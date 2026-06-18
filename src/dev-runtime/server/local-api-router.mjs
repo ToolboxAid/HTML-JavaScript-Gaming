@@ -1254,11 +1254,13 @@ function guestSession(mode, diagnostic = "") {
   };
 }
 
-function sessionUserFromIdentityTables(tables, userKey, modeId, providerLabel) {
+export function sessionUserFromIdentityTables(tables, userKey, modeId, providerLabel) {
   const mode = FIXED_ACCOUNT_SESSION_MODE;
-  const key = String(userKey || "");
+  const key = String(userKey || "").trim();
   if (!isUlidKey(key)) {
-    return guestSession(mode);
+    return key
+      ? guestSession(mode, `Selected ${providerLabel} user key ${key} is not a valid users.key.`)
+      : guestSession(mode);
   }
 
   const user = (tables.users || []).find((record) => record.key === key && record.isActive !== false);
@@ -1826,11 +1828,18 @@ class ApiRuntimeDataSource {
   }
 
   async currentSessionForRoute() {
+    const selectedUserKey = String(this.sessionUserKey || "").trim();
+    if (selectedUserKey && !isUlidKey(selectedUserKey)) {
+      return guestSession(
+        FIXED_ACCOUNT_SESSION_MODE,
+        `Selected Local DB identity user key ${selectedUserKey} is not a valid users.key.`,
+      );
+    }
     const status = await this.authStatusForRoute();
-    if (this.sessionUserKey) {
+    if (selectedUserKey) {
       try {
         const tables = await this.readSupabaseIdentityTablesUnchecked("Reading selected Local API session");
-        return sessionUserFromIdentityTables(tables, this.sessionUserKey, this.sessionModeId, "Local DB identity");
+        return sessionUserFromIdentityTables(tables, selectedUserKey, this.sessionModeId, "Local DB identity");
       } catch (error) {
         return guestSession(
           FIXED_ACCOUNT_SESSION_MODE,
@@ -1856,7 +1865,7 @@ class ApiRuntimeDataSource {
   }
 
   async setUserForRoute(userKey) {
-    this.sessionUserKey = String(userKey || "");
+    this.sessionUserKey = String(userKey || "").trim();
     this.sharedOptions.sessionMode = this.sessionModeId;
     this.sharedOptions.sessionUserKey = this.sessionUserKey;
     return this.currentSessionForRoute();

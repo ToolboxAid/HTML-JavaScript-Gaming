@@ -1,1694 +1,317 @@
-diff --git a/docs_build/pr/PLAN_PR_26169_001-creator-platform-foundation.md b/docs_build/pr/PLAN_PR_26169_001-creator-platform-foundation.md
+diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
+index 85b791359..f8d243e63 100644
+--- a/src/dev-runtime/server/local-api-router.mjs
++++ b/src/dev-runtime/server/local-api-router.mjs
+@@ -1254,11 +1254,13 @@ function guestSession(mode, diagnostic = "") {
+   };
+ }
+ 
+-function sessionUserFromIdentityTables(tables, userKey, modeId, providerLabel) {
++export function sessionUserFromIdentityTables(tables, userKey, modeId, providerLabel) {
+   const mode = FIXED_ACCOUNT_SESSION_MODE;
+-  const key = String(userKey || "");
++  const key = String(userKey || "").trim();
+   if (!isUlidKey(key)) {
+-    return guestSession(mode);
++    return key
++      ? guestSession(mode, `Selected ${providerLabel} user key ${key} is not a valid users.key.`)
++      : guestSession(mode);
+   }
+ 
+   const user = (tables.users || []).find((record) => record.key === key && record.isActive !== false);
+@@ -1826,11 +1828,18 @@ class ApiRuntimeDataSource {
+   }
+ 
+   async currentSessionForRoute() {
++    const selectedUserKey = String(this.sessionUserKey || "").trim();
++    if (selectedUserKey && !isUlidKey(selectedUserKey)) {
++      return guestSession(
++        FIXED_ACCOUNT_SESSION_MODE,
++        `Selected Local DB identity user key ${selectedUserKey} is not a valid users.key.`,
++      );
++    }
+     const status = await this.authStatusForRoute();
+-    if (this.sessionUserKey) {
++    if (selectedUserKey) {
+       try {
+         const tables = await this.readSupabaseIdentityTablesUnchecked("Reading selected Local API session");
+-        return sessionUserFromIdentityTables(tables, this.sessionUserKey, this.sessionModeId, "Local DB identity");
++        return sessionUserFromIdentityTables(tables, selectedUserKey, this.sessionModeId, "Local DB identity");
+       } catch (error) {
+         return guestSession(
+           FIXED_ACCOUNT_SESSION_MODE,
+@@ -1856,7 +1865,7 @@ class ApiRuntimeDataSource {
+   }
+ 
+   async setUserForRoute(userKey) {
+-    this.sessionUserKey = String(userKey || "");
++    this.sessionUserKey = String(userKey || "").trim();
+     this.sharedOptions.sessionMode = this.sessionModeId;
+     this.sharedOptions.sessionUserKey = this.sessionUserKey;
+     return this.currentSessionForRoute();
+diff --git a/tests/dev-runtime/SupabaseProviderContractStub.test.mjs b/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
+index f45cb5323..9d5531ad4 100644
+--- a/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
++++ b/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
+@@ -10,7 +10,10 @@ import {
+   createProviderContractSnapshot,
+ } from "../../src/dev-runtime/auth/provider-contract-stubs.mjs";
+ import { SEED_DB_KEYS } from "../../src/dev-runtime/seed/seed-db-keys.mjs";
+-import { createLocalApiRouter } from "../../src/dev-runtime/server/local-api-router.mjs";
++import {
++  createLocalApiRouter,
++  sessionUserFromIdentityTables,
++} from "../../src/dev-runtime/server/local-api-router.mjs";
+ 
+ function withEnv(nextEnv, callback) {
+   const previousEnv = {};
+@@ -1302,6 +1305,27 @@ test("Supabase identity session lookup fails visibly when the selected user is m
+   await fakeSupabase.close();
+ });
+ 
++test("Supabase identity session lookup fails visibly when the selected user key is malformed", async () => {
++  const server = await startApiServer();
++  try {
++    const response = await postApiPayload(server.baseUrl, "/api/session/user", {
++      userKey: "not-a-users-key",
++    });
++    assert.equal(response.status, 200);
++    assert.equal(response.payload.ok, true);
++    assert.equal(response.payload.data.authenticated, false);
++    assert.match(response.payload.data.diagnostic, /not a valid users\.key/);
++
++    const logout = await postApiPayload(server.baseUrl, "/api/session/logout", {});
++    assert.equal(logout.status, 200);
++    assert.equal(logout.payload.ok, true);
++    assert.equal(logout.payload.data.authenticated, false);
++    assert.doesNotMatch(logout.payload.data.diagnostic || "", /not a valid users\.key/);
++  } finally {
++    await server.close();
++  }
++});
++
+ test("Supabase identity session lookup fails visibly when user_roles references a missing role", async () => {
+   const fakeSupabase = await startFakeSupabaseAuthServer({
+     identityTables: fakeSupabaseIdentityTables({
+@@ -1341,6 +1365,142 @@ test("Supabase identity session lookup fails visibly when user_roles references
+   await fakeSupabase.close();
+ });
+ 
++test("Supabase identity table session resolver exposes Creator Admin and Owner role state", () => {
++  const admin = sessionUserFromIdentityTables(
++    fakeSupabaseIdentityTables(),
++    SEED_DB_KEYS.users.admin,
++    "account",
++    "Supabase identity",
++  );
++  assert.equal(admin.authenticated, true);
++  assert.equal(admin.userKey, SEED_DB_KEYS.users.admin);
++  assert.equal(admin.isAdmin, true);
++  assert.equal(admin.isOwner, false);
++  assert.deepEqual(admin.roleSlugs, ["admin"]);
++
++  const timestamp = "2026-06-15T00:00:00.000Z";
++  const audit = {
++    createdAt: timestamp,
++    createdBy: SEED_DB_KEYS.users.admin,
++    updatedAt: timestamp,
++    updatedBy: SEED_DB_KEYS.users.admin,
++  };
++  const tables = fakeSupabaseIdentityTables({
++    roles: [
++      {
++        key: SEED_DB_KEYS.roles.creator,
++        roleSlug: "creator",
++        name: "Creator",
++        description: "Creator account.",
++        isActive: true,
++        isSystemRole: false,
++        ...audit,
++      },
++      {
++        key: SEED_DB_KEYS.roles.admin,
++        roleSlug: "admin",
++        name: "Admin",
++        description: "Administrative account.",
++        isActive: true,
++        isSystemRole: false,
++        ...audit,
++      },
++      {
++        key: SEED_DB_KEYS.roles.owner,
++        roleSlug: "owner",
++        name: "Owner",
++        description: "Owner account.",
++        isActive: true,
++        isSystemRole: false,
++        ...audit,
++      },
++    ],
++    user_roles: [
++      {
++        key: SEED_DB_KEYS.userRoles.user1User,
++        userKey: SEED_DB_KEYS.users.user1,
++        roleKey: SEED_DB_KEYS.roles.creator,
++        ...audit,
++      },
++      {
++        key: SEED_DB_KEYS.userRoles.adminUser,
++        userKey: SEED_DB_KEYS.users.admin,
++        roleKey: SEED_DB_KEYS.roles.creator,
++        ...audit,
++      },
++      {
++        key: SEED_DB_KEYS.userRoles.adminAdmin,
++        userKey: SEED_DB_KEYS.users.admin,
++        roleKey: SEED_DB_KEYS.roles.admin,
++        ...audit,
++      },
++      {
++        key: SEED_DB_KEYS.userRoles.adminOwner,
++        userKey: SEED_DB_KEYS.users.admin,
++        roleKey: SEED_DB_KEYS.roles.owner,
++        ...audit,
++      },
++    ],
++  });
++
++  const creator = sessionUserFromIdentityTables(
++    tables,
++    SEED_DB_KEYS.users.user1,
++    "account",
++    "Supabase identity",
++  );
++  assert.equal(creator.authenticated, true);
++  assert.equal(creator.userKey, SEED_DB_KEYS.users.user1);
++  assert.equal(creator.isAdmin, false);
++  assert.equal(creator.isOwner, false);
++  assert.deepEqual(creator.roleSlugs, ["creator"]);
++
++  const owner = sessionUserFromIdentityTables(
++    tables,
++    SEED_DB_KEYS.users.admin,
++    "account",
++    "Supabase identity",
++  );
++  assert.equal(owner.authenticated, true);
++  assert.equal(owner.userKey, SEED_DB_KEYS.users.admin);
++  assert.equal(owner.isAdmin, true);
++  assert.equal(owner.isOwner, true);
++  assert.deepEqual(owner.roleSlugs, ["creator", "admin", "owner"]);
++});
++
++test("Supabase identity table session resolver reports missing user and missing role diagnostics", () => {
++  const tables = fakeSupabaseIdentityTables();
++  const missingUser = sessionUserFromIdentityTables(
++    tables,
++    "01K2GFSJ0Y0000000000000099",
++    "account",
++    "Supabase identity",
++  );
++  assert.equal(missingUser.authenticated, false);
++  assert.match(missingUser.diagnostic, /Selected Supabase identity user key .* is missing from users/);
++
++  const missingRole = sessionUserFromIdentityTables(
++    fakeSupabaseIdentityTables({
++      user_roles: [
++        {
++          key: SEED_DB_KEYS.userRoles.user1User,
++          userKey: SEED_DB_KEYS.users.user1,
++          roleKey: "01K2GFSJ0Y0000000000000088",
++          createdAt: "2026-06-15T00:00:00.000Z",
++          createdBy: SEED_DB_KEYS.users.admin,
++          updatedAt: "2026-06-15T00:00:00.000Z",
++          updatedBy: SEED_DB_KEYS.users.admin,
++        },
++      ],
++    }),
++    SEED_DB_KEYS.users.user1,
++    "account",
++    "Supabase identity",
++  );
++  assert.equal(missingRole.authenticated, false);
++  assert.match(missingRole.diagnostic, /references missing role key/);
++});
++
+ test("Operator auth preflight reports failed Supabase connectivity for wrong anon key without exposing secrets", async () => {
+   const fakeSupabase = await startFakeSupabaseAuthServer({
+     expectedApiKey: "expected-anon-key",
+diff --git a/docs_build/pr/BUILD_PR_26169_002-auth-preview-signin-regression.md b/docs_build/pr/BUILD_PR_26169_002-auth-preview-signin-regression.md
 new file mode 100644
-index 0000000..0000000
+index 000000000..82ad8a90c
 --- /dev/null
-+++ b/docs_build/pr/PLAN_PR_26169_001-creator-platform-foundation.md
-@@ -0,0 +1,78 @@
-+# PLAN_PR_26169_001-creator-platform-foundation
++++ b/docs_build/pr/BUILD_PR_26169_002-auth-preview-signin-regression.md
+@@ -0,0 +1,73 @@
++# BUILD_PR_26169_002-auth-preview-signin-regression
 +
 +## Objective
-+- Establish the creator platform foundation that later membership, invitation, AI credit, marketplace, team, legal, owner, and admin PRs can build on without hardcoded business rules.
++- Stabilize auth preview/session selection so selected users resolve from persisted `users`, `roles`, and `user_roles` records with visible diagnostics for invalid identity state.
 +
-+## Source Of Truth
-+- Approved business model from PR stack request:
-+  - Memberships: Free, Creator, Studio, Beta, Founding Creator, Founding Studio.
-+  - Marketplace access: everyone can browse, buy, and download free assets; Creator and higher can sell assets.
-+  - Revenue: creators receive 80% of Net Revenue.
-+  - AI credit packs: Small, Medium, Large; Studio receives 10% bonus purchased credits.
-+  - Roles: Creator, Admin, Owner.
-+  - Required tables: `membership_plans`, `membership_limits`, `user_memberships`, `founding_members`, `invitations`, `project_members`, `ai_actions`, `ai_credit_packs`, `user_ai_credits`, `ai_usage_log`.
-+- All pricing, percentages, limits, credits, and AI costs must be database-driven and Owner-editable.
-+
-+## Scope
-+- Define platform-level service boundaries for membership, entitlement, role, AI credit, marketplace, team, legal, owner, and admin operations.
-+- Identify where future BUILD PRs must connect UI pages to API/service contracts backed by DB adapters.
-+- Add no runtime behavior in this PLAN PR.
-+
-+## Non-Scope
-+- No implementation code.
-+- No database migrations.
-+- No UI changes.
-+- No BUILD_PR or APPLY_PR documents.
-+- No Playwright changes.
-+
-+## Implementation Requirements
-+- Future implementation must route product data through service contracts, not page-local arrays or hardcoded browser state.
-+- Creator, Admin, and Owner roles must be resolved through the existing user/role model and must not rely on hidden fallback users.
-+- The platform foundation must expose explicit contracts for:
-+  - Current user identity and role grants.
-+  - Current membership and limits.
-+  - Marketplace permissions.
-+  - AI credit balances and action costs.
-+  - Team membership limits.
-+  - Owner-editable configuration.
-+  - Admin health and operations read models.
-+- Error handling must fail visibly when user, role, membership, plan, limit, or configuration data is missing.
-+- Future BUILD PRs must inspect exact target files before editing and must keep each PR purpose isolated.
-+
-+## Data Model Requirements
-+- This PR must define the canonical ownership map for required tables:
-+  - `membership_plans`: plan identity, pricing, public/beta/founding availability, marketplace selling eligibility, revenue percentage, purchased AI credit bonus.
-+  - `membership_limits`: storage, monthly AI credits, publish limits, team limits, collaboration flag, marketplace capability flags.
-+  - `user_memberships`: active and historical user plan assignments.
-+  - `founding_members`: first 100 paid founding membership records with locked active pricing.
-+  - `invitations`: beta and future invitation flows.
-+  - `project_members`: project collaboration membership.
-+  - `ai_actions`: database-driven AI action costs.
-+  - `ai_credit_packs`: purchasable credit packs and prices.
-+  - `user_ai_credits`: current included, purchased, and bonus balances.
-+  - `ai_usage_log`: immutable credit usage and grant ledger.
-+- All new shared records must include audit fields consistent with repo DB governance: `key`, `createdAt`, `updatedAt`, `createdBy`, `updatedBy`.
-+- Plan codes must be stable uppercase values: `FREE`, `CREATOR`, `STUDIO`, `BETA`, `FOUNDING_CREATOR`, `FOUNDING_STUDIO`.
-+
-+## UI Requirements
-+- No UI is implemented in this PR.
-+- Future UI must show role-appropriate navigation without exposing unavailable actions as working controls.
-+- Membership, marketplace, team, AI, owner, legal, and admin pages must consume service/API data rather than owning their own business model constants.
-+- Any unavailable action must explain the required membership or role.
-+
-+## Validation Requirements
-+- PLAN-phase validation for this docs-only PR: branch validation only.
-+- Future BUILD validation must include targeted contract tests for each introduced service boundary.
-+- Future BUILD validation must confirm no runtime page persists pricing, percentages, limits, credits, or AI costs as hardcoded source of truth.
-+- No Playwright validation is required for this PLAN-only PR.
-+
-+## Acceptance Criteria
-+- The platform foundation plan names all required downstream business areas.
-+- The required database tables are listed with ownership intent.
-+- The requirement for database-driven, Owner-editable pricing, percentages, limits, credits, and AI costs is explicit.
-+- Dependencies for the full PR stack can reference this foundation as the shared contract.
-+
-+## Dependencies
-+- Upstream: none.
-+- Downstream: PRs 002 through 019 depend on this foundation.
-+
-diff --git a/docs_build/pr/PLAN_PR_26169_002-auth-preview-signin-regression.md b/docs_build/pr/PLAN_PR_26169_002-auth-preview-signin-regression.md
-new file mode 100644
-index 0000000..0000000
---- /dev/null
-+++ b/docs_build/pr/PLAN_PR_26169_002-auth-preview-signin-regression.md
-@@ -0,0 +1,57 @@
-+# PLAN_PR_26169_002-auth-preview-signin-regression
-+
-+## Objective
-+- Stabilize preview sign-in so creator, admin, and owner role previews use real user and role data instead of fallback auth state.
-+
-+## Scope
-+- Future BUILD must inspect existing auth preview, account, admin, and local session surfaces.
-+- Preserve current sign-in preview workflows while removing regressions that hide missing users, roles, or membership context.
-+- Add no runtime behavior in this PLAN PR.
-+
-+## Non-Scope
-+- No new membership assignment workflow.
-+- No beta invitation acceptance.
-+- No Owner configuration UI.
-+- No production auth provider change unless existing target files require an adapter correction.
-+
-+## Implementation Requirements
-+- Preview sign-in must resolve selected users from persisted user records.
-+- Role previews must resolve through persisted roles and user-role assignments.
-+- Creator, Admin, and Owner role states must be distinguishable and testable.
-+- Missing preview users or roles must show actionable diagnostics and must not silently create fallback sessions.
-+- The selected preview user must expose a stable platform user key to downstream membership and entitlement services.
-+- Sign-out must clear only preview auth state and must not mutate membership, AI credit, marketplace, or project data.
-+
-+## Data Model Requirements
-+- Use existing user, role, and user-role tables if present.
-+- Do not add membership tables in this PR.
-+- Do not persist pricing, limits, credits, or marketplace percentages in auth state.
-+- Auth preview session state may reference user and role keys only; it must not duplicate membership plan data.
-+
-+## UI Requirements
-+- Preview sign-in UI must clearly show the selected user and active roles.
-+- Admin-only and Owner-only preview choices must not appear as Creator actions.
-+- Error states must identify missing user, missing role, or missing user-role assignment.
-+- Any role switcher must remain a preview/dev affordance and must not imply production role escalation.
-+
-+## Validation Requirements
-+- PLAN-phase validation for this docs-only PR: branch validation only.
-+- Future BUILD validation must include targeted auth/account checks for:
-+  - Creator preview sign-in.
-+  - Admin preview sign-in.
-+  - Owner preview sign-in.
-+  - Missing user rejection.
-+  - Missing role rejection.
-+  - Sign-out state cleanup.
-+- No Playwright validation is required for this PLAN-only PR.
-+
-+## Acceptance Criteria
-+- Preview sign-in no longer masks invalid users or roles.
-+- Downstream services receive a stable user key and role set.
-+- No membership, marketplace, or AI business rules are hardcoded into auth preview state.
-+- Diagnostics are visible and actionable.
-+
-+## Dependencies
-+- Upstream: PR 001.
-+- Downstream: PR 003, PR 005, PR 006, PR 017, PR 018, PR 019.
-+
-diff --git a/docs_build/pr/PLAN_PR_26169_003-beta-invitations-admin.md b/docs_build/pr/PLAN_PR_26169_003-beta-invitations-admin.md
-new file mode 100644
-index 0000000..0000000
---- /dev/null
-+++ b/docs_build/pr/PLAN_PR_26169_003-beta-invitations-admin.md
-@@ -0,0 +1,79 @@
-+# PLAN_PR_26169_003-beta-invitations-admin
-+
-+## Objective
-+- Plan the Admin beta invitation workflow that grants invitation-only Beta access with Studio-equivalent limits.
-+
-+## Scope
-+- Add an Admin-managed invitation lifecycle for creating, listing, expiring, revoking, and accepting Beta invitations in a future BUILD PR.
-+- Use the approved Beta model:
-+  - $0/month.
-+  - 4 GB storage.
-+  - 400 AI credits/month.
-+  - Up to 10 team members.
-+  - Invitation only.
-+  - Studio-equivalent access.
-+- Add no runtime behavior in this PLAN PR.
-+
-+## Non-Scope
-+- No public self-service Beta signup.
-+- No paid membership checkout.
-+- No email delivery integration unless an existing notification contract already exists and is explicitly scoped in BUILD.
-+- No Owner membership pricing editor.
-+
-+## Implementation Requirements
-+- Admins must be able to create invitations for a target email and plan code `BETA`.
-+- Invitation records must have explicit status: pending, accepted, revoked, expired.
-+- Invitation acceptance must be single-use.
-+- Expired, revoked, already accepted, or mismatched-email invitations must fail visibly.
-+- Accepted Beta invitations must create or update the user membership through the membership assignment service in PR 005.
-+- Admin invitation actions must be auditable.
-+- Beta access must be represented as a membership plan and limits record, not as an auth-only flag.
-+
-+## Data Model Requirements
-+- `invitations` must support:
-+  - `key`
-+  - `email`
-+  - `invitationCode` or token hash
-+  - `planKey`
-+  - `status`
-+  - `invitedBy`
-+  - `expiresAt`
-+  - `acceptedBy`
-+  - `acceptedAt`
-+  - audit fields
-+- `membership_plans` must contain a `BETA` plan row.
-+- `membership_limits` must contain Beta limits matching Studio:
-+  - `storageMb = 4096`
-+  - `monthlyAiCredits = 400`
-+  - `maxTeamMembers = 10`
-+  - `collaborationEnabled = true`
-+  - marketplace sell enabled because Beta has Studio-equivalent access.
-+- Invitation acceptance must not store pricing or limits on the invitation itself beyond the referenced plan.
-+
-+## UI Requirements
-+- Admin Invitations page or panel must list invitations with email, plan, status, expiration, invited by, and accepted by.
-+- Admins must have controls to create, revoke, and inspect invitations.
-+- Invitation acceptance UI must show clear success and failure states.
-+- Beta must be labeled invitation-only and Studio-equivalent without implying a paid subscription.
-+
-+## Validation Requirements
-+- PLAN-phase validation for this docs-only PR: branch validation only.
-+- Future BUILD validation must include targeted admin and contract checks for:
-+  - Create pending Beta invitation.
-+  - Accept valid invitation.
-+  - Reject revoked invitation.
-+  - Reject expired invitation.
-+  - Reject duplicate acceptance.
-+  - Confirm accepted invitation feeds membership assignment.
-+- No Playwright validation is required for this PLAN-only PR.
-+
-+## Acceptance Criteria
-+- Admins can manage Beta invitations through database-backed records.
-+- Beta access is assigned through membership data, not hidden auth state.
-+- Invalid invitation states fail with actionable messages.
-+- Invitation status changes are auditable.
-+
-+## Dependencies
-+- Upstream: PR 001, PR 002.
-+- Downstream: PR 005, PR 006, PR 008, PR 012, PR 013.
-+
-diff --git a/docs_build/pr/PLAN_PR_26169_004-membership-data-model.md b/docs_build/pr/PLAN_PR_26169_004-membership-data-model.md
-new file mode 100644
-index 0000000..0000000
---- /dev/null
-+++ b/docs_build/pr/PLAN_PR_26169_004-membership-data-model.md
-@@ -0,0 +1,99 @@
-+# PLAN_PR_26169_004-membership-data-model
-+
-+## Objective
-+- Define the database-driven membership model for Free, Creator, Studio, Beta, Founding Creator, and Founding Studio plans.
-+
-+## Scope
-+- Future BUILD must introduce or align membership tables and seed data.
-+- Membership model must store all pricing, limits, percentages, and plan capabilities in the database.
-+- Add no runtime behavior in this PLAN PR.
-+
-+## Non-Scope
-+- No membership checkout.
-+- No assignment UI.
-+- No Owner editor UI.
-+- No AI credit ledger beyond membership monthly credit fields.
-+
-+## Implementation Requirements
-+- Membership plans must be queryable by stable plan code.
-+- Free plan must be available to all users.
-+- Creator and Studio plans must be paid public plans.
-+- Beta must be invitation-only and $0/month.
-+- Founding Creator and Founding Studio must represent the first 100 paid memberships with locked pricing while active.
-+- Founding plans inherit Creator or Studio capabilities while storing their locked price separately.
-+- Creator receives 80% of Net Revenue.
-+- Studio receives 80% of Net Revenue and 10% bonus purchased AI credits.
-+- Free cannot sell marketplace assets.
-+- Creator, Studio, Beta, Founding Creator, and Founding Studio can sell marketplace assets.
-+- Creator, Studio, Beta, Founding Creator, and Founding Studio have collaboration enabled.
-+
-+## Data Model Requirements
-+- `membership_plans` required fields:
-+  - `key`
-+  - `code`
-+  - `displayName`
-+  - `monthlyPriceCents`
-+  - `currency`
-+  - `billingInterval`
-+  - `isPublic`
-+  - `requiresInvitation`
-+  - `isFounding`
-+  - `basePlanCode`
-+  - `revenueShareBps`
-+  - `purchasedCreditBonusBps`
-+  - `active`
-+  - audit fields
-+- `membership_limits` required fields:
-+  - `key`
-+  - `planKey`
-+  - `storageMb`
-+  - `monthlyAiCredits`
-+  - `publishExperienceLimit`
-+  - `maxTeamMembers`
-+  - `collaborationEnabled`
-+  - `marketplaceBrowseEnabled`
-+  - `marketplaceBuyEnabled`
-+  - `marketplaceFreeDownloadEnabled`
-+  - `marketplaceSellEnabled`
-+  - audit fields
-+- Required plan values:
-+  - `FREE`: $0/month, 250 MB storage, 0 monthly AI credits, publish limit 1, max team members 1, collaboration disabled, cannot sell.
-+  - `CREATOR`: $9/month, 1 GB storage, 100 monthly AI credits, max team members 3, can sell, creator analytics, 80% Net Revenue.
-+  - `STUDIO`: $19/month, 4 GB storage, 400 monthly AI credits, max team members 10, can sell, advanced analytics, 80% Net Revenue, 10% purchased AI credit bonus.
-+  - `BETA`: $0/month, 4 GB storage, 400 monthly AI credits, max team members 10, invitation-only, Studio-equivalent access.
-+  - `FOUNDING_CREATOR`: $5/month locked while active, Creator-equivalent limits.
-+  - `FOUNDING_STUDIO`: $10/month locked while active, Studio-equivalent limits.
-+- `founding_members` required fields:
-+  - `key`
-+  - `userKey`
-+  - `planKey`
-+  - `sequenceNumber`
-+  - `lockedMonthlyPriceCents`
-+  - `active`
-+  - `assignedAt`
-+  - `endedAt`
-+  - audit fields
-+- Founding membership assignment must enforce first 100 paid memberships.
-+
-+## UI Requirements
-+- No UI is implemented in this PR.
-+- Future UI must render plan data from service responses.
-+- Plan labels, prices, limits, marketplace permissions, team limits, and credit amounts must not be hardcoded in the page.
-+
-+## Validation Requirements
-+- PLAN-phase validation for this docs-only PR: branch validation only.
-+- Future BUILD validation must include contract/data checks for seeded plans and limits.
-+- Future BUILD validation must assert that pricing, limits, revenue share, and bonus percentages are loaded from DB records.
-+- Future BUILD validation must verify no page-local plan arrays become source of truth.
-+- No Playwright validation is required for this PLAN-only PR.
-+
-+## Acceptance Criteria
-+- All approved membership plans exist in DB-backed records.
-+- All approved limits and prices match the business model.
-+- Founding plan data supports locked active pricing and first-100 eligibility.
-+- Marketplace and AI downstream PRs can read membership capability fields from one source.
-+
-+## Dependencies
-+- Upstream: PR 001.
-+- Downstream: PR 005, PR 006, PR 007, PR 009, PR 010, PR 012, PR 013, PR 017, PR 018.
-+
-diff --git a/docs_build/pr/PLAN_PR_26169_005-membership-assignment.md b/docs_build/pr/PLAN_PR_26169_005-membership-assignment.md
-new file mode 100644
-index 0000000..0000000
---- /dev/null
-+++ b/docs_build/pr/PLAN_PR_26169_005-membership-assignment.md
-@@ -0,0 +1,74 @@
-+# PLAN_PR_26169_005-membership-assignment
-+
-+## Objective
-+- Define the membership assignment service that applies Free, paid, Beta, and Founding memberships to users.
-+
-+## Scope
-+- Future BUILD must create membership assignment behavior using `user_memberships`, `membership_plans`, `membership_limits`, `founding_members`, and `invitations`.
-+- Assignment must be database-backed and auditable.
-+- Add no runtime behavior in this PLAN PR.
-+
-+## Non-Scope
-+- No checkout provider integration.
-+- No Owner pricing UI.
-+- No memberships page redesign.
-+- No AI monthly credit grant job beyond assignment hooks needed for PR 007.
-+
-+## Implementation Requirements
-+- Every platform user must resolve to exactly one active membership for entitlement checks.
-+- Users without paid, Beta, or founding membership must receive Free membership through an explicit DB-backed assignment path.
-+- Beta assignment must require an accepted valid invitation.
-+- Founding Creator and Founding Studio assignment must require paid membership eligibility and an available founding sequence within the first 100 paid memberships.
-+- Founding locked pricing remains while the founding membership is active.
-+- Membership changes must close or supersede the previous active `user_memberships` record without deleting history.
-+- Assignment must expose the active plan, limits, and source to downstream services.
-+- Invalid assignment requests must fail visibly with the exact reason.
-+
-+## Data Model Requirements
-+- `user_memberships` required fields:
-+  - `key`
-+  - `userKey`
-+  - `planKey`
-+  - `status`
-+  - `source`
-+  - `startedAt`
-+  - `renewsAt`
-+  - `canceledAt`
-+  - `endedAt`
-+  - `invitationKey`
-+  - `foundingMemberKey`
-+  - `externalSubscriptionId`
-+  - audit fields
-+- Allowed `status` values: active, pending, canceled, expired, superseded.
-+- Allowed `source` values: free, paid, beta_invitation, founding_paid, admin_adjustment.
-+- `founding_members.sequenceNumber` must be unique from 1 through 100.
-+- Assignment must reference `membership_plans` and must not copy prices or limits into `user_memberships`.
-+
-+## UI Requirements
-+- No UI is implemented in this PR.
-+- Future account/admin UI can call assignment services and show active membership state.
-+- Admin assignment diagnostics must identify user, requested plan, source, and failure reason.
-+
-+## Validation Requirements
-+- PLAN-phase validation for this docs-only PR: branch validation only.
-+- Future BUILD validation must include contract tests for:
-+  - Default Free assignment.
-+  - Creator assignment.
-+  - Studio assignment.
-+  - Beta assignment from accepted invitation.
-+  - Founding sequence assignment up to 100.
-+  - Rejection when founding capacity is exhausted.
-+  - Active membership uniqueness.
-+  - Historical membership preservation.
-+- No Playwright validation is required for this PLAN-only PR.
-+
-+## Acceptance Criteria
-+- Active membership resolution is deterministic for every user.
-+- Assignment never depends on hidden defaults or browser storage.
-+- Beta and founding assignment rules are enforced through database records.
-+- Downstream entitlement, AI credit, marketplace, and team services can consume active membership data.
-+
-+## Dependencies
-+- Upstream: PR 002, PR 003, PR 004.
-+- Downstream: PR 006, PR 007, PR 008, PR 009, PR 012, PR 013, PR 017.
-+
-diff --git a/docs_build/pr/PLAN_PR_26169_006-memberships-page-v2.md b/docs_build/pr/PLAN_PR_26169_006-memberships-page-v2.md
-new file mode 100644
-index 0000000..0000000
---- /dev/null
-+++ b/docs_build/pr/PLAN_PR_26169_006-memberships-page-v2.md
-@@ -0,0 +1,87 @@
-+# PLAN_PR_26169_006-memberships-page-v2
-+
-+## Objective
-+- Plan a database-backed Memberships page V2 that displays approved plans, active membership, capabilities, and upgrade/downgrade affordances.
-+
-+## Scope
-+- Future BUILD must replace hardcoded membership presentation with service-backed plan data.
-+- Page must show Free, Creator, Studio, Beta, Founding Creator, and Founding Studio states correctly.
-+- Add no runtime behavior in this PLAN PR.
-+
-+## Non-Scope
-+- No payment checkout implementation.
-+- No Owner editing controls.
-+- No Admin invitation creation.
-+- No AI credit purchase flow.
-+
-+## Implementation Requirements
-+- Membership plan cards or rows must be rendered from `membership_plans` and `membership_limits`.
-+- Active membership must come from `user_memberships`.
-+- Beta must show as invitation-only and not as a public paid upgrade.
-+- Founding Creator and Founding Studio must show locked active pricing only for eligible active founding members.
-+- Upgrade actions for Creator and Studio may be disabled or routed to a future checkout placeholder, but must not fake a successful purchase.
-+- Free plan must show:
-+  - $0/month.
-+  - 250 MB storage.
-+  - 0 AI credits/month.
-+  - Publish 1 experience.
-+  - No collaboration.
-+  - Browse, buy, and download marketplace assets.
-+  - Cannot sell.
-+- Creator plan must show:
-+  - $9/month.
-+  - 1 GB storage.
-+  - 100 AI credits/month.
-+  - Up to 3 team members.
-+  - Sell marketplace assets.
-+  - Creator analytics.
-+  - 80% Net Revenue.
-+- Studio plan must show:
-+  - $19/month.
-+  - 4 GB storage.
-+  - 400 AI credits/month.
-+  - Up to 10 team members.
-+  - Advanced analytics.
-+  - 80% Net Revenue.
-+  - 10% bonus purchased AI credits.
-+
-+## Data Model Requirements
-+- Page data must come from membership service reads over:
-+  - `membership_plans`
-+  - `membership_limits`
-+  - `user_memberships`
-+  - `founding_members`
-+  - `invitations` for pending Beta invitation state when relevant.
-+- UI must not duplicate plan constants in JavaScript.
-+- Membership capability labels must be derived from limit/capability fields.
-+
-+## UI Requirements
-+- Show active plan, billing price, storage limit, monthly AI credits, team limit, publish limit, marketplace sell eligibility, revenue share, and purchased credit bonus.
-+- Show clear disabled states for unavailable actions.
-+- Show Beta as invitation-only.
-+- Show founding status only to active founding members or eligible Owner/Admin contexts.
-+- Use existing Theme V2 patterns if this is a public/root page.
-+- No page-local CSS, inline styles, or inline scripts in future BUILD.
-+
-+## Validation Requirements
-+- PLAN-phase validation for this docs-only PR: branch validation only.
-+- Future BUILD validation must include targeted page/service checks for:
-+  - Free user display.
-+  - Creator user display.
-+  - Studio user display.
-+  - Beta user display.
-+  - Founding Creator and Founding Studio active states.
-+  - Missing membership error state.
-+- Playwright is required in future BUILD only if UI behavior is implemented.
-+- No Playwright validation is required for this PLAN-only PR.
-+
-+## Acceptance Criteria
-+- Memberships page displays the approved business model from DB-backed data.
-+- No pricing, percentages, limits, credits, or AI costs are page-local source of truth.
-+- Active membership state is accurate for regular, Beta, and founding users.
-+- Upgrade or change actions do not claim success without a real assignment or checkout path.
-+
-+## Dependencies
-+- Upstream: PR 004, PR 005.
-+- Downstream: PR 008, PR 017.
-+
-diff --git a/docs_build/pr/PLAN_PR_26169_007-ai-credit-foundation.md b/docs_build/pr/PLAN_PR_26169_007-ai-credit-foundation.md
-new file mode 100644
-index 0000000..0000000
---- /dev/null
-+++ b/docs_build/pr/PLAN_PR_26169_007-ai-credit-foundation.md
-@@ -0,0 +1,97 @@
-+# PLAN_PR_26169_007-ai-credit-foundation
-+
-+## Objective
-+- Define the AI credit foundation for monthly membership grants, purchased credit packs, Studio bonuses, action costs, and usage logging.
-+
-+## Scope
-+- Future BUILD must introduce AI credit data contracts and service behavior using `ai_actions`, `ai_credit_packs`, `user_ai_credits`, and `ai_usage_log`.
-+- All AI costs, pack prices, and credits must be database-driven and Owner-editable.
-+- Add no runtime behavior in this PLAN PR.
-+
-+## Non-Scope
-+- No AI provider integration.
-+- No checkout flow for purchasing packs.
-+- No AI generation UI.
-+- No Owner AI editor UI until PR 018.
-+
-+## Implementation Requirements
-+- Membership monthly credits must derive from `membership_limits.monthlyAiCredits`.
-+- AI action costs must derive from `ai_actions.creditCost`.
-+- Credit pack definitions must derive from `ai_credit_packs`.
-+- Studio and Founding Studio users must receive 10% bonus purchased credits.
-+- Beta users receive Studio-equivalent included monthly credits but do not imply paid Studio billing.
-+- Free users receive 0 monthly AI credits.
-+- Credit debits must be atomic at service level and must write `ai_usage_log`.
-+- Credit grants and purchases must write `ai_usage_log`.
-+- Insufficient credits must reject before invoking any AI action.
-+- Usage logs must identify user, action, delta, source, and resulting balance.
-+
-+## Data Model Requirements
-+- `ai_actions` required fields:
-+  - `key`
-+  - `code`
-+  - `displayName`
-+  - `creditCost`
-+  - `active`
-+  - audit fields
-+- `ai_credit_packs` required rows:
-+  - Small: 100 credits, $5.
-+  - Medium: 500 credits, $20.
-+  - Large: 3000 credits, $99.
-+- `ai_credit_packs` required fields:
-+  - `key`
-+  - `code`
-+  - `displayName`
-+  - `credits`
-+  - `priceCents`
-+  - `currency`
-+  - `active`
-+  - audit fields
-+- `user_ai_credits` required fields:
-+  - `key`
-+  - `userKey`
-+  - `includedBalance`
-+  - `purchasedBalance`
-+  - `bonusBalance`
-+  - `periodStart`
-+  - `periodEnd`
-+  - audit fields
-+- `ai_usage_log` required fields:
-+  - `key`
-+  - `userKey`
-+  - `actionKey`
-+  - `creditDelta`
-+  - `sourceType`
-+  - `sourceKey`
-+  - `balanceAfter`
-+  - `createdAt`
-+  - `createdBy`
-+- Studio bonus must use `membership_plans.purchasedCreditBonusBps`.
-+
-+## UI Requirements
-+- No UI is implemented in this PR.
-+- Future UI must display balances and pack definitions from service data.
-+- Any AI action button must disclose credit cost before execution when future UI consumes this service.
-+
-+## Validation Requirements
-+- PLAN-phase validation for this docs-only PR: branch validation only.
-+- Future BUILD validation must include targeted contract tests for:
-+  - Monthly grant by plan.
-+  - Small, Medium, and Large pack definitions.
-+  - Studio 10% purchased credit bonus.
-+  - Free 0 monthly credits.
-+  - AI action debit.
-+  - Insufficient credit rejection.
-+  - Usage log writes for grants, purchases, bonuses, and debits.
-+- No Playwright validation is required for this PLAN-only PR.
-+
-+## Acceptance Criteria
-+- AI credit costs, pack prices, pack credits, monthly credits, and bonus percentages are DB-driven.
-+- Credit balance changes are auditable through `ai_usage_log`.
-+- Studio bonus behavior is tied to membership data.
-+- AI actions cannot run when credits are insufficient.
-+
-+## Dependencies
-+- Upstream: PR 004, PR 005.
-+- Downstream: PR 008, PR 018, PR 019.
-+
-diff --git a/docs_build/pr/PLAN_PR_26169_008-ai-credit-display.md b/docs_build/pr/PLAN_PR_26169_008-ai-credit-display.md
-new file mode 100644
-index 0000000..0000000
---- /dev/null
-+++ b/docs_build/pr/PLAN_PR_26169_008-ai-credit-display.md
-@@ -0,0 +1,72 @@
-+# PLAN_PR_26169_008-ai-credit-display
-+
-+## Objective
-+- Plan user-facing AI credit display for balances, monthly credits, purchased packs, bonus credits, and recent usage.
-+
-+## Scope
-+- Future BUILD must add AI credit balance and usage UI backed by the AI credit foundation.
-+- Display must respect membership-specific monthly credits and Studio bonus behavior.
-+- Add no runtime behavior in this PLAN PR.
-+
-+## Non-Scope
-+- No AI action execution UI.
-+- No payment checkout.
-+- No Owner AI pricing editor.
-+- No admin AI monitoring dashboard.
-+
-+## Implementation Requirements
-+- Display current included, purchased, and bonus credit balances.
-+- Display current membership monthly AI credit grant:
-+  - Free: 0.
-+  - Creator and Founding Creator: 100.
-+  - Studio, Founding Studio, and Beta: 400.
-+- Display available packs:
-+  - Small: 100 credits, $5.
-+  - Medium: 500 credits, $20.
-+  - Large: 3000 credits, $99.
-+- Display Studio 10% bonus purchased credits when applicable.
-+- Display recent usage from `ai_usage_log`.
-+- Missing balance records must show actionable diagnostics and must not render fake zero balances unless the service explicitly created a zero record.
-+
-+## Data Model Requirements
-+- Read from:
-+  - `user_ai_credits`
-+  - `ai_usage_log`
-+  - `ai_credit_packs`
-+  - `membership_plans`
-+  - `membership_limits`
-+  - `user_memberships`
-+- UI must not persist credit totals or pack definitions in browser storage as source of truth.
-+- Pack display must use `ai_credit_packs.priceCents` and `credits`.
-+
-+## UI Requirements
-+- Show total available credits and a breakdown of included, purchased, and bonus credits.
-+- Show membership monthly grant and next period dates if available.
-+- Show pack list sorted by credit amount: Small, Medium, Large.
-+- Show Studio bonus messaging only when the active plan has a purchased credit bonus.
-+- Show recent AI usage with action name, credit delta, date, and source.
-+- Use status messaging for missing data, insufficient data, or service errors.
-+
-+## Validation Requirements
-+- PLAN-phase validation for this docs-only PR: branch validation only.
-+- Future BUILD validation must include targeted UI/service checks for:
-+  - Free user balance.
-+  - Creator user balance and 100 monthly credits.
-+  - Studio user balance and 400 monthly credits.
-+  - Beta user balance and 400 monthly credits.
-+  - Studio 10% bonus pack display.
-+  - Usage log rendering.
-+  - Missing balance diagnostic.
-+- Playwright is required in future BUILD only if UI behavior is implemented.
-+- No Playwright validation is required for this PLAN-only PR.
-+
-+## Acceptance Criteria
-+- Users can understand current credits, monthly grants, available packs, and recent usage.
-+- Display values are service-backed and database-driven.
-+- Studio bonus display is controlled by plan data.
-+- The UI does not invent balances when records are missing.
-+
-+## Dependencies
-+- Upstream: PR 006, PR 007.
-+- Downstream: PR 018, PR 019.
-+
-diff --git a/docs_build/pr/PLAN_PR_26169_009-marketplace-membership-rules.md b/docs_build/pr/PLAN_PR_26169_009-marketplace-membership-rules.md
-new file mode 100644
-index 0000000..0000000
---- /dev/null
-+++ b/docs_build/pr/PLAN_PR_26169_009-marketplace-membership-rules.md
-@@ -0,0 +1,69 @@
-+# PLAN_PR_26169_009-marketplace-membership-rules
-+
-+## Objective
-+- Define marketplace entitlement rules based on active membership.
-+
-+## Scope
-+- Future BUILD must enforce browse, buy, free download, and sell permissions through membership services.
-+- Use the approved marketplace model:
-+  - Everyone can browse.
-+  - Everyone can buy.
-+  - Everyone can download free assets.
-+  - Creator and higher can sell assets.
-+- Add no runtime behavior in this PLAN PR.
-+
-+## Non-Scope
-+- No marketplace revenue settlement.
-+- No category taxonomy implementation.
-+- No checkout provider implementation.
-+- No asset publishing UI beyond entitlement requirements.
-+
-+## Implementation Requirements
-+- Marketplace browse must be available to all authenticated and guest users if current marketplace already supports guests.
-+- Buying and free downloads must be available to all platform users regardless of paid plan.
-+- Selling must require active Creator, Studio, Beta, Founding Creator, or Founding Studio membership.
-+- Free users cannot sell.
-+- Missing membership data must block selling with an actionable diagnostic.
-+- Marketplace checks must read `membership_limits.marketplaceSellEnabled`, not hardcoded plan names.
-+- UI actions and backend/service operations must enforce the same entitlement rule.
-+
-+## Data Model Requirements
-+- Read entitlement fields from `membership_limits`:
-+  - `marketplaceBrowseEnabled`
-+  - `marketplaceBuyEnabled`
-+  - `marketplaceFreeDownloadEnabled`
-+  - `marketplaceSellEnabled`
-+- Read active membership from `user_memberships`.
-+- Do not duplicate marketplace permissions in marketplace item records.
-+- Marketplace item ownership remains outside this PR unless exact existing marketplace tables require a minimal permission join.
-+
-+## UI Requirements
-+- Browse, buy, and free download controls remain visible for allowed users.
-+- Sell or create-listing controls must show an upgrade or membership-required state for Free users.
-+- Error messaging must name the required membership level as Creator or higher.
-+- Creator, Studio, Beta, Founding Creator, and Founding Studio users must see sell entry points when other marketplace prerequisites are satisfied.
-+
-+## Validation Requirements
-+- PLAN-phase validation for this docs-only PR: branch validation only.
-+- Future BUILD validation must include targeted entitlement checks for:
-+  - Free can browse.
-+  - Free can buy.
-+  - Free can download free assets.
-+  - Free cannot sell.
-+  - Creator can sell.
-+  - Studio can sell.
-+  - Beta can sell.
-+  - Missing membership rejects sell.
-+- Playwright is required in future BUILD only if marketplace UI behavior is implemented.
-+- No Playwright validation is required for this PLAN-only PR.
-+
-+## Acceptance Criteria
-+- Marketplace permissions match the approved business model.
-+- Selling access is derived from DB-backed membership limits.
-+- Free users are blocked from selling consistently in UI and service paths.
-+- No marketplace permission relies on page-local plan constants.
-+
-+## Dependencies
-+- Upstream: PR 004, PR 005.
-+- Downstream: PR 010, PR 011, PR 017.
-+
-diff --git a/docs_build/pr/PLAN_PR_26169_010-marketplace-revenue-model.md b/docs_build/pr/PLAN_PR_26169_010-marketplace-revenue-model.md
-new file mode 100644
-index 0000000..0000000
---- /dev/null
-+++ b/docs_build/pr/PLAN_PR_26169_010-marketplace-revenue-model.md
-@@ -0,0 +1,65 @@
-+# PLAN_PR_26169_010-marketplace-revenue-model
-+
-+## Objective
-+- Define the marketplace revenue model where creators receive 80% of Net Revenue.
-+
-+## Scope
-+- Future BUILD must calculate creator revenue share from DB-backed percentage fields.
-+- Net Revenue must be sale amount less processing fees, taxes, refunds, chargebacks, and required deductions.
-+- Add no runtime behavior in this PLAN PR.
-+
-+## Non-Scope
-+- No payment provider integration.
-+- No payout execution.
-+- No tax filing workflow.
-+- No marketplace category UI.
-+
-+## Implementation Requirements
-+- Creator revenue share must default to 80% of Net Revenue for Creator, Studio, Beta, Founding Creator, and Founding Studio sellers.
-+- Revenue share must be Owner-editable through DB-backed settings in PR 017.
-+- Net Revenue calculation must define explicit inputs:
-+  - sale amount.
-+  - processing fees.
-+  - taxes.
-+  - refunds.
-+  - chargebacks.
-+  - required deductions.
-+- Revenue calculations must not use gross sale amount as creator payout basis.
-+- Negative Net Revenue must not create a positive creator payout.
-+- Refunds and chargebacks must create auditable adjustments.
-+- Revenue model must not hardcode 80% in marketplace UI or runtime logic; it must read from membership/revenue configuration.
-+
-+## Data Model Requirements
-+- `membership_plans.revenueShareBps` must hold the creator revenue share percentage.
-+- Required value for Creator, Studio, Beta, Founding Creator, and Founding Studio: `8000` basis points.
-+- Free users cannot sell and therefore must not receive marketplace seller revenue.
-+- Marketplace transaction records, if present or introduced in a later marketplace PR, must store sale amount, processing fees, taxes, refunds, chargebacks, required deductions, net revenue, creator revenue, platform revenue, and calculation timestamp.
-+- This PR must not introduce transaction tables unless the future BUILD scope includes an existing marketplace sale record path that needs revenue fields.
-+
-+## UI Requirements
-+- Marketplace seller-facing UI must display "80% of Net Revenue" using service-backed percentage data.
-+- Revenue previews must show the deduction categories included in Net Revenue.
-+- UI must avoid presenting payout estimates when required fee/tax/refund data is incomplete.
-+- Owner-facing editing belongs to PR 017.
-+
-+## Validation Requirements
-+- PLAN-phase validation for this docs-only PR: branch validation only.
-+- Future BUILD validation must include targeted contract tests for:
-+  - 80% creator share from DB field.
-+  - Net Revenue excludes processing fees and taxes.
-+  - Refund reduces Net Revenue.
-+  - Chargeback reduces Net Revenue.
-+  - Negative Net Revenue payout floors at zero or produces an explicit negative adjustment according to the selected accounting contract.
-+  - Free users cannot create seller revenue.
-+- No Playwright validation is required for this PLAN-only PR.
-+
-+## Acceptance Criteria
-+- Revenue calculations use Net Revenue and DB-backed percentages.
-+- Creator share is 80% for approved selling memberships.
-+- Deduction inputs are explicit and auditable.
-+- UI and service paths use the same revenue configuration.
-+
-+## Dependencies
-+- Upstream: PR 004, PR 009.
-+- Downstream: PR 017, PR 019.
-+
-diff --git a/docs_build/pr/PLAN_PR_26169_011-marketplace-categories.md b/docs_build/pr/PLAN_PR_26169_011-marketplace-categories.md
-new file mode 100644
-index 0000000..0000000
---- /dev/null
-+++ b/docs_build/pr/PLAN_PR_26169_011-marketplace-categories.md
-@@ -0,0 +1,77 @@
-+# PLAN_PR_26169_011-marketplace-categories
-+
-+## Objective
-+- Define marketplace categories for discovery and listing classification.
-+
-+## Scope
-+- Future BUILD must support the approved categories:
-+  - Games.
-+  - Assets.
-+  - Audio.
-+  - Music.
-+  - Worlds.
-+  - Templates.
-+  - Tutorials.
-+- Categories must be exposed through a service or DB-backed source, not page-local arrays.
-+- Add no runtime behavior in this PLAN PR.
-+
-+## Non-Scope
-+- No marketplace item migration.
-+- No seller revenue model changes.
-+- No checkout or download implementation.
-+- No category moderation workflow.
-+
-+## Implementation Requirements
-+- Marketplace browsing and listing forms must use the same category source.
-+- Category codes must be stable and URL-safe.
-+- Category display labels must match the approved list.
-+- Browseable category lists must be alphabetically sorted unless an intentional-order exception is documented.
-+- Existing marketplace items with missing or invalid categories must show diagnostics or migration warnings rather than silently assigning a fallback.
-+- Category data must be available to Creator and Admin marketplace surfaces.
-+
-+## Data Model Requirements
-+- Future BUILD must use an existing marketplace category table/source if present.
-+- If no category data source exists, introduce a DB-backed `marketplace_categories` source with:
-+  - `key`
-+  - `code`
-+  - `displayName`
-+  - `active`
-+  - `sortName`
-+  - audit fields
-+- Seed exact category codes:
-+  - `games`
-+  - `assets`
-+  - `audio`
-+  - `music`
-+  - `worlds`
-+  - `templates`
-+  - `tutorials`
-+- Marketplace listing records must reference category key or code rather than storing arbitrary category labels.
-+
-+## UI Requirements
-+- Category filters and selectors must list the approved categories.
-+- Browseable category lists should render alphabetically: Assets, Audio, Games, Music, Templates, Tutorials, Worlds.
-+- User-facing labels must be plain category names.
-+- Invalid category states must be visible in Admin or diagnostics views.
-+
-+## Validation Requirements
-+- PLAN-phase validation for this docs-only PR: branch validation only.
-+- Future BUILD validation must include targeted category checks for:
-+  - All seven approved categories exist.
-+  - No unapproved categories appear in browse/listing UI.
-+  - Category selector and browse filters use the same source.
-+  - Invalid category records are rejected or diagnosed.
-+  - Browseable category order follows alphabetical governance.
-+- Playwright is required in future BUILD only if marketplace UI behavior is implemented.
-+- No Playwright validation is required for this PLAN-only PR.
-+
-+## Acceptance Criteria
-+- Marketplace categories match the approved list exactly.
-+- Category source is shared by browse and listing surfaces.
-+- Category display follows navigation/list sorting governance.
-+- No page-local category array becomes source of truth.
-+
-+## Dependencies
-+- Upstream: PR 009.
-+- Downstream: marketplace listing, search, and Admin marketplace operations PRs after this stack.
-+
-diff --git a/docs_build/pr/PLAN_PR_26169_012-teams-foundation.md b/docs_build/pr/PLAN_PR_26169_012-teams-foundation.md
-new file mode 100644
-index 0000000..0000000
---- /dev/null
-+++ b/docs_build/pr/PLAN_PR_26169_012-teams-foundation.md
-@@ -0,0 +1,74 @@
-+# PLAN_PR_26169_012-teams-foundation
-+
-+## Objective
-+- Define the project team foundation for collaboration membership and team limits.
-+
-+## Scope
-+- Future BUILD must introduce project membership records and service contracts.
-+- Team behavior must respect membership limits:
-+  - Free: no collaboration.
-+  - Creator and Founding Creator: up to 3 total project members.
-+  - Studio, Founding Studio, and Beta: up to 10 total project members.
-+- Add no runtime behavior in this PLAN PR.
-+
-+## Non-Scope
-+- No enforcement UI beyond foundation contracts.
-+- No real-time collaboration.
-+- No permissions matrix beyond basic project member roles.
-+- No external organization/team billing.
-+
-+## Implementation Requirements
-+- Project owner must be represented as a project member.
-+- Team limit counts active `project_members` records including owner.
-+- Free membership must allow only the owner and must block invited collaborators.
-+- Creator and Founding Creator must allow up to 3 total active members.
-+- Studio, Founding Studio, and Beta must allow up to 10 total active members.
-+- Team member records must track role, status, inviter, and join date.
-+- Missing active membership must block collaboration actions with visible diagnostics.
-+- Team services must expose current count, max count, and whether additional invitations are allowed.
-+
-+## Data Model Requirements
-+- `project_members` required fields:
-+  - `key`
-+  - `projectKey`
-+  - `userKey`
-+  - `role`
-+  - `status`
-+  - `invitedBy`
-+  - `invitedAt`
-+  - `joinedAt`
-+  - `removedAt`
-+  - audit fields
-+- Allowed `role` values for foundation: owner, editor, viewer.
-+- Allowed `status` values for foundation: active, invited, removed.
-+- Team limits must be read from `membership_limits.maxTeamMembers` and `membership_limits.collaborationEnabled`.
-+- Do not store membership plan limits on `project_members`.
-+
-+## UI Requirements
-+- No UI is implemented in this PR.
-+- Future project/team UI must display current members, pending invites, and remaining seats.
-+- Free users must see collaboration unavailable messaging.
-+- Team controls must show disabled states when membership limits are reached.
-+
-+## Validation Requirements
-+- PLAN-phase validation for this docs-only PR: branch validation only.
-+- Future BUILD validation must include targeted contract tests for:
-+  - Owner member creation.
-+  - Free collaboration disabled.
-+  - Creator max 3 total members.
-+  - Studio max 10 total members.
-+  - Beta max 10 total members.
-+  - Removed members no longer count against active limit.
-+  - Missing membership blocks invite.
-+- No Playwright validation is required for this PLAN-only PR.
-+
-+## Acceptance Criteria
-+- Project collaboration has a DB-backed membership record model.
-+- Team limits are derived from membership limits.
-+- Free users cannot collaborate beyond project ownership.
-+- Downstream enforcement can rely on current count and max count from one service.
-+
-+## Dependencies
-+- Upstream: PR 004, PR 005.
-+- Downstream: PR 013, PR 019.
-+
-diff --git a/docs_build/pr/PLAN_PR_26169_013-team-enforcement.md b/docs_build/pr/PLAN_PR_26169_013-team-enforcement.md
-new file mode 100644
-index 0000000..0000000
---- /dev/null
-+++ b/docs_build/pr/PLAN_PR_26169_013-team-enforcement.md
-@@ -0,0 +1,66 @@
-+# PLAN_PR_26169_013-team-enforcement
-+
-+## Objective
-+- Enforce team collaboration limits and member permissions across project team actions.
-+
-+## Scope
-+- Future BUILD must apply team limit checks to invites, joins, removals, and role changes.
-+- Enforcement must use `project_members` and active membership limits.
-+- Add no runtime behavior in this PLAN PR.
-+
-+## Non-Scope
-+- No real-time collaborative editing.
-+- No organization billing.
-+- No advanced role permission matrix beyond owner/editor/viewer enforcement.
-+- No membership plan editing.
-+
-+## Implementation Requirements
-+- Invite creation must reject when collaboration is disabled.
-+- Invite creation must reject when active plus pending accepted members would exceed plan limit.
-+- Joining an invitation must re-check the current team limit at acceptance time.
-+- Owner removal must be blocked unless ownership transfer exists in exact future scope.
-+- Role changes must preserve at least one owner.
-+- Removed users must lose project access immediately.
-+- Enforcement must apply consistently in UI-triggered and service/API-triggered paths.
-+- Error messages must name the active plan limit and current team count.
-+
-+## Data Model Requirements
-+- Enforcement reads:
-+  - `project_members.status`
-+  - `project_members.role`
-+  - `membership_limits.maxTeamMembers`
-+  - `membership_limits.collaborationEnabled`
-+  - active membership from `user_memberships`
-+- No duplicate team limit fields may be added to project records.
-+- Audit fields must identify who invited, changed, or removed a member.
-+
-+## UI Requirements
-+- Team management UI must show active count and plan limit.
-+- Invite button must be disabled or blocked with explanation when limit is reached.
-+- Free users must see no-collaboration messaging.
-+- Role controls must prevent removing the last owner.
-+- Status/log area must report invite, join, removal, and role-change outcomes.
-+
-+## Validation Requirements
-+- PLAN-phase validation for this docs-only PR: branch validation only.
-+- Future BUILD validation must include targeted service/UI checks for:
-+  - Free invite blocked.
-+  - Creator fourth member blocked.
-+  - Studio eleventh member blocked.
-+  - Beta eleventh member blocked.
-+  - Join re-check blocks stale invite after limit reached.
-+  - Removed member cannot access project.
-+  - Last owner cannot be removed.
-+- Playwright is required in future BUILD only if team UI behavior is implemented.
-+- No Playwright validation is required for this PLAN-only PR.
-+
-+## Acceptance Criteria
-+- Collaboration limits are enforced at service boundary.
-+- UI states match service enforcement.
-+- Team count and max limit are visible to users.
-+- No team enforcement depends on hardcoded plan names.
-+
-+## Dependencies
-+- Upstream: PR 012.
-+- Downstream: project collaboration and admin support PRs after this stack.
-+
-diff --git a/docs_build/pr/PLAN_PR_26169_014-legal-foundation.md b/docs_build/pr/PLAN_PR_26169_014-legal-foundation.md
-new file mode 100644
-index 0000000..0000000
---- /dev/null
-+++ b/docs_build/pr/PLAN_PR_26169_014-legal-foundation.md
-@@ -0,0 +1,65 @@
-+# PLAN_PR_26169_014-legal-foundation
-+
-+## Objective
-+- Define the legal content foundation for Terms, Privacy, Cookies, Community, Copyright, and DMCA pages.
-+
-+## Scope
-+- Future BUILD must establish a legal document source and routing model.
-+- Owner must be able to manage legal content in a later PR or through an existing Owner settings surface.
-+- Add no runtime behavior in this PLAN PR.
-+
-+## Non-Scope
-+- No final legal copy approval.
-+- No Terms of Service page content beyond structural requirements.
-+- No Privacy/Cookies/Community/Copyright/DMCA page content beyond structural requirements.
-+- No legal acceptance modal unless explicitly scoped later.
-+
-+## Implementation Requirements
-+- Legal document pages must use one shared legal content service.
-+- Legal documents must support draft and published versions.
-+- Published legal pages must render the current published version.
-+- Missing published legal content must fail visibly in Admin/Owner diagnostics and must not render placeholder legal text as production content.
-+- Legal content edits must be Owner-scoped.
-+- Legal page routing must be stable and crawlable.
-+- Legal content must not be hardcoded into unrelated UI components.
-+
-+## Data Model Requirements
-+- Future BUILD must use an existing owner-editable content/settings table if present.
-+- If no suitable source exists, introduce:
-+  - `legal_documents`: `key`, `documentType`, `slug`, `title`, `status`, `publishedVersionKey`, audit fields.
-+  - `legal_document_versions`: `key`, `documentKey`, `version`, `bodyMarkdown`, `effectiveAt`, `publishedAt`, `publishedBy`, audit fields.
-+- Required document types:
-+  - terms_of_service.
-+  - privacy_policy.
-+  - cookies_policy.
-+  - community_guidelines.
-+  - copyright_policy.
-+  - dmca_policy.
-+- Legal document storage must not include pricing, membership limits, AI credit costs, or marketplace percentages.
-+
-+## UI Requirements
-+- Public legal pages must share consistent header/footer and Theme V2 styling if they are public/root pages.
-+- Owner/Admin diagnostics must show document type, status, current published version, and last updated date.
-+- User-facing legal pages must show title, effective date, and content body.
-+- No page-local CSS, inline styles, or inline scripts in future BUILD.
-+
-+## Validation Requirements
-+- PLAN-phase validation for this docs-only PR: branch validation only.
-+- Future BUILD validation must include targeted content/route checks for:
-+  - Each required legal document type resolves.
-+  - Published pages render only published content.
-+  - Missing published content is diagnosed.
-+  - Draft content does not appear publicly.
-+  - Owner-only edit access is enforced when editing is introduced.
-+- No Playwright validation is required for this PLAN-only PR.
-+
-+## Acceptance Criteria
-+- Legal content has a declared source of truth.
-+- Required legal document types are enumerated.
-+- Published legal pages can be implemented without page-local legal constants.
-+- Owner legal responsibility is represented in the plan.
-+
-+## Dependencies
-+- Upstream: PR 001, PR 002.
-+- Downstream: PR 015, PR 016, PR 017.
-+
-diff --git a/docs_build/pr/PLAN_PR_26169_015-terms-of-service.md b/docs_build/pr/PLAN_PR_26169_015-terms-of-service.md
-new file mode 100644
-index 0000000..0000000
---- /dev/null
-+++ b/docs_build/pr/PLAN_PR_26169_015-terms-of-service.md
-@@ -0,0 +1,57 @@
-+# PLAN_PR_26169_015-terms-of-service
-+
-+## Objective
-+- Plan the Terms of Service page using the legal foundation.
-+
-+## Scope
-+- Future BUILD must add or align the Terms of Service route and content rendering.
-+- Terms content must come from the legal content source defined in PR 014.
-+- Add no runtime behavior in this PLAN PR.
-+
-+## Non-Scope
-+- No Privacy, Cookies, Community, Copyright, or DMCA pages.
-+- No legal acceptance tracking unless exact future BUILD scope adds it.
-+- No membership, marketplace, or AI pricing changes.
-+
-+## Implementation Requirements
-+- Terms page must render the current published `terms_of_service` document.
-+- Page must show title and effective date.
-+- If no published Terms exist, public route must show a visible unavailable/legal diagnostics state and must not render fake copy.
-+- Footer/header legal links must resolve to the Terms page if navigation is in scope.
-+- Terms content must be editable only through Owner-scoped legal management when editing exists.
-+- Terms page must not duplicate legal content in static page-local constants.
-+
-+## Data Model Requirements
-+- Read legal content from:
-+  - `legal_documents.documentType = terms_of_service`.
-+  - The linked published legal document version.
-+- If legal acceptance tracking is explicitly added later, use a separate acceptance table and do not overload `user_memberships`.
-+- No changes to membership pricing, AI credit costs, marketplace percentages, or membership limits in this PR.
-+
-+## UI Requirements
-+- Terms page must use public/root Theme V2 structure if it is a public page.
-+- Show document title, effective date, and body content.
-+- Provide stable page heading text: `Terms of Service`.
-+- Avoid in-page marketing copy or feature explanations.
-+- No inline script, inline style, or page-local CSS in future BUILD.
-+
-+## Validation Requirements
-+- PLAN-phase validation for this docs-only PR: branch validation only.
-+- Future BUILD validation must include targeted route/content checks for:
-+  - Terms route exists.
-+  - Published Terms render.
-+  - Missing published Terms shows a visible diagnostic.
-+  - Draft Terms do not render publicly.
-+  - Header/footer link resolves if modified.
-+- No Playwright validation is required for this PLAN-only PR.
-+
-+## Acceptance Criteria
-+- Terms of Service is implemented as a legal document render, not hardcoded page copy.
-+- Public users can reach the Terms page.
-+- Missing content does not silently fallback.
-+- Terms work does not modify other legal pages.
-+
-+## Dependencies
-+- Upstream: PR 014.
-+- Downstream: PR 016.
-+
-diff --git a/docs_build/pr/PLAN_PR_26169_016-privacy-cookies-community-copyright-dmca.md b/docs_build/pr/PLAN_PR_26169_016-privacy-cookies-community-copyright-dmca.md
-new file mode 100644
-index 0000000..0000000
---- /dev/null
-+++ b/docs_build/pr/PLAN_PR_26169_016-privacy-cookies-community-copyright-dmca.md
-@@ -0,0 +1,71 @@
-+# PLAN_PR_26169_016-privacy-cookies-community-copyright-dmca
-+
-+## Objective
-+- Plan the remaining legal pages: Privacy Policy, Cookies Policy, Community Guidelines, Copyright Policy, and DMCA Policy.
-+
-+## Scope
-+- Future BUILD must add or align routes and rendering for five legal document types.
-+- Content must come from the legal content source defined in PR 014.
-+- Add no runtime behavior in this PLAN PR.
-+
-+## Non-Scope
-+- No Terms of Service changes.
-+- No cookie consent banner unless explicitly scoped later.
-+- No moderation workflow.
-+- No DMCA ticketing or support queue.
-+
-+## Implementation Requirements
-+- Public pages must render the current published document for:
-+  - `privacy_policy`
-+  - `cookies_policy`
-+  - `community_guidelines`
-+  - `copyright_policy`
-+  - `dmca_policy`
-+- Missing published content must show visible diagnostics instead of placeholder copy.
-+- Footer/header legal links must resolve to these pages if navigation is in scope.
-+- Community and copyright pages must not introduce moderation or takedown behavior beyond legal content rendering.
-+- DMCA page must provide legal content rendering only unless future BUILD explicitly scopes submission handling.
-+
-+## Data Model Requirements
-+- Read legal content from `legal_documents` and published versions defined in PR 014.
-+- Required slugs:
-+  - `privacy`
-+  - `cookies`
-+  - `community`
-+  - `copyright`
-+  - `dmca`
-+- Do not store legal copy in page-local constants.
-+- Do not add membership, AI credit, marketplace, or team data changes.
-+
-+## UI Requirements
-+- Each page must show title, effective date, and body content.
-+- Stable page headings:
-+  - `Privacy Policy`
-+  - `Cookies Policy`
-+  - `Community Guidelines`
-+  - `Copyright Policy`
-+  - `DMCA Policy`
-+- Pages must use public/root Theme V2 structure if public.
-+- Legal links must be browseable and alphabetically sorted where presented as a list, unless governed footer order already exists.
-+- No inline script, inline style, or page-local CSS in future BUILD.
-+
-+## Validation Requirements
-+- PLAN-phase validation for this docs-only PR: branch validation only.
-+- Future BUILD validation must include targeted route/content checks for:
-+  - All five routes resolve.
-+  - Published content renders for each document.
-+  - Missing published content is diagnosed for each document.
-+  - Draft content does not render publicly.
-+  - Navigation/footer links resolve if modified.
-+- No Playwright validation is required for this PLAN-only PR.
-+
-+## Acceptance Criteria
-+- All five legal pages are rendered through the legal foundation.
-+- No page owns duplicate legal copy.
-+- Public legal routing is stable.
-+- Legal page work remains separate from support, moderation, and takedown workflow implementation.
-+
-+## Dependencies
-+- Upstream: PR 014, PR 015.
-+- Downstream: PR 017, future support/moderation/DMCA workflow PRs.
-+
-diff --git a/docs_build/pr/PLAN_PR_26169_017-owner-memberships.md b/docs_build/pr/PLAN_PR_26169_017-owner-memberships.md
-new file mode 100644
-index 0000000..0000000
---- /dev/null
-+++ b/docs_build/pr/PLAN_PR_26169_017-owner-memberships.md
-@@ -0,0 +1,82 @@
-+# PLAN_PR_26169_017-owner-memberships
-+
-+## Objective
-+- Plan Owner controls for membership pricing, limits, marketplace percentages, founding programs, and revenue settings.
-+
-+## Scope
-+- Future BUILD must expose Owner-editable configuration for membership and marketplace business rules.
-+- Owner controls must edit DB-backed data, not static files or page-local constants.
-+- Add no runtime behavior in this PLAN PR.
-+
-+## Non-Scope
-+- No payment provider checkout.
-+- No Admin invitation workflow changes.
-+- No AI action cost or pack pricing editor; that is PR 018.
-+- No legal document editor unless exact future BUILD combines with PR 014.
-+
-+## Implementation Requirements
-+- Owner can view and edit membership plan fields:
-+  - monthly price.
-+  - active status.
-+  - public/invitation/founding flags.
-+  - revenue share percentage.
-+  - purchased credit bonus percentage.
-+- Owner can view and edit membership limit fields:
-+  - storage.
-+  - monthly AI credits.
-+  - publish limit.
-+  - team limit.
-+  - collaboration enabled.
-+  - marketplace permissions.
-+- Owner can view founding program state:
-+  - first 100 paid membership capacity.
-+  - assigned founding sequence count.
-+  - locked pricing for active founding members.
-+- Owner can edit marketplace revenue percentage from 80% to another value only through DB-backed records.
-+- Owner changes must be audited.
-+- Invalid edits must be rejected before save with visible diagnostics.
-+
-+## Data Model Requirements
-+- Edit existing DB-backed records:
-+  - `membership_plans`
-+  - `membership_limits`
-+  - `founding_members` for program state visibility and locked active prices.
-+- All price fields must use integer cents.
-+- Percent fields must use basis points.
-+- Storage must use MB.
-+- Publish limit may be nullable for unlimited plans; Free must be `1`.
-+- Purchased credit bonus must be `1000` basis points for Studio and Founding Studio unless Owner changes it.
-+- Initial creator revenue share must be `8000` basis points for selling plans.
-+
-+## UI Requirements
-+- Owner Memberships page must be Owner-only.
-+- UI must display current values and pending edits before save.
-+- Use numeric inputs for prices, storage, credits, limits, and percentages.
-+- Use toggles/checkboxes for active, public, invitation-only, collaboration, and marketplace permission flags.
-+- Show founding program count out of 100.
-+- Show save success/failure status and validation errors.
-+- No hardcoded business model values may be used as editable source of truth; defaults may be shown only from fetched DB records.
-+
-+## Validation Requirements
-+- PLAN-phase validation for this docs-only PR: branch validation only.
-+- Future BUILD validation must include targeted Owner/service checks for:
-+  - Owner can update Creator price.
-+  - Owner can update Studio team limit.
-+  - Owner can update revenue share basis points.
-+  - Non-Owner cannot access editor.
-+  - Invalid negative price is rejected.
-+  - Invalid percentage above 100% is rejected.
-+  - Founding locked active price is not overwritten by base plan price edits.
-+- Playwright is required in future BUILD only if Owner UI behavior is implemented.
-+- No Playwright validation is required for this PLAN-only PR.
-+
-+## Acceptance Criteria
-+- Membership pricing, percentages, limits, and founding program settings are Owner-editable from DB-backed records.
-+- Owner edits are validated and audited.
-+- Non-Owners cannot access membership business model controls.
-+- Downstream marketplace and AI displays read updated data through services.
-+
-+## Dependencies
-+- Upstream: PR 004, PR 005, PR 006, PR 009, PR 010, PR 014.
-+- Downstream: PR 018, PR 019.
-+
-diff --git a/docs_build/pr/PLAN_PR_26169_018-owner-ai-credits.md b/docs_build/pr/PLAN_PR_26169_018-owner-ai-credits.md
-new file mode 100644
-index 0000000..0000000
---- /dev/null
-+++ b/docs_build/pr/PLAN_PR_26169_018-owner-ai-credits.md
-@@ -0,0 +1,83 @@
-+# PLAN_PR_26169_018-owner-ai-credits
-+
-+## Objective
-+- Plan Owner controls for AI credit packs, monthly credit grants, purchased credit bonuses, and AI action costs.
-+
-+## Scope
-+- Future BUILD must expose Owner-editable AI pricing and credit configuration.
-+- Owner controls must edit `ai_actions`, `ai_credit_packs`, `membership_limits.monthlyAiCredits`, and `membership_plans.purchasedCreditBonusBps`.
-+- Add no runtime behavior in this PLAN PR.
-+
-+## Non-Scope
-+- No AI provider integration.
-+- No checkout provider integration.
-+- No user-facing AI credit display changes.
-+- No Admin monitoring dashboard beyond data needed by PR 019.
-+
-+## Implementation Requirements
-+- Owner can view and edit AI credit pack definitions:
-+  - Small: 100 credits, $5.
-+  - Medium: 500 credits, $20.
-+  - Large: 3000 credits, $99.
-+- Owner can view and edit active AI actions and their credit costs.
-+- Owner can view and edit monthly included AI credits by membership plan.
-+- Owner can view and edit Studio purchased credit bonus percentage.
-+- Changes must be audited.
-+- Invalid edits must reject before save:
-+  - negative credit amount.
-+  - negative price.
-+  - negative action cost.
-+  - bonus percentage below 0 or above 100%.
-+  - duplicate pack code.
-+  - duplicate AI action code.
-+- Existing balances and usage logs must not be retroactively rewritten by pricing edits.
-+
-+## Data Model Requirements
-+- Edit existing DB-backed records:
-+  - `ai_actions`
-+  - `ai_credit_packs`
-+  - `membership_limits.monthlyAiCredits`
-+  - `membership_plans.purchasedCreditBonusBps`
-+- `ai_credit_packs.priceCents` must store integer cents.
-+- `ai_credit_packs.credits` must store integer credits.
-+- `ai_actions.creditCost` must store integer credit cost.
-+- `ai_usage_log` remains immutable and must not be edited by Owner pricing screens.
-+- Current required initial values:
-+  - Small: 100 credits, 500 cents.
-+  - Medium: 500 credits, 2000 cents.
-+  - Large: 3000 credits, 9900 cents.
-+  - Studio purchased credit bonus: 1000 basis points.
-+
-+## UI Requirements
-+- Owner AI Credits page must be Owner-only.
-+- Pack editor must show pack code, display name, credits, price, active state.
-+- AI action editor must show action code, display name, credit cost, active state.
-+- Monthly credit editor must show plan name and included monthly credits.
-+- Bonus editor must show eligible plan and purchased credit bonus percentage.
-+- Use numeric inputs for credits, prices, and costs.
-+- Use toggles for active state.
-+- Show validation errors inline and in status/log output.
-+
-+## Validation Requirements
-+- PLAN-phase validation for this docs-only PR: branch validation only.
-+- Future BUILD validation must include targeted Owner/service checks for:
-+  - Owner can update Small pack price.
-+  - Owner can update Large pack credits.
-+  - Owner can update AI action cost.
-+  - Owner can update Studio bonus percentage.
-+  - Non-Owner cannot access editor.
-+  - Invalid negative price rejected.
-+  - Existing `ai_usage_log` rows are not mutated by edits.
-+- Playwright is required in future BUILD only if Owner UI behavior is implemented.
-+- No Playwright validation is required for this PLAN-only PR.
-+
-+## Acceptance Criteria
-+- AI credit packs, prices, action costs, monthly grants, and bonus percentages are Owner-editable from DB-backed records.
-+- Edits are validated and audited.
-+- Usage history remains immutable.
-+- User AI credit display reflects updated data through service reads.
-+
-+## Dependencies
-+- Upstream: PR 007, PR 008, PR 017.
-+- Downstream: PR 019.
-+
-diff --git a/docs_build/pr/PLAN_PR_26169_019-admin-health-operations.md b/docs_build/pr/PLAN_PR_26169_019-admin-health-operations.md
-new file mode 100644
-index 0000000..0000000
---- /dev/null
-+++ b/docs_build/pr/PLAN_PR_26169_019-admin-health-operations.md
-@@ -0,0 +1,77 @@
-+# PLAN_PR_26169_019-admin-health-operations
-+
-+## Objective
-+- Plan Admin health and operations visibility for memberships, invitations, AI credits, marketplace, teams, and platform configuration.
-+
-+## Scope
-+- Future BUILD must provide Admin read/operate surfaces for health, infrastructure, operations, invitations, AI monitoring, and support.
-+- Admin must not receive Owner-only pricing, percentage, legal, AI pricing, or founding program edit controls.
-+- Add no runtime behavior in this PLAN PR.
-+
-+## Non-Scope
-+- No Owner settings editing.
-+- No payment settlement.
-+- No legal document editing.
-+- No broad infrastructure monitoring integration unless exact target contracts already exist.
-+
-+## Implementation Requirements
-+- Admin dashboard must show operational health summaries for:
-+  - Membership assignment counts and failures.
-+  - Beta invitation counts by status.
-+  - AI credit balances, grants, debits, and insufficient-credit failures.
-+  - Marketplace seller eligibility and revenue calculation health.
-+  - Team membership limit violations or blocked invitations.
-+  - Missing required DB configuration.
-+- Admin can inspect and support invitation records.
-+- Admin can inspect AI usage and support user credit issues without editing Owner pricing.
-+- Admin can view membership state for support without changing Owner-controlled pricing or percentages.
-+- Admin diagnostics must identify missing plan, limit, invitation, AI action, credit pack, or user balance records.
-+- Admin operations must be audited when they mutate support data.
-+
-+## Data Model Requirements
-+- Read from:
-+  - `membership_plans`
-+  - `membership_limits`
-+  - `user_memberships`
-+  - `founding_members`
-+  - `invitations`
-+  - `project_members`
-+  - `ai_actions`
-+  - `ai_credit_packs`
-+  - `user_ai_credits`
-+  - `ai_usage_log`
-+- Admin support actions must not edit Owner-controlled pricing, percentages, limits, AI action costs, or pack prices.
-+- Any support adjustment to user AI credits, if explicitly scoped in future BUILD, must write `ai_usage_log` with source type `admin_adjustment`.
-+
-+## UI Requirements
-+- Admin Health/Operations page must be Admin-only.
-+- Show summary cards or tables for each operational area.
-+- Show clear PASS/WARN/FAIL/SKIP status per subsystem.
-+- Provide filters for invitation status, membership plan, and AI usage action when those tables are shown.
-+- Use read-only presentation for Owner-controlled business model fields.
-+- Provide support action controls only when exact BUILD scope authorizes them.
-+- Missing configuration must be surfaced as an actionable Admin health issue.
-+
-+## Validation Requirements
-+- PLAN-phase validation for this docs-only PR: branch validation only.
-+- Future BUILD validation must include targeted Admin/service checks for:
-+  - Admin can view health dashboard.
-+  - Creator cannot view Admin dashboard.
-+  - Owner-only pricing controls are absent for Admin.
-+  - Missing `membership_limits` row produces health warning/failure.
-+  - Missing `ai_credit_packs` row produces health warning/failure.
-+  - Invitation status counts are accurate.
-+  - AI usage summaries match `ai_usage_log`.
-+- Playwright is required in future BUILD only if Admin UI behavior is implemented.
-+- No Playwright validation is required for this PLAN-only PR.
-+
-+## Acceptance Criteria
-+- Admins can monitor platform operational health without Owner edit authority.
-+- Required table health is visible and actionable.
-+- Invitation and AI monitoring support the earlier stack PRs.
-+- Admin dashboard does not become a hidden source of business model configuration.
-+
-+## Dependencies
-+- Upstream: PR 002, PR 003, PR 004, PR 005, PR 007, PR 008, PR 010, PR 012, PR 013, PR 017, PR 018.
-+- Downstream: future support, monitoring, billing operations, and incident response PRs.
-+
-diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-new file mode 100644
-index 0000000..0000000
---- /dev/null
-+++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -0,0 +1,33 @@
-+# Codex Changed Files
-+
-+## PR Scope
-+- PLAN-only documentation stack for PR_26169 creator platform foundation.
-+- No runtime files changed.
-+- No Playwright files changed.
-+
-+## Files
-+- docs_build/pr/PLAN_PR_26169_001-creator-platform-foundation.md
-+- docs_build/pr/PLAN_PR_26169_002-auth-preview-signin-regression.md
-+- docs_build/pr/PLAN_PR_26169_003-beta-invitations-admin.md
-+- docs_build/pr/PLAN_PR_26169_004-membership-data-model.md
-+- docs_build/pr/PLAN_PR_26169_005-membership-assignment.md
-+- docs_build/pr/PLAN_PR_26169_006-memberships-page-v2.md
-+- docs_build/pr/PLAN_PR_26169_007-ai-credit-foundation.md
-+- docs_build/pr/PLAN_PR_26169_008-ai-credit-display.md
-+- docs_build/pr/PLAN_PR_26169_009-marketplace-membership-rules.md
-+- docs_build/pr/PLAN_PR_26169_010-marketplace-revenue-model.md
-+- docs_build/pr/PLAN_PR_26169_011-marketplace-categories.md
-+- docs_build/pr/PLAN_PR_26169_012-teams-foundation.md
-+- docs_build/pr/PLAN_PR_26169_013-team-enforcement.md
-+- docs_build/pr/PLAN_PR_26169_014-legal-foundation.md
-+- docs_build/pr/PLAN_PR_26169_015-terms-of-service.md
-+- docs_build/pr/PLAN_PR_26169_016-privacy-cookies-community-copyright-dmca.md
-+- docs_build/pr/PLAN_PR_26169_017-owner-memberships.md
-+- docs_build/pr/PLAN_PR_26169_018-owner-ai-credits.md
-+- docs_build/pr/PLAN_PR_26169_019-admin-health-operations.md
-+- docs_build/dev/reports/codex_review.diff
-+- docs_build/dev/reports/codex_changed_files.txt
-+- docs_build/dev/reports/pr_stack_summary.md
-+
-+## Artifact
-+- tmp/PR_26169_plan_stack_delta.zip
-diff --git a/docs_build/dev/reports/pr_stack_summary.md b/docs_build/dev/reports/pr_stack_summary.md
-new file mode 100644
-index 0000000..0000000
---- /dev/null
-+++ b/docs_build/dev/reports/pr_stack_summary.md
-@@ -0,0 +1,106 @@
-+# PR Stack Summary: PR_26169 Creator Platform Foundation
-+
-+## Scope
-+- This report summarizes the PLAN-only documentation stack for:
-+  - `PR_26169_001-creator-platform-foundation`
-+  - `PR_26169_002-auth-preview-signin-regression`
-+  - `PR_26169_003-beta-invitations-admin`
-+  - `PR_26169_004-membership-data-model`
-+  - `PR_26169_005-membership-assignment`
-+  - `PR_26169_006-memberships-page-v2`
-+  - `PR_26169_007-ai-credit-foundation`
-+  - `PR_26169_008-ai-credit-display`
-+  - `PR_26169_009-marketplace-membership-rules`
-+  - `PR_26169_010-marketplace-revenue-model`
-+  - `PR_26169_011-marketplace-categories`
-+  - `PR_26169_012-teams-foundation`
-+  - `PR_26169_013-team-enforcement`
-+  - `PR_26169_014-legal-foundation`
-+  - `PR_26169_015-terms-of-service`
-+  - `PR_26169_016-privacy-cookies-community-copyright-dmca`
-+  - `PR_26169_017-owner-memberships`
-+  - `PR_26169_018-owner-ai-credits`
-+  - `PR_26169_019-admin-health-operations`
-+
-+## Approved Business Model Captured
-+- Free: $0/month, 250 MB storage, 0 AI credits/month, publish 1 experience, no collaboration, browse marketplace, download free assets, buy marketplace assets, cannot sell.
-+- Creator: $9/month, 1 GB storage, 100 AI credits/month, up to 3 team members, sell marketplace assets, Creator analytics, 80% Net Revenue.
-+- Studio: $19/month, 4 GB storage, 400 AI credits/month, up to 10 team members, advanced analytics, 80% Net Revenue, 10% bonus purchased AI credits.
-+- Beta: $0/month, 4 GB storage, 400 AI credits/month, up to 10 team members, invitation only, Studio-equivalent access.
-+- Founding Creator: first 100 paid memberships, $5/month, locked while active.
-+- Founding Studio: first 100 paid memberships, $10/month, locked while active.
-+- Marketplace: everyone can browse, buy, and download free assets; Creator and higher can sell.
-+- Marketplace categories: Games, Assets, Audio, Music, Worlds, Templates, Tutorials.
-+- Revenue: creator receives 80% of Net Revenue.
-+- Net Revenue: sale amount less processing fees, taxes, refunds, chargebacks, and required deductions.
-+- AI credit packs: Small 100 credits for $5; Medium 500 credits for $20; Large 3000 credits for $99.
-+- Roles: Creator platform user; Admin health, infrastructure, operations, invitations, AI monitoring, support; Owner membership pricing, marketplace percentages, AI pricing, AI action costs, founding programs, legal, revenue settings.
-+
-+## Required Database Tables Captured
-+- `membership_plans`
-+- `membership_limits`
-+- `user_memberships`
-+- `founding_members`
-+- `invitations`
-+- `project_members`
-+- `ai_actions`
-+- `ai_credit_packs`
-+- `user_ai_credits`
-+- `ai_usage_log`
-+
-+## Stack Dependency Order
-+- PR 001 is the shared foundation for every later PR.
-+- PR 002 stabilizes auth preview for Creator/Admin/Owner role context.
-+- PR 003 adds Admin Beta invitation planning.
-+- PR 004 defines membership tables and seed values.
-+- PR 005 defines assignment of active memberships.
-+- PR 006 renders Memberships page V2 from DB-backed data.
-+- PR 007 defines AI credit costs, packs, balances, and ledger.
-+- PR 008 displays AI credit balances and packs.
-+- PR 009 enforces marketplace membership rules.
-+- PR 010 defines Net Revenue and creator revenue share.
-+- PR 011 defines marketplace categories.
-+- PR 012 defines project team membership foundation.
-+- PR 013 enforces team limits.
-+- PR 014 defines legal content foundation.
-+- PR 015 implements Terms planning from legal foundation.
-+- PR 016 implements remaining legal page planning from legal foundation.
-+- PR 017 adds Owner membership, marketplace, founding, and revenue settings planning.
-+- PR 018 adds Owner AI pricing and action-cost planning.
-+- PR 019 adds Admin health and operations planning across the stack.
-+
-+## Validation Report
-+- Current branch: `main`.
-+- Expected branch: `main`.
-+- Local branches found: `main`.
-+- Branch validation: PASS.
-+- PLAN_PR file count: PASS, 19 of 19 required files exist.
-+- PLAN_PR required section validation: PASS.
-+- Required reports: PASS, `codex_review.diff`, `codex_changed_files.txt`, and `pr_stack_summary.md` exist.
-+- Runtime validation: SKIP, docs-only PLAN stack packaging request.
-+- Playwright validation: SKIP, no runtime or UI implementation.
-+- ZIP packaging: PASS, `tmp/PR_26169_plan_stack_delta.zip` created with repo-relative paths.
-+
-+## Files Packaged
++## Source PLAN
 +- `docs_build/pr/PLAN_PR_26169_001-creator-platform-foundation.md`
 +- `docs_build/pr/PLAN_PR_26169_002-auth-preview-signin-regression.md`
-+- `docs_build/pr/PLAN_PR_26169_003-beta-invitations-admin.md`
-+- `docs_build/pr/PLAN_PR_26169_004-membership-data-model.md`
-+- `docs_build/pr/PLAN_PR_26169_005-membership-assignment.md`
-+- `docs_build/pr/PLAN_PR_26169_006-memberships-page-v2.md`
-+- `docs_build/pr/PLAN_PR_26169_007-ai-credit-foundation.md`
-+- `docs_build/pr/PLAN_PR_26169_008-ai-credit-display.md`
-+- `docs_build/pr/PLAN_PR_26169_009-marketplace-membership-rules.md`
-+- `docs_build/pr/PLAN_PR_26169_010-marketplace-revenue-model.md`
-+- `docs_build/pr/PLAN_PR_26169_011-marketplace-categories.md`
-+- `docs_build/pr/PLAN_PR_26169_012-teams-foundation.md`
-+- `docs_build/pr/PLAN_PR_26169_013-team-enforcement.md`
-+- `docs_build/pr/PLAN_PR_26169_014-legal-foundation.md`
-+- `docs_build/pr/PLAN_PR_26169_015-terms-of-service.md`
-+- `docs_build/pr/PLAN_PR_26169_016-privacy-cookies-community-copyright-dmca.md`
-+- `docs_build/pr/PLAN_PR_26169_017-owner-memberships.md`
-+- `docs_build/pr/PLAN_PR_26169_018-owner-ai-credits.md`
-+- `docs_build/pr/PLAN_PR_26169_019-admin-health-operations.md`
++
++## Scope
++- Preserve the production-safe public sign-in page with no public Local DB controls.
++- Keep preview/session role switching as API/dev-test behavior only.
++- Ensure selected preview users expose stable `users.key` values and role slugs.
++- Ensure invalid selected user keys, missing users, and missing role references return actionable diagnostics instead of silently becoming an indistinct Guest state.
++- Add targeted regression coverage for Creator, Admin, and Owner role resolution.
++
++## Non-Scope
++- No membership tables.
++- No beta invitation workflow.
++- No Owner configuration UI.
++- No marketplace, AI credit, legal, or team behavior.
++- No production auth provider redesign.
++- No public preview role picker UI.
++
++## Exact Target Files
++- `src/dev-runtime/server/local-api-router.mjs`
++- `tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
++- `docs_build/pr/BUILD_PR_26169_002-auth-preview-signin-regression.md`
++- `docs_build/dev/codex_commands.md`
++- `docs_build/dev/commit_comment.txt`
++- `docs_build/dev/reports/PR_26169_002-auth-preview-signin-regression.md`
 +- `docs_build/dev/reports/codex_review.diff`
 +- `docs_build/dev/reports/codex_changed_files.txt`
-+- `docs_build/dev/reports/pr_stack_summary.md`
++
++## Implementation Requirements
++- In `sessionUserFromIdentityTables`, preserve empty user-key behavior as unauthenticated Guest.
++- For a non-empty malformed selected user key, return Guest with a diagnostic that identifies the invalid `users.key` shape.
++- Keep missing persisted user diagnostics unchanged.
++- Keep missing `user_roles` diagnostics unchanged.
++- Keep missing referenced role diagnostics unchanged.
++- Preserve successful role resolution for Creator, Admin, and Owner.
++- Do not store membership pricing, limits, credits, marketplace percentages, or other business-model data in auth session state.
++
++## Validation Plan
++- Branch validation:
++  - Verify current branch is `main`.
++- Static checks:
++  - `node --check src/dev-runtime/server/local-api-router.mjs`
++  - `node --check tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
++- Targeted contract tests:
++  - Run only auth/session tests covering selected user resolution, invalid selected user, missing user, missing role, and Owner role state.
++- Runtime validation:
++  - No broad runtime validation.
++- Playwright:
++  - Not required unless the targeted contract change touches browser UI; this BUILD does not.
++
++## Acceptance Criteria
++- Creator preview/session selection resolves with stable `userKey` and `roleSlugs`.
++- Admin preview/session selection resolves with stable `userKey`, `roleSlugs`, and `isAdmin`.
++- Owner preview/session selection resolves with stable `userKey`, `roleSlugs`, `isAdmin`, and `isOwner`.
++- Missing selected user returns an actionable diagnostic.
++- Missing referenced role returns an actionable diagnostic.
++- Malformed non-empty selected user key returns an actionable diagnostic.
++- Sign-out/session clear behavior remains scoped to the selected session key and does not mutate product data.
++- No membership, marketplace, AI credit, team, or legal implementation is introduced.
++
++## Required Reports
++- `docs_build/dev/reports/PR_26169_002-auth-preview-signin-regression.md`
++- `docs_build/dev/reports/codex_review.diff`
++- `docs_build/dev/reports/codex_changed_files.txt`
++
++## Required ZIP
++- `tmp/PR_26169_002-auth-preview-signin-regression_delta.zip`

@@ -10,7 +10,10 @@ import {
   createProviderContractSnapshot,
 } from "../../src/dev-runtime/auth/provider-contract-stubs.mjs";
 import { SEED_DB_KEYS } from "../../src/dev-runtime/seed/seed-db-keys.mjs";
-import { createLocalApiRouter } from "../../src/dev-runtime/server/local-api-router.mjs";
+import {
+  createLocalApiRouter,
+  sessionUserFromIdentityTables,
+} from "../../src/dev-runtime/server/local-api-router.mjs";
 
 function withEnv(nextEnv, callback) {
   const previousEnv = {};
@@ -1302,6 +1305,27 @@ test("Supabase identity session lookup fails visibly when the selected user is m
   await fakeSupabase.close();
 });
 
+test("Supabase identity session lookup fails visibly when the selected user key is malformed", async () => {
+  const server = await startApiServer();
+  try {
+    const response = await postApiPayload(server.baseUrl, "/api/session/user", {
+      userKey: "not-a-users-key",
+    });
+    assert.equal(response.status, 200);
+    assert.equal(response.payload.ok, true);
+    assert.equal(response.payload.data.authenticated, false);
+    assert.match(response.payload.data.diagnostic, /not a valid users\.key/);
+
+    const logout = await postApiPayload(server.baseUrl, "/api/session/logout", {});
+    assert.equal(logout.status, 200);
+    assert.equal(logout.payload.ok, true);
+    assert.equal(logout.payload.data.authenticated, false);
+    assert.doesNotMatch(logout.payload.data.diagnostic || "", /not a valid users\.key/);
+  } finally {
+    await server.close();
+  }
+});
+
 test("Supabase identity session lookup fails visibly when user_roles references a missing role", async () => {
   const fakeSupabase = await startFakeSupabaseAuthServer({
     identityTables: fakeSupabaseIdentityTables({
@@ -1339,6 +1363,142 @@ test("Supabase identity session lookup fails visibly when user_roles references 
     }
   });
   await fakeSupabase.close();
+});
+
+test("Supabase identity table session resolver exposes Creator Admin and Owner role state", () => {
+  const admin = sessionUserFromIdentityTables(
+    fakeSupabaseIdentityTables(),
+    SEED_DB_KEYS.users.admin,
+    "account",
+    "Supabase identity",
+  );
+  assert.equal(admin.authenticated, true);
+  assert.equal(admin.userKey, SEED_DB_KEYS.users.admin);
+  assert.equal(admin.isAdmin, true);
+  assert.equal(admin.isOwner, false);
+  assert.deepEqual(admin.roleSlugs, ["admin"]);
+
+  const timestamp = "2026-06-15T00:00:00.000Z";
+  const audit = {
+    createdAt: timestamp,
+    createdBy: SEED_DB_KEYS.users.admin,
+    updatedAt: timestamp,
+    updatedBy: SEED_DB_KEYS.users.admin,
+  };
+  const tables = fakeSupabaseIdentityTables({
+    roles: [
+      {
+        key: SEED_DB_KEYS.roles.creator,
+        roleSlug: "creator",
+        name: "Creator",
+        description: "Creator account.",
+        isActive: true,
+        isSystemRole: false,
+        ...audit,
+      },
+      {
+        key: SEED_DB_KEYS.roles.admin,
+        roleSlug: "admin",
+        name: "Admin",
+        description: "Administrative account.",
+        isActive: true,
+        isSystemRole: false,
+        ...audit,
+      },
+      {
+        key: SEED_DB_KEYS.roles.owner,
+        roleSlug: "owner",
+        name: "Owner",
+        description: "Owner account.",
+        isActive: true,
+        isSystemRole: false,
+        ...audit,
+      },
+    ],
+    user_roles: [
+      {
+        key: SEED_DB_KEYS.userRoles.user1User,
+        userKey: SEED_DB_KEYS.users.user1,
+        roleKey: SEED_DB_KEYS.roles.creator,
+        ...audit,
+      },
+      {
+        key: SEED_DB_KEYS.userRoles.adminUser,
+        userKey: SEED_DB_KEYS.users.admin,
+        roleKey: SEED_DB_KEYS.roles.creator,
+        ...audit,
+      },
+      {
+        key: SEED_DB_KEYS.userRoles.adminAdmin,
+        userKey: SEED_DB_KEYS.users.admin,
+        roleKey: SEED_DB_KEYS.roles.admin,
+        ...audit,
+      },
+      {
+        key: SEED_DB_KEYS.userRoles.adminOwner,
+        userKey: SEED_DB_KEYS.users.admin,
+        roleKey: SEED_DB_KEYS.roles.owner,
+        ...audit,
+      },
+    ],
+  });
+
+  const creator = sessionUserFromIdentityTables(
+    tables,
+    SEED_DB_KEYS.users.user1,
+    "account",
+    "Supabase identity",
+  );
+  assert.equal(creator.authenticated, true);
+  assert.equal(creator.userKey, SEED_DB_KEYS.users.user1);
+  assert.equal(creator.isAdmin, false);
+  assert.equal(creator.isOwner, false);
+  assert.deepEqual(creator.roleSlugs, ["creator"]);
+
+  const owner = sessionUserFromIdentityTables(
+    tables,
+    SEED_DB_KEYS.users.admin,
+    "account",
+    "Supabase identity",
+  );
+  assert.equal(owner.authenticated, true);
+  assert.equal(owner.userKey, SEED_DB_KEYS.users.admin);
+  assert.equal(owner.isAdmin, true);
+  assert.equal(owner.isOwner, true);
+  assert.deepEqual(owner.roleSlugs, ["creator", "admin", "owner"]);
+});
+
+test("Supabase identity table session resolver reports missing user and missing role diagnostics", () => {
+  const tables = fakeSupabaseIdentityTables();
+  const missingUser = sessionUserFromIdentityTables(
+    tables,
+    "01K2GFSJ0Y0000000000000099",
+    "account",
+    "Supabase identity",
+  );
+  assert.equal(missingUser.authenticated, false);
+  assert.match(missingUser.diagnostic, /Selected Supabase identity user key .* is missing from users/);
+
+  const missingRole = sessionUserFromIdentityTables(
+    fakeSupabaseIdentityTables({
+      user_roles: [
+        {
+          key: SEED_DB_KEYS.userRoles.user1User,
+          userKey: SEED_DB_KEYS.users.user1,
+          roleKey: "01K2GFSJ0Y0000000000000088",
+          createdAt: "2026-06-15T00:00:00.000Z",
+          createdBy: SEED_DB_KEYS.users.admin,
+          updatedAt: "2026-06-15T00:00:00.000Z",
+          updatedBy: SEED_DB_KEYS.users.admin,
+        },
+      ],
+    }),
+    SEED_DB_KEYS.users.user1,
+    "account",
+    "Supabase identity",
+  );
+  assert.equal(missingRole.authenticated, false);
+  assert.match(missingRole.diagnostic, /references missing role key/);
 });
 
 test("Operator auth preflight reports failed Supabase connectivity for wrong anon key without exposing secrets", async () => {

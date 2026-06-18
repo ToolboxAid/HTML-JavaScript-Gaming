@@ -1,33 +1,8 @@
-# Codex Changed Files
-
-## PR Scope
-- PLAN-only documentation stack for PR_26169 creator platform foundation.
-- No runtime files changed.
-- No Playwright files changed.
-
-## Files
-- docs_build/pr/PLAN_PR_26169_001-creator-platform-foundation.md
-- docs_build/pr/PLAN_PR_26169_002-auth-preview-signin-regression.md
-- docs_build/pr/PLAN_PR_26169_003-beta-invitations-admin.md
-- docs_build/pr/PLAN_PR_26169_004-membership-data-model.md
-- docs_build/pr/PLAN_PR_26169_005-membership-assignment.md
-- docs_build/pr/PLAN_PR_26169_006-memberships-page-v2.md
-- docs_build/pr/PLAN_PR_26169_007-ai-credit-foundation.md
-- docs_build/pr/PLAN_PR_26169_008-ai-credit-display.md
-- docs_build/pr/PLAN_PR_26169_009-marketplace-membership-rules.md
-- docs_build/pr/PLAN_PR_26169_010-marketplace-revenue-model.md
-- docs_build/pr/PLAN_PR_26169_011-marketplace-categories.md
-- docs_build/pr/PLAN_PR_26169_012-teams-foundation.md
-- docs_build/pr/PLAN_PR_26169_013-team-enforcement.md
-- docs_build/pr/PLAN_PR_26169_014-legal-foundation.md
-- docs_build/pr/PLAN_PR_26169_015-terms-of-service.md
-- docs_build/pr/PLAN_PR_26169_016-privacy-cookies-community-copyright-dmca.md
-- docs_build/pr/PLAN_PR_26169_017-owner-memberships.md
-- docs_build/pr/PLAN_PR_26169_018-owner-ai-credits.md
-- docs_build/pr/PLAN_PR_26169_019-admin-health-operations.md
-- docs_build/dev/reports/codex_review.diff
-- docs_build/dev/reports/codex_changed_files.txt
-- docs_build/dev/reports/pr_stack_summary.md
-
-## Artifact
-- tmp/PR_26169_plan_stack_delta.zip
+docs_build/dev/codex_commands.md
+docs_build/dev/commit_comment.txt
+docs_build/dev/reports/PR_26169_002-auth-preview-signin-regression.md
+docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/codex_review.diff
+docs_build/pr/BUILD_PR_26169_002-auth-preview-signin-regression.md
+src/dev-runtime/server/local-api-router.mjs
+tests/dev-runtime/SupabaseProviderContractStub.test.mjs
