@@ -1,7 +1,7 @@
 import {
     readAdminOperationsStatus,
     runAdminOperationAction
-} from "../../../src/engine/api/admin-operations-api-client.js";
+} from "../../../src/api/admin-operations-api-client.js";
 
 class AdminOperationsController {
     constructor(root) {

@@ -1,4 +1,4 @@
-import { safeRequestServerApi } from "./server-api-client.js";
+import { safeRequestServerApi } from "../engine/api/server-api-client.js";
 
 function unwrap(response, context) {
   if (!response.ok) {

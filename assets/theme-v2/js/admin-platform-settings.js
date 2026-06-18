@@ -1,7 +1,7 @@
 import {
     readAdminPlatformBanner,
     updateAdminPlatformBanner
-} from "../../../src/engine/api/platform-settings-api-client.js";
+} from "../../../src/api/platform-settings-api-client.js";
 
 class AdminPlatformSettingsController {
     constructor(root) {

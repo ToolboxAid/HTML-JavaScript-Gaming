@@ -1,7 +1,7 @@
 import {
     readMarketplaceCategories,
     readMarketplaceEntitlements,
-} from "../../../src/engine/api/marketplace-api-client.js";
+} from "../../../src/api/marketplace-api-client.js";
 
 const ACTIONS = Object.freeze([
     { id: "browse", label: "Browse Marketplace" },

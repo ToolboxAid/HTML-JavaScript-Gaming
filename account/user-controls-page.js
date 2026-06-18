@@ -1,5 +1,5 @@
 import { createControlsToolApiRepository } from "../toolbox/controls/controls-api-client.js";
-import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
+import { getSessionCurrent } from "../src/api/session-api-client.js";
 import InputService from "../src/engine/input/InputService.js";
 import InputCaptureService from "../src/engine/input/InputCaptureService.js";
 import { gamepadProfileInputNames } from "../src/engine/input/GamepadInputClassifier.js";

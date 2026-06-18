@@ -31,13 +31,8 @@
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
                                 <summary>Owner Tools</summary>
-                                <nav class="accordion-body content-stack" aria-label="Owner tool pages">
-                                    <a class="btn btn--compact primary" aria-current="page" href="/owner/ai-credits.html">AI Credits</a>
-                                    <a class="btn btn--compact" href="/admin/db-viewer.html">DB Viewer</a>
-                                    <a class="btn btn--compact" href="/admin/design-system.html">Design System</a>
-                                    <a class="btn btn--compact" href="/admin/grouping-colors.html">Grouping Colors</a>
-                                    <a class="btn btn--compact" href="/owner/memberships.html">Memberships</a>
-                                    <a class="btn btn--compact" href="/admin/admin-notes.html">Notes</a>
+                                <nav class="accordion-body content-stack" aria-label="Owner tool pages" data-owner-tool-menu>
+                                    <p class="status" data-owner-nav-loading>Loading Owner tools.</p>
                                 </nav>
                             </details>
                         </div>
@@ -160,6 +155,7 @@
     <div data-partial="footer"></div>
     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+    <script type="module" src="assets/theme-v2/js/admin-owner-navigation.js"></script>
     <script type="module" src="assets/theme-v2/js/owner-ai-credits.js"></script>
 </body>
 

@@ -1,4 +1,4 @@
-import { getDbViewerSnapshot } from "../../../src/engine/api/db-viewer-api-client.js";
+import { getDbViewerSnapshot } from "../../../src/api/db-viewer-api-client.js";
 
 const SERVICE_START_ACTION = "Start the API-backed server, then reload this page.";
 

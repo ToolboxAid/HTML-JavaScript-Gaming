@@ -1,6 +1,6 @@
 import {
     readAdminInfrastructureStoragePathStatus
-} from "../../../src/engine/api/admin-infrastructure-api-client.js";
+} from "../../../src/api/admin-infrastructure-api-client.js";
 
 const STORAGE_PATH_LANES = Object.freeze([
     Object.freeze({ lane: "DEV", path: "/dev/projects/" }),

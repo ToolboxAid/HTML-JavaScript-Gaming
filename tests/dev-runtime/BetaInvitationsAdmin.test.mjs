@@ -102,9 +102,9 @@ async function signInAdmin(baseUrl) {
   assert.equal(session.userKey, SEED_DB_KEYS.users.admin);
 }
 
-async function createBetaInvitation(baseUrl, email) {
+async function createBetaInvitation(baseUrl, email, personalization = {}) {
   const data = await apiJson(baseUrl, "/api/admin/invitations/create", {
-    body: { email, planKey: "BETA" },
+    body: { email, planKey: "BETA", ...personalization },
     method: "POST",
   });
   assert.equal(data.status, "PASS");
@@ -131,7 +131,16 @@ test("Admin Beta invitations require Admin and support create, list, and revoke"
       assert.match(unauthenticatedList.payload.error, /Admin role required/);
 
       await signInAdmin(server.baseUrl);
-      const invitation = await createBetaInvitation(server.baseUrl, "beta-admin@example.test");
+      const invitation = await createBetaInvitation(server.baseUrl, "beta-admin@example.test", {
+        inviteSource: "manual-admin",
+        personalMessage: "Welcome to the Beta program.",
+        recipientName: "Beta Admin",
+        relationshipNote: "Studio partner",
+      });
+      assert.equal(invitation.recipientName, "Beta Admin");
+      assert.equal(invitation.relationshipNote, "Studio partner");
+      assert.equal(invitation.personalMessage, "Welcome to the Beta program.");
+      assert.equal(invitation.inviteSource, "manual-admin");
       const list = await apiJson(server.baseUrl, "/api/admin/invitations/list");
       assert.equal(list.status, "PASS");
       assert.equal(list.plan.code, "BETA");

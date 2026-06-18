@@ -32,19 +32,17 @@
                             <details class="vertical-accordion" open>
                                 <summary>Admin Tools</summary>
                                 <nav class="accordion-body content-stack" aria-label="Admin tool pages" data-admin-tool-menu>
-                                    <a class="btn btn--compact" href="/admin/infrastructure.html">Infrastructure</a>
-                                    <a class="btn btn--compact primary" aria-current="page" href="/admin/invitations.html">Invitations</a>
-                                    <a class="btn btn--compact" href="/admin/operations.html">Operations</a>
-                                    <a class="btn btn--compact" href="/admin/platform-settings.html">Platform Settings</a>
-                                    <a class="btn btn--compact" href="/admin/system-health.html">System Health</a>
-                                    <a class="btn btn--compact" href="/admin/tool-votes.html">Tool Votes</a>
-                                    <a class="btn btn--compact" href="/admin/users.html">Users</a>
+                                    <p class="status" data-admin-nav-loading>Loading Admin tools.</p>
                                 </nav>
                             </details>
                             <details class="vertical-accordion" open>
                                 <summary>Create Beta Invitation</summary>
                                 <form class="accordion-body content-stack" data-admin-invitation-form>
                                     <label>Email <input type="email" autocomplete="email" required data-admin-invitation-email></label>
+                                    <label>Recipient Name <input type="text" autocomplete="name" data-admin-invitation-recipient-name></label>
+                                    <label>Relationship Note <input type="text" data-admin-invitation-relationship-note></label>
+                                    <label>Personal Message <textarea data-admin-invitation-message></textarea></label>
+                                    <label>Invite Source <input type="text" data-admin-invitation-source></label>
                                     <label>Expires <input type="datetime-local" data-admin-invitation-expires-at></label>
                                     <button class="btn btn--compact primary" type="submit">Create Invitation</button>
                                 </form>
@@ -64,17 +62,21 @@
                                 <thead>
                                     <tr>
                                         <th scope="col">Email</th>
+                                        <th scope="col">Recipient</th>
+                                        <th scope="col">Relationship</th>
+                                        <th scope="col">Source</th>
                                         <th scope="col">Plan</th>
                                         <th scope="col">Status</th>
                                         <th scope="col">Expires</th>
                                         <th scope="col">Invited By</th>
                                         <th scope="col">Accepted By</th>
+                                        <th scope="col">Message</th>
                                         <th scope="col">Code</th>
                                         <th scope="col">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody data-admin-invitation-rows>
-                                    <tr><td>Loading</td><td>BETA</td><td>Loading</td><td>Loading</td><td>Loading</td><td>Loading</td><td>Loading</td><td>Loading</td></tr>
+                                    <tr><td>Loading</td><td>Loading</td><td>Loading</td><td>Loading</td><td>BETA</td><td>Loading</td><td>Loading</td><td>Loading</td><td>Loading</td><td>Loading</td><td>Loading</td><td>Loading</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -106,6 +108,7 @@
     <div data-partial="footer"></div>
     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+    <script type="module" src="assets/theme-v2/js/admin-owner-navigation.js"></script>
     <script type="module" src="assets/theme-v2/js/admin-invitations.js"></script>
 </body>
 

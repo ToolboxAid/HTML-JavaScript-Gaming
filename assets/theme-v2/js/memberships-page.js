@@ -1,4 +1,4 @@
-import { readMembershipCatalog } from "../../../src/engine/api/memberships-api-client.js";
+import { readMembershipCatalog } from "../../../src/api/memberships-api-client.js";
 
 function text(value, fallback = "N/A") {
     return value === undefined || value === null || value === "" ? fallback : String(value);

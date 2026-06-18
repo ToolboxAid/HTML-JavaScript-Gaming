@@ -121,6 +121,10 @@ import {
   LegalDocumentError,
   readPublishedLegalDocument,
 } from "../legal/legal-document-service.mjs";
+import {
+  getAdminNavigationItems,
+  getOwnerNavigationItems,
+} from "../../api/admin-owner-navigation.js";
 import { createPaletteSourceMockDbRows } from "../guest-seeds/palette-source-mock-db.js";
 import {
   SUPABASE_AUTH_PROVIDER_ID,
@@ -222,28 +226,6 @@ const TOOLBOX_ROLE_FOCUS_TOOLS = Object.freeze({
   Publisher: Object.freeze(["Publish", "Marketplace", "Community", "Cloud", "Languages"]),
   Viewer: Object.freeze(["Game Workspace", "Game Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Assets", "Colors", "Tags", "Audio", "Publish", "Marketplace", "Community", "Languages", "Achievements", "Ratings"]),
 });
-const ADMIN_NAVIGATION_MAIN_ITEMS = Object.freeze([
-  Object.freeze({ label: "Analytics", path: "admin/analytics.html", route: "admin-analytics" }),
-  Object.freeze({ label: "Controls", path: "admin/controls.html", route: "admin-controls" }),
-  Object.freeze({ label: "Infrastructure", path: "admin/infrastructure.html", route: "admin-infrastructure" }),
-  Object.freeze({ label: "Moderation", path: "admin/moderation.html", route: "admin-moderation" }),
-  Object.freeze({ label: "Operations", path: "admin/operations.html", route: "admin-operations" }),
-  Object.freeze({ label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" }),
-  Object.freeze({ label: "Ratings", path: "admin/ratings.html", route: "admin-ratings" }),
-  Object.freeze({ label: "Roles", path: "admin/roles.html", route: "admin-roles" }),
-  Object.freeze({ label: "System Health", path: "admin/system-health.html", route: "admin-system-health" }),
-  Object.freeze({ label: "Tool Votes", path: "admin/tool-votes.html", route: "admin-tool-votes" }),
-  Object.freeze({ label: "Users", path: "admin/users.html", route: "admin-users" }),
-]);
-const OWNER_NAVIGATION_ITEMS = Object.freeze([
-  Object.freeze({ label: "AI Credits", path: "owner/ai-credits.html", route: "owner-ai-credits" }),
-  Object.freeze({ label: "DB Viewer", path: "admin/db-viewer.html", route: "admin-db-viewer" }),
-  Object.freeze({ label: "Design System", path: "admin/design-system.html", route: "admin-design-system" }),
-  Object.freeze({ label: "Grouping Colors", path: "admin/grouping-colors.html", route: "admin-grouping-colors" }),
-  Object.freeze({ label: "Memberships", path: "owner/memberships.html", route: "owner-memberships" }),
-  Object.freeze({ href: "/admin/admin-notes.html", label: "Notes", localNotes: true }),
-]);
-
 const DB_ADAPTER_CONTRACT = Object.freeze({
   contract: "GameFoundryDbAdapter",
   rule: SERVER_DATA_BOUNDARY_RULE,
@@ -1667,6 +1649,14 @@ function normalizedInvitationCode(value) {
   return code;
 }
 
+function normalizedInvitationText(value, label, maxLength = 280) {
+  const text = String(value || "").trim();
+  if (text.length > maxLength) {
+    throw new Error(`${label} must be ${maxLength} characters or fewer.`);
+  }
+  return text;
+}
+
 function betaInvitationCode() {
   return `beta_${randomBytes(18).toString("base64url")}`;
 }
@@ -1701,10 +1691,14 @@ function publicInvitation(row) {
     createdBy: row.createdBy || "",
     email: row.email || "",
     expiresAt: row.expiresAt || "",
+    inviteSource: row.inviteSource || "",
     invitationCode: row.invitationCode || "",
     invitedBy: row.invitedBy || "",
     key: row.key || "",
+    personalMessage: row.personalMessage || "",
     planKey: row.planKey || BETA_INVITATION_PLAN_KEY,
+    recipientName: row.recipientName || "",
+    relationshipNote: row.relationshipNote || "",
     status: invitationStatus(row),
     updatedAt: row.updatedAt || "",
     updatedBy: row.updatedBy || "",
@@ -2809,10 +2803,14 @@ class ApiRuntimeDataSource {
       createdBy: session.userKey,
       email,
       expiresAt: invitationExpiresAt(body.expiresAt),
+      inviteSource: normalizedInvitationText(body.inviteSource, "Invite source", 80),
       invitationCode: betaInvitationCode(),
       invitedBy: session.userKey,
       key: runtimeGeneratedUlid(),
+      personalMessage: normalizedInvitationText(body.personalMessage, "Personal message", 500),
       planKey: BETA_INVITATION_PLAN_KEY,
+      recipientName: normalizedInvitationText(body.recipientName, "Recipient name", 120),
+      relationshipNote: normalizedInvitationText(body.relationshipNote, "Relationship note", 280),
       status: "pending",
       updatedAt: timestamp,
       updatedBy: session.userKey,
@@ -4706,11 +4704,11 @@ LIMIT 1;
 
   adminNavigationMenu() {
     return {
-      adminMainItems: clone(ADMIN_NAVIGATION_MAIN_ITEMS),
-      ownerMenuItems: clone(OWNER_NAVIGATION_ITEMS),
+      adminMainItems: getAdminNavigationItems(),
+      ownerMenuItems: getOwnerNavigationItems(),
       ownership: {
-        adminMainItems: "navigation config",
-        ownerMenuItems: "owner navigation config",
+        adminMainItems: "src/api/admin-owner-navigation.js",
+        ownerMenuItems: "src/api/admin-owner-navigation.js",
         routeMap: "static shell route resolution",
       },
       source: "server-api",

@@ -3,7 +3,7 @@ import {
   ASSET_USAGE_OPTIONS,
   createAssetToolApiRepository
 } from "./assets-api-client.js";
-import { getSessionCurrent } from "../../src/engine/api/session-api-client.js";
+import { getSessionCurrent } from "../../src/api/session-api-client.js";
 
 const repository = createAssetToolApiRepository();
 const params = new URLSearchParams(window.location.search);

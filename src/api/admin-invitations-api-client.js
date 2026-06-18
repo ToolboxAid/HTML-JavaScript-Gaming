@@ -1,7 +1,7 @@
 import {
   requireServerApiData,
   safeRequestServerApi,
-} from "./server-api-client.js";
+} from "../engine/api/server-api-client.js";
 
 export function readAdminInvitations() {
   return requireServerApiData(
@@ -10,10 +10,13 @@ export function readAdminInvitations() {
   );
 }
 
-export function createAdminBetaInvitation(email, expiresAt = "") {
+export function createAdminBetaInvitation(invitation = {}, expiresAt = "") {
+  const body = typeof invitation === "string"
+    ? { email: invitation, expiresAt }
+    : { ...invitation };
   return requireServerApiData(
     safeRequestServerApi("/admin/invitations/create", {
-      body: { email, expiresAt, planKey: "BETA" },
+      body: { ...body, planKey: "BETA" },
       method: "POST",
     }),
     "Admin Beta invitation create",

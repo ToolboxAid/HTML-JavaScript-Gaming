@@ -1,7 +1,7 @@
 import {
     readOwnerMembershipSettings,
     updateOwnerMembershipSettings,
-} from "../../../src/engine/api/owner-memberships-api-client.js";
+} from "../../../src/api/owner-memberships-api-client.js";
 
 const PLAN_NUMBER_FIELDS = Object.freeze([
     Object.freeze({ field: "monthlyPriceCents", label: "Price cents", max: 1000000, min: 0 }),

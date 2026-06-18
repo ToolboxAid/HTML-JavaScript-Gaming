@@ -297,10 +297,10 @@ async function validateProductServiceContract() {
   requireSnippet(registryClient, "toolbox/tool-registry-api-client.js", "safeRequestServerApi(\"/toolbox/registry/snapshot\")", findings, "Toolbox registry must read through the server API service contract.");
   rejectPattern(registryClient, "toolbox/tool-registry-api-client.js", /local-db|SQLite|Supabase|GAMEFOUNDRY_|process\.env/i, findings, "Toolbox registry client must not expose provider/environment implementation details.");
 
-  const votesClient = await readRequiredRepoFile("src/engine/api/toolbox-votes-api-client.js", findings, "Toolbox votes API client is missing");
-  requireSnippet(votesClient, "src/engine/api/toolbox-votes-api-client.js", "safeRequestServerApi(\"/toolbox/votes/snapshot\")", findings, "Toolbox votes must read through the server API service contract.");
-  requireSnippet(votesClient, "src/engine/api/toolbox-votes-api-client.js", "safeRequestServerApi(\"/toolbox/votes/cast\"", findings, "Toolbox votes must write through the server API service contract.");
-  rejectPattern(votesClient, "src/engine/api/toolbox-votes-api-client.js", /local-db|SQLite|Supabase|GAMEFOUNDRY_|process\.env/i, findings, "Toolbox votes client must not expose provider/environment implementation details.");
+  const votesClient = await readRequiredRepoFile("src/api/toolbox-votes-api-client.js", findings, "Toolbox votes API client is missing");
+  requireSnippet(votesClient, "src/api/toolbox-votes-api-client.js", "safeRequestServerApi(\"/toolbox/votes/snapshot\")", findings, "Toolbox votes must read through the server API service contract.");
+  requireSnippet(votesClient, "src/api/toolbox-votes-api-client.js", "safeRequestServerApi(\"/toolbox/votes/cast\"", findings, "Toolbox votes must write through the server API service contract.");
+  rejectPattern(votesClient, "src/api/toolbox-votes-api-client.js", /local-db|SQLite|Supabase|GAMEFOUNDRY_|process\.env/i, findings, "Toolbox votes client must not expose provider/environment implementation details.");
 
   for (const filePath of productApiClientFiles) {
     const contents = await readRequiredRepoFile(filePath, findings, "Product API client is missing");

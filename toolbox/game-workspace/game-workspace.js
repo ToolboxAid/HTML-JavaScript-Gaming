@@ -5,7 +5,7 @@ import {
   createGameWorkspaceApiRepository,
   readProjectWorkspaceProjectRecords,
 } from "./game-workspace-api-client.js";
-import { getSessionCurrent } from "../../src/engine/api/session-api-client.js";
+import { getSessionCurrent } from "../../src/api/session-api-client.js";
 
 const repository = createGameWorkspaceApiRepository();
 let projectRecordContract = null;

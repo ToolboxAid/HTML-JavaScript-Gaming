@@ -93,7 +93,7 @@ const MOCK_DB_TABLE_SCHEMAS = Object.freeze({
   users: Object.freeze(["key", "displayName", "email", "authProvider", "authProviderUserId", "isActive", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   roles: Object.freeze(["key", "roleSlug", "name", "description", "isSystemRole", "isActive", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   user_roles: Object.freeze(["key", "userKey", "roleKey", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-  invitations: Object.freeze(["key", "email", "invitationCode", "planKey", "status", "invitedBy", "expiresAt", "acceptedBy", "acceptedAt", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  invitations: Object.freeze(["key", "email", "recipientName", "relationshipNote", "personalMessage", "inviteSource", "invitationCode", "planKey", "status", "invitedBy", "expiresAt", "acceptedBy", "acceptedAt", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   membership_plans: Object.freeze(["key", "code", "displayName", "monthlyPriceCents", "currency", "billingInterval", "isPublic", "requiresInvitation", "isFounding", "basePlanCode", "revenueShareBps", "purchasedCreditBonusBps", "foundingMemberLimit", "active", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   membership_limits: Object.freeze(["key", "planKey", "storageMb", "monthlyAiCredits", "publishExperienceLimit", "maxTeamMembers", "collaborationEnabled", "marketplaceBrowseEnabled", "marketplaceBuyEnabled", "marketplaceFreeDownloadEnabled", "marketplaceSellEnabled", "analyticsTier", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   founding_members: Object.freeze(["key", "userKey", "planKey", "sequenceNumber", "lockedMonthlyPriceCents", "active", "assignedAt", "endedAt", "createdAt", "updatedAt", "createdBy", "updatedBy"]),

@@ -2,7 +2,7 @@ import {
   readToolboxVoteSnapshot,
   reorderToolboxVoteRows,
   updateToolboxVoteMetadata,
-} from "../src/engine/api/toolbox-votes-api-client.js";
+} from "../src/api/toolbox-votes-api-client.js";
 import { getToolboxContract } from "../toolbox/tool-registry-api-client.js";
 
 const status = document.querySelector("[data-toolbox-votes-status]");

@@ -2,7 +2,7 @@ import {
     createAdminBetaInvitation,
     readAdminInvitations,
     revokeAdminBetaInvitation
-} from "../../../src/engine/api/admin-invitations-api-client.js";
+} from "../../../src/api/admin-invitations-api-client.js";
 
 function text(value) {
     if (value === undefined || value === null || value === "") {
@@ -25,13 +25,17 @@ class AdminInvitationsController {
         this.emailInput = root.querySelector("[data-admin-invitation-email]");
         this.expiresAtInput = root.querySelector("[data-admin-invitation-expires-at]");
         this.form = root.querySelector("[data-admin-invitation-form]");
+        this.inviteSourceInput = root.querySelector("[data-admin-invitation-source]");
+        this.messageInput = root.querySelector("[data-admin-invitation-message]");
+        this.recipientNameInput = root.querySelector("[data-admin-invitation-recipient-name]");
+        this.relationshipNoteInput = root.querySelector("[data-admin-invitation-relationship-note]");
         this.rows = root.querySelector("[data-admin-invitation-rows]");
         this.status = root.querySelector("[data-admin-invitation-status]");
         this.summary = root.querySelector("[data-admin-invitation-summary]");
     }
 
     init() {
-        if (!this.emailInput || !this.expiresAtInput || !this.form || !this.rows || !this.status || !this.summary) {
+        if (!this.emailInput || !this.expiresAtInput || !this.form || !this.inviteSourceInput || !this.messageInput || !this.recipientNameInput || !this.relationshipNoteInput || !this.rows || !this.status || !this.summary) {
             return;
         }
         this.form.addEventListener("submit", (event) => {
@@ -63,7 +67,7 @@ class AdminInvitationsController {
         this.rows.replaceChildren();
         if (!invitations.length) {
             const row = document.createElement("tr");
-            ["No invitations", "BETA", "N/A", "N/A", "N/A", "N/A", "N/A", ""].forEach((value) => {
+            ["No invitations", "N/A", "N/A", "N/A", "BETA", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", ""].forEach((value) => {
                 const cell = document.createElement("td");
                 cell.textContent = value;
                 row.append(cell);
@@ -75,11 +79,15 @@ class AdminInvitationsController {
             const row = document.createElement("tr");
             [
                 invitation.email,
+                invitation.recipientName,
+                invitation.relationshipNote,
+                invitation.inviteSource,
                 invitation.planKey,
                 invitation.status,
                 invitation.expiresAt,
                 invitation.invitedBy,
                 invitation.acceptedBy,
+                invitation.personalMessage,
                 shortCode(invitation.invitationCode),
             ].forEach((value) => {
                 const cell = document.createElement("td");
@@ -117,9 +125,20 @@ class AdminInvitationsController {
 
     createInvitation() {
         try {
-            const payload = createAdminBetaInvitation(this.emailInput.value, this.expiresAtInput.value);
+            const payload = createAdminBetaInvitation({
+                email: this.emailInput.value,
+                expiresAt: this.expiresAtInput.value,
+                inviteSource: this.inviteSourceInput.value,
+                personalMessage: this.messageInput.value,
+                recipientName: this.recipientNameInput.value,
+                relationshipNote: this.relationshipNoteInput.value,
+            });
             this.emailInput.value = "";
             this.expiresAtInput.value = "";
+            this.inviteSourceInput.value = "";
+            this.messageInput.value = "";
+            this.recipientNameInput.value = "";
+            this.relationshipNoteInput.value = "";
             this.load();
             this.setStatus(payload.status || "PASS", payload.message || "Created Beta invitation.");
         } catch (error) {

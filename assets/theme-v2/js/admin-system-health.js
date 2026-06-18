@@ -1,7 +1,7 @@
 import {
     readAdminSystemHealthStatus,
     runAdminSystemHealthStorageConnectivityAction
-} from "../../../src/engine/api/admin-system-health-api-client.js";
+} from "../../../src/api/admin-system-health-api-client.js";
 
 const STORAGE_CONNECTIVITY_ACTIONS = Object.freeze([
     "storage-list",

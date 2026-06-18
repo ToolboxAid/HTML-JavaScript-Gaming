@@ -1,4 +1,4 @@
-import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
+import { getSessionCurrent } from "../src/api/session-api-client.js";
 
 function devRuntimeAllowed() {
   const host = window.location.hostname;
@@ -41,7 +41,7 @@ async function loadDbViewer() {
     showGatewayStatus(session.diagnostic || "Sign in with an admin account to open DB Viewer.");
     return;
   }
-  const module = await import("../src/engine/api/db-viewer-ui.js");
+  const module = await import("../src/api/db-viewer-ui.js");
   module.startDbViewer(document, { session });
 }
 

@@ -5,7 +5,7 @@ import {
 import {
     castToolboxVote,
     readToolboxVoteSnapshot
-} from "../src/engine/api/toolbox-votes-api-client.js";
+} from "../src/api/toolbox-votes-api-client.js";
 import {
     TOOL_IMAGE_FALLBACK,
     getActiveToolRegistry,
@@ -16,7 +16,7 @@ import {
     getToolboxContract,
     toolRegistryMetadataDiagnostic
 } from "./tool-registry-api-client.js";
-import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
+import { getSessionCurrent } from "../src/api/session-api-client.js";
 
 (function () {
     const list = document.querySelector("[data-tools-accordion-list]");

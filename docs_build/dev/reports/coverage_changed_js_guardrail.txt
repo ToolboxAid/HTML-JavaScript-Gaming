@@ -6,16 +6,40 @@ Missing changed runtime JS files are WARN, not FAIL.
 Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
+(0%) admin/db-viewer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) admin/tool-votes.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) assets/theme-v2/js/account-achievements.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) assets/theme-v2/js/account-ai-credits.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) assets/theme-v2/js/admin-invitations.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) assets/theme-v2/js/admin-infrastructure.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) assets/theme-v2/js/admin-operations.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) assets/theme-v2/js/admin-platform-settings.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) assets/theme-v2/js/admin-setup-actions.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) assets/theme-v2/js/admin-system-health.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) assets/theme-v2/js/legal-document-page.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) assets/theme-v2/js/marketplace-page.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) assets/theme-v2/js/memberships-page.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) assets/theme-v2/js/owner-ai-credits.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) assets/theme-v2/js/owner-memberships.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/api/admin-infrastructure-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/api/admin-operations-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/api/admin-setup-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/api/admin-system-health-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/api/ai-credits-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/api/db-viewer-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/api/db-viewer-ui.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/api/legal-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/api/marketplace-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/api/memberships-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/api/owner-ai-credits-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/api/owner-memberships-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/api/platform-settings-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/api/session-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/api/toolbox-votes-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/ai/ai-credit-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/ai/owner-ai-credit-settings-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/legal/legal-document-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/marketplace/marketplace-category-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/marketplace/marketplace-entitlement-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
@@ -27,27 +51,52 @@ Changed runtime JS files considered:
 (0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/teams/project-team-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/engine/api/admin-invitations-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/engine/api/ai-credits-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/engine/api/legal-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/engine/api/marketplace-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/engine/api/memberships-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/engine/api/owner-ai-credits-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/engine/api/owner-memberships-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) toolbox/assets/assets.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) toolbox/game-workspace/game-workspace.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) toolbox/toolRegistry.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) toolbox/tools-page-accordions.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(60%) src/api/admin-invitations-api-client.js - executed lines 40/40; executed functions 3/5
 (74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 748/748; executed functions 48/65
-(87%) assets/theme-v2/js/admin-system-health.js - executed lines 359/359; executed functions 46/53
+(80%) src/api/admin-owner-navigation.js - executed lines 40/40; executed functions 4/5
+(89%) assets/theme-v2/js/admin-invitations.js - executed lines 155/155; executed functions 16/18
+(89%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 44/44; executed functions 8/9
 
 Guardrail warnings:
+(0%) admin/db-viewer.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) admin/tool-votes.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) assets/theme-v2/js/account-achievements.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) assets/theme-v2/js/account-ai-credits.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) assets/theme-v2/js/admin-invitations.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) assets/theme-v2/js/admin-infrastructure.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) assets/theme-v2/js/admin-operations.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) assets/theme-v2/js/admin-platform-settings.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) assets/theme-v2/js/admin-setup-actions.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) assets/theme-v2/js/admin-system-health.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) assets/theme-v2/js/legal-document-page.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) assets/theme-v2/js/marketplace-page.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) assets/theme-v2/js/memberships-page.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) assets/theme-v2/js/owner-ai-credits.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) assets/theme-v2/js/owner-memberships.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/api/admin-infrastructure-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/api/admin-operations-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/api/admin-setup-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/api/admin-system-health-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/api/ai-credits-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/api/db-viewer-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/api/db-viewer-ui.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/api/legal-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/api/marketplace-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/api/memberships-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/api/owner-ai-credits-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/api/owner-memberships-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/api/platform-settings-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/api/session-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/api/toolbox-votes-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/ai/ai-credit-service.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/ai/owner-ai-credit-settings-service.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/legal/legal-document-service.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/marketplace/marketplace-category-service.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/marketplace/marketplace-entitlement-service.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
@@ -59,10 +108,8 @@ Guardrail warnings:
 (0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/teams/project-team-service.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/engine/api/admin-invitations-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/engine/api/ai-credits-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/engine/api/legal-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/engine/api/marketplace-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/engine/api/memberships-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/engine/api/owner-ai-credits-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/engine/api/owner-memberships-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) toolbox/assets/assets.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) toolbox/game-workspace/game-workspace.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) toolbox/toolRegistry.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) toolbox/tools-page-accordions.js - WARNING: changed runtime JS file missing from coverage; advisory only

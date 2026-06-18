@@ -1,4 +1,4 @@
-import { readPublishedLegalDocument } from "../../../src/engine/api/legal-api-client.js";
+import { readPublishedLegalDocument } from "../../../src/api/legal-api-client.js";
 
 function target(root, selector) {
     return root.querySelector(selector);

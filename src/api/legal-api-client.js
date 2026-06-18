@@ -1,7 +1,7 @@
 import {
   requireServerApiData,
   safeRequestServerApi,
-} from "./server-api-client.js";
+} from "../engine/api/server-api-client.js";
 
 export function readPublishedLegalDocument(documentType) {
   return requireServerApiData(

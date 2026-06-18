@@ -1,4 +1,4 @@
-import { readAdminSetupStatus } from "../../../src/engine/api/admin-setup-api-client.js";
+import { readAdminSetupStatus } from "../../../src/api/admin-setup-api-client.js";
 
 const refreshButtons = Array.from(document.querySelectorAll("[data-admin-setup-refresh]"));
 const statusFields = Array.from(document.querySelectorAll("[data-admin-setup-status]"));

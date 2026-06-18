@@ -32,11 +32,7 @@
                             <details class="vertical-accordion" open>
                                 <summary>Admin Tools</summary>
                                 <nav class="accordion-body content-stack" aria-label="Admin tool pages" data-admin-tool-menu>
-                                    <a class="btn btn--compact" href="/admin/tool-votes.html">Tool Votes</a>
-                                    <a class="btn btn--compact" href="/admin/environments.html">Environments</a>
-                                    <a class="btn btn--compact" href="/admin/users.html">Users</a>
-                                    <a class="btn btn--compact primary" aria-current="page" href="/admin/game-migration.html">Game Migration</a>
-                                    <a class="btn btn--compact" href="/admin/platform-settings.html">Platform Settings</a>
+                                    <p class="status" data-admin-nav-loading>Loading Admin tools.</p>
                                 </nav>
                             </details>
                             <details class="vertical-accordion" open>
@@ -88,6 +84,7 @@
     <div data-partial="footer"></div>
     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+    <script type="module" src="assets/theme-v2/js/admin-owner-navigation.js"></script>
 </body>
 
 </html>
