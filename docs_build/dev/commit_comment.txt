@@ -1,2 +1,2 @@
-PR_26168_247-memberships-page
-Add public Memberships page with Free, Creator, and Studio tiers.
+PR_26169_auth-preview-signin-regression
+Fix preview sign-in fallback blocking Supabase authentication.

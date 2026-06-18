@@ -2988,7 +2988,7 @@ LIMIT 1;
       operatorDiagnostic = failure.remediation || providerContract.supabaseAuth.diagnostic || "Account connection is not ready.";
       status = "unavailable";
     } else {
-      operatorDiagnostic = "Account and product data connections are configured for server API runtime.";
+      operatorDiagnostic = "Supabase Auth configuration is present; account actions validate upstream auth during the request.";
       status = "ready";
     }
     const message = status === "ready" ? AUTH_READY_MESSAGE : AUTH_UNAVAILABLE_MESSAGE;
@@ -3177,7 +3177,7 @@ LIMIT 1;
   }
 
   async authAdapterForAction(action, status = null) {
-    const readinessStatus = status || await this.authStatusForRoute();
+    const readinessStatus = status || this.authStatus();
     if (!readinessStatus.ready) {
       if (readinessStatus.identityTablesReady === false) {
         throw authIdentitySetupError(action, `Account identity setup is incomplete. ${readinessStatus.operatorDiagnostic || readinessStatus.status}`);
@@ -3294,7 +3294,7 @@ LIMIT 1;
   }
 
   async authSignIn(body = {}) {
-    const operatorStatus = await this.authStatusForRoute();
+    const operatorStatus = this.authStatus();
     logAuthActionOperatorDiagnostic({
       phase: "start",
       route: "POST /api/auth/sign-in",
@@ -3365,7 +3365,7 @@ LIMIT 1;
   }
 
   async authCreateAccount(body = {}) {
-    const operatorStatus = await this.authStatusForRoute();
+    const operatorStatus = this.authStatus();
     logAuthActionOperatorDiagnostic({
       phase: "start",
       route: "POST /api/auth/create-account",
@@ -3448,7 +3448,7 @@ LIMIT 1;
   }
 
   async authPasswordReset(body = {}, redirectTo = "") {
-    const operatorStatus = await this.authStatusForRoute();
+    const operatorStatus = this.authStatus();
     logAuthActionOperatorDiagnostic({
       phase: "start",
       route: "POST /api/auth/password-reset",
@@ -4357,7 +4357,7 @@ export function createLocalApiRouter() {
 
       if (parts[1] === "auth") {
         if (request.method === "GET" && parts[2] === "status") {
-          ok(response, await dataSource.authStatusForRoute());
+          ok(response, dataSource.authStatus());
           return true;
         }
         if (request.method === "GET" && parts[2] === "operator-preflight") {

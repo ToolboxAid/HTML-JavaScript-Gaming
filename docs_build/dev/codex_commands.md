@@ -2679,3 +2679,38 @@ Required reports:
 
 Packaging:
 - `tmp/PR_26168_247-memberships-page_delta.zip`
+
+
+## PR_26169_auth-preview-signin-regression
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main`.
+- Reviewed `account/sign-in.html`, `assets/theme-v2/js/login-session.js`, `assets/theme-v2/js/account-auth-service.js`, `assets/theme-v2/js/account-auth-actions.js`, and the Local API auth routes.
+- Changed `/api/auth/status` to report browser action availability from Supabase Auth configuration instead of strict operator preflight readiness.
+- Changed sign-in, create-account, and password-reset action gates to attempt the configured Supabase Auth provider when browser-safe auth config is present.
+- Kept strict connectivity and identity-table checks on operator preflight and post-auth session/identity resolution.
+- Preserved preview fallback behavior when Supabase Auth browser-safe config is missing.
+- Updated targeted Node and Playwright auth tests for config-gated status, safe identity failures, and real Supabase Auth calls.
+
+Validation:
+- `node --check src/dev-runtime/server/local-api-router.mjs`
+- `node --check tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
+- `node --check tests/playwright/tools/LoginSessionMode.spec.mjs`
+- `node --test --test-name-pattern "Missing Supabase config|Configured Supabase Auth enables sign-in attempt before identity readiness|Account auth routes call external Supabase Auth|Default Supabase Auth routes call external auth|Supabase account actions fail actionably when identity tables are missing|Operator auth preflight reports failed Supabase connectivity" tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
+- `node node_modules/@playwright/test/cli.js test tests/playwright/tools/LoginSessionMode.spec.mjs --grep "Sign-in page uses a production-safe|Configured account auth actions" --project=playwright --workers=1 --reporter=line`
+- `node node_modules/@playwright/test/cli.js test tests/playwright/tools/StaticOnlyLoginApiRequired.spec.mjs --project=playwright --workers=1 --reporter=line`
+- `node scripts/validate-browser-env-agnostic.mjs` reported existing product-data route guardrail failures in `local-api-router.mjs`.
+- `git diff --check`
+- Full samples smoke skipped because samples and `start_of_day` folders were not touched.
+
+Required reports:
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/PR_26169_auth-preview-signin-regression.md`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+- `docs_build/dev/reports/environment_agnostic_browser_gate_report.md`
+
+Packaging:
+- `tmp/PR_26169_auth-preview-signin-regression_delta.zip`

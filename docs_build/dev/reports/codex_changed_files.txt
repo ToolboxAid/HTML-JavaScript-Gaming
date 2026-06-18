@@ -1,68 +1,11 @@
-# Codex Changed Files
-
-## git status --short (PR-scoped)
-
-M assets/theme-v2/js/gamefoundry-partials.js
- M assets/theme-v2/partials/footer.html
- M assets/theme-v2/partials/header-nav.html
- M docs_build/dev/codex_commands.md
- M docs_build/dev/commit_comment.txt
- M docs_build/dev/reports/codex_changed_files.txt
- M docs_build/dev/reports/codex_review.diff
- M docs_build/dev/reports/filesystem_scan_reduction_report.md
- M docs_build/dev/reports/playwright_discovery_ownership_report.md
- M docs_build/dev/reports/playwright_discovery_scope_report.md
- M docs_build/dev/reports/playwright_structure_audit.md
- M src/dev-runtime/admin/header-nav.local.html
- M tests/playwright/tools/RootToolsFutureState.spec.mjs
-?? docs_build/dev/reports/PR_26168_247-memberships-page.md
-?? memberships/index.html
-?? tests/playwright/tools/PublicMembershipsPage.spec.mjs
-
-## git diff --stat (PR-scoped)
-
-assets/theme-v2/js/gamefoundry-partials.js         |  3 +-
- assets/theme-v2/partials/footer.html               |  1 +
- assets/theme-v2/partials/header-nav.html           |  8 ++++-
- docs_build/dev/codex_commands.md                   | 36 ++++++++++++++++++++++
- docs_build/dev/commit_comment.txt                  |  3 +-
- .../reports/filesystem_scan_reduction_report.md    |  2 +-
- .../playwright_discovery_ownership_report.md       |  6 ++--
- .../reports/playwright_discovery_scope_report.md   |  6 ++--
- .../dev/reports/playwright_structure_audit.md      |  8 ++---
- src/dev-runtime/admin/header-nav.local.html        |  8 ++++-
- .../playwright/tools/RootToolsFutureState.spec.mjs |  4 +--
- 11 files changed, 65 insertions(+), 20 deletions(-)
- .../dev/reports/PR_26168_247-memberships-page.md   | 90 ++++++++++++++++++++++
- 1 file changed, 90 insertions(+)
- /dev/null => memberships/index.html | 122 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 122 insertions(+)
- .../tools/PublicMembershipsPage.spec.mjs           | 110 +++++++++++++++++++++
- 1 file changed, 110 insertions(+)
- docs_build/dev/reports/codex_changed_files.txt |  108 +-
- docs_build/dev/reports/codex_review.diff       | 1918 +++++++-----------------
- 2 files changed, 603 insertions(+), 1423 deletions(-)
-
-## Full working tree note
-
-- Unrelated pre-existing working tree change remains: `D test.sql` (excluded from PR diff and ZIP).
-
-## Full git status --short
-
-M assets/theme-v2/js/gamefoundry-partials.js
- M assets/theme-v2/partials/footer.html
- M assets/theme-v2/partials/header-nav.html
- M docs_build/dev/codex_commands.md
- M docs_build/dev/commit_comment.txt
- M docs_build/dev/reports/codex_changed_files.txt
- M docs_build/dev/reports/codex_review.diff
- M docs_build/dev/reports/filesystem_scan_reduction_report.md
- M docs_build/dev/reports/playwright_discovery_ownership_report.md
- M docs_build/dev/reports/playwright_discovery_scope_report.md
- M docs_build/dev/reports/playwright_structure_audit.md
- M src/dev-runtime/admin/header-nav.local.html
- D test.sql
- M tests/playwright/tools/RootToolsFutureState.spec.mjs
-?? docs_build/dev/reports/PR_26168_247-memberships-page.md
-?? memberships/index.html
-?? tests/playwright/tools/PublicMembershipsPage.spec.mjs
+docs_build/dev/codex_commands.md
+docs_build/dev/commit_comment.txt
+docs_build/dev/reports/PR_26169_auth-preview-signin-regression.md
+docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/codex_review.diff
+docs_build/dev/reports/coverage_changed_js_guardrail.txt
+docs_build/dev/reports/environment_agnostic_browser_gate_report.md
+docs_build/dev/reports/playwright_v8_coverage_report.txt
+src/dev-runtime/server/local-api-router.mjs
+tests/dev-runtime/SupabaseProviderContractStub.test.mjs
+tests/playwright/tools/LoginSessionMode.spec.mjs

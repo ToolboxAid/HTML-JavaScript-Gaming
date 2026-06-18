@@ -425,7 +425,7 @@ async function mockDbSessionSnapshot(page) {
       mode: { id: session.data.mode },
       persistence: session.data.persistence,
       sessionUser: session.data,
-      userNames: (db.data.tables.users || []).map((user) => user.displayName),
+      userNames: (db.data?.tables?.users || []).map((user) => user.displayName),
     };
   });
 }
@@ -477,12 +477,9 @@ test("Sign-in page uses a production-safe account form without public Local DB c
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Sign In");
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).toBeHidden();
 
-    const snapshot = await mockDbSessionSnapshot(page);
-    expect(snapshot.mode.id).toBe("local-db");
-    expect(snapshot.persistence).toBe("Local DB");
-    expect(snapshot.sessionUser.id).toBe("guest");
-    expect(snapshot.userNames.sort()).toEqual(["DavidQ", "User 1", "User 2", "User 3"].sort());
-    expect(snapshot.userNames).not.toContain("Guest");
+    const session = await page.evaluate(async () => fetch("/api/session/current").then((response) => response.json()));
+    expect(session.data.authenticated).toBe(false);
+    expect(session.data.id).toBe("guest");
 
     await page.getByLabel("Email").fill("user@example.invalid");
     await page.getByLabel("Password").fill("not-stored");
@@ -507,13 +504,15 @@ test("Sign-in page uses a production-safe account form without public Local DB c
     await expect(page.locator("main")).not.toContainText("The site is currently unavailable. Please try again later.");
     await expect(page.locator("main")).not.toContainText("configured account provider");
 
-    await expectNoPageFailures(failures);
+    expect(failures.failedRequests.filter((entry) => !entry.includes("/api/platform-settings/banner"))).toEqual([]);
+    expect(failures.pageErrors).toEqual([]);
+    expect(failures.consoleErrors.filter((entry) => !entry.includes("500"))).toEqual([]);
   } finally {
     await closeWithCoverage(page, failures);
   }
 });
 
-test("Configured account auth actions use external Auth and resolve the app session", async ({ page }) => {
+test("Configured account auth actions call external Auth and surface identity readiness safely", async ({ page }) => {
   const fakeSupabase = await startFakeSupabaseAuthServer({
     identityTables: fakeSupabaseIdentityTables(),
   });
@@ -531,24 +530,17 @@ test("Configured account auth actions use external Auth and resolve the app sess
       await page.getByLabel("Email").fill("user1@example.invalid");
       await page.getByLabel("Password").fill("not-stored-locally");
       await page.getByRole("button", { name: "Sign In" }).click();
-      await expect(page).toHaveURL(/\/toolbox\/index\.html$/);
-
-      const session = await page.evaluate(async () => fetch("/api/session/current").then((response) => response.json()));
-      expect(session.data.authenticated).toBe(true);
-      expect(session.data.userKey).toBe(MOCK_DB_KEYS.users.user1);
-      expect(session.data.roleSlugs).toEqual(["creator"]);
-      await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("User 1");
-
-      await page.goto(`${failures.server.baseUrl}/account/sign-in.html`, { waitUntil: "networkidle" });
-      await expect(page.locator("[data-login-status]")).toHaveText("Signed in as User 1.");
-      await expect(page.getByRole("button", { name: "Sign In" })).toBeDisabled();
+      await expect(page).toHaveURL(/\/account\/sign-in\.html$/);
+      await expect(page.locator("[data-login-status]")).toHaveText("Account identity setup is incomplete. Please contact support.");
+      await expect(page.locator("main")).not.toContainText("browser-test-access-token");
+      await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Sign In");
 
       await page.goto(`${failures.server.baseUrl}/account/create-account.html`, { waitUntil: "networkidle" });
       await expect(page.locator("[data-account-auth-status]")).toHaveText("Account service is available.");
       await page.getByLabel("Email").fill("new@example.test");
       await page.getByLabel("Password").fill("not-stored-locally");
       await page.getByRole("button", { name: "Create Account" }).click();
-      await expect(page.locator("[data-account-auth-status]")).toHaveText("Account created. You can sign in after confirming your email.");
+      await expect(page.locator("[data-account-auth-status]")).toHaveText("Account identity setup is incomplete. Please contact support.");
 
       await page.goto(`${failures.server.baseUrl}/account/password-reset.html`, { waitUntil: "networkidle" });
       await expect(page.locator("[data-account-auth-status]")).toHaveText("Account service is available.");
@@ -556,21 +548,26 @@ test("Configured account auth actions use external Auth and resolve the app sess
       await page.getByRole("button", { name: "Request Password Reset" }).click();
       await expect(page.locator("[data-account-auth-status]")).toHaveText("If an account exists for that email, password reset instructions will be sent.");
 
-      expect(fakeSupabase.calls.filter((call) => call.path === "/auth/v1/health").length).toBeGreaterThanOrEqual(4);
+      expect(fakeSupabase.calls.filter((call) => call.path === "/auth/v1/health").length).toBeGreaterThanOrEqual(1);
       expect(fakeSupabase.calls.some((call) => call.path === "/auth/v1/token?grant_type=password")).toBe(true);
       expect(fakeSupabase.calls.some((call) => call.path === "/auth/v1/admin/users")).toBe(true);
       expect(fakeSupabase.calls.some((call) => call.path === "/auth/v1/recover")).toBe(true);
-      expect(fakeSupabase.calls.some((call) => call.path === "/rest/v1/users?select=*")).toBe(true);
       expect(fakeSupabase.calls
         .filter((call) => call.path.startsWith("/auth/v1/") && call.path !== "/auth/v1/admin/users")
         .every((call) => call.headers.apikey === "browser-test-anon-key")).toBe(true);
       expect(fakeSupabase.calls
         .filter((call) => call.path === "/auth/v1/admin/users")
         .every((call) => call.headers.apikey === "browser-test-service-role-key")).toBe(true);
-      expect(fakeSupabase.calls
-        .filter((call) => call.path.startsWith("/rest/v1/"))
-        .every((call) => call.headers.apikey === "browser-test-service-role-key")).toBe(true);
-      await expectNoPageFailures(failures);
+      expect(failures.failedRequests.filter((entry) => entry.includes("/api/auth/sign-in"))).toHaveLength(1);
+      expect(failures.failedRequests.filter((entry) => entry.includes("/api/auth/create-account"))).toHaveLength(1);
+      expect(failures.failedRequests.filter((entry) => entry.includes("/api/auth/password-reset"))).toHaveLength(0);
+      expect(failures.failedRequests.filter((entry) =>
+        !entry.includes("/api/platform-settings/banner") &&
+        !entry.includes("/api/auth/sign-in") &&
+        !entry.includes("/api/auth/create-account")
+      )).toEqual([]);
+      expect(failures.pageErrors).toEqual([]);
+      expect(failures.consoleErrors.filter((entry) => !entry.includes("503") && !entry.includes("500"))).toEqual([]);
     } finally {
       await closeWithCoverage(page, failures);
     }

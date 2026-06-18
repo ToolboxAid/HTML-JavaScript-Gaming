@@ -12,34 +12,27 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(35%) Toolbox Index - exercised 1 runtime JS files
+(0%) Toolbox Index - not exercised by this Playwright run
 (0%) Tool Template V2 - not exercised by this Playwright run
-(78%) Theme V2 Shared JS - exercised 3 runtime JS files
+(62%) Theme V2 Shared JS - exercised 4 runtime JS files
 
 Changed runtime JS files covered:
-(0%) src/dev-runtime/database/postgres-backup-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/dev-runtime/storage/r2-project-asset-storage.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/dev-runtime/storage/storage-config.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(56%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 742/742; executed functions 34/61
 
 Files with executed line/function counts where available:
-(35%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 9/26
-(36%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 5/14
-(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
-(70%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 741/741; executed functions 45/64
-(100%) assets/theme-v2/js/admin-operations.js - executed lines 273/273; executed functions 30/30
-(100%) src/engine/api/admin-operations-api-client.js - executed lines 19/19; executed functions 3/3
+(56%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 742/742; executed functions 34/61
+(71%) assets/theme-v2/js/account-auth-actions.js - executed lines 83/83; executed functions 5/7
+(71%) assets/theme-v2/js/account-auth-service.js - executed lines 63/63; executed functions 5/7
+(90%) assets/theme-v2/js/login-session.js - executed lines 113/113; executed functions 9/10
 
 Uncovered or low-coverage changed JS files:
-(0%) src/dev-runtime/database/postgres-backup-service.mjs - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
-(0%) src/dev-runtime/storage/r2-project-asset-storage.mjs - WARNING: uncovered changed runtime JS file; advisory only
-(0%) src/dev-runtime/storage/storage-config.mjs - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
-(0%) src/dev-runtime/database/postgres-backup-service.mjs - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
-(0%) src/dev-runtime/storage/r2-project-asset-storage.mjs - changed JS file not collected as browser runtime coverage
-(0%) src/dev-runtime/storage/storage-config.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/dev-runtime/PostgresBackupService.test.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/dev-runtime/SupabaseProviderContractStub.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/LoginSessionMode.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/PublicMembershipsPage.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
+(56%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage

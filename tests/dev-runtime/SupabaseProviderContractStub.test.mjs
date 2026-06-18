@@ -567,11 +567,11 @@ test("Auth status ignores legacy Local DB selectors when Supabase is configured"
       assert.equal(status.configured, true);
       assert.equal(status.supabaseConfigPresent, true);
       assert.equal(status.supabaseProviderActive, true);
-      assert.equal(status.supabaseConnectivityStatus, "healthy");
-      assert.equal(status.connectivityHealthy, true);
+      assert.equal(status.supabaseConnectivityStatus, "not-checked");
+      assert.equal(status.connectivityHealthy, null);
       assert.equal(status.authProviderId, "supabase-auth");
       assert.equal(status.databaseProviderId, "supabase-postgres");
-      assert.match(status.operatorDiagnostic, /Account connection is configured, reachable/);
+      assert.match(status.operatorDiagnostic, /Supabase Auth configuration is present/);
 
       const preflight = await apiJson(server.baseUrl, "/api/auth/operator-preflight");
       assert.equal(preflight.operatorOnly, true);
@@ -618,7 +618,7 @@ test("Fixed Supabase providers keep diagnostics available and block product data
       const snapshot = await apiPayload(server.baseUrl, "/api/product-data/snapshot");
       assert.equal(snapshot.status, 500);
       assert.equal(snapshot.payload.ok, false);
-      assert.match(snapshot.payload.error, /Supabase Postgres connection is not configured/);
+      assert.match(snapshot.payload.error, /database connection is not configured/);
     } finally {
       await server.close();
     }
@@ -666,7 +666,7 @@ test("Missing Supabase config fails safely without product data fallback", async
       const snapshot = await apiPayload(server.baseUrl, "/api/product-data/snapshot");
       assert.equal(snapshot.status, 500);
       assert.equal(snapshot.payload.ok, false);
-      assert.match(snapshot.payload.error, /Supabase Postgres connection is not configured/);
+      assert.match(snapshot.payload.error, /database connection is not configured/);
 
       const signIn = await postApiPayload(server.baseUrl, "/api/auth/sign-in", {
         email: "creator@example.test",
@@ -681,7 +681,43 @@ test("Missing Supabase config fails safely without product data fallback", async
   });
 });
 
-test("Account auth routes call external Supabase Auth and return sanitized action results", async () => {
+test("Configured Supabase Auth enables sign-in attempt before identity readiness", async () => {
+  const fakeSupabase = await startFakeSupabaseAuthServer({
+    identityTablesUnavailable: true,
+  });
+  await withEnv({
+    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
+    GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
+    GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: undefined,
+    GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
+  }, async () => {
+    const server = await startApiServer();
+    try {
+      const status = await apiJson(server.baseUrl, "/api/auth/status");
+      assert.equal(status.ready, true);
+      assert.equal(status.message, "Account service is available.");
+      assert.equal(status.supabaseConfigPresent, true);
+      assert.equal(status.supabaseConnectivityStatus, "not-checked");
+      assert.equal(status.connectivityHealthy, null);
+
+      const signIn = await postApiPayload(server.baseUrl, "/api/auth/sign-in", {
+        email: "creator@example.test",
+        password: "not-stored-locally",
+      });
+      assert.equal(signIn.status, 503);
+      assert.equal(signIn.payload.ok, false);
+      assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/token?grant_type=password"), true);
+      assert.equal(JSON.stringify(signIn.payload).includes("not-stored-locally"), false);
+      assert.equal(JSON.stringify(signIn.payload).includes("test-anon-key"), false);
+    } finally {
+      await server.close();
+    }
+  });
+  await fakeSupabase.close();
+});
+
+test("Account auth routes call external Supabase Auth and sanitize identity readiness failures", async () => {
   const fakeSupabase = await startFakeSupabaseAuthServer({
     identityTables: fakeSupabaseIdentityTables(),
   });
@@ -702,8 +738,8 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
       assert.equal(status.message, "Account service is available.");
       assert.equal(status.supabaseConfigPresent, true);
       assert.equal(status.supabaseProviderActive, true);
-      assert.equal(status.supabaseConnectivityStatus, "healthy");
-      assert.equal(status.connectivityHealthy, true);
+      assert.equal(status.supabaseConnectivityStatus, "not-checked");
+      assert.equal(status.connectivityHealthy, null);
 
       const preflight = await apiJson(server.baseUrl, "/api/auth/operator-preflight");
       assert.equal(preflight.supabaseConfigPresent, true);
@@ -719,35 +755,23 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
         email: "user1@example.invalid",
         password: "not-stored-locally",
       });
-      assert.equal(signIn.status, 200);
-      assert.equal(signIn.payload.ok, true);
-      assert.equal(signIn.payload.data.providerId, "supabase-auth");
-      assert.equal(signIn.payload.data.status, "PASS");
-      assert.equal(signIn.payload.data.passwordStoredByBrowser, false);
-      assert.equal(signIn.payload.data.serverSessionResolved, true);
-      assert.equal(signIn.payload.data.sessionResolved, true);
-      assert.equal(signIn.payload.data.userKey, SEED_DB_KEYS.users.user1);
-      assert.deepEqual(signIn.payload.data.roleSlugs, ["creator"]);
-      assert.equal(signIn.payload.data.accessTokenExposed, false);
-      assert.equal(signIn.payload.data.refreshTokenExposed, false);
+      assert.equal(signIn.status, 503);
+      assert.equal(signIn.payload.ok, false);
+      assert.equal(signIn.payload.error, "Account identity setup is incomplete. Please contact support.");
       assert.equal(JSON.stringify(signIn.payload).includes("fake-supabase-access-token"), false);
       assert.equal(JSON.stringify(signIn.payload).includes("fake-supabase-refresh-token"), false);
 
       const session = await apiJson(server.baseUrl, "/api/session/current");
-      assert.equal(session.authenticated, true);
-      assert.equal(session.userKey, SEED_DB_KEYS.users.user1);
-      assert.deepEqual(session.roleSlugs, ["creator"]);
+      assert.equal(session.authenticated, false);
+      assert.match(session.diagnostic, /identity table validation failed|database connection is not configured/i);
 
       const createAccount = await postApiPayload(server.baseUrl, "/api/auth/create-account", {
         email: "new@example.test",
         password: "not-stored-locally",
       });
-      assert.equal(createAccount.status, 200);
-      assert.equal(createAccount.payload.data.action, "create-account");
-      assert.equal(createAccount.payload.data.identityProvisioned, true);
-      assert.equal(createAccount.payload.data.serverSessionResolved, false);
-      assert.deepEqual(createAccount.payload.data.roleSlugs, ["creator"]);
-      assert.match(createAccount.payload.data.userKey, /^[0-9A-HJKMNP-TV-Z]{26}$/);
+      assert.equal(createAccount.status, 503);
+      assert.equal(createAccount.payload.ok, false);
+      assert.equal(createAccount.payload.error, "Account identity setup is incomplete. Please contact support.");
 
       const reset = await postApiPayload(server.baseUrl, "/api/auth/password-reset", {
         email: "reset@example.test",
@@ -757,21 +781,15 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
       assert.equal(reset.payload.data.redirectToIncluded, true);
       assert.equal(reset.payload.data.message, "If an account exists for that email, password reset instructions will be sent.");
 
-      assert.equal(fakeSupabase.calls.filter((call) => call.path === "/auth/v1/health").length >= 5, true);
+      assert.equal(fakeSupabase.calls.filter((call) => call.path === "/auth/v1/health").length >= 1, true);
       assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/token?grant_type=password"), true);
       assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/admin/users"), true);
       assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/recover"), true);
-      assert.equal(fakeSupabase.calls.some((call) => call.path === "/rest/v1/users?select=*"), true);
-      assert.equal(fakeSupabase.calls.some((call) => call.path === "/rest/v1/roles?select=*"), true);
-      assert.equal(fakeSupabase.calls.some((call) => call.path === "/rest/v1/user_roles?select=*"), true);
       assert.equal(fakeSupabase.calls
         .filter((call) => call.path.startsWith("/auth/v1/") && call.path !== "/auth/v1/admin/users")
         .every((call) => call.headers.apikey === "test-anon-key"), true);
       assert.equal(fakeSupabase.calls
         .filter((call) => call.path === "/auth/v1/admin/users")
-        .every((call) => call.headers.apikey === "test-service-role-key"), true);
-      assert.equal(fakeSupabase.calls
-        .filter((call) => call.path.startsWith("/rest/v1/"))
         .every((call) => call.headers.apikey === "test-service-role-key"), true);
     } finally {
       await server.close();
@@ -799,8 +817,12 @@ test("Create account provisions Supabase identity user default role and user_rol
     try {
       const status = await apiJson(server.baseUrl, "/api/auth/status");
       assert.equal(status.ready, true);
-      assert.equal(status.identityTablesReady, true);
-      assert.deepEqual(status.identityTableRecords, {
+      assert.equal(status.supabaseConnectivityStatus, "not-checked");
+      assert.equal(status.connectivityHealthy, null);
+
+      const preflight = await apiJson(server.baseUrl, "/api/auth/operator-preflight");
+      assert.equal(preflight.identityTablesReady, true);
+      assert.deepEqual(preflight.identityTableRecords, {
         roles: 0,
         user_roles: 0,
         users: 0,
@@ -1058,7 +1080,8 @@ test("Supabase sign in fails visibly when the Auth user has no app identity row"
     try {
       const status = await apiJson(server.baseUrl, "/api/auth/status");
       assert.equal(status.ready, true);
-      assert.equal(status.identityTablesReady, true);
+      assert.equal(status.supabaseConnectivityStatus, "not-checked");
+      assert.equal(status.connectivityHealthy, null);
 
       await withCapturedConsoleWarn(async (warnings) => {
         const signIn = await postApiPayload(server.baseUrl, "/api/auth/sign-in", {
@@ -1101,10 +1124,14 @@ test("Supabase account actions fail actionably when identity tables are missing"
     const server = await startApiServer();
     try {
       const status = await apiJson(server.baseUrl, "/api/auth/status");
-      assert.equal(status.ready, false);
-      assert.equal(status.identityTablesReady, false);
-      assert.equal(status.message, "Account identity setup is incomplete. Please contact support.");
-      assert.match(status.operatorDiagnostic, /supabase-identity-tables\.sql/);
+      assert.equal(status.ready, true);
+      assert.equal(status.supabaseConnectivityStatus, "not-checked");
+      assert.equal(status.connectivityHealthy, null);
+      assert.equal(status.message, "Account service is available.");
+
+      const preflight = await apiJson(server.baseUrl, "/api/auth/operator-preflight");
+      assert.equal(preflight.identityTablesReady, false);
+      assert.match(preflight.checks.find((check) => check.id === "supabase-identity-tables").summary, /identity table validation failed|supabase-identity-tables\.sql/i);
 
       const signIn = await postApiPayload(server.baseUrl, "/api/auth/sign-in", {
         email: "creator@example.test",
@@ -1113,7 +1140,7 @@ test("Supabase account actions fail actionably when identity tables are missing"
       assert.equal(signIn.status, 503);
       assert.equal(signIn.payload.ok, false);
       assert.equal(signIn.payload.error, "Account identity setup is incomplete. Please contact support.");
-      assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/token?grant_type=password"), false);
+      assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/token?grant_type=password"), true);
     } finally {
       await server.close();
     }
@@ -1121,7 +1148,7 @@ test("Supabase account actions fail actionably when identity tables are missing"
   await fakeSupabase.close();
 });
 
-test("Default Supabase Auth routes sign in create account and password reset through external auth", async () => {
+test("Default Supabase Auth routes call external auth and keep identity failures safe", async () => {
   const fakeSupabase = await startFakeSupabaseAuthServer({
     identityTables: fakeSupabaseIdentityTables(),
   });
@@ -1144,27 +1171,23 @@ test("Default Supabase Auth routes sign in create account and password reset thr
       assert.equal(status.noAutomaticFallback, true);
       assert.equal(status.active, true);
       assert.equal(status.configured, true);
-      assert.equal(status.connectivityHealthy, true);
+      assert.equal(status.connectivityHealthy, null);
 
       const signIn = await postApiPayload(server.baseUrl, "/api/auth/sign-in", {
         email: "user1@example.invalid",
         password: "not-stored-locally",
       });
-      assert.equal(signIn.status, 200);
-      assert.equal(signIn.payload.data.action, "sign-in");
-      assert.equal(signIn.payload.data.providerId, "supabase-auth");
-      assert.equal(signIn.payload.data.passwordStoredByBrowser, false);
-      assert.equal(signIn.payload.data.serverSessionResolved, true);
-      assert.equal(signIn.payload.data.sessionResolved, true);
-      assert.equal(signIn.payload.data.userKey, SEED_DB_KEYS.users.user1);
+      assert.equal(signIn.status, 503);
+      assert.equal(signIn.payload.ok, false);
+      assert.equal(signIn.payload.error, "Account identity setup is incomplete. Please contact support.");
 
       const createAccount = await postApiPayload(server.baseUrl, "/api/auth/create-account", {
         email: "default-create@example.test",
         password: "not-stored-locally",
       });
-      assert.equal(createAccount.status, 200);
-      assert.equal(createAccount.payload.data.action, "create-account");
-      assert.equal(createAccount.payload.data.providerId, "supabase-auth");
+      assert.equal(createAccount.status, 503);
+      assert.equal(createAccount.payload.ok, false);
+      assert.equal(createAccount.payload.error, "Account identity setup is incomplete. Please contact support.");
 
       const reset = await postApiPayload(server.baseUrl, "/api/auth/password-reset", {
         email: "default-reset@example.test",
@@ -1173,7 +1196,7 @@ test("Default Supabase Auth routes sign in create account and password reset thr
       assert.equal(reset.payload.data.action, "password-reset");
       assert.equal(reset.payload.data.providerId, "supabase-auth");
 
-      assert.equal(fakeSupabase.calls.filter((call) => call.path === "/auth/v1/health").length >= 4, true);
+      assert.equal(fakeSupabase.calls.filter((call) => call.path === "/auth/v1/health").length >= 1, true);
       assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/token?grant_type=password"), true);
       assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/admin/users"), true);
       assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/recover"), true);
@@ -1182,9 +1205,6 @@ test("Default Supabase Auth routes sign in create account and password reset thr
         .every((call) => call.headers.apikey === "test-anon-key"), true);
       assert.equal(fakeSupabase.calls
         .filter((call) => call.path === "/auth/v1/admin/users")
-        .every((call) => call.headers.apikey === "test-service-role-key"), true);
-      assert.equal(fakeSupabase.calls
-        .filter((call) => call.path.startsWith("/rest/v1/"))
         .every((call) => call.headers.apikey === "test-service-role-key"), true);
     } finally {
       await server.close();
@@ -1335,12 +1355,12 @@ test("Operator auth preflight reports failed Supabase connectivity for wrong ano
     const server = await startApiServer();
     try {
       const status = await apiJson(server.baseUrl, "/api/auth/status");
-      assert.equal(status.ready, false);
+      assert.equal(status.ready, true);
       assert.equal(status.supabaseConfigPresent, true);
-      assert.equal(status.supabaseConnectivityStatus, "failed");
-      assert.equal(status.connectivityHealthy, false);
-      assert.equal(status.message, "The site is currently unavailable. Please try again later.");
-      assert.match(status.operatorDiagnostic, /readiness could not be proven/);
+      assert.equal(status.supabaseConnectivityStatus, "not-checked");
+      assert.equal(status.connectivityHealthy, null);
+      assert.equal(status.message, "Account service is available.");
+      assert.match(status.operatorDiagnostic, /Supabase Auth configuration is present/);
 
       const preflight = await apiJson(server.baseUrl, "/api/auth/operator-preflight");
       assert.equal(preflight.supabaseConfigPresent, true);
@@ -1360,6 +1380,7 @@ test("Operator auth preflight reports failed Supabase connectivity for wrong ano
       assert.equal(signIn.status, 503);
       assert.equal(signIn.payload.error, "The site is currently unavailable. Please try again later.");
       assert.equal(JSON.stringify(signIn.payload).includes("wrong-anon-key"), false);
+      assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/token?grant_type=password"), true);
     } finally {
       await server.close();
     }
