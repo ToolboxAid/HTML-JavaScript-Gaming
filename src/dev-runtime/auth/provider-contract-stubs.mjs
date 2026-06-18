@@ -65,6 +65,18 @@ const SUPABASE_POSTGRES_SITE_SETUP_KEYS = Object.freeze([
 export const SUPABASE_POSTGRES_IDENTITY_TABLES = Object.freeze(["users", "roles", "user_roles"]);
 export const SUPABASE_POSTGRES_PRODUCT_TABLES = Object.freeze([
   "platform_settings",
+  "membership_plans",
+  "membership_limits",
+  "founding_members",
+  "user_memberships",
+  "ai_actions",
+  "ai_credit_packs",
+  "user_ai_credits",
+  "ai_usage_log",
+  "project_members",
+  "legal_documents",
+  "legal_document_versions",
+  "marketplace_categories",
   "game_workspace_games",
   "game_workspace_progress",
   "game_design_documents",

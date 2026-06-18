@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Invitations - Game Foundry Studio LLC</title>
+    <meta name="description" content="Admin Beta invitation workflow for creating, listing, revoking, and reviewing invitation status.">
+    <link rel="icon" href="/favicon.svg">
+    <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+</head>
+
+<body class="meaning-molten-orange">
+    <div data-partial="header-nav"></div>
+    <main data-admin-only="true" data-admin-invitations data-admin-wireframe="invitations">
+        <section class="page-title">
+            <div class="container">
+                <div class="kicker">Admin</div>
+                <h1>Invitations</h1>
+                <p class="lede">Create and monitor invitation-only Beta access with visible status diagnostics and auditable invitation records.</p>
+            </div>
+        </section>
+        <section class="section">
+            <div class="container container--tool-wide">
+                <div class="tool-workspace tool-workspace--wide">
+                    <aside class="tool-column tool-group-platform">
+                        <div class="tool-column-header">
+                            <h2>Admin</h2>
+                        </div>
+                        <div class="accordion-stack">
+                            <details class="vertical-accordion" open>
+                                <summary>Admin Tools</summary>
+                                <nav class="accordion-body content-stack" aria-label="Admin tool pages" data-admin-tool-menu>
+                                    <a class="btn btn--compact" href="/admin/infrastructure.html">Infrastructure</a>
+                                    <a class="btn btn--compact primary" aria-current="page" href="/admin/invitations.html">Invitations</a>
+                                    <a class="btn btn--compact" href="/admin/operations.html">Operations</a>
+                                    <a class="btn btn--compact" href="/admin/platform-settings.html">Platform Settings</a>
+                                    <a class="btn btn--compact" href="/admin/system-health.html">System Health</a>
+                                    <a class="btn btn--compact" href="/admin/tool-votes.html">Tool Votes</a>
+                                    <a class="btn btn--compact" href="/admin/users.html">Users</a>
+                                </nav>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Create Beta Invitation</summary>
+                                <form class="accordion-body content-stack" data-admin-invitation-form>
+                                    <label>Email <input type="email" autocomplete="email" required data-admin-invitation-email></label>
+                                    <label>Expires <input type="datetime-local" data-admin-invitation-expires-at></label>
+                                    <button class="btn btn--compact primary" type="submit">Create Invitation</button>
+                                </form>
+                            </details>
+                        </div>
+                    </aside>
+                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="admin-invitations" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
+                    <section class="tool-center-panel content-stack" aria-labelledby="admin-invitations-title">
+                        <div>
+                            <div class="kicker">Beta Access</div>
+                            <h2 id="admin-invitations-title">Invitation Queue</h2>
+                        </div>
+                        <p class="status" role="status" data-admin-invitation-status>Loading Beta invitations.</p>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Beta invitation records">
+                                <caption>Beta Invitations</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Email</th>
+                                        <th scope="col">Plan</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Expires</th>
+                                        <th scope="col">Invited By</th>
+                                        <th scope="col">Accepted By</th>
+                                        <th scope="col">Code</th>
+                                        <th scope="col">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-invitation-rows>
+                                    <tr><td>Loading</td><td>BETA</td><td>Loading</td><td>Loading</td><td>Loading</td><td>Loading</td><td>Loading</td><td>Loading</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                    <aside class="tool-column tool-group-platform">
+                        <div class="tool-column-header">
+                            <h2>Inspector</h2>
+                        </div>
+                        <div class="accordion-stack">
+                            <details class="vertical-accordion" open>
+                                <summary>Status</summary>
+                                <div class="accordion-body content-stack">
+                                    <p class="status" role="status" data-admin-invitation-summary>Beta is invitation-only and Studio-equivalent.</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Guardrails</summary>
+                                <div class="accordion-body content-stack">
+                                    <p>Invitations reference the BETA plan without storing pricing, storage limits, team limits, or AI credit limits on the invitation record.</p>
+                                    <p>Accepted invitations report a membership assignment handoff for the membership assignment PR.</p>
+                                </div>
+                            </details>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </section>
+    </main>
+    <div data-partial="footer"></div>
+    <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+    <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+    <script type="module" src="assets/theme-v2/js/admin-invitations.js"></script>
+</body>
+
+</html>

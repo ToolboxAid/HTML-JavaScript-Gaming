@@ -100,6 +100,151 @@
                             </table>
                         </div>
                         <div class="table-wrapper">
+                            <table class="data-table" aria-label="Admin operational health summary">
+                                <caption>Operational Health Summary</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Area</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Count</th>
+                                        <th scope="col">Diagnostic</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-health-summary-rows>
+                                    <tr><td>Operations</td><td>Loading</td><td>0</td><td>Loading operational health.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Admin membership support state">
+                                <caption>Membership Support State</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Filter</th>
+                                        <th scope="col">Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Plan</td>
+                                        <td>
+                                            <select aria-label="Membership plan filter" data-admin-health-membership-plan-filter>
+                                                <option value="">All plans</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Admin membership support rows">
+                                <caption>Membership Assignments</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">User</th>
+                                        <th scope="col">Plan</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Source</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-health-membership-rows>
+                                    <tr><td>Loading</td><td>Loading</td><td>Loading</td><td>Loading membership state.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Admin invitation support state">
+                                <caption>Invitation Support</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Filter</th>
+                                        <th scope="col">Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Status</td>
+                                        <td>
+                                            <select aria-label="Invitation status filter" data-admin-health-invitation-status-filter>
+                                                <option value="">All statuses</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Admin invitation support rows">
+                                <caption>Invitation Records</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Email</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Code</th>
+                                        <th scope="col">Expires</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-health-invitation-rows>
+                                    <tr><td>Loading</td><td>Loading</td><td>Loading</td><td>Loading invitation state.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Admin AI usage support state">
+                                <caption>AI Usage Monitoring</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Filter</th>
+                                        <th scope="col">Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Action</td>
+                                        <td>
+                                            <select aria-label="AI usage action filter" data-admin-health-ai-action-filter>
+                                                <option value="">All actions</option>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Admin AI usage support rows">
+                                <caption>AI Usage Rows</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">User</th>
+                                        <th scope="col">Action</th>
+                                        <th scope="col">Source</th>
+                                        <th scope="col">Delta</th>
+                                        <th scope="col">Balance After</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-health-ai-usage-rows>
+                                    <tr><td>Loading</td><td>Loading</td><td>Loading</td><td>0</td><td>Loading AI usage.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Admin operations configuration issues">
+                                <caption>Operational Configuration Issues</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Area</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Table</th>
+                                        <th scope="col">Issue</th>
+                                        <th scope="col">Next Step</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-health-config-issue-rows>
+                                    <tr><td>Operations</td><td>Loading</td><td>Loading</td><td>Loading configuration issues.</td><td>Loading next step.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
                             <table class="data-table" aria-label="Configured connection summary">
                                 <caption>Configured Connections</caption>
                                 <thead>

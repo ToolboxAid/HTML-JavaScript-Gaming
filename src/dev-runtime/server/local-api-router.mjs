@@ -85,6 +85,42 @@ import {
 } from "../persistence/mock-db-store.js";
 import { createServerSeedTables } from "../seed/server-seed-loader.mjs";
 import { SEED_DB_KEYS } from "../seed/seed-db-keys.mjs";
+import {
+  MembershipAssignmentError,
+  assignUserMembership,
+  readMembershipCatalog,
+  resolveActiveUserMembership,
+} from "../memberships/membership-assignment-service.mjs";
+import {
+  OwnerMembershipSettingsError,
+  readOwnerMembershipSettings,
+  updateOwnerMembershipSettings,
+} from "../memberships/owner-membership-settings-service.mjs";
+import {
+  AiCreditError,
+  readAiCreditDisplay,
+} from "../ai/ai-credit-service.mjs";
+import {
+  OwnerAiCreditSettingsError,
+  readOwnerAiCreditSettings,
+  updateOwnerAiCreditSettings,
+} from "../ai/owner-ai-credit-settings-service.mjs";
+import {
+  MarketplaceEntitlementError,
+  readMarketplaceEntitlements,
+} from "../marketplace/marketplace-entitlement-service.mjs";
+import {
+  MarketplaceCategoryError,
+  readMarketplaceCategories,
+} from "../marketplace/marketplace-category-service.mjs";
+import {
+  MarketplaceRevenueError,
+  readMarketplaceSellerRevenueModel,
+} from "../marketplace/marketplace-revenue-service.mjs";
+import {
+  LegalDocumentError,
+  readPublishedLegalDocument,
+} from "../legal/legal-document-service.mjs";
 import { createPaletteSourceMockDbRows } from "../guest-seeds/palette-source-mock-db.js";
 import {
   SUPABASE_AUTH_PROVIDER_ID,
@@ -144,6 +180,8 @@ const DB_VIEWER_STANDALONE_LABELS = Object.freeze({
   tool_state_samples: "Tool State Samples",
   platform_settings: "Platform Settings",
   support_categories: "Support Categories",
+  invitations: "Invitations",
+  marketplace_categories: "Marketplace Categories",
   user_roles: "User Roles",
 });
 const DB_VIEWER_GROUP_ORDER = Object.freeze([
@@ -160,6 +198,8 @@ const DB_VIEWER_GROUP_ORDER = Object.freeze([
   Object.freeze({ id: "toolbox_tool_planning", label: "Tool Planning", tableNames: Object.freeze(["toolbox_tool_planning"]), type: "table" }),
   Object.freeze({ id: "tool_state_samples", label: "Tool State Samples", tableNames: Object.freeze(["tool_state_samples"]), type: "table" }),
   Object.freeze({ id: "toolbox_votes", label: "Toolbox Votes", tableNames: DB_VIEWER_TOOLBOX_VOTE_TABLES, type: "table" }),
+  Object.freeze({ id: "invitations", label: "Invitations", tableNames: Object.freeze(["invitations"]), type: "table" }),
+  Object.freeze({ id: "marketplace_categories", label: "Marketplace Categories", tableNames: Object.freeze(["marketplace_categories"]), type: "table" }),
   Object.freeze({ id: "user_roles", label: "User Roles", tableNames: DB_VIEWER_IDENTITY_TABLES, type: "table" }),
 ]);
 const TOOLBOX_DEFAULT_RELEASE_CHANNELS = Object.freeze(["wireframe", "beta", "complete"]);
@@ -196,9 +236,11 @@ const ADMIN_NAVIGATION_MAIN_ITEMS = Object.freeze([
   Object.freeze({ label: "Users", path: "admin/users.html", route: "admin-users" }),
 ]);
 const OWNER_NAVIGATION_ITEMS = Object.freeze([
+  Object.freeze({ label: "AI Credits", path: "owner/ai-credits.html", route: "owner-ai-credits" }),
   Object.freeze({ label: "DB Viewer", path: "admin/db-viewer.html", route: "admin-db-viewer" }),
   Object.freeze({ label: "Design System", path: "admin/design-system.html", route: "admin-design-system" }),
   Object.freeze({ label: "Grouping Colors", path: "admin/grouping-colors.html", route: "admin-grouping-colors" }),
+  Object.freeze({ label: "Memberships", path: "owner/memberships.html", route: "owner-memberships" }),
   Object.freeze({ href: "/admin/admin-notes.html", label: "Notes", localNotes: true }),
 ]);
 
@@ -766,6 +808,309 @@ function systemHealthR2Readiness(storageStatus) {
   };
 }
 
+const ADMIN_OPERATIONS_REQUIRED_TABLES = Object.freeze([
+  "membership_plans",
+  "membership_limits",
+  "user_memberships",
+  "founding_members",
+  "invitations",
+  "project_members",
+  "ai_actions",
+  "ai_credit_packs",
+  "user_ai_credits",
+  "ai_usage_log",
+]);
+const ADMIN_OPERATIONS_REQUIRED_PACK_CODES = Object.freeze(["SMALL", "MEDIUM", "LARGE"]);
+const ADMIN_OPERATIONS_NO_ACTION_CODE = "UNASSIGNED";
+
+function adminHealthRows(tables, tableName) {
+  return Array.isArray(tables?.[tableName]) ? tables[tableName] : [];
+}
+
+function adminHealthCountsBy(rows, fieldName) {
+  return rows.reduce((counts, row) => {
+    const value = String(row?.[fieldName] || "unknown").trim() || "unknown";
+    counts[value] = (counts[value] || 0) + 1;
+    return counts;
+  }, {});
+}
+
+function adminHealthTableRows(tables) {
+  return ADMIN_OPERATIONS_REQUIRED_TABLES.map((tableName) => {
+    const exists = Array.isArray(tables?.[tableName]);
+    return {
+      area: "Required DB configuration",
+      count: exists ? tables[tableName].length : 0,
+      issue: exists ? `${tableName} table is available.` : `${tableName} table is missing.`,
+      nextStep: exists ? "No action required." : `Restore ${tableName} through the database seed/schema path before operating this subsystem.`,
+      status: exists ? "PASS" : "FAIL",
+      tableName,
+    };
+  });
+}
+
+function adminHealthPlanMaps(tables) {
+  const plans = adminHealthRows(tables, "membership_plans");
+  const limits = adminHealthRows(tables, "membership_limits");
+  return {
+    limitsByPlanKey: new Map(limits.map((row) => [row.planKey, row])),
+    plans,
+    plansByKey: new Map(plans.map((row) => [row.key, row])),
+  };
+}
+
+function adminHealthMemberships(tables, planMaps) {
+  const memberships = adminHealthRows(tables, "user_memberships");
+  const missingPlanRows = memberships.filter((row) => !planMaps.plansByKey.has(row.planKey));
+  const missingLimitPlans = planMaps.plans.filter((plan) => !planMaps.limitsByPlanKey.has(plan.key));
+  const rows = memberships.map((row) => {
+    const plan = planMaps.plansByKey.get(row.planKey);
+    return {
+      planCode: plan?.code || "MISSING_PLAN",
+      source: row.source || "unknown",
+      status: row.status || "unknown",
+      userKey: row.userKey || "",
+    };
+  });
+  const planOptions = Array.from(new Set(rows.map((row) => row.planCode))).sort();
+  const status = missingPlanRows.length || missingLimitPlans.length ? "FAIL" : "PASS";
+  return {
+    activeCount: memberships.filter((row) => row.status === "active").length,
+    countsByPlan: rows.reduce((counts, row) => {
+      counts[row.planCode] = (counts[row.planCode] || 0) + 1;
+      return counts;
+    }, {}),
+    countsByStatus: adminHealthCountsBy(memberships, "status"),
+    missingLimitPlanCodes: missingLimitPlans.map((plan) => plan.code),
+    missingPlanMembershipCount: missingPlanRows.length,
+    planOptions,
+    rows,
+    status,
+    summary: status === "PASS"
+      ? `Membership assignments are readable: ${memberships.length} total, ${memberships.filter((row) => row.status === "active").length} active.`
+      : `Membership assignment issues found: ${missingPlanRows.length} missing plan reference(s), ${missingLimitPlans.length} missing limit row(s).`,
+    totalCount: memberships.length,
+  };
+}
+
+function adminHealthInvitations(tables) {
+  const invitations = adminHealthRows(tables, "invitations");
+  const countsByStatus = adminHealthCountsBy(invitations, "status");
+  const statusOptions = Array.from(new Set(invitations.map((row) => String(row.status || "unknown")))).sort();
+  return {
+    countsByStatus,
+    rows: invitations
+      .slice()
+      .sort((left, right) => String(right.createdAt || "").localeCompare(String(left.createdAt || "")))
+      .map((row) => ({
+        email: row.email || "",
+        expiresAt: row.expiresAt || "",
+        invitationCode: row.invitationCode || "",
+        status: row.status || "unknown",
+      })),
+    status: "PASS",
+    statusOptions,
+    summary: `Invitation support can inspect ${invitations.length} invitation record(s).`,
+    totalCount: invitations.length,
+  };
+}
+
+function adminHealthAiCredits(tables) {
+  const actions = adminHealthRows(tables, "ai_actions");
+  const packs = adminHealthRows(tables, "ai_credit_packs");
+  const accounts = adminHealthRows(tables, "user_ai_credits");
+  const usageRows = adminHealthRows(tables, "ai_usage_log");
+  const actionsByKey = new Map(actions.map((row) => [row.key, row]));
+  const accountUsers = new Set(accounts.map((row) => row.userKey));
+  const usageUsers = new Set(usageRows.map((row) => row.userKey).filter(Boolean));
+  const missingBalanceUserKeys = Array.from(usageUsers).filter((userKey) => !accountUsers.has(userKey)).sort();
+  const missingActionUsageCount = usageRows.filter((row) => row.actionKey && !actionsByKey.has(row.actionKey)).length;
+  const missingPackCodes = ADMIN_OPERATIONS_REQUIRED_PACK_CODES.filter((code) => !packs.some((row) => row.code === code));
+  const rows = usageRows
+    .slice()
+    .sort((left, right) => String(right.createdAt || "").localeCompare(String(left.createdAt || "")))
+    .map((row) => {
+      const action = row.actionKey ? actionsByKey.get(row.actionKey) : null;
+      return {
+        actionCode: row.actionKey ? action?.code || "MISSING_ACTION" : ADMIN_OPERATIONS_NO_ACTION_CODE,
+        balanceAfter: row.balanceAfter ?? "",
+        creditDelta: row.creditDelta ?? 0,
+        sourceType: row.sourceType || "unknown",
+        userKey: row.userKey || "",
+      };
+    });
+  const actionOptions = Array.from(new Set(rows.map((row) => row.actionCode))).sort();
+  const status = missingPackCodes.length || !actions.length || missingActionUsageCount ? "FAIL" : missingBalanceUserKeys.length ? "WARN" : "PASS";
+  return {
+    actionOptions,
+    balanceAccountCount: accounts.length,
+    debitCount: usageRows.filter((row) => row.sourceType === "action_debit" || Number(row.creditDelta || 0) < 0).length,
+    insufficientCreditFailureCount: usageRows.filter((row) => row.sourceType === "insufficient_credit").length,
+    missingActionUsageCount,
+    missingBalanceUserKeys,
+    missingPackCodes,
+    monthlyGrantCount: usageRows.filter((row) => row.sourceType === "monthly_grant").length,
+    rows,
+    status,
+    summary: status === "PASS"
+      ? `AI credit monitoring can inspect ${usageRows.length} usage log row(s) and ${accounts.length} balance account(s).`
+      : `AI credit health found ${missingPackCodes.length} missing required pack(s), ${missingActionUsageCount} missing action reference(s), and ${missingBalanceUserKeys.length} usage user(s) without balances.`,
+    totalBalance: accounts.reduce((sum, row) => sum + Number(row.includedBalance || 0) + Number(row.purchasedBalance || 0) + Number(row.bonusBalance || 0), 0),
+    usageCount: usageRows.length,
+  };
+}
+
+function adminHealthMarketplace(tables, planMaps) {
+  const memberships = adminHealthRows(tables, "user_memberships");
+  const activeMemberships = memberships.filter((row) => row.status === "active");
+  const sellerEligibleRows = activeMemberships.filter((row) => {
+    const limits = planMaps.limitsByPlanKey.get(row.planKey);
+    return limits?.marketplaceSellEnabled === true;
+  });
+  const sellEnabledPlans = planMaps.plans.filter((plan) => planMaps.limitsByPlanKey.get(plan.key)?.marketplaceSellEnabled === true);
+  const missingRevenuePlans = sellEnabledPlans.filter((plan) => !Number.isInteger(plan.revenueShareBps));
+  const status = missingRevenuePlans.length ? "FAIL" : "PASS";
+  return {
+    missingRevenuePlanCodes: missingRevenuePlans.map((plan) => plan.code),
+    sellerEligibleCount: sellerEligibleRows.length,
+    status,
+    summary: status === "PASS"
+      ? `${sellerEligibleRows.length} active membership(s) currently have marketplace selling eligibility with DB-backed revenue share.`
+      : `Marketplace revenue readiness is missing revenue share basis points for ${missingRevenuePlans.map((plan) => plan.code).join(", ")}.`,
+  };
+}
+
+function adminHealthTeams(tables, planMaps) {
+  const projectMembers = adminHealthRows(tables, "project_members");
+  const memberships = adminHealthRows(tables, "user_memberships");
+  const activeMembershipByUser = new Map(memberships.filter((row) => row.status === "active").map((row) => [row.userKey, row]));
+  const membersByProject = projectMembers.reduce((groups, row) => {
+    const projectKey = row.projectKey || "unknown";
+    if (!groups.has(projectKey)) {
+      groups.set(projectKey, []);
+    }
+    groups.get(projectKey).push(row);
+    return groups;
+  }, new Map());
+  let limitViolationCount = 0;
+  membersByProject.forEach((members) => {
+    const activeMembers = members.filter((row) => row.status === "active");
+    const ownerMember = members.find((row) => row.role === "owner") || activeMembers[0];
+    const ownerMembership = activeMembershipByUser.get(ownerMember?.userKey);
+    const maxTeamMembers = Number(planMaps.limitsByPlanKey.get(ownerMembership?.planKey)?.maxTeamMembers || 1);
+    if (activeMembers.length > maxTeamMembers) {
+      limitViolationCount += 1;
+    }
+  });
+  const blockedInvitationCount = projectMembers.filter((row) => ["blocked", "limit_blocked", "rejected"].includes(String(row.status || ""))).length;
+  const status = limitViolationCount ? "FAIL" : blockedInvitationCount ? "WARN" : "PASS";
+  return {
+    blockedInvitationCount,
+    limitViolationCount,
+    projectCount: membersByProject.size,
+    status,
+    summary: status === "PASS"
+      ? `${membersByProject.size} project team(s) have no detected membership limit violations.`
+      : `Team health found ${limitViolationCount} project limit violation(s) and ${blockedInvitationCount} blocked invitation(s).`,
+  };
+}
+
+function adminHealthConfigIssues(tableRows, memberships, aiCredits) {
+  const issues = tableRows.filter((row) => row.status !== "PASS");
+  memberships.missingLimitPlanCodes.forEach((planCode) => {
+    issues.push({
+      area: "Membership configuration",
+      count: 1,
+      issue: `membership_limits row is missing for ${planCode}.`,
+      nextStep: "Restore the plan limit row before assigning or supporting this membership plan.",
+      status: "FAIL",
+      tableName: "membership_limits",
+    });
+  });
+  if (memberships.missingPlanMembershipCount) {
+    issues.push({
+      area: "Membership configuration",
+      count: memberships.missingPlanMembershipCount,
+      issue: `${memberships.missingPlanMembershipCount} membership assignment(s) reference a missing plan.`,
+      nextStep: "Restore the missing membership plan row or correct the affected membership assignment.",
+      status: "FAIL",
+      tableName: "user_memberships",
+    });
+  }
+  aiCredits.missingPackCodes.forEach((code) => {
+    issues.push({
+      area: "AI credit configuration",
+      count: 1,
+      issue: `Required AI credit pack ${code} is missing.`,
+      nextStep: "Restore the DB-backed AI credit pack before supporting purchases.",
+      status: "FAIL",
+      tableName: "ai_credit_packs",
+    });
+  });
+  if (aiCredits.missingActionUsageCount) {
+    issues.push({
+      area: "AI credit configuration",
+      count: aiCredits.missingActionUsageCount,
+      issue: `${aiCredits.missingActionUsageCount} AI usage row(s) reference missing AI actions.`,
+      nextStep: "Restore the AI action row or classify the historical usage row before support review.",
+      status: "FAIL",
+      tableName: "ai_usage_log",
+    });
+  }
+  if (aiCredits.missingBalanceUserKeys.length) {
+    issues.push({
+      area: "AI credit configuration",
+      count: aiCredits.missingBalanceUserKeys.length,
+      issue: `${aiCredits.missingBalanceUserKeys.length} user(s) have AI usage but no balance account.`,
+      nextStep: "Open the user AI credit support record and reconcile the missing balance before adjustment.",
+      status: "WARN",
+      tableName: "user_ai_credits",
+    });
+  }
+  if (!issues.length) {
+    issues.push({
+      area: "Required DB configuration",
+      count: ADMIN_OPERATIONS_REQUIRED_TABLES.length,
+      issue: "Required Admin operations tables and records are available.",
+      nextStep: "No action required.",
+      status: "PASS",
+      tableName: "all required tables",
+    });
+  }
+  return issues;
+}
+
+export function adminOperationsHealth(tables) {
+  const tableRows = adminHealthTableRows(tables);
+  const planMaps = adminHealthPlanMaps(tables);
+  const memberships = adminHealthMemberships(tables, planMaps);
+  const invitations = adminHealthInvitations(tables);
+  const aiCredits = adminHealthAiCredits(tables);
+  const marketplace = adminHealthMarketplace(tables, planMaps);
+  const teams = adminHealthTeams(tables, planMaps);
+  const configIssues = adminHealthConfigIssues(tableRows, memberships, aiCredits);
+  const summaryRows = [
+    { area: "Membership operations", count: memberships.totalCount, diagnostic: memberships.summary, status: memberships.status },
+    { area: "Invitation support", count: invitations.totalCount, diagnostic: invitations.summary, status: invitations.status },
+    { area: "AI credit monitoring", count: aiCredits.usageCount, diagnostic: aiCredits.summary, status: aiCredits.status },
+    { area: "Marketplace revenue health", count: marketplace.sellerEligibleCount, diagnostic: marketplace.summary, status: marketplace.status },
+    { area: "Team enforcement health", count: teams.projectCount, diagnostic: teams.summary, status: teams.status },
+    { area: "Required DB configuration", count: configIssues.length, diagnostic: configIssues[0]?.issue || "Required DB configuration unavailable.", status: overallHealthStatus(configIssues) },
+  ];
+  return {
+    aiCredits,
+    configIssues,
+    invitations,
+    marketplace,
+    memberships,
+    sourceTables: ADMIN_OPERATIONS_REQUIRED_TABLES,
+    status: overallHealthStatus(summaryRows),
+    summaryRows,
+    tableRows,
+    teams,
+  };
+}
+
 function providerFailureMessage(providerContract, providerId) {
   const failure = providerContract.providerDiagnostics.providerFailures
     .find((candidate) => candidate.providerId === providerId);
@@ -1150,6 +1495,12 @@ function fail(response, statusCode, error) {
   });
 }
 
+function httpError(message, statusCode = 400) {
+  const error = new Error(message);
+  error.statusCode = statusCode;
+  return error;
+}
+
 function repositoryMethodError(message, statusCode = 502) {
   const error = new Error(message);
   error.statusCode = statusCode;
@@ -1295,6 +1646,90 @@ export function sessionUserFromIdentityTables(tables, userKey, modeId, providerL
 
 function normalizedAuthEmail(value) {
   return String(value || "").trim();
+}
+
+const BETA_INVITATION_PLAN_KEY = "BETA";
+const INVITATION_STATUSES = Object.freeze(["pending", "accepted", "revoked", "expired"]);
+
+function normalizedInvitationEmail(value) {
+  const email = String(value || "").trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    throw new Error("Beta invitation requires a valid target email.");
+  }
+  return email;
+}
+
+function normalizedInvitationCode(value) {
+  const code = String(value || "").trim();
+  if (!code) {
+    throw new Error("Beta invitation acceptance requires an invitation code.");
+  }
+  return code;
+}
+
+function betaInvitationCode() {
+  return `beta_${randomBytes(18).toString("base64url")}`;
+}
+
+function invitationExpiresAt(value) {
+  const raw = String(value || "").trim();
+  const date = raw ? new Date(raw) : new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
+  if (Number.isNaN(date.getTime())) {
+    throw new Error("Beta invitation expiration must be a valid date.");
+  }
+  if (date.getTime() <= Date.now()) {
+    throw new Error("Beta invitation expiration must be in the future.");
+  }
+  return date.toISOString();
+}
+
+function invitationStatus(row) {
+  const status = String(row?.status || "").trim().toLowerCase();
+  return INVITATION_STATUSES.includes(status) ? status : "pending";
+}
+
+function invitationIsExpired(row, now = new Date()) {
+  const expiresAt = Date.parse(String(row?.expiresAt || ""));
+  return Number.isFinite(expiresAt) && expiresAt <= now.getTime();
+}
+
+function publicInvitation(row) {
+  return {
+    acceptedAt: row.acceptedAt || "",
+    acceptedBy: row.acceptedBy || "",
+    createdAt: row.createdAt || "",
+    createdBy: row.createdBy || "",
+    email: row.email || "",
+    expiresAt: row.expiresAt || "",
+    invitationCode: row.invitationCode || "",
+    invitedBy: row.invitedBy || "",
+    key: row.key || "",
+    planKey: row.planKey || BETA_INVITATION_PLAN_KEY,
+    status: invitationStatus(row),
+    updatedAt: row.updatedAt || "",
+    updatedBy: row.updatedBy || "",
+  };
+}
+
+function findInvitationUser(tables, email, userKey = "") {
+  const key = String(userKey || "").trim();
+  const users = Array.isArray(tables.users) ? tables.users : [];
+  if (key) {
+    const user = users.find((candidate) => candidate.key === key && candidate.isActive !== false);
+    if (!user) {
+      throw new Error(`Beta invitation acceptance user ${key} is missing from users.`);
+    }
+    if (normalizedInvitationEmail(user.email) !== email) {
+      throw new Error("Beta invitation acceptance email must match the selected user.");
+    }
+    return user;
+  }
+  const user = users.find((candidate) =>
+    candidate.isActive !== false && normalizedInvitationEmail(candidate.email) === email);
+  if (!user) {
+    throw new Error(`Beta invitation acceptance requires an active users record for ${email}.`);
+  }
+  return user;
 }
 
 function displayNameFromEmail(email) {
@@ -1841,6 +2276,15 @@ class ApiRuntimeDataSource {
         const tables = await this.readSupabaseIdentityTablesUnchecked("Reading selected Local API session");
         return sessionUserFromIdentityTables(tables, selectedUserKey, this.sessionModeId, "Local DB identity");
       } catch (error) {
+        const localSession = sessionUserFromIdentityTables(
+          this.standaloneTables,
+          selectedUserKey,
+          this.sessionModeId,
+          "Local DB identity",
+        );
+        if (localSession.authenticated) {
+          return localSession;
+        }
         return guestSession(
           FIXED_ACCOUNT_SESSION_MODE,
           `Selected Local API session could not be resolved from identity tables: ${error instanceof Error ? error.message : String(error || "Unknown identity table error.")}`,
@@ -1902,6 +2346,9 @@ class ApiRuntimeDataSource {
         this.standaloneTables[tableName] = [];
       }
     });
+    if (!Array.isArray(this.standaloneTables.invitations)) {
+      this.standaloneTables.invitations = [];
+    }
     this.sharedOptions = {
       memoryDbTables: this.standaloneTables,
       sessionMode: this.sessionModeId,
@@ -2100,9 +2547,382 @@ class ApiRuntimeDataSource {
   async requireAdminSession() {
     const session = await this.currentSessionForRoute();
     if (!session.isAdmin || !session.userKey) {
-      throw new Error("Admin role required to use this Admin API route.");
+      throw httpError("Admin role required to use this Admin API route.", 403);
     }
     return session;
+  }
+
+  async requireOwnerSession() {
+    const session = await this.currentSessionForRoute();
+    if (!session.isOwner || !session.userKey) {
+      throw httpError("Owner role required to use this Owner API route.", 403);
+    }
+    return session;
+  }
+
+  async ownerMembershipSettingsForRoute() {
+    const session = await this.requireOwnerSession();
+    try {
+      return {
+        ...readOwnerMembershipSettings(this.standaloneTables, { session }),
+        diagnostic: "Loaded Owner membership settings.",
+      };
+    } catch (error) {
+      if (error instanceof OwnerMembershipSettingsError) {
+        throw error;
+      }
+      throw httpError(error instanceof Error ? error.message : String(error || "Owner membership settings failed."), 500);
+    }
+  }
+
+  async updateOwnerMembershipSettingsForRoute(body = {}) {
+    const session = await this.requireOwnerSession();
+    try {
+      return updateOwnerMembershipSettings(this.standaloneTables, body, { session });
+    } catch (error) {
+      if (error instanceof OwnerMembershipSettingsError) {
+        throw error;
+      }
+      throw httpError(error instanceof Error ? error.message : String(error || "Owner membership settings update failed."), 500);
+    }
+  }
+
+  async ownerAiCreditSettingsForRoute() {
+    const session = await this.requireOwnerSession();
+    try {
+      return {
+        ...readOwnerAiCreditSettings(this.standaloneTables, { session }),
+        diagnostic: "Loaded Owner AI credit settings.",
+      };
+    } catch (error) {
+      if (error instanceof OwnerAiCreditSettingsError) {
+        throw error;
+      }
+      throw httpError(error instanceof Error ? error.message : String(error || "Owner AI credit settings failed."), 500);
+    }
+  }
+
+  async updateOwnerAiCreditSettingsForRoute(body = {}) {
+    const session = await this.requireOwnerSession();
+    try {
+      return updateOwnerAiCreditSettings(this.standaloneTables, body, { session });
+    } catch (error) {
+      if (error instanceof OwnerAiCreditSettingsError) {
+        throw error;
+      }
+      throw httpError(error instanceof Error ? error.message : String(error || "Owner AI credit settings update failed."), 500);
+    }
+  }
+
+  async adminActiveMembership(requestUrl) {
+    const session = await this.requireAdminSession();
+    const userKey = String(requestUrl?.searchParams?.get("userKey") || "").trim();
+    try {
+      return {
+        ...resolveActiveUserMembership(this.standaloneTables, { userKey }, {
+          actorKey: session.userKey,
+          createKey: runtimeGeneratedUlid,
+        }),
+        diagnostic: `Resolved active membership for ${userKey}.`,
+        sourceTable: "user_memberships",
+      };
+    } catch (error) {
+      if (error instanceof MembershipAssignmentError) {
+        throw error;
+      }
+      throw httpError(error instanceof Error ? error.message : String(error || "Membership resolution failed."), 500);
+    }
+  }
+
+  async assignAdminMembership(body = {}) {
+    const session = await this.requireAdminSession();
+    try {
+      return {
+        ...assignUserMembership(this.standaloneTables, body, {
+          actorKey: session.userKey,
+          createKey: runtimeGeneratedUlid,
+        }),
+        diagnostic: `Assigned ${String(body.planCode || body.code || "").trim().toUpperCase()} membership to ${String(body.userKey || "").trim()}.`,
+        sourceTable: "user_memberships",
+      };
+    } catch (error) {
+      if (error instanceof MembershipAssignmentError) {
+        throw error;
+      }
+      throw httpError(error instanceof Error ? error.message : String(error || "Membership assignment failed."), 500);
+    }
+  }
+
+  async membershipsCatalogForRoute(requestUrl) {
+    const session = await this.currentSessionForRoute();
+    const requestedUserKey = String(requestUrl?.searchParams?.get("userKey") || "").trim();
+    const userKey = requestedUserKey && session.isAdmin ? requestedUserKey : session.userKey || "";
+    try {
+      return {
+        ...readMembershipCatalog(this.standaloneTables, { userKey }, {
+          actorKey: session.userKey || SEED_DB_KEYS.users.admin,
+          createKey: runtimeGeneratedUlid,
+          isAdmin: session.isAdmin,
+          isOwner: session.isOwner,
+        }),
+        authenticated: session.authenticated === true,
+        currentUserKey: userKey,
+        diagnostic: userKey
+          ? `Loaded membership catalog for ${userKey}.`
+          : "Loaded membership catalog without an active signed-in user.",
+      };
+    } catch (error) {
+      if (error instanceof MembershipAssignmentError) {
+        throw error;
+      }
+      throw httpError(error instanceof Error ? error.message : String(error || "Membership catalog failed."), 500);
+    }
+  }
+
+  async aiCreditDisplayForRoute() {
+    const session = await this.currentSessionForRoute();
+    if (!session.authenticated || !session.userKey) {
+      throw httpError("Sign in required to view AI credits.", 401);
+    }
+    try {
+      return {
+        ...readAiCreditDisplay(this.standaloneTables, { userKey: session.userKey }, {
+          actorKey: session.userKey,
+          createKey: runtimeGeneratedUlid,
+        }),
+        authenticated: true,
+        diagnostic: `Loaded AI credit display for ${session.userKey}.`,
+      };
+    } catch (error) {
+      if (error instanceof AiCreditError || error instanceof MembershipAssignmentError) {
+        throw error;
+      }
+      throw httpError(error instanceof Error ? error.message : String(error || "AI credit display failed."), 500);
+    }
+  }
+
+  async marketplaceEntitlementsForRoute() {
+    const session = await this.currentSessionForRoute();
+    try {
+      const userKey = session.userKey || "";
+      return {
+        ...readMarketplaceEntitlements(this.standaloneTables, { userKey }),
+        authenticated: session.authenticated === true,
+        sellerRevenueModel: readMarketplaceSellerRevenueModel(this.standaloneTables, { userKey }),
+        diagnostic: session.userKey
+          ? `Loaded marketplace entitlements for ${session.userKey}.`
+          : "Loaded guest marketplace entitlements.",
+      };
+    } catch (error) {
+      if (error instanceof MarketplaceEntitlementError || error instanceof MarketplaceRevenueError) {
+        throw error;
+      }
+      throw httpError(error instanceof Error ? error.message : String(error || "Marketplace entitlements failed."), 500);
+    }
+  }
+
+  marketplaceCategoriesForRoute() {
+    try {
+      return {
+        ...readMarketplaceCategories(this.standaloneTables),
+        diagnostic: "Loaded marketplace categories from the shared category source.",
+      };
+    } catch (error) {
+      if (error instanceof MarketplaceCategoryError) {
+        throw error;
+      }
+      throw httpError(error instanceof Error ? error.message : String(error || "Marketplace categories failed."), 500);
+    }
+  }
+
+  legalDocumentForRoute(requestUrl) {
+    try {
+      return readPublishedLegalDocument(this.standaloneTables, {
+        documentType: requestUrl.searchParams.get("documentType") || "",
+        slug: requestUrl.searchParams.get("slug") || "",
+      });
+    } catch (error) {
+      if (error instanceof LegalDocumentError) {
+        throw error;
+      }
+      throw httpError(error instanceof Error ? error.message : String(error || "Legal document read failed."), 500);
+    }
+  }
+
+  invitationRows() {
+    if (!Array.isArray(this.standaloneTables.invitations)) {
+      this.standaloneTables.invitations = [];
+    }
+    return this.standaloneTables.invitations;
+  }
+
+  refreshExpiredInvitations(actorKey = SEED_DB_KEYS.users.admin) {
+    const now = new Date();
+    this.invitationRows()
+      .filter((row) => invitationStatus(row) === "pending" && invitationIsExpired(row, now))
+      .forEach((row) => {
+        const timestamp = now.toISOString();
+        row.status = "expired";
+        row.updatedAt = timestamp;
+        row.updatedBy = actorKey;
+      });
+  }
+
+  async adminInvitationsList() {
+    const session = await this.requireAdminSession();
+    this.refreshExpiredInvitations(session.userKey);
+    const invitations = this.invitationRows()
+      .map(publicInvitation)
+      .sort((first, second) => String(second.createdAt || "").localeCompare(String(first.createdAt || "")));
+    return {
+      invitations,
+      message: `Loaded ${invitations.length} Beta invitation record(s).`,
+      plan: {
+        code: BETA_INVITATION_PLAN_KEY,
+        label: "Beta",
+        membershipAssignment: "deferred-to-PR-26169-005",
+        studioEquivalent: true,
+      },
+      sourceTable: "invitations",
+      status: "PASS",
+    };
+  }
+
+  async createAdminBetaInvitation(body = {}) {
+    const session = await this.requireAdminSession();
+    const email = normalizedInvitationEmail(body.email);
+    const requestedPlan = String(body.planKey || body.planCode || BETA_INVITATION_PLAN_KEY).trim().toUpperCase();
+    if (requestedPlan !== BETA_INVITATION_PLAN_KEY) {
+      throw httpError("Admin invitations currently support the invitation-only BETA plan only.", 400);
+    }
+    this.refreshExpiredInvitations(session.userKey);
+    const duplicate = this.invitationRows().find((row) =>
+      row.email === email && row.planKey === BETA_INVITATION_PLAN_KEY && invitationStatus(row) === "pending");
+    if (duplicate) {
+      throw httpError(`A pending Beta invitation already exists for ${email}.`, 409);
+    }
+    const timestamp = new Date().toISOString();
+    const invitation = {
+      acceptedAt: "",
+      acceptedBy: "",
+      createdAt: timestamp,
+      createdBy: session.userKey,
+      email,
+      expiresAt: invitationExpiresAt(body.expiresAt),
+      invitationCode: betaInvitationCode(),
+      invitedBy: session.userKey,
+      key: runtimeGeneratedUlid(),
+      planKey: BETA_INVITATION_PLAN_KEY,
+      status: "pending",
+      updatedAt: timestamp,
+      updatedBy: session.userKey,
+    };
+    this.invitationRows().push(invitation);
+    return {
+      invitation: publicInvitation(invitation),
+      message: `Created pending Beta invitation for ${email}.`,
+      sourceTable: "invitations",
+      status: "PASS",
+    };
+  }
+
+  async revokeAdminBetaInvitation(body = {}) {
+    const session = await this.requireAdminSession();
+    this.refreshExpiredInvitations(session.userKey);
+    const key = String(body.key || body.invitationKey || "").trim();
+    const invitation = this.invitationRows().find((row) => row.key === key);
+    if (!invitation) {
+      throw httpError(`Beta invitation ${key || "missing"} was not found.`, 404);
+    }
+    const status = invitationStatus(invitation);
+    if (status === "accepted") {
+      throw httpError("Accepted Beta invitations cannot be revoked.", 409);
+    }
+    if (status === "revoked") {
+      throw httpError("Beta invitation is already revoked.", 409);
+    }
+    const timestamp = new Date().toISOString();
+    invitation.status = "revoked";
+    invitation.updatedAt = timestamp;
+    invitation.updatedBy = session.userKey;
+    return {
+      invitation: publicInvitation(invitation),
+      message: `Revoked Beta invitation for ${invitation.email}.`,
+      sourceTable: "invitations",
+      status: "PASS",
+    };
+  }
+
+  async expireAdminBetaInvitation(body = {}) {
+    const session = await this.requireAdminSession();
+    this.refreshExpiredInvitations(session.userKey);
+    const key = String(body.key || body.invitationKey || "").trim();
+    const invitation = this.invitationRows().find((row) => row.key === key);
+    if (!invitation) {
+      throw httpError(`Beta invitation ${key || "missing"} was not found.`, 404);
+    }
+    const status = invitationStatus(invitation);
+    if (status === "accepted") {
+      throw httpError("Accepted Beta invitations cannot be expired.", 409);
+    }
+    if (status === "revoked") {
+      throw httpError("Revoked Beta invitations cannot be expired.", 409);
+    }
+    if (status === "expired") {
+      throw httpError("Beta invitation is already expired.", 409);
+    }
+    const timestamp = new Date().toISOString();
+    invitation.status = "expired";
+    invitation.expiresAt = timestamp;
+    invitation.updatedAt = timestamp;
+    invitation.updatedBy = session.userKey;
+    return {
+      invitation: publicInvitation(invitation),
+      message: `Expired Beta invitation for ${invitation.email}.`,
+      sourceTable: "invitations",
+      status: "PASS",
+    };
+  }
+
+  acceptBetaInvitation(body = {}) {
+    this.refreshExpiredInvitations();
+    const email = normalizedInvitationEmail(body.email);
+    const invitationCode = normalizedInvitationCode(body.invitationCode || body.code);
+    const invitation = this.invitationRows().find((row) => row.invitationCode === invitationCode);
+    if (!invitation) {
+      throw httpError("Beta invitation code was not found.", 404);
+    }
+    const status = invitationStatus(invitation);
+    if (status === "accepted") {
+      throw httpError("Beta invitation has already been accepted.", 409);
+    }
+    if (status === "revoked") {
+      throw httpError("Beta invitation has been revoked.", 409);
+    }
+    if (status === "expired" || invitationIsExpired(invitation)) {
+      invitation.status = "expired";
+      invitation.updatedAt = new Date().toISOString();
+      invitation.updatedBy = invitation.invitedBy || SEED_DB_KEYS.users.admin;
+      throw httpError("Beta invitation has expired.", 410);
+    }
+    if (normalizedInvitationEmail(invitation.email) !== email) {
+      throw httpError("Beta invitation email does not match the invited address.", 403);
+    }
+    const user = findInvitationUser(this.standaloneTables, email, body.userKey);
+    const timestamp = new Date().toISOString();
+    invitation.acceptedAt = timestamp;
+    invitation.acceptedBy = user.key;
+    invitation.status = "accepted";
+    invitation.updatedAt = timestamp;
+    invitation.updatedBy = user.key;
+    return {
+      invitation: publicInvitation(invitation),
+      membershipAssignmentStatus: "deferred-to-PR-26169-005",
+      message: "Beta invitation accepted. Membership assignment will be applied by PR_26169_005.",
+      sourceTable: "invitations",
+      status: "PASS",
+      userKey: user.key,
+    };
   }
 
   ownerConnectionSummary() {
@@ -2461,6 +3281,7 @@ LIMIT 1;
     const packageStatus = projectPackageReadinessStatus();
     const promotionFoundation = this.ownerPromotionFoundation();
     const r2Readiness = systemHealthR2Readiness(storageStatus);
+    const operationsHealth = adminOperationsHealth(this.standaloneTables);
     const importBlocked = promotionFoundation.importOverwriteAllowed === false
       && promotionFoundation.browserExecutionAllowed === false
       && promotionFoundation.destructiveOperationsAllowed === false;
@@ -2520,6 +3341,11 @@ LIMIT 1;
         status: importBlocked ? "PASS" : "WARN",
         summary: promotionFoundation.safetyMessage || "Promotion safety status unavailable.",
       },
+      ...operationsHealth.summaryRows.map((row) => ({
+        area: row.area,
+        status: row.status,
+        summary: row.diagnostic,
+      })),
     ];
     return {
       details: [
@@ -2540,6 +3366,12 @@ LIMIT 1;
         { area: "Project package readiness", field: "Required files", status: packageStatus.status, value: (packageStatus.contract?.requiredFiles || GFSP_PACKAGE_REQUIRED_FILES).join(", ") },
         { area: "Promotion/package safety", field: "Browser destructive operations", status: promotionFoundation.destructiveOperationsAllowed === false ? "PASS" : "WARN", value: promotionFoundation.destructiveOperationsAllowed === false ? "disabled" : "review required" },
         { area: "Promotion/package safety", field: "Import overwrite", status: promotionFoundation.importOverwriteAllowed === false ? "PASS" : "WARN", value: promotionFoundation.importOverwritePolicy || "review required" },
+        { area: "Membership operations", field: "Active assignments", status: operationsHealth.memberships.status, value: `${operationsHealth.memberships.activeCount} active of ${operationsHealth.memberships.totalCount} total` },
+        { area: "Invitation support", field: "Status counts", status: operationsHealth.invitations.status, value: JSON.stringify(operationsHealth.invitations.countsByStatus) },
+        { area: "AI credit monitoring", field: "Usage rows", status: operationsHealth.aiCredits.status, value: `${operationsHealth.aiCredits.usageCount} usage row(s); ${operationsHealth.aiCredits.totalBalance} total balance credits` },
+        { area: "Marketplace revenue health", field: "Eligible sellers", status: operationsHealth.marketplace.status, value: `${operationsHealth.marketplace.sellerEligibleCount} active seller-eligible membership(s)` },
+        { area: "Team enforcement health", field: "Limit violations", status: operationsHealth.teams.status, value: `${operationsHealth.teams.limitViolationCount} violation(s); ${operationsHealth.teams.blockedInvitationCount} blocked invitation(s)` },
+        { area: "Required DB configuration", field: "Issue count", status: overallHealthStatus(operationsHealth.configIssues), value: `${operationsHealth.configIssues.length} issue row(s)` },
       ],
       links: {
         infrastructure: "/admin/infrastructure.html",
@@ -2547,6 +3379,7 @@ LIMIT 1;
       },
       limits: limitRows,
       message: "Admin System Health loaded safe status only.",
+      operationsHealth,
       overview,
       pressureLabels: SYSTEM_HEALTH_LIMIT_PRESSURE_LABELS,
       connectionSummary: this.ownerConnectionSummary(),
@@ -4462,6 +5295,93 @@ export function createLocalApiRouter() {
       if (parts[1] === "admin" && parts[2] === "operations" && request.method === "POST" && parts[3] === "action") {
         const body = await readRequestJson(request);
         ok(response, await dataSource.runAdminOperationAction(body));
+        return true;
+      }
+
+      if (parts[1] === "owner" && parts[2] === "memberships" && request.method === "GET" && parts[3] === "settings") {
+        ok(response, await dataSource.ownerMembershipSettingsForRoute());
+        return true;
+      }
+
+      if (parts[1] === "owner" && parts[2] === "memberships" && request.method === "POST" && parts[3] === "settings") {
+        const body = await readRequestJson(request);
+        ok(response, await dataSource.updateOwnerMembershipSettingsForRoute(body));
+        return true;
+      }
+
+      if (parts[1] === "owner" && parts[2] === "ai-credits" && request.method === "GET" && parts[3] === "settings") {
+        ok(response, await dataSource.ownerAiCreditSettingsForRoute());
+        return true;
+      }
+
+      if (parts[1] === "owner" && parts[2] === "ai-credits" && request.method === "POST" && parts[3] === "settings") {
+        const body = await readRequestJson(request);
+        ok(response, await dataSource.updateOwnerAiCreditSettingsForRoute(body));
+        return true;
+      }
+
+      if (parts[1] === "ai-credits" && request.method === "GET" && parts[2] === "display") {
+        ok(response, await dataSource.aiCreditDisplayForRoute());
+        return true;
+      }
+
+      if (parts[1] === "marketplace" && request.method === "GET" && parts[2] === "entitlements") {
+        ok(response, await dataSource.marketplaceEntitlementsForRoute());
+        return true;
+      }
+
+      if (parts[1] === "marketplace" && request.method === "GET" && parts[2] === "categories") {
+        ok(response, dataSource.marketplaceCategoriesForRoute());
+        return true;
+      }
+
+      if (parts[1] === "legal" && request.method === "GET" && parts[2] === "document") {
+        ok(response, dataSource.legalDocumentForRoute(requestUrl));
+        return true;
+      }
+
+      if (parts[1] === "memberships" && request.method === "GET" && parts[2] === "catalog") {
+        ok(response, await dataSource.membershipsCatalogForRoute(requestUrl));
+        return true;
+      }
+
+      if (parts[1] === "admin" && parts[2] === "memberships" && request.method === "GET" && parts[3] === "active") {
+        ok(response, await dataSource.adminActiveMembership(requestUrl));
+        return true;
+      }
+
+      if (parts[1] === "admin" && parts[2] === "memberships" && request.method === "POST" && parts[3] === "assign") {
+        const body = await readRequestJson(request);
+        ok(response, await dataSource.assignAdminMembership(body));
+        return true;
+      }
+
+      if (parts[1] === "admin" && parts[2] === "invitations" && request.method === "GET" && parts[3] === "list") {
+        ok(response, await dataSource.adminInvitationsList());
+        return true;
+      }
+
+      if (parts[1] === "admin" && parts[2] === "invitations" && request.method === "POST" && parts[3] === "create") {
+        const body = await readRequestJson(request);
+        ok(response, await dataSource.createAdminBetaInvitation(body));
+        return true;
+      }
+
+      if (parts[1] === "admin" && parts[2] === "invitations" && request.method === "POST" && parts[3] === "revoke") {
+        const body = await readRequestJson(request);
+        ok(response, await dataSource.revokeAdminBetaInvitation(body));
+        return true;
+      }
+
+      if (parts[1] === "admin" && parts[2] === "invitations" && request.method === "POST" && parts[3] === "expire") {
+        const body = await readRequestJson(request);
+        ok(response, await dataSource.expireAdminBetaInvitation(body));
+        return true;
+      }
+
+      if (parts[1] === "invitations" && request.method === "POST" && parts[2] === "accept") {
+        const body = await readRequestJson(request);
+        ok(response, dataSource.acceptBetaInvitation(body));
         return true;
       }
 

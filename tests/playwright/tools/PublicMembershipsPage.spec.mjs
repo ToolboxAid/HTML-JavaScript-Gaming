@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
+import { SEED_DB_KEYS } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
 
 async function openMembershipsPage(page, options = {}) {
   if (options.viewport) {
@@ -47,6 +48,11 @@ async function openMembershipsPage(page, options = {}) {
     headers: { "content-type": "application/json" },
     method: "POST",
   });
+  await fetch(`${server.baseUrl}/api/session/user`, {
+    body: JSON.stringify({ userKey: SEED_DB_KEYS.users.user1 }),
+    headers: { "content-type": "application/json" },
+    method: "POST",
+  });
   await page.goto(`${server.baseUrl}/memberships/index.html`, { waitUntil: "networkidle" });
   return { consoleErrors, failedRequests, pageErrors, server };
 }
@@ -56,10 +62,22 @@ test("public memberships page renders tiers with shared Theme V2 chrome", async 
 
   try {
     await expect(page).toHaveTitle(/Memberships - GameFoundryStudio/);
-    await expect(page.getByRole("heading", { name: "Choose the membership shape for your next game." })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Explore the studio." })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Build with structure." })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Coordinate a larger catalog." })).toBeVisible();
+    await expect(page.getByRole("heading", { exact: true, name: "Memberships" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Active: Free" })).toBeVisible();
+    await expect(page.getByRole("heading", { exact: true, name: "Free" })).toBeVisible();
+    await expect(page.getByRole("heading", { exact: true, name: "Creator" })).toBeVisible();
+    await expect(page.getByRole("heading", { exact: true, name: "Studio" })).toBeVisible();
+    await expect(page.getByRole("heading", { exact: true, name: "Beta" })).toBeVisible();
+    await expect(page.getByRole("heading", { exact: true, name: "Founding Creator" })).toBeVisible();
+    await expect(page.getByRole("heading", { exact: true, name: "Founding Studio" })).toBeVisible();
+    await expect(page.getByText("$0/month", { exact: true }).first()).toBeVisible();
+    await expect(page.getByText("$9/month", { exact: true })).toBeVisible();
+    await expect(page.getByText("$19/month", { exact: true })).toBeVisible();
+    await expect(page.getByText("250 MB storage").first()).toBeVisible();
+    await expect(page.getByText("1 GB storage").first()).toBeVisible();
+    await expect(page.getByText("4 GB storage").first()).toBeVisible();
+    await expect(page.getByText("Invitation Only")).toBeVisible();
+    await expect(page.getByText("Checkout Coming Soon").first()).toBeVisible();
     await expect(page.getByText("Free", { exact: true })).toBeVisible();
     await expect(page.getByText("Creator", { exact: true })).toBeVisible();
     await expect(page.getByText("Studio", { exact: true })).toBeVisible();

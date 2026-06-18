@@ -16,7 +16,16 @@ class AdminSystemHealthController {
         this.connectionSummary = root.querySelector("[data-admin-system-health-connection-summary]");
         this.databaseStatusRows = root.querySelector("[data-admin-system-health-database-status-rows]");
         this.details = root.querySelector("[data-admin-system-health-detail-rows]");
+        this.healthAiActionFilter = root.querySelector("[data-admin-health-ai-action-filter]");
+        this.healthAiUsageRows = root.querySelector("[data-admin-health-ai-usage-rows]");
+        this.healthConfigIssueRows = root.querySelector("[data-admin-health-config-issue-rows]");
+        this.healthInvitationRows = root.querySelector("[data-admin-health-invitation-rows]");
+        this.healthInvitationStatusFilter = root.querySelector("[data-admin-health-invitation-status-filter]");
+        this.healthMembershipPlanFilter = root.querySelector("[data-admin-health-membership-plan-filter]");
+        this.healthMembershipRows = root.querySelector("[data-admin-health-membership-rows]");
+        this.healthSummaryRows = root.querySelector("[data-admin-health-summary-rows]");
         this.limits = root.querySelector("[data-admin-system-health-limit-rows]");
+        this.operationsHealth = null;
         this.overview = root.querySelector("[data-admin-system-health-overview-rows]");
         this.r2Readiness = root.querySelector("[data-admin-system-health-r2-readiness-rows]");
         this.status = root.querySelector("[data-admin-system-health-status]");
@@ -28,12 +37,15 @@ class AdminSystemHealthController {
     }
 
     init() {
-        if (!this.connectionSummary || !this.databaseStatusRows || !this.details || !this.limits || !this.overview || !this.r2Readiness || !this.status || !this.storageConnectivityRows || !this.storageConnectivityStatus || !this.storageStatusRows || !this.summary) {
+        if (!this.connectionSummary || !this.databaseStatusRows || !this.details || !this.healthAiActionFilter || !this.healthAiUsageRows || !this.healthConfigIssueRows || !this.healthInvitationRows || !this.healthInvitationStatusFilter || !this.healthMembershipPlanFilter || !this.healthMembershipRows || !this.healthSummaryRows || !this.limits || !this.overview || !this.r2Readiness || !this.status || !this.storageConnectivityRows || !this.storageConnectivityStatus || !this.storageStatusRows || !this.summary) {
             return;
         }
         this.storageActionButtons.forEach((button) => {
             button.addEventListener("click", () => this.runStorageConnectivityAction(button.dataset.adminSystemHealthStorageAction));
         });
+        this.healthMembershipPlanFilter.addEventListener("change", () => this.renderMembershipRows(this.operationsHealth?.memberships || {}));
+        this.healthInvitationStatusFilter.addEventListener("change", () => this.renderInvitationRows(this.operationsHealth?.invitations || {}));
+        this.healthAiActionFilter.addEventListener("change", () => this.renderAiUsageRows(this.operationsHealth?.aiCredits || {}));
         this.load();
     }
 
@@ -64,6 +76,117 @@ class AdminSystemHealthController {
                 row.summary || "Status unavailable.",
             ]));
         });
+    }
+
+    replaceFilterOptions(select, options, allLabel) {
+        const currentValue = select.value;
+        select.replaceChildren();
+        const allOption = document.createElement("option");
+        allOption.value = "";
+        allOption.textContent = allLabel;
+        select.append(allOption);
+        options.forEach((value) => {
+            const option = document.createElement("option");
+            option.value = value;
+            option.textContent = value;
+            select.append(option);
+        });
+        select.value = options.includes(currentValue) ? currentValue : "";
+    }
+
+    renderHealthSummary(rows) {
+        this.healthSummaryRows.replaceChildren();
+        (rows.length ? rows : [{ area: "Operations", count: 0, diagnostic: "Operational health unavailable.", status: "WARN" }]).forEach((row) => {
+            this.healthSummaryRows.append(this.createRow([
+                row.area || "Unknown",
+                row.status || "WARN",
+                `${row.count || 0}`,
+                row.diagnostic || "No diagnostic returned.",
+            ]));
+        });
+    }
+
+    renderMembershipRows(memberships = {}) {
+        const selectedPlan = this.healthMembershipPlanFilter.value;
+        const rows = Array.isArray(memberships.rows) ? memberships.rows : [];
+        this.healthMembershipRows.replaceChildren();
+        rows
+            .filter((row) => !selectedPlan || row.planCode === selectedPlan)
+            .forEach((row) => {
+                this.healthMembershipRows.append(this.createRow([
+                    row.userKey || "unknown",
+                    row.planCode || "unknown",
+                    row.status || "unknown",
+                    row.source || "unknown",
+                ]));
+            });
+        if (!this.healthMembershipRows.children.length) {
+            this.healthMembershipRows.append(this.createRow(["No rows", selectedPlan || "All plans", "SKIP", "No matching membership assignments."]));
+        }
+    }
+
+    renderInvitationRows(invitations = {}) {
+        const selectedStatus = this.healthInvitationStatusFilter.value;
+        const rows = Array.isArray(invitations.rows) ? invitations.rows : [];
+        this.healthInvitationRows.replaceChildren();
+        rows
+            .filter((row) => !selectedStatus || row.status === selectedStatus)
+            .forEach((row) => {
+                this.healthInvitationRows.append(this.createRow([
+                    row.email || "unknown",
+                    row.status || "unknown",
+                    row.invitationCode || "hidden",
+                    row.expiresAt || "not set",
+                ]));
+            });
+        if (!this.healthInvitationRows.children.length) {
+            this.healthInvitationRows.append(this.createRow(["No rows", selectedStatus || "All statuses", "SKIP", "No matching invitation records."]));
+        }
+    }
+
+    renderAiUsageRows(aiCredits = {}) {
+        const selectedAction = this.healthAiActionFilter.value;
+        const rows = Array.isArray(aiCredits.rows) ? aiCredits.rows : [];
+        this.healthAiUsageRows.replaceChildren();
+        rows
+            .filter((row) => !selectedAction || row.actionCode === selectedAction)
+            .forEach((row) => {
+                this.healthAiUsageRows.append(this.createRow([
+                    row.userKey || "unknown",
+                    row.actionCode || "UNASSIGNED",
+                    row.sourceType || "unknown",
+                    `${row.creditDelta || 0}`,
+                    row.balanceAfter === "" || row.balanceAfter === undefined ? "not recorded" : `${row.balanceAfter}`,
+                ]));
+            });
+        if (!this.healthAiUsageRows.children.length) {
+            this.healthAiUsageRows.append(this.createRow(["No rows", selectedAction || "All actions", "SKIP", "0", "No matching AI usage records."]));
+        }
+    }
+
+    renderConfigIssues(rows) {
+        this.healthConfigIssueRows.replaceChildren();
+        (rows.length ? rows : [{ area: "Operations", issue: "Operational configuration unavailable.", nextStep: "Reload Admin System Health.", status: "WARN", tableName: "unknown" }]).forEach((row) => {
+            this.healthConfigIssueRows.append(this.createRow([
+                row.area || "Unknown",
+                row.status || "WARN",
+                row.tableName || "unknown",
+                row.issue || "No issue returned.",
+                row.nextStep || "Review Admin System Health diagnostics.",
+            ]));
+        });
+    }
+
+    renderOperationsHealth(operationsHealth = {}) {
+        this.operationsHealth = operationsHealth;
+        this.replaceFilterOptions(this.healthMembershipPlanFilter, operationsHealth.memberships?.planOptions || [], "All plans");
+        this.replaceFilterOptions(this.healthInvitationStatusFilter, operationsHealth.invitations?.statusOptions || [], "All statuses");
+        this.replaceFilterOptions(this.healthAiActionFilter, operationsHealth.aiCredits?.actionOptions || [], "All actions");
+        this.renderHealthSummary(Array.isArray(operationsHealth.summaryRows) ? operationsHealth.summaryRows : []);
+        this.renderMembershipRows(operationsHealth.memberships || {});
+        this.renderInvitationRows(operationsHealth.invitations || {});
+        this.renderAiUsageRows(operationsHealth.aiCredits || {});
+        this.renderConfigIssues(Array.isArray(operationsHealth.configIssues) ? operationsHealth.configIssues : []);
     }
 
     renderSummary(summary) {
@@ -219,6 +342,7 @@ class AdminSystemHealthController {
             this.renderConnectionSummary(payload.connectionSummary || {});
             this.renderDatabaseStatus(payload.databaseStatus || {});
             this.renderStorageStatus(payload.storageStatus || {});
+            this.renderOperationsHealth(payload.operationsHealth || {});
             this.renderDetails(Array.isArray(payload.details) ? payload.details : []);
             this.renderLimits(Array.isArray(payload.limits) ? payload.limits : []);
             this.renderR2Readiness(payload.r2Readiness || {});
@@ -236,6 +360,13 @@ class AdminSystemHealthController {
                 },
             ]);
             this.renderStorageStatus({});
+            this.renderOperationsHealth({
+                aiCredits: { actionOptions: [], rows: [] },
+                configIssues: [{ area: "Operations", issue: "Admin System Health failed to load.", nextStep: "Resolve the load failure and retry.", status: "FAIL", tableName: "operationsHealth" }],
+                invitations: { rows: [], statusOptions: [] },
+                memberships: { planOptions: [], rows: [] },
+                summaryRows: [{ area: "Operations", count: 0, diagnostic: error instanceof Error ? error.message : "Admin System Health unavailable.", status: "FAIL" }],
+            });
             this.renderDetails([]);
             this.renderLimits([]);
             this.renderR2Readiness({ rows: [] });

@@ -12,7 +12,7 @@
 
 <body>
     <div data-partial="header-nav"></div>
-    <main>
+    <main data-marketplace-page>
         <section class="page-title">
             <div class="container">
                 <div class="kicker">Game Foundry Marketplace</div>
@@ -30,9 +30,61 @@
                 </div>
             </div>
         </section>
+        <section class="section" id="packs">
+            <div class="container">
+                <div class="surface">
+                    <div class="surface-header">
+                        <div>
+                            <div class="kicker">Membership Rules</div>
+                            <p class="status" role="status" data-marketplace-status>Loading marketplace access.</p>
+                        </div>
+                    </div>
+                    <div class="surface-body content-stack">
+                        <div class="content-stack" data-marketplace-membership>
+                            <p class="status">Loading membership access.</p>
+                        </div>
+                        <div class="grid cols-4" data-marketplace-actions>
+                            <article class="card">
+                                <div class="card-body content-stack">
+                                    <div class="kicker">Loading</div>
+                                    <h2>Loading marketplace actions.</h2>
+                                    <p class="status">Marketplace entitlement rules are loading from the service.</p>
+                                </div>
+                            </article>
+                        </div>
+                        <section class="content-stack" aria-labelledby="marketplace-categories-title">
+                            <div>
+                                <div class="kicker">Categories</div>
+                                <h2 id="marketplace-categories-title">Browse Categories</h2>
+                                <p class="status" data-marketplace-categories-status>Loading marketplace categories.</p>
+                            </div>
+                            <div class="grid cols-4" data-marketplace-categories>
+                                <article class="card">
+                                    <div class="card-body content-stack">
+                                        <div class="kicker">Loading</div>
+                                        <h2>Loading categories.</h2>
+                                        <p class="status">Marketplace categories are loading from the service.</p>
+                                    </div>
+                                </article>
+                            </div>
+                        </section>
+                        <section class="content-stack" aria-labelledby="marketplace-revenue-title">
+                            <div>
+                                <div class="kicker">Seller Revenue</div>
+                                <h2 id="marketplace-revenue-title">Revenue Model</h2>
+                            </div>
+                            <div class="content-stack" data-marketplace-revenue>
+                                <p class="status">Loading seller revenue model.</p>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
     <div data-partial="footer"></div>
     <script src="../assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+    <script type="module" src="../assets/theme-v2/js/marketplace-page.js"></script>
 </body>
 
 </html>

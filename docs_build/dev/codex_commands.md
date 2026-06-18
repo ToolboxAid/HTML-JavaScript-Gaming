@@ -1,25 +1,47 @@
-# Codex Commands - PR_26169_002-auth-preview-signin-regression
+# Codex Commands
 
-## Changes
-- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
-- Read `docs_build/pr/PLAN_PR_26169_001-creator-platform-foundation.md`.
-- Read `docs_build/pr/PLAN_PR_26169_002-auth-preview-signin-regression.md`.
-- Created `docs_build/pr/BUILD_PR_26169_002-auth-preview-signin-regression.md`.
-- Updated `src/dev-runtime/server/local-api-router.mjs`.
-- Updated `tests/dev-runtime/SupabaseProviderContractStub.test.mjs`.
+## PR
+- `PR_26169_019-admin-health-operations`
 
-## Validation
-- `git branch --show-current`
-- `git branch --list`
-- `node --check src/dev-runtime/server/local-api-router.mjs`
-- `node --check tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
-- `node --test --test-name-pattern "malformed|Creator Admin and Owner|missing user and missing role" tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
-- `git diff --check -- src/dev-runtime/server/local-api-router.mjs tests/dev-runtime/SupabaseProviderContractStub.test.mjs docs_build/pr/BUILD_PR_26169_002-auth-preview-signin-regression.md`
+## Source Documents
+- `docs_build/dev/PROJECT_INSTRUCTIONS.md`
+- `docs_build/pr/PLAN_PR_26169_019-admin-health-operations.md`
+- `docs_build/pr/BUILD_PR_26169_019-admin-health-operations.md`
 
-## Required Reports
-- `docs_build/dev/reports/PR_26169_002-auth-preview-signin-regression.md`
-- `docs_build/dev/reports/codex_review.diff`
-- `docs_build/dev/reports/codex_changed_files.txt`
+## Validation Commands
+```bash
+git branch --show-current
+```
 
-## Required ZIP
-- `tmp/PR_26169_002-auth-preview-signin-regression_delta.zip`
+```bash
+node --check src/dev-runtime/server/local-api-router.mjs
+node --check assets/theme-v2/js/admin-system-health.js
+node --check tests/dev-runtime/AdminHealthOperations.test.mjs
+node --check tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+```
+
+```bash
+node -e "<static HTML restriction check for admin/system-health.html>"
+```
+
+```bash
+node --test tests/dev-runtime/AdminHealthOperations.test.mjs
+```
+
+```bash
+npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+```
+
+```bash
+git diff --check -- <PR_26169_019 scoped file list>
+```
+
+## Artifact Commands
+```bash
+python - <<'PY'
+# Generate docs_build/dev/reports/codex_changed_files.txt
+# Generate docs_build/dev/reports/codex_review.diff
+# Create tmp/PR_26169_019-admin-health-operations_delta.zip
+# Verify ZIP size and repo-relative paths
+PY
+```

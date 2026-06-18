@@ -58,10 +58,11 @@ test("account achievements page switches Build Play Share views", async ({ page 
     await expect(page.locator(".side-menu").getByRole("link", { name: "Achievements" })).toBeVisible();
     await expect(page.locator("header.site-header a[data-route='account-achievements']")).toHaveAttribute("href", "../account/achievements.html");
     await expect(page.locator("footer.footer").getByRole("link", { name: "Achievements" })).toBeVisible();
-    await expect(page.locator("[data-account-side-nav-accordion='left']")).toHaveAttribute("open", "");
+    await expect(page.locator("[data-account-side-nav-accordion='pages']")).toHaveAttribute("open", "");
     await expect(page.locator(".side-menu a")).toHaveText([
       "Account Home",
       "Achievements",
+      "AI Credits",
       "Preferences",
       "Profile",
       "Security",

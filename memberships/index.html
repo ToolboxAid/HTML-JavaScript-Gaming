@@ -5,79 +5,30 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Memberships - GameFoundryStudio</title>
-    <meta name="description" content="Compare Free, Creator, and Studio membership tiers for GameFoundryStudio.">
+    <meta name="description" content="Compare GameFoundryStudio memberships from database-backed plan data.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
 </head>
 
 <body>
     <div data-partial="header-nav"></div>
-    <main>
+    <main data-memberships-page>
         <section class="page-title">
             <div class="container">
                 <div class="kicker">Memberships</div>
-                <h1>Choose the membership shape for your next game.</h1>
-                <p class="lede">Start with public creation tools, grow into deeper creator workflows, and plan larger
-                    game portfolios as GameFoundryStudio expands.</p>
+                <h1>Memberships</h1>
+                <p class="lede">Compare current membership options, active status, and plan capabilities from the platform membership service.</p>
             </div>
         </section>
 
         <section class="section">
             <div class="container page-hero">
                 <img src="../assets/theme-v2/images/game-foundry-tools-poster.png" alt="Game Foundry Studio creator tools poster">
-                <div>
-                    <h2>Free, Creator, and Studio paths for building open-web games.</h2>
-                    <p class="lede">Memberships organize the product direction around the ways visitors build, play,
-                        and share without changing access rules in this public page.</p>
-                    <a class="btn primary" href="#membership-tiers">Compare Tiers</a>
+                <div class="content-stack">
+                    <h2>Memberships for open-web game creation.</h2>
+                    <p class="lede">Plan data, limits, revenue share, and credit bonuses load from database-backed membership records.</p>
+                    <a class="btn primary" href="#membership-tiers">Compare Plans</a>
                 </div>
-            </div>
-        </section>
-
-        <section class="section" id="membership-tiers">
-            <div class="container grid cols-3">
-                <article class="card">
-                    <div class="card-body content-stack">
-                        <div class="kicker">Free</div>
-                        <h2>Explore the studio.</h2>
-                        <p>Browse games, learn the creation model, and try public Toolbox surfaces as the platform
-                            matures.</p>
-                        <ul>
-                            <li>Public game discovery</li>
-                            <li>Learning and reference pages</li>
-                            <li>Starter creator workflows</li>
-                        </ul>
-                        <a class="btn" href="../games/index.html">Browse Games</a>
-                    </div>
-                </article>
-                <article class="card">
-                    <div class="card-body content-stack">
-                        <div class="kicker">Creator</div>
-                        <h2>Build with structure.</h2>
-                        <p>Plan game ideas through focused tools for design, configuration, assets, testing, and
-                            publishing readiness.</p>
-                        <ul>
-                            <li>Game design and configuration planning</li>
-                            <li>Asset and world-building workflows</li>
-                            <li>Progress paths for creator work</li>
-                        </ul>
-                        <a class="btn primary" href="../toolbox/index.html">Open Toolbox</a>
-                    </div>
-                </article>
-                <article class="card">
-                    <div class="card-body content-stack">
-                        <div class="kicker">Studio</div>
-                        <h2>Coordinate a larger catalog.</h2>
-                        <p>Shape a broader creation roadmap with portfolio planning, publishing preparation, and
-                            operational visibility.</p>
-                        <ul>
-                            <li>Multi-project creation planning</li>
-                            <li>Release-readiness checkpoints</li>
-                            <li>Studio-scale content operations</li>
-                        </ul>
-                        <a class="btn" href="../company/roadmap.html">View Roadmap</a>
-                    </div>
-                </article>
             </div>
         </section>
 
@@ -85,38 +36,41 @@
             <div class="container">
                 <div class="surface">
                     <div class="surface-header">
-                        <div class="kicker">Membership Direction</div>
-                        <h2>A public comparison page only.</h2>
-                    </div>
-                    <div class="surface-body">
-                        <div class="grid cols-3">
-                            <article class="callout">
-                                <h3>Build</h3>
-                                <p>Creator-facing workflows stay centered on structured game design, configuration,
-                                    assets, worlds, and testing.</p>
-                            </article>
-                            <article class="callout">
-                                <h3>Play</h3>
-                                <p>Visitors can keep discovering playable open-web projects while membership features
-                                    are planned.</p>
-                            </article>
-                            <article class="callout">
-                                <h3>Share</h3>
-                                <p>Publishing and community direction remains visible while this page stays
-                                    informational and public.</p>
-                            </article>
+                        <div>
+                            <div class="kicker">Active Membership</div>
+                            <p class="status" role="status" data-memberships-status>Loading memberships.</p>
                         </div>
                     </div>
-                    <div class="surface-footer">
-                        <a class="btn primary" href="../account/create-account.html">Create Account</a>
-                        <a class="btn" href="../learn/index.html">Learn More</a>
+                    <div class="surface-body content-stack" data-memberships-active>
+                        <p class="status">Loading active membership.</p>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="membership-tiers">
+            <div class="container">
+                <div class="surface-header">
+                    <div>
+                        <div class="kicker">Plans</div>
+                        <h2>Compare Plans</h2>
+                    </div>
+                </div>
+                <div class="grid cols-3" data-memberships-plans>
+                    <article class="card">
+                        <div class="card-body content-stack">
+                            <div class="kicker">Loading</div>
+                            <h2>Loading memberships.</h2>
+                            <p class="status">Membership records are loading from the service.</p>
+                        </div>
+                    </article>
                 </div>
             </div>
         </section>
     </main>
     <div data-partial="footer"></div>
     <script src="../assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+    <script type="module" src="../assets/theme-v2/js/memberships-page.js"></script>
 </body>
 
 </html>

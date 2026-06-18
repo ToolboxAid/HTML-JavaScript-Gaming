@@ -1,317 +1,1184 @@
-diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index 85b791359..f8d243e63 100644
---- a/src/dev-runtime/server/local-api-router.mjs
-+++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -1254,11 +1254,13 @@ function guestSession(mode, diagnostic = "") {
-   };
- }
- 
--function sessionUserFromIdentityTables(tables, userKey, modeId, providerLabel) {
-+export function sessionUserFromIdentityTables(tables, userKey, modeId, providerLabel) {
-   const mode = FIXED_ACCOUNT_SESSION_MODE;
--  const key = String(userKey || "");
-+  const key = String(userKey || "").trim();
-   if (!isUlidKey(key)) {
--    return guestSession(mode);
-+    return key
-+      ? guestSession(mode, `Selected ${providerLabel} user key ${key} is not a valid users.key.`)
-+      : guestSession(mode);
-   }
- 
-   const user = (tables.users || []).find((record) => record.key === key && record.isActive !== false);
-@@ -1826,11 +1828,18 @@ class ApiRuntimeDataSource {
-   }
- 
-   async currentSessionForRoute() {
-+    const selectedUserKey = String(this.sessionUserKey || "").trim();
-+    if (selectedUserKey && !isUlidKey(selectedUserKey)) {
-+      return guestSession(
-+        FIXED_ACCOUNT_SESSION_MODE,
-+        `Selected Local DB identity user key ${selectedUserKey} is not a valid users.key.`,
-+      );
-+    }
-     const status = await this.authStatusForRoute();
--    if (this.sessionUserKey) {
-+    if (selectedUserKey) {
-       try {
-         const tables = await this.readSupabaseIdentityTablesUnchecked("Reading selected Local API session");
--        return sessionUserFromIdentityTables(tables, this.sessionUserKey, this.sessionModeId, "Local DB identity");
-+        return sessionUserFromIdentityTables(tables, selectedUserKey, this.sessionModeId, "Local DB identity");
-       } catch (error) {
-         return guestSession(
-           FIXED_ACCOUNT_SESSION_MODE,
-@@ -1856,7 +1865,7 @@ class ApiRuntimeDataSource {
-   }
- 
-   async setUserForRoute(userKey) {
--    this.sessionUserKey = String(userKey || "");
-+    this.sessionUserKey = String(userKey || "").trim();
-     this.sharedOptions.sessionMode = this.sessionModeId;
-     this.sharedOptions.sessionUserKey = this.sessionUserKey;
-     return this.currentSessionForRoute();
-diff --git a/tests/dev-runtime/SupabaseProviderContractStub.test.mjs b/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
-index f45cb5323..9d5531ad4 100644
---- a/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
-+++ b/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
-@@ -10,7 +10,10 @@ import {
-   createProviderContractSnapshot,
- } from "../../src/dev-runtime/auth/provider-contract-stubs.mjs";
- import { SEED_DB_KEYS } from "../../src/dev-runtime/seed/seed-db-keys.mjs";
--import { createLocalApiRouter } from "../../src/dev-runtime/server/local-api-router.mjs";
-+import {
-+  createLocalApiRouter,
-+  sessionUserFromIdentityTables,
-+} from "../../src/dev-runtime/server/local-api-router.mjs";
- 
- function withEnv(nextEnv, callback) {
-   const previousEnv = {};
-@@ -1302,6 +1305,27 @@ test("Supabase identity session lookup fails visibly when the selected user is m
-   await fakeSupabase.close();
- });
- 
-+test("Supabase identity session lookup fails visibly when the selected user key is malformed", async () => {
-+  const server = await startApiServer();
-+  try {
-+    const response = await postApiPayload(server.baseUrl, "/api/session/user", {
-+      userKey: "not-a-users-key",
-+    });
-+    assert.equal(response.status, 200);
-+    assert.equal(response.payload.ok, true);
-+    assert.equal(response.payload.data.authenticated, false);
-+    assert.match(response.payload.data.diagnostic, /not a valid users\.key/);
+diff --git a/docs_build/pr/BUILD_PR_26169_019-admin-health-operations.md b/docs_build/pr/BUILD_PR_26169_019-admin-health-operations.md
+new file mode 100644
+--- /dev/null+++ b/docs_build/pr/BUILD_PR_26169_019-admin-health-operations.md@@ -0,0 +1,84 @@+# BUILD_PR_26169_019-admin-health-operations
 +
-+    const logout = await postApiPayload(server.baseUrl, "/api/session/logout", {});
-+    assert.equal(logout.status, 200);
-+    assert.equal(logout.payload.ok, true);
-+    assert.equal(logout.payload.data.authenticated, false);
-+    assert.doesNotMatch(logout.payload.data.diagnostic || "", /not a valid users\.key/);
++## Objective
++- Implement Admin-only operational health visibility for memberships, invitations, AI credits, marketplace seller/revenue readiness, teams, and required DB configuration.
++
++## Source Documents
++- PLAN: `docs_build/pr/PLAN_PR_26169_019-admin-health-operations.md`
++- Upstream invitation dependency: `docs_build/pr/BUILD_PR_26169_003-beta-invitations-admin.md`
++- Upstream membership dependency: `docs_build/pr/BUILD_PR_26169_005-membership-assignment.md`
++- Upstream AI credit dependency: `docs_build/pr/BUILD_PR_26169_007-ai-credit-foundation.md`
++- Upstream AI display dependency: `docs_build/pr/BUILD_PR_26169_008-ai-credit-display.md`
++- Upstream marketplace revenue dependency: `docs_build/pr/BUILD_PR_26169_010-marketplace-revenue-model.md`
++- Upstream teams dependency: `docs_build/pr/BUILD_PR_26169_012-teams-foundation.md`
++- Upstream Owner settings dependencies: `docs_build/pr/BUILD_PR_26169_017-owner-memberships.md` and `docs_build/pr/BUILD_PR_26169_018-owner-ai-credits.md`
++
++## Scope
++- Extend existing Admin System Health API payload with read-only operational health data.
++- Extend existing Admin System Health page to render the operational health summary and support tables.
++- Add filters for invitation status, membership plan, and AI usage action.
++- Add targeted unit and Playwright validation.
++
++## Non-Scope
++- No Owner settings editing.
++- No Owner pricing, percentage, legal, founding program, AI action cost, or AI pack price controls for Admin.
++- No payment settlement.
++- No legal document editing.
++- No broad infrastructure monitoring integration.
++- No Admin support mutation or AI credit adjustment workflow.
++- No schema/table additions.
++
++## Target Files
++- `src/dev-runtime/server/local-api-router.mjs`
++- `admin/system-health.html`
++- `assets/theme-v2/js/admin-system-health.js`
++- `tests/dev-runtime/AdminHealthOperations.test.mjs`
++- `tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`
++
++## Implementation Requirements
++- Admin System Health must show operational health summaries for:
++  - membership assignment counts and missing plan/limit failures.
++  - beta invitation counts by status.
++  - AI credit balances, monthly grants, debits, and insufficient-credit failure counts.
++  - marketplace seller eligibility and revenue calculation readiness.
++  - team membership limit violations or blocked invitations.
++  - missing required DB configuration.
++- Admin can inspect invitation records in read-only support tables.
++- Admin can inspect AI usage and user credit issue summaries without editing Owner pricing.
++- Admin can view membership support state without changing Owner-controlled pricing, percentages, limits, founding state, AI action costs, or pack prices.
++- Diagnostics must identify missing plan, limit, invitation, AI action, credit pack, and user balance records.
++- Admin support actions are not implemented in this PR; therefore no support mutation audit path is added.
++
++## UI Requirements
++- Page remains Admin-only through the existing Admin route guard.
++- Existing Admin System Health page must render operational health sections.
++- Show PASS/WARN/FAIL/SKIP status per subsystem.
++- Provide filters for:
++  - invitation status.
++  - membership plan.
++  - AI usage action.
++- Owner-controlled business model fields must be read-only text only.
++- No pricing, percentage, AI cost, AI pack price, legal, or founding edit controls appear on the Admin page.
++- Missing configuration must appear as actionable Admin health issues.
++- HTML must keep CSS and JavaScript external.
++
++## Validation Requirements
++- Verify branch is `main`.
++- Run syntax checks for changed JavaScript and MJS files.
++- Run static HTML restriction checks for `admin/system-health.html`.
++- Run targeted Admin health operations service validation:
++  - `node --test tests/dev-runtime/AdminHealthOperations.test.mjs`
++- Run targeted Admin health operations Playwright validation:
++  - `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`
++- Generate Playwright V8 coverage reports through the targeted Playwright spec.
++- Run scoped `git diff --check`.
++- Do not run full samples validation.
++
++## Acceptance Criteria
++- Admins can monitor platform operational health without Owner edit authority.
++- Creator/non-Admin users cannot view the Admin dashboard.
++- Required table health is visible and actionable.
++- Missing `membership_limits` and `ai_credit_packs` rows produce visible warnings/failures.
++- Invitation status counts are accurate.
++- AI usage summaries match `ai_usage_log`.
++- Admin dashboard does not become a hidden source of business model configuration.
+diff --git a/docs_build/dev/codex_commands.md b/docs_build/dev/codex_commands.md
+--- a/docs_build/dev/codex_commands.md+++ b/docs_build/dev/codex_commands.md@@ -4 +4 @@-- `PR_26169_018-owner-ai-credits`
++- `PR_26169_019-admin-health-operations`
+@@ -8,2 +8,2 @@-- `docs_build/pr/PLAN_PR_26169_018-owner-ai-credits.md`
+-- `docs_build/pr/BUILD_PR_26169_018-owner-ai-credits.md`
++- `docs_build/pr/PLAN_PR_26169_019-admin-health-operations.md`
++- `docs_build/pr/BUILD_PR_26169_019-admin-health-operations.md`
+@@ -17 +16,0 @@-node --check src/dev-runtime/ai/owner-ai-credit-settings-service.mjs
+@@ -19,5 +18,3 @@-node --check src/engine/api/owner-ai-credits-api-client.js
+-node --check assets/theme-v2/js/owner-ai-credits.js
+-node --check assets/theme-v2/js/gamefoundry-partials.js
+-node --check tests/dev-runtime/OwnerAiCredits.test.mjs
+-node --check tests/playwright/tools/OwnerAiCreditsPage.spec.mjs
++node --check assets/theme-v2/js/admin-system-health.js
++node --check tests/dev-runtime/AdminHealthOperations.test.mjs
++node --check tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+@@ -27 +24 @@-node -e "<static HTML restriction check for owner/ai-credits.html>"
++node -e "<static HTML restriction check for admin/system-health.html>"
+@@ -31 +28 @@-node --test tests/dev-runtime/OwnerAiCredits.test.mjs
++node --test tests/dev-runtime/AdminHealthOperations.test.mjs
+@@ -35 +32 @@-npx playwright test tests/playwright/tools/OwnerAiCreditsPage.spec.mjs
++npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+@@ -39 +36 @@-git diff --check -- <PR_26169_018 scoped file list>
++git diff --check -- <PR_26169_019 scoped file list>
+@@ -47 +44 @@-# Create tmp/PR_26169_018-owner-ai-credits_delta.zip
++# Create tmp/PR_26169_019-admin-health-operations_delta.zip
+diff --git a/docs_build/dev/commit_comment.txt b/docs_build/dev/commit_comment.txt
+--- a/docs_build/dev/commit_comment.txt+++ b/docs_build/dev/commit_comment.txt@@ -1 +1 @@-Add Owner AI credit pricing editor - PR_26169_018-owner-ai-credits
++Add Admin health operations dashboard - PR_26169_019-admin-health-operations
+diff --git a/docs_build/dev/reports/PR_26169_019-admin-health-operations.md b/docs_build/dev/reports/PR_26169_019-admin-health-operations.md
+new file mode 100644
+--- /dev/null+++ b/docs_build/dev/reports/PR_26169_019-admin-health-operations.md@@ -0,0 +1,98 @@+# PR_26169_019-admin-health-operations Report
++
++## Scope
++- PR: `PR_26169_019-admin-health-operations`
++- Source PLAN: `docs_build/pr/PLAN_PR_26169_019-admin-health-operations.md`
++- BUILD doc: `docs_build/pr/BUILD_PR_26169_019-admin-health-operations.md`
++- Dependencies: PR_26169_002, PR_26169_003, PR_26169_004, PR_26169_005, PR_26169_007, PR_26169_008, PR_26169_010, PR_26169_012, PR_26169_013, PR_26169_017, and PR_26169_018.
++
++## Branch Validation
++- Current branch before implementation: `main`
++- Current branch before packaging: `main`
++- Expected branch: `main`
++- Result: PASS
++
++## Requirement Checklist
++- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`: PASS
++- Read matching PLAN_PR before implementation: PASS
++- Create/read BUILD_PR before implementation: PASS
++- Implement only PR_26169_019 purpose: PASS
++- Admin can view health dashboard: PASS
++- Creator/non-Admin cannot view Admin dashboard: PASS
++- Owner-only pricing controls are absent for Admin: PASS
++- Missing `membership_limits` row produces operational health failure: PASS
++- Missing `ai_credit_packs` row produces operational health failure: PASS
++- Invitation status counts are accurate: PASS
++- AI usage summaries match `ai_usage_log`: PASS
++- Admin can inspect membership support state without Owner edit controls: PASS
++- Admin can inspect invitation and AI usage support tables: PASS
++- Missing required DB configuration is surfaced as actionable Admin health issue: PASS
++- No Owner settings editing, payment settlement, legal editing, support mutation, schema additions, or broad infrastructure integration: PASS
++
++## Implementation Summary
++- Extended the existing Admin System Health route with a read-only `operationsHealth` payload derived from DB-backed tables.
++- Added operational summaries for memberships, invitations, AI credits, marketplace revenue readiness, team enforcement, and required DB configuration.
++- Added diagnostics for missing membership limits, missing plan references, missing required AI credit packs, missing AI actions, and missing AI balance accounts.
++- Tightened the Admin API guard to return HTTP 403 for non-Admin sessions.
++- Extended `admin/system-health.html` and `admin-system-health.js` with read-only operations tables and filters.
++- Added targeted unit and Playwright coverage.
++
++## Validation
++- `git branch --show-current`: PASS (`main`)
++- `node --check src/dev-runtime/server/local-api-router.mjs`: PASS
++- `node --check assets/theme-v2/js/admin-system-health.js`: PASS
++- `node --check tests/dev-runtime/AdminHealthOperations.test.mjs`: PASS
++- `node --check tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`: PASS
++- Static HTML restriction check for `admin/system-health.html`: PASS
++- `node --test tests/dev-runtime/AdminHealthOperations.test.mjs`: PASS, 4 tests passed
++- `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`: PASS, 3 tests passed
++- Scoped `git diff --check`: PASS
++
++## Playwright And Coverage
++- Playwright impacted: Yes.
++- Validated behavior:
++  - Admin page renders operational health summaries.
++  - Membership plan filter updates the support table.
++  - Invitation status and AI action filters are visible.
++  - Owner AI and membership edit controls are absent.
++  - Creator session is blocked by the Admin page guard.
++  - HTML has no inline script, inline style, inline event handler, or page-local CSS.
++- V8 coverage artifacts:
++  - `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++  - `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
++- Coverage evidence for PR_019 browser files:
++  - `(74%) assets/theme-v2/js/gamefoundry-partials.js`
++  - `(87%) assets/theme-v2/js/admin-system-health.js`
++- Coverage note: because the sequential stack is intentionally uncommitted, the coverage helper also reports advisory WARN entries for earlier stack files. Those warnings are outside the PR_019 blocker scope.
++
++## Lanes
++- Impacted lanes: Admin System Health runtime, Admin route guard, Local API health payload, shared Theme V2 route guard behavior.
++- Skipped lanes: Owner pricing editors, checkout, legal editing, AI provider integration, marketplace payout execution, samples, full suite.
++- Skip rationale: PLAN_PR_26169_019 is scoped to Admin read-only health and operations visibility.
++- Full samples decision: SKIP. No samples, sample loader, or shared sample runtime changed.
++- Full suite requirement: Not triggered by this PR scope.
++- Expected blocker scope: PR_019 Admin System Health operational health dashboard, API payload, and route guard only.
++
++## Acceptance Criteria Evidence
++- Admins can monitor platform operational health without Owner edit authority: PASS
++- Required table health is visible and actionable: PASS
++- Invitation and AI monitoring support earlier stack PRs: PASS
++- Admin dashboard does not become a hidden business model configuration source: PASS
++- Creator/non-Admin sessions are blocked: PASS
++
++## Manual Validation
++- Start the local repo server.
++- Select/sign in as the seeded Admin user.
++- Open `admin/system-health.html`.
++- Expected: operational health summary shows membership, invitation, AI credit, marketplace, team, and required DB configuration rows.
++- Use the Membership Plan filter.
++- Expected: membership support rows update without exposing edit controls.
++- Select/sign in as a non-Admin creator and open `admin/system-health.html`.
++- Expected: Admin role required page replaces the dashboard.
++- Out of scope: Owner pricing edits, legal edits, checkout/payment settlement, support mutations, and full samples validation.
++
++## Artifacts
++- Changed files list: `docs_build/dev/reports/codex_changed_files.txt`
++- Review diff: `docs_build/dev/reports/codex_review.diff`
++- ZIP artifact: `tmp/PR_26169_019-admin-health-operations_delta.zip`
++- ZIP validation: PASS, repo-structured artifact exists with expected PR_019 entries and size > 0.
+diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+--- a/docs_build/dev/reports/playwright_v8_coverage_report.txt+++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt@@ -17 +17 @@-(81%) Theme V2 Shared JS - exercised 3 runtime JS files
++(78%) Theme V2 Shared JS - exercised 3 runtime JS files
+@@ -24,0 +25 @@+(0%) assets/theme-v2/js/owner-ai-credits.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+@@ -44,0 +46 @@+(0%) src/engine/api/owner-ai-credits-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+@@ -47,2 +49 @@-(100%) assets/theme-v2/js/owner-ai-credits.js - executed lines 286/286; executed functions 34/34
+-(100%) src/engine/api/owner-ai-credits-api-client.js - executed lines 19/19; executed functions 3/3
++(87%) assets/theme-v2/js/admin-system-health.js - executed lines 359/359; executed functions 46/53
+@@ -55,2 +56,2 @@-(100%) assets/theme-v2/js/owner-ai-credits.js - executed lines 286/286; executed functions 34/34
+-(100%) src/engine/api/owner-ai-credits-api-client.js - executed lines 19/19; executed functions 3/3
++(87%) assets/theme-v2/js/admin-system-health.js - executed lines 359/359; executed functions 46/53
++(100%) src/engine/api/admin-system-health-api-client.js - executed lines 19/19; executed functions 3/3
+@@ -63,0 +65 @@+(0%) assets/theme-v2/js/owner-ai-credits.js - WARNING: uncovered changed runtime JS file; advisory only
+@@ -83,0 +86 @@+(0%) src/engine/api/owner-ai-credits-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
+@@ -91,0 +95 @@+(0%) assets/theme-v2/js/owner-ai-credits.js - changed JS file not collected as browser runtime coverage
+@@ -111,0 +116 @@+(0%) src/engine/api/owner-ai-credits-api-client.js - changed JS file not collected as browser runtime coverage
+@@ -112,0 +118 @@+(0%) tests/dev-runtime/AdminHealthOperations.test.mjs - changed JS file not collected as browser runtime coverage
+@@ -129,0 +136 @@+(0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
+@@ -138,2 +145 @@-(100%) assets/theme-v2/js/owner-ai-credits.js - changed JS file with browser V8 coverage
+-(100%) src/engine/api/owner-ai-credits-api-client.js - changed JS file with browser V8 coverage
++(87%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
+diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+--- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt+++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt@@ -13,0 +14 @@+(0%) assets/theme-v2/js/owner-ai-credits.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+@@ -33,0 +35 @@+(0%) src/engine/api/owner-ai-credits-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+@@ -36,2 +38 @@-(100%) assets/theme-v2/js/owner-ai-credits.js - executed lines 286/286; executed functions 34/34
+-(100%) src/engine/api/owner-ai-credits-api-client.js - executed lines 19/19; executed functions 3/3
++(87%) assets/theme-v2/js/admin-system-health.js - executed lines 359/359; executed functions 46/53
+@@ -44,0 +46 @@+(0%) assets/theme-v2/js/owner-ai-credits.js - WARNING: changed runtime JS file missing from coverage; advisory only
+@@ -64,0 +67 @@+(0%) src/engine/api/owner-ai-credits-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
+diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
+--- a/src/dev-runtime/server/local-api-router.mjs+++ b/src/dev-runtime/server/local-api-router.mjs@@ -810,0 +811,303 @@+const ADMIN_OPERATIONS_REQUIRED_TABLES = Object.freeze([
++  "membership_plans",
++  "membership_limits",
++  "user_memberships",
++  "founding_members",
++  "invitations",
++  "project_members",
++  "ai_actions",
++  "ai_credit_packs",
++  "user_ai_credits",
++  "ai_usage_log",
++]);
++const ADMIN_OPERATIONS_REQUIRED_PACK_CODES = Object.freeze(["SMALL", "MEDIUM", "LARGE"]);
++const ADMIN_OPERATIONS_NO_ACTION_CODE = "UNASSIGNED";
++
++function adminHealthRows(tables, tableName) {
++  return Array.isArray(tables?.[tableName]) ? tables[tableName] : [];
++}
++
++function adminHealthCountsBy(rows, fieldName) {
++  return rows.reduce((counts, row) => {
++    const value = String(row?.[fieldName] || "unknown").trim() || "unknown";
++    counts[value] = (counts[value] || 0) + 1;
++    return counts;
++  }, {});
++}
++
++function adminHealthTableRows(tables) {
++  return ADMIN_OPERATIONS_REQUIRED_TABLES.map((tableName) => {
++    const exists = Array.isArray(tables?.[tableName]);
++    return {
++      area: "Required DB configuration",
++      count: exists ? tables[tableName].length : 0,
++      issue: exists ? `${tableName} table is available.` : `${tableName} table is missing.`,
++      nextStep: exists ? "No action required." : `Restore ${tableName} through the database seed/schema path before operating this subsystem.`,
++      status: exists ? "PASS" : "FAIL",
++      tableName,
++    };
++  });
++}
++
++function adminHealthPlanMaps(tables) {
++  const plans = adminHealthRows(tables, "membership_plans");
++  const limits = adminHealthRows(tables, "membership_limits");
++  return {
++    limitsByPlanKey: new Map(limits.map((row) => [row.planKey, row])),
++    plans,
++    plansByKey: new Map(plans.map((row) => [row.key, row])),
++  };
++}
++
++function adminHealthMemberships(tables, planMaps) {
++  const memberships = adminHealthRows(tables, "user_memberships");
++  const missingPlanRows = memberships.filter((row) => !planMaps.plansByKey.has(row.planKey));
++  const missingLimitPlans = planMaps.plans.filter((plan) => !planMaps.limitsByPlanKey.has(plan.key));
++  const rows = memberships.map((row) => {
++    const plan = planMaps.plansByKey.get(row.planKey);
++    return {
++      planCode: plan?.code || "MISSING_PLAN",
++      source: row.source || "unknown",
++      status: row.status || "unknown",
++      userKey: row.userKey || "",
++    };
++  });
++  const planOptions = Array.from(new Set(rows.map((row) => row.planCode))).sort();
++  const status = missingPlanRows.length || missingLimitPlans.length ? "FAIL" : "PASS";
++  return {
++    activeCount: memberships.filter((row) => row.status === "active").length,
++    countsByPlan: rows.reduce((counts, row) => {
++      counts[row.planCode] = (counts[row.planCode] || 0) + 1;
++      return counts;
++    }, {}),
++    countsByStatus: adminHealthCountsBy(memberships, "status"),
++    missingLimitPlanCodes: missingLimitPlans.map((plan) => plan.code),
++    missingPlanMembershipCount: missingPlanRows.length,
++    planOptions,
++    rows,
++    status,
++    summary: status === "PASS"
++      ? `Membership assignments are readable: ${memberships.length} total, ${memberships.filter((row) => row.status === "active").length} active.`
++      : `Membership assignment issues found: ${missingPlanRows.length} missing plan reference(s), ${missingLimitPlans.length} missing limit row(s).`,
++    totalCount: memberships.length,
++  };
++}
++
++function adminHealthInvitations(tables) {
++  const invitations = adminHealthRows(tables, "invitations");
++  const countsByStatus = adminHealthCountsBy(invitations, "status");
++  const statusOptions = Array.from(new Set(invitations.map((row) => String(row.status || "unknown")))).sort();
++  return {
++    countsByStatus,
++    rows: invitations
++      .slice()
++      .sort((left, right) => String(right.createdAt || "").localeCompare(String(left.createdAt || "")))
++      .map((row) => ({
++        email: row.email || "",
++        expiresAt: row.expiresAt || "",
++        invitationCode: row.invitationCode || "",
++        status: row.status || "unknown",
++      })),
++    status: "PASS",
++    statusOptions,
++    summary: `Invitation support can inspect ${invitations.length} invitation record(s).`,
++    totalCount: invitations.length,
++  };
++}
++
++function adminHealthAiCredits(tables) {
++  const actions = adminHealthRows(tables, "ai_actions");
++  const packs = adminHealthRows(tables, "ai_credit_packs");
++  const accounts = adminHealthRows(tables, "user_ai_credits");
++  const usageRows = adminHealthRows(tables, "ai_usage_log");
++  const actionsByKey = new Map(actions.map((row) => [row.key, row]));
++  const accountUsers = new Set(accounts.map((row) => row.userKey));
++  const usageUsers = new Set(usageRows.map((row) => row.userKey).filter(Boolean));
++  const missingBalanceUserKeys = Array.from(usageUsers).filter((userKey) => !accountUsers.has(userKey)).sort();
++  const missingActionUsageCount = usageRows.filter((row) => row.actionKey && !actionsByKey.has(row.actionKey)).length;
++  const missingPackCodes = ADMIN_OPERATIONS_REQUIRED_PACK_CODES.filter((code) => !packs.some((row) => row.code === code));
++  const rows = usageRows
++    .slice()
++    .sort((left, right) => String(right.createdAt || "").localeCompare(String(left.createdAt || "")))
++    .map((row) => {
++      const action = row.actionKey ? actionsByKey.get(row.actionKey) : null;
++      return {
++        actionCode: row.actionKey ? action?.code || "MISSING_ACTION" : ADMIN_OPERATIONS_NO_ACTION_CODE,
++        balanceAfter: row.balanceAfter ?? "",
++        creditDelta: row.creditDelta ?? 0,
++        sourceType: row.sourceType || "unknown",
++        userKey: row.userKey || "",
++      };
++    });
++  const actionOptions = Array.from(new Set(rows.map((row) => row.actionCode))).sort();
++  const status = missingPackCodes.length || !actions.length || missingActionUsageCount ? "FAIL" : missingBalanceUserKeys.length ? "WARN" : "PASS";
++  return {
++    actionOptions,
++    balanceAccountCount: accounts.length,
++    debitCount: usageRows.filter((row) => row.sourceType === "action_debit" || Number(row.creditDelta || 0) < 0).length,
++    insufficientCreditFailureCount: usageRows.filter((row) => row.sourceType === "insufficient_credit").length,
++    missingActionUsageCount,
++    missingBalanceUserKeys,
++    missingPackCodes,
++    monthlyGrantCount: usageRows.filter((row) => row.sourceType === "monthly_grant").length,
++    rows,
++    status,
++    summary: status === "PASS"
++      ? `AI credit monitoring can inspect ${usageRows.length} usage log row(s) and ${accounts.length} balance account(s).`
++      : `AI credit health found ${missingPackCodes.length} missing required pack(s), ${missingActionUsageCount} missing action reference(s), and ${missingBalanceUserKeys.length} usage user(s) without balances.`,
++    totalBalance: accounts.reduce((sum, row) => sum + Number(row.includedBalance || 0) + Number(row.purchasedBalance || 0) + Number(row.bonusBalance || 0), 0),
++    usageCount: usageRows.length,
++  };
++}
++
++function adminHealthMarketplace(tables, planMaps) {
++  const memberships = adminHealthRows(tables, "user_memberships");
++  const activeMemberships = memberships.filter((row) => row.status === "active");
++  const sellerEligibleRows = activeMemberships.filter((row) => {
++    const limits = planMaps.limitsByPlanKey.get(row.planKey);
++    return limits?.marketplaceSellEnabled === true;
++  });
++  const sellEnabledPlans = planMaps.plans.filter((plan) => planMaps.limitsByPlanKey.get(plan.key)?.marketplaceSellEnabled === true);
++  const missingRevenuePlans = sellEnabledPlans.filter((plan) => !Number.isInteger(plan.revenueShareBps));
++  const status = missingRevenuePlans.length ? "FAIL" : "PASS";
++  return {
++    missingRevenuePlanCodes: missingRevenuePlans.map((plan) => plan.code),
++    sellerEligibleCount: sellerEligibleRows.length,
++    status,
++    summary: status === "PASS"
++      ? `${sellerEligibleRows.length} active membership(s) currently have marketplace selling eligibility with DB-backed revenue share.`
++      : `Marketplace revenue readiness is missing revenue share basis points for ${missingRevenuePlans.map((plan) => plan.code).join(", ")}.`,
++  };
++}
++
++function adminHealthTeams(tables, planMaps) {
++  const projectMembers = adminHealthRows(tables, "project_members");
++  const memberships = adminHealthRows(tables, "user_memberships");
++  const activeMembershipByUser = new Map(memberships.filter((row) => row.status === "active").map((row) => [row.userKey, row]));
++  const membersByProject = projectMembers.reduce((groups, row) => {
++    const projectKey = row.projectKey || "unknown";
++    if (!groups.has(projectKey)) {
++      groups.set(projectKey, []);
++    }
++    groups.get(projectKey).push(row);
++    return groups;
++  }, new Map());
++  let limitViolationCount = 0;
++  membersByProject.forEach((members) => {
++    const activeMembers = members.filter((row) => row.status === "active");
++    const ownerMember = members.find((row) => row.role === "owner") || activeMembers[0];
++    const ownerMembership = activeMembershipByUser.get(ownerMember?.userKey);
++    const maxTeamMembers = Number(planMaps.limitsByPlanKey.get(ownerMembership?.planKey)?.maxTeamMembers || 1);
++    if (activeMembers.length > maxTeamMembers) {
++      limitViolationCount += 1;
++    }
++  });
++  const blockedInvitationCount = projectMembers.filter((row) => ["blocked", "limit_blocked", "rejected"].includes(String(row.status || ""))).length;
++  const status = limitViolationCount ? "FAIL" : blockedInvitationCount ? "WARN" : "PASS";
++  return {
++    blockedInvitationCount,
++    limitViolationCount,
++    projectCount: membersByProject.size,
++    status,
++    summary: status === "PASS"
++      ? `${membersByProject.size} project team(s) have no detected membership limit violations.`
++      : `Team health found ${limitViolationCount} project limit violation(s) and ${blockedInvitationCount} blocked invitation(s).`,
++  };
++}
++
++function adminHealthConfigIssues(tableRows, memberships, aiCredits) {
++  const issues = tableRows.filter((row) => row.status !== "PASS");
++  memberships.missingLimitPlanCodes.forEach((planCode) => {
++    issues.push({
++      area: "Membership configuration",
++      count: 1,
++      issue: `membership_limits row is missing for ${planCode}.`,
++      nextStep: "Restore the plan limit row before assigning or supporting this membership plan.",
++      status: "FAIL",
++      tableName: "membership_limits",
++    });
++  });
++  if (memberships.missingPlanMembershipCount) {
++    issues.push({
++      area: "Membership configuration",
++      count: memberships.missingPlanMembershipCount,
++      issue: `${memberships.missingPlanMembershipCount} membership assignment(s) reference a missing plan.`,
++      nextStep: "Restore the missing membership plan row or correct the affected membership assignment.",
++      status: "FAIL",
++      tableName: "user_memberships",
++    });
++  }
++  aiCredits.missingPackCodes.forEach((code) => {
++    issues.push({
++      area: "AI credit configuration",
++      count: 1,
++      issue: `Required AI credit pack ${code} is missing.`,
++      nextStep: "Restore the DB-backed AI credit pack before supporting purchases.",
++      status: "FAIL",
++      tableName: "ai_credit_packs",
++    });
++  });
++  if (aiCredits.missingActionUsageCount) {
++    issues.push({
++      area: "AI credit configuration",
++      count: aiCredits.missingActionUsageCount,
++      issue: `${aiCredits.missingActionUsageCount} AI usage row(s) reference missing AI actions.`,
++      nextStep: "Restore the AI action row or classify the historical usage row before support review.",
++      status: "FAIL",
++      tableName: "ai_usage_log",
++    });
++  }
++  if (aiCredits.missingBalanceUserKeys.length) {
++    issues.push({
++      area: "AI credit configuration",
++      count: aiCredits.missingBalanceUserKeys.length,
++      issue: `${aiCredits.missingBalanceUserKeys.length} user(s) have AI usage but no balance account.`,
++      nextStep: "Open the user AI credit support record and reconcile the missing balance before adjustment.",
++      status: "WARN",
++      tableName: "user_ai_credits",
++    });
++  }
++  if (!issues.length) {
++    issues.push({
++      area: "Required DB configuration",
++      count: ADMIN_OPERATIONS_REQUIRED_TABLES.length,
++      issue: "Required Admin operations tables and records are available.",
++      nextStep: "No action required.",
++      status: "PASS",
++      tableName: "all required tables",
++    });
++  }
++  return issues;
++}
++
++export function adminOperationsHealth(tables) {
++  const tableRows = adminHealthTableRows(tables);
++  const planMaps = adminHealthPlanMaps(tables);
++  const memberships = adminHealthMemberships(tables, planMaps);
++  const invitations = adminHealthInvitations(tables);
++  const aiCredits = adminHealthAiCredits(tables);
++  const marketplace = adminHealthMarketplace(tables, planMaps);
++  const teams = adminHealthTeams(tables, planMaps);
++  const configIssues = adminHealthConfigIssues(tableRows, memberships, aiCredits);
++  const summaryRows = [
++    { area: "Membership operations", count: memberships.totalCount, diagnostic: memberships.summary, status: memberships.status },
++    { area: "Invitation support", count: invitations.totalCount, diagnostic: invitations.summary, status: invitations.status },
++    { area: "AI credit monitoring", count: aiCredits.usageCount, diagnostic: aiCredits.summary, status: aiCredits.status },
++    { area: "Marketplace revenue health", count: marketplace.sellerEligibleCount, diagnostic: marketplace.summary, status: marketplace.status },
++    { area: "Team enforcement health", count: teams.projectCount, diagnostic: teams.summary, status: teams.status },
++    { area: "Required DB configuration", count: configIssues.length, diagnostic: configIssues[0]?.issue || "Required DB configuration unavailable.", status: overallHealthStatus(configIssues) },
++  ];
++  return {
++    aiCredits,
++    configIssues,
++    invitations,
++    marketplace,
++    memberships,
++    sourceTables: ADMIN_OPERATIONS_REQUIRED_TABLES,
++    status: overallHealthStatus(summaryRows),
++    summaryRows,
++    tableRows,
++    teams,
++  };
++}
++
+@@ -2247 +2550 @@-      throw new Error("Admin role required to use this Admin API route.");
++      throw httpError("Admin role required to use this Admin API route.", 403);
+@@ -2980,0 +3284 @@+    const operationsHealth = adminOperationsHealth(this.standaloneTables);
+@@ -3039,0 +3344,5 @@+      ...operationsHealth.summaryRows.map((row) => ({
++        area: row.area,
++        status: row.status,
++        summary: row.diagnostic,
++      })),
+@@ -3059,0 +3369,6 @@+        { area: "Membership operations", field: "Active assignments", status: operationsHealth.memberships.status, value: `${operationsHealth.memberships.activeCount} active of ${operationsHealth.memberships.totalCount} total` },
++        { area: "Invitation support", field: "Status counts", status: operationsHealth.invitations.status, value: JSON.stringify(operationsHealth.invitations.countsByStatus) },
++        { area: "AI credit monitoring", field: "Usage rows", status: operationsHealth.aiCredits.status, value: `${operationsHealth.aiCredits.usageCount} usage row(s); ${operationsHealth.aiCredits.totalBalance} total balance credits` },
++        { area: "Marketplace revenue health", field: "Eligible sellers", status: operationsHealth.marketplace.status, value: `${operationsHealth.marketplace.sellerEligibleCount} active seller-eligible membership(s)` },
++        { area: "Team enforcement health", field: "Limit violations", status: operationsHealth.teams.status, value: `${operationsHealth.teams.limitViolationCount} violation(s); ${operationsHealth.teams.blockedInvitationCount} blocked invitation(s)` },
++        { area: "Required DB configuration", field: "Issue count", status: overallHealthStatus(operationsHealth.configIssues), value: `${operationsHealth.configIssues.length} issue row(s)` },
+@@ -3066,0 +3382 @@+      operationsHealth,
+diff --git a/admin/system-health.html b/admin/system-health.html
+--- a/admin/system-health.html+++ b/admin/system-health.html@@ -102,0 +103,145 @@+                            <table class="data-table" aria-label="Admin operational health summary">
++                                <caption>Operational Health Summary</caption>
++                                <thead>
++                                    <tr>
++                                        <th scope="col">Area</th>
++                                        <th scope="col">Status</th>
++                                        <th scope="col">Count</th>
++                                        <th scope="col">Diagnostic</th>
++                                    </tr>
++                                </thead>
++                                <tbody data-admin-health-summary-rows>
++                                    <tr><td>Operations</td><td>Loading</td><td>0</td><td>Loading operational health.</td></tr>
++                                </tbody>
++                            </table>
++                        </div>
++                        <div class="table-wrapper">
++                            <table class="data-table" aria-label="Admin membership support state">
++                                <caption>Membership Support State</caption>
++                                <thead>
++                                    <tr>
++                                        <th scope="col">Filter</th>
++                                        <th scope="col">Value</th>
++                                    </tr>
++                                </thead>
++                                <tbody>
++                                    <tr>
++                                        <td>Plan</td>
++                                        <td>
++                                            <select aria-label="Membership plan filter" data-admin-health-membership-plan-filter>
++                                                <option value="">All plans</option>
++                                            </select>
++                                        </td>
++                                    </tr>
++                                </tbody>
++                            </table>
++                        </div>
++                        <div class="table-wrapper">
++                            <table class="data-table" aria-label="Admin membership support rows">
++                                <caption>Membership Assignments</caption>
++                                <thead>
++                                    <tr>
++                                        <th scope="col">User</th>
++                                        <th scope="col">Plan</th>
++                                        <th scope="col">Status</th>
++                                        <th scope="col">Source</th>
++                                    </tr>
++                                </thead>
++                                <tbody data-admin-health-membership-rows>
++                                    <tr><td>Loading</td><td>Loading</td><td>Loading</td><td>Loading membership state.</td></tr>
++                                </tbody>
++                            </table>
++                        </div>
++                        <div class="table-wrapper">
++                            <table class="data-table" aria-label="Admin invitation support state">
++                                <caption>Invitation Support</caption>
++                                <thead>
++                                    <tr>
++                                        <th scope="col">Filter</th>
++                                        <th scope="col">Value</th>
++                                    </tr>
++                                </thead>
++                                <tbody>
++                                    <tr>
++                                        <td>Status</td>
++                                        <td>
++                                            <select aria-label="Invitation status filter" data-admin-health-invitation-status-filter>
++                                                <option value="">All statuses</option>
++                                            </select>
++                                        </td>
++                                    </tr>
++                                </tbody>
++                            </table>
++                        </div>
++                        <div class="table-wrapper">
++                            <table class="data-table" aria-label="Admin invitation support rows">
++                                <caption>Invitation Records</caption>
++                                <thead>
++                                    <tr>
++                                        <th scope="col">Email</th>
++                                        <th scope="col">Status</th>
++                                        <th scope="col">Code</th>
++                                        <th scope="col">Expires</th>
++                                    </tr>
++                                </thead>
++                                <tbody data-admin-health-invitation-rows>
++                                    <tr><td>Loading</td><td>Loading</td><td>Loading</td><td>Loading invitation state.</td></tr>
++                                </tbody>
++                            </table>
++                        </div>
++                        <div class="table-wrapper">
++                            <table class="data-table" aria-label="Admin AI usage support state">
++                                <caption>AI Usage Monitoring</caption>
++                                <thead>
++                                    <tr>
++                                        <th scope="col">Filter</th>
++                                        <th scope="col">Value</th>
++                                    </tr>
++                                </thead>
++                                <tbody>
++                                    <tr>
++                                        <td>Action</td>
++                                        <td>
++                                            <select aria-label="AI usage action filter" data-admin-health-ai-action-filter>
++                                                <option value="">All actions</option>
++                                            </select>
++                                        </td>
++                                    </tr>
++                                </tbody>
++                            </table>
++                        </div>
++                        <div class="table-wrapper">
++                            <table class="data-table" aria-label="Admin AI usage support rows">
++                                <caption>AI Usage Rows</caption>
++                                <thead>
++                                    <tr>
++                                        <th scope="col">User</th>
++                                        <th scope="col">Action</th>
++                                        <th scope="col">Source</th>
++                                        <th scope="col">Delta</th>
++                                        <th scope="col">Balance After</th>
++                                    </tr>
++                                </thead>
++                                <tbody data-admin-health-ai-usage-rows>
++                                    <tr><td>Loading</td><td>Loading</td><td>Loading</td><td>0</td><td>Loading AI usage.</td></tr>
++                                </tbody>
++                            </table>
++                        </div>
++                        <div class="table-wrapper">
++                            <table class="data-table" aria-label="Admin operations configuration issues">
++                                <caption>Operational Configuration Issues</caption>
++                                <thead>
++                                    <tr>
++                                        <th scope="col">Area</th>
++                                        <th scope="col">Status</th>
++                                        <th scope="col">Table</th>
++                                        <th scope="col">Issue</th>
++                                        <th scope="col">Next Step</th>
++                                    </tr>
++                                </thead>
++                                <tbody data-admin-health-config-issue-rows>
++                                    <tr><td>Operations</td><td>Loading</td><td>Loading</td><td>Loading configuration issues.</td><td>Loading next step.</td></tr>
++                                </tbody>
++                            </table>
++                        </div>
++                        <div class="table-wrapper">
+diff --git a/assets/theme-v2/js/admin-system-health.js b/assets/theme-v2/js/admin-system-health.js
+--- a/assets/theme-v2/js/admin-system-health.js+++ b/assets/theme-v2/js/admin-system-health.js@@ -18,0 +19,8 @@+        this.healthAiActionFilter = root.querySelector("[data-admin-health-ai-action-filter]");
++        this.healthAiUsageRows = root.querySelector("[data-admin-health-ai-usage-rows]");
++        this.healthConfigIssueRows = root.querySelector("[data-admin-health-config-issue-rows]");
++        this.healthInvitationRows = root.querySelector("[data-admin-health-invitation-rows]");
++        this.healthInvitationStatusFilter = root.querySelector("[data-admin-health-invitation-status-filter]");
++        this.healthMembershipPlanFilter = root.querySelector("[data-admin-health-membership-plan-filter]");
++        this.healthMembershipRows = root.querySelector("[data-admin-health-membership-rows]");
++        this.healthSummaryRows = root.querySelector("[data-admin-health-summary-rows]");
+@@ -19,0 +28 @@+        this.operationsHealth = null;
+@@ -31 +40 @@-        if (!this.connectionSummary || !this.databaseStatusRows || !this.details || !this.limits || !this.overview || !this.r2Readiness || !this.status || !this.storageConnectivityRows || !this.storageConnectivityStatus || !this.storageStatusRows || !this.summary) {
++        if (!this.connectionSummary || !this.databaseStatusRows || !this.details || !this.healthAiActionFilter || !this.healthAiUsageRows || !this.healthConfigIssueRows || !this.healthInvitationRows || !this.healthInvitationStatusFilter || !this.healthMembershipPlanFilter || !this.healthMembershipRows || !this.healthSummaryRows || !this.limits || !this.overview || !this.r2Readiness || !this.status || !this.storageConnectivityRows || !this.storageConnectivityStatus || !this.storageStatusRows || !this.summary) {
+@@ -36,0 +46,3 @@+        this.healthMembershipPlanFilter.addEventListener("change", () => this.renderMembershipRows(this.operationsHealth?.memberships || {}));
++        this.healthInvitationStatusFilter.addEventListener("change", () => this.renderInvitationRows(this.operationsHealth?.invitations || {}));
++        this.healthAiActionFilter.addEventListener("change", () => this.renderAiUsageRows(this.operationsHealth?.aiCredits || {}));
+@@ -66,0 +79,111 @@+    }
++
++    replaceFilterOptions(select, options, allLabel) {
++        const currentValue = select.value;
++        select.replaceChildren();
++        const allOption = document.createElement("option");
++        allOption.value = "";
++        allOption.textContent = allLabel;
++        select.append(allOption);
++        options.forEach((value) => {
++            const option = document.createElement("option");
++            option.value = value;
++            option.textContent = value;
++            select.append(option);
++        });
++        select.value = options.includes(currentValue) ? currentValue : "";
++    }
++
++    renderHealthSummary(rows) {
++        this.healthSummaryRows.replaceChildren();
++        (rows.length ? rows : [{ area: "Operations", count: 0, diagnostic: "Operational health unavailable.", status: "WARN" }]).forEach((row) => {
++            this.healthSummaryRows.append(this.createRow([
++                row.area || "Unknown",
++                row.status || "WARN",
++                `${row.count || 0}`,
++                row.diagnostic || "No diagnostic returned.",
++            ]));
++        });
++    }
++
++    renderMembershipRows(memberships = {}) {
++        const selectedPlan = this.healthMembershipPlanFilter.value;
++        const rows = Array.isArray(memberships.rows) ? memberships.rows : [];
++        this.healthMembershipRows.replaceChildren();
++        rows
++            .filter((row) => !selectedPlan || row.planCode === selectedPlan)
++            .forEach((row) => {
++                this.healthMembershipRows.append(this.createRow([
++                    row.userKey || "unknown",
++                    row.planCode || "unknown",
++                    row.status || "unknown",
++                    row.source || "unknown",
++                ]));
++            });
++        if (!this.healthMembershipRows.children.length) {
++            this.healthMembershipRows.append(this.createRow(["No rows", selectedPlan || "All plans", "SKIP", "No matching membership assignments."]));
++        }
++    }
++
++    renderInvitationRows(invitations = {}) {
++        const selectedStatus = this.healthInvitationStatusFilter.value;
++        const rows = Array.isArray(invitations.rows) ? invitations.rows : [];
++        this.healthInvitationRows.replaceChildren();
++        rows
++            .filter((row) => !selectedStatus || row.status === selectedStatus)
++            .forEach((row) => {
++                this.healthInvitationRows.append(this.createRow([
++                    row.email || "unknown",
++                    row.status || "unknown",
++                    row.invitationCode || "hidden",
++                    row.expiresAt || "not set",
++                ]));
++            });
++        if (!this.healthInvitationRows.children.length) {
++            this.healthInvitationRows.append(this.createRow(["No rows", selectedStatus || "All statuses", "SKIP", "No matching invitation records."]));
++        }
++    }
++
++    renderAiUsageRows(aiCredits = {}) {
++        const selectedAction = this.healthAiActionFilter.value;
++        const rows = Array.isArray(aiCredits.rows) ? aiCredits.rows : [];
++        this.healthAiUsageRows.replaceChildren();
++        rows
++            .filter((row) => !selectedAction || row.actionCode === selectedAction)
++            .forEach((row) => {
++                this.healthAiUsageRows.append(this.createRow([
++                    row.userKey || "unknown",
++                    row.actionCode || "UNASSIGNED",
++                    row.sourceType || "unknown",
++                    `${row.creditDelta || 0}`,
++                    row.balanceAfter === "" || row.balanceAfter === undefined ? "not recorded" : `${row.balanceAfter}`,
++                ]));
++            });
++        if (!this.healthAiUsageRows.children.length) {
++            this.healthAiUsageRows.append(this.createRow(["No rows", selectedAction || "All actions", "SKIP", "0", "No matching AI usage records."]));
++        }
++    }
++
++    renderConfigIssues(rows) {
++        this.healthConfigIssueRows.replaceChildren();
++        (rows.length ? rows : [{ area: "Operations", issue: "Operational configuration unavailable.", nextStep: "Reload Admin System Health.", status: "WARN", tableName: "unknown" }]).forEach((row) => {
++            this.healthConfigIssueRows.append(this.createRow([
++                row.area || "Unknown",
++                row.status || "WARN",
++                row.tableName || "unknown",
++                row.issue || "No issue returned.",
++                row.nextStep || "Review Admin System Health diagnostics.",
++            ]));
++        });
++    }
++
++    renderOperationsHealth(operationsHealth = {}) {
++        this.operationsHealth = operationsHealth;
++        this.replaceFilterOptions(this.healthMembershipPlanFilter, operationsHealth.memberships?.planOptions || [], "All plans");
++        this.replaceFilterOptions(this.healthInvitationStatusFilter, operationsHealth.invitations?.statusOptions || [], "All statuses");
++        this.replaceFilterOptions(this.healthAiActionFilter, operationsHealth.aiCredits?.actionOptions || [], "All actions");
++        this.renderHealthSummary(Array.isArray(operationsHealth.summaryRows) ? operationsHealth.summaryRows : []);
++        this.renderMembershipRows(operationsHealth.memberships || {});
++        this.renderInvitationRows(operationsHealth.invitations || {});
++        this.renderAiUsageRows(operationsHealth.aiCredits || {});
++        this.renderConfigIssues(Array.isArray(operationsHealth.configIssues) ? operationsHealth.configIssues : []);
+@@ -221,0 +345 @@+            this.renderOperationsHealth(payload.operationsHealth || {});
+@@ -238,0 +363,7 @@+            this.renderOperationsHealth({
++                aiCredits: { actionOptions: [], rows: [] },
++                configIssues: [{ area: "Operations", issue: "Admin System Health failed to load.", nextStep: "Resolve the load failure and retry.", status: "FAIL", tableName: "operationsHealth" }],
++                invitations: { rows: [], statusOptions: [] },
++                memberships: { planOptions: [], rows: [] },
++                summaryRows: [{ area: "Operations", count: 0, diagnostic: error instanceof Error ? error.message : "Admin System Health unavailable.", status: "FAIL" }],
++            });
+diff --git a/tests/dev-runtime/AdminHealthOperations.test.mjs b/tests/dev-runtime/AdminHealthOperations.test.mjs
+new file mode 100644
+--- /dev/null+++ b/tests/dev-runtime/AdminHealthOperations.test.mjs@@ -0,0 +1,229 @@+import http from "node:http";
++import test from "node:test";
++import assert from "node:assert/strict";
++import {
++  adminOperationsHealth,
++  createLocalApiRouter,
++} from "../../src/dev-runtime/server/local-api-router.mjs";
++import {
++  debitAiCreditsForAction,
++  grantMonthlyAiCredits,
++} from "../../src/dev-runtime/ai/ai-credit-service.mjs";
++import { assignUserMembership } from "../../src/dev-runtime/memberships/membership-assignment-service.mjs";
++import { SEED_DB_KEYS, makeSeedUlid } from "../../src/dev-runtime/seed/seed-db-keys.mjs";
++import { createServerSeedTables } from "../../src/dev-runtime/seed/server-seed-loader.mjs";
++
++function createKeyFactory(start = 12000) {
++  let sequence = start;
++  return () => makeSeedUlid(sequence++);
++}
++
++function options(start = 12000) {
++  return {
++    actorKey: SEED_DB_KEYS.users.admin,
++    createKey: createKeyFactory(start),
++    now: "2026-06-18T12:00:00.000Z",
++  };
++}
++
++function withEnv(nextEnv, callback) {
++  const previousEnv = {};
++  Object.keys(nextEnv).forEach((key) => {
++    previousEnv[key] = process.env[key];
++    if (nextEnv[key] === undefined) {
++      delete process.env[key];
++    } else {
++      process.env[key] = nextEnv[key];
++    }
++  });
++  return Promise.resolve()
++    .then(callback)
++    .finally(() => {
++      Object.entries(previousEnv).forEach(([key, value]) => {
++        if (value === undefined) {
++          delete process.env[key];
++        } else {
++          process.env[key] = value;
++        }
++      });
++    });
++}
++
++function startApiServer() {
++  const handleRequest = createLocalApiRouter();
++  const server = http.createServer((request, response) => {
++    const address = server.address();
++    const port = address && typeof address !== "string" ? address.port : 0;
++    const requestUrl = new URL(request.url || "/", `http://127.0.0.1:${port}`);
++    handleRequest(request, response, requestUrl).catch((error) => {
++      response.statusCode = error?.statusCode || 500;
++      response.setHeader("Content-Type", "application/json; charset=utf-8");
++      response.end(JSON.stringify({
++        error: error instanceof Error ? error.message : String(error || "Admin health operations test server error."),
++        ok: false,
++      }));
++    });
++  });
++  return new Promise((resolve, reject) => {
++    server.once("error", reject);
++    server.listen(0, "127.0.0.1", () => {
++      const address = server.address();
++      if (!address || typeof address === "string") {
++        reject(new Error("Unable to start Admin health operations API server."));
++        return;
++      }
++      resolve({
++        baseUrl: `http://127.0.0.1:${address.port}`,
++        close: () => new Promise((closeResolve) => {
++          server.closeAllConnections?.();
++          server.close(closeResolve);
++        }),
++      });
++    });
++  });
++}
++
++async function apiPayload(baseUrl, pathName, request = {}) {
++  const init = request.body === undefined
++    ? request
++    : {
++      ...request,
++      body: JSON.stringify(request.body),
++      headers: {
++        "content-type": "application/json",
++        ...(request.headers || {}),
++      },
++    };
++  const response = await fetch(`${baseUrl}${pathName}`, init);
++  const payload = await response.json();
++  return { payload, status: response.status };
++}
++
++async function apiJson(baseUrl, pathName, request = {}) {
++  const { payload, status } = await apiPayload(baseUrl, pathName, request);
++  assert.equal(status, 200, `${pathName} should return 200: ${payload.error || ""}`);
++  assert.equal(payload.ok, true);
++  return payload.data;
++}
++
++test("Admin can view operational health while Creator sessions are blocked", async () => {
++  await withEnv({
++    GAMEFOUNDRY_SUPABASE_ANON_KEY: undefined,
++    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: undefined,
++    GAMEFOUNDRY_SUPABASE_URL: undefined,
++  }, async () => {
++    const server = await startApiServer();
++    try {
++      await apiJson(server.baseUrl, "/api/session/user", {
++        body: { userKey: SEED_DB_KEYS.users.user1 },
++        method: "POST",
++      });
++      const blocked = await apiPayload(server.baseUrl, "/api/admin/system-health/status");
++      assert.equal(blocked.status, 403);
++      assert.match(blocked.payload.error, /Admin role required/);
++
++      await apiJson(server.baseUrl, "/api/session/user", {
++        body: { userKey: SEED_DB_KEYS.users.admin },
++        method: "POST",
++      });
++      const health = await apiJson(server.baseUrl, "/api/admin/system-health/status");
++      assert.equal(Array.isArray(health.operationsHealth.summaryRows), true);
++      assert.deepEqual(
++        health.operationsHealth.summaryRows.map((row) => row.area),
++        [
++          "Membership operations",
++          "Invitation support",
++          "AI credit monitoring",
++          "Marketplace revenue health",
++          "Team enforcement health",
++          "Required DB configuration",
++        ],
++      );
++      const healthText = JSON.stringify(health.operationsHealth);
++      assert.equal(healthText.includes("monthlyPriceCents"), false);
++      assert.equal(healthText.includes("priceCents"), false);
++      assert.equal(health.secretEditingAllowed, false);
++    } finally {
++      await server.close();
++    }
++  });
++});
++
++test("missing membership limits and AI credit packs produce visible operational issues", () => {
++  const tables = createServerSeedTables();
++  const studioPlan = tables.membership_plans.find((row) => row.code === "STUDIO");
++  tables.membership_limits = tables.membership_limits.filter((row) => row.planKey !== studioPlan.key);
++  tables.ai_credit_packs = tables.ai_credit_packs.filter((row) => row.code !== "LARGE");
++
++  const health = adminOperationsHealth(tables);
++  assert.equal(health.memberships.status, "FAIL");
++  assert.equal(health.aiCredits.status, "FAIL");
++  assert.equal(health.memberships.missingLimitPlanCodes.includes("STUDIO"), true);
++  assert.equal(health.aiCredits.missingPackCodes.includes("LARGE"), true);
++  assert.equal(health.configIssues.some((row) => /membership_limits row is missing for STUDIO/.test(row.issue)), true);
++  assert.equal(health.configIssues.some((row) => /Required AI credit pack LARGE is missing/.test(row.issue)), true);
++});
++
++test("invitation status counts are accurate for Admin support", () => {
++  const tables = createServerSeedTables();
++  const betaPlan = tables.membership_plans.find((row) => row.code === "BETA");
++  tables.invitations.push(
++    {
++      acceptedAt: "",
++      acceptedBy: "",
++      createdAt: "2026-06-18T12:00:00.000Z",
++      createdBy: SEED_DB_KEYS.users.admin,
++      email: "pending@example.invalid",
++      expiresAt: "2026-07-18T12:00:00.000Z",
++      invitationCode: "PENDING-001",
++      invitedBy: SEED_DB_KEYS.users.admin,
++      key: makeSeedUlid(12100),
++      planKey: betaPlan.key,
++      status: "pending",
++      updatedAt: "2026-06-18T12:00:00.000Z",
++      updatedBy: SEED_DB_KEYS.users.admin,
++    },
++    {
++      acceptedAt: "2026-06-18T12:30:00.000Z",
++      acceptedBy: SEED_DB_KEYS.users.user1,
++      createdAt: "2026-06-18T12:10:00.000Z",
++      createdBy: SEED_DB_KEYS.users.admin,
++      email: "accepted@example.invalid",
++      expiresAt: "2026-07-18T12:10:00.000Z",
++      invitationCode: "ACCEPTED-001",
++      invitedBy: SEED_DB_KEYS.users.admin,
++      key: makeSeedUlid(12101),
++      planKey: betaPlan.key,
++      status: "accepted",
++      updatedAt: "2026-06-18T12:30:00.000Z",
++      updatedBy: SEED_DB_KEYS.users.user1,
++    },
++  );
++
++  const health = adminOperationsHealth(tables);
++  assert.equal(health.invitations.countsByStatus.pending, 1);
++  assert.equal(health.invitations.countsByStatus.accepted, 1);
++  assert.deepEqual(health.invitations.statusOptions, ["accepted", "pending"]);
++});
++
++test("AI usage summaries match ai_usage_log rows", () => {
++  const tables = createServerSeedTables();
++  assignUserMembership(tables, {
++    externalSubscriptionId: "sub_admin_health_ai",
++    planCode: "CREATOR",
++    source: "paid",
++    userKey: SEED_DB_KEYS.users.user1,
++  }, options(12200));
++  grantMonthlyAiCredits(tables, { userKey: SEED_DB_KEYS.users.user1 }, options(12300));
++  debitAiCreditsForAction(tables, {
++    actionCode: "TEXT_ASSIST",
++    userKey: SEED_DB_KEYS.users.user1,
++  }, options(12400));
++
++  const health = adminOperationsHealth(tables);
++  assert.equal(health.aiCredits.usageCount, tables.ai_usage_log.length);
++  assert.equal(health.aiCredits.monthlyGrantCount, 1);
++  assert.equal(health.aiCredits.debitCount, 1);
++  assert.equal(health.aiCredits.rows.some((row) => row.actionCode === "TEXT_ASSIST" && row.creditDelta < 0), true);
++  assert.equal(health.aiCredits.actionOptions.includes("TEXT_ASSIST"), true);
++});
+diff --git a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+new file mode 100644
+--- /dev/null+++ b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs@@ -0,0 +1,108 @@+import { expect, test } from "@playwright/test";
++import fs from "node:fs/promises";
++import path from "node:path";
++import { SEED_DB_KEYS } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
++import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
++import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
++
++async function setSessionUser(server, userKey) {
++  await fetch(`${server.baseUrl}/api/session/user`, {
++    body: JSON.stringify({ userKey }),
++    headers: { "content-type": "application/json" },
++    method: "POST",
++  });
++}
++
++async function openAdminSystemHealthPage(page, userKey) {
++  const server = await startRepoServer();
++  const failedRequests = [];
++  const pageErrors = [];
++  const consoleErrors = [];
++  page.on("pageerror", (error) => {
++    pageErrors.push(error.message);
++  });
++  page.on("console", (message) => {
++    if (message.type() === "error") {
++      consoleErrors.push(message.text());
++    }
++  });
++  page.on("response", (response) => {
++    if (response.status() >= 400) {
++      failedRequests.push(`${response.status()} ${response.url()}`);
++    }
++  });
++  page.on("requestfailed", (request) => {
++    failedRequests.push(`FAILED ${request.url()}`);
++  });
++  await setSessionUser(server, userKey);
++  await workspaceV2CoverageReporter.start(page);
++  await page.goto(`${server.baseUrl}/admin/system-health.html`, { waitUntil: "networkidle" });
++  return {
++    consoleErrors,
++    failedRequests,
++    pageErrors,
++    server,
++  };
++}
++
++async function closeAdminSystemHealthPage(page, context) {
++  await workspaceV2CoverageReporter.stop(page);
++  await context.server.close();
++}
++
++test.afterAll(async () => {
++  await workspaceV2CoverageReporter.writeReport();
++});
++
++test("Admin System Health renders operational health summaries and filters", async ({ page }) => {
++  const context = await openAdminSystemHealthPage(page, SEED_DB_KEYS.users.admin);
++  try {
++    await expect(page).toHaveTitle(/System Health - Game Foundry Studio LLC/);
++    await expect(page.getByRole("heading", { exact: true, name: "System Health" })).toBeVisible();
++    await expect(page.locator("[data-admin-system-health-status]")).toContainText("Admin System Health loaded safe status only.");
++    await expect(page.locator("[data-admin-health-summary-rows]")).toContainText("Membership operations");
++    await expect(page.locator("[data-admin-health-summary-rows]")).toContainText("Invitation support");
++    await expect(page.locator("[data-admin-health-summary-rows]")).toContainText("AI credit monitoring");
++    await expect(page.locator("[data-admin-health-summary-rows]")).toContainText("Marketplace revenue health");
++    await expect(page.locator("[data-admin-health-summary-rows]")).toContainText("Team enforcement health");
++    await expect(page.locator("[data-admin-health-config-issue-rows]")).toContainText("Required Admin operations tables and records are available.");
++
++    const membershipFilter = page.locator("[data-admin-health-membership-plan-filter]");
++    await expect(membershipFilter).toContainText("FREE");
++    await membershipFilter.selectOption("FREE");
++    await expect(page.locator("[data-admin-health-membership-rows]")).toContainText("FREE");
++
++    await expect(page.locator("[data-admin-health-invitation-status-filter]")).toBeVisible();
++    await expect(page.locator("[data-admin-health-ai-action-filter]")).toBeVisible();
++    await expect(page.locator("[data-owner-ai-save], [data-owner-membership-save], [data-owner-ai-credits], [data-owner-memberships]")).toHaveCount(0);
++    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
++    expect(context.pageErrors).toEqual([]);
++    expect(context.consoleErrors).toEqual([]);
++    expect(context.failedRequests).toEqual([]);
 +  } finally {
-+    await server.close();
++    await closeAdminSystemHealthPage(page, context);
 +  }
 +});
 +
- test("Supabase identity session lookup fails visibly when user_roles references a missing role", async () => {
-   const fakeSupabase = await startFakeSupabaseAuthServer({
-     identityTables: fakeSupabaseIdentityTables({
-@@ -1341,6 +1365,142 @@ test("Supabase identity session lookup fails visibly when user_roles references
-   await fakeSupabase.close();
- });
- 
-+test("Supabase identity table session resolver exposes Creator Admin and Owner role state", () => {
-+  const admin = sessionUserFromIdentityTables(
-+    fakeSupabaseIdentityTables(),
-+    SEED_DB_KEYS.users.admin,
-+    "account",
-+    "Supabase identity",
-+  );
-+  assert.equal(admin.authenticated, true);
-+  assert.equal(admin.userKey, SEED_DB_KEYS.users.admin);
-+  assert.equal(admin.isAdmin, true);
-+  assert.equal(admin.isOwner, false);
-+  assert.deepEqual(admin.roleSlugs, ["admin"]);
-+
-+  const timestamp = "2026-06-15T00:00:00.000Z";
-+  const audit = {
-+    createdAt: timestamp,
-+    createdBy: SEED_DB_KEYS.users.admin,
-+    updatedAt: timestamp,
-+    updatedBy: SEED_DB_KEYS.users.admin,
-+  };
-+  const tables = fakeSupabaseIdentityTables({
-+    roles: [
-+      {
-+        key: SEED_DB_KEYS.roles.creator,
-+        roleSlug: "creator",
-+        name: "Creator",
-+        description: "Creator account.",
-+        isActive: true,
-+        isSystemRole: false,
-+        ...audit,
-+      },
-+      {
-+        key: SEED_DB_KEYS.roles.admin,
-+        roleSlug: "admin",
-+        name: "Admin",
-+        description: "Administrative account.",
-+        isActive: true,
-+        isSystemRole: false,
-+        ...audit,
-+      },
-+      {
-+        key: SEED_DB_KEYS.roles.owner,
-+        roleSlug: "owner",
-+        name: "Owner",
-+        description: "Owner account.",
-+        isActive: true,
-+        isSystemRole: false,
-+        ...audit,
-+      },
-+    ],
-+    user_roles: [
-+      {
-+        key: SEED_DB_KEYS.userRoles.user1User,
-+        userKey: SEED_DB_KEYS.users.user1,
-+        roleKey: SEED_DB_KEYS.roles.creator,
-+        ...audit,
-+      },
-+      {
-+        key: SEED_DB_KEYS.userRoles.adminUser,
-+        userKey: SEED_DB_KEYS.users.admin,
-+        roleKey: SEED_DB_KEYS.roles.creator,
-+        ...audit,
-+      },
-+      {
-+        key: SEED_DB_KEYS.userRoles.adminAdmin,
-+        userKey: SEED_DB_KEYS.users.admin,
-+        roleKey: SEED_DB_KEYS.roles.admin,
-+        ...audit,
-+      },
-+      {
-+        key: SEED_DB_KEYS.userRoles.adminOwner,
-+        userKey: SEED_DB_KEYS.users.admin,
-+        roleKey: SEED_DB_KEYS.roles.owner,
-+        ...audit,
-+      },
-+    ],
-+  });
-+
-+  const creator = sessionUserFromIdentityTables(
-+    tables,
-+    SEED_DB_KEYS.users.user1,
-+    "account",
-+    "Supabase identity",
-+  );
-+  assert.equal(creator.authenticated, true);
-+  assert.equal(creator.userKey, SEED_DB_KEYS.users.user1);
-+  assert.equal(creator.isAdmin, false);
-+  assert.equal(creator.isOwner, false);
-+  assert.deepEqual(creator.roleSlugs, ["creator"]);
-+
-+  const owner = sessionUserFromIdentityTables(
-+    tables,
-+    SEED_DB_KEYS.users.admin,
-+    "account",
-+    "Supabase identity",
-+  );
-+  assert.equal(owner.authenticated, true);
-+  assert.equal(owner.userKey, SEED_DB_KEYS.users.admin);
-+  assert.equal(owner.isAdmin, true);
-+  assert.equal(owner.isOwner, true);
-+  assert.deepEqual(owner.roleSlugs, ["creator", "admin", "owner"]);
++test("Creator sessions cannot access Admin System Health operations", async ({ page }) => {
++  const context = await openAdminSystemHealthPage(page, SEED_DB_KEYS.users.user1);
++  try {
++    await expect(page.getByRole("heading", { name: "Admin role required" })).toBeVisible();
++    await expect(page.locator("[data-session-access-blocked='admin']")).toBeVisible();
++    await expect(page.locator("[data-admin-health-summary-rows]")).toHaveCount(0);
++    expect(context.pageErrors).toEqual([]);
++    expect(context.consoleErrors).toEqual([]);
++    expect(context.failedRequests).toEqual([]);
++  } finally {
++    await closeAdminSystemHealthPage(page, context);
++  }
 +});
 +
-+test("Supabase identity table session resolver reports missing user and missing role diagnostics", () => {
-+  const tables = fakeSupabaseIdentityTables();
-+  const missingUser = sessionUserFromIdentityTables(
-+    tables,
-+    "01K2GFSJ0Y0000000000000099",
-+    "account",
-+    "Supabase identity",
-+  );
-+  assert.equal(missingUser.authenticated, false);
-+  assert.match(missingUser.diagnostic, /Selected Supabase identity user key .* is missing from users/);
-+
-+  const missingRole = sessionUserFromIdentityTables(
-+    fakeSupabaseIdentityTables({
-+      user_roles: [
-+        {
-+          key: SEED_DB_KEYS.userRoles.user1User,
-+          userKey: SEED_DB_KEYS.users.user1,
-+          roleKey: "01K2GFSJ0Y0000000000000088",
-+          createdAt: "2026-06-15T00:00:00.000Z",
-+          createdBy: SEED_DB_KEYS.users.admin,
-+          updatedAt: "2026-06-15T00:00:00.000Z",
-+          updatedBy: SEED_DB_KEYS.users.admin,
-+        },
-+      ],
-+    }),
-+    SEED_DB_KEYS.users.user1,
-+    "account",
-+    "Supabase identity",
-+  );
-+  assert.equal(missingRole.authenticated, false);
-+  assert.match(missingRole.diagnostic, /references missing role key/);
++test("Admin System Health operations page keeps scripts and styles external", async () => {
++  const pageSource = await fs.readFile(path.resolve("admin/system-health.html"), "utf8");
++  expect(pageSource).not.toMatch(/<style\b/i);
++  expect(pageSource).not.toMatch(/<script\b(?![^>]+src=)/i);
++  expect(pageSource).not.toMatch(/\son[a-z]+\s*=/i);
++  expect(pageSource).not.toMatch(/\sstyle\s*=/i);
++  expect(pageSource).toContain("assets/theme-v2/js/admin-system-health.js");
 +});
-+
- test("Operator auth preflight reports failed Supabase connectivity for wrong anon key without exposing secrets", async () => {
-   const fakeSupabase = await startFakeSupabaseAuthServer({
-     expectedApiKey: "expected-anon-key",
-diff --git a/docs_build/pr/BUILD_PR_26169_002-auth-preview-signin-regression.md b/docs_build/pr/BUILD_PR_26169_002-auth-preview-signin-regression.md
-new file mode 100644
-index 000000000..82ad8a90c
---- /dev/null
-+++ b/docs_build/pr/BUILD_PR_26169_002-auth-preview-signin-regression.md
-@@ -0,0 +1,73 @@
-+# BUILD_PR_26169_002-auth-preview-signin-regression
-+
-+## Objective
-+- Stabilize auth preview/session selection so selected users resolve from persisted `users`, `roles`, and `user_roles` records with visible diagnostics for invalid identity state.
-+
-+## Source PLAN
-+- `docs_build/pr/PLAN_PR_26169_001-creator-platform-foundation.md`
-+- `docs_build/pr/PLAN_PR_26169_002-auth-preview-signin-regression.md`
-+
-+## Scope
-+- Preserve the production-safe public sign-in page with no public Local DB controls.
-+- Keep preview/session role switching as API/dev-test behavior only.
-+- Ensure selected preview users expose stable `users.key` values and role slugs.
-+- Ensure invalid selected user keys, missing users, and missing role references return actionable diagnostics instead of silently becoming an indistinct Guest state.
-+- Add targeted regression coverage for Creator, Admin, and Owner role resolution.
-+
-+## Non-Scope
-+- No membership tables.
-+- No beta invitation workflow.
-+- No Owner configuration UI.
-+- No marketplace, AI credit, legal, or team behavior.
-+- No production auth provider redesign.
-+- No public preview role picker UI.
-+
-+## Exact Target Files
-+- `src/dev-runtime/server/local-api-router.mjs`
-+- `tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
-+- `docs_build/pr/BUILD_PR_26169_002-auth-preview-signin-regression.md`
-+- `docs_build/dev/codex_commands.md`
-+- `docs_build/dev/commit_comment.txt`
-+- `docs_build/dev/reports/PR_26169_002-auth-preview-signin-regression.md`
-+- `docs_build/dev/reports/codex_review.diff`
-+- `docs_build/dev/reports/codex_changed_files.txt`
-+
-+## Implementation Requirements
-+- In `sessionUserFromIdentityTables`, preserve empty user-key behavior as unauthenticated Guest.
-+- For a non-empty malformed selected user key, return Guest with a diagnostic that identifies the invalid `users.key` shape.
-+- Keep missing persisted user diagnostics unchanged.
-+- Keep missing `user_roles` diagnostics unchanged.
-+- Keep missing referenced role diagnostics unchanged.
-+- Preserve successful role resolution for Creator, Admin, and Owner.
-+- Do not store membership pricing, limits, credits, marketplace percentages, or other business-model data in auth session state.
-+
-+## Validation Plan
-+- Branch validation:
-+  - Verify current branch is `main`.
-+- Static checks:
-+  - `node --check src/dev-runtime/server/local-api-router.mjs`
-+  - `node --check tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
-+- Targeted contract tests:
-+  - Run only auth/session tests covering selected user resolution, invalid selected user, missing user, missing role, and Owner role state.
-+- Runtime validation:
-+  - No broad runtime validation.
-+- Playwright:
-+  - Not required unless the targeted contract change touches browser UI; this BUILD does not.
-+
-+## Acceptance Criteria
-+- Creator preview/session selection resolves with stable `userKey` and `roleSlugs`.
-+- Admin preview/session selection resolves with stable `userKey`, `roleSlugs`, and `isAdmin`.
-+- Owner preview/session selection resolves with stable `userKey`, `roleSlugs`, `isAdmin`, and `isOwner`.
-+- Missing selected user returns an actionable diagnostic.
-+- Missing referenced role returns an actionable diagnostic.
-+- Malformed non-empty selected user key returns an actionable diagnostic.
-+- Sign-out/session clear behavior remains scoped to the selected session key and does not mutate product data.
-+- No membership, marketplace, AI credit, team, or legal implementation is introduced.
-+
-+## Required Reports
-+- `docs_build/dev/reports/PR_26169_002-auth-preview-signin-regression.md`
-+- `docs_build/dev/reports/codex_review.diff`
-+- `docs_build/dev/reports/codex_changed_files.txt`
-+
-+## Required ZIP
-+- `tmp/PR_26169_002-auth-preview-signin-regression_delta.zip`

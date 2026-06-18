@@ -1426,6 +1426,7 @@ test("Account navigation exposes User Controls in sorted browseable menus", asyn
     await expect(page.locator("[data-account-side-nav-link]")).toHaveText([
       "Account Home",
       "Achievements",
+      "AI Credits",
       "Preferences",
       "Profile",
       "Security",

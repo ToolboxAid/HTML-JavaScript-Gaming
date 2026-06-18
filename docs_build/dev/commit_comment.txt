@@ -1,12 +1,1 @@
-PR_26169_002-auth-preview-signin-regression
-
-Summary:
-- Reject malformed selected preview user keys before identity-table lookup.
-- Preserve persisted users/roles/user_roles session resolution for valid preview users.
-- Add targeted contract coverage for malformed keys, logout cleanup, Creator/Admin/Owner role states, missing users, and missing roles.
-
-Validation:
-- node --check src/dev-runtime/server/local-api-router.mjs
-- node --check tests/dev-runtime/SupabaseProviderContractStub.test.mjs
-- node --test --test-name-pattern "malformed|Creator Admin and Owner|missing user and missing role" tests/dev-runtime/SupabaseProviderContractStub.test.mjs
-- git diff --check -- src/dev-runtime/server/local-api-router.mjs tests/dev-runtime/SupabaseProviderContractStub.test.mjs docs_build/pr/BUILD_PR_26169_002-auth-preview-signin-regression.md
+Add Admin health operations dashboard - PR_26169_019-admin-health-operations

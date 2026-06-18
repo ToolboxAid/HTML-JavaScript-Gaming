@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Owner AI Credits - GameFoundryStudio</title>
+    <meta name="description" content="Owner controls for DB-backed AI credit packs, action costs, monthly grants, and purchased credit bonuses.">
+    <link rel="icon" href="/favicon.svg">
+    <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+</head>
+
+<body class="meaning-molten-orange">
+    <div data-partial="header-nav"></div>
+    <main data-owner-ai-credits>
+        <section class="page-title">
+            <div class="container">
+                <div class="kicker">Owner</div>
+                <h1>AI Credits</h1>
+                <p class="lede">Manage credit packs, action costs, monthly grants, and purchased credit bonuses from DB-backed business model records.</p>
+            </div>
+        </section>
+        <section class="section">
+            <div class="container container--tool-wide">
+                <div class="tool-workspace tool-workspace--wide">
+                    <aside class="tool-column tool-group-platform">
+                        <div class="tool-column-header">
+                            <h2>Owner</h2>
+                        </div>
+                        <div class="accordion-stack">
+                            <details class="vertical-accordion" open>
+                                <summary>Owner Tools</summary>
+                                <nav class="accordion-body content-stack" aria-label="Owner tool pages">
+                                    <a class="btn btn--compact primary" aria-current="page" href="/owner/ai-credits.html">AI Credits</a>
+                                    <a class="btn btn--compact" href="/admin/db-viewer.html">DB Viewer</a>
+                                    <a class="btn btn--compact" href="/admin/design-system.html">Design System</a>
+                                    <a class="btn btn--compact" href="/admin/grouping-colors.html">Grouping Colors</a>
+                                    <a class="btn btn--compact" href="/owner/memberships.html">Memberships</a>
+                                    <a class="btn btn--compact" href="/admin/admin-notes.html">Notes</a>
+                                </nav>
+                            </details>
+                        </div>
+                    </aside>
+                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="owner-ai-credits" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
+                    <section class="tool-center-panel content-stack" aria-labelledby="owner-ai-credits-title">
+                        <div>
+                            <div class="kicker">Business Model</div>
+                            <h2 id="owner-ai-credits-title">AI Credit Settings</h2>
+                        </div>
+                        <p class="status" role="status" data-owner-ai-status>Loading Owner AI credit settings.</p>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Owner AI credit pack settings">
+                                <caption>AI Credit Packs</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Code</th>
+                                        <th scope="col">Display Name</th>
+                                        <th scope="col">Credits</th>
+                                        <th scope="col">Price Cents</th>
+                                        <th scope="col">Active</th>
+                                        <th scope="col">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-owner-ai-pack-rows>
+                                    <tr>
+                                        <td>Loading</td>
+                                        <td>Loading</td>
+                                        <td>Loading</td>
+                                        <td>Loading</td>
+                                        <td>Loading</td>
+                                        <td>Loading</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Owner AI action cost settings">
+                                <caption>AI Actions</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Code</th>
+                                        <th scope="col">Display Name</th>
+                                        <th scope="col">Credit Cost</th>
+                                        <th scope="col">Active</th>
+                                        <th scope="col">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-owner-ai-action-rows>
+                                    <tr>
+                                        <td>Loading</td>
+                                        <td>Loading</td>
+                                        <td>Loading</td>
+                                        <td>Loading</td>
+                                        <td>Loading</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Owner monthly AI credit grant settings">
+                                <caption>Monthly Grants</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Plan</th>
+                                        <th scope="col">Display Name</th>
+                                        <th scope="col">Monthly Credits</th>
+                                        <th scope="col">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-owner-ai-grant-rows>
+                                    <tr>
+                                        <td>Loading</td>
+                                        <td>Loading</td>
+                                        <td>Loading</td>
+                                        <td>Loading</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Owner purchased credit bonus settings">
+                                <caption>Purchased Credit Bonuses</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Plan</th>
+                                        <th scope="col">Display Name</th>
+                                        <th scope="col">Bonus Bps</th>
+                                        <th scope="col">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-owner-ai-bonus-rows>
+                                    <tr>
+                                        <td>Loading</td>
+                                        <td>Loading</td>
+                                        <td>Loading</td>
+                                        <td>Loading</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                    <aside class="tool-column tool-group-platform">
+                        <div class="tool-column-header">
+                            <h2>Inspector</h2>
+                        </div>
+                        <div class="accordion-stack">
+                            <details class="vertical-accordion" open>
+                                <summary>Pending Edits</summary>
+                                <div class="accordion-body content-stack">
+                                    <p class="status" role="status" data-owner-ai-pending>No pending edits.</p>
+                                </div>
+                            </details>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </section>
+    </main>
+    <div data-partial="footer"></div>
+    <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+    <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+    <script type="module" src="assets/theme-v2/js/owner-ai-credits.js"></script>
+</body>
+
+</html>
