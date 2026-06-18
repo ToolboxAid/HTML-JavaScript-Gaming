@@ -81,7 +81,8 @@ async function apiJson(baseUrl, pathName, request = {}) {
 }
 
 test("product and web API clients live under src/api while engine API keeps only shared server plumbing", () => {
-  assert.deepEqual(fs.readdirSync("src/engine/api").sort(), ["server-api-client.js"]);
+  assert.deepEqual(fs.readdirSync("src/engine/api").sort(), []);
+  assert.equal(fs.existsSync("src/api/server-api-client.js"), true);
   MOVED_API_CLIENTS.forEach((fileName) => {
     assert.equal(fs.existsSync(`src/api/${fileName}`), true, `${fileName} should live under src/api`);
     assert.equal(fs.existsSync(`src/engine/api/${fileName}`), false, `${fileName} should not remain under src/engine/api`);
@@ -91,11 +92,14 @@ test("product and web API clients live under src/api while engine API keeps only
 test("Admin and Owner navigation are shared and include present operational/business pages", async () => {
   const adminLabels = getAdminNavigationItems().map((item) => item.label);
   const ownerLabels = getOwnerNavigationItems().map((item) => item.label);
-  ["Infrastructure", "Invitations", "Operations", "System Health", "Tool Votes", "Users"].forEach((label) => {
+  ["Admin Tools", "Infrastructure", "Invitations", "Operations", "System Health", "Tool Votes", "Users"].forEach((label) => {
     assert.equal(adminLabels.includes(label), true, `Admin navigation should include ${label}`);
   });
-  ["AI Credits", "Branding", "Grouping Colors", "Memberships"].forEach((label) => {
+  ["Owner Tools", "AI Credits", "Branding", "Grouping Colors", "Memberships", "Revenue"].forEach((label) => {
     assert.equal(ownerLabels.includes(label), true, `Owner navigation should include ${label}`);
+  });
+  ["Branding", "Design System", "Grouping Colors", "Site Settings", "Themes"].forEach((label) => {
+    assert.equal(adminLabels.includes(label), false, `Admin navigation should not include Owner business item ${label}`);
   });
 
   const server = await startApiServer();
@@ -126,7 +130,12 @@ test("touched Admin and Owner pages do not duplicate sidebar navigation links", 
     "admin/tool-votes.html",
     "admin/users.html",
     "owner/ai-credits.html",
+    "owner/branding.html",
+    "owner/design-system.html",
+    "owner/grouping-colors.html",
     "owner/memberships.html",
+    "owner/site-settings.html",
+    "owner/themes.html",
   ].forEach((fileName) => {
     const source = fs.readFileSync(fileName, "utf8");
     assert.equal(source.includes("assets/theme-v2/js/admin-owner-navigation.js"), true, `${fileName} should load shared nav renderer`);

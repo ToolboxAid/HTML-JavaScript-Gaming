@@ -3,7 +3,7 @@ import {
   createServerRepositoryClient,
   readServerToolConstants,
   requireServerConstant,
-} from "../../src/engine/api/server-api-client.js";
+} from "../../src/api/server-api-client.js";
 
 const constants = readServerToolConstants("assets");
 

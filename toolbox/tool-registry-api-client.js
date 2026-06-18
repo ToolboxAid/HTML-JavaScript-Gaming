@@ -1,7 +1,7 @@
 import {
   requireServerApiData,
   safeRequestServerApi,
-} from "../src/engine/api/server-api-client.js";
+} from "../src/api/server-api-client.js";
 
 let registrySnapshot = null;
 let registryDiagnostic = "";

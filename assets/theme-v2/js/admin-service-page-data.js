@@ -216,14 +216,14 @@ function renderAdminSiteSettings(root, snapshot) {
     content,
     "Site Settings Service Contract",
     "site_settings",
-    "Editable branding and site identity settings are code/content-owned and deferred from this Admin surface.",
+    "Editable branding and site identity settings are code/content-owned and deferred from this Owner surface.",
     "Use Admin Operations for operational planning. Keep Platform Settings focused on banner settings and future runtime toggles.",
   );
 }
 
 const RENDERERS = Object.freeze({
   "admin-roles": renderAdminRoles,
-  "admin-site-settings": renderAdminSiteSettings,
+  "owner-site-settings": renderAdminSiteSettings,
   "admin-users": renderAdminUsers,
 });
 

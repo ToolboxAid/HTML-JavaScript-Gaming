@@ -1,7 +1,7 @@
 import {
   requireServerApiData,
   safeRequestServerApi,
-} from "../engine/api/server-api-client.js";
+} from "./server-api-client.js";
 
 export function readToolboxVoteSnapshot() {
   return requireServerApiData(

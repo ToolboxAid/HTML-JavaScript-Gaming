@@ -4,7 +4,7 @@ import {
   readServerToolConstants,
   requireServerConstant,
   safeRequestServerApi,
-} from "../../src/engine/api/server-api-client.js";
+} from "../../src/api/server-api-client.js";
 
 const constants = readServerToolConstants("game-workspace");
 

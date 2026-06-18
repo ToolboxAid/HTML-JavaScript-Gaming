@@ -23,20 +23,8 @@
         </section>
         <section class="section">
             <div class="container account-panel">
-                <aside class="side-menu" aria-label="Admin pages">
-                    <a href="/admin/analytics.html">Analytics</a>
-                    <a href="/admin/branding.html">Branding</a>
-                    <a href="/admin/controls.html">Controls</a>
-                    <a href="/admin/environments.html">Environments</a>
-                    <a href="/admin/game-migration.html">Game Migration</a>
-                    <a href="/admin/moderation.html">Moderation</a>
-                    <a href="/admin/platform-settings.html">Platform Settings</a>
-                    <a class="active" aria-current="page" href="/admin/ratings.html">Ratings</a>
-                    <a href="/admin/roles.html">Roles</a>
-                    <a href="/admin/site-settings.html">Site Settings</a>
-                    <a href="/admin/themes.html">Themes</a>
-                    <a href="/admin/tool-votes.html">Tool Votes</a>
-                    <a href="/admin/users.html">Users</a>
+                <aside class="side-menu" aria-label="Admin operational pages" data-admin-tool-menu>
+                    <p class="status" data-admin-nav-loading>Loading Admin tools.</p>
                 </aside>
                 <div class="admin-page-stack">
         <section class="section">
@@ -154,6 +142,7 @@
     </main>
     <div data-partial="footer"></div>
     <script src="../assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+    <script type="module" src="../assets/theme-v2/js/admin-owner-navigation.js"></script>
 </body>
 
 </html>

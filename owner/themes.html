@@ -15,27 +15,15 @@
     <main>
         <section class="page-title">
             <div class="container">
-                <div class="kicker">Admin</div>
+                <div class="kicker">Owner</div>
                 <h1>Themes</h1>
                 <p class="lede">A planning page for theme organization and future theme governance.</p>
             </div>
         </section>
         <section class="section">
             <div class="container account-panel">
-                <aside class="side-menu" aria-label="Admin pages">
-                    <a href="/admin/analytics.html">Analytics</a>
-                    <a href="/admin/branding.html">Branding</a>
-                    <a href="/admin/controls.html">Controls</a>
-                    <a href="/admin/environments.html">Environments</a>
-                    <a href="/admin/game-migration.html">Game Migration</a>
-                    <a href="/admin/moderation.html">Moderation</a>
-                    <a href="/admin/platform-settings.html">Platform Settings</a>
-                    <a href="/admin/ratings.html">Ratings</a>
-                    <a href="/admin/roles.html">Roles</a>
-                    <a href="/admin/site-settings.html">Site Settings</a>
-                    <a class="active" aria-current="page" href="/admin/themes.html">Themes</a>
-                    <a href="/admin/tool-votes.html">Tool Votes</a>
-                    <a href="/admin/users.html">Users</a>
+                <aside class="side-menu" aria-label="Owner business pages" data-owner-tool-menu>
+                    <p class="status" data-owner-nav-loading>Loading Owner tools.</p>
                 </aside>
                 <div class="admin-page-stack">
         <section class="section">
@@ -45,7 +33,7 @@
                     <div class="grid cols-3">
                         <article class="callout">
                             <h2>Purpose</h2>
-                            <p>Provide an Admin destination for theme catalog planning and active theme review.</p>
+                            <p>Provide an Owner destination for theme catalog planning and active theme review.</p>
                         </article>
                         <article class="callout">
                             <h2>Future Scope</h2>
@@ -69,6 +57,7 @@
     </main>
     <div data-partial="footer"></div>
     <script src="../assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+    <script type="module" src="../assets/theme-v2/js/admin-owner-navigation.js"></script>
 </body>
 
 </html>

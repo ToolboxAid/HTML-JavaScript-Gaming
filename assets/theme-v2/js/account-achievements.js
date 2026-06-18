@@ -1,4 +1,4 @@
-import { createServerRepositoryClient } from "../../../src/engine/api/server-api-client.js";
+import { createServerRepositoryClient } from "../../../src/api/server-api-client.js";
 import { getSessionCurrent } from "../../../src/api/session-api-client.js";
 
 const tabs = Array.from(document.querySelectorAll("[data-achievements-tab]"));

@@ -15,7 +15,7 @@
     <main>
         <section class="page-title">
             <div class="container">
-                <div class="kicker">Admin Reference</div>
+                <div class="kicker">Owner Reference</div>
                 <h1>Theme V2 design-system catalog.</h1>
                 <p class="lede">Authoritative ownership, usage, consumers, status, and gap tracking for the approved
                     Game Foundry Studio LLC Theme V2 surface.</p>
@@ -23,20 +23,8 @@
         </section>
         <section class="section">
             <div class="container account-panel">
-                <aside class="side-menu" aria-label="Admin pages">
-                    <a href="/admin/analytics.html">Analytics</a>
-                    <a href="/admin/branding.html">Branding</a>
-                    <a href="/admin/controls.html">Controls</a>
-                    <a href="/admin/environments.html">Environments</a>
-                    <a href="/admin/game-migration.html">Game Migration</a>
-                    <a href="/admin/moderation.html">Moderation</a>
-                    <a href="/admin/platform-settings.html">Platform Settings</a>
-                    <a href="/admin/ratings.html">Ratings</a>
-                    <a href="/admin/roles.html">Roles</a>
-                    <a href="/admin/site-settings.html">Site Settings</a>
-                    <a href="/admin/themes.html">Themes</a>
-                    <a href="/admin/tool-votes.html">Tool Votes</a>
-                    <a href="/admin/users.html">Users</a>
+                <aside class="side-menu" aria-label="Owner business pages" data-owner-tool-menu>
+                    <p class="status" data-owner-nav-loading>Loading Owner tools.</p>
                 </aside>
                 <div class="admin-page-stack">
                     <section class="section">
@@ -51,7 +39,7 @@
                                         <article class="feedback">
                                             <strong class="feedback-title">Purpose</strong>
                                             <p class="feedback-message">Document approved Theme V2 primitives and
-                                                ownership decisions for Admin review.</p>
+                                                ownership decisions for Owner review.</p>
                                         </article>
                                         <article class="feedback">
                                             <strong class="feedback-title">Rule</strong>
@@ -111,7 +99,7 @@
                                         <p><strong>Approved Theme V2 ownership file:</strong>
                                             <code>typography.css</code></p>
                                         <p><strong>Example usage:</strong>
-                                            <code>&lt;div class="kicker"&gt;Admin Reference&lt;/div&gt;</code></p>
+                                            <code>&lt;div class="kicker"&gt;Owner Reference&lt;/div&gt;</code></p>
                                         <p><strong>Current consumers:</strong> Page titles, section headings,
                                             navigation, footer groups, cards, forms, tables, and documentation pages.</p>
                                         <p><strong>Status:</strong> Approved.</p>
@@ -263,7 +251,7 @@
                                         <p><strong>Approved Theme V2 ownership file:</strong>
                                             <code>layout.css</code>, <code>panels.css</code></p>
                                         <p><strong>Example usage:</strong>
-                                            <code>&lt;aside class="side-menu"&gt;&lt;a class="active" href="../admin/design-system.html"&gt;Design System&lt;/a&gt;&lt;/aside&gt;</code>
+                                            <code>&lt;aside class="side-menu"&gt;&lt;a class="active" href="../owner/design-system.html"&gt;Design System&lt;/a&gt;&lt;/aside&gt;</code>
                                         </p>
                                         <p><strong>Current consumers:</strong> Shared header partial, Admin side
                                             navigation, Account navigation, Tools navigation, and footer route links.</p>
@@ -394,6 +382,7 @@
     </main>
     <div data-partial="footer"></div>
     <script src="../assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+    <script type="module" src="../assets/theme-v2/js/admin-owner-navigation.js"></script>
 </body>
 
 </html>

@@ -1,4 +1,4 @@
-import { safeRequestServerApi } from "../engine/api/server-api-client.js";
+import { safeRequestServerApi } from "./server-api-client.js";
 
 export const AUTH_PROVIDER_CONTRACT_OPERATIONS = Object.freeze([
   "getCurrentUser",

@@ -1,4 +1,4 @@
-import { safeRequestServerApi } from "../../../src/engine/api/server-api-client.js";
+import { safeRequestServerApi } from "../../../src/api/server-api-client.js";
 
 const fields = {
   api: document.querySelector("[data-admin-db-status-api]"),

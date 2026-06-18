@@ -73,15 +73,10 @@
         roadmap: "company/roadmap.html",
         "release-notes": "company/release-notes.html",
         admin: "admin/platform-settings.html",
-        owner: "admin/db-viewer.html",
+        owner: "owner/memberships.html",
         "admin-operations": "admin/operations.html",
-        "admin-site-settings": "admin/site-settings.html",
-        "admin-branding": "admin/branding.html",
-        "admin-themes": "admin/themes.html",
-        "admin-design-system": "admin/design-system.html",
         "admin-controls": "admin/controls.html",
         "admin-db-viewer": "admin/db-viewer.html",
-        "admin-grouping-colors": "admin/grouping-colors.html",
         "admin-platform-settings": "admin/platform-settings.html",
         "admin-ratings": "admin/ratings.html",
         "admin-users": "admin/users.html",
@@ -91,7 +86,12 @@
         "admin-moderation": "admin/moderation.html",
         "admin-analytics": "admin/analytics.html",
         "owner-ai-credits": "owner/ai-credits.html",
+        "owner-branding": "owner/branding.html",
+        "owner-design-system": "owner/design-system.html",
+        "owner-grouping-colors": "owner/grouping-colors.html",
         "owner-memberships": "owner/memberships.html",
+        "owner-site-settings": "owner/site-settings.html",
+        "owner-themes": "owner/themes.html",
         "community-guidelines": "legal/community-guidelines.html",
         "cookies-policy": "legal/cookies-policy.html",
         "copyright-policy": "legal/copyright-policy.html",
@@ -106,10 +106,10 @@
         "account-profile": "account/profile.html",
         "account-security": "account/security.html",
         "account-user-controls": "account/user-controls.html",
-        branding: "admin/branding.html",
+        branding: "owner/branding.html",
         controls: "admin/controls.html",
-        "design-system": "admin/design-system.html",
-        "grouping-colors": "admin/grouping-colors.html",
+        "design-system": "owner/design-system.html",
+        "grouping-colors": "owner/grouping-colors.html",
         rating: "admin/ratings.html"
     };
 
@@ -173,14 +173,16 @@
         return Array.isArray(items)
             ? items.map(function (item) {
                 return {
+                    disabled: item.disabled === true,
                     href: typeof item.href === "string" ? item.href : "",
                     label: typeof item.label === "string" ? item.label : "",
                     localNotes: item.localNotes === true,
                     path: typeof item.path === "string" ? item.path : "",
+                    planned: item.planned === true,
                     route: typeof item.route === "string" ? item.route : ""
                 };
             }).filter(function (item) {
-                return item.label && (item.route || item.path || item.href);
+                return item.label && (item.disabled || item.route || item.path || item.href);
             })
             : [];
     }
@@ -230,6 +232,13 @@
     }
 
     function createMenuLink(item) {
+        if (item.disabled) {
+            const label = document.createElement("span");
+            label.dataset.menuItemDisabled = "";
+            label.setAttribute("aria-disabled", "true");
+            label.textContent = item.planned ? item.label + " (planned)" : item.label;
+            return label;
+        }
         const link = document.createElement("a");
         link.dataset.navLink = "";
         if (item.route) {

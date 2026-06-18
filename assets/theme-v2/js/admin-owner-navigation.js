@@ -14,7 +14,23 @@ function itemHref(item) {
     return `/${item.path}`;
 }
 
+function disabledLabel(item) {
+    return item.planned ? `${item.label} (planned)` : item.label;
+}
+
+function createDisabledItem(item) {
+    const label = document.createElement("span");
+    label.className = "btn btn--compact";
+    label.dataset.menuItemDisabled = "";
+    label.setAttribute("aria-disabled", "true");
+    label.textContent = disabledLabel(item);
+    return label;
+}
+
 function createLink(item, activePath) {
+    if (item.disabled) {
+        return createDisabledItem(item);
+    }
     const link = document.createElement("a");
     const href = itemHref(item);
     const itemPath = String(item.path || href).replace(/^\/+/, "");
