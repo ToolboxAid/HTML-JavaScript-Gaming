@@ -1,48 +1,68 @@
-# git status --short
-M .env.example
- M docs_build/database/README.md
- M docs_build/database/backup-restore-lane.md
- M docs_build/database/runbook.md
+# Codex Changed Files
+
+## git status --short (PR-scoped)
+
+M assets/theme-v2/js/gamefoundry-partials.js
+ M assets/theme-v2/partials/footer.html
+ M assets/theme-v2/partials/header-nav.html
  M docs_build/dev/codex_commands.md
  M docs_build/dev/commit_comment.txt
  M docs_build/dev/reports/codex_changed_files.txt
  M docs_build/dev/reports/codex_review.diff
- M docs_build/dev/reports/coverage_changed_js_guardrail.txt
- M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M src/dev-runtime/database/postgres-backup-service.mjs
- M src/dev-runtime/server/local-api-router.mjs
- M src/dev-runtime/storage/r2-project-asset-storage.mjs
- M src/dev-runtime/storage/storage-config.mjs
- M tests/dev-runtime/PostgresBackupService.test.mjs
- M tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
-?? docs_build/dev/reports/PR_26168_246-r2-backed-postgres-backups.md
+ M docs_build/dev/reports/filesystem_scan_reduction_report.md
+ M docs_build/dev/reports/playwright_discovery_ownership_report.md
+ M docs_build/dev/reports/playwright_discovery_scope_report.md
+ M docs_build/dev/reports/playwright_structure_audit.md
+ M src/dev-runtime/admin/header-nav.local.html
+ M tests/playwright/tools/RootToolsFutureState.spec.mjs
+?? docs_build/dev/reports/PR_26168_247-memberships-page.md
+?? memberships/index.html
+?? tests/playwright/tools/PublicMembershipsPage.spec.mjs
 
-# git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26168_246-r2-backed-postgres-backups.md
+## git diff --stat (PR-scoped)
 
-# git diff --stat
-.env.example                                       |   16 +
- docs_build/database/README.md                      |    2 +-
- docs_build/database/backup-restore-lane.md         |   80 +-
- docs_build/database/runbook.md                     |   23 +-
- docs_build/dev/codex_commands.md                   |   30 +
- docs_build/dev/commit_comment.txt                  |    2 +-
- docs_build/dev/reports/codex_changed_files.txt     |   51 +-
- docs_build/dev/reports/codex_review.diff           | 9458 +++-----------------
- .../dev/reports/coverage_changed_js_guardrail.txt  |   15 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |   22 +-
- .../database/postgres-backup-service.mjs           |  141 +-
- src/dev-runtime/server/local-api-router.mjs        |    5 +-
- .../storage/r2-project-asset-storage.mjs           |   64 +-
- src/dev-runtime/storage/storage-config.mjs         |  103 +-
- tests/dev-runtime/PostgresBackupService.test.mjs   |  269 +-
- .../tools/AdminPlatformToolsWireframes.spec.mjs    |   16 +-
- 16 files changed, 1989 insertions(+), 8308 deletions(-)
-warning: in the working copy of '.env.example', LF will be replaced by CRLF the next time Git touches it
-warning: in the working copy of 'docs_build/dev/reports/codex_changed_files.txt', CRLF will be replaced by LF the next time Git touches it
-warning: in the working copy of 'src/dev-runtime/database/postgres-backup-service.mjs', LF will be replaced by CRLF the next time Git touches it
-warning: in the working copy of 'src/dev-runtime/server/local-api-router.mjs', LF will be replaced by CRLF the next time Git touches it
-warning: in the working copy of 'src/dev-runtime/storage/r2-project-asset-storage.mjs', LF will be replaced by CRLF the next time Git touches it
-warning: in the working copy of 'src/dev-runtime/storage/storage-config.mjs', LF will be replaced by CRLF the next time Git touches it
-warning: in the working copy of 'tests/dev-runtime/PostgresBackupService.test.mjs', LF will be replaced by CRLF the next time Git touches it
-warning: in the working copy of 'tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs', LF will be replaced by CRLF the next time Git touches it
+assets/theme-v2/js/gamefoundry-partials.js         |  3 +-
+ assets/theme-v2/partials/footer.html               |  1 +
+ assets/theme-v2/partials/header-nav.html           |  8 ++++-
+ docs_build/dev/codex_commands.md                   | 36 ++++++++++++++++++++++
+ docs_build/dev/commit_comment.txt                  |  3 +-
+ .../reports/filesystem_scan_reduction_report.md    |  2 +-
+ .../playwright_discovery_ownership_report.md       |  6 ++--
+ .../reports/playwright_discovery_scope_report.md   |  6 ++--
+ .../dev/reports/playwright_structure_audit.md      |  8 ++---
+ src/dev-runtime/admin/header-nav.local.html        |  8 ++++-
+ .../playwright/tools/RootToolsFutureState.spec.mjs |  4 +--
+ 11 files changed, 65 insertions(+), 20 deletions(-)
+ .../dev/reports/PR_26168_247-memberships-page.md   | 90 ++++++++++++++++++++++
+ 1 file changed, 90 insertions(+)
+ /dev/null => memberships/index.html | 122 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 122 insertions(+)
+ .../tools/PublicMembershipsPage.spec.mjs           | 110 +++++++++++++++++++++
+ 1 file changed, 110 insertions(+)
+ docs_build/dev/reports/codex_changed_files.txt |  108 +-
+ docs_build/dev/reports/codex_review.diff       | 1918 +++++++-----------------
+ 2 files changed, 603 insertions(+), 1423 deletions(-)
+
+## Full working tree note
+
+- Unrelated pre-existing working tree change remains: `D test.sql` (excluded from PR diff and ZIP).
+
+## Full git status --short
+
+M assets/theme-v2/js/gamefoundry-partials.js
+ M assets/theme-v2/partials/footer.html
+ M assets/theme-v2/partials/header-nav.html
+ M docs_build/dev/codex_commands.md
+ M docs_build/dev/commit_comment.txt
+ M docs_build/dev/reports/codex_changed_files.txt
+ M docs_build/dev/reports/codex_review.diff
+ M docs_build/dev/reports/filesystem_scan_reduction_report.md
+ M docs_build/dev/reports/playwright_discovery_ownership_report.md
+ M docs_build/dev/reports/playwright_discovery_scope_report.md
+ M docs_build/dev/reports/playwright_structure_audit.md
+ M src/dev-runtime/admin/header-nav.local.html
+ D test.sql
+ M tests/playwright/tools/RootToolsFutureState.spec.mjs
+?? docs_build/dev/reports/PR_26168_247-memberships-page.md
+?? memberships/index.html
+?? tests/playwright/tools/PublicMembershipsPage.spec.mjs

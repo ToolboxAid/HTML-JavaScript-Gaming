@@ -1,12 +1,13 @@
 # Playwright Discovery Ownership Report
 
-Generated: 2026-06-17T15:59:08.928Z
+Generated: 2026-06-18T01:35:28.849Z
 Status: PASS
 
 ## Discovery-Time Ownership
 
 | File | Lane Requested | Detected Ownership | Expected Location | Lane Blocked | Status | Reason |
 | --- | --- | --- | --- | --- | --- | --- |
+| tests/playwright/tools/PublicMembershipsPage.spec.mjs | tools | tools | tests/playwright/tools | none | PASS | tools lane location |
 | tests/playwright/tools/RootToolsFutureState.spec.mjs | tools | tools | tests/playwright/tools | none | PASS | tool-specific filename: RootToolsFutureState |
 
 ## Shared Helper Naming
@@ -14,9 +15,6 @@ Status: PASS
 | File | Detected Ownership | Expected Location | Status | Reason |
 | --- | --- | --- | --- | --- |
 | tests/helpers/playwrightRepoServer.mjs | shared | tests/helpers | PASS | Intentionally shared helper is documented. |
-| tests/helpers/playwrightStorageIsolation.mjs | shared | tests/helpers | PASS | Intentionally shared helper is documented. |
-| tests/helpers/playwrightV8CoverageReporter.mjs | shared | tests/helpers | PASS | Generic shared helper name. |
-| tests/helpers/workspaceV2CoverageReporter.mjs | shared | tests/helpers | PASS | Intentionally shared helper is documented. |
 
 ## Blocking Findings
 

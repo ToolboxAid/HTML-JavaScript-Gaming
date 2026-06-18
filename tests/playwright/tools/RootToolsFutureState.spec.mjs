@@ -269,7 +269,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     for (const menuLabels of toolboxNestedMenus) {
       expectAlphabetical(menuLabels);
     }
-    for (const route of ["account", "admin", "games"]) {
+    for (const route of ["account", "admin", "games", "marketplace"]) {
       const menuLabels = await page.locator(`nav.nav-links > .nav-item:has(> a[data-route='${route}']) > .sub-menu > a`).evaluateAll((links) => (
         links.map((link) => link.textContent.trim())
       ));
@@ -489,7 +489,7 @@ test("common header renders primary navigation order across active pages", async
       await expect(page.locator("header.site-header")).toBeVisible();
       expect(await primaryNavigationLabels(page)).toEqual(PRIMARY_NAVIGATION_ORDER);
 
-      for (const route of ["account", "admin", "games"]) {
+      for (const route of ["account", "admin", "games", "marketplace"]) {
         const menuLabels = await page.locator(`nav.nav-links > .nav-item:has(> a[data-route='${route}']) > .sub-menu > a`).evaluateAll((links) => (
           links.map((link) => link.textContent.trim())
         ));

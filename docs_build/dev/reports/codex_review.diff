@@ -1,1425 +1,585 @@
-diff --git a/.env.example b/.env.example
-index 1f4e9b09d..c29a77d33 100644
---- a/.env.example
-+++ b/.env.example
-@@ -18,6 +18,22 @@ GAMEFOUNDRY_SUPABASE_ANON_KEY=
- # Do not expose these values to browser JavaScript, HTML, reports, or screenshots.
- GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY=
- GAMEFOUNDRY_DATABASE_URL=
-+
-+# Server-only Postgres backup storage.
-+# Copy this file to .env and keep the active deployment target's prefix:
-+# DEV /dev/backups/postgres/
-+# IST /ist/backups/postgres/
-+# UAT /uat/backups/postgres/
-+# PRD /prd/backups/postgres/
-+# R2 object prefixes are created by object upload; no manual folder creation is required.
-+GAMEFOUNDRY_DB_BACKUP_STORAGE_PROVIDER=r2
-+GAMEFOUNDRY_DB_BACKUP_PREFIX=/dev/backups/postgres/
-+
-+# Optional temporary server-side pg_dump staging override.
-+# Leave blank to use the OS temp directory. Do not point this at repo tmp/.
-+GAMEFOUNDRY_DB_BACKUP_STAGING_DIR=
-+
-+# Deprecated: final backup artifacts are uploaded to R2, not stored here.
- GAMEFOUNDRY_DB_BACKUP_DIR=
-
- # Server-only project asset storage configuration.
-diff --git a/docs_build/database/README.md b/docs_build/database/README.md
-index e73a5abe3..2b41560b0 100644
---- a/docs_build/database/README.md
-+++ b/docs_build/database/README.md
-@@ -37,7 +37,7 @@ The database promotion lane is documented in [promotion-lane.md](promotion-lane.
-
- ## Backup And Restore
-
--The operator-controlled backup and restore lane is documented in [backup-restore-lane.md](backup-restore-lane.md). Backup and restore use `GAMEFOUNDRY_DATABASE_URL` from `.env`; restore requires an explicit operator checklist and confirmation phrase before any destructive command runs.
-+The operator-controlled backup and restore lane is documented in [backup-restore-lane.md](backup-restore-lane.md). Backup uses `GAMEFOUNDRY_DATABASE_URL` from `.env`, temporary server-side `pg_dump --format=custom` staging, and the configured R2 backup prefix for final artifacts. Restore remains scaffold-only until safe R2 restore is explicitly implemented and still requires an operator checklist and confirmation phrase before any future destructive command can run.
-
- ## Runbook
-
-diff --git a/docs_build/database/backup-restore-lane.md b/docs_build/database/backup-restore-lane.md
-index d1cd866d3..829b23955 100644
---- a/docs_build/database/backup-restore-lane.md
-+++ b/docs_build/database/backup-restore-lane.md
-@@ -10,28 +10,52 @@ GAMEFOUNDRY_DATABASE_URL
-
- Do not paste database URLs, passwords, service keys, or dump contents into reports.
-
--## Backup Command Path
-+## Backup Operation Path
-
--Use the active `.env` as the source of the database connection. Do not pass deployment-target parameters.
-+Use the active `.env` as the source of the database connection and R2 backup
-+storage configuration. Do not pass deployment-target parameters.
-
--PowerShell operator flow:
-+Required backup storage variables:
-
--```powershell
--$databaseUrl = (Get-Content .env |
--  Where-Object { $_ -match '^GAMEFOUNDRY_DATABASE_URL=' } |
--  Select-Object -First 1) -replace '^GAMEFOUNDRY_DATABASE_URL=', ''
--
--$backupPath = Join-Path (Get-Location) 'backups\gamefoundry-backup.dump'
--pg_dump --dbname $databaseUrl --format custom --file $backupPath
-+```text
-+GAMEFOUNDRY_DB_BACKUP_STORAGE_PROVIDER=r2
-+GAMEFOUNDRY_DB_BACKUP_PREFIX=/dev/backups/postgres/
- ```
-
-+Copy-source target files must use the matching prefix:
-+
-+- DEV: `/dev/backups/postgres/`
-+- IST: `/ist/backups/postgres/`
-+- UAT: `/uat/backups/postgres/`
-+- PRD: `/prd/backups/postgres/`
-+
-+R2 prefixes are object-key prefixes. They are created by upload and do not
-+require manual folder creation.
-+
-+Create Backup runs through Admin Operations and the Local API:
-+
-+1. Validate the current database connection.
-+2. Run server-side `pg_dump --format=custom`.
-+3. Write the `.dump` only to temporary server-side staging.
-+4. Upload the `.dump` to the configured R2 backup prefix.
-+5. Delete the temporary local dump after upload.
-+6. Report PASS/FAIL without exposing database passwords or storage secrets.
-+
-+`GAMEFOUNDRY_DB_BACKUP_DIR` is deprecated for final backup storage. If
-+temporary staging must be overridden, use
-+`GAMEFOUNDRY_DB_BACKUP_STAGING_DIR` and keep it outside repo `tmp/`.
-+
- Validation expectation:
-
- - `.env` exists
- - `GAMEFOUNDRY_DATABASE_URL` is present
--- `pg_dump` is available on the operator machine
--- the backup file is written outside tracked source paths
--- reports state only the backup path and success/failure, not the connection string
-+- `GAMEFOUNDRY_DB_BACKUP_STORAGE_PROVIDER` is `r2`
-+- `GAMEFOUNDRY_DB_BACKUP_PREFIX` matches the active target prefix
-+- R2 endpoint, bucket, access key, and secret key are configured server-side
-+- `pg_dump` is available on the Local API host
-+- the local dump is temporary staging only and is deleted after upload
-+- reports state only R2 key, filename, size, timestamp, environment, and
-+  success/failure, not the connection string or storage secrets
-
- Backup metadata must be recorded without secrets:
-
-@@ -39,18 +63,24 @@ Backup metadata must be recorded without secrets:
- - `databaseName`
- - `createdAt`
- - `migrationVersion`
-+- `environment`
-+- `fileName`
-+- `r2Key`
-+- `sizeBytes`
-
- Use `schema_migrations` to derive `migrationVersion`; do not use
- `platform_settings` for backup migration state.
-
- ## Restore Checklist
-
--Restore is destructive. Do not run restore unless every checklist item is complete:
-+Restore is destructive. Admin Operations Restore From Backup remains
-+scaffold-only until a later PR explicitly implements safe R2 restore. Do not
-+run restore unless every checklist item is complete:
-
- - Confirm the target `.env` is the intended database.
- - Run `node .\scripts\validate-runtime-connections.mjs` and record PASS/FAIL.
- - Validate the current `schema_migrations` state before applying restore.
--- Confirm the backup file path and checksum.
-+- Confirm the R2 backup key, filename, size, timestamp, and checksum.
- - Confirm the backup metadata `migrationVersion`.
- - Confirm the application is stopped or in a maintenance window.
- - Confirm owner approval.
-@@ -61,27 +91,15 @@ Restore is destructive. Do not run restore unless every checklist item is comple
-
- ## Restore Command Path
-
--PowerShell operator flow:
--
--```powershell
--$confirmation = Read-Host 'Type RESTORE CONFIRMED to restore the configured database'
--if ($confirmation -ne 'RESTORE CONFIRMED') {
--  throw 'Restore cancelled because confirmation did not match.'
--}
--
--$databaseUrl = (Get-Content .env |
--  Where-Object { $_ -match '^GAMEFOUNDRY_DATABASE_URL=' } |
--  Select-Object -First 1) -replace '^GAMEFOUNDRY_DATABASE_URL=', ''
--
--$backupPath = Join-Path (Get-Location) 'backups\gamefoundry-backup.dump'
--pg_restore --dbname $databaseUrl --clean --if-exists --single-transaction $backupPath
--```
-+No active Restore From Backup command path is approved in this PR. Safe R2
-+restore must be explicitly implemented and reviewed before `pg_restore` is
-+available through Admin Operations.
-
- Restore reports must include:
-
- - target host, port, and database name only
- - backup metadata: `backupName`, `databaseName`, `createdAt`, and `migrationVersion`
--- backup file path
-+- R2 backup key and filename
- - backup checksum
- - migration state validation before restore
- - confirmation checklist status
-diff --git a/docs_build/database/runbook.md b/docs_build/database/runbook.md
-index c9f6e4594..d8ac5ada1 100644
---- a/docs_build/database/runbook.md
-+++ b/docs_build/database/runbook.md
-@@ -95,32 +95,41 @@ execution is allowed.
-
- ## Backup
-
--Use the backup path documented in
-+Use the backup operation path documented in
- [backup-restore-lane.md](backup-restore-lane.md). Backups use
--`GAMEFOUNDRY_DATABASE_URL` from `.env`.
-+`GAMEFOUNDRY_DATABASE_URL` from `.env`, write `pg_dump --format=custom` only
-+to temporary server-side staging, and upload the final `.dump` artifact to the
-+configured R2 backup prefix.
-
- Minimum backup checklist:
-
- - Confirm `.env` points at the intended database.
- - Confirm `pg_dump` is installed.
-+- Confirm `GAMEFOUNDRY_DB_BACKUP_STORAGE_PROVIDER=r2`.
-+- Confirm `GAMEFOUNDRY_DB_BACKUP_PREFIX` matches the active target:
-+  `/dev/backups/postgres/`, `/ist/backups/postgres/`,
-+  `/uat/backups/postgres/`, or `/prd/backups/postgres/`.
- - Record backup metadata: `backupName`, `databaseName`, `createdAt`, and
-   `migrationVersion`.
--- Write backup files outside tracked source paths.
--- Record backup path and checksum only.
-+- Confirm R2 prefixes require no manual folder creation.
-+- Confirm temporary local staging is deleted after successful upload.
-+- Record R2 key, filename, size, timestamp, environment, and checksum only.
- - Do not write secrets, full URLs, service role keys, or dump contents to
-   reports.
-
- ## Restore
-
- Use the restore path documented in
--[backup-restore-lane.md](backup-restore-lane.md). Restore is destructive and
--must require explicit operator confirmation.
-+[backup-restore-lane.md](backup-restore-lane.md). Restore is destructive,
-+remains scaffold-only until safe R2 restore is explicitly implemented, and must
-+require explicit operator confirmation before any future destructive command can
-+run.
-
- Minimum restore checklist:
-
- - Confirm `.env` points at the intended target database.
- - Validate the current `schema_migrations` state before applying restore.
--- Confirm the backup file path and checksum.
-+- Confirm the R2 backup key, filename, size, timestamp, and checksum.
- - Confirm backup metadata, including `migrationVersion`.
- - Stop the application or enter a maintenance window.
- - Confirm owner approval.
+diff --git a/assets/theme-v2/js/gamefoundry-partials.js b/assets/theme-v2/js/gamefoundry-partials.js
+index a481f3494..3ba7a3add 100644
+--- a/assets/theme-v2/js/gamefoundry-partials.js
++++ b/assets/theme-v2/js/gamefoundry-partials.js
+@@ -52,6 +52,7 @@
+         "game-retro": "games/retro/index.html",
+         "game-strategy": "games/strategy/index.html",
+         marketplace: "marketplace/index.html",
++        memberships: "memberships/index.html",
+         learn: "learn/index.html",
+         community: "community/index.html",
+         translations: "toolbox/languages/index.html",
+@@ -114,7 +115,7 @@
+ 
+     const rootSegments = new Set([
+         "account", "company", "community", "legal",
+-        "admin", "docs", "games", "learn", "marketplace", "owner", "toolbox"
++        "admin", "docs", "games", "learn", "marketplace", "memberships", "owner", "toolbox"
+     ]);
+ 
+     const currentScript = document.currentScript || document.querySelector("script[src*='gamefoundry-partials.js']");
+diff --git a/assets/theme-v2/partials/footer.html b/assets/theme-v2/partials/footer.html
+index ad6b61390..e73fd47ac 100644
+--- a/assets/theme-v2/partials/footer.html
++++ b/assets/theme-v2/partials/footer.html
+@@ -8,6 +8,7 @@
+           <a data-route="games" href="games/index.html">Games</a>
+           <a data-route="learn" href="learn/index.html">Learn</a>
+           <a data-route="marketplace" href="marketplace/index.html">Marketplace</a>
++          <a data-route="memberships" href="memberships/index.html">Memberships</a>
+           <a data-route="toolbox" href="toolbox/index.html">Toolbox</a>
+         </div>
+       </section>
+diff --git a/assets/theme-v2/partials/header-nav.html b/assets/theme-v2/partials/header-nav.html
+index 8c02d92e1..fe628aedd 100644
+--- a/assets/theme-v2/partials/header-nav.html
++++ b/assets/theme-v2/partials/header-nav.html
+@@ -95,7 +95,13 @@
+           </div>
+         </div>
+       </div>
+-      <a data-nav-link data-route="marketplace" href="marketplace/index.html">Marketplace</a>
++      <div class="nav-item">
++        <a data-nav-link data-route="marketplace" href="marketplace/index.html">Marketplace &#9662;</a>
++        <div class="sub-menu">
++          <a data-nav-link data-route="marketplace" href="marketplace/index.html">Marketplace Home</a>
++          <a data-nav-link data-route="memberships" href="memberships/index.html">Memberships</a>
++        </div>
++      </div>
+       <a data-nav-link data-route="learn" href="learn/index.html">Learn</a>
+       <div class="nav-item">
+         <a data-nav-link data-route="account" href="account/index.html">Account &#9662;</a>
 diff --git a/docs_build/dev/codex_commands.md b/docs_build/dev/codex_commands.md
-index 748ddc454..6b6bcf00d 100644
+index 6b6bcf00d..605ba0997 100644
 --- a/docs_build/dev/codex_commands.md
 +++ b/docs_build/dev/codex_commands.md
-@@ -2613,3 +2613,33 @@ Required reports:
-
+@@ -2643,3 +2643,39 @@ Required reports:
+ 
  Packaging:
- - `tmp/PR_26168_235-owner-operations-scope-cleanup_delta.zip`
+ - `tmp/PR_26168_246-r2-backed-postgres-backups_delta.zip`
 +
 +
-+## PR_26168_246-r2-backed-postgres-backups
++## PR_26168_247-memberships-page
 +
 +Changes:
 +- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
 +- Verified the current branch is `main`.
-+- Updated Create Backup to stage `pg_dump --format=custom` output in temporary server-side storage only.
-+- Uploaded final `.dump` artifacts to the configured R2 backup prefix.
-+- Added backup storage provider and prefix configuration for R2-backed Postgres backups.
-+- Deprecated `GAMEFOUNDRY_DB_BACKUP_DIR` for final backup storage.
-+- Kept Restore From Backup scaffold-only.
++- Added the public `memberships/index.html` page with Free, Creator, and Studio tiers.
++- Wired Memberships into the shared Marketplace submenu and Product footer.
++- Registered the Memberships route/root segment for shared Theme V2 partial rewriting.
++- Kept the primary top-level header IA exception unchanged.
++- Kept the slice public/static only with no backend enforcement, database changes, teams, legal pages, marketplace enforcement, or billing integration.
 +
 +Validation:
-+- `node --check` for changed JS/MJS and Playwright files.
-+- `node --test tests/dev-runtime/PostgresBackupService.test.mjs`
-+- `npx playwright test tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs --grep "Admin Operations" --reporter=line`
++- `node --check assets/theme-v2/js/gamefoundry-partials.js`
++- `node --check tests/playwright/tools/PublicMembershipsPage.spec.mjs`
++- `node --check tests/playwright/tools/RootToolsFutureState.spec.mjs`
++- Static HTML inline script/style/event-handler guard.
++- Static Memberships route/nav/footer/tier validation.
++- `node scripts/audit-playwright-test-locations.mjs --target tests/playwright/tools/PublicMembershipsPage.spec.mjs --target tests/playwright/tools/RootToolsFutureState.spec.mjs --helper tests/helpers/playwrightRepoServer.mjs --lanes tools`
++- `node node_modules/@playwright/test/cli.js test tests/playwright/tools/PublicMembershipsPage.spec.mjs --project=playwright --workers=1 --reporter=line`
++- Attempted targeted RootToolsFutureState header validation; blocked by existing local API/toolbox fixture 500/empty-card failures unrelated to the Memberships page.
 +- `git diff --check -- touched files`
-+- Static checks for no `.dump` artifacts and no inline Admin Operations HTML violations.
-+- Full samples smoke skipped because sample JSON and sample runtime behavior were not touched.
++- Full samples smoke skipped because samples and `start_of_day` folders were not touched.
 +
 +Required reports:
 +- `docs_build/dev/reports/codex_review.diff`
 +- `docs_build/dev/reports/codex_changed_files.txt`
-+- `docs_build/dev/reports/PR_26168_246-r2-backed-postgres-backups.md`
-+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
-+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
++- `docs_build/dev/reports/PR_26168_247-memberships-page.md`
++- `docs_build/dev/reports/playwright_structure_audit.md`
++- `docs_build/dev/reports/playwright_discovery_ownership_report.md`
++- `docs_build/dev/reports/playwright_discovery_scope_report.md`
++- `docs_build/dev/reports/filesystem_scan_reduction_report.md`
 +
 +Packaging:
-+- `tmp/PR_26168_246-r2-backed-postgres-backups_delta.zip`
++- `tmp/PR_26168_247-memberships-page_delta.zip`
 diff --git a/docs_build/dev/commit_comment.txt b/docs_build/dev/commit_comment.txt
-index b3b3ab7c9..8503f2d9e 100644
+index 8503f2d9e..4d870c23d 100644
 --- a/docs_build/dev/commit_comment.txt
 +++ b/docs_build/dev/commit_comment.txt
-@@ -1 +1 @@
--Admin operations order and safety - PR_26168_236-admin-operations-order-and-safety
-+R2 backed Postgres backups - PR_26168_246-r2-backed-postgres-backups
-diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index d3fe38e48..9c25f453c 100644
---- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,16 +6,13 @@ Missing changed runtime JS files are WARN, not FAIL.
- Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
-
- Changed runtime JS files considered:
--(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/database/postgres-backup-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(77%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 744/744; executed functions 50/65
--(100%) assets/theme-v2/js/admin-operations.js - executed lines 118/118; executed functions 20/20
--(100%) assets/theme-v2/js/admin-system-health.js - executed lines 235/235; executed functions 34/34
--(100%) src/engine/api/admin-operations-api-client.js - executed lines 19/19; executed functions 3/3
--(100%) src/engine/api/admin-system-health-api-client.js - executed lines 19/19; executed functions 3/3
-+(0%) src/dev-runtime/storage/r2-project-asset-storage.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/storage/storage-config.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-
- Guardrail warnings:
--(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) src/dev-runtime/database/postgres-backup-service.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) src/dev-runtime/storage/r2-project-asset-storage.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) src/dev-runtime/storage/storage-config.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 1c720fe95..a4f861f79 100644
---- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
-+++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -17,14 +17,10 @@ Exercised tool entry points detected:
- (78%) Theme V2 Shared JS - exercised 3 runtime JS files
-
- Changed runtime JS files covered:
--(0%) assets/theme-v2/js/admin-infrastructure.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/database/postgres-backup-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/project-packages/project-package-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) toolbox/game-workspace/game-workspace.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(70%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 741/741; executed functions 45/64
--(100%) assets/theme-v2/js/admin-operations.js - executed lines 273/273; executed functions 30/30
--(100%) src/engine/api/admin-operations-api-client.js - executed lines 19/19; executed functions 3/3
-+(0%) src/dev-runtime/storage/r2-project-asset-storage.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/storage/storage-config.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-
- Files with executed line/function counts where available:
- (35%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 9/26
-@@ -35,21 +31,15 @@ Files with executed line/function counts where available:
- (100%) src/engine/api/admin-operations-api-client.js - executed lines 19/19; executed functions 3/3
-
- Uncovered or low-coverage changed JS files:
--(0%) assets/theme-v2/js/admin-infrastructure.js - WARNING: uncovered changed runtime JS file; advisory only
- (0%) src/dev-runtime/database/postgres-backup-service.mjs - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/project-packages/project-package-service.mjs - WARNING: uncovered changed runtime JS file; advisory only
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
--(0%) toolbox/game-workspace/game-workspace.js - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) src/dev-runtime/storage/r2-project-asset-storage.mjs - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) src/dev-runtime/storage/storage-config.mjs - WARNING: uncovered changed runtime JS file; advisory only
-
- Changed JS files considered:
--(0%) assets/theme-v2/js/admin-infrastructure.js - changed JS file not collected as browser runtime coverage
- (0%) src/dev-runtime/database/postgres-backup-service.mjs - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/project-packages/project-package-service.mjs - changed JS file not collected as browser runtime coverage
- (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
-+(0%) src/dev-runtime/storage/r2-project-asset-storage.mjs - changed JS file not collected as browser runtime coverage
-+(0%) src/dev-runtime/storage/storage-config.mjs - changed JS file not collected as browser runtime coverage
- (0%) tests/dev-runtime/PostgresBackupService.test.mjs - changed JS file not collected as browser runtime coverage
- (0%) tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) toolbox/game-workspace/game-workspace.js - changed JS file not collected as browser runtime coverage
--(70%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
--(100%) assets/theme-v2/js/admin-operations.js - changed JS file with browser V8 coverage
--(100%) src/engine/api/admin-operations-api-client.js - changed JS file with browser V8 coverage
-diff --git a/src/dev-runtime/database/postgres-backup-service.mjs b/src/dev-runtime/database/postgres-backup-service.mjs
-index 7fa9c1034..1358db1ec 100644
---- a/src/dev-runtime/database/postgres-backup-service.mjs
-+++ b/src/dev-runtime/database/postgres-backup-service.mjs
-@@ -1,9 +1,13 @@
- import { spawn } from "node:child_process";
--import { readdir, stat, unlink } from "node:fs/promises";
-+import { mkdtemp, readFile, rm, stat, unlink } from "node:fs/promises";
-+import os from "node:os";
- import path from "node:path";
- import process from "node:process";
-+import { createConfiguredBackupStorage } from "../storage/r2-project-asset-storage.mjs";
-+import { DB_BACKUP_PREFIX_ENV, DB_BACKUP_STORAGE_PROVIDER_ENV } from "../storage/storage-config.mjs";
-
- export const DB_BACKUP_DIR_ENV = "GAMEFOUNDRY_DB_BACKUP_DIR";
-+export const DB_BACKUP_STAGING_DIR_ENV = "GAMEFOUNDRY_DB_BACKUP_STAGING_DIR";
- export const POSTGRES_BACKUP_FORMAT = "custom";
-
- const DATABASE_SSL_MODES = new Set(["disable", "require"]);
-@@ -58,26 +62,67 @@ function parseDatabaseConfig(env = process.env) {
-   };
- }
-
--function resolveBackupDirectory(env = process.env, repoRoot = process.cwd()) {
-+function resolveBackupStagingRoot(env = process.env, repoRoot = process.cwd()) {
-+  const configured = String(env[DB_BACKUP_STAGING_DIR_ENV] || "").trim();
-+  const stagingRoot = path.resolve(configured ? configured : os.tmpdir());
-+  const repoTmp = path.resolve(repoRoot, "tmp");
-+  if (pathIsInside(repoTmp, stagingRoot)) {
-+    throw new Error(`${DB_BACKUP_STAGING_DIR_ENV} must not point inside repo tmp/. Configure temporary server-side staging outside tmp/.`);
-+  }
-+  return stagingRoot;
-+}
-+
-+function deprecatedBackupDirectoryMessage(env = process.env) {
-   const configured = String(env[DB_BACKUP_DIR_ENV] || "").trim();
-   if (!configured) {
--    throw new Error(`${DB_BACKUP_DIR_ENV} is missing. Configure a server-side backup folder outside repo tmp/ before running Create Backup.`);
-+    return "";
-   }
--  const backupDirectory = path.resolve(repoRoot, configured);
--  const repoTmp = path.resolve(repoRoot, "tmp");
--  if (pathIsInside(repoTmp, backupDirectory)) {
--    throw new Error(`${DB_BACKUP_DIR_ENV} must not point inside repo tmp/. Configure a server-side backup folder outside tmp/.`);
--  }
--  return backupDirectory;
-+  return `${DB_BACKUP_DIR_ENV} is deprecated for final backup storage and was not used.`;
- }
-
- export function postgresBackupFilename({ environment = "unknown", now = new Date(), sequence = 1 } = {}) {
-   return `gamefoundry-${safeEnvironmentName(environment)}-db-${julianCode(now)}-${String(sequence).padStart(3, "0")}.dump`;
- }
-
--async function nextBackupSequence(backupDirectory, environment, now) {
-+function storageMissingMessage(backupStorage) {
-+  if (backupStorage?.config?.missingKeys?.length) {
-+    return `Missing or empty: ${backupStorage.config.missingKeys.join(", ")}.`;
-+  }
-+  if (backupStorage?.config?.validationError) {
-+    return backupStorage.config.validationError;
-+  }
-+  return `Configure ${DB_BACKUP_STORAGE_PROVIDER_ENV}=r2 and ${DB_BACKUP_PREFIX_ENV} before running Create Backup.`;
-+}
-+
-+function assertBackupStorage(backupStorage) {
-+  if (!backupStorage?.configured || typeof backupStorage.putObject !== "function") {
-+    throw new Error(`Create Backup requires configured R2 backup storage. ${storageMissingMessage(backupStorage)}`);
-+  }
-+  const backupPrefix = String(backupStorage.config?.backupPrefix || "").trim();
-+  if (!backupPrefix) {
-+    throw new Error(`Create Backup requires ${DB_BACKUP_PREFIX_ENV} before running pg_dump.`);
-+  }
-+  return {
-+    backupPrefix,
-+    storageProvider: String(backupStorage.config?.provider || "r2").trim() || "r2",
-+  };
-+}
-+
-+export function postgresBackupObjectKey({ backupPrefix, fileName } = {}) {
-+  const normalizedPrefix = String(backupPrefix || "").trim().replace(/\\/g, "/").replace(/^\/+|\/+$/g, "");
-+  return `/${normalizedPrefix}/${String(fileName || "").trim()}`.replace(/\/{2,}/g, "/");
-+}
-+
-+async function nextBackupSequence(backupStorage, backupPrefix, environment, now) {
-   const prefix = `gamefoundry-${safeEnvironmentName(environment)}-db-${julianCode(now)}-`;
--  const names = await readdir(backupDirectory);
-+  const listed = typeof backupStorage.listObjects === "function"
-+    ? await backupStorage.listObjects(backupPrefix)
-+    : { keys: [] };
-+  if (listed.ok === false) {
-+    throw new Error(`Create Backup failed: R2 backup prefix could not be listed. ${listed.message || "Verify storage list permissions and backup prefix."}`);
-+  }
-+  const names = (Array.isArray(listed.keys) ? listed.keys : [])
-+    .map((key) => path.posix.basename(String(key || "")));
-   const sequences = names
-     .map((name) => {
-       const match = name.match(new RegExp(`^${prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(\\d{3})\\.dump$`));
-@@ -114,13 +159,19 @@ function spawnProcess(command, args, options = {}) {
-   });
- }
-
--async function assertBackupDirectory(backupDirectory) {
--  const details = await stat(backupDirectory);
-+async function assertBackupStagingRoot(stagingRoot) {
-+  const details = await stat(stagingRoot);
-   if (!details.isDirectory()) {
--    throw new Error(`${DB_BACKUP_DIR_ENV} must point to an existing server-side directory.`);
-+    throw new Error(`${DB_BACKUP_STAGING_DIR_ENV} must point to an existing temporary server-side staging directory.`);
-   }
- }
-
-+async function createBackupStagingDirectory(env, repoRoot) {
-+  const stagingRoot = resolveBackupStagingRoot(env, repoRoot);
-+  await assertBackupStagingRoot(stagingRoot);
-+  return mkdtemp(path.join(stagingRoot, "gamefoundry-postgres-backup-"));
-+}
-+
- async function removePartialBackup(outputPath) {
-   try {
-     await unlink(outputPath);
-@@ -129,6 +180,13 @@ async function removePartialBackup(outputPath) {
-   }
- }
-
-+async function removeStagingDirectory(stagingDirectory) {
-+  if (!stagingDirectory) {
-+    return;
-+  }
-+  await rm(stagingDirectory, { force: true, recursive: true });
-+}
-+
- function pgDumpArgs(config, outputPath) {
-   return [
-     "--format=custom",
-@@ -169,27 +227,36 @@ function failure(message, details = {}) {
- }
-
- export async function createPostgresBackup({
-+  backupStorage = null,
-   env = process.env,
-   environment = "UNKNOWN",
-   now = new Date(),
-   repoRoot = process.cwd(),
-   runProcess = spawnProcess,
- } = {}) {
-+  let stagingDirectory = "";
-+  let outputPath = "";
-   try {
-     const config = parseDatabaseConfig(env);
--    const backupDirectory = resolveBackupDirectory(env, repoRoot);
--    await assertBackupDirectory(backupDirectory);
-+    const storage = backupStorage || createConfiguredBackupStorage(env);
-+    const storageConfig = assertBackupStorage(storage);
-     const version = await runProcess("pg_dump", ["--version"], { env: pgDumpEnvironment(config) });
-     if (version.code === "ENOENT") {
--      return failure("Create Backup failed: pg_dump is unavailable. Install PostgreSQL client tools on the Local API host and ensure pg_dump is on PATH.");
-+      return failure("Create Backup failed: pg_dump is unavailable. Install PostgreSQL client tools on the Local API host and ensure pg_dump is on PATH.", {
-+        currentEnvironment: environment,
-+      });
+@@ -1 +1,2 @@
+-R2 backed Postgres backups - PR_26168_246-r2-backed-postgres-backups
++PR_26168_247-memberships-page
++Add public Memberships page with Free, Creator, and Studio tiers.
+diff --git a/docs_build/dev/reports/filesystem_scan_reduction_report.md b/docs_build/dev/reports/filesystem_scan_reduction_report.md
+index b6f751b51..02b9ac352 100644
+--- a/docs_build/dev/reports/filesystem_scan_reduction_report.md
++++ b/docs_build/dev/reports/filesystem_scan_reduction_report.md
+@@ -1,6 +1,6 @@
+ # Filesystem Scan Reduction Report
+ 
+-Generated: 2026-06-17T15:59:08.931Z
++Generated: 2026-06-18T01:35:28.860Z
+ Status: PASS
+ 
+ ## Scan Enforcement
+diff --git a/docs_build/dev/reports/playwright_discovery_ownership_report.md b/docs_build/dev/reports/playwright_discovery_ownership_report.md
+index 1aa9b1a48..8b6eae163 100644
+--- a/docs_build/dev/reports/playwright_discovery_ownership_report.md
++++ b/docs_build/dev/reports/playwright_discovery_ownership_report.md
+@@ -1,12 +1,13 @@
+ # Playwright Discovery Ownership Report
+ 
+-Generated: 2026-06-17T15:59:08.928Z
++Generated: 2026-06-18T01:35:28.849Z
+ Status: PASS
+ 
+ ## Discovery-Time Ownership
+ 
+ | File | Lane Requested | Detected Ownership | Expected Location | Lane Blocked | Status | Reason |
+ | --- | --- | --- | --- | --- | --- | --- |
++| tests/playwright/tools/PublicMembershipsPage.spec.mjs | tools | tools | tests/playwright/tools | none | PASS | tools lane location |
+ | tests/playwright/tools/RootToolsFutureState.spec.mjs | tools | tools | tests/playwright/tools | none | PASS | tool-specific filename: RootToolsFutureState |
+ 
+ ## Shared Helper Naming
+@@ -14,9 +15,6 @@ Status: PASS
+ | File | Detected Ownership | Expected Location | Status | Reason |
+ | --- | --- | --- | --- | --- |
+ | tests/helpers/playwrightRepoServer.mjs | shared | tests/helpers | PASS | Intentionally shared helper is documented. |
+-| tests/helpers/playwrightStorageIsolation.mjs | shared | tests/helpers | PASS | Intentionally shared helper is documented. |
+-| tests/helpers/playwrightV8CoverageReporter.mjs | shared | tests/helpers | PASS | Generic shared helper name. |
+-| tests/helpers/workspaceV2CoverageReporter.mjs | shared | tests/helpers | PASS | Intentionally shared helper is documented. |
+ 
+ ## Blocking Findings
+ 
+diff --git a/docs_build/dev/reports/playwright_discovery_scope_report.md b/docs_build/dev/reports/playwright_discovery_scope_report.md
+index 373a7ee75..8aa0e3662 100644
+--- a/docs_build/dev/reports/playwright_discovery_scope_report.md
++++ b/docs_build/dev/reports/playwright_discovery_scope_report.md
+@@ -1,6 +1,6 @@
+ # Playwright Discovery Scope Report
+ 
+-Generated: 2026-06-17T15:59:08.930Z
++Generated: 2026-06-18T01:35:28.853Z
+ Status: PASS
+ Scoped discovery: Yes
+ 
+@@ -8,11 +8,9 @@ Scoped discovery: Yes
+ 
+ | Role | File | Status | Reason |
+ | --- | --- | --- | --- |
++| target spec | tests/playwright/tools/PublicMembershipsPage.spec.mjs | PASS | Explicit target is inside the selected discovery lane scope. |
+ | target spec | tests/playwright/tools/RootToolsFutureState.spec.mjs | PASS | Explicit target is inside the selected discovery lane scope. |
+ | required shared helper | tests/helpers/playwrightRepoServer.mjs | PASS | Required shared helper was resolved from targeted spec imports. |
+-| required shared helper | tests/helpers/playwrightStorageIsolation.mjs | PASS | Required shared helper was resolved from targeted spec imports. |
+-| required shared helper | tests/helpers/playwrightV8CoverageReporter.mjs | PASS | Required shared helper was resolved from targeted spec imports. |
+-| required shared helper | tests/helpers/workspaceV2CoverageReporter.mjs | PASS | Required shared helper was resolved from targeted spec imports. |
+ 
+ ## Scope Guard
+ 
+diff --git a/docs_build/dev/reports/playwright_structure_audit.md b/docs_build/dev/reports/playwright_structure_audit.md
+index 4fe57077b..20fa92a1a 100644
+--- a/docs_build/dev/reports/playwright_structure_audit.md
++++ b/docs_build/dev/reports/playwright_structure_audit.md
+@@ -1,6 +1,6 @@
+ # Playwright Structure Audit
+ 
+-Generated: 2026-06-17T15:59:08.920Z
++Generated: 2026-06-18T01:35:28.816Z
+ Status: PASS
+ 
+ ## Lane Directories
+@@ -10,7 +10,7 @@ Status: PASS
+ | tests/playwright/engine | SKIP | Lane was not selected, so targeted discovery did not enumerate this directory. |
+ | tests/playwright/games | SKIP | Lane was not selected, so targeted discovery did not enumerate this directory. |
+ | tests/playwright/integration | SKIP | Lane was not selected, so targeted discovery did not enumerate this directory. |
+-| tests/playwright/tools | PASS | Scoped discovery is limited to explicit target file(s): tests/playwright/tools/RootToolsFutureState.spec.mjs. |
++| tests/playwright/tools | PASS | Scoped discovery is limited to explicit target file(s): tests/playwright/tools/PublicMembershipsPage.spec.mjs, tests/playwright/tools/RootToolsFutureState.spec.mjs. |
+ 
+ ## Blocking Findings
+ 
+@@ -35,11 +35,9 @@ No blocking structural findings.
+ 
+ | File | Status | Missing Relative Imports |
+ | --- | --- | --- |
++| tests/playwright/tools/PublicMembershipsPage.spec.mjs | PASS | none |
+ | tests/playwright/tools/RootToolsFutureState.spec.mjs | PASS | none |
+ | tests/helpers/playwrightRepoServer.mjs | PASS | none |
+-| tests/helpers/playwrightStorageIsolation.mjs | PASS | none |
+-| tests/helpers/playwrightV8CoverageReporter.mjs | PASS | none |
+-| tests/helpers/workspaceV2CoverageReporter.mjs | PASS | none |
+ 
+ ## Intentionally Shared Helpers
+ 
+diff --git a/src/dev-runtime/admin/header-nav.local.html b/src/dev-runtime/admin/header-nav.local.html
+index 8c02d92e1..fe628aedd 100644
+--- a/src/dev-runtime/admin/header-nav.local.html
++++ b/src/dev-runtime/admin/header-nav.local.html
+@@ -95,7 +95,13 @@
+           </div>
+         </div>
+       </div>
+-      <a data-nav-link data-route="marketplace" href="marketplace/index.html">Marketplace</a>
++      <div class="nav-item">
++        <a data-nav-link data-route="marketplace" href="marketplace/index.html">Marketplace &#9662;</a>
++        <div class="sub-menu">
++          <a data-nav-link data-route="marketplace" href="marketplace/index.html">Marketplace Home</a>
++          <a data-nav-link data-route="memberships" href="memberships/index.html">Memberships</a>
++        </div>
++      </div>
+       <a data-nav-link data-route="learn" href="learn/index.html">Learn</a>
+       <div class="nav-item">
+         <a data-nav-link data-route="account" href="account/index.html">Account &#9662;</a>
+diff --git a/tests/playwright/tools/RootToolsFutureState.spec.mjs b/tests/playwright/tools/RootToolsFutureState.spec.mjs
+index 616250cc7..319f5699f 100644
+--- a/tests/playwright/tools/RootToolsFutureState.spec.mjs
++++ b/tests/playwright/tools/RootToolsFutureState.spec.mjs
+@@ -269,7 +269,7 @@ test("root tools surface links current tool pages without old_* routes", async (
+     for (const menuLabels of toolboxNestedMenus) {
+       expectAlphabetical(menuLabels);
      }
-     if (version.code !== 0) {
--      return failure("Create Backup failed: pg_dump --version did not complete. Verify PostgreSQL client tools are installed on the Local API host.");
-+      return failure("Create Backup failed: pg_dump --version did not complete. Verify PostgreSQL client tools are installed on the Local API host.", {
-+        currentEnvironment: environment,
-+      });
-     }
-
--    const sequence = await nextBackupSequence(backupDirectory, environment, now);
-+    const sequence = await nextBackupSequence(storage, storageConfig.backupPrefix, environment, now);
-     const fileName = postgresBackupFilename({ environment, now, sequence });
--    const outputPath = path.join(backupDirectory, fileName);
-+    const r2Key = postgresBackupObjectKey({ backupPrefix: storageConfig.backupPrefix, fileName });
-+    stagingDirectory = await createBackupStagingDirectory(env, repoRoot);
-+    outputPath = path.join(stagingDirectory, fileName);
-     const dump = await runProcess("pg_dump", pgDumpArgs(config, outputPath), {
-       env: pgDumpEnvironment(config),
-     });
-@@ -198,6 +265,7 @@ export async function createPostgresBackup({
-       return failure("Create Backup failed: pg_dump did not complete. Verify database connectivity, credentials, SSL mode, and backup directory permissions.", {
-         currentEnvironment: environment,
-         fileName,
-+        r2Key,
-       });
-     }
-
-@@ -207,27 +275,56 @@ export async function createPostgresBackup({
-       return failure("Create Backup failed: pg_dump produced an empty or invalid backup artifact.", {
-         currentEnvironment: environment,
-         fileName,
-+        r2Key,
-       });
-     }
-
-     const createdAt = now.toISOString();
-+    const upload = await storage.putObject({
-+      bytes: await readFile(outputPath),
-+      contentType: "application/octet-stream",
-+      objectKey: r2Key,
-+    });
-+    if (!upload.ok) {
-+      return failure(`Create Backup failed: R2 upload did not complete for ${r2Key}. ${upload.message || "Verify endpoint, bucket, credentials, and backup prefix."}`, {
-+        backup: {
-+          createdAt,
-+          fileName,
-+          format: POSTGRES_BACKUP_FORMAT,
-+          r2Key,
-+          sizeBytes: output.size,
-+          storageProvider: storageConfig.storageProvider,
-+        },
-+        currentEnvironment: environment,
-+      });
-+    }
-+
-+    await removeStagingDirectory(stagingDirectory);
-+    stagingDirectory = "";
-     return {
-       actionId: "create-backup",
-       actionLabel: "Create Backup",
-       backup: {
-         createdAt,
-+        environment,
-         fileName,
-         format: POSTGRES_BACKUP_FORMAT,
-+        r2Key,
-         sizeBytes: output.size,
-+        storageProvider: storageConfig.storageProvider,
-       },
-       currentEnvironment: environment,
-       executed: true,
--      message: `Create Backup wrote ${fileName} for ${environment} with pg_dump custom format at ${createdAt}; size ${output.size} bytes.`,
-+      message: `Create Backup uploaded ${fileName} to R2 key ${r2Key} for ${environment} at ${createdAt}; size ${output.size} bytes. ${deprecatedBackupDirectoryMessage(env)}`.trim(),
-       secretEditingAllowed: false,
-       secretsExposed: false,
-       status: "PASS",
-     };
-   } catch (error) {
--    return failure(error instanceof Error ? error.message : String(error || "Create Backup failed."));
-+    return failure(error instanceof Error ? error.message : String(error || "Create Backup failed."), {
-+      currentEnvironment: environment,
-+    });
-+  } finally {
-+    await removeStagingDirectory(stagingDirectory);
-   }
- }
-diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index 8cfaa7f23..b92839830 100644
---- a/src/dev-runtime/server/local-api-router.mjs
-+++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -16,7 +16,7 @@ import {
- import {
-   createInputMappingToolMockRepository,
- } from "../persistence/tool-repositories/input-mapping-mock-repository.js";
--import { createConfiguredProjectAssetStorage } from "../storage/r2-project-asset-storage.mjs";
-+import { createConfiguredBackupStorage, createConfiguredProjectAssetStorage } from "../storage/r2-project-asset-storage.mjs";
- import { loadStorageConfig } from "../storage/storage-config.mjs";
- import { createPostgresBackup } from "../database/postgres-backup-service.mjs";
- import {
-@@ -338,7 +338,7 @@ const ADMIN_OPERATION_GROUPS = Object.freeze([
-     message: "Backup and recovery actions run through guarded Local API contracts with environment-aware restore restrictions.",
-     actions: Object.freeze([
-       Object.freeze({
--        diagnostic: "Create Backup validates the configured Local DB connection, then runs server-side pg_dump --format=custom into GAMEFOUNDRY_DB_BACKUP_DIR.",
-+        diagnostic: "Create Backup validates the configured Local DB connection, runs server-side pg_dump --format=custom into temporary staging, uploads the .dump to the configured R2 backup prefix, then removes staging.",
-         id: "create-backup",
-         label: "Create Backup",
-         mode: "server-backup",
-@@ -2873,6 +2873,7 @@ LIMIT 1;
-       };
-     }
-     return createPostgresBackup({
-+      backupStorage: createConfiguredBackupStorage(process.env),
-       env: process.env,
-       environment: currentEnvironment,
-     });
-diff --git a/src/dev-runtime/storage/r2-project-asset-storage.mjs b/src/dev-runtime/storage/r2-project-asset-storage.mjs
-index 67dc6d163..25eecdf5d 100644
---- a/src/dev-runtime/storage/r2-project-asset-storage.mjs
-+++ b/src/dev-runtime/storage/r2-project-asset-storage.mjs
-@@ -1,5 +1,5 @@
- import crypto from "node:crypto";
--import { loadStorageConfig } from "./storage-config.mjs";
-+import { loadBackupStorageConfig, loadStorageConfig } from "./storage-config.mjs";
-
- const AWS_ALGORITHM = "AWS4-HMAC-SHA256";
- const AWS_REGION = "auto";
-@@ -156,6 +156,13 @@ function unconfiguredStorage(config) {
-         ok: false,
-       };
-     },
-+    async listObjects() {
-+      return {
-+        keys: [],
-+        message: `Storage configuration missing: ${missing}.`,
-+        ok: false,
-+      };
-+    },
-     async putObject() {
-       return {
-         bytesWritten: 0,
-@@ -181,6 +188,29 @@ function unconfiguredStorage(config) {
-   };
- }
-
-+async function listObjectsForPrefix(config, prefix) {
-+  const response = await signedFetch(config, {
-+    method: "GET",
-+    query: {
-+      "list-type": "2",
-+      prefix,
-+    },
-+  });
-+  const body = await response.text();
-+  if (!response.ok) {
-+    return {
-+      keys: [],
-+      message: `Storage list failed with HTTP ${response.status}.`,
-+      ok: false,
-+    };
-+  }
-+  return {
-+    keys: parseListBucketKeys(body),
-+    message: `Listed storage objects under ${prefix}.`,
-+    ok: true,
-+  };
-+}
-+
- export function createR2ProjectAssetStorage(config) {
-   return {
-     config,
-@@ -192,26 +222,10 @@ export function createR2ProjectAssetStorage(config) {
-       const prefix = projectId
-         ? `${config.projectsPrefix}${String(projectId).trim().replace(/^\/+|\/+$/g, "")}/`
-         : config.projectsPrefix;
--      const response = await signedFetch(config, {
--        method: "GET",
--        query: {
--          "list-type": "2",
--          prefix,
--        },
--      });
--      const body = await response.text();
--      if (!response.ok) {
--        return {
--          keys: [],
--          message: `Storage list failed with HTTP ${response.status}.`,
--          ok: false,
--        };
--      }
--      return {
--        keys: parseListBucketKeys(body),
--        message: `Listed storage objects under ${prefix}.`,
--        ok: true,
--      };
-+      return listObjectsForPrefix(config, prefix);
-+    },
-+    async listObjects(prefix = "") {
-+      return listObjectsForPrefix(config, normalizeObjectKey(prefix));
-     },
-     async putObject({ contentType = "application/octet-stream", objectKey, bytes }) {
-       const payload = Buffer.isBuffer(bytes) ? bytes : Buffer.from(bytes || "");
-@@ -280,3 +294,11 @@ export function createConfiguredProjectAssetStorage(env = process.env) {
-   const config = loadStorageConfig(env);
-   return config.configured ? createR2ProjectAssetStorage(config) : unconfiguredStorage(config);
- }
-+
-+export function createConfiguredBackupStorage(env = process.env) {
-+  const config = loadBackupStorageConfig(env);
-+  return config.configured ? createR2ProjectAssetStorage({
-+    ...config,
-+    projectsPrefix: config.backupPrefix,
-+  }) : unconfiguredStorage(config);
-+}
-diff --git a/src/dev-runtime/storage/storage-config.mjs b/src/dev-runtime/storage/storage-config.mjs
-index 29b0fc5d1..e54f404cc 100644
---- a/src/dev-runtime/storage/storage-config.mjs
-+++ b/src/dev-runtime/storage/storage-config.mjs
-@@ -1,16 +1,32 @@
--export const STORAGE_ENV_KEYS = Object.freeze([
-+export const STORAGE_CONNECTION_ENV_KEYS = Object.freeze([
-   "GAMEFOUNDRY_STORAGE_ENDPOINT",
-   "GAMEFOUNDRY_STORAGE_ACCESS_KEY_ID",
-   "GAMEFOUNDRY_STORAGE_SECRET_ACCESS_KEY",
-   "GAMEFOUNDRY_STORAGE_BUCKET",
-+]);
-+export const STORAGE_ENV_KEYS = Object.freeze([
-+  ...STORAGE_CONNECTION_ENV_KEYS,
-   "GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX",
- ]);
-+export const DB_BACKUP_STORAGE_PROVIDER_ENV = "GAMEFOUNDRY_DB_BACKUP_STORAGE_PROVIDER";
-+export const DB_BACKUP_PREFIX_ENV = "GAMEFOUNDRY_DB_BACKUP_PREFIX";
-+export const DB_BACKUP_STORAGE_ENV_KEYS = Object.freeze([
-+  ...STORAGE_CONNECTION_ENV_KEYS,
-+  DB_BACKUP_STORAGE_PROVIDER_ENV,
-+  DB_BACKUP_PREFIX_ENV,
-+]);
-+export const DB_BACKUP_ALLOWED_PREFIXES = Object.freeze([
-+  "/dev/backups/postgres/",
-+  "/ist/backups/postgres/",
-+  "/uat/backups/postgres/",
-+  "/prd/backups/postgres/",
-+]);
-
- function envValue(env, key) {
-   return String(env?.[key] || "").trim();
- }
-
--export function normalizeStorageProjectsPrefix(value) {
-+export function normalizeStoragePrefix(value) {
-   const normalized = String(value || "").trim().replace(/\\/g, "/").replace(/^\/+|\/+$/g, "");
-   if (!normalized) {
-     return "";
-@@ -18,6 +34,10 @@ export function normalizeStorageProjectsPrefix(value) {
-   return `/${normalized}/`;
- }
-
-+export function normalizeStorageProjectsPrefix(value) {
-+  return normalizeStoragePrefix(value);
-+}
-+
- export function loadStorageConfig(env = process.env) {
-   const missingKeys = STORAGE_ENV_KEYS.filter((key) => !envValue(env, key));
-   if (missingKeys.length) {
-@@ -76,3 +96,82 @@ export function loadStorageConfig(env = process.env) {
-   };
- }
-
-+export function loadBackupStorageConfig(env = process.env) {
-+  const missingKeys = DB_BACKUP_STORAGE_ENV_KEYS.filter((key) => !envValue(env, key));
-+  if (missingKeys.length) {
-+    return {
-+      configured: false,
-+      missingKeys,
-+      safe: {
-+        backupPrefix: normalizeStoragePrefix(envValue(env, DB_BACKUP_PREFIX_ENV)),
-+        bucket: envValue(env, "GAMEFOUNDRY_STORAGE_BUCKET"),
-+        endpoint: "",
-+        provider: envValue(env, DB_BACKUP_STORAGE_PROVIDER_ENV).toLowerCase(),
-+      },
-+    };
-+  }
-+
-+  const provider = envValue(env, DB_BACKUP_STORAGE_PROVIDER_ENV).toLowerCase();
-+  if (provider !== "r2") {
-+    return {
-+      configured: false,
-+      missingKeys: [],
-+      safe: {
-+        backupPrefix: normalizeStoragePrefix(envValue(env, DB_BACKUP_PREFIX_ENV)),
-+        bucket: envValue(env, "GAMEFOUNDRY_STORAGE_BUCKET"),
-+        endpoint: "",
-+        provider,
-+      },
-+      validationError: `${DB_BACKUP_STORAGE_PROVIDER_ENV} must be r2 for Postgres backups.`,
-+    };
-+  }
-+
-+  let endpoint = null;
-+  try {
-+    endpoint = new URL(envValue(env, "GAMEFOUNDRY_STORAGE_ENDPOINT"));
-+  } catch {
-+    return {
-+      configured: false,
-+      missingKeys: [],
-+      safe: {
-+        backupPrefix: normalizeStoragePrefix(envValue(env, DB_BACKUP_PREFIX_ENV)),
-+        bucket: envValue(env, "GAMEFOUNDRY_STORAGE_BUCKET"),
-+        endpoint: "invalid endpoint",
-+        provider,
-+      },
-+      validationError: "GAMEFOUNDRY_STORAGE_ENDPOINT must be a valid URL.",
-+    };
-+  }
-+
-+  const backupPrefix = normalizeStoragePrefix(envValue(env, DB_BACKUP_PREFIX_ENV));
-+  if (!DB_BACKUP_ALLOWED_PREFIXES.includes(backupPrefix)) {
-+    return {
-+      configured: false,
-+      missingKeys: [],
-+      safe: {
-+        backupPrefix,
-+        bucket: envValue(env, "GAMEFOUNDRY_STORAGE_BUCKET"),
-+        endpoint: endpoint.origin,
-+        provider,
-+      },
-+      validationError: `${DB_BACKUP_PREFIX_ENV} must be one of ${DB_BACKUP_ALLOWED_PREFIXES.join(", ")}.`,
-+    };
-+  }
-+
-+  return {
-+    accessKeyId: envValue(env, "GAMEFOUNDRY_STORAGE_ACCESS_KEY_ID"),
-+    backupPrefix,
-+    bucket: envValue(env, "GAMEFOUNDRY_STORAGE_BUCKET"),
-+    configured: true,
-+    endpoint: endpoint.origin,
-+    provider,
-+    safe: {
-+      backupPrefix,
-+      bucket: envValue(env, "GAMEFOUNDRY_STORAGE_BUCKET"),
-+      endpoint: endpoint.origin,
-+      provider,
-+    },
-+    secretAccessKey: envValue(env, "GAMEFOUNDRY_STORAGE_SECRET_ACCESS_KEY"),
-+  };
-+}
-+
-diff --git a/tests/dev-runtime/PostgresBackupService.test.mjs b/tests/dev-runtime/PostgresBackupService.test.mjs
-index adb803885..940256cd0 100644
---- a/tests/dev-runtime/PostgresBackupService.test.mjs
-+++ b/tests/dev-runtime/PostgresBackupService.test.mjs
-@@ -1,19 +1,123 @@
- import assert from "node:assert/strict";
--import { mkdtemp, rm, writeFile } from "node:fs/promises";
-+import { mkdtemp, readdir, rm, stat, writeFile } from "node:fs/promises";
-+import http from "node:http";
- import os from "node:os";
- import path from "node:path";
- import { test } from "node:test";
-
- import {
-   DB_BACKUP_DIR_ENV,
-+  DB_BACKUP_STAGING_DIR_ENV,
-   createPostgresBackup,
-   postgresBackupFilename,
-+  postgresBackupObjectKey,
- } from "../../src/dev-runtime/database/postgres-backup-service.mjs";
-+import {
-+  DB_BACKUP_PREFIX_ENV,
-+  DB_BACKUP_STORAGE_PROVIDER_ENV,
-+} from "../../src/dev-runtime/storage/storage-config.mjs";
-
- const TEST_ENV = Object.freeze({
-   GAMEFOUNDRY_DATABASE_SSL: "disable",
-   GAMEFOUNDRY_DATABASE_URL: "postgresql://backup_user:backup_secret@127.0.0.1:5432/gamefoundry_dev",
- });
-+const TEST_BACKUP_PREFIX = "/dev/backups/postgres/";
-+
-+function escapeXml(value) {
-+  return String(value || "")
-+    .replace(/&/g, "&amp;")
-+    .replace(/</g, "&lt;")
-+    .replace(/>/g, "&gt;")
-+    .replace(/"/g, "&quot;")
-+    .replace(/'/g, "&apos;");
-+}
-+
-+async function requestBody(request) {
-+  const chunks = [];
-+  for await (const chunk of request) {
-+    chunks.push(chunk);
-+  }
-+  return Buffer.concat(chunks);
-+}
-+
-+async function startFakeR2StorageServer(bucket = "backup-test-bucket") {
-+  const objects = new Map();
-+  const requests = [];
-+  const server = http.createServer(async (request, response) => {
-+    const requestUrl = new URL(request.url || "/", "http://127.0.0.1");
-+    const pathSegments = decodeURIComponent(requestUrl.pathname).split("/").filter(Boolean);
-+    const requestBucket = pathSegments[0] || "";
-+    const objectKey = `/${pathSegments.slice(1).join("/")}`;
-+    requests.push({
-+      method: request.method,
-+      objectKey,
-+      pathname: requestUrl.pathname,
-+      prefix: requestUrl.searchParams.get("prefix") || "",
-+    });
-+    if (requestBucket !== bucket) {
-+      response.statusCode = 404;
-+      response.end("Unknown bucket");
-+      return;
-+    }
-+    if (request.method === "GET" && requestUrl.searchParams.get("list-type") === "2") {
-+      const prefix = requestUrl.searchParams.get("prefix") || "";
-+      const keys = Array.from(objects.keys()).filter((key) => key.startsWith(prefix)).sort();
-+      response.statusCode = 200;
-+      response.setHeader("Content-Type", "application/xml");
-+      response.end(`<ListBucketResult>${keys.map((key) => `<Contents><Key>${escapeXml(key)}</Key></Contents>`).join("")}</ListBucketResult>`);
-+      return;
-+    }
-+    if (request.method === "PUT") {
-+      objects.set(objectKey, await requestBody(request));
-+      response.statusCode = 200;
-+      response.end("");
-+      return;
-+    }
-+    response.statusCode = 404;
-+    response.end("Missing object");
-+  });
-+  await new Promise((resolve, reject) => {
-+    server.once("error", reject);
-+    server.listen(0, "127.0.0.1", resolve);
-+  });
-+  const address = server.address();
-+  return {
-+    baseUrl: `http://127.0.0.1:${address.port}`,
-+    bucket,
-+    close: () => new Promise((resolve, reject) => server.close((error) => (error ? reject(error) : resolve()))),
-+    objects,
-+    requests,
-+  };
-+}
-+
-+function createBackupStorage({ keys = [], uploadResult = null } = {}) {
-+  const uploads = [];
-+  return {
-+    configured: true,
-+    config: {
-+      backupPrefix: TEST_BACKUP_PREFIX,
-+      provider: "r2",
-+    },
-+    uploads,
-+    async listObjects(prefix) {
-+      assert.equal(prefix, TEST_BACKUP_PREFIX);
-+      return {
-+        keys,
-+        message: `Listed storage objects under ${prefix}.`,
-+        ok: true,
-+      };
-+    },
-+    async putObject(upload) {
-+      uploads.push(upload);
-+      return uploadResult || {
-+        bytesWritten: upload.bytes.length,
-+        message: `Uploaded ${upload.objectKey}.`,
-+        ok: true,
-+        writeResult: "Stored",
-+      };
-+    },
-+  };
-+}
-
- test("postgresBackupFilename uses environment, Julian date, sequence, and dump extension", () => {
-   assert.equal(
-@@ -24,71 +128,82 @@ test("postgresBackupFilename uses environment, Julian date, sequence, and dump e
-     }),
-     "gamefoundry-dev-db-26168-001.dump",
-   );
-+  assert.equal(
-+    postgresBackupObjectKey({
-+      backupPrefix: TEST_BACKUP_PREFIX,
-+      fileName: "gamefoundry-dev-db-26168-001.dump",
-+    }),
-+    "/dev/backups/postgres/gamefoundry-dev-db-26168-001.dump",
-+  );
- });
-
--test("createPostgresBackup fails visibly when backup directory is missing", async () => {
-+test("createPostgresBackup fails visibly when R2 backup storage is missing", async () => {
-   const result = await createPostgresBackup({
-     env: TEST_ENV,
-     environment: "DEV",
-     now: new Date("2026-06-17T16:00:00.000Z"),
-     runProcess: async () => {
--      throw new Error("pg_dump should not run without a backup directory.");
-+      throw new Error("pg_dump should not run without configured R2 backup storage.");
-     },
-   });
-
-   assert.equal(result.status, "FAIL");
-   assert.equal(result.executed, false);
--  assert.match(result.message, /GAMEFOUNDRY_DB_BACKUP_DIR is missing/);
-+  assert.equal(result.currentEnvironment, "DEV");
-+  assert.match(result.message, /Create Backup requires configured R2 backup storage/);
-+  assert.match(result.message, new RegExp(DB_BACKUP_STORAGE_PROVIDER_ENV));
-+  assert.match(result.message, new RegExp(DB_BACKUP_PREFIX_ENV));
- });
-
- test("createPostgresBackup fails visibly when pg_dump is unavailable", async () => {
--  const backupDir = await mkdtemp(path.join(os.tmpdir(), "gamefoundry-backup-test-"));
--  try {
--    const result = await createPostgresBackup({
--      env: {
--        ...TEST_ENV,
--        [DB_BACKUP_DIR_ENV]: backupDir,
--      },
--      environment: "DEV",
--      now: new Date("2026-06-17T16:00:00.000Z"),
--      runProcess: async () => ({ code: "ENOENT", stderr: "not found", stdout: "" }),
--    });
-+  const result = await createPostgresBackup({
-+    backupStorage: createBackupStorage(),
-+    env: TEST_ENV,
-+    environment: "DEV",
-+    now: new Date("2026-06-17T16:00:00.000Z"),
-+    runProcess: async () => ({ code: "ENOENT", stderr: "not found", stdout: "" }),
-+  });
-
--    assert.equal(result.status, "FAIL");
--    assert.equal(result.executed, false);
--    assert.match(result.message, /pg_dump is unavailable/);
--  } finally {
--    await rm(backupDir, { force: true, recursive: true });
--  }
-+  assert.equal(result.status, "FAIL");
-+  assert.equal(result.executed, false);
-+  assert.equal(result.currentEnvironment, "DEV");
-+  assert.match(result.message, /pg_dump is unavailable/);
- });
-
--test("createPostgresBackup rejects repo tmp backup targets", async () => {
-+test("createPostgresBackup rejects repo tmp staging targets", async () => {
-   const result = await createPostgresBackup({
-+    backupStorage: createBackupStorage(),
-     env: {
-       ...TEST_ENV,
--      [DB_BACKUP_DIR_ENV]: "tmp/postgres-backups",
-+      [DB_BACKUP_STAGING_DIR_ENV]: "tmp/postgres-backups",
-     },
-     environment: "DEV",
-     now: new Date("2026-06-17T16:00:00.000Z"),
-     repoRoot: process.cwd(),
--    runProcess: async () => {
--      throw new Error("pg_dump should not run for repo tmp backup targets.");
-+    runProcess: async (command, args) => {
-+      assert.equal(command, "pg_dump");
-+      assert.deepEqual(args, ["--version"]);
-+      return { code: 0, stderr: "", stdout: "pg_dump (PostgreSQL) 16.0" };
-     },
-   });
-
-   assert.equal(result.status, "FAIL");
-   assert.equal(result.executed, false);
--  assert.match(result.message, /must not point inside repo tmp/);
-+  assert.equal(result.currentEnvironment, "DEV");
-+  assert.match(result.message, /GAMEFOUNDRY_DB_BACKUP_STAGING_DIR must not point inside repo tmp/);
- });
-
--test("createPostgresBackup runs pg_dump custom format to configured server-side folder", async () => {
--  const backupDir = await mkdtemp(path.join(os.tmpdir(), "gamefoundry-backup-test-"));
-+test("createPostgresBackup uploads pg_dump custom format to R2 and cleans temporary staging", async () => {
-+  const deprecatedBackupDir = await mkdtemp(path.join(os.tmpdir(), "gamefoundry-deprecated-backup-test-"));
-+  const storage = createBackupStorage();
-   const calls = [];
-+  let outputPath = "";
-   try {
-     const result = await createPostgresBackup({
-+      backupStorage: storage,
-       env: {
-         ...TEST_ENV,
--        [DB_BACKUP_DIR_ENV]: backupDir,
-+        [DB_BACKUP_DIR_ENV]: deprecatedBackupDir,
-       },
-       environment: "DEV",
-       now: new Date("2026-06-17T16:00:00.000Z"),
-@@ -99,7 +214,8 @@ test("createPostgresBackup runs pg_dump custom format to configured server-side
-         }
-         const fileIndex = args.indexOf("--file");
-         assert.notEqual(fileIndex, -1);
--        await writeFile(args[fileIndex + 1], Buffer.from("PGDMP custom-format-test"));
-+        outputPath = args[fileIndex + 1];
-+        await writeFile(outputPath, Buffer.from("PGDMP custom-format-test"));
-         return { code: 0, stderr: "", stdout: "" };
-       },
-     });
-@@ -108,17 +224,106 @@ test("createPostgresBackup runs pg_dump custom format to configured server-side
-     assert.ok(dumpCall);
-     assert.equal(result.status, "PASS");
-     assert.equal(result.executed, true);
-+    assert.equal(result.currentEnvironment, "DEV");
-     assert.equal(result.backup.fileName, "gamefoundry-dev-db-26168-001.dump");
-+    assert.equal(result.backup.environment, "DEV");
-     assert.equal(result.backup.format, "custom");
-+    assert.equal(result.backup.r2Key, "/dev/backups/postgres/gamefoundry-dev-db-26168-001.dump");
-     assert.ok(result.backup.sizeBytes > 0);
-+    assert.equal(result.backup.storageProvider, "r2");
-+    assert.equal(storage.uploads.length, 1);
-+    assert.equal(storage.uploads[0].contentType, "application/octet-stream");
-+    assert.equal(storage.uploads[0].objectKey, result.backup.r2Key);
-+    assert.equal(Buffer.from(storage.uploads[0].bytes).toString("utf8"), "PGDMP custom-format-test");
-+    assert.equal(path.dirname(outputPath).startsWith(path.resolve(process.cwd(), "tmp")), false);
-+    assert.equal(outputPath.startsWith(deprecatedBackupDir), false);
-     assert.equal(dumpCall.command, "pg_dump");
-     assert.equal(dumpCall.env.PGPASSWORD, "backup_secret");
-     assert.equal(dumpCall.env.PGSSLMODE, "disable");
-     assert.equal(dumpCall.args.includes("backup_secret"), false);
-     assert.equal(dumpCall.args.includes("--format=custom"), true);
-     assert.equal(dumpCall.args.includes("--dbname"), true);
--    assert.match(result.message, /gamefoundry-dev-db-26168-001\.dump/);
-+    assert.match(result.message, /R2 key \/dev\/backups\/postgres\/gamefoundry-dev-db-26168-001\.dump/);
-+    assert.match(result.message, /GAMEFOUNDRY_DB_BACKUP_DIR is deprecated/);
-+    assert.match(result.message, /2026-06-17T16:00:00\.000Z/);
-+    await assert.rejects(() => stat(outputPath), /ENOENT/);
-+    await assert.rejects(() => stat(path.dirname(outputPath)), /ENOENT/);
-+    assert.deepEqual(await readdir(deprecatedBackupDir), []);
-+  } finally {
-+    await rm(deprecatedBackupDir, { force: true, recursive: true });
-+  }
-+});
-+
-+test("createPostgresBackup reports R2 upload failure with key metadata and cleans staging", async () => {
-+  const storage = createBackupStorage({
-+    uploadResult: {
-+      bytesWritten: 0,
-+      message: "Storage upload failed with HTTP 500.",
-+      ok: false,
-+      writeResult: "FAIL: Storage upload",
-+    },
-+  });
-+  let outputPath = "";
-+  const result = await createPostgresBackup({
-+    backupStorage: storage,
-+    env: TEST_ENV,
-+    environment: "DEV",
-+    now: new Date("2026-06-17T16:00:00.000Z"),
-+    runProcess: async (command, args) => {
-+      if (args.includes("--version")) {
-+        return { code: 0, stderr: "", stdout: "pg_dump (PostgreSQL) 16.0" };
-+      }
-+      const fileIndex = args.indexOf("--file");
-+      outputPath = args[fileIndex + 1];
-+      await writeFile(outputPath, Buffer.from("PGDMP custom-format-test"));
-+      return { code: 0, stderr: "", stdout: "" };
-+    },
-+  });
-+
-+  assert.equal(result.status, "FAIL");
-+  assert.equal(result.executed, false);
-+  assert.equal(result.currentEnvironment, "DEV");
-+  assert.equal(result.backup.fileName, "gamefoundry-dev-db-26168-001.dump");
-+  assert.equal(result.backup.r2Key, "/dev/backups/postgres/gamefoundry-dev-db-26168-001.dump");
-+  assert.equal(result.backup.storageProvider, "r2");
-+  assert.match(result.message, /R2 upload did not complete/);
-+  assert.match(result.message, /Storage upload failed with HTTP 500/);
-+  await assert.rejects(() => stat(outputPath), /ENOENT/);
-+  await assert.rejects(() => stat(path.dirname(outputPath)), /ENOENT/);
-+});
-+
-+test("createPostgresBackup uploads backup artifact through configured R2 provider", async () => {
-+  const storageServer = await startFakeR2StorageServer();
-+  try {
-+    const result = await createPostgresBackup({
-+      env: {
-+        ...TEST_ENV,
-+        GAMEFOUNDRY_STORAGE_ACCESS_KEY_ID: "backup-test-access-key",
-+        GAMEFOUNDRY_STORAGE_BUCKET: storageServer.bucket,
-+        GAMEFOUNDRY_STORAGE_ENDPOINT: storageServer.baseUrl,
-+        GAMEFOUNDRY_STORAGE_SECRET_ACCESS_KEY: "backup-test-secret-key",
-+        [DB_BACKUP_PREFIX_ENV]: TEST_BACKUP_PREFIX,
-+        [DB_BACKUP_STORAGE_PROVIDER_ENV]: "r2",
-+      },
-+      environment: "DEV",
-+      now: new Date("2026-06-17T16:00:00.000Z"),
-+      runProcess: async (command, args) => {
-+        if (args.includes("--version")) {
-+          return { code: 0, stderr: "", stdout: "pg_dump (PostgreSQL) 16.0" };
-+        }
-+        const fileIndex = args.indexOf("--file");
-+        await writeFile(args[fileIndex + 1], Buffer.from("PGDMP configured-r2-upload-test"));
-+        return { code: 0, stderr: "", stdout: "" };
-+      },
-+    });
-+
-+    assert.equal(result.status, "PASS");
-+    assert.equal(result.backup.r2Key, "/dev/backups/postgres/gamefoundry-dev-db-26168-001.dump");
-+    assert.equal(storageServer.objects.get(result.backup.r2Key).toString("utf8"), "PGDMP configured-r2-upload-test");
-+    assert.equal(storageServer.requests.some((request) => request.method === "GET" && request.prefix === TEST_BACKUP_PREFIX), true);
-+    assert.equal(storageServer.requests.some((request) => request.method === "PUT" && request.objectKey === result.backup.r2Key), true);
-+    assert.doesNotMatch(result.message, /backup-test-secret-key|backup-test-access-key/);
-   } finally {
--    await rm(backupDir, { force: true, recursive: true });
-+    await storageServer.close();
-   }
- });
-diff --git a/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs b/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
-index 82d07404d..fb9c15656 100644
---- a/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
-+++ b/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
-@@ -1180,7 +1180,7 @@ test("Admin Operations exposes ordered guarded operation actions", async ({ page
-       id: "backup-recovery",
-       label: "Backup & Recovery",
-       actions: [
--        { id: "create-backup", label: "Create Backup", status: "PASS", diagnostic: "Create Backup validates the configured Local DB connection, then runs server-side pg_dump --format=custom into GAMEFOUNDRY_DB_BACKUP_DIR." },
-+        { id: "create-backup", label: "Create Backup", status: "PASS", diagnostic: "Create Backup validates the configured Local DB connection, runs server-side pg_dump --format=custom into temporary staging, uploads the .dump to the configured R2 backup prefix, then removes staging." },
-         { id: "restore-from-backup", label: "Restore From Backup", status: "WARN", diagnostic: "Restore From Backup remains scaffold-only until server-side pg_restore safety is approved.", confirmationMessage: "Restore From Backup is scaffold-only until server-side pg_restore safety is approved.", confirmationPhrase: "RESTORE", confirmationRequired: true, requiresBackupFile: true, risky: true },
-       ],
-     },
-@@ -1200,7 +1200,7 @@ test("Admin Operations exposes ordered guarded operation actions", async ({ page
-     "export-project-package": "Export Project Package generated DemoGame-26168-001.gfsp with 3 required file(s) and 0 asset reference(s); export validation PASS.",
-     "validate-project-package": "Validate Project Package passed integrity, required file, schema, compatibility, and asset reference checks. No import performed.",
-     "import-project-package": "Import Project Package replaced existing project Demo Game after explicit REPLACE confirmation.",
--    "create-backup": "Create Backup wrote gamefoundry-dev-db-26168-001.dump for DEV with pg_dump custom format at 2026-06-17T16:00:00.000Z; size 2048 bytes.",
-+    "create-backup": "Create Backup uploaded gamefoundry-dev-db-26168-001.dump to R2 key /dev/backups/postgres/gamefoundry-dev-db-26168-001.dump for DEV at 2026-06-17T16:00:00.000Z; size 2048 bytes.",
-     "restore-from-backup": "Restore From Backup is scaffold-only. Server-side pg_restore safety, conflict validation, and explicit restore approval must be implemented before restore can run.",
-     "run-migration": "Run Migration is not implemented in Admin Operations. Run Migration is risky and must require explicit confirmation before migration execution is implemented.",
-     "reseed-dev": "Reseed DEV is not implemented in Admin Operations. Reseed DEV is destructive and is only available when the configured project storage lane resolves to DEV.",
-@@ -1300,9 +1300,12 @@ test("Admin Operations exposes ordered guarded operation actions", async ({ page
-             actionLabel,
-             backup: body.actionId === "create-backup" ? {
-               createdAt: "2026-06-17T16:00:00.000Z",
-+              environment: "DEV",
-               fileName: "gamefoundry-dev-db-26168-001.dump",
-               format: "custom",
-+              r2Key: "/dev/backups/postgres/gamefoundry-dev-db-26168-001.dump",
-               sizeBytes: 2048,
-+              storageProvider: "r2",
-             } : undefined,
-             executed: packageResult ? packageResult.executed : body.actionId === "validate-current-connection" || body.actionId === "database-connectivity-test",
-             manualOnly: !packageResult && body.actionId !== "validate-current-connection" && body.actionId !== "database-connectivity-test",
-@@ -1390,9 +1393,10 @@ test("Admin Operations exposes ordered guarded operation actions", async ({ page
-     await page.locator("[data-admin-operation-action='import-project-package']").click();
-     await expect(page.locator("[data-admin-operations-status]")).toContainText("PASS: Import Project Package replaced existing project Demo Game after explicit REPLACE confirmation.");
-     await page.locator("[data-admin-operation-action='create-backup']").click();
--    await expect(page.locator("[data-admin-operations-status]")).toContainText("PASS: Create Backup wrote gamefoundry-dev-db-26168-001.dump for DEV");
-+    await expect(page.locator("[data-admin-operations-status]")).toContainText("PASS: Create Backup uploaded gamefoundry-dev-db-26168-001.dump to R2 key /dev/backups/postgres/gamefoundry-dev-db-26168-001.dump for DEV");
-     await expect(page.locator("[data-admin-operation-result-rows] tr").first()).toContainText("Create Backup");
-     await expect(page.locator("[data-admin-operation-result-rows] tr").first()).toContainText("yes");
-+    await expect(page.locator("[data-admin-operation-result-rows] tr").first()).toContainText("/dev/backups/postgres/gamefoundry-dev-db-26168-001.dump");
-     await expect(page.locator("[data-admin-operation-result-rows] tr").first()).toContainText("size 2048 bytes.");
-     await page.locator("[data-admin-operation-backup-file='restore-from-backup']").setInputFiles({
-       buffer: Buffer.from("{\"backupType\":\"Game Foundry Studio Local API Backup\"}"),
-@@ -1454,7 +1458,7 @@ test("Admin Operations reports export artifact and Postgres backup failures visi
-       id: "backup-recovery",
-       label: "Backup & Recovery",
-       actions: [
--        { id: "create-backup", label: "Create Backup", status: "PASS", diagnostic: "Create Backup runs server-side pg_dump --format=custom into GAMEFOUNDRY_DB_BACKUP_DIR." },
-+        { id: "create-backup", label: "Create Backup", status: "PASS", diagnostic: "Create Backup runs server-side pg_dump --format=custom into temporary staging, uploads the .dump to the configured R2 backup prefix, then removes staging." },
-       ],
-     },
-     {
-@@ -1530,7 +1534,7 @@ test("Admin Operations reports export artifact and Postgres backup failures visi
-             actionLabel: createBackup ? "Create Backup" : "Export Project Package",
-             executed: !createBackup,
-             message: createBackup
--              ? "GAMEFOUNDRY_DB_BACKUP_DIR is missing. Configure a server-side backup folder outside repo tmp/ before running Create Backup."
-+              ? "Create Backup requires configured R2 backup storage. Missing or empty: GAMEFOUNDRY_DB_BACKUP_STORAGE_PROVIDER, GAMEFOUNDRY_DB_BACKUP_PREFIX."
-               : `${body.actionId} returned PASS without artifact bytes.`,
-             status: createBackup ? "FAIL" : "PASS",
-           },
-@@ -1545,7 +1549,7 @@ test("Admin Operations reports export artifact and Postgres backup failures visi
-     await expect(page.locator("[data-admin-operation-result-rows] tr").first()).toContainText("Export Project Package");
-     await expect(page.locator("[data-admin-operation-result-rows] tr").first()).toContainText("FAIL");
-     await page.locator("[data-admin-operation-action='create-backup']").click();
--    await expect(page.locator("[data-admin-operations-status]")).toContainText("FAIL: GAMEFOUNDRY_DB_BACKUP_DIR is missing.");
-+    await expect(page.locator("[data-admin-operations-status]")).toContainText("FAIL: Create Backup requires configured R2 backup storage.");
-     await expect(page.locator("[data-admin-operation-result-rows] tr").first()).toContainText("Create Backup");
-     await expect(page.locator("[data-admin-operation-result-rows] tr").first()).toContainText("FAIL");
-     await expect(page.locator("[data-admin-operations]")).not.toContainText("asset-test-secret-key");
-diff --git a/docs_build/dev/reports/PR_26168_246-r2-backed-postgres-backups.md b/docs_build/dev/reports/PR_26168_246-r2-backed-postgres-backups.md
+-    for (const route of ["account", "admin", "games"]) {
++    for (const route of ["account", "admin", "games", "marketplace"]) {
+       const menuLabels = await page.locator(`nav.nav-links > .nav-item:has(> a[data-route='${route}']) > .sub-menu > a`).evaluateAll((links) => (
+         links.map((link) => link.textContent.trim())
+       ));
+@@ -489,7 +489,7 @@ test("common header renders primary navigation order across active pages", async
+       await expect(page.locator("header.site-header")).toBeVisible();
+       expect(await primaryNavigationLabels(page)).toEqual(PRIMARY_NAVIGATION_ORDER);
+ 
+-      for (const route of ["account", "admin", "games"]) {
++      for (const route of ["account", "admin", "games", "marketplace"]) {
+         const menuLabels = await page.locator(`nav.nav-links > .nav-item:has(> a[data-route='${route}']) > .sub-menu > a`).evaluateAll((links) => (
+           links.map((link) => link.textContent.trim())
+         ));
+diff --git a/docs_build/dev/reports/PR_26168_247-memberships-page.md b/docs_build/dev/reports/PR_26168_247-memberships-page.md
 new file mode 100644
-index 000000000..c0fb30a7c
+index 000000000..a0b4a1e7e
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26168_246-r2-backed-postgres-backups.md
-@@ -0,0 +1,140 @@
-+# PR_26168_246-r2-backed-postgres-backups
++++ b/docs_build/dev/reports/PR_26168_247-memberships-page.md
+@@ -0,0 +1,90 @@
++# PR_26168_247-memberships-page
 +
 +## Branch Validation
 +
-+PASS - Current branch is `main`; expected branch is `main`.
++PASS - Current branch is `main`.
 +
-+Local branches found:
-+
-+```text
-+main
-+```
-+
-+## Summary
-+
-+Create Backup now validates the current database connection through Admin Operations, runs server-side `pg_dump --format=custom`, writes the dump only to temporary server-side staging, uploads the final `.dump` to the configured R2 backup prefix, and removes staging after upload. `GAMEFOUNDRY_DB_BACKUP_DIR` is deprecated for final backup storage.
-+
-+Restore From Backup remains scaffold-only.
++Note: `test.sql` was already deleted in the working tree before this PR work and was left untouched/excluded from the PR package.
 +
 +## Requirement Checklist
 +
-+| Requirement | Status | Evidence |
++| Requirement | Status | Notes |
 +| --- | --- | --- |
-+| Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` first | PASS | Read before implementation and followed BUILD/report/ZIP rules. |
-+| Hard stop unless current branch is `main` | PASS | `git branch --show-current` returned `main`; local branch list contained `main`. |
-+| Upload final Create Backup artifacts to R2 instead of permanently storing in `GAMEFOUNDRY_DB_BACKUP_DIR` | PASS | `createPostgresBackup` uploads via configured R2 storage and only reports the R2 key. |
-+| Validate current DB connection before backup | PASS | `createBackupAction()` still calls `validateBackupDatabaseConnection()` before `createPostgresBackup()`. |
-+| Run server-side `pg_dump --format=custom` | PASS | Backup service keeps `--format=custom`; Node test asserts the dump command args. |
-+| Write dump to temporary server-side staging only | PASS | Backup service uses OS temp or `GAMEFOUNDRY_DB_BACKUP_STAGING_DIR`; repo `tmp/` staging is rejected. |
-+| Upload `.dump` to configured R2 backup prefix | PASS | `createConfiguredBackupStorage()` loads `GAMEFOUNDRY_DB_BACKUP_PREFIX`; configured fake R2 validation captured the PUT. |
-+| Delete temporary local dump after successful upload | PASS | Node test asserts the staged file and staging directory are removed after PASS. |
-+| Report PASS/FAIL with R2 key, filename, size, timestamp, and environment | PASS | Success and upload-failure results include backup metadata; Playwright asserts visible R2 key PASS/FAIL behavior. |
-+| Add safe env placeholders and copy-source guidance | PASS | `.env.example` includes provider, prefix, staging note, and deprecated backup-dir guidance. |
-+| Use environment-specific prefixes for DEV, IST, UAT, PRD | PASS | `.env.example` and database docs list `/dev/`, `/ist/`, `/uat/`, and `/prd/backups/postgres/`; config validates allowed prefixes. |
-+| R2 prefixes must not require manual folder creation | PASS | `.env.example` and database docs state prefixes are object-key prefixes created by upload. |
-+| Treat `GAMEFOUNDRY_DB_BACKUP_DIR` as deprecated final storage | PASS | Code ignores it for final storage and only appends a deprecation note when present. |
-+| Rename/document local staging as temporary only | PASS | Added `GAMEFOUNDRY_DB_BACKUP_STAGING_DIR` as optional temporary staging override. |
-+| Do not store backups in repo `tmp/` | PASS | Staging root under repo `tmp/` returns FAIL; no `.dump` files were found. |
-+| Do not commit backup files | PASS | `rg --files -g '*.dump'` returned no matches. |
-+| Do not expose DB password, storage keys, or secrets | PASS | DB password stays in `PGPASSWORD`; tests assert command args and UI/report messages do not expose secret fixture values. |
-+| Restore From Backup remains guarded/scaffold-only | PASS | Restore action remains `SKIP`; docs state no approved safe R2 restore path exists in this PR. |
-+| Use existing storage provider contract where possible | PASS | Backup uses the existing R2 signed storage module and `putObject` contract, with backup-specific config. |
-+| Do not add unrelated Project Package, migration, or workspace behavior | PASS | Changes are limited to backup storage, Admin Operations backup diagnostics/tests, env/docs, and required reports. |
-+| Do not run full samples smoke | PASS | Full samples smoke was skipped; no sample JSON or sample runtime behavior changed. |
++| Follow `docs_build/dev/PROJECT_INSTRUCTIONS.md` | PASS | Read before implementation; kept top-level header IA exception intact. |
++| Create only `PR_26168_247-memberships-page` | PASS | Scope limited to public Memberships page, shared navigation wiring, focused tests, and required reports/package. |
++| Add `/memberships/index.html` | PASS | New public Theme V2 page added with Free, Creator, and Studio tier content. |
++| Wire Memberships into shared nav | PASS | Added under shared Marketplace submenu in production header partial and local repo-server header mirror. |
++| Wire Memberships into shared footer | PASS | Added to Product footer links. |
++| Wire Memberships into mobile nav | PASS | Shared header submenu is the mobile/narrow navigation surface; Playwright validates the Memberships link at 390px width. |
++| Use existing GFS shared layout and CSS | PASS | Page uses Theme V2 shared partials/classes and existing CSS only. |
++| No backend enforcement | PASS | No API/service/runtime enforcement code added. |
++| No database changes | PASS | No schema, migration, seed, or database files touched. |
++| No legal pages | PASS | No legal pages added or modified. Existing shared footer legal links were not changed. |
++| No teams | PASS | No team model, team UI, or team copy added. |
++| No marketplace enforcement | PASS | Navigation placement only; no marketplace access logic or enforcement added. |
++| No billing integration | PASS | No billing, checkout, payment, or provider code/copy added. |
++| Commit message prepared | PASS | `docs_build/dev/commit_comment.txt` contains the requested title/body. |
++
++## Intentional Order Notes
++
++PASS - Primary top-level header navigation remains the documented product IA exception:
++`Games`, `Toolbox`, `Marketplace`, `Learn`, followed by session-dependent account/admin items.
++
++PASS - Memberships is placed inside the Marketplace submenu so the top-level header order remains unchanged.
++
++PASS - New browseable lists remain alphabetized:
++- Marketplace submenu: `Marketplace Home`, `Memberships`.
++- Product footer: `Games`, `Learn`, `Marketplace`, `Memberships`, `Toolbox`.
 +
 +## Validation Lane Report
 +
-+Impacted lane: Admin Operations backup action, Local API backup service, R2 storage provider config, and database backup docs.
-+
-+Skipped broad lanes: full samples, engine-wide runtime, Project Package, migration, and Project Workspace lanes. They were safe to skip because no sample JSON, engine core, package import/export behavior, migration runner, or Project Workspace runtime files changed.
-+
-+PASS - Syntax/static checks:
-+
-+```text
-+node --check src/dev-runtime/storage/storage-config.mjs
-+node --check src/dev-runtime/storage/r2-project-asset-storage.mjs
-+node --check src/dev-runtime/database/postgres-backup-service.mjs
-+node --check src/dev-runtime/server/local-api-router.mjs
-+node --check assets/theme-v2/js/admin-operations.js
-+node --check src/engine/api/admin-operations-api-client.js
-+node --check tests/dev-runtime/PostgresBackupService.test.mjs
-+node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
-+```
-+
-+PASS - Targeted Local API backup and R2 upload validation:
-+
-+```text
-+node --test tests/dev-runtime/PostgresBackupService.test.mjs
-+```
-+
-+Result: 7 passed.
-+
-+Covered:
-+
-+- Missing R2 backup storage visible FAIL.
-+- Missing `pg_dump` visible FAIL.
-+- Repo `tmp/` staging rejection.
-+- `pg_dump --format=custom` command construction without DB password in args.
-+- Successful R2 upload metadata with R2 key, filename, size, timestamp, and environment.
-+- Temporary staged dump and staging directory cleanup after successful upload.
-+- R2 upload failure reports key metadata and cleans staging.
-+- Configured R2 provider path against a fake local R2-compatible server.
-+
-+PASS - Targeted Admin Operations Playwright / visible PASS/FAIL behavior:
-+
-+```text
-+npx playwright test tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs --grep "Admin Operations" --reporter=line
-+```
-+
-+Result: 4 passed.
-+
-+Covered:
-+
-+- Create Backup visible PASS message includes the R2 key.
-+- Create Backup visible FAIL message is actionable when backup storage config is missing.
-+- Restore From Backup remains scaffold-only.
-+- Admin Operations order, safety table, non-admin block, and DEV-only reseed gating remain intact.
-+
-+PASS - Static artifact and HTML checks:
-+
-+```text
-+rg --files -g '*.dump' -g '!node_modules' -g '!tests/results' -g '!tmp'
-+rg --pcre2 -n "<script(?![^>]+src=)|<style|\s(onclick|onchange|oninput|onsubmit|onkeydown|onkeyup|onload)=" admin/operations.html
-+git diff --check
-+```
-+
-+Results:
-+
-+- No `.dump` files found.
-+- No inline Admin Operations HTML violations found.
-+- `git diff --check` passed with line-ending warnings only.
-+
-+PASS/WARN - Playwright V8 coverage report generated:
-+
-+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
-+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
-+- WARN entries are expected for Node-only Local API/storage modules that browser V8 coverage cannot collect.
++| Lane | Status | Command / Notes |
++| --- | --- | --- |
++| JS syntax | PASS | `node --check assets/theme-v2/js/gamefoundry-partials.js` |
++| Playwright spec syntax | PASS | `node --check tests/playwright/tools/PublicMembershipsPage.spec.mjs` |
++| Existing header contract spec syntax | PASS | `node --check tests/playwright/tools/RootToolsFutureState.spec.mjs` |
++| HTML inline guard | PASS | `rg --pcre2 -n "<script(?![^>]+src=)\|<style\|\\s(onclick\|onchange\|oninput\|onsubmit\|onkeydown\|onkeyup\|onload)=" ...` returned no matches. |
++| Out-of-scope term guard | PASS | Targeted search for billing/checkout/payment/stripe/team/entitlement/enforcement/database/migration terms returned no matches in touched implementation files. |
++| Static membership wiring | PASS | Node validation confirmed production header, local header mirror, footer, route map/root segment, and Free/Creator/Studio tier labels. |
++| Playwright ownership audit | PASS | Scoped audit passed for `PublicMembershipsPage.spec.mjs`, `RootToolsFutureState.spec.mjs`, and `playwrightRepoServer.mjs`. |
++| Targeted Memberships Playwright | PASS | `node node_modules/@playwright/test/cli.js test tests/playwright/tools/PublicMembershipsPage.spec.mjs --project=playwright --workers=1 --reporter=line` - 2 passed. |
++| Targeted shared-header RootTools attempt | FAIL (pre-existing fixture) | Attempted RootTools header validation failed on unrelated local API/toolbox fixture state: empty toolbox card list and 500s from `/api/platform-settings/banner`, `/api/toolbox/game-workspace/repositories`, and `/api/toolbox/registry/snapshot`. Memberships coverage was validated by the focused public-page spec and static production partial check. |
++| Diff whitespace | PASS | `git diff --check -- PR-scoped tracked files` passed; generated `codex_review.diff` is excluded because diff context lines trigger false trailing-whitespace positives. |
++| Full samples smoke | SKIP | Samples and `start_of_day` were not touched; repo instructions say not to run broad samples smoke for this slice. |
 +
 +## Manual Validation Notes
 +
-+PASS - The tested R2 path used a local fake R2-compatible server and the real configured storage factory, not real production credentials.
++1. Open `/memberships/index.html`.
++2. Confirm the page uses the shared header and footer.
++3. Confirm the H1 reads `Choose the membership shape for your next game.`
++4. Confirm Free, Creator, and Studio tier cards are visible.
++5. Open the Marketplace submenu and confirm Memberships is listed.
++6. Resize to a narrow mobile width and confirm the shared navigation still exposes Memberships.
++7. Confirm Product footer includes Memberships.
++8. Confirm there is no billing, backend enforcement, database, teams, legal page, or marketplace enforcement behavior.
 +
-+PASS - Successful backup tests verified that temporary local staging is removed after upload.
++Expected outcome: Memberships is a public informational page only, with shared Theme V2 chrome and no backend or data-model side effects.
 +
-+PASS - No real database password, storage access key, storage secret key, service role key, full database URL, or raw dump content was written to reports or UI messages.
++## Changed Files
 +
-+PASS - Actual live backup creation still requires a real `.env`, reachable Postgres database, installed PostgreSQL client tools on the Local API host, and configured R2 credentials.
++- `assets/theme-v2/js/gamefoundry-partials.js`
++- `assets/theme-v2/partials/footer.html`
++- `assets/theme-v2/partials/header-nav.html`
++- `docs_build/dev/codex_commands.md`
++- `docs_build/dev/commit_comment.txt`
++- `docs_build/dev/reports/PR_26168_247-memberships-page.md`
++- `docs_build/dev/reports/filesystem_scan_reduction_report.md`
++- `docs_build/dev/reports/playwright_discovery_ownership_report.md`
++- `docs_build/dev/reports/playwright_discovery_scope_report.md`
++- `docs_build/dev/reports/playwright_structure_audit.md`
++- `memberships/index.html`
++- `src/dev-runtime/admin/header-nav.local.html`
++- `tests/playwright/tools/PublicMembershipsPage.spec.mjs`
++- `tests/playwright/tools/RootToolsFutureState.spec.mjs`
 +
-+SKIP - Full samples smoke was not run because this PR only changes Admin Operations backup feedback, Local API backup service/storage behavior, env/docs, and targeted tests.
++## Package
 +
-+## Artifacts
-+
-+PASS - Required reports:
-+
++Generated artifacts:
 +- `docs_build/dev/reports/codex_review.diff`
 +- `docs_build/dev/reports/codex_changed_files.txt`
-+- `docs_build/dev/reports/PR_26168_246-r2-backed-postgres-backups.md`
++- `tmp/PR_26168_247-memberships-page_delta.zip`
+diff --git a/memberships/index.html b/memberships/index.html
+new file mode 100644
+index 000000000..274f08267
+--- /dev/null
++++ b/memberships/index.html
+@@ -0,0 +1,122 @@
++<!doctype html>
++<html lang="en">
 +
-+PASS - Repo-structured delta ZIP:
++<head>
++    <meta charset="utf-8">
++    <meta name="viewport" content="width=device-width, initial-scale=1">
++    <title>Memberships - GameFoundryStudio</title>
++    <meta name="description" content="Compare Free, Creator, and Studio membership tiers for GameFoundryStudio.">
++    <link rel="icon" href="/favicon.svg">
++    <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
++</head>
 +
-+- `tmp/PR_26168_246-r2-backed-postgres-backups_delta.zip`
++<body>
++    <div data-partial="header-nav"></div>
++    <main>
++        <section class="page-title">
++            <div class="container">
++                <div class="kicker">Memberships</div>
++                <h1>Choose the membership shape for your next game.</h1>
++                <p class="lede">Start with public creation tools, grow into deeper creator workflows, and plan larger
++                    game portfolios as GameFoundryStudio expands.</p>
++            </div>
++        </section>
++
++        <section class="section">
++            <div class="container page-hero">
++                <img src="../assets/theme-v2/images/game-foundry-tools-poster.png" alt="Game Foundry Studio creator tools poster">
++                <div>
++                    <h2>Free, Creator, and Studio paths for building open-web games.</h2>
++                    <p class="lede">Memberships organize the product direction around the ways visitors build, play,
++                        and share without changing access rules in this public page.</p>
++                    <a class="btn primary" href="#membership-tiers">Compare Tiers</a>
++                </div>
++            </div>
++        </section>
++
++        <section class="section" id="membership-tiers">
++            <div class="container grid cols-3">
++                <article class="card">
++                    <div class="card-body content-stack">
++                        <div class="kicker">Free</div>
++                        <h2>Explore the studio.</h2>
++                        <p>Browse games, learn the creation model, and try public Toolbox surfaces as the platform
++                            matures.</p>
++                        <ul>
++                            <li>Public game discovery</li>
++                            <li>Learning and reference pages</li>
++                            <li>Starter creator workflows</li>
++                        </ul>
++                        <a class="btn" href="../games/index.html">Browse Games</a>
++                    </div>
++                </article>
++                <article class="card">
++                    <div class="card-body content-stack">
++                        <div class="kicker">Creator</div>
++                        <h2>Build with structure.</h2>
++                        <p>Plan game ideas through focused tools for design, configuration, assets, testing, and
++                            publishing readiness.</p>
++                        <ul>
++                            <li>Game design and configuration planning</li>
++                            <li>Asset and world-building workflows</li>
++                            <li>Progress paths for creator work</li>
++                        </ul>
++                        <a class="btn primary" href="../toolbox/index.html">Open Toolbox</a>
++                    </div>
++                </article>
++                <article class="card">
++                    <div class="card-body content-stack">
++                        <div class="kicker">Studio</div>
++                        <h2>Coordinate a larger catalog.</h2>
++                        <p>Shape a broader creation roadmap with portfolio planning, publishing preparation, and
++                            operational visibility.</p>
++                        <ul>
++                            <li>Multi-project creation planning</li>
++                            <li>Release-readiness checkpoints</li>
++                            <li>Studio-scale content operations</li>
++                        </ul>
++                        <a class="btn" href="../company/roadmap.html">View Roadmap</a>
++                    </div>
++                </article>
++            </div>
++        </section>
++
++        <section class="section">
++            <div class="container">
++                <div class="surface">
++                    <div class="surface-header">
++                        <div class="kicker">Membership Direction</div>
++                        <h2>A public comparison page only.</h2>
++                    </div>
++                    <div class="surface-body">
++                        <div class="grid cols-3">
++                            <article class="callout">
++                                <h3>Build</h3>
++                                <p>Creator-facing workflows stay centered on structured game design, configuration,
++                                    assets, worlds, and testing.</p>
++                            </article>
++                            <article class="callout">
++                                <h3>Play</h3>
++                                <p>Visitors can keep discovering playable open-web projects while membership features
++                                    are planned.</p>
++                            </article>
++                            <article class="callout">
++                                <h3>Share</h3>
++                                <p>Publishing and community direction remains visible while this page stays
++                                    informational and public.</p>
++                            </article>
++                        </div>
++                    </div>
++                    <div class="surface-footer">
++                        <a class="btn primary" href="../account/create-account.html">Create Account</a>
++                        <a class="btn" href="../learn/index.html">Learn More</a>
++                    </div>
++                </div>
++            </div>
++        </section>
++    </main>
++    <div data-partial="footer"></div>
++    <script src="../assets/theme-v2/js/gamefoundry-partials.js" defer></script>
++</body>
++
++</html>
+diff --git a/tests/playwright/tools/PublicMembershipsPage.spec.mjs b/tests/playwright/tools/PublicMembershipsPage.spec.mjs
+new file mode 100644
+index 000000000..519f3be9d
+--- /dev/null
++++ b/tests/playwright/tools/PublicMembershipsPage.spec.mjs
+@@ -0,0 +1,110 @@
++import { expect, test } from "@playwright/test";
++import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
++
++async function openMembershipsPage(page, options = {}) {
++  if (options.viewport) {
++    await page.setViewportSize(options.viewport);
++  }
++  const server = await startRepoServer();
++  const failedRequests = [];
++  const pageErrors = [];
++  const consoleErrors = [];
++  page.on("pageerror", (error) => {
++    pageErrors.push(error.message);
++  });
++  page.on("console", (message) => {
++    if (message.type() === "error") {
++      consoleErrors.push(message.text());
++    }
++  });
++  page.on("response", (response) => {
++    if (response.status() >= 400) {
++      failedRequests.push(`${response.status()} ${response.url()}`);
++    }
++  });
++  page.on("requestfailed", (request) => {
++    failedRequests.push(`FAILED ${request.url()}`);
++  });
++  await page.route("**/api/platform-settings/banner", async (route) => {
++    await route.fulfill({
++      body: JSON.stringify({
++        data: {
++          banner: {
++            active: false,
++            message: "",
++            tone: "info",
++          },
++          sourceTable: "test-fixture",
++        },
++        ok: true,
++      }),
++      contentType: "application/json; charset=utf-8",
++      status: 200,
++    });
++  });
++  await fetch(`${server.baseUrl}/api/session/mode`, {
++    body: JSON.stringify({ modeId: "local-db" }),
++    headers: { "content-type": "application/json" },
++    method: "POST",
++  });
++  await page.goto(`${server.baseUrl}/memberships/index.html`, { waitUntil: "networkidle" });
++  return { consoleErrors, failedRequests, pageErrors, server };
++}
++
++test("public memberships page renders tiers with shared Theme V2 chrome", async ({ page }) => {
++  const { consoleErrors, failedRequests, pageErrors, server } = await openMembershipsPage(page);
++
++  try {
++    await expect(page).toHaveTitle(/Memberships - GameFoundryStudio/);
++    await expect(page.getByRole("heading", { name: "Choose the membership shape for your next game." })).toBeVisible();
++    await expect(page.getByRole("heading", { name: "Explore the studio." })).toBeVisible();
++    await expect(page.getByRole("heading", { name: "Build with structure." })).toBeVisible();
++    await expect(page.getByRole("heading", { name: "Coordinate a larger catalog." })).toBeVisible();
++    await expect(page.getByText("Free", { exact: true })).toBeVisible();
++    await expect(page.getByText("Creator", { exact: true })).toBeVisible();
++    await expect(page.getByText("Studio", { exact: true })).toBeVisible();
++    await expect(page.locator("header.site-header")).toBeVisible();
++    await expect(page.locator("footer.footer")).toBeVisible();
++    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='marketplace']) > .sub-menu a")).toHaveText([
++      "Marketplace Home",
++      "Memberships",
++    ]);
++    await expect(page.locator("nav.nav-links a[data-route='memberships']")).toHaveClass(/active/);
++    await expect(page.locator("nav.nav-links a[data-route='memberships']")).toHaveAttribute("href", "../memberships/index.html");
++    await expect(page.locator("footer.footer .footer__group").filter({ has: page.locator("#footer-product") }).locator(".footer__links a")).toHaveText([
++      "Games",
++      "Learn",
++      "Marketplace",
++      "Memberships",
++      "Toolbox",
++    ]);
++    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
++    expect(pageErrors).toEqual([]);
++    expect(consoleErrors).toEqual([]);
++    expect(failedRequests).toEqual([]);
++  } finally {
++    await server.close();
++  }
++});
++
++test("memberships link remains visible in the narrow shared navigation layout", async ({ page }) => {
++  const { consoleErrors, failedRequests, pageErrors, server } = await openMembershipsPage(page, {
++    viewport: { width: 390, height: 900 },
++  });
++
++  try {
++    await expect(page.locator("header.site-header")).toBeVisible();
++    await expect(page.locator("nav.nav-links a[data-route='memberships']")).toBeVisible();
++    await expect(page.locator("footer.footer a[data-route='memberships']")).toBeVisible();
++    const layout = await page.evaluate(() => ({
++      clientWidth: document.documentElement.clientWidth,
++      scrollWidth: document.documentElement.scrollWidth,
++    }));
++    expect(layout.scrollWidth).toBeLessThanOrEqual(layout.clientWidth + 1);
++    expect(pageErrors).toEqual([]);
++    expect(consoleErrors).toEqual([]);
++    expect(failedRequests).toEqual([]);
++  } finally {
++    await server.close();
++  }
++});

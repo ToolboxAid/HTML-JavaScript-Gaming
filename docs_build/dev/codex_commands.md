@@ -2643,3 +2643,39 @@ Required reports:
 
 Packaging:
 - `tmp/PR_26168_246-r2-backed-postgres-backups_delta.zip`
+
+
+## PR_26168_247-memberships-page
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main`.
+- Added the public `memberships/index.html` page with Free, Creator, and Studio tiers.
+- Wired Memberships into the shared Marketplace submenu and Product footer.
+- Registered the Memberships route/root segment for shared Theme V2 partial rewriting.
+- Kept the primary top-level header IA exception unchanged.
+- Kept the slice public/static only with no backend enforcement, database changes, teams, legal pages, marketplace enforcement, or billing integration.
+
+Validation:
+- `node --check assets/theme-v2/js/gamefoundry-partials.js`
+- `node --check tests/playwright/tools/PublicMembershipsPage.spec.mjs`
+- `node --check tests/playwright/tools/RootToolsFutureState.spec.mjs`
+- Static HTML inline script/style/event-handler guard.
+- Static Memberships route/nav/footer/tier validation.
+- `node scripts/audit-playwright-test-locations.mjs --target tests/playwright/tools/PublicMembershipsPage.spec.mjs --target tests/playwright/tools/RootToolsFutureState.spec.mjs --helper tests/helpers/playwrightRepoServer.mjs --lanes tools`
+- `node node_modules/@playwright/test/cli.js test tests/playwright/tools/PublicMembershipsPage.spec.mjs --project=playwright --workers=1 --reporter=line`
+- Attempted targeted RootToolsFutureState header validation; blocked by existing local API/toolbox fixture 500/empty-card failures unrelated to the Memberships page.
+- `git diff --check -- touched files`
+- Full samples smoke skipped because samples and `start_of_day` folders were not touched.
+
+Required reports:
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/PR_26168_247-memberships-page.md`
+- `docs_build/dev/reports/playwright_structure_audit.md`
+- `docs_build/dev/reports/playwright_discovery_ownership_report.md`
+- `docs_build/dev/reports/playwright_discovery_scope_report.md`
+- `docs_build/dev/reports/filesystem_scan_reduction_report.md`
+
+Packaging:
+- `tmp/PR_26168_247-memberships-page_delta.zip`

@@ -52,6 +52,7 @@
         "game-retro": "games/retro/index.html",
         "game-strategy": "games/strategy/index.html",
         marketplace: "marketplace/index.html",
+        memberships: "memberships/index.html",
         learn: "learn/index.html",
         community: "community/index.html",
         translations: "toolbox/languages/index.html",
@@ -114,7 +115,7 @@
 
     const rootSegments = new Set([
         "account", "company", "community", "legal",
-        "admin", "docs", "games", "learn", "marketplace", "owner", "toolbox"
+        "admin", "docs", "games", "learn", "marketplace", "memberships", "owner", "toolbox"
     ]);
 
     const currentScript = document.currentScript || document.querySelector("script[src*='gamefoundry-partials.js']");

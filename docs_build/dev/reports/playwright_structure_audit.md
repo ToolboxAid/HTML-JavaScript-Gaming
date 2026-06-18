@@ -1,6 +1,6 @@
 # Playwright Structure Audit
 
-Generated: 2026-06-17T15:59:08.920Z
+Generated: 2026-06-18T01:35:28.816Z
 Status: PASS
 
 ## Lane Directories
@@ -10,7 +10,7 @@ Status: PASS
 | tests/playwright/engine | SKIP | Lane was not selected, so targeted discovery did not enumerate this directory. |
 | tests/playwright/games | SKIP | Lane was not selected, so targeted discovery did not enumerate this directory. |
 | tests/playwright/integration | SKIP | Lane was not selected, so targeted discovery did not enumerate this directory. |
-| tests/playwright/tools | PASS | Scoped discovery is limited to explicit target file(s): tests/playwright/tools/RootToolsFutureState.spec.mjs. |
+| tests/playwright/tools | PASS | Scoped discovery is limited to explicit target file(s): tests/playwright/tools/PublicMembershipsPage.spec.mjs, tests/playwright/tools/RootToolsFutureState.spec.mjs. |
 
 ## Blocking Findings
 
@@ -35,11 +35,9 @@ No blocking structural findings.
 
 | File | Status | Missing Relative Imports |
 | --- | --- | --- |
+| tests/playwright/tools/PublicMembershipsPage.spec.mjs | PASS | none |
 | tests/playwright/tools/RootToolsFutureState.spec.mjs | PASS | none |
 | tests/helpers/playwrightRepoServer.mjs | PASS | none |
-| tests/helpers/playwrightStorageIsolation.mjs | PASS | none |
-| tests/helpers/playwrightV8CoverageReporter.mjs | PASS | none |
-| tests/helpers/workspaceV2CoverageReporter.mjs | PASS | none |
 
 ## Intentionally Shared Helpers
 
