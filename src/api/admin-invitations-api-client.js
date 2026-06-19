@@ -3,42 +3,42 @@ import {
   safeRequestServerApi,
 } from "./server-api-client.js";
 
-export function readAdminInvitations() {
+export function readAdminInvites() {
   return requireServerApiData(
     safeRequestServerApi("/admin/invitations/list"),
-    "Admin Invitations list",
+    "Admin Invites list",
   );
 }
 
-export function createAdminBetaInvitation(invitation = {}, expiresAt = "") {
-  const body = typeof invitation === "string"
-    ? { email: invitation, expiresAt }
-    : { ...invitation };
+export function createAdminBetaInvite(invite = {}, expiresAt = "") {
+  const body = typeof invite === "string"
+    ? { email: invite, expiresAt }
+    : { ...invite };
   return requireServerApiData(
     safeRequestServerApi("/admin/invitations/create", {
       body: { ...body, planKey: "BETA" },
       method: "POST",
     }),
-    "Admin Beta invitation create",
+    "Admin Beta invite create",
   );
 }
 
-export function revokeAdminBetaInvitation(invitationKey) {
+export function revokeAdminBetaInvite(inviteKey) {
   return requireServerApiData(
     safeRequestServerApi("/admin/invitations/revoke", {
-      body: { invitationKey },
+      body: { invitationKey: inviteKey },
       method: "POST",
     }),
-    "Admin Beta invitation revoke",
+    "Admin Beta invite revoke",
   );
 }
 
-export function expireAdminBetaInvitation(invitationKey) {
+export function expireAdminBetaInvite(inviteKey) {
   return requireServerApiData(
     safeRequestServerApi("/admin/invitations/expire", {
-      body: { invitationKey },
+      body: { invitationKey: inviteKey },
       method: "POST",
     }),
-    "Admin Beta invitation expire",
+    "Admin Beta invite expire",
   );
 }

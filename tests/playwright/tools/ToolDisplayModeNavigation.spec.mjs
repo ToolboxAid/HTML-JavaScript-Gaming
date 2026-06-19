@@ -224,13 +224,13 @@ test("Game Design renders identity and navigation rows with registry anchor link
   }
 });
 
-test("Game Workspace and Game Configuration use registry order without page hardcoding", async ({ page }) => {
+test("Game Hub and Game Configuration use registry order without page hardcoding", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
   const gameWorkspaceNavigation = getToolNavigationTargets("game-workspace");
   const gameConfigurationNavigation = getToolNavigationTargets("game-configuration");
 
   try {
-    await expect(page.locator("[data-tool-display-mode-row='identity']")).toContainText("Game Workspace");
+    await expect(page.locator("[data-tool-display-mode-row='identity']")).toContainText("Game Hub");
     await expectNavigationTarget(page.locator("[data-tool-nav-previous]"), "Previous", gameWorkspaceNavigation.previous);
     await expectNavigationTarget(page.locator("[data-tool-nav-next]"), "Next", gameWorkspaceNavigation.next);
 

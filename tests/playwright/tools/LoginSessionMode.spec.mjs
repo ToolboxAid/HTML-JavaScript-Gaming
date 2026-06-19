@@ -43,12 +43,12 @@ const UAT_PROD_ADMIN_LABELS = [
   "Moderation",
   "Platform Settings",
   "Ratings",
-  "Roles",
+  "Responsibilities",
   "Site Settings",
   "Site Setup",
   "Themes",
   "Tool Votes",
-  "Users",
+  "Creators",
 ];
 
 function nextLocalDbStoragePath() {
@@ -952,7 +952,7 @@ test("Admin Local DB pages and Account service pages render identity data or act
   const pageChecks = [
     {
       assertions: async () => {
-        await expect(page.getByRole("heading", { name: "Users", level: 1 })).toBeVisible();
+        await expect(page.getByRole("heading", { name: "Creators", level: 1 })).toBeVisible();
         await expect(page.locator("[data-local-db-status]")).toHaveText("Loaded 4 Local DB users from users, roles, and user_roles.");
         await expect(page.locator("[data-local-db-table='users']")).toContainText("DavidQ");
         await expect(page.locator("[data-local-db-table='users']")).toContainText(MOCK_DB_KEYS.users.admin);
@@ -963,7 +963,7 @@ test("Admin Local DB pages and Account service pages render identity data or act
     },
     {
       assertions: async () => {
-        await expect(page.getByRole("heading", { name: "Roles", level: 1 })).toBeVisible();
+        await expect(page.getByRole("heading", { name: "Responsibilities", level: 1 })).toBeVisible();
         await expect(page.locator("[data-local-db-status]")).toHaveText("Loaded 4 Local DB roles and 5 user-role assignments.");
         await expect(page.locator("[data-local-db-table='roles']")).toContainText("admin");
         await expect(page.locator("[data-local-db-table='roles']")).toContainText("DavidQ");

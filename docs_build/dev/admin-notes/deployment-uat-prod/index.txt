@@ -10,7 +10,7 @@ Tool Tutorials
 
 Step-by-step walkthroughs of Game Foundry Studio tools.
 
-Explore Project Workspace, Game Design, Assets, Objects, Controls, Events, Publishing, and more. Learn how each tool works, how they connect together, and how to use them effectively in your game projects.
+Explore Game Hub, Game Design, Assets, Objects, Controls, Events, Publishing, and more. Learn how each tool works, how they connect together, and how to use them effectively in your game projects.
 
 Master the tools that power your games.
 
@@ -195,7 +195,7 @@ Level 3 - Tool Validation
 Level 4 - Creator Workflow
 ```
 
-* Game Workspace
+* Game Hub
 * Game Design
 * Controls
 * Assets

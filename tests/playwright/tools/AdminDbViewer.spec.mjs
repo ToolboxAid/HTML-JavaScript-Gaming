@@ -169,7 +169,7 @@ function configuredDbViewerGroups(tableNames) {
     { id: "game-configuration", label: "Game Configuration", tableNames: include(["game_configuration_records", "game_configuration_validation_items"]), type: "tool" },
     { id: "game-design", label: "Game Design", tableNames: include(["game_design_documents", "game_design_validation_items"]), type: "tool" },
     { id: "game-journey", label: "Game Journey", tableNames: include(["game_journey_note_types", "game_journey_notes", "game_journey_templates", "game_journey_items", "game_journey_activity"]), type: "tool" },
-    { id: "game-workspace", label: "Game Workspace", tableNames: include(["game_workspace_games", "game_workspace_progress"]), type: "tool" },
+    { id: "game-workspace", label: "Game Hub", tableNames: include(["game_workspace_games", "game_workspace_progress"]), type: "tool" },
     { id: "objects", label: "Objects", tableNames: include(["object_definition_records"]), type: "tool" },
     { id: "palette", label: "Palette", tableNames: include(["palette_colors", "palette_source_swatches", "palette_swatch_usages", "project_workspace_palette_globals"]), type: "tool" },
     { id: "tags", label: "Tags", tableNames: include(["workspace_tag_records"]), type: "tool" },
@@ -177,7 +177,7 @@ function configuredDbViewerGroups(tableNames) {
     { id: "toolbox_tool_planning", label: "Tool Planning", tableNames: include(["toolbox_tool_planning"]), type: "table" },
     { id: "tool_state_samples", label: "Tool State Samples", tableNames: include(["tool_state_samples"]), type: "table" },
     { id: "toolbox_votes", label: "Toolbox Votes", tableNames: include(["toolbox_votes"]), type: "table" },
-    { id: "user_roles", label: "User Roles", tableNames: include(["users", "user_roles", "roles"]), type: "table" },
+    { id: "user_roles", label: "Creator Responsibilities", tableNames: include(["users", "user_roles", "roles"]), type: "table" },
     { id: "membership_limits", label: "membership_limits", tableNames: include(["membership_limits"]), type: "table" },
   ].filter((group) => group.tableNames.length);
 }
@@ -598,7 +598,7 @@ test("Admin DB Viewer shows current read-only Local DB tables, filters, users, r
       "Game Configuration",
       "Game Design",
       "Game Journey",
-      "Game Workspace",
+      "Game Hub",
       "Objects",
       "Palette",
       "Tags",
@@ -606,7 +606,7 @@ test("Admin DB Viewer shows current read-only Local DB tables, filters, users, r
       "Tool Planning",
       "Tool State Samples",
       "Toolbox Votes",
-      "User Roles",
+      "Creator Responsibilities",
       "Platform Settings",
       "Support Categories",
     ]);
@@ -747,8 +747,8 @@ test("Admin DB Viewer shows current read-only Local DB tables, filters, users, r
     await expect(page.locator("[data-admin-db-viewer] input, [data-admin-db-viewer] textarea, [data-admin-db-viewer] select")).toHaveCount(0);
     await expect(page.locator("[data-admin-db-viewer] button:not([data-admin-db-filter])")).toHaveCount(0);
 
-    await page.getByRole("button", { name: "Game Workspace" }).click();
-    await expect(page.locator("[data-admin-db-status]")).toHaveText(/for Game Workspace\./);
+    await page.getByRole("button", { name: "Game Hub" }).click();
+    await expect(page.locator("[data-admin-db-status]")).toHaveText(/for Game Hub\./);
     await expect(page.locator("[data-admin-db-table='game_workspace_games']")).toBeVisible();
     await expect(page.locator("[data-admin-db-table='game_workspace_games'] thead")).toContainText("ownerKey");
     await expect(page.locator("[data-admin-db-table='game_journey_items']")).toHaveCount(0);
@@ -804,8 +804,8 @@ test("Admin DB Viewer shows current read-only Local DB tables, filters, users, r
     await expect(page.locator("[data-admin-db-table='asset_storage_objects']")).toBeVisible();
     await expect(page.locator("[data-admin-db-table='palette_colors']")).toHaveCount(0);
 
-    await page.getByRole("button", { name: "User Roles" }).click();
-    await expect(page.locator("[data-admin-db-status]")).toHaveText(/for User Roles\./);
+    await page.getByRole("button", { name: "Creator Responsibilities" }).click();
+    await expect(page.locator("[data-admin-db-status]")).toHaveText(/for Creator Responsibilities\./);
     await expect(page.locator("[data-admin-db-table='users']")).toBeVisible();
     await expect(page.locator("[data-admin-db-table='user_roles']")).toBeVisible();
     await expect(page.locator("[data-admin-db-table='roles']")).toBeVisible();
@@ -875,7 +875,7 @@ test("Admin DB Viewer labels Supabase provider/source and shows Supabase-backed 
           "Game Configuration",
           "Game Design",
           "Game Journey",
-          "Game Workspace",
+          "Game Hub",
           "Objects",
           "Palette",
           "Tags",
@@ -883,7 +883,7 @@ test("Admin DB Viewer labels Supabase provider/source and shows Supabase-backed 
           "Tool Planning",
           "Tool State Samples",
           "Toolbox Votes",
-          "User Roles",
+          "Creator Responsibilities",
           "Platform Settings",
           "Support Categories",
         ]);
@@ -897,7 +897,7 @@ test("Admin DB Viewer labels Supabase provider/source and shows Supabase-backed 
         await expect(page.locator("[data-admin-db-status]")).toHaveText(/for Tool Metadata\./);
         await expect(page.locator("[data-admin-db-table='toolbox_tool_metadata']")).toBeVisible();
         await expect(page.locator("[data-admin-db-table='toolbox_tool_planning']")).toHaveCount(0);
-        await page.getByRole("button", { name: "User Roles" }).click();
+        await page.getByRole("button", { name: "Creator Responsibilities" }).click();
         expect(await page.locator("[data-admin-db-tables] > details").evaluateAll((details) =>
           details.map((item) => item.dataset.adminDbTable),
         )).toEqual(["users", "user_roles", "roles"]);
@@ -936,7 +936,7 @@ test("Admin DB Viewer restores configured table groups when one configured table
       "Asset",
       "Game Journey",
       "Tool Metadata",
-      "User Roles",
+      "Creator Responsibilities",
       "membership_limits",
     ]));
     await expect(page.locator("[data-admin-db-table='users']")).toContainText("DavidQ");
@@ -962,7 +962,7 @@ test("Admin DB Viewer renders schema headers for an empty configured DB source",
   try {
     await expect(page.getByRole("heading", { name: "Supabase Postgres", level: 1 })).toBeVisible();
     const filterLabels = await page.locator("[data-admin-db-filter]").allTextContents();
-    expect(filterLabels).toEqual(expect.arrayContaining(["All", "Palette", "User Roles"]));
+    expect(filterLabels).toEqual(expect.arrayContaining(["All", "Palette", "Creator Responsibilities"]));
     await expect(page.locator("[data-admin-db-table='palette_colors']")).toContainText("No records in this table.");
     await expect(page.locator("[data-admin-db-table='palette_colors']")).toContainText("Supabase Postgres read-only inspection still shows schema headers.");
     await expect(page.locator("[data-admin-db-table='palette_colors'] thead")).toContainText("createdAt");
@@ -1013,7 +1013,7 @@ test("Admin DB Viewer shows current read-only Local DB tables without write cont
       "Game Configuration",
       "Game Design",
       "Game Journey",
-      "Game Workspace",
+      "Game Hub",
       "Objects",
       "Palette",
       "Tags",
@@ -1021,7 +1021,7 @@ test("Admin DB Viewer shows current read-only Local DB tables without write cont
       "Tool Planning",
       "Tool State Samples",
       "Toolbox Votes",
-      "User Roles",
+      "Creator Responsibilities",
       "Platform Settings",
       "Support Categories",
     ]);
@@ -1057,8 +1057,8 @@ test("Admin DB Viewer shows current read-only Local DB tables without write cont
     });
     expect(replaceResponse.status).toBe(200);
     await page.reload({ waitUntil: "networkidle" });
-    await page.getByRole("button", { name: "User Roles" }).click();
-    await expect(page.locator("[data-admin-db-status]")).toHaveText(/Local DB loaded \d+ tables and \d+ records for User Roles\./);
+    await page.getByRole("button", { name: "Creator Responsibilities" }).click();
+    await expect(page.locator("[data-admin-db-status]")).toHaveText(/Local DB loaded \d+ tables and \d+ records for Creator Responsibilities\./);
     await expect(page.locator("[data-admin-db-table='users']")).toContainText("Local DB Readonly Admin");
 
     await expectNoPageFailures(failures);
@@ -1129,7 +1129,7 @@ test("Local DB viewer renders live persisted tool records after refresh", async 
       rows.map((row) => row.dataset.adminDbRecord)
     ));
     expect(new Set(journeyItemKeys).size).toBe(journeyItemKeys.length);
-    await page.getByRole("button", { name: "User Roles" }).click();
+    await page.getByRole("button", { name: "Creator Responsibilities" }).click();
     await expect(page.locator("[data-admin-db-table='users']")).not.toContainText("Guest");
     await expect(page.locator("[data-admin-db-table='users']")).not.toContainText("forge-bot");
     await expect(page.locator("[data-admin-db-table='roles']")).not.toContainText("system");

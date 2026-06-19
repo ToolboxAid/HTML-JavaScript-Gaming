@@ -8,7 +8,7 @@ node .\scripts\apply-supabase-dev-ddl.mjs
 node .\scripts\validate-supabase-dev.mjs
 npm run dev:local-api
 
-[x] Users/PSWD
+[x] Creators/PSWD
 - Update DEV Supabase identity seed so only these test identities remain:
   - User 1, email user1@example.invalid, password GFS1
   - User 2, email user2@example.invalid, password GFS2
@@ -48,5 +48,4 @@ Runtime boundary:
 - name is up for discuttion  (this is my ideas, things I want to fix, undecided question)
 [ ] Correction Notes update
 [subnote] should be /[subnote]/note.txt
-
 

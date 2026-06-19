@@ -19,6 +19,6 @@ export function createGameWorkspaceApiRepository(options = {}) {
 export function readProjectWorkspaceProjectRecords() {
   return requireServerApiData(
     safeRequestServerApi("/project-workspace/projects"),
-    "Project Workspace project records",
+    "Game Hub project records",
   );
 }

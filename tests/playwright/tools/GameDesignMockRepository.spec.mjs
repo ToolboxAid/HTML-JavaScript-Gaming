@@ -61,7 +61,7 @@ test("Game Design shows an actionable overlay when game context is missing", asy
     await expect(page.locator("[data-game-design-game-overlay]")).toBeVisible();
     await expect(page.locator("[data-game-design-validation-overlay]")).toBeVisible();
     await expect(page.locator("[data-game-design-validation-list]")).toContainText("Game Context");
-    await expect(page.locator("[data-game-design-game-context]")).toHaveText("No Game Workspace game");
+    await expect(page.locator("[data-game-design-game-context]")).toHaveText("No Game Hub game");
     await expect(page.locator("[data-game-design-output]")).not.toContainText("{");
     await expect(page.locator("[data-game-design-output]")).not.toContainText('"activeGameId"');
 
@@ -198,13 +198,13 @@ test("Game Design saves and updates design fields against the active game", asyn
   }
 });
 
-test("Game Design authors capability demos as Game Workspace games", async ({ page }) => {
+test("Game Design authors capability demos as Game Hub games", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/game-design/index.html?game=gravity-demo");
 
   try {
     await expect(page.locator("[data-game-design-game-context]")).toHaveText("Gravity Demo - Capability Demo");
-    await expect(page.getByText("Capability demos remain Game Workspace games.")).toBeVisible();
-    await expect(page.locator("[data-game-design-capability-demos]")).toContainText("Gravity Demo: Game Workspace game");
+    await expect(page.getByText("Capability demos remain Game Hub games.")).toBeVisible();
+    await expect(page.locator("[data-game-design-capability-demos]")).toContainText("Gravity Demo: Game Hub game");
     await expect(page.getByLabel("Game Type")).toHaveValue("Capability Demo");
     await expect(page.getByLabel("Genre")).toHaveValue("Utility");
     await expect(page.getByLabel("Play Style")).toHaveValue("Guided Tutorial");
@@ -214,7 +214,7 @@ test("Game Design authors capability demos as Game Workspace games", async ({ pa
     await page.getByRole("button", { name: "Save Game Design" }).click();
     await expect(page.locator("[data-game-design-output]")).not.toContainText("{");
     await expect(page.locator("[data-game-design-output]")).not.toContainText('"capabilityDemoAuthoring"');
-    await expect(page.locator("[data-game-design-output-capability]")).toHaveText("Gravity Demo remains a Game Workspace game.");
+    await expect(page.locator("[data-game-design-output-capability]")).toHaveText("Gravity Demo remains a Game Hub game.");
     await expect(page.locator("[data-game-design-table-counts]")).toContainText("game_design_capability_demos");
 
     await expectNoPageFailures(failures);

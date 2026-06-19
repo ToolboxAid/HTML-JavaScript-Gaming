@@ -267,7 +267,7 @@ export function createGameWorkspaceMockRepository() {
         gameProgress: "No active game",
         publishingProgress: "Not started",
         currentFocus: "Create or seed a game",
-        recommendedNextTool: "Game Workspace",
+        recommendedNextTool: "Game Hub",
         requiredForTestable: false,
         requiredForPublish: false,
         progressChecklist: [

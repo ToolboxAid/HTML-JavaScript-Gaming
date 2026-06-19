@@ -14,10 +14,10 @@ const REQUIRED_ADMIN_TOOLS = [
 const REQUIRED_RESTORED_TOOLS = [
   "AI Command Center",
   "Creator Learning",
-  "Project Team",
+  "Game Crew",
 ];
 const EXPECTED_SETUP_COMPACT_ORDER = [
-  "Game Workspace",
+  "Game Hub",
   "Game Design",
   "Colors",
   "Assets",
@@ -34,7 +34,7 @@ const EXPECTED_SETUP_COMPACT_ORDER = [
   "Game Journey",
 ];
 const INTENDED_SETUP_PATH_TOOLS = [
-  "Game Workspace",
+  "Game Hub",
   "Game Design",
   "Colors",
   "Assets",
@@ -184,7 +184,7 @@ test("Toolbox and Admin Tool Votes share the same DB-backed metadata and plannin
     expect(registrySnapshot.toolboxContract.groupSwatches.Design).toBe("toolbox-group-design");
     expect(registrySnapshot.toolboxContract.releaseChannelSwatches.complete).toBe("swatch-green");
     expect(registrySnapshot.toolboxContract.releaseChannelSwatches.deprecated).toBe("swatch-purple");
-    expect(registrySnapshot.toolboxContract.roleFocusTools.Designer).toEqual(expect.arrayContaining(["Game Workspace", "Colors"]));
+    expect(registrySnapshot.toolboxContract.roleFocusTools.Designer).toEqual(expect.arrayContaining(["Game Hub", "Colors"]));
     expect(new Set(snapshot.rows.map((row) => row.toolKey || row.toolId)).size).toBe(EXPECTED_TOOL_COUNT);
     expect(mockDbSnapshot.schemas.toolbox_tool_metadata).not.toEqual(expect.arrayContaining(TOOL_PLANNING_FIELDS));
     expect(mockDbSnapshot.schemas.toolbox_tool_planning).toEqual(expect.arrayContaining(TOOL_PLANNING_FIELDS));
@@ -222,7 +222,7 @@ test("Toolbox and Admin Tool Votes share the same DB-backed metadata and plannin
     }));
     expect(registrySnapshot.activeTools.find((tool) => tool.id === "users")).toEqual(expect.objectContaining({
       category: "Create",
-      displayName: "Project Team",
+      displayName: "Game Crew",
       releaseChannel: "planned",
       status: "planned",
       visibleInToolsList: true,

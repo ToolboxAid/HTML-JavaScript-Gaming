@@ -185,9 +185,9 @@ const DB_VIEWER_STANDALONE_LABELS = Object.freeze({
   tool_state_samples: "Tool State Samples",
   platform_settings: "Platform Settings",
   support_categories: "Support Categories",
-  invitations: "Invitations",
+  invitations: "Invites",
   marketplace_categories: "Marketplace Categories",
-  user_roles: "User Roles",
+  user_roles: "Creator Responsibilities",
 });
 const DB_VIEWER_GROUP_ORDER = Object.freeze([
   Object.freeze({ id: "asset", label: "Asset", ownerId: "asset", type: "tool" }),
@@ -195,7 +195,7 @@ const DB_VIEWER_GROUP_ORDER = Object.freeze([
   Object.freeze({ id: "game-configuration", label: "Game Configuration", ownerId: "game-configuration", type: "tool" }),
   Object.freeze({ id: "game-design", label: "Game Design", ownerId: "game-design", type: "tool" }),
   Object.freeze({ id: "game-journey", label: "Game Journey", ownerId: "game-journey", type: "tool" }),
-  Object.freeze({ id: "game-workspace", label: "Game Workspace", ownerId: "game-workspace", type: "tool" }),
+  Object.freeze({ id: "game-workspace", label: "Game Hub", ownerId: "game-workspace", type: "tool" }),
   Object.freeze({ id: "objects", label: "Objects", ownerId: "objects", type: "tool" }),
   Object.freeze({ id: "palette", label: "Palette", ownerId: "palette", type: "tool" }),
   Object.freeze({ id: "tags", label: "Tags", ownerId: "tags", type: "tool" }),
@@ -203,9 +203,9 @@ const DB_VIEWER_GROUP_ORDER = Object.freeze([
   Object.freeze({ id: "toolbox_tool_planning", label: "Tool Planning", tableNames: Object.freeze(["toolbox_tool_planning"]), type: "table" }),
   Object.freeze({ id: "tool_state_samples", label: "Tool State Samples", tableNames: Object.freeze(["tool_state_samples"]), type: "table" }),
   Object.freeze({ id: "toolbox_votes", label: "Toolbox Votes", tableNames: DB_VIEWER_TOOLBOX_VOTE_TABLES, type: "table" }),
-  Object.freeze({ id: "invitations", label: "Invitations", tableNames: Object.freeze(["invitations"]), type: "table" }),
+  Object.freeze({ id: "invitations", label: "Invites", tableNames: Object.freeze(["invitations"]), type: "table" }),
   Object.freeze({ id: "marketplace_categories", label: "Marketplace Categories", tableNames: Object.freeze(["marketplace_categories"]), type: "table" }),
-  Object.freeze({ id: "user_roles", label: "User Roles", tableNames: DB_VIEWER_IDENTITY_TABLES, type: "table" }),
+  Object.freeze({ id: "user_roles", label: "Creator Responsibilities", tableNames: DB_VIEWER_IDENTITY_TABLES, type: "table" }),
 ]);
 const TOOLBOX_DEFAULT_RELEASE_CHANNELS = Object.freeze(["wireframe", "beta", "complete"]);
 const BUILD_PATH_DEFAULT_RELEASE_CHANNELS = Object.freeze(["complete"]);
@@ -218,14 +218,14 @@ const TOOLBOX_RELEASE_CHANNEL_SWATCHES = Object.freeze({
 });
 const TOOLBOX_ROLE_FOCUS_TOOLS = Object.freeze({
   Owner: null,
-  Designer: Object.freeze(["Game Workspace", "Game Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Characters", "Colors", "Assets", "Tags"]),
+  Designer: Object.freeze(["Game Hub", "Game Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Characters", "Colors", "Assets", "Tags"]),
   "World Builder": Object.freeze(["Worlds", "Objects", "Assets", "Colors", "Tags", "Animations"]),
   Artist: Object.freeze(["Assets", "Colors", "Tags", "Fonts", "Sprites", "Characters", "Objects", "Animations"]),
   "Audio Creator": Object.freeze(["Audio", "Music", "Voices", "MIDI", "Audio Effects", "Voice Capture", "Voice Output", "Assets"]),
   Translator: Object.freeze(["Languages", "Voices", "Voice Capture", "Voice Output"]),
   Tester: Object.freeze(["Game Testing", "Controls", "Hitboxes", "Debug", "Performance", "Events"]),
   Publisher: Object.freeze(["Publish", "Marketplace", "Community", "Cloud", "Languages"]),
-  Viewer: Object.freeze(["Game Workspace", "Game Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Assets", "Colors", "Tags", "Audio", "Publish", "Marketplace", "Community", "Languages", "Achievements", "Ratings"]),
+  Viewer: Object.freeze(["Game Hub", "Game Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Assets", "Colors", "Tags", "Audio", "Publish", "Marketplace", "Community", "Languages", "Achievements", "Ratings"]),
 });
 const DB_ADAPTER_CONTRACT = Object.freeze({
   contract: "GameFoundryDbAdapter",
@@ -335,7 +335,7 @@ const ADMIN_OPERATION_GROUPS = Object.freeze([
     message: "Project package actions run through the Local API package contract. Browser controls only submit files and confirmations.",
     actions: Object.freeze([
       Object.freeze({
-        diagnostic: "Export Project Package creates a .gfsp ZIP package for the active Project Workspace record and validates it before returning diagnostics.",
+        diagnostic: "Export Project Package creates a .gfsp ZIP package for the active Game Hub record and validates it before returning diagnostics.",
         id: "export-project-package",
         label: "Export Project Package",
         mode: "server-package",
@@ -1421,7 +1421,7 @@ function normalizedToolKey(row) {
   return String(row?.toolKey || row?.toolId || row?.id || "").trim();
 }
 
-const SOURCE_CONTROLLED_TOOLBOX_TOOL_IDS = new Set(["users"]);
+const SOURCE_CONTROLLED_TOOLBOX_TOOL_IDS = new Set(["game-workspace", "tags", "users"]);
 const SOURCE_CONTROLLED_TOOLBOX_METADATA_FIELDS = Object.freeze([
   "adminOnly",
   "category",
@@ -1429,6 +1429,7 @@ const SOURCE_CONTROLLED_TOOLBOX_METADATA_FIELDS = Object.freeze([
   "description",
   "group",
   "hidden",
+  "path",
   "shortDescription",
   "shortLabel",
   "subgroup",
@@ -1641,7 +1642,7 @@ function assertRepositoryMethodResult(repositoryId, methodName, result) {
   if (methodName === "getActiveGame" && result !== null) {
     const members = Array.isArray(result?.members) ? result.members : null;
     if (!result || typeof result !== "object" || !String(result.id || "").trim() || !members) {
-      throw repositoryMethodError(`Server repository ${repositoryId}.getActiveGame returned a malformed active game payload. Open or create a Game Workspace game before continuing.`);
+      throw repositoryMethodError(`Server repository ${repositoryId}.getActiveGame returned a malformed active game payload. Open or create a Game Hub game before continuing.`);
     }
   }
 }
@@ -1762,7 +1763,7 @@ const INVITATION_STATUSES = Object.freeze(["pending", "accepted", "revoked", "ex
 function normalizedInvitationEmail(value) {
   const email = String(value || "").trim().toLowerCase();
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    throw new Error("Beta invitation requires a valid target email.");
+    throw new Error("Beta invite requires a valid target email.");
   }
   return email;
 }
@@ -1770,7 +1771,7 @@ function normalizedInvitationEmail(value) {
 function normalizedInvitationCode(value) {
   const code = String(value || "").trim();
   if (!code) {
-    throw new Error("Beta invitation acceptance requires an invitation code.");
+    throw new Error("Beta invite acceptance requires an invitation code.");
   }
   return code;
 }
@@ -1791,10 +1792,10 @@ function invitationExpiresAt(value) {
   const raw = String(value || "").trim();
   const date = raw ? new Date(raw) : new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
   if (Number.isNaN(date.getTime())) {
-    throw new Error("Beta invitation expiration must be a valid date.");
+    throw new Error("Beta invite expiration must be a valid date.");
   }
   if (date.getTime() <= Date.now()) {
-    throw new Error("Beta invitation expiration must be in the future.");
+    throw new Error("Beta invite expiration must be in the future.");
   }
   return date.toISOString();
 }
@@ -1837,17 +1838,17 @@ function findInvitationUser(tables, email, userKey = "") {
   if (key) {
     const user = users.find((candidate) => candidate.key === key && candidate.isActive !== false);
     if (!user) {
-      throw new Error(`Beta invitation acceptance user ${key} is missing from users.`);
+      throw new Error(`Beta invite acceptance user ${key} is missing from users.`);
     }
     if (normalizedInvitationEmail(user.email) !== email) {
-      throw new Error("Beta invitation acceptance email must match the selected user.");
+      throw new Error("Beta invite acceptance email must match the selected user.");
     }
     return user;
   }
   const user = users.find((candidate) =>
     candidate.isActive !== false && normalizedInvitationEmail(candidate.email) === email);
   if (!user) {
-    throw new Error(`Beta invitation acceptance requires an active users record for ${email}.`);
+    throw new Error(`Beta invite acceptance requires an active users record for ${email}.`);
   }
   return user;
 }
@@ -2571,10 +2572,10 @@ class ApiRuntimeDataSource {
       {
         action: "Create approved role records",
         id: "default-roles",
-        label: "Default Roles",
+        label: "Default Responsibilities",
         status: missingDefaultRoles.length ? "WARN" : "PASS",
         message: missingDefaultRoles.length
-          ? `Missing default role slug(s): ${missingDefaultRoles.join(", ")}.`
+          ? `Missing default responsibility slug(s): ${missingDefaultRoles.join(", ")}.`
           : "Default role slugs are present.",
       },
       {
@@ -2906,7 +2907,7 @@ class ApiRuntimeDataSource {
       .sort((first, second) => String(second.createdAt || "").localeCompare(String(first.createdAt || "")));
     return {
       invitations,
-      message: `Loaded ${invitations.length} Beta invitation record(s).`,
+      message: `Loaded ${invitations.length} Beta invite record(s).`,
       plan: {
         code: BETA_INVITATION_PLAN_KEY,
         label: "Beta",
@@ -2923,13 +2924,13 @@ class ApiRuntimeDataSource {
     const email = normalizedInvitationEmail(body.email);
     const requestedPlan = String(body.planKey || body.planCode || BETA_INVITATION_PLAN_KEY).trim().toUpperCase();
     if (requestedPlan !== BETA_INVITATION_PLAN_KEY) {
-      throw httpError("Admin invitations currently support the invitation-only BETA plan only.", 400);
+      throw httpError("Admin invites currently support the invite-only BETA plan only.", 400);
     }
     this.refreshExpiredInvitations(session.userKey);
     const duplicate = this.invitationRows().find((row) =>
       row.email === email && row.planKey === BETA_INVITATION_PLAN_KEY && invitationStatus(row) === "pending");
     if (duplicate) {
-      throw httpError(`A pending Beta invitation already exists for ${email}.`, 409);
+      throw httpError(`A pending Beta invite already exists for ${email}.`, 409);
     }
     const timestamp = new Date().toISOString();
     const invitation = {
@@ -2954,7 +2955,7 @@ class ApiRuntimeDataSource {
     this.invitationRows().push(invitation);
     return {
       invitation: publicInvitation(invitation),
-      message: `Created pending Beta invitation for ${email}.`,
+      message: `Created pending Beta invite for ${email}.`,
       sourceTable: "invitations",
       status: "PASS",
     };
@@ -2966,14 +2967,14 @@ class ApiRuntimeDataSource {
     const key = String(body.key || body.invitationKey || "").trim();
     const invitation = this.invitationRows().find((row) => row.key === key);
     if (!invitation) {
-      throw httpError(`Beta invitation ${key || "missing"} was not found.`, 404);
+      throw httpError(`Beta invite ${key || "missing"} was not found.`, 404);
     }
     const status = invitationStatus(invitation);
     if (status === "accepted") {
-      throw httpError("Accepted Beta invitations cannot be revoked.", 409);
+      throw httpError("Accepted Beta invites cannot be revoked.", 409);
     }
     if (status === "revoked") {
-      throw httpError("Beta invitation is already revoked.", 409);
+      throw httpError("Beta invite is already revoked.", 409);
     }
     const timestamp = new Date().toISOString();
     invitation.status = "revoked";
@@ -2981,7 +2982,7 @@ class ApiRuntimeDataSource {
     invitation.updatedBy = session.userKey;
     return {
       invitation: publicInvitation(invitation),
-      message: `Revoked Beta invitation for ${invitation.email}.`,
+      message: `Revoked Beta invite for ${invitation.email}.`,
       sourceTable: "invitations",
       status: "PASS",
     };
@@ -2993,17 +2994,17 @@ class ApiRuntimeDataSource {
     const key = String(body.key || body.invitationKey || "").trim();
     const invitation = this.invitationRows().find((row) => row.key === key);
     if (!invitation) {
-      throw httpError(`Beta invitation ${key || "missing"} was not found.`, 404);
+      throw httpError(`Beta invite ${key || "missing"} was not found.`, 404);
     }
     const status = invitationStatus(invitation);
     if (status === "accepted") {
-      throw httpError("Accepted Beta invitations cannot be expired.", 409);
+      throw httpError("Accepted Beta invites cannot be expired.", 409);
     }
     if (status === "revoked") {
-      throw httpError("Revoked Beta invitations cannot be expired.", 409);
+      throw httpError("Revoked Beta invites cannot be expired.", 409);
     }
     if (status === "expired") {
-      throw httpError("Beta invitation is already expired.", 409);
+      throw httpError("Beta invite is already expired.", 409);
     }
     const timestamp = new Date().toISOString();
     invitation.status = "expired";
@@ -3012,7 +3013,7 @@ class ApiRuntimeDataSource {
     invitation.updatedBy = session.userKey;
     return {
       invitation: publicInvitation(invitation),
-      message: `Expired Beta invitation for ${invitation.email}.`,
+      message: `Expired Beta invite for ${invitation.email}.`,
       sourceTable: "invitations",
       status: "PASS",
     };
@@ -3024,23 +3025,23 @@ class ApiRuntimeDataSource {
     const invitationCode = normalizedInvitationCode(body.invitationCode || body.code);
     const invitation = this.invitationRows().find((row) => row.invitationCode === invitationCode);
     if (!invitation) {
-      throw httpError("Beta invitation code was not found.", 404);
+      throw httpError("Beta invite code was not found.", 404);
     }
     const status = invitationStatus(invitation);
     if (status === "accepted") {
-      throw httpError("Beta invitation has already been accepted.", 409);
+      throw httpError("Beta invite has already been accepted.", 409);
     }
     if (status === "revoked") {
-      throw httpError("Beta invitation has been revoked.", 409);
+      throw httpError("Beta invite has been revoked.", 409);
     }
     if (status === "expired" || invitationIsExpired(invitation)) {
       invitation.status = "expired";
       invitation.updatedAt = new Date().toISOString();
       invitation.updatedBy = invitation.invitedBy || SEED_DB_KEYS.users.admin;
-      throw httpError("Beta invitation has expired.", 410);
+      throw httpError("Beta invite has expired.", 410);
     }
     if (normalizedInvitationEmail(invitation.email) !== email) {
-      throw httpError("Beta invitation email does not match the invited address.", 403);
+      throw httpError("Beta invite email does not match the invited address.", 403);
     }
     const user = findInvitationUser(this.standaloneTables, email, body.userKey);
     const timestamp = new Date().toISOString();
@@ -3052,7 +3053,7 @@ class ApiRuntimeDataSource {
     return {
       invitation: publicInvitation(invitation),
       membershipAssignmentStatus: "deferred-to-PR-26169-005",
-      message: "Beta invitation accepted. Membership assignment will be applied by PR_26169_005.",
+      message: "Beta invite accepted. Membership assignment will be applied by PR_26169_005.",
       sourceTable: "invitations",
       status: "PASS",
       userKey: user.key,
@@ -3561,7 +3562,7 @@ LIMIT 1;
       serviceContract: "Web UI -> Local API/Service Contract -> Local DB",
       source: "Local API",
       storageContract: "Asset references link to R2 object keys through API-owned asset metadata.",
-      terminology: "Project Workspace",
+      terminology: "Game Hub",
     };
   }
 
@@ -3653,7 +3654,7 @@ LIMIT 1;
   activeProjectPackageProject() {
     const activeGame = this.gameWorkspaceRepository.getActiveGame();
     if (!activeGame) {
-      throw new Error("Export Project Package requires an open Project Workspace project.");
+      throw new Error("Export Project Package requires an open Game Hub project.");
     }
     const projectRecord = this.projectPackageExistingProjects()
       .find((record) => record.localRecordId === activeGame.id);
@@ -5147,7 +5148,7 @@ LIMIT 1;
       throw new Error(`Server repository method ${methodName} is missing.`);
     }
     if (repository === this.gameWorkspaceRepository && GAME_WORKSPACE_SAVE_METHODS.has(methodName) && !this.sessionUserKey) {
-      throw new Error("Sign in required to save Project Workspace project records through Local API.");
+      throw new Error("Sign in required to save Game Hub project records through Local API.");
     }
     this.cleared = false;
     if (repository === this.assetRepository && methodName === "makeReadyGameConfiguration") {

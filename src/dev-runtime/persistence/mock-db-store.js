@@ -35,7 +35,7 @@ export const MOCK_DB_SESSION_MODES = Object.freeze([
 
 export const MOCK_DB_TOOL_GROUPS = Object.freeze({
   "game-workspace": Object.freeze({
-    label: "Game Workspace",
+    label: "Game Hub",
     tableNames: Object.freeze(["game_workspace_games", "game_workspace_progress"]),
   }),
   "game-design": Object.freeze({

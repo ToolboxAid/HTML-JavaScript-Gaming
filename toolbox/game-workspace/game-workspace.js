@@ -86,7 +86,7 @@ function normalizeActiveGame(value, context = "Active game") {
     return null;
   }
   if (!isRecord(value) || !Array.isArray(value.members)) {
-    setStatusLog(`${context} response is malformed. Reload Game Workspace after the server API contract is restored.`);
+    setStatusLog(`${context} response is malformed. Reload Game Hub after the server API contract is restored.`);
     return null;
   }
   return value;
@@ -99,21 +99,21 @@ function normalizeProgress(value) {
       gameProgress: "Blocked by server API error",
       publishingProgress: "Blocked",
       currentFocus: "Resolve the server API diagnostic",
-      recommendedNextTool: "Game Workspace",
+      recommendedNextTool: "Game Hub",
       progressChecklist: [
         { label: "Restore server API contract", status: "Blocked" },
       ],
     };
   }
   if (!isRecord(value)) {
-    setStatusLog("Game progress response is malformed. Reload Game Workspace after the server API contract is restored.");
+    setStatusLog("Game progress response is malformed. Reload Game Hub after the server API contract is restored.");
   }
   return isRecord(value) ? value : {
     gameStatus: "No Game",
     gameProgress: "No active game",
     publishingProgress: "Not started",
     currentFocus: "Create or seed a game",
-    recommendedNextTool: "Game Workspace",
+    recommendedNextTool: "Game Hub",
     progressChecklist: [],
   };
 }
@@ -152,7 +152,7 @@ function refreshSaveControls() {
   if (!saveAllowed) {
     const currentStatus = String(elements.statusLog?.textContent || "");
     if (!/Blocked|failed|malformed|Restore|Sign in required|unavailable/i.test(currentStatus)) {
-      setStatusLog("Guest browsing enabled; sign in required to save Project Workspace project records.");
+      setStatusLog("Guest browsing enabled; sign in required to save Game Hub project records.");
     }
   }
 }
@@ -161,7 +161,7 @@ function ensureProjectRecordsSaveAllowed(action) {
   if (projectRecordsSaveAllowed()) {
     return true;
   }
-  const message = `Sign in required to ${action} Project Workspace project records.`;
+  const message = `Sign in required to ${action} Game Hub project records.`;
   setStatusLog(message);
   setProjectRecordStatus(message);
   refreshSaveControls();
@@ -218,7 +218,7 @@ function renderProjectRecords() {
     projectRecordContract = readProjectWorkspaceProjectRecords();
   } catch (error) {
     projectRecordContract = null;
-    setProjectRecordStatus(error instanceof Error ? error.message : "Project Workspace project records are unavailable.");
+    setProjectRecordStatus(error instanceof Error ? error.message : "Game Hub project records are unavailable.");
     return;
   }
 
@@ -228,12 +228,12 @@ function renderProjectRecords() {
   const saveMode = projectRecordsSaveAllowed()
     ? "signed-in saves enabled"
     : "guest browsing enabled; guest saving blocked";
-  setProjectRecordStatus(`${projectRecordContract.terminology || "Project Workspace"} records loaded from the project records service; authoritative keys managed by service; asset references linked to storage object keys: ${assetReferenceCount}; ${saveMode}.`);
+  setProjectRecordStatus(`${projectRecordContract.terminology || "Game Hub"} records loaded from the project records service; authoritative keys managed by service; asset references linked to storage object keys: ${assetReferenceCount}; ${saveMode}.`);
 
   elements.projectRecordsTable.replaceChildren();
   if (!records.length) {
     const row = document.createElement("tr");
-    ["No records", "No Project Workspace records", "Not started", source].forEach((value) => {
+    ["No records", "No Game Hub records", "Not started", source].forEach((value) => {
       const cell = document.createElement("td");
       cell.textContent = value;
       row.append(cell);
@@ -268,7 +268,7 @@ function renderGameList() {
   const listResult = repository.listGames(gameUserKey ? { userKey: gameUserKey } : {});
   const games = Array.isArray(listResult) ? listResult : [];
   if (!Array.isArray(listResult) && !reportRepositoryError(listResult, "Game list")) {
-    setStatusLog("Game list response is malformed. Reload Game Workspace after the server API contract is restored.");
+    setStatusLog("Game list response is malformed. Reload Game Hub after the server API contract is restored.");
   }
 
   elements.gameList.replaceChildren();
@@ -343,7 +343,7 @@ function renderTableCounts() {
     ? tableResult
     : { users: [], games: [], game_members: [] };
   if ((!isRecord(tableResult) || isRepositoryErrorResult(tableResult)) && !reportRepositoryError(tableResult, "Repository tables")) {
-    setStatusLog("Repository tables response is malformed. Reload Game Workspace after the server API contract is restored.");
+    setStatusLog("Repository tables response is malformed. Reload Game Hub after the server API contract is restored.");
   }
   const rows = [
     ["users", Array.isArray(tables.users) ? tables.users.length : 0],

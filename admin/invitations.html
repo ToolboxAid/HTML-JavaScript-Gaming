@@ -5,8 +5,8 @@
     <meta charset="utf-8">
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Invitations - Game Foundry Studio LLC</title>
-    <meta name="description" content="Admin Beta invitation workflow for creating, listing, revoking, and reviewing invitation status.">
+    <title>Invites - Game Foundry Studio LLC</title>
+    <meta name="description" content="Admin Beta invite workflow for creating, listing, revoking, and reviewing invite status.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -17,8 +17,8 @@
         <section class="page-title">
             <div class="container">
                 <div class="kicker">Admin</div>
-                <h1>Invitations</h1>
-                <p class="lede">Create and monitor invitation-only Beta access with visible status diagnostics and auditable invitation records.</p>
+                <h1>Invites</h1>
+                <p class="lede">Create and monitor invite-only Beta access with visible status diagnostics and auditable invite records.</p>
             </div>
         </section>
         <section class="section">
@@ -36,7 +36,7 @@
                                 </nav>
                             </details>
                             <details class="vertical-accordion" open>
-                                <summary>Create Beta Invitation</summary>
+                                <summary>Create Beta Invite</summary>
                                 <form class="accordion-body content-stack" data-admin-invitation-form>
                                     <label>Email <input type="email" autocomplete="email" required data-admin-invitation-email></label>
                                     <label>Recipient Name <input type="text" autocomplete="name" data-admin-invitation-recipient-name></label>
@@ -44,7 +44,7 @@
                                     <label>Personal Message <textarea data-admin-invitation-message></textarea></label>
                                     <label>Invite Source <input type="text" data-admin-invitation-source></label>
                                     <label>Expires <input type="datetime-local" data-admin-invitation-expires-at></label>
-                                    <button class="btn btn--compact primary" type="submit">Create Invitation</button>
+                                    <button class="btn btn--compact primary" type="submit">Create Invite</button>
                                 </form>
                             </details>
                         </div>
@@ -53,12 +53,12 @@
                     <section class="tool-center-panel content-stack" aria-labelledby="admin-invitations-title">
                         <div>
                             <div class="kicker">Beta Access</div>
-                            <h2 id="admin-invitations-title">Invitation Queue</h2>
+                            <h2 id="admin-invitations-title">Invite Queue</h2>
                         </div>
-                        <p class="status" role="status" data-admin-invitation-status>Loading Beta invitations.</p>
+                        <p class="status" role="status" data-admin-invitation-status>Loading Beta invites.</p>
                         <div class="table-wrapper">
-                            <table class="data-table" aria-label="Beta invitation records">
-                                <caption>Beta Invitations</caption>
+                            <table class="data-table" aria-label="Beta invite records">
+                                <caption>Beta Invites</caption>
                                 <thead>
                                     <tr>
                                         <th scope="col">Email</th>
@@ -89,14 +89,14 @@
                             <details class="vertical-accordion" open>
                                 <summary>Status</summary>
                                 <div class="accordion-body content-stack">
-                                    <p class="status" role="status" data-admin-invitation-summary>Beta is invitation-only and Studio-equivalent.</p>
+                                    <p class="status" role="status" data-admin-invitation-summary>Beta is invite-only and Studio-equivalent.</p>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
                                 <summary>Guardrails</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>Invitations reference the BETA plan without storing pricing, storage limits, team limits, or AI credit limits on the invitation record.</p>
-                                    <p>Accepted invitations report a membership assignment handoff for the membership assignment PR.</p>
+                                    <p>Invites reference the BETA plan without storing pricing, storage limits, team limits, or AI credit limits on the invite record.</p>
+                                    <p>Accepted invites report a membership assignment handoff for the membership assignment PR.</p>
                                 </div>
                             </details>
                         </div>

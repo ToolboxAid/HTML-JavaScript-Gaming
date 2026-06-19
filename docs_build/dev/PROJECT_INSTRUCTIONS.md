@@ -107,7 +107,7 @@ All user-adjustable slider controls must display their current value while being
 
 Rules:
 - Value display must update live during drag/input.
-- Users must not need to release the slider to see the value.
+- Creators must not need to release the slider to see the value.
 - Value display must remain visible at all times.
 - Value display must not rely solely on browser-native tooltips.
 - Sliders should prefer:
@@ -127,7 +127,7 @@ Rules:
 - Persistent visible values are required.
 - Applies to:
   - Toolbox tools
-  - Project Workspace controls
+  - Game Hub controls
   - Account/Admin pages
   - Theme V2 controls
   - Future tools and pages
@@ -140,12 +140,12 @@ Rules:
 - Double-clicking a slider resets it to its default value.
 - Reset must occur immediately.
 - Reset value must be visible through the live value display.
-- Users must not need a separate reset button for individual sliders.
+- Creators must not need a separate reset button for individual sliders.
 - Tool-specific Reset buttons may still exist for resetting multiple controls.
 - Slider tooltips/help text should identify the default value when practical.
 - Applies to:
   - Toolbox tools
-  - Project Workspace controls
+  - Game Hub controls
   - Account/Admin pages
   - Theme V2 controls
   - Future tools and pages
@@ -225,8 +225,8 @@ Allowed intentional-order exceptions:
 - workflow paths
 - Build Path
 - dependency paths
-- Project Progress
-- Publishing Progress
+- Game Progress
+- Launch Progress
 - guided creator steps
 
 Every intentional-order exception must be documented in the PR report that introduces or preserves it.
@@ -235,7 +235,7 @@ Every intentional-order exception must be documented in the PR report that intro
 
 When a surface represents a creator workflow, items are ordered by the likely next action, not alphabetically.
 Workflow ordering is an approved exception to alphabetical ordering.
-This applies to Toolbox, Project Workspace, Create, Publish, Progress, and future guided workflows.
+This applies to Toolbox, Game Hub, Create, Publish, Progress, and future guided workflows.
 
 Rules:
 - Order follows how users naturally work:
@@ -246,16 +246,16 @@ Rules:
 - Tile ordering should minimize navigation decisions.
 
 Create group order:
-1. Game Workspace
-2. Project Team
+1. Game Hub
+2. Game Crew
 3. Game Configuration
 4. Tags
 
 Team planning distinction:
 - Studio Team is the account-level roster.
-- Project Team is the project-level assignment surface.
-- Current Toolbox implementation focus is Project Team.
-- Users functionality that previously lived in Account/Team planning should be planned through Create/Project Team when it is project-specific.
+- Game Crew is the game-level assignment surface.
+- Current Toolbox implementation focus is Game Crew.
+- Creator functionality that previously lived in Account/Team planning should be planned through Create/Game Crew when it is game-specific.
 
 Toolbox status values are:
 - Ready
@@ -274,13 +274,13 @@ Toolbox progress foundation fields are:
 
 Progress and Build Path views remain wireframe-only until a later implementation PR explicitly introduces a declared registry/data source and runtime behavior.
 
-Project Workspace is the next first real Toolbox rebuild target. Its contract owns:
+Game Hub is the next first real Toolbox rebuild target. Its contract owns:
 - Project Identity
 - Project Status
 - Project Progress
-- Publishing Progress
+- Launch Progress
 
-Do not implement Project Workspace runtime behavior, persistence, database behavior, authentication, or save/load flows before the rebuild PR explicitly scopes those capabilities.
+Do not implement Game Hub runtime behavior, persistence, database behavior, authentication, or save/load flows before the rebuild PR explicitly scopes those capabilities.
 
 ## TOOL STATUS GOVERNANCE
 
@@ -1855,12 +1855,12 @@ Rules:
 - Release validation must fail visibly when public/playable promotion includes enabled debug-only settings.
 - Reports for affected game release or publish flows must state whether debug settings were present and how public release gating handled them.
 
-## Project Workspace Naming Guidance
+## Game Hub Naming Guidance
 
-Use `Project Workspace` for user-facing copy and new test/report prose.
+Use `Game Hub` for user-facing copy and new test/report prose.
 
 Rules:
 - Do not introduce new user-facing `Workspace V2` wording.
 - Do not introduce new report/test prose that describes the current user-facing experience as `Workspace V2`.
 - Existing package scripts such as `npm run test:workspace-v2`, legacy lane identifiers, and historical test suite names may remain until renamed by a dedicated cleanup PR.
-- When a report invokes a legacy command name such as `npm run test:workspace-v2`, the report must explain that the command name is legacy and the user-facing product language is `Project Workspace`.
+- When a report invokes a legacy command name such as `npm run test:workspace-v2`, the report must explain that the command name is legacy and the user-facing product language is `Game Hub`.

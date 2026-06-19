@@ -1,0 +1,19 @@
+Boot
+↓
+Loading
+↓
+Attract
+↓
+Main Menu
+↓
+Level Select
+↓
+Gameplay
+↓
+Pause
+↓
+Game Over
+↓
+High Score
+↓
+Credits

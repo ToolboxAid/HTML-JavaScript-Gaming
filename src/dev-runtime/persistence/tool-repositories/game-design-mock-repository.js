@@ -201,7 +201,7 @@ export function createGameDesignMockRepository(options = {}) {
           {
             field: "game",
             label: "Game Context",
-            action: "Open or seed a Game Workspace game before saving Game Design."
+            action: "Open or seed a Game Hub game before saving Game Design."
           }
         ]
       };
@@ -280,7 +280,7 @@ export function createGameDesignMockRepository(options = {}) {
     listCapabilityDemoGames().forEach((game) => {
       const { document, findings } = createDesignForGame(game, {
         capabilityDemoAuthoring: true,
-        capabilityDemoNotes: `${game.name} remains a Game Workspace game.`,
+        capabilityDemoNotes: `${game.name} remains a Game Hub game.`,
         designSummary: `${game.name} demonstrates one planned capability as a game-owned demo.`,
         gameType: "Capability Demo",
         genre: "Utility",
@@ -332,9 +332,9 @@ export function createGameDesignMockRepository(options = {}) {
     if (!activeGame) {
       return {
         gameProgress: "No active game",
-        publishingProgress: "Blocked until Game Workspace has an active game",
-        currentFocus: "Open a Game Workspace game",
-        recommendedNextTool: "Game Workspace",
+        publishingProgress: "Blocked until Game Hub has an active game",
+        currentFocus: "Open a Game Hub game",
+        recommendedNextTool: "Game Hub",
         progressChecklist: [
           "Game context: Missing",
           "Game Design document: Blocked",

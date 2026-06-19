@@ -148,7 +148,7 @@ Remaining work:
 
 ---
 
-## Ownership & Permissions
+## Ownership & Access
 
 **95% Defined**
 
@@ -156,9 +156,9 @@ This category didn't exist before.
 
 Now we have:
 
-| Role    | Purpose           |
-| ------- | ----------------- |
-| Creator | Platform user     |
+| Responsibility | Purpose           |
+| -------------- | ----------------- |
+| Creator        | Platform creator  |
 | Admin   | Operates platform |
 | Owner   | Runs business     |
 
@@ -203,7 +203,7 @@ If I had to summarize where GFS is today:
 | Memberships             |        98% |
 | Marketplace             |        95% |
 | AI Strategy             |        95% |
-| Ownership & Permissions |        95% |
+| Ownership & Access      |        95% |
 | Database Design         |        92% |
 | Legal Requirements      |        85% |
 | Billing Implementation  |        60% |

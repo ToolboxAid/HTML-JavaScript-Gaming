@@ -288,11 +288,11 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.locator("[data-toolbox-wireframe]")).toHaveCount(0);
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     const readyGameWorkspaceCard = page.locator("main .control-card").filter({
-      has: page.locator("h3", { hasText: "Game Workspace" })
+      has: page.locator("h3", { hasText: "Game Hub" })
     });
     await expect(readyGameWorkspaceCard.locator("a.btn")).toHaveAttribute("href", "../toolbox/game-workspace/index.html");
     const defaultToolLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
-    expect(defaultToolLabels).toEqual(["Achievements", "Assets", "Colors", "Controls", "Game Configuration", "Game Design", "Game Journey", "Game Workspace", "Idea Board", "Languages", "Objects", "Saved Data", "Tags"]);
+    expect(defaultToolLabels).toEqual(["Achievements", "Assets", "Colors", "Controls", "Game Configuration", "Game Design", "Game Hub", "Game Journey", "Idea Board", "Languages", "Objects", "Saved Data", "Tags"]);
     await expect(page.locator("[data-toolbox-readiness]")).toHaveText(["Wireframe", "Beta", "Complete", "Wireframe", "Beta", "Beta", "Beta", "Beta", "Wireframe", "Wireframe", "Beta", "Wireframe", "Beta"]);
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^AI Command Center$/ }) })).toHaveCount(0);
     const oldStandaloneLabels = [
@@ -313,7 +313,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     expect(defaultToolLabels.filter((label) => oldStandaloneLabels.includes(label))).toEqual([]);
     expect(defaultToolLabels.filter((label) => ["Vector", "Tilemap", "Isometric", "Hex", "Sprite", "Character", "Enemy", "Interactive"].includes(label))).toEqual([]);
     expect(defaultToolLabels).not.toEqual(expect.arrayContaining([
-      "Users",
+      "Creators",
       "Environments",
       "Game Migration",
       "Platform Settings",
@@ -374,7 +374,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.getByText("Active Game: Demo Game")).toBeVisible();
     await expect(page.getByText("What should I do next? Game Configuration")).toBeVisible();
     await expect(page.getByText("Game Progress: Demo Game identity ready")).toBeVisible();
-    await expect(page.getByText("Publishing Progress: Publish blocked until configuration and required assets are ready")).toBeVisible();
+    await expect(page.getByText("Launch Progress: Publish blocked until configuration and required assets are ready")).toBeVisible();
     await expect(page.getByText("Current Focus: Complete Game Configuration")).toBeVisible();
     await expect(page.getByText("Work top-to-bottom and left-to-right through the workflow table.")).toBeVisible();
     await expect(page.locator("[data-build-path-tool]")).not.toHaveCount(0);
@@ -391,6 +391,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/42");
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
+    await expect(page.locator("main").getByText("Creators", { exact: true })).toHaveCount(0);
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
     await setServerSession(server, MOCK_DB_KEYS.users.admin);
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
@@ -399,13 +400,13 @@ test("root tools surface links current tool pages without old_* routes", async (
     const adminLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
     expect(adminLabels).toEqual(defaultToolLabels);
     expect(adminLabels).not.toEqual(expect.arrayContaining([
-      "Users",
+      "Creators",
       "Environments",
       "Game Migration",
       "Platform Settings"
     ]));
     await expect(page.locator("main .control-card").filter({
-      has: page.locator("h3", { hasText: /^Game Workspace$/ })
+      has: page.locator("h3", { hasText: /^Game Hub$/ })
     }).locator("[data-toolbox-readiness]")).toHaveText("Beta");
     await expect(page.locator("main .control-card").filter({
       has: page.locator("h3", { hasText: /^Game Configuration$/ })
@@ -437,11 +438,13 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.locator("[data-build-path-table='workflow']")).toBeVisible();
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
+    await expect(page.locator("main").getByText("Creators", { exact: true })).toHaveCount(0);
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
     await setServerSession(server, "");
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/42");
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
+    await expect(page.locator("main").getByText("Creators", { exact: true })).toHaveCount(0);
     expect(pageErrors).toEqual([]);
   } finally {
     await workspaceV2CoverageReporter.stop(page);

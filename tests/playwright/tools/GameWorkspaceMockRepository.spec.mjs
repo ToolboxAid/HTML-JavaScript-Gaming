@@ -210,14 +210,14 @@ async function expectNoPageFailures(failures) {
   expect(failures.consoleErrors).toEqual([]);
 }
 
-test("Deprecated project workspace route points creators to Game Workspace", async ({ page }) => {
+test("Deprecated project workspace route points creators to Game Hub", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/project-workspace/index.html");
 
   try {
-    await expect(page.getByRole("heading", { name: "Game Workspace" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Game Hub" })).toBeVisible();
     await expect(page.locator("main")).toContainText("This route is kept for older links.");
     await expect(page.locator("main")).not.toContainText("Project Workspace");
-    await expect(page.getByRole("link", { name: "Open Game Workspace" })).toHaveAttribute("href", "toolbox/game-workspace/index.html");
+    await expect(page.getByRole("link", { name: "Open Game Hub" })).toHaveAttribute("href", "toolbox/game-workspace/index.html");
 
     await expectNoPageFailures(failures);
   } finally {
@@ -225,7 +225,7 @@ test("Deprecated project workspace route points creators to Game Workspace", asy
   }
 });
 
-test("Game Workspace creates, opens, and deletes mock games", async ({ page }) => {
+test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html", { session: creatorSession() });
 
   try {
@@ -235,7 +235,7 @@ test("Game Workspace creates, opens, and deletes mock games", async ({ page }) =
     await expect(page.getByRole("button", { name: "Create Game" })).toBeEnabled();
     await expect(page.getByRole("button", { name: "Delete Open Game" })).toHaveClass("btn");
     await expect(page.getByRole("button", { name: "Delete Open Game" })).toBeEnabled();
-    await expect(page.locator("[data-project-record-status]")).toContainText("Project Workspace records loaded from the project records service");
+    await expect(page.locator("[data-project-record-status]")).toContainText("Game Hub records loaded from the project records service");
     await expect(page.locator("[data-project-record-status]")).toContainText("authoritative keys managed by service");
     await expect(page.locator("[data-project-record-status]")).toContainText("asset references linked to storage object keys: 0");
     await expect(page.locator("[data-project-records-table]")).toContainText("Demo Game");
@@ -281,7 +281,7 @@ test("Game Workspace creates, opens, and deletes mock games", async ({ page }) =
   }
 });
 
-test("Project Workspace preserves guest browsing and blocks guest saves", async ({ page }) => {
+test("Game Hub preserves guest browsing and blocks guest saves", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
 
   try {
@@ -301,7 +301,7 @@ test("Project Workspace preserves guest browsing and blocks guest saves", async 
 
     await page.getByRole("button", { name: "Open Gravity Demo" }).click();
     await expect(page.locator("[data-active-game-name]")).toHaveText("Gravity Demo");
-    await expect(page.locator("[data-game-workspace-log]")).toHaveText("Guest browsing enabled; sign in required to save Project Workspace project records.");
+    await expect(page.locator("[data-game-workspace-log]")).toHaveText("Guest browsing enabled; sign in required to save Game Hub project records.");
 
     await expectNoPageFailures(failures);
   } finally {
@@ -309,7 +309,7 @@ test("Project Workspace preserves guest browsing and blocks guest saves", async 
   }
 });
 
-test("Game Workspace shows active-game API diagnostics without throwing", async ({ page }) => {
+test("Game Hub shows active-game API diagnostics without throwing", async ({ page }) => {
   await page.route("**/api/toolbox/game-workspace/repositories/*/methods/getActiveGame", async (route) => {
     await route.fulfill({
       body: JSON.stringify({
@@ -334,7 +334,7 @@ test("Game Workspace shows active-game API diagnostics without throwing", async 
   }
 });
 
-test("Game Workspace reports malformed active-game payloads without throwing", async ({ page }) => {
+test("Game Hub reports malformed active-game payloads without throwing", async ({ page }) => {
   await page.route("**/api/toolbox/game-workspace/repositories/*/methods/getActiveGame", async (route) => {
     await route.fulfill({
       body: JSON.stringify({
@@ -365,7 +365,7 @@ test("Game Workspace reports malformed active-game payloads without throwing", a
   }
 });
 
-test("Game Workspace displays and edits game purpose and member role", async ({ page }) => {
+test("Game Hub displays and edits game purpose and member role", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html", { session: creatorSession() });
 
   try {
@@ -424,7 +424,7 @@ test("Game Workspace displays and edits game purpose and member role", async ({ 
   }
 });
 
-test("Game Workspace progress panels update from mock game state", async ({ page }) => {
+test("Game Hub progress panels update from mock game state", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html", { session: creatorSession() });
 
   try {
@@ -474,7 +474,7 @@ test("Game Workspace progress panels update from mock game state", async ({ page
   }
 });
 
-test("Game Workspace uses the wide Theme V2 tool layout at desktop widths", async ({ page }) => {
+test("Game Hub uses the wide Theme V2 tool layout at desktop widths", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1100 });
   const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
 
@@ -603,7 +603,7 @@ test("Toolbox member-role filters focus tools without exposing admin-only contro
   try {
     await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 11/39");
     await expect(page.locator("[data-toolbox-role-focus]")).toHaveCount(0);
-    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Workspace$/ }) })).toBeVisible();
+    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Hub$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Journey$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Design$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Configuration$/ }) })).toBeVisible();
@@ -613,7 +613,7 @@ test("Toolbox member-role filters focus tools without exposing admin-only contro
     await page.goto(`${failures.server.baseUrl}/toolbox/index.html?memberRole=Designer`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-toolbox-role-focus='Designer']")).toBeVisible();
     await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 7/39");
-    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Workspace$/ }) })).toBeVisible();
+    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Hub$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Journey$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Design$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Configuration$/ }) })).toBeVisible();
@@ -634,7 +634,7 @@ test("Toolbox member-role filters focus tools without exposing admin-only contro
     await expect(page.locator("[data-toolbox-role-focus='Viewer']")).toBeVisible();
     await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 9/39");
     await expect(page.getByText("Viewer focus shows preview-safe read-only tiles only.")).toBeVisible();
-    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Workspace$/ }) })).toBeVisible();
+    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Hub$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Journey$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Design$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Configuration$/ }) })).toBeVisible();

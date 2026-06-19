@@ -1073,7 +1073,7 @@ test("Game Journey requires an active game before editing", async ({ page }) => 
 
   try {
     await expect(page.locator("[data-journey-active-game]")).toContainText("No active game is open");
-    await expect(page.locator("[data-journey-diagnostics]")).toContainText("Open a game in Game Workspace");
+    await expect(page.locator("[data-journey-diagnostics]")).toContainText("Open a game in Game Hub");
     await expect(page.getByRole("button", { name: "Add Item" })).toBeDisabled();
     await expect(page.getByRole("button", { name: "Update Item" })).toBeDisabled();
     await expect(page.getByRole("button", { name: "Add Note", exact: true })).toBeDisabled();
@@ -1087,7 +1087,7 @@ test("Game Journey requires an active game before editing", async ({ page }) => 
   }
 });
 
-test("Game Workspace hands the active game route to Game Journey", async ({ page }) => {
+test("Game Hub hands the active game route to Game Journey", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
 
   try {

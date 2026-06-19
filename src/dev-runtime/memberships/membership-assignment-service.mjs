@@ -173,7 +173,7 @@ function acceptedBetaInvitation(tables, user, body) {
   }
   const invitation = tableRows(tables, "invitations").find((row) => row.key === invitationKey);
   if (!invitation) {
-    throw new MembershipAssignmentError(`Beta invitation ${invitationKey} was not found.`, 404);
+    throw new MembershipAssignmentError(`Beta invite ${invitationKey} was not found.`, 404);
   }
   if (invitation.planKey !== "BETA") {
     throw new MembershipAssignmentError("Beta membership assignment requires a BETA invitation.");

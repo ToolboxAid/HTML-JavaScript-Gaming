@@ -11,7 +11,7 @@ const ADMIN_TOOL_MENU_LABELS = [
   "Platform Settings",
   "System Health",
   "Tool Votes",
-  "Users",
+  "Creators",
 ];
 
 const ADMIN_WIREFRAME_PAGES = [
@@ -28,7 +28,7 @@ const ADMIN_WIREFRAME_PAGES = [
     slug: "system-health",
     systemHealth: true,
   },
-  { heading: "Users", path: "/admin/users.html", slug: "users", statusText: "Read-only Admin view." },
+  { heading: "Creators", path: "/admin/users.html", slug: "users", statusText: "Read-only Admin view." },
   { heading: "Platform Settings", liveSettings: true, path: "/admin/platform-settings.html", slug: "platform-settings" },
 ];
 
@@ -234,7 +234,7 @@ async function startAdminPage(page, pathName, options = {}) {
             { label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" },
             { label: "System Health", path: "admin/system-health.html", route: "admin-system-health" },
             { label: "Tool Votes", path: "admin/tool-votes.html", route: "admin-tool-votes" },
-            { label: "Users", path: "admin/users.html", route: "admin-users" },
+            { label: "Creators", path: "admin/users.html", route: "admin-users" },
           ],
           ownerMenuItems: [
             { label: "DB Viewer", path: "admin/db-viewer.html", route: "admin-db-viewer" },
@@ -503,7 +503,7 @@ async function expectAdminHeaderMenu(page) {
   await expect(adminSubmenu.locator(":scope > a[data-route='admin-platform-settings']")).toHaveText("Platform Settings");
   await expect(adminSubmenu.locator(":scope > a[data-route='admin-system-health']")).toHaveText("System Health");
   await expect(adminSubmenu.locator(":scope > a[data-route='admin-tool-votes']")).toHaveText("Tool Votes");
-  await expect(adminSubmenu.locator(":scope > a[data-route='admin-users']")).toHaveText("Users");
+  await expect(adminSubmenu.locator(":scope > a[data-route='admin-users']")).toHaveText("Creators");
   await expect(adminSubmenu.locator(":scope > a[data-route='admin-environments'], :scope > a[data-route='admin-game-migration'], :scope > a[data-route='admin-site-setup']")).toHaveCount(0);
   await expect(adminSubmenu.locator("[data-owner-menu], [data-admin-my-stuff-menu], [data-admin-notes-local-menu]")).toHaveCount(0);
 }
@@ -961,7 +961,7 @@ test("Platform Settings Admin controls update banner through the service route",
               { label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" },
               { label: "System Health", path: "admin/system-health.html", route: "admin-system-health" },
               { label: "Tool Votes", path: "admin/tool-votes.html", route: "admin-tool-votes" },
-              { label: "Users", path: "admin/users.html", route: "admin-users" },
+              { label: "Creators", path: "admin/users.html", route: "admin-users" },
             ],
             ownerMenuItems: [],
           },
@@ -1113,7 +1113,7 @@ test("Owner menu is role-gated separately from Admin menu", async ({ page }) => 
               { label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" },
               { label: "System Health", path: "admin/system-health.html", route: "admin-system-health" },
               { label: "Tool Votes", path: "admin/tool-votes.html", route: "admin-tool-votes" },
-              { label: "Users", path: "admin/users.html", route: "admin-users" },
+              { label: "Creators", path: "admin/users.html", route: "admin-users" },
             ],
             ownerMenuItems: [
               { label: "DB Viewer", path: "admin/db-viewer.html", route: "admin-db-viewer" },
@@ -1173,7 +1173,7 @@ test("Admin Operations exposes ordered guarded operation actions", async ({ page
       id: "project-packaging",
       label: "Project Packaging",
       actions: [
-        { id: "export-project-package", label: "Export Project Package", status: "PASS", diagnostic: "Export Project Package creates a .gfsp ZIP package for the active Project Workspace record." },
+        { id: "export-project-package", label: "Export Project Package", status: "PASS", diagnostic: "Export Project Package creates a .gfsp ZIP package for the active Game Hub record." },
         { id: "validate-project-package", label: "Validate Project Package", status: "PASS", diagnostic: "Validate Project Package checks package integrity without import.", requiresPackageFile: true },
         { id: "import-project-package", label: "Import Project Package", status: "WARN", diagnostic: "Import Project Package validates first and blocks silent overwrite.", confirmationMessage: "Replace Existing requires explicit confirmation before overwrite.", confirmationPhrase: "REPLACE", confirmationRequired: true, requiresPackageFile: true, risky: true, supportsImportModes: true },
       ],
@@ -1233,7 +1233,7 @@ test("Admin Operations exposes ordered guarded operation actions", async ({ page
               { label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" },
               { label: "System Health", path: "admin/system-health.html", route: "admin-system-health" },
               { label: "Tool Votes", path: "admin/tool-votes.html", route: "admin-tool-votes" },
-              { label: "Users", path: "admin/users.html", route: "admin-users" },
+              { label: "Creators", path: "admin/users.html", route: "admin-users" },
             ],
             ownerMenuItems: [
               { label: "DB Viewer", path: "admin/db-viewer.html", route: "admin-db-viewer" },
@@ -1590,7 +1590,7 @@ test("Admin Operations hides Reseed DEV outside the DEV lane", async ({ page }) 
               { label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" },
               { label: "System Health", path: "admin/system-health.html", route: "admin-system-health" },
               { label: "Tool Votes", path: "admin/tool-votes.html", route: "admin-tool-votes" },
-              { label: "Users", path: "admin/users.html", route: "admin-users" },
+              { label: "Creators", path: "admin/users.html", route: "admin-users" },
             ],
             ownerMenuItems: [],
           },

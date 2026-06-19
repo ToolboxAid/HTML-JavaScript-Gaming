@@ -70,14 +70,14 @@ function identityState(snapshot) {
   };
 }
 
-function rolesForUser(identity, userKey) {
+function responsibilitiesForCreator(identity, userKey) {
   return identity.userRoles
     .filter((row) => row.userKey === userKey)
     .map((row) => identity.rolesByKey.get(row.roleKey)?.name || row.roleKey)
     .filter(Boolean);
 }
 
-function assignedUsersForRole(identity, roleKey) {
+function creatorsForResponsibility(identity, roleKey) {
   return identity.userRoles
     .filter((row) => row.roleKey === roleKey)
     .map((row) => identity.usersByKey.get(row.userKey)?.displayName || row.userKey)
@@ -163,30 +163,30 @@ function renderFollowUp(parent, title, tableName, reason, action) {
   parent.append(article);
 }
 
-function renderAdminUsers(root, snapshot) {
+function renderAdminCreators(root, snapshot) {
   const content = clearContent(root);
   const identity = identityState(snapshot);
   const rows = identity.users.map((user) => [
     user.displayName,
     user.key,
     user.email,
-    rolesForUser(identity, user.key).join(", ") || "N/A",
+    responsibilitiesForCreator(identity, user.key).join(", ") || "N/A",
     user.isActive === false ? "Inactive" : "Active",
     user.updatedAt,
   ]);
-  renderTable(content, "Account Users", [
-    "User",
+  renderTable(content, "Account Creators", [
+    "Creator",
     "users.key",
     "Email",
-    "Roles",
+    "Responsibilities",
     "Account State",
     "Updated",
   ], rows, { tableName: "users" });
-  renderAudit(content, auditMessage("user", identity.users, identity.usersByKey));
-  setStatus(root, `Loaded ${identity.users.length} users from the account service.`);
+  renderAudit(content, auditMessage("creator", identity.users, identity.usersByKey));
+  setStatus(root, `Loaded ${identity.users.length} creators from the account service.`);
 }
 
-function renderAdminRoles(root, snapshot) {
+function renderAdminResponsibilities(root, snapshot) {
   const content = clearContent(root);
   const identity = identityState(snapshot);
   const rows = identity.roles.map((role) => [
@@ -194,18 +194,18 @@ function renderAdminRoles(root, snapshot) {
     role.key,
     role.description,
     role.isActive === false ? "Inactive" : "Active",
-    assignedUsersForRole(identity, role.key).join(", ") || "N/A",
+    creatorsForResponsibility(identity, role.key).join(", ") || "N/A",
   ]);
-  renderTable(content, "Account Roles", [
-    "Role",
+  renderTable(content, "Account Responsibilities", [
+    "Responsibility",
     "roles.key",
     "Description",
     "State",
-    "Assigned Users",
+    "Assigned Creators",
   ], rows, { tableName: "roles" });
-  renderAudit(content, auditMessage("role", identity.roles, identity.usersByKey));
+  renderAudit(content, auditMessage("responsibility", identity.roles, identity.usersByKey));
   renderAudit(content, auditMessage("user_roles", identity.userRoles, identity.usersByKey));
-  setStatus(root, `Loaded ${identity.roles.length} roles and ${identity.userRoles.length} user-role assignments.`);
+  setStatus(root, `Loaded ${identity.roles.length} responsibilities and ${identity.userRoles.length} creator-responsibility assignments.`);
 }
 
 function renderAdminSiteSettings(root, snapshot) {
@@ -222,9 +222,9 @@ function renderAdminSiteSettings(root, snapshot) {
 }
 
 const RENDERERS = Object.freeze({
-  "admin-roles": renderAdminRoles,
+  "admin-roles": renderAdminResponsibilities,
   "owner-site-settings": renderAdminSiteSettings,
-  "admin-users": renderAdminUsers,
+  "admin-users": renderAdminCreators,
 });
 
 function renderFailure(root, error) {

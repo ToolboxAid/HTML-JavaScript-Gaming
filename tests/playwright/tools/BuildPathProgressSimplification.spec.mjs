@@ -138,7 +138,7 @@ test("Build Path preserves DB order across selected status filters", async ({ pa
 
     const rows = await buildPathRows(page);
     expect(rows.map((row) => row.tool)).toEqual([
-      "Game Workspace",
+      "Game Hub",
       "Game Design",
       "Colors",
       "Assets",

@@ -548,7 +548,7 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
         gameCompletion.textContent = "Game Progress: " + gameProgressSummary.gameProgress;
 
         const publishingProgress = document.createElement("p");
-        publishingProgress.textContent = "Publishing Progress: " + gameProgressSummary.publishingProgress;
+        publishingProgress.textContent = "Launch Progress: " + gameProgressSummary.publishingProgress;
 
         const currentFocus = document.createElement("p");
         currentFocus.textContent = "Current Focus: " + gameProgressSummary.currentFocus;

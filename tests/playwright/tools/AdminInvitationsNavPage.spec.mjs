@@ -6,6 +6,11 @@ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
 async function setSessionUser(server, userKey) {
+  await fetch(`${server.baseUrl}/api/session/mode`, {
+    body: JSON.stringify({ modeId: "local-db" }),
+    headers: { "content-type": "application/json" },
+    method: "POST",
+  });
   await fetch(`${server.baseUrl}/api/session/user`, {
     body: JSON.stringify({ userKey }),
     headers: { "content-type": "application/json" },
@@ -13,8 +18,12 @@ async function setSessionUser(server, userKey) {
   });
 }
 
-async function openAdminInvitationsPage(page, userKey) {
+async function openAdminInvitesPage(page, userKey) {
   const server = await startRepoServer();
+  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
+  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
   const failedRequests = [];
   const pageErrors = [];
   const consoleErrors = [];
@@ -41,48 +50,55 @@ async function openAdminInvitationsPage(page, userKey) {
     consoleErrors,
     failedRequests,
     pageErrors,
+    previousApiUrl,
+    previousSiteUrl,
     server,
   };
 }
 
-async function closeAdminInvitationsPage(page, context) {
+function restoreEnvValue(key, value) {
+  if (value === undefined) {
+    delete process.env[key];
+    return;
+  }
+  process.env[key] = value;
+}
+
+async function closeAdminInvitesPage(page, context) {
   await workspaceV2CoverageReporter.stop(page);
   await context.server.close();
+  restoreEnvValue("GAMEFOUNDRY_API_URL", context.previousApiUrl);
+  restoreEnvValue("GAMEFOUNDRY_SITE_URL", context.previousSiteUrl);
 }
 
 test.afterAll(async () => {
   await workspaceV2CoverageReporter.writeReport();
 });
 
-test("Admin Invitations uses shared navigation and creates personalized Beta invitation records", async ({ page }) => {
-  const context = await openAdminInvitationsPage(page, SEED_DB_KEYS.users.admin);
+test("Admin Invites uses shared navigation and creates personalized Beta invite records", async ({ page }) => {
+  const context = await openAdminInvitesPage(page, SEED_DB_KEYS.users.admin);
   try {
-    await expect(page).toHaveTitle(/Invitations - Game Foundry Studio LLC/);
-    await expect(page.getByRole("heading", { exact: true, name: "Invitations" })).toBeVisible();
+    await expect(page).toHaveTitle(/Invites - Game Foundry Studio LLC/);
+    await expect(page.getByRole("heading", { exact: true, name: "Invites" })).toBeVisible();
     await expect(page.locator("nav[aria-label='Admin tool pages'] a")).toContainText([
       "Analytics",
-      "Branding",
       "Controls",
       "DB Viewer",
-      "Design System",
       "Environments",
       "Game Migration",
-      "Grouping Colors",
       "Infrastructure",
-      "Invitations",
+      "Invites",
       "Moderation",
       "Operations",
       "Platform Settings",
       "Ratings",
-      "Roles",
-      "Site Settings",
+      "Responsibilities",
       "Site Setup",
       "System Health",
-      "Themes",
       "Tool Votes",
-      "Users",
+      "Creators",
     ]);
-    await expect(page.locator("nav[aria-label='Admin tool pages'] a[aria-current='page']")).toHaveText("Invitations");
+    await expect(page.locator("nav[aria-label='Admin tool pages'] a[aria-current='page']")).toHaveText("Invites");
 
     await page.locator("[data-admin-invitation-email]").fill("personalized-beta@example.invalid");
     await page.locator("[data-admin-invitation-recipient-name]").fill("Personalized Beta");
@@ -91,7 +107,7 @@ test("Admin Invitations uses shared navigation and creates personalized Beta inv
     await page.locator("[data-admin-invitation-source]").fill("manual-admin");
     await page.locator("[data-admin-invitation-form] button[type='submit']").click();
 
-    await expect(page.locator("[data-admin-invitation-status]")).toContainText("PASS: Created pending Beta invitation for personalized-beta@example.invalid.");
+    await expect(page.locator("[data-admin-invitation-status]")).toContainText("PASS: Created pending Beta invite for personalized-beta@example.invalid.");
     await expect(page.locator("[data-admin-invitation-rows]")).toContainText("personalized-beta@example.invalid");
     await expect(page.locator("[data-admin-invitation-rows]")).toContainText("Personalized Beta");
     await expect(page.locator("[data-admin-invitation-rows]")).toContainText("Community playtester");
@@ -103,12 +119,12 @@ test("Admin Invitations uses shared navigation and creates personalized Beta inv
     expect(context.consoleErrors).toEqual([]);
     expect(context.failedRequests).toEqual([]);
   } finally {
-    await closeAdminInvitationsPage(page, context);
+    await closeAdminInvitesPage(page, context);
   }
 });
 
-test("non-Admin users cannot access Admin Invitations", async ({ page }) => {
-  const context = await openAdminInvitationsPage(page, SEED_DB_KEYS.users.user1);
+test("non-Admin users cannot access Admin Invites", async ({ page }) => {
+  const context = await openAdminInvitesPage(page, SEED_DB_KEYS.users.user1);
   try {
     await expect(page.getByRole("heading", { name: "Admin role required" })).toBeVisible();
     await expect(page.locator("[data-session-access-blocked='admin']")).toBeVisible();
@@ -117,11 +133,11 @@ test("non-Admin users cannot access Admin Invitations", async ({ page }) => {
     expect(context.consoleErrors).toEqual([]);
     expect(context.failedRequests).toEqual([]);
   } finally {
-    await closeAdminInvitationsPage(page, context);
+    await closeAdminInvitesPage(page, context);
   }
 });
 
-test("Admin Invitations page keeps scripts and styles external", async () => {
+test("Admin Invites page keeps scripts and styles external", async () => {
   const pageSource = await fs.readFile(path.resolve("admin/invitations.html"), "utf8");
   expect(pageSource).not.toMatch(/<style\b/i);
   expect(pageSource).not.toMatch(/<script\b(?![^>]+src=)/i);

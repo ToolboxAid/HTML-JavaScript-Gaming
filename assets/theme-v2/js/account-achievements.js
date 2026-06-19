@@ -53,11 +53,11 @@ function renderBuildRows(games) {
     buildRows.replaceChildren();
     if (!games.length) {
         const row = document.createElement("tr");
-        const cell = createCell("No Game Workspace games are available.");
+        const cell = createCell("No Game Hub games are available.");
         cell.colSpan = 5;
         row.append(cell);
         buildRows.append(row);
-        setText(buildStatus, "No Game Workspace games are available for Build achievements.");
+        setText(buildStatus, "No Game Hub games are available for Build achievements.");
         return;
     }
 
@@ -77,7 +77,7 @@ function renderBuildRows(games) {
     const readyGames = games.filter((project) => project.status === "Ready for Publish").length;
     setText(createdCount, String(games.length));
     setText(readyCount, String(readyGames));
-    setText(buildStatus, "Build game rows use the Game Workspace game source. Stats and ratings are not tracked yet.");
+    setText(buildStatus, "Build game rows use the Game Hub game source. Stats and ratings are not tracked yet.");
 }
 
 function renderBuildError(message) {
@@ -86,13 +86,13 @@ function renderBuildError(message) {
     }
     buildRows.replaceChildren();
     const row = document.createElement("tr");
-    const cell = createCell(message || "Game Workspace data is unavailable.");
+    const cell = createCell(message || "Game Hub data is unavailable.");
     cell.colSpan = 5;
     row.append(cell);
     buildRows.append(row);
     setText(createdCount, "0");
     setText(readyCount, "0");
-    setText(buildStatus, message || "Game Workspace data is unavailable.");
+    setText(buildStatus, message || "Game Hub data is unavailable.");
 }
 
 function currentBuildUserId() {
@@ -111,11 +111,11 @@ function loadBuildGames() {
     const userId = currentBuildUserId();
     const result = repository.listGames(userId ? { userId } : {});
     if (result?.error) {
-        renderBuildError(result.message || "Game Workspace data is unavailable.");
+        renderBuildError(result.message || "Game Hub data is unavailable.");
         return;
     }
     if (!Array.isArray(result)) {
-        renderBuildError("Game Workspace did not return game rows.");
+        renderBuildError("Game Hub did not return game rows.");
         return;
     }
     renderBuildRows(result);

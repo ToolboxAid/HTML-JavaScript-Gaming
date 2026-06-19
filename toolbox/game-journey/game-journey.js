@@ -866,7 +866,7 @@ function renderDiagnostics(activeGame, note, notes) {
   const canWrite = sessionUserCanWrite();
 
   if (!activeGame) {
-    messages.push("No active game is open. Open a game in Game Workspace to enable editing.");
+    messages.push("No active game is open. Open a game in Game Hub to enable editing.");
   } else {
     messages.push(`Active game: ${activeGame.name}.`);
   }

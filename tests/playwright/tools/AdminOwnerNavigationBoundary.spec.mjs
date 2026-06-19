@@ -11,16 +11,16 @@ const ADMIN_LABELS = Object.freeze([
   "Environments",
   "Game Migration",
   "Infrastructure",
-  "Invitations",
+  "Invites",
   "Moderation",
   "Operations",
   "Platform Settings",
   "Ratings",
-  "Roles",
+  "Responsibilities",
   "Site Setup",
   "System Health",
   "Tool Votes",
-  "Users",
+  "Creators",
 ]);
 
 const OWNER_LABELS = Object.freeze([
@@ -188,11 +188,11 @@ test("Owner menu renders business controls and planned entries without broken li
     for (const label of [
       "DB Viewer",
       "Infrastructure",
-      "Invitations",
+      "Invites",
       "Operations",
       "Platform Settings",
       "System Health",
-      "Users",
+      "Creators",
     ]) {
       expect(ownerLinkText).not.toContain(label);
     }

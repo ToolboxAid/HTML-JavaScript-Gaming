@@ -124,7 +124,7 @@ test("Tool Display Mode renders build-order previous and next controls", async (
   }
 });
 
-test("Game Workspace Tool Display Mode follows registry route targets", async ({ page }) => {
+test("Game Hub Tool Display Mode follows registry route targets", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
   const navigation = getToolNavigationTargets("game-workspace");
 

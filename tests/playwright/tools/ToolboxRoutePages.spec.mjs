@@ -274,7 +274,7 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
     await expect(page.locator("[data-toolbox-tool-name-link='Game Configuration']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Game Design']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Game Journey']")).toBeVisible();
-    await expect(page.locator("[data-toolbox-tool-name-link='Game Workspace']")).toBeVisible();
+    await expect(page.locator("[data-toolbox-tool-name-link='Game Hub']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toHaveCount(0);
     await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/42");
     await page.locator("[data-toolbox-status-filter='planned']").click();
@@ -283,7 +283,7 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
     await expect(page.locator("[data-toolbox-tool-card]")).toHaveCount(41);
     await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 41/42");
     await expect(page.locator("[data-toolbox-tool-name-link='AI Command Center']")).toBeVisible();
-    await expect(page.locator("[data-toolbox-tool-name-link='Project Team']")).toBeVisible();
+    await expect(page.locator("[data-toolbox-tool-name-link='Game Crew']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toBeVisible();
     await page.locator("[data-toolbox-status-filter='deprecated']").click();
     await expect(page.locator("[data-toolbox-tool-name-link='Build Game']")).toBeVisible();
@@ -390,7 +390,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await page.locator("[data-toolbox-status-filter='deprecated']").click();
     await expect(page.locator("[data-toolbox-status-filter='deprecated']")).toHaveAttribute("aria-pressed", "true");
 
-    for (const toolName of ["Assets", "Tags", "Game Configuration", "Game Design", "Game Journey", "Game Workspace"]) {
+    for (const toolName of ["Assets", "Tags", "Game Configuration", "Game Design", "Game Journey", "Game Hub"]) {
       const betaCard = page.locator(`[data-toolbox-tool-card='${toolName}']`);
       await expect(betaCard).toBeVisible();
       await expect(betaCard.locator("[data-toolbox-kicker]")).toHaveText("Beta");
@@ -570,7 +570,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await expect(page.locator("[data-admin-tool-menu] a")).toHaveText([
       "Tool Votes",
       "Environments",
-      "Users",
+      "Creators",
       "Game Migration",
       "Platform Settings",
     ]);
@@ -794,9 +794,9 @@ test("toolbox grouped view renders Game Journey order with unique colors while B
     expect(toolboxGroupsByTool["Idea Board"]).toBe("Idea");
     expect(toolboxGroupsByTool["Creator Learning"]).toBe("Idea");
     expect(toolboxGroupsByTool["AI Command Center"]).toBe("Design");
-    expect(toolboxGroupsByTool["Game Workspace"]).toBe("Create");
+    expect(toolboxGroupsByTool["Game Hub"]).toBe("Create");
     expect(toolboxGroupsByTool["Game Configuration"]).toBe("Create");
-    expect(toolboxGroupsByTool["Project Team"]).toBe("Create");
+    expect(toolboxGroupsByTool["Game Crew"]).toBe("Create");
     expect(toolboxGroupsByTool["Tags"]).toBe("Create");
     expect(toolboxGroupsByTool["Game Journey"]).toBe("Progression");
     expect(toolboxGroupsByTool["Publish"]).toBe("Publish");
@@ -806,7 +806,7 @@ test("toolbox grouped view renders Game Journey order with unique colors while B
     const createToolOrder = await page.locator("[data-tools-accordion='Create'] [data-toolbox-tool-card]").evaluateAll((cards) => (
       cards.map((card) => card.getAttribute("data-toolbox-tool-card"))
     ));
-    expect(createToolOrder).toEqual(["Game Workspace", "Project Team", "Game Configuration", "Tags"]);
+    expect(createToolOrder).toEqual(["Game Hub", "Game Crew", "Game Configuration", "Tags"]);
 
     const toolLinks = await page.locator("[data-toolbox-tool-name-link]").evaluateAll((links) => (
       links.map((link) => ({
@@ -828,7 +828,7 @@ test("toolbox grouped view renders Game Journey order with unique colors while B
     if (await betaFilter.getAttribute("aria-pressed") !== "true") {
       await betaFilter.click();
     }
-    await expect(page.locator("[data-build-path-tool='Game Workspace']")).toHaveAttribute("data-build-path-group", "Build/Create");
+    await expect(page.locator("[data-build-path-tool='Game Hub']")).toHaveAttribute("data-build-path-group", "Build/Create");
     await expect(page.locator("[data-build-path-tool='Colors']")).toHaveAttribute("data-build-path-group", "Design");
 
     const toolboxSource = await page.evaluate(async () => {
@@ -840,6 +840,74 @@ test("toolbox grouped view renders Game Journey order with unique colors while B
     expect(toolboxSource).not.toMatch(/\sstyle=/i);
     expect(toolboxSource).not.toContain("onclick=");
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+
+    expect(failedRequests).toEqual([]);
+    expect(pageErrors).toEqual([]);
+    expect(consoleErrors).toEqual([]);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await server.close();
+    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
+    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
+  }
+});
+
+test("Game Crew friendly route resolves while old Users route remains compatible", async ({ page }) => {
+  const server = await startRepoServer();
+  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
+  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
+  const failedRequests = [];
+  const pageErrors = [];
+  const consoleErrors = [];
+
+  page.on("response", (response) => {
+    if (response.status() >= 400) {
+      failedRequests.push(`${response.status()} ${response.url()}`);
+    }
+  });
+  page.on("requestfailed", (request) => {
+    failedRequests.push(`FAILED ${request.url()}`);
+  });
+  page.on("pageerror", (error) => {
+    const text = error.stack || error.message;
+    if (!isBrowserExtensionNoise(text)) {
+      pageErrors.push(error.message);
+    }
+  });
+  page.on("console", (message) => {
+    if (message.type() === "error" && !isBrowserExtensionNoise(message.text())) {
+      consoleErrors.push(message.text());
+    }
+  });
+
+  try {
+    await workspaceV2CoverageReporter.start(page);
+    await setServerSession(server, MOCK_DB_KEYS.users.admin);
+    await page.goto(`${server.baseUrl}/toolbox/index.html?view=group&group=create`, { waitUntil: "networkidle" });
+    const plannedFilter = page.locator("[data-toolbox-status-filter='planned']");
+    if (await plannedFilter.getAttribute("aria-pressed") !== "true") {
+      await plannedFilter.click();
+    }
+    const gameCrewLink = page.locator("[data-toolbox-tool-name-link='Game Crew']");
+    await expect(gameCrewLink).toHaveAttribute("href", "/toolbox/game-crew/index.html");
+    await expect(gameCrewLink).toHaveAttribute("data-registered-tool-route", "toolbox/game-crew/index.html");
+
+    await expect(gameCrewLink).toHaveAttribute("data-toolbox-launch-blocked", "planned");
+
+    await page.goto(`${server.baseUrl}/toolbox/game-crew/index.html`, { waitUntil: "domcontentloaded" });
+    await expect(page.getByRole("heading", { level: 1, name: "Game Crew" })).toBeVisible();
+    await expect(page.locator("main")).toContainText("Plan game-level crew assignments");
+    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+
+    await page.goto(`${server.baseUrl}/toolbox/users/index.html`, { waitUntil: "domcontentloaded" });
+    await expect(page.getByRole("heading", { level: 1, name: "Game Crew Route Moved" })).toBeVisible();
+    const compatibilityLink = page.getByRole("link", { name: "Open Game Crew" });
+    await expect(compatibilityLink).toHaveAttribute("href", "/toolbox/game-crew/index.html");
+    await compatibilityLink.click();
+    await page.waitForURL(/\/toolbox\/game-crew\/index\.html$/);
+    await expect(page.getByRole("heading", { level: 1, name: "Game Crew" })).toBeVisible();
 
     expect(failedRequests).toEqual([]);
     expect(pageErrors).toEqual([]);

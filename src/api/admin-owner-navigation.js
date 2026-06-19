@@ -6,16 +6,16 @@ const ADMIN_NAVIGATION_ITEMS = Object.freeze([
   Object.freeze({ label: "Environments", path: "admin/environments.html", route: "admin-environments" }),
   Object.freeze({ label: "Game Migration", path: "admin/game-migration.html", route: "admin-game-migration" }),
   Object.freeze({ label: "Infrastructure", path: "admin/infrastructure.html", route: "admin-infrastructure" }),
-  Object.freeze({ label: "Invitations", path: "admin/invitations.html", route: "admin-invitations" }),
+  Object.freeze({ label: "Invites", path: "admin/invitations.html", route: "admin-invitations" }),
   Object.freeze({ label: "Moderation", path: "admin/moderation.html", route: "admin-moderation" }),
   Object.freeze({ label: "Operations", path: "admin/operations.html", route: "admin-operations" }),
   Object.freeze({ label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" }),
   Object.freeze({ label: "Ratings", path: "admin/ratings.html", route: "admin-ratings" }),
-  Object.freeze({ label: "Roles", path: "admin/roles.html", route: "admin-roles" }),
+  Object.freeze({ label: "Responsibilities", path: "admin/roles.html", route: "admin-roles" }),
   Object.freeze({ label: "Site Setup", path: "admin/site-setup.html", route: "admin-site-setup" }),
   Object.freeze({ label: "System Health", path: "admin/system-health.html", route: "admin-system-health" }),
   Object.freeze({ label: "Tool Votes", path: "admin/tool-votes.html", route: "admin-tool-votes" }),
-  Object.freeze({ label: "Users", path: "admin/users.html", route: "admin-users" }),
+  Object.freeze({ label: "Creators", path: "admin/users.html", route: "admin-users" }),
 ]);
 
 const OWNER_NAVIGATION_ITEMS = Object.freeze([

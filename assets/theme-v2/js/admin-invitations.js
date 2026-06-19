@@ -1,7 +1,7 @@
 import {
-    createAdminBetaInvitation,
-    readAdminInvitations,
-    revokeAdminBetaInvitation
+    createAdminBetaInvite,
+    readAdminInvites,
+    revokeAdminBetaInvite
 } from "../../../src/api/admin-invitations-api-client.js";
 
 function text(value) {
@@ -19,7 +19,7 @@ function shortCode(value) {
     return `${code.slice(0, 10)}...${code.slice(-6)}`;
 }
 
-class AdminInvitationsController {
+class AdminInvitesController {
     constructor(root) {
         this.root = root;
         this.emailInput = root.querySelector("[data-admin-invitation-email]");
@@ -40,14 +40,14 @@ class AdminInvitationsController {
         }
         this.form.addEventListener("submit", (event) => {
             event.preventDefault();
-            this.createInvitation();
+            this.createInvite();
         });
         this.rows.addEventListener("click", (event) => {
             const button = event.target.closest("[data-admin-invitation-revoke]");
             if (!button) {
                 return;
             }
-            this.revokeInvitation(button.dataset.adminInvitationRevoke || "");
+            this.revokeInvite(button.dataset.adminInvitationRevoke || "");
         });
         this.load();
     }
@@ -58,16 +58,16 @@ class AdminInvitationsController {
 
     setSummary(payload = {}) {
         const plan = payload.plan || {};
-        const invitations = Array.isArray(payload.invitations) ? payload.invitations : [];
-        const pending = invitations.filter((invitation) => invitation.status === "pending").length;
-        this.summary.textContent = `Beta is invitation-only and Studio-equivalent. ${pending} pending invitation(s). Membership assignment: ${plan.membershipAssignment || "deferred"}.`;
+        const invites = Array.isArray(payload.invitations) ? payload.invitations : [];
+        const pending = invites.filter((invite) => invite.status === "pending").length;
+        this.summary.textContent = `Beta is invite-only and Studio-equivalent. ${pending} pending invite(s). Membership assignment: ${plan.membershipAssignment || "deferred"}.`;
     }
 
-    renderRows(invitations = []) {
+    renderRows(invites = []) {
         this.rows.replaceChildren();
-        if (!invitations.length) {
+        if (!invites.length) {
             const row = document.createElement("tr");
-            ["No invitations", "N/A", "N/A", "N/A", "BETA", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", ""].forEach((value) => {
+            ["No invites", "N/A", "N/A", "N/A", "BETA", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", ""].forEach((value) => {
                 const cell = document.createElement("td");
                 cell.textContent = value;
                 row.append(cell);
@@ -75,30 +75,30 @@ class AdminInvitationsController {
             this.rows.append(row);
             return;
         }
-        invitations.forEach((invitation) => {
+        invites.forEach((invite) => {
             const row = document.createElement("tr");
             [
-                invitation.email,
-                invitation.recipientName,
-                invitation.relationshipNote,
-                invitation.inviteSource,
-                invitation.planKey,
-                invitation.status,
-                invitation.expiresAt,
-                invitation.invitedBy,
-                invitation.acceptedBy,
-                invitation.personalMessage,
-                shortCode(invitation.invitationCode),
+                invite.email,
+                invite.recipientName,
+                invite.relationshipNote,
+                invite.inviteSource,
+                invite.planKey,
+                invite.status,
+                invite.expiresAt,
+                invite.invitedBy,
+                invite.acceptedBy,
+                invite.personalMessage,
+                shortCode(invite.invitationCode),
             ].forEach((value) => {
                 const cell = document.createElement("td");
                 cell.textContent = text(value);
                 row.append(cell);
             });
             const actionCell = document.createElement("td");
-            if (invitation.status === "pending") {
+            if (invite.status === "pending") {
                 const button = document.createElement("button");
                 button.className = "btn btn--compact";
-                button.dataset.adminInvitationRevoke = invitation.key || "";
+                button.dataset.adminInvitationRevoke = invite.key || "";
                 button.textContent = "Revoke";
                 button.type = "button";
                 actionCell.append(button);
@@ -112,20 +112,20 @@ class AdminInvitationsController {
 
     load() {
         try {
-            const payload = readAdminInvitations();
+            const payload = readAdminInvites();
             this.renderRows(payload.invitations || []);
             this.setSummary(payload);
-            this.setStatus(payload.status || "PASS", payload.message || "Loaded Beta invitations.");
+            this.setStatus(payload.status || "PASS", payload.message || "Loaded Beta invites.");
         } catch (error) {
             this.renderRows([]);
             this.setSummary({});
-            this.setStatus("FAIL", error instanceof Error ? error.message : "Admin Invitations are unavailable.");
+            this.setStatus("FAIL", error instanceof Error ? error.message : "Admin Invites are unavailable.");
         }
     }
 
-    createInvitation() {
+    createInvite() {
         try {
-            const payload = createAdminBetaInvitation({
+            const payload = createAdminBetaInvite({
                 email: this.emailInput.value,
                 expiresAt: this.expiresAtInput.value,
                 inviteSource: this.inviteSourceInput.value,
@@ -140,19 +140,19 @@ class AdminInvitationsController {
             this.recipientNameInput.value = "";
             this.relationshipNoteInput.value = "";
             this.load();
-            this.setStatus(payload.status || "PASS", payload.message || "Created Beta invitation.");
+            this.setStatus(payload.status || "PASS", payload.message || "Created Beta invite.");
         } catch (error) {
-            this.setStatus("FAIL", error instanceof Error ? error.message : "Beta invitation create failed.");
+            this.setStatus("FAIL", error instanceof Error ? error.message : "Beta invite create failed.");
         }
     }
 
-    revokeInvitation(invitationKey) {
+    revokeInvite(inviteKey) {
         try {
-            const payload = revokeAdminBetaInvitation(invitationKey);
+            const payload = revokeAdminBetaInvite(inviteKey);
             this.load();
-            this.setStatus(payload.status || "PASS", payload.message || "Revoked Beta invitation.");
+            this.setStatus(payload.status || "PASS", payload.message || "Revoked Beta invite.");
         } catch (error) {
-            this.setStatus("FAIL", error instanceof Error ? error.message : "Beta invitation revoke failed.");
+            this.setStatus("FAIL", error instanceof Error ? error.message : "Beta invite revoke failed.");
         }
     }
 }
@@ -162,5 +162,5 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!root) {
         return;
     }
-    new AdminInvitationsController(root).init();
+    new AdminInvitesController(root).init();
 });

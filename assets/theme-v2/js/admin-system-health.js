@@ -140,7 +140,7 @@ class AdminSystemHealthController {
                 ]));
             });
         if (!this.healthInvitationRows.children.length) {
-            this.healthInvitationRows.append(this.createRow(["No rows", selectedStatus || "All statuses", "SKIP", "No matching invitation records."]));
+            this.healthInvitationRows.append(this.createRow(["No rows", selectedStatus || "All statuses", "SKIP", "No matching invite records."]));
         }
     }
 

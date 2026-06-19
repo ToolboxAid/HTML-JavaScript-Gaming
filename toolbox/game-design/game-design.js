@@ -167,7 +167,7 @@ function renderCapabilityDemos(snapshot) {
 
   (snapshot.capabilityDemoGames || snapshot.capabilityDemoProjects || []).forEach((game) => {
     const item = document.createElement("li");
-    item.textContent = `${game.name}: Game Workspace game`;
+    item.textContent = `${game.name}: Game Hub game`;
     elements.capabilityDemoList.append(item);
   });
 
@@ -224,7 +224,7 @@ function renderOutput(snapshot, validation) {
   setText(
     elements.outputCapability,
     activeGame?.purpose === "Capability Demo"
-      ? `${activeGame.name} remains a Game Workspace game.`
+      ? `${activeGame.name} remains a Game Hub game.`
       : "Not a capability demo game."
   );
 }
@@ -255,7 +255,7 @@ function render() {
 
   setText(
     elements.gameContext,
-    activeGame ? `${activeGame.name} - ${activeGame.purpose}` : "No Game Workspace game"
+    activeGame ? `${activeGame.name} - ${activeGame.purpose}` : "No Game Hub game"
   );
   setText(elements.designStatus, activeDesign?.status || validation.status);
 
