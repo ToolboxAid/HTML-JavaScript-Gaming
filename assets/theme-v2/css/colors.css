@@ -13,6 +13,11 @@
   --green: #7dd957;
   --pink: #ff4f8b;
   --red: #ff2d2d;
+  --journey-yellow: #facc15;
+  --journey-lime: #a3e635;
+  --journey-teal: #2dd4bf;
+  --journey-indigo: #818cf8;
+  --journey-magenta: #d946ef;
   --deep-red: #ff5757;
   --mint: #22c55e;
   --white: #ffffff;
@@ -102,12 +107,24 @@
   background: var(--forge-gold)
 }
 
+.swatch-yellow {
+  background: var(--journey-yellow)
+}
+
+.swatch-lime {
+  background: var(--journey-lime)
+}
+
 .swatch-black {
   background: var(--bg)
 }
 
 .swatch-cyan {
   background: var(--bot-cyan)
+}
+
+.swatch-teal {
+  background: var(--journey-teal)
 }
 
 .swatch-green {
@@ -124,6 +141,14 @@
 
 .swatch-purple {
   background: var(--purple)
+}
+
+.swatch-indigo {
+  background: var(--journey-indigo)
+}
+
+.swatch-magenta {
+  background: var(--journey-magenta)
 }
 
 .swatch-blue {
@@ -219,6 +244,71 @@
 .tool-group-play {
   --tool-group-color: var(--toolbox-group-play-color);
   --tool-group-accent: var(--toolbox-group-play-color)
+}
+
+.tool-group-idea {
+  --tool-group-color: var(--red);
+  --tool-group-accent: var(--red)
+}
+
+.tool-group-journey-design {
+  --tool-group-color: var(--molten-orange);
+  --tool-group-accent: var(--molten-orange)
+}
+
+.tool-group-graphics {
+  --tool-group-color: var(--forge-gold);
+  --tool-group-accent: var(--forge-gold)
+}
+
+.tool-group-journey-audio {
+  --tool-group-color: var(--journey-yellow);
+  --tool-group-accent: var(--journey-yellow)
+}
+
+.tool-group-objects {
+  --tool-group-color: var(--journey-lime);
+  --tool-group-accent: var(--journey-lime)
+}
+
+.tool-group-worlds {
+  --tool-group-color: var(--green);
+  --tool-group-accent: var(--green)
+}
+
+.tool-group-interface {
+  --tool-group-color: var(--journey-teal);
+  --tool-group-accent: var(--journey-teal)
+}
+
+.tool-group-controls {
+  --tool-group-color: var(--bot-cyan);
+  --tool-group-accent: var(--bot-cyan)
+}
+
+.tool-group-rules {
+  --tool-group-color: var(--electric-blue);
+  --tool-group-accent: var(--electric-blue)
+}
+
+.tool-group-progression {
+  --tool-group-color: var(--journey-indigo);
+  --tool-group-accent: var(--journey-indigo)
+}
+
+.tool-group-play-test {
+  --tool-group-color: var(--purple);
+  --tool-group-accent: var(--purple)
+}
+
+.tool-group-publish {
+  --tool-group-color: var(--journey-magenta);
+  --tool-group-accent: var(--journey-magenta)
+}
+
+.tool-group-journey-share {
+  --tool-group-color: var(--pink);
+  --tool-group-accent: var(--pink)
 }
 
 .meaning-molten-orange {

@@ -130,7 +130,10 @@
 
 .swatch-label.swatch-cyan,
 .swatch-label.swatch-gold,
-.swatch-label.swatch-green {
+.swatch-label.swatch-green,
+.swatch-label.swatch-lime,
+.swatch-label.swatch-teal,
+.swatch-label.swatch-yellow {
   color: var(--bg);
   text-shadow: none
 }

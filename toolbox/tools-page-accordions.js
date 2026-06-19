@@ -67,17 +67,110 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
     const toolboxGroupOrder = Object.freeze([...(toolboxContract.toolboxGroupOrder || [])]);
     const groupSwatchMap = Object.freeze({ ...(toolboxContract.groupSwatches || {}) });
     const stateSwatchMap = Object.freeze({ ...(toolboxContract.releaseChannelSwatches || {}) });
+    const gameJourneyGroupOrder = Object.freeze([
+        "Idea",
+        "Design",
+        "Graphics",
+        "Audio",
+        "Objects",
+        "Worlds",
+        "Interface",
+        "Controls",
+        "Rules",
+        "Progression",
+        "Play Test",
+        "Publish",
+        "Share"
+    ]);
+    const gameJourneyGroupSwatches = Object.freeze({
+        "Idea": "swatch-red",
+        "Design": "swatch-orange",
+        "Graphics": "swatch-gold",
+        "Audio": "swatch-yellow",
+        "Objects": "swatch-lime",
+        "Worlds": "swatch-green",
+        "Interface": "swatch-teal",
+        "Controls": "swatch-cyan",
+        "Rules": "swatch-blue",
+        "Progression": "swatch-indigo",
+        "Play Test": "swatch-purple",
+        "Publish": "swatch-magenta",
+        "Share": "swatch-pink"
+    });
+    const gameJourneyGroupClasses = Object.freeze({
+        "Idea": "tool-group-idea",
+        "Design": "tool-group-journey-design",
+        "Graphics": "tool-group-graphics",
+        "Audio": "tool-group-journey-audio",
+        "Objects": "tool-group-objects",
+        "Worlds": "tool-group-worlds",
+        "Interface": "tool-group-interface",
+        "Controls": "tool-group-controls",
+        "Rules": "tool-group-rules",
+        "Progression": "tool-group-progression",
+        "Play Test": "tool-group-play-test",
+        "Publish": "tool-group-publish",
+        "Share": "tool-group-journey-share"
+    });
+    const gameJourneyGroupByToolId = Object.freeze({
+        "achievements": "Progression",
+        "ai-assistant": "Idea",
+        "animations": "Graphics",
+        "assets": "Graphics",
+        "audio": "Audio",
+        "audio-effects": "Audio",
+        "build-game": "Publish",
+        "characters": "Objects",
+        "cloud": "Share",
+        "code": "Rules",
+        "colors": "Graphics",
+        "community": "Share",
+        "controls": "Controls",
+        "debug": "Play Test",
+        "environments": "Publish",
+        "events": "Rules",
+        "fonts": "Interface",
+        "game-configuration": "Rules",
+        "game-design": "Design",
+        "game-journey": "Progression",
+        "game-migration": "Publish",
+        "game-testing": "Play Test",
+        "game-workspace": "Worlds",
+        "hitboxes": "Controls",
+        "input-mapping-v2": "Controls",
+        "languages": "Interface",
+        "learn": "Idea",
+        "marketplace": "Share",
+        "midi": "Audio",
+        "music": "Audio",
+        "objects": "Objects",
+        "particles": "Graphics",
+        "performance": "Play Test",
+        "platform-settings": "Publish",
+        "publish": "Publish",
+        "ratings": "Share",
+        "saved-data": "Progression",
+        "speech-to-text": "Audio",
+        "sprites": "Graphics",
+        "tags": "Objects",
+        "text-to-speech": "Audio",
+        "users": "Share",
+        "videos": "Graphics",
+        "voices": "Audio",
+        "worlds": "Worlds"
+    });
+    const toolboxGroupPositions = new Map(toolboxGroupOrder.map((group, index) => [group, index]));
     toolboxDefaultReleaseChannels.forEach((channel) => {
         visibleReleaseChannels.add(channel);
     });
     const registryTools = getActiveToolRegistry();
     const registryToolsByTitle = new Map(registryTools.map((tool) => [tool.displayName || tool.name, tool]));
-    const toolGroups = toolboxGroupOrder
+    const toolGroups = gameJourneyGroupOrder
         .map((group) => ({
             group,
             tools: registryTools
-                .filter((tool) => tool.toolboxGroup === group && includeToolInToolboxInventory(tool))
-                .sort((left, right) => (left.order ?? Number.MAX_SAFE_INTEGER) - (right.order ?? Number.MAX_SAFE_INTEGER))
+                .filter((tool) => includeToolInToolboxInventory(tool) && gameJourneyGroupForTool(tool) === group)
+                .sort(compareByRegistryOrder)
         }))
         .filter((group) => group.tools.length > 0);
     let toolboxVoteRows = [];
@@ -112,8 +205,12 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
         return left.title.localeCompare(right.title);
     }
 
-    function compareByGroup(left, right) {
-        return left.group.localeCompare(right.group);
+    function compareByRegistryOrder(left, right) {
+        const leftGroup = toolboxGroupPositions.get(left.toolboxGroup) ?? Number.MAX_SAFE_INTEGER;
+        const rightGroup = toolboxGroupPositions.get(right.toolboxGroup) ?? Number.MAX_SAFE_INTEGER;
+        return leftGroup - rightGroup
+            || (left.order ?? Number.MAX_SAFE_INTEGER) - (right.order ?? Number.MAX_SAFE_INTEGER)
+            || String(left.displayName || left.name || "").localeCompare(String(right.displayName || right.name || ""));
     }
 
     function releaseChannelForTool(tool) {
@@ -158,9 +255,39 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
         return tool.category || "Platform";
     }
 
-    function enrichTool(tool, groupName = colorGroupForTool(tool)) {
+    function gameJourneyGroupForTool(tool) {
+        const toolId = String(tool?.id || "").trim().toLowerCase();
+        if (gameJourneyGroupByToolId[toolId]) {
+            return gameJourneyGroupByToolId[toolId];
+        }
+        const searchable = [
+            toolId,
+            tool?.displayName,
+            tool?.name,
+            tool?.category,
+            tool?.toolboxGroup,
+            tool?.subgroup
+        ].filter(Boolean).join(" ").toLowerCase();
+        if (/\b(audio|music|voice|midi|sound|speech)\b/.test(searchable)) return "Audio";
+        if (/\b(color|asset|sprite|font|video|animation|particle|graphic)\b/.test(searchable)) return "Graphics";
+        if (/\b(object|character|tag)\b/.test(searchable)) return "Objects";
+        if (/\b(world|workspace|map|scene)\b/.test(searchable)) return "Worlds";
+        if (/\b(interface|language|ui|ux)\b/.test(searchable)) return "Interface";
+        if (/\b(control|input|hitbox)\b/.test(searchable)) return "Controls";
+        if (/\b(rule|event|configuration|code|extension)\b/.test(searchable)) return "Rules";
+        if (/\b(progress|achievement|saved|journey)\b/.test(searchable)) return "Progression";
+        if (/\b(test|debug|performance)\b/.test(searchable)) return "Play Test";
+        if (/\b(publish|build|migration|environment|settings)\b/.test(searchable)) return "Publish";
+        if (/\b(share|marketplace|community|cloud|rating|user)\b/.test(searchable)) return "Share";
+        if (/\b(design)\b/.test(searchable)) return "Design";
+        return "Idea";
+    }
+
+    function enrichTool(tool, groupName = "") {
         const registryTool = registryToolForCard(tool) || tool;
         const metadata = voteRowsByToolId.get(registryTool.id) || null;
+        const metadataGroup = metadata?.group || colorGroupForTool(registryTool);
+        const displayGroup = groupName || metadataGroup;
         const route = getToolRoute(registryTool);
         const path = String(metadata?.path || route || "").replace(/^\/+/, "");
         const title = registryTool.displayName || registryTool.name || tool.title || "Tool";
@@ -181,7 +308,7 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
             title,
             toolKey: metadata?.toolKey || metadata?.toolId || registryTool.id,
             adminOnly: registryTool?.adminOnly === true,
-            group: metadata?.group || groupName,
+            group: displayGroup,
             hidden: registryTool?.hidden === true,
             order: metadata?.order ?? registryTool.order,
             path,
@@ -258,18 +385,15 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
     }
 
     function visibleToolGroups() {
-        const groups = new Map();
-        toolGroups.flatMap((toolGroup) => toolGroup.tools).map((tool) => enrichTool(tool)).filter(isVisibleForRole).forEach((tool) => {
-            const groupName = tool.group;
-            if (!groups.has(groupName)) {
-                groups.set(groupName, []);
-            }
-            groups.get(groupName).push(tool);
-        });
-        return Array.from(groups.entries()).map(([group, tools]) => ({
-            group,
-            tools: tools.sort(compareByTitle)
-        })).sort(compareByGroup);
+        return toolGroups
+            .map((toolGroup) => ({
+                group: toolGroup.group,
+                tools: toolGroup.tools
+                    .map((tool) => enrichTool(tool, toolGroup.group))
+                    .filter(isVisibleForRole)
+                    .sort(compareByTitle)
+            }))
+            .filter((group) => group.tools.length > 0);
     }
 
     function roleAwareTools() {
@@ -306,11 +430,11 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
     }
 
     function groupClass(groupName) {
-        return registryTools.find((tool) => tool.category === groupName)?.colorGroup || "";
+        return gameJourneyGroupClasses[groupName] || registryTools.find((tool) => tool.category === groupName)?.colorGroup || "";
     }
 
     function groupSwatch(groupName) {
-        return groupSwatchMap[groupName] || "swatch-orange";
+        return gameJourneyGroupSwatches[groupName] || groupSwatchMap[groupName] || "swatch-orange";
     }
 
     function stateSwatch(channel) {

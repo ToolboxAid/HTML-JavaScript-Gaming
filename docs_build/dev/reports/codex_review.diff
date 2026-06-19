@@ -1,754 +1,900 @@
-﻿diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index fd87d3dd4..4e9498aa8 100644
---- a/docs_build/dev/reports/codex_changed_files.txt
-+++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -2,14 +2,10 @@
- docs_build/dev/reports/codex_review.diff
- docs_build/dev/reports/coverage_changed_js_guardrail.txt
- docs_build/dev/reports/playwright_v8_coverage_report.txt
--docs_build/dev/reports/PR_26169_028-admin-owner-notes-source.md
--docs_build/pr/BUILD_PR_26169_028-admin-owner-notes-source.md
--owner/notes.html
--src/dev-runtime/admin/admin-notes-directory.mjs
--src/dev-runtime/admin/admin-notes-viewer.js
-+docs_build/dev/reports/PR_26169_029-db-viewer-table-groups-regression.md
-+docs_build/pr/BUILD_PR_26169_029-db-viewer-table-groups-regression.md
-+src/api/db-viewer-ui.js
-+src/dev-runtime/auth/provider-contract-stubs.mjs
- src/dev-runtime/server/local-api-router.mjs
--src/dev-runtime/server/local-api-server.mjs
--tests/dev-runtime/AdminNotesBoundary.test.mjs
--tests/helpers/playwrightRepoServer.mjs
--tests/playwright/tools/AdminNotesLocalViewer.spec.mjs
--tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
-+tests/dev-runtime/DbViewerConfiguredSnapshot.test.mjs
-+tests/playwright/tools/AdminDbViewer.spec.mjs
+diff --git a/assets/theme-v2/css/colors.css b/assets/theme-v2/css/colors.css
+index 02277c846..fa46343ab 100644
+--- a/assets/theme-v2/css/colors.css
++++ b/assets/theme-v2/css/colors.css
+@@ -13,6 +13,11 @@
+   --green: #7dd957;
+   --pink: #ff4f8b;
+   --red: #ff2d2d;
++  --journey-yellow: #facc15;
++  --journey-lime: #a3e635;
++  --journey-teal: #2dd4bf;
++  --journey-indigo: #818cf8;
++  --journey-magenta: #d946ef;
+   --deep-red: #ff5757;
+   --mint: #22c55e;
+   --white: #ffffff;
+@@ -102,6 +107,14 @@
+   background: var(--forge-gold)
+ }
+ 
++.swatch-yellow {
++  background: var(--journey-yellow)
++}
++
++.swatch-lime {
++  background: var(--journey-lime)
++}
++
+ .swatch-black {
+   background: var(--bg)
+ }
+@@ -110,6 +123,10 @@
+   background: var(--bot-cyan)
+ }
+ 
++.swatch-teal {
++  background: var(--journey-teal)
++}
++
+ .swatch-green {
+   background: var(--green)
+ }
+@@ -126,6 +143,14 @@
+   background: var(--purple)
+ }
+ 
++.swatch-indigo {
++  background: var(--journey-indigo)
++}
++
++.swatch-magenta {
++  background: var(--journey-magenta)
++}
++
+ .swatch-blue {
+   background: var(--electric-blue)
+ }
+@@ -221,6 +246,71 @@
+   --tool-group-accent: var(--toolbox-group-play-color)
+ }
+ 
++.tool-group-idea {
++  --tool-group-color: var(--red);
++  --tool-group-accent: var(--red)
++}
++
++.tool-group-journey-design {
++  --tool-group-color: var(--molten-orange);
++  --tool-group-accent: var(--molten-orange)
++}
++
++.tool-group-graphics {
++  --tool-group-color: var(--forge-gold);
++  --tool-group-accent: var(--forge-gold)
++}
++
++.tool-group-journey-audio {
++  --tool-group-color: var(--journey-yellow);
++  --tool-group-accent: var(--journey-yellow)
++}
++
++.tool-group-objects {
++  --tool-group-color: var(--journey-lime);
++  --tool-group-accent: var(--journey-lime)
++}
++
++.tool-group-worlds {
++  --tool-group-color: var(--green);
++  --tool-group-accent: var(--green)
++}
++
++.tool-group-interface {
++  --tool-group-color: var(--journey-teal);
++  --tool-group-accent: var(--journey-teal)
++}
++
++.tool-group-controls {
++  --tool-group-color: var(--bot-cyan);
++  --tool-group-accent: var(--bot-cyan)
++}
++
++.tool-group-rules {
++  --tool-group-color: var(--electric-blue);
++  --tool-group-accent: var(--electric-blue)
++}
++
++.tool-group-progression {
++  --tool-group-color: var(--journey-indigo);
++  --tool-group-accent: var(--journey-indigo)
++}
++
++.tool-group-play-test {
++  --tool-group-color: var(--purple);
++  --tool-group-accent: var(--purple)
++}
++
++.tool-group-publish {
++  --tool-group-color: var(--journey-magenta);
++  --tool-group-accent: var(--journey-magenta)
++}
++
++.tool-group-journey-share {
++  --tool-group-color: var(--pink);
++  --tool-group-accent: var(--pink)
++}
++
+ .meaning-molten-orange {
+   --meaning-color: var(--molten-orange);
+   --meaning-soft: var(--meaning-molten-orange-soft);
+diff --git a/assets/theme-v2/css/status.css b/assets/theme-v2/css/status.css
+index b4cfa7afe..ad5d2df6b 100644
+--- a/assets/theme-v2/css/status.css
++++ b/assets/theme-v2/css/status.css
+@@ -130,7 +130,10 @@
+ 
+ .swatch-label.swatch-cyan,
+ .swatch-label.swatch-gold,
+-.swatch-label.swatch-green {
++.swatch-label.swatch-green,
++.swatch-label.swatch-lime,
++.swatch-label.swatch-teal,
++.swatch-label.swatch-yellow {
+   color: var(--bg);
+   text-shadow: none
+ }
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 28b72dd56..cf9c7f56a 100644
+index cf9c7f56a..55f70b2fb 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -7,11 +7,15 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
-
+@@ -6,16 +6,12 @@ Missing changed runtime JS files are WARN, not FAIL.
+ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+ 
  Changed runtime JS files considered:
- (0%) src/dev-runtime/admin/admin-notes-directory.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/admin/admin-notes-viewer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/admin/admin-notes-directory.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/admin/admin-notes-viewer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/api/db-viewer-ui.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(96%) src/dev-runtime/admin/admin-notes-viewer.js - executed lines 533/533; executed functions 53/55
-+(70%) src/api/db-viewer-ui.js - executed lines 543/543; executed functions 69/98
-
+-(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(70%) src/api/db-viewer-ui.js - executed lines 543/543; executed functions 69/98
++(76%) toolbox/tools-page-accordions.js - executed lines 1087/1087; executed functions 81/106
+ 
  Guardrail warnings:
- (0%) src/dev-runtime/admin/admin-notes-directory.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) src/dev-runtime/admin/admin-notes-viewer.js - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/admin/admin-notes-directory.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/admin/admin-notes-viewer.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/api/db-viewer-ui.js - WARNING: changed runtime JS file missing from coverage; advisory only
+ (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
- (0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index e517c0584..e4a9c17af 100644
+index e4a9c17af..67367bb71 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -14,39 +14,47 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
+@@ -12,49 +12,41 @@ Note: entry percentages use function coverage when available, otherwise line cov
+ Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
+ 
  Exercised tool entry points detected:
- (35%) Toolbox Index - exercised 1 runtime JS files
+-(35%) Toolbox Index - exercised 1 runtime JS files
++(80%) Toolbox Index - exercised 5 runtime JS files
  (0%) Tool Template V2 - not exercised by this Playwright run
--(70%) Theme V2 Shared JS - exercised 5 runtime JS files
-+(68%) Theme V2 Shared JS - exercised 4 runtime JS files
-
+-(68%) Theme V2 Shared JS - exercised 4 runtime JS files
++(63%) Theme V2 Shared JS - exercised 2 runtime JS files
+ 
  Changed runtime JS files covered:
- (0%) src/dev-runtime/admin/admin-notes-directory.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/admin/admin-notes-viewer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/admin/admin-notes-directory.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/admin/admin-notes-viewer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/api/db-viewer-ui.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(96%) src/dev-runtime/admin/admin-notes-viewer.js - executed lines 533/533; executed functions 53/55
-+(70%) src/api/db-viewer-ui.js - executed lines 543/543; executed functions 69/98
-
+-(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(70%) src/api/db-viewer-ui.js - executed lines 543/543; executed functions 69/98
++(76%) toolbox/tools-page-accordions.js - executed lines 1087/1087; executed functions 81/106
+ 
  Files with executed line/function counts where available:
-+(14%) assets/theme-v2/js/admin-setup-actions.js - executed lines 55/55; executed functions 1/7
-+(25%) src/api/session-api-client.js - executed lines 68/68; executed functions 3/12
-+(33%) src/api/admin-setup-api-client.js - executed lines 13/13; executed functions 1/3
- (35%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 9/26
--(36%) src/api/server-api-client.js - executed lines 167/167; executed functions 5/14
--(40%) src/api/admin-invitations-api-client.js - executed lines 40/40; executed functions 2/5
--(53%) assets/theme-v2/js/admin-invitations.js - executed lines 155/155; executed functions 9/17
--(59%) assets/theme-v2/js/owner-memberships.js - executed lines 248/248; executed functions 16/27
-+(43%) src/api/server-api-client.js - executed lines 167/167; executed functions 6/14
+-(14%) assets/theme-v2/js/admin-setup-actions.js - executed lines 55/55; executed functions 1/7
+ (25%) src/api/session-api-client.js - executed lines 68/68; executed functions 3/12
+-(33%) src/api/admin-setup-api-client.js - executed lines 13/13; executed functions 1/3
+-(35%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 9/26
+-(43%) src/api/server-api-client.js - executed lines 167/167; executed functions 6/14
++(33%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
++(63%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 54/86
++(63%) src/api/server-api-client.js - executed lines 167/167; executed functions 12/19
  (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
--(67%) src/api/owner-memberships-api-client.js - executed lines 19/19; executed functions 2/3
--(71%) src/api/public-config-client.js - executed lines 209/209; executed functions 20/28
--(74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 67/90
--(96%) src/dev-runtime/admin/admin-notes-viewer.js - executed lines 533/533; executed functions 53/55
--(100%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 11/11
--(100%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 5/5
-+(65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
-+(67%) admin/db-viewer.js - executed lines 45/45; executed functions 4/6
-+(70%) src/api/db-viewer-ui.js - executed lines 543/543; executed functions 69/98
-+(72%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 64/89
-+(100%) assets/theme-v2/js/admin-db-status-panel.js - executed lines 31/31; executed functions 3/3
-+(100%) src/api/db-viewer-api-client.js - executed lines 13/13; executed functions 3/3
-
+ (65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
+-(67%) admin/db-viewer.js - executed lines 45/45; executed functions 4/6
+-(70%) src/api/db-viewer-ui.js - executed lines 543/543; executed functions 69/98
+-(72%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 64/89
+-(100%) assets/theme-v2/js/admin-db-status-panel.js - executed lines 31/31; executed functions 3/3
+-(100%) src/api/db-viewer-api-client.js - executed lines 13/13; executed functions 3/3
++(67%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 20/20; executed functions 2/3
++(76%) toolbox/tools-page-accordions.js - executed lines 1087/1087; executed functions 81/106
++(78%) toolbox/game-configuration/game-configuration.js - executed lines 173/173; executed functions 14/18
++(93%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 27/29
++(100%) toolbox/game-configuration/game-configuration-api-client.js - executed lines 11/11; executed functions 2/2
+ 
  Uncovered or low-coverage changed JS files:
- (0%) src/dev-runtime/admin/admin-notes-directory.mjs - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) src/dev-runtime/admin/admin-notes-viewer.js - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/admin/admin-notes-directory.mjs - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/admin/admin-notes-viewer.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/api/db-viewer-ui.js - WARNING: uncovered changed runtime JS file; advisory only
+ (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
- (0%) src/dev-runtime/server/local-api-server.mjs - WARNING: uncovered changed runtime JS file; advisory only
-
+-(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: uncovered changed runtime JS file; advisory only
+ 
  Changed JS files considered:
- (0%) src/dev-runtime/admin/admin-notes-directory.mjs - changed JS file not collected as browser runtime coverage
-+(0%) src/dev-runtime/admin/admin-notes-viewer.js - changed JS file not collected as browser runtime coverage
-+(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/admin/admin-notes-directory.mjs - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/admin/admin-notes-viewer.js - changed JS file not collected as browser runtime coverage
++(0%) src/api/db-viewer-ui.js - changed JS file not collected as browser runtime coverage
+ (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
  (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
- (0%) src/dev-runtime/server/local-api-server.mjs - changed JS file not collected as browser runtime coverage
- (0%) tests/dev-runtime/AdminNotesBoundary.test.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/dev-runtime/DbViewerConfiguredSnapshot.test.mjs - changed JS file not collected as browser runtime coverage
- (0%) tests/helpers/playwrightRepoServer.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
- (0%) tests/playwright/tools/AdminNotesLocalViewer.spec.mjs - changed JS file not collected as browser runtime coverage
- (0%) tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs - changed JS file not collected as browser runtime coverage
--(96%) src/dev-runtime/admin/admin-notes-viewer.js - changed JS file with browser V8 coverage
-+(70%) src/api/db-viewer-ui.js - changed JS file with browser V8 coverage
-diff --git a/src/api/db-viewer-ui.js b/src/api/db-viewer-ui.js
-index 366bce5a4..4a6634e7e 100644
---- a/src/api/db-viewer-ui.js
-+++ b/src/api/db-viewer-ui.js
-@@ -4,6 +4,13 @@ const AUDIT_FIELDS = ["createdAt", "updatedAt", "createdBy", "updatedBy"];
- const DEPRECATED_TABLE_NOTES = Object.freeze({
-   palette_source_swatches: "Deprecated source history: retained for migration/reference only. Current Colors grid rendering, editing, save/load, and import/export do not read this table.",
+-(0%) src/dev-runtime/server/local-api-server.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/dev-runtime/AdminNotesBoundary.test.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/dev-runtime/DbViewerConfiguredSnapshot.test.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/helpers/playwrightRepoServer.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/AdminNotesLocalViewer.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs - changed JS file not collected as browser runtime coverage
+-(70%) src/api/db-viewer-ui.js - changed JS file with browser V8 coverage
++(0%) tests/playwright/tools/GameJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
++(76%) toolbox/tools-page-accordions.js - changed JS file with browser V8 coverage
+diff --git a/tests/playwright/tools/GameJourneyTool.spec.mjs b/tests/playwright/tools/GameJourneyTool.spec.mjs
+index 6dbde7dab..993e463ff 100644
+--- a/tests/playwright/tools/GameJourneyTool.spec.mjs
++++ b/tests/playwright/tools/GameJourneyTool.spec.mjs
+@@ -1104,7 +1104,7 @@ test("Game Workspace hands the active game route to Game Journey", async ({ page
  });
-+const PROVIDER_DISPLAY = Object.freeze({
-+  "supabase-postgres": Object.freeze({
-+    connectionLabel: "supabase-postgres (Supabase Postgres)",
-+    modeLabel: "Supabase Postgres",
-+    sourceLabel: "Supabase product DB",
-+  }),
+ 
+ test("Toolbox registration exposes Game Journey navigation", async ({ page }) => {
+-  const failures = await openRepoPage(page, "/toolbox/index.html?view=group&group=build");
++  const failures = await openRepoPage(page, "/toolbox/index.html?view=group&group=progression");
+ 
+   try {
+     const journeyLink = page.locator("[data-toolbox-tool-name-link='Game Journey']").first();
+@@ -1112,7 +1112,7 @@ test("Toolbox registration exposes Game Journey navigation", async ({ page }) =>
+     await expect(journeyLink).toHaveAttribute("href", /\/game-journey\/index\.html$/);
+     await expect(journeyLink).toHaveAttribute("data-registered-tool-route", "toolbox/game-journey/index.html");
+ 
+-    await page.goto(`${failures.server.baseUrl}/toolbox/index.html?view=group&group=build`, { waitUntil: "networkidle" });
++    await page.goto(`${failures.server.baseUrl}/toolbox/index.html?view=group&group=progression`, { waitUntil: "networkidle" });
+     const userJourneyLink = page.locator("[data-toolbox-tool-name-link='Game Journey']").first();
+     await expect(userJourneyLink).toHaveText("Game Journey");
+     await expect(userJourneyLink).toHaveAttribute("href", /\/game-journey\/index\.html$/);
+diff --git a/tests/playwright/tools/RootToolsFutureState.spec.mjs b/tests/playwright/tools/RootToolsFutureState.spec.mjs
+index 319f5699f..239f146fa 100644
+--- a/tests/playwright/tools/RootToolsFutureState.spec.mjs
++++ b/tests/playwright/tools/RootToolsFutureState.spec.mjs
+@@ -324,7 +324,7 @@ test("root tools surface links current tool pages without old_* routes", async (
+     const designCard = page.locator("main .control-card").filter({
+       has: page.locator("h3", { hasText: /^Game Design$/ })
+     }).first();
+-    await expect(designCard).toHaveClass(/(^|\s)tool-group-design(\s|$)/);
++    await expect(designCard).toHaveClass(/(^|\s)tool-group-journey-design(\s|$)/);
+     const allCardsHaveGroupClass = await page.locator("main [data-tools-accordion-list] .control-card").evaluateAll((cards) => (
+       cards.every((card) => Array.from(card.classList).some((className) => className.startsWith("tool-group-")))
+     ));
+@@ -363,7 +363,7 @@ test("root tools surface links current tool pages without old_* routes", async (
+     const guestGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
+       groups.map((group) => group.dataset.toolsAccordion)
+     ));
+-    expect(guestGroupLabels).toEqual(["Build/Create", "Design", "Platform", "Play"]);
++    expect(guestGroupLabels).toEqual(["Design", "Graphics", "Objects", "Worlds", "Interface", "Controls", "Rules", "Progression"]);
+     await expect(page.locator("[data-tools-accordion='Admin']")).toHaveCount(0);
+     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
+     await expect(page.locator("[data-tools-accordion-list] .control-card h3", { hasText: /^Progress$/ })).toHaveCount(0);
+@@ -431,7 +431,7 @@ test("root tools surface links current tool pages without old_* routes", async (
+     const adminGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
+       groups.map((group) => group.dataset.toolsAccordion)
+     ));
+-    expect(adminGroupLabels).toEqual(["Build/Create", "Design", "Platform", "Play"]);
++    expect(adminGroupLabels).toEqual(["Design", "Graphics", "Objects", "Worlds", "Interface", "Controls", "Rules", "Progression"]);
+     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
+     await page.getByRole("button", { name: "Build Path" }).click();
+     await expect(page.locator("[data-build-path-table='workflow']")).toBeVisible();
+@@ -665,6 +665,21 @@ test("representative active tool pages align center cleanup and registry group c
+     "tool-group-platform",
+     "tool-group-play"
+   ];
++  const gameJourneyGroupClasses = [
++    "tool-group-idea",
++    "tool-group-journey-design",
++    "tool-group-graphics",
++    "tool-group-journey-audio",
++    "tool-group-objects",
++    "tool-group-worlds",
++    "tool-group-interface",
++    "tool-group-controls",
++    "tool-group-rules",
++    "tool-group-progression",
++    "tool-group-play-test",
++    "tool-group-publish",
++    "tool-group-journey-share"
++  ];
+   const { failedRequests, pageErrors, server } = await openRepoPage(page, "/toolbox/index.html?view=group");
+ 
+   try {
+@@ -689,7 +704,7 @@ test("representative active tool pages align center cleanup and registry group c
+       })
+     )));
+     const toolboxCardGroupClasses = [...toolboxGroupCardStyles.values()].map((styles) => styles.groupClass);
+-    expect(toolboxCardGroupClasses.every((className) => ssotGroupClasses.includes(className))).toBe(true);
++    expect(toolboxCardGroupClasses.every((className) => gameJourneyGroupClasses.includes(className))).toBe(true);
+     expect(toolboxCardGroupClasses.filter((className) => legacyGroupClasses.includes(className))).toEqual([]);
+ 
+     for (const tool of activeTools) {
+@@ -699,7 +714,10 @@ test("representative active tool pages align center cleanup and registry group c
+       await expect(page.locator(".tool-center-panel h1, .tool-center-panel h2, .tool-center-panel h3").first()).toBeVisible();
+ 
+       const expectedFromToolboxGroup = toolboxGroupCardStyles.get(tool.displayName);
+-      const expectedGroupClass = expectedFromToolboxGroup?.groupClass || tool.colorGroup;
++      const expectedGroupClass = tool.colorGroup;
++      if (expectedFromToolboxGroup) {
++        expect(gameJourneyGroupClasses).toContain(expectedFromToolboxGroup.groupClass);
++      }
+       expect(ssotGroupClasses).toContain(expectedGroupClass);
+       expect(legacyGroupClasses).not.toContain(expectedGroupClass);
+       const sideColumns = page.locator(".tool-workspace > aside.tool-column");
+@@ -734,20 +752,8 @@ test("representative active tool pages align center cleanup and registry group c
+         })
+       ));
+ 
+-      if (expectedFromToolboxGroup) {
+-        expect(sidePanelStyles.map((styles) => styles.borderColor)).toEqual([
+-          expectedFromToolboxGroup.borderColor,
+-          expectedFromToolboxGroup.borderColor
+-        ]);
+-        expect(sidePanelStyles.map((styles) => styles.headerColor)).toEqual([
+-          expectedFromToolboxGroup.borderColor,
+-          expectedFromToolboxGroup.borderColor
+-        ]);
+-        expect(sidePanelHrColors).toEqual([
+-          expectedFromToolboxGroup.borderColor,
+-          expectedFromToolboxGroup.borderColor
+-        ]);
+-      }
++      expect(sidePanelStyles.map((styles) => styles.borderColor)).toEqual(sidePanelStyles.map((styles) => styles.headerColor));
++      expect(sidePanelHrColors).toEqual(sidePanelStyles.map((styles) => styles.borderColor));
+     }
+ 
+     expect(failedRequests).toEqual([]);
+diff --git a/tests/playwright/tools/ToolboxRoutePages.spec.mjs b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
+index a53e1d2fb..7264956ce 100644
+--- a/tests/playwright/tools/ToolboxRoutePages.spec.mjs
++++ b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
+@@ -23,6 +23,38 @@ const STATUS_HELP_TEXT = Object.freeze({
+   deprecated: "Tool remains supported but is not recommended for new workflows.\nMust remain deprecated before removal.",
+ });
+ 
++const GAME_JOURNEY_GROUP_ORDER = Object.freeze([
++  "Idea",
++  "Design",
++  "Graphics",
++  "Audio",
++  "Objects",
++  "Worlds",
++  "Interface",
++  "Controls",
++  "Rules",
++  "Progression",
++  "Play Test",
++  "Publish",
++  "Share",
++]);
++
++const GAME_JOURNEY_GROUP_COLORS = Object.freeze({
++  "Idea": "rgb(255, 45, 45)",
++  "Design": "rgb(255, 122, 0)",
++  "Graphics": "rgb(255, 200, 87)",
++  "Audio": "rgb(250, 204, 21)",
++  "Objects": "rgb(163, 230, 53)",
++  "Worlds": "rgb(125, 217, 87)",
++  "Interface": "rgb(45, 212, 191)",
++  "Controls": "rgb(32, 214, 255)",
++  "Rules": "rgb(77, 163, 255)",
++  "Progression": "rgb(129, 140, 248)",
++  "Play Test": "rgb(184, 119, 255)",
++  "Publish": "rgb(217, 70, 239)",
++  "Share": "rgb(255, 79, 139)",
 +});
-
- class AdminDbViewer {
-   constructor(documentRef = document, options = {}) {
-@@ -40,12 +47,15 @@ class AdminDbViewer {
-   }
-
-   providerInfo(snapshot = {}) {
-+    const providerId = snapshot.databaseProviderId || snapshot.provider?.databaseProviderId || snapshot.providerId || "configured";
-+    const source = snapshot.source || snapshot.provider?.source || "configured";
-+    const display = PROVIDER_DISPLAY[providerId] || {};
-     return {
--      modeLabel: "Configured Data",
--      providerId: snapshot.databaseProviderId || "configured",
--      connectionLabel: "Configured connection",
--      source: snapshot.source || "configured",
--      sourceLabel: "Configured connection",
-+      modeLabel: display.modeLabel || "Configured Data",
-+      providerId,
-+      connectionLabel: display.connectionLabel || "Configured connection",
-+      source,
-+      sourceLabel: display.sourceLabel || "Configured connection",
-     };
-   }
-
-@@ -180,6 +190,7 @@ class AdminDbViewer {
-       groups,
-       providerInfo: this.providerInfo(snapshot),
-       schemas,
-+      sourceDiagnostics: this.sourceDiagnostics(snapshot),
-       tables,
-     };
-   }
-@@ -456,7 +467,27 @@ class AdminDbViewer {
-     return list;
-   }
-
--  renderDiagnostics(tables, groups) {
-+  diagnosticMessage(diagnostic) {
-+    if (typeof diagnostic === "string") {
-+      return diagnostic;
-+    }
-+    if (!diagnostic || typeof diagnostic !== "object") {
-+      return "Configured database source reported an unreadable table.";
-+    }
-+    const message = diagnostic.message || `${diagnostic.tableName || "A configured table"} could not be read.`;
-+    return diagnostic.remediation ? `${message} ${diagnostic.remediation}` : message;
-+  }
 +
-+  sourceDiagnostics(snapshot = {}) {
-+    const diagnostics = [
-+      ...(Array.isArray(snapshot.tableDiagnostics) ? snapshot.tableDiagnostics : []),
-+      ...(Array.isArray(snapshot.diagnostics?.tableReadFailures) ? snapshot.diagnostics.tableReadFailures : []),
-+    ];
-+    const messages = diagnostics.map((diagnostic) => this.diagnosticMessage(diagnostic));
-+    return [...new Set(messages)];
-+  }
-+
-+  renderDiagnostics(tables, groups, sourceDiagnostics = []) {
-     this.diagnostics.replaceChildren();
-     const auditFindings = this.auditFindings(tables);
-     const bleedFindings = this.tableBleedFindings(tables);
-@@ -465,6 +496,11 @@ class AdminDbViewer {
-       ? auditFindings
-       : [`All current ${this.modeLabel} tables include createdAt, updatedAt, createdBy, and updatedBy.`];
-     const bleedSummary = bleedFindings.length ? bleedFindings : ["No table bleed detected."];
-+    if (sourceDiagnostics.length) {
-+      this.diagnostics.append(
-+        this.renderList(sourceDiagnostics, "adminDbSourceFindings"),
-+      );
-+    }
-     this.diagnostics.append(
-       this.renderList(auditSummary, "adminDbAuditFindings"),
-       this.renderList(bleedSummary, "adminDbBleedFindings"),
-@@ -528,7 +564,7 @@ class AdminDbViewer {
+ test.afterAll(async () => {
+   await workspaceV2CoverageReporter.writeReport();
+ });
+@@ -411,13 +443,13 @@ test("toolbox status kickers, filters, card order, and voting controls work from
+       STATUS_HELP_TEXT.complete,
      );
-     this.renderFilters(snapshot.groups);
-     this.renderClearSeedButton(snapshot.cleared);
--    this.renderDiagnostics(snapshot.tables, snapshot.groups);
-+    this.renderDiagnostics(snapshot.tables, snapshot.groups, snapshot.sourceDiagnostics);
-     this.renderRelationships(snapshot.tables);
-     this.renderTables(visibleTables, snapshot.schemas);
-     if (this.status) {
-diff --git a/src/dev-runtime/auth/provider-contract-stubs.mjs b/src/dev-runtime/auth/provider-contract-stubs.mjs
-index b01cc44fb..3dd803b30 100644
---- a/src/dev-runtime/auth/provider-contract-stubs.mjs
-+++ b/src/dev-runtime/auth/provider-contract-stubs.mjs
-@@ -255,6 +255,29 @@ function supabaseAuthUpstreamError(operation, response, payload = {}) {
-   return error;
- }
-
-+function safeErrorMessage(error) {
-+  return error instanceof Error ? error.message : String(error || "Unknown database error.");
-+}
-+
-+function isRecoverableDbViewerTableError(error) {
-+  const message = safeErrorMessage(error);
-+  if (/Database connection failed|GAMEFOUNDRY_DATABASE_URL|authentication|timed out|ECONNREFUSED|ENOTFOUND|Connection closed/i.test(message)) {
-+    return false;
-+  }
-+  return /relation .* does not exist|does not exist|schema cache|undefined_table|permission denied|not found|HTTP 404/i.test(message);
-+}
-+
-+function dbViewerTableDiagnostic(tableName, error) {
-+  return {
-+    code: "DB_VIEWER_TABLE_UNAVAILABLE",
-+    level: "WARN",
-+    message: `${tableName} could not be read from the configured database: ${safeErrorMessage(error)}`,
-+    remediation: `Confirm the ${tableName} table exists in the configured database and apply the product data migration for that table.`,
-+    status: "WARN",
-+    tableName,
-+  };
-+}
-+
- function attachSupabaseAuthOperatorMetadata(payload, response) {
-   if (payload && typeof payload === "object") {
-     Object.defineProperty(payload, "__operator", {
-@@ -1040,11 +1063,31 @@ export class SupabasePostgresProviderAdapter {
-
-   async getDbViewerSnapshot() {
-     this.assertConfigured();
--    const tables = await this.getTables();
-+    const results = await Promise.allSettled(SUPABASE_POSTGRES_TABLES.map(async (tableName) => [
-+      tableName,
-+      await this.getTableRows(tableName),
-+    ]));
-+    const fatalResult = results.find((result) => result.status === "rejected" && !isRecoverableDbViewerTableError(result.reason));
-+    if (fatalResult) {
-+      throw fatalResult.reason;
-+    }
-+    const tableDiagnostics = [];
-+    const tables = Object.fromEntries(results.map((result, index) => {
-+      const tableName = SUPABASE_POSTGRES_TABLES[index];
-+      if (result.status === "fulfilled") {
-+        return result.value;
-+      }
-+      tableDiagnostics.push(dbViewerTableDiagnostic(tableName, result.reason));
-+      return [tableName, []];
-+    }));
-     return {
-       boundary: PROVIDER_DATA_BOUNDARY_RULE,
-+      diagnostics: {
-+        tableReadFailures: tableDiagnostics,
-+      },
-       providerId: this.providerId,
-       readiness: this.readiness(),
-+      tableDiagnostics,
-       tables,
-     };
-   }
-diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index 4a2cdce66..b0d632318 100644
---- a/src/dev-runtime/server/local-api-router.mjs
-+++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -5210,12 +5210,19 @@ LIMIT 1;
-     const providerSnapshot = await adapter.getDbViewerSnapshot();
-     const baseline = this.snapshot();
-     const schemas = getMockDbTableSchemas();
-+    const tableDiagnostics = Array.isArray(providerSnapshot.tableDiagnostics)
-+      ? providerSnapshot.tableDiagnostics
-+      : [];
-     const tables = Object.fromEntries(Object.keys(schemas).map((tableName) => [
-       tableName,
-       Array.isArray(providerSnapshot.tables?.[tableName]) ? providerSnapshot.tables[tableName] : [],
-     ]));
-     return {
-       cleared: false,
-+      databaseProviderId: SUPABASE_POSTGRES_PROVIDER_ID,
-+      diagnostics: {
-+        tableReadFailures: tableDiagnostics,
-+      },
-       owners: baseline.owners,
-       provider: {
-         databaseProviderId: SUPABASE_POSTGRES_PROVIDER_ID,
-@@ -5223,6 +5230,7 @@ LIMIT 1;
-       },
-       schemas,
-       source: "supabase-postgres",
-+      tableDiagnostics,
-       tables,
-       toolGroups: baseline.toolGroups,
-       viewerGroups: dbViewerGroupsForSnapshot(tables, baseline.owners),
-diff --git a/tests/playwright/tools/AdminDbViewer.spec.mjs b/tests/playwright/tools/AdminDbViewer.spec.mjs
-index 80435517a..09ce8d4b6 100644
---- a/tests/playwright/tools/AdminDbViewer.spec.mjs
-+++ b/tests/playwright/tools/AdminDbViewer.spec.mjs
-@@ -7,6 +7,7 @@ import { createAssetToolMockRepository } from "../../../src/dev-runtime/persiste
- import { createGameWorkspacePaletteRepository } from "../../../src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js";
- import {
-   MOCK_DB_KEYS,
-+  getMockDbTableSchemas,
-   getStandaloneMockDbSeedTables,
-   normalizeMockDbTables,
- } from "../../../src/dev-runtime/persistence/mock-db-store.js";
-@@ -31,6 +32,26 @@ const standaloneSeedState = {
- };
- let localDbRunId = 0;
-
-+function adminSessionFixture() {
-+  return {
-+    adapterId: "supabase-auth",
-+    adapterName: "SupabaseAuthAdapter",
-+    adapterStatus: "configured",
-+    authenticated: true,
-+    diagnostic: "",
-+    displayName: "DavidQ",
-+    environment: "Supabase identity",
-+    id: MOCK_DB_KEYS.users.admin,
-+    isAdmin: true,
-+    isOwner: true,
-+    label: "DavidQ",
-+    mode: "supabase-auth",
-+    persistence: "Configured database",
-+    roleSlugs: ["admin", "owner"],
-+    userKey: MOCK_DB_KEYS.users.admin,
-+  };
-+}
-+
- const SUPABASE_ENV_KEYS = Object.freeze([
-   "GAMEFOUNDRY_AUTH_PROVIDER",
-   "GAMEFOUNDRY_DB_PROVIDER",
-@@ -139,6 +160,69 @@ function createSupabaseAdminDbTables() {
-   };
- }
-
-+function configuredDbViewerGroups(tableNames) {
-+  const include = (names) => names.filter((name) => tableNames.includes(name));
-+  return [
-+    { id: "all", label: "All", tableNames, type: "all" },
-+    { id: "asset", label: "Asset", tableNames: include(["asset_role_definitions", "asset_library_items", "asset_storage_objects", "asset_import_events", "asset_validation_items"]), type: "tool" },
-+    { id: "controls", label: "Controls", tableNames: include(["game_input_mappings", "player_controller_profiles", "player_input_device_selections", "input_custom_action_records"]), type: "tool" },
-+    { id: "game-configuration", label: "Game Configuration", tableNames: include(["game_configuration_records", "game_configuration_validation_items"]), type: "tool" },
-+    { id: "game-design", label: "Game Design", tableNames: include(["game_design_documents", "game_design_validation_items"]), type: "tool" },
-+    { id: "game-journey", label: "Game Journey", tableNames: include(["game_journey_note_types", "game_journey_notes", "game_journey_templates", "game_journey_items", "game_journey_activity"]), type: "tool" },
-+    { id: "game-workspace", label: "Game Workspace", tableNames: include(["game_workspace_games", "game_workspace_progress"]), type: "tool" },
-+    { id: "objects", label: "Objects", tableNames: include(["object_definition_records"]), type: "tool" },
-+    { id: "palette", label: "Palette", tableNames: include(["palette_colors", "palette_source_swatches", "palette_swatch_usages", "project_workspace_palette_globals"]), type: "tool" },
-+    { id: "tags", label: "Tags", tableNames: include(["workspace_tag_records"]), type: "tool" },
-+    { id: "toolbox_tool_metadata", label: "Tool Metadata", tableNames: include(["toolbox_tool_metadata"]), type: "table" },
-+    { id: "toolbox_tool_planning", label: "Tool Planning", tableNames: include(["toolbox_tool_planning"]), type: "table" },
-+    { id: "tool_state_samples", label: "Tool State Samples", tableNames: include(["tool_state_samples"]), type: "table" },
-+    { id: "toolbox_votes", label: "Toolbox Votes", tableNames: include(["toolbox_votes"]), type: "table" },
-+    { id: "user_roles", label: "User Roles", tableNames: include(["users", "user_roles", "roles"]), type: "table" },
-+    { id: "membership_limits", label: "membership_limits", tableNames: include(["membership_limits"]), type: "table" },
-+  ].filter((group) => group.tableNames.length);
-+}
-+
-+function createConfiguredDbViewerSnapshot(options = {}) {
-+  const schemas = getMockDbTableSchemas();
-+  const tableNames = Object.keys(schemas).sort();
-+  const tables = Object.fromEntries(tableNames.map((tableName) => [tableName, []]));
-+  const seededTables = createSupabaseAdminDbTables();
-+  if (!options.empty) {
-+    Object.entries(seededTables).forEach(([tableName, records]) => {
-+      if (Object.hasOwn(tables, tableName)) {
-+        tables[tableName] = records;
-+      }
-+    });
-+  }
-+  const tableDiagnostics = options.missingMembershipLimits
-+    ? [{
-+      code: "DB_VIEWER_TABLE_UNAVAILABLE",
-+      level: "WARN",
-+      message: 'membership_limits could not be read from the configured database: relation "membership_limits" does not exist',
-+      remediation: "Confirm the membership_limits table exists in the configured database and apply the product data migration for that table.",
-+      status: "WARN",
-+      tableName: "membership_limits",
-+    }]
-+    : [];
-+  return {
-+    cleared: false,
-+    databaseProviderId: "supabase-postgres",
-+    diagnostics: {
-+      tableReadFailures: tableDiagnostics,
-+    },
-+    provider: {
-+      databaseProviderId: "supabase-postgres",
-+      source: "supabase-postgres",
-+    },
-+    schemas,
-+    source: "supabase-postgres",
-+    tableDiagnostics,
-+    tables,
-+    viewerGroups: configuredDbViewerGroups(tableNames),
-+    version: 4,
-+  };
-+}
-+
- function startFakeSupabaseAdminDbServer() {
-   const tables = createSupabaseAdminDbTables();
-   const calls = [];
-@@ -238,6 +322,83 @@ async function openRepoPage(page, pathName, options = {}) {
-     failedRequests.push(`FAILED ${request.url()}`);
-   });
-
-+  if (options.sessionCurrent) {
-+    await page.route("**/api/session/current", async (route) => {
-+      await route.fulfill({
-+        body: JSON.stringify({ data: options.sessionCurrent, ok: true }),
-+        contentType: "application/json; charset=utf-8",
-+        status: 200,
-+      });
-+    });
-+    await page.route("**/api/navigation/admin-menu", async (route) => {
-+      await route.fulfill({
-+        body: JSON.stringify({
-+          data: {
-+            adminMainItems: [{
-+              label: "DB Viewer",
-+              path: "admin/db-viewer.html",
-+              route: "admin-db-viewer",
-+            }],
-+            ownerMenuItems: [],
-+            source: "test-fixture",
-+          },
-+          ok: true,
-+        }),
-+        contentType: "application/json; charset=utf-8",
-+        status: 200,
-+      });
-+    });
-+    await page.route("**/api/platform-settings/banner", async (route) => {
-+      await route.fulfill({
-+        body: JSON.stringify({
-+          data: {
-+            banner: {
-+              active: false,
-+              message: "",
-+              tone: "info",
-+            },
-+          },
-+          ok: true,
-+        }),
-+        contentType: "application/json; charset=utf-8",
-+        status: 200,
-+      });
-+    });
-+    await page.route("**/api/toolbox/registry/snapshot", async (route) => {
-+      await route.fulfill({
-+        body: JSON.stringify({
-+          data: {
-+            activeTools: [],
-+            readinessByStatus: {},
-+            toolboxContract: {},
-+            tools: [],
-+          },
-+          ok: true,
-+        }),
-+        contentType: "application/json; charset=utf-8",
-+        status: 200,
-+      });
-+    });
-+  }
-+
-+  if (options.productDataSnapshot || options.productDataError) {
-+    await page.route("**/api/product-data/snapshot", async (route) => {
-+      if (options.productDataError) {
-+        await route.fulfill({
-+          body: JSON.stringify({ error: options.productDataError, ok: false }),
-+          contentType: "application/json; charset=utf-8",
-+          status: 500,
-+        });
-+        return;
-+      }
-+      await route.fulfill({
-+        body: JSON.stringify({ data: options.productDataSnapshot, ok: true }),
-+        contentType: "application/json; charset=utf-8",
-+        status: 200,
-+      });
-+    });
-+  }
-+
-   if (sessionUserKey !== undefined) {
-     if (options.seedState) {
-       await fetch(`${server.baseUrl}/api/dev/testing/mock-db-state`, {
-@@ -757,6 +918,84 @@ test("Admin DB Viewer labels Supabase provider/source and shows Supabase-backed
+ 
+-    const designGroupLabel = page.locator("[data-toolbox-group-label='Design']").first();
+-    await expect(designGroupLabel).toBeVisible();
+-    await expect(designGroupLabel).toHaveCSS("background-color", "rgb(255, 79, 139)");
+-    await expect(designGroupLabel).toHaveCSS("color", "rgb(255, 255, 255)");
++    const graphicsGroupLabel = page.locator("[data-toolbox-group-label='Graphics']").first();
++    await expect(graphicsGroupLabel).toBeVisible();
++    await expect(graphicsGroupLabel).toHaveCSS("background-color", "rgb(255, 200, 87)");
++    await expect(graphicsGroupLabel).toHaveCSS("color", "rgb(9, 11, 15)");
+     const designActionRow = page.locator("[data-toolbox-tile-action-row='Colors']");
+-    await expect(designActionRow.locator("[data-toolbox-group-label='Design']")).toHaveCount(0);
+-    await expect(page.locator("[data-toolbox-tool-card='Colors'] .card-body > [data-toolbox-group-badge] [data-toolbox-group-label='Design']")).toHaveCSS("background-color", "rgb(255, 79, 139)");
++    await expect(designActionRow.locator("[data-toolbox-group-label='Graphics']")).toHaveCount(0);
++    await expect(page.locator("[data-toolbox-tool-card='Colors'] .card-body > [data-toolbox-group-badge] [data-toolbox-group-label='Graphics']")).toHaveCSS("background-color", "rgb(255, 200, 87)");
+     await expect(page.locator("[data-toolbox-tool-card='Colors'] .card-body > [data-toolbox-state-badge]")).toHaveAttribute("data-toolbox-state-badge", "complete");
+ 
+     await page.goto(`${server.baseUrl}/admin/tool-votes.html`, { waitUntil: "networkidle" });
+@@ -588,7 +620,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
    }
  });
+ 
+-test("toolbox group labels match Admin Tool Votes assignments and restored group colors", async ({ page }) => {
++test("toolbox grouped view renders Game Journey order with unique colors while Build Path keeps metadata groups", async ({ page }) => {
+   const server = await startRepoServer();
+   const failedRequests = [];
+   const pageErrors = [];
+@@ -617,15 +649,10 @@ test("toolbox group labels match Admin Tool Votes assignments and restored group
+   try {
+     await workspaceV2CoverageReporter.start(page);
+     await setServerSession(server, MOCK_DB_KEYS.users.admin);
+-    await page.goto(`${server.baseUrl}/admin/tool-votes.html`, { waitUntil: "networkidle" });
+-    const adminGroupsByTool = await page.locator("[data-toolbox-votes-tool-id]").evaluateAll((rows) => (
+-      Object.fromEntries(rows.map((row) => [
+-        row.querySelector("td")?.textContent.trim(),
+-        row.querySelector("[data-toolbox-votes-group]")?.value || "",
+-      ]))
+-    ));
++    const registryById = await toolMetadataById(server);
++    const registryByTitle = new Map(Array.from(registryById.values()).map((tool) => [tool.displayName, tool]));
+ 
+-    await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
++    await page.goto(`${server.baseUrl}/toolbox/index.html?view=group`, { waitUntil: "networkidle" });
+     const plannedFilter = page.locator("[data-toolbox-status-filter='planned']");
+     if (await plannedFilter.getAttribute("aria-pressed") !== "true") {
+       await plannedFilter.click();
+@@ -634,43 +661,72 @@ test("toolbox group labels match Admin Tool Votes assignments and restored group
+     if (await deprecatedFilter.getAttribute("aria-pressed") !== "true") {
+       await deprecatedFilter.click();
+     }
++    await expect(page.locator("[data-toolbox-status-filter='planned']")).toHaveAttribute("aria-pressed", "true");
++    await expect(page.locator("[data-toolbox-status-filter='deprecated']")).toHaveAttribute("aria-pressed", "true");
++    await expect(page.locator("[data-tools-accordion]")).toHaveCount(GAME_JOURNEY_GROUP_ORDER.length);
++    const groupNames = await page.locator("[data-tools-accordion]").evaluateAll((accordions) => (
++      accordions.map((accordion) => accordion.dataset.toolsAccordion)
++    ));
++    expect(groupNames).toEqual(GAME_JOURNEY_GROUP_ORDER);
++
++    const groupSwatches = await page.locator("[data-tools-accordion] > summary [data-toolbox-group-label]").evaluateAll((labels) => (
++      labels.map((label) => ({
++        group: label.dataset.toolboxGroupLabel,
++        backgroundColor: getComputedStyle(label).backgroundColor,
++        className: label.className,
++      }))
++    ));
++    expect(groupSwatches.map((swatch) => swatch.group)).toEqual(GAME_JOURNEY_GROUP_ORDER);
++    expect(new Set(groupSwatches.map((swatch) => swatch.backgroundColor)).size).toBe(GAME_JOURNEY_GROUP_ORDER.length);
++    expect(new Set(groupSwatches.map((swatch) => swatch.className)).size).toBe(GAME_JOURNEY_GROUP_ORDER.length);
++    for (const swatch of groupSwatches) {
++      expect(swatch.backgroundColor).toBe(GAME_JOURNEY_GROUP_COLORS[swatch.group]);
++    }
++
+     const toolboxGroupsByTool = await page.locator("[data-toolbox-tool-card]").evaluateAll((cards) => (
+       Object.fromEntries(cards.map((card) => [
+         card.getAttribute("data-toolbox-tool-card"),
+         card.querySelector("[data-toolbox-group-label]")?.textContent.trim() || "",
+       ]))
+     ));
+-    const visibleAdminGroupsByTool = Object.fromEntries(
+-      Object.entries(adminGroupsByTool).filter(([toolName]) => Object.hasOwn(toolboxGroupsByTool, toolName))
+-    );
+-    expect(Object.keys(toolboxGroupsByTool).sort()).toEqual(Object.keys(visibleAdminGroupsByTool).sort());
+-    expect(toolboxGroupsByTool).toEqual(visibleAdminGroupsByTool);
+-
+-    const expectedGroupColors = {
+-      "AI": "rgb(184, 119, 255)",
+-      "Audio": "rgb(255, 122, 0)",
+-      "Build/Create": "rgb(255, 45, 45)",
+-      "Design": "rgb(255, 79, 139)",
+-      "Marketplace": "rgb(255, 200, 87)",
+-      "Platform": "rgb(77, 163, 255)",
+-      "Play": "rgb(125, 217, 87)",
+-    };
+-    for (const [groupName, expectedColor] of Object.entries(expectedGroupColors)) {
+-      await expect(page.locator(`[data-toolbox-group-label='${groupName}']`).first()).toHaveCSS("background-color", expectedColor);
+-    }
+-    const buildColorTokens = await page.evaluate(() => {
+-      const styles = getComputedStyle(document.documentElement);
+-      return {
+-        build: styles.getPropertyValue("--toolbox-group-build-color").trim(),
+-        red: styles.getPropertyValue("--red").trim(),
+-      };
+-    });
+-    expect(buildColorTokens).toEqual({
+-      build: "#ff2d2d",
+-      red: "#ff2d2d",
++    expect(toolboxGroupsByTool["Game Workspace"]).toBe("Worlds");
++    expect(toolboxGroupsByTool["Game Configuration"]).toBe("Rules");
++    expect(toolboxGroupsByTool["Game Journey"]).toBe("Progression");
++    expect(toolboxGroupsByTool["Publish"]).toBe("Publish");
++    expect(toolboxGroupsByTool["Marketplace"]).toBe("Share");
++
++    const toolLinks = await page.locator("[data-toolbox-tool-name-link]").evaluateAll((links) => (
++      links.map((link) => ({
++        title: link.dataset.toolboxToolNameLink,
++        route: link.dataset.registeredToolRoute,
++        href: link.getAttribute("href"),
++      }))
++    ));
++    await expect(page.locator("[data-toolbox-tool-card]")).toHaveCount(toolLinks.length);
++    for (const link of toolLinks) {
++      const registryTool = registryByTitle.get(link.title);
++      expect(registryTool, `${link.title} should remain registered`).toBeTruthy();
++      expect(link.route).toBe(registryTool.route);
++      expect(link.href).toBe(`/${registryTool.route.replace(/^\/+/, "")}`);
++    }
++
++    await page.locator("[data-tools-view='build-path']").click();
++    const betaFilter = page.locator("[data-toolbox-status-filter='beta']");
++    if (await betaFilter.getAttribute("aria-pressed") !== "true") {
++      await betaFilter.click();
++    }
++    await expect(page.locator("[data-build-path-tool='Game Workspace']")).toHaveAttribute("data-build-path-group", "Build/Create");
++    await expect(page.locator("[data-build-path-tool='Colors']")).toHaveAttribute("data-build-path-group", "Design");
++
++    const toolboxSource = await page.evaluate(async () => {
++      const response = await fetch("/toolbox/index.html");
++      return response.text();
+     });
+-    await expect(page.locator("[data-toolbox-group-label='Marketplace']").first()).toHaveCSS("color", "rgb(9, 11, 15)");
+-    await expect(page.locator("[data-toolbox-group-label='Play']").first()).toHaveCSS("color", "rgb(9, 11, 15)");
++    expect(toolboxSource).not.toMatch(/<script(?![^>]+src=)[^>]*>/i);
++    expect(toolboxSource).not.toMatch(/<style[\s>]/i);
++    expect(toolboxSource).not.toMatch(/\sstyle=/i);
++    expect(toolboxSource).not.toContain("onclick=");
++    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+ 
+     expect(failedRequests).toEqual([]);
+     expect(pageErrors).toEqual([]);
+diff --git a/toolbox/index.html b/toolbox/index.html
+index 1582ea242..072132362 100644
+--- a/toolbox/index.html
++++ b/toolbox/index.html
+@@ -29,7 +29,7 @@
+                 </div>
+                 <div class="hero-actions" aria-label="Tool status filters" data-toolbox-status-filters></div>
+                 <p class="status" role="status" data-toolbox-launch-status>Showing Wireframe, Beta, and Complete tools. Select Planned to include planned tools.</p>
+-                <div class="accordion-group" data-tools-accordion-list></div>
++                <div class="accordion-group" data-tools-accordion-list data-toolbox-game-journey-groups></div>
+             </div>
+         </section>
+     </main>
+diff --git a/toolbox/tools-page-accordions.js b/toolbox/tools-page-accordions.js
+index a0521808e..952706d3b 100644
+--- a/toolbox/tools-page-accordions.js
++++ b/toolbox/tools-page-accordions.js
+@@ -67,17 +67,110 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
+     const toolboxGroupOrder = Object.freeze([...(toolboxContract.toolboxGroupOrder || [])]);
+     const groupSwatchMap = Object.freeze({ ...(toolboxContract.groupSwatches || {}) });
+     const stateSwatchMap = Object.freeze({ ...(toolboxContract.releaseChannelSwatches || {}) });
++    const gameJourneyGroupOrder = Object.freeze([
++        "Idea",
++        "Design",
++        "Graphics",
++        "Audio",
++        "Objects",
++        "Worlds",
++        "Interface",
++        "Controls",
++        "Rules",
++        "Progression",
++        "Play Test",
++        "Publish",
++        "Share"
++    ]);
++    const gameJourneyGroupSwatches = Object.freeze({
++        "Idea": "swatch-red",
++        "Design": "swatch-orange",
++        "Graphics": "swatch-gold",
++        "Audio": "swatch-yellow",
++        "Objects": "swatch-lime",
++        "Worlds": "swatch-green",
++        "Interface": "swatch-teal",
++        "Controls": "swatch-cyan",
++        "Rules": "swatch-blue",
++        "Progression": "swatch-indigo",
++        "Play Test": "swatch-purple",
++        "Publish": "swatch-magenta",
++        "Share": "swatch-pink"
++    });
++    const gameJourneyGroupClasses = Object.freeze({
++        "Idea": "tool-group-idea",
++        "Design": "tool-group-journey-design",
++        "Graphics": "tool-group-graphics",
++        "Audio": "tool-group-journey-audio",
++        "Objects": "tool-group-objects",
++        "Worlds": "tool-group-worlds",
++        "Interface": "tool-group-interface",
++        "Controls": "tool-group-controls",
++        "Rules": "tool-group-rules",
++        "Progression": "tool-group-progression",
++        "Play Test": "tool-group-play-test",
++        "Publish": "tool-group-publish",
++        "Share": "tool-group-journey-share"
++    });
++    const gameJourneyGroupByToolId = Object.freeze({
++        "achievements": "Progression",
++        "ai-assistant": "Idea",
++        "animations": "Graphics",
++        "assets": "Graphics",
++        "audio": "Audio",
++        "audio-effects": "Audio",
++        "build-game": "Publish",
++        "characters": "Objects",
++        "cloud": "Share",
++        "code": "Rules",
++        "colors": "Graphics",
++        "community": "Share",
++        "controls": "Controls",
++        "debug": "Play Test",
++        "environments": "Publish",
++        "events": "Rules",
++        "fonts": "Interface",
++        "game-configuration": "Rules",
++        "game-design": "Design",
++        "game-journey": "Progression",
++        "game-migration": "Publish",
++        "game-testing": "Play Test",
++        "game-workspace": "Worlds",
++        "hitboxes": "Controls",
++        "input-mapping-v2": "Controls",
++        "languages": "Interface",
++        "learn": "Idea",
++        "marketplace": "Share",
++        "midi": "Audio",
++        "music": "Audio",
++        "objects": "Objects",
++        "particles": "Graphics",
++        "performance": "Play Test",
++        "platform-settings": "Publish",
++        "publish": "Publish",
++        "ratings": "Share",
++        "saved-data": "Progression",
++        "speech-to-text": "Audio",
++        "sprites": "Graphics",
++        "tags": "Objects",
++        "text-to-speech": "Audio",
++        "users": "Share",
++        "videos": "Graphics",
++        "voices": "Audio",
++        "worlds": "Worlds"
++    });
++    const toolboxGroupPositions = new Map(toolboxGroupOrder.map((group, index) => [group, index]));
+     toolboxDefaultReleaseChannels.forEach((channel) => {
+         visibleReleaseChannels.add(channel);
+     });
+     const registryTools = getActiveToolRegistry();
+     const registryToolsByTitle = new Map(registryTools.map((tool) => [tool.displayName || tool.name, tool]));
+-    const toolGroups = toolboxGroupOrder
++    const toolGroups = gameJourneyGroupOrder
+         .map((group) => ({
+             group,
+             tools: registryTools
+-                .filter((tool) => tool.toolboxGroup === group && includeToolInToolboxInventory(tool))
+-                .sort((left, right) => (left.order ?? Number.MAX_SAFE_INTEGER) - (right.order ?? Number.MAX_SAFE_INTEGER))
++                .filter((tool) => includeToolInToolboxInventory(tool) && gameJourneyGroupForTool(tool) === group)
++                .sort(compareByRegistryOrder)
+         }))
+         .filter((group) => group.tools.length > 0);
+     let toolboxVoteRows = [];
+@@ -112,8 +205,12 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
+         return left.title.localeCompare(right.title);
+     }
+ 
+-    function compareByGroup(left, right) {
+-        return left.group.localeCompare(right.group);
++    function compareByRegistryOrder(left, right) {
++        const leftGroup = toolboxGroupPositions.get(left.toolboxGroup) ?? Number.MAX_SAFE_INTEGER;
++        const rightGroup = toolboxGroupPositions.get(right.toolboxGroup) ?? Number.MAX_SAFE_INTEGER;
++        return leftGroup - rightGroup
++            || (left.order ?? Number.MAX_SAFE_INTEGER) - (right.order ?? Number.MAX_SAFE_INTEGER)
++            || String(left.displayName || left.name || "").localeCompare(String(right.displayName || right.name || ""));
+     }
+ 
+     function releaseChannelForTool(tool) {
+@@ -158,9 +255,39 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
+         return tool.category || "Platform";
+     }
+ 
+-    function enrichTool(tool, groupName = colorGroupForTool(tool)) {
++    function gameJourneyGroupForTool(tool) {
++        const toolId = String(tool?.id || "").trim().toLowerCase();
++        if (gameJourneyGroupByToolId[toolId]) {
++            return gameJourneyGroupByToolId[toolId];
++        }
++        const searchable = [
++            toolId,
++            tool?.displayName,
++            tool?.name,
++            tool?.category,
++            tool?.toolboxGroup,
++            tool?.subgroup
++        ].filter(Boolean).join(" ").toLowerCase();
++        if (/\b(audio|music|voice|midi|sound|speech)\b/.test(searchable)) return "Audio";
++        if (/\b(color|asset|sprite|font|video|animation|particle|graphic)\b/.test(searchable)) return "Graphics";
++        if (/\b(object|character|tag)\b/.test(searchable)) return "Objects";
++        if (/\b(world|workspace|map|scene)\b/.test(searchable)) return "Worlds";
++        if (/\b(interface|language|ui|ux)\b/.test(searchable)) return "Interface";
++        if (/\b(control|input|hitbox)\b/.test(searchable)) return "Controls";
++        if (/\b(rule|event|configuration|code|extension)\b/.test(searchable)) return "Rules";
++        if (/\b(progress|achievement|saved|journey)\b/.test(searchable)) return "Progression";
++        if (/\b(test|debug|performance)\b/.test(searchable)) return "Play Test";
++        if (/\b(publish|build|migration|environment|settings)\b/.test(searchable)) return "Publish";
++        if (/\b(share|marketplace|community|cloud|rating|user)\b/.test(searchable)) return "Share";
++        if (/\b(design)\b/.test(searchable)) return "Design";
++        return "Idea";
++    }
++
++    function enrichTool(tool, groupName = "") {
+         const registryTool = registryToolForCard(tool) || tool;
+         const metadata = voteRowsByToolId.get(registryTool.id) || null;
++        const metadataGroup = metadata?.group || colorGroupForTool(registryTool);
++        const displayGroup = groupName || metadataGroup;
+         const route = getToolRoute(registryTool);
+         const path = String(metadata?.path || route || "").replace(/^\/+/, "");
+         const title = registryTool.displayName || registryTool.name || tool.title || "Tool";
+@@ -181,7 +308,7 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
+             title,
+             toolKey: metadata?.toolKey || metadata?.toolId || registryTool.id,
+             adminOnly: registryTool?.adminOnly === true,
+-            group: metadata?.group || groupName,
++            group: displayGroup,
+             hidden: registryTool?.hidden === true,
+             order: metadata?.order ?? registryTool.order,
+             path,
+@@ -258,18 +385,15 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
+     }
+ 
+     function visibleToolGroups() {
+-        const groups = new Map();
+-        toolGroups.flatMap((toolGroup) => toolGroup.tools).map((tool) => enrichTool(tool)).filter(isVisibleForRole).forEach((tool) => {
+-            const groupName = tool.group;
+-            if (!groups.has(groupName)) {
+-                groups.set(groupName, []);
+-            }
+-            groups.get(groupName).push(tool);
+-        });
+-        return Array.from(groups.entries()).map(([group, tools]) => ({
+-            group,
+-            tools: tools.sort(compareByTitle)
+-        })).sort(compareByGroup);
++        return toolGroups
++            .map((toolGroup) => ({
++                group: toolGroup.group,
++                tools: toolGroup.tools
++                    .map((tool) => enrichTool(tool, toolGroup.group))
++                    .filter(isVisibleForRole)
++                    .sort(compareByTitle)
++            }))
++            .filter((group) => group.tools.length > 0);
+     }
+ 
+     function roleAwareTools() {
+@@ -306,11 +430,11 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
+     }
+ 
+     function groupClass(groupName) {
+-        return registryTools.find((tool) => tool.category === groupName)?.colorGroup || "";
++        return gameJourneyGroupClasses[groupName] || registryTools.find((tool) => tool.category === groupName)?.colorGroup || "";
+     }
+ 
+     function groupSwatch(groupName) {
+-        return groupSwatchMap[groupName] || "swatch-orange";
++        return gameJourneyGroupSwatches[groupName] || groupSwatchMap[groupName] || "swatch-orange";
+     }
+ 
+     function stateSwatch(channel) {
 
-+test("Admin DB Viewer restores configured table groups when one configured table is unavailable", async ({ page }) => {
-+  const failures = await openRepoPage(page, "/admin/db-viewer.html", {
-+    productDataSnapshot: createConfiguredDbViewerSnapshot({ missingMembershipLimits: true }),
-+    sessionCurrent: adminSessionFixture(),
-+  });
-+
-+  try {
-+    await expect(page.getByRole("heading", { name: "Supabase Postgres", level: 1 })).toBeVisible();
-+    await expect(page.locator("[data-admin-db-mode-kicker]").first()).toHaveText("Admin Only / Supabase Postgres");
-+    await expect(page.locator("[data-admin-db-status-connection]")).toHaveText("supabase-postgres (Supabase Postgres)");
-+    await expect(page.locator("[data-admin-db-status-source]")).toHaveText("Supabase product DB");
-+    await expect(page.locator("[data-admin-db-status]")).toHaveText(/Supabase Postgres loaded \d+ tables and \d+ records for All\./);
-+    const filterLabels = await page.locator("[data-admin-db-filter]").allTextContents();
-+    expect(filterLabels).toEqual(expect.arrayContaining([
-+      "All",
-+      "Asset",
-+      "Game Journey",
-+      "Tool Metadata",
-+      "User Roles",
-+      "membership_limits",
-+    ]));
-+    await expect(page.locator("[data-admin-db-table='users']")).toContainText("DavidQ");
-+    await expect(page.locator("[data-admin-db-table='roles']")).toContainText("admin");
-+    await expect(page.locator("[data-admin-db-table='toolbox_tool_metadata']")).toContainText("Colors");
-+    await expect(page.locator("[data-admin-db-table='membership_limits']")).toContainText("No records in this table.");
-+    await expect(page.locator("[data-admin-db-table='membership_limits'] thead")).toContainText("storageMb");
-+    await expect(page.locator("[data-admin-db-source-findings]")).toContainText("membership_limits could not be read");
-+    await expect(page.locator("[data-admin-db-source-findings]")).toContainText("apply the product data migration");
-+    await expect(page.locator("[data-admin-db-relationship-summary]")).toContainText("*.createdBy -> users.key");
-+    await expectNoPageFailures(failures);
-+  } finally {
-+    await closeAdminDbPage(page, failures);
-+  }
-+});
-+
-+test("Admin DB Viewer renders schema headers for an empty configured DB source", async ({ page }) => {
-+  const failures = await openRepoPage(page, "/admin/db-viewer.html", {
-+    productDataSnapshot: createConfiguredDbViewerSnapshot({ empty: true }),
-+    sessionCurrent: adminSessionFixture(),
-+  });
-+
-+  try {
-+    await expect(page.getByRole("heading", { name: "Supabase Postgres", level: 1 })).toBeVisible();
-+    const filterLabels = await page.locator("[data-admin-db-filter]").allTextContents();
-+    expect(filterLabels).toEqual(expect.arrayContaining(["All", "Palette", "User Roles"]));
-+    await expect(page.locator("[data-admin-db-table='palette_colors']")).toContainText("No records in this table.");
-+    await expect(page.locator("[data-admin-db-table='palette_colors']")).toContainText("Supabase Postgres read-only inspection still shows schema headers.");
-+    await expect(page.locator("[data-admin-db-table='palette_colors'] thead")).toContainText("createdAt");
-+    await expect(page.locator("[data-admin-db-table='membership_limits']")).toContainText("No records in this table.");
-+    await expect(page.locator("[data-admin-db-table='membership_limits'] thead")).toContainText("monthlyAiCredits");
-+    await expect(page.locator("[data-admin-db-source-findings]")).toHaveCount(0);
-+    await expectNoPageFailures(failures);
-+  } finally {
-+    await closeAdminDbPage(page, failures);
-+  }
-+});
-+
-+test("Admin DB Viewer shows a visible configured source diagnostic when snapshot loading fails", async ({ page }) => {
-+  const failures = await openRepoPage(page, "/admin/db-viewer.html", {
-+    productDataError: "Configured database connection is not configured. Add GAMEFOUNDRY_DATABASE_URL on the server.",
-+    sessionCurrent: adminSessionFixture(),
-+  });
-+
-+  try {
-+    await expect(page.getByRole("heading", { name: "Configured Data", level: 1 })).toBeVisible();
-+    await expect(page.locator("[data-admin-db-status]")).toHaveText("Configured Data data error. Fix the configured connection, then reload DB Viewer.");
-+    await expect(page.locator("[data-admin-db-audit-findings]")).toContainText("Configured Data could not render current data");
-+    await expect(page.locator("[data-admin-db-audit-findings]")).toContainText("GAMEFOUNDRY_DATABASE_URL");
-+    await expect(page.locator("[data-admin-db-missing-links]")).toContainText("Relationships could not be checked until the Configured Data data error is fixed.");
-+    await expect(page.locator("[data-admin-db-table]")).toHaveCount(0);
-+    expect(failures.failedRequests.some((failure) => failure.includes("/api/product-data/snapshot"))).toBe(true);
-+    expect(failures.pageErrors).toEqual([]);
-+    expect(failures.consoleErrors.filter((failure) => !failure.includes("Failed to load resource"))).toEqual([]);
-+  } finally {
-+    await closeAdminDbPage(page, failures);
-+  }
-+});
-+
- test("Admin DB Viewer shows current read-only Local DB tables without write controls", async ({ page }) => {
-   const failures = await openRepoPage(page, "/admin/db-viewer.html", {
-     sessionModeId: "local-db",
-
-diff --git a/docs_build/dev/reports/PR_26169_029-db-viewer-table-groups-regression.md b/docs_build/dev/reports/PR_26169_029-db-viewer-table-groups-regression.md
+diff --git a/docs_build/dev/reports/PR_26170_001-toolbox-game-journey-navigation.md b/docs_build/dev/reports/PR_26170_001-toolbox-game-journey-navigation.md
 new file mode 100644
-index 000000000..9720afc91
+index 000000000..000000000
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26169_029-db-viewer-table-groups-regression.md
-@@ -0,0 +1,58 @@
-+# PR_26169_029 DB Viewer Table Groups Regression Report
++++ b/docs_build/dev/reports/PR_26170_001-toolbox-game-journey-navigation.md
+@@ -0,0 +1,52 @@
++# PR_26170_001 Toolbox Game Journey Navigation
 +
-+## Summary
++## Branch Validation
 +
-+Restored Admin DB Viewer rendering for configured product data snapshots. The viewer now receives schema-backed table arrays and viewer groups even when individual configured database tables are missing, and it displays those missing-table issues as visible source diagnostics instead of falling into the generic Configured Data load-error state.
-+
-+## Root Cause
-+
-+The DB Viewer page, route, script imports, and Admin navigation route were intact. PR_26169_023 and PR_26169_027/028 did not replace the DB Viewer route or point navigation at the wrong page.
-+
-+The regression was caused by the configured DB snapshot path. `admin/db-viewer.js` correctly loaded `src/api/db-viewer-ui.js`, but `/api/product-data/snapshot` called the shared Supabase/Postgres adapter snapshot. That adapter used an all-or-nothing table read, so one missing configured table, observed locally as `membership_limits`, rejected the entire snapshot. The UI then rendered its load-error path, which left the page as the generic Configured Data shell with no filters, table groups, table list, schemas, or relationship diagnostics.
-+
-+## Changes
-+
-+- Updated `SupabasePostgresProviderAdapter.getDbViewerSnapshot()` to keep DB Viewer reads schema-aware when a configured table is missing.
-+- Added table-level `DB_VIEWER_TABLE_UNAVAILABLE` diagnostics for recoverable per-table read failures.
-+- Preserved fatal behavior for missing/unreachable configured DB sources such as missing server config, connection failure, authentication failure, or timeout.
-+- Passed configured DB table diagnostics through `/api/product-data/snapshot`.
-+- Updated DB Viewer UI provider display to honor server-provided `supabase-postgres` provider metadata.
-+- Rendered configured-source diagnostics in the DB Inspector diagnostics panel while keeping existing audit, bleed, stale-display, and relationship checks.
-+- Added targeted Node and Playwright coverage for configured DB Viewer snapshots, missing-table diagnostics, empty schema-known sources, and snapshot-load failure diagnostics.
++- PASS: Current branch verified as `main`.
 +
 +## Requirement Checklist
 +
 +| Requirement | Status | Notes |
 +| --- | --- | --- |
-+| Restore DB Viewer initialization | PASS | Existing route/script load path remained intact; snapshot failure no longer collapses initialization. |
-+| Restore table group rendering | PASS | `/api/product-data/snapshot` now returns `viewerGroups` even with missing configured tables. |
-+| Restore configured table listing | PASS | Snapshot maps all shared schema tables to arrays, using empty arrays for unavailable tables. |
-+| Restore schemas/relationships/diagnostics | PASS | Schema headers remain visible; relationship and existing diagnostics still render. |
-+| Keep DB Viewer under Admin | PASS | No navigation or route move was made. |
-+| Do not move DB Viewer to Owner | PASS | Owner navigation untouched. |
-+| Do not create generic configured-data placeholder | PASS | Provider-aware UI shows `Supabase Postgres` and table groups. |
-+| Do not hardcode table lists page-locally | PASS | Runtime table list still comes from shared schemas and adapter snapshot; test fixtures only provide deterministic payloads. |
-+| Read from shared DB adapter/source of truth | PASS | Fix is in `SupabasePostgresProviderAdapter` and `/api/product-data/snapshot`. |
-+| Missing DB adapter/source visible diagnostic | PASS | Fatal source failures still render visible configured-source load diagnostics. |
-+| Empty DB source shows meaningful schema state | PASS | Empty arrays render table headers and empty-state text. |
-+| Preserve Admin/Owner navigation SSoT | PASS | Navigation files were not changed. |
-+| Avoid unrelated domains | PASS | Memberships, marketplace, AI credits, legal, notes, storage, and Admin/Owner menus were not changed. |
++| Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` first. | PASS | Read before implementation. |
++| Create `PR_26170_001-toolbox-game-journey-navigation`. | PASS | Build doc added under `docs_build/pr/`. |
++| Update `/toolbox/index.html` under the Toolbox section. | PASS | Added a non-inline marker to the existing Toolbox group list container. |
++| Replace displayed Toolbox groups with Game Journey order. | PASS | `toolbox/tools-page-accordions.js` now renders Idea, Design, Graphics, Audio, Objects, Worlds, Interface, Controls, Rules, Progression, Play Test, Publish, Share. |
++| Assign every displayed group a unique rainbow color with no duplicates. | PASS | Added Theme V2 swatch/tool-group classes and validated thirteen unique computed colors. |
++| Preserve tool cards, routes, statuses, and links. | PASS | Display grouping changed only; registered routes/statuses remain sourced from the registry. |
++| Do not change database behavior, metadata contracts, Workspace, runtime behavior, status values, or routes. | PASS | Registry/admin/build-path metadata remains unchanged; Build Path still exposes registry metadata groups. |
++| Do not add inline CSS/JS, `<style>`, `<script>`, or inline event handlers. | PASS | HTML source and rendered DOM checks passed. |
 +
-+## Validation
++## Implementation Notes
 +
-+- PASS: `git branch --show-current` -> `main`
-+- PASS: `node --check src/dev-runtime/auth/provider-contract-stubs.mjs`
-+- PASS: `node --check src/dev-runtime/server/local-api-router.mjs`
-+- PASS: `node --check src/api/db-viewer-ui.js`
-+- PASS: `node --check tests/dev-runtime/DbViewerConfiguredSnapshot.test.mjs`
-+- PASS: `node --check tests/playwright/tools/AdminDbViewer.spec.mjs`
-+- PASS: `node --test tests/dev-runtime/DbViewerConfiguredSnapshot.test.mjs`
-+- PASS: live route probe: `/api/product-data/snapshot` returned 30 viewer groups and 48 schema-backed tables, with table diagnostics instead of a 500.
-+- PASS: `npx playwright test tests/playwright/tools/AdminDbViewer.spec.mjs --grep "(Admin DB Viewer restores configured table groups|Admin DB Viewer renders schema headers|Admin DB Viewer shows a visible configured source diagnostic)" --workers=1` (3 passed)
-+- PASS: `git diff --check`
++- Added a Toolbox page presentation mapping from active tool IDs to the requested Game Journey groups.
++- Kept Build Path and admin metadata on the existing registry/toolbox metadata grouping path.
++- Added reusable Theme V2 colors/classes in CSS rather than inline styles.
++- Updated directly affected Playwright expectations for the new displayed grouping and the preserved registry metadata split.
 +
-+## Notes
++## Validation Lane Report
 +
-+- A broad name-pattern run against `tests/dev-runtime/SupabaseProviderContractStub.test.mjs` timed out and left Node test workers; those validation-only processes were stopped. The final validation uses the dedicated focused Node test instead.
-+- The existing local API server on port 5501 was observed and left running.
-+- Playwright V8 coverage was refreshed. Server-side runtime files report advisory WARN coverage only, as expected for browser V8 coverage; `src/api/db-viewer-ui.js` is covered by the focused Playwright run.
++| Lane | Command | Result |
++| --- | --- | --- |
++| Branch | `git status --short --branch` | PASS, branch `main`. |
++| JS syntax | `node --check toolbox/tools-page-accordions.js; node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs; node --check tests/playwright/tools/GameJourneyTool.spec.mjs; node --check tests/playwright/tools/RootToolsFutureState.spec.mjs; node --check tests/playwright/tools/ToolNavigationPrevNext.spec.mjs; node --check tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs` | PASS |
++| Diff whitespace | `git diff --check` | PASS |
++| Inline HTML guard | Node scan of `toolbox/index.html` for inline script/style/handlers | PASS |
++| Targeted Toolbox Playwright | `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --grep "toolbox grouped view renders Game Journey order" --workers=1 --reporter=line` | PASS, 1 passed |
++| Adjacent Game Journey route check | `npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs --grep "Toolbox registration exposes Game Journey navigation" --workers=1 --reporter=line` | PASS, 1 passed |
++| Extra adjacent navigation check | `npx playwright test tests/playwright/tools/ToolNavigationPrevNext.spec.mjs --grep "multi-path next control routes" --workers=1 --reporter=line` | FAIL: existing `/api/toolbox/game-configuration/.../makeValidGameDesign` returned 500; group URL assertion was not the failing condition. |
++| Extra adjacent display-mode check | `npx playwright test tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs --grep "multi-path fallback opens Toolbox Group view" --workers=1 --reporter=line` | FAIL: same `game-configuration` API 500. |
++
++## Playwright Result
++
++- Required targeted Toolbox page validation passed.
++- Playwright coverage reports were refreshed by the targeted runs.
++- Two extra non-required adjacent navigation checks were attempted and failed on an out-of-scope `game-configuration` API 500.
++
++## Manual Validation Notes
++
++- Confirmed all thirteen Game Journey groups render in order when Planned and Deprecated are enabled.
++- Confirmed each rendered group label has a unique computed background color.
++- Confirmed displayed Toolbox links still match their registered routes.
++- Confirmed Build Path keeps registry metadata groups such as `Build/Create` for Game Workspace and `Design` for Colors.
++- Confirmed `toolbox/index.html` has no inline style/script/event-handler additions.
 
-diff --git a/docs_build/pr/BUILD_PR_26169_029-db-viewer-table-groups-regression.md b/docs_build/pr/BUILD_PR_26169_029-db-viewer-table-groups-regression.md
+diff --git a/docs_build/pr/BUILD_PR_26170_001-toolbox-game-journey-navigation.md b/docs_build/pr/BUILD_PR_26170_001-toolbox-game-journey-navigation.md
 new file mode 100644
-index 000000000..2e4271f20
+index 000000000..000000000
 --- /dev/null
-+++ b/docs_build/pr/BUILD_PR_26169_029-db-viewer-table-groups-regression.md
-@@ -0,0 +1,59 @@
-+# BUILD PR_26169_029 DB Viewer Table Groups Regression
++++ b/docs_build/pr/BUILD_PR_26170_001-toolbox-game-journey-navigation.md
+@@ -0,0 +1,42 @@
++# BUILD PR_26170_001 Toolbox Game Journey Navigation
 +
 +## Purpose
 +
-+Fix the DB Viewer regression so the Admin DB Viewer renders table groups, configured table lists, schemas, relationships, and diagnostics from the shared DB adapter/source of truth instead of showing only a generic configured-data placeholder.
++Update the Toolbox index grouping under "The Toolbox" / "Creator tools organized by build surface." to render the requested Game Journey group order with unique rainbow colors while preserving existing tool cards, routes, and statuses.
 +
 +## Scope
 +
-+- Restore DB Viewer initialization.
-+- Restore table group rendering.
-+- Restore configured table listing.
-+- Restore table schema, relationship, and diagnostic display where previously available.
-+- Keep DB Viewer under Admin.
-+- Do not move DB Viewer to Owner.
-+- Do not turn DB Viewer into a generic configured-data placeholder.
-+- Do not hardcode table lists as page-local source of truth.
-+- DB Viewer must read from the shared DB adapter/source of truth already used by the Mock DB / configured data system.
-+- Missing DB adapter/source must show visible actionable diagnostics.
-+- Empty DB source must render table headers/groups where schema is known, not a blank generic page.
-+- Preserve Admin/Owner navigation SSoT from PR_26169_023.
-+- Do not change unrelated Admin/Owner menu items.
-+- Do not change memberships, marketplace, AI credits, legal, notes, or storage behavior.
-+
-+## Investigation Requirements
-+
-+- Inspect DB Viewer route/page/script before editing.
-+- Inspect changes from PR_26169_023 and PR_26169_027/028 that may have replaced or bypassed DB Viewer initialization.
-+- Identify whether the regression is caused by:
-+  - wrong route/path
-+  - missing script import
-+  - wrong API client path
-+  - generic page shell replacing DB Viewer content
-+  - missing shared DB adapter call
-+  - navigation pointing to the wrong page
-+- Document the root cause in the PR report.
++- Update `/toolbox/index.html` and the immediate Toolbox index rendering dependencies only as needed.
++- Replace the displayed Toolbox group organization with this Game Journey order:
++  - Idea
++  - Design
++  - Graphics
++  - Audio
++  - Objects
++  - Worlds
++  - Interface
++  - Controls
++  - Rules
++  - Progression
++  - Play Test
++  - Publish
++  - Share
++- Assign every displayed group a unique rainbow color with no duplicate colors.
++- Preserve existing tool cards, routes, statuses, and links unless a card must move into the matching Game Journey group.
++- Do not change database behavior, tool metadata source contracts, Workspace behavior, runtime behavior, tool status values, or routes.
++- Do not add inline CSS, inline JS, `<style>`, `<script>`, or inline event handlers.
 +
 +## Validation
 +
-+- Verify current branch is `main`.
-+- Run `node --check` for all touched JavaScript files.
-+- Run targeted DB Viewer validation:
-+  - DB Viewer route resolves.
-+  - DB Viewer shows table groups.
-+  - DB Viewer shows table list.
-+  - DB Viewer shows known schemas or diagnostics.
-+  - Missing DB source shows visible diagnostic.
-+  - Empty DB source shows meaningful empty state.
-+- Run targeted Admin navigation validation if navigation is touched.
-+- Run Playwright if DB Viewer UI behavior changes.
-+- Do not run full samples smoke.
-+- Stop on failure.
++- Confirm `/toolbox/index.html` renders the requested Game Journey group order.
++- Confirm every group has a unique color and no duplicates.
++- Confirm existing tool links still work.
++- Confirm no prohibited inline HTML styling/scripting was introduced.
++- Run targeted Toolbox page Playwright validation. If no narrower command exists, run `npm run test:workspace-v2`.
 +
-+## Required Reports
++## Reports
 +
-+- `docs_build/pr/BUILD_PR_26169_029-db-viewer-table-groups-regression.md`
-+- `docs_build/dev/reports/PR_26169_029-db-viewer-table-groups-regression.md`
 +- `docs_build/dev/reports/codex_review.diff`
 +- `docs_build/dev/reports/codex_changed_files.txt`
++- `docs_build/dev/reports/PR_26170_001-toolbox-game-journey-navigation.md`
 +- Repo-structured ZIP artifact in `tmp/`.
-
-diff --git a/tests/dev-runtime/DbViewerConfiguredSnapshot.test.mjs b/tests/dev-runtime/DbViewerConfiguredSnapshot.test.mjs
-new file mode 100644
-index 000000000..4045bb770
---- /dev/null
-+++ b/tests/dev-runtime/DbViewerConfiguredSnapshot.test.mjs
-@@ -0,0 +1,31 @@
-+import test from "node:test";
-+import assert from "node:assert/strict";
-+import { SupabasePostgresProviderAdapter } from "../../src/dev-runtime/auth/provider-contract-stubs.mjs";
-+
-+test("DB Viewer configured snapshot keeps schema-known tables visible when one configured table is missing", async () => {
-+  const calls = [];
-+  const database = new SupabasePostgresProviderAdapter({
-+    env: {
-+      GAMEFOUNDRY_DATABASE_URL: "postgres://user:pass@127.0.0.1:5432/gamefoundry",
-+      GAMEFOUNDRY_DATABASE_SSL: "disable",
-+    },
-+    postgresClient: {
-+      async requestTable(tableName) {
-+        calls.push(tableName);
-+        if (tableName === "membership_limits") {
-+          throw new Error('relation "membership_limits" does not exist');
-+        }
-+        return [{ key: `${tableName}-row` }];
-+      },
-+    },
-+  });
-+
-+  const snapshot = await database.getDbViewerSnapshot();
-+  assert.deepEqual(snapshot.tables.membership_limits, []);
-+  assert.equal(snapshot.tables.users[0].key, "users-row");
-+  assert.equal(snapshot.tableDiagnostics.length, 1);
-+  assert.equal(snapshot.tableDiagnostics[0].tableName, "membership_limits");
-+  assert.match(snapshot.tableDiagnostics[0].message, /membership_limits could not be read/);
-+  assert.equal(snapshot.diagnostics.tableReadFailures, snapshot.tableDiagnostics);
-+  assert.equal(calls.includes("asset_library_items"), true);
-+});

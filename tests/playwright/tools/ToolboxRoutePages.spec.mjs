@@ -23,6 +23,38 @@ const STATUS_HELP_TEXT = Object.freeze({
   deprecated: "Tool remains supported but is not recommended for new workflows.\nMust remain deprecated before removal.",
 });
 
+const GAME_JOURNEY_GROUP_ORDER = Object.freeze([
+  "Idea",
+  "Design",
+  "Graphics",
+  "Audio",
+  "Objects",
+  "Worlds",
+  "Interface",
+  "Controls",
+  "Rules",
+  "Progression",
+  "Play Test",
+  "Publish",
+  "Share",
+]);
+
+const GAME_JOURNEY_GROUP_COLORS = Object.freeze({
+  "Idea": "rgb(255, 45, 45)",
+  "Design": "rgb(255, 122, 0)",
+  "Graphics": "rgb(255, 200, 87)",
+  "Audio": "rgb(250, 204, 21)",
+  "Objects": "rgb(163, 230, 53)",
+  "Worlds": "rgb(125, 217, 87)",
+  "Interface": "rgb(45, 212, 191)",
+  "Controls": "rgb(32, 214, 255)",
+  "Rules": "rgb(77, 163, 255)",
+  "Progression": "rgb(129, 140, 248)",
+  "Play Test": "rgb(184, 119, 255)",
+  "Publish": "rgb(217, 70, 239)",
+  "Share": "rgb(255, 79, 139)",
+});
+
 test.afterAll(async () => {
   await workspaceV2CoverageReporter.writeReport();
 });
@@ -411,13 +443,13 @@ test("toolbox status kickers, filters, card order, and voting controls work from
       STATUS_HELP_TEXT.complete,
     );
 
-    const designGroupLabel = page.locator("[data-toolbox-group-label='Design']").first();
-    await expect(designGroupLabel).toBeVisible();
-    await expect(designGroupLabel).toHaveCSS("background-color", "rgb(255, 79, 139)");
-    await expect(designGroupLabel).toHaveCSS("color", "rgb(255, 255, 255)");
+    const graphicsGroupLabel = page.locator("[data-toolbox-group-label='Graphics']").first();
+    await expect(graphicsGroupLabel).toBeVisible();
+    await expect(graphicsGroupLabel).toHaveCSS("background-color", "rgb(255, 200, 87)");
+    await expect(graphicsGroupLabel).toHaveCSS("color", "rgb(9, 11, 15)");
     const designActionRow = page.locator("[data-toolbox-tile-action-row='Colors']");
-    await expect(designActionRow.locator("[data-toolbox-group-label='Design']")).toHaveCount(0);
-    await expect(page.locator("[data-toolbox-tool-card='Colors'] .card-body > [data-toolbox-group-badge] [data-toolbox-group-label='Design']")).toHaveCSS("background-color", "rgb(255, 79, 139)");
+    await expect(designActionRow.locator("[data-toolbox-group-label='Graphics']")).toHaveCount(0);
+    await expect(page.locator("[data-toolbox-tool-card='Colors'] .card-body > [data-toolbox-group-badge] [data-toolbox-group-label='Graphics']")).toHaveCSS("background-color", "rgb(255, 200, 87)");
     await expect(page.locator("[data-toolbox-tool-card='Colors'] .card-body > [data-toolbox-state-badge]")).toHaveAttribute("data-toolbox-state-badge", "complete");
 
     await page.goto(`${server.baseUrl}/admin/tool-votes.html`, { waitUntil: "networkidle" });
@@ -588,7 +620,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
   }
 });
 
-test("toolbox group labels match Admin Tool Votes assignments and restored group colors", async ({ page }) => {
+test("toolbox grouped view renders Game Journey order with unique colors while Build Path keeps metadata groups", async ({ page }) => {
   const server = await startRepoServer();
   const failedRequests = [];
   const pageErrors = [];
@@ -617,15 +649,10 @@ test("toolbox group labels match Admin Tool Votes assignments and restored group
   try {
     await workspaceV2CoverageReporter.start(page);
     await setServerSession(server, MOCK_DB_KEYS.users.admin);
-    await page.goto(`${server.baseUrl}/admin/tool-votes.html`, { waitUntil: "networkidle" });
-    const adminGroupsByTool = await page.locator("[data-toolbox-votes-tool-id]").evaluateAll((rows) => (
-      Object.fromEntries(rows.map((row) => [
-        row.querySelector("td")?.textContent.trim(),
-        row.querySelector("[data-toolbox-votes-group]")?.value || "",
-      ]))
-    ));
+    const registryById = await toolMetadataById(server);
+    const registryByTitle = new Map(Array.from(registryById.values()).map((tool) => [tool.displayName, tool]));
 
-    await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+    await page.goto(`${server.baseUrl}/toolbox/index.html?view=group`, { waitUntil: "networkidle" });
     const plannedFilter = page.locator("[data-toolbox-status-filter='planned']");
     if (await plannedFilter.getAttribute("aria-pressed") !== "true") {
       await plannedFilter.click();
@@ -634,43 +661,72 @@ test("toolbox group labels match Admin Tool Votes assignments and restored group
     if (await deprecatedFilter.getAttribute("aria-pressed") !== "true") {
       await deprecatedFilter.click();
     }
+    await expect(page.locator("[data-toolbox-status-filter='planned']")).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator("[data-toolbox-status-filter='deprecated']")).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator("[data-tools-accordion]")).toHaveCount(GAME_JOURNEY_GROUP_ORDER.length);
+    const groupNames = await page.locator("[data-tools-accordion]").evaluateAll((accordions) => (
+      accordions.map((accordion) => accordion.dataset.toolsAccordion)
+    ));
+    expect(groupNames).toEqual(GAME_JOURNEY_GROUP_ORDER);
+
+    const groupSwatches = await page.locator("[data-tools-accordion] > summary [data-toolbox-group-label]").evaluateAll((labels) => (
+      labels.map((label) => ({
+        group: label.dataset.toolboxGroupLabel,
+        backgroundColor: getComputedStyle(label).backgroundColor,
+        className: label.className,
+      }))
+    ));
+    expect(groupSwatches.map((swatch) => swatch.group)).toEqual(GAME_JOURNEY_GROUP_ORDER);
+    expect(new Set(groupSwatches.map((swatch) => swatch.backgroundColor)).size).toBe(GAME_JOURNEY_GROUP_ORDER.length);
+    expect(new Set(groupSwatches.map((swatch) => swatch.className)).size).toBe(GAME_JOURNEY_GROUP_ORDER.length);
+    for (const swatch of groupSwatches) {
+      expect(swatch.backgroundColor).toBe(GAME_JOURNEY_GROUP_COLORS[swatch.group]);
+    }
+
     const toolboxGroupsByTool = await page.locator("[data-toolbox-tool-card]").evaluateAll((cards) => (
       Object.fromEntries(cards.map((card) => [
         card.getAttribute("data-toolbox-tool-card"),
         card.querySelector("[data-toolbox-group-label]")?.textContent.trim() || "",
       ]))
     ));
-    const visibleAdminGroupsByTool = Object.fromEntries(
-      Object.entries(adminGroupsByTool).filter(([toolName]) => Object.hasOwn(toolboxGroupsByTool, toolName))
-    );
-    expect(Object.keys(toolboxGroupsByTool).sort()).toEqual(Object.keys(visibleAdminGroupsByTool).sort());
-    expect(toolboxGroupsByTool).toEqual(visibleAdminGroupsByTool);
+    expect(toolboxGroupsByTool["Game Workspace"]).toBe("Worlds");
+    expect(toolboxGroupsByTool["Game Configuration"]).toBe("Rules");
+    expect(toolboxGroupsByTool["Game Journey"]).toBe("Progression");
+    expect(toolboxGroupsByTool["Publish"]).toBe("Publish");
+    expect(toolboxGroupsByTool["Marketplace"]).toBe("Share");
 
-    const expectedGroupColors = {
-      "AI": "rgb(184, 119, 255)",
-      "Audio": "rgb(255, 122, 0)",
-      "Build/Create": "rgb(255, 45, 45)",
-      "Design": "rgb(255, 79, 139)",
-      "Marketplace": "rgb(255, 200, 87)",
-      "Platform": "rgb(77, 163, 255)",
-      "Play": "rgb(125, 217, 87)",
-    };
-    for (const [groupName, expectedColor] of Object.entries(expectedGroupColors)) {
-      await expect(page.locator(`[data-toolbox-group-label='${groupName}']`).first()).toHaveCSS("background-color", expectedColor);
+    const toolLinks = await page.locator("[data-toolbox-tool-name-link]").evaluateAll((links) => (
+      links.map((link) => ({
+        title: link.dataset.toolboxToolNameLink,
+        route: link.dataset.registeredToolRoute,
+        href: link.getAttribute("href"),
+      }))
+    ));
+    await expect(page.locator("[data-toolbox-tool-card]")).toHaveCount(toolLinks.length);
+    for (const link of toolLinks) {
+      const registryTool = registryByTitle.get(link.title);
+      expect(registryTool, `${link.title} should remain registered`).toBeTruthy();
+      expect(link.route).toBe(registryTool.route);
+      expect(link.href).toBe(`/${registryTool.route.replace(/^\/+/, "")}`);
     }
-    const buildColorTokens = await page.evaluate(() => {
-      const styles = getComputedStyle(document.documentElement);
-      return {
-        build: styles.getPropertyValue("--toolbox-group-build-color").trim(),
-        red: styles.getPropertyValue("--red").trim(),
-      };
+
+    await page.locator("[data-tools-view='build-path']").click();
+    const betaFilter = page.locator("[data-toolbox-status-filter='beta']");
+    if (await betaFilter.getAttribute("aria-pressed") !== "true") {
+      await betaFilter.click();
+    }
+    await expect(page.locator("[data-build-path-tool='Game Workspace']")).toHaveAttribute("data-build-path-group", "Build/Create");
+    await expect(page.locator("[data-build-path-tool='Colors']")).toHaveAttribute("data-build-path-group", "Design");
+
+    const toolboxSource = await page.evaluate(async () => {
+      const response = await fetch("/toolbox/index.html");
+      return response.text();
     });
-    expect(buildColorTokens).toEqual({
-      build: "#ff2d2d",
-      red: "#ff2d2d",
-    });
-    await expect(page.locator("[data-toolbox-group-label='Marketplace']").first()).toHaveCSS("color", "rgb(9, 11, 15)");
-    await expect(page.locator("[data-toolbox-group-label='Play']").first()).toHaveCSS("color", "rgb(9, 11, 15)");
+    expect(toolboxSource).not.toMatch(/<script(?![^>]+src=)[^>]*>/i);
+    expect(toolboxSource).not.toMatch(/<style[\s>]/i);
+    expect(toolboxSource).not.toMatch(/\sstyle=/i);
+    expect(toolboxSource).not.toContain("onclick=");
+    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
 
     expect(failedRequests).toEqual([]);
     expect(pageErrors).toEqual([]);

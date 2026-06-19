@@ -324,7 +324,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     const designCard = page.locator("main .control-card").filter({
       has: page.locator("h3", { hasText: /^Game Design$/ })
     }).first();
-    await expect(designCard).toHaveClass(/(^|\s)tool-group-design(\s|$)/);
+    await expect(designCard).toHaveClass(/(^|\s)tool-group-journey-design(\s|$)/);
     const allCardsHaveGroupClass = await page.locator("main [data-tools-accordion-list] .control-card").evaluateAll((cards) => (
       cards.every((card) => Array.from(card.classList).some((className) => className.startsWith("tool-group-")))
     ));
@@ -363,7 +363,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     const guestGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
       groups.map((group) => group.dataset.toolsAccordion)
     ));
-    expect(guestGroupLabels).toEqual(["Build/Create", "Design", "Platform", "Play"]);
+    expect(guestGroupLabels).toEqual(["Design", "Graphics", "Objects", "Worlds", "Interface", "Controls", "Rules", "Progression"]);
     await expect(page.locator("[data-tools-accordion='Admin']")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
     await expect(page.locator("[data-tools-accordion-list] .control-card h3", { hasText: /^Progress$/ })).toHaveCount(0);
@@ -431,7 +431,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     const adminGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
       groups.map((group) => group.dataset.toolsAccordion)
     ));
-    expect(adminGroupLabels).toEqual(["Build/Create", "Design", "Platform", "Play"]);
+    expect(adminGroupLabels).toEqual(["Design", "Graphics", "Objects", "Worlds", "Interface", "Controls", "Rules", "Progression"]);
     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
     await page.getByRole("button", { name: "Build Path" }).click();
     await expect(page.locator("[data-build-path-table='workflow']")).toBeVisible();
@@ -665,6 +665,21 @@ test("representative active tool pages align center cleanup and registry group c
     "tool-group-platform",
     "tool-group-play"
   ];
+  const gameJourneyGroupClasses = [
+    "tool-group-idea",
+    "tool-group-journey-design",
+    "tool-group-graphics",
+    "tool-group-journey-audio",
+    "tool-group-objects",
+    "tool-group-worlds",
+    "tool-group-interface",
+    "tool-group-controls",
+    "tool-group-rules",
+    "tool-group-progression",
+    "tool-group-play-test",
+    "tool-group-publish",
+    "tool-group-journey-share"
+  ];
   const { failedRequests, pageErrors, server } = await openRepoPage(page, "/toolbox/index.html?view=group");
 
   try {
@@ -689,7 +704,7 @@ test("representative active tool pages align center cleanup and registry group c
       })
     )));
     const toolboxCardGroupClasses = [...toolboxGroupCardStyles.values()].map((styles) => styles.groupClass);
-    expect(toolboxCardGroupClasses.every((className) => ssotGroupClasses.includes(className))).toBe(true);
+    expect(toolboxCardGroupClasses.every((className) => gameJourneyGroupClasses.includes(className))).toBe(true);
     expect(toolboxCardGroupClasses.filter((className) => legacyGroupClasses.includes(className))).toEqual([]);
 
     for (const tool of activeTools) {
@@ -699,7 +714,10 @@ test("representative active tool pages align center cleanup and registry group c
       await expect(page.locator(".tool-center-panel h1, .tool-center-panel h2, .tool-center-panel h3").first()).toBeVisible();
 
       const expectedFromToolboxGroup = toolboxGroupCardStyles.get(tool.displayName);
-      const expectedGroupClass = expectedFromToolboxGroup?.groupClass || tool.colorGroup;
+      const expectedGroupClass = tool.colorGroup;
+      if (expectedFromToolboxGroup) {
+        expect(gameJourneyGroupClasses).toContain(expectedFromToolboxGroup.groupClass);
+      }
       expect(ssotGroupClasses).toContain(expectedGroupClass);
       expect(legacyGroupClasses).not.toContain(expectedGroupClass);
       const sideColumns = page.locator(".tool-workspace > aside.tool-column");
@@ -734,20 +752,8 @@ test("representative active tool pages align center cleanup and registry group c
         })
       ));
 
-      if (expectedFromToolboxGroup) {
-        expect(sidePanelStyles.map((styles) => styles.borderColor)).toEqual([
-          expectedFromToolboxGroup.borderColor,
-          expectedFromToolboxGroup.borderColor
-        ]);
-        expect(sidePanelStyles.map((styles) => styles.headerColor)).toEqual([
-          expectedFromToolboxGroup.borderColor,
-          expectedFromToolboxGroup.borderColor
-        ]);
-        expect(sidePanelHrColors).toEqual([
-          expectedFromToolboxGroup.borderColor,
-          expectedFromToolboxGroup.borderColor
-        ]);
-      }
+      expect(sidePanelStyles.map((styles) => styles.borderColor)).toEqual(sidePanelStyles.map((styles) => styles.headerColor));
+      expect(sidePanelHrColors).toEqual(sidePanelStyles.map((styles) => styles.borderColor));
     }
 
     expect(failedRequests).toEqual([]);
