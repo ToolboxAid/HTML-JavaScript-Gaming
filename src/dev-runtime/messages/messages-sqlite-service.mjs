@@ -154,6 +154,37 @@ function emotionProfileFromRow(row) {
   };
 }
 
+function messageSegmentFromRow(row) {
+  return {
+    active: activeFromDatabase(row.active),
+    createdAt: row.createdAt,
+    createdBy: row.createdBy,
+    displayOrder: Number(row.displayOrder),
+    emotionProfileKey: row.emotionProfileKey,
+    emotionProfileName: row.emotionProfileName || "",
+    key: row.key,
+    messageKey: row.messageKey,
+    messageName: row.messageName || "",
+    segmentText: row.segmentText,
+    updatedAt: row.updatedAt,
+    updatedBy: row.updatedBy,
+  };
+}
+
+function normalizeRequiredInteger(value, label) {
+  if (value === undefined || value === null || String(value).trim() === "") {
+    throw httpError(`${label} is required.`);
+  }
+  const numberValue = Number(value);
+  if (!Number.isInteger(numberValue)) {
+    throw httpError(`${label} must be a whole number.`);
+  }
+  if (numberValue < 1) {
+    throw httpError(`${label} must be 1 or greater.`);
+  }
+  return numberValue;
+}
+
 export class MessagesSqliteService {
   constructor({
     env = process.env,
@@ -223,10 +254,28 @@ export class MessagesSqliteService {
         updatedBy TEXT NOT NULL
       );
 
+      CREATE TABLE IF NOT EXISTS messages_segments (
+        key TEXT PRIMARY KEY,
+        messageKey TEXT NOT NULL REFERENCES messages_records(key),
+        emotionProfileKey TEXT NOT NULL REFERENCES messages_emotion_profiles(key),
+        segmentText TEXT NOT NULL,
+        displayOrder INTEGER NOT NULL,
+        active INTEGER NOT NULL DEFAULT 1,
+        createdAt TEXT NOT NULL,
+        updatedAt TEXT NOT NULL,
+        createdBy TEXT NOT NULL,
+        updatedBy TEXT NOT NULL
+      );
+
       CREATE INDEX IF NOT EXISTS idx_messages_records_category ON messages_records (categoryKey);
       CREATE INDEX IF NOT EXISTS idx_messages_records_emotion ON messages_records (emotionProfileKey);
       CREATE INDEX IF NOT EXISTS idx_messages_records_createdby ON messages_records (createdBy);
       CREATE INDEX IF NOT EXISTS idx_messages_records_updatedby ON messages_records (updatedBy);
+      CREATE INDEX IF NOT EXISTS idx_messages_segments_message ON messages_segments (messageKey);
+      CREATE INDEX IF NOT EXISTS idx_messages_segments_emotion ON messages_segments (emotionProfileKey);
+      CREATE INDEX IF NOT EXISTS idx_messages_segments_order ON messages_segments (messageKey, displayOrder);
+      CREATE INDEX IF NOT EXISTS idx_messages_segments_createdby ON messages_segments (createdBy);
+      CREATE INDEX IF NOT EXISTS idx_messages_segments_updatedby ON messages_segments (updatedBy);
     `);
   }
 
@@ -541,6 +590,113 @@ export class MessagesSqliteService {
     );
     return this.getMessage(key);
   }
+
+  listMessageSegments() {
+    return this.db().prepare(`
+      SELECT
+        messages_segments.*,
+        messages_records.name AS messageName,
+        messages_emotion_profiles.name AS emotionProfileName
+      FROM messages_segments
+      LEFT JOIN messages_records ON messages_records.key = messages_segments.messageKey
+      LEFT JOIN messages_emotion_profiles ON messages_emotion_profiles.key = messages_segments.emotionProfileKey
+      ORDER BY messages_segments.messageKey ASC, messages_segments.displayOrder ASC,
+        messages_segments.createdAt ASC, messages_segments.key ASC
+    `).all().map(messageSegmentFromRow);
+  }
+
+  getMessageSegment(key) {
+    const row = this.db().prepare(`
+      SELECT
+        messages_segments.*,
+        messages_records.name AS messageName,
+        messages_emotion_profiles.name AS emotionProfileName
+      FROM messages_segments
+      LEFT JOIN messages_records ON messages_records.key = messages_segments.messageKey
+      LEFT JOIN messages_emotion_profiles ON messages_emotion_profiles.key = messages_segments.emotionProfileKey
+      WHERE messages_segments.key = ?
+    `).get(key);
+    if (!row) {
+      throw httpError("Message segment was not found.", 404);
+    }
+    return messageSegmentFromRow(row);
+  }
+
+  normalizeMessageSegmentInput(input = {}, existing = null) {
+    const messageKey = normalizeText(input.messageKey === undefined && existing ? existing.messageKey : input.messageKey).trim();
+    const emotionProfileKey = normalizeText(input.emotionProfileKey === undefined && existing ? existing.emotionProfileKey : input.emotionProfileKey).trim();
+    const segmentText = input.segmentText === undefined && existing ? existing.segmentText : normalizeText(input.segmentText);
+    const displayOrder = normalizeRequiredInteger(
+      input.displayOrder === undefined && existing ? existing.displayOrder : input.displayOrder,
+      "Display order",
+    );
+    if (!messageKey) {
+      throw httpError("Message is required.");
+    }
+    if (!emotionProfileKey) {
+      throw httpError("Emotion profile is required.");
+    }
+    if (!segmentText.trim()) {
+      throw httpError("Segment text is required.");
+    }
+    this.getMessage(messageKey);
+    this.assertActiveEmotionProfile(emotionProfileKey);
+    return {
+      active: normalizeActive(input.active, existing ? existing.active : true),
+      displayOrder,
+      emotionProfileKey,
+      messageKey,
+      segmentText,
+    };
+  }
+
+  createMessageSegment(input = {}, actorKey = "") {
+    const values = this.normalizeMessageSegmentInput(input);
+    const key = createUlid();
+    const now = timestamp();
+    const actor = normalizeActorKey(actorKey);
+    this.db().prepare(`
+      INSERT INTO messages_segments (
+        key, messageKey, emotionProfileKey, segmentText, displayOrder, active,
+        createdAt, updatedAt, createdBy, updatedBy
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      key,
+      values.messageKey,
+      values.emotionProfileKey,
+      values.segmentText,
+      values.displayOrder,
+      activeToDatabase(values.active),
+      now,
+      now,
+      actor,
+      actor,
+    );
+    return this.getMessageSegment(key);
+  }
+
+  updateMessageSegment(key, input = {}, actorKey = "") {
+    const existing = this.getMessageSegment(key);
+    const values = this.normalizeMessageSegmentInput(input, existing);
+    const now = timestamp();
+    this.db().prepare(`
+      UPDATE messages_segments
+      SET messageKey = ?, emotionProfileKey = ?, segmentText = ?, displayOrder = ?,
+        active = ?, updatedAt = ?, updatedBy = ?
+      WHERE key = ?
+    `).run(
+      values.messageKey,
+      values.emotionProfileKey,
+      values.segmentText,
+      values.displayOrder,
+      activeToDatabase(values.active),
+      now,
+      normalizeActorKey(actorKey),
+      key,
+    );
+    return this.getMessageSegment(key);
+  }
 }
 
 export function createMessagesSqliteService(options = {}) {
@@ -632,6 +788,33 @@ export function handleMessagesApiContract({
       return {
         category: service.updateCategory(key, body, actorKey),
         persistence: service.persistenceSummary(),
+      };
+    }
+  }
+
+  if (resource === "segments") {
+    if (normalizedMethod === "GET" && !key) {
+      return {
+        persistence: service.persistenceSummary(),
+        segments: service.listMessageSegments(),
+      };
+    }
+    if (normalizedMethod === "GET" && key) {
+      return {
+        persistence: service.persistenceSummary(),
+        segment: service.getMessageSegment(key),
+      };
+    }
+    if (normalizedMethod === "POST" && !key) {
+      return {
+        persistence: service.persistenceSummary(),
+        segment: service.createMessageSegment(body, actorKey),
+      };
+    }
+    if (normalizedMethod === "POST" && key) {
+      return {
+        persistence: service.persistenceSummary(),
+        segment: service.updateMessageSegment(key, body, actorKey),
       };
     }
   }

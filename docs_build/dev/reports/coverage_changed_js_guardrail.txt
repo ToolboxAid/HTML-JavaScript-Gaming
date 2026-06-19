@@ -11,8 +11,8 @@ Changed runtime JS files considered:
 (0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) toolbox/tools-page-accordions.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(86%) toolbox/messages/messages-api-client.js - executed lines 49/49; executed functions 12/14
-(94%) toolbox/messages/messages.js - executed lines 457/457; executed functions 47/50
+(83%) toolbox/messages/messages-api-client.js - executed lines 61/61; executed functions 15/18
+(95%) toolbox/messages/messages.js - executed lines 713/713; executed functions 69/73
 
 Guardrail warnings:
 (0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: changed runtime JS file missing from coverage; advisory only

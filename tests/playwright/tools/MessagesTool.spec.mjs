@@ -155,6 +155,7 @@ test("Messages tool creates, validates, updates, and persists through Local API 
     await expect(page.locator("[data-messages-count]")).toHaveText("1");
     await expect(page.locator("[data-messages-table]")).toContainText("Forest Warning");
     await expect(page.locator("[data-messages-selected-text]")).toHaveText("The forest gets darker beyond this point.\nWe are being attacked by bats.");
+    await expect(page.locator("[data-messages-segment-context]")).toHaveText("Segments for Forest Warning");
 
     const listResult = await jsonRequest(`${failures.server.baseUrl}/api/messages/messages`);
     expect(listResult.response.ok).toBe(true);
@@ -170,6 +171,80 @@ test("Messages tool creates, validates, updates, and persists through Local API 
     expect(createdMessage.key).toMatch(ULID_PATTERN);
     expect(createdMessage.createdBy).toMatch(ULID_PATTERN);
     expect(createdMessage.updatedBy).toMatch(ULID_PATTERN);
+
+    await page.locator("[data-messages-segment-order]").fill("");
+    await page.getByRole("button", { name: "Save Segment" }).click();
+    await expect(page.locator("[data-messages-segment-validation-card]")).toBeVisible();
+    await expect(page.locator("[data-messages-segment-validation-errors]")).toContainText("Segment Text is required.");
+    await expect(page.locator("[data-messages-segment-validation-errors]")).toContainText("Emotion Profile is required.");
+    await expect(page.locator("[data-messages-segment-validation-errors]")).toContainText("Display Order is required.");
+
+    await page.locator("[data-messages-segment-order]").fill("1");
+    await page.locator("[data-messages-segment-emotion-profile]").selectOption({ label: "Calm" });
+    await page.locator("[data-messages-segment-text]").fill("The forest gets darker beyond this point.");
+    await page.getByRole("button", { name: "Save Segment" }).click();
+    await expect(page.locator("[data-messages-log]")).toHaveText("Saved segment 1.");
+    await expect(page.locator("[data-messages-segments]")).toContainText("The forest gets darker beyond this point.");
+
+    await page.locator("[data-messages-segment-emotion-profile]").selectOption({ label: "Urgent" });
+    await page.locator("[data-messages-segment-text]").fill("We are being attacked by bats.");
+    await page.getByRole("button", { name: "Save Segment" }).click();
+    await expect(page.locator("[data-messages-log]")).toHaveText("Saved segment 2.");
+    await expect(page.locator("[data-messages-segments]")).toContainText("We are being attacked by bats.");
+
+    const segmentsResult = await jsonRequest(`${failures.server.baseUrl}/api/messages/segments`);
+    expect(segmentsResult.response.ok).toBe(true);
+    expect(segmentsResult.payload.ok).toBe(true);
+    const createdSegments = segmentsResult.payload.data.segments.filter((segment) => segment.messageKey === createdMessage.key);
+    expect(createdSegments).toHaveLength(2);
+    expect(createdSegments.map((segment) => segment.displayOrder)).toEqual([1, 2]);
+    createdSegments.forEach((segment) => {
+      expect(segment.key).toMatch(ULID_PATTERN);
+      expect(segment.createdBy).toMatch(ULID_PATTERN);
+      expect(segment.updatedBy).toMatch(ULID_PATTERN);
+    });
+
+    await page.locator("[data-messages-segment-row]").filter({ hasText: "We are being attacked by bats." }).getByRole("button", { name: "Move Up" }).click();
+    await expect(page.locator("[data-messages-log]")).toHaveText("Segment order updated.");
+    await expect(page.locator("[data-messages-segment-row]").first()).toContainText("We are being attacked by bats.");
+
+    await page.locator("[data-messages-segment-row]").filter({ hasText: "We are being attacked by bats." }).getByRole("button", { name: "Edit" }).click();
+    await page.locator("[data-messages-segment-text]").fill("We are being attacked by bats right now.");
+    await page.getByRole("button", { name: "Save Segment" }).click();
+    await expect(page.locator("[data-messages-log]")).toHaveText("Saved segment 1.");
+    await expect(page.locator("[data-messages-segments]")).toContainText("We are being attacked by bats right now.");
+
+    await page.locator("[data-messages-segment-row]").filter({ hasText: "We are being attacked by bats right now." }).getByRole("button", { name: "Disable" }).click();
+    await expect(page.locator("[data-messages-log]")).toHaveText("Disabled segment 1.");
+    await expect(page.locator("[data-messages-segment-row]").filter({ hasText: "We are being attacked by bats right now." })).toContainText("Inactive");
+
+    await page.getByRole("button", { name: "Reload Segments" }).click();
+    await expect(page.locator("[data-messages-log]")).toHaveText("Segments reloaded from the Local API.");
+    await expect(page.locator("[data-messages-segment-row]").filter({ hasText: "We are being attacked by bats right now." })).toContainText("Inactive");
+
+    const updatedSegmentsResult = await jsonRequest(`${failures.server.baseUrl}/api/messages/segments`);
+    const disabledSegment = updatedSegmentsResult.payload.data.segments.find((segment) => segment.segmentText === "We are being attacked by bats right now.");
+    expect(disabledSegment).toEqual(expect.objectContaining({
+      active: false,
+      displayOrder: 1,
+      emotionProfileName: "Urgent",
+      messageKey: createdMessage.key,
+      messageName: "Forest Warning",
+      segmentText: "We are being attacked by bats right now.",
+    }));
+
+    const getSegmentResult = await jsonRequest(`${failures.server.baseUrl}/api/messages/segments/${disabledSegment.key}`);
+    expect(getSegmentResult.response.ok).toBe(true);
+    expect(getSegmentResult.payload.data.segment).toEqual(expect.objectContaining({
+      active: false,
+      key: disabledSegment.key,
+      segmentText: "We are being attacked by bats right now.",
+    }));
+
+    const deleteSegmentResult = await fetch(`${failures.server.baseUrl}/api/messages/segments/${disabledSegment.key}`, {
+      method: "DELETE",
+    });
+    expect(deleteSegmentResult.status).toBe(404);
 
     await page.locator("[data-messages-row]").filter({ hasText: "Forest Warning" }).getByRole("button", { name: "Edit" }).click();
     await page.locator("[data-messages-name]").fill("Forest Warning Updated");
@@ -199,6 +274,15 @@ test("Messages tool creates, validates, updates, and persists through Local API 
       key: createdMessage.key,
       name: "Forest Warning Updated",
       messageText: "The forest gets darker beyond this point.",
+    }));
+
+    const persistedSegmentResult = await jsonRequest(`${restartedServer.baseUrl}/api/messages/segments/${disabledSegment.key}`);
+    expect(persistedSegmentResult.response.ok).toBe(true);
+    expect(persistedSegmentResult.payload.data.segment).toEqual(expect.objectContaining({
+      active: false,
+      displayOrder: 1,
+      key: disabledSegment.key,
+      segmentText: "We are being attacked by bats right now.",
     }));
 
     expect(failures.failedRequests).toEqual([]);

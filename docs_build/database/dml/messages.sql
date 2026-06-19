@@ -3,7 +3,7 @@
 -- Ownership: docs_build/database/dml/messages.sql
 -- Runtime setup/seed operations for this group must run through server-side APIs.
 -- Browser pages must not directly seed authoritative DB records.
--- Owned tables: messages_categories, messages_emotion_profiles, messages_records
+-- Owned tables: messages_categories, messages_emotion_profiles, messages_records, messages_segments
 
 -- DML status: Server-seed-owned.
 -- Setup is performed through the Messages Local API / server-side SQLite service for this PR.

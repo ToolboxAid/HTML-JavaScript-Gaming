@@ -1,49 +1,98 @@
-# scoped git status --short
-M docs_build/database/dml/DML_INDEX.md
-M docs_build/dev/reports/coverage_changed_js_guardrail.txt
-M docs_build/dev/reports/playwright_v8_coverage_report.txt
-M src/dev-runtime/server/local-api-router.mjs
-M src/dev-runtime/server/local-api-server.mjs
-M src/shared/toolbox/tool-metadata-inventory.js
-M tests/helpers/playwrightRepoServer.mjs
-M toolbox/tools-page-accordions.js
-?? docs_build/database/ddl/messages.sql
-?? docs_build/database/dml/messages.sql
-?? docs_build/database/seed/messages.json
-?? docs_build/dev/reports/PR_26171_002-messages-manual-validation.md
-?? docs_build/dev/reports/PR_26171_002-messages-tool-foundation.md
-?? docs_build/dev/reports/PR_26171_002-messages-validation.txt
-?? docs_build/pr/BUILD_PR_26171_002-messages-tool-foundation.md
-?? src/dev-runtime/messages/messages-sqlite-service.mjs
-?? tests/playwright/tools/MessagesTool.spec.mjs
-?? toolbox/messages/index.html
-?? toolbox/messages/messages-api-client.js
-?? toolbox/messages/messages.js
+# git status --short
+M docs_build/database/ddl/messages.sql
+ M docs_build/database/dml/messages.sql
+ M docs_build/database/seed/messages.json
+ M docs_build/dev/commit_comment.txt
+ M docs_build/dev/reports/codex_changed_files.txt
+ M docs_build/dev/reports/codex_review.diff
+ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+ M docs_build/dev/reports/dependency_gating_report.md
+ M docs_build/dev/reports/dependency_hydration_reuse_report.md
+ M docs_build/dev/reports/execution_graph_reuse_report.md
+ M docs_build/dev/reports/failure_fingerprint_report.md
+ M docs_build/dev/reports/filesystem_scan_reduction_report.md
+ M docs_build/dev/reports/incremental_validation_report.md
+ M docs_build/dev/reports/lane_compilation_report.md
+ M docs_build/dev/reports/lane_deduplication_report.md
+ M docs_build/dev/reports/lane_input_validation_report.md
+ M docs_build/dev/reports/lane_manifests/workspace-contract.json
+ M docs_build/dev/reports/lane_runtime_optimization_report.md
+ M docs_build/dev/reports/lane_snapshot_report.md
+ M docs_build/dev/reports/lane_snapshots/workspace-contract.json
+ M docs_build/dev/reports/lane_warm_start_report.md
+ M docs_build/dev/reports/lane_warm_starts/workspace-contract.json
+ M docs_build/dev/reports/monolith_trigger_removal_report.md
+ M docs_build/dev/reports/persistent_lane_manifest_report.md
+ M docs_build/dev/reports/playwright_discovery_ownership_report.md
+ M docs_build/dev/reports/playwright_discovery_scope_report.md
+ M docs_build/dev/reports/playwright_structure_audit.md
+ M docs_build/dev/reports/playwright_v8_coverage_report.txt
+ M docs_build/dev/reports/retry_suppression_report.md
+ M docs_build/dev/reports/slow_path_pruning_report.md
+ M docs_build/dev/reports/static_validation_report.md
+ M docs_build/dev/reports/targeted_file_manifest_report.md
+ M docs_build/dev/reports/test_cleanup_performance_report.md
+ M docs_build/dev/reports/test_cleanup_routing_report.md
+ M docs_build/dev/reports/testing_lane_execution_report.md
+ M docs_build/dev/reports/validation_cache_report.md
+ M docs_build/dev/reports/zero_browser_preflight_report.md
+ M src/dev-runtime/messages/messages-sqlite-service.mjs
+ M tests/playwright/tools/MessagesTool.spec.mjs
+ M toolbox/messages/index.html
+ M toolbox/messages/messages-api-client.js
+ M toolbox/messages/messages.js
+?? docs_build/dev/reports/PR_26171_004-messages-emotion-segments-manual-validation.md
+?? docs_build/dev/reports/PR_26171_004-messages-emotion-segments-validation.txt
+?? docs_build/dev/reports/PR_26171_004-messages-emotion-segments.md
+?? docs_build/pr/BUILD_PR_26171_004-messages-emotion-segments.md
 
-# excluded unrelated untracked files
-docs_build/dev/PROJECT_MULTI_PC.txt
+# git ls-files --others --exclude-standard
+docs_build/dev/reports/PR_26171_004-messages-emotion-segments-manual-validation.md
+docs_build/dev/reports/PR_26171_004-messages-emotion-segments-validation.txt
+docs_build/dev/reports/PR_26171_004-messages-emotion-segments.md
+docs_build/pr/BUILD_PR_26171_004-messages-emotion-segments.md
 
-# git diff --stat (tracked scoped paths)
- docs_build/database/dml/DML_INDEX.md               |  1 +
- .../dev/reports/coverage_changed_js_guardrail.txt  | 38 ++-------
- .../dev/reports/playwright_v8_coverage_report.txt  | 94 ++++++----------------
- src/dev-runtime/server/local-api-router.mjs        | 42 +++++++++-
- src/dev-runtime/server/local-api-server.mjs        |  1 +
- src/shared/toolbox/tool-metadata-inventory.js      | 35 ++++++++
- tests/helpers/playwrightRepoServer.mjs             |  1 +
- toolbox/tools-page-accordions.js                   |  1 +
- 8 files changed, 109 insertions(+), 104 deletions(-)
-
-# untracked scoped files
-docs_build/database/ddl/messages.sql
-docs_build/database/dml/messages.sql
-docs_build/database/seed/messages.json
-docs_build/dev/reports/PR_26171_002-messages-manual-validation.md
-docs_build/dev/reports/PR_26171_002-messages-tool-foundation.md
-docs_build/dev/reports/PR_26171_002-messages-validation.txt
-docs_build/pr/BUILD_PR_26171_002-messages-tool-foundation.md
-src/dev-runtime/messages/messages-sqlite-service.mjs
-tests/playwright/tools/MessagesTool.spec.mjs
-toolbox/messages/index.html
-toolbox/messages/messages-api-client.js
-toolbox/messages/messages.js
+# git diff --stat
+docs_build/database/ddl/messages.sql               |   20 +-
+ docs_build/database/dml/messages.sql               |    2 +-
+ docs_build/database/seed/messages.json             |    3 +-
+ docs_build/dev/commit_comment.txt                  |    2 +-
+ docs_build/dev/reports/codex_changed_files.txt     |  139 +-
+ docs_build/dev/reports/codex_review.diff           | 4710 ++++++++++----------
+ .../dev/reports/coverage_changed_js_guardrail.txt  |    4 +-
+ docs_build/dev/reports/dependency_gating_report.md |    2 +-
+ .../reports/dependency_hydration_reuse_report.md   |   12 +-
+ .../dev/reports/execution_graph_reuse_report.md    |   16 +-
+ .../dev/reports/failure_fingerprint_report.md      |    8 +-
+ .../reports/filesystem_scan_reduction_report.md    |    2 +-
+ .../dev/reports/incremental_validation_report.md   |   14 +-
+ docs_build/dev/reports/lane_compilation_report.md  |   26 +-
+ .../dev/reports/lane_deduplication_report.md       |    2 +-
+ .../dev/reports/lane_input_validation_report.md    |    2 +-
+ .../reports/lane_manifests/workspace-contract.json |   30 +-
+ .../reports/lane_runtime_optimization_report.md    |   14 +-
+ docs_build/dev/reports/lane_snapshot_report.md     |   12 +-
+ .../reports/lane_snapshots/workspace-contract.json |   76 +-
+ docs_build/dev/reports/lane_warm_start_report.md   |   12 +-
+ .../lane_warm_starts/workspace-contract.json       |   44 +-
+ .../dev/reports/monolith_trigger_removal_report.md |    2 +-
+ .../dev/reports/persistent_lane_manifest_report.md |   12 +-
+ .../playwright_discovery_ownership_report.md       |    6 +-
+ .../reports/playwright_discovery_scope_report.md   |    6 +-
+ .../dev/reports/playwright_structure_audit.md      |    8 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |   14 +-
+ docs_build/dev/reports/retry_suppression_report.md |    6 +-
+ docs_build/dev/reports/slow_path_pruning_report.md |   20 +-
+ docs_build/dev/reports/static_validation_report.md |   12 +-
+ .../dev/reports/targeted_file_manifest_report.md   |    8 +-
+ .../dev/reports/test_cleanup_performance_report.md |   26 +-
+ .../dev/reports/test_cleanup_routing_report.md     |    2 +-
+ .../dev/reports/testing_lane_execution_report.md   |   64 +-
+ docs_build/dev/reports/validation_cache_report.md  |   58 +-
+ .../dev/reports/zero_browser_preflight_report.md   |   10 +-
+ .../messages/messages-sqlite-service.mjs           |  183 +
+ tests/playwright/tools/MessagesTool.spec.mjs       |   84 +
+ toolbox/messages/index.html                        |   66 +-
+ toolbox/messages/messages-api-client.js            |   16 +
+ toolbox/messages/messages.js                       |  296 +-
+ 42 files changed, 3355 insertions(+), 2696 deletions(-)

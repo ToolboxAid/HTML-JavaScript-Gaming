@@ -12,7 +12,7 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(87%) Toolbox Index - exercised 3 runtime JS files
+(88%) Toolbox Index - exercised 3 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
 (56%) Theme V2 Shared JS - exercised 2 runtime JS files
 
@@ -22,8 +22,8 @@ Changed runtime JS files covered:
 (0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) toolbox/tools-page-accordions.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(86%) toolbox/messages/messages-api-client.js - executed lines 49/49; executed functions 12/14
-(94%) toolbox/messages/messages.js - executed lines 457/457; executed functions 47/50
+(83%) toolbox/messages/messages-api-client.js - executed lines 61/61; executed functions 15/18
+(95%) toolbox/messages/messages.js - executed lines 713/713; executed functions 69/73
 
 Files with executed line/function counts where available:
 (36%) src/api/server-api-client.js - executed lines 167/167; executed functions 5/14
@@ -31,8 +31,8 @@ Files with executed line/function counts where available:
 (54%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 46/85
 (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
 (76%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 22/29
-(86%) toolbox/messages/messages-api-client.js - executed lines 49/49; executed functions 12/14
-(94%) toolbox/messages/messages.js - executed lines 457/457; executed functions 47/50
+(83%) toolbox/messages/messages-api-client.js - executed lines 61/61; executed functions 15/18
+(95%) toolbox/messages/messages.js - executed lines 713/713; executed functions 69/73
 
 Uncovered or low-coverage changed JS files:
 (0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: uncovered changed runtime JS file; advisory only
@@ -49,5 +49,5 @@ Changed JS files considered:
 (0%) tests/helpers/playwrightRepoServer.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/MessagesTool.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) toolbox/tools-page-accordions.js - changed JS file not collected as browser runtime coverage
-(86%) toolbox/messages/messages-api-client.js - changed JS file with browser V8 coverage
-(94%) toolbox/messages/messages.js - changed JS file with browser V8 coverage
+(83%) toolbox/messages/messages-api-client.js - changed JS file with browser V8 coverage
+(95%) toolbox/messages/messages.js - changed JS file with browser V8 coverage

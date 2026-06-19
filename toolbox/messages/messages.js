@@ -1,13 +1,16 @@
 import {
+  createMessageSegment,
   createEmotionProfile,
   createMessage,
   createMessageCategory,
   listEmotionProfiles,
   listMessageCategories,
   listMessages,
+  listMessageSegments,
   updateEmotionProfile,
   updateMessage,
   updateMessageCategory,
+  updateMessageSegment,
 } from "./messages-api-client.js";
 
 const elements = {
@@ -50,6 +53,18 @@ const elements = {
   selectedName: document.querySelector("[data-messages-selected-name]"),
   selectedStatus: document.querySelector("[data-messages-selected-status]"),
   selectedText: document.querySelector("[data-messages-selected-text]"),
+  segmentActive: document.querySelector("[data-messages-segment-active]"),
+  segmentContext: document.querySelector("[data-messages-segment-context]"),
+  segmentEmotionProfile: document.querySelector("[data-messages-segment-emotion-profile]"),
+  segmentForm: document.querySelector("[data-messages-segment-form]"),
+  segmentKey: document.querySelector("[data-messages-segment-key]"),
+  segmentNew: document.querySelector("[data-messages-segment-new]"),
+  segmentOrder: document.querySelector("[data-messages-segment-order]"),
+  segmentReload: document.querySelector("[data-messages-segment-reload]"),
+  segmentRows: document.querySelector("[data-messages-segments]"),
+  segmentText: document.querySelector("[data-messages-segment-text]"),
+  segmentValidationCard: document.querySelector("[data-messages-segment-validation-card]"),
+  segmentValidationErrors: document.querySelector("[data-messages-segment-validation-errors]"),
   table: document.querySelector("[data-messages-table]"),
   text: document.querySelector("[data-messages-text]"),
   validationCard: document.querySelector("[data-messages-validation-card]"),
@@ -60,6 +75,7 @@ const state = {
   categories: [],
   emotionProfiles: [],
   messages: [],
+  segments: [],
   selectedMessageKey: "",
 };
 
@@ -100,26 +116,42 @@ function createButton(label, dataName, value) {
   return button;
 }
 
-function clearValidation() {
-  if (elements.validationErrors) {
-    elements.validationErrors.replaceChildren();
+function clearListValidation(list, card) {
+  if (list) {
+    list.replaceChildren();
   }
-  if (elements.validationCard) {
-    elements.validationCard.hidden = true;
+  if (card) {
+    card.hidden = true;
   }
 }
 
-function showValidation(errors) {
-  if (!elements.validationErrors || !elements.validationCard) {
+function showListValidation(errors, list, card) {
+  if (!list || !card) {
     return;
   }
-  elements.validationErrors.replaceChildren();
+  list.replaceChildren();
   errors.forEach((error) => {
     const item = document.createElement("li");
     item.textContent = error;
-    elements.validationErrors.append(item);
+    list.append(item);
   });
-  elements.validationCard.hidden = errors.length === 0;
+  card.hidden = errors.length === 0;
+}
+
+function clearValidation() {
+  clearListValidation(elements.validationErrors, elements.validationCard);
+}
+
+function showValidation(errors) {
+  showListValidation(errors, elements.validationErrors, elements.validationCard);
+}
+
+function clearSegmentValidation() {
+  clearListValidation(elements.segmentValidationErrors, elements.segmentValidationCard);
+}
+
+function showSegmentValidation(errors) {
+  showListValidation(errors, elements.segmentValidationErrors, elements.segmentValidationCard);
 }
 
 function activeCategories() {
@@ -226,6 +258,64 @@ function renderMessageRows() {
   });
 }
 
+function selectedMessageSegments() {
+  return state.segments
+    .filter((segment) => segment.messageKey === state.selectedMessageKey)
+    .sort((left, right) => left.displayOrder - right.displayOrder || left.createdAt.localeCompare(right.createdAt) || left.key.localeCompare(right.key));
+}
+
+function renderSegmentRows() {
+  if (!elements.segmentRows) {
+    return;
+  }
+  elements.segmentRows.replaceChildren();
+  if (!state.selectedMessageKey) {
+    const row = document.createElement("tr");
+    const cell = document.createElement("td");
+    cell.colSpan = 5;
+    cell.textContent = "Save or select a message before adding segments.";
+    row.append(cell);
+    elements.segmentRows.append(row);
+    return;
+  }
+  const segments = selectedMessageSegments();
+  if (!segments.length) {
+    const row = document.createElement("tr");
+    const cell = document.createElement("td");
+    cell.colSpan = 5;
+    cell.textContent = "No segments saved for this message.";
+    row.append(cell);
+    elements.segmentRows.append(row);
+    return;
+  }
+  segments.forEach((segment, index) => {
+    const row = document.createElement("tr");
+    row.dataset.messagesSegmentRow = segment.key;
+    const actions = document.createElement("td");
+    const group = document.createElement("div");
+    group.className = "action-group action-group--tight";
+    const moveUp = createButton("Move Up", "messagesSegmentMoveUp", segment.key);
+    const moveDown = createButton("Move Down", "messagesSegmentMoveDown", segment.key);
+    moveUp.disabled = index === 0;
+    moveDown.disabled = index === segments.length - 1;
+    group.append(
+      createButton("Edit", "messagesSegmentEdit", segment.key),
+      moveUp,
+      moveDown,
+      createButton(segment.active ? "Disable" : "Enable", "messagesSegmentToggle", segment.key),
+    );
+    actions.append(group);
+    row.append(
+      createCell(String(segment.displayOrder)),
+      createCell(segment.segmentText),
+      createCell(segment.emotionProfileName || "Unknown"),
+      createCell(statusForActive(segment.active)),
+      actions,
+    );
+    elements.segmentRows.append(row);
+  });
+}
+
 function renderSelectedMessage() {
   const selected = state.messages.find((message) => message.key === state.selectedMessageKey);
   setText(elements.selectedName, selected?.name || "None");
@@ -233,6 +323,7 @@ function renderSelectedMessage() {
   setText(elements.selectedEmotion, selected?.emotionProfileName || "None");
   setText(elements.selectedStatus, selected ? statusForActive(selected.active) : "None");
   setText(elements.selectedText, selected?.messageText || "No message selected.");
+  setText(elements.segmentContext, selected ? `Segments for ${selected.name}` : "Save or select a message before adding segments.");
 }
 
 function renderCounts() {
@@ -250,10 +341,12 @@ function renderPersistence(persistence = {}) {
 function render(persistence = {}) {
   populateSelect(elements.category, activeCategories(), "Select category");
   populateSelect(elements.emotionProfile, activeEmotionProfiles(), "Select emotion profile");
+  populateSelect(elements.segmentEmotionProfile, activeEmotionProfiles(), "Select emotion profile");
   renderCategoryRows();
   renderEmotionRows();
   renderMessageRows();
   renderSelectedMessage();
+  renderSegmentRows();
   renderCounts();
   renderPersistence(persistence);
 }
@@ -286,6 +379,55 @@ function validateMessage(values) {
   return errors;
 }
 
+function nextSegmentOrder() {
+  const segments = selectedMessageSegments();
+  if (!segments.length) {
+    return 1;
+  }
+  return Math.max(...segments.map((segment) => segment.displayOrder)) + 1;
+}
+
+function resetSegmentForm() {
+  setValue(elements.segmentKey, "");
+  setValue(elements.segmentEmotionProfile, "");
+  setValue(elements.segmentOrder, state.selectedMessageKey ? String(nextSegmentOrder()) : "");
+  setValue(elements.segmentText, "");
+  setChecked(elements.segmentActive, true);
+  clearSegmentValidation();
+}
+
+function segmentFormValues() {
+  return {
+    active: elements.segmentActive?.checked !== false,
+    displayOrder: elements.segmentOrder?.value || "",
+    emotionProfileKey: elements.segmentEmotionProfile?.value || "",
+    messageKey: state.selectedMessageKey,
+    segmentText: elements.segmentText?.value || "",
+  };
+}
+
+function validateSegment(values) {
+  const errors = [];
+  if (!state.selectedMessageKey) {
+    errors.push("Save or select a message before adding segments.");
+  }
+  if (!values.segmentText.trim()) {
+    errors.push("Segment Text is required.");
+  }
+  if (!values.emotionProfileKey) {
+    errors.push("Emotion Profile is required.");
+  }
+  if (String(values.displayOrder).trim() === "") {
+    errors.push("Display Order is required.");
+  } else {
+    const displayOrder = Number(values.displayOrder);
+    if (!Number.isInteger(displayOrder) || displayOrder < 1) {
+      errors.push("Display Order must be a whole number of 1 or greater.");
+    }
+  }
+  return errors;
+}
+
 function resetMessageForm() {
   state.selectedMessageKey = "";
   setValue(elements.key, "");
@@ -297,7 +439,9 @@ function resetMessageForm() {
   setChecked(elements.active, true);
   setText(elements.editorHeading, "New Message");
   clearValidation();
+  resetSegmentForm();
   renderSelectedMessage();
+  renderSegmentRows();
 }
 
 function editMessage(messageKey) {
@@ -315,7 +459,22 @@ function editMessage(messageKey) {
   setChecked(elements.active, message.active);
   setText(elements.editorHeading, `Edit ${message.name}`);
   clearValidation();
+  resetSegmentForm();
   renderSelectedMessage();
+  renderSegmentRows();
+}
+
+function editSegment(segmentKey) {
+  const segment = state.segments.find((candidate) => candidate.key === segmentKey);
+  if (!segment) {
+    return;
+  }
+  setValue(elements.segmentKey, segment.key);
+  setValue(elements.segmentEmotionProfile, segment.emotionProfileKey);
+  setValue(elements.segmentOrder, String(segment.displayOrder));
+  setValue(elements.segmentText, segment.segmentText);
+  setChecked(elements.segmentActive, segment.active);
+  clearSegmentValidation();
 }
 
 function resetCategoryForm() {
@@ -366,11 +525,21 @@ async function loadAll() {
   const categoryPayload = listMessageCategories();
   const emotionPayload = listEmotionProfiles();
   const messagesPayload = listMessages();
+  const segmentsPayload = listMessageSegments();
   state.categories = categoryPayload.categories || [];
   state.emotionProfiles = emotionPayload.emotionProfiles || [];
   state.messages = messagesPayload.messages || [];
-  render(messagesPayload.persistence || categoryPayload.persistence || emotionPayload.persistence);
+  state.segments = segmentsPayload.segments || [];
+  render(messagesPayload.persistence || categoryPayload.persistence || emotionPayload.persistence || segmentsPayload.persistence);
   setText(elements.log, "Messages loaded from the Local API.");
+}
+
+async function reloadSegments() {
+  const segmentsPayload = listMessageSegments();
+  state.segments = segmentsPayload.segments || [];
+  renderSegmentRows();
+  resetSegmentForm();
+  renderPersistence(segmentsPayload.persistence || {});
 }
 
 async function refreshAfterSave(message) {
@@ -413,6 +582,111 @@ elements.table?.addEventListener("click", (event) => {
   if (editButton) {
     editMessage(editButton.dataset.messagesEdit);
     setText(elements.log, "Message loaded for editing.");
+  }
+});
+
+elements.segmentForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const values = segmentFormValues();
+  const errors = validateSegment(values);
+  if (errors.length) {
+    showSegmentValidation(errors);
+    setText(elements.log, "Segment save blocked by validation.");
+    return;
+  }
+  clearSegmentValidation();
+  try {
+    const segmentKey = elements.segmentKey?.value || "";
+    const result = segmentKey
+      ? updateMessageSegment(segmentKey, values)
+      : createMessageSegment(values);
+    await reloadSegments();
+    setText(elements.log, `Saved segment ${result.segment.displayOrder}.`);
+  } catch (error) {
+    showSegmentValidation([error instanceof Error ? error.message : String(error || "Segment save failed.")]);
+    setText(elements.log, "Segment save failed.");
+  }
+});
+
+elements.segmentNew?.addEventListener("click", () => {
+  resetSegmentForm();
+  setText(elements.log, "Ready for a new segment.");
+});
+
+elements.segmentReload?.addEventListener("click", async () => {
+  try {
+    await reloadSegments();
+    setText(elements.log, "Segments reloaded from the Local API.");
+  } catch (error) {
+    showSegmentValidation([error instanceof Error ? error.message : String(error || "Segments reload failed.")]);
+    setText(elements.log, "Segments reload failed.");
+  }
+});
+
+elements.segmentRows?.addEventListener("click", async (event) => {
+  const editButton = event.target.closest("[data-messages-segment-edit]");
+  if (editButton) {
+    editSegment(editButton.dataset.messagesSegmentEdit);
+    setText(elements.log, "Segment loaded for editing.");
+    return;
+  }
+
+  const moveUpButton = event.target.closest("[data-messages-segment-move-up]");
+  const moveDownButton = event.target.closest("[data-messages-segment-move-down]");
+  if (moveUpButton || moveDownButton) {
+    const segmentKey = moveUpButton?.dataset.messagesSegmentMoveUp || moveDownButton?.dataset.messagesSegmentMoveDown;
+    const direction = moveUpButton ? -1 : 1;
+    const segments = selectedMessageSegments();
+    const currentIndex = segments.findIndex((segment) => segment.key === segmentKey);
+    const target = segments[currentIndex + direction];
+    const current = segments[currentIndex];
+    if (!current || !target) {
+      return;
+    }
+    try {
+      updateMessageSegment(current.key, {
+        active: current.active,
+        displayOrder: target.displayOrder,
+        emotionProfileKey: current.emotionProfileKey,
+        messageKey: current.messageKey,
+        segmentText: current.segmentText,
+      });
+      updateMessageSegment(target.key, {
+        active: target.active,
+        displayOrder: current.displayOrder,
+        emotionProfileKey: target.emotionProfileKey,
+        messageKey: target.messageKey,
+        segmentText: target.segmentText,
+      });
+      await reloadSegments();
+      setText(elements.log, "Segment order updated.");
+    } catch (error) {
+      showSegmentValidation([error instanceof Error ? error.message : String(error || "Segment reorder failed.")]);
+      setText(elements.log, "Segment reorder failed.");
+    }
+    return;
+  }
+
+  const toggleButton = event.target.closest("[data-messages-segment-toggle]");
+  if (toggleButton) {
+    const segment = state.segments.find((candidate) => candidate.key === toggleButton.dataset.messagesSegmentToggle);
+    if (!segment) {
+      return;
+    }
+    try {
+      const result = updateMessageSegment(segment.key, {
+        active: !segment.active,
+        displayOrder: segment.displayOrder,
+        emotionProfileKey: segment.emotionProfileKey,
+        messageKey: segment.messageKey,
+        segmentText: segment.segmentText,
+      });
+      await reloadSegments();
+      setText(elements.log, `${result.segment.active ? "Enabled" : "Disabled"} segment ${result.segment.displayOrder}.`);
+    } catch (error) {
+      showSegmentValidation([error instanceof Error ? error.message : String(error || "Segment status update failed.")]);
+      setText(elements.log, "Segment status update failed.");
+    }
   }
 });
 

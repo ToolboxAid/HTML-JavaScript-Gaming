@@ -1,0 +1,102 @@
+PR_26171_004-messages-emotion-segments validation report
+
+Branch validation:
+PASS
+
+Current branch:
+main
+
+Latest main validation:
+PASS - `git rev-list --left-right --count main...origin/main` returned `0 0`.
+
+Targeted syntax/static checks:
+PASS
+
+Commands:
+- node --check src/dev-runtime/messages/messages-sqlite-service.mjs
+- node --check toolbox/messages/messages-api-client.js
+- node --check toolbox/messages/messages.js
+- node --check tests/playwright/tools/MessagesTool.spec.mjs
+
+Theme V2 / HTML restriction validation:
+PASS
+
+Evidence:
+- `rg -n "<style| style=| on[a-z]+=" toolbox/messages/index.html` returned no matches.
+- Inline script guard returned `PASS no inline script tags in toolbox/messages/index.html`.
+
+Local API / SQLite segment contract probe:
+PASS
+
+Evidence:
+- `POST /api/messages/segments` without Display Order returned `400` with `Display order is required.`
+- `POST /api/messages/segments` without Emotion Profile returned `400` with `Emotion profile is required.`
+- `POST /api/messages/segments` without Segment Text returned `400` with `Segment text is required.`
+- `POST /api/messages/segments` created a segment.
+- `POST /api/messages/segments/:key` updated segment text, Display Order, and Active/Inactive status.
+- `GET /api/messages/segments` listed the segment.
+- `GET /api/messages/segments/:key` returned the segment after Local API restart against the same SQLite file.
+
+Playwright:
+PASS
+
+Command:
+- `npx playwright test tests/playwright/tools/MessagesTool.spec.mjs --project=playwright --workers=1 --reporter=list`
+
+Result:
+- 1 passed.
+
+Playwright behaviors covered:
+- Messages page loads.
+- Segment required validation displays for Segment Text, Emotion Profile, and Display Order.
+- Create Segment works.
+- Edit Segment works.
+- Reorder Segment works.
+- Disable Segment works using Active/Inactive.
+- Reload Segments reads from the Local API.
+- Local API persistence works.
+- SQLite persistence works across Local API restart.
+- `DELETE /api/messages/segments/:key` returns `404`.
+
+Requested workspace lane:
+FAIL
+
+Command:
+- `npm run test:workspace-v2`
+
+Initial result:
+- 5 failed.
+- Failures included unavailable API requests to `http://127.0.0.1:5501/api/...`.
+
+Rerun with Local API runtime started at `http://127.0.0.1:5501`:
+- 3 passed.
+- 2 failed.
+
+Remaining failures:
+- `RootToolsFutureState.spec.mjs:246` expected `Tool Count: 13/42`; current runtime returned `Tool Count: 14/43`.
+- `RootToolsFutureState.spec.mjs:455` expected alphabetical order with `Game Hub` before `Game Journey`; current page rendered `Game Journey` before `Game Hub`.
+
+Failure classification:
+- BLOCKER for the requested workspace lane.
+- Out of scope for this Messages segment PR.
+- Not changed in this PR to preserve one-purpose scope.
+
+Coverage reports:
+PASS with advisory WARN entries for server-side files not collected by browser V8 coverage.
+
+Evidence:
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+
+Diff validation:
+PASS
+
+Command:
+- `git diff --check -- <PR_26171_004 changed files>`
+
+Result:
+- No whitespace errors. Git reported CRLF normalization warnings for existing line-ending behavior only.
+
+Skipped validation:
+- Full samples validation skipped. This PR does not modify sample JSON, sample runtime, or shared sample framework behavior.
+- Full suite skipped. Targeted Messages validation and the requested workspace lane were run.

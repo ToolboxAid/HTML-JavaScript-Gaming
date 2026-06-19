@@ -60,3 +60,19 @@ export function createMessage(input) {
 export function updateMessage(messageKey, input) {
   return writeData(`/messages/messages/${encodeURIComponent(messageKey)}`, input, "Update message");
 }
+
+export function listMessageSegments() {
+  return readData("/messages/segments", "Message segments list");
+}
+
+export function getMessageSegment(segmentKey) {
+  return readData(`/messages/segments/${encodeURIComponent(segmentKey)}`, "Message segment");
+}
+
+export function createMessageSegment(input) {
+  return writeData("/messages/segments", input, "Create message segment");
+}
+
+export function updateMessageSegment(segmentKey, input) {
+  return writeData(`/messages/segments/${encodeURIComponent(segmentKey)}`, input, "Update message segment");
+}

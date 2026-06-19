@@ -203,6 +203,70 @@
                         <article class="card">
                             <div class="card-body content-stack">
                                 <div>
+                                    <div class="kicker">Ordered Content</div>
+                                    <h3>Message Segments</h3>
+                                    <p data-messages-segment-context>Save or select a message before adding segments.</p>
+                                </div>
+                                <form class="content-stack" data-messages-segment-form>
+                                    <input type="hidden" data-messages-segment-key>
+                                    <div class="table-wrapper">
+                                        <table class="data-table tool-form-table" aria-label="Message segment editor fields">
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row"><label for="messagesSegmentOrder">Display Order</label></th>
+                                                    <td><input id="messagesSegmentOrder" type="number" min="1" step="1" data-messages-segment-order></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="messagesSegmentEmotionProfile">Emotion Profile</label></th>
+                                                    <td><select id="messagesSegmentEmotionProfile" data-messages-segment-emotion-profile></select></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="messagesSegmentText">Segment Text</label></th>
+                                                    <td><textarea id="messagesSegmentText" rows="5" data-messages-segment-text></textarea></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Status</th>
+                                                    <td>
+                                                        <label>
+                                                            <input type="checkbox" data-messages-segment-active checked>
+                                                            Active
+                                                        </label>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="action-group">
+                                        <button class="btn" type="submit">Save Segment</button>
+                                        <button class="btn" type="button" data-messages-segment-new>New Segment</button>
+                                        <button class="btn" type="button" data-messages-segment-reload>Reload Segments</button>
+                                    </div>
+                                </form>
+                                <div class="status" data-messages-segment-validation-card hidden>
+                                    <p>Segment needs required fields.</p>
+                                    <ul data-messages-segment-validation-errors></ul>
+                                </div>
+                                <div class="table-wrapper">
+                                    <table class="data-table" aria-label="Message segments">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Order</th>
+                                                <th scope="col">Segment Text</th>
+                                                <th scope="col">Emotion</th>
+                                                <th scope="col">Status</th>
+                                                <th scope="col">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody data-messages-segments>
+                                            <tr><td colspan="5">Loading segments.</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="card">
+                            <div class="card-body content-stack">
+                                <div>
                                     <div class="kicker">Repository</div>
                                     <h3>Messages</h3>
                                 </div>
@@ -252,7 +316,7 @@
                             <details class="vertical-accordion" open>
                                 <summary>Future Compatibility</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>Segmented message support is planned for a future PR.</p>
+                                    <p>Message segments are stored as ordered text with emotion profiles.</p>
                                     <p>This tool stores message text exactly as entered.</p>
                                 </div>
                             </details>
