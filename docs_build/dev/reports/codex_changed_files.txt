@@ -1,146 +1,26 @@
 # git status --short
-M account/achievements.html
- M admin/invitations.html
- M admin/roles.html
- M admin/site-setup.html
- M admin/system-health.html
- M admin/users.html
- M assets/theme-v2/js/account-achievements.js
- M assets/theme-v2/js/admin-invitations.js
- M assets/theme-v2/js/admin-service-page-data.js
- M assets/theme-v2/js/admin-system-health.js
- M assets/theme-v2/partials/header-nav.html
- M docs_build/dev/PROJECT_INSTRUCTIONS.md
- M docs_build/dev/admin-notes/BusinessPlan.txt
- M docs_build/dev/admin-notes/deployment-uat-prod/index.txt
- M docs_build/dev/admin-notes/index.txt
- M docs_build/dev/admin-notes/tools/index.txt
- M docs_build/dev/reports/codex_changed_files.txt
+M docs_build/dev/reports/codex_changed_files.txt
  M docs_build/dev/reports/codex_review.diff
  M docs_build/dev/reports/coverage_changed_js_guardrail.txt
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M owner/grouping-colors.html
- M src/api/admin-invitations-api-client.js
- M src/api/admin-owner-navigation.js
- M src/dev-runtime/admin/header-nav.local.html
- M src/dev-runtime/memberships/membership-assignment-service.mjs
- M src/dev-runtime/persistence/mock-db-store.js
- M src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js
- M src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
- M src/dev-runtime/persistence/tool-repositories/game-workspace-mock-repository.js
- M src/dev-runtime/server/local-api-router.mjs
- M src/shared/toolbox/tool-metadata-inventory.js
- M tests/playwright/tools/AdminDbViewer.spec.mjs
- M tests/playwright/tools/AdminInvitationsNavPage.spec.mjs
- M tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
- M tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
- M tests/playwright/tools/BuildPathProgressSimplification.spec.mjs
- M tests/playwright/tools/GameDesignMockRepository.spec.mjs
- M tests/playwright/tools/GameJourneyTool.spec.mjs
- M tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs
- M tests/playwright/tools/LoginSessionMode.spec.mjs
- M tests/playwright/tools/RootToolsFutureState.spec.mjs
- M tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs
- M tests/playwright/tools/ToolNavigationPrevNext.spec.mjs
- M tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
  M tests/playwright/tools/ToolboxRoutePages.spec.mjs
- M toolbox/colors/index.html
- M toolbox/controls/index.html
- M toolbox/game-configuration/index.html
- M toolbox/game-design/game-design.js
- M toolbox/game-design/index.html
- M toolbox/game-journey/game-journey.js
- M toolbox/game-workspace/game-workspace-api-client.js
- M toolbox/game-workspace/game-workspace.js
- M toolbox/game-workspace/index.html
- M toolbox/project-workspace/index.html
- M toolbox/saved-data/index.html
- M toolbox/tags/index.html
  M toolbox/tools-page-accordions.js
- M toolbox/users/index.html
-?? docs_build/dev/admin-notes/GFS-AI-Credits-Reseller-Strategy.pdf
-?? docs_build/dev/admin-notes/engine/GameLoop.txt
-?? docs_build/dev/reports/PR_26170_009-friendly-naming-audit.md
-?? docs_build/dev/reports/PR_26170_010-friendly-visible-copy.md
-?? docs_build/dev/reports/PR_26170_011-friendly-metadata-vars.md
-?? docs_build/dev/reports/PR_26170_012-friendly-routes-folders.md
-?? docs_build/pr/BUILD_PR_26170_009-friendly-naming-audit.md
-?? docs_build/pr/BUILD_PR_26170_010-friendly-visible-copy.md
-?? docs_build/pr/BUILD_PR_26170_011-friendly-metadata-vars.md
-?? docs_build/pr/BUILD_PR_26170_012-friendly-routes-folders.md
-?? toolbox/game-crew/
+?? docs_build/dev/admin-notes/GFS_Create_Bucket_Workbook.pdf
+?? docs_build/dev/admin-notes/GFS_Idea_Bucket_Workbook.pdf
+?? docs_build/dev/reports/PR_26170_013-game-journey-friendly-descriptions.md
+?? docs_build/pr/BUILD_PR_26170_013-game-journey-friendly-descriptions.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/admin-notes/GFS-AI-Credits-Reseller-Strategy.pdf
-docs_build/dev/admin-notes/engine/GameLoop.txt
-docs_build/dev/reports/PR_26170_009-friendly-naming-audit.md
-docs_build/dev/reports/PR_26170_010-friendly-visible-copy.md
-docs_build/dev/reports/PR_26170_011-friendly-metadata-vars.md
-docs_build/dev/reports/PR_26170_012-friendly-routes-folders.md
-docs_build/pr/BUILD_PR_26170_009-friendly-naming-audit.md
-docs_build/pr/BUILD_PR_26170_010-friendly-visible-copy.md
-docs_build/pr/BUILD_PR_26170_011-friendly-metadata-vars.md
-docs_build/pr/BUILD_PR_26170_012-friendly-routes-folders.md
-toolbox/game-crew/index.html
+docs_build/dev/admin-notes/GFS_Create_Bucket_Workbook.pdf
+docs_build/dev/admin-notes/GFS_Idea_Bucket_Workbook.pdf
+docs_build/dev/reports/PR_26170_013-game-journey-friendly-descriptions.md
+docs_build/pr/BUILD_PR_26170_013-game-journey-friendly-descriptions.md
 
 # git diff --stat
-account/achievements.html                          |     4 +-
- admin/invitations.html                             |    26 +-
- admin/roles.html                                   |     8 +-
- admin/site-setup.html                              |     6 +-
- admin/system-health.html                           |    12 +-
- admin/users.html                                   |    22 +-
- assets/theme-v2/js/account-achievements.js         |    14 +-
- assets/theme-v2/js/admin-invitations.js            |    76 +-
- assets/theme-v2/js/admin-service-page-data.js      |    36 +-
- assets/theme-v2/js/admin-system-health.js          |     2 +-
- assets/theme-v2/partials/header-nav.html           |     2 +-
- docs_build/dev/PROJECT_INSTRUCTIONS.md             |    36 +-
- docs_build/dev/admin-notes/BusinessPlan.txt        |    10 +-
- .../dev/admin-notes/deployment-uat-prod/index.txt  |     6 +-
- docs_build/dev/admin-notes/index.txt               |     3 +-
- docs_build/dev/admin-notes/tools/index.txt         |    16 +-
- docs_build/dev/reports/codex_changed_files.txt     |   156 +-
- docs_build/dev/reports/codex_review.diff           | 26780 ++++++++++++++++---
- .../dev/reports/coverage_changed_js_guardrail.txt  |    29 +
- .../dev/reports/playwright_v8_coverage_report.txt  |    62 +-
- owner/grouping-colors.html                         |    16 +-
- src/api/admin-invitations-api-client.js            |    26 +-
- src/api/admin-owner-navigation.js                  |     6 +-
- src/dev-runtime/admin/header-nav.local.html        |     2 +-
- .../memberships/membership-assignment-service.mjs  |     2 +-
- src/dev-runtime/persistence/mock-db-store.js       |     2 +-
- .../game-design-mock-repository.js                 |    10 +-
- .../game-journey-mock-repository.js                |    28 +-
- .../game-workspace-mock-repository.js              |     2 +-
- src/dev-runtime/server/local-api-router.mjs        |    83 +-
- src/shared/toolbox/tool-metadata-inventory.js      |    32 +-
- tests/playwright/tools/AdminDbViewer.spec.mjs      |    36 +-
- .../tools/AdminInvitationsNavPage.spec.mjs         |    58 +-
- .../tools/AdminOwnerNavigationBoundary.spec.mjs    |    10 +-
- .../tools/AdminPlatformToolsWireframes.spec.mjs    |    18 +-
- .../tools/BuildPathProgressSimplification.spec.mjs |     2 +-
- .../tools/GameDesignMockRepository.spec.mjs        |    10 +-
- tests/playwright/tools/GameJourneyTool.spec.mjs    |     4 +-
- .../tools/GameWorkspaceMockRepository.spec.mjs     |    30 +-
- tests/playwright/tools/LoginSessionMode.spec.mjs   |     8 +-
- .../playwright/tools/RootToolsFutureState.spec.mjs |    15 +-
- .../tools/ToolDisplayModeNavigation.spec.mjs       |     4 +-
- .../tools/ToolNavigationPrevNext.spec.mjs          |     2 +-
- .../tools/ToolboxAdminMetadataSsot.spec.mjs        |    10 +-
- tests/playwright/tools/ToolboxRoutePages.spec.mjs  |    84 +-
- toolbox/colors/index.html                          |     8 +-
- toolbox/controls/index.html                        |     2 +-
- toolbox/game-configuration/index.html              |     2 +-
- toolbox/game-design/game-design.js                 |     6 +-
- toolbox/game-design/index.html                     |    20 +-
- toolbox/game-journey/game-journey.js               |     2 +-
- .../game-workspace/game-workspace-api-client.js    |     2 +-
- toolbox/game-workspace/game-workspace.js           |    22 +-
- toolbox/game-workspace/index.html                  |    28 +-
- toolbox/project-workspace/index.html               |    12 +-
- toolbox/saved-data/index.html                      |     2 +-
- toolbox/tags/index.html                            |    12 +-
- toolbox/tools-page-accordions.js                   |     2 +-
- toolbox/users/index.html                           |    45 +-
- 59 files changed, 23538 insertions(+), 4433 deletions(-)
+docs_build/dev/reports/codex_changed_files.txt     |   152 +-
+ docs_build/dev/reports/codex_review.diff           | 31133 +------------------
+ .../dev/reports/coverage_changed_js_guardrail.txt  |     2 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |    11 +-
+ tests/playwright/tools/ToolboxRoutePages.spec.mjs  |    25 +
+ toolbox/tools-page-accordions.js                   |    22 +-
+ 6 files changed, 297 insertions(+), 31048 deletions(-)

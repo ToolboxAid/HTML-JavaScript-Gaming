@@ -83,6 +83,22 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
         "Publish",
         "Share"
     ]);
+    const gameJourneyAccordionLabels = Object.freeze({
+        "Idea": "xxx% - Idea: Dream, brainstorm, and explore",
+        "Create": "xxx% - Create: Set up your game and crew",
+        "Design": "xxx% - Design: Shape the player experience",
+        "Graphics": "xxx% - Graphics: Create the look of your game",
+        "Audio": "xxx% - Audio: Bring your world to life with sound",
+        "Objects": "xxx% - Objects: Build things players can interact with",
+        "Worlds": "xxx% - Worlds: Design places to explore",
+        "Interface": "xxx% - Interface: Create what players see and use",
+        "Controls": "xxx% - Controls: Define how players play",
+        "Rules": "xxx% - Rules: Make your game come alive",
+        "Progression": "xxx% - Progression: Reward players and keep them engaged",
+        "Play Test": "xxx% - Play Test: See how your game feels",
+        "Publish": "xxx% - Publish: Prepare your game for launch",
+        "Share": "xxx% - Share: Grow your community"
+    });
     const gameJourneyGroupSwatches = Object.freeze({
         "Idea": "swatch-red",
         "Create": "swatch-amber",
@@ -769,11 +785,11 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
     function createGroupLabel(groupName, visibleText = groupName) {
         const label = document.createElement("span");
         label.className = "content-cluster";
-        label.dataset.toolboxGroupBadge = visibleText;
+        label.dataset.toolboxGroupBadge = groupName;
 
         const text = document.createElement("span");
         text.className = "swatch-label " + groupSwatch(groupName);
-        text.dataset.toolboxGroupLabel = visibleText;
+        text.dataset.toolboxGroupLabel = groupName;
         text.textContent = visibleText;
 
         label.append(createGroupSwatch(groupName), text);
@@ -1174,7 +1190,7 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
         details.open = isOpen;
 
         const summary = document.createElement("summary");
-        summary.append(createGroupLabel(group.title));
+        summary.append(createGroupLabel(group.title, gameJourneyAccordionLabels[group.title] || group.title));
 
         const body = document.createElement("div");
         body.className = "accordion-body";

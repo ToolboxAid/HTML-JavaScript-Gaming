@@ -41,6 +41,23 @@ const GAME_JOURNEY_GROUP_ORDER = Object.freeze([
   "Share",
 ]);
 
+const GAME_JOURNEY_ACCORDION_LABELS = Object.freeze([
+  "xxx% - Idea: Dream, brainstorm, and explore",
+  "xxx% - Create: Set up your game and crew",
+  "xxx% - Design: Shape the player experience",
+  "xxx% - Graphics: Create the look of your game",
+  "xxx% - Audio: Bring your world to life with sound",
+  "xxx% - Objects: Build things players can interact with",
+  "xxx% - Worlds: Design places to explore",
+  "xxx% - Interface: Create what players see and use",
+  "xxx% - Controls: Define how players play",
+  "xxx% - Rules: Make your game come alive",
+  "xxx% - Progression: Reward players and keep them engaged",
+  "xxx% - Play Test: See how your game feels",
+  "xxx% - Publish: Prepare your game for launch",
+  "xxx% - Share: Grow your community",
+]);
+
 const GAME_JOURNEY_GROUP_COLORS = Object.freeze({
   "Idea": { hex: "#FF2D2D", rgb: "rgb(255, 45, 45)" },
   "Create": { hex: "#F59E0B", rgb: "rgb(245, 158, 11)" },
@@ -769,6 +786,14 @@ test("toolbox grouped view renders Game Journey order with unique colors while B
       accordions.map((accordion) => accordion.dataset.toolsAccordion)
     ));
     expect(groupNames).toEqual(GAME_JOURNEY_GROUP_ORDER);
+
+    const accordionLabels = await page.locator("[data-tools-accordion] > summary [data-toolbox-group-label]").evaluateAll((labels) => (
+      labels.map((label) => label.textContent.trim())
+    ));
+    expect(accordionLabels).toEqual(GAME_JOURNEY_ACCORDION_LABELS);
+    expect(accordionLabels.every((label) => label.startsWith("xxx% - "))).toBe(true);
+    expect(accordionLabels.join(" ")).not.toMatch(/\b(Complete|In Progress|Not Started)\b/);
+    expect(accordionLabels.every((label) => !/[\r\n]/.test(label))).toBe(true);
 
     const groupSwatches = await page.locator("[data-tools-accordion] > summary [data-toolbox-group-label]").evaluateAll((labels) => (
       labels.map((label) => ({
