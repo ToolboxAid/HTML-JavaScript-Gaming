@@ -42,20 +42,20 @@ const GAME_JOURNEY_GROUP_ORDER = Object.freeze([
 ]);
 
 const GAME_JOURNEY_GROUP_COLORS = Object.freeze({
-  "Idea": "rgb(255, 45, 45)",
-  "Create": "rgb(245, 158, 11)",
-  "Design": "rgb(255, 122, 0)",
-  "Graphics": "rgb(255, 200, 87)",
-  "Audio": "rgb(250, 204, 21)",
-  "Objects": "rgb(163, 230, 53)",
-  "Worlds": "rgb(125, 217, 87)",
-  "Interface": "rgb(45, 212, 191)",
-  "Controls": "rgb(32, 214, 255)",
-  "Rules": "rgb(77, 163, 255)",
-  "Progression": "rgb(129, 140, 248)",
-  "Play Test": "rgb(184, 119, 255)",
-  "Publish": "rgb(217, 70, 239)",
-  "Share": "rgb(255, 79, 139)",
+  "Idea": { hex: "#FF2D2D", rgb: "rgb(255, 45, 45)" },
+  "Create": { hex: "#F59E0B", rgb: "rgb(245, 158, 11)" },
+  "Design": { hex: "#FF7A00", rgb: "rgb(255, 122, 0)" },
+  "Graphics": { hex: "#FFC857", rgb: "rgb(255, 200, 87)" },
+  "Audio": { hex: "#FACC15", rgb: "rgb(250, 204, 21)" },
+  "Objects": { hex: "#A3E635", rgb: "rgb(163, 230, 53)" },
+  "Worlds": { hex: "#7DD957", rgb: "rgb(125, 217, 87)" },
+  "Interface": { hex: "#2DD4BF", rgb: "rgb(45, 212, 191)" },
+  "Controls": { hex: "#20D6FF", rgb: "rgb(32, 214, 255)" },
+  "Rules": { hex: "#4DA3FF", rgb: "rgb(77, 163, 255)" },
+  "Progression": { hex: "#818CF8", rgb: "rgb(129, 140, 248)" },
+  "Play Test": { hex: "#B877FF", rgb: "rgb(184, 119, 255)" },
+  "Publish": { hex: "#D946EF", rgb: "rgb(217, 70, 239)" },
+  "Share": { hex: "#FF4F8B", rgb: "rgb(255, 79, 139)" },
 });
 
 test.afterAll(async () => {
@@ -762,7 +762,8 @@ test("toolbox grouped view renders Game Journey order with unique colors while B
     expect(new Set(groupSwatches.map((swatch) => swatch.backgroundColor)).size).toBe(GAME_JOURNEY_GROUP_ORDER.length);
     expect(new Set(groupSwatches.map((swatch) => swatch.className)).size).toBe(GAME_JOURNEY_GROUP_ORDER.length);
     for (const swatch of groupSwatches) {
-      expect(swatch.backgroundColor).toBe(GAME_JOURNEY_GROUP_COLORS[swatch.group]);
+      expect(GAME_JOURNEY_GROUP_COLORS[swatch.group].hex).toMatch(/^#[0-9A-F]{6}$/);
+      expect(swatch.backgroundColor).toBe(GAME_JOURNEY_GROUP_COLORS[swatch.group].rgb);
     }
 
     const toolboxGroupsByTool = await page.locator("[data-toolbox-tool-card]").evaluateAll((cards) => (
@@ -772,10 +773,12 @@ test("toolbox grouped view renders Game Journey order with unique colors while B
       ]))
     ));
     expect(toolboxGroupsByTool["Idea Board"]).toBe("Idea");
+    expect(toolboxGroupsByTool["Creator Learning"]).toBe("Idea");
     expect(toolboxGroupsByTool["AI Command Center"]).toBe("Design");
     expect(toolboxGroupsByTool["Game Workspace"]).toBe("Create");
     expect(toolboxGroupsByTool["Game Configuration"]).toBe("Create");
     expect(toolboxGroupsByTool["Game Journey"]).toBe("Create");
+    expect(toolboxGroupsByTool["Tags"]).toBe("Create");
     expect(toolboxGroupsByTool["Publish"]).toBe("Publish");
     expect(toolboxGroupsByTool["Marketplace"]).toBe("Share");
 
