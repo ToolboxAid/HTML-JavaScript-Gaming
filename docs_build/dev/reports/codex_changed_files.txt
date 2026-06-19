@@ -1,24 +1,36 @@
-﻿git status --short
- M .env.example
+# git status --short
+M assets/theme-v2/js/account-auth-service.js
  M assets/theme-v2/js/gamefoundry-partials.js
  M docs_build/dev/reports/codex_changed_files.txt
  M docs_build/dev/reports/codex_review.diff
  M docs_build/dev/reports/coverage_changed_js_guardrail.txt
  M docs_build/dev/reports/environment_agnostic_browser_gate_report.md
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
+ M scripts/validate-browser-env-agnostic.mjs
+ M src/api/server-api-client.js
  M src/dev-runtime/server/local-api-router.mjs
- M tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
-?? docs_build/dev/reports/PR_26169_024-environment-banner-all-pages.md
-?? docs_build/pr/BUILD_PR_26169_024-environment-banner-all-pages.md
-?? tests/dev-runtime/PublicEnvironmentConfig.test.mjs
-?? tests/playwright/tools/EnvironmentBannerCoverage.spec.mjs
+?? docs_build/dev/reports/PR_26169_025-browser-api-url-config.md
+?? docs_build/pr/BUILD_PR_26169_025-browser-api-url-config.md
+?? src/api/public-config-client.js
+?? tests/dev-runtime/PublicApiUrlClient.test.mjs
+?? tests/playwright/tools/BrowserApiUrlConfig.spec.mjs
 
-git diff --stat -- . :!docs_build/dev/reports/codex_review.diff :!docs_build/dev/reports/codex_changed_files.txt
- .env.example                                       |   6 +
- assets/theme-v2/js/gamefoundry-partials.js         | 121 +++++++++++++++------
- .../dev/reports/coverage_changed_js_guardrail.txt  |  44 +-------
- .../environment_agnostic_browser_gate_report.md    |  20 ++--
- .../dev/reports/playwright_v8_coverage_report.txt  |  80 ++------------
- src/dev-runtime/server/local-api-router.mjs        |  92 ++++++++++++++++
- .../tools/AdminPlatformToolsWireframes.spec.mjs    |  28 ++---
- 7 files changed, 220 insertions(+), 171 deletions(-)
+# git ls-files --others --exclude-standard
+docs_build/dev/reports/PR_26169_025-browser-api-url-config.md
+docs_build/pr/BUILD_PR_26169_025-browser-api-url-config.md
+src/api/public-config-client.js
+tests/dev-runtime/PublicApiUrlClient.test.mjs
+tests/playwright/tools/BrowserApiUrlConfig.spec.mjs
+
+# git diff --stat
+assets/theme-v2/js/account-auth-service.js         |    6 +-
+ assets/theme-v2/js/gamefoundry-partials.js         |  219 +-
+ docs_build/dev/reports/codex_changed_files.txt     |   44 +-
+ docs_build/dev/reports/codex_review.diff           | 2349 +++++++++++---------
+ .../dev/reports/coverage_changed_js_guardrail.txt  |   65 +-
+ .../environment_agnostic_browser_gate_report.md    |    2 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |  126 +-
+ scripts/validate-browser-env-agnostic.mjs          |    4 +-
+ src/api/server-api-client.js                       |   13 +-
+ src/dev-runtime/server/local-api-router.mjs        |    7 +
+ 10 files changed, 1537 insertions(+), 1298 deletions(-)

@@ -1,3 +1,8 @@
+import {
+  getPublicConfigDiagnostics,
+  resolveServerApiUrl,
+} from "./public-config-client.js";
+
 export const SERVER_DATA_BOUNDARY_RULE = "Browser -> Server API -> Data Source";
 
 const API_ROOT = "/api";
@@ -17,7 +22,10 @@ function serverRouteUnavailableDiagnostic(method, url, status) {
 }
 
 export function getServerApiDiagnostics() {
-  return diagnostics.slice();
+  return [
+    ...diagnostics,
+    ...getPublicConfigDiagnostics(),
+  ];
 }
 
 export function clearServerApiDiagnostics() {
@@ -31,7 +39,8 @@ export function requestServerApi(path, options = {}) {
 
   const xhr = new XMLHttpRequest();
   const method = (options.method || "GET").toUpperCase();
-  const url = path.startsWith(API_ROOT) ? path : `${API_ROOT}${path.startsWith("/") ? "" : "/"}${path}`;
+  const apiPath = path.startsWith(API_ROOT) ? path : `${API_ROOT}${path.startsWith("/") ? "" : "/"}${path}`;
+  const url = resolveServerApiUrl(apiPath);
   xhr.open(method, url, false);
   xhr.setRequestHeader("Accept", "application/json");
   if (options.body !== undefined) {

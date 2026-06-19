@@ -127,6 +127,197 @@
     const currentScript = document.currentScript || document.querySelector("script[src*='gamefoundry-partials.js']");
     const assetRoot = currentScript ? new URL("../", currentScript.src) : null;
     let navigationAdminMenuCache = null;
+    let publicConfigCache = null;
+    let publicConfigDataCache = null;
+    let publicConfigLoaded = false;
+    let publicConfigSource = "";
+    const publicConfigDiagnostics = [];
+    const publicConfigRoute = "/api/public/config";
+
+    function publishPublicConfigDiagnostics() {
+        window.GameFoundryPublicConfigDiagnostics = {
+            apiUrlConfigured: Boolean(publicConfigCache?.apiUrl),
+            diagnostics: publicConfigDiagnostics.slice(),
+            source: publicConfigSource
+        };
+    }
+
+    function recordPublicConfigDiagnostic(message) {
+        const normalizedMessage = String(message || "").trim();
+        if (normalizedMessage && !publicConfigDiagnostics.includes(normalizedMessage)) {
+            publicConfigDiagnostics.push(normalizedMessage);
+        }
+        publishPublicConfigDiagnostics();
+        return normalizedMessage;
+    }
+
+    function normalizePublicConfig(value) {
+        const config = value && typeof value === "object" ? value : {};
+        return {
+            apiUrl: typeof config.apiUrl === "string" ? config.apiUrl.trim() : "",
+            environmentLabel: typeof config.environmentLabel === "string" ? config.environmentLabel.trim() : "",
+            siteUrl: typeof config.siteUrl === "string" ? config.siteUrl.trim() : ""
+        };
+    }
+
+    function publicConfigFromPayload(payload) {
+        if (payload?.ok === false) {
+            return null;
+        }
+        return normalizePublicConfig(payload?.data?.publicConfig || payload?.publicConfig || {});
+    }
+
+    function sameOriginConfigUrl() {
+        return new URL(publicConfigRoute, window.location.origin).href;
+    }
+
+    function isLocalHostname(hostname) {
+        return ["localhost", "127.0.0.1", "::1"].includes(String(hostname || "").toLowerCase());
+    }
+
+    function companionLocalConfigUrl() {
+        if (!isLocalHostname(window.location.hostname)) {
+            return "";
+        }
+        const port = Number(window.location.port || 0);
+        if (!Number.isInteger(port) || port <= 0) {
+            return "";
+        }
+        const url = new URL(publicConfigRoute, window.location.origin);
+        url.port = String(port + 1);
+        return url.href;
+    }
+
+    function publicConfigCandidateUrls() {
+        const sameOriginUrl = sameOriginConfigUrl();
+        const companionUrl = companionLocalConfigUrl();
+        const urls = window.location.port === "5500"
+            ? [companionUrl, sameOriginUrl]
+            : [sameOriginUrl, companionUrl];
+        return Array.from(new Set(urls.filter(Boolean)));
+    }
+
+    function missingApiUrlDiagnostic() {
+        return "GAMEFOUNDRY_API_URL is missing from the server public config. Falling back to same-origin /api; static-only Live Server origins cannot serve API routes. Set GAMEFOUNDRY_API_URL in .env and restart the site API.";
+    }
+
+    function setLoadedPublicConfig(config, source, data) {
+        publicConfigLoaded = true;
+        publicConfigCache = normalizePublicConfig(config);
+        publicConfigDataCache = data && typeof data === "object"
+            ? data
+            : { publicConfig: publicConfigCache };
+        publicConfigSource = source;
+        publishPublicConfigDiagnostics();
+        return publicConfigCache;
+    }
+
+    function requestPublicConfigSync() {
+        if (publicConfigLoaded) {
+            return publicConfigCache;
+        }
+        if (window.GameFoundryPublicConfig && typeof window.GameFoundryPublicConfig === "object") {
+            return setLoadedPublicConfig(window.GameFoundryPublicConfig, "browser-global");
+        }
+        for (const url of publicConfigCandidateUrls()) {
+            try {
+                const request = new XMLHttpRequest();
+                request.open("GET", url, false);
+                request.setRequestHeader("Accept", "application/json");
+                request.send(null);
+                if (request.status < 200 || request.status >= 300) {
+                    continue;
+                }
+                const payload = request.responseText ? JSON.parse(request.responseText) : null;
+                const config = publicConfigFromPayload(payload);
+                if (config) {
+                    return setLoadedPublicConfig(config, url, payload?.data || {});
+                }
+            } catch {
+                // Try the next public config discovery URL.
+            }
+        }
+        recordPublicConfigDiagnostic(missingApiUrlDiagnostic());
+        return setLoadedPublicConfig({}, "same-origin-fallback");
+    }
+
+    async function requestPublicConfigAsync() {
+        if (publicConfigLoaded) {
+            return publicConfigCache;
+        }
+        if (window.GameFoundryPublicConfig && typeof window.GameFoundryPublicConfig === "object") {
+            return setLoadedPublicConfig(window.GameFoundryPublicConfig, "browser-global");
+        }
+        for (const url of publicConfigCandidateUrls()) {
+            const response = await fetch(url, {
+                headers: { "Accept": "application/json" },
+                method: "GET"
+            }).catch(function () {
+                return null;
+            });
+            if (!response?.ok) {
+                continue;
+            }
+            const payload = await response.json().catch(function () {
+                return null;
+            });
+            const config = publicConfigFromPayload(payload);
+            if (config) {
+                return setLoadedPublicConfig(config, url, payload?.data || {});
+            }
+        }
+        recordPublicConfigDiagnostic(missingApiUrlDiagnostic());
+        return setLoadedPublicConfig({}, "same-origin-fallback");
+    }
+
+    async function requestPublicConfigDataAsync() {
+        await requestPublicConfigAsync();
+        return publicConfigDataCache || { publicConfig: publicConfigCache || {} };
+    }
+
+    function normalizeApiPath(path) {
+        const value = String(path || "/").trim() || "/";
+        if (/^https?:\/\//i.test(value)) {
+            return value;
+        }
+        const rootedPath = value.startsWith("/") ? value : "/" + value;
+        return rootedPath.indexOf("/api/") === 0 || rootedPath === "/api"
+            ? rootedPath.slice(4) || "/"
+            : rootedPath;
+    }
+
+    function sameOriginApiUrl(path) {
+        const normalizedPath = normalizeApiPath(path);
+        if (/^https?:\/\//i.test(normalizedPath)) {
+            return normalizedPath;
+        }
+        return "/api" + normalizedPath;
+    }
+
+    function configuredApiUrl(path, config) {
+        const normalizedPath = normalizeApiPath(path);
+        if (/^https?:\/\//i.test(normalizedPath)) {
+            return normalizedPath;
+        }
+        const apiUrl = String(config?.apiUrl || "").trim().replace(/\/+$/, "");
+        if (!apiUrl) {
+            recordPublicConfigDiagnostic(missingApiUrlDiagnostic());
+            return sameOriginApiUrl(normalizedPath);
+        }
+        return apiUrl + normalizedPath;
+    }
+
+    function resolveApiUrl(path) {
+        return configuredApiUrl(path, requestPublicConfigSync());
+    }
+
+    async function resolveApiFetchUrl(path) {
+        return configuredApiUrl(path, await requestPublicConfigAsync());
+    }
+
+    async function fetchApi(path, options) {
+        return fetch(await resolveApiFetchUrl(path), options);
+    }
 
     function assetUrl(path) {
         if (!assetRoot) return rootPrefix() + path;
@@ -193,13 +384,14 @@
         }
         try {
             const request = new XMLHttpRequest();
-            request.open("GET", "/api/navigation/admin-menu", false);
+            const url = resolveApiUrl("/navigation/admin-menu");
+            request.open("GET", url, false);
             request.setRequestHeader("Accept", "application/json");
             request.send(null);
             const payload = request.responseText ? JSON.parse(request.responseText) : null;
             if (request.status < 200 || request.status >= 300 || payload?.ok === false) {
                 if (request.status === 404 || request.status === 405) {
-                    throw new Error(serverRouteUnavailableDiagnostic("GET", "/api/navigation/admin-menu", request.status));
+                    throw new Error(serverRouteUnavailableDiagnostic("GET", url, request.status));
                 }
                 throw new Error(payload?.error || "Navigation API did not return Admin menu data.");
             }
@@ -353,7 +545,8 @@
 
     function requestSessionApi(method, url, body) {
         const request = new XMLHttpRequest();
-        request.open(method, url, false);
+        const apiUrl = resolveApiUrl(url);
+        request.open(method, apiUrl, false);
         request.setRequestHeader("Accept", "application/json");
         if (body !== undefined) {
             request.setRequestHeader("Content-Type", "application/json");
@@ -362,7 +555,7 @@
         const payload = request.responseText ? JSON.parse(request.responseText) : null;
         if (request.status < 200 || request.status >= 300 || payload?.ok === false) {
             if (request.status === 404 || request.status === 405) {
-                throw new Error(serverRouteUnavailableDiagnostic(method, url, request.status));
+                throw new Error(serverRouteUnavailableDiagnostic(method, apiUrl, request.status));
             }
             throw new Error(payload?.error || "Session API did not return a valid auth response.");
         }
@@ -395,7 +588,7 @@
 
     function currentLoginState() {
         try {
-            return authSessionFromApiData(requestSessionApi("GET", "/api/session/current"));
+            return authSessionFromApiData(requestSessionApi("GET", "/session/current"));
         } catch (error) {
             const diagnostic = error instanceof Error ? error.message : "";
             if (diagnostic) {
@@ -419,7 +612,7 @@
     }
 
     async function requestPlatformBanner() {
-        const response = await fetch("/api/platform-settings/banner", {
+        const response = await fetchApi("/platform-settings/banner", {
             headers: { "Accept": "application/json" },
             method: "GET"
         });
@@ -440,17 +633,7 @@
     }
 
     async function requestEnvironmentBanner() {
-        const response = await fetch("/api/public/config", {
-            headers: { "Accept": "application/json" },
-            method: "GET"
-        });
-        const payload = await response.json().catch(function () {
-            return null;
-        });
-        if (!response.ok || payload?.ok === false) {
-            throw new Error(payload?.error || "Public configuration is unavailable.");
-        }
-        const data = payload?.data || {};
+        const data = await requestPublicConfigDataAsync();
         return {
             banner: normalizedPlatformBanner(data.environmentBanner || {}, "environment-config"),
             diagnostics: data.diagnostics || {}
@@ -784,7 +967,7 @@
         event.preventDefault();
         const session = (() => {
             try {
-                return authSessionFromApiData(requestSessionApi("POST", "/api/session/logout"));
+                return authSessionFromApiData(requestSessionApi("POST", "/session/logout"));
             } catch (error) {
                 return missingSessionApiLoginState(error instanceof Error ? error.message : "");
             }

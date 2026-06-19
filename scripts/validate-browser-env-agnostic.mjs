@@ -284,8 +284,8 @@ async function validateAccountServiceContract() {
   rejectPattern(loginSession, "assets/theme-v2/js/login-session.js", /\bfetch\s*\(/, findings, "Sign-in flow must not call fetch directly.");
 
   const accountService = await readRequiredRepoFile("assets/theme-v2/js/account-auth-service.js", findings, "Account auth service module is missing");
-  requireSnippet(accountService, "assets/theme-v2/js/account-auth-service.js", "fetch(`/api/auth/${path}`", findings, "Account auth service must own /api/auth requests.");
-  requireSnippet(accountService, "assets/theme-v2/js/account-auth-service.js", "fetch(\"/api/session/current\"", findings, "Account auth service must own /api/session/current requests.");
+  requireSnippet(accountService, "assets/theme-v2/js/account-auth-service.js", "fetchServerApi(`/auth/${path}`", findings, "Account auth service must own configured /api/auth requests.");
+  requireSnippet(accountService, "assets/theme-v2/js/account-auth-service.js", "fetchServerApi(\"/session/current\"", findings, "Account auth service must own configured /api/session/current requests.");
   rejectPattern(accountService, "assets/theme-v2/js/account-auth-service.js", /local-db|SQLite|Supabase|provider|GAMEFOUNDRY_|process\.env/i, findings, "Account auth service must not expose provider or environment implementation details.");
 
   return findings;

@@ -5,7 +5,7 @@ Status: PASS
 ## Scope
 - Scanned active browser/page/server/runtime roots: `account`, `admin`, `assets/theme-v2/js`, `toolbox`, `src/engine`, `src`, `scripts`, `docs_build/database`
 - Scanned active runtime example files: `.env.example`, `package.json`
-- Files scanned: 847
+- Files scanned: 848
 - Excluded test/archive/report/temp roots: `.git`, `archive`, `node_modules`, `start_of_day`, `tests`, `tmp`.
 - Tests and validation scripts are excluded only from deployment-label branching failures; their non-branching mentions may still appear for review.
 

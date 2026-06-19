@@ -1525,6 +1525,12 @@ function sendJson(response, statusCode, payload) {
   response.end(JSON.stringify(payload));
 }
 
+function applyApiCorsHeaders(response) {
+  response.setHeader("Access-Control-Allow-Headers", "Accept, Content-Type");
+  response.setHeader("Access-Control-Allow-Methods", "GET, POST, HEAD, OPTIONS");
+  response.setHeader("Access-Control-Allow-Origin", "*");
+}
+
 function sendNoContent(response, statusCode = 204) {
   response.statusCode = statusCode;
   response.setHeader("Allow", "GET, POST, HEAD, OPTIONS");
@@ -5237,6 +5243,7 @@ export function createLocalApiRouter() {
     }
 
     try {
+      applyApiCorsHeaders(response);
       const parts = requestUrl.pathname.split("/").filter(Boolean);
       if (request.method === "OPTIONS") {
         sendNoContent(response);

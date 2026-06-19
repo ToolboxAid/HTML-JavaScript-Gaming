@@ -1,3 +1,5 @@
+import { fetchServerApi } from "../../../src/api/public-config-client.js";
+
 export const ACCOUNT_SERVICE_READY_MESSAGE = "Account service is available.";
 export const ACCOUNT_IDENTITY_SETUP_MESSAGE = "Account identity setup is incomplete. Please contact support.";
 export const PASSWORD_RESET_RATE_LIMIT_MESSAGE = "Too many reset requests. Please wait and try again later.";
@@ -54,7 +56,7 @@ async function readJson(response, fallbackMessage) {
 }
 
 export async function requestAccountAuth(path, options = {}, fallbackMessage = accountActionFailureMessage(path)) {
-  const response = await fetch(`/api/auth/${path}`, {
+  const response = await fetchServerApi(`/auth/${path}`, {
     body: options.body ? JSON.stringify(options.body) : undefined,
     headers: options.body ? { "content-type": "application/json" } : undefined,
     method: options.method || "GET",
@@ -63,7 +65,7 @@ export async function requestAccountAuth(path, options = {}, fallbackMessage = a
 }
 
 export async function requestCurrentSession(fallbackMessage = accountActionFailureMessage("sign-in")) {
-  const response = await fetch("/api/session/current", {
+  const response = await fetchServerApi("/session/current", {
     headers: { "accept": "application/json" },
     method: "GET",
   });
