@@ -69,6 +69,7 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
     const stateSwatchMap = Object.freeze({ ...(toolboxContract.releaseChannelSwatches || {}) });
     const gameJourneyGroupOrder = Object.freeze([
         "Idea",
+        "Create",
         "Design",
         "Graphics",
         "Audio",
@@ -84,6 +85,7 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
     ]);
     const gameJourneyGroupSwatches = Object.freeze({
         "Idea": "swatch-red",
+        "Create": "swatch-amber",
         "Design": "swatch-orange",
         "Graphics": "swatch-gold",
         "Audio": "swatch-yellow",
@@ -99,6 +101,7 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
     });
     const gameJourneyGroupClasses = Object.freeze({
         "Idea": "tool-group-idea",
+        "Create": "tool-group-game-create",
         "Design": "tool-group-journey-design",
         "Graphics": "tool-group-graphics",
         "Audio": "tool-group-journey-audio",
@@ -114,7 +117,7 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
     });
     const gameJourneyGroupByToolId = Object.freeze({
         "achievements": "Progression",
-        "ai-assistant": "Idea",
+        "ai-assistant": "Design",
         "animations": "Graphics",
         "assets": "Graphics",
         "audio": "Audio",
@@ -130,16 +133,17 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
         "environments": "Publish",
         "events": "Rules",
         "fonts": "Interface",
-        "game-configuration": "Rules",
+        "game-configuration": "Create",
         "game-design": "Design",
-        "game-journey": "Progression",
+        "game-journey": "Create",
         "game-migration": "Publish",
         "game-testing": "Play Test",
-        "game-workspace": "Worlds",
+        "game-workspace": "Create",
         "hitboxes": "Controls",
+        "idea-board": "Idea",
         "input-mapping-v2": "Controls",
         "languages": "Interface",
-        "learn": "Idea",
+        "learn": "Share",
         "marketplace": "Share",
         "midi": "Audio",
         "music": "Audio",

@@ -4,8 +4,8 @@ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
-const EXPECTED_TOOL_COUNT = 45;
-const EXPECTED_VISIBLE_TOOL_COUNT = 44;
+const EXPECTED_TOOL_COUNT = 46;
+const EXPECTED_VISIBLE_TOOL_COUNT = 45;
 const REQUIRED_ADMIN_TOOLS = [
   "Environments",
   "Game Migration",
@@ -240,7 +240,7 @@ test("Toolbox and Admin Tool Votes share the same DB-backed metadata and plannin
       beta: 7,
       complete: 1,
       planned: 31,
-      wireframe: 4,
+      wireframe: 5,
       deprecated: 2,
     });
     const orderedSetupRows = snapshot.rows

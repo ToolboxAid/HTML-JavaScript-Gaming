@@ -106,7 +106,7 @@ test("Toolbox removes Progress view and renders the DB-backed Build Path table",
 
     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
       "Planned (27)",
-      "Wireframe (4)",
+      "Wireframe (5)",
       "Beta (7)",
       "Complete (1)",
       "Deprecated (1)",

@@ -69,6 +69,39 @@ const RELEASE_CHANNEL_BY_STATUS = Object.freeze({
 
 export const TOOL_REGISTRY = Object.freeze([
   {
+    "id": "idea-board",
+    "name": "Idea Board",
+    "displayName": "Idea Board",
+    "shortDescription": "Capture creator notebook cards before a project exists.",
+    "shortLabel": "Idea Board",
+    "path": "idea-board",
+    "folderName": "idea-board",
+    "entryPoint": "idea-board/index.html",
+    "badge": "/assets/theme-v2/images/badges/game-design.png",
+    "tool": "/assets/theme-v2/images/tools/game-design.png",
+    "description": "Capture creator notebook cards, board views, lists, notes, tags, and placeholder project creation before a project exists.",
+    "category": "Idea",
+    "colorGroup": "tool-group-idea",
+    "active": true,
+    "order": 45,
+    "requiredForPlayable": false,
+    "requiredForTestable": false,
+    "requiredForPublish": false,
+    "requires": [],
+    "status": "Wireframe",
+    "releaseChannel": "wireframe",
+    "progressChecklist": [
+      "Wireframe notebook sections visible",
+      "Create Project placeholder remains disabled",
+      "No persistence or project record creation"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Create"
+  },
+  {
     "id": "ai-assistant",
     "name": "AI Command Center",
     "displayName": "AI Command Center",

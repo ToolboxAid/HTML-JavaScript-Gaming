@@ -253,7 +253,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Build Path" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Build Path" })).not.toHaveAttribute("aria-disabled", "true");
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 12/40");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/41");
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='admin']")).toHaveCount(0);
     await expect(page.locator("nav.nav-links > a[data-route='learn']")).toHaveCount(1);
@@ -292,8 +292,8 @@ test("root tools surface links current tool pages without old_* routes", async (
     });
     await expect(readyGameWorkspaceCard.locator("a.btn")).toHaveAttribute("href", "../toolbox/game-workspace/index.html");
     const defaultToolLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
-    expect(defaultToolLabels).toEqual(["Achievements", "Assets", "Colors", "Controls", "Game Configuration", "Game Design", "Game Journey", "Game Workspace", "Languages", "Objects", "Saved Data", "Tags"]);
-    await expect(page.locator("[data-toolbox-readiness]")).toHaveText(["Wireframe", "Beta", "Complete", "Wireframe", "Beta", "Beta", "Beta", "Beta", "Wireframe", "Beta", "Wireframe", "Beta"]);
+    expect(defaultToolLabels).toEqual(["Achievements", "Assets", "Colors", "Controls", "Game Configuration", "Game Design", "Game Journey", "Game Workspace", "Idea Board", "Languages", "Objects", "Saved Data", "Tags"]);
+    await expect(page.locator("[data-toolbox-readiness]")).toHaveText(["Wireframe", "Beta", "Complete", "Wireframe", "Beta", "Beta", "Beta", "Beta", "Wireframe", "Wireframe", "Beta", "Wireframe", "Beta"]);
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^AI Command Center$/ }) })).toHaveCount(0);
     const oldStandaloneLabels = [
       ["Palette", "Manager"].join(" "),
@@ -363,7 +363,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     const guestGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
       groups.map((group) => group.dataset.toolsAccordion)
     ));
-    expect(guestGroupLabels).toEqual(["Design", "Graphics", "Objects", "Worlds", "Interface", "Controls", "Rules", "Progression"]);
+    expect(guestGroupLabels).toEqual(["Idea", "Create", "Design", "Graphics", "Objects", "Interface", "Controls", "Progression"]);
     await expect(page.locator("[data-tools-accordion='Admin']")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
     await expect(page.locator("[data-tools-accordion-list] .control-card h3", { hasText: /^Progress$/ })).toHaveCount(0);
@@ -389,12 +389,12 @@ test("root tools surface links current tool pages without old_* routes", async (
     expect(failedRequests.filter((request) => request.includes("/toolbox/old_"))).toEqual([]);
 
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 12/40");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/41");
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
     await setServerSession(server, MOCK_DB_KEYS.users.admin);
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 12/44");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/45");
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
     const adminLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
     expect(adminLabels).toEqual(defaultToolLabels);
@@ -431,7 +431,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     const adminGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
       groups.map((group) => group.dataset.toolsAccordion)
     ));
-    expect(adminGroupLabels).toEqual(["Design", "Graphics", "Objects", "Worlds", "Interface", "Controls", "Rules", "Progression"]);
+    expect(adminGroupLabels).toEqual(["Idea", "Create", "Design", "Graphics", "Objects", "Interface", "Controls", "Progression"]);
     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
     await page.getByRole("button", { name: "Build Path" }).click();
     await expect(page.locator("[data-build-path-table='workflow']")).toBeVisible();
@@ -440,7 +440,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
     await setServerSession(server, "");
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 12/40");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/41");
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
     expect(pageErrors).toEqual([]);
   } finally {
@@ -667,6 +667,7 @@ test("representative active tool pages align center cleanup and registry group c
   ];
   const gameJourneyGroupClasses = [
     "tool-group-idea",
+    "tool-group-game-create",
     "tool-group-journey-design",
     "tool-group-graphics",
     "tool-group-journey-audio",

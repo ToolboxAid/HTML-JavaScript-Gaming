@@ -1,254 +1,194 @@
 diff --git a/assets/theme-v2/css/colors.css b/assets/theme-v2/css/colors.css
-index 02277c846..fa46343ab 100644
+index fa46343ab..72d60491d 100644
 --- a/assets/theme-v2/css/colors.css
 +++ b/assets/theme-v2/css/colors.css
-@@ -13,6 +13,11 @@
+@@ -13,6 +13,7 @@
    --green: #7dd957;
    --pink: #ff4f8b;
    --red: #ff2d2d;
-+  --journey-yellow: #facc15;
-+  --journey-lime: #a3e635;
-+  --journey-teal: #2dd4bf;
-+  --journey-indigo: #818cf8;
-+  --journey-magenta: #d946ef;
-   --deep-red: #ff5757;
-   --mint: #22c55e;
-   --white: #ffffff;
-@@ -102,6 +107,14 @@
++  --journey-amber: #f59e0b;
+   --journey-yellow: #facc15;
+   --journey-lime: #a3e635;
+   --journey-teal: #2dd4bf;
+@@ -107,6 +108,10 @@
    background: var(--forge-gold)
  }
  
-+.swatch-yellow {
-+  background: var(--journey-yellow)
++.swatch-amber {
++  background: var(--journey-amber)
 +}
 +
-+.swatch-lime {
-+  background: var(--journey-lime)
-+}
-+
- .swatch-black {
-   background: var(--bg)
+ .swatch-yellow {
+   background: var(--journey-yellow)
  }
-@@ -110,6 +123,10 @@
-   background: var(--bot-cyan)
+@@ -251,6 +256,11 @@
+   --tool-group-accent: var(--red)
  }
  
-+.swatch-teal {
-+  background: var(--journey-teal)
++.tool-group-game-create {
++  --tool-group-color: var(--journey-amber);
++  --tool-group-accent: var(--journey-amber)
 +}
 +
- .swatch-green {
-   background: var(--green)
- }
-@@ -126,6 +143,14 @@
-   background: var(--purple)
- }
- 
-+.swatch-indigo {
-+  background: var(--journey-indigo)
-+}
-+
-+.swatch-magenta {
-+  background: var(--journey-magenta)
-+}
-+
- .swatch-blue {
-   background: var(--electric-blue)
- }
-@@ -221,6 +246,71 @@
-   --tool-group-accent: var(--toolbox-group-play-color)
- }
- 
-+.tool-group-idea {
-+  --tool-group-color: var(--red);
-+  --tool-group-accent: var(--red)
-+}
-+
-+.tool-group-journey-design {
-+  --tool-group-color: var(--molten-orange);
-+  --tool-group-accent: var(--molten-orange)
-+}
-+
-+.tool-group-graphics {
-+  --tool-group-color: var(--forge-gold);
-+  --tool-group-accent: var(--forge-gold)
-+}
-+
-+.tool-group-journey-audio {
-+  --tool-group-color: var(--journey-yellow);
-+  --tool-group-accent: var(--journey-yellow)
-+}
-+
-+.tool-group-objects {
-+  --tool-group-color: var(--journey-lime);
-+  --tool-group-accent: var(--journey-lime)
-+}
-+
-+.tool-group-worlds {
-+  --tool-group-color: var(--green);
-+  --tool-group-accent: var(--green)
-+}
-+
-+.tool-group-interface {
-+  --tool-group-color: var(--journey-teal);
-+  --tool-group-accent: var(--journey-teal)
-+}
-+
-+.tool-group-controls {
-+  --tool-group-color: var(--bot-cyan);
-+  --tool-group-accent: var(--bot-cyan)
-+}
-+
-+.tool-group-rules {
-+  --tool-group-color: var(--electric-blue);
-+  --tool-group-accent: var(--electric-blue)
-+}
-+
-+.tool-group-progression {
-+  --tool-group-color: var(--journey-indigo);
-+  --tool-group-accent: var(--journey-indigo)
-+}
-+
-+.tool-group-play-test {
-+  --tool-group-color: var(--purple);
-+  --tool-group-accent: var(--purple)
-+}
-+
-+.tool-group-publish {
-+  --tool-group-color: var(--journey-magenta);
-+  --tool-group-accent: var(--journey-magenta)
-+}
-+
-+.tool-group-journey-share {
-+  --tool-group-color: var(--pink);
-+  --tool-group-accent: var(--pink)
-+}
-+
- .meaning-molten-orange {
-   --meaning-color: var(--molten-orange);
-   --meaning-soft: var(--meaning-molten-orange-soft);
+ .tool-group-journey-design {
+   --tool-group-color: var(--molten-orange);
+   --tool-group-accent: var(--molten-orange)
 diff --git a/assets/theme-v2/css/status.css b/assets/theme-v2/css/status.css
-index b4cfa7afe..ad5d2df6b 100644
+index ad5d2df6b..5c521c45d 100644
 --- a/assets/theme-v2/css/status.css
 +++ b/assets/theme-v2/css/status.css
-@@ -130,7 +130,10 @@
+@@ -129,6 +129,7 @@
+ }
  
  .swatch-label.swatch-cyan,
++.swatch-label.swatch-amber,
  .swatch-label.swatch-gold,
--.swatch-label.swatch-green {
-+.swatch-label.swatch-green,
-+.swatch-label.swatch-lime,
-+.swatch-label.swatch-teal,
-+.swatch-label.swatch-yellow {
-   color: var(--bg);
-   text-shadow: none
- }
+ .swatch-label.swatch-green,
+ .swatch-label.swatch-lime,
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index cf9c7f56a..55f70b2fb 100644
+index 55f70b2fb..1e2fb98ec 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,16 +6,12 @@ Missing changed runtime JS files are WARN, not FAIL.
+@@ -6,12 +6,8 @@ Missing changed runtime JS files are WARN, not FAIL.
  Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
  
  Changed runtime JS files considered:
--(0%) src/dev-runtime/admin/admin-notes-directory.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/admin/admin-notes-viewer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/api/db-viewer-ui.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(70%) src/api/db-viewer-ui.js - executed lines 543/543; executed functions 69/98
-+(76%) toolbox/tools-page-accordions.js - executed lines 1087/1087; executed functions 81/106
+-(0%) src/api/db-viewer-ui.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(76%) toolbox/tools-page-accordions.js - executed lines 1087/1087; executed functions 81/106
++(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(76%) toolbox/tools-page-accordions.js - executed lines 1091/1091; executed functions 81/106
  
  Guardrail warnings:
--(0%) src/dev-runtime/admin/admin-notes-directory.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/dev-runtime/admin/admin-notes-viewer.js - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) src/api/db-viewer-ui.js - WARNING: changed runtime JS file missing from coverage; advisory only
- (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/api/db-viewer-ui.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index e4a9c17af..67367bb71 100644
+index 67367bb71..8f12cabcd 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -12,49 +12,41 @@ Note: entry percentages use function coverage when available, otherwise line cov
+@@ -12,41 +12,32 @@ Note: entry percentages use function coverage when available, otherwise line cov
  Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
  
  Exercised tool entry points detected:
--(35%) Toolbox Index - exercised 1 runtime JS files
-+(80%) Toolbox Index - exercised 5 runtime JS files
+-(80%) Toolbox Index - exercised 5 runtime JS files
++(71%) Toolbox Index - exercised 3 runtime JS files
  (0%) Tool Template V2 - not exercised by this Playwright run
--(68%) Theme V2 Shared JS - exercised 4 runtime JS files
-+(63%) Theme V2 Shared JS - exercised 2 runtime JS files
+-(63%) Theme V2 Shared JS - exercised 2 runtime JS files
++(63%) Theme V2 Shared JS - exercised 1 runtime JS files
  
  Changed runtime JS files covered:
--(0%) src/dev-runtime/admin/admin-notes-directory.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/admin/admin-notes-viewer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/api/db-viewer-ui.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(70%) src/api/db-viewer-ui.js - executed lines 543/543; executed functions 69/98
-+(76%) toolbox/tools-page-accordions.js - executed lines 1087/1087; executed functions 81/106
+-(0%) src/api/db-viewer-ui.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(76%) toolbox/tools-page-accordions.js - executed lines 1087/1087; executed functions 81/106
++(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(76%) toolbox/tools-page-accordions.js - executed lines 1091/1091; executed functions 81/106
  
  Files with executed line/function counts where available:
--(14%) assets/theme-v2/js/admin-setup-actions.js - executed lines 55/55; executed functions 1/7
  (25%) src/api/session-api-client.js - executed lines 68/68; executed functions 3/12
--(33%) src/api/admin-setup-api-client.js - executed lines 13/13; executed functions 1/3
--(35%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 9/26
--(43%) src/api/server-api-client.js - executed lines 167/167; executed functions 6/14
-+(33%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
-+(63%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 54/86
-+(63%) src/api/server-api-client.js - executed lines 167/167; executed functions 12/19
- (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
+ (33%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
++(44%) src/api/server-api-client.js - executed lines 167/167; executed functions 8/18
++(48%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 11/23
+ (63%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 54/86
+-(63%) src/api/server-api-client.js - executed lines 167/167; executed functions 12/19
+-(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
  (65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
--(67%) admin/db-viewer.js - executed lines 45/45; executed functions 4/6
--(70%) src/api/db-viewer-ui.js - executed lines 543/543; executed functions 69/98
--(72%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 64/89
--(100%) assets/theme-v2/js/admin-db-status-panel.js - executed lines 31/31; executed functions 3/3
--(100%) src/api/db-viewer-api-client.js - executed lines 13/13; executed functions 3/3
-+(67%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 20/20; executed functions 2/3
-+(76%) toolbox/tools-page-accordions.js - executed lines 1087/1087; executed functions 81/106
-+(78%) toolbox/game-configuration/game-configuration.js - executed lines 173/173; executed functions 14/18
-+(93%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 27/29
-+(100%) toolbox/game-configuration/game-configuration-api-client.js - executed lines 11/11; executed functions 2/2
+ (67%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 20/20; executed functions 2/3
+-(76%) toolbox/tools-page-accordions.js - executed lines 1087/1087; executed functions 81/106
+-(78%) toolbox/game-configuration/game-configuration.js - executed lines 173/173; executed functions 14/18
+-(93%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 27/29
+-(100%) toolbox/game-configuration/game-configuration-api-client.js - executed lines 11/11; executed functions 2/2
++(76%) toolbox/tools-page-accordions.js - executed lines 1091/1091; executed functions 81/106
  
  Uncovered or low-coverage changed JS files:
--(0%) src/dev-runtime/admin/admin-notes-directory.mjs - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/admin/admin-notes-viewer.js - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) src/api/db-viewer-ui.js - WARNING: uncovered changed runtime JS file; advisory only
- (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/api/db-viewer-ui.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
  
  Changed JS files considered:
--(0%) src/dev-runtime/admin/admin-notes-directory.mjs - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/admin/admin-notes-viewer.js - changed JS file not collected as browser runtime coverage
-+(0%) src/api/db-viewer-ui.js - changed JS file not collected as browser runtime coverage
- (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
- (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/server/local-api-server.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/dev-runtime/AdminNotesBoundary.test.mjs - changed JS file not collected as browser runtime coverage
- (0%) tests/dev-runtime/DbViewerConfiguredSnapshot.test.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/helpers/playwrightRepoServer.mjs - changed JS file not collected as browser runtime coverage
- (0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/AdminNotesLocalViewer.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs - changed JS file not collected as browser runtime coverage
--(70%) src/api/db-viewer-ui.js - changed JS file with browser V8 coverage
-+(0%) tests/playwright/tools/GameJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
-+(76%) toolbox/tools-page-accordions.js - changed JS file with browser V8 coverage
+-(0%) src/api/db-viewer-ui.js - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/dev-runtime/DbViewerConfiguredSnapshot.test.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) src/shared/toolbox/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/BuildPathProgressSimplification.spec.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/GameJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
+ (76%) toolbox/tools-page-accordions.js - changed JS file with browser V8 coverage
+diff --git a/src/shared/toolbox/tool-metadata-inventory.js b/src/shared/toolbox/tool-metadata-inventory.js
+index 5498be0a2..4537aa685 100644
+--- a/src/shared/toolbox/tool-metadata-inventory.js
++++ b/src/shared/toolbox/tool-metadata-inventory.js
+@@ -68,6 +68,39 @@ const RELEASE_CHANNEL_BY_STATUS = Object.freeze({
+ });
+ 
+ export const TOOL_REGISTRY = Object.freeze([
++  {
++    "id": "idea-board",
++    "name": "Idea Board",
++    "displayName": "Idea Board",
++    "shortDescription": "Capture creator notebook cards before a project exists.",
++    "shortLabel": "Idea Board",
++    "path": "idea-board",
++    "folderName": "idea-board",
++    "entryPoint": "idea-board/index.html",
++    "badge": "/assets/theme-v2/images/badges/game-design.png",
++    "tool": "/assets/theme-v2/images/tools/game-design.png",
++    "description": "Capture creator notebook cards, board views, lists, notes, tags, and placeholder project creation before a project exists.",
++    "category": "Idea",
++    "colorGroup": "tool-group-idea",
++    "active": true,
++    "order": 45,
++    "requiredForPlayable": false,
++    "requiredForTestable": false,
++    "requiredForPublish": false,
++    "requires": [],
++    "status": "Wireframe",
++    "releaseChannel": "wireframe",
++    "progressChecklist": [
++      "Wireframe notebook sections visible",
++      "Create Project placeholder remains disabled",
++      "No persistence or project record creation"
++    ],
++    "deferred": false,
++    "hidden": false,
++    "adminOnly": false,
++    "visibleInToolsList": true,
++    "toolboxGroup": "Create"
++  },
+   {
+     "id": "ai-assistant",
+     "name": "AI Command Center",
+diff --git a/tests/playwright/tools/BuildPathProgressSimplification.spec.mjs b/tests/playwright/tools/BuildPathProgressSimplification.spec.mjs
+index 6549225a6..23011e34b 100644
+--- a/tests/playwright/tools/BuildPathProgressSimplification.spec.mjs
++++ b/tests/playwright/tools/BuildPathProgressSimplification.spec.mjs
+@@ -106,7 +106,7 @@ test("Toolbox removes Progress view and renders the DB-backed Build Path table",
+ 
+     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
+       "Planned (27)",
+-      "Wireframe (4)",
++      "Wireframe (5)",
+       "Beta (7)",
+       "Complete (1)",
+       "Deprecated (1)",
 diff --git a/tests/playwright/tools/GameJourneyTool.spec.mjs b/tests/playwright/tools/GameJourneyTool.spec.mjs
-index 6dbde7dab..993e463ff 100644
+index 993e463ff..f66389899 100644
 --- a/tests/playwright/tools/GameJourneyTool.spec.mjs
 +++ b/tests/playwright/tools/GameJourneyTool.spec.mjs
 @@ -1104,7 +1104,7 @@ test("Game Workspace hands the active game route to Game Journey", async ({ page
  });
  
  test("Toolbox registration exposes Game Journey navigation", async ({ page }) => {
--  const failures = await openRepoPage(page, "/toolbox/index.html?view=group&group=build");
-+  const failures = await openRepoPage(page, "/toolbox/index.html?view=group&group=progression");
+-  const failures = await openRepoPage(page, "/toolbox/index.html?view=group&group=progression");
++  const failures = await openRepoPage(page, "/toolbox/index.html?view=group&group=create");
  
    try {
      const journeyLink = page.locator("[data-toolbox-tool-name-link='Game Journey']").first();
@@ -256,548 +196,389 @@ index 6dbde7dab..993e463ff 100644
      await expect(journeyLink).toHaveAttribute("href", /\/game-journey\/index\.html$/);
      await expect(journeyLink).toHaveAttribute("data-registered-tool-route", "toolbox/game-journey/index.html");
  
--    await page.goto(`${failures.server.baseUrl}/toolbox/index.html?view=group&group=build`, { waitUntil: "networkidle" });
-+    await page.goto(`${failures.server.baseUrl}/toolbox/index.html?view=group&group=progression`, { waitUntil: "networkidle" });
+-    await page.goto(`${failures.server.baseUrl}/toolbox/index.html?view=group&group=progression`, { waitUntil: "networkidle" });
++    await page.goto(`${failures.server.baseUrl}/toolbox/index.html?view=group&group=create`, { waitUntil: "networkidle" });
      const userJourneyLink = page.locator("[data-toolbox-tool-name-link='Game Journey']").first();
      await expect(userJourneyLink).toHaveText("Game Journey");
      await expect(userJourneyLink).toHaveAttribute("href", /\/game-journey\/index\.html$/);
 diff --git a/tests/playwright/tools/RootToolsFutureState.spec.mjs b/tests/playwright/tools/RootToolsFutureState.spec.mjs
-index 319f5699f..239f146fa 100644
+index 239f146fa..455206718 100644
 --- a/tests/playwright/tools/RootToolsFutureState.spec.mjs
 +++ b/tests/playwright/tools/RootToolsFutureState.spec.mjs
-@@ -324,7 +324,7 @@ test("root tools surface links current tool pages without old_* routes", async (
-     const designCard = page.locator("main .control-card").filter({
-       has: page.locator("h3", { hasText: /^Game Design$/ })
-     }).first();
--    await expect(designCard).toHaveClass(/(^|\s)tool-group-design(\s|$)/);
-+    await expect(designCard).toHaveClass(/(^|\s)tool-group-journey-design(\s|$)/);
-     const allCardsHaveGroupClass = await page.locator("main [data-tools-accordion-list] .control-card").evaluateAll((cards) => (
-       cards.every((card) => Array.from(card.classList).some((className) => className.startsWith("tool-group-")))
-     ));
+@@ -253,7 +253,7 @@ test("root tools surface links current tool pages without old_* routes", async (
+     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
+     await expect(page.getByRole("button", { name: "Build Path" })).toBeVisible();
+     await expect(page.getByRole("button", { name: "Build Path" })).not.toHaveAttribute("aria-disabled", "true");
+-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 12/40");
++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/41");
+     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
+     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='admin']")).toHaveCount(0);
+     await expect(page.locator("nav.nav-links > a[data-route='learn']")).toHaveCount(1);
+@@ -292,8 +292,8 @@ test("root tools surface links current tool pages without old_* routes", async (
+     });
+     await expect(readyGameWorkspaceCard.locator("a.btn")).toHaveAttribute("href", "../toolbox/game-workspace/index.html");
+     const defaultToolLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
+-    expect(defaultToolLabels).toEqual(["Achievements", "Assets", "Colors", "Controls", "Game Configuration", "Game Design", "Game Journey", "Game Workspace", "Languages", "Objects", "Saved Data", "Tags"]);
+-    await expect(page.locator("[data-toolbox-readiness]")).toHaveText(["Wireframe", "Beta", "Complete", "Wireframe", "Beta", "Beta", "Beta", "Beta", "Wireframe", "Beta", "Wireframe", "Beta"]);
++    expect(defaultToolLabels).toEqual(["Achievements", "Assets", "Colors", "Controls", "Game Configuration", "Game Design", "Game Journey", "Game Workspace", "Idea Board", "Languages", "Objects", "Saved Data", "Tags"]);
++    await expect(page.locator("[data-toolbox-readiness]")).toHaveText(["Wireframe", "Beta", "Complete", "Wireframe", "Beta", "Beta", "Beta", "Beta", "Wireframe", "Wireframe", "Beta", "Wireframe", "Beta"]);
+     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^AI Command Center$/ }) })).toHaveCount(0);
+     const oldStandaloneLabels = [
+       ["Palette", "Manager"].join(" "),
 @@ -363,7 +363,7 @@ test("root tools surface links current tool pages without old_* routes", async (
      const guestGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
        groups.map((group) => group.dataset.toolsAccordion)
      ));
--    expect(guestGroupLabels).toEqual(["Build/Create", "Design", "Platform", "Play"]);
-+    expect(guestGroupLabels).toEqual(["Design", "Graphics", "Objects", "Worlds", "Interface", "Controls", "Rules", "Progression"]);
+-    expect(guestGroupLabels).toEqual(["Design", "Graphics", "Objects", "Worlds", "Interface", "Controls", "Rules", "Progression"]);
++    expect(guestGroupLabels).toEqual(["Idea", "Create", "Design", "Graphics", "Objects", "Interface", "Controls", "Progression"]);
      await expect(page.locator("[data-tools-accordion='Admin']")).toHaveCount(0);
      await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
      await expect(page.locator("[data-tools-accordion-list] .control-card h3", { hasText: /^Progress$/ })).toHaveCount(0);
+@@ -389,12 +389,12 @@ test("root tools surface links current tool pages without old_* routes", async (
+     expect(failedRequests.filter((request) => request.includes("/toolbox/old_"))).toEqual([]);
+ 
+     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 12/40");
++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/41");
+     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
+     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
+     await setServerSession(server, MOCK_DB_KEYS.users.admin);
+     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 12/44");
++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/45");
+     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
+     const adminLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
+     expect(adminLabels).toEqual(defaultToolLabels);
 @@ -431,7 +431,7 @@ test("root tools surface links current tool pages without old_* routes", async (
      const adminGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
        groups.map((group) => group.dataset.toolsAccordion)
      ));
--    expect(adminGroupLabels).toEqual(["Build/Create", "Design", "Platform", "Play"]);
-+    expect(adminGroupLabels).toEqual(["Design", "Graphics", "Objects", "Worlds", "Interface", "Controls", "Rules", "Progression"]);
+-    expect(adminGroupLabels).toEqual(["Design", "Graphics", "Objects", "Worlds", "Interface", "Controls", "Rules", "Progression"]);
++    expect(adminGroupLabels).toEqual(["Idea", "Create", "Design", "Graphics", "Objects", "Interface", "Controls", "Progression"]);
      await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
      await page.getByRole("button", { name: "Build Path" }).click();
      await expect(page.locator("[data-build-path-table='workflow']")).toBeVisible();
-@@ -665,6 +665,21 @@ test("representative active tool pages align center cleanup and registry group c
-     "tool-group-platform",
-     "tool-group-play"
+@@ -440,7 +440,7 @@ test("root tools surface links current tool pages without old_* routes", async (
+     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
+     await setServerSession(server, "");
+     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 12/40");
++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/41");
+     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
+     expect(pageErrors).toEqual([]);
+   } finally {
+@@ -667,6 +667,7 @@ test("representative active tool pages align center cleanup and registry group c
    ];
-+  const gameJourneyGroupClasses = [
-+    "tool-group-idea",
-+    "tool-group-journey-design",
-+    "tool-group-graphics",
-+    "tool-group-journey-audio",
-+    "tool-group-objects",
-+    "tool-group-worlds",
-+    "tool-group-interface",
-+    "tool-group-controls",
-+    "tool-group-rules",
-+    "tool-group-progression",
-+    "tool-group-play-test",
-+    "tool-group-publish",
-+    "tool-group-journey-share"
-+  ];
-   const { failedRequests, pageErrors, server } = await openRepoPage(page, "/toolbox/index.html?view=group");
+   const gameJourneyGroupClasses = [
+     "tool-group-idea",
++    "tool-group-game-create",
+     "tool-group-journey-design",
+     "tool-group-graphics",
+     "tool-group-journey-audio",
+diff --git a/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs b/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
+index 9f89d2b9e..0f40e9616 100644
+--- a/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
++++ b/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
+@@ -4,8 +4,8 @@ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
+ import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
+ import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
  
-   try {
-@@ -689,7 +704,7 @@ test("representative active tool pages align center cleanup and registry group c
-       })
-     )));
-     const toolboxCardGroupClasses = [...toolboxGroupCardStyles.values()].map((styles) => styles.groupClass);
--    expect(toolboxCardGroupClasses.every((className) => ssotGroupClasses.includes(className))).toBe(true);
-+    expect(toolboxCardGroupClasses.every((className) => gameJourneyGroupClasses.includes(className))).toBe(true);
-     expect(toolboxCardGroupClasses.filter((className) => legacyGroupClasses.includes(className))).toEqual([]);
- 
-     for (const tool of activeTools) {
-@@ -699,7 +714,10 @@ test("representative active tool pages align center cleanup and registry group c
-       await expect(page.locator(".tool-center-panel h1, .tool-center-panel h2, .tool-center-panel h3").first()).toBeVisible();
- 
-       const expectedFromToolboxGroup = toolboxGroupCardStyles.get(tool.displayName);
--      const expectedGroupClass = expectedFromToolboxGroup?.groupClass || tool.colorGroup;
-+      const expectedGroupClass = tool.colorGroup;
-+      if (expectedFromToolboxGroup) {
-+        expect(gameJourneyGroupClasses).toContain(expectedFromToolboxGroup.groupClass);
-+      }
-       expect(ssotGroupClasses).toContain(expectedGroupClass);
-       expect(legacyGroupClasses).not.toContain(expectedGroupClass);
-       const sideColumns = page.locator(".tool-workspace > aside.tool-column");
-@@ -734,20 +752,8 @@ test("representative active tool pages align center cleanup and registry group c
-         })
-       ));
- 
--      if (expectedFromToolboxGroup) {
--        expect(sidePanelStyles.map((styles) => styles.borderColor)).toEqual([
--          expectedFromToolboxGroup.borderColor,
--          expectedFromToolboxGroup.borderColor
--        ]);
--        expect(sidePanelStyles.map((styles) => styles.headerColor)).toEqual([
--          expectedFromToolboxGroup.borderColor,
--          expectedFromToolboxGroup.borderColor
--        ]);
--        expect(sidePanelHrColors).toEqual([
--          expectedFromToolboxGroup.borderColor,
--          expectedFromToolboxGroup.borderColor
--        ]);
--      }
-+      expect(sidePanelStyles.map((styles) => styles.borderColor)).toEqual(sidePanelStyles.map((styles) => styles.headerColor));
-+      expect(sidePanelHrColors).toEqual(sidePanelStyles.map((styles) => styles.borderColor));
-     }
- 
-     expect(failedRequests).toEqual([]);
+-const EXPECTED_TOOL_COUNT = 45;
+-const EXPECTED_VISIBLE_TOOL_COUNT = 44;
++const EXPECTED_TOOL_COUNT = 46;
++const EXPECTED_VISIBLE_TOOL_COUNT = 45;
+ const REQUIRED_ADMIN_TOOLS = [
+   "Environments",
+   "Game Migration",
+@@ -240,7 +240,7 @@ test("Toolbox and Admin Tool Votes share the same DB-backed metadata and plannin
+       beta: 7,
+       complete: 1,
+       planned: 31,
+-      wireframe: 4,
++      wireframe: 5,
+       deprecated: 2,
+     });
+     const orderedSetupRows = snapshot.rows
 diff --git a/tests/playwright/tools/ToolboxRoutePages.spec.mjs b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
-index a53e1d2fb..7264956ce 100644
+index 7264956ce..80ec3d1c3 100644
 --- a/tests/playwright/tools/ToolboxRoutePages.spec.mjs
 +++ b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
-@@ -23,6 +23,38 @@ const STATUS_HELP_TEXT = Object.freeze({
-   deprecated: "Tool remains supported but is not recommended for new workflows.\nMust remain deprecated before removal.",
- });
+@@ -6,6 +6,7 @@ import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageRe
  
-+const GAME_JOURNEY_GROUP_ORDER = Object.freeze([
-+  "Idea",
-+  "Design",
-+  "Graphics",
-+  "Audio",
-+  "Objects",
-+  "Worlds",
-+  "Interface",
-+  "Controls",
-+  "Rules",
-+  "Progression",
-+  "Play Test",
-+  "Publish",
-+  "Share",
-+]);
-+
-+const GAME_JOURNEY_GROUP_COLORS = Object.freeze({
-+  "Idea": "rgb(255, 45, 45)",
-+  "Design": "rgb(255, 122, 0)",
-+  "Graphics": "rgb(255, 200, 87)",
-+  "Audio": "rgb(250, 204, 21)",
-+  "Objects": "rgb(163, 230, 53)",
-+  "Worlds": "rgb(125, 217, 87)",
-+  "Interface": "rgb(45, 212, 191)",
-+  "Controls": "rgb(32, 214, 255)",
-+  "Rules": "rgb(77, 163, 255)",
-+  "Progression": "rgb(129, 140, 248)",
-+  "Play Test": "rgb(184, 119, 255)",
-+  "Publish": "rgb(217, 70, 239)",
-+  "Share": "rgb(255, 79, 139)",
-+});
-+
- test.afterAll(async () => {
-   await workspaceV2CoverageReporter.writeReport();
- });
-@@ -411,13 +443,13 @@ test("toolbox status kickers, filters, card order, and voting controls work from
-       STATUS_HELP_TEXT.complete,
-     );
+ const TOOL_ROUTE_SMOKE_CASES = [
+   { heading: "Game Journey", route: "/tools/game-journey/index.html" },
++  { heading: "Idea Board", route: "/tools/idea-board/index.html" },
+   { heading: "Colors", route: "/tools/colors/index.html" },
+   { heading: "Assets", route: "/tools/assets/index.html" },
+   { heading: "Tags", route: "/tools/tags/index.html" },
+@@ -25,6 +26,7 @@ const STATUS_HELP_TEXT = Object.freeze({
  
--    const designGroupLabel = page.locator("[data-toolbox-group-label='Design']").first();
--    await expect(designGroupLabel).toBeVisible();
--    await expect(designGroupLabel).toHaveCSS("background-color", "rgb(255, 79, 139)");
--    await expect(designGroupLabel).toHaveCSS("color", "rgb(255, 255, 255)");
-+    const graphicsGroupLabel = page.locator("[data-toolbox-group-label='Graphics']").first();
-+    await expect(graphicsGroupLabel).toBeVisible();
-+    await expect(graphicsGroupLabel).toHaveCSS("background-color", "rgb(255, 200, 87)");
-+    await expect(graphicsGroupLabel).toHaveCSS("color", "rgb(9, 11, 15)");
-     const designActionRow = page.locator("[data-toolbox-tile-action-row='Colors']");
--    await expect(designActionRow.locator("[data-toolbox-group-label='Design']")).toHaveCount(0);
--    await expect(page.locator("[data-toolbox-tool-card='Colors'] .card-body > [data-toolbox-group-badge] [data-toolbox-group-label='Design']")).toHaveCSS("background-color", "rgb(255, 79, 139)");
-+    await expect(designActionRow.locator("[data-toolbox-group-label='Graphics']")).toHaveCount(0);
-+    await expect(page.locator("[data-toolbox-tool-card='Colors'] .card-body > [data-toolbox-group-badge] [data-toolbox-group-label='Graphics']")).toHaveCSS("background-color", "rgb(255, 200, 87)");
-     await expect(page.locator("[data-toolbox-tool-card='Colors'] .card-body > [data-toolbox-state-badge]")).toHaveAttribute("data-toolbox-state-badge", "complete");
+ const GAME_JOURNEY_GROUP_ORDER = Object.freeze([
+   "Idea",
++  "Create",
+   "Design",
+   "Graphics",
+   "Audio",
+@@ -41,6 +43,7 @@ const GAME_JOURNEY_GROUP_ORDER = Object.freeze([
  
-     await page.goto(`${server.baseUrl}/admin/tool-votes.html`, { waitUntil: "networkidle" });
-@@ -588,7 +620,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
+ const GAME_JOURNEY_GROUP_COLORS = Object.freeze({
+   "Idea": "rgb(255, 45, 45)",
++  "Create": "rgb(245, 158, 11)",
+   "Design": "rgb(255, 122, 0)",
+   "Graphics": "rgb(255, 200, 87)",
+   "Audio": "rgb(250, 204, 21)",
+@@ -130,6 +133,83 @@ test("tools route aliases render toolbox tool pages", async ({ page }) => {
    }
  });
  
--test("toolbox group labels match Admin Tool Votes assignments and restored group colors", async ({ page }) => {
-+test("toolbox grouped view renders Game Journey order with unique colors while Build Path keeps metadata groups", async ({ page }) => {
++test("Idea Board launches from Toolbox with placeholder-only Create Project action", async ({ page }) => {
++  const server = await startRepoServer();
++  const failedRequests = [];
++  const pageErrors = [];
++  const consoleErrors = [];
++  const mutatingApiRequests = [];
++
++  page.on("response", (response) => {
++    if (response.status() >= 400) {
++      failedRequests.push(`${response.status()} ${response.url()}`);
++    }
++  });
++  page.on("requestfailed", (request) => {
++    failedRequests.push(`FAILED ${request.url()}`);
++  });
++  page.on("pageerror", (error) => {
++    const text = error.stack || error.message;
++    if (!isBrowserExtensionNoise(text)) {
++      pageErrors.push(error.message);
++    }
++  });
++  page.on("console", (message) => {
++    if (message.type() === "error" && !isBrowserExtensionNoise(message.text())) {
++      consoleErrors.push(message.text());
++    }
++  });
++
++  try {
++    await workspaceV2CoverageReporter.start(page);
++    await setServerSession(server, MOCK_DB_KEYS.users.user1);
++    page.on("request", (request) => {
++      if (request.url().includes("/api/") && request.method() !== "GET") {
++        mutatingApiRequests.push(`${request.method()} ${request.url()}`);
++      }
++    });
++    await page.goto(`${server.baseUrl}/toolbox/index.html?view=group&group=idea`, { waitUntil: "networkidle" });
++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/41");
++    await expect(page.locator("[data-tools-accordion='Idea']")).toHaveCount(1);
++    await expect(page.locator("[data-tools-accordion='Idea']")).toBeVisible();
++    await expect(page.locator("[data-tools-accordion='Idea']")).toHaveJSProperty("open", true);
++    const ideaBoardLink = page.locator("[data-toolbox-tool-name-link='Idea Board']");
++    await expect(ideaBoardLink).toBeVisible();
++    await expect(ideaBoardLink).toHaveAttribute("href", "/toolbox/idea-board/index.html");
++    await expect(ideaBoardLink).toHaveAttribute("data-registered-tool-route", "toolbox/idea-board/index.html");
++
++    await ideaBoardLink.click();
++    await page.waitForURL(/\/toolbox\/idea-board\/index\.html$/);
++    await page.waitForLoadState("networkidle");
++    await expect(page.getByRole("heading", { level: 1, name: "Idea Board" })).toBeVisible();
++    await expect(page.locator("[data-idea-board-section]")).toContainText([
++      "Cards",
++      "Tags",
++      "Status",
++      "Board",
++      "List",
++      "Notes",
++      "Create Project",
++      "Diagnostics",
++    ]);
++    await expect(page.locator("[data-idea-board-create-project]")).toBeVisible();
++    await expect(page.locator("[data-idea-board-create-project]")).toBeDisabled();
++    await expect(page.locator("[data-idea-board-status]")).toHaveText("Wireframe only. No save, load, auth, AI, or database behavior is connected.");
++    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
++    mutatingApiRequests.length = 0;
++    await page.locator("[data-idea-board-create-project]").evaluate((button) => button.click());
++    await page.waitForTimeout(100);
++    expect(mutatingApiRequests).toEqual([]);
++
++    expect(failedRequests).toEqual([]);
++    expect(pageErrors).toEqual([]);
++    expect(consoleErrors).toEqual([]);
++  } finally {
++    await workspaceV2CoverageReporter.stop(page);
++    await server.close();
++  }
++});
++
+ test("toolbox index shows wireframe and beta tools while Planned remains opt-in", async ({ page }) => {
    const server = await startRepoServer();
    const failedRequests = [];
-   const pageErrors = [];
-@@ -617,15 +649,10 @@ test("toolbox group labels match Admin Tool Votes assignments and restored group
-   try {
-     await workspaceV2CoverageReporter.start(page);
-     await setServerSession(server, MOCK_DB_KEYS.users.admin);
--    await page.goto(`${server.baseUrl}/admin/tool-votes.html`, { waitUntil: "networkidle" });
--    const adminGroupsByTool = await page.locator("[data-toolbox-votes-tool-id]").evaluateAll((rows) => (
--      Object.fromEntries(rows.map((row) => [
--        row.querySelector("td")?.textContent.trim(),
--        row.querySelector("[data-toolbox-votes-group]")?.value || "",
--      ]))
--    ));
-+    const registryById = await toolMetadataById(server);
-+    const registryByTitle = new Map(Array.from(registryById.values()).map((tool) => [tool.displayName, tool]));
+@@ -171,6 +251,7 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
+     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+     await expect(page.locator("[data-toolbox-tool-name-link='AI Command Center']")).toHaveCount(0);
+     await expect(page.locator("[data-toolbox-tool-name-link='Colors']")).toBeVisible();
++    await expect(page.locator("[data-toolbox-tool-name-link='Idea Board']")).toBeVisible();
+     await expect(page.locator("[data-toolbox-tool-name-link='Fonts']")).toHaveCount(0);
+     await expect(page.locator("[data-toolbox-tool-name-link='Assets']")).toBeVisible();
+     await expect(page.locator("[data-toolbox-tool-name-link='Tags']")).toBeVisible();
+@@ -183,22 +264,23 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
+     await expect(page.locator("[data-toolbox-tool-name-link='Game Journey']")).toBeVisible();
+     await expect(page.locator("[data-toolbox-tool-name-link='Game Workspace']")).toBeVisible();
+     await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toHaveCount(0);
+-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 12/40");
++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/41");
+     await page.locator("[data-toolbox-status-filter='planned']").click();
+     await expect(page.locator("[data-toolbox-status-filter='planned']")).toHaveAttribute("aria-pressed", "true");
+     await expect(page.locator("[data-toolbox-tool-card][data-toolbox-release-channel='planned']")).toHaveCount(27);
+-    await expect(page.locator("[data-toolbox-tool-card]")).toHaveCount(39);
+-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 39/40");
++    await expect(page.locator("[data-toolbox-tool-card]")).toHaveCount(40);
++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 40/41");
+     await expect(page.locator("[data-toolbox-tool-name-link='AI Command Center']")).toBeVisible();
+     await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toBeVisible();
+     await page.locator("[data-toolbox-status-filter='deprecated']").click();
+     await expect(page.locator("[data-toolbox-tool-name-link='Build Game']")).toBeVisible();
+-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 40/40");
++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 41/41");
  
--    await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
-+    await page.goto(`${server.baseUrl}/toolbox/index.html?view=group`, { waitUntil: "networkidle" });
-     const plannedFilter = page.locator("[data-toolbox-status-filter='planned']");
-     if (await plannedFilter.getAttribute("aria-pressed") !== "true") {
-       await plannedFilter.click();
-@@ -634,43 +661,72 @@ test("toolbox group labels match Admin Tool Votes assignments and restored group
-     if (await deprecatedFilter.getAttribute("aria-pressed") !== "true") {
-       await deprecatedFilter.click();
-     }
-+    await expect(page.locator("[data-toolbox-status-filter='planned']")).toHaveAttribute("aria-pressed", "true");
-+    await expect(page.locator("[data-toolbox-status-filter='deprecated']")).toHaveAttribute("aria-pressed", "true");
-+    await expect(page.locator("[data-tools-accordion]")).toHaveCount(GAME_JOURNEY_GROUP_ORDER.length);
-+    const groupNames = await page.locator("[data-tools-accordion]").evaluateAll((accordions) => (
-+      accordions.map((accordion) => accordion.dataset.toolsAccordion)
-+    ));
-+    expect(groupNames).toEqual(GAME_JOURNEY_GROUP_ORDER);
-+
-+    const groupSwatches = await page.locator("[data-tools-accordion] > summary [data-toolbox-group-label]").evaluateAll((labels) => (
-+      labels.map((label) => ({
-+        group: label.dataset.toolboxGroupLabel,
-+        backgroundColor: getComputedStyle(label).backgroundColor,
-+        className: label.className,
-+      }))
-+    ));
-+    expect(groupSwatches.map((swatch) => swatch.group)).toEqual(GAME_JOURNEY_GROUP_ORDER);
-+    expect(new Set(groupSwatches.map((swatch) => swatch.backgroundColor)).size).toBe(GAME_JOURNEY_GROUP_ORDER.length);
-+    expect(new Set(groupSwatches.map((swatch) => swatch.className)).size).toBe(GAME_JOURNEY_GROUP_ORDER.length);
-+    for (const swatch of groupSwatches) {
-+      expect(swatch.backgroundColor).toBe(GAME_JOURNEY_GROUP_COLORS[swatch.group]);
-+    }
-+
-     const toolboxGroupsByTool = await page.locator("[data-toolbox-tool-card]").evaluateAll((cards) => (
-       Object.fromEntries(cards.map((card) => [
-         card.getAttribute("data-toolbox-tool-card"),
+     await setServerSession(server, MOCK_DB_KEYS.users.admin);
+     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+     await expect(page.locator("[data-toolbox-tool-name-link='Colors']")).toBeVisible();
+     await expect(page.locator("[data-toolbox-tool-name-link='Colors']")).toHaveAttribute("href", "/toolbox/colors/index.html");
++    await expect(page.locator("[data-toolbox-tool-name-link='Idea Board']")).toBeVisible();
+     await expect(page.locator("[data-toolbox-tool-name-link='Fonts']")).toHaveCount(0);
+     await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toHaveCount(0);
+     await page.locator("[data-toolbox-status-filter='planned']").click();
+@@ -251,7 +333,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
+ 
+     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
+       "Planned (27)",
+-      "Wireframe (4)",
++      "Wireframe (5)",
+       "Beta (7)",
+       "Complete (1)",
+       "Deprecated (1)",
+@@ -268,7 +350,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
+     await page.locator("[data-tools-view='build-path']").click();
+     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
+       "Planned (27)",
+-      "Wireframe (4)",
++      "Wireframe (5)",
+       "Beta (7)",
+       "Complete (1)",
+       "Deprecated (1)",
+@@ -689,9 +771,11 @@ test("toolbox grouped view renders Game Journey order with unique colors while B
          card.querySelector("[data-toolbox-group-label]")?.textContent.trim() || "",
        ]))
      ));
--    const visibleAdminGroupsByTool = Object.fromEntries(
--      Object.entries(adminGroupsByTool).filter(([toolName]) => Object.hasOwn(toolboxGroupsByTool, toolName))
--    );
--    expect(Object.keys(toolboxGroupsByTool).sort()).toEqual(Object.keys(visibleAdminGroupsByTool).sort());
--    expect(toolboxGroupsByTool).toEqual(visibleAdminGroupsByTool);
--
--    const expectedGroupColors = {
--      "AI": "rgb(184, 119, 255)",
--      "Audio": "rgb(255, 122, 0)",
--      "Build/Create": "rgb(255, 45, 45)",
--      "Design": "rgb(255, 79, 139)",
--      "Marketplace": "rgb(255, 200, 87)",
--      "Platform": "rgb(77, 163, 255)",
--      "Play": "rgb(125, 217, 87)",
--    };
--    for (const [groupName, expectedColor] of Object.entries(expectedGroupColors)) {
--      await expect(page.locator(`[data-toolbox-group-label='${groupName}']`).first()).toHaveCSS("background-color", expectedColor);
--    }
--    const buildColorTokens = await page.evaluate(() => {
--      const styles = getComputedStyle(document.documentElement);
--      return {
--        build: styles.getPropertyValue("--toolbox-group-build-color").trim(),
--        red: styles.getPropertyValue("--red").trim(),
--      };
--    });
--    expect(buildColorTokens).toEqual({
--      build: "#ff2d2d",
--      red: "#ff2d2d",
-+    expect(toolboxGroupsByTool["Game Workspace"]).toBe("Worlds");
-+    expect(toolboxGroupsByTool["Game Configuration"]).toBe("Rules");
-+    expect(toolboxGroupsByTool["Game Journey"]).toBe("Progression");
-+    expect(toolboxGroupsByTool["Publish"]).toBe("Publish");
-+    expect(toolboxGroupsByTool["Marketplace"]).toBe("Share");
-+
-+    const toolLinks = await page.locator("[data-toolbox-tool-name-link]").evaluateAll((links) => (
-+      links.map((link) => ({
-+        title: link.dataset.toolboxToolNameLink,
-+        route: link.dataset.registeredToolRoute,
-+        href: link.getAttribute("href"),
-+      }))
-+    ));
-+    await expect(page.locator("[data-toolbox-tool-card]")).toHaveCount(toolLinks.length);
-+    for (const link of toolLinks) {
-+      const registryTool = registryByTitle.get(link.title);
-+      expect(registryTool, `${link.title} should remain registered`).toBeTruthy();
-+      expect(link.route).toBe(registryTool.route);
-+      expect(link.href).toBe(`/${registryTool.route.replace(/^\/+/, "")}`);
-+    }
-+
-+    await page.locator("[data-tools-view='build-path']").click();
-+    const betaFilter = page.locator("[data-toolbox-status-filter='beta']");
-+    if (await betaFilter.getAttribute("aria-pressed") !== "true") {
-+      await betaFilter.click();
-+    }
-+    await expect(page.locator("[data-build-path-tool='Game Workspace']")).toHaveAttribute("data-build-path-group", "Build/Create");
-+    await expect(page.locator("[data-build-path-tool='Colors']")).toHaveAttribute("data-build-path-group", "Design");
-+
-+    const toolboxSource = await page.evaluate(async () => {
-+      const response = await fetch("/toolbox/index.html");
-+      return response.text();
-     });
--    await expect(page.locator("[data-toolbox-group-label='Marketplace']").first()).toHaveCSS("color", "rgb(9, 11, 15)");
--    await expect(page.locator("[data-toolbox-group-label='Play']").first()).toHaveCSS("color", "rgb(9, 11, 15)");
-+    expect(toolboxSource).not.toMatch(/<script(?![^>]+src=)[^>]*>/i);
-+    expect(toolboxSource).not.toMatch(/<style[\s>]/i);
-+    expect(toolboxSource).not.toMatch(/\sstyle=/i);
-+    expect(toolboxSource).not.toContain("onclick=");
-+    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+-    expect(toolboxGroupsByTool["Game Workspace"]).toBe("Worlds");
+-    expect(toolboxGroupsByTool["Game Configuration"]).toBe("Rules");
+-    expect(toolboxGroupsByTool["Game Journey"]).toBe("Progression");
++    expect(toolboxGroupsByTool["Idea Board"]).toBe("Idea");
++    expect(toolboxGroupsByTool["AI Command Center"]).toBe("Design");
++    expect(toolboxGroupsByTool["Game Workspace"]).toBe("Create");
++    expect(toolboxGroupsByTool["Game Configuration"]).toBe("Create");
++    expect(toolboxGroupsByTool["Game Journey"]).toBe("Create");
+     expect(toolboxGroupsByTool["Publish"]).toBe("Publish");
+     expect(toolboxGroupsByTool["Marketplace"]).toBe("Share");
+ 
+@@ -804,7 +888,7 @@ test("toolbox Build Path status filters support multi-select registry-matched to
+ 
+     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
+       "Planned (27)",
+-      "Wireframe (4)",
++      "Wireframe (5)",
+       "Beta (7)",
+       "Complete (1)",
+       "Deprecated (1)",
+@@ -829,19 +913,19 @@ test("toolbox Build Path status filters support multi-select registry-matched to
+ 
+     await page.locator("[data-toolbox-status-filter='wireframe']").click();
+     await expectActiveFilters(["planned", "wireframe"]);
+-    await expectBuildPathChannels(["planned", "wireframe"], 31);
++    await expectBuildPathChannels(["planned", "wireframe"], 32);
+     await expect(page.locator("[data-build-path-tool='Saved Data']")).toBeVisible();
+     await expect(page.locator("[data-build-path-tool='Build Game']")).toHaveCount(0);
+ 
+     await page.locator("[data-toolbox-status-filter='deprecated']").click();
+     await expectActiveFilters(["planned", "wireframe", "deprecated"]);
+-    await expectBuildPathChannels(["planned", "wireframe", "deprecated"], 32);
++    await expectBuildPathChannels(["planned", "wireframe", "deprecated"], 33);
+     await expect(page.locator("[data-build-path-tool='Build Game']")).toBeVisible();
+     await expectBuildPathOrder("Build Game", registryById.get("build-game").order);
+ 
+     await page.locator("[data-toolbox-status-filter='beta']").click();
+     await expectActiveFilters(["planned", "wireframe", "beta", "deprecated"]);
+-    await expectBuildPathChannels(["planned", "wireframe", "beta", "deprecated"], 39);
++    await expectBuildPathChannels(["planned", "wireframe", "beta", "deprecated"], 40);
  
      expect(failedRequests).toEqual([]);
      expect(pageErrors).toEqual([]);
-diff --git a/toolbox/index.html b/toolbox/index.html
-index 1582ea242..072132362 100644
---- a/toolbox/index.html
-+++ b/toolbox/index.html
-@@ -29,7 +29,7 @@
-                 </div>
-                 <div class="hero-actions" aria-label="Tool status filters" data-toolbox-status-filters></div>
-                 <p class="status" role="status" data-toolbox-launch-status>Showing Wireframe, Beta, and Complete tools. Select Planned to include planned tools.</p>
--                <div class="accordion-group" data-tools-accordion-list></div>
-+                <div class="accordion-group" data-tools-accordion-list data-toolbox-game-journey-groups></div>
-             </div>
-         </section>
-     </main>
 diff --git a/toolbox/tools-page-accordions.js b/toolbox/tools-page-accordions.js
-index a0521808e..952706d3b 100644
+index 952706d3b..d49d459ac 100644
 --- a/toolbox/tools-page-accordions.js
 +++ b/toolbox/tools-page-accordions.js
-@@ -67,17 +67,110 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
-     const toolboxGroupOrder = Object.freeze([...(toolboxContract.toolboxGroupOrder || [])]);
-     const groupSwatchMap = Object.freeze({ ...(toolboxContract.groupSwatches || {}) });
+@@ -69,6 +69,7 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
      const stateSwatchMap = Object.freeze({ ...(toolboxContract.releaseChannelSwatches || {}) });
-+    const gameJourneyGroupOrder = Object.freeze([
-+        "Idea",
-+        "Design",
-+        "Graphics",
-+        "Audio",
-+        "Objects",
-+        "Worlds",
-+        "Interface",
-+        "Controls",
-+        "Rules",
-+        "Progression",
-+        "Play Test",
-+        "Publish",
-+        "Share"
-+    ]);
-+    const gameJourneyGroupSwatches = Object.freeze({
-+        "Idea": "swatch-red",
-+        "Design": "swatch-orange",
-+        "Graphics": "swatch-gold",
-+        "Audio": "swatch-yellow",
-+        "Objects": "swatch-lime",
-+        "Worlds": "swatch-green",
-+        "Interface": "swatch-teal",
-+        "Controls": "swatch-cyan",
-+        "Rules": "swatch-blue",
-+        "Progression": "swatch-indigo",
-+        "Play Test": "swatch-purple",
-+        "Publish": "swatch-magenta",
-+        "Share": "swatch-pink"
-+    });
-+    const gameJourneyGroupClasses = Object.freeze({
-+        "Idea": "tool-group-idea",
-+        "Design": "tool-group-journey-design",
-+        "Graphics": "tool-group-graphics",
-+        "Audio": "tool-group-journey-audio",
-+        "Objects": "tool-group-objects",
-+        "Worlds": "tool-group-worlds",
-+        "Interface": "tool-group-interface",
-+        "Controls": "tool-group-controls",
-+        "Rules": "tool-group-rules",
-+        "Progression": "tool-group-progression",
-+        "Play Test": "tool-group-play-test",
-+        "Publish": "tool-group-publish",
-+        "Share": "tool-group-journey-share"
-+    });
-+    const gameJourneyGroupByToolId = Object.freeze({
-+        "achievements": "Progression",
-+        "ai-assistant": "Idea",
-+        "animations": "Graphics",
-+        "assets": "Graphics",
-+        "audio": "Audio",
-+        "audio-effects": "Audio",
-+        "build-game": "Publish",
-+        "characters": "Objects",
-+        "cloud": "Share",
-+        "code": "Rules",
-+        "colors": "Graphics",
-+        "community": "Share",
-+        "controls": "Controls",
-+        "debug": "Play Test",
-+        "environments": "Publish",
-+        "events": "Rules",
-+        "fonts": "Interface",
-+        "game-configuration": "Rules",
-+        "game-design": "Design",
-+        "game-journey": "Progression",
-+        "game-migration": "Publish",
-+        "game-testing": "Play Test",
-+        "game-workspace": "Worlds",
-+        "hitboxes": "Controls",
-+        "input-mapping-v2": "Controls",
-+        "languages": "Interface",
-+        "learn": "Idea",
-+        "marketplace": "Share",
-+        "midi": "Audio",
-+        "music": "Audio",
-+        "objects": "Objects",
-+        "particles": "Graphics",
-+        "performance": "Play Test",
-+        "platform-settings": "Publish",
-+        "publish": "Publish",
-+        "ratings": "Share",
-+        "saved-data": "Progression",
-+        "speech-to-text": "Audio",
-+        "sprites": "Graphics",
-+        "tags": "Objects",
-+        "text-to-speech": "Audio",
-+        "users": "Share",
-+        "videos": "Graphics",
-+        "voices": "Audio",
-+        "worlds": "Worlds"
-+    });
-+    const toolboxGroupPositions = new Map(toolboxGroupOrder.map((group, index) => [group, index]));
-     toolboxDefaultReleaseChannels.forEach((channel) => {
-         visibleReleaseChannels.add(channel);
+     const gameJourneyGroupOrder = Object.freeze([
+         "Idea",
++        "Create",
+         "Design",
+         "Graphics",
+         "Audio",
+@@ -84,6 +85,7 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
+     ]);
+     const gameJourneyGroupSwatches = Object.freeze({
+         "Idea": "swatch-red",
++        "Create": "swatch-amber",
+         "Design": "swatch-orange",
+         "Graphics": "swatch-gold",
+         "Audio": "swatch-yellow",
+@@ -99,6 +101,7 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
      });
-     const registryTools = getActiveToolRegistry();
-     const registryToolsByTitle = new Map(registryTools.map((tool) => [tool.displayName || tool.name, tool]));
--    const toolGroups = toolboxGroupOrder
-+    const toolGroups = gameJourneyGroupOrder
-         .map((group) => ({
-             group,
-             tools: registryTools
--                .filter((tool) => tool.toolboxGroup === group && includeToolInToolboxInventory(tool))
--                .sort((left, right) => (left.order ?? Number.MAX_SAFE_INTEGER) - (right.order ?? Number.MAX_SAFE_INTEGER))
-+                .filter((tool) => includeToolInToolboxInventory(tool) && gameJourneyGroupForTool(tool) === group)
-+                .sort(compareByRegistryOrder)
-         }))
-         .filter((group) => group.tools.length > 0);
-     let toolboxVoteRows = [];
-@@ -112,8 +205,12 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
-         return left.title.localeCompare(right.title);
-     }
- 
--    function compareByGroup(left, right) {
--        return left.group.localeCompare(right.group);
-+    function compareByRegistryOrder(left, right) {
-+        const leftGroup = toolboxGroupPositions.get(left.toolboxGroup) ?? Number.MAX_SAFE_INTEGER;
-+        const rightGroup = toolboxGroupPositions.get(right.toolboxGroup) ?? Number.MAX_SAFE_INTEGER;
-+        return leftGroup - rightGroup
-+            || (left.order ?? Number.MAX_SAFE_INTEGER) - (right.order ?? Number.MAX_SAFE_INTEGER)
-+            || String(left.displayName || left.name || "").localeCompare(String(right.displayName || right.name || ""));
-     }
- 
-     function releaseChannelForTool(tool) {
-@@ -158,9 +255,39 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
-         return tool.category || "Platform";
-     }
- 
--    function enrichTool(tool, groupName = colorGroupForTool(tool)) {
-+    function gameJourneyGroupForTool(tool) {
-+        const toolId = String(tool?.id || "").trim().toLowerCase();
-+        if (gameJourneyGroupByToolId[toolId]) {
-+            return gameJourneyGroupByToolId[toolId];
-+        }
-+        const searchable = [
-+            toolId,
-+            tool?.displayName,
-+            tool?.name,
-+            tool?.category,
-+            tool?.toolboxGroup,
-+            tool?.subgroup
-+        ].filter(Boolean).join(" ").toLowerCase();
-+        if (/\b(audio|music|voice|midi|sound|speech)\b/.test(searchable)) return "Audio";
-+        if (/\b(color|asset|sprite|font|video|animation|particle|graphic)\b/.test(searchable)) return "Graphics";
-+        if (/\b(object|character|tag)\b/.test(searchable)) return "Objects";
-+        if (/\b(world|workspace|map|scene)\b/.test(searchable)) return "Worlds";
-+        if (/\b(interface|language|ui|ux)\b/.test(searchable)) return "Interface";
-+        if (/\b(control|input|hitbox)\b/.test(searchable)) return "Controls";
-+        if (/\b(rule|event|configuration|code|extension)\b/.test(searchable)) return "Rules";
-+        if (/\b(progress|achievement|saved|journey)\b/.test(searchable)) return "Progression";
-+        if (/\b(test|debug|performance)\b/.test(searchable)) return "Play Test";
-+        if (/\b(publish|build|migration|environment|settings)\b/.test(searchable)) return "Publish";
-+        if (/\b(share|marketplace|community|cloud|rating|user)\b/.test(searchable)) return "Share";
-+        if (/\b(design)\b/.test(searchable)) return "Design";
-+        return "Idea";
-+    }
-+
-+    function enrichTool(tool, groupName = "") {
-         const registryTool = registryToolForCard(tool) || tool;
-         const metadata = voteRowsByToolId.get(registryTool.id) || null;
-+        const metadataGroup = metadata?.group || colorGroupForTool(registryTool);
-+        const displayGroup = groupName || metadataGroup;
-         const route = getToolRoute(registryTool);
-         const path = String(metadata?.path || route || "").replace(/^\/+/, "");
-         const title = registryTool.displayName || registryTool.name || tool.title || "Tool";
-@@ -181,7 +308,7 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
-             title,
-             toolKey: metadata?.toolKey || metadata?.toolId || registryTool.id,
-             adminOnly: registryTool?.adminOnly === true,
--            group: metadata?.group || groupName,
-+            group: displayGroup,
-             hidden: registryTool?.hidden === true,
-             order: metadata?.order ?? registryTool.order,
-             path,
-@@ -258,18 +385,15 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
-     }
- 
-     function visibleToolGroups() {
--        const groups = new Map();
--        toolGroups.flatMap((toolGroup) => toolGroup.tools).map((tool) => enrichTool(tool)).filter(isVisibleForRole).forEach((tool) => {
--            const groupName = tool.group;
--            if (!groups.has(groupName)) {
--                groups.set(groupName, []);
--            }
--            groups.get(groupName).push(tool);
--        });
--        return Array.from(groups.entries()).map(([group, tools]) => ({
--            group,
--            tools: tools.sort(compareByTitle)
--        })).sort(compareByGroup);
-+        return toolGroups
-+            .map((toolGroup) => ({
-+                group: toolGroup.group,
-+                tools: toolGroup.tools
-+                    .map((tool) => enrichTool(tool, toolGroup.group))
-+                    .filter(isVisibleForRole)
-+                    .sort(compareByTitle)
-+            }))
-+            .filter((group) => group.tools.length > 0);
-     }
- 
-     function roleAwareTools() {
-@@ -306,11 +430,11 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
-     }
- 
-     function groupClass(groupName) {
--        return registryTools.find((tool) => tool.category === groupName)?.colorGroup || "";
-+        return gameJourneyGroupClasses[groupName] || registryTools.find((tool) => tool.category === groupName)?.colorGroup || "";
-     }
- 
-     function groupSwatch(groupName) {
--        return groupSwatchMap[groupName] || "swatch-orange";
-+        return gameJourneyGroupSwatches[groupName] || groupSwatchMap[groupName] || "swatch-orange";
-     }
- 
-     function stateSwatch(channel) {
+     const gameJourneyGroupClasses = Object.freeze({
+         "Idea": "tool-group-idea",
++        "Create": "tool-group-game-create",
+         "Design": "tool-group-journey-design",
+         "Graphics": "tool-group-graphics",
+         "Audio": "tool-group-journey-audio",
+@@ -114,7 +117,7 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
+     });
+     const gameJourneyGroupByToolId = Object.freeze({
+         "achievements": "Progression",
+-        "ai-assistant": "Idea",
++        "ai-assistant": "Design",
+         "animations": "Graphics",
+         "assets": "Graphics",
+         "audio": "Audio",
+@@ -130,16 +133,17 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
+         "environments": "Publish",
+         "events": "Rules",
+         "fonts": "Interface",
+-        "game-configuration": "Rules",
++        "game-configuration": "Create",
+         "game-design": "Design",
+-        "game-journey": "Progression",
++        "game-journey": "Create",
+         "game-migration": "Publish",
+         "game-testing": "Play Test",
+-        "game-workspace": "Worlds",
++        "game-workspace": "Create",
+         "hitboxes": "Controls",
++        "idea-board": "Idea",
+         "input-mapping-v2": "Controls",
+         "languages": "Interface",
+-        "learn": "Idea",
++        "learn": "Share",
+         "marketplace": "Share",
+         "midi": "Audio",
+         "music": "Audio",
 
-diff --git a/docs_build/dev/reports/PR_26170_001-toolbox-game-journey-navigation.md b/docs_build/dev/reports/PR_26170_001-toolbox-game-journey-navigation.md
+diff --git a/docs_build/dev/reports/PR_26170_002-idea-board-tool.md b/docs_build/dev/reports/PR_26170_002-idea-board-tool.md
 new file mode 100644
 index 000000000..000000000
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26170_001-toolbox-game-journey-navigation.md
-@@ -0,0 +1,52 @@
-+# PR_26170_001 Toolbox Game Journey Navigation
++++ b/docs_build/dev/reports/PR_26170_002-idea-board-tool.md
+@@ -0,0 +1,43 @@
++# PR_26170_002 Idea Board Tool
 +
 +## Branch Validation
 +
@@ -808,65 +589,145 @@ index 000000000..000000000
 +| Requirement | Status | Notes |
 +| --- | --- | --- |
 +| Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` first. | PASS | Read before implementation. |
-+| Create `PR_26170_001-toolbox-game-journey-navigation`. | PASS | Build doc added under `docs_build/pr/`. |
-+| Update `/toolbox/index.html` under the Toolbox section. | PASS | Added a non-inline marker to the existing Toolbox group list container. |
-+| Replace displayed Toolbox groups with Game Journey order. | PASS | `toolbox/tools-page-accordions.js` now renders Idea, Design, Graphics, Audio, Objects, Worlds, Interface, Controls, Rules, Progression, Play Test, Publish, Share. |
-+| Assign every displayed group a unique rainbow color with no duplicates. | PASS | Added Theme V2 swatch/tool-group classes and validated thirteen unique computed colors. |
-+| Preserve tool cards, routes, statuses, and links. | PASS | Display grouping changed only; registered routes/statuses remain sourced from the registry. |
-+| Do not change database behavior, metadata contracts, Workspace, runtime behavior, status values, or routes. | PASS | Registry/admin/build-path metadata remains unchanged; Build Path still exposes registry metadata groups. |
-+| Do not add inline CSS/JS, `<style>`, `<script>`, or inline event handlers. | PASS | HTML source and rendered DOM checks passed. |
-+
-+## Implementation Notes
-+
-+- Added a Toolbox page presentation mapping from active tool IDs to the requested Game Journey groups.
-+- Kept Build Path and admin metadata on the existing registry/toolbox metadata grouping path.
-+- Added reusable Theme V2 colors/classes in CSS rather than inline styles.
-+- Updated directly affected Playwright expectations for the new displayed grouping and the preserved registry metadata split.
++| Create first-class tool at `toolbox/idea-board/` from `toolbox/_tool_template-v2`. | PASS | Added `toolbox/idea-board/index.html` using the template header, NAV, panels, accordions, status/logging, Theme V2 CSS, and external JS wiring. |
++| Purpose: creator notebook before a project exists. | PASS | Page copy and registry description use creator-notebook/pre-project language. |
++| Include wireframe sections for Cards, Board, List, Notes, Tags, Status, and Create Project placeholder. | PASS | Sections are present with `data-idea-board-section` markers. |
++| Register Idea Board in Toolbox under Idea. | PASS | Registered in `src/shared/toolbox/tool-metadata-inventory.js`; Toolbox grouped view renders it under Idea. |
++| Do not create project records. | PASS | Create Project is disabled placeholder-only; Playwright verified no API mutation after invoking the disabled placeholder. |
++| Do not add DB, persistence, auth, AI runtime, or save/load flows. | PASS | No tool-local JavaScript or API client was added. |
++| Keep Create Project visible placeholder action only. | PASS | Visible disabled button: `Create Project Placeholder`. |
++| No inline CSS/JS/style/script/event handlers. | PASS | Static guard and rendered DOM check passed. |
++| Workspace Manager V2 registration. | SKIP | `toolbox/workspace-manager-v2/` is not present in this checkout; no new workspace-manager surface was created for this PR. |
 +
 +## Validation Lane Report
 +
 +| Lane | Command | Result |
 +| --- | --- | --- |
-+| Branch | `git status --short --branch` | PASS, branch `main`. |
-+| JS syntax | `node --check toolbox/tools-page-accordions.js; node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs; node --check tests/playwright/tools/GameJourneyTool.spec.mjs; node --check tests/playwright/tools/RootToolsFutureState.spec.mjs; node --check tests/playwright/tools/ToolNavigationPrevNext.spec.mjs; node --check tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs` | PASS |
++| Branch | `git branch --show-current` | PASS: `main` |
++| JS syntax | `node --check toolbox/tools-page-accordions.js; node --check src/shared/toolbox/tool-metadata-inventory.js; node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs` | PASS |
++| Inline HTML guard | Node scan of `toolbox/idea-board/index.html` | PASS |
++| Targeted Idea Board Playwright | `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --grep "Idea Board launches" --workers=1 --reporter=line` | PASS, 1 passed |
 +| Diff whitespace | `git diff --check` | PASS |
-+| Inline HTML guard | Node scan of `toolbox/index.html` for inline script/style/handlers | PASS |
-+| Targeted Toolbox Playwright | `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --grep "toolbox grouped view renders Game Journey order" --workers=1 --reporter=line` | PASS, 1 passed |
-+| Adjacent Game Journey route check | `npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs --grep "Toolbox registration exposes Game Journey navigation" --workers=1 --reporter=line` | PASS, 1 passed |
-+| Extra adjacent navigation check | `npx playwright test tests/playwright/tools/ToolNavigationPrevNext.spec.mjs --grep "multi-path next control routes" --workers=1 --reporter=line` | FAIL: existing `/api/toolbox/game-configuration/.../makeValidGameDesign` returned 500; group URL assertion was not the failing condition. |
-+| Extra adjacent display-mode check | `npx playwright test tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs --grep "multi-path fallback opens Toolbox Group view" --workers=1 --reporter=line` | FAIL: same `game-configuration` API 500. |
 +
 +## Playwright Result
 +
-+- Required targeted Toolbox page validation passed.
-+- Playwright coverage reports were refreshed by the targeted runs.
-+- Two extra non-required adjacent navigation checks were attempted and failed on an out-of-scope `game-configuration` API 500.
++- PASS: Idea Board launches from the Toolbox Idea group.
++- PASS: Cards, Board, List, Notes, Tags, Status, Create Project, and Diagnostics wireframe sections render.
++- PASS: Create Project placeholder is disabled and produces no API mutation after the placeholder action is invoked.
 +
 +## Manual Validation Notes
 +
-+- Confirmed all thirteen Game Journey groups render in order when Planned and Deprecated are enabled.
-+- Confirmed each rendered group label has a unique computed background color.
-+- Confirmed displayed Toolbox links still match their registered routes.
-+- Confirmed Build Path keeps registry metadata groups such as `Build/Create` for Game Workspace and `Design` for Colors.
-+- Confirmed `toolbox/index.html` has no inline style/script/event-handler additions.
++- Confirmed Idea Board is a wireframe-only Theme V2 tool page.
++- Confirmed there is no tool-local JS, no persistence flow, no auth flow, no AI runtime flow, and no save/load flow.
++- Confirmed existing approved Theme V2 images are reused so the registry image contract does not gain missing binary assets.
++- Full samples smoke was skipped because samples are not in scope and no sample runtime behavior changed.
 
-diff --git a/docs_build/pr/BUILD_PR_26170_001-toolbox-game-journey-navigation.md b/docs_build/pr/BUILD_PR_26170_001-toolbox-game-journey-navigation.md
+diff --git a/docs_build/dev/reports/PR_26170_003-toolbox-create-group.md b/docs_build/dev/reports/PR_26170_003-toolbox-create-group.md
 new file mode 100644
 index 000000000..000000000
 --- /dev/null
-+++ b/docs_build/pr/BUILD_PR_26170_001-toolbox-game-journey-navigation.md
-@@ -0,0 +1,42 @@
-+# BUILD PR_26170_001 Toolbox Game Journey Navigation
++++ b/docs_build/dev/reports/PR_26170_003-toolbox-create-group.md
+@@ -0,0 +1,43 @@
++# PR_26170_003 Toolbox Create Group
++
++## Branch Validation
++
++- PASS: Current branch verified as `main`.
++
++## Requirement Checklist
++
++| Requirement | Status | Notes |
++| --- | --- | --- |
++| Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` first. | PASS | Read before implementation. |
++| Update Toolbox Game Journey groups to include Create after Idea. | PASS | Display order is Idea, Create, Design, Graphics, Audio, Objects, Worlds, Interface, Controls, Rules, Progression, Play Test, Publish, Share. |
++| Move Project Workspace/Game Workspace, Game Journey, and Game Configuration/Game Setup into Create. | PASS | Display mapping places `game-workspace`, `game-journey`, and `game-configuration` in Create. |
++| Keep Idea limited to Idea Board / creator-notebook concepts. | PASS | Idea contains Idea Board; AI Command Center moved to Design and Creator Learning to Share. |
++| Assign every group a unique rainbow color with no duplicate colors. | PASS | Added reusable amber swatch/tool group for Create; Playwright validated fourteen unique computed colors. |
++| Do not change routes, statuses, runtime behavior, database behavior, or tool metadata source contracts. | PASS | Display mapping changed only; Build Path still reports registry metadata groups such as `Build/Create` and `Design`. |
++| Do not add inline CSS/JS/style/script/event handlers. | PASS | Static guard passed for `toolbox/index.html` and `toolbox/idea-board/index.html`. |
++| Confirm existing tool links still work. | PASS | Playwright validated every displayed Toolbox card link against its registered route. |
++
++## Validation Lane Report
++
++| Lane | Command | Result |
++| --- | --- | --- |
++| Branch | `git branch --show-current` | PASS: `main` |
++| JS syntax | `node --check toolbox/tools-page-accordions.js; node --check src/shared/toolbox/tool-metadata-inventory.js; node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs; node --check tests/playwright/tools/RootToolsFutureState.spec.mjs; node --check tests/playwright/tools/GameJourneyTool.spec.mjs; node --check tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs; node --check tests/playwright/tools/BuildPathProgressSimplification.spec.mjs` | PASS |
++| Targeted Toolbox Playwright | `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --grep "toolbox grouped view renders Game Journey order" --workers=1 --reporter=line` | PASS, 1 passed |
++| Adjacent Game Journey registration | `npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs --grep "Toolbox registration exposes Game Journey navigation" --workers=1 --reporter=line` | PASS, 1 passed |
++| Inline HTML guard | Node scan of `toolbox/index.html` and `toolbox/idea-board/index.html` | PASS |
++| Diff whitespace | `git diff --check` | PASS |
++| Adjacent metadata SSoT check | `npx playwright test tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs --grep "Toolbox and Admin Tool Votes share" --workers=1 --reporter=line` | FAIL before new assertions: `/api/local-db/snapshot` returned unknown route in this local run. |
++
++## Playwright Result
++
++- PASS: Toolbox grouped view renders all fourteen requested groups in order.
++- PASS: Every displayed group has a unique computed color.
++- PASS: Existing displayed tool links still match registry routes.
++- PASS: Build Path continues to expose metadata groups from the existing registry/DB-backed metadata source.
++
++## Manual Validation Notes
++
++- Confirmed Create is a display-only grouping change in `toolbox/tools-page-accordions.js`.
++- Confirmed no route, status, runtime behavior, database behavior, or registry source contract was changed for existing tools.
++- Confirmed full samples smoke was skipped because samples are not in scope and the requested change is limited to Toolbox display/tool registration.
+
+diff --git a/docs_build/pr/BUILD_PR_26170_002-idea-board-tool.md b/docs_build/pr/BUILD_PR_26170_002-idea-board-tool.md
+new file mode 100644
+index 000000000..000000000
+--- /dev/null
++++ b/docs_build/pr/BUILD_PR_26170_002-idea-board-tool.md
+@@ -0,0 +1,32 @@
++# BUILD PR_26170_002 Idea Board Tool
 +
 +## Purpose
 +
-+Update the Toolbox index grouping under "The Toolbox" / "Creator tools organized by build surface." to render the requested Game Journey group order with unique rainbow colors while preserving existing tool cards, routes, and statuses.
++Create a first-class `toolbox/idea-board/` wireframe tool for creator notebook work before a project exists.
 +
 +## Scope
 +
-+- Update `/toolbox/index.html` and the immediate Toolbox index rendering dependencies only as needed.
-+- Replace the displayed Toolbox group organization with this Game Journey order:
++- Copy and adapt `toolbox/_tool_template-v2` into `toolbox/idea-board/`.
++- Include wireframe sections for Cards, Board, List, Notes, Tags, Status, and Create Project placeholder.
++- Register Idea Board so it appears from the Toolbox under the Idea display group.
++- Keep Create Project as a visible placeholder action only.
++- Do not create project records.
++- Do not add database behavior, persistence, authentication behavior, AI runtime behavior, or save/load flows.
++- Do not add inline CSS, inline JavaScript, `<style>`, `<script>` blocks, or inline event handlers.
++- If `toolbox/workspace-manager-v2/` is not present in this checkout, document workspace-manager registration as skipped due to missing target rather than creating a new surface.
++
++## Validation
++
++- Verify current branch is `main`.
++- Run `node --check` for touched JavaScript files.
++- Confirm Idea Board launches from Toolbox.
++- Confirm Create Project is placeholder only and does not create records.
++- Confirm no prohibited inline HTML styling/scripting was introduced.
++- Run targeted Idea Board/Toolbox Playwright validation.
++
++## Reports
++
++- `docs_build/dev/reports/PR_26170_002-idea-board-tool.md`
++- `docs_build/dev/reports/codex_review.diff`
++- `docs_build/dev/reports/codex_changed_files.txt`
++- Repo-structured ZIP artifact in `tmp/`.
+
+diff --git a/docs_build/pr/BUILD_PR_26170_003-toolbox-create-group.md b/docs_build/pr/BUILD_PR_26170_003-toolbox-create-group.md
+new file mode 100644
+index 000000000..000000000
+--- /dev/null
++++ b/docs_build/pr/BUILD_PR_26170_003-toolbox-create-group.md
+@@ -0,0 +1,44 @@
++# BUILD PR_26170_003 Toolbox Create Group
++
++## Purpose
++
++Update the Toolbox Game Journey grouping to include a Create group after Idea.
++
++## Scope
++
++- Update displayed Toolbox Game Journey groups to:
 +  - Idea
++  - Create
 +  - Design
 +  - Graphics
 +  - Audio
@@ -879,22 +740,143 @@ index 000000000..000000000
 +  - Play Test
 +  - Publish
 +  - Share
++- Move Project Workspace/Game Workspace, Game Journey, and Game Configuration/Game Setup into Create.
++- Keep Idea limited to Idea Board / creator-notebook concepts.
 +- Assign every displayed group a unique rainbow color with no duplicate colors.
-+- Preserve existing tool cards, routes, statuses, and links unless a card must move into the matching Game Journey group.
-+- Do not change database behavior, tool metadata source contracts, Workspace behavior, runtime behavior, tool status values, or routes.
-+- Do not add inline CSS, inline JS, `<style>`, `<script>`, or inline event handlers.
++- Do not change routes, statuses, runtime behavior, database behavior, or tool metadata source contracts.
++- Do not add inline CSS, inline JavaScript, `<style>`, `<script>` blocks, or inline event handlers.
 +
 +## Validation
 +
-+- Confirm `/toolbox/index.html` renders the requested Game Journey group order.
-+- Confirm every group has a unique color and no duplicates.
++- Verify current branch is `main`.
++- Run `node --check` for touched JavaScript files.
++- Confirm Toolbox group order and unique colors.
 +- Confirm existing tool links still work.
 +- Confirm no prohibited inline HTML styling/scripting was introduced.
-+- Run targeted Toolbox page Playwright validation. If no narrower command exists, run `npm run test:workspace-v2`.
++- Run targeted Toolbox Playwright validation.
 +
 +## Reports
 +
++- `docs_build/dev/reports/PR_26170_003-toolbox-create-group.md`
 +- `docs_build/dev/reports/codex_review.diff`
 +- `docs_build/dev/reports/codex_changed_files.txt`
-+- `docs_build/dev/reports/PR_26170_001-toolbox-game-journey-navigation.md`
 +- Repo-structured ZIP artifact in `tmp/`.
+
+diff --git a/toolbox/idea-board/index.html b/toolbox/idea-board/index.html
+new file mode 100644
+index 000000000..000000000
+--- /dev/null
++++ b/toolbox/idea-board/index.html
+@@ -0,0 +1,112 @@
++<!doctype html>
++<html lang="en">
++
++<head>
++    <meta charset="utf-8">
++    <base href="/">
++    <meta name="viewport" content="width=device-width, initial-scale=1">
++    <title>Idea Board - GameFoundryStudio</title>
++    <meta name="description" content="Creator notebook for game ideas before a project exists.">
++    <link rel="icon" href="/favicon.svg">
++    <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
++</head>
++
++<body class="meaning-molten-orange">
++    <div data-partial="header-nav"></div>
++    <main data-idea-board>
++        <section class="page-title">
++            <div class="container">
++                <div class="kicker">Toolbox Wireframe</div>
++                <h1>Idea Board</h1>
++                <p class="lede">Creator notebook for ideas before a project exists.</p>
++            </div>
++        </section>
++        <section class="section">
++            <div class="container container--tool-wide">
++                <div class="tool-workspace tool-workspace--wide">
++                    <aside class="tool-column tool-group-idea">
++                        <div class="tool-column-header">
++                            <h2>Notebook</h2>
++                        </div>
++                        <div class="accordion-stack">
++                            <details class="vertical-accordion" open data-idea-board-section="Cards">
++                                <summary>Cards</summary>
++                                <div class="accordion-body content-stack">
++                                    <p>Capture raw game ideas as lightweight cards.</p>
++                                    <ul>
++                                        <li>Working title</li>
++                                        <li>One-line pitch</li>
++                                        <li>Inspiration note</li>
++                                    </ul>
++                                </div>
++                            </details>
++                            <details class="vertical-accordion" data-idea-board-section="Tags">
++                                <summary>Tags</summary>
++                                <div class="accordion-body content-stack">
++                                    <p>Sketch optional tags for theme, genre, audience, mechanic, and platform.</p>
++                                </div>
++                            </details>
++                            <details class="vertical-accordion" data-idea-board-section="Status">
++                                <summary>Status</summary>
++                                <div class="accordion-body content-stack">
++                                    <p>Wireframe statuses: New, Exploring, Parked, Ready to Shape.</p>
++                                </div>
++                            </details>
++                        </div>
++                    </aside>
++                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="idea-board" data-tool-icon-src="assets/theme-v2/images/badges/game-design.png" data-tool-character-src="assets/theme-v2/images/tools/game-design.png"></div>
++                    <section class="tool-center-panel">
++                        <img src="assets/theme-v2/images/tools/game-design.png" alt="Idea Board preview placeholder">
++                        <h2>Idea Workspace</h2>
++                        <p>Arrange early ideas before choosing whether they should become a project.</p>
++                        <div class="card-grid">
++                            <article class="card" data-idea-board-section="Board">
++                                <div class="card-body content-stack">
++                                    <h3>Board</h3>
++                                    <p>Columns for collecting, comparing, and parking ideas.</p>
++                                </div>
++                            </article>
++                            <article class="card" data-idea-board-section="List">
++                                <div class="card-body content-stack">
++                                    <h3>List</h3>
++                                    <p>Sorted idea rows for quick scanning and triage.</p>
++                                </div>
++                            </article>
++                            <article class="card" data-idea-board-section="Notes">
++                                <div class="card-body content-stack">
++                                    <h3>Notes</h3>
++                                    <p>Freeform notes for mechanics, moods, blockers, and next questions.</p>
++                                </div>
++                            </article>
++                        </div>
++                    </section>
++                    <aside class="tool-column tool-group-idea">
++                        <div class="tool-column-header">
++                            <h2>Actions</h2>
++                        </div>
++                        <div class="accordion-stack">
++                            <details class="vertical-accordion" open data-idea-board-section="Create Project">
++                                <summary>Create Project</summary>
++                                <div class="accordion-body content-stack">
++                                    <p>Create Project is a visible placeholder only. This wireframe does not create project records.</p>
++                                    <button class="btn primary" type="button" disabled data-idea-board-create-project>Create Project Placeholder</button>
++                                </div>
++                            </details>
++                            <details class="vertical-accordion" data-idea-board-section="Diagnostics">
++                                <summary>Diagnostics</summary>
++                                <div class="accordion-body content-stack">
++                                    <p class="status" role="status" data-idea-board-status>Wireframe only. No save, load, auth, AI, or database behavior is connected.</p>
++                                </div>
++                            </details>
++                        </div>
++                    </aside>
++                </div>
++            </div>
++        </section>
++    </main>
++    <div data-partial="footer"></div>
++    <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
++    <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
++</body>
++
++</html>

@@ -1104,7 +1104,7 @@ test("Game Workspace hands the active game route to Game Journey", async ({ page
 });
 
 test("Toolbox registration exposes Game Journey navigation", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/index.html?view=group&group=progression");
+  const failures = await openRepoPage(page, "/toolbox/index.html?view=group&group=create");
 
   try {
     const journeyLink = page.locator("[data-toolbox-tool-name-link='Game Journey']").first();
@@ -1112,7 +1112,7 @@ test("Toolbox registration exposes Game Journey navigation", async ({ page }) =>
     await expect(journeyLink).toHaveAttribute("href", /\/game-journey\/index\.html$/);
     await expect(journeyLink).toHaveAttribute("data-registered-tool-route", "toolbox/game-journey/index.html");
 
-    await page.goto(`${failures.server.baseUrl}/toolbox/index.html?view=group&group=progression`, { waitUntil: "networkidle" });
+    await page.goto(`${failures.server.baseUrl}/toolbox/index.html?view=group&group=create`, { waitUntil: "networkidle" });
     const userJourneyLink = page.locator("[data-toolbox-tool-name-link='Game Journey']").first();
     await expect(userJourneyLink).toHaveText("Game Journey");
     await expect(userJourneyLink).toHaveAttribute("href", /\/game-journey\/index\.html$/);
