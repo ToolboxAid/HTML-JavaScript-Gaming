@@ -255,6 +255,29 @@ function supabaseAuthUpstreamError(operation, response, payload = {}) {
   return error;
 }
 
+function safeErrorMessage(error) {
+  return error instanceof Error ? error.message : String(error || "Unknown database error.");
+}
+
+function isRecoverableDbViewerTableError(error) {
+  const message = safeErrorMessage(error);
+  if (/Database connection failed|GAMEFOUNDRY_DATABASE_URL|authentication|timed out|ECONNREFUSED|ENOTFOUND|Connection closed/i.test(message)) {
+    return false;
+  }
+  return /relation .* does not exist|does not exist|schema cache|undefined_table|permission denied|not found|HTTP 404/i.test(message);
+}
+
+function dbViewerTableDiagnostic(tableName, error) {
+  return {
+    code: "DB_VIEWER_TABLE_UNAVAILABLE",
+    level: "WARN",
+    message: `${tableName} could not be read from the configured database: ${safeErrorMessage(error)}`,
+    remediation: `Confirm the ${tableName} table exists in the configured database and apply the product data migration for that table.`,
+    status: "WARN",
+    tableName,
+  };
+}
+
 function attachSupabaseAuthOperatorMetadata(payload, response) {
   if (payload && typeof payload === "object") {
     Object.defineProperty(payload, "__operator", {
@@ -1040,11 +1063,31 @@ export class SupabasePostgresProviderAdapter {
 
   async getDbViewerSnapshot() {
     this.assertConfigured();
-    const tables = await this.getTables();
+    const results = await Promise.allSettled(SUPABASE_POSTGRES_TABLES.map(async (tableName) => [
+      tableName,
+      await this.getTableRows(tableName),
+    ]));
+    const fatalResult = results.find((result) => result.status === "rejected" && !isRecoverableDbViewerTableError(result.reason));
+    if (fatalResult) {
+      throw fatalResult.reason;
+    }
+    const tableDiagnostics = [];
+    const tables = Object.fromEntries(results.map((result, index) => {
+      const tableName = SUPABASE_POSTGRES_TABLES[index];
+      if (result.status === "fulfilled") {
+        return result.value;
+      }
+      tableDiagnostics.push(dbViewerTableDiagnostic(tableName, result.reason));
+      return [tableName, []];
+    }));
     return {
       boundary: PROVIDER_DATA_BOUNDARY_RULE,
+      diagnostics: {
+        tableReadFailures: tableDiagnostics,
+      },
       providerId: this.providerId,
       readiness: this.readiness(),
+      tableDiagnostics,
       tables,
     };
   }

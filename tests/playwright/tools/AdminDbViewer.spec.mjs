@@ -7,6 +7,7 @@ import { createAssetToolMockRepository } from "../../../src/dev-runtime/persiste
 import { createGameWorkspacePaletteRepository } from "../../../src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js";
 import {
   MOCK_DB_KEYS,
+  getMockDbTableSchemas,
   getStandaloneMockDbSeedTables,
   normalizeMockDbTables,
 } from "../../../src/dev-runtime/persistence/mock-db-store.js";
@@ -30,6 +31,26 @@ const standaloneSeedState = {
   version: 3,
 };
 let localDbRunId = 0;
+
+function adminSessionFixture() {
+  return {
+    adapterId: "supabase-auth",
+    adapterName: "SupabaseAuthAdapter",
+    adapterStatus: "configured",
+    authenticated: true,
+    diagnostic: "",
+    displayName: "DavidQ",
+    environment: "Supabase identity",
+    id: MOCK_DB_KEYS.users.admin,
+    isAdmin: true,
+    isOwner: true,
+    label: "DavidQ",
+    mode: "supabase-auth",
+    persistence: "Configured database",
+    roleSlugs: ["admin", "owner"],
+    userKey: MOCK_DB_KEYS.users.admin,
+  };
+}
 
 const SUPABASE_ENV_KEYS = Object.freeze([
   "GAMEFOUNDRY_AUTH_PROVIDER",
@@ -139,6 +160,69 @@ function createSupabaseAdminDbTables() {
   };
 }
 
+function configuredDbViewerGroups(tableNames) {
+  const include = (names) => names.filter((name) => tableNames.includes(name));
+  return [
+    { id: "all", label: "All", tableNames, type: "all" },
+    { id: "asset", label: "Asset", tableNames: include(["asset_role_definitions", "asset_library_items", "asset_storage_objects", "asset_import_events", "asset_validation_items"]), type: "tool" },
+    { id: "controls", label: "Controls", tableNames: include(["game_input_mappings", "player_controller_profiles", "player_input_device_selections", "input_custom_action_records"]), type: "tool" },
+    { id: "game-configuration", label: "Game Configuration", tableNames: include(["game_configuration_records", "game_configuration_validation_items"]), type: "tool" },
+    { id: "game-design", label: "Game Design", tableNames: include(["game_design_documents", "game_design_validation_items"]), type: "tool" },
+    { id: "game-journey", label: "Game Journey", tableNames: include(["game_journey_note_types", "game_journey_notes", "game_journey_templates", "game_journey_items", "game_journey_activity"]), type: "tool" },
+    { id: "game-workspace", label: "Game Workspace", tableNames: include(["game_workspace_games", "game_workspace_progress"]), type: "tool" },
+    { id: "objects", label: "Objects", tableNames: include(["object_definition_records"]), type: "tool" },
+    { id: "palette", label: "Palette", tableNames: include(["palette_colors", "palette_source_swatches", "palette_swatch_usages", "project_workspace_palette_globals"]), type: "tool" },
+    { id: "tags", label: "Tags", tableNames: include(["workspace_tag_records"]), type: "tool" },
+    { id: "toolbox_tool_metadata", label: "Tool Metadata", tableNames: include(["toolbox_tool_metadata"]), type: "table" },
+    { id: "toolbox_tool_planning", label: "Tool Planning", tableNames: include(["toolbox_tool_planning"]), type: "table" },
+    { id: "tool_state_samples", label: "Tool State Samples", tableNames: include(["tool_state_samples"]), type: "table" },
+    { id: "toolbox_votes", label: "Toolbox Votes", tableNames: include(["toolbox_votes"]), type: "table" },
+    { id: "user_roles", label: "User Roles", tableNames: include(["users", "user_roles", "roles"]), type: "table" },
+    { id: "membership_limits", label: "membership_limits", tableNames: include(["membership_limits"]), type: "table" },
+  ].filter((group) => group.tableNames.length);
+}
+
+function createConfiguredDbViewerSnapshot(options = {}) {
+  const schemas = getMockDbTableSchemas();
+  const tableNames = Object.keys(schemas).sort();
+  const tables = Object.fromEntries(tableNames.map((tableName) => [tableName, []]));
+  const seededTables = createSupabaseAdminDbTables();
+  if (!options.empty) {
+    Object.entries(seededTables).forEach(([tableName, records]) => {
+      if (Object.hasOwn(tables, tableName)) {
+        tables[tableName] = records;
+      }
+    });
+  }
+  const tableDiagnostics = options.missingMembershipLimits
+    ? [{
+      code: "DB_VIEWER_TABLE_UNAVAILABLE",
+      level: "WARN",
+      message: 'membership_limits could not be read from the configured database: relation "membership_limits" does not exist',
+      remediation: "Confirm the membership_limits table exists in the configured database and apply the product data migration for that table.",
+      status: "WARN",
+      tableName: "membership_limits",
+    }]
+    : [];
+  return {
+    cleared: false,
+    databaseProviderId: "supabase-postgres",
+    diagnostics: {
+      tableReadFailures: tableDiagnostics,
+    },
+    provider: {
+      databaseProviderId: "supabase-postgres",
+      source: "supabase-postgres",
+    },
+    schemas,
+    source: "supabase-postgres",
+    tableDiagnostics,
+    tables,
+    viewerGroups: configuredDbViewerGroups(tableNames),
+    version: 4,
+  };
+}
+
 function startFakeSupabaseAdminDbServer() {
   const tables = createSupabaseAdminDbTables();
   const calls = [];
@@ -237,6 +321,83 @@ async function openRepoPage(page, pathName, options = {}) {
   page.on("requestfailed", (request) => {
     failedRequests.push(`FAILED ${request.url()}`);
   });
+
+  if (options.sessionCurrent) {
+    await page.route("**/api/session/current", async (route) => {
+      await route.fulfill({
+        body: JSON.stringify({ data: options.sessionCurrent, ok: true }),
+        contentType: "application/json; charset=utf-8",
+        status: 200,
+      });
+    });
+    await page.route("**/api/navigation/admin-menu", async (route) => {
+      await route.fulfill({
+        body: JSON.stringify({
+          data: {
+            adminMainItems: [{
+              label: "DB Viewer",
+              path: "admin/db-viewer.html",
+              route: "admin-db-viewer",
+            }],
+            ownerMenuItems: [],
+            source: "test-fixture",
+          },
+          ok: true,
+        }),
+        contentType: "application/json; charset=utf-8",
+        status: 200,
+      });
+    });
+    await page.route("**/api/platform-settings/banner", async (route) => {
+      await route.fulfill({
+        body: JSON.stringify({
+          data: {
+            banner: {
+              active: false,
+              message: "",
+              tone: "info",
+            },
+          },
+          ok: true,
+        }),
+        contentType: "application/json; charset=utf-8",
+        status: 200,
+      });
+    });
+    await page.route("**/api/toolbox/registry/snapshot", async (route) => {
+      await route.fulfill({
+        body: JSON.stringify({
+          data: {
+            activeTools: [],
+            readinessByStatus: {},
+            toolboxContract: {},
+            tools: [],
+          },
+          ok: true,
+        }),
+        contentType: "application/json; charset=utf-8",
+        status: 200,
+      });
+    });
+  }
+
+  if (options.productDataSnapshot || options.productDataError) {
+    await page.route("**/api/product-data/snapshot", async (route) => {
+      if (options.productDataError) {
+        await route.fulfill({
+          body: JSON.stringify({ error: options.productDataError, ok: false }),
+          contentType: "application/json; charset=utf-8",
+          status: 500,
+        });
+        return;
+      }
+      await route.fulfill({
+        body: JSON.stringify({ data: options.productDataSnapshot, ok: true }),
+        contentType: "application/json; charset=utf-8",
+        status: 200,
+      });
+    });
+  }
 
   if (sessionUserKey !== undefined) {
     if (options.seedState) {
@@ -754,6 +915,84 @@ test("Admin DB Viewer labels Supabase provider/source and shows Supabase-backed 
     });
   } finally {
     await fakeSupabase.close();
+  }
+});
+
+test("Admin DB Viewer restores configured table groups when one configured table is unavailable", async ({ page }) => {
+  const failures = await openRepoPage(page, "/admin/db-viewer.html", {
+    productDataSnapshot: createConfiguredDbViewerSnapshot({ missingMembershipLimits: true }),
+    sessionCurrent: adminSessionFixture(),
+  });
+
+  try {
+    await expect(page.getByRole("heading", { name: "Supabase Postgres", level: 1 })).toBeVisible();
+    await expect(page.locator("[data-admin-db-mode-kicker]").first()).toHaveText("Admin Only / Supabase Postgres");
+    await expect(page.locator("[data-admin-db-status-connection]")).toHaveText("supabase-postgres (Supabase Postgres)");
+    await expect(page.locator("[data-admin-db-status-source]")).toHaveText("Supabase product DB");
+    await expect(page.locator("[data-admin-db-status]")).toHaveText(/Supabase Postgres loaded \d+ tables and \d+ records for All\./);
+    const filterLabels = await page.locator("[data-admin-db-filter]").allTextContents();
+    expect(filterLabels).toEqual(expect.arrayContaining([
+      "All",
+      "Asset",
+      "Game Journey",
+      "Tool Metadata",
+      "User Roles",
+      "membership_limits",
+    ]));
+    await expect(page.locator("[data-admin-db-table='users']")).toContainText("DavidQ");
+    await expect(page.locator("[data-admin-db-table='roles']")).toContainText("admin");
+    await expect(page.locator("[data-admin-db-table='toolbox_tool_metadata']")).toContainText("Colors");
+    await expect(page.locator("[data-admin-db-table='membership_limits']")).toContainText("No records in this table.");
+    await expect(page.locator("[data-admin-db-table='membership_limits'] thead")).toContainText("storageMb");
+    await expect(page.locator("[data-admin-db-source-findings]")).toContainText("membership_limits could not be read");
+    await expect(page.locator("[data-admin-db-source-findings]")).toContainText("apply the product data migration");
+    await expect(page.locator("[data-admin-db-relationship-summary]")).toContainText("*.createdBy -> users.key");
+    await expectNoPageFailures(failures);
+  } finally {
+    await closeAdminDbPage(page, failures);
+  }
+});
+
+test("Admin DB Viewer renders schema headers for an empty configured DB source", async ({ page }) => {
+  const failures = await openRepoPage(page, "/admin/db-viewer.html", {
+    productDataSnapshot: createConfiguredDbViewerSnapshot({ empty: true }),
+    sessionCurrent: adminSessionFixture(),
+  });
+
+  try {
+    await expect(page.getByRole("heading", { name: "Supabase Postgres", level: 1 })).toBeVisible();
+    const filterLabels = await page.locator("[data-admin-db-filter]").allTextContents();
+    expect(filterLabels).toEqual(expect.arrayContaining(["All", "Palette", "User Roles"]));
+    await expect(page.locator("[data-admin-db-table='palette_colors']")).toContainText("No records in this table.");
+    await expect(page.locator("[data-admin-db-table='palette_colors']")).toContainText("Supabase Postgres read-only inspection still shows schema headers.");
+    await expect(page.locator("[data-admin-db-table='palette_colors'] thead")).toContainText("createdAt");
+    await expect(page.locator("[data-admin-db-table='membership_limits']")).toContainText("No records in this table.");
+    await expect(page.locator("[data-admin-db-table='membership_limits'] thead")).toContainText("monthlyAiCredits");
+    await expect(page.locator("[data-admin-db-source-findings]")).toHaveCount(0);
+    await expectNoPageFailures(failures);
+  } finally {
+    await closeAdminDbPage(page, failures);
+  }
+});
+
+test("Admin DB Viewer shows a visible configured source diagnostic when snapshot loading fails", async ({ page }) => {
+  const failures = await openRepoPage(page, "/admin/db-viewer.html", {
+    productDataError: "Configured database connection is not configured. Add GAMEFOUNDRY_DATABASE_URL on the server.",
+    sessionCurrent: adminSessionFixture(),
+  });
+
+  try {
+    await expect(page.getByRole("heading", { name: "Configured Data", level: 1 })).toBeVisible();
+    await expect(page.locator("[data-admin-db-status]")).toHaveText("Configured Data data error. Fix the configured connection, then reload DB Viewer.");
+    await expect(page.locator("[data-admin-db-audit-findings]")).toContainText("Configured Data could not render current data");
+    await expect(page.locator("[data-admin-db-audit-findings]")).toContainText("GAMEFOUNDRY_DATABASE_URL");
+    await expect(page.locator("[data-admin-db-missing-links]")).toContainText("Relationships could not be checked until the Configured Data data error is fixed.");
+    await expect(page.locator("[data-admin-db-table]")).toHaveCount(0);
+    expect(failures.failedRequests.some((failure) => failure.includes("/api/product-data/snapshot"))).toBe(true);
+    expect(failures.pageErrors).toEqual([]);
+    expect(failures.consoleErrors.filter((failure) => !failure.includes("Failed to load resource"))).toEqual([]);
+  } finally {
+    await closeAdminDbPage(page, failures);
   }
 });
 

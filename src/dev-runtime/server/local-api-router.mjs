@@ -5210,12 +5210,19 @@ LIMIT 1;
     const providerSnapshot = await adapter.getDbViewerSnapshot();
     const baseline = this.snapshot();
     const schemas = getMockDbTableSchemas();
+    const tableDiagnostics = Array.isArray(providerSnapshot.tableDiagnostics)
+      ? providerSnapshot.tableDiagnostics
+      : [];
     const tables = Object.fromEntries(Object.keys(schemas).map((tableName) => [
       tableName,
       Array.isArray(providerSnapshot.tables?.[tableName]) ? providerSnapshot.tables[tableName] : [],
     ]));
     return {
       cleared: false,
+      databaseProviderId: SUPABASE_POSTGRES_PROVIDER_ID,
+      diagnostics: {
+        tableReadFailures: tableDiagnostics,
+      },
       owners: baseline.owners,
       provider: {
         databaseProviderId: SUPABASE_POSTGRES_PROVIDER_ID,
@@ -5223,6 +5230,7 @@ LIMIT 1;
       },
       schemas,
       source: "supabase-postgres",
+      tableDiagnostics,
       tables,
       toolGroups: baseline.toolGroups,
       viewerGroups: dbViewerGroupsForSnapshot(tables, baseline.owners),

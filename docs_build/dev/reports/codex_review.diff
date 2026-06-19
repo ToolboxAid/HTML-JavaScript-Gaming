@@ -1,935 +1,754 @@
 ﻿diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 224eba181..db485d281 100644
+index fd87d3dd4..4e9498aa8 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,13 +1,13 @@
--# git status --short
--M docs_build/dev/reports/PR_26169_027-owner-notes-restoration.md
-- M docs_build/dev/reports/playwright_v8_coverage_report.txt
-- M tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
--
--# git ls-files --others --exclude-standard
--(no output)
--
--# git diff --stat
--.../PR_26169_027-owner-notes-restoration.md        |  1 +
-- .../dev/reports/playwright_v8_coverage_report.txt  |  6 +--
-- .../tools/AdminOwnerNavigationBoundary.spec.mjs    | 50 ++++++++++++++++++++++
-- 3 files changed, 53 insertions(+), 4 deletions(-)
-\ No newline at end of file
-+﻿docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+docs_build/dev/reports/playwright_v8_coverage_report.txt
-+docs_build/dev/reports/PR_26169_028-admin-owner-notes-source.md
-+docs_build/pr/BUILD_PR_26169_028-admin-owner-notes-source.md
-+owner/notes.html
-+src/dev-runtime/admin/admin-notes-directory.mjs
-+src/dev-runtime/admin/admin-notes-viewer.js
-+src/dev-runtime/server/local-api-router.mjs
-+src/dev-runtime/server/local-api-server.mjs
-+tests/dev-runtime/AdminNotesBoundary.test.mjs
-+tests/helpers/playwrightRepoServer.mjs
-+tests/playwright/tools/AdminNotesLocalViewer.spec.mjs
-+tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
+@@ -2,14 +2,10 @@
+ docs_build/dev/reports/codex_review.diff
+ docs_build/dev/reports/coverage_changed_js_guardrail.txt
+ docs_build/dev/reports/playwright_v8_coverage_report.txt
+-docs_build/dev/reports/PR_26169_028-admin-owner-notes-source.md
+-docs_build/pr/BUILD_PR_26169_028-admin-owner-notes-source.md
+-owner/notes.html
+-src/dev-runtime/admin/admin-notes-directory.mjs
+-src/dev-runtime/admin/admin-notes-viewer.js
++docs_build/dev/reports/PR_26169_029-db-viewer-table-groups-regression.md
++docs_build/pr/BUILD_PR_26169_029-db-viewer-table-groups-regression.md
++src/api/db-viewer-ui.js
++src/dev-runtime/auth/provider-contract-stubs.mjs
+ src/dev-runtime/server/local-api-router.mjs
+-src/dev-runtime/server/local-api-server.mjs
+-tests/dev-runtime/AdminNotesBoundary.test.mjs
+-tests/helpers/playwrightRepoServer.mjs
+-tests/playwright/tools/AdminNotesLocalViewer.spec.mjs
+-tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
++tests/dev-runtime/DbViewerConfiguredSnapshot.test.mjs
++tests/playwright/tools/AdminDbViewer.spec.mjs
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index b4264da87..28b72dd56 100644
+index 28b72dd56..cf9c7f56a 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,8 +6,12 @@ Missing changed runtime JS files are WARN, not FAIL.
- Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
- 
+@@ -7,11 +7,15 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+
  Changed runtime JS files considered:
--(74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 67/90
--(100%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 5/5
-+(0%) src/dev-runtime/admin/admin-notes-directory.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(96%) src/dev-runtime/admin/admin-notes-viewer.js - executed lines 533/533; executed functions 53/55
- 
+ (0%) src/dev-runtime/admin/admin-notes-directory.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/admin/admin-notes-viewer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(96%) src/dev-runtime/admin/admin-notes-viewer.js - executed lines 533/533; executed functions 53/55
++(70%) src/api/db-viewer-ui.js - executed lines 543/543; executed functions 69/98
+
  Guardrail warnings:
--(100%) none - no changed runtime JS coverage warnings
-+(0%) src/dev-runtime/admin/admin-notes-directory.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+ (0%) src/dev-runtime/admin/admin-notes-directory.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/dev-runtime/admin/admin-notes-viewer.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+ (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+ (0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 0d06c599b..e517c0584 100644
+index e517c0584..e4a9c17af 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -17,8 +17,10 @@ Exercised tool entry points detected:
- (70%) Theme V2 Shared JS - exercised 5 runtime JS files
- 
+@@ -14,39 +14,47 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
+ Exercised tool entry points detected:
+ (35%) Toolbox Index - exercised 1 runtime JS files
+ (0%) Tool Template V2 - not exercised by this Playwright run
+-(70%) Theme V2 Shared JS - exercised 5 runtime JS files
++(68%) Theme V2 Shared JS - exercised 4 runtime JS files
+
  Changed runtime JS files covered:
--(74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 67/90
--(100%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 5/5
-+(0%) src/dev-runtime/admin/admin-notes-directory.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(96%) src/dev-runtime/admin/admin-notes-viewer.js - executed lines 533/533; executed functions 53/55
- 
+ (0%) src/dev-runtime/admin/admin-notes-directory.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/admin/admin-notes-viewer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(96%) src/dev-runtime/admin/admin-notes-viewer.js - executed lines 533/533; executed functions 53/55
++(70%) src/api/db-viewer-ui.js - executed lines 543/543; executed functions 69/98
+
  Files with executed line/function counts where available:
++(14%) assets/theme-v2/js/admin-setup-actions.js - executed lines 55/55; executed functions 1/7
++(25%) src/api/session-api-client.js - executed lines 68/68; executed functions 3/12
++(33%) src/api/admin-setup-api-client.js - executed lines 13/13; executed functions 1/3
  (35%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 9/26
-@@ -27,17 +29,24 @@ Files with executed line/function counts where available:
- (53%) assets/theme-v2/js/admin-invitations.js - executed lines 155/155; executed functions 9/17
- (59%) assets/theme-v2/js/owner-memberships.js - executed lines 248/248; executed functions 16/27
+-(36%) src/api/server-api-client.js - executed lines 167/167; executed functions 5/14
+-(40%) src/api/admin-invitations-api-client.js - executed lines 40/40; executed functions 2/5
+-(53%) assets/theme-v2/js/admin-invitations.js - executed lines 155/155; executed functions 9/17
+-(59%) assets/theme-v2/js/owner-memberships.js - executed lines 248/248; executed functions 16/27
++(43%) src/api/server-api-client.js - executed lines 167/167; executed functions 6/14
  (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
--(65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
- (67%) src/api/owner-memberships-api-client.js - executed lines 19/19; executed functions 2/3
-+(71%) src/api/public-config-client.js - executed lines 209/209; executed functions 20/28
- (74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 67/90
-+(96%) src/dev-runtime/admin/admin-notes-viewer.js - executed lines 533/533; executed functions 53/55
- (100%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 11/11
- (100%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 5/5
- 
+-(67%) src/api/owner-memberships-api-client.js - executed lines 19/19; executed functions 2/3
+-(71%) src/api/public-config-client.js - executed lines 209/209; executed functions 20/28
+-(74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 67/90
+-(96%) src/dev-runtime/admin/admin-notes-viewer.js - executed lines 533/533; executed functions 53/55
+-(100%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 11/11
+-(100%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 5/5
++(65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
++(67%) admin/db-viewer.js - executed lines 45/45; executed functions 4/6
++(70%) src/api/db-viewer-ui.js - executed lines 543/543; executed functions 69/98
++(72%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 64/89
++(100%) assets/theme-v2/js/admin-db-status-panel.js - executed lines 31/31; executed functions 3/3
++(100%) src/api/db-viewer-api-client.js - executed lines 13/13; executed functions 3/3
+
  Uncovered or low-coverage changed JS files:
--(100%) none - no low-coverage changed runtime JS files
-+(0%) src/dev-runtime/admin/admin-notes-directory.mjs - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: uncovered changed runtime JS file; advisory only
- 
+ (0%) src/dev-runtime/admin/admin-notes-directory.mjs - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/admin/admin-notes-viewer.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
+ (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+ (0%) src/dev-runtime/server/local-api-server.mjs - WARNING: uncovered changed runtime JS file; advisory only
+
  Changed JS files considered:
--(0%) tests/dev-runtime/ApiMenuPathCleanup.test.mjs - changed JS file not collected as browser runtime coverage
-+(0%) src/dev-runtime/admin/admin-notes-directory.mjs - changed JS file not collected as browser runtime coverage
-+(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
-+(0%) src/dev-runtime/server/local-api-server.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/dev-runtime/AdminNotesBoundary.test.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/helpers/playwrightRepoServer.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/AdminNotesLocalViewer.spec.mjs - changed JS file not collected as browser runtime coverage
+ (0%) src/dev-runtime/admin/admin-notes-directory.mjs - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/admin/admin-notes-viewer.js - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
+ (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
+ (0%) src/dev-runtime/server/local-api-server.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/dev-runtime/AdminNotesBoundary.test.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/dev-runtime/DbViewerConfiguredSnapshot.test.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/helpers/playwrightRepoServer.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/AdminNotesLocalViewer.spec.mjs - changed JS file not collected as browser runtime coverage
  (0%) tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs - changed JS file not collected as browser runtime coverage
--(74%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
--(100%) src/api/admin-owner-navigation.js - changed JS file with browser V8 coverage
-+(96%) src/dev-runtime/admin/admin-notes-viewer.js - changed JS file with browser V8 coverage
-diff --git a/owner/notes.html b/owner/notes.html
-index 2de9991da..6cb17f857 100644
---- a/owner/notes.html
-+++ b/owner/notes.html
-@@ -5,19 +5,19 @@
-     <meta charset="utf-8">
-     <meta name="viewport" content="width=device-width, initial-scale=1">
-     <title>Notes - Game Foundry Studio</title>
--    <meta name="description" content="Owner route for Game Foundry Studio notes workflow access.">
-+    <meta name="description" content="Owner route for Admin/Owner Notes loaded from docs_build/dev/admin-notes.">
-     <link rel="icon" href="/favicon.svg">
-     <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
- </head>
- 
- <body>
-     <div data-partial="header-nav"></div>
--    <main data-owner-notes>
-+    <main data-owner-notes data-admin-notes-viewer>
-         <section class="page-title">
-             <div class="container">
-                 <div class="kicker">Owner</div>
-                 <h1>Notes</h1>
--                <p class="lede">Review game-scoped notes through the existing Game Journey workflow.</p>
-+                <p class="lede">Admin/Owner Notes loaded from docs_build/dev/admin-notes/.</p>
-             </div>
-         </section>
-         <section class="section">
-@@ -26,19 +26,40 @@
-                     <p class="status" data-owner-nav-loading>Loading Owner tools.</p>
-                 </aside>
-                 <div class="admin-page-stack">
--                    <section class="section">
--                        <div class="container card">
--                            <div class="card-body content-stack">
-+                    <article class="card">
-+                        <div class="card-body">
-+                            <div class="section-heading">
-                                 <div>
--                                    <div class="kicker">Active Notes Workflow</div>
--                                    <h2>Game Journey owns note editing.</h2>
-+                                    <div class="kicker">Loaded Note</div>
-+                                    <h2 data-admin-notes-title>index.txt</h2>
-                                 </div>
--                                <p class="status" role="status">Owner Notes is active and routes to the existing Game Journey notes workflow.</p>
--                                <p>Use Game Journey for note filters, ownership-aware editing, activity, and related work rows.</p>
--                                <p><a class="btn primary" data-route="game-journey" href="../toolbox/game-journey/index.html">Open Game Journey</a></p>
-+                                <p class="status" data-admin-notes-status>Loading docs_build/dev/admin-notes/index.txt.</p>
-                             </div>
-+                            <div data-admin-notes-content></div>
-                         </div>
--                    </section>
-+                    </article>
-+                    <article class="card" data-admin-notes-directory>
-+                        <div class="card-body">
-+                            <div class="content-stack">
-+                                <div class="kicker">Source Folder</div>
-+                                <div class="section-heading">
-+                                    <h3>Current Folder: <span data-admin-notes-current-folder>admin-notes</span></h3>
-+                                    <button class="btn btn--compact" type="button" data-admin-notes-parent-folder disabled>..</button>
-+                                </div>
-+                                <h4>Open folders:</h4>
-+                                <div class="cluster" data-admin-notes-folder-links></div>
-+                                <h4>Open files:</h4>
-+                                <div class="cluster" data-admin-notes-file-links></div>
-+                                <p class="status" data-admin-notes-folder-diagnostic></p>
-+                            </div>
-+                        </div>
-+                    </article>
-+                    <article class="card">
-+                        <div class="card-body">
-+                            <h3>Status Legend</h3>
-+                            <p class="cluster" data-admin-notes-legend-list></p>
-+                        </div>
-+                    </article>
-                 </div>
-             </div>
-         </section>
-@@ -46,6 +67,7 @@
-     <div data-partial="footer"></div>
-     <script src="../assets/theme-v2/js/gamefoundry-partials.js" defer></script>
-     <script type="module" src="../assets/theme-v2/js/admin-owner-navigation.js"></script>
-+    <script type="module" src="../src/dev-runtime/admin/admin-notes-viewer.js"></script>
- </body>
- 
- </html>
-diff --git a/src/dev-runtime/admin/admin-notes-directory.mjs b/src/dev-runtime/admin/admin-notes-directory.mjs
-index 8903b84d1..3e2c92b40 100644
---- a/src/dev-runtime/admin/admin-notes-directory.mjs
-+++ b/src/dev-runtime/admin/admin-notes-directory.mjs
-@@ -4,10 +4,13 @@ import { pathToFileURL } from "node:url";
- 
- const ADMIN_NOTES_DIRECTORY = "docs_build/dev/admin-notes";
- const DIRECTORY_LIST_QUERY = "adminNotesDirectory";
-+const DIRECTORY_API_PATH = "/api/dev/admin-notes/directory";
- const NOTE_INDEX_FILE = "index.txt";
- 
- function sendJson(response, statusCode, payload) {
-   response.statusCode = statusCode;
-+  response.setHeader("Access-Control-Allow-Origin", "*");
-+  response.setHeader("Access-Control-Allow-Headers", "accept, content-type");
-   response.setHeader("Content-Type", "application/json; charset=utf-8");
-   response.end(JSON.stringify(payload));
- }
-@@ -25,6 +28,12 @@ function isInside(parentPath, childPath) {
- 
- function safeAdminNotesFolder(repoRoot, requestPath) {
-   const relativeFolderPath = repoRelativePath(decodeURIComponent(requestPath || ""));
-+  const hasTraversalSegment = relativeFolderPath
-+    .split("/")
-+    .some((segment) => segment === "." || segment === "..");
-+  if (hasTraversalSegment) {
-+    return null;
-+  }
-   if (relativeFolderPath !== ADMIN_NOTES_DIRECTORY && !relativeFolderPath.startsWith(`${ADMIN_NOTES_DIRECTORY}/`)) {
-     return null;
+-(96%) src/dev-runtime/admin/admin-notes-viewer.js - changed JS file with browser V8 coverage
++(70%) src/api/db-viewer-ui.js - changed JS file with browser V8 coverage
+diff --git a/src/api/db-viewer-ui.js b/src/api/db-viewer-ui.js
+index 366bce5a4..4a6634e7e 100644
+--- a/src/api/db-viewer-ui.js
++++ b/src/api/db-viewer-ui.js
+@@ -4,6 +4,13 @@ const AUDIT_FIELDS = ["createdAt", "updatedAt", "createdBy", "updatedBy"];
+ const DEPRECATED_TABLE_NOTES = Object.freeze({
+   palette_source_swatches: "Deprecated source history: retained for migration/reference only. Current Colors grid rendering, editing, save/load, and import/export do not read this table.",
+ });
++const PROVIDER_DISPLAY = Object.freeze({
++  "supabase-postgres": Object.freeze({
++    connectionLabel: "supabase-postgres (Supabase Postgres)",
++    modeLabel: "Supabase Postgres",
++    sourceLabel: "Supabase product DB",
++  }),
++});
+
+ class AdminDbViewer {
+   constructor(documentRef = document, options = {}) {
+@@ -40,12 +47,15 @@ class AdminDbViewer {
    }
-@@ -39,6 +48,50 @@ function safeAdminNotesFolder(repoRoot, requestPath) {
-   };
+
+   providerInfo(snapshot = {}) {
++    const providerId = snapshot.databaseProviderId || snapshot.provider?.databaseProviderId || snapshot.providerId || "configured";
++    const source = snapshot.source || snapshot.provider?.source || "configured";
++    const display = PROVIDER_DISPLAY[providerId] || {};
+     return {
+-      modeLabel: "Configured Data",
+-      providerId: snapshot.databaseProviderId || "configured",
+-      connectionLabel: "Configured connection",
+-      source: snapshot.source || "configured",
+-      sourceLabel: "Configured connection",
++      modeLabel: display.modeLabel || "Configured Data",
++      providerId,
++      connectionLabel: display.connectionLabel || "Configured connection",
++      source,
++      sourceLabel: display.sourceLabel || "Configured connection",
+     };
+   }
+
+@@ -180,6 +190,7 @@ class AdminDbViewer {
+       groups,
+       providerInfo: this.providerInfo(snapshot),
+       schemas,
++      sourceDiagnostics: this.sourceDiagnostics(snapshot),
+       tables,
+     };
+   }
+@@ -456,7 +467,27 @@ class AdminDbViewer {
+     return list;
+   }
+
+-  renderDiagnostics(tables, groups) {
++  diagnosticMessage(diagnostic) {
++    if (typeof diagnostic === "string") {
++      return diagnostic;
++    }
++    if (!diagnostic || typeof diagnostic !== "object") {
++      return "Configured database source reported an unreadable table.";
++    }
++    const message = diagnostic.message || `${diagnostic.tableName || "A configured table"} could not be read.`;
++    return diagnostic.remediation ? `${message} ${diagnostic.remediation}` : message;
++  }
++
++  sourceDiagnostics(snapshot = {}) {
++    const diagnostics = [
++      ...(Array.isArray(snapshot.tableDiagnostics) ? snapshot.tableDiagnostics : []),
++      ...(Array.isArray(snapshot.diagnostics?.tableReadFailures) ? snapshot.diagnostics.tableReadFailures : []),
++    ];
++    const messages = diagnostics.map((diagnostic) => this.diagnosticMessage(diagnostic));
++    return [...new Set(messages)];
++  }
++
++  renderDiagnostics(tables, groups, sourceDiagnostics = []) {
+     this.diagnostics.replaceChildren();
+     const auditFindings = this.auditFindings(tables);
+     const bleedFindings = this.tableBleedFindings(tables);
+@@ -465,6 +496,11 @@ class AdminDbViewer {
+       ? auditFindings
+       : [`All current ${this.modeLabel} tables include createdAt, updatedAt, createdBy, and updatedBy.`];
+     const bleedSummary = bleedFindings.length ? bleedFindings : ["No table bleed detected."];
++    if (sourceDiagnostics.length) {
++      this.diagnostics.append(
++        this.renderList(sourceDiagnostics, "adminDbSourceFindings"),
++      );
++    }
+     this.diagnostics.append(
+       this.renderList(auditSummary, "adminDbAuditFindings"),
+       this.renderList(bleedSummary, "adminDbBleedFindings"),
+@@ -528,7 +564,7 @@ class AdminDbViewer {
+     );
+     this.renderFilters(snapshot.groups);
+     this.renderClearSeedButton(snapshot.cleared);
+-    this.renderDiagnostics(snapshot.tables, snapshot.groups);
++    this.renderDiagnostics(snapshot.tables, snapshot.groups, snapshot.sourceDiagnostics);
+     this.renderRelationships(snapshot.tables);
+     this.renderTables(visibleTables, snapshot.schemas);
+     if (this.status) {
+diff --git a/src/dev-runtime/auth/provider-contract-stubs.mjs b/src/dev-runtime/auth/provider-contract-stubs.mjs
+index b01cc44fb..3dd803b30 100644
+--- a/src/dev-runtime/auth/provider-contract-stubs.mjs
++++ b/src/dev-runtime/auth/provider-contract-stubs.mjs
+@@ -255,6 +255,29 @@ function supabaseAuthUpstreamError(operation, response, payload = {}) {
+   return error;
  }
- 
-+async function adminNotesDirectoryResult(repoRoot, folderPath) {
-+  const safeFolder = safeAdminNotesFolder(repoRoot, folderPath);
-+  if (!safeFolder) {
-+    return {
-+      payload: {
-+        entries: [],
-+        error: "Admin Notes directory listing is restricted to docs_build/dev/admin-notes/.",
-+        ok: false,
-+      },
-+      statusCode: 403,
-+    };
+
++function safeErrorMessage(error) {
++  return error instanceof Error ? error.message : String(error || "Unknown database error.");
++}
++
++function isRecoverableDbViewerTableError(error) {
++  const message = safeErrorMessage(error);
++  if (/Database connection failed|GAMEFOUNDRY_DATABASE_URL|authentication|timed out|ECONNREFUSED|ENOTFOUND|Connection closed/i.test(message)) {
++    return false;
 +  }
++  return /relation .* does not exist|does not exist|schema cache|undefined_table|permission denied|not found|HTTP 404/i.test(message);
++}
 +
-+  const stat = await fs.stat(safeFolder.absolutePath).catch(() => null);
-+  if (!stat?.isDirectory()) {
-+    return {
-+      payload: {
-+        entries: [],
-+        error: `Admin Notes folder not found: ${safeFolder.relativePath}.`,
-+        ok: false,
-+      },
-+      statusCode: 404,
-+    };
-+  }
-+
-+  const dirents = await fs.readdir(safeFolder.absolutePath, { withFileTypes: true });
-+  const entries = (await Promise.all(dirents.map(async (dirent) => {
-+    return fileEntry(safeFolder.relativePath, dirent) ||
-+      await folderEntry(safeFolder.relativePath, safeFolder.absolutePath, dirent);
-+  })))
-+    .filter(Boolean)
-+    .sort((left, right) => left.label.localeCompare(right.label));
-+
++function dbViewerTableDiagnostic(tableName, error) {
 +  return {
-+    payload: {
-+      entries,
-+      folderFileUrl: pathToFileURL(safeFolder.absolutePath).href,
-+      folderPath: safeFolder.relativePath,
-+      ok: true,
-+    },
-+    statusCode: 200,
++    code: "DB_VIEWER_TABLE_UNAVAILABLE",
++    level: "WARN",
++    message: `${tableName} could not be read from the configured database: ${safeErrorMessage(error)}`,
++    remediation: `Confirm the ${tableName} table exists in the configured database and apply the product data migration for that table.`,
++    status: "WARN",
++    tableName,
 +  };
 +}
 +
- function fileEntry(folderPath, dirent) {
-   if (!dirent.isFile() || path.extname(dirent.name).toLowerCase() !== ".txt") {
-     return null;
-@@ -66,44 +119,23 @@ async function folderEntry(folderPath, absoluteFolderPath, dirent) {
-   };
- }
- 
--export async function handleAdminNotesDirectoryRequest(requestUrl, response, { repoRoot }) {
--  if (!requestUrl.searchParams.has(DIRECTORY_LIST_QUERY)) {
-+export async function handleAdminNotesDirectoryApiRequest(requestUrl, response, { repoRoot }) {
-+  if (requestUrl.pathname !== DIRECTORY_API_PATH) {
-     return false;
-   }
- 
--  const safeFolder = safeAdminNotesFolder(repoRoot, requestUrl.pathname);
--  if (!safeFolder) {
--    sendJson(response, 403, {
--      entries: [],
--      error: "Admin Notes directory listing is restricted to docs_build/dev/admin-notes/.",
--      ok: false,
--    });
--    return true;
--  }
-+  const folderPath = requestUrl.searchParams.get("folder") || ADMIN_NOTES_DIRECTORY;
-+  const result = await adminNotesDirectoryResult(repoRoot, folderPath);
-+  sendJson(response, result.statusCode, result.payload);
-+  return true;
-+}
- 
--  const stat = await fs.stat(safeFolder.absolutePath).catch(() => null);
--  if (!stat?.isDirectory()) {
--    sendJson(response, 404, {
--      entries: [],
--      error: `Admin Notes folder not found: ${safeFolder.relativePath}.`,
--      ok: false,
--    });
--    return true;
-+export async function handleAdminNotesDirectoryRequest(requestUrl, response, { repoRoot }) {
-+  if (!requestUrl.searchParams.has(DIRECTORY_LIST_QUERY)) {
-+    return false;
-   }
- 
--  const dirents = await fs.readdir(safeFolder.absolutePath, { withFileTypes: true });
--  const entries = (await Promise.all(dirents.map(async (dirent) => {
--    return fileEntry(safeFolder.relativePath, dirent) ||
--      await folderEntry(safeFolder.relativePath, safeFolder.absolutePath, dirent);
--  })))
--    .filter(Boolean)
--    .sort((left, right) => left.label.localeCompare(right.label));
--
--  sendJson(response, 200, {
--    entries,
--    folderFileUrl: pathToFileURL(safeFolder.absolutePath).href,
--    folderPath: safeFolder.relativePath,
--    ok: true,
--  });
-+  const result = await adminNotesDirectoryResult(repoRoot, requestUrl.pathname);
-+  sendJson(response, result.statusCode, result.payload);
-   return true;
- }
-diff --git a/src/dev-runtime/admin/admin-notes-viewer.js b/src/dev-runtime/admin/admin-notes-viewer.js
-index 81f05526d..48fd38831 100644
---- a/src/dev-runtime/admin/admin-notes-viewer.js
-+++ b/src/dev-runtime/admin/admin-notes-viewer.js
-@@ -1,4 +1,6 @@
--// Dev-runtime only: do not import this viewer from production-facing pages or bundles.
-+import { resolveServerApiFetchUrl } from "../../api/public-config-client.js";
-+
-+// Dev-runtime only: do not import this viewer from production bundles.
- const NOTES_DIRECTORY = "docs_build/dev/admin-notes";
- const DEFAULT_NOTE = "index";
- const VIEWER_PATH = "/admin/admin-notes.html";
-@@ -6,7 +8,6 @@ const LINK_CLASS = "btn btn--compact primary";
- const NOTE_NAME_PATTERN = /^[A-Za-z0-9_-]+$/;
- const STATUS_ICON_PATTERN = /^\[([ xX.!?-])\]\s*(.*)$/;
- const NOTE_INDEX_FILE = "index.txt";
--const DIRECTORY_LIST_QUERY = "adminNotesDirectory";
- const STATUS_MARKERS = {
-   " ": {
-     marker: "[ ]",
-@@ -68,6 +69,7 @@ class AdminNotesViewer {
-     this.folderDiagnostic = documentRef.querySelector("[data-admin-notes-folder-diagnostic]");
-     this.legendList = documentRef.querySelector("[data-admin-notes-legend-list]");
-     this.currentFolderPath = NOTES_DIRECTORY;
-+    this.viewerPath = this.viewerPathFromLocation(window.location);
-     this.bindEvents();
-   }
- 
-@@ -206,11 +208,22 @@ class AdminNotesViewer {
-   }
- 
-   hrefForNote(noteName) {
--    return noteName === DEFAULT_NOTE ? VIEWER_PATH : `${VIEWER_PATH}?note=${encodeURIComponent(noteName)}`;
-+    return noteName === DEFAULT_NOTE ? this.viewerPath : `${this.viewerPath}?note=${encodeURIComponent(noteName)}`;
-   }
- 
-   hrefForFile(filePath) {
--    return `${VIEWER_PATH}?file=${encodeURIComponent(filePath)}`;
-+    return `${this.viewerPath}?file=${encodeURIComponent(filePath)}`;
-+  }
-+
-+  viewerPathFromLocation(locationRef) {
-+    const pathname = String(locationRef?.pathname || "").replace(/\/+/g, "/");
-+    if (pathname.endsWith("/owner/notes.html")) {
-+      return "/owner/notes.html";
+ function attachSupabaseAuthOperatorMetadata(payload, response) {
+   if (payload && typeof payload === "object") {
+     Object.defineProperty(payload, "__operator", {
+@@ -1040,11 +1063,31 @@ export class SupabasePostgresProviderAdapter {
+
+   async getDbViewerSnapshot() {
+     this.assertConfigured();
+-    const tables = await this.getTables();
++    const results = await Promise.allSettled(SUPABASE_POSTGRES_TABLES.map(async (tableName) => [
++      tableName,
++      await this.getTableRows(tableName),
++    ]));
++    const fatalResult = results.find((result) => result.status === "rejected" && !isRecoverableDbViewerTableError(result.reason));
++    if (fatalResult) {
++      throw fatalResult.reason;
 +    }
-+    if (pathname.endsWith("/src/dev-runtime/admin/notes.html")) {
-+      return "/src/dev-runtime/admin/notes.html";
-+    }
-+    return VIEWER_PATH;
++    const tableDiagnostics = [];
++    const tables = Object.fromEntries(results.map((result, index) => {
++      const tableName = SUPABASE_POSTGRES_TABLES[index];
++      if (result.status === "fulfilled") {
++        return result.value;
++      }
++      tableDiagnostics.push(dbViewerTableDiagnostic(tableName, result.reason));
++      return [tableName, []];
++    }));
+     return {
+       boundary: PROVIDER_DATA_BOUNDARY_RULE,
++      diagnostics: {
++        tableReadFailures: tableDiagnostics,
++      },
+       providerId: this.providerId,
+       readiness: this.readiness(),
++      tableDiagnostics,
+       tables,
+     };
    }
- 
-   repoFileUrl(filePath) {
-@@ -297,7 +310,6 @@ class AdminNotesViewer {
-     const listing = await this.directoryListingForFolder(folderPath);
-     const currentFolderPath = listing.folderPath || this.adminNotesFolderPathFromValue(folderPath) || NOTES_DIRECTORY;
-     this.updateCurrentFolder(currentFolderPath);
--    this.setFolderDiagnostic(listing.error || "");
-     const entries = listing.entries;
-     const safeEntries = entries
-       .map((entry) => this.safeDirectoryEntry(entry))
-@@ -309,6 +321,7 @@ class AdminNotesViewer {
- 
-     this.folderLinks?.replaceChildren();
-     this.fileLinks?.replaceChildren();
-+    this.setFolderDiagnostic(listing.error || (safeEntries.length ? "" : "No Admin Notes files found in this folder."));
-     folderEntries.forEach((entry) => {
-       this.folderLinks?.append(this.directoryLink(entry));
-     });
-@@ -326,18 +339,20 @@ class AdminNotesViewer {
-       };
-     }
-     try {
--      const response = await fetch(this.directoryListingUrl(safeFolderPath), { cache: "no-store" });
-+      const response = await fetch(await this.directoryListingUrl(safeFolderPath), { cache: "no-store" });
-+      const listing = await response.json().catch(() => null);
-       if (!response.ok) {
-         return {
-           entries: [],
--          error: "Current Folder listing is unavailable. Start the local/dev server to read Admin Notes folders from the filesystem."
-+          error: listing?.error || "Current Folder listing is unavailable. Start the local/dev server to read Admin Notes folders from the filesystem."
-         };
-       }
--      const listing = await response.json();
-       return {
-         entries: Array.isArray(listing.entries) ? listing.entries : [],
-         folderPath: this.adminNotesFolderPathFromValue(listing.folderPath),
--        error: ""
-+        error: listing?.ok === false
-+          ? listing.error || "Current Folder listing is unavailable. Start the local/dev server to read Admin Notes folders from the filesystem."
-+          : ""
-       };
-     } catch {
-       return {
-@@ -348,8 +363,8 @@ class AdminNotesViewer {
-   }
- 
-   directoryListingUrl(folderPath) {
--    const folderUrl = folderPath.endsWith("/") ? folderPath : `${folderPath}/`;
--    return `${this.repoFileUrl(folderUrl)}?${DIRECTORY_LIST_QUERY}=1`;
-+    const folder = folderPath.endsWith("/") ? folderPath.slice(0, -1) : folderPath;
-+    return resolveServerApiFetchUrl(`/dev/admin-notes/directory?folder=${encodeURIComponent(folder)}`);
-   }
- 
-   setFolderDiagnostic(message) {
 diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index 2acad3a3c..4a2cdce66 100644
+index 4a2cdce66..b0d632318 100644
 --- a/src/dev-runtime/server/local-api-router.mjs
 +++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -117,6 +117,7 @@ import {
-   MarketplaceRevenueError,
-   readMarketplaceSellerRevenueModel,
- } from "../marketplace/marketplace-revenue-service.mjs";
-+import { handleAdminNotesDirectoryApiRequest } from "../admin/admin-notes-directory.mjs";
+@@ -5210,12 +5210,19 @@ LIMIT 1;
+     const providerSnapshot = await adapter.getDbViewerSnapshot();
+     const baseline = this.snapshot();
+     const schemas = getMockDbTableSchemas();
++    const tableDiagnostics = Array.isArray(providerSnapshot.tableDiagnostics)
++      ? providerSnapshot.tableDiagnostics
++      : [];
+     const tables = Object.fromEntries(Object.keys(schemas).map((tableName) => [
+       tableName,
+       Array.isArray(providerSnapshot.tables?.[tableName]) ? providerSnapshot.tables[tableName] : [],
+     ]));
+     return {
+       cleared: false,
++      databaseProviderId: SUPABASE_POSTGRES_PROVIDER_ID,
++      diagnostics: {
++        tableReadFailures: tableDiagnostics,
++      },
+       owners: baseline.owners,
+       provider: {
+         databaseProviderId: SUPABASE_POSTGRES_PROVIDER_ID,
+@@ -5223,6 +5230,7 @@ LIMIT 1;
+       },
+       schemas,
+       source: "supabase-postgres",
++      tableDiagnostics,
+       tables,
+       toolGroups: baseline.toolGroups,
+       viewerGroups: dbViewerGroupsForSnapshot(tables, baseline.owners),
+diff --git a/tests/playwright/tools/AdminDbViewer.spec.mjs b/tests/playwright/tools/AdminDbViewer.spec.mjs
+index 80435517a..09ce8d4b6 100644
+--- a/tests/playwright/tools/AdminDbViewer.spec.mjs
++++ b/tests/playwright/tools/AdminDbViewer.spec.mjs
+@@ -7,6 +7,7 @@ import { createAssetToolMockRepository } from "../../../src/dev-runtime/persiste
+ import { createGameWorkspacePaletteRepository } from "../../../src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js";
  import {
-   LegalDocumentError,
-   readPublishedLegalDocument,
-@@ -5234,7 +5235,9 @@ LIMIT 1;
-  * Legacy export name retained for the existing dev:local-api command surface.
-  * The router itself serves the configured server API contract.
-  */
--export function createLocalApiRouter() {
-+export function createLocalApiRouter({
-+  repoRoot = process.cwd(),
-+} = {}) {
-   const dataSource = new ApiRuntimeDataSource();
- 
-   return async function handleApiRuntimeRequest(request, response, requestUrl) {
-@@ -5249,6 +5252,9 @@ export function createLocalApiRouter() {
-         sendNoContent(response);
-         return true;
-       }
-+      if (request.method === "GET" && await handleAdminNotesDirectoryApiRequest(requestUrl, response, { repoRoot })) {
-+        return true;
-+      }
-       if (parts[1] === "session") {
-         if (request.method === "HEAD" && ["current", "modes", "users"].includes(parts[2])) {
-           sendNoContent(response, 200);
-diff --git a/src/dev-runtime/server/local-api-server.mjs b/src/dev-runtime/server/local-api-server.mjs
-index 4917579f9..5967369d3 100644
---- a/src/dev-runtime/server/local-api-server.mjs
-+++ b/src/dev-runtime/server/local-api-server.mjs
-@@ -55,7 +55,7 @@ export async function startLocalApiServer({
-   host = "127.0.0.1",
-   port = 5501,
- } = {}) {
--  const handleApiRuntimeRequest = createLocalApiRouter();
-+  const handleApiRuntimeRequest = createLocalApiRouter({ repoRoot });
-   const server = http.createServer(async (request, response) => {
-     try {
-       const requestUrl = new URL(request.url || "/", `http://${host}:${port}`);
-diff --git a/tests/dev-runtime/AdminNotesBoundary.test.mjs b/tests/dev-runtime/AdminNotesBoundary.test.mjs
-index 508ef1411..3bbc6e06b 100644
---- a/tests/dev-runtime/AdminNotesBoundary.test.mjs
-+++ b/tests/dev-runtime/AdminNotesBoundary.test.mjs
-@@ -3,6 +3,7 @@ import fs from "node:fs";
- import path from "node:path";
- import process from "node:process";
- import test from "node:test";
-+import { handleAdminNotesDirectoryApiRequest } from "../../src/dev-runtime/admin/admin-notes-directory.mjs";
- import {
-   ADMIN_NOTES_LOCAL_MENU_LABEL,
-   ADMIN_NOTES_LOCAL_SOURCE_PATH,
-@@ -16,18 +17,21 @@ const productionRoots = [
-   "account",
-   "admin",
-   "assets",
-+  "owner",
-   "src/engine",
-   "src/shared",
-   "toolbox",
- ];
- 
- const expectedDevNotes = [
--  "docs_build/dev/admin-notes/README.md",
-+  "docs_build/dev/admin-notes/BusinessPlan.txt",
-   "docs_build/dev/admin-notes/index.txt",
-   "docs_build/dev/admin-notes/notes/index.txt",
-   "docs_build/dev/admin-notes/other/index.txt",
--  "docs_build/dev/admin-notes/quick-reference.txt",
-+  "docs_build/dev/admin-notes/PS_commands.txt",
-+  "docs_build/dev/admin-notes/roadmap2MVP.txt",
-   "docs_build/dev/admin-notes/sample.txt",
-+  "docs_build/dev/admin-notes/tools/index.txt",
-   "src/dev-runtime/admin/notes.html",
- ];
- 
-@@ -101,6 +105,41 @@ function extractAnchorLabels(source) {
-   );
- }
- 
-+class CapturedJsonResponse {
-+  constructor() {
-+    this.body = "";
-+    this.headers = {};
-+    this.statusCode = 200;
-+  }
-+
-+  setHeader(name, value) {
-+    this.headers[name.toLowerCase()] = value;
-+  }
-+
-+  end(body) {
-+    this.body = String(body || "");
-+  }
-+}
-+
-+async function adminNotesDirectoryPayload(folderPath, root = repoRoot) {
-+  const response = new CapturedJsonResponse();
-+  const requestUrl = new URL("http://127.0.0.1/api/dev/admin-notes/directory");
-+  if (folderPath !== undefined) {
-+    requestUrl.searchParams.set("folder", folderPath);
-+  }
-+  const handled = await handleAdminNotesDirectoryApiRequest(requestUrl, response, { repoRoot: root });
-+  assert.equal(handled, true, "Admin Notes API directory request should be handled");
+   MOCK_DB_KEYS,
++  getMockDbTableSchemas,
+   getStandaloneMockDbSeedTables,
+   normalizeMockDbTables,
+ } from "../../../src/dev-runtime/persistence/mock-db-store.js";
+@@ -31,6 +32,26 @@ const standaloneSeedState = {
+ };
+ let localDbRunId = 0;
+
++function adminSessionFixture() {
 +  return {
-+    payload: JSON.parse(response.body),
-+    statusCode: response.statusCode,
++    adapterId: "supabase-auth",
++    adapterName: "SupabaseAuthAdapter",
++    adapterStatus: "configured",
++    authenticated: true,
++    diagnostic: "",
++    displayName: "DavidQ",
++    environment: "Supabase identity",
++    id: MOCK_DB_KEYS.users.admin,
++    isAdmin: true,
++    isOwner: true,
++    label: "DavidQ",
++    mode: "supabase-auth",
++    persistence: "Configured database",
++    roleSlugs: ["admin", "owner"],
++    userKey: MOCK_DB_KEYS.users.admin,
 +  };
 +}
 +
-+function makeTempRepoRoot() {
-+  fs.mkdirSync(repoPath("tmp"), { recursive: true });
-+  return fs.mkdtempSync(path.join(repoPath("tmp"), "admin-notes-boundary-"));
+ const SUPABASE_ENV_KEYS = Object.freeze([
+   "GAMEFOUNDRY_AUTH_PROVIDER",
+   "GAMEFOUNDRY_DB_PROVIDER",
+@@ -139,6 +160,69 @@ function createSupabaseAdminDbTables() {
+   };
+ }
+
++function configuredDbViewerGroups(tableNames) {
++  const include = (names) => names.filter((name) => tableNames.includes(name));
++  return [
++    { id: "all", label: "All", tableNames, type: "all" },
++    { id: "asset", label: "Asset", tableNames: include(["asset_role_definitions", "asset_library_items", "asset_storage_objects", "asset_import_events", "asset_validation_items"]), type: "tool" },
++    { id: "controls", label: "Controls", tableNames: include(["game_input_mappings", "player_controller_profiles", "player_input_device_selections", "input_custom_action_records"]), type: "tool" },
++    { id: "game-configuration", label: "Game Configuration", tableNames: include(["game_configuration_records", "game_configuration_validation_items"]), type: "tool" },
++    { id: "game-design", label: "Game Design", tableNames: include(["game_design_documents", "game_design_validation_items"]), type: "tool" },
++    { id: "game-journey", label: "Game Journey", tableNames: include(["game_journey_note_types", "game_journey_notes", "game_journey_templates", "game_journey_items", "game_journey_activity"]), type: "tool" },
++    { id: "game-workspace", label: "Game Workspace", tableNames: include(["game_workspace_games", "game_workspace_progress"]), type: "tool" },
++    { id: "objects", label: "Objects", tableNames: include(["object_definition_records"]), type: "tool" },
++    { id: "palette", label: "Palette", tableNames: include(["palette_colors", "palette_source_swatches", "palette_swatch_usages", "project_workspace_palette_globals"]), type: "tool" },
++    { id: "tags", label: "Tags", tableNames: include(["workspace_tag_records"]), type: "tool" },
++    { id: "toolbox_tool_metadata", label: "Tool Metadata", tableNames: include(["toolbox_tool_metadata"]), type: "table" },
++    { id: "toolbox_tool_planning", label: "Tool Planning", tableNames: include(["toolbox_tool_planning"]), type: "table" },
++    { id: "tool_state_samples", label: "Tool State Samples", tableNames: include(["tool_state_samples"]), type: "table" },
++    { id: "toolbox_votes", label: "Toolbox Votes", tableNames: include(["toolbox_votes"]), type: "table" },
++    { id: "user_roles", label: "User Roles", tableNames: include(["users", "user_roles", "roles"]), type: "table" },
++    { id: "membership_limits", label: "membership_limits", tableNames: include(["membership_limits"]), type: "table" },
++  ].filter((group) => group.tableNames.length);
 +}
 +
- test("Admin Notes dev files and local viewer entrypoint exist", () => {
-   expectedDevNotes.forEach((filePath) => {
-     assert.equal(fs.existsSync(repoPath(filePath)), true, `${filePath} exists`);
-@@ -148,12 +187,21 @@ test("Admin Notes local viewer page uses external dev-runtime JavaScript only",
-   assert.match(viewerSource, /assets\/theme-v2\/js\/gamefoundry-partials\.js/, "viewer page loads shared Theme V2 partial wiring");
- });
- 
--test("production-facing paths do not link to dev Admin Notes files or implementation", () => {
-+test("Owner Notes route is the only production-facing Admin Notes viewer route", () => {
-+  const ownerNotesSource = fs.readFileSync(repoPath("owner/notes.html"), "utf8");
-+  assert.doesNotMatch(ownerNotesSource, /<script(?![^>]*\bsrc=)/i, "Owner Notes page must not contain inline scripts");
-+  assert.doesNotMatch(ownerNotesSource, /<style\b/i, "Owner Notes page must not contain style blocks");
-+  assert.doesNotMatch(ownerNotesSource, /\son[a-z]+\s*=/i, "Owner Notes page must not contain inline event handlers");
-+  assert.match(ownerNotesSource, /data-owner-notes/, "Owner Notes page keeps Owner route marker");
-+  assert.match(ownerNotesSource, /data-admin-notes-viewer/, "Owner Notes page reuses the Admin Notes viewer pattern");
-+  assert.match(ownerNotesSource, /docs_build\/dev\/admin-notes/, "Owner Notes page points at the admin-notes source folder");
-+  assert.match(ownerNotesSource, /\.\.\/src\/dev-runtime\/admin\/admin-notes-viewer\.js/, "Owner Notes page reuses the existing viewer script");
-+  assert.doesNotMatch(ownerNotesSource, /Game Journey owns note editing|Open Game Journey/, "Owner Notes page must not use the old placeholder workflow");
-+});
-+
-+test("production-facing paths only expose Admin Notes through Owner Notes", () => {
-   const headerSource = fs.readFileSync(repoPath("assets/theme-v2/partials/header-nav.html"), "utf8");
-   assert.doesNotMatch(headerSource, /docs_build\/dev\/admin-notes|admin-notes-dev|data-admin-notes-local-menu|data-admin-my-stuff-menu|My Stuff|Admin Notes/);
--  for (const label of uatProdAdminLabels) {
--    assert.match(headerSource, new RegExp(`>${label}<\\/a>`), `production Admin menu keeps ${label}`);
--  }
-   for (const label of devOnlyAdminLabels) {
-     assert.doesNotMatch(headerSource, new RegExp(`>${label}<\\/a>`), `production Admin menu omits dev-only ${label}`);
-   }
-@@ -161,6 +209,9 @@ test("production-facing paths do not link to dev Admin Notes files or implementa
-   const violations = productionRoots
-     .flatMap(walkTextFiles)
-     .filter((filePath) => {
-+      if (relativePath(filePath) === "owner/notes.html") {
-+        return false;
++function createConfiguredDbViewerSnapshot(options = {}) {
++  const schemas = getMockDbTableSchemas();
++  const tableNames = Object.keys(schemas).sort();
++  const tables = Object.fromEntries(tableNames.map((tableName) => [tableName, []]));
++  const seededTables = createSupabaseAdminDbTables();
++  if (!options.empty) {
++    Object.entries(seededTables).forEach(([tableName, records]) => {
++      if (Object.hasOwn(tables, tableName)) {
++        tables[tableName] = records;
 +      }
-       const source = fs.readFileSync(filePath, "utf8");
-       return /docs_build\/dev\/admin-notes|docs_build\\dev\\admin-notes|src\/dev-runtime\/admin|src\\dev-runtime\\admin|data-admin-my-stuff-menu|My Stuff|admin-notes|Admin Notes/.test(source);
-     })
-@@ -169,66 +220,90 @@ test("production-facing paths do not link to dev Admin Notes files or implementa
-   assert.deepEqual(violations, [], "production-facing paths must not expose Admin Notes");
- });
- 
--test("local dev server serves a dedicated Admin Notes header partial only", () => {
--  const headerPath = repoPath("assets/theme-v2/partials/header-nav.html");
--  const source = fs.readFileSync(headerPath, "utf8");
--  const localHeaderPath = localAdminNotesHeaderPartialPath(repoRoot, headerPath);
--  const servedHeader = fs.readFileSync(localHeaderPath, "utf8");
-+test("Admin Notes directory API is read-only, sorted, and restricted to docs_build/dev/admin-notes", async () => {
-+  assert.equal(fs.existsSync(repoPath("docs_build/dev/admin-notes")), true, "Admin Notes source directory exists");
- 
--  assert.match(servedHeader, /data-admin-notes-local-menu/);
--  assert.match(servedHeader, /data-admin-my-stuff-menu/);
--  assert.match(servedHeader, /data-admin-my-stuff-separator/);
--  assert.match(servedHeader, /data-admin-my-stuff-separator role="separator" aria-disabled="true" tabindex="-1"/);
--  assert.match(servedHeader, /data-nav-link data-admin-notes-local-menu/);
--  assert.match(servedHeader, new RegExp(ADMIN_NOTES_LOCAL_VIEWER_PATH.replace(/\//g, "\\/")));
--  assert.doesNotMatch(servedHeader, new RegExp(ADMIN_NOTES_LOCAL_SOURCE_PATH.replace(/\//g, "\\/")));
--  assert.match(servedHeader, new RegExp(ADMIN_NOTES_LOCAL_MENU_LABEL.replace(/[()]/g, "\\$&")));
--  assert.match(servedHeader, new RegExp(ADMIN_MY_STUFF_MENU_LABEL.replace(/[()]/g, "\\$&")));
--  const myStuffStart = servedHeader.indexOf("data-admin-my-stuff-submenu");
--  const separatorStart = servedHeader.indexOf("data-admin-my-stuff-separator");
--  const mainAdminStart = separatorStart;
--  const mainAdminEnd = servedHeader.indexOf("</div>\n      </div>\n    </nav>", mainAdminStart);
--  const myStuffSource = servedHeader.slice(myStuffStart, separatorStart);
--  const mainAdminSource = servedHeader.slice(mainAdminStart, mainAdminEnd);
--  assert.deepEqual(extractAnchorLabels(myStuffSource), devOnlyAdminLabels, "local My Stuff items are alphabetical");
--  assert.deepEqual(extractAnchorLabels(mainAdminSource), uatProdAdminLabels, "local main Admin items are alphabetical");
--  for (const label of devOnlyAdminLabels) {
--    assert.match(myStuffSource, new RegExp(`>${label}<\\/a>`), `local My Stuff contains ${label}`);
--    assert.doesNotMatch(mainAdminSource, new RegExp(`>${label}<\\/a>`), `local main Admin list omits ${label}`);
--  }
--  for (const label of uatProdAdminLabels) {
--    assert.match(mainAdminSource, new RegExp(`>${label}<\\/a>`), `local main Admin list keeps ${label}`);
--  }
-+  const rootListing = await adminNotesDirectoryPayload("docs_build/dev/admin-notes");
-+  assert.equal(rootListing.statusCode, 200);
-+  assert.equal(rootListing.payload.ok, true);
-+  assert.equal(rootListing.payload.folderPath, "docs_build/dev/admin-notes");
-+  assert.ok(rootListing.payload.entries.length > 0, "Admin Notes directory has entries");
-+  assert.ok(
-+    rootListing.payload.entries.every((entry) => entry.path.startsWith("docs_build/dev/admin-notes/")),
-+    "Admin Notes entries stay under the source folder",
-+  );
-+  assert.deepEqual(
-+    rootListing.payload.entries.map((entry) => entry.label),
-+    rootListing.payload.entries.map((entry) => entry.label).sort((left, right) => left.localeCompare(right)),
-+    "Admin Notes entries are sorted alphabetically",
-+  );
-   assert.ok(
--    servedHeader.indexOf("data-admin-my-stuff-menu") < servedHeader.indexOf("data-admin-my-stuff-separator") &&
--      servedHeader.indexOf("data-admin-my-stuff-separator") < servedHeader.indexOf('data-route="admin-analytics"'),
--    "local My Stuff section is first with separator before Analytics",
-+    rootListing.payload.entries.some((entry) => entry.path === "docs_build/dev/admin-notes/sample.txt"),
-+    "Admin Notes list includes an existing text file from the source folder",
-   );
-   assert.ok(
--    servedHeader.indexOf("data-admin-my-stuff-menu") < servedHeader.indexOf("data-admin-notes-local-menu"),
--    "local Notes entry is inside the My Stuff section",
-+    rootListing.payload.entries.some((entry) => entry.path === "docs_build/dev/admin-notes/notes/index.txt"),
-+    "Admin Notes list includes a folder index from the source folder",
-   );
-+
-+  const traversal = await adminNotesDirectoryPayload("docs_build/dev/admin-notes/../../reports");
-+  assert.equal(traversal.statusCode, 403);
-+  assert.equal(traversal.payload.ok, false);
-+  assert.match(traversal.payload.error, /restricted to docs_build\/dev\/admin-notes/);
-+
-+  const missingRoot = makeTempRepoRoot();
-+  try {
-+    const missing = await adminNotesDirectoryPayload("docs_build/dev/admin-notes", missingRoot);
-+    assert.equal(missing.statusCode, 404);
-+    assert.equal(missing.payload.ok, false);
-+    assert.match(missing.payload.error, /folder not found/i);
-+  } finally {
-+    fs.rmSync(missingRoot, { force: true, recursive: true });
++    });
 +  }
++  const tableDiagnostics = options.missingMembershipLimits
++    ? [{
++      code: "DB_VIEWER_TABLE_UNAVAILABLE",
++      level: "WARN",
++      message: 'membership_limits could not be read from the configured database: relation "membership_limits" does not exist',
++      remediation: "Confirm the membership_limits table exists in the configured database and apply the product data migration for that table.",
++      status: "WARN",
++      tableName: "membership_limits",
++    }]
++    : [];
++  return {
++    cleared: false,
++    databaseProviderId: "supabase-postgres",
++    diagnostics: {
++      tableReadFailures: tableDiagnostics,
++    },
++    provider: {
++      databaseProviderId: "supabase-postgres",
++      source: "supabase-postgres",
++    },
++    schemas,
++    source: "supabase-postgres",
++    tableDiagnostics,
++    tables,
++    viewerGroups: configuredDbViewerGroups(tableNames),
++    version: 4,
++  };
++}
 +
-+  const emptyRoot = makeTempRepoRoot();
-+  try {
-+    fs.mkdirSync(path.join(emptyRoot, "docs_build/dev/admin-notes"), { recursive: true });
-+    const empty = await adminNotesDirectoryPayload("docs_build/dev/admin-notes", emptyRoot);
-+    assert.equal(empty.statusCode, 200);
-+    assert.equal(empty.payload.ok, true);
-+    assert.deepEqual(empty.payload.entries, []);
-+  } finally {
-+    fs.rmSync(emptyRoot, { force: true, recursive: true });
-+  }
-+});
-+
-+test("local header partial does not create a competing Admin Notes menu", () => {
-+  const headerPath = repoPath("assets/theme-v2/partials/header-nav.html");
-+  const source = fs.readFileSync(headerPath, "utf8");
-+  const localHeaderPath = localAdminNotesHeaderPartialPath(repoRoot, headerPath);
-+  const servedHeader = fs.readFileSync(localHeaderPath, "utf8");
-+
-   assert.equal(relativePath(localHeaderPath), "src/dev-runtime/admin/header-nav.local.html");
--  assert.doesNotMatch(source, /data-admin-notes-local-menu/);
-+  assert.doesNotMatch(servedHeader, /data-admin-notes-local-menu|data-admin-my-stuff-menu|data-admin-my-stuff-separator|Admin Notes/);
-+  assert.doesNotMatch(servedHeader, new RegExp(ADMIN_NOTES_LOCAL_SOURCE_PATH.replace(/\//g, "\\/")));
-+  assert.doesNotMatch(servedHeader, new RegExp(ADMIN_NOTES_LOCAL_VIEWER_PATH.replace(/\//g, "\\/")));
-+  assert.doesNotMatch(servedHeader, new RegExp(`>${ADMIN_NOTES_LOCAL_MENU_LABEL}<\\/a>`));
-+  assert.doesNotMatch(servedHeader, new RegExp(`>${ADMIN_MY_STUFF_MENU_LABEL}<\\/a>`));
-+  assert.doesNotMatch(source, /data-admin-notes-local-menu|Admin Notes/);
-   assert.equal(localAdminNotesHeaderPartialPath(repoRoot, repoPath("account/sign-in.html")), repoPath("account/sign-in.html"));
- });
- 
--test("Admin page left menus are alphabetical UAT/PROD-safe lists", () => {
-+test("Admin page left menus use dynamic placeholders without Notes duplication", () => {
-   const adminDir = repoPath("admin");
-   const pages = fs.readdirSync(adminDir).filter((name) => name.endsWith(".html")).sort();
-   const checkedPages = [];
- 
-   for (const pageName of pages) {
-     const source = fs.readFileSync(path.join(adminDir, pageName), "utf8");
--    const match = source.match(/<aside class="side-menu" aria-label="Admin pages">([\s\S]*?)<\/aside>/);
--    if (!match) {
-+    if (!/data-admin-tool-menu/.test(source)) {
-       continue;
-     }
-     checkedPages.push(pageName);
--    assert.deepEqual(extractAnchorLabels(match[1]), uatProdAdminLabels, `${pageName} left menu is alphabetical`);
-     for (const label of devOnlyAdminLabels) {
--      assert.doesNotMatch(match[1], new RegExp(`>${label}<\\/a>`), `${pageName} left menu omits ${label}`);
-+      assert.doesNotMatch(source, new RegExp(`>${label}<\\/a>`), `${pageName} left menu omits ${label}`);
-     }
-+    assert.doesNotMatch(source, /docs_build\/dev\/admin-notes|src\/dev-runtime\/admin|admin-notes|Admin Notes/);
-   }
- 
-   assert.ok(checkedPages.length > 0, "Admin pages with side menus were checked");
-diff --git a/tests/helpers/playwrightRepoServer.mjs b/tests/helpers/playwrightRepoServer.mjs
-index 077366c63..a233b9e40 100644
---- a/tests/helpers/playwrightRepoServer.mjs
-+++ b/tests/helpers/playwrightRepoServer.mjs
-@@ -92,7 +92,7 @@ function resolveBrowserRoutePath(decodedPath) {
- 
- export async function startRepoServer() {
-   await loadRuntimeEnv();
--  const handleLocalApiRequest = createLocalApiRouter();
-+  const handleLocalApiRequest = createLocalApiRouter({ repoRoot });
-   const server = http.createServer(async (request, response) => {
-     try {
-       const requestUrl = new URL(request.url || "/", "http://127.0.0.1");
-diff --git a/tests/playwright/tools/AdminNotesLocalViewer.spec.mjs b/tests/playwright/tools/AdminNotesLocalViewer.spec.mjs
-index 9ac53b97e..6ecaec680 100644
---- a/tests/playwright/tools/AdminNotesLocalViewer.spec.mjs
-+++ b/tests/playwright/tools/AdminNotesLocalViewer.spec.mjs
-@@ -20,8 +20,12 @@ test.afterAll(async () => {
-   await workspaceV2CoverageReporter.writeReport();
- });
- 
--async function openLocalViewer(page, routePath = "/admin/admin-notes.html") {
-+async function openLocalViewer(page, routePath = "/admin/admin-notes.html", options = {}) {
-   const server = await startRepoServer();
-+  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
-+  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
-+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
-+  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
-   const failedRequests = [];
-   const pageErrors = [];
-   const consoleErrors = [];
-@@ -57,9 +61,13 @@ async function openLocalViewer(page, routePath = "/admin/admin-notes.html") {
-     method: "POST",
+ function startFakeSupabaseAdminDbServer() {
+   const tables = createSupabaseAdminDbTables();
+   const calls = [];
+@@ -238,6 +322,83 @@ async function openRepoPage(page, pathName, options = {}) {
+     failedRequests.push(`FAILED ${request.url()}`);
    });
- 
-+  if (typeof options.beforeGoto === "function") {
-+    await options.beforeGoto({ page, server });
-+  }
-+
-   await workspaceV2CoverageReporter.start(page);
-   await page.goto(`${server.baseUrl}${routePath}`, { waitUntil: "networkidle" });
--  return { consoleErrors, failedRequests, pageErrors, server };
-+  return { consoleErrors, failedRequests, pageErrors, previousApiUrl, previousSiteUrl, server };
- }
- 
- function expectNoPageFailures(failures) {
-@@ -71,6 +79,16 @@ function expectNoPageFailures(failures) {
- async function closeWithCoverage(page, failures) {
-   await workspaceV2CoverageReporter.stop(page);
-   await failures.server.close();
-+  if (failures.previousApiUrl === undefined) {
-+    delete process.env.GAMEFOUNDRY_API_URL;
-+  } else {
-+    process.env.GAMEFOUNDRY_API_URL = failures.previousApiUrl;
-+  }
-+  if (failures.previousSiteUrl === undefined) {
-+    delete process.env.GAMEFOUNDRY_SITE_URL;
-+  } else {
-+    process.env.GAMEFOUNDRY_SITE_URL = failures.previousSiteUrl;
-+  }
- }
- 
- test("Admin Notes local viewer loads index and opens root folder note files", async ({ page }) => {
-@@ -84,27 +102,36 @@ test("Admin Notes local viewer loads index and opens root folder note files", as
-     await expect(page).toHaveURL(/\/admin\/admin-notes\.html$/);
-     await expect(page.locator("[data-admin-notes-title]")).toHaveText("index.txt");
-     await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded docs_build/dev/admin-notes/index.txt.");
--    await expect(page.locator("[data-admin-notes-content]")).toContainText("Project Life Cycle");
-+    await expect(page.locator("[data-admin-notes-content]")).toContainText("Admin Notes Ownership");
-     await expect(page.locator("[data-admin-notes-current-folder]")).toHaveText("admin-notes");
-     await expect(page.locator("[data-admin-notes-parent-folder]")).toBeDisabled();
-     await expect(page.getByRole("heading", { name: "Open folders:", level: 4 })).toBeVisible();
-     await expect(page.getByRole("heading", { name: "Open files:", level: 4 })).toBeVisible();
- 
-     await expect(page.locator("[data-admin-notes-folder-links] [data-admin-notes-directory-link='folder']")).toContainText([
-+      "admin/",
-+      "colors/",
-+      "deployment-uat-prod/",
-+      "email/",
-+      "engine/",
-+      "fonts/",
-       "notes/",
-       "other/",
-+      "tools/",
-     ]);
-     await expect(page.locator("[data-admin-notes-folder-links] [data-admin-notes-directory-link='file']")).toHaveCount(0);
-     await expect(page.locator("[data-admin-notes-file-links] [data-admin-notes-directory-link='file']")).toContainText([
--      "quick-reference.txt",
-+      "BusinessPlan.txt",
-+      "PS_commands.txt",
-+      "roadmap2MVP.txt",
-       "sample.txt",
-     ]);
-     await expect(page.locator("[data-admin-notes-file-links] [data-admin-notes-directory-link='folder']")).toHaveCount(0);
- 
--    await page.getByRole("link", { name: "quick-reference.txt" }).click();
--    await expect(page.locator("[data-admin-notes-title]")).toHaveText("quick-reference.txt");
--    await expect(page.locator("[data-admin-notes-content]")).toContainText("Quick Reference");
--    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded docs_build/dev/admin-notes/quick-reference.txt.");
-+    await page.getByRole("link", { name: "sample.txt" }).click();
-+    await expect(page.locator("[data-admin-notes-title]")).toHaveText("sample.txt");
-+    await expect(page.locator("[data-admin-notes-content]")).toContainText("Capture admin-only project ideas here.");
-+    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded docs_build/dev/admin-notes/sample.txt.");
-     await expect(page.locator("[data-admin-notes-current-folder]")).toHaveText("admin-notes");
-     await expect(page.locator("[data-admin-notes-parent-folder]")).toBeDisabled();
- 
-@@ -117,8 +144,93 @@ test("Admin Notes local viewer loads index and opens root folder note files", as
-     await page.locator("[data-admin-notes-parent-folder]").click();
-     await expect(page.locator("[data-admin-notes-current-folder]")).toHaveText("admin-notes");
-     await expect(page.locator("[data-admin-notes-parent-folder]")).toBeDisabled();
--    await expect(page.locator("[data-admin-notes-content]")).toContainText("Project Life Cycle");
-+    await expect(page.locator("[data-admin-notes-content]")).toContainText("Admin Notes Ownership");
-+
-+    await expectNoPageFailures(failures);
-+  } finally {
-+    await closeWithCoverage(page, failures);
-+  }
-+});
-+
-+test("Owner Notes route reads the shared admin-notes source", async ({ page }) => {
-+  const failures = await openLocalViewer(page, "/owner/notes.html");
-+
-+  try {
-+    await expect(page).toHaveURL(/\/owner\/notes\.html$/);
-+    await expect(page.getByRole("heading", { name: "Notes", level: 1 })).toBeVisible();
-+    await expect(page.locator("main[data-owner-notes][data-admin-notes-viewer]")).toBeVisible();
-+    await expect(page.locator("[aria-label='Owner business pages'] a[aria-current='page']")).toHaveText("Notes");
-+    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded docs_build/dev/admin-notes/index.txt.");
-+    await expect(page.locator("[data-admin-notes-content]")).toContainText("Admin Notes Ownership");
-+    await expect(page.locator("[data-admin-notes-folder-links] [data-admin-notes-directory-link='folder']")).toContainText([
-+      "notes/",
-+      "other/",
-+    ]);
- 
-+    await page.getByRole("link", { name: "sample.txt" }).click();
-+    await expect(page).toHaveURL(/\/owner\/notes\.html\?file=docs_build%2Fdev%2Fadmin-notes%2Fsample\.txt$/);
-+    await expect(page.locator("[data-admin-notes-title]")).toHaveText("sample.txt");
-+    await expect(page.locator("[data-admin-notes-content]")).toContainText("Capture admin-only project ideas here.");
-+    await expect(page.locator("nav[aria-label='Admin tool pages'] a", { hasText: "Notes" })).toHaveCount(0);
-+    await expectNoPageFailures(failures);
-+  } finally {
-+    await closeWithCoverage(page, failures);
-+  }
-+});
-+
-+test("Admin Notes viewer shows a visible missing-directory diagnostic", async ({ page }) => {
-+  const failures = await openLocalViewer(page, "/owner/notes.html", {
-+    beforeGoto: async ({ page: routedPage }) => {
-+      await routedPage.route("**/api/dev/admin-notes/directory?*", async (route) => {
-+        await route.fulfill({
-+          body: JSON.stringify({
-+            entries: [],
-+            error: "Admin Notes folder not found: docs_build/dev/admin-notes.",
-+            ok: false,
-+          }),
-+          contentType: "application/json; charset=utf-8",
-+          status: 404,
-+        });
+
++  if (options.sessionCurrent) {
++    await page.route("**/api/session/current", async (route) => {
++      await route.fulfill({
++        body: JSON.stringify({ data: options.sessionCurrent, ok: true }),
++        contentType: "application/json; charset=utf-8",
++        status: 200,
 +      });
-+    },
++    });
++    await page.route("**/api/navigation/admin-menu", async (route) => {
++      await route.fulfill({
++        body: JSON.stringify({
++          data: {
++            adminMainItems: [{
++              label: "DB Viewer",
++              path: "admin/db-viewer.html",
++              route: "admin-db-viewer",
++            }],
++            ownerMenuItems: [],
++            source: "test-fixture",
++          },
++          ok: true,
++        }),
++        contentType: "application/json; charset=utf-8",
++        status: 200,
++      });
++    });
++    await page.route("**/api/platform-settings/banner", async (route) => {
++      await route.fulfill({
++        body: JSON.stringify({
++          data: {
++            banner: {
++              active: false,
++              message: "",
++              tone: "info",
++            },
++          },
++          ok: true,
++        }),
++        contentType: "application/json; charset=utf-8",
++        status: 200,
++      });
++    });
++    await page.route("**/api/toolbox/registry/snapshot", async (route) => {
++      await route.fulfill({
++        body: JSON.stringify({
++          data: {
++            activeTools: [],
++            readinessByStatus: {},
++            toolboxContract: {},
++            tools: [],
++          },
++          ok: true,
++        }),
++        contentType: "application/json; charset=utf-8",
++        status: 200,
++      });
++    });
++  }
++
++  if (options.productDataSnapshot || options.productDataError) {
++    await page.route("**/api/product-data/snapshot", async (route) => {
++      if (options.productDataError) {
++        await route.fulfill({
++          body: JSON.stringify({ error: options.productDataError, ok: false }),
++          contentType: "application/json; charset=utf-8",
++          status: 500,
++        });
++        return;
++      }
++      await route.fulfill({
++        body: JSON.stringify({ data: options.productDataSnapshot, ok: true }),
++        contentType: "application/json; charset=utf-8",
++        status: 200,
++      });
++    });
++  }
++
+   if (sessionUserKey !== undefined) {
+     if (options.seedState) {
+       await fetch(`${server.baseUrl}/api/dev/testing/mock-db-state`, {
+@@ -757,6 +918,84 @@ test("Admin DB Viewer labels Supabase provider/source and shows Supabase-backed
+   }
+ });
+
++test("Admin DB Viewer restores configured table groups when one configured table is unavailable", async ({ page }) => {
++  const failures = await openRepoPage(page, "/admin/db-viewer.html", {
++    productDataSnapshot: createConfiguredDbViewerSnapshot({ missingMembershipLimits: true }),
++    sessionCurrent: adminSessionFixture(),
 +  });
 +
 +  try {
-+    await expect(page.locator("[data-admin-notes-folder-diagnostic]")).toContainText("Admin Notes folder not found");
-+    await expect(page.locator("[data-admin-notes-folder-links] [data-admin-notes-directory-link]")).toHaveCount(0);
-+    await expect(page.locator("[data-admin-notes-file-links] [data-admin-notes-directory-link]")).toHaveCount(0);
++    await expect(page.getByRole("heading", { name: "Supabase Postgres", level: 1 })).toBeVisible();
++    await expect(page.locator("[data-admin-db-mode-kicker]").first()).toHaveText("Admin Only / Supabase Postgres");
++    await expect(page.locator("[data-admin-db-status-connection]")).toHaveText("supabase-postgres (Supabase Postgres)");
++    await expect(page.locator("[data-admin-db-status-source]")).toHaveText("Supabase product DB");
++    await expect(page.locator("[data-admin-db-status]")).toHaveText(/Supabase Postgres loaded \d+ tables and \d+ records for All\./);
++    const filterLabels = await page.locator("[data-admin-db-filter]").allTextContents();
++    expect(filterLabels).toEqual(expect.arrayContaining([
++      "All",
++      "Asset",
++      "Game Journey",
++      "Tool Metadata",
++      "User Roles",
++      "membership_limits",
++    ]));
++    await expect(page.locator("[data-admin-db-table='users']")).toContainText("DavidQ");
++    await expect(page.locator("[data-admin-db-table='roles']")).toContainText("admin");
++    await expect(page.locator("[data-admin-db-table='toolbox_tool_metadata']")).toContainText("Colors");
++    await expect(page.locator("[data-admin-db-table='membership_limits']")).toContainText("No records in this table.");
++    await expect(page.locator("[data-admin-db-table='membership_limits'] thead")).toContainText("storageMb");
++    await expect(page.locator("[data-admin-db-source-findings]")).toContainText("membership_limits could not be read");
++    await expect(page.locator("[data-admin-db-source-findings]")).toContainText("apply the product data migration");
++    await expect(page.locator("[data-admin-db-relationship-summary]")).toContainText("*.createdBy -> users.key");
++    await expectNoPageFailures(failures);
++  } finally {
++    await closeAdminDbPage(page, failures);
++  }
++});
++
++test("Admin DB Viewer renders schema headers for an empty configured DB source", async ({ page }) => {
++  const failures = await openRepoPage(page, "/admin/db-viewer.html", {
++    productDataSnapshot: createConfiguredDbViewerSnapshot({ empty: true }),
++    sessionCurrent: adminSessionFixture(),
++  });
++
++  try {
++    await expect(page.getByRole("heading", { name: "Supabase Postgres", level: 1 })).toBeVisible();
++    const filterLabels = await page.locator("[data-admin-db-filter]").allTextContents();
++    expect(filterLabels).toEqual(expect.arrayContaining(["All", "Palette", "User Roles"]));
++    await expect(page.locator("[data-admin-db-table='palette_colors']")).toContainText("No records in this table.");
++    await expect(page.locator("[data-admin-db-table='palette_colors']")).toContainText("Supabase Postgres read-only inspection still shows schema headers.");
++    await expect(page.locator("[data-admin-db-table='palette_colors'] thead")).toContainText("createdAt");
++    await expect(page.locator("[data-admin-db-table='membership_limits']")).toContainText("No records in this table.");
++    await expect(page.locator("[data-admin-db-table='membership_limits'] thead")).toContainText("monthlyAiCredits");
++    await expect(page.locator("[data-admin-db-source-findings]")).toHaveCount(0);
++    await expectNoPageFailures(failures);
++  } finally {
++    await closeAdminDbPage(page, failures);
++  }
++});
++
++test("Admin DB Viewer shows a visible configured source diagnostic when snapshot loading fails", async ({ page }) => {
++  const failures = await openRepoPage(page, "/admin/db-viewer.html", {
++    productDataError: "Configured database connection is not configured. Add GAMEFOUNDRY_DATABASE_URL on the server.",
++    sessionCurrent: adminSessionFixture(),
++  });
++
++  try {
++    await expect(page.getByRole("heading", { name: "Configured Data", level: 1 })).toBeVisible();
++    await expect(page.locator("[data-admin-db-status]")).toHaveText("Configured Data data error. Fix the configured connection, then reload DB Viewer.");
++    await expect(page.locator("[data-admin-db-audit-findings]")).toContainText("Configured Data could not render current data");
++    await expect(page.locator("[data-admin-db-audit-findings]")).toContainText("GAMEFOUNDRY_DATABASE_URL");
++    await expect(page.locator("[data-admin-db-missing-links]")).toContainText("Relationships could not be checked until the Configured Data data error is fixed.");
++    await expect(page.locator("[data-admin-db-table]")).toHaveCount(0);
++    expect(failures.failedRequests.some((failure) => failure.includes("/api/product-data/snapshot"))).toBe(true);
 +    expect(failures.pageErrors).toEqual([]);
-+    expect(failures.consoleErrors).toHaveLength(1);
-+    expect(failures.consoleErrors[0]).toContain("404");
-+    expect(failures.failedRequests).toEqual([
-+      `404 ${failures.server.baseUrl}/api/dev/admin-notes/directory?folder=docs_build%2Fdev%2Fadmin-notes`,
-+    ]);
++    expect(failures.consoleErrors.filter((failure) => !failure.includes("Failed to load resource"))).toEqual([]);
 +  } finally {
-+    await closeWithCoverage(page, failures);
++    await closeAdminDbPage(page, failures);
 +  }
 +});
 +
-+test("Admin Notes viewer shows an empty state for an empty source folder", async ({ page }) => {
-+  const failures = await openLocalViewer(page, "/owner/notes.html", {
-+    beforeGoto: async ({ page: routedPage }) => {
-+      await routedPage.route("**/api/dev/admin-notes/directory?*", async (route) => {
-+        await route.fulfill({
-+          body: JSON.stringify({
-+            entries: [],
-+            folderPath: "docs_build/dev/admin-notes",
-+            ok: true,
-+          }),
-+          contentType: "application/json; charset=utf-8",
-+          status: 200,
-+        });
-+      });
+ test("Admin DB Viewer shows current read-only Local DB tables without write controls", async ({ page }) => {
+   const failures = await openRepoPage(page, "/admin/db-viewer.html", {
+     sessionModeId: "local-db",
+
+diff --git a/docs_build/dev/reports/PR_26169_029-db-viewer-table-groups-regression.md b/docs_build/dev/reports/PR_26169_029-db-viewer-table-groups-regression.md
+new file mode 100644
+index 000000000..9720afc91
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26169_029-db-viewer-table-groups-regression.md
+@@ -0,0 +1,58 @@
++# PR_26169_029 DB Viewer Table Groups Regression Report
++
++## Summary
++
++Restored Admin DB Viewer rendering for configured product data snapshots. The viewer now receives schema-backed table arrays and viewer groups even when individual configured database tables are missing, and it displays those missing-table issues as visible source diagnostics instead of falling into the generic Configured Data load-error state.
++
++## Root Cause
++
++The DB Viewer page, route, script imports, and Admin navigation route were intact. PR_26169_023 and PR_26169_027/028 did not replace the DB Viewer route or point navigation at the wrong page.
++
++The regression was caused by the configured DB snapshot path. `admin/db-viewer.js` correctly loaded `src/api/db-viewer-ui.js`, but `/api/product-data/snapshot` called the shared Supabase/Postgres adapter snapshot. That adapter used an all-or-nothing table read, so one missing configured table, observed locally as `membership_limits`, rejected the entire snapshot. The UI then rendered its load-error path, which left the page as the generic Configured Data shell with no filters, table groups, table list, schemas, or relationship diagnostics.
++
++## Changes
++
++- Updated `SupabasePostgresProviderAdapter.getDbViewerSnapshot()` to keep DB Viewer reads schema-aware when a configured table is missing.
++- Added table-level `DB_VIEWER_TABLE_UNAVAILABLE` diagnostics for recoverable per-table read failures.
++- Preserved fatal behavior for missing/unreachable configured DB sources such as missing server config, connection failure, authentication failure, or timeout.
++- Passed configured DB table diagnostics through `/api/product-data/snapshot`.
++- Updated DB Viewer UI provider display to honor server-provided `supabase-postgres` provider metadata.
++- Rendered configured-source diagnostics in the DB Inspector diagnostics panel while keeping existing audit, bleed, stale-display, and relationship checks.
++- Added targeted Node and Playwright coverage for configured DB Viewer snapshots, missing-table diagnostics, empty schema-known sources, and snapshot-load failure diagnostics.
++
++## Requirement Checklist
++
++| Requirement | Status | Notes |
++| --- | --- | --- |
++| Restore DB Viewer initialization | PASS | Existing route/script load path remained intact; snapshot failure no longer collapses initialization. |
++| Restore table group rendering | PASS | `/api/product-data/snapshot` now returns `viewerGroups` even with missing configured tables. |
++| Restore configured table listing | PASS | Snapshot maps all shared schema tables to arrays, using empty arrays for unavailable tables. |
++| Restore schemas/relationships/diagnostics | PASS | Schema headers remain visible; relationship and existing diagnostics still render. |
++| Keep DB Viewer under Admin | PASS | No navigation or route move was made. |
++| Do not move DB Viewer to Owner | PASS | Owner navigation untouched. |
++| Do not create generic configured-data placeholder | PASS | Provider-aware UI shows `Supabase Postgres` and table groups. |
++| Do not hardcode table lists page-locally | PASS | Runtime table list still comes from shared schemas and adapter snapshot; test fixtures only provide deterministic payloads. |
++| Read from shared DB adapter/source of truth | PASS | Fix is in `SupabasePostgresProviderAdapter` and `/api/product-data/snapshot`. |
++| Missing DB adapter/source visible diagnostic | PASS | Fatal source failures still render visible configured-source load diagnostics. |
++| Empty DB source shows meaningful schema state | PASS | Empty arrays render table headers and empty-state text. |
++| Preserve Admin/Owner navigation SSoT | PASS | Navigation files were not changed. |
++| Avoid unrelated domains | PASS | Memberships, marketplace, AI credits, legal, notes, storage, and Admin/Owner menus were not changed. |
++
++## Validation
++
++- PASS: `git branch --show-current` -> `main`
++- PASS: `node --check src/dev-runtime/auth/provider-contract-stubs.mjs`
++- PASS: `node --check src/dev-runtime/server/local-api-router.mjs`
++- PASS: `node --check src/api/db-viewer-ui.js`
++- PASS: `node --check tests/dev-runtime/DbViewerConfiguredSnapshot.test.mjs`
++- PASS: `node --check tests/playwright/tools/AdminDbViewer.spec.mjs`
++- PASS: `node --test tests/dev-runtime/DbViewerConfiguredSnapshot.test.mjs`
++- PASS: live route probe: `/api/product-data/snapshot` returned 30 viewer groups and 48 schema-backed tables, with table diagnostics instead of a 500.
++- PASS: `npx playwright test tests/playwright/tools/AdminDbViewer.spec.mjs --grep "(Admin DB Viewer restores configured table groups|Admin DB Viewer renders schema headers|Admin DB Viewer shows a visible configured source diagnostic)" --workers=1` (3 passed)
++- PASS: `git diff --check`
++
++## Notes
++
++- A broad name-pattern run against `tests/dev-runtime/SupabaseProviderContractStub.test.mjs` timed out and left Node test workers; those validation-only processes were stopped. The final validation uses the dedicated focused Node test instead.
++- The existing local API server on port 5501 was observed and left running.
++- Playwright V8 coverage was refreshed. Server-side runtime files report advisory WARN coverage only, as expected for browser V8 coverage; `src/api/db-viewer-ui.js` is covered by the focused Playwright run.
+
+diff --git a/docs_build/pr/BUILD_PR_26169_029-db-viewer-table-groups-regression.md b/docs_build/pr/BUILD_PR_26169_029-db-viewer-table-groups-regression.md
+new file mode 100644
+index 000000000..2e4271f20
+--- /dev/null
++++ b/docs_build/pr/BUILD_PR_26169_029-db-viewer-table-groups-regression.md
+@@ -0,0 +1,59 @@
++# BUILD PR_26169_029 DB Viewer Table Groups Regression
++
++## Purpose
++
++Fix the DB Viewer regression so the Admin DB Viewer renders table groups, configured table lists, schemas, relationships, and diagnostics from the shared DB adapter/source of truth instead of showing only a generic configured-data placeholder.
++
++## Scope
++
++- Restore DB Viewer initialization.
++- Restore table group rendering.
++- Restore configured table listing.
++- Restore table schema, relationship, and diagnostic display where previously available.
++- Keep DB Viewer under Admin.
++- Do not move DB Viewer to Owner.
++- Do not turn DB Viewer into a generic configured-data placeholder.
++- Do not hardcode table lists as page-local source of truth.
++- DB Viewer must read from the shared DB adapter/source of truth already used by the Mock DB / configured data system.
++- Missing DB adapter/source must show visible actionable diagnostics.
++- Empty DB source must render table headers/groups where schema is known, not a blank generic page.
++- Preserve Admin/Owner navigation SSoT from PR_26169_023.
++- Do not change unrelated Admin/Owner menu items.
++- Do not change memberships, marketplace, AI credits, legal, notes, or storage behavior.
++
++## Investigation Requirements
++
++- Inspect DB Viewer route/page/script before editing.
++- Inspect changes from PR_26169_023 and PR_26169_027/028 that may have replaced or bypassed DB Viewer initialization.
++- Identify whether the regression is caused by:
++  - wrong route/path
++  - missing script import
++  - wrong API client path
++  - generic page shell replacing DB Viewer content
++  - missing shared DB adapter call
++  - navigation pointing to the wrong page
++- Document the root cause in the PR report.
++
++## Validation
++
++- Verify current branch is `main`.
++- Run `node --check` for all touched JavaScript files.
++- Run targeted DB Viewer validation:
++  - DB Viewer route resolves.
++  - DB Viewer shows table groups.
++  - DB Viewer shows table list.
++  - DB Viewer shows known schemas or diagnostics.
++  - Missing DB source shows visible diagnostic.
++  - Empty DB source shows meaningful empty state.
++- Run targeted Admin navigation validation if navigation is touched.
++- Run Playwright if DB Viewer UI behavior changes.
++- Do not run full samples smoke.
++- Stop on failure.
++
++## Required Reports
++
++- `docs_build/pr/BUILD_PR_26169_029-db-viewer-table-groups-regression.md`
++- `docs_build/dev/reports/PR_26169_029-db-viewer-table-groups-regression.md`
++- `docs_build/dev/reports/codex_review.diff`
++- `docs_build/dev/reports/codex_changed_files.txt`
++- Repo-structured ZIP artifact in `tmp/`.
+
+diff --git a/tests/dev-runtime/DbViewerConfiguredSnapshot.test.mjs b/tests/dev-runtime/DbViewerConfiguredSnapshot.test.mjs
+new file mode 100644
+index 000000000..4045bb770
+--- /dev/null
++++ b/tests/dev-runtime/DbViewerConfiguredSnapshot.test.mjs
+@@ -0,0 +1,31 @@
++import test from "node:test";
++import assert from "node:assert/strict";
++import { SupabasePostgresProviderAdapter } from "../../src/dev-runtime/auth/provider-contract-stubs.mjs";
++
++test("DB Viewer configured snapshot keeps schema-known tables visible when one configured table is missing", async () => {
++  const calls = [];
++  const database = new SupabasePostgresProviderAdapter({
++    env: {
++      GAMEFOUNDRY_DATABASE_URL: "postgres://user:pass@127.0.0.1:5432/gamefoundry",
++      GAMEFOUNDRY_DATABASE_SSL: "disable",
++    },
++    postgresClient: {
++      async requestTable(tableName) {
++        calls.push(tableName);
++        if (tableName === "membership_limits") {
++          throw new Error('relation "membership_limits" does not exist');
++        }
++        return [{ key: `${tableName}-row` }];
++      },
 +    },
 +  });
 +
-+  try {
-+    await expect(page.locator("[data-admin-notes-folder-diagnostic]")).toContainText("No Admin Notes files found");
-+    await expect(page.locator("[data-admin-notes-folder-links] [data-admin-notes-directory-link]")).toHaveCount(0);
-+    await expect(page.locator("[data-admin-notes-file-links] [data-admin-notes-directory-link]")).toHaveCount(0);
-     await expectNoPageFailures(failures);
-   } finally {
-     await closeWithCoverage(page, failures);
-diff --git a/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs b/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
-index 0adf9a52c..d7fc26446 100644
---- a/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
-+++ b/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
-@@ -217,7 +217,9 @@ test("Owner Notes resolves under owner path and is owner-only", async ({ page })
-   const context = await openPage(page, "/owner/notes.html");
-   try {
-     await expect(page).toHaveTitle(/Notes - Game Foundry Studio/);
--    await expect(page.locator("main[data-owner-notes]")).toBeVisible();
-+    await expect(page.locator("main[data-owner-notes][data-admin-notes-viewer]")).toBeVisible();
-+    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded docs_build/dev/admin-notes/index.txt.");
-+    await expect(page.locator("[data-admin-notes-content]")).toContainText("Admin Notes Ownership");
-     await expect(page.locator("[aria-label='Owner business pages'] a[aria-current='page']")).toHaveText("Notes");
-     await expect(page.locator("[aria-label='Owner business pages'] a[href='/admin/notes.html']")).toHaveCount(0);
-     await expect(page.locator("nav[aria-label='Admin tool pages'] a", { hasText: "Notes" })).toHaveCount(0);
++  const snapshot = await database.getDbViewerSnapshot();
++  assert.deepEqual(snapshot.tables.membership_limits, []);
++  assert.equal(snapshot.tables.users[0].key, "users-row");
++  assert.equal(snapshot.tableDiagnostics.length, 1);
++  assert.equal(snapshot.tableDiagnostics[0].tableName, "membership_limits");
++  assert.match(snapshot.tableDiagnostics[0].message, /membership_limits could not be read/);
++  assert.equal(snapshot.diagnostics.tableReadFailures, snapshot.tableDiagnostics);
++  assert.equal(calls.includes("asset_library_items"), true);
++});

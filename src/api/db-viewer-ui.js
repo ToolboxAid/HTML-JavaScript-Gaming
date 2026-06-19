@@ -4,6 +4,13 @@ const AUDIT_FIELDS = ["createdAt", "updatedAt", "createdBy", "updatedBy"];
 const DEPRECATED_TABLE_NOTES = Object.freeze({
   palette_source_swatches: "Deprecated source history: retained for migration/reference only. Current Colors grid rendering, editing, save/load, and import/export do not read this table.",
 });
+const PROVIDER_DISPLAY = Object.freeze({
+  "supabase-postgres": Object.freeze({
+    connectionLabel: "supabase-postgres (Supabase Postgres)",
+    modeLabel: "Supabase Postgres",
+    sourceLabel: "Supabase product DB",
+  }),
+});
 
 class AdminDbViewer {
   constructor(documentRef = document, options = {}) {
@@ -40,12 +47,15 @@ class AdminDbViewer {
   }
 
   providerInfo(snapshot = {}) {
+    const providerId = snapshot.databaseProviderId || snapshot.provider?.databaseProviderId || snapshot.providerId || "configured";
+    const source = snapshot.source || snapshot.provider?.source || "configured";
+    const display = PROVIDER_DISPLAY[providerId] || {};
     return {
-      modeLabel: "Configured Data",
-      providerId: snapshot.databaseProviderId || "configured",
-      connectionLabel: "Configured connection",
-      source: snapshot.source || "configured",
-      sourceLabel: "Configured connection",
+      modeLabel: display.modeLabel || "Configured Data",
+      providerId,
+      connectionLabel: display.connectionLabel || "Configured connection",
+      source,
+      sourceLabel: display.sourceLabel || "Configured connection",
     };
   }
 
@@ -180,6 +190,7 @@ class AdminDbViewer {
       groups,
       providerInfo: this.providerInfo(snapshot),
       schemas,
+      sourceDiagnostics: this.sourceDiagnostics(snapshot),
       tables,
     };
   }
@@ -456,7 +467,27 @@ class AdminDbViewer {
     return list;
   }
 
-  renderDiagnostics(tables, groups) {
+  diagnosticMessage(diagnostic) {
+    if (typeof diagnostic === "string") {
+      return diagnostic;
+    }
+    if (!diagnostic || typeof diagnostic !== "object") {
+      return "Configured database source reported an unreadable table.";
+    }
+    const message = diagnostic.message || `${diagnostic.tableName || "A configured table"} could not be read.`;
+    return diagnostic.remediation ? `${message} ${diagnostic.remediation}` : message;
+  }
+
+  sourceDiagnostics(snapshot = {}) {
+    const diagnostics = [
+      ...(Array.isArray(snapshot.tableDiagnostics) ? snapshot.tableDiagnostics : []),
+      ...(Array.isArray(snapshot.diagnostics?.tableReadFailures) ? snapshot.diagnostics.tableReadFailures : []),
+    ];
+    const messages = diagnostics.map((diagnostic) => this.diagnosticMessage(diagnostic));
+    return [...new Set(messages)];
+  }
+
+  renderDiagnostics(tables, groups, sourceDiagnostics = []) {
     this.diagnostics.replaceChildren();
     const auditFindings = this.auditFindings(tables);
     const bleedFindings = this.tableBleedFindings(tables);
@@ -465,6 +496,11 @@ class AdminDbViewer {
       ? auditFindings
       : [`All current ${this.modeLabel} tables include createdAt, updatedAt, createdBy, and updatedBy.`];
     const bleedSummary = bleedFindings.length ? bleedFindings : ["No table bleed detected."];
+    if (sourceDiagnostics.length) {
+      this.diagnostics.append(
+        this.renderList(sourceDiagnostics, "adminDbSourceFindings"),
+      );
+    }
     this.diagnostics.append(
       this.renderList(auditSummary, "adminDbAuditFindings"),
       this.renderList(bleedSummary, "adminDbBleedFindings"),
@@ -528,7 +564,7 @@ class AdminDbViewer {
     );
     this.renderFilters(snapshot.groups);
     this.renderClearSeedButton(snapshot.cleared);
-    this.renderDiagnostics(snapshot.tables, snapshot.groups);
+    this.renderDiagnostics(snapshot.tables, snapshot.groups, snapshot.sourceDiagnostics);
     this.renderRelationships(snapshot.tables);
     this.renderTables(visibleTables, snapshot.schemas);
     if (this.status) {
