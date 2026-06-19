@@ -12,24 +12,24 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(70%) Toolbox Index - exercised 3 runtime JS files
+(79%) Toolbox Index - exercised 3 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
 (72%) Theme V2 Shared JS - exercised 1 runtime JS files
 
 Changed runtime JS files covered:
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(75%) toolbox/tools-page-accordions.js - executed lines 1112/1112; executed functions 80/107
+(85%) toolbox/tools-page-accordions.js - executed lines 1112/1112; executed functions 98/115
 
 Files with executed line/function counts where available:
 (25%) src/api/session-api-client.js - executed lines 68/68; executed functions 3/12
 (33%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
-(44%) src/api/server-api-client.js - executed lines 167/167; executed functions 8/18
 (48%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 11/23
+(53%) src/api/server-api-client.js - executed lines 167/167; executed functions 10/19
 (65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
 (67%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 20/20; executed functions 2/3
 (72%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 65/90
-(75%) toolbox/tools-page-accordions.js - executed lines 1112/1112; executed functions 80/107
+(85%) toolbox/tools-page-accordions.js - executed lines 1112/1112; executed functions 98/115
 
 Uncovered or low-coverage changed JS files:
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
@@ -41,4 +41,4 @@ Changed JS files considered:
 (0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
-(75%) toolbox/tools-page-accordions.js - changed JS file with browser V8 coverage
+(85%) toolbox/tools-page-accordions.js - changed JS file with browser V8 coverage

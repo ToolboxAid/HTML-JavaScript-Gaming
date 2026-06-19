@@ -1,8 +1,8 @@
 Order,Tool,Group,Status,Complete
 1,AI Assistant,AI,Wireframe,No
 2,Game Workspace,Create,Ready,Yes
-3,Game Configuration,Create,Ready,Yes
-4,Project Team,Create,Planned,No
+3,Project Team,Create,Planned,No
+4,Game Configuration,Create,Ready,Yes
 5,Tags,Create,Ready,Yes
 6,Game Design,Design,Ready,Yes
 7,Assets,Design,Ready,Yes
@@ -42,17 +42,18 @@ Order,Tool,Group,Status,Complete
 41,Game Migration,Platform,Planned,No
 42,Platform Settings,Platform,Planned,No
 
-Toolbox Workflow Ordering Governance
-- Toolbox groups are intentional workflow-order exceptions.
-- Tiles are ordered by creator progression, not alphabetically.
+Workflow Ordering Governance
+- When a surface represents a creator workflow, items are ordered by likely next action, not alphabetically.
+- Workflow ordering is an approved exception to alphabetical ordering.
+- Applies to Toolbox, Project Workspace, Create, Publish, Progress, and future guided workflows.
 - Order follows how users naturally work: Select -> Create -> Review, Left -> Right, Top -> Bottom.
 - The next tile should represent the most likely next creator action.
 - Tile ordering should minimize navigation decisions.
 
 Create group order
 1. Game Workspace
-2. Game Configuration
-3. Project Team
+2. Project Team
+3. Game Configuration
 4. Tags
 
 Team distinction

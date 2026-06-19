@@ -8,7 +8,7 @@ PASS - Current branch verified as `main`.
 
 - PASS - Toolbox grouped rendering no longer alphabetizes cards inside groups. `toolbox/tools-page-accordions.js` uses `compareByWorkflowOrder` for grouped card ordering.
 - PASS - Toolbox groups render by declared Game Journey order from source order. The targeted Playwright grouped-view check asserted `GAME_JOURNEY_GROUP_ORDER`.
-- PASS - Create group renders in required workflow order: `Game Workspace`, `Game Configuration`, `Project Team`, `Tags`. Covered by source validation and Playwright.
+- PASS - Create group renders in required workflow order: `Game Workspace`, `Project Team`, `Game Configuration`, `Tags`. Covered by source validation and Playwright.
 - PASS - Existing `users` tool was moved into Create as `Project Team` without changing its route (`toolbox/users/index.html`) or planned status.
 - PASS - `Users` is no longer exposed as a Toolbox tile under Share, Account, Platform, or any non-Create group. API snapshot validation confirms `id: users` displays as `Project Team` with `group/category/toolboxGroup: Create`.
 - PASS - User-facing Toolbox copy uses `Project Team` for project-specific team assignment. `Studio Team` remains documented as the account-level roster distinction.
@@ -48,6 +48,6 @@ PASS - Current branch verified as `main`.
 ## Manual Validation Notes
 
 - Confirmed `/toolbox/index.html?view=group` renders all Game Journey groups in declared order.
-- Confirmed Create group tile order is `Game Workspace`, `Game Configuration`, `Project Team`, `Tags`.
+- Confirmed Create group tile order is `Game Workspace`, `Project Team`, `Game Configuration`, `Tags`.
 - Confirmed `Project Team` uses the existing `toolbox/users/index.html` route and remains planned.
 - Confirmed `Users` does not remain as a visible Toolbox tile label in the API-backed active registry.

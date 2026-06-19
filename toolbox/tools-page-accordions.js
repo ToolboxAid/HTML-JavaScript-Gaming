@@ -167,8 +167,8 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
     const workflowToolOrderByGroup = Object.freeze({
         "Create": Object.freeze({
             "game-workspace": 1,
-            "game-configuration": 2,
-            "users": 3,
+            "users": 2,
+            "game-configuration": 3,
             "tags": 4
         })
     });

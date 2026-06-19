@@ -1,20 +1,36 @@
-# PR_26170_007 changed files
+# git status --short
+M docs_build/dev/PROJECT_INSTRUCTIONS.md
+ M docs_build/dev/admin-notes/tools/index.txt
+ M docs_build/dev/reports/PR_26170_006-toolbox-workflow-order-and-project-team.md
+ M docs_build/dev/reports/PR_26170_007-toolbox-workflow-render-order-project-team.md
+ M docs_build/dev/reports/codex_changed_files.txt
+ M docs_build/dev/reports/codex_review.diff
+ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+ M docs_build/dev/reports/playwright_v8_coverage_report.txt
+ M docs_build/pr/BUILD_PR_26170_006-toolbox-workflow-order-and-project-team.md
+ M docs_build/pr/BUILD_PR_26170_007-toolbox-workflow-render-order-project-team.md
+ M owner/grouping-colors.html
+ M tests/playwright/tools/ToolboxRoutePages.spec.mjs
+ M toolbox/tools-page-accordions.js
+?? docs_build/dev/reports/PR_26170_008-workflow-order-governance.md
+?? docs_build/pr/BUILD_PR_26170_008-workflow-order-governance.md
 
-docs_build/dev/reports/PR_26170_007-toolbox-workflow-render-order-project-team.md
-docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/coverage_changed_js_guardrail.txt
-docs_build/dev/reports/playwright_v8_coverage_report.txt
-docs_build/pr/BUILD_PR_26170_007-toolbox-workflow-render-order-project-team.md
-src/dev-runtime/server/local-api-router.mjs
-src/shared/toolbox/tool-metadata-inventory.js
-tests/playwright/tools/RootToolsFutureState.spec.mjs
-tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
-tests/playwright/tools/ToolboxRoutePages.spec.mjs
-toolbox/tools-page-accordions.js
-toolbox/users/index.html
+# git ls-files --others --exclude-standard
+docs_build/dev/reports/PR_26170_008-workflow-order-governance.md
+docs_build/pr/BUILD_PR_26170_008-workflow-order-governance.md
 
-# Unrelated untracked files intentionally excluded from this PR artifact
-
-docs_build/dev/admin-notes/GFS-Connected-Play-Second-Screen-Turn-Based-Design-26170-001.pdf
-docs_build/dev/admin-notes/GFS_Game_Identity_Strategy.pdf.pdf
+# git diff --stat
+docs_build/dev/PROJECT_INSTRUCTIONS.md             |   11 +-
+ docs_build/dev/admin-notes/tools/index.txt         |   15 +-
+ ..._006-toolbox-workflow-order-and-project-team.md |   10 +-
+ ...7-toolbox-workflow-render-order-project-team.md |    4 +-
+ docs_build/dev/reports/codex_changed_files.txt     |   48 +-
+ docs_build/dev/reports/codex_review.diff           | 3572 ++------------------
+ .../dev/reports/coverage_changed_js_guardrail.txt  |    2 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |   10 +-
+ ..._006-toolbox-workflow-order-and-project-team.md |   12 +-
+ ...7-toolbox-workflow-render-order-project-team.md |    4 +-
+ owner/grouping-colors.html                         |    8 +-
+ tests/playwright/tools/ToolboxRoutePages.spec.mjs  |    2 +-
+ toolbox/tools-page-accordions.js                   |    4 +-
+ 13 files changed, 382 insertions(+), 3320 deletions(-)

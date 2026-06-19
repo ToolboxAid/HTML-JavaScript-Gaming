@@ -6,13 +6,13 @@
 ## Requirement Checklist
 - PASS: Built `PR_26170_006-toolbox-workflow-order-and-project-team`.
 - PASS: Added BUILD doc at `docs_build/pr/BUILD_PR_26170_006-toolbox-workflow-order-and-project-team.md`.
-- PASS: Added Toolbox Workflow Ordering Governance to `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
-- PASS: Documented Toolbox groups as intentional workflow-order exceptions.
-- PASS: Documented tile ordering by creator progression rather than alphabetical sorting.
+- PASS: Added Workflow Ordering Governance to `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- PASS: Documented workflow surfaces as intentional workflow-order exceptions.
+- PASS: Documented item ordering by likely next creator action rather than alphabetical sorting.
 - PASS: Documented natural ordering rules: `Select -> Create -> Review`, `Left -> Right`, and `Top -> Bottom`.
 - PASS: Documented that the next tile should represent the most likely next creator action.
 - PASS: Documented that tile ordering should minimize navigation decisions.
-- PASS: Updated Create group references to this order: Game Workspace, Game Configuration, Project Team, Tags.
+- PASS: Updated Create group references to this order: Game Workspace, Project Team, Game Configuration, Tags.
 - PASS: Moved project-specific Users planning into Create/Project Team documentation.
 - PASS: Documented the distinction between Studio Team as account-level roster and Project Team as project-level assignment.
 - PASS: Updated Owner Notes source content in `docs_build/dev/admin-notes/tools/index.txt`.
@@ -48,7 +48,7 @@
 - Full samples smoke: skipped per request and because documentation changes do not affect sample runtime behavior.
 
 ## Manual Test Notes
-- Open `owner/grouping-colors.html` and confirm Create lists Game Workspace, Game Configuration, Project Team, and Tags.
+- Open `owner/grouping-colors.html` and confirm Create lists Game Workspace, Project Team, Game Configuration, and Tags.
 - Open Owner Notes for `docs_build/dev/admin-notes/tools/index.txt` and confirm the Create group order and Studio Team / Project Team distinction are visible.
 - Confirm no Toolbox page ordering or runtime behavior changed in this PR.
 

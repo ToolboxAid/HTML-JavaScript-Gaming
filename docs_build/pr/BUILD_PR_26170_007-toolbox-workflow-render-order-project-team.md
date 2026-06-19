@@ -14,8 +14,8 @@
 - Toolbox groups render by declared workflow order/source order.
 - Create group renders:
   1. Game Workspace
-  2. Game Configuration
-  3. Project Team
+  2. Project Team
+  3. Game Configuration
   4. Tags
 - Existing Users/Team toolbox tile renders as Project Team under Create.
 - Project-specific user/team copy uses Project Team.

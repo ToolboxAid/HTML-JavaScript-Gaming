@@ -806,7 +806,7 @@ test("toolbox grouped view renders Game Journey order with unique colors while B
     const createToolOrder = await page.locator("[data-tools-accordion='Create'] [data-toolbox-tool-card]").evaluateAll((cards) => (
       cards.map((card) => card.getAttribute("data-toolbox-tool-card"))
     ));
-    expect(createToolOrder).toEqual(["Game Workspace", "Game Configuration", "Project Team", "Tags"]);
+    expect(createToolOrder).toEqual(["Game Workspace", "Project Team", "Game Configuration", "Tags"]);
 
     const toolLinks = await page.locator("[data-toolbox-tool-name-link]").evaluateAll((links) => (
       links.map((link) => ({

@@ -1,19 +1,19 @@
 # BUILD PR_26170_006-toolbox-workflow-order-and-project-team
 
 ## Purpose
-- Add Toolbox workflow-ordering governance.
+- Add workflow-ordering governance for Toolbox creator workflow surfaces.
 - Document the Create group progression and Project Team planning focus.
 - Keep this PR documentation-only with no runtime behavior changes.
 
 ## Scope
-- Update Toolbox governance documentation.
+- Update workflow governance documentation.
 - Update owner-facing grouping notes.
 - Update Owner Notes source content for Toolbox/Create group planning.
 - Do not change runtime JavaScript, CSS behavior, API behavior, database behavior, tool metadata contracts, routes, or rendered Toolbox behavior.
 
 ## Required Governance
-- Toolbox groups are intentional workflow-order exceptions.
-- Tiles are ordered by creator progression, not alphabetically.
+- Workflow surfaces are intentional workflow-order exceptions.
+- Items are ordered by likely next creator action, not alphabetically.
 - Order follows how users naturally work:
   - Select -> Create -> Review
   - Left -> Right
@@ -22,8 +22,8 @@
 - Tile ordering should minimize navigation decisions.
 - Create group order:
   1. Game Workspace
-  2. Game Configuration
-  3. Project Team
+  2. Project Team
+  3. Game Configuration
   4. Tags
 - Team distinction:
   - Studio Team = account-level roster

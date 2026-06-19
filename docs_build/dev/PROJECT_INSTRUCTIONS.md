@@ -231,12 +231,13 @@ Allowed intentional-order exceptions:
 
 Every intentional-order exception must be documented in the PR report that introduces or preserves it.
 
-### Toolbox Workflow Ordering Governance
+### Workflow Ordering Governance
 
-Toolbox groups are intentional workflow-order exceptions when the surface is guiding creators through a natural making sequence.
+When a surface represents a creator workflow, items are ordered by the likely next action, not alphabetically.
+Workflow ordering is an approved exception to alphabetical ordering.
+This applies to Toolbox, Project Workspace, Create, Publish, Progress, and future guided workflows.
 
 Rules:
-- Toolbox group and tile order is by creator progression, not alphabetically.
 - Order follows how users naturally work:
   - Select -> Create -> Review
   - Left -> Right
@@ -246,8 +247,8 @@ Rules:
 
 Create group order:
 1. Game Workspace
-2. Game Configuration
-3. Project Team
+2. Project Team
+3. Game Configuration
 4. Tags
 
 Team planning distinction:
