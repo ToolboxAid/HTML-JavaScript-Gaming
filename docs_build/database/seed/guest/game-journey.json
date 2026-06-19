@@ -6,6 +6,7 @@
   "writableByGuest": false,
   "signInRedirect": "account/sign-in.html",
   "tables": {
+    "game_journey_completion_metrics": [],
     "game_journey_note_types": [],
     "game_journey_notes": [],
     "game_journey_templates": [],

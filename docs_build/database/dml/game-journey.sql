@@ -4,7 +4,7 @@
 -- Runtime setup/seed operations for this group must run through server-side APIs.
 -- Temporary scope: DEV/review artifact only until Admin Site Setup/server seed APIs fully own grouped setup.
 -- Browser pages must not directly seed authoritative DB records.
--- Owned tables: game_journey_note_types, game_journey_notes, game_journey_templates, game_journey_items, game_journey_activity
+-- Owned tables: game_journey_completion_metrics, game_journey_note_types, game_journey_notes, game_journey_templates, game_journey_items, game_journey_activity
 
 -- DML status: Server-seed-owned.
 -- Setup is performed through the Admin-owned server-side seed API.

@@ -1,12 +1,22 @@
-# git status --short
-?? docs_build/dev/admin-notes/GFS_Game_Journey_Master_Plan.txt
-?? docs_build/dev/reports/PR_26170_014-game-journey-master-plan.md
-?? docs_build/pr/BUILD_PR_26170_014-game-journey-master-plan.md
-
-# git ls-files --others --exclude-standard
-docs_build/dev/admin-notes/GFS_Game_Journey_Master_Plan.txt
-docs_build/dev/reports/PR_26170_014-game-journey-master-plan.md
-docs_build/pr/BUILD_PR_26170_014-game-journey-master-plan.md
-
-# git diff --stat
-(no output)
+docs_build/database/ddl/game-journey.sql
+docs_build/database/dml/game-journey.sql
+docs_build/database/seed/game-journey.json
+docs_build/database/seed/guest/game-journey.json
+docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/codex_review.diff
+docs_build/dev/reports/PR_26171_001-game-journey-completion-model-manual-validation.md
+docs_build/dev/reports/PR_26171_001-game-journey-completion-model-validation.md
+docs_build/dev/reports/PR_26171_001-game-journey-completion-model.md
+src/api/game-journey-completion-api-client.js
+src/dev-runtime/auth/provider-contract-stubs.mjs
+src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs
+src/dev-runtime/persistence/mock-db-store.js
+src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
+src/dev-runtime/server/local-api-router.mjs
+tests/playwright/tools/AdminDbViewer.spec.mjs
+tests/playwright/tools/GameJourneyTool.spec.mjs
+tests/playwright/tools/ToolboxRoutePages.spec.mjs
+toolbox/game-journey/game-journey-api-client.js
+toolbox/game-journey/game-journey.js
+toolbox/game-journey/index.html
+toolbox/tools-page-accordions.js

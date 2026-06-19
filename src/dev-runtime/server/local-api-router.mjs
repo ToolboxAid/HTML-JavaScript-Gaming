@@ -3566,6 +3566,18 @@ LIMIT 1;
     };
   }
 
+  gameJourneyCompletionMetricsForRoute() {
+    return this.gameJourneyRepository.getCompletionMetricsSnapshot();
+  }
+
+  updateGameJourneyCompletionMetricForRoute(bucketKey, updates = {}) {
+    const metric = this.gameJourneyRepository.updateCompletionMetric(bucketKey, updates);
+    return {
+      ...this.gameJourneyCompletionMetricsForRoute(),
+      updatedMetric: metric,
+    };
+  }
+
   async validateAdminConnection() {
     await this.requireAdminSession();
     const authStatus = await this.authStatusForRoute();
@@ -5405,6 +5417,18 @@ export function createLocalApiRouter({
       if (parts[1] === "project-workspace" && request.method === "GET" && parts[2] === "projects") {
         ok(response, dataSource.projectWorkspaceProjectsForRoute());
         return true;
+      }
+
+      if (parts[1] === "game-journey" && parts[2] === "completion-metrics") {
+        if (request.method === "GET") {
+          ok(response, dataSource.gameJourneyCompletionMetricsForRoute());
+          return true;
+        }
+        if ((request.method === "POST" || request.method === "PATCH") && parts[3]) {
+          const body = await readRequestJson(request);
+          ok(response, dataSource.updateGameJourneyCompletionMetricForRoute(parts[3], body));
+          return true;
+        }
       }
 
       if (parts[1] === "public" && request.method === "GET" && parts[2] === "config") {

@@ -8,6 +8,9 @@ import {
   getMockDbSessionUser,
   getMockDbSystemUser,
 } from "../mock-db-store.js";
+import {
+  createGameJourneyCompletionMetricsStore,
+} from "../game-journey-completion-metrics-store.mjs";
 
 function makeUlid(sequence) {
   return `01K2GFSJ0Y${String(sequence).padStart(16, "0")}`;
@@ -487,6 +490,10 @@ function getSeedTables() {
 export function createGameJourneyMockRepository(options = {}) {
   const gameWorkspaceRepository =
     options.gameWorkspaceRepository || options.workspaceRepository || createGameWorkspaceMockRepository();
+  const completionMetricsStore =
+    options.completionMetricsStore || createGameJourneyCompletionMetricsStore({
+      dbPath: options.completionMetricsDbPath,
+    });
   const tables = loadMockDbTables(GAME_JOURNEY_DB_OWNER, getSeedTables(), options).tables;
   let selectedNoteKey = GAME_JOURNEY_KEYS.notes.designPass;
   let selectedItemKey = GAME_JOURNEY_KEYS.items.designAffordance;
@@ -1116,7 +1123,13 @@ export function createGameJourneyMockRepository(options = {}) {
   }
 
   return {
-    getTables: () => clone(tables),
+    getTables: () => clone({
+      game_journey_completion_metrics: completionMetricsStore.listMetrics(),
+      ...tables,
+    }),
+    getCompletionMetricsSnapshot: () => completionMetricsStore.snapshot(),
+    listCompletionMetrics: () => completionMetricsStore.listMetrics(),
+    updateCompletionMetric: (bucketKey, updates) => completionMetricsStore.updateMetric(bucketKey, updates),
     getSessionUser: () => currentSessionUser(),
     getSystemUser: () => getMockDbSystemUser(),
     getActiveGame,

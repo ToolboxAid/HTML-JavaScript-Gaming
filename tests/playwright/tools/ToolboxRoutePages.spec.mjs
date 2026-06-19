@@ -42,20 +42,20 @@ const GAME_JOURNEY_GROUP_ORDER = Object.freeze([
 ]);
 
 const GAME_JOURNEY_ACCORDION_LABELS = Object.freeze([
-  "xxx% - Idea: Dream, brainstorm, and explore",
-  "xxx% - Create: Set up your game and crew",
-  "xxx% - Design: Shape the player experience",
-  "xxx% - Graphics: Create the look of your game",
-  "xxx% - Audio: Bring your world to life with sound",
-  "xxx% - Objects: Build things players can interact with",
-  "xxx% - Worlds: Design places to explore",
-  "xxx% - Interface: Create what players see and use",
-  "xxx% - Controls: Define how players play",
-  "xxx% - Rules: Make your game come alive",
-  "xxx% - Progression: Reward players and keep them engaged",
-  "xxx% - Play Test: See how your game feels",
-  "xxx% - Publish: Prepare your game for launch",
-  "xxx% - Share: Grow your community",
+  "0% - Idea: Dream, brainstorm, and explore (0 of 4 complete, inactive)",
+  "0% - Create: Set up your game and crew (0 of 5 complete, active)",
+  "0% - Design: Shape the player experience (0 of 5 complete, active)",
+  "0% - Graphics: Create the look of your game (0 of 5 complete, active)",
+  "0% - Audio: Bring your world to life with sound (0 of 4 complete, inactive)",
+  "0% - Objects: Build things players can interact with (0 of 5 complete, active)",
+  "0% - Worlds: Design places to explore (0 of 5 complete, active)",
+  "0% - Interface: Create what players see and use (0 of 5 complete, active)",
+  "0% - Controls: Define how players play (0 of 4 complete, active)",
+  "0% - Rules: Make your game come alive (0 of 5 complete, active)",
+  "0% - Progression: Reward players and keep them engaged (0 of 4 complete, inactive)",
+  "0% - Play Test: See how your game feels (0 of 5 complete, active)",
+  "0% - Publish: Prepare your game for launch (0 of 5 complete, active)",
+  "0% - Share: Grow your community (0 of 5 complete, inactive)",
 ]);
 
 const GAME_JOURNEY_GROUP_COLORS = Object.freeze({
@@ -791,8 +791,8 @@ test("toolbox grouped view renders Game Journey order with unique colors while B
       labels.map((label) => label.textContent.trim())
     ));
     expect(accordionLabels).toEqual(GAME_JOURNEY_ACCORDION_LABELS);
-    expect(accordionLabels.every((label) => label.startsWith("xxx% - "))).toBe(true);
-    expect(accordionLabels.join(" ")).not.toMatch(/\b(Complete|In Progress|Not Started)\b/);
+    expect(accordionLabels.every((label) => /^\d+% - .+ \(\d+ of \d+ complete, (active|inactive)\)$/.test(label))).toBe(true);
+    expect(accordionLabels.join(" ")).not.toContain("xxx%");
     expect(accordionLabels.every((label) => !/[\r\n]/.test(label))).toBe(true);
 
     const groupSwatches = await page.locator("[data-tools-accordion] > summary [data-toolbox-group-label]").evaluateAll((labels) => (

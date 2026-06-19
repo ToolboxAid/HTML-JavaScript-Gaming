@@ -75,6 +75,17 @@ async function openRepoPage(page, pathName, options = {}) {
   return { consoleErrors, failedRequests, pageErrors, server };
 }
 
+async function fetchApiData(server, pathName, options = {}) {
+  const response = await fetch(`${server.baseUrl}${pathName}`, {
+    headers: options.body ? { "content-type": "application/json" } : undefined,
+    ...options,
+  });
+  const payload = await response.json();
+  expect(response.ok, JSON.stringify(payload)).toBe(true);
+  expect(payload.ok).toBe(true);
+  return payload.data;
+}
+
 function expectNoPageFailures(failures) {
   expect(failures.failedRequests).toEqual([]);
   expect(failures.pageErrors).toEqual([]);
@@ -156,6 +167,15 @@ test("Game Journey edits rows and updates note summary counts live", async ({ pa
     await expect(page.locator("[data-journey-stat-in-progress]")).toHaveText("1");
     await expect(page.locator("[data-journey-stat-decide]")).toHaveText("1");
     await expect(page.locator("[data-journey-stat-skipped]")).toHaveText("0");
+    await expect(page.locator("[data-journey-completion-metrics]")).toContainText("Completion model: 0 of 66 planned items complete (0%). Active buckets: 10; inactive buckets: 4.");
+    await expect(page.locator("[data-journey-completion-bucket]")).toHaveCount(14);
+    await expect(page.locator("[data-journey-completion-bucket='001-idea'] td")).toHaveText([
+      "Idea",
+      "4",
+      "0",
+      "0%",
+      "inactive",
+    ]);
     await expect(page.locator("[data-journey-filter='all']")).toHaveClass(/primary/);
     await expect(page.locator("[data-journey-filter='all']")).toHaveAttribute("aria-current", "true");
     await expect(page.locator("[data-journey-filter]")).toHaveText([
@@ -1066,6 +1086,77 @@ test("Game Journey mock data keeps system guidance template-owned", () => {
   });
   expect(firstAddedItem.createdBy).toBe(MOCK_DB_KEYS.users.user1);
   expect(firstAddedItem.title).toBe("First editable user item");
+});
+
+test("Game Journey Local API persists completion metrics to SQLite", async () => {
+  const previousMetricsPath = process.env.GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH;
+  const metricsPath = path.join(process.cwd(), "tmp", "local-api", `game-journey-metrics-${process.pid}-${Date.now()}.sqlite`);
+  process.env.GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH = metricsPath;
+  const server = await startRepoServer();
+  try {
+    const initial = await fetchApiData(server, "/api/game-journey/completion-metrics");
+    expect(initial.databaseEngine).toBe("SQLite");
+    expect(initial.records).toHaveLength(14);
+    expect(initial.records.find((metric) => metric.bucketKey === "001-idea")).toMatchObject({
+      active: false,
+      completedCount: 0,
+      percentComplete: 0,
+      plannedCount: 4,
+      status: "inactive",
+    });
+
+    const updated = await fetchApiData(server, "/api/game-journey/completion-metrics/001-idea", {
+      body: JSON.stringify({
+        active: true,
+        completedCount: 2,
+        plannedCount: 4,
+      }),
+      method: "POST",
+    });
+    expect(updated.updatedMetric).toMatchObject({
+      active: true,
+      bucketKey: "001-idea",
+      completedCount: 2,
+      percentComplete: 50,
+      plannedCount: 4,
+      status: "active",
+    });
+
+    const after = await fetchApiData(server, "/api/game-journey/completion-metrics");
+    expect(after.records.find((metric) => metric.bucketKey === "001-idea")).toMatchObject({
+      active: true,
+      completedCount: 2,
+      percentComplete: 50,
+      plannedCount: 4,
+      status: "active",
+    });
+
+    const { DatabaseSync } = await import("node:sqlite");
+    const database = new DatabaseSync(metricsPath);
+    try {
+      const row = database.prepare(`
+        SELECT "plannedCount", "completedCount", "active", "status"
+        FROM game_journey_completion_metrics
+        WHERE "bucketKey" = ?
+      `).get("001-idea");
+      expect(row).toMatchObject({
+        active: 1,
+        completedCount: 2,
+        plannedCount: 4,
+        status: "active",
+      });
+    } finally {
+      database.close();
+    }
+  } finally {
+    await server.close();
+    await fs.rm(metricsPath, { force: true });
+    if (previousMetricsPath) {
+      process.env.GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH = previousMetricsPath;
+    } else {
+      delete process.env.GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH;
+    }
+  }
 });
 
 test("Game Journey requires an active game before editing", async ({ page }) => {

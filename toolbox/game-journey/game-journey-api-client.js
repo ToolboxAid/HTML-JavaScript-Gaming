@@ -3,6 +3,10 @@ import {
   readServerToolConstants,
   requireServerConstant,
 } from "../../src/api/server-api-client.js";
+export {
+  readGameJourneyCompletionMetrics,
+  updateGameJourneyCompletionMetric,
+} from "../../src/api/game-journey-completion-api-client.js";
 
 const constants = readServerToolConstants("game-journey");
 

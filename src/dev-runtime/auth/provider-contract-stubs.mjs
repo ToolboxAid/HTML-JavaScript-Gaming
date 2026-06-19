@@ -88,6 +88,7 @@ export const SUPABASE_POSTGRES_PRODUCT_TABLES = Object.freeze([
   "player_controller_profiles",
   "player_input_device_selections",
   "input_custom_action_records",
+  "game_journey_completion_metrics",
   "game_journey_note_types",
   "game_journey_notes",
   "game_journey_templates",

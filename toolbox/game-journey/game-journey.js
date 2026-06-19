@@ -4,6 +4,7 @@ import {
   GAME_JOURNEY_STATUSES,
   GAME_JOURNEY_SUGGESTED_TOOLS,
   createGameJourneyApiRepository,
+  readGameJourneyCompletionMetrics,
 } from "./game-journey-api-client.js";
 import {
   getActiveToolRegistry,
@@ -49,6 +50,7 @@ const recentActivity = document.querySelector("[data-journey-recent-activity]");
 const diagnostics = document.querySelector("[data-journey-diagnostics]");
 const searchInput = document.querySelector("[data-journey-search-input]");
 const searchStatus = document.querySelector("[data-journey-search-status]");
+const completionMetrics = document.querySelector("[data-journey-completion-metrics]");
 
 const statTargets = {
   open: document.querySelector("[data-journey-stat-open]"),
@@ -74,6 +76,18 @@ let summarySort = {
   key: "updated",
   direction: "desc",
 };
+let completionMetricsSnapshot = null;
+let completionMetricsDiagnostic = "";
+
+function refreshCompletionMetricsSnapshot() {
+  try {
+    completionMetricsSnapshot = readGameJourneyCompletionMetrics();
+    completionMetricsDiagnostic = "";
+  } catch (error) {
+    completionMetricsSnapshot = null;
+    completionMetricsDiagnostic = error instanceof Error ? error.message : String(error || "Completion metrics unavailable.");
+  }
+}
 
 function applyInitialGameRoute() {
   const gameId = params.get("game");
@@ -684,6 +698,60 @@ function renderStats(counts) {
   });
 }
 
+function renderCompletionMetrics() {
+  if (!completionMetrics) {
+    return;
+  }
+  completionMetrics.innerHTML = "";
+  if (completionMetricsDiagnostic) {
+    completionMetrics.append(
+      createElement("p", {
+        className: "status",
+        text: `Completion metrics unavailable: ${completionMetricsDiagnostic}`,
+      }),
+    );
+    return;
+  }
+
+  const records = completionMetricsSnapshot?.records || [];
+  if (!records.length) {
+    completionMetrics.append(createElement("p", { text: "No completion metrics are available." }));
+    return;
+  }
+
+  const summary = createElement("p", {
+    className: "status",
+    text: `Completion model: ${completionMetricsSnapshot.completedCount} of ${completionMetricsSnapshot.plannedCount} planned items complete (${completionMetricsSnapshot.percentComplete}%). Active buckets: ${completionMetricsSnapshot.activeCount}; inactive buckets: ${completionMetricsSnapshot.inactiveCount}.`,
+  });
+  const wrapper = createElement("div", { className: "table-wrapper" });
+  const table = createElement("table", { className: "data-table data-table--fixed" });
+  table.setAttribute("aria-label", "Game Journey completion metrics");
+  const head = createElement("thead");
+  const headRow = createElement("tr");
+  ["Bucket", "Planned", "Completed", "%", "Status"].forEach((heading) => {
+    const cell = createElement("th", { text: heading });
+    cell.scope = "col";
+    headRow.append(cell);
+  });
+  head.append(headRow);
+  const body = createElement("tbody");
+  records.forEach((metric) => {
+    const row = createElement("tr");
+    row.dataset.journeyCompletionBucket = metric.bucketKey;
+    row.append(
+      createElement("td", { text: metric.bucketName }),
+      createElement("td", { text: String(metric.plannedCount) }),
+      createElement("td", { text: String(metric.completedCount) }),
+      createElement("td", { text: `${metric.percentComplete}%` }),
+      createElement("td", { text: metric.status }),
+    );
+    body.append(row);
+  });
+  table.append(head, body);
+  wrapper.append(table);
+  completionMetrics.append(summary, wrapper);
+}
+
 function renderSearchStatus(query, notes) {
   if (!searchStatus) {
     return;
@@ -953,6 +1021,7 @@ function render() {
   enableGuestSignInWriteActions(activeGame, canWrite);
   renderStatScope(selectedStatsNote, notes);
   renderStats(statCounts);
+  renderCompletionMetrics();
   renderSuggestedTools(displayNote);
   renderRecentActivity();
   renderDiagnostics(activeGame, displayNote, notes);
@@ -1166,5 +1235,6 @@ addTypeButton.addEventListener("click", () => {
 });
 
 renderStatusOptions();
+refreshCompletionMetricsSnapshot();
 applyInitialGameRoute();
 render();

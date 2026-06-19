@@ -3,6 +3,9 @@ import {
     createGameWorkspaceApiRepository
 } from "./game-workspace/game-workspace-api-client.js";
 import {
+    readGameJourneyCompletionMetrics
+} from "../src/api/game-journey-completion-api-client.js";
+import {
     castToolboxVote,
     readToolboxVoteSnapshot
 } from "../src/api/toolbox-votes-api-client.js";
@@ -83,21 +86,21 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
         "Publish",
         "Share"
     ]);
-    const gameJourneyAccordionLabels = Object.freeze({
-        "Idea": "xxx% - Idea: Dream, brainstorm, and explore",
-        "Create": "xxx% - Create: Set up your game and crew",
-        "Design": "xxx% - Design: Shape the player experience",
-        "Graphics": "xxx% - Graphics: Create the look of your game",
-        "Audio": "xxx% - Audio: Bring your world to life with sound",
-        "Objects": "xxx% - Objects: Build things players can interact with",
-        "Worlds": "xxx% - Worlds: Design places to explore",
-        "Interface": "xxx% - Interface: Create what players see and use",
-        "Controls": "xxx% - Controls: Define how players play",
-        "Rules": "xxx% - Rules: Make your game come alive",
-        "Progression": "xxx% - Progression: Reward players and keep them engaged",
-        "Play Test": "xxx% - Play Test: See how your game feels",
-        "Publish": "xxx% - Publish: Prepare your game for launch",
-        "Share": "xxx% - Share: Grow your community"
+    const gameJourneyFriendlyDescriptions = Object.freeze({
+        "Idea": "Dream, brainstorm, and explore",
+        "Create": "Set up your game and crew",
+        "Design": "Shape the player experience",
+        "Graphics": "Create the look of your game",
+        "Audio": "Bring your world to life with sound",
+        "Objects": "Build things players can interact with",
+        "Worlds": "Design places to explore",
+        "Interface": "Create what players see and use",
+        "Controls": "Define how players play",
+        "Rules": "Make your game come alive",
+        "Progression": "Reward players and keep them engaged",
+        "Play Test": "See how your game feels",
+        "Publish": "Prepare your game for launch",
+        "Share": "Grow your community"
     });
     const gameJourneyGroupSwatches = Object.freeze({
         "Idea": "swatch-red",
@@ -205,6 +208,8 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
     let toolboxVoteRows = [];
     const voteRowsByToolId = new Map();
     let voteDiagnostic = "";
+    let gameJourneyCompletionSnapshot = null;
+    let gameJourneyCompletionDiagnostic = "";
 
     function applyToolboxVoteSnapshot(snapshot) {
         voteRowsByToolId.clear();
@@ -219,6 +224,26 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
     } catch (error) {
         voteDiagnostic = error instanceof Error ? error.message : String(error || "Toolbox vote data unavailable.");
     }
+
+    try {
+        gameJourneyCompletionSnapshot = readGameJourneyCompletionMetrics();
+    } catch (error) {
+        gameJourneyCompletionDiagnostic = error instanceof Error ? error.message : String(error || "Game Journey completion metrics unavailable.");
+    }
+
+    const gameJourneyCompletionByGroup = new Map(
+        (gameJourneyCompletionSnapshot?.records || []).map((metric) => [metric.bucketName, metric])
+    );
+
+    function gameJourneyAccordionLabel(groupName) {
+        const metric = gameJourneyCompletionByGroup.get(groupName);
+        const description = metric?.friendlyDescription || gameJourneyFriendlyDescriptions[groupName] || groupName;
+        if (!metric) {
+            return `0% - ${groupName}: ${description} (0 of 0 complete, inactive)`;
+        }
+        return `${metric.percentComplete}% - ${groupName}: ${description} (${metric.completedCount} of ${metric.plannedCount} complete, ${metric.status})`;
+    }
+
     function getGameProgressSummary() {
         const activeGame = gameWorkspaceRepository.getActiveGame();
         const progress = gameWorkspaceRepository.getGameProgress();
@@ -1190,10 +1215,19 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
         details.open = isOpen;
 
         const summary = document.createElement("summary");
-        summary.append(createGroupLabel(group.title, gameJourneyAccordionLabels[group.title] || group.title));
+        summary.append(createGroupLabel(group.title, gameJourneyAccordionLabel(group.title)));
 
         const body = document.createElement("div");
         body.className = "accordion-body";
+
+        if (gameJourneyCompletionDiagnostic) {
+            const diagnostic = document.createElement("p");
+            diagnostic.className = "status";
+            diagnostic.dataset.gameJourneyCompletionDiagnostic = group.title;
+            diagnostic.setAttribute("role", "status");
+            diagnostic.textContent = "Game Journey completion metrics unavailable: " + gameJourneyCompletionDiagnostic;
+            body.append(diagnostic);
+        }
 
         if (group.note) {
             const note = document.createElement("p");
