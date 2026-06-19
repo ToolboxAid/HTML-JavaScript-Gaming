@@ -140,6 +140,7 @@ export async function startRepoServer() {
     baseUrl: `http://127.0.0.1:${address.port}`,
     repoRoot,
     close: async () => {
+      await handleLocalApiRequest.close?.();
       await new Promise((resolve, reject) => {
         const forceClose = setTimeout(() => {
           server.closeAllConnections?.();

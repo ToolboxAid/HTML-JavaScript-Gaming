@@ -234,6 +234,41 @@ export const TOOL_REGISTRY = Object.freeze([
     "toolboxGroup": "Build"
   },
   {
+    "id": "messages",
+    "name": "Messages",
+    "displayName": "Messages",
+    "shortDescription": "Create and manage reusable game text and future speech content.",
+    "shortLabel": "Messages",
+    "path": "messages",
+    "folderName": "messages",
+    "entryPoint": "messages/index.html",
+    "badge": "/assets/theme-v2/images/badges/game-design.png",
+    "tool": "/assets/theme-v2/images/tools/game-design.png",
+    "description": "Create, organize, and manage game dialog, narration, quest text, tutorials, notifications, and future Text To Speech content.",
+    "category": "Design",
+    "colorGroup": "tool-group-design",
+    "active": true,
+    "order": 3,
+    "requiredForPlayable": false,
+    "requiredForTestable": true,
+    "requiredForPublish": false,
+    "requires": [
+      "game-design"
+    ],
+    "status": "beta",
+    "releaseChannel": "beta",
+    "progressChecklist": [
+      "Messages Local API available",
+      "Categories and emotion profiles seed server-side",
+      "Message text persists exactly as entered"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Content"
+  },
+  {
     "id": "game-configuration",
     "name": "Game Configuration",
     "displayName": "Game Configuration",

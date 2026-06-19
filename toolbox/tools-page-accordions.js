@@ -161,6 +161,7 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
         "languages": "Interface",
         "learn": "Idea",
         "marketplace": "Share",
+        "messages": "Design",
         "midi": "Audio",
         "music": "Audio",
         "objects": "Objects",

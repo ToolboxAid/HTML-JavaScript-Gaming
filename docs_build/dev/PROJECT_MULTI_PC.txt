@@ -1,0 +1,193 @@
+If your goal is **maximum throughput**, I would have the three chats play different roles.
+
+## Master Control
+
+Don't build anything here.
+
+This chat should answer:
+
+```text
+What should be built next?
+What is the priority?
+What are the requirements?
+What PR number is next?
+```
+
+Think of it as:
+
+```text
+Product Manager
+Architect
+CTO
+```
+
+Not developer.
+
+---
+
+## PC Chat
+
+Give it ownership of a workstream.
+
+Example:
+
+```text
+GFS - Development A
+
+Owns:
+- Game Journey
+- Game Hub
+- Progress
+- Publish
+- Share
+```
+
+When you enter:
+
+```text
+NEXT
+```
+
+it keeps building in that area.
+
+---
+
+## Laptop Chat
+
+Give it a different workstream.
+
+Example:
+
+```text
+GFS - Development B
+
+Owns:
+- Audio
+- MIDI
+- Messages
+- Events
+- AI
+```
+
+When you enter:
+
+```text
+NEXT
+```
+
+it keeps building there.
+
+---
+
+## What should Master Control focus on?
+
+Right now, for GFS, I would prioritize:
+
+### 1. Tool Completion
+
+Not IST.
+
+You can't really test in IST if the tools aren't usable yet.
+
+Current value chain:
+
+```text
+Tool Completion
+↓
+Game Creation
+↓
+DEV Testing
+↓
+IST
+↓
+UAT
+↓
+PROD
+```
+
+So I'd keep IST mostly as infrastructure work and focus development on tool completion.
+
+---
+
+### 2. Create Tool Ownership Map
+
+Master Control should assign ownership:
+
+```text
+PC
+  Game Journey
+  Game Hub
+  Publish
+  Share
+
+Laptop
+  Audio
+  MIDI
+  Events
+  Messages
+```
+
+This reduces merge conflicts dramatically.
+
+---
+
+### 3. Create Branch Rules
+
+Every feature gets:
+
+```text
+feature/<tool-name>
+```
+
+Examples:
+
+```text
+feature/messages-tool
+feature/audio-tool
+feature/game-hub
+feature/progress-tracking
+```
+
+Never have both PCs working in the same tool at the same time.
+
+---
+
+## What I can do
+
+I can help you turn Master Control into a scheduler.
+
+For example, in Master Control you can ask:
+
+```text
+Given everything we know about GFS:
+
+What should PC build next?
+What should Laptop build next?
+
+Generate the next PR for each.
+```
+
+Then Master Control outputs:
+
+```text
+PC:
+PR_26171_002-game-hub-progress
+
+Laptop:
+PR_26171_003-messages-tool-mvp
+```
+
+You paste those into the two development chats.
+
+Both Codex sessions work simultaneously.
+
+Then when PRs come back, Master Control decides:
+
+```text
+Merge
+Reject
+Revise
+Queue next PR
+```
+
+That is probably the fastest path to doubling throughput without creating chaos.

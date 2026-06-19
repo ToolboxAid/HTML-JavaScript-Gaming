@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Messages - GameFoundryStudio</title>
+    <meta name="description" content="Messages Toolbox tool for game dialog, narration, quest text, tutorials, notifications, and future Text To Speech integration.">
+    <link rel="icon" href="/favicon.svg">
+    <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+</head>
+
+<body class="meaning-molten-orange">
+    <div data-partial="header-nav"></div>
+    <main>
+        <section class="page-title">
+            <div class="container">
+                <div class="kicker">Toolbox / Design</div>
+                <h1>Messages</h1>
+                <p class="lede">Create, organize, and manage game text and speech content.</p>
+            </div>
+        </section>
+        <section class="section">
+            <div class="container container--tool-wide">
+                <div class="tool-workspace tool-workspace--wide">
+                    <aside class="tool-column tool-group-design">
+                        <div class="tool-column-header">
+                            <h2>Message Setup</h2>
+                        </div>
+                        <div class="accordion-stack">
+                            <details class="vertical-accordion" open>
+                                <summary>Categories</summary>
+                                <div class="accordion-body content-stack">
+                                    <form class="content-stack" data-messages-category-form>
+                                        <input type="hidden" data-messages-category-key>
+                                        <label for="messagesCategoryName">Category</label>
+                                        <input id="messagesCategoryName" type="text" data-messages-category-name>
+                                        <label>
+                                            <input type="checkbox" data-messages-category-active checked>
+                                            Active
+                                        </label>
+                                        <div class="action-group action-group--tight">
+                                            <button class="btn btn--compact" type="submit">Save Category</button>
+                                            <button class="btn btn--compact" type="button" data-messages-category-cancel>New Category</button>
+                                        </div>
+                                    </form>
+                                    <div class="table-wrapper">
+                                        <table class="data-table" aria-label="Message categories">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Name</th>
+                                                    <th scope="col">Status</th>
+                                                    <th scope="col">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody data-messages-categories>
+                                                <tr><td colspan="3">Loading categories.</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Emotion Profiles</summary>
+                                <div class="accordion-body content-stack">
+                                    <form class="content-stack" data-messages-emotion-form>
+                                        <input type="hidden" data-messages-emotion-key>
+                                        <div class="table-wrapper">
+                                            <table class="data-table tool-form-table" aria-label="Emotion profile fields">
+                                                <tbody>
+                                                    <tr>
+                                                        <th scope="row"><label for="messagesEmotionName">Name</label></th>
+                                                        <td><input id="messagesEmotionName" type="text" data-messages-emotion-name></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="messagesEmotionDescription">Description</label></th>
+                                                        <td><textarea id="messagesEmotionDescription" rows="3" data-messages-emotion-description></textarea></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="messagesEmotionVolume">Volume</label></th>
+                                                        <td><input id="messagesEmotionVolume" type="number" min="0" max="2" step="0.05" value="1" data-messages-emotion-volume></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="messagesEmotionPitch">Pitch</label></th>
+                                                        <td><input id="messagesEmotionPitch" type="number" min="0.25" max="2" step="0.05" value="1" data-messages-emotion-pitch></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="messagesEmotionRate">Rate</label></th>
+                                                        <td><input id="messagesEmotionRate" type="number" min="0.25" max="2" step="0.05" value="1" data-messages-emotion-rate></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="messagesEmotionPauseBefore">Pause Before Ms</label></th>
+                                                        <td><input id="messagesEmotionPauseBefore" type="number" min="0" step="10" value="0" data-messages-emotion-pause-before></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="messagesEmotionPauseAfter">Pause After Ms</label></th>
+                                                        <td><input id="messagesEmotionPauseAfter" type="number" min="0" step="10" value="0" data-messages-emotion-pause-after></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row">Status</th>
+                                                        <td>
+                                                            <label>
+                                                                <input type="checkbox" data-messages-emotion-active checked>
+                                                                Active
+                                                            </label>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="action-group action-group--tight">
+                                            <button class="btn btn--compact" type="submit">Save Emotion Profile</button>
+                                            <button class="btn btn--compact" type="button" data-messages-emotion-cancel>New Emotion Profile</button>
+                                        </div>
+                                    </form>
+                                    <div class="table-wrapper">
+                                        <table class="data-table" aria-label="Emotion profiles">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Name</th>
+                                                    <th scope="col">Status</th>
+                                                    <th scope="col">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody data-messages-emotions>
+                                                <tr><td colspan="3">Loading emotion profiles.</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+                    </aside>
+                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="messages" data-tool-icon-src="assets/theme-v2/images/badges/game-design.png" data-tool-character-src="assets/theme-v2/images/tools/game-design.png"></div>
+                    <section class="tool-center-panel">
+                        <h2>Message Editor</h2>
+                        <p>Messages define what is said. Emotion profiles define future delivery settings only.</p>
+                        <div class="grid cols-3" aria-label="Messages summary">
+                            <article class="mini-stat"><strong data-messages-count>0</strong>Messages</article>
+                            <article class="mini-stat"><strong data-messages-category-count>0</strong>Categories</article>
+                            <article class="mini-stat"><strong data-messages-emotion-count>0</strong>Emotion Profiles</article>
+                        </div>
+                        <article class="card">
+                            <div class="card-body content-stack">
+                                <div>
+                                    <div class="kicker">Game Text</div>
+                                    <h3 data-messages-editor-heading>New Message</h3>
+                                </div>
+                                <form class="content-stack" data-messages-form>
+                                    <input type="hidden" data-messages-message-key>
+                                    <div class="table-wrapper">
+                                        <table class="data-table tool-form-table" aria-label="Message editor fields">
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row"><label for="messagesName">Message Name</label></th>
+                                                    <td><input id="messagesName" type="text" data-messages-name></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="messagesCategory">Category</label></th>
+                                                    <td><select id="messagesCategory" data-messages-category></select></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="messagesEmotionProfile">Emotion Profile</label></th>
+                                                    <td><select id="messagesEmotionProfile" data-messages-emotion-profile></select></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="messagesText">Message Text</label></th>
+                                                    <td><textarea id="messagesText" rows="7" data-messages-text></textarea></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="messagesNotes">Notes</label></th>
+                                                    <td><textarea id="messagesNotes" rows="4" data-messages-notes></textarea></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Status</th>
+                                                    <td>
+                                                        <label>
+                                                            <input type="checkbox" data-messages-active checked>
+                                                            Active
+                                                        </label>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="action-group">
+                                        <button class="btn" type="submit">Save Message</button>
+                                        <button class="btn" type="button" data-messages-new>New Message</button>
+                                    </div>
+                                </form>
+                                <article class="card" data-messages-validation-card hidden>
+                                    <div class="card-body content-stack">
+                                        <div>
+                                            <div class="kicker">Actionable Validation</div>
+                                            <h3>Message Needs Required Fields</h3>
+                                        </div>
+                                        <ul data-messages-validation-errors></ul>
+                                    </div>
+                                </article>
+                            </div>
+                        </article>
+                        <article class="card">
+                            <div class="card-body content-stack">
+                                <div>
+                                    <div class="kicker">Repository</div>
+                                    <h3>Messages</h3>
+                                </div>
+                                <div class="table-wrapper">
+                                    <table class="data-table" aria-label="Messages">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Name</th>
+                                                <th scope="col">Category</th>
+                                                <th scope="col">Emotion</th>
+                                                <th scope="col">Status</th>
+                                                <th scope="col">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody data-messages-table>
+                                            <tr><td colspan="5">Loading messages.</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </article>
+                    </section>
+                    <aside class="tool-column tool-group-design">
+                        <div class="tool-column-header">
+                            <h2>Inspector</h2>
+                        </div>
+                        <div class="accordion-stack">
+                            <details class="vertical-accordion" open>
+                                <summary>Selected Message</summary>
+                                <div class="accordion-body content-stack">
+                                    <p>Name: <span data-messages-selected-name>None</span></p>
+                                    <p>Category: <span data-messages-selected-category>None</span></p>
+                                    <p>Emotion Profile: <span data-messages-selected-emotion>None</span></p>
+                                    <p>Status: <span data-messages-selected-status>None</span></p>
+                                    <p>Text:</p>
+                                    <pre data-messages-selected-text>No message selected.</pre>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Persistence</summary>
+                                <div class="accordion-body content-stack">
+                                    <p>Source: <span data-messages-persistence-source>Server API</span></p>
+                                    <p>Engine: <span data-messages-persistence-engine>SQLite</span></p>
+                                    <p>Ownership: <span data-messages-persistence-owner>messages</span></p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Future Compatibility</summary>
+                                <div class="accordion-body content-stack">
+                                    <p>Segmented message support is planned for a future PR.</p>
+                                    <p>This tool stores message text exactly as entered.</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Status Log</summary>
+                                <div class="accordion-body">
+                                    <div class="status" role="status" data-messages-log>Loading Messages.</div>
+                                </div>
+                            </details>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </section>
+    </main>
+    <div data-partial="footer"></div>
+    <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+    <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+    <script type="module" src="toolbox/messages/messages.js"></script>
+</body>
+
+</html>

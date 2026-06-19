@@ -1,0 +1,30 @@
+{
+  "group": "Messages",
+  "groupKey": "messages",
+  "owner": "docs_build/database/seed",
+  "serverSideSeedRequired": true,
+  "browserAuthoritativeKeyGenerationAllowed": false,
+  "tables": {
+    "messages_categories": [
+      "Dialog",
+      "Narration",
+      "Quest",
+      "Tutorial",
+      "Combat",
+      "System",
+      "Achievement",
+      "Notification"
+    ],
+    "messages_emotion_profiles": [
+      "Calm",
+      "Urgent",
+      "Whisper",
+      "Angry",
+      "Excited",
+      "Sad",
+      "Mysterious"
+    ],
+    "messages_records": []
+  },
+  "note": "Seed names are applied by the server-side Messages SQLite service. Browser pages must not seed authoritative records."
+}

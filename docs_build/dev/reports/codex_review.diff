@@ -1,753 +1,2596 @@
-diff --git a/docs_build/dev/admin-notes/GFS_Game_Journey_Master_Plan.txt b/docs_build/dev/admin-notes/GFS_Game_Journey_Master_Plan.txt
+diff --git a/docs_build/database/dml/DML_INDEX.md b/docs_build/database/dml/DML_INDEX.md
+index a3ff997e9..642e3ebce 100644
+--- a/docs_build/database/dml/DML_INDEX.md
++++ b/docs_build/database/dml/DML_INDEX.md
+@@ -14,6 +14,7 @@ Direct SQL setup is intentionally narrow. Account DEV users now require server-s
+ | Game Design | `game-design.sql` | Server-seed-owned | Server-side seed API |
+ | Game Journey | `game-journey.sql` | Server-seed-owned | Server-side seed API |
+ | Game Workspace | `game-workspace.sql` | Server-seed-owned | Server-side seed API |
++| Messages | `messages.sql` | Server-seed-owned | Messages Local API/server-side SQLite service |
+ | Objects | `objects.sql` | Server-seed-owned | Server-side seed API |
+ | Palette | `palette.sql` | Server-seed-owned | Server-side seed API |
+ | Support Tickets | `support-tickets.sql` | Server-seed-owned | Admin Site Setup/server-side seed API |
+diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+index 08e5657ba..b43835564 100644
+--- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+@@ -6,39 +6,17 @@ Missing changed runtime JS files are WARN, not FAIL.
+ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+ 
+ Changed runtime JS files considered:
+-(0%) assets/theme-v2/js/account-achievements.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) assets/theme-v2/js/admin-invitations.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) assets/theme-v2/js/admin-system-health.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/api/admin-invitations-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/api/admin-owner-navigation.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/memberships/membership-assignment-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/game-workspace-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) toolbox/game-design/game-design.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) toolbox/game-journey/game-journey.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) toolbox/game-workspace/game-workspace.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(67%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 20/20; executed functions 2/3
+-(85%) toolbox/tools-page-accordions.js - executed lines 1128/1128; executed functions 98/115
++(0%) toolbox/tools-page-accordions.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(86%) toolbox/messages/messages-api-client.js - executed lines 49/49; executed functions 12/14
++(94%) toolbox/messages/messages.js - executed lines 457/457; executed functions 47/50
+ 
+ Guardrail warnings:
+-(0%) assets/theme-v2/js/account-achievements.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) assets/theme-v2/js/admin-invitations.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) assets/theme-v2/js/admin-system-health.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/api/admin-invitations-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/api/admin-owner-navigation.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/memberships/membership-assignment-service.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/game-workspace-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+ (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+ (0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) toolbox/game-design/game-design.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) toolbox/game-journey/game-journey.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) toolbox/game-workspace/game-workspace.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) toolbox/tools-page-accordions.js - WARNING: changed runtime JS file missing from coverage; advisory only
+diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+index 5a8e06edc..919d02dc8 100644
+--- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
++++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+@@ -12,88 +12,42 @@ Note: entry percentages use function coverage when available, otherwise line cov
+ Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
+ 
+ Exercised tool entry points detected:
+-(79%) Toolbox Index - exercised 3 runtime JS files
++(87%) Toolbox Index - exercised 3 runtime JS files
+ (0%) Tool Template V2 - not exercised by this Playwright run
+-(72%) Theme V2 Shared JS - exercised 1 runtime JS files
++(56%) Theme V2 Shared JS - exercised 2 runtime JS files
+ 
+ Changed runtime JS files covered:
+-(0%) assets/theme-v2/js/account-achievements.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) assets/theme-v2/js/admin-invitations.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) assets/theme-v2/js/admin-system-health.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/api/admin-invitations-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/api/admin-owner-navigation.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/memberships/membership-assignment-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/game-workspace-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) toolbox/game-design/game-design.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) toolbox/game-journey/game-journey.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) toolbox/game-workspace/game-workspace.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(67%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 20/20; executed functions 2/3
+-(85%) toolbox/tools-page-accordions.js - executed lines 1128/1128; executed functions 98/115
++(0%) toolbox/tools-page-accordions.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(86%) toolbox/messages/messages-api-client.js - executed lines 49/49; executed functions 12/14
++(94%) toolbox/messages/messages.js - executed lines 457/457; executed functions 47/50
+ 
+ Files with executed line/function counts where available:
+-(25%) src/api/session-api-client.js - executed lines 68/68; executed functions 3/12
+-(33%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
+-(48%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 11/23
+-(53%) src/api/server-api-client.js - executed lines 167/167; executed functions 10/19
+-(65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
+-(67%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 20/20; executed functions 2/3
+-(72%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 65/90
+-(85%) toolbox/tools-page-accordions.js - executed lines 1128/1128; executed functions 98/115
++(36%) src/api/server-api-client.js - executed lines 167/167; executed functions 5/14
++(38%) src/api/public-config-client.js - executed lines 209/209; executed functions 10/26
++(54%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 46/85
++(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
++(76%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 22/29
++(86%) toolbox/messages/messages-api-client.js - executed lines 49/49; executed functions 12/14
++(94%) toolbox/messages/messages.js - executed lines 457/457; executed functions 47/50
+ 
+ Uncovered or low-coverage changed JS files:
+-(0%) assets/theme-v2/js/account-achievements.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) assets/theme-v2/js/admin-invitations.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) assets/theme-v2/js/admin-system-health.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/api/admin-invitations-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/api/admin-owner-navigation.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/memberships/membership-assignment-service.mjs - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/game-workspace-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: uncovered changed runtime JS file; advisory only
+ (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: uncovered changed runtime JS file; advisory only
+ (0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) toolbox/game-design/game-design.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) toolbox/game-journey/game-journey.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) toolbox/game-workspace/game-workspace.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) toolbox/tools-page-accordions.js - WARNING: uncovered changed runtime JS file; advisory only
+ 
+ Changed JS files considered:
+-(0%) assets/theme-v2/js/account-achievements.js - changed JS file not collected as browser runtime coverage
+-(0%) assets/theme-v2/js/admin-invitations.js - changed JS file not collected as browser runtime coverage
+-(0%) assets/theme-v2/js/admin-service-page-data.js - changed JS file not collected as browser runtime coverage
+-(0%) assets/theme-v2/js/admin-system-health.js - changed JS file not collected as browser runtime coverage
+-(0%) src/api/admin-invitations-api-client.js - changed JS file not collected as browser runtime coverage
+-(0%) src/api/admin-owner-navigation.js - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/memberships/membership-assignment-service.mjs - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/persistence/tool-repositories/game-workspace-mock-repository.js - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - changed JS file not collected as browser runtime coverage
+ (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/server/local-api-server.mjs - changed JS file not collected as browser runtime coverage
+ (0%) src/shared/toolbox/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/AdminInvitationsNavPage.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/BuildPathProgressSimplification.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/GameDesignMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/GameJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/LoginSessionMode.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/ToolNavigationPrevNext.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) toolbox/game-design/game-design.js - changed JS file not collected as browser runtime coverage
+-(0%) toolbox/game-journey/game-journey.js - changed JS file not collected as browser runtime coverage
+-(0%) toolbox/game-workspace/game-workspace.js - changed JS file not collected as browser runtime coverage
+-(67%) toolbox/game-workspace/game-workspace-api-client.js - changed JS file with browser V8 coverage
+-(85%) toolbox/tools-page-accordions.js - changed JS file with browser V8 coverage
++(0%) tests/helpers/playwrightRepoServer.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/MessagesTool.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) toolbox/tools-page-accordions.js - changed JS file not collected as browser runtime coverage
++(86%) toolbox/messages/messages-api-client.js - changed JS file with browser V8 coverage
++(94%) toolbox/messages/messages.js - changed JS file with browser V8 coverage
+diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
+index 4eae4d0a9..4ee8e5367 100644
+--- a/src/dev-runtime/server/local-api-router.mjs
++++ b/src/dev-runtime/server/local-api-router.mjs
+@@ -118,6 +118,10 @@ import {
+   readMarketplaceSellerRevenueModel,
+ } from "../marketplace/marketplace-revenue-service.mjs";
+ import { handleAdminNotesDirectoryApiRequest } from "../admin/admin-notes-directory.mjs";
++import {
++  createMessagesSqliteService,
++  handleMessagesApiContract,
++} from "../messages/messages-sqlite-service.mjs";
+ import {
+   LegalDocumentError,
+   readPublishedLegalDocument,
+@@ -2228,7 +2232,10 @@ function productTablesFromSnapshot(snapshot) {
+ }
+ 
+ class ApiRuntimeDataSource {
+-  constructor() {
++  constructor({
++    repoRoot = process.cwd(),
++  } = {}) {
++    this.messagesService = createMessagesSqliteService({ repoRoot });
+     this.repositoryCounter = 1;
+     this.repositoryById = new Map();
+     this.sessionModeId = FIXED_ACCOUNT_SESSION_MODE.id;
+@@ -4730,6 +4737,24 @@ LIMIT 1;
+     return rows;
+   }
+ 
++  messagesActorKey() {
++    return this.sessionUserKey || SEED_DB_KEYS.users.forgeBot;
++  }
++
++  messagesApiContract(method, parts, body) {
++    return handleMessagesApiContract({
++      actorKey: this.messagesActorKey(),
++      body,
++      method,
++      parts,
++      service: this.messagesService,
++    });
++  }
++
++  close() {
++    this.messagesService.close();
++  }
++
+   async supabaseToolboxToolMetadataRows() {
+     const adapter = this.supabaseDatabaseAdapter("Reading Supabase Toolbox tool metadata");
+     const rows = await adapter.getProductTableRows("toolbox_tool_metadata");
+@@ -5314,9 +5339,9 @@ LIMIT 1;
+ export function createLocalApiRouter({
+   repoRoot = process.cwd(),
+ } = {}) {
+-  const dataSource = new ApiRuntimeDataSource();
++  const dataSource = new ApiRuntimeDataSource({ repoRoot });
+ 
+-  return async function handleApiRuntimeRequest(request, response, requestUrl) {
++  async function handleApiRuntimeRequest(request, response, requestUrl) {
+     if (!requestUrl.pathname.startsWith("/api/")) {
+       return false;
+     }
+@@ -5524,6 +5549,12 @@ export function createLocalApiRouter({
+         return true;
+       }
+ 
++      if (parts[1] === "messages") {
++        const body = request.method === "POST" ? await readRequestJson(request) : {};
++        ok(response, dataSource.messagesApiContract(request.method, parts.slice(2), body));
++        return true;
++      }
++
+       if (parts[1] === "admin" && parts[2] === "memberships" && request.method === "GET" && parts[3] === "active") {
+         ok(response, await dataSource.adminActiveMembership(requestUrl));
+         return true;
+@@ -5687,5 +5718,8 @@ export function createLocalApiRouter({
+       fail(response, error?.statusCode || 500, error);
+       return true;
+     }
+-  };
++  }
++
++  handleApiRuntimeRequest.close = () => dataSource.close();
++  return handleApiRuntimeRequest;
+ }
+diff --git a/src/dev-runtime/server/local-api-server.mjs b/src/dev-runtime/server/local-api-server.mjs
+index 5967369d3..e1ad1d97a 100644
+--- a/src/dev-runtime/server/local-api-server.mjs
++++ b/src/dev-runtime/server/local-api-server.mjs
+@@ -97,6 +97,7 @@ export async function startLocalApiServer({
+   return {
+     baseUrl: `http://${host}:${port}`,
+     close: async () => {
++      await handleApiRuntimeRequest.close?.();
+       await new Promise((resolve, reject) => {
+         server.close((error) => {
+           if (error) reject(error);
+diff --git a/src/shared/toolbox/tool-metadata-inventory.js b/src/shared/toolbox/tool-metadata-inventory.js
+index b63c69389..8a08fb0e5 100644
+--- a/src/shared/toolbox/tool-metadata-inventory.js
++++ b/src/shared/toolbox/tool-metadata-inventory.js
+@@ -233,6 +233,41 @@ export const TOOL_REGISTRY = Object.freeze([
+     "visibleInToolsList": true,
+     "toolboxGroup": "Build"
+   },
++  {
++    "id": "messages",
++    "name": "Messages",
++    "displayName": "Messages",
++    "shortDescription": "Create and manage reusable game text and future speech content.",
++    "shortLabel": "Messages",
++    "path": "messages",
++    "folderName": "messages",
++    "entryPoint": "messages/index.html",
++    "badge": "/assets/theme-v2/images/badges/game-design.png",
++    "tool": "/assets/theme-v2/images/tools/game-design.png",
++    "description": "Create, organize, and manage game dialog, narration, quest text, tutorials, notifications, and future Text To Speech content.",
++    "category": "Design",
++    "colorGroup": "tool-group-design",
++    "active": true,
++    "order": 3,
++    "requiredForPlayable": false,
++    "requiredForTestable": true,
++    "requiredForPublish": false,
++    "requires": [
++      "game-design"
++    ],
++    "status": "beta",
++    "releaseChannel": "beta",
++    "progressChecklist": [
++      "Messages Local API available",
++      "Categories and emotion profiles seed server-side",
++      "Message text persists exactly as entered"
++    ],
++    "deferred": false,
++    "hidden": false,
++    "adminOnly": false,
++    "visibleInToolsList": true,
++    "toolboxGroup": "Content"
++  },
+   {
+     "id": "game-configuration",
+     "name": "Game Configuration",
+diff --git a/tests/helpers/playwrightRepoServer.mjs b/tests/helpers/playwrightRepoServer.mjs
+index a233b9e40..13bb7c069 100644
+--- a/tests/helpers/playwrightRepoServer.mjs
++++ b/tests/helpers/playwrightRepoServer.mjs
+@@ -140,6 +140,7 @@ export async function startRepoServer() {
+     baseUrl: `http://127.0.0.1:${address.port}`,
+     repoRoot,
+     close: async () => {
++      await handleLocalApiRequest.close?.();
+       await new Promise((resolve, reject) => {
+         const forceClose = setTimeout(() => {
+           server.closeAllConnections?.();
+diff --git a/toolbox/tools-page-accordions.js b/toolbox/tools-page-accordions.js
+index 1ce5299c7..9fc26afaa 100644
+--- a/toolbox/tools-page-accordions.js
++++ b/toolbox/tools-page-accordions.js
+@@ -161,6 +161,7 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
+         "languages": "Interface",
+         "learn": "Idea",
+         "marketplace": "Share",
++        "messages": "Design",
+         "midi": "Audio",
+         "music": "Audio",
+         "objects": "Objects",
+diff --git a/docs_build/database/ddl/messages.sql b/docs_build/database/ddl/messages.sql
 new file mode 100644
-index 000000000..073fe3d1c
+index 000000000..febcc999e
 --- /dev/null
-+++ b/docs_build/dev/admin-notes/GFS_Game_Journey_Master_Plan.txt
-@@ -0,0 +1,538 @@
-+# Game Journey Master Plan
++++ b/docs_build/database/ddl/messages.sql
+@@ -0,0 +1,51 @@
++-- Game Foundry Studio DEV database DDL
++-- Group: Messages
++-- Ownership: docs_build/database/ddl/messages.sql
++-- Target DEV database: gamefoundry_dev
++-- Scope: executable grouped table DDL for active server API migration.
++-- Authoritative key values are generated by the server/API layer unless a later DEV-only seed exception explicitly applies.
++-- Owned tables: messages_categories, messages_emotion_profiles, messages_records
++CREATE TABLE IF NOT EXISTS messages_categories (
++    key text PRIMARY KEY,
++    "name" text NOT NULL UNIQUE,
++    "active" boolean NOT NULL DEFAULT true,
++    "createdAt" timestamptz NOT NULL DEFAULT now(),
++    "updatedAt" timestamptz NOT NULL DEFAULT now(),
++    "createdBy" text NOT NULL REFERENCES users(key),
++    "updatedBy" text NOT NULL REFERENCES users(key)
++);
 +
-+Authoritative status: This document is the current planning source of truth for Game Journey buckets and their intended creator workflow.
++CREATE TABLE IF NOT EXISTS messages_emotion_profiles (
++    key text PRIMARY KEY,
++    "name" text NOT NULL UNIQUE,
++    "description" text NOT NULL DEFAULT '',
++    "volume" numeric NOT NULL DEFAULT 1,
++    "pitch" numeric NOT NULL DEFAULT 1,
++    "rate" numeric NOT NULL DEFAULT 1,
++    "pauseBeforeMs" integer NOT NULL DEFAULT 0,
++    "pauseAfterMs" integer NOT NULL DEFAULT 0,
++    "active" boolean NOT NULL DEFAULT true,
++    "createdAt" timestamptz NOT NULL DEFAULT now(),
++    "updatedAt" timestamptz NOT NULL DEFAULT now(),
++    "createdBy" text NOT NULL REFERENCES users(key),
++    "updatedBy" text NOT NULL REFERENCES users(key)
++);
 +
-+Current completion placeholder: xxx%
++CREATE TABLE IF NOT EXISTS messages_records (
++    key text PRIMARY KEY,
++    "name" text NOT NULL,
++    "categoryKey" text NOT NULL REFERENCES messages_categories(key),
++    "emotionProfileKey" text NOT NULL REFERENCES messages_emotion_profiles(key),
++    "messageText" text NOT NULL,
++    "notes" text NOT NULL DEFAULT '',
++    "active" boolean NOT NULL DEFAULT true,
++    "createdAt" timestamptz NOT NULL DEFAULT now(),
++    "updatedAt" timestamptz NOT NULL DEFAULT now(),
++    "createdBy" text NOT NULL REFERENCES users(key),
++    "updatedBy" text NOT NULL REFERENCES users(key)
++);
 +
-+Implementation boundary:
-+- Do not calculate completion yet.
-+- Do not implement runtime behavior yet.
-+- Do not implement database changes yet.
-+- Do not use this document as a live runtime contract until a later PR explicitly promotes it into a declared registry or data source.
-+
-+Product frame:
-+- Game Foundry Studio creator loop: Build · Play · Share.
-+- Game Hub owns game identity, game status, Game Progress, and Launch Progress.
-+- Game Crew is game-level assignment.
-+- Studio Team is account-level roster.
-+- Vector Art is the MVP graphics path.
-+- Events are the Rules implementation path.
-+- DEV, IST, UAT, and PROD are deployment targets for release validation, not gameplay behavior switches.
-+
-+Completion placeholder rule:
-+- Every bucket displays `xxx%` until a later implementation PR introduces Planned Count, Completed Count, and Auto-calculated %.
-+- `xxx%` is display-only planning text.
-+
-+Bucket order:
-+001 Idea
-+002 Create
-+003 Design
-+004 Graphics
-+005 Audio
-+006 Objects
-+007 Worlds
-+008 Interface
-+009 Controls
-+010 Rules
-+011 Progression
-+012 Play Test
-+013 Publish
-+014 Share
-+
-+## 001 Idea
-+
-+Friendly Description: Dream, brainstorm, and explore
-+Completion Placeholder: xxx%
-+Required For MVP: N
-+Can Skip: Y
-+Purpose: Capture early concepts, audience ideas, themes, rough mechanics, references, and open questions before a game record must exist.
-+Accepted Tools:
-+- Idea Board
-+- Creator Learning
-+- Notes
-+- Game Journey
-+Deliverables:
-+- One clear game concept or problem statement.
-+- Target player notes.
-+- Inspiration/reference notes.
-+- Early risks, undecided questions, and ideas to revisit.
-+Completion Rules:
-+- Mark complete manually when a creator has enough idea clarity to create or select a game in Game Hub.
-+- Do not require every idea card to be resolved.
-+- Do not calculate completion from card count yet.
-+Dependencies:
-+- None.
-+- May feed Create when the creator is ready to start a game.
-+L/C/R Layout Model:
-+- Left: idea prompts, tags, filters, and capture controls.
-+- Center: board/list of ideas and selected concept notes.
-+- Right: decision notes, risks, next action, and diagnostics.
-+
-+## 002 Create
-+
-+Friendly Description: Set up your game and crew
-+Completion Placeholder: xxx%
-+Required For MVP: Y
-+Can Skip: N
-+Purpose: Establish the game container, identity, ownership, Game Crew, and basic setup needed before other buckets can produce game-scoped work.
-+Accepted Tools:
-+- Game Hub
-+- Game Crew
-+- Game Configuration
-+- Tags
-+Deliverables:
-+- Game Hub record with working title, purpose, status, and active game selection.
-+- Game Crew assignment plan for game-level work.
-+- Studio Team distinction documented as account-level roster, not the project assignment surface.
-+- Core game configuration choices.
-+- Baseline tags for organizing work.
-+Completion Rules:
-+- Mark complete manually when the active game exists, has a known owner/creator, and has enough setup to accept design and asset work.
-+- Do not create project records from Idea Board.
-+- Do not calculate completion from records yet.
-+Dependencies:
-+- Idea can provide concept notes, but Create can start without completed Idea.
-+L/C/R Layout Model:
-+- Left: game identity, crew setup, configuration inputs, and tag setup.
-+- Center: active game summary and setup checklist.
-+- Right: setup diagnostics, missing requirements, Game Progress, and next action.
-+
-+## 003 Design
-+
-+Friendly Description: Shape the player experience
-+Completion Placeholder: xxx%
-+Required For MVP: Y
-+Can Skip: N
-+Purpose: Define the player-facing experience, core loop, screens, message flow, and design decisions that guide implementation.
-+Accepted Tools:
-+- Game Design
-+- Messages
-+- Game Journey
-+- Creator Learning
-+Deliverables:
-+- Core loop description.
-+- Player goal and fail-state notes.
-+- Screen/flow outline.
-+- Message/text plan where applicable.
-+- Design assumptions and open questions.
-+Completion Rules:
-+- Mark complete manually when the MVP has enough design clarity for graphics, objects, worlds, controls, and rules work.
-+- Messages may remain planned unless the MVP depends on authored text.
-+- Do not calculate completion from document count yet.
-+Dependencies:
-+- Create should identify the active game.
-+- Idea may feed design notes.
-+L/C/R Layout Model:
-+- Left: design prompts, mode filters, and decision categories.
-+- Center: player journey, screen flow, and design board.
-+- Right: unresolved decisions, risk notes, suggested next tools, and diagnostics.
-+
-+## 004 Graphics
-+
-+Friendly Description: Create the look of your game
-+Completion Placeholder: xxx%
-+Required For MVP: Y
-+Can Skip: N
-+Purpose: Define and create the visual style, color language, sprites, UI images, badges, and visual assets required for a playable MVP.
-+Accepted Tools:
-+- Colors
-+- Sprites
-+- Characters
-+- Animations
-+- Particles
-+- Vector Art
-+- Assets
-+Deliverables:
-+- MVP visual style direction.
-+- Vector Art baseline for MVP graphics path.
-+- Palette/color choices.
-+- Required sprite/vector assets.
-+- Placeholder or final images for key player-facing objects and UI.
-+Completion Rules:
-+- Mark complete manually when all required MVP visual placeholders or Vector Art assets exist and are acceptable for Play Test.
-+- Full polish is not required for MVP.
-+- Do not calculate completion from asset count yet.
-+Dependencies:
-+- Create identifies the active game.
-+- Design provides visual intent.
-+- Objects, Worlds, and Interface consume graphics outputs.
-+L/C/R Layout Model:
-+- Left: visual style controls, palette, asset type filters, and import/create actions.
-+- Center: visual asset board, preview canvas, and style samples.
-+- Right: asset readiness, missing visual assets, replacement notes, and diagnostics.
-+
-+## 005 Audio
-+
-+Friendly Description: Bring your world to life with sound
-+Completion Placeholder: xxx%
-+Required For MVP: N
-+Can Skip: Y
-+Purpose: Plan and create music, sound effects, voices, speech, and audio treatment for player feedback and atmosphere.
-+Accepted Tools:
-+- Audio
-+- Music
-+- Voices
-+- Audio Effects
-+- Text To Speech
-+- Speech To Text
-+- Assets
-+Deliverables:
-+- Sound and music plan.
-+- Required MVP sound placeholders if audio is needed.
-+- Voice/emotion direction where messages use speech.
-+- Audio asset references.
-+Completion Rules:
-+- Mark complete manually when required MVP audio placeholders or final assets are present.
-+- If the MVP is playable without audio, this bucket can be skipped.
-+- Do not calculate completion from asset count yet.
-+Dependencies:
-+- Design defines audio intent.
-+- Rules and Events can trigger audio.
-+- Messages and Emotions may feed Text To Speech.
-+L/C/R Layout Model:
-+- Left: audio type filters, import/create controls, and voice/emotion settings.
-+- Center: audio asset list, timeline/preview, and playback controls.
-+- Right: usage references, missing audio diagnostics, replacement notes, and readiness.
-+
-+## 006 Objects
-+
-+Friendly Description: Build things players can interact with
-+Completion Placeholder: xxx%
-+Required For MVP: Y
-+Can Skip: N
-+Purpose: Define interactive things in the game: player, obstacles, collectibles, goals, hazards, NPCs, props, and object state.
-+Accepted Tools:
-+- Objects
-+- Characters
-+- Sprites
-+- Tags
-+- Assets
-+- Game Configuration
-+Deliverables:
-+- MVP object list.
-+- Object roles and interaction intent.
-+- Object visual references.
-+- Object state notes.
-+- Required object tags.
-+Completion Rules:
-+- Mark complete manually when MVP objects have defined names, roles, visuals/placeholders, and interaction intent.
-+- Do not require final balancing or polish.
-+- Do not calculate completion from object count yet.
-+Dependencies:
-+- Create identifies the active game.
-+- Design defines player experience.
-+- Graphics supplies visual placeholders or Vector Art.
-+- Rules defines behavior through Events.
-+L/C/R Layout Model:
-+- Left: object type filters, role selectors, and create/edit controls.
-+- Center: object board, object details, and relationship view.
-+- Right: missing fields, asset references, usage count, and diagnostics.
-+
-+## 007 Worlds
-+
-+Friendly Description: Design places to explore
-+Completion Placeholder: xxx%
-+Required For MVP: Y
-+Can Skip: N
-+Purpose: Define spaces, scenes, levels, maps, spawn points, boundaries, and world structure for gameplay.
-+Accepted Tools:
-+- Worlds
-+- Tile Map
-+- Parallax Scene
-+- Objects
-+- Assets
-+- Game Configuration
-+Deliverables:
-+- MVP world/level list.
-+- Starting scene or map.
-+- Object placement plan.
-+- Boundaries and navigation notes.
-+- Background/visual references.
-+Completion Rules:
-+- Mark complete manually when the MVP has at least one playable world/scene with enough structure for Play Test.
-+- Do not require full level set completion.
-+- Do not calculate completion from map count yet.
-+Dependencies:
-+- Create identifies the active game.
-+- Design defines player path.
-+- Graphics supplies world visuals/placeholders.
-+- Objects supplies interactable entities.
-+L/C/R Layout Model:
-+- Left: world/scene list, map tools, placement filters, and setup controls.
-+- Center: map/world canvas or scene board.
-+- Right: object references, missing setup, bounds diagnostics, and next action.
-+
-+## 008 Interface
-+
-+Friendly Description: Create what players see and use
-+Completion Placeholder: xxx%
-+Required For MVP: Y
-+Can Skip: N
-+Purpose: Define menus, HUD, messages, buttons, instructions, overlays, and player-facing UI needed to understand and play the game.
-+Accepted Tools:
-+- Interface
-+- Fonts
-+- Languages
-+- Messages
-+- Colors
-+- Assets
-+Deliverables:
-+- MVP screen/UI list.
-+- HUD or player feedback elements.
-+- Fonts and readable text treatment.
-+- Message/instruction placeholders.
-+- Accessibility/readability notes.
-+Completion Rules:
-+- Mark complete manually when the MVP has enough interface to start, understand, play, and finish/fail the game.
-+- Localization can remain planned unless MVP requires multiple languages.
-+- Do not calculate completion from screen count yet.
-+Dependencies:
-+- Design defines the player-facing flow.
-+- Graphics supplies UI visual style.
-+- Rules defines feedback states.
-+L/C/R Layout Model:
-+- Left: screen filters, UI controls, text/message inputs, and font settings.
-+- Center: screen preview, HUD mockup, or interface board.
-+- Right: readability checks, missing UI states, text diagnostics, and next action.
-+
-+## 009 Controls
-+
-+Friendly Description: Define how players play
-+Completion Placeholder: xxx%
-+Required For MVP: Y
-+Can Skip: N
-+Purpose: Define input mapping, player actions, control help, and device expectations.
-+Accepted Tools:
-+- Controls
-+- Input Mapping V2
-+- Hitboxes
-+- Game Configuration
-+Deliverables:
-+- MVP input map.
-+- Player action list.
-+- Control help/instruction notes.
-+- Hitbox and interaction boundaries where needed.
-+Completion Rules:
-+- Mark complete manually when each MVP player action has an assigned input and can be explained to a player.
-+- Do not require all device profiles for MVP.
-+- Do not calculate completion from action count yet.
-+Dependencies:
-+- Design defines actions.
-+- Objects and Worlds define what controls affect.
-+- Interface exposes control help.
-+L/C/R Layout Model:
-+- Left: action list, device/profile selectors, and binding controls.
-+- Center: input mapping table, preview, or interaction test surface.
-+- Right: missing bindings, conflict diagnostics, accessibility notes, and next action.
-+
-+## 010 Rules
-+
-+Friendly Description: Make your game come alive
-+Completion Placeholder: xxx%
-+Required For MVP: Y
-+Can Skip: N
-+Purpose: Define gameplay behavior, events, triggers, scoring, win/fail conditions, object interactions, and game responses.
-+Accepted Tools:
-+- Events
-+- Rules
-+- Code
-+- Objects
-+- Worlds
-+- Controls
-+Deliverables:
-+- MVP Events list.
-+- Trigger/action behavior plan.
-+- Win/fail condition definitions.
-+- Score/state rules where needed.
-+- Object/world interaction rules.
-+Completion Rules:
-+- Mark complete manually when MVP Events cover the core loop and required win/fail/gameplay behavior.
-+- Events are the Rules implementation path.
-+- Do not calculate completion from event count yet.
-+Dependencies:
-+- Design defines the intended experience.
-+- Objects, Worlds, Interface, and Controls provide the things rules connect.
-+L/C/R Layout Model:
-+- Left: event categories, trigger/action selectors, and rule inputs.
-+- Center: event graph, rules table, or behavior board.
-+- Right: validation diagnostics, missing triggers/actions, dependency warnings, and next action.
-+
-+## 011 Progression
-+
-+Friendly Description: Reward players and keep them engaged
-+Completion Placeholder: xxx%
-+Required For MVP: N
-+Can Skip: Y
-+Purpose: Define achievements, saved data, unlocks, pacing, player rewards, and progression loops beyond the core MVP.
-+Accepted Tools:
-+- Achievements
-+- Saved Data
-+- Game Journey
-+- Tags
-+- Ratings
-+Deliverables:
-+- Reward/progression plan.
-+- Save-state needs.
-+- Achievement or milestone placeholders if required.
-+- Player engagement notes.
-+Completion Rules:
-+- Mark complete manually when the MVP either has a defined progression path or explicitly chooses to skip progression.
-+- Saves are required only when the MVP depends on persistence.
-+- Do not calculate completion from achievement or save-slot count yet.
-+Dependencies:
-+- Rules defines reward triggers.
-+- Play Test may reveal pacing gaps.
-+- Publish may require save/reward decisions.
-+L/C/R Layout Model:
-+- Left: reward types, save/progress settings, and milestone filters.
-+- Center: progression map, achievement list, or save-state board.
-+- Right: missing trigger references, persistence diagnostics, pacing notes, and next action.
-+
-+## 012 Play Test
-+
-+Friendly Description: See how your game feels
-+Completion Placeholder: xxx%
-+Required For MVP: Y
-+Can Skip: N
-+Purpose: Validate whether the game can be played, understood, completed, and improved before release preparation.
-+Accepted Tools:
-+- Game Testing
-+- Debug
-+- Performance
-+- Game Hub
-+- Game Journey
-+Deliverables:
-+- MVP play-test checklist.
-+- Known issues and fixes.
-+- Debug/performance notes.
-+- Player feedback notes.
-+- Go/no-go decision for Publish.
-+Completion Rules:
-+- Mark complete manually when the MVP has been tested through the core loop and blockers are either fixed or accepted.
-+- Debug-only settings must be visible and must not silently carry into public release.
-+- Do not calculate completion from test count yet.
-+Dependencies:
-+- Create, Design, Graphics, Objects, Worlds, Interface, Controls, and Rules should be ready enough for testing.
-+L/C/R Layout Model:
-+- Left: test scenario list, device/profile filters, and debug toggles.
-+- Center: play-test checklist, results board, and current test run.
-+- Right: issues, performance diagnostics, blockers, and next action.
-+
-+## 013 Publish
-+
-+Friendly Description: Prepare your game for launch
-+Completion Placeholder: xxx%
-+Required For MVP: Y
-+Can Skip: N
-+Purpose: Prepare the game for DEV, IST, UAT, and PROD promotion with release readiness, metadata, packaging, and launch checks.
-+Accepted Tools:
-+- Publish
-+- Build Game
-+- Environments
-+- Game Migration
-+- Platform Settings
-+- Game Hub
-+Deliverables:
-+- Launch Progress readiness notes.
-+- Release metadata.
-+- DEV/IST/UAT/PROD promotion checklist.
-+- Debug/public-release gating notes.
-+- Package/export plan.
-+Completion Rules:
-+- Mark complete manually when release readiness is reviewed and blockers are resolved or explicitly deferred.
-+- DEV, IST, UAT, and PROD are deployment targets, not behavior switches.
-+- Public/playable promotion must reject enabled debug-only settings when release gating is implemented.
-+- Do not calculate completion from checklist count yet.
-+Dependencies:
-+- Play Test provides go/no-go readiness.
-+- Interface, Rules, Controls, and required MVP assets should be acceptable.
-+- Game Hub tracks Launch Progress.
-+L/C/R Layout Model:
-+- Left: release target, metadata inputs, environment checklist, and package actions.
-+- Center: launch checklist, release candidate summary, and promotion path.
-+- Right: blockers, environment diagnostics, debug-gating status, and next action.
-+
-+## 014 Share
-+
-+Friendly Description: Grow your community
-+Completion Placeholder: xxx%
-+Required For MVP: N
-+Can Skip: Y
-+Purpose: Plan discovery, marketplace/community presence, public profile, ratings, social links, and post-launch sharing.
-+Accepted Tools:
-+- Marketplace
-+- Community
-+- Cloud
-+- Ratings
-+- Learn
-+- Public game page
-+Deliverables:
-+- Share/public page plan.
-+- Marketplace/community readiness notes.
-+- Ratings/feedback plan.
-+- Creator profile or community copy.
-+- Post-launch growth ideas.
-+Completion Rules:
-+- Mark complete manually when the creator has selected the first sharing path or explicitly chooses to defer sharing.
-+- MVP can ship internally without Share if Publish target is not public.
-+- Do not calculate completion from public links or listing count yet.
-+Dependencies:
-+- Publish determines whether the game is ready for public sharing.
-+- Build · Play · Share framing informs public copy.
-+L/C/R Layout Model:
-+- Left: audience, channel, listing, and community settings.
-+- Center: public/share preview, marketplace card, or community plan.
-+- Right: share readiness, missing public metadata, feedback diagnostics, and next action.
-+
-+# Future Roadmap: Auto Progress
-+
-+Status: Planned documentation only.
-+
-+Future fields:
-+- Planned Count: number of checklist items, deliverables, or accepted tool outputs expected for a bucket.
-+- Completed Count: number of planned items that pass bucket completion rules.
-+- Auto-calculated %: Completed Count divided by Planned Count, rendered as a percentage.
-+
-+Rules for future implementation:
-+- Keep `xxx%` until a later PR declares the source of truth for planned and completed counts.
-+- Do not infer completion from route availability, tool status, or file presence alone.
-+- Do not calculate bucket completion in page-local JavaScript.
-+- Do not store completion state outside the declared Game Journey data source.
-+- Completion diagnostics must explain missing prerequisites and blocked dependencies.
-+
-+Future display model:
-+- `xxx% - Bucket: Friendly Description` remains the placeholder pattern until counts exist.
-+- Later display may become `<auto-calculated %> - Bucket: Friendly Description`.
-+- Bucket ordering remains 001 through 014.
-+
-+# MVP Summary
-+
-+Required for MVP:
-+- 002 Create
-+- 003 Design
-+- 004 Graphics
-+- 006 Objects
-+- 007 Worlds
-+- 008 Interface
-+- 009 Controls
-+- 010 Rules
-+- 012 Play Test
-+- 013 Publish
-+
-+Can skip for MVP:
-+- 001 Idea
-+- 005 Audio
-+- 011 Progression
-+- 014 Share
-+
-+MVP path:
-+1. Create the game in Game Hub.
-+2. Assign Game Crew while keeping Studio Team as the account-level roster concept.
-+3. Shape the player experience.
-+4. Use Vector Art as the MVP graphics path.
-+5. Build objects and worlds.
-+6. Create interface and controls.
-+7. Use Events for Rules.
-+8. Play test the core loop.
-+9. Prepare DEV, IST, UAT, and PROD release readiness.
-+10. Share when the launch target requires it.
-diff --git a/docs_build/dev/reports/PR_26170_014-game-journey-master-plan.md b/docs_build/dev/reports/PR_26170_014-game-journey-master-plan.md
++CREATE INDEX IF NOT EXISTS idx_messages_records_categorykey ON messages_records ("categoryKey");
++CREATE INDEX IF NOT EXISTS idx_messages_records_emotionprofilekey ON messages_records ("emotionProfileKey");
++CREATE INDEX IF NOT EXISTS idx_messages_records_createdby ON messages_records ("createdBy");
++CREATE INDEX IF NOT EXISTS idx_messages_records_updatedby ON messages_records ("updatedBy");
+diff --git a/docs_build/database/dml/messages.sql b/docs_build/database/dml/messages.sql
 new file mode 100644
-index 000000000..5677e6675
+index 000000000..630791942
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26170_014-game-journey-master-plan.md
-@@ -0,0 +1,143 @@
-+# PR_26170_014-game-journey-master-plan
++++ b/docs_build/database/dml/messages.sql
+@@ -0,0 +1,13 @@
++-- Game Foundry Studio DEV database DML / seed review
++-- Group: Messages
++-- Ownership: docs_build/database/dml/messages.sql
++-- Runtime setup/seed operations for this group must run through server-side APIs.
++-- Browser pages must not directly seed authoritative DB records.
++-- Owned tables: messages_categories, messages_emotion_profiles, messages_records
++
++-- DML status: Server-seed-owned.
++-- Setup is performed through the Messages Local API / server-side SQLite service for this PR.
++-- Browser pages must not seed authoritative records.
++-- The server/API layer generates all keys and audit fields.
++-- This SQL file intentionally has no direct INSERT statements because direct SQL would bypass key/audit ownership.
++-- Direct SQL setup for this group remains deferred until a later migration-runner PR explicitly owns it.
+diff --git a/docs_build/database/seed/messages.json b/docs_build/database/seed/messages.json
+new file mode 100644
+index 000000000..a28a38eb6
+--- /dev/null
++++ b/docs_build/database/seed/messages.json
+@@ -0,0 +1,30 @@
++{
++  "group": "Messages",
++  "groupKey": "messages",
++  "owner": "docs_build/database/seed",
++  "serverSideSeedRequired": true,
++  "browserAuthoritativeKeyGenerationAllowed": false,
++  "tables": {
++    "messages_categories": [
++      "Dialog",
++      "Narration",
++      "Quest",
++      "Tutorial",
++      "Combat",
++      "System",
++      "Achievement",
++      "Notification"
++    ],
++    "messages_emotion_profiles": [
++      "Calm",
++      "Urgent",
++      "Whisper",
++      "Angry",
++      "Excited",
++      "Sad",
++      "Mysterious"
++    ],
++    "messages_records": []
++  },
++  "note": "Seed names are applied by the server-side Messages SQLite service. Browser pages must not seed authoritative records."
++}
+diff --git a/docs_build/dev/reports/PR_26171_002-messages-manual-validation.md b/docs_build/dev/reports/PR_26171_002-messages-manual-validation.md
+new file mode 100644
+index 000000000..766c440fd
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26171_002-messages-manual-validation.md
+@@ -0,0 +1,68 @@
++# PR_26171_002 Messages Manual Validation Notes
++
++Manual validation was performed through the targeted Playwright run and direct Local API probes.
++
++PASS - Messages page loads at `/tools/messages/index.html`.
++
++PASS - Category seeds are visible:
++- Dialog
++- Narration
++- Quest
++- Tutorial
++- Combat
++- System
++- Achievement
++- Notification
++
++PASS - Emotion Profile seeds are visible:
++- Calm
++- Urgent
++- Whisper
++- Angry
++- Excited
++- Sad
++- Mysterious
++
++PASS - Category management:
++- Added `Barks`.
++- Renamed `Barks` to `World Barks`.
++- Disabled `World Barks`.
++
++PASS - Emotion Profile management:
++- Added `Robot`.
++- Edited `Robot` description and configuration values.
++- Disabled `Robot`.
++
++PASS - Message validation:
++- Empty save displays visible errors for Message Name, Category, Emotion Profile, and Message Text.
++
++PASS - Message create:
++- Created `Forest Warning`.
++- Selected Dialog category and Urgent emotion profile.
++- Stored multiline message text exactly as entered.
++
++PASS - Message update:
++- Updated `Forest Warning` to `Forest Warning Updated`.
++- Updated Message Text without parser, markup, tag, or conversion behavior.
++
++PASS - Local API / SQLite persistence:
++- Direct API probe created a message.
++- Restarted the Local API against the same SQLite file.
++- Confirmed the message was still readable with exact multiline text.
++
++PASS - No delete endpoints:
++- `DELETE /api/messages/messages/:key` returned `404`.
++
++PASS - Theme V2 rendering:
++- Messages page uses Theme V2 classes and shared partials.
++- No inline styles, style blocks, inline event handlers, tool-local CSS, or page-local CSS were introduced.
++
++Out-of-scope confirmation:
++- No Text To Speech implementation.
++- No audio playback.
++- No voice selection.
++- No AI voices.
++- No speech preview.
++- No dialog trees.
++- No quest/event integration.
++- No localization or translation behavior.
+diff --git a/docs_build/dev/reports/PR_26171_002-messages-tool-foundation.md b/docs_build/dev/reports/PR_26171_002-messages-tool-foundation.md
+new file mode 100644
+index 000000000..96e07c95a
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26171_002-messages-tool-foundation.md
+@@ -0,0 +1,180 @@
++# PR_26171_002-messages-tool-foundation
 +
 +## Summary
 +
-+Created the authoritative Game Journey Master Plan as documentation only.
++Created the foundational Messages tool for game dialog, narration, quest text, tutorials, notifications, and future Text To Speech integration.
 +
-+Primary document:
-+- `docs_build/dev/admin-notes/GFS_Game_Journey_Master_Plan.txt`
-+
-+BUILD document:
-+- `docs_build/pr/BUILD_PR_26170_014-game-journey-master-plan.md`
++This PR adds:
++- Theme V2 Messages tool UI.
++- Server-owned Local API contracts under `/api/messages/*`.
++- Server-side SQLite persistence for Messages.
++- Server/API-generated ULID keys and audit fields.
++- Seeded categories and emotion profiles.
++- Toolbox registry entry under the Design Game Journey bucket.
++- Targeted Playwright and Local API persistence validation.
 +
 +## Branch Validation
 +
-+PASS - Current branch verified as `main`.
++PASS - Current branch is `main`.
 +
 +Evidence:
 +- `git branch --show-current` -> `main`
++- `git rev-list --left-right --count main...origin/main` -> `0 0`
 +
 +## Requirement Checklist
 +
-+PASS - Created authoritative Game Journey Master Plan.
++PASS - Tool Name: Messages.
 +
 +Evidence:
-+- Added `docs_build/dev/admin-notes/GFS_Game_Journey_Master_Plan.txt`.
-+- Document states it is the current planning source of truth for Game Journey buckets and intended creator workflow.
++- Added `toolbox/messages/index.html`.
++- Page title and H1 are `Messages`.
 +
-+PASS - Defined all 14 Game Journey buckets in order.
-+
-+Evidence:
-+- `001 Idea`
-+- `002 Create`
-+- `003 Design`
-+- `004 Graphics`
-+- `005 Audio`
-+- `006 Objects`
-+- `007 Worlds`
-+- `008 Interface`
-+- `009 Controls`
-+- `010 Rules`
-+- `011 Progression`
-+- `012 Play Test`
-+- `013 Publish`
-+- `014 Share`
-+
-+PASS - Each bucket includes all required fields.
++PASS - Tool purpose implemented.
 +
 +Evidence:
-+- Friendly Description
-+- Required For MVP
-+- Can Skip
-+- Purpose
-+- Accepted Tools
-+- Deliverables
-+- Completion Rules
-+- Dependencies
-+- L/C/R Layout Model
++- UI supports creating, organizing, and managing game text and speech-content configuration records.
 +
-+PASS - Approved friendly descriptions were used.
++PASS - Message record supports required fields.
 +
 +Evidence:
-+- Static validation checked each approved description against its matching bucket.
++- `messages_records` stores Message Name, Category, Emotion Profile, Message Text, Notes, and Active/Inactive.
++- Browser editor exposes all required fields.
 +
-+PASS - Existing GFS decisions were included.
-+
-+Evidence:
-+- Game Hub
-+- Game Crew
-+- Studio Team
-+- Vector Art as MVP graphics path
-+- Events for Rules
-+- DEV, IST, UAT, and PROD
-+- Build · Play · Share
-+
-+PASS - No completion calculations were implemented.
++PASS - Category management implemented.
 +
 +Evidence:
-+- Document uses display-only `xxx%`.
-+- Document explicitly states completion calculations are out of scope.
++- Seed categories: Dialog, Narration, Quest, Tutorial, Combat, System, Achievement, Notification.
++- UI and API support add, rename, and disable.
++- No delete endpoint exists.
 +
-+PASS - No runtime behavior was implemented.
-+
-+Evidence:
-+- Documentation-only change.
-+- No JavaScript, HTML runtime, API, or navigation files changed.
-+
-+PASS - No database changes were implemented.
++PASS - Emotion Profile management implemented.
 +
 +Evidence:
-+- Documentation-only change.
-+- No schema, adapter, fixture, or database contract files changed.
++- Seed profiles: Calm, Urgent, Whisper, Angry, Excited, Sad, Mysterious.
++- UI and API support add, edit, and disable.
++- No delete endpoint exists.
 +
-+PASS - Placeholder `xxx%` is used.
-+
-+Evidence:
-+- Static validation found `xxx%` placeholder text.
-+
-+PASS - Future roadmap section was created.
++PASS - Emotion Profile fields implemented.
 +
 +Evidence:
-+- Roadmap section includes Planned Count, Completed Count, and Auto-calculated %.
++- Name, Description, Volume, Pitch, Rate, PauseBeforeMs, PauseAfterMs, and Active/Inactive exist in SQLite schema, API payloads, and UI form.
++- These fields are configuration only.
 +
-+## Validation Lane Report
++PASS - Message Editor implemented.
++
++Evidence:
++- Name, Category, Emotion Profile, Message Text, and Notes are editable.
++- Message Text is a multiline `<textarea>`.
++- Service stores `messageText` exactly as received.
++- No parsing, conversion, markup, or tags were added.
++
++PASS - Future segmented message support is not blocked.
++
++Evidence:
++- Messages store one exact text field now.
++- Category and Emotion Profile are normalized references.
++- No parser or markup format was introduced.
++
++PASS - Database ownership area created.
++
++Evidence:
++- Added `docs_build/database/ddl/messages.sql`.
++- Added `docs_build/database/dml/messages.sql`.
++- Added `docs_build/database/seed/messages.json`.
++- Added Messages to `docs_build/database/dml/DML_INDEX.md`.
++
++PASS - Platform audit fields implemented.
++
++Evidence:
++- SQLite records include `key`, `createdAt`, `updatedAt`, `createdBy`, and `updatedBy`.
++- API probe validated message key, createdBy, and updatedBy are ULID-style values.
++
++PASS - Browser does not generate authoritative keys.
++
++Evidence:
++- Browser payloads do not include keys.
++- `MessagesSqliteService` generates record keys server-side.
++
++PASS - Local API contracts implemented.
++
++Evidence:
++- Messages: List, Get, Create, Update.
++- Emotion Profiles: List, Get, Create, Update.
++- Categories: List, Create, Update.
++- No delete routes were added.
++
++PASS - Theme V2 compliance.
++
++Evidence:
++- Messages page uses existing Theme V2 classes.
++- No tool-local CSS or page-local CSS added.
++- No inline styles, `<style>` blocks, inline event handlers, or inline script blocks.
++
++PASS - Save validation implemented.
++
++Evidence:
++- Browser validation blocks save when Message Name, Category, Emotion Profile, or Message Text is missing.
++- Validation errors render visibly in `data-messages-validation-errors`.
++
++PASS - Out-of-scope features not implemented.
++
++Evidence:
++- No Text To Speech, audio playback, voice selection, AI voices, speech preview, dialog trees, quest integration, event integration, localization, or translation behavior added.
++
++PASS - Platform rules followed.
++
++Evidence:
++- Current branch is `main`.
++- Browser uses Local API only.
++- SQLite persistence is server-side.
++- No browser-owned product data or local storage source of truth.
++- No mock database behavior added.
++- Failures show visible messages.
++
++## Validation Lane
 +
 +Impacted lane:
-+- Documentation/static validation only.
++- Local API + SQLite persistence + Theme V2 Messages UI.
 +
-+Commands run:
-+- `git branch --show-current`
-+- Static Python validation for bucket order, required fields, approved descriptions, GFS decisions, `xxx%`, and future roadmap terms.
-+- `git diff --check -- docs_build/dev/admin-notes/GFS_Game_Journey_Master_Plan.txt docs_build/pr/BUILD_PR_26170_014-game-journey-master-plan.md`
++Commands and results:
++- `node --check` for touched JavaScript files: PASS.
++- HTML inline-style/script guard: PASS.
++- Direct Local API / SQLite probe: PASS.
++- Toolbox registry validation: PASS.
++- `npx playwright test tests/playwright/tools/MessagesTool.spec.mjs --project=playwright --workers=1 --reporter=list`: PASS, 1 passed.
++- `git diff --check -- <PR_26171_002 changed files>`: PASS.
 +
-+Results:
-+- PASS - Branch is `main`.
-+- PASS - Static validation found all 14 buckets in order.
-+- PASS - Static validation found all required fields per bucket.
-+- PASS - Static validation found approved descriptions.
-+- PASS - Static validation found required GFS decisions.
-+- PASS - Static validation found `xxx%`.
-+- PASS - Static validation found Planned Count, Completed Count, and Auto-calculated %.
-+- PASS - `git diff --check` reported no whitespace errors.
++Skipped lanes:
++- Full samples validation skipped because no sample JSON or sample runtime behavior changed.
++- Full suite skipped because targeted Messages/API/UI validation covered this PR's behavior.
 +
-+## Playwright Decision
++## Playwright Result
 +
-+Skipped - Not impacted.
++PASS - `tests/playwright/tools/MessagesTool.spec.mjs`
 +
-+Reason:
-+- This PR is documentation-only and does not change rendered UI, routes, scripts, styles, or runtime behavior.
-+
-+## Samples Decision
-+
-+Skipped - Explicitly out of scope.
++Covered:
++- Messages page loads.
++- Seed Categories load.
++- Seed Emotion Profiles load.
++- Category add, rename, disable.
++- Emotion Profile add, edit, disable.
++- Validation displays correctly.
++- Create Message works.
++- Update Message works.
++- Local API persistence works.
++- SQLite persistence works after server restart.
++- Theme V2 rendering remains functional.
 +
 +## Manual Validation Notes
 +
-+- Confirmed the master plan is in `docs_build/dev/admin-notes/`.
-+- Confirmed the BUILD document captures the requested scope and exclusions.
-+- Confirmed the master plan does not claim live completion calculation or runtime behavior.
++See:
++- `docs_build/dev/reports/PR_26171_002-messages-manual-validation.md`
 +
 +## Artifact
 +
 +Required ZIP:
-+- `tmp/PR_26170_014-game-journey-master-plan_delta.zip`
-diff --git a/docs_build/pr/BUILD_PR_26170_014-game-journey-master-plan.md b/docs_build/pr/BUILD_PR_26170_014-game-journey-master-plan.md
++- `tmp/PR_26171_002-messages-tool-foundation_delta.zip`
++
++## Worktree Note
++
++`docs_build/dev/PROJECT_MULTI_PC.txt` is an unrelated untracked file present before this PR work. It was not modified and is excluded from this PR's artifacts.
+diff --git a/docs_build/dev/reports/PR_26171_002-messages-validation.txt b/docs_build/dev/reports/PR_26171_002-messages-validation.txt
 new file mode 100644
-index 000000000..763ff148e
+index 000000000..50cb2aff5
 --- /dev/null
-+++ b/docs_build/pr/BUILD_PR_26170_014-game-journey-master-plan.md
-@@ -0,0 +1,54 @@
-+# BUILD PR_26170_014-game-journey-master-plan
++++ b/docs_build/dev/reports/PR_26171_002-messages-validation.txt
+@@ -0,0 +1,98 @@
++PR_26171_002-messages-tool-foundation validation report
++
++Branch validation:
++PASS
++
++Current branch:
++main
++
++Latest main validation:
++PASS - `git rev-list --left-right --count main...origin/main` returned `0 0`.
++
++Targeted syntax/static checks:
++PASS
++
++Commands:
++- node --check src/dev-runtime/messages/messages-sqlite-service.mjs
++- node --check src/dev-runtime/server/local-api-router.mjs
++- node --check src/dev-runtime/server/local-api-server.mjs
++- node --check tests/helpers/playwrightRepoServer.mjs
++- node --check toolbox/messages/messages-api-client.js
++- node --check toolbox/messages/messages.js
++- node --check src/shared/toolbox/tool-metadata-inventory.js
++- node --check toolbox/tools-page-accordions.js
++- node --check tests/playwright/tools/MessagesTool.spec.mjs
++
++Theme V2 / HTML restriction validation:
++PASS
++
++Evidence:
++- `toolbox/messages/index.html` scan found no `<style>` blocks.
++- `toolbox/messages/index.html` scan found no inline `style=` attributes.
++- `toolbox/messages/index.html` scan found no inline event handlers.
++- `toolbox/messages/index.html` scan found no inline `<script>` blocks.
++
++Local API / SQLite contract probe:
++PASS
++
++Evidence:
++- `/api/messages/categories` returned 8 seeded categories.
++- `/api/messages/emotion-profiles` returned 7 seeded emotion profiles.
++- `POST /api/messages/messages` created a message with a 26-character server-generated ULID key.
++- `GET /api/messages/messages/:key` returned exact multiline message text after Local API restart against the same SQLite file.
++- `DELETE /api/messages/messages/:key` returned `404`, confirming no delete endpoint exists.
++
++Toolbox registry validation:
++PASS
++
++Evidence:
++- `/api/toolbox/registry/snapshot` includes `Messages`.
++- Registered route is `toolbox/messages/index.html`.
++- `visibleInToolsList` is `true`.
++
++Playwright:
++PASS
++
++Command:
++- `npx playwright test tests/playwright/tools/MessagesTool.spec.mjs --project=playwright --workers=1 --reporter=list`
++
++Result:
++- 1 passed.
++
++Playwright behaviors covered:
++- Messages page loads.
++- Categories load.
++- Emotion Profiles load.
++- Category add, rename, and disable work.
++- Emotion Profile add, edit, and disable work.
++- Required field validation displays visibly.
++- Create Message works.
++- Update Message works.
++- Message text preserves exact multiline content.
++- Local API persistence works.
++- SQLite persistence works across Local API restart.
++- Theme V2 rendering remains functional.
++- No inline style/script/event handler violations are present.
++
++Coverage reports:
++PASS with advisory WARN entries for server-side files not collected by browser V8 coverage.
++
++Evidence:
++- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
++
++Diff validation:
++PASS
++
++Command:
++- `git diff --check -- <PR_26171_002 changed files>`
++
++Result:
++- No whitespace errors. Git reported CRLF normalization warnings for existing line-ending behavior only.
++
++Skipped validation:
++- Full samples validation skipped. This PR does not modify sample JSON, sample runtime, or shared sample framework behavior.
++- Full suite skipped. Targeted Local API, SQLite, Theme V2, and Messages Playwright validation covered the changed behavior.
++
++Unrelated worktree note:
++- `docs_build/dev/PROJECT_MULTI_PC.txt` is untracked and unrelated. It was not modified and is excluded from this PR's review artifacts and ZIP.
+diff --git a/docs_build/pr/BUILD_PR_26171_002-messages-tool-foundation.md b/docs_build/pr/BUILD_PR_26171_002-messages-tool-foundation.md
+new file mode 100644
+index 000000000..ec00b4e57
+--- /dev/null
++++ b/docs_build/pr/BUILD_PR_26171_002-messages-tool-foundation.md
+@@ -0,0 +1,47 @@
++# BUILD PR_26171_002-messages-tool-foundation
 +
 +## Purpose
 +
-+Create the authoritative Game Journey Master Plan documentation for the 14 Game Journey buckets.
++Create the foundational Messages tool for game dialog, narration, quest text, tutorials, notifications, and future Text To Speech integration.
 +
 +## Scope
 +
-+- Add a docs-only master plan under `docs_build/dev/admin-notes/`.
-+- Define all 14 ordered buckets from `001 Idea` through `014 Share`.
-+- For each bucket, document:
-+  - Friendly Description
-+  - Required For MVP
-+  - Can Skip
-+  - Purpose
-+  - Accepted Tools
-+  - Deliverables
-+  - Completion Rules
-+  - Dependencies
-+  - L/C/R Layout Model
-+- Use literal `xxx%` as the completion placeholder.
-+- Include existing GFS decisions:
-+  - Game Hub
-+  - Game Crew
-+  - Studio Team
-+  - Vector Art as MVP graphics path
-+  - Events for Rules
-+  - DEV/IST/UAT/PROD
-+  - Build · Play · Share
-+- Add a future roadmap section for Planned Count, Completed Count, and Auto-calculated %.
++- Add a Theme V2 `Messages` first-class Toolbox tool.
++- Add server-owned Local API contracts for messages, emotion profiles, and categories.
++- Add server-side SQLite persistence for Messages only.
++- Add grouped Messages database ownership documentation.
++- Seed default message categories and emotion profiles through the server-side persistence layer.
++- Register Messages in the Toolbox metadata under the Design Game Journey bucket.
++- Validate create, update, required-field errors, Local API persistence, SQLite persistence, and Theme V2 rendering.
 +
 +## Out Of Scope
 +
-+- Completion calculations.
-+- Runtime behavior.
-+- Database changes.
-+- Samples validation.
-+- Roadmap status-marker changes.
++- Text To Speech.
++- Audio playback.
++- Voice selection.
++- AI voices.
++- Speech preview.
++- Dialog trees.
++- Quest integration.
++- Event integration.
++- Localization.
++- Translation.
++- Browser-owned product data.
++- Local storage source of truth.
++- Mock database behavior.
 +
 +## Validation
 +
 +- Verify current branch is `main`.
-+- Run documentation/static validation only.
-+- Verify every required bucket and required field exists.
-+- Verify literal `xxx%` placeholder exists and no implementation terms imply live calculation.
-+- Skip runtime validation.
-+- Skip samples validation.
++- Run `node --check` on touched JavaScript files.
++- Run targeted Local API and SQLite persistence validation.
++- Run targeted Playwright validation for the Messages tool.
++- Run `git diff --check`.
 +
 +## Required Reports
 +
 +- `docs_build/dev/reports/codex_review.diff`
 +- `docs_build/dev/reports/codex_changed_files.txt`
-+- `docs_build/dev/reports/PR_26170_014-game-journey-master-plan.md`
-+- `tmp/PR_26170_014-game-journey-master-plan_delta.zip`
++- `docs_build/dev/reports/PR_26171_002-messages-tool-foundation.md`
++- `docs_build/dev/reports/PR_26171_002-messages-validation.txt`
++- `tmp/PR_26171_002-messages-tool-foundation_delta.zip`
+diff --git a/src/dev-runtime/messages/messages-sqlite-service.mjs b/src/dev-runtime/messages/messages-sqlite-service.mjs
+new file mode 100644
+index 000000000..9981ff740
+--- /dev/null
++++ b/src/dev-runtime/messages/messages-sqlite-service.mjs
+@@ -0,0 +1,640 @@
++import { randomBytes } from "node:crypto";
++import { mkdirSync } from "node:fs";
++import path from "node:path";
++import process from "node:process";
++import { DatabaseSync } from "node:sqlite";
++import { SEED_DB_KEYS } from "../seed/seed-db-keys.mjs";
++
++const MESSAGES_SQLITE_PATH_ENV_KEY = "GAMEFOUNDRY_MESSAGES_SQLITE_PATH";
++const ULID_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
++const SEED_CATEGORY_NAMES = Object.freeze([
++  "Dialog",
++  "Narration",
++  "Quest",
++  "Tutorial",
++  "Combat",
++  "System",
++  "Achievement",
++  "Notification",
++]);
++const SEED_EMOTION_PROFILES = Object.freeze([
++  Object.freeze({ description: "Neutral spoken delivery for general narration or dialog.", name: "Calm", pauseAfterMs: 150, pauseBeforeMs: 0, pitch: 1, rate: 1, volume: 1 }),
++  Object.freeze({ description: "Fast, alert delivery for warnings and immediate danger.", name: "Urgent", pauseAfterMs: 80, pauseBeforeMs: 0, pitch: 1.08, rate: 1.15, volume: 1 }),
++  Object.freeze({ description: "Quiet delivery for secret, stealth, or intimate lines.", name: "Whisper", pauseAfterMs: 180, pauseBeforeMs: 80, pitch: 0.95, rate: 0.9, volume: 0.55 }),
++  Object.freeze({ description: "Forceful delivery for conflict or frustration.", name: "Angry", pauseAfterMs: 90, pauseBeforeMs: 0, pitch: 0.98, rate: 1.1, volume: 1 }),
++  Object.freeze({ description: "Bright delivery for reveals, wins, and high-energy moments.", name: "Excited", pauseAfterMs: 100, pauseBeforeMs: 0, pitch: 1.12, rate: 1.12, volume: 1 }),
++  Object.freeze({ description: "Soft delivery for loss, regret, or reflective moments.", name: "Sad", pauseAfterMs: 220, pauseBeforeMs: 100, pitch: 0.9, rate: 0.85, volume: 0.8 }),
++  Object.freeze({ description: "Measured delivery for suspense, hidden lore, or strange events.", name: "Mysterious", pauseAfterMs: 260, pauseBeforeMs: 120, pitch: 0.92, rate: 0.88, volume: 0.85 }),
++]);
++
++function encodeUlidPart(value, length) {
++  let remaining = BigInt(value);
++  let encoded = "";
++  for (let index = 0; index < length; index += 1) {
++    encoded = ULID_ALPHABET[Number(remaining % 32n)] + encoded;
++    remaining /= 32n;
++  }
++  return encoded;
++}
++
++function createUlid() {
++  const timePart = encodeUlidPart(Date.now(), 10);
++  const randomPart = Array.from(randomBytes(16), (byte) => ULID_ALPHABET[byte % 32]).join("");
++  return `${timePart}${randomPart}`;
++}
++
++function timestamp() {
++  return new Date().toISOString();
++}
++
++function httpError(message, statusCode = 400) {
++  const error = new Error(message);
++  error.statusCode = statusCode;
++  return error;
++}
++
++function normalizeText(value) {
++  return typeof value === "string" ? value : "";
++}
++
++function normalizeName(value, label) {
++  const normalized = normalizeText(value).trim();
++  if (!normalized) {
++    throw httpError(`${label} is required.`);
++  }
++  return normalized;
++}
++
++function normalizeActive(value, fallback = true) {
++  return value === undefined ? fallback : value !== false;
++}
++
++function normalizeNumber(value, fallback) {
++  const numberValue = Number(value);
++  return Number.isFinite(numberValue) ? numberValue : fallback;
++}
++
++function normalizeInteger(value, fallback) {
++  const numberValue = Number(value);
++  return Number.isInteger(numberValue) ? numberValue : fallback;
++}
++
++function normalizeActorKey(actorKey) {
++  const normalized = normalizeText(actorKey).trim();
++  return normalized || SEED_DB_KEYS.users.forgeBot;
++}
++
++function activeToDatabase(value) {
++  return value ? 1 : 0;
++}
++
++function activeFromDatabase(value) {
++  return Number(value) !== 0;
++}
++
++function resolveMessagesDatabasePath(repoRoot, env = process.env) {
++  const configuredPath = normalizeText(env[MESSAGES_SQLITE_PATH_ENV_KEY]).trim();
++  if (configuredPath) {
++    return path.resolve(repoRoot, configuredPath);
++  }
++  return path.join(repoRoot, "tmp", "messages", "messages.sqlite");
++}
++
++function ensureParentDirectory(filePath) {
++  mkdirSync(path.dirname(filePath), { recursive: true });
++}
++
++function messageRecordFromRow(row) {
++  return {
++    active: activeFromDatabase(row.active),
++    categoryKey: row.categoryKey,
++    categoryName: row.categoryName || "",
++    createdAt: row.createdAt,
++    createdBy: row.createdBy,
++    emotionProfileKey: row.emotionProfileKey,
++    emotionProfileName: row.emotionProfileName || "",
++    key: row.key,
++    messageText: row.messageText,
++    name: row.name,
++    notes: row.notes || "",
++    updatedAt: row.updatedAt,
++    updatedBy: row.updatedBy,
++  };
++}
++
++function categoryFromRow(row) {
++  return {
++    active: activeFromDatabase(row.active),
++    createdAt: row.createdAt,
++    createdBy: row.createdBy,
++    key: row.key,
++    name: row.name,
++    status: activeFromDatabase(row.active) ? "Active" : "Inactive",
++    updatedAt: row.updatedAt,
++    updatedBy: row.updatedBy,
++  };
++}
++
++function emotionProfileFromRow(row) {
++  return {
++    active: activeFromDatabase(row.active),
++    createdAt: row.createdAt,
++    createdBy: row.createdBy,
++    description: row.description || "",
++    key: row.key,
++    name: row.name,
++    pauseAfterMs: Number(row.pauseAfterMs),
++    pauseBeforeMs: Number(row.pauseBeforeMs),
++    pitch: Number(row.pitch),
++    rate: Number(row.rate),
++    status: activeFromDatabase(row.active) ? "Active" : "Inactive",
++    updatedAt: row.updatedAt,
++    updatedBy: row.updatedBy,
++    volume: Number(row.volume),
++  };
++}
++
++export class MessagesSqliteService {
++  constructor({
++    env = process.env,
++    repoRoot = process.cwd(),
++  } = {}) {
++    this.databasePath = resolveMessagesDatabasePath(repoRoot, env);
++    this.database = null;
++  }
++
++  db() {
++    if (!this.database) {
++      ensureParentDirectory(this.databasePath);
++      this.database = new DatabaseSync(this.databasePath);
++      this.database.exec("PRAGMA foreign_keys = ON;");
++      this.initializeSchema();
++      this.seedDefaults();
++    }
++    return this.database;
++  }
++
++  close() {
++    if (this.database) {
++      this.database.close();
++      this.database = null;
++    }
++  }
++
++  initializeSchema() {
++    this.database.exec(`
++      CREATE TABLE IF NOT EXISTS messages_categories (
++        key TEXT PRIMARY KEY,
++        name TEXT NOT NULL UNIQUE,
++        active INTEGER NOT NULL DEFAULT 1,
++        createdAt TEXT NOT NULL,
++        updatedAt TEXT NOT NULL,
++        createdBy TEXT NOT NULL,
++        updatedBy TEXT NOT NULL
++      );
++
++      CREATE TABLE IF NOT EXISTS messages_emotion_profiles (
++        key TEXT PRIMARY KEY,
++        name TEXT NOT NULL UNIQUE,
++        description TEXT NOT NULL DEFAULT '',
++        volume REAL NOT NULL DEFAULT 1,
++        pitch REAL NOT NULL DEFAULT 1,
++        rate REAL NOT NULL DEFAULT 1,
++        pauseBeforeMs INTEGER NOT NULL DEFAULT 0,
++        pauseAfterMs INTEGER NOT NULL DEFAULT 0,
++        active INTEGER NOT NULL DEFAULT 1,
++        createdAt TEXT NOT NULL,
++        updatedAt TEXT NOT NULL,
++        createdBy TEXT NOT NULL,
++        updatedBy TEXT NOT NULL
++      );
++
++      CREATE TABLE IF NOT EXISTS messages_records (
++        key TEXT PRIMARY KEY,
++        name TEXT NOT NULL,
++        categoryKey TEXT NOT NULL REFERENCES messages_categories(key),
++        emotionProfileKey TEXT NOT NULL REFERENCES messages_emotion_profiles(key),
++        messageText TEXT NOT NULL,
++        notes TEXT NOT NULL DEFAULT '',
++        active INTEGER NOT NULL DEFAULT 1,
++        createdAt TEXT NOT NULL,
++        updatedAt TEXT NOT NULL,
++        createdBy TEXT NOT NULL,
++        updatedBy TEXT NOT NULL
++      );
++
++      CREATE INDEX IF NOT EXISTS idx_messages_records_category ON messages_records (categoryKey);
++      CREATE INDEX IF NOT EXISTS idx_messages_records_emotion ON messages_records (emotionProfileKey);
++      CREATE INDEX IF NOT EXISTS idx_messages_records_createdby ON messages_records (createdBy);
++      CREATE INDEX IF NOT EXISTS idx_messages_records_updatedby ON messages_records (updatedBy);
++    `);
++  }
++
++  seedDefaults() {
++    SEED_CATEGORY_NAMES.forEach((name) => {
++      const existing = this.findCategoryByName(name);
++      if (!existing) {
++        this.insertCategory({
++          active: true,
++          actorKey: SEED_DB_KEYS.users.forgeBot,
++          name,
++        });
++      }
++    });
++
++    SEED_EMOTION_PROFILES.forEach((profile) => {
++      const existing = this.findEmotionProfileByName(profile.name);
++      if (!existing) {
++        this.insertEmotionProfile({
++          ...profile,
++          active: true,
++          actorKey: SEED_DB_KEYS.users.forgeBot,
++        });
++      }
++    });
++  }
++
++  persistenceSummary() {
++    return {
++      engine: "SQLite",
++      owner: "messages",
++      storage: "server-owned",
++    };
++  }
++
++  listCategories() {
++    return this.db().prepare(`
++      SELECT * FROM messages_categories
++      ORDER BY name COLLATE NOCASE ASC
++    `).all().map(categoryFromRow);
++  }
++
++  getCategory(key) {
++    const row = this.db().prepare("SELECT * FROM messages_categories WHERE key = ?").get(key);
++    if (!row) {
++      throw httpError("Message category was not found.", 404);
++    }
++    return categoryFromRow(row);
++  }
++
++  findCategoryByName(name) {
++    const normalized = normalizeText(name).trim();
++    if (!normalized) {
++      return null;
++    }
++    const row = this.db().prepare("SELECT * FROM messages_categories WHERE lower(name) = lower(?)").get(normalized);
++    return row ? categoryFromRow(row) : null;
++  }
++
++  insertCategory({ active = true, actorKey, name }) {
++    const key = createUlid();
++    const now = timestamp();
++    const actor = normalizeActorKey(actorKey);
++    this.db().prepare(`
++      INSERT INTO messages_categories (key, name, active, createdAt, updatedAt, createdBy, updatedBy)
++      VALUES (?, ?, ?, ?, ?, ?, ?)
++    `).run(key, normalizeName(name, "Category name"), activeToDatabase(active), now, now, actor, actor);
++    return this.getCategory(key);
++  }
++
++  createCategory(input = {}, actorKey = "") {
++    const name = normalizeName(input.name, "Category name");
++    const existing = this.findCategoryByName(name);
++    if (existing) {
++      throw httpError(`Category ${name} already exists.`);
++    }
++    return this.insertCategory({
++      active: normalizeActive(input.active, true),
++      actorKey,
++      name,
++    });
++  }
++
++  updateCategory(key, input = {}, actorKey = "") {
++    const existing = this.getCategory(key);
++    const name = input.name === undefined ? existing.name : normalizeName(input.name, "Category name");
++    const duplicate = this.findCategoryByName(name);
++    if (duplicate && duplicate.key !== key) {
++      throw httpError(`Category ${name} already exists.`);
++    }
++    const now = timestamp();
++    this.db().prepare(`
++      UPDATE messages_categories
++      SET name = ?, active = ?, updatedAt = ?, updatedBy = ?
++      WHERE key = ?
++    `).run(name, activeToDatabase(normalizeActive(input.active, existing.active)), now, normalizeActorKey(actorKey), key);
++    return this.getCategory(key);
++  }
++
++  listEmotionProfiles() {
++    return this.db().prepare(`
++      SELECT * FROM messages_emotion_profiles
++      ORDER BY name COLLATE NOCASE ASC
++    `).all().map(emotionProfileFromRow);
++  }
++
++  getEmotionProfile(key) {
++    const row = this.db().prepare("SELECT * FROM messages_emotion_profiles WHERE key = ?").get(key);
++    if (!row) {
++      throw httpError("Emotion profile was not found.", 404);
++    }
++    return emotionProfileFromRow(row);
++  }
++
++  findEmotionProfileByName(name) {
++    const normalized = normalizeText(name).trim();
++    if (!normalized) {
++      return null;
++    }
++    const row = this.db().prepare("SELECT * FROM messages_emotion_profiles WHERE lower(name) = lower(?)").get(normalized);
++    return row ? emotionProfileFromRow(row) : null;
++  }
++
++  insertEmotionProfile(input = {}) {
++    const key = createUlid();
++    const now = timestamp();
++    const actor = normalizeActorKey(input.actorKey);
++    this.db().prepare(`
++      INSERT INTO messages_emotion_profiles (
++        key, name, description, volume, pitch, rate, pauseBeforeMs, pauseAfterMs,
++        active, createdAt, updatedAt, createdBy, updatedBy
++      )
++      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
++    `).run(
++      key,
++      normalizeName(input.name, "Emotion profile name"),
++      normalizeText(input.description),
++      normalizeNumber(input.volume, 1),
++      normalizeNumber(input.pitch, 1),
++      normalizeNumber(input.rate, 1),
++      normalizeInteger(input.pauseBeforeMs, 0),
++      normalizeInteger(input.pauseAfterMs, 0),
++      activeToDatabase(normalizeActive(input.active, true)),
++      now,
++      now,
++      actor,
++      actor,
++    );
++    return this.getEmotionProfile(key);
++  }
++
++  createEmotionProfile(input = {}, actorKey = "") {
++    const name = normalizeName(input.name, "Emotion profile name");
++    const existing = this.findEmotionProfileByName(name);
++    if (existing) {
++      throw httpError(`Emotion profile ${name} already exists.`);
++    }
++    return this.insertEmotionProfile({
++      ...input,
++      actorKey,
++      name,
++    });
++  }
++
++  updateEmotionProfile(key, input = {}, actorKey = "") {
++    const existing = this.getEmotionProfile(key);
++    const name = input.name === undefined ? existing.name : normalizeName(input.name, "Emotion profile name");
++    const duplicate = this.findEmotionProfileByName(name);
++    if (duplicate && duplicate.key !== key) {
++      throw httpError(`Emotion profile ${name} already exists.`);
++    }
++    const now = timestamp();
++    this.db().prepare(`
++      UPDATE messages_emotion_profiles
++      SET name = ?, description = ?, volume = ?, pitch = ?, rate = ?, pauseBeforeMs = ?, pauseAfterMs = ?,
++        active = ?, updatedAt = ?, updatedBy = ?
++      WHERE key = ?
++    `).run(
++      name,
++      input.description === undefined ? existing.description : normalizeText(input.description),
++      normalizeNumber(input.volume, existing.volume),
++      normalizeNumber(input.pitch, existing.pitch),
++      normalizeNumber(input.rate, existing.rate),
++      normalizeInteger(input.pauseBeforeMs, existing.pauseBeforeMs),
++      normalizeInteger(input.pauseAfterMs, existing.pauseAfterMs),
++      activeToDatabase(normalizeActive(input.active, existing.active)),
++      now,
++      normalizeActorKey(actorKey),
++      key,
++    );
++    return this.getEmotionProfile(key);
++  }
++
++  listMessages() {
++    return this.db().prepare(`
++      SELECT
++        messages_records.*,
++        messages_categories.name AS categoryName,
++        messages_emotion_profiles.name AS emotionProfileName
++      FROM messages_records
++      LEFT JOIN messages_categories ON messages_categories.key = messages_records.categoryKey
++      LEFT JOIN messages_emotion_profiles ON messages_emotion_profiles.key = messages_records.emotionProfileKey
++      ORDER BY messages_records.updatedAt DESC, messages_records.name COLLATE NOCASE ASC
++    `).all().map(messageRecordFromRow);
++  }
++
++  getMessage(key) {
++    const row = this.db().prepare(`
++      SELECT
++        messages_records.*,
++        messages_categories.name AS categoryName,
++        messages_emotion_profiles.name AS emotionProfileName
++      FROM messages_records
++      LEFT JOIN messages_categories ON messages_categories.key = messages_records.categoryKey
++      LEFT JOIN messages_emotion_profiles ON messages_emotion_profiles.key = messages_records.emotionProfileKey
++      WHERE messages_records.key = ?
++    `).get(key);
++    if (!row) {
++      throw httpError("Message was not found.", 404);
++    }
++    return messageRecordFromRow(row);
++  }
++
++  assertActiveCategory(key) {
++    const category = this.getCategory(key);
++    if (!category.active) {
++      throw httpError("Category is inactive. Choose an active category before saving a message.");
++    }
++    return category;
++  }
++
++  assertActiveEmotionProfile(key) {
++    const profile = this.getEmotionProfile(key);
++    if (!profile.active) {
++      throw httpError("Emotion profile is inactive. Choose an active emotion profile before saving a message.");
++    }
++    return profile;
++  }
++
++  normalizeMessageInput(input = {}, existing = null) {
++    const name = input.name === undefined && existing ? existing.name : normalizeName(input.name, "Message name");
++    const categoryKey = normalizeText(input.categoryKey === undefined && existing ? existing.categoryKey : input.categoryKey).trim();
++    const emotionProfileKey = normalizeText(input.emotionProfileKey === undefined && existing ? existing.emotionProfileKey : input.emotionProfileKey).trim();
++    const messageText = input.messageText === undefined && existing ? existing.messageText : normalizeText(input.messageText);
++    if (!categoryKey) {
++      throw httpError("Category is required.");
++    }
++    if (!emotionProfileKey) {
++      throw httpError("Emotion profile is required.");
++    }
++    if (!messageText.trim()) {
++      throw httpError("Message text is required.");
++    }
++    this.assertActiveCategory(categoryKey);
++    this.assertActiveEmotionProfile(emotionProfileKey);
++    return {
++      active: normalizeActive(input.active, existing ? existing.active : true),
++      categoryKey,
++      emotionProfileKey,
++      messageText,
++      name,
++      notes: input.notes === undefined && existing ? existing.notes : normalizeText(input.notes),
++    };
++  }
++
++  createMessage(input = {}, actorKey = "") {
++    const values = this.normalizeMessageInput(input);
++    const key = createUlid();
++    const now = timestamp();
++    const actor = normalizeActorKey(actorKey);
++    this.db().prepare(`
++      INSERT INTO messages_records (
++        key, name, categoryKey, emotionProfileKey, messageText, notes, active,
++        createdAt, updatedAt, createdBy, updatedBy
++      )
++      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
++    `).run(
++      key,
++      values.name,
++      values.categoryKey,
++      values.emotionProfileKey,
++      values.messageText,
++      values.notes,
++      activeToDatabase(values.active),
++      now,
++      now,
++      actor,
++      actor,
++    );
++    return this.getMessage(key);
++  }
++
++  updateMessage(key, input = {}, actorKey = "") {
++    const existing = this.getMessage(key);
++    const values = this.normalizeMessageInput(input, existing);
++    const now = timestamp();
++    this.db().prepare(`
++      UPDATE messages_records
++      SET name = ?, categoryKey = ?, emotionProfileKey = ?, messageText = ?, notes = ?,
++        active = ?, updatedAt = ?, updatedBy = ?
++      WHERE key = ?
++    `).run(
++      values.name,
++      values.categoryKey,
++      values.emotionProfileKey,
++      values.messageText,
++      values.notes,
++      activeToDatabase(values.active),
++      now,
++      normalizeActorKey(actorKey),
++      key,
++    );
++    return this.getMessage(key);
++  }
++}
++
++export function createMessagesSqliteService(options = {}) {
++  return new MessagesSqliteService(options);
++}
++
++export function handleMessagesApiContract({
++  actorKey = "",
++  body = {},
++  method = "GET",
++  parts = [],
++  service,
++} = {}) {
++  if (!service) {
++    throw httpError("Messages SQLite service is not configured.", 500);
++  }
++  const normalizedMethod = String(method || "GET").toUpperCase();
++  const resource = parts[0] || "";
++  const key = parts[1] || "";
++
++  if (resource === "messages") {
++    if (normalizedMethod === "GET" && !key) {
++      return {
++        messages: service.listMessages(),
++        persistence: service.persistenceSummary(),
++      };
++    }
++    if (normalizedMethod === "GET" && key) {
++      return {
++        message: service.getMessage(key),
++        persistence: service.persistenceSummary(),
++      };
++    }
++    if (normalizedMethod === "POST" && !key) {
++      return {
++        message: service.createMessage(body, actorKey),
++        persistence: service.persistenceSummary(),
++      };
++    }
++    if (normalizedMethod === "POST" && key) {
++      return {
++        message: service.updateMessage(key, body, actorKey),
++        persistence: service.persistenceSummary(),
++      };
++    }
++  }
++
++  if (resource === "emotion-profiles") {
++    if (normalizedMethod === "GET" && !key) {
++      return {
++        emotionProfiles: service.listEmotionProfiles(),
++        persistence: service.persistenceSummary(),
++      };
++    }
++    if (normalizedMethod === "GET" && key) {
++      return {
++        emotionProfile: service.getEmotionProfile(key),
++        persistence: service.persistenceSummary(),
++      };
++    }
++    if (normalizedMethod === "POST" && !key) {
++      return {
++        emotionProfile: service.createEmotionProfile(body, actorKey),
++        persistence: service.persistenceSummary(),
++      };
++    }
++    if (normalizedMethod === "POST" && key) {
++      return {
++        emotionProfile: service.updateEmotionProfile(key, body, actorKey),
++        persistence: service.persistenceSummary(),
++      };
++    }
++  }
++
++  if (resource === "categories") {
++    if (normalizedMethod === "GET" && !key) {
++      return {
++        categories: service.listCategories(),
++        persistence: service.persistenceSummary(),
++      };
++    }
++    if (normalizedMethod === "POST" && !key) {
++      return {
++        category: service.createCategory(body, actorKey),
++        persistence: service.persistenceSummary(),
++      };
++    }
++    if (normalizedMethod === "POST" && key) {
++      return {
++        category: service.updateCategory(key, body, actorKey),
++        persistence: service.persistenceSummary(),
++      };
++    }
++  }
++
++  throw httpError(`Unknown Messages API route: ${normalizedMethod} /api/messages/${parts.join("/")}.`, 404);
++}
+diff --git a/tests/playwright/tools/MessagesTool.spec.mjs b/tests/playwright/tools/MessagesTool.spec.mjs
+new file mode 100644
+index 000000000..444c134e7
+--- /dev/null
++++ b/tests/playwright/tools/MessagesTool.spec.mjs
+@@ -0,0 +1,211 @@
++import fs from "node:fs/promises";
++import path from "node:path";
++import { expect, test } from "@playwright/test";
++import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
++import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
++import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
++
++const ULID_PATTERN = /^[0-9A-HJKMNP-TV-Z]{26}$/;
++let messagesRunId = 0;
++
++function messagesDbPath() {
++  messagesRunId += 1;
++  return path.join(process.cwd(), "tmp", `messages-tool-${process.pid}-${messagesRunId}.sqlite`);
++}
++
++async function jsonRequest(url, options = {}) {
++  const response = await fetch(url, {
++    headers: {
++      "Content-Type": "application/json",
++      ...(options.headers || {}),
++    },
++    ...options,
++  });
++  const payload = await response.json().catch(() => null);
++  return {
++    payload,
++    response,
++  };
++}
++
++test.beforeEach(async ({ page }) => {
++  await installPlaywrightStorageIsolation(page, {
++    lane: "messages-tool",
++    surface: "Messages Local API, SQLite persistence, and Theme V2 tool",
++  });
++});
++
++test.afterEach(async ({ page }) => {
++  await clearPlaywrightStorage(page);
++});
++
++test.afterAll(async () => {
++  await workspaceV2CoverageReporter.writeReport();
++});
++
++async function openMessagesPage(page, sqlitePath) {
++  const previousMessagesSqlitePath = process.env.GAMEFOUNDRY_MESSAGES_SQLITE_PATH;
++  process.env.GAMEFOUNDRY_MESSAGES_SQLITE_PATH = sqlitePath;
++  const server = await startRepoServer();
++  const failures = {
++    consoleErrors: [],
++    failedRequests: [],
++    pageErrors: [],
++    previousMessagesSqlitePath,
++    server,
++    sqlitePath,
++  };
++
++  page.on("pageerror", (error) => {
++    failures.pageErrors.push(error.message);
++  });
++  page.on("console", (message) => {
++    if (message.type() === "error") {
++      failures.consoleErrors.push(message.text());
++    }
++  });
++  page.on("response", (response) => {
++    if (response.status() >= 400) {
++      failures.failedRequests.push(`${response.status()} ${response.url()}`);
++    }
++  });
++  page.on("requestfailed", (request) => {
++    failures.failedRequests.push(`FAILED ${request.url()}`);
++  });
++
++  await page.addInitScript((apiUrl) => {
++    window.GameFoundryPublicConfig = {
++      apiUrl,
++      environmentLabel: "Development Environment",
++      siteUrl: window.location.origin,
++    };
++  }, `${server.baseUrl}/api`);
++  await workspaceV2CoverageReporter.start(page);
++  await page.goto(`${server.baseUrl}/tools/messages/index.html`, { waitUntil: "networkidle" });
++  return failures;
++}
++
++async function closeMessagesRun(failures, page) {
++  await workspaceV2CoverageReporter.stop(page);
++  await failures.server.close();
++  if (failures.previousMessagesSqlitePath === undefined) {
++    delete process.env.GAMEFOUNDRY_MESSAGES_SQLITE_PATH;
++  } else {
++    process.env.GAMEFOUNDRY_MESSAGES_SQLITE_PATH = failures.previousMessagesSqlitePath;
++  }
++}
++
++test("Messages tool creates, validates, updates, and persists through Local API SQLite", async ({ page }) => {
++  const sqlitePath = messagesDbPath();
++  await fs.rm(sqlitePath, { force: true });
++  const failures = await openMessagesPage(page, sqlitePath);
++
++  try {
++    await expect(page.getByRole("heading", { level: 1, name: "Messages" })).toBeVisible();
++    await expect(page.locator(".tool-workspace")).toBeVisible();
++    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
++    await expect(page.locator("[data-messages-categories]")).toContainText("Dialog");
++    await expect(page.locator("[data-messages-categories]")).toContainText("Notification");
++    await expect(page.locator("[data-messages-emotions]")).toContainText("Calm");
++    await expect(page.locator("[data-messages-emotions]")).toContainText("Urgent");
++    await expect(page.locator("[data-messages-persistence-engine]")).toHaveText("SQLite");
++
++    await page.locator("[data-messages-category-name]").fill("Barks");
++    await page.getByRole("button", { name: "Save Category" }).click();
++    await expect(page.locator("[data-messages-log]")).toHaveText("Saved category Barks.");
++    await expect(page.locator("[data-messages-categories]")).toContainText("Barks");
++    await page.locator("[data-messages-category-row]").filter({ hasText: "Barks" }).getByRole("button", { name: "Edit" }).click();
++    await page.locator("[data-messages-category-name]").fill("World Barks");
++    await page.locator("[data-messages-category-active]").uncheck();
++    await page.getByRole("button", { name: "Save Category" }).click();
++    await expect(page.locator("[data-messages-categories]")).toContainText("World Barks");
++    await expect(page.locator("[data-messages-category-row]").filter({ hasText: "World Barks" })).toContainText("Inactive");
++
++    await page.locator("[data-messages-emotion-name]").fill("Robot");
++    await page.locator("[data-messages-emotion-description]").fill("Mechanical delivery for synthetic speakers.");
++    await page.locator("[data-messages-emotion-volume]").fill("0.9");
++    await page.locator("[data-messages-emotion-pitch]").fill("0.85");
++    await page.locator("[data-messages-emotion-rate]").fill("0.95");
++    await page.locator("[data-messages-emotion-pause-before]").fill("40");
++    await page.locator("[data-messages-emotion-pause-after]").fill("120");
++    await page.getByRole("button", { name: "Save Emotion Profile" }).click();
++    await expect(page.locator("[data-messages-log]")).toHaveText("Saved emotion profile Robot.");
++    await expect(page.locator("[data-messages-emotions]")).toContainText("Robot");
++    await page.locator("[data-messages-emotion-row]").filter({ hasText: "Robot" }).getByRole("button", { name: "Edit" }).click();
++    await page.locator("[data-messages-emotion-description]").fill("Disabled test profile.");
++    await page.locator("[data-messages-emotion-active]").uncheck();
++    await page.getByRole("button", { name: "Save Emotion Profile" }).click();
++    await expect(page.locator("[data-messages-emotion-row]").filter({ hasText: "Robot" })).toContainText("Inactive");
++
++    await page.getByRole("button", { name: "Save Message" }).click();
++    await expect(page.locator("[data-messages-validation-card]")).toBeVisible();
++    await expect(page.locator("[data-messages-validation-errors]")).toContainText("Message Name is required.");
++    await expect(page.locator("[data-messages-validation-errors]")).toContainText("Category is required.");
++    await expect(page.locator("[data-messages-validation-errors]")).toContainText("Emotion Profile is required.");
++    await expect(page.locator("[data-messages-validation-errors]")).toContainText("Message Text is required.");
++
++    await page.locator("[data-messages-name]").fill("Forest Warning");
++    await page.locator("[data-messages-category]").selectOption({ label: "Dialog" });
++    await page.locator("[data-messages-emotion-profile]").selectOption({ label: "Urgent" });
++    await page.locator("[data-messages-text]").fill("The forest gets darker beyond this point.\nWe are being attacked by bats.");
++    await page.locator("[data-messages-notes]").fill("Opening forest danger line.");
++    await page.getByRole("button", { name: "Save Message" }).click();
++
++    await expect(page.locator("[data-messages-log]")).toHaveText("Saved Forest Warning.");
++    await expect(page.locator("[data-messages-count]")).toHaveText("1");
++    await expect(page.locator("[data-messages-table]")).toContainText("Forest Warning");
++    await expect(page.locator("[data-messages-selected-text]")).toHaveText("The forest gets darker beyond this point.\nWe are being attacked by bats.");
++
++    const listResult = await jsonRequest(`${failures.server.baseUrl}/api/messages/messages`);
++    expect(listResult.response.ok).toBe(true);
++    expect(listResult.payload.ok).toBe(true);
++    const createdMessage = listResult.payload.data.messages.find((message) => message.name === "Forest Warning");
++    expect(createdMessage).toEqual(expect.objectContaining({
++      active: true,
++      categoryName: "Dialog",
++      emotionProfileName: "Urgent",
++      messageText: "The forest gets darker beyond this point.\nWe are being attacked by bats.",
++      notes: "Opening forest danger line.",
++    }));
++    expect(createdMessage.key).toMatch(ULID_PATTERN);
++    expect(createdMessage.createdBy).toMatch(ULID_PATTERN);
++    expect(createdMessage.updatedBy).toMatch(ULID_PATTERN);
++
++    await page.locator("[data-messages-row]").filter({ hasText: "Forest Warning" }).getByRole("button", { name: "Edit" }).click();
++    await page.locator("[data-messages-name]").fill("Forest Warning Updated");
++    await page.locator("[data-messages-text]").fill("The forest gets darker beyond this point.");
++    await page.getByRole("button", { name: "Save Message" }).click();
++    await expect(page.locator("[data-messages-log]")).toHaveText("Saved Forest Warning Updated.");
++    await expect(page.locator("[data-messages-table]")).toContainText("Forest Warning Updated");
++
++    const updateResult = await jsonRequest(`${failures.server.baseUrl}/api/messages/messages/${createdMessage.key}`);
++    expect(updateResult.payload.data.message).toEqual(expect.objectContaining({
++      key: createdMessage.key,
++      messageText: "The forest gets darker beyond this point.",
++      name: "Forest Warning Updated",
++    }));
++
++    const deleteResult = await fetch(`${failures.server.baseUrl}/api/messages/messages/${createdMessage.key}`, {
++      method: "DELETE",
++    });
++    expect(deleteResult.status).toBe(404);
++
++    await failures.server.close();
++    const restartedServer = await startRepoServer();
++    failures.server = restartedServer;
++    const persistedResult = await jsonRequest(`${restartedServer.baseUrl}/api/messages/messages/${createdMessage.key}`);
++    expect(persistedResult.response.ok).toBe(true);
++    expect(persistedResult.payload.data.message).toEqual(expect.objectContaining({
++      key: createdMessage.key,
++      name: "Forest Warning Updated",
++      messageText: "The forest gets darker beyond this point.",
++    }));
++
++    expect(failures.failedRequests).toEqual([]);
++    expect(failures.pageErrors).toEqual([]);
++    expect(failures.consoleErrors).toEqual([]);
++  } finally {
++    await closeMessagesRun(failures, page);
++    await fs.rm(sqlitePath, { force: true });
++  }
++});
+diff --git a/toolbox/messages/index.html b/toolbox/messages/index.html
+new file mode 100644
+index 000000000..d47b1d1bf
+--- /dev/null
++++ b/toolbox/messages/index.html
+@@ -0,0 +1,277 @@
++<!doctype html>
++<html lang="en">
++
++<head>
++    <meta charset="utf-8">
++    <base href="/">
++    <meta name="viewport" content="width=device-width, initial-scale=1">
++    <title>Messages - GameFoundryStudio</title>
++    <meta name="description" content="Messages Toolbox tool for game dialog, narration, quest text, tutorials, notifications, and future Text To Speech integration.">
++    <link rel="icon" href="/favicon.svg">
++    <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
++</head>
++
++<body class="meaning-molten-orange">
++    <div data-partial="header-nav"></div>
++    <main>
++        <section class="page-title">
++            <div class="container">
++                <div class="kicker">Toolbox / Design</div>
++                <h1>Messages</h1>
++                <p class="lede">Create, organize, and manage game text and speech content.</p>
++            </div>
++        </section>
++        <section class="section">
++            <div class="container container--tool-wide">
++                <div class="tool-workspace tool-workspace--wide">
++                    <aside class="tool-column tool-group-design">
++                        <div class="tool-column-header">
++                            <h2>Message Setup</h2>
++                        </div>
++                        <div class="accordion-stack">
++                            <details class="vertical-accordion" open>
++                                <summary>Categories</summary>
++                                <div class="accordion-body content-stack">
++                                    <form class="content-stack" data-messages-category-form>
++                                        <input type="hidden" data-messages-category-key>
++                                        <label for="messagesCategoryName">Category</label>
++                                        <input id="messagesCategoryName" type="text" data-messages-category-name>
++                                        <label>
++                                            <input type="checkbox" data-messages-category-active checked>
++                                            Active
++                                        </label>
++                                        <div class="action-group action-group--tight">
++                                            <button class="btn btn--compact" type="submit">Save Category</button>
++                                            <button class="btn btn--compact" type="button" data-messages-category-cancel>New Category</button>
++                                        </div>
++                                    </form>
++                                    <div class="table-wrapper">
++                                        <table class="data-table" aria-label="Message categories">
++                                            <thead>
++                                                <tr>
++                                                    <th scope="col">Name</th>
++                                                    <th scope="col">Status</th>
++                                                    <th scope="col">Actions</th>
++                                                </tr>
++                                            </thead>
++                                            <tbody data-messages-categories>
++                                                <tr><td colspan="3">Loading categories.</td></tr>
++                                            </tbody>
++                                        </table>
++                                    </div>
++                                </div>
++                            </details>
++                            <details class="vertical-accordion" open>
++                                <summary>Emotion Profiles</summary>
++                                <div class="accordion-body content-stack">
++                                    <form class="content-stack" data-messages-emotion-form>
++                                        <input type="hidden" data-messages-emotion-key>
++                                        <div class="table-wrapper">
++                                            <table class="data-table tool-form-table" aria-label="Emotion profile fields">
++                                                <tbody>
++                                                    <tr>
++                                                        <th scope="row"><label for="messagesEmotionName">Name</label></th>
++                                                        <td><input id="messagesEmotionName" type="text" data-messages-emotion-name></td>
++                                                    </tr>
++                                                    <tr>
++                                                        <th scope="row"><label for="messagesEmotionDescription">Description</label></th>
++                                                        <td><textarea id="messagesEmotionDescription" rows="3" data-messages-emotion-description></textarea></td>
++                                                    </tr>
++                                                    <tr>
++                                                        <th scope="row"><label for="messagesEmotionVolume">Volume</label></th>
++                                                        <td><input id="messagesEmotionVolume" type="number" min="0" max="2" step="0.05" value="1" data-messages-emotion-volume></td>
++                                                    </tr>
++                                                    <tr>
++                                                        <th scope="row"><label for="messagesEmotionPitch">Pitch</label></th>
++                                                        <td><input id="messagesEmotionPitch" type="number" min="0.25" max="2" step="0.05" value="1" data-messages-emotion-pitch></td>
++                                                    </tr>
++                                                    <tr>
++                                                        <th scope="row"><label for="messagesEmotionRate">Rate</label></th>
++                                                        <td><input id="messagesEmotionRate" type="number" min="0.25" max="2" step="0.05" value="1" data-messages-emotion-rate></td>
++                                                    </tr>
++                                                    <tr>
++                                                        <th scope="row"><label for="messagesEmotionPauseBefore">Pause Before Ms</label></th>
++                                                        <td><input id="messagesEmotionPauseBefore" type="number" min="0" step="10" value="0" data-messages-emotion-pause-before></td>
++                                                    </tr>
++                                                    <tr>
++                                                        <th scope="row"><label for="messagesEmotionPauseAfter">Pause After Ms</label></th>
++                                                        <td><input id="messagesEmotionPauseAfter" type="number" min="0" step="10" value="0" data-messages-emotion-pause-after></td>
++                                                    </tr>
++                                                    <tr>
++                                                        <th scope="row">Status</th>
++                                                        <td>
++                                                            <label>
++                                                                <input type="checkbox" data-messages-emotion-active checked>
++                                                                Active
++                                                            </label>
++                                                        </td>
++                                                    </tr>
++                                                </tbody>
++                                            </table>
++                                        </div>
++                                        <div class="action-group action-group--tight">
++                                            <button class="btn btn--compact" type="submit">Save Emotion Profile</button>
++                                            <button class="btn btn--compact" type="button" data-messages-emotion-cancel>New Emotion Profile</button>
++                                        </div>
++                                    </form>
++                                    <div class="table-wrapper">
++                                        <table class="data-table" aria-label="Emotion profiles">
++                                            <thead>
++                                                <tr>
++                                                    <th scope="col">Name</th>
++                                                    <th scope="col">Status</th>
++                                                    <th scope="col">Actions</th>
++                                                </tr>
++                                            </thead>
++                                            <tbody data-messages-emotions>
++                                                <tr><td colspan="3">Loading emotion profiles.</td></tr>
++                                            </tbody>
++                                        </table>
++                                    </div>
++                                </div>
++                            </details>
++                        </div>
++                    </aside>
++                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="messages" data-tool-icon-src="assets/theme-v2/images/badges/game-design.png" data-tool-character-src="assets/theme-v2/images/tools/game-design.png"></div>
++                    <section class="tool-center-panel">
++                        <h2>Message Editor</h2>
++                        <p>Messages define what is said. Emotion profiles define future delivery settings only.</p>
++                        <div class="grid cols-3" aria-label="Messages summary">
++                            <article class="mini-stat"><strong data-messages-count>0</strong>Messages</article>
++                            <article class="mini-stat"><strong data-messages-category-count>0</strong>Categories</article>
++                            <article class="mini-stat"><strong data-messages-emotion-count>0</strong>Emotion Profiles</article>
++                        </div>
++                        <article class="card">
++                            <div class="card-body content-stack">
++                                <div>
++                                    <div class="kicker">Game Text</div>
++                                    <h3 data-messages-editor-heading>New Message</h3>
++                                </div>
++                                <form class="content-stack" data-messages-form>
++                                    <input type="hidden" data-messages-message-key>
++                                    <div class="table-wrapper">
++                                        <table class="data-table tool-form-table" aria-label="Message editor fields">
++                                            <tbody>
++                                                <tr>
++                                                    <th scope="row"><label for="messagesName">Message Name</label></th>
++                                                    <td><input id="messagesName" type="text" data-messages-name></td>
++                                                </tr>
++                                                <tr>
++                                                    <th scope="row"><label for="messagesCategory">Category</label></th>
++                                                    <td><select id="messagesCategory" data-messages-category></select></td>
++                                                </tr>
++                                                <tr>
++                                                    <th scope="row"><label for="messagesEmotionProfile">Emotion Profile</label></th>
++                                                    <td><select id="messagesEmotionProfile" data-messages-emotion-profile></select></td>
++                                                </tr>
++                                                <tr>
++                                                    <th scope="row"><label for="messagesText">Message Text</label></th>
++                                                    <td><textarea id="messagesText" rows="7" data-messages-text></textarea></td>
++                                                </tr>
++                                                <tr>
++                                                    <th scope="row"><label for="messagesNotes">Notes</label></th>
++                                                    <td><textarea id="messagesNotes" rows="4" data-messages-notes></textarea></td>
++                                                </tr>
++                                                <tr>
++                                                    <th scope="row">Status</th>
++                                                    <td>
++                                                        <label>
++                                                            <input type="checkbox" data-messages-active checked>
++                                                            Active
++                                                        </label>
++                                                    </td>
++                                                </tr>
++                                            </tbody>
++                                        </table>
++                                    </div>
++                                    <div class="action-group">
++                                        <button class="btn" type="submit">Save Message</button>
++                                        <button class="btn" type="button" data-messages-new>New Message</button>
++                                    </div>
++                                </form>
++                                <article class="card" data-messages-validation-card hidden>
++                                    <div class="card-body content-stack">
++                                        <div>
++                                            <div class="kicker">Actionable Validation</div>
++                                            <h3>Message Needs Required Fields</h3>
++                                        </div>
++                                        <ul data-messages-validation-errors></ul>
++                                    </div>
++                                </article>
++                            </div>
++                        </article>
++                        <article class="card">
++                            <div class="card-body content-stack">
++                                <div>
++                                    <div class="kicker">Repository</div>
++                                    <h3>Messages</h3>
++                                </div>
++                                <div class="table-wrapper">
++                                    <table class="data-table" aria-label="Messages">
++                                        <thead>
++                                            <tr>
++                                                <th scope="col">Name</th>
++                                                <th scope="col">Category</th>
++                                                <th scope="col">Emotion</th>
++                                                <th scope="col">Status</th>
++                                                <th scope="col">Actions</th>
++                                            </tr>
++                                        </thead>
++                                        <tbody data-messages-table>
++                                            <tr><td colspan="5">Loading messages.</td></tr>
++                                        </tbody>
++                                    </table>
++                                </div>
++                            </div>
++                        </article>
++                    </section>
++                    <aside class="tool-column tool-group-design">
++                        <div class="tool-column-header">
++                            <h2>Inspector</h2>
++                        </div>
++                        <div class="accordion-stack">
++                            <details class="vertical-accordion" open>
++                                <summary>Selected Message</summary>
++                                <div class="accordion-body content-stack">
++                                    <p>Name: <span data-messages-selected-name>None</span></p>
++                                    <p>Category: <span data-messages-selected-category>None</span></p>
++                                    <p>Emotion Profile: <span data-messages-selected-emotion>None</span></p>
++                                    <p>Status: <span data-messages-selected-status>None</span></p>
++                                    <p>Text:</p>
++                                    <pre data-messages-selected-text>No message selected.</pre>
++                                </div>
++                            </details>
++                            <details class="vertical-accordion" open>
++                                <summary>Persistence</summary>
++                                <div class="accordion-body content-stack">
++                                    <p>Source: <span data-messages-persistence-source>Server API</span></p>
++                                    <p>Engine: <span data-messages-persistence-engine>SQLite</span></p>
++                                    <p>Ownership: <span data-messages-persistence-owner>messages</span></p>
++                                </div>
++                            </details>
++                            <details class="vertical-accordion" open>
++                                <summary>Future Compatibility</summary>
++                                <div class="accordion-body content-stack">
++                                    <p>Segmented message support is planned for a future PR.</p>
++                                    <p>This tool stores message text exactly as entered.</p>
++                                </div>
++                            </details>
++                            <details class="vertical-accordion" open>
++                                <summary>Status Log</summary>
++                                <div class="accordion-body">
++                                    <div class="status" role="status" data-messages-log>Loading Messages.</div>
++                                </div>
++                            </details>
++                        </div>
++                    </aside>
++                </div>
++            </div>
++        </section>
++    </main>
++    <div data-partial="footer"></div>
++    <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
++    <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
++    <script type="module" src="toolbox/messages/messages.js"></script>
++</body>
++
++</html>
+diff --git a/toolbox/messages/messages-api-client.js b/toolbox/messages/messages-api-client.js
+new file mode 100644
+index 000000000..afa70e76e
+--- /dev/null
++++ b/toolbox/messages/messages-api-client.js
+@@ -0,0 +1,62 @@
++import {
++  requireServerApiData,
++  safeRequestServerApi,
++} from "../../src/api/server-api-client.js";
++
++function readData(path, context) {
++  return requireServerApiData(safeRequestServerApi(path), context);
++}
++
++function writeData(path, body, context) {
++  return requireServerApiData(
++    safeRequestServerApi(path, {
++      body,
++      method: "POST",
++    }),
++    context,
++  );
++}
++
++export function listMessageCategories() {
++  return readData("/messages/categories", "Messages categories");
++}
++
++export function createMessageCategory(input) {
++  return writeData("/messages/categories", input, "Create message category");
++}
++
++export function updateMessageCategory(categoryKey, input) {
++  return writeData(`/messages/categories/${encodeURIComponent(categoryKey)}`, input, "Update message category");
++}
++
++export function listEmotionProfiles() {
++  return readData("/messages/emotion-profiles", "Messages emotion profiles");
++}
++
++export function getEmotionProfile(profileKey) {
++  return readData(`/messages/emotion-profiles/${encodeURIComponent(profileKey)}`, "Messages emotion profile");
++}
++
++export function createEmotionProfile(input) {
++  return writeData("/messages/emotion-profiles", input, "Create emotion profile");
++}
++
++export function updateEmotionProfile(profileKey, input) {
++  return writeData(`/messages/emotion-profiles/${encodeURIComponent(profileKey)}`, input, "Update emotion profile");
++}
++
++export function listMessages() {
++  return readData("/messages/messages", "Messages list");
++}
++
++export function getMessage(messageKey) {
++  return readData(`/messages/messages/${encodeURIComponent(messageKey)}`, "Message record");
++}
++
++export function createMessage(input) {
++  return writeData("/messages/messages", input, "Create message");
++}
++
++export function updateMessage(messageKey, input) {
++  return writeData(`/messages/messages/${encodeURIComponent(messageKey)}`, input, "Update message");
++}
+diff --git a/toolbox/messages/messages.js b/toolbox/messages/messages.js
+new file mode 100644
+index 000000000..44a23d9a2
+--- /dev/null
++++ b/toolbox/messages/messages.js
+@@ -0,0 +1,497 @@
++import {
++  createEmotionProfile,
++  createMessage,
++  createMessageCategory,
++  listEmotionProfiles,
++  listMessageCategories,
++  listMessages,
++  updateEmotionProfile,
++  updateMessage,
++  updateMessageCategory,
++} from "./messages-api-client.js";
++
++const elements = {
++  active: document.querySelector("[data-messages-active]"),
++  category: document.querySelector("[data-messages-category]"),
++  categoryActive: document.querySelector("[data-messages-category-active]"),
++  categoryCancel: document.querySelector("[data-messages-category-cancel]"),
++  categoryCount: document.querySelector("[data-messages-category-count]"),
++  categoryForm: document.querySelector("[data-messages-category-form]"),
++  categoryKey: document.querySelector("[data-messages-category-key]"),
++  categoryName: document.querySelector("[data-messages-category-name]"),
++  categoryRows: document.querySelector("[data-messages-categories]"),
++  count: document.querySelector("[data-messages-count]"),
++  editorHeading: document.querySelector("[data-messages-editor-heading]"),
++  emotionActive: document.querySelector("[data-messages-emotion-active]"),
++  emotionCancel: document.querySelector("[data-messages-emotion-cancel]"),
++  emotionCount: document.querySelector("[data-messages-emotion-count]"),
++  emotionDescription: document.querySelector("[data-messages-emotion-description]"),
++  emotionForm: document.querySelector("[data-messages-emotion-form]"),
++  emotionKey: document.querySelector("[data-messages-emotion-key]"),
++  emotionName: document.querySelector("[data-messages-emotion-name]"),
++  emotionPauseAfter: document.querySelector("[data-messages-emotion-pause-after]"),
++  emotionPauseBefore: document.querySelector("[data-messages-emotion-pause-before]"),
++  emotionPitch: document.querySelector("[data-messages-emotion-pitch]"),
++  emotionProfile: document.querySelector("[data-messages-emotion-profile]"),
++  emotionRate: document.querySelector("[data-messages-emotion-rate]"),
++  emotionRows: document.querySelector("[data-messages-emotions]"),
++  emotionVolume: document.querySelector("[data-messages-emotion-volume]"),
++  form: document.querySelector("[data-messages-form]"),
++  key: document.querySelector("[data-messages-message-key]"),
++  log: document.querySelector("[data-messages-log]"),
++  name: document.querySelector("[data-messages-name]"),
++  newMessage: document.querySelector("[data-messages-new]"),
++  notes: document.querySelector("[data-messages-notes]"),
++  persistenceEngine: document.querySelector("[data-messages-persistence-engine]"),
++  persistenceOwner: document.querySelector("[data-messages-persistence-owner]"),
++  persistenceSource: document.querySelector("[data-messages-persistence-source]"),
++  selectedCategory: document.querySelector("[data-messages-selected-category]"),
++  selectedEmotion: document.querySelector("[data-messages-selected-emotion]"),
++  selectedName: document.querySelector("[data-messages-selected-name]"),
++  selectedStatus: document.querySelector("[data-messages-selected-status]"),
++  selectedText: document.querySelector("[data-messages-selected-text]"),
++  table: document.querySelector("[data-messages-table]"),
++  text: document.querySelector("[data-messages-text]"),
++  validationCard: document.querySelector("[data-messages-validation-card]"),
++  validationErrors: document.querySelector("[data-messages-validation-errors]"),
++};
++
++const state = {
++  categories: [],
++  emotionProfiles: [],
++  messages: [],
++  selectedMessageKey: "",
++};
++
++function setText(element, value) {
++  if (element) {
++    element.textContent = value;
++  }
++}
++
++function setValue(element, value) {
++  if (element) {
++    element.value = value;
++  }
++}
++
++function setChecked(element, value) {
++  if (element) {
++    element.checked = value !== false;
++  }
++}
++
++function statusForActive(active) {
++  return active ? "Active" : "Inactive";
++}
++
++function createCell(text) {
++  const cell = document.createElement("td");
++  cell.textContent = text;
++  return cell;
++}
++
++function createButton(label, dataName, value) {
++  const button = document.createElement("button");
++  button.className = "btn btn--compact";
++  button.type = "button";
++  button.dataset[dataName] = value;
++  button.textContent = label;
++  return button;
++}
++
++function clearValidation() {
++  if (elements.validationErrors) {
++    elements.validationErrors.replaceChildren();
++  }
++  if (elements.validationCard) {
++    elements.validationCard.hidden = true;
++  }
++}
++
++function showValidation(errors) {
++  if (!elements.validationErrors || !elements.validationCard) {
++    return;
++  }
++  elements.validationErrors.replaceChildren();
++  errors.forEach((error) => {
++    const item = document.createElement("li");
++    item.textContent = error;
++    elements.validationErrors.append(item);
++  });
++  elements.validationCard.hidden = errors.length === 0;
++}
++
++function activeCategories() {
++  return state.categories.filter((category) => category.active);
++}
++
++function activeEmotionProfiles() {
++  return state.emotionProfiles.filter((profile) => profile.active);
++}
++
++function populateSelect(select, options, placeholder) {
++  if (!select) {
++    return;
++  }
++  const currentValue = select.value;
++  select.replaceChildren();
++  const placeholderOption = document.createElement("option");
++  placeholderOption.value = "";
++  placeholderOption.textContent = placeholder;
++  select.append(placeholderOption);
++  options.forEach((optionValue) => {
++    const option = document.createElement("option");
++    option.value = optionValue.key;
++    option.textContent = optionValue.name;
++    select.append(option);
++  });
++  select.value = options.some((optionValue) => optionValue.key === currentValue) ? currentValue : "";
++}
++
++function renderCategoryRows() {
++  if (!elements.categoryRows) {
++    return;
++  }
++  elements.categoryRows.replaceChildren();
++  state.categories.forEach((category) => {
++    const row = document.createElement("tr");
++    row.dataset.messagesCategoryRow = category.key;
++    const actions = document.createElement("td");
++    const group = document.createElement("div");
++    group.className = "action-group action-group--tight";
++    group.append(createButton("Edit", "messagesCategoryEdit", category.key));
++    actions.append(group);
++    row.append(
++      createCell(category.name),
++      createCell(statusForActive(category.active)),
++      actions,
++    );
++    elements.categoryRows.append(row);
++  });
++}
++
++function renderEmotionRows() {
++  if (!elements.emotionRows) {
++    return;
++  }
++  elements.emotionRows.replaceChildren();
++  state.emotionProfiles.forEach((profile) => {
++    const row = document.createElement("tr");
++    row.dataset.messagesEmotionRow = profile.key;
++    const actions = document.createElement("td");
++    const group = document.createElement("div");
++    group.className = "action-group action-group--tight";
++    group.append(createButton("Edit", "messagesEmotionEdit", profile.key));
++    actions.append(group);
++    row.append(
++      createCell(profile.name),
++      createCell(statusForActive(profile.active)),
++      actions,
++    );
++    elements.emotionRows.append(row);
++  });
++}
++
++function renderMessageRows() {
++  if (!elements.table) {
++    return;
++  }
++  elements.table.replaceChildren();
++  if (!state.messages.length) {
++    const row = document.createElement("tr");
++    const cell = document.createElement("td");
++    cell.colSpan = 5;
++    cell.textContent = "No messages saved yet.";
++    row.append(cell);
++    elements.table.append(row);
++    return;
++  }
++  state.messages.forEach((message) => {
++    const row = document.createElement("tr");
++    row.dataset.messagesRow = message.key;
++    const actions = document.createElement("td");
++    const group = document.createElement("div");
++    group.className = "action-group action-group--tight";
++    group.append(createButton("Edit", "messagesEdit", message.key));
++    actions.append(group);
++    row.append(
++      createCell(message.name),
++      createCell(message.categoryName || "Unknown"),
++      createCell(message.emotionProfileName || "Unknown"),
++      createCell(statusForActive(message.active)),
++      actions,
++    );
++    elements.table.append(row);
++  });
++}
++
++function renderSelectedMessage() {
++  const selected = state.messages.find((message) => message.key === state.selectedMessageKey);
++  setText(elements.selectedName, selected?.name || "None");
++  setText(elements.selectedCategory, selected?.categoryName || "None");
++  setText(elements.selectedEmotion, selected?.emotionProfileName || "None");
++  setText(elements.selectedStatus, selected ? statusForActive(selected.active) : "None");
++  setText(elements.selectedText, selected?.messageText || "No message selected.");
++}
++
++function renderCounts() {
++  setText(elements.count, String(state.messages.length));
++  setText(elements.categoryCount, String(state.categories.length));
++  setText(elements.emotionCount, String(state.emotionProfiles.length));
++}
++
++function renderPersistence(persistence = {}) {
++  setText(elements.persistenceSource, "Server API");
++  setText(elements.persistenceEngine, persistence.engine || "SQLite");
++  setText(elements.persistenceOwner, persistence.owner || "messages");
++}
++
++function render(persistence = {}) {
++  populateSelect(elements.category, activeCategories(), "Select category");
++  populateSelect(elements.emotionProfile, activeEmotionProfiles(), "Select emotion profile");
++  renderCategoryRows();
++  renderEmotionRows();
++  renderMessageRows();
++  renderSelectedMessage();
++  renderCounts();
++  renderPersistence(persistence);
++}
++
++function messageFormValues() {
++  return {
++    active: elements.active?.checked !== false,
++    categoryKey: elements.category?.value || "",
++    emotionProfileKey: elements.emotionProfile?.value || "",
++    messageText: elements.text?.value || "",
++    name: elements.name?.value || "",
++    notes: elements.notes?.value || "",
++  };
++}
++
++function validateMessage(values) {
++  const errors = [];
++  if (!values.name.trim()) {
++    errors.push("Message Name is required.");
++  }
++  if (!values.categoryKey) {
++    errors.push("Category is required.");
++  }
++  if (!values.emotionProfileKey) {
++    errors.push("Emotion Profile is required.");
++  }
++  if (!values.messageText.trim()) {
++    errors.push("Message Text is required.");
++  }
++  return errors;
++}
++
++function resetMessageForm() {
++  state.selectedMessageKey = "";
++  setValue(elements.key, "");
++  setValue(elements.name, "");
++  setValue(elements.category, "");
++  setValue(elements.emotionProfile, "");
++  setValue(elements.text, "");
++  setValue(elements.notes, "");
++  setChecked(elements.active, true);
++  setText(elements.editorHeading, "New Message");
++  clearValidation();
++  renderSelectedMessage();
++}
++
++function editMessage(messageKey) {
++  const message = state.messages.find((candidate) => candidate.key === messageKey);
++  if (!message) {
++    return;
++  }
++  state.selectedMessageKey = message.key;
++  setValue(elements.key, message.key);
++  setValue(elements.name, message.name);
++  setValue(elements.category, message.categoryKey);
++  setValue(elements.emotionProfile, message.emotionProfileKey);
++  setValue(elements.text, message.messageText);
++  setValue(elements.notes, message.notes || "");
++  setChecked(elements.active, message.active);
++  setText(elements.editorHeading, `Edit ${message.name}`);
++  clearValidation();
++  renderSelectedMessage();
++}
++
++function resetCategoryForm() {
++  setValue(elements.categoryKey, "");
++  setValue(elements.categoryName, "");
++  setChecked(elements.categoryActive, true);
++}
++
++function editCategory(categoryKey) {
++  const category = state.categories.find((candidate) => candidate.key === categoryKey);
++  if (!category) {
++    return;
++  }
++  setValue(elements.categoryKey, category.key);
++  setValue(elements.categoryName, category.name);
++  setChecked(elements.categoryActive, category.active);
++}
++
++function resetEmotionForm() {
++  setValue(elements.emotionKey, "");
++  setValue(elements.emotionName, "");
++  setValue(elements.emotionDescription, "");
++  setValue(elements.emotionVolume, "1");
++  setValue(elements.emotionPitch, "1");
++  setValue(elements.emotionRate, "1");
++  setValue(elements.emotionPauseBefore, "0");
++  setValue(elements.emotionPauseAfter, "0");
++  setChecked(elements.emotionActive, true);
++}
++
++function editEmotionProfile(profileKey) {
++  const profile = state.emotionProfiles.find((candidate) => candidate.key === profileKey);
++  if (!profile) {
++    return;
++  }
++  setValue(elements.emotionKey, profile.key);
++  setValue(elements.emotionName, profile.name);
++  setValue(elements.emotionDescription, profile.description || "");
++  setValue(elements.emotionVolume, String(profile.volume));
++  setValue(elements.emotionPitch, String(profile.pitch));
++  setValue(elements.emotionRate, String(profile.rate));
++  setValue(elements.emotionPauseBefore, String(profile.pauseBeforeMs));
++  setValue(elements.emotionPauseAfter, String(profile.pauseAfterMs));
++  setChecked(elements.emotionActive, profile.active);
++}
++
++async function loadAll() {
++  const categoryPayload = listMessageCategories();
++  const emotionPayload = listEmotionProfiles();
++  const messagesPayload = listMessages();
++  state.categories = categoryPayload.categories || [];
++  state.emotionProfiles = emotionPayload.emotionProfiles || [];
++  state.messages = messagesPayload.messages || [];
++  render(messagesPayload.persistence || categoryPayload.persistence || emotionPayload.persistence);
++  setText(elements.log, "Messages loaded from the Local API.");
++}
++
++async function refreshAfterSave(message) {
++  await loadAll();
++  if (message?.key) {
++    editMessage(message.key);
++  }
++}
++
++elements.form?.addEventListener("submit", async (event) => {
++  event.preventDefault();
++  const values = messageFormValues();
++  const errors = validateMessage(values);
++  if (errors.length) {
++    showValidation(errors);
++    setText(elements.log, "Message save blocked by validation.");
++    return;
++  }
++  clearValidation();
++  try {
++    const messageKey = elements.key?.value || "";
++    const result = messageKey
++      ? updateMessage(messageKey, values)
++      : createMessage(values);
++    await refreshAfterSave(result.message);
++    setText(elements.log, `Saved ${result.message.name}.`);
++  } catch (error) {
++    showValidation([error instanceof Error ? error.message : String(error || "Message save failed.")]);
++    setText(elements.log, "Message save failed.");
++  }
++});
++
++elements.newMessage?.addEventListener("click", () => {
++  resetMessageForm();
++  setText(elements.log, "Ready for a new message.");
++});
++
++elements.table?.addEventListener("click", (event) => {
++  const editButton = event.target.closest("[data-messages-edit]");
++  if (editButton) {
++    editMessage(editButton.dataset.messagesEdit);
++    setText(elements.log, "Message loaded for editing.");
++  }
++});
++
++elements.categoryForm?.addEventListener("submit", async (event) => {
++  event.preventDefault();
++  const input = {
++    active: elements.categoryActive?.checked !== false,
++    name: elements.categoryName?.value || "",
++  };
++  try {
++    const categoryKey = elements.categoryKey?.value || "";
++    const result = categoryKey
++      ? updateMessageCategory(categoryKey, input)
++      : createMessageCategory(input);
++    await loadAll();
++    resetCategoryForm();
++    setText(elements.log, `Saved category ${result.category.name}.`);
++  } catch (error) {
++    setText(elements.log, error instanceof Error ? error.message : String(error || "Category save failed."));
++  }
++});
++
++elements.categoryCancel?.addEventListener("click", () => {
++  resetCategoryForm();
++  setText(elements.log, "Ready for a new category.");
++});
++
++elements.categoryRows?.addEventListener("click", (event) => {
++  const editButton = event.target.closest("[data-messages-category-edit]");
++  if (editButton) {
++    editCategory(editButton.dataset.messagesCategoryEdit);
++    setText(elements.log, "Category loaded for editing.");
++  }
++});
++
++elements.emotionForm?.addEventListener("submit", async (event) => {
++  event.preventDefault();
++  const input = {
++    active: elements.emotionActive?.checked !== false,
++    description: elements.emotionDescription?.value || "",
++    name: elements.emotionName?.value || "",
++    pauseAfterMs: Number(elements.emotionPauseAfter?.value || 0),
++    pauseBeforeMs: Number(elements.emotionPauseBefore?.value || 0),
++    pitch: Number(elements.emotionPitch?.value || 1),
++    rate: Number(elements.emotionRate?.value || 1),
++    volume: Number(elements.emotionVolume?.value || 1),
++  };
++  try {
++    const profileKey = elements.emotionKey?.value || "";
++    const result = profileKey
++      ? updateEmotionProfile(profileKey, input)
++      : createEmotionProfile(input);
++    await loadAll();
++    resetEmotionForm();
++    setText(elements.log, `Saved emotion profile ${result.emotionProfile.name}.`);
++  } catch (error) {
++    setText(elements.log, error instanceof Error ? error.message : String(error || "Emotion profile save failed."));
++  }
++});
++
++elements.emotionCancel?.addEventListener("click", () => {
++  resetEmotionForm();
++  setText(elements.log, "Ready for a new emotion profile.");
++});
++
++elements.emotionRows?.addEventListener("click", (event) => {
++  const editButton = event.target.closest("[data-messages-emotion-edit]");
++  if (editButton) {
++    editEmotionProfile(editButton.dataset.messagesEmotionEdit);
++    setText(elements.log, "Emotion profile loaded for editing.");
++  }
++});
++
++try {
++  await loadAll();
++  resetMessageForm();
++  resetCategoryForm();
++  resetEmotionForm();
++} catch (error) {
++  setText(elements.log, error instanceof Error ? error.message : String(error || "Messages failed to load."));
++  showValidation(["Messages could not load from the Local API. Start the Local API server and reload this tool."]);
++}

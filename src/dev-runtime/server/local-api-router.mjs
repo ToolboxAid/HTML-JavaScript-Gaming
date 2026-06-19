@@ -119,6 +119,10 @@ import {
 } from "../marketplace/marketplace-revenue-service.mjs";
 import { handleAdminNotesDirectoryApiRequest } from "../admin/admin-notes-directory.mjs";
 import {
+  createMessagesSqliteService,
+  handleMessagesApiContract,
+} from "../messages/messages-sqlite-service.mjs";
+import {
   LegalDocumentError,
   readPublishedLegalDocument,
 } from "../legal/legal-document-service.mjs";
@@ -2228,7 +2232,10 @@ function productTablesFromSnapshot(snapshot) {
 }
 
 class ApiRuntimeDataSource {
-  constructor() {
+  constructor({
+    repoRoot = process.cwd(),
+  } = {}) {
+    this.messagesService = createMessagesSqliteService({ repoRoot });
     this.repositoryCounter = 1;
     this.repositoryById = new Map();
     this.sessionModeId = FIXED_ACCOUNT_SESSION_MODE.id;
@@ -4730,6 +4737,24 @@ LIMIT 1;
     return rows;
   }
 
+  messagesActorKey() {
+    return this.sessionUserKey || SEED_DB_KEYS.users.forgeBot;
+  }
+
+  messagesApiContract(method, parts, body) {
+    return handleMessagesApiContract({
+      actorKey: this.messagesActorKey(),
+      body,
+      method,
+      parts,
+      service: this.messagesService,
+    });
+  }
+
+  close() {
+    this.messagesService.close();
+  }
+
   async supabaseToolboxToolMetadataRows() {
     const adapter = this.supabaseDatabaseAdapter("Reading Supabase Toolbox tool metadata");
     const rows = await adapter.getProductTableRows("toolbox_tool_metadata");
@@ -5314,9 +5339,9 @@ LIMIT 1;
 export function createLocalApiRouter({
   repoRoot = process.cwd(),
 } = {}) {
-  const dataSource = new ApiRuntimeDataSource();
+  const dataSource = new ApiRuntimeDataSource({ repoRoot });
 
-  return async function handleApiRuntimeRequest(request, response, requestUrl) {
+  async function handleApiRuntimeRequest(request, response, requestUrl) {
     if (!requestUrl.pathname.startsWith("/api/")) {
       return false;
     }
@@ -5524,6 +5549,12 @@ export function createLocalApiRouter({
         return true;
       }
 
+      if (parts[1] === "messages") {
+        const body = request.method === "POST" ? await readRequestJson(request) : {};
+        ok(response, dataSource.messagesApiContract(request.method, parts.slice(2), body));
+        return true;
+      }
+
       if (parts[1] === "admin" && parts[2] === "memberships" && request.method === "GET" && parts[3] === "active") {
         ok(response, await dataSource.adminActiveMembership(requestUrl));
         return true;
@@ -5687,5 +5718,8 @@ export function createLocalApiRouter({
       fail(response, error?.statusCode || 500, error);
       return true;
     }
-  };
+  }
+
+  handleApiRuntimeRequest.close = () => dataSource.close();
+  return handleApiRuntimeRequest;
 }
