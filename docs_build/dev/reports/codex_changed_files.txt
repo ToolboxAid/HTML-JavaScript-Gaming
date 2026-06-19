@@ -1,12 +1,12 @@
 # git status --short
-?? docs_build/dev/admin-notes/GFS_Game_Journey_Master_Plan.txt
-?? docs_build/dev/reports/PR_26170_014-game-journey-master-plan.md
-?? docs_build/pr/BUILD_PR_26170_014-game-journey-master-plan.md
+M docs_build/dev/PROJECT_INSTRUCTIONS.md
+?? docs_build/dev/reports/pr-governance-validation.txt
+?? docs_build/pr/BUILD_PR_26171_001-branch-first-pr-governance.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/admin-notes/GFS_Game_Journey_Master_Plan.txt
-docs_build/dev/reports/PR_26170_014-game-journey-master-plan.md
-docs_build/pr/BUILD_PR_26170_014-game-journey-master-plan.md
+docs_build/dev/reports/pr-governance-validation.txt
+docs_build/pr/BUILD_PR_26171_001-branch-first-pr-governance.md
 
 # git diff --stat
-(no output)
+docs_build/dev/PROJECT_INSTRUCTIONS.md | 45 +++++++++++++++++++---------------
+ 1 file changed, 25 insertions(+), 20 deletions(-)

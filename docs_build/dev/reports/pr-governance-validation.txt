@@ -1,0 +1,77 @@
+PR_26171_001-branch-first-pr-governance
+
+Branch validation:
+PASS
+
+Current branch:
+PR_26171_001-branch-first-pr-governance
+
+Base main revision used for branch creation:
+b0fb55381797c6c18f7e28ea7be52b9367046142
+
+Latest main verification:
+PASS
+
+Evidence:
+- `git -c http.sslBackend=schannel fetch origin main` completed successfully.
+- `git rev-parse main` returned `b0fb55381797c6c18f7e28ea7be52b9367046142`.
+- `git rev-parse origin/main` returned `b0fb55381797c6c18f7e28ea7be52b9367046142`.
+- `git rev-list --left-right --count main...origin/main` returned `0 0`.
+
+Requirement validation:
+
+PASS - Replaced `MAIN BRANCH EXECUTION GUARD`.
+Evidence:
+- `## MAIN BRANCH EXECUTION GUARD` is no longer present.
+- `## BRANCH-FIRST PR EXECUTION GUARD` is present.
+
+PASS - Added branch-first rules.
+Evidence:
+- Never commit directly to `main`.
+- Never push directly to `main`.
+- Never perform local merges into `main`.
+- All implementation work must occur on a feature branch.
+- All integration must occur through a GitHub Pull Request.
+- Start work from latest `main`, then create a feature branch.
+- GitHub PR merge is the authoritative merge path.
+
+PASS - Updated branch validation definition.
+Evidence:
+- PASS = current branch is not `main` and the branch was created from latest `main`.
+- FAIL = implementation attempted on `main`.
+
+PASS - Updated rule precedence note.
+Evidence:
+- `BRANCH-FIRST PR EXECUTION GUARD` now supersedes older main-only execution requirements wherever they appear.
+
+PASS - Added rationale.
+Evidence:
+- Supports parallel Codex sessions.
+- Supports multi-PC development.
+- Reduces merge risk.
+- Preserves audit history and rollback.
+
+PASS - No remaining instructions require implementation work on `main`.
+Evidence:
+- Search for stale main-only guard terms found no old required-execution-branch, return-to-main, expected-branch, or hard-stop instructions.
+- The only remaining matched branch-validation phrase is the new PASS condition requiring the current branch to be not `main`.
+
+PASS - Governance text is internally consistent.
+Evidence:
+- The guard prohibits direct commit, push, and local merge into `main`.
+- The guard requires feature branches for implementation.
+- The guard requires GitHub Pull Requests for integration.
+- The validation rule matches those constraints.
+- The precedence note resolves older main-only instructions in favor of branch-first PR governance.
+
+PASS - `git diff --check`.
+Evidence:
+- `git diff --check -- docs_build/dev/PROJECT_INSTRUCTIONS.md docs_build/pr/BUILD_PR_26171_001-branch-first-pr-governance.md` completed with no output.
+
+Impacted lane:
+- Documentation/governance only.
+
+Skipped lanes:
+- Runtime validation skipped: no runtime files changed.
+- Playwright skipped: no UI behavior changed.
+- Samples validation skipped: no sample behavior changed.

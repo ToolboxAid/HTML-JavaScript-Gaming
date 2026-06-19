@@ -75,31 +75,34 @@ User:
 - Do not expand scope beyond the PR
 - Do not modify `start_of_day` folders unless requested
 
-## MAIN BRANCH EXECUTION GUARD
+## BRANCH-FIRST PR EXECUTION GUARD
 
-Before any BUILD execution, Codex must verify the current git branch.
+Before any BUILD execution, Codex must verify the current git branch and branch base.
 
 Rules:
-- The required execution branch is:
-  - `main`
-- If the current branch is not `main`:
-  - HARD STOP.
-  - Do not create code changes.
-  - Do not create implementation PRs.
-  - Do not create ZIP artifacts.
-  - Do not continue execution.
-- Codex must report:
-  - current branch
-  - expected branch (`main`)
-  - local branches found
-- Codex may continue only after the user explicitly returns to `main`.
-
-Exception:
-- Explicit branch-audit or branch-comparison PRs may inspect non-main branches but must not perform implementation work on them.
+- Never commit directly to `main`.
+- Never push directly to `main`.
+- Never perform local merges into `main`.
+- All implementation work must occur on a feature branch.
+- All integration must occur through a GitHub Pull Request.
+- Start work from latest `main`, then create a feature branch.
+- GitHub PR merge is the authoritative merge path.
+- Branch validation becomes:
+  - PASS = current branch is not `main` and the branch was created from latest `main`.
+  - FAIL = implementation attempted on `main`.
 
 Required report output:
-- Current branch
-- Branch validation PASS/FAIL
+- Current branch.
+- Base `main` revision used for branch creation.
+- Latest `main` verification result.
+- Branch validation PASS/FAIL.
+- GitHub Pull Request integration expectation.
+
+Rationale:
+- Supports parallel Codex sessions.
+- Supports multi-PC development.
+- Reduces merge risk.
+- Preserves audit history and rollback.
 
 ## SLIDER VALUE VISIBILITY REQUIREMENT
 
@@ -157,6 +160,8 @@ Newer appended sections override earlier overlapping rules.
 When rules overlap, use the most specific current section as authoritative.
 
 Conflicting workflow instructions must resolve to the newest explicit section.
+
+`BRANCH-FIRST PR EXECUTION GUARD` supersedes older main-only execution requirements wherever they appear.
 
 Future governance additions should extend existing sections instead of duplicating overlapping guidance.
 
