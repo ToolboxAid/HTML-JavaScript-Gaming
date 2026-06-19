@@ -90,6 +90,7 @@
         "owner-design-system": "owner/design-system.html",
         "owner-grouping-colors": "owner/grouping-colors.html",
         "owner-memberships": "owner/memberships.html",
+        "owner-notes": "owner/notes.html",
         "owner-site-settings": "owner/site-settings.html",
         "owner-themes": "owner/themes.html",
         "community-guidelines": "legal/community-guidelines.html",

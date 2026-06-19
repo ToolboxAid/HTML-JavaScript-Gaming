@@ -1,16 +1,24 @@
 # git status --short
- M docs_build/dev/reports/codex_changed_files.txt
- M docs_build/dev/reports/codex_review.diff
- M scripts/start-local-api-server.mjs
-?? docs_build/dev/reports/PR_26169_026-local-api-startup-url-logging.md
-?? docs_build/pr/BUILD_PR_26169_026-local-api-startup-url-logging.md
-?? tests/dev-runtime/LocalApiStartupLogging.test.mjs
+M assets/theme-v2/js/gamefoundry-partials.js
+ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+ M docs_build/dev/reports/playwright_v8_coverage_report.txt
+ M src/api/admin-owner-navigation.js
+ M tests/dev-runtime/ApiMenuPathCleanup.test.mjs
+ M tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
+?? docs_build/dev/reports/PR_26169_027-owner-notes-restoration.md
+?? docs_build/pr/BUILD_PR_26169_027-owner-notes-restoration.md
+?? owner/notes.html
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26169_026-local-api-startup-url-logging.md
-docs_build/pr/BUILD_PR_26169_026-local-api-startup-url-logging.md
-tests/dev-runtime/LocalApiStartupLogging.test.mjs
+docs_build/dev/reports/PR_26169_027-owner-notes-restoration.md
+docs_build/pr/BUILD_PR_26169_027-owner-notes-restoration.md
+owner/notes.html
 
-# git diff --stat -- . :!docs_build/dev/reports/codex_review.diff :!docs_build/dev/reports/codex_changed_files.txt
- scripts/start-local-api-server.mjs | 109 +++++++++++++++++++++++++------------
- 1 file changed, 75 insertions(+), 34 deletions(-)
+# git diff --stat
+assets/theme-v2/js/gamefoundry-partials.js         |  1 +
+ .../dev/reports/coverage_changed_js_guardrail.txt  | 10 ++--
+ .../dev/reports/playwright_v8_coverage_report.txt  | 47 +++++++-----------
+ src/api/admin-owner-navigation.js                  |  2 +-
+ tests/dev-runtime/ApiMenuPathCleanup.test.mjs      | 12 +++++
+ .../tools/AdminOwnerNavigationBoundary.spec.mjs    | 57 ++++++++++++++++++++--
+ 6 files changed, 88 insertions(+), 41 deletions(-)

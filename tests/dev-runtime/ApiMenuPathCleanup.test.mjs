@@ -103,6 +103,18 @@ test("Admin and Owner shared menus are non-overlapping by responsibility", () =>
   });
 });
 
+test("Owner Notes is active under owner path only", () => {
+  const adminItems = getAdminNavigationItems();
+  const ownerItems = getOwnerNavigationItems();
+  const ownerNotes = ownerItems.find((item) => item.label === "Notes");
+  assert.equal(adminItems.some((item) => item.label === "Notes"), false, "Admin menu must not include Notes");
+  assert.equal(ownerNotes?.disabled, undefined, "Owner Notes should not be disabled");
+  assert.equal(ownerNotes?.planned, undefined, "Owner Notes should not be planned");
+  assert.equal(ownerNotes?.path, "owner/notes.html");
+  assert.equal(ownerNotes?.route, "owner-notes");
+  assert.equal(fs.existsSync("owner/notes.html"), true, "Owner Notes route should exist");
+});
+
 test("Admin and Owner shared menu active links resolve or are explicitly disabled", () => {
   getAdminNavigationItems().forEach(assertActivePathExists);
   getOwnerNavigationItems().forEach(assertActivePathExists);

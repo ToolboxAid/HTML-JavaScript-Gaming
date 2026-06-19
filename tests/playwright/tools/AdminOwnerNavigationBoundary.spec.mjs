@@ -32,7 +32,7 @@ const OWNER_LABELS = Object.freeze([
   "Legal (planned)",
   "Memberships",
   "Marketplace Settings (planned)",
-  "Notes (planned)",
+  "Notes",
   "Revenue (planned)",
   "Site Settings",
   "Themes",
@@ -46,8 +46,12 @@ async function setSessionUser(server, userKey) {
   });
 }
 
-async function openPage(page, pagePath) {
+async function openPage(page, pagePath, userKey = SEED_DB_KEYS.users.admin) {
   const server = await startRepoServer();
+  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
+  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
   const failedRequests = [];
   const pageErrors = [];
   const consoleErrors = [];
@@ -63,20 +67,38 @@ async function openPage(page, pagePath) {
     }
   });
   page.on("requestfailed", (request) => failedRequests.push(`FAILED ${request.url()}`));
-  await setSessionUser(server, SEED_DB_KEYS.users.admin);
+  await fetch(`${server.baseUrl}/api/local-db/seed`, { method: "POST" });
+  await fetch(`${server.baseUrl}/api/session/mode`, {
+    body: JSON.stringify({ modeId: "local-db" }),
+    headers: { "content-type": "application/json" },
+    method: "POST",
+  });
+  await setSessionUser(server, userKey);
   await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}${pagePath}`, { waitUntil: "networkidle" });
   return {
     consoleErrors,
     failedRequests,
     pageErrors,
+    previousApiUrl,
+    previousSiteUrl,
     server,
   };
+}
+
+function restoreEnvValue(key, value) {
+  if (value === undefined) {
+    delete process.env[key];
+    return;
+  }
+  process.env[key] = value;
 }
 
 async function closePage(page, context) {
   await workspaceV2CoverageReporter.stop(page);
   await context.server.close();
+  restoreEnvValue("GAMEFOUNDRY_API_URL", context.previousApiUrl);
+  restoreEnvValue("GAMEFOUNDRY_SITE_URL", context.previousSiteUrl);
 }
 
 test.afterAll(async () => {
@@ -125,11 +147,11 @@ test("Owner menu renders business controls and planned entries without broken li
       expect(ownerLinkText).not.toContain(label);
     }
     await expect(page.locator("nav[aria-label='Owner tool pages']").getByRole("link", { name: "AI Credits" })).toHaveAttribute("href", /owner\/ai-credits\.html/);
+    await expect(page.locator("nav[aria-label='Owner tool pages']").getByRole("link", { name: "Notes" })).toHaveAttribute("href", /owner\/notes\.html/);
     await expect(page.locator("nav[aria-label='Owner tool pages'] span[aria-disabled='true']")).toHaveText([
       "Owner Tools",
       "Legal (planned)",
       "Marketplace Settings (planned)",
-      "Notes (planned)",
       "Revenue (planned)",
     ]);
     await expect(page.locator("nav[aria-label='Owner tool pages'] span[aria-disabled='true'] a")).toHaveCount(0);
@@ -138,6 +160,33 @@ test("Owner menu renders business controls and planned entries without broken li
     expect(context.failedRequests).toEqual([]);
   } finally {
     await closePage(page, context);
+  }
+});
+
+test("Owner Notes resolves under owner path and is owner-only", async ({ page }) => {
+  const context = await openPage(page, "/owner/notes.html");
+  try {
+    await expect(page).toHaveTitle(/Notes - Game Foundry Studio/);
+    await expect(page.locator("main[data-owner-notes]")).toBeVisible();
+    await expect(page.locator("[aria-label='Owner business pages'] a[aria-current='page']")).toHaveText("Notes");
+    await expect(page.locator("[aria-label='Owner business pages'] a[href='/admin/notes.html']")).toHaveCount(0);
+    await expect(page.locator("nav[aria-label='Admin tool pages'] a", { hasText: "Notes" })).toHaveCount(0);
+    expect(context.pageErrors).toEqual([]);
+    expect(context.consoleErrors).toEqual([]);
+    expect(context.failedRequests).toEqual([]);
+  } finally {
+    await closePage(page, context);
+  }
+
+  const blockedContext = await openPage(page, "/owner/notes.html", SEED_DB_KEYS.users.user1);
+  try {
+    await expect(page.locator("[data-session-access-blocked='owner']")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Owner role required" })).toBeVisible();
+    expect(blockedContext.pageErrors).toEqual([]);
+    expect(blockedContext.consoleErrors).toEqual([]);
+    expect(blockedContext.failedRequests).toEqual([]);
+  } finally {
+    await closePage(page, blockedContext);
   }
 });
 

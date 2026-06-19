@@ -27,7 +27,7 @@ const OWNER_NAVIGATION_ITEMS = Object.freeze([
   Object.freeze({ disabled: true, label: "Legal", planned: true }),
   Object.freeze({ label: "Memberships", path: "owner/memberships.html", route: "owner-memberships" }),
   Object.freeze({ disabled: true, label: "Marketplace Settings", planned: true }),
-  Object.freeze({ disabled: true, label: "Notes", planned: true }),
+  Object.freeze({ label: "Notes", path: "owner/notes.html", route: "owner-notes" }),
   Object.freeze({ disabled: true, label: "Revenue", planned: true }),
   Object.freeze({ label: "Site Settings", path: "owner/site-settings.html", route: "owner-site-settings" }),
   Object.freeze({ label: "Themes", path: "owner/themes.html", route: "owner-themes" }),
