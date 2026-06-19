@@ -221,6 +221,7 @@ Primary top-level header navigation is an explicit product IA exception and must
 
 Allowed intentional-order exceptions:
 - primary top-level header navigation
+- Toolbox groups and tiles when they are presented as creator workflow surfaces
 - workflow paths
 - Build Path
 - dependency paths
@@ -229,6 +230,31 @@ Allowed intentional-order exceptions:
 - guided creator steps
 
 Every intentional-order exception must be documented in the PR report that introduces or preserves it.
+
+### Toolbox Workflow Ordering Governance
+
+Toolbox groups are intentional workflow-order exceptions when the surface is guiding creators through a natural making sequence.
+
+Rules:
+- Toolbox group and tile order is by creator progression, not alphabetically.
+- Order follows how users naturally work:
+  - Select -> Create -> Review
+  - Left -> Right
+  - Top -> Bottom
+- The next tile should represent the most likely next creator action.
+- Tile ordering should minimize navigation decisions.
+
+Create group order:
+1. Game Workspace
+2. Game Configuration
+3. Project Team
+4. Tags
+
+Team planning distinction:
+- Studio Team is the account-level roster.
+- Project Team is the project-level assignment surface.
+- Current Toolbox implementation focus is Project Team.
+- Users functionality that previously lived in Account/Team planning should be planned through Create/Project Team when it is project-specific.
 
 Toolbox status values are:
 - Ready

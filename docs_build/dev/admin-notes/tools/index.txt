@@ -1,43 +1,62 @@
 Order,Tool,Group,Status,Complete
 1,AI Assistant,AI,Wireframe,No
-2,Project Workspace,Build/Create,Ready,Yes
-3,Project Journey,Build/Create,Ready,Yes
-4,Game Design,Design,Ready,Yes
-5,Game Configuration,Build/Create,Ready,Yes
-6,Assets,Design,Ready,Yes
-7,Colors,Design,Ready,Yes
-8,Fonts,Design,Wireframe,No
-9,Sprites,Design,Wireframe,No
-10,Characters,Design,Wireframe,No
-11,Objects,Design,Wireframe,No
-12,Worlds,Design,Wireframe,No
-13,Animations,Design,Wireframe,No
-14,Audio,Audio,Wireframe,No
-15,Music,Audio,Wireframe,No
-16,Voices,Audio,Wireframe,No
-17,Videos,Audio,Wireframe,No
-18,Build Game,Build/Create,Wireframe,No
-19,Game Testing,Play,Wireframe,No
-20,Controls,Platform,Wireframe,No
-21,Hitboxes,Platform,Wireframe,No
-22,Saved Data,Platform,Wireframe,No
-23,Debug,Platform,Wireframe,No
-24,Performance,Platform,Wireframe,No
-25,Events,Platform,Wireframe,No
-26,Publish,Marketplace,Planned,No
-27,Marketplace,Marketplace,Wireframe,No
-28,Community,Marketplace,Wireframe,No
-29,Languages,Platform,Wireframe,No
-30,Achievements,Play,Wireframe,No
-31,Ratings,Play,Wireframe,No
-32,Cloud,Platform,Hidden,No
-33,Custom Extensions,Build/Create,Hidden,No
-34,MIDI,Audio,Hidden,No
-35,Particles,Audio,Hidden,No
-36,Audio Effects,Audio,Hidden,No
-37,Voice Capture,Audio,Hidden,No
-38,Voice Output,Audio,Hidden,No
-39,Users,Platform,Planned,No
+2,Game Workspace,Create,Ready,Yes
+3,Game Configuration,Create,Ready,Yes
+4,Project Team,Create,Planned,No
+5,Tags,Create,Ready,Yes
+6,Game Design,Design,Ready,Yes
+7,Assets,Design,Ready,Yes
+8,Colors,Design,Ready,Yes
+9,Fonts,Design,Wireframe,No
+10,Sprites,Design,Wireframe,No
+11,Characters,Design,Wireframe,No
+12,Objects,Design,Wireframe,No
+13,Worlds,Design,Wireframe,No
+14,Animations,Design,Wireframe,No
+15,Audio,Audio,Wireframe,No
+16,Music,Audio,Wireframe,No
+17,Voices,Audio,Wireframe,No
+18,Videos,Audio,Wireframe,No
+19,Build Game,Build/Create,Wireframe,No
+20,Game Testing,Play,Wireframe,No
+21,Controls,Platform,Wireframe,No
+22,Hitboxes,Platform,Wireframe,No
+23,Saved Data,Platform,Wireframe,No
+24,Debug,Platform,Wireframe,No
+25,Performance,Platform,Wireframe,No
+26,Events,Platform,Wireframe,No
+27,Publish,Marketplace,Planned,No
+28,Marketplace,Marketplace,Wireframe,No
+29,Community,Marketplace,Wireframe,No
+30,Languages,Platform,Wireframe,No
+31,Achievements,Play,Wireframe,No
+32,Ratings,Play,Wireframe,No
+33,Cloud,Platform,Hidden,No
+34,Custom Extensions,Build/Create,Hidden,No
+35,MIDI,Audio,Hidden,No
+36,Particles,Audio,Hidden,No
+37,Audio Effects,Audio,Hidden,No
+38,Voice Capture,Audio,Hidden,No
+39,Voice Output,Audio,Hidden,No
 40,Environments,Platform,Planned,No
 41,Game Migration,Platform,Planned,No
 42,Platform Settings,Platform,Planned,No
+
+Toolbox Workflow Ordering Governance
+- Toolbox groups are intentional workflow-order exceptions.
+- Tiles are ordered by creator progression, not alphabetically.
+- Order follows how users naturally work: Select -> Create -> Review, Left -> Right, Top -> Bottom.
+- The next tile should represent the most likely next creator action.
+- Tile ordering should minimize navigation decisions.
+
+Create group order
+1. Game Workspace
+2. Game Configuration
+3. Project Team
+4. Tags
+
+Team distinction
+- Studio Team = account-level roster.
+- Project Team = project-level assignment.
+- Current implementation focus is Project Team.
+- Users functionality that is project-specific moves from Account/Team planning into Create/Project Team planning.

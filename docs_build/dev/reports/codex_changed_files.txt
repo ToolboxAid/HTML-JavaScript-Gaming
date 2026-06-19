@@ -1,20 +1,16 @@
 # git status --short
-M docs_build/dev/reports/codex_changed_files.txt
- M docs_build/dev/reports/codex_review.diff
+M docs_build/dev/PROJECT_INSTRUCTIONS.md
+ M docs_build/dev/admin-notes/tools/index.txt
  M owner/grouping-colors.html
- M tests/playwright/tools/ToolboxRoutePages.spec.mjs
- M toolbox/tools-page-accordions.js
-?? docs_build/dev/reports/PR_26170_005-toolbox-create-idea-color-model.md
-?? docs_build/pr/BUILD_PR_26170_005-toolbox-create-idea-color-model.md
+?? docs_build/dev/reports/PR_26170_006-toolbox-workflow-order-and-project-team.md
+?? docs_build/pr/BUILD_PR_26170_006-toolbox-workflow-order-and-project-team.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26170_005-toolbox-create-idea-color-model.md
-docs_build/pr/BUILD_PR_26170_005-toolbox-create-idea-color-model.md
+docs_build/dev/reports/PR_26170_006-toolbox-workflow-order-and-project-team.md
+docs_build/pr/BUILD_PR_26170_006-toolbox-workflow-order-and-project-team.md
 
 # git diff --stat
-docs_build/dev/reports/codex_changed_files.txt    |   34 +-
- docs_build/dev/reports/codex_review.diff          | 1246 +++++++--------------
- owner/grouping-colors.html                        |  214 +++-
- tests/playwright/tools/ToolboxRoutePages.spec.mjs |   33 +-
- toolbox/tools-page-accordions.js                  |    4 +-
- 5 files changed, 599 insertions(+), 932 deletions(-)
+docs_build/dev/PROJECT_INSTRUCTIONS.md     | 26 ++++++++
+ docs_build/dev/admin-notes/tools/index.txt | 97 ++++++++++++++++++------------
+ owner/grouping-colors.html                 | 19 ++++--
+ 3 files changed, 97 insertions(+), 45 deletions(-)
