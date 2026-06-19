@@ -1,315 +1,3343 @@
-diff --git a/docs_build/dev/PROJECT_INSTRUCTIONS.md b/docs_build/dev/PROJECT_INSTRUCTIONS.md
-index 5c32ef5dd..235f09e6e 100644
---- a/docs_build/dev/PROJECT_INSTRUCTIONS.md
-+++ b/docs_build/dev/PROJECT_INSTRUCTIONS.md
-@@ -221,6 +221,7 @@ Primary top-level header navigation is an explicit product IA exception and must
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index d7e370f57..1cec725d0 100644
+--- a/docs_build/dev/reports/codex_changed_files.txt
++++ b/docs_build/dev/reports/codex_changed_files.txt
+@@ -1,16 +1,20 @@
+-# git status --short
+-M docs_build/dev/PROJECT_INSTRUCTIONS.md
+- M docs_build/dev/admin-notes/tools/index.txt
+- M owner/grouping-colors.html
+-?? docs_build/dev/reports/PR_26170_006-toolbox-workflow-order-and-project-team.md
+-?? docs_build/pr/BUILD_PR_26170_006-toolbox-workflow-order-and-project-team.md
++# PR_26170_007 changed files
  
- Allowed intentional-order exceptions:
- - primary top-level header navigation
-+- Toolbox groups and tiles when they are presented as creator workflow surfaces
- - workflow paths
- - Build Path
- - dependency paths
-@@ -230,6 +231,31 @@ Allowed intentional-order exceptions:
+-# git ls-files --others --exclude-standard
+-docs_build/dev/reports/PR_26170_006-toolbox-workflow-order-and-project-team.md
+-docs_build/pr/BUILD_PR_26170_006-toolbox-workflow-order-and-project-team.md
++docs_build/dev/reports/PR_26170_007-toolbox-workflow-render-order-project-team.md
++docs_build/dev/reports/codex_changed_files.txt
++docs_build/dev/reports/codex_review.diff
++docs_build/dev/reports/coverage_changed_js_guardrail.txt
++docs_build/dev/reports/playwright_v8_coverage_report.txt
++docs_build/pr/BUILD_PR_26170_007-toolbox-workflow-render-order-project-team.md
++src/dev-runtime/server/local-api-router.mjs
++src/shared/toolbox/tool-metadata-inventory.js
++tests/playwright/tools/RootToolsFutureState.spec.mjs
++tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
++tests/playwright/tools/ToolboxRoutePages.spec.mjs
++toolbox/tools-page-accordions.js
++toolbox/users/index.html
  
- Every intentional-order exception must be documented in the PR report that introduces or preserves it.
- 
-+### Toolbox Workflow Ordering Governance
-+
-+Toolbox groups are intentional workflow-order exceptions when the surface is guiding creators through a natural making sequence.
-+
-+Rules:
-+- Toolbox group and tile order is by creator progression, not alphabetically.
-+- Order follows how users naturally work:
-+  - Select -> Create -> Review
-+  - Left -> Right
-+  - Top -> Bottom
-+- The next tile should represent the most likely next creator action.
-+- Tile ordering should minimize navigation decisions.
-+
-+Create group order:
-+1. Game Workspace
-+2. Game Configuration
-+3. Project Team
-+4. Tags
-+
-+Team planning distinction:
-+- Studio Team is the account-level roster.
-+- Project Team is the project-level assignment surface.
-+- Current Toolbox implementation focus is Project Team.
-+- Users functionality that previously lived in Account/Team planning should be planned through Create/Project Team when it is project-specific.
-+
- Toolbox status values are:
- - Ready
- - Wireframe
-diff --git a/docs_build/dev/admin-notes/tools/index.txt b/docs_build/dev/admin-notes/tools/index.txt
-index eb1e8e077..d31d6c9af 100644
---- a/docs_build/dev/admin-notes/tools/index.txt
-+++ b/docs_build/dev/admin-notes/tools/index.txt
-@@ -1,43 +1,62 @@
- Order,Tool,Group,Status,Complete
- 1,AI Assistant,AI,Wireframe,No
--2,Project Workspace,Build/Create,Ready,Yes
--3,Project Journey,Build/Create,Ready,Yes
--4,Game Design,Design,Ready,Yes
--5,Game Configuration,Build/Create,Ready,Yes
--6,Assets,Design,Ready,Yes
--7,Colors,Design,Ready,Yes
--8,Fonts,Design,Wireframe,No
--9,Sprites,Design,Wireframe,No
--10,Characters,Design,Wireframe,No
--11,Objects,Design,Wireframe,No
--12,Worlds,Design,Wireframe,No
--13,Animations,Design,Wireframe,No
--14,Audio,Audio,Wireframe,No
--15,Music,Audio,Wireframe,No
--16,Voices,Audio,Wireframe,No
--17,Videos,Audio,Wireframe,No
--18,Build Game,Build/Create,Wireframe,No
--19,Game Testing,Play,Wireframe,No
--20,Controls,Platform,Wireframe,No
--21,Hitboxes,Platform,Wireframe,No
--22,Saved Data,Platform,Wireframe,No
--23,Debug,Platform,Wireframe,No
--24,Performance,Platform,Wireframe,No
--25,Events,Platform,Wireframe,No
--26,Publish,Marketplace,Planned,No
--27,Marketplace,Marketplace,Wireframe,No
--28,Community,Marketplace,Wireframe,No
--29,Languages,Platform,Wireframe,No
--30,Achievements,Play,Wireframe,No
--31,Ratings,Play,Wireframe,No
--32,Cloud,Platform,Hidden,No
--33,Custom Extensions,Build/Create,Hidden,No
--34,MIDI,Audio,Hidden,No
--35,Particles,Audio,Hidden,No
--36,Audio Effects,Audio,Hidden,No
--37,Voice Capture,Audio,Hidden,No
--38,Voice Output,Audio,Hidden,No
--39,Users,Platform,Planned,No
-+2,Game Workspace,Create,Ready,Yes
-+3,Game Configuration,Create,Ready,Yes
-+4,Project Team,Create,Planned,No
-+5,Tags,Create,Ready,Yes
-+6,Game Design,Design,Ready,Yes
-+7,Assets,Design,Ready,Yes
-+8,Colors,Design,Ready,Yes
-+9,Fonts,Design,Wireframe,No
-+10,Sprites,Design,Wireframe,No
-+11,Characters,Design,Wireframe,No
-+12,Objects,Design,Wireframe,No
-+13,Worlds,Design,Wireframe,No
-+14,Animations,Design,Wireframe,No
-+15,Audio,Audio,Wireframe,No
-+16,Music,Audio,Wireframe,No
-+17,Voices,Audio,Wireframe,No
-+18,Videos,Audio,Wireframe,No
-+19,Build Game,Build/Create,Wireframe,No
-+20,Game Testing,Play,Wireframe,No
-+21,Controls,Platform,Wireframe,No
-+22,Hitboxes,Platform,Wireframe,No
-+23,Saved Data,Platform,Wireframe,No
-+24,Debug,Platform,Wireframe,No
-+25,Performance,Platform,Wireframe,No
-+26,Events,Platform,Wireframe,No
-+27,Publish,Marketplace,Planned,No
-+28,Marketplace,Marketplace,Wireframe,No
-+29,Community,Marketplace,Wireframe,No
-+30,Languages,Platform,Wireframe,No
-+31,Achievements,Play,Wireframe,No
-+32,Ratings,Play,Wireframe,No
-+33,Cloud,Platform,Hidden,No
-+34,Custom Extensions,Build/Create,Hidden,No
-+35,MIDI,Audio,Hidden,No
-+36,Particles,Audio,Hidden,No
-+37,Audio Effects,Audio,Hidden,No
-+38,Voice Capture,Audio,Hidden,No
-+39,Voice Output,Audio,Hidden,No
- 40,Environments,Platform,Planned,No
- 41,Game Migration,Platform,Planned,No
--42,Platform Settings,Platform,Planned,No
+-# git diff --stat
+-docs_build/dev/PROJECT_INSTRUCTIONS.md     | 26 ++++++++
+- docs_build/dev/admin-notes/tools/index.txt | 97 ++++++++++++++++++------------
+- owner/grouping-colors.html                 | 19 ++++--
+- 3 files changed, 97 insertions(+), 45 deletions(-)
 \ No newline at end of file
-+42,Platform Settings,Platform,Planned,No
++# Unrelated untracked files intentionally excluded from this PR artifact
 +
-+Toolbox Workflow Ordering Governance
-+- Toolbox groups are intentional workflow-order exceptions.
-+- Tiles are ordered by creator progression, not alphabetically.
-+- Order follows how users naturally work: Select -> Create -> Review, Left -> Right, Top -> Bottom.
-+- The next tile should represent the most likely next creator action.
-+- Tile ordering should minimize navigation decisions.
++docs_build/dev/admin-notes/GFS-Connected-Play-Second-Screen-Turn-Based-Design-26170-001.pdf
++docs_build/dev/admin-notes/GFS_Game_Identity_Strategy.pdf.pdf
+diff --git a/docs_build/dev/reports/codex_review.diff b/docs_build/dev/reports/codex_review.diff
+index 75cb5cd68..02c9c853c 100644
+--- a/docs_build/dev/reports/codex_review.diff
++++ b/docs_build/dev/reports/codex_review.diff
+@@ -1,315 +1,1506 @@
+-diff --git a/docs_build/dev/PROJECT_INSTRUCTIONS.md b/docs_build/dev/PROJECT_INSTRUCTIONS.md
+-index 5c32ef5dd..235f09e6e 100644
+---- a/docs_build/dev/PROJECT_INSTRUCTIONS.md
+-+++ b/docs_build/dev/PROJECT_INSTRUCTIONS.md
+-@@ -221,6 +221,7 @@ Primary top-level header navigation is an explicit product IA exception and must
++diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++index 1e2fb98ec..d0aed11ad 100644
++--- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+++++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++@@ -6,8 +6,10 @@ Missing changed runtime JS files are WARN, not FAIL.
++ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+  
+- Allowed intentional-order exceptions:
+- - primary top-level header navigation
+-+- Toolbox groups and tiles when they are presented as creator workflow surfaces
+- - workflow paths
+- - Build Path
+- - dependency paths
+-@@ -230,6 +231,31 @@ Allowed intentional-order exceptions:
++ Changed runtime JS files considered:
+++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++ (0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++-(76%) toolbox/tools-page-accordions.js - executed lines 1091/1091; executed functions 81/106
+++(75%) toolbox/tools-page-accordions.js - executed lines 1112/1112; executed functions 80/107
+  
+- Every intentional-order exception must be documented in the PR report that introduces or preserves it.
++ Guardrail warnings:
+++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++ (0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
++diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
++index 8f12cabcd..a65a91d29 100644
++--- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
+++++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
++@@ -12,32 +12,33 @@ Note: entry percentages use function coverage when available, otherwise line cov
++ Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
+  
+-+### Toolbox Workflow Ordering Governance
+-+
+-+Toolbox groups are intentional workflow-order exceptions when the surface is guiding creators through a natural making sequence.
+-+
+-+Rules:
+-+- Toolbox group and tile order is by creator progression, not alphabetically.
+-+- Order follows how users naturally work:
+-+  - Select -> Create -> Review
+-+  - Left -> Right
+-+  - Top -> Bottom
+-+- The next tile should represent the most likely next creator action.
+-+- Tile ordering should minimize navigation decisions.
+-+
+-+Create group order:
+-+1. Game Workspace
+-+2. Game Configuration
+-+3. Project Team
+-+4. Tags
+-+
+-+Team planning distinction:
+-+- Studio Team is the account-level roster.
+-+- Project Team is the project-level assignment surface.
+-+- Current Toolbox implementation focus is Project Team.
+-+- Users functionality that previously lived in Account/Team planning should be planned through Create/Project Team when it is project-specific.
+-+
+- Toolbox status values are:
+- - Ready
+- - Wireframe
+-diff --git a/docs_build/dev/admin-notes/tools/index.txt b/docs_build/dev/admin-notes/tools/index.txt
+-index eb1e8e077..d31d6c9af 100644
+---- a/docs_build/dev/admin-notes/tools/index.txt
+-+++ b/docs_build/dev/admin-notes/tools/index.txt
+-@@ -1,43 +1,62 @@
+- Order,Tool,Group,Status,Complete
+- 1,AI Assistant,AI,Wireframe,No
+--2,Project Workspace,Build/Create,Ready,Yes
+--3,Project Journey,Build/Create,Ready,Yes
+--4,Game Design,Design,Ready,Yes
+--5,Game Configuration,Build/Create,Ready,Yes
+--6,Assets,Design,Ready,Yes
+--7,Colors,Design,Ready,Yes
+--8,Fonts,Design,Wireframe,No
+--9,Sprites,Design,Wireframe,No
+--10,Characters,Design,Wireframe,No
+--11,Objects,Design,Wireframe,No
+--12,Worlds,Design,Wireframe,No
+--13,Animations,Design,Wireframe,No
+--14,Audio,Audio,Wireframe,No
+--15,Music,Audio,Wireframe,No
+--16,Voices,Audio,Wireframe,No
+--17,Videos,Audio,Wireframe,No
+--18,Build Game,Build/Create,Wireframe,No
+--19,Game Testing,Play,Wireframe,No
+--20,Controls,Platform,Wireframe,No
+--21,Hitboxes,Platform,Wireframe,No
+--22,Saved Data,Platform,Wireframe,No
+--23,Debug,Platform,Wireframe,No
+--24,Performance,Platform,Wireframe,No
+--25,Events,Platform,Wireframe,No
+--26,Publish,Marketplace,Planned,No
+--27,Marketplace,Marketplace,Wireframe,No
+--28,Community,Marketplace,Wireframe,No
+--29,Languages,Platform,Wireframe,No
+--30,Achievements,Play,Wireframe,No
+--31,Ratings,Play,Wireframe,No
+--32,Cloud,Platform,Hidden,No
+--33,Custom Extensions,Build/Create,Hidden,No
+--34,MIDI,Audio,Hidden,No
+--35,Particles,Audio,Hidden,No
+--36,Audio Effects,Audio,Hidden,No
+--37,Voice Capture,Audio,Hidden,No
+--38,Voice Output,Audio,Hidden,No
+--39,Users,Platform,Planned,No
+-+2,Game Workspace,Create,Ready,Yes
+-+3,Game Configuration,Create,Ready,Yes
+-+4,Project Team,Create,Planned,No
+-+5,Tags,Create,Ready,Yes
+-+6,Game Design,Design,Ready,Yes
+-+7,Assets,Design,Ready,Yes
+-+8,Colors,Design,Ready,Yes
+-+9,Fonts,Design,Wireframe,No
+-+10,Sprites,Design,Wireframe,No
+-+11,Characters,Design,Wireframe,No
+-+12,Objects,Design,Wireframe,No
+-+13,Worlds,Design,Wireframe,No
+-+14,Animations,Design,Wireframe,No
+-+15,Audio,Audio,Wireframe,No
+-+16,Music,Audio,Wireframe,No
+-+17,Voices,Audio,Wireframe,No
+-+18,Videos,Audio,Wireframe,No
+-+19,Build Game,Build/Create,Wireframe,No
+-+20,Game Testing,Play,Wireframe,No
+-+21,Controls,Platform,Wireframe,No
+-+22,Hitboxes,Platform,Wireframe,No
+-+23,Saved Data,Platform,Wireframe,No
+-+24,Debug,Platform,Wireframe,No
+-+25,Performance,Platform,Wireframe,No
+-+26,Events,Platform,Wireframe,No
+-+27,Publish,Marketplace,Planned,No
+-+28,Marketplace,Marketplace,Wireframe,No
+-+29,Community,Marketplace,Wireframe,No
+-+30,Languages,Platform,Wireframe,No
+-+31,Achievements,Play,Wireframe,No
+-+32,Ratings,Play,Wireframe,No
+-+33,Cloud,Platform,Hidden,No
+-+34,Custom Extensions,Build/Create,Hidden,No
+-+35,MIDI,Audio,Hidden,No
+-+36,Particles,Audio,Hidden,No
+-+37,Audio Effects,Audio,Hidden,No
+-+38,Voice Capture,Audio,Hidden,No
+-+39,Voice Output,Audio,Hidden,No
+- 40,Environments,Platform,Planned,No
+- 41,Game Migration,Platform,Planned,No
+--42,Platform Settings,Platform,Planned,No
+-\ No newline at end of file
+-+42,Platform Settings,Platform,Planned,No
+-+
+-+Toolbox Workflow Ordering Governance
+-+- Toolbox groups are intentional workflow-order exceptions.
+-+- Tiles are ordered by creator progression, not alphabetically.
+-+- Order follows how users naturally work: Select -> Create -> Review, Left -> Right, Top -> Bottom.
+-+- The next tile should represent the most likely next creator action.
+-+- Tile ordering should minimize navigation decisions.
+-+
+-+Create group order
+-+1. Game Workspace
+-+2. Game Configuration
+-+3. Project Team
+-+4. Tags
+-+
+-+Team distinction
+-+- Studio Team = account-level roster.
+-+- Project Team = project-level assignment.
+-+- Current implementation focus is Project Team.
+-+- Users functionality that is project-specific moves from Account/Team planning into Create/Project Team planning.
+-diff --git a/owner/grouping-colors.html b/owner/grouping-colors.html
+-index 6c23c202a..14a05983f 100644
+---- a/owner/grouping-colors.html
+-+++ b/owner/grouping-colors.html
+-@@ -79,7 +79,7 @@
+-                                         <td><span class="brand-color-code"><span
+-                                                     class="brand-color-swatch swatch-amber"></span>Amber <strong>#F59E0B</strong></span></td>
+-                                         <td>Create</td>
+--                                        <td>Project Workspace, Game Journey, Game Configuration, Tags</td>
+-+                                        <td>Game Workspace, Game Configuration, Project Team, Tags</td>
+-                                     </tr>
+-                                     <tr>
+-                                         <td><span class="brand-color-code"><span
+-@@ -151,7 +151,7 @@
+-                                         <td><span class="brand-color-code"><span
+-                                                     class="brand-color-swatch swatch-pink"></span>Pink <strong>#FF4F8B</strong></span></td>
+-                                         <td>Share</td>
+--                                        <td>Marketplace, Community, Cloud, Ratings, Users</td>
+-+                                        <td>Marketplace, Community, Cloud, Ratings</td>
+-                                     </tr>
+-                                 </tbody>
+-                             </table>
+-@@ -168,8 +168,15 @@
+-                             <summary>Idea and Create</summary>
+-                             <div class="accordion-body">
+-                                 <p>Idea <strong>#FF2D2D</strong> is for pre-project thinking and learning. Create
+--                                    <strong>#F59E0B</strong> is for project setup, workspace, configuration, journey,
+--                                    and shared Tags.</p>
+-+                                    <strong>#F59E0B</strong> follows creator workflow order: Game Workspace, Game
+-+                                    Configuration, Project Team, then Tags.</p>
+-+                            </div>
+-+                        </details>
+-+                        <details class="vertical-accordion">
+-+                            <summary>Studio Team and Project Team</summary>
+-+                            <div class="accordion-body">
+-+                                <p>Studio Team is the account-level roster. Project Team is project-level assignment,
+-+                                    and current Toolbox planning focuses on Project Team inside Create.</p>
+-                             </div>
+-                         </details>
+-                         <details class="vertical-accordion">
+-@@ -201,9 +208,9 @@
+-                                 <h3><span class="brand-color-code"><span
+-                                             class="brand-color-swatch swatch-amber"></span>Amber #F59E0B: Create</span></h3>
+-                                 <ul>
+--                                    <li>Project Workspace</li>
+--                                    <li>Game Journey</li>
+-+                                    <li>Game Workspace</li>
+-                                     <li>Game Configuration</li>
+-+                                    <li>Project Team</li>
+-                                     <li>Tags</li>
+-                                 </ul>
+-                             </article>
+-diff --git a/docs_build/dev/reports/PR_26170_006-toolbox-workflow-order-and-project-team.md b/docs_build/dev/reports/PR_26170_006-toolbox-workflow-order-and-project-team.md
++ Exercised tool entry points detected:
++-(71%) Toolbox Index - exercised 3 runtime JS files
+++(70%) Toolbox Index - exercised 3 runtime JS files
++ (0%) Tool Template V2 - not exercised by this Playwright run
++-(63%) Theme V2 Shared JS - exercised 1 runtime JS files
+++(72%) Theme V2 Shared JS - exercised 1 runtime JS files
++ 
++ Changed runtime JS files covered:
+++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++ (0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++-(76%) toolbox/tools-page-accordions.js - executed lines 1091/1091; executed functions 81/106
+++(75%) toolbox/tools-page-accordions.js - executed lines 1112/1112; executed functions 80/107
++ 
++ Files with executed line/function counts where available:
++ (25%) src/api/session-api-client.js - executed lines 68/68; executed functions 3/12
++ (33%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
++ (44%) src/api/server-api-client.js - executed lines 167/167; executed functions 8/18
++ (48%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 11/23
++-(63%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 54/86
++ (65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
++ (67%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 20/20; executed functions 2/3
++-(76%) toolbox/tools-page-accordions.js - executed lines 1091/1091; executed functions 81/106
+++(72%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 65/90
+++(75%) toolbox/tools-page-accordions.js - executed lines 1112/1112; executed functions 80/107
++ 
++ Uncovered or low-coverage changed JS files:
+++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
++ (0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
++ 
++ Changed JS files considered:
+++(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
++ (0%) src/shared/toolbox/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
++-(0%) tests/playwright/tools/BuildPathProgressSimplification.spec.mjs - changed JS file not collected as browser runtime coverage
++-(0%) tests/playwright/tools/GameJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
++ (0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
++ (0%) tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs - changed JS file not collected as browser runtime coverage
++ (0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
++-(76%) toolbox/tools-page-accordions.js - changed JS file with browser V8 coverage
+++(75%) toolbox/tools-page-accordions.js - changed JS file with browser V8 coverage
++diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
++index b0d632318..f70773668 100644
++--- a/src/dev-runtime/server/local-api-router.mjs
+++++ b/src/dev-runtime/server/local-api-router.mjs
++@@ -1421,6 +1421,48 @@ function normalizedToolKey(row) {
++   return String(row?.toolKey || row?.toolId || row?.id || "").trim();
++ }
++ 
+++const SOURCE_CONTROLLED_TOOLBOX_TOOL_IDS = new Set(["users"]);
+++const SOURCE_CONTROLLED_TOOLBOX_METADATA_FIELDS = Object.freeze([
+++  "adminOnly",
+++  "category",
+++  "colorGroup",
+++  "description",
+++  "group",
+++  "hidden",
+++  "shortDescription",
+++  "shortLabel",
+++  "subgroup",
+++  "toolName",
+++  "toolboxGroup",
+++  "visibleInToolsList",
+++]);
+++const SOURCE_CONTROLLED_TOOLBOX_PLANNING_FIELDS = Object.freeze([
+++  "progressChecklist",
+++]);
+++
+++function shouldSyncSourceControlledTool(toolId) {
+++  return SOURCE_CONTROLLED_TOOLBOX_TOOL_IDS.has(String(toolId || ""));
+++}
+++
+++function valuesMatchForSourceSync(left, right) {
+++  if (Array.isArray(left) || Array.isArray(right)) {
+++    return JSON.stringify(left || []) === JSON.stringify(right || []);
+++  }
+++  return left === right;
+++}
+++
+++function applySourceControlledValues(target, defaults, fields) {
+++  let changed = false;
+++  fields.forEach((field) => {
+++    const value = defaults[field];
+++    if (!valuesMatchForSourceSync(target[field], value)) {
+++      target[field] = Array.isArray(value) ? [...value] : value;
+++      changed = true;
+++    }
+++  });
+++  return changed;
+++}
+++
++ function requiredToolMetadataDiagnostics(row) {
++   const missing = ["toolKey", "toolName", "group", "path", "order", "status"].filter((field) => {
++     const value = field === "toolKey" ? normalizedToolKey(row) : row?.[field];
++@@ -4562,6 +4604,9 @@ LIMIT 1;
++           : Array.isArray(migratedValues.requires) ? migratedValues.requires : defaults.requires,
++         toolKey,
++       };
+++      if (shouldSyncSourceControlledTool(toolKey)) {
+++        applySourceControlledValues(normalizedValues, defaults, SOURCE_CONTROLLED_TOOLBOX_PLANNING_FIELDS);
+++      }
++ 
++       if (!existingRow) {
++         rows.push({
++@@ -4634,9 +4679,12 @@ LIMIT 1;
++         releaseChannelLabel: getToolReleaseChannelLabel(releaseChannel),
++         toolName: existingRow.toolName || defaults.toolName,
++       };
+++      if (shouldSyncSourceControlledTool(tool.id)) {
+++        applySourceControlledValues(normalizedValues, defaults, SOURCE_CONTROLLED_TOOLBOX_METADATA_FIELDS);
+++      }
++       Object.entries(normalizedValues).forEach(([key, value]) => {
++-        if (existingRow[key] !== value) {
++-          existingRow[key] = value;
+++        if (!valuesMatchForSourceSync(existingRow[key], value)) {
+++          existingRow[key] = Array.isArray(value) ? [...value] : value;
++           changed = true;
++         }
++       });
++@@ -4665,8 +4713,17 @@ LIMIT 1;
++         ...this.defaultToolboxPlanning(tool),
++         ...createMockDbAuditFields(index, SEED_DB_KEYS.users.forgeBot),
++       }));
++-    if (missingRows.length) {
++-      await adapter.upsertProductTable("toolbox_tool_planning", missingRows);
+++    const syncedRows = activeTools
+++      .filter((tool) => shouldSyncSourceControlledTool(tool.id) && rowsByToolKey.has(tool.id))
+++      .flatMap((tool) => {
+++        const row = rowsByToolKey.get(tool.id);
+++        const updatedRow = { ...row };
+++        return applySourceControlledValues(updatedRow, this.defaultToolboxPlanning(tool), SOURCE_CONTROLLED_TOOLBOX_PLANNING_FIELDS)
+++          ? [updatedRow]
+++          : [];
+++      });
+++    if (missingRows.length || syncedRows.length) {
+++      await adapter.upsertProductTable("toolbox_tool_planning", [...missingRows, ...syncedRows]);
++       return adapter.getProductTableRows("toolbox_tool_planning");
++     }
++     return rows;
++@@ -4676,7 +4733,8 @@ LIMIT 1;
++     const adapter = this.supabaseDatabaseAdapter("Reading Supabase Toolbox tool metadata");
++     const rows = await adapter.getProductTableRows("toolbox_tool_metadata");
++     const activeTools = getActiveToolRegistry();
++-    const existingToolKeys = new Set(rows.map((row) => row.toolKey || row.toolId));
+++    const rowsByToolKey = new Map(rows.map((row) => [row.toolKey || row.toolId, row]));
+++    const existingToolKeys = new Set(rowsByToolKey.keys());
++     const missingRows = activeTools
++       .filter((tool) => !existingToolKeys.has(tool.id))
++       .map((tool, index) => ({
++@@ -4684,8 +4742,17 @@ LIMIT 1;
++         ...this.defaultToolboxMetadata(tool, index),
++         ...createMockDbAuditFields(index, SEED_DB_KEYS.users.forgeBot),
++       }));
++-    if (missingRows.length) {
++-      await adapter.upsertProductTable("toolbox_tool_metadata", missingRows);
+++    const syncedRows = activeTools
+++      .filter((tool) => shouldSyncSourceControlledTool(tool.id) && rowsByToolKey.has(tool.id))
+++      .flatMap((tool, index) => {
+++        const row = rowsByToolKey.get(tool.id);
+++        const updatedRow = { ...row };
+++        return applySourceControlledValues(updatedRow, this.defaultToolboxMetadata(tool, index), SOURCE_CONTROLLED_TOOLBOX_METADATA_FIELDS)
+++          ? [updatedRow]
+++          : [];
+++      });
+++    if (missingRows.length || syncedRows.length) {
+++      await adapter.upsertProductTable("toolbox_tool_metadata", [...missingRows, ...syncedRows]);
++       return adapter.getProductTableRows("toolbox_tool_metadata");
++     }
++     return rows;
++diff --git a/src/shared/toolbox/tool-metadata-inventory.js b/src/shared/toolbox/tool-metadata-inventory.js
++index 4537aa685..69d5ce762 100644
++--- a/src/shared/toolbox/tool-metadata-inventory.js
+++++ b/src/shared/toolbox/tool-metadata-inventory.js
++@@ -1460,18 +1460,18 @@ export const TOOL_REGISTRY = Object.freeze([
++   },
++   {
++     "id": "users",
++-    "name": "Users",
++-    "displayName": "Users",
++-    "shortDescription": "Plan admin-only user management workflows.",
++-    "shortLabel": "Users",
+++    "name": "Project Team",
+++    "displayName": "Project Team",
+++    "shortDescription": "Plan project-level team assignments for the active game.",
+++    "shortLabel": "Project Team",
++     "path": "users",
++     "folderName": "users",
++     "entryPoint": "users/index.html",
++     "badge": "/assets/theme-v2/images/badges/users.png",
++     "tool": "/assets/theme-v2/images/tools/users.png",
++-    "description": "Plan admin-only user management workflows.",
++-    "category": "Platform",
++-    "colorGroup": "tool-group-platform",
+++    "description": "Plan project-level team assignments for the active game. Studio Team remains the account-level roster.",
+++    "category": "Create",
+++    "colorGroup": "tool-group-game-create",
++     "active": true,
++     "order": 40,
++     "requiredForPlayable": false,
++@@ -1480,15 +1480,15 @@ export const TOOL_REGISTRY = Object.freeze([
++     "requires": [],
++     "status": "Planned",
++     "progressChecklist": [
++-      "Admin-only planned capability",
+++      "Project-level assignment planning",
++       "Static planned text only"
++     ],
++     "deferred": true,
++-    "hidden": true,
++-    "adminOnly": true,
++-    "visibleInToolsList": false,
++-    "toolboxGroup": "Admin",
++-    "subgroup": "Admin planned"
+++    "hidden": false,
+++    "adminOnly": false,
+++    "visibleInToolsList": true,
+++    "toolboxGroup": "Create",
+++    "subgroup": "Project planning"
++   },
++   {
++     "id": "environments",
++diff --git a/tests/playwright/tools/RootToolsFutureState.spec.mjs b/tests/playwright/tools/RootToolsFutureState.spec.mjs
++index 455206718..b8dedafac 100644
++--- a/tests/playwright/tools/RootToolsFutureState.spec.mjs
+++++ b/tests/playwright/tools/RootToolsFutureState.spec.mjs
++@@ -253,7 +253,7 @@ test("root tools surface links current tool pages without old_* routes", async (
++     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
++     await expect(page.getByRole("button", { name: "Build Path" })).toBeVisible();
++     await expect(page.getByRole("button", { name: "Build Path" })).not.toHaveAttribute("aria-disabled", "true");
++-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/41");
+++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/42");
++     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
++     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='admin']")).toHaveCount(0);
++     await expect(page.locator("nav.nav-links > a[data-route='learn']")).toHaveCount(1);
++@@ -389,7 +389,7 @@ test("root tools surface links current tool pages without old_* routes", async (
++     expect(failedRequests.filter((request) => request.includes("/toolbox/old_"))).toEqual([]);
++ 
++     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
++-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/41");
+++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/42");
++     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
++     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
++     await setServerSession(server, MOCK_DB_KEYS.users.admin);
++@@ -440,7 +440,7 @@ test("root tools surface links current tool pages without old_* routes", async (
++     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
++     await setServerSession(server, "");
++     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
++-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/41");
+++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/42");
++     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
++     expect(pageErrors).toEqual([]);
++   } finally {
++diff --git a/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs b/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
++index 0f40e9616..4b46e8fa3 100644
++--- a/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
+++++ b/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
++@@ -10,11 +10,11 @@ const REQUIRED_ADMIN_TOOLS = [
++   "Environments",
++   "Game Migration",
++   "Platform Settings",
++-  "Users",
++ ];
++ const REQUIRED_RESTORED_TOOLS = [
++   "AI Command Center",
++   "Creator Learning",
+++  "Project Team",
++ ];
++ const EXPECTED_SETUP_COMPACT_ORDER = [
++   "Game Workspace",
++@@ -220,6 +220,13 @@ test("Toolbox and Admin Tool Votes share the same DB-backed metadata and plannin
++       status: "deprecated",
++       visibleInToolsList: false,
++     }));
+++    expect(registrySnapshot.activeTools.find((tool) => tool.id === "users")).toEqual(expect.objectContaining({
+++      category: "Create",
+++      displayName: "Project Team",
+++      releaseChannel: "planned",
+++      status: "planned",
+++      visibleInToolsList: true,
+++    }));
++ 
++     for (const row of snapshot.rows) {
++       expect(row.toolKey, row.toolName).toBeTruthy();
++diff --git a/tests/playwright/tools/ToolboxRoutePages.spec.mjs b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
++index 9d8201460..a3214ddc5 100644
++--- a/tests/playwright/tools/ToolboxRoutePages.spec.mjs
+++++ b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
++@@ -90,6 +90,14 @@ async function toolMetadataById(server) {
++   return new Map(snapshot.activeTools.map((tool) => [tool.id, tool]));
++ }
++ 
+++function restoreEnvValue(key, value) {
+++  if (value === undefined) {
+++    delete process.env[key];
+++    return;
+++  }
+++  process.env[key] = value;
+++}
+++
++ test("tools route aliases render toolbox tool pages", async ({ page }) => {
++   const server = await startRepoServer();
++   const failedRequests = [];
++@@ -169,7 +177,7 @@ test("Idea Board launches from Toolbox with placeholder-only Create Project acti
++       }
++     });
++     await page.goto(`${server.baseUrl}/toolbox/index.html?view=group&group=idea`, { waitUntil: "networkidle" });
++-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/41");
+++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/42");
++     await expect(page.locator("[data-tools-accordion='Idea']")).toHaveCount(1);
++     await expect(page.locator("[data-tools-accordion='Idea']")).toBeVisible();
++     await expect(page.locator("[data-tools-accordion='Idea']")).toHaveJSProperty("open", true);
++@@ -212,6 +220,10 @@ test("Idea Board launches from Toolbox with placeholder-only Create Project acti
++ 
++ test("toolbox index shows wireframe and beta tools while Planned remains opt-in", async ({ page }) => {
++   const server = await startRepoServer();
+++  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+++  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
+++  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
+++  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
++   const failedRequests = [];
++   const pageErrors = [];
++   const consoleErrors = [];
++@@ -264,17 +276,18 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
++     await expect(page.locator("[data-toolbox-tool-name-link='Game Journey']")).toBeVisible();
++     await expect(page.locator("[data-toolbox-tool-name-link='Game Workspace']")).toBeVisible();
++     await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toHaveCount(0);
++-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/41");
+++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/42");
++     await page.locator("[data-toolbox-status-filter='planned']").click();
++     await expect(page.locator("[data-toolbox-status-filter='planned']")).toHaveAttribute("aria-pressed", "true");
++-    await expect(page.locator("[data-toolbox-tool-card][data-toolbox-release-channel='planned']")).toHaveCount(27);
++-    await expect(page.locator("[data-toolbox-tool-card]")).toHaveCount(40);
++-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 40/41");
+++    await expect(page.locator("[data-toolbox-tool-card][data-toolbox-release-channel='planned']")).toHaveCount(28);
+++    await expect(page.locator("[data-toolbox-tool-card]")).toHaveCount(41);
+++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 41/42");
++     await expect(page.locator("[data-toolbox-tool-name-link='AI Command Center']")).toBeVisible();
+++    await expect(page.locator("[data-toolbox-tool-name-link='Project Team']")).toBeVisible();
++     await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toBeVisible();
++     await page.locator("[data-toolbox-status-filter='deprecated']").click();
++     await expect(page.locator("[data-toolbox-tool-name-link='Build Game']")).toBeVisible();
++-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 41/41");
+++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 42/42");
++ 
++     await setServerSession(server, MOCK_DB_KEYS.users.admin);
++     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
++@@ -297,6 +310,8 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
++   } finally {
++     await workspaceV2CoverageReporter.stop(page);
++     await server.close();
+++    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
+++    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
++   }
++ });
++ 
++@@ -332,7 +347,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
++     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
++ 
++     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
++-      "Planned (27)",
+++      "Planned (28)",
++       "Wireframe (5)",
++       "Beta (7)",
++       "Complete (1)",
++@@ -349,7 +364,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
++ 
++     await page.locator("[data-tools-view='build-path']").click();
++     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
++-      "Planned (27)",
+++      "Planned (28)",
++       "Wireframe (5)",
++       "Beta (7)",
++       "Complete (1)",
++@@ -704,6 +719,10 @@ test("toolbox status kickers, filters, card order, and voting controls work from
++ 
++ test("toolbox grouped view renders Game Journey order with unique colors while Build Path keeps metadata groups", async ({ page }) => {
++   const server = await startRepoServer();
+++  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+++  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
+++  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
+++  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
++   const failedRequests = [];
++   const pageErrors = [];
++   const consoleErrors = [];
++@@ -777,10 +796,17 @@ test("toolbox grouped view renders Game Journey order with unique colors while B
++     expect(toolboxGroupsByTool["AI Command Center"]).toBe("Design");
++     expect(toolboxGroupsByTool["Game Workspace"]).toBe("Create");
++     expect(toolboxGroupsByTool["Game Configuration"]).toBe("Create");
++-    expect(toolboxGroupsByTool["Game Journey"]).toBe("Create");
+++    expect(toolboxGroupsByTool["Project Team"]).toBe("Create");
++     expect(toolboxGroupsByTool["Tags"]).toBe("Create");
+++    expect(toolboxGroupsByTool["Game Journey"]).toBe("Progression");
++     expect(toolboxGroupsByTool["Publish"]).toBe("Publish");
++     expect(toolboxGroupsByTool["Marketplace"]).toBe("Share");
+++    expect(toolboxGroupsByTool.Users).toBeUndefined();
+++
+++    const createToolOrder = await page.locator("[data-tools-accordion='Create'] [data-toolbox-tool-card]").evaluateAll((cards) => (
+++      cards.map((card) => card.getAttribute("data-toolbox-tool-card"))
+++    ));
+++    expect(createToolOrder).toEqual(["Game Workspace", "Game Configuration", "Project Team", "Tags"]);
++ 
++     const toolLinks = await page.locator("[data-toolbox-tool-name-link]").evaluateAll((links) => (
++       links.map((link) => ({
++@@ -821,6 +847,8 @@ test("toolbox grouped view renders Game Journey order with unique colors while B
++   } finally {
++     await workspaceV2CoverageReporter.stop(page);
++     await server.close();
+++    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
+++    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
++   }
++ });
++ 
++@@ -890,7 +918,7 @@ test("toolbox Build Path status filters support multi-select registry-matched to
++     await expect(page.locator("[data-tools-sort='grouped']")).not.toHaveClass(/primary/);
++ 
++     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
++-      "Planned (27)",
+++      "Planned (28)",
++       "Wireframe (5)",
++       "Beta (7)",
++       "Complete (1)",
++@@ -903,32 +931,32 @@ test("toolbox Build Path status filters support multi-select registry-matched to
++ 
++     await page.locator("[data-toolbox-status-filter='planned']").click();
++     await expectActiveFilters(["planned", "complete"]);
++-    await expectBuildPathChannels(["planned", "complete"], 28);
+++    await expectBuildPathChannels(["planned", "complete"], 29);
++     await expect(page.locator("[data-build-path-tool='AI Command Center']")).toBeVisible();
++     await expectBuildPathOrder("AI Command Center", registryById.get("ai-assistant").order);
++     await expectBuildPathOrder("Colors", registryById.get("colors").order);
++ 
++     await page.locator("[data-toolbox-status-filter='complete']").click();
++     await expectActiveFilters(["planned"]);
++-    await expectBuildPathChannels(["planned"], 27);
+++    await expectBuildPathChannels(["planned"], 28);
++     await expect(page.locator("[data-build-path-tool='Colors']")).toHaveCount(0);
++     await expect(page.locator("[data-build-path-tool='AI Command Center']")).toBeVisible();
++ 
++     await page.locator("[data-toolbox-status-filter='wireframe']").click();
++     await expectActiveFilters(["planned", "wireframe"]);
++-    await expectBuildPathChannels(["planned", "wireframe"], 32);
+++    await expectBuildPathChannels(["planned", "wireframe"], 33);
++     await expect(page.locator("[data-build-path-tool='Saved Data']")).toBeVisible();
++     await expect(page.locator("[data-build-path-tool='Build Game']")).toHaveCount(0);
++ 
++     await page.locator("[data-toolbox-status-filter='deprecated']").click();
++     await expectActiveFilters(["planned", "wireframe", "deprecated"]);
++-    await expectBuildPathChannels(["planned", "wireframe", "deprecated"], 33);
+++    await expectBuildPathChannels(["planned", "wireframe", "deprecated"], 34);
++     await expect(page.locator("[data-build-path-tool='Build Game']")).toBeVisible();
++     await expectBuildPathOrder("Build Game", registryById.get("build-game").order);
++ 
++     await page.locator("[data-toolbox-status-filter='beta']").click();
++     await expectActiveFilters(["planned", "wireframe", "beta", "deprecated"]);
++-    await expectBuildPathChannels(["planned", "wireframe", "beta", "deprecated"], 40);
+++    await expectBuildPathChannels(["planned", "wireframe", "beta", "deprecated"], 41);
++ 
++     expect(failedRequests).toEqual([]);
++     expect(pageErrors).toEqual([]);
++diff --git a/toolbox/tools-page-accordions.js b/toolbox/tools-page-accordions.js
++index 193541c51..0432d7497 100644
++--- a/toolbox/tools-page-accordions.js
+++++ b/toolbox/tools-page-accordions.js
++@@ -135,7 +135,7 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
++         "fonts": "Interface",
++         "game-configuration": "Create",
++         "game-design": "Design",
++-        "game-journey": "Create",
+++        "game-journey": "Progression",
++         "game-migration": "Publish",
++         "game-testing": "Play Test",
++         "game-workspace": "Create",
++@@ -158,16 +158,25 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
++         "sprites": "Graphics",
++         "tags": "Create",
++         "text-to-speech": "Audio",
++-        "users": "Share",
+++        "users": "Create",
++         "videos": "Graphics",
++         "voices": "Audio",
++         "worlds": "Worlds"
++     });
++     const toolboxGroupPositions = new Map(toolboxGroupOrder.map((group, index) => [group, index]));
+++    const workflowToolOrderByGroup = Object.freeze({
+++        "Create": Object.freeze({
+++            "game-workspace": 1,
+++            "game-configuration": 2,
+++            "users": 3,
+++            "tags": 4
+++        })
+++    });
++     toolboxDefaultReleaseChannels.forEach((channel) => {
++         visibleReleaseChannels.add(channel);
++     });
++     const registryTools = getActiveToolRegistry();
+++    const registryOrderPositions = new Map(registryTools.map((tool, index) => [tool.id, index]));
++     const registryToolsByTitle = new Map(registryTools.map((tool) => [tool.displayName || tool.name, tool]));
++     const toolGroups = gameJourneyGroupOrder
++         .map((group) => ({
++@@ -217,6 +226,20 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
++             || String(left.displayName || left.name || "").localeCompare(String(right.displayName || right.name || ""));
++     }
++ 
+++    function workflowOrderForTool(tool) {
+++        const toolGroupOrder = workflowToolOrderByGroup[tool.group || gameJourneyGroupForTool(tool)];
+++        if (toolGroupOrder && Number.isInteger(toolGroupOrder[tool.id])) {
+++            return toolGroupOrder[tool.id];
+++        }
+++        return registryOrderPositions.get(tool.id) ?? Number.MAX_SAFE_INTEGER;
+++    }
+++
+++    function compareByWorkflowOrder(left, right) {
+++        return workflowOrderForTool(left) - workflowOrderForTool(right)
+++            || (left.order ?? Number.MAX_SAFE_INTEGER) - (right.order ?? Number.MAX_SAFE_INTEGER)
+++            || String(left.displayName || left.name || left.title || "").localeCompare(String(right.displayName || right.name || right.title || ""));
+++    }
+++
++     function releaseChannelForTool(tool) {
++         if (typeof tool === "string") {
++             const explicitChannel = tool.trim().toLowerCase();
++@@ -395,7 +418,7 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
++                 tools: toolGroup.tools
++                     .map((tool) => enrichTool(tool, toolGroup.group))
++                     .filter(isVisibleForRole)
++-                    .sort(compareByTitle)
+++                    .sort(compareByWorkflowOrder)
++             }))
++             .filter((group) => group.tools.length > 0);
++     }
++diff --git a/toolbox/users/index.html b/toolbox/users/index.html
++index dda4a3de4..0f541132a 100644
++--- a/toolbox/users/index.html
+++++ b/toolbox/users/index.html
++@@ -5,8 +5,8 @@
++     <meta charset="utf-8">
++     <base href="/">
++     <meta name="viewport" content="width=device-width, initial-scale=1">
++-    <title>Users - GameFoundryStudio</title>
++-    <meta name="description" content="Users Toolbox wireframe. Plan admin-only user management workflows.">
+++    <title>Project Team - GameFoundryStudio</title>
+++    <meta name="description" content="Project Team Toolbox wireframe. Plan project-level team assignments for the active game.">
++     <link rel="icon" href="/favicon.svg">
++     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
++ </head>
++@@ -16,17 +16,17 @@
++     <main>
++         <section class="page-title">
++             <div class="container">
++-                <div class="kicker">Toolbox / Users</div>
++-                <h1>Users</h1>
++-                <p class="lede">Plan admin-only user management workflows. Static wireframe only; no database, persistence, save, load, or runtime behavior is implemented.</p>
+++                <div class="kicker">Toolbox / Project Team</div>
+++                <h1>Project Team</h1>
+++                <p class="lede">Plan project-level team assignments for the active game. Static wireframe only; no database, persistence, save, load, or runtime behavior is implemented.</p>
++             </div>
++         </section>
++         <section class="section">
++             <div class="container container--tool-wide">
++                 <div class="tool-workspace tool-workspace--wide">
++-                    <aside class="tool-column tool-group-platform">
+++                    <aside class="tool-column tool-group-game-create">
++                         <div class="tool-column-header">
++-                            <h2>Users</h2>
+++                            <h2>Project Team</h2>
++                         </div>
++                         <div class="accordion-stack">
++                             <details class="vertical-accordion" open>
++@@ -37,9 +37,9 @@
++                     </aside>
++                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="users" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
++                     <section class="tool-center-panel"><h2>Workspace</h2>
++-                        <p>Plan admin-only user management workflows. This page preserves the shared Theme V2 tool template structure for future rebuild work.</p>
+++                        <p>Plan project-level team assignments. Studio Team remains the account-level roster and is not implemented in this Project Team wireframe.</p>
++                     </section>
++-                    <aside class="tool-column tool-group-platform">
+++                    <aside class="tool-column tool-group-game-create">
++                         <div class="tool-column-header">
++                             <h2>Inspector</h2>
++                         </div>
++diff --git a/docs_build/dev/admin-notes/GFS-Connected-Play-Second-Screen-Turn-Based-Design-26170-001.pdf b/docs_build/dev/admin-notes/GFS-Connected-Play-Second-Screen-Turn-Based-Design-26170-001.pdf
++new file mode 100644
++index 000000000..ecfc99cb3
++--- /dev/null
+++++ b/docs_build/dev/admin-notes/GFS-Connected-Play-Second-Screen-Turn-Based-Design-26170-001.pdf
++@@ -0,0 +1,396 @@
+++                                               Game Foundry Studio
+++
+++          Connected Play / Second Screen Design
+++
+++                        Turn-Based TV + Phone/PC Adventure Game Architecture
+++
+++        Recommended file name: GFS-Connected-Play-Second-Screen-Turn-Based-Design-26170-001.pdf
+++
+++Purpose. This document captures the second-screen game concept discussed for Game Foundry Studio and
+++turns it into a future build note. The goal is to let creators build TV-friendly, turn-based adventure, party,
+++classroom, tabletop, and board-style games where the main game is shown on a TV or shared screen, while
+++players interact from phones, PCs, tablets, or other devices.
+++
+++Core idea. The TV or host screen is the shared game board. Player devices become private or public
+++controllers. A separate GFS networking server/VPS handles sessions, joining, presence, turn messages,
+++reconnect, and save synchronization.
+++
+++1. Working Feature Names
+++
+++ Feature group: Connected Play
+++ Creator-facing area: Connected Players
+++ Phone/tablet/PC UI tool: Remote Screens
+++ Turn flow tool: Turn Manager
+++ Checkpoint tool: Save Spots
+++ Backend service name options: GFS Play Server, GFS Session Server, or GFS Networking Server
+++Recommendation. Use Connected Play as the broad feature name. Use Connected Players as the creator-
+++facing configuration tool. This avoids making the feature sound like normal keyboard/mouse/gamepad
+++controls. The phone can roll dice, spin a wheel, choose a secret card, vote, manage inventory, chat, trade, or
+++operate as a host device.
+++
+++2. Why This Matters
+++
+++ Most TVs do not have good keyboard or mouse input, and remote controls are poor for complex game
+++     interaction.
+++
+++ Phones are already available at family game nights, classrooms, parties, and tabletop sessions.
+++ Turn-based games have very low network traffic: button clicks, dice rolls, card choices, votes, and save
+++
+++     events.
+++ Second-screen input enables hidden information, secret choices, team-only instructions, private
+++
+++     inventory, and player-specific prompts.
+++ This gives GFS a differentiator: creators can build Jackbox-like, Kahoot-like, tabletop assistant,
+++
+++     classroom quiz, and social deduction experiences without writing networking code.
+++
+++                                                               Game Foundry Studio - Connected Play Design
+++3. Example Game Pattern
+++
+++ A player opens the adventure game on a TV, browser, projector, or large shared monitor.
+++ The TV shows a QR code and join code.
+++ Players scan the QR code or visit a join URL from their phone, PC, or tablet.
+++ Each player joins the session, chooses a name/avatar, and receives a player role.
+++ The TV displays the shared board, world map, encounter, dice result, wheel animation, or story event.
+++ Each player device displays the correct UI for that player: roll dice, choose action, vote, pick a card,
+++
+++     enter an answer, or manage inventory.
+++ The networking server validates the action and routes it to the TV/host screen.
+++ At creator-defined save spots, the session syncs back to GFS storage/database so the group can resume
+++
+++     later.
+++
+++4. Recommended Architecture
+++
+++Use a separate VPS or server for networking. The main GFS app should remain focused on tools,
+++published games, accounts, project data, and assets. Connected Play should have a separate service
+++boundary because session state, player presence, turn messages, and reconnect behavior are operationally
+++different from static pages and project editing.
+++
+++Domain / Service               Responsibility                   Notes
+++
+++gamefoundrystudio.com          Main app, tools, creator pages,  Static app and creator tooling.
+++                               published game pages
+++
+++api.gamefoundrystudio.com      Accounts, projects, saves, publishing, Can be Supabase/API-backed
+++
+++                               package metadata                 depending on environment.
+++
+++network.gamefoundrystudio.com  Lobby, sessions, join codes, presence, Separate VPS/service. This is the
+++
+++                               turn messages, reconnect         Connected Play runtime.
+++
+++R2 / storage                   Assets, project packages,        Environment prefixes remain
+++                               checkpoints, save payloads       DEV/IST/UAT/PROD.
+++
+++5. Recommended V1 Network Model
+++
+++Start server-relayed, not peer-to-peer. For turn-based games, the traffic is small enough that phone ->
+++networking VPS -> TV is simpler, more reliable, easier to test, and easier to debug. Peer-to-peer can be
+++added later as an optimization, but it should not block V1.
+++
+++ V1: Phone/PC/tablet sends action to GFS Play Server.
+++ GFS Play Server validates session, player, role, and turn ownership.
+++ GFS Play Server forwards the accepted action to the TV/host screen.
+++ TV/host screen updates game state and animation.
+++ At save spots, the game sends a checkpoint to GFS API/storage.
+++Future peer-preferred mode. After players join through GFS, devices can attempt peer-to-peer
+++connections for gameplay messages. The server would still remain responsible for lobby, signaling,
+++
+++                                                               Game Foundry Studio - Connected Play Design
+++identity, reconnect, fallback relay, and save sync. If peer-to-peer fails due to NAT/firewall conditions, the
+++game falls back to the server relay.
+++
+++6. Creator-Facing Tools to Add
+++
+++Tool               Purpose                   Creator Configures                                             Examples
+++
+++Connected Players  Defines who can join and  Join code, QR code, player                                     Family board game,
+++                   what roles exist.         slots, teams, host,                                            classroom quiz, party
+++                                             spectators, reconnect                                          adventure.
+++                                             rules.
+++
+++Remote Screens     Builds the UI shown on    Buttons, dice, wheel, cards,                                   Roll dice, choose spell, vote
+++                   each phone/PC/tablet.     vote, number entry, text                                       on path.
+++                                             entry, inventory, private
+++                                             messages.
+++
+++Turn Manager       Controls turn order and   Turn sequence, active                                          Player 2 rolls, Red Team
+++Save Spots         valid actions.            player/team, timeout, skip,                                    votes, host reveals answer.
+++                                             round rules, host override.
+++                   Defines checkpoint and
+++                   resume behavior.          Save after turn, after                                         Resume campaign next
+++                                             round, after room, after                                       week from saved room.
+++                                             boss, manual host save,
+++                                             auto-save interval.
+++
+++Host Controls      Optional game             Start round, pause, skip                                       Teacher quiz host,
+++Presence Monitor   master/teacher/admin      player, award points,                                          dungeon master, party
+++                   controls.                 reveal card, kick player.                                      host.
+++
+++                   Shows player state to     Connected, disconnected,                                       Pause if current player
+++                   creator/game host.        reconnecting, idle,                                            disconnects.
+++                                             spectator.
+++
+++7. Built-In Remote Widgets
+++
+++ Dice Roller
+++ Wheel Spinner
+++ Card Draw / Card Choice
+++ Vote / Poll
+++ Yes / No
+++ Multiple Choice
+++ Text Entry
+++ Number Entry
+++ Slider
+++ Inventory Selector
+++ Character Action Buttons
+++ Team Chat / Private Message
+++
+++                                                               Game Foundry Studio - Connected Play Design
+++ Timer / Ready Button
+++ Rating / Stars
+++ Host Override Buttons
+++
+++Design principle. Remote widgets should be drag-and-drop building blocks. Creators should not need to
+++know WebSockets, session IDs, JSON payloads, or networking details. The engine should turn widget
+++actions into game events.
+++
+++8. Core Game Events
+++
+++ On Session Created
+++ On Player Join
+++ On Player Leave
+++ On Player Reconnect
+++ On Player Ready
+++ On Turn Start
+++ On Turn Timeout
+++ On Player Action
+++ On Vote Complete
+++ On Dice Rolled
+++ On Wheel Spun
+++ On Card Chosen
+++ On Host Action
+++ On Save Spot Reached
+++ On Save Complete
+++ On Network Error
+++
+++9. Roles and Permissions
+++
+++Role                      Can Do                              Use Cases
+++                                                              Teacher, party host, dungeon master,
+++Host                      Create/start session, pause, skip,  parent.
+++                          reveal, award, save, end session.   Normal adventure/party game
+++                                                              participant.
+++Player                    Interact when allowed, receive
+++                          private screens, take turns, vote,  Team-based puzzles, classroom
+++                          choose actions.                     groups.
+++                                                              Audience, stream viewers, classroom
+++Team Member               Act for team or vote with team.     observers.
+++                                                              Creator testing during build.
+++Spectator                 View only, no gameplay actions
+++Creator/Test User         unless promoted.
+++
+++                          Debug session, inspect messages,
+++                          simulate players.
+++
+++                          Game Foundry Studio - Connected Play Design
+++10. Private Information Support
+++
+++Private player UI is a major reason to build this feature. The TV can show shared information while
+++each player device shows information only that player, team, or host should see.
+++
+++ Secret missions: only one player sees their objective.
+++ Hidden roles: social deduction games where players have private roles.
+++ Card hands: each player sees their own cards.
+++ Inventory: each player sees personal items and abilities.
+++ Team-only instructions: Red Team and Blue Team receive different prompts.
+++ Puzzle input: one player reads clues while another sees controls.
+++
+++11. Turn-Based Validation Rules
+++
+++ Only the current player or current team can submit turn actions unless the creator allows all-player
+++     input.
+++
+++ The server should reject duplicate, late, invalid, or out-of-turn actions.
+++ Actions should include a session ID, player ID, action type, action payload, and turn/round counter.
+++ Server should provide idempotency keys so a double tap does not roll dice twice.
+++ The TV/host should receive accepted actions, not raw untrusted inputs.
+++ Host override can skip, pause, undo, or force a state depending on creator settings.
+++
+++12. Save Spots / Checkpoints
+++
+++Save Spots are creator-defined moments where the game reconnects/syncs to GFS for durable
+++storage. This keeps live turn traffic on the networking server while project saves and resumable campaign
+++state remain under the normal GFS data/storage model.
+++
+++ Save after each turn.
+++ Save after each round.
+++ Save after each room/level/map.
+++ Save after boss or story milestone.
+++ Save when host presses Save.
+++ Auto-save every X minutes.
+++ Save only when all players confirm.
+++ Save on graceful session end.
+++Recommended checkpoint contents. Current map/room, player positions, player roles, player inventory,
+++score, quest flags, turn order, round number, random seed, unresolved prompts, disconnected player state,
+++and last accepted action ID.
+++
+++13. Session Lifecycle
+++
+++1. Creator configures Connected Play for the game.
+++2. TV/host launches the published game.
+++3. TV requests a new session from network.gamefoundrystudio.com.
+++4. Network server returns session ID, short join code, and QR join URL.
+++
+++                                                               Game Foundry Studio - Connected Play Design
+++5. Players join from phones/PCs/tablets.
+++6. Host starts the game when enough players are ready.
+++7. Turn Manager selects current player/team.
+++8. Remote Screens display only the allowed controls for that player/team/host.
+++9. Player submits action.
+++10. Network server validates and routes action.
+++11. TV/host applies action to game state and shows animation/result.
+++12. Save Spot triggers checkpoint sync to GFS API/storage.
+++13. If a player disconnects, Presence Service marks them disconnected and supports reconnect.
+++14. At session end, final checkpoint is saved and session is closed.
+++
+++14. Backend Services on the Separate VPS
+++
+++Service                Responsibility                      Notes
+++
+++Lobby Service          Create sessions, join codes, QR URLs, First service needed for V1.
+++                       session capacity, host ownership.
+++
+++Presence Service       Track connected, disconnected,      Needed for turn reliability.
+++                       reconnecting, idle, ready.
+++
+++Turn Service           Validate active player/team and     Critical for turn-based games.
+++                       accepted action sequence.
+++
+++Message Service        Route phone/PC actions to TV/host   Likely WebSocket-based for V1.
+++                       and host messages to players.
+++
+++Remote Screen Service  Serves or describes the correct UI  Can be driven by the game
+++                       state for each device.              definition.
+++
+++Save Sync Service      Sends checkpoint payloads to GFS    Bridge between networking VPS and
+++                       API/storage.                        GFS project/save model.
+++
+++Reconnect Service      Allows a player to return to their slot Use session token or rejoin code.
+++                       after network loss.
+++
+++Telemetry/Health       Tracks service status, session counts, Useful for owner operations.
+++                       errors, latency.
+++
+++15. Suggested Message Types
+++
+++ session.create
+++ session.join
+++ session.leave
+++ session.ready
+++ player.assign
+++ turn.start
+++ turn.timeout
+++
+++                                                               Game Foundry Studio - Connected Play Design
+++ action.submit
+++ action.accepted
+++ action.rejected
+++ dice.roll
+++ wheel.spin
+++ vote.cast
+++ vote.complete
+++ card.choose
+++ host.pause
+++ host.skip
+++ host.award
+++ save.request
+++ save.complete
+++ presence.update
+++ error.network
+++ error.invalid_turn
+++
+++16. GFS Game Journey Placement
+++
+++Do not hide this under normal Controls only. Keyboard, mouse, gamepad, touch, and accessibility are
+++device inputs. Connected Play is a game mode and session architecture.
+++
+++ Recommended placement: Interface -> Connected Players -> Rules
+++ Alternative placement: Controls -> Connected Players -> Rules, if the toolbox needs it near input
+++
+++     configuration.
+++ The feature should still connect to Controls for accessibility and input mapping, but it should have its
+++
+++     own tool group or tile.
+++
+++17. MVP Scope
+++
+++ Create session from TV/host screen.
+++ Show QR code and short join code.
+++ Allow players to join from phone/PC/tablet.
+++ Assign host and player roles.
+++ Show basic remote screens: button, dice, wheel, vote, multiple choice.
+++ Support turn order with current-player validation.
+++ Route action from player device to TV/host screen through networking VPS.
+++ Show presence: connected/disconnected/rejoined.
+++ Support manual save and save-after-turn.
+++ Support reconnect to same player slot.
+++
+++18. Later Enhancements
+++
+++ Peer-preferred mode using WebRTC for browser-to-browser data channels, with server fallback.
+++ Local Party mode for same-Wi-Fi sessions.
+++
+++                                                               Game Foundry Studio - Connected Play Design
+++ Team-only screens and team chat.
+++ Spectator view and stream-friendly audience mode.
+++ Advanced hidden roles and secret objectives.
+++ Companion UI templates for board games, quizzes, tabletop adventures, and social deduction games.
+++ Creator test harness to simulate 2, 4, 8, or more players from one browser.
+++ Replay log and action history for debugging.
+++ Session analytics: average players, disconnects, turn duration, abandoned sessions.
+++ Moderation tools for public sessions.
+++
+++19. Risks and Design Notes
+++
+++ Security: the server must not trust client actions. Validate player, role, turn, action type, and payload.
+++ Double actions: use action IDs/idempotency keys to prevent double rolls or duplicate votes.
+++ Reconnect: disconnected players need a safe way to reclaim the same slot.
+++ Privacy: private screens must not leak hidden cards, roles, objectives, or team prompts to the TV or
+++
+++     wrong player.
+++ Scalability: turn-based traffic is small, but public games and classroom sessions may create many idle
+++
+++     WebSocket connections.
+++ Cost: V1 relay is simpler but uses server bandwidth. For turn-based games this should be manageable.
+++ Fallback: peer-to-peer should be optional later, not required for reliability.
+++ Debugging: creators need clear test panels, not invisible networking failures.
+++ Save authority: GFS should remain the durable save/checkpoint authority even when live gameplay
+++
+++     traffic uses the networking server.
+++
+++20. Example Creator Configuration  Value
+++                                   Turn-based adventure board game
+++Setting                            2-6 players, 1 host optional, spectators allowed
+++Game Type                          QR code + 6-digit join code
+++Players                            Dice, choose path, use item, vote, ready button
+++Join Method                        Clockwise player order; skip after timeout; host can
+++Remote Widgets                     override
+++Turn Rule                          Each player sees inventory and secret objective
+++                                   After each room and manual host save
+++Private UI                         Player can rejoin same slot with session token or join
+++Save Spots                         code + name confirmation
+++Reconnect                          V1 server relay; future peer-preferred optional
+++
+++Networking Mode
+++
+++Game Foundry Studio - Connected Play Design
+++21. One-Line Build Summary
+++
+++Connected Play lets creators build TV-first, turn-based games where the shared screen is the adventure
+++board and each player device becomes a private, role-aware controller, all powered by a separate GFS Play
+++Server for sessions, presence, turn validation, messages, reconnect, and save synchronization.
+++
+++                                                               Game Foundry Studio - Connected Play Design
+++
++diff --git a/docs_build/dev/admin-notes/GFS_Game_Identity_Strategy.pdf.pdf b/docs_build/dev/admin-notes/GFS_Game_Identity_Strategy.pdf.pdf
+ new file mode 100644
+-index 000000000..aad610159
++index 000000000..39ac07f6c
+ --- /dev/null
+-+++ b/docs_build/dev/reports/PR_26170_006-toolbox-workflow-order-and-project-team.md
+-@@ -0,0 +1,56 @@
+-+# PR_26170_006-toolbox-workflow-order-and-project-team
+++++ b/docs_build/dev/admin-notes/GFS_Game_Identity_Strategy.pdf.pdf
++@@ -0,0 +1,399 @@
+++Since you asked for a detailed summary to save for later implementation, here's the
+++consolidated version with the wildcard subdomain roadmap incorporated.
+++
+++         Edit
+++
+++          Game Foundry Studio - Game Ecosystem,
+++          Discovery, and Domain Strategy
+++
+++            Vision
+++
+++               Game Foundry Studio should not simply host games.
+++               Game Foundry Studio should host complete game ecosystems.
+++               A game is more than:
+++
+++                     Play
+++               A game ecosystem includes:
+++
+++                     Play
+++                     Learn
+++                     Collect
+++                     Compete
+++                     Discuss
+++                     Share
+++                     Purchase
+++                     Return
+++               The long-term goal is to keep players inside the GFS ecosystem
+++               while still allowing creators to establish their own brands.
+++
+++          Core Principle
+++
+++               Every published game automatically receives an official home
+++               inside GFS.
+++               Example:
+++               gamefoundrystudio.com/kingdoms-of-aether
+++               This page is permanent and cannot be removed.
+++It serves as:
+++
+++      Discovery page
+++      SEO page
+++      Community page
+++      Marketplace page
+++      Analytics page
+++      Canonical game page
+++
+++Even if the creator later uses custom domains, the canonical GFS
+++page remains.
+++
+++Ecosystem Pages
+++
+++Every published game automatically receives:
+++
+++/overview
+++/news
+++/challenges
+++/events
+++/wiki
+++/store
+++/media
+++/community
+++/leaderboards
+++/achievements
+++/rewards
+++/patch-notes
+++
+++Examples:
+++
+++gamefoundrystudio.com/kingdoms-of-aether/news
+++
+++gamefoundrystudio.com/kingdoms-of-aether/challenges
+++
+++gamefoundrystudio.com/kingdoms-of-aether/wiki
+++
+++gamefoundrystudio.com/kingdoms-of-aether/store
+++
+++These pages are generated using templates.
+++
+++Creators provide content.
+++GFS provides structure.
+++
+++Challenge and Reward Loop
+++
+++Primary objective:
+++Drive players from the game back into GFS.
+++Example:
+++Daily Challenge
+++Visit the Dragon Archives.
+++Link:
+++gamefoundrystudio.com/kingdoms-of-aether/challenges/dragon-of-
+++the-day
+++Reward:
+++
+++      Gems
+++      Energy
+++      XP
+++      Cosmetic Items
+++      Crafting Materials
+++Player Flow:
+++Game
+++↓
+++Challenge Page
+++↓
+++Reward Claim
+++↓
+++Back To Game
+++This creates recurring engagement with GFS itself.
+++
+++Challenge Types
+++
+++Knowledge Challenge
+++      Read article
+++      Answer question
+++      Receive reward
+++Exploration Challenge
+++      Find hidden code
+++      Receive reward
+++Community Challenge
+++      Vote
+++      Discuss
+++      Participate
+++      Receive reward
+++Creator Spotlight
+++      Read creator content
+++      Receive reward
+++Marketplace Promotion
+++      View item
+++      Receive reward
+++
+++Store Integration
+++
+++Future creator monetization.
+++Example:
+++gamefoundrystudio.com/kingdoms-of-aether/store
+++Possible contents:
+++
+++      Cosmetic packs
+++      Character skins
+++      Expansion packs
+++      Supporter packs
+++      Soundtracks
+++      Wallpapers
+++      Merchandise links
+++All template driven.
+++All creator managed.
+++
+++Membership Philosophy
+++
+++Do NOT make ecosystem pages Founder-only.
+++Do NOT make ecosystem pages Studio-only.
+++Do NOT make ecosystem pages Pro-only.
+++Every published game should receive ecosystem pages.
+++Reason:
+++The value of GFS grows through content volume.
+++Desired outcome:
+++100 games
+++100 ecosystems
+++Not:
+++100 games
+++5 ecosystems
+++
+++Free Plan
+++
+++Includes:
+++      Game page
+++      News
+++      Challenges
+++      Wiki
+++      Community
+++      Achievements
+++      Rewards
+++
+++Required branding:
+++Powered by Game Foundry Studio
+++Creator Plan
+++
+++Adds:
+++      Additional projects
+++      More storage
+++      Marketplace publishing
+++      Advanced analytics
+++      Premium page templates
+++      Additional AI credits
+++
+++Studio Plan
+++
+++Adds:
+++      Teams
+++      Enterprise analytics
+++      Higher limits
+++      White-label options
+++      Additional AI credits
+++
+++Domain Strategy
+++
+++Custom domains should be a sidecar service.
+++Not a membership feature.
+++Creators should be able to buy membership levels without being
+++forced to buy domains.
+++
+++Bring Your Own Domain
+++
+++Examples:
+++KingdomsOfAether.com
+++PlayKingdomsOfAether.com
+++Creator purchases domain from registrar.
+++Creator connects domain to GFS.
+++GFS manages:
+++
+++      SSL
+++      Routing
+++      Analytics
+++      Ecosystem integration
+++Potential pricing:
+++$1-$2/month per connected domain
+++
+++Managed Domain (Future)
+++
+++Potential future service.
+++Creator purchases through GFS.
+++Includes:
+++
+++      Registration
+++      SSL
+++      DNS setup
+++      Routing
+++Example:
+++$29 setup
+++Includes first year
+++Then:
+++$24/year renewal
+++Not recommended for V1 due to registrar complexity.
+++
+++Game Identity Pack
+++
+++Rather than selling:
+++Custom Domain
+++Sell:
+++Game Identity Pack
+++Includes:
+++
+++      Domain Mapping
+++      SSL
+++      Marketing Landing Page
+++      QR Code Generation
+++      Analytics
+++      Ecosystem Integration
+++Higher perceived value than domain mapping alone.
+++
+++Canonical Page Rule
+++
+++Regardless of custom domains:
+++KingdomsOfAether.com
+++Must always have a corresponding GFS page:
+++gamefoundrystudio.com/kingdoms-of-aether
+++This page remains permanently available.
+++Purpose:
+++
+++      Discovery
+++      SEO
+++      Analytics
+++      Cross-promotion
+++      Platform growth
+++
+++Wildcard Subdomain Strategy
+++
+++Long-term enhancement.
+++Example:
+++kingdoms-of-aether.gamefoundrystudio.com
+++Additional ecosystem pages:
+++wiki.kingdoms-of-aether.gamefoundrystudio.com
+++news.kingdoms-of-aether.gamefoundrystudio.com
+++community.kingdoms-of-aether.gamefoundrystudio.com
+++Benefits:
+++
+++      No creator DNS setup
+++      No creator SSL setup
+++      Premium feel
+++      Full GFS control
+++      Easier than supporting arbitrary custom domains
+++Requirements:
+++      Wildcard DNS
+++      Wildcard SSL
+++      Subdomain routing
+++
+++Effort Estimates
+++
+++Path URLs
+++gamefoundrystudio.com/kingdoms-of-aether
+++Effort: 1x
+++
+++Wildcard Subdomains
+++kingdoms-of-aether.gamefoundrystudio.com
+++Effort: 2x
+++
+++Custom Domains
+++kingdomsofaether.com
+++Effort: 4x
+++
+++Custom Domains + Creator Subdomains
+++wiki.kingdomsofaether.com
+++community.kingdomsofaether.com
+++Effort: 8x
+++
+++Important Observation
+++
+++Players care far more about:
+++      Rewards
+++      Content
+++      Events
+++      Challenges
+++
+++Than URL structure.
+++Most players will happily visit:
+++gamefoundrystudio.com/kingdoms-of-aether/challenges/dragon-of-
+++the-day
+++if they receive:
+++100 Gems
+++Therefore:
+++Build ecosystem features first.
+++Build URL sophistication later.
+++
+++Recommended Rollout Plan
+++
+++V1 - Path URLs
+++
+++Primary format:
+++gamefoundrystudio.com/kingdoms-of-aether
+++Simple.
+++Fast.
+++Lowest effort.
+++Highest value.
+++
+++V2 - Wildcard Subdomains
+++
+++Examples:
+++kingdoms-of-aether.gamefoundrystudio.com
+++wiki.kingdoms-of-aether.gamefoundrystudio.com
+++news.kingdoms-of-aether.gamefoundrystudio.com
+++Premium feel.
+++Still fully controlled by GFS.
+++
+++V3 - Bring Your Own Domain
+++
+++Examples:
+++kingdomsofaether.com
+++playkingdomsofaether.com
+++Creator purchases domain elsewhere.
+++GFS hosts and manages routing.
+++
+++V4 - Creator Domain Subdomains
+++
+++Examples:
+++wiki.kingdomsofaether.com
+++community.kingdomsofaether.com
+++news.kingdomsofaether.com
+++Highest effort.
+++Lowest initial priority.
+++
+++DNS Architecture
+++
+++Never point creators directly at an IP address.
+++Always point creators at a hostname controlled by GFS.
+++Example:
+++www.kingdomsofaether.com
+++CNAME domains.gamefoundrystudio.com
+++Flow:
+++Creator Domain
+++↓
+++CNAME
+++↓
+++domains.gamefoundrystudio.com
+++↓
+++Cloudflare
+++↓
+++Game Foundry Studio
+++Benefits:
+++
+++      Infrastructure changes are invisible to creators
+++      No DNS updates required when hosting changes
+++      Cloudflare remains in front of all traffic
+++      Simplifies scaling and migration
+++This should be considered the preferred architecture for all future
+++custom-domain support.
+++
+++Long-Term Strategic Goal
+++
+++The strategic asset is not the engine.
+++               The strategic asset is:
+++               Thousands of game ecosystems living under one roof.
+++               Future players should say:
+++               "I found this game on Game Foundry Studio."
+++               not:
+++               "I found this random website somewhere."
+++               That network effect is what transforms GFS from a game creation
+++               tool into a game platform.
+++
+++This is one of the strongest platform-level ideas we've discussed because it directly ties
+++together Game Journey → Community → Discovery → Marketplace → Retention →
+++Monetization into a single ecosystem instead of treating them as separate features.
+++
++diff --git a/docs_build/dev/reports/PR_26170_007-toolbox-workflow-render-order-project-team.md b/docs_build/dev/reports/PR_26170_007-toolbox-workflow-render-order-project-team.md
++new file mode 100644
++index 000000000..286851fb7
++--- /dev/null
+++++ b/docs_build/dev/reports/PR_26170_007-toolbox-workflow-render-order-project-team.md
++@@ -0,0 +1,53 @@
+++# PR_26170_007-toolbox-workflow-render-order-project-team
+ +
+ +## Branch Validation
+-+- PASS: Current branch verified as `main`.
+++
+++PASS - Current branch verified as `main`.
+ +
+ +## Requirement Checklist
+-+- PASS: Built `PR_26170_006-toolbox-workflow-order-and-project-team`.
+-+- PASS: Added BUILD doc at `docs_build/pr/BUILD_PR_26170_006-toolbox-workflow-order-and-project-team.md`.
+-+- PASS: Added Toolbox Workflow Ordering Governance to `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+-+- PASS: Documented Toolbox groups as intentional workflow-order exceptions.
+-+- PASS: Documented tile ordering by creator progression rather than alphabetical sorting.
+-+- PASS: Documented natural ordering rules: `Select -> Create -> Review`, `Left -> Right`, and `Top -> Bottom`.
+-+- PASS: Documented that the next tile should represent the most likely next creator action.
+-+- PASS: Documented that tile ordering should minimize navigation decisions.
+-+- PASS: Updated Create group references to this order: Game Workspace, Game Configuration, Project Team, Tags.
+-+- PASS: Moved project-specific Users planning into Create/Project Team documentation.
+-+- PASS: Documented the distinction between Studio Team as account-level roster and Project Team as project-level assignment.
+-+- PASS: Updated Owner Notes source content in `docs_build/dev/admin-notes/tools/index.txt`.
+-+- PASS: Updated owner-facing group notes in `owner/grouping-colors.html`.
+-+- PASS: No runtime behavior changes were made for this PR.
+-+
+-+## Impacted Lane
+-+- Documentation/static lane only.
+ +
+-+## Validation
+-+- PASS: `git branch --show-current` returned `main`.
+-+- PASS: `git diff --check -- docs_build/dev/PROJECT_INSTRUCTIONS.md docs_build/dev/admin-notes/tools/index.txt owner/grouping-colors.html docs_build/pr/BUILD_PR_26170_006-toolbox-workflow-order-and-project-team.md`
+-+- PASS: Targeted Node documentation validation confirmed:
+-+  - governance includes workflow-order exception rules.
+-+  - governance includes creator progression, next-action, and navigation-minimization rules.
+-+  - Create group order is consistent.
+-+  - Owner Notes source includes Project Team and Tags in Create.
+-+  - Owner Notes source no longer lists Users as Platform planning.
+-+  - owner reference no longer lists Users in Share.
+-+  - Studio Team and Project Team distinction is documented.
+-+
+-+## Playwright Decision
+-+- Playwright impacted: No.
+-+- No Playwright impact. This PR is docs/workflow only.
+-+- `npm run test:workspace-v2` was not run because no runtime, UI behavior, toolState, workspace, or interaction behavior changed.
+++- PASS - Toolbox grouped rendering no longer alphabetizes cards inside groups. `toolbox/tools-page-accordions.js` uses `compareByWorkflowOrder` for grouped card ordering.
+++- PASS - Toolbox groups render by declared Game Journey order from source order. The targeted Playwright grouped-view check asserted `GAME_JOURNEY_GROUP_ORDER`.
+++- PASS - Create group renders in required workflow order: `Game Workspace`, `Game Configuration`, `Project Team`, `Tags`. Covered by source validation and Playwright.
+++- PASS - Existing `users` tool was moved into Create as `Project Team` without changing its route (`toolbox/users/index.html`) or planned status.
+++- PASS - `Users` is no longer exposed as a Toolbox tile under Share, Account, Platform, or any non-Create group. API snapshot validation confirms `id: users` displays as `Project Team` with `group/category/toolboxGroup: Create`.
+++- PASS - User-facing Toolbox copy uses `Project Team` for project-specific team assignment. `Studio Team` remains documented as the account-level roster distinction.
+++- PASS - No database source contract was replaced. A one-tool source-controlled metadata sync keeps the configured DB-backed Toolbox metadata aligned for the governed `users` -> `Project Team` move while leaving other tool metadata rows owner-editable.
+++
+++## Validation Lane Report
+++
+++- PASS - `node --check toolbox/tools-page-accordions.js`
+++- PASS - `node --check src/shared/toolbox/tool-metadata-inventory.js`
+++- PASS - `node --check src/dev-runtime/server/local-api-router.mjs`
+++- PASS - `node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs`
+++- PASS - `node --check tests/playwright/tools/RootToolsFutureState.spec.mjs`
+++- PASS - `node --check tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs`
+++- PASS - HTML inline guard: `rg -n "<style|\\sstyle=|\\son[a-z]+=" toolbox/users/index.html` returned no matches.
+++- PASS - Targeted source/API validation confirmed shared inventory, API registry snapshot, grouped renderer mapping, Create workflow order, and Project Team page copy.
+++- PASS - `git diff --check` completed with no whitespace errors; only existing Windows line-ending warnings were reported.
+++
+++## Playwright Result
+++
+++- PASS - `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --grep "toolbox grouped view renders Game Journey order" --workers=1 --reporter=list`
+++- PASS - `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --grep "toolbox index shows wireframe and beta tools" --workers=1 --reporter=list`
+++
+++## Coverage Notes
+++
+++- Generated advisory Playwright V8 reports:
+++  - `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+++  - `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+++- Browser coverage exercised `toolbox/tools-page-accordions.js`.
+++- Server-side `src/dev-runtime/server/local-api-router.mjs` and shared metadata inventory are not browser-collected by V8 coverage; targeted Node/API validation covered those paths.
+ +
+ +## Skipped Lanes
+-+- Runtime: skipped because this PR changes documentation only.
+-+- Integration: skipped because no handoff contract changed.
+-+- Engine: skipped because no engine/shared runtime code changed.
+-+- Samples: skipped because no sample files or sample loading behavior changed.
+-+- Recovery/UAT: skipped because this is not a recovery lane behavior change.
+-+- Full samples smoke: skipped per request and because documentation changes do not affect sample runtime behavior.
+-+
+-+## Manual Test Notes
+-+- Open `owner/grouping-colors.html` and confirm Create lists Game Workspace, Game Configuration, Project Team, and Tags.
+-+- Open Owner Notes for `docs_build/dev/admin-notes/tools/index.txt` and confirm the Create group order and Studio Team / Project Team distinction are visible.
+-+- Confirm no Toolbox page ordering or runtime behavior changed in this PR.
+-+
+-+## Stacked Worktree Note
+-+- The working tree already contains uncommitted prior PR changes. This PR's intentional product changes are documentation-only in `docs_build/dev/PROJECT_INSTRUCTIONS.md`, `docs_build/dev/admin-notes/tools/index.txt`, and `owner/grouping-colors.html`, plus the required BUILD/report artifacts.
+-diff --git a/docs_build/pr/BUILD_PR_26170_006-toolbox-workflow-order-and-project-team.md b/docs_build/pr/BUILD_PR_26170_006-toolbox-workflow-order-and-project-team.md
+++
+++- SKIP - Full samples smoke was not run per request.
+++- SKIP - Broad workspace suite was not run because targeted Toolbox Playwright validation covered the impacted UI/rendering behavior.
+++- SKIP - Database behavior, runtime behavior, Workspace behavior, routes, and status-value lanes were not broadened beyond the directly required Toolbox metadata/API validation.
+++
+++## Manual Validation Notes
+++
+++- Confirmed `/toolbox/index.html?view=group` renders all Game Journey groups in declared order.
+++- Confirmed Create group tile order is `Game Workspace`, `Game Configuration`, `Project Team`, `Tags`.
+++- Confirmed `Project Team` uses the existing `toolbox/users/index.html` route and remains planned.
+++- Confirmed `Users` does not remain as a visible Toolbox tile label in the API-backed active registry.
++diff --git a/docs_build/pr/BUILD_PR_26170_007-toolbox-workflow-render-order-project-team.md b/docs_build/pr/BUILD_PR_26170_007-toolbox-workflow-render-order-project-team.md
+ new file mode 100644
+-index 000000000..edfa1ec4c
++index 000000000..1f44bc228
+ --- /dev/null
+-+++ b/docs_build/pr/BUILD_PR_26170_006-toolbox-workflow-order-and-project-team.md
+-@@ -0,0 +1,44 @@
+-+# BUILD PR_26170_006-toolbox-workflow-order-and-project-team
+++++ b/docs_build/pr/BUILD_PR_26170_007-toolbox-workflow-render-order-project-team.md
++@@ -0,0 +1,34 @@
+++# BUILD PR_26170_007-toolbox-workflow-render-order-project-team
+ +
+ +## Purpose
+-+- Add Toolbox workflow-ordering governance.
+-+- Document the Create group progression and Project Team planning focus.
+-+- Keep this PR documentation-only with no runtime behavior changes.
+++- Fix Toolbox grouped rendering so workflow groups and tiles render in declared creator workflow/source order instead of alphabetical label order.
+++- Move the existing Users/Team toolbox tile into Create as Project Team.
+ +
+ +## Scope
+-+- Update Toolbox governance documentation.
+-+- Update owner-facing grouping notes.
+-+- Update Owner Notes source content for Toolbox/Create group planning.
+-+- Do not change runtime JavaScript, CSS behavior, API behavior, database behavior, tool metadata contracts, routes, or rendered Toolbox behavior.
+-+
+-+## Required Governance
+-+- Toolbox groups are intentional workflow-order exceptions.
+-+- Tiles are ordered by creator progression, not alphabetically.
+-+- Order follows how users naturally work:
+-+  - Select -> Create -> Review
+-+  - Left -> Right
+-+  - Top -> Bottom
+-+- The next tile should represent the most likely next creator action.
+-+- Tile ordering should minimize navigation decisions.
+-+- Create group order:
+++- Update Toolbox grouped renderer ordering logic.
+++- Update directly required toolbox metadata and Project Team page copy.
+++- Update targeted Toolbox Playwright expectations.
+++- Do not change database behavior, persistence behavior, route behavior, auth behavior, Account/Admin Users pages, or full samples.
+++
+++## Required Behavior
+++- Toolbox groups render by declared workflow order/source order.
+++- Create group renders:
+ +  1. Game Workspace
+ +  2. Game Configuration
+ +  3. Project Team
+ +  4. Tags
+-+- Team distinction:
+-+  - Studio Team = account-level roster
+-+  - Project Team = project-level assignment
+-+  - Current implementation focus is Project Team
+++- Existing Users/Team toolbox tile renders as Project Team under Create.
+++- Project-specific user/team copy uses Project Team.
+++- Studio Team remains account-level roster documentation only.
+ +
+ +## Validation
+-+- Verify current branch is `main`.
+-+- Run targeted documentation validation only.
+-+- Verify ordering references are consistent.
+-+- Confirm Playwright impact is No because there are no runtime/UI behavior changes.
+++- Verify branch is `main`.
+++- Run targeted Toolbox static/syntax checks.
+++- Run targeted Toolbox Playwright validation.
+ +- Do not run full samples.
+ +
+ +## Required Artifacts
+-+- `docs_build/dev/reports/PR_26170_006-toolbox-workflow-order-and-project-team.md`
+++- `docs_build/dev/reports/PR_26170_007-toolbox-workflow-render-order-project-team.md`
+ +- `docs_build/dev/reports/codex_review.diff`
+ +- `docs_build/dev/reports/codex_changed_files.txt`
+-+- `tmp/PR_26170_006-toolbox-workflow-order-and-project-team_delta.zip`
+++- `tmp/PR_26170_007-toolbox-workflow-render-order-project-team_delta.zip`
+diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+index 1e2fb98ec..d0aed11ad 100644
+--- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+@@ -6,8 +6,10 @@ Missing changed runtime JS files are WARN, not FAIL.
+ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+ 
+ Changed runtime JS files considered:
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(76%) toolbox/tools-page-accordions.js - executed lines 1091/1091; executed functions 81/106
++(75%) toolbox/tools-page-accordions.js - executed lines 1112/1112; executed functions 80/107
+ 
+ Guardrail warnings:
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+ (0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
+diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+index 8f12cabcd..a65a91d29 100644
+--- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
++++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+@@ -12,32 +12,33 @@ Note: entry percentages use function coverage when available, otherwise line cov
+ Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
+ 
+ Exercised tool entry points detected:
+-(71%) Toolbox Index - exercised 3 runtime JS files
++(70%) Toolbox Index - exercised 3 runtime JS files
+ (0%) Tool Template V2 - not exercised by this Playwright run
+-(63%) Theme V2 Shared JS - exercised 1 runtime JS files
++(72%) Theme V2 Shared JS - exercised 1 runtime JS files
+ 
+ Changed runtime JS files covered:
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(76%) toolbox/tools-page-accordions.js - executed lines 1091/1091; executed functions 81/106
++(75%) toolbox/tools-page-accordions.js - executed lines 1112/1112; executed functions 80/107
+ 
+ Files with executed line/function counts where available:
+ (25%) src/api/session-api-client.js - executed lines 68/68; executed functions 3/12
+ (33%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
+ (44%) src/api/server-api-client.js - executed lines 167/167; executed functions 8/18
+ (48%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 11/23
+-(63%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 54/86
+ (65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
+ (67%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 20/20; executed functions 2/3
+-(76%) toolbox/tools-page-accordions.js - executed lines 1091/1091; executed functions 81/106
++(72%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 65/90
++(75%) toolbox/tools-page-accordions.js - executed lines 1112/1112; executed functions 80/107
+ 
+ Uncovered or low-coverage changed JS files:
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+ (0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
+ 
+ Changed JS files considered:
++(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
+ (0%) src/shared/toolbox/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/BuildPathProgressSimplification.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/GameJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
+-(76%) toolbox/tools-page-accordions.js - changed JS file with browser V8 coverage
++(75%) toolbox/tools-page-accordions.js - changed JS file with browser V8 coverage
+diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
+index b0d632318..f70773668 100644
+--- a/src/dev-runtime/server/local-api-router.mjs
++++ b/src/dev-runtime/server/local-api-router.mjs
+@@ -1421,6 +1421,48 @@ function normalizedToolKey(row) {
+   return String(row?.toolKey || row?.toolId || row?.id || "").trim();
+ }
+ 
++const SOURCE_CONTROLLED_TOOLBOX_TOOL_IDS = new Set(["users"]);
++const SOURCE_CONTROLLED_TOOLBOX_METADATA_FIELDS = Object.freeze([
++  "adminOnly",
++  "category",
++  "colorGroup",
++  "description",
++  "group",
++  "hidden",
++  "shortDescription",
++  "shortLabel",
++  "subgroup",
++  "toolName",
++  "toolboxGroup",
++  "visibleInToolsList",
++]);
++const SOURCE_CONTROLLED_TOOLBOX_PLANNING_FIELDS = Object.freeze([
++  "progressChecklist",
++]);
 +
-+Create group order
-+1. Game Workspace
-+2. Game Configuration
-+3. Project Team
-+4. Tags
++function shouldSyncSourceControlledTool(toolId) {
++  return SOURCE_CONTROLLED_TOOLBOX_TOOL_IDS.has(String(toolId || ""));
++}
 +
-+Team distinction
-+- Studio Team = account-level roster.
-+- Project Team = project-level assignment.
-+- Current implementation focus is Project Team.
-+- Users functionality that is project-specific moves from Account/Team planning into Create/Project Team planning.
-diff --git a/owner/grouping-colors.html b/owner/grouping-colors.html
-index 6c23c202a..14a05983f 100644
---- a/owner/grouping-colors.html
-+++ b/owner/grouping-colors.html
-@@ -79,7 +79,7 @@
-                                         <td><span class="brand-color-code"><span
-                                                     class="brand-color-swatch swatch-amber"></span>Amber <strong>#F59E0B</strong></span></td>
-                                         <td>Create</td>
--                                        <td>Project Workspace, Game Journey, Game Configuration, Tags</td>
-+                                        <td>Game Workspace, Game Configuration, Project Team, Tags</td>
-                                     </tr>
-                                     <tr>
-                                         <td><span class="brand-color-code"><span
-@@ -151,7 +151,7 @@
-                                         <td><span class="brand-color-code"><span
-                                                     class="brand-color-swatch swatch-pink"></span>Pink <strong>#FF4F8B</strong></span></td>
-                                         <td>Share</td>
--                                        <td>Marketplace, Community, Cloud, Ratings, Users</td>
-+                                        <td>Marketplace, Community, Cloud, Ratings</td>
-                                     </tr>
-                                 </tbody>
-                             </table>
-@@ -168,8 +168,15 @@
-                             <summary>Idea and Create</summary>
-                             <div class="accordion-body">
-                                 <p>Idea <strong>#FF2D2D</strong> is for pre-project thinking and learning. Create
--                                    <strong>#F59E0B</strong> is for project setup, workspace, configuration, journey,
--                                    and shared Tags.</p>
-+                                    <strong>#F59E0B</strong> follows creator workflow order: Game Workspace, Game
-+                                    Configuration, Project Team, then Tags.</p>
-+                            </div>
-+                        </details>
-+                        <details class="vertical-accordion">
-+                            <summary>Studio Team and Project Team</summary>
-+                            <div class="accordion-body">
-+                                <p>Studio Team is the account-level roster. Project Team is project-level assignment,
-+                                    and current Toolbox planning focuses on Project Team inside Create.</p>
-                             </div>
-                         </details>
-                         <details class="vertical-accordion">
-@@ -201,9 +208,9 @@
-                                 <h3><span class="brand-color-code"><span
-                                             class="brand-color-swatch swatch-amber"></span>Amber #F59E0B: Create</span></h3>
-                                 <ul>
--                                    <li>Project Workspace</li>
--                                    <li>Game Journey</li>
-+                                    <li>Game Workspace</li>
-                                     <li>Game Configuration</li>
-+                                    <li>Project Team</li>
-                                     <li>Tags</li>
-                                 </ul>
-                             </article>
-diff --git a/docs_build/dev/reports/PR_26170_006-toolbox-workflow-order-and-project-team.md b/docs_build/dev/reports/PR_26170_006-toolbox-workflow-order-and-project-team.md
++function valuesMatchForSourceSync(left, right) {
++  if (Array.isArray(left) || Array.isArray(right)) {
++    return JSON.stringify(left || []) === JSON.stringify(right || []);
++  }
++  return left === right;
++}
++
++function applySourceControlledValues(target, defaults, fields) {
++  let changed = false;
++  fields.forEach((field) => {
++    const value = defaults[field];
++    if (!valuesMatchForSourceSync(target[field], value)) {
++      target[field] = Array.isArray(value) ? [...value] : value;
++      changed = true;
++    }
++  });
++  return changed;
++}
++
+ function requiredToolMetadataDiagnostics(row) {
+   const missing = ["toolKey", "toolName", "group", "path", "order", "status"].filter((field) => {
+     const value = field === "toolKey" ? normalizedToolKey(row) : row?.[field];
+@@ -4562,6 +4604,9 @@ LIMIT 1;
+           : Array.isArray(migratedValues.requires) ? migratedValues.requires : defaults.requires,
+         toolKey,
+       };
++      if (shouldSyncSourceControlledTool(toolKey)) {
++        applySourceControlledValues(normalizedValues, defaults, SOURCE_CONTROLLED_TOOLBOX_PLANNING_FIELDS);
++      }
+ 
+       if (!existingRow) {
+         rows.push({
+@@ -4634,9 +4679,12 @@ LIMIT 1;
+         releaseChannelLabel: getToolReleaseChannelLabel(releaseChannel),
+         toolName: existingRow.toolName || defaults.toolName,
+       };
++      if (shouldSyncSourceControlledTool(tool.id)) {
++        applySourceControlledValues(normalizedValues, defaults, SOURCE_CONTROLLED_TOOLBOX_METADATA_FIELDS);
++      }
+       Object.entries(normalizedValues).forEach(([key, value]) => {
+-        if (existingRow[key] !== value) {
+-          existingRow[key] = value;
++        if (!valuesMatchForSourceSync(existingRow[key], value)) {
++          existingRow[key] = Array.isArray(value) ? [...value] : value;
+           changed = true;
+         }
+       });
+@@ -4665,8 +4713,17 @@ LIMIT 1;
+         ...this.defaultToolboxPlanning(tool),
+         ...createMockDbAuditFields(index, SEED_DB_KEYS.users.forgeBot),
+       }));
+-    if (missingRows.length) {
+-      await adapter.upsertProductTable("toolbox_tool_planning", missingRows);
++    const syncedRows = activeTools
++      .filter((tool) => shouldSyncSourceControlledTool(tool.id) && rowsByToolKey.has(tool.id))
++      .flatMap((tool) => {
++        const row = rowsByToolKey.get(tool.id);
++        const updatedRow = { ...row };
++        return applySourceControlledValues(updatedRow, this.defaultToolboxPlanning(tool), SOURCE_CONTROLLED_TOOLBOX_PLANNING_FIELDS)
++          ? [updatedRow]
++          : [];
++      });
++    if (missingRows.length || syncedRows.length) {
++      await adapter.upsertProductTable("toolbox_tool_planning", [...missingRows, ...syncedRows]);
+       return adapter.getProductTableRows("toolbox_tool_planning");
+     }
+     return rows;
+@@ -4676,7 +4733,8 @@ LIMIT 1;
+     const adapter = this.supabaseDatabaseAdapter("Reading Supabase Toolbox tool metadata");
+     const rows = await adapter.getProductTableRows("toolbox_tool_metadata");
+     const activeTools = getActiveToolRegistry();
+-    const existingToolKeys = new Set(rows.map((row) => row.toolKey || row.toolId));
++    const rowsByToolKey = new Map(rows.map((row) => [row.toolKey || row.toolId, row]));
++    const existingToolKeys = new Set(rowsByToolKey.keys());
+     const missingRows = activeTools
+       .filter((tool) => !existingToolKeys.has(tool.id))
+       .map((tool, index) => ({
+@@ -4684,8 +4742,17 @@ LIMIT 1;
+         ...this.defaultToolboxMetadata(tool, index),
+         ...createMockDbAuditFields(index, SEED_DB_KEYS.users.forgeBot),
+       }));
+-    if (missingRows.length) {
+-      await adapter.upsertProductTable("toolbox_tool_metadata", missingRows);
++    const syncedRows = activeTools
++      .filter((tool) => shouldSyncSourceControlledTool(tool.id) && rowsByToolKey.has(tool.id))
++      .flatMap((tool, index) => {
++        const row = rowsByToolKey.get(tool.id);
++        const updatedRow = { ...row };
++        return applySourceControlledValues(updatedRow, this.defaultToolboxMetadata(tool, index), SOURCE_CONTROLLED_TOOLBOX_METADATA_FIELDS)
++          ? [updatedRow]
++          : [];
++      });
++    if (missingRows.length || syncedRows.length) {
++      await adapter.upsertProductTable("toolbox_tool_metadata", [...missingRows, ...syncedRows]);
+       return adapter.getProductTableRows("toolbox_tool_metadata");
+     }
+     return rows;
+diff --git a/src/shared/toolbox/tool-metadata-inventory.js b/src/shared/toolbox/tool-metadata-inventory.js
+index 4537aa685..69d5ce762 100644
+--- a/src/shared/toolbox/tool-metadata-inventory.js
++++ b/src/shared/toolbox/tool-metadata-inventory.js
+@@ -1460,18 +1460,18 @@ export const TOOL_REGISTRY = Object.freeze([
+   },
+   {
+     "id": "users",
+-    "name": "Users",
+-    "displayName": "Users",
+-    "shortDescription": "Plan admin-only user management workflows.",
+-    "shortLabel": "Users",
++    "name": "Project Team",
++    "displayName": "Project Team",
++    "shortDescription": "Plan project-level team assignments for the active game.",
++    "shortLabel": "Project Team",
+     "path": "users",
+     "folderName": "users",
+     "entryPoint": "users/index.html",
+     "badge": "/assets/theme-v2/images/badges/users.png",
+     "tool": "/assets/theme-v2/images/tools/users.png",
+-    "description": "Plan admin-only user management workflows.",
+-    "category": "Platform",
+-    "colorGroup": "tool-group-platform",
++    "description": "Plan project-level team assignments for the active game. Studio Team remains the account-level roster.",
++    "category": "Create",
++    "colorGroup": "tool-group-game-create",
+     "active": true,
+     "order": 40,
+     "requiredForPlayable": false,
+@@ -1480,15 +1480,15 @@ export const TOOL_REGISTRY = Object.freeze([
+     "requires": [],
+     "status": "Planned",
+     "progressChecklist": [
+-      "Admin-only planned capability",
++      "Project-level assignment planning",
+       "Static planned text only"
+     ],
+     "deferred": true,
+-    "hidden": true,
+-    "adminOnly": true,
+-    "visibleInToolsList": false,
+-    "toolboxGroup": "Admin",
+-    "subgroup": "Admin planned"
++    "hidden": false,
++    "adminOnly": false,
++    "visibleInToolsList": true,
++    "toolboxGroup": "Create",
++    "subgroup": "Project planning"
+   },
+   {
+     "id": "environments",
+diff --git a/tests/playwright/tools/RootToolsFutureState.spec.mjs b/tests/playwright/tools/RootToolsFutureState.spec.mjs
+index 455206718..b8dedafac 100644
+--- a/tests/playwright/tools/RootToolsFutureState.spec.mjs
++++ b/tests/playwright/tools/RootToolsFutureState.spec.mjs
+@@ -253,7 +253,7 @@ test("root tools surface links current tool pages without old_* routes", async (
+     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
+     await expect(page.getByRole("button", { name: "Build Path" })).toBeVisible();
+     await expect(page.getByRole("button", { name: "Build Path" })).not.toHaveAttribute("aria-disabled", "true");
+-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/41");
++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/42");
+     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
+     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='admin']")).toHaveCount(0);
+     await expect(page.locator("nav.nav-links > a[data-route='learn']")).toHaveCount(1);
+@@ -389,7 +389,7 @@ test("root tools surface links current tool pages without old_* routes", async (
+     expect(failedRequests.filter((request) => request.includes("/toolbox/old_"))).toEqual([]);
+ 
+     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/41");
++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/42");
+     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
+     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
+     await setServerSession(server, MOCK_DB_KEYS.users.admin);
+@@ -440,7 +440,7 @@ test("root tools surface links current tool pages without old_* routes", async (
+     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
+     await setServerSession(server, "");
+     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/41");
++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/42");
+     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
+     expect(pageErrors).toEqual([]);
+   } finally {
+diff --git a/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs b/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
+index 0f40e9616..4b46e8fa3 100644
+--- a/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
++++ b/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
+@@ -10,11 +10,11 @@ const REQUIRED_ADMIN_TOOLS = [
+   "Environments",
+   "Game Migration",
+   "Platform Settings",
+-  "Users",
+ ];
+ const REQUIRED_RESTORED_TOOLS = [
+   "AI Command Center",
+   "Creator Learning",
++  "Project Team",
+ ];
+ const EXPECTED_SETUP_COMPACT_ORDER = [
+   "Game Workspace",
+@@ -220,6 +220,13 @@ test("Toolbox and Admin Tool Votes share the same DB-backed metadata and plannin
+       status: "deprecated",
+       visibleInToolsList: false,
+     }));
++    expect(registrySnapshot.activeTools.find((tool) => tool.id === "users")).toEqual(expect.objectContaining({
++      category: "Create",
++      displayName: "Project Team",
++      releaseChannel: "planned",
++      status: "planned",
++      visibleInToolsList: true,
++    }));
+ 
+     for (const row of snapshot.rows) {
+       expect(row.toolKey, row.toolName).toBeTruthy();
+diff --git a/tests/playwright/tools/ToolboxRoutePages.spec.mjs b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
+index 9d8201460..a3214ddc5 100644
+--- a/tests/playwright/tools/ToolboxRoutePages.spec.mjs
++++ b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
+@@ -90,6 +90,14 @@ async function toolMetadataById(server) {
+   return new Map(snapshot.activeTools.map((tool) => [tool.id, tool]));
+ }
+ 
++function restoreEnvValue(key, value) {
++  if (value === undefined) {
++    delete process.env[key];
++    return;
++  }
++  process.env[key] = value;
++}
++
+ test("tools route aliases render toolbox tool pages", async ({ page }) => {
+   const server = await startRepoServer();
+   const failedRequests = [];
+@@ -169,7 +177,7 @@ test("Idea Board launches from Toolbox with placeholder-only Create Project acti
+       }
+     });
+     await page.goto(`${server.baseUrl}/toolbox/index.html?view=group&group=idea`, { waitUntil: "networkidle" });
+-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/41");
++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/42");
+     await expect(page.locator("[data-tools-accordion='Idea']")).toHaveCount(1);
+     await expect(page.locator("[data-tools-accordion='Idea']")).toBeVisible();
+     await expect(page.locator("[data-tools-accordion='Idea']")).toHaveJSProperty("open", true);
+@@ -212,6 +220,10 @@ test("Idea Board launches from Toolbox with placeholder-only Create Project acti
+ 
+ test("toolbox index shows wireframe and beta tools while Planned remains opt-in", async ({ page }) => {
+   const server = await startRepoServer();
++  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
++  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
++  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
++  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
+   const failedRequests = [];
+   const pageErrors = [];
+   const consoleErrors = [];
+@@ -264,17 +276,18 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
+     await expect(page.locator("[data-toolbox-tool-name-link='Game Journey']")).toBeVisible();
+     await expect(page.locator("[data-toolbox-tool-name-link='Game Workspace']")).toBeVisible();
+     await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toHaveCount(0);
+-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/41");
++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/42");
+     await page.locator("[data-toolbox-status-filter='planned']").click();
+     await expect(page.locator("[data-toolbox-status-filter='planned']")).toHaveAttribute("aria-pressed", "true");
+-    await expect(page.locator("[data-toolbox-tool-card][data-toolbox-release-channel='planned']")).toHaveCount(27);
+-    await expect(page.locator("[data-toolbox-tool-card]")).toHaveCount(40);
+-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 40/41");
++    await expect(page.locator("[data-toolbox-tool-card][data-toolbox-release-channel='planned']")).toHaveCount(28);
++    await expect(page.locator("[data-toolbox-tool-card]")).toHaveCount(41);
++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 41/42");
+     await expect(page.locator("[data-toolbox-tool-name-link='AI Command Center']")).toBeVisible();
++    await expect(page.locator("[data-toolbox-tool-name-link='Project Team']")).toBeVisible();
+     await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toBeVisible();
+     await page.locator("[data-toolbox-status-filter='deprecated']").click();
+     await expect(page.locator("[data-toolbox-tool-name-link='Build Game']")).toBeVisible();
+-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 41/41");
++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 42/42");
+ 
+     await setServerSession(server, MOCK_DB_KEYS.users.admin);
+     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+@@ -297,6 +310,8 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
+   } finally {
+     await workspaceV2CoverageReporter.stop(page);
+     await server.close();
++    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
++    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
+   }
+ });
+ 
+@@ -332,7 +347,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
+     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+ 
+     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
+-      "Planned (27)",
++      "Planned (28)",
+       "Wireframe (5)",
+       "Beta (7)",
+       "Complete (1)",
+@@ -349,7 +364,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
+ 
+     await page.locator("[data-tools-view='build-path']").click();
+     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
+-      "Planned (27)",
++      "Planned (28)",
+       "Wireframe (5)",
+       "Beta (7)",
+       "Complete (1)",
+@@ -704,6 +719,10 @@ test("toolbox status kickers, filters, card order, and voting controls work from
+ 
+ test("toolbox grouped view renders Game Journey order with unique colors while Build Path keeps metadata groups", async ({ page }) => {
+   const server = await startRepoServer();
++  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
++  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
++  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
++  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
+   const failedRequests = [];
+   const pageErrors = [];
+   const consoleErrors = [];
+@@ -777,10 +796,17 @@ test("toolbox grouped view renders Game Journey order with unique colors while B
+     expect(toolboxGroupsByTool["AI Command Center"]).toBe("Design");
+     expect(toolboxGroupsByTool["Game Workspace"]).toBe("Create");
+     expect(toolboxGroupsByTool["Game Configuration"]).toBe("Create");
+-    expect(toolboxGroupsByTool["Game Journey"]).toBe("Create");
++    expect(toolboxGroupsByTool["Project Team"]).toBe("Create");
+     expect(toolboxGroupsByTool["Tags"]).toBe("Create");
++    expect(toolboxGroupsByTool["Game Journey"]).toBe("Progression");
+     expect(toolboxGroupsByTool["Publish"]).toBe("Publish");
+     expect(toolboxGroupsByTool["Marketplace"]).toBe("Share");
++    expect(toolboxGroupsByTool.Users).toBeUndefined();
++
++    const createToolOrder = await page.locator("[data-tools-accordion='Create'] [data-toolbox-tool-card]").evaluateAll((cards) => (
++      cards.map((card) => card.getAttribute("data-toolbox-tool-card"))
++    ));
++    expect(createToolOrder).toEqual(["Game Workspace", "Game Configuration", "Project Team", "Tags"]);
+ 
+     const toolLinks = await page.locator("[data-toolbox-tool-name-link]").evaluateAll((links) => (
+       links.map((link) => ({
+@@ -821,6 +847,8 @@ test("toolbox grouped view renders Game Journey order with unique colors while B
+   } finally {
+     await workspaceV2CoverageReporter.stop(page);
+     await server.close();
++    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
++    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
+   }
+ });
+ 
+@@ -890,7 +918,7 @@ test("toolbox Build Path status filters support multi-select registry-matched to
+     await expect(page.locator("[data-tools-sort='grouped']")).not.toHaveClass(/primary/);
+ 
+     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
+-      "Planned (27)",
++      "Planned (28)",
+       "Wireframe (5)",
+       "Beta (7)",
+       "Complete (1)",
+@@ -903,32 +931,32 @@ test("toolbox Build Path status filters support multi-select registry-matched to
+ 
+     await page.locator("[data-toolbox-status-filter='planned']").click();
+     await expectActiveFilters(["planned", "complete"]);
+-    await expectBuildPathChannels(["planned", "complete"], 28);
++    await expectBuildPathChannels(["planned", "complete"], 29);
+     await expect(page.locator("[data-build-path-tool='AI Command Center']")).toBeVisible();
+     await expectBuildPathOrder("AI Command Center", registryById.get("ai-assistant").order);
+     await expectBuildPathOrder("Colors", registryById.get("colors").order);
+ 
+     await page.locator("[data-toolbox-status-filter='complete']").click();
+     await expectActiveFilters(["planned"]);
+-    await expectBuildPathChannels(["planned"], 27);
++    await expectBuildPathChannels(["planned"], 28);
+     await expect(page.locator("[data-build-path-tool='Colors']")).toHaveCount(0);
+     await expect(page.locator("[data-build-path-tool='AI Command Center']")).toBeVisible();
+ 
+     await page.locator("[data-toolbox-status-filter='wireframe']").click();
+     await expectActiveFilters(["planned", "wireframe"]);
+-    await expectBuildPathChannels(["planned", "wireframe"], 32);
++    await expectBuildPathChannels(["planned", "wireframe"], 33);
+     await expect(page.locator("[data-build-path-tool='Saved Data']")).toBeVisible();
+     await expect(page.locator("[data-build-path-tool='Build Game']")).toHaveCount(0);
+ 
+     await page.locator("[data-toolbox-status-filter='deprecated']").click();
+     await expectActiveFilters(["planned", "wireframe", "deprecated"]);
+-    await expectBuildPathChannels(["planned", "wireframe", "deprecated"], 33);
++    await expectBuildPathChannels(["planned", "wireframe", "deprecated"], 34);
+     await expect(page.locator("[data-build-path-tool='Build Game']")).toBeVisible();
+     await expectBuildPathOrder("Build Game", registryById.get("build-game").order);
+ 
+     await page.locator("[data-toolbox-status-filter='beta']").click();
+     await expectActiveFilters(["planned", "wireframe", "beta", "deprecated"]);
+-    await expectBuildPathChannels(["planned", "wireframe", "beta", "deprecated"], 40);
++    await expectBuildPathChannels(["planned", "wireframe", "beta", "deprecated"], 41);
+ 
+     expect(failedRequests).toEqual([]);
+     expect(pageErrors).toEqual([]);
+diff --git a/toolbox/tools-page-accordions.js b/toolbox/tools-page-accordions.js
+index 193541c51..0432d7497 100644
+--- a/toolbox/tools-page-accordions.js
++++ b/toolbox/tools-page-accordions.js
+@@ -135,7 +135,7 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
+         "fonts": "Interface",
+         "game-configuration": "Create",
+         "game-design": "Design",
+-        "game-journey": "Create",
++        "game-journey": "Progression",
+         "game-migration": "Publish",
+         "game-testing": "Play Test",
+         "game-workspace": "Create",
+@@ -158,16 +158,25 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
+         "sprites": "Graphics",
+         "tags": "Create",
+         "text-to-speech": "Audio",
+-        "users": "Share",
++        "users": "Create",
+         "videos": "Graphics",
+         "voices": "Audio",
+         "worlds": "Worlds"
+     });
+     const toolboxGroupPositions = new Map(toolboxGroupOrder.map((group, index) => [group, index]));
++    const workflowToolOrderByGroup = Object.freeze({
++        "Create": Object.freeze({
++            "game-workspace": 1,
++            "game-configuration": 2,
++            "users": 3,
++            "tags": 4
++        })
++    });
+     toolboxDefaultReleaseChannels.forEach((channel) => {
+         visibleReleaseChannels.add(channel);
+     });
+     const registryTools = getActiveToolRegistry();
++    const registryOrderPositions = new Map(registryTools.map((tool, index) => [tool.id, index]));
+     const registryToolsByTitle = new Map(registryTools.map((tool) => [tool.displayName || tool.name, tool]));
+     const toolGroups = gameJourneyGroupOrder
+         .map((group) => ({
+@@ -217,6 +226,20 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
+             || String(left.displayName || left.name || "").localeCompare(String(right.displayName || right.name || ""));
+     }
+ 
++    function workflowOrderForTool(tool) {
++        const toolGroupOrder = workflowToolOrderByGroup[tool.group || gameJourneyGroupForTool(tool)];
++        if (toolGroupOrder && Number.isInteger(toolGroupOrder[tool.id])) {
++            return toolGroupOrder[tool.id];
++        }
++        return registryOrderPositions.get(tool.id) ?? Number.MAX_SAFE_INTEGER;
++    }
++
++    function compareByWorkflowOrder(left, right) {
++        return workflowOrderForTool(left) - workflowOrderForTool(right)
++            || (left.order ?? Number.MAX_SAFE_INTEGER) - (right.order ?? Number.MAX_SAFE_INTEGER)
++            || String(left.displayName || left.name || left.title || "").localeCompare(String(right.displayName || right.name || right.title || ""));
++    }
++
+     function releaseChannelForTool(tool) {
+         if (typeof tool === "string") {
+             const explicitChannel = tool.trim().toLowerCase();
+@@ -395,7 +418,7 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
+                 tools: toolGroup.tools
+                     .map((tool) => enrichTool(tool, toolGroup.group))
+                     .filter(isVisibleForRole)
+-                    .sort(compareByTitle)
++                    .sort(compareByWorkflowOrder)
+             }))
+             .filter((group) => group.tools.length > 0);
+     }
+diff --git a/toolbox/users/index.html b/toolbox/users/index.html
+index dda4a3de4..0f541132a 100644
+--- a/toolbox/users/index.html
++++ b/toolbox/users/index.html
+@@ -5,8 +5,8 @@
+     <meta charset="utf-8">
+     <base href="/">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+-    <title>Users - GameFoundryStudio</title>
+-    <meta name="description" content="Users Toolbox wireframe. Plan admin-only user management workflows.">
++    <title>Project Team - GameFoundryStudio</title>
++    <meta name="description" content="Project Team Toolbox wireframe. Plan project-level team assignments for the active game.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+ </head>
+@@ -16,17 +16,17 @@
+     <main>
+         <section class="page-title">
+             <div class="container">
+-                <div class="kicker">Toolbox / Users</div>
+-                <h1>Users</h1>
+-                <p class="lede">Plan admin-only user management workflows. Static wireframe only; no database, persistence, save, load, or runtime behavior is implemented.</p>
++                <div class="kicker">Toolbox / Project Team</div>
++                <h1>Project Team</h1>
++                <p class="lede">Plan project-level team assignments for the active game. Static wireframe only; no database, persistence, save, load, or runtime behavior is implemented.</p>
+             </div>
+         </section>
+         <section class="section">
+             <div class="container container--tool-wide">
+                 <div class="tool-workspace tool-workspace--wide">
+-                    <aside class="tool-column tool-group-platform">
++                    <aside class="tool-column tool-group-game-create">
+                         <div class="tool-column-header">
+-                            <h2>Users</h2>
++                            <h2>Project Team</h2>
+                         </div>
+                         <div class="accordion-stack">
+                             <details class="vertical-accordion" open>
+@@ -37,9 +37,9 @@
+                     </aside>
+                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="users" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
+                     <section class="tool-center-panel"><h2>Workspace</h2>
+-                        <p>Plan admin-only user management workflows. This page preserves the shared Theme V2 tool template structure for future rebuild work.</p>
++                        <p>Plan project-level team assignments. Studio Team remains the account-level roster and is not implemented in this Project Team wireframe.</p>
+                     </section>
+-                    <aside class="tool-column tool-group-platform">
++                    <aside class="tool-column tool-group-game-create">
+                         <div class="tool-column-header">
+                             <h2>Inspector</h2>
+                         </div>
+diff --git a/docs_build/dev/admin-notes/GFS-Connected-Play-Second-Screen-Turn-Based-Design-26170-001.pdf b/docs_build/dev/admin-notes/GFS-Connected-Play-Second-Screen-Turn-Based-Design-26170-001.pdf
 new file mode 100644
-index 000000000..aad610159
+index 000000000..ecfc99cb3
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26170_006-toolbox-workflow-order-and-project-team.md
-@@ -0,0 +1,56 @@
-+# PR_26170_006-toolbox-workflow-order-and-project-team
++++ b/docs_build/dev/admin-notes/GFS-Connected-Play-Second-Screen-Turn-Based-Design-26170-001.pdf
+@@ -0,0 +1,396 @@
++                                               Game Foundry Studio
++
++          Connected Play / Second Screen Design
++
++                        Turn-Based TV + Phone/PC Adventure Game Architecture
++
++        Recommended file name: GFS-Connected-Play-Second-Screen-Turn-Based-Design-26170-001.pdf
++
++Purpose. This document captures the second-screen game concept discussed for Game Foundry Studio and
++turns it into a future build note. The goal is to let creators build TV-friendly, turn-based adventure, party,
++classroom, tabletop, and board-style games where the main game is shown on a TV or shared screen, while
++players interact from phones, PCs, tablets, or other devices.
++
++Core idea. The TV or host screen is the shared game board. Player devices become private or public
++controllers. A separate GFS networking server/VPS handles sessions, joining, presence, turn messages,
++reconnect, and save synchronization.
++
++1. Working Feature Names
++
++ Feature group: Connected Play
++ Creator-facing area: Connected Players
++ Phone/tablet/PC UI tool: Remote Screens
++ Turn flow tool: Turn Manager
++ Checkpoint tool: Save Spots
++ Backend service name options: GFS Play Server, GFS Session Server, or GFS Networking Server
++Recommendation. Use Connected Play as the broad feature name. Use Connected Players as the creator-
++facing configuration tool. This avoids making the feature sound like normal keyboard/mouse/gamepad
++controls. The phone can roll dice, spin a wheel, choose a secret card, vote, manage inventory, chat, trade, or
++operate as a host device.
++
++2. Why This Matters
++
++ Most TVs do not have good keyboard or mouse input, and remote controls are poor for complex game
++     interaction.
++
++ Phones are already available at family game nights, classrooms, parties, and tabletop sessions.
++ Turn-based games have very low network traffic: button clicks, dice rolls, card choices, votes, and save
++
++     events.
++ Second-screen input enables hidden information, secret choices, team-only instructions, private
++
++     inventory, and player-specific prompts.
++ This gives GFS a differentiator: creators can build Jackbox-like, Kahoot-like, tabletop assistant,
++
++     classroom quiz, and social deduction experiences without writing networking code.
++
++                                                               Game Foundry Studio - Connected Play Design
++3. Example Game Pattern
++
++ A player opens the adventure game on a TV, browser, projector, or large shared monitor.
++ The TV shows a QR code and join code.
++ Players scan the QR code or visit a join URL from their phone, PC, or tablet.
++ Each player joins the session, chooses a name/avatar, and receives a player role.
++ The TV displays the shared board, world map, encounter, dice result, wheel animation, or story event.
++ Each player device displays the correct UI for that player: roll dice, choose action, vote, pick a card,
++
++     enter an answer, or manage inventory.
++ The networking server validates the action and routes it to the TV/host screen.
++ At creator-defined save spots, the session syncs back to GFS storage/database so the group can resume
++
++     later.
++
++4. Recommended Architecture
++
++Use a separate VPS or server for networking. The main GFS app should remain focused on tools,
++published games, accounts, project data, and assets. Connected Play should have a separate service
++boundary because session state, player presence, turn messages, and reconnect behavior are operationally
++different from static pages and project editing.
++
++Domain / Service               Responsibility                   Notes
++
++gamefoundrystudio.com          Main app, tools, creator pages,  Static app and creator tooling.
++                               published game pages
++
++api.gamefoundrystudio.com      Accounts, projects, saves, publishing, Can be Supabase/API-backed
++
++                               package metadata                 depending on environment.
++
++network.gamefoundrystudio.com  Lobby, sessions, join codes, presence, Separate VPS/service. This is the
++
++                               turn messages, reconnect         Connected Play runtime.
++
++R2 / storage                   Assets, project packages,        Environment prefixes remain
++                               checkpoints, save payloads       DEV/IST/UAT/PROD.
++
++5. Recommended V1 Network Model
++
++Start server-relayed, not peer-to-peer. For turn-based games, the traffic is small enough that phone ->
++networking VPS -> TV is simpler, more reliable, easier to test, and easier to debug. Peer-to-peer can be
++added later as an optimization, but it should not block V1.
++
++ V1: Phone/PC/tablet sends action to GFS Play Server.
++ GFS Play Server validates session, player, role, and turn ownership.
++ GFS Play Server forwards the accepted action to the TV/host screen.
++ TV/host screen updates game state and animation.
++ At save spots, the game sends a checkpoint to GFS API/storage.
++Future peer-preferred mode. After players join through GFS, devices can attempt peer-to-peer
++connections for gameplay messages. The server would still remain responsible for lobby, signaling,
++
++                                                               Game Foundry Studio - Connected Play Design
++identity, reconnect, fallback relay, and save sync. If peer-to-peer fails due to NAT/firewall conditions, the
++game falls back to the server relay.
++
++6. Creator-Facing Tools to Add
++
++Tool               Purpose                   Creator Configures                                             Examples
++
++Connected Players  Defines who can join and  Join code, QR code, player                                     Family board game,
++                   what roles exist.         slots, teams, host,                                            classroom quiz, party
++                                             spectators, reconnect                                          adventure.
++                                             rules.
++
++Remote Screens     Builds the UI shown on    Buttons, dice, wheel, cards,                                   Roll dice, choose spell, vote
++                   each phone/PC/tablet.     vote, number entry, text                                       on path.
++                                             entry, inventory, private
++                                             messages.
++
++Turn Manager       Controls turn order and   Turn sequence, active                                          Player 2 rolls, Red Team
++Save Spots         valid actions.            player/team, timeout, skip,                                    votes, host reveals answer.
++                                             round rules, host override.
++                   Defines checkpoint and
++                   resume behavior.          Save after turn, after                                         Resume campaign next
++                                             round, after room, after                                       week from saved room.
++                                             boss, manual host save,
++                                             auto-save interval.
++
++Host Controls      Optional game             Start round, pause, skip                                       Teacher quiz host,
++Presence Monitor   master/teacher/admin      player, award points,                                          dungeon master, party
++                   controls.                 reveal card, kick player.                                      host.
++
++                   Shows player state to     Connected, disconnected,                                       Pause if current player
++                   creator/game host.        reconnecting, idle,                                            disconnects.
++                                             spectator.
++
++7. Built-In Remote Widgets
++
++ Dice Roller
++ Wheel Spinner
++ Card Draw / Card Choice
++ Vote / Poll
++ Yes / No
++ Multiple Choice
++ Text Entry
++ Number Entry
++ Slider
++ Inventory Selector
++ Character Action Buttons
++ Team Chat / Private Message
++
++                                                               Game Foundry Studio - Connected Play Design
++ Timer / Ready Button
++ Rating / Stars
++ Host Override Buttons
++
++Design principle. Remote widgets should be drag-and-drop building blocks. Creators should not need to
++know WebSockets, session IDs, JSON payloads, or networking details. The engine should turn widget
++actions into game events.
++
++8. Core Game Events
++
++ On Session Created
++ On Player Join
++ On Player Leave
++ On Player Reconnect
++ On Player Ready
++ On Turn Start
++ On Turn Timeout
++ On Player Action
++ On Vote Complete
++ On Dice Rolled
++ On Wheel Spun
++ On Card Chosen
++ On Host Action
++ On Save Spot Reached
++ On Save Complete
++ On Network Error
++
++9. Roles and Permissions
++
++Role                      Can Do                              Use Cases
++                                                              Teacher, party host, dungeon master,
++Host                      Create/start session, pause, skip,  parent.
++                          reveal, award, save, end session.   Normal adventure/party game
++                                                              participant.
++Player                    Interact when allowed, receive
++                          private screens, take turns, vote,  Team-based puzzles, classroom
++                          choose actions.                     groups.
++                                                              Audience, stream viewers, classroom
++Team Member               Act for team or vote with team.     observers.
++                                                              Creator testing during build.
++Spectator                 View only, no gameplay actions
++Creator/Test User         unless promoted.
++
++                          Debug session, inspect messages,
++                          simulate players.
++
++                          Game Foundry Studio - Connected Play Design
++10. Private Information Support
++
++Private player UI is a major reason to build this feature. The TV can show shared information while
++each player device shows information only that player, team, or host should see.
++
++ Secret missions: only one player sees their objective.
++ Hidden roles: social deduction games where players have private roles.
++ Card hands: each player sees their own cards.
++ Inventory: each player sees personal items and abilities.
++ Team-only instructions: Red Team and Blue Team receive different prompts.
++ Puzzle input: one player reads clues while another sees controls.
++
++11. Turn-Based Validation Rules
++
++ Only the current player or current team can submit turn actions unless the creator allows all-player
++     input.
++
++ The server should reject duplicate, late, invalid, or out-of-turn actions.
++ Actions should include a session ID, player ID, action type, action payload, and turn/round counter.
++ Server should provide idempotency keys so a double tap does not roll dice twice.
++ The TV/host should receive accepted actions, not raw untrusted inputs.
++ Host override can skip, pause, undo, or force a state depending on creator settings.
++
++12. Save Spots / Checkpoints
++
++Save Spots are creator-defined moments where the game reconnects/syncs to GFS for durable
++storage. This keeps live turn traffic on the networking server while project saves and resumable campaign
++state remain under the normal GFS data/storage model.
++
++ Save after each turn.
++ Save after each round.
++ Save after each room/level/map.
++ Save after boss or story milestone.
++ Save when host presses Save.
++ Auto-save every X minutes.
++ Save only when all players confirm.
++ Save on graceful session end.
++Recommended checkpoint contents. Current map/room, player positions, player roles, player inventory,
++score, quest flags, turn order, round number, random seed, unresolved prompts, disconnected player state,
++and last accepted action ID.
++
++13. Session Lifecycle
++
++1. Creator configures Connected Play for the game.
++2. TV/host launches the published game.
++3. TV requests a new session from network.gamefoundrystudio.com.
++4. Network server returns session ID, short join code, and QR join URL.
++
++                                                               Game Foundry Studio - Connected Play Design
++5. Players join from phones/PCs/tablets.
++6. Host starts the game when enough players are ready.
++7. Turn Manager selects current player/team.
++8. Remote Screens display only the allowed controls for that player/team/host.
++9. Player submits action.
++10. Network server validates and routes action.
++11. TV/host applies action to game state and shows animation/result.
++12. Save Spot triggers checkpoint sync to GFS API/storage.
++13. If a player disconnects, Presence Service marks them disconnected and supports reconnect.
++14. At session end, final checkpoint is saved and session is closed.
++
++14. Backend Services on the Separate VPS
++
++Service                Responsibility                      Notes
++
++Lobby Service          Create sessions, join codes, QR URLs, First service needed for V1.
++                       session capacity, host ownership.
++
++Presence Service       Track connected, disconnected,      Needed for turn reliability.
++                       reconnecting, idle, ready.
++
++Turn Service           Validate active player/team and     Critical for turn-based games.
++                       accepted action sequence.
++
++Message Service        Route phone/PC actions to TV/host   Likely WebSocket-based for V1.
++                       and host messages to players.
++
++Remote Screen Service  Serves or describes the correct UI  Can be driven by the game
++                       state for each device.              definition.
++
++Save Sync Service      Sends checkpoint payloads to GFS    Bridge between networking VPS and
++                       API/storage.                        GFS project/save model.
++
++Reconnect Service      Allows a player to return to their slot Use session token or rejoin code.
++                       after network loss.
++
++Telemetry/Health       Tracks service status, session counts, Useful for owner operations.
++                       errors, latency.
++
++15. Suggested Message Types
++
++ session.create
++ session.join
++ session.leave
++ session.ready
++ player.assign
++ turn.start
++ turn.timeout
++
++                                                               Game Foundry Studio - Connected Play Design
++ action.submit
++ action.accepted
++ action.rejected
++ dice.roll
++ wheel.spin
++ vote.cast
++ vote.complete
++ card.choose
++ host.pause
++ host.skip
++ host.award
++ save.request
++ save.complete
++ presence.update
++ error.network
++ error.invalid_turn
++
++16. GFS Game Journey Placement
++
++Do not hide this under normal Controls only. Keyboard, mouse, gamepad, touch, and accessibility are
++device inputs. Connected Play is a game mode and session architecture.
++
++ Recommended placement: Interface -> Connected Players -> Rules
++ Alternative placement: Controls -> Connected Players -> Rules, if the toolbox needs it near input
++
++     configuration.
++ The feature should still connect to Controls for accessibility and input mapping, but it should have its
++
++     own tool group or tile.
++
++17. MVP Scope
++
++ Create session from TV/host screen.
++ Show QR code and short join code.
++ Allow players to join from phone/PC/tablet.
++ Assign host and player roles.
++ Show basic remote screens: button, dice, wheel, vote, multiple choice.
++ Support turn order with current-player validation.
++ Route action from player device to TV/host screen through networking VPS.
++ Show presence: connected/disconnected/rejoined.
++ Support manual save and save-after-turn.
++ Support reconnect to same player slot.
++
++18. Later Enhancements
++
++ Peer-preferred mode using WebRTC for browser-to-browser data channels, with server fallback.
++ Local Party mode for same-Wi-Fi sessions.
++
++                                                               Game Foundry Studio - Connected Play Design
++ Team-only screens and team chat.
++ Spectator view and stream-friendly audience mode.
++ Advanced hidden roles and secret objectives.
++ Companion UI templates for board games, quizzes, tabletop adventures, and social deduction games.
++ Creator test harness to simulate 2, 4, 8, or more players from one browser.
++ Replay log and action history for debugging.
++ Session analytics: average players, disconnects, turn duration, abandoned sessions.
++ Moderation tools for public sessions.
++
++19. Risks and Design Notes
++
++ Security: the server must not trust client actions. Validate player, role, turn, action type, and payload.
++ Double actions: use action IDs/idempotency keys to prevent double rolls or duplicate votes.
++ Reconnect: disconnected players need a safe way to reclaim the same slot.
++ Privacy: private screens must not leak hidden cards, roles, objectives, or team prompts to the TV or
++
++     wrong player.
++ Scalability: turn-based traffic is small, but public games and classroom sessions may create many idle
++
++     WebSocket connections.
++ Cost: V1 relay is simpler but uses server bandwidth. For turn-based games this should be manageable.
++ Fallback: peer-to-peer should be optional later, not required for reliability.
++ Debugging: creators need clear test panels, not invisible networking failures.
++ Save authority: GFS should remain the durable save/checkpoint authority even when live gameplay
++
++     traffic uses the networking server.
++
++20. Example Creator Configuration  Value
++                                   Turn-based adventure board game
++Setting                            2-6 players, 1 host optional, spectators allowed
++Game Type                          QR code + 6-digit join code
++Players                            Dice, choose path, use item, vote, ready button
++Join Method                        Clockwise player order; skip after timeout; host can
++Remote Widgets                     override
++Turn Rule                          Each player sees inventory and secret objective
++                                   After each room and manual host save
++Private UI                         Player can rejoin same slot with session token or join
++Save Spots                         code + name confirmation
++Reconnect                          V1 server relay; future peer-preferred optional
++
++Networking Mode
++
++Game Foundry Studio - Connected Play Design
++21. One-Line Build Summary
++
++Connected Play lets creators build TV-first, turn-based games where the shared screen is the adventure
++board and each player device becomes a private, role-aware controller, all powered by a separate GFS Play
++Server for sessions, presence, turn validation, messages, reconnect, and save synchronization.
++
++                                                               Game Foundry Studio - Connected Play Design
++
+diff --git a/docs_build/dev/admin-notes/GFS_Game_Identity_Strategy.pdf.pdf b/docs_build/dev/admin-notes/GFS_Game_Identity_Strategy.pdf.pdf
+new file mode 100644
+index 000000000..39ac07f6c
+--- /dev/null
++++ b/docs_build/dev/admin-notes/GFS_Game_Identity_Strategy.pdf.pdf
+@@ -0,0 +1,399 @@
++Since you asked for a detailed summary to save for later implementation, here's the
++consolidated version with the wildcard subdomain roadmap incorporated.
++
++         Edit
++
++          Game Foundry Studio - Game Ecosystem,
++          Discovery, and Domain Strategy
++
++            Vision
++
++               Game Foundry Studio should not simply host games.
++               Game Foundry Studio should host complete game ecosystems.
++               A game is more than:
++
++                     Play
++               A game ecosystem includes:
++
++                     Play
++                     Learn
++                     Collect
++                     Compete
++                     Discuss
++                     Share
++                     Purchase
++                     Return
++               The long-term goal is to keep players inside the GFS ecosystem
++               while still allowing creators to establish their own brands.
++
++          Core Principle
++
++               Every published game automatically receives an official home
++               inside GFS.
++               Example:
++               gamefoundrystudio.com/kingdoms-of-aether
++               This page is permanent and cannot be removed.
++It serves as:
++
++      Discovery page
++      SEO page
++      Community page
++      Marketplace page
++      Analytics page
++      Canonical game page
++
++Even if the creator later uses custom domains, the canonical GFS
++page remains.
++
++Ecosystem Pages
++
++Every published game automatically receives:
++
++/overview
++/news
++/challenges
++/events
++/wiki
++/store
++/media
++/community
++/leaderboards
++/achievements
++/rewards
++/patch-notes
++
++Examples:
++
++gamefoundrystudio.com/kingdoms-of-aether/news
++
++gamefoundrystudio.com/kingdoms-of-aether/challenges
++
++gamefoundrystudio.com/kingdoms-of-aether/wiki
++
++gamefoundrystudio.com/kingdoms-of-aether/store
++
++These pages are generated using templates.
++
++Creators provide content.
++GFS provides structure.
++
++Challenge and Reward Loop
++
++Primary objective:
++Drive players from the game back into GFS.
++Example:
++Daily Challenge
++Visit the Dragon Archives.
++Link:
++gamefoundrystudio.com/kingdoms-of-aether/challenges/dragon-of-
++the-day
++Reward:
++
++      Gems
++      Energy
++      XP
++      Cosmetic Items
++      Crafting Materials
++Player Flow:
++Game
++↓
++Challenge Page
++↓
++Reward Claim
++↓
++Back To Game
++This creates recurring engagement with GFS itself.
++
++Challenge Types
++
++Knowledge Challenge
++      Read article
++      Answer question
++      Receive reward
++Exploration Challenge
++      Find hidden code
++      Receive reward
++Community Challenge
++      Vote
++      Discuss
++      Participate
++      Receive reward
++Creator Spotlight
++      Read creator content
++      Receive reward
++Marketplace Promotion
++      View item
++      Receive reward
++
++Store Integration
++
++Future creator monetization.
++Example:
++gamefoundrystudio.com/kingdoms-of-aether/store
++Possible contents:
++
++      Cosmetic packs
++      Character skins
++      Expansion packs
++      Supporter packs
++      Soundtracks
++      Wallpapers
++      Merchandise links
++All template driven.
++All creator managed.
++
++Membership Philosophy
++
++Do NOT make ecosystem pages Founder-only.
++Do NOT make ecosystem pages Studio-only.
++Do NOT make ecosystem pages Pro-only.
++Every published game should receive ecosystem pages.
++Reason:
++The value of GFS grows through content volume.
++Desired outcome:
++100 games
++100 ecosystems
++Not:
++100 games
++5 ecosystems
++
++Free Plan
++
++Includes:
++      Game page
++      News
++      Challenges
++      Wiki
++      Community
++      Achievements
++      Rewards
++
++Required branding:
++Powered by Game Foundry Studio
++Creator Plan
++
++Adds:
++      Additional projects
++      More storage
++      Marketplace publishing
++      Advanced analytics
++      Premium page templates
++      Additional AI credits
++
++Studio Plan
++
++Adds:
++      Teams
++      Enterprise analytics
++      Higher limits
++      White-label options
++      Additional AI credits
++
++Domain Strategy
++
++Custom domains should be a sidecar service.
++Not a membership feature.
++Creators should be able to buy membership levels without being
++forced to buy domains.
++
++Bring Your Own Domain
++
++Examples:
++KingdomsOfAether.com
++PlayKingdomsOfAether.com
++Creator purchases domain from registrar.
++Creator connects domain to GFS.
++GFS manages:
++
++      SSL
++      Routing
++      Analytics
++      Ecosystem integration
++Potential pricing:
++$1-$2/month per connected domain
++
++Managed Domain (Future)
++
++Potential future service.
++Creator purchases through GFS.
++Includes:
++
++      Registration
++      SSL
++      DNS setup
++      Routing
++Example:
++$29 setup
++Includes first year
++Then:
++$24/year renewal
++Not recommended for V1 due to registrar complexity.
++
++Game Identity Pack
++
++Rather than selling:
++Custom Domain
++Sell:
++Game Identity Pack
++Includes:
++
++      Domain Mapping
++      SSL
++      Marketing Landing Page
++      QR Code Generation
++      Analytics
++      Ecosystem Integration
++Higher perceived value than domain mapping alone.
++
++Canonical Page Rule
++
++Regardless of custom domains:
++KingdomsOfAether.com
++Must always have a corresponding GFS page:
++gamefoundrystudio.com/kingdoms-of-aether
++This page remains permanently available.
++Purpose:
++
++      Discovery
++      SEO
++      Analytics
++      Cross-promotion
++      Platform growth
++
++Wildcard Subdomain Strategy
++
++Long-term enhancement.
++Example:
++kingdoms-of-aether.gamefoundrystudio.com
++Additional ecosystem pages:
++wiki.kingdoms-of-aether.gamefoundrystudio.com
++news.kingdoms-of-aether.gamefoundrystudio.com
++community.kingdoms-of-aether.gamefoundrystudio.com
++Benefits:
++
++      No creator DNS setup
++      No creator SSL setup
++      Premium feel
++      Full GFS control
++      Easier than supporting arbitrary custom domains
++Requirements:
++      Wildcard DNS
++      Wildcard SSL
++      Subdomain routing
++
++Effort Estimates
++
++Path URLs
++gamefoundrystudio.com/kingdoms-of-aether
++Effort: 1x
++
++Wildcard Subdomains
++kingdoms-of-aether.gamefoundrystudio.com
++Effort: 2x
++
++Custom Domains
++kingdomsofaether.com
++Effort: 4x
++
++Custom Domains + Creator Subdomains
++wiki.kingdomsofaether.com
++community.kingdomsofaether.com
++Effort: 8x
++
++Important Observation
++
++Players care far more about:
++      Rewards
++      Content
++      Events
++      Challenges
++
++Than URL structure.
++Most players will happily visit:
++gamefoundrystudio.com/kingdoms-of-aether/challenges/dragon-of-
++the-day
++if they receive:
++100 Gems
++Therefore:
++Build ecosystem features first.
++Build URL sophistication later.
++
++Recommended Rollout Plan
++
++V1 - Path URLs
++
++Primary format:
++gamefoundrystudio.com/kingdoms-of-aether
++Simple.
++Fast.
++Lowest effort.
++Highest value.
++
++V2 - Wildcard Subdomains
++
++Examples:
++kingdoms-of-aether.gamefoundrystudio.com
++wiki.kingdoms-of-aether.gamefoundrystudio.com
++news.kingdoms-of-aether.gamefoundrystudio.com
++Premium feel.
++Still fully controlled by GFS.
++
++V3 - Bring Your Own Domain
++
++Examples:
++kingdomsofaether.com
++playkingdomsofaether.com
++Creator purchases domain elsewhere.
++GFS hosts and manages routing.
++
++V4 - Creator Domain Subdomains
++
++Examples:
++wiki.kingdomsofaether.com
++community.kingdomsofaether.com
++news.kingdomsofaether.com
++Highest effort.
++Lowest initial priority.
++
++DNS Architecture
++
++Never point creators directly at an IP address.
++Always point creators at a hostname controlled by GFS.
++Example:
++www.kingdomsofaether.com
++CNAME domains.gamefoundrystudio.com
++Flow:
++Creator Domain
++↓
++CNAME
++↓
++domains.gamefoundrystudio.com
++↓
++Cloudflare
++↓
++Game Foundry Studio
++Benefits:
++
++      Infrastructure changes are invisible to creators
++      No DNS updates required when hosting changes
++      Cloudflare remains in front of all traffic
++      Simplifies scaling and migration
++This should be considered the preferred architecture for all future
++custom-domain support.
++
++Long-Term Strategic Goal
++
++The strategic asset is not the engine.
++               The strategic asset is:
++               Thousands of game ecosystems living under one roof.
++               Future players should say:
++               "I found this game on Game Foundry Studio."
++               not:
++               "I found this random website somewhere."
++               That network effect is what transforms GFS from a game creation
++               tool into a game platform.
++
++This is one of the strongest platform-level ideas we've discussed because it directly ties
++together Game Journey → Community → Discovery → Marketplace → Retention →
++Monetization into a single ecosystem instead of treating them as separate features.
++
+diff --git a/docs_build/dev/reports/PR_26170_007-toolbox-workflow-render-order-project-team.md b/docs_build/dev/reports/PR_26170_007-toolbox-workflow-render-order-project-team.md
+new file mode 100644
+index 000000000..286851fb7
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26170_007-toolbox-workflow-render-order-project-team.md
+@@ -0,0 +1,53 @@
++# PR_26170_007-toolbox-workflow-render-order-project-team
 +
 +## Branch Validation
-+- PASS: Current branch verified as `main`.
++
++PASS - Current branch verified as `main`.
 +
 +## Requirement Checklist
-+- PASS: Built `PR_26170_006-toolbox-workflow-order-and-project-team`.
-+- PASS: Added BUILD doc at `docs_build/pr/BUILD_PR_26170_006-toolbox-workflow-order-and-project-team.md`.
-+- PASS: Added Toolbox Workflow Ordering Governance to `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
-+- PASS: Documented Toolbox groups as intentional workflow-order exceptions.
-+- PASS: Documented tile ordering by creator progression rather than alphabetical sorting.
-+- PASS: Documented natural ordering rules: `Select -> Create -> Review`, `Left -> Right`, and `Top -> Bottom`.
-+- PASS: Documented that the next tile should represent the most likely next creator action.
-+- PASS: Documented that tile ordering should minimize navigation decisions.
-+- PASS: Updated Create group references to this order: Game Workspace, Game Configuration, Project Team, Tags.
-+- PASS: Moved project-specific Users planning into Create/Project Team documentation.
-+- PASS: Documented the distinction between Studio Team as account-level roster and Project Team as project-level assignment.
-+- PASS: Updated Owner Notes source content in `docs_build/dev/admin-notes/tools/index.txt`.
-+- PASS: Updated owner-facing group notes in `owner/grouping-colors.html`.
-+- PASS: No runtime behavior changes were made for this PR.
 +
-+## Impacted Lane
-+- Documentation/static lane only.
++- PASS - Toolbox grouped rendering no longer alphabetizes cards inside groups. `toolbox/tools-page-accordions.js` uses `compareByWorkflowOrder` for grouped card ordering.
++- PASS - Toolbox groups render by declared Game Journey order from source order. The targeted Playwright grouped-view check asserted `GAME_JOURNEY_GROUP_ORDER`.
++- PASS - Create group renders in required workflow order: `Game Workspace`, `Game Configuration`, `Project Team`, `Tags`. Covered by source validation and Playwright.
++- PASS - Existing `users` tool was moved into Create as `Project Team` without changing its route (`toolbox/users/index.html`) or planned status.
++- PASS - `Users` is no longer exposed as a Toolbox tile under Share, Account, Platform, or any non-Create group. API snapshot validation confirms `id: users` displays as `Project Team` with `group/category/toolboxGroup: Create`.
++- PASS - User-facing Toolbox copy uses `Project Team` for project-specific team assignment. `Studio Team` remains documented as the account-level roster distinction.
++- PASS - No database source contract was replaced. A one-tool source-controlled metadata sync keeps the configured DB-backed Toolbox metadata aligned for the governed `users` -> `Project Team` move while leaving other tool metadata rows owner-editable.
 +
-+## Validation
-+- PASS: `git branch --show-current` returned `main`.
-+- PASS: `git diff --check -- docs_build/dev/PROJECT_INSTRUCTIONS.md docs_build/dev/admin-notes/tools/index.txt owner/grouping-colors.html docs_build/pr/BUILD_PR_26170_006-toolbox-workflow-order-and-project-team.md`
-+- PASS: Targeted Node documentation validation confirmed:
-+  - governance includes workflow-order exception rules.
-+  - governance includes creator progression, next-action, and navigation-minimization rules.
-+  - Create group order is consistent.
-+  - Owner Notes source includes Project Team and Tags in Create.
-+  - Owner Notes source no longer lists Users as Platform planning.
-+  - owner reference no longer lists Users in Share.
-+  - Studio Team and Project Team distinction is documented.
++## Validation Lane Report
 +
-+## Playwright Decision
-+- Playwright impacted: No.
-+- No Playwright impact. This PR is docs/workflow only.
-+- `npm run test:workspace-v2` was not run because no runtime, UI behavior, toolState, workspace, or interaction behavior changed.
++- PASS - `node --check toolbox/tools-page-accordions.js`
++- PASS - `node --check src/shared/toolbox/tool-metadata-inventory.js`
++- PASS - `node --check src/dev-runtime/server/local-api-router.mjs`
++- PASS - `node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs`
++- PASS - `node --check tests/playwright/tools/RootToolsFutureState.spec.mjs`
++- PASS - `node --check tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs`
++- PASS - HTML inline guard: `rg -n "<style|\\sstyle=|\\son[a-z]+=" toolbox/users/index.html` returned no matches.
++- PASS - Targeted source/API validation confirmed shared inventory, API registry snapshot, grouped renderer mapping, Create workflow order, and Project Team page copy.
++- PASS - `git diff --check` completed with no whitespace errors; only existing Windows line-ending warnings were reported.
++
++## Playwright Result
++
++- PASS - `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --grep "toolbox grouped view renders Game Journey order" --workers=1 --reporter=list`
++- PASS - `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --grep "toolbox index shows wireframe and beta tools" --workers=1 --reporter=list`
++
++## Coverage Notes
++
++- Generated advisory Playwright V8 reports:
++  - `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++  - `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
++- Browser coverage exercised `toolbox/tools-page-accordions.js`.
++- Server-side `src/dev-runtime/server/local-api-router.mjs` and shared metadata inventory are not browser-collected by V8 coverage; targeted Node/API validation covered those paths.
 +
 +## Skipped Lanes
-+- Runtime: skipped because this PR changes documentation only.
-+- Integration: skipped because no handoff contract changed.
-+- Engine: skipped because no engine/shared runtime code changed.
-+- Samples: skipped because no sample files or sample loading behavior changed.
-+- Recovery/UAT: skipped because this is not a recovery lane behavior change.
-+- Full samples smoke: skipped per request and because documentation changes do not affect sample runtime behavior.
 +
-+## Manual Test Notes
-+- Open `owner/grouping-colors.html` and confirm Create lists Game Workspace, Game Configuration, Project Team, and Tags.
-+- Open Owner Notes for `docs_build/dev/admin-notes/tools/index.txt` and confirm the Create group order and Studio Team / Project Team distinction are visible.
-+- Confirm no Toolbox page ordering or runtime behavior changed in this PR.
++- SKIP - Full samples smoke was not run per request.
++- SKIP - Broad workspace suite was not run because targeted Toolbox Playwright validation covered the impacted UI/rendering behavior.
++- SKIP - Database behavior, runtime behavior, Workspace behavior, routes, and status-value lanes were not broadened beyond the directly required Toolbox metadata/API validation.
 +
-+## Stacked Worktree Note
-+- The working tree already contains uncommitted prior PR changes. This PR's intentional product changes are documentation-only in `docs_build/dev/PROJECT_INSTRUCTIONS.md`, `docs_build/dev/admin-notes/tools/index.txt`, and `owner/grouping-colors.html`, plus the required BUILD/report artifacts.
-diff --git a/docs_build/pr/BUILD_PR_26170_006-toolbox-workflow-order-and-project-team.md b/docs_build/pr/BUILD_PR_26170_006-toolbox-workflow-order-and-project-team.md
++## Manual Validation Notes
++
++- Confirmed `/toolbox/index.html?view=group` renders all Game Journey groups in declared order.
++- Confirmed Create group tile order is `Game Workspace`, `Game Configuration`, `Project Team`, `Tags`.
++- Confirmed `Project Team` uses the existing `toolbox/users/index.html` route and remains planned.
++- Confirmed `Users` does not remain as a visible Toolbox tile label in the API-backed active registry.
+diff --git a/docs_build/pr/BUILD_PR_26170_007-toolbox-workflow-render-order-project-team.md b/docs_build/pr/BUILD_PR_26170_007-toolbox-workflow-render-order-project-team.md
 new file mode 100644
-index 000000000..edfa1ec4c
+index 000000000..1f44bc228
 --- /dev/null
-+++ b/docs_build/pr/BUILD_PR_26170_006-toolbox-workflow-order-and-project-team.md
-@@ -0,0 +1,44 @@
-+# BUILD PR_26170_006-toolbox-workflow-order-and-project-team
++++ b/docs_build/pr/BUILD_PR_26170_007-toolbox-workflow-render-order-project-team.md
+@@ -0,0 +1,34 @@
++# BUILD PR_26170_007-toolbox-workflow-render-order-project-team
 +
 +## Purpose
-+- Add Toolbox workflow-ordering governance.
-+- Document the Create group progression and Project Team planning focus.
-+- Keep this PR documentation-only with no runtime behavior changes.
++- Fix Toolbox grouped rendering so workflow groups and tiles render in declared creator workflow/source order instead of alphabetical label order.
++- Move the existing Users/Team toolbox tile into Create as Project Team.
 +
 +## Scope
-+- Update Toolbox governance documentation.
-+- Update owner-facing grouping notes.
-+- Update Owner Notes source content for Toolbox/Create group planning.
-+- Do not change runtime JavaScript, CSS behavior, API behavior, database behavior, tool metadata contracts, routes, or rendered Toolbox behavior.
++- Update Toolbox grouped renderer ordering logic.
++- Update directly required toolbox metadata and Project Team page copy.
++- Update targeted Toolbox Playwright expectations.
++- Do not change database behavior, persistence behavior, route behavior, auth behavior, Account/Admin Users pages, or full samples.
 +
-+## Required Governance
-+- Toolbox groups are intentional workflow-order exceptions.
-+- Tiles are ordered by creator progression, not alphabetically.
-+- Order follows how users naturally work:
-+  - Select -> Create -> Review
-+  - Left -> Right
-+  - Top -> Bottom
-+- The next tile should represent the most likely next creator action.
-+- Tile ordering should minimize navigation decisions.
-+- Create group order:
++## Required Behavior
++- Toolbox groups render by declared workflow order/source order.
++- Create group renders:
 +  1. Game Workspace
 +  2. Game Configuration
 +  3. Project Team
 +  4. Tags
-+- Team distinction:
-+  - Studio Team = account-level roster
-+  - Project Team = project-level assignment
-+  - Current implementation focus is Project Team
++- Existing Users/Team toolbox tile renders as Project Team under Create.
++- Project-specific user/team copy uses Project Team.
++- Studio Team remains account-level roster documentation only.
 +
 +## Validation
-+- Verify current branch is `main`.
-+- Run targeted documentation validation only.
-+- Verify ordering references are consistent.
-+- Confirm Playwright impact is No because there are no runtime/UI behavior changes.
++- Verify branch is `main`.
++- Run targeted Toolbox static/syntax checks.
++- Run targeted Toolbox Playwright validation.
 +- Do not run full samples.
 +
 +## Required Artifacts
-+- `docs_build/dev/reports/PR_26170_006-toolbox-workflow-order-and-project-team.md`
++- `docs_build/dev/reports/PR_26170_007-toolbox-workflow-render-order-project-team.md`
 +- `docs_build/dev/reports/codex_review.diff`
 +- `docs_build/dev/reports/codex_changed_files.txt`
-+- `tmp/PR_26170_006-toolbox-workflow-order-and-project-team_delta.zip`
++- `tmp/PR_26170_007-toolbox-workflow-render-order-project-team_delta.zip`

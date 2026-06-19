@@ -90,6 +90,14 @@ async function toolMetadataById(server) {
   return new Map(snapshot.activeTools.map((tool) => [tool.id, tool]));
 }
 
+function restoreEnvValue(key, value) {
+  if (value === undefined) {
+    delete process.env[key];
+    return;
+  }
+  process.env[key] = value;
+}
+
 test("tools route aliases render toolbox tool pages", async ({ page }) => {
   const server = await startRepoServer();
   const failedRequests = [];
@@ -169,7 +177,7 @@ test("Idea Board launches from Toolbox with placeholder-only Create Project acti
       }
     });
     await page.goto(`${server.baseUrl}/toolbox/index.html?view=group&group=idea`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/41");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/42");
     await expect(page.locator("[data-tools-accordion='Idea']")).toHaveCount(1);
     await expect(page.locator("[data-tools-accordion='Idea']")).toBeVisible();
     await expect(page.locator("[data-tools-accordion='Idea']")).toHaveJSProperty("open", true);
@@ -212,6 +220,10 @@ test("Idea Board launches from Toolbox with placeholder-only Create Project acti
 
 test("toolbox index shows wireframe and beta tools while Planned remains opt-in", async ({ page }) => {
   const server = await startRepoServer();
+  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
+  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
   const failedRequests = [];
   const pageErrors = [];
   const consoleErrors = [];
@@ -264,17 +276,18 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
     await expect(page.locator("[data-toolbox-tool-name-link='Game Journey']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Game Workspace']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toHaveCount(0);
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/41");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/42");
     await page.locator("[data-toolbox-status-filter='planned']").click();
     await expect(page.locator("[data-toolbox-status-filter='planned']")).toHaveAttribute("aria-pressed", "true");
-    await expect(page.locator("[data-toolbox-tool-card][data-toolbox-release-channel='planned']")).toHaveCount(27);
-    await expect(page.locator("[data-toolbox-tool-card]")).toHaveCount(40);
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 40/41");
+    await expect(page.locator("[data-toolbox-tool-card][data-toolbox-release-channel='planned']")).toHaveCount(28);
+    await expect(page.locator("[data-toolbox-tool-card]")).toHaveCount(41);
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 41/42");
     await expect(page.locator("[data-toolbox-tool-name-link='AI Command Center']")).toBeVisible();
+    await expect(page.locator("[data-toolbox-tool-name-link='Project Team']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toBeVisible();
     await page.locator("[data-toolbox-status-filter='deprecated']").click();
     await expect(page.locator("[data-toolbox-tool-name-link='Build Game']")).toBeVisible();
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 41/41");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 42/42");
 
     await setServerSession(server, MOCK_DB_KEYS.users.admin);
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
@@ -297,6 +310,8 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
   } finally {
     await workspaceV2CoverageReporter.stop(page);
     await server.close();
+    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
+    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
   }
 });
 
@@ -332,7 +347,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
 
     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
-      "Planned (27)",
+      "Planned (28)",
       "Wireframe (5)",
       "Beta (7)",
       "Complete (1)",
@@ -349,7 +364,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
 
     await page.locator("[data-tools-view='build-path']").click();
     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
-      "Planned (27)",
+      "Planned (28)",
       "Wireframe (5)",
       "Beta (7)",
       "Complete (1)",
@@ -704,6 +719,10 @@ test("toolbox status kickers, filters, card order, and voting controls work from
 
 test("toolbox grouped view renders Game Journey order with unique colors while Build Path keeps metadata groups", async ({ page }) => {
   const server = await startRepoServer();
+  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
+  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
   const failedRequests = [];
   const pageErrors = [];
   const consoleErrors = [];
@@ -777,10 +796,17 @@ test("toolbox grouped view renders Game Journey order with unique colors while B
     expect(toolboxGroupsByTool["AI Command Center"]).toBe("Design");
     expect(toolboxGroupsByTool["Game Workspace"]).toBe("Create");
     expect(toolboxGroupsByTool["Game Configuration"]).toBe("Create");
-    expect(toolboxGroupsByTool["Game Journey"]).toBe("Create");
+    expect(toolboxGroupsByTool["Project Team"]).toBe("Create");
     expect(toolboxGroupsByTool["Tags"]).toBe("Create");
+    expect(toolboxGroupsByTool["Game Journey"]).toBe("Progression");
     expect(toolboxGroupsByTool["Publish"]).toBe("Publish");
     expect(toolboxGroupsByTool["Marketplace"]).toBe("Share");
+    expect(toolboxGroupsByTool.Users).toBeUndefined();
+
+    const createToolOrder = await page.locator("[data-tools-accordion='Create'] [data-toolbox-tool-card]").evaluateAll((cards) => (
+      cards.map((card) => card.getAttribute("data-toolbox-tool-card"))
+    ));
+    expect(createToolOrder).toEqual(["Game Workspace", "Game Configuration", "Project Team", "Tags"]);
 
     const toolLinks = await page.locator("[data-toolbox-tool-name-link]").evaluateAll((links) => (
       links.map((link) => ({
@@ -821,6 +847,8 @@ test("toolbox grouped view renders Game Journey order with unique colors while B
   } finally {
     await workspaceV2CoverageReporter.stop(page);
     await server.close();
+    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
+    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
   }
 });
 
@@ -890,7 +918,7 @@ test("toolbox Build Path status filters support multi-select registry-matched to
     await expect(page.locator("[data-tools-sort='grouped']")).not.toHaveClass(/primary/);
 
     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
-      "Planned (27)",
+      "Planned (28)",
       "Wireframe (5)",
       "Beta (7)",
       "Complete (1)",
@@ -903,32 +931,32 @@ test("toolbox Build Path status filters support multi-select registry-matched to
 
     await page.locator("[data-toolbox-status-filter='planned']").click();
     await expectActiveFilters(["planned", "complete"]);
-    await expectBuildPathChannels(["planned", "complete"], 28);
+    await expectBuildPathChannels(["planned", "complete"], 29);
     await expect(page.locator("[data-build-path-tool='AI Command Center']")).toBeVisible();
     await expectBuildPathOrder("AI Command Center", registryById.get("ai-assistant").order);
     await expectBuildPathOrder("Colors", registryById.get("colors").order);
 
     await page.locator("[data-toolbox-status-filter='complete']").click();
     await expectActiveFilters(["planned"]);
-    await expectBuildPathChannels(["planned"], 27);
+    await expectBuildPathChannels(["planned"], 28);
     await expect(page.locator("[data-build-path-tool='Colors']")).toHaveCount(0);
     await expect(page.locator("[data-build-path-tool='AI Command Center']")).toBeVisible();
 
     await page.locator("[data-toolbox-status-filter='wireframe']").click();
     await expectActiveFilters(["planned", "wireframe"]);
-    await expectBuildPathChannels(["planned", "wireframe"], 32);
+    await expectBuildPathChannels(["planned", "wireframe"], 33);
     await expect(page.locator("[data-build-path-tool='Saved Data']")).toBeVisible();
     await expect(page.locator("[data-build-path-tool='Build Game']")).toHaveCount(0);
 
     await page.locator("[data-toolbox-status-filter='deprecated']").click();
     await expectActiveFilters(["planned", "wireframe", "deprecated"]);
-    await expectBuildPathChannels(["planned", "wireframe", "deprecated"], 33);
+    await expectBuildPathChannels(["planned", "wireframe", "deprecated"], 34);
     await expect(page.locator("[data-build-path-tool='Build Game']")).toBeVisible();
     await expectBuildPathOrder("Build Game", registryById.get("build-game").order);
 
     await page.locator("[data-toolbox-status-filter='beta']").click();
     await expectActiveFilters(["planned", "wireframe", "beta", "deprecated"]);
-    await expectBuildPathChannels(["planned", "wireframe", "beta", "deprecated"], 40);
+    await expectBuildPathChannels(["planned", "wireframe", "beta", "deprecated"], 41);
 
     expect(failedRequests).toEqual([]);
     expect(pageErrors).toEqual([]);

@@ -10,11 +10,11 @@ const REQUIRED_ADMIN_TOOLS = [
   "Environments",
   "Game Migration",
   "Platform Settings",
-  "Users",
 ];
 const REQUIRED_RESTORED_TOOLS = [
   "AI Command Center",
   "Creator Learning",
+  "Project Team",
 ];
 const EXPECTED_SETUP_COMPACT_ORDER = [
   "Game Workspace",
@@ -219,6 +219,13 @@ test("Toolbox and Admin Tool Votes share the same DB-backed metadata and plannin
       releaseChannel: "deprecated",
       status: "deprecated",
       visibleInToolsList: false,
+    }));
+    expect(registrySnapshot.activeTools.find((tool) => tool.id === "users")).toEqual(expect.objectContaining({
+      category: "Create",
+      displayName: "Project Team",
+      releaseChannel: "planned",
+      status: "planned",
+      visibleInToolsList: true,
     }));
 
     for (const row of snapshot.rows) {

@@ -1,16 +1,20 @@
-# git status --short
-M docs_build/dev/PROJECT_INSTRUCTIONS.md
- M docs_build/dev/admin-notes/tools/index.txt
- M owner/grouping-colors.html
-?? docs_build/dev/reports/PR_26170_006-toolbox-workflow-order-and-project-team.md
-?? docs_build/pr/BUILD_PR_26170_006-toolbox-workflow-order-and-project-team.md
+# PR_26170_007 changed files
 
-# git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26170_006-toolbox-workflow-order-and-project-team.md
-docs_build/pr/BUILD_PR_26170_006-toolbox-workflow-order-and-project-team.md
+docs_build/dev/reports/PR_26170_007-toolbox-workflow-render-order-project-team.md
+docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/codex_review.diff
+docs_build/dev/reports/coverage_changed_js_guardrail.txt
+docs_build/dev/reports/playwright_v8_coverage_report.txt
+docs_build/pr/BUILD_PR_26170_007-toolbox-workflow-render-order-project-team.md
+src/dev-runtime/server/local-api-router.mjs
+src/shared/toolbox/tool-metadata-inventory.js
+tests/playwright/tools/RootToolsFutureState.spec.mjs
+tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
+tests/playwright/tools/ToolboxRoutePages.spec.mjs
+toolbox/tools-page-accordions.js
+toolbox/users/index.html
 
-# git diff --stat
-docs_build/dev/PROJECT_INSTRUCTIONS.md     | 26 ++++++++
- docs_build/dev/admin-notes/tools/index.txt | 97 ++++++++++++++++++------------
- owner/grouping-colors.html                 | 19 ++++--
- 3 files changed, 97 insertions(+), 45 deletions(-)
+# Unrelated untracked files intentionally excluded from this PR artifact
+
+docs_build/dev/admin-notes/GFS-Connected-Play-Second-Screen-Turn-Based-Design-26170-001.pdf
+docs_build/dev/admin-notes/GFS_Game_Identity_Strategy.pdf.pdf

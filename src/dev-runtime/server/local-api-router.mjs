@@ -1421,6 +1421,48 @@ function normalizedToolKey(row) {
   return String(row?.toolKey || row?.toolId || row?.id || "").trim();
 }
 
+const SOURCE_CONTROLLED_TOOLBOX_TOOL_IDS = new Set(["users"]);
+const SOURCE_CONTROLLED_TOOLBOX_METADATA_FIELDS = Object.freeze([
+  "adminOnly",
+  "category",
+  "colorGroup",
+  "description",
+  "group",
+  "hidden",
+  "shortDescription",
+  "shortLabel",
+  "subgroup",
+  "toolName",
+  "toolboxGroup",
+  "visibleInToolsList",
+]);
+const SOURCE_CONTROLLED_TOOLBOX_PLANNING_FIELDS = Object.freeze([
+  "progressChecklist",
+]);
+
+function shouldSyncSourceControlledTool(toolId) {
+  return SOURCE_CONTROLLED_TOOLBOX_TOOL_IDS.has(String(toolId || ""));
+}
+
+function valuesMatchForSourceSync(left, right) {
+  if (Array.isArray(left) || Array.isArray(right)) {
+    return JSON.stringify(left || []) === JSON.stringify(right || []);
+  }
+  return left === right;
+}
+
+function applySourceControlledValues(target, defaults, fields) {
+  let changed = false;
+  fields.forEach((field) => {
+    const value = defaults[field];
+    if (!valuesMatchForSourceSync(target[field], value)) {
+      target[field] = Array.isArray(value) ? [...value] : value;
+      changed = true;
+    }
+  });
+  return changed;
+}
+
 function requiredToolMetadataDiagnostics(row) {
   const missing = ["toolKey", "toolName", "group", "path", "order", "status"].filter((field) => {
     const value = field === "toolKey" ? normalizedToolKey(row) : row?.[field];
@@ -4562,6 +4604,9 @@ LIMIT 1;
           : Array.isArray(migratedValues.requires) ? migratedValues.requires : defaults.requires,
         toolKey,
       };
+      if (shouldSyncSourceControlledTool(toolKey)) {
+        applySourceControlledValues(normalizedValues, defaults, SOURCE_CONTROLLED_TOOLBOX_PLANNING_FIELDS);
+      }
 
       if (!existingRow) {
         rows.push({
@@ -4634,9 +4679,12 @@ LIMIT 1;
         releaseChannelLabel: getToolReleaseChannelLabel(releaseChannel),
         toolName: existingRow.toolName || defaults.toolName,
       };
+      if (shouldSyncSourceControlledTool(tool.id)) {
+        applySourceControlledValues(normalizedValues, defaults, SOURCE_CONTROLLED_TOOLBOX_METADATA_FIELDS);
+      }
       Object.entries(normalizedValues).forEach(([key, value]) => {
-        if (existingRow[key] !== value) {
-          existingRow[key] = value;
+        if (!valuesMatchForSourceSync(existingRow[key], value)) {
+          existingRow[key] = Array.isArray(value) ? [...value] : value;
           changed = true;
         }
       });
@@ -4665,8 +4713,17 @@ LIMIT 1;
         ...this.defaultToolboxPlanning(tool),
         ...createMockDbAuditFields(index, SEED_DB_KEYS.users.forgeBot),
       }));
-    if (missingRows.length) {
-      await adapter.upsertProductTable("toolbox_tool_planning", missingRows);
+    const syncedRows = activeTools
+      .filter((tool) => shouldSyncSourceControlledTool(tool.id) && rowsByToolKey.has(tool.id))
+      .flatMap((tool) => {
+        const row = rowsByToolKey.get(tool.id);
+        const updatedRow = { ...row };
+        return applySourceControlledValues(updatedRow, this.defaultToolboxPlanning(tool), SOURCE_CONTROLLED_TOOLBOX_PLANNING_FIELDS)
+          ? [updatedRow]
+          : [];
+      });
+    if (missingRows.length || syncedRows.length) {
+      await adapter.upsertProductTable("toolbox_tool_planning", [...missingRows, ...syncedRows]);
       return adapter.getProductTableRows("toolbox_tool_planning");
     }
     return rows;
@@ -4676,7 +4733,8 @@ LIMIT 1;
     const adapter = this.supabaseDatabaseAdapter("Reading Supabase Toolbox tool metadata");
     const rows = await adapter.getProductTableRows("toolbox_tool_metadata");
     const activeTools = getActiveToolRegistry();
-    const existingToolKeys = new Set(rows.map((row) => row.toolKey || row.toolId));
+    const rowsByToolKey = new Map(rows.map((row) => [row.toolKey || row.toolId, row]));
+    const existingToolKeys = new Set(rowsByToolKey.keys());
     const missingRows = activeTools
       .filter((tool) => !existingToolKeys.has(tool.id))
       .map((tool, index) => ({
@@ -4684,8 +4742,17 @@ LIMIT 1;
         ...this.defaultToolboxMetadata(tool, index),
         ...createMockDbAuditFields(index, SEED_DB_KEYS.users.forgeBot),
       }));
-    if (missingRows.length) {
-      await adapter.upsertProductTable("toolbox_tool_metadata", missingRows);
+    const syncedRows = activeTools
+      .filter((tool) => shouldSyncSourceControlledTool(tool.id) && rowsByToolKey.has(tool.id))
+      .flatMap((tool, index) => {
+        const row = rowsByToolKey.get(tool.id);
+        const updatedRow = { ...row };
+        return applySourceControlledValues(updatedRow, this.defaultToolboxMetadata(tool, index), SOURCE_CONTROLLED_TOOLBOX_METADATA_FIELDS)
+          ? [updatedRow]
+          : [];
+      });
+    if (missingRows.length || syncedRows.length) {
+      await adapter.upsertProductTable("toolbox_tool_metadata", [...missingRows, ...syncedRows]);
       return adapter.getProductTableRows("toolbox_tool_metadata");
     }
     return rows;

@@ -135,7 +135,7 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
         "fonts": "Interface",
         "game-configuration": "Create",
         "game-design": "Design",
-        "game-journey": "Create",
+        "game-journey": "Progression",
         "game-migration": "Publish",
         "game-testing": "Play Test",
         "game-workspace": "Create",
@@ -158,16 +158,25 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
         "sprites": "Graphics",
         "tags": "Create",
         "text-to-speech": "Audio",
-        "users": "Share",
+        "users": "Create",
         "videos": "Graphics",
         "voices": "Audio",
         "worlds": "Worlds"
     });
     const toolboxGroupPositions = new Map(toolboxGroupOrder.map((group, index) => [group, index]));
+    const workflowToolOrderByGroup = Object.freeze({
+        "Create": Object.freeze({
+            "game-workspace": 1,
+            "game-configuration": 2,
+            "users": 3,
+            "tags": 4
+        })
+    });
     toolboxDefaultReleaseChannels.forEach((channel) => {
         visibleReleaseChannels.add(channel);
     });
     const registryTools = getActiveToolRegistry();
+    const registryOrderPositions = new Map(registryTools.map((tool, index) => [tool.id, index]));
     const registryToolsByTitle = new Map(registryTools.map((tool) => [tool.displayName || tool.name, tool]));
     const toolGroups = gameJourneyGroupOrder
         .map((group) => ({
@@ -215,6 +224,20 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
         return leftGroup - rightGroup
             || (left.order ?? Number.MAX_SAFE_INTEGER) - (right.order ?? Number.MAX_SAFE_INTEGER)
             || String(left.displayName || left.name || "").localeCompare(String(right.displayName || right.name || ""));
+    }
+
+    function workflowOrderForTool(tool) {
+        const toolGroupOrder = workflowToolOrderByGroup[tool.group || gameJourneyGroupForTool(tool)];
+        if (toolGroupOrder && Number.isInteger(toolGroupOrder[tool.id])) {
+            return toolGroupOrder[tool.id];
+        }
+        return registryOrderPositions.get(tool.id) ?? Number.MAX_SAFE_INTEGER;
+    }
+
+    function compareByWorkflowOrder(left, right) {
+        return workflowOrderForTool(left) - workflowOrderForTool(right)
+            || (left.order ?? Number.MAX_SAFE_INTEGER) - (right.order ?? Number.MAX_SAFE_INTEGER)
+            || String(left.displayName || left.name || left.title || "").localeCompare(String(right.displayName || right.name || right.title || ""));
     }
 
     function releaseChannelForTool(tool) {
@@ -395,7 +418,7 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
                 tools: toolGroup.tools
                     .map((tool) => enrichTool(tool, toolGroup.group))
                     .filter(isVisibleForRole)
-                    .sort(compareByTitle)
+                    .sort(compareByWorkflowOrder)
             }))
             .filter((group) => group.tools.length > 0);
     }
