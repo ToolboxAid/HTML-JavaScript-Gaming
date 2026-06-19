@@ -1,36 +1,16 @@
 # git status --short
-M assets/theme-v2/js/account-auth-service.js
- M assets/theme-v2/js/gamefoundry-partials.js
  M docs_build/dev/reports/codex_changed_files.txt
  M docs_build/dev/reports/codex_review.diff
- M docs_build/dev/reports/coverage_changed_js_guardrail.txt
- M docs_build/dev/reports/environment_agnostic_browser_gate_report.md
- M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M scripts/validate-browser-env-agnostic.mjs
- M src/api/server-api-client.js
- M src/dev-runtime/server/local-api-router.mjs
-?? docs_build/dev/reports/PR_26169_025-browser-api-url-config.md
-?? docs_build/pr/BUILD_PR_26169_025-browser-api-url-config.md
-?? src/api/public-config-client.js
-?? tests/dev-runtime/PublicApiUrlClient.test.mjs
-?? tests/playwright/tools/BrowserApiUrlConfig.spec.mjs
+ M scripts/start-local-api-server.mjs
+?? docs_build/dev/reports/PR_26169_026-local-api-startup-url-logging.md
+?? docs_build/pr/BUILD_PR_26169_026-local-api-startup-url-logging.md
+?? tests/dev-runtime/LocalApiStartupLogging.test.mjs
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26169_025-browser-api-url-config.md
-docs_build/pr/BUILD_PR_26169_025-browser-api-url-config.md
-src/api/public-config-client.js
-tests/dev-runtime/PublicApiUrlClient.test.mjs
-tests/playwright/tools/BrowserApiUrlConfig.spec.mjs
+docs_build/dev/reports/PR_26169_026-local-api-startup-url-logging.md
+docs_build/pr/BUILD_PR_26169_026-local-api-startup-url-logging.md
+tests/dev-runtime/LocalApiStartupLogging.test.mjs
 
-# git diff --stat
-assets/theme-v2/js/account-auth-service.js         |    6 +-
- assets/theme-v2/js/gamefoundry-partials.js         |  219 +-
- docs_build/dev/reports/codex_changed_files.txt     |   44 +-
- docs_build/dev/reports/codex_review.diff           | 2349 +++++++++++---------
- .../dev/reports/coverage_changed_js_guardrail.txt  |   65 +-
- .../environment_agnostic_browser_gate_report.md    |    2 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |  126 +-
- scripts/validate-browser-env-agnostic.mjs          |    4 +-
- src/api/server-api-client.js                       |   13 +-
- src/dev-runtime/server/local-api-router.mjs        |    7 +
- 10 files changed, 1537 insertions(+), 1298 deletions(-)
+# git diff --stat -- . :!docs_build/dev/reports/codex_review.diff :!docs_build/dev/reports/codex_changed_files.txt
+ scripts/start-local-api-server.mjs | 109 +++++++++++++++++++++++++------------
+ 1 file changed, 75 insertions(+), 34 deletions(-)

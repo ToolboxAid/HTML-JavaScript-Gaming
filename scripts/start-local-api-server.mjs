@@ -1,10 +1,12 @@
 import process from "node:process";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 import { databaseSslMode } from "../src/dev-runtime/persistence/postgres-connection-client.mjs";
 import { startLocalApiServer } from "../src/dev-runtime/server/local-api-server.mjs";
 
 const RUNTIME_ENV_FILE = ".env";
+const NOT_CONFIGURED = "(not configured)";
 
 function loadRuntimeEnv() {
   const envPath = path.resolve(process.cwd(), RUNTIME_ENV_FILE);
@@ -38,8 +40,6 @@ function loadRuntimeEnv() {
   };
 }
 
-const runtimeEnv = loadRuntimeEnv();
-
 function connectionStatus(requiredKeys) {
   const missingKeys = requiredKeys.filter((key) => !String(process.env[key] || "").trim());
   return {
@@ -48,40 +48,81 @@ function connectionStatus(requiredKeys) {
   };
 }
 
-const accountConnection = connectionStatus([
-  "GAMEFOUNDRY_SUPABASE_URL",
-  "GAMEFOUNDRY_SUPABASE_ANON_KEY",
-]);
-const databaseConnection = connectionStatus([
-  "GAMEFOUNDRY_SUPABASE_URL",
-  "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY",
-  "GAMEFOUNDRY_DATABASE_URL",
-  "GAMEFOUNDRY_DATABASE_SSL",
-]);
-let configuredDatabaseSslMode = "";
-let databaseSslModeError = "";
-try {
-  configuredDatabaseSslMode = databaseSslMode();
-} catch (error) {
-  databaseSslModeError = error instanceof Error ? error.message : String(error || "Unknown database SSL mode error.");
+function configuredValue(value) {
+  return String(value || "").trim() || NOT_CONFIGURED;
 }
-const host = process.env.GAMEFOUNDRY_LOCAL_API_HOST || "127.0.0.1";
-const port = Number(process.env.GAMEFOUNDRY_LOCAL_API_PORT || 5501);
 
-const localServer = await startLocalApiServer({ host, port });
+function defaultApiUrl(baseUrl) {
+  return `${String(baseUrl || "").replace(/\/+$/, "")}/api`;
+}
 
-console.log(`GameFoundry API runtime server running at ${localServer.baseUrl}/account/sign-in.html`);
-console.log(runtimeEnv.loaded
-  ? `.env loaded for API runtime (${runtimeEnv.loadedKeys} key(s) applied).`
-  : ".env was not found for API runtime.");
-console.log(`Configured auth connection: ${accountConnection.ready ? "configured" : `missing ${accountConnection.missingKeys.join(", ")}`}.`);
-console.log(`Configured database connection: ${databaseConnection.ready ? "configured" : `missing ${databaseConnection.missingKeys.join(", ")}`}.`);
-console.log(`Database SSL mode: ${configuredDatabaseSslMode || `invalid (${databaseSslModeError})`}`);
-console.log("Press Ctrl+C to stop.");
+function connectionStatusLine(label, connection) {
+  return `Configured ${label} connection: ${connection.ready ? "configured" : `missing ${connection.missingKeys.join(", ")}`}.`;
+}
 
-for (const signal of ["SIGINT", "SIGTERM"]) {
-  process.once(signal, async () => {
-    await localServer.close();
-    process.exit(0);
-  });
+export function formatStartupLogLines({
+  accountConnection,
+  configuredDatabaseSslMode,
+  databaseConnection,
+  databaseSslModeError,
+  env = process.env,
+  localServer,
+  runtimeEnv,
+}) {
+  return [
+    `GameFoundry API runtime server running at ${localServer.baseUrl}`,
+    `Configured site URL: ${configuredValue(env.GAMEFOUNDRY_SITE_URL)}`,
+    `Configured API URL: ${String(env.GAMEFOUNDRY_API_URL || "").trim() || defaultApiUrl(localServer.baseUrl)}`,
+    runtimeEnv.loaded
+      ? `.env loaded for API runtime (${runtimeEnv.loadedKeys} key(s) applied).`
+      : ".env was not found for API runtime.",
+    connectionStatusLine("auth", accountConnection),
+    connectionStatusLine("database", databaseConnection),
+    `Database SSL mode: ${configuredDatabaseSslMode || `invalid (${databaseSslModeError})`}`,
+    "Press Ctrl+C to stop.",
+  ];
+}
+
+async function main() {
+  const runtimeEnv = loadRuntimeEnv();
+  const accountConnection = connectionStatus([
+    "GAMEFOUNDRY_SUPABASE_URL",
+    "GAMEFOUNDRY_SUPABASE_ANON_KEY",
+  ]);
+  const databaseConnection = connectionStatus([
+    "GAMEFOUNDRY_SUPABASE_URL",
+    "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY",
+    "GAMEFOUNDRY_DATABASE_URL",
+    "GAMEFOUNDRY_DATABASE_SSL",
+  ]);
+  let configuredDatabaseSslMode = "";
+  let databaseSslModeError = "";
+  try {
+    configuredDatabaseSslMode = databaseSslMode();
+  } catch (error) {
+    databaseSslModeError = error instanceof Error ? error.message : String(error || "Unknown database SSL mode error.");
+  }
+  const host = process.env.GAMEFOUNDRY_LOCAL_API_HOST || "127.0.0.1";
+  const port = Number(process.env.GAMEFOUNDRY_LOCAL_API_PORT || 5501);
+
+  const localServer = await startLocalApiServer({ host, port });
+  formatStartupLogLines({
+    accountConnection,
+    configuredDatabaseSslMode,
+    databaseConnection,
+    databaseSslModeError,
+    localServer,
+    runtimeEnv,
+  }).forEach((line) => console.log(line));
+
+  for (const signal of ["SIGINT", "SIGTERM"]) {
+    process.once(signal, async () => {
+      await localServer.close();
+      process.exit(0);
+    });
+  }
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  await main();
 }
