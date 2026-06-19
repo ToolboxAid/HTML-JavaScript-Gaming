@@ -46,6 +46,54 @@ async function setSessionUser(server, userKey) {
   });
 }
 
+async function stubInactivePlatformBanner(page) {
+  await page.route("**/api/platform-settings/banner", async (route) => {
+    await route.fulfill({
+      body: JSON.stringify({
+        data: {
+          banner: {
+            active: false,
+            message: "",
+            source: "platform-settings",
+            sourceTable: "platform_settings",
+            sourceTableRowKey: "",
+            tone: "info",
+          },
+          diagnostics: {
+            active: false,
+            message: "",
+            sourceTable: "platform_settings",
+            sourceTableRowKey: "",
+          },
+          sourceTable: "platform_settings",
+        },
+        ok: true,
+      }),
+      contentType: "application/json; charset=utf-8",
+      status: 200,
+    });
+  });
+}
+
+async function stubToolboxRegistrySnapshot(page) {
+  await page.route("**/api/toolbox/registry/snapshot", async (route) => {
+    await route.fulfill({
+      body: JSON.stringify({
+        data: {
+          activeTools: [],
+          imageFallback: "/assets/theme-v2/images/image-missing.svg",
+          readinessByStatus: {},
+          toolboxContract: {},
+          tools: [],
+        },
+        ok: true,
+      }),
+      contentType: "application/json; charset=utf-8",
+      status: 200,
+    });
+  });
+}
+
 async function openPage(page, pagePath, userKey = SEED_DB_KEYS.users.admin) {
   const server = await startRepoServer();
   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
@@ -67,6 +115,8 @@ async function openPage(page, pagePath, userKey = SEED_DB_KEYS.users.admin) {
     }
   });
   page.on("requestfailed", (request) => failedRequests.push(`FAILED ${request.url()}`));
+  await stubInactivePlatformBanner(page);
+  await stubToolboxRegistrySnapshot(page);
   await fetch(`${server.baseUrl}/api/local-db/seed`, { method: "POST" });
   await fetch(`${server.baseUrl}/api/session/mode`, {
     body: JSON.stringify({ modeId: "local-db" }),

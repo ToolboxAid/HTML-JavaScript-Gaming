@@ -46,6 +46,7 @@ Restored Notes as an active Owner page without touching the isolated dev-only Ad
 - Playwright was required because rendered Owner navigation behavior changed.
 - The first focused Playwright run failed because the existing test helper relied on `.env` public API config and did not bind browser API calls to the random Playwright server. The helper now seeds local DB mode and temporarily points `GAMEFOUNDRY_API_URL` / `GAMEFOUNDRY_SITE_URL` at the test server, then restores prior values.
 - A second focused Playwright run failed because the new assertion used `nav[aria-label='Owner business pages']`, while existing Owner side menus are `aside.side-menu`; the selector was corrected and the final run passed.
+- A follow-up rerun in the current local environment found unrelated 500 responses from shared platform-banner and toolbox-registry APIs. The targeted navigation Playwright helper now stubs inactive banner and empty toolbox registry responses so Owner/Admin navigation validation remains isolated from unrelated service availability.
 - Playwright V8 coverage was refreshed for changed runtime JavaScript. `coverage_changed_js_guardrail.txt` reports no changed runtime JS coverage warnings.
 
 ## Lane Decisions

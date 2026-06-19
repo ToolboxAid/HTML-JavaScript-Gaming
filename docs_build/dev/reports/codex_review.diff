@@ -1,421 +1,114 @@
-diff --git a/assets/theme-v2/js/gamefoundry-partials.js b/assets/theme-v2/js/gamefoundry-partials.js
-index 7b44744f7..862614796 100644
---- a/assets/theme-v2/js/gamefoundry-partials.js
-+++ b/assets/theme-v2/js/gamefoundry-partials.js
-@@ -90,6 +90,7 @@
-         "owner-design-system": "owner/design-system.html",
-         "owner-grouping-colors": "owner/grouping-colors.html",
-         "owner-memberships": "owner/memberships.html",
-+        "owner-notes": "owner/notes.html",
-         "owner-site-settings": "owner/site-settings.html",
-         "owner-themes": "owner/themes.html",
-         "community-guidelines": "legal/community-guidelines.html",
-diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 0674f87a8..b4264da87 100644
---- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,12 +6,8 @@ Missing changed runtime JS files are WARN, not FAIL.
- Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+diff --git a/docs_build/dev/reports/PR_26169_027-owner-notes-restoration.md b/docs_build/dev/reports/PR_26169_027-owner-notes-restoration.md
+index 18a651674..b17dea38b 100644
+--- a/docs_build/dev/reports/PR_26169_027-owner-notes-restoration.md
++++ b/docs_build/dev/reports/PR_26169_027-owner-notes-restoration.md
+@@ -46,6 +46,7 @@ Restored Notes as an active Owner page without touching the isolated dev-only Ad
+ - Playwright was required because rendered Owner navigation behavior changed.
+ - The first focused Playwright run failed because the existing test helper relied on `.env` public API config and did not bind browser API calls to the random Playwright server. The helper now seeds local DB mode and temporarily points `GAMEFOUNDRY_API_URL` / `GAMEFOUNDRY_SITE_URL` at the test server, then restores prior values.
+ - A second focused Playwright run failed because the new assertion used `nav[aria-label='Owner business pages']`, while existing Owner side menus are `aside.side-menu`; the selector was corrected and the final run passed.
++- A follow-up rerun in the current local environment found unrelated 500 responses from shared platform-banner and toolbox-registry APIs. The targeted navigation Playwright helper now stubs inactive banner and empty toolbox registry responses so Owner/Admin navigation validation remains isolated from unrelated service availability.
+ - Playwright V8 coverage was refreshed for changed runtime JavaScript. `coverage_changed_js_guardrail.txt` reports no changed runtime JS coverage warnings.
  
- Changed runtime JS files considered:
--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(43%) src/api/server-api-client.js - executed lines 167/167; executed functions 6/14
--(73%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 976/976; executed functions 66/90
--(75%) src/api/public-config-client.js - executed lines 209/209; executed functions 21/28
--(100%) assets/theme-v2/js/account-auth-service.js - executed lines 64/64; executed functions 7/7
-+(74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 67/90
-+(100%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 5/5
- 
- Guardrail warnings:
--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
--(43%) src/api/server-api-client.js - WARNING: advisory low coverage below 50%; executed lines 167/167; executed functions 6/14
-+(100%) none - no changed runtime JS coverage warnings
+ ## Lane Decisions
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 3d0b7da39..66c4bc8ab 100644
+index 66c4bc8ab..0d06c599b 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -12,45 +12,34 @@ Note: entry percentages use function coverage when available, otherwise line cov
+@@ -12,7 +12,7 @@ Note: entry percentages use function coverage when available, otherwise line cov
  Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
  
  Exercised tool entry points detected:
--(14%) Toolbox Index - exercised 1 runtime JS files
-+(46%) Toolbox Index - exercised 1 runtime JS files
+-(46%) Toolbox Index - exercised 1 runtime JS files
++(35%) Toolbox Index - exercised 1 runtime JS files
  (0%) Tool Template V2 - not exercised by this Playwright run
--(76%) Theme V2 Shared JS - exercised 7 runtime JS files
-+(70%) Theme V2 Shared JS - exercised 5 runtime JS files
+ (70%) Theme V2 Shared JS - exercised 5 runtime JS files
  
- Changed runtime JS files covered:
--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(43%) src/api/server-api-client.js - executed lines 167/167; executed functions 6/14
--(73%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 976/976; executed functions 66/90
--(75%) src/api/public-config-client.js - executed lines 209/209; executed functions 21/28
--(100%) assets/theme-v2/js/account-auth-service.js - executed lines 64/64; executed functions 7/7
-+(74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 67/90
-+(100%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 5/5
+@@ -21,9 +21,9 @@ Changed runtime JS files covered:
+ (100%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 5/5
  
  Files with executed line/function counts where available:
--(14%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 3/22
--(43%) src/api/server-api-client.js - executed lines 167/167; executed functions 6/14
--(50%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 7/14
-+(36%) src/api/server-api-client.js - executed lines 167/167; executed functions 5/14
-+(40%) src/api/admin-invitations-api-client.js - executed lines 40/40; executed functions 2/5
-+(46%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 12/26
-+(53%) assets/theme-v2/js/admin-invitations.js - executed lines 155/155; executed functions 9/17
++(35%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 9/26
+ (36%) src/api/server-api-client.js - executed lines 167/167; executed functions 5/14
+ (40%) src/api/admin-invitations-api-client.js - executed lines 40/40; executed functions 2/5
+-(46%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 12/26
+ (53%) assets/theme-v2/js/admin-invitations.js - executed lines 155/155; executed functions 9/17
  (59%) assets/theme-v2/js/owner-memberships.js - executed lines 248/248; executed functions 16/27
-+(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
-+(65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
- (67%) src/api/owner-memberships-api-client.js - executed lines 19/19; executed functions 2/3
--(73%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 976/976; executed functions 66/90
--(75%) src/api/public-config-client.js - executed lines 209/209; executed functions 21/28
--(85%) assets/theme-v2/js/admin-system-health.js - executed lines 359/359; executed functions 45/53
--(90%) assets/theme-v2/js/login-session.js - executed lines 113/113; executed functions 9/10
--(100%) assets/theme-v2/js/account-auth-service.js - executed lines 64/64; executed functions 7/7
-+(74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 67/90
- (100%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 11/11
- (100%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 5/5
--(100%) src/api/admin-system-health-api-client.js - executed lines 19/19; executed functions 3/3
- 
- Uncovered or low-coverage changed JS files:
--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
--(43%) src/api/server-api-client.js - WARNING: advisory low coverage; executed lines 167/167
-+(100%) none - no low-coverage changed runtime JS files
+ (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
+@@ -37,9 +37,7 @@ Uncovered or low-coverage changed JS files:
+ (100%) none - no low-coverage changed runtime JS files
  
  Changed JS files considered:
--(0%) scripts/validate-browser-env-agnostic.mjs - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/dev-runtime/PublicApiUrlClient.test.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/dev-runtime/PublicEnvironmentConfig.test.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/BrowserApiUrlConfig.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/EnvironmentBannerCoverage.spec.mjs - changed JS file not collected as browser runtime coverage
--(43%) src/api/server-api-client.js - changed JS file with browser V8 coverage
--(73%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
--(75%) src/api/public-config-client.js - changed JS file with browser V8 coverage
--(100%) assets/theme-v2/js/account-auth-service.js - changed JS file with browser V8 coverage
-+(0%) scripts/start-local-api-server.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/dev-runtime/ApiMenuPathCleanup.test.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/dev-runtime/LocalApiStartupLogging.test.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs - changed JS file not collected as browser runtime coverage
-+(74%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
-+(100%) src/api/admin-owner-navigation.js - changed JS file with browser V8 coverage
-diff --git a/src/api/admin-owner-navigation.js b/src/api/admin-owner-navigation.js
-index 2a5d916d8..54e89df04 100644
---- a/src/api/admin-owner-navigation.js
-+++ b/src/api/admin-owner-navigation.js
-@@ -27,7 +27,7 @@ const OWNER_NAVIGATION_ITEMS = Object.freeze([
-   Object.freeze({ disabled: true, label: "Legal", planned: true }),
-   Object.freeze({ label: "Memberships", path: "owner/memberships.html", route: "owner-memberships" }),
-   Object.freeze({ disabled: true, label: "Marketplace Settings", planned: true }),
--  Object.freeze({ disabled: true, label: "Notes", planned: true }),
-+  Object.freeze({ label: "Notes", path: "owner/notes.html", route: "owner-notes" }),
-   Object.freeze({ disabled: true, label: "Revenue", planned: true }),
-   Object.freeze({ label: "Site Settings", path: "owner/site-settings.html", route: "owner-site-settings" }),
-   Object.freeze({ label: "Themes", path: "owner/themes.html", route: "owner-themes" }),
-diff --git a/tests/dev-runtime/ApiMenuPathCleanup.test.mjs b/tests/dev-runtime/ApiMenuPathCleanup.test.mjs
-index 0e26a0a36..deb1027fe 100644
---- a/tests/dev-runtime/ApiMenuPathCleanup.test.mjs
-+++ b/tests/dev-runtime/ApiMenuPathCleanup.test.mjs
-@@ -103,6 +103,18 @@ test("Admin and Owner shared menus are non-overlapping by responsibility", () =>
-   });
- });
- 
-+test("Owner Notes is active under owner path only", () => {
-+  const adminItems = getAdminNavigationItems();
-+  const ownerItems = getOwnerNavigationItems();
-+  const ownerNotes = ownerItems.find((item) => item.label === "Notes");
-+  assert.equal(adminItems.some((item) => item.label === "Notes"), false, "Admin menu must not include Notes");
-+  assert.equal(ownerNotes?.disabled, undefined, "Owner Notes should not be disabled");
-+  assert.equal(ownerNotes?.planned, undefined, "Owner Notes should not be planned");
-+  assert.equal(ownerNotes?.path, "owner/notes.html");
-+  assert.equal(ownerNotes?.route, "owner-notes");
-+  assert.equal(fs.existsSync("owner/notes.html"), true, "Owner Notes route should exist");
-+});
-+
- test("Admin and Owner shared menu active links resolve or are explicitly disabled", () => {
-   getAdminNavigationItems().forEach(assertActivePathExists);
-   getOwnerNavigationItems().forEach(assertActivePathExists);
+-(0%) scripts/start-local-api-server.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/dev-runtime/ApiMenuPathCleanup.test.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/dev-runtime/LocalApiStartupLogging.test.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs - changed JS file not collected as browser runtime coverage
+ (74%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
+ (100%) src/api/admin-owner-navigation.js - changed JS file with browser V8 coverage
 diff --git a/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs b/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
-index 25a0ce4f4..4f3ba6ab2 100644
+index 4f3ba6ab2..0adf9a52c 100644
 --- a/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
 +++ b/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
-@@ -32,7 +32,7 @@ const OWNER_LABELS = Object.freeze([
-   "Legal (planned)",
-   "Memberships",
-   "Marketplace Settings (planned)",
--  "Notes (planned)",
-+  "Notes",
-   "Revenue (planned)",
-   "Site Settings",
-   "Themes",
-@@ -46,8 +46,12 @@ async function setSessionUser(server, userKey) {
+@@ -46,6 +46,54 @@ async function setSessionUser(server, userKey) {
    });
  }
  
--async function openPage(page, pagePath) {
-+async function openPage(page, pagePath, userKey = SEED_DB_KEYS.users.admin) {
++async function stubInactivePlatformBanner(page) {
++  await page.route("**/api/platform-settings/banner", async (route) => {
++    await route.fulfill({
++      body: JSON.stringify({
++        data: {
++          banner: {
++            active: false,
++            message: "",
++            source: "platform-settings",
++            sourceTable: "platform_settings",
++            sourceTableRowKey: "",
++            tone: "info",
++          },
++          diagnostics: {
++            active: false,
++            message: "",
++            sourceTable: "platform_settings",
++            sourceTableRowKey: "",
++          },
++          sourceTable: "platform_settings",
++        },
++        ok: true,
++      }),
++      contentType: "application/json; charset=utf-8",
++      status: 200,
++    });
++  });
++}
++
++async function stubToolboxRegistrySnapshot(page) {
++  await page.route("**/api/toolbox/registry/snapshot", async (route) => {
++    await route.fulfill({
++      body: JSON.stringify({
++        data: {
++          activeTools: [],
++          imageFallback: "/assets/theme-v2/images/image-missing.svg",
++          readinessByStatus: {},
++          toolboxContract: {},
++          tools: [],
++        },
++        ok: true,
++      }),
++      contentType: "application/json; charset=utf-8",
++      status: 200,
++    });
++  });
++}
++
+ async function openPage(page, pagePath, userKey = SEED_DB_KEYS.users.admin) {
    const server = await startRepoServer();
-+  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
-+  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
-+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
-+  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
-   const failedRequests = [];
-   const pageErrors = [];
-   const consoleErrors = [];
-@@ -63,20 +67,38 @@ async function openPage(page, pagePath) {
+   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+@@ -67,6 +115,8 @@ async function openPage(page, pagePath, userKey = SEED_DB_KEYS.users.admin) {
      }
    });
    page.on("requestfailed", (request) => failedRequests.push(`FAILED ${request.url()}`));
--  await setSessionUser(server, SEED_DB_KEYS.users.admin);
-+  await fetch(`${server.baseUrl}/api/local-db/seed`, { method: "POST" });
-+  await fetch(`${server.baseUrl}/api/session/mode`, {
-+    body: JSON.stringify({ modeId: "local-db" }),
-+    headers: { "content-type": "application/json" },
-+    method: "POST",
-+  });
-+  await setSessionUser(server, userKey);
-   await workspaceV2CoverageReporter.start(page);
-   await page.goto(`${server.baseUrl}${pagePath}`, { waitUntil: "networkidle" });
-   return {
-     consoleErrors,
-     failedRequests,
-     pageErrors,
-+    previousApiUrl,
-+    previousSiteUrl,
-     server,
-   };
- }
- 
-+function restoreEnvValue(key, value) {
-+  if (value === undefined) {
-+    delete process.env[key];
-+    return;
-+  }
-+  process.env[key] = value;
-+}
-+
- async function closePage(page, context) {
-   await workspaceV2CoverageReporter.stop(page);
-   await context.server.close();
-+  restoreEnvValue("GAMEFOUNDRY_API_URL", context.previousApiUrl);
-+  restoreEnvValue("GAMEFOUNDRY_SITE_URL", context.previousSiteUrl);
- }
- 
- test.afterAll(async () => {
-@@ -125,11 +147,11 @@ test("Owner menu renders business controls and planned entries without broken li
-       expect(ownerLinkText).not.toContain(label);
-     }
-     await expect(page.locator("nav[aria-label='Owner tool pages']").getByRole("link", { name: "AI Credits" })).toHaveAttribute("href", /owner\/ai-credits\.html/);
-+    await expect(page.locator("nav[aria-label='Owner tool pages']").getByRole("link", { name: "Notes" })).toHaveAttribute("href", /owner\/notes\.html/);
-     await expect(page.locator("nav[aria-label='Owner tool pages'] span[aria-disabled='true']")).toHaveText([
-       "Owner Tools",
-       "Legal (planned)",
-       "Marketplace Settings (planned)",
--      "Notes (planned)",
-       "Revenue (planned)",
-     ]);
-     await expect(page.locator("nav[aria-label='Owner tool pages'] span[aria-disabled='true'] a")).toHaveCount(0);
-@@ -141,6 +163,33 @@ test("Owner menu renders business controls and planned entries without broken li
-   }
- });
- 
-+test("Owner Notes resolves under owner path and is owner-only", async ({ page }) => {
-+  const context = await openPage(page, "/owner/notes.html");
-+  try {
-+    await expect(page).toHaveTitle(/Notes - Game Foundry Studio/);
-+    await expect(page.locator("main[data-owner-notes]")).toBeVisible();
-+    await expect(page.locator("[aria-label='Owner business pages'] a[aria-current='page']")).toHaveText("Notes");
-+    await expect(page.locator("[aria-label='Owner business pages'] a[href='/admin/notes.html']")).toHaveCount(0);
-+    await expect(page.locator("nav[aria-label='Admin tool pages'] a", { hasText: "Notes" })).toHaveCount(0);
-+    expect(context.pageErrors).toEqual([]);
-+    expect(context.consoleErrors).toEqual([]);
-+    expect(context.failedRequests).toEqual([]);
-+  } finally {
-+    await closePage(page, context);
-+  }
-+
-+  const blockedContext = await openPage(page, "/owner/notes.html", SEED_DB_KEYS.users.user1);
-+  try {
-+    await expect(page.locator("[data-session-access-blocked='owner']")).toBeVisible();
-+    await expect(page.getByRole("heading", { name: "Owner role required" })).toBeVisible();
-+    expect(blockedContext.pageErrors).toEqual([]);
-+    expect(blockedContext.consoleErrors).toEqual([]);
-+    expect(blockedContext.failedRequests).toEqual([]);
-+  } finally {
-+    await closePage(page, blockedContext);
-+  }
-+});
-+
- test("Moved Owner business page resolves under owner path", async ({ page }) => {
-   const context = await openPage(page, "/owner/branding.html");
-   try {
-diff --git a/docs_build/dev/reports/PR_26169_027-owner-notes-restoration.md b/docs_build/dev/reports/PR_26169_027-owner-notes-restoration.md
-new file mode 100644
-index 000000000..18a651674
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26169_027-owner-notes-restoration.md
-@@ -0,0 +1,69 @@
-+# PR_26169_027-owner-notes-restoration Report
-+
-+## Summary
-+
-+Restored Notes as an active Owner page without touching the isolated dev-only Admin Notes implementation. The shared Admin/Owner navigation SSoT now routes Owner Notes to `owner/notes.html`, the Owner route resolves under the Owner path, and targeted validation confirms Notes is owner-only and absent from Admin navigation.
-+
-+## Branch Guard
-+
-+| Check | Expected | Actual | Status |
-+| --- | --- | --- | --- |
-+| Current branch | `main` | `main` | PASS |
-+| Local branches found | includes `main` | `main` | PASS |
-+
-+## Requirement Checklist
-+
-+| Requirement | Evidence | Status |
-+| --- | --- | --- |
-+| Restore Notes as an active Owner page | `src/api/admin-owner-navigation.js` now defines Notes with `path: "owner/notes.html"` and `route: "owner-notes"`. | PASS |
-+| Remove "Planned" label from Notes | Targeted SSoT test asserts `ownerNotes?.planned` is `undefined`; Playwright expects visible label `Notes`. | PASS |
-+| Wire Notes into Owner navigation SSoT | Owner Notes is sourced from `getOwnerNavigationItems()` in `src/api/admin-owner-navigation.js`. | PASS |
-+| Verify Notes route exists and resolves | `owner/notes.html` exists; Node route validation and Playwright route validation passed. | PASS |
-+| Verify Owner-only visibility | Playwright confirms owner seed user sees `main[data-owner-notes]`; non-owner seed user gets `Owner role required`. | PASS |
-+| Verify Notes is not duplicated in Admin navigation | Node and Playwright assertions confirm Admin navigation does not include Notes. | PASS |
-+| Verify Notes path is under `owner/` | SSoT and Node test assert `owner/notes.html`. | PASS |
-+| Fix menu metadata/status to reflect implementation state | Notes changed from disabled/planned to active link metadata. | PASS |
-+| Do not create a second Admin Notes system | Dev-only Admin Notes files under `src/dev-runtime/admin/` were not touched; `owner/notes.html` links to existing Game Journey notes workflow. | PASS |
-+| Do not modify unrelated Owner/Admin menu items | Only the Notes SSoT entry changed. | PASS |
-+
-+## Validation
-+
-+| Command | Result |
-+| --- | --- |
-+| `git branch --show-current` | PASS, `main` |
-+| `git branch --format='%(refname:short)'` | PASS, `main` |
-+| `node --check src/api/admin-owner-navigation.js` | PASS |
-+| `node --check assets/theme-v2/js/gamefoundry-partials.js` | PASS |
-+| `node --check tests/dev-runtime/ApiMenuPathCleanup.test.mjs` | PASS |
-+| `node --check tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs` | PASS |
-+| `node --test tests/dev-runtime/ApiMenuPathCleanup.test.mjs` | PASS, 6 tests |
-+| `npx playwright test tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs` | PASS, 4 tests |
-+| `git diff --check` | PASS, with Git CRLF working-copy notices only |
-+| `rg --pcre2 -n '<script(?![^>]*\\bsrc=)|<style\\b|\\son[a-z]+\\s*=' owner/notes.html` | PASS, no matches |
-+
-+## Validation Notes
-+
-+- Playwright was required because rendered Owner navigation behavior changed.
-+- The first focused Playwright run failed because the existing test helper relied on `.env` public API config and did not bind browser API calls to the random Playwright server. The helper now seeds local DB mode and temporarily points `GAMEFOUNDRY_API_URL` / `GAMEFOUNDRY_SITE_URL` at the test server, then restores prior values.
-+- A second focused Playwright run failed because the new assertion used `nav[aria-label='Owner business pages']`, while existing Owner side menus are `aside.side-menu`; the selector was corrected and the final run passed.
-+- Playwright V8 coverage was refreshed for changed runtime JavaScript. `coverage_changed_js_guardrail.txt` reports no changed runtime JS coverage warnings.
-+
-+## Lane Decisions
-+
-+| Lane | Decision |
-+| --- | --- |
-+| Owner/Admin navigation | Executed targeted Node SSoT/route validation and targeted Playwright navigation validation. |
-+| Owner route rendering | Executed targeted Playwright page resolution and owner-only guard validation. |
-+| Admin Notes dev runtime | Skipped; no dev-only Admin Notes source files were touched. |
-+| Samples | Skipped; samples are not in scope and were not touched. |
-+| Broad suite | Skipped; this PR changes one Owner route and shared Owner navigation metadata only. |
-+
-+## Required Artifacts
-+
-+| Artifact | Status |
-+| --- | --- |
-+| `docs_build/pr/BUILD_PR_26169_027-owner-notes-restoration.md` | PASS |
-+| `docs_build/dev/reports/PR_26169_027-owner-notes-restoration.md` | PASS |
-+| `docs_build/dev/reports/codex_review.diff` | Generated during closeout |
-+| `docs_build/dev/reports/codex_changed_files.txt` | Generated during closeout |
-+| `tmp/PR_26169_027-owner-notes-restoration_delta.zip` | Generated during closeout |
-diff --git a/docs_build/pr/BUILD_PR_26169_027-owner-notes-restoration.md b/docs_build/pr/BUILD_PR_26169_027-owner-notes-restoration.md
-new file mode 100644
-index 000000000..bee838c78
---- /dev/null
-+++ b/docs_build/pr/BUILD_PR_26169_027-owner-notes-restoration.md
-@@ -0,0 +1,33 @@
-+# BUILD_PR_26169_027-owner-notes-restoration
-+
-+## Purpose
-+Restore Notes as an active Owner page by fixing Owner navigation metadata and route validation without changing Notes functionality.
-+
-+## Scope
-+- Restore Notes as an active Owner page.
-+- Remove any "Planned" label from Notes.
-+- Wire Notes back into the Owner navigation SSoT.
-+- Verify Notes route exists and resolves correctly.
-+- Verify Owner-only visibility.
-+- Verify Notes is not duplicated in Admin navigation.
-+- Verify Notes path is under `owner/` if Notes is an Owner business page.
-+- Fix menu metadata/status so Notes reflects its actual implementation state.
-+- Do not create a new Notes page if one already exists.
-+- Do not modify unrelated Owner/Admin menu items.
-+- Do not change Notes functionality beyond restoring navigation and metadata.
-+
-+## Validation
-+- Verify current branch is `main`.
-+- Run `node --check` on touched JavaScript files.
-+- Run targeted Owner navigation validation.
-+- Run targeted route validation for Notes.
-+- Run Playwright only if navigation UI behavior changes.
-+- Do not run full samples smoke.
-+- Stop on failure.
-+
-+## Required Reports
-+- `docs_build/pr/BUILD_PR_26169_027-owner-notes-restoration.md`
-+- `docs_build/dev/reports/PR_26169_027-owner-notes-restoration.md`
-+- `docs_build/dev/reports/codex_review.diff`
-+- `docs_build/dev/reports/codex_changed_files.txt`
-+- `tmp/PR_26169_027-owner-notes-restoration_delta.zip`
-diff --git a/owner/notes.html b/owner/notes.html
-new file mode 100644
-index 000000000..2de9991da
---- /dev/null
-+++ b/owner/notes.html
-@@ -0,0 +1,51 @@
-+<!doctype html>
-+<html lang="en">
-+
-+<head>
-+    <meta charset="utf-8">
-+    <meta name="viewport" content="width=device-width, initial-scale=1">
-+    <title>Notes - Game Foundry Studio</title>
-+    <meta name="description" content="Owner route for Game Foundry Studio notes workflow access.">
-+    <link rel="icon" href="/favicon.svg">
-+    <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
-+</head>
-+
-+<body>
-+    <div data-partial="header-nav"></div>
-+    <main data-owner-notes>
-+        <section class="page-title">
-+            <div class="container">
-+                <div class="kicker">Owner</div>
-+                <h1>Notes</h1>
-+                <p class="lede">Review game-scoped notes through the existing Game Journey workflow.</p>
-+            </div>
-+        </section>
-+        <section class="section">
-+            <div class="container account-panel">
-+                <aside class="side-menu" aria-label="Owner business pages" data-owner-tool-menu>
-+                    <p class="status" data-owner-nav-loading>Loading Owner tools.</p>
-+                </aside>
-+                <div class="admin-page-stack">
-+                    <section class="section">
-+                        <div class="container card">
-+                            <div class="card-body content-stack">
-+                                <div>
-+                                    <div class="kicker">Active Notes Workflow</div>
-+                                    <h2>Game Journey owns note editing.</h2>
-+                                </div>
-+                                <p class="status" role="status">Owner Notes is active and routes to the existing Game Journey notes workflow.</p>
-+                                <p>Use Game Journey for note filters, ownership-aware editing, activity, and related work rows.</p>
-+                                <p><a class="btn primary" data-route="game-journey" href="../toolbox/game-journey/index.html">Open Game Journey</a></p>
-+                            </div>
-+                        </div>
-+                    </section>
-+                </div>
-+            </div>
-+        </section>
-+    </main>
-+    <div data-partial="footer"></div>
-+    <script src="../assets/theme-v2/js/gamefoundry-partials.js" defer></script>
-+    <script type="module" src="../assets/theme-v2/js/admin-owner-navigation.js"></script>
-+</body>
-+
-+</html>
++  await stubInactivePlatformBanner(page);
++  await stubToolboxRegistrySnapshot(page);
+   await fetch(`${server.baseUrl}/api/local-db/seed`, { method: "POST" });
+   await fetch(`${server.baseUrl}/api/session/mode`, {
+     body: JSON.stringify({ modeId: "local-db" }),
