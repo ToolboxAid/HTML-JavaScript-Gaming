@@ -92,7 +92,7 @@ function resolveBrowserRoutePath(decodedPath) {
 
 export async function startRepoServer() {
   await loadRuntimeEnv();
-  const handleLocalApiRequest = createLocalApiRouter();
+  const handleLocalApiRequest = createLocalApiRouter({ repoRoot });
   const server = http.createServer(async (request, response) => {
     try {
       const requestUrl = new URL(request.url || "/", "http://127.0.0.1");

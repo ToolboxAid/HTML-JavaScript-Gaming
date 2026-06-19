@@ -6,8 +6,12 @@ Missing changed runtime JS files are WARN, not FAIL.
 Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
-(74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 67/90
-(100%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 5/5
+(0%) src/dev-runtime/admin/admin-notes-directory.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(96%) src/dev-runtime/admin/admin-notes-viewer.js - executed lines 533/533; executed functions 53/55
 
 Guardrail warnings:
-(100%) none - no changed runtime JS coverage warnings
+(0%) src/dev-runtime/admin/admin-notes-directory.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file missing from coverage; advisory only

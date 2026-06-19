@@ -55,7 +55,7 @@ export async function startLocalApiServer({
   host = "127.0.0.1",
   port = 5501,
 } = {}) {
-  const handleApiRuntimeRequest = createLocalApiRouter();
+  const handleApiRuntimeRequest = createLocalApiRouter({ repoRoot });
   const server = http.createServer(async (request, response) => {
     try {
       const requestUrl = new URL(request.url || "/", `http://${host}:${port}`);

@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import test from "node:test";
+import { handleAdminNotesDirectoryApiRequest } from "../../src/dev-runtime/admin/admin-notes-directory.mjs";
 import {
   ADMIN_NOTES_LOCAL_MENU_LABEL,
   ADMIN_NOTES_LOCAL_SOURCE_PATH,
@@ -16,18 +17,21 @@ const productionRoots = [
   "account",
   "admin",
   "assets",
+  "owner",
   "src/engine",
   "src/shared",
   "toolbox",
 ];
 
 const expectedDevNotes = [
-  "docs_build/dev/admin-notes/README.md",
+  "docs_build/dev/admin-notes/BusinessPlan.txt",
   "docs_build/dev/admin-notes/index.txt",
   "docs_build/dev/admin-notes/notes/index.txt",
   "docs_build/dev/admin-notes/other/index.txt",
-  "docs_build/dev/admin-notes/quick-reference.txt",
+  "docs_build/dev/admin-notes/PS_commands.txt",
+  "docs_build/dev/admin-notes/roadmap2MVP.txt",
   "docs_build/dev/admin-notes/sample.txt",
+  "docs_build/dev/admin-notes/tools/index.txt",
   "src/dev-runtime/admin/notes.html",
 ];
 
@@ -101,6 +105,41 @@ function extractAnchorLabels(source) {
   );
 }
 
+class CapturedJsonResponse {
+  constructor() {
+    this.body = "";
+    this.headers = {};
+    this.statusCode = 200;
+  }
+
+  setHeader(name, value) {
+    this.headers[name.toLowerCase()] = value;
+  }
+
+  end(body) {
+    this.body = String(body || "");
+  }
+}
+
+async function adminNotesDirectoryPayload(folderPath, root = repoRoot) {
+  const response = new CapturedJsonResponse();
+  const requestUrl = new URL("http://127.0.0.1/api/dev/admin-notes/directory");
+  if (folderPath !== undefined) {
+    requestUrl.searchParams.set("folder", folderPath);
+  }
+  const handled = await handleAdminNotesDirectoryApiRequest(requestUrl, response, { repoRoot: root });
+  assert.equal(handled, true, "Admin Notes API directory request should be handled");
+  return {
+    payload: JSON.parse(response.body),
+    statusCode: response.statusCode,
+  };
+}
+
+function makeTempRepoRoot() {
+  fs.mkdirSync(repoPath("tmp"), { recursive: true });
+  return fs.mkdtempSync(path.join(repoPath("tmp"), "admin-notes-boundary-"));
+}
+
 test("Admin Notes dev files and local viewer entrypoint exist", () => {
   expectedDevNotes.forEach((filePath) => {
     assert.equal(fs.existsSync(repoPath(filePath)), true, `${filePath} exists`);
@@ -148,12 +187,21 @@ test("Admin Notes local viewer page uses external dev-runtime JavaScript only", 
   assert.match(viewerSource, /assets\/theme-v2\/js\/gamefoundry-partials\.js/, "viewer page loads shared Theme V2 partial wiring");
 });
 
-test("production-facing paths do not link to dev Admin Notes files or implementation", () => {
+test("Owner Notes route is the only production-facing Admin Notes viewer route", () => {
+  const ownerNotesSource = fs.readFileSync(repoPath("owner/notes.html"), "utf8");
+  assert.doesNotMatch(ownerNotesSource, /<script(?![^>]*\bsrc=)/i, "Owner Notes page must not contain inline scripts");
+  assert.doesNotMatch(ownerNotesSource, /<style\b/i, "Owner Notes page must not contain style blocks");
+  assert.doesNotMatch(ownerNotesSource, /\son[a-z]+\s*=/i, "Owner Notes page must not contain inline event handlers");
+  assert.match(ownerNotesSource, /data-owner-notes/, "Owner Notes page keeps Owner route marker");
+  assert.match(ownerNotesSource, /data-admin-notes-viewer/, "Owner Notes page reuses the Admin Notes viewer pattern");
+  assert.match(ownerNotesSource, /docs_build\/dev\/admin-notes/, "Owner Notes page points at the admin-notes source folder");
+  assert.match(ownerNotesSource, /\.\.\/src\/dev-runtime\/admin\/admin-notes-viewer\.js/, "Owner Notes page reuses the existing viewer script");
+  assert.doesNotMatch(ownerNotesSource, /Game Journey owns note editing|Open Game Journey/, "Owner Notes page must not use the old placeholder workflow");
+});
+
+test("production-facing paths only expose Admin Notes through Owner Notes", () => {
   const headerSource = fs.readFileSync(repoPath("assets/theme-v2/partials/header-nav.html"), "utf8");
   assert.doesNotMatch(headerSource, /docs_build\/dev\/admin-notes|admin-notes-dev|data-admin-notes-local-menu|data-admin-my-stuff-menu|My Stuff|Admin Notes/);
-  for (const label of uatProdAdminLabels) {
-    assert.match(headerSource, new RegExp(`>${label}<\\/a>`), `production Admin menu keeps ${label}`);
-  }
   for (const label of devOnlyAdminLabels) {
     assert.doesNotMatch(headerSource, new RegExp(`>${label}<\\/a>`), `production Admin menu omits dev-only ${label}`);
   }
@@ -161,6 +209,9 @@ test("production-facing paths do not link to dev Admin Notes files or implementa
   const violations = productionRoots
     .flatMap(walkTextFiles)
     .filter((filePath) => {
+      if (relativePath(filePath) === "owner/notes.html") {
+        return false;
+      }
       const source = fs.readFileSync(filePath, "utf8");
       return /docs_build\/dev\/admin-notes|docs_build\\dev\\admin-notes|src\/dev-runtime\/admin|src\\dev-runtime\\admin|data-admin-my-stuff-menu|My Stuff|admin-notes|Admin Notes/.test(source);
     })
@@ -169,66 +220,90 @@ test("production-facing paths do not link to dev Admin Notes files or implementa
   assert.deepEqual(violations, [], "production-facing paths must not expose Admin Notes");
 });
 
-test("local dev server serves a dedicated Admin Notes header partial only", () => {
+test("Admin Notes directory API is read-only, sorted, and restricted to docs_build/dev/admin-notes", async () => {
+  assert.equal(fs.existsSync(repoPath("docs_build/dev/admin-notes")), true, "Admin Notes source directory exists");
+
+  const rootListing = await adminNotesDirectoryPayload("docs_build/dev/admin-notes");
+  assert.equal(rootListing.statusCode, 200);
+  assert.equal(rootListing.payload.ok, true);
+  assert.equal(rootListing.payload.folderPath, "docs_build/dev/admin-notes");
+  assert.ok(rootListing.payload.entries.length > 0, "Admin Notes directory has entries");
+  assert.ok(
+    rootListing.payload.entries.every((entry) => entry.path.startsWith("docs_build/dev/admin-notes/")),
+    "Admin Notes entries stay under the source folder",
+  );
+  assert.deepEqual(
+    rootListing.payload.entries.map((entry) => entry.label),
+    rootListing.payload.entries.map((entry) => entry.label).sort((left, right) => left.localeCompare(right)),
+    "Admin Notes entries are sorted alphabetically",
+  );
+  assert.ok(
+    rootListing.payload.entries.some((entry) => entry.path === "docs_build/dev/admin-notes/sample.txt"),
+    "Admin Notes list includes an existing text file from the source folder",
+  );
+  assert.ok(
+    rootListing.payload.entries.some((entry) => entry.path === "docs_build/dev/admin-notes/notes/index.txt"),
+    "Admin Notes list includes a folder index from the source folder",
+  );
+
+  const traversal = await adminNotesDirectoryPayload("docs_build/dev/admin-notes/../../reports");
+  assert.equal(traversal.statusCode, 403);
+  assert.equal(traversal.payload.ok, false);
+  assert.match(traversal.payload.error, /restricted to docs_build\/dev\/admin-notes/);
+
+  const missingRoot = makeTempRepoRoot();
+  try {
+    const missing = await adminNotesDirectoryPayload("docs_build/dev/admin-notes", missingRoot);
+    assert.equal(missing.statusCode, 404);
+    assert.equal(missing.payload.ok, false);
+    assert.match(missing.payload.error, /folder not found/i);
+  } finally {
+    fs.rmSync(missingRoot, { force: true, recursive: true });
+  }
+
+  const emptyRoot = makeTempRepoRoot();
+  try {
+    fs.mkdirSync(path.join(emptyRoot, "docs_build/dev/admin-notes"), { recursive: true });
+    const empty = await adminNotesDirectoryPayload("docs_build/dev/admin-notes", emptyRoot);
+    assert.equal(empty.statusCode, 200);
+    assert.equal(empty.payload.ok, true);
+    assert.deepEqual(empty.payload.entries, []);
+  } finally {
+    fs.rmSync(emptyRoot, { force: true, recursive: true });
+  }
+});
+
+test("local header partial does not create a competing Admin Notes menu", () => {
   const headerPath = repoPath("assets/theme-v2/partials/header-nav.html");
   const source = fs.readFileSync(headerPath, "utf8");
   const localHeaderPath = localAdminNotesHeaderPartialPath(repoRoot, headerPath);
   const servedHeader = fs.readFileSync(localHeaderPath, "utf8");
 
-  assert.match(servedHeader, /data-admin-notes-local-menu/);
-  assert.match(servedHeader, /data-admin-my-stuff-menu/);
-  assert.match(servedHeader, /data-admin-my-stuff-separator/);
-  assert.match(servedHeader, /data-admin-my-stuff-separator role="separator" aria-disabled="true" tabindex="-1"/);
-  assert.match(servedHeader, /data-nav-link data-admin-notes-local-menu/);
-  assert.match(servedHeader, new RegExp(ADMIN_NOTES_LOCAL_VIEWER_PATH.replace(/\//g, "\\/")));
-  assert.doesNotMatch(servedHeader, new RegExp(ADMIN_NOTES_LOCAL_SOURCE_PATH.replace(/\//g, "\\/")));
-  assert.match(servedHeader, new RegExp(ADMIN_NOTES_LOCAL_MENU_LABEL.replace(/[()]/g, "\\$&")));
-  assert.match(servedHeader, new RegExp(ADMIN_MY_STUFF_MENU_LABEL.replace(/[()]/g, "\\$&")));
-  const myStuffStart = servedHeader.indexOf("data-admin-my-stuff-submenu");
-  const separatorStart = servedHeader.indexOf("data-admin-my-stuff-separator");
-  const mainAdminStart = separatorStart;
-  const mainAdminEnd = servedHeader.indexOf("</div>\n      </div>\n    </nav>", mainAdminStart);
-  const myStuffSource = servedHeader.slice(myStuffStart, separatorStart);
-  const mainAdminSource = servedHeader.slice(mainAdminStart, mainAdminEnd);
-  assert.deepEqual(extractAnchorLabels(myStuffSource), devOnlyAdminLabels, "local My Stuff items are alphabetical");
-  assert.deepEqual(extractAnchorLabels(mainAdminSource), uatProdAdminLabels, "local main Admin items are alphabetical");
-  for (const label of devOnlyAdminLabels) {
-    assert.match(myStuffSource, new RegExp(`>${label}<\\/a>`), `local My Stuff contains ${label}`);
-    assert.doesNotMatch(mainAdminSource, new RegExp(`>${label}<\\/a>`), `local main Admin list omits ${label}`);
-  }
-  for (const label of uatProdAdminLabels) {
-    assert.match(mainAdminSource, new RegExp(`>${label}<\\/a>`), `local main Admin list keeps ${label}`);
-  }
-  assert.ok(
-    servedHeader.indexOf("data-admin-my-stuff-menu") < servedHeader.indexOf("data-admin-my-stuff-separator") &&
-      servedHeader.indexOf("data-admin-my-stuff-separator") < servedHeader.indexOf('data-route="admin-analytics"'),
-    "local My Stuff section is first with separator before Analytics",
-  );
-  assert.ok(
-    servedHeader.indexOf("data-admin-my-stuff-menu") < servedHeader.indexOf("data-admin-notes-local-menu"),
-    "local Notes entry is inside the My Stuff section",
-  );
   assert.equal(relativePath(localHeaderPath), "src/dev-runtime/admin/header-nav.local.html");
-  assert.doesNotMatch(source, /data-admin-notes-local-menu/);
+  assert.doesNotMatch(servedHeader, /data-admin-notes-local-menu|data-admin-my-stuff-menu|data-admin-my-stuff-separator|Admin Notes/);
+  assert.doesNotMatch(servedHeader, new RegExp(ADMIN_NOTES_LOCAL_SOURCE_PATH.replace(/\//g, "\\/")));
+  assert.doesNotMatch(servedHeader, new RegExp(ADMIN_NOTES_LOCAL_VIEWER_PATH.replace(/\//g, "\\/")));
+  assert.doesNotMatch(servedHeader, new RegExp(`>${ADMIN_NOTES_LOCAL_MENU_LABEL}<\\/a>`));
+  assert.doesNotMatch(servedHeader, new RegExp(`>${ADMIN_MY_STUFF_MENU_LABEL}<\\/a>`));
+  assert.doesNotMatch(source, /data-admin-notes-local-menu|Admin Notes/);
   assert.equal(localAdminNotesHeaderPartialPath(repoRoot, repoPath("account/sign-in.html")), repoPath("account/sign-in.html"));
 });
 
-test("Admin page left menus are alphabetical UAT/PROD-safe lists", () => {
+test("Admin page left menus use dynamic placeholders without Notes duplication", () => {
   const adminDir = repoPath("admin");
   const pages = fs.readdirSync(adminDir).filter((name) => name.endsWith(".html")).sort();
   const checkedPages = [];
 
   for (const pageName of pages) {
     const source = fs.readFileSync(path.join(adminDir, pageName), "utf8");
-    const match = source.match(/<aside class="side-menu" aria-label="Admin pages">([\s\S]*?)<\/aside>/);
-    if (!match) {
+    if (!/data-admin-tool-menu/.test(source)) {
       continue;
     }
     checkedPages.push(pageName);
-    assert.deepEqual(extractAnchorLabels(match[1]), uatProdAdminLabels, `${pageName} left menu is alphabetical`);
     for (const label of devOnlyAdminLabels) {
-      assert.doesNotMatch(match[1], new RegExp(`>${label}<\\/a>`), `${pageName} left menu omits ${label}`);
+      assert.doesNotMatch(source, new RegExp(`>${label}<\\/a>`), `${pageName} left menu omits ${label}`);
     }
+    assert.doesNotMatch(source, /docs_build\/dev\/admin-notes|src\/dev-runtime\/admin|admin-notes|Admin Notes/);
   }
 
   assert.ok(checkedPages.length > 0, "Admin pages with side menus were checked");

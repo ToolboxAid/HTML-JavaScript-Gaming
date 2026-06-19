@@ -1,114 +1,935 @@
-diff --git a/docs_build/dev/reports/PR_26169_027-owner-notes-restoration.md b/docs_build/dev/reports/PR_26169_027-owner-notes-restoration.md
-index 18a651674..b17dea38b 100644
---- a/docs_build/dev/reports/PR_26169_027-owner-notes-restoration.md
-+++ b/docs_build/dev/reports/PR_26169_027-owner-notes-restoration.md
-@@ -46,6 +46,7 @@ Restored Notes as an active Owner page without touching the isolated dev-only Ad
- - Playwright was required because rendered Owner navigation behavior changed.
- - The first focused Playwright run failed because the existing test helper relied on `.env` public API config and did not bind browser API calls to the random Playwright server. The helper now seeds local DB mode and temporarily points `GAMEFOUNDRY_API_URL` / `GAMEFOUNDRY_SITE_URL` at the test server, then restores prior values.
- - A second focused Playwright run failed because the new assertion used `nav[aria-label='Owner business pages']`, while existing Owner side menus are `aside.side-menu`; the selector was corrected and the final run passed.
-+- A follow-up rerun in the current local environment found unrelated 500 responses from shared platform-banner and toolbox-registry APIs. The targeted navigation Playwright helper now stubs inactive banner and empty toolbox registry responses so Owner/Admin navigation validation remains isolated from unrelated service availability.
- - Playwright V8 coverage was refreshed for changed runtime JavaScript. `coverage_changed_js_guardrail.txt` reports no changed runtime JS coverage warnings.
+﻿diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index 224eba181..db485d281 100644
+--- a/docs_build/dev/reports/codex_changed_files.txt
++++ b/docs_build/dev/reports/codex_changed_files.txt
+@@ -1,13 +1,13 @@
+-# git status --short
+-M docs_build/dev/reports/PR_26169_027-owner-notes-restoration.md
+- M docs_build/dev/reports/playwright_v8_coverage_report.txt
+- M tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
+-
+-# git ls-files --others --exclude-standard
+-(no output)
+-
+-# git diff --stat
+-.../PR_26169_027-owner-notes-restoration.md        |  1 +
+- .../dev/reports/playwright_v8_coverage_report.txt  |  6 +--
+- .../tools/AdminOwnerNavigationBoundary.spec.mjs    | 50 ++++++++++++++++++++++
+- 3 files changed, 53 insertions(+), 4 deletions(-)
+\ No newline at end of file
++﻿docs_build/dev/reports/coverage_changed_js_guardrail.txt
++docs_build/dev/reports/playwright_v8_coverage_report.txt
++docs_build/dev/reports/PR_26169_028-admin-owner-notes-source.md
++docs_build/pr/BUILD_PR_26169_028-admin-owner-notes-source.md
++owner/notes.html
++src/dev-runtime/admin/admin-notes-directory.mjs
++src/dev-runtime/admin/admin-notes-viewer.js
++src/dev-runtime/server/local-api-router.mjs
++src/dev-runtime/server/local-api-server.mjs
++tests/dev-runtime/AdminNotesBoundary.test.mjs
++tests/helpers/playwrightRepoServer.mjs
++tests/playwright/tools/AdminNotesLocalViewer.spec.mjs
++tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
+diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+index b4264da87..28b72dd56 100644
+--- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+@@ -6,8 +6,12 @@ Missing changed runtime JS files are WARN, not FAIL.
+ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
  
- ## Lane Decisions
+ Changed runtime JS files considered:
+-(74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 67/90
+-(100%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 5/5
++(0%) src/dev-runtime/admin/admin-notes-directory.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(96%) src/dev-runtime/admin/admin-notes-viewer.js - executed lines 533/533; executed functions 53/55
+ 
+ Guardrail warnings:
+-(100%) none - no changed runtime JS coverage warnings
++(0%) src/dev-runtime/admin/admin-notes-directory.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 66c4bc8ab..0d06c599b 100644
+index 0d06c599b..e517c0584 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -12,7 +12,7 @@ Note: entry percentages use function coverage when available, otherwise line cov
- Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
- 
- Exercised tool entry points detected:
--(46%) Toolbox Index - exercised 1 runtime JS files
-+(35%) Toolbox Index - exercised 1 runtime JS files
- (0%) Tool Template V2 - not exercised by this Playwright run
+@@ -17,8 +17,10 @@ Exercised tool entry points detected:
  (70%) Theme V2 Shared JS - exercised 5 runtime JS files
  
-@@ -21,9 +21,9 @@ Changed runtime JS files covered:
- (100%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 5/5
+ Changed runtime JS files covered:
+-(74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 67/90
+-(100%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 5/5
++(0%) src/dev-runtime/admin/admin-notes-directory.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(96%) src/dev-runtime/admin/admin-notes-viewer.js - executed lines 533/533; executed functions 53/55
  
  Files with executed line/function counts where available:
-+(35%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 9/26
- (36%) src/api/server-api-client.js - executed lines 167/167; executed functions 5/14
- (40%) src/api/admin-invitations-api-client.js - executed lines 40/40; executed functions 2/5
--(46%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 12/26
+ (35%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 9/26
+@@ -27,17 +29,24 @@ Files with executed line/function counts where available:
  (53%) assets/theme-v2/js/admin-invitations.js - executed lines 155/155; executed functions 9/17
  (59%) assets/theme-v2/js/owner-memberships.js - executed lines 248/248; executed functions 16/27
  (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
-@@ -37,9 +37,7 @@ Uncovered or low-coverage changed JS files:
- (100%) none - no low-coverage changed runtime JS files
+-(65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
+ (67%) src/api/owner-memberships-api-client.js - executed lines 19/19; executed functions 2/3
++(71%) src/api/public-config-client.js - executed lines 209/209; executed functions 20/28
+ (74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 67/90
++(96%) src/dev-runtime/admin/admin-notes-viewer.js - executed lines 533/533; executed functions 53/55
+ (100%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 11/11
+ (100%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 5/5
+ 
+ Uncovered or low-coverage changed JS files:
+-(100%) none - no low-coverage changed runtime JS files
++(0%) src/dev-runtime/admin/admin-notes-directory.mjs - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: uncovered changed runtime JS file; advisory only
  
  Changed JS files considered:
--(0%) scripts/start-local-api-server.mjs - changed JS file not collected as browser runtime coverage
- (0%) tests/dev-runtime/ApiMenuPathCleanup.test.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/dev-runtime/LocalApiStartupLogging.test.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/dev-runtime/ApiMenuPathCleanup.test.mjs - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/admin/admin-notes-directory.mjs - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/server/local-api-server.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/dev-runtime/AdminNotesBoundary.test.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/helpers/playwrightRepoServer.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/AdminNotesLocalViewer.spec.mjs - changed JS file not collected as browser runtime coverage
  (0%) tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs - changed JS file not collected as browser runtime coverage
- (74%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
- (100%) src/api/admin-owner-navigation.js - changed JS file with browser V8 coverage
-diff --git a/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs b/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
-index 4f3ba6ab2..0adf9a52c 100644
---- a/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
-+++ b/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
-@@ -46,6 +46,54 @@ async function setSessionUser(server, userKey) {
-   });
+-(74%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
+-(100%) src/api/admin-owner-navigation.js - changed JS file with browser V8 coverage
++(96%) src/dev-runtime/admin/admin-notes-viewer.js - changed JS file with browser V8 coverage
+diff --git a/owner/notes.html b/owner/notes.html
+index 2de9991da..6cb17f857 100644
+--- a/owner/notes.html
++++ b/owner/notes.html
+@@ -5,19 +5,19 @@
+     <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+     <title>Notes - Game Foundry Studio</title>
+-    <meta name="description" content="Owner route for Game Foundry Studio notes workflow access.">
++    <meta name="description" content="Owner route for Admin/Owner Notes loaded from docs_build/dev/admin-notes.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
+ </head>
+ 
+ <body>
+     <div data-partial="header-nav"></div>
+-    <main data-owner-notes>
++    <main data-owner-notes data-admin-notes-viewer>
+         <section class="page-title">
+             <div class="container">
+                 <div class="kicker">Owner</div>
+                 <h1>Notes</h1>
+-                <p class="lede">Review game-scoped notes through the existing Game Journey workflow.</p>
++                <p class="lede">Admin/Owner Notes loaded from docs_build/dev/admin-notes/.</p>
+             </div>
+         </section>
+         <section class="section">
+@@ -26,19 +26,40 @@
+                     <p class="status" data-owner-nav-loading>Loading Owner tools.</p>
+                 </aside>
+                 <div class="admin-page-stack">
+-                    <section class="section">
+-                        <div class="container card">
+-                            <div class="card-body content-stack">
++                    <article class="card">
++                        <div class="card-body">
++                            <div class="section-heading">
+                                 <div>
+-                                    <div class="kicker">Active Notes Workflow</div>
+-                                    <h2>Game Journey owns note editing.</h2>
++                                    <div class="kicker">Loaded Note</div>
++                                    <h2 data-admin-notes-title>index.txt</h2>
+                                 </div>
+-                                <p class="status" role="status">Owner Notes is active and routes to the existing Game Journey notes workflow.</p>
+-                                <p>Use Game Journey for note filters, ownership-aware editing, activity, and related work rows.</p>
+-                                <p><a class="btn primary" data-route="game-journey" href="../toolbox/game-journey/index.html">Open Game Journey</a></p>
++                                <p class="status" data-admin-notes-status>Loading docs_build/dev/admin-notes/index.txt.</p>
+                             </div>
++                            <div data-admin-notes-content></div>
+                         </div>
+-                    </section>
++                    </article>
++                    <article class="card" data-admin-notes-directory>
++                        <div class="card-body">
++                            <div class="content-stack">
++                                <div class="kicker">Source Folder</div>
++                                <div class="section-heading">
++                                    <h3>Current Folder: <span data-admin-notes-current-folder>admin-notes</span></h3>
++                                    <button class="btn btn--compact" type="button" data-admin-notes-parent-folder disabled>..</button>
++                                </div>
++                                <h4>Open folders:</h4>
++                                <div class="cluster" data-admin-notes-folder-links></div>
++                                <h4>Open files:</h4>
++                                <div class="cluster" data-admin-notes-file-links></div>
++                                <p class="status" data-admin-notes-folder-diagnostic></p>
++                            </div>
++                        </div>
++                    </article>
++                    <article class="card">
++                        <div class="card-body">
++                            <h3>Status Legend</h3>
++                            <p class="cluster" data-admin-notes-legend-list></p>
++                        </div>
++                    </article>
+                 </div>
+             </div>
+         </section>
+@@ -46,6 +67,7 @@
+     <div data-partial="footer"></div>
+     <script src="../assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+     <script type="module" src="../assets/theme-v2/js/admin-owner-navigation.js"></script>
++    <script type="module" src="../src/dev-runtime/admin/admin-notes-viewer.js"></script>
+ </body>
+ 
+ </html>
+diff --git a/src/dev-runtime/admin/admin-notes-directory.mjs b/src/dev-runtime/admin/admin-notes-directory.mjs
+index 8903b84d1..3e2c92b40 100644
+--- a/src/dev-runtime/admin/admin-notes-directory.mjs
++++ b/src/dev-runtime/admin/admin-notes-directory.mjs
+@@ -4,10 +4,13 @@ import { pathToFileURL } from "node:url";
+ 
+ const ADMIN_NOTES_DIRECTORY = "docs_build/dev/admin-notes";
+ const DIRECTORY_LIST_QUERY = "adminNotesDirectory";
++const DIRECTORY_API_PATH = "/api/dev/admin-notes/directory";
+ const NOTE_INDEX_FILE = "index.txt";
+ 
+ function sendJson(response, statusCode, payload) {
+   response.statusCode = statusCode;
++  response.setHeader("Access-Control-Allow-Origin", "*");
++  response.setHeader("Access-Control-Allow-Headers", "accept, content-type");
+   response.setHeader("Content-Type", "application/json; charset=utf-8");
+   response.end(JSON.stringify(payload));
+ }
+@@ -25,6 +28,12 @@ function isInside(parentPath, childPath) {
+ 
+ function safeAdminNotesFolder(repoRoot, requestPath) {
+   const relativeFolderPath = repoRelativePath(decodeURIComponent(requestPath || ""));
++  const hasTraversalSegment = relativeFolderPath
++    .split("/")
++    .some((segment) => segment === "." || segment === "..");
++  if (hasTraversalSegment) {
++    return null;
++  }
+   if (relativeFolderPath !== ADMIN_NOTES_DIRECTORY && !relativeFolderPath.startsWith(`${ADMIN_NOTES_DIRECTORY}/`)) {
+     return null;
+   }
+@@ -39,6 +48,50 @@ function safeAdminNotesFolder(repoRoot, requestPath) {
+   };
  }
  
-+async function stubInactivePlatformBanner(page) {
-+  await page.route("**/api/platform-settings/banner", async (route) => {
-+    await route.fulfill({
-+      body: JSON.stringify({
-+        data: {
-+          banner: {
-+            active: false,
-+            message: "",
-+            source: "platform-settings",
-+            sourceTable: "platform_settings",
-+            sourceTableRowKey: "",
-+            tone: "info",
-+          },
-+          diagnostics: {
-+            active: false,
-+            message: "",
-+            sourceTable: "platform_settings",
-+            sourceTableRowKey: "",
-+          },
-+          sourceTable: "platform_settings",
-+        },
-+        ok: true,
-+      }),
-+      contentType: "application/json; charset=utf-8",
-+      status: 200,
-+    });
-+  });
++async function adminNotesDirectoryResult(repoRoot, folderPath) {
++  const safeFolder = safeAdminNotesFolder(repoRoot, folderPath);
++  if (!safeFolder) {
++    return {
++      payload: {
++        entries: [],
++        error: "Admin Notes directory listing is restricted to docs_build/dev/admin-notes/.",
++        ok: false,
++      },
++      statusCode: 403,
++    };
++  }
++
++  const stat = await fs.stat(safeFolder.absolutePath).catch(() => null);
++  if (!stat?.isDirectory()) {
++    return {
++      payload: {
++        entries: [],
++        error: `Admin Notes folder not found: ${safeFolder.relativePath}.`,
++        ok: false,
++      },
++      statusCode: 404,
++    };
++  }
++
++  const dirents = await fs.readdir(safeFolder.absolutePath, { withFileTypes: true });
++  const entries = (await Promise.all(dirents.map(async (dirent) => {
++    return fileEntry(safeFolder.relativePath, dirent) ||
++      await folderEntry(safeFolder.relativePath, safeFolder.absolutePath, dirent);
++  })))
++    .filter(Boolean)
++    .sort((left, right) => left.label.localeCompare(right.label));
++
++  return {
++    payload: {
++      entries,
++      folderFileUrl: pathToFileURL(safeFolder.absolutePath).href,
++      folderPath: safeFolder.relativePath,
++      ok: true,
++    },
++    statusCode: 200,
++  };
 +}
 +
-+async function stubToolboxRegistrySnapshot(page) {
-+  await page.route("**/api/toolbox/registry/snapshot", async (route) => {
-+    await route.fulfill({
-+      body: JSON.stringify({
-+        data: {
-+          activeTools: [],
-+          imageFallback: "/assets/theme-v2/images/image-missing.svg",
-+          readinessByStatus: {},
-+          toolboxContract: {},
-+          tools: [],
-+        },
-+        ok: true,
-+      }),
-+      contentType: "application/json; charset=utf-8",
-+      status: 200,
-+    });
-+  });
+ function fileEntry(folderPath, dirent) {
+   if (!dirent.isFile() || path.extname(dirent.name).toLowerCase() !== ".txt") {
+     return null;
+@@ -66,44 +119,23 @@ async function folderEntry(folderPath, absoluteFolderPath, dirent) {
+   };
+ }
+ 
+-export async function handleAdminNotesDirectoryRequest(requestUrl, response, { repoRoot }) {
+-  if (!requestUrl.searchParams.has(DIRECTORY_LIST_QUERY)) {
++export async function handleAdminNotesDirectoryApiRequest(requestUrl, response, { repoRoot }) {
++  if (requestUrl.pathname !== DIRECTORY_API_PATH) {
+     return false;
+   }
+ 
+-  const safeFolder = safeAdminNotesFolder(repoRoot, requestUrl.pathname);
+-  if (!safeFolder) {
+-    sendJson(response, 403, {
+-      entries: [],
+-      error: "Admin Notes directory listing is restricted to docs_build/dev/admin-notes/.",
+-      ok: false,
+-    });
+-    return true;
+-  }
++  const folderPath = requestUrl.searchParams.get("folder") || ADMIN_NOTES_DIRECTORY;
++  const result = await adminNotesDirectoryResult(repoRoot, folderPath);
++  sendJson(response, result.statusCode, result.payload);
++  return true;
 +}
+ 
+-  const stat = await fs.stat(safeFolder.absolutePath).catch(() => null);
+-  if (!stat?.isDirectory()) {
+-    sendJson(response, 404, {
+-      entries: [],
+-      error: `Admin Notes folder not found: ${safeFolder.relativePath}.`,
+-      ok: false,
+-    });
+-    return true;
++export async function handleAdminNotesDirectoryRequest(requestUrl, response, { repoRoot }) {
++  if (!requestUrl.searchParams.has(DIRECTORY_LIST_QUERY)) {
++    return false;
+   }
+ 
+-  const dirents = await fs.readdir(safeFolder.absolutePath, { withFileTypes: true });
+-  const entries = (await Promise.all(dirents.map(async (dirent) => {
+-    return fileEntry(safeFolder.relativePath, dirent) ||
+-      await folderEntry(safeFolder.relativePath, safeFolder.absolutePath, dirent);
+-  })))
+-    .filter(Boolean)
+-    .sort((left, right) => left.label.localeCompare(right.label));
+-
+-  sendJson(response, 200, {
+-    entries,
+-    folderFileUrl: pathToFileURL(safeFolder.absolutePath).href,
+-    folderPath: safeFolder.relativePath,
+-    ok: true,
+-  });
++  const result = await adminNotesDirectoryResult(repoRoot, requestUrl.pathname);
++  sendJson(response, result.statusCode, result.payload);
+   return true;
+ }
+diff --git a/src/dev-runtime/admin/admin-notes-viewer.js b/src/dev-runtime/admin/admin-notes-viewer.js
+index 81f05526d..48fd38831 100644
+--- a/src/dev-runtime/admin/admin-notes-viewer.js
++++ b/src/dev-runtime/admin/admin-notes-viewer.js
+@@ -1,4 +1,6 @@
+-// Dev-runtime only: do not import this viewer from production-facing pages or bundles.
++import { resolveServerApiFetchUrl } from "../../api/public-config-client.js";
 +
- async function openPage(page, pagePath, userKey = SEED_DB_KEYS.users.admin) {
-   const server = await startRepoServer();
-   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
-@@ -67,6 +115,8 @@ async function openPage(page, pagePath, userKey = SEED_DB_KEYS.users.admin) {
++// Dev-runtime only: do not import this viewer from production bundles.
+ const NOTES_DIRECTORY = "docs_build/dev/admin-notes";
+ const DEFAULT_NOTE = "index";
+ const VIEWER_PATH = "/admin/admin-notes.html";
+@@ -6,7 +8,6 @@ const LINK_CLASS = "btn btn--compact primary";
+ const NOTE_NAME_PATTERN = /^[A-Za-z0-9_-]+$/;
+ const STATUS_ICON_PATTERN = /^\[([ xX.!?-])\]\s*(.*)$/;
+ const NOTE_INDEX_FILE = "index.txt";
+-const DIRECTORY_LIST_QUERY = "adminNotesDirectory";
+ const STATUS_MARKERS = {
+   " ": {
+     marker: "[ ]",
+@@ -68,6 +69,7 @@ class AdminNotesViewer {
+     this.folderDiagnostic = documentRef.querySelector("[data-admin-notes-folder-diagnostic]");
+     this.legendList = documentRef.querySelector("[data-admin-notes-legend-list]");
+     this.currentFolderPath = NOTES_DIRECTORY;
++    this.viewerPath = this.viewerPathFromLocation(window.location);
+     this.bindEvents();
+   }
+ 
+@@ -206,11 +208,22 @@ class AdminNotesViewer {
+   }
+ 
+   hrefForNote(noteName) {
+-    return noteName === DEFAULT_NOTE ? VIEWER_PATH : `${VIEWER_PATH}?note=${encodeURIComponent(noteName)}`;
++    return noteName === DEFAULT_NOTE ? this.viewerPath : `${this.viewerPath}?note=${encodeURIComponent(noteName)}`;
+   }
+ 
+   hrefForFile(filePath) {
+-    return `${VIEWER_PATH}?file=${encodeURIComponent(filePath)}`;
++    return `${this.viewerPath}?file=${encodeURIComponent(filePath)}`;
++  }
++
++  viewerPathFromLocation(locationRef) {
++    const pathname = String(locationRef?.pathname || "").replace(/\/+/g, "/");
++    if (pathname.endsWith("/owner/notes.html")) {
++      return "/owner/notes.html";
++    }
++    if (pathname.endsWith("/src/dev-runtime/admin/notes.html")) {
++      return "/src/dev-runtime/admin/notes.html";
++    }
++    return VIEWER_PATH;
+   }
+ 
+   repoFileUrl(filePath) {
+@@ -297,7 +310,6 @@ class AdminNotesViewer {
+     const listing = await this.directoryListingForFolder(folderPath);
+     const currentFolderPath = listing.folderPath || this.adminNotesFolderPathFromValue(folderPath) || NOTES_DIRECTORY;
+     this.updateCurrentFolder(currentFolderPath);
+-    this.setFolderDiagnostic(listing.error || "");
+     const entries = listing.entries;
+     const safeEntries = entries
+       .map((entry) => this.safeDirectoryEntry(entry))
+@@ -309,6 +321,7 @@ class AdminNotesViewer {
+ 
+     this.folderLinks?.replaceChildren();
+     this.fileLinks?.replaceChildren();
++    this.setFolderDiagnostic(listing.error || (safeEntries.length ? "" : "No Admin Notes files found in this folder."));
+     folderEntries.forEach((entry) => {
+       this.folderLinks?.append(this.directoryLink(entry));
+     });
+@@ -326,18 +339,20 @@ class AdminNotesViewer {
+       };
      }
+     try {
+-      const response = await fetch(this.directoryListingUrl(safeFolderPath), { cache: "no-store" });
++      const response = await fetch(await this.directoryListingUrl(safeFolderPath), { cache: "no-store" });
++      const listing = await response.json().catch(() => null);
+       if (!response.ok) {
+         return {
+           entries: [],
+-          error: "Current Folder listing is unavailable. Start the local/dev server to read Admin Notes folders from the filesystem."
++          error: listing?.error || "Current Folder listing is unavailable. Start the local/dev server to read Admin Notes folders from the filesystem."
+         };
+       }
+-      const listing = await response.json();
+       return {
+         entries: Array.isArray(listing.entries) ? listing.entries : [],
+         folderPath: this.adminNotesFolderPathFromValue(listing.folderPath),
+-        error: ""
++        error: listing?.ok === false
++          ? listing.error || "Current Folder listing is unavailable. Start the local/dev server to read Admin Notes folders from the filesystem."
++          : ""
+       };
+     } catch {
+       return {
+@@ -348,8 +363,8 @@ class AdminNotesViewer {
+   }
+ 
+   directoryListingUrl(folderPath) {
+-    const folderUrl = folderPath.endsWith("/") ? folderPath : `${folderPath}/`;
+-    return `${this.repoFileUrl(folderUrl)}?${DIRECTORY_LIST_QUERY}=1`;
++    const folder = folderPath.endsWith("/") ? folderPath.slice(0, -1) : folderPath;
++    return resolveServerApiFetchUrl(`/dev/admin-notes/directory?folder=${encodeURIComponent(folder)}`);
+   }
+ 
+   setFolderDiagnostic(message) {
+diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
+index 2acad3a3c..4a2cdce66 100644
+--- a/src/dev-runtime/server/local-api-router.mjs
++++ b/src/dev-runtime/server/local-api-router.mjs
+@@ -117,6 +117,7 @@ import {
+   MarketplaceRevenueError,
+   readMarketplaceSellerRevenueModel,
+ } from "../marketplace/marketplace-revenue-service.mjs";
++import { handleAdminNotesDirectoryApiRequest } from "../admin/admin-notes-directory.mjs";
+ import {
+   LegalDocumentError,
+   readPublishedLegalDocument,
+@@ -5234,7 +5235,9 @@ LIMIT 1;
+  * Legacy export name retained for the existing dev:local-api command surface.
+  * The router itself serves the configured server API contract.
+  */
+-export function createLocalApiRouter() {
++export function createLocalApiRouter({
++  repoRoot = process.cwd(),
++} = {}) {
+   const dataSource = new ApiRuntimeDataSource();
+ 
+   return async function handleApiRuntimeRequest(request, response, requestUrl) {
+@@ -5249,6 +5252,9 @@ export function createLocalApiRouter() {
+         sendNoContent(response);
+         return true;
+       }
++      if (request.method === "GET" && await handleAdminNotesDirectoryApiRequest(requestUrl, response, { repoRoot })) {
++        return true;
++      }
+       if (parts[1] === "session") {
+         if (request.method === "HEAD" && ["current", "modes", "users"].includes(parts[2])) {
+           sendNoContent(response, 200);
+diff --git a/src/dev-runtime/server/local-api-server.mjs b/src/dev-runtime/server/local-api-server.mjs
+index 4917579f9..5967369d3 100644
+--- a/src/dev-runtime/server/local-api-server.mjs
++++ b/src/dev-runtime/server/local-api-server.mjs
+@@ -55,7 +55,7 @@ export async function startLocalApiServer({
+   host = "127.0.0.1",
+   port = 5501,
+ } = {}) {
+-  const handleApiRuntimeRequest = createLocalApiRouter();
++  const handleApiRuntimeRequest = createLocalApiRouter({ repoRoot });
+   const server = http.createServer(async (request, response) => {
+     try {
+       const requestUrl = new URL(request.url || "/", `http://${host}:${port}`);
+diff --git a/tests/dev-runtime/AdminNotesBoundary.test.mjs b/tests/dev-runtime/AdminNotesBoundary.test.mjs
+index 508ef1411..3bbc6e06b 100644
+--- a/tests/dev-runtime/AdminNotesBoundary.test.mjs
++++ b/tests/dev-runtime/AdminNotesBoundary.test.mjs
+@@ -3,6 +3,7 @@ import fs from "node:fs";
+ import path from "node:path";
+ import process from "node:process";
+ import test from "node:test";
++import { handleAdminNotesDirectoryApiRequest } from "../../src/dev-runtime/admin/admin-notes-directory.mjs";
+ import {
+   ADMIN_NOTES_LOCAL_MENU_LABEL,
+   ADMIN_NOTES_LOCAL_SOURCE_PATH,
+@@ -16,18 +17,21 @@ const productionRoots = [
+   "account",
+   "admin",
+   "assets",
++  "owner",
+   "src/engine",
+   "src/shared",
+   "toolbox",
+ ];
+ 
+ const expectedDevNotes = [
+-  "docs_build/dev/admin-notes/README.md",
++  "docs_build/dev/admin-notes/BusinessPlan.txt",
+   "docs_build/dev/admin-notes/index.txt",
+   "docs_build/dev/admin-notes/notes/index.txt",
+   "docs_build/dev/admin-notes/other/index.txt",
+-  "docs_build/dev/admin-notes/quick-reference.txt",
++  "docs_build/dev/admin-notes/PS_commands.txt",
++  "docs_build/dev/admin-notes/roadmap2MVP.txt",
+   "docs_build/dev/admin-notes/sample.txt",
++  "docs_build/dev/admin-notes/tools/index.txt",
+   "src/dev-runtime/admin/notes.html",
+ ];
+ 
+@@ -101,6 +105,41 @@ function extractAnchorLabels(source) {
+   );
+ }
+ 
++class CapturedJsonResponse {
++  constructor() {
++    this.body = "";
++    this.headers = {};
++    this.statusCode = 200;
++  }
++
++  setHeader(name, value) {
++    this.headers[name.toLowerCase()] = value;
++  }
++
++  end(body) {
++    this.body = String(body || "");
++  }
++}
++
++async function adminNotesDirectoryPayload(folderPath, root = repoRoot) {
++  const response = new CapturedJsonResponse();
++  const requestUrl = new URL("http://127.0.0.1/api/dev/admin-notes/directory");
++  if (folderPath !== undefined) {
++    requestUrl.searchParams.set("folder", folderPath);
++  }
++  const handled = await handleAdminNotesDirectoryApiRequest(requestUrl, response, { repoRoot: root });
++  assert.equal(handled, true, "Admin Notes API directory request should be handled");
++  return {
++    payload: JSON.parse(response.body),
++    statusCode: response.statusCode,
++  };
++}
++
++function makeTempRepoRoot() {
++  fs.mkdirSync(repoPath("tmp"), { recursive: true });
++  return fs.mkdtempSync(path.join(repoPath("tmp"), "admin-notes-boundary-"));
++}
++
+ test("Admin Notes dev files and local viewer entrypoint exist", () => {
+   expectedDevNotes.forEach((filePath) => {
+     assert.equal(fs.existsSync(repoPath(filePath)), true, `${filePath} exists`);
+@@ -148,12 +187,21 @@ test("Admin Notes local viewer page uses external dev-runtime JavaScript only",
+   assert.match(viewerSource, /assets\/theme-v2\/js\/gamefoundry-partials\.js/, "viewer page loads shared Theme V2 partial wiring");
+ });
+ 
+-test("production-facing paths do not link to dev Admin Notes files or implementation", () => {
++test("Owner Notes route is the only production-facing Admin Notes viewer route", () => {
++  const ownerNotesSource = fs.readFileSync(repoPath("owner/notes.html"), "utf8");
++  assert.doesNotMatch(ownerNotesSource, /<script(?![^>]*\bsrc=)/i, "Owner Notes page must not contain inline scripts");
++  assert.doesNotMatch(ownerNotesSource, /<style\b/i, "Owner Notes page must not contain style blocks");
++  assert.doesNotMatch(ownerNotesSource, /\son[a-z]+\s*=/i, "Owner Notes page must not contain inline event handlers");
++  assert.match(ownerNotesSource, /data-owner-notes/, "Owner Notes page keeps Owner route marker");
++  assert.match(ownerNotesSource, /data-admin-notes-viewer/, "Owner Notes page reuses the Admin Notes viewer pattern");
++  assert.match(ownerNotesSource, /docs_build\/dev\/admin-notes/, "Owner Notes page points at the admin-notes source folder");
++  assert.match(ownerNotesSource, /\.\.\/src\/dev-runtime\/admin\/admin-notes-viewer\.js/, "Owner Notes page reuses the existing viewer script");
++  assert.doesNotMatch(ownerNotesSource, /Game Journey owns note editing|Open Game Journey/, "Owner Notes page must not use the old placeholder workflow");
++});
++
++test("production-facing paths only expose Admin Notes through Owner Notes", () => {
+   const headerSource = fs.readFileSync(repoPath("assets/theme-v2/partials/header-nav.html"), "utf8");
+   assert.doesNotMatch(headerSource, /docs_build\/dev\/admin-notes|admin-notes-dev|data-admin-notes-local-menu|data-admin-my-stuff-menu|My Stuff|Admin Notes/);
+-  for (const label of uatProdAdminLabels) {
+-    assert.match(headerSource, new RegExp(`>${label}<\\/a>`), `production Admin menu keeps ${label}`);
+-  }
+   for (const label of devOnlyAdminLabels) {
+     assert.doesNotMatch(headerSource, new RegExp(`>${label}<\\/a>`), `production Admin menu omits dev-only ${label}`);
+   }
+@@ -161,6 +209,9 @@ test("production-facing paths do not link to dev Admin Notes files or implementa
+   const violations = productionRoots
+     .flatMap(walkTextFiles)
+     .filter((filePath) => {
++      if (relativePath(filePath) === "owner/notes.html") {
++        return false;
++      }
+       const source = fs.readFileSync(filePath, "utf8");
+       return /docs_build\/dev\/admin-notes|docs_build\\dev\\admin-notes|src\/dev-runtime\/admin|src\\dev-runtime\\admin|data-admin-my-stuff-menu|My Stuff|admin-notes|Admin Notes/.test(source);
+     })
+@@ -169,66 +220,90 @@ test("production-facing paths do not link to dev Admin Notes files or implementa
+   assert.deepEqual(violations, [], "production-facing paths must not expose Admin Notes");
+ });
+ 
+-test("local dev server serves a dedicated Admin Notes header partial only", () => {
+-  const headerPath = repoPath("assets/theme-v2/partials/header-nav.html");
+-  const source = fs.readFileSync(headerPath, "utf8");
+-  const localHeaderPath = localAdminNotesHeaderPartialPath(repoRoot, headerPath);
+-  const servedHeader = fs.readFileSync(localHeaderPath, "utf8");
++test("Admin Notes directory API is read-only, sorted, and restricted to docs_build/dev/admin-notes", async () => {
++  assert.equal(fs.existsSync(repoPath("docs_build/dev/admin-notes")), true, "Admin Notes source directory exists");
+ 
+-  assert.match(servedHeader, /data-admin-notes-local-menu/);
+-  assert.match(servedHeader, /data-admin-my-stuff-menu/);
+-  assert.match(servedHeader, /data-admin-my-stuff-separator/);
+-  assert.match(servedHeader, /data-admin-my-stuff-separator role="separator" aria-disabled="true" tabindex="-1"/);
+-  assert.match(servedHeader, /data-nav-link data-admin-notes-local-menu/);
+-  assert.match(servedHeader, new RegExp(ADMIN_NOTES_LOCAL_VIEWER_PATH.replace(/\//g, "\\/")));
+-  assert.doesNotMatch(servedHeader, new RegExp(ADMIN_NOTES_LOCAL_SOURCE_PATH.replace(/\//g, "\\/")));
+-  assert.match(servedHeader, new RegExp(ADMIN_NOTES_LOCAL_MENU_LABEL.replace(/[()]/g, "\\$&")));
+-  assert.match(servedHeader, new RegExp(ADMIN_MY_STUFF_MENU_LABEL.replace(/[()]/g, "\\$&")));
+-  const myStuffStart = servedHeader.indexOf("data-admin-my-stuff-submenu");
+-  const separatorStart = servedHeader.indexOf("data-admin-my-stuff-separator");
+-  const mainAdminStart = separatorStart;
+-  const mainAdminEnd = servedHeader.indexOf("</div>\n      </div>\n    </nav>", mainAdminStart);
+-  const myStuffSource = servedHeader.slice(myStuffStart, separatorStart);
+-  const mainAdminSource = servedHeader.slice(mainAdminStart, mainAdminEnd);
+-  assert.deepEqual(extractAnchorLabels(myStuffSource), devOnlyAdminLabels, "local My Stuff items are alphabetical");
+-  assert.deepEqual(extractAnchorLabels(mainAdminSource), uatProdAdminLabels, "local main Admin items are alphabetical");
+-  for (const label of devOnlyAdminLabels) {
+-    assert.match(myStuffSource, new RegExp(`>${label}<\\/a>`), `local My Stuff contains ${label}`);
+-    assert.doesNotMatch(mainAdminSource, new RegExp(`>${label}<\\/a>`), `local main Admin list omits ${label}`);
+-  }
+-  for (const label of uatProdAdminLabels) {
+-    assert.match(mainAdminSource, new RegExp(`>${label}<\\/a>`), `local main Admin list keeps ${label}`);
+-  }
++  const rootListing = await adminNotesDirectoryPayload("docs_build/dev/admin-notes");
++  assert.equal(rootListing.statusCode, 200);
++  assert.equal(rootListing.payload.ok, true);
++  assert.equal(rootListing.payload.folderPath, "docs_build/dev/admin-notes");
++  assert.ok(rootListing.payload.entries.length > 0, "Admin Notes directory has entries");
++  assert.ok(
++    rootListing.payload.entries.every((entry) => entry.path.startsWith("docs_build/dev/admin-notes/")),
++    "Admin Notes entries stay under the source folder",
++  );
++  assert.deepEqual(
++    rootListing.payload.entries.map((entry) => entry.label),
++    rootListing.payload.entries.map((entry) => entry.label).sort((left, right) => left.localeCompare(right)),
++    "Admin Notes entries are sorted alphabetically",
++  );
+   assert.ok(
+-    servedHeader.indexOf("data-admin-my-stuff-menu") < servedHeader.indexOf("data-admin-my-stuff-separator") &&
+-      servedHeader.indexOf("data-admin-my-stuff-separator") < servedHeader.indexOf('data-route="admin-analytics"'),
+-    "local My Stuff section is first with separator before Analytics",
++    rootListing.payload.entries.some((entry) => entry.path === "docs_build/dev/admin-notes/sample.txt"),
++    "Admin Notes list includes an existing text file from the source folder",
+   );
+   assert.ok(
+-    servedHeader.indexOf("data-admin-my-stuff-menu") < servedHeader.indexOf("data-admin-notes-local-menu"),
+-    "local Notes entry is inside the My Stuff section",
++    rootListing.payload.entries.some((entry) => entry.path === "docs_build/dev/admin-notes/notes/index.txt"),
++    "Admin Notes list includes a folder index from the source folder",
+   );
++
++  const traversal = await adminNotesDirectoryPayload("docs_build/dev/admin-notes/../../reports");
++  assert.equal(traversal.statusCode, 403);
++  assert.equal(traversal.payload.ok, false);
++  assert.match(traversal.payload.error, /restricted to docs_build\/dev\/admin-notes/);
++
++  const missingRoot = makeTempRepoRoot();
++  try {
++    const missing = await adminNotesDirectoryPayload("docs_build/dev/admin-notes", missingRoot);
++    assert.equal(missing.statusCode, 404);
++    assert.equal(missing.payload.ok, false);
++    assert.match(missing.payload.error, /folder not found/i);
++  } finally {
++    fs.rmSync(missingRoot, { force: true, recursive: true });
++  }
++
++  const emptyRoot = makeTempRepoRoot();
++  try {
++    fs.mkdirSync(path.join(emptyRoot, "docs_build/dev/admin-notes"), { recursive: true });
++    const empty = await adminNotesDirectoryPayload("docs_build/dev/admin-notes", emptyRoot);
++    assert.equal(empty.statusCode, 200);
++    assert.equal(empty.payload.ok, true);
++    assert.deepEqual(empty.payload.entries, []);
++  } finally {
++    fs.rmSync(emptyRoot, { force: true, recursive: true });
++  }
++});
++
++test("local header partial does not create a competing Admin Notes menu", () => {
++  const headerPath = repoPath("assets/theme-v2/partials/header-nav.html");
++  const source = fs.readFileSync(headerPath, "utf8");
++  const localHeaderPath = localAdminNotesHeaderPartialPath(repoRoot, headerPath);
++  const servedHeader = fs.readFileSync(localHeaderPath, "utf8");
++
+   assert.equal(relativePath(localHeaderPath), "src/dev-runtime/admin/header-nav.local.html");
+-  assert.doesNotMatch(source, /data-admin-notes-local-menu/);
++  assert.doesNotMatch(servedHeader, /data-admin-notes-local-menu|data-admin-my-stuff-menu|data-admin-my-stuff-separator|Admin Notes/);
++  assert.doesNotMatch(servedHeader, new RegExp(ADMIN_NOTES_LOCAL_SOURCE_PATH.replace(/\//g, "\\/")));
++  assert.doesNotMatch(servedHeader, new RegExp(ADMIN_NOTES_LOCAL_VIEWER_PATH.replace(/\//g, "\\/")));
++  assert.doesNotMatch(servedHeader, new RegExp(`>${ADMIN_NOTES_LOCAL_MENU_LABEL}<\\/a>`));
++  assert.doesNotMatch(servedHeader, new RegExp(`>${ADMIN_MY_STUFF_MENU_LABEL}<\\/a>`));
++  assert.doesNotMatch(source, /data-admin-notes-local-menu|Admin Notes/);
+   assert.equal(localAdminNotesHeaderPartialPath(repoRoot, repoPath("account/sign-in.html")), repoPath("account/sign-in.html"));
+ });
+ 
+-test("Admin page left menus are alphabetical UAT/PROD-safe lists", () => {
++test("Admin page left menus use dynamic placeholders without Notes duplication", () => {
+   const adminDir = repoPath("admin");
+   const pages = fs.readdirSync(adminDir).filter((name) => name.endsWith(".html")).sort();
+   const checkedPages = [];
+ 
+   for (const pageName of pages) {
+     const source = fs.readFileSync(path.join(adminDir, pageName), "utf8");
+-    const match = source.match(/<aside class="side-menu" aria-label="Admin pages">([\s\S]*?)<\/aside>/);
+-    if (!match) {
++    if (!/data-admin-tool-menu/.test(source)) {
+       continue;
+     }
+     checkedPages.push(pageName);
+-    assert.deepEqual(extractAnchorLabels(match[1]), uatProdAdminLabels, `${pageName} left menu is alphabetical`);
+     for (const label of devOnlyAdminLabels) {
+-      assert.doesNotMatch(match[1], new RegExp(`>${label}<\\/a>`), `${pageName} left menu omits ${label}`);
++      assert.doesNotMatch(source, new RegExp(`>${label}<\\/a>`), `${pageName} left menu omits ${label}`);
+     }
++    assert.doesNotMatch(source, /docs_build\/dev\/admin-notes|src\/dev-runtime\/admin|admin-notes|Admin Notes/);
+   }
+ 
+   assert.ok(checkedPages.length > 0, "Admin pages with side menus were checked");
+diff --git a/tests/helpers/playwrightRepoServer.mjs b/tests/helpers/playwrightRepoServer.mjs
+index 077366c63..a233b9e40 100644
+--- a/tests/helpers/playwrightRepoServer.mjs
++++ b/tests/helpers/playwrightRepoServer.mjs
+@@ -92,7 +92,7 @@ function resolveBrowserRoutePath(decodedPath) {
+ 
+ export async function startRepoServer() {
+   await loadRuntimeEnv();
+-  const handleLocalApiRequest = createLocalApiRouter();
++  const handleLocalApiRequest = createLocalApiRouter({ repoRoot });
+   const server = http.createServer(async (request, response) => {
+     try {
+       const requestUrl = new URL(request.url || "/", "http://127.0.0.1");
+diff --git a/tests/playwright/tools/AdminNotesLocalViewer.spec.mjs b/tests/playwright/tools/AdminNotesLocalViewer.spec.mjs
+index 9ac53b97e..6ecaec680 100644
+--- a/tests/playwright/tools/AdminNotesLocalViewer.spec.mjs
++++ b/tests/playwright/tools/AdminNotesLocalViewer.spec.mjs
+@@ -20,8 +20,12 @@ test.afterAll(async () => {
+   await workspaceV2CoverageReporter.writeReport();
+ });
+ 
+-async function openLocalViewer(page, routePath = "/admin/admin-notes.html") {
++async function openLocalViewer(page, routePath = "/admin/admin-notes.html", options = {}) {
+   const server = await startRepoServer();
++  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
++  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
++  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
++  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
+   const failedRequests = [];
+   const pageErrors = [];
+   const consoleErrors = [];
+@@ -57,9 +61,13 @@ async function openLocalViewer(page, routePath = "/admin/admin-notes.html") {
+     method: "POST",
    });
-   page.on("requestfailed", (request) => failedRequests.push(`FAILED ${request.url()}`));
-+  await stubInactivePlatformBanner(page);
-+  await stubToolboxRegistrySnapshot(page);
-   await fetch(`${server.baseUrl}/api/local-db/seed`, { method: "POST" });
-   await fetch(`${server.baseUrl}/api/session/mode`, {
-     body: JSON.stringify({ modeId: "local-db" }),
+ 
++  if (typeof options.beforeGoto === "function") {
++    await options.beforeGoto({ page, server });
++  }
++
+   await workspaceV2CoverageReporter.start(page);
+   await page.goto(`${server.baseUrl}${routePath}`, { waitUntil: "networkidle" });
+-  return { consoleErrors, failedRequests, pageErrors, server };
++  return { consoleErrors, failedRequests, pageErrors, previousApiUrl, previousSiteUrl, server };
+ }
+ 
+ function expectNoPageFailures(failures) {
+@@ -71,6 +79,16 @@ function expectNoPageFailures(failures) {
+ async function closeWithCoverage(page, failures) {
+   await workspaceV2CoverageReporter.stop(page);
+   await failures.server.close();
++  if (failures.previousApiUrl === undefined) {
++    delete process.env.GAMEFOUNDRY_API_URL;
++  } else {
++    process.env.GAMEFOUNDRY_API_URL = failures.previousApiUrl;
++  }
++  if (failures.previousSiteUrl === undefined) {
++    delete process.env.GAMEFOUNDRY_SITE_URL;
++  } else {
++    process.env.GAMEFOUNDRY_SITE_URL = failures.previousSiteUrl;
++  }
+ }
+ 
+ test("Admin Notes local viewer loads index and opens root folder note files", async ({ page }) => {
+@@ -84,27 +102,36 @@ test("Admin Notes local viewer loads index and opens root folder note files", as
+     await expect(page).toHaveURL(/\/admin\/admin-notes\.html$/);
+     await expect(page.locator("[data-admin-notes-title]")).toHaveText("index.txt");
+     await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded docs_build/dev/admin-notes/index.txt.");
+-    await expect(page.locator("[data-admin-notes-content]")).toContainText("Project Life Cycle");
++    await expect(page.locator("[data-admin-notes-content]")).toContainText("Admin Notes Ownership");
+     await expect(page.locator("[data-admin-notes-current-folder]")).toHaveText("admin-notes");
+     await expect(page.locator("[data-admin-notes-parent-folder]")).toBeDisabled();
+     await expect(page.getByRole("heading", { name: "Open folders:", level: 4 })).toBeVisible();
+     await expect(page.getByRole("heading", { name: "Open files:", level: 4 })).toBeVisible();
+ 
+     await expect(page.locator("[data-admin-notes-folder-links] [data-admin-notes-directory-link='folder']")).toContainText([
++      "admin/",
++      "colors/",
++      "deployment-uat-prod/",
++      "email/",
++      "engine/",
++      "fonts/",
+       "notes/",
+       "other/",
++      "tools/",
+     ]);
+     await expect(page.locator("[data-admin-notes-folder-links] [data-admin-notes-directory-link='file']")).toHaveCount(0);
+     await expect(page.locator("[data-admin-notes-file-links] [data-admin-notes-directory-link='file']")).toContainText([
+-      "quick-reference.txt",
++      "BusinessPlan.txt",
++      "PS_commands.txt",
++      "roadmap2MVP.txt",
+       "sample.txt",
+     ]);
+     await expect(page.locator("[data-admin-notes-file-links] [data-admin-notes-directory-link='folder']")).toHaveCount(0);
+ 
+-    await page.getByRole("link", { name: "quick-reference.txt" }).click();
+-    await expect(page.locator("[data-admin-notes-title]")).toHaveText("quick-reference.txt");
+-    await expect(page.locator("[data-admin-notes-content]")).toContainText("Quick Reference");
+-    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded docs_build/dev/admin-notes/quick-reference.txt.");
++    await page.getByRole("link", { name: "sample.txt" }).click();
++    await expect(page.locator("[data-admin-notes-title]")).toHaveText("sample.txt");
++    await expect(page.locator("[data-admin-notes-content]")).toContainText("Capture admin-only project ideas here.");
++    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded docs_build/dev/admin-notes/sample.txt.");
+     await expect(page.locator("[data-admin-notes-current-folder]")).toHaveText("admin-notes");
+     await expect(page.locator("[data-admin-notes-parent-folder]")).toBeDisabled();
+ 
+@@ -117,8 +144,93 @@ test("Admin Notes local viewer loads index and opens root folder note files", as
+     await page.locator("[data-admin-notes-parent-folder]").click();
+     await expect(page.locator("[data-admin-notes-current-folder]")).toHaveText("admin-notes");
+     await expect(page.locator("[data-admin-notes-parent-folder]")).toBeDisabled();
+-    await expect(page.locator("[data-admin-notes-content]")).toContainText("Project Life Cycle");
++    await expect(page.locator("[data-admin-notes-content]")).toContainText("Admin Notes Ownership");
++
++    await expectNoPageFailures(failures);
++  } finally {
++    await closeWithCoverage(page, failures);
++  }
++});
++
++test("Owner Notes route reads the shared admin-notes source", async ({ page }) => {
++  const failures = await openLocalViewer(page, "/owner/notes.html");
++
++  try {
++    await expect(page).toHaveURL(/\/owner\/notes\.html$/);
++    await expect(page.getByRole("heading", { name: "Notes", level: 1 })).toBeVisible();
++    await expect(page.locator("main[data-owner-notes][data-admin-notes-viewer]")).toBeVisible();
++    await expect(page.locator("[aria-label='Owner business pages'] a[aria-current='page']")).toHaveText("Notes");
++    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded docs_build/dev/admin-notes/index.txt.");
++    await expect(page.locator("[data-admin-notes-content]")).toContainText("Admin Notes Ownership");
++    await expect(page.locator("[data-admin-notes-folder-links] [data-admin-notes-directory-link='folder']")).toContainText([
++      "notes/",
++      "other/",
++    ]);
+ 
++    await page.getByRole("link", { name: "sample.txt" }).click();
++    await expect(page).toHaveURL(/\/owner\/notes\.html\?file=docs_build%2Fdev%2Fadmin-notes%2Fsample\.txt$/);
++    await expect(page.locator("[data-admin-notes-title]")).toHaveText("sample.txt");
++    await expect(page.locator("[data-admin-notes-content]")).toContainText("Capture admin-only project ideas here.");
++    await expect(page.locator("nav[aria-label='Admin tool pages'] a", { hasText: "Notes" })).toHaveCount(0);
++    await expectNoPageFailures(failures);
++  } finally {
++    await closeWithCoverage(page, failures);
++  }
++});
++
++test("Admin Notes viewer shows a visible missing-directory diagnostic", async ({ page }) => {
++  const failures = await openLocalViewer(page, "/owner/notes.html", {
++    beforeGoto: async ({ page: routedPage }) => {
++      await routedPage.route("**/api/dev/admin-notes/directory?*", async (route) => {
++        await route.fulfill({
++          body: JSON.stringify({
++            entries: [],
++            error: "Admin Notes folder not found: docs_build/dev/admin-notes.",
++            ok: false,
++          }),
++          contentType: "application/json; charset=utf-8",
++          status: 404,
++        });
++      });
++    },
++  });
++
++  try {
++    await expect(page.locator("[data-admin-notes-folder-diagnostic]")).toContainText("Admin Notes folder not found");
++    await expect(page.locator("[data-admin-notes-folder-links] [data-admin-notes-directory-link]")).toHaveCount(0);
++    await expect(page.locator("[data-admin-notes-file-links] [data-admin-notes-directory-link]")).toHaveCount(0);
++    expect(failures.pageErrors).toEqual([]);
++    expect(failures.consoleErrors).toHaveLength(1);
++    expect(failures.consoleErrors[0]).toContain("404");
++    expect(failures.failedRequests).toEqual([
++      `404 ${failures.server.baseUrl}/api/dev/admin-notes/directory?folder=docs_build%2Fdev%2Fadmin-notes`,
++    ]);
++  } finally {
++    await closeWithCoverage(page, failures);
++  }
++});
++
++test("Admin Notes viewer shows an empty state for an empty source folder", async ({ page }) => {
++  const failures = await openLocalViewer(page, "/owner/notes.html", {
++    beforeGoto: async ({ page: routedPage }) => {
++      await routedPage.route("**/api/dev/admin-notes/directory?*", async (route) => {
++        await route.fulfill({
++          body: JSON.stringify({
++            entries: [],
++            folderPath: "docs_build/dev/admin-notes",
++            ok: true,
++          }),
++          contentType: "application/json; charset=utf-8",
++          status: 200,
++        });
++      });
++    },
++  });
++
++  try {
++    await expect(page.locator("[data-admin-notes-folder-diagnostic]")).toContainText("No Admin Notes files found");
++    await expect(page.locator("[data-admin-notes-folder-links] [data-admin-notes-directory-link]")).toHaveCount(0);
++    await expect(page.locator("[data-admin-notes-file-links] [data-admin-notes-directory-link]")).toHaveCount(0);
+     await expectNoPageFailures(failures);
+   } finally {
+     await closeWithCoverage(page, failures);
+diff --git a/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs b/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
+index 0adf9a52c..d7fc26446 100644
+--- a/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
++++ b/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
+@@ -217,7 +217,9 @@ test("Owner Notes resolves under owner path and is owner-only", async ({ page })
+   const context = await openPage(page, "/owner/notes.html");
+   try {
+     await expect(page).toHaveTitle(/Notes - Game Foundry Studio/);
+-    await expect(page.locator("main[data-owner-notes]")).toBeVisible();
++    await expect(page.locator("main[data-owner-notes][data-admin-notes-viewer]")).toBeVisible();
++    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded docs_build/dev/admin-notes/index.txt.");
++    await expect(page.locator("[data-admin-notes-content]")).toContainText("Admin Notes Ownership");
+     await expect(page.locator("[aria-label='Owner business pages'] a[aria-current='page']")).toHaveText("Notes");
+     await expect(page.locator("[aria-label='Owner business pages'] a[href='/admin/notes.html']")).toHaveCount(0);
+     await expect(page.locator("nav[aria-label='Admin tool pages'] a", { hasText: "Notes" })).toHaveCount(0);

@@ -1,13 +1,15 @@
-# git status --short
-M docs_build/dev/reports/PR_26169_027-owner-notes-restoration.md
- M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
-
-# git ls-files --others --exclude-standard
-(no output)
-
-# git diff --stat
-.../PR_26169_027-owner-notes-restoration.md        |  1 +
- .../dev/reports/playwright_v8_coverage_report.txt  |  6 +--
- .../tools/AdminOwnerNavigationBoundary.spec.mjs    | 50 ++++++++++++++++++++++
- 3 files changed, 53 insertions(+), 4 deletions(-)
+﻿docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/codex_review.diff
+docs_build/dev/reports/coverage_changed_js_guardrail.txt
+docs_build/dev/reports/playwright_v8_coverage_report.txt
+docs_build/dev/reports/PR_26169_028-admin-owner-notes-source.md
+docs_build/pr/BUILD_PR_26169_028-admin-owner-notes-source.md
+owner/notes.html
+src/dev-runtime/admin/admin-notes-directory.mjs
+src/dev-runtime/admin/admin-notes-viewer.js
+src/dev-runtime/server/local-api-router.mjs
+src/dev-runtime/server/local-api-server.mjs
+tests/dev-runtime/AdminNotesBoundary.test.mjs
+tests/helpers/playwrightRepoServer.mjs
+tests/playwright/tools/AdminNotesLocalViewer.spec.mjs
+tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs

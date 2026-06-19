@@ -17,8 +17,10 @@ Exercised tool entry points detected:
 (70%) Theme V2 Shared JS - exercised 5 runtime JS files
 
 Changed runtime JS files covered:
-(74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 67/90
-(100%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 5/5
+(0%) src/dev-runtime/admin/admin-notes-directory.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(96%) src/dev-runtime/admin/admin-notes-viewer.js - executed lines 533/533; executed functions 53/55
 
 Files with executed line/function counts where available:
 (35%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 9/26
@@ -27,17 +29,24 @@ Files with executed line/function counts where available:
 (53%) assets/theme-v2/js/admin-invitations.js - executed lines 155/155; executed functions 9/17
 (59%) assets/theme-v2/js/owner-memberships.js - executed lines 248/248; executed functions 16/27
 (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
-(65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
 (67%) src/api/owner-memberships-api-client.js - executed lines 19/19; executed functions 2/3
+(71%) src/api/public-config-client.js - executed lines 209/209; executed functions 20/28
 (74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 67/90
+(96%) src/dev-runtime/admin/admin-notes-viewer.js - executed lines 533/533; executed functions 53/55
 (100%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 11/11
 (100%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 5/5
 
 Uncovered or low-coverage changed JS files:
-(100%) none - no low-coverage changed runtime JS files
+(0%) src/dev-runtime/admin/admin-notes-directory.mjs - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
-(0%) tests/dev-runtime/ApiMenuPathCleanup.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/admin/admin-notes-directory.mjs - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/server/local-api-server.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/dev-runtime/AdminNotesBoundary.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/helpers/playwrightRepoServer.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/AdminNotesLocalViewer.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs - changed JS file not collected as browser runtime coverage
-(74%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
-(100%) src/api/admin-owner-navigation.js - changed JS file with browser V8 coverage
+(96%) src/dev-runtime/admin/admin-notes-viewer.js - changed JS file with browser V8 coverage

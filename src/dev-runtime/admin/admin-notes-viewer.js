@@ -1,4 +1,6 @@
-// Dev-runtime only: do not import this viewer from production-facing pages or bundles.
+import { resolveServerApiFetchUrl } from "../../api/public-config-client.js";
+
+// Dev-runtime only: do not import this viewer from production bundles.
 const NOTES_DIRECTORY = "docs_build/dev/admin-notes";
 const DEFAULT_NOTE = "index";
 const VIEWER_PATH = "/admin/admin-notes.html";
@@ -6,7 +8,6 @@ const LINK_CLASS = "btn btn--compact primary";
 const NOTE_NAME_PATTERN = /^[A-Za-z0-9_-]+$/;
 const STATUS_ICON_PATTERN = /^\[([ xX.!?-])\]\s*(.*)$/;
 const NOTE_INDEX_FILE = "index.txt";
-const DIRECTORY_LIST_QUERY = "adminNotesDirectory";
 const STATUS_MARKERS = {
   " ": {
     marker: "[ ]",
@@ -68,6 +69,7 @@ class AdminNotesViewer {
     this.folderDiagnostic = documentRef.querySelector("[data-admin-notes-folder-diagnostic]");
     this.legendList = documentRef.querySelector("[data-admin-notes-legend-list]");
     this.currentFolderPath = NOTES_DIRECTORY;
+    this.viewerPath = this.viewerPathFromLocation(window.location);
     this.bindEvents();
   }
 
@@ -206,11 +208,22 @@ class AdminNotesViewer {
   }
 
   hrefForNote(noteName) {
-    return noteName === DEFAULT_NOTE ? VIEWER_PATH : `${VIEWER_PATH}?note=${encodeURIComponent(noteName)}`;
+    return noteName === DEFAULT_NOTE ? this.viewerPath : `${this.viewerPath}?note=${encodeURIComponent(noteName)}`;
   }
 
   hrefForFile(filePath) {
-    return `${VIEWER_PATH}?file=${encodeURIComponent(filePath)}`;
+    return `${this.viewerPath}?file=${encodeURIComponent(filePath)}`;
+  }
+
+  viewerPathFromLocation(locationRef) {
+    const pathname = String(locationRef?.pathname || "").replace(/\/+/g, "/");
+    if (pathname.endsWith("/owner/notes.html")) {
+      return "/owner/notes.html";
+    }
+    if (pathname.endsWith("/src/dev-runtime/admin/notes.html")) {
+      return "/src/dev-runtime/admin/notes.html";
+    }
+    return VIEWER_PATH;
   }
 
   repoFileUrl(filePath) {
@@ -297,7 +310,6 @@ class AdminNotesViewer {
     const listing = await this.directoryListingForFolder(folderPath);
     const currentFolderPath = listing.folderPath || this.adminNotesFolderPathFromValue(folderPath) || NOTES_DIRECTORY;
     this.updateCurrentFolder(currentFolderPath);
-    this.setFolderDiagnostic(listing.error || "");
     const entries = listing.entries;
     const safeEntries = entries
       .map((entry) => this.safeDirectoryEntry(entry))
@@ -309,6 +321,7 @@ class AdminNotesViewer {
 
     this.folderLinks?.replaceChildren();
     this.fileLinks?.replaceChildren();
+    this.setFolderDiagnostic(listing.error || (safeEntries.length ? "" : "No Admin Notes files found in this folder."));
     folderEntries.forEach((entry) => {
       this.folderLinks?.append(this.directoryLink(entry));
     });
@@ -326,18 +339,20 @@ class AdminNotesViewer {
       };
     }
     try {
-      const response = await fetch(this.directoryListingUrl(safeFolderPath), { cache: "no-store" });
+      const response = await fetch(await this.directoryListingUrl(safeFolderPath), { cache: "no-store" });
+      const listing = await response.json().catch(() => null);
       if (!response.ok) {
         return {
           entries: [],
-          error: "Current Folder listing is unavailable. Start the local/dev server to read Admin Notes folders from the filesystem."
+          error: listing?.error || "Current Folder listing is unavailable. Start the local/dev server to read Admin Notes folders from the filesystem."
         };
       }
-      const listing = await response.json();
       return {
         entries: Array.isArray(listing.entries) ? listing.entries : [],
         folderPath: this.adminNotesFolderPathFromValue(listing.folderPath),
-        error: ""
+        error: listing?.ok === false
+          ? listing.error || "Current Folder listing is unavailable. Start the local/dev server to read Admin Notes folders from the filesystem."
+          : ""
       };
     } catch {
       return {
@@ -348,8 +363,8 @@ class AdminNotesViewer {
   }
 
   directoryListingUrl(folderPath) {
-    const folderUrl = folderPath.endsWith("/") ? folderPath : `${folderPath}/`;
-    return `${this.repoFileUrl(folderUrl)}?${DIRECTORY_LIST_QUERY}=1`;
+    const folder = folderPath.endsWith("/") ? folderPath.slice(0, -1) : folderPath;
+    return resolveServerApiFetchUrl(`/dev/admin-notes/directory?folder=${encodeURIComponent(folder)}`);
   }
 
   setFolderDiagnostic(message) {

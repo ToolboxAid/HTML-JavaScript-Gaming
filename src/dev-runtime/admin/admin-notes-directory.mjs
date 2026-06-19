@@ -4,10 +4,13 @@ import { pathToFileURL } from "node:url";
 
 const ADMIN_NOTES_DIRECTORY = "docs_build/dev/admin-notes";
 const DIRECTORY_LIST_QUERY = "adminNotesDirectory";
+const DIRECTORY_API_PATH = "/api/dev/admin-notes/directory";
 const NOTE_INDEX_FILE = "index.txt";
 
 function sendJson(response, statusCode, payload) {
   response.statusCode = statusCode;
+  response.setHeader("Access-Control-Allow-Origin", "*");
+  response.setHeader("Access-Control-Allow-Headers", "accept, content-type");
   response.setHeader("Content-Type", "application/json; charset=utf-8");
   response.end(JSON.stringify(payload));
 }
@@ -25,6 +28,12 @@ function isInside(parentPath, childPath) {
 
 function safeAdminNotesFolder(repoRoot, requestPath) {
   const relativeFolderPath = repoRelativePath(decodeURIComponent(requestPath || ""));
+  const hasTraversalSegment = relativeFolderPath
+    .split("/")
+    .some((segment) => segment === "." || segment === "..");
+  if (hasTraversalSegment) {
+    return null;
+  }
   if (relativeFolderPath !== ADMIN_NOTES_DIRECTORY && !relativeFolderPath.startsWith(`${ADMIN_NOTES_DIRECTORY}/`)) {
     return null;
   }
@@ -36,6 +45,50 @@ function safeAdminNotesFolder(repoRoot, requestPath) {
   return {
     absolutePath: folderPath,
     relativePath: relativeFolderPath,
+  };
+}
+
+async function adminNotesDirectoryResult(repoRoot, folderPath) {
+  const safeFolder = safeAdminNotesFolder(repoRoot, folderPath);
+  if (!safeFolder) {
+    return {
+      payload: {
+        entries: [],
+        error: "Admin Notes directory listing is restricted to docs_build/dev/admin-notes/.",
+        ok: false,
+      },
+      statusCode: 403,
+    };
+  }
+
+  const stat = await fs.stat(safeFolder.absolutePath).catch(() => null);
+  if (!stat?.isDirectory()) {
+    return {
+      payload: {
+        entries: [],
+        error: `Admin Notes folder not found: ${safeFolder.relativePath}.`,
+        ok: false,
+      },
+      statusCode: 404,
+    };
+  }
+
+  const dirents = await fs.readdir(safeFolder.absolutePath, { withFileTypes: true });
+  const entries = (await Promise.all(dirents.map(async (dirent) => {
+    return fileEntry(safeFolder.relativePath, dirent) ||
+      await folderEntry(safeFolder.relativePath, safeFolder.absolutePath, dirent);
+  })))
+    .filter(Boolean)
+    .sort((left, right) => left.label.localeCompare(right.label));
+
+  return {
+    payload: {
+      entries,
+      folderFileUrl: pathToFileURL(safeFolder.absolutePath).href,
+      folderPath: safeFolder.relativePath,
+      ok: true,
+    },
+    statusCode: 200,
   };
 }
 
@@ -66,44 +119,23 @@ async function folderEntry(folderPath, absoluteFolderPath, dirent) {
   };
 }
 
+export async function handleAdminNotesDirectoryApiRequest(requestUrl, response, { repoRoot }) {
+  if (requestUrl.pathname !== DIRECTORY_API_PATH) {
+    return false;
+  }
+
+  const folderPath = requestUrl.searchParams.get("folder") || ADMIN_NOTES_DIRECTORY;
+  const result = await adminNotesDirectoryResult(repoRoot, folderPath);
+  sendJson(response, result.statusCode, result.payload);
+  return true;
+}
+
 export async function handleAdminNotesDirectoryRequest(requestUrl, response, { repoRoot }) {
   if (!requestUrl.searchParams.has(DIRECTORY_LIST_QUERY)) {
     return false;
   }
 
-  const safeFolder = safeAdminNotesFolder(repoRoot, requestUrl.pathname);
-  if (!safeFolder) {
-    sendJson(response, 403, {
-      entries: [],
-      error: "Admin Notes directory listing is restricted to docs_build/dev/admin-notes/.",
-      ok: false,
-    });
-    return true;
-  }
-
-  const stat = await fs.stat(safeFolder.absolutePath).catch(() => null);
-  if (!stat?.isDirectory()) {
-    sendJson(response, 404, {
-      entries: [],
-      error: `Admin Notes folder not found: ${safeFolder.relativePath}.`,
-      ok: false,
-    });
-    return true;
-  }
-
-  const dirents = await fs.readdir(safeFolder.absolutePath, { withFileTypes: true });
-  const entries = (await Promise.all(dirents.map(async (dirent) => {
-    return fileEntry(safeFolder.relativePath, dirent) ||
-      await folderEntry(safeFolder.relativePath, safeFolder.absolutePath, dirent);
-  })))
-    .filter(Boolean)
-    .sort((left, right) => left.label.localeCompare(right.label));
-
-  sendJson(response, 200, {
-    entries,
-    folderFileUrl: pathToFileURL(safeFolder.absolutePath).href,
-    folderPath: safeFolder.relativePath,
-    ok: true,
-  });
+  const result = await adminNotesDirectoryResult(repoRoot, requestUrl.pathname);
+  sendJson(response, result.statusCode, result.payload);
   return true;
 }

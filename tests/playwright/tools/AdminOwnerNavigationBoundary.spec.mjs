@@ -217,7 +217,9 @@ test("Owner Notes resolves under owner path and is owner-only", async ({ page })
   const context = await openPage(page, "/owner/notes.html");
   try {
     await expect(page).toHaveTitle(/Notes - Game Foundry Studio/);
-    await expect(page.locator("main[data-owner-notes]")).toBeVisible();
+    await expect(page.locator("main[data-owner-notes][data-admin-notes-viewer]")).toBeVisible();
+    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded docs_build/dev/admin-notes/index.txt.");
+    await expect(page.locator("[data-admin-notes-content]")).toContainText("Admin Notes Ownership");
     await expect(page.locator("[aria-label='Owner business pages'] a[aria-current='page']")).toHaveText("Notes");
     await expect(page.locator("[aria-label='Owner business pages'] a[href='/admin/notes.html']")).toHaveCount(0);
     await expect(page.locator("nav[aria-label='Admin tool pages'] a", { hasText: "Notes" })).toHaveCount(0);

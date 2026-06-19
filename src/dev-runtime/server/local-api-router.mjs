@@ -117,6 +117,7 @@ import {
   MarketplaceRevenueError,
   readMarketplaceSellerRevenueModel,
 } from "../marketplace/marketplace-revenue-service.mjs";
+import { handleAdminNotesDirectoryApiRequest } from "../admin/admin-notes-directory.mjs";
 import {
   LegalDocumentError,
   readPublishedLegalDocument,
@@ -5234,7 +5235,9 @@ LIMIT 1;
  * Legacy export name retained for the existing dev:local-api command surface.
  * The router itself serves the configured server API contract.
  */
-export function createLocalApiRouter() {
+export function createLocalApiRouter({
+  repoRoot = process.cwd(),
+} = {}) {
   const dataSource = new ApiRuntimeDataSource();
 
   return async function handleApiRuntimeRequest(request, response, requestUrl) {
@@ -5247,6 +5250,9 @@ export function createLocalApiRouter() {
       const parts = requestUrl.pathname.split("/").filter(Boolean);
       if (request.method === "OPTIONS") {
         sendNoContent(response);
+        return true;
+      }
+      if (request.method === "GET" && await handleAdminNotesDirectoryApiRequest(requestUrl, response, { repoRoot })) {
         return true;
       }
       if (parts[1] === "session") {
