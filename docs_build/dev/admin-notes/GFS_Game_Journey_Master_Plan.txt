@@ -1,0 +1,538 @@
+# Game Journey Master Plan
+
+Authoritative status: This document is the current planning source of truth for Game Journey buckets and their intended creator workflow.
+
+Current completion placeholder: xxx%
+
+Implementation boundary:
+- Do not calculate completion yet.
+- Do not implement runtime behavior yet.
+- Do not implement database changes yet.
+- Do not use this document as a live runtime contract until a later PR explicitly promotes it into a declared registry or data source.
+
+Product frame:
+- Game Foundry Studio creator loop: Build · Play · Share.
+- Game Hub owns game identity, game status, Game Progress, and Launch Progress.
+- Game Crew is game-level assignment.
+- Studio Team is account-level roster.
+- Vector Art is the MVP graphics path.
+- Events are the Rules implementation path.
+- DEV, IST, UAT, and PROD are deployment targets for release validation, not gameplay behavior switches.
+
+Completion placeholder rule:
+- Every bucket displays `xxx%` until a later implementation PR introduces Planned Count, Completed Count, and Auto-calculated %.
+- `xxx%` is display-only planning text.
+
+Bucket order:
+001 Idea
+002 Create
+003 Design
+004 Graphics
+005 Audio
+006 Objects
+007 Worlds
+008 Interface
+009 Controls
+010 Rules
+011 Progression
+012 Play Test
+013 Publish
+014 Share
+
+## 001 Idea
+
+Friendly Description: Dream, brainstorm, and explore
+Completion Placeholder: xxx%
+Required For MVP: N
+Can Skip: Y
+Purpose: Capture early concepts, audience ideas, themes, rough mechanics, references, and open questions before a game record must exist.
+Accepted Tools:
+- Idea Board
+- Creator Learning
+- Notes
+- Game Journey
+Deliverables:
+- One clear game concept or problem statement.
+- Target player notes.
+- Inspiration/reference notes.
+- Early risks, undecided questions, and ideas to revisit.
+Completion Rules:
+- Mark complete manually when a creator has enough idea clarity to create or select a game in Game Hub.
+- Do not require every idea card to be resolved.
+- Do not calculate completion from card count yet.
+Dependencies:
+- None.
+- May feed Create when the creator is ready to start a game.
+L/C/R Layout Model:
+- Left: idea prompts, tags, filters, and capture controls.
+- Center: board/list of ideas and selected concept notes.
+- Right: decision notes, risks, next action, and diagnostics.
+
+## 002 Create
+
+Friendly Description: Set up your game and crew
+Completion Placeholder: xxx%
+Required For MVP: Y
+Can Skip: N
+Purpose: Establish the game container, identity, ownership, Game Crew, and basic setup needed before other buckets can produce game-scoped work.
+Accepted Tools:
+- Game Hub
+- Game Crew
+- Game Configuration
+- Tags
+Deliverables:
+- Game Hub record with working title, purpose, status, and active game selection.
+- Game Crew assignment plan for game-level work.
+- Studio Team distinction documented as account-level roster, not the project assignment surface.
+- Core game configuration choices.
+- Baseline tags for organizing work.
+Completion Rules:
+- Mark complete manually when the active game exists, has a known owner/creator, and has enough setup to accept design and asset work.
+- Do not create project records from Idea Board.
+- Do not calculate completion from records yet.
+Dependencies:
+- Idea can provide concept notes, but Create can start without completed Idea.
+L/C/R Layout Model:
+- Left: game identity, crew setup, configuration inputs, and tag setup.
+- Center: active game summary and setup checklist.
+- Right: setup diagnostics, missing requirements, Game Progress, and next action.
+
+## 003 Design
+
+Friendly Description: Shape the player experience
+Completion Placeholder: xxx%
+Required For MVP: Y
+Can Skip: N
+Purpose: Define the player-facing experience, core loop, screens, message flow, and design decisions that guide implementation.
+Accepted Tools:
+- Game Design
+- Messages
+- Game Journey
+- Creator Learning
+Deliverables:
+- Core loop description.
+- Player goal and fail-state notes.
+- Screen/flow outline.
+- Message/text plan where applicable.
+- Design assumptions and open questions.
+Completion Rules:
+- Mark complete manually when the MVP has enough design clarity for graphics, objects, worlds, controls, and rules work.
+- Messages may remain planned unless the MVP depends on authored text.
+- Do not calculate completion from document count yet.
+Dependencies:
+- Create should identify the active game.
+- Idea may feed design notes.
+L/C/R Layout Model:
+- Left: design prompts, mode filters, and decision categories.
+- Center: player journey, screen flow, and design board.
+- Right: unresolved decisions, risk notes, suggested next tools, and diagnostics.
+
+## 004 Graphics
+
+Friendly Description: Create the look of your game
+Completion Placeholder: xxx%
+Required For MVP: Y
+Can Skip: N
+Purpose: Define and create the visual style, color language, sprites, UI images, badges, and visual assets required for a playable MVP.
+Accepted Tools:
+- Colors
+- Sprites
+- Characters
+- Animations
+- Particles
+- Vector Art
+- Assets
+Deliverables:
+- MVP visual style direction.
+- Vector Art baseline for MVP graphics path.
+- Palette/color choices.
+- Required sprite/vector assets.
+- Placeholder or final images for key player-facing objects and UI.
+Completion Rules:
+- Mark complete manually when all required MVP visual placeholders or Vector Art assets exist and are acceptable for Play Test.
+- Full polish is not required for MVP.
+- Do not calculate completion from asset count yet.
+Dependencies:
+- Create identifies the active game.
+- Design provides visual intent.
+- Objects, Worlds, and Interface consume graphics outputs.
+L/C/R Layout Model:
+- Left: visual style controls, palette, asset type filters, and import/create actions.
+- Center: visual asset board, preview canvas, and style samples.
+- Right: asset readiness, missing visual assets, replacement notes, and diagnostics.
+
+## 005 Audio
+
+Friendly Description: Bring your world to life with sound
+Completion Placeholder: xxx%
+Required For MVP: N
+Can Skip: Y
+Purpose: Plan and create music, sound effects, voices, speech, and audio treatment for player feedback and atmosphere.
+Accepted Tools:
+- Audio
+- Music
+- Voices
+- Audio Effects
+- Text To Speech
+- Speech To Text
+- Assets
+Deliverables:
+- Sound and music plan.
+- Required MVP sound placeholders if audio is needed.
+- Voice/emotion direction where messages use speech.
+- Audio asset references.
+Completion Rules:
+- Mark complete manually when required MVP audio placeholders or final assets are present.
+- If the MVP is playable without audio, this bucket can be skipped.
+- Do not calculate completion from asset count yet.
+Dependencies:
+- Design defines audio intent.
+- Rules and Events can trigger audio.
+- Messages and Emotions may feed Text To Speech.
+L/C/R Layout Model:
+- Left: audio type filters, import/create controls, and voice/emotion settings.
+- Center: audio asset list, timeline/preview, and playback controls.
+- Right: usage references, missing audio diagnostics, replacement notes, and readiness.
+
+## 006 Objects
+
+Friendly Description: Build things players can interact with
+Completion Placeholder: xxx%
+Required For MVP: Y
+Can Skip: N
+Purpose: Define interactive things in the game: player, obstacles, collectibles, goals, hazards, NPCs, props, and object state.
+Accepted Tools:
+- Objects
+- Characters
+- Sprites
+- Tags
+- Assets
+- Game Configuration
+Deliverables:
+- MVP object list.
+- Object roles and interaction intent.
+- Object visual references.
+- Object state notes.
+- Required object tags.
+Completion Rules:
+- Mark complete manually when MVP objects have defined names, roles, visuals/placeholders, and interaction intent.
+- Do not require final balancing or polish.
+- Do not calculate completion from object count yet.
+Dependencies:
+- Create identifies the active game.
+- Design defines player experience.
+- Graphics supplies visual placeholders or Vector Art.
+- Rules defines behavior through Events.
+L/C/R Layout Model:
+- Left: object type filters, role selectors, and create/edit controls.
+- Center: object board, object details, and relationship view.
+- Right: missing fields, asset references, usage count, and diagnostics.
+
+## 007 Worlds
+
+Friendly Description: Design places to explore
+Completion Placeholder: xxx%
+Required For MVP: Y
+Can Skip: N
+Purpose: Define spaces, scenes, levels, maps, spawn points, boundaries, and world structure for gameplay.
+Accepted Tools:
+- Worlds
+- Tile Map
+- Parallax Scene
+- Objects
+- Assets
+- Game Configuration
+Deliverables:
+- MVP world/level list.
+- Starting scene or map.
+- Object placement plan.
+- Boundaries and navigation notes.
+- Background/visual references.
+Completion Rules:
+- Mark complete manually when the MVP has at least one playable world/scene with enough structure for Play Test.
+- Do not require full level set completion.
+- Do not calculate completion from map count yet.
+Dependencies:
+- Create identifies the active game.
+- Design defines player path.
+- Graphics supplies world visuals/placeholders.
+- Objects supplies interactable entities.
+L/C/R Layout Model:
+- Left: world/scene list, map tools, placement filters, and setup controls.
+- Center: map/world canvas or scene board.
+- Right: object references, missing setup, bounds diagnostics, and next action.
+
+## 008 Interface
+
+Friendly Description: Create what players see and use
+Completion Placeholder: xxx%
+Required For MVP: Y
+Can Skip: N
+Purpose: Define menus, HUD, messages, buttons, instructions, overlays, and player-facing UI needed to understand and play the game.
+Accepted Tools:
+- Interface
+- Fonts
+- Languages
+- Messages
+- Colors
+- Assets
+Deliverables:
+- MVP screen/UI list.
+- HUD or player feedback elements.
+- Fonts and readable text treatment.
+- Message/instruction placeholders.
+- Accessibility/readability notes.
+Completion Rules:
+- Mark complete manually when the MVP has enough interface to start, understand, play, and finish/fail the game.
+- Localization can remain planned unless MVP requires multiple languages.
+- Do not calculate completion from screen count yet.
+Dependencies:
+- Design defines the player-facing flow.
+- Graphics supplies UI visual style.
+- Rules defines feedback states.
+L/C/R Layout Model:
+- Left: screen filters, UI controls, text/message inputs, and font settings.
+- Center: screen preview, HUD mockup, or interface board.
+- Right: readability checks, missing UI states, text diagnostics, and next action.
+
+## 009 Controls
+
+Friendly Description: Define how players play
+Completion Placeholder: xxx%
+Required For MVP: Y
+Can Skip: N
+Purpose: Define input mapping, player actions, control help, and device expectations.
+Accepted Tools:
+- Controls
+- Input Mapping V2
+- Hitboxes
+- Game Configuration
+Deliverables:
+- MVP input map.
+- Player action list.
+- Control help/instruction notes.
+- Hitbox and interaction boundaries where needed.
+Completion Rules:
+- Mark complete manually when each MVP player action has an assigned input and can be explained to a player.
+- Do not require all device profiles for MVP.
+- Do not calculate completion from action count yet.
+Dependencies:
+- Design defines actions.
+- Objects and Worlds define what controls affect.
+- Interface exposes control help.
+L/C/R Layout Model:
+- Left: action list, device/profile selectors, and binding controls.
+- Center: input mapping table, preview, or interaction test surface.
+- Right: missing bindings, conflict diagnostics, accessibility notes, and next action.
+
+## 010 Rules
+
+Friendly Description: Make your game come alive
+Completion Placeholder: xxx%
+Required For MVP: Y
+Can Skip: N
+Purpose: Define gameplay behavior, events, triggers, scoring, win/fail conditions, object interactions, and game responses.
+Accepted Tools:
+- Events
+- Rules
+- Code
+- Objects
+- Worlds
+- Controls
+Deliverables:
+- MVP Events list.
+- Trigger/action behavior plan.
+- Win/fail condition definitions.
+- Score/state rules where needed.
+- Object/world interaction rules.
+Completion Rules:
+- Mark complete manually when MVP Events cover the core loop and required win/fail/gameplay behavior.
+- Events are the Rules implementation path.
+- Do not calculate completion from event count yet.
+Dependencies:
+- Design defines the intended experience.
+- Objects, Worlds, Interface, and Controls provide the things rules connect.
+L/C/R Layout Model:
+- Left: event categories, trigger/action selectors, and rule inputs.
+- Center: event graph, rules table, or behavior board.
+- Right: validation diagnostics, missing triggers/actions, dependency warnings, and next action.
+
+## 011 Progression
+
+Friendly Description: Reward players and keep them engaged
+Completion Placeholder: xxx%
+Required For MVP: N
+Can Skip: Y
+Purpose: Define achievements, saved data, unlocks, pacing, player rewards, and progression loops beyond the core MVP.
+Accepted Tools:
+- Achievements
+- Saved Data
+- Game Journey
+- Tags
+- Ratings
+Deliverables:
+- Reward/progression plan.
+- Save-state needs.
+- Achievement or milestone placeholders if required.
+- Player engagement notes.
+Completion Rules:
+- Mark complete manually when the MVP either has a defined progression path or explicitly chooses to skip progression.
+- Saves are required only when the MVP depends on persistence.
+- Do not calculate completion from achievement or save-slot count yet.
+Dependencies:
+- Rules defines reward triggers.
+- Play Test may reveal pacing gaps.
+- Publish may require save/reward decisions.
+L/C/R Layout Model:
+- Left: reward types, save/progress settings, and milestone filters.
+- Center: progression map, achievement list, or save-state board.
+- Right: missing trigger references, persistence diagnostics, pacing notes, and next action.
+
+## 012 Play Test
+
+Friendly Description: See how your game feels
+Completion Placeholder: xxx%
+Required For MVP: Y
+Can Skip: N
+Purpose: Validate whether the game can be played, understood, completed, and improved before release preparation.
+Accepted Tools:
+- Game Testing
+- Debug
+- Performance
+- Game Hub
+- Game Journey
+Deliverables:
+- MVP play-test checklist.
+- Known issues and fixes.
+- Debug/performance notes.
+- Player feedback notes.
+- Go/no-go decision for Publish.
+Completion Rules:
+- Mark complete manually when the MVP has been tested through the core loop and blockers are either fixed or accepted.
+- Debug-only settings must be visible and must not silently carry into public release.
+- Do not calculate completion from test count yet.
+Dependencies:
+- Create, Design, Graphics, Objects, Worlds, Interface, Controls, and Rules should be ready enough for testing.
+L/C/R Layout Model:
+- Left: test scenario list, device/profile filters, and debug toggles.
+- Center: play-test checklist, results board, and current test run.
+- Right: issues, performance diagnostics, blockers, and next action.
+
+## 013 Publish
+
+Friendly Description: Prepare your game for launch
+Completion Placeholder: xxx%
+Required For MVP: Y
+Can Skip: N
+Purpose: Prepare the game for DEV, IST, UAT, and PROD promotion with release readiness, metadata, packaging, and launch checks.
+Accepted Tools:
+- Publish
+- Build Game
+- Environments
+- Game Migration
+- Platform Settings
+- Game Hub
+Deliverables:
+- Launch Progress readiness notes.
+- Release metadata.
+- DEV/IST/UAT/PROD promotion checklist.
+- Debug/public-release gating notes.
+- Package/export plan.
+Completion Rules:
+- Mark complete manually when release readiness is reviewed and blockers are resolved or explicitly deferred.
+- DEV, IST, UAT, and PROD are deployment targets, not behavior switches.
+- Public/playable promotion must reject enabled debug-only settings when release gating is implemented.
+- Do not calculate completion from checklist count yet.
+Dependencies:
+- Play Test provides go/no-go readiness.
+- Interface, Rules, Controls, and required MVP assets should be acceptable.
+- Game Hub tracks Launch Progress.
+L/C/R Layout Model:
+- Left: release target, metadata inputs, environment checklist, and package actions.
+- Center: launch checklist, release candidate summary, and promotion path.
+- Right: blockers, environment diagnostics, debug-gating status, and next action.
+
+## 014 Share
+
+Friendly Description: Grow your community
+Completion Placeholder: xxx%
+Required For MVP: N
+Can Skip: Y
+Purpose: Plan discovery, marketplace/community presence, public profile, ratings, social links, and post-launch sharing.
+Accepted Tools:
+- Marketplace
+- Community
+- Cloud
+- Ratings
+- Learn
+- Public game page
+Deliverables:
+- Share/public page plan.
+- Marketplace/community readiness notes.
+- Ratings/feedback plan.
+- Creator profile or community copy.
+- Post-launch growth ideas.
+Completion Rules:
+- Mark complete manually when the creator has selected the first sharing path or explicitly chooses to defer sharing.
+- MVP can ship internally without Share if Publish target is not public.
+- Do not calculate completion from public links or listing count yet.
+Dependencies:
+- Publish determines whether the game is ready for public sharing.
+- Build · Play · Share framing informs public copy.
+L/C/R Layout Model:
+- Left: audience, channel, listing, and community settings.
+- Center: public/share preview, marketplace card, or community plan.
+- Right: share readiness, missing public metadata, feedback diagnostics, and next action.
+
+# Future Roadmap: Auto Progress
+
+Status: Planned documentation only.
+
+Future fields:
+- Planned Count: number of checklist items, deliverables, or accepted tool outputs expected for a bucket.
+- Completed Count: number of planned items that pass bucket completion rules.
+- Auto-calculated %: Completed Count divided by Planned Count, rendered as a percentage.
+
+Rules for future implementation:
+- Keep `xxx%` until a later PR declares the source of truth for planned and completed counts.
+- Do not infer completion from route availability, tool status, or file presence alone.
+- Do not calculate bucket completion in page-local JavaScript.
+- Do not store completion state outside the declared Game Journey data source.
+- Completion diagnostics must explain missing prerequisites and blocked dependencies.
+
+Future display model:
+- `xxx% - Bucket: Friendly Description` remains the placeholder pattern until counts exist.
+- Later display may become `<auto-calculated %> - Bucket: Friendly Description`.
+- Bucket ordering remains 001 through 014.
+
+# MVP Summary
+
+Required for MVP:
+- 002 Create
+- 003 Design
+- 004 Graphics
+- 006 Objects
+- 007 Worlds
+- 008 Interface
+- 009 Controls
+- 010 Rules
+- 012 Play Test
+- 013 Publish
+
+Can skip for MVP:
+- 001 Idea
+- 005 Audio
+- 011 Progression
+- 014 Share
+
+MVP path:
+1. Create the game in Game Hub.
+2. Assign Game Crew while keeping Studio Team as the account-level roster concept.
+3. Shape the player experience.
+4. Use Vector Art as the MVP graphics path.
+5. Build objects and worlds.
+6. Create interface and controls.
+7. Use Events for Rules.
+8. Play test the core loop.
+9. Prepare DEV, IST, UAT, and PROD release readiness.
+10. Share when the launch target requires it.

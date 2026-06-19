@@ -1,26 +1,12 @@
 # git status --short
-M docs_build/dev/reports/codex_changed_files.txt
- M docs_build/dev/reports/codex_review.diff
- M docs_build/dev/reports/coverage_changed_js_guardrail.txt
- M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M tests/playwright/tools/ToolboxRoutePages.spec.mjs
- M toolbox/tools-page-accordions.js
-?? docs_build/dev/admin-notes/GFS_Create_Bucket_Workbook.pdf
-?? docs_build/dev/admin-notes/GFS_Idea_Bucket_Workbook.pdf
-?? docs_build/dev/reports/PR_26170_013-game-journey-friendly-descriptions.md
-?? docs_build/pr/BUILD_PR_26170_013-game-journey-friendly-descriptions.md
+?? docs_build/dev/admin-notes/GFS_Game_Journey_Master_Plan.txt
+?? docs_build/dev/reports/PR_26170_014-game-journey-master-plan.md
+?? docs_build/pr/BUILD_PR_26170_014-game-journey-master-plan.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/admin-notes/GFS_Create_Bucket_Workbook.pdf
-docs_build/dev/admin-notes/GFS_Idea_Bucket_Workbook.pdf
-docs_build/dev/reports/PR_26170_013-game-journey-friendly-descriptions.md
-docs_build/pr/BUILD_PR_26170_013-game-journey-friendly-descriptions.md
+docs_build/dev/admin-notes/GFS_Game_Journey_Master_Plan.txt
+docs_build/dev/reports/PR_26170_014-game-journey-master-plan.md
+docs_build/pr/BUILD_PR_26170_014-game-journey-master-plan.md
 
 # git diff --stat
-docs_build/dev/reports/codex_changed_files.txt     |   152 +-
- docs_build/dev/reports/codex_review.diff           | 31133 +------------------
- .../dev/reports/coverage_changed_js_guardrail.txt  |     2 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |    11 +-
- tests/playwright/tools/ToolboxRoutePages.spec.mjs  |    25 +
- toolbox/tools-page-accordions.js                   |    22 +-
- 6 files changed, 297 insertions(+), 31048 deletions(-)
+(no output)
