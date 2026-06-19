@@ -259,6 +259,13 @@ const PLATFORM_BANNER_DEFAULTS = Object.freeze({
   message: "",
   tone: "info",
 });
+const PUBLIC_CONFIG_ENV_KEYS = Object.freeze({
+  apiUrl: "GAMEFOUNDRY_API_URL",
+  environmentLabel: "GAMEFOUNDRY_ENVIRONMENT_LABEL",
+  siteUrl: "GAMEFOUNDRY_SITE_URL",
+});
+const ENVIRONMENT_BANNER_SOURCE = "environment-config";
+const ENVIRONMENT_LABEL_HIDDEN_VALUES = Object.freeze(["prd", "production"]);
 const STORAGE_PROJECTS_PREFIX_ENV_KEY = "GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX";
 const SYSTEM_HEALTH_LIMIT_ENV_KEYS = Object.freeze([
   Object.freeze({
@@ -1277,6 +1284,76 @@ function normalizedPlatformBanner(rows = []) {
     sourceTableRowKey: rowsByKey.get(PLATFORM_BANNER_SETTING_KEYS.active)?.key || "",
     sourceTable: "platform_settings",
     tone,
+  };
+}
+
+function publicConfigValue(env, key) {
+  return String(env?.[key] || "").trim();
+}
+
+function publicConfigFromEnvironment(env = process.env) {
+  return {
+    apiUrl: publicConfigValue(env, PUBLIC_CONFIG_ENV_KEYS.apiUrl),
+    environmentLabel: publicConfigValue(env, PUBLIC_CONFIG_ENV_KEYS.environmentLabel),
+    siteUrl: publicConfigValue(env, PUBLIC_CONFIG_ENV_KEYS.siteUrl),
+  };
+}
+
+function localApiRequestUrl(requestUrl) {
+  const hostname = String(requestUrl?.hostname || "").toLowerCase();
+  return hostname === "127.0.0.1" || hostname === "localhost" || hostname === "::1";
+}
+
+function environmentLabelSuppressesBanner(label) {
+  const normalized = String(label || "").trim().toLowerCase();
+  return ENVIRONMENT_LABEL_HIDDEN_VALUES.includes(normalized);
+}
+
+function inactiveEnvironmentBanner() {
+  return {
+    active: false,
+    message: "",
+    source: ENVIRONMENT_BANNER_SOURCE,
+    sourceTable: "",
+    sourceTableRowKey: "",
+    tone: "info",
+  };
+}
+
+function environmentBannerFromPublicConfig(publicConfig, requestUrl) {
+  const label = String(publicConfig?.environmentLabel || "").trim();
+  if (label) {
+    return environmentLabelSuppressesBanner(label)
+      ? inactiveEnvironmentBanner()
+      : {
+          active: true,
+          message: label,
+          source: ENVIRONMENT_BANNER_SOURCE,
+          sourceTable: "",
+          sourceTableRowKey: "",
+          tone: "warning",
+        };
+  }
+  if (localApiRequestUrl(requestUrl)) {
+    return {
+      active: true,
+      message: `Environment banner configuration is incomplete. Set ${PUBLIC_CONFIG_ENV_KEYS.environmentLabel} in .env and restart the site API.`,
+      source: ENVIRONMENT_BANNER_SOURCE,
+      sourceTable: "",
+      sourceTableRowKey: "",
+      tone: "danger",
+    };
+  }
+  return inactiveEnvironmentBanner();
+}
+
+function publicConfigDiagnostics(publicConfig, environmentBanner) {
+  return {
+    apiUrlConfigured: Boolean(publicConfig.apiUrl),
+    environmentBannerActive: environmentBanner.active,
+    environmentLabelConfigured: Boolean(publicConfig.environmentLabel),
+    secretsExposed: false,
+    siteUrlConfigured: Boolean(publicConfig.siteUrl),
   };
 }
 
@@ -2502,6 +2579,16 @@ class ApiRuntimeDataSource {
       banner,
       diagnostics: platformBannerDiagnostics(banner),
       sourceTable: "platform_settings",
+    };
+  }
+
+  publicConfigForRoute(requestUrl) {
+    const publicConfig = publicConfigFromEnvironment();
+    const environmentBanner = environmentBannerFromPublicConfig(publicConfig, requestUrl);
+    return {
+      diagnostics: publicConfigDiagnostics(publicConfig, environmentBanner),
+      environmentBanner,
+      publicConfig,
     };
   }
 
@@ -5228,6 +5315,11 @@ export function createLocalApiRouter() {
 
       if (parts[1] === "project-workspace" && request.method === "GET" && parts[2] === "projects") {
         ok(response, dataSource.projectWorkspaceProjectsForRoute());
+        return true;
+      }
+
+      if (parts[1] === "public" && request.method === "GET" && parts[2] === "config") {
+        ok(response, dataSource.publicConfigForRoute(requestUrl));
         return true;
       }
 

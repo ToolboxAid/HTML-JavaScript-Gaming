@@ -812,11 +812,12 @@ test("Platform banner renders active settings under the header and above the foo
     });
 
     await page.goto(`${server.baseUrl}/account/sign-in.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-platform-banner]")).toHaveCount(2);
-    await expect(page.locator("[data-platform-banner-placement='header']")).toContainText("Temporary data notice for creators.");
-    await expect(page.locator("[data-platform-banner-placement='header']")).toHaveClass(/platform-banner--warning/);
-    await expect(page.locator("[data-platform-banner-placement='footer']")).toContainText("Temporary data notice for creators.");
-    await expect(page.locator("[data-platform-banner-placement='footer']")).toHaveClass(/platform-banner--warning/);
+    const platformBanners = page.locator("[data-platform-banner-source='platform-settings']");
+    await expect(platformBanners).toHaveCount(2);
+    await expect(page.locator("[data-platform-banner-source='platform-settings'][data-platform-banner-placement='header']")).toContainText("Temporary data notice for creators.");
+    await expect(page.locator("[data-platform-banner-source='platform-settings'][data-platform-banner-placement='header']")).toHaveClass(/platform-banner--warning/);
+    await expect(page.locator("[data-platform-banner-source='platform-settings'][data-platform-banner-placement='footer']")).toContainText("Temporary data notice for creators.");
+    await expect(page.locator("[data-platform-banner-source='platform-settings'][data-platform-banner-placement='footer']")).toHaveClass(/platform-banner--warning/);
     await expect.poll(async () => page.evaluate(() => window.GameFoundryPlatformBannerDiagnostics)).toEqual({
       active: true,
       message: "Temporary data notice for creators.",
@@ -825,8 +826,8 @@ test("Platform banner renders active settings under the header and above the foo
     });
     const layout = await page.evaluate(() => {
       const header = document.querySelector("header.site-header");
-      const headerBanner = document.querySelector("[data-platform-banner-placement='header']");
-      const footerBanner = document.querySelector("[data-platform-banner-placement='footer']");
+      const headerBanner = document.querySelector("[data-platform-banner-source='platform-settings'][data-platform-banner-placement='header']");
+      const footerBanner = document.querySelector("[data-platform-banner-source='platform-settings'][data-platform-banner-placement='footer']");
       const main = document.querySelector("main");
       const footer = document.querySelector("footer.footer");
       const headerBox = header?.getBoundingClientRect();
@@ -908,8 +909,9 @@ test("Platform banner tones render distinct Theme V2 highlights", async ({ page 
       banner.tone = tone;
       banner.message = `${tone} tone notice.`;
       await page.evaluate(() => window.dispatchEvent(new CustomEvent("gamefoundry:platform-settings-changed")));
-      await expect(page.locator("[data-platform-banner-placement='header']")).toHaveClass(new RegExp(`platform-banner--${tone}`));
-      toneMetrics[tone] = await page.locator("[data-platform-banner-placement='header']").evaluate((element) => {
+      const platformHeaderBanner = page.locator("[data-platform-banner-source='platform-settings'][data-platform-banner-placement='header']");
+      await expect(platformHeaderBanner).toHaveClass(new RegExp(`platform-banner--${tone}`));
+      toneMetrics[tone] = await platformHeaderBanner.evaluate((element) => {
         const bannerStyle = window.getComputedStyle(element);
         return {
           backgroundColor: bannerStyle.backgroundColor,
@@ -1056,9 +1058,9 @@ test("Platform Settings Admin controls update banner through the service route",
     ]);
     await expect(page.locator("[data-platform-banner-diagnostics]")).toContainText("Active: true.");
     await expect(page.locator("[data-platform-banner-diagnostics]")).toContainText("Message: Outage notice for creators.");
-    await expect(page.locator("[data-platform-banner]")).toHaveCount(2);
-    await expect(page.locator("[data-platform-banner-placement='header']")).toContainText("Outage notice for creators.");
-    await expect(page.locator("[data-platform-banner-placement='footer']")).toContainText("Outage notice for creators.");
+    await expect(page.locator("[data-platform-banner-source='platform-settings']")).toHaveCount(2);
+    await expect(page.locator("[data-platform-banner-source='platform-settings'][data-platform-banner-placement='header']")).toContainText("Outage notice for creators.");
+    await expect(page.locator("[data-platform-banner-source='platform-settings'][data-platform-banner-placement='footer']")).toContainText("Outage notice for creators.");
 
     await page.locator("[data-platform-banner-active]").uncheck();
     await page.locator("[data-platform-banner-save]").click();
@@ -1077,7 +1079,7 @@ test("Platform Settings Admin controls update banner through the service route",
     ]);
     await expect(page.locator("[data-platform-banner-preview]")).toContainText("No active banner.");
     await expect(page.locator("[data-platform-banner-diagnostics]")).toContainText("Active: false.");
-    await expect(page.locator("[data-platform-banner]")).toHaveCount(0);
+    await expect(page.locator("[data-platform-banner-source='platform-settings']")).toHaveCount(0);
   } finally {
     await server.close();
   }

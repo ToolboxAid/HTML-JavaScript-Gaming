@@ -405,13 +405,14 @@
         }
     }
 
-    function normalizedPlatformBanner(data) {
-        const banner = data?.banner && typeof data.banner === "object" ? data.banner : {};
+    function normalizedPlatformBanner(data, fallbackSource) {
+        const banner = data && typeof data === "object" ? data : {};
         const tone = ["info", "warning", "danger"].includes(banner.tone) ? banner.tone : "info";
         return {
             active: banner.active === true,
             message: typeof banner.message === "string" ? banner.message.trim() : "",
-            sourceTable: typeof banner.sourceTable === "string" ? banner.sourceTable : data?.sourceTable || "",
+            source: typeof banner.source === "string" ? banner.source : fallbackSource || "platform-settings",
+            sourceTable: typeof banner.sourceTable === "string" ? banner.sourceTable : "",
             sourceTableRowKey: typeof banner.sourceTableRowKey === "string" ? banner.sourceTableRowKey : "",
             tone
         };
@@ -428,7 +429,32 @@
         if (!response.ok || payload?.ok === false) {
             throw new Error(payload?.error || "Platform banner settings are unavailable.");
         }
-        return normalizedPlatformBanner(payload?.data);
+        const data = payload?.data || {};
+        return {
+            banner: normalizedPlatformBanner({
+                ...(data.banner || {}),
+                sourceTable: data.banner?.sourceTable || data.sourceTable || "",
+            }, "platform-settings"),
+            diagnostics: data.diagnostics || data.banner || {}
+        };
+    }
+
+    async function requestEnvironmentBanner() {
+        const response = await fetch("/api/public/config", {
+            headers: { "Accept": "application/json" },
+            method: "GET"
+        });
+        const payload = await response.json().catch(function () {
+            return null;
+        });
+        if (!response.ok || payload?.ok === false) {
+            throw new Error(payload?.error || "Public configuration is unavailable.");
+        }
+        const data = payload?.data || {};
+        return {
+            banner: normalizedPlatformBanner(data.environmentBanner || {}, "environment-config"),
+            diagnostics: data.diagnostics || {}
+        };
     }
 
     function removePlatformBanner() {
@@ -442,6 +468,7 @@
         section.className = "platform-banner platform-banner--" + banner.tone;
         section.dataset.platformBanner = "";
         section.dataset.platformBannerPlacement = placement;
+        section.dataset.platformBannerSource = banner.source || "platform-settings";
         section.setAttribute("aria-label", "Platform notice");
         const inner = document.createElement("div");
         inner.className = "platform-banner__inner";
@@ -453,42 +480,74 @@
         return section;
     }
 
+    function platformBannerDiagnostics(banner) {
+        return {
+            active: banner.active,
+            message: banner.message,
+            sourceTable: banner.sourceTable,
+            sourceTableRowKey: banner.sourceTableRowKey
+        };
+    }
+
+    function renderBannerPlacement(banners, placement) {
+        const nodes = banners.map((banner) => createPlatformBanner(banner, placement));
+        const header = document.querySelector("header.site-header");
+        if (placement === "header" && header) {
+            header.after(...nodes);
+            return;
+        }
+        const footer = document.querySelector("footer.footer");
+        if (placement === "footer" && footer?.parentNode) {
+            footer.before(...nodes);
+            return;
+        }
+        if (placement === "header") {
+            const main = document.querySelector("main");
+            if (main) {
+                main.before(...nodes);
+            }
+        }
+    }
+
     async function renderPlatformBanner() {
-        try {
-            const banner = await requestPlatformBanner();
-            window.GameFoundryPlatformBannerDiagnostics = {
-                active: banner.active,
-                message: banner.message,
-                sourceTable: banner.sourceTable,
-                sourceTableRowKey: banner.sourceTableRowKey
+        const [environmentResponse, platformResponse] = await Promise.allSettled([
+            requestEnvironmentBanner(),
+            requestPlatformBanner()
+        ]);
+        const banners = [];
+        removePlatformBanner();
+        if (environmentResponse.status === "fulfilled") {
+            const banner = environmentResponse.value.banner;
+            window.GameFoundryEnvironmentBannerDiagnostics = environmentResponse.value.diagnostics || {};
+            if (banner.active && banner.message) {
+                banners.push(banner);
+            }
+        } else {
+            window.GameFoundryEnvironmentBannerDiagnostics = {
+                environmentBannerActive: false,
+                environmentLabelConfigured: false,
+                secretsExposed: false
             };
-            removePlatformBanner();
-            if (!banner.active || !banner.message) {
-                return;
+            console.warn("[platform-settings/operator] Public configuration unavailable:", environmentResponse.reason instanceof Error ? environmentResponse.reason.message : String(environmentResponse.reason || ""));
+        }
+        if (platformResponse.status === "fulfilled") {
+            const banner = platformResponse.value.banner;
+            window.GameFoundryPlatformBannerDiagnostics = platformResponse.value.diagnostics || platformBannerDiagnostics(banner);
+            if (banner.active && banner.message) {
+                banners.push(banner);
             }
-            const header = document.querySelector("header.site-header");
-            if (header) {
-                header.after(createPlatformBanner(banner, "header"));
-            }
-            const footer = document.querySelector("footer.footer");
-            if (footer?.parentNode) {
-                footer.parentNode.insertBefore(createPlatformBanner(banner, "footer"), footer);
-            }
-            if (!header) {
-                const main = document.querySelector("main");
-                if (main?.parentNode) {
-                    main.parentNode.insertBefore(createPlatformBanner(banner, "header"), main);
-                }
-            }
-        } catch (error) {
-            removePlatformBanner();
+        } else {
             window.GameFoundryPlatformBannerDiagnostics = {
                 active: false,
                 message: "",
                 sourceTable: "",
                 sourceTableRowKey: ""
             };
-            console.warn("[platform-settings/operator] Platform banner unavailable:", error instanceof Error ? error.message : String(error || ""));
+            console.warn("[platform-settings/operator] Platform banner unavailable:", platformResponse.reason instanceof Error ? platformResponse.reason.message : String(platformResponse.reason || ""));
+        }
+        if (banners.length) {
+            renderBannerPlacement(banners, "header");
+            renderBannerPlacement(banners, "footer");
         }
     }
 

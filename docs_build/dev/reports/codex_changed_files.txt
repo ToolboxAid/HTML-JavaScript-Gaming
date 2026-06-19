@@ -1,57 +1,24 @@
-﻿admin/analytics.html
-admin/branding.html
-admin/controls.html
-admin/design-system.html
-admin/grouping-colors.html
-admin/moderation.html
-admin/ratings.html
-admin/roles.html
-admin/site-settings.html
-admin/themes.html
-assets/theme-v2/js/account-achievements.js
-assets/theme-v2/js/admin-db-status-panel.js
-assets/theme-v2/js/admin-owner-navigation.js
-assets/theme-v2/js/admin-service-page-data.js
-assets/theme-v2/js/gamefoundry-partials.js
-docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/coverage_changed_js_guardrail.txt
-docs_build/dev/reports/playwright_v8_coverage_report.txt
-docs_build/dev/reports/PR_26169_023-api-menu-path-cleanup.md
-docs_build/pr/BUILD_PR_26169_023-api-menu-path-cleanup.md
-owner/branding.html
-owner/design-system.html
-owner/grouping-colors.html
-owner/site-settings.html
-owner/themes.html
-src/api/admin-infrastructure-api-client.js
-src/api/admin-invitations-api-client.js
-src/api/admin-operations-api-client.js
-src/api/admin-owner-navigation.js
-src/api/admin-setup-api-client.js
-src/api/admin-system-health-api-client.js
-src/api/ai-credits-api-client.js
-src/api/db-viewer-api-client.js
-src/api/legal-api-client.js
-src/api/marketplace-api-client.js
-src/api/memberships-api-client.js
-src/api/owner-ai-credits-api-client.js
-src/api/owner-memberships-api-client.js
-src/api/platform-settings-api-client.js
-src/api/server-api-client.js
-src/api/session-api-client.js
-src/api/toolbox-votes-api-client.js
-src/engine/api/server-api-client.js
-tests/dev-runtime/ApiMenuPathCleanup.test.mjs
-tests/dev-runtime/ArchitectureCleanupApiNavInvitations.test.mjs
-tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
-toolbox/assets/assets-api-client.js
-toolbox/colors/palette-api-client.js
-toolbox/controls/controls-api-client.js
-toolbox/game-configuration/game-configuration-api-client.js
-toolbox/game-design/game-design-api-client.js
-toolbox/game-journey/game-journey-api-client.js
-toolbox/game-workspace/game-workspace-api-client.js
-toolbox/objects/objects-api-client.js
-toolbox/tags/tags-api-client.js
-toolbox/tool-registry-api-client.js
+﻿git status --short
+ M .env.example
+ M assets/theme-v2/js/gamefoundry-partials.js
+ M docs_build/dev/reports/codex_changed_files.txt
+ M docs_build/dev/reports/codex_review.diff
+ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+ M docs_build/dev/reports/environment_agnostic_browser_gate_report.md
+ M docs_build/dev/reports/playwright_v8_coverage_report.txt
+ M src/dev-runtime/server/local-api-router.mjs
+ M tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
+?? docs_build/dev/reports/PR_26169_024-environment-banner-all-pages.md
+?? docs_build/pr/BUILD_PR_26169_024-environment-banner-all-pages.md
+?? tests/dev-runtime/PublicEnvironmentConfig.test.mjs
+?? tests/playwright/tools/EnvironmentBannerCoverage.spec.mjs
+
+git diff --stat -- . :!docs_build/dev/reports/codex_review.diff :!docs_build/dev/reports/codex_changed_files.txt
+ .env.example                                       |   6 +
+ assets/theme-v2/js/gamefoundry-partials.js         | 121 +++++++++++++++------
+ .../dev/reports/coverage_changed_js_guardrail.txt  |  44 +-------
+ .../environment_agnostic_browser_gate_report.md    |  20 ++--
+ .../dev/reports/playwright_v8_coverage_report.txt  |  80 ++------------
+ src/dev-runtime/server/local-api-router.mjs        |  92 ++++++++++++++++
+ .../tools/AdminPlatformToolsWireframes.spec.mjs    |  28 ++---
+ 7 files changed, 220 insertions(+), 171 deletions(-)
