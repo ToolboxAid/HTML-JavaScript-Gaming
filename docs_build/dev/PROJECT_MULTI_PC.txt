@@ -524,6 +524,23 @@ Governance, recovery, diagnostics, and instruction-hardening PRs:
 - Must document TEAM ownership compliance in the PR report.
 - Recovery reports must include TEAM ownership.
 
+GitHub Authoritative Workstream Rule:
+- GitHub is the authoritative workstream record.
+- GitHub branches, commits, and pull requests are the authoritative record for active and completed Codex workstreams.
+- Local-only commits are prohibited.
+- Every completed PR scope must be committed and pushed before Codex continues to another PR.
+- Start-gate sync validation is PASS only when the branch is clean and `local == origin`, meaning local HEAD equals origin HEAD.
+- Start-gate sync validation is FAIL when:
+  - branch is ahead of origin
+  - branch has unpushed commits
+  - current branch is detached HEAD
+  - push failure is unresolved
+  - TEAM ownership mismatches the requested PR scope
+- Branch ahead of origin is a hard stop.
+- Push failure is a hard stop until resolved.
+- Ownership mismatch is a hard stop.
+- EOD merge approval remains owner-controlled and requires explicit approval.
+
 Stable and merge approval:
 - Stable promotion and merge approval are controlled by the assigned Team Alpha, Team Beta, or Team Gamma owner.
 - Master Control may recommend sequencing, but Codex must not merge or mark stable without explicit owner approval for the affected workstream.
@@ -531,6 +548,7 @@ Stable and merge approval:
 Hard stop rules:
 - If the PR name does not include a TEAM token, stop before changes.
 - If the TEAM token does not match the owner map or explicit Master Control assignment, stop before changes.
+- If branch sync validation fails, stop before changes.
 - If the PR scope belongs to another TEAM owner, stop before changes.
 - If the PR crosses multiple team ownership areas, stop and require Master Control to split or assign the work.
 - If the requested implementation path conflicts with the active owner path, stop before changes.

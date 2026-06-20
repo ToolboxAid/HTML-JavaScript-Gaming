@@ -1,48 +1,8 @@
-docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/coverage_changed_js_guardrail.txt
-docs_build/dev/reports/dependency_gating_report.md
-docs_build/dev/reports/dependency_hydration_reuse_report.md
-docs_build/dev/reports/execution_graph_reuse_report.md
-docs_build/dev/reports/failure_fingerprint_report.md
-docs_build/dev/reports/filesystem_scan_reduction_report.md
-docs_build/dev/reports/incremental_validation_report.md
-docs_build/dev/reports/lane_compilation_report.md
-docs_build/dev/reports/lane_deduplication_report.md
-docs_build/dev/reports/lane_input_validation_report.md
-docs_build/dev/reports/lane_manifests/workspace-contract.json
-docs_build/dev/reports/lane_runtime_optimization_report.md
-docs_build/dev/reports/lane_snapshot_report.md
-docs_build/dev/reports/lane_snapshots/workspace-contract.json
-docs_build/dev/reports/lane_warm_start_report.md
-docs_build/dev/reports/lane_warm_starts/workspace-contract.json
-docs_build/dev/reports/monolith_trigger_removal_report.md
-docs_build/dev/reports/persistent_lane_manifest_report.md
-docs_build/dev/reports/playwright_discovery_ownership_report.md
-docs_build/dev/reports/playwright_discovery_scope_report.md
-docs_build/dev/reports/playwright_structure_audit.md
-docs_build/dev/reports/playwright_v8_coverage_report.txt
-docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-instruction-compliance-checklist.md
-docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-manual-validation-notes.md
-docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-message-parent-child-table-checklist.md
-docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-tts-summary-layout-checklist.md
-docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-tts-tools-registration-checklist.md
-docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-validation-report.md
-docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction.md
-docs_build/dev/reports/retry_suppression_report.md
-docs_build/dev/reports/slow_path_pruning_report.md
-docs_build/dev/reports/static_validation_report.md
-docs_build/dev/reports/targeted_file_manifest_report.md
-docs_build/dev/reports/test_cleanup_performance_report.md
-docs_build/dev/reports/test_cleanup_routing_report.md
-docs_build/dev/reports/testing_lane_execution_report.md
-docs_build/dev/reports/validation_cache_report.md
-docs_build/dev/reports/zero_browser_preflight_report.md
-src/shared/toolbox/tool-metadata-inventory.js
-tests/playwright/tools/MessagesTool.spec.mjs
-tests/playwright/tools/RootToolsFutureState.spec.mjs
-tests/playwright/tools/TextToSpeechFunctional.spec.mjs
-tests/playwright/tools/ToolboxRoutePages.spec.mjs
-toolbox/messages/index.html
-toolbox/messages/messages.js
-toolbox/text-to-speech/index.html
+M  docs_build/dev/reports/PR_26171_GAMMA_009-github-authoritative-workstream-sync.md
+
+ docs_build/dev/PROJECT_INSTRUCTIONS.md             | 55 +++++++++++++++++--
+ docs_build/dev/PROJECT_MULTI_PC.txt                | 18 +++++++
+ ...stream-sync-instruction-compliance-checklist.md | 27 ++++++++++
+ ...tive-workstream-sync-manual-validation-notes.md | 25 +++++++++
+ ...MMA_009-github-authoritative-workstream-sync.md | 62 ++++++++++++++++++++++
+ 5 files changed, 184 insertions(+), 3 deletions(-)

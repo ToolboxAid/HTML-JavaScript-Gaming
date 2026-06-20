@@ -2009,7 +2009,9 @@ Rules:
 - Do not ask the user if a branch should be pushed.
 - Treat PR creation as required.
 - Treat branch push as required.
-- Treat merge as required after validation passes.
+- Treat merge as required only after validation passes and explicit owner/EOD approval is provided.
+- Local-only commits are prohibited as completed workstream state.
+- Every completed PR scope must be committed and pushed before Codex continues to another PR.
 - If GitHub prompts `Would you like to create a Pull Request?`, answer YES automatically.
 - If merge conflicts occur:
   - preserve latest main
@@ -2025,15 +2027,58 @@ Required Git workflow report fields:
 - merge result
 - final main commit
 
+## GITHUB AUTHORITATIVE WORKSTREAM RULE
+
+GitHub is the authoritative workstream record.
+
+Rules:
+- GitHub branches, commits, and pull requests are the authoritative record for active and completed Codex workstreams.
+- Local-only commits are prohibited.
+- A PR scope is not complete until its scoped changes are committed and pushed to GitHub.
+- Every completed PR scope must be committed and pushed before Codex continues to another PR.
+- Push failure is a hard stop until resolved.
+- A branch ahead of origin is a hard stop because it contains unpushed commits.
+- Detached HEAD execution is prohibited for PR work.
+- Ownership mismatch is a hard stop.
+- This rule does not authorize merging.
+- EOD merge approval remains owner-controlled and requires explicit approval.
+
+Start-gate sync validation:
+- PASS when:
+  - current branch is not detached
+  - repository is clean
+  - current branch has an origin upstream
+  - `local == origin`
+  - local branch HEAD equals origin branch HEAD
+  - TEAM ownership matches the requested PR scope
+- FAIL when:
+  - current branch is detached HEAD
+  - repository is dirty
+  - branch is ahead of origin
+  - branch has unpushed commits
+  - local branch HEAD does not equal origin branch HEAD
+  - push failure is unresolved
+  - TEAM ownership mismatches the requested PR scope
+
+Required report output:
+- current branch
+- upstream branch
+- local commit
+- origin commit
+- local/origin sync PASS/FAIL
+- push result
+- TEAM ownership PASS/FAIL
+
 ## OWNER-CONTROLLED STABLE AND MERGE APPROVAL
 
 Stable promotion and merge approval are owner-controlled.
 
 Rules:
 - Codex may prepare scoped changes, reports, validation evidence, ZIP artifacts, branches, and PRs.
-- Codex must not merge a PR or mark a workstream stable without explicit approval from the assigned Team Alpha or Team Beta owner.
+- Codex must not merge a PR or mark a workstream stable without explicit approval from the assigned Team Alpha, Team Beta, or Team Gamma owner.
 - Master Control may recommend sequencing or assignment, but affected workstream owners control stable and merge approval.
 - This targeted section supersedes older automatic-merge wording when approval ownership is in question.
+- EOD merge approval remains owner-controlled and requires explicit approval.
 
 ## CODEX INSTRUCTION ENFORCEMENT START GATE
 
@@ -2047,12 +2092,16 @@ Required instruction reads:
 
 Required pre-change report:
 - Codex must report instruction compliance as `PASS` or `FAIL` before making file changes.
-- The report must include branch, clean status, PR TEAM owner, implementation path, validation scope, required report list, and ZIP requirement.
+- The report must include branch, upstream branch, local/origin sync status, clean status, PR TEAM owner, implementation path, validation scope, required report list, and ZIP requirement.
 - Any `FAIL` is a hard stop unless the PR explicitly scopes branch audit or recovery documentation without implementation.
 
 Hard stops before changes:
 - If the current branch is not `main`, HARD STOP.
 - If the repository is not clean before the PR branch is created, HARD STOP.
+- If the current branch is detached HEAD, HARD STOP.
+- If local branch HEAD does not equal origin branch HEAD, HARD STOP.
+- If the current branch is ahead of origin or has unpushed commits, HARD STOP.
+- If a previous push failed and remains unresolved, HARD STOP.
 - If the PR name does not include a required TEAM token, HARD STOP.
 - If the PR TEAM owner does not match the team ownership map in `PROJECT_MULTI_PC.txt`, HARD STOP.
 - If the PR asks for implementation and the implementation path is wrong, HARD STOP.

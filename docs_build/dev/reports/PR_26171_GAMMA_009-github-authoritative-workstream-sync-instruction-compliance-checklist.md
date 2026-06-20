@@ -1,0 +1,27 @@
+# Instruction Compliance Checklist - PR_26171_GAMMA_009
+
+- PR has one purpose only: PASS
+- Exact PR name provided: PASS
+- PR name includes TEAM token `GAMMA`: PASS
+- Exact branch name provided: PASS
+- Branch started from latest `main`: PASS
+- `docs_build/dev/PROJECT_INSTRUCTIONS.md` read before changes: PASS
+- `docs_build/dev/PROJECT_MULTI_PC.txt` read before changes: PASS
+- Instruction enforcement start gate run before changes: PASS
+- Repository clean before branch creation: PASS
+- `main` local/origin sync verified before branch creation: PASS
+- TEAM ownership verified as Gamma governance/instruction-hardening work: PASS
+- Scope limited to requested governance docs: PASS
+- GitHub authoritative workstream rule added: PASS
+- Local-only commits prohibited: PASS
+- Completed PR scopes require commit and push before continuing: PASS
+- Start-gate sync validation added: PASS
+- Branch ahead of origin hard stop added: PASS
+- Owner-controlled EOD merge approval preserved: PASS
+- Runtime code unchanged: PASS
+- Required reports created: PASS
+- Manual validation notes created: PASS
+- ZIP required and pending final packaging: PASS
+- Playwright skipped with reason documented: PASS
+- Samples skipped with reason documented: PASS
+- PR merge withheld until explicit EOD approval: PASS
