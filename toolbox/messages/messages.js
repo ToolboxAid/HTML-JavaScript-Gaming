@@ -51,6 +51,11 @@ const elements = {
   persistenceEngine: document.querySelector("[data-messages-persistence-engine]"),
   persistenceOwner: document.querySelector("[data-messages-persistence-owner]"),
   persistenceSource: document.querySelector("[data-messages-persistence-source]"),
+  previewMessage: document.querySelector("[data-messages-preview-message]"),
+  previewSegments: document.querySelector("[data-messages-preview-segments]"),
+  previewStatus: document.querySelector("[data-messages-preview-status]"),
+  previewStop: document.querySelector("[data-messages-preview-stop]"),
+  previewTtsProfile: document.querySelector("[data-messages-preview-tts-profile]"),
   selectedCategory: document.querySelector("[data-messages-selected-category]"),
   selectedEmotion: document.querySelector("[data-messages-selected-emotion]"),
   selectedName: document.querySelector("[data-messages-selected-name]"),
@@ -180,6 +185,10 @@ function activeEmotionProfiles() {
   return state.emotionProfiles.filter((profile) => profile.active);
 }
 
+function activeTtsProfiles() {
+  return state.ttsProfiles.filter((profile) => profile.active);
+}
+
 function populateSelect(select, options, placeholder) {
   if (!select) {
     return;
@@ -307,6 +316,20 @@ function selectedMessageSegments() {
     .sort((left, right) => left.displayOrder - right.displayOrder || left.createdAt.localeCompare(right.createdAt) || left.key.localeCompare(right.key));
 }
 
+function selectedMessage() {
+  return state.messages.find((message) => message.key === state.selectedMessageKey) || null;
+}
+
+function selectedTtsProfile() {
+  return state.ttsProfiles.find((profile) => profile.key === elements.previewTtsProfile?.value)
+    || activeTtsProfiles()[0]
+    || null;
+}
+
+function emotionProfileByKey(profileKey) {
+  return state.emotionProfiles.find((profile) => profile.key === profileKey) || null;
+}
+
 function renderSegmentRows() {
   if (!elements.segmentRows) {
     return;
@@ -360,7 +383,7 @@ function renderSegmentRows() {
 }
 
 function renderSelectedMessage() {
-  const selected = state.messages.find((message) => message.key === state.selectedMessageKey);
+  const selected = selectedMessage();
   setText(elements.selectedName, selected?.name || "None");
   setText(elements.selectedCategory, selected?.categoryName || "None");
   setText(elements.selectedEmotion, selected?.emotionProfileName || "None");
@@ -386,6 +409,10 @@ function render(persistence = {}) {
   populateSelect(elements.category, activeCategories(), "Select category");
   populateSelect(elements.emotionProfile, activeEmotionProfiles(), "Select emotion profile");
   populateSelect(elements.segmentEmotionProfile, activeEmotionProfiles(), "Select emotion profile");
+  populateSelect(elements.previewTtsProfile, activeTtsProfiles(), "Default active TTS profile");
+  if (!elements.previewTtsProfile?.value && activeTtsProfiles()[0]) {
+    elements.previewTtsProfile.value = activeTtsProfiles()[0].key;
+  }
   renderCategoryRows();
   renderEmotionRows();
   renderTtsRows();
@@ -499,6 +526,81 @@ function validateTtsProfile(values) {
     errors.push("Language is required.");
   }
   return errors;
+}
+
+function speechSynthesisAvailable() {
+  return Boolean(window.speechSynthesis && window.SpeechSynthesisUtterance);
+}
+
+function createSpeechUtterance(text, ttsProfile, emotionProfile) {
+  const utterance = new window.SpeechSynthesisUtterance(text);
+  utterance.lang = ttsProfile.language;
+  utterance.volume = emotionProfile ? emotionProfile.volume : ttsProfile.volume;
+  utterance.pitch = emotionProfile ? emotionProfile.pitch : ttsProfile.pitch;
+  utterance.rate = emotionProfile ? emotionProfile.rate : ttsProfile.rate;
+  const voices = typeof window.speechSynthesis.getVoices === "function" ? window.speechSynthesis.getVoices() : [];
+  const voice = voices.find((candidate) => candidate.name === ttsProfile.voiceName);
+  if (voice) {
+    utterance.voice = voice;
+  }
+  return utterance;
+}
+
+function previewSpeech(items, successMessage) {
+  if (!speechSynthesisAvailable()) {
+    setText(elements.previewStatus, "Browser speech synthesis is unavailable. Use a browser with speechSynthesis support to preview messages.");
+    setText(elements.log, "Speech preview unavailable.");
+    return;
+  }
+  const ttsProfile = selectedTtsProfile();
+  if (!ttsProfile) {
+    setText(elements.previewStatus, "Choose or create an active TTS profile before previewing speech.");
+    setText(elements.log, "Speech preview needs an active TTS profile.");
+    return;
+  }
+  window.speechSynthesis.cancel();
+  items.forEach((item) => {
+    window.speechSynthesis.speak(createSpeechUtterance(item.text, ttsProfile, item.emotionProfile));
+  });
+  setText(elements.previewStatus, successMessage);
+  setText(elements.log, successMessage);
+}
+
+function previewSelectedMessage() {
+  const message = selectedMessage();
+  if (!message) {
+    setText(elements.previewStatus, "Select or save a message before previewing speech.");
+    setText(elements.log, "Speech preview needs a selected message.");
+    return;
+  }
+  previewSpeech(
+    [{ emotionProfile: emotionProfileByKey(message.emotionProfileKey), text: message.messageText }],
+    `Preview requested for message ${message.name}.`,
+  );
+}
+
+function previewSelectedSegments() {
+  const segments = selectedMessageSegments().filter((segment) => segment.active);
+  if (!segments.length) {
+    setText(elements.previewStatus, "Add at least one active segment before previewing speech.");
+    setText(elements.log, "Speech preview needs active segments.");
+    return;
+  }
+  previewSpeech(
+    segments.map((segment) => ({
+      emotionProfile: emotionProfileByKey(segment.emotionProfileKey),
+      text: segment.segmentText,
+    })),
+    `Preview requested for ${segments.length} active segment${segments.length === 1 ? "" : "s"}.`,
+  );
+}
+
+function stopSpeechPreview() {
+  if (window.speechSynthesis && typeof window.speechSynthesis.cancel === "function") {
+    window.speechSynthesis.cancel();
+  }
+  setText(elements.previewStatus, "Speech preview stopped.");
+  setText(elements.log, "Speech preview stopped.");
 }
 
 function resetMessageForm() {
@@ -902,6 +1004,18 @@ elements.ttsRows?.addEventListener("click", (event) => {
     editTtsProfile(editButton.dataset.messagesTtsEdit);
     setText(elements.log, "TTS profile loaded for editing.");
   }
+});
+
+elements.previewMessage?.addEventListener("click", () => {
+  previewSelectedMessage();
+});
+
+elements.previewSegments?.addEventListener("click", () => {
+  previewSelectedSegments();
+});
+
+elements.previewStop?.addEventListener("click", () => {
+  stopSpeechPreview();
 });
 
 try {
