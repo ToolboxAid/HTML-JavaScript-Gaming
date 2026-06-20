@@ -28,9 +28,9 @@ const SEED_EMOTION_PROFILES = Object.freeze([
 ]);
 const SEED_TTS_PROFILES = Object.freeze([
   Object.freeze({
-    description: "Default browser speech configuration reserved for future preview and playback.",
+    description: "Balanced local browser playback option until authored TTS profiles are available.",
     language: "en-US",
-    name: "Browser Speech Default",
+    name: "Default Balanced TTS Profile",
     pitch: 1,
     providerKey: "browser-speech",
     rate: 1,

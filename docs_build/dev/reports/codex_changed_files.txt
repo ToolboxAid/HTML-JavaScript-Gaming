@@ -1,9 +1,9 @@
 assets/theme-v2/css/tables.css / updated
+docs_build/dev/reports/codex_changed_files.txt / updated
+docs_build/dev/reports/codex_review.diff / updated
 docs_build/pr/PR_26171_ALPHA_046-game-hub-table-standard-rebuild/APPLY_PR.md / added
 docs_build/pr/PR_26171_ALPHA_046-game-hub-table-standard-rebuild/BUILD_PR.md / added
 docs_build/pr/PR_26171_ALPHA_046-game-hub-table-standard-rebuild/PLAN_PR.md / added
-docs_build/dev/reports/codex_review.diff / updated
-docs_build/dev/reports/codex_changed_files.txt / updated
 tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs / updated
 toolbox/game-workspace/game-workspace.js / updated
 toolbox/game-workspace/index.html / updated

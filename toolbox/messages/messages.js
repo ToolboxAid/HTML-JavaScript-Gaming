@@ -17,7 +17,7 @@ const DEFAULT_TTS_PROFILE = Object.freeze({
   description: "Balanced local browser playback option until authored TTS profiles are available.",
   key: DEFAULT_TTS_PROFILE_KEY,
   language: "en-US",
-  name: "Default Balanced TTS",
+  name: "Default Balanced TTS Profile",
   pitch: 1,
   providerKey: "browser-speech",
   rate: 1,
@@ -406,7 +406,7 @@ function speechTestReadiness() {
     return { message: "Select an active TTS profile before testing speech.", ok: false };
   }
   if (!target.emotionProfile) {
-    return { message: "Selected item needs an emotion profile before testing speech.", ok: false };
+    return { message: "Selected item needs an Emotion before testing speech.", ok: false };
   }
   if (!String(target.text || "").trim()) {
     return { message: "Selected item needs message text before testing speech.", ok: false };
@@ -466,7 +466,7 @@ function createMessageEditRows(message = null) {
   const stack = document.createElement("div");
   stack.className = "content-stack";
   stack.append(
-    createField("Primary Emotion", createSelect(message?.emotionProfileKey || "", "messageEmotion", selectOptionsWithCurrent(message?.emotionProfileKey || ""), "Select emotion profile")),
+    createField("Primary Emotion", createSelect(message?.emotionProfileKey || "", "messageEmotion", selectOptionsWithCurrent(message?.emotionProfileKey || ""), "Select emotion")),
     createField("Message Text", createTextarea(message?.messageText || "", "messageText", 6)),
     createField("Notes", createTextarea(message?.notes || "", "messageNotes", 3)),
   );
@@ -691,7 +691,7 @@ function validateMessage(values) {
     errors.push("Message Name is required.");
   }
   if (!values.emotionProfileKey) {
-    errors.push("Emotion Profile is required.");
+    errors.push("Emotion is required.");
   }
   if (!values.messageText.trim()) {
     errors.push("Message Text is required.");
@@ -719,7 +719,7 @@ function validateSegment(values) {
     errors.push("Part Text is required.");
   }
   if (!values.emotionProfileKey) {
-    errors.push("Emotion Profile is required.");
+    errors.push("Emotion is required.");
   }
   if (String(values.displayOrder).trim() === "") {
     errors.push("Display Order is required.");
@@ -897,7 +897,7 @@ function speakTarget(service, target, profile) {
     return visiblePlaybackError("Select a TTS profile before playback.");
   }
   if (!target.emotionProfile) {
-    return visiblePlaybackError("Selected message or part needs an emotion profile before playback.");
+    return visiblePlaybackError("Selected message or part needs an Emotion before playback.");
   }
   if (!String(target.text || "").trim()) {
     return visiblePlaybackError("Selected message or part needs text before playback.");
