@@ -1,37 +1,65 @@
-# Codex Changed Files - PR_26171_063-codex-instruction-enforcement-hardening
+# Codex Changed Files - PR_26171_061-text2speech-engine-audio-feature-parity
 
-## Conflict Resolution Note
-- Merged latest `origin/main` into the PR branch after GitHub reported merge conflicts.
-- Regenerated Codex artifacts from the PR_063 delta against updated `origin/main`.
-- No implementation scope was changed while resolving conflicts.
+## Git Status Short
+```text
+ A docs_build/dev/reports/PR_26171_061-engine-audio-ownership-checklist.md
+ A docs_build/dev/reports/PR_26171_061-instruction-compliance-checklist.md
+ A docs_build/dev/reports/PR_26171_061-manual-validation-notes.md
+ A docs_build/dev/reports/PR_26171_061-old-tts-feature-parity-checklist.md
+ A docs_build/dev/reports/PR_26171_061-text2speech-engine-audio-feature-parity.md
+ A docs_build/dev/reports/PR_26171_061-validation.md
+ M docs_build/dev/reports/codex_changed_files.txt
+ M docs_build/dev/reports/codex_review.diff
+ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+ M docs_build/dev/reports/playwright_v8_coverage_report.txt
+ M src/engine/audio/TextToSpeechEngine.js
+ M tests/playwright/tools/TextToSpeechFunctional.spec.mjs
+ M toolbox/text-to-speech/index.html
+ M toolbox/text-to-speech/text2speech.js
+```
+
+## Git Diff Stat
+```text
+ ...R_26171_061-engine-audio-ownership-checklist.md |   25 +
+ ...R_26171_061-instruction-compliance-checklist.md |   32 +
+ .../PR_26171_061-manual-validation-notes.md        |   27 +
+ ...R_26171_061-old-tts-feature-parity-checklist.md |   48 +
+ ..._061-text2speech-engine-audio-feature-parity.md |   71 +
+ docs_build/dev/reports/PR_26171_061-validation.md  |   40 +
+ docs_build/dev/reports/codex_changed_files.txt     |   82 +-
+ docs_build/dev/reports/codex_review.diff           | 2057 +++++++++++++++++---
+ .../dev/reports/coverage_changed_js_guardrail.txt  |    8 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |   37 +-
+ src/engine/audio/TextToSpeechEngine.js             |  208 +-
+ .../tools/TextToSpeechFunctional.spec.mjs          |   30 +
+ toolbox/text-to-speech/index.html                  |  119 +-
+ toolbox/text-to-speech/text2speech.js              |  853 ++++++--
+ 14 files changed, 3147 insertions(+), 490 deletions(-)
+```
 
 ## Changed Files
-- docs_build/dev/PROJECT_INSTRUCTIONS.md
-- docs_build/dev/PROJECT_MULTI_PC.txt
-- docs_build/dev/reports/PR_26171_063-codex-instruction-enforcement-hardening.md
-- docs_build/dev/reports/PR_26171_063-instruction-compliance-checklist.md
-- docs_build/dev/reports/PR_26171_063-validation.md
-- docs_build/dev/reports/PR_26171_063-manual-validation-notes.md
+- src/engine/audio/TextToSpeechEngine.js
+- toolbox/text-to-speech/index.html
+- toolbox/text-to-speech/text2speech.js
+- tests/playwright/tools/TextToSpeechFunctional.spec.mjs
+- docs_build/dev/reports/coverage_changed_js_guardrail.txt
+- docs_build/dev/reports/playwright_v8_coverage_report.txt
+- docs_build/dev/reports/PR_26171_061-text2speech-engine-audio-feature-parity.md
+- docs_build/dev/reports/PR_26171_061-instruction-compliance-checklist.md
+- docs_build/dev/reports/PR_26171_061-old-tts-feature-parity-checklist.md
+- docs_build/dev/reports/PR_26171_061-engine-audio-ownership-checklist.md
+- docs_build/dev/reports/PR_26171_061-validation.md
+- docs_build/dev/reports/PR_26171_061-manual-validation-notes.md
 - docs_build/dev/reports/codex_review.diff
 - docs_build/dev/reports/codex_changed_files.txt
 
-## Git Diff Stat Against Updated origin/main
-```text
- docs_build/dev/PROJECT_INSTRUCTIONS.md             |  47 ++
- docs_build/dev/PROJECT_MULTI_PC.txt                |  58 ++
- ..._063-codex-instruction-enforcement-hardening.md |  48 ++
- ...R_26171_063-instruction-compliance-checklist.md |  37 ++
- .../PR_26171_063-manual-validation-notes.md        |  19 +
- docs_build/dev/reports/PR_26171_063-validation.md  |  32 +
- docs_build/dev/reports/codex_changed_files.txt     |  48 ++
- docs_build/dev/reports/codex_review.diff           | 699 +++++++++------------
- 8 files changed, 569 insertions(+), 419 deletions(-)
-```
-
 ## Validation
-- PASS: `git diff --check` after conflict resolution.
-- PASS: targeted required instruction-anchor validation after conflict resolution.
-- SKIP: Playwright, because the PR explicitly requires no Playwright and changes docs/workflow only.
+- PASS: `node --check src\engine\audio\TextToSpeechEngine.js`.
+- PASS: `node --check toolbox\text-to-speech\text2speech.js`.
+- PASS: `node --test tests\tools\Text2SpeechShell.test.mjs`.
+- PASS: `npx playwright test tests/playwright/tools/TextToSpeechFunctional.spec.mjs`.
+- PASS: `npm run test:workspace-v2` (legacy command name; user-facing language is Project Workspace).
+- PASS: `git diff --check`.
 
 ## ZIP
-- Path: `tmp/PR_26171_063-codex-instruction-enforcement-hardening_delta.zip`.
+- Path: `tmp/PR_26171_061-text2speech-engine-audio-feature-parity_delta.zip`.

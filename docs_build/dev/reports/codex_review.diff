@@ -1,281 +1,1856 @@
-diff --git a/docs_build/dev/PROJECT_INSTRUCTIONS.md b/docs_build/dev/PROJECT_INSTRUCTIONS.md
-index 6a2014f2f..528312412 100644
---- a/docs_build/dev/PROJECT_INSTRUCTIONS.md
-+++ b/docs_build/dev/PROJECT_INSTRUCTIONS.md
-@@ -2008,3 +2008,50 @@ Required Git workflow report fields:
- - PR URL
- - merge result
- - final main commit
-+
-+## CODEX INSTRUCTION ENFORCEMENT START GATE
-+
-+Codex must run this gate before every PR execution and before any file changes.
-+
-+Required instruction reads:
-+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
-+- Read `docs_build/dev/PROJECT_MULTI_PC.txt`.
-+- Treat the newest applicable section in `PROJECT_INSTRUCTIONS.md` as authoritative when rules overlap.
-+- Treat the current owner/parity section in `PROJECT_MULTI_PC.txt` as authoritative for PC/Laptop routing.
-+
-+Required pre-change report:
-+- Codex must report instruction compliance as `PASS` or `FAIL` before making file changes.
-+- The report must include branch, clean status, PR owner, PR parity, implementation path, validation scope, required report list, and ZIP requirement.
-+- Any `FAIL` is a hard stop unless the PR explicitly scopes branch audit or recovery documentation without implementation.
-+
-+Hard stops before changes:
-+- If the current branch is not `main`, HARD STOP.
-+- If the repository is not clean before the PR branch is created, HARD STOP.
-+- If the PR owner does not match the PC/Laptop ownership map in `PROJECT_MULTI_PC.txt`, HARD STOP.
-+- If the PR number parity does not match the assigned machine in `PROJECT_MULTI_PC.txt`, HARD STOP.
-+- If the PR asks for implementation and the implementation path is wrong, HARD STOP.
-+- If a PR asks for functional parity and only placeholder-only work is possible, HARD STOP and report the missing source or blocker.
-+- If scoped validation is skipped without a documented reason, HARD STOP.
-+
-+Path enforcement:
-+- Use the active path named by the PR and verified in the repository.
-+- Do not create wrong replacement paths.
-+- For Text To Speech work, the active toolbox path is `toolbox/text-to-speech/`.
-+- Do not create `tools/text2speech/` for new work.
-+- If a PR names archived tools, games, or samples as a functionality sample, treat the archive as a read-only reference sample, not as a reason to skip implementation.
-+
-+Completion hard stops:
-+- If the required repo ZIP is missing, HARD STOP.
-+- If the required repo ZIP is empty or not under `tmp/`, HARD STOP.
-+- If required reports are missing, HARD STOP.
-+- If `docs_build/dev/reports/codex_review.diff` is missing, HARD STOP.
-+- If `docs_build/dev/reports/codex_changed_files.txt` is missing, HARD STOP.
-+- If manual validation notes are missing, HARD STOP.
-+- If the PR-specific report is missing, HARD STOP.
-+- If an instruction compliance checklist is required and missing, HARD STOP.
-+- If requested scoped validation did not run and no explicit skip reason is recorded, HARD STOP.
-+
-+Functional parity rule:
-+- A PR that asks to restore or rebuild working functionality must produce functional parity with the approved sample or source.
-+- Placeholder shells, dead controls, static mockups, and nonfunctional UI are not acceptable completion states for functional parity PRs.
-+- If functional parity cannot be reached in scope, Codex must stop and report the exact blocker instead of packaging placeholder-only work.
-diff --git a/docs_build/dev/PROJECT_MULTI_PC.txt b/docs_build/dev/PROJECT_MULTI_PC.txt
-index 3be408469..60ef4881a 100644
---- a/docs_build/dev/PROJECT_MULTI_PC.txt
-+++ b/docs_build/dev/PROJECT_MULTI_PC.txt
-@@ -448,3 +448,61 @@ Queue next PR
- ```
-
- That is probably the fastest path to doubling throughput without creating chaos.
-+
-+----------------------------------------------------------------------------------------
-+
-+Current Authoritative Multi-PC Gate
-+
-+Codex must read this file before every PR execution.
-+
-+Machine parity:
-+
-+PC / Environment 1:
-+- Uses even-numbered PR sequence values.
-+- Example: `PR_26171_064-*`.
-+
-+Laptop / Environment 2:
-+- Uses odd-numbered PR sequence values.
-+- Example: `PR_26171_063-*`.
-+
-+Owner map:
-+
-+PC / Environment 1 owns Creator Journey work:
-+- Game Journey
-+- Game Hub
-+- Idea
-+- Design
-+- Objects
-+- Worlds
-+- Interface
-+- Controls
-+- Rules
-+- Progression
-+- Play Test
-+- Progress Tracking
-+- Game Design
-+- Game Crew
-+
-+Laptop / Environment 2 owns Content Creation and asset/publishing work:
-+- Graphics
-+- Toolbox images
-+- Audio
-+- MIDI
-+- Messages
-+- Text To Speech
-+- TTS
-+- Publishing
-+- Marketplace
-+- Community
-+- Arcade
-+
-+Governance, recovery, diagnostics, and instruction-hardening PRs:
-+- Follow PR number parity unless Master Control explicitly assigns an owner.
-+- Must not implement tool/runtime work from the opposite owner.
-+- Must document owner/parity compliance in the PR report.
-+
-+Hard stop rules:
-+- If the PR number parity does not match the current machine, stop before changes.
-+- If the PR scope belongs to the other machine owner, stop before changes.
-+- If the PR crosses PC and Laptop ownership, stop and require Master Control to split or assign the work.
-+- If the requested implementation path conflicts with the active owner path, stop before changes.
-diff --git a/docs_build/dev/reports/PR_26171_063-codex-instruction-enforcement-hardening.md b/docs_build/dev/reports/PR_26171_063-codex-instruction-enforcement-hardening.md
+diff --git a/docs_build/dev/reports/PR_26171_061-engine-audio-ownership-checklist.md b/docs_build/dev/reports/PR_26171_061-engine-audio-ownership-checklist.md
 new file mode 100644
-index 000000000..30bcba263
+index 000000000..5e18e0955
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_063-codex-instruction-enforcement-hardening.md
-@@ -0,0 +1,48 @@
-+# PR_26171_063 Codex Instruction Enforcement Hardening
++++ b/docs_build/dev/reports/PR_26171_061-engine-audio-ownership-checklist.md
+@@ -0,0 +1,25 @@
++# PR_26171_061 Engine Audio Ownership Checklist
 +
-+## Purpose
++## Engine Ownership
 +
-+Make Codex explicitly obey `docs_build/dev/PROJECT_INSTRUCTIONS.md` and `docs_build/dev/PROJECT_MULTI_PC.txt` before every PR.
++- PASS: Reusable TTS voice filtering lives in `src/engine/audio/TextToSpeechEngine.js`.
++- PASS: Reusable TTS preset shaping lives in `src/engine/audio/TextToSpeechEngine.js`.
++- PASS: Reusable TTS queue item helpers live in `src/engine/audio/TextToSpeechEngine.js`.
++- PASS: Existing defaults remain in `src/engine/audio/TextToSpeechDefaults.js`.
++- PASS: Active toolbox UI consumes the engine module instead of duplicating all engine behavior locally.
 +
-+## Scope
++## Active Tool Ownership
 +
-+- Added a Codex instruction enforcement start gate to `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
-+- Added current authoritative PC/Laptop owner and PR parity rules to `docs_build/dev/PROJECT_MULTI_PC.txt`.
-+- Documented hard stops for branch state, clean status, owner mismatch, parity mismatch, wrong implementation paths, missing reports, missing ZIPs, skipped validation, and placeholder-only functional parity work.
++- PASS: Active tool remains under `toolbox/text-to-speech/`.
++- PASS: Active HTML remains Theme V2 only.
++- PASS: Active JavaScript remains external.
++- PASS: Active tool owns DOM wiring, status display, and control event handling.
++- PASS: Active tool does not create database behavior.
 +
-+## Requirement Checklist
++## Boundary Checks
 +
-+- PASS: Codex must read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before execution.
-+- PASS: Codex must read `docs_build/dev/PROJECT_MULTI_PC.txt` before execution.
-+- PASS: Codex must report instruction compliance PASS/FAIL before changes.
-+- PASS: Codex must hard stop when not on `main` before starting.
-+- PASS: Codex must hard stop when the repo is not clean before starting.
-+- PASS: Codex must hard stop when PR owner does not match PC/Laptop ownership.
-+- PASS: Codex must hard stop when PR number parity does not match assigned machine.
-+- PASS: Codex must hard stop when required ZIP is missing.
-+- PASS: Codex must hard stop when required reports are missing.
-+- PASS: Codex must hard stop when implementation path is wrong.
-+- PASS: Codex must hard stop when scoped validation was skipped without reason.
-+- PASS: Codex must not continue with placeholder-only work when the PR asks for functional parity.
-+- PASS: Codex must not create wrong paths such as `tools/text2speech` when active path is `toolbox/text-to-speech`.
-+- PASS: Codex must not treat archived tools as "do not implement" when the PR says they are the functionality sample.
-+
-+## Owner And Parity Evidence
-+
-+- Current PR: `PR_26171_063-codex-instruction-enforcement-hardening`.
-+- Sequence: `063`.
-+- Sequence parity: odd.
-+- Assigned machine under the new authoritative gate: Laptop / Environment 2.
-+- Scope type: governance, recovery, diagnostics, and instruction-hardening.
-+- Result: PASS because governance/instruction-hardening PRs follow PR number parity unless Master Control explicitly assigns another owner.
-+
-+## Validation Scope
-+
-+- Playwright impacted: No.
-+- No Playwright impact. This PR is docs/workflow only.
-+- Validation is docs/static only.
-+- Runtime, tool, engine, samples, and Game Hub validation are skipped because no runtime, UI, toolState, engine, or sample behavior changed.
-+
-+## ZIP
-+
-+- Required ZIP path: `tmp/PR_26171_063-codex-instruction-enforcement-hardening_delta.zip`.
-diff --git a/docs_build/dev/reports/PR_26171_063-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26171_063-instruction-compliance-checklist.md
++- PASS: No `tools/text2speech/` path was created.
++- PASS: Archived `old_text2speech-V2` was used as a read-only functionality sample.
++- PASS: Archived tool files were not activated in navigation.
++- PASS: Browser SpeechSynthesis is the implemented local provider.
++- PASS: Planned providers remain documented but do not block browser preview.
+diff --git a/docs_build/dev/reports/PR_26171_061-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26171_061-instruction-compliance-checklist.md
 new file mode 100644
-index 000000000..9d2277ab5
+index 000000000..ffb2cb288
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_063-instruction-compliance-checklist.md
-@@ -0,0 +1,37 @@
-+# PR_26171_063 Instruction Compliance Checklist
++++ b/docs_build/dev/reports/PR_26171_061-instruction-compliance-checklist.md
+@@ -0,0 +1,32 @@
++# PR_26171_061 Instruction Compliance Checklist
 +
-+## Pre-Change Gate
++## Pre-Work Gate
 +
 +- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before file changes.
 +- PASS: Read `docs_build/dev/PROJECT_MULTI_PC.txt` before file changes.
 +- PASS: Reported instruction compliance PASS/FAIL before file changes.
-+- PASS: Starting branch was `main`.
-+- PASS: Starting repository status was clean.
-+- PASS: Created scoped branch `pr/26171-063-codex-instruction-enforcement-hardening` after the clean `main` check.
++- PASS: `git branch --show-current` reported `main` before branch creation.
++- PASS: `git checkout main` completed before branch creation.
++- PASS: `git pull origin main` completed before branch creation.
++- PASS: `git status` reported a clean working tree before branch creation.
++- PASS: Created branch `pr/26171-061-text2speech-engine-audio-feature-parity` from clean latest `main`.
 +
-+## Current PR Routing
++## Owner And Parity
 +
-+- PASS: PR number `063` is odd.
-+- PASS: Odd PR parity maps to Laptop / Environment 2 under the new authoritative Multi-PC gate.
-+- PASS: PR scope is instruction/governance hardening and follows parity because no Master Control owner override was provided.
-+- PASS: No PC-owned tool implementation was changed.
-+- PASS: No Laptop-owned tool implementation was changed.
++- PASS: PR number `061` is odd.
++- PASS: Odd parity maps to Laptop / Environment 2.
++- PASS: Text To Speech / TTS is owned by Laptop / Environment 2.
++- PASS: Implementation path matches active owner path: `toolbox/text-to-speech/`.
++- PASS: Shared engine path matches approved reusable audio path: `src/engine/audio/`.
 +
-+## Path And Functional Parity Gate
++## Hard Stop Checks
 +
-+- PASS: No implementation path was changed by this docs-only PR.
-+- PASS: `toolbox/text-to-speech/` is documented as the active Text To Speech path.
-+- PASS: `tools/text2speech/` is documented as a wrong new-work path.
-+- PASS: Placeholder-only functional parity work is prohibited.
-+- PASS: Archived functionality samples are documented as read-only reference samples when explicitly named by a PR.
-+
-+## Completion Gate
-+
-+- PASS: Required PR-specific report exists.
-+- PASS: Required instruction compliance checklist exists.
-+- PASS: Required manual validation notes exist.
-+- PASS: Required `docs_build/dev/reports/codex_review.diff` exists after artifact generation.
-+- PASS: Required `docs_build/dev/reports/codex_changed_files.txt` exists after artifact generation.
-+- PASS: Required ZIP exists after packaging.
-+- PASS: Scoped validation was not skipped; docs/static validation was run.
-+- PASS: Playwright was not run because the PR explicitly requires no Playwright.
-diff --git a/docs_build/dev/reports/PR_26171_063-manual-validation-notes.md b/docs_build/dev/reports/PR_26171_063-manual-validation-notes.md
++- PASS: Instructions were present and readable.
++- PASS: Branch workflow could be followed.
++- PASS: Repository was clean before branching.
++- PASS: No owner mismatch.
++- PASS: No parity mismatch.
++- PASS: No wrong implementation path.
++- PASS: Scoped validation was not skipped.
++- PASS: Required reports were created.
++- PASS: Required repo ZIP was created.
+diff --git a/docs_build/dev/reports/PR_26171_061-manual-validation-notes.md b/docs_build/dev/reports/PR_26171_061-manual-validation-notes.md
 new file mode 100644
-index 000000000..43af53cc8
+index 000000000..3341b14ba
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_063-manual-validation-notes.md
-@@ -0,0 +1,19 @@
-+# PR_26171_063 Manual Validation Notes
++++ b/docs_build/dev/reports/PR_26171_061-manual-validation-notes.md
+@@ -0,0 +1,27 @@
++# PR_26171_061 Manual Validation Notes
 +
 +## Manual Review
 +
-+- Confirmed the new start gate requires reading `PROJECT_INSTRUCTIONS.md` and `PROJECT_MULTI_PC.txt` before every PR.
-+- Confirmed the new gate requires visible PASS/FAIL instruction compliance before file changes.
-+- Confirmed the hard stop list covers branch, clean status, owner, parity, required ZIP, required reports, wrong paths, skipped validation, and placeholder-only functional parity work.
-+- Confirmed Text To Speech path enforcement names `toolbox/text-to-speech/` as active and rejects new `tools/text2speech/` work.
-+- Confirmed archived tools can be used as read-only functionality samples when a PR explicitly names them.
++- Confirmed active Text To Speech path is `toolbox/text-to-speech/`.
++- Confirmed no `tools/text2speech/` directory was created.
++- Confirmed old functionality sample path is `archive/v1-v2/tools/old_text2speech-V2/`.
++- Confirmed active HTML has external scripts only.
++- Confirmed active HTML has no inline style attributes or inline event handlers.
++- Confirmed no database files were changed.
 +
-+## Manual Runtime Checks
++## Automated Browser Coverage Used For Manual Equivalents
 +
-+- No Playwright was run.
-+- No browser runtime checks were performed.
-+- No Project Workspace/Game Hub runtime checks were performed.
-+- No Local API checks were performed.
-+- No Text To Speech runtime checks were performed.
++- Opened active Text To Speech page through targeted Playwright validation.
++- Verified browser voices render.
++- Verified restored control groups render.
++- Verified preset shaping updates pitch and volume values.
++- Verified named sentence Add, Duplicate, and Delete.
++- Verified output summary includes queue JSON.
++- Verified Speak, Pause, Resume, and Stop call the browser SpeechSynthesis mock.
++- Verified unavailable SpeechSynthesis shows actionable error.
 +
-+These checks are out of scope because this PR only changes documentation and governance reports.
-diff --git a/docs_build/dev/reports/PR_26171_063-validation.md b/docs_build/dev/reports/PR_26171_063-validation.md
++## Out Of Scope Manual Checks
++
++- No paid provider was manually exercised.
++- No generated audio file export was manually exercised.
++- No database behavior was manually exercised.
+diff --git a/docs_build/dev/reports/PR_26171_061-old-tts-feature-parity-checklist.md b/docs_build/dev/reports/PR_26171_061-old-tts-feature-parity-checklist.md
 new file mode 100644
-index 000000000..cedb0134a
+index 000000000..e09e0f974
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_063-validation.md
-@@ -0,0 +1,32 @@
-+# PR_26171_063 Validation
++++ b/docs_build/dev/reports/PR_26171_061-old-tts-feature-parity-checklist.md
+@@ -0,0 +1,48 @@
++# PR_26171_061 Old TTS Feature Parity Checklist
 +
-+## Scope
++Functionality sample: `archive/v1-v2/tools/old_text2speech-V2/`
 +
-+Docs/static validation only.
++## Controls And Options
 +
-+No Playwright was run because the PR explicitly says "No Playwright" and the changed files are governance docs and reports only.
++- PASS: Gender helper filter restored.
++- PASS: Language filter restored.
++- PASS: Voice dropdown restored.
++- PASS: Voice details restored.
++- PASS: Voice Age select restored.
++- PASS: Character Preset select restored.
++- PASS: SSML-like Preset select restored.
++- PASS: Volume slider restored with visible value.
++- PASS: Rate / Speed slider restored with visible value.
++- PASS: Pitch slider restored with visible value.
++- PASS: Name field restored.
++- PASS: Text To Speak editor restored.
 +
-+## Commands
++## Queue And JSON
 +
-+- `git diff --check`
-+  - PASS: no whitespace errors.
-+- Targeted required-text validation for `docs_build/dev/PROJECT_INSTRUCTIONS.md`, `docs_build/dev/PROJECT_MULTI_PC.txt`, and PR_26171_063 reports.
-+  - PASS: all required hardening anchors were found.
-+  - Note: the first targeted text check found missing exact `No Playwright` wording in manual notes; the note was corrected and the validation was rerun successfully.
++- PASS: Named Sentences queue restored.
++- PASS: Add named sentence restored.
++- PASS: Duplicate named sentence restored.
++- PASS: Delete named sentence restored.
++- PASS: Output Summary JSON restored.
++- PASS: Import JSON restored for standalone launch.
++- PASS: Copy JSON restored for standalone launch.
++- PASS: Export JSON restored for standalone launch.
++- PASS: URL JSON source loading restored through `samplePresetPath`.
 +
-+## Skipped
++## Playback And Status
 +
++- PASS: Speak restored.
++- PASS: Pause restored when browser support exists.
++- PASS: Resume restored when browser support exists.
++- PASS: Stop restored.
++- PASS: Clearable status log restored.
++- PASS: Actionable unavailable-browser error restored.
++- PASS: No placeholder provider-blocking behavior remains for browser preview.
++
++## Workspace
++
++- PASS: Project Workspace launch detection restored.
++- PASS: Standalone JSON actions hide during Project Workspace launch.
++- PASS: Return to Project Workspace action restored.
++- PASS: Project Workspace toolState loading restored.
++- PASS: Project Workspace dirty-state writeback restored.
+diff --git a/docs_build/dev/reports/PR_26171_061-text2speech-engine-audio-feature-parity.md b/docs_build/dev/reports/PR_26171_061-text2speech-engine-audio-feature-parity.md
+new file mode 100644
+index 000000000..b2f4a44d3
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26171_061-text2speech-engine-audio-feature-parity.md
+@@ -0,0 +1,71 @@
++# PR_26171_061 Text To Speech Engine Audio Feature Parity
++
++## Summary
++
++Restored active Text To Speech feature parity from the archived `old_text2speech-V2` functionality sample while keeping active implementation in `toolbox/text-to-speech/` and reusable engine behavior in `src/engine/audio/`.
++
++## Changed Scope
++
++- Rebuilt reusable Text To Speech voice filtering, preset shaping, and queue-item helpers in `src/engine/audio/TextToSpeechEngine.js`.
++- Expanded `toolbox/text-to-speech/index.html` with Theme V2 controls for the old V2 feature set.
++- Rebuilt `toolbox/text-to-speech/text2speech.js` so the active tool consumes the engine audio module.
++- Expanded targeted browser validation in `tests/playwright/tools/TextToSpeechFunctional.spec.mjs`.
++- Updated Playwright V8 coverage artifacts for changed runtime JavaScript.
++
++## Requirement Checklist
++
++- PASS: Used `archive/v1-v2/tools/old_text2speech-V2/` as the required functionality sample.
++- PASS: Reusable TTS behavior lives in `src/engine/audio/`.
++- PASS: `toolbox/text-to-speech/` consumes `src/engine/audio/TextToSpeechEngine.js`.
++- PASS: Restored old controls/options/features in the active tool.
++- PASS: Browser SpeechSynthesis provider remains implemented.
++- PASS: Planned provider adapters do not block browser preview behavior.
++- PASS: No `tools/text2speech/` path was created.
++- PASS: No database files were changed.
++- PASS: Theme V2 remains the styling source.
++- PASS: HTML uses external JavaScript only.
++- PASS: No inline script, style, or event handler was added.
++
++## Restored Feature Set
++
++- Import JSON.
++- Copy JSON.
++- Export JSON.
++- Project Workspace return action during workspace launch.
++- Gender helper filter.
++- Language filter.
++- Browser voice selection.
++- Voice details.
++- Voice age shaping.
++- Character presets.
++- SSML-like presets.
++- Volume, rate, and pitch sliders with visible values.
++- Named sentence Name field.
++- Add, Duplicate, and Delete named sentence actions.
++- Text To Speak editor.
++- Speak, Pause, Resume, and Stop playback actions.
++- Named Sentences queue.
++- Output Summary JSON.
++- Clearable Status log.
++- URL JSON preset loading through `samplePresetPath`.
++- Project Workspace toolState loading and dirty-state writeback.
++
++## Validation Summary
++
++- PASS: `node --check src\engine\audio\TextToSpeechEngine.js`
++- PASS: `node --check toolbox\text-to-speech\text2speech.js`
++- PASS: `node --test tests\tools\Text2SpeechShell.test.mjs`
++- PASS: `npx playwright test tests/playwright/tools/TextToSpeechFunctional.spec.mjs`
++- PASS: `npm run test:workspace-v2`
++  - Note: command name is legacy; user-facing language is Project Workspace.
++- PASS: `git diff --check`
++- PASS: changed runtime JS coverage collected for `src/engine/audio/TextToSpeechEngine.js`.
++- PASS: changed runtime JS coverage collected for `toolbox/text-to-speech/text2speech.js`.
++
++## Out Of Scope
++
++- No database changes.
++- No external paid provider implementation.
++- No generated audio file export provider.
++- No new `tools/text2speech/` path.
++- No archived tool activation.
+diff --git a/docs_build/dev/reports/PR_26171_061-validation.md b/docs_build/dev/reports/PR_26171_061-validation.md
+new file mode 100644
+index 000000000..f8d339260
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26171_061-validation.md
+@@ -0,0 +1,40 @@
++# PR_26171_061 Validation Report
++
++## Commands Run
++
++- `node --check src\engine\audio\TextToSpeechEngine.js`
++  - PASS.
++- `node --check toolbox\text-to-speech\text2speech.js`
++  - PASS.
++- `node --test tests\tools\Text2SpeechShell.test.mjs`
++  - PASS: 3 tests passed.
++- `npx playwright test tests/playwright/tools/TextToSpeechFunctional.spec.mjs`
++  - PASS: 2 tests passed.
++  - Covers restored controls, preset shaping, queue add/duplicate/delete, output summary, pause/resume, speak, stop, and unavailable SpeechSynthesis error handling.
 +- `npm run test:workspace-v2`
-+  - SKIP: legacy command name for Project Workspace/Game Hub validation; no workspace or toolState behavior changed.
-+- `npm run test:playwright:static`
-+  - SKIP: command name is Playwright-scoped and this PR explicitly says no Playwright.
-+- Runtime, tool, engine, samples, and browser validation
-+  - SKIP: docs/workflow-only change.
++  - PASS: 5 Project Workspace tests passed.
++  - Note: command name is legacy; user-facing language is Project Workspace.
++  - Note: first execution used a 120s timeout and timed out before completion; rerun with a longer timeout completed successfully.
++- `git diff --check`
++  - PASS.
++
++## Coverage
++
++- PASS: `docs_build/dev/reports/playwright_v8_coverage_report.txt` produced changed runtime JS coverage.
++- PASS: `docs_build/dev/reports/coverage_changed_js_guardrail.txt` reports no changed runtime JS coverage warnings.
++- PASS: `src/engine/audio/TextToSpeechEngine.js` covered at 71%.
++- PASS: `toolbox/text-to-speech/text2speech.js` covered at 71%.
 +
 +## Artifact Verification
 +
 +- PASS: `docs_build/dev/reports/codex_review.diff` exists.
 +- PASS: `docs_build/dev/reports/codex_changed_files.txt` exists.
-+- PASS: `tmp/PR_26171_063-codex-instruction-enforcement-hardening_delta.zip` exists.
++- PASS: `tmp/PR_26171_061-text2speech-engine-audio-feature-parity_delta.zip` exists.
 +- PASS: ZIP size is greater than zero.
 +- PASS: ZIP contents preserve repo-relative paths.
++
++## Skipped
++
++- Full samples validation skipped because no sample JSON or sample runtime behavior changed.
++- Database validation skipped because no database files or runtime persistence changed.
++- External provider validation skipped because paid/provider generation is out of scope and browser SpeechSynthesis is the implemented provider for this PR.
+diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+index 076d27690..807990e9f 100644
+--- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+@@ -6,10 +6,8 @@ Missing changed runtime JS files are WARN, not FAIL.
+ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+
+ Changed runtime JS files considered:
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(70%) toolbox/idea-board/index.js - executed lines 480/480; executed functions 23/33
++(71%) src/engine/audio/TextToSpeechEngine.js - executed lines 412/412; executed functions 37/52
++(71%) toolbox/text-to-speech/text2speech.js - executed lines 835/835; executed functions 61/86
+
+ Guardrail warnings:
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(100%) none - no changed runtime JS coverage warnings
+diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+index cb35b4d50..dd573eabd 100644
+--- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
++++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+@@ -12,35 +12,28 @@ Note: entry percentages use function coverage when available, otherwise line cov
+ Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
+
+ Exercised tool entry points detected:
+-(78%) Toolbox Index - exercised 4 runtime JS files
++(72%) Toolbox Index - exercised 2 runtime JS files
+ (0%) Tool Template V2 - not exercised by this Playwright run
+-(63%) Theme V2 Shared JS - exercised 2 runtime JS files
++(56%) Theme V2 Shared JS - exercised 2 runtime JS files
+
+ Changed runtime JS files covered:
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(70%) toolbox/idea-board/index.js - executed lines 480/480; executed functions 23/33
++(71%) src/engine/audio/TextToSpeechEngine.js - executed lines 412/412; executed functions 37/52
++(71%) toolbox/text-to-speech/text2speech.js - executed lines 835/835; executed functions 61/86
+
+ Files with executed line/function counts where available:
+-(25%) src/api/session-api-client.js - executed lines 68/68; executed functions 3/12
+-(33%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
+-(44%) src/api/server-api-client.js - executed lines 167/167; executed functions 8/18
+-(63%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 54/86
++(36%) src/api/server-api-client.js - executed lines 167/167; executed functions 5/14
++(38%) src/api/public-config-client.js - executed lines 209/209; executed functions 10/26
++(54%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 46/85
+ (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
+-(65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
+-(67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
+-(67%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 20/20; executed functions 2/3
+-(70%) toolbox/idea-board/index.js - executed lines 480/480; executed functions 23/33
+-(78%) toolbox/tools-page-accordions.js - executed lines 1156/1156; executed functions 87/111
+-(86%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 25/29
++(71%) src/engine/audio/TextToSpeechEngine.js - executed lines 412/412; executed functions 37/52
++(71%) toolbox/text-to-speech/text2speech.js - executed lines 835/835; executed functions 61/86
++(76%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 22/29
++(100%) src/engine/audio/TextToSpeechDefaults.js - executed lines 108/108; executed functions 1/1
+
+ Uncovered or low-coverage changed JS files:
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
++(100%) none - no low-coverage changed runtime JS files
+
+ Changed JS files considered:
+-(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
+-(0%) src/shared/toolbox/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/IdeaBoardTableNotes.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
+-(70%) toolbox/idea-board/index.js - changed JS file with browser V8 coverage
++(0%) tests/playwright/tools/TextToSpeechFunctional.spec.mjs - changed JS file not collected as browser runtime coverage
++(71%) src/engine/audio/TextToSpeechEngine.js - changed JS file with browser V8 coverage
++(71%) toolbox/text-to-speech/text2speech.js - changed JS file with browser V8 coverage
+diff --git a/src/engine/audio/TextToSpeechEngine.js b/src/engine/audio/TextToSpeechEngine.js
+index c8e1dced3..a5f3ccabd 100644
+--- a/src/engine/audio/TextToSpeechEngine.js
++++ b/src/engine/audio/TextToSpeechEngine.js
+@@ -1,7 +1,10 @@
+ import {
++  TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS,
+   TEXT_TO_SPEECH_DEFAULTS,
+   TEXT_TO_SPEECH_DISPLAY_NAME,
+-  TEXT_TO_SPEECH_RANGE_DEFAULTS
++  TEXT_TO_SPEECH_RANGE_DEFAULTS,
++  TEXT_TO_SPEECH_SSML_LIKE_PRESET_DEFAULTS,
++  TEXT_TO_SPEECH_VOICE_AGE_PRESET_DEFAULTS
+ } from "./TextToSpeechDefaults.js";
+
+ function finiteNumber(value, fallback) {
+@@ -9,8 +12,180 @@ function finiteNumber(value, fallback) {
+   return Number.isFinite(number) ? number : fallback;
+ }
+
+-function boundedNumber(value, { fallback, max, min }) {
+-  return Math.min(max, Math.max(min, finiteNumber(value, fallback)));
++function boundedNumber(value, { fallback, max, min, value: defaultValue }) {
++  const fallbackValue = fallback ?? defaultValue ?? min;
++  return Math.min(max, Math.max(min, finiteNumber(value, fallbackValue)));
++}
++
++function shapedNumber(value, { fallback, max, min, step }) {
++  const boundedValue = boundedNumber(value, { fallback, max, min });
++  const stepText = String(step || "1");
++  const decimalPart = stepText.includes(".") ? stepText.split(".")[1] : "";
++  const multiplier = 10 ** decimalPart.length;
++  return Math.round(boundedValue * multiplier) / multiplier;
++}
++
++function textToSpeechSlugFromName(name) {
++  const slug = String(name || "")
++    .trim()
++    .toLowerCase()
++    .replace(/[^a-z0-9]+/g, "-")
++    .replace(/^-+|-+$/g, "");
++  return slug || "speech-item";
++}
++
++function textToSpeechVoiceGender(option) {
++  const voiceText = `${option?.gender || ""} ${option?.name || ""} ${option?.label || ""}`;
++  const voiceLanguage = String(option?.language || "").toLowerCase();
++  if (/\bneutral\b|\bnon[-\s]?binary\b|\bandrogynous\b/i.test(voiceText)) return "neutral";
++  if (voiceLanguage === "es-es" || /\bmale\b|\bman\b|\bdavid\b|\bmark\b/i.test(voiceText)) return "male";
++  if (/\bfemale\b|\bwoman\b|\bzira\b/i.test(voiceText)) return "female";
++  return "unknown";
++}
++
++function genderFilterLabel(value) {
++  if (value === "male-preferred") return "Male";
++  if (value === "female-preferred") return "Female";
++  if (value === "neutral") return "Neutral";
++  return "Any";
++}
++
++function ageFilterLabel(value) {
++  if (value === "adult") return "Adult";
++  if (value === "child") return "Child";
++  if (value === "elderly") return "Elderly";
++  if (value === "teen") return "Teen";
++  return "Any";
++}
++
++function payloadGenderValue(value) {
++  return value === "neutral" ? "any" : value;
++}
++
++function filterTextToSpeechVoicesByGender(voiceOptions, genderFilter = "any") {
++  if (genderFilter === "any") return voiceOptions;
++  if (genderFilter === "male-preferred") {
++    return voiceOptions.filter((option) => textToSpeechVoiceGender(option) === "male");
++  }
++  if (genderFilter === "female-preferred") {
++    return voiceOptions.filter((option) => textToSpeechVoiceGender(option) === "female");
++  }
++  if (genderFilter === "neutral") {
++    return voiceOptions.filter((option) => ["neutral", "unknown"].includes(textToSpeechVoiceGender(option)));
++  }
++  return voiceOptions;
++}
++
++function optionLabelCompare(left, right) {
++  return String(left.label).localeCompare(String(right.label), undefined, {
++    numeric: true,
++    sensitivity: "base"
++  });
++}
++
++function textToSpeechLanguageOptionsFromVoices(voiceOptions) {
++  const languageCounts = new Map();
++  voiceOptions.forEach((option) => {
++    const language = String(option.language || "").trim();
++    if (language) {
++      languageCounts.set(language, (languageCounts.get(language) || 0) + 1);
++    }
++  });
++  return Array.from(languageCounts.entries())
++    .map(([language, count]) => ({
++      label: `${language} (${count} ${count === 1 ? "voice" : "voices"})`,
++      value: language
++    }))
++    .sort(optionLabelCompare);
++}
++
++function filterTextToSpeechVoiceOptions(voiceOptions, { gender = "any", language = "" } = {}) {
++  const filteredByGender = filterTextToSpeechVoicesByGender(voiceOptions, gender);
++  const matchingVoices = filteredByGender
++    .filter((option) => !language || option.language === language)
++    .sort(optionLabelCompare);
++  return {
++    filteredVoiceCount: filteredByGender.length,
++    gender,
++    genderLabel: genderFilterLabel(gender),
++    language,
++    languageOptions: textToSpeechLanguageOptionsFromVoices(filteredByGender),
++    matchingVoices,
++    voiceCount: voiceOptions.length
++  };
++}
++
++function shapeTextToSpeechOptions({
++  characterPreset = TEXT_TO_SPEECH_DEFAULTS.characterPreset,
++  pitch = TEXT_TO_SPEECH_DEFAULTS.pitch,
++  rate = TEXT_TO_SPEECH_DEFAULTS.rate,
++  ssmlLikePreset = TEXT_TO_SPEECH_DEFAULTS.ssmlLikePreset,
++  voiceAge = TEXT_TO_SPEECH_DEFAULTS.voiceAge,
++  volume = TEXT_TO_SPEECH_DEFAULTS.volume
++} = {}, sliderOverrides = {}) {
++  const character = TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS[characterPreset] || TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS.manual;
++  const age = TEXT_TO_SPEECH_VOICE_AGE_PRESET_DEFAULTS[voiceAge] || TEXT_TO_SPEECH_VOICE_AGE_PRESET_DEFAULTS.any;
++  const ssmlLike = TEXT_TO_SPEECH_SSML_LIKE_PRESET_DEFAULTS[ssmlLikePreset] || TEXT_TO_SPEECH_SSML_LIKE_PRESET_DEFAULTS.normal;
++  return {
++    characterPreset,
++    pitch: sliderOverrides.pitch
++      ? boundedNumber(pitch, TEXT_TO_SPEECH_RANGE_DEFAULTS.pitch)
++      : shapedNumber(Number(character.pitch) + Number(age.pitchOffset) + Number(ssmlLike.pitchOffset), TEXT_TO_SPEECH_RANGE_DEFAULTS.pitch),
++    rate: sliderOverrides.rate
++      ? boundedNumber(rate, TEXT_TO_SPEECH_RANGE_DEFAULTS.rate)
++      : shapedNumber(Number(character.rate) * Number(age.rateMultiplier) * Number(ssmlLike.rateMultiplier), TEXT_TO_SPEECH_RANGE_DEFAULTS.rate),
++    ssmlLikePreset,
++    voiceAge,
++    volume: sliderOverrides.volume
++      ? boundedNumber(volume, TEXT_TO_SPEECH_RANGE_DEFAULTS.volume)
++      : shapedNumber(Number(character.volume) * Number(ssmlLike.volumeMultiplier), TEXT_TO_SPEECH_RANGE_DEFAULTS.volume)
++  };
++}
++
++function uniqueTextToSpeechName(baseName, existingItems = []) {
++  const requestedName = String(baseName || "").trim() || "New speech item";
++  const existingNames = new Set(existingItems.map((item) => item.name));
++  if (!existingNames.has(requestedName)) return requestedName;
++  for (let index = 2; index < 1000; index += 1) {
++    const candidate = `${requestedName} ${index}`;
++    if (!existingNames.has(candidate)) return candidate;
++  }
++  return `${requestedName} ${Date.now().toString(36)}`;
++}
++
++function uniqueTextToSpeechId(baseName, existingItems = []) {
++  const existingIds = new Set(existingItems.map((item) => item.id));
++  const baseId = textToSpeechSlugFromName(baseName);
++  if (!existingIds.has(baseId)) return baseId;
++  for (let index = 2; index < 1000; index += 1) {
++    const candidate = `${baseId}-${index}`;
++    if (!existingIds.has(candidate)) return candidate;
++  }
++  return `${baseId}-${Date.now().toString(36)}`;
++}
++
++function createTextToSpeechQueueItem({
++  existingItems = [],
++  id = "",
++  name = "",
++  text = "",
++  ...options
++} = {}) {
++  const itemName = uniqueTextToSpeechName(name, id ? [] : existingItems);
++  return {
++    characterPreset: options.characterPreset || TEXT_TO_SPEECH_DEFAULTS.characterPreset,
++    gender: payloadGenderValue(options.gender || TEXT_TO_SPEECH_DEFAULTS.gender),
++    id: id || uniqueTextToSpeechId(itemName, existingItems),
++    language: options.language || TEXT_TO_SPEECH_DEFAULTS.language,
++    name: itemName,
++    pitch: boundedNumber(options.pitch, TEXT_TO_SPEECH_RANGE_DEFAULTS.pitch),
++    rate: boundedNumber(options.rate, TEXT_TO_SPEECH_RANGE_DEFAULTS.rate),
++    ssmlLikePreset: options.ssmlLikePreset || TEXT_TO_SPEECH_DEFAULTS.ssmlLikePreset,
++    text: String(text || "").trim() || "New speech line.",
++    voice: String(options.voice || ""),
++    voiceAge: options.voiceAge || TEXT_TO_SPEECH_DEFAULTS.voiceAge,
++    volume: boundedNumber(options.volume, TEXT_TO_SPEECH_RANGE_DEFAULTS.volume)
++  };
+ }
+
+ class TextToSpeechEngine {
+@@ -58,6 +233,18 @@ class TextToSpeechEngine {
+       }));
+   }
+
++  filterVoiceOptions(options = {}) {
++    return filterTextToSpeechVoiceOptions(this.voiceOptions(), options);
++  }
++
++  shapeOptions(options = {}, sliderOverrides = {}) {
++    return shapeTextToSpeechOptions(options, sliderOverrides);
++  }
++
++  createQueueItem(options = {}) {
++    return createTextToSpeechQueueItem(options);
++  }
++
+   voiceForValue(value) {
+     const normalizedValue = String(value || "").trim();
+     if (!normalizedValue) {
+@@ -248,5 +435,18 @@ class TextToSpeechEngine {
+   }
+ }
+
+-export { TextToSpeechEngine };
++export {
++  ageFilterLabel as textToSpeechAgeFilterLabel,
++  createTextToSpeechQueueItem,
++  filterTextToSpeechVoiceOptions,
++  genderFilterLabel as textToSpeechGenderFilterLabel,
++  payloadGenderValue as textToSpeechPayloadGenderValue,
++  shapeTextToSpeechOptions,
++  textToSpeechLanguageOptionsFromVoices,
++  textToSpeechSlugFromName,
++  textToSpeechVoiceGender,
++  TextToSpeechEngine,
++  uniqueTextToSpeechId,
++  uniqueTextToSpeechName
++};
+ export default TextToSpeechEngine;
+diff --git a/tests/playwright/tools/TextToSpeechFunctional.spec.mjs b/tests/playwright/tools/TextToSpeechFunctional.spec.mjs
+index ccf95e3e3..17e2c0b62 100644
+--- a/tests/playwright/tools/TextToSpeechFunctional.spec.mjs
++++ b/tests/playwright/tools/TextToSpeechFunctional.spec.mjs
+@@ -66,7 +66,13 @@ async function openTextToSpeechPage(page, { speechAvailable = true } = {}) {
+         getVoices() {
+           return voices;
+         },
++        pause() {
++          window.__textToSpeechCalls.push({ type: "pause" });
++        },
+         removeEventListener() {},
++        resume() {
++          window.__textToSpeechCalls.push({ type: "resume" });
++        },
+         speak(utterance) {
+           window.__textToSpeechCalls.push({
+             lang: utterance.lang,
+@@ -101,8 +107,22 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
+     await expect(page.locator("[data-tts-voice-select]")).toContainText("Arcade Voice");
+     await expect(page.locator("[data-tts-voice-count]")).toHaveText("2");
+     await expect(page.locator("[data-tts-engine-label]")).toHaveText("Ready");
++    await expect(page.locator("[data-tts-gender-select]")).toBeVisible();
++    await expect(page.locator("[data-tts-language-select]")).toBeVisible();
++    await expect(page.locator("[data-tts-age-select]")).toBeVisible();
++    await expect(page.locator("[data-tts-character-preset-select]")).toBeVisible();
++    await expect(page.locator("[data-tts-ssml-preset-select]")).toBeVisible();
++    await expect(page.locator("[data-tts-import-json]")).toBeEnabled();
++    await expect(page.locator("[data-tts-copy-json]")).toBeEnabled();
++    await expect(page.locator("[data-tts-export-json]")).toBeEnabled();
+
+     await page.locator("[data-tts-text-input]").fill("Launch the next wave.");
++    await page.locator("[data-tts-item-name]").fill("Wave intro");
++    await page.locator("[data-tts-character-preset-select]").selectOption("dramatic");
++    await page.locator("[data-tts-age-select]").selectOption("teen");
++    await page.locator("[data-tts-ssml-preset-select]").selectOption("whisper-ish");
++    await expect(page.locator("[data-tts-pitch-value]")).toHaveText("1.1");
++    await expect(page.locator("[data-tts-volume-value]")).toHaveText("0.6");
+     await page.locator("[data-tts-voice-select]").selectOption("arcade-voice-uri");
+     await page.locator("[data-tts-rate]").fill("1.4");
+     await page.locator("[data-tts-pitch]").fill("0.8");
+@@ -111,6 +131,13 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
+     await expect(page.locator("[data-tts-pitch-value]")).toHaveText("0.8");
+     await expect(page.locator("[data-tts-volume-value]")).toHaveText("0.55");
+     await expect(page.locator("[data-tts-text-count]")).toHaveText("21");
++    await page.locator("[data-tts-add-item]").click();
++    await expect(page.locator("[data-tts-queue-list]")).toContainText("Wave intro");
++    await expect(page.locator("[data-tts-output-summary]")).toContainText("\"name\": \"Wave intro\"");
++    await page.locator("[data-tts-duplicate-item]").click();
++    await expect(page.locator("[data-tts-queue-list]")).toContainText("Wave intro 2 copy");
++    await page.locator("[data-tts-delete-item]").click();
++    await expect(page.locator("[data-tts-queue-list] [data-tts-queue-item]")).toHaveCount(2);
+
+     await expect(page.locator("[data-tts-speak]")).toBeEnabled();
+     await page.locator("[data-tts-speak]").click();
+@@ -126,10 +153,13 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
+       volume: 0.55,
+     }));
+
++    await page.locator("[data-tts-pause]").click();
++    await page.locator("[data-tts-resume]").click();
+     await page.locator("[data-tts-stop]").click();
+     await expect(page.locator("[data-tts-status]")).toContainText("Speech stopped");
+     calls = await page.evaluate(() => window.__textToSpeechCalls);
+     expect(calls.at(-1)).toEqual({ type: "cancel" });
++    expect(calls).toEqual(expect.arrayContaining([{ type: "pause" }, { type: "resume" }]));
+
+     expect(failures.failedRequests).toEqual([]);
+     expect(failures.pageErrors).toEqual([]);
+diff --git a/toolbox/text-to-speech/index.html b/toolbox/text-to-speech/index.html
+index adaaff3a7..f5b29b19a 100644
+--- a/toolbox/text-to-speech/index.html
++++ b/toolbox/text-to-speech/index.html
+@@ -6,7 +6,7 @@
+     <base href="/">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+     <title>Text To Speech - GameFoundryStudio</title>
+-    <meta name="description" content="Functional browser Text To Speech tool using Theme V2 and the Web Speech API.">
++    <meta name="description" content="Functional browser Text To Speech tool using Theme V2 and the shared engine audio Text To Speech module.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+ </head>
+@@ -18,52 +18,100 @@
+             <div class="container">
+                 <div class="kicker">Project Workspace / Audio</div>
+                 <h1>Text To Speech</h1>
+-                <p class="lede">Preview spoken game text with local browser speech synthesis before deciding whether a generated audio provider is needed.</p>
++                <p class="lede">Create named speech lines, shape browser voices, and preview spoken game text through the shared engine audio Text To Speech module.</p>
+             </div>
+         </section>
+         <section class="section">
+             <div class="container container--tool-wide">
++                <nav class="action-group" aria-label="Text To Speech JSON actions" data-tts-standalone-actions>
++                    <button class="btn" type="button" data-tts-import-json>Import JSON</button>
++                    <input type="file" accept="application/json,.json" hidden data-tts-import-json-input>
++                    <button class="btn" type="button" data-tts-copy-json>Copy JSON</button>
++                    <button class="btn" type="button" data-tts-export-json>Export JSON</button>
++                </nav>
++                <nav class="action-group" aria-label="Project Workspace actions" hidden data-tts-workspace-actions>
++                    <button class="btn" type="button" data-tts-return-workspace>Return to Project Workspace</button>
++                </nav>
+                 <div class="tool-workspace tool-workspace--wide">
+                     <aside class="tool-column tool-group-audio">
+                         <div class="tool-column-header">
+-                            <h2>Script</h2>
++                            <h2>Speech Options</h2>
+                         </div>
+                         <div class="accordion-stack">
+                             <details class="vertical-accordion" open>
+-                                <summary>Text</summary>
++                                <summary>Voice Filters</summary>
+                                 <div class="accordion-body content-stack">
+-                                    <label for="ttsTextInput">Speech Text</label>
+-                                    <textarea id="ttsTextInput" data-tts-text-input>Welcome to the arena, hero.</textarea>
+-                                    <p class="field-hint">Enter narration, dialog, tutorial text, menu feedback, or any short line you want to preview.</p>
++                                    <label for="ttsGenderSelect">Gender</label>
++                                    <select id="ttsGenderSelect" data-tts-gender-select></select>
++                                    <label for="ttsLanguageSelect">Language</label>
++                                    <select id="ttsLanguageSelect" data-tts-language-select></select>
++                                    <label for="ttsVoiceSelect">Voice</label>
++                                    <select id="ttsVoiceSelect" data-tts-voice-select></select>
++                                    <p class="field-hint" data-tts-voice-details>No browser voices loaded yet.</p>
+                                 </div>
+                             </details>
+                             <details class="vertical-accordion" open>
+-                                <summary>Browser Voice</summary>
++                                <summary>Presets</summary>
+                                 <div class="accordion-body content-stack">
+-                                    <label for="ttsVoiceSelect">Voice</label>
+-                                    <select id="ttsVoiceSelect" data-tts-voice-select></select>
+-                                    <p class="field-hint" data-tts-voice-details>No browser voices loaded yet.</p>
++                                    <label for="ttsVoiceAgeSelect">Voice Age</label>
++                                    <select id="ttsVoiceAgeSelect" data-tts-age-select></select>
++                                    <label for="ttsCharacterPresetSelect">Character Preset</label>
++                                    <select id="ttsCharacterPresetSelect" data-tts-character-preset-select></select>
++                                    <label for="ttsSsmlPresetSelect">SSML-like Preset</label>
++                                    <select id="ttsSsmlPresetSelect" data-tts-ssml-preset-select></select>
++                                </div>
++                            </details>
++                            <details class="vertical-accordion" open>
++                                <summary>Delivery</summary>
++                                <div class="accordion-body content-stack">
++                                    <div class="slider-value-row">
++                                        <label for="ttsVolume">Volume</label>
++                                        <input id="ttsVolume" type="range" data-tts-volume>
++                                        <output for="ttsVolume" class="slider-current-value" data-tts-volume-value>1</output>
++                                    </div>
++                                    <div class="slider-value-row">
++                                        <label for="ttsRate">Rate / Speed</label>
++                                        <input id="ttsRate" type="range" data-tts-rate>
++                                        <output for="ttsRate" class="slider-current-value" data-tts-rate-value>1</output>
++                                    </div>
++                                    <div class="slider-value-row">
++                                        <label for="ttsPitch">Pitch</label>
++                                        <input id="ttsPitch" type="range" data-tts-pitch>
++                                        <output for="ttsPitch" class="slider-current-value" data-tts-pitch-value>1</output>
++                                    </div>
++                                    <p class="field-hint">Voice Age and SSML-like presets shape rate, pitch, and volume. Manual slider changes are preserved until a new character preset is selected.</p>
++                                </div>
++                            </details>
++                            <details class="vertical-accordion" open>
++                                <summary>Named Sentence</summary>
++                                <div class="accordion-body content-stack">
++                                    <label for="ttsSpeechItemName">Name</label>
++                                    <input id="ttsSpeechItemName" type="text" autocomplete="off" data-tts-item-name>
++                                    <div class="action-group" aria-label="Named sentence actions">
++                                        <button class="btn" type="button" data-tts-add-item>Add</button>
++                                        <button class="btn" type="button" data-tts-duplicate-item>Duplicate</button>
++                                        <button class="btn" type="button" data-tts-delete-item>Delete</button>
++                                    </div>
+                                 </div>
+                             </details>
+                         </div>
+                     </aside>
+                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="text-to-speech" data-tool-icon-src="assets/theme-v2/images/badges/text-to-speech.png" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
+                     <section class="tool-center-panel">
+-                        <h2>Browser Preview</h2>
+-                        <p>Use the browser Web Speech API for immediate local preview. This does not create files, call paid providers, or fake generated audio.</p>
+-                        <div class="grid cols-3" aria-label="Text To Speech browser preview summary">
++                        <h2>Speech Composition</h2>
++                        <div class="grid cols-3" aria-label="Text To Speech summary">
+                             <article class="mini-stat"><strong data-tts-text-count>0</strong>Characters</article>
+                             <article class="mini-stat"><strong data-tts-voice-count>0</strong>Voices</article>
+                             <article class="mini-stat"><strong data-tts-engine-label>Checking</strong>Engine</article>
+                         </div>
+                         <article class="card">
+                             <div class="card-body content-stack">
+-                                <div>
+-                                    <div class="kicker">Preview Controls</div>
+-                                    <h3>Speak Browser Preview</h3>
+-                                </div>
+-                                <div class="action-group">
+-                                    <button class="btn" type="button" data-tts-speak>Speak / Preview</button>
++                                <label for="ttsTextInput">Text To Speak</label>
++                                <textarea id="ttsTextInput" rows="10" autocomplete="off" data-tts-text-input>Welcome to the arena, hero.</textarea>
++                                <div class="action-group" aria-label="Speech playback actions">
++                                    <button class="btn" type="button" data-tts-speak>Speak</button>
++                                    <button class="btn" type="button" data-tts-pause>Pause</button>
++                                    <button class="btn" type="button" data-tts-resume>Resume</button>
+                                     <button class="btn" type="button" data-tts-stop>Stop</button>
+                                 </div>
+                                 <div class="status" role="status" data-tts-status>Loading browser Text To Speech.</div>
+@@ -72,45 +120,30 @@
+                         <article class="card">
+                             <div class="card-body content-stack">
+                                 <div>
+-                                    <div class="kicker">Ownership Boundary</div>
+-                                    <h3>Preview Only</h3>
++                                    <div class="kicker">Named Sentences</div>
++                                    <h3>Queue</h3>
+                                 </div>
+-                                <p>Message text remains Design-owned. Browser preview is local playback only. Future generated audio files remain Audio-owned when a real provider/export flow is added.</p>
++                                <div role="listbox" aria-label="Named Sentences" data-tts-queue-list></div>
+                             </div>
+                         </article>
+                     </section>
+                     <aside class="tool-column tool-group-audio">
+                         <div class="tool-column-header">
+-                            <h2>Voice Settings</h2>
++                            <h2>Output</h2>
+                         </div>
+                         <div class="accordion-stack">
+                             <details class="vertical-accordion" open>
+-                                <summary>Delivery</summary>
++                                <summary>Output Summary</summary>
+                                 <div class="accordion-body content-stack">
+-                                    <div class="field-group">
+-                                        <div class="slider-value-row">
+-                                            <label for="ttsRate">Rate</label>
+-                                            <input id="ttsRate" type="range" min="0.1" max="2" step="0.1" value="1" data-tts-rate>
+-                                            <output for="ttsRate" class="slider-current-value" data-tts-rate-value>1</output>
+-                                        </div>
+-                                        <div class="slider-value-row">
+-                                            <label for="ttsPitch">Pitch</label>
+-                                            <input id="ttsPitch" type="range" min="0.1" max="2" step="0.1" value="1" data-tts-pitch>
+-                                            <output for="ttsPitch" class="slider-current-value" data-tts-pitch-value>1</output>
+-                                        </div>
+-                                        <div class="slider-value-row">
+-                                            <label for="ttsVolume">Volume</label>
+-                                            <input id="ttsVolume" type="range" min="0" max="1" step="0.01" value="1" data-tts-volume>
+-                                            <output for="ttsVolume" class="slider-current-value" data-tts-volume-value>1</output>
+-                                        </div>
+-                                    </div>
++                                    <pre data-tts-output-summary>[]</pre>
+                                 </div>
+                             </details>
+                             <details class="vertical-accordion" open>
+                                 <summary>Engine Status</summary>
+                                 <div class="accordion-body content-stack">
+                                     <p data-tts-engine-status>Checking browser speech synthesis.</p>
+-                                    <p class="field-hint">If speech synthesis is unavailable, use a browser with Web Speech API support.</p>
++                                    <button class="btn" type="button" data-tts-clear-status>Clear Status</button>
++                                    <textarea readonly rows="10" aria-label="Status log" data-tts-status-log></textarea>
+                                 </div>
+                             </details>
+                         </div>
+diff --git a/toolbox/text-to-speech/text2speech.js b/toolbox/text-to-speech/text2speech.js
+index 03d785410..5ab111eeb 100644
+--- a/toolbox/text-to-speech/text2speech.js
++++ b/toolbox/text-to-speech/text2speech.js
+@@ -1,8 +1,31 @@
+-import { TextToSpeechEngine } from "../../src/engine/audio/TextToSpeechEngine.js";
++import {
++  createTextToSpeechQueueItem,
++  filterTextToSpeechVoiceOptions,
++  shapeTextToSpeechOptions,
++  textToSpeechPayloadGenderValue,
++  TextToSpeechEngine,
++  uniqueTextToSpeechId,
++  uniqueTextToSpeechName
++} from "../../src/engine/audio/TextToSpeechEngine.js";
++import {
++  TEXT_TO_SPEECH_AGE_FILTER_OPTIONS,
++  TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS,
++  TEXT_TO_SPEECH_CHARACTER_PRESET_OPTIONS,
++  TEXT_TO_SPEECH_DEFAULTS,
++  TEXT_TO_SPEECH_DISPLAY_NAME,
++  TEXT_TO_SPEECH_GENDER_FILTER_OPTIONS,
++  TEXT_TO_SPEECH_LANGUAGE_OPTIONS,
++  TEXT_TO_SPEECH_RANGE_DEFAULTS,
++  TEXT_TO_SPEECH_SCHEMA_ID,
++  TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS
++} from "../../src/engine/audio/TextToSpeechDefaults.js";
++
++const WORKSPACE_TOOL_STATE_KEY = "workspace.tools.text2speech-V2";
++const TTS_URL_SOURCE_PARAM = "samplePresetPath";
+
+ const TTS_OWNERSHIP = Object.freeze({
+   DESIGN: "Design",
+-  AUDIO: "Audio",
++  AUDIO: "Audio"
+ });
+
+ const TTS_MESSAGE_STATUSES = Object.freeze([
+@@ -11,17 +34,13 @@ const TTS_MESSAGE_STATUSES = Object.freeze([
+   "speaking",
+   "stopped",
+   "blocked",
+-  "archived",
++  "archived"
+ ]);
+
+-const TTS_LANGUAGES = Object.freeze([
+-  { code: "en-US", name: "English (United States)" },
+-  { code: "en-GB", name: "English (United Kingdom)" },
+-  { code: "es-ES", name: "Spanish (Spain)" },
+-  { code: "fr-FR", name: "French (France)" },
+-  { code: "de-DE", name: "German (Germany)" },
+-  { code: "ja-JP", name: "Japanese (Japan)" },
+-]);
++const TTS_LANGUAGES = Object.freeze(TEXT_TO_SPEECH_LANGUAGE_OPTIONS.map((option) => ({
++  code: option.value,
++  name: option.label
++})));
+
+ const TTS_PROVIDER_ADAPTER_PLAN = Object.freeze([
+   {
+@@ -29,48 +48,48 @@ const TTS_PROVIDER_ADAPTER_PLAN = Object.freeze([
+     name: "Browser Speech Synthesis",
+     status: "implemented",
+     boundary: "Local browser Web Speech API preview; no generated files.",
+-    requiredCapabilities: ["text input", "voice selection", "rate", "pitch", "volume", "speak", "stop"],
++    requiredCapabilities: ["text input", "voice selection", "rate", "pitch", "volume", "speak", "pause", "resume", "stop"]
+   },
+   {
+     key: "openai",
+     name: "OpenAI",
+     status: "planned",
+     boundary: "External provider adapter; no implementation in this PR.",
+-    requiredCapabilities: ["text input", "voice selection", "generated audio file response", "usage metadata"],
++    requiredCapabilities: ["text input", "voice selection", "generated audio file response", "usage metadata"]
+   },
+   {
+     key: "elevenlabs",
+     name: "ElevenLabs",
+     status: "planned",
+     boundary: "External provider adapter; no implementation in this PR.",
+-    requiredCapabilities: ["text input", "voice profile mapping", "generated audio file response", "provider job metadata"],
++    requiredCapabilities: ["text input", "voice profile mapping", "generated audio file response", "provider job metadata"]
+   },
+   {
+     key: "azure",
+     name: "Azure AI Speech",
+     status: "planned",
+     boundary: "External provider adapter; no implementation in this PR.",
+-    requiredCapabilities: ["SSML-safe text", "language mapping", "voice deployment mapping", "generated audio file response"],
++    requiredCapabilities: ["SSML-safe text", "language mapping", "voice deployment mapping", "generated audio file response"]
+   },
+   {
+     key: "local",
+     name: "Local Provider",
+     status: "planned",
+     boundary: "Local/offline adapter; no implementation in this PR.",
+-    requiredCapabilities: ["local model availability", "voice preset mapping", "file output", "device/runtime capability reporting"],
+-  },
++    requiredCapabilities: ["local model availability", "voice preset mapping", "file output", "device/runtime capability reporting"]
++  }
+ ]);
+
+-const RANGE_LIMITS = Object.freeze({
+-  pitch: Object.freeze({ fallback: 1, max: 2, min: 0.1 }),
+-  rate: Object.freeze({ fallback: 1, max: 2, min: 0.1 }),
+-  volume: Object.freeze({ fallback: 1, max: 1, min: 0 }),
+-});
+-
+-function boundedNumber(value, { fallback, max, min }) {
++function boundedNumber(value, { fallback, max, min, value: defaultValue }) {
+   const number = Number(value);
+-  if (!Number.isFinite(number)) return fallback;
+-  return Math.min(max, Math.max(min, number));
++  const fallbackValue = fallback ?? defaultValue ?? min;
++  return Math.min(max, Math.max(min, Number.isFinite(number) ? number : fallbackValue));
++}
++
++function formatRangeValue(value, kind) {
++  const limits = TEXT_TO_SPEECH_RANGE_DEFAULTS[kind] || TEXT_TO_SPEECH_RANGE_DEFAULTS.rate;
++  const boundedValue = boundedNumber(value, limits);
++  return String(Math.round(boundedValue * 100) / 100);
+ }
+
+ function createTtsMessage({
+@@ -81,7 +100,7 @@ function createTtsMessage({
+   voiceProfileKey = "browser-speech",
+   languageCode = "en-US",
+   status = "draft",
+-  metadata = {},
++  metadata = {}
+ } = {}) {
+   return {
+     id: String(id || "tts-message-draft"),
+@@ -97,9 +116,9 @@ function createTtsMessage({
+       creatorNotes: String(metadata.creatorNotes || ""),
+       intent: String(metadata.intent || ""),
+       sceneKey: String(metadata.sceneKey || ""),
+-      tags: Array.isArray(metadata.tags) ? metadata.tags.map(String) : [],
++      tags: Array.isArray(metadata.tags) ? metadata.tags.map(String) : []
+     },
+-    generatedAudio: null,
++    generatedAudio: null
+   };
+ }
+
+@@ -116,17 +135,17 @@ function createVoiceProfile({ key = "browser-speech", name = "Browser Speech", p
+     providerKey: String(providerKey),
+     voiceId: String(voiceId),
+     owner: TTS_OWNERSHIP.DESIGN,
+-    generatedAudioOwner: TTS_OWNERSHIP.AUDIO,
++    generatedAudioOwner: TTS_OWNERSHIP.AUDIO
+   };
+ }
+
+ function createSpeechPreviewRequest({
+-  pitch = 1,
+-  rate = 1,
++  pitch = TEXT_TO_SPEECH_DEFAULTS.pitch,
++  rate = TEXT_TO_SPEECH_DEFAULTS.rate,
+   text = "",
+   voice = "",
+   voiceOptions = [],
+-  volume = 1,
++  volume = TEXT_TO_SPEECH_DEFAULTS.volume
+ } = {}) {
+   const normalizedText = String(text || "").trim();
+   if (!normalizedText) {
+@@ -139,30 +158,38 @@ function createSpeechPreviewRequest({
+   }
+
+   return {
+-    language: selectedVoice.language || "en-US",
++    language: selectedVoice.language || TEXT_TO_SPEECH_DEFAULTS.language,
+     ok: true,
+-    pitch: boundedNumber(pitch, RANGE_LIMITS.pitch),
+-    rate: boundedNumber(rate, RANGE_LIMITS.rate),
++    pitch: boundedNumber(pitch, TEXT_TO_SPEECH_RANGE_DEFAULTS.pitch),
++    rate: boundedNumber(rate, TEXT_TO_SPEECH_RANGE_DEFAULTS.rate),
+     speechItemId: "browser-preview",
+     speechItemName: "Browser Preview",
+     text: normalizedText,
+     voice: selectedVoice.value,
+     voiceName: selectedVoice.name || selectedVoice.label || "selected voice",
+-    volume: boundedNumber(volume, RANGE_LIMITS.volume),
++    volume: boundedNumber(volume, TEXT_TO_SPEECH_RANGE_DEFAULTS.volume)
+   };
+ }
+
+ function previewTtsMessage(message, options = {}) {
+   return createSpeechPreviewRequest({
+     ...options,
+-    text: message?.text,
++    text: message?.text
+   });
+ }
+
+-function formatRangeValue(value, kind) {
+-  const limits = RANGE_LIMITS[kind] || RANGE_LIMITS.rate;
+-  const boundedValue = boundedNumber(value, limits);
+-  return String(Math.round(boundedValue * 100) / 100);
++function populateSelect(select, options, selectedValue = "") {
++  if (!select) return;
++  select.replaceChildren(...options.map((option) => {
++    const node = document.createElement("option");
++    node.value = String(option.value);
++    node.textContent = option.label;
++    node.selected = String(option.value) === String(selectedValue);
++    return node;
++  }));
++  if (options.some((option) => String(option.value) === String(selectedValue))) {
++    select.value = String(selectedValue);
++  }
+ }
+
+ function setTextContent(root, selector, text) {
+@@ -170,151 +197,682 @@ function setTextContent(root, selector, text) {
+   if (node) node.textContent = text;
+ }
+
+-function setStatus(root, message, state = "info") {
+-  const status = root.querySelector("[data-tts-status]");
+-  if (!status) return;
+-  status.textContent = message;
+-  status.dataset.ttsStatusState = state;
++function readFileText(file) {
++  return new Promise((resolve, reject) => {
++    const reader = new FileReader();
++    reader.addEventListener("load", () => resolve(String(reader.result || "")));
++    reader.addEventListener("error", () => reject(reader.error || new Error("File read failed.")));
++    reader.readAsText(file);
++  });
++}
++
++function downloadTextFile(text, filename, documentRef = document) {
++  const blob = new Blob([text], { type: "application/json" });
++  const url = URL.createObjectURL(blob);
++  const link = documentRef.createElement("a");
++  link.href = url;
++  link.download = filename;
++  documentRef.body.append(link);
++  link.click();
++  link.remove();
++  URL.revokeObjectURL(url);
+ }
+
+-function renderVoiceOptions(select, voiceOptions) {
+-  select.replaceChildren();
+-  if (voiceOptions.length === 0) {
+-    const option = document.createElement("option");
+-    option.value = "";
+-    option.textContent = "No browser voices available";
+-    select.append(option);
+-    select.value = "";
+-    return;
+-  }
+-  voiceOptions.forEach((voiceOption) => {
+-    const option = document.createElement("option");
+-    option.value = voiceOption.value;
+-    option.textContent = voiceOption.label;
+-    select.append(option);
+-  });
+-  select.value = voiceOptions[0].value;
++function isPlainObject(value) {
++  return Boolean(value && typeof value === "object" && !Array.isArray(value));
+ }
+
+-function collectSpeechRequest(root, voiceOptions) {
+-  return createSpeechPreviewRequest({
+-    pitch: root.querySelector("[data-tts-pitch]")?.value,
+-    rate: root.querySelector("[data-tts-rate]")?.value,
+-    text: root.querySelector("[data-tts-text-input]")?.value,
+-    voice: root.querySelector("[data-tts-voice-select]")?.value,
+-    voiceOptions,
+-    volume: root.querySelector("[data-tts-volume]")?.value,
+-  });
++function validateTextToSpeechPayload(payload, sourceLabel = "payload") {
++  if (!Array.isArray(payload)) {
++    return { ok: false, message: `${TEXT_TO_SPEECH_DISPLAY_NAME} ${sourceLabel} must be a root array.` };
++  }
++  const required = ["id", "name", "text", "gender", "language", "voice", "voiceAge", "volume", "rate", "pitch", "characterPreset", "ssmlLikePreset"];
++  for (const [index, item] of payload.entries()) {
++    if (!isPlainObject(item)) {
++      return { ok: false, message: `${TEXT_TO_SPEECH_DISPLAY_NAME} ${sourceLabel}[${index}] must be an object.` };
++    }
++    const missing = required.filter((key) => !Object.prototype.hasOwnProperty.call(item, key));
++    if (missing.length) {
++      return { ok: false, message: `${TEXT_TO_SPEECH_DISPLAY_NAME} ${sourceLabel}[${index}] missing: ${missing.join(", ")}.` };
++    }
++  }
++  return { ok: true };
++}
++
++function queueItemMeta(item) {
++  return [
++    item.language || "no language",
++    item.characterPreset || "manual",
++    item.voiceAge || "any"
++  ].join(" / ");
+ }
+
+ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeechEngine() } = {}) {
+-  const textInput = root.querySelector("[data-tts-text-input]");
+-  const voiceSelect = root.querySelector("[data-tts-voice-select]");
+-  const speakButton = root.querySelector("[data-tts-speak]");
+-  const stopButton = root.querySelector("[data-tts-stop]");
+-  const rateInput = root.querySelector("[data-tts-rate]");
+-  const pitchInput = root.querySelector("[data-tts-pitch]");
+-  const volumeInput = root.querySelector("[data-tts-volume]");
+-  let voiceOptions = [];
++  const elements = {
++    addItem: root.querySelector("[data-tts-add-item]"),
++    age: root.querySelector("[data-tts-age-select]"),
++    characterPreset: root.querySelector("[data-tts-character-preset-select]"),
++    clearStatus: root.querySelector("[data-tts-clear-status]"),
++    copyJson: root.querySelector("[data-tts-copy-json]"),
++    deleteItem: root.querySelector("[data-tts-delete-item]"),
++    duplicateItem: root.querySelector("[data-tts-duplicate-item]"),
++    exportJson: root.querySelector("[data-tts-export-json]"),
++    gender: root.querySelector("[data-tts-gender-select]"),
++    importJson: root.querySelector("[data-tts-import-json]"),
++    importJsonInput: root.querySelector("[data-tts-import-json-input]"),
++    itemName: root.querySelector("[data-tts-item-name]"),
++    language: root.querySelector("[data-tts-language-select]"),
++    outputSummary: root.querySelector("[data-tts-output-summary]"),
++    pause: root.querySelector("[data-tts-pause]"),
++    pitch: root.querySelector("[data-tts-pitch]"),
++    pitchValue: root.querySelector("[data-tts-pitch-value]"),
++    queueList: root.querySelector("[data-tts-queue-list]"),
++    rate: root.querySelector("[data-tts-rate]"),
++    rateValue: root.querySelector("[data-tts-rate-value]"),
++    resume: root.querySelector("[data-tts-resume]"),
++    returnWorkspace: root.querySelector("[data-tts-return-workspace]"),
++    speak: root.querySelector("[data-tts-speak]"),
++    ssmlPreset: root.querySelector("[data-tts-ssml-preset-select]"),
++    standaloneActions: root.querySelector("[data-tts-standalone-actions]"),
++    status: root.querySelector("[data-tts-status]"),
++    statusLog: root.querySelector("[data-tts-status-log]"),
++    stop: root.querySelector("[data-tts-stop]"),
++    text: root.querySelector("[data-tts-text-input]"),
++    voice: root.querySelector("[data-tts-voice-select]"),
++    volume: root.querySelector("[data-tts-volume]"),
++    volumeValue: root.querySelector("[data-tts-volume-value]"),
++    workspaceActions: root.querySelector("[data-tts-workspace-actions]")
++  };
++  const state = {
++    applyingItem: false,
++    queue: [],
++    selectedItemId: "",
++    sliderOverrides: { pitch: false, rate: false, volume: false },
++    voiceOptions: []
++  };
++
++  function writeStatus(message, level = "OK") {
++    const line = `${level} ${message}`;
++    if (elements.status) {
++      elements.status.textContent = message;
++      elements.status.dataset.ttsStatusState = level.toLowerCase();
++    }
++    if (elements.statusLog) {
++      elements.statusLog.value = elements.statusLog.value ? `${elements.statusLog.value}\n${line}` : line;
++      elements.statusLog.scrollTop = elements.statusLog.scrollHeight;
++    }
++  }
++
++  function selectedItem() {
++    return state.queue.find((item) => item.id === state.selectedItemId) || null;
++  }
++
++  function selectedVoiceOptions() {
++    return Array.from(elements.voice?.options || []).map((option) => ({
++      label: option.textContent || option.value,
++      language: elements.language?.value || TEXT_TO_SPEECH_DEFAULTS.language,
++      name: option.textContent || option.value,
++      value: option.value
++    })).filter((option) => option.value);
++  }
++
++  function currentOptions() {
++    return {
++      characterPreset: elements.characterPreset?.value || TEXT_TO_SPEECH_DEFAULTS.characterPreset,
++      gender: textToSpeechPayloadGenderValue(elements.gender?.value || TEXT_TO_SPEECH_DEFAULTS.gender),
++      language: elements.language?.value || TEXT_TO_SPEECH_DEFAULTS.language,
++      pitch: Number(elements.pitch?.value || TEXT_TO_SPEECH_DEFAULTS.pitch),
++      rate: Number(elements.rate?.value || TEXT_TO_SPEECH_DEFAULTS.rate),
++      ssmlLikePreset: elements.ssmlPreset?.value || TEXT_TO_SPEECH_DEFAULTS.ssmlLikePreset,
++      voice: elements.voice?.value || "",
++      voiceAge: elements.age?.value || TEXT_TO_SPEECH_DEFAULTS.voiceAge,
++      volume: Number(elements.volume?.value || TEXT_TO_SPEECH_DEFAULTS.volume)
++    };
++  }
++
++  function itemFromControls(overrides = {}) {
++    const currentItem = selectedItem();
++    return createTextToSpeechQueueItem({
++      ...currentOptions(),
++      existingItems: state.queue.filter((item) => item.id !== currentItem?.id),
++      id: overrides.id ?? currentItem?.id ?? "",
++      name: overrides.name ?? elements.itemName?.value ?? currentItem?.name ?? "New speech item",
++      text: overrides.text ?? elements.text?.value ?? currentItem?.text ?? ""
++    });
++  }
++
++  function syncRangeOutputs() {
++    if (elements.rate) elements.rate.value = formatRangeValue(elements.rate.value, "rate");
++    if (elements.pitch) elements.pitch.value = formatRangeValue(elements.pitch.value, "pitch");
++    if (elements.volume) elements.volume.value = formatRangeValue(elements.volume.value, "volume");
++    if (elements.rateValue) elements.rateValue.textContent = elements.rate?.value || "1";
++    if (elements.pitchValue) elements.pitchValue.textContent = elements.pitch?.value || "1";
++    if (elements.volumeValue) elements.volumeValue.textContent = elements.volume?.value || "1";
++  }
++
++  function configureRanges() {
++    [
++      { input: elements.volume, kind: "volume" },
++      { input: elements.rate, kind: "rate" },
++      { input: elements.pitch, kind: "pitch" }
++    ].forEach(({ input, kind }) => {
++      const range = TEXT_TO_SPEECH_RANGE_DEFAULTS[kind];
++      if (!input || !range) return;
++      input.min = String(range.min);
++      input.max = String(range.max);
++      input.step = String(range.step);
++      input.value = String(range.value);
++    });
++    syncRangeOutputs();
++  }
++
++  function applyShapedOptions({ resetOverrides = false } = {}) {
++    if (resetOverrides) {
++      state.sliderOverrides = { pitch: false, rate: false, volume: false };
++    }
++    const shaped = shapeTextToSpeechOptions(currentOptions(), state.sliderOverrides);
++    if (elements.rate && !state.sliderOverrides.rate) elements.rate.value = String(shaped.rate);
++    if (elements.pitch && !state.sliderOverrides.pitch) elements.pitch.value = String(shaped.pitch);
++    if (elements.volume && !state.sliderOverrides.volume) elements.volume.value = String(shaped.volume);
++    syncRangeOutputs();
++  }
++
++  function renderOutputSummary() {
++    if (elements.outputSummary) {
++      elements.outputSummary.textContent = JSON.stringify(state.queue, null, 2);
++    }
++    setTextContent(root, "[data-tts-text-count]", String(String(elements.text?.value || "").length));
++  }
++
++  function renderQueue() {
++    if (!elements.queueList) return;
++    elements.queueList.replaceChildren(...state.queue.map((item) => {
++      const button = document.createElement("button");
++      button.type = "button";
++      button.className = "btn";
++      button.dataset.ttsQueueItem = item.id;
++      button.setAttribute("role", "option");
++      button.setAttribute("aria-selected", String(item.id === state.selectedItemId));
++      button.textContent = `${item.name} - ${queueItemMeta(item)}`;
++      return button;
++    }));
++    renderOutputSummary();
++  }
++
++  function markWorkspaceDirty(reason, changedKeys = []) {
++    if (!isWorkspaceLaunch()) return;
++    const rawToolState = window.sessionStorage.getItem(WORKSPACE_TOOL_STATE_KEY);
++    if (!rawToolState) {
++      writeStatus(`Cannot mark ${TEXT_TO_SPEECH_DISPLAY_NAME} dirty: missing ${WORKSPACE_TOOL_STATE_KEY}.`, "FAIL");
++      return;
++    }
++    try {
++      const toolState = JSON.parse(rawToolState);
++      window.sessionStorage.setItem(WORKSPACE_TOOL_STATE_KEY, JSON.stringify({
++        ...toolState,
++        data: state.queue,
++        dirty: {
++          changedAt: new Date().toISOString(),
++          changedKeys,
++          isDirty: true,
++          reason
++        }
++      }));
++      writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} dirty state: true; reason=${reason}.`);
++    } catch (error) {
++      writeStatus(`Cannot mark ${TEXT_TO_SPEECH_DISPLAY_NAME} dirty: ${error.message}`, "FAIL");
++    }
++  }
++
++  function syncSelectedItemFromControls(reason, changedKeys = []) {
++    if (state.applyingItem) return;
++    const item = selectedItem();
++    if (!item) return;
++    const nextItem = itemFromControls({ id: item.id, name: elements.itemName?.value || item.name });
++    const index = state.queue.findIndex((entry) => entry.id === item.id);
++    if (index >= 0) {
++      state.queue[index] = nextItem;
++      state.selectedItemId = nextItem.id;
++      renderQueue();
++      markWorkspaceDirty(reason, changedKeys);
++    }
++  }
++
++  function selectItem(itemId, { writeLog = true } = {}) {
++    const item = state.queue.find((entry) => entry.id === itemId);
++    if (!item) return;
++    state.selectedItemId = item.id;
++    state.applyingItem = true;
++    try {
++      if (elements.itemName) elements.itemName.value = item.name;
++      if (elements.text) elements.text.value = item.text;
++      if (elements.gender) elements.gender.value = item.gender === "any" ? "any" : item.gender;
++      if (elements.age) elements.age.value = item.voiceAge;
++      if (elements.characterPreset) elements.characterPreset.value = item.characterPreset;
++      if (elements.ssmlPreset) elements.ssmlPreset.value = item.ssmlLikePreset;
++      if (elements.rate) elements.rate.value = String(item.rate);
++      if (elements.pitch) elements.pitch.value = String(item.pitch);
++      if (elements.volume) elements.volume.value = String(item.volume);
++      syncRangeOutputs();
++      refreshVoices({ selectedVoice: item.voice });
++    } finally {
++      state.applyingItem = false;
++    }
++    renderQueue();
++    refreshActionState();
++    if (writeLog) writeStatus(`Selected speech item: ${item.name}.`);
++  }
++
++  function addItem() {
++    const requestedName = String(elements.itemName?.value || "").trim();
++    if (!requestedName) {
++      writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} Add blocked: Name is required before creating a named speech item.`, "FAIL");
++      return;
++    }
++    const item = createTextToSpeechQueueItem({
++      ...currentOptions(),
++      existingItems: state.queue,
++      name: requestedName,
++      text: elements.text?.value || "New speech line."
++    });
++    state.queue.push(item);
++    state.selectedItemId = item.id;
++    renderQueue();
++    selectItem(item.id, { writeLog: false });
++    markWorkspaceDirty("speech-item-added", [`queue.${item.id}`]);
++    writeStatus(`Added speech item: ${item.name}.`);
++  }
++
++  function duplicateItem() {
++    const item = itemFromControls();
++    if (!selectedItem()) {
++      writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} duplicate failed: no named sentence is selected.`, "FAIL");
++      return;
++    }
++    const name = uniqueTextToSpeechName(`${item.name} copy`, state.queue);
++    const copy = {
++      ...item,
++      id: uniqueTextToSpeechId(name, state.queue),
++      name
++    };
++    state.queue.push(copy);
++    selectItem(copy.id, { writeLog: false });
++    markWorkspaceDirty("speech-item-duplicated", [`queue.${copy.id}`]);
++    writeStatus(`Duplicated speech item: ${copy.name}.`);
++  }
++
++  function deleteItem() {
++    const item = selectedItem();
++    if (!item) {
++      writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} delete failed: no named sentence is selected.`, "FAIL");
++      return;
++    }
++    const index = state.queue.findIndex((entry) => entry.id === item.id);
++    state.queue.splice(index, 1);
++    state.selectedItemId = state.queue[Math.min(index, state.queue.length - 1)]?.id || "";
++    renderQueue();
++    if (state.selectedItemId) {
++      selectItem(state.selectedItemId, { writeLog: false });
++    } else {
++      if (elements.itemName) elements.itemName.value = "";
++      if (elements.text) elements.text.value = "";
++      renderOutputSummary();
++    }
++    markWorkspaceDirty("speech-item-deleted", ["queue"]);
++    writeStatus(`Deleted speech item: ${item.name}.`);
++  }
+
+-  function syncRange(input, selector, kind) {
+-    if (!input) return;
+-    input.value = formatRangeValue(input.value, kind);
+-    setTextContent(root, selector, input.value);
++  function refreshVoices({ selectedVoice = elements.voice?.value || "" } = {}) {
++    state.voiceOptions = engine.voiceOptions();
++    const gender = elements.gender?.value || "any";
++    const filteredByGender = filterTextToSpeechVoiceOptions(state.voiceOptions, { gender });
++    const languageOptions = filteredByGender.languageOptions.length
++      ? filteredByGender.languageOptions
++      : TEXT_TO_SPEECH_LANGUAGE_OPTIONS;
++    const previousLanguage = elements.language?.value || TEXT_TO_SPEECH_DEFAULTS.language;
++    const language = languageOptions.some((option) => option.value === previousLanguage)
++      ? previousLanguage
++      : languageOptions[0]?.value || TEXT_TO_SPEECH_DEFAULTS.language;
++    populateSelect(elements.language, languageOptions, language);
++    const result = filterTextToSpeechVoiceOptions(state.voiceOptions, { gender, language });
++    populateSelect(elements.voice, result.matchingVoices.map((option) => ({
++      label: option.label,
++      value: option.value
++    })), selectedVoice);
++    if (elements.voice && !elements.voice.value && result.matchingVoices[0]) {
++      elements.voice.value = result.matchingVoices[0].value;
++    }
++    if (elements.voice && result.matchingVoices.length === 0) {
++      const option = document.createElement("option");
++      option.value = "";
++      option.textContent = state.voiceOptions.length ? `No ${result.genderLabel} voices for ${language}` : "No browser voices available";
++      elements.voice.replaceChildren(option);
++    }
++    setTextContent(root, "[data-tts-voice-count]", String(state.voiceOptions.length));
++    setTextContent(root, "[data-tts-voice-details]", state.voiceOptions.length
++      ? `${result.matchingVoices.length} matching ${result.genderLabel} voice${result.matchingVoices.length === 1 ? "" : "s"} for ${language}.`
++      : "No SpeechSynthesis voices loaded.");
++    refreshActionState();
++    return result;
+   }
+
+   function refreshActionState() {
+-    const hasText = Boolean(String(textInput?.value || "").trim());
+-    const hasVoice = Boolean(voiceSelect?.value);
++    const hasText = Boolean(String(elements.text?.value || "").trim());
++    const hasVoice = Boolean(elements.voice?.value);
+     const supported = engine.isSupported();
+-    if (speakButton) speakButton.disabled = !(supported && hasText && hasVoice);
+-    if (stopButton) stopButton.disabled = !supported;
+-    setTextContent(root, "[data-tts-text-count]", String(String(textInput?.value || "").length));
+-  }
+-
+-  function refreshVoices({ preserveSelection = true } = {}) {
+-    const previousVoice = voiceSelect?.value || "";
+-    voiceOptions = engine.voiceOptions();
+-    if (voiceSelect) {
+-      renderVoiceOptions(voiceSelect, voiceOptions);
+-      if (preserveSelection && voiceOptions.some((option) => option.value === previousVoice)) {
+-        voiceSelect.value = previousVoice;
++    if (elements.speak) elements.speak.disabled = !(supported && hasText && hasVoice && selectedItem());
++    if (elements.pause) elements.pause.disabled = !(engine.canPause() && selectedItem());
++    if (elements.resume) elements.resume.disabled = !(engine.canResume() && selectedItem());
++    if (elements.stop) elements.stop.disabled = !(supported && selectedItem());
++    if (elements.copyJson) elements.copyJson.disabled = isWorkspaceLaunch();
++    if (elements.exportJson) elements.exportJson.disabled = isWorkspaceLaunch();
++    if (elements.importJson) elements.importJson.disabled = isWorkspaceLaunch();
++    setTextContent(root, "[data-tts-text-count]", String(String(elements.text?.value || "").length));
++  }
++
++  function isWorkspaceLaunch() {
++    const params = new URLSearchParams(window.location.search);
++    return params.get("launch") === "workspace"
++      && params.get("fromTool") === "workspace-manager-v2"
++      && Boolean(params.get("hostContextId"));
++  }
++
++  function applyLaunchMode() {
++    const workspaceLaunch = isWorkspaceLaunch();
++    if (elements.standaloneActions) elements.standaloneActions.hidden = workspaceLaunch;
++    if (elements.workspaceActions) elements.workspaceActions.hidden = !workspaceLaunch;
++  }
++
++  function workspaceManagerUrl() {
++    const url = new URL("../workspace-manager-v2/index.html", window.location.href);
++    const params = new URLSearchParams(window.location.search);
++    const hostContextId = params.get("hostContextId") || "";
++    if (hostContextId) url.searchParams.set("hostContextId", hostContextId);
++    if (params.get("workspaceMode")?.toLowerCase() === "uat") url.searchParams.set("workspace", "uat");
++    return url.href;
++  }
++
++  async function loadQueue() {
++    if (isWorkspaceLaunch()) {
++      const rawToolState = window.sessionStorage.getItem(WORKSPACE_TOOL_STATE_KEY);
++      if (!rawToolState) {
++        writeStatus(`Workspace launch missing ${WORKSPACE_TOOL_STATE_KEY}; queue cannot render.`, "FAIL");
++        return;
++      }
++      try {
++        const toolState = JSON.parse(rawToolState);
++        const payload = toolState?.data ?? [];
++        const validation = validateTextToSpeechPayload(payload, WORKSPACE_TOOL_STATE_KEY);
++        if (!validation.ok) {
++          writeStatus(validation.message, "FAIL");
++          return;
++        }
++        state.queue = payload.map((item) => ({ ...item }));
++        writeStatus(`Loaded ${state.queue.length} ${TEXT_TO_SPEECH_DISPLAY_NAME} item(s) from Project Workspace toolState.`);
++      } catch (error) {
++        writeStatus(`${WORKSPACE_TOOL_STATE_KEY} is invalid JSON: ${error.message}`, "FAIL");
++        return;
++      }
++    } else {
++      const params = new URLSearchParams(window.location.search);
++      const samplePresetPath = String(params.get(TTS_URL_SOURCE_PARAM) || "").trim();
++      if (samplePresetPath) {
++        try {
++          const response = await fetch(samplePresetPath, { cache: "no-store" });
++          if (!response.ok) throw new Error(`${response.status}`);
++          const payload = await response.json();
++          const validation = validateTextToSpeechPayload(payload, samplePresetPath);
++          if (!validation.ok) {
++            writeStatus(validation.message, "FAIL");
++            return;
++          }
++          state.queue = payload.map((item) => ({ ...item }));
++          writeStatus(`Loaded preset for ${TEXT_TO_SPEECH_DISPLAY_NAME}: ${samplePresetPath}.`);
++        } catch (error) {
++          writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} URL JSON source ${samplePresetPath} failed: ${error.message}.`, "FAIL");
++          return;
++        }
+       }
+     }
+-    setTextContent(root, "[data-tts-voice-count]", String(voiceOptions.length));
+-    setTextContent(root, "[data-tts-voice-details]", voiceOptions.length
+-      ? `${voiceOptions.length} browser voice${voiceOptions.length === 1 ? "" : "s"} available.`
+-      : "No browser voices are currently available.");
+-    refreshActionState();
++    if (state.queue.length === 0) {
++      state.queue = [createTextToSpeechQueueItem({
++        ...TEXT_TO_SPEECH_DEFAULTS,
++        existingItems: [],
++        name: "Narrator welcome",
++        text: elements.text?.value || "Welcome to the arena, hero."
++      })];
++      writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} empty launch: created a local named sentence draft.`);
++    }
++    state.selectedItemId = state.queue[0]?.id || "";
++    renderQueue();
++    if (state.selectedItemId) selectItem(state.selectedItemId, { writeLog: false });
+   }
+
+-  function markUnavailable() {
+-    setTextContent(root, "[data-tts-engine-label]", "Unavailable");
+-    setTextContent(root, "[data-tts-engine-status]", "SpeechSynthesis is unavailable in this browser. Use a browser with Web Speech API support.");
+-    setStatus(root, "SpeechSynthesis is unavailable in this browser. Use a browser with Web Speech API support.", "error");
+-    if (voiceSelect) {
+-      voiceSelect.disabled = true;
+-      renderVoiceOptions(voiceSelect, []);
++  async function importJson(file) {
++    if (isWorkspaceLaunch()) {
++      writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} Import JSON is only available during standalone launch.`, "FAIL");
++      return;
++    }
++    if (!file) {
++      writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} Import JSON blocked: choose a JSON file first.`, "FAIL");
++      return;
++    }
++    try {
++      const payload = JSON.parse(await readFileText(file));
++      const validation = validateTextToSpeechPayload(payload, file.name || "selected JSON file");
++      if (!validation.ok) {
++        writeStatus(`Import JSON blocked: ${validation.message}`, "FAIL");
++        return;
++      }
++      state.queue = payload.map((item) => ({ ...item }));
++      state.selectedItemId = state.queue[0]?.id || "";
++      renderQueue();
++      if (state.selectedItemId) selectItem(state.selectedItemId, { writeLog: false });
++      writeStatus(`Imported ${state.queue.length} ${TEXT_TO_SPEECH_DISPLAY_NAME} item(s) from ${file.name || "selected JSON file"}; schema=${TEXT_TO_SPEECH_SCHEMA_ID}.`);
++    } catch (error) {
++      writeStatus(`Import JSON failed: ${error.message}`, "FAIL");
+     }
+-    if (speakButton) speakButton.disabled = true;
+-    if (stopButton) stopButton.disabled = true;
+   }
+
+-  syncRange(rateInput, "[data-tts-rate-value]", "rate");
+-  syncRange(pitchInput, "[data-tts-pitch-value]", "pitch");
+-  syncRange(volumeInput, "[data-tts-volume-value]", "volume");
+-
+-  if (!engine.isSupported()) {
+-    markUnavailable();
+-    return { engine, speechSupported: false, voiceOptions };
++  async function copyJson() {
++    const json = JSON.stringify(state.queue, null, 2);
++    if (!navigator.clipboard || typeof navigator.clipboard.writeText !== "function") {
++      writeStatus("Copy JSON failed: Clipboard API is unavailable.", "FAIL");
++      return;
++    }
++    try {
++      await navigator.clipboard.writeText(json);
++      writeStatus(`Copied ${TEXT_TO_SPEECH_DISPLAY_NAME} JSON root array to clipboard (${state.queue.length} item(s)).`);
++    } catch (error) {
++      writeStatus(`Copy JSON failed: ${error.message}`, "FAIL");
++    }
+   }
+
+-  setTextContent(root, "[data-tts-engine-label]", "Ready");
+-  setTextContent(root, "[data-tts-engine-status]", "Browser SpeechSynthesis is available for local preview.");
+-  setStatus(root, "Browser Text To Speech ready. Enter text, choose a voice, then press Speak / Preview.", "ready");
+-  refreshVoices({ preserveSelection: false });
+-  engine.onVoicesChanged(() => {
+-    refreshVoices();
+-  });
++  function exportJson() {
++    downloadTextFile(JSON.stringify(state.queue, null, 2), "text-to-speech-v2.json");
++    writeStatus(`Exported ${TEXT_TO_SPEECH_DISPLAY_NAME} JSON root array (${state.queue.length} item(s)).`);
++  }
+
+-  [rateInput, pitchInput, volumeInput].forEach((input) => {
+-    input?.addEventListener("input", () => {
+-      const kind = input === rateInput ? "rate" : input === pitchInput ? "pitch" : "volume";
+-      syncRange(input, `[data-tts-${kind}-value]`, kind);
+-      refreshActionState();
++  function speak() {
++    const item = selectedItem();
++    if (!item) {
++      writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} Speak blocked: select a named speech item with text first.`, "FAIL");
++      return;
++    }
++    syncSelectedItemFromControls("speak-sync", ["speechOptions", "text"]);
++    const request = createSpeechPreviewRequest({
++      ...currentOptions(),
++      text: elements.text?.value,
++      voiceOptions: selectedVoiceOptions()
+     });
+-  });
+-  textInput?.addEventListener("input", refreshActionState);
+-  voiceSelect?.addEventListener("change", refreshActionState);
+-
+-  speakButton?.addEventListener("click", () => {
+-    const request = collectSpeechRequest(root, voiceOptions);
+     if (!request.ok) {
+-      setStatus(root, request.message, "error");
++      writeStatus(request.message, "FAIL");
+       refreshActionState();
+       return;
+     }
+-    const result = engine.speak(request);
++    const result = engine.speak({
++      ...currentOptions(),
++      speechItemId: item.id,
++      speechItemName: item.name,
++      text: request.text
++    });
+     if (!result.ok) {
+-      setStatus(root, result.message, "error");
++      writeStatus(result.message, "FAIL");
+       refreshActionState();
+       return;
+     }
+-    setStatus(root, `Speech queued with ${result.voiceName}; rate=${result.rate}; pitch=${result.pitch}; volume=${result.volume}.`, "ready");
++    writeStatus(`Speech queued: ${result.speechItemName}; ${result.language}; voice=${result.voiceName}; rate=${result.rate}; pitch=${result.pitch}; volume=${result.volume}; queuedItems=${result.queuedSpeechItems.length}.`);
++    renderOutputSummary();
+     refreshActionState();
+-  });
++  }
++
++  function pause() {
++    const result = engine.pause();
++    if (!result.ok) {
++      writeStatus(result.message, "FAIL");
++      return;
++    }
++    writeStatus("Speech paused.");
++  }
++
++  function resume() {
++    const result = engine.resume();
++    if (!result.ok) {
++      writeStatus(result.message, "FAIL");
++      return;
++    }
++    writeStatus("Speech resumed.");
++  }
+
+-  stopButton?.addEventListener("click", () => {
++  function stop() {
+     const result = engine.stop();
+     if (!result.ok) {
+-      setStatus(root, result.message, "error");
++      writeStatus(result.message, "FAIL");
+       return;
+     }
+-    setStatus(root, `Speech stopped. Cleared ${result.stoppedCount} queued item${result.stoppedCount === 1 ? "" : "s"}.`, "ready");
++    writeStatus(`Speech stopped. Cleared ${result.stoppedCount} queued item${result.stoppedCount === 1 ? "" : "s"}.`);
++    refreshActionState();
++  }
++
++  function mountEvents() {
++    elements.queueList?.addEventListener("click", (event) => {
++      const itemButton = event.target.closest("[data-tts-queue-item]");
++      if (itemButton) selectItem(itemButton.dataset.ttsQueueItem || "");
++    });
++    elements.addItem?.addEventListener("click", addItem);
++    elements.duplicateItem?.addEventListener("click", duplicateItem);
++    elements.deleteItem?.addEventListener("click", deleteItem);
++    elements.speak?.addEventListener("click", speak);
++    elements.pause?.addEventListener("click", pause);
++    elements.resume?.addEventListener("click", resume);
++    elements.stop?.addEventListener("click", stop);
++    elements.clearStatus?.addEventListener("click", () => {
++      if (elements.statusLog) elements.statusLog.value = "";
++      if (elements.status) elements.status.textContent = "Status cleared.";
++    });
++    elements.importJson?.addEventListener("click", () => elements.importJsonInput?.click());
++    elements.importJsonInput?.addEventListener("change", () => {
++      void importJson(elements.importJsonInput.files?.[0] || null);
++      elements.importJsonInput.value = "";
++    });
++    elements.copyJson?.addEventListener("click", () => {
++      void copyJson();
++    });
++    elements.exportJson?.addEventListener("click", exportJson);
++    elements.returnWorkspace?.addEventListener("click", () => {
++      window.location.href = workspaceManagerUrl();
++    });
++    elements.itemName?.addEventListener("input", () => syncSelectedItemFromControls("speech-item-renamed", ["name"]));
++    elements.text?.addEventListener("input", () => {
++      syncSelectedItemFromControls("text-updated", ["text"]);
++      refreshActionState();
++    });
++    [elements.gender, elements.language].forEach((select) => {
++      select?.addEventListener("change", () => {
++        refreshVoices();
++        syncSelectedItemFromControls("voice-filter-updated", ["gender", "language", "voice"]);
++      });
++    });
++    elements.voice?.addEventListener("change", () => syncSelectedItemFromControls("voice-updated", ["voice"]));
++    elements.characterPreset?.addEventListener("change", () => {
++      if (elements.ssmlPreset) {
++        elements.ssmlPreset.value = TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS[elements.characterPreset.value]?.ssmlLikePreset || "normal";
++      }
++      applyShapedOptions({ resetOverrides: true });
++      syncSelectedItemFromControls("character-preset-updated", ["characterPreset", "rate", "pitch", "volume"]);
++    });
++    [elements.age, elements.ssmlPreset].forEach((select) => {
++      select?.addEventListener("change", () => {
++        applyShapedOptions();
++        syncSelectedItemFromControls("speech-shaping-updated", ["voiceAge", "ssmlLikePreset", "rate", "pitch", "volume"]);
++      });
++    });
++    [
++      { input: elements.pitch, kind: "pitch" },
++      { input: elements.rate, kind: "rate" },
++      { input: elements.volume, kind: "volume" }
++    ].forEach(({ input, kind }) => {
++      input?.addEventListener("input", () => {
++        state.sliderOverrides[kind] = true;
++        syncRangeOutputs();
++        syncSelectedItemFromControls(`${kind}-updated`, [kind]);
++        refreshActionState();
++      });
++      input?.addEventListener("dblclick", () => {
++        state.sliderOverrides[kind] = false;
++        applyShapedOptions();
++        syncSelectedItemFromControls(`${kind}-reset`, [kind]);
++      });
++    });
++  }
++
++  function populateStaticControls() {
++    populateSelect(elements.gender, TEXT_TO_SPEECH_GENDER_FILTER_OPTIONS, TEXT_TO_SPEECH_DEFAULTS.gender);
++    populateSelect(elements.age, TEXT_TO_SPEECH_AGE_FILTER_OPTIONS, TEXT_TO_SPEECH_DEFAULTS.voiceAge);
++    populateSelect(elements.characterPreset, TEXT_TO_SPEECH_CHARACTER_PRESET_OPTIONS, TEXT_TO_SPEECH_DEFAULTS.characterPreset);
++    populateSelect(elements.ssmlPreset, TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS, TEXT_TO_SPEECH_DEFAULTS.ssmlLikePreset);
++    populateSelect(elements.language, TEXT_TO_SPEECH_LANGUAGE_OPTIONS, TEXT_TO_SPEECH_DEFAULTS.language);
++    configureRanges();
++  }
++
++  function markUnavailable() {
++    setTextContent(root, "[data-tts-engine-label]", "Unavailable");
++    setTextContent(root, "[data-tts-engine-status]", "SpeechSynthesis is unavailable in this browser. Use a browser with Web Speech API support.");
++    writeStatus("SpeechSynthesis is unavailable in this browser. Use a browser with Web Speech API support.", "FAIL");
++    populateSelect(elements.voice, [{ label: "No browser voices available", value: "" }], "");
+     refreshActionState();
++  }
++
++  async function start() {
++    applyLaunchMode();
++    populateStaticControls();
++    mountEvents();
++    if (!engine.isSupported()) {
++      await loadQueue();
++      markUnavailable();
++      return;
++    }
++    setTextContent(root, "[data-tts-engine-label]", "Ready");
++    setTextContent(root, "[data-tts-engine-status]", "Browser SpeechSynthesis is available for local preview.");
++    refreshVoices();
++    engine.onVoicesChanged(() => {
++      refreshVoices();
++      writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} voices updated from browser SpeechSynthesis.`);
++    });
++    await loadQueue();
++    refreshVoices({ selectedVoice: selectedItem()?.voice || elements.voice?.value || "" });
++    writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} ready. SpeechSynthesis is available.`);
++  }
++
++  void start().catch((error) => {
++    writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} startup failed: ${error.message}`, "FAIL");
+   });
+
+-  return { engine, speechSupported: true, voiceOptions };
++  return {
++    engine,
++    queue: () => state.queue.map((item) => ({ ...item })),
++    speechSupported: engine.isSupported()
++  };
+ }
+
+ if (typeof document !== "undefined") {
+@@ -332,4 +890,5 @@ export {
+   createVoiceProfile,
+   initializeTextToSpeechTool,
+   previewTtsMessage,
++  validateTextToSpeechPayload
+ };

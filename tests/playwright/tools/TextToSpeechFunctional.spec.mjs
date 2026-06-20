@@ -66,7 +66,13 @@ async function openTextToSpeechPage(page, { speechAvailable = true } = {}) {
         getVoices() {
           return voices;
         },
+        pause() {
+          window.__textToSpeechCalls.push({ type: "pause" });
+        },
         removeEventListener() {},
+        resume() {
+          window.__textToSpeechCalls.push({ type: "resume" });
+        },
         speak(utterance) {
           window.__textToSpeechCalls.push({
             lang: utterance.lang,
@@ -101,8 +107,22 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
     await expect(page.locator("[data-tts-voice-select]")).toContainText("Arcade Voice");
     await expect(page.locator("[data-tts-voice-count]")).toHaveText("2");
     await expect(page.locator("[data-tts-engine-label]")).toHaveText("Ready");
+    await expect(page.locator("[data-tts-gender-select]")).toBeVisible();
+    await expect(page.locator("[data-tts-language-select]")).toBeVisible();
+    await expect(page.locator("[data-tts-age-select]")).toBeVisible();
+    await expect(page.locator("[data-tts-character-preset-select]")).toBeVisible();
+    await expect(page.locator("[data-tts-ssml-preset-select]")).toBeVisible();
+    await expect(page.locator("[data-tts-import-json]")).toBeEnabled();
+    await expect(page.locator("[data-tts-copy-json]")).toBeEnabled();
+    await expect(page.locator("[data-tts-export-json]")).toBeEnabled();
 
     await page.locator("[data-tts-text-input]").fill("Launch the next wave.");
+    await page.locator("[data-tts-item-name]").fill("Wave intro");
+    await page.locator("[data-tts-character-preset-select]").selectOption("dramatic");
+    await page.locator("[data-tts-age-select]").selectOption("teen");
+    await page.locator("[data-tts-ssml-preset-select]").selectOption("whisper-ish");
+    await expect(page.locator("[data-tts-pitch-value]")).toHaveText("1.1");
+    await expect(page.locator("[data-tts-volume-value]")).toHaveText("0.6");
     await page.locator("[data-tts-voice-select]").selectOption("arcade-voice-uri");
     await page.locator("[data-tts-rate]").fill("1.4");
     await page.locator("[data-tts-pitch]").fill("0.8");
@@ -111,6 +131,13 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
     await expect(page.locator("[data-tts-pitch-value]")).toHaveText("0.8");
     await expect(page.locator("[data-tts-volume-value]")).toHaveText("0.55");
     await expect(page.locator("[data-tts-text-count]")).toHaveText("21");
+    await page.locator("[data-tts-add-item]").click();
+    await expect(page.locator("[data-tts-queue-list]")).toContainText("Wave intro");
+    await expect(page.locator("[data-tts-output-summary]")).toContainText("\"name\": \"Wave intro\"");
+    await page.locator("[data-tts-duplicate-item]").click();
+    await expect(page.locator("[data-tts-queue-list]")).toContainText("Wave intro 2 copy");
+    await page.locator("[data-tts-delete-item]").click();
+    await expect(page.locator("[data-tts-queue-list] [data-tts-queue-item]")).toHaveCount(2);
 
     await expect(page.locator("[data-tts-speak]")).toBeEnabled();
     await page.locator("[data-tts-speak]").click();
@@ -126,10 +153,13 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
       volume: 0.55,
     }));
 
+    await page.locator("[data-tts-pause]").click();
+    await page.locator("[data-tts-resume]").click();
     await page.locator("[data-tts-stop]").click();
     await expect(page.locator("[data-tts-status]")).toContainText("Speech stopped");
     calls = await page.evaluate(() => window.__textToSpeechCalls);
     expect(calls.at(-1)).toEqual({ type: "cancel" });
+    expect(calls).toEqual(expect.arrayContaining([{ type: "pause" }, { type: "resume" }]));
 
     expect(failures.failedRequests).toEqual([]);
     expect(failures.pageErrors).toEqual([]);
