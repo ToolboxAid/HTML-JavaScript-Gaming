@@ -2,7 +2,6 @@ import {
   createMessageSegment,
   createEmotionProfile,
   createMessage,
-  createMessageCategory,
   createTtsProfile,
   listEmotionProfiles,
   listMessageCategories,
@@ -11,21 +10,12 @@ import {
   listTtsProfiles,
   updateEmotionProfile,
   updateMessage,
-  updateMessageCategory,
   updateMessageSegment,
   updateTtsProfile,
 } from "./messages-api-client.js";
 
 const elements = {
   active: document.querySelector("[data-messages-active]"),
-  category: document.querySelector("[data-messages-category]"),
-  categoryActive: document.querySelector("[data-messages-category-active]"),
-  categoryCancel: document.querySelector("[data-messages-category-cancel]"),
-  categoryCount: document.querySelector("[data-messages-category-count]"),
-  categoryForm: document.querySelector("[data-messages-category-form]"),
-  categoryKey: document.querySelector("[data-messages-category-key]"),
-  categoryName: document.querySelector("[data-messages-category-name]"),
-  categoryRows: document.querySelector("[data-messages-categories]"),
   count: document.querySelector("[data-messages-count]"),
   editorHeading: document.querySelector("[data-messages-editor-heading]"),
   emotionActive: document.querySelector("[data-messages-emotion-active]"),
@@ -56,7 +46,6 @@ const elements = {
   previewStatus: document.querySelector("[data-messages-preview-status]"),
   previewStop: document.querySelector("[data-messages-preview-stop]"),
   previewTtsProfile: document.querySelector("[data-messages-preview-tts-profile]"),
-  selectedCategory: document.querySelector("[data-messages-selected-category]"),
   selectedEmotion: document.querySelector("[data-messages-selected-emotion]"),
   selectedName: document.querySelector("[data-messages-selected-name]"),
   selectedStatus: document.querySelector("[data-messages-selected-status]"),
@@ -189,6 +178,16 @@ function activeTtsProfiles() {
   return state.ttsProfiles.filter((profile) => profile.active);
 }
 
+function legacyCategoryKey() {
+  const selected = selectedMessage();
+  if (selected?.categoryKey) {
+    return selected.categoryKey;
+  }
+  const active = activeCategories();
+  const dialog = active.find((category) => category.name === "Dialog");
+  return dialog?.key || active[0]?.key || state.categories[0]?.key || "";
+}
+
 function populateSelect(select, options, placeholder) {
   if (!select) {
     return;
@@ -208,28 +207,6 @@ function populateSelect(select, options, placeholder) {
   select.value = options.some((optionValue) => optionValue.key === currentValue) ? currentValue : "";
 }
 
-function renderCategoryRows() {
-  if (!elements.categoryRows) {
-    return;
-  }
-  elements.categoryRows.replaceChildren();
-  state.categories.forEach((category) => {
-    const row = document.createElement("tr");
-    row.dataset.messagesCategoryRow = category.key;
-    const actions = document.createElement("td");
-    const group = document.createElement("div");
-    group.className = "action-group action-group--tight";
-    group.append(createButton("Edit", "messagesCategoryEdit", category.key));
-    actions.append(group);
-    row.append(
-      createCell(category.name),
-      createCell(statusForActive(category.active)),
-      actions,
-    );
-    elements.categoryRows.append(row);
-  });
-}
-
 function renderEmotionRows() {
   if (!elements.emotionRows) {
     return;
@@ -241,7 +218,7 @@ function renderEmotionRows() {
     const actions = document.createElement("td");
     const group = document.createElement("div");
     group.className = "action-group action-group--tight";
-    group.append(createButton("Edit", "messagesEmotionEdit", profile.key));
+    group.append(createButton("Update Row", "messagesEmotionEdit", profile.key));
     actions.append(group);
     row.append(
       createCell(profile.name),
@@ -264,7 +241,7 @@ function renderTtsRows() {
     const actions = document.createElement("td");
     const group = document.createElement("div");
     group.className = "action-group action-group--tight";
-    group.append(createButton("Edit", "messagesTtsEdit", profile.key));
+    group.append(createButton("Update Row", "messagesTtsEdit", profile.key));
     actions.append(group);
     row.append(
       createCell(profile.name),
@@ -285,8 +262,8 @@ function renderMessageRows() {
   if (!state.messages.length) {
     const row = document.createElement("tr");
     const cell = document.createElement("td");
-    cell.colSpan = 5;
-    cell.textContent = "No messages saved yet.";
+    cell.colSpan = 4;
+    cell.textContent = "No message rows saved yet.";
     row.append(cell);
     elements.table.append(row);
     return;
@@ -297,11 +274,13 @@ function renderMessageRows() {
     const actions = document.createElement("td");
     const group = document.createElement("div");
     group.className = "action-group action-group--tight";
-    group.append(createButton("Edit", "messagesEdit", message.key));
+    group.append(
+      createButton("Update Row", "messagesEdit", message.key),
+      createButton(message.active ? "Disable Row" : "Enable Row", "messagesToggle", message.key),
+    );
     actions.append(group);
     row.append(
       createCell(message.name),
-      createCell(message.categoryName || "Unknown"),
       createCell(message.emotionProfileName || "Unknown"),
       createCell(statusForActive(message.active)),
       actions,
@@ -365,10 +344,10 @@ function renderSegmentRows() {
     moveUp.disabled = index === 0;
     moveDown.disabled = index === segments.length - 1;
     group.append(
-      createButton("Edit", "messagesSegmentEdit", segment.key),
+      createButton("Update Row", "messagesSegmentEdit", segment.key),
       moveUp,
       moveDown,
-      createButton(segment.active ? "Disable" : "Enable", "messagesSegmentToggle", segment.key),
+      createButton(segment.active ? "Disable Row" : "Enable Row", "messagesSegmentToggle", segment.key),
     );
     actions.append(group);
     row.append(
@@ -385,35 +364,31 @@ function renderSegmentRows() {
 function renderSelectedMessage() {
   const selected = selectedMessage();
   setText(elements.selectedName, selected?.name || "None");
-  setText(elements.selectedCategory, selected?.categoryName || "None");
   setText(elements.selectedEmotion, selected?.emotionProfileName || "None");
   setText(elements.selectedStatus, selected ? statusForActive(selected.active) : "None");
   setText(elements.selectedText, selected?.messageText || "No message selected.");
-  setText(elements.segmentContext, selected ? `Segments for ${selected.name}` : "Save or select a message before adding segments.");
+  setText(elements.segmentContext, selected ? `Segments for ${selected.name}` : "Select or add a message row before adding segments.");
 }
 
 function renderCounts() {
   setText(elements.count, String(state.messages.length));
-  setText(elements.categoryCount, String(state.categories.length));
   setText(elements.emotionCount, String(state.emotionProfiles.length));
   setText(elements.ttsCount, String(state.ttsProfiles.length));
 }
 
 function renderPersistence(persistence = {}) {
-  setText(elements.persistenceSource, "Server API");
-  setText(elements.persistenceEngine, persistence.engine || "SQLite");
+  setText(elements.persistenceSource, "Local API");
+  setText(elements.persistenceEngine, "Postgres target");
   setText(elements.persistenceOwner, persistence.owner || "messages");
 }
 
 function render(persistence = {}) {
-  populateSelect(elements.category, activeCategories(), "Select category");
   populateSelect(elements.emotionProfile, activeEmotionProfiles(), "Select emotion profile");
   populateSelect(elements.segmentEmotionProfile, activeEmotionProfiles(), "Select emotion profile");
   populateSelect(elements.previewTtsProfile, activeTtsProfiles(), "Default active TTS profile");
   if (!elements.previewTtsProfile?.value && activeTtsProfiles()[0]) {
     elements.previewTtsProfile.value = activeTtsProfiles()[0].key;
   }
-  renderCategoryRows();
   renderEmotionRows();
   renderTtsRows();
   renderMessageRows();
@@ -426,7 +401,7 @@ function render(persistence = {}) {
 function messageFormValues() {
   return {
     active: elements.active?.checked !== false,
-    categoryKey: elements.category?.value || "",
+    categoryKey: legacyCategoryKey(),
     emotionProfileKey: elements.emotionProfile?.value || "",
     messageText: elements.text?.value || "",
     name: elements.name?.value || "",
@@ -440,7 +415,7 @@ function validateMessage(values) {
     errors.push("Message Name is required.");
   }
   if (!values.categoryKey) {
-    errors.push("Category is required.");
+    errors.push("Message Studio legacy seed is unavailable. Reload the Local API before updating rows.");
   }
   if (!values.emotionProfileKey) {
     errors.push("Emotion Profile is required.");
@@ -607,12 +582,11 @@ function resetMessageForm() {
   state.selectedMessageKey = "";
   setValue(elements.key, "");
   setValue(elements.name, "");
-  setValue(elements.category, "");
   setValue(elements.emotionProfile, "");
   setValue(elements.text, "");
   setValue(elements.notes, "");
   setChecked(elements.active, true);
-  setText(elements.editorHeading, "New Message");
+  setText(elements.editorHeading, "Add Message Row");
   clearValidation();
   resetSegmentForm();
   renderSelectedMessage();
@@ -627,12 +601,11 @@ function editMessage(messageKey) {
   state.selectedMessageKey = message.key;
   setValue(elements.key, message.key);
   setValue(elements.name, message.name);
-  setValue(elements.category, message.categoryKey);
   setValue(elements.emotionProfile, message.emotionProfileKey);
   setValue(elements.text, message.messageText);
   setValue(elements.notes, message.notes || "");
   setChecked(elements.active, message.active);
-  setText(elements.editorHeading, `Edit ${message.name}`);
+  setText(elements.editorHeading, `Update ${message.name}`);
   clearValidation();
   resetSegmentForm();
   renderSelectedMessage();
@@ -650,22 +623,6 @@ function editSegment(segmentKey) {
   setValue(elements.segmentText, segment.segmentText);
   setChecked(elements.segmentActive, segment.active);
   clearSegmentValidation();
-}
-
-function resetCategoryForm() {
-  setValue(elements.categoryKey, "");
-  setValue(elements.categoryName, "");
-  setChecked(elements.categoryActive, true);
-}
-
-function editCategory(categoryKey) {
-  const category = state.categories.find((candidate) => candidate.key === categoryKey);
-  if (!category) {
-    return;
-  }
-  setValue(elements.categoryKey, category.key);
-  setValue(elements.categoryName, category.name);
-  setChecked(elements.categoryActive, category.active);
 }
 
 function resetEmotionForm() {
@@ -738,7 +695,7 @@ async function loadAll() {
   state.messages = messagesPayload.messages || [];
   state.segments = segmentsPayload.segments || [];
   render(messagesPayload.persistence || categoryPayload.persistence || emotionPayload.persistence || ttsPayload.persistence || segmentsPayload.persistence);
-  setText(elements.log, "Messages loaded from the Local API.");
+  setText(elements.log, "Message Studio loaded from the Local API.");
 }
 
 async function reloadSegments() {
@@ -746,7 +703,6 @@ async function reloadSegments() {
   const emotionPayload = listEmotionProfiles();
   state.segments = segmentsPayload.segments || [];
   state.emotionProfiles = emotionPayload.emotionProfiles || [];
-  populateSelect(elements.emotionProfile, activeEmotionProfiles(), "Select emotion profile");
   populateSelect(elements.segmentEmotionProfile, activeEmotionProfiles(), "Select emotion profile");
   renderEmotionRows();
   renderSegmentRows();
@@ -767,7 +723,7 @@ elements.form?.addEventListener("submit", async (event) => {
   const errors = validateMessage(values);
   if (errors.length) {
     showValidation(errors);
-    setText(elements.log, "Message save blocked by validation.");
+    setText(elements.log, "Message row update blocked by validation.");
     return;
   }
   clearValidation();
@@ -777,23 +733,47 @@ elements.form?.addEventListener("submit", async (event) => {
       ? updateMessage(messageKey, values)
       : createMessage(values);
     await refreshAfterSave(result.message);
-    setText(elements.log, `Saved ${result.message.name}.`);
+    setText(elements.log, `Updated row ${result.message.name}.`);
   } catch (error) {
-    showValidation([error instanceof Error ? error.message : String(error || "Message save failed.")]);
-    setText(elements.log, "Message save failed.");
+    showValidation([error instanceof Error ? error.message : String(error || "Message row update failed.")]);
+    setText(elements.log, "Message row update failed.");
   }
 });
 
 elements.newMessage?.addEventListener("click", () => {
   resetMessageForm();
-  setText(elements.log, "Ready for a new message.");
+  setText(elements.log, "Ready to add a message row.");
 });
 
-elements.table?.addEventListener("click", (event) => {
+elements.table?.addEventListener("click", async (event) => {
   const editButton = event.target.closest("[data-messages-edit]");
   if (editButton) {
     editMessage(editButton.dataset.messagesEdit);
-    setText(elements.log, "Message loaded for editing.");
+    setText(elements.log, "Message row loaded for update.");
+    return;
+  }
+
+  const toggleButton = event.target.closest("[data-messages-toggle]");
+  if (toggleButton) {
+    const message = state.messages.find((candidate) => candidate.key === toggleButton.dataset.messagesToggle);
+    if (!message) {
+      return;
+    }
+    try {
+      const result = updateMessage(message.key, {
+        active: !message.active,
+        categoryKey: message.categoryKey,
+        emotionProfileKey: message.emotionProfileKey,
+        messageText: message.messageText,
+        name: message.name,
+        notes: message.notes,
+      });
+      await refreshAfterSave(result.message);
+      setText(elements.log, `${result.message.active ? "Enabled" : "Disabled"} row ${result.message.name}.`);
+    } catch (error) {
+      showValidation([error instanceof Error ? error.message : String(error || "Message row status update failed.")]);
+      setText(elements.log, "Message row status update failed.");
+    }
   }
 });
 
@@ -803,7 +783,7 @@ elements.segmentForm?.addEventListener("submit", async (event) => {
   const errors = validateSegment(values);
   if (errors.length) {
     showSegmentValidation(errors);
-    setText(elements.log, "Segment save blocked by validation.");
+    setText(elements.log, "Segment row update blocked by validation.");
     return;
   }
   clearSegmentValidation();
@@ -813,16 +793,16 @@ elements.segmentForm?.addEventListener("submit", async (event) => {
       ? updateMessageSegment(segmentKey, values)
       : createMessageSegment(values);
     await reloadSegments();
-    setText(elements.log, `Saved segment ${result.segment.displayOrder}.`);
+    setText(elements.log, `Updated segment row ${result.segment.displayOrder}.`);
   } catch (error) {
-    showSegmentValidation([error instanceof Error ? error.message : String(error || "Segment save failed.")]);
-    setText(elements.log, "Segment save failed.");
+    showSegmentValidation([error instanceof Error ? error.message : String(error || "Segment row update failed.")]);
+    setText(elements.log, "Segment row update failed.");
   }
 });
 
 elements.segmentNew?.addEventListener("click", () => {
   resetSegmentForm();
-  setText(elements.log, "Ready for a new segment.");
+  setText(elements.log, "Ready to add a segment row.");
 });
 
 elements.segmentReload?.addEventListener("click", async () => {
@@ -894,43 +874,11 @@ elements.segmentRows?.addEventListener("click", async (event) => {
         segmentText: segment.segmentText,
       });
       await reloadSegments();
-      setText(elements.log, `${result.segment.active ? "Enabled" : "Disabled"} segment ${result.segment.displayOrder}.`);
+      setText(elements.log, `${result.segment.active ? "Enabled" : "Disabled"} segment row ${result.segment.displayOrder}.`);
     } catch (error) {
       showSegmentValidation([error instanceof Error ? error.message : String(error || "Segment status update failed.")]);
       setText(elements.log, "Segment status update failed.");
     }
-  }
-});
-
-elements.categoryForm?.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const input = {
-    active: elements.categoryActive?.checked !== false,
-    name: elements.categoryName?.value || "",
-  };
-  try {
-    const categoryKey = elements.categoryKey?.value || "";
-    const result = categoryKey
-      ? updateMessageCategory(categoryKey, input)
-      : createMessageCategory(input);
-    await loadAll();
-    resetCategoryForm();
-    setText(elements.log, `Saved category ${result.category.name}.`);
-  } catch (error) {
-    setText(elements.log, error instanceof Error ? error.message : String(error || "Category save failed."));
-  }
-});
-
-elements.categoryCancel?.addEventListener("click", () => {
-  resetCategoryForm();
-  setText(elements.log, "Ready for a new category.");
-});
-
-elements.categoryRows?.addEventListener("click", (event) => {
-  const editButton = event.target.closest("[data-messages-category-edit]");
-  if (editButton) {
-    editCategory(editButton.dataset.messagesCategoryEdit);
-    setText(elements.log, "Category loaded for editing.");
   }
 });
 
@@ -953,7 +901,7 @@ elements.emotionForm?.addEventListener("submit", async (event) => {
       : createEmotionProfile(input);
     await loadAll();
     resetEmotionForm();
-    setText(elements.log, `Saved emotion profile ${result.emotionProfile.name}.`);
+    setText(elements.log, `Updated emotion profile ${result.emotionProfile.name}.`);
   } catch (error) {
     setText(elements.log, error instanceof Error ? error.message : String(error || "Emotion profile save failed."));
   }
@@ -961,14 +909,14 @@ elements.emotionForm?.addEventListener("submit", async (event) => {
 
 elements.emotionCancel?.addEventListener("click", () => {
   resetEmotionForm();
-  setText(elements.log, "Ready for a new emotion profile.");
+  setText(elements.log, "Ready to add an emotion profile.");
 });
 
 elements.emotionRows?.addEventListener("click", (event) => {
   const editButton = event.target.closest("[data-messages-emotion-edit]");
   if (editButton) {
     editEmotionProfile(editButton.dataset.messagesEmotionEdit);
-    setText(elements.log, "Emotion profile loaded for editing.");
+    setText(elements.log, "Emotion profile loaded for update.");
   }
 });
 
@@ -987,7 +935,7 @@ elements.ttsForm?.addEventListener("submit", async (event) => {
       : createTtsProfile(input);
     await loadAll();
     resetTtsForm();
-    setText(elements.log, `Saved TTS profile ${result.ttsProfile.name}.`);
+    setText(elements.log, `Updated TTS profile ${result.ttsProfile.name}.`);
   } catch (error) {
     setText(elements.log, error instanceof Error ? error.message : String(error || "TTS profile save failed."));
   }
@@ -995,14 +943,14 @@ elements.ttsForm?.addEventListener("submit", async (event) => {
 
 elements.ttsCancel?.addEventListener("click", () => {
   resetTtsForm();
-  setText(elements.log, "Ready for a new TTS profile.");
+  setText(elements.log, "Ready to add a TTS profile.");
 });
 
 elements.ttsRows?.addEventListener("click", (event) => {
   const editButton = event.target.closest("[data-messages-tts-edit]");
   if (editButton) {
     editTtsProfile(editButton.dataset.messagesTtsEdit);
-    setText(elements.log, "TTS profile loaded for editing.");
+    setText(elements.log, "TTS profile loaded for update.");
   }
 });
 
@@ -1021,10 +969,9 @@ elements.previewStop?.addEventListener("click", () => {
 try {
   await loadAll();
   resetMessageForm();
-  resetCategoryForm();
   resetEmotionForm();
   resetTtsForm();
 } catch (error) {
   setText(elements.log, error instanceof Error ? error.message : String(error || "Messages failed to load."));
-  showValidation(["Messages could not load from the Local API. Start the Local API server and reload this tool."]);
+  showValidation(["Message Studio could not load from the Local API. Start the Local API server and reload this tool."]);
 }

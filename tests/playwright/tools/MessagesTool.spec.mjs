@@ -31,7 +31,7 @@ async function jsonRequest(url, options = {}) {
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
     lane: "messages-tool",
-    surface: "Messages Local API, SQLite persistence, and Theme V2 tool",
+    surface: "Message Studio Local API, legacy SQLite adapter, and Theme V2 tool",
   });
 });
 
@@ -141,33 +141,22 @@ async function closeMessagesRun(failures, page) {
   }
 }
 
-test("Messages tool creates, validates, updates, and persists through Local API SQLite", async ({ page }) => {
+test("Message Studio creates, validates, updates, and persists through the Local API", async ({ page }) => {
   const sqlitePath = messagesDbPath();
   await fs.rm(sqlitePath, { force: true });
   const failures = await openMessagesPage(page, sqlitePath);
 
   try {
-    await expect(page.getByRole("heading", { level: 1, name: "Messages" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Message Studio" })).toBeVisible();
     await expect(page.locator(".tool-workspace")).toBeVisible();
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-    await expect(page.locator("[data-messages-categories]")).toContainText("Dialog");
-    await expect(page.locator("[data-messages-categories]")).toContainText("Notification");
+    await expect(page.locator("[data-messages-category-name]")).toHaveCount(0);
+    await expect(page.locator("[data-messages-category]")).toHaveCount(0);
     await expect(page.locator("[data-messages-emotions]")).toContainText("Calm");
     await expect(page.locator("[data-messages-emotions]")).toContainText("Urgent");
     await expect(page.locator("[data-messages-tts-profiles]")).toContainText("Browser Speech Default");
     await expect(page.locator("[data-messages-tts-profiles]")).toContainText("Narration Preview");
-    await expect(page.locator("[data-messages-persistence-engine]")).toHaveText("SQLite");
-
-    await page.locator("[data-messages-category-name]").fill("Barks");
-    await page.getByRole("button", { name: "Save Category" }).click();
-    await expect(page.locator("[data-messages-log]")).toHaveText("Saved category Barks.");
-    await expect(page.locator("[data-messages-categories]")).toContainText("Barks");
-    await page.locator("[data-messages-category-row]").filter({ hasText: "Barks" }).getByRole("button", { name: "Edit" }).click();
-    await page.locator("[data-messages-category-name]").fill("World Barks");
-    await page.locator("[data-messages-category-active]").uncheck();
-    await page.getByRole("button", { name: "Save Category" }).click();
-    await expect(page.locator("[data-messages-categories]")).toContainText("World Barks");
-    await expect(page.locator("[data-messages-category-row]").filter({ hasText: "World Barks" })).toContainText("Inactive");
+    await expect(page.locator("[data-messages-persistence-engine]")).toHaveText("Postgres target");
 
     await page.locator("[data-messages-emotion-name]").fill("Robot");
     await page.locator("[data-messages-emotion-description]").fill("Mechanical delivery for synthetic speakers.");
@@ -176,13 +165,13 @@ test("Messages tool creates, validates, updates, and persists through Local API 
     await page.locator("[data-messages-emotion-rate]").fill("0.95");
     await page.locator("[data-messages-emotion-pause-before]").fill("40");
     await page.locator("[data-messages-emotion-pause-after]").fill("120");
-    await page.getByRole("button", { name: "Save Emotion Profile" }).click();
-    await expect(page.locator("[data-messages-log]")).toHaveText("Saved emotion profile Robot.");
+    await page.getByRole("button", { name: "Update Emotion Profile" }).click();
+    await expect(page.locator("[data-messages-log]")).toHaveText("Updated emotion profile Robot.");
     await expect(page.locator("[data-messages-emotions]")).toContainText("Robot");
-    await page.locator("[data-messages-emotion-row]").filter({ hasText: "Robot" }).getByRole("button", { name: "Edit" }).click();
+    await page.locator("[data-messages-emotion-row]").filter({ hasText: "Robot" }).getByRole("button", { name: "Update Row" }).click();
     await page.locator("[data-messages-emotion-description]").fill("Disabled test profile.");
     await page.locator("[data-messages-emotion-active]").uncheck();
-    await page.getByRole("button", { name: "Save Emotion Profile" }).click();
+    await page.getByRole("button", { name: "Update Emotion Profile" }).click();
     await expect(page.locator("[data-messages-emotion-row]").filter({ hasText: "Robot" })).toContainText("Inactive");
 
     await page.locator("[data-messages-tts-name]").fill("Arcade Browser Voice");
@@ -193,19 +182,19 @@ test("Messages tool creates, validates, updates, and persists through Local API 
     await page.locator("[data-messages-tts-volume]").fill("0.8");
     await page.locator("[data-messages-tts-pitch]").fill("1.1");
     await page.locator("[data-messages-tts-rate]").fill("0.95");
-    await page.getByRole("button", { name: "Save TTS Profile" }).click();
-    await expect(page.locator("[data-messages-log]")).toHaveText("Saved TTS profile Arcade Browser Voice.");
+    await page.getByRole("button", { name: "Update TTS Profile" }).click();
+    await expect(page.locator("[data-messages-log]")).toHaveText("Updated TTS profile Arcade Browser Voice.");
     await expect(page.locator("[data-messages-tts-profiles]")).toContainText("Arcade Browser Voice");
     await expect(page.locator("[data-messages-tts-count]")).toHaveText("3");
 
-    await page.locator("[data-messages-tts-row]").filter({ hasText: "Arcade Browser Voice" }).getByRole("button", { name: "Edit" }).click();
+    await page.locator("[data-messages-tts-row]").filter({ hasText: "Arcade Browser Voice" }).getByRole("button", { name: "Update Row" }).click();
     await page.locator("[data-messages-tts-description]").fill("Updated configuration only.");
     await page.locator("[data-messages-tts-active]").uncheck();
-    await page.getByRole("button", { name: "Save TTS Profile" }).click();
+    await page.getByRole("button", { name: "Update TTS Profile" }).click();
     await expect(page.locator("[data-messages-tts-row]").filter({ hasText: "Arcade Browser Voice" })).toContainText("Inactive");
-    await page.locator("[data-messages-tts-row]").filter({ hasText: "Arcade Browser Voice" }).getByRole("button", { name: "Edit" }).click();
+    await page.locator("[data-messages-tts-row]").filter({ hasText: "Arcade Browser Voice" }).getByRole("button", { name: "Update Row" }).click();
     await page.locator("[data-messages-tts-active]").check();
-    await page.getByRole("button", { name: "Save TTS Profile" }).click();
+    await page.getByRole("button", { name: "Update TTS Profile" }).click();
     await expect(page.locator("[data-messages-tts-row]").filter({ hasText: "Arcade Browser Voice" })).toContainText("Active");
 
     const ttsProfilesResult = await jsonRequest(`${failures.server.baseUrl}/api/messages/tts-profiles`);
@@ -237,21 +226,19 @@ test("Messages tool creates, validates, updates, and persists through Local API 
     });
     expect(deleteTtsProfileResult.status).toBe(404);
 
-    await page.getByRole("button", { name: "Save Message" }).click();
+    await page.locator("[data-messages-form]").getByRole("button", { name: "Update Row" }).click();
     await expect(page.locator("[data-messages-validation-card]")).toBeVisible();
     await expect(page.locator("[data-messages-validation-errors]")).toContainText("Message Name is required.");
-    await expect(page.locator("[data-messages-validation-errors]")).toContainText("Category is required.");
     await expect(page.locator("[data-messages-validation-errors]")).toContainText("Emotion Profile is required.");
     await expect(page.locator("[data-messages-validation-errors]")).toContainText("Message Text is required.");
 
     await page.locator("[data-messages-name]").fill("Forest Warning");
-    await page.locator("[data-messages-category]").selectOption({ label: "Dialog" });
     await page.locator("[data-messages-emotion-profile]").selectOption({ label: "Urgent" });
     await page.locator("[data-messages-text]").fill("The forest gets darker beyond this point.\nWe are being attacked by bats.");
     await page.locator("[data-messages-notes]").fill("Opening forest danger line.");
-    await page.getByRole("button", { name: "Save Message" }).click();
+    await page.locator("[data-messages-form]").getByRole("button", { name: "Update Row" }).click();
 
-    await expect(page.locator("[data-messages-log]")).toHaveText("Saved Forest Warning.");
+    await expect(page.locator("[data-messages-log]")).toHaveText("Updated row Forest Warning.");
     await expect(page.locator("[data-messages-count]")).toHaveText("1");
     await expect(page.locator("[data-messages-table]")).toContainText("Forest Warning");
     await expect(page.locator("[data-messages-selected-text]")).toHaveText("The forest gets darker beyond this point.\nWe are being attacked by bats.");
@@ -273,7 +260,7 @@ test("Messages tool creates, validates, updates, and persists through Local API 
     expect(createdMessage.updatedBy).toMatch(ULID_PATTERN);
 
     await page.locator("[data-messages-segment-order]").fill("");
-    await page.getByRole("button", { name: "Save Segment" }).click();
+    await page.getByRole("button", { name: "Update Segment Row" }).click();
     await expect(page.locator("[data-messages-segment-validation-card]")).toBeVisible();
     await expect(page.locator("[data-messages-segment-validation-errors]")).toContainText("Segment Text is required.");
     await expect(page.locator("[data-messages-segment-validation-errors]")).toContainText("Emotion Profile is required.");
@@ -282,14 +269,14 @@ test("Messages tool creates, validates, updates, and persists through Local API 
     await page.locator("[data-messages-segment-order]").fill("1");
     await page.locator("[data-messages-segment-emotion-profile]").selectOption({ label: "Calm" });
     await page.locator("[data-messages-segment-text]").fill("The forest gets darker beyond this point.");
-    await page.getByRole("button", { name: "Save Segment" }).click();
-    await expect(page.locator("[data-messages-log]")).toHaveText("Saved segment 1.");
+    await page.getByRole("button", { name: "Update Segment Row" }).click();
+    await expect(page.locator("[data-messages-log]")).toHaveText("Updated segment row 1.");
     await expect(page.locator("[data-messages-segments]")).toContainText("The forest gets darker beyond this point.");
 
     await page.locator("[data-messages-segment-emotion-profile]").selectOption({ label: "Urgent" });
     await page.locator("[data-messages-segment-text]").fill("We are being attacked by bats.");
-    await page.getByRole("button", { name: "Save Segment" }).click();
-    await expect(page.locator("[data-messages-log]")).toHaveText("Saved segment 2.");
+    await page.getByRole("button", { name: "Update Segment Row" }).click();
+    await expect(page.locator("[data-messages-log]")).toHaveText("Updated segment row 2.");
     await expect(page.locator("[data-messages-segments]")).toContainText("We are being attacked by bats.");
 
     await page.locator("[data-messages-preview-tts-profile]").selectOption({ label: "Arcade Browser Voice" });
@@ -346,14 +333,14 @@ test("Messages tool creates, validates, updates, and persists through Local API 
     await expect(page.locator("[data-messages-log]")).toHaveText("Segment order updated.");
     await expect(page.locator("[data-messages-segment-row]").first()).toContainText("We are being attacked by bats.");
 
-    await page.locator("[data-messages-segment-row]").filter({ hasText: "We are being attacked by bats." }).getByRole("button", { name: "Edit" }).click();
+    await page.locator("[data-messages-segment-row]").filter({ hasText: "We are being attacked by bats." }).getByRole("button", { name: "Update Row" }).click();
     await page.locator("[data-messages-segment-text]").fill("We are being attacked by bats right now.");
-    await page.getByRole("button", { name: "Save Segment" }).click();
-    await expect(page.locator("[data-messages-log]")).toHaveText("Saved segment 1.");
+    await page.getByRole("button", { name: "Update Segment Row" }).click();
+    await expect(page.locator("[data-messages-log]")).toHaveText("Updated segment row 1.");
     await expect(page.locator("[data-messages-segments]")).toContainText("We are being attacked by bats right now.");
 
-    await page.locator("[data-messages-segment-row]").filter({ hasText: "We are being attacked by bats right now." }).getByRole("button", { name: "Disable" }).click();
-    await expect(page.locator("[data-messages-log]")).toHaveText("Disabled segment 1.");
+    await page.locator("[data-messages-segment-row]").filter({ hasText: "We are being attacked by bats right now." }).getByRole("button", { name: "Disable Row" }).click();
+    await expect(page.locator("[data-messages-log]")).toHaveText("Disabled segment row 1.");
     await expect(page.locator("[data-messages-segment-row]").filter({ hasText: "We are being attacked by bats right now." })).toContainText("Inactive");
 
     await page.getByRole("button", { name: "Reload Segments" }).click();
@@ -411,9 +398,9 @@ test("Messages tool creates, validates, updates, and persists through Local API 
     expect(deactivateReferencedProfile.payload.error).toContain("Emotion profile is referenced by messages or segments.");
 
     await expect(page.locator("[data-messages-emotion-row]").filter({ hasText: "Urgent" })).toContainText("2");
-    await page.locator("[data-messages-emotion-row]").filter({ hasText: "Urgent" }).getByRole("button", { name: "Edit" }).click();
+    await page.locator("[data-messages-emotion-row]").filter({ hasText: "Urgent" }).getByRole("button", { name: "Update Row" }).click();
     await page.locator("[data-messages-emotion-active]").uncheck();
-    await page.getByRole("button", { name: "Save Emotion Profile" }).click();
+    await page.getByRole("button", { name: "Update Emotion Profile" }).click();
     await expect(page.locator("[data-messages-log]")).toContainText("Emotion profile is referenced by messages or segments.");
     await expect(page.locator("[data-messages-emotion-row]").filter({ hasText: "Urgent" })).toContainText("Active");
     failures.failedRequests = failures.failedRequests.filter((request) => !request.includes(`/api/messages/emotion-profiles/${urgentProfile.key}`));
@@ -421,11 +408,11 @@ test("Messages tool creates, validates, updates, and persists through Local API 
       (message) => message !== "Failed to load resource: the server responded with a status of 400 (Bad Request)",
     );
 
-    await page.locator("[data-messages-row]").filter({ hasText: "Forest Warning" }).getByRole("button", { name: "Edit" }).click();
+    await page.locator("[data-messages-row]").filter({ hasText: "Forest Warning" }).getByRole("button", { name: "Update Row" }).click();
     await page.locator("[data-messages-name]").fill("Forest Warning Updated");
     await page.locator("[data-messages-text]").fill("The forest gets darker beyond this point.");
-    await page.getByRole("button", { name: "Save Message" }).click();
-    await expect(page.locator("[data-messages-log]")).toHaveText("Saved Forest Warning Updated.");
+    await page.locator("[data-messages-form]").getByRole("button", { name: "Update Row" }).click();
+    await expect(page.locator("[data-messages-log]")).toHaveText("Updated row Forest Warning Updated.");
     await expect(page.locator("[data-messages-table]")).toContainText("Forest Warning Updated");
 
     const updateResult = await jsonRequest(`${failures.server.baseUrl}/api/messages/messages/${createdMessage.key}`);
@@ -478,18 +465,17 @@ test("Messages tool creates, validates, updates, and persists through Local API 
   }
 });
 
-test("Messages speech preview reports unavailable browser synthesis", async ({ page }) => {
+test("Message Studio speech preview reports unavailable browser synthesis", async ({ page }) => {
   const sqlitePath = messagesDbPath();
   await fs.rm(sqlitePath, { force: true });
   const failures = await openMessagesPage(page, sqlitePath, { speechAvailable: false });
 
   try {
     await page.locator("[data-messages-name]").fill("Unavailable Preview");
-    await page.locator("[data-messages-category]").selectOption({ label: "Dialog" });
     await page.locator("[data-messages-emotion-profile]").selectOption({ label: "Calm" });
     await page.locator("[data-messages-text]").fill("This line cannot be spoken in this browser.");
-    await page.getByRole("button", { name: "Save Message" }).click();
-    await expect(page.locator("[data-messages-log]")).toHaveText("Saved Unavailable Preview.");
+    await page.locator("[data-messages-form]").getByRole("button", { name: "Update Row" }).click();
+    await expect(page.locator("[data-messages-log]")).toHaveText("Updated row Unavailable Preview.");
     await page.getByRole("button", { name: "Preview Message" }).click();
     await expect(page.locator("[data-messages-preview-status]")).toHaveText("Browser speech synthesis is unavailable. Use a browser with speechSynthesis support to preview messages.");
     await expect(page.locator("[data-messages-log]")).toHaveText("Speech preview unavailable.");

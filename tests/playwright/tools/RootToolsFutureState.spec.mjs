@@ -253,7 +253,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Build Path" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Build Path" })).not.toHaveAttribute("aria-disabled", "true");
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/42");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 14/43");
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='admin']")).toHaveCount(0);
     await expect(page.locator("nav.nav-links > a[data-route='learn']")).toHaveCount(1);

@@ -235,10 +235,10 @@ export const TOOL_REGISTRY = Object.freeze([
   },
   {
     "id": "messages",
-    "name": "Messages",
-    "displayName": "Messages",
+    "name": "Message Studio",
+    "displayName": "Message Studio",
     "shortDescription": "Create and manage reusable game text and future speech content.",
-    "shortLabel": "Messages",
+    "shortLabel": "Message Studio",
     "path": "messages",
     "folderName": "messages",
     "entryPoint": "messages/index.html",
@@ -258,8 +258,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "status": "beta",
     "releaseChannel": "beta",
     "progressChecklist": [
-      "Messages Local API available",
-      "Categories and emotion profiles seed server-side",
+      "Message Studio Local API available",
+      "Emotion profiles seed server-side",
       "Message text persists exactly as entered"
     ],
     "deferred": false,
