@@ -15,6 +15,7 @@ export const GAME_JOURNEY_STATUS_BY_ID = Object.freeze(requireServerConstant(con
 export const GAME_JOURNEY_STATUSES = Object.freeze(requireServerConstant(constants, "GAME_JOURNEY_STATUSES", "game-journey"));
 export const GAME_JOURNEY_SUGGESTED_TOOLS = Object.freeze(requireServerConstant(constants, "GAME_JOURNEY_SUGGESTED_TOOLS", "game-journey"));
 export const GAME_JOURNEY_TOOL_OWNERSHIP_AREAS = Object.freeze(requireServerConstant(constants, "GAME_JOURNEY_TOOL_OWNERSHIP_AREAS", "game-journey"));
+export const GAME_JOURNEY_RECOMMENDED_TARGETS = Object.freeze(requireServerConstant(constants, "GAME_JOURNEY_RECOMMENDED_TARGETS", "game-journey"));
 
 export function createGameJourneyApiRepository(options = {}) {
   return createServerRepositoryClient("game-journey", options);

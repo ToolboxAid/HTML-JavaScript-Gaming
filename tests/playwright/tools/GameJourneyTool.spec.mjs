@@ -7,6 +7,7 @@ import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../..
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 import {
   GAME_JOURNEY_KEYS,
+  GAME_JOURNEY_RECOMMENDED_TARGETS,
   GAME_JOURNEY_STATUS_BY_ID,
   GAME_JOURNEY_STATUSES,
   GAME_JOURNEY_TOOL_OWNERSHIP_AREAS,
@@ -195,11 +196,23 @@ async function expectFilteredSummaryRows(page, statusId, expectedRows) {
 
 test("Game Journey exposes static tool ownership areas without automatic counts", async () => {
   expectStaticToolOwnershipAreas(GAME_JOURNEY_TOOL_OWNERSHIP_AREAS);
+  expect(GAME_JOURNEY_RECOMMENDED_TARGETS.map((target) => target.label)).toEqual([
+    "Heroes",
+    "Enemies",
+    "Levels",
+    "Audio",
+  ]);
 
   const server = await startRepoServer();
   try {
     const constants = await fetchApiData(server, "/api/toolbox/game-journey/constants");
     expectStaticToolOwnershipAreas(constants.GAME_JOURNEY_TOOL_OWNERSHIP_AREAS);
+    expect(constants.GAME_JOURNEY_RECOMMENDED_TARGETS.map((target) => target.label)).toEqual([
+      "Heroes",
+      "Enemies",
+      "Levels",
+      "Audio",
+    ]);
   } finally {
     await server.close();
   }
@@ -269,6 +282,13 @@ test("Game Journey progress dashboard summarizes completion metrics", async ({ p
     await expect(page.locator("[data-journey-most-complete-areas] li").first()).toHaveText("Idea: 0% complete (0 of 4)");
     await expect(page.locator("[data-journey-least-complete-areas] li")).toHaveCount(3);
     await expect(page.locator("[data-journey-least-complete-areas] li").first()).toHaveText("Idea: 0% complete (0 of 4)");
+    await expect(page.locator("[data-journey-recommended-target]")).toHaveCount(4);
+    await expect(page.locator("[data-journey-recommended-target='heroes'] td").nth(0)).toHaveText("Heroes");
+    await expect(page.locator("[data-journey-recommended-target='heroes'] td").nth(1)).toHaveText("Objects");
+    await expect(page.locator("[data-journey-target-input='heroes']")).toHaveValue("1");
+    await page.locator("[data-journey-target-input='heroes']").fill("2");
+    await expect(page.locator("[data-journey-target-status]")).toHaveText("Heroes suggested target set to 2.");
+    await expect(page.locator("[data-journey-target-input='heroes']")).toHaveValue("2");
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
 
     expect(failedRequests).toEqual([]);

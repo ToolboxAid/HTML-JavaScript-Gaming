@@ -243,6 +243,33 @@ export const GAME_JOURNEY_TOOL_OWNERSHIP_AREAS = Object.freeze([
   }),
 ]);
 
+export const GAME_JOURNEY_RECOMMENDED_TARGETS = Object.freeze([
+  Object.freeze({
+    key: "heroes",
+    label: "Heroes",
+    sectionName: "Objects",
+    suggestedCount: 1,
+  }),
+  Object.freeze({
+    key: "enemies",
+    label: "Enemies",
+    sectionName: "Objects",
+    suggestedCount: 3,
+  }),
+  Object.freeze({
+    key: "levels",
+    label: "Levels",
+    sectionName: "Worlds",
+    suggestedCount: 5,
+  }),
+  Object.freeze({
+    key: "audio",
+    label: "Audio",
+    sectionName: "Audio",
+    suggestedCount: 6,
+  }),
+]);
+
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }

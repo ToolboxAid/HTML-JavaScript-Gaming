@@ -1,5 +1,6 @@
 import {
   GAME_JOURNEY_KEYS,
+  GAME_JOURNEY_RECOMMENDED_TARGETS,
   GAME_JOURNEY_STATUS_BY_ID,
   GAME_JOURNEY_STATUSES,
   GAME_JOURNEY_SUGGESTED_TOOLS,
@@ -51,6 +52,8 @@ const diagnostics = document.querySelector("[data-journey-diagnostics]");
 const searchInput = document.querySelector("[data-journey-search-input]");
 const searchStatus = document.querySelector("[data-journey-search-status]");
 const completionMetrics = document.querySelector("[data-journey-completion-metrics]");
+const recommendedTargets = document.querySelector("[data-journey-recommended-targets]");
+const recommendedTargetStatus = document.querySelector("[data-journey-target-status]");
 
 const statTargets = {
   open: document.querySelector("[data-journey-stat-open]"),
@@ -78,6 +81,9 @@ let summarySort = {
 };
 let completionMetricsSnapshot = null;
 let completionMetricsDiagnostic = "";
+const recommendedTargetValues = new Map(
+  GAME_JOURNEY_RECOMMENDED_TARGETS.map((target) => [target.key, target.suggestedCount]),
+);
 
 function refreshCompletionMetricsSnapshot() {
   try {
@@ -819,6 +825,58 @@ function renderCompletionMetrics() {
   completionMetrics.append(dashboard);
 }
 
+function normalizeTargetCount(value) {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) {
+    return 0;
+  }
+  return Math.max(0, Math.trunc(parsed));
+}
+
+function renderRecommendedTargets() {
+  if (!recommendedTargets) {
+    return;
+  }
+  recommendedTargets.innerHTML = "";
+  if (!GAME_JOURNEY_RECOMMENDED_TARGETS.length) {
+    recommendedTargets.append(createElement("p", { text: "No recommended planning targets are available." }));
+    return;
+  }
+
+  const wrapper = createElement("div", { className: "table-wrapper" });
+  const table = createElement("table", { className: "data-table data-table--fixed" });
+  table.setAttribute("aria-label", "Game Journey recommended planning targets");
+  const head = createElement("thead");
+  const headRow = createElement("tr");
+  ["Target", "Section", "Suggested"].forEach((heading) => {
+    const cell = createElement("th", { text: heading });
+    cell.scope = "col";
+    headRow.append(cell);
+  });
+  head.append(headRow);
+  const body = createElement("tbody");
+  GAME_JOURNEY_RECOMMENDED_TARGETS.forEach((target) => {
+    const row = createElement("tr");
+    row.dataset.journeyRecommendedTarget = target.key;
+    const labelCell = createElement("td", { text: target.label });
+    const sectionCell = createElement("td", { text: target.sectionName });
+    const input = document.createElement("input");
+    input.type = "number";
+    input.min = "0";
+    input.step = "1";
+    input.value = String(recommendedTargetValues.get(target.key) ?? target.suggestedCount);
+    input.setAttribute("aria-label", `${target.label} suggested target`);
+    input.dataset.journeyTargetInput = target.key;
+    const inputCell = createElement("td");
+    inputCell.append(input);
+    row.append(labelCell, sectionCell, inputCell);
+    body.append(row);
+  });
+  table.append(head, body);
+  wrapper.append(table);
+  recommendedTargets.append(wrapper);
+}
+
 function renderSearchStatus(query, notes) {
   if (!searchStatus) {
     return;
@@ -1089,6 +1147,7 @@ function render() {
   renderStatScope(selectedStatsNote, notes);
   renderStats(statCounts);
   renderCompletionMetrics();
+  renderRecommendedTargets();
   renderSuggestedTools(displayNote);
   renderRecentActivity();
   renderDiagnostics(activeGame, displayNote, notes);
@@ -1254,6 +1313,23 @@ searchInput?.addEventListener("input", () => {
     restoreSearchSelectionSnapshot();
   }
   render();
+});
+
+recommendedTargets?.addEventListener("input", (event) => {
+  const input = event.target.closest("[data-journey-target-input]");
+  if (!input) {
+    return;
+  }
+  const target = GAME_JOURNEY_RECOMMENDED_TARGETS.find((item) => item.key === input.dataset.journeyTargetInput);
+  if (!target) {
+    return;
+  }
+  const value = normalizeTargetCount(input.value);
+  recommendedTargetValues.set(target.key, value);
+  input.value = String(value);
+  if (recommendedTargetStatus) {
+    recommendedTargetStatus.textContent = `${target.label} suggested target set to ${value}.`;
+  }
 });
 
 addNoteButton.addEventListener("click", () => {
