@@ -4,10 +4,13 @@
 - Current branch: `codex/pr-26171-040-idea-board-production-copy-cleanup`.
 - Expected starting branch: `main` (PASS before branch creation).
 - Created branch: `codex/pr-26171-040-idea-board-production-copy-cleanup`.
-- Push result: pending until after commit.
-- PR URL: pending until after push.
+- Commit before conflict resolution: `acbc5b113e9e90a4051e810897415ea222040ddd`.
+- Initial push result: PASS, branch pushed to `origin/codex/pr-26171-040-idea-board-production-copy-cleanup`.
+- PR URL: `https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/15`.
+- Conflict resolution: merged `origin/main` at `7393b650228c84d266701cc3f4ce3696029dd47e`; conflicts were limited to `codex_changed_files.txt` and `codex_review.diff`.
+- Conflict resolution push result: pending until after merge-validation commit.
 - Merge result: pending until after PR validation/merge.
-- Final main commit: pending until after merge and final pull.
+- Final main sync: pending until after merge and final pull.
 
 ## Changed Files
 - docs_build/dev/reports/codex_changed_files.txt
@@ -38,13 +41,14 @@
 - PASS: `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line`.
 - PASS: `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches"`.
 - PASS: `git diff --check`.
+- PASS: Post-conflict rerun completed after merging `origin/main` at `7393b650228c84d266701cc3f4ce3696029dd47e`.
 - PASS: Playwright V8 coverage report produced because runtime JavaScript changed.
 - WARN: Coverage report marks `src/dev-runtime/server/local-api-router.mjs` and `src/shared/toolbox/tool-metadata-inventory.js` as not collected by browser V8 coverage; advisory only per project instructions.
 - SKIPPED: Full samples smoke was not run per request.
 
 ## ZIP
 - Path: `tmp/PR_26171_040-idea-board-production-copy-cleanup_delta.zip`.
-- Size: `86984` bytes before final report refresh; final size reported in the delivery summary.
+- Size: final size reported in the delivery summary after conflict-resolution ZIP refresh.
 - Contents:
   - docs_build/dev/reports/codex_changed_files.txt
   - docs_build/dev/reports/codex_review.diff
