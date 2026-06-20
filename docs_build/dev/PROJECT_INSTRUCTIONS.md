@@ -11,22 +11,38 @@ PLAN_PR → BUILD_PR → APPLY_PR
 
 PR names MUST follow:
 
-`PR_<YYJJJ>_<###>-<short-description>`
+`PR_<YYJJJ>_<TEAM>_<###>-<short-description>`
 
 Where:
 - `YY` = year (2 digit)
-- `JJJ` = Julian day (001–365)
+- `JJJ` = Julian day (001-365)
+- `TEAM` = required team ownership token from `docs_build/dev/PROJECT_MULTI_PC.txt`
 - `###` = sequence for the day (001+)
 
 Example:
-- `PR_26124_001-palette-baseline`
-- `PR_26124_002-tool-fix-asset-manager`
+- `PR_26171_ALPHA_065-message-studio-parent-child-table-foundation`
+- `PR_26171_BETA_069-message-tts-profile-contract-alignment`
+- `PR_26171_GAMMA_071-main-merge-conflict-recovery`
+
+Branch names MUST mirror PR ownership:
+
+`pr/<YYJJJ>-<TEAM>-<###>-<short-description>`
+
+Branch examples:
+- `pr/26171-ALPHA-065-message-studio-parent-child-table-foundation`
+- `pr/26171-BETA-069-message-tts-profile-contract-alignment`
+- `pr/26171-GAMMA-071-main-merge-conflict-recovery`
 
 Rules:
 - Must be unique per day
 - Must be sortable
+- `TEAM` is required
+- `TEAM` ownership comes from `docs_build/dev/PROJECT_MULTI_PC.txt`
+- Team ownership is independent of machine, workspace, laptop, desktop, or environment
 - Description must be short and hyphenated
 - Do NOT reuse old `PR_11_*` format for new PRs
+- Existing PC/LAPTOP, desktop/laptop, workspace, environment, or machine-parity examples are historical only
+- Future PR reports, recovery reports, validation reports, and manual validation notes must include TEAM ownership
 
 ## CHATGPT EXECUTION ROLE
 
@@ -817,7 +833,7 @@ If the user says `NEXT`:
 
 Use the current naming standard:
 
-`PR_<YYJJJ>_<###>-<short-description>`
+`PR_<YYJJJ>_<TEAM>_<###>-<short-description>`
 
 Do NOT continue old `PR_11_*` naming for new work.
 
@@ -2027,18 +2043,18 @@ Required instruction reads:
 - Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
 - Read `docs_build/dev/PROJECT_MULTI_PC.txt`.
 - Treat the newest applicable section in `PROJECT_INSTRUCTIONS.md` as authoritative when rules overlap.
-- Treat the current owner/parity section in `PROJECT_MULTI_PC.txt` as authoritative for Team Alpha / Team Beta routing.
+- Treat the current team ownership section in `PROJECT_MULTI_PC.txt` as authoritative for TEAM routing.
 
 Required pre-change report:
 - Codex must report instruction compliance as `PASS` or `FAIL` before making file changes.
-- The report must include branch, clean status, PR owner, PR parity, implementation path, validation scope, required report list, and ZIP requirement.
+- The report must include branch, clean status, PR TEAM owner, implementation path, validation scope, required report list, and ZIP requirement.
 - Any `FAIL` is a hard stop unless the PR explicitly scopes branch audit or recovery documentation without implementation.
 
 Hard stops before changes:
 - If the current branch is not `main`, HARD STOP.
 - If the repository is not clean before the PR branch is created, HARD STOP.
-- If the PR owner does not match the Team Alpha / Team Beta ownership map in `PROJECT_MULTI_PC.txt`, HARD STOP.
-- If the PR number parity does not match the assigned machine in `PROJECT_MULTI_PC.txt`, HARD STOP.
+- If the PR name does not include a required TEAM token, HARD STOP.
+- If the PR TEAM owner does not match the team ownership map in `PROJECT_MULTI_PC.txt`, HARD STOP.
 - If the PR asks for implementation and the implementation path is wrong, HARD STOP.
 - If a PR asks for functional parity and only placeholder-only work is possible, HARD STOP and report the missing source or blocker.
 - If scoped validation is skipped without a documented reason, HARD STOP.

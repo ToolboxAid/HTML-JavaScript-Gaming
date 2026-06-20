@@ -22,7 +22,7 @@ Requirements
 Acceptance Criteria
 Dependencies
 Priority
-Owner (Team Alpha / Team Beta)
+Owner (Team Alpha / Team Beta / Team Gamma)
 Recommended Workstream Split
 
 Instead of arbitrary splits, split by Creator journey.
@@ -451,23 +451,35 @@ That is probably the fastest path to doubling throughput without creating chaos.
 
 ----------------------------------------------------------------------------------------
 
-Current Authoritative Multi-PC Gate
+Current Authoritative Team Ownership Gate
 
 Codex must read this file before every PR execution.
 
-Machine parity:
+PR naming:
 
-Team Alpha / Environment 1:
-- Uses even-numbered PR sequence values.
-- Example: `PR_26171_064-*`.
+- PR names must include the owning TEAM token:
+  - `PR_<YYJJJ>_<TEAM>_<###>-<description>`
+- Branch names must mirror PR ownership:
+  - `pr/<YYJJJ>-<TEAM>-<###>-<description>`
+- `TEAM` is required.
+- Team ownership is independent of machine, workspace, laptop, desktop, or environment.
+- Do not infer PR ownership from PR number parity or current machine.
 
-Team Beta / Environment 2:
-- Uses odd-numbered PR sequence values.
-- Example: `PR_26171_063-*`.
+Current examples:
+- `PR_26171_ALPHA_065-message-studio-parent-child-table-foundation`
+- `PR_26171_BETA_069-message-tts-profile-contract-alignment`
+- `PR_26171_GAMMA_071-main-merge-conflict-recovery`
+- `pr/26171-ALPHA-065-message-studio-parent-child-table-foundation`
+- `pr/26171-BETA-069-message-tts-profile-contract-alignment`
+- `pr/26171-GAMMA-071-main-merge-conflict-recovery`
+
+Historical examples:
+- Older PC/LAPTOP, desktop/laptop, workspace, environment, and machine-parity examples are historical only.
+- Older parity-only examples such as `PR_26171_064-*` and `PR_26171_063-*` are historical only.
 
 Owner map:
 
-Team Alpha / Environment 1 owns Creator Journey work:
+Team Alpha owns Creator Journey work:
 - Game Journey
 - Game Hub
 - Idea
@@ -483,7 +495,7 @@ Team Alpha / Environment 1 owns Creator Journey work:
 - Game Design
 - Game Crew
 
-Team Beta / Environment 2 owns Content Creation and asset/publishing work:
+Team Beta owns Content Creation and asset/publishing work:
 - Graphics
 - Toolbox images
 - Audio
@@ -496,17 +508,29 @@ Team Beta / Environment 2 owns Content Creation and asset/publishing work:
 - Community
 - Arcade
 
+Team Gamma owns governance, recovery, diagnostics, and instruction-hardening work:
+- PR naming governance
+- Git workflow governance
+- Recovery reports
+- Workspace recovery
+- Main merge conflict recovery
+- Diagnostics
+- Instruction enforcement
+- Static docs governance
+
 Governance, recovery, diagnostics, and instruction-hardening PRs:
-- Follow PR number parity unless Master Control explicitly assigns an owner.
+- Use the TEAM token assigned by Master Control.
 - Must not implement tool/runtime work from the opposite owner.
-- Must document owner/parity compliance in the PR report.
+- Must document TEAM ownership compliance in the PR report.
+- Recovery reports must include TEAM ownership.
 
 Stable and merge approval:
-- Stable promotion and merge approval are controlled by the assigned Team Alpha or Team Beta owner.
+- Stable promotion and merge approval are controlled by the assigned Team Alpha, Team Beta, or Team Gamma owner.
 - Master Control may recommend sequencing, but Codex must not merge or mark stable without explicit owner approval for the affected workstream.
 
 Hard stop rules:
-- If the PR number parity does not match the current machine, stop before changes.
-- If the PR scope belongs to the other machine owner, stop before changes.
-- If the PR crosses Team Alpha and Team Beta ownership, stop and require Master Control to split or assign the work.
+- If the PR name does not include a TEAM token, stop before changes.
+- If the TEAM token does not match the owner map or explicit Master Control assignment, stop before changes.
+- If the PR scope belongs to another TEAM owner, stop before changes.
+- If the PR crosses multiple team ownership areas, stop and require Master Control to split or assign the work.
 - If the requested implementation path conflicts with the active owner path, stop before changes.
