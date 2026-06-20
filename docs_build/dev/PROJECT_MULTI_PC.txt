@@ -524,6 +524,21 @@ Governance, recovery, diagnostics, and instruction-hardening PRs:
 - Must document TEAM ownership compliance in the PR report.
 - Recovery reports must include TEAM ownership.
 
+Sequential Codex Queue Mode:
+- Any TEAM owner may use Sequential Codex Queue Mode for ordered, fully scoped PR queues within that team's ownership area.
+- Sequential Codex Queue Mode means Codex receives one queue command containing multiple ordered PR scopes.
+- Each queued PR must still have exact PR name, TEAM token, branch name, exact scope, validation scope, required reports, manual validation notes, and ZIP requirement.
+- A queue command is not itself a PR unless explicitly named as one.
+- Each queued PR must stay within the same TEAM ownership area unless Master Control explicitly splits or assigns cross-team work.
+- ALPHA queues may only contain Alpha-owned scopes.
+- BETA queues may only contain Beta-owned scopes.
+- GAMMA queues may only contain Gamma-owned scopes.
+- Cross-team queues are prohibited unless each PR is individually assigned to the correct TEAM token.
+- Missing exact scope for any queued PR is a hard stop for that PR only.
+- Codex may continue to the next queued PR only if the next PR has exact scope and does not depend on the stopped PR.
+- Codex must not create empty ZIPs or package partial PRs.
+- EOD merge/push is owner-controlled and requires explicit approval.
+
 Stable and merge approval:
 - Stable promotion and merge approval are controlled by the assigned Team Alpha, Team Beta, or Team Gamma owner.
 - Master Control may recommend sequencing, but Codex must not merge or mark stable without explicit owner approval for the affected workstream.

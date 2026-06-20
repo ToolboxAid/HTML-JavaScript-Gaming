@@ -1999,7 +1999,7 @@ Required workflow:
 10. Create Pull Request automatically.
 11. Resolve merge conflicts if encountered.
 12. Re-run validation after conflict resolution.
-13. Merge PR.
+13. Merge PR only after explicit owner/EOD approval.
 14. Return to main.
 15. Pull latest main.
 16. Continue to next approved PR.
@@ -2008,8 +2008,8 @@ Rules:
 - Do not ask the user if a PR should be created.
 - Do not ask the user if a branch should be pushed.
 - Treat PR creation as required.
-- Treat branch push as required.
-- Treat merge as required after validation passes.
+- Treat branch push as required for scoped PR branch publishing.
+- Treat merge as required only after validation passes and explicit owner/EOD approval is provided.
 - If GitHub prompts `Would you like to create a Pull Request?`, answer YES automatically.
 - If merge conflicts occur:
   - preserve latest main
@@ -2031,9 +2031,39 @@ Stable promotion and merge approval are owner-controlled.
 
 Rules:
 - Codex may prepare scoped changes, reports, validation evidence, ZIP artifacts, branches, and PRs.
-- Codex must not merge a PR or mark a workstream stable without explicit approval from the assigned Team Alpha or Team Beta owner.
+- Codex must not merge a PR or mark a workstream stable without explicit approval from the assigned Team Alpha, Team Beta, or Team Gamma owner.
 - Master Control may recommend sequencing or assignment, but affected workstream owners control stable and merge approval.
 - This targeted section supersedes older automatic-merge wording when approval ownership is in question.
+- EOD merge and EOD push actions are owner-controlled and require explicit approval.
+
+## SEQUENTIAL CODEX QUEUE MODE
+
+Any TEAM owner may use Sequential Codex Queue Mode for ordered, fully scoped PR queues within that team's ownership area.
+
+Sequential Codex Queue Mode means Codex receives one queue command containing multiple ordered PR scopes.
+
+Each queued PR must still have:
+- exact PR name
+- TEAM token
+- branch name
+- exact scope
+- validation scope
+- required reports
+- manual validation notes
+- ZIP requirement
+
+Rules:
+- A queue command is not itself a PR unless explicitly named as one.
+- Each queued PR must stay within the same TEAM ownership area unless Master Control explicitly splits or assigns cross-team work.
+- ALPHA queues may only contain Alpha-owned scopes.
+- BETA queues may only contain Beta-owned scopes.
+- GAMMA queues may only contain Gamma-owned scopes.
+- Cross-team queues are prohibited unless each PR is individually assigned to the correct TEAM token.
+- Missing exact scope for any queued PR is a hard stop for that PR only.
+- Codex may continue to the next queued PR only if the next PR has exact scope and does not depend on the stopped PR.
+- Codex must not create empty ZIPs or package partial PRs.
+- EOD merge/push is owner-controlled and requires explicit approval.
+- This section supersedes older wording that implies every PR must be independently prompted when Master Control provides a fully scoped sequential queue.
 
 ## CODEX INSTRUCTION ENFORCEMENT START GATE
 

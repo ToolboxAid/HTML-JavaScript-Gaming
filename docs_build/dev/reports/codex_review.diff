@@ -1,952 +1,205 @@
-diff --git a/docs_build/dev/reports/PR_26171_BETA_071-tts-profile-emotion-table-manual-validation-notes.md b/docs_build/dev/reports/PR_26171_BETA_071-tts-profile-emotion-table-manual-validation-notes.md
+diff --git a/docs_build/dev/PROJECT_INSTRUCTIONS.md b/docs_build/dev/PROJECT_INSTRUCTIONS.md
+index dbc044b99..b8fdf8c3b 100644
+--- a/docs_build/dev/PROJECT_INSTRUCTIONS.md
++++ b/docs_build/dev/PROJECT_INSTRUCTIONS.md
+@@ -2002 +2002 @@ Required workflow:
+-13. Merge PR.
++13. Merge PR only after explicit owner/EOD approval.
+@@ -2011,2 +2011,2 @@ Rules:
+-- Treat branch push as required.
+-- Treat merge as required after validation passes.
++- Treat branch push as required for scoped PR branch publishing.
++- Treat merge as required only after validation passes and explicit owner/EOD approval is provided.
+@@ -2034 +2034 @@ Rules:
+-- Codex must not merge a PR or mark a workstream stable without explicit approval from the assigned Team Alpha or Team Beta owner.
++- Codex must not merge a PR or mark a workstream stable without explicit approval from the assigned Team Alpha, Team Beta, or Team Gamma owner.
+@@ -2036,0 +2037,30 @@ Rules:
++- EOD merge and EOD push actions are owner-controlled and require explicit approval.
++
++## SEQUENTIAL CODEX QUEUE MODE
++
++Any TEAM owner may use Sequential Codex Queue Mode for ordered, fully scoped PR queues within that team's ownership area.
++
++Sequential Codex Queue Mode means Codex receives one queue command containing multiple ordered PR scopes.
++
++Each queued PR must still have:
++- exact PR name
++- TEAM token
++- branch name
++- exact scope
++- validation scope
++- required reports
++- manual validation notes
++- ZIP requirement
++
++Rules:
++- A queue command is not itself a PR unless explicitly named as one.
++- Each queued PR must stay within the same TEAM ownership area unless Master Control explicitly splits or assigns cross-team work.
++- ALPHA queues may only contain Alpha-owned scopes.
++- BETA queues may only contain Beta-owned scopes.
++- GAMMA queues may only contain Gamma-owned scopes.
++- Cross-team queues are prohibited unless each PR is individually assigned to the correct TEAM token.
++- Missing exact scope for any queued PR is a hard stop for that PR only.
++- Codex may continue to the next queued PR only if the next PR has exact scope and does not depend on the stopped PR.
++- Codex must not create empty ZIPs or package partial PRs.
++- EOD merge/push is owner-controlled and requires explicit approval.
++- This section supersedes older wording that implies every PR must be independently prompted when Master Control provides a fully scoped sequential queue.
+diff --git a/docs_build/dev/PROJECT_MULTI_PC.txt b/docs_build/dev/PROJECT_MULTI_PC.txt
+index 1f0ff3eb1..d05f191b2 100644
+--- a/docs_build/dev/PROJECT_MULTI_PC.txt
++++ b/docs_build/dev/PROJECT_MULTI_PC.txt
+@@ -526,0 +527,15 @@ Governance, recovery, diagnostics, and instruction-hardening PRs:
++Sequential Codex Queue Mode:
++- Any TEAM owner may use Sequential Codex Queue Mode for ordered, fully scoped PR queues within that team's ownership area.
++- Sequential Codex Queue Mode means Codex receives one queue command containing multiple ordered PR scopes.
++- Each queued PR must still have exact PR name, TEAM token, branch name, exact scope, validation scope, required reports, manual validation notes, and ZIP requirement.
++- A queue command is not itself a PR unless explicitly named as one.
++- Each queued PR must stay within the same TEAM ownership area unless Master Control explicitly splits or assigns cross-team work.
++- ALPHA queues may only contain Alpha-owned scopes.
++- BETA queues may only contain Beta-owned scopes.
++- GAMMA queues may only contain Gamma-owned scopes.
++- Cross-team queues are prohibited unless each PR is individually assigned to the correct TEAM token.
++- Missing exact scope for any queued PR is a hard stop for that PR only.
++- Codex may continue to the next queued PR only if the next PR has exact scope and does not depend on the stopped PR.
++- Codex must not create empty ZIPs or package partial PRs.
++- EOD merge/push is owner-controlled and requires explicit approval.
++
+diff --git a/docs_build/dev/reports/PR_26171_GAMMA_005-all-team-sequential-queue-governance-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26171_GAMMA_005-all-team-sequential-queue-governance-instruction-compliance-checklist.md
 new file mode 100644
-index 000000000..bf86c9d43
+index 000000000..9b1ba3b22
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_BETA_071-tts-profile-emotion-table-manual-validation-notes.md
-@@ -0,0 +1,21 @@
-+# PR_26171_BETA_071-tts-profile-emotion-table Manual Validation Notes
++++ b/docs_build/dev/reports/PR_26171_GAMMA_005-all-team-sequential-queue-governance-instruction-compliance-checklist.md
+@@ -0,0 +1,26 @@
++# PR_26171_GAMMA_005 Instruction Compliance Checklist
 +
-+Generated: 2026-06-20T22:26:42.301Z
-+Team ownership: BETA
-+Branch: pr/26171-BETA-071-tts-profile-emotion-table
-+
-+## Manual Review
-+
-+- Reviewed TTS Studio table markup in `toolbox/text-to-speech/index.html`; parent table already uses the required TTS Profiles columns.
-+- Reviewed TTS Studio rendering in `toolbox/text-to-speech/text2speech.js`; clicking a profile row opens the selected profile's Emotion Settings child table, and inline profile/emotion editors remain external-JS driven.
-+- Reviewed Message Studio compatibility coverage in `tests/playwright/tools/MessagesTool.spec.mjs`; the default TTS Profile dropdown and Message Parts TTS Profile dropdown remain validated.
-+
-+## Automated Browser Coverage Used As Manual Proxy
-+
-+- TTS Playwright validation clicked the default, Man Profile 1, and Woman Profile 2 rows and verified each selected profile exposes four emotion rows.
-+- TTS Playwright validation exercised Add/Edit Profile and Add/Edit Emotion inline paths.
-+- Message Studio Playwright validation exercised message-level and part-level TTS Profile dropdown behavior and playback routing.
-+
-+## Not Performed
-+
-+- No separate unscripted browser session was run beyond the targeted Playwright browser validations.
-diff --git a/docs_build/dev/reports/PR_26171_BETA_071-tts-profile-emotion-table-validation.md b/docs_build/dev/reports/PR_26171_BETA_071-tts-profile-emotion-table-validation.md
++- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`: PASS.
++- Read `docs_build/dev/PROJECT_MULTI_PC.txt`: PASS.
++- Checkout `main` before starting: PASS.
++- Pull latest `main`: PASS.
++- Verify branch is `main`: PASS.
++- Verify clean status before branch creation: PASS.
++- Verify PR name includes TEAM token: PASS.
++- Verify TEAM owner matches Team Gamma governance/instruction-hardening ownership: PASS.
++- Create requested branch `pr/26171-GAMMA-005-all-team-sequential-queue-governance`: PASS.
++- Keep scope limited to requested docs and reports: PASS.
++- Run docs/static validation only: PASS.
++- Run `git diff --check`: PASS.
++- Verify Sequential Codex Queue Mode is not Gamma-only: PASS.
++- Verify TEAM ownership boundaries remain enforced: PASS.
++- Verify automatic merge wording is constrained by owner-controlled EOD approval: PASS.
++- Do not run Playwright: PASS.
++- Do not run samples: PASS.
++- Create required PR-specific report: PASS.
++- Create manual validation notes: PASS.
++- Create instruction compliance checklist: PASS.
++- Create `codex_review.diff`: PASS.
++- Create `codex_changed_files.txt`: PASS.
++- Create repo-structured ZIP under `tmp/`: PASS.
++- Do not merge before explicit EOD approval: PASS.
+diff --git a/docs_build/dev/reports/PR_26171_GAMMA_005-all-team-sequential-queue-governance-manual-validation-notes.md b/docs_build/dev/reports/PR_26171_GAMMA_005-all-team-sequential-queue-governance-manual-validation-notes.md
 new file mode 100644
-index 000000000..0cfa16c4d
+index 000000000..fec42fd39
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_BETA_071-tts-profile-emotion-table-validation.md
++++ b/docs_build/dev/reports/PR_26171_GAMMA_005-all-team-sequential-queue-governance-manual-validation-notes.md
 @@ -0,0 +1,24 @@
-+# PR_26171_BETA_071-tts-profile-emotion-table Validation Report
++# PR_26171_GAMMA_005 Manual Validation Notes
 +
-+Generated: 2026-06-20T22:26:42.301Z
-+Team ownership: BETA
-+Branch: pr/26171-BETA-071-tts-profile-emotion-table
++Manual validation status: PASS.
 +
-+## Results
++Manual checks performed:
++- Reviewed `docs_build/dev/PROJECT_INSTRUCTIONS.md` Sequential Codex Queue Mode section for all-team wording.
++- Reviewed `docs_build/dev/PROJECT_MULTI_PC.txt` ownership section for Alpha, Beta, and Gamma queue boundaries.
++- Confirmed queue mode is not Gamma-only.
++- Confirmed cross-team queues remain prohibited unless each PR is assigned to the correct TEAM token.
++- Confirmed EOD merge/push remains owner-controlled and requires explicit approval.
++- Confirmed Playwright and samples are skipped because this PR changes docs/workflow governance only.
 +
-+- PASS: `npx playwright test tests/playwright/tools/TextToSpeechFunctional.spec.mjs`
-+  - 2 passed.
-+- PASS: `node --test tests/tools/Text2SpeechShell.test.mjs`
-+  - 4 passed.
-+- PASS: `npx playwright test tests/playwright/tools/MessagesTool.spec.mjs --trace=off`
-+  - 2 passed.
-+- PASS: `npm run test:workspace-v2`
-+  - 5 workspace-contract Playwright tests passed.
-+- PASS: `git diff --check`
-+  - No whitespace errors reported.
++Expected outcome:
++- Team Alpha, Team Beta, and Team Gamma may each use Sequential Codex Queue Mode for fully scoped queues inside their own ownership area.
++- Cross-team work must still be split or explicitly assigned with the correct TEAM token per PR.
++- Codex must not package empty ZIPs or partial PRs.
 +
-+## Notes
-+
-+- The Message Studio compatibility check used `--trace=off` to avoid the known trace artifact writer issue while keeping the browser assertions unchanged.
-+- Node emitted experimental SQLite warnings during Playwright runs; tests still passed.
-+- Workspace validation refreshed the standard generated validation report snapshots under `docs_build/dev/reports`.
-diff --git a/docs_build/dev/reports/PR_26171_BETA_071-tts-profile-emotion-table.md b/docs_build/dev/reports/PR_26171_BETA_071-tts-profile-emotion-table.md
++Out of scope:
++- Runtime behavior.
++- Tool implementation.
++- Admin UI implementation.
++- Database migration or connection behavior.
++- Playwright validation.
++- Samples validation.
+diff --git a/docs_build/dev/reports/PR_26171_GAMMA_005-all-team-sequential-queue-governance.md b/docs_build/dev/reports/PR_26171_GAMMA_005-all-team-sequential-queue-governance.md
 new file mode 100644
-index 000000000..08f7006ae
+index 000000000..921629ba5
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_BETA_071-tts-profile-emotion-table.md
-@@ -0,0 +1,31 @@
-+# PR_26171_BETA_071-tts-profile-emotion-table
++++ b/docs_build/dev/reports/PR_26171_GAMMA_005-all-team-sequential-queue-governance.md
+@@ -0,0 +1,71 @@
++# PR_26171_GAMMA_005-all-team-sequential-queue-governance
 +
-+Generated: 2026-06-20T22:26:42.301Z
-+Team ownership: BETA
-+Branch: pr/26171-BETA-071-tts-profile-emotion-table
-+Base HEAD: 78b642f70cf5698b611f2f8e1f6c6e18f9d73961
-+origin/main: 78b642f70cf5698b611f2f8e1f6c6e18f9d73961
-+Ahead/behind before commit: 0	0
-+Spec source: latest user request in Codex session; no repository BUILD_PR doc for PR_26171_BETA_071 was found by targeted search.
++## Summary
++
++Team ownership: GAMMA.
++
++Purpose: generalize Sequential Codex Queue Mode from Gamma-only governance to all TEAM owners while preserving Alpha, Beta, and Gamma ownership boundaries and owner-controlled EOD merge approval.
 +
 +## Scope
 +
-+- Implemented the missing TTS Studio parent/child table contract detail for Emotion Settings.
-+- Kept TTS Studio parent table as TTS Profiles.
-+- Kept profile row click expansion for selected-profile Emotion Settings.
-+- Kept inline Add/Edit Profile and Add/Edit Emotion behavior.
-+- Kept Message Studio TTS Profile dropdown compatibility.
-+- Kept Theme V2 and external JavaScript only.
++Changed files:
++- `docs_build/dev/PROJECT_INSTRUCTIONS.md`
++- `docs_build/dev/PROJECT_MULTI_PC.txt`
++- `docs_build/dev/reports/PR_26171_GAMMA_005-all-team-sequential-queue-governance.md`
++- `docs_build/dev/reports/PR_26171_GAMMA_005-all-team-sequential-queue-governance-manual-validation-notes.md`
++- `docs_build/dev/reports/PR_26171_GAMMA_005-all-team-sequential-queue-governance-instruction-compliance-checklist.md`
++- `docs_build/dev/reports/codex_review.diff`
++- `docs_build/dev/reports/codex_changed_files.txt`
 +
-+## Code Changes
++## Instruction Compliance
 +
-+- Changed the TTS Studio Emotion Settings child-table column from `SSML-like Preset` to authoritative `Preset`.
-+- Updated the targeted TTS Playwright validation expectation to require the `Preset` child column.
++Start gate: PASS.
 +
-+## Existing Behavior Verified
++- Required instruction reads: PASS. Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` and `docs_build/dev/PROJECT_MULTI_PC.txt`.
++- Checkout `main` before starting: PASS.
++- Pull latest `main`: PASS.
++- Verify branch is `main`: PASS.
++- Verify clean status before PR branch: PASS.
++- Created branch: `pr/26171-GAMMA-005-all-team-sequential-queue-governance`.
++- PR TEAM owner: GAMMA.
++- Implementation path: docs-only governance update in `docs_build/dev/PROJECT_INSTRUCTIONS.md` and `docs_build/dev/PROJECT_MULTI_PC.txt`.
++- Validation scope: docs/static only.
++- Required reports: PASS. PR report, manual validation notes, instruction compliance checklist, `codex_review.diff`, and `codex_changed_files.txt`.
++- ZIP requirement: PASS. Required final ZIP path is `tmp/PR_26171_GAMMA_005-all-team-sequential-queue-governance_delta.zip`.
 +
-+- TTS Profiles columns remain: Profile Name, Voice, Language, Gender, Age, Emotion Count, Status, Actions.
-+- Emotion Settings child columns now read: Emotion, Pitch, Rate, Volume, Preset, Status, Actions.
-+- Default profile rows include Default Balanced Profile, Man Profile 1, and Woman Profile 2.
-+- Man Profile 1 and Woman Profile 2 each expose Neutral, Happy, Angry, and Scared emotion settings when selected.
-+- No separate Emotion Studio was introduced.
-diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 4e6b64182..e7060b771 100644
---- a/docs_build/dev/reports/codex_changed_files.txt
-+++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,8 +1,6 @@
--docs_build/dev/reports/PR_26171_BETA_069-message-tts-profile-contract-alignment-manual-validation-notes.md
--docs_build/dev/reports/PR_26171_BETA_069-message-tts-profile-contract-alignment-message-tts-ownership-checklist.md
--docs_build/dev/reports/PR_26171_BETA_069-message-tts-profile-contract-alignment-parent-child-table-checklist.md
--docs_build/dev/reports/PR_26171_BETA_069-message-tts-profile-contract-alignment-validation.md
--docs_build/dev/reports/PR_26171_BETA_069-message-tts-profile-contract-alignment.md
-+docs_build/dev/reports/PR_26171_BETA_071-tts-profile-emotion-table-manual-validation-notes.md
-+docs_build/dev/reports/PR_26171_BETA_071-tts-profile-emotion-table-validation.md
-+docs_build/dev/reports/PR_26171_BETA_071-tts-profile-emotion-table.md
- docs_build/dev/reports/codex_changed_files.txt
- docs_build/dev/reports/codex_review.diff
- docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -15,12 +13,9 @@ docs_build/dev/reports/incremental_validation_report.md
- docs_build/dev/reports/lane_compilation_report.md
- docs_build/dev/reports/lane_deduplication_report.md
- docs_build/dev/reports/lane_input_validation_report.md
--docs_build/dev/reports/lane_manifests/workspace-contract.json
- docs_build/dev/reports/lane_runtime_optimization_report.md
- docs_build/dev/reports/lane_snapshot_report.md
--docs_build/dev/reports/lane_snapshots/workspace-contract.json
- docs_build/dev/reports/lane_warm_start_report.md
--docs_build/dev/reports/lane_warm_starts/workspace-contract.json
- docs_build/dev/reports/monolith_trigger_removal_report.md
- docs_build/dev/reports/persistent_lane_manifest_report.md
- docs_build/dev/reports/playwright_discovery_ownership_report.md
-@@ -36,7 +31,5 @@ docs_build/dev/reports/test_cleanup_routing_report.md
- docs_build/dev/reports/testing_lane_execution_report.md
- docs_build/dev/reports/validation_cache_report.md
- docs_build/dev/reports/zero_browser_preflight_report.md
--src/dev-runtime/messages/messages-sqlite-service.mjs
--tests/playwright/tools/MessagesTool.spec.mjs
--toolbox/messages/index.html
--toolbox/messages/messages.js
-+tests/playwright/tools/TextToSpeechFunctional.spec.mjs
-+toolbox/text-to-speech/text2speech.js
-diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 80f3fb1fd..9e74b4c4c 100644
---- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,9 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
- Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
-
- Changed runtime JS files considered:
--(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) toolbox/messages/messages.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) toolbox/text-to-speech/text2speech.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-
- Guardrail warnings:
--(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) toolbox/messages/messages.js - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) toolbox/text-to-speech/text2speech.js - WARNING: changed runtime JS file missing from coverage; advisory only
-diff --git a/docs_build/dev/reports/dependency_gating_report.md b/docs_build/dev/reports/dependency_gating_report.md
-index be770c249..4c9cc3405 100644
---- a/docs_build/dev/reports/dependency_gating_report.md
-+++ b/docs_build/dev/reports/dependency_gating_report.md
-@@ -1,6 +1,6 @@
- # Dependency Gating Report
-
--Generated: 2026-06-20T22:00:44.904Z
-+Generated: 2026-06-20T22:24:21.160Z
- Status: PASS
-
- ## Gate Order
-diff --git a/docs_build/dev/reports/dependency_hydration_reuse_report.md b/docs_build/dev/reports/dependency_hydration_reuse_report.md
-index ab5e4c4bf..838bb8cb9 100644
---- a/docs_build/dev/reports/dependency_hydration_reuse_report.md
-+++ b/docs_build/dev/reports/dependency_hydration_reuse_report.md
-@@ -1,22 +1,22 @@
- # Dependency Hydration Reuse Report
-
--Generated: 2026-06-20T22:00:44.905Z
-+Generated: 2026-06-20T22:24:21.161Z
- Status: PASS
-
- ## Summary
-
--Reused dependency hydration: 0
--Invalidated dependency hydration: 1
-+Reused dependency hydration: 1
-+Invalidated dependency hydration: 0
- Generated dependency hydration: 0
--Prevented dependency graph hydration: 0
--Prevented helper resolution passes: 0
-+Prevented dependency graph hydration: 1
-+Prevented helper resolution passes: 4
- Prevented fixture ownership traversal: 0
-
- ## Hydration Decisions
-
- | Lane | Status | Helpers | Fixtures | Imports | Dependency Hydration Hash | Reason |
- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | INVALIDATED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 355ba7a85dbb3cdb | Dependency hydration was refreshed after warm-start invalidation. |
-+| workspace-contract | REUSED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 355ba7a85dbb3cdb | Dependency hydration reused from validated warm-start state. |
-
- ## Safeguards
-
-diff --git a/docs_build/dev/reports/execution_graph_reuse_report.md b/docs_build/dev/reports/execution_graph_reuse_report.md
-index 301570520..2c253ab11 100644
---- a/docs_build/dev/reports/execution_graph_reuse_report.md
-+++ b/docs_build/dev/reports/execution_graph_reuse_report.md
-@@ -1,22 +1,22 @@
- # Execution Graph Reuse Report
-
--Generated: 2026-06-20T22:00:44.906Z
-+Generated: 2026-06-20T22:24:21.162Z
- Status: PASS
-
- ## Summary
-
--Reused execution graphs: 0
--Prevented graph rebuilds: 0
--Prevented redundant dependency traversal: 0
--Prevented fixture/helper graph assembly: 0
--Prevented manifest traversal: 0
--Prevented targeted scheduling work: 0
-+Reused execution graphs: 1
-+Prevented graph rebuilds: 1
-+Prevented redundant dependency traversal: 1
-+Prevented fixture/helper graph assembly: 4
-+Prevented manifest traversal: 1
-+Prevented targeted scheduling work: 1
-
- ## Execution Graph Decisions
-
- | Lane | Status | Snapshot Status | Execution Graph Hash | Reason |
- | --- | --- | --- | --- | --- |
--| workspace-contract | INVALIDATED | INVALIDATED | 38fe84ad09ebf228 | Lane snapshot is part of the selected targeted execution graph. |
-+| workspace-contract | REUSED | REUSED | 38fe84ad09ebf228 | Lane snapshot is part of the selected targeted execution graph. |
-
- ## Safeguards
-
-diff --git a/docs_build/dev/reports/failure_fingerprint_report.md b/docs_build/dev/reports/failure_fingerprint_report.md
-index cd2f40145..8afe00bfb 100644
---- a/docs_build/dev/reports/failure_fingerprint_report.md
-+++ b/docs_build/dev/reports/failure_fingerprint_report.md
-@@ -1,6 +1,6 @@
- # Failure Fingerprint Report
-
--Generated: 2026-06-20T22:02:07.356Z
-+Generated: 2026-06-20T22:25:27.830Z
- Status: PASS
-
- ## Summary
-diff --git a/docs_build/dev/reports/filesystem_scan_reduction_report.md b/docs_build/dev/reports/filesystem_scan_reduction_report.md
-index db2188189..a0fa1eb2c 100644
---- a/docs_build/dev/reports/filesystem_scan_reduction_report.md
-+++ b/docs_build/dev/reports/filesystem_scan_reduction_report.md
-@@ -1,6 +1,6 @@
- # Filesystem Scan Reduction Report
-
--Generated: 2026-06-20T22:00:44.868Z
-+Generated: 2026-06-20T22:24:21.137Z
- Status: PASS
-
- ## Scan Enforcement
-diff --git a/docs_build/dev/reports/incremental_validation_report.md b/docs_build/dev/reports/incremental_validation_report.md
-index 9afab0070..a9f7bde56 100644
---- a/docs_build/dev/reports/incremental_validation_report.md
-+++ b/docs_build/dev/reports/incremental_validation_report.md
-@@ -1,24 +1,24 @@
- # Incremental Validation Report
-
--Generated: 2026-06-20T22:00:44.908Z
-+Generated: 2026-06-20T22:24:21.163Z
- Status: PASS
-
- ## Reuse Summary
-
--Reused manifests: 0
--Invalidated manifests: 1
-+Reused manifests: 1
-+Invalidated manifests: 0
- Generated manifests: 0
- Skipped manifests: 0
--Prevented lane regeneration: 0
--Prevented discovery scans: 0
--Prevented helper resolution passes: 0
-+Prevented lane regeneration: 1
-+Prevented discovery scans: 1
-+Prevented helper resolution passes: 4
- Prevented fixture resolution passes: 0
-
- ## Incremental Decisions
-
- | Lane | Decision | Invalidated By | Runtime Savings Observation |
- | --- | --- | --- | --- |
--| workspace-contract | INVALIDATED | Persistent manifest lane definition hash changed for workspace-contract. | Manifest was regenerated or skipped; no reuse savings for this lane. |
-+| workspace-contract | REUSED | unchanged inputs | Reused 1 test input(s), 4 helper(s), and 0 fixture(s). |
-
- ## Invalidation Rules
-
-diff --git a/docs_build/dev/reports/lane_compilation_report.md b/docs_build/dev/reports/lane_compilation_report.md
-index 197d0ee67..c8b1bb57c 100644
---- a/docs_build/dev/reports/lane_compilation_report.md
-+++ b/docs_build/dev/reports/lane_compilation_report.md
-@@ -1,6 +1,6 @@
- # Lane Compilation Report
-
--Generated: 2026-06-20T22:00:44.904Z
-+Generated: 2026-06-20T22:24:21.160Z
- Status: PASS
-
- ## Lane Graph
-diff --git a/docs_build/dev/reports/lane_deduplication_report.md b/docs_build/dev/reports/lane_deduplication_report.md
-index f4b96ae11..d35291e9f 100644
---- a/docs_build/dev/reports/lane_deduplication_report.md
-+++ b/docs_build/dev/reports/lane_deduplication_report.md
-@@ -1,6 +1,6 @@
- # Lane Deduplication Report
-
--Generated: 2026-06-20T22:00:44.904Z
-+Generated: 2026-06-20T22:24:21.160Z
- Status: PASS
-
- ## Summary
-diff --git a/docs_build/dev/reports/lane_input_validation_report.md b/docs_build/dev/reports/lane_input_validation_report.md
-index 5faa23b75..049c2bfc9 100644
---- a/docs_build/dev/reports/lane_input_validation_report.md
-+++ b/docs_build/dev/reports/lane_input_validation_report.md
-@@ -1,6 +1,6 @@
- # Lane Input Validation Report
-
--Generated: 2026-06-20T22:00:44.908Z
-+Generated: 2026-06-20T22:24:21.163Z
- Status: PASS
-
- ## Input Files
-diff --git a/docs_build/dev/reports/lane_runtime_optimization_report.md b/docs_build/dev/reports/lane_runtime_optimization_report.md
-index 9687a8af7..a0a78cdc0 100644
---- a/docs_build/dev/reports/lane_runtime_optimization_report.md
-+++ b/docs_build/dev/reports/lane_runtime_optimization_report.md
-@@ -1,16 +1,16 @@
- # Lane Runtime Optimization Report
-
--Generated: 2026-06-20T22:00:44.905Z
-+Generated: 2026-06-20T22:24:21.161Z
- Status: PASS
-
- ## Runtime Cost Summary
-
- Reused runtime sessions: 0
--Reused lane snapshots: 0
--Reused warm-start lanes: 0
--Reused dependency hydration: 0
--Prevented graph rebuilds: 0
--Prevented redundant initialization: 0
-+Reused lane snapshots: 1
-+Reused warm-start lanes: 1
-+Reused dependency hydration: 1
-+Prevented graph rebuilds: 1
-+Prevented redundant initialization: 1
- Prevented redundant browser launches: 0
- Prevented redundant lane execution: 14
- Baseline Playwright/browser launches: 1
-@@ -28,7 +28,7 @@ No zero-browser, compilation, or dependency blockers were found.
-
- | Lane | Snapshot | Warm Start | Hydration | Baseline Browser Launches | Scheduled Browser Launches | Commands | Reason |
- | --- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | INVALIDATED | INVALIDATED | INVALIDATED | 1 | 1 | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
-+| workspace-contract | REUSED | REUSED | REUSED | 1 | 1 | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
-
- ## Runtime Savings Observations
-
-diff --git a/docs_build/dev/reports/lane_snapshot_report.md b/docs_build/dev/reports/lane_snapshot_report.md
-index 57c65bed1..81ff64d5f 100644
---- a/docs_build/dev/reports/lane_snapshot_report.md
-+++ b/docs_build/dev/reports/lane_snapshot_report.md
-@@ -1,23 +1,23 @@
- # Lane Snapshot Report
-
--Generated: 2026-06-20T22:00:44.905Z
-+Generated: 2026-06-20T22:24:21.161Z
- Status: PASS
- Snapshot directory: docs_build/dev/reports/lane_snapshots
-
- ## Summary
-
--Reused lane snapshots: 0
--Invalidated snapshots: 1
-+Reused lane snapshots: 1
-+Invalidated snapshots: 0
- Generated snapshots: 0
- Skipped snapshots: 0
--Prevented graph rebuilds: 0
--Prevented manifest traversal: 0
-+Prevented graph rebuilds: 1
-+Prevented manifest traversal: 1
-
- ## Snapshot Decisions
-
- | Lane | Status | Snapshot Path | Manifest Hash | Dependency Graph Hash | Helper Graph Hash | Fixture Graph Hash | Runtime Config Hash | Execution Graph Hash | Snapshot Hash | Reason |
- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | 8ab2c33d83a49b9f | 53e56ebae6e84541 | 7d3db838f9f780e0 | 6c4fac7630b0b6f3 | e5ac9cbc103c3984 | 38fe84ad09ebf228 | 9a4abbfe1a0c2ddf | Lane snapshot commandsHash changed for workspace-contract.; Lane snapshot dependencyGraphHash changed for workspace-contract.; Lane snapshot executionGraphHash changed for workspace-contract.; Lane snapshot inputHash changed for workspace-contract.; Lane snapshot laneDefinitionHash changed for workspace-contract.; Lane snapshot manifestHash changed for workspace-contract.; Lane snapshot runtimeConfigurationHash changed for workspace-contract.; Lane snapshot snapshotHash changed for workspace-contract.; Lane snapshot warmStartHash changed for workspace-contract. |
-+| workspace-contract | REUSED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | 8ab2c33d83a49b9f | 53e56ebae6e84541 | 7d3db838f9f780e0 | 6c4fac7630b0b6f3 | e5ac9cbc103c3984 | 38fe84ad09ebf228 | 9a4abbfe1a0c2ddf | Targeted files, manifest, dependency graph, helper graph, fixture graph, ownership, lane config, and runtime config are unchanged. |
-
- ## Snapshot Validation Findings
-
-diff --git a/docs_build/dev/reports/lane_warm_start_report.md b/docs_build/dev/reports/lane_warm_start_report.md
-index b005a46bc..3f9c56257 100644
---- a/docs_build/dev/reports/lane_warm_start_report.md
-+++ b/docs_build/dev/reports/lane_warm_start_report.md
-@@ -1,23 +1,23 @@
- # Lane Warm-Start Report
-
--Generated: 2026-06-20T22:00:44.905Z
-+Generated: 2026-06-20T22:24:21.161Z
- Status: PASS
- Warm-start directory: docs_build/dev/reports/lane_warm_starts
-
- ## Summary
-
--Reused warm-start lanes: 0
--Invalidated warm-start states: 1
-+Reused warm-start lanes: 1
-+Invalidated warm-start states: 0
- Generated warm-start states: 0
- Skipped warm-start states: 0
--Prevented redundant initialization: 0
--Prevented lane graph assembly: 0
-+Prevented redundant initialization: 1
-+Prevented lane graph assembly: 1
-
- ## Warm-Start Decisions
-
- | Lane | Status | Warm-Start Path | Manifest Hash | Warm-Start Hash | Dependency Hydration Hash | Reason |
- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | 8ab2c33d83a49b9f | 6531ee5f63e19fe6 | 355ba7a85dbb3cdb | Warm-start commandsHash changed for workspace-contract.; Warm-start dependencyGraphHash changed for workspace-contract.; Warm-start dependencyHydrationHash changed for workspace-contract.; Warm-start inputHash changed for workspace-contract.; Warm-start laneConfigHash changed for workspace-contract.; Warm-start laneDefinitionHash changed for workspace-contract.; Warm-start manifestHash changed for workspace-contract.; Warm-start warmStartHash changed for workspace-contract. |
-+| workspace-contract | REUSED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | 8ab2c33d83a49b9f | 6531ee5f63e19fe6 | 355ba7a85dbb3cdb | Manifest inputs, dependency graph, ownership metadata, helper placement, fixture placement, and lane configuration are unchanged. |
-
- ## Fast-Fail Safeguards
-
-diff --git a/docs_build/dev/reports/monolith_trigger_removal_report.md b/docs_build/dev/reports/monolith_trigger_removal_report.md
-index 0a665c580..81ed18be6 100644
---- a/docs_build/dev/reports/monolith_trigger_removal_report.md
-+++ b/docs_build/dev/reports/monolith_trigger_removal_report.md
-@@ -1,6 +1,6 @@
- # Monolith Trigger Removal Report
-
--Generated: 2026-06-20T22:02:07.358Z
-+Generated: 2026-06-20T22:25:27.832Z
- Status: PASS
-
- ## Removed Broad Execution Triggers
-diff --git a/docs_build/dev/reports/persistent_lane_manifest_report.md b/docs_build/dev/reports/persistent_lane_manifest_report.md
-index 5003cfc8f..0ec1eaab7 100644
---- a/docs_build/dev/reports/persistent_lane_manifest_report.md
-+++ b/docs_build/dev/reports/persistent_lane_manifest_report.md
-@@ -1,27 +1,27 @@
- # Persistent Lane Manifest Report
-
--Generated: 2026-06-20T22:00:44.907Z
-+Generated: 2026-06-20T22:24:21.162Z
- Status: PASS
- Manifest directory: docs_build/dev/reports/lane_manifests
-
- ## Summary
-
--Reused manifests: 0
--Invalidated manifests: 1
-+Reused manifests: 1
-+Invalidated manifests: 0
- Generated manifests: 0
--Prevented discovery scans: 0
-+Prevented discovery scans: 1
-
- ## Manifest Events
-
- | Lane | Status | Manifest Path | Input Hash | Manifest Hash | Reason |
- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_manifests/workspace-contract.json | 3511a9e9fca6b605 | 8ab2c33d83a49b9f | Persistent manifest lane definition hash changed for workspace-contract. |
-+| workspace-contract | REUSED | docs_build/dev/reports/lane_manifests/workspace-contract.json | 3511a9e9fca6b605 | 8ab2c33d83a49b9f | Inputs unchanged; persisted lane manifest reused. |
-
- ## Persisted Manifest Files
-
- | Lane | Ownership | Source | Tests | Helpers | Fixtures | Dependency Graph Hash | Manifest Hash |
- | --- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | tools | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 53e56ebae6e84541 | 8ab2c33d83a49b9f |
-+| workspace-contract | tools | persistent | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 53e56ebae6e84541 | 8ab2c33d83a49b9f |
-
- ## Fast-Fail Enforcement
-
-diff --git a/docs_build/dev/reports/playwright_discovery_ownership_report.md b/docs_build/dev/reports/playwright_discovery_ownership_report.md
-index ec1b0117b..a27d0ea35 100644
---- a/docs_build/dev/reports/playwright_discovery_ownership_report.md
-+++ b/docs_build/dev/reports/playwright_discovery_ownership_report.md
-@@ -1,6 +1,6 @@
- # Playwright Discovery Ownership Report
-
--Generated: 2026-06-20T22:00:44.857Z
-+Generated: 2026-06-20T22:24:21.133Z
- Status: PASS
-
- ## Discovery-Time Ownership
-diff --git a/docs_build/dev/reports/playwright_discovery_scope_report.md b/docs_build/dev/reports/playwright_discovery_scope_report.md
-index c0eb649c3..15b452c5f 100644
---- a/docs_build/dev/reports/playwright_discovery_scope_report.md
-+++ b/docs_build/dev/reports/playwright_discovery_scope_report.md
-@@ -1,6 +1,6 @@
- # Playwright Discovery Scope Report
-
--Generated: 2026-06-20T22:00:44.866Z
-+Generated: 2026-06-20T22:24:21.135Z
- Status: PASS
- Scoped discovery: Yes
-
-diff --git a/docs_build/dev/reports/playwright_structure_audit.md b/docs_build/dev/reports/playwright_structure_audit.md
-index 89d466133..949ae2337 100644
---- a/docs_build/dev/reports/playwright_structure_audit.md
-+++ b/docs_build/dev/reports/playwright_structure_audit.md
-@@ -1,6 +1,6 @@
- # Playwright Structure Audit
-
--Generated: 2026-06-20T22:00:44.842Z
-+Generated: 2026-06-20T22:24:21.122Z
- Status: PASS
-
- ## Lane Directories
-diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 6619794a2..7afa51aac 100644
---- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
-+++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -17,8 +17,7 @@ Exercised tool entry points detected:
- (61%) Theme V2 Shared JS - exercised 7 runtime JS files
-
- Changed runtime JS files covered:
--(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) toolbox/messages/messages.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) toolbox/text-to-speech/text2speech.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-
- Files with executed line/function counts where available:
- (14%) assets/theme-v2/js/account-auth-service.js - executed lines 64/64; executed functions 1/7
-@@ -49,10 +48,8 @@ Files with executed line/function counts where available:
- (100%) toolbox/game-design/game-design-api-client.js - executed lines 13/13; executed functions 2/2
-
- Uncovered or low-coverage changed JS files:
--(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: uncovered changed runtime JS file; advisory only
--(0%) toolbox/messages/messages.js - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) toolbox/text-to-speech/text2speech.js - WARNING: uncovered changed runtime JS file; advisory only
-
- Changed JS files considered:
--(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/MessagesTool.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) toolbox/messages/messages.js - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/TextToSpeechFunctional.spec.mjs - changed JS file not collected as browser runtime coverage
-+(0%) toolbox/text-to-speech/text2speech.js - changed JS file not collected as browser runtime coverage
-diff --git a/docs_build/dev/reports/retry_suppression_report.md b/docs_build/dev/reports/retry_suppression_report.md
-index 4f85f1b56..05653a228 100644
---- a/docs_build/dev/reports/retry_suppression_report.md
-+++ b/docs_build/dev/reports/retry_suppression_report.md
-@@ -1,6 +1,6 @@
- # Retry Suppression Report
-
--Generated: 2026-06-20T22:02:07.357Z
-+Generated: 2026-06-20T22:25:27.830Z
- Status: PASS
-
- ## Summary
-diff --git a/docs_build/dev/reports/slow_path_pruning_report.md b/docs_build/dev/reports/slow_path_pruning_report.md
-index 999c150ec..35ae65aca 100644
---- a/docs_build/dev/reports/slow_path_pruning_report.md
-+++ b/docs_build/dev/reports/slow_path_pruning_report.md
-@@ -1,19 +1,19 @@
- # Slow Path Pruning Report
-
--Generated: 2026-06-20T22:02:07.358Z
-+Generated: 2026-06-20T22:25:27.832Z
- Status: PASS
- Source timing evidence: docs_build/dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
-
- ## Before / After Runtime Observations
-
- PR_26146_038 measured lane elapsed time: 169.71s
--Current measured lane elapsed time: 82.40s
-+Current measured lane elapsed time: 66.64s
- PR_26146_038 actual browser launches: 4
- Current actual browser launches: 1
- Accidental no-argument browser launches prevented: 5
- Reduced Workspace lane nested launches: 1
--Reused dependency hydration: 0
--Reused snapshots: 0
-+Reused dependency hydration: 1
-+Reused snapshots: 1
- Validation cache hits: 18
-
- ## Slow Paths Optimized
-@@ -31,11 +31,11 @@ Validation cache hits: 18
- | PR_26146_038 | tool-runtime | 19.10s | Asset Manager V2 temporary UAT context |
- | PR_26146_038 | integration | 14.50s | games index resolves Pong thumbnail from manifest preview role |
- | PR_26146_038 | tool-runtime | 10.10s | Preview Generator V2 real batch output |
--| current targeted run | workspace-contract | 28.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes |
--| current targeted run | workspace-contract | 13.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:560:1 > learn wireframe pages load with shared Theme V2 structure |
--| current targeted run | workspace-contract | 12.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:480:1 > common header renders primary navigation order across active pages |
--| current targeted run | workspace-contract | 12.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:662:1 > representative active tool pages align center cleanup and registry group colors |
--| current targeted run | workspace-contract | 1.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:639:1 > tool template future-state page loads from root Theme V2 paths |
-+| current targeted run | workspace-contract | 14.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:662:1 > representative active tool pages align center cleanup and registry group colors |
-+| current targeted run | workspace-contract | 14.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes |
-+| current targeted run | workspace-contract | 13.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:560:1 > learn wireframe pages load with shared Theme V2 structure |
-+| current targeted run | workspace-contract | 10.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:480:1 > common header renders primary navigation order across active pages |
-+| current targeted run | workspace-contract | 2.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:639:1 > tool template future-state page loads from root Theme V2 paths |
-
- ## Guardrails
-
-diff --git a/docs_build/dev/reports/static_validation_report.md b/docs_build/dev/reports/static_validation_report.md
-index ee6ee211f..6acb14443 100644
---- a/docs_build/dev/reports/static_validation_report.md
-+++ b/docs_build/dev/reports/static_validation_report.md
-@@ -1,6 +1,6 @@
- # Static Validation Report
-
--Generated: 2026-06-20T22:00:44.887Z
-+Generated: 2026-06-20T22:24:21.153Z
- Status: PASS
- Static only: No
- Dry run: No
-@@ -23,12 +23,12 @@ Reason: No deterministic static validation failure was found.
- | missing import detection | PASS | Covered by Playwright structure audit relative import checks. |
- | missing fixture detection | PASS | No missing fixture findings. |
- | targeted file manifests | PASS | workspace-contract:8ab2c33d83a49b9f |
--| persistent lane manifests | PASS | workspace-contract:INVALIDATED |
--| lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
--| dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
-+| persistent lane manifests | PASS | workspace-contract:REUSED |
-+| lane warm-start reuse | PASS | workspace-contract:REUSED |
-+| dependency hydration reuse | PASS | workspace-contract:REUSED |
- | lane input graph expansion | PASS | No inputs escaped manifest scope. |
- | scoped discovery targets | PASS | tests/playwright/tools/RootToolsFutureState.spec.mjs |
--| broad scan prevention | PASS | Discovery map read 5 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
-+| broad scan prevention | PASS | Discovery map read 0 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
- | invalid lane target detection | PASS | No invalid lane target findings. |
- | Windows quoting hazard detection | PASS | No shell-sensitive grep hazards found. |
- | duplicate lane registration detection | PASS | No duplicate lane registrations found. |
-diff --git a/docs_build/dev/reports/targeted_file_manifest_report.md b/docs_build/dev/reports/targeted_file_manifest_report.md
-index 5efa1a3dc..484b1a0a5 100644
---- a/docs_build/dev/reports/targeted_file_manifest_report.md
-+++ b/docs_build/dev/reports/targeted_file_manifest_report.md
-@@ -1,19 +1,19 @@
- # Targeted File Manifest Report
-
--Generated: 2026-06-20T22:00:44.907Z
-+Generated: 2026-06-20T22:24:21.162Z
- Status: PASS
-
- ## Manifest-Generated Lane Inputs
-
- | Lane | Ownership | Status | Source | Tests | Helpers | Fixtures | Imports / Dependencies | Dependency Graph Hash | Manifest Hash | Reason |
- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | tools | PASS | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 53e56ebae6e84541 | 8ab2c33d83a49b9f | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
-+| workspace-contract | tools | PASS | persistent | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 53e56ebae6e84541 | 8ab2c33d83a49b9f | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
-
- ## Discovery Expansion Control
-
- Prevented discovery expansion: Yes
--Prevented redundant scans: 4
--Targeted file/helper reads: 5
-+Prevented redundant scans: 0
-+Targeted file/helper reads: 0
-
- ## Runtime Savings Observations
-
-diff --git a/docs_build/dev/reports/test_cleanup_performance_report.md b/docs_build/dev/reports/test_cleanup_performance_report.md
-index c7ad10af5..5fa929a2a 100644
---- a/docs_build/dev/reports/test_cleanup_performance_report.md
-+++ b/docs_build/dev/reports/test_cleanup_performance_report.md
-@@ -1,29 +1,29 @@
- # Test Cleanup Performance Report
-
--Generated: 2026-06-20T22:02:07.357Z
-+Generated: 2026-06-20T22:25:27.831Z
- Status: PASS
-
- ## Cost Summary
-
--Total measured lane elapsed time: 82.40s
-+Total measured lane elapsed time: 66.64s
- Actual browser launch count: 1
- Scheduled browser launch count: 1
- Baseline browser launch count: 1
- Skipped lanes: 14
--Reused manifests: 0
--Reused snapshots: 0
-+Reused manifests: 1
-+Reused snapshots: 1
- Cached validations reused: 18
- Prevented broad execution: 2
- Prevented reruns: 0
- Prevented redundant browser launches: 0
--Prevented graph rebuilds: 0
--Prevented redundant dependency traversal: 0
-+Prevented graph rebuilds: 1
-+Prevented redundant dependency traversal: 1
-
- ## Lane Elapsed Time
-
- | Lane | Status | Elapsed | Browser Launches | Reason |
- | --- | --- | --- | --- | --- |
--| workspace-contract | PASS | 82.40s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
-+| workspace-contract | PASS | 66.64s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
- | game-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
- | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
- | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
-@@ -43,11 +43,11 @@ Prevented redundant dependency traversal: 0
-
- | Lane | Duration | Test | Command |
- | --- | --- | --- | --- |
--| workspace-contract | 28.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
--| workspace-contract | 13.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:560:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
--| workspace-contract | 12.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:480:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
--| workspace-contract | 12.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:662:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
--| workspace-contract | 1.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:639:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 14.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:662:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 14.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 13.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:560:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 10.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:480:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 2.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:639:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-
- ## Prevented Broad Execution
-
-diff --git a/docs_build/dev/reports/test_cleanup_routing_report.md b/docs_build/dev/reports/test_cleanup_routing_report.md
-index 5382e2807..e22e7e13d 100644
---- a/docs_build/dev/reports/test_cleanup_routing_report.md
-+++ b/docs_build/dev/reports/test_cleanup_routing_report.md
-@@ -1,6 +1,6 @@
- # Test Cleanup Routing Report
-
--Generated: 2026-06-20T22:02:07.357Z
-+Generated: 2026-06-20T22:25:27.831Z
- Status: PASS
-
- ## Representative Routing Cases
-diff --git a/docs_build/dev/reports/testing_lane_execution_report.md b/docs_build/dev/reports/testing_lane_execution_report.md
-index c7d93ad5e..08d402a0e 100644
---- a/docs_build/dev/reports/testing_lane_execution_report.md
-+++ b/docs_build/dev/reports/testing_lane_execution_report.md
-@@ -1,6 +1,6 @@
- # Testing Lane Execution Report
-
--Generated: 2026-06-20T22:02:07.371Z
-+Generated: 2026-06-20T22:25:27.854Z
- Dry run: No
-
- ## Summary
-@@ -9,7 +9,7 @@ PASS: 1
- WARN: 0
- FAIL: 0
- SKIP: 14
--Total lane elapsed time: 82.40s
-+Total lane elapsed time: 66.64s
- Actual browser launches: 1
-
- ## Full Samples Smoke
-@@ -34,11 +34,11 @@ Reason: No deterministic dependency failures before runtime.
- Status: PASS
- Scheduled lane order: workspace-contract
- Reused runtime sessions: 0
--Reused lane snapshots: 0
--Reused warm-start lanes: 0
--Reused dependency hydration: 0
--Prevented graph rebuilds: 0
--Prevented redundant initialization: 0
-+Reused lane snapshots: 1
-+Reused warm-start lanes: 1
-+Reused dependency hydration: 1
-+Prevented graph rebuilds: 1
-+Prevented redundant initialization: 1
- Prevented redundant browser launches: 0
- Prevented redundant lane execution: 14
-
-@@ -64,7 +64,7 @@ Status: PASS
- Target files: tests/playwright/tools/RootToolsFutureState.spec.mjs
- Required shared helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs
- Required fixtures: none
--Targeted file/helper reads: 5
-+Targeted file/helper reads: 0
- Cached discovery reuse: Yes
- Prevented fallback expansion: Yes; no ownership or scope blocker widened into broad discovery.
-
-@@ -73,27 +73,27 @@ Prevented fallback expansion: Yes; no ownership or scope blocker widened into br
- Status: PASS
- Generated manifests: workspace-contract:PASS
- Prevented discovery expansion: Yes
--Prevented redundant scans: 4
--Persistent manifest events: workspace-contract:INVALIDATED
-+Prevented redundant scans: 0
-+Persistent manifest events: workspace-contract:REUSED
-
- ## Warm-Start Reuse
-
- Status: PASS
--Warm-start events: workspace-contract:INVALIDATED
--Dependency hydration events: workspace-contract:INVALIDATED
--Prevented redundant initialization: 0
--Prevented helper resolution passes: 0
-+Warm-start events: workspace-contract:REUSED
-+Dependency hydration events: workspace-contract:REUSED
-+Prevented redundant initialization: 1
-+Prevented helper resolution passes: 4
- Prevented fixture ownership traversal: 0
-
- ## Lane Snapshots
-
- Status: PASS
--Snapshot events: workspace-contract:INVALIDATED
--Reused snapshots: 0
--Invalidated snapshots: 1
--Prevented graph rebuilds: 0
--Prevented redundant dependency traversal: 0
--Prevented fixture/helper graph assembly: 0
-+Snapshot events: workspace-contract:REUSED
-+Reused snapshots: 1
-+Invalidated snapshots: 0
-+Prevented graph rebuilds: 1
-+Prevented redundant dependency traversal: 1
-+Prevented fixture/helper graph assembly: 4
-
- ## Lane Deduplication
-
-@@ -105,7 +105,7 @@ Prevented Workspace lane reruns: 0
-
- | Lane | Status | Elapsed | Browser Launches | Executed/Skipped Reason | Affected Surface | Fixtures / Inputs |
- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | PASS | 82.40s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
-+| workspace-contract | PASS | 66.64s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
- | game-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Workspace mock repository, Game Workspace UI, and Toolbox Progress/Build Path game-state bridge | repo-served Game Workspace page; repo-served Toolbox page with role simulation; in-memory SQL-shaped mock game repository |
- | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | repo-served Game Design page; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Design mock repository; Game Workspace mock game context |
- | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | repo-served Game Configuration page; repo-served Game Design page for handoff checks; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Configuration mock repository; Game Design mock repository handoff |
-@@ -125,16 +125,16 @@ Prevented Workspace lane reruns: 0
-
- | Lane | Duration | Test |
- | --- | --- | --- |
--| workspace-contract | 28.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes |
--| workspace-contract | 13.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:560:1 > learn wireframe pages load with shared Theme V2 structure |
--| workspace-contract | 12.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:480:1 > common header renders primary navigation order across active pages |
--| workspace-contract | 12.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:662:1 > representative active tool pages align center cleanup and registry group colors |
--| workspace-contract | 1.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:639:1 > tool template future-state page loads from root Theme V2 paths |
-+| workspace-contract | 14.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:662:1 > representative active tool pages align center cleanup and registry group colors |
-+| workspace-contract | 14.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes |
-+| workspace-contract | 13.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:560:1 > learn wireframe pages load with shared Theme V2 structure |
-+| workspace-contract | 10.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:480:1 > common header renders primary navigation order across active pages |
-+| workspace-contract | 2.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:639:1 > tool template future-state page loads from root Theme V2 paths |
-
- ## Commands
-
- ### workspace-contract
--- PASS 82.39s C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
-+- PASS 66.63s C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
-
- ### game-workspace
- - SKIP
-diff --git a/docs_build/dev/reports/validation_cache_report.md b/docs_build/dev/reports/validation_cache_report.md
-index e621f97fe..22f1b7f36 100644
---- a/docs_build/dev/reports/validation_cache_report.md
-+++ b/docs_build/dev/reports/validation_cache_report.md
-@@ -1,6 +1,6 @@
- # Validation Cache Report
-
--Generated: 2026-06-20T22:00:44.911Z
-+Generated: 2026-06-20T22:24:21.164Z
- Status: PASS
-
- ## Cache Summary
-@@ -15,26 +15,26 @@ Validations computed: 10
- | lane registration validation | MISS | 6a5b13bb47c3fad3 | initial computation | lane definitions change; package.json lane scripts change |
- | runner preflight validation | MISS | 0633df51b798654a | initial computation | lane definitions change; fixture ownership changes; targeted files change |
- | scoped discovery map | MISS | e195476e1978ec54 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
--| targeted file manifest validation | MISS | bb6d00323d0ed895 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
--| lane warm-start validation | MISS | 5d0348bd315a7cbb | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
--| structural ownership validation | MISS | 5374a30793a59a19 | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
-+| targeted file manifest validation | MISS | 7fb12a66a3e7d872 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
-+| lane warm-start validation | MISS | da50ab7f4c0d9e39 | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
-+| structural ownership validation | MISS | 36a12668db8ad3db | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
- | lane compilation validation | MISS | 0e1346462ea720dd | initial computation | lane definitions change; targeted files change; fixture ownership changes |
- | lane compilation validation | HIT | 0e1346462ea720dd | dependency validation input | unchanged within execution cycle |
- | dependency validation | MISS | 94d1bf1c7924d46d | initial computation | dependency graph changes; lane definitions change; lane compilation input changes |
--| lane snapshot validation | MISS | 19125b6a8e924abf | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
-+| lane snapshot validation | MISS | bbc4fd5f2fcd9c3f | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
- | zero-browser preflight | MISS | 568caf8342cb4bc0 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change; dependency graph changes |
--| structural ownership validation | HIT | 5374a30793a59a19 | static validation report | unchanged within execution cycle |
--| structural ownership validation | HIT | 5374a30793a59a19 | zero-browser preflight report | unchanged within execution cycle |
-+| structural ownership validation | HIT | 36a12668db8ad3db | static validation report | unchanged within execution cycle |
-+| structural ownership validation | HIT | 36a12668db8ad3db | zero-browser preflight report | unchanged within execution cycle |
- | scoped discovery map | HIT | e195476e1978ec54 | structural ownership validation input | unchanged within execution cycle |
- | scoped discovery map | HIT | e195476e1978ec54 | discovery scope reporting | unchanged within execution cycle |
--| targeted file manifest validation | HIT | bb6d00323d0ed895 | lane input validation report | unchanged within execution cycle |
--| targeted file manifest validation | HIT | bb6d00323d0ed895 | runtime scheduling blockers | unchanged within execution cycle |
--| lane warm-start validation | HIT | 5d0348bd315a7cbb | warm-start report | unchanged within execution cycle |
--| lane warm-start validation | HIT | 5d0348bd315a7cbb | dependency hydration reuse report | unchanged within execution cycle |
--| lane warm-start validation | HIT | 5d0348bd315a7cbb | runtime scheduling | unchanged within execution cycle |
--| lane snapshot validation | HIT | 19125b6a8e924abf | lane snapshot report | unchanged within execution cycle |
--| lane snapshot validation | HIT | 19125b6a8e924abf | execution graph reuse report | unchanged within execution cycle |
--| lane snapshot validation | HIT | 19125b6a8e924abf | runtime scheduling | unchanged within execution cycle |
-+| targeted file manifest validation | HIT | 7fb12a66a3e7d872 | lane input validation report | unchanged within execution cycle |
-+| targeted file manifest validation | HIT | 7fb12a66a3e7d872 | runtime scheduling blockers | unchanged within execution cycle |
-+| lane warm-start validation | HIT | da50ab7f4c0d9e39 | warm-start report | unchanged within execution cycle |
-+| lane warm-start validation | HIT | da50ab7f4c0d9e39 | dependency hydration reuse report | unchanged within execution cycle |
-+| lane warm-start validation | HIT | da50ab7f4c0d9e39 | runtime scheduling | unchanged within execution cycle |
-+| lane snapshot validation | HIT | bbc4fd5f2fcd9c3f | lane snapshot report | unchanged within execution cycle |
-+| lane snapshot validation | HIT | bbc4fd5f2fcd9c3f | execution graph reuse report | unchanged within execution cycle |
-+| lane snapshot validation | HIT | bbc4fd5f2fcd9c3f | runtime scheduling | unchanged within execution cycle |
- | lane compilation validation | HIT | 0e1346462ea720dd | lane compilation report | unchanged within execution cycle |
- | lane compilation validation | HIT | 0e1346462ea720dd | runtime scheduling | unchanged within execution cycle |
- | dependency validation | HIT | 94d1bf1c7924d46d | dependency report | unchanged within execution cycle |
-diff --git a/docs_build/dev/reports/zero_browser_preflight_report.md b/docs_build/dev/reports/zero_browser_preflight_report.md
-index 961632504..8e1062f3d 100644
---- a/docs_build/dev/reports/zero_browser_preflight_report.md
-+++ b/docs_build/dev/reports/zero_browser_preflight_report.md
-@@ -1,6 +1,6 @@
- # Zero-Browser Preflight Report
-
--Generated: 2026-06-20T22:00:44.910Z
-+Generated: 2026-06-20T22:24:21.164Z
- Status: PASS
-
- ## Prevented Browser Launches
-@@ -24,10 +24,10 @@ No deterministic setup failures.
- | unresolved fixtures | PASS | No unresolved fixture findings. |
- | unresolved helpers | PASS | Shared helper imports and naming ownership checked. |
- | targeted file manifests | PASS | workspace-contract:PASS |
--| persistent lane manifests | PASS | workspace-contract:INVALIDATED |
--| lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
--| dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
--| lane snapshots | PASS | workspace-contract:INVALIDATED |
-+| persistent lane manifests | PASS | workspace-contract:REUSED |
-+| lane warm-start reuse | PASS | workspace-contract:REUSED |
-+| dependency hydration reuse | PASS | workspace-contract:REUSED |
-+| lane snapshots | PASS | workspace-contract:REUSED |
- | manifest input graph expansion | PASS | No scoped discovery inputs escaped manifest ownership. |
- | scoped discovery | PASS | Targets: tests/playwright/tools/RootToolsFutureState.spec.mjs; helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs. |
- | invalid grep patterns | PASS | No invalid grep patterns. |
-diff --git a/tests/playwright/tools/TextToSpeechFunctional.spec.mjs b/tests/playwright/tools/TextToSpeechFunctional.spec.mjs
-index 984835da8..07b1444ae 100644
---- a/tests/playwright/tools/TextToSpeechFunctional.spec.mjs
-+++ b/tests/playwright/tools/TextToSpeechFunctional.spec.mjs
-@@ -115,7 +115,7 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
-     await page.locator("[data-tts-profile-row]").filter({ hasText: "Default Balanced Profile" }).click();
-     await expect(page.getByRole("heading", { name: "Emotion Settings" })).toBeVisible();
-     await expect(page.getByRole("columnheader", { name: "Emotion", exact: true })).toBeVisible();
--    await expect(page.getByRole("columnheader", { name: "SSML-like Preset" })).toBeVisible();
-+    await expect(page.getByRole("columnheader", { name: "Preset" })).toBeVisible();
-     await expect(page.locator("[data-tts-emotion-row]")).toHaveCount(4);
-     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Neutral" }).getByRole("button", { name: "Delete" })).toBeDisabled();
-     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Happy" })).toBeVisible();
-diff --git a/toolbox/text-to-speech/text2speech.js b/toolbox/text-to-speech/text2speech.js
-index e3b82626b..36f3e9278 100644
---- a/toolbox/text-to-speech/text2speech.js
-+++ b/toolbox/text-to-speech/text2speech.js
-@@ -740,7 +740,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
-     table.setAttribute("aria-label", "Emotion Settings");
-     const thead = document.createElement("thead");
-     const headerRow = document.createElement("tr");
--    ["Emotion", "Pitch", "Rate", "Volume", "SSML-like Preset", "Status", "Actions"].forEach((label) => {
-+    ["Emotion", "Pitch", "Rate", "Volume", "Preset", "Status", "Actions"].forEach((label) => {
-       const header = document.createElement("th");
-       header.scope = "col";
-       header.textContent = label;
++## Requirement Checklist
++
++- Generalize Sequential Codex Queue Mode from Gamma-only to all TEAM owners: PASS.
++- Replace Gamma-only permission with any TEAM owner permission: PASS.
++- Preserve Alpha ownership boundaries: PASS.
++- Preserve Beta ownership boundaries: PASS.
++- Preserve Gamma ownership boundaries: PASS.
++- Prohibit cross-team queues unless each PR is individually assigned to the correct TEAM token: PASS.
++- Keep exact PR name, TEAM token, branch name, exact scope, validation scope, required reports, manual notes, and ZIP requirement per queued PR: PASS.
++- Keep missing exact scope as a hard stop for that PR only: PASS.
++- Keep EOD merge/push owner-controlled: PASS.
++
++## Validation
++
++Lanes executed:
++- docs/static - governance docs only.
++
++Commands run:
++- `git diff --check` - PASS.
++- `rg -n "Any TEAM owner may use Sequential Codex Queue Mode|Team Gamma may use Sequential Codex Queue Mode|ALPHA queues may only contain|BETA queues may only contain|GAMMA queues may only contain|Cross-team queues are prohibited" docs_build/dev/PROJECT_INSTRUCTIONS.md docs_build/dev/PROJECT_MULTI_PC.txt` - PASS. Found all-team language and ownership-boundary rules; no Gamma-only permission remained.
++- `rg -n "Team Gamma may use Sequential Codex Queue Mode" docs_build/dev/PROJECT_INSTRUCTIONS.md docs_build/dev/PROJECT_MULTI_PC.txt` - PASS. No matches.
++- `rg -n "Merge PR only after explicit owner/EOD approval|Treat merge as required only after validation passes and explicit owner/EOD approval is provided|EOD merge/push is owner-controlled and requires explicit approval|Codex must not merge a PR or mark a workstream stable without explicit approval" docs_build/dev/PROJECT_INSTRUCTIONS.md docs_build/dev/PROJECT_MULTI_PC.txt` - PASS.
++
++Skipped lanes:
++- Playwright: SKIP. Docs/workflow-only PR with no UI, tool runtime, toolState, or workspace behavior changes.
++- Samples: SKIP. Docs/workflow-only PR with no sample loader, sample JSON, or sample runtime changes.
++- Runtime, integration, and engine: SKIP. No runtime, handoff, shared parser, or engine behavior changed.
++
++## Git Workflow
++
++- Current branch: `pr/26171-GAMMA-005-all-team-sequential-queue-governance`.
++- Created branch: `pr/26171-GAMMA-005-all-team-sequential-queue-governance`.
++- Push result: PASS. Pushed `pr/26171-GAMMA-005-all-team-sequential-queue-governance` to `origin`.
++- PR URL: `https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/29`.
++- Merge result: not merged; EOD approval required.
++- Final main commit before branch: `eaee83f93`.
