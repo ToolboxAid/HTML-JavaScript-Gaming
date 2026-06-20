@@ -1,5 +1,10 @@
-docs_build/dev/PROJECT_INSTRUCTIONS.md
-docs_build/dev/PROJECT_MULTI_PC.txt
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/team_alpha_beta_owner_approval_report.md
+docs_build/dev/reports/PR_26171_071-merge-conflict-recovery-report.md
+docs_build/dev/reports/PR_26171_071-preserved-local-commit-report.md
+docs_build/dev/reports/PR_26171_071-discarded-unrelated-work-report.md
+docs_build/dev/reports/PR_26171_071-manual-validation-notes.md
+docs_build/dev/reports/PR_26171_071-recovery-precleanup.patch.md
+docs_build/dev/reports/PR_26171_071-status-before-cleanup.txt
+docs_build/dev/reports/PR_26171_071-conflicted-files-before-cleanup.txt
+docs_build/dev/reports/PR_26171_071-untracked-files-before-cleanup.txt
