@@ -853,10 +853,20 @@ function normalizeTargetCount(value) {
   return Math.max(0, Math.trunc(parsed));
 }
 
+function formatAreaList(names) {
+  if (names.length <= 1) {
+    return names[0] || "";
+  }
+  if (names.length === 2) {
+    return `${names[0]} and ${names[1]}`;
+  }
+  return `${names.slice(0, -1).join(", ")}, and ${names.at(-1)}`;
+}
+
 function completionInsightMessages(snapshot, records, mostComplete, leastComplete) {
   const messages = [];
   if (!snapshot?.plannedCount) {
-    messages.push("Completion is low because no planned section targets are available yet.");
+    messages.push("Completion is low because no planned section targets are available yet. Next action: add suggested targets for the areas this game needs.");
     return messages;
   }
 
@@ -879,10 +889,21 @@ function completionInsightMessages(snapshot, records, mostComplete, leastComplet
   }
   const weakest = leastComplete.find((metric) => metric.plannedCount > 0);
   if (weakest) {
-    messages.push(`${weakest.bucketName} needs attention with ${weakest.completedCount} of ${weakest.plannedCount} planned items complete.`);
+    messages.push(`${weakest.bucketName} needs attention: complete one planned item or adjust the planned count if the scope changed.`);
+  }
+  const lowProgressAreas = records
+    .filter((metric) => metric.active && metric.plannedCount > 0 && metric.percentComplete < 50)
+    .sort((left, right) =>
+      left.percentComplete - right.percentComplete ||
+      left.completedCount - right.completedCount ||
+      left.bucketKey.localeCompare(right.bucketKey),
+    )
+    .slice(0, 3);
+  if (lowProgressAreas.length) {
+    messages.push(`Next focus: ${formatAreaList(lowProgressAreas.map((metric) => metric.bucketName))}. Complete one small item in each area before expanding the plan.`);
   }
   if (records.every((metric) => metric.completedCount === 0)) {
-    messages.push("Mark a section item complete to move overall progress above 0%.");
+    messages.push("Next action: mark one finished section item complete so overall progress can rise above 0%.");
   }
   return messages;
 }
