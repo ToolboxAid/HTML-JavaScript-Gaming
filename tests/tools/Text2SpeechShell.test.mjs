@@ -3,9 +3,14 @@ import test from "node:test";
 
 import {
   TTS_MESSAGE_STATUSES,
+  TTS_PROFILE_CONTRACT_VERSION,
   TTS_PROVIDER_ADAPTER_PLAN,
+  createDefaultTextToSpeechProfiles,
   createEmotionProfile,
+  createMessageStudioTtsProfileOptions,
   createSpeechPreviewRequest,
+  createTextToSpeechProfile,
+  createTextToSpeechProfileEmotion,
   createTtsMessage,
   createVoiceProfile,
   previewTtsMessage,
@@ -58,4 +63,47 @@ test("Text2Speech provider adapter plan keeps browser speech implemented and pai
   );
   assert.equal(TTS_PROVIDER_ADAPTER_PLAN[0].status, "implemented");
   assert.ok(TTS_PROVIDER_ADAPTER_PLAN.slice(1).every((provider) => provider.status === "planned"));
+});
+
+test("Text2Speech profile contract exposes Message Studio compatible profile options", () => {
+  const voiceOptions = [{ language: "en-US", label: "Test Voice (en-US)", name: "Test Voice", value: "test-voice" }];
+  const defaults = createDefaultTextToSpeechProfiles(voiceOptions);
+  const custom = createTextToSpeechProfile({
+    emotions: [
+      createTextToSpeechProfileEmotion({
+        emotion: "urgent",
+        pitch: 1.2,
+        rate: 1.1,
+        ssmlLikePreset: "whisper-ish",
+        volume: 0.8,
+      }),
+    ],
+    id: "custom-profile",
+    name: "Custom Profile",
+    voice: "test-voice",
+    voiceName: "Test Voice",
+  });
+  const options = createMessageStudioTtsProfileOptions([custom]);
+
+  assert.equal(TTS_PROFILE_CONTRACT_VERSION, "tts-profile-emotion-v1");
+  assert.equal(defaults[0].name, "Default Balanced Profile");
+  assert.equal(defaults[0].messageStudioUsageCount, 1);
+  assert.equal(defaults[0].emotions[0].emotionLabel, "Neutral");
+  assert.equal(defaults[0].emotions[0].messagePartsUsageCount, 1);
+  assert.deepEqual(options, [{
+    active: true,
+    emotionSettings: [{
+      emotion: "urgent",
+      emotionLabel: "Urgent",
+      pitch: 1.2,
+      rate: 1.1,
+      ssmlLikePreset: "whisper-ish",
+      volume: 0.8,
+    }],
+    key: "custom-profile",
+    language: "en-US",
+    name: "Custom Profile",
+    providerKey: "browser-speech",
+    voiceName: "Test Voice",
+  }]);
 });

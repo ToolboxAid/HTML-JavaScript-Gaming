@@ -98,14 +98,50 @@
                     </aside>
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="text-to-speech" data-tool-icon-src="assets/theme-v2/images/badges/text-to-speech.png" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
                     <section class="tool-center-panel">
-                        <h2>Speech Composition</h2>
-                        <div class="grid cols-3" aria-label="Text To Speech summary">
+                        <h2>TTS Studio</h2>
+                        <div class="grid cols-4" aria-label="Text To Speech summary">
                             <article class="mini-stat"><strong data-tts-text-count>0</strong>Characters</article>
+                            <article class="mini-stat"><strong data-tts-profile-count>0</strong>TTS Profiles</article>
+                            <article class="mini-stat"><strong data-tts-emotion-count>0</strong>Emotion Settings</article>
                             <article class="mini-stat"><strong data-tts-voice-count>0</strong>Voices</article>
                             <article class="mini-stat"><strong data-tts-engine-label>Checking</strong>Engine</article>
                         </div>
                         <article class="card">
                             <div class="card-body content-stack">
+                                <div>
+                                    <div class="kicker">Reusable Speech Profiles</div>
+                                    <h3>TTS Profiles</h3>
+                                </div>
+                                <div class="table-wrapper">
+                                    <table class="data-table" aria-label="TTS Profiles">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Profile Name</th>
+                                                <th scope="col">Voice</th>
+                                                <th scope="col">Language</th>
+                                                <th scope="col">Gender</th>
+                                                <th scope="col">Age</th>
+                                                <th scope="col">Emotion Count</th>
+                                                <th scope="col">Status</th>
+                                                <th scope="col">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody data-tts-profile-table>
+                                            <tr><td colspan="8">Loading TTS profiles.</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="action-group">
+                                    <button class="btn" type="button" data-tts-add-profile>Add Profile</button>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="card">
+                            <div class="card-body content-stack">
+                                <div>
+                                    <div class="kicker">Local Preview</div>
+                                    <h3>Speech Composition</h3>
+                                </div>
                                 <label for="ttsTextInput">Text To Speak</label>
                                 <textarea id="ttsTextInput" rows="10" autocomplete="off" data-tts-text-input>Welcome to the arena, hero.</textarea>
                                 <div class="action-group" aria-label="Speech playback actions">
