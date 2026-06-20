@@ -366,10 +366,6 @@ test("Idea Board launches from Toolbox with accordion table notes model", async 
     await page.locator("[data-idea-board-idea-status-input]").selectOption("Ready");
     await page.locator("[data-idea-board-idea-action='save']").click();
     await expect(page.locator("[data-idea-board-idea-row='launch-tile'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Create Project", "Delete"]);
-    await page.locator("[data-idea-board-idea-row='launch-tile'] [data-idea-board-idea-action='create-project']").click();
-    await expect(page.locator("[data-idea-board-idea-row='launch-tile'] td").nth(1)).toHaveText("Project");
-    await expect(page.locator("[data-idea-board-idea-row='launch-tile'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Open Project", "Archive"]);
-    await expect(page.locator("[data-idea-board-idea-row='launch-tile'] [data-idea-board-idea-action='delete']")).toHaveCount(0);
     expect(mutatingApiRequests).toEqual([]);
 
     expect(failedRequests).toEqual([]);

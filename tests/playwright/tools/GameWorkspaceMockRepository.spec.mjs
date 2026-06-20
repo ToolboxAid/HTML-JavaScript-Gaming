@@ -15,6 +15,14 @@ const SUPABASE_ENV_KEYS = Object.freeze([
 let fakeSupabaseServer;
 let previousSupabaseEnv;
 
+function restoreEnvValue(key, value) {
+  if (value === undefined) {
+    delete process.env[key];
+    return;
+  }
+  process.env[key] = value;
+}
+
 function startFakeSupabaseServer() {
   const tables = {
     roles: [],
@@ -123,6 +131,16 @@ test.afterAll(async () => {
 
 async function openRepoPage(page, pathName, options = {}) {
   const server = await startRepoServer();
+  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
+  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
+  const closeServer = server.close.bind(server);
+  server.close = async () => {
+    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
+    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
+    await closeServer();
+  };
   const failedRequests = [];
   const pageErrors = [];
   const consoleErrors = [];
@@ -235,12 +253,10 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
     await expect(page.getByRole("button", { name: "Create Game" })).toBeEnabled();
     await expect(page.getByRole("button", { name: "Delete Open Game" })).toHaveClass("btn");
     await expect(page.getByRole("button", { name: "Delete Open Game" })).toBeEnabled();
-    await expect(page.locator("[data-project-record-status]")).toContainText("Game Hub records loaded from the project records service");
-    await expect(page.locator("[data-project-record-status]")).toContainText("authoritative keys managed by service");
-    await expect(page.locator("[data-project-record-status]")).toContainText("asset references linked to storage object keys: 0");
+    await expect(page.locator("[data-project-record-status]")).toHaveText("Project Information loaded.");
+    await expect(page.locator("[data-game-project-information]")).toContainText("Project Information");
     await expect(page.locator("[data-project-records-table]")).toContainText("Demo Game");
-    await expect(page.locator("[data-project-records-table]")).toContainText("Project records service");
-    await expect(page.locator("[data-project-records-table]")).toContainText("asset refs 0");
+    await expect(page.locator("[data-source-idea-section]")).toContainText("No source idea yet");
     await expect(page.locator("[data-active-game-name]")).toHaveText("Demo Game");
     await expect(page.locator("[data-active-game-purpose]")).toHaveText("Game");
     await expect(page.locator("[data-current-user-role]")).toHaveText("Owner");
@@ -257,7 +273,7 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
     await page.getByRole("button", { name: "Create Game" }).click();
     await expect(page.locator("[data-active-game-name]")).toHaveText("Launch Test Game");
     await expect(page.locator("[data-game-list]")).toContainText("Launch Test Game");
-    await expect(page.locator("[data-project-records-table]")).toContainText("Launch Test Game");
+    await expect(page.locator("[data-game-project-information]")).toContainText("Launch Test Game");
     await expect(page.locator("[data-game-row='launch-test-game-1']").getByRole("button", { name: "Open Launch Test Game (Active)" })).toHaveClass(/primary/);
     await expect(page.locator("[data-game-workspace-log]")).toHaveText("Created and opened Launch Test Game.");
 
@@ -287,11 +303,8 @@ test("Game Hub preserves guest browsing and blocks guest saves", async ({ page }
   try {
     await expect(page.locator("[data-active-game-name]")).toHaveText("Demo Game");
     await expect(page.locator("[data-game-list]")).toContainText("Gravity Demo");
-    await expect(page.locator("[data-project-record-status]")).toContainText("guest browsing enabled; guest saving blocked");
-    await expect(page.locator("[data-project-record-status]")).toContainText("project records service");
-    await expect(page.locator("[data-project-record-status]")).toContainText("asset references linked to storage object keys: 0");
+    await expect(page.locator("[data-project-record-status]")).toHaveText("Project Information loaded. Sign in to save changes.");
     await expect(page.locator("[data-project-records-table]")).toContainText("Demo Game");
-    await expect(page.locator("[data-project-records-table]")).toContainText("Project records service");
     await expect(page.getByRole("button", { name: "Create Game" })).toBeDisabled();
     await expect(page.getByRole("button", { name: "Delete Open Game" })).toBeDisabled();
     await expect(page.getByLabel("Game Name")).toBeDisabled();
@@ -301,7 +314,7 @@ test("Game Hub preserves guest browsing and blocks guest saves", async ({ page }
 
     await page.getByRole("button", { name: "Open Gravity Demo" }).click();
     await expect(page.locator("[data-active-game-name]")).toHaveText("Gravity Demo");
-    await expect(page.locator("[data-game-workspace-log]")).toHaveText("Guest browsing enabled; sign in required to save Game Hub project records.");
+    await expect(page.locator("[data-game-workspace-log]")).toHaveText("Sign in to create or update Game Hub projects.");
 
     await expectNoPageFailures(failures);
   } finally {
@@ -309,7 +322,7 @@ test("Game Hub preserves guest browsing and blocks guest saves", async ({ page }
   }
 });
 
-test("Game Hub shows active-game API diagnostics without throwing", async ({ page }) => {
+test("Game Hub shows active-game errors without throwing", async ({ page }) => {
   await page.route("**/api/toolbox/game-workspace/repositories/*/methods/getActiveGame", async (route) => {
     await route.fulfill({
       body: JSON.stringify({
@@ -326,7 +339,7 @@ test("Game Hub shows active-game API diagnostics without throwing", async ({ pag
   try {
     expect(failures.failedRequests.some((request) => request.includes("502") && request.includes("/methods/getActiveGame"))).toBe(true);
     await expect(page.locator("[data-active-game-name]")).toHaveText("No game open");
-    await expect(page.locator("[data-game-workspace-log]")).toContainText("Active game unavailable for validation.");
+    await expect(page.locator("[data-game-workspace-log]")).toContainText("Active game is temporarily unavailable.");
     expect(failures.pageErrors).toEqual([]);
     expect(failures.consoleErrors.filter((message) => !message.includes("status of 502"))).toEqual([]);
   } finally {
@@ -356,7 +369,7 @@ test("Game Hub reports malformed active-game payloads without throwing", async (
   try {
     await expect(page.locator("[data-active-game-name]")).toHaveText("No game open");
     await expect(page.locator("[data-current-user-role]")).toHaveText("Viewer");
-    await expect(page.locator("[data-game-workspace-log]")).toContainText("Active game response is malformed.");
+    await expect(page.locator("[data-game-workspace-log]")).toContainText("Active game is temporarily unavailable.");
     await expect(page.getByLabel("Game Purpose")).toBeDisabled();
 
     await expectNoPageFailures(failures);
@@ -395,7 +408,6 @@ test("Game Hub displays and edits game purpose and member role", async ({ page }
     await expect(page.getByLabel("Game Purpose")).toHaveValue("Game");
     await expect(page.getByLabel("Game Status")).toHaveValue("Under Construction");
     await expect(page.getByLabel("Current User Role")).toHaveValue("Owner");
-    await expect(page.locator("[data-game-members-table]")).toContainText("Owner");
 
     await page.getByLabel("Game Purpose").selectOption("Learning Game");
     await expect(page.locator("[data-active-game-purpose]")).toHaveText("Learning Game");
@@ -407,7 +419,6 @@ test("Game Hub displays and edits game purpose and member role", async ({ page }
 
     await page.getByLabel("Current User Role").selectOption("Designer");
     await expect(page.locator("[data-current-user-role]")).toHaveText("Designer");
-    await expect(page.locator("[data-game-members-table]")).toContainText("Designer");
     await expect(page.locator("[data-game-workspace-log]")).toHaveText("Updated current user role to Designer.");
 
     await page.getByLabel("Game Purpose").selectOption("Capability Demo");
@@ -435,23 +446,22 @@ test("Game Hub progress panels update from mock game state", async ({ page }) =>
     await expect(page.locator("[data-recommended-next-tool]").first()).toHaveText("Game Configuration");
     await expect(page.locator("[data-game-progress-checklist]")).toContainText("Game identity: Complete");
     await expect(page.locator("[data-game-output-panels] summary")).toHaveText([
-      "Readiness Output",
-      "Repository Tables",
-      "Team Members"
+      "Readiness Output"
     ]);
     await expect(page.locator("aside.tool-column").last().getByText("Readiness Output")).toHaveCount(0);
-    await expect(page.locator("aside.tool-column").last().getByText("Repository Tables")).toHaveCount(0);
-    await expect(page.locator("aside.tool-column").last().getByText("Team Members")).toHaveCount(0);
     const panelOrderIsCorrect = await page.locator(".tool-center-panel").evaluate((panel) => {
+      const projectInformation = panel.querySelector("[data-game-project-information]");
+      const sourceIdea = panel.querySelector("[data-source-idea-section]");
       const staticOverlay = panel.querySelector("[data-game-workspace-foundation]");
       const outputPanels = panel.querySelector("[data-game-output-panels]");
-      const missingRequirements = panel.querySelector("[data-missing-requirements]");
       return Boolean(
+        projectInformation &&
+        sourceIdea &&
         staticOverlay &&
         outputPanels &&
-        missingRequirements &&
-        (staticOverlay.compareDocumentPosition(outputPanels) & Node.DOCUMENT_POSITION_FOLLOWING) &&
-        (outputPanels.compareDocumentPosition(missingRequirements) & Node.DOCUMENT_POSITION_FOLLOWING)
+        (projectInformation.compareDocumentPosition(sourceIdea) & Node.DOCUMENT_POSITION_FOLLOWING) &&
+        (sourceIdea.compareDocumentPosition(staticOverlay) & Node.DOCUMENT_POSITION_FOLLOWING) &&
+        (staticOverlay.compareDocumentPosition(outputPanels) & Node.DOCUMENT_POSITION_FOLLOWING)
       );
     });
     expect(panelOrderIsCorrect).toBe(true);
@@ -460,9 +470,7 @@ test("Game Hub progress panels update from mock game state", async ({ page }) =>
     await page.getByRole("button", { name: "Create Game" }).click();
     await expect(page.locator("[data-game-status]")).toHaveText("Under Construction");
     await expect(page.locator("[data-game-progress]")).toHaveText("Progress Review Game identity ready");
-    await expect(page.locator("[data-table-counts], [data-game-table-counts]")).toContainText("games");
-    await expect(page.locator("[data-game-table-counts]")).toContainText("5");
-    await expect(page.locator("[data-game-members-table]")).toContainText("Owner");
+    await expect(page.locator("[data-game-project-information]")).toContainText("Progress Review Game");
 
     await page.getByRole("button", { name: "Delete Open Game" }).click();
     await expect(page.locator("[data-active-game-name]")).toHaveText("Demo Game");
