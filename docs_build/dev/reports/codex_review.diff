@@ -1,166 +1,281 @@
-diff --git a/docs_build/dev/reports/PR_26171_059-manual-validation-notes.md b/docs_build/dev/reports/PR_26171_059-manual-validation-notes.md
+diff --git a/docs_build/dev/PROJECT_INSTRUCTIONS.md b/docs_build/dev/PROJECT_INSTRUCTIONS.md
+index 6a2014f2f..528312412 100644
+--- a/docs_build/dev/PROJECT_INSTRUCTIONS.md
++++ b/docs_build/dev/PROJECT_INSTRUCTIONS.md
+@@ -2008,3 +2008,50 @@ Required Git workflow report fields:
+ - PR URL
+ - merge result
+ - final main commit
++
++## CODEX INSTRUCTION ENFORCEMENT START GATE
++
++Codex must run this gate before every PR execution and before any file changes.
++
++Required instruction reads:
++- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
++- Read `docs_build/dev/PROJECT_MULTI_PC.txt`.
++- Treat the newest applicable section in `PROJECT_INSTRUCTIONS.md` as authoritative when rules overlap.
++- Treat the current owner/parity section in `PROJECT_MULTI_PC.txt` as authoritative for PC/Laptop routing.
++
++Required pre-change report:
++- Codex must report instruction compliance as `PASS` or `FAIL` before making file changes.
++- The report must include branch, clean status, PR owner, PR parity, implementation path, validation scope, required report list, and ZIP requirement.
++- Any `FAIL` is a hard stop unless the PR explicitly scopes branch audit or recovery documentation without implementation.
++
++Hard stops before changes:
++- If the current branch is not `main`, HARD STOP.
++- If the repository is not clean before the PR branch is created, HARD STOP.
++- If the PR owner does not match the PC/Laptop ownership map in `PROJECT_MULTI_PC.txt`, HARD STOP.
++- If the PR number parity does not match the assigned machine in `PROJECT_MULTI_PC.txt`, HARD STOP.
++- If the PR asks for implementation and the implementation path is wrong, HARD STOP.
++- If a PR asks for functional parity and only placeholder-only work is possible, HARD STOP and report the missing source or blocker.
++- If scoped validation is skipped without a documented reason, HARD STOP.
++
++Path enforcement:
++- Use the active path named by the PR and verified in the repository.
++- Do not create wrong replacement paths.
++- For Text To Speech work, the active toolbox path is `toolbox/text-to-speech/`.
++- Do not create `tools/text2speech/` for new work.
++- If a PR names archived tools, games, or samples as a functionality sample, treat the archive as a read-only reference sample, not as a reason to skip implementation.
++
++Completion hard stops:
++- If the required repo ZIP is missing, HARD STOP.
++- If the required repo ZIP is empty or not under `tmp/`, HARD STOP.
++- If required reports are missing, HARD STOP.
++- If `docs_build/dev/reports/codex_review.diff` is missing, HARD STOP.
++- If `docs_build/dev/reports/codex_changed_files.txt` is missing, HARD STOP.
++- If manual validation notes are missing, HARD STOP.
++- If the PR-specific report is missing, HARD STOP.
++- If an instruction compliance checklist is required and missing, HARD STOP.
++- If requested scoped validation did not run and no explicit skip reason is recorded, HARD STOP.
++
++Functional parity rule:
++- A PR that asks to restore or rebuild working functionality must produce functional parity with the approved sample or source.
++- Placeholder shells, dead controls, static mockups, and nonfunctional UI are not acceptable completion states for functional parity PRs.
++- If functional parity cannot be reached in scope, Codex must stop and report the exact blocker instead of packaging placeholder-only work.
+diff --git a/docs_build/dev/PROJECT_MULTI_PC.txt b/docs_build/dev/PROJECT_MULTI_PC.txt
+index 3be408469..60ef4881a 100644
+--- a/docs_build/dev/PROJECT_MULTI_PC.txt
++++ b/docs_build/dev/PROJECT_MULTI_PC.txt
+@@ -448,3 +448,61 @@ Queue next PR
+ ```
+
+ That is probably the fastest path to doubling throughput without creating chaos.
++
++----------------------------------------------------------------------------------------
++
++Current Authoritative Multi-PC Gate
++
++Codex must read this file before every PR execution.
++
++Machine parity:
++
++PC / Environment 1:
++- Uses even-numbered PR sequence values.
++- Example: `PR_26171_064-*`.
++
++Laptop / Environment 2:
++- Uses odd-numbered PR sequence values.
++- Example: `PR_26171_063-*`.
++
++Owner map:
++
++PC / Environment 1 owns Creator Journey work:
++- Game Journey
++- Game Hub
++- Idea
++- Design
++- Objects
++- Worlds
++- Interface
++- Controls
++- Rules
++- Progression
++- Play Test
++- Progress Tracking
++- Game Design
++- Game Crew
++
++Laptop / Environment 2 owns Content Creation and asset/publishing work:
++- Graphics
++- Toolbox images
++- Audio
++- MIDI
++- Messages
++- Text To Speech
++- TTS
++- Publishing
++- Marketplace
++- Community
++- Arcade
++
++Governance, recovery, diagnostics, and instruction-hardening PRs:
++- Follow PR number parity unless Master Control explicitly assigns an owner.
++- Must not implement tool/runtime work from the opposite owner.
++- Must document owner/parity compliance in the PR report.
++
++Hard stop rules:
++- If the PR number parity does not match the current machine, stop before changes.
++- If the PR scope belongs to the other machine owner, stop before changes.
++- If the PR crosses PC and Laptop ownership, stop and require Master Control to split or assign the work.
++- If the requested implementation path conflicts with the active owner path, stop before changes.
+diff --git a/docs_build/dev/reports/PR_26171_063-codex-instruction-enforcement-hardening.md b/docs_build/dev/reports/PR_26171_063-codex-instruction-enforcement-hardening.md
 new file mode 100644
-index 000000000..d34d3d31c
+index 000000000..30bcba263
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_059-manual-validation-notes.md
-@@ -0,0 +1,19 @@
-+# PR_26171_059 Manual Validation Notes
-+
-+## Manual Review
-+
-+- Confirmed this PR only documents the rollback restore plan.
-+- Confirmed the restore list keeps Local API sign-in recovery, env diagnostics, toolbox image restoration, Text To Speech rebuild, and Game Journey corrections as separate future scoped PRs.
-+- Confirmed this PR does not reapply implementation.
-+- Confirmed this PR excludes disconnected PC branch reuse, broad cherry-picks, wrong-path `tools/text2speech/` work, placeholder Text To Speech shell work, and unrelated report churn.
-+
-+## Runtime Notes
-+
-+- No browser sign-in flow was manually exercised for this PR.
-+- No Local API runtime was started for this PR.
-+- No Project Workspace runtime validation was run for this PR.
-+- No Text To Speech runtime validation was run for this PR.
-+- No toolbox image runtime validation was run for this PR.
-+- No Game Journey runtime validation was run for this PR.
-+
-+Runtime validation must happen in the future scoped implementation PRs listed in `PR_26171_059-rollback-restore-plan.md`.
-diff --git a/docs_build/dev/reports/PR_26171_059-rollback-restore-plan.md b/docs_build/dev/reports/PR_26171_059-rollback-restore-plan.md
-new file mode 100644
-index 000000000..83ddb4f7f
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_059-rollback-restore-plan.md
-@@ -0,0 +1,97 @@
-+# PR_26171_059 Rollback Restore Plan
++++ b/docs_build/dev/reports/PR_26171_063-codex-instruction-enforcement-hardening.md
+@@ -0,0 +1,48 @@
++# PR_26171_063 Codex Instruction Enforcement Hardening
 +
 +## Purpose
 +
-+Commit the clean recovery state from latest `main` and document the work that must be restored after rollback.
-+
-+This PR is documentation-only. It does not reapply implementation work, does not reuse the disconnected PC branch, and does not cherry-pick broad contaminated history.
-+
-+## Baseline Evidence
-+
-+- Verified starting branch: `main`.
-+- Removed leftover local-only PR_26171_057 report artifacts before branching.
-+- Pulled latest `origin/main` with a fast-forward update.
-+- Recovery baseline commit used for this PR branch: `20fd280c608917b960b3080484a5d28c51990ccb`.
-+- Created scoped branch: `pr/26171-059-rollback-restore-plan`.
-+- No runtime, toolbox, engine, API, or test implementation files are changed by this PR.
-+
-+## Restore List After Rollback
-+
-+1. Local API sign-in recovery
-+   - Inspect the sign-in page and its external JavaScript first.
-+   - Remove preview-disabled sign-in behavior.
-+   - Use the configured API URL instead of hardcoded preview-disabled behavior.
-+   - Submit email and password to the Local API session auth endpoint used by `npm run dev:local-api`.
-+   - On valid DEV credentials, create a Local API session and redirect to the expected signed-in destination.
-+   - On invalid credentials, show a visible actionable error.
-+   - Keep Continue Browsing for guest browsing.
-+   - Do not create fake login.
-+   - Do not use browser-owned auth as the source of truth.
-+   - Do not create custom password tables.
-+   - Do not change Create Account or Password Reset beyond keeping placeholders safe.
-+
-+2. Env diagnostics and runtime ports
-+   - Print all env keys one per row.
-+   - Mask secrets.
-+   - Print the active site, API, and database ports.
-+
-+3. Toolbox image restoration
-+   - Restore valid toolbox images.
-+   - Remove excessive `image-missing.svg` fallbacks.
-+   - Keep image restoration scoped to real existing assets or approved replacements.
-+
-+4. Text To Speech engine/audio rebuild
-+   - Use `old_text2speech-V2` as the functionality sample.
-+   - Move reusable Text To Speech engine code to `src/engine/audio/`.
-+   - Make `toolbox/text-to-speech/` consume the reusable engine module.
-+   - Restore old controls, options, and features from the working sample.
-+   - Do not use the wrong `tools/text2speech/` path.
-+   - Do not ship placeholder Text To Speech shell work that does not restore functionality.
-+
-+5. Game Journey table correction
-+   - Add row under the table.
-+   - Support inline edit row behavior.
-+   - Treat Note Tree as a subtable.
-+   - Show metadata in table columns.
-+   - Ensure system notes cannot be deleted.
-+
-+6. Game Journey post-rollback verification
-+   - Confirm friendly descriptions.
-+   - Confirm dashboard, targets, and insights only if those surfaces are still present on clean `main`.
-+   - Reapply missing approved Journey work only from clean `main`.
-+
-+## Reapply Rules
-+
-+- Every reapply PR starts from clean `main`.
-+- Every reapply PR gets its own branch.
-+- Every reapply PR is scoped to one approved purpose.
-+- Do not reuse the disconnected branch.
-+- Do not merge the disconnected branch.
-+- Do not cherry-pick broad PC commits.
-+- Prefer file-level or diff-level reapplication for approved scoped changes.
-+- Exclude wrong-path work such as `tools/text2speech/`.
-+- Exclude placeholder Text To Speech shell work.
-+- Exclude unrelated report churn.
-+- Run targeted validation only after each reapply PR implements its scoped change.
-+
-+## Approved Reapply Order
-+
-+1. Local API sign-in recovery.
-+2. Env diagnostics and runtime ports.
-+3. Toolbox image restoration.
-+4. Text To Speech engine/audio rebuild from the old working Text To Speech sample.
-+5. Game Journey table corrections if still missing.
-+6. Game Journey post-rollback verification and approved follow-up only if still needed.
-+
-+## Discarded Contaminated Work
-+
-+- Disconnected PC branch history.
-+- Broad cherry-picks from contaminated commits.
-+- Wrong-path `tools/text2speech/` work.
-+- Placeholder Text To Speech shell work.
-+- Unrelated report churn.
-+- Any implementation work not revalidated from clean `main`.
-+
-+## Validation Boundary
-+
-+This PR is limited to docs/static validation. It intentionally does not run Local API sign-in validation, Text To Speech runtime validation, toolbox image runtime validation, or Project Workspace validation because implementation reapply is out of scope for PR_26171_059.
-diff --git a/docs_build/dev/reports/PR_26171_059-validation.md b/docs_build/dev/reports/PR_26171_059-validation.md
-new file mode 100644
-index 000000000..4504c6ddb
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_059-validation.md
-@@ -0,0 +1,32 @@
-+# PR_26171_059 Validation Report
++Make Codex explicitly obey `docs_build/dev/PROJECT_INSTRUCTIONS.md` and `docs_build/dev/PROJECT_MULTI_PC.txt` before every PR.
 +
 +## Scope
 +
-+Validation is docs/static only for this rollback restore plan PR.
++- Added a Codex instruction enforcement start gate to `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
++- Added current authoritative PC/Laptop owner and PR parity rules to `docs_build/dev/PROJECT_MULTI_PC.txt`.
++- Documented hard stops for branch state, clean status, owner mismatch, parity mismatch, wrong implementation paths, missing reports, missing ZIPs, skipped validation, and placeholder-only functional parity work.
 +
-+Implementation validation is intentionally deferred until each approved restore item is reapplied in its own scoped PR from clean `main`.
++## Requirement Checklist
++
++- PASS: Codex must read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before execution.
++- PASS: Codex must read `docs_build/dev/PROJECT_MULTI_PC.txt` before execution.
++- PASS: Codex must report instruction compliance PASS/FAIL before changes.
++- PASS: Codex must hard stop when not on `main` before starting.
++- PASS: Codex must hard stop when the repo is not clean before starting.
++- PASS: Codex must hard stop when PR owner does not match PC/Laptop ownership.
++- PASS: Codex must hard stop when PR number parity does not match assigned machine.
++- PASS: Codex must hard stop when required ZIP is missing.
++- PASS: Codex must hard stop when required reports are missing.
++- PASS: Codex must hard stop when implementation path is wrong.
++- PASS: Codex must hard stop when scoped validation was skipped without reason.
++- PASS: Codex must not continue with placeholder-only work when the PR asks for functional parity.
++- PASS: Codex must not create wrong paths such as `tools/text2speech` when active path is `toolbox/text-to-speech`.
++- PASS: Codex must not treat archived tools as "do not implement" when the PR says they are the functionality sample.
++
++## Owner And Parity Evidence
++
++- Current PR: `PR_26171_063-codex-instruction-enforcement-hardening`.
++- Sequence: `063`.
++- Sequence parity: odd.
++- Assigned machine under the new authoritative gate: Laptop / Environment 2.
++- Scope type: governance, recovery, diagnostics, and instruction-hardening.
++- Result: PASS because governance/instruction-hardening PRs follow PR number parity unless Master Control explicitly assigns another owner.
++
++## Validation Scope
++
++- Playwright impacted: No.
++- No Playwright impact. This PR is docs/workflow only.
++- Validation is docs/static only.
++- Runtime, tool, engine, samples, and Game Hub validation are skipped because no runtime, UI, toolState, engine, or sample behavior changed.
++
++## ZIP
++
++- Required ZIP path: `tmp/PR_26171_063-codex-instruction-enforcement-hardening_delta.zip`.
+diff --git a/docs_build/dev/reports/PR_26171_063-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26171_063-instruction-compliance-checklist.md
+new file mode 100644
+index 000000000..9d2277ab5
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26171_063-instruction-compliance-checklist.md
+@@ -0,0 +1,37 @@
++# PR_26171_063 Instruction Compliance Checklist
++
++## Pre-Change Gate
++
++- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before file changes.
++- PASS: Read `docs_build/dev/PROJECT_MULTI_PC.txt` before file changes.
++- PASS: Reported instruction compliance PASS/FAIL before file changes.
++- PASS: Starting branch was `main`.
++- PASS: Starting repository status was clean.
++- PASS: Created scoped branch `pr/26171-063-codex-instruction-enforcement-hardening` after the clean `main` check.
++
++## Current PR Routing
++
++- PASS: PR number `063` is odd.
++- PASS: Odd PR parity maps to Laptop / Environment 2 under the new authoritative Multi-PC gate.
++- PASS: PR scope is instruction/governance hardening and follows parity because no Master Control owner override was provided.
++- PASS: No PC-owned tool implementation was changed.
++- PASS: No Laptop-owned tool implementation was changed.
++
++## Path And Functional Parity Gate
++
++- PASS: No implementation path was changed by this docs-only PR.
++- PASS: `toolbox/text-to-speech/` is documented as the active Text To Speech path.
++- PASS: `tools/text2speech/` is documented as a wrong new-work path.
++- PASS: Placeholder-only functional parity work is prohibited.
++- PASS: Archived functionality samples are documented as read-only reference samples when explicitly named by a PR.
++
++## Completion Gate
++
++- PASS: Required PR-specific report exists.
++- PASS: Required instruction compliance checklist exists.
++- PASS: Required manual validation notes exist.
++- PASS: Required `docs_build/dev/reports/codex_review.diff` exists after artifact generation.
++- PASS: Required `docs_build/dev/reports/codex_changed_files.txt` exists after artifact generation.
++- PASS: Required ZIP exists after packaging.
++- PASS: Scoped validation was not skipped; docs/static validation was run.
++- PASS: Playwright was not run because the PR explicitly requires no Playwright.
+diff --git a/docs_build/dev/reports/PR_26171_063-manual-validation-notes.md b/docs_build/dev/reports/PR_26171_063-manual-validation-notes.md
+new file mode 100644
+index 000000000..43af53cc8
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26171_063-manual-validation-notes.md
+@@ -0,0 +1,19 @@
++# PR_26171_063 Manual Validation Notes
++
++## Manual Review
++
++- Confirmed the new start gate requires reading `PROJECT_INSTRUCTIONS.md` and `PROJECT_MULTI_PC.txt` before every PR.
++- Confirmed the new gate requires visible PASS/FAIL instruction compliance before file changes.
++- Confirmed the hard stop list covers branch, clean status, owner, parity, required ZIP, required reports, wrong paths, skipped validation, and placeholder-only functional parity work.
++- Confirmed Text To Speech path enforcement names `toolbox/text-to-speech/` as active and rejects new `tools/text2speech/` work.
++- Confirmed archived tools can be used as read-only functionality samples when a PR explicitly names them.
++
++## Manual Runtime Checks
++
++- No Playwright was run.
++- No browser runtime checks were performed.
++- No Project Workspace/Game Hub runtime checks were performed.
++- No Local API checks were performed.
++- No Text To Speech runtime checks were performed.
++
++These checks are out of scope because this PR only changes documentation and governance reports.
+diff --git a/docs_build/dev/reports/PR_26171_063-validation.md b/docs_build/dev/reports/PR_26171_063-validation.md
+new file mode 100644
+index 000000000..cedb0134a
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26171_063-validation.md
+@@ -0,0 +1,32 @@
++# PR_26171_063 Validation
++
++## Scope
++
++Docs/static validation only.
++
++No Playwright was run because the PR explicitly says "No Playwright" and the changed files are governance docs and reports only.
 +
 +## Commands
 +
-+- `git status --short --branch`
-+  - PASS: starting branch was `main`.
-+  - PASS: leftover PR_26171_057 local-only report artifacts were removed before branching.
-+  - PASS: PR branch was created from clean latest `main`.
-+- `git pull --ff-only origin main`
-+  - PASS: local `main` fast-forwarded to `20fd280c608917b960b3080484a5d28c51990ccb`.
-+- `npm run test:playwright:static`
-+  - PASS: static-only validation completed successfully.
-+  - Note: the command refreshed generated validation reports; those generated report changes were restored because they are unrelated to this rollback plan PR.
 +- `git diff --check`
 +  - PASS: no whitespace errors.
++- Targeted required-text validation for `docs_build/dev/PROJECT_INSTRUCTIONS.md`, `docs_build/dev/PROJECT_MULTI_PC.txt`, and PR_26171_063 reports.
++  - PASS: all required hardening anchors were found.
++  - Note: the first targeted text check found missing exact `No Playwright` wording in manual notes; the note was corrected and the validation was rerun successfully.
 +
-+## Not Run
++## Skipped
 +
-+- `npm run dev:local-api`
 +- `npm run test:workspace-v2`
-+- Runtime sign-in validation
-+- Text To Speech runtime validation
-+- Toolbox image runtime validation
-+- Game Journey runtime validation
++  - SKIP: legacy command name for Project Workspace/Game Hub validation; no workspace or toolState behavior changed.
++- `npm run test:playwright:static`
++  - SKIP: command name is Playwright-scoped and this PR explicitly says no Playwright.
++- Runtime, tool, engine, samples, and browser validation
++  - SKIP: docs/workflow-only change.
 +
-+These commands are intentionally out of scope for this docs/static rollback plan PR.
++## Artifact Verification
++
++- PASS: `docs_build/dev/reports/codex_review.diff` exists.
++- PASS: `docs_build/dev/reports/codex_changed_files.txt` exists.
++- PASS: `tmp/PR_26171_063-codex-instruction-enforcement-hardening_delta.zip` exists.
++- PASS: ZIP size is greater than zero.
++- PASS: ZIP contents preserve repo-relative paths.

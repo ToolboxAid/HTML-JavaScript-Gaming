@@ -1,39 +1,44 @@
-# Codex Changed Files - PR_26171_059-rollback-restore-plan
+# Codex Changed Files - PR_26171_063-codex-instruction-enforcement-hardening
 
-## Git Workflow
-- Verified starting branch: `main`.
-- Verified repo scope: clean after removing leftover local-only PR_26171_057 report artifacts.
-- Pulled latest `origin/main`: `20fd280c608917b960b3080484a5d28c51990ccb`.
-- Created branch: `pr/26171-059-rollback-restore-plan`.
-- Push result: pending until after commit.
-- PR URL: pending until after push.
-- Merge result: pending until after PR validation/merge.
-- Final main sync: pending until after merge and final pull.
+## Git Status Short
+```text
+ M docs_build/dev/PROJECT_INSTRUCTIONS.md
+ M docs_build/dev/PROJECT_MULTI_PC.txt
+ A docs_build/dev/reports/PR_26171_063-codex-instruction-enforcement-hardening.md
+ A docs_build/dev/reports/PR_26171_063-instruction-compliance-checklist.md
+ A docs_build/dev/reports/PR_26171_063-manual-validation-notes.md
+ A docs_build/dev/reports/PR_26171_063-validation.md
+ M docs_build/dev/reports/codex_changed_files.txt
+ M docs_build/dev/reports/codex_review.diff
+```
+
+## Git Diff Stat
+```text
+ docs_build/dev/PROJECT_INSTRUCTIONS.md             |  47 +++
+ docs_build/dev/PROJECT_MULTI_PC.txt                |  58 +++
+ ..._063-codex-instruction-enforcement-hardening.md |  48 +++
+ ...R_26171_063-instruction-compliance-checklist.md |  37 ++
+ .../PR_26171_063-manual-validation-notes.md        |  19 +
+ docs_build/dev/reports/PR_26171_063-validation.md  |  32 ++
+ docs_build/dev/reports/codex_changed_files.txt     |  65 ++--
+ docs_build/dev/reports/codex_review.diff           | 395 +++++++++++++--------
+ 8 files changed, 531 insertions(+), 170 deletions(-)
+```
 
 ## Changed Files
-- docs_build/dev/reports/PR_26171_059-rollback-restore-plan.md
-- docs_build/dev/reports/PR_26171_059-validation.md
-- docs_build/dev/reports/PR_26171_059-manual-validation-notes.md
+- docs_build/dev/PROJECT_INSTRUCTIONS.md
+- docs_build/dev/PROJECT_MULTI_PC.txt
+- docs_build/dev/reports/PR_26171_063-codex-instruction-enforcement-hardening.md
+- docs_build/dev/reports/PR_26171_063-instruction-compliance-checklist.md
+- docs_build/dev/reports/PR_26171_063-validation.md
+- docs_build/dev/reports/PR_26171_063-manual-validation-notes.md
 - docs_build/dev/reports/codex_review.diff
 - docs_build/dev/reports/codex_changed_files.txt
 
-## Requirement Evidence
-- PASS: Documented Local API sign-in recovery requirements.
-- PASS: Documented env diagnostics and runtime port requirements.
-- PASS: Documented toolbox image restoration requirements.
-- PASS: Documented Text To Speech engine/audio rebuild requirements.
-- PASS: Documented Game Journey table correction requirements.
-- PASS: Documented Game Journey post-rollback verification requirements.
-- PASS: Documented reapply rules requiring clean `main`, scoped branches, and no disconnected branch reuse.
-- PASS: Documented discarded contaminated work list.
-- PASS: No implementation reapply in this PR.
-
 ## Validation
-- PASS: `npm run test:playwright:static`.
-- PASS: Restored unrelated generated validation report churn after static validation.
-- PASS: `git diff --check`.
-- NOT RUN: `npm run dev:local-api` by design for docs/static-only scope.
-- NOT RUN: `npm run test:workspace-v2` by design for docs/static-only scope.
+- PASS: `git diff --check` after artifact whitespace normalization.
+- PASS: targeted required-text validation for instruction hardening anchors.
+- SKIP: Playwright, because the PR explicitly requires no Playwright and changes docs/workflow only.
 
 ## ZIP
-- Path: `tmp/PR_26171_059-rollback-restore-plan_delta.zip`.
+- Path: `tmp/PR_26171_063-codex-instruction-enforcement-hardening_delta.zip`.

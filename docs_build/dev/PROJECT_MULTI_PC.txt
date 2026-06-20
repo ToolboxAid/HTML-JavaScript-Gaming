@@ -448,3 +448,61 @@ Queue next PR
 ```
 
 That is probably the fastest path to doubling throughput without creating chaos.
+
+----------------------------------------------------------------------------------------
+
+Current Authoritative Multi-PC Gate
+
+Codex must read this file before every PR execution.
+
+Machine parity:
+
+PC / Environment 1:
+- Uses even-numbered PR sequence values.
+- Example: `PR_26171_064-*`.
+
+Laptop / Environment 2:
+- Uses odd-numbered PR sequence values.
+- Example: `PR_26171_063-*`.
+
+Owner map:
+
+PC / Environment 1 owns Creator Journey work:
+- Game Journey
+- Game Hub
+- Idea
+- Design
+- Objects
+- Worlds
+- Interface
+- Controls
+- Rules
+- Progression
+- Play Test
+- Progress Tracking
+- Game Design
+- Game Crew
+
+Laptop / Environment 2 owns Content Creation and asset/publishing work:
+- Graphics
+- Toolbox images
+- Audio
+- MIDI
+- Messages
+- Text To Speech
+- TTS
+- Publishing
+- Marketplace
+- Community
+- Arcade
+
+Governance, recovery, diagnostics, and instruction-hardening PRs:
+- Follow PR number parity unless Master Control explicitly assigns an owner.
+- Must not implement tool/runtime work from the opposite owner.
+- Must document owner/parity compliance in the PR report.
+
+Hard stop rules:
+- If the PR number parity does not match the current machine, stop before changes.
+- If the PR scope belongs to the other machine owner, stop before changes.
+- If the PR crosses PC and Laptop ownership, stop and require Master Control to split or assign the work.
+- If the requested implementation path conflicts with the active owner path, stop before changes.
