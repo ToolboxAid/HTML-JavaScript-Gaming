@@ -1,3 +1,260 @@
+I think this is the right operating model for GFS at your current stage, with a few modifications to fit how we've already organized the project.
+
+Master Control Responsibilities
+
+Master Control should own:
+
+Product roadmap
+Tool priority
+Architecture
+Naming governance
+Workflow governance
+Environment strategy
+PR sequencing
+Merge approval
+
+It should never build code and never own implementation details.
+
+Its outputs should be:
+
+Next PR
+Requirements
+Acceptance Criteria
+Dependencies
+Priority
+Owner (PC/Laptop)
+Recommended Workstream Split
+
+Instead of arbitrary splits, split by Creator journey.
+
+PC — Creator Journey
+
+Owns:
+
+Idea
+Design
+Objects
+Worlds
+Interface
+Controls
+Rules
+Progression
+Play Test
+
+Includes:
+
+Game Journey
+Game Hub
+Progress Tracking
+Game Design
+Objects
+Events
+Controls
+Worlds
+Testing
+
+Reason:
+
+These tools are heavily connected.
+
+Laptop — Content Creation
+
+Owns:
+
+Graphics
+Audio
+Publish
+Share
+
+Includes:
+
+Sprites
+Vector Art
+Audio
+MIDI
+Messages
+TTS
+Publishing
+Marketplace
+Community
+Arcade
+
+Reason:
+
+These tools share asset pipelines and publishing workflows.
+
+Messages Tool Placement
+
+I would move Messages to Laptop ownership.
+
+Reason:
+
+Messages is becoming:
+
+Dialog
+Narration
+Quest Text
+Speech
+TTS
+Emotion Profiles
+
+Which ties directly into:
+
+Audio
+Voices
+TTS
+MIDI
+Branch Strategy
+
+I would adjust slightly from feature branches.
+
+Since GFS already works in PR units:
+
+main
+
+Then Codex creates:
+
+pr/26171-001-game-journey-progress
+pr/26171-002-messages-foundation
+pr/26171-003-midi-editor-grid
+
+Advantages:
+
+PR maps directly to deliverable
+Easier report generation
+Easier rollback
+Easier audit
+
+This matches your existing PR naming convention better than generic feature branches.
+
+Current Priority Order
+
+If I were acting as CTO for GFS today:
+
+Tier 1
+
+Finish Creator tools.
+
+Messages
+Events
+Audio
+MIDI
+Game Journey
+Progress Tracking
+
+These are actively defining how games get built.
+
+Tier 2
+
+Creator usability.
+
+Friendly naming
+Page copy
+Tool descriptions
+Navigation cleanup
+Progress percentages
+
+Much of this already has active PRs.
+
+Tier 3
+
+Publishing pipeline.
+
+Project Package
+Export
+Import
+Validate
+DEV
+IST
+UAT
+PROD
+
+Infrastructure exists conceptually.
+
+Tool completion is the blocker.
+
+Tier 4
+
+Community.
+
+Game Hub
+Arcade
+Marketplace
+Reviews
+Ratings
+Community
+Creator Profiles
+
+These become valuable after creators can build complete games.
+
+Immediate Queue
+
+If we start using Master Control today, my queue would be:
+
+PC
+PR_26171_001-game-journey-completion-model
+
+Scope:
+
+Replace checkboxes with numeric completion counts.
+Support:
+Hero [1]
+Enemy [4]
+Levels [12]
+Sounds [17]
+
+This solves the "xxx%" problem.
+
+Laptop
+PR_26171_002-messages-tool-foundation
+
+Scope:
+
+Create Messages tool data model.
+
+Messages
+Emotions
+Speech Profiles
+
+Example:
+
+Calm
+Urgent
+Whisper
+Angry
+Excited
+
+Volume
+Pitch
+Rate
+
+No TTS generation yet.
+
+This establishes the foundation for dialog, narration, and speech consistency across games.
+
+Master Control Rule
+
+Before any new PR is created, ask:
+
+Does this directly help a Creator:
+- Build
+- Play
+- Share
+
+If the answer is no:
+
+Defer it.
+
+That keeps GFS focused on Creator value instead of infrastructure expansion.
+
+Based on everything we've discussed, I would currently allocate approximately:
+
+80% Tool Completion
+15% Publishing Pipeline
+5% Infrastructure
+
+until a complete game can be built start-to-finish entirely inside Game Foundry Studio.
+----------------------------------------------------------------------------------------
 If your goal is **maximum throughput**, I would have the three chats play different roles.
 
 ## Master Control
