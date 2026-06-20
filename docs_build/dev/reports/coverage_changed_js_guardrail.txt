@@ -6,7 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
 Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
-(100%) none changed - no changed runtime JS files
+(0%) toolbox/idea-board/index.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 
 Guardrail warnings:
-(100%) none changed - no changed runtime JS files
+(0%) toolbox/idea-board/index.js - WARNING: changed runtime JS file missing from coverage; advisory only

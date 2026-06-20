@@ -1,10 +1,11 @@
-const ideas = Object.freeze([
+const statusOptions = Object.freeze(["New", "Exploring", "Parked", "Ready to Shape"]);
+
+const ideas = [
   {
     id: "sky-orchard",
     title: "Sky Orchard",
     pitch: "Grow floating islands while defending them from storm creatures.",
     status: "Exploring",
-    owner: "Creator",
     updated: "2026-06-20",
   },
   {
@@ -12,10 +13,9 @@ const ideas = Object.freeze([
     title: "Clockwork Courier",
     pitch: "Deliver messages through looping city districts before time resets.",
     status: "New",
-    owner: "Creator",
     updated: "2026-06-20",
   },
-]);
+];
 
 const notesByIdea = new Map([
   [
@@ -24,18 +24,12 @@ const notesByIdea = new Map([
       {
         id: "sky-system-origin",
         note: "System seed note: compare early Sky Orchard ideas before creating a project.",
-        type: "System",
-        createdBy: "System",
-        created: "2026-06-20",
         updated: "2026-06-20",
         system: true,
       },
       {
         id: "sky-creator-next-question",
         note: "Ask whether the core loop is resource planning, action defense, or both.",
-        type: "Creator",
-        createdBy: "Creator",
-        created: "2026-06-20",
         updated: "2026-06-20",
         system: false,
       },
@@ -47,18 +41,12 @@ const notesByIdea = new Map([
       {
         id: "clock-system-origin",
         note: "System seed note: keep Clockwork Courier scoped until the time-loop hook is clear.",
-        type: "System",
-        createdBy: "System",
-        created: "2026-06-20",
         updated: "2026-06-20",
         system: true,
       },
       {
         id: "clock-creator-route-risk",
         note: "Check whether district routing stays readable after the first reset.",
-        type: "Creator",
-        createdBy: "Creator",
-        created: "2026-06-20",
         updated: "2026-06-20",
         system: false,
       },
@@ -68,7 +56,9 @@ const notesByIdea = new Map([
 
 const state = {
   selectedIdeaId: "sky-orchard",
+  editingIdeaId: null,
   editingNoteId: null,
+  addingIdea: false,
   addingNote: false,
 };
 
@@ -77,11 +67,17 @@ function today() {
 }
 
 function selectedIdea() {
-  return ideas.find((idea) => idea.id === state.selectedIdeaId);
+  return ideas.find((idea) => idea.id === state.selectedIdeaId) || null;
 }
 
-function selectedNotes() {
-  return notesByIdea.get(state.selectedIdeaId);
+function notesForIdea(ideaId) {
+  if (!notesByIdea.has(ideaId)) notesByIdea.set(ideaId, []);
+  return notesByIdea.get(ideaId);
+}
+
+function noteCountLabel(ideaId) {
+  const count = notesForIdea(ideaId).length;
+  return `${count} ${count === 1 ? "Note" : "Notes"}`;
 }
 
 function cell(text) {
@@ -90,13 +86,35 @@ function cell(text) {
   return td;
 }
 
-function actionButton(label, action, variant = "") {
+function actionButton(label, action, datasetName, variant = "") {
   const control = document.createElement("button");
   control.className = variant ? `btn btn--compact ${variant}` : "btn btn--compact";
   control.type = "button";
   control.textContent = label;
-  control.dataset.ideaBoardAction = action;
+  control.dataset[datasetName] = action;
   return control;
+}
+
+function textInput(label, value = "") {
+  const input = document.createElement("input");
+  input.type = "text";
+  input.value = value;
+  input.setAttribute("aria-label", label);
+  return input;
+}
+
+function statusSelect(value) {
+  const select = document.createElement("select");
+  select.setAttribute("aria-label", "Idea status");
+  select.dataset.ideaBoardIdeaStatusInput = "true";
+  for (const optionValue of statusOptions) {
+    const option = document.createElement("option");
+    option.value = optionValue;
+    option.textContent = optionValue;
+    option.selected = optionValue === value;
+    select.append(option);
+  }
+  return select;
 }
 
 function updateStatus(root, message) {
@@ -104,56 +122,92 @@ function updateStatus(root, message) {
   if (status) status.textContent = message;
 }
 
-function renderIdeaSelection(root) {
-  for (const row of root.querySelectorAll("[data-idea-board-idea-row]")) {
-    const rowSelected = row.dataset.ideaBoardIdeaRow === state.selectedIdeaId;
-    row.setAttribute("aria-selected", String(rowSelected));
-    const selectButton = row.querySelector("[data-idea-board-select-idea]");
-    if (selectButton) {
-      selectButton.disabled = rowSelected;
-      selectButton.classList.toggle("primary", rowSelected);
-      selectButton.textContent = rowSelected ? "Selected" : "Select";
-    }
-  }
-}
-
-function renderSelectedIdeaContext(root) {
-  const idea = selectedIdea();
-  if (!idea) {
-    updateStatus(root, `Idea Board cannot find selected idea: ${state.selectedIdeaId}.`);
-    return;
-  }
-  const title = root.querySelector("[data-idea-board-selected-title]");
-  const summary = root.querySelector("[data-idea-board-selected-summary]");
-  const caption = root.querySelector("[data-idea-board-notes-caption]");
-  if (title) title.textContent = `Notes for ${idea.title}`;
-  if (summary) {
-    summary.textContent = `Selected idea context: ${idea.status}, owned by ${idea.owner}, updated ${idea.updated}.`;
-  }
-  if (caption) caption.textContent = `Selected idea notes for ${idea.title}`;
-}
-
-function renderInputRow(tbody, note = null) {
+function renderIdeaInputRow(tbody, idea = null) {
   const row = document.createElement("tr");
-  row.dataset.ideaBoardInlineInputRow = "true";
+  row.dataset.ideaBoardIdeaInputRow = "true";
+  if (idea) row.dataset.ideaId = idea.id;
+
+  const titleCell = document.createElement("th");
+  titleCell.scope = "row";
+  const titleInput = textInput(idea ? "Edit idea title" : "New idea title", idea?.title || "");
+  titleInput.dataset.ideaBoardIdeaTitleInput = "true";
+  titleCell.append(titleInput);
+  row.append(titleCell);
+
+  const pitchCell = document.createElement("td");
+  const pitchInput = textInput(idea ? "Edit idea pitch" : "New idea pitch", idea?.pitch || "");
+  pitchInput.dataset.ideaBoardIdeaPitchInput = "true";
+  pitchCell.append(pitchInput);
+  row.append(pitchCell);
+
+  const statusCell = document.createElement("td");
+  statusCell.append(statusSelect(idea?.status || "New"));
+  row.append(statusCell);
+  row.append(cell(idea?.updated || today()));
+  row.append(cell(idea ? noteCountLabel(idea.id) : "0 Notes"));
+
+  const actions = document.createElement("td");
+  actions.append(
+    actionButton("Save", "save", "ideaBoardIdeaAction", "primary"),
+    " ",
+    actionButton("Cancel", "cancel", "ideaBoardIdeaAction"),
+  );
+  row.append(actions);
+  tbody.append(row);
+  titleInput.focus();
+}
+
+function renderIdeaRow(tbody, idea) {
+  const row = document.createElement("tr");
+  const selected = idea.id === state.selectedIdeaId;
+  row.dataset.ideaBoardIdeaRow = idea.id;
+  row.setAttribute("aria-selected", String(selected));
+
+  const title = document.createElement("th");
+  title.scope = "row";
+  title.textContent = idea.title;
+  row.append(title);
+  row.append(cell(idea.pitch));
+  row.append(cell(idea.status));
+  row.append(cell(idea.updated));
+
+  const notes = document.createElement("td");
+  const notesButton = document.createElement("button");
+  notesButton.className = selected ? "btn btn--compact primary" : "btn btn--compact";
+  notesButton.type = "button";
+  notesButton.textContent = noteCountLabel(idea.id);
+  notesButton.dataset.ideaBoardSelectIdea = idea.id;
+  notesButton.setAttribute("aria-expanded", String(selected));
+  notes.append(notesButton);
+  row.append(notes);
+
+  const actions = document.createElement("td");
+  actions.append(
+    actionButton("Edit", "edit", "ideaBoardIdeaAction"),
+    " ",
+    actionButton("Delete", "delete", "ideaBoardIdeaAction"),
+  );
+  row.append(actions);
+  tbody.append(row);
+}
+
+function renderNoteInputRow(tbody, note = null) {
+  const row = document.createElement("tr");
+  row.dataset.ideaBoardNoteInputRow = "true";
   if (note) row.dataset.noteId = note.id;
 
   const noteCell = document.createElement("td");
-  const input = document.createElement("input");
-  input.type = "text";
-  input.value = note?.note || "";
-  input.setAttribute("aria-label", note ? "Edit selected idea note text" : "New selected idea note text");
+  const input = textInput(note ? "Edit note text" : "New note text", note?.note || "");
   input.dataset.ideaBoardNoteInput = "true";
   noteCell.append(input);
   row.append(noteCell);
 
-  row.append(cell(note?.type || "Creator"));
-  row.append(cell(note?.createdBy || "Creator"));
-  row.append(cell(note?.created || today()));
-  row.append(cell(today()));
-
   const actions = document.createElement("td");
-  actions.append(actionButton("Save", "save", "primary"), " ", actionButton("Cancel", "cancel"));
+  actions.append(
+    actionButton("Save", "save", "ideaBoardNoteAction", "primary"),
+    " ",
+    actionButton("Cancel", "cancel", "ideaBoardNoteAction"),
+  );
   row.append(actions);
   tbody.append(row);
   input.focus();
@@ -164,46 +218,116 @@ function renderNoteRow(tbody, note) {
   row.dataset.noteId = note.id;
   if (note.system) row.dataset.ideaBoardSystemNote = "true";
   row.append(cell(note.note));
-  row.append(cell(note.type));
-  row.append(cell(note.createdBy));
-  row.append(cell(note.created));
-  row.append(cell(note.updated));
 
   const actions = document.createElement("td");
-  if (note.system) {
-    actions.textContent = "System locked";
-  } else {
-    actions.append(actionButton("Edit", "edit"), " ", actionButton("Delete", "delete"));
+  actions.append(actionButton("Edit", "edit", "ideaBoardNoteAction"));
+  if (!note.system) {
+    actions.append(" ", actionButton("Delete", "delete", "ideaBoardNoteAction"));
   }
   row.append(actions);
   tbody.append(row);
 }
 
-function renderNotes(root) {
-  const tbody = root.querySelector("[data-idea-board-notes-body]");
-  const notes = selectedNotes();
-  if (!tbody || !notes) {
-    updateStatus(root, `Idea Board cannot load notes for selected idea: ${state.selectedIdeaId}.`);
-    return;
-  }
-  tbody.replaceChildren();
-  if (state.addingNote) renderInputRow(tbody);
-  for (const note of notes) {
+function renderExpandedNotesRow(tbody, idea) {
+  const row = document.createElement("tr");
+  row.dataset.ideaBoardExpandedRow = idea.id;
+
+  const content = document.createElement("td");
+  content.colSpan = 6;
+
+  const wrapper = document.createElement("div");
+  wrapper.className = "content-stack";
+
+  const tableWrapper = document.createElement("div");
+  tableWrapper.className = "table-wrapper";
+  const notesTable = document.createElement("table");
+  notesTable.className = "data-table data-table--fixed";
+  notesTable.dataset.ideaBoardNotesTable = idea.id;
+  notesTable.setAttribute("aria-label", `${idea.title} notes`);
+  notesTable.innerHTML = "<thead><tr><th scope=\"col\">Note</th><th scope=\"col\">Actions</th></tr></thead>";
+
+  const notesBody = document.createElement("tbody");
+  notesBody.dataset.ideaBoardNotesBody = idea.id;
+  notesTable.append(notesBody);
+  tableWrapper.append(notesTable);
+  wrapper.append(tableWrapper);
+
+  const controls = document.createElement("div");
+  controls.className = "action-group";
+  const addNote = actionButton("Add Note", "add", "ideaBoardNoteAction", "primary");
+  addNote.dataset.ideaBoardAddNote = idea.id;
+  controls.append(addNote);
+  wrapper.append(controls);
+
+  content.append(wrapper);
+  row.append(content);
+  tbody.append(row);
+
+  if (state.addingNote) renderNoteInputRow(notesBody);
+  for (const note of notesForIdea(idea.id)) {
     if (state.editingNoteId === note.id) {
-      renderInputRow(tbody, note);
+      renderNoteInputRow(notesBody, note);
     } else {
-      renderNoteRow(tbody, note);
+      renderNoteRow(notesBody, note);
     }
   }
 }
 
 function render(root) {
-  renderIdeaSelection(root);
-  renderSelectedIdeaContext(root);
-  renderNotes(root);
+  const tbody = root.querySelector("[data-idea-board-ideas-body]");
+  if (!tbody) return;
+  tbody.replaceChildren();
+  for (const idea of ideas) {
+    if (state.editingIdeaId === idea.id) {
+      renderIdeaInputRow(tbody, idea);
+    } else {
+      renderIdeaRow(tbody, idea);
+    }
+    if (state.selectedIdeaId === idea.id) renderExpandedNotesRow(tbody, idea);
+  }
+  if (state.addingIdea) renderIdeaInputRow(tbody);
 }
 
-function saveRow(root, row) {
+function slugifyTitle(title) {
+  const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  return slug || `idea-${Date.now()}`;
+}
+
+function saveIdeaRow(root, row) {
+  const title = row.querySelector("[data-idea-board-idea-title-input]")?.value.trim();
+  const pitch = row.querySelector("[data-idea-board-idea-pitch-input]")?.value.trim();
+  const status = row.querySelector("[data-idea-board-idea-status-input]")?.value;
+  if (!title || !pitch || !status) {
+    updateStatus(root, "Enter an idea, pitch, and status before saving.");
+    return;
+  }
+
+  const ideaId = row.dataset.ideaId;
+  if (ideaId) {
+    const idea = ideas.find((item) => item.id === ideaId);
+    if (!idea) {
+      updateStatus(root, `Idea Board cannot find idea: ${ideaId}.`);
+      return;
+    }
+    idea.title = title;
+    idea.pitch = pitch;
+    idea.status = status;
+    idea.updated = today();
+    state.editingIdeaId = null;
+    updateStatus(root, `Updated ${idea.title}.`);
+  } else {
+    const baseId = slugifyTitle(title);
+    const id = ideas.some((idea) => idea.id === baseId) ? `${baseId}-${Date.now()}` : baseId;
+    ideas.push({ id, title, pitch, status, updated: today() });
+    notesByIdea.set(id, []);
+    state.selectedIdeaId = id;
+    state.addingIdea = false;
+    updateStatus(root, `Added ${title}.`);
+  }
+  render(root);
+}
+
+function saveNoteRow(root, row) {
   const input = row.querySelector("[data-idea-board-note-input]");
   const value = input?.value.trim();
   if (!value) {
@@ -211,17 +335,12 @@ function saveRow(root, row) {
     return;
   }
 
-  const notes = selectedNotes();
-  if (!notes) {
-    updateStatus(root, `Idea Board cannot save notes for selected idea: ${state.selectedIdeaId}.`);
-    return;
-  }
-
+  const notes = notesForIdea(state.selectedIdeaId);
   const noteId = row.dataset.noteId;
   if (noteId) {
-    const note = notes.find((item) => item.id === noteId && !item.system);
+    const note = notes.find((item) => item.id === noteId);
     if (!note) {
-      updateStatus(root, "Only creator notes can be edited.");
+      updateStatus(root, `Idea Board cannot find note: ${noteId}.`);
       return;
     }
     note.note = value;
@@ -230,11 +349,8 @@ function saveRow(root, row) {
     updateStatus(root, `Updated note for ${selectedIdea().title}.`);
   } else {
     notes.unshift({
-      id: `creator-${state.selectedIdeaId}-${Date.now()}`,
+      id: `note-${state.selectedIdeaId}-${Date.now()}`,
       note: value,
-      type: "Creator",
-      createdBy: "Creator",
-      created: today(),
       updated: today(),
       system: false,
     });
@@ -244,51 +360,117 @@ function saveRow(root, row) {
   render(root);
 }
 
-function handleClick(root, event) {
-  const ideaButton = event.target.closest("[data-idea-board-select-idea]");
-  if (ideaButton) {
-    state.selectedIdeaId = ideaButton.dataset.ideaBoardSelectIdea;
-    state.addingNote = false;
-    state.editingNoteId = null;
-    updateStatus(root, `Selected ${selectedIdea().title}. Notes now show that idea's context.`);
-    render(root);
+function selectIdea(root, ideaId) {
+  if (!ideas.some((idea) => idea.id === ideaId)) {
+    updateStatus(root, `Idea Board cannot select missing idea: ${ideaId}.`);
     return;
   }
+  state.selectedIdeaId = ideaId;
+  state.editingIdeaId = null;
+  state.editingNoteId = null;
+  state.addingNote = false;
+  updateStatus(root, `Expanded notes for ${selectedIdea().title}.`);
+  render(root);
+}
 
-  const addButton = event.target.closest("[data-idea-board-add-note]");
-  if (addButton) {
+function deleteIdea(root, ideaId) {
+  const index = ideas.findIndex((idea) => idea.id === ideaId);
+  if (index < 0) {
+    updateStatus(root, `Idea Board cannot delete missing idea: ${ideaId}.`);
+    return;
+  }
+  const [removed] = ideas.splice(index, 1);
+  notesByIdea.delete(ideaId);
+  if (state.selectedIdeaId === ideaId) {
+    state.selectedIdeaId = ideas[Math.min(index, ideas.length - 1)]?.id || "";
+    state.editingNoteId = null;
+    state.addingNote = false;
+  }
+  updateStatus(root, `Deleted ${removed.title}.`);
+  render(root);
+}
+
+function handleIdeaAction(root, actionControl) {
+  const action = actionControl.dataset.ideaBoardIdeaAction;
+  const row = actionControl.closest("tr");
+  const ideaId = actionControl.dataset.ideaBoardSelectIdea || row?.dataset.ideaBoardIdeaRow || row?.dataset.ideaId;
+  if (action === "select") {
+    selectIdea(root, ideaId);
+  } else if (action === "edit") {
+    state.editingIdeaId = ideaId;
+    state.addingIdea = false;
+    state.editingNoteId = null;
+    state.addingNote = false;
+    updateStatus(root, `Editing ${ideas.find((idea) => idea.id === ideaId)?.title}.`);
+    render(root);
+  } else if (action === "delete") {
+    deleteIdea(root, ideaId);
+  } else if (action === "cancel") {
+    state.editingIdeaId = null;
+    state.addingIdea = false;
+    updateStatus(root, "Cancelled idea edit.");
+    render(root);
+  } else if (action === "save") {
+    saveIdeaRow(root, row);
+  }
+}
+
+function handleNoteAction(root, actionControl) {
+  const action = actionControl.dataset.ideaBoardNoteAction;
+  const row = actionControl.closest("tr");
+  const noteId = row?.dataset.noteId;
+  if (action === "add") {
     state.addingNote = true;
     state.editingNoteId = null;
     updateStatus(root, `Adding a note for ${selectedIdea().title}.`);
     render(root);
-    return;
-  }
-
-  const actionControl = event.target.closest("[data-idea-board-action]");
-  if (!actionControl) return;
-  const row = actionControl.closest("tr");
-  const noteId = row?.dataset.noteId;
-  const action = actionControl.dataset.ideaBoardAction;
-  if (action === "edit") {
+  } else if (action === "edit") {
     state.editingNoteId = noteId;
     state.addingNote = false;
     updateStatus(root, `Editing note for ${selectedIdea().title}.`);
+    render(root);
   } else if (action === "delete") {
-    const notes = selectedNotes();
-    const index = notes?.findIndex((note) => note.id === noteId && !note.system) ?? -1;
+    const notes = notesForIdea(state.selectedIdeaId);
+    const index = notes.findIndex((note) => note.id === noteId && !note.system);
     if (index >= 0) {
       notes.splice(index, 1);
       updateStatus(root, `Deleted note for ${selectedIdea().title}.`);
+      render(root);
     }
   } else if (action === "cancel") {
     state.editingNoteId = null;
     state.addingNote = false;
     updateStatus(root, `Cancelled note edit for ${selectedIdea().title}.`);
+    render(root);
   } else if (action === "save") {
-    saveRow(root, row);
+    saveNoteRow(root, row);
+  }
+}
+
+function handleClick(root, event) {
+  const addIdea = event.target.closest("[data-idea-board-add-idea]");
+  if (addIdea) {
+    state.addingIdea = true;
+    state.editingIdeaId = null;
+    updateStatus(root, "Adding a new idea.");
+    render(root);
     return;
   }
-  render(root);
+
+  const selectIdeaButton = event.target.closest("[data-idea-board-select-idea]");
+  if (selectIdeaButton) {
+    selectIdea(root, selectIdeaButton.dataset.ideaBoardSelectIdea);
+    return;
+  }
+
+  const ideaAction = event.target.closest("[data-idea-board-idea-action]");
+  if (ideaAction) {
+    handleIdeaAction(root, ideaAction);
+    return;
+  }
+
+  const noteAction = event.target.closest("[data-idea-board-note-action]");
+  if (noteAction) handleNoteAction(root, noteAction);
 }
 
 document.addEventListener("DOMContentLoaded", () => {

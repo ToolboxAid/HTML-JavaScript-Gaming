@@ -1,11 +1,13 @@
-# Codex Changed Files - PR_26171_030-idea-board-workflow-fix
+# Codex Changed Files - PR_26171_031-idea-board-inline-tree-grid-actions
 
 ## Git Workflow
-- Branch: `codex/fix-idea-board-pr-workflow`
-- Base: `origin/main`
-- PR URL: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/4
-- Merge conflicts: resolved in `docs_build/dev/reports/codex_changed_files.txt` and `docs_build/dev/reports/codex_review.diff` by regenerating both reports from the final `origin/main` diff.
-- Commit hash, push result, merge result, and final main commit: reported after commit, push, PR merge, and final main pull.
+- Current branch: `codex/pr-26171-031-idea-board-inline-tree-grid-actions`
+- Expected starting branch: `main` (PASS before branch creation).
+- Created branch: `codex/pr-26171-031-idea-board-inline-tree-grid-actions`.
+- Push result: pending until after commit.
+- PR URL: pending until after push.
+- Merge result: pending until after PR validation/merge.
+- Final main commit: pending until after merge and final pull.
 
 ## Changed Files
 - docs_build/dev/codex_commands.md
@@ -43,23 +45,10 @@
 - docs_build/dev/reports/testing_lane_execution_report.md
 - docs_build/dev/reports/validation_cache_report.md
 - docs_build/dev/reports/zero_browser_preflight_report.md
-- docs_build/pr/APPLY_PR_26171_026-idea-board-template-cleanup.md
-- docs_build/pr/APPLY_PR_26171_027-idea-board-table-work-surface.md
-- docs_build/pr/APPLY_PR_26171_028-idea-board-notes-table-governance.md
-- docs_build/pr/APPLY_PR_26171_029-idea-board-validation-playwright.md
-- docs_build/pr/APPLY_PR_26171_030-idea-board-workflow-fix.md
-- docs_build/pr/BUILD_PR_26171_026-idea-board-template-cleanup.md
-- docs_build/pr/BUILD_PR_26171_027-idea-board-table-work-surface.md
-- docs_build/pr/BUILD_PR_26171_028-idea-board-notes-table-governance.md
-- docs_build/pr/BUILD_PR_26171_029-idea-board-validation-playwright.md
-- docs_build/pr/BUILD_PR_26171_030-idea-board-workflow-fix.md
-- docs_build/pr/PLAN_PR_26171_026-idea-board-template-cleanup.md
-- docs_build/pr/PLAN_PR_26171_027-idea-board-table-work-surface.md
-- docs_build/pr/PLAN_PR_26171_028-idea-board-notes-table-governance.md
-- docs_build/pr/PLAN_PR_26171_029-idea-board-validation-playwright.md
-- docs_build/pr/PLAN_PR_26171_030-idea-board-workflow-fix.md
+- docs_build/pr/APPLY_PR_26171_031-idea-board-inline-tree-grid-actions.md
+- docs_build/pr/BUILD_PR_26171_031-idea-board-inline-tree-grid-actions.md
+- docs_build/pr/PLAN_PR_26171_031-idea-board-inline-tree-grid-actions.md
 - tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-- tests/playwright/tools/RootToolsFutureState.spec.mjs
 - tests/playwright/tools/ToolboxRoutePages.spec.mjs
 - toolbox/idea-board/index.html
 - toolbox/idea-board/index.js
@@ -100,46 +89,45 @@
 - M	docs_build/dev/reports/testing_lane_execution_report.md
 - M	docs_build/dev/reports/validation_cache_report.md
 - M	docs_build/dev/reports/zero_browser_preflight_report.md
-- A	docs_build/pr/APPLY_PR_26171_026-idea-board-template-cleanup.md
-- A	docs_build/pr/APPLY_PR_26171_027-idea-board-table-work-surface.md
-- A	docs_build/pr/APPLY_PR_26171_028-idea-board-notes-table-governance.md
-- A	docs_build/pr/APPLY_PR_26171_029-idea-board-validation-playwright.md
-- A	docs_build/pr/APPLY_PR_26171_030-idea-board-workflow-fix.md
-- A	docs_build/pr/BUILD_PR_26171_026-idea-board-template-cleanup.md
-- A	docs_build/pr/BUILD_PR_26171_027-idea-board-table-work-surface.md
-- A	docs_build/pr/BUILD_PR_26171_028-idea-board-notes-table-governance.md
-- A	docs_build/pr/BUILD_PR_26171_029-idea-board-validation-playwright.md
-- A	docs_build/pr/BUILD_PR_26171_030-idea-board-workflow-fix.md
-- A	docs_build/pr/PLAN_PR_26171_026-idea-board-template-cleanup.md
-- A	docs_build/pr/PLAN_PR_26171_027-idea-board-table-work-surface.md
-- A	docs_build/pr/PLAN_PR_26171_028-idea-board-notes-table-governance.md
-- A	docs_build/pr/PLAN_PR_26171_029-idea-board-validation-playwright.md
-- A	docs_build/pr/PLAN_PR_26171_030-idea-board-workflow-fix.md
-- A	tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-- M	tests/playwright/tools/RootToolsFutureState.spec.mjs
+- A	docs_build/pr/APPLY_PR_26171_031-idea-board-inline-tree-grid-actions.md
+- A	docs_build/pr/BUILD_PR_26171_031-idea-board-inline-tree-grid-actions.md
+- A	docs_build/pr/PLAN_PR_26171_031-idea-board-inline-tree-grid-actions.md
+- M	tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
 - M	tests/playwright/tools/ToolboxRoutePages.spec.mjs
 - M	toolbox/idea-board/index.html
-- A	toolbox/idea-board/index.js
-
-## Copied Files Verified
-- PASS: Re-read `toolbox/_tool_template-v2/index.html`; verified Theme V2 stylesheet, header/footer partials, left/center/right `tool-workspace tool-workspace--wide` shell, accordion stack, ToolDisplayMode host, and external Theme V2 scripts.
-- PASS: Verified `toolbox/_tool_template-v2` currently contains `index.html` only; there was no template-local JavaScript file to copy.
-- PASS: Verified `toolbox/idea-board/index.html` adapts the template structure with Theme V2 CSS, header/footer partials, left and right tool columns, center panel, ToolDisplayMode host, accordions, and external scripts.
-- PASS: Verified no inline `<script>`, `<style>`, `style=`, or inline event handlers in `toolbox/idea-board/index.html`.
+- M	toolbox/idea-board/index.js
 
 ## Requirement Evidence
-- PASS 026: Idea Board is migrated to Tool Template V2 / Theme V2 shell with clean left/center/right layout and external-only JavaScript/CSS.
-- PASS 027: Idea Board is table-first; the primary work surface is `data-idea-board-table`, with selected idea row controls and no form-first primary workflow.
-- PASS 028: Notes are scoped to the selected idea through `data-idea-board-selected-title`, `data-idea-board-notes-table`, and selected idea state in `toolbox/idea-board/index.js`; Add Note opens an inline row inside the selected notes table; creator notes expose Edit/Delete on the right; system notes expose neither Edit nor Delete; note metadata is table columns.
-- PASS 029: Targeted Playwright coverage validates table columns, selected idea switching, scoped note add/edit/delete, system note lockout, placeholder-only Create Project, and no mutating API calls.
-- PASS 030: Workspace V2 validation harness pins public API/site env to the ephemeral test server and updates current registry/count expectations so the required workspace lane passes on the rebased branch.
+- PASS: Main Idea Board table removes the Owner column.
+- PASS: Main table columns are Idea, Pitch, Status, Updated, Notes, Actions.
+- PASS: Notes column shows note counts such as `2 Notes` and `0 Notes`.
+- PASS: Selected idea expands as `data-idea-board-expanded-row` immediately after its matching `data-idea-board-idea-row`.
+- PASS: Detached `Notes for Sky Orchard` section was removed.
+- PASS: Visible `Selected idea context` text was removed.
+- PASS: Notes subtable no longer shows Type, Created By, Created, or Updated columns.
+- PASS: Notes subtable visible columns are Note and Actions.
+- PASS: Idea normal rows expose Edit and Delete in the Actions column.
+- PASS: Idea edit/add rows expose Save and Cancel.
+- PASS: Idea edit Status field is a `select` dropdown.
+- PASS: Note normal rows expose Edit and Delete when deletion is allowed.
+- PASS: System notes expose Edit and do not expose Delete.
+- PASS: Note edit/add rows expose Save and Cancel.
+- PASS: Add Idea opens an inline idea row inside the main table.
+- PASS: Add Note opens an inline note row inside the selected idea expanded row.
+- PASS: The implementation changes runtime HTML/JS and Playwright tests; this is not docs-only work.
+- PASS: No detached notes panels were introduced.
+- PASS: The primary workflow remains table-first, not form-first.
 
-## Validation After Conflict Resolution
+## Validation
 - PASS: `node --check toolbox/idea-board/index.js`.
 - PASS: `node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`.
 - PASS: `node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs`.
-- PASS: `node --check tests/playwright/tools/RootToolsFutureState.spec.mjs`.
 - PASS: Idea Board inline HTML guard found no inline `<script>`, `<style>`, `style=`, or inline event handlers.
 - PASS: `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line` (1 passed).
 - PASS: `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches"` (1 passed).
 - PASS: `npm run test:workspace-v2` (5 passed).
+- SKIP: Full samples smoke was not run; samples are not in scope and the user explicitly prohibited full samples smoke.
+
+## ZIP
+- Path: `tmp/PR_26171_031-idea-board-inline-tree-grid-actions_delta.zip`.
+- Size and contents: reported after final ZIP generation.
