@@ -2008,3 +2008,50 @@ Required Git workflow report fields:
 - PR URL
 - merge result
 - final main commit
+
+## CODEX INSTRUCTION ENFORCEMENT START GATE
+
+Codex must run this gate before every PR execution and before any file changes.
+
+Required instruction reads:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Read `docs_build/dev/PROJECT_MULTI_PC.txt`.
+- Treat the newest applicable section in `PROJECT_INSTRUCTIONS.md` as authoritative when rules overlap.
+- Treat the current owner/parity section in `PROJECT_MULTI_PC.txt` as authoritative for PC/Laptop routing.
+
+Required pre-change report:
+- Codex must report instruction compliance as `PASS` or `FAIL` before making file changes.
+- The report must include branch, clean status, PR owner, PR parity, implementation path, validation scope, required report list, and ZIP requirement.
+- Any `FAIL` is a hard stop unless the PR explicitly scopes branch audit or recovery documentation without implementation.
+
+Hard stops before changes:
+- If the current branch is not `main`, HARD STOP.
+- If the repository is not clean before the PR branch is created, HARD STOP.
+- If the PR owner does not match the PC/Laptop ownership map in `PROJECT_MULTI_PC.txt`, HARD STOP.
+- If the PR number parity does not match the assigned machine in `PROJECT_MULTI_PC.txt`, HARD STOP.
+- If the PR asks for implementation and the implementation path is wrong, HARD STOP.
+- If a PR asks for functional parity and only placeholder-only work is possible, HARD STOP and report the missing source or blocker.
+- If scoped validation is skipped without a documented reason, HARD STOP.
+
+Path enforcement:
+- Use the active path named by the PR and verified in the repository.
+- Do not create wrong replacement paths.
+- For Text To Speech work, the active toolbox path is `toolbox/text-to-speech/`.
+- Do not create `tools/text2speech/` for new work.
+- If a PR names archived tools, games, or samples as a functionality sample, treat the archive as a read-only reference sample, not as a reason to skip implementation.
+
+Completion hard stops:
+- If the required repo ZIP is missing, HARD STOP.
+- If the required repo ZIP is empty or not under `tmp/`, HARD STOP.
+- If required reports are missing, HARD STOP.
+- If `docs_build/dev/reports/codex_review.diff` is missing, HARD STOP.
+- If `docs_build/dev/reports/codex_changed_files.txt` is missing, HARD STOP.
+- If manual validation notes are missing, HARD STOP.
+- If the PR-specific report is missing, HARD STOP.
+- If an instruction compliance checklist is required and missing, HARD STOP.
+- If requested scoped validation did not run and no explicit skip reason is recorded, HARD STOP.
+
+Functional parity rule:
+- A PR that asks to restore or rebuild working functionality must produce functional parity with the approved sample or source.
+- Placeholder shells, dead controls, static mockups, and nonfunctional UI are not acceptable completion states for functional parity PRs.
+- If functional parity cannot be reached in scope, Codex must stop and report the exact blocker instead of packaging placeholder-only work.

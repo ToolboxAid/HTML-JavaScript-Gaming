@@ -4,8 +4,11 @@
 - Current branch: `codex/pr-26171-041-idea-board-production-polish`.
 - Expected starting branch: `main` (PASS before branch creation).
 - Created branch: `codex/pr-26171-041-idea-board-production-polish`.
-- Push result: pending until after commit.
-- PR URL: pending until after push.
+- Commit before conflict resolution: `ca626873a4cf19925229851b0da2a4ff55c2073f`.
+- Initial push result: PASS, branch pushed to `origin/codex/pr-26171-041-idea-board-production-polish`.
+- PR URL: `https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/17`.
+- Conflict resolution: merged `origin/main` at `0a364f85516aea82e38eea2f498fde5980f9adf9`; conflicts were limited to `codex_changed_files.txt` and `codex_review.diff`.
+- Conflict resolution push result: pending until after merge-validation commit.
 - Merge result: pending until after PR validation/merge.
 - Final main sync: pending until after merge and final pull.
 
@@ -13,6 +16,8 @@
 ```text
  M assets/theme-v2/css/tables.css
  M assets/theme-v2/js/tool-display-mode.js
+ M docs_build/dev/reports/codex_changed_files.txt
+ M docs_build/dev/reports/codex_review.diff
  M docs_build/dev/reports/coverage_changed_js_guardrail.txt
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
  M src/shared/toolbox/tool-metadata-inventory.js
@@ -64,13 +69,14 @@
 - PASS: `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches" --timeout=90000`.
 - PASS: `npm run test:workspace-v2` (workspace-contract lane, 5 passed).
 - PASS: `git diff --check`.
+- PASS: Post-conflict rerun completed after merging `origin/main` at `0a364f85516aea82e38eea2f498fde5980f9adf9`.
 - PASS: Playwright V8 coverage report produced because runtime JavaScript changed.
 - WARN: Coverage report marks `src/shared/toolbox/tool-metadata-inventory.js` as not collected by browser V8 coverage; advisory only per project instructions.
 - SKIPPED: Full samples smoke was not run per request.
 
 ## ZIP
 - Path: `tmp/PR_26171_041-idea-board-production-polish_delta.zip`.
-- Size: `50677` bytes before final report refresh; final size reported in the delivery summary.
+- Size: final size reported in the delivery summary after conflict-resolution ZIP refresh.
 - Contents:
   - assets/theme-v2/css/tables.css
   - assets/theme-v2/js/tool-display-mode.js

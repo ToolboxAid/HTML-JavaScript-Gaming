@@ -1,13 +1,216 @@
-﻿diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index f45918591..3cab64e3e 100644
+﻿diff --git a/assets/theme-v2/css/tables.css b/assets/theme-v2/css/tables.css
+index a8c75090a..c39ef19f0 100644
+--- a/assets/theme-v2/css/tables.css
++++ b/assets/theme-v2/css/tables.css
+@@ -38,6 +38,67 @@ td {
+   color: var(--text)
+ }
+
++.idea-board-table-caption {
++  position: relative;
++  z-index: var(--z-index-sm);
++  display: flex;
++  align-items: center;
++  justify-content: space-between;
++  gap: var(--space-10);
++  padding: var(--space-10);
++  font-weight: var(--font-weight-heavy)
++}
++
++.idea-board-show-filter {
++  position: relative;
++  z-index: var(--z-index-md);
++  color: var(--text);
++  font-size: var(--font-size-xs);
++  font-weight: var(--font-weight-bold)
++}
++
++.idea-board-show-filter summary {
++  display: inline-flex;
++  align-items: center;
++  min-height: var(--space-28);
++  padding: var(--space-3) var(--space-10);
++  border: var(--border-standard);
++  border-radius: var(--radius-md);
++  background: var(--panel-soft);
++  cursor: pointer;
++  list-style: none
++}
++
++.idea-board-show-filter summary::-webkit-details-marker {
++  display: none
++}
++
++.idea-board-show-filter__menu {
++  position: static;
++  min-width: 12rem;
++  margin-top: var(--space-6);
++  padding: var(--space-10);
++  border: var(--border-standard);
++  border-radius: var(--radius-md);
++  background: var(--panel);
++  box-shadow: var(--shadow-md)
++}
++
++.idea-board-show-filter__options {
++  display: grid;
++  gap: var(--space-6);
++  margin-top: var(--space-10)
++}
++
++.idea-board-show-filter__option {
++  display: flex;
++  align-items: center;
++  gap: var(--space-8);
++  color: var(--text);
++  font-weight: var(--font-weight-regular);
++  white-space: nowrap
++}
++
+ .data-table th {
+   color: var(--gold);
+   font-size: var(--font-size-sm);
+@@ -60,8 +121,13 @@ td {
+   gap: .35em;
+   color: inherit;
+   font: inherit;
+-  line-height: inherit;
+-  vertical-align: baseline
++  line-height: var(--line-height-single);
++  vertical-align: baseline;
++  white-space: nowrap
++}
++
++.idea-board-idea-label__text {
++  line-height: var(--line-height-single)
+ }
+
+ .idea-board-idea-chevron {
+diff --git a/assets/theme-v2/js/tool-display-mode.js b/assets/theme-v2/js/tool-display-mode.js
+index 9c23ba67e..e77b7a9df 100644
+--- a/assets/theme-v2/js/tool-display-mode.js
++++ b/assets/theme-v2/js/tool-display-mode.js
+@@ -157,7 +157,7 @@
+             const diagnostic = document.createElement("p");
+             diagnostic.className = "status";
+             diagnostic.setAttribute("role", "status");
+-            diagnostic.textContent = "Tool navigation could not load from the server API. Start the local server API and refresh.";
++            diagnostic.textContent = "Tool navigation is temporarily unavailable. Refresh the page or try again shortly.";
+             body.appendChild(diagnostic);
+         }
+     }
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index 4b9b70b93..bb7de5d8d 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -70,4 +70,16 @@
+@@ -1,37 +1,91 @@
+-# Codex Changed Files - PR_26171_063-codex-instruction-enforcement-hardening
++# Codex Changed Files - PR_26171_041-idea-board-production-polish
+
+-## Conflict Resolution Note
+-- Merged latest `origin/main` into the PR branch after GitHub reported merge conflicts.
+-- Regenerated Codex artifacts from the PR_063 delta against updated `origin/main`.
+-- No implementation scope was changed while resolving conflicts.
++## Git Workflow
++- Current branch: `codex/pr-26171-041-idea-board-production-polish`.
++- Expected starting branch: `main` (PASS before branch creation).
++- Created branch: `codex/pr-26171-041-idea-board-production-polish`.
++- Commit before conflict resolution: `ca626873a4cf19925229851b0da2a4ff55c2073f`.
++- Initial push result: PASS, branch pushed to `origin/codex/pr-26171-041-idea-board-production-polish`.
++- PR URL: `https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/17`.
++- Conflict resolution: merged `origin/main` at `0a364f85516aea82e38eea2f498fde5980f9adf9`; conflicts were limited to `codex_changed_files.txt` and `codex_review.diff`.
++- Conflict resolution push result: pending until after merge-validation commit.
++- Merge result: pending until after PR validation/merge.
++- Final main sync: pending until after merge and final pull.
+
+-## Changed Files
+-- docs_build/dev/PROJECT_INSTRUCTIONS.md
+-- docs_build/dev/PROJECT_MULTI_PC.txt
+-- docs_build/dev/reports/PR_26171_063-codex-instruction-enforcement-hardening.md
+-- docs_build/dev/reports/PR_26171_063-instruction-compliance-checklist.md
+-- docs_build/dev/reports/PR_26171_063-validation.md
+-- docs_build/dev/reports/PR_26171_063-manual-validation-notes.md
+-- docs_build/dev/reports/codex_review.diff
+-- docs_build/dev/reports/codex_changed_files.txt
++## Git Status
++```text
++ M assets/theme-v2/css/tables.css
++ M assets/theme-v2/js/tool-display-mode.js
++ M docs_build/dev/reports/codex_changed_files.txt
++ M docs_build/dev/reports/codex_review.diff
++ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
++ M docs_build/dev/reports/playwright_v8_coverage_report.txt
++ M src/shared/toolbox/tool-metadata-inventory.js
++ M tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
++ M tests/playwright/tools/ToolboxRoutePages.spec.mjs
++ M toolbox/idea-board/index.html
++ M toolbox/idea-board/index.js
++```
+
+-## Git Diff Stat Against Updated origin/main
++## Diff Stat
+ ```text
+- docs_build/dev/PROJECT_INSTRUCTIONS.md             |  47 ++
+- docs_build/dev/PROJECT_MULTI_PC.txt                |  58 ++
+- ..._063-codex-instruction-enforcement-hardening.md |  48 ++
+- ...R_26171_063-instruction-compliance-checklist.md |  37 ++
+- .../PR_26171_063-manual-validation-notes.md        |  19 +
+- docs_build/dev/reports/PR_26171_063-validation.md  |  32 +
+- docs_build/dev/reports/codex_changed_files.txt     |  48 ++
+- docs_build/dev/reports/codex_review.diff           | 699 +++++++++------------
+- 8 files changed, 569 insertions(+), 419 deletions(-)
++ assets/theme-v2/css/tables.css                     |  70 +++++++-
++ assets/theme-v2/js/tool-display-mode.js            |   2 +-
++ .../dev/reports/coverage_changed_js_guardrail.txt  |   5 +-
++ .../dev/reports/playwright_v8_coverage_report.txt  |  11 +-
++ src/shared/toolbox/tool-metadata-inventory.js      |   6 +-
++ .../playwright/tools/IdeaBoardTableNotes.spec.mjs  |  71 +++++++-
++ tests/playwright/tools/ToolboxRoutePages.spec.mjs  |  26 ++-
++ toolbox/idea-board/index.html                      |  31 ++--
++ toolbox/idea-board/index.js                        | 191 ++++++++++++++++++++-
++ 9 files changed, 368 insertions(+), 45 deletions(-)
+ ```
+
++## Requirement Evidence
++- PASS: Removed creator-visible Create Project from the right-side Next Steps area; no disabled `data-idea-board-create-project` panel remains.
++- PASS: Create Project is shown only in a Ready idea row's Actions column.
++- PASS: Clicking Create Project changes the idea status from Ready to Project and replaces Create Project/Delete with Open Project and Archive.
++- PASS: Project rows show Open Project and Archive and do not show Delete.
++- PASS: Added Archived status; archived rows are hidden by default.
++- PASS: Archived rows show Restore and Delete.
++- PASS: Restore returns archived ideas to their previous non-archived status, with Refining fallback in runtime.
++- PASS: Delete is guarded so Project ideas cannot be deleted unless archived first.
++- PASS: Status dropdown uses New, Exploring, Refining, Ready, Project, and Archived.
++- PASS: Added compact Show checkbox dropdown beside the visible table description line, with default statuses New, Exploring, Refining, Ready, and Project selected and Archived unselected.
++- PASS: Show dropdown supports any checkbox combination plus Select All and Clear All.
++- PASS: Updated creator-facing copy to "Capture, compare, and shape game ideas." and "Scan, compare, and update early ideas."
++- PASS: Replaced creator-visible Tool Display Mode navigation error with safe copy that does not mention server/API/local server/port/implementation details.
++- PASS: Chevron renders to the left of the Idea text, inline, same size, same color, and on the same text line; the whole Idea cell remains the expansion target.
++- PASS: Notes count remains informational only.
++- PASS: Table-first structure, inline Add Idea/Add Note, row-level Save/Cancel, status dropdown edit mode, notes indentation, and single-open accordion behavior remain covered.
++
+ ## Validation
+-- PASS: `git diff --check` after conflict resolution.
+-- PASS: targeted required instruction-anchor validation after conflict resolution.
+-- SKIP: Playwright, because the PR explicitly requires no Playwright and changes docs/workflow only.
++- PASS: `node --check toolbox/idea-board/index.js`.
++- PASS: `node --check assets/theme-v2/js/tool-display-mode.js`.
++- PASS: `node --check src/shared/toolbox/tool-metadata-inventory.js`.
++- PASS: `node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`.
++- PASS: `node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs`.
++- PASS: `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line --timeout=90000`.
++- PASS: `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches" --timeout=90000`.
++- PASS: `npm run test:workspace-v2` (workspace-contract lane, 5 passed).
++- PASS: `git diff --check`.
++- PASS: Post-conflict rerun completed after merging `origin/main` at `0a364f85516aea82e38eea2f498fde5980f9adf9`.
++- PASS: Playwright V8 coverage report produced because runtime JavaScript changed.
++- WARN: Coverage report marks `src/shared/toolbox/tool-metadata-inventory.js` as not collected by browser V8 coverage; advisory only per project instructions.
++- SKIPPED: Full samples smoke was not run per request.
 
  ## ZIP
- - Path: `tmp/PR_26171_041-idea-board-production-polish_delta.zip`.
--- Size and contents: reported after final ZIP generation.
-+- Size: `50677` bytes before final report refresh; final size reported in the delivery summary.
+-- Path: `tmp/PR_26171_063-codex-instruction-enforcement-hardening_delta.zip`.
++- Path: `tmp/PR_26171_041-idea-board-production-polish_delta.zip`.
++- Size: final size reported in the delivery summary after conflict-resolution ZIP refresh.
 +- Contents:
 +  - assets/theme-v2/css/tables.css
 +  - assets/theme-v2/js/tool-display-mode.js
@@ -20,3 +223,664 @@ index f45918591..3cab64e3e 100644
 +  - tests/playwright/tools/ToolboxRoutePages.spec.mjs
 +  - toolbox/idea-board/index.html
 +  - toolbox/idea-board/index.js
+diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+index 076d27690..66dd0cb12 100644
+--- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+@@ -6,10 +6,9 @@ Missing changed runtime JS files are WARN, not FAIL.
+ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+
+ Changed runtime JS files considered:
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(70%) toolbox/idea-board/index.js - executed lines 480/480; executed functions 23/33
++(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
++(74%) toolbox/idea-board/index.js - executed lines 640/640; executed functions 37/50
+
+ Guardrail warnings:
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+ (0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
+diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+index cb35b4d50..4a9f71ff1 100644
+--- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
++++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+@@ -17,9 +17,9 @@ Exercised tool entry points detected:
+ (63%) Theme V2 Shared JS - exercised 2 runtime JS files
+
+ Changed runtime JS files covered:
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(70%) toolbox/idea-board/index.js - executed lines 480/480; executed functions 23/33
++(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
++(74%) toolbox/idea-board/index.js - executed lines 640/640; executed functions 37/50
+
+ Files with executed line/function counts where available:
+ (25%) src/api/session-api-client.js - executed lines 68/68; executed functions 3/12
+@@ -30,17 +30,16 @@ Files with executed line/function counts where available:
+ (65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
+ (67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
+ (67%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 20/20; executed functions 2/3
+-(70%) toolbox/idea-board/index.js - executed lines 480/480; executed functions 23/33
++(74%) toolbox/idea-board/index.js - executed lines 640/640; executed functions 37/50
+ (78%) toolbox/tools-page-accordions.js - executed lines 1156/1156; executed functions 87/111
+ (86%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 25/29
+
+ Uncovered or low-coverage changed JS files:
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+ (0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
+
+ Changed JS files considered:
+-(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
+ (0%) src/shared/toolbox/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/IdeaBoardTableNotes.spec.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
+-(70%) toolbox/idea-board/index.js - changed JS file with browser V8 coverage
++(64%) assets/theme-v2/js/tool-display-mode.js - changed JS file with browser V8 coverage
++(74%) toolbox/idea-board/index.js - changed JS file with browser V8 coverage
+diff --git a/src/shared/toolbox/tool-metadata-inventory.js b/src/shared/toolbox/tool-metadata-inventory.js
+index db04eac5b..6d2ed68fa 100644
+--- a/src/shared/toolbox/tool-metadata-inventory.js
++++ b/src/shared/toolbox/tool-metadata-inventory.js
+@@ -72,14 +72,14 @@ export const TOOL_REGISTRY = Object.freeze([
+     "id": "idea-board",
+     "name": "Idea Board",
+     "displayName": "Idea Board",
+-    "shortDescription": "Capture, compare, and shape game ideas in a table.",
++    "shortDescription": "Capture, compare, and shape game ideas.",
+     "shortLabel": "Idea Board",
+     "path": "idea-board",
+     "folderName": "idea-board",
+     "entryPoint": "idea-board/index.html",
+     "badge": "/assets/theme-v2/images/badges/game-design.png",
+     "tool": "/assets/theme-v2/images/tools/game-design.png",
+-    "description": "Capture, compare, and shape game ideas with notes under each idea row.",
++    "description": "Capture, compare, and shape game ideas.",
+     "category": "Idea",
+     "colorGroup": "tool-group-idea",
+     "active": true,
+@@ -93,7 +93,7 @@ export const TOOL_REGISTRY = Object.freeze([
+     "progressChecklist": [
+       "Idea table workflow visible",
+       "Add Idea and Add Note actions remain inline",
+-      "Create Project remains unavailable until an idea is ready"
++      "Ready ideas show project actions in their row"
+     ],
+     "deferred": false,
+     "hidden": false,
+diff --git a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+index f5544ca88..38085a4d2 100644
+--- a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
++++ b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+@@ -13,10 +13,13 @@ function restoreEnvValue(key, value) {
+ async function expectIdeaChevron(page, ideaId, iconName) {
+   const metrics = await page.locator(`[data-idea-board-idea-row='${ideaId}'] th`).evaluate((cell, targetIdeaId) => {
+     const label = cell.querySelector(".idea-board-idea-label");
++    const text = label.querySelector(".idea-board-idea-label__text");
+     const icon = cell.querySelector(`[data-idea-board-chevron='${targetIdeaId}']`);
+     const cellStyles = getComputedStyle(cell);
+     const labelStyles = getComputedStyle(label);
+     const iconStyles = getComputedStyle(icon);
++    const textRect = text.getBoundingClientRect();
++    const iconRect = icon.getBoundingClientRect();
+     return {
+       iconName: icon.dataset.ideaBoardChevronIcon,
+       labelDisplay: labelStyles.display,
+@@ -24,7 +27,11 @@ async function expectIdeaChevron(page, ideaId, iconName) {
+       iconHeight: Number.parseFloat(iconStyles.height),
+       fontSize: Number.parseFloat(cellStyles.fontSize),
+       iconColor: iconStyles.backgroundColor,
++      iconBottom: iconRect.bottom,
++      iconLeft: iconRect.left,
+       textColor: cellStyles.color,
++      textBottom: textRect.bottom,
++      textLeft: textRect.left,
+       maskImage: iconStyles.getPropertyValue("-webkit-mask-image") || iconStyles.maskImage,
+     };
+   }, ideaId);
+@@ -33,6 +40,8 @@ async function expectIdeaChevron(page, ideaId, iconName) {
+   expect(Math.abs(metrics.iconWidth - metrics.fontSize)).toBeLessThanOrEqual(1);
+   expect(Math.abs(metrics.iconHeight - metrics.fontSize)).toBeLessThanOrEqual(1);
+   expect(metrics.iconColor).toBe(metrics.textColor);
++  expect(metrics.iconLeft).toBeLessThan(metrics.textLeft);
++  expect(Math.abs(metrics.iconBottom - metrics.textBottom)).toBeLessThanOrEqual(2);
+   expect(metrics.maskImage).toContain(iconName);
+ }
+
+@@ -92,7 +101,7 @@ async function expectExpandedNotesChildIndentation(page, ideaId, expectedInputRo
+
+ async function expectProductionCopy(page) {
+   await expect(page.locator("main")).not.toContainText(
+-    /\bDB-shaped\b|\bin-page data model\b|\buserId\b|\bideaId\b|\bnoteId\b|\bsystem flag\b|\bmetadata\b|\bseed\b|\bdebug\b|\bselected context\b|\bmock\b|\btest\b|\binternal implementation\b|\bplaceholder\b|\bproject records\b|\bmutating API\b|\bauth\b|\bAI\b|\bdatabase behavior\b/i,
++    /\bDB-shaped\b|\bin-page data model\b|\buserId\b|\bideaId\b|\bnoteId\b|\bsystem flag\b|\bmetadata\b|\bseed\b|\bdebug\b|\bselected context\b|\bmock\b|\btest\b|\binternal implementation\b|\bplaceholder\b|\bproject records\b|\bmutating API\b|\bserver\b|\bAPI\b|\blocal server\b|\bport\b|\bunderlying systems\b|\bauth\b|\bAI\b|\bdatabase behavior\b/i,
+   );
+ }
+
+@@ -141,6 +150,28 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
+     await expect(page.locator("[data-idea-board-add-idea-row]")).toHaveCount(1);
+     await expect(page.locator("[data-idea-board-add-idea]")).toHaveText("Add Idea");
+     await expectButtonLeftAligned(page, "[data-idea-board-add-idea]", "[data-idea-board-add-idea-row] > td");
++    await expect(page.locator("[data-idea-board-show-filter] summary")).toHaveText("Show");
++    const captionMetrics = await page.locator(".idea-board-table-caption").evaluate((caption) => {
++      const label = caption.querySelector("span");
++      const filter = caption.querySelector("[data-idea-board-show-filter]");
++      const labelRect = label.getBoundingClientRect();
++      const filterRect = filter.getBoundingClientRect();
++      return {
++        filterRight: filterRect.right,
++        filterTop: filterRect.top,
++        labelRight: labelRect.right,
++        labelTop: labelRect.top,
++      };
++    });
++    expect(captionMetrics.filterRight).toBeGreaterThan(captionMetrics.labelRight);
++    expect(Math.abs(captionMetrics.filterTop - captionMetrics.labelTop)).toBeLessThanOrEqual(4);
++    await page.locator("[data-idea-board-show-filter] summary").click();
++    await expect(page.locator("[data-idea-board-status-filter-option]")).toHaveCount(6);
++    const checkedStatuses = await page.locator("[data-idea-board-status-filter-option]:checked").evaluateAll((inputs) => (
++      inputs.map((input) => input.value)
++    ));
++    expect(checkedStatuses).toEqual(["New", "Exploring", "Refining", "Ready", "Project"]);
++    await expect(page.locator("[data-idea-board-status-filter-option][value='Archived']")).not.toBeChecked();
+     await expect(page.getByText(/another/i)).toHaveCount(0);
+     await expect(page.locator("[data-idea-board-notes-chevron]")).toHaveCount(0);
+     await expect(page.getByText("Selected idea context")).toHaveCount(0);
+@@ -223,11 +254,19 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
+     const ideaInputRow = page.locator("[data-idea-board-idea-input-row]").last();
+     await expect(ideaInputRow.locator("[data-idea-board-idea-action]")).toHaveText(["Save", "Cancel"]);
+     await expect(ideaInputRow.locator("[data-idea-board-idea-status-input]")).toHaveCount(1);
++    await expect(ideaInputRow.locator("[data-idea-board-idea-status-input] option")).toHaveText([
++      "New",
++      "Exploring",
++      "Refining",
++      "Ready",
++      "Project",
++      "Archived",
++    ]);
+     await expect(ideaInputRow.locator("td").nth(2)).toHaveText(/\d{4}-\d{2}-\d{2}/);
+     await expect(ideaInputRow.locator("td").nth(3)).toHaveText("0 Notes");
+     await page.locator("[data-idea-board-idea-input]").fill("Lantern Reef");
+     await page.locator("[data-idea-board-pitch-input]").fill("Guide light through a reef that rearranges at dusk.");
+-    await page.locator("[data-idea-board-idea-status-input]").selectOption("Parked");
++    await page.locator("[data-idea-board-idea-status-input]").selectOption("Refining");
+     await page.locator("[data-idea-board-idea-action='save']").click();
+     await expect(page.locator("[data-idea-board-idea-row='lantern-reef']")).toBeVisible();
+     await expect(page.locator("[data-idea-board-notes-count='lantern-reef']")).toHaveText("0 Notes");
+@@ -236,9 +275,33 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
+     await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='edit']").click();
+     await expect(page.locator("[data-idea-board-idea-input-row] [data-idea-board-idea-action]")).toHaveText(["Save", "Cancel"]);
+     await expect(page.locator("[data-idea-board-idea-status-input]")).toHaveCount(1);
+-    await page.locator("[data-idea-board-idea-status-input]").selectOption("Ready to Shape");
++    await page.locator("[data-idea-board-idea-status-input]").selectOption("Ready");
+     await page.locator("[data-idea-board-idea-action='save']").click();
+-    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] td").nth(1)).toHaveText("Ready to Shape");
++    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] td").nth(1)).toHaveText("Ready");
++    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Create Project", "Delete"]);
++    await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='create-project']").click();
++    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] td").nth(1)).toHaveText("Project");
++    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Open Project", "Archive"]);
++    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='delete']")).toHaveCount(0);
++    await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='open-project']").click();
++    await expect(page.locator("[data-idea-board-status]")).toHaveText("Opening Lantern Reef.");
++    await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='archive']").click();
++    await expect(page.locator("[data-idea-board-idea-row='lantern-reef']")).toHaveCount(0);
++    await page.locator("[data-idea-board-status-filter-option][value='Archived']").check();
++    await expect(page.locator("[data-idea-board-idea-row='lantern-reef']")).toBeVisible();
++    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] td").nth(1)).toHaveText("Archived");
++    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action]")).toHaveText(["Restore", "Delete"]);
++    await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='restore']").click();
++    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] td").nth(1)).toHaveText("Project");
++    await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='archive']").click();
++    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action]")).toHaveText(["Restore", "Delete"]);
++    await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='delete']").click();
++    await expect(page.locator("[data-idea-board-idea-row='lantern-reef']")).toHaveCount(0);
++    await page.locator("[data-idea-board-filter-clear-all]").click();
++    await expect(page.locator("[data-idea-board-idea-row]")).toHaveCount(0);
++    await expect(page.locator("[data-idea-board-add-idea]")).toBeVisible();
++    await page.locator("[data-idea-board-filter-select-all]").click();
++    await expect(page.locator("[data-idea-board-idea-row]")).toHaveCount(3);
+
+     expect(mutatingApiRequests).toEqual([]);
+     expect(failedRequests).toEqual([]);
+diff --git a/tests/playwright/tools/ToolboxRoutePages.spec.mjs b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
+index b3033e10d..9f40a19ad 100644
+--- a/tests/playwright/tools/ToolboxRoutePages.spec.mjs
++++ b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
+@@ -115,10 +115,13 @@ function restoreEnvValue(key, value) {
+ async function expectIdeaChevron(page, ideaId, iconName) {
+   const metrics = await page.locator(`[data-idea-board-idea-row='${ideaId}'] th`).evaluate((cell, targetIdeaId) => {
+     const label = cell.querySelector(".idea-board-idea-label");
++    const text = label.querySelector(".idea-board-idea-label__text");
+     const icon = cell.querySelector(`[data-idea-board-chevron='${targetIdeaId}']`);
+     const cellStyles = getComputedStyle(cell);
+     const labelStyles = getComputedStyle(label);
+     const iconStyles = getComputedStyle(icon);
++    const textRect = text.getBoundingClientRect();
++    const iconRect = icon.getBoundingClientRect();
+     return {
+       iconName: icon.dataset.ideaBoardChevronIcon,
+       labelDisplay: labelStyles.display,
+@@ -126,7 +129,11 @@ async function expectIdeaChevron(page, ideaId, iconName) {
+       iconHeight: Number.parseFloat(iconStyles.height),
+       fontSize: Number.parseFloat(cellStyles.fontSize),
+       iconColor: iconStyles.backgroundColor,
++      iconBottom: iconRect.bottom,
++      iconLeft: iconRect.left,
+       textColor: cellStyles.color,
++      textBottom: textRect.bottom,
++      textLeft: textRect.left,
+       maskImage: iconStyles.getPropertyValue("-webkit-mask-image") || iconStyles.maskImage,
+     };
+   }, ideaId);
+@@ -135,6 +142,8 @@ async function expectIdeaChevron(page, ideaId, iconName) {
+   expect(Math.abs(metrics.iconWidth - metrics.fontSize)).toBeLessThanOrEqual(1);
+   expect(Math.abs(metrics.iconHeight - metrics.fontSize)).toBeLessThanOrEqual(1);
+   expect(metrics.iconColor).toBe(metrics.textColor);
++  expect(metrics.iconLeft).toBeLessThan(metrics.textLeft);
++  expect(Math.abs(metrics.iconBottom - metrics.textBottom)).toBeLessThanOrEqual(2);
+   expect(metrics.maskImage).toContain(iconName);
+ }
+
+@@ -194,7 +203,7 @@ async function expectExpandedNotesChildIndentation(page, ideaId, expectedInputRo
+
+ async function expectIdeaBoardProductionCopy(page) {
+   await expect(page.locator("main")).not.toContainText(
+-    /\bDB-shaped\b|\bin-page data model\b|\buserId\b|\bideaId\b|\bnoteId\b|\bsystem flag\b|\bmetadata\b|\bseed\b|\bdebug\b|\bselected context\b|\bmock\b|\btest\b|\binternal implementation\b|\bplaceholder\b|\bproject records\b|\bmutating API\b|\bauth\b|\bAI\b|\bdatabase behavior\b/i,
++    /\bDB-shaped\b|\bin-page data model\b|\buserId\b|\bideaId\b|\bnoteId\b|\bsystem flag\b|\bmetadata\b|\bseed\b|\bdebug\b|\bselected context\b|\bmock\b|\btest\b|\binternal implementation\b|\bplaceholder\b|\bproject records\b|\bmutating API\b|\bserver\b|\bAPI\b|\blocal server\b|\bport\b|\bunderlying systems\b|\bauth\b|\bAI\b|\bdatabase behavior\b/i,
+   );
+ }
+
+@@ -302,7 +311,6 @@ test("Idea Board launches from Toolbox with accordion table notes model", async
+       "Workflow",
+       "Status",
+       "Idea Table",
+-      "Create Project",
+       "Notes Governance",
+       "Diagnostics",
+     ]);
+@@ -335,12 +343,10 @@ test("Idea Board launches from Toolbox with accordion table notes model", async
+     await expect(page.locator("[data-idea-board-add-note='top-thoughts']")).toBeVisible();
+     await expect(page.locator("[data-idea-board-add-note='top-thoughts']")).toHaveText("Add Note");
+     await expectExpandedNotesChildIndentation(page, "top-thoughts");
+-    await expect(page.locator("[data-idea-board-create-project]")).toBeVisible();
+-    await expect(page.locator("[data-idea-board-create-project]")).toBeDisabled();
++    await expect(page.locator("[data-idea-board-create-project]")).toHaveCount(0);
+     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+     await expect(page.locator("script[src='toolbox/idea-board/index.js']")).toHaveCount(1);
+     mutatingApiRequests.length = 0;
+-    await page.locator("[data-idea-board-create-project]").evaluate((button) => button.click());
+     await page.locator("[data-idea-board-add-note='top-thoughts']").click();
+     await page.locator("[data-idea-board-note-input]").fill("Capture traversal risks before project creation.");
+     await page.locator("[data-idea-board-note-action='save']").click();
+@@ -348,6 +354,16 @@ test("Idea Board launches from Toolbox with accordion table notes model", async
+     await page.locator("[data-idea-board-idea-cell='clockwork-courier']").click();
+     await expect(page.locator("[data-idea-board-expanded-row='clockwork-courier']")).toBeVisible();
+     await expect(page.locator("[data-idea-board-notes-table='clockwork-courier']")).not.toContainText("Capture traversal risks before project creation.");
++    await page.locator("[data-idea-board-add-idea]").click();
++    await page.locator("[data-idea-board-idea-input]").fill("Launch Tile");
++    await page.locator("[data-idea-board-pitch-input]").fill("Turn a polished board idea into a project.");
++    await page.locator("[data-idea-board-idea-status-input]").selectOption("Ready");
++    await page.locator("[data-idea-board-idea-action='save']").click();
++    await expect(page.locator("[data-idea-board-idea-row='launch-tile'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Create Project", "Delete"]);
++    await page.locator("[data-idea-board-idea-row='launch-tile'] [data-idea-board-idea-action='create-project']").click();
++    await expect(page.locator("[data-idea-board-idea-row='launch-tile'] td").nth(1)).toHaveText("Project");
++    await expect(page.locator("[data-idea-board-idea-row='launch-tile'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Open Project", "Archive"]);
++    await expect(page.locator("[data-idea-board-idea-row='launch-tile'] [data-idea-board-idea-action='delete']")).toHaveCount(0);
+     expect(mutatingApiRequests).toEqual([]);
+
+     expect(failedRequests).toEqual([]);
+diff --git a/toolbox/idea-board/index.html b/toolbox/idea-board/index.html
+index 214a303fb..422d67b1b 100644
+--- a/toolbox/idea-board/index.html
++++ b/toolbox/idea-board/index.html
+@@ -18,7 +18,7 @@
+             <div class="container">
+                 <div class="kicker">Toolbox</div>
+                 <h1>Idea Board</h1>
+-                <p class="lede">Capture, compare, and shape game ideas in one table.</p>
++                <p class="lede">Capture, compare, and shape game ideas.</p>
+             </div>
+         </section>
+         <section class="section">
+@@ -38,7 +38,7 @@
+                             <details class="vertical-accordion" data-idea-board-section="Status">
+                                 <summary>Status</summary>
+                                 <div class="accordion-body content-stack">
+-                                    <p>Use status to show where each idea stands: New, Exploring, Parked, or Ready to Shape.</p>
++                                    <p>Use status to show where each idea stands: New, Exploring, Refining, Ready, Project, or Archived.</p>
+                                 </div>
+                             </details>
+                         </div>
+@@ -46,10 +46,22 @@
+                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="idea-board" data-tool-icon-src="assets/theme-v2/images/badges/game-design.png" data-tool-character-src="assets/theme-v2/images/tools/game-design.png"></div>
+                     <section class="tool-center-panel" aria-labelledby="idea-board-work-surface-title">
+                         <h2 id="idea-board-work-surface-title">Ideas</h2>
+-                        <p>Scan, compare, and update early ideas without leaving the table.</p>
++                        <p>Scan, compare, and update early ideas.</p>
++                        <div class="idea-board-table-caption">
++                            <span>Idea Board table with expandable notes rows</span>
++                            <details class="idea-board-show-filter" data-idea-board-show-filter>
++                                <summary>Show</summary>
++                                <div class="idea-board-show-filter__menu">
++                                    <div class="action-group action-group--tight">
++                                        <button class="btn btn--compact" type="button" data-idea-board-filter-select-all>Select All</button>
++                                        <button class="btn btn--compact" type="button" data-idea-board-filter-clear-all>Clear All</button>
++                                    </div>
++                                    <div class="idea-board-show-filter__options" data-idea-board-status-options></div>
++                                </div>
++                            </details>
++                        </div>
+                         <div class="table-wrapper" data-idea-board-section="Idea Table">
+-                            <table class="data-table data-table--fixed" data-idea-board-table>
+-                                <caption>Idea Board table with expandable notes rows</caption>
++                            <table class="data-table data-table--fixed" aria-label="Idea Board table with expandable notes rows" data-idea-board-table>
+                                 <thead>
+                                     <tr>
+                                         <th scope="col">Idea</th>
+@@ -69,14 +81,7 @@
+                             <h2>Next Steps</h2>
+                         </div>
+                         <div class="accordion-stack">
+-                            <details class="vertical-accordion" open data-idea-board-section="Create Project">
+-                                <summary>Create Project</summary>
+-                                <div class="accordion-body content-stack">
+-                                    <p>Create Project will be available after an idea is ready.</p>
+-                                    <button class="btn primary" type="button" disabled data-idea-board-create-project>Create Project</button>
+-                                </div>
+-                            </details>
+-                            <details class="vertical-accordion" data-idea-board-section="Notes Governance">
++                            <details class="vertical-accordion" open data-idea-board-section="Notes Governance">
+                                 <summary>Notes</summary>
+                                 <div class="accordion-body content-stack">
+                                     <p>Add Note opens a new note row under the expanded idea. Notes can be edited, and removable notes can be deleted.</p>
+diff --git a/toolbox/idea-board/index.js b/toolbox/idea-board/index.js
+index 8f588c3c3..2b74e797d 100644
+--- a/toolbox/idea-board/index.js
++++ b/toolbox/idea-board/index.js
+@@ -1,4 +1,5 @@
+-const statusOptions = Object.freeze(["New", "Exploring", "Parked", "Ready to Shape"]);
++const statusOptions = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project", "Archived"]);
++const defaultVisibleStatuses = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project"]);
+ const userId = "user-1";
+
+ const ideaTable = [
+@@ -79,6 +80,7 @@ const state = {
+   editingNoteId: null,
+   addingIdea: false,
+   addingNoteIdeaId: null,
++  visibleStatuses: new Set(defaultVisibleStatuses),
+ };
+
+ function today() {
+@@ -98,6 +100,34 @@ function noteCountLabel(ideaId) {
+   return `${count} ${count === 1 ? "Note" : "Notes"}`;
+ }
+
++function isArchived(record) {
++  return record.status === "Archived";
++}
++
++function isProject(record) {
++  return record.status === "Project";
++}
++
++function visibleIdeas() {
++  return ideaTable.filter((record) => state.visibleStatuses.has(record.status));
++}
++
++function previousStatusForRestore(record) {
++  return statusOptions.includes(record.previousStatus) && record.previousStatus !== "Archived"
++    ? record.previousStatus
++    : "Refining";
++}
++
++function rememberPreviousStatus(record) {
++  if (record.status !== "Archived") {
++    record.previousStatus = record.status;
++  }
++}
++
++function canDeleteIdea(record) {
++  return !isProject(record) || isArchived(record);
++}
++
+ function cell(text) {
+   const td = document.createElement("td");
+   td.textContent = text;
+@@ -113,6 +143,25 @@ function actionButton(label, action, datasetName, variant = "") {
+   return control;
+ }
+
++function renderStatusFilter(root) {
++  const options = root.querySelector("[data-idea-board-status-options]");
++  if (!options) return;
++  options.replaceChildren();
++  for (const status of statusOptions) {
++    const label = document.createElement("label");
++    label.className = "idea-board-show-filter__option";
++    const input = document.createElement("input");
++    input.type = "checkbox";
++    input.value = status;
++    input.checked = state.visibleStatuses.has(status);
++    input.dataset.ideaBoardStatusFilterOption = status;
++    const text = document.createElement("span");
++    text.textContent = status;
++    label.append(input, text);
++    options.append(label);
++  }
++}
++
+ function textInput(label, value = "") {
+   const input = document.createElement("input");
+   input.type = "text";
+@@ -199,7 +248,7 @@ function renderIdeaRow(tbody, record) {
+   chevron.setAttribute("aria-hidden", "true");
+   chevron.dataset.ideaBoardChevron = record.ideaId;
+   chevron.dataset.ideaBoardChevronIcon = chevronIcon;
+-  ideaLabel.append(ideaText, chevron);
++  ideaLabel.append(chevron, ideaText);
+   idea.append(ideaLabel);
+   row.append(idea);
+   row.append(cell(record.pitch));
+@@ -214,11 +263,28 @@ function renderIdeaRow(tbody, record) {
+   row.append(notes);
+
+   const actions = document.createElement("td");
+-  actions.append(
+-    actionButton("Edit", "edit", "ideaBoardIdeaAction"),
+-    " ",
+-    actionButton("Delete", "delete", "ideaBoardIdeaAction"),
+-  );
++  if (isArchived(record)) {
++    actions.append(
++      actionButton("Restore", "restore", "ideaBoardIdeaAction"),
++      " ",
++      actionButton("Delete", "delete", "ideaBoardIdeaAction"),
++    );
++  } else {
++    actions.append(actionButton("Edit", "edit", "ideaBoardIdeaAction"));
++    if (record.status === "Ready") {
++      actions.append(" ", actionButton("Create Project", "create-project", "ideaBoardIdeaAction", "primary"));
++    }
++    if (isProject(record)) {
++      actions.append(
++        " ",
++        actionButton("Open Project", "open-project", "ideaBoardIdeaAction", "primary"),
++        " ",
++        actionButton("Archive", "archive", "ideaBoardIdeaAction"),
++      );
++    } else {
++      actions.append(" ", actionButton("Delete", "delete", "ideaBoardIdeaAction"));
++    }
++  }
+   row.append(actions);
+   tbody.append(row);
+ }
+@@ -322,8 +388,9 @@ function renderAddIdeaRow(tbody) {
+ function render(root) {
+   const tbody = root.querySelector("[data-idea-board-ideas-body]");
+   if (!tbody) return;
++  renderStatusFilter(root);
+   tbody.replaceChildren();
+-  for (const record of ideaTable) {
++  for (const record of visibleIdeas()) {
+     if (state.editingIdeaId === record.ideaId) {
+       renderIdeaInputRow(tbody, record);
+     } else {
+@@ -361,7 +428,11 @@ function saveIdeaRow(root, row) {
+     }
+     record.idea = idea;
+     record.pitch = pitch;
++    if (status === "Archived" && record.status !== "Archived") {
++      record.previousStatus = record.status;
++    }
+     record.status = status;
++    rememberPreviousStatus(record);
+     record.updated = today();
+     state.editingIdeaId = null;
+     updateStatus(root, `Updated ${record.idea}.`);
+@@ -427,6 +498,10 @@ function deleteIdea(root, ideaId) {
+     updateStatus(root, "Idea Board could not delete that idea.");
+     return;
+   }
++  if (!canDeleteIdea(ideaTable[index])) {
++    updateStatus(root, "Archive this project before deleting it.");
++    return;
++  }
+   const [removed] = ideaTable.splice(index, 1);
+   for (let noteIndex = noteTable.length - 1; noteIndex >= 0; noteIndex -= 1) {
+     if (noteTable[noteIndex].ideaId === ideaId) noteTable.splice(noteIndex, 1);
+@@ -438,6 +513,61 @@ function deleteIdea(root, ideaId) {
+   render(root);
+ }
+
++function createProject(root, ideaId) {
++  const record = ideaRecord(ideaId);
++  if (!record) {
++    updateStatus(root, "Idea Board could not update that idea.");
++    return;
++  }
++  if (record.status !== "Ready") {
++    updateStatus(root, "Set this idea to Ready before creating a project.");
++    return;
++  }
++  record.status = "Project";
++  record.previousStatus = "Project";
++  record.updated = today();
++  updateStatus(root, `${record.idea} is now a project.`);
++  render(root);
++}
++
++function archiveIdea(root, ideaId) {
++  const record = ideaRecord(ideaId);
++  if (!record) {
++    updateStatus(root, "Idea Board could not archive that idea.");
++    return;
++  }
++  if (record.status !== "Archived") record.previousStatus = record.status;
++  record.status = "Archived";
++  record.updated = today();
++  if (!state.visibleStatuses.has("Archived") && state.expandedIdeaId === ideaId) {
++    state.expandedIdeaId = null;
++  }
++  updateStatus(root, `Archived ${record.idea}.`);
++  render(root);
++}
++
++function restoreIdea(root, ideaId) {
++  const record = ideaRecord(ideaId);
++  if (!record) {
++    updateStatus(root, "Idea Board could not restore that idea.");
++    return;
++  }
++  record.status = previousStatusForRestore(record);
++  record.previousStatus = record.status;
++  record.updated = today();
++  updateStatus(root, `Restored ${record.idea}.`);
++  render(root);
++}
++
++function openProject(root, ideaId) {
++  const record = ideaRecord(ideaId);
++  if (!record) {
++    updateStatus(root, "Idea Board could not open that project.");
++    return;
++  }
++  updateStatus(root, `Opening ${record.idea}.`);
++}
++
+ function handleIdeaAction(root, actionControl) {
+   const action = actionControl.dataset.ideaBoardIdeaAction;
+   const row = actionControl.closest("tr");
+@@ -454,6 +584,14 @@ function handleIdeaAction(root, actionControl) {
+     render(root);
+   } else if (action === "delete") {
+     deleteIdea(root, ideaId);
++  } else if (action === "create-project") {
++    createProject(root, ideaId);
++  } else if (action === "open-project") {
++    openProject(root, ideaId);
++  } else if (action === "archive") {
++    archiveIdea(root, ideaId);
++  } else if (action === "restore") {
++    restoreIdea(root, ideaId);
+   } else if (action === "cancel") {
+     state.editingIdeaId = null;
+     state.addingIdea = false;
+@@ -497,7 +635,38 @@ function handleNoteAction(root, actionControl) {
+   }
+ }
+
++function handleFilterAction(root, actionControl) {
++  if (actionControl.matches("[data-idea-board-filter-select-all]")) {
++    state.visibleStatuses = new Set(statusOptions);
++    updateStatus(root, "Showing all statuses.");
++  } else if (actionControl.matches("[data-idea-board-filter-clear-all]")) {
++    state.visibleStatuses = new Set();
++    state.expandedIdeaId = null;
++    updateStatus(root, "Status filters cleared.");
++  }
++  render(root);
++}
++
++function handleFilterChange(root, input) {
++  if (input.checked) {
++    state.visibleStatuses.add(input.value);
++  } else {
++    state.visibleStatuses.delete(input.value);
++    if (state.expandedIdeaId && ideaRecord(state.expandedIdeaId)?.status === input.value) {
++      state.expandedIdeaId = null;
++    }
++  }
++  updateStatus(root, "Updated visible statuses.");
++  render(root);
++}
++
+ function handleClick(root, event) {
++  const filterAction = event.target.closest("[data-idea-board-filter-select-all], [data-idea-board-filter-clear-all]");
++  if (filterAction) {
++    handleFilterAction(root, filterAction);
++    return;
++  }
++
+   const toggle = event.target.closest("[data-idea-board-toggle-notes]");
+   if (toggle) {
+     toggleNotes(root, toggle.dataset.ideaBoardToggleNotes);
+@@ -514,6 +683,11 @@ function handleClick(root, event) {
+   if (noteAction) handleNoteAction(root, noteAction);
+ }
+
++function handleChange(root, event) {
++  const statusFilter = event.target.closest("[data-idea-board-status-filter-option]");
++  if (statusFilter) handleFilterChange(root, statusFilter);
++}
++
+ function handleKeydown(root, event) {
+   const toggle = event.target.closest("[data-idea-board-toggle-notes]");
+   if (!toggle || (event.key !== "Enter" && event.key !== " ")) return;
+@@ -526,5 +700,6 @@ document.addEventListener("DOMContentLoaded", () => {
+   if (!root) return;
+   render(root);
+   root.addEventListener("click", (event) => handleClick(root, event));
++  root.addEventListener("change", (event) => handleChange(root, event));
+   root.addEventListener("keydown", (event) => handleKeydown(root, event));
+ });
