@@ -102,6 +102,14 @@ function statusLabel(statusId) {
   return status ? `${status.icon} ${status.label}` : statusId;
 }
 
+function restoreEnvValue(key, value) {
+  if (value === undefined) {
+    delete process.env[key];
+    return;
+  }
+  process.env[key] = value;
+}
+
 function expectStaticToolOwnershipAreas(areas) {
   expect(areas.map((area) => area.sectionName)).toEqual([
     "Idea",
@@ -194,6 +202,83 @@ test("Game Journey exposes static tool ownership areas without automatic counts"
     expectStaticToolOwnershipAreas(constants.GAME_JOURNEY_TOOL_OWNERSHIP_AREAS);
   } finally {
     await server.close();
+  }
+});
+
+test("Game Journey progress dashboard summarizes completion metrics", async ({ page }) => {
+  const server = await startRepoServer();
+  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
+  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
+  const failedRequests = [];
+  const pageErrors = [];
+  const consoleErrors = [];
+
+  page.on("pageerror", (error) => {
+    pageErrors.push(error.message);
+  });
+  page.on("console", (message) => {
+    if (message.type() === "error") {
+      consoleErrors.push(message.text());
+    }
+  });
+  page.on("response", (response) => {
+    if (response.status() >= 400) {
+      failedRequests.push(`${response.status()} ${response.url()}`);
+    }
+  });
+  page.on("requestfailed", (request) => {
+    failedRequests.push(`FAILED ${request.url()}`);
+  });
+
+  try {
+    await workspaceV2CoverageReporter.start(page);
+    await fetch(`${server.baseUrl}/api/session/mode`, {
+      body: JSON.stringify({ modeId: "local-db" }),
+      headers: { "content-type": "application/json" },
+      method: "POST",
+    });
+    await fetch(`${server.baseUrl}/api/session/user`, {
+      body: JSON.stringify({ userKey: MOCK_DB_KEYS.users.user1 }),
+      headers: { "content-type": "application/json" },
+      method: "POST",
+    });
+    await page.goto(`${server.baseUrl}/toolbox/game-journey/index.html?game=demo-game`, { waitUntil: "networkidle" });
+
+    await expect(page.locator("[data-journey-active-game]")).toHaveText("Active game: Demo Game.");
+    await expect(page.locator("[data-journey-progress-dashboard]")).toBeVisible();
+    await expect(page.locator("details > summary", { hasText: /^Progress Dashboard$/ })).toHaveCount(1);
+    await expect(page.locator("[data-journey-completion-metrics]")).toContainText("Completion model: 0 of 66 planned items complete (0%). Active buckets: 10; inactive buckets: 4.");
+    await expect(page.locator("[data-journey-overall-progress] .mini-stat")).toHaveText([
+      "0%Progress",
+      "0Completed",
+      "66Planned",
+      "10Active Sections",
+    ]);
+    await expect(page.locator("[data-journey-section-progress] table")).toHaveAttribute("aria-label", "Game Journey section progress");
+    await expect(page.locator("[data-journey-completion-bucket]")).toHaveCount(14);
+    await expect(page.locator("[data-journey-completion-bucket='001-idea'] td")).toHaveText([
+      "Idea",
+      "4",
+      "0",
+      "0%",
+      "inactive",
+    ]);
+    await expect(page.locator("[data-journey-most-complete-areas] li")).toHaveCount(3);
+    await expect(page.locator("[data-journey-most-complete-areas] li").first()).toHaveText("Idea: 0% complete (0 of 4)");
+    await expect(page.locator("[data-journey-least-complete-areas] li")).toHaveCount(3);
+    await expect(page.locator("[data-journey-least-complete-areas] li").first()).toHaveText("Idea: 0% complete (0 of 4)");
+    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+
+    expect(failedRequests).toEqual([]);
+    expect(pageErrors).toEqual([]);
+    expect(consoleErrors).toEqual([]);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await server.close();
+    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
+    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
   }
 });
 

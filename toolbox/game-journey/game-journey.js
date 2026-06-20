@@ -719,16 +719,37 @@ function renderCompletionMetrics() {
     return;
   }
 
+  const dashboard = createElement("div", { className: "content-stack content-stack--compact" });
+  dashboard.dataset.journeyProgressDashboard = "";
   const summary = createElement("p", {
     className: "status",
     text: `Completion model: ${completionMetricsSnapshot.completedCount} of ${completionMetricsSnapshot.plannedCount} planned items complete (${completionMetricsSnapshot.percentComplete}%). Active buckets: ${completionMetricsSnapshot.activeCount}; inactive buckets: ${completionMetricsSnapshot.inactiveCount}.`,
   });
+  const overallHeading = createElement("h3", { text: "Overall Progress" });
+  const overallGrid = createElement("div", { className: "grid cols-2" });
+  overallGrid.dataset.journeyOverallProgress = "";
+  [
+    ["Progress", `${completionMetricsSnapshot.percentComplete}%`],
+    ["Completed", String(completionMetricsSnapshot.completedCount)],
+    ["Planned", String(completionMetricsSnapshot.plannedCount)],
+    ["Active Sections", String(completionMetricsSnapshot.activeCount)],
+  ].forEach(([label, value]) => {
+    const stat = createElement("article", { className: "mini-stat mini-stat--inline" });
+    stat.append(
+      createElement("strong", { text: value }),
+      createElement("span", { text: label }),
+    );
+    overallGrid.append(stat);
+  });
+
+  const sectionHeading = createElement("h3", { text: "Section Progress" });
   const wrapper = createElement("div", { className: "table-wrapper" });
+  wrapper.dataset.journeySectionProgress = "";
   const table = createElement("table", { className: "data-table data-table--fixed" });
-  table.setAttribute("aria-label", "Game Journey completion metrics");
+  table.setAttribute("aria-label", "Game Journey section progress");
   const head = createElement("thead");
   const headRow = createElement("tr");
-  ["Bucket", "Planned", "Completed", "%", "Status"].forEach((heading) => {
+  ["Section", "Planned", "Completed", "%", "Status"].forEach((heading) => {
     const cell = createElement("th", { text: heading });
     cell.scope = "col";
     headRow.append(cell);
@@ -749,7 +770,53 @@ function renderCompletionMetrics() {
   });
   table.append(head, body);
   wrapper.append(table);
-  completionMetrics.append(summary, wrapper);
+
+  const rankedRecords = records.filter((metric) => metric.plannedCount > 0);
+  const mostComplete = [...rankedRecords]
+    .sort((left, right) =>
+      right.percentComplete - left.percentComplete ||
+      right.completedCount - left.completedCount ||
+      left.bucketKey.localeCompare(right.bucketKey),
+    )
+    .slice(0, 3);
+  const leastComplete = [...rankedRecords]
+    .sort((left, right) =>
+      left.percentComplete - right.percentComplete ||
+      left.completedCount - right.completedCount ||
+      left.bucketKey.localeCompare(right.bucketKey),
+    )
+    .slice(0, 3);
+
+  const mostHeading = createElement("h3", { text: "Most Complete Areas" });
+  const mostList = createElement("ol");
+  mostList.dataset.journeyMostCompleteAreas = "";
+  mostComplete.forEach((metric) => {
+    mostList.append(createElement("li", {
+      text: `${metric.bucketName}: ${metric.percentComplete}% complete (${metric.completedCount} of ${metric.plannedCount})`,
+    }));
+  });
+
+  const leastHeading = createElement("h3", { text: "Least Complete Areas" });
+  const leastList = createElement("ol");
+  leastList.dataset.journeyLeastCompleteAreas = "";
+  leastComplete.forEach((metric) => {
+    leastList.append(createElement("li", {
+      text: `${metric.bucketName}: ${metric.percentComplete}% complete (${metric.completedCount} of ${metric.plannedCount})`,
+    }));
+  });
+
+  dashboard.append(
+    summary,
+    overallHeading,
+    overallGrid,
+    sectionHeading,
+    wrapper,
+    mostHeading,
+    mostList,
+    leastHeading,
+    leastList,
+  );
+  completionMetrics.append(dashboard);
 }
 
 function renderSearchStatus(query, notes) {
