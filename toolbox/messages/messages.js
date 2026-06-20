@@ -3,14 +3,17 @@ import {
   createEmotionProfile,
   createMessage,
   createMessageCategory,
+  createTtsProfile,
   listEmotionProfiles,
   listMessageCategories,
   listMessages,
   listMessageSegments,
+  listTtsProfiles,
   updateEmotionProfile,
   updateMessage,
   updateMessageCategory,
   updateMessageSegment,
+  updateTtsProfile,
 } from "./messages-api-client.js";
 
 const elements = {
@@ -67,6 +70,20 @@ const elements = {
   segmentValidationErrors: document.querySelector("[data-messages-segment-validation-errors]"),
   table: document.querySelector("[data-messages-table]"),
   text: document.querySelector("[data-messages-text]"),
+  ttsActive: document.querySelector("[data-messages-tts-active]"),
+  ttsCancel: document.querySelector("[data-messages-tts-cancel]"),
+  ttsCount: document.querySelector("[data-messages-tts-count]"),
+  ttsDescription: document.querySelector("[data-messages-tts-description]"),
+  ttsForm: document.querySelector("[data-messages-tts-form]"),
+  ttsKey: document.querySelector("[data-messages-tts-key]"),
+  ttsLanguage: document.querySelector("[data-messages-tts-language]"),
+  ttsName: document.querySelector("[data-messages-tts-name]"),
+  ttsPitch: document.querySelector("[data-messages-tts-pitch]"),
+  ttsProviderKey: document.querySelector("[data-messages-tts-provider-key]"),
+  ttsRate: document.querySelector("[data-messages-tts-rate]"),
+  ttsRows: document.querySelector("[data-messages-tts-profiles]"),
+  ttsVoiceName: document.querySelector("[data-messages-tts-voice-name]"),
+  ttsVolume: document.querySelector("[data-messages-tts-volume]"),
   validationCard: document.querySelector("[data-messages-validation-card]"),
   validationErrors: document.querySelector("[data-messages-validation-errors]"),
 };
@@ -77,6 +94,7 @@ const state = {
   messages: [],
   segments: [],
   selectedMessageKey: "",
+  ttsProfiles: [],
 };
 
 function setText(element, value) {
@@ -218,10 +236,35 @@ function renderEmotionRows() {
     actions.append(group);
     row.append(
       createCell(profile.name),
+      createCell(String(profile.usageCount || 0)),
       createCell(statusForActive(profile.active)),
       actions,
     );
     elements.emotionRows.append(row);
+  });
+}
+
+function renderTtsRows() {
+  if (!elements.ttsRows) {
+    return;
+  }
+  elements.ttsRows.replaceChildren();
+  state.ttsProfiles.forEach((profile) => {
+    const row = document.createElement("tr");
+    row.dataset.messagesTtsRow = profile.key;
+    const actions = document.createElement("td");
+    const group = document.createElement("div");
+    group.className = "action-group action-group--tight";
+    group.append(createButton("Edit", "messagesTtsEdit", profile.key));
+    actions.append(group);
+    row.append(
+      createCell(profile.name),
+      createCell(profile.providerKey),
+      createCell(profile.language),
+      createCell(statusForActive(profile.active)),
+      actions,
+    );
+    elements.ttsRows.append(row);
   });
 }
 
@@ -330,6 +373,7 @@ function renderCounts() {
   setText(elements.count, String(state.messages.length));
   setText(elements.categoryCount, String(state.categories.length));
   setText(elements.emotionCount, String(state.emotionProfiles.length));
+  setText(elements.ttsCount, String(state.ttsProfiles.length));
 }
 
 function renderPersistence(persistence = {}) {
@@ -344,6 +388,7 @@ function render(persistence = {}) {
   populateSelect(elements.segmentEmotionProfile, activeEmotionProfiles(), "Select emotion profile");
   renderCategoryRows();
   renderEmotionRows();
+  renderTtsRows();
   renderMessageRows();
   renderSelectedMessage();
   renderSegmentRows();
@@ -428,6 +473,34 @@ function validateSegment(values) {
   return errors;
 }
 
+function ttsProfileFormValues() {
+  return {
+    active: elements.ttsActive?.checked !== false,
+    description: elements.ttsDescription?.value || "",
+    language: elements.ttsLanguage?.value || "",
+    name: elements.ttsName?.value || "",
+    pitch: Number(elements.ttsPitch?.value || 1),
+    providerKey: elements.ttsProviderKey?.value || "",
+    rate: Number(elements.ttsRate?.value || 1),
+    voiceName: elements.ttsVoiceName?.value || "",
+    volume: Number(elements.ttsVolume?.value || 1),
+  };
+}
+
+function validateTtsProfile(values) {
+  const errors = [];
+  if (!values.name.trim()) {
+    errors.push("TTS Profile Name is required.");
+  }
+  if (!values.providerKey.trim()) {
+    errors.push("Provider Key is required.");
+  }
+  if (!values.language.trim()) {
+    errors.push("Language is required.");
+  }
+  return errors;
+}
+
 function resetMessageForm() {
   state.selectedMessageKey = "";
   setValue(elements.key, "");
@@ -505,6 +578,19 @@ function resetEmotionForm() {
   setChecked(elements.emotionActive, true);
 }
 
+function resetTtsForm() {
+  setValue(elements.ttsKey, "");
+  setValue(elements.ttsName, "");
+  setValue(elements.ttsDescription, "");
+  setValue(elements.ttsProviderKey, "browser-speech");
+  setValue(elements.ttsVoiceName, "");
+  setValue(elements.ttsLanguage, "en-US");
+  setValue(elements.ttsVolume, "1");
+  setValue(elements.ttsPitch, "1");
+  setValue(elements.ttsRate, "1");
+  setChecked(elements.ttsActive, true);
+}
+
 function editEmotionProfile(profileKey) {
   const profile = state.emotionProfiles.find((candidate) => candidate.key === profileKey);
   if (!profile) {
@@ -521,25 +607,49 @@ function editEmotionProfile(profileKey) {
   setChecked(elements.emotionActive, profile.active);
 }
 
+function editTtsProfile(profileKey) {
+  const profile = state.ttsProfiles.find((candidate) => candidate.key === profileKey);
+  if (!profile) {
+    return;
+  }
+  setValue(elements.ttsKey, profile.key);
+  setValue(elements.ttsName, profile.name);
+  setValue(elements.ttsDescription, profile.description || "");
+  setValue(elements.ttsProviderKey, profile.providerKey);
+  setValue(elements.ttsVoiceName, profile.voiceName || "");
+  setValue(elements.ttsLanguage, profile.language);
+  setValue(elements.ttsVolume, String(profile.volume));
+  setValue(elements.ttsPitch, String(profile.pitch));
+  setValue(elements.ttsRate, String(profile.rate));
+  setChecked(elements.ttsActive, profile.active);
+}
+
 async function loadAll() {
   const categoryPayload = listMessageCategories();
   const emotionPayload = listEmotionProfiles();
+  const ttsPayload = listTtsProfiles();
   const messagesPayload = listMessages();
   const segmentsPayload = listMessageSegments();
   state.categories = categoryPayload.categories || [];
   state.emotionProfiles = emotionPayload.emotionProfiles || [];
+  state.ttsProfiles = ttsPayload.ttsProfiles || [];
   state.messages = messagesPayload.messages || [];
   state.segments = segmentsPayload.segments || [];
-  render(messagesPayload.persistence || categoryPayload.persistence || emotionPayload.persistence || segmentsPayload.persistence);
+  render(messagesPayload.persistence || categoryPayload.persistence || emotionPayload.persistence || ttsPayload.persistence || segmentsPayload.persistence);
   setText(elements.log, "Messages loaded from the Local API.");
 }
 
 async function reloadSegments() {
   const segmentsPayload = listMessageSegments();
+  const emotionPayload = listEmotionProfiles();
   state.segments = segmentsPayload.segments || [];
+  state.emotionProfiles = emotionPayload.emotionProfiles || [];
+  populateSelect(elements.emotionProfile, activeEmotionProfiles(), "Select emotion profile");
+  populateSelect(elements.segmentEmotionProfile, activeEmotionProfiles(), "Select emotion profile");
+  renderEmotionRows();
   renderSegmentRows();
   resetSegmentForm();
-  renderPersistence(segmentsPayload.persistence || {});
+  renderPersistence(segmentsPayload.persistence || emotionPayload.persistence || {});
 }
 
 async function refreshAfterSave(message) {
@@ -760,11 +870,46 @@ elements.emotionRows?.addEventListener("click", (event) => {
   }
 });
 
+elements.ttsForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const input = ttsProfileFormValues();
+  const errors = validateTtsProfile(input);
+  if (errors.length) {
+    setText(elements.log, errors.join(" "));
+    return;
+  }
+  try {
+    const ttsKey = elements.ttsKey?.value || "";
+    const result = ttsKey
+      ? updateTtsProfile(ttsKey, input)
+      : createTtsProfile(input);
+    await loadAll();
+    resetTtsForm();
+    setText(elements.log, `Saved TTS profile ${result.ttsProfile.name}.`);
+  } catch (error) {
+    setText(elements.log, error instanceof Error ? error.message : String(error || "TTS profile save failed."));
+  }
+});
+
+elements.ttsCancel?.addEventListener("click", () => {
+  resetTtsForm();
+  setText(elements.log, "Ready for a new TTS profile.");
+});
+
+elements.ttsRows?.addEventListener("click", (event) => {
+  const editButton = event.target.closest("[data-messages-tts-edit]");
+  if (editButton) {
+    editTtsProfile(editButton.dataset.messagesTtsEdit);
+    setText(elements.log, "TTS profile loaded for editing.");
+  }
+});
+
 try {
   await loadAll();
   resetMessageForm();
   resetCategoryForm();
   resetEmotionForm();
+  resetTtsForm();
 } catch (error) {
   setText(elements.log, error instanceof Error ? error.message : String(error || "Messages failed to load."));
   showValidation(["Messages could not load from the Local API. Start the Local API server and reload this tool."]);

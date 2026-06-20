@@ -45,6 +45,22 @@ export function updateEmotionProfile(profileKey, input) {
   return writeData(`/messages/emotion-profiles/${encodeURIComponent(profileKey)}`, input, "Update emotion profile");
 }
 
+export function listTtsProfiles() {
+  return readData("/messages/tts-profiles", "Messages TTS profiles");
+}
+
+export function getTtsProfile(profileKey) {
+  return readData(`/messages/tts-profiles/${encodeURIComponent(profileKey)}`, "Messages TTS profile");
+}
+
+export function createTtsProfile(input) {
+  return writeData("/messages/tts-profiles", input, "Create TTS profile");
+}
+
+export function updateTtsProfile(profileKey, input) {
+  return writeData(`/messages/tts-profiles/${encodeURIComponent(profileKey)}`, input, "Update TTS profile");
+}
+
 export function listMessages() {
   return readData("/messages/messages", "Messages list");
 }
