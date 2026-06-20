@@ -173,7 +173,7 @@ test("Message Studio renders Messages with child Message Parts and plays ordered
     await page.locator("[data-messages-commit='__new__']").click();
     await expect(page.locator("[data-messages-validation-card]")).toBeVisible();
     await expect(page.locator("[data-messages-validation-errors]")).toContainText("Message Name is required.");
-    await expect(page.locator("[data-messages-validation-errors]")).toContainText("Emotion Profile is required.");
+    await expect(page.locator("[data-messages-validation-errors]")).toContainText("Emotion is required.");
     await expect(page.locator("[data-messages-validation-errors]")).toContainText("Message Text is required.");
     await page.locator("[data-messages-cancel='__new__']").click();
 
@@ -188,6 +188,7 @@ test("Message Studio renders Messages with child Message Parts and plays ordered
     await expect(page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" })).toContainText("Dialog");
     await expect(page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" })).toContainText("0");
     await expect(page.locator("[data-message-default-tts-profile]").first()).toHaveValue(/.+/);
+    await expect(page.locator("[data-message-default-tts-profile]").first()).toContainText("Default Balanced TTS Profile");
 
     const messageRow = page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" });
     await messageRow.click();
@@ -198,10 +199,13 @@ test("Message Studio renders Messages with child Message Parts and plays ordered
     await expect(page.getByRole("columnheader", { exact: true, name: "TTS Profile" })).toBeVisible();
 
     await page.getByRole("button", { name: "Add Part" }).click();
+    await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-text]")).toBeVisible();
+    await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion]")).toBeVisible();
+    await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-tts-profile]")).toContainText("Default Balanced TTS Profile");
     await page.locator("[data-messages-segment-editor='__new__'] [data-segment-order]").fill("");
     await page.locator("[data-messages-segment-commit='__new__']").click();
     await expect(page.locator("[data-messages-validation-errors]")).toContainText("Part Text is required.");
-    await expect(page.locator("[data-messages-validation-errors]")).toContainText("Emotion Profile is required.");
+    await expect(page.locator("[data-messages-validation-errors]")).toContainText("Emotion is required.");
     await expect(page.locator("[data-messages-validation-errors]")).toContainText("Display Order is required.");
     await page.locator("[data-messages-segment-cancel='__new__']").click();
 
@@ -238,7 +242,7 @@ test("Message Studio renders Messages with child Message Parts and plays ordered
     expect(speechCalls.at(-1)).toEqual({ type: "cancel" });
 
     await page.locator("[data-messages-segment-row]").filter({ hasText: "Keep your torch high." }).getByRole("button", { name: "Play Part" }).click();
-    await expect(page.locator("[data-messages-log]")).toHaveText("Play Part queued Part 2 using Browser Speech Default.");
+    await expect(page.locator("[data-messages-log]")).toHaveText("Play Part queued Part 2 using Default Balanced TTS Profile.");
     speechCalls = await page.evaluate(() => window.__messagesSpeechCalls);
     expect(speechCalls.at(-1)).toEqual(expect.objectContaining({
       text: "Keep your torch high.",
