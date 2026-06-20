@@ -811,6 +811,13 @@ function renderCompletionMetrics() {
     }));
   });
 
+  const insightHeading = createElement("h3", { text: "Completion Insights" });
+  const insightList = createElement("ul");
+  insightList.dataset.journeyCompletionInsights = "";
+  completionInsightMessages(completionMetricsSnapshot, records, mostComplete, leastComplete).forEach((message) => {
+    insightList.append(createElement("li", { text: message }));
+  });
+
   dashboard.append(
     summary,
     overallHeading,
@@ -821,6 +828,8 @@ function renderCompletionMetrics() {
     mostList,
     leastHeading,
     leastList,
+    insightHeading,
+    insightList,
   );
   completionMetrics.append(dashboard);
 }
@@ -831,6 +840,40 @@ function normalizeTargetCount(value) {
     return 0;
   }
   return Math.max(0, Math.trunc(parsed));
+}
+
+function completionInsightMessages(snapshot, records, mostComplete, leastComplete) {
+  const messages = [];
+  if (!snapshot?.plannedCount) {
+    messages.push("Completion is low because no planned section targets are available yet.");
+    return messages;
+  }
+
+  if (snapshot.percentComplete === 0) {
+    messages.push("Completion is low because no planned items are complete yet.");
+  } else if (snapshot.percentComplete < 50) {
+    messages.push("Completion is low because fewer than half of the planned items are complete.");
+  } else if (snapshot.percentComplete >= 80) {
+    messages.push("Completion is high because most planned items are already complete.");
+  } else {
+    messages.push("Completion is growing because completed items are catching up to planned items.");
+  }
+
+  if (snapshot.inactiveCount > 0) {
+    messages.push(`${snapshot.inactiveCount} section${snapshot.inactiveCount === 1 ? "" : "s"} are inactive, so they are visible as planning context but not active focus areas.`);
+  }
+  const strongest = mostComplete[0];
+  if (strongest) {
+    messages.push(`${strongest.bucketName} is one of the most complete areas with ${strongest.completedCount} of ${strongest.plannedCount} planned items complete.`);
+  }
+  const weakest = leastComplete.find((metric) => metric.plannedCount > 0);
+  if (weakest) {
+    messages.push(`${weakest.bucketName} needs attention with ${weakest.completedCount} of ${weakest.plannedCount} planned items complete.`);
+  }
+  if (records.every((metric) => metric.completedCount === 0)) {
+    messages.push("Mark a section item complete to move overall progress above 0%.");
+  }
+  return messages;
 }
 
 function renderRecommendedTargets() {

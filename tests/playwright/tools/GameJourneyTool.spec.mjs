@@ -282,6 +282,13 @@ test("Game Journey progress dashboard summarizes completion metrics", async ({ p
     await expect(page.locator("[data-journey-most-complete-areas] li").first()).toHaveText("Idea: 0% complete (0 of 4)");
     await expect(page.locator("[data-journey-least-complete-areas] li")).toHaveCount(3);
     await expect(page.locator("[data-journey-least-complete-areas] li").first()).toHaveText("Idea: 0% complete (0 of 4)");
+    await expect(page.locator("[data-journey-completion-insights] li")).toHaveText([
+      "Completion is low because no planned items are complete yet.",
+      "4 sections are inactive, so they are visible as planning context but not active focus areas.",
+      "Idea is one of the most complete areas with 0 of 4 planned items complete.",
+      "Idea needs attention with 0 of 4 planned items complete.",
+      "Mark a section item complete to move overall progress above 0%.",
+    ]);
     await expect(page.locator("[data-journey-recommended-target]")).toHaveCount(4);
     await expect(page.locator("[data-journey-recommended-target='heroes'] td").nth(0)).toHaveText("Heroes");
     await expect(page.locator("[data-journey-recommended-target='heroes'] td").nth(1)).toHaveText("Objects");
