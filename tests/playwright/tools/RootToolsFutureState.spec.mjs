@@ -277,7 +277,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Build Path" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Build Path" })).not.toHaveAttribute("aria-disabled", "true");
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 14/43");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 14/42");
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='admin']")).toHaveCount(0);
     await expect(page.locator("nav.nav-links > a[data-route='learn']")).toHaveCount(1);
@@ -413,7 +413,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     expect(failedRequests.filter((request) => request.includes("/toolbox/old_"))).toEqual([]);
 
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 14/43");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 14/42");
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
     await expect(page.locator("main").getByText("Creators", { exact: true })).toHaveCount(0);
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
@@ -466,7 +466,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
     await setServerSession(server, "");
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 14/43");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 14/42");
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
     await expect(page.locator("main").getByText("Creators", { exact: true })).toHaveCount(0);
     expect(pageErrors).toEqual([]);

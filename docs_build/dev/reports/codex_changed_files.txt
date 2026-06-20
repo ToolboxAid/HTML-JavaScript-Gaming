@@ -68,29 +68,84 @@
 - PASS 027: Idea Board is table-first; the primary work surface is `data-idea-board-table`, with selected idea row controls and no form-first primary workflow.
 - PASS 028: Notes are scoped to the selected idea through `data-idea-board-selected-title`, `data-idea-board-notes-table`, and selected idea state in `toolbox/idea-board/index.js`; Add Note opens an inline row inside the selected notes table; creator notes expose Edit/Delete on the right; system notes expose neither Edit nor Delete; note metadata is table columns.
 - PASS 029: Targeted Playwright coverage validates table columns, selected idea switching, scoped note add/edit/delete, system note lockout, placeholder-only Create Project, and no mutating API calls.
-- PASS 030: Workspace V2 validation harness now pins public API/site env to the ephemeral test server and updates current Message Studio registry expectations so the required workspace lane passes.
+- PASS 030: Workspace V2 validation harness pins public API/site env to the ephemeral test server and updates current Message Studio registry/count expectations so the required workspace lane passes on the rebased branch.
 
 ## Validation
-- PASS before rebase: `node --check toolbox/idea-board/index.js`.
-- PASS before rebase: `node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`.
-- PASS before rebase: `node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs`.
-- PASS before rebase: `node --check tests/playwright/tools/RootToolsFutureState.spec.mjs`.
-- PASS before rebase: Inline HTML guard for `toolbox/idea-board/index.html`.
-- PASS before rebase: `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line` (1 passed).
-- PASS before rebase: `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches"` (1 passed).
-- PASS before rebase: `npm run test:workspace-v2` (5 passed).
-- PENDING after conflict resolution: re-run targeted validation.
+- PASS after rebase: `node --check toolbox/idea-board/index.js`.
+- PASS after rebase: `node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`.
+- PASS after rebase: `node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs`.
+- PASS after rebase: `node --check tests/playwright/tools/RootToolsFutureState.spec.mjs`.
+- PASS after rebase: `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line` (1 passed).
+- PASS after rebase: `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches"` (1 passed when rerun alone; earlier parallel run failed in Playwright artifact cleanup only).
+- PASS after rebase: `npm run test:workspace-v2` (5 passed).
+- PASS: `git diff --cached --check`.
 - SKIP: Full samples smoke, per user instruction.
 
 ## Git Workflow Fields
 - Current branch: codex/fix-idea-board-pr-workflow.
 - Created branch: codex/fix-idea-board-pr-workflow from refreshed main.
-- Push result: pushed before rebase; force-with-lease push pending after conflict resolution.
+- Conflict resolution: rebase onto `origin/main` conflicted only in generated Codex report files; reports were regenerated from the rebased PR diff.
+- Push result: pushed before rebase; force-with-lease push pending after amend.
 - PR URL: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/4.
 - Merge result: pending.
 - Final main commit: pending.
 
 ## ZIP
 - Path: tmp/PR_26171_030-idea-board-workflow-fix_delta.zip.
-- Size: pending after conflict-resolution package refresh.
-- Contents: pending after conflict-resolution package refresh.
+- Size: 101613 bytes.
+- Contents:
+- docs_build/dev/codex_commands.md
+- docs_build/dev/commit_comment.txt
+- docs_build/dev/reports/codex_changed_files.txt
+- docs_build/dev/reports/codex_review.diff
+- docs_build/dev/reports/coverage_changed_js_guardrail.txt
+- docs_build/dev/reports/dependency_gating_report.md
+- docs_build/dev/reports/dependency_hydration_reuse_report.md
+- docs_build/dev/reports/execution_graph_reuse_report.md
+- docs_build/dev/reports/failure_fingerprint_report.md
+- docs_build/dev/reports/filesystem_scan_reduction_report.md
+- docs_build/dev/reports/incremental_validation_report.md
+- docs_build/dev/reports/lane_compilation_report.md
+- docs_build/dev/reports/lane_deduplication_report.md
+- docs_build/dev/reports/lane_input_validation_report.md
+- docs_build/dev/reports/lane_manifests/workspace-contract.json
+- docs_build/dev/reports/lane_runtime_optimization_report.md
+- docs_build/dev/reports/lane_snapshot_report.md
+- docs_build/dev/reports/lane_snapshots/workspace-contract.json
+- docs_build/dev/reports/lane_warm_start_report.md
+- docs_build/dev/reports/lane_warm_starts/workspace-contract.json
+- docs_build/dev/reports/monolith_trigger_removal_report.md
+- docs_build/dev/reports/persistent_lane_manifest_report.md
+- docs_build/dev/reports/playwright_discovery_ownership_report.md
+- docs_build/dev/reports/playwright_discovery_scope_report.md
+- docs_build/dev/reports/playwright_structure_audit.md
+- docs_build/dev/reports/playwright_v8_coverage_report.txt
+- docs_build/dev/reports/retry_suppression_report.md
+- docs_build/dev/reports/slow_path_pruning_report.md
+- docs_build/dev/reports/static_validation_report.md
+- docs_build/dev/reports/targeted_file_manifest_report.md
+- docs_build/dev/reports/test_cleanup_performance_report.md
+- docs_build/dev/reports/test_cleanup_routing_report.md
+- docs_build/dev/reports/testing_lane_execution_report.md
+- docs_build/dev/reports/validation_cache_report.md
+- docs_build/dev/reports/zero_browser_preflight_report.md
+- docs_build/pr/APPLY_PR_26171_026-idea-board-template-cleanup.md
+- docs_build/pr/APPLY_PR_26171_027-idea-board-table-work-surface.md
+- docs_build/pr/APPLY_PR_26171_028-idea-board-notes-table-governance.md
+- docs_build/pr/APPLY_PR_26171_029-idea-board-validation-playwright.md
+- docs_build/pr/APPLY_PR_26171_030-idea-board-workflow-fix.md
+- docs_build/pr/BUILD_PR_26171_026-idea-board-template-cleanup.md
+- docs_build/pr/BUILD_PR_26171_027-idea-board-table-work-surface.md
+- docs_build/pr/BUILD_PR_26171_028-idea-board-notes-table-governance.md
+- docs_build/pr/BUILD_PR_26171_029-idea-board-validation-playwright.md
+- docs_build/pr/BUILD_PR_26171_030-idea-board-workflow-fix.md
+- docs_build/pr/PLAN_PR_26171_026-idea-board-template-cleanup.md
+- docs_build/pr/PLAN_PR_26171_027-idea-board-table-work-surface.md
+- docs_build/pr/PLAN_PR_26171_028-idea-board-notes-table-governance.md
+- docs_build/pr/PLAN_PR_26171_029-idea-board-validation-playwright.md
+- docs_build/pr/PLAN_PR_26171_030-idea-board-workflow-fix.md
+- tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+- tests/playwright/tools/RootToolsFutureState.spec.mjs
+- tests/playwright/tools/ToolboxRoutePages.spec.mjs
+- toolbox/idea-board/index.html
+- toolbox/idea-board/index.js
