@@ -32,7 +32,7 @@
                             <details class="vertical-accordion" open data-idea-board-section="Workflow">
                                 <summary>Workflow</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>Review ideas directly in the work table, then use the notes table to capture follow-up context.</p>
+                                    <p>Review ideas in the work table, then expand an idea row to manage its notes in place.</p>
                                 </div>
                             </details>
                             <details class="vertical-accordion" data-idea-board-section="Status">
@@ -49,7 +49,7 @@
                         <p>The primary surface is a table so creators can scan, compare, and govern early ideas without a form-first workflow.</p>
                         <div class="table-wrapper" data-idea-board-section="Idea Table">
                             <table class="data-table data-table--fixed" data-idea-board-table>
-                                <caption>Idea Board inline tree grid work surface</caption>
+                                <caption>Idea Board table with expandable notes rows</caption>
                                 <thead>
                                     <tr>
                                         <th scope="col">Idea</th>
@@ -62,9 +62,6 @@
                                 </thead>
                                 <tbody data-idea-board-ideas-body></tbody>
                             </table>
-                        </div>
-                        <div class="action-group">
-                            <button class="btn primary" type="button" data-idea-board-add-idea>Add Idea</button>
                         </div>
                     </section>
                     <aside class="tool-column tool-group-idea">
@@ -82,7 +79,7 @@
                             <details class="vertical-accordion" data-idea-board-section="Notes Governance">
                                 <summary>Notes Governance</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>Add Note inserts an inline row under the selected idea. Creator notes can be edited or deleted. System notes can be edited but not deleted.</p>
+                                    <p>Add Note inserts an inline row inside the expanded idea notes area. Creator notes can be edited or deleted. System notes can be edited but not deleted.</p>
                                 </div>
                             </details>
                             <details class="vertical-accordion" data-idea-board-section="Diagnostics">

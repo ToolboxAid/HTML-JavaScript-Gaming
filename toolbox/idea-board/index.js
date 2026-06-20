@@ -1,78 +1,96 @@
 const statusOptions = Object.freeze(["New", "Exploring", "Parked", "Ready to Shape"]);
+const userId = "user-1";
 
-const ideas = [
+const ideaTable = [
   {
-    id: "sky-orchard",
-    title: "Sky Orchard",
-    pitch: "Grow floating islands while defending them from storm creatures.",
+    ideaId: "top-thoughts",
+    userId,
+    idea: "Top Thoughts",
+    pitch: "Smartest person wins...",
     status: "Exploring",
     updated: "2026-06-20",
   },
   {
-    id: "clockwork-courier",
-    title: "Clockwork Courier",
-    pitch: "Deliver messages through looping city districts before time resets.",
+    ideaId: "sky-orchard",
+    userId,
+    idea: "Sky Orchard",
+    pitch: "Grow floating islands...",
+    status: "Exploring",
+    updated: "2026-06-20",
+  },
+  {
+    ideaId: "clockwork-courier",
+    userId,
+    idea: "Clockwork Courier",
+    pitch: "Deliver messages through looping city...",
     status: "New",
     updated: "2026-06-20",
   },
 ];
 
-const notesByIdea = new Map([
-  [
-    "sky-orchard",
-    [
-      {
-        id: "sky-system-origin",
-        note: "System seed note: compare early Sky Orchard ideas before creating a project.",
-        updated: "2026-06-20",
-        system: true,
-      },
-      {
-        id: "sky-creator-next-question",
-        note: "Ask whether the core loop is resource planning, action defense, or both.",
-        updated: "2026-06-20",
-        system: false,
-      },
-    ],
-  ],
-  [
-    "clockwork-courier",
-    [
-      {
-        id: "clock-system-origin",
-        note: "System seed note: keep Clockwork Courier scoped until the time-loop hook is clear.",
-        updated: "2026-06-20",
-        system: true,
-      },
-      {
-        id: "clock-creator-route-risk",
-        note: "Check whether district routing stays readable after the first reset.",
-        updated: "2026-06-20",
-        system: false,
-      },
-    ],
-  ],
-]);
+const noteTable = [
+  {
+    noteId: "top-system-origin",
+    ideaId: "top-thoughts",
+    note: "System seed note: keep the sharpest premise at the top of the board.",
+    system: true,
+    updated: "2026-06-20",
+  },
+  {
+    noteId: "top-creator-win-condition",
+    ideaId: "top-thoughts",
+    note: "Define how players prove they made the smartest move.",
+    system: false,
+    updated: "2026-06-20",
+  },
+  {
+    noteId: "top-creator-opponent",
+    ideaId: "top-thoughts",
+    note: "List opponent behaviors that make clever play visible.",
+    system: false,
+    updated: "2026-06-20",
+  },
+  {
+    noteId: "sky-system-origin",
+    ideaId: "sky-orchard",
+    note: "System seed note: compare early Sky Orchard ideas before creating a project.",
+    system: true,
+    updated: "2026-06-20",
+  },
+  {
+    noteId: "sky-creator-loop",
+    ideaId: "sky-orchard",
+    note: "Ask whether the core loop is resource planning, action defense, or both.",
+    system: false,
+    updated: "2026-06-20",
+  },
+  {
+    noteId: "sky-creator-storm",
+    ideaId: "sky-orchard",
+    note: "Prototype the storm creature escalation table.",
+    system: false,
+    updated: "2026-06-20",
+  },
+];
 
 const state = {
-  selectedIdeaId: "sky-orchard",
+  expandedIdeaId: null,
   editingIdeaId: null,
   editingNoteId: null,
   addingIdea: false,
-  addingNote: false,
+  addingNoteIdeaId: null,
 };
 
 function today() {
   return new Date().toISOString().slice(0, 10);
 }
 
-function selectedIdea() {
-  return ideas.find((idea) => idea.id === state.selectedIdeaId) || null;
+function ideaRecord(ideaId) {
+  return ideaTable.find((record) => record.ideaId === ideaId) || null;
 }
 
 function notesForIdea(ideaId) {
-  if (!notesByIdea.has(ideaId)) notesByIdea.set(ideaId, []);
-  return notesByIdea.get(ideaId);
+  return noteTable.filter((record) => record.ideaId === ideaId);
 }
 
 function noteCountLabel(ideaId) {
@@ -122,29 +140,29 @@ function updateStatus(root, message) {
   if (status) status.textContent = message;
 }
 
-function renderIdeaInputRow(tbody, idea = null) {
+function renderIdeaInputRow(tbody, record = null) {
   const row = document.createElement("tr");
   row.dataset.ideaBoardIdeaInputRow = "true";
-  if (idea) row.dataset.ideaId = idea.id;
+  if (record) row.dataset.ideaId = record.ideaId;
 
-  const titleCell = document.createElement("th");
-  titleCell.scope = "row";
-  const titleInput = textInput(idea ? "Edit idea title" : "New idea title", idea?.title || "");
-  titleInput.dataset.ideaBoardIdeaTitleInput = "true";
-  titleCell.append(titleInput);
-  row.append(titleCell);
+  const ideaCell = document.createElement("th");
+  ideaCell.scope = "row";
+  const ideaInput = textInput(record ? "Edit idea" : "New idea", record?.idea || "");
+  ideaInput.dataset.ideaBoardIdeaInput = "true";
+  ideaCell.append(ideaInput);
+  row.append(ideaCell);
 
   const pitchCell = document.createElement("td");
-  const pitchInput = textInput(idea ? "Edit idea pitch" : "New idea pitch", idea?.pitch || "");
-  pitchInput.dataset.ideaBoardIdeaPitchInput = "true";
+  const pitchInput = textInput(record ? "Edit pitch" : "New pitch", record?.pitch || "");
+  pitchInput.dataset.ideaBoardPitchInput = "true";
   pitchCell.append(pitchInput);
   row.append(pitchCell);
 
   const statusCell = document.createElement("td");
-  statusCell.append(statusSelect(idea?.status || "New"));
+  statusCell.append(statusSelect(record?.status || "New"));
   row.append(statusCell);
-  row.append(cell(idea?.updated || today()));
-  row.append(cell(idea ? noteCountLabel(idea.id) : "0 Notes"));
+  row.append(cell(record?.updated || today()));
+  row.append(cell(record ? noteCountLabel(record.ideaId) : "0 Notes"));
 
   const actions = document.createElement("td");
   actions.append(
@@ -154,31 +172,40 @@ function renderIdeaInputRow(tbody, idea = null) {
   );
   row.append(actions);
   tbody.append(row);
-  titleInput.focus();
+  ideaInput.focus();
 }
 
-function renderIdeaRow(tbody, idea) {
+function renderIdeaRow(tbody, record) {
   const row = document.createElement("tr");
-  const selected = idea.id === state.selectedIdeaId;
-  row.dataset.ideaBoardIdeaRow = idea.id;
-  row.setAttribute("aria-selected", String(selected));
+  const expanded = record.ideaId === state.expandedIdeaId;
+  row.dataset.ideaBoardIdeaRow = record.ideaId;
 
-  const title = document.createElement("th");
-  title.scope = "row";
-  title.textContent = idea.title;
-  row.append(title);
-  row.append(cell(idea.pitch));
-  row.append(cell(idea.status));
-  row.append(cell(idea.updated));
+  const idea = document.createElement("th");
+  idea.scope = "row";
+  idea.textContent = record.idea;
+  row.append(idea);
+  row.append(cell(record.pitch));
+  row.append(cell(record.status));
+  row.append(cell(record.updated));
 
   const notes = document.createElement("td");
-  const notesButton = document.createElement("button");
-  notesButton.className = selected ? "btn btn--compact primary" : "btn btn--compact";
-  notesButton.type = "button";
-  notesButton.textContent = noteCountLabel(idea.id);
-  notesButton.dataset.ideaBoardSelectIdea = idea.id;
-  notesButton.setAttribute("aria-expanded", String(selected));
-  notes.append(notesButton);
+  const notesCount = document.createElement("button");
+  notesCount.className = expanded ? "btn btn--compact primary" : "btn btn--compact";
+  notesCount.type = "button";
+  notesCount.textContent = noteCountLabel(record.ideaId);
+  notesCount.dataset.ideaBoardToggleNotes = record.ideaId;
+  notesCount.dataset.ideaBoardNotesCount = record.ideaId;
+  notesCount.setAttribute("aria-expanded", String(expanded));
+
+  const notesChevron = document.createElement("button");
+  notesChevron.className = expanded ? "btn btn--compact primary" : "btn btn--compact";
+  notesChevron.type = "button";
+  notesChevron.textContent = expanded ? "v" : ">";
+  notesChevron.dataset.ideaBoardToggleNotes = record.ideaId;
+  notesChevron.dataset.ideaBoardNotesChevron = record.ideaId;
+  notesChevron.setAttribute("aria-label", `${expanded ? "Collapse" : "Expand"} notes for ${record.idea}`);
+  notesChevron.setAttribute("aria-expanded", String(expanded));
+  notes.append(notesCount, " ", notesChevron);
   row.append(notes);
 
   const actions = document.createElement("td");
@@ -191,13 +218,14 @@ function renderIdeaRow(tbody, idea) {
   tbody.append(row);
 }
 
-function renderNoteInputRow(tbody, note = null) {
+function renderNoteInputRow(tbody, ideaId, record = null) {
   const row = document.createElement("tr");
   row.dataset.ideaBoardNoteInputRow = "true";
-  if (note) row.dataset.noteId = note.id;
+  row.dataset.ideaId = ideaId;
+  if (record) row.dataset.noteId = record.noteId;
 
   const noteCell = document.createElement("td");
-  const input = textInput(note ? "Edit note text" : "New note text", note?.note || "");
+  const input = textInput(record ? "Edit note" : "New note", record?.note || "");
   input.dataset.ideaBoardNoteInput = "true";
   noteCell.append(input);
   row.append(noteCell);
@@ -213,195 +241,218 @@ function renderNoteInputRow(tbody, note = null) {
   input.focus();
 }
 
-function renderNoteRow(tbody, note) {
+function renderNoteRow(tbody, record) {
   const row = document.createElement("tr");
-  row.dataset.noteId = note.id;
-  if (note.system) row.dataset.ideaBoardSystemNote = "true";
-  row.append(cell(note.note));
+  row.dataset.noteId = record.noteId;
+  row.dataset.ideaId = record.ideaId;
+  if (record.system) row.dataset.ideaBoardSystemNote = "true";
+  row.append(cell(record.note));
 
   const actions = document.createElement("td");
   actions.append(actionButton("Edit", "edit", "ideaBoardNoteAction"));
-  if (!note.system) {
+  if (!record.system) {
     actions.append(" ", actionButton("Delete", "delete", "ideaBoardNoteAction"));
   }
   row.append(actions);
   tbody.append(row);
 }
 
-function renderExpandedNotesRow(tbody, idea) {
+function renderExpandedNotesRow(tbody, record) {
   const row = document.createElement("tr");
-  row.dataset.ideaBoardExpandedRow = idea.id;
+  row.dataset.ideaBoardExpandedRow = record.ideaId;
 
   const content = document.createElement("td");
   content.colSpan = 6;
 
   const wrapper = document.createElement("div");
   wrapper.className = "content-stack";
+  const heading = document.createElement("h3");
+  heading.textContent = "Notes";
+  heading.dataset.ideaBoardNotesHeader = record.ideaId;
+  wrapper.append(heading);
 
   const tableWrapper = document.createElement("div");
   tableWrapper.className = "table-wrapper";
   const notesTable = document.createElement("table");
   notesTable.className = "data-table data-table--fixed";
-  notesTable.dataset.ideaBoardNotesTable = idea.id;
-  notesTable.setAttribute("aria-label", `${idea.title} notes`);
+  notesTable.dataset.ideaBoardNotesTable = record.ideaId;
+  notesTable.setAttribute("aria-label", `${record.idea} notes`);
   notesTable.innerHTML = "<thead><tr><th scope=\"col\">Note</th><th scope=\"col\">Actions</th></tr></thead>";
 
   const notesBody = document.createElement("tbody");
-  notesBody.dataset.ideaBoardNotesBody = idea.id;
+  notesBody.dataset.ideaBoardNotesBody = record.ideaId;
   notesTable.append(notesBody);
   tableWrapper.append(notesTable);
   wrapper.append(tableWrapper);
 
+  for (const note of notesForIdea(record.ideaId)) {
+    if (state.editingNoteId === note.noteId) {
+      renderNoteInputRow(notesBody, record.ideaId, note);
+    } else {
+      renderNoteRow(notesBody, note);
+    }
+  }
+  if (state.addingNoteIdeaId === record.ideaId) renderNoteInputRow(notesBody, record.ideaId);
+
   const controls = document.createElement("div");
   controls.className = "action-group";
   const addNote = actionButton("Add Note", "add", "ideaBoardNoteAction", "primary");
-  addNote.dataset.ideaBoardAddNote = idea.id;
+  addNote.dataset.ideaBoardAddNote = record.ideaId;
   controls.append(addNote);
   wrapper.append(controls);
 
   content.append(wrapper);
   row.append(content);
   tbody.append(row);
+}
 
-  if (state.addingNote) renderNoteInputRow(notesBody);
-  for (const note of notesForIdea(idea.id)) {
-    if (state.editingNoteId === note.id) {
-      renderNoteInputRow(notesBody, note);
-    } else {
-      renderNoteRow(notesBody, note);
-    }
-  }
+function renderAddIdeaRow(tbody) {
+  const row = document.createElement("tr");
+  row.dataset.ideaBoardAddIdeaRow = "true";
+  const prompt = document.createElement("td");
+  prompt.colSpan = 5;
+  prompt.textContent = "Add another idea";
+  row.append(prompt);
+  const actions = document.createElement("td");
+  const addIdea = actionButton("Add Idea", "add", "ideaBoardIdeaAction", "primary");
+  addIdea.dataset.ideaBoardAddIdea = "true";
+  actions.append(addIdea);
+  row.append(actions);
+  tbody.append(row);
 }
 
 function render(root) {
   const tbody = root.querySelector("[data-idea-board-ideas-body]");
   if (!tbody) return;
   tbody.replaceChildren();
-  for (const idea of ideas) {
-    if (state.editingIdeaId === idea.id) {
-      renderIdeaInputRow(tbody, idea);
+  for (const record of ideaTable) {
+    if (state.editingIdeaId === record.ideaId) {
+      renderIdeaInputRow(tbody, record);
     } else {
-      renderIdeaRow(tbody, idea);
+      renderIdeaRow(tbody, record);
     }
-    if (state.selectedIdeaId === idea.id) renderExpandedNotesRow(tbody, idea);
+    if (state.expandedIdeaId === record.ideaId) renderExpandedNotesRow(tbody, record);
   }
-  if (state.addingIdea) renderIdeaInputRow(tbody);
+  if (state.addingIdea) {
+    renderIdeaInputRow(tbody);
+  } else {
+    renderAddIdeaRow(tbody);
+  }
 }
 
-function slugifyTitle(title) {
-  const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-  return slug || `idea-${Date.now()}`;
+function ideaIdFromText(text) {
+  const base = text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  return base || `idea-${Date.now()}`;
 }
 
 function saveIdeaRow(root, row) {
-  const title = row.querySelector("[data-idea-board-idea-title-input]")?.value.trim();
-  const pitch = row.querySelector("[data-idea-board-idea-pitch-input]")?.value.trim();
+  const idea = row.querySelector("[data-idea-board-idea-input]")?.value.trim();
+  const pitch = row.querySelector("[data-idea-board-pitch-input]")?.value.trim();
   const status = row.querySelector("[data-idea-board-idea-status-input]")?.value;
-  if (!title || !pitch || !status) {
+  if (!idea || !pitch || !status) {
     updateStatus(root, "Enter an idea, pitch, and status before saving.");
     return;
   }
 
   const ideaId = row.dataset.ideaId;
   if (ideaId) {
-    const idea = ideas.find((item) => item.id === ideaId);
-    if (!idea) {
+    const record = ideaRecord(ideaId);
+    if (!record) {
       updateStatus(root, `Idea Board cannot find idea: ${ideaId}.`);
       return;
     }
-    idea.title = title;
-    idea.pitch = pitch;
-    idea.status = status;
-    idea.updated = today();
+    record.idea = idea;
+    record.pitch = pitch;
+    record.status = status;
+    record.updated = today();
     state.editingIdeaId = null;
-    updateStatus(root, `Updated ${idea.title}.`);
+    updateStatus(root, `Updated ${record.idea}.`);
   } else {
-    const baseId = slugifyTitle(title);
-    const id = ideas.some((idea) => idea.id === baseId) ? `${baseId}-${Date.now()}` : baseId;
-    ideas.push({ id, title, pitch, status, updated: today() });
-    notesByIdea.set(id, []);
-    state.selectedIdeaId = id;
+    const baseIdeaId = ideaIdFromText(idea);
+    const newIdeaId = ideaTable.some((record) => record.ideaId === baseIdeaId) ? `${baseIdeaId}-${Date.now()}` : baseIdeaId;
+    ideaTable.push({ ideaId: newIdeaId, userId, idea, pitch, status, updated: today() });
     state.addingIdea = false;
-    updateStatus(root, `Added ${title}.`);
+    updateStatus(root, `Added ${idea}.`);
   }
   render(root);
 }
 
 function saveNoteRow(root, row) {
-  const input = row.querySelector("[data-idea-board-note-input]");
-  const value = input?.value.trim();
+  const ideaId = row.dataset.ideaId;
+  const value = row.querySelector("[data-idea-board-note-input]")?.value.trim();
   if (!value) {
     updateStatus(root, "Enter note text before saving.");
     return;
   }
 
-  const notes = notesForIdea(state.selectedIdeaId);
   const noteId = row.dataset.noteId;
   if (noteId) {
-    const note = notes.find((item) => item.id === noteId);
-    if (!note) {
+    const record = noteTable.find((note) => note.noteId === noteId && note.ideaId === ideaId);
+    if (!record) {
       updateStatus(root, `Idea Board cannot find note: ${noteId}.`);
       return;
     }
-    note.note = value;
-    note.updated = today();
+    record.note = value;
+    record.updated = today();
     state.editingNoteId = null;
-    updateStatus(root, `Updated note for ${selectedIdea().title}.`);
+    updateStatus(root, "Updated note.");
   } else {
-    notes.unshift({
-      id: `note-${state.selectedIdeaId}-${Date.now()}`,
+    noteTable.push({
+      noteId: `note-${ideaId}-${Date.now()}`,
+      ideaId,
       note: value,
-      updated: today(),
       system: false,
+      updated: today(),
     });
-    state.addingNote = false;
-    updateStatus(root, `Added note for ${selectedIdea().title}.`);
+    state.addingNoteIdeaId = null;
+    updateStatus(root, "Added note.");
   }
   render(root);
 }
 
-function selectIdea(root, ideaId) {
-  if (!ideas.some((idea) => idea.id === ideaId)) {
-    updateStatus(root, `Idea Board cannot select missing idea: ${ideaId}.`);
+function toggleNotes(root, ideaId) {
+  if (!ideaRecord(ideaId)) {
+    updateStatus(root, `Idea Board cannot expand missing idea: ${ideaId}.`);
     return;
   }
-  state.selectedIdeaId = ideaId;
-  state.editingIdeaId = null;
+  const expanded = state.expandedIdeaId === ideaId;
+  state.expandedIdeaId = expanded ? null : ideaId;
   state.editingNoteId = null;
-  state.addingNote = false;
-  updateStatus(root, `Expanded notes for ${selectedIdea().title}.`);
+  state.addingNoteIdeaId = null;
+  updateStatus(root, expanded ? "Collapsed notes." : `Expanded notes for ${ideaRecord(ideaId).idea}.`);
   render(root);
 }
 
 function deleteIdea(root, ideaId) {
-  const index = ideas.findIndex((idea) => idea.id === ideaId);
+  const index = ideaTable.findIndex((record) => record.ideaId === ideaId);
   if (index < 0) {
     updateStatus(root, `Idea Board cannot delete missing idea: ${ideaId}.`);
     return;
   }
-  const [removed] = ideas.splice(index, 1);
-  notesByIdea.delete(ideaId);
-  if (state.selectedIdeaId === ideaId) {
-    state.selectedIdeaId = ideas[Math.min(index, ideas.length - 1)]?.id || "";
-    state.editingNoteId = null;
-    state.addingNote = false;
+  const [removed] = ideaTable.splice(index, 1);
+  for (let noteIndex = noteTable.length - 1; noteIndex >= 0; noteIndex -= 1) {
+    if (noteTable[noteIndex].ideaId === ideaId) noteTable.splice(noteIndex, 1);
   }
-  updateStatus(root, `Deleted ${removed.title}.`);
+  if (state.expandedIdeaId === ideaId) state.expandedIdeaId = null;
+  if (state.editingIdeaId === ideaId) state.editingIdeaId = null;
+  if (state.addingNoteIdeaId === ideaId) state.addingNoteIdeaId = null;
+  updateStatus(root, `Deleted ${removed.idea}.`);
   render(root);
 }
 
 function handleIdeaAction(root, actionControl) {
   const action = actionControl.dataset.ideaBoardIdeaAction;
   const row = actionControl.closest("tr");
-  const ideaId = actionControl.dataset.ideaBoardSelectIdea || row?.dataset.ideaBoardIdeaRow || row?.dataset.ideaId;
-  if (action === "select") {
-    selectIdea(root, ideaId);
+  const ideaId = row?.dataset.ideaBoardIdeaRow || row?.dataset.ideaId;
+  if (action === "add") {
+    state.addingIdea = true;
+    state.editingIdeaId = null;
+    updateStatus(root, "Adding a new idea.");
+    render(root);
   } else if (action === "edit") {
     state.editingIdeaId = ideaId;
     state.addingIdea = false;
-    state.editingNoteId = null;
-    state.addingNote = false;
-    updateStatus(root, `Editing ${ideas.find((idea) => idea.id === ideaId)?.title}.`);
+    updateStatus(root, `Editing ${ideaRecord(ideaId)?.idea}.`);
     render(root);
   } else if (action === "delete") {
     deleteIdea(root, ideaId);
@@ -418,29 +469,30 @@ function handleIdeaAction(root, actionControl) {
 function handleNoteAction(root, actionControl) {
   const action = actionControl.dataset.ideaBoardNoteAction;
   const row = actionControl.closest("tr");
+  const ideaId = actionControl.dataset.ideaBoardAddNote || row?.dataset.ideaId || state.expandedIdeaId;
   const noteId = row?.dataset.noteId;
   if (action === "add") {
-    state.addingNote = true;
+    state.expandedIdeaId = ideaId;
+    state.addingNoteIdeaId = ideaId;
     state.editingNoteId = null;
-    updateStatus(root, `Adding a note for ${selectedIdea().title}.`);
+    updateStatus(root, "Adding a note.");
     render(root);
   } else if (action === "edit") {
     state.editingNoteId = noteId;
-    state.addingNote = false;
-    updateStatus(root, `Editing note for ${selectedIdea().title}.`);
+    state.addingNoteIdeaId = null;
+    updateStatus(root, "Editing note.");
     render(root);
   } else if (action === "delete") {
-    const notes = notesForIdea(state.selectedIdeaId);
-    const index = notes.findIndex((note) => note.id === noteId && !note.system);
+    const index = noteTable.findIndex((note) => note.noteId === noteId && note.ideaId === ideaId && !note.system);
     if (index >= 0) {
-      notes.splice(index, 1);
-      updateStatus(root, `Deleted note for ${selectedIdea().title}.`);
+      noteTable.splice(index, 1);
+      updateStatus(root, "Deleted note.");
       render(root);
     }
   } else if (action === "cancel") {
     state.editingNoteId = null;
-    state.addingNote = false;
-    updateStatus(root, `Cancelled note edit for ${selectedIdea().title}.`);
+    state.addingNoteIdeaId = null;
+    updateStatus(root, "Cancelled note edit.");
     render(root);
   } else if (action === "save") {
     saveNoteRow(root, row);
@@ -448,18 +500,9 @@ function handleNoteAction(root, actionControl) {
 }
 
 function handleClick(root, event) {
-  const addIdea = event.target.closest("[data-idea-board-add-idea]");
-  if (addIdea) {
-    state.addingIdea = true;
-    state.editingIdeaId = null;
-    updateStatus(root, "Adding a new idea.");
-    render(root);
-    return;
-  }
-
-  const selectIdeaButton = event.target.closest("[data-idea-board-select-idea]");
-  if (selectIdeaButton) {
-    selectIdea(root, selectIdeaButton.dataset.ideaBoardSelectIdea);
+  const toggle = event.target.closest("[data-idea-board-toggle-notes]");
+  if (toggle) {
+    toggleNotes(root, toggle.dataset.ideaBoardToggleNotes);
     return;
   }
 

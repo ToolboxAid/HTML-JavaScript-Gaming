@@ -1,6 +1,6 @@
 # Zero-Browser Preflight Report
 
-Generated: 2026-06-20T06:06:50.126Z
+Generated: 2026-06-20T15:20:55.596Z
 Status: PASS
 
 ## Prevented Browser Launches
@@ -24,10 +24,10 @@ No deterministic setup failures.
 | unresolved fixtures | PASS | No unresolved fixture findings. |
 | unresolved helpers | PASS | Shared helper imports and naming ownership checked. |
 | targeted file manifests | PASS | workspace-contract:PASS |
-| persistent lane manifests | PASS | workspace-contract:INVALIDATED |
-| lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
-| dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
-| lane snapshots | PASS | workspace-contract:INVALIDATED |
+| persistent lane manifests | PASS | workspace-contract:REUSED |
+| lane warm-start reuse | PASS | workspace-contract:REUSED |
+| dependency hydration reuse | PASS | workspace-contract:REUSED |
+| lane snapshots | PASS | workspace-contract:REUSED |
 | manifest input graph expansion | PASS | No scoped discovery inputs escaped manifest ownership. |
 | scoped discovery | PASS | Targets: tests/playwright/tools/RootToolsFutureState.spec.mjs; helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs. |
 | invalid grep patterns | PASS | No invalid grep patterns. |

@@ -1,744 +1,572 @@
 diff --git a/docs_build/dev/codex_commands.md b/docs_build/dev/codex_commands.md
-index b10ca5027..2a6187c19 100644
+index 2a6187c19..d7d9ec8c6 100644
 --- a/docs_build/dev/codex_commands.md
 +++ b/docs_build/dev/codex_commands.md
-@@ -1,23 +1,39 @@
+@@ -1,20 +1,20 @@
  # Codex Commands
 
--- Read skill: repo-build.
--- Read skill: github:yeet.
--- Read source of truth: docs_build/dev/PROJECT_INSTRUCTIONS.md.
--- Re-read original Idea Board request from prior conversation and docs_build/pr/BUILD_PR_26170_002-idea-board-tool.md.
--- Inspected toolbox/_tool_template-v2/index.html.
--- Inspected toolbox/idea-board/index.html and toolbox/idea-board/index.js.
--- Inspected tests/playwright/tools/IdeaBoardTableNotes.spec.mjs.
--- Inspected tests/playwright/tools/ToolboxRoutePages.spec.mjs.
--- Inspected tests/playwright/tools/RootToolsFutureState.spec.mjs.
--- git fetch origin main --prune.
--- git pull --ff-only origin main.
--- git switch -c codex/fix-idea-board-pr-workflow.
--- node --check toolbox/idea-board/index.js.
--- node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs.
--- node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs.
--- node --check tests/playwright/tools/RootToolsFutureState.spec.mjs.
--- Inline HTML guard for toolbox/idea-board/index.html.
--- npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line.
--- npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches".
--- npm run test:workspace-v2.
--- git diff --check.
-+## PR
-+- `PR_26171_031-idea-board-inline-tree-grid-actions`
-+
-+## Source Documents
-+- `docs_build/dev/PROJECT_INSTRUCTIONS.md`
-+- `docs_build/pr/PLAN_PR_26171_031-idea-board-inline-tree-grid-actions.md`
-+- `docs_build/pr/BUILD_PR_26171_031-idea-board-inline-tree-grid-actions.md`
-+- `docs_build/pr/APPLY_PR_26171_031-idea-board-inline-tree-grid-actions.md`
-+
-+## Git Workflow Commands
-+- `git branch --show-current`
-+- `git status -sb`
-+- `git branch --list`
-+- `git pull --ff-only origin main`
-+- `git switch -c codex/pr-26171-031-idea-board-inline-tree-grid-actions`
-+
-+## Inspection Commands
-+- `Get-Content -Raw docs_build/dev/PROJECT_INSTRUCTIONS.md`
-+- `Get-Content -Raw toolbox/idea-board/index.html`
-+- `Get-Content -Raw toolbox/idea-board/index.js`
-+- `Get-Content -Raw tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`
-+- `Get-Content -Raw tests/playwright/tools/ToolboxRoutePages.spec.mjs`
-+
-+## Validation Commands
-+- `node --check toolbox/idea-board/index.js`
-+- `node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`
-+- `node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs`
-+- `node -e "<Idea Board inline HTML restriction guard>"`
-+- `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line`
-+- `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches"`
-+- `npm run test:workspace-v2`
-+
-+## Artifact Commands
-+- Generate `docs_build/dev/reports/codex_changed_files.txt`
-+- Generate `docs_build/dev/reports/codex_review.diff`
-+- Create `tmp/PR_26171_031-idea-board-inline-tree-grid-actions_delta.zip`
-+- Verify ZIP size and repo-relative paths
+ ## PR
+-- `PR_26171_031-idea-board-inline-tree-grid-actions`
++- `PR_26171_032-idea-board-accordion-table-model`
+
+ ## Source Documents
+ - `docs_build/dev/PROJECT_INSTRUCTIONS.md`
+-- `docs_build/pr/PLAN_PR_26171_031-idea-board-inline-tree-grid-actions.md`
+-- `docs_build/pr/BUILD_PR_26171_031-idea-board-inline-tree-grid-actions.md`
+-- `docs_build/pr/APPLY_PR_26171_031-idea-board-inline-tree-grid-actions.md`
++- `docs_build/pr/PLAN_PR_26171_032-idea-board-accordion-table-model.md`
++- `docs_build/pr/BUILD_PR_26171_032-idea-board-accordion-table-model.md`
++- `docs_build/pr/APPLY_PR_26171_032-idea-board-accordion-table-model.md`
+
+ ## Git Workflow Commands
+ - `git branch --show-current`
+ - `git status -sb`
+ - `git branch --list`
+ - `git pull --ff-only origin main`
+-- `git switch -c codex/pr-26171-031-idea-board-inline-tree-grid-actions`
++- `git switch -c codex/pr-26171-032-idea-board-accordion-table-model`
+
+ ## Inspection Commands
+ - `Get-Content -Raw docs_build/dev/PROJECT_INSTRUCTIONS.md`
+@@ -35,5 +35,5 @@
+ ## Artifact Commands
+ - Generate `docs_build/dev/reports/codex_changed_files.txt`
+ - Generate `docs_build/dev/reports/codex_review.diff`
+-- Create `tmp/PR_26171_031-idea-board-inline-tree-grid-actions_delta.zip`
++- Create `tmp/PR_26171_032-idea-board-accordion-table-model_delta.zip`
+ - Verify ZIP size and repo-relative paths
 diff --git a/docs_build/dev/commit_comment.txt b/docs_build/dev/commit_comment.txt
-index 82a8f44c3..564fbbd68 100644
+index 564fbbd68..684187bdb 100644
 --- a/docs_build/dev/commit_comment.txt
 +++ b/docs_build/dev/commit_comment.txt
 @@ -1,5 +1,5 @@
--PR_26171_030 idea board workflow fix
-+PR_26171_031 idea board inline tree grid actions
+-PR_26171_031 idea board inline tree grid actions
++PR_26171_032 idea board accordion table model
 
--- fix Idea Board selected-idea notes context
--- update targeted Playwright and workspace-v2 validation harness
--- refresh Idea Board workflow docs and reports
-+- render selected idea notes directly under the idea row
-+- add inline idea and note add/edit/delete workflows
-+- update targeted Idea Board Playwright coverage and reports
-diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 4bd294215..40c16ff54 100644
---- a/docs_build/dev/reports/codex_changed_files.txt
-+++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,17 +1,17 @@
--# Codex Changed Files - PR_26171_030-idea-board-workflow-fix
-+# Codex Changed Files - PR_26171_031-idea-board-inline-tree-grid-actions
-
- ## Git Workflow
--- Branch: `codex/fix-idea-board-pr-workflow`
--- Base: `origin/main`
--- PR URL: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/4
--- Merge conflicts: resolved in `docs_build/dev/reports/codex_changed_files.txt` and `docs_build/dev/reports/codex_review.diff` by regenerating both reports from the final `origin/main` diff.
--- Commit hash, push result, merge result, and final main commit: reported after commit, push, PR merge, and final main pull.
-+- Current branch: `codex/pr-26171-031-idea-board-inline-tree-grid-actions`
-+- Expected starting branch: `main` (PASS before branch creation).
-+- Created branch: `codex/pr-26171-031-idea-board-inline-tree-grid-actions`.
-+- Push result: pending until after commit.
-+- PR URL: pending until after push.
-+- Merge result: pending until after PR validation/merge.
-+- Final main commit: pending until after merge and final pull.
-
- ## Changed Files
- - docs_build/dev/codex_commands.md
- - docs_build/dev/commit_comment.txt
--- docs_build/dev/reports/codex_changed_files.txt
--- docs_build/dev/reports/codex_review.diff
- - docs_build/dev/reports/coverage_changed_js_guardrail.txt
- - docs_build/dev/reports/dependency_gating_report.md
- - docs_build/dev/reports/dependency_hydration_reuse_report.md
-@@ -43,23 +43,7 @@
- - docs_build/dev/reports/testing_lane_execution_report.md
- - docs_build/dev/reports/validation_cache_report.md
- - docs_build/dev/reports/zero_browser_preflight_report.md
--- docs_build/pr/APPLY_PR_26171_026-idea-board-template-cleanup.md
--- docs_build/pr/APPLY_PR_26171_027-idea-board-table-work-surface.md
--- docs_build/pr/APPLY_PR_26171_028-idea-board-notes-table-governance.md
--- docs_build/pr/APPLY_PR_26171_029-idea-board-validation-playwright.md
--- docs_build/pr/APPLY_PR_26171_030-idea-board-workflow-fix.md
--- docs_build/pr/BUILD_PR_26171_026-idea-board-template-cleanup.md
--- docs_build/pr/BUILD_PR_26171_027-idea-board-table-work-surface.md
--- docs_build/pr/BUILD_PR_26171_028-idea-board-notes-table-governance.md
--- docs_build/pr/BUILD_PR_26171_029-idea-board-validation-playwright.md
--- docs_build/pr/BUILD_PR_26171_030-idea-board-workflow-fix.md
--- docs_build/pr/PLAN_PR_26171_026-idea-board-template-cleanup.md
--- docs_build/pr/PLAN_PR_26171_027-idea-board-table-work-surface.md
--- docs_build/pr/PLAN_PR_26171_028-idea-board-notes-table-governance.md
--- docs_build/pr/PLAN_PR_26171_029-idea-board-validation-playwright.md
--- docs_build/pr/PLAN_PR_26171_030-idea-board-workflow-fix.md
- - tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
--- tests/playwright/tools/RootToolsFutureState.spec.mjs
- - tests/playwright/tools/ToolboxRoutePages.spec.mjs
- - toolbox/idea-board/index.html
- - toolbox/idea-board/index.js
-@@ -67,8 +51,6 @@
- ## Name Status
- - M	docs_build/dev/codex_commands.md
- - M	docs_build/dev/commit_comment.txt
--- M	docs_build/dev/reports/codex_changed_files.txt
--- M	docs_build/dev/reports/codex_review.diff
- - M	docs_build/dev/reports/coverage_changed_js_guardrail.txt
- - M	docs_build/dev/reports/dependency_gating_report.md
- - M	docs_build/dev/reports/dependency_hydration_reuse_report.md
-@@ -100,46 +82,42 @@
- - M	docs_build/dev/reports/testing_lane_execution_report.md
- - M	docs_build/dev/reports/validation_cache_report.md
- - M	docs_build/dev/reports/zero_browser_preflight_report.md
--- A	docs_build/pr/APPLY_PR_26171_026-idea-board-template-cleanup.md
--- A	docs_build/pr/APPLY_PR_26171_027-idea-board-table-work-surface.md
--- A	docs_build/pr/APPLY_PR_26171_028-idea-board-notes-table-governance.md
--- A	docs_build/pr/APPLY_PR_26171_029-idea-board-validation-playwright.md
--- A	docs_build/pr/APPLY_PR_26171_030-idea-board-workflow-fix.md
--- A	docs_build/pr/BUILD_PR_26171_026-idea-board-template-cleanup.md
--- A	docs_build/pr/BUILD_PR_26171_027-idea-board-table-work-surface.md
--- A	docs_build/pr/BUILD_PR_26171_028-idea-board-notes-table-governance.md
--- A	docs_build/pr/BUILD_PR_26171_029-idea-board-validation-playwright.md
--- A	docs_build/pr/BUILD_PR_26171_030-idea-board-workflow-fix.md
--- A	docs_build/pr/PLAN_PR_26171_026-idea-board-template-cleanup.md
--- A	docs_build/pr/PLAN_PR_26171_027-idea-board-table-work-surface.md
--- A	docs_build/pr/PLAN_PR_26171_028-idea-board-notes-table-governance.md
--- A	docs_build/pr/PLAN_PR_26171_029-idea-board-validation-playwright.md
--- A	docs_build/pr/PLAN_PR_26171_030-idea-board-workflow-fix.md
--- A	tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
--- M	tests/playwright/tools/RootToolsFutureState.spec.mjs
-+- M	tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
- - M	tests/playwright/tools/ToolboxRoutePages.spec.mjs
- - M	toolbox/idea-board/index.html
--- A	toolbox/idea-board/index.js
--
--## Copied Files Verified
--- PASS: Re-read `toolbox/_tool_template-v2/index.html`; verified Theme V2 stylesheet, header/footer partials, left/center/right `tool-workspace tool-workspace--wide` shell, accordion stack, ToolDisplayMode host, and external Theme V2 scripts.
--- PASS: Verified `toolbox/_tool_template-v2` currently contains `index.html` only; there was no template-local JavaScript file to copy.
--- PASS: Verified `toolbox/idea-board/index.html` adapts the template structure with Theme V2 CSS, header/footer partials, left and right tool columns, center panel, ToolDisplayMode host, accordions, and external scripts.
--- PASS: Verified no inline `<script>`, `<style>`, `style=`, or inline event handlers in `toolbox/idea-board/index.html`.
-+- M	toolbox/idea-board/index.js
-
- ## Requirement Evidence
--- PASS 026: Idea Board is migrated to Tool Template V2 / Theme V2 shell with clean left/center/right layout and external-only JavaScript/CSS.
--- PASS 027: Idea Board is table-first; the primary work surface is `data-idea-board-table`, with selected idea row controls and no form-first primary workflow.
--- PASS 028: Notes are scoped to the selected idea through `data-idea-board-selected-title`, `data-idea-board-notes-table`, and selected idea state in `toolbox/idea-board/index.js`; Add Note opens an inline row inside the selected notes table; creator notes expose Edit/Delete on the right; system notes expose neither Edit nor Delete; note metadata is table columns.
--- PASS 029: Targeted Playwright coverage validates table columns, selected idea switching, scoped note add/edit/delete, system note lockout, placeholder-only Create Project, and no mutating API calls.
--- PASS 030: Workspace V2 validation harness pins public API/site env to the ephemeral test server and updates current registry/count expectations so the required workspace lane passes on the rebased branch.
-+- PASS: Main Idea Board table removes the Owner column.
-+- PASS: Main table columns are Idea, Pitch, Status, Updated, Notes, Actions.
-+- PASS: Notes column shows note counts such as `2 Notes` and `0 Notes`.
-+- PASS: Selected idea expands as `data-idea-board-expanded-row` immediately after its matching `data-idea-board-idea-row`.
-+- PASS: Detached `Notes for Sky Orchard` section was removed.
-+- PASS: Visible `Selected idea context` text was removed.
-+- PASS: Notes subtable no longer shows Type, Created By, Created, or Updated columns.
-+- PASS: Notes subtable visible columns are Note and Actions.
-+- PASS: Idea normal rows expose Edit and Delete in the Actions column.
-+- PASS: Idea edit/add rows expose Save and Cancel.
-+- PASS: Idea edit Status field is a `select` dropdown.
-+- PASS: Note normal rows expose Edit and Delete when deletion is allowed.
-+- PASS: System notes expose Edit and do not expose Delete.
-+- PASS: Note edit/add rows expose Save and Cancel.
-+- PASS: Add Idea opens an inline idea row inside the main table.
-+- PASS: Add Note opens an inline note row inside the selected idea expanded row.
-+- PASS: The implementation changes runtime HTML/JS and Playwright tests; this is not docs-only work.
-+- PASS: No detached notes panels were introduced.
-+- PASS: The primary workflow remains table-first, not form-first.
-
--## Validation After Conflict Resolution
-+## Validation
- - PASS: `node --check toolbox/idea-board/index.js`.
- - PASS: `node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`.
- - PASS: `node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs`.
--- PASS: `node --check tests/playwright/tools/RootToolsFutureState.spec.mjs`.
- - PASS: Idea Board inline HTML guard found no inline `<script>`, `<style>`, `style=`, or inline event handlers.
- - PASS: `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line` (1 passed).
- - PASS: `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches"` (1 passed).
- - PASS: `npm run test:workspace-v2` (5 passed).
-+- SKIP: Full samples smoke was not run; samples are not in scope and the user explicitly prohibited full samples smoke.
-+
-+## ZIP
-+- Path: `tmp/PR_26171_031-idea-board-inline-tree-grid-actions_delta.zip`.
-+- Size and contents: reported after final ZIP generation.
-diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 7b1c51f19..e4434cc48 100644
---- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,7 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
- Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
-
- Changed runtime JS files considered:
--(100%) none changed - no changed runtime JS files
-+(0%) toolbox/idea-board/index.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-
- Guardrail warnings:
--(100%) none changed - no changed runtime JS files
-+(0%) toolbox/idea-board/index.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-- render selected idea notes directly under the idea row
+-- add inline idea and note add/edit/delete workflows
+-- update targeted Idea Board Playwright coverage and reports
++- reshape Idea Board in-page data into idea and note table records
++- default to collapsed notes with row-level expand/collapse controls
++- update targeted Playwright coverage and reports
 diff --git a/docs_build/dev/reports/dependency_gating_report.md b/docs_build/dev/reports/dependency_gating_report.md
-index 49a5f1867..7af58fcab 100644
+index 7af58fcab..5e48503d3 100644
 --- a/docs_build/dev/reports/dependency_gating_report.md
 +++ b/docs_build/dev/reports/dependency_gating_report.md
 @@ -1,6 +1,6 @@
  # Dependency Gating Report
 
--Generated: 2026-06-20T05:44:40.304Z
-+Generated: 2026-06-20T06:06:50.123Z
+-Generated: 2026-06-20T06:06:50.123Z
++Generated: 2026-06-20T15:20:55.593Z
  Status: PASS
 
  ## Gate Order
 diff --git a/docs_build/dev/reports/dependency_hydration_reuse_report.md b/docs_build/dev/reports/dependency_hydration_reuse_report.md
-index 3b69608e4..d012874ad 100644
+index d012874ad..aae36d9f8 100644
 --- a/docs_build/dev/reports/dependency_hydration_reuse_report.md
 +++ b/docs_build/dev/reports/dependency_hydration_reuse_report.md
-@@ -1,6 +1,6 @@
+@@ -1,22 +1,22 @@
  # Dependency Hydration Reuse Report
 
--Generated: 2026-06-20T05:44:40.305Z
-+Generated: 2026-06-20T06:06:50.124Z
+-Generated: 2026-06-20T06:06:50.124Z
++Generated: 2026-06-20T15:20:55.594Z
  Status: PASS
 
  ## Summary
+
+-Reused dependency hydration: 0
+-Invalidated dependency hydration: 1
++Reused dependency hydration: 1
++Invalidated dependency hydration: 0
+ Generated dependency hydration: 0
+-Prevented dependency graph hydration: 0
+-Prevented helper resolution passes: 0
++Prevented dependency graph hydration: 1
++Prevented helper resolution passes: 4
+ Prevented fixture ownership traversal: 0
+
+ ## Hydration Decisions
+
+ | Lane | Status | Helpers | Fixtures | Imports | Dependency Hydration Hash | Reason |
+ | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | INVALIDATED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | c2315ccbd4c09b9c | Dependency hydration was refreshed after warm-start invalidation. |
++| workspace-contract | REUSED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | c2315ccbd4c09b9c | Dependency hydration reused from validated warm-start state. |
+
+ ## Safeguards
+
 diff --git a/docs_build/dev/reports/execution_graph_reuse_report.md b/docs_build/dev/reports/execution_graph_reuse_report.md
-index da0a520c4..ba09cc24e 100644
+index ba09cc24e..e00e0041d 100644
 --- a/docs_build/dev/reports/execution_graph_reuse_report.md
 +++ b/docs_build/dev/reports/execution_graph_reuse_report.md
-@@ -1,6 +1,6 @@
+@@ -1,22 +1,22 @@
  # Execution Graph Reuse Report
 
--Generated: 2026-06-20T05:44:40.305Z
-+Generated: 2026-06-20T06:06:50.124Z
+-Generated: 2026-06-20T06:06:50.124Z
++Generated: 2026-06-20T15:20:55.594Z
  Status: PASS
 
  ## Summary
-@@ -16,7 +16,7 @@ Prevented targeted scheduling work: 0
+
+-Reused execution graphs: 0
+-Prevented graph rebuilds: 0
+-Prevented redundant dependency traversal: 0
+-Prevented fixture/helper graph assembly: 0
+-Prevented manifest traversal: 0
+-Prevented targeted scheduling work: 0
++Reused execution graphs: 1
++Prevented graph rebuilds: 1
++Prevented redundant dependency traversal: 1
++Prevented fixture/helper graph assembly: 4
++Prevented manifest traversal: 1
++Prevented targeted scheduling work: 1
+
+ ## Execution Graph Decisions
 
  | Lane | Status | Snapshot Status | Execution Graph Hash | Reason |
  | --- | --- | --- | --- | --- |
--| workspace-contract | INVALIDATED | INVALIDATED | 6757c88f8a32946d | Lane snapshot is part of the selected targeted execution graph. |
-+| workspace-contract | INVALIDATED | INVALIDATED | 252760eee0f3dab4 | Lane snapshot is part of the selected targeted execution graph. |
+-| workspace-contract | INVALIDATED | INVALIDATED | 252760eee0f3dab4 | Lane snapshot is part of the selected targeted execution graph. |
++| workspace-contract | REUSED | REUSED | 252760eee0f3dab4 | Lane snapshot is part of the selected targeted execution graph. |
 
  ## Safeguards
 
 diff --git a/docs_build/dev/reports/failure_fingerprint_report.md b/docs_build/dev/reports/failure_fingerprint_report.md
-index 9179b5709..61b595d34 100644
+index 61b595d34..49be9d6ee 100644
 --- a/docs_build/dev/reports/failure_fingerprint_report.md
 +++ b/docs_build/dev/reports/failure_fingerprint_report.md
 @@ -1,6 +1,6 @@
  # Failure Fingerprint Report
 
--Generated: 2026-06-20T05:45:42.507Z
-+Generated: 2026-06-20T06:07:57.208Z
+-Generated: 2026-06-20T06:07:57.208Z
++Generated: 2026-06-20T15:21:49.844Z
  Status: PASS
 
  ## Summary
 diff --git a/docs_build/dev/reports/filesystem_scan_reduction_report.md b/docs_build/dev/reports/filesystem_scan_reduction_report.md
-index 7f57d454e..34ba5359b 100644
+index 34ba5359b..772bfd1d3 100644
 --- a/docs_build/dev/reports/filesystem_scan_reduction_report.md
 +++ b/docs_build/dev/reports/filesystem_scan_reduction_report.md
 @@ -1,6 +1,6 @@
  # Filesystem Scan Reduction Report
 
--Generated: 2026-06-20T05:44:40.265Z
-+Generated: 2026-06-20T06:06:50.100Z
+-Generated: 2026-06-20T06:06:50.100Z
++Generated: 2026-06-20T15:20:55.568Z
  Status: PASS
 
  ## Scan Enforcement
 diff --git a/docs_build/dev/reports/incremental_validation_report.md b/docs_build/dev/reports/incremental_validation_report.md
-index 82bbdd422..06591738f 100644
+index 06591738f..3d8de6e74 100644
 --- a/docs_build/dev/reports/incremental_validation_report.md
 +++ b/docs_build/dev/reports/incremental_validation_report.md
-@@ -1,6 +1,6 @@
+@@ -1,24 +1,24 @@
  # Incremental Validation Report
 
--Generated: 2026-06-20T05:44:40.307Z
-+Generated: 2026-06-20T06:06:50.125Z
+-Generated: 2026-06-20T06:06:50.125Z
++Generated: 2026-06-20T15:20:55.595Z
  Status: PASS
 
  ## Reuse Summary
-@@ -18,7 +18,7 @@ Prevented fixture resolution passes: 0
+
+-Reused manifests: 0
+-Invalidated manifests: 1
++Reused manifests: 1
++Invalidated manifests: 0
+ Generated manifests: 0
+ Skipped manifests: 0
+-Prevented lane regeneration: 0
+-Prevented discovery scans: 0
+-Prevented helper resolution passes: 0
++Prevented lane regeneration: 1
++Prevented discovery scans: 1
++Prevented helper resolution passes: 4
+ Prevented fixture resolution passes: 0
+
+ ## Incremental Decisions
 
  | Lane | Decision | Invalidated By | Runtime Savings Observation |
  | --- | --- | --- | --- |
--| workspace-contract | INVALIDATED | Persistent manifest dependency graph hash changed for workspace-contract.; Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. | Manifest was regenerated or skipped; no reuse savings for this lane. |
-+| workspace-contract | INVALIDATED | Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. | Manifest was regenerated or skipped; no reuse savings for this lane. |
+-| workspace-contract | INVALIDATED | Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. | Manifest was regenerated or skipped; no reuse savings for this lane. |
++| workspace-contract | REUSED | unchanged inputs | Reused 1 test input(s), 4 helper(s), and 0 fixture(s). |
 
  ## Invalidation Rules
 
 diff --git a/docs_build/dev/reports/lane_compilation_report.md b/docs_build/dev/reports/lane_compilation_report.md
-index 1d4d53418..b3c4486ba 100644
+index b3c4486ba..0d6402395 100644
 --- a/docs_build/dev/reports/lane_compilation_report.md
 +++ b/docs_build/dev/reports/lane_compilation_report.md
 @@ -1,6 +1,6 @@
  # Lane Compilation Report
 
--Generated: 2026-06-20T05:44:40.303Z
-+Generated: 2026-06-20T06:06:50.123Z
+-Generated: 2026-06-20T06:06:50.123Z
++Generated: 2026-06-20T15:20:55.593Z
  Status: PASS
 
  ## Lane Graph
 diff --git a/docs_build/dev/reports/lane_deduplication_report.md b/docs_build/dev/reports/lane_deduplication_report.md
-index 473fb4f8d..1381d00a6 100644
+index 1381d00a6..0e95ceab2 100644
 --- a/docs_build/dev/reports/lane_deduplication_report.md
 +++ b/docs_build/dev/reports/lane_deduplication_report.md
 @@ -1,6 +1,6 @@
  # Lane Deduplication Report
 
--Generated: 2026-06-20T05:44:40.304Z
-+Generated: 2026-06-20T06:06:50.124Z
+-Generated: 2026-06-20T06:06:50.124Z
++Generated: 2026-06-20T15:20:55.593Z
  Status: PASS
 
  ## Summary
 diff --git a/docs_build/dev/reports/lane_input_validation_report.md b/docs_build/dev/reports/lane_input_validation_report.md
-index d1f0ff8e5..2adc73f34 100644
+index 2adc73f34..3621011ff 100644
 --- a/docs_build/dev/reports/lane_input_validation_report.md
 +++ b/docs_build/dev/reports/lane_input_validation_report.md
 @@ -1,6 +1,6 @@
  # Lane Input Validation Report
 
--Generated: 2026-06-20T05:44:40.307Z
-+Generated: 2026-06-20T06:06:50.126Z
+-Generated: 2026-06-20T06:06:50.126Z
++Generated: 2026-06-20T15:20:55.595Z
  Status: PASS
 
  ## Input Files
-diff --git a/docs_build/dev/reports/lane_manifests/workspace-contract.json b/docs_build/dev/reports/lane_manifests/workspace-contract.json
-index be4e484e3..3cb3984c0 100644
---- a/docs_build/dev/reports/lane_manifests/workspace-contract.json
-+++ b/docs_build/dev/reports/lane_manifests/workspace-contract.json
-@@ -11,7 +11,7 @@
-     "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
-     "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
-     "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
--    "tests/playwright/tools/RootToolsFutureState.spec.mjs": "00b5e5d5872cc433"
-+    "tests/playwright/tools/RootToolsFutureState.spec.mjs": "39da9b89bd793366"
-   },
-   "fixtures": [],
-   "helpers": [
-@@ -30,15 +30,15 @@
-     "tests/helpers/playwrightV8CoverageReporter.mjs",
-     "tests/helpers/workspaceV2CoverageReporter.mjs"
-   ],
--  "inputHash": "7b6ea10bf1c6c8ab",
-+  "inputHash": "4b520ec67663da30",
-   "lane": "workspace-contract",
-   "laneDefinitionHash": "c93cc3ce4d3672a0",
--  "manifestHash": "b1d93cf51c8a9dd5",
-+  "manifestHash": "2974ef9fd87603c5",
-   "ownership": "tools",
-   "tests": [
-     "tests/playwright/tools/RootToolsFutureState.spec.mjs"
-   ],
-   "version": 1,
--  "generatedAt": "2026-06-20T05:44:38.843Z",
-+  "generatedAt": "2026-06-20T06:06:49.056Z",
-   "source": "generated"
- }
 diff --git a/docs_build/dev/reports/lane_runtime_optimization_report.md b/docs_build/dev/reports/lane_runtime_optimization_report.md
-index 082a2a78a..e22d4dbe7 100644
+index e22d4dbe7..c2e047565 100644
 --- a/docs_build/dev/reports/lane_runtime_optimization_report.md
 +++ b/docs_build/dev/reports/lane_runtime_optimization_report.md
-@@ -1,6 +1,6 @@
+@@ -1,16 +1,16 @@
  # Lane Runtime Optimization Report
 
--Generated: 2026-06-20T05:44:40.304Z
-+Generated: 2026-06-20T06:06:50.124Z
+-Generated: 2026-06-20T06:06:50.124Z
++Generated: 2026-06-20T15:20:55.593Z
  Status: PASS
 
  ## Runtime Cost Summary
+
+ Reused runtime sessions: 0
+-Reused lane snapshots: 0
+-Reused warm-start lanes: 0
+-Reused dependency hydration: 0
+-Prevented graph rebuilds: 0
+-Prevented redundant initialization: 0
++Reused lane snapshots: 1
++Reused warm-start lanes: 1
++Reused dependency hydration: 1
++Prevented graph rebuilds: 1
++Prevented redundant initialization: 1
+ Prevented redundant browser launches: 0
+ Prevented redundant lane execution: 14
+ Baseline Playwright/browser launches: 1
+@@ -28,7 +28,7 @@ No zero-browser, compilation, or dependency blockers were found.
+
+ | Lane | Snapshot | Warm Start | Hydration | Baseline Browser Launches | Scheduled Browser Launches | Commands | Reason |
+ | --- | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | INVALIDATED | INVALIDATED | INVALIDATED | 1 | 1 | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
++| workspace-contract | REUSED | REUSED | REUSED | 1 | 1 | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
+
+ ## Runtime Savings Observations
+
 diff --git a/docs_build/dev/reports/lane_snapshot_report.md b/docs_build/dev/reports/lane_snapshot_report.md
-index 538dcfe7f..bf798861a 100644
+index bf798861a..8bb3a541c 100644
 --- a/docs_build/dev/reports/lane_snapshot_report.md
 +++ b/docs_build/dev/reports/lane_snapshot_report.md
-@@ -1,6 +1,6 @@
+@@ -1,23 +1,23 @@
  # Lane Snapshot Report
 
--Generated: 2026-06-20T05:44:40.305Z
-+Generated: 2026-06-20T06:06:50.124Z
+-Generated: 2026-06-20T06:06:50.124Z
++Generated: 2026-06-20T15:20:55.594Z
  Status: PASS
  Snapshot directory: docs_build/dev/reports/lane_snapshots
 
-@@ -17,7 +17,7 @@ Prevented manifest traversal: 0
+ ## Summary
+
+-Reused lane snapshots: 0
+-Invalidated snapshots: 1
++Reused lane snapshots: 1
++Invalidated snapshots: 0
+ Generated snapshots: 0
+ Skipped snapshots: 0
+-Prevented graph rebuilds: 0
+-Prevented manifest traversal: 0
++Prevented graph rebuilds: 1
++Prevented manifest traversal: 1
+
+ ## Snapshot Decisions
 
  | Lane | Status | Snapshot Path | Manifest Hash | Dependency Graph Hash | Helper Graph Hash | Fixture Graph Hash | Runtime Config Hash | Execution Graph Hash | Snapshot Hash | Reason |
  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | b1d93cf51c8a9dd5 | 7ddc1041bdb425d1 | 7d3db838f9f780e0 | 6c4fac7630b0b6f3 | 32fb60598a4cb1ee | 6757c88f8a32946d | 61cca917cea6be03 | Lane snapshot dependencyGraphHash changed for workspace-contract.; Lane snapshot executionGraphHash changed for workspace-contract.; Lane snapshot inputHash changed for workspace-contract.; Lane snapshot manifestHash changed for workspace-contract.; Lane snapshot snapshotHash changed for workspace-contract.; Lane snapshot warmStartHash changed for workspace-contract. |
-+| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | 2974ef9fd87603c5 | 7ddc1041bdb425d1 | 7d3db838f9f780e0 | 6c4fac7630b0b6f3 | 32fb60598a4cb1ee | 252760eee0f3dab4 | e0858e78c3c58246 | Lane snapshot executionGraphHash changed for workspace-contract.; Lane snapshot inputHash changed for workspace-contract.; Lane snapshot manifestHash changed for workspace-contract.; Lane snapshot snapshotHash changed for workspace-contract.; Lane snapshot warmStartHash changed for workspace-contract. |
+-| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | 2974ef9fd87603c5 | 7ddc1041bdb425d1 | 7d3db838f9f780e0 | 6c4fac7630b0b6f3 | 32fb60598a4cb1ee | 252760eee0f3dab4 | e0858e78c3c58246 | Lane snapshot executionGraphHash changed for workspace-contract.; Lane snapshot inputHash changed for workspace-contract.; Lane snapshot manifestHash changed for workspace-contract.; Lane snapshot snapshotHash changed for workspace-contract.; Lane snapshot warmStartHash changed for workspace-contract. |
++| workspace-contract | REUSED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | 2974ef9fd87603c5 | 7ddc1041bdb425d1 | 7d3db838f9f780e0 | 6c4fac7630b0b6f3 | 32fb60598a4cb1ee | 252760eee0f3dab4 | e0858e78c3c58246 | Targeted files, manifest, dependency graph, helper graph, fixture graph, ownership, lane config, and runtime config are unchanged. |
 
  ## Snapshot Validation Findings
 
-diff --git a/docs_build/dev/reports/lane_snapshots/workspace-contract.json b/docs_build/dev/reports/lane_snapshots/workspace-contract.json
-index 33f41852b..ed9767a8d 100644
---- a/docs_build/dev/reports/lane_snapshots/workspace-contract.json
-+++ b/docs_build/dev/reports/lane_snapshots/workspace-contract.json
-@@ -26,7 +26,7 @@
-     ]
-   },
-   "dependencyGraphHash": "7ddc1041bdb425d1",
--  "executionGraphHash": "6757c88f8a32946d",
-+  "executionGraphHash": "252760eee0f3dab4",
-   "fixtureGraph": {
-     "fixtureHashes": {},
-     "fixtures": []
-@@ -47,7 +47,7 @@
-     ]
-   },
-   "helperGraphHash": "7d3db838f9f780e0",
--  "inputHash": "7b6ea10bf1c6c8ab",
-+  "inputHash": "4b520ec67663da30",
-   "lane": "workspace-contract",
-   "laneCompilationStatus": "PASS",
-   "laneDefinitionHash": "c93cc3ce4d3672a0",
-@@ -61,7 +61,7 @@
-       "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
-       "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
-       "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
--      "tests/playwright/tools/RootToolsFutureState.spec.mjs": "00b5e5d5872cc433"
-+      "tests/playwright/tools/RootToolsFutureState.spec.mjs": "39da9b89bd793366"
-     },
-     "fixtures": [],
-     "helpers": [
-@@ -80,14 +80,14 @@
-       "tests/helpers/playwrightV8CoverageReporter.mjs",
-       "tests/helpers/workspaceV2CoverageReporter.mjs"
-     ],
--    "manifestHash": "b1d93cf51c8a9dd5",
-+    "manifestHash": "2974ef9fd87603c5",
-     "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
-     "source": "generated",
-     "tests": [
-       "tests/playwright/tools/RootToolsFutureState.spec.mjs"
-     ]
-   },
--  "manifestHash": "b1d93cf51c8a9dd5",
-+  "manifestHash": "2974ef9fd87603c5",
-   "ownership": "tools",
-   "runtimeConfiguration": {
-     "affectedSurface": "Root tools future-state navigation and Tool Template V2 contract",
-@@ -114,8 +114,8 @@
-     "requiresSamplesFlag": false
-   },
-   "runtimeConfigurationHash": "32fb60598a4cb1ee",
--  "snapshotHash": "61cca917cea6be03",
-+  "snapshotHash": "e0858e78c3c58246",
-   "version": 1,
--  "warmStartHash": "20a97bb7208b833b",
--  "generatedAt": "2026-06-20T05:44:40.293Z"
-+  "warmStartHash": "6a00e8e8eca552d3",
-+  "generatedAt": "2026-06-20T06:06:50.119Z"
- }
 diff --git a/docs_build/dev/reports/lane_warm_start_report.md b/docs_build/dev/reports/lane_warm_start_report.md
-index b34070c86..393df432e 100644
+index 393df432e..f4420632b 100644
 --- a/docs_build/dev/reports/lane_warm_start_report.md
 +++ b/docs_build/dev/reports/lane_warm_start_report.md
-@@ -1,6 +1,6 @@
+@@ -1,23 +1,23 @@
  # Lane Warm-Start Report
 
--Generated: 2026-06-20T05:44:40.305Z
-+Generated: 2026-06-20T06:06:50.124Z
+-Generated: 2026-06-20T06:06:50.124Z
++Generated: 2026-06-20T15:20:55.593Z
  Status: PASS
  Warm-start directory: docs_build/dev/reports/lane_warm_starts
 
-@@ -17,7 +17,7 @@ Prevented lane graph assembly: 0
+ ## Summary
+
+-Reused warm-start lanes: 0
+-Invalidated warm-start states: 1
++Reused warm-start lanes: 1
++Invalidated warm-start states: 0
+ Generated warm-start states: 0
+ Skipped warm-start states: 0
+-Prevented redundant initialization: 0
+-Prevented lane graph assembly: 0
++Prevented redundant initialization: 1
++Prevented lane graph assembly: 1
+
+ ## Warm-Start Decisions
 
  | Lane | Status | Warm-Start Path | Manifest Hash | Warm-Start Hash | Dependency Hydration Hash | Reason |
  | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | b1d93cf51c8a9dd5 | 20a97bb7208b833b | c2315ccbd4c09b9c | Warm-start dependencyGraphHash changed for workspace-contract.; Warm-start dependencyHydrationHash changed for workspace-contract.; Warm-start inputHash changed for workspace-contract.; Warm-start manifestHash changed for workspace-contract.; Warm-start warmStartHash changed for workspace-contract. |
-+| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | 2974ef9fd87603c5 | 6a00e8e8eca552d3 | c2315ccbd4c09b9c | Warm-start inputHash changed for workspace-contract.; Warm-start manifestHash changed for workspace-contract.; Warm-start warmStartHash changed for workspace-contract. |
+-| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | 2974ef9fd87603c5 | 6a00e8e8eca552d3 | c2315ccbd4c09b9c | Warm-start inputHash changed for workspace-contract.; Warm-start manifestHash changed for workspace-contract.; Warm-start warmStartHash changed for workspace-contract. |
++| workspace-contract | REUSED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | 2974ef9fd87603c5 | 6a00e8e8eca552d3 | c2315ccbd4c09b9c | Manifest inputs, dependency graph, ownership metadata, helper placement, fixture placement, and lane configuration are unchanged. |
 
  ## Fast-Fail Safeguards
 
-diff --git a/docs_build/dev/reports/lane_warm_starts/workspace-contract.json b/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
-index 8bedb337b..525610984 100644
---- a/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
-+++ b/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
-@@ -39,15 +39,15 @@
-     ]
-   },
-   "dependencyHydrationHash": "c2315ccbd4c09b9c",
--  "inputHash": "7b6ea10bf1c6c8ab",
-+  "inputHash": "4b520ec67663da30",
-   "lane": "workspace-contract",
-   "laneConfigHash": "990389bf77bad0d7",
-   "laneDefinitionHash": "c93cc3ce4d3672a0",
--  "manifestHash": "b1d93cf51c8a9dd5",
-+  "manifestHash": "2974ef9fd87603c5",
-   "ownership": "tools",
--  "warmStartHash": "20a97bb7208b833b",
-+  "warmStartHash": "6a00e8e8eca552d3",
-   "version": 1,
--  "generatedAt": "2026-06-20T05:44:38.862Z",
-+  "generatedAt": "2026-06-20T06:06:49.066Z",
-   "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
-   "sourceManifest": "generated"
- }
 diff --git a/docs_build/dev/reports/monolith_trigger_removal_report.md b/docs_build/dev/reports/monolith_trigger_removal_report.md
-index d10053b47..846465261 100644
+index 846465261..720b0c3f7 100644
 --- a/docs_build/dev/reports/monolith_trigger_removal_report.md
 +++ b/docs_build/dev/reports/monolith_trigger_removal_report.md
 @@ -1,6 +1,6 @@
  # Monolith Trigger Removal Report
 
--Generated: 2026-06-20T05:45:42.508Z
-+Generated: 2026-06-20T06:07:57.210Z
+-Generated: 2026-06-20T06:07:57.210Z
++Generated: 2026-06-20T15:21:49.846Z
  Status: PASS
 
  ## Removed Broad Execution Triggers
 diff --git a/docs_build/dev/reports/persistent_lane_manifest_report.md b/docs_build/dev/reports/persistent_lane_manifest_report.md
-index 13159be30..73dea4c16 100644
+index 73dea4c16..d131d40ba 100644
 --- a/docs_build/dev/reports/persistent_lane_manifest_report.md
 +++ b/docs_build/dev/reports/persistent_lane_manifest_report.md
-@@ -1,6 +1,6 @@
+@@ -1,27 +1,27 @@
  # Persistent Lane Manifest Report
 
--Generated: 2026-06-20T05:44:40.307Z
-+Generated: 2026-06-20T06:06:50.125Z
+-Generated: 2026-06-20T06:06:50.125Z
++Generated: 2026-06-20T15:20:55.595Z
  Status: PASS
  Manifest directory: docs_build/dev/reports/lane_manifests
 
-@@ -15,13 +15,13 @@ Prevented discovery scans: 0
+ ## Summary
+
+-Reused manifests: 0
+-Invalidated manifests: 1
++Reused manifests: 1
++Invalidated manifests: 0
+ Generated manifests: 0
+-Prevented discovery scans: 0
++Prevented discovery scans: 1
+
+ ## Manifest Events
 
  | Lane | Status | Manifest Path | Input Hash | Manifest Hash | Reason |
  | --- | --- | --- | --- | --- | --- |
--| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_manifests/workspace-contract.json | 7b6ea10bf1c6c8ab | b1d93cf51c8a9dd5 | Persistent manifest dependency graph hash changed for workspace-contract.; Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. |
-+| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_manifests/workspace-contract.json | 4b520ec67663da30 | 2974ef9fd87603c5 | Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. |
+-| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_manifests/workspace-contract.json | 4b520ec67663da30 | 2974ef9fd87603c5 | Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. |
++| workspace-contract | REUSED | docs_build/dev/reports/lane_manifests/workspace-contract.json | 4b520ec67663da30 | 2974ef9fd87603c5 | Inputs unchanged; persisted lane manifest reused. |
 
  ## Persisted Manifest Files
 
  | Lane | Ownership | Source | Tests | Helpers | Fixtures | Dependency Graph Hash | Manifest Hash |
  | --- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | tools | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 7ddc1041bdb425d1 | b1d93cf51c8a9dd5 |
-+| workspace-contract | tools | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 7ddc1041bdb425d1 | 2974ef9fd87603c5 |
+-| workspace-contract | tools | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 7ddc1041bdb425d1 | 2974ef9fd87603c5 |
++| workspace-contract | tools | persistent | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 7ddc1041bdb425d1 | 2974ef9fd87603c5 |
 
  ## Fast-Fail Enforcement
 
 diff --git a/docs_build/dev/reports/playwright_discovery_ownership_report.md b/docs_build/dev/reports/playwright_discovery_ownership_report.md
-index dcbb828ce..e907a0113 100644
+index e907a0113..de2279dd6 100644
 --- a/docs_build/dev/reports/playwright_discovery_ownership_report.md
 +++ b/docs_build/dev/reports/playwright_discovery_ownership_report.md
 @@ -1,6 +1,6 @@
  # Playwright Discovery Ownership Report
 
--Generated: 2026-06-20T05:44:40.256Z
-+Generated: 2026-06-20T06:06:50.093Z
+-Generated: 2026-06-20T06:06:50.093Z
++Generated: 2026-06-20T15:20:55.562Z
  Status: PASS
 
  ## Discovery-Time Ownership
 diff --git a/docs_build/dev/reports/playwright_discovery_scope_report.md b/docs_build/dev/reports/playwright_discovery_scope_report.md
-index 18e9df5b9..c13f9a8ea 100644
+index c13f9a8ea..2b309ffb1 100644
 --- a/docs_build/dev/reports/playwright_discovery_scope_report.md
 +++ b/docs_build/dev/reports/playwright_discovery_scope_report.md
 @@ -1,6 +1,6 @@
  # Playwright Discovery Scope Report
 
--Generated: 2026-06-20T05:44:40.260Z
-+Generated: 2026-06-20T06:06:50.098Z
+-Generated: 2026-06-20T06:06:50.098Z
++Generated: 2026-06-20T15:20:55.565Z
  Status: PASS
  Scoped discovery: Yes
 
 diff --git a/docs_build/dev/reports/playwright_structure_audit.md b/docs_build/dev/reports/playwright_structure_audit.md
-index 0b2354d1d..e13e46c36 100644
+index e13e46c36..8faf744d6 100644
 --- a/docs_build/dev/reports/playwright_structure_audit.md
 +++ b/docs_build/dev/reports/playwright_structure_audit.md
 @@ -1,6 +1,6 @@
  # Playwright Structure Audit
 
--Generated: 2026-06-20T05:44:40.218Z
-+Generated: 2026-06-20T06:06:50.073Z
+-Generated: 2026-06-20T06:06:50.073Z
++Generated: 2026-06-20T15:20:55.540Z
  Status: PASS
 
  ## Lane Directories
-diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 7560c6da4..0ee7e11eb 100644
---- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
-+++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -17,7 +17,7 @@ Exercised tool entry points detected:
- (61%) Theme V2 Shared JS - exercised 7 runtime JS files
-
- Changed runtime JS files covered:
--(100%) none changed - no changed runtime JS files
-+(0%) toolbox/idea-board/index.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-
- Files with executed line/function counts where available:
- (14%) assets/theme-v2/js/account-auth-service.js - executed lines 64/64; executed functions 1/7
-@@ -48,7 +48,9 @@ Files with executed line/function counts where available:
- (100%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 20/20; executed functions 3/3
-
- Uncovered or low-coverage changed JS files:
--(100%) none changed - no changed runtime JS files
-+(0%) toolbox/idea-board/index.js - WARNING: uncovered changed runtime JS file; advisory only
-
- Changed JS files considered:
--(100%) none - no changed JS files
-+(0%) tests/playwright/tools/IdeaBoardTableNotes.spec.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
-+(0%) toolbox/idea-board/index.js - changed JS file not collected as browser runtime coverage
 diff --git a/docs_build/dev/reports/retry_suppression_report.md b/docs_build/dev/reports/retry_suppression_report.md
-index 9237bffd9..5b8011912 100644
+index 5b8011912..4e67d7e4a 100644
 --- a/docs_build/dev/reports/retry_suppression_report.md
 +++ b/docs_build/dev/reports/retry_suppression_report.md
 @@ -1,6 +1,6 @@
  # Retry Suppression Report
 
--Generated: 2026-06-20T05:45:42.508Z
-+Generated: 2026-06-20T06:07:57.209Z
+-Generated: 2026-06-20T06:07:57.209Z
++Generated: 2026-06-20T15:21:49.844Z
  Status: PASS
 
  ## Summary
 diff --git a/docs_build/dev/reports/slow_path_pruning_report.md b/docs_build/dev/reports/slow_path_pruning_report.md
-index b218b11d0..23ca74691 100644
+index 23ca74691..e483bb700 100644
 --- a/docs_build/dev/reports/slow_path_pruning_report.md
 +++ b/docs_build/dev/reports/slow_path_pruning_report.md
-@@ -1,13 +1,13 @@
+@@ -1,19 +1,19 @@
  # Slow Path Pruning Report
 
--Generated: 2026-06-20T05:45:42.508Z
-+Generated: 2026-06-20T06:07:57.210Z
+-Generated: 2026-06-20T06:07:57.210Z
++Generated: 2026-06-20T15:21:49.846Z
  Status: PASS
  Source timing evidence: docs_build/dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
 
  ## Before / After Runtime Observations
 
  PR_26146_038 measured lane elapsed time: 169.71s
--Current measured lane elapsed time: 62.12s
-+Current measured lane elapsed time: 67.03s
+-Current measured lane elapsed time: 67.03s
++Current measured lane elapsed time: 54.19s
  PR_26146_038 actual browser launches: 4
  Current actual browser launches: 1
  Accidental no-argument browser launches prevented: 5
+ Reduced Workspace lane nested launches: 1
+-Reused dependency hydration: 0
+-Reused snapshots: 0
++Reused dependency hydration: 1
++Reused snapshots: 1
+ Validation cache hits: 18
+
+ ## Slow Paths Optimized
 @@ -31,11 +31,11 @@ Validation cache hits: 18
  | PR_26146_038 | tool-runtime | 19.10s | Asset Manager V2 temporary UAT context |
  | PR_26146_038 | integration | 14.50s | games index resolves Pong thumbnail from manifest preview role |
  | PR_26146_038 | tool-runtime | 10.10s | Preview Generator V2 real batch output |
--| current targeted run | workspace-contract | 14.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:662:1 > representative active tool pages align center cleanup and registry group colors |
--| current targeted run | workspace-contract | 14.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes |
--| current targeted run | workspace-contract | 12.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:560:1 > learn wireframe pages load with shared Theme V2 structure |
--| current targeted run | workspace-contract | 10.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:480:1 > common header renders primary navigation order across active pages |
--| current targeted run | workspace-contract | 1.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:639:1 > tool template future-state page loads from root Theme V2 paths |
-+| current targeted run | workspace-contract | 16.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes |
-+| current targeted run | workspace-contract | 14.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:662:1 > representative active tool pages align center cleanup and registry group colors |
-+| current targeted run | workspace-contract | 13.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:560:1 > learn wireframe pages load with shared Theme V2 structure |
-+| current targeted run | workspace-contract | 9.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:480:1 > common header renders primary navigation order across active pages |
-+| current targeted run | workspace-contract | 1.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:639:1 > tool template future-state page loads from root Theme V2 paths |
+-| current targeted run | workspace-contract | 16.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes |
+-| current targeted run | workspace-contract | 14.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:662:1 > representative active tool pages align center cleanup and registry group colors |
+-| current targeted run | workspace-contract | 13.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:560:1 > learn wireframe pages load with shared Theme V2 structure |
+-| current targeted run | workspace-contract | 9.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:480:1 > common header renders primary navigation order across active pages |
+-| current targeted run | workspace-contract | 1.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:639:1 > tool template future-state page loads from root Theme V2 paths |
++| current targeted run | workspace-contract | 12.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes |
++| current targeted run | workspace-contract | 11.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:662:1 > representative active tool pages align center cleanup and registry group colors |
++| current targeted run | workspace-contract | 11.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:560:1 > learn wireframe pages load with shared Theme V2 structure |
++| current targeted run | workspace-contract | 8.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:480:1 > common header renders primary navigation order across active pages |
++| current targeted run | workspace-contract | 1.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:639:1 > tool template future-state page loads from root Theme V2 paths |
 
  ## Guardrails
 
 diff --git a/docs_build/dev/reports/static_validation_report.md b/docs_build/dev/reports/static_validation_report.md
-index dcf5dccb4..c2515050d 100644
+index c2515050d..a55d8bb9d 100644
 --- a/docs_build/dev/reports/static_validation_report.md
 +++ b/docs_build/dev/reports/static_validation_report.md
 @@ -1,6 +1,6 @@
  # Static Validation Report
 
--Generated: 2026-06-20T05:44:40.289Z
-+Generated: 2026-06-20T06:06:50.116Z
+-Generated: 2026-06-20T06:06:50.116Z
++Generated: 2026-06-20T15:20:55.586Z
  Status: PASS
  Static only: No
  Dry run: No
-@@ -22,7 +22,7 @@ Reason: No deterministic static validation failure was found.
- | invalid filename detection | PASS | Covered by Playwright structure audit. |
+@@ -23,12 +23,12 @@ Reason: No deterministic static validation failure was found.
  | missing import detection | PASS | Covered by Playwright structure audit relative import checks. |
  | missing fixture detection | PASS | No missing fixture findings. |
--| targeted file manifests | PASS | workspace-contract:b1d93cf51c8a9dd5 |
-+| targeted file manifests | PASS | workspace-contract:2974ef9fd87603c5 |
- | persistent lane manifests | PASS | workspace-contract:INVALIDATED |
- | lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
- | dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
+ | targeted file manifests | PASS | workspace-contract:2974ef9fd87603c5 |
+-| persistent lane manifests | PASS | workspace-contract:INVALIDATED |
+-| lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
+-| dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
++| persistent lane manifests | PASS | workspace-contract:REUSED |
++| lane warm-start reuse | PASS | workspace-contract:REUSED |
++| dependency hydration reuse | PASS | workspace-contract:REUSED |
+ | lane input graph expansion | PASS | No inputs escaped manifest scope. |
+ | scoped discovery targets | PASS | tests/playwright/tools/RootToolsFutureState.spec.mjs |
+-| broad scan prevention | PASS | Discovery map read 5 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
++| broad scan prevention | PASS | Discovery map read 0 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
+ | invalid lane target detection | PASS | No invalid lane target findings. |
+ | Windows quoting hazard detection | PASS | No shell-sensitive grep hazards found. |
+ | duplicate lane registration detection | PASS | No duplicate lane registrations found. |
 diff --git a/docs_build/dev/reports/targeted_file_manifest_report.md b/docs_build/dev/reports/targeted_file_manifest_report.md
-index 6f4baf704..e53f66539 100644
+index e53f66539..b9d1db2b3 100644
 --- a/docs_build/dev/reports/targeted_file_manifest_report.md
 +++ b/docs_build/dev/reports/targeted_file_manifest_report.md
-@@ -1,13 +1,13 @@
+@@ -1,19 +1,19 @@
  # Targeted File Manifest Report
 
--Generated: 2026-06-20T05:44:40.306Z
-+Generated: 2026-06-20T06:06:50.125Z
+-Generated: 2026-06-20T06:06:50.125Z
++Generated: 2026-06-20T15:20:55.594Z
  Status: PASS
 
  ## Manifest-Generated Lane Inputs
 
  | Lane | Ownership | Status | Source | Tests | Helpers | Fixtures | Imports / Dependencies | Dependency Graph Hash | Manifest Hash | Reason |
  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | tools | PASS | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 7ddc1041bdb425d1 | b1d93cf51c8a9dd5 | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
-+| workspace-contract | tools | PASS | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 7ddc1041bdb425d1 | 2974ef9fd87603c5 | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
+-| workspace-contract | tools | PASS | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 7ddc1041bdb425d1 | 2974ef9fd87603c5 | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
++| workspace-contract | tools | PASS | persistent | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 7ddc1041bdb425d1 | 2974ef9fd87603c5 | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
 
  ## Discovery Expansion Control
 
+ Prevented discovery expansion: Yes
+-Prevented redundant scans: 4
+-Targeted file/helper reads: 5
++Prevented redundant scans: 0
++Targeted file/helper reads: 0
+
+ ## Runtime Savings Observations
+
 diff --git a/docs_build/dev/reports/test_cleanup_performance_report.md b/docs_build/dev/reports/test_cleanup_performance_report.md
-index 010dff785..e0fd9aa87 100644
+index e0fd9aa87..6dba9521e 100644
 --- a/docs_build/dev/reports/test_cleanup_performance_report.md
 +++ b/docs_build/dev/reports/test_cleanup_performance_report.md
-@@ -1,11 +1,11 @@
+@@ -1,29 +1,29 @@
  # Test Cleanup Performance Report
 
--Generated: 2026-06-20T05:45:42.508Z
-+Generated: 2026-06-20T06:07:57.209Z
+-Generated: 2026-06-20T06:07:57.209Z
++Generated: 2026-06-20T15:21:49.845Z
  Status: PASS
 
  ## Cost Summary
 
--Total measured lane elapsed time: 62.12s
-+Total measured lane elapsed time: 67.03s
+-Total measured lane elapsed time: 67.03s
++Total measured lane elapsed time: 54.19s
  Actual browser launch count: 1
  Scheduled browser launch count: 1
  Baseline browser launch count: 1
-@@ -23,7 +23,7 @@ Prevented redundant dependency traversal: 0
+ Skipped lanes: 14
+-Reused manifests: 0
+-Reused snapshots: 0
++Reused manifests: 1
++Reused snapshots: 1
+ Cached validations reused: 18
+ Prevented broad execution: 2
+ Prevented reruns: 0
+ Prevented redundant browser launches: 0
+-Prevented graph rebuilds: 0
+-Prevented redundant dependency traversal: 0
++Prevented graph rebuilds: 1
++Prevented redundant dependency traversal: 1
+
+ ## Lane Elapsed Time
 
  | Lane | Status | Elapsed | Browser Launches | Reason |
  | --- | --- | --- | --- | --- |
--| workspace-contract | PASS | 62.12s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
-+| workspace-contract | PASS | 67.03s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
+-| workspace-contract | PASS | 67.03s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
++| workspace-contract | PASS | 54.19s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
  | game-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
  | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
  | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
@@ -746,40 +574,40 @@ index 010dff785..e0fd9aa87 100644
 
  | Lane | Duration | Test | Command |
  | --- | --- | --- | --- |
--| workspace-contract | 14.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:662:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
--| workspace-contract | 14.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
--| workspace-contract | 12.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:560:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
--| workspace-contract | 10.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:480:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
--| workspace-contract | 1.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:639:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 16.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 14.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:662:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 13.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:560:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 9.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:480:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 1.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:639:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 16.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 14.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:662:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 13.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:560:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 9.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:480:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 1.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:639:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 12.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 11.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:662:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 11.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:560:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 8.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:480:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 1.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:639:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
 
  ## Prevented Broad Execution
 
 diff --git a/docs_build/dev/reports/test_cleanup_routing_report.md b/docs_build/dev/reports/test_cleanup_routing_report.md
-index 5f623e338..521937448 100644
+index 521937448..f645b68dc 100644
 --- a/docs_build/dev/reports/test_cleanup_routing_report.md
 +++ b/docs_build/dev/reports/test_cleanup_routing_report.md
 @@ -1,6 +1,6 @@
  # Test Cleanup Routing Report
 
--Generated: 2026-06-20T05:45:42.508Z
-+Generated: 2026-06-20T06:07:57.210Z
+-Generated: 2026-06-20T06:07:57.210Z
++Generated: 2026-06-20T15:21:49.845Z
  Status: PASS
 
  ## Representative Routing Cases
 diff --git a/docs_build/dev/reports/testing_lane_execution_report.md b/docs_build/dev/reports/testing_lane_execution_report.md
-index cb83c373d..be0e2d686 100644
+index be0e2d686..3b5e7b901 100644
 --- a/docs_build/dev/reports/testing_lane_execution_report.md
 +++ b/docs_build/dev/reports/testing_lane_execution_report.md
 @@ -1,6 +1,6 @@
  # Testing Lane Execution Report
 
--Generated: 2026-06-20T05:45:42.544Z
-+Generated: 2026-06-20T06:07:57.358Z
+-Generated: 2026-06-20T06:07:57.358Z
++Generated: 2026-06-20T15:21:49.873Z
  Dry run: No
 
  ## Summary
@@ -787,17 +615,83 @@ index cb83c373d..be0e2d686 100644
  WARN: 0
  FAIL: 0
  SKIP: 14
--Total lane elapsed time: 62.12s
-+Total lane elapsed time: 67.03s
+-Total lane elapsed time: 67.03s
++Total lane elapsed time: 54.19s
  Actual browser launches: 1
 
  ## Full Samples Smoke
+@@ -34,11 +34,11 @@ Reason: No deterministic dependency failures before runtime.
+ Status: PASS
+ Scheduled lane order: workspace-contract
+ Reused runtime sessions: 0
+-Reused lane snapshots: 0
+-Reused warm-start lanes: 0
+-Reused dependency hydration: 0
+-Prevented graph rebuilds: 0
+-Prevented redundant initialization: 0
++Reused lane snapshots: 1
++Reused warm-start lanes: 1
++Reused dependency hydration: 1
++Prevented graph rebuilds: 1
++Prevented redundant initialization: 1
+ Prevented redundant browser launches: 0
+ Prevented redundant lane execution: 14
+
+@@ -64,7 +64,7 @@ Status: PASS
+ Target files: tests/playwright/tools/RootToolsFutureState.spec.mjs
+ Required shared helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs
+ Required fixtures: none
+-Targeted file/helper reads: 5
++Targeted file/helper reads: 0
+ Cached discovery reuse: Yes
+ Prevented fallback expansion: Yes; no ownership or scope blocker widened into broad discovery.
+
+@@ -73,27 +73,27 @@ Prevented fallback expansion: Yes; no ownership or scope blocker widened into br
+ Status: PASS
+ Generated manifests: workspace-contract:PASS
+ Prevented discovery expansion: Yes
+-Prevented redundant scans: 4
+-Persistent manifest events: workspace-contract:INVALIDATED
++Prevented redundant scans: 0
++Persistent manifest events: workspace-contract:REUSED
+
+ ## Warm-Start Reuse
+
+ Status: PASS
+-Warm-start events: workspace-contract:INVALIDATED
+-Dependency hydration events: workspace-contract:INVALIDATED
+-Prevented redundant initialization: 0
+-Prevented helper resolution passes: 0
++Warm-start events: workspace-contract:REUSED
++Dependency hydration events: workspace-contract:REUSED
++Prevented redundant initialization: 1
++Prevented helper resolution passes: 4
+ Prevented fixture ownership traversal: 0
+
+ ## Lane Snapshots
+
+ Status: PASS
+-Snapshot events: workspace-contract:INVALIDATED
+-Reused snapshots: 0
+-Invalidated snapshots: 1
+-Prevented graph rebuilds: 0
+-Prevented redundant dependency traversal: 0
+-Prevented fixture/helper graph assembly: 0
++Snapshot events: workspace-contract:REUSED
++Reused snapshots: 1
++Invalidated snapshots: 0
++Prevented graph rebuilds: 1
++Prevented redundant dependency traversal: 1
++Prevented fixture/helper graph assembly: 4
+
+ ## Lane Deduplication
+
 @@ -105,7 +105,7 @@ Prevented Workspace lane reruns: 0
 
  | Lane | Status | Elapsed | Browser Launches | Executed/Skipped Reason | Affected Surface | Fixtures / Inputs |
  | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | PASS | 62.12s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
-+| workspace-contract | PASS | 67.03s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
+-| workspace-contract | PASS | 67.03s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
++| workspace-contract | PASS | 54.19s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
  | game-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Workspace mock repository, Game Workspace UI, and Toolbox Progress/Build Path game-state bridge | repo-served Game Workspace page; repo-served Toolbox page with role simulation; in-memory SQL-shaped mock game repository |
  | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | repo-served Game Design page; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Design mock repository; Game Workspace mock game context |
  | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | repo-served Game Configuration page; repo-served Game Design page for handoff checks; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Configuration mock repository; Game Design mock repository handoff |
@@ -805,34 +699,34 @@ index cb83c373d..be0e2d686 100644
 
  | Lane | Duration | Test |
  | --- | --- | --- |
--| workspace-contract | 14.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:662:1 > representative active tool pages align center cleanup and registry group colors |
--| workspace-contract | 14.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes |
--| workspace-contract | 12.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:560:1 > learn wireframe pages load with shared Theme V2 structure |
--| workspace-contract | 10.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:480:1 > common header renders primary navigation order across active pages |
--| workspace-contract | 1.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:639:1 > tool template future-state page loads from root Theme V2 paths |
-+| workspace-contract | 16.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes |
-+| workspace-contract | 14.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:662:1 > representative active tool pages align center cleanup and registry group colors |
-+| workspace-contract | 13.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:560:1 > learn wireframe pages load with shared Theme V2 structure |
-+| workspace-contract | 9.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:480:1 > common header renders primary navigation order across active pages |
-+| workspace-contract | 1.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:639:1 > tool template future-state page loads from root Theme V2 paths |
+-| workspace-contract | 16.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes |
+-| workspace-contract | 14.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:662:1 > representative active tool pages align center cleanup and registry group colors |
+-| workspace-contract | 13.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:560:1 > learn wireframe pages load with shared Theme V2 structure |
+-| workspace-contract | 9.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:480:1 > common header renders primary navigation order across active pages |
+-| workspace-contract | 1.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:639:1 > tool template future-state page loads from root Theme V2 paths |
++| workspace-contract | 12.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes |
++| workspace-contract | 11.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:662:1 > representative active tool pages align center cleanup and registry group colors |
++| workspace-contract | 11.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:560:1 > learn wireframe pages load with shared Theme V2 structure |
++| workspace-contract | 8.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:480:1 > common header renders primary navigation order across active pages |
++| workspace-contract | 1.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:639:1 > tool template future-state page loads from root Theme V2 paths |
 
  ## Commands
 
  ### workspace-contract
--- PASS 62.12s C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
-+- PASS 67.03s C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
+-- PASS 67.03s C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
++- PASS 54.19s C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
 
  ### game-workspace
  - SKIP
 diff --git a/docs_build/dev/reports/validation_cache_report.md b/docs_build/dev/reports/validation_cache_report.md
-index 0e34656e5..baece9001 100644
+index baece9001..967c6adb0 100644
 --- a/docs_build/dev/reports/validation_cache_report.md
 +++ b/docs_build/dev/reports/validation_cache_report.md
 @@ -1,6 +1,6 @@
  # Validation Cache Report
 
--Generated: 2026-06-20T05:44:40.309Z
-+Generated: 2026-06-20T06:06:50.127Z
+-Generated: 2026-06-20T06:06:50.127Z
++Generated: 2026-06-20T15:20:55.596Z
  Status: PASS
 
  ## Cache Summary
@@ -840,82 +734,97 @@ index 0e34656e5..baece9001 100644
  | lane registration validation | MISS | 2e5779ed0ed947c7 | initial computation | lane definitions change; package.json lane scripts change |
  | runner preflight validation | MISS | 82ebdc0c4e1e7794 | initial computation | lane definitions change; fixture ownership changes; targeted files change |
  | scoped discovery map | MISS | 97bdfaa7c37c6c39 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
--| targeted file manifest validation | MISS | 569afc9ef4d65966 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
--| lane warm-start validation | MISS | ce69ece0978a145c | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
--| structural ownership validation | MISS | 7d16549767cccc93 | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
-+| targeted file manifest validation | MISS | 696efe659341aeab | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
-+| lane warm-start validation | MISS | fb3e2200afe07095 | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
-+| structural ownership validation | MISS | 7637fdf8fc29545f | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
+-| targeted file manifest validation | MISS | 696efe659341aeab | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
+-| lane warm-start validation | MISS | fb3e2200afe07095 | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
+-| structural ownership validation | MISS | 7637fdf8fc29545f | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
++| targeted file manifest validation | MISS | f00c0768fb7147cc | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
++| lane warm-start validation | MISS | 13112421856a5bf3 | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
++| structural ownership validation | MISS | f439c70cf2273124 | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
  | lane compilation validation | MISS | c974136a7964ae67 | initial computation | lane definitions change; targeted files change; fixture ownership changes |
  | lane compilation validation | HIT | c974136a7964ae67 | dependency validation input | unchanged within execution cycle |
  | dependency validation | MISS | 46fe936f65e8a29d | initial computation | dependency graph changes; lane definitions change; lane compilation input changes |
--| lane snapshot validation | MISS | 34a15b2f8ce4e4f5 | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
-+| lane snapshot validation | MISS | 3dbdd7a291b32661 | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
+-| lane snapshot validation | MISS | 3dbdd7a291b32661 | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
++| lane snapshot validation | MISS | 266634d2954f34cf | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
  | zero-browser preflight | MISS | e92e4238c2719b6f | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change; dependency graph changes |
--| structural ownership validation | HIT | 7d16549767cccc93 | static validation report | unchanged within execution cycle |
--| structural ownership validation | HIT | 7d16549767cccc93 | zero-browser preflight report | unchanged within execution cycle |
-+| structural ownership validation | HIT | 7637fdf8fc29545f | static validation report | unchanged within execution cycle |
-+| structural ownership validation | HIT | 7637fdf8fc29545f | zero-browser preflight report | unchanged within execution cycle |
+-| structural ownership validation | HIT | 7637fdf8fc29545f | static validation report | unchanged within execution cycle |
+-| structural ownership validation | HIT | 7637fdf8fc29545f | zero-browser preflight report | unchanged within execution cycle |
++| structural ownership validation | HIT | f439c70cf2273124 | static validation report | unchanged within execution cycle |
++| structural ownership validation | HIT | f439c70cf2273124 | zero-browser preflight report | unchanged within execution cycle |
  | scoped discovery map | HIT | 97bdfaa7c37c6c39 | structural ownership validation input | unchanged within execution cycle |
  | scoped discovery map | HIT | 97bdfaa7c37c6c39 | discovery scope reporting | unchanged within execution cycle |
--| targeted file manifest validation | HIT | 569afc9ef4d65966 | lane input validation report | unchanged within execution cycle |
--| targeted file manifest validation | HIT | 569afc9ef4d65966 | runtime scheduling blockers | unchanged within execution cycle |
--| lane warm-start validation | HIT | ce69ece0978a145c | warm-start report | unchanged within execution cycle |
--| lane warm-start validation | HIT | ce69ece0978a145c | dependency hydration reuse report | unchanged within execution cycle |
--| lane warm-start validation | HIT | ce69ece0978a145c | runtime scheduling | unchanged within execution cycle |
--| lane snapshot validation | HIT | 34a15b2f8ce4e4f5 | lane snapshot report | unchanged within execution cycle |
--| lane snapshot validation | HIT | 34a15b2f8ce4e4f5 | execution graph reuse report | unchanged within execution cycle |
--| lane snapshot validation | HIT | 34a15b2f8ce4e4f5 | runtime scheduling | unchanged within execution cycle |
-+| targeted file manifest validation | HIT | 696efe659341aeab | lane input validation report | unchanged within execution cycle |
-+| targeted file manifest validation | HIT | 696efe659341aeab | runtime scheduling blockers | unchanged within execution cycle |
-+| lane warm-start validation | HIT | fb3e2200afe07095 | warm-start report | unchanged within execution cycle |
-+| lane warm-start validation | HIT | fb3e2200afe07095 | dependency hydration reuse report | unchanged within execution cycle |
-+| lane warm-start validation | HIT | fb3e2200afe07095 | runtime scheduling | unchanged within execution cycle |
-+| lane snapshot validation | HIT | 3dbdd7a291b32661 | lane snapshot report | unchanged within execution cycle |
-+| lane snapshot validation | HIT | 3dbdd7a291b32661 | execution graph reuse report | unchanged within execution cycle |
-+| lane snapshot validation | HIT | 3dbdd7a291b32661 | runtime scheduling | unchanged within execution cycle |
+-| targeted file manifest validation | HIT | 696efe659341aeab | lane input validation report | unchanged within execution cycle |
+-| targeted file manifest validation | HIT | 696efe659341aeab | runtime scheduling blockers | unchanged within execution cycle |
+-| lane warm-start validation | HIT | fb3e2200afe07095 | warm-start report | unchanged within execution cycle |
+-| lane warm-start validation | HIT | fb3e2200afe07095 | dependency hydration reuse report | unchanged within execution cycle |
+-| lane warm-start validation | HIT | fb3e2200afe07095 | runtime scheduling | unchanged within execution cycle |
+-| lane snapshot validation | HIT | 3dbdd7a291b32661 | lane snapshot report | unchanged within execution cycle |
+-| lane snapshot validation | HIT | 3dbdd7a291b32661 | execution graph reuse report | unchanged within execution cycle |
+-| lane snapshot validation | HIT | 3dbdd7a291b32661 | runtime scheduling | unchanged within execution cycle |
++| targeted file manifest validation | HIT | f00c0768fb7147cc | lane input validation report | unchanged within execution cycle |
++| targeted file manifest validation | HIT | f00c0768fb7147cc | runtime scheduling blockers | unchanged within execution cycle |
++| lane warm-start validation | HIT | 13112421856a5bf3 | warm-start report | unchanged within execution cycle |
++| lane warm-start validation | HIT | 13112421856a5bf3 | dependency hydration reuse report | unchanged within execution cycle |
++| lane warm-start validation | HIT | 13112421856a5bf3 | runtime scheduling | unchanged within execution cycle |
++| lane snapshot validation | HIT | 266634d2954f34cf | lane snapshot report | unchanged within execution cycle |
++| lane snapshot validation | HIT | 266634d2954f34cf | execution graph reuse report | unchanged within execution cycle |
++| lane snapshot validation | HIT | 266634d2954f34cf | runtime scheduling | unchanged within execution cycle |
  | lane compilation validation | HIT | c974136a7964ae67 | lane compilation report | unchanged within execution cycle |
  | lane compilation validation | HIT | c974136a7964ae67 | runtime scheduling | unchanged within execution cycle |
  | dependency validation | HIT | 46fe936f65e8a29d | dependency report | unchanged within execution cycle |
 diff --git a/docs_build/dev/reports/zero_browser_preflight_report.md b/docs_build/dev/reports/zero_browser_preflight_report.md
-index 810a3911b..283a446cd 100644
+index 283a446cd..0e88ec04a 100644
 --- a/docs_build/dev/reports/zero_browser_preflight_report.md
 +++ b/docs_build/dev/reports/zero_browser_preflight_report.md
 @@ -1,6 +1,6 @@
  # Zero-Browser Preflight Report
 
--Generated: 2026-06-20T05:44:40.308Z
-+Generated: 2026-06-20T06:06:50.126Z
+-Generated: 2026-06-20T06:06:50.126Z
++Generated: 2026-06-20T15:20:55.596Z
  Status: PASS
 
  ## Prevented Browser Launches
-diff --git a/docs_build/pr/APPLY_PR_26171_031-idea-board-inline-tree-grid-actions.md b/docs_build/pr/APPLY_PR_26171_031-idea-board-inline-tree-grid-actions.md
+@@ -24,10 +24,10 @@ No deterministic setup failures.
+ | unresolved fixtures | PASS | No unresolved fixture findings. |
+ | unresolved helpers | PASS | Shared helper imports and naming ownership checked. |
+ | targeted file manifests | PASS | workspace-contract:PASS |
+-| persistent lane manifests | PASS | workspace-contract:INVALIDATED |
+-| lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
+-| dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
+-| lane snapshots | PASS | workspace-contract:INVALIDATED |
++| persistent lane manifests | PASS | workspace-contract:REUSED |
++| lane warm-start reuse | PASS | workspace-contract:REUSED |
++| dependency hydration reuse | PASS | workspace-contract:REUSED |
++| lane snapshots | PASS | workspace-contract:REUSED |
+ | manifest input graph expansion | PASS | No scoped discovery inputs escaped manifest ownership. |
+ | scoped discovery | PASS | Targets: tests/playwright/tools/RootToolsFutureState.spec.mjs; helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs. |
+ | invalid grep patterns | PASS | No invalid grep patterns. |
+diff --git a/docs_build/pr/APPLY_PR_26171_032-idea-board-accordion-table-model.md b/docs_build/pr/APPLY_PR_26171_032-idea-board-accordion-table-model.md
 new file mode 100644
-index 000000000..11945bf2a
+index 000000000..0d9b375f9
 --- /dev/null
-+++ b/docs_build/pr/APPLY_PR_26171_031-idea-board-inline-tree-grid-actions.md
++++ b/docs_build/pr/APPLY_PR_26171_032-idea-board-accordion-table-model.md
 @@ -0,0 +1,14 @@
-+# APPLY PR_26171_031-idea-board-inline-tree-grid-actions
++# APPLY PR_26171_032-idea-board-accordion-table-model
 +
 +## Apply Summary
-+- Applied on branch `codex/pr-26171-031-idea-board-inline-tree-grid-actions`.
-+- Converted Idea Board into an inline table tree grid with selected notes expanded directly below the selected idea.
++- Applied on branch `codex/pr-26171-032-idea-board-accordion-table-model`.
++- Converted Idea Board to an in-page DB-shaped idea/note table model with accordion notes expansion.
 +- Validation, ZIP, commit, PR, merge, and final main fields are recorded in `docs_build/dev/reports/codex_changed_files.txt`.
 +
 +## Requirement Evidence
 +- PASS evidence is recorded in `docs_build/dev/reports/codex_changed_files.txt`.
-+- The implementation is not docs-only; it changes Idea Board HTML, runtime JavaScript, and targeted Playwright behavior coverage.
++- The implementation remains in-page only and introduces no DB persistence or SQLite.
 +
 +## Validation Evidence
 +- See `docs_build/dev/reports/codex_changed_files.txt`.
 +- See `docs_build/dev/reports/codex_review.diff`.
-diff --git a/docs_build/pr/BUILD_PR_26171_031-idea-board-inline-tree-grid-actions.md b/docs_build/pr/BUILD_PR_26171_031-idea-board-inline-tree-grid-actions.md
+diff --git a/docs_build/pr/BUILD_PR_26171_032-idea-board-accordion-table-model.md b/docs_build/pr/BUILD_PR_26171_032-idea-board-accordion-table-model.md
 new file mode 100644
-index 000000000..6745640c8
+index 000000000..b48a7eb13
 --- /dev/null
-+++ b/docs_build/pr/BUILD_PR_26171_031-idea-board-inline-tree-grid-actions.md
-@@ -0,0 +1,48 @@
-+# BUILD PR_26171_031-idea-board-inline-tree-grid-actions
++++ b/docs_build/pr/BUILD_PR_26171_032-idea-board-accordion-table-model.md
+@@ -0,0 +1,58 @@
++# BUILD PR_26171_032-idea-board-accordion-table-model
 +
 +Source of truth: docs_build/dev/PROJECT_INSTRUCTIONS.md.
 +
@@ -924,35 +833,45 @@ index 000000000..6745640c8
 +- docs_build/dev/commit_comment.txt
 +- docs_build/dev/reports/codex_changed_files.txt
 +- docs_build/dev/reports/codex_review.diff
-+- docs_build/pr/PLAN_PR_26171_031-idea-board-inline-tree-grid-actions.md
-+- docs_build/pr/BUILD_PR_26171_031-idea-board-inline-tree-grid-actions.md
-+- docs_build/pr/APPLY_PR_26171_031-idea-board-inline-tree-grid-actions.md
++- docs_build/pr/PLAN_PR_26171_032-idea-board-accordion-table-model.md
++- docs_build/pr/BUILD_PR_26171_032-idea-board-accordion-table-model.md
++- docs_build/pr/APPLY_PR_26171_032-idea-board-accordion-table-model.md
 +- tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
 +- tests/playwright/tools/ToolboxRoutePages.spec.mjs
 +- toolbox/idea-board/index.html
 +- toolbox/idea-board/index.js
 +
 +## Requirements
-+- Remove Owner column.
-+- Main table columns must be: Idea, Pitch, Status, Updated, Notes, Actions.
-+- Notes column must show note count text such as `2 Notes`.
-+- Selected idea must expand directly under its own idea row.
-+- Remove detached `Notes for Sky Orchard` section.
-+- Remove visible `Selected idea context` text.
-+- Remove visible notes metadata columns: Type, Created By, Created, Updated.
-+- Notes subtable visible columns must be: Note, Actions.
-+- Idea normal row actions must be Edit and Delete.
-+- Idea edit row actions must be Save and Cancel.
-+- Idea edit Status field must be a dropdown.
-+- Note normal row must expose Edit and Delete when allowed.
-+- System note must expose Edit and must not expose Delete.
-+- Note edit row actions must be Save and Cancel.
-+- Add Idea must open an inline idea row with Save and Cancel.
-+- Add Note must open an inline note row under the selected idea with Save and Cancel.
-+- Do not create docs-only work.
-+- Do not create detached panels.
-+- Do not use form-first UI.
-+- Produce repo-structured delta ZIP at `tmp/PR_26171_031-idea-board-inline-tree-grid-actions_delta.zip`.
++- Use an in-page DB-shaped Idea table: `ideaId`, `userId`, `idea`, `pitch`, `status`, `updated`.
++- Use an in-page DB-shaped Note table: `noteId`, `ideaId`, `note`, `system`, `updated`.
++- Preserve relationship semantics: User 1-* Idea and Idea 1-* Note.
++- Do not add real DB persistence.
++- Do not add SQLite.
++- Default state must have no selected idea and no expanded notes.
++- Main Idea table must show all ideas only by default.
++- Add Idea must appear as the final table row/action area.
++- Visible Idea table columns must be Idea, Pitch, Status, Updated, Notes, Actions.
++- Seed rows must include:
++  - Top Thoughts | Smartest person wins... | Exploring | 2026-06-20 | 3 Notes | Edit Delete
++  - Sky Orchard | Grow floating islands... | Exploring | 2026-06-20 | 3 Notes | Edit Delete
++  - Clockwork Courier | Deliver messages through looping city... | New | 2026-06-20 | 0 Notes | Edit Delete
++- Notes count or chevron must expand/collapse notes for that idea.
++- Expanded notes must render directly under the owning idea row.
++- Only one expanded idea is required at a time.
++- Notes are not selected context.
++- Remove selected-idea terminology from visible UI.
++- Remove `Selected idea context`.
++- Remove detached `Notes for Sky Orchard` heading.
++- Remove note metadata columns from visible UI.
++- Expanded notes visible structure must include a `Notes` header.
++- Expanded note rows must show only note text plus Actions.
++- Note normal actions must be Edit and Delete when allowed.
++- System notes must allow Edit and hide/disable Delete.
++- Add Note must appear under the expanded notes for that idea.
++- Add Idea must open an inline idea row at the bottom of the main table with Idea input, Pitch input, Status dropdown, Updated auto-filled, 0 Notes, Save, and Cancel.
++- Edit Idea must replace that idea row with inline edit controls and Save/Cancel on the same row.
++- Add/Edit Note must use inline note rows inside the expanded notes area with Save/Cancel on the same row.
++- Produce repo-structured delta ZIP at `tmp/PR_26171_032-idea-board-accordion-table-model_delta.zip`.
 +
 +## Validation Commands
 +- `node --check toolbox/idea-board/index.js`
@@ -962,29 +881,31 @@ index 000000000..6745640c8
 +- `npm run test:workspace-v2`
 +
 +## ZIP Output
-+- `tmp/PR_26171_031-idea-board-inline-tree-grid-actions_delta.zip`
-diff --git a/docs_build/pr/PLAN_PR_26171_031-idea-board-inline-tree-grid-actions.md b/docs_build/pr/PLAN_PR_26171_031-idea-board-inline-tree-grid-actions.md
++- `tmp/PR_26171_032-idea-board-accordion-table-model_delta.zip`
+diff --git a/docs_build/pr/PLAN_PR_26171_032-idea-board-accordion-table-model.md b/docs_build/pr/PLAN_PR_26171_032-idea-board-accordion-table-model.md
 new file mode 100644
-index 000000000..c36d6eaba
+index 000000000..209c00aa4
 --- /dev/null
-+++ b/docs_build/pr/PLAN_PR_26171_031-idea-board-inline-tree-grid-actions.md
-@@ -0,0 +1,29 @@
-+# PLAN PR_26171_031-idea-board-inline-tree-grid-actions
++++ b/docs_build/pr/PLAN_PR_26171_032-idea-board-accordion-table-model.md
+@@ -0,0 +1,31 @@
++# PLAN PR_26171_032-idea-board-accordion-table-model
 +
 +Source of truth: docs_build/dev/PROJECT_INSTRUCTIONS.md.
 +
 +## Purpose
-+Fix Idea Board so the work surface is a table-first inline tree grid where the selected idea expands directly beneath its own row and all idea/note actions happen inline.
++Fix Idea Board to use a DB-shaped in-page idea/note table model with accordion-style notes expansion and no selected-idea context.
 +
 +## Scope
-+- Remove the detached selected notes section and selected idea context text.
-+- Remove the Owner column from the main idea table.
-+- Render main columns: Idea, Pitch, Status, Updated, Notes, Actions.
-+- Render selected idea notes as a subtable directly under the selected idea row.
-+- Hide note metadata columns from the notes subtable.
-+- Support inline Add/Edit/Delete actions for ideas and notes.
-+- Keep system note deletion disallowed while allowing system note editing.
-+- Update targeted Idea Board Playwright coverage, required reports, and ZIP output.
++- Keep behavior functional and in-page only.
++- Do not add real DB persistence.
++- Do not add SQLite.
++- Model in-page ideas with `ideaId`, `userId`, `idea`, `pitch`, `status`, and `updated`.
++- Model in-page notes with `noteId`, `ideaId`, `note`, `system`, and `updated`.
++- Render all ideas by default with no expanded notes.
++- Expand or collapse notes for one idea at a time from the notes count or chevron.
++- Render expanded notes directly under the owning idea row.
++- Keep Add/Edit idea and Add/Edit note workflows inline.
++- Update targeted Idea Board Playwright coverage, reports, and ZIP output.
 +
 +## Validation
 +- `node --check toolbox/idea-board/index.js`
@@ -995,866 +916,871 @@ index 000000000..c36d6eaba
 +
 +## Git Workflow
 +- Start from refreshed `main`.
-+- Create branch `codex/pr-26171-031-idea-board-inline-tree-grid-actions`.
++- Create branch `codex/pr-26171-032-idea-board-accordion-table-model`.
 +- Stage only scoped files.
 +- Commit, push, create PR, merge after validation, return to `main`, and pull latest `main`.
 diff --git a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-index d6f3668d0..c0d6ded06 100644
+index c0d6ded06..c6f80abb5 100644
 --- a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
 +++ b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
 @@ -10,7 +10,7 @@ function restoreEnvValue(key, value) {
    process.env[key] = value;
  }
 
--test("Idea Board presents a table-first work surface and governed notes workflow", async ({ page }) => {
-+test("Idea Board presents inline tree grid idea and note actions", async ({ page }) => {
+-test("Idea Board presents inline tree grid idea and note actions", async ({ page }) => {
++test("Idea Board uses DB-shaped accordion table ideas and notes", async ({ page }) => {
    const server = await startRepoServer();
    const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
    const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
-@@ -41,49 +41,83 @@ test("Idea Board presents a table-first work surface and governed notes workflow
-   try {
-     await page.goto(`${server.baseUrl}/toolbox/idea-board/index.html`, { waitUntil: "networkidle" });
-     await expect(page.getByRole("heading", { level: 1, name: "Idea Board" })).toBeVisible();
--    await expect(page.locator("[data-idea-board-table] th[scope='col']")).toHaveText(["Idea", "Pitch", "Status", "Owner", "Updated", "Notes"]);
--    await expect(page.locator("[data-idea-board-table] tbody tr")).toHaveCount(2);
-+    await expect(page.locator("[data-idea-board-table] > thead th[scope='col']")).toHaveText([
-+      "Idea",
-+      "Pitch",
-+      "Status",
-+      "Updated",
-+      "Notes",
-+      "Actions",
-+    ]);
-+    await expect(page.locator("[data-idea-board-table] > thead th[scope='col']", { hasText: "Owner" })).toHaveCount(0);
-+    await expect(page.locator("[data-idea-board-idea-row]")).toHaveCount(2);
-+    await expect(page.locator("[data-idea-board-section='Selected Notes']")).toHaveCount(0);
+@@ -49,75 +49,87 @@ test("Idea Board presents inline tree grid idea and note actions", async ({ page
+       "Notes",
+       "Actions",
+     ]);
+-    await expect(page.locator("[data-idea-board-table] > thead th[scope='col']", { hasText: "Owner" })).toHaveCount(0);
+-    await expect(page.locator("[data-idea-board-idea-row]")).toHaveCount(2);
+-    await expect(page.locator("[data-idea-board-section='Selected Notes']")).toHaveCount(0);
+-    await expect(page.getByText("Notes for Sky Orchard")).toHaveCount(0);
++    await expect(page.locator("[data-idea-board-idea-row]")).toHaveCount(3);
++    await expect(page.locator("[data-idea-board-expanded-row]")).toHaveCount(0);
++    await expect(page.locator("[data-idea-board-add-idea-row]")).toHaveCount(1);
+     await expect(page.getByText("Selected idea context")).toHaveCount(0);
+-    await expect(page.locator("[data-idea-board-idea-row='sky-orchard']")).toHaveAttribute("aria-selected", "true");
 +    await expect(page.getByText("Notes for Sky Orchard")).toHaveCount(0);
-+    await expect(page.getByText("Selected idea context")).toHaveCount(0);
-     await expect(page.locator("[data-idea-board-idea-row='sky-orchard']")).toHaveAttribute("aria-selected", "true");
--    await expect(page.locator("[data-idea-board-selected-title]")).toHaveText("Notes for Sky Orchard");
--    await expect(page.locator("[data-idea-board-notes-table] th[scope='col']")).toHaveText(["Note", "Type", "Created By", "Created", "Updated", "Actions"]);
--    await expect(page.locator("[data-idea-board-system-note] [data-idea-board-action='delete']")).toHaveCount(0);
--    await expect(page.locator("[data-idea-board-system-note] [data-idea-board-action='edit']")).toHaveCount(0);
--    await expect(page.locator("[data-idea-board-system-note]").first()).toContainText("System locked");
++    await expect(page.getByText("Selected")).toHaveCount(0);
++
++    await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] th")).toHaveText("Top Thoughts");
++    await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] td").nth(0)).toHaveText("Smartest person wins...");
++    await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] td").nth(1)).toHaveText("Exploring");
++    await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] td").nth(2)).toHaveText("2026-06-20");
++    await expect(page.locator("[data-idea-board-notes-count='top-thoughts']")).toHaveText("3 Notes");
++    await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Delete"]);
 
--    await page.locator("[data-idea-board-add-note]").click();
--    await expect(page.locator("[data-idea-board-inline-input-row]")).toHaveCount(1);
--    await expect(page.locator("[data-idea-board-inline-input-row] [data-idea-board-action]")).toHaveText(["Save", "Cancel"]);
+-    const initialRowOrder = await page.locator("[data-idea-board-ideas-body] > tr").evaluateAll((rows) => (
+-      rows.map((row) => row.getAttribute("data-idea-board-idea-row") || row.getAttribute("data-idea-board-expanded-row"))
+-    ));
+-    expect(initialRowOrder.slice(0, 3)).toEqual(["sky-orchard", "sky-orchard", "clockwork-courier"]);
+-    await expect(page.locator("[data-idea-board-idea-row='sky-orchard'] [data-idea-board-select-idea]")).toHaveText("2 Notes");
+-    await expect(page.locator("[data-idea-board-notes-table='sky-orchard'] th[scope='col']")).toHaveText(["Note", "Actions"]);
++    await expect(page.locator("[data-idea-board-idea-row='sky-orchard'] th")).toHaveText("Sky Orchard");
++    await expect(page.locator("[data-idea-board-idea-row='sky-orchard'] td").nth(0)).toHaveText("Grow floating islands...");
++    await expect(page.locator("[data-idea-board-notes-count='sky-orchard']")).toHaveText("3 Notes");
++    await expect(page.locator("[data-idea-board-idea-row='clockwork-courier'] th")).toHaveText("Clockwork Courier");
++    await expect(page.locator("[data-idea-board-idea-row='clockwork-courier'] td").nth(0)).toHaveText("Deliver messages through looping city...");
++    await expect(page.locator("[data-idea-board-notes-count='clockwork-courier']")).toHaveText("0 Notes");
++
++    await page.locator("[data-idea-board-notes-count='top-thoughts']").click();
++    await expect(page.locator("[data-idea-board-expanded-row='top-thoughts']")).toBeVisible();
++    await expect(page.locator("[data-idea-board-expanded-row='top-thoughts'] [data-idea-board-notes-header='top-thoughts']")).toHaveText("Notes");
++    await expect(page.locator("[data-idea-board-notes-table='top-thoughts'] th[scope='col']")).toHaveText(["Note", "Actions"]);
+     await expect(page.locator("[data-idea-board-notes-table] th[scope='col']", { hasText: "Type" })).toHaveCount(0);
+     await expect(page.locator("[data-idea-board-notes-table] th[scope='col']", { hasText: "Created By" })).toHaveCount(0);
+     await expect(page.locator("[data-idea-board-notes-table] th[scope='col']", { hasText: "Created" })).toHaveCount(0);
+     await expect(page.locator("[data-idea-board-notes-table] th[scope='col']", { hasText: "Updated" })).toHaveCount(0);
+-    await expect(page.locator("[data-idea-board-idea-row='sky-orchard'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Delete"]);
+
+-    const systemNote = page.locator("[data-idea-board-system-note]").first();
++    const systemNote = page.locator("[data-idea-board-notes-table='top-thoughts'] [data-idea-board-system-note]").first();
+     await expect(systemNote.locator("[data-idea-board-note-action]")).toHaveText(["Edit"]);
+     await expect(systemNote.locator("[data-idea-board-note-action='delete']")).toHaveCount(0);
+     await systemNote.locator("[data-idea-board-note-action='edit']").click();
+     await expect(page.locator("[data-idea-board-note-input-row] [data-idea-board-note-action]")).toHaveText(["Save", "Cancel"]);
+-    await page.locator("[data-idea-board-note-input]").fill("System note edited inline for Sky Orchard.");
++    await page.locator("[data-idea-board-note-input]").fill("System note can be edited in-place.");
+     await page.locator("[data-idea-board-note-action='save']").click();
+-    await expect(page.locator("[data-idea-board-notes-table='sky-orchard']")).toContainText("System note edited inline for Sky Orchard.");
++    await expect(page.locator("[data-idea-board-notes-table='top-thoughts']")).toContainText("System note can be edited in-place.");
+     await expect(page.locator("[data-idea-board-system-note] [data-idea-board-note-action='delete']")).toHaveCount(0);
+
+-    await page.locator("[data-idea-board-add-note='sky-orchard']").click();
++    await page.locator("[data-idea-board-add-note='top-thoughts']").click();
+     await expect(page.locator("[data-idea-board-note-input-row] [data-idea-board-note-action]")).toHaveText(["Save", "Cancel"]);
 -    await page.locator("[data-idea-board-note-input]").fill("Prototype the storm creature escalation table.");
--    await page.locator("[data-idea-board-action='save']").click();
--    const skyCreatorNote = page.locator("[data-idea-board-notes-table] tbody tr").first();
--    await expect(skyCreatorNote).toContainText("Prototype the storm creature escalation table.");
--    await expect(skyCreatorNote.locator("td").nth(1)).toHaveText("Creator");
--    await expect(skyCreatorNote.locator("td").nth(2)).toHaveText("Creator");
-+    const initialRowOrder = await page.locator("[data-idea-board-ideas-body] > tr").evaluateAll((rows) => (
-+      rows.map((row) => row.getAttribute("data-idea-board-idea-row") || row.getAttribute("data-idea-board-expanded-row"))
-+    ));
-+    expect(initialRowOrder.slice(0, 3)).toEqual(["sky-orchard", "sky-orchard", "clockwork-courier"]);
-+    await expect(page.locator("[data-idea-board-idea-row='sky-orchard'] [data-idea-board-select-idea]")).toHaveText("2 Notes");
-+    await expect(page.locator("[data-idea-board-notes-table='sky-orchard'] th[scope='col']")).toHaveText(["Note", "Actions"]);
-+    await expect(page.locator("[data-idea-board-notes-table] th[scope='col']", { hasText: "Type" })).toHaveCount(0);
-+    await expect(page.locator("[data-idea-board-notes-table] th[scope='col']", { hasText: "Created By" })).toHaveCount(0);
-+    await expect(page.locator("[data-idea-board-notes-table] th[scope='col']", { hasText: "Created" })).toHaveCount(0);
-+    await expect(page.locator("[data-idea-board-notes-table] th[scope='col']", { hasText: "Updated" })).toHaveCount(0);
-+    await expect(page.locator("[data-idea-board-idea-row='sky-orchard'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Delete"]);
++    await page.locator("[data-idea-board-note-input]").fill("Add a fourth table-shaped note.");
+     await page.locator("[data-idea-board-note-action='save']").click();
+-    await expect(page.locator("[data-idea-board-notes-table='sky-orchard']")).toContainText("Prototype the storm creature escalation table.");
+-    await expect(page.locator("[data-idea-board-idea-row='sky-orchard'] [data-idea-board-select-idea]")).toHaveText("3 Notes");
++    await expect(page.locator("[data-idea-board-notes-table='top-thoughts']")).toContainText("Add a fourth table-shaped note.");
++    await expect(page.locator("[data-idea-board-notes-count='top-thoughts']")).toHaveText("4 Notes");
+
+-    await page.locator("[data-idea-board-notes-table='sky-orchard'] tbody tr").first().locator("[data-idea-board-note-action='edit']").click();
+-    await page.locator("[data-idea-board-note-input]").fill("Prototype storm escalation after core loop review.");
++    await page.locator("[data-idea-board-notes-table='top-thoughts'] tbody tr").last().locator("[data-idea-board-note-action='edit']").click();
++    await page.locator("[data-idea-board-note-input]").fill("Edited fourth table-shaped note.");
+     await page.locator("[data-idea-board-note-action='save']").click();
+-    await expect(page.locator("[data-idea-board-notes-table='sky-orchard']")).toContainText("Prototype storm escalation after core loop review.");
+-    await page.locator("[data-idea-board-notes-table='sky-orchard'] tbody tr").first().locator("[data-idea-board-note-action='delete']").click();
+-    await expect(page.locator("[data-idea-board-notes-table='sky-orchard']")).not.toContainText("Prototype storm escalation after core loop review.");
++    await expect(page.locator("[data-idea-board-notes-table='top-thoughts']")).toContainText("Edited fourth table-shaped note.");
++    await page.locator("[data-idea-board-notes-table='top-thoughts'] tbody tr").last().locator("[data-idea-board-note-action='delete']").click();
++    await expect(page.locator("[data-idea-board-notes-table='top-thoughts']")).not.toContainText("Edited fourth table-shaped note.");
++    await expect(page.locator("[data-idea-board-notes-count='top-thoughts']")).toHaveText("3 Notes");
 
 -    await page.locator("[data-idea-board-select-idea='clockwork-courier']").click();
--    await expect(page.locator("[data-idea-board-idea-row='clockwork-courier']")).toHaveAttribute("aria-selected", "true");
--    await expect(page.locator("[data-idea-board-selected-title]")).toHaveText("Notes for Clockwork Courier");
--    await expect(page.locator("[data-idea-board-notes-table]")).not.toContainText("Prototype the storm creature escalation table.");
--    await expect(page.locator("[data-idea-board-notes-table]")).toContainText("Check whether district routing stays readable after the first reset.");
-+    const systemNote = page.locator("[data-idea-board-system-note]").first();
-+    await expect(systemNote.locator("[data-idea-board-note-action]")).toHaveText(["Edit"]);
-+    await expect(systemNote.locator("[data-idea-board-note-action='delete']")).toHaveCount(0);
-+    await systemNote.locator("[data-idea-board-note-action='edit']").click();
-+    await expect(page.locator("[data-idea-board-note-input-row] [data-idea-board-note-action]")).toHaveText(["Save", "Cancel"]);
-+    await page.locator("[data-idea-board-note-input]").fill("System note edited inline for Sky Orchard.");
-+    await page.locator("[data-idea-board-note-action='save']").click();
-+    await expect(page.locator("[data-idea-board-notes-table='sky-orchard']")).toContainText("System note edited inline for Sky Orchard.");
-+    await expect(page.locator("[data-idea-board-system-note] [data-idea-board-note-action='delete']")).toHaveCount(0);
+-    const clockRowOrder = await page.locator("[data-idea-board-ideas-body] > tr").evaluateAll((rows) => (
+-      rows.map((row) => row.getAttribute("data-idea-board-idea-row") || row.getAttribute("data-idea-board-expanded-row"))
+-    ));
+-    expect(clockRowOrder.slice(0, 3)).toEqual(["sky-orchard", "clockwork-courier", "clockwork-courier"]);
+-    await expect(page.locator("[data-idea-board-notes-table='clockwork-courier']")).toContainText("Check whether district routing stays readable after the first reset.");
+-    await expect(page.locator("[data-idea-board-notes-table='clockwork-courier']")).not.toContainText("System note edited inline for Sky Orchard.");
++    await page.locator("[data-idea-board-notes-chevron='sky-orchard']").click();
++    await expect(page.locator("[data-idea-board-expanded-row='top-thoughts']")).toHaveCount(0);
++    await expect(page.locator("[data-idea-board-expanded-row='sky-orchard']")).toBeVisible();
++    await page.locator("[data-idea-board-notes-chevron='sky-orchard']").click();
++    await expect(page.locator("[data-idea-board-expanded-row]")).toHaveCount(0);
 
--    await page.locator("[data-idea-board-add-note]").click();
--    await page.locator("[data-idea-board-note-input]").fill("Map the reset rules before writing project records.");
--    await page.locator("[data-idea-board-action='save']").click();
--    await expect(page.locator("[data-idea-board-notes-table]")).toContainText("Map the reset rules before writing project records.");
-+    await page.locator("[data-idea-board-add-note='sky-orchard']").click();
-+    await expect(page.locator("[data-idea-board-note-input-row] [data-idea-board-note-action]")).toHaveText(["Save", "Cancel"]);
-+    await page.locator("[data-idea-board-note-input]").fill("Prototype the storm creature escalation table.");
-+    await page.locator("[data-idea-board-note-action='save']").click();
-+    await expect(page.locator("[data-idea-board-notes-table='sky-orchard']")).toContainText("Prototype the storm creature escalation table.");
-+    await expect(page.locator("[data-idea-board-idea-row='sky-orchard'] [data-idea-board-select-idea]")).toHaveText("3 Notes");
+     await page.locator("[data-idea-board-add-idea]").click();
+-    await expect(page.locator("[data-idea-board-idea-input-row] [data-idea-board-idea-action]")).toHaveText(["Save", "Cancel"]);
+-    await expect(page.locator("[data-idea-board-idea-input-row] [data-idea-board-idea-status-input]")).toHaveCount(1);
+-    await page.locator("[data-idea-board-idea-title-input]").fill("Lantern Reef");
+-    await page.locator("[data-idea-board-idea-pitch-input]").fill("Guide light through a reef that rearranges at dusk.");
++    const ideaInputRow = page.locator("[data-idea-board-idea-input-row]").last();
++    await expect(ideaInputRow.locator("[data-idea-board-idea-action]")).toHaveText(["Save", "Cancel"]);
++    await expect(ideaInputRow.locator("[data-idea-board-idea-status-input]")).toHaveCount(1);
++    await expect(ideaInputRow.locator("td").nth(2)).toHaveText(/\d{4}-\d{2}-\d{2}/);
++    await expect(ideaInputRow.locator("td").nth(3)).toHaveText("0 Notes");
++    await page.locator("[data-idea-board-idea-input]").fill("Lantern Reef");
++    await page.locator("[data-idea-board-pitch-input]").fill("Guide light through a reef that rearranges at dusk.");
+     await page.locator("[data-idea-board-idea-status-input]").selectOption("Parked");
+     await page.locator("[data-idea-board-idea-action='save']").click();
+     await expect(page.locator("[data-idea-board-idea-row='lantern-reef']")).toBeVisible();
+-    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-select-idea]")).toHaveText("0 Notes");
+-    await expect(page.locator("[data-idea-board-expanded-row='lantern-reef']")).toBeVisible();
++    await expect(page.locator("[data-idea-board-notes-count='lantern-reef']")).toHaveText("0 Notes");
++    await expect(page.locator("[data-idea-board-expanded-row='lantern-reef']")).toHaveCount(0);
 
--    await page.locator("[data-idea-board-select-idea='sky-orchard']").click();
--    await expect(page.locator("[data-idea-board-selected-title]")).toHaveText("Notes for Sky Orchard");
--    await expect(page.locator("[data-idea-board-notes-table]")).toContainText("Prototype the storm creature escalation table.");
--    await expect(page.locator("[data-idea-board-notes-table]")).not.toContainText("Map the reset rules before writing project records.");
--    await page.locator("[data-idea-board-notes-table] tbody tr").first().locator("[data-idea-board-action='edit']").click();
--    await page.locator("[data-idea-board-note-input]").fill("Prototype storm creature escalation after core loop review.");
--    await page.locator("[data-idea-board-action='save']").click();
--    await expect(page.locator("[data-idea-board-notes-table]")).toContainText("Prototype storm creature escalation after core loop review.");
-+    await page.locator("[data-idea-board-notes-table='sky-orchard'] tbody tr").first().locator("[data-idea-board-note-action='edit']").click();
-+    await page.locator("[data-idea-board-note-input]").fill("Prototype storm escalation after core loop review.");
-+    await page.locator("[data-idea-board-note-action='save']").click();
-+    await expect(page.locator("[data-idea-board-notes-table='sky-orchard']")).toContainText("Prototype storm escalation after core loop review.");
-+    await page.locator("[data-idea-board-notes-table='sky-orchard'] tbody tr").first().locator("[data-idea-board-note-action='delete']").click();
-+    await expect(page.locator("[data-idea-board-notes-table='sky-orchard']")).not.toContainText("Prototype storm escalation after core loop review.");
-
--    await page.locator("[data-idea-board-notes-table] tbody tr").first().locator("[data-idea-board-action='delete']").click();
--    await expect(page.locator("[data-idea-board-notes-table]")).not.toContainText("Prototype storm creature escalation after core loop review.");
-     await page.locator("[data-idea-board-select-idea='clockwork-courier']").click();
--    await expect(page.locator("[data-idea-board-notes-table]")).toContainText("Map the reset rules before writing project records.");
-+    const clockRowOrder = await page.locator("[data-idea-board-ideas-body] > tr").evaluateAll((rows) => (
-+      rows.map((row) => row.getAttribute("data-idea-board-idea-row") || row.getAttribute("data-idea-board-expanded-row"))
-+    ));
-+    expect(clockRowOrder.slice(0, 3)).toEqual(["sky-orchard", "clockwork-courier", "clockwork-courier"]);
-+    await expect(page.locator("[data-idea-board-notes-table='clockwork-courier']")).toContainText("Check whether district routing stays readable after the first reset.");
-+    await expect(page.locator("[data-idea-board-notes-table='clockwork-courier']")).not.toContainText("System note edited inline for Sky Orchard.");
-+
-+    await page.locator("[data-idea-board-add-idea]").click();
-+    await expect(page.locator("[data-idea-board-idea-input-row] [data-idea-board-idea-action]")).toHaveText(["Save", "Cancel"]);
-+    await expect(page.locator("[data-idea-board-idea-input-row] [data-idea-board-idea-status-input]")).toHaveCount(1);
-+    await page.locator("[data-idea-board-idea-title-input]").fill("Lantern Reef");
-+    await page.locator("[data-idea-board-idea-pitch-input]").fill("Guide light through a reef that rearranges at dusk.");
-+    await page.locator("[data-idea-board-idea-status-input]").selectOption("Parked");
-+    await page.locator("[data-idea-board-idea-action='save']").click();
-+    await expect(page.locator("[data-idea-board-idea-row='lantern-reef']")).toBeVisible();
-+    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-select-idea]")).toHaveText("0 Notes");
-+    await expect(page.locator("[data-idea-board-expanded-row='lantern-reef']")).toBeVisible();
-+
-+    await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='edit']").click();
-+    await expect(page.locator("[data-idea-board-idea-input-row] [data-idea-board-idea-action]")).toHaveText(["Save", "Cancel"]);
-+    await page.locator("[data-idea-board-idea-status-input]").selectOption("Ready to Shape");
-+    await page.locator("[data-idea-board-idea-action='save']").click();
-+    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] td").nth(1)).toHaveText("Ready to Shape");
-+    await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='delete']").click();
-+    await expect(page.locator("[data-idea-board-idea-row='lantern-reef']")).toHaveCount(0);
+     await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='edit']").click();
+     await expect(page.locator("[data-idea-board-idea-input-row] [data-idea-board-idea-action]")).toHaveText(["Save", "Cancel"]);
++    await expect(page.locator("[data-idea-board-idea-status-input]")).toHaveCount(1);
+     await page.locator("[data-idea-board-idea-status-input]").selectOption("Ready to Shape");
+     await page.locator("[data-idea-board-idea-action='save']").click();
+     await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] td").nth(1)).toHaveText("Ready to Shape");
+-    await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='delete']").click();
+-    await expect(page.locator("[data-idea-board-idea-row='lantern-reef']")).toHaveCount(0);
 
      expect(mutatingApiRequests).toEqual([]);
      expect(failedRequests).toEqual([]);
 diff --git a/tests/playwright/tools/ToolboxRoutePages.spec.mjs b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
-index d80985c11..d7bdf8c98 100644
+index d7bdf8c98..62d47cdcf 100644
 --- a/tests/playwright/tools/ToolboxRoutePages.spec.mjs
 +++ b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
 @@ -155,7 +155,7 @@ test("tools route aliases render toolbox tool pages", async ({ page }) => {
    }
  });
 
--test("Idea Board launches from Toolbox with table-first selected notes context", async ({ page }) => {
-+test("Idea Board launches from Toolbox with inline tree grid notes context", async ({ page }) => {
+-test("Idea Board launches from Toolbox with inline tree grid notes context", async ({ page }) => {
++test("Idea Board launches from Toolbox with accordion table notes model", async ({ page }) => {
    const server = await startRepoServer();
    const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
    const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
-@@ -215,29 +215,32 @@ test("Idea Board launches from Toolbox with table-first selected notes context",
-       "Workflow",
-       "Status",
-       "Idea Table",
--      "Selected Notes",
-       "Create Project",
-       "Notes Governance",
-       "Diagnostics",
+@@ -221,24 +221,31 @@ test("Idea Board launches from Toolbox with inline tree grid notes context", asy
      ]);
      await expect(page.locator("[data-idea-board-table]")).toBeVisible();
--    await expect(page.locator("[data-idea-board-notes-table]")).toBeVisible();
--    await expect(page.locator("[data-idea-board-selected-title]")).toHaveText("Notes for Sky Orchard");
--    await expect(page.locator("[data-idea-board-add-note]")).toBeVisible();
-+    await expect(page.locator("[data-idea-board-table] > thead th[scope='col']")).toHaveText(["Idea", "Pitch", "Status", "Updated", "Notes", "Actions"]);
-+    await expect(page.locator("[data-idea-board-expanded-row='sky-orchard']")).toBeVisible();
-+    await expect(page.locator("[data-idea-board-notes-table='sky-orchard']")).toBeVisible();
-+    await expect(page.locator("[data-idea-board-notes-table='sky-orchard'] th[scope='col']")).toHaveText(["Note", "Actions"]);
-+    await expect(page.getByText("Notes for Sky Orchard")).toHaveCount(0);
-+    await expect(page.getByText("Selected idea context")).toHaveCount(0);
-+    await expect(page.locator("[data-idea-board-add-note='sky-orchard']")).toBeVisible();
+     await expect(page.locator("[data-idea-board-table] > thead th[scope='col']")).toHaveText(["Idea", "Pitch", "Status", "Updated", "Notes", "Actions"]);
+-    await expect(page.locator("[data-idea-board-expanded-row='sky-orchard']")).toBeVisible();
+-    await expect(page.locator("[data-idea-board-notes-table='sky-orchard']")).toBeVisible();
+-    await expect(page.locator("[data-idea-board-notes-table='sky-orchard'] th[scope='col']")).toHaveText(["Note", "Actions"]);
++    await expect(page.locator("[data-idea-board-idea-row]")).toHaveCount(3);
++    await expect(page.locator("[data-idea-board-expanded-row]")).toHaveCount(0);
++    await expect(page.locator("[data-idea-board-notes-count='top-thoughts']")).toHaveText("3 Notes");
++    await expect(page.locator("[data-idea-board-notes-count='sky-orchard']")).toHaveText("3 Notes");
++    await expect(page.locator("[data-idea-board-notes-count='clockwork-courier']")).toHaveText("0 Notes");
++    await expect(page.locator("[data-idea-board-status]")).toHaveText("Idea Board table edits are in-page only. No project records, auth, AI, or database behavior is connected.");
++    await page.locator("[data-idea-board-notes-count='top-thoughts']").click();
++    await expect(page.locator("[data-idea-board-expanded-row='top-thoughts']")).toBeVisible();
++    await expect(page.locator("[data-idea-board-notes-header='top-thoughts']")).toHaveText("Notes");
++    await expect(page.locator("[data-idea-board-notes-table='top-thoughts'] th[scope='col']")).toHaveText(["Note", "Actions"]);
+     await expect(page.getByText("Notes for Sky Orchard")).toHaveCount(0);
+     await expect(page.getByText("Selected idea context")).toHaveCount(0);
+-    await expect(page.locator("[data-idea-board-add-note='sky-orchard']")).toBeVisible();
++    await expect(page.getByText("Selected")).toHaveCount(0);
++    await expect(page.locator("[data-idea-board-add-note='top-thoughts']")).toBeVisible();
      await expect(page.locator("[data-idea-board-create-project]")).toBeVisible();
      await expect(page.locator("[data-idea-board-create-project]")).toBeDisabled();
--    await expect(page.locator("[data-idea-board-status]")).toHaveText("Idea Board table is active in-page only. No save, load, auth, AI, or database behavior is connected.");
-+    await expect(page.locator("[data-idea-board-status]")).toHaveText("Idea Board table edits are in-page only. No project records, auth, AI, or database behavior is connected.");
+-    await expect(page.locator("[data-idea-board-status]")).toHaveText("Idea Board table edits are in-page only. No project records, auth, AI, or database behavior is connected.");
      await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
      await expect(page.locator("script[src='toolbox/idea-board/index.js']")).toHaveCount(1);
      mutatingApiRequests.length = 0;
      await page.locator("[data-idea-board-create-project]").evaluate((button) => button.click());
--    await page.locator("[data-idea-board-add-note]").click();
-+    await page.locator("[data-idea-board-add-note='sky-orchard']").click();
+-    await page.locator("[data-idea-board-add-note='sky-orchard']").click();
++    await page.locator("[data-idea-board-add-note='top-thoughts']").click();
      await page.locator("[data-idea-board-note-input]").fill("Capture traversal risks before project creation.");
--    await page.locator("[data-idea-board-action='save']").click();
--    await expect(page.locator("[data-idea-board-notes-table]")).toContainText("Capture traversal risks before project creation.");
-+    await page.locator("[data-idea-board-note-action='save']").click();
-+    await expect(page.locator("[data-idea-board-notes-table='sky-orchard']")).toContainText("Capture traversal risks before project creation.");
-     await page.locator("[data-idea-board-select-idea='clockwork-courier']").click();
--    await expect(page.locator("[data-idea-board-selected-title]")).toHaveText("Notes for Clockwork Courier");
--    await expect(page.locator("[data-idea-board-notes-table]")).not.toContainText("Capture traversal risks before project creation.");
-+    await expect(page.locator("[data-idea-board-expanded-row='clockwork-courier']")).toBeVisible();
-+    await expect(page.locator("[data-idea-board-notes-table='clockwork-courier']")).not.toContainText("Capture traversal risks before project creation.");
+     await page.locator("[data-idea-board-note-action='save']").click();
+-    await expect(page.locator("[data-idea-board-notes-table='sky-orchard']")).toContainText("Capture traversal risks before project creation.");
+-    await page.locator("[data-idea-board-select-idea='clockwork-courier']").click();
++    await expect(page.locator("[data-idea-board-notes-table='top-thoughts']")).toContainText("Capture traversal risks before project creation.");
++    await page.locator("[data-idea-board-notes-chevron='clockwork-courier']").click();
+     await expect(page.locator("[data-idea-board-expanded-row='clockwork-courier']")).toBeVisible();
+     await expect(page.locator("[data-idea-board-notes-table='clockwork-courier']")).not.toContainText("Capture traversal risks before project creation.");
      expect(mutatingApiRequests).toEqual([]);
-
-     expect(failedRequests).toEqual([]);
 diff --git a/toolbox/idea-board/index.html b/toolbox/idea-board/index.html
-index 4ae004668..0b38edaaf 100644
+index 0b38edaaf..a74e747be 100644
 --- a/toolbox/idea-board/index.html
 +++ b/toolbox/idea-board/index.html
-@@ -49,63 +49,22 @@
+@@ -32,7 +32,7 @@
+                             <details class="vertical-accordion" open data-idea-board-section="Workflow">
+                                 <summary>Workflow</summary>
+                                 <div class="accordion-body content-stack">
+-                                    <p>Review ideas directly in the work table, then use the notes table to capture follow-up context.</p>
++                                    <p>Review ideas in the work table, then expand an idea row to manage its notes in place.</p>
+                                 </div>
+                             </details>
+                             <details class="vertical-accordion" data-idea-board-section="Status">
+@@ -49,7 +49,7 @@
                          <p>The primary surface is a table so creators can scan, compare, and govern early ideas without a form-first workflow.</p>
                          <div class="table-wrapper" data-idea-board-section="Idea Table">
                              <table class="data-table data-table--fixed" data-idea-board-table>
--                                <caption>Idea Board table-first work surface</caption>
-+                                <caption>Idea Board inline tree grid work surface</caption>
+-                                <caption>Idea Board inline tree grid work surface</caption>
++                                <caption>Idea Board table with expandable notes rows</caption>
                                  <thead>
                                      <tr>
                                          <th scope="col">Idea</th>
-                                         <th scope="col">Pitch</th>
-                                         <th scope="col">Status</th>
--                                        <th scope="col">Owner</th>
-                                         <th scope="col">Updated</th>
-                                         <th scope="col">Notes</th>
-+                                        <th scope="col">Actions</th>
-                                     </tr>
-                                 </thead>
--                                <tbody>
--                                    <tr data-idea-board-idea-row="sky-orchard" aria-selected="true">
--                                        <th scope="row">Sky Orchard</th>
--                                        <td>Grow floating islands while defending them from storm creatures.</td>
--                                        <td>Exploring</td>
--                                        <td>Creator</td>
--                                        <td>2026-06-20</td>
--                                        <td>
--                                            <button class="btn btn--compact primary" type="button" disabled data-idea-board-select-idea="sky-orchard">Selected</button>
--                                        </td>
--                                    </tr>
--                                    <tr data-idea-board-idea-row="clockwork-courier" aria-selected="false">
--                                        <th scope="row">Clockwork Courier</th>
--                                        <td>Deliver messages through looping city districts before time resets.</td>
--                                        <td>New</td>
--                                        <td>Creator</td>
--                                        <td>2026-06-20</td>
--                                        <td>
--                                            <button class="btn btn--compact" type="button" data-idea-board-select-idea="clockwork-courier">Select</button>
--                                        </td>
--                                    </tr>
--                                </tbody>
-+                                <tbody data-idea-board-ideas-body></tbody>
+@@ -63,9 +63,6 @@
+                                 <tbody data-idea-board-ideas-body></tbody>
                              </table>
                          </div>
--                        <div class="content-stack" data-idea-board-section="Selected Notes">
--                            <h3 data-idea-board-selected-title>Notes for Sky Orchard</h3>
--                            <p id="idea-board-selected-summary" data-idea-board-selected-summary>Selected idea context: Exploring, owned by Creator, updated 2026-06-20.</p>
--                            <div class="table-wrapper">
--                                <table class="data-table data-table--fixed" data-idea-board-notes-table aria-describedby="idea-board-selected-summary">
--                                    <caption data-idea-board-notes-caption>Selected idea notes for Sky Orchard</caption>
--                                    <thead>
--                                        <tr>
--                                            <th scope="col">Note</th>
--                                            <th scope="col">Type</th>
--                                            <th scope="col">Created By</th>
--                                            <th scope="col">Created</th>
--                                            <th scope="col">Updated</th>
--                                            <th scope="col">Actions</th>
--                                        </tr>
--                                    </thead>
--                                    <tbody data-idea-board-notes-body></tbody>
--                                </table>
--                            </div>
--                            <div class="action-group" data-idea-board-add-note-panel>
--                                <button class="btn primary" type="button" data-idea-board-add-note>Add Note</button>
--                            </div>
-+                        <div class="action-group">
-+                            <button class="btn primary" type="button" data-idea-board-add-idea>Add Idea</button>
-                         </div>
+-                        <div class="action-group">
+-                            <button class="btn primary" type="button" data-idea-board-add-idea>Add Idea</button>
+-                        </div>
                      </section>
                      <aside class="tool-column tool-group-idea">
-@@ -123,14 +82,14 @@
+                         <div class="tool-column-header forge-gold">
+@@ -82,7 +79,7 @@
                              <details class="vertical-accordion" data-idea-board-section="Notes Governance">
                                  <summary>Notes Governance</summary>
                                  <div class="accordion-body content-stack">
--                                    <p>Add Note inserts an inline row below the selected idea notes table headers. Creator notes can be edited or deleted. System notes are locked from editing and deletion.</p>
-+                                    <p>Add Note inserts an inline row under the selected idea. Creator notes can be edited or deleted. System notes can be edited but not deleted.</p>
+-                                    <p>Add Note inserts an inline row under the selected idea. Creator notes can be edited or deleted. System notes can be edited but not deleted.</p>
++                                    <p>Add Note inserts an inline row inside the expanded idea notes area. Creator notes can be edited or deleted. System notes can be edited but not deleted.</p>
                                  </div>
                              </details>
                              <details class="vertical-accordion" data-idea-board-section="Diagnostics">
-                                 <summary>Diagnostics</summary>
-                                 <div class="accordion-body content-stack">
-                                     <p>No project records or mutating API requests are created by this tool surface.</p>
--                                    <p class="status" role="status" data-idea-board-status>Idea Board table is active in-page only. No save, load, auth, AI, or database behavior is connected.</p>
-+                                    <p class="status" role="status" data-idea-board-status>Idea Board table edits are in-page only. No project records, auth, AI, or database behavior is connected.</p>
-                                 </div>
-                             </details>
-                         </div>
 diff --git a/toolbox/idea-board/index.js b/toolbox/idea-board/index.js
-index 59424bf5b..711506b77 100644
+index 711506b77..821bfab13 100644
 --- a/toolbox/idea-board/index.js
 +++ b/toolbox/idea-board/index.js
-@@ -1,10 +1,11 @@
--const ideas = Object.freeze([
-+const statusOptions = Object.freeze(["New", "Exploring", "Parked", "Ready to Shape"]);
-+
-+const ideas = [
+@@ -1,78 +1,96 @@
+ const statusOptions = Object.freeze(["New", "Exploring", "Parked", "Ready to Shape"]);
++const userId = "user-1";
+
+-const ideas = [
++const ideaTable = [
    {
-     id: "sky-orchard",
-     title: "Sky Orchard",
-     pitch: "Grow floating islands while defending them from storm creatures.",
+-    id: "sky-orchard",
+-    title: "Sky Orchard",
+-    pitch: "Grow floating islands while defending them from storm creatures.",
++    ideaId: "top-thoughts",
++    userId,
++    idea: "Top Thoughts",
++    pitch: "Smartest person wins...",
      status: "Exploring",
--    owner: "Creator",
      updated: "2026-06-20",
    },
    {
-@@ -12,10 +13,9 @@ const ideas = Object.freeze([
-     title: "Clockwork Courier",
-     pitch: "Deliver messages through looping city districts before time resets.",
+-    id: "clockwork-courier",
+-    title: "Clockwork Courier",
+-    pitch: "Deliver messages through looping city districts before time resets.",
++    ideaId: "sky-orchard",
++    userId,
++    idea: "Sky Orchard",
++    pitch: "Grow floating islands...",
++    status: "Exploring",
++    updated: "2026-06-20",
++  },
++  {
++    ideaId: "clockwork-courier",
++    userId,
++    idea: "Clockwork Courier",
++    pitch: "Deliver messages through looping city...",
      status: "New",
--    owner: "Creator",
      updated: "2026-06-20",
    },
+ ];
+
+-const notesByIdea = new Map([
+-  [
+-    "sky-orchard",
+-    [
+-      {
+-        id: "sky-system-origin",
+-        note: "System seed note: compare early Sky Orchard ideas before creating a project.",
+-        updated: "2026-06-20",
+-        system: true,
+-      },
+-      {
+-        id: "sky-creator-next-question",
+-        note: "Ask whether the core loop is resource planning, action defense, or both.",
+-        updated: "2026-06-20",
+-        system: false,
+-      },
+-    ],
+-  ],
+-  [
+-    "clockwork-courier",
+-    [
+-      {
+-        id: "clock-system-origin",
+-        note: "System seed note: keep Clockwork Courier scoped until the time-loop hook is clear.",
+-        updated: "2026-06-20",
+-        system: true,
+-      },
+-      {
+-        id: "clock-creator-route-risk",
+-        note: "Check whether district routing stays readable after the first reset.",
+-        updated: "2026-06-20",
+-        system: false,
+-      },
+-    ],
+-  ],
 -]);
++const noteTable = [
++  {
++    noteId: "top-system-origin",
++    ideaId: "top-thoughts",
++    note: "System seed note: keep the sharpest premise at the top of the board.",
++    system: true,
++    updated: "2026-06-20",
++  },
++  {
++    noteId: "top-creator-win-condition",
++    ideaId: "top-thoughts",
++    note: "Define how players prove they made the smartest move.",
++    system: false,
++    updated: "2026-06-20",
++  },
++  {
++    noteId: "top-creator-opponent",
++    ideaId: "top-thoughts",
++    note: "List opponent behaviors that make clever play visible.",
++    system: false,
++    updated: "2026-06-20",
++  },
++  {
++    noteId: "sky-system-origin",
++    ideaId: "sky-orchard",
++    note: "System seed note: compare early Sky Orchard ideas before creating a project.",
++    system: true,
++    updated: "2026-06-20",
++  },
++  {
++    noteId: "sky-creator-loop",
++    ideaId: "sky-orchard",
++    note: "Ask whether the core loop is resource planning, action defense, or both.",
++    system: false,
++    updated: "2026-06-20",
++  },
++  {
++    noteId: "sky-creator-storm",
++    ideaId: "sky-orchard",
++    note: "Prototype the storm creature escalation table.",
++    system: false,
++    updated: "2026-06-20",
++  },
 +];
 
- const notesByIdea = new Map([
-   [
-@@ -24,18 +24,12 @@ const notesByIdea = new Map([
-       {
-         id: "sky-system-origin",
-         note: "System seed note: compare early Sky Orchard ideas before creating a project.",
--        type: "System",
--        createdBy: "System",
--        created: "2026-06-20",
-         updated: "2026-06-20",
-         system: true,
-       },
-       {
-         id: "sky-creator-next-question",
-         note: "Ask whether the core loop is resource planning, action defense, or both.",
--        type: "Creator",
--        createdBy: "Creator",
--        created: "2026-06-20",
-         updated: "2026-06-20",
-         system: false,
-       },
-@@ -47,18 +41,12 @@ const notesByIdea = new Map([
-       {
-         id: "clock-system-origin",
-         note: "System seed note: keep Clockwork Courier scoped until the time-loop hook is clear.",
--        type: "System",
--        createdBy: "System",
--        created: "2026-06-20",
-         updated: "2026-06-20",
-         system: true,
-       },
-       {
-         id: "clock-creator-route-risk",
-         note: "Check whether district routing stays readable after the first reset.",
--        type: "Creator",
--        createdBy: "Creator",
--        created: "2026-06-20",
-         updated: "2026-06-20",
-         system: false,
-       },
-@@ -68,7 +56,9 @@ const notesByIdea = new Map([
-
  const state = {
-   selectedIdeaId: "sky-orchard",
-+  editingIdeaId: null,
+-  selectedIdeaId: "sky-orchard",
++  expandedIdeaId: null,
+   editingIdeaId: null,
    editingNoteId: null,
-+  addingIdea: false,
-   addingNote: false,
+   addingIdea: false,
+-  addingNote: false,
++  addingNoteIdeaId: null,
  };
 
-@@ -77,11 +67,17 @@ function today() {
+ function today() {
+   return new Date().toISOString().slice(0, 10);
  }
 
- function selectedIdea() {
--  return ideas.find((idea) => idea.id === state.selectedIdeaId);
-+  return ideas.find((idea) => idea.id === state.selectedIdeaId) || null;
-+}
-+
-+function notesForIdea(ideaId) {
-+  if (!notesByIdea.has(ideaId)) notesByIdea.set(ideaId, []);
-+  return notesByIdea.get(ideaId);
+-function selectedIdea() {
+-  return ideas.find((idea) => idea.id === state.selectedIdeaId) || null;
++function ideaRecord(ideaId) {
++  return ideaTable.find((record) => record.ideaId === ideaId) || null;
  }
 
--function selectedNotes() {
--  return notesByIdea.get(state.selectedIdeaId);
-+function noteCountLabel(ideaId) {
-+  const count = notesForIdea(ideaId).length;
-+  return `${count} ${count === 1 ? "Note" : "Notes"}`;
+ function notesForIdea(ideaId) {
+-  if (!notesByIdea.has(ideaId)) notesByIdea.set(ideaId, []);
+-  return notesByIdea.get(ideaId);
++  return noteTable.filter((record) => record.ideaId === ideaId);
  }
 
- function cell(text) {
-@@ -90,70 +86,128 @@ function cell(text) {
-   return td;
- }
-
--function actionButton(label, action, variant = "") {
-+function actionButton(label, action, datasetName, variant = "") {
-   const control = document.createElement("button");
-   control.className = variant ? `btn btn--compact ${variant}` : "btn btn--compact";
-   control.type = "button";
-   control.textContent = label;
--  control.dataset.ideaBoardAction = action;
-+  control.dataset[datasetName] = action;
-   return control;
- }
-
-+function textInput(label, value = "") {
-+  const input = document.createElement("input");
-+  input.type = "text";
-+  input.value = value;
-+  input.setAttribute("aria-label", label);
-+  return input;
-+}
-+
-+function statusSelect(value) {
-+  const select = document.createElement("select");
-+  select.setAttribute("aria-label", "Idea status");
-+  select.dataset.ideaBoardIdeaStatusInput = "true";
-+  for (const optionValue of statusOptions) {
-+    const option = document.createElement("option");
-+    option.value = optionValue;
-+    option.textContent = optionValue;
-+    option.selected = optionValue === value;
-+    select.append(option);
-+  }
-+  return select;
-+}
-+
- function updateStatus(root, message) {
-   const status = root.querySelector("[data-idea-board-status]");
+ function noteCountLabel(ideaId) {
+@@ -122,29 +140,29 @@ function updateStatus(root, message) {
    if (status) status.textContent = message;
  }
 
--function renderIdeaSelection(root) {
--  for (const row of root.querySelectorAll("[data-idea-board-idea-row]")) {
--    const rowSelected = row.dataset.ideaBoardIdeaRow === state.selectedIdeaId;
--    row.setAttribute("aria-selected", String(rowSelected));
--    const selectButton = row.querySelector("[data-idea-board-select-idea]");
--    if (selectButton) {
--      selectButton.disabled = rowSelected;
--      selectButton.classList.toggle("primary", rowSelected);
--      selectButton.textContent = rowSelected ? "Selected" : "Select";
--    }
--  }
-+function renderIdeaInputRow(tbody, idea = null) {
-+  const row = document.createElement("tr");
-+  row.dataset.ideaBoardIdeaInputRow = "true";
-+  if (idea) row.dataset.ideaId = idea.id;
-+
-+  const titleCell = document.createElement("th");
-+  titleCell.scope = "row";
-+  const titleInput = textInput(idea ? "Edit idea title" : "New idea title", idea?.title || "");
-+  titleInput.dataset.ideaBoardIdeaTitleInput = "true";
-+  titleCell.append(titleInput);
-+  row.append(titleCell);
-+
-+  const pitchCell = document.createElement("td");
-+  const pitchInput = textInput(idea ? "Edit idea pitch" : "New idea pitch", idea?.pitch || "");
-+  pitchInput.dataset.ideaBoardIdeaPitchInput = "true";
-+  pitchCell.append(pitchInput);
-+  row.append(pitchCell);
-+
-+  const statusCell = document.createElement("td");
-+  statusCell.append(statusSelect(idea?.status || "New"));
-+  row.append(statusCell);
-+  row.append(cell(idea?.updated || today()));
-+  row.append(cell(idea ? noteCountLabel(idea.id) : "0 Notes"));
-+
-+  const actions = document.createElement("td");
-+  actions.append(
-+    actionButton("Save", "save", "ideaBoardIdeaAction", "primary"),
-+    " ",
-+    actionButton("Cancel", "cancel", "ideaBoardIdeaAction"),
-+  );
-+  row.append(actions);
-+  tbody.append(row);
-+  titleInput.focus();
- }
-
--function renderSelectedIdeaContext(root) {
--  const idea = selectedIdea();
--  if (!idea) {
--    updateStatus(root, `Idea Board cannot find selected idea: ${state.selectedIdeaId}.`);
--    return;
--  }
--  const title = root.querySelector("[data-idea-board-selected-title]");
--  const summary = root.querySelector("[data-idea-board-selected-summary]");
--  const caption = root.querySelector("[data-idea-board-notes-caption]");
--  if (title) title.textContent = `Notes for ${idea.title}`;
--  if (summary) {
--    summary.textContent = `Selected idea context: ${idea.status}, owned by ${idea.owner}, updated ${idea.updated}.`;
--  }
--  if (caption) caption.textContent = `Selected idea notes for ${idea.title}`;
-+function renderIdeaRow(tbody, idea) {
-+  const row = document.createElement("tr");
-+  const selected = idea.id === state.selectedIdeaId;
-+  row.dataset.ideaBoardIdeaRow = idea.id;
-+  row.setAttribute("aria-selected", String(selected));
-+
-+  const title = document.createElement("th");
-+  title.scope = "row";
-+  title.textContent = idea.title;
-+  row.append(title);
-+  row.append(cell(idea.pitch));
-+  row.append(cell(idea.status));
-+  row.append(cell(idea.updated));
-+
-+  const notes = document.createElement("td");
-+  const notesButton = document.createElement("button");
-+  notesButton.className = selected ? "btn btn--compact primary" : "btn btn--compact";
-+  notesButton.type = "button";
-+  notesButton.textContent = noteCountLabel(idea.id);
-+  notesButton.dataset.ideaBoardSelectIdea = idea.id;
-+  notesButton.setAttribute("aria-expanded", String(selected));
-+  notes.append(notesButton);
-+  row.append(notes);
-+
-+  const actions = document.createElement("td");
-+  actions.append(
-+    actionButton("Edit", "edit", "ideaBoardIdeaAction"),
-+    " ",
-+    actionButton("Delete", "delete", "ideaBoardIdeaAction"),
-+  );
-+  row.append(actions);
-+  tbody.append(row);
- }
-
--function renderInputRow(tbody, note = null) {
-+function renderNoteInputRow(tbody, note = null) {
+-function renderIdeaInputRow(tbody, idea = null) {
++function renderIdeaInputRow(tbody, record = null) {
    const row = document.createElement("tr");
--  row.dataset.ideaBoardInlineInputRow = "true";
-+  row.dataset.ideaBoardNoteInputRow = "true";
-   if (note) row.dataset.noteId = note.id;
+   row.dataset.ideaBoardIdeaInputRow = "true";
+-  if (idea) row.dataset.ideaId = idea.id;
++  if (record) row.dataset.ideaId = record.ideaId;
+
+-  const titleCell = document.createElement("th");
+-  titleCell.scope = "row";
+-  const titleInput = textInput(idea ? "Edit idea title" : "New idea title", idea?.title || "");
+-  titleInput.dataset.ideaBoardIdeaTitleInput = "true";
+-  titleCell.append(titleInput);
+-  row.append(titleCell);
++  const ideaCell = document.createElement("th");
++  ideaCell.scope = "row";
++  const ideaInput = textInput(record ? "Edit idea" : "New idea", record?.idea || "");
++  ideaInput.dataset.ideaBoardIdeaInput = "true";
++  ideaCell.append(ideaInput);
++  row.append(ideaCell);
+
+   const pitchCell = document.createElement("td");
+-  const pitchInput = textInput(idea ? "Edit idea pitch" : "New idea pitch", idea?.pitch || "");
+-  pitchInput.dataset.ideaBoardIdeaPitchInput = "true";
++  const pitchInput = textInput(record ? "Edit pitch" : "New pitch", record?.pitch || "");
++  pitchInput.dataset.ideaBoardPitchInput = "true";
+   pitchCell.append(pitchInput);
+   row.append(pitchCell);
+
+   const statusCell = document.createElement("td");
+-  statusCell.append(statusSelect(idea?.status || "New"));
++  statusCell.append(statusSelect(record?.status || "New"));
+   row.append(statusCell);
+-  row.append(cell(idea?.updated || today()));
+-  row.append(cell(idea ? noteCountLabel(idea.id) : "0 Notes"));
++  row.append(cell(record?.updated || today()));
++  row.append(cell(record ? noteCountLabel(record.ideaId) : "0 Notes"));
+
+   const actions = document.createElement("td");
+   actions.append(
+@@ -154,31 +172,40 @@ function renderIdeaInputRow(tbody, idea = null) {
+   );
+   row.append(actions);
+   tbody.append(row);
+-  titleInput.focus();
++  ideaInput.focus();
+ }
+
+-function renderIdeaRow(tbody, idea) {
++function renderIdeaRow(tbody, record) {
+   const row = document.createElement("tr");
+-  const selected = idea.id === state.selectedIdeaId;
+-  row.dataset.ideaBoardIdeaRow = idea.id;
+-  row.setAttribute("aria-selected", String(selected));
+-
+-  const title = document.createElement("th");
+-  title.scope = "row";
+-  title.textContent = idea.title;
+-  row.append(title);
+-  row.append(cell(idea.pitch));
+-  row.append(cell(idea.status));
+-  row.append(cell(idea.updated));
++  const expanded = record.ideaId === state.expandedIdeaId;
++  row.dataset.ideaBoardIdeaRow = record.ideaId;
++
++  const idea = document.createElement("th");
++  idea.scope = "row";
++  idea.textContent = record.idea;
++  row.append(idea);
++  row.append(cell(record.pitch));
++  row.append(cell(record.status));
++  row.append(cell(record.updated));
+
+   const notes = document.createElement("td");
+-  const notesButton = document.createElement("button");
+-  notesButton.className = selected ? "btn btn--compact primary" : "btn btn--compact";
+-  notesButton.type = "button";
+-  notesButton.textContent = noteCountLabel(idea.id);
+-  notesButton.dataset.ideaBoardSelectIdea = idea.id;
+-  notesButton.setAttribute("aria-expanded", String(selected));
+-  notes.append(notesButton);
++  const notesCount = document.createElement("button");
++  notesCount.className = expanded ? "btn btn--compact primary" : "btn btn--compact";
++  notesCount.type = "button";
++  notesCount.textContent = noteCountLabel(record.ideaId);
++  notesCount.dataset.ideaBoardToggleNotes = record.ideaId;
++  notesCount.dataset.ideaBoardNotesCount = record.ideaId;
++  notesCount.setAttribute("aria-expanded", String(expanded));
++
++  const notesChevron = document.createElement("button");
++  notesChevron.className = expanded ? "btn btn--compact primary" : "btn btn--compact";
++  notesChevron.type = "button";
++  notesChevron.textContent = expanded ? "v" : ">";
++  notesChevron.dataset.ideaBoardToggleNotes = record.ideaId;
++  notesChevron.dataset.ideaBoardNotesChevron = record.ideaId;
++  notesChevron.setAttribute("aria-label", `${expanded ? "Collapse" : "Expand"} notes for ${record.idea}`);
++  notesChevron.setAttribute("aria-expanded", String(expanded));
++  notes.append(notesCount, " ", notesChevron);
+   row.append(notes);
+
+   const actions = document.createElement("td");
+@@ -191,13 +218,14 @@ function renderIdeaRow(tbody, idea) {
+   tbody.append(row);
+ }
+
+-function renderNoteInputRow(tbody, note = null) {
++function renderNoteInputRow(tbody, ideaId, record = null) {
+   const row = document.createElement("tr");
+   row.dataset.ideaBoardNoteInputRow = "true";
+-  if (note) row.dataset.noteId = note.id;
++  row.dataset.ideaId = ideaId;
++  if (record) row.dataset.noteId = record.noteId;
 
    const noteCell = document.createElement("td");
--  const input = document.createElement("input");
--  input.type = "text";
--  input.value = note?.note || "";
--  input.setAttribute("aria-label", note ? "Edit selected idea note text" : "New selected idea note text");
-+  const input = textInput(note ? "Edit note text" : "New note text", note?.note || "");
+-  const input = textInput(note ? "Edit note text" : "New note text", note?.note || "");
++  const input = textInput(record ? "Edit note" : "New note", record?.note || "");
    input.dataset.ideaBoardNoteInput = "true";
    noteCell.append(input);
    row.append(noteCell);
-
--  row.append(cell(note?.type || "Creator"));
--  row.append(cell(note?.createdBy || "Creator"));
--  row.append(cell(note?.created || today()));
--  row.append(cell(today()));
--
-   const actions = document.createElement("td");
--  actions.append(actionButton("Save", "save", "primary"), " ", actionButton("Cancel", "cancel"));
-+  actions.append(
-+    actionButton("Save", "save", "ideaBoardNoteAction", "primary"),
-+    " ",
-+    actionButton("Cancel", "cancel", "ideaBoardNoteAction"),
-+  );
-   row.append(actions);
-   tbody.append(row);
+@@ -213,195 +241,218 @@ function renderNoteInputRow(tbody, note = null) {
    input.focus();
-@@ -164,46 +218,116 @@ function renderNoteRow(tbody, note) {
-   row.dataset.noteId = note.id;
-   if (note.system) row.dataset.ideaBoardSystemNote = "true";
-   row.append(cell(note.note));
--  row.append(cell(note.type));
--  row.append(cell(note.createdBy));
--  row.append(cell(note.created));
--  row.append(cell(note.updated));
+ }
+
+-function renderNoteRow(tbody, note) {
++function renderNoteRow(tbody, record) {
+   const row = document.createElement("tr");
+-  row.dataset.noteId = note.id;
+-  if (note.system) row.dataset.ideaBoardSystemNote = "true";
+-  row.append(cell(note.note));
++  row.dataset.noteId = record.noteId;
++  row.dataset.ideaId = record.ideaId;
++  if (record.system) row.dataset.ideaBoardSystemNote = "true";
++  row.append(cell(record.note));
 
    const actions = document.createElement("td");
--  if (note.system) {
--    actions.textContent = "System locked";
--  } else {
--    actions.append(actionButton("Edit", "edit"), " ", actionButton("Delete", "delete"));
-+  actions.append(actionButton("Edit", "edit", "ideaBoardNoteAction"));
-+  if (!note.system) {
-+    actions.append(" ", actionButton("Delete", "delete", "ideaBoardNoteAction"));
+   actions.append(actionButton("Edit", "edit", "ideaBoardNoteAction"));
+-  if (!note.system) {
++  if (!record.system) {
+     actions.append(" ", actionButton("Delete", "delete", "ideaBoardNoteAction"));
    }
    row.append(actions);
    tbody.append(row);
  }
 
--function renderNotes(root) {
--  const tbody = root.querySelector("[data-idea-board-notes-body]");
--  const notes = selectedNotes();
--  if (!tbody || !notes) {
--    updateStatus(root, `Idea Board cannot load notes for selected idea: ${state.selectedIdeaId}.`);
--    return;
--  }
--  tbody.replaceChildren();
--  if (state.addingNote) renderInputRow(tbody);
--  for (const note of notes) {
-+function renderExpandedNotesRow(tbody, idea) {
-+  const row = document.createElement("tr");
-+  row.dataset.ideaBoardExpandedRow = idea.id;
-+
-+  const content = document.createElement("td");
-+  content.colSpan = 6;
-+
-+  const wrapper = document.createElement("div");
-+  wrapper.className = "content-stack";
-+
-+  const tableWrapper = document.createElement("div");
-+  tableWrapper.className = "table-wrapper";
-+  const notesTable = document.createElement("table");
-+  notesTable.className = "data-table data-table--fixed";
-+  notesTable.dataset.ideaBoardNotesTable = idea.id;
-+  notesTable.setAttribute("aria-label", `${idea.title} notes`);
-+  notesTable.innerHTML = "<thead><tr><th scope=\"col\">Note</th><th scope=\"col\">Actions</th></tr></thead>";
-+
-+  const notesBody = document.createElement("tbody");
-+  notesBody.dataset.ideaBoardNotesBody = idea.id;
-+  notesTable.append(notesBody);
-+  tableWrapper.append(notesTable);
-+  wrapper.append(tableWrapper);
-+
-+  const controls = document.createElement("div");
-+  controls.className = "action-group";
-+  const addNote = actionButton("Add Note", "add", "ideaBoardNoteAction", "primary");
-+  addNote.dataset.ideaBoardAddNote = idea.id;
-+  controls.append(addNote);
-+  wrapper.append(controls);
-+
-+  content.append(wrapper);
-+  row.append(content);
-+  tbody.append(row);
-+
-+  if (state.addingNote) renderNoteInputRow(notesBody);
-+  for (const note of notesForIdea(idea.id)) {
-     if (state.editingNoteId === note.id) {
--      renderInputRow(tbody, note);
-+      renderNoteInputRow(notesBody, note);
-     } else {
--      renderNoteRow(tbody, note);
+-function renderExpandedNotesRow(tbody, idea) {
++function renderExpandedNotesRow(tbody, record) {
+   const row = document.createElement("tr");
+-  row.dataset.ideaBoardExpandedRow = idea.id;
++  row.dataset.ideaBoardExpandedRow = record.ideaId;
+
+   const content = document.createElement("td");
+   content.colSpan = 6;
+
+   const wrapper = document.createElement("div");
+   wrapper.className = "content-stack";
++  const heading = document.createElement("h3");
++  heading.textContent = "Notes";
++  heading.dataset.ideaBoardNotesHeader = record.ideaId;
++  wrapper.append(heading);
+
+   const tableWrapper = document.createElement("div");
+   tableWrapper.className = "table-wrapper";
+   const notesTable = document.createElement("table");
+   notesTable.className = "data-table data-table--fixed";
+-  notesTable.dataset.ideaBoardNotesTable = idea.id;
+-  notesTable.setAttribute("aria-label", `${idea.title} notes`);
++  notesTable.dataset.ideaBoardNotesTable = record.ideaId;
++  notesTable.setAttribute("aria-label", `${record.idea} notes`);
+   notesTable.innerHTML = "<thead><tr><th scope=\"col\">Note</th><th scope=\"col\">Actions</th></tr></thead>";
+
+   const notesBody = document.createElement("tbody");
+-  notesBody.dataset.ideaBoardNotesBody = idea.id;
++  notesBody.dataset.ideaBoardNotesBody = record.ideaId;
+   notesTable.append(notesBody);
+   tableWrapper.append(notesTable);
+   wrapper.append(tableWrapper);
+
++  for (const note of notesForIdea(record.ideaId)) {
++    if (state.editingNoteId === note.noteId) {
++      renderNoteInputRow(notesBody, record.ideaId, note);
++    } else {
 +      renderNoteRow(notesBody, note);
-     }
-   }
++    }
++  }
++  if (state.addingNoteIdeaId === record.ideaId) renderNoteInputRow(notesBody, record.ideaId);
++
+   const controls = document.createElement("div");
+   controls.className = "action-group";
+   const addNote = actionButton("Add Note", "add", "ideaBoardNoteAction", "primary");
+-  addNote.dataset.ideaBoardAddNote = idea.id;
++  addNote.dataset.ideaBoardAddNote = record.ideaId;
+   controls.append(addNote);
+   wrapper.append(controls);
+
+   content.append(wrapper);
+   row.append(content);
+   tbody.append(row);
++}
+
+-  if (state.addingNote) renderNoteInputRow(notesBody);
+-  for (const note of notesForIdea(idea.id)) {
+-    if (state.editingNoteId === note.id) {
+-      renderNoteInputRow(notesBody, note);
+-    } else {
+-      renderNoteRow(notesBody, note);
+-    }
+-  }
++function renderAddIdeaRow(tbody) {
++  const row = document.createElement("tr");
++  row.dataset.ideaBoardAddIdeaRow = "true";
++  const prompt = document.createElement("td");
++  prompt.colSpan = 5;
++  prompt.textContent = "Add another idea";
++  row.append(prompt);
++  const actions = document.createElement("td");
++  const addIdea = actionButton("Add Idea", "add", "ideaBoardIdeaAction", "primary");
++  addIdea.dataset.ideaBoardAddIdea = "true";
++  actions.append(addIdea);
++  row.append(actions);
++  tbody.append(row);
  }
 
  function render(root) {
--  renderIdeaSelection(root);
--  renderSelectedIdeaContext(root);
--  renderNotes(root);
-+  const tbody = root.querySelector("[data-idea-board-ideas-body]");
-+  if (!tbody) return;
-+  tbody.replaceChildren();
-+  for (const idea of ideas) {
-+    if (state.editingIdeaId === idea.id) {
-+      renderIdeaInputRow(tbody, idea);
-+    } else {
-+      renderIdeaRow(tbody, idea);
-+    }
-+    if (state.selectedIdeaId === idea.id) renderExpandedNotesRow(tbody, idea);
+   const tbody = root.querySelector("[data-idea-board-ideas-body]");
+   if (!tbody) return;
+   tbody.replaceChildren();
+-  for (const idea of ideas) {
+-    if (state.editingIdeaId === idea.id) {
+-      renderIdeaInputRow(tbody, idea);
++  for (const record of ideaTable) {
++    if (state.editingIdeaId === record.ideaId) {
++      renderIdeaInputRow(tbody, record);
+     } else {
+-      renderIdeaRow(tbody, idea);
++      renderIdeaRow(tbody, record);
+     }
+-    if (state.selectedIdeaId === idea.id) renderExpandedNotesRow(tbody, idea);
++    if (state.expandedIdeaId === record.ideaId) renderExpandedNotesRow(tbody, record);
 +  }
-+  if (state.addingIdea) renderIdeaInputRow(tbody);
-+}
-+
-+function slugifyTitle(title) {
-+  const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-+  return slug || `idea-${Date.now()}`;
++  if (state.addingIdea) {
++    renderIdeaInputRow(tbody);
++  } else {
++    renderAddIdeaRow(tbody);
+   }
+-  if (state.addingIdea) renderIdeaInputRow(tbody);
  }
 
--function saveRow(root, row) {
-+function saveIdeaRow(root, row) {
-+  const title = row.querySelector("[data-idea-board-idea-title-input]")?.value.trim();
-+  const pitch = row.querySelector("[data-idea-board-idea-pitch-input]")?.value.trim();
-+  const status = row.querySelector("[data-idea-board-idea-status-input]")?.value;
-+  if (!title || !pitch || !status) {
-+    updateStatus(root, "Enter an idea, pitch, and status before saving.");
-+    return;
-+  }
-+
-+  const ideaId = row.dataset.ideaId;
-+  if (ideaId) {
-+    const idea = ideas.find((item) => item.id === ideaId);
-+    if (!idea) {
-+      updateStatus(root, `Idea Board cannot find idea: ${ideaId}.`);
-+      return;
-+    }
-+    idea.title = title;
-+    idea.pitch = pitch;
-+    idea.status = status;
-+    idea.updated = today();
-+    state.editingIdeaId = null;
-+    updateStatus(root, `Updated ${idea.title}.`);
-+  } else {
-+    const baseId = slugifyTitle(title);
-+    const id = ideas.some((idea) => idea.id === baseId) ? `${baseId}-${Date.now()}` : baseId;
-+    ideas.push({ id, title, pitch, status, updated: today() });
-+    notesByIdea.set(id, []);
-+    state.selectedIdeaId = id;
-+    state.addingIdea = false;
-+    updateStatus(root, `Added ${title}.`);
-+  }
-+  render(root);
-+}
-+
-+function saveNoteRow(root, row) {
-   const input = row.querySelector("[data-idea-board-note-input]");
-   const value = input?.value.trim();
-   if (!value) {
-@@ -211,17 +335,12 @@ function saveRow(root, row) {
+-function slugifyTitle(title) {
+-  const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+-  return slug || `idea-${Date.now()}`;
++function ideaIdFromText(text) {
++  const base = text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
++  return base || `idea-${Date.now()}`;
+ }
+
+ function saveIdeaRow(root, row) {
+-  const title = row.querySelector("[data-idea-board-idea-title-input]")?.value.trim();
+-  const pitch = row.querySelector("[data-idea-board-idea-pitch-input]")?.value.trim();
++  const idea = row.querySelector("[data-idea-board-idea-input]")?.value.trim();
++  const pitch = row.querySelector("[data-idea-board-pitch-input]")?.value.trim();
+   const status = row.querySelector("[data-idea-board-idea-status-input]")?.value;
+-  if (!title || !pitch || !status) {
++  if (!idea || !pitch || !status) {
+     updateStatus(root, "Enter an idea, pitch, and status before saving.");
      return;
    }
 
--  const notes = selectedNotes();
--  if (!notes) {
--    updateStatus(root, `Idea Board cannot save notes for selected idea: ${state.selectedIdeaId}.`);
--    return;
--  }
--
-+  const notes = notesForIdea(state.selectedIdeaId);
-   const noteId = row.dataset.noteId;
-   if (noteId) {
--    const note = notes.find((item) => item.id === noteId && !item.system);
-+    const note = notes.find((item) => item.id === noteId);
-     if (!note) {
--      updateStatus(root, "Only creator notes can be edited.");
-+      updateStatus(root, `Idea Board cannot find note: ${noteId}.`);
+   const ideaId = row.dataset.ideaId;
+   if (ideaId) {
+-    const idea = ideas.find((item) => item.id === ideaId);
+-    if (!idea) {
++    const record = ideaRecord(ideaId);
++    if (!record) {
+       updateStatus(root, `Idea Board cannot find idea: ${ideaId}.`);
        return;
      }
-     note.note = value;
-@@ -230,11 +349,8 @@ function saveRow(root, row) {
-     updateStatus(root, `Updated note for ${selectedIdea().title}.`);
+-    idea.title = title;
+-    idea.pitch = pitch;
+-    idea.status = status;
+-    idea.updated = today();
++    record.idea = idea;
++    record.pitch = pitch;
++    record.status = status;
++    record.updated = today();
+     state.editingIdeaId = null;
+-    updateStatus(root, `Updated ${idea.title}.`);
++    updateStatus(root, `Updated ${record.idea}.`);
    } else {
-     notes.unshift({
--      id: `creator-${state.selectedIdeaId}-${Date.now()}`,
-+      id: `note-${state.selectedIdeaId}-${Date.now()}`,
-       note: value,
--      type: "Creator",
--      createdBy: "Creator",
--      created: today(),
-       updated: today(),
-       system: false,
-     });
-@@ -244,51 +360,117 @@ function saveRow(root, row) {
+-    const baseId = slugifyTitle(title);
+-    const id = ideas.some((idea) => idea.id === baseId) ? `${baseId}-${Date.now()}` : baseId;
+-    ideas.push({ id, title, pitch, status, updated: today() });
+-    notesByIdea.set(id, []);
+-    state.selectedIdeaId = id;
++    const baseIdeaId = ideaIdFromText(idea);
++    const newIdeaId = ideaTable.some((record) => record.ideaId === baseIdeaId) ? `${baseIdeaId}-${Date.now()}` : baseIdeaId;
++    ideaTable.push({ ideaId: newIdeaId, userId, idea, pitch, status, updated: today() });
+     state.addingIdea = false;
+-    updateStatus(root, `Added ${title}.`);
++    updateStatus(root, `Added ${idea}.`);
+   }
    render(root);
  }
 
--function handleClick(root, event) {
--  const ideaButton = event.target.closest("[data-idea-board-select-idea]");
--  if (ideaButton) {
--    state.selectedIdeaId = ideaButton.dataset.ideaBoardSelectIdea;
--    state.addingNote = false;
--    state.editingNoteId = null;
--    updateStatus(root, `Selected ${selectedIdea().title}. Notes now show that idea's context.`);
--    render(root);
-+function selectIdea(root, ideaId) {
-+  if (!ideas.some((idea) => idea.id === ideaId)) {
-+    updateStatus(root, `Idea Board cannot select missing idea: ${ideaId}.`);
+ function saveNoteRow(root, row) {
+-  const input = row.querySelector("[data-idea-board-note-input]");
+-  const value = input?.value.trim();
++  const ideaId = row.dataset.ideaId;
++  const value = row.querySelector("[data-idea-board-note-input]")?.value.trim();
+   if (!value) {
+     updateStatus(root, "Enter note text before saving.");
      return;
    }
-+  state.selectedIdeaId = ideaId;
-+  state.editingIdeaId = null;
-+  state.editingNoteId = null;
-+  state.addingNote = false;
-+  updateStatus(root, `Expanded notes for ${selectedIdea().title}.`);
-+  render(root);
-+}
 
--  const addButton = event.target.closest("[data-idea-board-add-note]");
--  if (addButton) {
--    state.addingNote = true;
-+function deleteIdea(root, ideaId) {
-+  const index = ideas.findIndex((idea) => idea.id === ideaId);
-+  if (index < 0) {
-+    updateStatus(root, `Idea Board cannot delete missing idea: ${ideaId}.`);
-+    return;
-+  }
-+  const [removed] = ideas.splice(index, 1);
-+  notesByIdea.delete(ideaId);
-+  if (state.selectedIdeaId === ideaId) {
-+    state.selectedIdeaId = ideas[Math.min(index, ideas.length - 1)]?.id || "";
-     state.editingNoteId = null;
--    updateStatus(root, `Adding a note for ${selectedIdea().title}.`);
-+    state.addingNote = false;
-+  }
-+  updateStatus(root, `Deleted ${removed.title}.`);
-+  render(root);
-+}
-+
-+function handleIdeaAction(root, actionControl) {
-+  const action = actionControl.dataset.ideaBoardIdeaAction;
-+  const row = actionControl.closest("tr");
-+  const ideaId = actionControl.dataset.ideaBoardSelectIdea || row?.dataset.ideaBoardIdeaRow || row?.dataset.ideaId;
-+  if (action === "select") {
-+    selectIdea(root, ideaId);
-+  } else if (action === "edit") {
-+    state.editingIdeaId = ideaId;
-+    state.addingIdea = false;
-+    state.editingNoteId = null;
-+    state.addingNote = false;
-+    updateStatus(root, `Editing ${ideas.find((idea) => idea.id === ideaId)?.title}.`);
-     render(root);
--    return;
-+  } else if (action === "delete") {
-+    deleteIdea(root, ideaId);
-+  } else if (action === "cancel") {
-+    state.editingIdeaId = null;
-+    state.addingIdea = false;
-+    updateStatus(root, "Cancelled idea edit.");
-+    render(root);
-+  } else if (action === "save") {
-+    saveIdeaRow(root, row);
-   }
-+}
-
--  const actionControl = event.target.closest("[data-idea-board-action]");
--  if (!actionControl) return;
-+function handleNoteAction(root, actionControl) {
-+  const action = actionControl.dataset.ideaBoardNoteAction;
-   const row = actionControl.closest("tr");
-   const noteId = row?.dataset.noteId;
--  const action = actionControl.dataset.ideaBoardAction;
--  if (action === "edit") {
-+  if (action === "add") {
-+    state.addingNote = true;
-+    state.editingNoteId = null;
-+    updateStatus(root, `Adding a note for ${selectedIdea().title}.`);
-+    render(root);
-+  } else if (action === "edit") {
-     state.editingNoteId = noteId;
-     state.addingNote = false;
-     updateStatus(root, `Editing note for ${selectedIdea().title}.`);
-+    render(root);
-   } else if (action === "delete") {
--    const notes = selectedNotes();
--    const index = notes?.findIndex((note) => note.id === noteId && !note.system) ?? -1;
-+    const notes = notesForIdea(state.selectedIdeaId);
-+    const index = notes.findIndex((note) => note.id === noteId && !note.system);
-     if (index >= 0) {
-       notes.splice(index, 1);
-       updateStatus(root, `Deleted note for ${selectedIdea().title}.`);
-+      render(root);
+-  const notes = notesForIdea(state.selectedIdeaId);
+   const noteId = row.dataset.noteId;
+   if (noteId) {
+-    const note = notes.find((item) => item.id === noteId);
+-    if (!note) {
++    const record = noteTable.find((note) => note.noteId === noteId && note.ideaId === ideaId);
++    if (!record) {
+       updateStatus(root, `Idea Board cannot find note: ${noteId}.`);
+       return;
      }
-   } else if (action === "cancel") {
+-    note.note = value;
+-    note.updated = today();
++    record.note = value;
++    record.updated = today();
      state.editingNoteId = null;
-     state.addingNote = false;
-     updateStatus(root, `Cancelled note edit for ${selectedIdea().title}.`);
-+    render(root);
-   } else if (action === "save") {
--    saveRow(root, row);
-+    saveNoteRow(root, row);
-+  }
-+}
-+
-+function handleClick(root, event) {
-+  const addIdea = event.target.closest("[data-idea-board-add-idea]");
-+  if (addIdea) {
+-    updateStatus(root, `Updated note for ${selectedIdea().title}.`);
++    updateStatus(root, "Updated note.");
+   } else {
+-    notes.unshift({
+-      id: `note-${state.selectedIdeaId}-${Date.now()}`,
++    noteTable.push({
++      noteId: `note-${ideaId}-${Date.now()}`,
++      ideaId,
+       note: value,
+-      updated: today(),
+       system: false,
++      updated: today(),
+     });
+-    state.addingNote = false;
+-    updateStatus(root, `Added note for ${selectedIdea().title}.`);
++    state.addingNoteIdeaId = null;
++    updateStatus(root, "Added note.");
+   }
+   render(root);
+ }
+
+-function selectIdea(root, ideaId) {
+-  if (!ideas.some((idea) => idea.id === ideaId)) {
+-    updateStatus(root, `Idea Board cannot select missing idea: ${ideaId}.`);
++function toggleNotes(root, ideaId) {
++  if (!ideaRecord(ideaId)) {
++    updateStatus(root, `Idea Board cannot expand missing idea: ${ideaId}.`);
+     return;
+   }
+-  state.selectedIdeaId = ideaId;
+-  state.editingIdeaId = null;
++  const expanded = state.expandedIdeaId === ideaId;
++  state.expandedIdeaId = expanded ? null : ideaId;
+   state.editingNoteId = null;
+-  state.addingNote = false;
+-  updateStatus(root, `Expanded notes for ${selectedIdea().title}.`);
++  state.addingNoteIdeaId = null;
++  updateStatus(root, expanded ? "Collapsed notes." : `Expanded notes for ${ideaRecord(ideaId).idea}.`);
+   render(root);
+ }
+
+ function deleteIdea(root, ideaId) {
+-  const index = ideas.findIndex((idea) => idea.id === ideaId);
++  const index = ideaTable.findIndex((record) => record.ideaId === ideaId);
+   if (index < 0) {
+     updateStatus(root, `Idea Board cannot delete missing idea: ${ideaId}.`);
+     return;
+   }
+-  const [removed] = ideas.splice(index, 1);
+-  notesByIdea.delete(ideaId);
+-  if (state.selectedIdeaId === ideaId) {
+-    state.selectedIdeaId = ideas[Math.min(index, ideas.length - 1)]?.id || "";
+-    state.editingNoteId = null;
+-    state.addingNote = false;
++  const [removed] = ideaTable.splice(index, 1);
++  for (let noteIndex = noteTable.length - 1; noteIndex >= 0; noteIndex -= 1) {
++    if (noteTable[noteIndex].ideaId === ideaId) noteTable.splice(noteIndex, 1);
+   }
+-  updateStatus(root, `Deleted ${removed.title}.`);
++  if (state.expandedIdeaId === ideaId) state.expandedIdeaId = null;
++  if (state.editingIdeaId === ideaId) state.editingIdeaId = null;
++  if (state.addingNoteIdeaId === ideaId) state.addingNoteIdeaId = null;
++  updateStatus(root, `Deleted ${removed.idea}.`);
+   render(root);
+ }
+
+ function handleIdeaAction(root, actionControl) {
+   const action = actionControl.dataset.ideaBoardIdeaAction;
+   const row = actionControl.closest("tr");
+-  const ideaId = actionControl.dataset.ideaBoardSelectIdea || row?.dataset.ideaBoardIdeaRow || row?.dataset.ideaId;
+-  if (action === "select") {
+-    selectIdea(root, ideaId);
++  const ideaId = row?.dataset.ideaBoardIdeaRow || row?.dataset.ideaId;
++  if (action === "add") {
 +    state.addingIdea = true;
 +    state.editingIdeaId = null;
 +    updateStatus(root, "Adding a new idea.");
 +    render(root);
-     return;
-   }
--  render(root);
-+
-+  const selectIdeaButton = event.target.closest("[data-idea-board-select-idea]");
-+  if (selectIdeaButton) {
-+    selectIdea(root, selectIdeaButton.dataset.ideaBoardSelectIdea);
-+    return;
-+  }
-+
-+  const ideaAction = event.target.closest("[data-idea-board-idea-action]");
-+  if (ideaAction) {
-+    handleIdeaAction(root, ideaAction);
-+    return;
-+  }
-+
-+  const noteAction = event.target.closest("[data-idea-board-note-action]");
-+  if (noteAction) handleNoteAction(root, noteAction);
+   } else if (action === "edit") {
+     state.editingIdeaId = ideaId;
+     state.addingIdea = false;
+-    state.editingNoteId = null;
+-    state.addingNote = false;
+-    updateStatus(root, `Editing ${ideas.find((idea) => idea.id === ideaId)?.title}.`);
++    updateStatus(root, `Editing ${ideaRecord(ideaId)?.idea}.`);
+     render(root);
+   } else if (action === "delete") {
+     deleteIdea(root, ideaId);
+@@ -418,29 +469,30 @@ function handleIdeaAction(root, actionControl) {
+ function handleNoteAction(root, actionControl) {
+   const action = actionControl.dataset.ideaBoardNoteAction;
+   const row = actionControl.closest("tr");
++  const ideaId = actionControl.dataset.ideaBoardAddNote || row?.dataset.ideaId || state.expandedIdeaId;
+   const noteId = row?.dataset.noteId;
+   if (action === "add") {
+-    state.addingNote = true;
++    state.expandedIdeaId = ideaId;
++    state.addingNoteIdeaId = ideaId;
+     state.editingNoteId = null;
+-    updateStatus(root, `Adding a note for ${selectedIdea().title}.`);
++    updateStatus(root, "Adding a note.");
+     render(root);
+   } else if (action === "edit") {
+     state.editingNoteId = noteId;
+-    state.addingNote = false;
+-    updateStatus(root, `Editing note for ${selectedIdea().title}.`);
++    state.addingNoteIdeaId = null;
++    updateStatus(root, "Editing note.");
+     render(root);
+   } else if (action === "delete") {
+-    const notes = notesForIdea(state.selectedIdeaId);
+-    const index = notes.findIndex((note) => note.id === noteId && !note.system);
++    const index = noteTable.findIndex((note) => note.noteId === noteId && note.ideaId === ideaId && !note.system);
+     if (index >= 0) {
+-      notes.splice(index, 1);
+-      updateStatus(root, `Deleted note for ${selectedIdea().title}.`);
++      noteTable.splice(index, 1);
++      updateStatus(root, "Deleted note.");
+       render(root);
+     }
+   } else if (action === "cancel") {
+     state.editingNoteId = null;
+-    state.addingNote = false;
+-    updateStatus(root, `Cancelled note edit for ${selectedIdea().title}.`);
++    state.addingNoteIdeaId = null;
++    updateStatus(root, "Cancelled note edit.");
+     render(root);
+   } else if (action === "save") {
+     saveNoteRow(root, row);
+@@ -448,18 +500,9 @@ function handleNoteAction(root, actionControl) {
  }
 
- document.addEventListener("DOMContentLoaded", () => {
+ function handleClick(root, event) {
+-  const addIdea = event.target.closest("[data-idea-board-add-idea]");
+-  if (addIdea) {
+-    state.addingIdea = true;
+-    state.editingIdeaId = null;
+-    updateStatus(root, "Adding a new idea.");
+-    render(root);
+-    return;
+-  }
+-
+-  const selectIdeaButton = event.target.closest("[data-idea-board-select-idea]");
+-  if (selectIdeaButton) {
+-    selectIdea(root, selectIdeaButton.dataset.ideaBoardSelectIdea);
++  const toggle = event.target.closest("[data-idea-board-toggle-notes]");
++  if (toggle) {
++    toggleNotes(root, toggle.dataset.ideaBoardToggleNotes);
+     return;
+   }

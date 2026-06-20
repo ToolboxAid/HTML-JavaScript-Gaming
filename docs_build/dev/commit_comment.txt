@@ -1,5 +1,5 @@
-PR_26171_031 idea board inline tree grid actions
+PR_26171_032 idea board accordion table model
 
-- render selected idea notes directly under the idea row
-- add inline idea and note add/edit/delete workflows
-- update targeted Idea Board Playwright coverage and reports
+- reshape Idea Board in-page data into idea and note table records
+- default to collapsed notes with row-level expand/collapse controls
+- update targeted Playwright coverage and reports

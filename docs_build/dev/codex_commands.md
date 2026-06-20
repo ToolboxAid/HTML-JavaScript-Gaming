@@ -1,20 +1,20 @@
 # Codex Commands
 
 ## PR
-- `PR_26171_031-idea-board-inline-tree-grid-actions`
+- `PR_26171_032-idea-board-accordion-table-model`
 
 ## Source Documents
 - `docs_build/dev/PROJECT_INSTRUCTIONS.md`
-- `docs_build/pr/PLAN_PR_26171_031-idea-board-inline-tree-grid-actions.md`
-- `docs_build/pr/BUILD_PR_26171_031-idea-board-inline-tree-grid-actions.md`
-- `docs_build/pr/APPLY_PR_26171_031-idea-board-inline-tree-grid-actions.md`
+- `docs_build/pr/PLAN_PR_26171_032-idea-board-accordion-table-model.md`
+- `docs_build/pr/BUILD_PR_26171_032-idea-board-accordion-table-model.md`
+- `docs_build/pr/APPLY_PR_26171_032-idea-board-accordion-table-model.md`
 
 ## Git Workflow Commands
 - `git branch --show-current`
 - `git status -sb`
 - `git branch --list`
 - `git pull --ff-only origin main`
-- `git switch -c codex/pr-26171-031-idea-board-inline-tree-grid-actions`
+- `git switch -c codex/pr-26171-032-idea-board-accordion-table-model`
 
 ## Inspection Commands
 - `Get-Content -Raw docs_build/dev/PROJECT_INSTRUCTIONS.md`
@@ -35,5 +35,5 @@
 ## Artifact Commands
 - Generate `docs_build/dev/reports/codex_changed_files.txt`
 - Generate `docs_build/dev/reports/codex_review.diff`
-- Create `tmp/PR_26171_031-idea-board-inline-tree-grid-actions_delta.zip`
+- Create `tmp/PR_26171_032-idea-board-accordion-table-model_delta.zip`
 - Verify ZIP size and repo-relative paths
