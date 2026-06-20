@@ -155,6 +155,43 @@ async function expectButtonLeftAligned(page, buttonSelector, containerSelector) 
   expect(metrics.buttonLeft).toBeLessThan(metrics.containerLeft + metrics.containerWidth / 2);
 }
 
+async function expectExpandedNotesChildIndentation(page, ideaId, expectedInputRows = 0) {
+  const metrics = await page.locator(`[data-idea-board-expanded-row='${ideaId}']`).evaluate((row, targetIdeaId) => {
+    const expandedCell = row.querySelector(":scope > td");
+    const childSurface = row.querySelector(".idea-board-notes-child-surface");
+    const noteCell = row.querySelector(`[data-idea-board-notes-table='${targetIdeaId}'] tbody tr td:first-child`);
+    const noteInput = row.querySelector("[data-idea-board-note-input]");
+    const addNote = row.querySelector(`[data-idea-board-add-note='${targetIdeaId}']`);
+    const addNoteActions = row.querySelector(".idea-board-notes-child-actions");
+    const expandedStyles = getComputedStyle(expandedCell);
+    const noteCellStyles = getComputedStyle(noteCell);
+    const addNoteActionStyles = getComputedStyle(addNoteActions);
+    const expandedRect = expandedCell.getBoundingClientRect();
+    const childRect = childSurface.getBoundingClientRect();
+    const noteCellRect = noteCell.getBoundingClientRect();
+    const expandedPadding = Number.parseFloat(expandedStyles.paddingLeft || "0");
+    const noteCellPadding = Number.parseFloat(noteCellStyles.paddingLeft || "0");
+    return {
+      addNoteLeft: addNote.getBoundingClientRect().left,
+      childSurfaceLeft: childRect.left,
+      expandedContentLeft: expandedRect.left + expandedPadding,
+      expectedContentLeft: expandedRect.left + 2 * (expandedPadding + noteCellPadding),
+      inputLeft: noteInput ? noteInput.getBoundingClientRect().left : null,
+      inputRows: row.querySelectorAll("[data-idea-board-note-input-row]").length,
+      noteContentLeft: noteCellRect.left + noteCellPadding,
+      actionContentLeft: addNoteActions.getBoundingClientRect().left + Number.parseFloat(addNoteActionStyles.paddingLeft || "0"),
+    };
+  }, ideaId);
+  expect(metrics.childSurfaceLeft).toBeGreaterThan(metrics.expandedContentLeft);
+  expect(Math.abs(metrics.noteContentLeft - metrics.expectedContentLeft)).toBeLessThanOrEqual(2);
+  expect(Math.abs(metrics.addNoteLeft - metrics.expectedContentLeft)).toBeLessThanOrEqual(2);
+  expect(Math.abs(metrics.actionContentLeft - metrics.expectedContentLeft)).toBeLessThanOrEqual(2);
+  expect(metrics.inputRows).toBe(expectedInputRows);
+  if (expectedInputRows > 0) {
+    expect(Math.abs(metrics.inputLeft - metrics.expectedContentLeft)).toBeLessThanOrEqual(2);
+  }
+}
+
 test("tools route aliases render toolbox tool pages", async ({ page }) => {
   const server = await startRepoServer();
   const failedRequests = [];
@@ -289,7 +326,7 @@ test("Idea Board launches from Toolbox with accordion table notes model", async 
     await expect(page.getByText("Selected")).toHaveCount(0);
     await expect(page.locator("[data-idea-board-add-note='top-thoughts']")).toBeVisible();
     await expect(page.locator("[data-idea-board-add-note='top-thoughts']")).toHaveText("Add Note");
-    await expectButtonLeftAligned(page, "[data-idea-board-add-note='top-thoughts']", "[data-idea-board-expanded-row='top-thoughts'] > td");
+    await expectExpandedNotesChildIndentation(page, "top-thoughts");
     await expect(page.locator("[data-idea-board-create-project]")).toBeVisible();
     await expect(page.locator("[data-idea-board-create-project]")).toBeDisabled();
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);

@@ -269,6 +269,9 @@ function renderExpandedNotesRow(tbody, record) {
   const content = document.createElement("td");
   content.colSpan = 6;
 
+  const childSurface = document.createElement("div");
+  childSurface.className = "idea-board-notes-child-surface";
+
   const tableWrapper = document.createElement("div");
   tableWrapper.className = "table-wrapper";
   const notesTable = document.createElement("table");
@@ -281,7 +284,7 @@ function renderExpandedNotesRow(tbody, record) {
   notesBody.dataset.ideaBoardNotesBody = record.ideaId;
   notesTable.append(notesBody);
   tableWrapper.append(notesTable);
-  content.append(tableWrapper);
+  childSurface.append(tableWrapper);
 
   for (const note of notesForIdea(record.ideaId)) {
     if (state.editingNoteId === note.noteId) {
@@ -293,11 +296,12 @@ function renderExpandedNotesRow(tbody, record) {
   if (state.addingNoteIdeaId === record.ideaId) renderNoteInputRow(notesBody, record.ideaId);
 
   const controls = document.createElement("div");
-  controls.className = "action-group";
+  controls.className = "action-group idea-board-notes-child-actions";
   const addNote = actionButton("Add Note", "add", "ideaBoardNoteAction", "primary");
   addNote.dataset.ideaBoardAddNote = record.ideaId;
   controls.append(addNote);
-  content.append(controls);
+  childSurface.append(controls);
+  content.append(childSurface);
 
   row.append(content);
   tbody.append(row);
