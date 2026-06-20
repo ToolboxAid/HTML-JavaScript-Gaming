@@ -1,0 +1,28 @@
+# PR_26171_GAMMA_006 Instruction Compliance Checklist
+
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`: PASS.
+- Read `docs_build/dev/PROJECT_MULTI_PC.txt`: PASS.
+- Checkout `main` before starting: PASS.
+- Pull latest `main`: PASS.
+- Verify branch is `main`: PASS.
+- Verify clean status before branch creation: PASS.
+- Verify PR 005 artifacts do not leave unstaged report changes: PASS.
+- Verify PR name includes TEAM token: PASS.
+- Verify TEAM owner matches Team Gamma governance/diagnostics ownership: PASS.
+- Create requested branch `pr/26171-GAMMA-006-sqlite-deprecation-audit`: PASS.
+- Audit SQLite references across active repo paths: PASS.
+- Classify references as active runtime, local API, test, docs, or archive/reference: PASS.
+- Do not remove SQLite code in this PR: PASS.
+- Create removal backlog with recommended follow-up PRs: PASS.
+- Confirm Postgres remains authoritative: PASS.
+- Run `git diff --check`: PASS.
+- Run targeted SQLite/Postgres text checks: PASS.
+- Do not run Playwright: PASS.
+- Do not run samples: PASS.
+- Create required PR-specific audit report: PASS.
+- Create manual validation notes: PASS.
+- Create instruction compliance checklist: PASS.
+- Create `codex_review.diff`: PASS.
+- Create `codex_changed_files.txt`: PASS.
+- Create repo-structured ZIP under `tmp/`: PASS.
+- Do not merge before explicit EOD approval: PASS.
