@@ -6,7 +6,7 @@
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Idea Board - GameFoundryStudio</title>
-    <meta name="description" content="Creator notebook for game ideas before a project exists.">
+    <meta name="description" content="Table-first creator notebook for game ideas before a project exists.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -16,86 +16,121 @@
     <main data-idea-board>
         <section class="page-title">
             <div class="container">
-                <div class="kicker">Toolbox Wireframe</div>
+                <div class="kicker">Toolbox</div>
                 <h1>Idea Board</h1>
-                <p class="lede">Creator notebook for ideas before a project exists.</p>
+                <p class="lede">Table-first creator notebook for ideas before a project exists.</p>
             </div>
         </section>
         <section class="section">
             <div class="container container--tool-wide">
                 <div class="tool-workspace tool-workspace--wide">
                     <aside class="tool-column tool-group-idea">
-                        <div class="tool-column-header">
-                            <h2>Notebook</h2>
+                        <div class="tool-column-header molten-orange">
+                            <h2>Idea Filters</h2>
                         </div>
                         <div class="accordion-stack">
-                            <details class="vertical-accordion" open data-idea-board-section="Cards">
-                                <summary>Cards</summary>
+                            <details class="vertical-accordion" open data-idea-board-section="Workflow">
+                                <summary>Workflow</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>Capture raw game ideas as lightweight cards.</p>
-                                    <ul>
-                                        <li>Working title</li>
-                                        <li>One-line pitch</li>
-                                        <li>Inspiration note</li>
-                                    </ul>
-                                </div>
-                            </details>
-                            <details class="vertical-accordion" data-idea-board-section="Tags">
-                                <summary>Tags</summary>
-                                <div class="accordion-body content-stack">
-                                    <p>Sketch optional tags for theme, genre, audience, mechanic, and platform.</p>
+                                    <p>Review ideas directly in the work table, then use the notes table to capture follow-up context.</p>
                                 </div>
                             </details>
                             <details class="vertical-accordion" data-idea-board-section="Status">
                                 <summary>Status</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>Wireframe statuses: New, Exploring, Parked, Ready to Shape.</p>
+                                    <p>Statuses remain governance labels only: New, Exploring, Parked, Ready to Shape.</p>
                                 </div>
                             </details>
                         </div>
                     </aside>
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="idea-board" data-tool-icon-src="assets/theme-v2/images/badges/game-design.png" data-tool-character-src="assets/theme-v2/images/tools/game-design.png"></div>
-                    <section class="tool-center-panel">
-                        <img src="assets/theme-v2/images/tools/game-design.png" alt="Idea Board preview placeholder">
-                        <h2>Idea Workspace</h2>
-                        <p>Arrange early ideas before choosing whether they should become a project.</p>
-                        <div class="card-grid">
-                            <article class="card" data-idea-board-section="Board">
-                                <div class="card-body content-stack">
-                                    <h3>Board</h3>
-                                    <p>Columns for collecting, comparing, and parking ideas.</p>
-                                </div>
-                            </article>
-                            <article class="card" data-idea-board-section="List">
-                                <div class="card-body content-stack">
-                                    <h3>List</h3>
-                                    <p>Sorted idea rows for quick scanning and triage.</p>
-                                </div>
-                            </article>
-                            <article class="card" data-idea-board-section="Notes">
-                                <div class="card-body content-stack">
-                                    <h3>Notes</h3>
-                                    <p>Freeform notes for mechanics, moods, blockers, and next questions.</p>
-                                </div>
-                            </article>
+                    <section class="tool-center-panel" aria-labelledby="idea-board-work-surface-title">
+                        <h2 id="idea-board-work-surface-title">Idea Work Surface</h2>
+                        <p>The primary surface is a table so creators can scan, compare, and govern early ideas without a form-first workflow.</p>
+                        <div class="table-wrapper" data-idea-board-section="Idea Table">
+                            <table class="data-table data-table--fixed" data-idea-board-table>
+                                <caption>Idea Board table-first work surface</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Idea</th>
+                                        <th scope="col">Pitch</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Owner</th>
+                                        <th scope="col">Updated</th>
+                                        <th scope="col">Notes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr data-idea-board-idea-row="sky-orchard" aria-selected="true">
+                                        <th scope="row">Sky Orchard</th>
+                                        <td>Grow floating islands while defending them from storm creatures.</td>
+                                        <td>Exploring</td>
+                                        <td>Creator</td>
+                                        <td>2026-06-20</td>
+                                        <td>
+                                            <button class="btn btn--compact primary" type="button" disabled data-idea-board-select-idea="sky-orchard">Selected</button>
+                                        </td>
+                                    </tr>
+                                    <tr data-idea-board-idea-row="clockwork-courier" aria-selected="false">
+                                        <th scope="row">Clockwork Courier</th>
+                                        <td>Deliver messages through looping city districts before time resets.</td>
+                                        <td>New</td>
+                                        <td>Creator</td>
+                                        <td>2026-06-20</td>
+                                        <td>
+                                            <button class="btn btn--compact" type="button" data-idea-board-select-idea="clockwork-courier">Select</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="content-stack" data-idea-board-section="Selected Notes">
+                            <h3 data-idea-board-selected-title>Notes for Sky Orchard</h3>
+                            <p id="idea-board-selected-summary" data-idea-board-selected-summary>Selected idea context: Exploring, owned by Creator, updated 2026-06-20.</p>
+                            <div class="table-wrapper">
+                                <table class="data-table data-table--fixed" data-idea-board-notes-table aria-describedby="idea-board-selected-summary">
+                                    <caption data-idea-board-notes-caption>Selected idea notes for Sky Orchard</caption>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Note</th>
+                                            <th scope="col">Type</th>
+                                            <th scope="col">Created By</th>
+                                            <th scope="col">Created</th>
+                                            <th scope="col">Updated</th>
+                                            <th scope="col">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody data-idea-board-notes-body></tbody>
+                                </table>
+                            </div>
+                            <div class="action-group" data-idea-board-add-note-panel>
+                                <button class="btn primary" type="button" data-idea-board-add-note>Add Note</button>
+                            </div>
                         </div>
                     </section>
                     <aside class="tool-column tool-group-idea">
-                        <div class="tool-column-header">
-                            <h2>Actions</h2>
+                        <div class="tool-column-header forge-gold">
+                            <h2>Governance</h2>
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open data-idea-board-section="Create Project">
                                 <summary>Create Project</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>Create Project is a visible placeholder only. This wireframe does not create project records.</p>
+                                    <p>Create Project is a visible placeholder only. This work surface does not create project records.</p>
                                     <button class="btn primary" type="button" disabled data-idea-board-create-project>Create Project Placeholder</button>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" data-idea-board-section="Notes Governance">
+                                <summary>Notes Governance</summary>
+                                <div class="accordion-body content-stack">
+                                    <p>Add Note inserts an inline row below the selected idea notes table headers. Creator notes can be edited or deleted. System notes are locked from editing and deletion.</p>
                                 </div>
                             </details>
                             <details class="vertical-accordion" data-idea-board-section="Diagnostics">
                                 <summary>Diagnostics</summary>
                                 <div class="accordion-body content-stack">
-                                    <p class="status" role="status" data-idea-board-status>Wireframe only. No save, load, auth, AI, or database behavior is connected.</p>
+                                    <p>No project records or mutating API requests are created by this tool surface.</p>
+                                    <p class="status" role="status" data-idea-board-status>Idea Board table is active in-page only. No save, load, auth, AI, or database behavior is connected.</p>
                                 </div>
                             </details>
                         </div>
@@ -107,6 +142,7 @@
     <div data-partial="footer"></div>
     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+    <script src="toolbox/idea-board/index.js" defer></script>
 </body>
 
 </html>

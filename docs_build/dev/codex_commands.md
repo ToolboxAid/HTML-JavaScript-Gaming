@@ -1,47 +1,23 @@
 # Codex Commands
 
-## PR
-- `PR_26169_019-admin-health-operations`
-
-## Source Documents
-- `docs_build/dev/PROJECT_INSTRUCTIONS.md`
-- `docs_build/pr/PLAN_PR_26169_019-admin-health-operations.md`
-- `docs_build/pr/BUILD_PR_26169_019-admin-health-operations.md`
-
-## Validation Commands
-```bash
-git branch --show-current
-```
-
-```bash
-node --check src/dev-runtime/server/local-api-router.mjs
-node --check assets/theme-v2/js/admin-system-health.js
-node --check tests/dev-runtime/AdminHealthOperations.test.mjs
-node --check tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-```
-
-```bash
-node -e "<static HTML restriction check for admin/system-health.html>"
-```
-
-```bash
-node --test tests/dev-runtime/AdminHealthOperations.test.mjs
-```
-
-```bash
-npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-```
-
-```bash
-git diff --check -- <PR_26169_019 scoped file list>
-```
-
-## Artifact Commands
-```bash
-python - <<'PY'
-# Generate docs_build/dev/reports/codex_changed_files.txt
-# Generate docs_build/dev/reports/codex_review.diff
-# Create tmp/PR_26169_019-admin-health-operations_delta.zip
-# Verify ZIP size and repo-relative paths
-PY
-```
+- Read skill: repo-build.
+- Read skill: github:yeet.
+- Read source of truth: docs_build/dev/PROJECT_INSTRUCTIONS.md.
+- Re-read original Idea Board request from prior conversation and docs_build/pr/BUILD_PR_26170_002-idea-board-tool.md.
+- Inspected toolbox/_tool_template-v2/index.html.
+- Inspected toolbox/idea-board/index.html and toolbox/idea-board/index.js.
+- Inspected tests/playwright/tools/IdeaBoardTableNotes.spec.mjs.
+- Inspected tests/playwright/tools/ToolboxRoutePages.spec.mjs.
+- Inspected tests/playwright/tools/RootToolsFutureState.spec.mjs.
+- git fetch origin main --prune.
+- git pull --ff-only origin main.
+- git switch -c codex/fix-idea-board-pr-workflow.
+- node --check toolbox/idea-board/index.js.
+- node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs.
+- node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs.
+- node --check tests/playwright/tools/RootToolsFutureState.spec.mjs.
+- Inline HTML guard for toolbox/idea-board/index.html.
+- npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line.
+- npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches".
+- npm run test:workspace-v2.
+- git diff --check.

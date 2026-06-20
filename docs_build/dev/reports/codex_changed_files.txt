@@ -1,32 +1,145 @@
-# git status --short
-M assets/theme-v2/partials/header-nav.html
- M src/dev-runtime/admin/header-nav.local.html
- M src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
- M src/dev-runtime/server/local-api-router.mjs
- M src/shared/toolbox/tool-metadata-inventory.js
- M tests/tools/Text2SpeechShell.test.mjs
- M toolbox/text-to-speech/index.html
- M toolbox/text-to-speech/text2speech.js
-?? docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild-manual-validation.md
-?? docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild-requirements.md
-?? docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild-validation.md
-?? docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild.md
-?? tests/playwright/tools/TextToSpeechFunctional.spec.mjs
+# Codex Changed Files - PR_26171_030-idea-board-workflow-fix
 
-# git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild-manual-validation.md
-docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild-requirements.md
-docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild-validation.md
-docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild.md
-tests/playwright/tools/TextToSpeechFunctional.spec.mjs
+## Git Workflow
+- Branch: `codex/fix-idea-board-pr-workflow`
+- Base: `origin/main`
+- PR URL: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/4
+- Merge conflicts: resolved in `docs_build/dev/reports/codex_changed_files.txt` and `docs_build/dev/reports/codex_review.diff` by regenerating both reports from the final `origin/main` diff.
+- Commit hash, push result, merge result, and final main commit: reported after commit, push, PR merge, and final main pull.
 
-# git diff --stat
-assets/theme-v2/partials/header-nav.html           |   2 +-
- src/dev-runtime/admin/header-nav.local.html        |   2 +-
- .../game-journey-mock-repository.js                |   2 +-
- src/dev-runtime/server/local-api-router.mjs        |  13 +-
- src/shared/toolbox/tool-metadata-inventory.js      |  27 ++-
- tests/tools/Text2SpeechShell.test.mjs              |  36 ++-
- toolbox/text-to-speech/index.html                  |  78 ++++---
- toolbox/text-to-speech/text2speech.js              | 260 +++++++++++++++++----
- 8 files changed, 309 insertions(+), 111 deletions(-)
+## Changed Files
+- docs_build/dev/codex_commands.md
+- docs_build/dev/commit_comment.txt
+- docs_build/dev/reports/codex_changed_files.txt
+- docs_build/dev/reports/codex_review.diff
+- docs_build/dev/reports/coverage_changed_js_guardrail.txt
+- docs_build/dev/reports/dependency_gating_report.md
+- docs_build/dev/reports/dependency_hydration_reuse_report.md
+- docs_build/dev/reports/execution_graph_reuse_report.md
+- docs_build/dev/reports/failure_fingerprint_report.md
+- docs_build/dev/reports/filesystem_scan_reduction_report.md
+- docs_build/dev/reports/incremental_validation_report.md
+- docs_build/dev/reports/lane_compilation_report.md
+- docs_build/dev/reports/lane_deduplication_report.md
+- docs_build/dev/reports/lane_input_validation_report.md
+- docs_build/dev/reports/lane_manifests/workspace-contract.json
+- docs_build/dev/reports/lane_runtime_optimization_report.md
+- docs_build/dev/reports/lane_snapshot_report.md
+- docs_build/dev/reports/lane_snapshots/workspace-contract.json
+- docs_build/dev/reports/lane_warm_start_report.md
+- docs_build/dev/reports/lane_warm_starts/workspace-contract.json
+- docs_build/dev/reports/monolith_trigger_removal_report.md
+- docs_build/dev/reports/persistent_lane_manifest_report.md
+- docs_build/dev/reports/playwright_discovery_ownership_report.md
+- docs_build/dev/reports/playwright_discovery_scope_report.md
+- docs_build/dev/reports/playwright_structure_audit.md
+- docs_build/dev/reports/playwright_v8_coverage_report.txt
+- docs_build/dev/reports/retry_suppression_report.md
+- docs_build/dev/reports/slow_path_pruning_report.md
+- docs_build/dev/reports/static_validation_report.md
+- docs_build/dev/reports/targeted_file_manifest_report.md
+- docs_build/dev/reports/test_cleanup_performance_report.md
+- docs_build/dev/reports/test_cleanup_routing_report.md
+- docs_build/dev/reports/testing_lane_execution_report.md
+- docs_build/dev/reports/validation_cache_report.md
+- docs_build/dev/reports/zero_browser_preflight_report.md
+- docs_build/pr/APPLY_PR_26171_026-idea-board-template-cleanup.md
+- docs_build/pr/APPLY_PR_26171_027-idea-board-table-work-surface.md
+- docs_build/pr/APPLY_PR_26171_028-idea-board-notes-table-governance.md
+- docs_build/pr/APPLY_PR_26171_029-idea-board-validation-playwright.md
+- docs_build/pr/APPLY_PR_26171_030-idea-board-workflow-fix.md
+- docs_build/pr/BUILD_PR_26171_026-idea-board-template-cleanup.md
+- docs_build/pr/BUILD_PR_26171_027-idea-board-table-work-surface.md
+- docs_build/pr/BUILD_PR_26171_028-idea-board-notes-table-governance.md
+- docs_build/pr/BUILD_PR_26171_029-idea-board-validation-playwright.md
+- docs_build/pr/BUILD_PR_26171_030-idea-board-workflow-fix.md
+- docs_build/pr/PLAN_PR_26171_026-idea-board-template-cleanup.md
+- docs_build/pr/PLAN_PR_26171_027-idea-board-table-work-surface.md
+- docs_build/pr/PLAN_PR_26171_028-idea-board-notes-table-governance.md
+- docs_build/pr/PLAN_PR_26171_029-idea-board-validation-playwright.md
+- docs_build/pr/PLAN_PR_26171_030-idea-board-workflow-fix.md
+- tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+- tests/playwright/tools/RootToolsFutureState.spec.mjs
+- tests/playwright/tools/ToolboxRoutePages.spec.mjs
+- toolbox/idea-board/index.html
+- toolbox/idea-board/index.js
+
+## Name Status
+- M	docs_build/dev/codex_commands.md
+- M	docs_build/dev/commit_comment.txt
+- M	docs_build/dev/reports/codex_changed_files.txt
+- M	docs_build/dev/reports/codex_review.diff
+- M	docs_build/dev/reports/coverage_changed_js_guardrail.txt
+- M	docs_build/dev/reports/dependency_gating_report.md
+- M	docs_build/dev/reports/dependency_hydration_reuse_report.md
+- M	docs_build/dev/reports/execution_graph_reuse_report.md
+- M	docs_build/dev/reports/failure_fingerprint_report.md
+- M	docs_build/dev/reports/filesystem_scan_reduction_report.md
+- M	docs_build/dev/reports/incremental_validation_report.md
+- M	docs_build/dev/reports/lane_compilation_report.md
+- M	docs_build/dev/reports/lane_deduplication_report.md
+- M	docs_build/dev/reports/lane_input_validation_report.md
+- M	docs_build/dev/reports/lane_manifests/workspace-contract.json
+- M	docs_build/dev/reports/lane_runtime_optimization_report.md
+- M	docs_build/dev/reports/lane_snapshot_report.md
+- M	docs_build/dev/reports/lane_snapshots/workspace-contract.json
+- M	docs_build/dev/reports/lane_warm_start_report.md
+- M	docs_build/dev/reports/lane_warm_starts/workspace-contract.json
+- M	docs_build/dev/reports/monolith_trigger_removal_report.md
+- M	docs_build/dev/reports/persistent_lane_manifest_report.md
+- M	docs_build/dev/reports/playwright_discovery_ownership_report.md
+- M	docs_build/dev/reports/playwright_discovery_scope_report.md
+- M	docs_build/dev/reports/playwright_structure_audit.md
+- M	docs_build/dev/reports/playwright_v8_coverage_report.txt
+- M	docs_build/dev/reports/retry_suppression_report.md
+- M	docs_build/dev/reports/slow_path_pruning_report.md
+- M	docs_build/dev/reports/static_validation_report.md
+- M	docs_build/dev/reports/targeted_file_manifest_report.md
+- M	docs_build/dev/reports/test_cleanup_performance_report.md
+- M	docs_build/dev/reports/test_cleanup_routing_report.md
+- M	docs_build/dev/reports/testing_lane_execution_report.md
+- M	docs_build/dev/reports/validation_cache_report.md
+- M	docs_build/dev/reports/zero_browser_preflight_report.md
+- A	docs_build/pr/APPLY_PR_26171_026-idea-board-template-cleanup.md
+- A	docs_build/pr/APPLY_PR_26171_027-idea-board-table-work-surface.md
+- A	docs_build/pr/APPLY_PR_26171_028-idea-board-notes-table-governance.md
+- A	docs_build/pr/APPLY_PR_26171_029-idea-board-validation-playwright.md
+- A	docs_build/pr/APPLY_PR_26171_030-idea-board-workflow-fix.md
+- A	docs_build/pr/BUILD_PR_26171_026-idea-board-template-cleanup.md
+- A	docs_build/pr/BUILD_PR_26171_027-idea-board-table-work-surface.md
+- A	docs_build/pr/BUILD_PR_26171_028-idea-board-notes-table-governance.md
+- A	docs_build/pr/BUILD_PR_26171_029-idea-board-validation-playwright.md
+- A	docs_build/pr/BUILD_PR_26171_030-idea-board-workflow-fix.md
+- A	docs_build/pr/PLAN_PR_26171_026-idea-board-template-cleanup.md
+- A	docs_build/pr/PLAN_PR_26171_027-idea-board-table-work-surface.md
+- A	docs_build/pr/PLAN_PR_26171_028-idea-board-notes-table-governance.md
+- A	docs_build/pr/PLAN_PR_26171_029-idea-board-validation-playwright.md
+- A	docs_build/pr/PLAN_PR_26171_030-idea-board-workflow-fix.md
+- A	tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+- M	tests/playwright/tools/RootToolsFutureState.spec.mjs
+- M	tests/playwright/tools/ToolboxRoutePages.spec.mjs
+- M	toolbox/idea-board/index.html
+- A	toolbox/idea-board/index.js
+
+## Copied Files Verified
+- PASS: Re-read `toolbox/_tool_template-v2/index.html`; verified Theme V2 stylesheet, header/footer partials, left/center/right `tool-workspace tool-workspace--wide` shell, accordion stack, ToolDisplayMode host, and external Theme V2 scripts.
+- PASS: Verified `toolbox/_tool_template-v2` currently contains `index.html` only; there was no template-local JavaScript file to copy.
+- PASS: Verified `toolbox/idea-board/index.html` adapts the template structure with Theme V2 CSS, header/footer partials, left and right tool columns, center panel, ToolDisplayMode host, accordions, and external scripts.
+- PASS: Verified no inline `<script>`, `<style>`, `style=`, or inline event handlers in `toolbox/idea-board/index.html`.
+
+## Requirement Evidence
+- PASS 026: Idea Board is migrated to Tool Template V2 / Theme V2 shell with clean left/center/right layout and external-only JavaScript/CSS.
+- PASS 027: Idea Board is table-first; the primary work surface is `data-idea-board-table`, with selected idea row controls and no form-first primary workflow.
+- PASS 028: Notes are scoped to the selected idea through `data-idea-board-selected-title`, `data-idea-board-notes-table`, and selected idea state in `toolbox/idea-board/index.js`; Add Note opens an inline row inside the selected notes table; creator notes expose Edit/Delete on the right; system notes expose neither Edit nor Delete; note metadata is table columns.
+- PASS 029: Targeted Playwright coverage validates table columns, selected idea switching, scoped note add/edit/delete, system note lockout, placeholder-only Create Project, and no mutating API calls.
+- PASS 030: Workspace V2 validation harness pins public API/site env to the ephemeral test server and updates current registry/count expectations so the required workspace lane passes on the rebased branch.
+
+## Validation After Conflict Resolution
+- PASS: `node --check toolbox/idea-board/index.js`.
+- PASS: `node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`.
+- PASS: `node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs`.
+- PASS: `node --check tests/playwright/tools/RootToolsFutureState.spec.mjs`.
+- PASS: Idea Board inline HTML guard found no inline `<script>`, `<style>`, `style=`, or inline event handlers.
+- PASS: `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line` (1 passed).
+- PASS: `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches"` (1 passed).
+- PASS: `npm run test:workspace-v2` (5 passed).
