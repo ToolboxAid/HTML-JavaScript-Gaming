@@ -38,6 +38,67 @@ td {
   color: var(--text)
 }
 
+.idea-board-table-caption {
+  position: relative;
+  z-index: var(--z-index-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-10);
+  padding: var(--space-10);
+  font-weight: var(--font-weight-heavy)
+}
+
+.idea-board-show-filter {
+  position: relative;
+  z-index: var(--z-index-md);
+  color: var(--text);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold)
+}
+
+.idea-board-show-filter summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--space-28);
+  padding: var(--space-3) var(--space-10);
+  border: var(--border-standard);
+  border-radius: var(--radius-md);
+  background: var(--panel-soft);
+  cursor: pointer;
+  list-style: none
+}
+
+.idea-board-show-filter summary::-webkit-details-marker {
+  display: none
+}
+
+.idea-board-show-filter__menu {
+  position: static;
+  min-width: 12rem;
+  margin-top: var(--space-6);
+  padding: var(--space-10);
+  border: var(--border-standard);
+  border-radius: var(--radius-md);
+  background: var(--panel);
+  box-shadow: var(--shadow-md)
+}
+
+.idea-board-show-filter__options {
+  display: grid;
+  gap: var(--space-6);
+  margin-top: var(--space-10)
+}
+
+.idea-board-show-filter__option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  color: var(--text);
+  font-weight: var(--font-weight-regular);
+  white-space: nowrap
+}
+
 .data-table th {
   color: var(--gold);
   font-size: var(--font-size-sm);
@@ -60,8 +121,13 @@ td {
   gap: .35em;
   color: inherit;
   font: inherit;
-  line-height: inherit;
-  vertical-align: baseline
+  line-height: var(--line-height-single);
+  vertical-align: baseline;
+  white-space: nowrap
+}
+
+.idea-board-idea-label__text {
+  line-height: var(--line-height-single)
 }
 
 .idea-board-idea-chevron {

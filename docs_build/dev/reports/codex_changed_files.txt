@@ -1,60 +1,83 @@
-# Codex Changed Files - PR_26171_040-idea-board-production-copy-cleanup
+# Codex Changed Files - PR_26171_041-idea-board-production-polish
 
 ## Git Workflow
-- Current branch: `codex/pr-26171-040-idea-board-production-copy-cleanup`.
+- Current branch: `codex/pr-26171-041-idea-board-production-polish`.
 - Expected starting branch: `main` (PASS before branch creation).
-- Created branch: `codex/pr-26171-040-idea-board-production-copy-cleanup`.
-- Commit before conflict resolution: `acbc5b113e9e90a4051e810897415ea222040ddd`.
-- Initial push result: PASS, branch pushed to `origin/codex/pr-26171-040-idea-board-production-copy-cleanup`.
-- PR URL: `https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/15`.
-- Conflict resolution: merged `origin/main` at `7393b650228c84d266701cc3f4ce3696029dd47e`; conflicts were limited to `codex_changed_files.txt` and `codex_review.diff`.
-- Conflict resolution push result: pending until after merge-validation commit.
+- Created branch: `codex/pr-26171-041-idea-board-production-polish`.
+- Push result: pending until after commit.
+- PR URL: pending until after push.
 - Merge result: pending until after PR validation/merge.
 - Final main sync: pending until after merge and final pull.
 
-## Changed Files
-- docs_build/dev/reports/codex_changed_files.txt
-- docs_build/dev/reports/codex_review.diff
-- docs_build/dev/reports/coverage_changed_js_guardrail.txt
-- docs_build/dev/reports/playwright_v8_coverage_report.txt
-- src/dev-runtime/server/local-api-router.mjs
-- src/shared/toolbox/tool-metadata-inventory.js
-- tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-- tests/playwright/tools/ToolboxRoutePages.spec.mjs
-- toolbox/idea-board/index.html
-- toolbox/idea-board/index.js
+## Git Status
+```text
+ M assets/theme-v2/css/tables.css
+ M assets/theme-v2/js/tool-display-mode.js
+ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+ M docs_build/dev/reports/playwright_v8_coverage_report.txt
+ M src/shared/toolbox/tool-metadata-inventory.js
+ M tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+ M tests/playwright/tools/ToolboxRoutePages.spec.mjs
+ M toolbox/idea-board/index.html
+ M toolbox/idea-board/index.js
+```
+
+## Diff Stat
+```text
+ assets/theme-v2/css/tables.css                     |  70 +++++++-
+ assets/theme-v2/js/tool-display-mode.js            |   2 +-
+ .../dev/reports/coverage_changed_js_guardrail.txt  |   5 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |  11 +-
+ src/shared/toolbox/tool-metadata-inventory.js      |   6 +-
+ .../playwright/tools/IdeaBoardTableNotes.spec.mjs  |  71 +++++++-
+ tests/playwright/tools/ToolboxRoutePages.spec.mjs  |  26 ++-
+ toolbox/idea-board/index.html                      |  31 ++--
+ toolbox/idea-board/index.js                        | 191 ++++++++++++++++++++-
+ 9 files changed, 368 insertions(+), 45 deletions(-)
+```
 
 ## Requirement Evidence
-- PASS: Creator-visible Idea Board page copy no longer uses DB-shaped, in-page data model, ID/flag/metadata/seed/debug/mock/test/internal wording.
-- PASS: Shared Toolbox metadata for Idea Board now uses simple creator-facing language for short description, description, and progress checklist text.
-- PASS: Existing persisted Toolbox metadata rows now source-sync Idea Board copy so the browser-visible registry summary updates from source-controlled text.
-- PASS: Idea Board table workflow, Add Idea, Add Note, Edit/Delete, Save/Cancel, Status dropdown, accordion behavior, notes under idea rows, and existing in-page data structure were preserved.
-- PASS: Targeted Playwright production-copy checks verify the Idea Board main surface does not expose the prohibited creator-visible wording.
-- PASS: Copied/adapted files verified as not applicable for this copy-only PR; no Tool Template V2 file copy was required.
+- PASS: Removed creator-visible Create Project from the right-side Next Steps area; no disabled `data-idea-board-create-project` panel remains.
+- PASS: Create Project is shown only in a Ready idea row's Actions column.
+- PASS: Clicking Create Project changes the idea status from Ready to Project and replaces Create Project/Delete with Open Project and Archive.
+- PASS: Project rows show Open Project and Archive and do not show Delete.
+- PASS: Added Archived status; archived rows are hidden by default.
+- PASS: Archived rows show Restore and Delete.
+- PASS: Restore returns archived ideas to their previous non-archived status, with Refining fallback in runtime.
+- PASS: Delete is guarded so Project ideas cannot be deleted unless archived first.
+- PASS: Status dropdown uses New, Exploring, Refining, Ready, Project, and Archived.
+- PASS: Added compact Show checkbox dropdown beside the visible table description line, with default statuses New, Exploring, Refining, Ready, and Project selected and Archived unselected.
+- PASS: Show dropdown supports any checkbox combination plus Select All and Clear All.
+- PASS: Updated creator-facing copy to "Capture, compare, and shape game ideas." and "Scan, compare, and update early ideas."
+- PASS: Replaced creator-visible Tool Display Mode navigation error with safe copy that does not mention server/API/local server/port/implementation details.
+- PASS: Chevron renders to the left of the Idea text, inline, same size, same color, and on the same text line; the whole Idea cell remains the expansion target.
+- PASS: Notes count remains informational only.
+- PASS: Table-first structure, inline Add Idea/Add Note, row-level Save/Cancel, status dropdown edit mode, notes indentation, and single-open accordion behavior remain covered.
 
 ## Validation
 - PASS: `node --check toolbox/idea-board/index.js`.
-- PASS: `node --check src/dev-runtime/server/local-api-router.mjs`.
+- PASS: `node --check assets/theme-v2/js/tool-display-mode.js`.
 - PASS: `node --check src/shared/toolbox/tool-metadata-inventory.js`.
 - PASS: `node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`.
 - PASS: `node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs`.
-- PASS: `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line`.
-- PASS: `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches"`.
+- PASS: `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line --timeout=90000`.
+- PASS: `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches" --timeout=90000`.
+- PASS: `npm run test:workspace-v2` (workspace-contract lane, 5 passed).
 - PASS: `git diff --check`.
-- PASS: Post-conflict rerun completed after merging `origin/main` at `7393b650228c84d266701cc3f4ce3696029dd47e`.
 - PASS: Playwright V8 coverage report produced because runtime JavaScript changed.
-- WARN: Coverage report marks `src/dev-runtime/server/local-api-router.mjs` and `src/shared/toolbox/tool-metadata-inventory.js` as not collected by browser V8 coverage; advisory only per project instructions.
+- WARN: Coverage report marks `src/shared/toolbox/tool-metadata-inventory.js` as not collected by browser V8 coverage; advisory only per project instructions.
 - SKIPPED: Full samples smoke was not run per request.
 
 ## ZIP
-- Path: `tmp/PR_26171_040-idea-board-production-copy-cleanup_delta.zip`.
-- Size: final size reported in the delivery summary after conflict-resolution ZIP refresh.
+- Path: `tmp/PR_26171_041-idea-board-production-polish_delta.zip`.
+- Size: `50677` bytes before final report refresh; final size reported in the delivery summary.
 - Contents:
+  - assets/theme-v2/css/tables.css
+  - assets/theme-v2/js/tool-display-mode.js
   - docs_build/dev/reports/codex_changed_files.txt
   - docs_build/dev/reports/codex_review.diff
   - docs_build/dev/reports/coverage_changed_js_guardrail.txt
   - docs_build/dev/reports/playwright_v8_coverage_report.txt
-  - src/dev-runtime/server/local-api-router.mjs
   - src/shared/toolbox/tool-metadata-inventory.js
   - tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
   - tests/playwright/tools/ToolboxRoutePages.spec.mjs

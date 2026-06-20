@@ -13,10 +13,13 @@ function restoreEnvValue(key, value) {
 async function expectIdeaChevron(page, ideaId, iconName) {
   const metrics = await page.locator(`[data-idea-board-idea-row='${ideaId}'] th`).evaluate((cell, targetIdeaId) => {
     const label = cell.querySelector(".idea-board-idea-label");
+    const text = label.querySelector(".idea-board-idea-label__text");
     const icon = cell.querySelector(`[data-idea-board-chevron='${targetIdeaId}']`);
     const cellStyles = getComputedStyle(cell);
     const labelStyles = getComputedStyle(label);
     const iconStyles = getComputedStyle(icon);
+    const textRect = text.getBoundingClientRect();
+    const iconRect = icon.getBoundingClientRect();
     return {
       iconName: icon.dataset.ideaBoardChevronIcon,
       labelDisplay: labelStyles.display,
@@ -24,7 +27,11 @@ async function expectIdeaChevron(page, ideaId, iconName) {
       iconHeight: Number.parseFloat(iconStyles.height),
       fontSize: Number.parseFloat(cellStyles.fontSize),
       iconColor: iconStyles.backgroundColor,
+      iconBottom: iconRect.bottom,
+      iconLeft: iconRect.left,
       textColor: cellStyles.color,
+      textBottom: textRect.bottom,
+      textLeft: textRect.left,
       maskImage: iconStyles.getPropertyValue("-webkit-mask-image") || iconStyles.maskImage,
     };
   }, ideaId);
@@ -33,6 +40,8 @@ async function expectIdeaChevron(page, ideaId, iconName) {
   expect(Math.abs(metrics.iconWidth - metrics.fontSize)).toBeLessThanOrEqual(1);
   expect(Math.abs(metrics.iconHeight - metrics.fontSize)).toBeLessThanOrEqual(1);
   expect(metrics.iconColor).toBe(metrics.textColor);
+  expect(metrics.iconLeft).toBeLessThan(metrics.textLeft);
+  expect(Math.abs(metrics.iconBottom - metrics.textBottom)).toBeLessThanOrEqual(2);
   expect(metrics.maskImage).toContain(iconName);
 }
 
@@ -92,7 +101,7 @@ async function expectExpandedNotesChildIndentation(page, ideaId, expectedInputRo
 
 async function expectProductionCopy(page) {
   await expect(page.locator("main")).not.toContainText(
-    /\bDB-shaped\b|\bin-page data model\b|\buserId\b|\bideaId\b|\bnoteId\b|\bsystem flag\b|\bmetadata\b|\bseed\b|\bdebug\b|\bselected context\b|\bmock\b|\btest\b|\binternal implementation\b|\bplaceholder\b|\bproject records\b|\bmutating API\b|\bauth\b|\bAI\b|\bdatabase behavior\b/i,
+    /\bDB-shaped\b|\bin-page data model\b|\buserId\b|\bideaId\b|\bnoteId\b|\bsystem flag\b|\bmetadata\b|\bseed\b|\bdebug\b|\bselected context\b|\bmock\b|\btest\b|\binternal implementation\b|\bplaceholder\b|\bproject records\b|\bmutating API\b|\bserver\b|\bAPI\b|\blocal server\b|\bport\b|\bunderlying systems\b|\bauth\b|\bAI\b|\bdatabase behavior\b/i,
   );
 }
 
@@ -141,6 +150,28 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
     await expect(page.locator("[data-idea-board-add-idea-row]")).toHaveCount(1);
     await expect(page.locator("[data-idea-board-add-idea]")).toHaveText("Add Idea");
     await expectButtonLeftAligned(page, "[data-idea-board-add-idea]", "[data-idea-board-add-idea-row] > td");
+    await expect(page.locator("[data-idea-board-show-filter] summary")).toHaveText("Show");
+    const captionMetrics = await page.locator(".idea-board-table-caption").evaluate((caption) => {
+      const label = caption.querySelector("span");
+      const filter = caption.querySelector("[data-idea-board-show-filter]");
+      const labelRect = label.getBoundingClientRect();
+      const filterRect = filter.getBoundingClientRect();
+      return {
+        filterRight: filterRect.right,
+        filterTop: filterRect.top,
+        labelRight: labelRect.right,
+        labelTop: labelRect.top,
+      };
+    });
+    expect(captionMetrics.filterRight).toBeGreaterThan(captionMetrics.labelRight);
+    expect(Math.abs(captionMetrics.filterTop - captionMetrics.labelTop)).toBeLessThanOrEqual(4);
+    await page.locator("[data-idea-board-show-filter] summary").click();
+    await expect(page.locator("[data-idea-board-status-filter-option]")).toHaveCount(6);
+    const checkedStatuses = await page.locator("[data-idea-board-status-filter-option]:checked").evaluateAll((inputs) => (
+      inputs.map((input) => input.value)
+    ));
+    expect(checkedStatuses).toEqual(["New", "Exploring", "Refining", "Ready", "Project"]);
+    await expect(page.locator("[data-idea-board-status-filter-option][value='Archived']")).not.toBeChecked();
     await expect(page.getByText(/another/i)).toHaveCount(0);
     await expect(page.locator("[data-idea-board-notes-chevron]")).toHaveCount(0);
     await expect(page.getByText("Selected idea context")).toHaveCount(0);
@@ -223,11 +254,19 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
     const ideaInputRow = page.locator("[data-idea-board-idea-input-row]").last();
     await expect(ideaInputRow.locator("[data-idea-board-idea-action]")).toHaveText(["Save", "Cancel"]);
     await expect(ideaInputRow.locator("[data-idea-board-idea-status-input]")).toHaveCount(1);
+    await expect(ideaInputRow.locator("[data-idea-board-idea-status-input] option")).toHaveText([
+      "New",
+      "Exploring",
+      "Refining",
+      "Ready",
+      "Project",
+      "Archived",
+    ]);
     await expect(ideaInputRow.locator("td").nth(2)).toHaveText(/\d{4}-\d{2}-\d{2}/);
     await expect(ideaInputRow.locator("td").nth(3)).toHaveText("0 Notes");
     await page.locator("[data-idea-board-idea-input]").fill("Lantern Reef");
     await page.locator("[data-idea-board-pitch-input]").fill("Guide light through a reef that rearranges at dusk.");
-    await page.locator("[data-idea-board-idea-status-input]").selectOption("Parked");
+    await page.locator("[data-idea-board-idea-status-input]").selectOption("Refining");
     await page.locator("[data-idea-board-idea-action='save']").click();
     await expect(page.locator("[data-idea-board-idea-row='lantern-reef']")).toBeVisible();
     await expect(page.locator("[data-idea-board-notes-count='lantern-reef']")).toHaveText("0 Notes");
@@ -236,9 +275,33 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
     await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='edit']").click();
     await expect(page.locator("[data-idea-board-idea-input-row] [data-idea-board-idea-action]")).toHaveText(["Save", "Cancel"]);
     await expect(page.locator("[data-idea-board-idea-status-input]")).toHaveCount(1);
-    await page.locator("[data-idea-board-idea-status-input]").selectOption("Ready to Shape");
+    await page.locator("[data-idea-board-idea-status-input]").selectOption("Ready");
     await page.locator("[data-idea-board-idea-action='save']").click();
-    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] td").nth(1)).toHaveText("Ready to Shape");
+    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] td").nth(1)).toHaveText("Ready");
+    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Create Project", "Delete"]);
+    await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='create-project']").click();
+    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] td").nth(1)).toHaveText("Project");
+    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Open Project", "Archive"]);
+    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='delete']")).toHaveCount(0);
+    await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='open-project']").click();
+    await expect(page.locator("[data-idea-board-status]")).toHaveText("Opening Lantern Reef.");
+    await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='archive']").click();
+    await expect(page.locator("[data-idea-board-idea-row='lantern-reef']")).toHaveCount(0);
+    await page.locator("[data-idea-board-status-filter-option][value='Archived']").check();
+    await expect(page.locator("[data-idea-board-idea-row='lantern-reef']")).toBeVisible();
+    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] td").nth(1)).toHaveText("Archived");
+    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action]")).toHaveText(["Restore", "Delete"]);
+    await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='restore']").click();
+    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] td").nth(1)).toHaveText("Project");
+    await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='archive']").click();
+    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action]")).toHaveText(["Restore", "Delete"]);
+    await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='delete']").click();
+    await expect(page.locator("[data-idea-board-idea-row='lantern-reef']")).toHaveCount(0);
+    await page.locator("[data-idea-board-filter-clear-all]").click();
+    await expect(page.locator("[data-idea-board-idea-row]")).toHaveCount(0);
+    await expect(page.locator("[data-idea-board-add-idea]")).toBeVisible();
+    await page.locator("[data-idea-board-filter-select-all]").click();
+    await expect(page.locator("[data-idea-board-idea-row]")).toHaveCount(3);
 
     expect(mutatingApiRequests).toEqual([]);
     expect(failedRequests).toEqual([]);
