@@ -6,9 +6,8 @@ Missing changed runtime JS files are WARN, not FAIL.
 Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
-(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
-(74%) toolbox/idea-board/index.js - executed lines 640/640; executed functions 37/50
+(71%) src/engine/audio/TextToSpeechEngine.js - executed lines 412/412; executed functions 37/52
+(71%) toolbox/text-to-speech/text2speech.js - executed lines 835/835; executed functions 61/86
 
 Guardrail warnings:
-(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(100%) none - no changed runtime JS coverage warnings

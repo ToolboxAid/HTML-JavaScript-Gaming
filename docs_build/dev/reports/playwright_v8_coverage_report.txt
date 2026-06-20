@@ -12,34 +12,28 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(78%) Toolbox Index - exercised 4 runtime JS files
+(72%) Toolbox Index - exercised 2 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
-(63%) Theme V2 Shared JS - exercised 2 runtime JS files
+(56%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
-(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
-(74%) toolbox/idea-board/index.js - executed lines 640/640; executed functions 37/50
+(71%) src/engine/audio/TextToSpeechEngine.js - executed lines 412/412; executed functions 37/52
+(71%) toolbox/text-to-speech/text2speech.js - executed lines 835/835; executed functions 61/86
 
 Files with executed line/function counts where available:
-(25%) src/api/session-api-client.js - executed lines 68/68; executed functions 3/12
-(33%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
-(44%) src/api/server-api-client.js - executed lines 167/167; executed functions 8/18
-(63%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 54/86
+(36%) src/api/server-api-client.js - executed lines 167/167; executed functions 5/14
+(38%) src/api/public-config-client.js - executed lines 209/209; executed functions 10/26
+(54%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 46/85
 (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
-(65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
-(67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
-(67%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 20/20; executed functions 2/3
-(74%) toolbox/idea-board/index.js - executed lines 640/640; executed functions 37/50
-(78%) toolbox/tools-page-accordions.js - executed lines 1156/1156; executed functions 87/111
-(86%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 25/29
+(71%) src/engine/audio/TextToSpeechEngine.js - executed lines 412/412; executed functions 37/52
+(71%) toolbox/text-to-speech/text2speech.js - executed lines 835/835; executed functions 61/86
+(76%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 22/29
+(100%) src/engine/audio/TextToSpeechDefaults.js - executed lines 108/108; executed functions 1/1
 
 Uncovered or low-coverage changed JS files:
-(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
+(100%) none - no low-coverage changed runtime JS files
 
 Changed JS files considered:
-(0%) src/shared/toolbox/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/IdeaBoardTableNotes.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
-(64%) assets/theme-v2/js/tool-display-mode.js - changed JS file with browser V8 coverage
-(74%) toolbox/idea-board/index.js - changed JS file with browser V8 coverage
+(0%) tests/playwright/tools/TextToSpeechFunctional.spec.mjs - changed JS file not collected as browser runtime coverage
+(71%) src/engine/audio/TextToSpeechEngine.js - changed JS file with browser V8 coverage
+(71%) toolbox/text-to-speech/text2speech.js - changed JS file with browser V8 coverage
