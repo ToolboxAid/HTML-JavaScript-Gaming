@@ -10,7 +10,7 @@ function restoreEnvValue(key, value) {
   process.env[key] = value;
 }
 
-test("Idea Board presents inline tree grid idea and note actions", async ({ page }) => {
+test("Idea Board uses DB-shaped accordion table ideas and notes", async ({ page }) => {
   const server = await startRepoServer();
   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
   const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
@@ -49,75 +49,87 @@ test("Idea Board presents inline tree grid idea and note actions", async ({ page
       "Notes",
       "Actions",
     ]);
-    await expect(page.locator("[data-idea-board-table] > thead th[scope='col']", { hasText: "Owner" })).toHaveCount(0);
-    await expect(page.locator("[data-idea-board-idea-row]")).toHaveCount(2);
-    await expect(page.locator("[data-idea-board-section='Selected Notes']")).toHaveCount(0);
-    await expect(page.getByText("Notes for Sky Orchard")).toHaveCount(0);
+    await expect(page.locator("[data-idea-board-idea-row]")).toHaveCount(3);
+    await expect(page.locator("[data-idea-board-expanded-row]")).toHaveCount(0);
+    await expect(page.locator("[data-idea-board-add-idea-row]")).toHaveCount(1);
     await expect(page.getByText("Selected idea context")).toHaveCount(0);
-    await expect(page.locator("[data-idea-board-idea-row='sky-orchard']")).toHaveAttribute("aria-selected", "true");
+    await expect(page.getByText("Notes for Sky Orchard")).toHaveCount(0);
+    await expect(page.getByText("Selected")).toHaveCount(0);
 
-    const initialRowOrder = await page.locator("[data-idea-board-ideas-body] > tr").evaluateAll((rows) => (
-      rows.map((row) => row.getAttribute("data-idea-board-idea-row") || row.getAttribute("data-idea-board-expanded-row"))
-    ));
-    expect(initialRowOrder.slice(0, 3)).toEqual(["sky-orchard", "sky-orchard", "clockwork-courier"]);
-    await expect(page.locator("[data-idea-board-idea-row='sky-orchard'] [data-idea-board-select-idea]")).toHaveText("2 Notes");
-    await expect(page.locator("[data-idea-board-notes-table='sky-orchard'] th[scope='col']")).toHaveText(["Note", "Actions"]);
+    await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] th")).toHaveText("Top Thoughts");
+    await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] td").nth(0)).toHaveText("Smartest person wins...");
+    await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] td").nth(1)).toHaveText("Exploring");
+    await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] td").nth(2)).toHaveText("2026-06-20");
+    await expect(page.locator("[data-idea-board-notes-count='top-thoughts']")).toHaveText("3 Notes");
+    await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Delete"]);
+
+    await expect(page.locator("[data-idea-board-idea-row='sky-orchard'] th")).toHaveText("Sky Orchard");
+    await expect(page.locator("[data-idea-board-idea-row='sky-orchard'] td").nth(0)).toHaveText("Grow floating islands...");
+    await expect(page.locator("[data-idea-board-notes-count='sky-orchard']")).toHaveText("3 Notes");
+    await expect(page.locator("[data-idea-board-idea-row='clockwork-courier'] th")).toHaveText("Clockwork Courier");
+    await expect(page.locator("[data-idea-board-idea-row='clockwork-courier'] td").nth(0)).toHaveText("Deliver messages through looping city...");
+    await expect(page.locator("[data-idea-board-notes-count='clockwork-courier']")).toHaveText("0 Notes");
+
+    await page.locator("[data-idea-board-notes-count='top-thoughts']").click();
+    await expect(page.locator("[data-idea-board-expanded-row='top-thoughts']")).toBeVisible();
+    await expect(page.locator("[data-idea-board-expanded-row='top-thoughts'] [data-idea-board-notes-header='top-thoughts']")).toHaveText("Notes");
+    await expect(page.locator("[data-idea-board-notes-table='top-thoughts'] th[scope='col']")).toHaveText(["Note", "Actions"]);
     await expect(page.locator("[data-idea-board-notes-table] th[scope='col']", { hasText: "Type" })).toHaveCount(0);
     await expect(page.locator("[data-idea-board-notes-table] th[scope='col']", { hasText: "Created By" })).toHaveCount(0);
     await expect(page.locator("[data-idea-board-notes-table] th[scope='col']", { hasText: "Created" })).toHaveCount(0);
     await expect(page.locator("[data-idea-board-notes-table] th[scope='col']", { hasText: "Updated" })).toHaveCount(0);
-    await expect(page.locator("[data-idea-board-idea-row='sky-orchard'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Delete"]);
 
-    const systemNote = page.locator("[data-idea-board-system-note]").first();
+    const systemNote = page.locator("[data-idea-board-notes-table='top-thoughts'] [data-idea-board-system-note]").first();
     await expect(systemNote.locator("[data-idea-board-note-action]")).toHaveText(["Edit"]);
     await expect(systemNote.locator("[data-idea-board-note-action='delete']")).toHaveCount(0);
     await systemNote.locator("[data-idea-board-note-action='edit']").click();
     await expect(page.locator("[data-idea-board-note-input-row] [data-idea-board-note-action]")).toHaveText(["Save", "Cancel"]);
-    await page.locator("[data-idea-board-note-input]").fill("System note edited inline for Sky Orchard.");
+    await page.locator("[data-idea-board-note-input]").fill("System note can be edited in-place.");
     await page.locator("[data-idea-board-note-action='save']").click();
-    await expect(page.locator("[data-idea-board-notes-table='sky-orchard']")).toContainText("System note edited inline for Sky Orchard.");
+    await expect(page.locator("[data-idea-board-notes-table='top-thoughts']")).toContainText("System note can be edited in-place.");
     await expect(page.locator("[data-idea-board-system-note] [data-idea-board-note-action='delete']")).toHaveCount(0);
 
-    await page.locator("[data-idea-board-add-note='sky-orchard']").click();
+    await page.locator("[data-idea-board-add-note='top-thoughts']").click();
     await expect(page.locator("[data-idea-board-note-input-row] [data-idea-board-note-action]")).toHaveText(["Save", "Cancel"]);
-    await page.locator("[data-idea-board-note-input]").fill("Prototype the storm creature escalation table.");
+    await page.locator("[data-idea-board-note-input]").fill("Add a fourth table-shaped note.");
     await page.locator("[data-idea-board-note-action='save']").click();
-    await expect(page.locator("[data-idea-board-notes-table='sky-orchard']")).toContainText("Prototype the storm creature escalation table.");
-    await expect(page.locator("[data-idea-board-idea-row='sky-orchard'] [data-idea-board-select-idea]")).toHaveText("3 Notes");
+    await expect(page.locator("[data-idea-board-notes-table='top-thoughts']")).toContainText("Add a fourth table-shaped note.");
+    await expect(page.locator("[data-idea-board-notes-count='top-thoughts']")).toHaveText("4 Notes");
 
-    await page.locator("[data-idea-board-notes-table='sky-orchard'] tbody tr").first().locator("[data-idea-board-note-action='edit']").click();
-    await page.locator("[data-idea-board-note-input]").fill("Prototype storm escalation after core loop review.");
+    await page.locator("[data-idea-board-notes-table='top-thoughts'] tbody tr").last().locator("[data-idea-board-note-action='edit']").click();
+    await page.locator("[data-idea-board-note-input]").fill("Edited fourth table-shaped note.");
     await page.locator("[data-idea-board-note-action='save']").click();
-    await expect(page.locator("[data-idea-board-notes-table='sky-orchard']")).toContainText("Prototype storm escalation after core loop review.");
-    await page.locator("[data-idea-board-notes-table='sky-orchard'] tbody tr").first().locator("[data-idea-board-note-action='delete']").click();
-    await expect(page.locator("[data-idea-board-notes-table='sky-orchard']")).not.toContainText("Prototype storm escalation after core loop review.");
+    await expect(page.locator("[data-idea-board-notes-table='top-thoughts']")).toContainText("Edited fourth table-shaped note.");
+    await page.locator("[data-idea-board-notes-table='top-thoughts'] tbody tr").last().locator("[data-idea-board-note-action='delete']").click();
+    await expect(page.locator("[data-idea-board-notes-table='top-thoughts']")).not.toContainText("Edited fourth table-shaped note.");
+    await expect(page.locator("[data-idea-board-notes-count='top-thoughts']")).toHaveText("3 Notes");
 
-    await page.locator("[data-idea-board-select-idea='clockwork-courier']").click();
-    const clockRowOrder = await page.locator("[data-idea-board-ideas-body] > tr").evaluateAll((rows) => (
-      rows.map((row) => row.getAttribute("data-idea-board-idea-row") || row.getAttribute("data-idea-board-expanded-row"))
-    ));
-    expect(clockRowOrder.slice(0, 3)).toEqual(["sky-orchard", "clockwork-courier", "clockwork-courier"]);
-    await expect(page.locator("[data-idea-board-notes-table='clockwork-courier']")).toContainText("Check whether district routing stays readable after the first reset.");
-    await expect(page.locator("[data-idea-board-notes-table='clockwork-courier']")).not.toContainText("System note edited inline for Sky Orchard.");
+    await page.locator("[data-idea-board-notes-chevron='sky-orchard']").click();
+    await expect(page.locator("[data-idea-board-expanded-row='top-thoughts']")).toHaveCount(0);
+    await expect(page.locator("[data-idea-board-expanded-row='sky-orchard']")).toBeVisible();
+    await page.locator("[data-idea-board-notes-chevron='sky-orchard']").click();
+    await expect(page.locator("[data-idea-board-expanded-row]")).toHaveCount(0);
 
     await page.locator("[data-idea-board-add-idea]").click();
-    await expect(page.locator("[data-idea-board-idea-input-row] [data-idea-board-idea-action]")).toHaveText(["Save", "Cancel"]);
-    await expect(page.locator("[data-idea-board-idea-input-row] [data-idea-board-idea-status-input]")).toHaveCount(1);
-    await page.locator("[data-idea-board-idea-title-input]").fill("Lantern Reef");
-    await page.locator("[data-idea-board-idea-pitch-input]").fill("Guide light through a reef that rearranges at dusk.");
+    const ideaInputRow = page.locator("[data-idea-board-idea-input-row]").last();
+    await expect(ideaInputRow.locator("[data-idea-board-idea-action]")).toHaveText(["Save", "Cancel"]);
+    await expect(ideaInputRow.locator("[data-idea-board-idea-status-input]")).toHaveCount(1);
+    await expect(ideaInputRow.locator("td").nth(2)).toHaveText(/\d{4}-\d{2}-\d{2}/);
+    await expect(ideaInputRow.locator("td").nth(3)).toHaveText("0 Notes");
+    await page.locator("[data-idea-board-idea-input]").fill("Lantern Reef");
+    await page.locator("[data-idea-board-pitch-input]").fill("Guide light through a reef that rearranges at dusk.");
     await page.locator("[data-idea-board-idea-status-input]").selectOption("Parked");
     await page.locator("[data-idea-board-idea-action='save']").click();
     await expect(page.locator("[data-idea-board-idea-row='lantern-reef']")).toBeVisible();
-    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-select-idea]")).toHaveText("0 Notes");
-    await expect(page.locator("[data-idea-board-expanded-row='lantern-reef']")).toBeVisible();
+    await expect(page.locator("[data-idea-board-notes-count='lantern-reef']")).toHaveText("0 Notes");
+    await expect(page.locator("[data-idea-board-expanded-row='lantern-reef']")).toHaveCount(0);
 
     await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='edit']").click();
     await expect(page.locator("[data-idea-board-idea-input-row] [data-idea-board-idea-action]")).toHaveText(["Save", "Cancel"]);
+    await expect(page.locator("[data-idea-board-idea-status-input]")).toHaveCount(1);
     await page.locator("[data-idea-board-idea-status-input]").selectOption("Ready to Shape");
     await page.locator("[data-idea-board-idea-action='save']").click();
     await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] td").nth(1)).toHaveText("Ready to Shape");
-    await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='delete']").click();
-    await expect(page.locator("[data-idea-board-idea-row='lantern-reef']")).toHaveCount(0);
 
     expect(mutatingApiRequests).toEqual([]);
     expect(failedRequests).toEqual([]);
