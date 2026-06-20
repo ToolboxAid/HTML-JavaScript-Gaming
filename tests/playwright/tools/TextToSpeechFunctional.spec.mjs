@@ -1,0 +1,159 @@
+import { expect, test } from "@playwright/test";
+import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
+import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
+
+test.afterAll(async () => {
+  await workspaceV2CoverageReporter.writeReport();
+});
+
+async function openTextToSpeechPage(page, { speechAvailable = true } = {}) {
+  const server = await startRepoServer();
+  const failures = {
+    consoleErrors: [],
+    failedRequests: [],
+    pageErrors: [],
+    server,
+  };
+
+  page.on("pageerror", (error) => failures.pageErrors.push(error.message));
+  page.on("console", (message) => {
+    if (message.type() === "error") failures.consoleErrors.push(message.text());
+  });
+  page.on("response", (response) => {
+    if (response.status() >= 400) failures.failedRequests.push(`${response.status()} ${response.url()}`);
+  });
+  page.on("requestfailed", (request) => failures.failedRequests.push(`FAILED ${request.url()}`));
+
+  await page.addInitScript(({ apiUrl, siteUrl, speechAvailable: enabled }) => {
+    Object.defineProperty(Navigator.prototype, "webdriver", {
+      configurable: true,
+      get: () => true,
+    });
+    window.GameFoundryPublicConfig = {
+      apiUrl,
+      environmentLabel: "Development Environment",
+      siteUrl,
+    };
+    window.__textToSpeechCalls = [];
+    if (!enabled) {
+      Object.defineProperty(window, "SpeechSynthesisUtterance", { configurable: true, value: undefined });
+      Object.defineProperty(window, "speechSynthesis", { configurable: true, value: undefined });
+      return;
+    }
+
+    Object.defineProperty(window, "SpeechSynthesisUtterance", {
+      configurable: true,
+      value: class SpeechSynthesisUtterance {
+        constructor(text = "") {
+          this.text = text;
+        }
+      },
+    });
+
+    const voices = [
+      { lang: "en-US", name: "Arcade Voice", voiceURI: "arcade-voice-uri" },
+      { lang: "en-GB", name: "Narrator Voice", voiceURI: "narrator-voice-uri" },
+    ];
+    Object.defineProperty(window, "speechSynthesis", {
+      configurable: true,
+      value: {
+        addEventListener(type, callback) {
+          if (type === "voiceschanged") this.__voicesChanged = callback;
+        },
+        cancel() {
+          window.__textToSpeechCalls.push({ type: "cancel" });
+        },
+        getVoices() {
+          return voices;
+        },
+        removeEventListener() {},
+        speak(utterance) {
+          window.__textToSpeechCalls.push({
+            lang: utterance.lang,
+            pitch: utterance.pitch,
+            rate: utterance.rate,
+            text: utterance.text,
+            type: "speak",
+            voiceName: utterance.voice?.name || "",
+            volume: utterance.volume,
+          });
+        },
+      },
+    });
+  }, { apiUrl: `${server.baseUrl}/api`, siteUrl: server.baseUrl, speechAvailable });
+
+  await workspaceV2CoverageReporter.start(page);
+  await page.goto(`${server.baseUrl}/toolbox/text-to-speech/index.html`, { waitUntil: "networkidle" });
+  return failures;
+}
+
+async function closeTextToSpeechRun(failures, page) {
+  await workspaceV2CoverageReporter.stop(page);
+  await failures.server.close();
+}
+
+test("Text To Speech page loads and speaks through browser speech synthesis", async ({ page }) => {
+  const failures = await openTextToSpeechPage(page);
+  try {
+    await expect(page.getByRole("heading", { level: 1, name: "Text To Speech" })).toBeVisible();
+    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+
+    await expect(page.locator("[data-tts-voice-select]")).toContainText("Arcade Voice");
+    await expect(page.locator("[data-tts-voice-count]")).toHaveText("2");
+    await expect(page.locator("[data-tts-engine-label]")).toHaveText("Ready");
+
+    await page.locator("[data-tts-text-input]").fill("Launch the next wave.");
+    await page.locator("[data-tts-voice-select]").selectOption("arcade-voice-uri");
+    await page.locator("[data-tts-rate]").fill("1.4");
+    await page.locator("[data-tts-pitch]").fill("0.8");
+    await page.locator("[data-tts-volume]").fill("0.55");
+    await expect(page.locator("[data-tts-rate-value]")).toHaveText("1.4");
+    await expect(page.locator("[data-tts-pitch-value]")).toHaveText("0.8");
+    await expect(page.locator("[data-tts-volume-value]")).toHaveText("0.55");
+    await expect(page.locator("[data-tts-text-count]")).toHaveText("21");
+
+    await expect(page.locator("[data-tts-speak]")).toBeEnabled();
+    await page.locator("[data-tts-speak]").click();
+    await expect(page.locator("[data-tts-status]")).toContainText("Speech queued");
+    let calls = await page.evaluate(() => window.__textToSpeechCalls);
+    expect(calls.at(-1)).toEqual(expect.objectContaining({
+      lang: "en-US",
+      pitch: 0.8,
+      rate: 1.4,
+      text: "Launch the next wave.",
+      type: "speak",
+      voiceName: "Arcade Voice",
+      volume: 0.55,
+    }));
+
+    await page.locator("[data-tts-stop]").click();
+    await expect(page.locator("[data-tts-status]")).toContainText("Speech stopped");
+    calls = await page.evaluate(() => window.__textToSpeechCalls);
+    expect(calls.at(-1)).toEqual({ type: "cancel" });
+
+    expect(failures.failedRequests).toEqual([]);
+    expect(failures.pageErrors).toEqual([]);
+    expect(failures.consoleErrors).toEqual([]);
+  } finally {
+    await closeTextToSpeechRun(failures, page);
+  }
+});
+
+test("Text To Speech shows actionable error when browser speech synthesis is unavailable", async ({ page }) => {
+  const failures = await openTextToSpeechPage(page, { speechAvailable: false });
+  try {
+    await expect(page.getByRole("heading", { level: 1, name: "Text To Speech" })).toBeVisible();
+    await expect(page.locator("[data-tts-engine-label]")).toHaveText("Unavailable");
+    await expect(page.locator("[data-tts-engine-status]")).toContainText("SpeechSynthesis is unavailable");
+    await expect(page.locator("[data-tts-status]")).toContainText("Use a browser with Web Speech API support");
+    await expect(page.locator("[data-tts-voice-select]")).toContainText("No browser voices available");
+    await expect(page.locator("[data-tts-speak]")).toBeDisabled();
+    await expect(page.locator("[data-tts-stop]")).toBeDisabled();
+
+    expect(failures.failedRequests).toEqual([]);
+    expect(failures.pageErrors).toEqual([]);
+    expect(failures.consoleErrors).toEqual([]);
+  } finally {
+    await closeTextToSpeechRun(failures, page);
+  }
+});

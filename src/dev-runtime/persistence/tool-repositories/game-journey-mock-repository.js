@@ -187,7 +187,7 @@ export const GAME_JOURNEY_TOOL_OWNERSHIP_AREAS = Object.freeze([
     sectionKey: "audio",
     sectionName: "Audio",
     ownershipArea: "Sound and voice planning",
-    toolNames: Object.freeze(["Audio", "Music", "Audio Effects", "MIDI", "Voice Capture", "Voice Output"]),
+    toolNames: Object.freeze(["Audio", "Music", "Audio Effects", "MIDI", "Voice Capture", "Text To Speech"]),
   }),
   Object.freeze({
     sectionKey: "objects",
