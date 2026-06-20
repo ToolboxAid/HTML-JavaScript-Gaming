@@ -112,6 +112,32 @@ function restoreEnvValue(key, value) {
   process.env[key] = value;
 }
 
+async function expectIdeaChevron(page, ideaId, iconName) {
+  const metrics = await page.locator(`[data-idea-board-idea-row='${ideaId}'] th`).evaluate((cell, targetIdeaId) => {
+    const label = cell.querySelector(".idea-board-idea-label");
+    const icon = cell.querySelector(`[data-idea-board-chevron='${targetIdeaId}']`);
+    const cellStyles = getComputedStyle(cell);
+    const labelStyles = getComputedStyle(label);
+    const iconStyles = getComputedStyle(icon);
+    return {
+      iconName: icon.dataset.ideaBoardChevronIcon,
+      labelDisplay: labelStyles.display,
+      iconWidth: Number.parseFloat(iconStyles.width),
+      iconHeight: Number.parseFloat(iconStyles.height),
+      fontSize: Number.parseFloat(cellStyles.fontSize),
+      iconColor: iconStyles.backgroundColor,
+      textColor: cellStyles.color,
+      maskImage: iconStyles.getPropertyValue("-webkit-mask-image") || iconStyles.maskImage,
+    };
+  }, ideaId);
+  expect(metrics.iconName).toBe(iconName);
+  expect(metrics.labelDisplay).toBe("inline-flex");
+  expect(Math.abs(metrics.iconWidth - metrics.fontSize)).toBeLessThanOrEqual(1);
+  expect(Math.abs(metrics.iconHeight - metrics.fontSize)).toBeLessThanOrEqual(1);
+  expect(metrics.iconColor).toBe(metrics.textColor);
+  expect(metrics.maskImage).toContain(iconName);
+}
+
 test("tools route aliases render toolbox tool pages", async ({ page }) => {
   const server = await startRepoServer();
   const failedRequests = [];
@@ -226,13 +252,13 @@ test("Idea Board launches from Toolbox with accordion table notes model", async 
     await expect(page.locator("[data-idea-board-notes-count='top-thoughts']")).toHaveText("3 Notes");
     await expect(page.locator("[data-idea-board-notes-count='sky-orchard']")).toHaveText("3 Notes");
     await expect(page.locator("[data-idea-board-notes-count='clockwork-courier']")).toHaveText("0 Notes");
-    await expect(page.locator("[data-idea-board-chevron='top-thoughts']")).toHaveAttribute("src", /gfs-chevron-down\.svg$/);
+    await expectIdeaChevron(page, "top-thoughts", "gfs-chevron-down.svg");
     await expect(page.locator("[data-idea-board-status]")).toHaveText("Idea Board table edits are in-page only. No project records, auth, AI, or database behavior is connected.");
     await page.locator("[data-idea-board-notes-count='top-thoughts']").click();
     await expect(page.locator("[data-idea-board-expanded-row]")).toHaveCount(0);
     await page.locator("[data-idea-board-idea-cell='top-thoughts']").click();
     await expect(page.locator("[data-idea-board-expanded-row='top-thoughts']")).toBeVisible();
-    await expect(page.locator("[data-idea-board-chevron='top-thoughts']")).toHaveAttribute("src", /gfs-chevron-up\.svg$/);
+    await expectIdeaChevron(page, "top-thoughts", "gfs-chevron-up.svg");
     await expect(page.locator("[data-idea-board-notes-header='top-thoughts']")).toHaveText("Notes");
     await expect(page.locator("[data-idea-board-notes-table='top-thoughts'] th[scope='col']")).toHaveText(["Note", "Actions"]);
     await expect(page.getByText("Notes for Sky Orchard")).toHaveCount(0);

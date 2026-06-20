@@ -10,6 +10,32 @@ function restoreEnvValue(key, value) {
   process.env[key] = value;
 }
 
+async function expectIdeaChevron(page, ideaId, iconName) {
+  const metrics = await page.locator(`[data-idea-board-idea-row='${ideaId}'] th`).evaluate((cell, targetIdeaId) => {
+    const label = cell.querySelector(".idea-board-idea-label");
+    const icon = cell.querySelector(`[data-idea-board-chevron='${targetIdeaId}']`);
+    const cellStyles = getComputedStyle(cell);
+    const labelStyles = getComputedStyle(label);
+    const iconStyles = getComputedStyle(icon);
+    return {
+      iconName: icon.dataset.ideaBoardChevronIcon,
+      labelDisplay: labelStyles.display,
+      iconWidth: Number.parseFloat(iconStyles.width),
+      iconHeight: Number.parseFloat(iconStyles.height),
+      fontSize: Number.parseFloat(cellStyles.fontSize),
+      iconColor: iconStyles.backgroundColor,
+      textColor: cellStyles.color,
+      maskImage: iconStyles.getPropertyValue("-webkit-mask-image") || iconStyles.maskImage,
+    };
+  }, ideaId);
+  expect(metrics.iconName).toBe(iconName);
+  expect(metrics.labelDisplay).toBe("inline-flex");
+  expect(Math.abs(metrics.iconWidth - metrics.fontSize)).toBeLessThanOrEqual(1);
+  expect(Math.abs(metrics.iconHeight - metrics.fontSize)).toBeLessThanOrEqual(1);
+  expect(metrics.iconColor).toBe(metrics.textColor);
+  expect(metrics.maskImage).toContain(iconName);
+}
+
 test("Idea Board uses DB-shaped accordion table ideas and notes", async ({ page }) => {
   const server = await startRepoServer();
   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
@@ -58,7 +84,7 @@ test("Idea Board uses DB-shaped accordion table ideas and notes", async ({ page 
     await expect(page.getByText("Selected")).toHaveCount(0);
 
     await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] th")).toHaveText("Top Thoughts");
-    await expect(page.locator("[data-idea-board-chevron='top-thoughts']")).toHaveAttribute("src", /gfs-chevron-down\.svg$/);
+    await expectIdeaChevron(page, "top-thoughts", "gfs-chevron-down.svg");
     await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] td").nth(0)).toHaveText("Smartest person wins...");
     await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] td").nth(1)).toHaveText("Exploring");
     await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] td").nth(2)).toHaveText("2026-06-20");
@@ -66,7 +92,7 @@ test("Idea Board uses DB-shaped accordion table ideas and notes", async ({ page 
     await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Delete"]);
 
     await expect(page.locator("[data-idea-board-idea-row='sky-orchard'] th")).toHaveText("Sky Orchard");
-    await expect(page.locator("[data-idea-board-chevron='sky-orchard']")).toHaveAttribute("src", /gfs-chevron-down\.svg$/);
+    await expectIdeaChevron(page, "sky-orchard", "gfs-chevron-down.svg");
     await expect(page.locator("[data-idea-board-idea-row='sky-orchard'] td").nth(0)).toHaveText("Grow floating islands...");
     await expect(page.locator("[data-idea-board-notes-count='sky-orchard']")).toHaveText("3 Notes");
     await expect(page.locator("[data-idea-board-idea-row='clockwork-courier'] th")).toHaveText("Clockwork Courier");
@@ -77,7 +103,7 @@ test("Idea Board uses DB-shaped accordion table ideas and notes", async ({ page 
     await expect(page.locator("[data-idea-board-expanded-row]")).toHaveCount(0);
     await page.locator("[data-idea-board-idea-cell='top-thoughts']").click();
     await expect(page.locator("[data-idea-board-expanded-row='top-thoughts']")).toBeVisible();
-    await expect(page.locator("[data-idea-board-chevron='top-thoughts']")).toHaveAttribute("src", /gfs-chevron-up\.svg$/);
+    await expectIdeaChevron(page, "top-thoughts", "gfs-chevron-up.svg");
     await expect(page.locator("[data-idea-board-expanded-row='top-thoughts'] [data-idea-board-notes-header='top-thoughts']")).toHaveText("Notes");
     await expect(page.locator("[data-idea-board-notes-table='top-thoughts'] th[scope='col']")).toHaveText(["Note", "Actions"]);
     await expect(page.locator("[data-idea-board-notes-table] th[scope='col']", { hasText: "Type" })).toHaveCount(0);
@@ -113,12 +139,12 @@ test("Idea Board uses DB-shaped accordion table ideas and notes", async ({ page 
     await page.locator("[data-idea-board-idea-cell='sky-orchard']").click();
     await expect(page.locator("[data-idea-board-expanded-row='top-thoughts']")).toHaveCount(0);
     await expect(page.locator("[data-idea-board-expanded-row='sky-orchard']")).toBeVisible();
-    await expect(page.locator("[data-idea-board-chevron='sky-orchard']")).toHaveAttribute("src", /gfs-chevron-up\.svg$/);
+    await expectIdeaChevron(page, "sky-orchard", "gfs-chevron-up.svg");
     await page.locator("[data-idea-board-notes-count='sky-orchard']").click();
     await expect(page.locator("[data-idea-board-expanded-row='sky-orchard']")).toBeVisible();
     await page.locator("[data-idea-board-idea-cell='sky-orchard']").click();
     await expect(page.locator("[data-idea-board-expanded-row]")).toHaveCount(0);
-    await expect(page.locator("[data-idea-board-chevron='sky-orchard']")).toHaveAttribute("src", /gfs-chevron-down\.svg$/);
+    await expectIdeaChevron(page, "sky-orchard", "gfs-chevron-down.svg");
 
     await page.locator("[data-idea-board-add-idea]").click();
     const ideaInputRow = page.locator("[data-idea-board-idea-input-row]").last();
