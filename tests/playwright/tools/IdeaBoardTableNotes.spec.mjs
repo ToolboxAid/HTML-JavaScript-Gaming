@@ -105,6 +105,11 @@ async function expectProductionCopy(page) {
   );
 }
 
+async function expectNoNavigationFallbackUi(page) {
+  await expect(page.locator("body")).not.toContainText("Tool navigation is temporarily unavailable. Refresh the page or try again shortly.");
+  await expect(page.locator(".tool-display-mode")).not.toContainText(/\bserver\b|\bAPI\b|\blocal server\b|\bport\b|\bregistry\b|\bsnapshot\b/i);
+}
+
 test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
   const server = await startRepoServer();
   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
@@ -137,6 +142,7 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
     await page.goto(`${server.baseUrl}/toolbox/idea-board/index.html`, { waitUntil: "networkidle" });
     await expect(page.getByRole("heading", { level: 1, name: "Idea Board" })).toBeVisible();
     await expectProductionCopy(page);
+    await expectNoNavigationFallbackUi(page);
     await expect(page.locator("[data-idea-board-table] > thead th[scope='col']")).toHaveText([
       "Idea",
       "Pitch",
@@ -305,6 +311,58 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
 
     expect(mutatingApiRequests).toEqual([]);
     expect(failedRequests).toEqual([]);
+    expect(pageErrors).toEqual([]);
+    expect(consoleErrors).toEqual([]);
+  } finally {
+    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
+    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
+    await server.close();
+  }
+});
+
+test("Idea Board remains usable without visible navigation fallback when registry navigation is unavailable", async ({ page }) => {
+  const server = await startRepoServer();
+  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
+  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
+  const pageErrors = [];
+  const consoleErrors = [];
+  const navigationWarnings = [];
+
+  await page.route("**/api/toolbox/registry/snapshot", async (route) => {
+    await route.fulfill({ body: "", status: 204 });
+  });
+
+  page.on("pageerror", (error) => {
+    const text = error.stack || error.message;
+    if (!isBrowserExtensionNoise(text)) pageErrors.push(error.message);
+  });
+  page.on("console", (message) => {
+    const text = message.text();
+    if (message.type() === "warning" && text.includes("Tool navigation could not be loaded.")) {
+      navigationWarnings.push(text);
+    }
+    if (message.type() === "error" && !isBrowserExtensionNoise(text)) consoleErrors.push(text);
+  });
+
+  try {
+    await page.goto(`${server.baseUrl}/toolbox/idea-board/index.html`, { waitUntil: "networkidle" });
+    await expect(page.getByRole("heading", { level: 1, name: "Idea Board" })).toBeVisible();
+    await expectProductionCopy(page);
+    await expectNoNavigationFallbackUi(page);
+    await expect(page.locator(".tool-display-mode__navigation-row")).toHaveCount(0);
+    await expect(page.locator("[data-idea-board-table]")).toBeVisible();
+    await expect(page.locator("[data-idea-board-idea-row]")).toHaveCount(3);
+
+    await page.locator("[data-idea-board-idea-cell='top-thoughts']").click();
+    await expect(page.locator("[data-idea-board-expanded-row='top-thoughts']")).toBeVisible();
+    await page.locator("[data-idea-board-add-note='top-thoughts']").click();
+    await page.locator("[data-idea-board-note-input]").fill("Navigation fallback does not block table notes.");
+    await page.locator("[data-idea-board-note-action='save']").click();
+    await expect(page.locator("[data-idea-board-notes-table='top-thoughts']")).toContainText("Navigation fallback does not block table notes.");
+
+    expect(navigationWarnings.length).toBeGreaterThan(0);
     expect(pageErrors).toEqual([]);
     expect(consoleErrors).toEqual([]);
   } finally {

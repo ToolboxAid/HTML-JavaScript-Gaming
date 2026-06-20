@@ -1,54 +1,78 @@
-# Codex Changed Files - PR_26171_061-text2speech-engine-audio-feature-parity
+# PR_26171_042 Codex Changed Files Report
 
-## Git Workflow
-- Starting branch: `main`.
-- Created branch: `pr/26171-061-text2speech-engine-audio-feature-parity`.
-- Initial commit: `e4541d63719ab777b0654c8fecf4b13237d31256`.
-- PR branch was merged with `origin/main` during PR conflict recovery.
-- Conflicts were limited to generated report artifacts.
+## Instruction Compliance Gate
 
-## Scoped Diff Stat
-```text
-...R_26171_061-engine-audio-ownership-checklist.md |  25 +
- ...R_26171_061-instruction-compliance-checklist.md |  32 +
- .../PR_26171_061-manual-validation-notes.md        |  27 +
- ...R_26171_061-old-tts-feature-parity-checklist.md |  48 ++
- ..._061-text2speech-engine-audio-feature-parity.md |  71 ++
- docs_build/dev/reports/PR_26171_061-validation.md  |  42 +
- docs_build/dev/reports/codex_changed_files.txt     | 118 +--
- .../dev/reports/coverage_changed_js_guardrail.txt  |   7 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |  36 +-
- src/engine/audio/TextToSpeechEngine.js             | 208 ++++-
- .../tools/TextToSpeechFunctional.spec.mjs          |  30 +
- toolbox/text-to-speech/index.html                  | 119 +--
- toolbox/text-to-speech/text2speech.js              | 853 +++++++++++++++++----
- 13 files changed, 1317 insertions(+), 299 deletions(-)
-```
+- Current branch before execution: `main`
+- Required execution branch before PR branch: `main`
+- Branch validation: PASS
+- Clean repository before branch creation: PASS
+- PR owner/parity: PASS, `042` is even and Idea/Tool Display navigation scope maps to PC / Environment 1.
+- Implementation path: PASS, active Idea Board and Theme V2 files only.
+- Validation scope: PASS, targeted Idea Board, targeted Toolbox route for Idea Board, and workspace contract lane because shared Tool Display Mode behavior changed.
+- Required reports: PASS, `docs_build/dev/reports/codex_review.diff` and this report are updated.
+- ZIP requirement: PASS, `tmp/PR_26171_042-idea-board-navigation-fallback-cleanup_delta.zip` is required and produced before final delivery.
 
-## Changed Files
-- src/engine/audio/TextToSpeechEngine.js
-- toolbox/text-to-speech/index.html
-- toolbox/text-to-speech/text2speech.js
-- tests/playwright/tools/TextToSpeechFunctional.spec.mjs
-- docs_build/dev/reports/coverage_changed_js_guardrail.txt
-- docs_build/dev/reports/playwright_v8_coverage_report.txt
-- docs_build/dev/reports/PR_26171_061-text2speech-engine-audio-feature-parity.md
-- docs_build/dev/reports/PR_26171_061-instruction-compliance-checklist.md
-- docs_build/dev/reports/PR_26171_061-old-tts-feature-parity-checklist.md
-- docs_build/dev/reports/PR_26171_061-engine-audio-ownership-checklist.md
-- docs_build/dev/reports/PR_26171_061-validation.md
-- docs_build/dev/reports/PR_26171_061-manual-validation-notes.md
-- docs_build/dev/reports/codex_review.diff
-- docs_build/dev/reports/codex_changed_files.txt
+## Git Workflow Fields
+
+- Created branch: `codex/pr-26171-042-idea-board-navigation-fallback-cleanup`
+- Push result: PASS, branch pushed to `origin/codex/pr-26171-042-idea-board-navigation-fallback-cleanup`.
+- PR URL: `https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/19`
+- Merge result: recorded in final Codex delivery after GitHub merge returns the merge SHA.
+- Final main commit: recorded in final Codex delivery after returning to `main` and pulling latest.
+- Conflict resolution: PASS, merged latest `origin/main` (`9df4942226b0c1a25cfc9567040fc237d90df8f9`) and resolved conflicts only in singleton generated report artifacts.
+
+## Scoped Files
+
+- `assets/theme-v2/js/tool-display-mode.js`
+- `tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`
+- `tests/playwright/tools/ToolboxRoutePages.spec.mjs`
+- `docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/PLAN_PR.md`
+- `docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/BUILD_PR.md`
+- `docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/APPLY_PR.md`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/codex_changed_files.txt`
+
+## Requirement Evidence
+
+- PASS: Removed creator-visible Tool Display Mode navigation diagnostic fallback. `tool-display-mode.js` now logs the navigation load failure to console only and appends no status paragraph.
+- PASS: Removed visible message `Tool navigation is temporarily unavailable. Refresh the page or try again shortly.`
+- PASS: Idea Board stays usable when registry-backed navigation cannot load. Static/no-registry Playwright path expands notes and adds a note successfully.
+- PASS: Creator-facing UI does not mention server, API, local server, port, registry, snapshot, or implementation details in the navigation fallback area.
+- PASS: Navigation failure does not affect Idea Board table functionality.
+- PASS: API-backed local route validated by targeted Idea Board and Toolbox route Playwright.
+- PASS: Static/no-registry route behavior validated by targeted Idea Board Playwright with the registry snapshot returning no data.
+- PASS: Optional previous/next navigation is omitted when unavailable.
+- PASS: Idea Board lifecycle, Show filter, Create Project, Archive, chevron, and table row editing behavior were not changed.
 
 ## Validation
-- PASS: `node --check src\engine\audio\TextToSpeechEngine.js`.
-- PASS: `node --check toolbox\text-to-speech\text2speech.js`.
-- PASS: `node --test tests\tools\Text2SpeechShell.test.mjs`.
-- PASS: `npx playwright test tests/playwright/tools/TextToSpeechFunctional.spec.mjs`.
-- PASS: `npm run test:workspace-v2` (legacy command name; user-facing language is Project Workspace).
-- PASS: `git diff --check`.
-- PASS: Post-conflict validation rerun after merging `origin/main` into the PR branch.
 
-## ZIP
-- Path: `tmp/PR_26171_061-text2speech-engine-audio-feature-parity_delta.zip`.
+- PASS: `node --check assets/theme-v2/js/tool-display-mode.js`
+- PASS: `node --check toolbox/idea-board/index.js`
+- PASS: `node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`
+- PASS: `node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs`
+- PASS: `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line --timeout=90000`
+- PASS: `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches" --timeout=90000`
+- PASS: `npm run test:workspace-v2`
+- PASS: `git diff --check`
+- SKIP: Full samples smoke, per user instruction.
+
+## Coverage Evidence
+
+- PASS: `docs_build/dev/reports/playwright_v8_coverage_report.txt` updated.
+- PASS: `docs_build/dev/reports/coverage_changed_js_guardrail.txt` updated.
+- PASS: Changed runtime JS coverage lists `assets/theme-v2/js/tool-display-mode.js` at 64% advisory function coverage.
+
+## ZIP Contents
+
+- `assets/theme-v2/js/tool-display-mode.js`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/APPLY_PR.md`
+- `docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/BUILD_PR.md`
+- `docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/PLAN_PR.md`
+- `tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`
+- `tests/playwright/tools/ToolboxRoutePages.spec.mjs`

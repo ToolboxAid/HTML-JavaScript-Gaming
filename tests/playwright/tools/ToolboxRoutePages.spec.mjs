@@ -207,6 +207,11 @@ async function expectIdeaBoardProductionCopy(page) {
   );
 }
 
+async function expectNoToolNavigationFallbackUi(page) {
+  await expect(page.locator("body")).not.toContainText("Tool navigation is temporarily unavailable. Refresh the page or try again shortly.");
+  await expect(page.locator(".tool-display-mode")).not.toContainText(/\bserver\b|\bAPI\b|\blocal server\b|\bport\b|\bregistry\b|\bsnapshot\b/i);
+}
+
 test("tools route aliases render toolbox tool pages", async ({ page }) => {
   const server = await startRepoServer();
   const failedRequests = [];
@@ -304,6 +309,7 @@ test("Idea Board launches from Toolbox with accordion table notes model", async 
     await page.waitForLoadState("networkidle");
     await expect(page.getByRole("heading", { level: 1, name: "Idea Board" })).toBeVisible();
     await expectIdeaBoardProductionCopy(page);
+    await expectNoToolNavigationFallbackUi(page);
     const ideaBoardSections = await page.locator("[data-idea-board-section]").evaluateAll((sections) => (
       sections.map((section) => section.getAttribute("data-idea-board-section"))
     ));

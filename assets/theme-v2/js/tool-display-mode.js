@@ -154,11 +154,6 @@
             body.appendChild(navigationRow);
         } catch (error) {
             console.warn("Tool navigation could not be loaded.", error);
-            const diagnostic = document.createElement("p");
-            diagnostic.className = "status";
-            diagnostic.setAttribute("role", "status");
-            diagnostic.textContent = "Tool navigation is temporarily unavailable. Refresh the page or try again shortly.";
-            body.appendChild(diagnostic);
         }
     }
 
