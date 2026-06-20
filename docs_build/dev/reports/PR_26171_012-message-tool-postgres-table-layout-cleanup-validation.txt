@@ -1,0 +1,34 @@
+Validation report for PR_26171_012-message-tool-postgres-table-layout-cleanup
+
+Branch and git validation:
+- git branch --show-current: main
+- git checkout main: PASS
+- git -c http.sslBackend=schannel pull origin main: PASS, already up to date
+- git status before branch: PASS, clean
+- git checkout -b pr/26171-012-message-tool-postgres-table-layout-cleanup: PASS
+
+Static validation:
+- node --check toolbox/messages/messages.js: PASS
+- node --check src/shared/toolbox/tool-metadata-inventory.js: PASS
+- node --check src/dev-runtime/server/local-api-router.mjs: PASS
+- node --check tests/playwright/tools/MessagesTool.spec.mjs: PASS
+- node --check tests/playwright/tools/RootToolsFutureState.spec.mjs: PASS
+- git diff --check for touched files: PASS with CRLF warnings only
+
+Targeted UI/static validation:
+- Category/category visible UI removed from toolbox/messages/index.html: PASS
+- Save Message / New Message / Message Editor visible copy removed from toolbox/messages/index.html: PASS
+- Inline style/script/event handler check for toolbox/messages/index.html: PASS
+- Rendered tool title/H1 after registry override: PASS, Message Studio
+
+Playwright:
+- npx playwright test tests/playwright/tools/MessagesTool.spec.mjs --project=playwright --workers=1 --reporter=list: PASS, 2 passed
+- npm run test:workspace-v2: WARN, 3 passed / 2 failed
+  - Remaining failures are existing header ordering expectations:
+    - root tools surface links current tool pages without old_* routes
+    - common header renders primary navigation order across active pages
+  - Both failures compare expected alphabetical Toolbox menu order `Game Hub` before `Game Journey` against current UI order `Game Journey` before `Game Hub`.
+
+Samples:
+- Full samples validation: SKIP, no samples changed.
+

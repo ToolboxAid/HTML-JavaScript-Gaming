@@ -1,524 +1,1287 @@
-diff --git a/docs_build/dev/commit_comment.txt b/docs_build/dev/commit_comment.txt
-index 64c6def55..99a545830 100644
---- a/docs_build/dev/commit_comment.txt
-+++ b/docs_build/dev/commit_comment.txt
-@@ -1 +1 @@
--Add Messages TTS profile foundation - PR_26171_008
-+Add browser-local Messages speech preview - PR_26171_010
-diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index f06b061c8..f3d26911e 100644
---- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,9 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
- Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
- 
- Changed runtime JS files considered:
--(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(82%) toolbox/messages/messages-api-client.js - executed lines 73/73; executed functions 18/22
--(94%) toolbox/messages/messages.js - executed lines 850/850; executed functions 78/83
-+(95%) toolbox/messages/messages.js - executed lines 951/951; executed functions 98/103
- 
- Guardrail warnings:
--(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-+(100%) none - no changed runtime JS coverage warnings
-diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index e745e5ccc..21aed1043 100644
---- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
-+++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -12,14 +12,12 @@ Note: entry percentages use function coverage when available, otherwise line cov
- Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
- 
- Exercised tool entry points detected:
--(88%) Toolbox Index - exercised 3 runtime JS files
-+(90%) Toolbox Index - exercised 3 runtime JS files
- (0%) Tool Template V2 - not exercised by this Playwright run
- (56%) Theme V2 Shared JS - exercised 2 runtime JS files
- 
- Changed runtime JS files covered:
--(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(82%) toolbox/messages/messages-api-client.js - executed lines 73/73; executed functions 18/22
--(94%) toolbox/messages/messages.js - executed lines 850/850; executed functions 78/83
-+(95%) toolbox/messages/messages.js - executed lines 951/951; executed functions 98/103
- 
- Files with executed line/function counts where available:
- (38%) src/api/public-config-client.js - executed lines 209/209; executed functions 10/26
-@@ -28,13 +26,11 @@ Files with executed line/function counts where available:
- (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
- (76%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 22/29
- (82%) toolbox/messages/messages-api-client.js - executed lines 73/73; executed functions 18/22
--(94%) toolbox/messages/messages.js - executed lines 850/850; executed functions 78/83
-+(95%) toolbox/messages/messages.js - executed lines 951/951; executed functions 98/103
- 
- Uncovered or low-coverage changed JS files:
--(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: uncovered changed runtime JS file; advisory only
-+(100%) none - no low-coverage changed runtime JS files
- 
- Changed JS files considered:
--(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - changed JS file not collected as browser runtime coverage
- (0%) tests/playwright/tools/MessagesTool.spec.mjs - changed JS file not collected as browser runtime coverage
--(82%) toolbox/messages/messages-api-client.js - changed JS file with browser V8 coverage
--(94%) toolbox/messages/messages.js - changed JS file with browser V8 coverage
-+(95%) toolbox/messages/messages.js - changed JS file with browser V8 coverage
+diff --git a/docs_build/dev/PROJECT_INSTRUCTIONS.md b/docs_build/dev/PROJECT_INSTRUCTIONS.md
+index 98cc865ed..7ea9cbead 100644
+--- a/docs_build/dev/PROJECT_INSTRUCTIONS.md
++++ b/docs_build/dev/PROJECT_INSTRUCTIONS.md
+@@ -358,6 +358,20 @@ Prohibited product-data ownership:
+
+ Toolbox and Admin tool metadata must use a shared DB-backed tool metadata source for `toolKey`, `toolName`, `group`, `path`, `order`, and `status`. Browser pages may render metadata returned by the API/service contract, but they must not own a separate runtime copy of that metadata.
+
++## POSTGRES DATABASE DIRECTION
++
++SQLite is deprecated for new database work.
++
++Rules:
++- New database work must target Postgres.
++- New persistence must flow through Local API / Postgres direction only.
++- Do not add new SQLite services.
++- Do not add new SQLite DDL.
++- Do not add new SQLite seed data.
++- Do not add new SQLite runtime persistence.
++- Legacy SQLite references may remain only as documented technical debt when they already exist.
++- Browser code must not own product data or generate authoritative persistence keys.
++
+ ## DEV RUNTIME BOUNDARY
+
+ All mock/dev-only runtime implementation must live under `src/dev-runtime/`.
+diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
+index 1d3efd243..679fee5d5 100644
+--- a/src/dev-runtime/server/local-api-router.mjs
++++ b/src/dev-runtime/server/local-api-router.mjs
+@@ -1425,7 +1425,7 @@ function normalizedToolKey(row) {
+   return String(row?.toolKey || row?.toolId || row?.id || "").trim();
+ }
+
+-const SOURCE_CONTROLLED_TOOLBOX_TOOL_IDS = new Set(["game-workspace", "tags", "users"]);
++const SOURCE_CONTROLLED_TOOLBOX_TOOL_IDS = new Set(["game-workspace", "messages", "tags", "users"]);
+ const SOURCE_CONTROLLED_TOOLBOX_METADATA_FIELDS = Object.freeze([
+   "adminOnly",
+   "category",
+diff --git a/src/shared/toolbox/tool-metadata-inventory.js b/src/shared/toolbox/tool-metadata-inventory.js
+index 8a08fb0e5..5f6575560 100644
+--- a/src/shared/toolbox/tool-metadata-inventory.js
++++ b/src/shared/toolbox/tool-metadata-inventory.js
+@@ -235,10 +235,10 @@ export const TOOL_REGISTRY = Object.freeze([
+   },
+   {
+     "id": "messages",
+-    "name": "Messages",
+-    "displayName": "Messages",
++    "name": "Message Studio",
++    "displayName": "Message Studio",
+     "shortDescription": "Create and manage reusable game text and future speech content.",
+-    "shortLabel": "Messages",
++    "shortLabel": "Message Studio",
+     "path": "messages",
+     "folderName": "messages",
+     "entryPoint": "messages/index.html",
+@@ -258,8 +258,8 @@ export const TOOL_REGISTRY = Object.freeze([
+     "status": "beta",
+     "releaseChannel": "beta",
+     "progressChecklist": [
+-      "Messages Local API available",
+-      "Categories and emotion profiles seed server-side",
++      "Message Studio Local API available",
++      "Emotion profiles seed server-side",
+       "Message text persists exactly as entered"
+     ],
+     "deferred": false,
 diff --git a/tests/playwright/tools/MessagesTool.spec.mjs b/tests/playwright/tools/MessagesTool.spec.mjs
-index a539f6a1e..1072ed843 100644
+index 1072ed843..42da82006 100644
 --- a/tests/playwright/tools/MessagesTool.spec.mjs
 +++ b/tests/playwright/tools/MessagesTool.spec.mjs
-@@ -43,7 +43,7 @@ test.afterAll(async () => {
-   await workspaceV2CoverageReporter.writeReport();
- });
- 
--async function openMessagesPage(page, sqlitePath) {
-+async function openMessagesPage(page, sqlitePath, options = {}) {
-   const previousMessagesSqlitePath = process.env.GAMEFOUNDRY_MESSAGES_SQLITE_PATH;
-   process.env.GAMEFOUNDRY_MESSAGES_SQLITE_PATH = sqlitePath;
-   const server = await startRepoServer();
-@@ -73,13 +73,59 @@ async function openMessagesPage(page, sqlitePath) {
-     failures.failedRequests.push(`FAILED ${request.url()}`);
+@@ -31,7 +31,7 @@ async function jsonRequest(url, options = {}) {
+ test.beforeEach(async ({ page }) => {
+   await installPlaywrightStorageIsolation(page, {
+     lane: "messages-tool",
+-    surface: "Messages Local API, SQLite persistence, and Theme V2 tool",
++    surface: "Message Studio Local API, legacy SQLite adapter, and Theme V2 tool",
    });
- 
--  await page.addInitScript((apiUrl) => {
-+  await page.addInitScript(({ apiUrl, speechAvailable }) => {
-     window.GameFoundryPublicConfig = {
-       apiUrl,
-       environmentLabel: "Development Environment",
-       siteUrl: window.location.origin,
-     };
--  }, `${server.baseUrl}/api`);
-+    window.__messagesSpeechCalls = [];
-+    if (speechAvailable) {
-+      Object.defineProperty(window, "SpeechSynthesisUtterance", {
-+        configurable: true,
-+        value: class SpeechSynthesisUtterance {
-+          constructor(text = "") {
-+            this.lang = "";
-+            this.pitch = 1;
-+            this.rate = 1;
-+            this.text = text;
-+            this.voice = null;
-+            this.volume = 1;
-+          }
-+        },
-+      });
-+      Object.defineProperty(window, "speechSynthesis", {
-+        configurable: true,
-+        value: {
-+          cancel() {
-+            window.__messagesSpeechCalls.push({ type: "cancel" });
-+          },
-+          getVoices() {
-+            return [
-+              { lang: "en-US", name: "Test Voice" },
-+            ];
-+          },
-+          speak(utterance) {
-+            window.__messagesSpeechCalls.push({
-+              lang: utterance.lang,
-+              pitch: utterance.pitch,
-+              rate: utterance.rate,
-+              text: utterance.text,
-+              type: "speak",
-+              voiceName: utterance.voice?.name || "",
-+              volume: utterance.volume,
-+            });
-+          },
-+        },
-+      });
-+      return;
-+    }
-+    Object.defineProperty(window, "SpeechSynthesisUtterance", { configurable: true, value: undefined });
-+    Object.defineProperty(window, "speechSynthesis", { configurable: true, value: undefined });
-+  }, {
-+    apiUrl: `${server.baseUrl}/api`,
-+    speechAvailable: options.speechAvailable !== false,
-+  });
-   await workspaceV2CoverageReporter.start(page);
-   await page.goto(`${server.baseUrl}/tools/messages/index.html`, { waitUntil: "networkidle" });
-   return failures;
-@@ -246,6 +292,44 @@ test("Messages tool creates, validates, updates, and persists through Local API
-     await expect(page.locator("[data-messages-log]")).toHaveText("Saved segment 2.");
+ });
+
+@@ -141,33 +141,22 @@ async function closeMessagesRun(failures, page) {
+   }
+ }
+
+-test("Messages tool creates, validates, updates, and persists through Local API SQLite", async ({ page }) => {
++test("Message Studio creates, validates, updates, and persists through the Local API", async ({ page }) => {
+   const sqlitePath = messagesDbPath();
+   await fs.rm(sqlitePath, { force: true });
+   const failures = await openMessagesPage(page, sqlitePath);
+
+   try {
+-    await expect(page.getByRole("heading", { level: 1, name: "Messages" })).toBeVisible();
++    await expect(page.getByRole("heading", { level: 1, name: "Message Studio" })).toBeVisible();
+     await expect(page.locator(".tool-workspace")).toBeVisible();
+     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+-    await expect(page.locator("[data-messages-categories]")).toContainText("Dialog");
+-    await expect(page.locator("[data-messages-categories]")).toContainText("Notification");
++    await expect(page.locator("[data-messages-category-name]")).toHaveCount(0);
++    await expect(page.locator("[data-messages-category]")).toHaveCount(0);
+     await expect(page.locator("[data-messages-emotions]")).toContainText("Calm");
+     await expect(page.locator("[data-messages-emotions]")).toContainText("Urgent");
+     await expect(page.locator("[data-messages-tts-profiles]")).toContainText("Browser Speech Default");
+     await expect(page.locator("[data-messages-tts-profiles]")).toContainText("Narration Preview");
+-    await expect(page.locator("[data-messages-persistence-engine]")).toHaveText("SQLite");
+-
+-    await page.locator("[data-messages-category-name]").fill("Barks");
+-    await page.getByRole("button", { name: "Save Category" }).click();
+-    await expect(page.locator("[data-messages-log]")).toHaveText("Saved category Barks.");
+-    await expect(page.locator("[data-messages-categories]")).toContainText("Barks");
+-    await page.locator("[data-messages-category-row]").filter({ hasText: "Barks" }).getByRole("button", { name: "Edit" }).click();
+-    await page.locator("[data-messages-category-name]").fill("World Barks");
+-    await page.locator("[data-messages-category-active]").uncheck();
+-    await page.getByRole("button", { name: "Save Category" }).click();
+-    await expect(page.locator("[data-messages-categories]")).toContainText("World Barks");
+-    await expect(page.locator("[data-messages-category-row]").filter({ hasText: "World Barks" })).toContainText("Inactive");
++    await expect(page.locator("[data-messages-persistence-engine]")).toHaveText("Postgres target");
+
+     await page.locator("[data-messages-emotion-name]").fill("Robot");
+     await page.locator("[data-messages-emotion-description]").fill("Mechanical delivery for synthetic speakers.");
+@@ -176,13 +165,13 @@ test("Messages tool creates, validates, updates, and persists through Local API
+     await page.locator("[data-messages-emotion-rate]").fill("0.95");
+     await page.locator("[data-messages-emotion-pause-before]").fill("40");
+     await page.locator("[data-messages-emotion-pause-after]").fill("120");
+-    await page.getByRole("button", { name: "Save Emotion Profile" }).click();
+-    await expect(page.locator("[data-messages-log]")).toHaveText("Saved emotion profile Robot.");
++    await page.getByRole("button", { name: "Update Emotion Profile" }).click();
++    await expect(page.locator("[data-messages-log]")).toHaveText("Updated emotion profile Robot.");
+     await expect(page.locator("[data-messages-emotions]")).toContainText("Robot");
+-    await page.locator("[data-messages-emotion-row]").filter({ hasText: "Robot" }).getByRole("button", { name: "Edit" }).click();
++    await page.locator("[data-messages-emotion-row]").filter({ hasText: "Robot" }).getByRole("button", { name: "Update Row" }).click();
+     await page.locator("[data-messages-emotion-description]").fill("Disabled test profile.");
+     await page.locator("[data-messages-emotion-active]").uncheck();
+-    await page.getByRole("button", { name: "Save Emotion Profile" }).click();
++    await page.getByRole("button", { name: "Update Emotion Profile" }).click();
+     await expect(page.locator("[data-messages-emotion-row]").filter({ hasText: "Robot" })).toContainText("Inactive");
+
+     await page.locator("[data-messages-tts-name]").fill("Arcade Browser Voice");
+@@ -193,19 +182,19 @@ test("Messages tool creates, validates, updates, and persists through Local API
+     await page.locator("[data-messages-tts-volume]").fill("0.8");
+     await page.locator("[data-messages-tts-pitch]").fill("1.1");
+     await page.locator("[data-messages-tts-rate]").fill("0.95");
+-    await page.getByRole("button", { name: "Save TTS Profile" }).click();
+-    await expect(page.locator("[data-messages-log]")).toHaveText("Saved TTS profile Arcade Browser Voice.");
++    await page.getByRole("button", { name: "Update TTS Profile" }).click();
++    await expect(page.locator("[data-messages-log]")).toHaveText("Updated TTS profile Arcade Browser Voice.");
+     await expect(page.locator("[data-messages-tts-profiles]")).toContainText("Arcade Browser Voice");
+     await expect(page.locator("[data-messages-tts-count]")).toHaveText("3");
+
+-    await page.locator("[data-messages-tts-row]").filter({ hasText: "Arcade Browser Voice" }).getByRole("button", { name: "Edit" }).click();
++    await page.locator("[data-messages-tts-row]").filter({ hasText: "Arcade Browser Voice" }).getByRole("button", { name: "Update Row" }).click();
+     await page.locator("[data-messages-tts-description]").fill("Updated configuration only.");
+     await page.locator("[data-messages-tts-active]").uncheck();
+-    await page.getByRole("button", { name: "Save TTS Profile" }).click();
++    await page.getByRole("button", { name: "Update TTS Profile" }).click();
+     await expect(page.locator("[data-messages-tts-row]").filter({ hasText: "Arcade Browser Voice" })).toContainText("Inactive");
+-    await page.locator("[data-messages-tts-row]").filter({ hasText: "Arcade Browser Voice" }).getByRole("button", { name: "Edit" }).click();
++    await page.locator("[data-messages-tts-row]").filter({ hasText: "Arcade Browser Voice" }).getByRole("button", { name: "Update Row" }).click();
+     await page.locator("[data-messages-tts-active]").check();
+-    await page.getByRole("button", { name: "Save TTS Profile" }).click();
++    await page.getByRole("button", { name: "Update TTS Profile" }).click();
+     await expect(page.locator("[data-messages-tts-row]").filter({ hasText: "Arcade Browser Voice" })).toContainText("Active");
+
+     const ttsProfilesResult = await jsonRequest(`${failures.server.baseUrl}/api/messages/tts-profiles`);
+@@ -237,21 +226,19 @@ test("Messages tool creates, validates, updates, and persists through Local API
+     });
+     expect(deleteTtsProfileResult.status).toBe(404);
+
+-    await page.getByRole("button", { name: "Save Message" }).click();
++    await page.locator("[data-messages-form]").getByRole("button", { name: "Update Row" }).click();
+     await expect(page.locator("[data-messages-validation-card]")).toBeVisible();
+     await expect(page.locator("[data-messages-validation-errors]")).toContainText("Message Name is required.");
+-    await expect(page.locator("[data-messages-validation-errors]")).toContainText("Category is required.");
+     await expect(page.locator("[data-messages-validation-errors]")).toContainText("Emotion Profile is required.");
+     await expect(page.locator("[data-messages-validation-errors]")).toContainText("Message Text is required.");
+
+     await page.locator("[data-messages-name]").fill("Forest Warning");
+-    await page.locator("[data-messages-category]").selectOption({ label: "Dialog" });
+     await page.locator("[data-messages-emotion-profile]").selectOption({ label: "Urgent" });
+     await page.locator("[data-messages-text]").fill("The forest gets darker beyond this point.\nWe are being attacked by bats.");
+     await page.locator("[data-messages-notes]").fill("Opening forest danger line.");
+-    await page.getByRole("button", { name: "Save Message" }).click();
++    await page.locator("[data-messages-form]").getByRole("button", { name: "Update Row" }).click();
+
+-    await expect(page.locator("[data-messages-log]")).toHaveText("Saved Forest Warning.");
++    await expect(page.locator("[data-messages-log]")).toHaveText("Updated row Forest Warning.");
+     await expect(page.locator("[data-messages-count]")).toHaveText("1");
+     await expect(page.locator("[data-messages-table]")).toContainText("Forest Warning");
+     await expect(page.locator("[data-messages-selected-text]")).toHaveText("The forest gets darker beyond this point.\nWe are being attacked by bats.");
+@@ -273,7 +260,7 @@ test("Messages tool creates, validates, updates, and persists through Local API
+     expect(createdMessage.updatedBy).toMatch(ULID_PATTERN);
+
+     await page.locator("[data-messages-segment-order]").fill("");
+-    await page.getByRole("button", { name: "Save Segment" }).click();
++    await page.getByRole("button", { name: "Update Segment Row" }).click();
+     await expect(page.locator("[data-messages-segment-validation-card]")).toBeVisible();
+     await expect(page.locator("[data-messages-segment-validation-errors]")).toContainText("Segment Text is required.");
+     await expect(page.locator("[data-messages-segment-validation-errors]")).toContainText("Emotion Profile is required.");
+@@ -282,14 +269,14 @@ test("Messages tool creates, validates, updates, and persists through Local API
+     await page.locator("[data-messages-segment-order]").fill("1");
+     await page.locator("[data-messages-segment-emotion-profile]").selectOption({ label: "Calm" });
+     await page.locator("[data-messages-segment-text]").fill("The forest gets darker beyond this point.");
+-    await page.getByRole("button", { name: "Save Segment" }).click();
+-    await expect(page.locator("[data-messages-log]")).toHaveText("Saved segment 1.");
++    await page.getByRole("button", { name: "Update Segment Row" }).click();
++    await expect(page.locator("[data-messages-log]")).toHaveText("Updated segment row 1.");
+     await expect(page.locator("[data-messages-segments]")).toContainText("The forest gets darker beyond this point.");
+
+     await page.locator("[data-messages-segment-emotion-profile]").selectOption({ label: "Urgent" });
+     await page.locator("[data-messages-segment-text]").fill("We are being attacked by bats.");
+-    await page.getByRole("button", { name: "Save Segment" }).click();
+-    await expect(page.locator("[data-messages-log]")).toHaveText("Saved segment 2.");
++    await page.getByRole("button", { name: "Update Segment Row" }).click();
++    await expect(page.locator("[data-messages-log]")).toHaveText("Updated segment row 2.");
      await expect(page.locator("[data-messages-segments]")).toContainText("We are being attacked by bats.");
- 
-+    await page.locator("[data-messages-preview-tts-profile]").selectOption({ label: "Arcade Browser Voice" });
-+    await page.locator("[data-messages-preview-message]").click();
-+    await expect(page.locator("[data-messages-preview-status]")).toHaveText("Preview requested for message Forest Warning.");
-+    let speechCalls = await page.evaluate(() => window.__messagesSpeechCalls);
-+    expect(speechCalls.filter((call) => call.type === "speak").at(-1)).toEqual(expect.objectContaining({
-+      lang: "en-US",
-+      pitch: 1.08,
-+      rate: 1.15,
-+      text: "The forest gets darker beyond this point.\nWe are being attacked by bats.",
-+      voiceName: "Test Voice",
-+      volume: 1,
-+    }));
-+
-+    await page.locator("[data-messages-preview-segments]").click();
-+    await expect(page.locator("[data-messages-preview-status]")).toHaveText("Preview requested for 2 active segments.");
-+    speechCalls = await page.evaluate(() => window.__messagesSpeechCalls);
-+    expect(speechCalls.filter((call) => call.type === "speak").slice(-2)).toEqual([
-+      expect.objectContaining({
-+        pitch: 1,
-+        rate: 1,
-+        text: "The forest gets darker beyond this point.",
-+        voiceName: "Test Voice",
-+        volume: 1,
-+      }),
-+      expect.objectContaining({
-+        pitch: 1.08,
-+        rate: 1.15,
-+        text: "We are being attacked by bats.",
-+        voiceName: "Test Voice",
-+        volume: 1,
-+      }),
-+    ]);
-+
-+    await page.locator("[data-messages-preview-stop]").click();
-+    await expect(page.locator("[data-messages-preview-status]")).toHaveText("Speech preview stopped.");
-+    speechCalls = await page.evaluate(() => window.__messagesSpeechCalls);
-+    expect(speechCalls.at(-1)).toEqual({ type: "cancel" });
-+
-     const segmentsResult = await jsonRequest(`${failures.server.baseUrl}/api/messages/segments`);
-     expect(segmentsResult.response.ok).toBe(true);
-     expect(segmentsResult.payload.ok).toBe(true);
-@@ -393,3 +477,27 @@ test("Messages tool creates, validates, updates, and persists through Local API
-     await fs.rm(sqlitePath, { force: true });
+
+     await page.locator("[data-messages-preview-tts-profile]").selectOption({ label: "Arcade Browser Voice" });
+@@ -346,14 +333,14 @@ test("Messages tool creates, validates, updates, and persists through Local API
+     await expect(page.locator("[data-messages-log]")).toHaveText("Segment order updated.");
+     await expect(page.locator("[data-messages-segment-row]").first()).toContainText("We are being attacked by bats.");
+
+-    await page.locator("[data-messages-segment-row]").filter({ hasText: "We are being attacked by bats." }).getByRole("button", { name: "Edit" }).click();
++    await page.locator("[data-messages-segment-row]").filter({ hasText: "We are being attacked by bats." }).getByRole("button", { name: "Update Row" }).click();
+     await page.locator("[data-messages-segment-text]").fill("We are being attacked by bats right now.");
+-    await page.getByRole("button", { name: "Save Segment" }).click();
+-    await expect(page.locator("[data-messages-log]")).toHaveText("Saved segment 1.");
++    await page.getByRole("button", { name: "Update Segment Row" }).click();
++    await expect(page.locator("[data-messages-log]")).toHaveText("Updated segment row 1.");
+     await expect(page.locator("[data-messages-segments]")).toContainText("We are being attacked by bats right now.");
+
+-    await page.locator("[data-messages-segment-row]").filter({ hasText: "We are being attacked by bats right now." }).getByRole("button", { name: "Disable" }).click();
+-    await expect(page.locator("[data-messages-log]")).toHaveText("Disabled segment 1.");
++    await page.locator("[data-messages-segment-row]").filter({ hasText: "We are being attacked by bats right now." }).getByRole("button", { name: "Disable Row" }).click();
++    await expect(page.locator("[data-messages-log]")).toHaveText("Disabled segment row 1.");
+     await expect(page.locator("[data-messages-segment-row]").filter({ hasText: "We are being attacked by bats right now." })).toContainText("Inactive");
+
+     await page.getByRole("button", { name: "Reload Segments" }).click();
+@@ -411,9 +398,9 @@ test("Messages tool creates, validates, updates, and persists through Local API
+     expect(deactivateReferencedProfile.payload.error).toContain("Emotion profile is referenced by messages or segments.");
+
+     await expect(page.locator("[data-messages-emotion-row]").filter({ hasText: "Urgent" })).toContainText("2");
+-    await page.locator("[data-messages-emotion-row]").filter({ hasText: "Urgent" }).getByRole("button", { name: "Edit" }).click();
++    await page.locator("[data-messages-emotion-row]").filter({ hasText: "Urgent" }).getByRole("button", { name: "Update Row" }).click();
+     await page.locator("[data-messages-emotion-active]").uncheck();
+-    await page.getByRole("button", { name: "Save Emotion Profile" }).click();
++    await page.getByRole("button", { name: "Update Emotion Profile" }).click();
+     await expect(page.locator("[data-messages-log]")).toContainText("Emotion profile is referenced by messages or segments.");
+     await expect(page.locator("[data-messages-emotion-row]").filter({ hasText: "Urgent" })).toContainText("Active");
+     failures.failedRequests = failures.failedRequests.filter((request) => !request.includes(`/api/messages/emotion-profiles/${urgentProfile.key}`));
+@@ -421,11 +408,11 @@ test("Messages tool creates, validates, updates, and persists through Local API
+       (message) => message !== "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+     );
+
+-    await page.locator("[data-messages-row]").filter({ hasText: "Forest Warning" }).getByRole("button", { name: "Edit" }).click();
++    await page.locator("[data-messages-row]").filter({ hasText: "Forest Warning" }).getByRole("button", { name: "Update Row" }).click();
+     await page.locator("[data-messages-name]").fill("Forest Warning Updated");
+     await page.locator("[data-messages-text]").fill("The forest gets darker beyond this point.");
+-    await page.getByRole("button", { name: "Save Message" }).click();
+-    await expect(page.locator("[data-messages-log]")).toHaveText("Saved Forest Warning Updated.");
++    await page.locator("[data-messages-form]").getByRole("button", { name: "Update Row" }).click();
++    await expect(page.locator("[data-messages-log]")).toHaveText("Updated row Forest Warning Updated.");
+     await expect(page.locator("[data-messages-table]")).toContainText("Forest Warning Updated");
+
+     const updateResult = await jsonRequest(`${failures.server.baseUrl}/api/messages/messages/${createdMessage.key}`);
+@@ -478,18 +465,17 @@ test("Messages tool creates, validates, updates, and persists through Local API
    }
  });
-+
-+test("Messages speech preview reports unavailable browser synthesis", async ({ page }) => {
-+  const sqlitePath = messagesDbPath();
-+  await fs.rm(sqlitePath, { force: true });
-+  const failures = await openMessagesPage(page, sqlitePath, { speechAvailable: false });
-+
-+  try {
-+    await page.locator("[data-messages-name]").fill("Unavailable Preview");
-+    await page.locator("[data-messages-category]").selectOption({ label: "Dialog" });
-+    await page.locator("[data-messages-emotion-profile]").selectOption({ label: "Calm" });
-+    await page.locator("[data-messages-text]").fill("This line cannot be spoken in this browser.");
-+    await page.getByRole("button", { name: "Save Message" }).click();
-+    await expect(page.locator("[data-messages-log]")).toHaveText("Saved Unavailable Preview.");
-+    await page.getByRole("button", { name: "Preview Message" }).click();
-+    await expect(page.locator("[data-messages-preview-status]")).toHaveText("Browser speech synthesis is unavailable. Use a browser with speechSynthesis support to preview messages.");
-+    await expect(page.locator("[data-messages-log]")).toHaveText("Speech preview unavailable.");
-+    expect(failures.failedRequests).toEqual([]);
-+    expect(failures.pageErrors).toEqual([]);
-+    expect(failures.consoleErrors).toEqual([]);
-+  } finally {
-+    await closeMessagesRun(failures, page);
-+    await fs.rm(sqlitePath, { force: true });
-+  }
-+});
+
+-test("Messages speech preview reports unavailable browser synthesis", async ({ page }) => {
++test("Message Studio speech preview reports unavailable browser synthesis", async ({ page }) => {
+   const sqlitePath = messagesDbPath();
+   await fs.rm(sqlitePath, { force: true });
+   const failures = await openMessagesPage(page, sqlitePath, { speechAvailable: false });
+
+   try {
+     await page.locator("[data-messages-name]").fill("Unavailable Preview");
+-    await page.locator("[data-messages-category]").selectOption({ label: "Dialog" });
+     await page.locator("[data-messages-emotion-profile]").selectOption({ label: "Calm" });
+     await page.locator("[data-messages-text]").fill("This line cannot be spoken in this browser.");
+-    await page.getByRole("button", { name: "Save Message" }).click();
+-    await expect(page.locator("[data-messages-log]")).toHaveText("Saved Unavailable Preview.");
++    await page.locator("[data-messages-form]").getByRole("button", { name: "Update Row" }).click();
++    await expect(page.locator("[data-messages-log]")).toHaveText("Updated row Unavailable Preview.");
+     await page.getByRole("button", { name: "Preview Message" }).click();
+     await expect(page.locator("[data-messages-preview-status]")).toHaveText("Browser speech synthesis is unavailable. Use a browser with speechSynthesis support to preview messages.");
+     await expect(page.locator("[data-messages-log]")).toHaveText("Speech preview unavailable.");
+diff --git a/tests/playwright/tools/RootToolsFutureState.spec.mjs b/tests/playwright/tools/RootToolsFutureState.spec.mjs
+index 203dc8813..59d6ff1e9 100644
+--- a/tests/playwright/tools/RootToolsFutureState.spec.mjs
++++ b/tests/playwright/tools/RootToolsFutureState.spec.mjs
+@@ -253,7 +253,7 @@ test("root tools surface links current tool pages without old_* routes", async (
+     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
+     await expect(page.getByRole("button", { name: "Build Path" })).toBeVisible();
+     await expect(page.getByRole("button", { name: "Build Path" })).not.toHaveAttribute("aria-disabled", "true");
+-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/42");
++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 14/43");
+     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
+     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='admin']")).toHaveCount(0);
+     await expect(page.locator("nav.nav-links > a[data-route='learn']")).toHaveCount(1);
 diff --git a/toolbox/messages/index.html b/toolbox/messages/index.html
-index 7687c1543..f76d124c8 100644
+index f76d124c8..29cb564fa 100644
 --- a/toolbox/messages/index.html
 +++ b/toolbox/messages/index.html
-@@ -390,6 +390,19 @@
+@@ -5,8 +5,8 @@
+     <meta charset="utf-8">
+     <base href="/">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+-    <title>Messages - GameFoundryStudio</title>
+-    <meta name="description" content="Messages Toolbox tool for game dialog, narration, quest text, tutorials, notifications, and future Text To Speech integration.">
++    <title>Message Studio - GameFoundryStudio</title>
++    <meta name="description" content="Message Studio Toolbox tool for game dialog, narration, quest text, tutorials, notifications, and future Text To Speech integration.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+ </head>
+@@ -17,8 +17,8 @@
+         <section class="page-title">
+             <div class="container">
+                 <div class="kicker">Toolbox / Design</div>
+-                <h1>Messages</h1>
+-                <p class="lede">Create, organize, and manage game text and speech content.</p>
++                <h1>Message Studio</h1>
++                <p class="lede">Create, organize, and manage game text, narration, and speech content.</p>
+             </div>
+         </section>
+         <section class="section">
+@@ -26,217 +26,75 @@
+                 <div class="tool-workspace tool-workspace--wide">
+                     <aside class="tool-column tool-group-design">
+                         <div class="tool-column-header">
+-                            <h2>Message Setup</h2>
++                            <h2>Studio Setup</h2>
+                         </div>
+                         <div class="accordion-stack">
+                             <details class="vertical-accordion" open>
+-                                <summary>Categories</summary>
++                                <summary>Content Direction</summary>
+                                 <div class="accordion-body content-stack">
+-                                    <form class="content-stack" data-messages-category-form>
+-                                        <input type="hidden" data-messages-category-key>
+-                                        <label for="messagesCategoryName">Category</label>
+-                                        <input id="messagesCategoryName" type="text" data-messages-category-name>
+-                                        <label>
+-                                            <input type="checkbox" data-messages-category-active checked>
+-                                            Active
+-                                        </label>
+-                                        <div class="action-group action-group--tight">
+-                                            <button class="btn btn--compact" type="submit">Save Category</button>
+-                                            <button class="btn btn--compact" type="button" data-messages-category-cancel>New Category</button>
+-                                        </div>
+-                                    </form>
+-                                    <div class="table-wrapper">
+-                                        <table class="data-table" aria-label="Message categories">
+-                                            <thead>
+-                                                <tr>
+-                                                    <th scope="col">Name</th>
+-                                                    <th scope="col">Status</th>
+-                                                    <th scope="col">Actions</th>
+-                                                </tr>
+-                                            </thead>
+-                                            <tbody data-messages-categories>
+-                                                <tr><td colspan="3">Loading categories.</td></tr>
+-                                            </tbody>
+-                                        </table>
+-                                    </div>
++                                    <p>Message Studio stores game text exactly as entered.</p>
++                                    <p>Tags are the forward classification direction for game content.</p>
+                                 </div>
+                             </details>
+                             <details class="vertical-accordion" open>
+-                                <summary>Emotion Profiles</summary>
++                                <summary>Row Workflow</summary>
+                                 <div class="accordion-body content-stack">
+-                                    <form class="content-stack" data-messages-emotion-form>
+-                                        <input type="hidden" data-messages-emotion-key>
+-                                        <div class="table-wrapper">
+-                                            <table class="data-table tool-form-table" aria-label="Emotion profile fields">
+-                                                <tbody>
+-                                                    <tr>
+-                                                        <th scope="row"><label for="messagesEmotionName">Name</label></th>
+-                                                        <td><input id="messagesEmotionName" type="text" data-messages-emotion-name></td>
+-                                                    </tr>
+-                                                    <tr>
+-                                                        <th scope="row"><label for="messagesEmotionDescription">Description</label></th>
+-                                                        <td><textarea id="messagesEmotionDescription" rows="3" data-messages-emotion-description></textarea></td>
+-                                                    </tr>
+-                                                    <tr>
+-                                                        <th scope="row"><label for="messagesEmotionVolume">Volume</label></th>
+-                                                        <td><input id="messagesEmotionVolume" type="number" min="0" max="2" step="0.01" value="1" data-messages-emotion-volume></td>
+-                                                    </tr>
+-                                                    <tr>
+-                                                        <th scope="row"><label for="messagesEmotionPitch">Pitch</label></th>
+-                                                        <td><input id="messagesEmotionPitch" type="number" min="0.25" max="2" step="0.01" value="1" data-messages-emotion-pitch></td>
+-                                                    </tr>
+-                                                    <tr>
+-                                                        <th scope="row"><label for="messagesEmotionRate">Rate</label></th>
+-                                                        <td><input id="messagesEmotionRate" type="number" min="0.25" max="2" step="0.01" value="1" data-messages-emotion-rate></td>
+-                                                    </tr>
+-                                                    <tr>
+-                                                        <th scope="row"><label for="messagesEmotionPauseBefore">Pause Before Ms</label></th>
+-                                                        <td><input id="messagesEmotionPauseBefore" type="number" min="0" step="10" value="0" data-messages-emotion-pause-before></td>
+-                                                    </tr>
+-                                                    <tr>
+-                                                        <th scope="row"><label for="messagesEmotionPauseAfter">Pause After Ms</label></th>
+-                                                        <td><input id="messagesEmotionPauseAfter" type="number" min="0" step="10" value="0" data-messages-emotion-pause-after></td>
+-                                                    </tr>
+-                                                    <tr>
+-                                                        <th scope="row">Status</th>
+-                                                        <td>
+-                                                            <label>
+-                                                                <input type="checkbox" data-messages-emotion-active checked>
+-                                                                Active
+-                                                            </label>
+-                                                        </td>
+-                                                    </tr>
+-                                                </tbody>
+-                                            </table>
+-                                        </div>
+-                                        <div class="action-group action-group--tight">
+-                                            <button class="btn btn--compact" type="submit">Save Emotion Profile</button>
+-                                            <button class="btn btn--compact" type="button" data-messages-emotion-cancel>New Emotion Profile</button>
+-                                        </div>
+-                                    </form>
+-                                    <div class="table-wrapper">
+-                                        <table class="data-table" aria-label="Emotion profiles">
+-                                            <thead>
+-                                                <tr>
+-                                                    <th scope="col">Name</th>
+-                                                    <th scope="col">Usage</th>
+-                                                    <th scope="col">Status</th>
+-                                                    <th scope="col">Actions</th>
+-                                                </tr>
+-                                            </thead>
+-                                            <tbody data-messages-emotions>
+-                                                <tr><td colspan="4">Loading emotion profiles.</td></tr>
+-                                            </tbody>
+-                                        </table>
+-                                    </div>
+-                                </div>
+-                            </details>
+-                            <details class="vertical-accordion" open>
+-                                <summary>TTS Profiles</summary>
+-                                <div class="accordion-body content-stack">
+-                                    <form class="content-stack" data-messages-tts-form>
+-                                        <input type="hidden" data-messages-tts-key>
+-                                        <div class="table-wrapper">
+-                                            <table class="data-table tool-form-table" aria-label="TTS profile fields">
+-                                                <tbody>
+-                                                    <tr>
+-                                                        <th scope="row"><label for="messagesTtsName">Name</label></th>
+-                                                        <td><input id="messagesTtsName" type="text" data-messages-tts-name></td>
+-                                                    </tr>
+-                                                    <tr>
+-                                                        <th scope="row"><label for="messagesTtsDescription">Description</label></th>
+-                                                        <td><textarea id="messagesTtsDescription" rows="3" data-messages-tts-description></textarea></td>
+-                                                    </tr>
+-                                                    <tr>
+-                                                        <th scope="row"><label for="messagesTtsProviderKey">Provider Key</label></th>
+-                                                        <td><input id="messagesTtsProviderKey" type="text" data-messages-tts-provider-key></td>
+-                                                    </tr>
+-                                                    <tr>
+-                                                        <th scope="row"><label for="messagesTtsVoiceName">Voice Name</label></th>
+-                                                        <td><input id="messagesTtsVoiceName" type="text" data-messages-tts-voice-name></td>
+-                                                    </tr>
+-                                                    <tr>
+-                                                        <th scope="row"><label for="messagesTtsLanguage">Language</label></th>
+-                                                        <td><input id="messagesTtsLanguage" type="text" data-messages-tts-language></td>
+-                                                    </tr>
+-                                                    <tr>
+-                                                        <th scope="row"><label for="messagesTtsVolume">Volume</label></th>
+-                                                        <td><input id="messagesTtsVolume" type="number" min="0" max="2" step="0.01" value="1" data-messages-tts-volume></td>
+-                                                    </tr>
+-                                                    <tr>
+-                                                        <th scope="row"><label for="messagesTtsPitch">Pitch</label></th>
+-                                                        <td><input id="messagesTtsPitch" type="number" min="0.25" max="2" step="0.01" value="1" data-messages-tts-pitch></td>
+-                                                    </tr>
+-                                                    <tr>
+-                                                        <th scope="row"><label for="messagesTtsRate">Rate</label></th>
+-                                                        <td><input id="messagesTtsRate" type="number" min="0.25" max="2" step="0.01" value="1" data-messages-tts-rate></td>
+-                                                    </tr>
+-                                                    <tr>
+-                                                        <th scope="row">Status</th>
+-                                                        <td>
+-                                                            <label>
+-                                                                <input type="checkbox" data-messages-tts-active checked>
+-                                                                Active
+-                                                            </label>
+-                                                        </td>
+-                                                    </tr>
+-                                                </tbody>
+-                                            </table>
+-                                        </div>
+-                                        <div class="action-group action-group--tight">
+-                                            <button class="btn btn--compact" type="submit">Save TTS Profile</button>
+-                                            <button class="btn btn--compact" type="button" data-messages-tts-cancel>New TTS Profile</button>
+-                                        </div>
+-                                    </form>
+-                                    <div class="table-wrapper">
+-                                        <table class="data-table" aria-label="TTS profiles">
+-                                            <thead>
+-                                                <tr>
+-                                                    <th scope="col">Name</th>
+-                                                    <th scope="col">Provider</th>
+-                                                    <th scope="col">Language</th>
+-                                                    <th scope="col">Status</th>
+-                                                    <th scope="col">Actions</th>
+-                                                </tr>
+-                                            </thead>
+-                                            <tbody data-messages-tts-profiles>
+-                                                <tr><td colspan="5">Loading TTS profiles.</td></tr>
+-                                            </tbody>
+-                                        </table>
+-                                    </div>
++                                    <p>Review existing rows, select one to update, or add a row from the Message Rows table.</p>
++                                    <p>Disable rows instead of deleting game text.</p>
+                                 </div>
+                             </details>
+                         </div>
+                     </aside>
+                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="messages" data-tool-icon-src="assets/theme-v2/images/badges/game-design.png" data-tool-character-src="assets/theme-v2/images/tools/game-design.png"></div>
+                     <section class="tool-center-panel">
+-                        <h2>Message Editor</h2>
+-                        <p>Messages define what is said. Emotion profiles define future delivery settings only.</p>
+-                        <div class="grid cols-3" aria-label="Messages summary">
+-                            <article class="mini-stat"><strong data-messages-count>0</strong>Messages</article>
+-                            <article class="mini-stat"><strong data-messages-category-count>0</strong>Categories</article>
++                        <h2>Message Studio</h2>
++                        <p>Message rows define what is said. Emotion profiles and TTS profiles define future delivery settings only.</p>
++                        <div class="grid cols-3" aria-label="Message Studio summary">
++                            <article class="mini-stat"><strong data-messages-count>0</strong>Message Rows</article>
+                             <article class="mini-stat"><strong data-messages-emotion-count>0</strong>Emotion Profiles</article>
+                             <article class="mini-stat"><strong data-messages-tts-count>0</strong>TTS Profiles</article>
+                         </div>
+                         <article class="card">
+                             <div class="card-body content-stack">
+                                 <div>
+-                                    <div class="kicker">Game Text</div>
+-                                    <h3 data-messages-editor-heading>New Message</h3>
++                                    <div class="kicker">Game Text Repository</div>
++                                    <h3>Message Rows</h3>
++                                </div>
++                                <div class="table-wrapper">
++                                    <table class="data-table" aria-label="Message rows">
++                                        <thead>
++                                            <tr>
++                                                <th scope="col">Name</th>
++                                                <th scope="col">Emotion</th>
++                                                <th scope="col">Status</th>
++                                                <th scope="col">Actions</th>
++                                            </tr>
++                                        </thead>
++                                        <tbody data-messages-table>
++                                            <tr><td colspan="4">Loading message rows.</td></tr>
++                                        </tbody>
++                                    </table>
++                                </div>
++                                <div class="action-group">
++                                    <button class="btn" type="button" data-messages-new>Add Message Row</button>
++                                </div>
++                            </div>
++                        </article>
++                        <article class="card">
++                            <div class="card-body content-stack">
++                                <div>
++                                    <div class="kicker">Selected Row Details</div>
++                                    <h3 data-messages-editor-heading>Add Message Row</h3>
+                                 </div>
+                                 <form class="content-stack" data-messages-form>
+                                     <input type="hidden" data-messages-message-key>
+                                     <div class="table-wrapper">
+-                                        <table class="data-table tool-form-table" aria-label="Message editor fields">
++                                        <table class="data-table tool-form-table" aria-label="Message row fields">
+                                             <tbody>
+                                                 <tr>
+                                                     <th scope="row"><label for="messagesName">Message Name</label></th>
+                                                     <td><input id="messagesName" type="text" data-messages-name></td>
+                                                 </tr>
+-                                                <tr>
+-                                                    <th scope="row"><label for="messagesCategory">Category</label></th>
+-                                                    <td><select id="messagesCategory" data-messages-category></select></td>
+-                                                </tr>
+                                                 <tr>
+                                                     <th scope="row"><label for="messagesEmotionProfile">Emotion Profile</label></th>
+                                                     <td><select id="messagesEmotionProfile" data-messages-emotion-profile></select></td>
+@@ -262,15 +120,14 @@
+                                         </table>
+                                     </div>
+                                     <div class="action-group">
+-                                        <button class="btn" type="submit">Save Message</button>
+-                                        <button class="btn" type="button" data-messages-new>New Message</button>
++                                        <button class="btn" type="submit">Update Row</button>
+                                     </div>
+                                 </form>
+                                 <article class="card" data-messages-validation-card hidden>
+                                     <div class="card-body content-stack">
+                                         <div>
+                                             <div class="kicker">Actionable Validation</div>
+-                                            <h3>Message Needs Required Fields</h3>
++                                            <h3>Message Row Needs Required Fields</h3>
+                                         </div>
+                                         <ul data-messages-validation-errors></ul>
+                                     </div>
+@@ -282,7 +139,7 @@
+                                 <div>
+                                     <div class="kicker">Ordered Content</div>
+                                     <h3>Message Segments</h3>
+-                                    <p data-messages-segment-context>Save or select a message before adding segments.</p>
++                                    <p data-messages-segment-context>Select or add a message row before adding segments.</p>
+                                 </div>
+                                 <form class="content-stack" data-messages-segment-form>
+                                     <input type="hidden" data-messages-segment-key>
+@@ -314,13 +171,13 @@
+                                         </table>
+                                     </div>
+                                     <div class="action-group">
+-                                        <button class="btn" type="submit">Save Segment</button>
+-                                        <button class="btn" type="button" data-messages-segment-new>New Segment</button>
++                                        <button class="btn" type="submit">Update Segment Row</button>
++                                        <button class="btn" type="button" data-messages-segment-new>Add Segment Row</button>
+                                         <button class="btn" type="button" data-messages-segment-reload>Reload Segments</button>
+                                     </div>
+                                 </form>
+                                 <div class="status" data-messages-segment-validation-card hidden>
+-                                    <p>Segment needs required fields.</p>
++                                    <p>Segment row needs required fields.</p>
+                                     <ul data-messages-segment-validation-errors></ul>
+                                 </div>
+                                 <div class="table-wrapper">
+@@ -344,22 +201,149 @@
+                         <article class="card">
+                             <div class="card-body content-stack">
+                                 <div>
+-                                    <div class="kicker">Repository</div>
+-                                    <h3>Messages</h3>
++                                    <div class="kicker">Delivery Configuration</div>
++                                    <h3>Emotion Profiles</h3>
++                                </div>
++                                <form class="content-stack" data-messages-emotion-form>
++                                    <input type="hidden" data-messages-emotion-key>
++                                    <div class="table-wrapper">
++                                        <table class="data-table tool-form-table" aria-label="Emotion profile fields">
++                                            <tbody>
++                                                <tr>
++                                                    <th scope="row"><label for="messagesEmotionName">Name</label></th>
++                                                    <td><input id="messagesEmotionName" type="text" data-messages-emotion-name></td>
++                                                </tr>
++                                                <tr>
++                                                    <th scope="row"><label for="messagesEmotionDescription">Description</label></th>
++                                                    <td><textarea id="messagesEmotionDescription" rows="3" data-messages-emotion-description></textarea></td>
++                                                </tr>
++                                                <tr>
++                                                    <th scope="row"><label for="messagesEmotionVolume">Volume</label></th>
++                                                    <td><input id="messagesEmotionVolume" type="number" min="0" max="2" step="0.01" value="1" data-messages-emotion-volume></td>
++                                                </tr>
++                                                <tr>
++                                                    <th scope="row"><label for="messagesEmotionPitch">Pitch</label></th>
++                                                    <td><input id="messagesEmotionPitch" type="number" min="0.25" max="2" step="0.01" value="1" data-messages-emotion-pitch></td>
++                                                </tr>
++                                                <tr>
++                                                    <th scope="row"><label for="messagesEmotionRate">Rate</label></th>
++                                                    <td><input id="messagesEmotionRate" type="number" min="0.25" max="2" step="0.01" value="1" data-messages-emotion-rate></td>
++                                                </tr>
++                                                <tr>
++                                                    <th scope="row"><label for="messagesEmotionPauseBefore">Pause Before Ms</label></th>
++                                                    <td><input id="messagesEmotionPauseBefore" type="number" min="0" step="10" value="0" data-messages-emotion-pause-before></td>
++                                                </tr>
++                                                <tr>
++                                                    <th scope="row"><label for="messagesEmotionPauseAfter">Pause After Ms</label></th>
++                                                    <td><input id="messagesEmotionPauseAfter" type="number" min="0" step="10" value="0" data-messages-emotion-pause-after></td>
++                                                </tr>
++                                                <tr>
++                                                    <th scope="row">Status</th>
++                                                    <td>
++                                                        <label>
++                                                            <input type="checkbox" data-messages-emotion-active checked>
++                                                            Active
++                                                        </label>
++                                                    </td>
++                                                </tr>
++                                            </tbody>
++                                        </table>
++                                    </div>
++                                    <div class="action-group action-group--tight">
++                                        <button class="btn btn--compact" type="submit">Update Emotion Profile</button>
++                                        <button class="btn btn--compact" type="button" data-messages-emotion-cancel>Add Emotion Profile</button>
++                                    </div>
++                                </form>
++                                <div class="table-wrapper">
++                                    <table class="data-table" aria-label="Emotion profiles">
++                                        <thead>
++                                            <tr>
++                                                <th scope="col">Name</th>
++                                                <th scope="col">Usage</th>
++                                                <th scope="col">Status</th>
++                                                <th scope="col">Actions</th>
++                                            </tr>
++                                        </thead>
++                                        <tbody data-messages-emotions>
++                                            <tr><td colspan="4">Loading emotion profiles.</td></tr>
++                                        </tbody>
++                                    </table>
++                                </div>
++                            </div>
++                        </article>
++                        <article class="card">
++                            <div class="card-body content-stack">
++                                <div>
++                                    <div class="kicker">Delivery Configuration</div>
++                                    <h3>TTS Profiles</h3>
+                                 </div>
++                                <form class="content-stack" data-messages-tts-form>
++                                    <input type="hidden" data-messages-tts-key>
++                                    <div class="table-wrapper">
++                                        <table class="data-table tool-form-table" aria-label="TTS profile fields">
++                                            <tbody>
++                                                <tr>
++                                                    <th scope="row"><label for="messagesTtsName">Name</label></th>
++                                                    <td><input id="messagesTtsName" type="text" data-messages-tts-name></td>
++                                                </tr>
++                                                <tr>
++                                                    <th scope="row"><label for="messagesTtsDescription">Description</label></th>
++                                                    <td><textarea id="messagesTtsDescription" rows="3" data-messages-tts-description></textarea></td>
++                                                </tr>
++                                                <tr>
++                                                    <th scope="row"><label for="messagesTtsProviderKey">Provider Key</label></th>
++                                                    <td><input id="messagesTtsProviderKey" type="text" data-messages-tts-provider-key></td>
++                                                </tr>
++                                                <tr>
++                                                    <th scope="row"><label for="messagesTtsVoiceName">Voice Name</label></th>
++                                                    <td><input id="messagesTtsVoiceName" type="text" data-messages-tts-voice-name></td>
++                                                </tr>
++                                                <tr>
++                                                    <th scope="row"><label for="messagesTtsLanguage">Language</label></th>
++                                                    <td><input id="messagesTtsLanguage" type="text" data-messages-tts-language></td>
++                                                </tr>
++                                                <tr>
++                                                    <th scope="row"><label for="messagesTtsVolume">Volume</label></th>
++                                                    <td><input id="messagesTtsVolume" type="number" min="0" max="2" step="0.01" value="1" data-messages-tts-volume></td>
++                                                </tr>
++                                                <tr>
++                                                    <th scope="row"><label for="messagesTtsPitch">Pitch</label></th>
++                                                    <td><input id="messagesTtsPitch" type="number" min="0.25" max="2" step="0.01" value="1" data-messages-tts-pitch></td>
++                                                </tr>
++                                                <tr>
++                                                    <th scope="row"><label for="messagesTtsRate">Rate</label></th>
++                                                    <td><input id="messagesTtsRate" type="number" min="0.25" max="2" step="0.01" value="1" data-messages-tts-rate></td>
++                                                </tr>
++                                                <tr>
++                                                    <th scope="row">Status</th>
++                                                    <td>
++                                                        <label>
++                                                            <input type="checkbox" data-messages-tts-active checked>
++                                                            Active
++                                                        </label>
++                                                    </td>
++                                                </tr>
++                                            </tbody>
++                                        </table>
++                                    </div>
++                                    <div class="action-group action-group--tight">
++                                        <button class="btn btn--compact" type="submit">Update TTS Profile</button>
++                                        <button class="btn btn--compact" type="button" data-messages-tts-cancel>Add TTS Profile</button>
++                                    </div>
++                                </form>
+                                 <div class="table-wrapper">
+-                                    <table class="data-table" aria-label="Messages">
++                                    <table class="data-table" aria-label="TTS profiles">
+                                         <thead>
+                                             <tr>
+                                                 <th scope="col">Name</th>
+-                                                <th scope="col">Category</th>
+-                                                <th scope="col">Emotion</th>
++                                                <th scope="col">Provider</th>
++                                                <th scope="col">Language</th>
+                                                 <th scope="col">Status</th>
+                                                 <th scope="col">Actions</th>
+                                             </tr>
+                                         </thead>
+-                                        <tbody data-messages-table>
+-                                            <tr><td colspan="5">Loading messages.</td></tr>
++                                        <tbody data-messages-tts-profiles>
++                                            <tr><td colspan="5">Loading TTS profiles.</td></tr>
+                                         </tbody>
+                                     </table>
+                                 </div>
+@@ -375,7 +359,6 @@
+                                 <summary>Selected Message</summary>
+                                 <div class="accordion-body content-stack">
+                                     <p>Name: <span data-messages-selected-name>None</span></p>
+-                                    <p>Category: <span data-messages-selected-category>None</span></p>
+                                     <p>Emotion Profile: <span data-messages-selected-emotion>None</span></p>
+                                     <p>Status: <span data-messages-selected-status>None</span></p>
+                                     <p>Text:</p>
+@@ -385,8 +368,8 @@
+                             <details class="vertical-accordion" open>
+                                 <summary>Persistence</summary>
+                                 <div class="accordion-body content-stack">
+-                                    <p>Source: <span data-messages-persistence-source>Server API</span></p>
+-                                    <p>Engine: <span data-messages-persistence-engine>SQLite</span></p>
++                                    <p>Source: <span data-messages-persistence-source>Local API</span></p>
++                                    <p>Database Direction: <span data-messages-persistence-engine>Postgres</span></p>
                                      <p>Ownership: <span data-messages-persistence-owner>messages</span></p>
                                  </div>
                              </details>
-+                            <details class="vertical-accordion" open>
-+                                <summary>Speech Preview</summary>
-+                                <div class="accordion-body content-stack">
-+                                    <label for="messagesPreviewTtsProfile">TTS Profile</label>
-+                                    <select id="messagesPreviewTtsProfile" data-messages-preview-tts-profile></select>
-+                                    <div class="action-group action-group--tight">
-+                                        <button class="btn btn--compact" type="button" data-messages-preview-message>Preview Message</button>
-+                                        <button class="btn btn--compact" type="button" data-messages-preview-segments>Preview Segments</button>
-+                                        <button class="btn btn--compact" type="button" data-messages-preview-stop>Stop Preview</button>
-+                                    </div>
-+                                    <div class="status" role="status" data-messages-preview-status>Speech preview is idle.</div>
-+                                </div>
-+                            </details>
+@@ -413,7 +396,7 @@
                              <details class="vertical-accordion" open>
-                                 <summary>Future Compatibility</summary>
-                                 <div class="accordion-body content-stack">
+                                 <summary>Status Log</summary>
+                                 <div class="accordion-body">
+-                                    <div class="status" role="status" data-messages-log>Loading Messages.</div>
++                                    <div class="status" role="status" data-messages-log>Loading Message Studio.</div>
+                                 </div>
+                             </details>
+                         </div>
 diff --git a/toolbox/messages/messages.js b/toolbox/messages/messages.js
-index 0a8b78b78..ffc8b56f1 100644
+index ffc8b56f1..8792cd1e2 100644
 --- a/toolbox/messages/messages.js
 +++ b/toolbox/messages/messages.js
-@@ -51,6 +51,11 @@ const elements = {
-   persistenceEngine: document.querySelector("[data-messages-persistence-engine]"),
-   persistenceOwner: document.querySelector("[data-messages-persistence-owner]"),
-   persistenceSource: document.querySelector("[data-messages-persistence-source]"),
-+  previewMessage: document.querySelector("[data-messages-preview-message]"),
-+  previewSegments: document.querySelector("[data-messages-preview-segments]"),
-+  previewStatus: document.querySelector("[data-messages-preview-status]"),
-+  previewStop: document.querySelector("[data-messages-preview-stop]"),
-+  previewTtsProfile: document.querySelector("[data-messages-preview-tts-profile]"),
-   selectedCategory: document.querySelector("[data-messages-selected-category]"),
+@@ -2,7 +2,6 @@ import {
+   createMessageSegment,
+   createEmotionProfile,
+   createMessage,
+-  createMessageCategory,
+   createTtsProfile,
+   listEmotionProfiles,
+   listMessageCategories,
+@@ -11,21 +10,12 @@ import {
+   listTtsProfiles,
+   updateEmotionProfile,
+   updateMessage,
+-  updateMessageCategory,
+   updateMessageSegment,
+   updateTtsProfile,
+ } from "./messages-api-client.js";
+
+ const elements = {
+   active: document.querySelector("[data-messages-active]"),
+-  category: document.querySelector("[data-messages-category]"),
+-  categoryActive: document.querySelector("[data-messages-category-active]"),
+-  categoryCancel: document.querySelector("[data-messages-category-cancel]"),
+-  categoryCount: document.querySelector("[data-messages-category-count]"),
+-  categoryForm: document.querySelector("[data-messages-category-form]"),
+-  categoryKey: document.querySelector("[data-messages-category-key]"),
+-  categoryName: document.querySelector("[data-messages-category-name]"),
+-  categoryRows: document.querySelector("[data-messages-categories]"),
+   count: document.querySelector("[data-messages-count]"),
+   editorHeading: document.querySelector("[data-messages-editor-heading]"),
+   emotionActive: document.querySelector("[data-messages-emotion-active]"),
+@@ -56,7 +46,6 @@ const elements = {
+   previewStatus: document.querySelector("[data-messages-preview-status]"),
+   previewStop: document.querySelector("[data-messages-preview-stop]"),
+   previewTtsProfile: document.querySelector("[data-messages-preview-tts-profile]"),
+-  selectedCategory: document.querySelector("[data-messages-selected-category]"),
    selectedEmotion: document.querySelector("[data-messages-selected-emotion]"),
    selectedName: document.querySelector("[data-messages-selected-name]"),
-@@ -180,6 +185,10 @@ function activeEmotionProfiles() {
-   return state.emotionProfiles.filter((profile) => profile.active);
+   selectedStatus: document.querySelector("[data-messages-selected-status]"),
+@@ -189,6 +178,16 @@ function activeTtsProfiles() {
+   return state.ttsProfiles.filter((profile) => profile.active);
  }
- 
-+function activeTtsProfiles() {
-+  return state.ttsProfiles.filter((profile) => profile.active);
+
++function legacyCategoryKey() {
++  const selected = selectedMessage();
++  if (selected?.categoryKey) {
++    return selected.categoryKey;
++  }
++  const active = activeCategories();
++  const dialog = active.find((category) => category.name === "Dialog");
++  return dialog?.key || active[0]?.key || state.categories[0]?.key || "";
 +}
 +
  function populateSelect(select, options, placeholder) {
    if (!select) {
      return;
-@@ -307,6 +316,20 @@ function selectedMessageSegments() {
-     .sort((left, right) => left.displayOrder - right.displayOrder || left.createdAt.localeCompare(right.createdAt) || left.key.localeCompare(right.key));
+@@ -208,28 +207,6 @@ function populateSelect(select, options, placeholder) {
+   select.value = options.some((optionValue) => optionValue.key === currentValue) ? currentValue : "";
  }
- 
-+function selectedMessage() {
-+  return state.messages.find((message) => message.key === state.selectedMessageKey) || null;
-+}
-+
-+function selectedTtsProfile() {
-+  return state.ttsProfiles.find((profile) => profile.key === elements.previewTtsProfile?.value)
-+    || activeTtsProfiles()[0]
-+    || null;
-+}
-+
-+function emotionProfileByKey(profileKey) {
-+  return state.emotionProfiles.find((profile) => profile.key === profileKey) || null;
-+}
-+
- function renderSegmentRows() {
-   if (!elements.segmentRows) {
+
+-function renderCategoryRows() {
+-  if (!elements.categoryRows) {
+-    return;
+-  }
+-  elements.categoryRows.replaceChildren();
+-  state.categories.forEach((category) => {
+-    const row = document.createElement("tr");
+-    row.dataset.messagesCategoryRow = category.key;
+-    const actions = document.createElement("td");
+-    const group = document.createElement("div");
+-    group.className = "action-group action-group--tight";
+-    group.append(createButton("Edit", "messagesCategoryEdit", category.key));
+-    actions.append(group);
+-    row.append(
+-      createCell(category.name),
+-      createCell(statusForActive(category.active)),
+-      actions,
+-    );
+-    elements.categoryRows.append(row);
+-  });
+-}
+-
+ function renderEmotionRows() {
+   if (!elements.emotionRows) {
      return;
-@@ -360,7 +383,7 @@ function renderSegmentRows() {
- }
- 
+@@ -241,7 +218,7 @@ function renderEmotionRows() {
+     const actions = document.createElement("td");
+     const group = document.createElement("div");
+     group.className = "action-group action-group--tight";
+-    group.append(createButton("Edit", "messagesEmotionEdit", profile.key));
++    group.append(createButton("Update Row", "messagesEmotionEdit", profile.key));
+     actions.append(group);
+     row.append(
+       createCell(profile.name),
+@@ -264,7 +241,7 @@ function renderTtsRows() {
+     const actions = document.createElement("td");
+     const group = document.createElement("div");
+     group.className = "action-group action-group--tight";
+-    group.append(createButton("Edit", "messagesTtsEdit", profile.key));
++    group.append(createButton("Update Row", "messagesTtsEdit", profile.key));
+     actions.append(group);
+     row.append(
+       createCell(profile.name),
+@@ -285,8 +262,8 @@ function renderMessageRows() {
+   if (!state.messages.length) {
+     const row = document.createElement("tr");
+     const cell = document.createElement("td");
+-    cell.colSpan = 5;
+-    cell.textContent = "No messages saved yet.";
++    cell.colSpan = 4;
++    cell.textContent = "No message rows saved yet.";
+     row.append(cell);
+     elements.table.append(row);
+     return;
+@@ -297,11 +274,13 @@ function renderMessageRows() {
+     const actions = document.createElement("td");
+     const group = document.createElement("div");
+     group.className = "action-group action-group--tight";
+-    group.append(createButton("Edit", "messagesEdit", message.key));
++    group.append(
++      createButton("Update Row", "messagesEdit", message.key),
++      createButton(message.active ? "Disable Row" : "Enable Row", "messagesToggle", message.key),
++    );
+     actions.append(group);
+     row.append(
+       createCell(message.name),
+-      createCell(message.categoryName || "Unknown"),
+       createCell(message.emotionProfileName || "Unknown"),
+       createCell(statusForActive(message.active)),
+       actions,
+@@ -365,10 +344,10 @@ function renderSegmentRows() {
+     moveUp.disabled = index === 0;
+     moveDown.disabled = index === segments.length - 1;
+     group.append(
+-      createButton("Edit", "messagesSegmentEdit", segment.key),
++      createButton("Update Row", "messagesSegmentEdit", segment.key),
+       moveUp,
+       moveDown,
+-      createButton(segment.active ? "Disable" : "Enable", "messagesSegmentToggle", segment.key),
++      createButton(segment.active ? "Disable Row" : "Enable Row", "messagesSegmentToggle", segment.key),
+     );
+     actions.append(group);
+     row.append(
+@@ -385,35 +364,31 @@ function renderSegmentRows() {
  function renderSelectedMessage() {
--  const selected = state.messages.find((message) => message.key === state.selectedMessageKey);
-+  const selected = selectedMessage();
+   const selected = selectedMessage();
    setText(elements.selectedName, selected?.name || "None");
-   setText(elements.selectedCategory, selected?.categoryName || "None");
+-  setText(elements.selectedCategory, selected?.categoryName || "None");
    setText(elements.selectedEmotion, selected?.emotionProfileName || "None");
-@@ -386,6 +409,10 @@ function render(persistence = {}) {
-   populateSelect(elements.category, activeCategories(), "Select category");
+   setText(elements.selectedStatus, selected ? statusForActive(selected.active) : "None");
+   setText(elements.selectedText, selected?.messageText || "No message selected.");
+-  setText(elements.segmentContext, selected ? `Segments for ${selected.name}` : "Save or select a message before adding segments.");
++  setText(elements.segmentContext, selected ? `Segments for ${selected.name}` : "Select or add a message row before adding segments.");
+ }
+
+ function renderCounts() {
+   setText(elements.count, String(state.messages.length));
+-  setText(elements.categoryCount, String(state.categories.length));
+   setText(elements.emotionCount, String(state.emotionProfiles.length));
+   setText(elements.ttsCount, String(state.ttsProfiles.length));
+ }
+
+ function renderPersistence(persistence = {}) {
+-  setText(elements.persistenceSource, "Server API");
+-  setText(elements.persistenceEngine, persistence.engine || "SQLite");
++  setText(elements.persistenceSource, "Local API");
++  setText(elements.persistenceEngine, "Postgres target");
+   setText(elements.persistenceOwner, persistence.owner || "messages");
+ }
+
+ function render(persistence = {}) {
+-  populateSelect(elements.category, activeCategories(), "Select category");
    populateSelect(elements.emotionProfile, activeEmotionProfiles(), "Select emotion profile");
    populateSelect(elements.segmentEmotionProfile, activeEmotionProfiles(), "Select emotion profile");
-+  populateSelect(elements.previewTtsProfile, activeTtsProfiles(), "Default active TTS profile");
-+  if (!elements.previewTtsProfile?.value && activeTtsProfiles()[0]) {
-+    elements.previewTtsProfile.value = activeTtsProfiles()[0].key;
-+  }
-   renderCategoryRows();
+   populateSelect(elements.previewTtsProfile, activeTtsProfiles(), "Default active TTS profile");
+   if (!elements.previewTtsProfile?.value && activeTtsProfiles()[0]) {
+     elements.previewTtsProfile.value = activeTtsProfiles()[0].key;
+   }
+-  renderCategoryRows();
    renderEmotionRows();
    renderTtsRows();
-@@ -501,6 +528,81 @@ function validateTtsProfile(values) {
-   return errors;
- }
- 
-+function speechSynthesisAvailable() {
-+  return Boolean(window.speechSynthesis && window.SpeechSynthesisUtterance);
-+}
-+
-+function createSpeechUtterance(text, ttsProfile, emotionProfile) {
-+  const utterance = new window.SpeechSynthesisUtterance(text);
-+  utterance.lang = ttsProfile.language;
-+  utterance.volume = emotionProfile ? emotionProfile.volume : ttsProfile.volume;
-+  utterance.pitch = emotionProfile ? emotionProfile.pitch : ttsProfile.pitch;
-+  utterance.rate = emotionProfile ? emotionProfile.rate : ttsProfile.rate;
-+  const voices = typeof window.speechSynthesis.getVoices === "function" ? window.speechSynthesis.getVoices() : [];
-+  const voice = voices.find((candidate) => candidate.name === ttsProfile.voiceName);
-+  if (voice) {
-+    utterance.voice = voice;
-+  }
-+  return utterance;
-+}
-+
-+function previewSpeech(items, successMessage) {
-+  if (!speechSynthesisAvailable()) {
-+    setText(elements.previewStatus, "Browser speech synthesis is unavailable. Use a browser with speechSynthesis support to preview messages.");
-+    setText(elements.log, "Speech preview unavailable.");
-+    return;
-+  }
-+  const ttsProfile = selectedTtsProfile();
-+  if (!ttsProfile) {
-+    setText(elements.previewStatus, "Choose or create an active TTS profile before previewing speech.");
-+    setText(elements.log, "Speech preview needs an active TTS profile.");
-+    return;
-+  }
-+  window.speechSynthesis.cancel();
-+  items.forEach((item) => {
-+    window.speechSynthesis.speak(createSpeechUtterance(item.text, ttsProfile, item.emotionProfile));
-+  });
-+  setText(elements.previewStatus, successMessage);
-+  setText(elements.log, successMessage);
-+}
-+
-+function previewSelectedMessage() {
-+  const message = selectedMessage();
-+  if (!message) {
-+    setText(elements.previewStatus, "Select or save a message before previewing speech.");
-+    setText(elements.log, "Speech preview needs a selected message.");
-+    return;
-+  }
-+  previewSpeech(
-+    [{ emotionProfile: emotionProfileByKey(message.emotionProfileKey), text: message.messageText }],
-+    `Preview requested for message ${message.name}.`,
-+  );
-+}
-+
-+function previewSelectedSegments() {
-+  const segments = selectedMessageSegments().filter((segment) => segment.active);
-+  if (!segments.length) {
-+    setText(elements.previewStatus, "Add at least one active segment before previewing speech.");
-+    setText(elements.log, "Speech preview needs active segments.");
-+    return;
-+  }
-+  previewSpeech(
-+    segments.map((segment) => ({
-+      emotionProfile: emotionProfileByKey(segment.emotionProfileKey),
-+      text: segment.segmentText,
-+    })),
-+    `Preview requested for ${segments.length} active segment${segments.length === 1 ? "" : "s"}.`,
-+  );
-+}
-+
-+function stopSpeechPreview() {
-+  if (window.speechSynthesis && typeof window.speechSynthesis.cancel === "function") {
-+    window.speechSynthesis.cancel();
-+  }
-+  setText(elements.previewStatus, "Speech preview stopped.");
-+  setText(elements.log, "Speech preview stopped.");
-+}
-+
- function resetMessageForm() {
+   renderMessageRows();
+@@ -426,7 +401,7 @@ function render(persistence = {}) {
+ function messageFormValues() {
+   return {
+     active: elements.active?.checked !== false,
+-    categoryKey: elements.category?.value || "",
++    categoryKey: legacyCategoryKey(),
+     emotionProfileKey: elements.emotionProfile?.value || "",
+     messageText: elements.text?.value || "",
+     name: elements.name?.value || "",
+@@ -440,7 +415,7 @@ function validateMessage(values) {
+     errors.push("Message Name is required.");
+   }
+   if (!values.categoryKey) {
+-    errors.push("Category is required.");
++    errors.push("Message Studio legacy seed is unavailable. Reload the Local API before updating rows.");
+   }
+   if (!values.emotionProfileKey) {
+     errors.push("Emotion Profile is required.");
+@@ -607,12 +582,11 @@ function resetMessageForm() {
    state.selectedMessageKey = "";
    setValue(elements.key, "");
-@@ -904,6 +1006,18 @@ elements.ttsRows?.addEventListener("click", (event) => {
+   setValue(elements.name, "");
+-  setValue(elements.category, "");
+   setValue(elements.emotionProfile, "");
+   setValue(elements.text, "");
+   setValue(elements.notes, "");
+   setChecked(elements.active, true);
+-  setText(elements.editorHeading, "New Message");
++  setText(elements.editorHeading, "Add Message Row");
+   clearValidation();
+   resetSegmentForm();
+   renderSelectedMessage();
+@@ -627,12 +601,11 @@ function editMessage(messageKey) {
+   state.selectedMessageKey = message.key;
+   setValue(elements.key, message.key);
+   setValue(elements.name, message.name);
+-  setValue(elements.category, message.categoryKey);
+   setValue(elements.emotionProfile, message.emotionProfileKey);
+   setValue(elements.text, message.messageText);
+   setValue(elements.notes, message.notes || "");
+   setChecked(elements.active, message.active);
+-  setText(elements.editorHeading, `Edit ${message.name}`);
++  setText(elements.editorHeading, `Update ${message.name}`);
+   clearValidation();
+   resetSegmentForm();
+   renderSelectedMessage();
+@@ -652,22 +625,6 @@ function editSegment(segmentKey) {
+   clearSegmentValidation();
+ }
+
+-function resetCategoryForm() {
+-  setValue(elements.categoryKey, "");
+-  setValue(elements.categoryName, "");
+-  setChecked(elements.categoryActive, true);
+-}
+-
+-function editCategory(categoryKey) {
+-  const category = state.categories.find((candidate) => candidate.key === categoryKey);
+-  if (!category) {
+-    return;
+-  }
+-  setValue(elements.categoryKey, category.key);
+-  setValue(elements.categoryName, category.name);
+-  setChecked(elements.categoryActive, category.active);
+-}
+-
+ function resetEmotionForm() {
+   setValue(elements.emotionKey, "");
+   setValue(elements.emotionName, "");
+@@ -738,7 +695,7 @@ async function loadAll() {
+   state.messages = messagesPayload.messages || [];
+   state.segments = segmentsPayload.segments || [];
+   render(messagesPayload.persistence || categoryPayload.persistence || emotionPayload.persistence || ttsPayload.persistence || segmentsPayload.persistence);
+-  setText(elements.log, "Messages loaded from the Local API.");
++  setText(elements.log, "Message Studio loaded from the Local API.");
+ }
+
+ async function reloadSegments() {
+@@ -746,7 +703,6 @@ async function reloadSegments() {
+   const emotionPayload = listEmotionProfiles();
+   state.segments = segmentsPayload.segments || [];
+   state.emotionProfiles = emotionPayload.emotionProfiles || [];
+-  populateSelect(elements.emotionProfile, activeEmotionProfiles(), "Select emotion profile");
+   populateSelect(elements.segmentEmotionProfile, activeEmotionProfiles(), "Select emotion profile");
+   renderEmotionRows();
+   renderSegmentRows();
+@@ -767,7 +723,7 @@ elements.form?.addEventListener("submit", async (event) => {
+   const errors = validateMessage(values);
+   if (errors.length) {
+     showValidation(errors);
+-    setText(elements.log, "Message save blocked by validation.");
++    setText(elements.log, "Message row update blocked by validation.");
+     return;
+   }
+   clearValidation();
+@@ -777,23 +733,47 @@ elements.form?.addEventListener("submit", async (event) => {
+       ? updateMessage(messageKey, values)
+       : createMessage(values);
+     await refreshAfterSave(result.message);
+-    setText(elements.log, `Saved ${result.message.name}.`);
++    setText(elements.log, `Updated row ${result.message.name}.`);
+   } catch (error) {
+-    showValidation([error instanceof Error ? error.message : String(error || "Message save failed.")]);
+-    setText(elements.log, "Message save failed.");
++    showValidation([error instanceof Error ? error.message : String(error || "Message row update failed.")]);
++    setText(elements.log, "Message row update failed.");
    }
  });
- 
-+elements.previewMessage?.addEventListener("click", () => {
-+  previewSelectedMessage();
-+});
+
+ elements.newMessage?.addEventListener("click", () => {
+   resetMessageForm();
+-  setText(elements.log, "Ready for a new message.");
++  setText(elements.log, "Ready to add a message row.");
+ });
+
+-elements.table?.addEventListener("click", (event) => {
++elements.table?.addEventListener("click", async (event) => {
+   const editButton = event.target.closest("[data-messages-edit]");
+   if (editButton) {
+     editMessage(editButton.dataset.messagesEdit);
+-    setText(elements.log, "Message loaded for editing.");
++    setText(elements.log, "Message row loaded for update.");
++    return;
++  }
 +
-+elements.previewSegments?.addEventListener("click", () => {
-+  previewSelectedSegments();
-+});
-+
-+elements.previewStop?.addEventListener("click", () => {
-+  stopSpeechPreview();
-+});
-+
++  const toggleButton = event.target.closest("[data-messages-toggle]");
++  if (toggleButton) {
++    const message = state.messages.find((candidate) => candidate.key === toggleButton.dataset.messagesToggle);
++    if (!message) {
++      return;
++    }
++    try {
++      const result = updateMessage(message.key, {
++        active: !message.active,
++        categoryKey: message.categoryKey,
++        emotionProfileKey: message.emotionProfileKey,
++        messageText: message.messageText,
++        name: message.name,
++        notes: message.notes,
++      });
++      await refreshAfterSave(result.message);
++      setText(elements.log, `${result.message.active ? "Enabled" : "Disabled"} row ${result.message.name}.`);
++    } catch (error) {
++      showValidation([error instanceof Error ? error.message : String(error || "Message row status update failed.")]);
++      setText(elements.log, "Message row status update failed.");
++    }
+   }
+ });
+
+@@ -803,7 +783,7 @@ elements.segmentForm?.addEventListener("submit", async (event) => {
+   const errors = validateSegment(values);
+   if (errors.length) {
+     showSegmentValidation(errors);
+-    setText(elements.log, "Segment save blocked by validation.");
++    setText(elements.log, "Segment row update blocked by validation.");
+     return;
+   }
+   clearSegmentValidation();
+@@ -813,16 +793,16 @@ elements.segmentForm?.addEventListener("submit", async (event) => {
+       ? updateMessageSegment(segmentKey, values)
+       : createMessageSegment(values);
+     await reloadSegments();
+-    setText(elements.log, `Saved segment ${result.segment.displayOrder}.`);
++    setText(elements.log, `Updated segment row ${result.segment.displayOrder}.`);
+   } catch (error) {
+-    showSegmentValidation([error instanceof Error ? error.message : String(error || "Segment save failed.")]);
+-    setText(elements.log, "Segment save failed.");
++    showSegmentValidation([error instanceof Error ? error.message : String(error || "Segment row update failed.")]);
++    setText(elements.log, "Segment row update failed.");
+   }
+ });
+
+ elements.segmentNew?.addEventListener("click", () => {
+   resetSegmentForm();
+-  setText(elements.log, "Ready for a new segment.");
++  setText(elements.log, "Ready to add a segment row.");
+ });
+
+ elements.segmentReload?.addEventListener("click", async () => {
+@@ -894,7 +874,7 @@ elements.segmentRows?.addEventListener("click", async (event) => {
+         segmentText: segment.segmentText,
+       });
+       await reloadSegments();
+-      setText(elements.log, `${result.segment.active ? "Enabled" : "Disabled"} segment ${result.segment.displayOrder}.`);
++      setText(elements.log, `${result.segment.active ? "Enabled" : "Disabled"} segment row ${result.segment.displayOrder}.`);
+     } catch (error) {
+       showSegmentValidation([error instanceof Error ? error.message : String(error || "Segment status update failed.")]);
+       setText(elements.log, "Segment status update failed.");
+@@ -902,38 +882,6 @@ elements.segmentRows?.addEventListener("click", async (event) => {
+   }
+ });
+
+-elements.categoryForm?.addEventListener("submit", async (event) => {
+-  event.preventDefault();
+-  const input = {
+-    active: elements.categoryActive?.checked !== false,
+-    name: elements.categoryName?.value || "",
+-  };
+-  try {
+-    const categoryKey = elements.categoryKey?.value || "";
+-    const result = categoryKey
+-      ? updateMessageCategory(categoryKey, input)
+-      : createMessageCategory(input);
+-    await loadAll();
+-    resetCategoryForm();
+-    setText(elements.log, `Saved category ${result.category.name}.`);
+-  } catch (error) {
+-    setText(elements.log, error instanceof Error ? error.message : String(error || "Category save failed."));
+-  }
+-});
+-
+-elements.categoryCancel?.addEventListener("click", () => {
+-  resetCategoryForm();
+-  setText(elements.log, "Ready for a new category.");
+-});
+-
+-elements.categoryRows?.addEventListener("click", (event) => {
+-  const editButton = event.target.closest("[data-messages-category-edit]");
+-  if (editButton) {
+-    editCategory(editButton.dataset.messagesCategoryEdit);
+-    setText(elements.log, "Category loaded for editing.");
+-  }
+-});
+-
+ elements.emotionForm?.addEventListener("submit", async (event) => {
+   event.preventDefault();
+   const input = {
+@@ -953,7 +901,7 @@ elements.emotionForm?.addEventListener("submit", async (event) => {
+       : createEmotionProfile(input);
+     await loadAll();
+     resetEmotionForm();
+-    setText(elements.log, `Saved emotion profile ${result.emotionProfile.name}.`);
++    setText(elements.log, `Updated emotion profile ${result.emotionProfile.name}.`);
+   } catch (error) {
+     setText(elements.log, error instanceof Error ? error.message : String(error || "Emotion profile save failed."));
+   }
+@@ -961,14 +909,14 @@ elements.emotionForm?.addEventListener("submit", async (event) => {
+
+ elements.emotionCancel?.addEventListener("click", () => {
+   resetEmotionForm();
+-  setText(elements.log, "Ready for a new emotion profile.");
++  setText(elements.log, "Ready to add an emotion profile.");
+ });
+
+ elements.emotionRows?.addEventListener("click", (event) => {
+   const editButton = event.target.closest("[data-messages-emotion-edit]");
+   if (editButton) {
+     editEmotionProfile(editButton.dataset.messagesEmotionEdit);
+-    setText(elements.log, "Emotion profile loaded for editing.");
++    setText(elements.log, "Emotion profile loaded for update.");
+   }
+ });
+
+@@ -987,7 +935,7 @@ elements.ttsForm?.addEventListener("submit", async (event) => {
+       : createTtsProfile(input);
+     await loadAll();
+     resetTtsForm();
+-    setText(elements.log, `Saved TTS profile ${result.ttsProfile.name}.`);
++    setText(elements.log, `Updated TTS profile ${result.ttsProfile.name}.`);
+   } catch (error) {
+     setText(elements.log, error instanceof Error ? error.message : String(error || "TTS profile save failed."));
+   }
+@@ -995,14 +943,14 @@ elements.ttsForm?.addEventListener("submit", async (event) => {
+
+ elements.ttsCancel?.addEventListener("click", () => {
+   resetTtsForm();
+-  setText(elements.log, "Ready for a new TTS profile.");
++  setText(elements.log, "Ready to add a TTS profile.");
+ });
+
+ elements.ttsRows?.addEventListener("click", (event) => {
+   const editButton = event.target.closest("[data-messages-tts-edit]");
+   if (editButton) {
+     editTtsProfile(editButton.dataset.messagesTtsEdit);
+-    setText(elements.log, "TTS profile loaded for editing.");
++    setText(elements.log, "TTS profile loaded for update.");
+   }
+ });
+
+@@ -1021,10 +969,9 @@ elements.previewStop?.addEventListener("click", () => {
  try {
    await loadAll();
    resetMessageForm();
-
-diff --git a/docs_build/dev/reports/PR_26171_010-message-speech-preview-manual-validation.md b/docs_build/dev/reports/PR_26171_010-message-speech-preview-manual-validation.md
-new file mode 100644
-index 000000000..093b8a822
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_010-message-speech-preview-manual-validation.md
-@@ -0,0 +1,9 @@
-+# PR_26171_010 Manual Validation Notes
-+
-+- Confirmed the Messages inspector includes a Speech Preview section.
-+- Confirmed selected message preview uses the active TTS profile voice/language and the message emotion profile delivery values.
-+- Confirmed active segment preview speaks active segments in display order.
-+- Confirmed segment preview applies each segment emotion profile's delivery values.
-+- Confirmed Stop Preview calls cancel and reports stopped status.
-+- Confirmed missing browser speech synthesis reports an actionable diagnostic.
-+- Confirmed no server TTS, audio generation, audio persistence, runtime playback API, or preview history storage was introduced.
-
-diff --git a/docs_build/dev/reports/PR_26171_010-message-speech-preview-validation.txt b/docs_build/dev/reports/PR_26171_010-message-speech-preview-validation.txt
-new file mode 100644
-index 000000000..7895c20c0
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_010-message-speech-preview-validation.txt
-@@ -0,0 +1,33 @@
-+PR_26171_010-message-speech-preview validation
-+
-+Branch:
-+PASS pr/PR_26171_010-message-speech-preview
-+
-+Syntax:
-+PASS node --check toolbox/messages/messages.js
-+PASS node --check tests/playwright/tools/MessagesTool.spec.mjs
-+
-+Targeted Playwright:
-+PASS npx playwright test tests/playwright/tools/MessagesTool.spec.mjs --project=playwright --workers=1 --reporter=list
-+Result: 2 passed.
-+
-+Preview behavior:
-+PASS selected full-message preview produced a stubbed utterance.
-+PASS active ordered segment preview produced ordered stubbed utterances.
-+PASS segment preview used emotion profile volume, pitch, and rate.
-+PASS Stop Preview called cancel.
-+PASS missing speech synthesis displayed an actionable diagnostic.
-+
-+Workspace lane:
-+FAIL npm run test:workspace-v2
-+Failure file: tests/playwright/tools/RootToolsFutureState.spec.mjs
-+Failures:
-+- Toolbox accordion control-card count was 0.
-+- Header alphabetical expectation failed around Game Hub/Game Journey ordering.
-+- Non-Messages pages reported failed requests to session, platform banner, registry, and toolbox constants APIs.
-+
-+Whitespace:
-+PASS git diff --check on touched files. CRLF warnings only.
-+
-+Disposition:
-+MERGE WITH RECORDED WORKSPACE FAILURE. PR_010 targeted validation passed. The required workspace-v2 lane failed outside the Messages speech preview scope and is documented for follow-up.
-
-diff --git a/docs_build/dev/reports/PR_26171_010-message-speech-preview.md b/docs_build/dev/reports/PR_26171_010-message-speech-preview.md
-new file mode 100644
-index 000000000..ce5b31fef
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_010-message-speech-preview.md
-@@ -0,0 +1,59 @@
-+# PR_26171_010-message-speech-preview
-+
-+## Branch Validation
-+
-+- Branch: `pr/PR_26171_010-message-speech-preview`
-+- Source: clean `main` after PR_26171_008 merge and push.
-+- Status: PASS for branch setup and scoped implementation.
-+
-+## Requirement Checklist
-+
-+- PASS: Added a Theme V2 Speech Preview section to the Messages tool.
-+- PASS: Added selected full-message preview.
-+- PASS: Added selected ordered active-segment preview.
-+- PASS: Preview uses selected/default active TTS Profile settings for language and voice.
-+- PASS: Segment preview uses each segment's Emotion Profile settings for volume, pitch, and rate.
-+- PASS: Browser-local preview uses `speechSynthesis` and `SpeechSynthesisUtterance` when available.
-+- PASS: Missing browser speech support shows a visible actionable diagnostic.
-+- PASS: Stop Preview calls `speechSynthesis.cancel()` and updates status.
-+- PASS: Preview logic lives in external `toolbox/messages/messages.js`.
-+- PASS: Playwright stubs browser speech synthesis and validates preview payloads without real audio output.
-+- PASS: No server-side TTS generation, audio file generation, audio persistence, AI voices, voice adapters, runtime playback API, dialog trees, localization, translation, game runtime integration, or preview history storage was added.
-+- PASS: No new API/DB persistence was added.
-+- PASS: No inline styles, style blocks, inline scripts, or inline event handlers were introduced.
-+- FAIL: Required `npm run test:workspace-v2` lane failed in existing `RootToolsFutureState.spec.mjs` coverage outside the Messages speech preview scope.
-+
-+## Validation Lane Report
-+
-+- PASS: `node --check toolbox/messages/messages.js`
-+- PASS: `node --check tests/playwright/tools/MessagesTool.spec.mjs`
-+- PASS: `npx playwright test tests/playwright/tools/MessagesTool.spec.mjs --project=playwright --workers=1 --reporter=list`
-+- PASS: Validated preview selected message payload with stubbed speech synthesis.
-+- PASS: Validated preview active ordered segment payloads with emotion profile settings.
-+- PASS: Validated Stop Preview cancel behavior.
-+- PASS: Validated unavailable speech synthesis diagnostic.
-+- PASS: `git diff --check` on touched files.
-+- FAIL: `npm run test:workspace-v2`
-+
-+## Workspace-V2 Failure Summary
-+
-+`npm run test:workspace-v2` failed in `tests/playwright/tools/RootToolsFutureState.spec.mjs`:
-+
-+- Toolbox accordion `.control-card` count was `0`.
-+- Header alphabetical expectation failed around `Game Hub` and `Game Journey`.
-+- Non-Messages pages reported failed requests to session, platform banner, registry, and toolbox constants APIs.
-+
-+These failures were already present for the batch and are outside PR_010's browser-local Messages speech preview scope.
-+
-+## Manual Validation Notes
-+
-+- Selected message preview reports a preview request and produces one stubbed utterance.
-+- Active ordered segment preview reports a preview request and produces ordered stubbed utterances.
-+- Segment utterances use the segment emotion profile's volume, pitch, and rate.
-+- Stop Preview reports stopped status and calls cancel.
-+- Missing browser speech synthesis shows an actionable diagnostic.
-+- No audio is generated or persisted.
-+
-+## Samples Decision
-+
-+- Full samples smoke was not run because samples are out of scope for browser-local Messages speech preview.
+-  resetCategoryForm();
+   resetEmotionForm();
+   resetTtsForm();
+ } catch (error) {
+   setText(elements.log, error instanceof Error ? error.message : String(error || "Messages failed to load."));
+-  showValidation(["Messages could not load from the Local API. Start the Local API server and reload this tool."]);
++  showValidation(["Message Studio could not load from the Local API. Start the Local API server and reload this tool."]);
+ }

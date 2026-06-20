@@ -358,6 +358,20 @@ Prohibited product-data ownership:
 
 Toolbox and Admin tool metadata must use a shared DB-backed tool metadata source for `toolKey`, `toolName`, `group`, `path`, `order`, and `status`. Browser pages may render metadata returned by the API/service contract, but they must not own a separate runtime copy of that metadata.
 
+## POSTGRES DATABASE DIRECTION
+
+SQLite is deprecated for new database work.
+
+Rules:
+- New database work must target Postgres.
+- New persistence must flow through Local API / Postgres direction only.
+- Do not add new SQLite services.
+- Do not add new SQLite DDL.
+- Do not add new SQLite seed data.
+- Do not add new SQLite runtime persistence.
+- Legacy SQLite references may remain only as documented technical debt when they already exist.
+- Browser code must not own product data or generate authoritative persistence keys.
+
 ## DEV RUNTIME BOUNDARY
 
 All mock/dev-only runtime implementation must live under `src/dev-runtime/`.
