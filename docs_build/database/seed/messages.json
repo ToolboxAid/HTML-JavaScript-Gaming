@@ -24,6 +24,10 @@
       "Sad",
       "Mysterious"
     ],
+    "messages_tts_profiles": [
+      "Browser Speech Default",
+      "Narration Preview"
+    ],
     "messages_records": [],
     "messages_segments": []
   },

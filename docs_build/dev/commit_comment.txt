@@ -1,1 +1,1 @@
-Manage referenced Messages emotion profiles - PR_26171_006
+Add Messages TTS profile foundation - PR_26171_008

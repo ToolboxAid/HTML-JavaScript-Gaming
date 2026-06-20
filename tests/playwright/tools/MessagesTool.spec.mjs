@@ -108,6 +108,8 @@ test("Messages tool creates, validates, updates, and persists through Local API 
     await expect(page.locator("[data-messages-categories]")).toContainText("Notification");
     await expect(page.locator("[data-messages-emotions]")).toContainText("Calm");
     await expect(page.locator("[data-messages-emotions]")).toContainText("Urgent");
+    await expect(page.locator("[data-messages-tts-profiles]")).toContainText("Browser Speech Default");
+    await expect(page.locator("[data-messages-tts-profiles]")).toContainText("Narration Preview");
     await expect(page.locator("[data-messages-persistence-engine]")).toHaveText("SQLite");
 
     await page.locator("[data-messages-category-name]").fill("Barks");
@@ -136,6 +138,58 @@ test("Messages tool creates, validates, updates, and persists through Local API 
     await page.locator("[data-messages-emotion-active]").uncheck();
     await page.getByRole("button", { name: "Save Emotion Profile" }).click();
     await expect(page.locator("[data-messages-emotion-row]").filter({ hasText: "Robot" })).toContainText("Inactive");
+
+    await page.locator("[data-messages-tts-name]").fill("Arcade Browser Voice");
+    await page.locator("[data-messages-tts-description]").fill("Configuration only for future browser speech preview.");
+    await page.locator("[data-messages-tts-provider-key]").fill("browser-speech");
+    await page.locator("[data-messages-tts-voice-name]").fill("Test Voice");
+    await page.locator("[data-messages-tts-language]").fill("en-US");
+    await page.locator("[data-messages-tts-volume]").fill("0.8");
+    await page.locator("[data-messages-tts-pitch]").fill("1.1");
+    await page.locator("[data-messages-tts-rate]").fill("0.95");
+    await page.getByRole("button", { name: "Save TTS Profile" }).click();
+    await expect(page.locator("[data-messages-log]")).toHaveText("Saved TTS profile Arcade Browser Voice.");
+    await expect(page.locator("[data-messages-tts-profiles]")).toContainText("Arcade Browser Voice");
+    await expect(page.locator("[data-messages-tts-count]")).toHaveText("3");
+
+    await page.locator("[data-messages-tts-row]").filter({ hasText: "Arcade Browser Voice" }).getByRole("button", { name: "Edit" }).click();
+    await page.locator("[data-messages-tts-description]").fill("Updated configuration only.");
+    await page.locator("[data-messages-tts-active]").uncheck();
+    await page.getByRole("button", { name: "Save TTS Profile" }).click();
+    await expect(page.locator("[data-messages-tts-row]").filter({ hasText: "Arcade Browser Voice" })).toContainText("Inactive");
+    await page.locator("[data-messages-tts-row]").filter({ hasText: "Arcade Browser Voice" }).getByRole("button", { name: "Edit" }).click();
+    await page.locator("[data-messages-tts-active]").check();
+    await page.getByRole("button", { name: "Save TTS Profile" }).click();
+    await expect(page.locator("[data-messages-tts-row]").filter({ hasText: "Arcade Browser Voice" })).toContainText("Active");
+
+    const ttsProfilesResult = await jsonRequest(`${failures.server.baseUrl}/api/messages/tts-profiles`);
+    expect(ttsProfilesResult.response.ok).toBe(true);
+    expect(ttsProfilesResult.payload.ok).toBe(true);
+    const createdTtsProfile = ttsProfilesResult.payload.data.ttsProfiles.find((profile) => profile.name === "Arcade Browser Voice");
+    expect(createdTtsProfile).toEqual(expect.objectContaining({
+      active: true,
+      description: "Updated configuration only.",
+      language: "en-US",
+      providerKey: "browser-speech",
+      rate: 0.95,
+      voiceName: "Test Voice",
+    }));
+    expect(createdTtsProfile.key).toMatch(ULID_PATTERN);
+    expect(createdTtsProfile.createdBy).toMatch(ULID_PATTERN);
+    expect(createdTtsProfile.updatedBy).toMatch(ULID_PATTERN);
+
+    const getTtsProfileResult = await jsonRequest(`${failures.server.baseUrl}/api/messages/tts-profiles/${createdTtsProfile.key}`);
+    expect(getTtsProfileResult.response.ok).toBe(true);
+    expect(getTtsProfileResult.payload.data.ttsProfile).toEqual(expect.objectContaining({
+      key: createdTtsProfile.key,
+      name: "Arcade Browser Voice",
+      providerKey: "browser-speech",
+    }));
+
+    const deleteTtsProfileResult = await fetch(`${failures.server.baseUrl}/api/messages/tts-profiles/${createdTtsProfile.key}`, {
+      method: "DELETE",
+    });
+    expect(deleteTtsProfileResult.status).toBe(404);
 
     await page.getByRole("button", { name: "Save Message" }).click();
     await expect(page.locator("[data-messages-validation-card]")).toBeVisible();
@@ -320,6 +374,15 @@ test("Messages tool creates, validates, updates, and persists through Local API 
       displayOrder: 1,
       key: disabledSegment.key,
       segmentText: "We are being attacked by bats right now.",
+    }));
+
+    const persistedTtsProfileResult = await jsonRequest(`${restartedServer.baseUrl}/api/messages/tts-profiles/${createdTtsProfile.key}`);
+    expect(persistedTtsProfileResult.response.ok).toBe(true);
+    expect(persistedTtsProfileResult.payload.data.ttsProfile).toEqual(expect.objectContaining({
+      key: createdTtsProfile.key,
+      name: "Arcade Browser Voice",
+      providerKey: "browser-speech",
+      voiceName: "Test Voice",
     }));
 
     expect(failures.failedRequests).toEqual([]);

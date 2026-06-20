@@ -1,7 +1,10 @@
+docs_build/database/ddl/messages.sql
+docs_build/database/dml/messages.sql
+docs_build/database/seed/messages.json
 docs_build/dev/commit_comment.txt
-docs_build/dev/reports/PR_26171_006-message-emotion-profile-management-manual-validation.md
-docs_build/dev/reports/PR_26171_006-message-emotion-profile-management-validation.txt
-docs_build/dev/reports/PR_26171_006-message-emotion-profile-management.md
+docs_build/dev/reports/PR_26171_008-message-tts-profile-foundation-manual-validation.md
+docs_build/dev/reports/PR_26171_008-message-tts-profile-foundation-validation.txt
+docs_build/dev/reports/PR_26171_008-message-tts-profile-foundation.md
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/coverage_changed_js_guardrail.txt
@@ -9,4 +12,5 @@ docs_build/dev/reports/playwright_v8_coverage_report.txt
 src/dev-runtime/messages/messages-sqlite-service.mjs
 tests/playwright/tools/MessagesTool.spec.mjs
 toolbox/messages/index.html
+toolbox/messages/messages-api-client.js
 toolbox/messages/messages.js
