@@ -19,6 +19,7 @@
 - PR URL: `https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/19`
 - Merge result: recorded in final Codex delivery after GitHub merge returns the merge SHA.
 - Final main commit: recorded in final Codex delivery after returning to `main` and pulling latest.
+- Conflict resolution: PASS, merged latest `origin/main` (`9df4942226b0c1a25cfc9567040fc237d90df8f9`) and resolved conflicts only in singleton generated report artifacts.
 
 ## Scoped Files
 
