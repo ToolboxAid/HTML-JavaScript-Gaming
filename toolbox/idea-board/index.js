@@ -32,7 +32,7 @@ const noteTable = [
   {
     noteId: "top-system-origin",
     ideaId: "top-thoughts",
-    note: "System seed note: keep the sharpest premise at the top of the board.",
+    note: "Keep the sharpest premise at the top of the board.",
     system: true,
     updated: "2026-06-20",
   },
@@ -53,7 +53,7 @@ const noteTable = [
   {
     noteId: "sky-system-origin",
     ideaId: "sky-orchard",
-    note: "System seed note: compare early Sky Orchard ideas before creating a project.",
+    note: "Compare early Sky Orchard ideas before creating a project.",
     system: true,
     updated: "2026-06-20",
   },
@@ -356,7 +356,7 @@ function saveIdeaRow(root, row) {
   if (ideaId) {
     const record = ideaRecord(ideaId);
     if (!record) {
-      updateStatus(root, `Idea Board cannot find idea: ${ideaId}.`);
+      updateStatus(root, "Idea Board could not find that idea.");
       return;
     }
     record.idea = idea;
@@ -387,7 +387,7 @@ function saveNoteRow(root, row) {
   if (noteId) {
     const record = noteTable.find((note) => note.noteId === noteId && note.ideaId === ideaId);
     if (!record) {
-      updateStatus(root, `Idea Board cannot find note: ${noteId}.`);
+      updateStatus(root, "Idea Board could not find that note.");
       return;
     }
     record.note = value;
@@ -410,7 +410,7 @@ function saveNoteRow(root, row) {
 
 function toggleNotes(root, ideaId) {
   if (!ideaRecord(ideaId)) {
-    updateStatus(root, `Idea Board cannot expand missing idea: ${ideaId}.`);
+    updateStatus(root, "Idea Board could not expand that idea.");
     return;
   }
   const expanded = state.expandedIdeaId === ideaId;
@@ -424,7 +424,7 @@ function toggleNotes(root, ideaId) {
 function deleteIdea(root, ideaId) {
   const index = ideaTable.findIndex((record) => record.ideaId === ideaId);
   if (index < 0) {
-    updateStatus(root, `Idea Board cannot delete missing idea: ${ideaId}.`);
+    updateStatus(root, "Idea Board could not delete that idea.");
     return;
   }
   const [removed] = ideaTable.splice(index, 1);

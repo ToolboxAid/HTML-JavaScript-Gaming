@@ -1,57 +1,58 @@
-# Codex Changed Files - PR_26171_039-table-first-workspace-governance
+# Codex Changed Files - PR_26171_040-idea-board-production-copy-cleanup
 
 ## Git Workflow
-- Current branch: `codex/pr-26171-039-table-first-workspace-governance`.
+- Current branch: `codex/pr-26171-040-idea-board-production-copy-cleanup`.
 - Expected starting branch: `main` (PASS before branch creation).
-- Created branch: `codex/pr-26171-039-table-first-workspace-governance`.
+- Created branch: `codex/pr-26171-040-idea-board-production-copy-cleanup`.
 - Push result: pending until after commit.
 - PR URL: pending until after push.
 - Merge result: pending until after PR validation/merge.
 - Final main commit: pending until after merge and final pull.
 
 ## Changed Files
-- docs_build/dev/PROJECT_INSTRUCTIONS.md
 - docs_build/dev/reports/codex_changed_files.txt
 - docs_build/dev/reports/codex_review.diff
+- docs_build/dev/reports/coverage_changed_js_guardrail.txt
+- docs_build/dev/reports/playwright_v8_coverage_report.txt
+- src/dev-runtime/server/local-api-router.mjs
+- src/shared/toolbox/tool-metadata-inventory.js
+- tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+- tests/playwright/tools/ToolboxRoutePages.spec.mjs
+- toolbox/idea-board/index.html
+- toolbox/idea-board/index.js
 
 ## Requirement Evidence
-- PASS: Added `TABLE-FIRST WORKSPACE GOVERNANCE` section to `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
-- PASS: Section states primary work surface is a table.
-- PASS: Section says to prefer inline table workflows over forms.
-- PASS: Section prohibits detached selected-item context panels.
-- PASS: Section prohibits detached notes/detail panels when child rows can render under the parent row.
-- PASS: Parent/child patterns include Idea 1-* Notes, Character 1-* Dialog, Quest 1-* Objectives, and Audio Profile 1-* Effects.
-- PASS: Section says parent name cell owns accordion behavior.
-- PASS: Section says chevron appears inside parent name cell.
-- PASS: Section says entire parent name cell toggles expansion.
-- PASS: Section says child count columns are informational only.
-- PASS: Section says only one parent row may be expanded at a time.
-- PASS: Section says default state is all collapsed.
-- PASS: Section says child rows are indented.
-- PASS: Section says child Add button aligns with child rows.
-- PASS: Section says metadata remains stored but hidden unless explicitly needed.
-- PASS: Section says Add buttons are left aligned and self-describing.
-- PASS: Section says enumerated fields become dropdowns during edit mode.
-- PASS: Visual examples include default collapsed table, expanded parent with indented child rows, normal Edit/Delete row, edit Save/Cancel row with dropdown status, and add Save/Cancel row.
-- PASS: Explicit row-state rules include Normal row actions: Edit Delete.
-- PASS: Explicit row-state rules include Edit row actions: Save Cancel.
-- PASS: Explicit row-state rules include Add row actions: Save Cancel.
-- PASS: Explicit row-state rules state Save/Cancel is row-level only.
-- PASS: Explicit row-state rules prohibit page-level Save for normal row editing.
-- PASS: Explicit row-state rules state Cancel restores previous row state.
-- PASS: Explicit row-state rules state Save commits only the edited row.
-- PASS: Explicit row-state rules prohibit multiple simultaneous row edits unless explicitly approved.
-- PASS: Runtime code was not changed.
-- PASS: Tests were not changed.
-- PASS: Roadmap status was not changed.
+- PASS: Creator-visible Idea Board page copy no longer uses DB-shaped, in-page data model, ID/flag/metadata/seed/debug/mock/test/internal wording.
+- PASS: Shared Toolbox metadata for Idea Board now uses simple creator-facing language for short description, description, and progress checklist text.
+- PASS: Existing persisted Toolbox metadata rows now source-sync Idea Board copy so the browser-visible registry summary updates from source-controlled text.
+- PASS: Idea Board table workflow, Add Idea, Add Note, Edit/Delete, Save/Cancel, Status dropdown, accordion behavior, notes under idea rows, and existing in-page data structure were preserved.
+- PASS: Targeted Playwright production-copy checks verify the Idea Board main surface does not expose the prohibited creator-visible wording.
+- PASS: Copied/adapted files verified as not applicable for this copy-only PR; no Tool Template V2 file copy was required.
 
 ## Validation
+- PASS: `node --check toolbox/idea-board/index.js`.
+- PASS: `node --check src/dev-runtime/server/local-api-router.mjs`.
+- PASS: `node --check src/shared/toolbox/tool-metadata-inventory.js`.
+- PASS: `node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`.
+- PASS: `node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs`.
+- PASS: `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line`.
+- PASS: `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches"`.
 - PASS: `git diff --check`.
-- PASS: Heading confirmation found `## TABLE-FIRST WORKSPACE GOVERNANCE`.
-- PASS: Visual examples confirmation found `Visual examples:` and numbered examples.
-- PASS: Save/Cancel row-state confirmation found edit/add examples and explicit row-state rules.
-- PASS: No Playwright impact; this PR is docs/workflow only.
+- PASS: Playwright V8 coverage report produced because runtime JavaScript changed.
+- WARN: Coverage report marks `src/dev-runtime/server/local-api-router.mjs` and `src/shared/toolbox/tool-metadata-inventory.js` as not collected by browser V8 coverage; advisory only per project instructions.
+- SKIPPED: Full samples smoke was not run per request.
 
 ## ZIP
-- Path: `tmp/PR_26171_039-table-first-workspace-governance_delta.zip`.
-- Size and contents: reported after final ZIP generation.
+- Path: `tmp/PR_26171_040-idea-board-production-copy-cleanup_delta.zip`.
+- Size: `86984` bytes before final report refresh; final size reported in the delivery summary.
+- Contents:
+  - docs_build/dev/reports/codex_changed_files.txt
+  - docs_build/dev/reports/codex_review.diff
+  - docs_build/dev/reports/coverage_changed_js_guardrail.txt
+  - docs_build/dev/reports/playwright_v8_coverage_report.txt
+  - src/dev-runtime/server/local-api-router.mjs
+  - src/shared/toolbox/tool-metadata-inventory.js
+  - tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+  - tests/playwright/tools/ToolboxRoutePages.spec.mjs
+  - toolbox/idea-board/index.html
+  - toolbox/idea-board/index.js
