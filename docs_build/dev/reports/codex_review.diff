@@ -1,1609 +1,298 @@
-diff --git a/docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-instruction-compliance-checklist.md
+diff --git a/docs_build/dev/PROJECT_INSTRUCTIONS.md b/docs_build/dev/PROJECT_INSTRUCTIONS.md
+index dbc044b99..a92b7e332 100644
+--- a/docs_build/dev/PROJECT_INSTRUCTIONS.md
++++ b/docs_build/dev/PROJECT_INSTRUCTIONS.md
+@@ -94 +94 @@ User:
+-## MAIN BRANCH EXECUTION GUARD
++## WORKSTREAM BRANCH EXECUTION GUARD
+@@ -99 +99 @@ Rules:
+-- The required execution branch is:
++- Approved execution branches are:
+@@ -101 +101,14 @@ Rules:
+-- If the current branch is not `main`:
++  - approved team workstream branches
++- Approved team workstream branch format:
++  - `team/<TEAM>/<workstream>`
++- Workstream branch examples:
++  - `team/ALPHA/game-hub`
++  - `team/BETA/messages`
++  - `team/GAMMA/admin`
++- The repository must be clean before file changes.
++- The current branch must not be detached HEAD.
++- The current branch must have an origin upstream unless a new PR branch has just been created from an approved execution branch.
++- Local branch HEAD must match origin branch HEAD when an origin upstream exists.
++- TEAM ownership must match the approved workstream branch and requested PR scope.
++- PR scope must stay inside TEAM ownership.
++- If the current branch is neither `main` nor an approved team workstream branch:
+@@ -106,0 +120,6 @@ Rules:
++- If the repository is dirty, HARD STOP.
++- If the current branch is detached HEAD, HARD STOP.
++- If local branch HEAD does not equal origin branch HEAD when an origin upstream exists, HARD STOP.
++- If the current branch is ahead of origin or has unpushed commits, HARD STOP.
++- If TEAM ownership mismatches the branch or scope, HARD STOP.
++- If cross-team scope is attempted without explicit Master Control assignment, HARD STOP.
+@@ -109 +128 @@ Rules:
+-  - expected branch (`main`)
++  - expected branch (`main` or approved `team/<TEAM>/<workstream>`)
+@@ -111 +130,4 @@ Rules:
+-- Codex may continue only after the user explicitly returns to `main`.
++  - upstream branch
++  - local/origin sync PASS/FAIL
++  - TEAM ownership PASS/FAIL
++- Codex may continue only after the user explicitly moves to `main` or an approved team workstream branch and all guard checks pass.
+@@ -114 +136 @@ Exception:
+-- Explicit branch-audit or branch-comparison PRs may inspect non-main branches but must not perform implementation work on them.
++- Explicit branch-audit or branch-comparison PRs may inspect unapproved branches but must not perform implementation work on them.
+@@ -117,0 +140,4 @@ Required report output:
++- Expected branch
++- Upstream branch
++- Local/origin sync PASS/FAIL
++- TEAM ownership PASS/FAIL
+@@ -1991,2 +2017,2 @@ Required workflow:
+-2. Checkout main.
+-3. Pull latest main.
++2. Checkout `main` or the approved team workstream branch.
++3. Pull latest approved execution branch.
+@@ -2002 +2028 @@ Required workflow:
+-13. Merge PR.
++13. Merge PR only after explicit owner/EOD approval.
+@@ -2012 +2038,3 @@ Rules:
+-- Treat merge as required after validation passes.
++- Treat merge as required only after validation passes and explicit owner/EOD approval is provided.
++- Local-only commits are prohibited as completed workstream state.
++- Every completed PR scope must be committed and pushed before Codex continues to another PR.
+@@ -2027,0 +2056,42 @@ Required Git workflow report fields:
++## GITHUB AUTHORITATIVE WORKSTREAM RULE
++
++GitHub is the authoritative workstream record.
++
++Rules:
++- GitHub branches, commits, and pull requests are the authoritative record for active and completed Codex workstreams.
++- Local-only commits are prohibited.
++- A PR scope is not complete until its scoped changes are committed and pushed to GitHub.
++- Every completed PR scope must be committed and pushed before Codex continues to another PR.
++- Push failure is a hard stop until resolved.
++- A branch ahead of origin is a hard stop because it contains unpushed commits.
++- Detached HEAD execution is prohibited for PR work.
++- Ownership mismatch is a hard stop.
++- This rule does not authorize merging.
++- EOD merge approval remains owner-controlled and requires explicit approval.
++
++Start-gate sync validation:
++- PASS when:
++  - current branch is not detached
++  - repository is clean
++  - current branch has an origin upstream
++  - `local == origin`
++  - local branch HEAD equals origin branch HEAD
++  - TEAM ownership matches the requested PR scope
++- FAIL when:
++  - current branch is detached HEAD
++  - repository is dirty
++  - branch is ahead of origin
++  - branch has unpushed commits
++  - local branch HEAD does not equal origin branch HEAD
++  - push failure is unresolved
++  - TEAM ownership mismatches the requested PR scope
++
++Required report output:
++- current branch
++- upstream branch
++- local commit
++- origin commit
++- local/origin sync PASS/FAIL
++- push result
++- TEAM ownership PASS/FAIL
++
+@@ -2034 +2104 @@ Rules:
+-- Codex must not merge a PR or mark a workstream stable without explicit approval from the assigned Team Alpha or Team Beta owner.
++- Codex must not merge a PR or mark a workstream stable without explicit approval from the assigned Team Alpha, Team Beta, or Team Gamma owner.
+@@ -2036,0 +2107 @@ Rules:
++- EOD merge approval remains owner-controlled and requires explicit approval.
+@@ -2050 +2121 @@ Required pre-change report:
+-- The report must include branch, clean status, PR TEAM owner, implementation path, validation scope, required report list, and ZIP requirement.
++- The report must include branch, expected branch, upstream branch, local/origin sync status, clean status, PR TEAM owner, implementation path, validation scope, required report list, and ZIP requirement.
+@@ -2054 +2125 @@ Hard stops before changes:
+-- If the current branch is not `main`, HARD STOP.
++- If the current branch is neither `main` nor an approved team workstream branch, HARD STOP.
+@@ -2055,0 +2127,4 @@ Hard stops before changes:
++- If the current branch is detached HEAD, HARD STOP.
++- If local branch HEAD does not equal origin branch HEAD when an origin upstream exists, HARD STOP.
++- If the current branch is ahead of origin or has unpushed commits, HARD STOP.
++- If a previous push failed and remains unresolved, HARD STOP.
+@@ -2057,0 +2133 @@ Hard stops before changes:
++- If cross-team scope is attempted without explicit Master Control assignment, HARD STOP.
+diff --git a/docs_build/dev/PROJECT_MULTI_PC.txt b/docs_build/dev/PROJECT_MULTI_PC.txt
+index 1f0ff3eb1..8b29bdbe3 100644
+--- a/docs_build/dev/PROJECT_MULTI_PC.txt
++++ b/docs_build/dev/PROJECT_MULTI_PC.txt
+@@ -526,0 +527,29 @@ Governance, recovery, diagnostics, and instruction-hardening PRs:
++Workstream Branch Execution Guard:
++- Approved execution branches are `main` and approved team workstream branches.
++- Approved team workstream branch format:
++  - `team/<TEAM>/<workstream>`
++- Workstream branch examples:
++  - `team/ALPHA/game-hub`
++  - `team/BETA/messages`
++  - `team/GAMMA/admin`
++- Hard stops include dirty repo, unapproved branch, TEAM mismatch, cross-team scope, detached HEAD, local/origin mismatch, and unpushed commits.
++- TEAM ownership must match the approved workstream branch and requested PR scope.
++- Cross-team work remains prohibited unless Master Control splits or assigns each PR to the correct TEAM token.
++
++GitHub Authoritative Workstream Rule:
++- GitHub is the authoritative workstream record.
++- GitHub branches, commits, and pull requests are the authoritative record for active and completed Codex workstreams.
++- Local-only commits are prohibited.
++- Every completed PR scope must be committed and pushed before Codex continues to another PR.
++- Start-gate sync validation is PASS only when the branch is clean and `local == origin`, meaning local HEAD equals origin HEAD.
++- Start-gate sync validation is FAIL when:
++  - branch is ahead of origin
++  - branch has unpushed commits
++  - current branch is detached HEAD
++  - push failure is unresolved
++  - TEAM ownership mismatches the requested PR scope
++- Branch ahead of origin is a hard stop.
++- Push failure is a hard stop until resolved.
++- Ownership mismatch is a hard stop.
++- EOD merge approval remains owner-controlled and requires explicit approval.
++
+@@ -533,0 +563,2 @@ Hard stop rules:
++- If the execution branch is neither `main` nor an approved team workstream branch, stop before changes.
++- If branch sync validation fails, stop before changes.
+diff --git a/docs_build/dev/reports/PR_26171_GAMMA_010-replace-main-branch-guard-with-workstream-guard-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26171_GAMMA_010-replace-main-branch-guard-with-workstream-guard-instruction-compliance-checklist.md
 new file mode 100644
-index 000000000..12b13f0eb
+index 000000000..c63fe1394
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-instruction-compliance-checklist.md
-@@ -0,0 +1,18 @@
-+# PR_26171_BETA_073-message-tts-table-ui-correction Instruction Compliance Checklist
++++ b/docs_build/dev/reports/PR_26171_GAMMA_010-replace-main-branch-guard-with-workstream-guard-instruction-compliance-checklist.md
+@@ -0,0 +1,28 @@
++# Instruction Compliance Checklist - PR_26171_GAMMA_010
 +
-+Generated: 2026-06-20T23:06:25.711Z
-+Team ownership: BETA
-+Branch: pr/26171-BETA-073-message-tts-table-ui-correction
-+
-+## Gate
-+
-+- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
-+- PASS: Read `docs_build/dev/PROJECT_MULTI_PC.txt`.
-+- PASS: Current branch was `main` before creating `pr/26171-BETA-073-message-tts-table-ui-correction`.
-+- PASS: Repository was clean and synced with `origin/main` before branch creation.
-+- PASS: PR name includes required TEAM token `BETA`.
-+- PASS: Team BETA owns Messages, Text To Speech/TTS, and Audio content work.
-+- PASS: Implementation path uses active `toolbox/text-to-speech/` and `toolbox/messages/` paths.
-+- PASS: No `tools/text2speech/` path was created.
-+- PASS: Required validation scope was targeted TTS Studio, targeted Message Studio, and legacy `npm run test:workspace-v2` for Project Workspace/Game Hub coverage.
-+- PASS: Required report and ZIP outputs are included in this PR.
-diff --git a/docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-manual-validation-notes.md b/docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-manual-validation-notes.md
++- PR has one purpose only: PASS
++- Exact PR name provided: PASS
++- PR name includes TEAM token `GAMMA`: PASS
++- Exact branch name provided: PASS
++- Branch started from latest `main`: PASS
++- `docs_build/dev/PROJECT_INSTRUCTIONS.md` read before changes: PASS
++- `docs_build/dev/PROJECT_MULTI_PC.txt` read before changes: PASS
++- Instruction enforcement start gate run before changes: PASS
++- Repository clean before branch creation: PASS
++- `main` local/origin sync verified before branch creation: PASS
++- TEAM ownership verified as Gamma governance/instruction-hardening work: PASS
++- Scope limited to requested governance docs: PASS
++- Main-only branch guard replaced: PASS
++- Main-only BUILD start hard stop removed: PASS
++- Approved workstream branches allowed: PASS
++- Required hard stops preserved: PASS
++- GitHub authoritative sync rule preserved: PASS
++- Local-only commits remain prohibited: PASS
++- Owner-controlled EOD merge approval preserved: PASS
++- Runtime code unchanged: PASS
++- Required reports created: PASS
++- Manual validation notes created: PASS
++- ZIP required and pending final packaging: PASS
++- Playwright skipped with reason documented: PASS
++- Samples skipped with reason documented: PASS
++- PR merge withheld until explicit EOD approval: PASS
+diff --git a/docs_build/dev/reports/PR_26171_GAMMA_010-replace-main-branch-guard-with-workstream-guard-manual-validation-notes.md b/docs_build/dev/reports/PR_26171_GAMMA_010-replace-main-branch-guard-with-workstream-guard-manual-validation-notes.md
 new file mode 100644
-index 000000000..35e29192e
+index 000000000..68708a279
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-manual-validation-notes.md
-@@ -0,0 +1,22 @@
-+# PR_26171_BETA_073-message-tts-table-ui-correction Manual Validation Notes
++++ b/docs_build/dev/reports/PR_26171_GAMMA_010-replace-main-branch-guard-with-workstream-guard-manual-validation-notes.md
+@@ -0,0 +1,27 @@
++# Manual Validation Notes - PR_26171_GAMMA_010
 +
-+Generated: 2026-06-20T23:06:25.711Z
-+Team ownership: BETA
-+Branch: pr/26171-BETA-073-message-tts-table-ui-correction
++## Scope Review
 +
-+## Manual Review
++Reviewed the governance docs after edit:
++- `docs_build/dev/PROJECT_INSTRUCTIONS.md`
++- `docs_build/dev/PROJECT_MULTI_PC.txt`
 +
-+- Reviewed `src/shared/toolbox/tool-metadata-inventory.js` to confirm Text To Speech uses the active `text-to-speech/index.html` registry entry and beta release metadata.
-+- Reviewed `toolbox/text-to-speech/index.html` to confirm the summary uses only Theme V2 reusable classes and keeps all live data hooks.
-+- Reviewed `toolbox/messages/index.html` and `toolbox/messages/messages.js` to confirm Add Message/Add Part are table-row workflows and Message Parts remain child table content.
-+- Reviewed targeted Playwright coverage for Message Studio TTS Profile dropdown compatibility.
++Confirmed:
++- `MAIN BRANCH EXECUTION GUARD` is no longer present.
++- `WORKSTREAM BRANCH EXECUTION GUARD` is present.
++- The main-only BUILD start hard stop is gone.
++- Execution is allowed from `main` or approved team workstream branches.
++- Approved branch format is `team/<TEAM>/<workstream>`.
++- Hard stops remain for dirty repo, unapproved branch, TEAM mismatch, cross-team scope, detached HEAD, local/origin mismatch, and unpushed commits.
++- GitHub authoritative sync governance remains present.
++- Local-only commits remain prohibited.
++- Runtime code was not changed.
++- EOD merge approval remains owner-controlled and requires explicit approval.
 +
-+## Automated Browser Validation Used As Manual Proxy
++## Validation Notes
 +
-+- TTS validation clicked through the toolbox index Text To Speech card and confirmed the active path.
-+- TTS validation exercised the TTS Studio page, summary hooks, profile/emotion table behavior, and speech synthesis.
-+- Message validation exercised add/edit message rows, add/edit part rows, name-cell expansion, part-count non-expansion, message playback, part playback, and unavailable audio errors.
++Static validation was sufficient because this PR updates governance documentation only.
 +
-+## Not Performed
-+
-+- No unscripted manual browser session was run beyond Playwright browser validation.
-diff --git a/docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-message-parent-child-table-checklist.md b/docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-message-parent-child-table-checklist.md
++Skipped lanes:
++- Playwright was not run because no UI route, component, or browser behavior changed.
++- Samples smoke was not run because samples are outside the requested docs/static validation scope.
+diff --git a/docs_build/dev/reports/PR_26171_GAMMA_010-replace-main-branch-guard-with-workstream-guard.md b/docs_build/dev/reports/PR_26171_GAMMA_010-replace-main-branch-guard-with-workstream-guard.md
 new file mode 100644
-index 000000000..558c4dc82
+index 000000000..498221cc6
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-message-parent-child-table-checklist.md
-@@ -0,0 +1,17 @@
-+# PR_26171_BETA_073-message-tts-table-ui-correction Message Parent-Child Table Checklist
++++ b/docs_build/dev/reports/PR_26171_GAMMA_010-replace-main-branch-guard-with-workstream-guard.md
+@@ -0,0 +1,64 @@
++# PR_26171_GAMMA_010-replace-main-branch-guard-with-workstream-guard
 +
-+Generated: 2026-06-20T23:06:25.711Z
-+Team ownership: BETA
++## Summary
 +
-+- PASS: Parent table remains `Messages`.
-+- PASS: Message name cell owns expand/collapse and exposes `aria-expanded`.
-+- PASS: Keyboard Enter/Space on the message name cell toggles the child table.
-+- PASS: Clicking the Parts count cell does not expand the child table.
-+- PASS: Child table remains `Message Parts` with ordered parts.
-+- PASS: Child table includes Order, Text, Emotion, TTS Profile, Status, and Actions columns.
-+- PASS: Add Message is an inline table action row and opens an inline add row.
-+- PASS: Edit Message opens an inline edit row.
-+- PASS: Add Part is an inline child-table action row and opens an inline add row.
-+- PASS: Edit Part opens an inline edit row.
-+- PASS: Play Message, Play Part, and Stop remain visible and validated.
-+- PASS: No separate Emotion Studio was introduced.
-diff --git a/docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-tts-summary-layout-checklist.md b/docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-tts-summary-layout-checklist.md
-new file mode 100644
-index 000000000..dc2c2da2f
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-tts-summary-layout-checklist.md
-@@ -0,0 +1,10 @@
-+# PR_26171_BETA_073-message-tts-table-ui-correction TTS Summary Layout Checklist
++This PR replaces the main-only branch execution guard with a workstream branch execution guard.
 +
-+Generated: 2026-06-20T23:06:25.711Z
-+Team ownership: BETA
++Scope completed:
++- Replaced `MAIN BRANCH EXECUTION GUARD` with `WORKSTREAM BRANCH EXECUTION GUARD`.
++- Removed the main-only BUILD start hard stop.
++- Allowed execution from `main` or approved team workstream branches.
++- Added approved workstream branch format `team/<TEAM>/<workstream>`.
++- Preserved hard stops for dirty repo, unapproved branch, TEAM mismatch, cross-team scope, detached HEAD, local/origin mismatch, and unpushed commits.
++- Preserved GitHub authoritative workstream sync governance.
++- Preserved owner-controlled EOD merge approval.
++- Did not change runtime code.
 +
-+- PASS: TTS summary uses existing Theme V2 `content-cluster content-cluster--nowrap` classes.
-+- PASS: TTS summary uses existing `pill`, `mini-stat`, and `mini-stat--inline` classes.
-+- PASS: Summary row includes TTS Studio, Characters, TTS Profiles, Emotion Settings, Voices, and Engine items.
-+- PASS: The existing live data hooks remain: `data-tts-text-count`, `data-tts-profile-count`, `data-tts-emotion-count`, `data-tts-voice-count`, and `data-tts-engine-label`.
-+- PASS: No page-local CSS, tool-local CSS, inline style, or style block was added.
-diff --git a/docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-tts-tools-registration-checklist.md b/docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-tts-tools-registration-checklist.md
-new file mode 100644
-index 000000000..49234a385
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-tts-tools-registration-checklist.md
-@@ -0,0 +1,12 @@
-+# PR_26171_BETA_073-message-tts-table-ui-correction TTS Tools Registration Checklist
++## Start Gate
 +
-+Generated: 2026-06-20T23:06:25.711Z
-+Team ownership: BETA
++Instruction compliance start gate: PASS
 +
-+- PASS: Text To Speech metadata uses `path: text-to-speech`.
-+- PASS: Text To Speech metadata uses `entryPoint: text-to-speech/index.html`.
-+- PASS: Text To Speech metadata now uses `status: beta` and `releaseChannel: beta`.
-+- PASS: Toolbox index validation finds `Text To Speech` with href `/toolbox/text-to-speech/index.html`.
-+- PASS: Toolbox index validation finds `data-registered-tool-route=toolbox/text-to-speech/index.html`.
-+- PASS: Validation asserts no link targets `tools/text2speech`.
-+- PASS: No `tools/text2speech/` directory was created.
-diff --git a/docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-validation-report.md b/docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-validation-report.md
-new file mode 100644
-index 000000000..d3e85234c
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-validation-report.md
-@@ -0,0 +1,29 @@
-+# PR_26171_BETA_073-message-tts-table-ui-correction Validation Report
-+
-+Generated: 2026-06-20T23:06:25.711Z
-+Team ownership: BETA
-+Branch: pr/26171-BETA-073-message-tts-table-ui-correction
-+
-+## Required Validation
-+
-+- PASS: `npx playwright test tests/playwright/tools/TextToSpeechFunctional.spec.mjs`
-+  - 3 passed. Covers TTS page behavior, one-line summary row, toolbox registration path, and unavailable speech error.
-+- PASS: `node --test tests/tools/Text2SpeechShell.test.mjs`
-+  - 4 passed. Covers TTS shell/profile contract.
-+- PASS: `npx playwright test tests/playwright/tools/MessagesTool.spec.mjs --trace=off`
-+  - 2 passed. Covers Messages parent/child table, inline add/edit rows, TTS Profile dropdown compatibility, playback, and unavailable audio error.
-+- PASS: `npm run test:workspace-v2`
-+  - Legacy command name; user-facing product language is Project Workspace/Game Hub. Final rerun passed 5 workspace-contract tests.
-+- PASS: `git diff --check`
-+  - No whitespace errors; Git emitted line-ending normalization warnings only.
-+
-+## Additional Focused Sanity Validation
-+
-+- PASS: `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs -g "toolbox index shows wireframe" --trace=off`
-+  - 1 passed after updating expected toolbox counts for Text To Speech moving from planned/missing metadata into active beta registration.
-+
-+## Notes
-+
-+- Initial Message Studio validation exposed a missing Add Message control on empty tables; fixed and reran to PASS.
-+- Initial Project Workspace validation exposed stale toolbox count expectations; fixed and reran to PASS.
-+- Node emitted experimental SQLite warnings during relevant test runs; tests passed.
-diff --git a/docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction.md b/docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction.md
-new file mode 100644
-index 000000000..b6715055c
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction.md
-@@ -0,0 +1,44 @@
-+# PR_26171_BETA_073-message-tts-table-ui-correction
-+
-+Generated: 2026-06-20T23:06:25.711Z
-+Team ownership: BETA
-+Branch: pr/26171-BETA-073-message-tts-table-ui-correction
-+Base HEAD: eaee83f9327b336ec5679ebd591d94e50fab0523
-+origin/main at branch start: eaee83f9327b336ec5679ebd591d94e50fab0523
-+Ahead/behind before commit: 0	0
-+Spec source: latest user request in Codex session; no repository BUILD_PR doc for PR_26171_BETA_073 was found by targeted search.
-+
-+## Purpose
-+
-+Correct TTS and Message Studio UI alignment while preserving Theme V2, external JavaScript, existing Local API contracts, and server/API-backed product data ownership.
-+
-+## Requirement Checklist
-+
-+- PASS: TTS Studio appears on the toolbox index through the active registry path `toolbox/text-to-speech/index.html`.
-+- PASS: No `tools/text2speech/` path was created or linked.
-+- PASS: TTS summary uses a single Theme V2 inline row with TTS Studio, Characters, TTS Profiles, Emotion Settings, Voices, and Engine items.
-+- PASS: Message Studio keeps parent table `Messages`.
-+- PASS: Message name cell owns expand/collapse for the Message Parts child table; clicking the Parts count does not expand.
-+- PASS: Message Parts child table keeps ordered parts with Text, Emotion, TTS Profile, Status, and Actions.
-+- PASS: Add/Edit Message and Add/Edit Part remain inline row workflows.
-+- PASS: Play Message, Play Part, and Stop controls remain visible and validated.
-+- PASS: No separate Emotion Studio was created.
-+- PASS: No database tables or browser-owned product data source of truth were added.
-+- PASS: No inline styles, style blocks, inline event handlers, page-local CSS, or tool-local CSS were added.
-+
-+## Implementation Summary
-+
-+- Corrected Text To Speech registry metadata from uppercase `Beta` to authoritative `beta` release-channel metadata so the DB-backed toolbox registry exposes it as active/visible.
-+- Reworked the TTS summary from a five-card grid into a Theme V2 nowrap inline summary row.
-+- Moved Message Studio Add Message and Add Part actions into table rows.
-+- Tightened Message Studio expansion to the parent message name cell with keyboard support.
-+- Updated targeted and workspace tests for the corrected TTS registration and table behavior.
++- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`: PASS
++- Read `docs_build/dev/PROJECT_MULTI_PC.txt`: PASS
++- Checked out `main`: PASS
++- Pulled latest `main`: PASS
++- Verified current branch was `main` before creating PR branch: PASS
++- Verified repository was clean before creating PR branch: PASS
++- Verified `main` local/origin sync was `0 0`: PASS
++- Created PR branch from `main`: PASS
++- PR name includes TEAM token `GAMMA`: PASS
++- TEAM ownership verified as Gamma governance/instruction-hardening scope: PASS
++- Base `main` commit: `e8845dae6`
 +
 +## Git Workflow
 +
-+- Current branch: pr/26171-BETA-073-message-tts-table-ui-correction
-+- Created branch: `pr/26171-BETA-073-message-tts-table-ui-correction`
-+- Push result: pending until commit/push step completes.
-+- PR URL: pending until PR creation step completes.
-+- Merge result: pending until PR merge step completes.
-+- Final main commit: pending until post-merge sync completes.
-diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index e7060b771..3f04bddfd 100644
---- a/docs_build/dev/reports/codex_changed_files.txt
-+++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,6 +1,3 @@
--docs_build/dev/reports/PR_26171_BETA_071-tts-profile-emotion-table-manual-validation-notes.md
--docs_build/dev/reports/PR_26171_BETA_071-tts-profile-emotion-table-validation.md
--docs_build/dev/reports/PR_26171_BETA_071-tts-profile-emotion-table.md
- docs_build/dev/reports/codex_changed_files.txt
- docs_build/dev/reports/codex_review.diff
- docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -13,15 +10,25 @@ docs_build/dev/reports/incremental_validation_report.md
- docs_build/dev/reports/lane_compilation_report.md
- docs_build/dev/reports/lane_deduplication_report.md
- docs_build/dev/reports/lane_input_validation_report.md
-+docs_build/dev/reports/lane_manifests/workspace-contract.json
- docs_build/dev/reports/lane_runtime_optimization_report.md
- docs_build/dev/reports/lane_snapshot_report.md
-+docs_build/dev/reports/lane_snapshots/workspace-contract.json
- docs_build/dev/reports/lane_warm_start_report.md
-+docs_build/dev/reports/lane_warm_starts/workspace-contract.json
- docs_build/dev/reports/monolith_trigger_removal_report.md
- docs_build/dev/reports/persistent_lane_manifest_report.md
- docs_build/dev/reports/playwright_discovery_ownership_report.md
- docs_build/dev/reports/playwright_discovery_scope_report.md
- docs_build/dev/reports/playwright_structure_audit.md
- docs_build/dev/reports/playwright_v8_coverage_report.txt
-+docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-instruction-compliance-checklist.md
-+docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-manual-validation-notes.md
-+docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-message-parent-child-table-checklist.md
-+docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-tts-summary-layout-checklist.md
-+docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-tts-tools-registration-checklist.md
-+docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-validation-report.md
-+docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction.md
- docs_build/dev/reports/retry_suppression_report.md
- docs_build/dev/reports/slow_path_pruning_report.md
- docs_build/dev/reports/static_validation_report.md
-@@ -31,5 +38,11 @@ docs_build/dev/reports/test_cleanup_routing_report.md
- docs_build/dev/reports/testing_lane_execution_report.md
- docs_build/dev/reports/validation_cache_report.md
- docs_build/dev/reports/zero_browser_preflight_report.md
-+src/shared/toolbox/tool-metadata-inventory.js
-+tests/playwright/tools/MessagesTool.spec.mjs
-+tests/playwright/tools/RootToolsFutureState.spec.mjs
- tests/playwright/tools/TextToSpeechFunctional.spec.mjs
--toolbox/text-to-speech/text2speech.js
-+tests/playwright/tools/ToolboxRoutePages.spec.mjs
-+toolbox/messages/index.html
-+toolbox/messages/messages.js
-+toolbox/text-to-speech/index.html
-diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 9e74b4c4c..59de15fb6 100644
---- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,7 +6,9 @@ Missing changed runtime JS files are WARN, not FAIL.
- Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
-
- Changed runtime JS files considered:
--(0%) toolbox/text-to-speech/text2speech.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) toolbox/messages/messages.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-
- Guardrail warnings:
--(0%) toolbox/text-to-speech/text2speech.js - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) toolbox/messages/messages.js - WARNING: changed runtime JS file missing from coverage; advisory only
-diff --git a/docs_build/dev/reports/dependency_gating_report.md b/docs_build/dev/reports/dependency_gating_report.md
-index 4c9cc3405..3c18f9166 100644
---- a/docs_build/dev/reports/dependency_gating_report.md
-+++ b/docs_build/dev/reports/dependency_gating_report.md
-@@ -1,6 +1,6 @@
- # Dependency Gating Report
-
--Generated: 2026-06-20T22:24:21.160Z
-+Generated: 2026-06-20T22:58:20.683Z
- Status: PASS
-
- ## Gate Order
-diff --git a/docs_build/dev/reports/dependency_hydration_reuse_report.md b/docs_build/dev/reports/dependency_hydration_reuse_report.md
-index 838bb8cb9..88a4c3471 100644
---- a/docs_build/dev/reports/dependency_hydration_reuse_report.md
-+++ b/docs_build/dev/reports/dependency_hydration_reuse_report.md
-@@ -1,22 +1,22 @@
- # Dependency Hydration Reuse Report
-
--Generated: 2026-06-20T22:24:21.161Z
-+Generated: 2026-06-20T22:58:20.684Z
- Status: PASS
-
- ## Summary
-
--Reused dependency hydration: 1
--Invalidated dependency hydration: 0
-+Reused dependency hydration: 0
-+Invalidated dependency hydration: 1
- Generated dependency hydration: 0
--Prevented dependency graph hydration: 1
--Prevented helper resolution passes: 4
-+Prevented dependency graph hydration: 0
-+Prevented helper resolution passes: 0
- Prevented fixture ownership traversal: 0
-
- ## Hydration Decisions
-
- | Lane | Status | Helpers | Fixtures | Imports | Dependency Hydration Hash | Reason |
- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | REUSED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 355ba7a85dbb3cdb | Dependency hydration reused from validated warm-start state. |
-+| workspace-contract | INVALIDATED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 355ba7a85dbb3cdb | Dependency hydration was refreshed after warm-start invalidation. |
-
- ## Safeguards
-
-diff --git a/docs_build/dev/reports/execution_graph_reuse_report.md b/docs_build/dev/reports/execution_graph_reuse_report.md
-index 2c253ab11..977ef5c81 100644
---- a/docs_build/dev/reports/execution_graph_reuse_report.md
-+++ b/docs_build/dev/reports/execution_graph_reuse_report.md
-@@ -1,22 +1,22 @@
- # Execution Graph Reuse Report
-
--Generated: 2026-06-20T22:24:21.162Z
-+Generated: 2026-06-20T22:58:20.684Z
- Status: PASS
-
- ## Summary
-
--Reused execution graphs: 1
--Prevented graph rebuilds: 1
--Prevented redundant dependency traversal: 1
--Prevented fixture/helper graph assembly: 4
--Prevented manifest traversal: 1
--Prevented targeted scheduling work: 1
-+Reused execution graphs: 0
-+Prevented graph rebuilds: 0
-+Prevented redundant dependency traversal: 0
-+Prevented fixture/helper graph assembly: 0
-+Prevented manifest traversal: 0
-+Prevented targeted scheduling work: 0
-
- ## Execution Graph Decisions
-
- | Lane | Status | Snapshot Status | Execution Graph Hash | Reason |
- | --- | --- | --- | --- | --- |
--| workspace-contract | REUSED | REUSED | 38fe84ad09ebf228 | Lane snapshot is part of the selected targeted execution graph. |
-+| workspace-contract | INVALIDATED | INVALIDATED | 744556e5d675e213 | Lane snapshot is part of the selected targeted execution graph. |
-
- ## Safeguards
-
-diff --git a/docs_build/dev/reports/failure_fingerprint_report.md b/docs_build/dev/reports/failure_fingerprint_report.md
-index 8afe00bfb..5e9437dba 100644
---- a/docs_build/dev/reports/failure_fingerprint_report.md
-+++ b/docs_build/dev/reports/failure_fingerprint_report.md
-@@ -1,6 +1,6 @@
- # Failure Fingerprint Report
-
--Generated: 2026-06-20T22:25:27.830Z
-+Generated: 2026-06-20T22:59:39.176Z
- Status: PASS
-
- ## Summary
-diff --git a/docs_build/dev/reports/filesystem_scan_reduction_report.md b/docs_build/dev/reports/filesystem_scan_reduction_report.md
-index a0fa1eb2c..4164a7dd3 100644
---- a/docs_build/dev/reports/filesystem_scan_reduction_report.md
-+++ b/docs_build/dev/reports/filesystem_scan_reduction_report.md
-@@ -1,6 +1,6 @@
- # Filesystem Scan Reduction Report
-
--Generated: 2026-06-20T22:24:21.137Z
-+Generated: 2026-06-20T22:58:20.655Z
- Status: PASS
-
- ## Scan Enforcement
-diff --git a/docs_build/dev/reports/incremental_validation_report.md b/docs_build/dev/reports/incremental_validation_report.md
-index a9f7bde56..efee248fd 100644
---- a/docs_build/dev/reports/incremental_validation_report.md
-+++ b/docs_build/dev/reports/incremental_validation_report.md
-@@ -1,24 +1,24 @@
- # Incremental Validation Report
-
--Generated: 2026-06-20T22:24:21.163Z
-+Generated: 2026-06-20T22:58:20.685Z
- Status: PASS
-
- ## Reuse Summary
-
--Reused manifests: 1
--Invalidated manifests: 0
-+Reused manifests: 0
-+Invalidated manifests: 1
- Generated manifests: 0
- Skipped manifests: 0
--Prevented lane regeneration: 1
--Prevented discovery scans: 1
--Prevented helper resolution passes: 4
-+Prevented lane regeneration: 0
-+Prevented discovery scans: 0
-+Prevented helper resolution passes: 0
- Prevented fixture resolution passes: 0
-
- ## Incremental Decisions
-
- | Lane | Decision | Invalidated By | Runtime Savings Observation |
- | --- | --- | --- | --- |
--| workspace-contract | REUSED | unchanged inputs | Reused 1 test input(s), 4 helper(s), and 0 fixture(s). |
-+| workspace-contract | INVALIDATED | Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. | Manifest was regenerated or skipped; no reuse savings for this lane. |
-
- ## Invalidation Rules
-
-diff --git a/docs_build/dev/reports/lane_compilation_report.md b/docs_build/dev/reports/lane_compilation_report.md
-index c8b1bb57c..9e3895ceb 100644
---- a/docs_build/dev/reports/lane_compilation_report.md
-+++ b/docs_build/dev/reports/lane_compilation_report.md
-@@ -1,6 +1,6 @@
- # Lane Compilation Report
-
--Generated: 2026-06-20T22:24:21.160Z
-+Generated: 2026-06-20T22:58:20.683Z
- Status: PASS
-
- ## Lane Graph
-diff --git a/docs_build/dev/reports/lane_deduplication_report.md b/docs_build/dev/reports/lane_deduplication_report.md
-index d35291e9f..5b55db348 100644
---- a/docs_build/dev/reports/lane_deduplication_report.md
-+++ b/docs_build/dev/reports/lane_deduplication_report.md
-@@ -1,6 +1,6 @@
- # Lane Deduplication Report
-
--Generated: 2026-06-20T22:24:21.160Z
-+Generated: 2026-06-20T22:58:20.683Z
- Status: PASS
-
- ## Summary
-diff --git a/docs_build/dev/reports/lane_input_validation_report.md b/docs_build/dev/reports/lane_input_validation_report.md
-index 049c2bfc9..998c71c08 100644
---- a/docs_build/dev/reports/lane_input_validation_report.md
-+++ b/docs_build/dev/reports/lane_input_validation_report.md
-@@ -1,6 +1,6 @@
- # Lane Input Validation Report
-
--Generated: 2026-06-20T22:24:21.163Z
-+Generated: 2026-06-20T22:58:20.685Z
- Status: PASS
-
- ## Input Files
-diff --git a/docs_build/dev/reports/lane_manifests/workspace-contract.json b/docs_build/dev/reports/lane_manifests/workspace-contract.json
-index 106a4a6e8..9d5178fda 100644
---- a/docs_build/dev/reports/lane_manifests/workspace-contract.json
-+++ b/docs_build/dev/reports/lane_manifests/workspace-contract.json
-@@ -11,7 +11,7 @@
-     "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
-     "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
-     "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
--    "tests/playwright/tools/RootToolsFutureState.spec.mjs": "39da9b89bd793366"
-+    "tests/playwright/tools/RootToolsFutureState.spec.mjs": "7094370f23d8085e"
-   },
-   "fixtures": [],
-   "helpers": [
-@@ -30,15 +30,15 @@
-     "tests/helpers/playwrightV8CoverageReporter.mjs",
-     "tests/helpers/workspaceV2CoverageReporter.mjs"
-   ],
--  "inputHash": "3511a9e9fca6b605",
-+  "inputHash": "63bec7503b20624b",
-   "lane": "workspace-contract",
-   "laneDefinitionHash": "95059517ac8a6497",
--  "manifestHash": "8ab2c33d83a49b9f",
-+  "manifestHash": "1291241716cd7ab6",
-   "ownership": "tools",
-   "tests": [
-     "tests/playwright/tools/RootToolsFutureState.spec.mjs"
-   ],
-   "version": 1,
--  "generatedAt": "2026-06-20T22:00:43.239Z",
-+  "generatedAt": "2026-06-20T22:58:19.300Z",
-   "source": "generated"
- }
-diff --git a/docs_build/dev/reports/lane_runtime_optimization_report.md b/docs_build/dev/reports/lane_runtime_optimization_report.md
-index a0a78cdc0..8667df0bd 100644
---- a/docs_build/dev/reports/lane_runtime_optimization_report.md
-+++ b/docs_build/dev/reports/lane_runtime_optimization_report.md
-@@ -1,16 +1,16 @@
- # Lane Runtime Optimization Report
-
--Generated: 2026-06-20T22:24:21.161Z
-+Generated: 2026-06-20T22:58:20.683Z
- Status: PASS
-
- ## Runtime Cost Summary
-
- Reused runtime sessions: 0
--Reused lane snapshots: 1
--Reused warm-start lanes: 1
--Reused dependency hydration: 1
--Prevented graph rebuilds: 1
--Prevented redundant initialization: 1
-+Reused lane snapshots: 0
-+Reused warm-start lanes: 0
-+Reused dependency hydration: 0
-+Prevented graph rebuilds: 0
-+Prevented redundant initialization: 0
- Prevented redundant browser launches: 0
- Prevented redundant lane execution: 14
- Baseline Playwright/browser launches: 1
-@@ -28,7 +28,7 @@ No zero-browser, compilation, or dependency blockers were found.
-
- | Lane | Snapshot | Warm Start | Hydration | Baseline Browser Launches | Scheduled Browser Launches | Commands | Reason |
- | --- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | REUSED | REUSED | REUSED | 1 | 1 | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
-+| workspace-contract | INVALIDATED | INVALIDATED | INVALIDATED | 1 | 1 | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
-
- ## Runtime Savings Observations
-
-diff --git a/docs_build/dev/reports/lane_snapshot_report.md b/docs_build/dev/reports/lane_snapshot_report.md
-index 81ff64d5f..190ba8c41 100644
---- a/docs_build/dev/reports/lane_snapshot_report.md
-+++ b/docs_build/dev/reports/lane_snapshot_report.md
-@@ -1,23 +1,23 @@
- # Lane Snapshot Report
-
--Generated: 2026-06-20T22:24:21.161Z
-+Generated: 2026-06-20T22:58:20.684Z
- Status: PASS
- Snapshot directory: docs_build/dev/reports/lane_snapshots
-
- ## Summary
-
--Reused lane snapshots: 1
--Invalidated snapshots: 0
-+Reused lane snapshots: 0
-+Invalidated snapshots: 1
- Generated snapshots: 0
- Skipped snapshots: 0
--Prevented graph rebuilds: 1
--Prevented manifest traversal: 1
-+Prevented graph rebuilds: 0
-+Prevented manifest traversal: 0
-
- ## Snapshot Decisions
-
- | Lane | Status | Snapshot Path | Manifest Hash | Dependency Graph Hash | Helper Graph Hash | Fixture Graph Hash | Runtime Config Hash | Execution Graph Hash | Snapshot Hash | Reason |
- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | REUSED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | 8ab2c33d83a49b9f | 53e56ebae6e84541 | 7d3db838f9f780e0 | 6c4fac7630b0b6f3 | e5ac9cbc103c3984 | 38fe84ad09ebf228 | 9a4abbfe1a0c2ddf | Targeted files, manifest, dependency graph, helper graph, fixture graph, ownership, lane config, and runtime config are unchanged. |
-+| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | 1291241716cd7ab6 | 53e56ebae6e84541 | 7d3db838f9f780e0 | 6c4fac7630b0b6f3 | e5ac9cbc103c3984 | 744556e5d675e213 | 7135cba84942c652 | Lane snapshot executionGraphHash changed for workspace-contract.; Lane snapshot inputHash changed for workspace-contract.; Lane snapshot manifestHash changed for workspace-contract.; Lane snapshot snapshotHash changed for workspace-contract.; Lane snapshot warmStartHash changed for workspace-contract. |
-
- ## Snapshot Validation Findings
-
-diff --git a/docs_build/dev/reports/lane_snapshots/workspace-contract.json b/docs_build/dev/reports/lane_snapshots/workspace-contract.json
-index 7469a1091..ac4f12de1 100644
---- a/docs_build/dev/reports/lane_snapshots/workspace-contract.json
-+++ b/docs_build/dev/reports/lane_snapshots/workspace-contract.json
-@@ -26,7 +26,7 @@
-     ]
-   },
-   "dependencyGraphHash": "53e56ebae6e84541",
--  "executionGraphHash": "38fe84ad09ebf228",
-+  "executionGraphHash": "744556e5d675e213",
-   "fixtureGraph": {
-     "fixtureHashes": {},
-     "fixtures": []
-@@ -47,7 +47,7 @@
-     ]
-   },
-   "helperGraphHash": "7d3db838f9f780e0",
--  "inputHash": "3511a9e9fca6b605",
-+  "inputHash": "63bec7503b20624b",
-   "lane": "workspace-contract",
-   "laneCompilationStatus": "PASS",
-   "laneDefinitionHash": "95059517ac8a6497",
-@@ -61,7 +61,7 @@
-       "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
-       "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
-       "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
--      "tests/playwright/tools/RootToolsFutureState.spec.mjs": "39da9b89bd793366"
-+      "tests/playwright/tools/RootToolsFutureState.spec.mjs": "7094370f23d8085e"
-     },
-     "fixtures": [],
-     "helpers": [
-@@ -80,14 +80,14 @@
-       "tests/helpers/playwrightV8CoverageReporter.mjs",
-       "tests/helpers/workspaceV2CoverageReporter.mjs"
-     ],
--    "manifestHash": "8ab2c33d83a49b9f",
-+    "manifestHash": "1291241716cd7ab6",
-     "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
-     "source": "generated",
-     "tests": [
-       "tests/playwright/tools/RootToolsFutureState.spec.mjs"
-     ]
-   },
--  "manifestHash": "8ab2c33d83a49b9f",
-+  "manifestHash": "1291241716cd7ab6",
-   "ownership": "tools",
-   "runtimeConfiguration": {
-     "affectedSurface": "Root tools future-state navigation and Tool Template V2 contract",
-@@ -114,8 +114,8 @@
-     "requiresSamplesFlag": false
-   },
-   "runtimeConfigurationHash": "e5ac9cbc103c3984",
--  "snapshotHash": "9a4abbfe1a0c2ddf",
-+  "snapshotHash": "7135cba84942c652",
-   "version": 1,
--  "warmStartHash": "6531ee5f63e19fe6",
--  "generatedAt": "2026-06-20T22:00:44.895Z"
-+  "warmStartHash": "fe298d7913eac5ca",
-+  "generatedAt": "2026-06-20T22:58:20.677Z"
- }
-diff --git a/docs_build/dev/reports/lane_warm_start_report.md b/docs_build/dev/reports/lane_warm_start_report.md
-index 3f9c56257..806f7dbc5 100644
---- a/docs_build/dev/reports/lane_warm_start_report.md
-+++ b/docs_build/dev/reports/lane_warm_start_report.md
-@@ -1,23 +1,23 @@
- # Lane Warm-Start Report
-
--Generated: 2026-06-20T22:24:21.161Z
-+Generated: 2026-06-20T22:58:20.684Z
- Status: PASS
- Warm-start directory: docs_build/dev/reports/lane_warm_starts
-
- ## Summary
-
--Reused warm-start lanes: 1
--Invalidated warm-start states: 0
-+Reused warm-start lanes: 0
-+Invalidated warm-start states: 1
- Generated warm-start states: 0
- Skipped warm-start states: 0
--Prevented redundant initialization: 1
--Prevented lane graph assembly: 1
-+Prevented redundant initialization: 0
-+Prevented lane graph assembly: 0
-
- ## Warm-Start Decisions
-
- | Lane | Status | Warm-Start Path | Manifest Hash | Warm-Start Hash | Dependency Hydration Hash | Reason |
- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | REUSED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | 8ab2c33d83a49b9f | 6531ee5f63e19fe6 | 355ba7a85dbb3cdb | Manifest inputs, dependency graph, ownership metadata, helper placement, fixture placement, and lane configuration are unchanged. |
-+| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | 1291241716cd7ab6 | fe298d7913eac5ca | 355ba7a85dbb3cdb | Warm-start inputHash changed for workspace-contract.; Warm-start manifestHash changed for workspace-contract.; Warm-start warmStartHash changed for workspace-contract. |
-
- ## Fast-Fail Safeguards
-
-diff --git a/docs_build/dev/reports/lane_warm_starts/workspace-contract.json b/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
-index 4fc1c814c..fc55da06b 100644
---- a/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
-+++ b/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
-@@ -39,15 +39,15 @@
-     ]
-   },
-   "dependencyHydrationHash": "355ba7a85dbb3cdb",
--  "inputHash": "3511a9e9fca6b605",
-+  "inputHash": "63bec7503b20624b",
-   "lane": "workspace-contract",
-   "laneConfigHash": "09eaf9063f7694e3",
-   "laneDefinitionHash": "95059517ac8a6497",
--  "manifestHash": "8ab2c33d83a49b9f",
-+  "manifestHash": "1291241716cd7ab6",
-   "ownership": "tools",
--  "warmStartHash": "6531ee5f63e19fe6",
-+  "warmStartHash": "fe298d7913eac5ca",
-   "version": 1,
--  "generatedAt": "2026-06-20T22:00:43.249Z",
-+  "generatedAt": "2026-06-20T22:58:19.312Z",
-   "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
-   "sourceManifest": "generated"
- }
-diff --git a/docs_build/dev/reports/monolith_trigger_removal_report.md b/docs_build/dev/reports/monolith_trigger_removal_report.md
-index 81ed18be6..7141f5d34 100644
---- a/docs_build/dev/reports/monolith_trigger_removal_report.md
-+++ b/docs_build/dev/reports/monolith_trigger_removal_report.md
-@@ -1,6 +1,6 @@
- # Monolith Trigger Removal Report
-
--Generated: 2026-06-20T22:25:27.832Z
-+Generated: 2026-06-20T22:59:39.177Z
- Status: PASS
-
- ## Removed Broad Execution Triggers
-diff --git a/docs_build/dev/reports/persistent_lane_manifest_report.md b/docs_build/dev/reports/persistent_lane_manifest_report.md
-index 0ec1eaab7..f4baf21cb 100644
---- a/docs_build/dev/reports/persistent_lane_manifest_report.md
-+++ b/docs_build/dev/reports/persistent_lane_manifest_report.md
-@@ -1,27 +1,27 @@
- # Persistent Lane Manifest Report
-
--Generated: 2026-06-20T22:24:21.162Z
-+Generated: 2026-06-20T22:58:20.685Z
- Status: PASS
- Manifest directory: docs_build/dev/reports/lane_manifests
-
- ## Summary
-
--Reused manifests: 1
--Invalidated manifests: 0
-+Reused manifests: 0
-+Invalidated manifests: 1
- Generated manifests: 0
--Prevented discovery scans: 1
-+Prevented discovery scans: 0
-
- ## Manifest Events
-
- | Lane | Status | Manifest Path | Input Hash | Manifest Hash | Reason |
- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | REUSED | docs_build/dev/reports/lane_manifests/workspace-contract.json | 3511a9e9fca6b605 | 8ab2c33d83a49b9f | Inputs unchanged; persisted lane manifest reused. |
-+| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_manifests/workspace-contract.json | 63bec7503b20624b | 1291241716cd7ab6 | Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. |
-
- ## Persisted Manifest Files
-
- | Lane | Ownership | Source | Tests | Helpers | Fixtures | Dependency Graph Hash | Manifest Hash |
- | --- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | tools | persistent | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 53e56ebae6e84541 | 8ab2c33d83a49b9f |
-+| workspace-contract | tools | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 53e56ebae6e84541 | 1291241716cd7ab6 |
-
- ## Fast-Fail Enforcement
-
-diff --git a/docs_build/dev/reports/playwright_discovery_ownership_report.md b/docs_build/dev/reports/playwright_discovery_ownership_report.md
-index a27d0ea35..977875caf 100644
---- a/docs_build/dev/reports/playwright_discovery_ownership_report.md
-+++ b/docs_build/dev/reports/playwright_discovery_ownership_report.md
-@@ -1,6 +1,6 @@
- # Playwright Discovery Ownership Report
-
--Generated: 2026-06-20T22:24:21.133Z
-+Generated: 2026-06-20T22:58:20.646Z
- Status: PASS
-
- ## Discovery-Time Ownership
-diff --git a/docs_build/dev/reports/playwright_discovery_scope_report.md b/docs_build/dev/reports/playwright_discovery_scope_report.md
-index 15b452c5f..69c83d957 100644
---- a/docs_build/dev/reports/playwright_discovery_scope_report.md
-+++ b/docs_build/dev/reports/playwright_discovery_scope_report.md
-@@ -1,6 +1,6 @@
- # Playwright Discovery Scope Report
-
--Generated: 2026-06-20T22:24:21.135Z
-+Generated: 2026-06-20T22:58:20.652Z
- Status: PASS
- Scoped discovery: Yes
-
-diff --git a/docs_build/dev/reports/playwright_structure_audit.md b/docs_build/dev/reports/playwright_structure_audit.md
-index 949ae2337..392a08ee3 100644
---- a/docs_build/dev/reports/playwright_structure_audit.md
-+++ b/docs_build/dev/reports/playwright_structure_audit.md
-@@ -1,6 +1,6 @@
- # Playwright Structure Audit
-
--Generated: 2026-06-20T22:24:21.122Z
-+Generated: 2026-06-20T22:58:20.624Z
- Status: PASS
-
- ## Lane Directories
-diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 7afa51aac..94d5e709f 100644
---- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
-+++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -12,44 +12,33 @@ Note: entry percentages use function coverage when available, otherwise line cov
- Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
-
- Exercised tool entry points detected:
--(71%) Toolbox Index - exercised 10 runtime JS files
-+(70%) Toolbox Index - exercised 3 runtime JS files
- (0%) Tool Template V2 - not exercised by this Playwright run
--(61%) Theme V2 Shared JS - exercised 7 runtime JS files
-+(72%) Theme V2 Shared JS - exercised 1 runtime JS files
-
- Changed runtime JS files covered:
--(0%) toolbox/text-to-speech/text2speech.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) toolbox/messages/messages.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-
- Files with executed line/function counts where available:
--(14%) assets/theme-v2/js/account-auth-service.js - executed lines 64/64; executed functions 1/7
--(14%) assets/theme-v2/js/admin-setup-actions.js - executed lines 55/55; executed functions 1/7
--(18%) assets/theme-v2/js/account-page-data.js - executed lines 150/150; executed functions 3/17
--(20%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 2/10
--(25%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 1/4
- (25%) src/api/session-api-client.js - executed lines 68/68; executed functions 3/12
--(29%) src/engine/input/NormalizedInputRegistry.js - executed lines 341/341; executed functions 6/21
--(33%) src/api/admin-setup-api-client.js - executed lines 13/13; executed functions 1/3
- (33%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
--(56%) toolbox/colors/colors.js - executed lines 1848/1848; executed functions 115/204
--(58%) src/api/server-api-client.js - executed lines 167/167; executed functions 11/19
--(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 204/204; executed functions 9/14
--(64%) toolbox/controls/controls.js - executed lines 610/610; executed functions 36/56
-+(44%) src/api/server-api-client.js - executed lines 167/167; executed functions 8/18
-+(48%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 11/23
- (65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
- (67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
- (67%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 20/20; executed functions 2/3
--(71%) toolbox/game-workspace/game-workspace.js - executed lines 472/472; executed functions 32/45
--(74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 67/90
--(89%) toolbox/tools-page-accordions.js - executed lines 1156/1156; executed functions 105/118
--(90%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 26/29
--(91%) toolbox/game-design/game-design.js - executed lines 254/254; executed functions 21/23
--(94%) assets/theme-v2/js/marketplace-page.js - executed lines 170/170; executed functions 16/17
--(100%) src/api/marketplace-api-client.js - executed lines 16/16; executed functions 3/3
--(100%) toolbox/colors/palette-api-client.js - executed lines 28/28; executed functions 4/4
--(100%) toolbox/controls/controls-api-client.js - executed lines 33/33; executed functions 5/5
--(100%) toolbox/game-design/game-design-api-client.js - executed lines 13/13; executed functions 2/2
-+(72%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 65/90
-+(74%) toolbox/tools-page-accordions.js - executed lines 1156/1156; executed functions 81/109
-
- Uncovered or low-coverage changed JS files:
--(0%) toolbox/text-to-speech/text2speech.js - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) toolbox/messages/messages.js - WARNING: uncovered changed runtime JS file; advisory only
-
- Changed JS files considered:
-+(0%) src/shared/toolbox/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/MessagesTool.spec.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
- (0%) tests/playwright/tools/TextToSpeechFunctional.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) toolbox/text-to-speech/text2speech.js - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
-+(0%) toolbox/messages/messages.js - changed JS file not collected as browser runtime coverage
-diff --git a/docs_build/dev/reports/retry_suppression_report.md b/docs_build/dev/reports/retry_suppression_report.md
-index 05653a228..b85b2ce3f 100644
---- a/docs_build/dev/reports/retry_suppression_report.md
-+++ b/docs_build/dev/reports/retry_suppression_report.md
-@@ -1,6 +1,6 @@
- # Retry Suppression Report
-
--Generated: 2026-06-20T22:25:27.830Z
-+Generated: 2026-06-20T22:59:39.176Z
- Status: PASS
-
- ## Summary
-diff --git a/docs_build/dev/reports/slow_path_pruning_report.md b/docs_build/dev/reports/slow_path_pruning_report.md
-index 35ae65aca..4aa32ba0e 100644
---- a/docs_build/dev/reports/slow_path_pruning_report.md
-+++ b/docs_build/dev/reports/slow_path_pruning_report.md
-@@ -1,19 +1,19 @@
- # Slow Path Pruning Report
-
--Generated: 2026-06-20T22:25:27.832Z
-+Generated: 2026-06-20T22:59:39.177Z
- Status: PASS
- Source timing evidence: docs_build/dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
-
- ## Before / After Runtime Observations
-
- PR_26146_038 measured lane elapsed time: 169.71s
--Current measured lane elapsed time: 66.64s
-+Current measured lane elapsed time: 78.45s
- PR_26146_038 actual browser launches: 4
- Current actual browser launches: 1
- Accidental no-argument browser launches prevented: 5
- Reduced Workspace lane nested launches: 1
--Reused dependency hydration: 1
--Reused snapshots: 1
-+Reused dependency hydration: 0
-+Reused snapshots: 0
- Validation cache hits: 18
-
- ## Slow Paths Optimized
-@@ -31,11 +31,11 @@ Validation cache hits: 18
- | PR_26146_038 | tool-runtime | 19.10s | Asset Manager V2 temporary UAT context |
- | PR_26146_038 | integration | 14.50s | games index resolves Pong thumbnail from manifest preview role |
- | PR_26146_038 | tool-runtime | 10.10s | Preview Generator V2 real batch output |
--| current targeted run | workspace-contract | 14.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:662:1 > representative active tool pages align center cleanup and registry group colors |
-+| current targeted run | workspace-contract | 18.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:667:1 > representative active tool pages align center cleanup and registry group colors |
-+| current targeted run | workspace-contract | 17.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:565:1 > learn wireframe pages load with shared Theme V2 structure |
- | current targeted run | workspace-contract | 14.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes |
--| current targeted run | workspace-contract | 13.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:560:1 > learn wireframe pages load with shared Theme V2 structure |
--| current targeted run | workspace-contract | 10.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:480:1 > common header renders primary navigation order across active pages |
--| current targeted run | workspace-contract | 2.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:639:1 > tool template future-state page loads from root Theme V2 paths |
-+| current targeted run | workspace-contract | 10.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:485:1 > common header renders primary navigation order across active pages |
-+| current targeted run | workspace-contract | 2.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:644:1 > tool template future-state page loads from root Theme V2 paths |
-
- ## Guardrails
-
-diff --git a/docs_build/dev/reports/static_validation_report.md b/docs_build/dev/reports/static_validation_report.md
-index 6acb14443..3752d284f 100644
---- a/docs_build/dev/reports/static_validation_report.md
-+++ b/docs_build/dev/reports/static_validation_report.md
-@@ -1,6 +1,6 @@
- # Static Validation Report
-
--Generated: 2026-06-20T22:24:21.153Z
-+Generated: 2026-06-20T22:58:20.674Z
- Status: PASS
- Static only: No
- Dry run: No
-@@ -22,13 +22,13 @@ Reason: No deterministic static validation failure was found.
- | invalid filename detection | PASS | Covered by Playwright structure audit. |
- | missing import detection | PASS | Covered by Playwright structure audit relative import checks. |
- | missing fixture detection | PASS | No missing fixture findings. |
--| targeted file manifests | PASS | workspace-contract:8ab2c33d83a49b9f |
--| persistent lane manifests | PASS | workspace-contract:REUSED |
--| lane warm-start reuse | PASS | workspace-contract:REUSED |
--| dependency hydration reuse | PASS | workspace-contract:REUSED |
-+| targeted file manifests | PASS | workspace-contract:1291241716cd7ab6 |
-+| persistent lane manifests | PASS | workspace-contract:INVALIDATED |
-+| lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
-+| dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
- | lane input graph expansion | PASS | No inputs escaped manifest scope. |
- | scoped discovery targets | PASS | tests/playwright/tools/RootToolsFutureState.spec.mjs |
--| broad scan prevention | PASS | Discovery map read 0 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
-+| broad scan prevention | PASS | Discovery map read 5 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
- | invalid lane target detection | PASS | No invalid lane target findings. |
- | Windows quoting hazard detection | PASS | No shell-sensitive grep hazards found. |
- | duplicate lane registration detection | PASS | No duplicate lane registrations found. |
-diff --git a/docs_build/dev/reports/targeted_file_manifest_report.md b/docs_build/dev/reports/targeted_file_manifest_report.md
-index 484b1a0a5..d06980143 100644
---- a/docs_build/dev/reports/targeted_file_manifest_report.md
-+++ b/docs_build/dev/reports/targeted_file_manifest_report.md
-@@ -1,19 +1,19 @@
- # Targeted File Manifest Report
-
--Generated: 2026-06-20T22:24:21.162Z
-+Generated: 2026-06-20T22:58:20.685Z
- Status: PASS
-
- ## Manifest-Generated Lane Inputs
-
- | Lane | Ownership | Status | Source | Tests | Helpers | Fixtures | Imports / Dependencies | Dependency Graph Hash | Manifest Hash | Reason |
- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | tools | PASS | persistent | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 53e56ebae6e84541 | 8ab2c33d83a49b9f | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
-+| workspace-contract | tools | PASS | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 53e56ebae6e84541 | 1291241716cd7ab6 | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
-
- ## Discovery Expansion Control
-
- Prevented discovery expansion: Yes
--Prevented redundant scans: 0
--Targeted file/helper reads: 0
-+Prevented redundant scans: 4
-+Targeted file/helper reads: 5
-
- ## Runtime Savings Observations
-
-diff --git a/docs_build/dev/reports/test_cleanup_performance_report.md b/docs_build/dev/reports/test_cleanup_performance_report.md
-index 5fa929a2a..3aa560665 100644
---- a/docs_build/dev/reports/test_cleanup_performance_report.md
-+++ b/docs_build/dev/reports/test_cleanup_performance_report.md
-@@ -1,29 +1,29 @@
- # Test Cleanup Performance Report
-
--Generated: 2026-06-20T22:25:27.831Z
-+Generated: 2026-06-20T22:59:39.177Z
- Status: PASS
-
- ## Cost Summary
-
--Total measured lane elapsed time: 66.64s
-+Total measured lane elapsed time: 78.45s
- Actual browser launch count: 1
- Scheduled browser launch count: 1
- Baseline browser launch count: 1
- Skipped lanes: 14
--Reused manifests: 1
--Reused snapshots: 1
-+Reused manifests: 0
-+Reused snapshots: 0
- Cached validations reused: 18
- Prevented broad execution: 2
- Prevented reruns: 0
- Prevented redundant browser launches: 0
--Prevented graph rebuilds: 1
--Prevented redundant dependency traversal: 1
-+Prevented graph rebuilds: 0
-+Prevented redundant dependency traversal: 0
-
- ## Lane Elapsed Time
-
- | Lane | Status | Elapsed | Browser Launches | Reason |
- | --- | --- | --- | --- | --- |
--| workspace-contract | PASS | 66.64s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
-+| workspace-contract | PASS | 78.45s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
- | game-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
- | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
- | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
-@@ -43,11 +43,11 @@ Prevented redundant dependency traversal: 1
-
- | Lane | Duration | Test | Command |
- | --- | --- | --- | --- |
--| workspace-contract | 14.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:662:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 18.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:667:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 17.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:565:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
- | workspace-contract | 14.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
--| workspace-contract | 13.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:560:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
--| workspace-contract | 10.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:480:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
--| workspace-contract | 2.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:639:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 10.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:485:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 2.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:644:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-
- ## Prevented Broad Execution
-
-diff --git a/docs_build/dev/reports/test_cleanup_routing_report.md b/docs_build/dev/reports/test_cleanup_routing_report.md
-index e22e7e13d..51d699234 100644
---- a/docs_build/dev/reports/test_cleanup_routing_report.md
-+++ b/docs_build/dev/reports/test_cleanup_routing_report.md
-@@ -1,6 +1,6 @@
- # Test Cleanup Routing Report
-
--Generated: 2026-06-20T22:25:27.831Z
-+Generated: 2026-06-20T22:59:39.177Z
- Status: PASS
-
- ## Representative Routing Cases
-diff --git a/docs_build/dev/reports/testing_lane_execution_report.md b/docs_build/dev/reports/testing_lane_execution_report.md
-index 08d402a0e..7713de7a1 100644
---- a/docs_build/dev/reports/testing_lane_execution_report.md
-+++ b/docs_build/dev/reports/testing_lane_execution_report.md
-@@ -1,6 +1,6 @@
- # Testing Lane Execution Report
-
--Generated: 2026-06-20T22:25:27.854Z
-+Generated: 2026-06-20T22:59:39.207Z
- Dry run: No
-
- ## Summary
-@@ -9,7 +9,7 @@ PASS: 1
- WARN: 0
- FAIL: 0
- SKIP: 14
--Total lane elapsed time: 66.64s
-+Total lane elapsed time: 78.45s
- Actual browser launches: 1
-
- ## Full Samples Smoke
-@@ -34,11 +34,11 @@ Reason: No deterministic dependency failures before runtime.
- Status: PASS
- Scheduled lane order: workspace-contract
- Reused runtime sessions: 0
--Reused lane snapshots: 1
--Reused warm-start lanes: 1
--Reused dependency hydration: 1
--Prevented graph rebuilds: 1
--Prevented redundant initialization: 1
-+Reused lane snapshots: 0
-+Reused warm-start lanes: 0
-+Reused dependency hydration: 0
-+Prevented graph rebuilds: 0
-+Prevented redundant initialization: 0
- Prevented redundant browser launches: 0
- Prevented redundant lane execution: 14
-
-@@ -64,7 +64,7 @@ Status: PASS
- Target files: tests/playwright/tools/RootToolsFutureState.spec.mjs
- Required shared helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs
- Required fixtures: none
--Targeted file/helper reads: 0
-+Targeted file/helper reads: 5
- Cached discovery reuse: Yes
- Prevented fallback expansion: Yes; no ownership or scope blocker widened into broad discovery.
-
-@@ -73,27 +73,27 @@ Prevented fallback expansion: Yes; no ownership or scope blocker widened into br
- Status: PASS
- Generated manifests: workspace-contract:PASS
- Prevented discovery expansion: Yes
--Prevented redundant scans: 0
--Persistent manifest events: workspace-contract:REUSED
-+Prevented redundant scans: 4
-+Persistent manifest events: workspace-contract:INVALIDATED
-
- ## Warm-Start Reuse
-
- Status: PASS
--Warm-start events: workspace-contract:REUSED
--Dependency hydration events: workspace-contract:REUSED
--Prevented redundant initialization: 1
--Prevented helper resolution passes: 4
-+Warm-start events: workspace-contract:INVALIDATED
-+Dependency hydration events: workspace-contract:INVALIDATED
-+Prevented redundant initialization: 0
-+Prevented helper resolution passes: 0
- Prevented fixture ownership traversal: 0
-
- ## Lane Snapshots
-
- Status: PASS
--Snapshot events: workspace-contract:REUSED
--Reused snapshots: 1
--Invalidated snapshots: 0
--Prevented graph rebuilds: 1
--Prevented redundant dependency traversal: 1
--Prevented fixture/helper graph assembly: 4
-+Snapshot events: workspace-contract:INVALIDATED
-+Reused snapshots: 0
-+Invalidated snapshots: 1
-+Prevented graph rebuilds: 0
-+Prevented redundant dependency traversal: 0
-+Prevented fixture/helper graph assembly: 0
-
- ## Lane Deduplication
-
-@@ -105,7 +105,7 @@ Prevented Workspace lane reruns: 0
-
- | Lane | Status | Elapsed | Browser Launches | Executed/Skipped Reason | Affected Surface | Fixtures / Inputs |
- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | PASS | 66.64s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
-+| workspace-contract | PASS | 78.45s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
- | game-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Workspace mock repository, Game Workspace UI, and Toolbox Progress/Build Path game-state bridge | repo-served Game Workspace page; repo-served Toolbox page with role simulation; in-memory SQL-shaped mock game repository |
- | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | repo-served Game Design page; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Design mock repository; Game Workspace mock game context |
- | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | repo-served Game Configuration page; repo-served Game Design page for handoff checks; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Configuration mock repository; Game Design mock repository handoff |
-@@ -125,16 +125,16 @@ Prevented Workspace lane reruns: 0
-
- | Lane | Duration | Test |
- | --- | --- | --- |
--| workspace-contract | 14.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:662:1 > representative active tool pages align center cleanup and registry group colors |
-+| workspace-contract | 18.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:667:1 > representative active tool pages align center cleanup and registry group colors |
-+| workspace-contract | 17.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:565:1 > learn wireframe pages load with shared Theme V2 structure |
- | workspace-contract | 14.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes |
--| workspace-contract | 13.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:560:1 > learn wireframe pages load with shared Theme V2 structure |
--| workspace-contract | 10.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:480:1 > common header renders primary navigation order across active pages |
--| workspace-contract | 2.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:639:1 > tool template future-state page loads from root Theme V2 paths |
-+| workspace-contract | 10.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:485:1 > common header renders primary navigation order across active pages |
-+| workspace-contract | 2.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:644:1 > tool template future-state page loads from root Theme V2 paths |
-
- ## Commands
-
- ### workspace-contract
--- PASS 66.63s C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
-+- PASS 78.44s C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
-
- ### game-workspace
- - SKIP
-diff --git a/docs_build/dev/reports/validation_cache_report.md b/docs_build/dev/reports/validation_cache_report.md
-index 22f1b7f36..e19c36558 100644
---- a/docs_build/dev/reports/validation_cache_report.md
-+++ b/docs_build/dev/reports/validation_cache_report.md
-@@ -1,6 +1,6 @@
- # Validation Cache Report
-
--Generated: 2026-06-20T22:24:21.164Z
-+Generated: 2026-06-20T22:58:20.687Z
- Status: PASS
-
- ## Cache Summary
-@@ -15,26 +15,26 @@ Validations computed: 10
- | lane registration validation | MISS | 6a5b13bb47c3fad3 | initial computation | lane definitions change; package.json lane scripts change |
- | runner preflight validation | MISS | 0633df51b798654a | initial computation | lane definitions change; fixture ownership changes; targeted files change |
- | scoped discovery map | MISS | e195476e1978ec54 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
--| targeted file manifest validation | MISS | 7fb12a66a3e7d872 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
--| lane warm-start validation | MISS | da50ab7f4c0d9e39 | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
--| structural ownership validation | MISS | 36a12668db8ad3db | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
-+| targeted file manifest validation | MISS | 070fd74956239d48 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
-+| lane warm-start validation | MISS | 6f24967ea6249f42 | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
-+| structural ownership validation | MISS | ce9fb480b7ef245b | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
- | lane compilation validation | MISS | 0e1346462ea720dd | initial computation | lane definitions change; targeted files change; fixture ownership changes |
- | lane compilation validation | HIT | 0e1346462ea720dd | dependency validation input | unchanged within execution cycle |
- | dependency validation | MISS | 94d1bf1c7924d46d | initial computation | dependency graph changes; lane definitions change; lane compilation input changes |
--| lane snapshot validation | MISS | bbc4fd5f2fcd9c3f | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
-+| lane snapshot validation | MISS | 5d2cdac11ae1ca38 | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
- | zero-browser preflight | MISS | 568caf8342cb4bc0 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change; dependency graph changes |
--| structural ownership validation | HIT | 36a12668db8ad3db | static validation report | unchanged within execution cycle |
--| structural ownership validation | HIT | 36a12668db8ad3db | zero-browser preflight report | unchanged within execution cycle |
-+| structural ownership validation | HIT | ce9fb480b7ef245b | static validation report | unchanged within execution cycle |
-+| structural ownership validation | HIT | ce9fb480b7ef245b | zero-browser preflight report | unchanged within execution cycle |
- | scoped discovery map | HIT | e195476e1978ec54 | structural ownership validation input | unchanged within execution cycle |
- | scoped discovery map | HIT | e195476e1978ec54 | discovery scope reporting | unchanged within execution cycle |
--| targeted file manifest validation | HIT | 7fb12a66a3e7d872 | lane input validation report | unchanged within execution cycle |
--| targeted file manifest validation | HIT | 7fb12a66a3e7d872 | runtime scheduling blockers | unchanged within execution cycle |
--| lane warm-start validation | HIT | da50ab7f4c0d9e39 | warm-start report | unchanged within execution cycle |
--| lane warm-start validation | HIT | da50ab7f4c0d9e39 | dependency hydration reuse report | unchanged within execution cycle |
--| lane warm-start validation | HIT | da50ab7f4c0d9e39 | runtime scheduling | unchanged within execution cycle |
--| lane snapshot validation | HIT | bbc4fd5f2fcd9c3f | lane snapshot report | unchanged within execution cycle |
--| lane snapshot validation | HIT | bbc4fd5f2fcd9c3f | execution graph reuse report | unchanged within execution cycle |
--| lane snapshot validation | HIT | bbc4fd5f2fcd9c3f | runtime scheduling | unchanged within execution cycle |
-+| targeted file manifest validation | HIT | 070fd74956239d48 | lane input validation report | unchanged within execution cycle |
-+| targeted file manifest validation | HIT | 070fd74956239d48 | runtime scheduling blockers | unchanged within execution cycle |
-+| lane warm-start validation | HIT | 6f24967ea6249f42 | warm-start report | unchanged within execution cycle |
-+| lane warm-start validation | HIT | 6f24967ea6249f42 | dependency hydration reuse report | unchanged within execution cycle |
-+| lane warm-start validation | HIT | 6f24967ea6249f42 | runtime scheduling | unchanged within execution cycle |
-+| lane snapshot validation | HIT | 5d2cdac11ae1ca38 | lane snapshot report | unchanged within execution cycle |
-+| lane snapshot validation | HIT | 5d2cdac11ae1ca38 | execution graph reuse report | unchanged within execution cycle |
-+| lane snapshot validation | HIT | 5d2cdac11ae1ca38 | runtime scheduling | unchanged within execution cycle |
- | lane compilation validation | HIT | 0e1346462ea720dd | lane compilation report | unchanged within execution cycle |
- | lane compilation validation | HIT | 0e1346462ea720dd | runtime scheduling | unchanged within execution cycle |
- | dependency validation | HIT | 94d1bf1c7924d46d | dependency report | unchanged within execution cycle |
-diff --git a/docs_build/dev/reports/zero_browser_preflight_report.md b/docs_build/dev/reports/zero_browser_preflight_report.md
-index 8e1062f3d..19b494b64 100644
---- a/docs_build/dev/reports/zero_browser_preflight_report.md
-+++ b/docs_build/dev/reports/zero_browser_preflight_report.md
-@@ -1,6 +1,6 @@
- # Zero-Browser Preflight Report
-
--Generated: 2026-06-20T22:24:21.164Z
-+Generated: 2026-06-20T22:58:20.686Z
- Status: PASS
-
- ## Prevented Browser Launches
-@@ -24,10 +24,10 @@ No deterministic setup failures.
- | unresolved fixtures | PASS | No unresolved fixture findings. |
- | unresolved helpers | PASS | Shared helper imports and naming ownership checked. |
- | targeted file manifests | PASS | workspace-contract:PASS |
--| persistent lane manifests | PASS | workspace-contract:REUSED |
--| lane warm-start reuse | PASS | workspace-contract:REUSED |
--| dependency hydration reuse | PASS | workspace-contract:REUSED |
--| lane snapshots | PASS | workspace-contract:REUSED |
-+| persistent lane manifests | PASS | workspace-contract:INVALIDATED |
-+| lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
-+| dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
-+| lane snapshots | PASS | workspace-contract:INVALIDATED |
- | manifest input graph expansion | PASS | No scoped discovery inputs escaped manifest ownership. |
- | scoped discovery | PASS | Targets: tests/playwright/tools/RootToolsFutureState.spec.mjs; helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs. |
- | invalid grep patterns | PASS | No invalid grep patterns. |
-diff --git a/src/shared/toolbox/tool-metadata-inventory.js b/src/shared/toolbox/tool-metadata-inventory.js
-index 6d2ed68fa..9c81eb6ef 100644
---- a/src/shared/toolbox/tool-metadata-inventory.js
-+++ b/src/shared/toolbox/tool-metadata-inventory.js
-@@ -1448,7 +1448,8 @@ export const TOOL_REGISTRY = Object.freeze([
-     "requiredForTestable": false,
-     "requiredForPublish": false,
-     "requires": [],
--    "status": "Beta",
-+    "status": "beta",
-+    "releaseChannel": "beta",
-     "progressChecklist": [
-       "Browser Web Speech API preview",
-       "Creator text entry",
-diff --git a/tests/playwright/tools/MessagesTool.spec.mjs b/tests/playwright/tools/MessagesTool.spec.mjs
-index cdafb6f5b..5c2e1a212 100644
---- a/tests/playwright/tools/MessagesTool.spec.mjs
-+++ b/tests/playwright/tools/MessagesTool.spec.mjs
-@@ -167,9 +167,11 @@ test("Message Studio renders Messages with child Message Parts and plays ordered
-     await expect(page.getByRole("columnheader", { name: "Message Name" })).toBeVisible();
-     await expect(page.getByRole("columnheader", { name: "Default TTS Profile" })).toBeVisible();
-     await expect(page.locator("[data-messages-segment-count]")).toHaveText("0");
-+    await expect(page.locator("[data-messages-add-control-row]")).toBeVisible();
-     await expect(page.getByRole("button", { name: "Stop" })).toBeEnabled();
-
-     await page.getByRole("button", { name: "Add Message" }).click();
-+    await expect(page.locator("[data-messages-row-editor='__new__']")).toBeVisible();
-     await page.locator("[data-messages-commit='__new__']").click();
-     await expect(page.locator("[data-messages-validation-card]")).toBeVisible();
-     await expect(page.locator("[data-messages-validation-errors]")).toContainText("Message Name is required.");
-@@ -191,7 +193,13 @@ test("Message Studio renders Messages with child Message Parts and plays ordered
-     await expect(page.locator("[data-message-default-tts-profile]").first()).toContainText("Default Balanced TTS Profile");
-
-     const messageRow = page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" });
--    await messageRow.click();
-+    const messageNameCell = page.locator("[data-messages-name-cell]").filter({ hasText: "Bat Encounter" });
-+    await expect(page.locator("[data-messages-segment-host]")).toBeVisible();
-+    await messageNameCell.click();
-+    await expect(page.locator("[data-messages-segment-host]")).toHaveCount(0);
-+    await messageRow.locator("td").nth(3).click();
-+    await expect(page.locator("[data-messages-segment-host]")).toHaveCount(0);
-+    await messageNameCell.click();
-     await expect(page.locator("[data-messages-segment-host]")).toBeVisible();
-     await expect(page.getByRole("heading", { name: "Message Parts" })).toBeVisible();
-     await expect(page.getByRole("columnheader", { name: "Order" })).toBeVisible();
-@@ -199,6 +207,7 @@ test("Message Studio renders Messages with child Message Parts and plays ordered
-     await expect(page.getByRole("columnheader", { exact: true, name: "TTS Profile" })).toBeVisible();
-
-     await page.getByRole("button", { name: "Add Part" }).click();
-+    await expect(page.locator("[data-messages-segment-add-control-row]")).toHaveCount(0);
-     await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-text]")).toBeVisible();
-     await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion]")).toBeVisible();
-     await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-tts-profile]")).toContainText("Default Balanced TTS Profile");
-@@ -307,7 +316,6 @@ test("Message Studio shows actionable playback error when audio engine is unavai
-       name: "Bat Encounter",
-       text: "Bats drop from the rafters.",
-     });
--    await page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" }).click();
-     await addPart(page, {
-       emotion: "Urgent",
-       order: 1,
-diff --git a/tests/playwright/tools/RootToolsFutureState.spec.mjs b/tests/playwright/tools/RootToolsFutureState.spec.mjs
-index d1f9bf7b4..1f043323e 100644
---- a/tests/playwright/tools/RootToolsFutureState.spec.mjs
-+++ b/tests/playwright/tools/RootToolsFutureState.spec.mjs
-@@ -277,7 +277,7 @@ test("root tools surface links current tool pages without old_* routes", async (
-     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
-     await expect(page.getByRole("button", { name: "Build Path" })).toBeVisible();
-     await expect(page.getByRole("button", { name: "Build Path" })).not.toHaveAttribute("aria-disabled", "true");
--    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 14/42");
-+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 15/43");
-     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
-     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='admin']")).toHaveCount(0);
-     await expect(page.locator("nav.nav-links > a[data-route='learn']")).toHaveCount(1);
-@@ -316,8 +316,13 @@ test("root tools surface links current tool pages without old_* routes", async (
-     });
-     await expect(readyGameWorkspaceCard.locator("a.btn")).toHaveAttribute("href", "../toolbox/game-workspace/index.html");
-     const defaultToolLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
--    expect(defaultToolLabels).toEqual(["Achievements", "Assets", "Colors", "Controls", "Game Configuration", "Game Design", "Game Hub", "Game Journey", "Idea Board", "Languages", "Message Studio", "Objects", "Saved Data", "Tags"]);
--    await expect(page.locator("[data-toolbox-readiness]")).toHaveText(["Wireframe", "Beta", "Complete", "Wireframe", "Beta", "Beta", "Beta", "Beta", "Wireframe", "Wireframe", "Beta", "Beta", "Wireframe", "Beta"]);
-+    expect(defaultToolLabels).toEqual(["Achievements", "Assets", "Colors", "Controls", "Game Configuration", "Game Design", "Game Hub", "Game Journey", "Idea Board", "Languages", "Message Studio", "Objects", "Saved Data", "Tags", "Text To Speech"]);
-+    const textToSpeechCard = page.locator("main .control-card").filter({
-+      has: page.locator("h3", { hasText: /^Text To Speech$/ })
-+    });
-+    await expect(textToSpeechCard.locator("[data-toolbox-tool-name-link='Text To Speech']")).toHaveAttribute("href", "/toolbox/text-to-speech/index.html");
-+    await expect(textToSpeechCard.locator("[data-toolbox-tool-name-link='Text To Speech']")).toHaveAttribute("data-registered-tool-route", "toolbox/text-to-speech/index.html");
-+    await expect(page.locator("[data-toolbox-readiness]")).toHaveText(["Wireframe", "Beta", "Complete", "Wireframe", "Beta", "Beta", "Beta", "Beta", "Wireframe", "Wireframe", "Beta", "Beta", "Wireframe", "Beta", "Beta"]);
-     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^AI Command Center$/ }) })).toHaveCount(0);
-     const oldStandaloneLabels = [
-       ["Palette", "Manager"].join(" "),
-@@ -387,7 +392,7 @@ test("root tools surface links current tool pages without old_* routes", async (
-     const guestGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
-       groups.map((group) => group.dataset.toolsAccordion)
-     ));
--    expect(guestGroupLabels).toEqual(["Idea", "Design", "Graphics", "Objects", "Interface", "Controls", "Progression"]);
-+    expect(guestGroupLabels).toEqual(["Idea", "Design", "Graphics", "Audio", "Objects", "Interface", "Controls", "Progression"]);
-     await expect(page.locator("[data-tools-accordion='Admin']")).toHaveCount(0);
-     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
-     await expect(page.locator("[data-tools-accordion-list] .control-card h3", { hasText: /^Progress$/ })).toHaveCount(0);
-@@ -413,13 +418,13 @@ test("root tools surface links current tool pages without old_* routes", async (
-     expect(failedRequests.filter((request) => request.includes("/toolbox/old_"))).toEqual([]);
-
-     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
--    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 14/42");
-+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 15/43");
-     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
-     await expect(page.locator("main").getByText("Creators", { exact: true })).toHaveCount(0);
-     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
-     await setServerSession(server, MOCK_DB_KEYS.users.admin);
-     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
--    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 14/46");
-+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 15/46");
-     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
-     const adminLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
-     expect(adminLabels).toEqual(defaultToolLabels);
-@@ -456,7 +461,7 @@ test("root tools surface links current tool pages without old_* routes", async (
-     const adminGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
-       groups.map((group) => group.dataset.toolsAccordion)
-     ));
--    expect(adminGroupLabels).toEqual(["Idea", "Design", "Graphics", "Objects", "Interface", "Controls", "Progression"]);
-+    expect(adminGroupLabels).toEqual(["Idea", "Design", "Graphics", "Audio", "Objects", "Interface", "Controls", "Progression"]);
-     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
-     await page.getByRole("button", { name: "Build Path" }).click();
-     await expect(page.locator("[data-build-path-table='workflow']")).toBeVisible();
-@@ -466,7 +471,7 @@ test("root tools surface links current tool pages without old_* routes", async (
-     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
-     await setServerSession(server, "");
-     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
--    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 14/42");
-+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 15/43");
-     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
-     await expect(page.locator("main").getByText("Creators", { exact: true })).toHaveCount(0);
-     expect(pageErrors).toEqual([]);
-diff --git a/tests/playwright/tools/TextToSpeechFunctional.spec.mjs b/tests/playwright/tools/TextToSpeechFunctional.spec.mjs
-index 07b1444ae..fa1050126 100644
---- a/tests/playwright/tools/TextToSpeechFunctional.spec.mjs
-+++ b/tests/playwright/tools/TextToSpeechFunctional.spec.mjs
-@@ -103,6 +103,8 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
-   try {
-     await expect(page.getByRole("heading", { level: 1, name: "Text To Speech" })).toBeVisible();
-     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-+    await expect(page.locator("[data-tts-summary]")).toHaveClass(/content-cluster--nowrap/);
-+    await expect(page.locator("[data-tts-summary]")).toContainText("TTS Studio");
-
-     await expect(page.locator("[data-tts-voice-select]")).toContainText("Arcade Voice");
-     await expect(page.locator("[data-tts-voice-count]")).toHaveText("2");
-@@ -223,6 +225,53 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
-   }
- });
-
-+test("Text To Speech is registered on the toolbox index with the active toolbox path", async ({ page }) => {
-+  const server = await startRepoServer();
-+  const failures = {
-+    consoleErrors: [],
-+    failedRequests: [],
-+    pageErrors: [],
-+    server,
-+  };
++- PR branch: `pr/26171-GAMMA-010-replace-main-branch-guard-with-workstream-guard`
++- Branch created from: `main`
++- Branch push: PASS, pushed to `origin/pr/26171-GAMMA-010-replace-main-branch-guard-with-workstream-guard`
++- Pull request: PASS, draft PR https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/35
++- Merge status: not merged; EOD merge requires explicit owner approval
++- ZIP artifact path: `tmp/PR_26171_GAMMA_010-replace-main-branch-guard-with-workstream-guard_delta.zip`
 +
-+  page.on("pageerror", (error) => failures.pageErrors.push(error.message));
-+  page.on("console", (message) => {
-+    if (message.type() === "error") failures.consoleErrors.push(message.text());
-+  });
-+  page.on("response", (response) => {
-+    if (response.status() >= 400) failures.failedRequests.push(`${response.status()} ${response.url()}`);
-+  });
-+  page.on("requestfailed", (request) => failures.failedRequests.push(`FAILED ${request.url()}`));
++## Validation
 +
-+  await page.addInitScript(({ apiUrl, siteUrl }) => {
-+    window.GameFoundryPublicConfig = {
-+      apiUrl,
-+      environmentLabel: "Development Environment",
-+      siteUrl,
-+    };
-+  }, { apiUrl: `${server.baseUrl}/api`, siteUrl: server.baseUrl });
++Requested validation scope was docs/static only.
 +
-+  try {
-+    await workspaceV2CoverageReporter.start(page);
-+    await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
-+    const textToSpeechLink = page.locator("[data-toolbox-tool-name-link='Text To Speech']");
-+    await expect(textToSpeechLink).toBeVisible();
-+    await expect(textToSpeechLink).toHaveAttribute("href", "/toolbox/text-to-speech/index.html");
-+    await expect(textToSpeechLink).toHaveAttribute("data-registered-tool-route", "toolbox/text-to-speech/index.html");
-+    await expect(page.locator("a[href*='tools/text2speech']")).toHaveCount(0);
-+    await textToSpeechLink.click();
-+    await page.waitForURL(/\/toolbox\/text-to-speech\/index\.html$/);
-+    await expect(page.getByRole("heading", { level: 1, name: "Text To Speech" })).toBeVisible();
++Executed:
++- `git diff --check`: PASS
++- Targeted text check verifying the old main-only hard stop is gone.
++- Targeted text check verifying approved workstream branches are allowed.
++- Targeted text check verifying local-only commits remain prohibited.
++- Targeted text check verifying GitHub authoritative sync governance remains present.
++- Targeted text check verifying EOD merge approval remains owner-controlled.
 +
-+    expect(failures.failedRequests).toEqual([]);
-+    expect(failures.pageErrors).toEqual([]);
-+    expect(failures.consoleErrors).toEqual([]);
-+  } finally {
-+    await workspaceV2CoverageReporter.stop(page);
-+    await server.close();
-+  }
-+});
++Skipped:
++- Playwright: skipped by request; this PR modifies governance docs only.
++- Samples smoke: skipped by request; this PR modifies governance docs only.
 +
- test("Text To Speech shows actionable error when browser speech synthesis is unavailable", async ({ page }) => {
-   const failures = await openTextToSpeechPage(page, { speechAvailable: false });
-   try {
-diff --git a/tests/playwright/tools/ToolboxRoutePages.spec.mjs b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
-index bfe555c39..0cf4d475c 100644
---- a/tests/playwright/tools/ToolboxRoutePages.spec.mjs
-+++ b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
-@@ -435,20 +435,21 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
-     await expect(page.locator("[data-toolbox-tool-name-link='Game Configuration']")).toBeVisible();
-     await expect(page.locator("[data-toolbox-tool-name-link='Game Design']")).toBeVisible();
-     await expect(page.locator("[data-toolbox-tool-name-link='Game Journey']")).toBeVisible();
--    await expect(page.locator("[data-toolbox-tool-name-link='Game Hub']")).toBeVisible();
-+    await expect(page.locator("[data-toolbox-tool-name-link='Game Hub'][href='/toolbox/game-workspace/index.html']")).toBeVisible();
-+    await expect(page.locator("[data-toolbox-tool-name-link='Text To Speech']")).toHaveAttribute("href", "/toolbox/text-to-speech/index.html");
-     await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toHaveCount(0);
--    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/42");
-+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 16/44");
-     await page.locator("[data-toolbox-status-filter='planned']").click();
-     await expect(page.locator("[data-toolbox-status-filter='planned']")).toHaveAttribute("aria-pressed", "true");
--    await expect(page.locator("[data-toolbox-tool-card][data-toolbox-release-channel='planned']")).toHaveCount(28);
--    await expect(page.locator("[data-toolbox-tool-card]")).toHaveCount(41);
--    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 41/42");
-+    await expect(page.locator("[data-toolbox-tool-card][data-toolbox-release-channel='planned']")).toHaveCount(27);
-+    await expect(page.locator("[data-toolbox-tool-card]")).toHaveCount(43);
-+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 43/44");
-     await expect(page.locator("[data-toolbox-tool-name-link='AI Command Center']")).toBeVisible();
-     await expect(page.locator("[data-toolbox-tool-name-link='Game Crew']")).toBeVisible();
-     await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toBeVisible();
-     await page.locator("[data-toolbox-status-filter='deprecated']").click();
-     await expect(page.locator("[data-toolbox-tool-name-link='Build Game']")).toBeVisible();
--    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 42/42");
-+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 44/44");
-
-     await setServerSession(server, MOCK_DB_KEYS.users.admin);
-     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
-diff --git a/toolbox/messages/index.html b/toolbox/messages/index.html
-index fddb3d371..55cbd6ccb 100644
---- a/toolbox/messages/index.html
-+++ b/toolbox/messages/index.html
-@@ -77,9 +77,6 @@
-                                         </tbody>
-                                     </table>
-                                 </div>
--                                <div class="action-group">
--                                    <button class="btn" type="button" data-messages-add-row>Add Message</button>
--                                </div>
-                                 <div class="status" data-messages-validation-card hidden>
-                                     <p>Message row needs required fields.</p>
-                                     <ul data-messages-validation-errors></ul>
-diff --git a/toolbox/messages/messages.js b/toolbox/messages/messages.js
-index 0774a4619..c881cc0b4 100644
---- a/toolbox/messages/messages.js
-+++ b/toolbox/messages/messages.js
-@@ -27,7 +27,6 @@ const DEFAULT_TTS_PROFILE = Object.freeze({
- const ttsServiceRegistry = createMessageStudioTtsServiceRegistry();
-
- const elements = {
--  addMessageRow: document.querySelector("[data-messages-add-row]"),
-   count: document.querySelector("[data-messages-count]"),
-   log: document.querySelector("[data-messages-log]"),
-   persistenceEngine: document.querySelector("[data-messages-persistence-engine]"),
-@@ -206,6 +205,27 @@ function tableMessage(colSpan, text) {
-   return row;
- }
-
-+function tableActionRow(colSpan, button) {
-+  const row = document.createElement("tr");
-+  const cell = document.createElement("td");
-+  cell.colSpan = colSpan;
-+  cell.append(createActionGroup(button));
-+  row.append(cell);
-+  return row;
-+}
++## Required Reports
 +
-+function createMessageAddControlRow() {
-+  const row = tableActionRow(6, createButton("Add Message", "messagesAddRow", NEW_ROW_KEY));
-+  row.dataset.messagesAddControlRow = "";
-+  return row;
-+}
-+
-+function createSegmentAddControlRow() {
-+  const row = tableActionRow(6, createButton("Add Part", "messagesSegmentAddRow", state.selectedMessageKey));
-+  row.dataset.messagesSegmentAddControlRow = state.selectedMessageKey;
-+  return row;
-+}
-+
- function clearValidation() {
-   if (elements.validationErrors) {
-     elements.validationErrors.replaceChildren();
-@@ -547,14 +567,13 @@ function createMessageSegmentTable() {
-
-   if (state.editingSegmentKey === NEW_ROW_KEY) {
-     tbody.append(createSegmentEditRow(null));
-+  } else {
-+    tbody.append(createSegmentAddControlRow());
-   }
-
-   table.append(thead, tbody);
-   tableWrapper.append(table);
--  const actionGroup = document.createElement("div");
--  actionGroup.className = "action-group";
--  actionGroup.append(createButton("Add Part", "messagesSegmentAddRow", state.selectedMessageKey));
--  wrapper.append(tableWrapper, actionGroup);
-+  wrapper.append(tableWrapper);
-   return wrapper;
- }
-
-@@ -612,6 +631,7 @@ function renderMessageRows() {
-   elements.table.replaceChildren();
-   if (!state.messages.length && state.editingMessageKey !== NEW_ROW_KEY) {
-     elements.table.append(tableMessage(6, "No messages saved yet. Add a message such as Bat Encounter."));
-+    elements.table.append(createMessageAddControlRow());
-     return;
-   }
-
-@@ -627,6 +647,9 @@ function renderMessageRows() {
-     const nameCell = document.createElement("td");
-     const isExpanded = state.selectedMessageKey === message.key;
-     nameCell.dataset.messagesNameCell = message.key;
-+    nameCell.tabIndex = 0;
-+    nameCell.setAttribute("role", "button");
-+    nameCell.setAttribute("aria-expanded", String(isExpanded));
-     nameCell.textContent = `${isExpanded ? "v" : ">"} ${message.name}`;
-     const ttsCell = document.createElement("td");
-     ttsCell.append(createTtsProfileSelect(
-@@ -654,6 +677,8 @@ function renderMessageRows() {
-
-   if (state.editingMessageKey === NEW_ROW_KEY) {
-     createMessageEditRows(null).forEach((row) => elements.table.append(row));
-+  } else {
-+    elements.table.append(createMessageAddControlRow());
-   }
- }
-
-@@ -1010,14 +1035,6 @@ async function moveSegment(key, direction) {
-   }
- }
-
--elements.addMessageRow?.addEventListener("click", () => {
--  clearValidation();
--  state.editingMessageKey = NEW_ROW_KEY;
--  state.editingSegmentKey = "";
--  render();
--  setText(elements.log, "Ready to add a message row.");
--});
--
- elements.previewTtsProfile?.addEventListener("change", () => {
-   renderSpeechTestControls();
- });
-@@ -1064,6 +1081,8 @@ elements.table?.addEventListener("click", async (event) => {
-     return;
-   }
-   const row = event.target.closest("[data-messages-row]");
-+  const messageAddButton = event.target.closest("[data-messages-add-row]");
-+  const messageNameCell = event.target.closest("[data-messages-name-cell]");
-   const segmentRow = event.target.closest("[data-messages-segment-row]");
-   const playButton = event.target.closest("[data-messages-play]");
-   const editButton = event.target.closest("[data-messages-edit]");
-@@ -1079,6 +1098,14 @@ elements.table?.addEventListener("click", async (event) => {
-   const moveUpButton = event.target.closest("[data-messages-segment-move-up]");
-   const moveDownButton = event.target.closest("[data-messages-segment-move-down]");
-
-+  if (messageAddButton) {
-+    clearValidation();
-+    state.editingMessageKey = NEW_ROW_KEY;
-+    state.editingSegmentKey = "";
-+    render();
-+    setText(elements.log, "Ready to add a message row.");
-+    return;
-+  }
-   if (playButton) {
-     state.selectedMessageKey = playButton.dataset.messagesPlay;
-     state.selectedSegmentKey = "";
-@@ -1162,14 +1189,23 @@ elements.table?.addEventListener("click", async (event) => {
-     render();
-     return;
-   }
--  if (row) {
--    state.selectedMessageKey = row.dataset.messagesRow;
-+  if (messageNameCell && row) {
-+    state.selectedMessageKey = state.selectedMessageKey === row.dataset.messagesRow ? "" : row.dataset.messagesRow;
-     state.selectedSegmentKey = "";
-     state.editingSegmentKey = "";
-     render();
-   }
- });
-
-+elements.table?.addEventListener("keydown", (event) => {
-+  const messageNameCell = event.target.closest("[data-messages-name-cell]");
-+  if (!messageNameCell || !["Enter", " "].includes(event.key)) {
-+    return;
-+  }
-+  event.preventDefault();
-+  messageNameCell.click();
-+});
-+
- try {
-   await loadAll();
- } catch (error) {
-diff --git a/toolbox/text-to-speech/index.html b/toolbox/text-to-speech/index.html
-index e82dd9468..95672aa69 100644
---- a/toolbox/text-to-speech/index.html
-+++ b/toolbox/text-to-speech/index.html
-@@ -98,13 +98,13 @@
-                     </aside>
-                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="text-to-speech" data-tool-icon-src="assets/theme-v2/images/badges/text-to-speech.png" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
-                     <section class="tool-center-panel">
--                        <h2>TTS Studio</h2>
--                        <div class="grid cols-4" aria-label="Text To Speech summary">
--                            <article class="mini-stat"><strong data-tts-text-count>0</strong>Characters</article>
--                            <article class="mini-stat"><strong data-tts-profile-count>0</strong>TTS Profiles</article>
--                            <article class="mini-stat"><strong data-tts-emotion-count>0</strong>Emotion Settings</article>
--                            <article class="mini-stat"><strong data-tts-voice-count>0</strong>Voices</article>
--                            <article class="mini-stat"><strong data-tts-engine-label>Checking</strong>Engine</article>
-+                        <div class="content-cluster content-cluster--nowrap" aria-label="Text To Speech summary" data-tts-summary>
-+                            <span class="pill">TTS Studio</span>
-+                            <article class="mini-stat mini-stat--inline"><span>Characters</span> <strong data-tts-text-count>0</strong></article>
-+                            <article class="mini-stat mini-stat--inline"><span>TTS Profiles</span> <strong data-tts-profile-count>0</strong></article>
-+                            <article class="mini-stat mini-stat--inline"><span>Emotion Settings</span> <strong data-tts-emotion-count>0</strong></article>
-+                            <article class="mini-stat mini-stat--inline"><span>Voices</span> <strong data-tts-voice-count>0</strong></article>
-+                            <article class="mini-stat mini-stat--inline"><span>Engine</span> <strong data-tts-engine-label>Checking</strong></article>
-                         </div>
-                         <article class="card">
-                             <div class="card-body content-stack">
++- `docs_build/dev/reports/codex_review.diff`
++- `docs_build/dev/reports/codex_changed_files.txt`
++- `docs_build/dev/reports/PR_26171_GAMMA_010-replace-main-branch-guard-with-workstream-guard.md`
++- `docs_build/dev/reports/PR_26171_GAMMA_010-replace-main-branch-guard-with-workstream-guard-manual-validation-notes.md`
++- `docs_build/dev/reports/PR_26171_GAMMA_010-replace-main-branch-guard-with-workstream-guard-instruction-compliance-checklist.md`
