@@ -97,6 +97,7 @@ export async function startLocalApiServer({
   return {
     baseUrl: `http://${host}:${port}`,
     close: async () => {
+      await handleApiRuntimeRequest.close?.();
       await new Promise((resolve, reject) => {
         server.close((error) => {
           if (error) reject(error);

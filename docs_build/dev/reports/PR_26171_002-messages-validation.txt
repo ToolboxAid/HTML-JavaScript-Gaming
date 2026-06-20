@@ -1,0 +1,98 @@
+PR_26171_002-messages-tool-foundation validation report
+
+Branch validation:
+PASS
+
+Current branch:
+main
+
+Latest main validation:
+PASS - `git rev-list --left-right --count main...origin/main` returned `0 0`.
+
+Targeted syntax/static checks:
+PASS
+
+Commands:
+- node --check src/dev-runtime/messages/messages-sqlite-service.mjs
+- node --check src/dev-runtime/server/local-api-router.mjs
+- node --check src/dev-runtime/server/local-api-server.mjs
+- node --check tests/helpers/playwrightRepoServer.mjs
+- node --check toolbox/messages/messages-api-client.js
+- node --check toolbox/messages/messages.js
+- node --check src/shared/toolbox/tool-metadata-inventory.js
+- node --check toolbox/tools-page-accordions.js
+- node --check tests/playwright/tools/MessagesTool.spec.mjs
+
+Theme V2 / HTML restriction validation:
+PASS
+
+Evidence:
+- `toolbox/messages/index.html` scan found no `<style>` blocks.
+- `toolbox/messages/index.html` scan found no inline `style=` attributes.
+- `toolbox/messages/index.html` scan found no inline event handlers.
+- `toolbox/messages/index.html` scan found no inline `<script>` blocks.
+
+Local API / SQLite contract probe:
+PASS
+
+Evidence:
+- `/api/messages/categories` returned 8 seeded categories.
+- `/api/messages/emotion-profiles` returned 7 seeded emotion profiles.
+- `POST /api/messages/messages` created a message with a 26-character server-generated ULID key.
+- `GET /api/messages/messages/:key` returned exact multiline message text after Local API restart against the same SQLite file.
+- `DELETE /api/messages/messages/:key` returned `404`, confirming no delete endpoint exists.
+
+Toolbox registry validation:
+PASS
+
+Evidence:
+- `/api/toolbox/registry/snapshot` includes `Messages`.
+- Registered route is `toolbox/messages/index.html`.
+- `visibleInToolsList` is `true`.
+
+Playwright:
+PASS
+
+Command:
+- `npx playwright test tests/playwright/tools/MessagesTool.spec.mjs --project=playwright --workers=1 --reporter=list`
+
+Result:
+- 1 passed.
+
+Playwright behaviors covered:
+- Messages page loads.
+- Categories load.
+- Emotion Profiles load.
+- Category add, rename, and disable work.
+- Emotion Profile add, edit, and disable work.
+- Required field validation displays visibly.
+- Create Message works.
+- Update Message works.
+- Message text preserves exact multiline content.
+- Local API persistence works.
+- SQLite persistence works across Local API restart.
+- Theme V2 rendering remains functional.
+- No inline style/script/event handler violations are present.
+
+Coverage reports:
+PASS with advisory WARN entries for server-side files not collected by browser V8 coverage.
+
+Evidence:
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+
+Diff validation:
+PASS
+
+Command:
+- `git diff --check -- <PR_26171_002 changed files>`
+
+Result:
+- No whitespace errors. Git reported CRLF normalization warnings for existing line-ending behavior only.
+
+Skipped validation:
+- Full samples validation skipped. This PR does not modify sample JSON, sample runtime, or shared sample framework behavior.
+- Full suite skipped. Targeted Local API, SQLite, Theme V2, and Messages Playwright validation covered the changed behavior.
+
+Unrelated worktree note:
+- `docs_build/dev/PROJECT_MULTI_PC.txt` is untracked and unrelated. It was not modified and is excluded from this PR's review artifacts and ZIP.

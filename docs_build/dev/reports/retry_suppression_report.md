@@ -1,7 +1,7 @@
 # Retry Suppression Report
 
-Generated: 2026-06-17T15:59:53.719Z
-Status: PASS
+Generated: 2026-06-19T23:42:59.854Z
+Status: WARN
 
 ## Summary
 
@@ -15,7 +15,7 @@ Prevented repeated lane hydration: 0
 
 | Fingerprint | Lane | Category | Retry Decision | Reason |
 | --- | --- | --- | --- | --- |
-| none | none | none | No retry needed | No failures were observed. |
+| 75f3490fba176a52 | workspace-contract | runtime failure | Allowed only on explicit targeted retry | Retry is allowed only when explicitly requested and must preserve the same targeted lane scope. |
 
 ## Enforcement Rules
 
