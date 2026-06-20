@@ -246,6 +246,43 @@ test("Messages tool creates, validates, updates, and persists through Local API 
     });
     expect(deleteSegmentResult.status).toBe(404);
 
+    const profileUsageResult = await jsonRequest(`${failures.server.baseUrl}/api/messages/emotion-profiles`);
+    expect(profileUsageResult.response.ok).toBe(true);
+    const urgentProfile = profileUsageResult.payload.data.emotionProfiles.find((profile) => profile.name === "Urgent");
+    expect(urgentProfile).toEqual(expect.objectContaining({
+      messageUsageCount: 1,
+      segmentUsageCount: 1,
+      usageCount: 2,
+    }));
+    expect(urgentProfile.references.map((reference) => reference.type).sort()).toEqual(["message", "segment"]);
+
+    const deactivateReferencedProfile = await jsonRequest(`${failures.server.baseUrl}/api/messages/emotion-profiles/${urgentProfile.key}`, {
+      body: JSON.stringify({
+        active: false,
+        description: urgentProfile.description,
+        name: urgentProfile.name,
+        pauseAfterMs: urgentProfile.pauseAfterMs,
+        pauseBeforeMs: urgentProfile.pauseBeforeMs,
+        pitch: urgentProfile.pitch,
+        rate: urgentProfile.rate,
+        volume: urgentProfile.volume,
+      }),
+      method: "POST",
+    });
+    expect(deactivateReferencedProfile.response.status).toBe(400);
+    expect(deactivateReferencedProfile.payload.error).toContain("Emotion profile is referenced by messages or segments.");
+
+    await expect(page.locator("[data-messages-emotion-row]").filter({ hasText: "Urgent" })).toContainText("2");
+    await page.locator("[data-messages-emotion-row]").filter({ hasText: "Urgent" }).getByRole("button", { name: "Edit" }).click();
+    await page.locator("[data-messages-emotion-active]").uncheck();
+    await page.getByRole("button", { name: "Save Emotion Profile" }).click();
+    await expect(page.locator("[data-messages-log]")).toContainText("Emotion profile is referenced by messages or segments.");
+    await expect(page.locator("[data-messages-emotion-row]").filter({ hasText: "Urgent" })).toContainText("Active");
+    failures.failedRequests = failures.failedRequests.filter((request) => !request.includes(`/api/messages/emotion-profiles/${urgentProfile.key}`));
+    failures.consoleErrors = failures.consoleErrors.filter(
+      (message) => message !== "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+    );
+
     await page.locator("[data-messages-row]").filter({ hasText: "Forest Warning" }).getByRole("button", { name: "Edit" }).click();
     await page.locator("[data-messages-name]").fill("Forest Warning Updated");
     await page.locator("[data-messages-text]").fill("The forest gets darker beyond this point.");

@@ -1,317 +1,364 @@
-﻿diff --git a/tests/playwright/tools/RootToolsFutureState.spec.mjs b/tests/playwright/tools/RootToolsFutureState.spec.mjs
-index 957b335fd..203dc8813 100644
---- a/tests/playwright/tools/RootToolsFutureState.spec.mjs
-+++ b/tests/playwright/tools/RootToolsFutureState.spec.mjs
-@@ -363,7 +363,7 @@ test("root tools surface links current tool pages without old_* routes", async (
-     const guestGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
-       groups.map((group) => group.dataset.toolsAccordion)
-     ));
--    expect(guestGroupLabels).toEqual(["Idea", "Create", "Design", "Graphics", "Objects", "Interface", "Controls", "Progression"]);
-+    expect(guestGroupLabels).toEqual(["Idea", "Design", "Graphics", "Objects", "Interface", "Controls", "Progression"]);
-     await expect(page.locator("[data-tools-accordion='Admin']")).toHaveCount(0);
-     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
-     await expect(page.locator("[data-tools-accordion-list] .control-card h3", { hasText: /^Progress$/ })).toHaveCount(0);
-@@ -432,7 +432,7 @@ test("root tools surface links current tool pages without old_* routes", async (
-     const adminGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
-       groups.map((group) => group.dataset.toolsAccordion)
-     ));
--    expect(adminGroupLabels).toEqual(["Idea", "Create", "Design", "Graphics", "Objects", "Interface", "Controls", "Progression"]);
-+    expect(adminGroupLabels).toEqual(["Idea", "Design", "Graphics", "Objects", "Interface", "Controls", "Progression"]);
-     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
-     await page.getByRole("button", { name: "Build Path" }).click();
-     await expect(page.locator("[data-build-path-table='workflow']")).toBeVisible();
-@@ -670,7 +670,6 @@ test("representative active tool pages align center cleanup and registry group c
-   ];
-   const gameJourneyGroupClasses = [
-     "tool-group-idea",
--    "tool-group-game-create",
-     "tool-group-journey-design",
-     "tool-group-graphics",
-     "tool-group-journey-audio",
-diff --git a/tests/playwright/tools/ToolboxRoutePages.spec.mjs b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
-index 65789bf01..210fa4924 100644
---- a/tests/playwright/tools/ToolboxRoutePages.spec.mjs
-+++ b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
-@@ -26,7 +26,6 @@ const STATUS_HELP_TEXT = Object.freeze({
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index 1b8d80431..d5cdff372 100644
+--- a/docs_build/dev/reports/codex_changed_files.txt
++++ b/docs_build/dev/reports/codex_changed_files.txt
+@@ -1,10 +1,5 @@
+-ï»¿docs_build/dev/reports/codex_changed_files.txt
+-docs_build/dev/reports/codex_review.diff
+-docs_build/dev/reports/PR_26171_003-game-journey-friendly-descriptions.md
+-docs_build/dev/reports/PR_26171_003-game-journey-friendly-descriptions-branch-validation.md
+-docs_build/dev/reports/PR_26171_003-game-journey-friendly-descriptions-manual-validation.md
+-docs_build/dev/reports/PR_26171_003-game-journey-friendly-descriptions-requirements-checklist.md
+-docs_build/dev/reports/PR_26171_003-game-journey-friendly-descriptions-validation-lane-report.md
+-tests/playwright/tools/RootToolsFutureState.spec.mjs
+-tests/playwright/tools/ToolboxRoutePages.spec.mjs
+-toolbox/tools-page-accordions.js
++ï»¿docs_build/dev/reports/codex_review.diff
++src/dev-runtime/messages/messages-sqlite-service.mjs
++tests/playwright/tools/MessagesTool.spec.mjs
++toolbox/messages/index.html
++toolbox/messages/messages.js
+diff --git a/src/dev-runtime/messages/messages-sqlite-service.mjs b/src/dev-runtime/messages/messages-sqlite-service.mjs
+index 1b725b4e4..66f3a0c29 100644
+--- a/src/dev-runtime/messages/messages-sqlite-service.mjs
++++ b/src/dev-runtime/messages/messages-sqlite-service.mjs
+@@ -135,7 +135,9 @@ function categoryFromRow(row) {
+   };
+ }
  
- const GAME_JOURNEY_GROUP_ORDER = Object.freeze([
-   "Idea",
--  "Create",
-   "Design",
-   "Graphics",
-   "Audio",
-@@ -42,25 +41,23 @@ const GAME_JOURNEY_GROUP_ORDER = Object.freeze([
- ]);
- 
- const GAME_JOURNEY_ACCORDION_LABELS = Object.freeze([
--  "0% - Idea: Dream, brainstorm, and explore (0 of 4 complete, inactive)",
--  "0% - Create: Set up your game and crew (0 of 5 complete, active)",
--  "0% - Design: Shape the player experience (0 of 5 complete, active)",
--  "0% - Graphics: Create the look of your game (0 of 5 complete, active)",
--  "0% - Audio: Bring your world to life with sound (0 of 4 complete, inactive)",
--  "0% - Objects: Build things players can interact with (0 of 5 complete, active)",
--  "0% - Worlds: Design places to explore (0 of 5 complete, active)",
--  "0% - Interface: Create what players see and use (0 of 5 complete, active)",
--  "0% - Controls: Define how players play (0 of 4 complete, active)",
--  "0% - Rules: Make your game come alive (0 of 5 complete, active)",
--  "0% - Progression: Reward players and keep them engaged (0 of 4 complete, inactive)",
--  "0% - Play Test: See how your game feels (0 of 5 complete, active)",
--  "0% - Publish: Prepare your game for launch (0 of 5 complete, active)",
--  "0% - Share: Grow your community (0 of 5 complete, inactive)",
-+  "0% Complete — Idea: Dream, brainstorm, and explore",
-+  "0% Complete — Design: Shape your game's story and systems",
-+  "0% Complete — Graphics: Create the visual look of your game",
-+  "0% Complete — Audio: Build sounds, music, and voices",
-+  "0% Complete — Objects: Create the things players interact with",
-+  "0% Complete — Worlds: Build levels, maps, and places to explore",
-+  "0% Complete — Interface: Design menus, HUDs, and player screens",
-+  "0% Complete — Controls: Define how players interact with your game",
-+  "0% Complete — Rules: Create gameplay behavior and events",
-+  "0% Complete — Progression: Build rewards, unlocks, and advancement",
-+  "0% Complete — Play Test: Test, debug, and improve your game",
-+  "0% Complete — Publish: Prepare and release your game",
-+  "0% Complete — Share: Grow your audience and community",
- ]);
- 
- const GAME_JOURNEY_GROUP_COLORS = Object.freeze({
-   "Idea": { hex: "#FF2D2D", rgb: "rgb(255, 45, 45)" },
--  "Create": { hex: "#F59E0B", rgb: "rgb(245, 158, 11)" },
-   "Design": { hex: "#FF7A00", rgb: "rgb(255, 122, 0)" },
-   "Graphics": { hex: "#FFC857", rgb: "rgb(255, 200, 87)" },
-   "Audio": { hex: "#FACC15", rgb: "rgb(250, 204, 21)" },
-@@ -791,8 +788,11 @@ test("toolbox grouped view renders Game Journey order with unique colors while B
-       labels.map((label) => label.textContent.trim())
-     ));
-     expect(accordionLabels).toEqual(GAME_JOURNEY_ACCORDION_LABELS);
--    expect(accordionLabels.every((label) => /^\d+% - .+ \(\d+ of \d+ complete, (active|inactive)\)$/.test(label))).toBe(true);
-+    expect(accordionLabels.every((label) => /^\d+% Complete — .+: .+$/.test(label))).toBe(true);
-     expect(accordionLabels.join(" ")).not.toContain("xxx%");
-+    expect(accordionLabels.join(" ")).not.toMatch(/\(\d+ of \d+ complete/);
-+    expect(accordionLabels.join(" ")).not.toContain("inactive");
-+    expect(accordionLabels.join(" ")).not.toContain("active");
-     expect(accordionLabels.every((label) => !/[\r\n]/.test(label))).toBe(true);
- 
-     const groupSwatches = await page.locator("[data-tools-accordion] > summary [data-toolbox-group-label]").evaluateAll((labels) => (
-@@ -819,19 +819,21 @@ test("toolbox grouped view renders Game Journey order with unique colors while B
-     expect(toolboxGroupsByTool["Idea Board"]).toBe("Idea");
-     expect(toolboxGroupsByTool["Creator Learning"]).toBe("Idea");
-     expect(toolboxGroupsByTool["AI Command Center"]).toBe("Design");
--    expect(toolboxGroupsByTool["Game Hub"]).toBe("Create");
--    expect(toolboxGroupsByTool["Game Configuration"]).toBe("Create");
--    expect(toolboxGroupsByTool["Game Crew"]).toBe("Create");
--    expect(toolboxGroupsByTool["Tags"]).toBe("Create");
-+    expect(toolboxGroupsByTool["Game Hub"]).toBe("Design");
-+    expect(toolboxGroupsByTool["Game Configuration"]).toBe("Design");
-+    expect(toolboxGroupsByTool["Game Crew"]).toBe("Design");
-+    expect(toolboxGroupsByTool["Tags"]).toBe("Design");
-     expect(toolboxGroupsByTool["Game Journey"]).toBe("Progression");
-     expect(toolboxGroupsByTool["Publish"]).toBe("Publish");
-     expect(toolboxGroupsByTool["Marketplace"]).toBe("Share");
-     expect(toolboxGroupsByTool.Users).toBeUndefined();
- 
--    const createToolOrder = await page.locator("[data-tools-accordion='Create'] [data-toolbox-tool-card]").evaluateAll((cards) => (
-+    const designToolOrder = await page.locator("[data-tools-accordion='Design'] [data-toolbox-tool-card]").evaluateAll((cards) => (
-       cards.map((card) => card.getAttribute("data-toolbox-tool-card"))
-     ));
--    expect(createToolOrder).toEqual(["Game Hub", "Game Crew", "Game Configuration", "Tags"]);
-+    const expectedDesignTools = ["Game Hub", "Game Crew", "Game Configuration", "Tags", "Game Design", "AI Command Center"];
-+    expect(designToolOrder).toEqual(expect.arrayContaining(expectedDesignTools));
-+    expect(designToolOrder.filter((title) => expectedDesignTools.includes(title))).toEqual(expectedDesignTools);
- 
-     const toolLinks = await page.locator("[data-toolbox-tool-name-link]").evaluateAll((links) => (
-       links.map((link) => ({
-@@ -877,6 +879,79 @@ test("toolbox grouped view renders Game Journey order with unique colors while B
+-function emotionProfileFromRow(row) {
++function emotionProfileFromRow(row, usage = {}) {
++  const messageUsageCount = Number(usage.messageUsageCount || 0);
++  const segmentUsageCount = Number(usage.segmentUsageCount || 0);
+   return {
+     active: activeFromDatabase(row.active),
+     createdAt: row.createdAt,
+@@ -147,9 +149,13 @@ function emotionProfileFromRow(row) {
+     pauseBeforeMs: Number(row.pauseBeforeMs),
+     pitch: Number(row.pitch),
+     rate: Number(row.rate),
++    references: Array.isArray(usage.references) ? usage.references : [],
++    messageUsageCount,
++    segmentUsageCount,
+     status: activeFromDatabase(row.active) ? "Active" : "Inactive",
+     updatedAt: row.updatedAt,
+     updatedBy: row.updatedBy,
++    usageCount: messageUsageCount + segmentUsageCount,
+     volume: Number(row.volume),
+   };
+ }
+@@ -379,7 +385,7 @@ export class MessagesSqliteService {
+     return this.db().prepare(`
+       SELECT * FROM messages_emotion_profiles
+       ORDER BY name COLLATE NOCASE ASC
+-    `).all().map(emotionProfileFromRow);
++    `).all().map((row) => emotionProfileFromRow(row, this.emotionProfileUsage(row.key)));
    }
- });
  
-+test("toolbox grouped Game Journey accordions keep friendly labels readable on mobile", async ({ page }) => {
-+  const server = await startRepoServer();
-+  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
-+  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
-+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
-+  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
-+  const failedRequests = [];
-+  const pageErrors = [];
-+  const consoleErrors = [];
-+
-+  page.on("response", (response) => {
-+    if (response.status() >= 400) {
-+      failedRequests.push(`${response.status()} ${response.url()}`);
-+    }
-+  });
-+  page.on("requestfailed", (request) => {
-+    failedRequests.push(`FAILED ${request.url()}`);
-+  });
-+  page.on("pageerror", (error) => {
-+    const text = error.stack || error.message;
-+    if (!isBrowserExtensionNoise(text)) {
-+      pageErrors.push(error.message);
-+    }
-+  });
-+  page.on("console", (message) => {
-+    if (message.type() === "error" && !isBrowserExtensionNoise(message.text())) {
-+      consoleErrors.push(message.text());
-+    }
-+  });
-+
-+  try {
-+    await page.setViewportSize({ width: 390, height: 844 });
-+    await workspaceV2CoverageReporter.start(page);
-+    await setServerSession(server, MOCK_DB_KEYS.users.admin);
-+    await page.goto(`${server.baseUrl}/toolbox/index.html?view=group`, { waitUntil: "networkidle" });
-+    const plannedFilter = page.locator("[data-toolbox-status-filter='planned']");
-+    if (await plannedFilter.getAttribute("aria-pressed") !== "true") {
-+      await plannedFilter.click();
-+    }
-+    const deprecatedFilter = page.locator("[data-toolbox-status-filter='deprecated']");
-+    if (await deprecatedFilter.getAttribute("aria-pressed") !== "true") {
-+      await deprecatedFilter.click();
-+    }
-+
-+    const labels = page.locator("[data-tools-accordion] > summary [data-toolbox-group-label]");
-+    await expect(labels).toHaveText(GAME_JOURNEY_ACCORDION_LABELS);
-+    const labelLayout = await labels.evaluateAll((items) => (
-+      items.map((label) => {
-+        const rect = label.getBoundingClientRect();
-+        const viewportWidth = document.documentElement.clientWidth;
-+        return {
-+          fitsViewport: rect.left >= 0 && rect.right <= viewportWidth,
-+          text: label.textContent.trim(),
-+          wraps: getComputedStyle(label).whiteSpace !== "nowrap",
-+        };
-+      })
-+    ));
-+    expect(labelLayout.every((item) => item.fitsViewport)).toBe(true);
-+    expect(labelLayout.every((item) => item.wraps)).toBe(true);
-+    expect(labelLayout.map((item) => item.text)).toEqual(GAME_JOURNEY_ACCORDION_LABELS);
-+    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-+
-+    expect(failedRequests).toEqual([]);
-+    expect(pageErrors).toEqual([]);
-+    expect(consoleErrors).toEqual([]);
-+  } finally {
-+    await workspaceV2CoverageReporter.stop(page);
-+    await server.close();
-+    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
-+    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
-+  }
-+});
-+
- test("Game Crew friendly route resolves while old Users route remains compatible", async ({ page }) => {
-   const server = await startRepoServer();
-   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
-diff --git a/toolbox/tools-page-accordions.js b/toolbox/tools-page-accordions.js
-index 8475d8a6c..8c5c6061b 100644
---- a/toolbox/tools-page-accordions.js
-+++ b/toolbox/tools-page-accordions.js
-@@ -72,7 +72,6 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
-     const stateSwatchMap = Object.freeze({ ...(toolboxContract.releaseChannelSwatches || {}) });
-     const gameJourneyGroupOrder = Object.freeze([
-         "Idea",
--        "Create",
-         "Design",
-         "Graphics",
-         "Audio",
-@@ -88,23 +87,21 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
-     ]);
-     const gameJourneyFriendlyDescriptions = Object.freeze({
-         "Idea": "Dream, brainstorm, and explore",
--        "Create": "Set up your game and crew",
--        "Design": "Shape the player experience",
--        "Graphics": "Create the look of your game",
--        "Audio": "Bring your world to life with sound",
--        "Objects": "Build things players can interact with",
--        "Worlds": "Design places to explore",
--        "Interface": "Create what players see and use",
--        "Controls": "Define how players play",
--        "Rules": "Make your game come alive",
--        "Progression": "Reward players and keep them engaged",
--        "Play Test": "See how your game feels",
--        "Publish": "Prepare your game for launch",
--        "Share": "Grow your community"
-+        "Design": "Shape your game's story and systems",
-+        "Graphics": "Create the visual look of your game",
-+        "Audio": "Build sounds, music, and voices",
-+        "Objects": "Create the things players interact with",
-+        "Worlds": "Build levels, maps, and places to explore",
-+        "Interface": "Design menus, HUDs, and player screens",
-+        "Controls": "Define how players interact with your game",
-+        "Rules": "Create gameplay behavior and events",
-+        "Progression": "Build rewards, unlocks, and advancement",
-+        "Play Test": "Test, debug, and improve your game",
-+        "Publish": "Prepare and release your game",
-+        "Share": "Grow your audience and community"
-     });
-     const gameJourneyGroupSwatches = Object.freeze({
-         "Idea": "swatch-red",
--        "Create": "swatch-amber",
-         "Design": "swatch-orange",
-         "Graphics": "swatch-gold",
-         "Audio": "swatch-yellow",
-@@ -120,7 +117,6 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
-     });
-     const gameJourneyGroupClasses = Object.freeze({
-         "Idea": "tool-group-idea",
--        "Create": "tool-group-game-create",
-         "Design": "tool-group-journey-design",
-         "Graphics": "tool-group-graphics",
-         "Audio": "tool-group-journey-audio",
-@@ -152,12 +148,13 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
-         "environments": "Publish",
-         "events": "Rules",
-         "fonts": "Interface",
--        "game-configuration": "Create",
-+        "game-configuration": "Design",
-+        "game-crew": "Design",
-         "game-design": "Design",
-         "game-journey": "Progression",
-         "game-migration": "Publish",
-         "game-testing": "Play Test",
--        "game-workspace": "Create",
-+        "game-workspace": "Design",
-         "hitboxes": "Controls",
-         "idea-board": "Idea",
-         "input-mapping-v2": "Controls",
-@@ -176,20 +173,23 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
-         "saved-data": "Progression",
-         "speech-to-text": "Audio",
-         "sprites": "Graphics",
--        "tags": "Create",
-+        "tags": "Design",
-         "text-to-speech": "Audio",
--        "users": "Create",
-+        "users": "Design",
-         "videos": "Graphics",
-         "voices": "Audio",
-         "worlds": "Worlds"
-     });
-     const toolboxGroupPositions = new Map(toolboxGroupOrder.map((group, index) => [group, index]));
-     const workflowToolOrderByGroup = Object.freeze({
--        "Create": Object.freeze({
-+        "Design": Object.freeze({
-             "game-workspace": 1,
-             "users": 2,
-+            "game-crew": 2,
-             "game-configuration": 3,
--            "tags": 4
-+            "tags": 4,
-+            "game-design": 5,
-+            "ai-assistant": 6
-         })
-     });
-     toolboxDefaultReleaseChannels.forEach((channel) => {
-@@ -238,11 +238,9 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
- 
-     function gameJourneyAccordionLabel(groupName) {
-         const metric = gameJourneyCompletionByGroup.get(groupName);
--        const description = metric?.friendlyDescription || gameJourneyFriendlyDescriptions[groupName] || groupName;
--        if (!metric) {
--            return `0% - ${groupName}: ${description} (0 of 0 complete, inactive)`;
--        }
--        return `${metric.percentComplete}% - ${groupName}: ${description} (${metric.completedCount} of ${metric.plannedCount} complete, ${metric.status})`;
-+        const description = gameJourneyFriendlyDescriptions[groupName] || groupName;
-+        const percentComplete = Number.isFinite(metric?.percentComplete) ? metric.percentComplete : 0;
-+        return `${percentComplete}% Complete — ${groupName}: ${description}`;
+   getEmotionProfile(key) {
+@@ -387,7 +393,7 @@ export class MessagesSqliteService {
+     if (!row) {
+       throw httpError("Emotion profile was not found.", 404);
      }
+-    return emotionProfileFromRow(row);
++    return emotionProfileFromRow(row, this.emotionProfileUsage(row.key));
+   }
  
-     function getGameProgressSummary() {
+   findEmotionProfileByName(name) {
+@@ -399,6 +405,46 @@ export class MessagesSqliteService {
+     return row ? emotionProfileFromRow(row) : null;
+   }
+ 
++  emotionProfileUsage(key) {
++    const messageReferences = this.db().prepare(`
++      SELECT key, name
++      FROM messages_records
++      WHERE emotionProfileKey = ?
++      ORDER BY name COLLATE NOCASE ASC, key ASC
++    `).all(key).map((row) => ({
++      key: row.key,
++      label: row.name,
++      type: "message",
++    }));
++    const segmentReferences = this.db().prepare(`
++      SELECT
++        messages_segments.key,
++        messages_segments.messageKey,
++        messages_segments.displayOrder,
++        messages_segments.segmentText,
++        messages_records.name AS messageName
++      FROM messages_segments
++      LEFT JOIN messages_records ON messages_records.key = messages_segments.messageKey
++      WHERE messages_segments.emotionProfileKey = ?
++      ORDER BY messages_records.name COLLATE NOCASE ASC, messages_segments.displayOrder ASC, messages_segments.key ASC
++    `).all(key).map((row) => ({
++      displayOrder: Number(row.displayOrder),
++      key: row.key,
++      label: `${row.messageName || "Unknown Message"} segment ${row.displayOrder}`,
++      messageKey: row.messageKey,
++      preview: normalizeText(row.segmentText).slice(0, 80),
++      type: "segment",
++    }));
++    return {
++      messageUsageCount: messageReferences.length,
++      references: [
++        ...messageReferences,
++        ...segmentReferences,
++      ],
++      segmentUsageCount: segmentReferences.length,
++    };
++  }
++
+   insertEmotionProfile(input = {}) {
+     const key = createUlid();
+     const now = timestamp();
+@@ -447,6 +493,10 @@ export class MessagesSqliteService {
+     if (duplicate && duplicate.key !== key) {
+       throw httpError(`Emotion profile ${name} already exists.`);
+     }
++    const active = normalizeActive(input.active, existing.active);
++    if (existing.active && !active && existing.usageCount > 0) {
++      throw httpError("Emotion profile is referenced by messages or segments. Reassign those references before deactivating this emotion profile.");
++    }
+     const now = timestamp();
+     this.db().prepare(`
+       UPDATE messages_emotion_profiles
+@@ -461,7 +511,7 @@ export class MessagesSqliteService {
+       normalizeNumber(input.rate, existing.rate),
+       normalizeInteger(input.pauseBeforeMs, existing.pauseBeforeMs),
+       normalizeInteger(input.pauseAfterMs, existing.pauseAfterMs),
+-      activeToDatabase(normalizeActive(input.active, existing.active)),
++      activeToDatabase(active),
+       now,
+       normalizeActorKey(actorKey),
+       key,
+diff --git a/tests/playwright/tools/MessagesTool.spec.mjs b/tests/playwright/tools/MessagesTool.spec.mjs
+index 5741cf563..983571bc0 100644
+--- a/tests/playwright/tools/MessagesTool.spec.mjs
++++ b/tests/playwright/tools/MessagesTool.spec.mjs
+@@ -246,6 +246,43 @@ test("Messages tool creates, validates, updates, and persists through Local API
+     });
+     expect(deleteSegmentResult.status).toBe(404);
+ 
++    const profileUsageResult = await jsonRequest(`${failures.server.baseUrl}/api/messages/emotion-profiles`);
++    expect(profileUsageResult.response.ok).toBe(true);
++    const urgentProfile = profileUsageResult.payload.data.emotionProfiles.find((profile) => profile.name === "Urgent");
++    expect(urgentProfile).toEqual(expect.objectContaining({
++      messageUsageCount: 1,
++      segmentUsageCount: 1,
++      usageCount: 2,
++    }));
++    expect(urgentProfile.references.map((reference) => reference.type).sort()).toEqual(["message", "segment"]);
++
++    const deactivateReferencedProfile = await jsonRequest(`${failures.server.baseUrl}/api/messages/emotion-profiles/${urgentProfile.key}`, {
++      body: JSON.stringify({
++        active: false,
++        description: urgentProfile.description,
++        name: urgentProfile.name,
++        pauseAfterMs: urgentProfile.pauseAfterMs,
++        pauseBeforeMs: urgentProfile.pauseBeforeMs,
++        pitch: urgentProfile.pitch,
++        rate: urgentProfile.rate,
++        volume: urgentProfile.volume,
++      }),
++      method: "POST",
++    });
++    expect(deactivateReferencedProfile.response.status).toBe(400);
++    expect(deactivateReferencedProfile.payload.error).toContain("Emotion profile is referenced by messages or segments.");
++
++    await expect(page.locator("[data-messages-emotion-row]").filter({ hasText: "Urgent" })).toContainText("2");
++    await page.locator("[data-messages-emotion-row]").filter({ hasText: "Urgent" }).getByRole("button", { name: "Edit" }).click();
++    await page.locator("[data-messages-emotion-active]").uncheck();
++    await page.getByRole("button", { name: "Save Emotion Profile" }).click();
++    await expect(page.locator("[data-messages-log]")).toContainText("Emotion profile is referenced by messages or segments.");
++    await expect(page.locator("[data-messages-emotion-row]").filter({ hasText: "Urgent" })).toContainText("Active");
++    failures.failedRequests = failures.failedRequests.filter((request) => !request.includes(`/api/messages/emotion-profiles/${urgentProfile.key}`));
++    failures.consoleErrors = failures.consoleErrors.filter(
++      (message) => message !== "Failed to load resource: the server responded with a status of 400 (Bad Request)",
++    );
++
+     await page.locator("[data-messages-row]").filter({ hasText: "Forest Warning" }).getByRole("button", { name: "Edit" }).click();
+     await page.locator("[data-messages-name]").fill("Forest Warning Updated");
+     await page.locator("[data-messages-text]").fill("The forest gets darker beyond this point.");
+diff --git a/toolbox/messages/index.html b/toolbox/messages/index.html
+index dea5ac800..4a6d46984 100644
+--- a/toolbox/messages/index.html
++++ b/toolbox/messages/index.html
+@@ -79,15 +79,15 @@
+                                                     </tr>
+                                                     <tr>
+                                                         <th scope="row"><label for="messagesEmotionVolume">Volume</label></th>
+-                                                        <td><input id="messagesEmotionVolume" type="number" min="0" max="2" step="0.05" value="1" data-messages-emotion-volume></td>
++                                                        <td><input id="messagesEmotionVolume" type="number" min="0" max="2" step="0.01" value="1" data-messages-emotion-volume></td>
+                                                     </tr>
+                                                     <tr>
+                                                         <th scope="row"><label for="messagesEmotionPitch">Pitch</label></th>
+-                                                        <td><input id="messagesEmotionPitch" type="number" min="0.25" max="2" step="0.05" value="1" data-messages-emotion-pitch></td>
++                                                        <td><input id="messagesEmotionPitch" type="number" min="0.25" max="2" step="0.01" value="1" data-messages-emotion-pitch></td>
+                                                     </tr>
+                                                     <tr>
+                                                         <th scope="row"><label for="messagesEmotionRate">Rate</label></th>
+-                                                        <td><input id="messagesEmotionRate" type="number" min="0.25" max="2" step="0.05" value="1" data-messages-emotion-rate></td>
++                                                        <td><input id="messagesEmotionRate" type="number" min="0.25" max="2" step="0.01" value="1" data-messages-emotion-rate></td>
+                                                     </tr>
+                                                     <tr>
+                                                         <th scope="row"><label for="messagesEmotionPauseBefore">Pause Before Ms</label></th>
+@@ -119,12 +119,13 @@
+                                             <thead>
+                                                 <tr>
+                                                     <th scope="col">Name</th>
++                                                    <th scope="col">Usage</th>
+                                                     <th scope="col">Status</th>
+                                                     <th scope="col">Actions</th>
+                                                 </tr>
+                                             </thead>
+                                             <tbody data-messages-emotions>
+-                                                <tr><td colspan="3">Loading emotion profiles.</td></tr>
++                                                <tr><td colspan="4">Loading emotion profiles.</td></tr>
+                                             </tbody>
+                                         </table>
+                                     </div>
+diff --git a/toolbox/messages/messages.js b/toolbox/messages/messages.js
+index 5d69c6f5b..3f2fd3168 100644
+--- a/toolbox/messages/messages.js
++++ b/toolbox/messages/messages.js
+@@ -218,6 +218,7 @@ function renderEmotionRows() {
+     actions.append(group);
+     row.append(
+       createCell(profile.name),
++      createCell(String(profile.usageCount || 0)),
+       createCell(statusForActive(profile.active)),
+       actions,
+     );
+@@ -536,10 +537,15 @@ async function loadAll() {
+ 
+ async function reloadSegments() {
+   const segmentsPayload = listMessageSegments();
++  const emotionPayload = listEmotionProfiles();
+   state.segments = segmentsPayload.segments || [];
++  state.emotionProfiles = emotionPayload.emotionProfiles || [];
++  populateSelect(elements.emotionProfile, activeEmotionProfiles(), "Select emotion profile");
++  populateSelect(elements.segmentEmotionProfile, activeEmotionProfiles(), "Select emotion profile");
++  renderEmotionRows();
+   renderSegmentRows();
+   resetSegmentForm();
+-  renderPersistence(segmentsPayload.persistence || {});
++  renderPersistence(segmentsPayload.persistence || emotionPayload.persistence || {});
+ }
+ 
+ async function refreshAfterSave(message) {
+
+diff --git a/docs_build/dev/reports/PR_26171_006-message-emotion-profile-management-manual-validation.md b/docs_build/dev/reports/PR_26171_006-message-emotion-profile-management-manual-validation.md
+new file mode 100644
+index 000000000..c7f514b58
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26171_006-message-emotion-profile-management-manual-validation.md
+@@ -0,0 +1,11 @@
++# PR_26171_006 Manual Validation Notes
++
++- Confirmed targeted Playwright flow opens the Theme V2 Messages tool.
++- Confirmed seeded categories and emotion profiles load.
++- Confirmed a message can be created with the `Urgent` emotion profile.
++- Confirmed a message segment can be created with the same `Urgent` emotion profile.
++- Confirmed `Urgent` reports usage count `2`.
++- Confirmed referenced-profile deactivation is blocked through the Local API.
++- Confirmed referenced-profile deactivation is blocked through the UI and displays an actionable diagnostic.
++- Confirmed no delete behavior, TTS behavior, speech preview, voice provider adapter, runtime playback, or audio playback behavior was introduced.
++- Manual merge validation was not performed because `npm run test:workspace-v2` failed.
+
+diff --git a/docs_build/dev/reports/PR_26171_006-message-emotion-profile-management-validation.txt b/docs_build/dev/reports/PR_26171_006-message-emotion-profile-management-validation.txt
+new file mode 100644
+index 000000000..4423219e0
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26171_006-message-emotion-profile-management-validation.txt
+@@ -0,0 +1,30 @@
++PR_26171_006-message-emotion-profile-management validation
++
++Branch:
++PASS pr/PR_26171_006-message-emotion-profile-management
++
++Syntax:
++PASS node --check src/dev-runtime/messages/messages-sqlite-service.mjs
++PASS node --check toolbox/messages/messages.js
++PASS node --check tests/playwright/tools/MessagesTool.spec.mjs
++
++Targeted API/SQLite:
++PASS direct service probe created a message and segment using Urgent, verified messageUsageCount=1, segmentUsageCount=1, usageCount=2, and verified referenced deactivation returns the expected 400 diagnostic.
++
++Playwright:
++PASS npx playwright test tests/playwright/tools/MessagesTool.spec.mjs --project=playwright --workers=1 --reporter=list
++Result: 1 passed.
++
++Workspace lane:
++FAIL npm run test:workspace-v2
++Failure file: tests/playwright/tools/RootToolsFutureState.spec.mjs
++Failures:
++- Toolbox accordion control-card count was 0.
++- Header alphabetical expectation failed around Game Hub/Game Journey ordering.
++- Non-Messages pages reported failed requests to session, platform banner, registry, and toolbox constants APIs.
++
++Whitespace:
++PASS git diff --check on touched implementation/test files. CRLF warnings only.
++
++Disposition:
++BLOCKED. PR_006 implementation is not merged because required workspace-v2 validation failed outside the Messages scope.
+
+diff --git a/docs_build/dev/reports/PR_26171_006-message-emotion-profile-management.md b/docs_build/dev/reports/PR_26171_006-message-emotion-profile-management.md
+new file mode 100644
+index 000000000..93bce3c37
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26171_006-message-emotion-profile-management.md
+@@ -0,0 +1,53 @@
++# PR_26171_006-message-emotion-profile-management
++
++## Branch Validation
++
++- Branch: `pr/PR_26171_006-message-emotion-profile-management`
++- Source: created after `main` contained commit `3dcb965a3`
++- Status: PASS for branch setup; implementation branch remains unmerged because required workspace validation failed.
++
++## Requirement Checklist
++
++- PASS: Emotion profile payloads expose `messageUsageCount`, `segmentUsageCount`, `usageCount`, and `references`.
++- PASS: Usage counts are computed from `messages_records.emotionProfileKey` and `messages_segments.emotionProfileKey`.
++- PASS: Referenced emotion profiles cannot be deactivated.
++- PASS: Blocked deactivation shows an actionable API/UI diagnostic.
++- PASS: Emotion Profiles table displays usage count.
++- PASS: Existing add/edit/Active behavior is preserved for unreferenced profiles.
++- PASS: No delete endpoint was added.
++- PASS: No Text To Speech, speech preview, voice adapter, runtime playback, or audio behavior was added.
++- PASS: Theme V2 rules were preserved; no inline CSS, style block, inline script, or inline event handler was introduced.
++- FAIL: Required `npm run test:workspace-v2` lane failed in existing `RootToolsFutureState.spec.mjs` coverage outside the Messages tool.
++
++## Validation Lane Report
++
++- PASS: `node --check src/dev-runtime/messages/messages-sqlite-service.mjs`
++- PASS: `node --check toolbox/messages/messages.js`
++- PASS: `node --check tests/playwright/tools/MessagesTool.spec.mjs`
++- PASS: Direct SQLite/API usage-count and referenced-deactivation probe.
++- PASS: `npx playwright test tests/playwright/tools/MessagesTool.spec.mjs --project=playwright --workers=1 --reporter=list`
++- PASS: `git diff --check -- src/dev-runtime/messages/messages-sqlite-service.mjs toolbox/messages/index.html toolbox/messages/messages.js tests/playwright/tools/MessagesTool.spec.mjs`
++- FAIL: `npm run test:workspace-v2`
++
++## Workspace-V2 Failure Summary
++
++`npm run test:workspace-v2` failed in `tests/playwright/tools/RootToolsFutureState.spec.mjs`:
++
++- `root tools surface links current tool pages without old_* routes`: Toolbox accordion `.control-card` count was `0`.
++- `common header renders primary navigation order across active pages`: existing alphabetical assertion expected `Game Hub` before `Game Journey`.
++- `learn wireframe pages load with shared Theme V2 structure`: failed requests to `/api/session/current` and `/api/platform-settings/banner`.
++- `tool template future-state page loads from root Theme V2 paths`: failed requests to `/api/session/current`, `/api/toolbox/registry/snapshot`, and `/api/platform-settings/banner`.
++- `representative active tool pages align center cleanup and registry group colors`: failed requests to toolbox constants, session, platform banner, and registry APIs.
++
++These failures are outside the PR_006 Messages emotion profile scope and were not fixed in this branch.
++
++## Manual Validation Notes
++
++- The Messages Playwright path creates a message using the `Urgent` profile and a segment using the same profile.
++- The `Urgent` profile row displays usage count `2`.
++- API deactivation of referenced `Urgent` returns HTTP 400 with the expected diagnostic.
++- UI deactivation of referenced `Urgent` shows the expected diagnostic and leaves the profile Active.
++
++## Samples Decision
++
++- Full samples smoke was not run.

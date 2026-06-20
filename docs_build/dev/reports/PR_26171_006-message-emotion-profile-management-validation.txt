@@ -1,0 +1,30 @@
+PR_26171_006-message-emotion-profile-management validation
+
+Branch:
+PASS pr/PR_26171_006-message-emotion-profile-management
+
+Syntax:
+PASS node --check src/dev-runtime/messages/messages-sqlite-service.mjs
+PASS node --check toolbox/messages/messages.js
+PASS node --check tests/playwright/tools/MessagesTool.spec.mjs
+
+Targeted API/SQLite:
+PASS direct service probe created a message and segment using Urgent, verified messageUsageCount=1, segmentUsageCount=1, usageCount=2, and verified referenced deactivation returns the expected 400 diagnostic.
+
+Playwright:
+PASS npx playwright test tests/playwright/tools/MessagesTool.spec.mjs --project=playwright --workers=1 --reporter=list
+Result: 1 passed.
+
+Workspace lane:
+FAIL npm run test:workspace-v2
+Failure file: tests/playwright/tools/RootToolsFutureState.spec.mjs
+Failures:
+- Toolbox accordion control-card count was 0.
+- Header alphabetical expectation failed around Game Hub/Game Journey ordering.
+- Non-Messages pages reported failed requests to session, platform banner, registry, and toolbox constants APIs.
+
+Whitespace:
+PASS git diff --check on touched implementation/test files. CRLF warnings only.
+
+Disposition:
+BLOCKED. PR_006 implementation is not merged because required workspace-v2 validation failed outside the Messages scope.
