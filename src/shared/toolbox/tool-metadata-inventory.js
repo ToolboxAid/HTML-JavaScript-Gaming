@@ -1448,7 +1448,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForTestable": false,
     "requiredForPublish": false,
     "requires": [],
-    "status": "Beta",
+    "status": "beta",
+    "releaseChannel": "beta",
     "progressChecklist": [
       "Browser Web Speech API preview",
       "Creator text entry",

@@ -27,7 +27,6 @@ const DEFAULT_TTS_PROFILE = Object.freeze({
 const ttsServiceRegistry = createMessageStudioTtsServiceRegistry();
 
 const elements = {
-  addMessageRow: document.querySelector("[data-messages-add-row]"),
   count: document.querySelector("[data-messages-count]"),
   log: document.querySelector("[data-messages-log]"),
   persistenceEngine: document.querySelector("[data-messages-persistence-engine]"),
@@ -203,6 +202,27 @@ function tableMessage(colSpan, text) {
   cell.colSpan = colSpan;
   cell.textContent = text;
   row.append(cell);
+  return row;
+}
+
+function tableActionRow(colSpan, button) {
+  const row = document.createElement("tr");
+  const cell = document.createElement("td");
+  cell.colSpan = colSpan;
+  cell.append(createActionGroup(button));
+  row.append(cell);
+  return row;
+}
+
+function createMessageAddControlRow() {
+  const row = tableActionRow(6, createButton("Add Message", "messagesAddRow", NEW_ROW_KEY));
+  row.dataset.messagesAddControlRow = "";
+  return row;
+}
+
+function createSegmentAddControlRow() {
+  const row = tableActionRow(6, createButton("Add Part", "messagesSegmentAddRow", state.selectedMessageKey));
+  row.dataset.messagesSegmentAddControlRow = state.selectedMessageKey;
   return row;
 }
 
@@ -547,14 +567,13 @@ function createMessageSegmentTable() {
 
   if (state.editingSegmentKey === NEW_ROW_KEY) {
     tbody.append(createSegmentEditRow(null));
+  } else {
+    tbody.append(createSegmentAddControlRow());
   }
 
   table.append(thead, tbody);
   tableWrapper.append(table);
-  const actionGroup = document.createElement("div");
-  actionGroup.className = "action-group";
-  actionGroup.append(createButton("Add Part", "messagesSegmentAddRow", state.selectedMessageKey));
-  wrapper.append(tableWrapper, actionGroup);
+  wrapper.append(tableWrapper);
   return wrapper;
 }
 
@@ -612,6 +631,7 @@ function renderMessageRows() {
   elements.table.replaceChildren();
   if (!state.messages.length && state.editingMessageKey !== NEW_ROW_KEY) {
     elements.table.append(tableMessage(6, "No messages saved yet. Add a message such as Bat Encounter."));
+    elements.table.append(createMessageAddControlRow());
     return;
   }
 
@@ -627,6 +647,9 @@ function renderMessageRows() {
     const nameCell = document.createElement("td");
     const isExpanded = state.selectedMessageKey === message.key;
     nameCell.dataset.messagesNameCell = message.key;
+    nameCell.tabIndex = 0;
+    nameCell.setAttribute("role", "button");
+    nameCell.setAttribute("aria-expanded", String(isExpanded));
     nameCell.textContent = `${isExpanded ? "v" : ">"} ${message.name}`;
     const ttsCell = document.createElement("td");
     ttsCell.append(createTtsProfileSelect(
@@ -654,6 +677,8 @@ function renderMessageRows() {
 
   if (state.editingMessageKey === NEW_ROW_KEY) {
     createMessageEditRows(null).forEach((row) => elements.table.append(row));
+  } else {
+    elements.table.append(createMessageAddControlRow());
   }
 }
 
@@ -1010,14 +1035,6 @@ async function moveSegment(key, direction) {
   }
 }
 
-elements.addMessageRow?.addEventListener("click", () => {
-  clearValidation();
-  state.editingMessageKey = NEW_ROW_KEY;
-  state.editingSegmentKey = "";
-  render();
-  setText(elements.log, "Ready to add a message row.");
-});
-
 elements.previewTtsProfile?.addEventListener("change", () => {
   renderSpeechTestControls();
 });
@@ -1064,6 +1081,8 @@ elements.table?.addEventListener("click", async (event) => {
     return;
   }
   const row = event.target.closest("[data-messages-row]");
+  const messageAddButton = event.target.closest("[data-messages-add-row]");
+  const messageNameCell = event.target.closest("[data-messages-name-cell]");
   const segmentRow = event.target.closest("[data-messages-segment-row]");
   const playButton = event.target.closest("[data-messages-play]");
   const editButton = event.target.closest("[data-messages-edit]");
@@ -1079,6 +1098,14 @@ elements.table?.addEventListener("click", async (event) => {
   const moveUpButton = event.target.closest("[data-messages-segment-move-up]");
   const moveDownButton = event.target.closest("[data-messages-segment-move-down]");
 
+  if (messageAddButton) {
+    clearValidation();
+    state.editingMessageKey = NEW_ROW_KEY;
+    state.editingSegmentKey = "";
+    render();
+    setText(elements.log, "Ready to add a message row.");
+    return;
+  }
   if (playButton) {
     state.selectedMessageKey = playButton.dataset.messagesPlay;
     state.selectedSegmentKey = "";
@@ -1162,12 +1189,21 @@ elements.table?.addEventListener("click", async (event) => {
     render();
     return;
   }
-  if (row) {
-    state.selectedMessageKey = row.dataset.messagesRow;
+  if (messageNameCell && row) {
+    state.selectedMessageKey = state.selectedMessageKey === row.dataset.messagesRow ? "" : row.dataset.messagesRow;
     state.selectedSegmentKey = "";
     state.editingSegmentKey = "";
     render();
   }
+});
+
+elements.table?.addEventListener("keydown", (event) => {
+  const messageNameCell = event.target.closest("[data-messages-name-cell]");
+  if (!messageNameCell || !["Enter", " "].includes(event.key)) {
+    return;
+  }
+  event.preventDefault();
+  messageNameCell.click();
 });
 
 try {

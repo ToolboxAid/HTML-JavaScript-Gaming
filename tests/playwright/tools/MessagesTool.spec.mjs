@@ -167,9 +167,11 @@ test("Message Studio renders Messages with child Message Parts and plays ordered
     await expect(page.getByRole("columnheader", { name: "Message Name" })).toBeVisible();
     await expect(page.getByRole("columnheader", { name: "Default TTS Profile" })).toBeVisible();
     await expect(page.locator("[data-messages-segment-count]")).toHaveText("0");
+    await expect(page.locator("[data-messages-add-control-row]")).toBeVisible();
     await expect(page.getByRole("button", { name: "Stop" })).toBeEnabled();
 
     await page.getByRole("button", { name: "Add Message" }).click();
+    await expect(page.locator("[data-messages-row-editor='__new__']")).toBeVisible();
     await page.locator("[data-messages-commit='__new__']").click();
     await expect(page.locator("[data-messages-validation-card]")).toBeVisible();
     await expect(page.locator("[data-messages-validation-errors]")).toContainText("Message Name is required.");
@@ -191,7 +193,13 @@ test("Message Studio renders Messages with child Message Parts and plays ordered
     await expect(page.locator("[data-message-default-tts-profile]").first()).toContainText("Default Balanced TTS Profile");
 
     const messageRow = page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" });
-    await messageRow.click();
+    const messageNameCell = page.locator("[data-messages-name-cell]").filter({ hasText: "Bat Encounter" });
+    await expect(page.locator("[data-messages-segment-host]")).toBeVisible();
+    await messageNameCell.click();
+    await expect(page.locator("[data-messages-segment-host]")).toHaveCount(0);
+    await messageRow.locator("td").nth(3).click();
+    await expect(page.locator("[data-messages-segment-host]")).toHaveCount(0);
+    await messageNameCell.click();
     await expect(page.locator("[data-messages-segment-host]")).toBeVisible();
     await expect(page.getByRole("heading", { name: "Message Parts" })).toBeVisible();
     await expect(page.getByRole("columnheader", { name: "Order" })).toBeVisible();
@@ -199,6 +207,7 @@ test("Message Studio renders Messages with child Message Parts and plays ordered
     await expect(page.getByRole("columnheader", { exact: true, name: "TTS Profile" })).toBeVisible();
 
     await page.getByRole("button", { name: "Add Part" }).click();
+    await expect(page.locator("[data-messages-segment-add-control-row]")).toHaveCount(0);
     await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-text]")).toBeVisible();
     await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion]")).toBeVisible();
     await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-tts-profile]")).toContainText("Default Balanced TTS Profile");
@@ -307,7 +316,6 @@ test("Message Studio shows actionable playback error when audio engine is unavai
       name: "Bat Encounter",
       text: "Bats drop from the rafters.",
     });
-    await page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" }).click();
     await addPart(page, {
       emotion: "Urgent",
       order: 1,

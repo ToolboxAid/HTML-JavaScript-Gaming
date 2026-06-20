@@ -277,7 +277,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Build Path" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Build Path" })).not.toHaveAttribute("aria-disabled", "true");
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 14/42");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 15/43");
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='admin']")).toHaveCount(0);
     await expect(page.locator("nav.nav-links > a[data-route='learn']")).toHaveCount(1);
@@ -316,8 +316,13 @@ test("root tools surface links current tool pages without old_* routes", async (
     });
     await expect(readyGameWorkspaceCard.locator("a.btn")).toHaveAttribute("href", "../toolbox/game-workspace/index.html");
     const defaultToolLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
-    expect(defaultToolLabels).toEqual(["Achievements", "Assets", "Colors", "Controls", "Game Configuration", "Game Design", "Game Hub", "Game Journey", "Idea Board", "Languages", "Message Studio", "Objects", "Saved Data", "Tags"]);
-    await expect(page.locator("[data-toolbox-readiness]")).toHaveText(["Wireframe", "Beta", "Complete", "Wireframe", "Beta", "Beta", "Beta", "Beta", "Wireframe", "Wireframe", "Beta", "Beta", "Wireframe", "Beta"]);
+    expect(defaultToolLabels).toEqual(["Achievements", "Assets", "Colors", "Controls", "Game Configuration", "Game Design", "Game Hub", "Game Journey", "Idea Board", "Languages", "Message Studio", "Objects", "Saved Data", "Tags", "Text To Speech"]);
+    const textToSpeechCard = page.locator("main .control-card").filter({
+      has: page.locator("h3", { hasText: /^Text To Speech$/ })
+    });
+    await expect(textToSpeechCard.locator("[data-toolbox-tool-name-link='Text To Speech']")).toHaveAttribute("href", "/toolbox/text-to-speech/index.html");
+    await expect(textToSpeechCard.locator("[data-toolbox-tool-name-link='Text To Speech']")).toHaveAttribute("data-registered-tool-route", "toolbox/text-to-speech/index.html");
+    await expect(page.locator("[data-toolbox-readiness]")).toHaveText(["Wireframe", "Beta", "Complete", "Wireframe", "Beta", "Beta", "Beta", "Beta", "Wireframe", "Wireframe", "Beta", "Beta", "Wireframe", "Beta", "Beta"]);
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^AI Command Center$/ }) })).toHaveCount(0);
     const oldStandaloneLabels = [
       ["Palette", "Manager"].join(" "),
@@ -387,7 +392,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     const guestGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
       groups.map((group) => group.dataset.toolsAccordion)
     ));
-    expect(guestGroupLabels).toEqual(["Idea", "Design", "Graphics", "Objects", "Interface", "Controls", "Progression"]);
+    expect(guestGroupLabels).toEqual(["Idea", "Design", "Graphics", "Audio", "Objects", "Interface", "Controls", "Progression"]);
     await expect(page.locator("[data-tools-accordion='Admin']")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
     await expect(page.locator("[data-tools-accordion-list] .control-card h3", { hasText: /^Progress$/ })).toHaveCount(0);
@@ -413,13 +418,13 @@ test("root tools surface links current tool pages without old_* routes", async (
     expect(failedRequests.filter((request) => request.includes("/toolbox/old_"))).toEqual([]);
 
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 14/42");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 15/43");
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
     await expect(page.locator("main").getByText("Creators", { exact: true })).toHaveCount(0);
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
     await setServerSession(server, MOCK_DB_KEYS.users.admin);
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 14/46");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 15/46");
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
     const adminLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
     expect(adminLabels).toEqual(defaultToolLabels);
@@ -456,7 +461,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     const adminGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
       groups.map((group) => group.dataset.toolsAccordion)
     ));
-    expect(adminGroupLabels).toEqual(["Idea", "Design", "Graphics", "Objects", "Interface", "Controls", "Progression"]);
+    expect(adminGroupLabels).toEqual(["Idea", "Design", "Graphics", "Audio", "Objects", "Interface", "Controls", "Progression"]);
     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
     await page.getByRole("button", { name: "Build Path" }).click();
     await expect(page.locator("[data-build-path-table='workflow']")).toBeVisible();
@@ -466,7 +471,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
     await setServerSession(server, "");
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 14/42");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 15/43");
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
     await expect(page.locator("main").getByText("Creators", { exact: true })).toHaveCount(0);
     expect(pageErrors).toEqual([]);

@@ -435,20 +435,21 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
     await expect(page.locator("[data-toolbox-tool-name-link='Game Configuration']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Game Design']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Game Journey']")).toBeVisible();
-    await expect(page.locator("[data-toolbox-tool-name-link='Game Hub']")).toBeVisible();
+    await expect(page.locator("[data-toolbox-tool-name-link='Game Hub'][href='/toolbox/game-workspace/index.html']")).toBeVisible();
+    await expect(page.locator("[data-toolbox-tool-name-link='Text To Speech']")).toHaveAttribute("href", "/toolbox/text-to-speech/index.html");
     await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toHaveCount(0);
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/42");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 16/44");
     await page.locator("[data-toolbox-status-filter='planned']").click();
     await expect(page.locator("[data-toolbox-status-filter='planned']")).toHaveAttribute("aria-pressed", "true");
-    await expect(page.locator("[data-toolbox-tool-card][data-toolbox-release-channel='planned']")).toHaveCount(28);
-    await expect(page.locator("[data-toolbox-tool-card]")).toHaveCount(41);
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 41/42");
+    await expect(page.locator("[data-toolbox-tool-card][data-toolbox-release-channel='planned']")).toHaveCount(27);
+    await expect(page.locator("[data-toolbox-tool-card]")).toHaveCount(43);
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 43/44");
     await expect(page.locator("[data-toolbox-tool-name-link='AI Command Center']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Game Crew']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toBeVisible();
     await page.locator("[data-toolbox-status-filter='deprecated']").click();
     await expect(page.locator("[data-toolbox-tool-name-link='Build Game']")).toBeVisible();
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 42/42");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 44/44");
 
     await setServerSession(server, MOCK_DB_KEYS.users.admin);
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
