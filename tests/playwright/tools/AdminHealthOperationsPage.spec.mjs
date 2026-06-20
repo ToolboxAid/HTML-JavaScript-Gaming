@@ -6,6 +6,11 @@ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
 async function setSessionUser(server, userKey) {
+  await fetch(`${server.baseUrl}/api/session/mode`, {
+    body: JSON.stringify({ modeId: "local-db" }),
+    headers: { "content-type": "application/json" },
+    method: "POST",
+  });
   await fetch(`${server.baseUrl}/api/session/user`, {
     body: JSON.stringify({ userKey }),
     headers: { "content-type": "application/json" },
@@ -15,9 +20,14 @@ async function setSessionUser(server, userKey) {
 
 async function openAdminSystemHealthPage(page, userKey) {
   const server = await startRepoServer();
+  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
+  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
   const failedRequests = [];
   const pageErrors = [];
   const consoleErrors = [];
+  const requestUrls = [];
   page.on("pageerror", (error) => {
     pageErrors.push(error.message);
   });
@@ -34,6 +44,9 @@ async function openAdminSystemHealthPage(page, userKey) {
   page.on("requestfailed", (request) => {
     failedRequests.push(`FAILED ${request.url()}`);
   });
+  page.on("request", (request) => {
+    requestUrls.push(request.url());
+  });
   await setSessionUser(server, userKey);
   await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}/admin/system-health.html`, { waitUntil: "networkidle" });
@@ -41,39 +54,50 @@ async function openAdminSystemHealthPage(page, userKey) {
     consoleErrors,
     failedRequests,
     pageErrors,
+    previousApiUrl,
+    previousSiteUrl,
+    requestUrls,
     server,
   };
+}
+
+function restoreEnvValue(key, value) {
+  if (value === undefined) {
+    delete process.env[key];
+    return;
+  }
+  process.env[key] = value;
 }
 
 async function closeAdminSystemHealthPage(page, context) {
   await workspaceV2CoverageReporter.stop(page);
   await context.server.close();
+  restoreEnvValue("GAMEFOUNDRY_API_URL", context.previousApiUrl);
+  restoreEnvValue("GAMEFOUNDRY_SITE_URL", context.previousSiteUrl);
 }
 
 test.afterAll(async () => {
   await workspaceV2CoverageReporter.writeReport();
 });
 
-test("Admin System Health renders operational health summaries and filters", async ({ page }) => {
+test("Admin System Health renders foundation tables without page API calls", async ({ page }) => {
   const context = await openAdminSystemHealthPage(page, SEED_DB_KEYS.users.admin);
   try {
     await expect(page).toHaveTitle(/System Health - Game Foundry Studio LLC/);
     await expect(page.getByRole("heading", { exact: true, name: "System Health" })).toBeVisible();
-    await expect(page.locator("[data-admin-system-health-status]")).toContainText("Admin System Health loaded safe status only.");
-    await expect(page.locator("[data-admin-health-summary-rows]")).toContainText("Membership operations");
-    await expect(page.locator("[data-admin-health-summary-rows]")).toContainText("Invitation support");
-    await expect(page.locator("[data-admin-health-summary-rows]")).toContainText("AI credit monitoring");
-    await expect(page.locator("[data-admin-health-summary-rows]")).toContainText("Marketplace revenue health");
-    await expect(page.locator("[data-admin-health-summary-rows]")).toContainText("Team enforcement health");
-    await expect(page.locator("[data-admin-health-config-issue-rows]")).toContainText("Required Admin operations tables and records are available.");
-
-    const membershipFilter = page.locator("[data-admin-health-membership-plan-filter]");
-    await expect(membershipFilter).toContainText("FREE");
-    await membershipFilter.selectOption("FREE");
-    await expect(page.locator("[data-admin-health-membership-rows]")).toContainText("FREE");
-
-    await expect(page.locator("[data-admin-health-invitation-status-filter]")).toBeVisible();
-    await expect(page.locator("[data-admin-health-ai-action-filter]")).toBeVisible();
+    await expect(page.getByRole("table", { name: "Environment summary" })).toContainText("DEV");
+    await expect(page.getByRole("table", { name: "Environment summary" })).toContainText("IST");
+    await expect(page.getByRole("table", { name: "Environment summary" })).toContainText("UAT");
+    await expect(page.getByRole("table", { name: "Environment summary" })).toContainText("PRD");
+    await expect(page.getByRole("table", { name: "Database health" })).toContainText("Postgres");
+    await expect(page.getByRole("table", { name: "Storage health" })).toContainText("Cloudflare R2");
+    await expect(page.getByRole("table", { name: "Runtime environment" })).toContainText("********");
+    await expect(page.getByRole("table", { name: "Limits and capacity" })).toContainText("Class A Ops");
+    await expect(page.getByRole("table", { name: "Diagnostics log" })).toContainText("PASS");
+    await expect(page.getByRole("table", { name: "Diagnostics log" })).toContainText("WARN");
+    await expect(page.getByRole("table", { name: "Diagnostics log" })).toContainText("FAIL");
+    expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health"))).toBe(false);
+    await expect(page.locator("[data-admin-system-health-storage-action]")).toHaveCount(0);
     await expect(page.locator("[data-owner-ai-save], [data-owner-membership-save], [data-owner-ai-credits], [data-owner-memberships]")).toHaveCount(0);
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     expect(context.pageErrors).toEqual([]);
@@ -89,7 +113,7 @@ test("Creator sessions cannot access Admin System Health operations", async ({ p
   try {
     await expect(page.getByRole("heading", { name: "Admin role required" })).toBeVisible();
     await expect(page.locator("[data-session-access-blocked='admin']")).toBeVisible();
-    await expect(page.locator("[data-admin-health-summary-rows]")).toHaveCount(0);
+    await expect(page.getByRole("table", { name: "Environment summary" })).toHaveCount(0);
     expect(context.pageErrors).toEqual([]);
     expect(context.consoleErrors).toEqual([]);
     expect(context.failedRequests).toEqual([]);
@@ -104,5 +128,6 @@ test("Admin System Health operations page keeps scripts and styles external", as
   expect(pageSource).not.toMatch(/<script\b(?![^>]+src=)/i);
   expect(pageSource).not.toMatch(/\son[a-z]+\s*=/i);
   expect(pageSource).not.toMatch(/\sstyle\s*=/i);
-  expect(pageSource).toContain("assets/theme-v2/js/admin-system-health.js");
+  expect(pageSource).not.toContain("assets/theme-v2/js/admin-system-health.js");
+  expect(pageSource).toContain("assets/theme-v2/js/admin-owner-navigation.js");
 });

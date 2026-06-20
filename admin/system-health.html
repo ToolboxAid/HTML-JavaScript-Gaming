@@ -6,7 +6,7 @@
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>System Health - Game Foundry Studio LLC</title>
-    <meta name="description" content="Admin read-only system health status for account, product data, storage, environment, migrations, packages, and promotion safety.">
+    <meta name="description" content="Admin system health foundation for environment, Postgres, R2, runtime, limits, and diagnostics planning.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -18,7 +18,7 @@
             <div class="container">
                 <div class="kicker">Admin</div>
                 <h1>System Health</h1>
-                <p class="lede">Review safe runtime readiness across account, Local DB, R2 storage, migrations, package planning, promotion safety, and storage connectivity.</p>
+                <p class="lede">Review the foundation view for environment, Postgres, Cloudflare R2, runtime configuration, capacity, and diagnostics.</p>
             </div>
         </section>
         <section class="section">
@@ -36,21 +36,14 @@
                                 </nav>
                             </details>
                             <details class="vertical-accordion" open>
-                                <summary>Status Sources</summary>
+                                <summary>Health Sections</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>Account/session readiness</p>
-                                    <p>Product Data / Local DB</p>
-                                    <p>Project Asset Storage / R2</p>
-                                    <p>Project package readiness</p>
-                                </div>
-                            </details>
-                            <details class="vertical-accordion" open>
-                                <summary>Storage Connectivity</summary>
-                                <div class="accordion-body content-stack">
-                                    <button class="btn btn--compact" type="button" data-admin-system-health-storage-action="storage-list">List</button>
-                                    <button class="btn btn--compact" type="button" data-admin-system-health-storage-action="storage-write-test-object">Write Test Object</button>
-                                    <button class="btn btn--compact" type="button" data-admin-system-health-storage-action="storage-read-test-object">Read Test Object</button>
-                                    <button class="btn btn--compact" type="button" data-admin-system-health-storage-action="storage-delete-test-object">Delete Test Object</button>
+                                    <p>Environment Summary</p>
+                                    <p>Database Health</p>
+                                    <p>Storage Health</p>
+                                    <p>Runtime Environment</p>
+                                    <p>Limits &amp; Capacity</p>
+                                    <p>Diagnostics Log</p>
                                 </div>
                             </details>
                         </div>
@@ -58,329 +51,139 @@
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="admin-system-health" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
                     <section class="tool-center-panel content-stack" aria-labelledby="admin-system-health-title">
                         <div>
-                            <div class="kicker">Read-only Status</div>
-                            <h2 id="admin-system-health-title">System Health Overview</h2>
+                            <div class="kicker">Foundation</div>
+                            <h2 id="admin-system-health-title">System Health Tables</h2>
                         </div>
                         <div class="table-wrapper">
-                            <table class="data-table" aria-label="System health dashboard summary">
-                                <caption>System Health Dashboard Summary</caption>
+                            <table class="data-table" aria-label="Environment summary">
+                                <caption>Environment Summary</caption>
                                 <thead>
                                     <tr>
+                                        <th scope="col">Environment</th>
+                                        <th scope="col">Purpose</th>
+                                        <th scope="col">Promotion Gate</th>
                                         <th scope="col">Status</th>
-                                        <th scope="col">Score</th>
-                                        <th scope="col">PASS</th>
-                                        <th scope="col">WARN</th>
-                                        <th scope="col">FAIL</th>
-                                        <th scope="col">Last Refresh</th>
-                                    </tr>
-                                </thead>
-                                <tbody data-admin-system-health-summary-rows>
-                                    <tr><td>Loading</td><td>0</td><td>0</td><td>0</td><td>0</td><td>Loading refresh timestamp.</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="table-wrapper">
-                            <table class="data-table" aria-label="System health overview">
-                                <caption>System Health Overview</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Area</th>
-                                        <th scope="col">Status</th>
-                                        <th scope="col">Summary</th>
-                                    </tr>
-                                </thead>
-                                <tbody data-admin-system-health-overview-rows>
-                                    <tr><td>System Health</td><td>Loading</td><td>Loading safe status.</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="table-wrapper">
-                            <table class="data-table" aria-label="Admin operational health summary">
-                                <caption>Operational Health Summary</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Area</th>
-                                        <th scope="col">Status</th>
-                                        <th scope="col">Count</th>
-                                        <th scope="col">Diagnostic</th>
-                                    </tr>
-                                </thead>
-                                <tbody data-admin-health-summary-rows>
-                                    <tr><td>Operations</td><td>Loading</td><td>0</td><td>Loading operational health.</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="table-wrapper">
-                            <table class="data-table" aria-label="Admin membership support state">
-                                <caption>Membership Support State</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Filter</th>
-                                        <th scope="col">Value</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>Plan</td>
-                                        <td>
-                                            <select aria-label="Membership plan filter" data-admin-health-membership-plan-filter>
-                                                <option value="">All plans</option>
-                                            </select>
-                                        </td>
-                                    </tr>
+                                    <tr><td>DEV</td><td>Local implementation and diagnostics</td><td>Developer validation</td><td>WARN</td></tr>
+                                    <tr><td>IST</td><td>Integrated system testing</td><td>Cross-feature validation</td><td>WARN</td></tr>
+                                    <tr><td>UAT</td><td>User acceptance testing</td><td>Owner review</td><td>WARN</td></tr>
+                                    <tr><td>PRD</td><td>Production runtime</td><td>EOD approval</td><td>WARN</td></tr>
                                 </tbody>
                             </table>
                         </div>
                         <div class="table-wrapper">
-                            <table class="data-table" aria-label="Admin membership support rows">
-                                <caption>Membership Assignments</caption>
+                            <table class="data-table" aria-label="Database health">
+                                <caption>Database Health - Postgres Only</caption>
                                 <thead>
                                     <tr>
-                                        <th scope="col">User</th>
-                                        <th scope="col">Plan</th>
-                                        <th scope="col">Status</th>
-                                        <th scope="col">Source</th>
-                                    </tr>
-                                </thead>
-                                <tbody data-admin-health-membership-rows>
-                                    <tr><td>Loading</td><td>Loading</td><td>Loading</td><td>Loading membership state.</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="table-wrapper">
-                            <table class="data-table" aria-label="Admin invite support state">
-                                <caption>Invite Support</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Filter</th>
+                                        <th scope="col">Field</th>
                                         <th scope="col">Value</th>
+                                        <th scope="col">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>Status</td>
-                                        <td>
-                                            <select aria-label="Invite status filter" data-admin-health-invitation-status-filter>
-                                                <option value="">All statuses</option>
-                                            </select>
-                                        </td>
-                                    </tr>
+                                    <tr><td>Provider</td><td>Postgres</td><td>PASS</td></tr>
+                                    <tr><td>Host</td><td>Configured host placeholder</td><td>WARN</td></tr>
+                                    <tr><td>Port</td><td>5432</td><td>WARN</td></tr>
+                                    <tr><td>Database</td><td>Configured database placeholder</td><td>WARN</td></tr>
+                                    <tr><td>Migration Version</td><td>Pending migration reader</td><td>WARN</td></tr>
+                                    <tr><td>Status</td><td>Connection check pending</td><td>WARN</td></tr>
                                 </tbody>
                             </table>
                         </div>
                         <div class="table-wrapper">
-                            <table class="data-table" aria-label="Admin invite support rows">
-                                <caption>Invite Records</caption>
+                            <table class="data-table" aria-label="Storage health">
+                                <caption>Storage Health - Cloudflare R2</caption>
                                 <thead>
                                     <tr>
-                                        <th scope="col">Email</th>
+                                        <th scope="col">Check</th>
+                                        <th scope="col">Target</th>
                                         <th scope="col">Status</th>
-                                        <th scope="col">Code</th>
-                                        <th scope="col">Expires</th>
-                                    </tr>
-                                </thead>
-                                <tbody data-admin-health-invitation-rows>
-                                    <tr><td>Loading</td><td>Loading</td><td>Loading</td><td>Loading invite state.</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="table-wrapper">
-                            <table class="data-table" aria-label="Admin AI usage support state">
-                                <caption>AI Usage Monitoring</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Filter</th>
-                                        <th scope="col">Value</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>Action</td>
-                                        <td>
-                                            <select aria-label="AI usage action filter" data-admin-health-ai-action-filter>
-                                                <option value="">All actions</option>
-                                            </select>
-                                        </td>
-                                    </tr>
+                                    <tr><td>Bucket</td><td>Configured bucket placeholder</td><td>WARN</td></tr>
+                                    <tr><td>List</td><td>Objects prefix</td><td>WARN</td></tr>
+                                    <tr><td>Read</td><td>Health object</td><td>WARN</td></tr>
+                                    <tr><td>Write</td><td>Health object</td><td>WARN</td></tr>
+                                    <tr><td>Delete</td><td>Health object</td><td>WARN</td></tr>
                                 </tbody>
                             </table>
                         </div>
                         <div class="table-wrapper">
-                            <table class="data-table" aria-label="Admin AI usage support rows">
-                                <caption>AI Usage Rows</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">User</th>
-                                        <th scope="col">Action</th>
-                                        <th scope="col">Source</th>
-                                        <th scope="col">Delta</th>
-                                        <th scope="col">Balance After</th>
-                                    </tr>
-                                </thead>
-                                <tbody data-admin-health-ai-usage-rows>
-                                    <tr><td>Loading</td><td>Loading</td><td>Loading</td><td>0</td><td>Loading AI usage.</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="table-wrapper">
-                            <table class="data-table" aria-label="Admin operations configuration issues">
-                                <caption>Operational Configuration Issues</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Area</th>
-                                        <th scope="col">Status</th>
-                                        <th scope="col">Table</th>
-                                        <th scope="col">Issue</th>
-                                        <th scope="col">Next Step</th>
-                                    </tr>
-                                </thead>
-                                <tbody data-admin-health-config-issue-rows>
-                                    <tr><td>Operations</td><td>Loading</td><td>Loading</td><td>Loading configuration issues.</td><td>Loading next step.</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="table-wrapper">
-                            <table class="data-table" aria-label="Configured connection summary">
-                                <caption>Configured Connections</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Connection</th>
-                                        <th scope="col">Status</th>
-                                        <th scope="col">Mode</th>
-                                    </tr>
-                                </thead>
-                                <tbody data-admin-system-health-connection-summary>
-                                    <tr><td>Account</td><td>Loading</td><td>Loading configured connection summary.</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="table-wrapper">
-                            <table class="data-table" aria-label="System health database status">
-                                <caption>Database Status</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Field</th>
-                                        <th scope="col">Status</th>
-                                        <th scope="col">Value</th>
-                                    </tr>
-                                </thead>
-                                <tbody data-admin-system-health-database-status-rows>
-                                    <tr><td>Connection Configured</td><td>Loading</td><td>Loading database status.</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="table-wrapper">
-                            <table class="data-table" aria-label="System health storage status">
-                                <caption>Project Asset Storage Status</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Field</th>
-                                        <th scope="col">Status</th>
-                                        <th scope="col">Value</th>
-                                    </tr>
-                                </thead>
-                                <tbody data-admin-system-health-storage-status-rows>
-                                    <tr><td>Storage Configured</td><td>Loading</td><td>Loading storage status.</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="table-wrapper">
-                            <table class="data-table" aria-label="R2 operational readiness">
-                                <caption>R2 Operational Readiness</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Area</th>
-                                        <th scope="col">Signal</th>
-                                        <th scope="col">Status</th>
-                                        <th scope="col">Value</th>
-                                        <th scope="col">Next Step</th>
-                                    </tr>
-                                </thead>
-                                <tbody data-admin-system-health-r2-readiness-rows>
-                                    <tr><td>Project Asset Storage / R2</td><td>Status</td><td>Loading</td><td>Loading</td><td>Loading R2 readiness.</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="table-wrapper">
-                            <table class="data-table" aria-label="System health storage connectivity results">
-                                <caption>Storage Connectivity Results</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Action</th>
-                                        <th scope="col">Status</th>
-                                        <th scope="col">Executed</th>
-                                        <th scope="col">Message</th>
-                                    </tr>
-                                </thead>
-                                <tbody data-admin-system-health-storage-connectivity-result-rows>
-                                    <tr><td>startup</td><td>SKIP</td><td>no</td><td>Storage connectivity startup has not run yet.</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="table-wrapper">
-                            <table class="data-table" aria-label="System health details">
-                                <caption>System Health Details</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Area</th>
-                                        <th scope="col">Field</th>
-                                        <th scope="col">Status</th>
-                                        <th scope="col">Value</th>
-                                    </tr>
-                                </thead>
-                                <tbody data-admin-system-health-detail-rows>
-                                    <tr><td>System Health</td><td>Status</td><td>Loading</td><td>Loading safe details.</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="table-wrapper">
-                            <table class="data-table" aria-label="System health environment limits">
-                                <caption>Environment Limits from current .env; values may differ by DEV/IST/UAT/PRD</caption>
+                            <table class="data-table" aria-label="Runtime environment">
+                                <caption>Runtime Environment - Alphabetical Variables</caption>
                                 <thead>
                                     <tr>
                                         <th scope="col">Variable</th>
-                                        <th scope="col">Limit</th>
-                                        <th scope="col">Usage</th>
-                                        <th scope="col">Pressure</th>
-                                        <th scope="col">Next Step</th>
+                                        <th scope="col">Display</th>
+                                        <th scope="col">Status</th>
                                     </tr>
                                 </thead>
-                                <tbody data-admin-system-health-limit-rows>
-                                    <tr><td>System Health</td><td>Loading</td><td>Loading</td><td>Loading</td><td>Loading limit diagnostics.</td></tr>
+                                <tbody>
+                                    <tr><td>CLOUDFLARE_R2_ACCESS_KEY_ID</td><td>********</td><td>WARN</td></tr>
+                                    <tr><td>CLOUDFLARE_R2_BUCKET</td><td>Configured bucket placeholder</td><td>WARN</td></tr>
+                                    <tr><td>CLOUDFLARE_R2_SECRET_ACCESS_KEY</td><td>********</td><td>WARN</td></tr>
+                                    <tr><td>DATABASE_URL</td><td>********</td><td>WARN</td></tr>
+                                    <tr><td>GAMEFOUNDRY_ENVIRONMENT</td><td>DEV / IST / UAT / PRD</td><td>WARN</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Limits and capacity">
+                                <caption>Limits &amp; Capacity</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Limit</th>
+                                        <th scope="col">Current</th>
+                                        <th scope="col">Capacity Signal</th>
+                                        <th scope="col">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>DB Size</td><td>Pending metric</td><td>Threshold not connected</td><td>WARN</td></tr>
+                                    <tr><td>Connections</td><td>Pending metric</td><td>Pool usage not connected</td><td>WARN</td></tr>
+                                    <tr><td>Storage</td><td>Pending metric</td><td>Bucket usage not connected</td><td>WARN</td></tr>
+                                    <tr><td>Class A Ops</td><td>Pending metric</td><td>R2 write/list budget not connected</td><td>WARN</td></tr>
+                                    <tr><td>Class B Ops</td><td>Pending metric</td><td>R2 read budget not connected</td><td>WARN</td></tr>
                                 </tbody>
                             </table>
                         </div>
                     </section>
                     <aside class="tool-column tool-group-platform">
                         <div class="tool-column-header">
-                            <h2>Inspector</h2>
+                            <h2>Diagnostics</h2>
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Status</summary>
-                                <div class="accordion-body content-stack">
-                                    <p class="status" role="status" data-admin-system-health-status>Loading Admin System Health.</p>
-                                </div>
-                            </details>
-                            <details class="vertical-accordion" open>
-                                <summary>Storage Connectivity Status</summary>
-                                <div class="accordion-body content-stack">
-                                    <p class="status" role="status" data-admin-system-health-storage-connectivity-status>Storage connectivity startup pending.</p>
+                                <summary>Diagnostics Log</summary>
+                                <div class="accordion-body">
+                                    <div class="table-wrapper">
+                                        <table class="data-table" aria-label="Diagnostics log">
+                                            <caption>Diagnostics Log</caption>
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Result</th>
+                                                    <th scope="col">Area</th>
+                                                    <th scope="col">Diagnostic</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr><td>PASS</td><td>Database Health</td><td>Postgres is the only planned database provider.</td></tr>
+                                                <tr><td>WARN</td><td>Runtime Environment</td><td>Secret values are masked until server-owned readers are approved.</td></tr>
+                                                <tr><td>FAIL</td><td>Diagnostics</td><td>No active failure is declared in this foundation view.</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
                                 <summary>Related Pages</summary>
                                 <div class="accordion-body content-stack">
                                     <a class="btn btn--compact" href="/admin/infrastructure.html">Infrastructure Reference</a>
-                                    <a class="btn btn--compact" href="/admin/operations.html">Admin Operations Actions</a>
-                                </div>
-                            </details>
-                            <details class="vertical-accordion" open>
-                                <summary>Guardrails</summary>
-                                <div class="accordion-body content-stack">
-                                    <p>System Health is read-only and does not expose secrets.</p>
-                                    <p>Infrastructure remains the architecture reference page.</p>
-                                    <p>Admin Operations remains the action page.</p>
+                                    <a class="btn btn--compact" href="/admin/operations.html">Admin Operations</a>
                                 </div>
                             </details>
                         </div>
@@ -393,7 +196,6 @@
     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
     <script type="module" src="assets/theme-v2/js/admin-owner-navigation.js"></script>
-    <script type="module" src="assets/theme-v2/js/admin-system-health.js"></script>
 </body>
 
 </html>
