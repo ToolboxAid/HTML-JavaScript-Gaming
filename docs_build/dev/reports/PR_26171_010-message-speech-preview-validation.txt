@@ -1,0 +1,33 @@
+PR_26171_010-message-speech-preview validation
+
+Branch:
+PASS pr/PR_26171_010-message-speech-preview
+
+Syntax:
+PASS node --check toolbox/messages/messages.js
+PASS node --check tests/playwright/tools/MessagesTool.spec.mjs
+
+Targeted Playwright:
+PASS npx playwright test tests/playwright/tools/MessagesTool.spec.mjs --project=playwright --workers=1 --reporter=list
+Result: 2 passed.
+
+Preview behavior:
+PASS selected full-message preview produced a stubbed utterance.
+PASS active ordered segment preview produced ordered stubbed utterances.
+PASS segment preview used emotion profile volume, pitch, and rate.
+PASS Stop Preview called cancel.
+PASS missing speech synthesis displayed an actionable diagnostic.
+
+Workspace lane:
+FAIL npm run test:workspace-v2
+Failure file: tests/playwright/tools/RootToolsFutureState.spec.mjs
+Failures:
+- Toolbox accordion control-card count was 0.
+- Header alphabetical expectation failed around Game Hub/Game Journey ordering.
+- Non-Messages pages reported failed requests to session, platform banner, registry, and toolbox constants APIs.
+
+Whitespace:
+PASS git diff --check on touched files. CRLF warnings only.
+
+Disposition:
+MERGE WITH RECORDED WORKSPACE FAILURE. PR_010 targeted validation passed. The required workspace-v2 lane failed outside the Messages speech preview scope and is documented for follow-up.

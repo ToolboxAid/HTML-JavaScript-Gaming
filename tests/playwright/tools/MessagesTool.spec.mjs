@@ -43,7 +43,7 @@ test.afterAll(async () => {
   await workspaceV2CoverageReporter.writeReport();
 });
 
-async function openMessagesPage(page, sqlitePath) {
+async function openMessagesPage(page, sqlitePath, options = {}) {
   const previousMessagesSqlitePath = process.env.GAMEFOUNDRY_MESSAGES_SQLITE_PATH;
   process.env.GAMEFOUNDRY_MESSAGES_SQLITE_PATH = sqlitePath;
   const server = await startRepoServer();
@@ -73,13 +73,59 @@ async function openMessagesPage(page, sqlitePath) {
     failures.failedRequests.push(`FAILED ${request.url()}`);
   });
 
-  await page.addInitScript((apiUrl) => {
+  await page.addInitScript(({ apiUrl, speechAvailable }) => {
     window.GameFoundryPublicConfig = {
       apiUrl,
       environmentLabel: "Development Environment",
       siteUrl: window.location.origin,
     };
-  }, `${server.baseUrl}/api`);
+    window.__messagesSpeechCalls = [];
+    if (speechAvailable) {
+      Object.defineProperty(window, "SpeechSynthesisUtterance", {
+        configurable: true,
+        value: class SpeechSynthesisUtterance {
+          constructor(text = "") {
+            this.lang = "";
+            this.pitch = 1;
+            this.rate = 1;
+            this.text = text;
+            this.voice = null;
+            this.volume = 1;
+          }
+        },
+      });
+      Object.defineProperty(window, "speechSynthesis", {
+        configurable: true,
+        value: {
+          cancel() {
+            window.__messagesSpeechCalls.push({ type: "cancel" });
+          },
+          getVoices() {
+            return [
+              { lang: "en-US", name: "Test Voice" },
+            ];
+          },
+          speak(utterance) {
+            window.__messagesSpeechCalls.push({
+              lang: utterance.lang,
+              pitch: utterance.pitch,
+              rate: utterance.rate,
+              text: utterance.text,
+              type: "speak",
+              voiceName: utterance.voice?.name || "",
+              volume: utterance.volume,
+            });
+          },
+        },
+      });
+      return;
+    }
+    Object.defineProperty(window, "SpeechSynthesisUtterance", { configurable: true, value: undefined });
+    Object.defineProperty(window, "speechSynthesis", { configurable: true, value: undefined });
+  }, {
+    apiUrl: `${server.baseUrl}/api`,
+    speechAvailable: options.speechAvailable !== false,
+  });
   await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}/tools/messages/index.html`, { waitUntil: "networkidle" });
   return failures;
@@ -246,6 +292,44 @@ test("Messages tool creates, validates, updates, and persists through Local API 
     await expect(page.locator("[data-messages-log]")).toHaveText("Saved segment 2.");
     await expect(page.locator("[data-messages-segments]")).toContainText("We are being attacked by bats.");
 
+    await page.locator("[data-messages-preview-tts-profile]").selectOption({ label: "Arcade Browser Voice" });
+    await page.locator("[data-messages-preview-message]").click();
+    await expect(page.locator("[data-messages-preview-status]")).toHaveText("Preview requested for message Forest Warning.");
+    let speechCalls = await page.evaluate(() => window.__messagesSpeechCalls);
+    expect(speechCalls.filter((call) => call.type === "speak").at(-1)).toEqual(expect.objectContaining({
+      lang: "en-US",
+      pitch: 1.08,
+      rate: 1.15,
+      text: "The forest gets darker beyond this point.\nWe are being attacked by bats.",
+      voiceName: "Test Voice",
+      volume: 1,
+    }));
+
+    await page.locator("[data-messages-preview-segments]").click();
+    await expect(page.locator("[data-messages-preview-status]")).toHaveText("Preview requested for 2 active segments.");
+    speechCalls = await page.evaluate(() => window.__messagesSpeechCalls);
+    expect(speechCalls.filter((call) => call.type === "speak").slice(-2)).toEqual([
+      expect.objectContaining({
+        pitch: 1,
+        rate: 1,
+        text: "The forest gets darker beyond this point.",
+        voiceName: "Test Voice",
+        volume: 1,
+      }),
+      expect.objectContaining({
+        pitch: 1.08,
+        rate: 1.15,
+        text: "We are being attacked by bats.",
+        voiceName: "Test Voice",
+        volume: 1,
+      }),
+    ]);
+
+    await page.locator("[data-messages-preview-stop]").click();
+    await expect(page.locator("[data-messages-preview-status]")).toHaveText("Speech preview stopped.");
+    speechCalls = await page.evaluate(() => window.__messagesSpeechCalls);
+    expect(speechCalls.at(-1)).toEqual({ type: "cancel" });
+
     const segmentsResult = await jsonRequest(`${failures.server.baseUrl}/api/messages/segments`);
     expect(segmentsResult.response.ok).toBe(true);
     expect(segmentsResult.payload.ok).toBe(true);
@@ -385,6 +469,30 @@ test("Messages tool creates, validates, updates, and persists through Local API 
       voiceName: "Test Voice",
     }));
 
+    expect(failures.failedRequests).toEqual([]);
+    expect(failures.pageErrors).toEqual([]);
+    expect(failures.consoleErrors).toEqual([]);
+  } finally {
+    await closeMessagesRun(failures, page);
+    await fs.rm(sqlitePath, { force: true });
+  }
+});
+
+test("Messages speech preview reports unavailable browser synthesis", async ({ page }) => {
+  const sqlitePath = messagesDbPath();
+  await fs.rm(sqlitePath, { force: true });
+  const failures = await openMessagesPage(page, sqlitePath, { speechAvailable: false });
+
+  try {
+    await page.locator("[data-messages-name]").fill("Unavailable Preview");
+    await page.locator("[data-messages-category]").selectOption({ label: "Dialog" });
+    await page.locator("[data-messages-emotion-profile]").selectOption({ label: "Calm" });
+    await page.locator("[data-messages-text]").fill("This line cannot be spoken in this browser.");
+    await page.getByRole("button", { name: "Save Message" }).click();
+    await expect(page.locator("[data-messages-log]")).toHaveText("Saved Unavailable Preview.");
+    await page.getByRole("button", { name: "Preview Message" }).click();
+    await expect(page.locator("[data-messages-preview-status]")).toHaveText("Browser speech synthesis is unavailable. Use a browser with speechSynthesis support to preview messages.");
+    await expect(page.locator("[data-messages-log]")).toHaveText("Speech preview unavailable.");
     expect(failures.failedRequests).toEqual([]);
     expect(failures.pageErrors).toEqual([]);
     expect(failures.consoleErrors).toEqual([]);

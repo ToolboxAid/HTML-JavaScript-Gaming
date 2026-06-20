@@ -12,14 +12,12 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(88%) Toolbox Index - exercised 3 runtime JS files
+(90%) Toolbox Index - exercised 3 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
 (56%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
-(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(82%) toolbox/messages/messages-api-client.js - executed lines 73/73; executed functions 18/22
-(94%) toolbox/messages/messages.js - executed lines 850/850; executed functions 78/83
+(95%) toolbox/messages/messages.js - executed lines 951/951; executed functions 98/103
 
 Files with executed line/function counts where available:
 (38%) src/api/public-config-client.js - executed lines 209/209; executed functions 10/26
@@ -28,13 +26,11 @@ Files with executed line/function counts where available:
 (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
 (76%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 22/29
 (82%) toolbox/messages/messages-api-client.js - executed lines 73/73; executed functions 18/22
-(94%) toolbox/messages/messages.js - executed lines 850/850; executed functions 78/83
+(95%) toolbox/messages/messages.js - executed lines 951/951; executed functions 98/103
 
 Uncovered or low-coverage changed JS files:
-(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: uncovered changed runtime JS file; advisory only
+(100%) none - no low-coverage changed runtime JS files
 
 Changed JS files considered:
-(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/MessagesTool.spec.mjs - changed JS file not collected as browser runtime coverage
-(82%) toolbox/messages/messages-api-client.js - changed JS file with browser V8 coverage
-(94%) toolbox/messages/messages.js - changed JS file with browser V8 coverage
+(95%) toolbox/messages/messages.js - changed JS file with browser V8 coverage

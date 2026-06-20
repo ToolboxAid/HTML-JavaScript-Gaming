@@ -391,6 +391,19 @@
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
+                                <summary>Speech Preview</summary>
+                                <div class="accordion-body content-stack">
+                                    <label for="messagesPreviewTtsProfile">TTS Profile</label>
+                                    <select id="messagesPreviewTtsProfile" data-messages-preview-tts-profile></select>
+                                    <div class="action-group action-group--tight">
+                                        <button class="btn btn--compact" type="button" data-messages-preview-message>Preview Message</button>
+                                        <button class="btn btn--compact" type="button" data-messages-preview-segments>Preview Segments</button>
+                                        <button class="btn btn--compact" type="button" data-messages-preview-stop>Stop Preview</button>
+                                    </div>
+                                    <div class="status" role="status" data-messages-preview-status>Speech preview is idle.</div>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
                                 <summary>Future Compatibility</summary>
                                 <div class="accordion-body content-stack">
                                     <p>Message segments are stored as ordered text with emotion profiles.</p>
