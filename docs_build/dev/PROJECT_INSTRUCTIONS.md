@@ -358,13 +358,15 @@ Prohibited product-data ownership:
 
 Toolbox and Admin tool metadata must use a shared DB-backed tool metadata source for `toolKey`, `toolName`, `group`, `path`, `order`, and `status`. Browser pages may render metadata returned by the API/service contract, but they must not own a separate runtime copy of that metadata.
 
-## POSTGRES DATABASE DIRECTION
+## DATABASE DIRECTION
 
-SQLite is deprecated for new database work.
+SQLite is deprecated.
+Postgres is authoritative.
 
 Rules:
 - New database work must target Postgres.
-- New persistence must flow through Local API / Postgres direction only.
+- Local API -> Postgres is the required direction.
+- New PRs must not introduce SQLite persistence.
 - Do not add new SQLite services.
 - Do not add new SQLite DDL.
 - Do not add new SQLite seed data.

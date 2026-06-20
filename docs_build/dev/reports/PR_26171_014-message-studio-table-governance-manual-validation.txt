@@ -1,0 +1,14 @@
+PR_26171_014-message-studio-table-governance manual validation notes
+
+Reviewed Message Studio page structure after the table governance conversion:
+- Message Rows use table columns Name, Primary Emotion, Segments, Tags, Status, Actions.
+- Add Message Row opens an inline editable row.
+- Edit opens inline row editing.
+- Disable actions are present for active rows and no Delete actions are present.
+- Selected Message Row renders a nested Segment Table.
+- Segment rows support Edit, Move Up, Move Down, and Disable.
+- Emotion Profiles and TTS Profiles use inline table rows for add/edit.
+- Speech Preview is display-only and has no playback buttons.
+
+No browser category UI is present in toolbox/messages.
+No manual provider/audio playback was attempted because it is out of scope.

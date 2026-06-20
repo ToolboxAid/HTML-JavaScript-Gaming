@@ -65,136 +65,24 @@
                                         <thead>
                                             <tr>
                                                 <th scope="col">Name</th>
-                                                <th scope="col">Emotion</th>
+                                                <th scope="col">Primary Emotion</th>
+                                                <th scope="col">Segments</th>
+                                                <th scope="col">Tags</th>
                                                 <th scope="col">Status</th>
                                                 <th scope="col">Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody data-messages-table>
-                                            <tr><td colspan="4">Loading message rows.</td></tr>
+                                            <tr><td colspan="6">Loading message rows.</td></tr>
                                         </tbody>
                                     </table>
                                 </div>
                                 <div class="action-group">
-                                    <button class="btn" type="button" data-messages-new>Add Message Row</button>
+                                    <button class="btn" type="button" data-messages-add-row>Add Message Row</button>
                                 </div>
-                            </div>
-                        </article>
-                        <article class="card">
-                            <div class="card-body content-stack">
-                                <div>
-                                    <div class="kicker">Selected Row Details</div>
-                                    <h3 data-messages-editor-heading>Add Message Row</h3>
-                                </div>
-                                <form class="content-stack" data-messages-form>
-                                    <input type="hidden" data-messages-message-key>
-                                    <div class="table-wrapper">
-                                        <table class="data-table tool-form-table" aria-label="Message row fields">
-                                            <tbody>
-                                                <tr>
-                                                    <th scope="row"><label for="messagesName">Message Name</label></th>
-                                                    <td><input id="messagesName" type="text" data-messages-name></td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row"><label for="messagesEmotionProfile">Emotion Profile</label></th>
-                                                    <td><select id="messagesEmotionProfile" data-messages-emotion-profile></select></td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row"><label for="messagesText">Message Text</label></th>
-                                                    <td><textarea id="messagesText" rows="7" data-messages-text></textarea></td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row"><label for="messagesNotes">Notes</label></th>
-                                                    <td><textarea id="messagesNotes" rows="4" data-messages-notes></textarea></td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row">Status</th>
-                                                    <td>
-                                                        <label>
-                                                            <input type="checkbox" data-messages-active checked>
-                                                            Active
-                                                        </label>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div class="action-group">
-                                        <button class="btn" type="submit">Update Row</button>
-                                    </div>
-                                </form>
-                                <article class="card" data-messages-validation-card hidden>
-                                    <div class="card-body content-stack">
-                                        <div>
-                                            <div class="kicker">Actionable Validation</div>
-                                            <h3>Message Row Needs Required Fields</h3>
-                                        </div>
-                                        <ul data-messages-validation-errors></ul>
-                                    </div>
-                                </article>
-                            </div>
-                        </article>
-                        <article class="card">
-                            <div class="card-body content-stack">
-                                <div>
-                                    <div class="kicker">Ordered Content</div>
-                                    <h3>Message Segments</h3>
-                                    <p data-messages-segment-context>Select or add a message row before adding segments.</p>
-                                </div>
-                                <form class="content-stack" data-messages-segment-form>
-                                    <input type="hidden" data-messages-segment-key>
-                                    <div class="table-wrapper">
-                                        <table class="data-table tool-form-table" aria-label="Message segment editor fields">
-                                            <tbody>
-                                                <tr>
-                                                    <th scope="row"><label for="messagesSegmentOrder">Display Order</label></th>
-                                                    <td><input id="messagesSegmentOrder" type="number" min="1" step="1" data-messages-segment-order></td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row"><label for="messagesSegmentEmotionProfile">Emotion Profile</label></th>
-                                                    <td><select id="messagesSegmentEmotionProfile" data-messages-segment-emotion-profile></select></td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row"><label for="messagesSegmentText">Segment Text</label></th>
-                                                    <td><textarea id="messagesSegmentText" rows="5" data-messages-segment-text></textarea></td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row">Status</th>
-                                                    <td>
-                                                        <label>
-                                                            <input type="checkbox" data-messages-segment-active checked>
-                                                            Active
-                                                        </label>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div class="action-group">
-                                        <button class="btn" type="submit">Update Segment Row</button>
-                                        <button class="btn" type="button" data-messages-segment-new>Add Segment Row</button>
-                                        <button class="btn" type="button" data-messages-segment-reload>Reload Segments</button>
-                                    </div>
-                                </form>
-                                <div class="status" data-messages-segment-validation-card hidden>
-                                    <p>Segment row needs required fields.</p>
-                                    <ul data-messages-segment-validation-errors></ul>
-                                </div>
-                                <div class="table-wrapper">
-                                    <table class="data-table" aria-label="Message segments">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">Order</th>
-                                                <th scope="col">Segment Text</th>
-                                                <th scope="col">Emotion</th>
-                                                <th scope="col">Status</th>
-                                                <th scope="col">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody data-messages-segments>
-                                            <tr><td colspan="5">Loading segments.</td></tr>
-                                        </tbody>
-                                    </table>
+                                <div class="status" data-messages-validation-card hidden>
+                                    <p>Message row needs required fields.</p>
+                                    <ul data-messages-validation-errors></ul>
                                 </div>
                             </div>
                         </article>
@@ -204,70 +92,25 @@
                                     <div class="kicker">Delivery Configuration</div>
                                     <h3>Emotion Profiles</h3>
                                 </div>
-                                <form class="content-stack" data-messages-emotion-form>
-                                    <input type="hidden" data-messages-emotion-key>
-                                    <div class="table-wrapper">
-                                        <table class="data-table tool-form-table" aria-label="Emotion profile fields">
-                                            <tbody>
-                                                <tr>
-                                                    <th scope="row"><label for="messagesEmotionName">Name</label></th>
-                                                    <td><input id="messagesEmotionName" type="text" data-messages-emotion-name></td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row"><label for="messagesEmotionDescription">Description</label></th>
-                                                    <td><textarea id="messagesEmotionDescription" rows="3" data-messages-emotion-description></textarea></td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row"><label for="messagesEmotionVolume">Volume</label></th>
-                                                    <td><input id="messagesEmotionVolume" type="number" min="0" max="2" step="0.01" value="1" data-messages-emotion-volume></td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row"><label for="messagesEmotionPitch">Pitch</label></th>
-                                                    <td><input id="messagesEmotionPitch" type="number" min="0.25" max="2" step="0.01" value="1" data-messages-emotion-pitch></td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row"><label for="messagesEmotionRate">Rate</label></th>
-                                                    <td><input id="messagesEmotionRate" type="number" min="0.25" max="2" step="0.01" value="1" data-messages-emotion-rate></td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row"><label for="messagesEmotionPauseBefore">Pause Before Ms</label></th>
-                                                    <td><input id="messagesEmotionPauseBefore" type="number" min="0" step="10" value="0" data-messages-emotion-pause-before></td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row"><label for="messagesEmotionPauseAfter">Pause After Ms</label></th>
-                                                    <td><input id="messagesEmotionPauseAfter" type="number" min="0" step="10" value="0" data-messages-emotion-pause-after></td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row">Status</th>
-                                                    <td>
-                                                        <label>
-                                                            <input type="checkbox" data-messages-emotion-active checked>
-                                                            Active
-                                                        </label>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div class="action-group action-group--tight">
-                                        <button class="btn btn--compact" type="submit">Update Emotion Profile</button>
-                                        <button class="btn btn--compact" type="button" data-messages-emotion-cancel>Add Emotion Profile</button>
-                                    </div>
-                                </form>
                                 <div class="table-wrapper">
                                     <table class="data-table" aria-label="Emotion profiles">
                                         <thead>
                                             <tr>
                                                 <th scope="col">Name</th>
-                                                <th scope="col">Usage</th>
+                                                <th scope="col">Volume</th>
+                                                <th scope="col">Pitch</th>
+                                                <th scope="col">Rate</th>
                                                 <th scope="col">Status</th>
                                                 <th scope="col">Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody data-messages-emotions>
-                                            <tr><td colspan="4">Loading emotion profiles.</td></tr>
+                                            <tr><td colspan="6">Loading emotion profiles.</td></tr>
                                         </tbody>
                                     </table>
+                                </div>
+                                <div class="action-group">
+                                    <button class="btn" type="button" data-messages-emotion-add-row>Add Profile</button>
                                 </div>
                             </div>
                         </article>
@@ -277,75 +120,25 @@
                                     <div class="kicker">Delivery Configuration</div>
                                     <h3>TTS Profiles</h3>
                                 </div>
-                                <form class="content-stack" data-messages-tts-form>
-                                    <input type="hidden" data-messages-tts-key>
-                                    <div class="table-wrapper">
-                                        <table class="data-table tool-form-table" aria-label="TTS profile fields">
-                                            <tbody>
-                                                <tr>
-                                                    <th scope="row"><label for="messagesTtsName">Name</label></th>
-                                                    <td><input id="messagesTtsName" type="text" data-messages-tts-name></td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row"><label for="messagesTtsDescription">Description</label></th>
-                                                    <td><textarea id="messagesTtsDescription" rows="3" data-messages-tts-description></textarea></td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row"><label for="messagesTtsProviderKey">Provider Key</label></th>
-                                                    <td><input id="messagesTtsProviderKey" type="text" data-messages-tts-provider-key></td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row"><label for="messagesTtsVoiceName">Voice Name</label></th>
-                                                    <td><input id="messagesTtsVoiceName" type="text" data-messages-tts-voice-name></td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row"><label for="messagesTtsLanguage">Language</label></th>
-                                                    <td><input id="messagesTtsLanguage" type="text" data-messages-tts-language></td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row"><label for="messagesTtsVolume">Volume</label></th>
-                                                    <td><input id="messagesTtsVolume" type="number" min="0" max="2" step="0.01" value="1" data-messages-tts-volume></td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row"><label for="messagesTtsPitch">Pitch</label></th>
-                                                    <td><input id="messagesTtsPitch" type="number" min="0.25" max="2" step="0.01" value="1" data-messages-tts-pitch></td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row"><label for="messagesTtsRate">Rate</label></th>
-                                                    <td><input id="messagesTtsRate" type="number" min="0.25" max="2" step="0.01" value="1" data-messages-tts-rate></td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row">Status</th>
-                                                    <td>
-                                                        <label>
-                                                            <input type="checkbox" data-messages-tts-active checked>
-                                                            Active
-                                                        </label>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div class="action-group action-group--tight">
-                                        <button class="btn btn--compact" type="submit">Update TTS Profile</button>
-                                        <button class="btn btn--compact" type="button" data-messages-tts-cancel>Add TTS Profile</button>
-                                    </div>
-                                </form>
                                 <div class="table-wrapper">
                                     <table class="data-table" aria-label="TTS profiles">
                                         <thead>
                                             <tr>
                                                 <th scope="col">Name</th>
                                                 <th scope="col">Provider</th>
+                                                <th scope="col">Voice</th>
                                                 <th scope="col">Language</th>
                                                 <th scope="col">Status</th>
                                                 <th scope="col">Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody data-messages-tts-profiles>
-                                            <tr><td colspan="5">Loading TTS profiles.</td></tr>
+                                            <tr><td colspan="6">Loading TTS profiles.</td></tr>
                                         </tbody>
                                     </table>
+                                </div>
+                                <div class="action-group">
+                                    <button class="btn" type="button" data-messages-tts-add-row>Add Profile</button>
                                 </div>
                             </div>
                         </article>
@@ -376,14 +169,8 @@
                             <details class="vertical-accordion" open>
                                 <summary>Speech Preview</summary>
                                 <div class="accordion-body content-stack">
-                                    <label for="messagesPreviewTtsProfile">TTS Profile</label>
-                                    <select id="messagesPreviewTtsProfile" data-messages-preview-tts-profile></select>
-                                    <div class="action-group action-group--tight">
-                                        <button class="btn btn--compact" type="button" data-messages-preview-message>Preview Message</button>
-                                        <button class="btn btn--compact" type="button" data-messages-preview-segments>Preview Segments</button>
-                                        <button class="btn btn--compact" type="button" data-messages-preview-stop>Stop Preview</button>
-                                    </div>
-                                    <div class="status" role="status" data-messages-preview-status>Speech preview is idle.</div>
+                                    <p>Speech Preview is display-only.</p>
+                                    <div class="status" role="status" data-messages-preview-status>No playback, provider calls, or audio generation run from Message Studio.</div>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>

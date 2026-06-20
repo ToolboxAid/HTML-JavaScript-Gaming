@@ -1,10 +1,9 @@
 import {
+  createMessage,
   createMessageSegment,
   createEmotionProfile,
-  createMessage,
   createTtsProfile,
   listEmotionProfiles,
-  listMessageCategories,
   listMessages,
   listMessageSegments,
   listTtsProfiles,
@@ -14,76 +13,36 @@ import {
   updateTtsProfile,
 } from "./messages-api-client.js";
 
+const NEW_ROW_KEY = "__new__";
+
 const elements = {
-  active: document.querySelector("[data-messages-active]"),
+  addMessageRow: document.querySelector("[data-messages-add-row]"),
   count: document.querySelector("[data-messages-count]"),
-  editorHeading: document.querySelector("[data-messages-editor-heading]"),
-  emotionActive: document.querySelector("[data-messages-emotion-active]"),
-  emotionCancel: document.querySelector("[data-messages-emotion-cancel]"),
+  emotionAddRow: document.querySelector("[data-messages-emotion-add-row]"),
   emotionCount: document.querySelector("[data-messages-emotion-count]"),
-  emotionDescription: document.querySelector("[data-messages-emotion-description]"),
-  emotionForm: document.querySelector("[data-messages-emotion-form]"),
-  emotionKey: document.querySelector("[data-messages-emotion-key]"),
-  emotionName: document.querySelector("[data-messages-emotion-name]"),
-  emotionPauseAfter: document.querySelector("[data-messages-emotion-pause-after]"),
-  emotionPauseBefore: document.querySelector("[data-messages-emotion-pause-before]"),
-  emotionPitch: document.querySelector("[data-messages-emotion-pitch]"),
-  emotionProfile: document.querySelector("[data-messages-emotion-profile]"),
-  emotionRate: document.querySelector("[data-messages-emotion-rate]"),
   emotionRows: document.querySelector("[data-messages-emotions]"),
-  emotionVolume: document.querySelector("[data-messages-emotion-volume]"),
-  form: document.querySelector("[data-messages-form]"),
-  key: document.querySelector("[data-messages-message-key]"),
   log: document.querySelector("[data-messages-log]"),
-  name: document.querySelector("[data-messages-name]"),
-  newMessage: document.querySelector("[data-messages-new]"),
-  notes: document.querySelector("[data-messages-notes]"),
   persistenceEngine: document.querySelector("[data-messages-persistence-engine]"),
   persistenceOwner: document.querySelector("[data-messages-persistence-owner]"),
   persistenceSource: document.querySelector("[data-messages-persistence-source]"),
-  previewMessage: document.querySelector("[data-messages-preview-message]"),
-  previewSegments: document.querySelector("[data-messages-preview-segments]"),
   previewStatus: document.querySelector("[data-messages-preview-status]"),
-  previewStop: document.querySelector("[data-messages-preview-stop]"),
-  previewTtsProfile: document.querySelector("[data-messages-preview-tts-profile]"),
   selectedEmotion: document.querySelector("[data-messages-selected-emotion]"),
   selectedName: document.querySelector("[data-messages-selected-name]"),
   selectedStatus: document.querySelector("[data-messages-selected-status]"),
   selectedText: document.querySelector("[data-messages-selected-text]"),
-  segmentActive: document.querySelector("[data-messages-segment-active]"),
-  segmentContext: document.querySelector("[data-messages-segment-context]"),
-  segmentEmotionProfile: document.querySelector("[data-messages-segment-emotion-profile]"),
-  segmentForm: document.querySelector("[data-messages-segment-form]"),
-  segmentKey: document.querySelector("[data-messages-segment-key]"),
-  segmentNew: document.querySelector("[data-messages-segment-new]"),
-  segmentOrder: document.querySelector("[data-messages-segment-order]"),
-  segmentReload: document.querySelector("[data-messages-segment-reload]"),
-  segmentRows: document.querySelector("[data-messages-segments]"),
-  segmentText: document.querySelector("[data-messages-segment-text]"),
-  segmentValidationCard: document.querySelector("[data-messages-segment-validation-card]"),
-  segmentValidationErrors: document.querySelector("[data-messages-segment-validation-errors]"),
   table: document.querySelector("[data-messages-table]"),
-  text: document.querySelector("[data-messages-text]"),
-  ttsActive: document.querySelector("[data-messages-tts-active]"),
-  ttsCancel: document.querySelector("[data-messages-tts-cancel]"),
+  ttsAddRow: document.querySelector("[data-messages-tts-add-row]"),
   ttsCount: document.querySelector("[data-messages-tts-count]"),
-  ttsDescription: document.querySelector("[data-messages-tts-description]"),
-  ttsForm: document.querySelector("[data-messages-tts-form]"),
-  ttsKey: document.querySelector("[data-messages-tts-key]"),
-  ttsLanguage: document.querySelector("[data-messages-tts-language]"),
-  ttsName: document.querySelector("[data-messages-tts-name]"),
-  ttsPitch: document.querySelector("[data-messages-tts-pitch]"),
-  ttsProviderKey: document.querySelector("[data-messages-tts-provider-key]"),
-  ttsRate: document.querySelector("[data-messages-tts-rate]"),
   ttsRows: document.querySelector("[data-messages-tts-profiles]"),
-  ttsVoiceName: document.querySelector("[data-messages-tts-voice-name]"),
-  ttsVolume: document.querySelector("[data-messages-tts-volume]"),
   validationCard: document.querySelector("[data-messages-validation-card]"),
   validationErrors: document.querySelector("[data-messages-validation-errors]"),
 };
 
 const state = {
-  categories: [],
+  editingEmotionKey: "",
+  editingMessageKey: "",
+  editingSegmentKey: "",
+  editingTtsKey: "",
   emotionProfiles: [],
   messages: [],
   segments: [],
@@ -94,18 +53,6 @@ const state = {
 function setText(element, value) {
   if (element) {
     element.textContent = value;
-  }
-}
-
-function setValue(element, value) {
-  if (element) {
-    element.value = value;
-  }
-}
-
-function setChecked(element, value) {
-  if (element) {
-    element.checked = value !== false;
   }
 }
 
@@ -128,72 +75,56 @@ function createButton(label, dataName, value) {
   return button;
 }
 
-function clearListValidation(list, card) {
-  if (list) {
-    list.replaceChildren();
+function createActionGroup(...buttons) {
+  const group = document.createElement("div");
+  group.className = "action-group action-group--tight";
+  buttons.filter(Boolean).forEach((button) => group.append(button));
+  return group;
+}
+
+function createInput(value, dataName, type = "text") {
+  const input = document.createElement("input");
+  input.dataset[dataName] = "";
+  input.type = type;
+  input.value = value ?? "";
+  return input;
+}
+
+function createNumberInput(value, dataName, options = {}) {
+  const input = createInput(String(value ?? ""), dataName, "number");
+  if (options.min !== undefined) {
+    input.min = String(options.min);
   }
-  if (card) {
-    card.hidden = true;
+  if (options.max !== undefined) {
+    input.max = String(options.max);
   }
-}
-
-function showListValidation(errors, list, card) {
-  if (!list || !card) {
-    return;
+  if (options.step !== undefined) {
+    input.step = String(options.step);
   }
-  list.replaceChildren();
-  errors.forEach((error) => {
-    const item = document.createElement("li");
-    item.textContent = error;
-    list.append(item);
-  });
-  card.hidden = errors.length === 0;
+  return input;
 }
 
-function clearValidation() {
-  clearListValidation(elements.validationErrors, elements.validationCard);
+function createCheckbox(checked, dataName) {
+  const label = document.createElement("label");
+  const input = document.createElement("input");
+  input.dataset[dataName] = "";
+  input.type = "checkbox";
+  input.checked = checked !== false;
+  label.append(input, " Active");
+  return label;
 }
 
-function showValidation(errors) {
-  showListValidation(errors, elements.validationErrors, elements.validationCard);
+function createTextarea(value, dataName, rows = 4) {
+  const textarea = document.createElement("textarea");
+  textarea.dataset[dataName] = "";
+  textarea.rows = rows;
+  textarea.value = value ?? "";
+  return textarea;
 }
 
-function clearSegmentValidation() {
-  clearListValidation(elements.segmentValidationErrors, elements.segmentValidationCard);
-}
-
-function showSegmentValidation(errors) {
-  showListValidation(errors, elements.segmentValidationErrors, elements.segmentValidationCard);
-}
-
-function activeCategories() {
-  return state.categories.filter((category) => category.active);
-}
-
-function activeEmotionProfiles() {
-  return state.emotionProfiles.filter((profile) => profile.active);
-}
-
-function activeTtsProfiles() {
-  return state.ttsProfiles.filter((profile) => profile.active);
-}
-
-function legacyCategoryKey() {
-  const selected = selectedMessage();
-  if (selected?.categoryKey) {
-    return selected.categoryKey;
-  }
-  const active = activeCategories();
-  const dialog = active.find((category) => category.name === "Dialog");
-  return dialog?.key || active[0]?.key || state.categories[0]?.key || "";
-}
-
-function populateSelect(select, options, placeholder) {
-  if (!select) {
-    return;
-  }
-  const currentValue = select.value;
-  select.replaceChildren();
+function createSelect(value, dataName, options, placeholder) {
+  const select = document.createElement("select");
+  select.dataset[dataName] = "";
   const placeholderOption = document.createElement("option");
   placeholderOption.value = "";
   placeholderOption.textContent = placeholder;
@@ -204,170 +135,90 @@ function populateSelect(select, options, placeholder) {
     option.textContent = optionValue.name;
     select.append(option);
   });
-  select.value = options.some((optionValue) => optionValue.key === currentValue) ? currentValue : "";
+  select.value = options.some((optionValue) => optionValue.key === value) ? value : "";
+  return select;
 }
 
-function renderEmotionRows() {
-  if (!elements.emotionRows) {
+function createField(labelText, field) {
+  const label = document.createElement("label");
+  const span = document.createElement("span");
+  span.textContent = labelText;
+  label.append(span, field);
+  return label;
+}
+
+function tableMessage(colSpan, text) {
+  const row = document.createElement("tr");
+  const cell = document.createElement("td");
+  cell.colSpan = colSpan;
+  cell.textContent = text;
+  row.append(cell);
+  return row;
+}
+
+function clearValidation() {
+  if (elements.validationErrors) {
+    elements.validationErrors.replaceChildren();
+  }
+  if (elements.validationCard) {
+    elements.validationCard.hidden = true;
+  }
+}
+
+function showValidation(errors) {
+  if (!elements.validationErrors || !elements.validationCard) {
     return;
   }
-  elements.emotionRows.replaceChildren();
-  state.emotionProfiles.forEach((profile) => {
-    const row = document.createElement("tr");
-    row.dataset.messagesEmotionRow = profile.key;
-    const actions = document.createElement("td");
-    const group = document.createElement("div");
-    group.className = "action-group action-group--tight";
-    group.append(createButton("Update Row", "messagesEmotionEdit", profile.key));
-    actions.append(group);
-    row.append(
-      createCell(profile.name),
-      createCell(String(profile.usageCount || 0)),
-      createCell(statusForActive(profile.active)),
-      actions,
-    );
-    elements.emotionRows.append(row);
+  elements.validationErrors.replaceChildren();
+  errors.forEach((error) => {
+    const item = document.createElement("li");
+    item.textContent = error;
+    elements.validationErrors.append(item);
   });
+  elements.validationCard.hidden = errors.length === 0;
 }
 
-function renderTtsRows() {
-  if (!elements.ttsRows) {
-    return;
-  }
-  elements.ttsRows.replaceChildren();
-  state.ttsProfiles.forEach((profile) => {
-    const row = document.createElement("tr");
-    row.dataset.messagesTtsRow = profile.key;
-    const actions = document.createElement("td");
-    const group = document.createElement("div");
-    group.className = "action-group action-group--tight";
-    group.append(createButton("Update Row", "messagesTtsEdit", profile.key));
-    actions.append(group);
-    row.append(
-      createCell(profile.name),
-      createCell(profile.providerKey),
-      createCell(profile.language),
-      createCell(statusForActive(profile.active)),
-      actions,
-    );
-    elements.ttsRows.append(row);
-  });
-}
-
-function renderMessageRows() {
-  if (!elements.table) {
-    return;
-  }
-  elements.table.replaceChildren();
-  if (!state.messages.length) {
-    const row = document.createElement("tr");
-    const cell = document.createElement("td");
-    cell.colSpan = 4;
-    cell.textContent = "No message rows saved yet.";
-    row.append(cell);
-    elements.table.append(row);
-    return;
-  }
-  state.messages.forEach((message) => {
-    const row = document.createElement("tr");
-    row.dataset.messagesRow = message.key;
-    const actions = document.createElement("td");
-    const group = document.createElement("div");
-    group.className = "action-group action-group--tight";
-    group.append(
-      createButton("Update Row", "messagesEdit", message.key),
-      createButton(message.active ? "Disable Row" : "Enable Row", "messagesToggle", message.key),
-    );
-    actions.append(group);
-    row.append(
-      createCell(message.name),
-      createCell(message.emotionProfileName || "Unknown"),
-      createCell(statusForActive(message.active)),
-      actions,
-    );
-    elements.table.append(row);
-  });
-}
-
-function selectedMessageSegments() {
-  return state.segments
-    .filter((segment) => segment.messageKey === state.selectedMessageKey)
-    .sort((left, right) => left.displayOrder - right.displayOrder || left.createdAt.localeCompare(right.createdAt) || left.key.localeCompare(right.key));
+function activeEmotionProfiles() {
+  return state.emotionProfiles.filter((profile) => profile.active);
 }
 
 function selectedMessage() {
   return state.messages.find((message) => message.key === state.selectedMessageKey) || null;
 }
 
-function selectedTtsProfile() {
-  return state.ttsProfiles.find((profile) => profile.key === elements.previewTtsProfile?.value)
-    || activeTtsProfiles()[0]
-    || null;
-}
-
 function emotionProfileByKey(profileKey) {
   return state.emotionProfiles.find((profile) => profile.key === profileKey) || null;
 }
 
-function renderSegmentRows() {
-  if (!elements.segmentRows) {
-    return;
-  }
-  elements.segmentRows.replaceChildren();
-  if (!state.selectedMessageKey) {
-    const row = document.createElement("tr");
-    const cell = document.createElement("td");
-    cell.colSpan = 5;
-    cell.textContent = "Save or select a message before adding segments.";
-    row.append(cell);
-    elements.segmentRows.append(row);
-    return;
-  }
-  const segments = selectedMessageSegments();
-  if (!segments.length) {
-    const row = document.createElement("tr");
-    const cell = document.createElement("td");
-    cell.colSpan = 5;
-    cell.textContent = "No segments saved for this message.";
-    row.append(cell);
-    elements.segmentRows.append(row);
-    return;
-  }
-  segments.forEach((segment, index) => {
-    const row = document.createElement("tr");
-    row.dataset.messagesSegmentRow = segment.key;
-    const actions = document.createElement("td");
-    const group = document.createElement("div");
-    group.className = "action-group action-group--tight";
-    const moveUp = createButton("Move Up", "messagesSegmentMoveUp", segment.key);
-    const moveDown = createButton("Move Down", "messagesSegmentMoveDown", segment.key);
-    moveUp.disabled = index === 0;
-    moveDown.disabled = index === segments.length - 1;
-    group.append(
-      createButton("Update Row", "messagesSegmentEdit", segment.key),
-      moveUp,
-      moveDown,
-      createButton(segment.active ? "Disable Row" : "Enable Row", "messagesSegmentToggle", segment.key),
-    );
-    actions.append(group);
-    row.append(
-      createCell(String(segment.displayOrder)),
-      createCell(segment.segmentText),
-      createCell(segment.emotionProfileName || "Unknown"),
-      createCell(statusForActive(segment.active)),
-      actions,
-    );
-    elements.segmentRows.append(row);
-  });
+function ttsProfileByKey(profileKey) {
+  return state.ttsProfiles.find((profile) => profile.key === profileKey) || null;
 }
 
-function renderSelectedMessage() {
-  const selected = selectedMessage();
-  setText(elements.selectedName, selected?.name || "None");
-  setText(elements.selectedEmotion, selected?.emotionProfileName || "None");
-  setText(elements.selectedStatus, selected ? statusForActive(selected.active) : "None");
-  setText(elements.selectedText, selected?.messageText || "No message selected.");
-  setText(elements.segmentContext, selected ? `Segments for ${selected.name}` : "Select or add a message row before adding segments.");
+function messageSegments(messageKey) {
+  return state.segments
+    .filter((segment) => segment.messageKey === messageKey)
+    .sort((left, right) => left.displayOrder - right.displayOrder || left.createdAt.localeCompare(right.createdAt) || left.key.localeCompare(right.key));
+}
+
+function selectedMessageSegments() {
+  return messageSegments(state.selectedMessageKey);
+}
+
+function nextSegmentOrder() {
+  const segments = selectedMessageSegments();
+  if (!segments.length) {
+    return 1;
+  }
+  return Math.max(...segments.map((segment) => segment.displayOrder)) + 1;
+}
+
+function selectOptionsWithCurrent(currentKey) {
+  const active = activeEmotionProfiles();
+  const current = emotionProfileByKey(currentKey);
+  if (current && !active.some((profile) => profile.key === current.key)) {
+    return [...active, current];
+  }
+  return active;
 }
 
 function renderCounts() {
@@ -382,30 +233,359 @@ function renderPersistence(persistence = {}) {
   setText(elements.persistenceOwner, persistence.owner || "messages");
 }
 
-function render(persistence = {}) {
-  populateSelect(elements.emotionProfile, activeEmotionProfiles(), "Select emotion profile");
-  populateSelect(elements.segmentEmotionProfile, activeEmotionProfiles(), "Select emotion profile");
-  populateSelect(elements.previewTtsProfile, activeTtsProfiles(), "Default active TTS profile");
-  if (!elements.previewTtsProfile?.value && activeTtsProfiles()[0]) {
-    elements.previewTtsProfile.value = activeTtsProfiles()[0].key;
-  }
-  renderEmotionRows();
-  renderTtsRows();
-  renderMessageRows();
-  renderSelectedMessage();
-  renderSegmentRows();
-  renderCounts();
-  renderPersistence(persistence);
+function renderSelectedMessage() {
+  const selected = selectedMessage();
+  setText(elements.selectedName, selected?.name || "None");
+  setText(elements.selectedEmotion, selected?.emotionProfileName || "None");
+  setText(elements.selectedStatus, selected ? statusForActive(selected.active) : "None");
+  setText(elements.selectedText, selected?.messageText || "No message selected.");
 }
 
-function messageFormValues() {
+function renderSpeechPreviewStatus() {
+  setText(elements.previewStatus, "No playback, provider calls, or audio generation run from Message Studio.");
+}
+
+function createMessageEditRows(message = null) {
+  const key = message?.key || NEW_ROW_KEY;
+  const row = document.createElement("tr");
+  row.dataset.messagesRowEditor = key;
+
+  const nameCell = document.createElement("td");
+  nameCell.append(createInput(message?.name || "", "messageName"));
+
+  const emotionCell = document.createElement("td");
+  emotionCell.append(createSelect(message?.emotionProfileKey || "", "messageEmotion", selectOptionsWithCurrent(message?.emotionProfileKey || ""), "Select emotion profile"));
+
+  const segmentCell = createCell(message ? String(messageSegments(message.key).length) : "0");
+  const tagsCell = createCell("Tags planned");
+
+  const statusCell = document.createElement("td");
+  statusCell.append(createCheckbox(message?.active !== false, "messageActive"));
+
+  const actions = document.createElement("td");
+  actions.append(createActionGroup(
+    createButton("Update Row", "messagesCommit", key),
+    createButton("Cancel", "messagesCancel", key),
+  ));
+
+  row.append(nameCell, emotionCell, segmentCell, tagsCell, statusCell, actions);
+
+  const detailRow = document.createElement("tr");
+  detailRow.dataset.messagesRowEditorDetails = key;
+  const detailCell = document.createElement("td");
+  detailCell.colSpan = 6;
+  const stack = document.createElement("div");
+  stack.className = "content-stack";
+  stack.append(
+    createField("Message Text", createTextarea(message?.messageText || "", "messageText", 6)),
+    createField("Notes", createTextarea(message?.notes || "", "messageNotes", 3)),
+  );
+  detailCell.append(stack);
+  detailRow.append(detailCell);
+
+  return [row, detailRow];
+}
+
+function createMessageSegmentTable() {
+  const wrapper = document.createElement("div");
+  wrapper.className = "content-stack";
+
+  const context = document.createElement("div");
+  context.className = "kicker";
+  context.textContent = "Message Row / Segment Table";
+  const heading = document.createElement("h3");
+  heading.textContent = "Message Segments";
+  wrapper.append(context, heading);
+
+  const tableWrapper = document.createElement("div");
+  tableWrapper.className = "table-wrapper";
+  const table = document.createElement("table");
+  table.className = "data-table";
+  table.setAttribute("aria-label", "Selected message segments");
+  const thead = document.createElement("thead");
+  const headerRow = document.createElement("tr");
+  ["Order", "Emotion", "Text", "Status", "Actions"].forEach((label) => {
+    const header = document.createElement("th");
+    header.scope = "col";
+    header.textContent = label;
+    headerRow.append(header);
+  });
+  thead.append(headerRow);
+  const tbody = document.createElement("tbody");
+  tbody.dataset.messagesSegments = "";
+
+  const segments = selectedMessageSegments();
+  if (!segments.length && state.editingSegmentKey !== NEW_ROW_KEY) {
+    tbody.append(tableMessage(5, "No segments saved for this message."));
+  }
+
+  segments.forEach((segment, index) => {
+    if (state.editingSegmentKey === segment.key) {
+      tbody.append(createSegmentEditRow(segment));
+      return;
+    }
+    const row = document.createElement("tr");
+    row.dataset.messagesSegmentRow = segment.key;
+    const actions = document.createElement("td");
+    const moveUp = createButton("Move Up", "messagesSegmentMoveUp", segment.key);
+    const moveDown = createButton("Move Down", "messagesSegmentMoveDown", segment.key);
+    moveUp.disabled = index === 0;
+    moveDown.disabled = index === segments.length - 1;
+    actions.append(createActionGroup(
+      createButton("Edit", "messagesSegmentEdit", segment.key),
+      moveUp,
+      moveDown,
+      segment.active ? createButton("Disable", "messagesSegmentDisable", segment.key) : null,
+    ));
+    row.append(
+      createCell(String(segment.displayOrder)),
+      createCell(segment.emotionProfileName || "Unknown"),
+      createCell(segment.segmentText),
+      createCell(statusForActive(segment.active)),
+      actions,
+    );
+    tbody.append(row);
+  });
+
+  if (state.editingSegmentKey === NEW_ROW_KEY) {
+    tbody.append(createSegmentEditRow(null));
+  }
+
+  table.append(thead, tbody);
+  tableWrapper.append(table);
+  const actionGroup = document.createElement("div");
+  actionGroup.className = "action-group";
+  actionGroup.append(createButton("Add Segment Row", "messagesSegmentAddRow", state.selectedMessageKey));
+  wrapper.append(tableWrapper, actionGroup);
+  return wrapper;
+}
+
+function createSegmentEditRow(segment = null) {
+  const key = segment?.key || NEW_ROW_KEY;
+  const row = document.createElement("tr");
+  row.dataset.messagesSegmentEditor = key;
+
+  const orderCell = document.createElement("td");
+  orderCell.append(createNumberInput(segment?.displayOrder || nextSegmentOrder(), "segmentOrder", { min: 1, step: 1 }));
+
+  const emotionCell = document.createElement("td");
+  emotionCell.append(createSelect(segment?.emotionProfileKey || "", "segmentEmotion", selectOptionsWithCurrent(segment?.emotionProfileKey || ""), "Select emotion"));
+
+  const textCell = document.createElement("td");
+  textCell.append(createTextarea(segment?.segmentText || "", "segmentText", 3));
+
+  const statusCell = document.createElement("td");
+  statusCell.append(createCheckbox(segment?.active !== false, "segmentActive"));
+
+  const actions = document.createElement("td");
+  actions.append(createActionGroup(
+    createButton("Update Row", "messagesSegmentCommit", key),
+    createButton("Cancel", "messagesSegmentCancel", key),
+  ));
+
+  row.append(orderCell, emotionCell, textCell, statusCell, actions);
+  return row;
+}
+
+function appendSelectedSegmentsHost(messageKey) {
+  if (state.selectedMessageKey !== messageKey) {
+    return;
+  }
+  const hostRow = document.createElement("tr");
+  hostRow.dataset.messagesSegmentHost = messageKey;
+  const cell = document.createElement("td");
+  cell.colSpan = 6;
+  cell.append(createMessageSegmentTable());
+  hostRow.append(cell);
+  elements.table.append(hostRow);
+}
+
+function renderMessageRows() {
+  if (!elements.table) {
+    return;
+  }
+  elements.table.replaceChildren();
+  if (!state.messages.length && state.editingMessageKey !== NEW_ROW_KEY) {
+    elements.table.append(tableMessage(6, "No message rows saved yet."));
+    return;
+  }
+
+  state.messages.forEach((message) => {
+    if (state.editingMessageKey === message.key) {
+      createMessageEditRows(message).forEach((row) => elements.table.append(row));
+      appendSelectedSegmentsHost(message.key);
+      return;
+    }
+
+    const row = document.createElement("tr");
+    row.dataset.messagesRow = message.key;
+    const actions = document.createElement("td");
+    actions.append(createActionGroup(
+      createButton("Edit", "messagesEdit", message.key),
+      message.active ? createButton("Disable", "messagesDisable", message.key) : null,
+    ));
+    row.append(
+      createCell(message.name),
+      createCell(message.emotionProfileName || "Unknown"),
+      createCell(String(messageSegments(message.key).length)),
+      createCell("Tags planned"),
+      createCell(statusForActive(message.active)),
+      actions,
+    );
+    elements.table.append(row);
+    appendSelectedSegmentsHost(message.key);
+  });
+
+  if (state.editingMessageKey === NEW_ROW_KEY) {
+    createMessageEditRows(null).forEach((row) => elements.table.append(row));
+  }
+}
+
+function createEmotionEditRow(profile = null) {
+  const key = profile?.key || NEW_ROW_KEY;
+  const row = document.createElement("tr");
+  row.dataset.messagesEmotionEditor = key;
+
+  const nameCell = document.createElement("td");
+  nameCell.append(createInput(profile?.name || "", "emotionName"));
+  const volumeCell = document.createElement("td");
+  volumeCell.append(createNumberInput(profile?.volume ?? 1, "emotionVolume", { min: 0, max: 2, step: 0.01 }));
+  const pitchCell = document.createElement("td");
+  pitchCell.append(createNumberInput(profile?.pitch ?? 1, "emotionPitch", { min: 0.25, max: 2, step: 0.01 }));
+  const rateCell = document.createElement("td");
+  rateCell.append(createNumberInput(profile?.rate ?? 1, "emotionRate", { min: 0.25, max: 2, step: 0.01 }));
+  const statusCell = document.createElement("td");
+  statusCell.append(createCheckbox(profile?.active !== false, "emotionActive"));
+  const actions = document.createElement("td");
+  actions.append(createActionGroup(
+    createButton("Update Row", "messagesEmotionCommit", key),
+    createButton("Cancel", "messagesEmotionCancel", key),
+  ));
+  row.append(nameCell, volumeCell, pitchCell, rateCell, statusCell, actions);
+  return row;
+}
+
+function renderEmotionRows() {
+  if (!elements.emotionRows) {
+    return;
+  }
+  elements.emotionRows.replaceChildren();
+  state.emotionProfiles.forEach((profile) => {
+    if (state.editingEmotionKey === profile.key) {
+      elements.emotionRows.append(createEmotionEditRow(profile));
+      return;
+    }
+    const row = document.createElement("tr");
+    row.dataset.messagesEmotionRow = profile.key;
+    const actions = document.createElement("td");
+    actions.append(createActionGroup(
+      createButton("Edit", "messagesEmotionEdit", profile.key),
+      profile.active ? createButton("Disable", "messagesEmotionDisable", profile.key) : null,
+    ));
+    row.append(
+      createCell(profile.name),
+      createCell(String(profile.volume)),
+      createCell(String(profile.pitch)),
+      createCell(String(profile.rate)),
+      createCell(statusForActive(profile.active)),
+      actions,
+    );
+    elements.emotionRows.append(row);
+  });
+  if (state.editingEmotionKey === NEW_ROW_KEY) {
+    elements.emotionRows.append(createEmotionEditRow(null));
+  }
+  if (!state.emotionProfiles.length && state.editingEmotionKey !== NEW_ROW_KEY) {
+    elements.emotionRows.append(tableMessage(6, "No emotion profiles saved yet."));
+  }
+}
+
+function createTtsEditRow(profile = null) {
+  const key = profile?.key || NEW_ROW_KEY;
+  const row = document.createElement("tr");
+  row.dataset.messagesTtsEditor = key;
+
+  const nameCell = document.createElement("td");
+  nameCell.append(createInput(profile?.name || "", "ttsName"));
+  const providerCell = document.createElement("td");
+  providerCell.append(createInput(profile?.providerKey || "browser-speech", "ttsProvider"));
+  const voiceCell = document.createElement("td");
+  voiceCell.append(createInput(profile?.voiceName || "", "ttsVoice"));
+  const languageCell = document.createElement("td");
+  languageCell.append(createInput(profile?.language || "en-US", "ttsLanguage"));
+  const statusCell = document.createElement("td");
+  statusCell.append(createCheckbox(profile?.active !== false, "ttsActive"));
+  const actions = document.createElement("td");
+  actions.append(createActionGroup(
+    createButton("Update Row", "messagesTtsCommit", key),
+    createButton("Cancel", "messagesTtsCancel", key),
+  ));
+  row.append(nameCell, providerCell, voiceCell, languageCell, statusCell, actions);
+  return row;
+}
+
+function renderTtsRows() {
+  if (!elements.ttsRows) {
+    return;
+  }
+  elements.ttsRows.replaceChildren();
+  state.ttsProfiles.forEach((profile) => {
+    if (state.editingTtsKey === profile.key) {
+      elements.ttsRows.append(createTtsEditRow(profile));
+      return;
+    }
+    const row = document.createElement("tr");
+    row.dataset.messagesTtsRow = profile.key;
+    const actions = document.createElement("td");
+    actions.append(createActionGroup(
+      createButton("Edit", "messagesTtsEdit", profile.key),
+      profile.active ? createButton("Disable", "messagesTtsDisable", profile.key) : null,
+    ));
+    row.append(
+      createCell(profile.name),
+      createCell(profile.providerKey),
+      createCell(profile.voiceName || ""),
+      createCell(profile.language),
+      createCell(statusForActive(profile.active)),
+      actions,
+    );
+    elements.ttsRows.append(row);
+  });
+  if (state.editingTtsKey === NEW_ROW_KEY) {
+    elements.ttsRows.append(createTtsEditRow(null));
+  }
+  if (!state.ttsProfiles.length && state.editingTtsKey !== NEW_ROW_KEY) {
+    elements.ttsRows.append(tableMessage(6, "No TTS profiles saved yet."));
+  }
+}
+
+function render(persistence = {}) {
+  renderMessageRows();
+  renderEmotionRows();
+  renderTtsRows();
+  renderSelectedMessage();
+  renderCounts();
+  renderPersistence(persistence);
+  renderSpeechPreviewStatus();
+}
+
+function editorValue(root, selector) {
+  return root?.querySelector(selector)?.value || "";
+}
+
+function editorChecked(root, selector) {
+  return root?.querySelector(selector)?.checked !== false;
+}
+
+function messageValues(key) {
+  const root = elements.table?.querySelector(`[data-messages-row-editor="${key}"]`);
+  const details = elements.table?.querySelector(`[data-messages-row-editor-details="${key}"]`);
   return {
-    active: elements.active?.checked !== false,
-    categoryKey: legacyCategoryKey(),
-    emotionProfileKey: elements.emotionProfile?.value || "",
-    messageText: elements.text?.value || "",
-    name: elements.name?.value || "",
-    notes: elements.notes?.value || "",
+    active: editorChecked(root, "[data-message-active]"),
+    emotionProfileKey: editorValue(root, "[data-message-emotion]"),
+    messageText: editorValue(details, "[data-message-text]"),
+    name: editorValue(root, "[data-message-name]"),
+    notes: editorValue(details, "[data-message-notes]"),
   };
 }
 
@@ -413,9 +593,6 @@ function validateMessage(values) {
   const errors = [];
   if (!values.name.trim()) {
     errors.push("Message Name is required.");
-  }
-  if (!values.categoryKey) {
-    errors.push("Message Studio legacy seed is unavailable. Reload the Local API before updating rows.");
   }
   if (!values.emotionProfileKey) {
     errors.push("Emotion Profile is required.");
@@ -426,37 +603,21 @@ function validateMessage(values) {
   return errors;
 }
 
-function nextSegmentOrder() {
-  const segments = selectedMessageSegments();
-  if (!segments.length) {
-    return 1;
-  }
-  return Math.max(...segments.map((segment) => segment.displayOrder)) + 1;
-}
-
-function resetSegmentForm() {
-  setValue(elements.segmentKey, "");
-  setValue(elements.segmentEmotionProfile, "");
-  setValue(elements.segmentOrder, state.selectedMessageKey ? String(nextSegmentOrder()) : "");
-  setValue(elements.segmentText, "");
-  setChecked(elements.segmentActive, true);
-  clearSegmentValidation();
-}
-
-function segmentFormValues() {
+function segmentValues(key) {
+  const root = elements.table?.querySelector(`[data-messages-segment-editor="${key}"]`);
   return {
-    active: elements.segmentActive?.checked !== false,
-    displayOrder: elements.segmentOrder?.value || "",
-    emotionProfileKey: elements.segmentEmotionProfile?.value || "",
+    active: editorChecked(root, "[data-segment-active]"),
+    displayOrder: editorValue(root, "[data-segment-order]"),
+    emotionProfileKey: editorValue(root, "[data-segment-emotion]"),
     messageKey: state.selectedMessageKey,
-    segmentText: elements.segmentText?.value || "",
+    segmentText: editorValue(root, "[data-segment-text]"),
   };
 }
 
 function validateSegment(values) {
   const errors = [];
   if (!state.selectedMessageKey) {
-    errors.push("Save or select a message before adding segments.");
+    errors.push("Select a message row before adding segments.");
   }
   if (!values.segmentText.trim()) {
     errors.push("Segment Text is required.");
@@ -475,27 +636,48 @@ function validateSegment(values) {
   return errors;
 }
 
-function ttsProfileFormValues() {
+function emotionValues(key) {
+  const root = elements.emotionRows?.querySelector(`[data-messages-emotion-editor="${key}"]`);
+  const existing = key === NEW_ROW_KEY ? null : emotionProfileByKey(key);
   return {
-    active: elements.ttsActive?.checked !== false,
-    description: elements.ttsDescription?.value || "",
-    language: elements.ttsLanguage?.value || "",
-    name: elements.ttsName?.value || "",
-    pitch: Number(elements.ttsPitch?.value || 1),
-    providerKey: elements.ttsProviderKey?.value || "",
-    rate: Number(elements.ttsRate?.value || 1),
-    voiceName: elements.ttsVoiceName?.value || "",
-    volume: Number(elements.ttsVolume?.value || 1),
+    active: editorChecked(root, "[data-emotion-active]"),
+    description: existing?.description || "",
+    name: editorValue(root, "[data-emotion-name]"),
+    pauseAfterMs: existing?.pauseAfterMs ?? 0,
+    pauseBeforeMs: existing?.pauseBeforeMs ?? 0,
+    pitch: Number(editorValue(root, "[data-emotion-pitch]") || 1),
+    rate: Number(editorValue(root, "[data-emotion-rate]") || 1),
+    volume: Number(editorValue(root, "[data-emotion-volume]") || 1),
   };
 }
 
-function validateTtsProfile(values) {
+function validateEmotion(values) {
+  return values.name.trim() ? [] : ["Emotion Profile Name is required."];
+}
+
+function ttsValues(key) {
+  const root = elements.ttsRows?.querySelector(`[data-messages-tts-editor="${key}"]`);
+  const existing = key === NEW_ROW_KEY ? null : ttsProfileByKey(key);
+  return {
+    active: editorChecked(root, "[data-tts-active]"),
+    description: existing?.description || "",
+    language: editorValue(root, "[data-tts-language]"),
+    name: editorValue(root, "[data-tts-name]"),
+    pitch: existing?.pitch ?? 1,
+    providerKey: editorValue(root, "[data-tts-provider]"),
+    rate: existing?.rate ?? 1,
+    voiceName: editorValue(root, "[data-tts-voice]"),
+    volume: existing?.volume ?? 1,
+  };
+}
+
+function validateTts(values) {
   const errors = [];
   if (!values.name.trim()) {
     errors.push("TTS Profile Name is required.");
   }
   if (!values.providerKey.trim()) {
-    errors.push("Provider Key is required.");
+    errors.push("Provider is required.");
   }
   if (!values.language.trim()) {
     errors.push("Language is required.");
@@ -503,223 +685,30 @@ function validateTtsProfile(values) {
   return errors;
 }
 
-function speechSynthesisAvailable() {
-  return Boolean(window.speechSynthesis && window.SpeechSynthesisUtterance);
-}
-
-function createSpeechUtterance(text, ttsProfile, emotionProfile) {
-  const utterance = new window.SpeechSynthesisUtterance(text);
-  utterance.lang = ttsProfile.language;
-  utterance.volume = emotionProfile ? emotionProfile.volume : ttsProfile.volume;
-  utterance.pitch = emotionProfile ? emotionProfile.pitch : ttsProfile.pitch;
-  utterance.rate = emotionProfile ? emotionProfile.rate : ttsProfile.rate;
-  const voices = typeof window.speechSynthesis.getVoices === "function" ? window.speechSynthesis.getVoices() : [];
-  const voice = voices.find((candidate) => candidate.name === ttsProfile.voiceName);
-  if (voice) {
-    utterance.voice = voice;
-  }
-  return utterance;
-}
-
-function previewSpeech(items, successMessage) {
-  if (!speechSynthesisAvailable()) {
-    setText(elements.previewStatus, "Browser speech synthesis is unavailable. Use a browser with speechSynthesis support to preview messages.");
-    setText(elements.log, "Speech preview unavailable.");
-    return;
-  }
-  const ttsProfile = selectedTtsProfile();
-  if (!ttsProfile) {
-    setText(elements.previewStatus, "Choose or create an active TTS profile before previewing speech.");
-    setText(elements.log, "Speech preview needs an active TTS profile.");
-    return;
-  }
-  window.speechSynthesis.cancel();
-  items.forEach((item) => {
-    window.speechSynthesis.speak(createSpeechUtterance(item.text, ttsProfile, item.emotionProfile));
-  });
-  setText(elements.previewStatus, successMessage);
-  setText(elements.log, successMessage);
-}
-
-function previewSelectedMessage() {
-  const message = selectedMessage();
-  if (!message) {
-    setText(elements.previewStatus, "Select or save a message before previewing speech.");
-    setText(elements.log, "Speech preview needs a selected message.");
-    return;
-  }
-  previewSpeech(
-    [{ emotionProfile: emotionProfileByKey(message.emotionProfileKey), text: message.messageText }],
-    `Preview requested for message ${message.name}.`,
-  );
-}
-
-function previewSelectedSegments() {
-  const segments = selectedMessageSegments().filter((segment) => segment.active);
-  if (!segments.length) {
-    setText(elements.previewStatus, "Add at least one active segment before previewing speech.");
-    setText(elements.log, "Speech preview needs active segments.");
-    return;
-  }
-  previewSpeech(
-    segments.map((segment) => ({
-      emotionProfile: emotionProfileByKey(segment.emotionProfileKey),
-      text: segment.segmentText,
-    })),
-    `Preview requested for ${segments.length} active segment${segments.length === 1 ? "" : "s"}.`,
-  );
-}
-
-function stopSpeechPreview() {
-  if (window.speechSynthesis && typeof window.speechSynthesis.cancel === "function") {
-    window.speechSynthesis.cancel();
-  }
-  setText(elements.previewStatus, "Speech preview stopped.");
-  setText(elements.log, "Speech preview stopped.");
-}
-
-function resetMessageForm() {
-  state.selectedMessageKey = "";
-  setValue(elements.key, "");
-  setValue(elements.name, "");
-  setValue(elements.emotionProfile, "");
-  setValue(elements.text, "");
-  setValue(elements.notes, "");
-  setChecked(elements.active, true);
-  setText(elements.editorHeading, "Add Message Row");
-  clearValidation();
-  resetSegmentForm();
-  renderSelectedMessage();
-  renderSegmentRows();
-}
-
-function editMessage(messageKey) {
-  const message = state.messages.find((candidate) => candidate.key === messageKey);
-  if (!message) {
-    return;
-  }
-  state.selectedMessageKey = message.key;
-  setValue(elements.key, message.key);
-  setValue(elements.name, message.name);
-  setValue(elements.emotionProfile, message.emotionProfileKey);
-  setValue(elements.text, message.messageText);
-  setValue(elements.notes, message.notes || "");
-  setChecked(elements.active, message.active);
-  setText(elements.editorHeading, `Update ${message.name}`);
-  clearValidation();
-  resetSegmentForm();
-  renderSelectedMessage();
-  renderSegmentRows();
-}
-
-function editSegment(segmentKey) {
-  const segment = state.segments.find((candidate) => candidate.key === segmentKey);
-  if (!segment) {
-    return;
-  }
-  setValue(elements.segmentKey, segment.key);
-  setValue(elements.segmentEmotionProfile, segment.emotionProfileKey);
-  setValue(elements.segmentOrder, String(segment.displayOrder));
-  setValue(elements.segmentText, segment.segmentText);
-  setChecked(elements.segmentActive, segment.active);
-  clearSegmentValidation();
-}
-
-function resetEmotionForm() {
-  setValue(elements.emotionKey, "");
-  setValue(elements.emotionName, "");
-  setValue(elements.emotionDescription, "");
-  setValue(elements.emotionVolume, "1");
-  setValue(elements.emotionPitch, "1");
-  setValue(elements.emotionRate, "1");
-  setValue(elements.emotionPauseBefore, "0");
-  setValue(elements.emotionPauseAfter, "0");
-  setChecked(elements.emotionActive, true);
-}
-
-function resetTtsForm() {
-  setValue(elements.ttsKey, "");
-  setValue(elements.ttsName, "");
-  setValue(elements.ttsDescription, "");
-  setValue(elements.ttsProviderKey, "browser-speech");
-  setValue(elements.ttsVoiceName, "");
-  setValue(elements.ttsLanguage, "en-US");
-  setValue(elements.ttsVolume, "1");
-  setValue(elements.ttsPitch, "1");
-  setValue(elements.ttsRate, "1");
-  setChecked(elements.ttsActive, true);
-}
-
-function editEmotionProfile(profileKey) {
-  const profile = state.emotionProfiles.find((candidate) => candidate.key === profileKey);
-  if (!profile) {
-    return;
-  }
-  setValue(elements.emotionKey, profile.key);
-  setValue(elements.emotionName, profile.name);
-  setValue(elements.emotionDescription, profile.description || "");
-  setValue(elements.emotionVolume, String(profile.volume));
-  setValue(elements.emotionPitch, String(profile.pitch));
-  setValue(elements.emotionRate, String(profile.rate));
-  setValue(elements.emotionPauseBefore, String(profile.pauseBeforeMs));
-  setValue(elements.emotionPauseAfter, String(profile.pauseAfterMs));
-  setChecked(elements.emotionActive, profile.active);
-}
-
-function editTtsProfile(profileKey) {
-  const profile = state.ttsProfiles.find((candidate) => candidate.key === profileKey);
-  if (!profile) {
-    return;
-  }
-  setValue(elements.ttsKey, profile.key);
-  setValue(elements.ttsName, profile.name);
-  setValue(elements.ttsDescription, profile.description || "");
-  setValue(elements.ttsProviderKey, profile.providerKey);
-  setValue(elements.ttsVoiceName, profile.voiceName || "");
-  setValue(elements.ttsLanguage, profile.language);
-  setValue(elements.ttsVolume, String(profile.volume));
-  setValue(elements.ttsPitch, String(profile.pitch));
-  setValue(elements.ttsRate, String(profile.rate));
-  setChecked(elements.ttsActive, profile.active);
-}
-
 async function loadAll() {
-  const categoryPayload = listMessageCategories();
   const emotionPayload = listEmotionProfiles();
   const ttsPayload = listTtsProfiles();
   const messagesPayload = listMessages();
   const segmentsPayload = listMessageSegments();
-  state.categories = categoryPayload.categories || [];
   state.emotionProfiles = emotionPayload.emotionProfiles || [];
   state.ttsProfiles = ttsPayload.ttsProfiles || [];
   state.messages = messagesPayload.messages || [];
   state.segments = segmentsPayload.segments || [];
-  render(messagesPayload.persistence || categoryPayload.persistence || emotionPayload.persistence || ttsPayload.persistence || segmentsPayload.persistence);
+  if (state.selectedMessageKey && !state.messages.some((message) => message.key === state.selectedMessageKey)) {
+    state.selectedMessageKey = "";
+  }
+  render(messagesPayload.persistence || emotionPayload.persistence || ttsPayload.persistence || segmentsPayload.persistence);
   setText(elements.log, "Message Studio loaded from the Local API.");
 }
 
-async function reloadSegments() {
-  const segmentsPayload = listMessageSegments();
-  const emotionPayload = listEmotionProfiles();
-  state.segments = segmentsPayload.segments || [];
-  state.emotionProfiles = emotionPayload.emotionProfiles || [];
-  populateSelect(elements.segmentEmotionProfile, activeEmotionProfiles(), "Select emotion profile");
-  renderEmotionRows();
-  renderSegmentRows();
-  resetSegmentForm();
-  renderPersistence(segmentsPayload.persistence || emotionPayload.persistence || {});
-}
-
-async function refreshAfterSave(message) {
+async function reloadAfterChange(messageKey = state.selectedMessageKey) {
   await loadAll();
-  if (message?.key) {
-    editMessage(message.key);
-  }
+  state.selectedMessageKey = messageKey && state.messages.some((message) => message.key === messageKey) ? messageKey : "";
+  render();
 }
 
-elements.form?.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const values = messageFormValues();
+async function commitMessage(key) {
+  const values = messageValues(key);
   const errors = validateMessage(values);
   if (errors.length) {
     showValidation(errors);
@@ -728,249 +717,366 @@ elements.form?.addEventListener("submit", async (event) => {
   }
   clearValidation();
   try {
-    const messageKey = elements.key?.value || "";
-    const result = messageKey
-      ? updateMessage(messageKey, values)
-      : createMessage(values);
-    await refreshAfterSave(result.message);
+    const result = key === NEW_ROW_KEY
+      ? createMessage(values)
+      : updateMessage(key, values);
+    state.editingMessageKey = "";
+    state.selectedMessageKey = result.message.key;
+    await reloadAfterChange(result.message.key);
     setText(elements.log, `Updated row ${result.message.name}.`);
   } catch (error) {
     showValidation([error instanceof Error ? error.message : String(error || "Message row update failed.")]);
     setText(elements.log, "Message row update failed.");
   }
-});
+}
 
-elements.newMessage?.addEventListener("click", () => {
-  resetMessageForm();
-  setText(elements.log, "Ready to add a message row.");
-});
-
-elements.table?.addEventListener("click", async (event) => {
-  const editButton = event.target.closest("[data-messages-edit]");
-  if (editButton) {
-    editMessage(editButton.dataset.messagesEdit);
-    setText(elements.log, "Message row loaded for update.");
-    return;
-  }
-
-  const toggleButton = event.target.closest("[data-messages-toggle]");
-  if (toggleButton) {
-    const message = state.messages.find((candidate) => candidate.key === toggleButton.dataset.messagesToggle);
-    if (!message) {
-      return;
-    }
-    try {
-      const result = updateMessage(message.key, {
-        active: !message.active,
-        categoryKey: message.categoryKey,
-        emotionProfileKey: message.emotionProfileKey,
-        messageText: message.messageText,
-        name: message.name,
-        notes: message.notes,
-      });
-      await refreshAfterSave(result.message);
-      setText(elements.log, `${result.message.active ? "Enabled" : "Disabled"} row ${result.message.name}.`);
-    } catch (error) {
-      showValidation([error instanceof Error ? error.message : String(error || "Message row status update failed.")]);
-      setText(elements.log, "Message row status update failed.");
-    }
-  }
-});
-
-elements.segmentForm?.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const values = segmentFormValues();
+async function commitSegment(key) {
+  const values = segmentValues(key);
   const errors = validateSegment(values);
   if (errors.length) {
-    showSegmentValidation(errors);
+    showValidation(errors);
     setText(elements.log, "Segment row update blocked by validation.");
     return;
   }
-  clearSegmentValidation();
+  clearValidation();
   try {
-    const segmentKey = elements.segmentKey?.value || "";
-    const result = segmentKey
-      ? updateMessageSegment(segmentKey, values)
-      : createMessageSegment(values);
-    await reloadSegments();
+    const result = key === NEW_ROW_KEY
+      ? createMessageSegment(values)
+      : updateMessageSegment(key, values);
+    state.editingSegmentKey = "";
+    await reloadAfterChange(state.selectedMessageKey);
     setText(elements.log, `Updated segment row ${result.segment.displayOrder}.`);
   } catch (error) {
-    showSegmentValidation([error instanceof Error ? error.message : String(error || "Segment row update failed.")]);
+    showValidation([error instanceof Error ? error.message : String(error || "Segment row update failed.")]);
     setText(elements.log, "Segment row update failed.");
   }
-});
+}
 
-elements.segmentNew?.addEventListener("click", () => {
-  resetSegmentForm();
-  setText(elements.log, "Ready to add a segment row.");
-});
-
-elements.segmentReload?.addEventListener("click", async () => {
-  try {
-    await reloadSegments();
-    setText(elements.log, "Segments reloaded from the Local API.");
-  } catch (error) {
-    showSegmentValidation([error instanceof Error ? error.message : String(error || "Segments reload failed.")]);
-    setText(elements.log, "Segments reload failed.");
-  }
-});
-
-elements.segmentRows?.addEventListener("click", async (event) => {
-  const editButton = event.target.closest("[data-messages-segment-edit]");
-  if (editButton) {
-    editSegment(editButton.dataset.messagesSegmentEdit);
-    setText(elements.log, "Segment loaded for editing.");
+async function commitEmotion(key) {
+  const values = emotionValues(key);
+  const errors = validateEmotion(values);
+  if (errors.length) {
+    showValidation(errors);
+    setText(elements.log, "Emotion profile update blocked by validation.");
     return;
   }
-
-  const moveUpButton = event.target.closest("[data-messages-segment-move-up]");
-  const moveDownButton = event.target.closest("[data-messages-segment-move-down]");
-  if (moveUpButton || moveDownButton) {
-    const segmentKey = moveUpButton?.dataset.messagesSegmentMoveUp || moveDownButton?.dataset.messagesSegmentMoveDown;
-    const direction = moveUpButton ? -1 : 1;
-    const segments = selectedMessageSegments();
-    const currentIndex = segments.findIndex((segment) => segment.key === segmentKey);
-    const target = segments[currentIndex + direction];
-    const current = segments[currentIndex];
-    if (!current || !target) {
-      return;
-    }
-    try {
-      updateMessageSegment(current.key, {
-        active: current.active,
-        displayOrder: target.displayOrder,
-        emotionProfileKey: current.emotionProfileKey,
-        messageKey: current.messageKey,
-        segmentText: current.segmentText,
-      });
-      updateMessageSegment(target.key, {
-        active: target.active,
-        displayOrder: current.displayOrder,
-        emotionProfileKey: target.emotionProfileKey,
-        messageKey: target.messageKey,
-        segmentText: target.segmentText,
-      });
-      await reloadSegments();
-      setText(elements.log, "Segment order updated.");
-    } catch (error) {
-      showSegmentValidation([error instanceof Error ? error.message : String(error || "Segment reorder failed.")]);
-      setText(elements.log, "Segment reorder failed.");
-    }
-    return;
-  }
-
-  const toggleButton = event.target.closest("[data-messages-segment-toggle]");
-  if (toggleButton) {
-    const segment = state.segments.find((candidate) => candidate.key === toggleButton.dataset.messagesSegmentToggle);
-    if (!segment) {
-      return;
-    }
-    try {
-      const result = updateMessageSegment(segment.key, {
-        active: !segment.active,
-        displayOrder: segment.displayOrder,
-        emotionProfileKey: segment.emotionProfileKey,
-        messageKey: segment.messageKey,
-        segmentText: segment.segmentText,
-      });
-      await reloadSegments();
-      setText(elements.log, `${result.segment.active ? "Enabled" : "Disabled"} segment row ${result.segment.displayOrder}.`);
-    } catch (error) {
-      showSegmentValidation([error instanceof Error ? error.message : String(error || "Segment status update failed.")]);
-      setText(elements.log, "Segment status update failed.");
-    }
-  }
-});
-
-elements.emotionForm?.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const input = {
-    active: elements.emotionActive?.checked !== false,
-    description: elements.emotionDescription?.value || "",
-    name: elements.emotionName?.value || "",
-    pauseAfterMs: Number(elements.emotionPauseAfter?.value || 0),
-    pauseBeforeMs: Number(elements.emotionPauseBefore?.value || 0),
-    pitch: Number(elements.emotionPitch?.value || 1),
-    rate: Number(elements.emotionRate?.value || 1),
-    volume: Number(elements.emotionVolume?.value || 1),
-  };
+  clearValidation();
   try {
-    const profileKey = elements.emotionKey?.value || "";
-    const result = profileKey
-      ? updateEmotionProfile(profileKey, input)
-      : createEmotionProfile(input);
-    await loadAll();
-    resetEmotionForm();
+    const result = key === NEW_ROW_KEY
+      ? createEmotionProfile(values)
+      : updateEmotionProfile(key, values);
+    state.editingEmotionKey = "";
+    await reloadAfterChange();
     setText(elements.log, `Updated emotion profile ${result.emotionProfile.name}.`);
   } catch (error) {
-    setText(elements.log, error instanceof Error ? error.message : String(error || "Emotion profile save failed."));
+    showValidation([error instanceof Error ? error.message : String(error || "Emotion profile update failed.")]);
+    setText(elements.log, "Emotion profile update failed.");
   }
+}
+
+async function commitTts(key) {
+  const values = ttsValues(key);
+  const errors = validateTts(values);
+  if (errors.length) {
+    showValidation(errors);
+    setText(elements.log, "TTS profile update blocked by validation.");
+    return;
+  }
+  clearValidation();
+  try {
+    const result = key === NEW_ROW_KEY
+      ? createTtsProfile(values)
+      : updateTtsProfile(key, values);
+    state.editingTtsKey = "";
+    await reloadAfterChange();
+    setText(elements.log, `Updated TTS profile ${result.ttsProfile.name}.`);
+  } catch (error) {
+    showValidation([error instanceof Error ? error.message : String(error || "TTS profile update failed.")]);
+    setText(elements.log, "TTS profile update failed.");
+  }
+}
+
+async function disableMessage(key) {
+  const message = state.messages.find((candidate) => candidate.key === key);
+  if (!message) {
+    return;
+  }
+  try {
+    const result = updateMessage(key, {
+      active: false,
+      emotionProfileKey: message.emotionProfileKey,
+      messageText: message.messageText,
+      name: message.name,
+      notes: message.notes,
+    });
+    state.selectedMessageKey = result.message.key;
+    await reloadAfterChange(result.message.key);
+    setText(elements.log, `Disabled row ${result.message.name}.`);
+  } catch (error) {
+    showValidation([error instanceof Error ? error.message : String(error || "Message row status update failed.")]);
+    setText(elements.log, "Message row status update failed.");
+  }
+}
+
+async function disableSegment(key) {
+  const segment = state.segments.find((candidate) => candidate.key === key);
+  if (!segment) {
+    return;
+  }
+  try {
+    const result = updateMessageSegment(key, {
+      active: false,
+      displayOrder: segment.displayOrder,
+      emotionProfileKey: segment.emotionProfileKey,
+      messageKey: segment.messageKey,
+      segmentText: segment.segmentText,
+    });
+    await reloadAfterChange(segment.messageKey);
+    setText(elements.log, `Disabled segment row ${result.segment.displayOrder}.`);
+  } catch (error) {
+    showValidation([error instanceof Error ? error.message : String(error || "Segment status update failed.")]);
+    setText(elements.log, "Segment status update failed.");
+  }
+}
+
+async function disableEmotion(key) {
+  const profile = emotionProfileByKey(key);
+  if (!profile) {
+    return;
+  }
+  try {
+    const result = updateEmotionProfile(key, {
+      active: false,
+      description: profile.description,
+      name: profile.name,
+      pauseAfterMs: profile.pauseAfterMs,
+      pauseBeforeMs: profile.pauseBeforeMs,
+      pitch: profile.pitch,
+      rate: profile.rate,
+      volume: profile.volume,
+    });
+    await reloadAfterChange();
+    setText(elements.log, `Disabled emotion profile ${result.emotionProfile.name}.`);
+  } catch (error) {
+    showValidation([error instanceof Error ? error.message : String(error || "Emotion profile status update failed.")]);
+    setText(elements.log, "Emotion profile status update failed.");
+  }
+}
+
+async function disableTts(key) {
+  const profile = ttsProfileByKey(key);
+  if (!profile) {
+    return;
+  }
+  try {
+    const result = updateTtsProfile(key, {
+      active: false,
+      description: profile.description,
+      language: profile.language,
+      name: profile.name,
+      pitch: profile.pitch,
+      providerKey: profile.providerKey,
+      rate: profile.rate,
+      voiceName: profile.voiceName,
+      volume: profile.volume,
+    });
+    await reloadAfterChange();
+    setText(elements.log, `Disabled TTS profile ${result.ttsProfile.name}.`);
+  } catch (error) {
+    showValidation([error instanceof Error ? error.message : String(error || "TTS profile status update failed.")]);
+    setText(elements.log, "TTS profile status update failed.");
+  }
+}
+
+async function moveSegment(key, direction) {
+  const segments = selectedMessageSegments();
+  const currentIndex = segments.findIndex((segment) => segment.key === key);
+  const current = segments[currentIndex];
+  const target = segments[currentIndex + direction];
+  if (!current || !target) {
+    return;
+  }
+  try {
+    updateMessageSegment(current.key, {
+      active: current.active,
+      displayOrder: target.displayOrder,
+      emotionProfileKey: current.emotionProfileKey,
+      messageKey: current.messageKey,
+      segmentText: current.segmentText,
+    });
+    updateMessageSegment(target.key, {
+      active: target.active,
+      displayOrder: current.displayOrder,
+      emotionProfileKey: target.emotionProfileKey,
+      messageKey: target.messageKey,
+      segmentText: target.segmentText,
+    });
+    await reloadAfterChange(state.selectedMessageKey);
+    setText(elements.log, "Segment order updated.");
+  } catch (error) {
+    showValidation([error instanceof Error ? error.message : String(error || "Segment reorder failed.")]);
+    setText(elements.log, "Segment reorder failed.");
+  }
+}
+
+elements.addMessageRow?.addEventListener("click", () => {
+  clearValidation();
+  state.editingMessageKey = NEW_ROW_KEY;
+  state.editingSegmentKey = "";
+  render();
+  setText(elements.log, "Ready to add a message row.");
 });
 
-elements.emotionCancel?.addEventListener("click", () => {
-  resetEmotionForm();
+elements.emotionAddRow?.addEventListener("click", () => {
+  clearValidation();
+  state.editingEmotionKey = NEW_ROW_KEY;
+  renderEmotionRows();
   setText(elements.log, "Ready to add an emotion profile.");
 });
 
-elements.emotionRows?.addEventListener("click", (event) => {
-  const editButton = event.target.closest("[data-messages-emotion-edit]");
-  if (editButton) {
-    editEmotionProfile(editButton.dataset.messagesEmotionEdit);
-    setText(elements.log, "Emotion profile loaded for update.");
-  }
-});
-
-elements.ttsForm?.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const input = ttsProfileFormValues();
-  const errors = validateTtsProfile(input);
-  if (errors.length) {
-    setText(elements.log, errors.join(" "));
-    return;
-  }
-  try {
-    const ttsKey = elements.ttsKey?.value || "";
-    const result = ttsKey
-      ? updateTtsProfile(ttsKey, input)
-      : createTtsProfile(input);
-    await loadAll();
-    resetTtsForm();
-    setText(elements.log, `Updated TTS profile ${result.ttsProfile.name}.`);
-  } catch (error) {
-    setText(elements.log, error instanceof Error ? error.message : String(error || "TTS profile save failed."));
-  }
-});
-
-elements.ttsCancel?.addEventListener("click", () => {
-  resetTtsForm();
+elements.ttsAddRow?.addEventListener("click", () => {
+  clearValidation();
+  state.editingTtsKey = NEW_ROW_KEY;
+  renderTtsRows();
   setText(elements.log, "Ready to add a TTS profile.");
 });
 
-elements.ttsRows?.addEventListener("click", (event) => {
-  const editButton = event.target.closest("[data-messages-tts-edit]");
+elements.table?.addEventListener("click", async (event) => {
+  const row = event.target.closest("[data-messages-row]");
+  const editButton = event.target.closest("[data-messages-edit]");
+  const commitButton = event.target.closest("[data-messages-commit]");
+  const cancelButton = event.target.closest("[data-messages-cancel]");
+  const disableButton = event.target.closest("[data-messages-disable]");
+  const segmentAddButton = event.target.closest("[data-messages-segment-add-row]");
+  const segmentEditButton = event.target.closest("[data-messages-segment-edit]");
+  const segmentCommitButton = event.target.closest("[data-messages-segment-commit]");
+  const segmentCancelButton = event.target.closest("[data-messages-segment-cancel]");
+  const segmentDisableButton = event.target.closest("[data-messages-segment-disable]");
+  const moveUpButton = event.target.closest("[data-messages-segment-move-up]");
+  const moveDownButton = event.target.closest("[data-messages-segment-move-down]");
+
   if (editButton) {
-    editTtsProfile(editButton.dataset.messagesTtsEdit);
-    setText(elements.log, "TTS profile loaded for update.");
+    clearValidation();
+    state.editingMessageKey = editButton.dataset.messagesEdit;
+    state.selectedMessageKey = editButton.dataset.messagesEdit;
+    render();
+    setText(elements.log, "Message row opened inline.");
+    return;
+  }
+  if (commitButton) {
+    await commitMessage(commitButton.dataset.messagesCommit);
+    return;
+  }
+  if (cancelButton) {
+    state.editingMessageKey = "";
+    clearValidation();
+    render();
+    setText(elements.log, "Message row edit canceled.");
+    return;
+  }
+  if (disableButton) {
+    await disableMessage(disableButton.dataset.messagesDisable);
+    return;
+  }
+  if (segmentAddButton) {
+    clearValidation();
+    state.editingSegmentKey = NEW_ROW_KEY;
+    render();
+    setText(elements.log, "Ready to add a segment row.");
+    return;
+  }
+  if (segmentEditButton) {
+    clearValidation();
+    state.editingSegmentKey = segmentEditButton.dataset.messagesSegmentEdit;
+    render();
+    setText(elements.log, "Segment row opened inline.");
+    return;
+  }
+  if (segmentCommitButton) {
+    await commitSegment(segmentCommitButton.dataset.messagesSegmentCommit);
+    return;
+  }
+  if (segmentCancelButton) {
+    state.editingSegmentKey = "";
+    clearValidation();
+    render();
+    setText(elements.log, "Segment row edit canceled.");
+    return;
+  }
+  if (segmentDisableButton) {
+    await disableSegment(segmentDisableButton.dataset.messagesSegmentDisable);
+    return;
+  }
+  if (moveUpButton || moveDownButton) {
+    const key = moveUpButton?.dataset.messagesSegmentMoveUp || moveDownButton?.dataset.messagesSegmentMoveDown;
+    await moveSegment(key, moveUpButton ? -1 : 1);
+    return;
+  }
+  if (row) {
+    state.selectedMessageKey = row.dataset.messagesRow;
+    state.editingSegmentKey = "";
+    render();
   }
 });
 
-elements.previewMessage?.addEventListener("click", () => {
-  previewSelectedMessage();
+elements.emotionRows?.addEventListener("click", async (event) => {
+  const editButton = event.target.closest("[data-messages-emotion-edit]");
+  const commitButton = event.target.closest("[data-messages-emotion-commit]");
+  const cancelButton = event.target.closest("[data-messages-emotion-cancel]");
+  const disableButton = event.target.closest("[data-messages-emotion-disable]");
+  if (editButton) {
+    clearValidation();
+    state.editingEmotionKey = editButton.dataset.messagesEmotionEdit;
+    renderEmotionRows();
+    setText(elements.log, "Emotion profile opened inline.");
+    return;
+  }
+  if (commitButton) {
+    await commitEmotion(commitButton.dataset.messagesEmotionCommit);
+    return;
+  }
+  if (cancelButton) {
+    state.editingEmotionKey = "";
+    clearValidation();
+    renderEmotionRows();
+    setText(elements.log, "Emotion profile edit canceled.");
+    return;
+  }
+  if (disableButton) {
+    await disableEmotion(disableButton.dataset.messagesEmotionDisable);
+  }
 });
 
-elements.previewSegments?.addEventListener("click", () => {
-  previewSelectedSegments();
-});
-
-elements.previewStop?.addEventListener("click", () => {
-  stopSpeechPreview();
+elements.ttsRows?.addEventListener("click", async (event) => {
+  const editButton = event.target.closest("[data-messages-tts-edit]");
+  const commitButton = event.target.closest("[data-messages-tts-commit]");
+  const cancelButton = event.target.closest("[data-messages-tts-cancel]");
+  const disableButton = event.target.closest("[data-messages-tts-disable]");
+  if (editButton) {
+    clearValidation();
+    state.editingTtsKey = editButton.dataset.messagesTtsEdit;
+    renderTtsRows();
+    setText(elements.log, "TTS profile opened inline.");
+    return;
+  }
+  if (commitButton) {
+    await commitTts(commitButton.dataset.messagesTtsCommit);
+    return;
+  }
+  if (cancelButton) {
+    state.editingTtsKey = "";
+    clearValidation();
+    renderTtsRows();
+    setText(elements.log, "TTS profile edit canceled.");
+    return;
+  }
+  if (disableButton) {
+    await disableTts(disableButton.dataset.messagesTtsDisable);
+  }
 });
 
 try {
   await loadAll();
-  resetMessageForm();
-  resetEmotionForm();
-  resetTtsForm();
 } catch (error) {
   setText(elements.log, error instanceof Error ? error.message : String(error || "Messages failed to load."));
   showValidation(["Message Studio could not load from the Local API. Start the Local API server and reload this tool."]);

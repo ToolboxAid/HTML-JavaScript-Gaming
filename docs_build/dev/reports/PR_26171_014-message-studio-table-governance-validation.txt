@@ -1,0 +1,22 @@
+PR_26171_014-message-studio-table-governance validation report
+
+Branch:
+PASS - Started from main.
+
+Static and syntax checks:
+PASS - node --check toolbox/messages/messages.js
+PASS - node --check toolbox/messages/messages-api-client.js
+PASS - node --check src/dev-runtime/messages/messages-sqlite-service.mjs
+PASS - node --check tests/playwright/tools/MessagesTool.spec.mjs
+PASS - git diff --check
+
+Targeted runtime/static assertions:
+PASS - No category references remain in toolbox/messages browser files.
+PASS - No speech synthesis or preview action hooks remain in toolbox/messages browser files.
+PASS - No Delete labels exist in Message Studio browser files or the targeted Playwright spec.
+
+Playwright:
+PASS - npx playwright test tests/playwright/tools/MessagesTool.spec.mjs --workers=1 --reporter=list
+
+Samples:
+SKIPPED - Full samples smoke was out of scope.
