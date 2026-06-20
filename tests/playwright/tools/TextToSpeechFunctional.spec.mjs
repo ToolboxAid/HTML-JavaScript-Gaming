@@ -35,6 +35,15 @@ async function openTextToSpeechPage(page, { speechAvailable = true } = {}) {
       siteUrl,
     };
     window.__textToSpeechCalls = [];
+    Object.defineProperty(window.navigator, "clipboard", {
+      configurable: true,
+      value: {
+        writeText(text) {
+          window.__copiedTextToSpeechJson = String(text);
+          return Promise.resolve();
+        },
+      },
+    });
     if (!enabled) {
       Object.defineProperty(window, "SpeechSynthesisUtterance", { configurable: true, value: undefined });
       Object.defineProperty(window, "speechSynthesis", { configurable: true, value: undefined });
@@ -51,8 +60,8 @@ async function openTextToSpeechPage(page, { speechAvailable = true } = {}) {
     });
 
     const voices = [
-      { lang: "en-US", name: "Arcade Voice", voiceURI: "arcade-voice-uri" },
-      { lang: "en-GB", name: "Narrator Voice", voiceURI: "narrator-voice-uri" },
+      { lang: "en-US", name: "David Arcade Voice", voiceURI: "arcade-voice-uri" },
+      { lang: "en-GB", name: "Zira Narrator Voice", voiceURI: "narrator-voice-uri" },
     ];
     Object.defineProperty(window, "speechSynthesis", {
       configurable: true,
@@ -66,7 +75,13 @@ async function openTextToSpeechPage(page, { speechAvailable = true } = {}) {
         getVoices() {
           return voices;
         },
+        pause() {
+          window.__textToSpeechCalls.push({ type: "pause" });
+        },
         removeEventListener() {},
+        resume() {
+          window.__textToSpeechCalls.push({ type: "resume" });
+        },
         speak(utterance) {
           window.__textToSpeechCalls.push({
             lang: utterance.lang,
@@ -101,9 +116,25 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
     await expect(page.locator("[data-tts-voice-select]")).toContainText("Arcade Voice");
     await expect(page.locator("[data-tts-voice-count]")).toHaveText("2");
     await expect(page.locator("[data-tts-engine-label]")).toHaveText("Ready");
+    await expect(page.locator("[data-tts-import-json]")).toBeVisible();
+    await expect(page.locator("[data-tts-copy-json]")).toBeVisible();
+    await expect(page.locator("[data-tts-export-json]")).toBeVisible();
+    await expect(page.locator("[data-tts-add-item]")).toBeVisible();
+    await expect(page.locator("[data-tts-duplicate-item]")).toBeDisabled();
+    await expect(page.locator("[data-tts-delete-item]")).toBeDisabled();
+    await expect(page.locator("[data-tts-age-filter]")).toBeVisible();
+    await expect(page.locator("[data-tts-character-preset]")).toBeVisible();
+    await expect(page.locator("[data-tts-ssml-preset]")).toBeVisible();
+    await expect(page.locator("[data-tts-output-summary]")).toHaveText("[]");
 
+    await page.locator("[data-tts-name-input]").fill("Battle Call");
     await page.locator("[data-tts-text-input]").fill("Launch the next wave.");
+    await page.locator("[data-tts-gender-filter]").selectOption("male-preferred");
+    await page.locator("[data-tts-language-select]").selectOption("en-US");
     await page.locator("[data-tts-voice-select]").selectOption("arcade-voice-uri");
+    await page.locator("[data-tts-age-filter]").selectOption("child");
+    await page.locator("[data-tts-character-preset]").selectOption("robot");
+    await page.locator("[data-tts-ssml-preset]").selectOption("slow");
     await page.locator("[data-tts-rate]").fill("1.4");
     await page.locator("[data-tts-pitch]").fill("0.8");
     await page.locator("[data-tts-volume]").fill("0.55");
@@ -111,6 +142,31 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
     await expect(page.locator("[data-tts-pitch-value]")).toHaveText("0.8");
     await expect(page.locator("[data-tts-volume-value]")).toHaveText("0.55");
     await expect(page.locator("[data-tts-text-count]")).toHaveText("21");
+
+    await page.locator("[data-tts-add-item]").click();
+    await expect(page.locator("[data-tts-queue-list] [data-tts-queue-item-id]")).toHaveCount(1);
+    await expect(page.locator("[data-tts-output-summary]")).toContainText("Battle Call");
+    await expect(page.locator("[data-tts-queue-count]")).toHaveText("1");
+    await expect(page.locator("[data-tts-duplicate-item]")).toBeEnabled();
+    await expect(page.locator("[data-tts-delete-item]")).toBeEnabled();
+
+    await page.locator("[data-tts-duplicate-item]").click();
+    await expect(page.locator("[data-tts-queue-list] [data-tts-queue-item-id]")).toHaveCount(2);
+    await expect(page.locator("[data-tts-output-summary]")).toContainText("Battle Call copy");
+    await page.locator("[data-tts-delete-item]").click();
+    await expect(page.locator("[data-tts-queue-list] [data-tts-queue-item-id]")).toHaveCount(1);
+
+    await page.locator("[data-tts-copy-json]").click();
+    await expect(page.locator("[data-tts-status-log]")).toHaveValue(/Copied Text To Speech JSON/);
+    const copiedJson = await page.evaluate(() => window.__copiedTextToSpeechJson);
+    expect(JSON.parse(copiedJson)).toEqual([expect.objectContaining({
+      characterPreset: "robot",
+      name: "Battle Call",
+      ssmlLikePreset: "slow",
+      text: "Launch the next wave.",
+      voice: "arcade-voice-uri",
+      voiceAge: "child",
+    })]);
 
     await expect(page.locator("[data-tts-speak]")).toBeEnabled();
     await page.locator("[data-tts-speak]").click();
@@ -122,12 +178,20 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
       rate: 1.4,
       text: "Launch the next wave.",
       type: "speak",
-      voiceName: "Arcade Voice",
+      voiceName: "David Arcade Voice",
       volume: 0.55,
     }));
 
+    await expect(page.locator("[data-tts-pause]")).toBeEnabled();
+    await page.locator("[data-tts-pause]").click();
+    calls = await page.evaluate(() => window.__textToSpeechCalls);
+    expect(calls.at(-1)).toEqual({ type: "pause" });
+    await expect(page.locator("[data-tts-resume]")).toBeEnabled();
+    await page.locator("[data-tts-resume]").click();
+    calls = await page.evaluate(() => window.__textToSpeechCalls);
+    expect(calls.at(-1)).toEqual({ type: "resume" });
     await page.locator("[data-tts-stop]").click();
-    await expect(page.locator("[data-tts-status]")).toContainText("Speech stopped");
+    await expect(page.locator("[data-tts-status]")).toContainText("Speech queue stopped");
     calls = await page.evaluate(() => window.__textToSpeechCalls);
     expect(calls.at(-1)).toEqual({ type: "cancel" });
 
@@ -148,6 +212,8 @@ test("Text To Speech shows actionable error when browser speech synthesis is una
     await expect(page.locator("[data-tts-status]")).toContainText("Use a browser with Web Speech API support");
     await expect(page.locator("[data-tts-voice-select]")).toContainText("No browser voices available");
     await expect(page.locator("[data-tts-speak]")).toBeDisabled();
+    await expect(page.locator("[data-tts-pause]")).toBeDisabled();
+    await expect(page.locator("[data-tts-resume]")).toBeDisabled();
     await expect(page.locator("[data-tts-stop]")).toBeDisabled();
 
     expect(failures.failedRequests).toEqual([]);

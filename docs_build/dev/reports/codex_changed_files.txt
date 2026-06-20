@@ -1,32 +1,24 @@
 # git status --short
-M assets/theme-v2/partials/header-nav.html
- M src/dev-runtime/admin/header-nav.local.html
- M src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
- M src/dev-runtime/server/local-api-router.mjs
- M src/shared/toolbox/tool-metadata-inventory.js
+M tests/playwright/tools/TextToSpeechFunctional.spec.mjs
  M tests/tools/Text2SpeechShell.test.mjs
  M toolbox/text-to-speech/index.html
  M toolbox/text-to-speech/text2speech.js
-?? docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild-manual-validation.md
-?? docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild-requirements.md
-?? docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild-validation.md
-?? docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild.md
-?? tests/playwright/tools/TextToSpeechFunctional.spec.mjs
+?? docs_build/dev/reports/PR_26171_039-text2speech-archived-feature-parity.md
+?? docs_build/dev/reports/PR_26171_039-text2speech-manual-validation.md
+?? docs_build/dev/reports/PR_26171_039-text2speech-old-feature-inventory.md
+?? docs_build/dev/reports/PR_26171_039-text2speech-requirements.md
+?? docs_build/dev/reports/PR_26171_039-text2speech-validation.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild-manual-validation.md
-docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild-requirements.md
-docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild-validation.md
-docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild.md
-tests/playwright/tools/TextToSpeechFunctional.spec.mjs
+docs_build/dev/reports/PR_26171_039-text2speech-archived-feature-parity.md
+docs_build/dev/reports/PR_26171_039-text2speech-manual-validation.md
+docs_build/dev/reports/PR_26171_039-text2speech-old-feature-inventory.md
+docs_build/dev/reports/PR_26171_039-text2speech-requirements.md
+docs_build/dev/reports/PR_26171_039-text2speech-validation.md
 
 # git diff --stat
-assets/theme-v2/partials/header-nav.html           |   2 +-
- src/dev-runtime/admin/header-nav.local.html        |   2 +-
- .../game-journey-mock-repository.js                |   2 +-
- src/dev-runtime/server/local-api-router.mjs        |  13 +-
- src/shared/toolbox/tool-metadata-inventory.js      |  27 ++-
- tests/tools/Text2SpeechShell.test.mjs              |  36 ++-
- toolbox/text-to-speech/index.html                  |  78 ++++---
- toolbox/text-to-speech/text2speech.js              | 260 +++++++++++++++++----
- 8 files changed, 309 insertions(+), 111 deletions(-)
+.../tools/TextToSpeechFunctional.spec.mjs          |  76 +-
+ tests/tools/Text2SpeechShell.test.mjs              |  53 ++
+ toolbox/text-to-speech/index.html                  |  75 +-
+ toolbox/text-to-speech/text2speech.js              | 972 ++++++++++++++++++---
+ 4 files changed, 1040 insertions(+), 136 deletions(-)
