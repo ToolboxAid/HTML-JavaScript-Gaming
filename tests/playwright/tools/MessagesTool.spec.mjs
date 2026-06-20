@@ -162,10 +162,12 @@ test("Message Studio renders Messages with child Message Parts and plays ordered
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     await expect(page.locator("[data-messages-category-name]")).toHaveCount(0);
     await expect(page.locator("[data-messages-tts-add-row]")).toHaveCount(0);
+    await expect(page.locator("[data-messages-emotions]")).toHaveCount(0);
+    await expect(page.locator("[data-messages-tts-profiles]")).toHaveCount(0);
     await expect(page.getByRole("columnheader", { name: "Message Name" })).toBeVisible();
     await expect(page.getByRole("columnheader", { name: "Default TTS Profile" })).toBeVisible();
-    await expect(page.locator("[data-messages-tts-profiles]")).toContainText("Browser Speech Default");
-    await expect(page.locator("[data-messages-tts-profiles]")).toContainText("Owned by TTS Studio");
+    await expect(page.locator("[data-messages-segment-count]")).toHaveText("0");
+    await expect(page.getByRole("button", { name: "Stop" })).toBeEnabled();
 
     await page.getByRole("button", { name: "Add Message" }).click();
     await page.locator("[data-messages-commit='__new__']").click();
@@ -230,6 +232,10 @@ test("Message Studio renders Messages with child Message Parts and plays ordered
       type: "speak",
       voiceName: "Test Voice",
     }));
+    await page.getByRole("button", { name: "Stop" }).click();
+    await expect(page.locator("[data-messages-log]")).toHaveText("Message Studio playback stopped. Cleared 2 queued items.");
+    speechCalls = await page.evaluate(() => window.__messagesSpeechCalls);
+    expect(speechCalls.at(-1)).toEqual({ type: "cancel" });
 
     await page.locator("[data-messages-segment-row]").filter({ hasText: "Keep your torch high." }).getByRole("button", { name: "Play Part" }).click();
     await expect(page.locator("[data-messages-log]")).toHaveText("Play Part queued Part 2 using Browser Speech Default.");

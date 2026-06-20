@@ -51,7 +51,7 @@
                         <p>Messages own game text and ordered parts. Audio playback is delegated to the audio engine.</p>
                         <div class="grid cols-3" aria-label="Message Studio summary">
                             <article class="mini-stat"><strong data-messages-count>0</strong>Messages</article>
-                            <article class="mini-stat"><strong data-messages-emotion-count>0</strong>Emotion Profiles</article>
+                            <article class="mini-stat"><strong data-messages-segment-count>0</strong>Message Parts</article>
                             <article class="mini-stat"><strong data-messages-tts-count>0</strong>TTS Profiles</article>
                         </div>
                         <article class="card">
@@ -83,59 +83,6 @@
                                 <div class="status" data-messages-validation-card hidden>
                                     <p>Message row needs required fields.</p>
                                     <ul data-messages-validation-errors></ul>
-                                </div>
-                            </div>
-                        </article>
-                        <article class="card">
-                            <div class="card-body content-stack">
-                                <div>
-                                    <div class="kicker">Delivery Configuration</div>
-                                    <h3>Emotion Profiles</h3>
-                                </div>
-                                <div class="table-wrapper">
-                                    <table class="data-table" aria-label="Emotion profiles">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">Name</th>
-                                                <th scope="col">Volume</th>
-                                                <th scope="col">Pitch</th>
-                                                <th scope="col">Rate</th>
-                                                <th scope="col">Status</th>
-                                                <th scope="col">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody data-messages-emotions>
-                                            <tr><td colspan="6">Loading emotion profiles.</td></tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="action-group">
-                                    <button class="btn" type="button" data-messages-emotion-add-row>Add Profile</button>
-                                </div>
-                            </div>
-                        </article>
-                        <article class="card">
-                            <div class="card-body content-stack">
-                                <div>
-                                    <div class="kicker">Delivery Configuration</div>
-                                    <h3>Available TTS Profiles</h3>
-                                </div>
-                                <div class="table-wrapper">
-                                    <table class="data-table" aria-label="TTS profiles">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">Name</th>
-                                                <th scope="col">Provider</th>
-                                                <th scope="col">Voice</th>
-                                                <th scope="col">Language</th>
-                                                <th scope="col">Status</th>
-                                                <th scope="col">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody data-messages-tts-profiles>
-                                            <tr><td colspan="6">Loading TTS profiles.</td></tr>
-                                        </tbody>
-                                    </table>
                                 </div>
                             </div>
                         </article>
@@ -174,6 +121,7 @@
                                     <p>Selected item: <span data-messages-speech-test-target>None</span></p>
                                     <div class="action-group action-group--tight">
                                         <button class="btn btn--compact" type="button" data-messages-test-speech disabled>Test Speech</button>
+                                        <button class="btn btn--compact" type="button" data-messages-stop-speech disabled>Stop</button>
                                     </div>
                                     <div class="status" role="status" data-messages-preview-status>Select a message row or segment row before testing speech.</div>
                                 </div>

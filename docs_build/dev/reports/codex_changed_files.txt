@@ -1,10 +1,17 @@
-docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/PR_26171_071-merge-conflict-recovery-report.md
-docs_build/dev/reports/PR_26171_071-preserved-local-commit-report.md
-docs_build/dev/reports/PR_26171_071-discarded-unrelated-work-report.md
-docs_build/dev/reports/PR_26171_071-manual-validation-notes.md
-docs_build/dev/reports/PR_26171_071-recovery-precleanup.patch.md
-docs_build/dev/reports/PR_26171_071-status-before-cleanup.txt
-docs_build/dev/reports/PR_26171_071-conflicted-files-before-cleanup.txt
-docs_build/dev/reports/PR_26171_071-untracked-files-before-cleanup.txt
+﻿A	docs_build/dev/reports/PR_26171_069-manual-validation-notes.md
+A	docs_build/dev/reports/PR_26171_069-message-tts-ownership-checklist.md
+A	docs_build/dev/reports/PR_26171_069-message-tts-profile-contract-alignment.md
+A	docs_build/dev/reports/PR_26171_069-parent-child-table-checklist.md
+A	docs_build/dev/reports/PR_26171_069-validation.md
+A	docs_build/pr/PR_26171_069-message-tts-profile-contract-alignment/APPLY_PR.md
+A	docs_build/pr/PR_26171_069-message-tts-profile-contract-alignment/BUILD_PR.md
+A	docs_build/pr/PR_26171_069-message-tts-profile-contract-alignment/PLAN_PR.md
+M	tests/playwright/tools/MessagesTool.spec.mjs
+M	tests/playwright/tools/TextToSpeechFunctional.spec.mjs
+M	tests/tools/Text2SpeechShell.test.mjs
+M	toolbox/messages/index.html
+M	toolbox/messages/message-tts-service-registry.js
+M	toolbox/messages/messages.js
+M	toolbox/text-to-speech/text2speech.js
+M	docs_build/dev/reports/codex_review.diff
+M	docs_build/dev/reports/codex_changed_files.txt
