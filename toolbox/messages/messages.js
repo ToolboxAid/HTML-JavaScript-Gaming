@@ -218,6 +218,7 @@ function renderEmotionRows() {
     actions.append(group);
     row.append(
       createCell(profile.name),
+      createCell(String(profile.usageCount || 0)),
       createCell(statusForActive(profile.active)),
       actions,
     );
@@ -536,10 +537,15 @@ async function loadAll() {
 
 async function reloadSegments() {
   const segmentsPayload = listMessageSegments();
+  const emotionPayload = listEmotionProfiles();
   state.segments = segmentsPayload.segments || [];
+  state.emotionProfiles = emotionPayload.emotionProfiles || [];
+  populateSelect(elements.emotionProfile, activeEmotionProfiles(), "Select emotion profile");
+  populateSelect(elements.segmentEmotionProfile, activeEmotionProfiles(), "Select emotion profile");
+  renderEmotionRows();
   renderSegmentRows();
   resetSegmentForm();
-  renderPersistence(segmentsPayload.persistence || {});
+  renderPersistence(segmentsPayload.persistence || emotionPayload.persistence || {});
 }
 
 async function refreshAfterSave(message) {

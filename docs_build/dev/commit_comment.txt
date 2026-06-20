@@ -1,1 +1,1 @@
-Add Messages emotion segments persistence and editor - PR_26171_004
+Manage referenced Messages emotion profiles - PR_26171_006
