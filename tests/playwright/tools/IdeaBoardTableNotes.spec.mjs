@@ -53,6 +53,43 @@ async function expectButtonLeftAligned(page, buttonSelector, containerSelector) 
   expect(metrics.buttonLeft).toBeLessThan(metrics.containerLeft + metrics.containerWidth / 2);
 }
 
+async function expectExpandedNotesChildIndentation(page, ideaId, expectedInputRows = 0) {
+  const metrics = await page.locator(`[data-idea-board-expanded-row='${ideaId}']`).evaluate((row, targetIdeaId) => {
+    const expandedCell = row.querySelector(":scope > td");
+    const childSurface = row.querySelector(".idea-board-notes-child-surface");
+    const noteCell = row.querySelector(`[data-idea-board-notes-table='${targetIdeaId}'] tbody tr td:first-child`);
+    const noteInput = row.querySelector("[data-idea-board-note-input]");
+    const addNote = row.querySelector(`[data-idea-board-add-note='${targetIdeaId}']`);
+    const addNoteActions = row.querySelector(".idea-board-notes-child-actions");
+    const expandedStyles = getComputedStyle(expandedCell);
+    const noteCellStyles = getComputedStyle(noteCell);
+    const addNoteActionStyles = getComputedStyle(addNoteActions);
+    const expandedRect = expandedCell.getBoundingClientRect();
+    const childRect = childSurface.getBoundingClientRect();
+    const noteCellRect = noteCell.getBoundingClientRect();
+    const expandedPadding = Number.parseFloat(expandedStyles.paddingLeft || "0");
+    const noteCellPadding = Number.parseFloat(noteCellStyles.paddingLeft || "0");
+    return {
+      addNoteLeft: addNote.getBoundingClientRect().left,
+      childSurfaceLeft: childRect.left,
+      expandedContentLeft: expandedRect.left + expandedPadding,
+      expectedContentLeft: expandedRect.left + 2 * (expandedPadding + noteCellPadding),
+      inputLeft: noteInput ? noteInput.getBoundingClientRect().left : null,
+      inputRows: row.querySelectorAll("[data-idea-board-note-input-row]").length,
+      noteContentLeft: noteCellRect.left + noteCellPadding,
+      actionContentLeft: addNoteActions.getBoundingClientRect().left + Number.parseFloat(addNoteActionStyles.paddingLeft || "0"),
+    };
+  }, ideaId);
+  expect(metrics.childSurfaceLeft).toBeGreaterThan(metrics.expandedContentLeft);
+  expect(Math.abs(metrics.noteContentLeft - metrics.expectedContentLeft)).toBeLessThanOrEqual(2);
+  expect(Math.abs(metrics.addNoteLeft - metrics.expectedContentLeft)).toBeLessThanOrEqual(2);
+  expect(Math.abs(metrics.actionContentLeft - metrics.expectedContentLeft)).toBeLessThanOrEqual(2);
+  expect(metrics.inputRows).toBe(expectedInputRows);
+  if (expectedInputRows > 0) {
+    expect(Math.abs(metrics.inputLeft - metrics.expectedContentLeft)).toBeLessThanOrEqual(2);
+  }
+}
+
 test("Idea Board uses DB-shaped accordion table ideas and notes", async ({ page }) => {
   const server = await startRepoServer();
   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
@@ -130,7 +167,7 @@ test("Idea Board uses DB-shaped accordion table ideas and notes", async ({ page 
     await expect(page.locator("[data-idea-board-expanded-row='top-thoughts'] > td > .content-stack")).toHaveCount(0);
     await expect(page.locator("[data-idea-board-notes-table='top-thoughts'] th[scope='col']")).toHaveText(["Note", "Actions"]);
     await expect(page.locator("[data-idea-board-add-note='top-thoughts']")).toHaveText("Add Note");
-    await expectButtonLeftAligned(page, "[data-idea-board-add-note='top-thoughts']", "[data-idea-board-expanded-row='top-thoughts'] > td");
+    await expectExpandedNotesChildIndentation(page, "top-thoughts");
     await expect(page.locator("[data-idea-board-notes-table] th[scope='col']", { hasText: "Type" })).toHaveCount(0);
     await expect(page.locator("[data-idea-board-notes-table] th[scope='col']", { hasText: "Created By" })).toHaveCount(0);
     await expect(page.locator("[data-idea-board-notes-table] th[scope='col']", { hasText: "Created" })).toHaveCount(0);
@@ -141,6 +178,7 @@ test("Idea Board uses DB-shaped accordion table ideas and notes", async ({ page 
     await expect(systemNote.locator("[data-idea-board-note-action='delete']")).toHaveCount(0);
     await systemNote.locator("[data-idea-board-note-action='edit']").click();
     await expect(page.locator("[data-idea-board-note-input-row] [data-idea-board-note-action]")).toHaveText(["Save", "Cancel"]);
+    await expectExpandedNotesChildIndentation(page, "top-thoughts", 1);
     await page.locator("[data-idea-board-note-input]").fill("System note can be edited in-place.");
     await page.locator("[data-idea-board-note-action='save']").click();
     await expect(page.locator("[data-idea-board-notes-table='top-thoughts']")).toContainText("System note can be edited in-place.");
@@ -148,6 +186,7 @@ test("Idea Board uses DB-shaped accordion table ideas and notes", async ({ page 
 
     await page.locator("[data-idea-board-add-note='top-thoughts']").click();
     await expect(page.locator("[data-idea-board-note-input-row] [data-idea-board-note-action]")).toHaveText(["Save", "Cancel"]);
+    await expectExpandedNotesChildIndentation(page, "top-thoughts", 1);
     await page.locator("[data-idea-board-note-input]").fill("Add a fourth table-shaped note.");
     await page.locator("[data-idea-board-note-action='save']").click();
     await expect(page.locator("[data-idea-board-notes-table='top-thoughts']")).toContainText("Add a fourth table-shaped note.");

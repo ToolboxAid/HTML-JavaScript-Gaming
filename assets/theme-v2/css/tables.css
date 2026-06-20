@@ -88,6 +88,16 @@ td {
   mask-image: url("../images/gfs-chevron-up.svg")
 }
 
+.idea-board-notes-child-surface {
+  margin-left: calc(var(--space-14) * 2);
+  max-width: calc(100% - (var(--space-14) * 2))
+}
+
+.idea-board-notes-child-actions {
+  padding-left: var(--space-14);
+  padding-top: var(--space-10)
+}
+
 .tool-form-table {
   table-layout: fixed;
   width: 100%
