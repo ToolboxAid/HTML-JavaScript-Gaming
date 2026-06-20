@@ -1,5 +1,5 @@
-PR_26171_032 idea board accordion table model
+PR_26171_033 idea board inline accordion cell
 
-- reshape Idea Board in-page data into idea and note table records
-- default to collapsed notes with row-level expand/collapse controls
+- move accordion chevron into the Idea table cell
+- keep Notes count informational instead of a toggle
 - update targeted Playwright coverage and reports

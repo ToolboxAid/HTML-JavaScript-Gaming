@@ -182,30 +182,29 @@ function renderIdeaRow(tbody, record) {
 
   const idea = document.createElement("th");
   idea.scope = "row";
-  idea.textContent = record.idea;
+  idea.tabIndex = 0;
+  idea.dataset.ideaBoardToggleNotes = record.ideaId;
+  idea.dataset.ideaBoardIdeaCell = record.ideaId;
+  idea.setAttribute("aria-expanded", String(expanded));
+  idea.setAttribute("role", "button");
+  idea.setAttribute("aria-label", `${expanded ? "Collapse" : "Expand"} notes for ${record.idea}`);
+  const ideaText = document.createElement("span");
+  ideaText.textContent = record.idea;
+  const chevron = document.createElement("img");
+  chevron.alt = "";
+  chevron.dataset.ideaBoardChevron = record.ideaId;
+  chevron.src = expanded ? "assets/theme-v2/images/gfs-chevron-up.svg" : "assets/theme-v2/images/gfs-chevron-down.svg";
+  idea.append(ideaText, " ", chevron);
   row.append(idea);
   row.append(cell(record.pitch));
   row.append(cell(record.status));
   row.append(cell(record.updated));
 
   const notes = document.createElement("td");
-  const notesCount = document.createElement("button");
-  notesCount.className = expanded ? "btn btn--compact primary" : "btn btn--compact";
-  notesCount.type = "button";
+  const notesCount = document.createElement("span");
   notesCount.textContent = noteCountLabel(record.ideaId);
-  notesCount.dataset.ideaBoardToggleNotes = record.ideaId;
   notesCount.dataset.ideaBoardNotesCount = record.ideaId;
-  notesCount.setAttribute("aria-expanded", String(expanded));
-
-  const notesChevron = document.createElement("button");
-  notesChevron.className = expanded ? "btn btn--compact primary" : "btn btn--compact";
-  notesChevron.type = "button";
-  notesChevron.textContent = expanded ? "v" : ">";
-  notesChevron.dataset.ideaBoardToggleNotes = record.ideaId;
-  notesChevron.dataset.ideaBoardNotesChevron = record.ideaId;
-  notesChevron.setAttribute("aria-label", `${expanded ? "Collapse" : "Expand"} notes for ${record.idea}`);
-  notesChevron.setAttribute("aria-expanded", String(expanded));
-  notes.append(notesCount, " ", notesChevron);
+  notes.append(notesCount);
   row.append(notes);
 
   const actions = document.createElement("td");
@@ -516,9 +515,17 @@ function handleClick(root, event) {
   if (noteAction) handleNoteAction(root, noteAction);
 }
 
+function handleKeydown(root, event) {
+  const toggle = event.target.closest("[data-idea-board-toggle-notes]");
+  if (!toggle || (event.key !== "Enter" && event.key !== " ")) return;
+  event.preventDefault();
+  toggleNotes(root, toggle.dataset.ideaBoardToggleNotes);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const root = document.querySelector("[data-idea-board]");
   if (!root) return;
   render(root);
   root.addEventListener("click", (event) => handleClick(root, event));
+  root.addEventListener("keydown", (event) => handleKeydown(root, event));
 });

@@ -1,117 +1,52 @@
-# Codex Changed Files - PR_26171_032-idea-board-accordion-table-model
+# Codex Changed Files - PR_26171_033-idea-board-inline-accordion-cell
 
 ## Git Workflow
-- Current branch: `codex/pr-26171-032-idea-board-accordion-table-model`
+- Current branch: `codex/pr-26171-033-idea-board-inline-accordion-cell`.
 - Expected starting branch: `main` (PASS before branch creation).
-- Created branch: `codex/pr-26171-032-idea-board-accordion-table-model`.
+- Created branch: `codex/pr-26171-033-idea-board-inline-accordion-cell`.
 - Push result: pending until after commit.
 - PR URL: pending until after push.
 - Merge result: pending until after PR validation/merge.
 - Final main commit: pending until after merge and final pull.
 
 ## Changed Files
+- assets/theme-v2/images/gfs-chevron-down.svg
+- assets/theme-v2/images/gfs-chevron-up.svg
 - docs_build/dev/codex_commands.md
 - docs_build/dev/commit_comment.txt
-- docs_build/dev/reports/dependency_gating_report.md
-- docs_build/dev/reports/dependency_hydration_reuse_report.md
-- docs_build/dev/reports/execution_graph_reuse_report.md
-- docs_build/dev/reports/failure_fingerprint_report.md
-- docs_build/dev/reports/filesystem_scan_reduction_report.md
-- docs_build/dev/reports/incremental_validation_report.md
-- docs_build/dev/reports/lane_compilation_report.md
-- docs_build/dev/reports/lane_deduplication_report.md
-- docs_build/dev/reports/lane_input_validation_report.md
-- docs_build/dev/reports/lane_runtime_optimization_report.md
-- docs_build/dev/reports/lane_snapshot_report.md
-- docs_build/dev/reports/lane_warm_start_report.md
-- docs_build/dev/reports/monolith_trigger_removal_report.md
-- docs_build/dev/reports/persistent_lane_manifest_report.md
-- docs_build/dev/reports/playwright_discovery_ownership_report.md
-- docs_build/dev/reports/playwright_discovery_scope_report.md
-- docs_build/dev/reports/playwright_structure_audit.md
-- docs_build/dev/reports/retry_suppression_report.md
-- docs_build/dev/reports/slow_path_pruning_report.md
-- docs_build/dev/reports/static_validation_report.md
-- docs_build/dev/reports/targeted_file_manifest_report.md
-- docs_build/dev/reports/test_cleanup_performance_report.md
-- docs_build/dev/reports/test_cleanup_routing_report.md
-- docs_build/dev/reports/testing_lane_execution_report.md
-- docs_build/dev/reports/validation_cache_report.md
-- docs_build/dev/reports/zero_browser_preflight_report.md
-- docs_build/pr/APPLY_PR_26171_032-idea-board-accordion-table-model.md
-- docs_build/pr/BUILD_PR_26171_032-idea-board-accordion-table-model.md
-- docs_build/pr/PLAN_PR_26171_032-idea-board-accordion-table-model.md
+- docs_build/dev/reports/codex_changed_files.txt
+- docs_build/dev/reports/codex_review.diff
+- docs_build/dev/reports/coverage_changed_js_guardrail.txt
+- docs_build/dev/reports/playwright_v8_coverage_report.txt
+- docs_build/pr/APPLY_PR_26171_033-idea-board-inline-accordion-cell.md
+- docs_build/pr/BUILD_PR_26171_033-idea-board-inline-accordion-cell.md
+- docs_build/pr/PLAN_PR_26171_033-idea-board-inline-accordion-cell.md
 - tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
 - tests/playwright/tools/ToolboxRoutePages.spec.mjs
-- toolbox/idea-board/index.html
 - toolbox/idea-board/index.js
 
-## Name Status
-- M	docs_build/dev/codex_commands.md
-- M	docs_build/dev/commit_comment.txt
-- M	docs_build/dev/reports/dependency_gating_report.md
-- M	docs_build/dev/reports/dependency_hydration_reuse_report.md
-- M	docs_build/dev/reports/execution_graph_reuse_report.md
-- M	docs_build/dev/reports/failure_fingerprint_report.md
-- M	docs_build/dev/reports/filesystem_scan_reduction_report.md
-- M	docs_build/dev/reports/incremental_validation_report.md
-- M	docs_build/dev/reports/lane_compilation_report.md
-- M	docs_build/dev/reports/lane_deduplication_report.md
-- M	docs_build/dev/reports/lane_input_validation_report.md
-- M	docs_build/dev/reports/lane_runtime_optimization_report.md
-- M	docs_build/dev/reports/lane_snapshot_report.md
-- M	docs_build/dev/reports/lane_warm_start_report.md
-- M	docs_build/dev/reports/monolith_trigger_removal_report.md
-- M	docs_build/dev/reports/persistent_lane_manifest_report.md
-- M	docs_build/dev/reports/playwright_discovery_ownership_report.md
-- M	docs_build/dev/reports/playwright_discovery_scope_report.md
-- M	docs_build/dev/reports/playwright_structure_audit.md
-- M	docs_build/dev/reports/retry_suppression_report.md
-- M	docs_build/dev/reports/slow_path_pruning_report.md
-- M	docs_build/dev/reports/static_validation_report.md
-- M	docs_build/dev/reports/targeted_file_manifest_report.md
-- M	docs_build/dev/reports/test_cleanup_performance_report.md
-- M	docs_build/dev/reports/test_cleanup_routing_report.md
-- M	docs_build/dev/reports/testing_lane_execution_report.md
-- M	docs_build/dev/reports/validation_cache_report.md
-- M	docs_build/dev/reports/zero_browser_preflight_report.md
-- A	docs_build/pr/APPLY_PR_26171_032-idea-board-accordion-table-model.md
-- A	docs_build/pr/BUILD_PR_26171_032-idea-board-accordion-table-model.md
-- A	docs_build/pr/PLAN_PR_26171_032-idea-board-accordion-table-model.md
-- M	tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-- M	tests/playwright/tools/ToolboxRoutePages.spec.mjs
-- M	toolbox/idea-board/index.html
-- M	toolbox/idea-board/index.js
-
 ## Requirement Evidence
-- PASS: Idea records use DB-shaped fields `ideaId`, `userId`, `idea`, `pitch`, `status`, and `updated` in `toolbox/idea-board/index.js`.
-- PASS: Note records use DB-shaped fields `noteId`, `ideaId`, `note`, `system`, and `updated` in `toolbox/idea-board/index.js`.
-- PASS: Relationship semantics are represented in-page by `userId` on idea records and `ideaId` on note records.
-- PASS: No real DB persistence, adapters, SQLite services, SQLite DDL, or SQLite seed files were added.
-- PASS: Default state has `expandedIdeaId: null`, no expanded rows, and the main table shows all ideas only.
-- PASS: Add Idea appears as the final table row/action area and opens an inline idea row at the bottom.
-- PASS: Visible Idea table columns are Idea, Pitch, Status, Updated, Notes, Actions.
-- PASS: Seed rows render Top Thoughts, Sky Orchard, and Clockwork Courier with the requested pitches, statuses, dates, note counts, and Edit/Delete actions.
-- PASS: Notes count and chevron buttons expand/collapse notes for that idea.
-- PASS: Expanded notes render directly under the owning idea row, and only one expanded idea is required/active at a time.
-- PASS: Notes are not selected context; visible selected-idea terminology, `Selected idea context`, and detached `Notes for Sky Orchard` heading were removed.
-- PASS: Visible note metadata columns are removed; expanded note table shows only Note and Actions columns.
-- PASS: Expanded notes include a `Notes` header.
-- PASS: Note rows expose Edit/Delete when allowed; system notes expose Edit and do not expose Delete.
-- PASS: Add Note appears under the expanded notes area for that idea.
-- PASS: Add/Edit Idea rows use inline controls with a Status dropdown and Save/Cancel actions on the same row.
-- PASS: Add/Edit Note rows use inline controls with Save/Cancel actions on the same row inside the expanded notes area.
+- PASS: Separate `>` expand/collapse button removed from `toolbox/idea-board/index.js`; no `data-idea-board-notes-chevron` control remains.
+- PASS: No separate expand/collapse control column was added; the visible Idea table remains Idea, Pitch, Status, Updated, Notes, Actions.
+- PASS: Notes count is rendered as a plain informational span and no longer carries `data-idea-board-toggle-notes`.
+- PASS: Chevron image is rendered inside the Idea row header cell.
+- PASS: Collapsed rows use `assets/theme-v2/images/gfs-chevron-down.svg`.
+- PASS: Expanded rows use `assets/theme-v2/images/gfs-chevron-up.svg`.
+- PASS: The whole Idea cell carries the toggle target and handles click plus Enter/Space keyboard activation.
+- PASS: Expanded notes continue to render directly under the owning idea row.
+- PASS: Targeted Playwright verifies clicking Notes count does not expand from a collapsed state.
+- PASS: Targeted Playwright verifies clicking Notes count does not collapse from an expanded state.
+- PASS: Targeted Playwright verifies clicking the Idea cell expands/collapses and the chevron switches down/up.
+- PASS: Theme V2 chevron SVG assets were added under `assets/theme-v2/images/`.
 
 ## Validation
 - PASS: `node --check toolbox/idea-board/index.js`.
 - PASS: `node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`.
 - PASS: `node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs`.
-- PASS: Idea Board inline HTML guard found no inline `<script>`, `<style>`, `style=`, or inline event handlers.
-- PASS: `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line` (1 passed after correcting a test regex typo).
-- PASS: `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches"` (1 passed after correcting the status assertion order).
-- PASS: `npm run test:workspace-v2` (5 passed).
-- SKIP: Full samples smoke was not run; samples are not in scope and the user explicitly prohibited full samples smoke.
+- PASS: `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line` (1 passed).
+- PASS: `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches"` (1 passed).
+- SKIP: Full samples smoke was not run; it is not in scope for this PR.
 
 ## ZIP
-- Path: `tmp/PR_26171_032-idea-board-accordion-table-model_delta.zip`.
+- Path: `tmp/PR_26171_033-idea-board-inline-accordion-cell_delta.zip`.
 - Size and contents: reported after final ZIP generation.

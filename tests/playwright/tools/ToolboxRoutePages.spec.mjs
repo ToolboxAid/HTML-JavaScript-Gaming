@@ -226,9 +226,13 @@ test("Idea Board launches from Toolbox with accordion table notes model", async 
     await expect(page.locator("[data-idea-board-notes-count='top-thoughts']")).toHaveText("3 Notes");
     await expect(page.locator("[data-idea-board-notes-count='sky-orchard']")).toHaveText("3 Notes");
     await expect(page.locator("[data-idea-board-notes-count='clockwork-courier']")).toHaveText("0 Notes");
+    await expect(page.locator("[data-idea-board-chevron='top-thoughts']")).toHaveAttribute("src", /gfs-chevron-down\.svg$/);
     await expect(page.locator("[data-idea-board-status]")).toHaveText("Idea Board table edits are in-page only. No project records, auth, AI, or database behavior is connected.");
     await page.locator("[data-idea-board-notes-count='top-thoughts']").click();
+    await expect(page.locator("[data-idea-board-expanded-row]")).toHaveCount(0);
+    await page.locator("[data-idea-board-idea-cell='top-thoughts']").click();
     await expect(page.locator("[data-idea-board-expanded-row='top-thoughts']")).toBeVisible();
+    await expect(page.locator("[data-idea-board-chevron='top-thoughts']")).toHaveAttribute("src", /gfs-chevron-up\.svg$/);
     await expect(page.locator("[data-idea-board-notes-header='top-thoughts']")).toHaveText("Notes");
     await expect(page.locator("[data-idea-board-notes-table='top-thoughts'] th[scope='col']")).toHaveText(["Note", "Actions"]);
     await expect(page.getByText("Notes for Sky Orchard")).toHaveCount(0);
@@ -245,7 +249,7 @@ test("Idea Board launches from Toolbox with accordion table notes model", async 
     await page.locator("[data-idea-board-note-input]").fill("Capture traversal risks before project creation.");
     await page.locator("[data-idea-board-note-action='save']").click();
     await expect(page.locator("[data-idea-board-notes-table='top-thoughts']")).toContainText("Capture traversal risks before project creation.");
-    await page.locator("[data-idea-board-notes-chevron='clockwork-courier']").click();
+    await page.locator("[data-idea-board-idea-cell='clockwork-courier']").click();
     await expect(page.locator("[data-idea-board-expanded-row='clockwork-courier']")).toBeVisible();
     await expect(page.locator("[data-idea-board-notes-table='clockwork-courier']")).not.toContainText("Capture traversal risks before project creation.");
     expect(mutatingApiRequests).toEqual([]);
