@@ -2009,6 +2009,16 @@ Required Git workflow report fields:
 - merge result
 - final main commit
 
+## OWNER-CONTROLLED STABLE AND MERGE APPROVAL
+
+Stable promotion and merge approval are owner-controlled.
+
+Rules:
+- Codex may prepare scoped changes, reports, validation evidence, ZIP artifacts, branches, and PRs.
+- Codex must not merge a PR or mark a workstream stable without explicit approval from the assigned Team Alpha or Team Beta owner.
+- Master Control may recommend sequencing or assignment, but affected workstream owners control stable and merge approval.
+- This targeted section supersedes older automatic-merge wording when approval ownership is in question.
+
 ## CODEX INSTRUCTION ENFORCEMENT START GATE
 
 Codex must run this gate before every PR execution and before any file changes.
@@ -2017,7 +2027,7 @@ Required instruction reads:
 - Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
 - Read `docs_build/dev/PROJECT_MULTI_PC.txt`.
 - Treat the newest applicable section in `PROJECT_INSTRUCTIONS.md` as authoritative when rules overlap.
-- Treat the current owner/parity section in `PROJECT_MULTI_PC.txt` as authoritative for PC/Laptop routing.
+- Treat the current owner/parity section in `PROJECT_MULTI_PC.txt` as authoritative for Team Alpha / Team Beta routing.
 
 Required pre-change report:
 - Codex must report instruction compliance as `PASS` or `FAIL` before making file changes.
@@ -2027,7 +2037,7 @@ Required pre-change report:
 Hard stops before changes:
 - If the current branch is not `main`, HARD STOP.
 - If the repository is not clean before the PR branch is created, HARD STOP.
-- If the PR owner does not match the PC/Laptop ownership map in `PROJECT_MULTI_PC.txt`, HARD STOP.
+- If the PR owner does not match the Team Alpha / Team Beta ownership map in `PROJECT_MULTI_PC.txt`, HARD STOP.
 - If the PR number parity does not match the assigned machine in `PROJECT_MULTI_PC.txt`, HARD STOP.
 - If the PR asks for implementation and the implementation path is wrong, HARD STOP.
 - If a PR asks for functional parity and only placeholder-only work is possible, HARD STOP and report the missing source or blocker.

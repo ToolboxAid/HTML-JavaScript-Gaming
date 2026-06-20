@@ -11,7 +11,7 @@ Naming governance
 Workflow governance
 Environment strategy
 PR sequencing
-Merge approval
+Stable and merge approval
 
 It should never build code and never own implementation details.
 
@@ -22,12 +22,12 @@ Requirements
 Acceptance Criteria
 Dependencies
 Priority
-Owner (PC/Laptop)
+Owner (Team Alpha / Team Beta)
 Recommended Workstream Split
 
 Instead of arbitrary splits, split by Creator journey.
 
-PC — Creator Journey
+Team Alpha — Creator Journey
 
 Owns:
 
@@ -57,7 +57,7 @@ Reason:
 
 These tools are heavily connected.
 
-Laptop — Content Creation
+Team Beta — Content Creation
 
 Owns:
 
@@ -85,7 +85,7 @@ These tools share asset pipelines and publishing workflows.
 
 Messages Tool Placement
 
-I would move Messages to Laptop ownership.
+I would move Messages to Team Beta ownership.
 
 Reason:
 
@@ -191,7 +191,7 @@ Immediate Queue
 
 If we start using Master Control today, my queue would be:
 
-PC
+Team Alpha
 PR_26171_001-game-journey-completion-model
 
 Scope:
@@ -205,7 +205,7 @@ Sounds [17]
 
 This solves the "xxx%" problem.
 
-Laptop
+Team Beta
 PR_26171_002-messages-tool-foundation
 
 Scope:
@@ -282,7 +282,7 @@ Not developer.
 
 ---
 
-## PC Chat
+## Team Alpha Chat
 
 Give it ownership of a workstream.
 
@@ -309,7 +309,7 @@ it keeps building in that area.
 
 ---
 
-## Laptop Chat
+## Team Beta Chat
 
 Give it a different workstream.
 
@@ -371,13 +371,13 @@ So I'd keep IST mostly as infrastructure work and focus development on tool comp
 Master Control should assign ownership:
 
 ```text
-PC
+Team Alpha
   Game Journey
   Game Hub
   Publish
   Share
 
-Laptop
+Team Beta
   Audio
   MIDI
   Events
@@ -405,7 +405,7 @@ feature/game-hub
 feature/progress-tracking
 ```
 
-Never have both PCs working in the same tool at the same time.
+Never have both teams working in the same tool at the same time.
 
 ---
 
@@ -418,8 +418,8 @@ For example, in Master Control you can ask:
 ```text
 Given everything we know about GFS:
 
-What should PC build next?
-What should Laptop build next?
+What should Team Alpha build next?
+What should Team Beta build next?
 
 Generate the next PR for each.
 ```
@@ -427,10 +427,10 @@ Generate the next PR for each.
 Then Master Control outputs:
 
 ```text
-PC:
+Team Alpha:
 PR_26171_002-game-hub-progress
 
-Laptop:
+Team Beta:
 PR_26171_003-messages-tool-mvp
 ```
 
@@ -457,17 +457,17 @@ Codex must read this file before every PR execution.
 
 Machine parity:
 
-PC / Environment 1:
+Team Alpha / Environment 1:
 - Uses even-numbered PR sequence values.
 - Example: `PR_26171_064-*`.
 
-Laptop / Environment 2:
+Team Beta / Environment 2:
 - Uses odd-numbered PR sequence values.
 - Example: `PR_26171_063-*`.
 
 Owner map:
 
-PC / Environment 1 owns Creator Journey work:
+Team Alpha / Environment 1 owns Creator Journey work:
 - Game Journey
 - Game Hub
 - Idea
@@ -483,7 +483,7 @@ PC / Environment 1 owns Creator Journey work:
 - Game Design
 - Game Crew
 
-Laptop / Environment 2 owns Content Creation and asset/publishing work:
+Team Beta / Environment 2 owns Content Creation and asset/publishing work:
 - Graphics
 - Toolbox images
 - Audio
@@ -501,8 +501,12 @@ Governance, recovery, diagnostics, and instruction-hardening PRs:
 - Must not implement tool/runtime work from the opposite owner.
 - Must document owner/parity compliance in the PR report.
 
+Stable and merge approval:
+- Stable promotion and merge approval are controlled by the assigned Team Alpha or Team Beta owner.
+- Master Control may recommend sequencing, but Codex must not merge or mark stable without explicit owner approval for the affected workstream.
+
 Hard stop rules:
 - If the PR number parity does not match the current machine, stop before changes.
 - If the PR scope belongs to the other machine owner, stop before changes.
-- If the PR crosses PC and Laptop ownership, stop and require Master Control to split or assign the work.
+- If the PR crosses Team Alpha and Team Beta ownership, stop and require Master Control to split or assign the work.
 - If the requested implementation path conflicts with the active owner path, stop before changes.
