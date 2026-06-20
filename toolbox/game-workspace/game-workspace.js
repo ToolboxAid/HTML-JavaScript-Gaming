@@ -3,12 +3,10 @@ import {
   GAME_WORKSPACE_GAME_PURPOSES,
   GAME_WORKSPACE_GAME_STATUSES,
   createGameWorkspaceApiRepository,
-  readProjectWorkspaceProjectRecords,
 } from "./game-workspace-api-client.js";
 import { getSessionCurrent } from "../../src/api/session-api-client.js";
 
 const repository = createGameWorkspaceApiRepository();
-let projectRecordContract = null;
 
 const elements = {
   activeGameName: document.querySelector("[data-active-game-name]"),
@@ -29,6 +27,10 @@ const elements = {
   projectRecordStatus: document.querySelector("[data-project-record-status]"),
   projectRecordsTable: document.querySelector("[data-project-records-table]"),
   purposeInput: document.querySelector("[data-game-purpose-input]"),
+  sourceIdeaDisplay: document.querySelector("[data-source-idea-display]"),
+  sourceIdeaName: document.querySelector("[data-source-idea-name]"),
+  sourceIdeaNotes: document.querySelector("[data-source-idea-notes]"),
+  sourceIdeaPitch: document.querySelector("[data-source-idea-pitch]"),
   gameStatus: document.querySelector("[data-game-status]"),
   gameStatusInput: document.querySelector("[data-game-status-input]"),
   publishingProgress: document.querySelector("[data-publishing-progress]"),
@@ -63,7 +65,7 @@ function isRepositoryErrorResult(value) {
 }
 
 function repositoryErrorMessage(value, context) {
-  return String(value?.message || value?.error || `${context} failed through the server API contract.`).trim();
+  return `${context} is temporarily unavailable. Refresh the page or try again shortly.`;
 }
 
 function reportRepositoryError(value, context) {
@@ -86,7 +88,7 @@ function normalizeActiveGame(value, context = "Active game") {
     return null;
   }
   if (!isRecord(value) || !Array.isArray(value.members)) {
-    setStatusLog(`${context} response is malformed. Reload Game Hub after the server API contract is restored.`);
+    setStatusLog(`${context} is temporarily unavailable. Refresh the page or try again shortly.`);
     return null;
   }
   return value;
@@ -96,23 +98,23 @@ function normalizeProgress(value) {
   if (reportRepositoryError(value, "Game progress")) {
     return {
       gameStatus: "No Game",
-      gameProgress: "Blocked by server API error",
-      publishingProgress: "Blocked",
-      currentFocus: "Resolve the server API diagnostic",
+      gameProgress: "Progress is temporarily unavailable",
+      publishingProgress: "Unavailable",
+      currentFocus: "Refresh Game Hub",
       recommendedNextTool: "Game Hub",
       progressChecklist: [
-        { label: "Restore server API contract", status: "Blocked" },
+        { label: "Project information", status: "Unavailable" },
       ],
     };
   }
   if (!isRecord(value)) {
-    setStatusLog("Game progress response is malformed. Reload Game Hub after the server API contract is restored.");
+    setStatusLog("Game progress is temporarily unavailable. Refresh the page or try again shortly.");
   }
   return isRecord(value) ? value : {
     gameStatus: "No Game",
     gameProgress: "No active game",
     publishingProgress: "Not started",
-    currentFocus: "Create or seed a game",
+    currentFocus: "Create a game",
     recommendedNextTool: "Game Hub",
     progressChecklist: [],
   };
@@ -151,8 +153,8 @@ function refreshSaveControls() {
   }
   if (!saveAllowed) {
     const currentStatus = String(elements.statusLog?.textContent || "");
-    if (!/Blocked|failed|malformed|Restore|Sign in required|unavailable/i.test(currentStatus)) {
-      setStatusLog("Guest browsing enabled; sign in required to save Game Hub project records.");
+    if (!/failed|Sign in required|unavailable/i.test(currentStatus)) {
+      setStatusLog("Sign in to create or update Game Hub projects.");
     }
   }
 }
@@ -161,7 +163,7 @@ function ensureProjectRecordsSaveAllowed(action) {
   if (projectRecordsSaveAllowed()) {
     return true;
   }
-  const message = `Sign in required to ${action} Game Hub project records.`;
+  const message = `Sign in required to ${action} Game Hub projects.`;
   setStatusLog(message);
   setProjectRecordStatus(message);
   refreshSaveControls();
@@ -209,53 +211,31 @@ function createGameButton(game, isActive) {
   return button;
 }
 
-function renderProjectRecords() {
+function renderProjectInformation(activeGame, currentMember, progress) {
   if (!elements.projectRecordsTable) {
     return;
   }
 
-  try {
-    projectRecordContract = readProjectWorkspaceProjectRecords();
-  } catch (error) {
-    projectRecordContract = null;
-    setProjectRecordStatus(error instanceof Error ? error.message : "Game Hub project records are unavailable.");
-    return;
-  }
-
-  const records = Array.isArray(projectRecordContract.records) ? projectRecordContract.records : [];
-  const source = projectRecordContract.sourceLabel || "Project records service";
-  const assetReferenceCount = Number(projectRecordContract.assetReferenceCount || 0);
-  const saveMode = projectRecordsSaveAllowed()
-    ? "signed-in saves enabled"
-    : "guest browsing enabled; guest saving blocked";
-  setProjectRecordStatus(`${projectRecordContract.terminology || "Game Hub"} records loaded from the project records service; authoritative keys managed by service; asset references linked to storage object keys: ${assetReferenceCount}; ${saveMode}.`);
-
   elements.projectRecordsTable.replaceChildren();
-  if (!records.length) {
-    const row = document.createElement("tr");
-    ["No records", "No Game Hub records", "Not started", source].forEach((value) => {
-      const cell = document.createElement("td");
-      cell.textContent = value;
-      row.append(cell);
-    });
-    elements.projectRecordsTable.append(row);
-    return;
-  }
-
-  records.forEach((record) => {
-    const row = document.createElement("tr");
-    [
-      record.projectKey || "missing key",
-      record.name || "Untitled project",
-      record.status || "No status",
-      `${source}; asset refs ${Number(record.assetReferenceCount || 0)}`,
-    ].forEach((value) => {
-      const cell = document.createElement("td");
-      cell.textContent = value;
-      row.append(cell);
-    });
-    elements.projectRecordsTable.append(row);
+  const row = document.createElement("tr");
+  [
+    { datasetName: "activeGameName", value: activeGame?.name || "No game open" },
+    { datasetName: "activeGameStatus", value: activeGame?.status || progress?.gameStatus || "No Game" },
+    { datasetName: "activeGamePurpose", value: activeGame?.purpose || "No purpose" },
+    { datasetName: "activeGameOwner", value: activeGame?.ownerDisplayName || "No owner" },
+    { datasetName: "currentUserRole", value: currentMember?.role || "Viewer" },
+    { datasetName: "recommendedNextTool", value: progress?.recommendedNextTool || "Game Hub" },
+  ].forEach(({ datasetName, value }) => {
+    const cell = document.createElement("td");
+    cell.dataset[datasetName] = "true";
+    cell.textContent = value;
+    row.append(cell);
   });
+  elements.projectRecordsTable.append(row);
+
+  setProjectRecordStatus(projectRecordsSaveAllowed()
+    ? "Project Information loaded."
+    : "Project Information loaded. Sign in to save changes.");
 }
 
 function renderGameList() {
@@ -268,7 +248,7 @@ function renderGameList() {
   const listResult = repository.listGames(gameUserKey ? { userKey: gameUserKey } : {});
   const games = Array.isArray(listResult) ? listResult : [];
   if (!Array.isArray(listResult) && !reportRepositoryError(listResult, "Game list")) {
-    setStatusLog("Game list response is malformed. Reload Game Hub after the server API contract is restored.");
+    setStatusLog("Game list is temporarily unavailable. Refresh the page or try again shortly.");
   }
 
   elements.gameList.replaceChildren();
@@ -276,7 +256,7 @@ function renderGameList() {
   if (games.length === 0) {
     const emptyState = document.createElement("p");
     emptyState.className = "status";
-    emptyState.textContent = "No games. Create or seed a game to continue.";
+    emptyState.textContent = "No games. Create a game to continue.";
     elements.gameList.append(emptyState);
     return;
   }
@@ -343,7 +323,7 @@ function renderTableCounts() {
     ? tableResult
     : { users: [], games: [], game_members: [] };
   if ((!isRecord(tableResult) || isRepositoryErrorResult(tableResult)) && !reportRepositoryError(tableResult, "Repository tables")) {
-    setStatusLog("Repository tables response is malformed. Reload Game Hub after the server API contract is restored.");
+    setStatusLog("Game Hub project details are temporarily unavailable. Refresh the page or try again shortly.");
   }
   const rows = [
     ["users", Array.isArray(tables.users) ? tables.users.length : 0],
@@ -364,6 +344,29 @@ function renderTableCounts() {
     row.append(tableCell, countCell);
     elements.tableCounts.append(row);
   });
+}
+
+function renderSourceIdea(activeGame) {
+  const sourceIdea = isRecord(activeGame?.sourceIdea) ? activeGame.sourceIdea : null;
+  const name = String(sourceIdea?.idea || "").trim();
+  const pitch = String(sourceIdea?.pitch || "").trim();
+  const notes = Array.isArray(sourceIdea?.notes)
+    ? sourceIdea.notes.map((note) => String(note || "").trim()).filter(Boolean)
+    : [];
+
+  setText(elements.sourceIdeaName, name || "No source idea yet");
+  setText(elements.sourceIdeaDisplay, name || "No source idea yet");
+  setText(elements.sourceIdeaPitch, pitch || "Create a project from Idea Board to see source details.");
+
+  if (elements.sourceIdeaNotes) {
+    elements.sourceIdeaNotes.replaceChildren();
+    const visibleNotes = notes.length ? notes : ["No source notes."];
+    visibleNotes.forEach((note) => {
+      const item = document.createElement("li");
+      item.textContent = note;
+      elements.sourceIdeaNotes.append(item);
+    });
+  }
 }
 
 function renderChecklist(progress) {
@@ -419,7 +422,8 @@ function renderWorkspace() {
   renderMembersTable(activeGame);
   renderTableCounts();
   renderChecklist(progress);
-  renderProjectRecords();
+  renderProjectInformation(activeGame, currentMember, progress);
+  renderSourceIdea(activeGame);
   refreshSaveControls();
 }
 
@@ -437,7 +441,7 @@ elements.form?.addEventListener("submit", (event) => {
 
   if (reportRepositoryError(game, "Create Game") || !isRecord(game) || !String(game.name || "").trim()) {
     if (!isRepositoryErrorResult(game)) {
-      setStatusLog("Create Game did not return a valid game. Restore the server API contract and try again.");
+      setStatusLog("Create Game could not be completed. Refresh the page or try again shortly.");
     }
     renderWorkspace();
     return;
@@ -528,4 +532,15 @@ elements.currentUserRoleInput?.addEventListener("change", () => {
 populateSelect(elements.purposeInput, GAME_WORKSPACE_GAME_PURPOSES);
 populateSelect(elements.gameStatusInput, GAME_WORKSPACE_GAME_STATUSES);
 populateSelect(elements.currentUserRoleInput, GAME_WORKSPACE_MEMBER_ROLES);
+const requestedGameId = new URL(window.location.href).searchParams.get("game");
+if (requestedGameId) {
+  const openedGame = repository.openGame(requestedGameId);
+  if (isRepositoryErrorResult(openedGame)) {
+    setStatusLog(repositoryErrorMessage(openedGame, "Open Game"));
+  } else if (openedGame) {
+    setStatusLog(`Opened ${openedGame.name}.`);
+  } else {
+    setStatusLog("That Game Hub project could not be found.");
+  }
+}
 renderWorkspace();

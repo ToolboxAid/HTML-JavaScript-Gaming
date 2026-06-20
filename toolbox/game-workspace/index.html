@@ -66,40 +66,55 @@
                         </div>
                     </aside>
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="game-workspace" data-tool-icon-src="assets/theme-v2/images/badges/index.png" data-tool-character-src="assets/theme-v2/images/characters/index.png"></div>
-                    <section class="tool-center-panel"><h2>Game Hub Overview</h2>
-                        <p>Game Hub manages game identity, status, progress, and launch readiness through the project records service.</p>
-                        <div class="status" role="status" data-project-record-status>Loading Game Hub project records.</div>
-                        <div class="table-wrapper">
-                            <table class="data-table" aria-label="Game Hub project records">
-                                <caption>Game Hub Project Records</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Authoritative Key</th>
-                                        <th scope="col">Project</th>
-                                        <th scope="col">Status</th>
-                                        <th scope="col">Source</th>
-                                    </tr>
-                                </thead>
-                                <tbody data-project-records-table>
-                                    <tr><td>Loading</td><td>Loading</td><td>Loading</td><td>Project records service</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <article class="card">
+                    <section class="tool-center-panel"><h2>Project Information</h2>
+                        <p>Review the open project and its source idea.</p>
+                        <div class="status" role="status" data-project-record-status>Project Information ready.</div>
+                        <article class="card" data-game-project-information>
                             <div class="card-body content-stack">
-                                <div>
-                                    <div class="kicker">Open Game</div>
-                                    <h3 data-active-game-name>Demo Game</h3>
-                                </div>
-                                <div class="grid cols-3" aria-label="Active game summary">
-                                    <article class="mini-stat"><strong data-active-game-status>Under Construction</strong>Game Status</article>
-                                    <article class="mini-stat"><strong data-active-game-purpose>Game</strong>Game Purpose</article>
-                                    <article class="mini-stat"><strong data-active-game-owner>No owner</strong>Owner</article>
-                                    <article class="mini-stat"><strong data-current-user-role>Owner</strong>Current User Role</article>
-                                    <article class="mini-stat"><strong data-recommended-next-tool>Game Configuration</strong>Recommended Next Tool</article>
+                                <div class="table-wrapper">
+                                    <table class="data-table" aria-label="Project Information">
+                                        <caption>Project Information</caption>
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Project</th>
+                                                <th scope="col">Status</th>
+                                                <th scope="col">Purpose</th>
+                                                <th scope="col">Owner</th>
+                                                <th scope="col">Role</th>
+                                                <th scope="col">Next Tool</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody data-project-records-table>
+                                            <tr>
+                                                <td data-active-game-name>Demo Game</td>
+                                                <td data-active-game-status>Under Construction</td>
+                                                <td data-active-game-purpose>Game</td>
+                                                <td data-active-game-owner>No owner</td>
+                                                <td data-current-user-role>Owner</td>
+                                                <td data-recommended-next-tool>Game Configuration</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                                 <div class="action-group">
                                     <a class="btn primary" href="toolbox/game-journey/index.html?game=demo-game" data-game-journey-link>Open Game Journey</a>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="card" data-source-idea-section>
+                            <div class="card-body content-stack">
+                                <div>
+                                    <div class="kicker">Source Idea</div>
+                                    <h3 data-source-idea-name>No source idea yet</h3>
+                                </div>
+                                <div class="table-wrapper">
+                                    <table class="data-table" aria-label="Source Idea">
+                                        <tbody>
+                                            <tr><th scope="row">Idea</th><td data-source-idea-display>No source idea yet</td></tr>
+                                            <tr><th scope="row">Pitch</th><td data-source-idea-pitch>Create a project from Idea Board to see source details.</td></tr>
+                                            <tr><th scope="row">Notes</th><td><ul class="content-list" data-source-idea-notes><li>No source notes.</li></ul></td></tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </article>
@@ -119,7 +134,7 @@
                                     <article class="callout"><h3>Recommended Next Tool</h3><p data-recommended-next-tool>Game Configuration</p></article>
                                     <article class="callout"><h3>Checklist</h3><ul data-game-progress-checklist><li>Game identity: Complete</li></ul></article>
                                 </div>
-                                <div class="status" role="status" data-game-workspace-log>Demo Game seeded.</div>
+                                <div class="status" role="status" data-game-workspace-log>Game Hub ready.</div>
                             </div>
                         </article>
                         <div class="accordion-stack" data-game-output-panels>
@@ -141,56 +156,7 @@
                                     </div>
                                 </div>
                             </details>
-                            <details class="vertical-accordion" open>
-                                <summary>Repository Tables</summary>
-                                <div class="accordion-body">
-                                    <div class="table-wrapper">
-                                        <table class="data-table">
-                                            <caption>Game Hub data row counts</caption>
-                                            <thead>
-                                                <tr><th scope="col">Table</th><th scope="col">Rows</th></tr>
-                                            </thead>
-                                            <tbody data-game-table-counts>
-                                                <tr><td>users</td><td>3</td></tr>
-                                                <tr><td>games</td><td>4</td></tr>
-                                                <tr><td>game_members</td><td>12</td></tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </details>
-                            <details class="vertical-accordion" open>
-                                <summary>Team Members</summary>
-                                <div class="accordion-body">
-                                    <div class="table-wrapper">
-                                        <table class="data-table">
-                                            <caption>Open game members</caption>
-                                            <thead>
-                                                <tr><th scope="col">User</th><th scope="col">User Key</th><th scope="col">Role</th><th scope="col">Permission</th></tr>
-                                            </thead>
-                                            <tbody data-game-members-table>
-                                                <tr><td>No game</td><td>-</td><td>-</td><td>-</td></tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </details>
                         </div>
-                        <article class="card" role="dialog" aria-labelledby="game-workspace-missing-requirements-title" data-missing-requirements>
-                            <div class="card-body content-stack">
-                                <div>
-                                    <div class="kicker">Requirements</div>
-                                    <h3 id="game-workspace-missing-requirements-title">Missing Requirements</h3>
-                                </div>
-                                <p>Not implemented yet: cross-tool blocking, publish validation, or persisted release gates. This review surface lists the next requirements only.</p>
-                                <div class="grid cols-3">
-                                    <article class="callout"><h3>Game Design</h3><p><span class="pill">Under Construction</span> Define win and lose conditions.</p></article>
-                                    <article class="callout"><h3>Game Configuration</h3><p><span class="pill">Planned</span> Choose release profile and debug policy.</p></article>
-                                    <article class="callout"><h3>Publish</h3><p><span class="pill">Planned</span> Prepare share metadata later.</p></article>
-                                </div>
-                                <div class="status" role="status">Game Hub does not run real publish gating yet.</div>
-                            </div>
-                        </article>
                     </section>
                     <aside class="tool-column tool-group-build">
                         <div class="tool-column-header">
@@ -200,7 +166,7 @@
                             <details class="vertical-accordion" open>
                                 <summary>Status Log</summary>
                                 <div class="accordion-body">
-                                    <p>Game Hub operations report status in the center panel while the right column stays reserved for inspector status and diagnostics.</p>
+                                    <p>Game Hub actions report status in the center panel.</p>
                                     <div class="status" role="status">Game data ready.</div>
                                 </div>
                             </details>

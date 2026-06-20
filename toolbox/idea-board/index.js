@@ -1,6 +1,10 @@
+import { createServerRepositoryClient } from "../../src/api/server-api-client.js";
+
 const statusOptions = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project", "Archived"]);
 const defaultVisibleStatuses = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project"]);
 const userId = "user-1";
+const gameHubRoute = "toolbox/game-workspace/index.html";
+let gameHubRepository = null;
 
 const ideaTable = [
   {
@@ -108,6 +112,10 @@ function isProject(record) {
   return record.status === "Project";
 }
 
+function isLockedIdea(record) {
+  return Boolean(record && (isProject(record) || isArchived(record)));
+}
+
 function visibleIdeas() {
   return ideaTable.filter((record) => state.visibleStatuses.has(record.status));
 }
@@ -126,6 +134,17 @@ function rememberPreviousStatus(record) {
 
 function canDeleteIdea(record) {
   return !isProject(record) || isArchived(record);
+}
+
+function isRepositoryErrorResult(value) {
+  return Boolean(value && typeof value === "object" && value.error === true);
+}
+
+function gameHubProjectRepository() {
+  if (!gameHubRepository) {
+    gameHubRepository = createServerRepositoryClient("game-workspace");
+  }
+  return gameHubRepository;
 }
 
 function cell(text) {
@@ -269,21 +288,18 @@ function renderIdeaRow(tbody, record) {
       " ",
       actionButton("Delete", "delete", "ideaBoardIdeaAction"),
     );
+  } else if (isProject(record)) {
+    actions.append(
+      actionButton("Open in Game Hub", "open-project", "ideaBoardIdeaAction", "primary"),
+      " ",
+      actionButton("Archive", "archive", "ideaBoardIdeaAction"),
+    );
   } else {
     actions.append(actionButton("Edit", "edit", "ideaBoardIdeaAction"));
     if (record.status === "Ready") {
       actions.append(" ", actionButton("Create Project", "create-project", "ideaBoardIdeaAction", "primary"));
     }
-    if (isProject(record)) {
-      actions.append(
-        " ",
-        actionButton("Open Project", "open-project", "ideaBoardIdeaAction", "primary"),
-        " ",
-        actionButton("Archive", "archive", "ideaBoardIdeaAction"),
-      );
-    } else {
-      actions.append(" ", actionButton("Delete", "delete", "ideaBoardIdeaAction"));
-    }
+    actions.append(" ", actionButton("Delete", "delete", "ideaBoardIdeaAction"));
   }
   row.append(actions);
   tbody.append(row);
@@ -312,7 +328,7 @@ function renderNoteInputRow(tbody, ideaId, record = null) {
   input.focus();
 }
 
-function renderNoteRow(tbody, record) {
+function renderNoteRow(tbody, record, locked = false) {
   const row = document.createElement("tr");
   row.dataset.noteId = record.noteId;
   row.dataset.ideaId = record.ideaId;
@@ -320,9 +336,11 @@ function renderNoteRow(tbody, record) {
   row.append(cell(record.note));
 
   const actions = document.createElement("td");
-  actions.append(actionButton("Edit", "edit", "ideaBoardNoteAction"));
-  if (!record.system) {
-    actions.append(" ", actionButton("Delete", "delete", "ideaBoardNoteAction"));
+  if (!locked) {
+    actions.append(actionButton("Edit", "edit", "ideaBoardNoteAction"));
+    if (!record.system) {
+      actions.append(" ", actionButton("Delete", "delete", "ideaBoardNoteAction"));
+    }
   }
   row.append(actions);
   tbody.append(row);
@@ -337,6 +355,7 @@ function renderExpandedNotesRow(tbody, record) {
 
   const childSurface = document.createElement("div");
   childSurface.className = "idea-board-notes-child-surface";
+  const locked = isLockedIdea(record);
 
   const tableWrapper = document.createElement("div");
   tableWrapper.className = "table-wrapper";
@@ -353,20 +372,22 @@ function renderExpandedNotesRow(tbody, record) {
   childSurface.append(tableWrapper);
 
   for (const note of notesForIdea(record.ideaId)) {
-    if (state.editingNoteId === note.noteId) {
+    if (!locked && state.editingNoteId === note.noteId) {
       renderNoteInputRow(notesBody, record.ideaId, note);
     } else {
-      renderNoteRow(notesBody, note);
+      renderNoteRow(notesBody, note, locked);
     }
   }
-  if (state.addingNoteIdeaId === record.ideaId) renderNoteInputRow(notesBody, record.ideaId);
+  if (!locked && state.addingNoteIdeaId === record.ideaId) renderNoteInputRow(notesBody, record.ideaId);
 
-  const controls = document.createElement("div");
-  controls.className = "action-group idea-board-notes-child-actions";
-  const addNote = actionButton("Add Note", "add", "ideaBoardNoteAction", "primary");
-  addNote.dataset.ideaBoardAddNote = record.ideaId;
-  controls.append(addNote);
-  childSurface.append(controls);
+  if (!locked) {
+    const controls = document.createElement("div");
+    controls.className = "action-group idea-board-notes-child-actions";
+    const addNote = actionButton("Add Note", "add", "ideaBoardNoteAction", "primary");
+    addNote.dataset.ideaBoardAddNote = record.ideaId;
+    controls.append(addNote);
+    childSurface.append(controls);
+  }
   content.append(childSurface);
 
   row.append(content);
@@ -391,7 +412,7 @@ function render(root) {
   renderStatusFilter(root);
   tbody.replaceChildren();
   for (const record of visibleIdeas()) {
-    if (state.editingIdeaId === record.ideaId) {
+    if (state.editingIdeaId === record.ideaId && !isLockedIdea(record)) {
       renderIdeaInputRow(tbody, record);
     } else {
       renderIdeaRow(tbody, record);
@@ -426,6 +447,12 @@ function saveIdeaRow(root, row) {
       updateStatus(root, "Idea Board could not find that idea.");
       return;
     }
+    if (isLockedIdea(record)) {
+      state.editingIdeaId = null;
+      updateStatus(root, "This project is read-only.");
+      render(root);
+      return;
+    }
     record.idea = idea;
     record.pitch = pitch;
     if (status === "Archived" && record.status !== "Archived") {
@@ -448,6 +475,14 @@ function saveIdeaRow(root, row) {
 
 function saveNoteRow(root, row) {
   const ideaId = row.dataset.ideaId;
+  const idea = ideaRecord(ideaId);
+  if (idea && isLockedIdea(idea)) {
+    state.editingNoteId = null;
+    state.addingNoteIdeaId = null;
+    updateStatus(root, "Project notes are read-only.");
+    render(root);
+    return;
+  }
   const value = row.querySelector("[data-idea-board-note-input]")?.value.trim();
   if (!value) {
     updateStatus(root, "Enter note text before saving.");
@@ -513,6 +548,19 @@ function deleteIdea(root, ideaId) {
   render(root);
 }
 
+function projectSourceIdea(record) {
+  return {
+    idea: record.idea,
+    pitch: record.pitch,
+    notes: notesForIdea(record.ideaId).map((note) => note.note),
+  };
+}
+
+function gameHubUrl(record) {
+  const suffix = record.projectId ? `?game=${encodeURIComponent(record.projectId)}` : "";
+  return `${gameHubRoute}${suffix}`;
+}
+
 function createProject(root, ideaId) {
   const record = ideaRecord(ideaId);
   if (!record) {
@@ -523,9 +571,26 @@ function createProject(root, ideaId) {
     updateStatus(root, "Set this idea to Ready before creating a project.");
     return;
   }
+  const repository = gameHubProjectRepository();
+  const project = repository.createGame({
+    name: record.idea,
+    purpose: "Game",
+    sourceIdea: projectSourceIdea(record),
+    status: "Planning",
+  });
+  if (isRepositoryErrorResult(project) || !project || !project.id) {
+    console.warn("Idea Board could not create a Game Hub project.", project?.message || repository.__apiDiagnostic?.() || "");
+    updateStatus(root, "Game Hub project could not be created right now. Try again shortly.");
+    return;
+  }
   record.status = "Project";
   record.previousStatus = "Project";
+  record.projectId = project.id;
+  record.projectName = project.name || record.idea;
   record.updated = today();
+  state.editingIdeaId = null;
+  state.editingNoteId = null;
+  state.addingNoteIdeaId = null;
   updateStatus(root, `${record.idea} is now a project.`);
   render(root);
 }
@@ -539,6 +604,9 @@ function archiveIdea(root, ideaId) {
   if (record.status !== "Archived") record.previousStatus = record.status;
   record.status = "Archived";
   record.updated = today();
+  state.editingIdeaId = null;
+  state.editingNoteId = null;
+  state.addingNoteIdeaId = null;
   if (!state.visibleStatuses.has("Archived") && state.expandedIdeaId === ideaId) {
     state.expandedIdeaId = null;
   }
@@ -565,7 +633,12 @@ function openProject(root, ideaId) {
     updateStatus(root, "Idea Board could not open that project.");
     return;
   }
-  updateStatus(root, `Opening ${record.idea}.`);
+  if (!record.projectId) {
+    updateStatus(root, "Create the Game Hub project before opening it.");
+    return;
+  }
+  updateStatus(root, `Opening ${record.idea} in Game Hub.`);
+  window.location.href = gameHubUrl(record);
 }
 
 function handleIdeaAction(root, actionControl) {
@@ -578,6 +651,11 @@ function handleIdeaAction(root, actionControl) {
     updateStatus(root, "Adding a new idea.");
     render(root);
   } else if (action === "edit") {
+    if (isLockedIdea(ideaRecord(ideaId))) {
+      updateStatus(root, "This project is read-only.");
+      render(root);
+      return;
+    }
     state.editingIdeaId = ideaId;
     state.addingIdea = false;
     updateStatus(root, `Editing ${ideaRecord(ideaId)?.idea}.`);
@@ -606,6 +684,14 @@ function handleNoteAction(root, actionControl) {
   const action = actionControl.dataset.ideaBoardNoteAction;
   const row = actionControl.closest("tr");
   const ideaId = actionControl.dataset.ideaBoardAddNote || row?.dataset.ideaId || state.expandedIdeaId;
+  const idea = ideaRecord(ideaId);
+  if (idea && isLockedIdea(idea)) {
+    state.editingNoteId = null;
+    state.addingNoteIdeaId = null;
+    updateStatus(root, "Project notes are read-only.");
+    render(root);
+    return;
+  }
   const noteId = row?.dataset.noteId;
   if (action === "add") {
     state.expandedIdeaId = ideaId;

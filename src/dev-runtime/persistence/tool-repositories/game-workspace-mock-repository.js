@@ -156,8 +156,37 @@ export const GAME_WORKSPACE_SCHEMA = Object.freeze({
   game_members: Object.freeze(["gameId", "userKey", "permission", "role"]),
 });
 
+function normalizeSourceIdea(sourceIdea) {
+  if (!sourceIdea || typeof sourceIdea !== "object") {
+    return null;
+  }
+
+  const idea = String(sourceIdea.idea || "").trim();
+  const pitch = String(sourceIdea.pitch || "").trim();
+  const notes = Array.isArray(sourceIdea.notes)
+    ? sourceIdea.notes.map((note) => String(note || "").trim()).filter(Boolean)
+    : [];
+
+  if (!idea && !pitch && !notes.length) {
+    return null;
+  }
+
+  return { idea, pitch, notes };
+}
+
+function cloneRow(row) {
+  const cloned = { ...row };
+  const sourceIdea = normalizeSourceIdea(row.sourceIdea);
+  if (sourceIdea) {
+    cloned.sourceIdea = sourceIdea;
+  } else {
+    delete cloned.sourceIdea;
+  }
+  return cloned;
+}
+
 function cloneRows(rows) {
-  return rows.map((row) => ({ ...row }));
+  return rows.map(cloneRow);
 }
 
 function cloneTables(tables) {
@@ -227,6 +256,7 @@ export function createGameWorkspaceMockRepository() {
     return {
       ...game,
       purpose: game.purpose || "Game",
+      sourceIdea: normalizeSourceIdea(game.sourceIdea),
       ownerDisplayName: owner?.displayName || game.ownerKey,
       members: getGameMembers(game.id),
     };
@@ -373,6 +403,10 @@ export function createGameWorkspaceMockRepository() {
       purpose,
       status,
     };
+    const sourceIdea = normalizeSourceIdea(input.sourceIdea);
+    if (sourceIdea) {
+      game.sourceIdea = sourceIdea;
+    }
 
     tables.games.push(game);
     tables.game_members.push({
