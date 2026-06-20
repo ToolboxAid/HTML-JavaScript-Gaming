@@ -36,6 +36,23 @@ async function expectIdeaChevron(page, ideaId, iconName) {
   expect(metrics.maskImage).toContain(iconName);
 }
 
+async function expectButtonLeftAligned(page, buttonSelector, containerSelector) {
+  const metrics = await page.locator(buttonSelector).evaluate((button, selector) => {
+    const container = button.ownerDocument.querySelector(selector);
+    const buttonRect = button.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
+    const containerStyles = getComputedStyle(container);
+    return {
+      buttonLeft: buttonRect.left,
+      containerLeft: containerRect.left,
+      containerWidth: containerRect.width,
+      expectedLeft: containerRect.left + Number.parseFloat(containerStyles.paddingLeft || "0"),
+    };
+  }, containerSelector);
+  expect(Math.abs(metrics.buttonLeft - metrics.expectedLeft)).toBeLessThanOrEqual(2);
+  expect(metrics.buttonLeft).toBeLessThan(metrics.containerLeft + metrics.containerWidth / 2);
+}
+
 test("Idea Board uses DB-shaped accordion table ideas and notes", async ({ page }) => {
   const server = await startRepoServer();
   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
@@ -78,6 +95,9 @@ test("Idea Board uses DB-shaped accordion table ideas and notes", async ({ page 
     await expect(page.locator("[data-idea-board-idea-row]")).toHaveCount(3);
     await expect(page.locator("[data-idea-board-expanded-row]")).toHaveCount(0);
     await expect(page.locator("[data-idea-board-add-idea-row]")).toHaveCount(1);
+    await expect(page.locator("[data-idea-board-add-idea]")).toHaveText("Add Idea");
+    await expectButtonLeftAligned(page, "[data-idea-board-add-idea]", "[data-idea-board-add-idea-row] > td");
+    await expect(page.getByText(/another/i)).toHaveCount(0);
     await expect(page.locator("[data-idea-board-notes-chevron]")).toHaveCount(0);
     await expect(page.getByText("Selected idea context")).toHaveCount(0);
     await expect(page.getByText("Notes for Sky Orchard")).toHaveCount(0);
@@ -109,6 +129,8 @@ test("Idea Board uses DB-shaped accordion table ideas and notes", async ({ page 
     await expect(page.locator("[data-idea-board-expanded-row='top-thoughts'] :is(h1,h2,h3,h4,h5,h6)").filter({ hasText: /^Notes$/ })).toHaveCount(0);
     await expect(page.locator("[data-idea-board-expanded-row='top-thoughts'] > td > .content-stack")).toHaveCount(0);
     await expect(page.locator("[data-idea-board-notes-table='top-thoughts'] th[scope='col']")).toHaveText(["Note", "Actions"]);
+    await expect(page.locator("[data-idea-board-add-note='top-thoughts']")).toHaveText("Add Note");
+    await expectButtonLeftAligned(page, "[data-idea-board-add-note='top-thoughts']", "[data-idea-board-expanded-row='top-thoughts'] > td");
     await expect(page.locator("[data-idea-board-notes-table] th[scope='col']", { hasText: "Type" })).toHaveCount(0);
     await expect(page.locator("[data-idea-board-notes-table] th[scope='col']", { hasText: "Created By" })).toHaveCount(0);
     await expect(page.locator("[data-idea-board-notes-table] th[scope='col']", { hasText: "Created" })).toHaveCount(0);
