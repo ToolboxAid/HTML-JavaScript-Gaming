@@ -90,7 +90,13 @@ async function expectExpandedNotesChildIndentation(page, ideaId, expectedInputRo
   }
 }
 
-test("Idea Board uses DB-shaped accordion table ideas and notes", async ({ page }) => {
+async function expectProductionCopy(page) {
+  await expect(page.locator("main")).not.toContainText(
+    /\bDB-shaped\b|\bin-page data model\b|\buserId\b|\bideaId\b|\bnoteId\b|\bsystem flag\b|\bmetadata\b|\bseed\b|\bdebug\b|\bselected context\b|\bmock\b|\btest\b|\binternal implementation\b|\bplaceholder\b|\bproject records\b|\bmutating API\b|\bauth\b|\bAI\b|\bdatabase behavior\b/i,
+  );
+}
+
+test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
   const server = await startRepoServer();
   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
   const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
@@ -121,6 +127,7 @@ test("Idea Board uses DB-shaped accordion table ideas and notes", async ({ page 
   try {
     await page.goto(`${server.baseUrl}/toolbox/idea-board/index.html`, { waitUntil: "networkidle" });
     await expect(page.getByRole("heading", { level: 1, name: "Idea Board" })).toBeVisible();
+    await expectProductionCopy(page);
     await expect(page.locator("[data-idea-board-table] > thead th[scope='col']")).toHaveText([
       "Idea",
       "Pitch",
@@ -160,6 +167,7 @@ test("Idea Board uses DB-shaped accordion table ideas and notes", async ({ page 
     await expect(page.locator("[data-idea-board-expanded-row]")).toHaveCount(0);
     await page.locator("[data-idea-board-idea-cell='top-thoughts']").click();
     await expect(page.locator("[data-idea-board-expanded-row='top-thoughts']")).toBeVisible();
+    await expectProductionCopy(page);
     await expectIdeaChevron(page, "top-thoughts", "gfs-chevron-up.svg");
     await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] + [data-idea-board-expanded-row='top-thoughts']")).toHaveCount(1);
     await expect(page.locator("[data-idea-board-expanded-row='top-thoughts'] [data-idea-board-notes-header]")).toHaveCount(0);
@@ -179,9 +187,9 @@ test("Idea Board uses DB-shaped accordion table ideas and notes", async ({ page 
     await systemNote.locator("[data-idea-board-note-action='edit']").click();
     await expect(page.locator("[data-idea-board-note-input-row] [data-idea-board-note-action]")).toHaveText(["Save", "Cancel"]);
     await expectExpandedNotesChildIndentation(page, "top-thoughts", 1);
-    await page.locator("[data-idea-board-note-input]").fill("System note can be edited in-place.");
+    await page.locator("[data-idea-board-note-input]").fill("Starter note can be edited in place.");
     await page.locator("[data-idea-board-note-action='save']").click();
-    await expect(page.locator("[data-idea-board-notes-table='top-thoughts']")).toContainText("System note can be edited in-place.");
+    await expect(page.locator("[data-idea-board-notes-table='top-thoughts']")).toContainText("Starter note can be edited in place.");
     await expect(page.locator("[data-idea-board-system-note] [data-idea-board-note-action='delete']")).toHaveCount(0);
 
     await page.locator("[data-idea-board-add-note='top-thoughts']").click();

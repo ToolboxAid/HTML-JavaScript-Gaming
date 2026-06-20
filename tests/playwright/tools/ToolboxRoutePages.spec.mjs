@@ -192,6 +192,12 @@ async function expectExpandedNotesChildIndentation(page, ideaId, expectedInputRo
   }
 }
 
+async function expectIdeaBoardProductionCopy(page) {
+  await expect(page.locator("main")).not.toContainText(
+    /\bDB-shaped\b|\bin-page data model\b|\buserId\b|\bideaId\b|\bnoteId\b|\bsystem flag\b|\bmetadata\b|\bseed\b|\bdebug\b|\bselected context\b|\bmock\b|\btest\b|\binternal implementation\b|\bplaceholder\b|\bproject records\b|\bmutating API\b|\bauth\b|\bAI\b|\bdatabase behavior\b/i,
+  );
+}
+
 test("tools route aliases render toolbox tool pages", async ({ page }) => {
   const server = await startRepoServer();
   const failedRequests = [];
@@ -288,6 +294,7 @@ test("Idea Board launches from Toolbox with accordion table notes model", async 
     await page.waitForURL(/\/toolbox\/idea-board\/index\.html$/);
     await page.waitForLoadState("networkidle");
     await expect(page.getByRole("heading", { level: 1, name: "Idea Board" })).toBeVisible();
+    await expectIdeaBoardProductionCopy(page);
     const ideaBoardSections = await page.locator("[data-idea-board-section]").evaluateAll((sections) => (
       sections.map((section) => section.getAttribute("data-idea-board-section"))
     ));
@@ -310,11 +317,12 @@ test("Idea Board launches from Toolbox with accordion table notes model", async 
     await expect(page.locator("[data-idea-board-notes-count='sky-orchard']")).toHaveText("3 Notes");
     await expect(page.locator("[data-idea-board-notes-count='clockwork-courier']")).toHaveText("0 Notes");
     await expectIdeaChevron(page, "top-thoughts", "gfs-chevron-down.svg");
-    await expect(page.locator("[data-idea-board-status]")).toHaveText("Idea Board table edits are in-page only. No project records, auth, AI, or database behavior is connected.");
+    await expect(page.locator("[data-idea-board-status]")).toHaveText("Ready to shape ideas and notes.");
     await page.locator("[data-idea-board-notes-count='top-thoughts']").click();
     await expect(page.locator("[data-idea-board-expanded-row]")).toHaveCount(0);
     await page.locator("[data-idea-board-idea-cell='top-thoughts']").click();
     await expect(page.locator("[data-idea-board-expanded-row='top-thoughts']")).toBeVisible();
+    await expectIdeaBoardProductionCopy(page);
     await expectIdeaChevron(page, "top-thoughts", "gfs-chevron-up.svg");
     await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] + [data-idea-board-expanded-row='top-thoughts']")).toHaveCount(1);
     await expect(page.locator("[data-idea-board-expanded-row='top-thoughts'] [data-idea-board-notes-header]")).toHaveCount(0);

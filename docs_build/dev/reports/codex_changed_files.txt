@@ -1,39 +1,62 @@
-# Codex Changed Files - PR_26171_059-rollback-restore-plan
+# Codex Changed Files - PR_26171_040-idea-board-production-copy-cleanup
 
 ## Git Workflow
-- Verified starting branch: `main`.
-- Verified repo scope: clean after removing leftover local-only PR_26171_057 report artifacts.
-- Pulled latest `origin/main`: `20fd280c608917b960b3080484a5d28c51990ccb`.
-- Created branch: `pr/26171-059-rollback-restore-plan`.
-- Push result: pending until after commit.
-- PR URL: pending until after push.
+- Current branch: `codex/pr-26171-040-idea-board-production-copy-cleanup`.
+- Expected starting branch: `main` (PASS before branch creation).
+- Created branch: `codex/pr-26171-040-idea-board-production-copy-cleanup`.
+- Commit before conflict resolution: `acbc5b113e9e90a4051e810897415ea222040ddd`.
+- Initial push result: PASS, branch pushed to `origin/codex/pr-26171-040-idea-board-production-copy-cleanup`.
+- PR URL: `https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/15`.
+- Conflict resolution: merged `origin/main` at `7393b650228c84d266701cc3f4ce3696029dd47e`; conflicts were limited to `codex_changed_files.txt` and `codex_review.diff`.
+- Conflict resolution push result: pending until after merge-validation commit.
 - Merge result: pending until after PR validation/merge.
 - Final main sync: pending until after merge and final pull.
 
 ## Changed Files
-- docs_build/dev/reports/PR_26171_059-rollback-restore-plan.md
-- docs_build/dev/reports/PR_26171_059-validation.md
-- docs_build/dev/reports/PR_26171_059-manual-validation-notes.md
-- docs_build/dev/reports/codex_review.diff
 - docs_build/dev/reports/codex_changed_files.txt
+- docs_build/dev/reports/codex_review.diff
+- docs_build/dev/reports/coverage_changed_js_guardrail.txt
+- docs_build/dev/reports/playwright_v8_coverage_report.txt
+- src/dev-runtime/server/local-api-router.mjs
+- src/shared/toolbox/tool-metadata-inventory.js
+- tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+- tests/playwright/tools/ToolboxRoutePages.spec.mjs
+- toolbox/idea-board/index.html
+- toolbox/idea-board/index.js
 
 ## Requirement Evidence
-- PASS: Documented Local API sign-in recovery requirements.
-- PASS: Documented env diagnostics and runtime port requirements.
-- PASS: Documented toolbox image restoration requirements.
-- PASS: Documented Text To Speech engine/audio rebuild requirements.
-- PASS: Documented Game Journey table correction requirements.
-- PASS: Documented Game Journey post-rollback verification requirements.
-- PASS: Documented reapply rules requiring clean `main`, scoped branches, and no disconnected branch reuse.
-- PASS: Documented discarded contaminated work list.
-- PASS: No implementation reapply in this PR.
+- PASS: Creator-visible Idea Board page copy no longer uses DB-shaped, in-page data model, ID/flag/metadata/seed/debug/mock/test/internal wording.
+- PASS: Shared Toolbox metadata for Idea Board now uses simple creator-facing language for short description, description, and progress checklist text.
+- PASS: Existing persisted Toolbox metadata rows now source-sync Idea Board copy so the browser-visible registry summary updates from source-controlled text.
+- PASS: Idea Board table workflow, Add Idea, Add Note, Edit/Delete, Save/Cancel, Status dropdown, accordion behavior, notes under idea rows, and existing in-page data structure were preserved.
+- PASS: Targeted Playwright production-copy checks verify the Idea Board main surface does not expose the prohibited creator-visible wording.
+- PASS: Copied/adapted files verified as not applicable for this copy-only PR; no Tool Template V2 file copy was required.
 
 ## Validation
-- PASS: `npm run test:playwright:static`.
-- PASS: Restored unrelated generated validation report churn after static validation.
+- PASS: `node --check toolbox/idea-board/index.js`.
+- PASS: `node --check src/dev-runtime/server/local-api-router.mjs`.
+- PASS: `node --check src/shared/toolbox/tool-metadata-inventory.js`.
+- PASS: `node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`.
+- PASS: `node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs`.
+- PASS: `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line`.
+- PASS: `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches"`.
 - PASS: `git diff --check`.
-- NOT RUN: `npm run dev:local-api` by design for docs/static-only scope.
-- NOT RUN: `npm run test:workspace-v2` by design for docs/static-only scope.
+- PASS: Post-conflict rerun completed after merging `origin/main` at `7393b650228c84d266701cc3f4ce3696029dd47e`.
+- PASS: Playwright V8 coverage report produced because runtime JavaScript changed.
+- WARN: Coverage report marks `src/dev-runtime/server/local-api-router.mjs` and `src/shared/toolbox/tool-metadata-inventory.js` as not collected by browser V8 coverage; advisory only per project instructions.
+- SKIPPED: Full samples smoke was not run per request.
 
 ## ZIP
-- Path: `tmp/PR_26171_059-rollback-restore-plan_delta.zip`.
+- Path: `tmp/PR_26171_040-idea-board-production-copy-cleanup_delta.zip`.
+- Size: final size reported in the delivery summary after conflict-resolution ZIP refresh.
+- Contents:
+  - docs_build/dev/reports/codex_changed_files.txt
+  - docs_build/dev/reports/codex_review.diff
+  - docs_build/dev/reports/coverage_changed_js_guardrail.txt
+  - docs_build/dev/reports/playwright_v8_coverage_report.txt
+  - src/dev-runtime/server/local-api-router.mjs
+  - src/shared/toolbox/tool-metadata-inventory.js
+  - tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+  - tests/playwright/tools/ToolboxRoutePages.spec.mjs
+  - toolbox/idea-board/index.html
+  - toolbox/idea-board/index.js
