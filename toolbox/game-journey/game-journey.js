@@ -23,7 +23,6 @@ const filterButtons = Array.from(document.querySelectorAll("[data-journey-filter
 const sortButtons = Array.from(document.querySelectorAll("[data-journey-sort]"));
 const sortHeaders = Array.from(document.querySelectorAll("[data-journey-sort-header]"));
 const summaryBody = document.querySelector("[data-journey-summary-body]");
-const itemTree = document.querySelector("[data-journey-item-tree]");
 const selectedNoteMessage = document.querySelector("[data-journey-selected-note]");
 const activeGameMessage = document.querySelector("[data-journey-active-game]");
 const editorForm = document.querySelector("[data-journey-editor-form]");
@@ -54,6 +53,7 @@ const searchStatus = document.querySelector("[data-journey-search-status]");
 const completionMetrics = document.querySelector("[data-journey-completion-metrics]");
 const recommendedTargets = document.querySelector("[data-journey-recommended-targets]");
 const recommendedTargetStatus = document.querySelector("[data-journey-target-status]");
+const SUMMARY_TABLE_COLUMN_COUNT = 13;
 
 const statTargets = {
   open: document.querySelector("[data-journey-stat-open]"),
@@ -81,6 +81,9 @@ let summarySort = {
 };
 let completionMetricsSnapshot = null;
 let completionMetricsDiagnostic = "";
+let addNoteRowOpen = false;
+let editingNoteKey = "";
+let itemTree = null;
 const recommendedTargetValues = new Map(
   GAME_JOURNEY_RECOMMENDED_TARGETS.map((target) => [target.key, target.suggestedCount]),
 );
@@ -259,6 +262,66 @@ function isUserItem(item) {
   return Boolean(item && !isSystemItem(item));
 }
 
+function isSystemNote(note) {
+  return Boolean(note?.systemCreated || note?.items?.some((item) => isSystemItem(item)));
+}
+
+function noteOwnerLabel(note) {
+  if (isSystemNote(note)) {
+    return "System-created";
+  }
+
+  const sessionUser = repository.getSessionUser();
+  if (note?.ownerKey && note.ownerKey === sessionUser?.userKey) {
+    return "You";
+  }
+
+  return note?.ownerKey || "Unknown";
+}
+
+function createCountCell(value) {
+  return createElement("td", { text: String(value) });
+}
+
+function createReadonlyCountCell() {
+  return createElement("td", { text: "-" });
+}
+
+function createNoteTypeSelect(selectedTypeKey, disabled = false) {
+  const select = createElement("select");
+  populateNoteTypeSelect(select, repository.listNoteTypes(), selectedTypeKey);
+  select.disabled = disabled;
+  return select;
+}
+
+function createNoteActions(actions) {
+  const cell = createElement("td");
+  const group = createElement("div", {
+    className: "action-group",
+  });
+  group.setAttribute("aria-label", "Game Journey note row actions");
+  actions.forEach((action) => group.append(action));
+  cell.append(group);
+  return cell;
+}
+
+function createNoteActionButton(label, datasetName, value, options = {}) {
+  const button = createElement("button", {
+    className: options.primary ? "btn btn--compact primary" : "btn btn--compact",
+    text: label,
+  });
+  button.type = "button";
+  button.dataset[datasetName] = value;
+  if (options.disabled) {
+    button.disabled = true;
+  }
+  if (options.title) {
+    button.title = options.title;
+    button.setAttribute("aria-label", options.title);
+  }
+  return button;
+}
+
 function countItems(items) {
   return items.reduce((counts, item) => {
     const status = GAME_JOURNEY_STATUS_BY_ID[item.status];
@@ -349,50 +412,186 @@ function updateSortHeaders() {
   });
 }
 
-function renderSummary(notes) {
+function createSummaryCountCells(note) {
+  return [
+    createCountCell(note.counts["not-started"]),
+    createCountCell(note.counts.blocker),
+    createCountCell(note.counts.decide),
+    createCountCell(note.counts["in-progress"]),
+    createCountCell(note.counts.complete),
+    createCountCell(note.counts.skipped),
+    createCountCell(note.counts.open),
+    createCountCell(note.counts.total),
+    createElement("td", { text: formatDate(note.updatedAt) }),
+  ];
+}
+
+function createSummaryNoteButton(note, selected) {
+  const noteButton = createElement("button", {
+    className: selected ? "btn btn--compact primary" : "btn btn--compact",
+    text: note.name,
+  });
+  noteButton.type = "button";
+  noteButton.dataset.journeyNoteButton = note.key;
+  noteButton.setAttribute("aria-pressed", String(selected));
+  if (selected) {
+    noteButton.setAttribute("aria-current", "true");
+  }
+  return noteButton;
+}
+
+function createSummaryNoteRow(note, editingDisabled) {
+  const row = createElement("tr");
+  const nameCell = createElement("td");
+  const selected = selectedSummaryNoteKey === note.key;
+  const systemNote = isSystemNote(note);
+  nameCell.append(createSummaryNoteButton(note, selected));
+  row.dataset.journeySummaryNoteRow = note.key;
+  row.append(
+    nameCell,
+    createElement("td", { text: note.type?.name || "Unknown" }),
+    createElement("td", { text: noteOwnerLabel(note) }),
+    ...createSummaryCountCells(note),
+    createNoteActions([
+      createNoteActionButton("Edit", "journeyEditNote", note.key, {
+        disabled: editingDisabled,
+      }),
+      createNoteActionButton("Delete", "journeyDeleteNote", note.key, {
+        disabled: editingDisabled || systemNote,
+        title: systemNote ? "System-created notes cannot be deleted" : "Delete note",
+      }),
+    ]),
+  );
+  return row;
+}
+
+function createSummaryAddRow(editingDisabled) {
+  const row = createElement("tr");
+  row.dataset.journeyAddNoteRow = "";
+
+  const nameCell = createElement("td");
+  const nameInput = createElement("input");
+  nameInput.type = "text";
+  nameInput.placeholder = "Playtest follow-ups";
+  nameInput.disabled = editingDisabled;
+  nameInput.dataset.journeyNewNoteName = "";
+  nameCell.append(nameInput);
+
+  const typeCell = createElement("td");
+  const typeSelect = createNoteTypeSelect(preferredNewNoteTypeKey || repository.listNoteTypes()[0]?.key || "", editingDisabled);
+  typeSelect.dataset.journeyNewNoteType = "";
+  typeCell.append(typeSelect);
+
+  row.append(
+    nameCell,
+    typeCell,
+    createElement("td", { text: "You" }),
+    createReadonlyCountCell(),
+    createReadonlyCountCell(),
+    createReadonlyCountCell(),
+    createReadonlyCountCell(),
+    createReadonlyCountCell(),
+    createReadonlyCountCell(),
+    createReadonlyCountCell(),
+    createReadonlyCountCell(),
+    createReadonlyCountCell(),
+    createNoteActions([
+      createNoteActionButton("Save", "journeySaveNewNote", "true", {
+        primary: true,
+        disabled: editingDisabled,
+      }),
+      createNoteActionButton("Cancel", "journeyCancelNewNote", "true"),
+    ]),
+  );
+  return row;
+}
+
+function createSummaryEditRow(note, editingDisabled) {
+  const row = createElement("tr");
+  const systemNote = isSystemNote(note);
+  const fieldsDisabled = editingDisabled || systemNote;
+  row.dataset.journeyEditNoteRow = note.key;
+
+  const nameCell = createElement("td");
+  const nameInput = createElement("input");
+  nameInput.type = "text";
+  nameInput.value = note.name;
+  nameInput.disabled = fieldsDisabled;
+  nameInput.dataset.journeyNoteNameInput = note.key;
+  nameCell.append(nameInput);
+
+  const typeCell = createElement("td");
+  const typeSelect = createNoteTypeSelect(note.typeKey, fieldsDisabled);
+  typeSelect.dataset.journeyNoteTypeSelect = note.key;
+  typeCell.append(typeSelect);
+
+  row.append(
+    nameCell,
+    typeCell,
+    createElement("td", { text: noteOwnerLabel(note) }),
+    ...createSummaryCountCells(note),
+    createNoteActions([
+      createNoteActionButton("Save", "journeySaveNote", note.key, {
+        primary: true,
+        disabled: fieldsDisabled,
+        title: systemNote ? "System-created notes only allow status changes in their item rows" : "Save note",
+      }),
+      createNoteActionButton("Cancel", "journeyCancelNoteEdit", note.key),
+      createNoteActionButton("Delete", "journeyDeleteNote", note.key, {
+        disabled: editingDisabled || systemNote,
+        title: systemNote ? "System-created notes cannot be deleted" : "Delete note",
+      }),
+    ]),
+  );
+  return row;
+}
+
+function createSummaryTreeRow(note, editingDisabled) {
+  const row = createElement("tr");
+  const cell = createElement("td");
+  const treeHost = createElement("div");
+  row.dataset.journeyNoteTreeRow = note?.key || "new-note";
+  cell.colSpan = SUMMARY_TABLE_COLUMN_COUNT;
+  treeHost.dataset.journeyItemTree = note?.key || "";
+  cell.append(treeHost);
+  row.append(cell);
+  renderItemTree(note, editingDisabled, treeHost);
+  return row;
+}
+
+function renderSummary(notes, displayNote, editingDisabled, noteWriteDisabled = editingDisabled) {
   summaryBody.innerHTML = "";
+  itemTree = null;
   updateSortHeaders();
+
+  if (addNoteRowOpen) {
+    summaryBody.append(createSummaryAddRow(noteWriteDisabled), createSummaryTreeRow(null, editingDisabled));
+  }
 
   if (!notes.length) {
     const row = createElement("tr");
     const cell = createElement("td", {
       text: "No notes match the current Game Journey filter.",
     });
-    cell.colSpan = 11;
+    cell.colSpan = SUMMARY_TABLE_COLUMN_COUNT;
     row.append(cell);
     summaryBody.append(row);
     return;
   }
 
   sortSummaryNotes(notes).forEach((note) => {
-    const row = createElement("tr");
-    const nameCell = createElement("td");
-    const selected = selectedSummaryNoteKey === note.key;
-    const noteButton = createElement("button", {
-      className: selected ? "btn btn--compact primary" : "btn btn--compact",
-      text: note.name,
-    });
-    noteButton.type = "button";
-    noteButton.dataset.journeyNoteButton = note.key;
-    noteButton.setAttribute("aria-pressed", String(selected));
-    if (selected) {
-      noteButton.setAttribute("aria-current", "true");
-    }
-    nameCell.append(noteButton);
-    row.append(
-      nameCell,
-      createElement("td", { text: note.type?.name || "Unknown" }),
-      createElement("td", { text: String(note.counts["not-started"]) }),
-      createElement("td", { text: String(note.counts.blocker) }),
-      createElement("td", { text: String(note.counts.decide) }),
-      createElement("td", { text: String(note.counts["in-progress"]) }),
-      createElement("td", { text: String(note.counts.complete) }),
-      createElement("td", { text: String(note.counts.skipped) }),
-      createElement("td", { text: String(note.counts.open) }),
-      createElement("td", { text: String(note.counts.total) }),
-      createElement("td", { text: formatDate(note.updatedAt) }),
-    );
+    const editing = editingNoteKey === note.key;
+    const row = editing
+      ? createSummaryEditRow(note, noteWriteDisabled)
+      : createSummaryNoteRow(note, noteWriteDisabled);
     summaryBody.append(row);
+
+    const shouldRenderTree =
+      !addNoteRowOpen &&
+      (editing || (!editingNoteKey && selectedSummaryNoteKey === note.key));
+    if (shouldRenderTree) {
+      summaryBody.append(createSummaryTreeRow(displayNote?.key === note.key ? displayNote : note, editingDisabled));
+    }
   });
 }
 
@@ -458,7 +657,6 @@ function makeSelectedItemDetails(item, editingDisabled) {
   const details = createElement("div", {
     className: "content-stack content-stack--compact",
   });
-  details.dataset.journeySelectedItemDetails = item.key;
 
   if (isSystemItem(item)) {
     const guidance = createElement("div", {
@@ -504,53 +702,78 @@ function makeSelectedItemDetails(item, editingDisabled) {
   return details;
 }
 
-function renderItemTree(note, editingDisabled) {
-  itemTree.innerHTML = "";
+function renderItemTree(note, editingDisabled, target = itemTree) {
+  itemTree = target;
+  if (!target) {
+    return;
+  }
+  target.innerHTML = "";
+  const wrapper = createElement("div", {
+    className: "table-wrapper",
+  });
+  const table = createElement("table", {
+    className: "data-table data-table--fixed",
+  });
+  table.setAttribute("aria-label", "Selected note item subtable");
+  const head = createElement("thead");
+  const headRow = createElement("tr");
+  ["Item", "Status", "Details", "Actions"].forEach((label) => {
+    const header = createElement("th", { text: label });
+    header.scope = "col";
+    headRow.append(header);
+  });
+  head.append(headRow);
+  const body = createElement("tbody");
 
   if (!note || !note.items.length) {
-    itemTree.append(createElement("p", { text: "No journey items yet." }));
+    const emptyRow = createElement("tr");
+    const emptyCell = createElement("td", { text: "No journey items yet." });
+    emptyCell.colSpan = 4;
+    emptyRow.append(emptyCell);
+    body.append(emptyRow);
+    table.append(head, body);
+    wrapper.append(table);
+    target.append(wrapper);
     return;
   }
 
   const selectedItem = getSelectedItem();
-  const root = createElement("ul", {
-    className: "tool-tree--compact",
-  });
-  root.setAttribute("role", "tree");
-  const lists = [root];
-  const lastItems = [];
 
   note.items.forEach((item) => {
-    let indent = Math.max(0, Math.min(Number(item.indent) || 0, 4));
-    if (indent > lastItems.length) {
-      indent = lastItems.length;
+    const itemRow = createElement("tr");
+    const itemCell = createElement("td");
+    const statusCell = createElement("td", { text: createStatusText(item.status) });
+    const detailsCell = createElement("td", { text: item.userDetails || "-" });
+    const actionCell = createElement("td");
+    const actionGroup = createElement("div", {
+      className: "action-group",
+    });
+    actionGroup.setAttribute("aria-label", "Journey item row actions");
+    itemRow.dataset.journeyItemRow = item.key;
+    itemCell.dataset.journeyItemIndent = String(Math.max(0, Math.min(Number(item.indent) || 0, 4)));
+    itemCell.append(makeItemButton(item));
+    if (isUserItem(item)) {
+      actionGroup.append(createDeleteItemButton(item));
+    } else {
+      actionGroup.append(createSystemItemIndicator());
     }
-
-    while (lists.length > indent + 1) {
-      lists.pop();
-      lastItems.pop();
-    }
-
-    if (indent > 0 && !lists[indent]) {
-      const parent = lastItems[indent - 1];
-      if (parent) {
-        const childList = createElement("ul");
-        parent.append(childList);
-        lists[indent] = childList;
-      }
-    }
-
-    const itemElement = createElement("li");
-    itemElement.setAttribute("role", "treeitem");
-    itemElement.append(makeItemRowContent(item));
+    actionCell.append(actionGroup);
+    itemRow.append(itemCell, statusCell, detailsCell, actionCell);
+    body.append(itemRow);
     if (selectedItem?.key === item.key) {
-      itemElement.append(makeSelectedItemDetails(item, editingDisabled));
+      const detailsRow = createElement("tr");
+      const detailsRowCell = createElement("td");
+      detailsRow.dataset.journeySelectedItemDetails = item.key;
+      detailsRowCell.colSpan = 4;
+      detailsRowCell.append(makeSelectedItemDetails(item, editingDisabled));
+      detailsRow.append(detailsRowCell);
+      body.append(detailsRow);
     }
-    lists[indent].append(itemElement);
-    lastItems[indent] = itemElement;
   });
 
-  itemTree.append(root);
+  table.append(head, body);
+  wrapper.append(table);
+  target.append(wrapper);
 }
 
 function renderEditor(editingDisabled, note) {
@@ -970,6 +1193,10 @@ function sessionUserCanWrite() {
   return Boolean(repository.getSessionUser().userKey);
 }
 
+function isRepositoryErrorResult(result) {
+  return Boolean(result && typeof result === "object" && result.error === true);
+}
+
 function redirectGuestWriteAction(statusTarget) {
   if (sessionUserCanWrite()) {
     return false;
@@ -1211,17 +1438,21 @@ function render() {
   activeGameMessage.textContent = activeGame
     ? `Active game: ${activeGame.name}.`
     : "No active game is open. Editing actions are disabled.";
-  selectedNoteMessage.textContent = note
-    ? `${note.name} (${note.type?.name || "Unknown"})`
-    : "Choose a note from the summary table.";
+  if (selectedNoteMessage) {
+    selectedNoteMessage.textContent = note
+      ? `${note.name} (${note.type?.name || "Unknown"})`
+      : "Choose a note from the summary table.";
+  }
+  if (editingNoteKey && !notes.some((item) => item.key === editingNoteKey)) {
+    editingNoteKey = "";
+  }
 
   setEditingDisabled(editingDisabled);
   setGameScopedControlsDisabled(gameControlsDisabled);
   setGameWriteControlsDisabled(gameWriteControlsDisabled);
   updateFilterButtons();
   renderNoteTypeOptions(note);
-  renderSummary(notes);
-  renderItemTree(displayNote, editingDisabled);
+  renderSummary(notes, displayNote, editingDisabled, gameWriteControlsDisabled);
   renderEditor(editingDisabled, displayNote);
   enableGuestSignInWriteActions(activeGame, canWrite);
   renderStatScope(selectedStatsNote, notes);
@@ -1262,20 +1493,6 @@ sortButtons.forEach((button) => {
 });
 
 summaryBody.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-journey-note-button]");
-  if (!button) {
-    return;
-  }
-  selectedSummaryNoteKey = button.dataset.journeyNoteButton;
-  if (!currentSearchQuery()) {
-    selectedSummaryNoteKeyBeforeSearch = selectedSummaryNoteKey;
-    searchSelectionSnapshotTaken = false;
-  }
-  repository.selectNote(selectedSummaryNoteKey);
-  render();
-});
-
-itemTree.addEventListener("click", (event) => {
   const deleteButton = event.target.closest("[data-journey-delete-item]");
   if (deleteButton) {
     event.preventDefault();
@@ -1288,15 +1505,141 @@ itemTree.addEventListener("click", (event) => {
     return;
   }
 
-  const button = event.target.closest("[data-journey-item-button]");
-  if (!button) {
+  const saveNewNoteButton = event.target.closest("[data-journey-save-new-note]");
+  if (saveNewNoteButton) {
+    event.preventDefault();
+    if (redirectGuestWriteAction(noteStatus)) {
+      return;
+    }
+    const row = saveNewNoteButton.closest("[data-journey-add-note-row]");
+    const nameInput = row?.querySelector("[data-journey-new-note-name]");
+    const typeSelect = row?.querySelector("[data-journey-new-note-type]");
+    const note = repository.addNote({
+      name: nameInput?.value || "",
+      typeKey: typeSelect?.value || "",
+    });
+    if (!note || isRepositoryErrorResult(note)) {
+      if (noteStatus) {
+        noteStatus.textContent = note?.message || (sessionUserCanWrite()
+          ? "Open a game before adding a Game Journey note."
+          : "Log in as a user before adding a Game Journey note.");
+      }
+      return;
+    }
+    activeFilter = "all";
+    addNoteRowOpen = false;
+    editingNoteKey = "";
+    selectedSummaryNoteKey = note.key;
+    selectedSummaryNoteKeyBeforeSearch = note.key;
+    preferredNewNoteTypeKey = note.typeKey;
+    if (noteStatus) {
+      noteStatus.textContent = `Added ${note.name} to the summary table.`;
+    }
+    render();
     return;
   }
-  repository.selectItem(button.dataset.journeyItemButton);
+
+  const cancelNewNoteButton = event.target.closest("[data-journey-cancel-new-note]");
+  if (cancelNewNoteButton) {
+    event.preventDefault();
+    addNoteRowOpen = false;
+    render();
+    return;
+  }
+
+  const editNoteButton = event.target.closest("[data-journey-edit-note]");
+  if (editNoteButton) {
+    event.preventDefault();
+    addNoteRowOpen = false;
+    editingNoteKey = editNoteButton.dataset.journeyEditNote;
+    selectedSummaryNoteKey = editingNoteKey;
+    selectedSummaryNoteKeyBeforeSearch = editingNoteKey;
+    repository.selectNote(editingNoteKey);
+    render();
+    return;
+  }
+
+  const saveNoteButton = event.target.closest("[data-journey-save-note]");
+  if (saveNoteButton) {
+    event.preventDefault();
+    if (redirectGuestWriteAction(noteStatus)) {
+      return;
+    }
+    const row = saveNoteButton.closest("[data-journey-edit-note-row]");
+    const note = repository.updateNote(saveNoteButton.dataset.journeySaveNote, {
+      name: row?.querySelector("[data-journey-note-name-input]")?.value || "",
+      typeKey: row?.querySelector("[data-journey-note-type-select]")?.value || "",
+    });
+    if (note && !isRepositoryErrorResult(note)) {
+      selectedSummaryNoteKey = note.key;
+      selectedSummaryNoteKeyBeforeSearch = note.key;
+      if (noteStatus) {
+        noteStatus.textContent = `Saved ${note.name} in the summary table.`;
+      }
+    } else if (noteStatus) {
+      noteStatus.textContent = note?.message || "The selected note could not be saved.";
+    }
+    editingNoteKey = "";
+    render();
+    return;
+  }
+
+  const cancelNoteEditButton = event.target.closest("[data-journey-cancel-note-edit]");
+  if (cancelNoteEditButton) {
+    event.preventDefault();
+    editingNoteKey = "";
+    render();
+    return;
+  }
+
+  const deleteNoteButton = event.target.closest("[data-journey-delete-note]");
+  if (deleteNoteButton) {
+    event.preventDefault();
+    if (!window.confirm(DELETE_CONFIRMATION_MESSAGE)) {
+      return;
+    }
+    const result = repository.deleteNote(deleteNoteButton.dataset.journeyDeleteNote);
+    if (isRepositoryErrorResult(result)) {
+      if (noteStatus) {
+        noteStatus.textContent = result.message || "The selected note could not be deleted.";
+      }
+      return;
+    }
+    if (result?.selectedNoteKey !== undefined) {
+      selectedSummaryNoteKey = result.selectedNoteKey;
+      selectedSummaryNoteKeyBeforeSearch = result.selectedNoteKey;
+    }
+    editingNoteKey = "";
+    if (noteStatus && result?.reason) {
+      noteStatus.textContent = result.reason;
+    }
+    render();
+    return;
+  }
+
+  const itemButton = event.target.closest("[data-journey-item-button]");
+  if (itemButton) {
+    repository.selectItem(itemButton.dataset.journeyItemButton);
+    render();
+    return;
+  }
+
+  const noteButton = event.target.closest("[data-journey-note-button]");
+  if (!noteButton) {
+    return;
+  }
+  addNoteRowOpen = false;
+  editingNoteKey = "";
+  selectedSummaryNoteKey = noteButton.dataset.journeyNoteButton;
+  if (!currentSearchQuery()) {
+    selectedSummaryNoteKeyBeforeSearch = selectedSummaryNoteKey;
+    searchSelectionSnapshotTaken = false;
+  }
+  repository.selectNote(selectedSummaryNoteKey);
   render();
 });
 
-itemTree.addEventListener("input", (event) => {
+summaryBody.addEventListener("input", (event) => {
   const detailsInput = event.target.closest("[data-journey-item-details-input]");
   if (!detailsInput) {
     return;
@@ -1341,7 +1684,7 @@ editorForm.addEventListener("submit", (event) => {
     return;
   }
 
-  const detailsInput = itemTree.querySelector("[data-journey-item-details-input]");
+  const detailsInput = itemTree?.querySelector("[data-journey-item-details-input]");
   repository.updateItem(selectedItem.key, {
     title: titleInput.value,
     status: statusInput.value,
@@ -1425,39 +1768,24 @@ recommendedTargets?.addEventListener("input", (event) => {
   }
 });
 
-addNoteButton.addEventListener("click", () => {
+addNoteButton?.addEventListener("click", () => {
   if (redirectGuestWriteAction(noteStatus)) {
     return;
   }
-  const note = repository.addNote({
-    name: newNoteNameInput.value,
-    typeKey: newNoteTypeSelect.value,
-  });
-  if (!note) {
-    if (noteStatus) {
-      noteStatus.textContent = sessionUserCanWrite()
-        ? "Open a game before adding a Game Journey note."
-        : "Log in as a user before adding a Game Journey note.";
-    }
-    return;
-  }
-  activeFilter = "all";
-  selectedSummaryNoteKey = note.key;
-  selectedSummaryNoteKeyBeforeSearch = note.key;
-  preferredNewNoteTypeKey = note.typeKey;
-  newNoteNameInput.value = "";
+  addNoteRowOpen = true;
+  editingNoteKey = "";
   if (noteStatus) {
-    noteStatus.textContent = `Added ${note.name} to the summary table.`;
+    noteStatus.textContent = "Add the new note in the inline summary table row.";
   }
   render();
 });
 
-noteTypeSelect.addEventListener("change", () => {
+noteTypeSelect?.addEventListener("change", () => {
   repository.updateSelectedNoteType(noteTypeSelect.value);
   render();
 });
 
-addTypeButton.addEventListener("click", () => {
+addTypeButton?.addEventListener("click", () => {
   if (redirectGuestWriteAction(typeStatus)) {
     return;
   }

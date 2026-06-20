@@ -48,15 +48,6 @@
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
-                                <summary>Add Note</summary>
-                                <div class="accordion-body content-stack">
-                                    <label for="journeyNewNoteName">Note Name <input id="journeyNewNoteName" type="text" placeholder="Playtest follow-ups" data-journey-new-note-name></label>
-                                    <label for="journeyNewNoteType">Type <select id="journeyNewNoteType" data-journey-new-note-type></select></label>
-                                    <button class="btn primary" type="button" data-journey-add-note>Add Note</button>
-                                    <div class="status" role="status" data-journey-note-status>Add a game-scoped note to the summary table.</div>
-                                </div>
-                            </details>
-                            <details class="vertical-accordion" open>
                                 <summary>Selected Item Editor</summary>
                                 <div class="accordion-body content-stack">
                                     <form class="content-stack content-stack--compact" data-journey-editor-form>
@@ -92,16 +83,6 @@
                                     </form>
                                 </div>
                             </details>
-                            <details class="vertical-accordion" open>
-                                <summary>Selected Note Metadata</summary>
-                                <div class="accordion-body content-stack">
-                                    <p>Seeded defaults stay extensible in the Game Journey mock data.</p>
-                                    <label for="journeyNoteTypeSelect">Type <select id="journeyNoteTypeSelect" data-journey-note-type-select></select></label>
-                                    <label for="journeyTypeInput">Add Note Type <input id="journeyTypeInput" type="text" placeholder="Playtest" data-journey-type-input></label>
-                                    <button class="btn" type="button" data-journey-add-type>Add Note Type</button>
-                                    <div class="status" role="status" data-journey-type-status>Default types ready.</div>
-                                </div>
-                            </details>
                         </div>
                     </aside>
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="game-journey" data-tool-icon-src="assets/theme-v2/images/badges/index.png" data-tool-character-src="assets/theme-v2/images/characters/index.png"></div>
@@ -118,6 +99,7 @@
                                                 <tr>
                                                     <th scope="col" data-journey-sort-header="name"><button class="btn btn--compact" type="button" data-journey-sort="name">Name</button></th>
                                                     <th scope="col" data-journey-sort-header="type"><button class="btn btn--compact" type="button" data-journey-sort="type">Type</button></th>
+                                                    <th scope="col">Owner</th>
                                                     <th scope="col" data-journey-sort-header="not-started"><button class="btn btn--compact" type="button" data-journey-sort="not-started">⬜</button></th>
                                                     <th scope="col" data-journey-sort-header="blocker"><button class="btn btn--compact" type="button" data-journey-sort="blocker">⛔</button></th>
                                                     <th scope="col" data-journey-sort-header="decide"><button class="btn btn--compact" type="button" data-journey-sort="decide">❓</button></th>
@@ -127,20 +109,25 @@
                                                     <th scope="col" data-journey-sort-header="open"><button class="btn btn--compact" type="button" data-journey-sort="open">Open</button></th>
                                                     <th scope="col" data-journey-sort-header="total"><button class="btn btn--compact" type="button" data-journey-sort="total">Total</button></th>
                                                     <th scope="col" data-journey-sort-header="updated"><button class="btn btn--compact" type="button" data-journey-sort="updated">Updated</button></th>
+                                                    <th scope="col">Actions</th>
                                                 </tr>
                                             </thead>
                                             <tbody data-journey-summary-body>
-                                                <tr><td colspan="11">Loading notes.</td></tr>
+                                                <tr><td colspan="13">Loading notes.</td></tr>
                                             </tbody>
                                         </table>
                                     </div>
-                                </div>
-                            </details>
-                            <details class="vertical-accordion" open>
-                                <summary>Note Tree</summary>
-                                <div class="accordion-body content-stack">
-                                    <div class="status" role="status" data-journey-selected-note>Choose a note from the summary table.</div>
-                                    <div data-journey-item-tree></div>
+                                    <div class="content-stack content-stack--compact">
+                                        <div class="action-group" role="group" aria-label="Game Journey note controls">
+                                            <button class="btn primary" type="button" data-journey-add-note>Add Note</button>
+                                        </div>
+                                        <div class="action-group" role="group" aria-label="Game Journey note type controls">
+                                            <label for="journeyTypeInput">Add Note Type <input id="journeyTypeInput" type="text" placeholder="Playtest" data-journey-type-input></label>
+                                            <button class="btn" type="button" data-journey-add-type>Add Note Type</button>
+                                        </div>
+                                        <div class="status" role="status" data-journey-note-status>Add a game-scoped note to the summary table.</div>
+                                        <div class="status" role="status" data-journey-type-status>Default types ready.</div>
+                                    </div>
                                 </div>
                             </details>
                         </div>

@@ -1634,6 +1634,16 @@ UI consistency validation expectations:
 - accordion controls must open, close, preserve state when expected, and expose no dead accordion behavior
 - dead accordion enforcement is mandatory for tool completion and recovery/UAT lanes
 
+### Summary Table / Notes Table Governance
+
+For tools that present Summary Table or Notes Table note-management surfaces:
+- Add Note controls belong below the table.
+- Clicking Add Note opens an inline input row inside the table.
+- Tables with notes must include Edit and Delete actions on the right.
+- System-created notes cannot be deleted.
+- System-created notes may only have status changed when the tool explicitly allows status editing.
+- Selected Note Metadata must be shown as table columns, not as a separate detached panel.
+
 ## INPUT RESOLUTION RULES
 
 - Discover real files and directories.

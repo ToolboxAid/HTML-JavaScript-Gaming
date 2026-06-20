@@ -1638,6 +1638,24 @@ const GAME_WORKSPACE_SAVE_METHODS = new Set([
   "updateGameStatus",
 ]);
 
+const GAME_JOURNEY_TOOL_STORE_METHODS = new Set([
+  "addItem",
+  "addNote",
+  "addNoteType",
+  "applySystemItemUpdate",
+  "changeSelectedIndent",
+  "deleteItem",
+  "deleteNote",
+  "injectTemplateDiagnostics",
+  "moveSelectedItem",
+  "selectItem",
+  "selectNote",
+  "updateItem",
+  "updateNote",
+  "updateRecommendedTarget",
+  "updateSelectedNoteType",
+]);
+
 function assertRepositoryMethodResult(repositoryId, methodName, result) {
   if (result === undefined) {
     throw repositoryMethodError(`Server repository ${repositoryId}.${methodName} returned no result. Restore the server API contract for ${methodName}.`);
@@ -5207,7 +5225,7 @@ LIMIT 1;
     const result = await method(...args);
     assertRepositoryMethodResult(repositoryId, methodName, result);
     const methodPersistsThroughToolStore =
-      repository === this.gameJourneyRepository && methodName === "updateRecommendedTarget";
+      repository === this.gameJourneyRepository && GAME_JOURNEY_TOOL_STORE_METHODS.has(methodName);
     if (repositoryMethodRequiresPersistence(methodName) && !methodPersistsThroughToolStore) {
       if (repository === this.gameWorkspaceRepository) {
         await this.persistGameWorkspaceProviderState(`Persisting ${methodName} result`);

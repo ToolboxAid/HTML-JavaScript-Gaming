@@ -37,6 +37,10 @@ test.afterAll(async () => {
 
 async function openRepoPage(page, pathName, options = {}) {
   const server = await startRepoServer();
+  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
+  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
   const collectCoverage = options.collectCoverage !== false;
   const sessionUserKey = options.sessionUserKey === undefined ? MOCK_DB_KEYS.users.user1 : options.sessionUserKey;
   const failedRequests = [];
@@ -74,7 +78,7 @@ async function openRepoPage(page, pathName, options = {}) {
     method: "POST",
   });
   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
-  return { consoleErrors, failedRequests, pageErrors, server };
+  return { consoleErrors, failedRequests, pageErrors, previousApiUrl, previousSiteUrl, server };
 }
 
 async function fetchApiData(server, pathName, options = {}) {
@@ -346,7 +350,81 @@ test("Game Journey progress dashboard summarizes completion metrics", async ({ p
 async function closeWithCoverage(page, failures) {
   await workspaceV2CoverageReporter.stop(page);
   await failures.server.close();
+  restoreEnvValue("GAMEFOUNDRY_API_URL", failures.previousApiUrl);
+  restoreEnvValue("GAMEFOUNDRY_SITE_URL", failures.previousSiteUrl);
 }
+
+test("Game Journey summary table uses inline notes and item subtables", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/game-journey/index.html?game=demo-game");
+
+  try {
+    await expect(page.locator("details > summary", { hasText: /^Add Note$/ })).toHaveCount(0);
+    await expect(page.locator("details > summary", { hasText: /^Selected Note Metadata$/ })).toHaveCount(0);
+    await expect(page.locator("details > summary", { hasText: /^Note Tree$/ })).toHaveCount(0);
+    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+
+    const summaryTable = page.locator("[data-journey-summary-table]");
+    await expect(summaryTable).toBeVisible();
+    const headers = await summaryTable.locator("thead th").evaluateAll((cells) =>
+      cells.map((cell) => cell.textContent.trim().replace(/\s+/g, " ")),
+    );
+    expect(headers).toEqual(expect.arrayContaining(["Name", "Type", "Owner", "Actions"]));
+    expect(headers.at(-1)).toBe("Actions");
+
+    const addNoteButton = page.locator("[data-journey-add-note]");
+    await expect(addNoteButton).toBeVisible();
+    const addNoteBelowTable = await addNoteButton.evaluate((button) => {
+      const table = document.querySelector("[data-journey-summary-table]");
+      return Boolean(table && table.compareDocumentPosition(button) & Node.DOCUMENT_POSITION_FOLLOWING);
+    });
+    expect(addNoteBelowTable).toBe(true);
+
+    const systemRow = page.locator(`[data-journey-summary-note-row="${GAME_JOURNEY_KEYS.notes.designPass}"]`);
+    await expect(systemRow.locator("td").nth(2)).toHaveText("System-created");
+    await expect(systemRow.locator("[data-journey-delete-note]")).toBeDisabled();
+    await systemRow.locator("[data-journey-edit-note]").click();
+    const systemEditRow = page.locator(`[data-journey-edit-note-row="${GAME_JOURNEY_KEYS.notes.designPass}"]`);
+    await expect(systemEditRow.locator("[data-journey-note-name-input]")).toBeDisabled();
+    await expect(systemEditRow.locator("[data-journey-note-type-select]")).toBeDisabled();
+    await expect(page.locator(`[data-journey-note-tree-row="${GAME_JOURNEY_KEYS.notes.designPass}"] > td > [data-journey-item-tree] > .table-wrapper > table`)).toHaveAttribute("aria-label", "Selected note item subtable");
+
+    await addNoteButton.click();
+    const addRow = page.locator("[data-journey-add-note-row]");
+    await expect(addRow).toBeVisible();
+    await expect(page.locator("[data-journey-note-tree-row='new-note'] > td > [data-journey-item-tree] > .table-wrapper > table")).toHaveAttribute("aria-label", "Selected note item subtable");
+    await addRow.locator("[data-journey-new-note-name]").fill("Usability Audit");
+    await addRow.locator("[data-journey-new-note-type]").selectOption(GAME_JOURNEY_KEYS.noteTypes.task);
+    await addRow.locator("[data-journey-save-new-note]").click();
+    await expect(page.locator("[data-journey-note-status]")).toContainText("Added Usability Audit");
+
+    const userRow = page.locator("[data-journey-summary-note-row]", { hasText: "Usability Audit" });
+    await expect(userRow.locator("td").nth(1)).toHaveText("Task");
+    await expect(userRow.locator("td").nth(2)).toHaveText("You");
+    await expect(userRow.locator("td").last()).toContainText("Edit");
+    await expect(userRow.locator("td").last()).toContainText("Delete");
+    await expect(userRow.locator("[data-journey-delete-note]")).toBeEnabled();
+
+    await userRow.locator("[data-journey-edit-note]").click();
+    const userEditRow = page.locator("[data-journey-edit-note-row]", { hasText: "Task" });
+    await expect(userEditRow.locator("[data-journey-note-name-input]")).toHaveValue("Usability Audit");
+    await userEditRow.locator("[data-journey-note-name-input]").fill("Usability Audit Updated");
+    await userEditRow.locator("[data-journey-save-note]").click();
+    await expect(page.locator("[data-journey-note-status]")).toContainText("Saved Usability Audit Updated");
+    await expect(page.locator("[data-journey-summary-note-row]", { hasText: "Usability Audit Updated" })).toBeVisible();
+
+    page.once("dialog", (dialog) => dialog.accept());
+    await page.locator("[data-journey-summary-note-row]", { hasText: "Usability Audit Updated" }).locator("[data-journey-delete-note]").click();
+    await expect(page.locator("[data-journey-note-status]")).toHaveText("Deleted user-created note.");
+    await expect(page.locator("[data-journey-summary-body]")).not.toContainText("Usability Audit Updated");
+
+    await expect(page.locator("[data-journey-progress-dashboard]")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "What To Do Next" })).toBeVisible();
+    await expect(page.locator("[data-journey-recommended-target='heroes']")).toBeVisible();
+    await expectNoPageFailures(failures);
+  } finally {
+    await closeWithCoverage(page, failures);
+  }
+});
 
 test("Game Journey edits rows and updates note summary counts live", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/game-journey/index.html?game=demo-game");

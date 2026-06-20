@@ -905,6 +905,23 @@ export function createGameJourneyMockRepository(options = {}) {
     return getItemsForNoteFilter(note.key, filterId).length > 0;
   }
 
+  function isSystemNote(note) {
+    return Boolean(note && getItemsForNote(note.key).some(isSystemItem));
+  }
+
+  function hydrateNote(note, filterId = "all") {
+    const items = getItemsForNoteFilter(note.key, filterId);
+    return {
+      ...clone(note),
+      systemCreated: isSystemNote(note),
+      type: clone(
+        tables.game_journey_note_types.find((type) => type.key === note.typeKey),
+      ),
+      counts: getNoteCounts(note.key, filterId),
+      items: items.map(hydrateItem),
+    };
+  }
+
   function listNotes(filterId = "all") {
     const activeGame = requireActiveGame();
     if (!activeGame) {
@@ -915,17 +932,7 @@ export function createGameJourneyMockRepository(options = {}) {
       .filter((note) => note.gameKey === activeGame.key)
       .filter(currentUserCanSeeNote)
       .filter((note) => noteMatchesFilter(note, filterId))
-      .map((note) => {
-        const items = getItemsForNoteFilter(note.key, filterId);
-        return {
-          ...clone(note),
-          type: clone(
-            tables.game_journey_note_types.find((type) => type.key === note.typeKey),
-          ),
-          counts: getNoteCounts(note.key, filterId),
-          items: items.map(hydrateItem),
-        };
-      })
+      .map((note) => hydrateNote(note, filterId))
       .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt));
   }
 
@@ -983,14 +990,7 @@ export function createGameJourneyMockRepository(options = {}) {
       selectedItemKey = getItemsForNote(note.key)[0]?.key || "";
     }
 
-    return {
-      ...clone(note),
-      type: clone(
-        tables.game_journey_note_types.find((type) => type.key === note.typeKey),
-      ),
-      counts: getNoteCounts(note.key),
-      items: getItemsForNote(note.key).map(hydrateItem),
-    };
+    return hydrateNote(note);
   }
 
   function selectNote(noteKey) {
@@ -1177,6 +1177,72 @@ export function createGameJourneyMockRepository(options = {}) {
     return updateItem(item.key, { indent: item.indent + delta });
   }
 
+  function updateNote(noteKey, updates = {}) {
+    const activeGame = requireActiveGame();
+    const note = tables.game_journey_notes.find(
+      (candidate) => candidate.key === noteKey && candidate.gameKey === activeGame?.key && currentUserCanSeeNote(candidate),
+    );
+    const selectedType = tables.game_journey_note_types.find((type) => type.key === updates.typeKey);
+    if (!activeGame || !note || !currentUserCanWrite()) {
+      return null;
+    }
+
+    selectedNoteKey = note.key;
+    if (isSystemNote(note)) {
+      return getSelectedNote();
+    }
+
+    if (typeof updates.name === "string") {
+      note.name = updates.name.trim() || note.name;
+    }
+    if (selectedType) {
+      note.typeKey = selectedType.key;
+    }
+
+    touchNote(note.key);
+    addActivity(activeGame.key, note.key, `Updated note ${note.name}`);
+    persistTables();
+    return getSelectedNote();
+  }
+
+  function deleteNote(noteKey) {
+    const activeGame = requireActiveGame();
+    const note = tables.game_journey_notes.find(
+      (candidate) => candidate.key === noteKey && candidate.gameKey === activeGame?.key && currentUserCanSeeNote(candidate),
+    );
+    if (!activeGame || !note || !currentUserCanWrite()) {
+      return {
+        deleted: false,
+        reason: "No journey note is selected for deletion.",
+        selectedNoteKey,
+      };
+    }
+
+    if (isSystemNote(note)) {
+      selectedNoteKey = note.key;
+      return {
+        deleted: false,
+        reason: "System-created notes cannot be deleted.",
+        note: getSelectedNote(),
+        selectedNoteKey,
+      };
+    }
+
+    tables.game_journey_items = tables.game_journey_items.filter((item) => item.noteKey !== note.key);
+    tables.game_journey_notes = tables.game_journey_notes.filter((candidate) => candidate.key !== note.key);
+    const nextNote = tables.game_journey_notes.find(
+      (candidate) => candidate.gameKey === activeGame.key && currentUserCanSeeNote(candidate),
+    );
+    selectedNoteKey = nextNote?.key || "";
+    selectedItemKey = selectedNoteKey ? getItemsForNote(selectedNoteKey)[0]?.key || "" : "";
+    persistTables();
+    return {
+      deleted: true,
+      reason: "Deleted user-created note.",
+      selectedNoteKey,
+    };
+  }
+
   function updateSelectedNoteType(typeKey) {
     const activeGame = requireActiveGame();
     const note = tables.game_journey_notes.find((item) => item.key === selectedNoteKey && currentUserCanSeeNote(item));
@@ -1347,6 +1413,8 @@ export function createGameJourneyMockRepository(options = {}) {
     listNoteTypes: () => clone(tables.game_journey_note_types),
     addNoteType,
     addNote,
+    updateNote,
+    deleteNote,
     updateSelectedNoteType,
     listNotes,
     getSelectedNote,
