@@ -106,7 +106,45 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
 
     await expect(page.locator("[data-tts-voice-select]")).toContainText("Arcade Voice");
     await expect(page.locator("[data-tts-voice-count]")).toHaveText("2");
-    await expect(page.locator("[data-tts-engine-label]")).toHaveText("Ready");
+    await expect(page.locator("[data-tts-profile-count]")).toHaveText("3");
+    await expect(page.locator("[data-tts-emotion-count]")).toHaveText("3");
+    await expect(page.locator("[data-tts-profile-table]")).toContainText("Default Balanced Profile");
+    await expect(page.locator("[data-tts-profile-table]")).toContainText("Man Profile 1");
+    await expect(page.locator("[data-tts-profile-table]")).toContainText("Woman Profile 2");
+    await expect(page.locator("[data-tts-profile-row]").filter({ hasText: "Default Balanced Profile" }).getByRole("button", { name: "Delete" })).toBeDisabled();
+    await page.locator("[data-tts-profile-row]").filter({ hasText: "Default Balanced Profile" }).click();
+    await expect(page.getByRole("heading", { name: "Emotion Settings" })).toBeVisible();
+    await expect(page.getByRole("columnheader", { name: "Emotion", exact: true })).toBeVisible();
+    await expect(page.getByRole("columnheader", { name: "SSML-like Preset" })).toBeVisible();
+    await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Neutral" }).getByRole("button", { name: "Delete" })).toBeDisabled();
+
+    await page.getByRole("button", { name: "Add Profile" }).click();
+    await expect(page.locator("[data-tts-profile-editor='__new__']")).toBeVisible();
+    await page.locator("[data-tts-profile-editor='__new__'] [data-tts-profile-name]").fill("Creature Profile");
+    await page.locator("[data-tts-profile-editor='__new__'] [data-tts-profile-gender]").selectOption("neutral");
+    await page.locator("[data-tts-commit-profile='__new__']").click();
+    await expect(page.locator("[data-tts-status]")).toHaveText("Saved TTS profile: Creature Profile.");
+    await expect(page.locator("[data-tts-profile-table]")).toContainText("Creature Profile");
+    await page.locator("[data-tts-profile-row]").filter({ hasText: "Creature Profile" }).getByRole("button", { name: "Edit Profile" }).click();
+    await page.locator("[data-tts-profile-editor] [data-tts-profile-name]").fill("Creature Profile Updated");
+    await page.locator("[data-tts-profile-editor] [data-tts-commit-profile]").click();
+    await expect(page.locator("[data-tts-status]")).toHaveText("Saved TTS profile: Creature Profile Updated.");
+    await page.getByRole("button", { name: "Add Emotion" }).click();
+    await page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-name]").selectOption("urgent");
+    await page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-pitch]").fill("1.2");
+    await page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-rate]").fill("1.1");
+    await page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-volume]").fill("0.8");
+    await page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-ssml-preset]").selectOption("whisper-ish");
+    await page.locator("[data-tts-commit-emotion='__new__']").click();
+    await expect(page.locator("[data-tts-status]")).toHaveText("Saved emotion setting: Urgent.");
+    await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Urgent" })).toContainText("1.2");
+    await page.locator("[data-tts-emotion-row]").filter({ hasText: "Urgent" }).getByRole("button", { name: "Edit Emotion" }).click();
+    await page.locator("[data-tts-emotion-editor] [data-tts-emotion-volume]").fill("0.7");
+    await page.locator("[data-tts-emotion-editor] [data-tts-commit-emotion]").click();
+    await expect(page.locator("[data-tts-status]")).toHaveText("Saved emotion setting: Urgent.");
+    await expect(page.locator("[data-tts-output-summary]")).toContainText("\"contractVersion\": \"tts-profile-emotion-v1\"");
+    await expect(page.locator("[data-tts-output-summary]")).toContainText("\"name\": \"Creature Profile Updated\"");
+
     await expect(page.locator("[data-tts-gender-select]")).toBeVisible();
     await expect(page.locator("[data-tts-language-select]")).toBeVisible();
     await expect(page.locator("[data-tts-age-select]")).toBeVisible();
@@ -173,7 +211,7 @@ test("Text To Speech shows actionable error when browser speech synthesis is una
   const failures = await openTextToSpeechPage(page, { speechAvailable: false });
   try {
     await expect(page.getByRole("heading", { level: 1, name: "Text To Speech" })).toBeVisible();
-    await expect(page.locator("[data-tts-engine-label]")).toHaveText("Unavailable");
+    await expect(page.locator("[data-tts-profile-count]")).toHaveText("3");
     await expect(page.locator("[data-tts-engine-status]")).toContainText("SpeechSynthesis is unavailable");
     await expect(page.locator("[data-tts-status]")).toContainText("Use a browser with Web Speech API support");
     await expect(page.locator("[data-tts-voice-select]")).toContainText("No browser voices available");
