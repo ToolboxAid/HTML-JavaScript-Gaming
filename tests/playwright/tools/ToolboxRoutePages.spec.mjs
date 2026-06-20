@@ -138,6 +138,23 @@ async function expectIdeaChevron(page, ideaId, iconName) {
   expect(metrics.maskImage).toContain(iconName);
 }
 
+async function expectButtonLeftAligned(page, buttonSelector, containerSelector) {
+  const metrics = await page.locator(buttonSelector).evaluate((button, selector) => {
+    const container = button.ownerDocument.querySelector(selector);
+    const buttonRect = button.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
+    const containerStyles = getComputedStyle(container);
+    return {
+      buttonLeft: buttonRect.left,
+      containerLeft: containerRect.left,
+      containerWidth: containerRect.width,
+      expectedLeft: containerRect.left + Number.parseFloat(containerStyles.paddingLeft || "0"),
+    };
+  }, containerSelector);
+  expect(Math.abs(metrics.buttonLeft - metrics.expectedLeft)).toBeLessThanOrEqual(2);
+  expect(metrics.buttonLeft).toBeLessThan(metrics.containerLeft + metrics.containerWidth / 2);
+}
+
 test("tools route aliases render toolbox tool pages", async ({ page }) => {
   const server = await startRepoServer();
   const failedRequests = [];
@@ -249,6 +266,9 @@ test("Idea Board launches from Toolbox with accordion table notes model", async 
     await expect(page.locator("[data-idea-board-table] > thead th[scope='col']")).toHaveText(["Idea", "Pitch", "Status", "Updated", "Notes", "Actions"]);
     await expect(page.locator("[data-idea-board-idea-row]")).toHaveCount(3);
     await expect(page.locator("[data-idea-board-expanded-row]")).toHaveCount(0);
+    await expect(page.locator("[data-idea-board-add-idea]")).toHaveText("Add Idea");
+    await expectButtonLeftAligned(page, "[data-idea-board-add-idea]", "[data-idea-board-add-idea-row] > td");
+    await expect(page.getByText(/another/i)).toHaveCount(0);
     await expect(page.locator("[data-idea-board-notes-count='top-thoughts']")).toHaveText("3 Notes");
     await expect(page.locator("[data-idea-board-notes-count='sky-orchard']")).toHaveText("3 Notes");
     await expect(page.locator("[data-idea-board-notes-count='clockwork-courier']")).toHaveText("0 Notes");
@@ -268,6 +288,8 @@ test("Idea Board launches from Toolbox with accordion table notes model", async 
     await expect(page.getByText("Selected idea context")).toHaveCount(0);
     await expect(page.getByText("Selected")).toHaveCount(0);
     await expect(page.locator("[data-idea-board-add-note='top-thoughts']")).toBeVisible();
+    await expect(page.locator("[data-idea-board-add-note='top-thoughts']")).toHaveText("Add Note");
+    await expectButtonLeftAligned(page, "[data-idea-board-add-note='top-thoughts']", "[data-idea-board-expanded-row='top-thoughts'] > td");
     await expect(page.locator("[data-idea-board-create-project]")).toBeVisible();
     await expect(page.locator("[data-idea-board-create-project]")).toBeDisabled();
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);

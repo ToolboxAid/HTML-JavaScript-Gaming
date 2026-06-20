@@ -306,11 +306,8 @@ function renderExpandedNotesRow(tbody, record) {
 function renderAddIdeaRow(tbody) {
   const row = document.createElement("tr");
   row.dataset.ideaBoardAddIdeaRow = "true";
-  const prompt = document.createElement("td");
-  prompt.colSpan = 5;
-  prompt.textContent = "Add another idea";
-  row.append(prompt);
   const actions = document.createElement("td");
+  actions.colSpan = 6;
   const addIdea = actionButton("Add Idea", "add", "ideaBoardIdeaAction", "primary");
   addIdea.dataset.ideaBoardAddIdea = "true";
   actions.append(addIdea);
