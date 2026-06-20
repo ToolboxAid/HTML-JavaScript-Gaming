@@ -1660,6 +1660,81 @@ For tools that present Summary Table or Notes Table note-management surfaces:
 - System-created notes may only have status changed when the tool explicitly allows status editing.
 - Selected Note Metadata must be shown as table columns, not as a separate detached panel.
 
+## TABLE-FIRST WORKSPACE GOVERNANCE
+
+Primary tool work surfaces must be table-first unless a PR explicitly approves another interaction model.
+
+Rules:
+- The primary work surface is a table.
+- Prefer inline table workflows over forms.
+- No detached selected-item context panels.
+- No detached notes/detail panels when child rows can render under the parent row.
+- Parent name cells own accordion behavior.
+- The chevron appears inside the parent name cell.
+- The entire parent name cell toggles expansion.
+- Child count columns are informational only.
+- Only one parent row may be expanded at a time.
+- The default state is all collapsed.
+- Child rows are indented.
+- The child Add button aligns with child rows.
+- Metadata remains stored but hidden unless explicitly needed.
+- Add buttons are left aligned and self-describing.
+- Enumerated fields become dropdowns during edit mode.
+
+Parent/child table pattern examples:
+- Idea 1-* Notes
+- Character 1-* Dialog
+- Quest 1-* Objectives
+- Audio Profile 1-* Effects
+
+Visual examples:
+
+1. Default collapsed table.
+
+| Idea | Pitch | Status | Updated | Notes | Actions |
+| --- | --- | --- | --- | --- | --- |
+| > Sky Orchard | Grow floating islands... | Exploring | 2026-06-20 | 3 Notes | Edit Delete |
+| > Clockwork Courier | Deliver messages through looping city... | New | 2026-06-20 | 0 Notes | Edit Delete |
+| Add Idea | | | | | |
+
+2. Expanded parent with child rows indented.
+
+| Idea | Pitch | Status | Updated | Notes | Actions |
+| --- | --- | --- | --- | --- | --- |
+| v Sky Orchard | Grow floating islands... | Exploring | 2026-06-20 | 3 Notes | Edit Delete |
+|   Note | Actions | | | | |
+|   Wind test needs traversal risks. | Edit Delete | | | | |
+|   Island height should read from camera. | Edit Delete | | | | |
+|   Add Note | | | | | |
+
+3. Normal row with Edit/Delete.
+
+| Idea | Pitch | Status | Updated | Notes | Actions |
+| --- | --- | --- | --- | --- | --- |
+| > Sky Orchard | Grow floating islands... | Exploring | 2026-06-20 | 3 Notes | Edit Delete |
+
+4. Edit row with Save/Cancel and dropdown status.
+
+| Idea | Pitch | Status | Updated | Notes | Actions |
+| --- | --- | --- | --- | --- | --- |
+| [Sky Orchard] | [Grow floating islands...] | [Exploring v] | 2026-06-20 | 3 Notes | Save Cancel |
+
+5. Add row with Save/Cancel.
+
+| Idea | Pitch | Status | Updated | Notes | Actions |
+| --- | --- | --- | --- | --- | --- |
+| [New idea] | [Pitch] | [New v] | auto | 0 Notes | Save Cancel |
+
+Explicit row-state rules:
+- Normal row actions: Edit Delete.
+- Edit row actions: Save Cancel.
+- Add row actions: Save Cancel.
+- Save/Cancel is row-level only.
+- No page-level Save for normal row editing.
+- Cancel restores previous row state.
+- Save commits only the edited row.
+- Multiple simultaneous row edits are prohibited unless explicitly approved.
+
 ## INPUT RESOLUTION RULES
 
 - Discover real files and directories.
