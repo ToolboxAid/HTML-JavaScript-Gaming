@@ -269,13 +269,6 @@ function renderExpandedNotesRow(tbody, record) {
   const content = document.createElement("td");
   content.colSpan = 6;
 
-  const wrapper = document.createElement("div");
-  wrapper.className = "content-stack";
-  const heading = document.createElement("h3");
-  heading.textContent = "Notes";
-  heading.dataset.ideaBoardNotesHeader = record.ideaId;
-  wrapper.append(heading);
-
   const tableWrapper = document.createElement("div");
   tableWrapper.className = "table-wrapper";
   const notesTable = document.createElement("table");
@@ -288,7 +281,7 @@ function renderExpandedNotesRow(tbody, record) {
   notesBody.dataset.ideaBoardNotesBody = record.ideaId;
   notesTable.append(notesBody);
   tableWrapper.append(notesTable);
-  wrapper.append(tableWrapper);
+  content.append(tableWrapper);
 
   for (const note of notesForIdea(record.ideaId)) {
     if (state.editingNoteId === note.noteId) {
@@ -304,9 +297,8 @@ function renderExpandedNotesRow(tbody, record) {
   const addNote = actionButton("Add Note", "add", "ideaBoardNoteAction", "primary");
   addNote.dataset.ideaBoardAddNote = record.ideaId;
   controls.append(addNote);
-  wrapper.append(controls);
+  content.append(controls);
 
-  content.append(wrapper);
   row.append(content);
   tbody.append(row);
 }

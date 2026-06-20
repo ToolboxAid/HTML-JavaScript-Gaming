@@ -104,7 +104,10 @@ test("Idea Board uses DB-shaped accordion table ideas and notes", async ({ page 
     await page.locator("[data-idea-board-idea-cell='top-thoughts']").click();
     await expect(page.locator("[data-idea-board-expanded-row='top-thoughts']")).toBeVisible();
     await expectIdeaChevron(page, "top-thoughts", "gfs-chevron-up.svg");
-    await expect(page.locator("[data-idea-board-expanded-row='top-thoughts'] [data-idea-board-notes-header='top-thoughts']")).toHaveText("Notes");
+    await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] + [data-idea-board-expanded-row='top-thoughts']")).toHaveCount(1);
+    await expect(page.locator("[data-idea-board-expanded-row='top-thoughts'] [data-idea-board-notes-header]")).toHaveCount(0);
+    await expect(page.locator("[data-idea-board-expanded-row='top-thoughts'] :is(h1,h2,h3,h4,h5,h6)").filter({ hasText: /^Notes$/ })).toHaveCount(0);
+    await expect(page.locator("[data-idea-board-expanded-row='top-thoughts'] > td > .content-stack")).toHaveCount(0);
     await expect(page.locator("[data-idea-board-notes-table='top-thoughts'] th[scope='col']")).toHaveText(["Note", "Actions"]);
     await expect(page.locator("[data-idea-board-notes-table] th[scope='col']", { hasText: "Type" })).toHaveCount(0);
     await expect(page.locator("[data-idea-board-notes-table] th[scope='col']", { hasText: "Created By" })).toHaveCount(0);
@@ -139,6 +142,7 @@ test("Idea Board uses DB-shaped accordion table ideas and notes", async ({ page 
     await page.locator("[data-idea-board-idea-cell='sky-orchard']").click();
     await expect(page.locator("[data-idea-board-expanded-row='top-thoughts']")).toHaveCount(0);
     await expect(page.locator("[data-idea-board-expanded-row='sky-orchard']")).toBeVisible();
+    await expect(page.locator("[data-idea-board-idea-row='sky-orchard'] + [data-idea-board-expanded-row='sky-orchard']")).toHaveCount(1);
     await expectIdeaChevron(page, "sky-orchard", "gfs-chevron-up.svg");
     await page.locator("[data-idea-board-notes-count='sky-orchard']").click();
     await expect(page.locator("[data-idea-board-expanded-row='sky-orchard']")).toBeVisible();

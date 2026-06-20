@@ -259,7 +259,10 @@ test("Idea Board launches from Toolbox with accordion table notes model", async 
     await page.locator("[data-idea-board-idea-cell='top-thoughts']").click();
     await expect(page.locator("[data-idea-board-expanded-row='top-thoughts']")).toBeVisible();
     await expectIdeaChevron(page, "top-thoughts", "gfs-chevron-up.svg");
-    await expect(page.locator("[data-idea-board-notes-header='top-thoughts']")).toHaveText("Notes");
+    await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] + [data-idea-board-expanded-row='top-thoughts']")).toHaveCount(1);
+    await expect(page.locator("[data-idea-board-expanded-row='top-thoughts'] [data-idea-board-notes-header]")).toHaveCount(0);
+    await expect(page.locator("[data-idea-board-expanded-row='top-thoughts'] :is(h1,h2,h3,h4,h5,h6)").filter({ hasText: /^Notes$/ })).toHaveCount(0);
+    await expect(page.locator("[data-idea-board-expanded-row='top-thoughts'] > td > .content-stack")).toHaveCount(0);
     await expect(page.locator("[data-idea-board-notes-table='top-thoughts'] th[scope='col']")).toHaveText(["Note", "Actions"]);
     await expect(page.getByText("Notes for Sky Orchard")).toHaveCount(0);
     await expect(page.getByText("Selected idea context")).toHaveCount(0);
