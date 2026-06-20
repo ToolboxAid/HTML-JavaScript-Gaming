@@ -524,6 +524,34 @@ Governance, recovery, diagnostics, and instruction-hardening PRs:
 - Must document TEAM ownership compliance in the PR report.
 - Recovery reports must include TEAM ownership.
 
+Team Gamma Sequential Codex Queue Mode:
+- Team Gamma may use Sequential Codex Queue Mode for governance, diagnostics, admin, recovery, and instruction-hardening work.
+- Sequential Codex Queue Mode means Codex receives one queue command containing multiple ordered PR scopes.
+- Each queued PR must still have exact PR name, TEAM token, branch name, exact scope, validation scope, required reports, manual validation notes, and ZIP requirement.
+- A queue command is not itself a PR unless explicitly named as one.
+- Missing exact scope for any queued PR is a hard stop for that PR only.
+- Codex may continue to the next queued PR only if the next PR has exact scope and does not depend on the stopped PR.
+- Codex must not create empty ZIPs or package partial PRs.
+- EOD merge/push is owner-controlled and requires explicit approval.
+- This section supersedes older wording that implies every PR must be independently prompted when Master Control provides a fully scoped sequential queue.
+
+Exact Gamma queue scope examples:
+- `PR_26171_GAMMA_001-sqlite-deprecation-audit`
+  - Branch: `pr/26171-GAMMA-001-sqlite-deprecation-audit`
+  - Exact scope: audit active repository documentation and runtime references for SQLite deprecation status; document existing SQLite references as legacy technical debt only; do not add SQLite services, DDL, seed data, or runtime persistence.
+  - Validation scope: docs/static validation only; do not run Playwright; do not run samples.
+  - Required reports: PR-specific report, manual validation notes, instruction compliance checklist, `codex_review.diff`, `codex_changed_files.txt`, and repo-structured ZIP.
+- `PR_26171_GAMMA_002-admin-system-health-foundation`
+  - Branch: `pr/26171-GAMMA-002-admin-system-health-foundation`
+  - Exact scope: document the Admin system-health foundation contract for diagnostics ownership, visible failure reporting, and Postgres-first health checks; do not implement admin UI, runtime APIs, auth behavior, or database migrations.
+  - Validation scope: docs/static validation only; do not run Playwright; do not run samples.
+  - Required reports: PR-specific report, manual validation notes, instruction compliance checklist, `codex_review.diff`, `codex_changed_files.txt`, and repo-structured ZIP.
+- `PR_26171_GAMMA_003-admin-postgres-r2-diagnostics`
+  - Branch: `pr/26171-GAMMA-003-admin-postgres-r2-diagnostics`
+  - Exact scope: document Admin diagnostics expectations for Postgres and R2 readiness, credential-presence checks, actionable failure messages, and skipped-lane reporting; do not implement R2 storage, database connections, migrations, or admin runtime behavior.
+  - Validation scope: docs/static validation only; do not run Playwright; do not run samples.
+  - Required reports: PR-specific report, manual validation notes, instruction compliance checklist, `codex_review.diff`, `codex_changed_files.txt`, and repo-structured ZIP.
+
 Stable and merge approval:
 - Stable promotion and merge approval are controlled by the assigned Team Alpha, Team Beta, or Team Gamma owner.
 - Master Control may recommend sequencing, but Codex must not merge or mark stable without explicit owner approval for the affected workstream.

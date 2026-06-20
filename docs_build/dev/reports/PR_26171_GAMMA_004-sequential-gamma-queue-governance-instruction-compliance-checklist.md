@@ -1,0 +1,25 @@
+# PR_26171_GAMMA_004 Instruction Compliance Checklist
+
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`: PASS.
+- Read `docs_build/dev/PROJECT_MULTI_PC.txt`: PASS.
+- Start from `main`: PASS.
+- Pull latest `main`: PASS.
+- Verify clean repository before branch creation: PASS.
+- Verify PR name includes TEAM token: PASS.
+- Verify TEAM owner matches Team Gamma governance/diagnostics/instruction-hardening ownership: PASS.
+- Create requested branch `pr/26171-GAMMA-004-sequential-gamma-queue-governance`: PASS.
+- Keep scope limited to requested docs and reports: PASS.
+- Run docs/static validation only: PASS.
+- Run `git diff --check`: PASS.
+- Verify PR naming examples use TEAM token: PASS.
+- Verify branch examples use TEAM token: PASS.
+- Verify automatic merge wording is constrained by owner-controlled EOD approval: PASS.
+- Do not run Playwright: PASS.
+- Do not run samples: PASS.
+- Create required PR-specific report: PASS.
+- Create manual validation notes: PASS.
+- Create instruction compliance checklist: PASS.
+- Create `codex_review.diff`: PASS.
+- Create `codex_changed_files.txt`: PASS.
+- Create repo-structured ZIP under `tmp/`: PASS.
+- Do not merge before explicit EOD approval: PASS.
