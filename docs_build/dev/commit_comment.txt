@@ -1,5 +1,5 @@
-PR_26171_030 idea board workflow fix
+PR_26171_031 idea board inline tree grid actions
 
-- fix Idea Board selected-idea notes context
-- update targeted Playwright and workspace-v2 validation harness
-- refresh Idea Board workflow docs and reports
+- render selected idea notes directly under the idea row
+- add inline idea and note add/edit/delete workflows
+- update targeted Idea Board Playwright coverage and reports

@@ -155,7 +155,7 @@ test("tools route aliases render toolbox tool pages", async ({ page }) => {
   }
 });
 
-test("Idea Board launches from Toolbox with table-first selected notes context", async ({ page }) => {
+test("Idea Board launches from Toolbox with inline tree grid notes context", async ({ page }) => {
   const server = await startRepoServer();
   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
   const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
@@ -215,29 +215,32 @@ test("Idea Board launches from Toolbox with table-first selected notes context",
       "Workflow",
       "Status",
       "Idea Table",
-      "Selected Notes",
       "Create Project",
       "Notes Governance",
       "Diagnostics",
     ]);
     await expect(page.locator("[data-idea-board-table]")).toBeVisible();
-    await expect(page.locator("[data-idea-board-notes-table]")).toBeVisible();
-    await expect(page.locator("[data-idea-board-selected-title]")).toHaveText("Notes for Sky Orchard");
-    await expect(page.locator("[data-idea-board-add-note]")).toBeVisible();
+    await expect(page.locator("[data-idea-board-table] > thead th[scope='col']")).toHaveText(["Idea", "Pitch", "Status", "Updated", "Notes", "Actions"]);
+    await expect(page.locator("[data-idea-board-expanded-row='sky-orchard']")).toBeVisible();
+    await expect(page.locator("[data-idea-board-notes-table='sky-orchard']")).toBeVisible();
+    await expect(page.locator("[data-idea-board-notes-table='sky-orchard'] th[scope='col']")).toHaveText(["Note", "Actions"]);
+    await expect(page.getByText("Notes for Sky Orchard")).toHaveCount(0);
+    await expect(page.getByText("Selected idea context")).toHaveCount(0);
+    await expect(page.locator("[data-idea-board-add-note='sky-orchard']")).toBeVisible();
     await expect(page.locator("[data-idea-board-create-project]")).toBeVisible();
     await expect(page.locator("[data-idea-board-create-project]")).toBeDisabled();
-    await expect(page.locator("[data-idea-board-status]")).toHaveText("Idea Board table is active in-page only. No save, load, auth, AI, or database behavior is connected.");
+    await expect(page.locator("[data-idea-board-status]")).toHaveText("Idea Board table edits are in-page only. No project records, auth, AI, or database behavior is connected.");
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     await expect(page.locator("script[src='toolbox/idea-board/index.js']")).toHaveCount(1);
     mutatingApiRequests.length = 0;
     await page.locator("[data-idea-board-create-project]").evaluate((button) => button.click());
-    await page.locator("[data-idea-board-add-note]").click();
+    await page.locator("[data-idea-board-add-note='sky-orchard']").click();
     await page.locator("[data-idea-board-note-input]").fill("Capture traversal risks before project creation.");
-    await page.locator("[data-idea-board-action='save']").click();
-    await expect(page.locator("[data-idea-board-notes-table]")).toContainText("Capture traversal risks before project creation.");
+    await page.locator("[data-idea-board-note-action='save']").click();
+    await expect(page.locator("[data-idea-board-notes-table='sky-orchard']")).toContainText("Capture traversal risks before project creation.");
     await page.locator("[data-idea-board-select-idea='clockwork-courier']").click();
-    await expect(page.locator("[data-idea-board-selected-title]")).toHaveText("Notes for Clockwork Courier");
-    await expect(page.locator("[data-idea-board-notes-table]")).not.toContainText("Capture traversal risks before project creation.");
+    await expect(page.locator("[data-idea-board-expanded-row='clockwork-courier']")).toBeVisible();
+    await expect(page.locator("[data-idea-board-notes-table='clockwork-courier']")).not.toContainText("Capture traversal risks before project creation.");
     expect(mutatingApiRequests).toEqual([]);
 
     expect(failedRequests).toEqual([]);

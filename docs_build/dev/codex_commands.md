@@ -1,23 +1,39 @@
 # Codex Commands
 
-- Read skill: repo-build.
-- Read skill: github:yeet.
-- Read source of truth: docs_build/dev/PROJECT_INSTRUCTIONS.md.
-- Re-read original Idea Board request from prior conversation and docs_build/pr/BUILD_PR_26170_002-idea-board-tool.md.
-- Inspected toolbox/_tool_template-v2/index.html.
-- Inspected toolbox/idea-board/index.html and toolbox/idea-board/index.js.
-- Inspected tests/playwright/tools/IdeaBoardTableNotes.spec.mjs.
-- Inspected tests/playwright/tools/ToolboxRoutePages.spec.mjs.
-- Inspected tests/playwright/tools/RootToolsFutureState.spec.mjs.
-- git fetch origin main --prune.
-- git pull --ff-only origin main.
-- git switch -c codex/fix-idea-board-pr-workflow.
-- node --check toolbox/idea-board/index.js.
-- node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs.
-- node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs.
-- node --check tests/playwright/tools/RootToolsFutureState.spec.mjs.
-- Inline HTML guard for toolbox/idea-board/index.html.
-- npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line.
-- npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches".
-- npm run test:workspace-v2.
-- git diff --check.
+## PR
+- `PR_26171_031-idea-board-inline-tree-grid-actions`
+
+## Source Documents
+- `docs_build/dev/PROJECT_INSTRUCTIONS.md`
+- `docs_build/pr/PLAN_PR_26171_031-idea-board-inline-tree-grid-actions.md`
+- `docs_build/pr/BUILD_PR_26171_031-idea-board-inline-tree-grid-actions.md`
+- `docs_build/pr/APPLY_PR_26171_031-idea-board-inline-tree-grid-actions.md`
+
+## Git Workflow Commands
+- `git branch --show-current`
+- `git status -sb`
+- `git branch --list`
+- `git pull --ff-only origin main`
+- `git switch -c codex/pr-26171-031-idea-board-inline-tree-grid-actions`
+
+## Inspection Commands
+- `Get-Content -Raw docs_build/dev/PROJECT_INSTRUCTIONS.md`
+- `Get-Content -Raw toolbox/idea-board/index.html`
+- `Get-Content -Raw toolbox/idea-board/index.js`
+- `Get-Content -Raw tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`
+- `Get-Content -Raw tests/playwright/tools/ToolboxRoutePages.spec.mjs`
+
+## Validation Commands
+- `node --check toolbox/idea-board/index.js`
+- `node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`
+- `node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs`
+- `node -e "<Idea Board inline HTML restriction guard>"`
+- `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line`
+- `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches"`
+- `npm run test:workspace-v2`
+
+## Artifact Commands
+- Generate `docs_build/dev/reports/codex_changed_files.txt`
+- Generate `docs_build/dev/reports/codex_review.diff`
+- Create `tmp/PR_26171_031-idea-board-inline-tree-grid-actions_delta.zip`
+- Verify ZIP size and repo-relative paths

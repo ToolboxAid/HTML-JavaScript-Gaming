@@ -49,63 +49,22 @@
                         <p>The primary surface is a table so creators can scan, compare, and govern early ideas without a form-first workflow.</p>
                         <div class="table-wrapper" data-idea-board-section="Idea Table">
                             <table class="data-table data-table--fixed" data-idea-board-table>
-                                <caption>Idea Board table-first work surface</caption>
+                                <caption>Idea Board inline tree grid work surface</caption>
                                 <thead>
                                     <tr>
                                         <th scope="col">Idea</th>
                                         <th scope="col">Pitch</th>
                                         <th scope="col">Status</th>
-                                        <th scope="col">Owner</th>
                                         <th scope="col">Updated</th>
                                         <th scope="col">Notes</th>
+                                        <th scope="col">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr data-idea-board-idea-row="sky-orchard" aria-selected="true">
-                                        <th scope="row">Sky Orchard</th>
-                                        <td>Grow floating islands while defending them from storm creatures.</td>
-                                        <td>Exploring</td>
-                                        <td>Creator</td>
-                                        <td>2026-06-20</td>
-                                        <td>
-                                            <button class="btn btn--compact primary" type="button" disabled data-idea-board-select-idea="sky-orchard">Selected</button>
-                                        </td>
-                                    </tr>
-                                    <tr data-idea-board-idea-row="clockwork-courier" aria-selected="false">
-                                        <th scope="row">Clockwork Courier</th>
-                                        <td>Deliver messages through looping city districts before time resets.</td>
-                                        <td>New</td>
-                                        <td>Creator</td>
-                                        <td>2026-06-20</td>
-                                        <td>
-                                            <button class="btn btn--compact" type="button" data-idea-board-select-idea="clockwork-courier">Select</button>
-                                        </td>
-                                    </tr>
-                                </tbody>
+                                <tbody data-idea-board-ideas-body></tbody>
                             </table>
                         </div>
-                        <div class="content-stack" data-idea-board-section="Selected Notes">
-                            <h3 data-idea-board-selected-title>Notes for Sky Orchard</h3>
-                            <p id="idea-board-selected-summary" data-idea-board-selected-summary>Selected idea context: Exploring, owned by Creator, updated 2026-06-20.</p>
-                            <div class="table-wrapper">
-                                <table class="data-table data-table--fixed" data-idea-board-notes-table aria-describedby="idea-board-selected-summary">
-                                    <caption data-idea-board-notes-caption>Selected idea notes for Sky Orchard</caption>
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Note</th>
-                                            <th scope="col">Type</th>
-                                            <th scope="col">Created By</th>
-                                            <th scope="col">Created</th>
-                                            <th scope="col">Updated</th>
-                                            <th scope="col">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody data-idea-board-notes-body></tbody>
-                                </table>
-                            </div>
-                            <div class="action-group" data-idea-board-add-note-panel>
-                                <button class="btn primary" type="button" data-idea-board-add-note>Add Note</button>
-                            </div>
+                        <div class="action-group">
+                            <button class="btn primary" type="button" data-idea-board-add-idea>Add Idea</button>
                         </div>
                     </section>
                     <aside class="tool-column tool-group-idea">
@@ -123,14 +82,14 @@
                             <details class="vertical-accordion" data-idea-board-section="Notes Governance">
                                 <summary>Notes Governance</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>Add Note inserts an inline row below the selected idea notes table headers. Creator notes can be edited or deleted. System notes are locked from editing and deletion.</p>
+                                    <p>Add Note inserts an inline row under the selected idea. Creator notes can be edited or deleted. System notes can be edited but not deleted.</p>
                                 </div>
                             </details>
                             <details class="vertical-accordion" data-idea-board-section="Diagnostics">
                                 <summary>Diagnostics</summary>
                                 <div class="accordion-body content-stack">
                                     <p>No project records or mutating API requests are created by this tool surface.</p>
-                                    <p class="status" role="status" data-idea-board-status>Idea Board table is active in-page only. No save, load, auth, AI, or database behavior is connected.</p>
+                                    <p class="status" role="status" data-idea-board-status>Idea Board table edits are in-page only. No project records, auth, AI, or database behavior is connected.</p>
                                 </div>
                             </details>
                         </div>
