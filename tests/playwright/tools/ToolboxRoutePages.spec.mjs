@@ -115,10 +115,13 @@ function restoreEnvValue(key, value) {
 async function expectIdeaChevron(page, ideaId, iconName) {
   const metrics = await page.locator(`[data-idea-board-idea-row='${ideaId}'] th`).evaluate((cell, targetIdeaId) => {
     const label = cell.querySelector(".idea-board-idea-label");
+    const text = label.querySelector(".idea-board-idea-label__text");
     const icon = cell.querySelector(`[data-idea-board-chevron='${targetIdeaId}']`);
     const cellStyles = getComputedStyle(cell);
     const labelStyles = getComputedStyle(label);
     const iconStyles = getComputedStyle(icon);
+    const textRect = text.getBoundingClientRect();
+    const iconRect = icon.getBoundingClientRect();
     return {
       iconName: icon.dataset.ideaBoardChevronIcon,
       labelDisplay: labelStyles.display,
@@ -126,7 +129,11 @@ async function expectIdeaChevron(page, ideaId, iconName) {
       iconHeight: Number.parseFloat(iconStyles.height),
       fontSize: Number.parseFloat(cellStyles.fontSize),
       iconColor: iconStyles.backgroundColor,
+      iconBottom: iconRect.bottom,
+      iconLeft: iconRect.left,
       textColor: cellStyles.color,
+      textBottom: textRect.bottom,
+      textLeft: textRect.left,
       maskImage: iconStyles.getPropertyValue("-webkit-mask-image") || iconStyles.maskImage,
     };
   }, ideaId);
@@ -135,6 +142,8 @@ async function expectIdeaChevron(page, ideaId, iconName) {
   expect(Math.abs(metrics.iconWidth - metrics.fontSize)).toBeLessThanOrEqual(1);
   expect(Math.abs(metrics.iconHeight - metrics.fontSize)).toBeLessThanOrEqual(1);
   expect(metrics.iconColor).toBe(metrics.textColor);
+  expect(metrics.iconLeft).toBeLessThan(metrics.textLeft);
+  expect(Math.abs(metrics.iconBottom - metrics.textBottom)).toBeLessThanOrEqual(2);
   expect(metrics.maskImage).toContain(iconName);
 }
 
@@ -194,7 +203,7 @@ async function expectExpandedNotesChildIndentation(page, ideaId, expectedInputRo
 
 async function expectIdeaBoardProductionCopy(page) {
   await expect(page.locator("main")).not.toContainText(
-    /\bDB-shaped\b|\bin-page data model\b|\buserId\b|\bideaId\b|\bnoteId\b|\bsystem flag\b|\bmetadata\b|\bseed\b|\bdebug\b|\bselected context\b|\bmock\b|\btest\b|\binternal implementation\b|\bplaceholder\b|\bproject records\b|\bmutating API\b|\bauth\b|\bAI\b|\bdatabase behavior\b/i,
+    /\bDB-shaped\b|\bin-page data model\b|\buserId\b|\bideaId\b|\bnoteId\b|\bsystem flag\b|\bmetadata\b|\bseed\b|\bdebug\b|\bselected context\b|\bmock\b|\btest\b|\binternal implementation\b|\bplaceholder\b|\bproject records\b|\bmutating API\b|\bserver\b|\bAPI\b|\blocal server\b|\bport\b|\bunderlying systems\b|\bauth\b|\bAI\b|\bdatabase behavior\b/i,
   );
 }
 
@@ -302,7 +311,6 @@ test("Idea Board launches from Toolbox with accordion table notes model", async 
       "Workflow",
       "Status",
       "Idea Table",
-      "Create Project",
       "Notes Governance",
       "Diagnostics",
     ]);
@@ -335,12 +343,10 @@ test("Idea Board launches from Toolbox with accordion table notes model", async 
     await expect(page.locator("[data-idea-board-add-note='top-thoughts']")).toBeVisible();
     await expect(page.locator("[data-idea-board-add-note='top-thoughts']")).toHaveText("Add Note");
     await expectExpandedNotesChildIndentation(page, "top-thoughts");
-    await expect(page.locator("[data-idea-board-create-project]")).toBeVisible();
-    await expect(page.locator("[data-idea-board-create-project]")).toBeDisabled();
+    await expect(page.locator("[data-idea-board-create-project]")).toHaveCount(0);
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     await expect(page.locator("script[src='toolbox/idea-board/index.js']")).toHaveCount(1);
     mutatingApiRequests.length = 0;
-    await page.locator("[data-idea-board-create-project]").evaluate((button) => button.click());
     await page.locator("[data-idea-board-add-note='top-thoughts']").click();
     await page.locator("[data-idea-board-note-input]").fill("Capture traversal risks before project creation.");
     await page.locator("[data-idea-board-note-action='save']").click();
@@ -348,6 +354,16 @@ test("Idea Board launches from Toolbox with accordion table notes model", async 
     await page.locator("[data-idea-board-idea-cell='clockwork-courier']").click();
     await expect(page.locator("[data-idea-board-expanded-row='clockwork-courier']")).toBeVisible();
     await expect(page.locator("[data-idea-board-notes-table='clockwork-courier']")).not.toContainText("Capture traversal risks before project creation.");
+    await page.locator("[data-idea-board-add-idea]").click();
+    await page.locator("[data-idea-board-idea-input]").fill("Launch Tile");
+    await page.locator("[data-idea-board-pitch-input]").fill("Turn a polished board idea into a project.");
+    await page.locator("[data-idea-board-idea-status-input]").selectOption("Ready");
+    await page.locator("[data-idea-board-idea-action='save']").click();
+    await expect(page.locator("[data-idea-board-idea-row='launch-tile'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Create Project", "Delete"]);
+    await page.locator("[data-idea-board-idea-row='launch-tile'] [data-idea-board-idea-action='create-project']").click();
+    await expect(page.locator("[data-idea-board-idea-row='launch-tile'] td").nth(1)).toHaveText("Project");
+    await expect(page.locator("[data-idea-board-idea-row='launch-tile'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Open Project", "Archive"]);
+    await expect(page.locator("[data-idea-board-idea-row='launch-tile'] [data-idea-board-idea-action='delete']")).toHaveCount(0);
     expect(mutatingApiRequests).toEqual([]);
 
     expect(failedRequests).toEqual([]);
