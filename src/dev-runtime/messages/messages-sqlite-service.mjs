@@ -135,7 +135,9 @@ function categoryFromRow(row) {
   };
 }
 
-function emotionProfileFromRow(row) {
+function emotionProfileFromRow(row, usage = {}) {
+  const messageUsageCount = Number(usage.messageUsageCount || 0);
+  const segmentUsageCount = Number(usage.segmentUsageCount || 0);
   return {
     active: activeFromDatabase(row.active),
     createdAt: row.createdAt,
@@ -147,9 +149,13 @@ function emotionProfileFromRow(row) {
     pauseBeforeMs: Number(row.pauseBeforeMs),
     pitch: Number(row.pitch),
     rate: Number(row.rate),
+    references: Array.isArray(usage.references) ? usage.references : [],
+    messageUsageCount,
+    segmentUsageCount,
     status: activeFromDatabase(row.active) ? "Active" : "Inactive",
     updatedAt: row.updatedAt,
     updatedBy: row.updatedBy,
+    usageCount: messageUsageCount + segmentUsageCount,
     volume: Number(row.volume),
   };
 }
@@ -379,7 +385,7 @@ export class MessagesSqliteService {
     return this.db().prepare(`
       SELECT * FROM messages_emotion_profiles
       ORDER BY name COLLATE NOCASE ASC
-    `).all().map(emotionProfileFromRow);
+    `).all().map((row) => emotionProfileFromRow(row, this.emotionProfileUsage(row.key)));
   }
 
   getEmotionProfile(key) {
@@ -387,7 +393,7 @@ export class MessagesSqliteService {
     if (!row) {
       throw httpError("Emotion profile was not found.", 404);
     }
-    return emotionProfileFromRow(row);
+    return emotionProfileFromRow(row, this.emotionProfileUsage(row.key));
   }
 
   findEmotionProfileByName(name) {
@@ -397,6 +403,46 @@ export class MessagesSqliteService {
     }
     const row = this.db().prepare("SELECT * FROM messages_emotion_profiles WHERE lower(name) = lower(?)").get(normalized);
     return row ? emotionProfileFromRow(row) : null;
+  }
+
+  emotionProfileUsage(key) {
+    const messageReferences = this.db().prepare(`
+      SELECT key, name
+      FROM messages_records
+      WHERE emotionProfileKey = ?
+      ORDER BY name COLLATE NOCASE ASC, key ASC
+    `).all(key).map((row) => ({
+      key: row.key,
+      label: row.name,
+      type: "message",
+    }));
+    const segmentReferences = this.db().prepare(`
+      SELECT
+        messages_segments.key,
+        messages_segments.messageKey,
+        messages_segments.displayOrder,
+        messages_segments.segmentText,
+        messages_records.name AS messageName
+      FROM messages_segments
+      LEFT JOIN messages_records ON messages_records.key = messages_segments.messageKey
+      WHERE messages_segments.emotionProfileKey = ?
+      ORDER BY messages_records.name COLLATE NOCASE ASC, messages_segments.displayOrder ASC, messages_segments.key ASC
+    `).all(key).map((row) => ({
+      displayOrder: Number(row.displayOrder),
+      key: row.key,
+      label: `${row.messageName || "Unknown Message"} segment ${row.displayOrder}`,
+      messageKey: row.messageKey,
+      preview: normalizeText(row.segmentText).slice(0, 80),
+      type: "segment",
+    }));
+    return {
+      messageUsageCount: messageReferences.length,
+      references: [
+        ...messageReferences,
+        ...segmentReferences,
+      ],
+      segmentUsageCount: segmentReferences.length,
+    };
   }
 
   insertEmotionProfile(input = {}) {
@@ -447,6 +493,10 @@ export class MessagesSqliteService {
     if (duplicate && duplicate.key !== key) {
       throw httpError(`Emotion profile ${name} already exists.`);
     }
+    const active = normalizeActive(input.active, existing.active);
+    if (existing.active && !active && existing.usageCount > 0) {
+      throw httpError("Emotion profile is referenced by messages or segments. Reassign those references before deactivating this emotion profile.");
+    }
     const now = timestamp();
     this.db().prepare(`
       UPDATE messages_emotion_profiles
@@ -461,7 +511,7 @@ export class MessagesSqliteService {
       normalizeNumber(input.rate, existing.rate),
       normalizeInteger(input.pauseBeforeMs, existing.pauseBeforeMs),
       normalizeInteger(input.pauseAfterMs, existing.pauseAfterMs),
-      activeToDatabase(normalizeActive(input.active, existing.active)),
+      activeToDatabase(active),
       now,
       normalizeActorKey(actorKey),
       key,
