@@ -72,14 +72,14 @@ export const TOOL_REGISTRY = Object.freeze([
     "id": "idea-board",
     "name": "Idea Board",
     "displayName": "Idea Board",
-    "shortDescription": "Capture, compare, and shape game ideas in a table.",
+    "shortDescription": "Capture, compare, and shape game ideas.",
     "shortLabel": "Idea Board",
     "path": "idea-board",
     "folderName": "idea-board",
     "entryPoint": "idea-board/index.html",
     "badge": "/assets/theme-v2/images/badges/game-design.png",
     "tool": "/assets/theme-v2/images/tools/game-design.png",
-    "description": "Capture, compare, and shape game ideas with notes under each idea row.",
+    "description": "Capture, compare, and shape game ideas.",
     "category": "Idea",
     "colorGroup": "tool-group-idea",
     "active": true,
@@ -93,7 +93,7 @@ export const TOOL_REGISTRY = Object.freeze([
     "progressChecklist": [
       "Idea table workflow visible",
       "Add Idea and Add Note actions remain inline",
-      "Create Project remains unavailable until an idea is ready"
+      "Ready ideas show project actions in their row"
     ],
     "deferred": false,
     "hidden": false,

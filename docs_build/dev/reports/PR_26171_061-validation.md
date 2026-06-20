@@ -11,10 +11,12 @@
 - `npx playwright test tests/playwright/tools/TextToSpeechFunctional.spec.mjs`
   - PASS: 2 tests passed.
   - Covers restored controls, preset shaping, queue add/duplicate/delete, output summary, pause/resume, speak, stop, and unavailable SpeechSynthesis error handling.
+  - PASS: rerun after merging `origin/main` into the PR branch for conflict resolution.
 - `npm run test:workspace-v2`
   - PASS: 5 Project Workspace tests passed.
   - Note: command name is legacy; user-facing language is Project Workspace.
   - Note: first execution used a 120s timeout and timed out before completion; rerun with a longer timeout completed successfully.
+  - PASS: rerun after merging `origin/main` into the PR branch for conflict resolution.
 - `git diff --check`
   - PASS.
 

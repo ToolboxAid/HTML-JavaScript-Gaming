@@ -1,4 +1,5 @@
-const statusOptions = Object.freeze(["New", "Exploring", "Parked", "Ready to Shape"]);
+const statusOptions = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project", "Archived"]);
+const defaultVisibleStatuses = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project"]);
 const userId = "user-1";
 
 const ideaTable = [
@@ -79,6 +80,7 @@ const state = {
   editingNoteId: null,
   addingIdea: false,
   addingNoteIdeaId: null,
+  visibleStatuses: new Set(defaultVisibleStatuses),
 };
 
 function today() {
@@ -98,6 +100,34 @@ function noteCountLabel(ideaId) {
   return `${count} ${count === 1 ? "Note" : "Notes"}`;
 }
 
+function isArchived(record) {
+  return record.status === "Archived";
+}
+
+function isProject(record) {
+  return record.status === "Project";
+}
+
+function visibleIdeas() {
+  return ideaTable.filter((record) => state.visibleStatuses.has(record.status));
+}
+
+function previousStatusForRestore(record) {
+  return statusOptions.includes(record.previousStatus) && record.previousStatus !== "Archived"
+    ? record.previousStatus
+    : "Refining";
+}
+
+function rememberPreviousStatus(record) {
+  if (record.status !== "Archived") {
+    record.previousStatus = record.status;
+  }
+}
+
+function canDeleteIdea(record) {
+  return !isProject(record) || isArchived(record);
+}
+
 function cell(text) {
   const td = document.createElement("td");
   td.textContent = text;
@@ -111,6 +141,25 @@ function actionButton(label, action, datasetName, variant = "") {
   control.textContent = label;
   control.dataset[datasetName] = action;
   return control;
+}
+
+function renderStatusFilter(root) {
+  const options = root.querySelector("[data-idea-board-status-options]");
+  if (!options) return;
+  options.replaceChildren();
+  for (const status of statusOptions) {
+    const label = document.createElement("label");
+    label.className = "idea-board-show-filter__option";
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.value = status;
+    input.checked = state.visibleStatuses.has(status);
+    input.dataset.ideaBoardStatusFilterOption = status;
+    const text = document.createElement("span");
+    text.textContent = status;
+    label.append(input, text);
+    options.append(label);
+  }
 }
 
 function textInput(label, value = "") {
@@ -199,7 +248,7 @@ function renderIdeaRow(tbody, record) {
   chevron.setAttribute("aria-hidden", "true");
   chevron.dataset.ideaBoardChevron = record.ideaId;
   chevron.dataset.ideaBoardChevronIcon = chevronIcon;
-  ideaLabel.append(ideaText, chevron);
+  ideaLabel.append(chevron, ideaText);
   idea.append(ideaLabel);
   row.append(idea);
   row.append(cell(record.pitch));
@@ -214,11 +263,28 @@ function renderIdeaRow(tbody, record) {
   row.append(notes);
 
   const actions = document.createElement("td");
-  actions.append(
-    actionButton("Edit", "edit", "ideaBoardIdeaAction"),
-    " ",
-    actionButton("Delete", "delete", "ideaBoardIdeaAction"),
-  );
+  if (isArchived(record)) {
+    actions.append(
+      actionButton("Restore", "restore", "ideaBoardIdeaAction"),
+      " ",
+      actionButton("Delete", "delete", "ideaBoardIdeaAction"),
+    );
+  } else {
+    actions.append(actionButton("Edit", "edit", "ideaBoardIdeaAction"));
+    if (record.status === "Ready") {
+      actions.append(" ", actionButton("Create Project", "create-project", "ideaBoardIdeaAction", "primary"));
+    }
+    if (isProject(record)) {
+      actions.append(
+        " ",
+        actionButton("Open Project", "open-project", "ideaBoardIdeaAction", "primary"),
+        " ",
+        actionButton("Archive", "archive", "ideaBoardIdeaAction"),
+      );
+    } else {
+      actions.append(" ", actionButton("Delete", "delete", "ideaBoardIdeaAction"));
+    }
+  }
   row.append(actions);
   tbody.append(row);
 }
@@ -322,8 +388,9 @@ function renderAddIdeaRow(tbody) {
 function render(root) {
   const tbody = root.querySelector("[data-idea-board-ideas-body]");
   if (!tbody) return;
+  renderStatusFilter(root);
   tbody.replaceChildren();
-  for (const record of ideaTable) {
+  for (const record of visibleIdeas()) {
     if (state.editingIdeaId === record.ideaId) {
       renderIdeaInputRow(tbody, record);
     } else {
@@ -361,7 +428,11 @@ function saveIdeaRow(root, row) {
     }
     record.idea = idea;
     record.pitch = pitch;
+    if (status === "Archived" && record.status !== "Archived") {
+      record.previousStatus = record.status;
+    }
     record.status = status;
+    rememberPreviousStatus(record);
     record.updated = today();
     state.editingIdeaId = null;
     updateStatus(root, `Updated ${record.idea}.`);
@@ -427,6 +498,10 @@ function deleteIdea(root, ideaId) {
     updateStatus(root, "Idea Board could not delete that idea.");
     return;
   }
+  if (!canDeleteIdea(ideaTable[index])) {
+    updateStatus(root, "Archive this project before deleting it.");
+    return;
+  }
   const [removed] = ideaTable.splice(index, 1);
   for (let noteIndex = noteTable.length - 1; noteIndex >= 0; noteIndex -= 1) {
     if (noteTable[noteIndex].ideaId === ideaId) noteTable.splice(noteIndex, 1);
@@ -436,6 +511,61 @@ function deleteIdea(root, ideaId) {
   if (state.addingNoteIdeaId === ideaId) state.addingNoteIdeaId = null;
   updateStatus(root, `Deleted ${removed.idea}.`);
   render(root);
+}
+
+function createProject(root, ideaId) {
+  const record = ideaRecord(ideaId);
+  if (!record) {
+    updateStatus(root, "Idea Board could not update that idea.");
+    return;
+  }
+  if (record.status !== "Ready") {
+    updateStatus(root, "Set this idea to Ready before creating a project.");
+    return;
+  }
+  record.status = "Project";
+  record.previousStatus = "Project";
+  record.updated = today();
+  updateStatus(root, `${record.idea} is now a project.`);
+  render(root);
+}
+
+function archiveIdea(root, ideaId) {
+  const record = ideaRecord(ideaId);
+  if (!record) {
+    updateStatus(root, "Idea Board could not archive that idea.");
+    return;
+  }
+  if (record.status !== "Archived") record.previousStatus = record.status;
+  record.status = "Archived";
+  record.updated = today();
+  if (!state.visibleStatuses.has("Archived") && state.expandedIdeaId === ideaId) {
+    state.expandedIdeaId = null;
+  }
+  updateStatus(root, `Archived ${record.idea}.`);
+  render(root);
+}
+
+function restoreIdea(root, ideaId) {
+  const record = ideaRecord(ideaId);
+  if (!record) {
+    updateStatus(root, "Idea Board could not restore that idea.");
+    return;
+  }
+  record.status = previousStatusForRestore(record);
+  record.previousStatus = record.status;
+  record.updated = today();
+  updateStatus(root, `Restored ${record.idea}.`);
+  render(root);
+}
+
+function openProject(root, ideaId) {
+  const record = ideaRecord(ideaId);
+  if (!record) {
+    updateStatus(root, "Idea Board could not open that project.");
+    return;
+  }
+  updateStatus(root, `Opening ${record.idea}.`);
 }
 
 function handleIdeaAction(root, actionControl) {
@@ -454,6 +584,14 @@ function handleIdeaAction(root, actionControl) {
     render(root);
   } else if (action === "delete") {
     deleteIdea(root, ideaId);
+  } else if (action === "create-project") {
+    createProject(root, ideaId);
+  } else if (action === "open-project") {
+    openProject(root, ideaId);
+  } else if (action === "archive") {
+    archiveIdea(root, ideaId);
+  } else if (action === "restore") {
+    restoreIdea(root, ideaId);
   } else if (action === "cancel") {
     state.editingIdeaId = null;
     state.addingIdea = false;
@@ -497,7 +635,38 @@ function handleNoteAction(root, actionControl) {
   }
 }
 
+function handleFilterAction(root, actionControl) {
+  if (actionControl.matches("[data-idea-board-filter-select-all]")) {
+    state.visibleStatuses = new Set(statusOptions);
+    updateStatus(root, "Showing all statuses.");
+  } else if (actionControl.matches("[data-idea-board-filter-clear-all]")) {
+    state.visibleStatuses = new Set();
+    state.expandedIdeaId = null;
+    updateStatus(root, "Status filters cleared.");
+  }
+  render(root);
+}
+
+function handleFilterChange(root, input) {
+  if (input.checked) {
+    state.visibleStatuses.add(input.value);
+  } else {
+    state.visibleStatuses.delete(input.value);
+    if (state.expandedIdeaId && ideaRecord(state.expandedIdeaId)?.status === input.value) {
+      state.expandedIdeaId = null;
+    }
+  }
+  updateStatus(root, "Updated visible statuses.");
+  render(root);
+}
+
 function handleClick(root, event) {
+  const filterAction = event.target.closest("[data-idea-board-filter-select-all], [data-idea-board-filter-clear-all]");
+  if (filterAction) {
+    handleFilterAction(root, filterAction);
+    return;
+  }
+
   const toggle = event.target.closest("[data-idea-board-toggle-notes]");
   if (toggle) {
     toggleNotes(root, toggle.dataset.ideaBoardToggleNotes);
@@ -514,6 +683,11 @@ function handleClick(root, event) {
   if (noteAction) handleNoteAction(root, noteAction);
 }
 
+function handleChange(root, event) {
+  const statusFilter = event.target.closest("[data-idea-board-status-filter-option]");
+  if (statusFilter) handleFilterChange(root, statusFilter);
+}
+
 function handleKeydown(root, event) {
   const toggle = event.target.closest("[data-idea-board-toggle-notes]");
   if (!toggle || (event.key !== "Enter" && event.key !== " ")) return;
@@ -526,5 +700,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!root) return;
   render(root);
   root.addEventListener("click", (event) => handleClick(root, event));
+  root.addEventListener("change", (event) => handleChange(root, event));
   root.addEventListener("keydown", (event) => handleKeydown(root, event));
 });

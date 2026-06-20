@@ -157,7 +157,7 @@
             const diagnostic = document.createElement("p");
             diagnostic.className = "status";
             diagnostic.setAttribute("role", "status");
-            diagnostic.textContent = "Tool navigation could not load from the server API. Start the local server API and refresh.";
+            diagnostic.textContent = "Tool navigation is temporarily unavailable. Refresh the page or try again shortly.";
             body.appendChild(diagnostic);
         }
     }

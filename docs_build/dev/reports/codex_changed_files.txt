@@ -1,40 +1,28 @@
 # Codex Changed Files - PR_26171_061-text2speech-engine-audio-feature-parity
 
-## Git Status Short
-```text
- A docs_build/dev/reports/PR_26171_061-engine-audio-ownership-checklist.md
- A docs_build/dev/reports/PR_26171_061-instruction-compliance-checklist.md
- A docs_build/dev/reports/PR_26171_061-manual-validation-notes.md
- A docs_build/dev/reports/PR_26171_061-old-tts-feature-parity-checklist.md
- A docs_build/dev/reports/PR_26171_061-text2speech-engine-audio-feature-parity.md
- A docs_build/dev/reports/PR_26171_061-validation.md
- M docs_build/dev/reports/codex_changed_files.txt
- M docs_build/dev/reports/codex_review.diff
- M docs_build/dev/reports/coverage_changed_js_guardrail.txt
- M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M src/engine/audio/TextToSpeechEngine.js
- M tests/playwright/tools/TextToSpeechFunctional.spec.mjs
- M toolbox/text-to-speech/index.html
- M toolbox/text-to-speech/text2speech.js
-```
+## Git Workflow
+- Starting branch: `main`.
+- Created branch: `pr/26171-061-text2speech-engine-audio-feature-parity`.
+- Initial commit: `e4541d63719ab777b0654c8fecf4b13237d31256`.
+- PR branch was merged with `origin/main` during PR conflict recovery.
+- Conflicts were limited to generated report artifacts.
 
-## Git Diff Stat
+## Scoped Diff Stat
 ```text
- ...R_26171_061-engine-audio-ownership-checklist.md |   25 +
- ...R_26171_061-instruction-compliance-checklist.md |   32 +
- .../PR_26171_061-manual-validation-notes.md        |   27 +
- ...R_26171_061-old-tts-feature-parity-checklist.md |   48 +
- ..._061-text2speech-engine-audio-feature-parity.md |   71 +
- docs_build/dev/reports/PR_26171_061-validation.md  |   40 +
- docs_build/dev/reports/codex_changed_files.txt     |   82 +-
- docs_build/dev/reports/codex_review.diff           | 2057 +++++++++++++++++---
- .../dev/reports/coverage_changed_js_guardrail.txt  |    8 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |   37 +-
- src/engine/audio/TextToSpeechEngine.js             |  208 +-
- .../tools/TextToSpeechFunctional.spec.mjs          |   30 +
- toolbox/text-to-speech/index.html                  |  119 +-
- toolbox/text-to-speech/text2speech.js              |  853 ++++++--
- 14 files changed, 3147 insertions(+), 490 deletions(-)
+...R_26171_061-engine-audio-ownership-checklist.md |  25 +
+ ...R_26171_061-instruction-compliance-checklist.md |  32 +
+ .../PR_26171_061-manual-validation-notes.md        |  27 +
+ ...R_26171_061-old-tts-feature-parity-checklist.md |  48 ++
+ ..._061-text2speech-engine-audio-feature-parity.md |  71 ++
+ docs_build/dev/reports/PR_26171_061-validation.md  |  42 +
+ docs_build/dev/reports/codex_changed_files.txt     | 118 +--
+ .../dev/reports/coverage_changed_js_guardrail.txt  |   7 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |  36 +-
+ src/engine/audio/TextToSpeechEngine.js             | 208 ++++-
+ .../tools/TextToSpeechFunctional.spec.mjs          |  30 +
+ toolbox/text-to-speech/index.html                  | 119 +--
+ toolbox/text-to-speech/text2speech.js              | 853 +++++++++++++++++----
+ 13 files changed, 1317 insertions(+), 299 deletions(-)
 ```
 
 ## Changed Files
@@ -60,6 +48,7 @@
 - PASS: `npx playwright test tests/playwright/tools/TextToSpeechFunctional.spec.mjs`.
 - PASS: `npm run test:workspace-v2` (legacy command name; user-facing language is Project Workspace).
 - PASS: `git diff --check`.
+- PASS: Post-conflict validation rerun after merging `origin/main` into the PR branch.
 
 ## ZIP
 - Path: `tmp/PR_26171_061-text2speech-engine-audio-feature-parity_delta.zip`.
