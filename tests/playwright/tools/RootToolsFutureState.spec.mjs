@@ -13,6 +13,10 @@ const SUPABASE_ENV_KEYS = [
   "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY",
   "GAMEFOUNDRY_SUPABASE_URL",
 ];
+const PUBLIC_ENV_KEYS = [
+  "GAMEFOUNDRY_API_URL",
+  "GAMEFOUNDRY_SITE_URL",
+];
 let fakeSupabaseServer;
 let previousSupabaseEnv;
 
@@ -186,6 +190,7 @@ test.afterAll(async () => {
 
 async function openRepoPage(page, pathName) {
   const server = await startRepoServer();
+  const restorePublicEnv = useRepoServerPublicEnv(server);
   const failedRequests = [];
   const pageErrors = [];
   page.on("pageerror", (error) => {
@@ -201,7 +206,7 @@ async function openRepoPage(page, pathName) {
   });
   await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
-  return { failedRequests, pageErrors, server };
+  return { failedRequests, pageErrors, restorePublicEnv, server };
 }
 
 async function setServerSession(server, userKey) {
@@ -233,6 +238,25 @@ function sortedCopy(labels) {
   return [...labels].sort((left, right) => left.localeCompare(right));
 }
 
+function restoreEnvValue(key, value) {
+  if (value === undefined) {
+    delete process.env[key];
+    return;
+  }
+  process.env[key] = value;
+}
+
+function useRepoServerPublicEnv(server) {
+  const previousValues = Object.fromEntries(PUBLIC_ENV_KEYS.map((key) => [key, process.env[key]]));
+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
+  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
+  return () => {
+    for (const [key, value] of Object.entries(previousValues)) {
+      restoreEnvValue(key, value);
+    }
+  };
+}
+
 function expectAlphabetical(labels) {
   expect(labels).toEqual(sortedCopy(labels));
 }
@@ -244,7 +268,7 @@ async function primaryNavigationLabels(page) {
 }
 
 test("root tools surface links current tool pages without old_* routes", async ({ page }) => {
-  const { failedRequests, pageErrors, server } = await openRepoPage(page, "/toolbox/index.html");
+  const { failedRequests, pageErrors, restorePublicEnv, server } = await openRepoPage(page, "/toolbox/index.html");
 
   try {
     await expect(page.locator("[data-tools-accordion-list] .control-card")).not.toHaveCount(0);
@@ -292,8 +316,8 @@ test("root tools surface links current tool pages without old_* routes", async (
     });
     await expect(readyGameWorkspaceCard.locator("a.btn")).toHaveAttribute("href", "../toolbox/game-workspace/index.html");
     const defaultToolLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
-    expect(defaultToolLabels).toEqual(["Achievements", "Assets", "Colors", "Controls", "Game Configuration", "Game Design", "Game Hub", "Game Journey", "Idea Board", "Languages", "Objects", "Saved Data", "Tags"]);
-    await expect(page.locator("[data-toolbox-readiness]")).toHaveText(["Wireframe", "Beta", "Complete", "Wireframe", "Beta", "Beta", "Beta", "Beta", "Wireframe", "Wireframe", "Beta", "Wireframe", "Beta"]);
+    expect(defaultToolLabels).toEqual(["Achievements", "Assets", "Colors", "Controls", "Game Configuration", "Game Design", "Game Hub", "Game Journey", "Idea Board", "Languages", "Message Studio", "Objects", "Saved Data", "Tags"]);
+    await expect(page.locator("[data-toolbox-readiness]")).toHaveText(["Wireframe", "Beta", "Complete", "Wireframe", "Beta", "Beta", "Beta", "Beta", "Wireframe", "Wireframe", "Beta", "Beta", "Wireframe", "Beta"]);
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^AI Command Center$/ }) })).toHaveCount(0);
     const oldStandaloneLabels = [
       ["Palette", "Manager"].join(" "),
@@ -389,13 +413,13 @@ test("root tools surface links current tool pages without old_* routes", async (
     expect(failedRequests.filter((request) => request.includes("/toolbox/old_"))).toEqual([]);
 
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/42");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 14/43");
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
     await expect(page.locator("main").getByText("Creators", { exact: true })).toHaveCount(0);
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
     await setServerSession(server, MOCK_DB_KEYS.users.admin);
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/45");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 14/46");
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
     const adminLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
     expect(adminLabels).toEqual(defaultToolLabels);
@@ -442,11 +466,12 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
     await setServerSession(server, "");
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/42");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 14/43");
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
     await expect(page.locator("main").getByText("Creators", { exact: true })).toHaveCount(0);
     expect(pageErrors).toEqual([]);
   } finally {
+    restorePublicEnv();
     await workspaceV2CoverageReporter.stop(page);
     await server.close();
   }
@@ -454,6 +479,7 @@ test("root tools surface links current tool pages without old_* routes", async (
 
 test("common header renders primary navigation order across active pages", async ({ page }) => {
   const server = await startRepoServer();
+  const restorePublicEnv = useRepoServerPublicEnv(server);
   const failedRequests = [];
   const pageErrors = [];
   const consoleErrors = [];
@@ -464,7 +490,7 @@ test("common header renders primary navigation order across active pages", async
     "/marketplace/index.html",
     "/learn/index.html",
     "/account/index.html",
-    "/admin/site-settings.html"
+    "/admin/site-setup.html"
   ];
 
   page.on("pageerror", (error) => {
@@ -514,7 +540,7 @@ test("common header renders primary navigation order across active pages", async
       await expect(page.locator("[data-toolbox-menu]").getByText("Admin", { exact: true })).toHaveCount(0);
 
       const bodyText = await page.locator("body").innerText();
-      expect(bodyText.replace(/GameFoundryStudio|Game Foundry Studio/g, "").match(/\bStudio\b/g) || []).toEqual([]);
+      expect(bodyText.replace(/GameFoundryStudio|Game Foundry Studio|Message Studio/g, "").match(/\bStudio\b/g) || []).toEqual([]);
 
       if (pagePath === "/toolbox/index.html") {
         await expect(page.locator("[data-tools-count]")).toBeVisible();
@@ -525,6 +551,7 @@ test("common header renders primary navigation order across active pages", async
     expect(pageErrors).toEqual([]);
     expect(consoleErrors.filter((message) => !message.includes("404 (Not Found)"))).toEqual([]);
   } finally {
+    restorePublicEnv();
     await workspaceV2CoverageReporter.stop(page);
     await server.close();
   }
@@ -579,7 +606,7 @@ test("learn wireframe pages load with shared Theme V2 structure", async ({ page 
   ];
 
   for (const learnPage of learnPages) {
-    const { failedRequests, pageErrors, server } = await openRepoPage(page, learnPage.path);
+    const { failedRequests, pageErrors, restorePublicEnv, server } = await openRepoPage(page, learnPage.path);
 
     try {
       await expect(page.locator("header.site-header")).toBeVisible();
@@ -602,6 +629,7 @@ test("learn wireframe pages load with shared Theme V2 structure", async ({ page 
       expect(failedRequests).toEqual([]);
       expect(pageErrors).toEqual([]);
     } finally {
+      restorePublicEnv();
       await workspaceV2CoverageReporter.stop(page);
       await server.close();
     }
@@ -609,7 +637,7 @@ test("learn wireframe pages load with shared Theme V2 structure", async ({ page 
 });
 
 test("tool template future-state page loads from root Theme V2 paths", async ({ page }) => {
-  const { failedRequests, pageErrors, server } = await openRepoPage(page, "/toolbox/_tool_template-v2/index.html");
+  const { failedRequests, pageErrors, restorePublicEnv, server } = await openRepoPage(page, "/toolbox/_tool_template-v2/index.html");
 
   try {
     await expect(page.locator("base")).toHaveAttribute("href", "/");
@@ -625,6 +653,7 @@ test("tool template future-state page loads from root Theme V2 paths", async ({ 
     expect(failedRequests).toEqual([]);
     expect(pageErrors).toEqual([]);
   } finally {
+    restorePublicEnv();
     await workspaceV2CoverageReporter.stop(page);
     await server.close();
   }
@@ -683,7 +712,7 @@ test("representative active tool pages align center cleanup and registry group c
     "tool-group-publish",
     "tool-group-journey-share"
   ];
-  const { failedRequests, pageErrors, server } = await openRepoPage(page, "/toolbox/index.html?view=group");
+  const { failedRequests, pageErrors, restorePublicEnv, server } = await openRepoPage(page, "/toolbox/index.html?view=group");
 
   try {
     const registrySnapshot = await fetchRegistrySnapshot(server);
@@ -762,6 +791,7 @@ test("representative active tool pages align center cleanup and registry group c
     expect(failedRequests).toEqual([]);
     expect(pageErrors).toEqual([]);
   } finally {
+    restorePublicEnv();
     await workspaceV2CoverageReporter.stop(page);
     await server.close();
   }
