@@ -69,6 +69,7 @@ import {
   GAME_JOURNEY_STATUS_BY_ID,
   GAME_JOURNEY_STATUSES,
   GAME_JOURNEY_SUGGESTED_TOOLS,
+  GAME_JOURNEY_TOOL_OWNERSHIP_AREAS,
   createGameJourneyMockRepository,
 } from "../persistence/tool-repositories/game-journey-mock-repository.js";
 import {
@@ -5115,6 +5116,7 @@ LIMIT 1;
         GAME_JOURNEY_STATUS_BY_ID,
         GAME_JOURNEY_STATUSES,
         GAME_JOURNEY_SUGGESTED_TOOLS,
+        GAME_JOURNEY_TOOL_OWNERSHIP_AREAS,
       };
     }
     if (toolId === "palette" || toolId === "colors") {

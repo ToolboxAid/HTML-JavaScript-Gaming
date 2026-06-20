@@ -162,6 +162,87 @@ export const GAME_JOURNEY_SUGGESTED_TOOLS = Object.freeze({
   }),
 });
 
+export const GAME_JOURNEY_TOOL_OWNERSHIP_AREAS = Object.freeze([
+  Object.freeze({
+    sectionKey: "idea",
+    sectionName: "Idea",
+    ownershipArea: "Concept planning",
+    toolNames: Object.freeze(["Idea Board", "Creator Learning", "AI Command Center"]),
+  }),
+  Object.freeze({
+    sectionKey: "design",
+    sectionName: "Design",
+    ownershipArea: "Game structure",
+    toolNames: Object.freeze(["Game Design", "Game Configuration", "Game Hub", "Game Crew", "Tags"]),
+  }),
+  Object.freeze({
+    sectionKey: "graphics",
+    sectionName: "Graphics",
+    ownershipArea: "Visual asset planning",
+    toolNames: Object.freeze(["Assets", "Colors", "Sprites", "Animations", "Particles", "Videos"]),
+  }),
+  Object.freeze({
+    sectionKey: "audio",
+    sectionName: "Audio",
+    ownershipArea: "Sound and voice planning",
+    toolNames: Object.freeze(["Audio", "Music", "Audio Effects", "MIDI", "Voice Capture", "Voice Output"]),
+  }),
+  Object.freeze({
+    sectionKey: "objects",
+    sectionName: "Objects",
+    ownershipArea: "Interactive things",
+    toolNames: Object.freeze(["Objects", "Characters"]),
+  }),
+  Object.freeze({
+    sectionKey: "worlds",
+    sectionName: "Worlds",
+    ownershipArea: "Places and levels",
+    toolNames: Object.freeze(["Worlds", "Environments"]),
+  }),
+  Object.freeze({
+    sectionKey: "interface",
+    sectionName: "Interface",
+    ownershipArea: "Player screens",
+    toolNames: Object.freeze(["Fonts", "Languages", "Messages"]),
+  }),
+  Object.freeze({
+    sectionKey: "controls",
+    sectionName: "Controls",
+    ownershipArea: "Player input",
+    toolNames: Object.freeze(["Controls", "Input Mapping V2", "Hitboxes"]),
+  }),
+  Object.freeze({
+    sectionKey: "rules",
+    sectionName: "Rules",
+    ownershipArea: "Gameplay behavior",
+    toolNames: Object.freeze(["Events", "Custom Extensions"]),
+  }),
+  Object.freeze({
+    sectionKey: "progression",
+    sectionName: "Progression",
+    ownershipArea: "Rewards and advancement",
+    toolNames: Object.freeze(["Achievements", "Saved Data", "Game Journey"]),
+  }),
+  Object.freeze({
+    sectionKey: "play-test",
+    sectionName: "Play Test",
+    ownershipArea: "Testing and tuning",
+    toolNames: Object.freeze(["Game Testing", "Debug", "Performance"]),
+  }),
+  Object.freeze({
+    sectionKey: "publish",
+    sectionName: "Publish",
+    ownershipArea: "Release readiness",
+    toolNames: Object.freeze(["Publish", "Build Game", "Platform Settings", "Game Migration"]),
+  }),
+  Object.freeze({
+    sectionKey: "share",
+    sectionName: "Share",
+    ownershipArea: "Audience and community",
+    toolNames: Object.freeze(["Marketplace", "Community", "Ratings", "Cloud"]),
+  }),
+]);
+
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }

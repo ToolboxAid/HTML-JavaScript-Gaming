@@ -9,6 +9,7 @@ import {
   GAME_JOURNEY_KEYS,
   GAME_JOURNEY_STATUS_BY_ID,
   GAME_JOURNEY_STATUSES,
+  GAME_JOURNEY_TOOL_OWNERSHIP_AREAS,
   createGameJourneyMockRepository,
 } from "../../../src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js";
 import { MOCK_DB_KEYS, getStandaloneMockDbSeedTables } from "../../../src/dev-runtime/persistence/mock-db-store.js";
@@ -101,6 +102,44 @@ function statusLabel(statusId) {
   return status ? `${status.icon} ${status.label}` : statusId;
 }
 
+function expectStaticToolOwnershipAreas(areas) {
+  expect(areas.map((area) => area.sectionName)).toEqual([
+    "Idea",
+    "Design",
+    "Graphics",
+    "Audio",
+    "Objects",
+    "Worlds",
+    "Interface",
+    "Controls",
+    "Rules",
+    "Progression",
+    "Play Test",
+    "Publish",
+    "Share",
+  ]);
+  expect(areas.every((area) => area.sectionKey && area.ownershipArea && area.toolNames.length > 0)).toBe(true);
+  expect(areas.flatMap((area) => area.toolNames)).toEqual(expect.arrayContaining([
+    "Idea Board",
+    "Game Design",
+    "Assets",
+    "Audio",
+    "Objects",
+    "Worlds",
+    "Controls",
+    "Events",
+    "Game Journey",
+    "Game Testing",
+    "Publish",
+    "Community",
+  ]));
+  expect(areas.flatMap((area) => Object.keys(area))).not.toEqual(expect.arrayContaining([
+    "plannedCount",
+    "completedCount",
+    "percentComplete",
+  ]));
+}
+
 async function visibleTreeStatuses(page) {
   return page.locator("[data-journey-item-button]").evaluateAll((buttons) =>
     buttons.map((button) => button.dataset.journeyItemStatus),
@@ -145,6 +184,18 @@ async function expectFilteredSummaryRows(page, statusId, expectedRows) {
     expect(cells[9], `${expectedRow.name} Total count`).toBe(String(expectedRow.total));
   });
 }
+
+test("Game Journey exposes static tool ownership areas without automatic counts", async () => {
+  expectStaticToolOwnershipAreas(GAME_JOURNEY_TOOL_OWNERSHIP_AREAS);
+
+  const server = await startRepoServer();
+  try {
+    const constants = await fetchApiData(server, "/api/toolbox/game-journey/constants");
+    expectStaticToolOwnershipAreas(constants.GAME_JOURNEY_TOOL_OWNERSHIP_AREAS);
+  } finally {
+    await server.close();
+  }
+});
 
 async function closeWithCoverage(page, failures) {
   await workspaceV2CoverageReporter.stop(page);
