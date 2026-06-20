@@ -1,12 +1,10 @@
-﻿docs_build/dev/PROJECT_INSTRUCTIONS.md
-docs_build/dev/reports/codex_review.diff
+﻿docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/coverage_changed_js_guardrail.txt
 docs_build/dev/reports/playwright_v8_coverage_report.txt
-docs_build/dev/reports/PR_26171_014-message-studio-table-governance.md
-docs_build/dev/reports/PR_26171_014-message-studio-table-governance-manual-validation.txt
-docs_build/dev/reports/PR_26171_014-message-studio-table-governance-validation.txt
-src/dev-runtime/messages/messages-sqlite-service.mjs
+docs_build/dev/reports/PR_26171_016-message-studio-speech-test-and-tts-service-picker.md
+docs_build/dev/reports/PR_26171_016-message-studio-speech-test-and-tts-service-picker-manual-validation.txt
+docs_build/dev/reports/PR_26171_016-message-studio-speech-test-and-tts-service-picker-validation.txt
 tests/playwright/tools/MessagesTool.spec.mjs
 toolbox/messages/index.html
 toolbox/messages/messages.js
-toolbox/messages/messages-api-client.js
+toolbox/messages/message-tts-service-registry.js

@@ -43,7 +43,7 @@ test.afterAll(async () => {
   await workspaceV2CoverageReporter.writeReport();
 });
 
-async function openMessagesPage(page, sqlitePath) {
+async function openMessagesPage(page, sqlitePath, options = {}) {
   const previousMessagesSqlitePath = process.env.GAMEFOUNDRY_MESSAGES_SQLITE_PATH;
   process.env.GAMEFOUNDRY_MESSAGES_SQLITE_PATH = sqlitePath;
   const server = await startRepoServer();
@@ -73,13 +73,18 @@ async function openMessagesPage(page, sqlitePath) {
     failures.failedRequests.push(`FAILED ${request.url()}`);
   });
 
-  await page.addInitScript(({ apiUrl }) => {
+  await page.addInitScript(({ apiUrl, speechAvailable }) => {
     window.GameFoundryPublicConfig = {
       apiUrl,
       environmentLabel: "Development Environment",
       siteUrl: window.location.origin,
     };
     window.__messagesSpeechCalls = [];
+    if (!speechAvailable) {
+      Object.defineProperty(window, "SpeechSynthesisUtterance", { configurable: true, value: undefined });
+      Object.defineProperty(window, "speechSynthesis", { configurable: true, value: undefined });
+      return;
+    }
     Object.defineProperty(window, "SpeechSynthesisUtterance", {
       configurable: true,
       value: class SpeechSynthesisUtterance {
@@ -95,15 +100,24 @@ async function openMessagesPage(page, sqlitePath) {
           window.__messagesSpeechCalls.push({ type: "cancel" });
         },
         getVoices() {
-          return [{ lang: "en-US", name: "Test Voice" }];
+          return [{ lang: "en-US", name: "Test Voice", voiceURI: "test-voice-uri" }];
         },
         speak(utterance) {
-          window.__messagesSpeechCalls.push({ text: utterance.text, type: "speak" });
+          window.__messagesSpeechCalls.push({
+            lang: utterance.lang,
+            pitch: utterance.pitch,
+            rate: utterance.rate,
+            text: utterance.text,
+            type: "speak",
+            voiceName: utterance.voice?.name || "",
+            volume: utterance.volume,
+          });
         },
       },
     });
   }, {
     apiUrl: `${server.baseUrl}/api`,
+    speechAvailable: options.speechAvailable !== false,
   });
   await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}/tools/messages/index.html`, { waitUntil: "networkidle" });
@@ -168,7 +182,9 @@ test("Message Studio uses table governance, validates rows, and persists through
     await expect(page.locator("[data-messages-category]")).toHaveCount(0);
     await expect(page.getByRole("button", { name: /delete/i })).toHaveCount(0);
     await expect(page.locator("[data-messages-persistence-engine]")).toHaveText("Postgres target");
-    await expect(page.locator("[data-messages-preview-status]")).toHaveText("No playback, provider calls, or audio generation run from Message Studio.");
+    await expect(page.locator("[data-messages-tts-service]")).toHaveValue("browser-speech-synthesis");
+    await expect(page.locator("[data-messages-preview-status]")).toHaveText("Select a message row or segment row before testing speech.");
+    await expect(page.locator("[data-messages-test-speech]")).toBeDisabled();
     await expect(page.locator("[data-messages-preview-message], [data-messages-preview-segments], [data-messages-preview-stop]")).toHaveCount(0);
 
     await expect(page.locator("[data-messages-emotions]")).toContainText("Calm");
@@ -191,15 +207,14 @@ test("Message Studio uses table governance, validates rows, and persists through
     await page.locator("[data-messages-tts-row]").filter({ hasText: "Arcade Browser Voice" }).getByRole("button", { name: "Edit" }).click();
     await page.locator("[data-messages-tts-editor] [data-tts-language]").fill("en-GB");
     await page.locator("[data-messages-tts-editor] [data-messages-tts-commit]").click();
-    await page.locator("[data-messages-tts-row]").filter({ hasText: "Arcade Browser Voice" }).getByRole("button", { name: "Disable" }).click();
-    await expect(page.locator("[data-messages-tts-row]").filter({ hasText: "Arcade Browser Voice" })).toContainText("Inactive");
+    await expect(page.locator("[data-messages-tts-row]").filter({ hasText: "Arcade Browser Voice" })).toContainText("Active");
 
     const ttsProfilesResult = await jsonRequest(`${failures.server.baseUrl}/api/messages/tts-profiles`);
     expect(ttsProfilesResult.response.ok).toBe(true);
     expect(ttsProfilesResult.payload.ok).toBe(true);
     const createdTtsProfile = ttsProfilesResult.payload.data.ttsProfiles.find((profile) => profile.name === "Arcade Browser Voice");
     expect(createdTtsProfile).toEqual(expect.objectContaining({
-      active: false,
+      active: true,
       language: "en-GB",
       providerKey: "browser-speech",
       voiceName: "Test Voice",
@@ -266,8 +281,40 @@ test("Message Studio uses table governance, validates rows, and persists through
     await expect(page.locator("[data-messages-log]")).toHaveText("Updated segment row 2.");
     await expect(page.locator("[data-messages-segment-row]")).toHaveCount(2);
 
-    const speechCalls = await page.evaluate(() => window.__messagesSpeechCalls);
+    let speechCalls = await page.evaluate(() => window.__messagesSpeechCalls);
     expect(speechCalls).toEqual([]);
+
+    await page.locator("[data-messages-preview-tts-profile]").selectOption({ label: "Arcade Browser Voice" });
+    await page.locator("[data-messages-row]").filter({ hasText: "Forest Warning" }).click();
+    await expect(page.locator("[data-messages-speech-test-target]")).toHaveText("Message Row: Forest Warning");
+    await expect(page.locator("[data-messages-test-speech]")).toBeEnabled();
+    await page.locator("[data-messages-test-speech]").click();
+    await expect(page.locator("[data-messages-preview-status]")).toHaveText("Speech test started for Message Row: Forest Warning using Browser Speech Synthesis.");
+    speechCalls = await page.evaluate(() => window.__messagesSpeechCalls);
+    expect(speechCalls.at(-1)).toEqual(expect.objectContaining({
+      lang: "en-GB",
+      pitch: 1.08,
+      rate: 1.15,
+      text: "The forest gets darker beyond this point.\nWe are being attacked by bats.",
+      type: "speak",
+      voiceName: "Test Voice",
+      volume: 1,
+    }));
+
+    await page.locator("[data-messages-segment-row]").filter({ hasText: "The forest gets darker beyond this point." }).click();
+    await expect(page.locator("[data-messages-speech-test-target]")).toHaveText("Segment 1");
+    await page.locator("[data-messages-test-speech]").click();
+    await expect(page.locator("[data-messages-preview-status]")).toHaveText("Speech test started for Segment 1 using Browser Speech Synthesis.");
+    speechCalls = await page.evaluate(() => window.__messagesSpeechCalls);
+    expect(speechCalls.at(-1)).toEqual(expect.objectContaining({
+      lang: "en-GB",
+      pitch: 1,
+      rate: 1,
+      text: "The forest gets darker beyond this point.",
+      type: "speak",
+      voiceName: "Test Voice",
+      volume: 1,
+    }));
 
     const segmentsResult = await jsonRequest(`${failures.server.baseUrl}/api/messages/segments`);
     expect(segmentsResult.response.ok).toBe(true);
@@ -324,6 +371,10 @@ test("Message Studio uses table governance, validates rows, and persists through
       messageText: "The forest gets darker beyond this point.",
       name: "Forest Warning Updated",
     }));
+
+    await page.locator("[data-messages-tts-row]").filter({ hasText: "Arcade Browser Voice" }).getByRole("button", { name: "Disable" }).click();
+    await expect(page.locator("[data-messages-log]")).toHaveText("Disabled TTS profile Arcade Browser Voice.");
+    await expect(page.locator("[data-messages-tts-row]").filter({ hasText: "Arcade Browser Voice" })).toContainText("Inactive");
 
     for (const url of [
       `${failures.server.baseUrl}/api/messages/messages/${createdMessage.key}`,
