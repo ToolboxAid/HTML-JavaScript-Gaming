@@ -26,7 +26,6 @@ const STATUS_HELP_TEXT = Object.freeze({
 
 const GAME_JOURNEY_GROUP_ORDER = Object.freeze([
   "Idea",
-  "Create",
   "Design",
   "Graphics",
   "Audio",
@@ -42,25 +41,23 @@ const GAME_JOURNEY_GROUP_ORDER = Object.freeze([
 ]);
 
 const GAME_JOURNEY_ACCORDION_LABELS = Object.freeze([
-  "0% - Idea: Dream, brainstorm, and explore (0 of 4 complete, inactive)",
-  "0% - Create: Set up your game and crew (0 of 5 complete, active)",
-  "0% - Design: Shape the player experience (0 of 5 complete, active)",
-  "0% - Graphics: Create the look of your game (0 of 5 complete, active)",
-  "0% - Audio: Bring your world to life with sound (0 of 4 complete, inactive)",
-  "0% - Objects: Build things players can interact with (0 of 5 complete, active)",
-  "0% - Worlds: Design places to explore (0 of 5 complete, active)",
-  "0% - Interface: Create what players see and use (0 of 5 complete, active)",
-  "0% - Controls: Define how players play (0 of 4 complete, active)",
-  "0% - Rules: Make your game come alive (0 of 5 complete, active)",
-  "0% - Progression: Reward players and keep them engaged (0 of 4 complete, inactive)",
-  "0% - Play Test: See how your game feels (0 of 5 complete, active)",
-  "0% - Publish: Prepare your game for launch (0 of 5 complete, active)",
-  "0% - Share: Grow your community (0 of 5 complete, inactive)",
+  "0% Complete — Idea: Dream, brainstorm, and explore",
+  "0% Complete — Design: Shape your game's story and systems",
+  "0% Complete — Graphics: Create the visual look of your game",
+  "0% Complete — Audio: Build sounds, music, and voices",
+  "0% Complete — Objects: Create the things players interact with",
+  "0% Complete — Worlds: Build levels, maps, and places to explore",
+  "0% Complete — Interface: Design menus, HUDs, and player screens",
+  "0% Complete — Controls: Define how players interact with your game",
+  "0% Complete — Rules: Create gameplay behavior and events",
+  "0% Complete — Progression: Build rewards, unlocks, and advancement",
+  "0% Complete — Play Test: Test, debug, and improve your game",
+  "0% Complete — Publish: Prepare and release your game",
+  "0% Complete — Share: Grow your audience and community",
 ]);
 
 const GAME_JOURNEY_GROUP_COLORS = Object.freeze({
   "Idea": { hex: "#FF2D2D", rgb: "rgb(255, 45, 45)" },
-  "Create": { hex: "#F59E0B", rgb: "rgb(245, 158, 11)" },
   "Design": { hex: "#FF7A00", rgb: "rgb(255, 122, 0)" },
   "Graphics": { hex: "#FFC857", rgb: "rgb(255, 200, 87)" },
   "Audio": { hex: "#FACC15", rgb: "rgb(250, 204, 21)" },
@@ -791,8 +788,11 @@ test("toolbox grouped view renders Game Journey order with unique colors while B
       labels.map((label) => label.textContent.trim())
     ));
     expect(accordionLabels).toEqual(GAME_JOURNEY_ACCORDION_LABELS);
-    expect(accordionLabels.every((label) => /^\d+% - .+ \(\d+ of \d+ complete, (active|inactive)\)$/.test(label))).toBe(true);
+    expect(accordionLabels.every((label) => /^\d+% Complete — .+: .+$/.test(label))).toBe(true);
     expect(accordionLabels.join(" ")).not.toContain("xxx%");
+    expect(accordionLabels.join(" ")).not.toMatch(/\(\d+ of \d+ complete/);
+    expect(accordionLabels.join(" ")).not.toContain("inactive");
+    expect(accordionLabels.join(" ")).not.toContain("active");
     expect(accordionLabels.every((label) => !/[\r\n]/.test(label))).toBe(true);
 
     const groupSwatches = await page.locator("[data-tools-accordion] > summary [data-toolbox-group-label]").evaluateAll((labels) => (
@@ -819,19 +819,21 @@ test("toolbox grouped view renders Game Journey order with unique colors while B
     expect(toolboxGroupsByTool["Idea Board"]).toBe("Idea");
     expect(toolboxGroupsByTool["Creator Learning"]).toBe("Idea");
     expect(toolboxGroupsByTool["AI Command Center"]).toBe("Design");
-    expect(toolboxGroupsByTool["Game Hub"]).toBe("Create");
-    expect(toolboxGroupsByTool["Game Configuration"]).toBe("Create");
-    expect(toolboxGroupsByTool["Game Crew"]).toBe("Create");
-    expect(toolboxGroupsByTool["Tags"]).toBe("Create");
+    expect(toolboxGroupsByTool["Game Hub"]).toBe("Design");
+    expect(toolboxGroupsByTool["Game Configuration"]).toBe("Design");
+    expect(toolboxGroupsByTool["Game Crew"]).toBe("Design");
+    expect(toolboxGroupsByTool["Tags"]).toBe("Design");
     expect(toolboxGroupsByTool["Game Journey"]).toBe("Progression");
     expect(toolboxGroupsByTool["Publish"]).toBe("Publish");
     expect(toolboxGroupsByTool["Marketplace"]).toBe("Share");
     expect(toolboxGroupsByTool.Users).toBeUndefined();
 
-    const createToolOrder = await page.locator("[data-tools-accordion='Create'] [data-toolbox-tool-card]").evaluateAll((cards) => (
+    const designToolOrder = await page.locator("[data-tools-accordion='Design'] [data-toolbox-tool-card]").evaluateAll((cards) => (
       cards.map((card) => card.getAttribute("data-toolbox-tool-card"))
     ));
-    expect(createToolOrder).toEqual(["Game Hub", "Game Crew", "Game Configuration", "Tags"]);
+    const expectedDesignTools = ["Game Hub", "Game Crew", "Game Configuration", "Tags", "Game Design", "AI Command Center"];
+    expect(designToolOrder).toEqual(expect.arrayContaining(expectedDesignTools));
+    expect(designToolOrder.filter((title) => expectedDesignTools.includes(title))).toEqual(expectedDesignTools);
 
     const toolLinks = await page.locator("[data-toolbox-tool-name-link]").evaluateAll((links) => (
       links.map((link) => ({
@@ -864,6 +866,79 @@ test("toolbox grouped view renders Game Journey order with unique colors while B
     expect(toolboxSource).not.toMatch(/<style[\s>]/i);
     expect(toolboxSource).not.toMatch(/\sstyle=/i);
     expect(toolboxSource).not.toContain("onclick=");
+    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+
+    expect(failedRequests).toEqual([]);
+    expect(pageErrors).toEqual([]);
+    expect(consoleErrors).toEqual([]);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await server.close();
+    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
+    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
+  }
+});
+
+test("toolbox grouped Game Journey accordions keep friendly labels readable on mobile", async ({ page }) => {
+  const server = await startRepoServer();
+  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
+  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
+  const failedRequests = [];
+  const pageErrors = [];
+  const consoleErrors = [];
+
+  page.on("response", (response) => {
+    if (response.status() >= 400) {
+      failedRequests.push(`${response.status()} ${response.url()}`);
+    }
+  });
+  page.on("requestfailed", (request) => {
+    failedRequests.push(`FAILED ${request.url()}`);
+  });
+  page.on("pageerror", (error) => {
+    const text = error.stack || error.message;
+    if (!isBrowserExtensionNoise(text)) {
+      pageErrors.push(error.message);
+    }
+  });
+  page.on("console", (message) => {
+    if (message.type() === "error" && !isBrowserExtensionNoise(message.text())) {
+      consoleErrors.push(message.text());
+    }
+  });
+
+  try {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await workspaceV2CoverageReporter.start(page);
+    await setServerSession(server, MOCK_DB_KEYS.users.admin);
+    await page.goto(`${server.baseUrl}/toolbox/index.html?view=group`, { waitUntil: "networkidle" });
+    const plannedFilter = page.locator("[data-toolbox-status-filter='planned']");
+    if (await plannedFilter.getAttribute("aria-pressed") !== "true") {
+      await plannedFilter.click();
+    }
+    const deprecatedFilter = page.locator("[data-toolbox-status-filter='deprecated']");
+    if (await deprecatedFilter.getAttribute("aria-pressed") !== "true") {
+      await deprecatedFilter.click();
+    }
+
+    const labels = page.locator("[data-tools-accordion] > summary [data-toolbox-group-label]");
+    await expect(labels).toHaveText(GAME_JOURNEY_ACCORDION_LABELS);
+    const labelLayout = await labels.evaluateAll((items) => (
+      items.map((label) => {
+        const rect = label.getBoundingClientRect();
+        const viewportWidth = document.documentElement.clientWidth;
+        return {
+          fitsViewport: rect.left >= 0 && rect.right <= viewportWidth,
+          text: label.textContent.trim(),
+          wraps: getComputedStyle(label).whiteSpace !== "nowrap",
+        };
+      })
+    ));
+    expect(labelLayout.every((item) => item.fitsViewport)).toBe(true);
+    expect(labelLayout.every((item) => item.wraps)).toBe(true);
+    expect(labelLayout.map((item) => item.text)).toEqual(GAME_JOURNEY_ACCORDION_LABELS);
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
 
     expect(failedRequests).toEqual([]);

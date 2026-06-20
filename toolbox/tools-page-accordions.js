@@ -72,7 +72,6 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
     const stateSwatchMap = Object.freeze({ ...(toolboxContract.releaseChannelSwatches || {}) });
     const gameJourneyGroupOrder = Object.freeze([
         "Idea",
-        "Create",
         "Design",
         "Graphics",
         "Audio",
@@ -88,23 +87,21 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
     ]);
     const gameJourneyFriendlyDescriptions = Object.freeze({
         "Idea": "Dream, brainstorm, and explore",
-        "Create": "Set up your game and crew",
-        "Design": "Shape the player experience",
-        "Graphics": "Create the look of your game",
-        "Audio": "Bring your world to life with sound",
-        "Objects": "Build things players can interact with",
-        "Worlds": "Design places to explore",
-        "Interface": "Create what players see and use",
-        "Controls": "Define how players play",
-        "Rules": "Make your game come alive",
-        "Progression": "Reward players and keep them engaged",
-        "Play Test": "See how your game feels",
-        "Publish": "Prepare your game for launch",
-        "Share": "Grow your community"
+        "Design": "Shape your game's story and systems",
+        "Graphics": "Create the visual look of your game",
+        "Audio": "Build sounds, music, and voices",
+        "Objects": "Create the things players interact with",
+        "Worlds": "Build levels, maps, and places to explore",
+        "Interface": "Design menus, HUDs, and player screens",
+        "Controls": "Define how players interact with your game",
+        "Rules": "Create gameplay behavior and events",
+        "Progression": "Build rewards, unlocks, and advancement",
+        "Play Test": "Test, debug, and improve your game",
+        "Publish": "Prepare and release your game",
+        "Share": "Grow your audience and community"
     });
     const gameJourneyGroupSwatches = Object.freeze({
         "Idea": "swatch-red",
-        "Create": "swatch-amber",
         "Design": "swatch-orange",
         "Graphics": "swatch-gold",
         "Audio": "swatch-yellow",
@@ -120,7 +117,6 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
     });
     const gameJourneyGroupClasses = Object.freeze({
         "Idea": "tool-group-idea",
-        "Create": "tool-group-game-create",
         "Design": "tool-group-journey-design",
         "Graphics": "tool-group-graphics",
         "Audio": "tool-group-journey-audio",
@@ -152,12 +148,13 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
         "environments": "Publish",
         "events": "Rules",
         "fonts": "Interface",
-        "game-configuration": "Create",
+        "game-configuration": "Design",
+        "game-crew": "Design",
         "game-design": "Design",
         "game-journey": "Progression",
         "game-migration": "Publish",
         "game-testing": "Play Test",
-        "game-workspace": "Create",
+        "game-workspace": "Design",
         "hitboxes": "Controls",
         "idea-board": "Idea",
         "input-mapping-v2": "Controls",
@@ -176,20 +173,23 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
         "saved-data": "Progression",
         "speech-to-text": "Audio",
         "sprites": "Graphics",
-        "tags": "Create",
+        "tags": "Design",
         "text-to-speech": "Audio",
-        "users": "Create",
+        "users": "Design",
         "videos": "Graphics",
         "voices": "Audio",
         "worlds": "Worlds"
     });
     const toolboxGroupPositions = new Map(toolboxGroupOrder.map((group, index) => [group, index]));
     const workflowToolOrderByGroup = Object.freeze({
-        "Create": Object.freeze({
+        "Design": Object.freeze({
             "game-workspace": 1,
             "users": 2,
+            "game-crew": 2,
             "game-configuration": 3,
-            "tags": 4
+            "tags": 4,
+            "game-design": 5,
+            "ai-assistant": 6
         })
     });
     toolboxDefaultReleaseChannels.forEach((channel) => {
@@ -238,11 +238,9 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
 
     function gameJourneyAccordionLabel(groupName) {
         const metric = gameJourneyCompletionByGroup.get(groupName);
-        const description = metric?.friendlyDescription || gameJourneyFriendlyDescriptions[groupName] || groupName;
-        if (!metric) {
-            return `0% - ${groupName}: ${description} (0 of 0 complete, inactive)`;
-        }
-        return `${metric.percentComplete}% - ${groupName}: ${description} (${metric.completedCount} of ${metric.plannedCount} complete, ${metric.status})`;
+        const description = gameJourneyFriendlyDescriptions[groupName] || groupName;
+        const percentComplete = Number.isFinite(metric?.percentComplete) ? metric.percentComplete : 0;
+        return `${percentComplete}% Complete — ${groupName}: ${description}`;
     }
 
     function getGameProgressSummary() {

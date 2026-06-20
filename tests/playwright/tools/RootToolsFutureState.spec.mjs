@@ -363,7 +363,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     const guestGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
       groups.map((group) => group.dataset.toolsAccordion)
     ));
-    expect(guestGroupLabels).toEqual(["Idea", "Create", "Design", "Graphics", "Objects", "Interface", "Controls", "Progression"]);
+    expect(guestGroupLabels).toEqual(["Idea", "Design", "Graphics", "Objects", "Interface", "Controls", "Progression"]);
     await expect(page.locator("[data-tools-accordion='Admin']")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
     await expect(page.locator("[data-tools-accordion-list] .control-card h3", { hasText: /^Progress$/ })).toHaveCount(0);
@@ -432,7 +432,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     const adminGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
       groups.map((group) => group.dataset.toolsAccordion)
     ));
-    expect(adminGroupLabels).toEqual(["Idea", "Create", "Design", "Graphics", "Objects", "Interface", "Controls", "Progression"]);
+    expect(adminGroupLabels).toEqual(["Idea", "Design", "Graphics", "Objects", "Interface", "Controls", "Progression"]);
     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
     await page.getByRole("button", { name: "Build Path" }).click();
     await expect(page.locator("[data-build-path-table='workflow']")).toBeVisible();
@@ -670,7 +670,6 @@ test("representative active tool pages align center cleanup and registry group c
   ];
   const gameJourneyGroupClasses = [
     "tool-group-idea",
-    "tool-group-game-create",
     "tool-group-journey-design",
     "tool-group-graphics",
     "tool-group-journey-audio",
