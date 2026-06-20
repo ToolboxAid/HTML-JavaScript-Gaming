@@ -39,6 +39,10 @@ function createMessageStudioTtsServiceRegistry({
         voice: selectedVoice,
       });
     },
+
+    stop() {
+      return engine.stop();
+    },
   };
 }
 

@@ -88,8 +88,10 @@ test("Text2Speech profile contract exposes Message Studio compatible profile opt
   assert.equal(TTS_PROFILE_CONTRACT_VERSION, "tts-profile-emotion-v1");
   assert.equal(defaults[0].name, "Default Balanced Profile");
   assert.equal(defaults[0].messageStudioUsageCount, 1);
-  assert.equal(defaults[0].emotions[0].emotionLabel, "Neutral");
-  assert.equal(defaults[0].emotions[0].messagePartsUsageCount, 1);
+  assert.deepEqual(defaults[0].emotions.map((emotion) => emotion.emotionLabel), ["Neutral", "Happy", "Angry", "Scared"]);
+  assert.deepEqual(defaults[1].emotions.map((emotion) => emotion.emotionLabel), ["Neutral", "Happy", "Angry", "Scared"]);
+  assert.deepEqual(defaults[2].emotions.map((emotion) => emotion.emotionLabel), ["Neutral", "Happy", "Angry", "Scared"]);
+  assert.equal(defaults[0].emotions.find((emotion) => emotion.emotion === "neutral").messagePartsUsageCount, 1);
   assert.deepEqual(options, [{
     active: true,
     emotionSettings: [{

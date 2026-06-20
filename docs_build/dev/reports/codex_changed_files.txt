@@ -1,54 +1,17 @@
-PR_26171_044-idea-board-game-hub-project-flow
-
-Changed files:
-- docs_build/pr/PR_26171_044-idea-board-game-hub-project-flow/PLAN_PR.md
-- docs_build/pr/PR_26171_044-idea-board-game-hub-project-flow/BUILD_PR.md
-- docs_build/pr/PR_26171_044-idea-board-game-hub-project-flow/APPLY_PR.md
-- docs_build/dev/reports/codex_review.diff
-- docs_build/dev/reports/codex_changed_files.txt
-- src/dev-runtime/persistence/tool-repositories/game-workspace-mock-repository.js
-- tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs
-- tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-- tests/playwright/tools/ToolboxRoutePages.spec.mjs
-- toolbox/game-workspace/game-workspace.js
-- toolbox/game-workspace/index.html
-- toolbox/idea-board/index.html
-- toolbox/idea-board/index.js
-
-Requirement PASS evidence:
-- PASS: Create Project appears only for Ready ideas. Evidence: Idea Board actions remain Edit/Create Project/Delete for Ready rows and switch to Open in Game Hub/Archive after creation in targeted Playwright.
-- PASS: Create Project uses the shared Game Hub project contract. Evidence: Idea Board calls the existing game-workspace server repository client createGame method; Playwright asserts the createGame repository request occurs.
-- PASS: Create Project sets Idea status to Project. Evidence: targeted Playwright asserts the row status becomes Project.
-- PASS: Project ideas and notes are read-only. Evidence: targeted Playwright asserts no Edit/Delete/Add Note/note actions remain for the Project row.
-- PASS: Project row actions are Open in Game Hub and Archive. Evidence: targeted Playwright asserts exact action labels.
-- PASS: Project ideas cannot be edited or deleted while Project. Evidence: Project rows do not render Edit/Delete actions and deletion guard remains active.
-- PASS: Project ideas cannot add/edit/delete notes. Evidence: expanded Project notes render without Add Note or note actions.
-- PASS: Archived ideas remain hidden by default and show Restore/Delete when visible. Evidence: targeted Playwright archives, shows Archived through the filter, and asserts Restore/Delete.
-- PASS: Game Hub shows creator-facing Project Information. Evidence: Game Hub HTML/JS replaces internal record display with Project Information and targeted Game Hub Playwright passes.
-- PASS: Game Hub shows read-only Source Idea fields. Evidence: Idea Board-to-Game Hub Playwright asserts Idea, Pitch, and Notes from the source idea render in Game Hub.
-- PASS: Game Hub avoids internal IDs, DB/API/mock/debug/seed wording in creator-facing display. Evidence: touched runtime files pass creator-visible text scan and targeted Playwright checks the navigated Game Hub main content.
-- PASS: Open in Game Hub navigates to the related project. Evidence: targeted Playwright waits for /toolbox/game-workspace/index.html?game=lantern-reef-* and asserts the linked project renders.
-- PASS: No Game Journey expansion beyond existing link/reference. Evidence: implementation does not add Game Journey creation or new journey wiring.
-
-Validation evidence:
-- PASS: node --check toolbox/idea-board/index.js
-- PASS: node --check toolbox/game-workspace/game-workspace.js
-- PASS: node --check toolbox/game-workspace/game-workspace-api-client.js
-- PASS: node --check src/dev-runtime/persistence/tool-repositories/game-workspace-mock-repository.js
-- PASS: node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-- PASS: node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs
-- PASS: node --check tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs
-- PASS: npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line
-- PASS: npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line --grep "Idea Board launches"
-- PASS: npx playwright test tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs --project=playwright --workers=1 --reporter=line --grep "Game Hub"
-- PASS: npm run test:workspace-v2
-- PASS: git diff --check
-
-Git workflow:
-- Current branch: codex/pr-26171-044-idea-board-game-hub-project-flow
-- Created branch: codex/pr-26171-044-idea-board-game-hub-project-flow
-- Commit hash: 2a38796f81aae2dceb4151095b8f89a276cd2d32
-- Push result: pushed to origin/codex/pr-26171-044-idea-board-game-hub-project-flow
-- PR URL: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/22
-- Merge result: to be reported after merge
-- Final main commit: to be reported after returning to main and pulling latest
+﻿A	docs_build/dev/reports/PR_26171_069-manual-validation-notes.md
+A	docs_build/dev/reports/PR_26171_069-message-tts-ownership-checklist.md
+A	docs_build/dev/reports/PR_26171_069-message-tts-profile-contract-alignment.md
+A	docs_build/dev/reports/PR_26171_069-parent-child-table-checklist.md
+A	docs_build/dev/reports/PR_26171_069-validation.md
+A	docs_build/pr/PR_26171_069-message-tts-profile-contract-alignment/APPLY_PR.md
+A	docs_build/pr/PR_26171_069-message-tts-profile-contract-alignment/BUILD_PR.md
+A	docs_build/pr/PR_26171_069-message-tts-profile-contract-alignment/PLAN_PR.md
+M	tests/playwright/tools/MessagesTool.spec.mjs
+M	tests/playwright/tools/TextToSpeechFunctional.spec.mjs
+M	tests/tools/Text2SpeechShell.test.mjs
+M	toolbox/messages/index.html
+M	toolbox/messages/message-tts-service-registry.js
+M	toolbox/messages/messages.js
+M	toolbox/text-to-speech/text2speech.js
+M	docs_build/dev/reports/codex_review.diff
+M	docs_build/dev/reports/codex_changed_files.txt

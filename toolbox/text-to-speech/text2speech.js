@@ -95,10 +95,12 @@ const TTS_PROFILE_GENDER_OPTIONS = Object.freeze([
 
 const TTS_PROFILE_EMOTION_OPTIONS = Object.freeze([
   Object.freeze({ label: "Neutral", value: "neutral" }),
+  Object.freeze({ label: "Happy", value: "happy" }),
+  Object.freeze({ label: "Angry", value: "angry" }),
+  Object.freeze({ label: "Scared", value: "scared" }),
   Object.freeze({ label: "Calm", value: "calm" }),
   Object.freeze({ label: "Urgent", value: "urgent" }),
   Object.freeze({ label: "Whisper", value: "whisper" }),
-  Object.freeze({ label: "Angry", value: "angry" }),
   Object.freeze({ label: "Excited", value: "excited" })
 ]);
 
@@ -243,13 +245,25 @@ function defaultVoiceForProfile(voiceOptions = [], preferredGender = "") {
   return preferred || voiceOptions[0];
 }
 
+function createDefaultEmotionSettings({ markNeutralInUse = false } = {}) {
+  return [
+    createTextToSpeechProfileEmotion({
+      emotion: "neutral",
+      messagePartsUsageCount: markNeutralInUse ? 1 : 0,
+    }),
+    createTextToSpeechProfileEmotion({ emotion: "happy", pitch: 1.08, rate: 1.04 }),
+    createTextToSpeechProfileEmotion({ emotion: "angry", pitch: 0.96, rate: 1.08, volume: 1 }),
+    createTextToSpeechProfileEmotion({ emotion: "scared", pitch: 1.12, rate: 1.12, volume: 0.9 }),
+  ];
+}
+
 function createDefaultTextToSpeechProfiles(voiceOptions = []) {
   const balancedVoice = defaultVoiceForProfile(voiceOptions);
   const manVoice = defaultVoiceForProfile(voiceOptions, "male") || balancedVoice;
   const womanVoice = defaultVoiceForProfile(voiceOptions, "female") || voiceOptions[1] || balancedVoice;
   return [
     createTextToSpeechProfile({
-      emotions: [createTextToSpeechProfileEmotion({ messagePartsUsageCount: 1 })],
+      emotions: createDefaultEmotionSettings({ markNeutralInUse: true }),
       id: DEFAULT_TTS_PROFILE_ID,
       language: balancedVoice?.language || TEXT_TO_SPEECH_DEFAULTS.language,
       messageStudioUsageCount: 1,
@@ -258,6 +272,7 @@ function createDefaultTextToSpeechProfiles(voiceOptions = []) {
       voiceName: balancedVoice?.name || balancedVoice?.label || "Default browser voice"
     }),
     createTextToSpeechProfile({
+      emotions: createDefaultEmotionSettings(),
       gender: "male",
       id: "man-profile-1",
       language: manVoice?.language || TEXT_TO_SPEECH_DEFAULTS.language,
@@ -266,6 +281,7 @@ function createDefaultTextToSpeechProfiles(voiceOptions = []) {
       voiceName: manVoice?.name || manVoice?.label || "Default browser voice"
     }),
     createTextToSpeechProfile({
+      emotions: createDefaultEmotionSettings(),
       gender: "female",
       id: "woman-profile-2",
       language: womanVoice?.language || TEXT_TO_SPEECH_DEFAULTS.language,

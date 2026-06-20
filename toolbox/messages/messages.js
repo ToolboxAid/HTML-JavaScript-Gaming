@@ -1,12 +1,10 @@
 import {
   createMessage,
   createMessageSegment,
-  createEmotionProfile,
   listEmotionProfiles,
   listMessages,
   listMessageSegments,
   listTtsProfiles,
-  updateEmotionProfile,
   updateMessage,
   updateMessageSegment,
 } from "./messages-api-client.js";
@@ -31,9 +29,6 @@ const ttsServiceRegistry = createMessageStudioTtsServiceRegistry();
 const elements = {
   addMessageRow: document.querySelector("[data-messages-add-row]"),
   count: document.querySelector("[data-messages-count]"),
-  emotionAddRow: document.querySelector("[data-messages-emotion-add-row]"),
-  emotionCount: document.querySelector("[data-messages-emotion-count]"),
-  emotionRows: document.querySelector("[data-messages-emotions]"),
   log: document.querySelector("[data-messages-log]"),
   persistenceEngine: document.querySelector("[data-messages-persistence-engine]"),
   persistenceOwner: document.querySelector("[data-messages-persistence-owner]"),
@@ -45,18 +40,18 @@ const elements = {
   selectedSegment: document.querySelector("[data-messages-selected-segment]"),
   selectedStatus: document.querySelector("[data-messages-selected-status]"),
   selectedText: document.querySelector("[data-messages-selected-text]"),
+  segmentCount: document.querySelector("[data-messages-segment-count]"),
   speechTestTarget: document.querySelector("[data-messages-speech-test-target]"),
+  stopSpeech: document.querySelector("[data-messages-stop-speech]"),
   table: document.querySelector("[data-messages-table]"),
   testSpeech: document.querySelector("[data-messages-test-speech]"),
   ttsCount: document.querySelector("[data-messages-tts-count]"),
-  ttsRows: document.querySelector("[data-messages-tts-profiles]"),
   ttsService: document.querySelector("[data-messages-tts-service]"),
   validationCard: document.querySelector("[data-messages-validation-card]"),
   validationErrors: document.querySelector("[data-messages-validation-errors]"),
 };
 
 const state = {
-  editingEmotionKey: "",
   editingMessageKey: "",
   editingSegmentKey: "",
   emotionProfiles: [],
@@ -341,7 +336,7 @@ function selectOptionsWithCurrent(currentKey) {
 
 function renderCounts() {
   setText(elements.count, String(state.messages.length));
-  setText(elements.emotionCount, String(state.emotionProfiles.length));
+  setText(elements.segmentCount, String(state.segments.length));
   setText(elements.ttsCount, String(activeTtsProfileOptions().length));
 }
 
@@ -428,6 +423,9 @@ function renderSpeechTestControls() {
   setText(elements.previewStatus, readiness.message);
   if (elements.testSpeech) {
     elements.testSpeech.disabled = !readiness.ok;
+  }
+  if (elements.stopSpeech) {
+    elements.stopSpeech.disabled = !selectedTtsService()?.available;
   }
 }
 
@@ -659,89 +657,8 @@ function renderMessageRows() {
   }
 }
 
-function createEmotionEditRow(profile = null) {
-  const key = profile?.key || NEW_ROW_KEY;
-  const row = document.createElement("tr");
-  row.dataset.messagesEmotionEditor = key;
-
-  const nameCell = document.createElement("td");
-  nameCell.append(createInput(profile?.name || "", "emotionName"));
-  const volumeCell = document.createElement("td");
-  volumeCell.append(createNumberInput(profile?.volume ?? 1, "emotionVolume", { min: 0, max: 2, step: 0.01 }));
-  const pitchCell = document.createElement("td");
-  pitchCell.append(createNumberInput(profile?.pitch ?? 1, "emotionPitch", { min: 0.25, max: 2, step: 0.01 }));
-  const rateCell = document.createElement("td");
-  rateCell.append(createNumberInput(profile?.rate ?? 1, "emotionRate", { min: 0.25, max: 2, step: 0.01 }));
-  const statusCell = document.createElement("td");
-  statusCell.append(createCheckbox(profile?.active !== false, "emotionActive"));
-  const actions = document.createElement("td");
-  actions.append(createActionGroup(
-    createButton("Update Row", "messagesEmotionCommit", key),
-    createButton("Cancel", "messagesEmotionCancel", key),
-  ));
-  row.append(nameCell, volumeCell, pitchCell, rateCell, statusCell, actions);
-  return row;
-}
-
-function renderEmotionRows() {
-  if (!elements.emotionRows) {
-    return;
-  }
-  elements.emotionRows.replaceChildren();
-  state.emotionProfiles.forEach((profile) => {
-    if (state.editingEmotionKey === profile.key) {
-      elements.emotionRows.append(createEmotionEditRow(profile));
-      return;
-    }
-    const row = document.createElement("tr");
-    row.dataset.messagesEmotionRow = profile.key;
-    const actions = document.createElement("td");
-    actions.append(createActionGroup(
-      createButton("Edit", "messagesEmotionEdit", profile.key),
-      profile.active ? createButton("Disable", "messagesEmotionDisable", profile.key) : null,
-    ));
-    row.append(
-      createCell(profile.name),
-      createCell(String(profile.volume)),
-      createCell(String(profile.pitch)),
-      createCell(String(profile.rate)),
-      createCell(statusForActive(profile.active)),
-      actions,
-    );
-    elements.emotionRows.append(row);
-  });
-  if (state.editingEmotionKey === NEW_ROW_KEY) {
-    elements.emotionRows.append(createEmotionEditRow(null));
-  }
-  if (!state.emotionProfiles.length && state.editingEmotionKey !== NEW_ROW_KEY) {
-    elements.emotionRows.append(tableMessage(6, "No emotion profiles saved yet."));
-  }
-}
-
-function renderTtsRows() {
-  if (!elements.ttsRows) {
-    return;
-  }
-  elements.ttsRows.replaceChildren();
-  activeTtsProfileOptions().forEach((profile) => {
-    const row = document.createElement("tr");
-    row.dataset.messagesTtsRow = profile.key;
-    row.append(
-      createCell(profile.name),
-      createCell(profile.providerKey),
-      createCell(profile.voiceName || ""),
-      createCell(profile.language),
-      createCell(statusForActive(profile.active)),
-      createCell(profile.key === DEFAULT_TTS_PROFILE_KEY ? "Default option" : "Owned by TTS Studio"),
-    );
-    elements.ttsRows.append(row);
-  });
-}
-
 function render(persistence = {}) {
   renderMessageRows();
-  renderEmotionRows();
-  renderTtsRows();
   renderSelectedMessage();
   renderCounts();
   renderPersistence(persistence);
@@ -813,25 +730,6 @@ function validateSegment(values) {
     }
   }
   return errors;
-}
-
-function emotionValues(key) {
-  const root = elements.emotionRows?.querySelector(`[data-messages-emotion-editor="${key}"]`);
-  const existing = key === NEW_ROW_KEY ? null : emotionProfileByKey(key);
-  return {
-    active: editorChecked(root, "[data-emotion-active]"),
-    description: existing?.description || "",
-    name: editorValue(root, "[data-emotion-name]"),
-    pauseAfterMs: existing?.pauseAfterMs ?? 0,
-    pauseBeforeMs: existing?.pauseBeforeMs ?? 0,
-    pitch: Number(editorValue(root, "[data-emotion-pitch]") || 1),
-    rate: Number(editorValue(root, "[data-emotion-rate]") || 1),
-    volume: Number(editorValue(root, "[data-emotion-volume]") || 1),
-  };
-}
-
-function validateEmotion(values) {
-  return values.name.trim() ? [] : ["Emotion Profile Name is required."];
 }
 
 async function loadAll() {
@@ -906,28 +804,6 @@ async function commitSegment(key) {
   } catch (error) {
     showValidation([error instanceof Error ? error.message : String(error || "Segment row update failed.")]);
     setText(elements.log, "Message part update failed.");
-  }
-}
-
-async function commitEmotion(key) {
-  const values = emotionValues(key);
-  const errors = validateEmotion(values);
-  if (errors.length) {
-    showValidation(errors);
-    setText(elements.log, "Emotion profile update blocked by validation.");
-    return;
-  }
-  clearValidation();
-  try {
-    const result = key === NEW_ROW_KEY
-      ? createEmotionProfile(values)
-      : updateEmotionProfile(key, values);
-    state.editingEmotionKey = "";
-    await reloadAfterChange();
-    setText(elements.log, `Updated emotion profile ${result.emotionProfile.name}.`);
-  } catch (error) {
-    showValidation([error instanceof Error ? error.message : String(error || "Emotion profile update failed.")]);
-    setText(elements.log, "Emotion profile update failed.");
   }
 }
 
@@ -1091,28 +967,16 @@ function playMessage(key) {
   setText(elements.log, message);
 }
 
-async function disableEmotion(key) {
-  const profile = emotionProfileByKey(key);
-  if (!profile) {
+function stopSpeech() {
+  const result = ttsServiceRegistry.stop();
+  if (!result.ok) {
+    visiblePlaybackError(result.message || "Message Studio playback could not be stopped.");
     return;
   }
-  try {
-    const result = updateEmotionProfile(key, {
-      active: false,
-      description: profile.description,
-      name: profile.name,
-      pauseAfterMs: profile.pauseAfterMs,
-      pauseBeforeMs: profile.pauseBeforeMs,
-      pitch: profile.pitch,
-      rate: profile.rate,
-      volume: profile.volume,
-    });
-    await reloadAfterChange();
-    setText(elements.log, `Disabled emotion profile ${result.emotionProfile.name}.`);
-  } catch (error) {
-    showValidation([error instanceof Error ? error.message : String(error || "Emotion profile status update failed.")]);
-    setText(elements.log, "Emotion profile status update failed.");
-  }
+  clearValidation();
+  const message = `Message Studio playback stopped. Cleared ${result.stoppedCount} queued item${result.stoppedCount === 1 ? "" : "s"}.`;
+  setText(elements.previewStatus, message);
+  setText(elements.log, message);
 }
 
 async function moveSegment(key, direction) {
@@ -1154,13 +1018,6 @@ elements.addMessageRow?.addEventListener("click", () => {
   setText(elements.log, "Ready to add a message row.");
 });
 
-elements.emotionAddRow?.addEventListener("click", () => {
-  clearValidation();
-  state.editingEmotionKey = NEW_ROW_KEY;
-  renderEmotionRows();
-  setText(elements.log, "Ready to add an emotion profile.");
-});
-
 elements.previewTtsProfile?.addEventListener("change", () => {
   renderSpeechTestControls();
 });
@@ -1171,6 +1028,10 @@ elements.ttsService?.addEventListener("change", () => {
 
 elements.testSpeech?.addEventListener("click", () => {
   testSelectedSpeech();
+});
+
+elements.stopSpeech?.addEventListener("click", () => {
+  stopSpeech();
 });
 
 ttsServiceRegistry.onServicesChanged(() => {
@@ -1306,34 +1167,6 @@ elements.table?.addEventListener("click", async (event) => {
     state.selectedSegmentKey = "";
     state.editingSegmentKey = "";
     render();
-  }
-});
-
-elements.emotionRows?.addEventListener("click", async (event) => {
-  const editButton = event.target.closest("[data-messages-emotion-edit]");
-  const commitButton = event.target.closest("[data-messages-emotion-commit]");
-  const cancelButton = event.target.closest("[data-messages-emotion-cancel]");
-  const disableButton = event.target.closest("[data-messages-emotion-disable]");
-  if (editButton) {
-    clearValidation();
-    state.editingEmotionKey = editButton.dataset.messagesEmotionEdit;
-    renderEmotionRows();
-    setText(elements.log, "Emotion profile opened inline.");
-    return;
-  }
-  if (commitButton) {
-    await commitEmotion(commitButton.dataset.messagesEmotionCommit);
-    return;
-  }
-  if (cancelButton) {
-    state.editingEmotionKey = "";
-    clearValidation();
-    renderEmotionRows();
-    setText(elements.log, "Emotion profile edit canceled.");
-    return;
-  }
-  if (disableButton) {
-    await disableEmotion(disableButton.dataset.messagesEmotionDisable);
   }
 });
 
