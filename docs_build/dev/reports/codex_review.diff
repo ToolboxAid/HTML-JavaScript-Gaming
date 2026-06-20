@@ -1,886 +1,2249 @@
-﻿diff --git a/assets/theme-v2/css/tables.css b/assets/theme-v2/css/tables.css
-index a8c75090a..c39ef19f0 100644
---- a/assets/theme-v2/css/tables.css
-+++ b/assets/theme-v2/css/tables.css
-@@ -38,6 +38,67 @@ td {
-   color: var(--text)
- }
-
-+.idea-board-table-caption {
-+  position: relative;
-+  z-index: var(--z-index-sm);
-+  display: flex;
-+  align-items: center;
-+  justify-content: space-between;
-+  gap: var(--space-10);
-+  padding: var(--space-10);
-+  font-weight: var(--font-weight-heavy)
-+}
-+
-+.idea-board-show-filter {
-+  position: relative;
-+  z-index: var(--z-index-md);
-+  color: var(--text);
-+  font-size: var(--font-size-xs);
-+  font-weight: var(--font-weight-bold)
-+}
-+
-+.idea-board-show-filter summary {
-+  display: inline-flex;
-+  align-items: center;
-+  min-height: var(--space-28);
-+  padding: var(--space-3) var(--space-10);
-+  border: var(--border-standard);
-+  border-radius: var(--radius-md);
-+  background: var(--panel-soft);
-+  cursor: pointer;
-+  list-style: none
-+}
-+
-+.idea-board-show-filter summary::-webkit-details-marker {
-+  display: none
-+}
-+
-+.idea-board-show-filter__menu {
-+  position: static;
-+  min-width: 12rem;
-+  margin-top: var(--space-6);
-+  padding: var(--space-10);
-+  border: var(--border-standard);
-+  border-radius: var(--radius-md);
-+  background: var(--panel);
-+  box-shadow: var(--shadow-md)
-+}
-+
-+.idea-board-show-filter__options {
-+  display: grid;
-+  gap: var(--space-6);
-+  margin-top: var(--space-10)
-+}
-+
-+.idea-board-show-filter__option {
-+  display: flex;
-+  align-items: center;
-+  gap: var(--space-8);
-+  color: var(--text);
-+  font-weight: var(--font-weight-regular);
-+  white-space: nowrap
-+}
-+
- .data-table th {
-   color: var(--gold);
-   font-size: var(--font-size-sm);
-@@ -60,8 +121,13 @@ td {
-   gap: .35em;
-   color: inherit;
-   font: inherit;
--  line-height: inherit;
--  vertical-align: baseline
-+  line-height: var(--line-height-single);
-+  vertical-align: baseline;
-+  white-space: nowrap
-+}
-+
-+.idea-board-idea-label__text {
-+  line-height: var(--line-height-single)
- }
-
- .idea-board-idea-chevron {
 diff --git a/assets/theme-v2/js/tool-display-mode.js b/assets/theme-v2/js/tool-display-mode.js
-index 9c23ba67e..e77b7a9df 100644
+index e77b7a9df..08bada607 100644
 --- a/assets/theme-v2/js/tool-display-mode.js
 +++ b/assets/theme-v2/js/tool-display-mode.js
-@@ -157,7 +157,7 @@
-             const diagnostic = document.createElement("p");
-             diagnostic.className = "status";
-             diagnostic.setAttribute("role", "status");
--            diagnostic.textContent = "Tool navigation could not load from the server API. Start the local server API and refresh.";
-+            diagnostic.textContent = "Tool navigation is temporarily unavailable. Refresh the page or try again shortly.";
-             body.appendChild(diagnostic);
+@@ -154,11 +154,6 @@
+             body.appendChild(navigationRow);
+         } catch (error) {
+             console.warn("Tool navigation could not be loaded.", error);
+-            const diagnostic = document.createElement("p");
+-            diagnostic.className = "status";
+-            diagnostic.setAttribute("role", "status");
+-            diagnostic.textContent = "Tool navigation is temporarily unavailable. Refresh the page or try again shortly.";
+-            body.appendChild(diagnostic);
          }
      }
-diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 4b9b70b93..bb7de5d8d 100644
---- a/docs_build/dev/reports/codex_changed_files.txt
-+++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,37 +1,91 @@
--# Codex Changed Files - PR_26171_063-codex-instruction-enforcement-hardening
-+# Codex Changed Files - PR_26171_041-idea-board-production-polish
 
--## Conflict Resolution Note
--- Merged latest `origin/main` into the PR branch after GitHub reported merge conflicts.
--- Regenerated Codex artifacts from the PR_063 delta against updated `origin/main`.
--- No implementation scope was changed while resolving conflicts.
-+## Git Workflow
-+- Current branch: `codex/pr-26171-041-idea-board-production-polish`.
-+- Expected starting branch: `main` (PASS before branch creation).
-+- Created branch: `codex/pr-26171-041-idea-board-production-polish`.
-+- Commit before conflict resolution: `ca626873a4cf19925229851b0da2a4ff55c2073f`.
-+- Initial push result: PASS, branch pushed to `origin/codex/pr-26171-041-idea-board-production-polish`.
-+- PR URL: `https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/17`.
-+- Conflict resolution: merged `origin/main` at `0a364f85516aea82e38eea2f498fde5980f9adf9`; conflicts were limited to `codex_changed_files.txt` and `codex_review.diff`.
-+- Conflict resolution push result: pending until after merge-validation commit.
-+- Merge result: pending until after PR validation/merge.
-+- Final main sync: pending until after merge and final pull.
-
+diff --git a/docs_build/dev/reports/PR_26171_061-engine-audio-ownership-checklist.md b/docs_build/dev/reports/PR_26171_061-engine-audio-ownership-checklist.md
+deleted file mode 100644
+index 5e18e0955..000000000
+--- a/docs_build/dev/reports/PR_26171_061-engine-audio-ownership-checklist.md
++++ /dev/null
+@@ -1,25 +0,0 @@
+-# PR_26171_061 Engine Audio Ownership Checklis
+-
+-## Engine Ownership
+-
+-- PASS: Reusable TTS voice filtering lives in `src/engine/audio/TextToSpeechEngine.js`.
+-- PASS: Reusable TTS preset shaping lives in `src/engine/audio/TextToSpeechEngine.js`.
+-- PASS: Reusable TTS queue item helpers live in `src/engine/audio/TextToSpeechEngine.js`.
+-- PASS: Existing defaults remain in `src/engine/audio/TextToSpeechDefaults.js`.
+-- PASS: Active toolbox UI consumes the engine module instead of duplicating all engine behavior locally.
+-
+-## Active Tool Ownership
+-
+-- PASS: Active tool remains under `toolbox/text-to-speech/`.
+-- PASS: Active HTML remains Theme V2 only.
+-- PASS: Active JavaScript remains external.
+-- PASS: Active tool owns DOM wiring, status display, and control event handling.
+-- PASS: Active tool does not create database behavior.
+-
+-## Boundary Checks
+-
+-- PASS: No `tools/text2speech/` path was created.
+-- PASS: Archived `old_text2speech-V2` was used as a read-only functionality sample.
+-- PASS: Archived tool files were not activated in navigation.
+-- PASS: Browser SpeechSynthesis is the implemented local provider.
+-- PASS: Planned providers remain documented but do not block browser preview.
+diff --git a/docs_build/dev/reports/PR_26171_061-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26171_061-instruction-compliance-checklist.md
+deleted file mode 100644
+index ffb2cb288..000000000
+--- a/docs_build/dev/reports/PR_26171_061-instruction-compliance-checklist.md
++++ /dev/null
+@@ -1,32 +0,0 @@
+-# PR_26171_061 Instruction Compliance Checklis
+-
+-## Pre-Work Gate
+-
+-- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before file changes.
+-- PASS: Read `docs_build/dev/PROJECT_MULTI_PC.txt` before file changes.
+-- PASS: Reported instruction compliance PASS/FAIL before file changes.
+-- PASS: `git branch --show-current` reported `main` before branch creation.
+-- PASS: `git checkout main` completed before branch creation.
+-- PASS: `git pull origin main` completed before branch creation.
+-- PASS: `git status` reported a clean working tree before branch creation.
+-- PASS: Created branch `pr/26171-061-text2speech-engine-audio-feature-parity` from clean latest `main`.
+-
+-## Owner And Parity
+-
+-- PASS: PR number `061` is odd.
+-- PASS: Odd parity maps to Laptop / Environment 2.
+-- PASS: Text To Speech / TTS is owned by Laptop / Environment 2.
+-- PASS: Implementation path matches active owner path: `toolbox/text-to-speech/`.
+-- PASS: Shared engine path matches approved reusable audio path: `src/engine/audio/`.
+-
+-## Hard Stop Checks
+-
+-- PASS: Instructions were present and readable.
+-- PASS: Branch workflow could be followed.
+-- PASS: Repository was clean before branching.
+-- PASS: No owner mismatch.
+-- PASS: No parity mismatch.
+-- PASS: No wrong implementation path.
+-- PASS: Scoped validation was not skipped.
+-- PASS: Required reports were created.
+-- PASS: Required repo ZIP was created.
+diff --git a/docs_build/dev/reports/PR_26171_061-manual-validation-notes.md b/docs_build/dev/reports/PR_26171_061-manual-validation-notes.md
+deleted file mode 100644
+index 3341b14ba..000000000
+--- a/docs_build/dev/reports/PR_26171_061-manual-validation-notes.md
++++ /dev/null
+@@ -1,27 +0,0 @@
+-# PR_26171_061 Manual Validation Notes
+-
+-## Manual Review
+-
+-- Confirmed active Text To Speech path is `toolbox/text-to-speech/`.
+-- Confirmed no `tools/text2speech/` directory was created.
+-- Confirmed old functionality sample path is `archive/v1-v2/tools/old_text2speech-V2/`.
+-- Confirmed active HTML has external scripts only.
+-- Confirmed active HTML has no inline style attributes or inline event handlers.
+-- Confirmed no database files were changed.
+-
+-## Automated Browser Coverage Used For Manual Equivalents
+-
+-- Opened active Text To Speech page through targeted Playwright validation.
+-- Verified browser voices render.
+-- Verified restored control groups render.
+-- Verified preset shaping updates pitch and volume values.
+-- Verified named sentence Add, Duplicate, and Delete.
+-- Verified output summary includes queue JSON.
+-- Verified Speak, Pause, Resume, and Stop call the browser SpeechSynthesis mock.
+-- Verified unavailable SpeechSynthesis shows actionable error.
+-
+-## Out Of Scope Manual Checks
+-
+-- No paid provider was manually exercised.
+-- No generated audio file export was manually exercised.
+-- No database behavior was manually exercised.
+diff --git a/docs_build/dev/reports/PR_26171_061-old-tts-feature-parity-checklist.md b/docs_build/dev/reports/PR_26171_061-old-tts-feature-parity-checklist.md
+deleted file mode 100644
+index e09e0f974..000000000
+--- a/docs_build/dev/reports/PR_26171_061-old-tts-feature-parity-checklist.md
++++ /dev/null
+@@ -1,48 +0,0 @@
+-# PR_26171_061 Old TTS Feature Parity Checklis
+-
+-Functionality sample: `archive/v1-v2/tools/old_text2speech-V2/`
+-
+-## Controls And Options
+-
+-- PASS: Gender helper filter restored.
+-- PASS: Language filter restored.
+-- PASS: Voice dropdown restored.
+-- PASS: Voice details restored.
+-- PASS: Voice Age select restored.
+-- PASS: Character Preset select restored.
+-- PASS: SSML-like Preset select restored.
+-- PASS: Volume slider restored with visible value.
+-- PASS: Rate / Speed slider restored with visible value.
+-- PASS: Pitch slider restored with visible value.
+-- PASS: Name field restored.
+-- PASS: Text To Speak editor restored.
+-
+-## Queue And JSON
+-
+-- PASS: Named Sentences queue restored.
+-- PASS: Add named sentence restored.
+-- PASS: Duplicate named sentence restored.
+-- PASS: Delete named sentence restored.
+-- PASS: Output Summary JSON restored.
+-- PASS: Import JSON restored for standalone launch.
+-- PASS: Copy JSON restored for standalone launch.
+-- PASS: Export JSON restored for standalone launch.
+-- PASS: URL JSON source loading restored through `samplePresetPath`.
+-
+-## Playback And Status
+-
+-- PASS: Speak restored.
+-- PASS: Pause restored when browser support exists.
+-- PASS: Resume restored when browser support exists.
+-- PASS: Stop restored.
+-- PASS: Clearable status log restored.
+-- PASS: Actionable unavailable-browser error restored.
+-- PASS: No placeholder provider-blocking behavior remains for browser preview.
+-
+-## Workspace
+-
+-- PASS: Project Workspace launch detection restored.
+-- PASS: Standalone JSON actions hide during Project Workspace launch.
+-- PASS: Return to Project Workspace action restored.
+-- PASS: Project Workspace toolState loading restored.
+-- PASS: Project Workspace dirty-state writeback restored.
+diff --git a/docs_build/dev/reports/PR_26171_061-text2speech-engine-audio-feature-parity.md b/docs_build/dev/reports/PR_26171_061-text2speech-engine-audio-feature-parity.md
+deleted file mode 100644
+index b2f4a44d3..000000000
+--- a/docs_build/dev/reports/PR_26171_061-text2speech-engine-audio-feature-parity.md
++++ /dev/null
+@@ -1,71 +0,0 @@
+-# PR_26171_061 Text To Speech Engine Audio Feature Parity
+-
+-## Summary
+-
+-Restored active Text To Speech feature parity from the archived `old_text2speech-V2` functionality sample while keeping active implementation in `toolbox/text-to-speech/` and reusable engine behavior in `src/engine/audio/`.
+-
+-## Changed Scope
+-
+-- Rebuilt reusable Text To Speech voice filtering, preset shaping, and queue-item helpers in `src/engine/audio/TextToSpeechEngine.js`.
+-- Expanded `toolbox/text-to-speech/index.html` with Theme V2 controls for the old V2 feature set.
+-- Rebuilt `toolbox/text-to-speech/text2speech.js` so the active tool consumes the engine audio module.
+-- Expanded targeted browser validation in `tests/playwright/tools/TextToSpeechFunctional.spec.mjs`.
+-- Updated Playwright V8 coverage artifacts for changed runtime JavaScript.
+-
+-## Requirement Checklis
+-
+-- PASS: Used `archive/v1-v2/tools/old_text2speech-V2/` as the required functionality sample.
+-- PASS: Reusable TTS behavior lives in `src/engine/audio/`.
+-- PASS: `toolbox/text-to-speech/` consumes `src/engine/audio/TextToSpeechEngine.js`.
+-- PASS: Restored old controls/options/features in the active tool.
+-- PASS: Browser SpeechSynthesis provider remains implemented.
+-- PASS: Planned provider adapters do not block browser preview behavior.
+-- PASS: No `tools/text2speech/` path was created.
+-- PASS: No database files were changed.
+-- PASS: Theme V2 remains the styling source.
+-- PASS: HTML uses external JavaScript only.
+-- PASS: No inline script, style, or event handler was added.
+-
+-## Restored Feature Se
+-
+-- Import JSON.
+-- Copy JSON.
+-- Export JSON.
+-- Project Workspace return action during workspace launch.
+-- Gender helper filter.
+-- Language filter.
+-- Browser voice selection.
+-- Voice details.
+-- Voice age shaping.
+-- Character presets.
+-- SSML-like presets.
+-- Volume, rate, and pitch sliders with visible values.
+-- Named sentence Name field.
+-- Add, Duplicate, and Delete named sentence actions.
+-- Text To Speak editor.
+-- Speak, Pause, Resume, and Stop playback actions.
+-- Named Sentences queue.
+-- Output Summary JSON.
+-- Clearable Status log.
+-- URL JSON preset loading through `samplePresetPath`.
+-- Project Workspace toolState loading and dirty-state writeback.
+-
+-## Validation Summary
+-
+-- PASS: `node --check src\engine\audio\TextToSpeechEngine.js`
+-- PASS: `node --check toolbox\text-to-speech\text2speech.js`
+-- PASS: `node --test tests\tools\Text2SpeechShell.test.mjs`
+-- PASS: `npx playwright test tests/playwright/tools/TextToSpeechFunctional.spec.mjs`
+-- PASS: `npm run test:workspace-v2`
+-  - Note: command name is legacy; user-facing language is Project Workspace.
+-- PASS: `git diff --check`
+-- PASS: changed runtime JS coverage collected for `src/engine/audio/TextToSpeechEngine.js`.
+-- PASS: changed runtime JS coverage collected for `toolbox/text-to-speech/text2speech.js`.
+-
+-## Out Of Scope
+-
+-- No database changes.
+-- No external paid provider implementation.
+-- No generated audio file export provider.
+-- No new `tools/text2speech/` path.
+-- No archived tool activation.
+diff --git a/docs_build/dev/reports/PR_26171_061-validation.md b/docs_build/dev/reports/PR_26171_061-validation.md
+deleted file mode 100644
+index bf864dc27..000000000
+--- a/docs_build/dev/reports/PR_26171_061-validation.md
++++ /dev/null
+@@ -1,42 +0,0 @@
+-# PR_26171_061 Validation Repor
+-
+-## Commands Run
+-
+-- `node --check src\engine\audio\TextToSpeechEngine.js`
+-  - PASS.
+-- `node --check toolbox\text-to-speech\text2speech.js`
+-  - PASS.
+-- `node --test tests\tools\Text2SpeechShell.test.mjs`
+-  - PASS: 3 tests passed.
+-- `npx playwright test tests/playwright/tools/TextToSpeechFunctional.spec.mjs`
+-  - PASS: 2 tests passed.
+-  - Covers restored controls, preset shaping, queue add/duplicate/delete, output summary, pause/resume, speak, stop, and unavailable SpeechSynthesis error handling.
+-  - PASS: rerun after merging `origin/main` into the PR branch for conflict resolution.
+-- `npm run test:workspace-v2`
+-  - PASS: 5 Project Workspace tests passed.
+-  - Note: command name is legacy; user-facing language is Project Workspace.
+-  - Note: first execution used a 120s timeout and timed out before completion; rerun with a longer timeout completed successfully.
+-  - PASS: rerun after merging `origin/main` into the PR branch for conflict resolution.
+-- `git diff --check`
+-  - PASS.
+-
+-## Coverage
+-
+-- PASS: `docs_build/dev/reports/playwright_v8_coverage_report.txt` produced changed runtime JS coverage.
+-- PASS: `docs_build/dev/reports/coverage_changed_js_guardrail.txt` reports no changed runtime JS coverage warnings.
+-- PASS: `src/engine/audio/TextToSpeechEngine.js` covered at 71%.
+-- PASS: `toolbox/text-to-speech/text2speech.js` covered at 71%.
+-
+-## Artifact Verification
+-
+-- PASS: `docs_build/dev/reports/codex_review.diff` exists.
+-- PASS: `docs_build/dev/reports/codex_changed_files.txt` exists.
+-- PASS: `tmp/PR_26171_061-text2speech-engine-audio-feature-parity_delta.zip` exists.
+-- PASS: ZIP size is greater than zero.
+-- PASS: ZIP contents preserve repo-relative paths.
+-
+-## Skipped
+-
+-- Full samples validation skipped because no sample JSON or sample runtime behavior changed.
+-- Database validation skipped because no database files or runtime persistence changed.
+-- External provider validation skipped because paid/provider generation is out of scope and browser SpeechSynthesis is the implemented provider for this PR.
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.tx
+index 2a3c37ce3..1412bd11c 100644
+--- a/docs_build/dev/reports/codex_changed_files.tx
++++ b/docs_build/dev/reports/codex_changed_files.tx
+@@ -1,54 +1,77 @@
+-# Codex Changed Files - PR_26171_061-text2speech-engine-audio-feature-parity
+-
+-## Git Workflow
+-- Starting branch: `main`.
+-- Created branch: `pr/26171-061-text2speech-engine-audio-feature-parity`.
+-- Initial commit: `e4541d63719ab777b0654c8fecf4b13237d31256`.
+-- PR branch was merged with `origin/main` during PR conflict recovery.
+-- Conflicts were limited to generated report artifacts.
+-
+-## Scoped Diff Sta
+-```tex
+-...R_26171_061-engine-audio-ownership-checklist.md |  25 +
+- ...R_26171_061-instruction-compliance-checklist.md |  32 +
+- .../PR_26171_061-manual-validation-notes.md        |  27 +
+- ...R_26171_061-old-tts-feature-parity-checklist.md |  48 ++
+- ..._061-text2speech-engine-audio-feature-parity.md |  71 ++
+- docs_build/dev/reports/PR_26171_061-validation.md  |  42 +
+- docs_build/dev/reports/codex_changed_files.txt     | 118 +--
+- .../dev/reports/coverage_changed_js_guardrail.txt  |   7 +-
+- .../dev/reports/playwright_v8_coverage_report.txt  |  36 +-
+- src/engine/audio/TextToSpeechEngine.js             | 208 ++++-
+- .../tools/TextToSpeechFunctional.spec.mjs          |  30 +
+- toolbox/text-to-speech/index.html                  | 119 +--
+- toolbox/text-to-speech/text2speech.js              | 853 +++++++++++++++++----
+- 13 files changed, 1317 insertions(+), 299 deletions(-)
+-```
+-
 -## Changed Files
--- docs_build/dev/PROJECT_INSTRUCTIONS.md
--- docs_build/dev/PROJECT_MULTI_PC.txt
--- docs_build/dev/reports/PR_26171_063-codex-instruction-enforcement-hardening.md
--- docs_build/dev/reports/PR_26171_063-instruction-compliance-checklist.md
--- docs_build/dev/reports/PR_26171_063-validation.md
--- docs_build/dev/reports/PR_26171_063-manual-validation-notes.md
+-- src/engine/audio/TextToSpeechEngine.js
+-- toolbox/text-to-speech/index.html
+-- toolbox/text-to-speech/text2speech.js
+-- tests/playwright/tools/TextToSpeechFunctional.spec.mjs
+-- docs_build/dev/reports/coverage_changed_js_guardrail.tx
+-- docs_build/dev/reports/playwright_v8_coverage_report.tx
+-- docs_build/dev/reports/PR_26171_061-text2speech-engine-audio-feature-parity.md
+-- docs_build/dev/reports/PR_26171_061-instruction-compliance-checklist.md
+-- docs_build/dev/reports/PR_26171_061-old-tts-feature-parity-checklist.md
+-- docs_build/dev/reports/PR_26171_061-engine-audio-ownership-checklist.md
+-- docs_build/dev/reports/PR_26171_061-validation.md
+-- docs_build/dev/reports/PR_26171_061-manual-validation-notes.md
 -- docs_build/dev/reports/codex_review.diff
--- docs_build/dev/reports/codex_changed_files.txt
-+## Git Status
-+```text
-+ M assets/theme-v2/css/tables.css
-+ M assets/theme-v2/js/tool-display-mode.js
-+ M docs_build/dev/reports/codex_changed_files.txt
-+ M docs_build/dev/reports/codex_review.diff
-+ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+ M docs_build/dev/reports/playwright_v8_coverage_report.txt
-+ M src/shared/toolbox/tool-metadata-inventory.js
-+ M tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-+ M tests/playwright/tools/ToolboxRoutePages.spec.mjs
-+ M toolbox/idea-board/index.html
-+ M toolbox/idea-board/index.js
-+```
-
--## Git Diff Stat Against Updated origin/main
-+## Diff Stat
- ```text
-- docs_build/dev/PROJECT_INSTRUCTIONS.md             |  47 ++
-- docs_build/dev/PROJECT_MULTI_PC.txt                |  58 ++
-- ..._063-codex-instruction-enforcement-hardening.md |  48 ++
-- ...R_26171_063-instruction-compliance-checklist.md |  37 ++
-- .../PR_26171_063-manual-validation-notes.md        |  19 +
-- docs_build/dev/reports/PR_26171_063-validation.md  |  32 +
-- docs_build/dev/reports/codex_changed_files.txt     |  48 ++
-- docs_build/dev/reports/codex_review.diff           | 699 +++++++++------------
-- 8 files changed, 569 insertions(+), 419 deletions(-)
-+ assets/theme-v2/css/tables.css                     |  70 +++++++-
-+ assets/theme-v2/js/tool-display-mode.js            |   2 +-
-+ .../dev/reports/coverage_changed_js_guardrail.txt  |   5 +-
-+ .../dev/reports/playwright_v8_coverage_report.txt  |  11 +-
-+ src/shared/toolbox/tool-metadata-inventory.js      |   6 +-
-+ .../playwright/tools/IdeaBoardTableNotes.spec.mjs  |  71 +++++++-
-+ tests/playwright/tools/ToolboxRoutePages.spec.mjs  |  26 ++-
-+ toolbox/idea-board/index.html                      |  31 ++--
-+ toolbox/idea-board/index.js                        | 191 ++++++++++++++++++++-
-+ 9 files changed, 368 insertions(+), 45 deletions(-)
- ```
-
-+## Requirement Evidence
-+- PASS: Removed creator-visible Create Project from the right-side Next Steps area; no disabled `data-idea-board-create-project` panel remains.
-+- PASS: Create Project is shown only in a Ready idea row's Actions column.
-+- PASS: Clicking Create Project changes the idea status from Ready to Project and replaces Create Project/Delete with Open Project and Archive.
-+- PASS: Project rows show Open Project and Archive and do not show Delete.
-+- PASS: Added Archived status; archived rows are hidden by default.
-+- PASS: Archived rows show Restore and Delete.
-+- PASS: Restore returns archived ideas to their previous non-archived status, with Refining fallback in runtime.
-+- PASS: Delete is guarded so Project ideas cannot be deleted unless archived first.
-+- PASS: Status dropdown uses New, Exploring, Refining, Ready, Project, and Archived.
-+- PASS: Added compact Show checkbox dropdown beside the visible table description line, with default statuses New, Exploring, Refining, Ready, and Project selected and Archived unselected.
-+- PASS: Show dropdown supports any checkbox combination plus Select All and Clear All.
-+- PASS: Updated creator-facing copy to "Capture, compare, and shape game ideas." and "Scan, compare, and update early ideas."
-+- PASS: Replaced creator-visible Tool Display Mode navigation error with safe copy that does not mention server/API/local server/port/implementation details.
-+- PASS: Chevron renders to the left of the Idea text, inline, same size, same color, and on the same text line; the whole Idea cell remains the expansion target.
-+- PASS: Notes count remains informational only.
-+- PASS: Table-first structure, inline Add Idea/Add Note, row-level Save/Cancel, status dropdown edit mode, notes indentation, and single-open accordion behavior remain covered.
+-- docs_build/dev/reports/codex_changed_files.tx
++# PR_26171_042 Codex Changed Files Repor
 +
- ## Validation
--- PASS: `git diff --check` after conflict resolution.
--- PASS: targeted required instruction-anchor validation after conflict resolution.
--- SKIP: Playwright, because the PR explicitly requires no Playwright and changes docs/workflow only.
-+- PASS: `node --check toolbox/idea-board/index.js`.
-+- PASS: `node --check assets/theme-v2/js/tool-display-mode.js`.
-+- PASS: `node --check src/shared/toolbox/tool-metadata-inventory.js`.
-+- PASS: `node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`.
-+- PASS: `node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs`.
-+- PASS: `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line --timeout=90000`.
-+- PASS: `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches" --timeout=90000`.
-+- PASS: `npm run test:workspace-v2` (workspace-contract lane, 5 passed).
-+- PASS: `git diff --check`.
-+- PASS: Post-conflict rerun completed after merging `origin/main` at `0a364f85516aea82e38eea2f498fde5980f9adf9`.
-+- PASS: Playwright V8 coverage report produced because runtime JavaScript changed.
-+- WARN: Coverage report marks `src/shared/toolbox/tool-metadata-inventory.js` as not collected by browser V8 coverage; advisory only per project instructions.
-+- SKIPPED: Full samples smoke was not run per request.
++## Instruction Compliance Gate
++
++- Current branch before execution: `main`
++- Required execution branch before PR branch: `main`
++- Branch validation: PASS
++- Clean repository before branch creation: PASS
++- PR owner/parity: PASS, `042` is even and Idea/Tool Display navigation scope maps to PC / Environment 1.
++- Implementation path: PASS, active Idea Board and Theme V2 files only.
++- Validation scope: PASS, targeted Idea Board, targeted Toolbox route for Idea Board, and workspace contract lane because shared Tool Display Mode behavior changed.
++- Required reports: PASS, `docs_build/dev/reports/codex_review.diff` and this report are updated.
++- ZIP requirement: PASS, `tmp/PR_26171_042-idea-board-navigation-fallback-cleanup_delta.zip` is required and produced before final delivery.
++
++## Git Workflow Fields
++
++- Created branch: `codex/pr-26171-042-idea-board-navigation-fallback-cleanup`
++- Push result: PASS, branch pushed to `origin/codex/pr-26171-042-idea-board-navigation-fallback-cleanup`.
++- PR URL: `https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/19`
++- Merge result: recorded in final Codex delivery after GitHub merge returns the merge SHA.
++- Final main commit: recorded in final Codex delivery after returning to `main` and pulling latest.
++
++## Scoped Files
++
++- `assets/theme-v2/js/tool-display-mode.js`
++- `tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`
++- `tests/playwright/tools/ToolboxRoutePages.spec.mjs`
++- `docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/PLAN_PR.md`
++- `docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/BUILD_PR.md`
++- `docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/APPLY_PR.md`
++- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
++- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- `docs_build/dev/reports/codex_review.diff`
++- `docs_build/dev/reports/codex_changed_files.txt`
++
++## Requirement Evidence
++
++- PASS: Removed creator-visible Tool Display Mode navigation diagnostic fallback. `tool-display-mode.js` now logs the navigation load failure to console only and appends no status paragraph.
++- PASS: Removed visible message `Tool navigation is temporarily unavailable. Refresh the page or try again shortly.`
++- PASS: Idea Board stays usable when registry-backed navigation cannot load. Static/no-registry Playwright path expands notes and adds a note successfully.
++- PASS: Creator-facing UI does not mention server, API, local server, port, registry, snapshot, or implementation details in the navigation fallback area.
++- PASS: Navigation failure does not affect Idea Board table functionality.
++- PASS: API-backed local route validated by targeted Idea Board and Toolbox route Playwright.
++- PASS: Static/no-registry route behavior validated by targeted Idea Board Playwright with the registry snapshot returning no data.
++- PASS: Optional previous/next navigation is omitted when unavailable.
++- PASS: Idea Board lifecycle, Show filter, Create Project, Archive, chevron, and table row editing behavior were not changed.
 
- ## ZIP
--- Path: `tmp/PR_26171_063-codex-instruction-enforcement-hardening_delta.zip`.
-+- Path: `tmp/PR_26171_041-idea-board-production-polish_delta.zip`.
-+- Size: final size reported in the delivery summary after conflict-resolution ZIP refresh.
-+- Contents:
-+  - assets/theme-v2/css/tables.css
-+  - assets/theme-v2/js/tool-display-mode.js
-+  - docs_build/dev/reports/codex_changed_files.txt
-+  - docs_build/dev/reports/codex_review.diff
-+  - docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+  - docs_build/dev/reports/playwright_v8_coverage_report.txt
-+  - src/shared/toolbox/tool-metadata-inventory.js
-+  - tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-+  - tests/playwright/tools/ToolboxRoutePages.spec.mjs
-+  - toolbox/idea-board/index.html
-+  - toolbox/idea-board/index.js
-diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 076d27690..66dd0cb12 100644
---- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,10 +6,9 @@ Missing changed runtime JS files are WARN, not FAIL.
+ ## Validation
+-- PASS: `node --check src\engine\audio\TextToSpeechEngine.js`.
+-- PASS: `node --check toolbox\text-to-speech\text2speech.js`.
+-- PASS: `node --test tests\tools\Text2SpeechShell.test.mjs`.
+-- PASS: `npx playwright test tests/playwright/tools/TextToSpeechFunctional.spec.mjs`.
+-- PASS: `npm run test:workspace-v2` (legacy command name; user-facing language is Project Workspace).
+-- PASS: `git diff --check`.
+-- PASS: Post-conflict validation rerun after merging `origin/main` into the PR branch.
+-
+-## ZIP
+-- Path: `tmp/PR_26171_061-text2speech-engine-audio-feature-parity_delta.zip`.
++
++- PASS: `node --check assets/theme-v2/js/tool-display-mode.js`
++- PASS: `node --check toolbox/idea-board/index.js`
++- PASS: `node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`
++- PASS: `node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs`
++- PASS: `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line --timeout=90000`
++- PASS: `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches" --timeout=90000`
++- PASS: `npm run test:workspace-v2`
++- PASS: `git diff --check`
++- SKIP: Full samples smoke, per user instruction.
++
++## Coverage Evidence
++
++- PASS: `docs_build/dev/reports/playwright_v8_coverage_report.txt` updated.
++- PASS: `docs_build/dev/reports/coverage_changed_js_guardrail.txt` updated.
++- PASS: Changed runtime JS coverage lists `assets/theme-v2/js/tool-display-mode.js` at 64% advisory function coverage.
++
++## ZIP Contents
++
++- `assets/theme-v2/js/tool-display-mode.js`
++- `docs_build/dev/reports/codex_changed_files.txt`
++- `docs_build/dev/reports/codex_review.diff`
++- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
++- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- `docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/APPLY_PR.md`
++- `docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/BUILD_PR.md`
++- `docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/PLAN_PR.md`
++- `tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`
++- `tests/playwright/tools/ToolboxRoutePages.spec.mjs`
+diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.tx
+index 807990e9f..242796c4f 100644
+--- a/docs_build/dev/reports/coverage_changed_js_guardrail.tx
++++ b/docs_build/dev/reports/coverage_changed_js_guardrail.tx
+@@ -6,8 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
  Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
  Changed runtime JS files considered:
--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(70%) toolbox/idea-board/index.js - executed lines 480/480; executed functions 23/33
-+(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
-+(74%) toolbox/idea-board/index.js - executed lines 640/640; executed functions 37/50
+-(71%) src/engine/audio/TextToSpeechEngine.js - executed lines 412/412; executed functions 37/52
+-(71%) toolbox/text-to-speech/text2speech.js - executed lines 835/835; executed functions 61/86
++(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 204/204; executed functions 9/14
 
  Guardrail warnings:
--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
- (0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
-diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index cb35b4d50..4a9f71ff1 100644
---- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
-+++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -17,9 +17,9 @@ Exercised tool entry points detected:
- (63%) Theme V2 Shared JS - exercised 2 runtime JS files
+ (100%) none - no changed runtime JS coverage warnings
+diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.tx
+index dd573eabd..17eb943d2 100644
+--- a/docs_build/dev/reports/playwright_v8_coverage_report.tx
++++ b/docs_build/dev/reports/playwright_v8_coverage_report.tx
+@@ -12,28 +12,45 @@ Note: entry percentages use function coverage when available, otherwise line cov
+ Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
+
+ Exercised tool entry points detected:
+-(72%) Toolbox Index - exercised 2 runtime JS files
++(72%) Toolbox Index - exercised 10 runtime JS files
+ (0%) Tool Template V2 - not exercised by this Playwright run
+-(56%) Theme V2 Shared JS - exercised 2 runtime JS files
++(61%) Theme V2 Shared JS - exercised 7 runtime JS files
 
  Changed runtime JS files covered:
--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(70%) toolbox/idea-board/index.js - executed lines 480/480; executed functions 23/33
-+(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
-+(74%) toolbox/idea-board/index.js - executed lines 640/640; executed functions 37/50
+-(71%) src/engine/audio/TextToSpeechEngine.js - executed lines 412/412; executed functions 37/52
+-(71%) toolbox/text-to-speech/text2speech.js - executed lines 835/835; executed functions 61/86
++(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 204/204; executed functions 9/14
 
  Files with executed line/function counts where available:
- (25%) src/api/session-api-client.js - executed lines 68/68; executed functions 3/12
-@@ -30,17 +30,16 @@ Files with executed line/function counts where available:
- (65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
- (67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
- (67%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 20/20; executed functions 2/3
--(70%) toolbox/idea-board/index.js - executed lines 480/480; executed functions 23/33
-+(74%) toolbox/idea-board/index.js - executed lines 640/640; executed functions 37/50
- (78%) toolbox/tools-page-accordions.js - executed lines 1156/1156; executed functions 87/111
- (86%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 25/29
+-(36%) src/api/server-api-client.js - executed lines 167/167; executed functions 5/14
+-(38%) src/api/public-config-client.js - executed lines 209/209; executed functions 10/26
+-(54%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 46/85
+-(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
+-(71%) src/engine/audio/TextToSpeechEngine.js - executed lines 412/412; executed functions 37/52
+-(71%) toolbox/text-to-speech/text2speech.js - executed lines 835/835; executed functions 61/86
+-(76%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 22/29
+-(100%) src/engine/audio/TextToSpeechDefaults.js - executed lines 108/108; executed functions 1/1
++(14%) assets/theme-v2/js/account-auth-service.js - executed lines 64/64; executed functions 1/7
++(14%) assets/theme-v2/js/admin-setup-actions.js - executed lines 55/55; executed functions 1/7
++(18%) assets/theme-v2/js/account-page-data.js - executed lines 150/150; executed functions 3/17
++(20%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 2/10
++(25%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 1/4
++(25%) src/api/session-api-client.js - executed lines 68/68; executed functions 3/12
++(29%) src/engine/input/NormalizedInputRegistry.js - executed lines 341/341; executed functions 6/21
++(33%) src/api/admin-setup-api-client.js - executed lines 13/13; executed functions 1/3
++(33%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
++(56%) toolbox/colors/colors.js - executed lines 1848/1848; executed functions 115/204
++(58%) src/api/server-api-client.js - executed lines 167/167; executed functions 11/19
++(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 204/204; executed functions 9/14
++(64%) toolbox/controls/controls.js - executed lines 610/610; executed functions 36/56
++(65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
++(67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
++(74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 67/90
++(75%) toolbox/game-workspace/game-workspace.js - executed lines 458/458; executed functions 33/44
++(89%) toolbox/tools-page-accordions.js - executed lines 1156/1156; executed functions 105/118
++(90%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 26/29
++(91%) toolbox/game-design/game-design.js - executed lines 254/254; executed functions 21/23
++(94%) assets/theme-v2/js/marketplace-page.js - executed lines 170/170; executed functions 16/17
++(100%) src/api/marketplace-api-client.js - executed lines 16/16; executed functions 3/3
++(100%) toolbox/colors/palette-api-client.js - executed lines 28/28; executed functions 4/4
++(100%) toolbox/controls/controls-api-client.js - executed lines 33/33; executed functions 5/5
++(100%) toolbox/game-design/game-design-api-client.js - executed lines 13/13; executed functions 2/2
++(100%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 20/20; executed functions 3/3
 
  Uncovered or low-coverage changed JS files:
--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
- (0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
+ (100%) none - no low-coverage changed runtime JS files
 
  Changed JS files considered:
--(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
- (0%) src/shared/toolbox/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
- (0%) tests/playwright/tools/IdeaBoardTableNotes.spec.mjs - changed JS file not collected as browser runtime coverage
- (0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
--(70%) toolbox/idea-board/index.js - changed JS file with browser V8 coverage
+-(0%) tests/playwright/tools/TextToSpeechFunctional.spec.mjs - changed JS file not collected as browser runtime coverage
+-(71%) src/engine/audio/TextToSpeechEngine.js - changed JS file with browser V8 coverage
+-(71%) toolbox/text-to-speech/text2speech.js - changed JS file with browser V8 coverage
++(0%) tests/playwright/tools/IdeaBoardTableNotes.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
 +(64%) assets/theme-v2/js/tool-display-mode.js - changed JS file with browser V8 coverage
-+(74%) toolbox/idea-board/index.js - changed JS file with browser V8 coverage
-diff --git a/src/shared/toolbox/tool-metadata-inventory.js b/src/shared/toolbox/tool-metadata-inventory.js
-index db04eac5b..6d2ed68fa 100644
---- a/src/shared/toolbox/tool-metadata-inventory.js
-+++ b/src/shared/toolbox/tool-metadata-inventory.js
-@@ -72,14 +72,14 @@ export const TOOL_REGISTRY = Object.freeze([
-     "id": "idea-board",
-     "name": "Idea Board",
-     "displayName": "Idea Board",
--    "shortDescription": "Capture, compare, and shape game ideas in a table.",
-+    "shortDescription": "Capture, compare, and shape game ideas.",
-     "shortLabel": "Idea Board",
-     "path": "idea-board",
-     "folderName": "idea-board",
-     "entryPoint": "idea-board/index.html",
-     "badge": "/assets/theme-v2/images/badges/game-design.png",
-     "tool": "/assets/theme-v2/images/tools/game-design.png",
--    "description": "Capture, compare, and shape game ideas with notes under each idea row.",
-+    "description": "Capture, compare, and shape game ideas.",
-     "category": "Idea",
-     "colorGroup": "tool-group-idea",
-     "active": true,
-@@ -93,7 +93,7 @@ export const TOOL_REGISTRY = Object.freeze([
-     "progressChecklist": [
-       "Idea table workflow visible",
-       "Add Idea and Add Note actions remain inline",
--      "Create Project remains unavailable until an idea is ready"
-+      "Ready ideas show project actions in their row"
-     ],
-     "deferred": false,
-     "hidden": false,
+diff --git a/docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/APPLY_PR.md b/docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/APPLY_PR.md
+new file mode 100644
+index 000000000..7dcde1b3e
+--- /dev/null
++++ b/docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/APPLY_PR.md
+@@ -0,0 +1,20 @@
++# PR_26171_042-idea-board-navigation-fallback-cleanup Apply
++
++## Apply Steps
++
++1. Start from `main`.
++2. Pull latest `main`.
++3. Create `codex/pr-26171-042-idea-board-navigation-fallback-cleanup`.
++4. Implement the BUILD scope.
++5. Run requested validation.
++6. Stage scoped files only.
++7. Commit.
++8. Push branch.
++9. Create PR.
++10. Merge after validation passes.
++11. Return to `main` and pull latest.
++12. Confirm final report fields and repo-structured ZIP.
++
++## Merge Conflict Handling
++
++If conflicts occur, preserve latest `main`, preserve PR scope, resolve only touched files, rerun validation, regenerate reports and ZIP, then continue.
+diff --git a/docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/BUILD_PR.md b/docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/BUILD_PR.md
+new file mode 100644
+index 000000000..874f6dc4e
+--- /dev/null
++++ b/docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/BUILD_PR.md
+@@ -0,0 +1,57 @@
++# PR_26171_042-idea-board-navigation-fallback-cleanup Build
++
++## Source Of Truth
++
++Use the user request for `PR_26171_042-idea-board-navigation-fallback-cleanup`, `docs_build/dev/PROJECT_INSTRUCTIONS.md`, `docs_build/dev/PROJECT_MULTI_PC.txt`, and this BUILD doc.
++
++## Singular Purpose
++
++Clean up the optional Tool Display Mode navigation fallback for Idea Board without changing Idea Board table behavior.
++
++## Exact Targets
++
++- `assets/theme-v2/js/tool-display-mode.js`
++- `toolbox/idea-board/index.js`
++- `tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`
++- `tests/playwright/tools/ToolboxRoutePages.spec.mjs`
++- `docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/PLAN_PR.md`
++- `docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/BUILD_PR.md`
++- `docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/APPLY_PR.md`
++- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
++- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- `docs_build/dev/reports/codex_review.diff`
++- `docs_build/dev/reports/codex_changed_files.txt`
++
++## Implementation Requirements
++
++- Do not show creator-visible navigation diagnostics when optional Tool Display Mode navigation cannot load.
++- Remove the visible message `Tool navigation is temporarily unavailable. Refresh the page or try again shortly.`
++- Keep Idea Board usable when the navigation registry cannot load.
++- Log the navigation failure to console only.
++- Do not mention server, API, local server, port, registry, snapshot, or implementation details in creator-facing UI.
++- Do not let navigation failure affect Idea Board table functionality.
++- Validate both API-backed local route and static route without registry response.
++- In both cases, Idea Board renders, no creator-visible navigation error appears, and optional previous/next navigation is hidden or omitted when unavailable.
++- Ensure final Codex report fields are non-pending for PR URL, merge result, final main commit, created branch, and push result.
++
++## Explicit Non-Goals
++
++- Do not change Idea Board lifecycle behavior.
++- Do not change Show filter behavior.
++- Do not change Create Project behavior.
++- Do not change Archive behavior.
++- Do not change Chevron behavior.
++- Do not change table row editing behavior.
++
++## Validation
++
++- `node --check assets/theme-v2/js/tool-display-mode.js`
++- `node --check toolbox/idea-board/index.js`
++- `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line --timeout=90000`
++- `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches" --timeout=90000`
++- `npm run test:workspace-v2`
++- `git diff --check`
++
++## ZIP
++
++Create `tmp/PR_26171_042-idea-board-navigation-fallback-cleanup_delta.zip` with repo-structured changed files only.
+diff --git a/docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/PLAN_PR.md b/docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/PLAN_PR.md
+new file mode 100644
+index 000000000..3b5d5fbfe
+--- /dev/null
++++ b/docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/PLAN_PR.md
+@@ -0,0 +1,36 @@
++# PR_26171_042-idea-board-navigation-fallback-cleanup Plan
++
++## Purpose
++
++Fix the optional Tool Display Mode navigation fallback so Idea Board stays clean and usable when registry-backed previous/next navigation cannot load.
++
++## Scope
++
++- Remove the creator-visible Tool Display Mode navigation fallback diagnostic.
++- Keep navigation failures logged to the browser console.
++- Preserve Idea Board lifecycle, filtering, project, archive, chevron, and row editing behavior.
++- Validate API-backed and static/no-registry Idea Board rendering.
++- Update final Codex reports with non-pending Git workflow fields.
++
++## Required Validation
++
++- `node --check assets/theme-v2/js/tool-display-mode.js`
++- `node --check toolbox/idea-board/index.js`
++- Targeted Idea Board Playwright.
++- Targeted Toolbox route Playwright for Idea Board.
++- `npm run test:workspace-v2`
++- Do not run full samples smoke.
++
++## Required Reports
++
++- `docs_build/dev/reports/codex_review.diff`
++- `docs_build/dev/reports/codex_changed_files.txt`
++
++## Required Delivery
++
++- Commit changes.
++- Push branch.
++- Create PR.
++- Merge after validation passes.
++- Return to main and pull latest main.
++- Produce repo-structured ZIP under `tmp/`.
+diff --git a/src/engine/audio/TextToSpeechEngine.js b/src/engine/audio/TextToSpeechEngine.js
+index a5f3ccabd..c8e1dced3 100644
+--- a/src/engine/audio/TextToSpeechEngine.js
++++ b/src/engine/audio/TextToSpeechEngine.js
+@@ -1,10 +1,7 @@
+ import {
+-  TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS,
+   TEXT_TO_SPEECH_DEFAULTS,
+   TEXT_TO_SPEECH_DISPLAY_NAME,
+-  TEXT_TO_SPEECH_RANGE_DEFAULTS,
+-  TEXT_TO_SPEECH_SSML_LIKE_PRESET_DEFAULTS,
+-  TEXT_TO_SPEECH_VOICE_AGE_PRESET_DEFAULTS
++  TEXT_TO_SPEECH_RANGE_DEFAULTS
+ } from "./TextToSpeechDefaults.js";
+
+ function finiteNumber(value, fallback) {
+@@ -12,180 +9,8 @@ function finiteNumber(value, fallback) {
+   return Number.isFinite(number) ? number : fallback;
+ }
+
+-function boundedNumber(value, { fallback, max, min, value: defaultValue }) {
+-  const fallbackValue = fallback ?? defaultValue ?? min;
+-  return Math.min(max, Math.max(min, finiteNumber(value, fallbackValue)));
+-}
+-
+-function shapedNumber(value, { fallback, max, min, step }) {
+-  const boundedValue = boundedNumber(value, { fallback, max, min });
+-  const stepText = String(step || "1");
+-  const decimalPart = stepText.includes(".") ? stepText.split(".")[1] : "";
+-  const multiplier = 10 ** decimalPart.length;
+-  return Math.round(boundedValue * multiplier) / multiplier;
+-}
+-
+-function textToSpeechSlugFromName(name) {
+-  const slug = String(name || "")
+-    .trim()
+-    .toLowerCase()
+-    .replace(/[^a-z0-9]+/g, "-")
+-    .replace(/^-+|-+$/g, "");
+-  return slug || "speech-item";
+-}
+-
+-function textToSpeechVoiceGender(option) {
+-  const voiceText = `${option?.gender || ""} ${option?.name || ""} ${option?.label || ""}`;
+-  const voiceLanguage = String(option?.language || "").toLowerCase();
+-  if (/\bneutral\b|\bnon[-\s]?binary\b|\bandrogynous\b/i.test(voiceText)) return "neutral";
+-  if (voiceLanguage === "es-es" || /\bmale\b|\bman\b|\bdavid\b|\bmark\b/i.test(voiceText)) return "male";
+-  if (/\bfemale\b|\bwoman\b|\bzira\b/i.test(voiceText)) return "female";
+-  return "unknown";
+-}
+-
+-function genderFilterLabel(value) {
+-  if (value === "male-preferred") return "Male";
+-  if (value === "female-preferred") return "Female";
+-  if (value === "neutral") return "Neutral";
+-  return "Any";
+-}
+-
+-function ageFilterLabel(value) {
+-  if (value === "adult") return "Adult";
+-  if (value === "child") return "Child";
+-  if (value === "elderly") return "Elderly";
+-  if (value === "teen") return "Teen";
+-  return "Any";
+-}
+-
+-function payloadGenderValue(value) {
+-  return value === "neutral" ? "any" : value;
+-}
+-
+-function filterTextToSpeechVoicesByGender(voiceOptions, genderFilter = "any") {
+-  if (genderFilter === "any") return voiceOptions;
+-  if (genderFilter === "male-preferred") {
+-    return voiceOptions.filter((option) => textToSpeechVoiceGender(option) === "male");
+-  }
+-  if (genderFilter === "female-preferred") {
+-    return voiceOptions.filter((option) => textToSpeechVoiceGender(option) === "female");
+-  }
+-  if (genderFilter === "neutral") {
+-    return voiceOptions.filter((option) => ["neutral", "unknown"].includes(textToSpeechVoiceGender(option)));
+-  }
+-  return voiceOptions;
+-}
+-
+-function optionLabelCompare(left, right) {
+-  return String(left.label).localeCompare(String(right.label), undefined, {
+-    numeric: true,
+-    sensitivity: "base"
+-  });
+-}
+-
+-function textToSpeechLanguageOptionsFromVoices(voiceOptions) {
+-  const languageCounts = new Map();
+-  voiceOptions.forEach((option) => {
+-    const language = String(option.language || "").trim();
+-    if (language) {
+-      languageCounts.set(language, (languageCounts.get(language) || 0) + 1);
+-    }
+-  });
+-  return Array.from(languageCounts.entries())
+-    .map(([language, count]) => ({
+-      label: `${language} (${count} ${count === 1 ? "voice" : "voices"})`,
+-      value: language
+-    }))
+-    .sort(optionLabelCompare);
+-}
+-
+-function filterTextToSpeechVoiceOptions(voiceOptions, { gender = "any", language = "" } = {}) {
+-  const filteredByGender = filterTextToSpeechVoicesByGender(voiceOptions, gender);
+-  const matchingVoices = filteredByGender
+-    .filter((option) => !language || option.language === language)
+-    .sort(optionLabelCompare);
+-  return {
+-    filteredVoiceCount: filteredByGender.length,
+-    gender,
+-    genderLabel: genderFilterLabel(gender),
+-    language,
+-    languageOptions: textToSpeechLanguageOptionsFromVoices(filteredByGender),
+-    matchingVoices,
+-    voiceCount: voiceOptions.length
+-  };
+-}
+-
+-function shapeTextToSpeechOptions({
+-  characterPreset = TEXT_TO_SPEECH_DEFAULTS.characterPreset,
+-  pitch = TEXT_TO_SPEECH_DEFAULTS.pitch,
+-  rate = TEXT_TO_SPEECH_DEFAULTS.rate,
+-  ssmlLikePreset = TEXT_TO_SPEECH_DEFAULTS.ssmlLikePreset,
+-  voiceAge = TEXT_TO_SPEECH_DEFAULTS.voiceAge,
+-  volume = TEXT_TO_SPEECH_DEFAULTS.volume
+-} = {}, sliderOverrides = {}) {
+-  const character = TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS[characterPreset] || TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS.manual;
+-  const age = TEXT_TO_SPEECH_VOICE_AGE_PRESET_DEFAULTS[voiceAge] || TEXT_TO_SPEECH_VOICE_AGE_PRESET_DEFAULTS.any;
+-  const ssmlLike = TEXT_TO_SPEECH_SSML_LIKE_PRESET_DEFAULTS[ssmlLikePreset] || TEXT_TO_SPEECH_SSML_LIKE_PRESET_DEFAULTS.normal;
+-  return {
+-    characterPreset,
+-    pitch: sliderOverrides.pitch
+-      ? boundedNumber(pitch, TEXT_TO_SPEECH_RANGE_DEFAULTS.pitch)
+-      : shapedNumber(Number(character.pitch) + Number(age.pitchOffset) + Number(ssmlLike.pitchOffset), TEXT_TO_SPEECH_RANGE_DEFAULTS.pitch),
+-    rate: sliderOverrides.rate
+-      ? boundedNumber(rate, TEXT_TO_SPEECH_RANGE_DEFAULTS.rate)
+-      : shapedNumber(Number(character.rate) * Number(age.rateMultiplier) * Number(ssmlLike.rateMultiplier), TEXT_TO_SPEECH_RANGE_DEFAULTS.rate),
+-    ssmlLikePreset,
+-    voiceAge,
+-    volume: sliderOverrides.volume
+-      ? boundedNumber(volume, TEXT_TO_SPEECH_RANGE_DEFAULTS.volume)
+-      : shapedNumber(Number(character.volume) * Number(ssmlLike.volumeMultiplier), TEXT_TO_SPEECH_RANGE_DEFAULTS.volume)
+-  };
+-}
+-
+-function uniqueTextToSpeechName(baseName, existingItems = []) {
+-  const requestedName = String(baseName || "").trim() || "New speech item";
+-  const existingNames = new Set(existingItems.map((item) => item.name));
+-  if (!existingNames.has(requestedName)) return requestedName;
+-  for (let index = 2; index < 1000; index += 1) {
+-    const candidate = `${requestedName} ${index}`;
+-    if (!existingNames.has(candidate)) return candidate;
+-  }
+-  return `${requestedName} ${Date.now().toString(36)}`;
+-}
+-
+-function uniqueTextToSpeechId(baseName, existingItems = []) {
+-  const existingIds = new Set(existingItems.map((item) => item.id));
+-  const baseId = textToSpeechSlugFromName(baseName);
+-  if (!existingIds.has(baseId)) return baseId;
+-  for (let index = 2; index < 1000; index += 1) {
+-    const candidate = `${baseId}-${index}`;
+-    if (!existingIds.has(candidate)) return candidate;
+-  }
+-  return `${baseId}-${Date.now().toString(36)}`;
+-}
+-
+-function createTextToSpeechQueueItem({
+-  existingItems = [],
+-  id = "",
+-  name = "",
+-  text = "",
+-  ...options
+-} = {}) {
+-  const itemName = uniqueTextToSpeechName(name, id ? [] : existingItems);
+-  return {
+-    characterPreset: options.characterPreset || TEXT_TO_SPEECH_DEFAULTS.characterPreset,
+-    gender: payloadGenderValue(options.gender || TEXT_TO_SPEECH_DEFAULTS.gender),
+-    id: id || uniqueTextToSpeechId(itemName, existingItems),
+-    language: options.language || TEXT_TO_SPEECH_DEFAULTS.language,
+-    name: itemName,
+-    pitch: boundedNumber(options.pitch, TEXT_TO_SPEECH_RANGE_DEFAULTS.pitch),
+-    rate: boundedNumber(options.rate, TEXT_TO_SPEECH_RANGE_DEFAULTS.rate),
+-    ssmlLikePreset: options.ssmlLikePreset || TEXT_TO_SPEECH_DEFAULTS.ssmlLikePreset,
+-    text: String(text || "").trim() || "New speech line.",
+-    voice: String(options.voice || ""),
+-    voiceAge: options.voiceAge || TEXT_TO_SPEECH_DEFAULTS.voiceAge,
+-    volume: boundedNumber(options.volume, TEXT_TO_SPEECH_RANGE_DEFAULTS.volume)
+-  };
++function boundedNumber(value, { fallback, max, min }) {
++  return Math.min(max, Math.max(min, finiteNumber(value, fallback)));
+ }
+
+ class TextToSpeechEngine {
+@@ -233,18 +58,6 @@ class TextToSpeechEngine {
+       }));
+   }
+
+-  filterVoiceOptions(options = {}) {
+-    return filterTextToSpeechVoiceOptions(this.voiceOptions(), options);
+-  }
+-
+-  shapeOptions(options = {}, sliderOverrides = {}) {
+-    return shapeTextToSpeechOptions(options, sliderOverrides);
+-  }
+-
+-  createQueueItem(options = {}) {
+-    return createTextToSpeechQueueItem(options);
+-  }
+-
+   voiceForValue(value) {
+     const normalizedValue = String(value || "").trim();
+     if (!normalizedValue) {
+@@ -435,18 +248,5 @@ class TextToSpeechEngine {
+   }
+ }
+
+-export {
+-  ageFilterLabel as textToSpeechAgeFilterLabel,
+-  createTextToSpeechQueueItem,
+-  filterTextToSpeechVoiceOptions,
+-  genderFilterLabel as textToSpeechGenderFilterLabel,
+-  payloadGenderValue as textToSpeechPayloadGenderValue,
+-  shapeTextToSpeechOptions,
+-  textToSpeechLanguageOptionsFromVoices,
+-  textToSpeechSlugFromName,
+-  textToSpeechVoiceGender,
+-  TextToSpeechEngine,
+-  uniqueTextToSpeechId,
+-  uniqueTextToSpeechName
+-};
++export { TextToSpeechEngine };
+ export default TextToSpeechEngine;
 diff --git a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-index f5544ca88..38085a4d2 100644
+index 38085a4d2..1a42e53d7 100644
 --- a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
 +++ b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-@@ -13,10 +13,13 @@ function restoreEnvValue(key, value) {
- async function expectIdeaChevron(page, ideaId, iconName) {
-   const metrics = await page.locator(`[data-idea-board-idea-row='${ideaId}'] th`).evaluate((cell, targetIdeaId) => {
-     const label = cell.querySelector(".idea-board-idea-label");
-+    const text = label.querySelector(".idea-board-idea-label__text");
-     const icon = cell.querySelector(`[data-idea-board-chevron='${targetIdeaId}']`);
-     const cellStyles = getComputedStyle(cell);
-     const labelStyles = getComputedStyle(label);
-     const iconStyles = getComputedStyle(icon);
-+    const textRect = text.getBoundingClientRect();
-+    const iconRect = icon.getBoundingClientRect();
-     return {
-       iconName: icon.dataset.ideaBoardChevronIcon,
-       labelDisplay: labelStyles.display,
-@@ -24,7 +27,11 @@ async function expectIdeaChevron(page, ideaId, iconName) {
-       iconHeight: Number.parseFloat(iconStyles.height),
-       fontSize: Number.parseFloat(cellStyles.fontSize),
-       iconColor: iconStyles.backgroundColor,
-+      iconBottom: iconRect.bottom,
-+      iconLeft: iconRect.left,
-       textColor: cellStyles.color,
-+      textBottom: textRect.bottom,
-+      textLeft: textRect.left,
-       maskImage: iconStyles.getPropertyValue("-webkit-mask-image") || iconStyles.maskImage,
-     };
-   }, ideaId);
-@@ -33,6 +40,8 @@ async function expectIdeaChevron(page, ideaId, iconName) {
-   expect(Math.abs(metrics.iconWidth - metrics.fontSize)).toBeLessThanOrEqual(1);
-   expect(Math.abs(metrics.iconHeight - metrics.fontSize)).toBeLessThanOrEqual(1);
-   expect(metrics.iconColor).toBe(metrics.textColor);
-+  expect(metrics.iconLeft).toBeLessThan(metrics.textLeft);
-+  expect(Math.abs(metrics.iconBottom - metrics.textBottom)).toBeLessThanOrEqual(2);
-   expect(metrics.maskImage).toContain(iconName);
- }
-
-@@ -92,7 +101,7 @@ async function expectExpandedNotesChildIndentation(page, ideaId, expectedInputRo
-
- async function expectProductionCopy(page) {
-   await expect(page.locator("main")).not.toContainText(
--    /\bDB-shaped\b|\bin-page data model\b|\buserId\b|\bideaId\b|\bnoteId\b|\bsystem flag\b|\bmetadata\b|\bseed\b|\bdebug\b|\bselected context\b|\bmock\b|\btest\b|\binternal implementation\b|\bplaceholder\b|\bproject records\b|\bmutating API\b|\bauth\b|\bAI\b|\bdatabase behavior\b/i,
-+    /\bDB-shaped\b|\bin-page data model\b|\buserId\b|\bideaId\b|\bnoteId\b|\bsystem flag\b|\bmetadata\b|\bseed\b|\bdebug\b|\bselected context\b|\bmock\b|\btest\b|\binternal implementation\b|\bplaceholder\b|\bproject records\b|\bmutating API\b|\bserver\b|\bAPI\b|\blocal server\b|\bport\b|\bunderlying systems\b|\bauth\b|\bAI\b|\bdatabase behavior\b/i,
+@@ -105,6 +105,11 @@ async function expectProductionCopy(page) {
    );
  }
 
-@@ -141,6 +150,28 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-     await expect(page.locator("[data-idea-board-add-idea-row]")).toHaveCount(1);
-     await expect(page.locator("[data-idea-board-add-idea]")).toHaveText("Add Idea");
-     await expectButtonLeftAligned(page, "[data-idea-board-add-idea]", "[data-idea-board-add-idea-row] > td");
-+    await expect(page.locator("[data-idea-board-show-filter] summary")).toHaveText("Show");
-+    const captionMetrics = await page.locator(".idea-board-table-caption").evaluate((caption) => {
-+      const label = caption.querySelector("span");
-+      const filter = caption.querySelector("[data-idea-board-show-filter]");
-+      const labelRect = label.getBoundingClientRect();
-+      const filterRect = filter.getBoundingClientRect();
-+      return {
-+        filterRight: filterRect.right,
-+        filterTop: filterRect.top,
-+        labelRight: labelRect.right,
-+        labelTop: labelRect.top,
-+      };
-+    });
-+    expect(captionMetrics.filterRight).toBeGreaterThan(captionMetrics.labelRight);
-+    expect(Math.abs(captionMetrics.filterTop - captionMetrics.labelTop)).toBeLessThanOrEqual(4);
-+    await page.locator("[data-idea-board-show-filter] summary").click();
-+    await expect(page.locator("[data-idea-board-status-filter-option]")).toHaveCount(6);
-+    const checkedStatuses = await page.locator("[data-idea-board-status-filter-option]:checked").evaluateAll((inputs) => (
-+      inputs.map((input) => input.value)
-+    ));
-+    expect(checkedStatuses).toEqual(["New", "Exploring", "Refining", "Ready", "Project"]);
-+    await expect(page.locator("[data-idea-board-status-filter-option][value='Archived']")).not.toBeChecked();
-     await expect(page.getByText(/another/i)).toHaveCount(0);
-     await expect(page.locator("[data-idea-board-notes-chevron]")).toHaveCount(0);
-     await expect(page.getByText("Selected idea context")).toHaveCount(0);
-@@ -223,11 +254,19 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-     const ideaInputRow = page.locator("[data-idea-board-idea-input-row]").last();
-     await expect(ideaInputRow.locator("[data-idea-board-idea-action]")).toHaveText(["Save", "Cancel"]);
-     await expect(ideaInputRow.locator("[data-idea-board-idea-status-input]")).toHaveCount(1);
-+    await expect(ideaInputRow.locator("[data-idea-board-idea-status-input] option")).toHaveText([
-+      "New",
-+      "Exploring",
-+      "Refining",
-+      "Ready",
-+      "Project",
-+      "Archived",
-+    ]);
-     await expect(ideaInputRow.locator("td").nth(2)).toHaveText(/\d{4}-\d{2}-\d{2}/);
-     await expect(ideaInputRow.locator("td").nth(3)).toHaveText("0 Notes");
-     await page.locator("[data-idea-board-idea-input]").fill("Lantern Reef");
-     await page.locator("[data-idea-board-pitch-input]").fill("Guide light through a reef that rearranges at dusk.");
--    await page.locator("[data-idea-board-idea-status-input]").selectOption("Parked");
-+    await page.locator("[data-idea-board-idea-status-input]").selectOption("Refining");
-     await page.locator("[data-idea-board-idea-action='save']").click();
-     await expect(page.locator("[data-idea-board-idea-row='lantern-reef']")).toBeVisible();
-     await expect(page.locator("[data-idea-board-notes-count='lantern-reef']")).toHaveText("0 Notes");
-@@ -236,9 +275,33 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-     await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='edit']").click();
-     await expect(page.locator("[data-idea-board-idea-input-row] [data-idea-board-idea-action]")).toHaveText(["Save", "Cancel"]);
-     await expect(page.locator("[data-idea-board-idea-status-input]")).toHaveCount(1);
--    await page.locator("[data-idea-board-idea-status-input]").selectOption("Ready to Shape");
-+    await page.locator("[data-idea-board-idea-status-input]").selectOption("Ready");
-     await page.locator("[data-idea-board-idea-action='save']").click();
--    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] td").nth(1)).toHaveText("Ready to Shape");
-+    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] td").nth(1)).toHaveText("Ready");
-+    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Create Project", "Delete"]);
-+    await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='create-project']").click();
-+    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] td").nth(1)).toHaveText("Project");
-+    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Open Project", "Archive"]);
-+    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='delete']")).toHaveCount(0);
-+    await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='open-project']").click();
-+    await expect(page.locator("[data-idea-board-status]")).toHaveText("Opening Lantern Reef.");
-+    await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='archive']").click();
-+    await expect(page.locator("[data-idea-board-idea-row='lantern-reef']")).toHaveCount(0);
-+    await page.locator("[data-idea-board-status-filter-option][value='Archived']").check();
-+    await expect(page.locator("[data-idea-board-idea-row='lantern-reef']")).toBeVisible();
-+    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] td").nth(1)).toHaveText("Archived");
-+    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action]")).toHaveText(["Restore", "Delete"]);
-+    await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='restore']").click();
-+    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] td").nth(1)).toHaveText("Project");
-+    await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='archive']").click();
-+    await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action]")).toHaveText(["Restore", "Delete"]);
-+    await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='delete']").click();
-+    await expect(page.locator("[data-idea-board-idea-row='lantern-reef']")).toHaveCount(0);
-+    await page.locator("[data-idea-board-filter-clear-all]").click();
-+    await expect(page.locator("[data-idea-board-idea-row]")).toHaveCount(0);
-+    await expect(page.locator("[data-idea-board-add-idea]")).toBeVisible();
-+    await page.locator("[data-idea-board-filter-select-all]").click();
++async function expectNoNavigationFallbackUi(page) {
++  await expect(page.locator("body")).not.toContainText("Tool navigation is temporarily unavailable. Refresh the page or try again shortly.");
++  await expect(page.locator(".tool-display-mode")).not.toContainText(/\bserver\b|\bAPI\b|\blocal server\b|\bport\b|\bregistry\b|\bsnapshot\b/i);
++}
++
+ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
+   const server = await startRepoServer();
+   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+@@ -137,6 +142,7 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
+     await page.goto(`${server.baseUrl}/toolbox/idea-board/index.html`, { waitUntil: "networkidle" });
+     await expect(page.getByRole("heading", { level: 1, name: "Idea Board" })).toBeVisible();
+     await expectProductionCopy(page);
++    await expectNoNavigationFallbackUi(page);
+     await expect(page.locator("[data-idea-board-table] > thead th[scope='col']")).toHaveText([
+       "Idea",
+       "Pitch",
+@@ -313,3 +319,55 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
+     await server.close();
+   }
+ });
++
++test("Idea Board remains usable without visible navigation fallback when registry navigation is unavailable", async ({ page }) => {
++  const server = await startRepoServer();
++  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
++  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
++  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
++  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
++  const pageErrors = [];
++  const consoleErrors = [];
++  const navigationWarnings = [];
++
++  await page.route("**/api/toolbox/registry/snapshot", async (route) => {
++    await route.fulfill({ body: "", status: 204 });
++  });
++
++  page.on("pageerror", (error) => {
++    const text = error.stack || error.message;
++    if (!isBrowserExtensionNoise(text)) pageErrors.push(error.message);
++  });
++  page.on("console", (message) => {
++    const text = message.text();
++    if (message.type() === "warning" && text.includes("Tool navigation could not be loaded.")) {
++      navigationWarnings.push(text);
++    }
++    if (message.type() === "error" && !isBrowserExtensionNoise(text)) consoleErrors.push(text);
++  });
++
++  try {
++    await page.goto(`${server.baseUrl}/toolbox/idea-board/index.html`, { waitUntil: "networkidle" });
++    await expect(page.getByRole("heading", { level: 1, name: "Idea Board" })).toBeVisible();
++    await expectProductionCopy(page);
++    await expectNoNavigationFallbackUi(page);
++    await expect(page.locator(".tool-display-mode__navigation-row")).toHaveCount(0);
++    await expect(page.locator("[data-idea-board-table]")).toBeVisible();
 +    await expect(page.locator("[data-idea-board-idea-row]")).toHaveCount(3);
++
++    await page.locator("[data-idea-board-idea-cell='top-thoughts']").click();
++    await expect(page.locator("[data-idea-board-expanded-row='top-thoughts']")).toBeVisible();
++    await page.locator("[data-idea-board-add-note='top-thoughts']").click();
++    await page.locator("[data-idea-board-note-input]").fill("Navigation fallback does not block table notes.");
++    await page.locator("[data-idea-board-note-action='save']").click();
++    await expect(page.locator("[data-idea-board-notes-table='top-thoughts']")).toContainText("Navigation fallback does not block table notes.");
++
++    expect(navigationWarnings.length).toBeGreaterThan(0);
++    expect(pageErrors).toEqual([]);
++    expect(consoleErrors).toEqual([]);
++  } finally {
++    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
++    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
++    await server.close();
++  }
++});
+diff --git a/tests/playwright/tools/TextToSpeechFunctional.spec.mjs b/tests/playwright/tools/TextToSpeechFunctional.spec.mjs
+index 17e2c0b62..ccf95e3e3 100644
+--- a/tests/playwright/tools/TextToSpeechFunctional.spec.mjs
++++ b/tests/playwright/tools/TextToSpeechFunctional.spec.mjs
+@@ -66,13 +66,7 @@ async function openTextToSpeechPage(page, { speechAvailable = true } = {}) {
+         getVoices() {
+           return voices;
+         },
+-        pause() {
+-          window.__textToSpeechCalls.push({ type: "pause" });
+-        },
+         removeEventListener() {},
+-        resume() {
+-          window.__textToSpeechCalls.push({ type: "resume" });
+-        },
+         speak(utterance) {
+           window.__textToSpeechCalls.push({
+             lang: utterance.lang,
+@@ -107,22 +101,8 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
+     await expect(page.locator("[data-tts-voice-select]")).toContainText("Arcade Voice");
+     await expect(page.locator("[data-tts-voice-count]")).toHaveText("2");
+     await expect(page.locator("[data-tts-engine-label]")).toHaveText("Ready");
+-    await expect(page.locator("[data-tts-gender-select]")).toBeVisible();
+-    await expect(page.locator("[data-tts-language-select]")).toBeVisible();
+-    await expect(page.locator("[data-tts-age-select]")).toBeVisible();
+-    await expect(page.locator("[data-tts-character-preset-select]")).toBeVisible();
+-    await expect(page.locator("[data-tts-ssml-preset-select]")).toBeVisible();
+-    await expect(page.locator("[data-tts-import-json]")).toBeEnabled();
+-    await expect(page.locator("[data-tts-copy-json]")).toBeEnabled();
+-    await expect(page.locator("[data-tts-export-json]")).toBeEnabled();
 
-     expect(mutatingApiRequests).toEqual([]);
-     expect(failedRequests).toEqual([]);
+     await page.locator("[data-tts-text-input]").fill("Launch the next wave.");
+-    await page.locator("[data-tts-item-name]").fill("Wave intro");
+-    await page.locator("[data-tts-character-preset-select]").selectOption("dramatic");
+-    await page.locator("[data-tts-age-select]").selectOption("teen");
+-    await page.locator("[data-tts-ssml-preset-select]").selectOption("whisper-ish");
+-    await expect(page.locator("[data-tts-pitch-value]")).toHaveText("1.1");
+-    await expect(page.locator("[data-tts-volume-value]")).toHaveText("0.6");
+     await page.locator("[data-tts-voice-select]").selectOption("arcade-voice-uri");
+     await page.locator("[data-tts-rate]").fill("1.4");
+     await page.locator("[data-tts-pitch]").fill("0.8");
+@@ -131,13 +111,6 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
+     await expect(page.locator("[data-tts-pitch-value]")).toHaveText("0.8");
+     await expect(page.locator("[data-tts-volume-value]")).toHaveText("0.55");
+     await expect(page.locator("[data-tts-text-count]")).toHaveText("21");
+-    await page.locator("[data-tts-add-item]").click();
+-    await expect(page.locator("[data-tts-queue-list]")).toContainText("Wave intro");
+-    await expect(page.locator("[data-tts-output-summary]")).toContainText("\"name\": \"Wave intro\"");
+-    await page.locator("[data-tts-duplicate-item]").click();
+-    await expect(page.locator("[data-tts-queue-list]")).toContainText("Wave intro 2 copy");
+-    await page.locator("[data-tts-delete-item]").click();
+-    await expect(page.locator("[data-tts-queue-list] [data-tts-queue-item]")).toHaveCount(2);
+
+     await expect(page.locator("[data-tts-speak]")).toBeEnabled();
+     await page.locator("[data-tts-speak]").click();
+@@ -153,13 +126,10 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
+       volume: 0.55,
+     }));
+
+-    await page.locator("[data-tts-pause]").click();
+-    await page.locator("[data-tts-resume]").click();
+     await page.locator("[data-tts-stop]").click();
+     await expect(page.locator("[data-tts-status]")).toContainText("Speech stopped");
+     calls = await page.evaluate(() => window.__textToSpeechCalls);
+     expect(calls.at(-1)).toEqual({ type: "cancel" });
+-    expect(calls).toEqual(expect.arrayContaining([{ type: "pause" }, { type: "resume" }]));
+
+     expect(failures.failedRequests).toEqual([]);
+     expect(failures.pageErrors).toEqual([]);
 diff --git a/tests/playwright/tools/ToolboxRoutePages.spec.mjs b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
-index b3033e10d..9f40a19ad 100644
+index 9f40a19ad..b2d410c0f 100644
 --- a/tests/playwright/tools/ToolboxRoutePages.spec.mjs
 +++ b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
-@@ -115,10 +115,13 @@ function restoreEnvValue(key, value) {
- async function expectIdeaChevron(page, ideaId, iconName) {
-   const metrics = await page.locator(`[data-idea-board-idea-row='${ideaId}'] th`).evaluate((cell, targetIdeaId) => {
-     const label = cell.querySelector(".idea-board-idea-label");
-+    const text = label.querySelector(".idea-board-idea-label__text");
-     const icon = cell.querySelector(`[data-idea-board-chevron='${targetIdeaId}']`);
-     const cellStyles = getComputedStyle(cell);
-     const labelStyles = getComputedStyle(label);
-     const iconStyles = getComputedStyle(icon);
-+    const textRect = text.getBoundingClientRect();
-+    const iconRect = icon.getBoundingClientRect();
-     return {
-       iconName: icon.dataset.ideaBoardChevronIcon,
-       labelDisplay: labelStyles.display,
-@@ -126,7 +129,11 @@ async function expectIdeaChevron(page, ideaId, iconName) {
-       iconHeight: Number.parseFloat(iconStyles.height),
-       fontSize: Number.parseFloat(cellStyles.fontSize),
-       iconColor: iconStyles.backgroundColor,
-+      iconBottom: iconRect.bottom,
-+      iconLeft: iconRect.left,
-       textColor: cellStyles.color,
-+      textBottom: textRect.bottom,
-+      textLeft: textRect.left,
-       maskImage: iconStyles.getPropertyValue("-webkit-mask-image") || iconStyles.maskImage,
-     };
-   }, ideaId);
-@@ -135,6 +142,8 @@ async function expectIdeaChevron(page, ideaId, iconName) {
-   expect(Math.abs(metrics.iconWidth - metrics.fontSize)).toBeLessThanOrEqual(1);
-   expect(Math.abs(metrics.iconHeight - metrics.fontSize)).toBeLessThanOrEqual(1);
-   expect(metrics.iconColor).toBe(metrics.textColor);
-+  expect(metrics.iconLeft).toBeLessThan(metrics.textLeft);
-+  expect(Math.abs(metrics.iconBottom - metrics.textBottom)).toBeLessThanOrEqual(2);
-   expect(metrics.maskImage).toContain(iconName);
- }
-
-@@ -194,7 +203,7 @@ async function expectExpandedNotesChildIndentation(page, ideaId, expectedInputRo
-
- async function expectIdeaBoardProductionCopy(page) {
-   await expect(page.locator("main")).not.toContainText(
--    /\bDB-shaped\b|\bin-page data model\b|\buserId\b|\bideaId\b|\bnoteId\b|\bsystem flag\b|\bmetadata\b|\bseed\b|\bdebug\b|\bselected context\b|\bmock\b|\btest\b|\binternal implementation\b|\bplaceholder\b|\bproject records\b|\bmutating API\b|\bauth\b|\bAI\b|\bdatabase behavior\b/i,
-+    /\bDB-shaped\b|\bin-page data model\b|\buserId\b|\bideaId\b|\bnoteId\b|\bsystem flag\b|\bmetadata\b|\bseed\b|\bdebug\b|\bselected context\b|\bmock\b|\btest\b|\binternal implementation\b|\bplaceholder\b|\bproject records\b|\bmutating API\b|\bserver\b|\bAPI\b|\blocal server\b|\bport\b|\bunderlying systems\b|\bauth\b|\bAI\b|\bdatabase behavior\b/i,
+@@ -207,6 +207,11 @@ async function expectIdeaBoardProductionCopy(page) {
    );
  }
 
-@@ -302,7 +311,6 @@ test("Idea Board launches from Toolbox with accordion table notes model", async
-       "Workflow",
-       "Status",
-       "Idea Table",
--      "Create Project",
-       "Notes Governance",
-       "Diagnostics",
-     ]);
-@@ -335,12 +343,10 @@ test("Idea Board launches from Toolbox with accordion table notes model", async
-     await expect(page.locator("[data-idea-board-add-note='top-thoughts']")).toBeVisible();
-     await expect(page.locator("[data-idea-board-add-note='top-thoughts']")).toHaveText("Add Note");
-     await expectExpandedNotesChildIndentation(page, "top-thoughts");
--    await expect(page.locator("[data-idea-board-create-project]")).toBeVisible();
--    await expect(page.locator("[data-idea-board-create-project]")).toBeDisabled();
-+    await expect(page.locator("[data-idea-board-create-project]")).toHaveCount(0);
-     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-     await expect(page.locator("script[src='toolbox/idea-board/index.js']")).toHaveCount(1);
-     mutatingApiRequests.length = 0;
--    await page.locator("[data-idea-board-create-project]").evaluate((button) => button.click());
-     await page.locator("[data-idea-board-add-note='top-thoughts']").click();
-     await page.locator("[data-idea-board-note-input]").fill("Capture traversal risks before project creation.");
-     await page.locator("[data-idea-board-note-action='save']").click();
-@@ -348,6 +354,16 @@ test("Idea Board launches from Toolbox with accordion table notes model", async
-     await page.locator("[data-idea-board-idea-cell='clockwork-courier']").click();
-     await expect(page.locator("[data-idea-board-expanded-row='clockwork-courier']")).toBeVisible();
-     await expect(page.locator("[data-idea-board-notes-table='clockwork-courier']")).not.toContainText("Capture traversal risks before project creation.");
-+    await page.locator("[data-idea-board-add-idea]").click();
-+    await page.locator("[data-idea-board-idea-input]").fill("Launch Tile");
-+    await page.locator("[data-idea-board-pitch-input]").fill("Turn a polished board idea into a project.");
-+    await page.locator("[data-idea-board-idea-status-input]").selectOption("Ready");
-+    await page.locator("[data-idea-board-idea-action='save']").click();
-+    await expect(page.locator("[data-idea-board-idea-row='launch-tile'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Create Project", "Delete"]);
-+    await page.locator("[data-idea-board-idea-row='launch-tile'] [data-idea-board-idea-action='create-project']").click();
-+    await expect(page.locator("[data-idea-board-idea-row='launch-tile'] td").nth(1)).toHaveText("Project");
-+    await expect(page.locator("[data-idea-board-idea-row='launch-tile'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Open Project", "Archive"]);
-+    await expect(page.locator("[data-idea-board-idea-row='launch-tile'] [data-idea-board-idea-action='delete']")).toHaveCount(0);
-     expect(mutatingApiRequests).toEqual([]);
-
-     expect(failedRequests).toEqual([]);
-diff --git a/toolbox/idea-board/index.html b/toolbox/idea-board/index.html
-index 214a303fb..422d67b1b 100644
---- a/toolbox/idea-board/index.html
-+++ b/toolbox/idea-board/index.html
-@@ -18,7 +18,7 @@
++async function expectNoToolNavigationFallbackUi(page) {
++  await expect(page.locator("body")).not.toContainText("Tool navigation is temporarily unavailable. Refresh the page or try again shortly.");
++  await expect(page.locator(".tool-display-mode")).not.toContainText(/\bserver\b|\bAPI\b|\blocal server\b|\bport\b|\bregistry\b|\bsnapshot\b/i);
++}
++
+ test("tools route aliases render toolbox tool pages", async ({ page }) => {
+   const server = await startRepoServer();
+   const failedRequests = [];
+@@ -304,6 +309,7 @@ test("Idea Board launches from Toolbox with accordion table notes model", async
+     await page.waitForLoadState("networkidle");
+     await expect(page.getByRole("heading", { level: 1, name: "Idea Board" })).toBeVisible();
+     await expectIdeaBoardProductionCopy(page);
++    await expectNoToolNavigationFallbackUi(page);
+     const ideaBoardSections = await page.locator("[data-idea-board-section]").evaluateAll((sections) => (
+       sections.map((section) => section.getAttribute("data-idea-board-section"))
+     ));
+diff --git a/toolbox/text-to-speech/index.html b/toolbox/text-to-speech/index.html
+index f5b29b19a..adaaff3a7 100644
+--- a/toolbox/text-to-speech/index.html
++++ b/toolbox/text-to-speech/index.html
+@@ -6,7 +6,7 @@
+     <base href="/">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+     <title>Text To Speech - GameFoundryStudio</title>
+-    <meta name="description" content="Functional browser Text To Speech tool using Theme V2 and the shared engine audio Text To Speech module.">
++    <meta name="description" content="Functional browser Text To Speech tool using Theme V2 and the Web Speech API.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+ </head>
+@@ -18,100 +18,52 @@
              <div class="container">
-                 <div class="kicker">Toolbox</div>
-                 <h1>Idea Board</h1>
--                <p class="lede">Capture, compare, and shape game ideas in one table.</p>
-+                <p class="lede">Capture, compare, and shape game ideas.</p>
+                 <div class="kicker">Project Workspace / Audio</div>
+                 <h1>Text To Speech</h1>
+-                <p class="lede">Create named speech lines, shape browser voices, and preview spoken game text through the shared engine audio Text To Speech module.</p>
++                <p class="lede">Preview spoken game text with local browser speech synthesis before deciding whether a generated audio provider is needed.</p>
              </div>
          </section>
          <section class="section">
-@@ -38,7 +38,7 @@
-                             <details class="vertical-accordion" data-idea-board-section="Status">
-                                 <summary>Status</summary>
+             <div class="container container--tool-wide">
+-                <nav class="action-group" aria-label="Text To Speech JSON actions" data-tts-standalone-actions>
+-                    <button class="btn" type="button" data-tts-import-json>Import JSON</button>
+-                    <input type="file" accept="application/json,.json" hidden data-tts-import-json-input>
+-                    <button class="btn" type="button" data-tts-copy-json>Copy JSON</button>
+-                    <button class="btn" type="button" data-tts-export-json>Export JSON</button>
+-                </nav>
+-                <nav class="action-group" aria-label="Project Workspace actions" hidden data-tts-workspace-actions>
+-                    <button class="btn" type="button" data-tts-return-workspace>Return to Project Workspace</button>
+-                </nav>
+                 <div class="tool-workspace tool-workspace--wide">
+                     <aside class="tool-column tool-group-audio">
+                         <div class="tool-column-header">
+-                            <h2>Speech Options</h2>
++                            <h2>Script</h2>
+                         </div>
+                         <div class="accordion-stack">
+                             <details class="vertical-accordion" open>
+-                                <summary>Voice Filters</summary>
++                                <summary>Text</summary>
                                  <div class="accordion-body content-stack">
--                                    <p>Use status to show where each idea stands: New, Exploring, Parked, or Ready to Shape.</p>
-+                                    <p>Use status to show where each idea stands: New, Exploring, Refining, Ready, Project, or Archived.</p>
+-                                    <label for="ttsGenderSelect">Gender</label>
+-                                    <select id="ttsGenderSelect" data-tts-gender-select></select>
+-                                    <label for="ttsLanguageSelect">Language</label>
+-                                    <select id="ttsLanguageSelect" data-tts-language-select></select>
+-                                    <label for="ttsVoiceSelect">Voice</label>
+-                                    <select id="ttsVoiceSelect" data-tts-voice-select></select>
+-                                    <p class="field-hint" data-tts-voice-details>No browser voices loaded yet.</p>
+-                                </div>
+-                            </details>
+-                            <details class="vertical-accordion" open>
+-                                <summary>Presets</summary>
+-                                <div class="accordion-body content-stack">
+-                                    <label for="ttsVoiceAgeSelect">Voice Age</label>
+-                                    <select id="ttsVoiceAgeSelect" data-tts-age-select></select>
+-                                    <label for="ttsCharacterPresetSelect">Character Preset</label>
+-                                    <select id="ttsCharacterPresetSelect" data-tts-character-preset-select></select>
+-                                    <label for="ttsSsmlPresetSelect">SSML-like Preset</label>
+-                                    <select id="ttsSsmlPresetSelect" data-tts-ssml-preset-select></select>
++                                    <label for="ttsTextInput">Speech Text</label>
++                                    <textarea id="ttsTextInput" data-tts-text-input>Welcome to the arena, hero.</textarea>
++                                    <p class="field-hint">Enter narration, dialog, tutorial text, menu feedback, or any short line you want to preview.</p>
+                                 </div>
+                             </details>
+                             <details class="vertical-accordion" open>
+-                                <summary>Delivery</summary>
++                                <summary>Browser Voice</summary>
+                                 <div class="accordion-body content-stack">
+-                                    <div class="slider-value-row">
+-                                        <label for="ttsVolume">Volume</label>
+-                                        <input id="ttsVolume" type="range" data-tts-volume>
+-                                        <output for="ttsVolume" class="slider-current-value" data-tts-volume-value>1</output>
+-                                    </div>
+-                                    <div class="slider-value-row">
+-                                        <label for="ttsRate">Rate / Speed</label>
+-                                        <input id="ttsRate" type="range" data-tts-rate>
+-                                        <output for="ttsRate" class="slider-current-value" data-tts-rate-value>1</output>
+-                                    </div>
+-                                    <div class="slider-value-row">
+-                                        <label for="ttsPitch">Pitch</label>
+-                                        <input id="ttsPitch" type="range" data-tts-pitch>
+-                                        <output for="ttsPitch" class="slider-current-value" data-tts-pitch-value>1</output>
+-                                    </div>
+-                                    <p class="field-hint">Voice Age and SSML-like presets shape rate, pitch, and volume. Manual slider changes are preserved until a new character preset is selected.</p>
+-                                </div>
+-                            </details>
+-                            <details class="vertical-accordion" open>
+-                                <summary>Named Sentence</summary>
+-                                <div class="accordion-body content-stack">
+-                                    <label for="ttsSpeechItemName">Name</label>
+-                                    <input id="ttsSpeechItemName" type="text" autocomplete="off" data-tts-item-name>
+-                                    <div class="action-group" aria-label="Named sentence actions">
+-                                        <button class="btn" type="button" data-tts-add-item>Add</button>
+-                                        <button class="btn" type="button" data-tts-duplicate-item>Duplicate</button>
+-                                        <button class="btn" type="button" data-tts-delete-item>Delete</button>
+-                                    </div>
++                                    <label for="ttsVoiceSelect">Voice</label>
++                                    <select id="ttsVoiceSelect" data-tts-voice-select></select>
++                                    <p class="field-hint" data-tts-voice-details>No browser voices loaded yet.</p>
                                  </div>
                              </details>
                          </div>
-@@ -46,10 +46,22 @@
-                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="idea-board" data-tool-icon-src="assets/theme-v2/images/badges/game-design.png" data-tool-character-src="assets/theme-v2/images/tools/game-design.png"></div>
-                     <section class="tool-center-panel" aria-labelledby="idea-board-work-surface-title">
-                         <h2 id="idea-board-work-surface-title">Ideas</h2>
--                        <p>Scan, compare, and update early ideas without leaving the table.</p>
-+                        <p>Scan, compare, and update early ideas.</p>
-+                        <div class="idea-board-table-caption">
-+                            <span>Idea Board table with expandable notes rows</span>
-+                            <details class="idea-board-show-filter" data-idea-board-show-filter>
-+                                <summary>Show</summary>
-+                                <div class="idea-board-show-filter__menu">
-+                                    <div class="action-group action-group--tight">
-+                                        <button class="btn btn--compact" type="button" data-idea-board-filter-select-all>Select All</button>
-+                                        <button class="btn btn--compact" type="button" data-idea-board-filter-clear-all>Clear All</button>
-+                                    </div>
-+                                    <div class="idea-board-show-filter__options" data-idea-board-status-options></div>
+                     </aside>
+                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="text-to-speech" data-tool-icon-src="assets/theme-v2/images/badges/text-to-speech.png" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
+                     <section class="tool-center-panel">
+-                        <h2>Speech Composition</h2>
+-                        <div class="grid cols-3" aria-label="Text To Speech summary">
++                        <h2>Browser Preview</h2>
++                        <p>Use the browser Web Speech API for immediate local preview. This does not create files, call paid providers, or fake generated audio.</p>
++                        <div class="grid cols-3" aria-label="Text To Speech browser preview summary">
+                             <article class="mini-stat"><strong data-tts-text-count>0</strong>Characters</article>
+                             <article class="mini-stat"><strong data-tts-voice-count>0</strong>Voices</article>
+                             <article class="mini-stat"><strong data-tts-engine-label>Checking</strong>Engine</article>
+                         </div>
+                         <article class="card">
+                             <div class="card-body content-stack">
+-                                <label for="ttsTextInput">Text To Speak</label>
+-                                <textarea id="ttsTextInput" rows="10" autocomplete="off" data-tts-text-input>Welcome to the arena, hero.</textarea>
+-                                <div class="action-group" aria-label="Speech playback actions">
+-                                    <button class="btn" type="button" data-tts-speak>Speak</button>
+-                                    <button class="btn" type="button" data-tts-pause>Pause</button>
+-                                    <button class="btn" type="button" data-tts-resume>Resume</button>
++                                <div>
++                                    <div class="kicker">Preview Controls</div>
++                                    <h3>Speak Browser Preview</h3>
 +                                </div>
-+                            </details>
-+                        </div>
-                         <div class="table-wrapper" data-idea-board-section="Idea Table">
--                            <table class="data-table data-table--fixed" data-idea-board-table>
--                                <caption>Idea Board table with expandable notes rows</caption>
-+                            <table class="data-table data-table--fixed" aria-label="Idea Board table with expandable notes rows" data-idea-board-table>
-                                 <thead>
-                                     <tr>
-                                         <th scope="col">Idea</th>
-@@ -69,14 +81,7 @@
-                             <h2>Next Steps</h2>
++                                <div class="action-group">
++                                    <button class="btn" type="button" data-tts-speak>Speak / Preview</button>
+                                     <button class="btn" type="button" data-tts-stop>Stop</button>
+                                 </div>
+                                 <div class="status" role="status" data-tts-status>Loading browser Text To Speech.</div>
+@@ -120,30 +72,45 @@
+                         <article class="card">
+                             <div class="card-body content-stack">
+                                 <div>
+-                                    <div class="kicker">Named Sentences</div>
+-                                    <h3>Queue</h3>
++                                    <div class="kicker">Ownership Boundary</div>
++                                    <h3>Preview Only</h3>
+                                 </div>
+-                                <div role="listbox" aria-label="Named Sentences" data-tts-queue-list></div>
++                                <p>Message text remains Design-owned. Browser preview is local playback only. Future generated audio files remain Audio-owned when a real provider/export flow is added.</p>
+                             </div>
+                         </article>
+                     </section>
+                     <aside class="tool-column tool-group-audio">
+                         <div class="tool-column-header">
+-                            <h2>Output</h2>
++                            <h2>Voice Settings</h2>
                          </div>
                          <div class="accordion-stack">
--                            <details class="vertical-accordion" open data-idea-board-section="Create Project">
--                                <summary>Create Project</summary>
--                                <div class="accordion-body content-stack">
--                                    <p>Create Project will be available after an idea is ready.</p>
--                                    <button class="btn primary" type="button" disabled data-idea-board-create-project>Create Project</button>
--                                </div>
--                            </details>
--                            <details class="vertical-accordion" data-idea-board-section="Notes Governance">
-+                            <details class="vertical-accordion" open data-idea-board-section="Notes Governance">
-                                 <summary>Notes</summary>
+                             <details class="vertical-accordion" open>
+-                                <summary>Output Summary</summary>
++                                <summary>Delivery</summary>
                                  <div class="accordion-body content-stack">
-                                     <p>Add Note opens a new note row under the expanded idea. Notes can be edited, and removable notes can be deleted.</p>
-diff --git a/toolbox/idea-board/index.js b/toolbox/idea-board/index.js
-index 8f588c3c3..2b74e797d 100644
---- a/toolbox/idea-board/index.js
-+++ b/toolbox/idea-board/index.js
-@@ -1,4 +1,5 @@
--const statusOptions = Object.freeze(["New", "Exploring", "Parked", "Ready to Shape"]);
-+const statusOptions = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project", "Archived"]);
-+const defaultVisibleStatuses = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project"]);
- const userId = "user-1";
+-                                    <pre data-tts-output-summary>[]</pre>
++                                    <div class="field-group">
++                                        <div class="slider-value-row">
++                                            <label for="ttsRate">Rate</label>
++                                            <input id="ttsRate" type="range" min="0.1" max="2" step="0.1" value="1" data-tts-rate>
++                                            <output for="ttsRate" class="slider-current-value" data-tts-rate-value>1</output>
++                                        </div>
++                                        <div class="slider-value-row">
++                                            <label for="ttsPitch">Pitch</label>
++                                            <input id="ttsPitch" type="range" min="0.1" max="2" step="0.1" value="1" data-tts-pitch>
++                                            <output for="ttsPitch" class="slider-current-value" data-tts-pitch-value>1</output>
++                                        </div>
++                                        <div class="slider-value-row">
++                                            <label for="ttsVolume">Volume</label>
++                                            <input id="ttsVolume" type="range" min="0" max="1" step="0.01" value="1" data-tts-volume>
++                                            <output for="ttsVolume" class="slider-current-value" data-tts-volume-value>1</output>
++                                        </div>
++                                    </div>
+                                 </div>
+                             </details>
+                             <details class="vertical-accordion" open>
+                                 <summary>Engine Status</summary>
+                                 <div class="accordion-body content-stack">
+                                     <p data-tts-engine-status>Checking browser speech synthesis.</p>
+-                                    <button class="btn" type="button" data-tts-clear-status>Clear Status</button>
+-                                    <textarea readonly rows="10" aria-label="Status log" data-tts-status-log></textarea>
++                                    <p class="field-hint">If speech synthesis is unavailable, use a browser with Web Speech API support.</p>
+                                 </div>
+                             </details>
+                         </div>
+diff --git a/toolbox/text-to-speech/text2speech.js b/toolbox/text-to-speech/text2speech.js
+index 5ab111eeb..03d785410 100644
+--- a/toolbox/text-to-speech/text2speech.js
++++ b/toolbox/text-to-speech/text2speech.js
+@@ -1,31 +1,8 @@
+-import {
+-  createTextToSpeechQueueItem,
+-  filterTextToSpeechVoiceOptions,
+-  shapeTextToSpeechOptions,
+-  textToSpeechPayloadGenderValue,
+-  TextToSpeechEngine,
+-  uniqueTextToSpeechId,
+-  uniqueTextToSpeechName
+-} from "../../src/engine/audio/TextToSpeechEngine.js";
+-import {
+-  TEXT_TO_SPEECH_AGE_FILTER_OPTIONS,
+-  TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS,
+-  TEXT_TO_SPEECH_CHARACTER_PRESET_OPTIONS,
+-  TEXT_TO_SPEECH_DEFAULTS,
+-  TEXT_TO_SPEECH_DISPLAY_NAME,
+-  TEXT_TO_SPEECH_GENDER_FILTER_OPTIONS,
+-  TEXT_TO_SPEECH_LANGUAGE_OPTIONS,
+-  TEXT_TO_SPEECH_RANGE_DEFAULTS,
+-  TEXT_TO_SPEECH_SCHEMA_ID,
+-  TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS
+-} from "../../src/engine/audio/TextToSpeechDefaults.js";
+-
+-const WORKSPACE_TOOL_STATE_KEY = "workspace.tools.text2speech-V2";
+-const TTS_URL_SOURCE_PARAM = "samplePresetPath";
++import { TextToSpeechEngine } from "../../src/engine/audio/TextToSpeechEngine.js";
 
- const ideaTable = [
-@@ -79,6 +80,7 @@ const state = {
-   editingNoteId: null,
-   addingIdea: false,
-   addingNoteIdeaId: null,
-+  visibleStatuses: new Set(defaultVisibleStatuses),
- };
-
- function today() {
-@@ -98,6 +100,34 @@ function noteCountLabel(ideaId) {
-   return `${count} ${count === 1 ? "Note" : "Notes"}`;
- }
-
-+function isArchived(record) {
-+  return record.status === "Archived";
-+}
-+
-+function isProject(record) {
-+  return record.status === "Project";
-+}
-+
-+function visibleIdeas() {
-+  return ideaTable.filter((record) => state.visibleStatuses.has(record.status));
-+}
-+
-+function previousStatusForRestore(record) {
-+  return statusOptions.includes(record.previousStatus) && record.previousStatus !== "Archived"
-+    ? record.previousStatus
-+    : "Refining";
-+}
-+
-+function rememberPreviousStatus(record) {
-+  if (record.status !== "Archived") {
-+    record.previousStatus = record.status;
-+  }
-+}
-+
-+function canDeleteIdea(record) {
-+  return !isProject(record) || isArchived(record);
-+}
-+
- function cell(text) {
-   const td = document.createElement("td");
-   td.textContent = text;
-@@ -113,6 +143,25 @@ function actionButton(label, action, datasetName, variant = "") {
-   return control;
- }
-
-+function renderStatusFilter(root) {
-+  const options = root.querySelector("[data-idea-board-status-options]");
-+  if (!options) return;
-+  options.replaceChildren();
-+  for (const status of statusOptions) {
-+    const label = document.createElement("label");
-+    label.className = "idea-board-show-filter__option";
-+    const input = document.createElement("input");
-+    input.type = "checkbox";
-+    input.value = status;
-+    input.checked = state.visibleStatuses.has(status);
-+    input.dataset.ideaBoardStatusFilterOption = status;
-+    const text = document.createElement("span");
-+    text.textContent = status;
-+    label.append(input, text);
-+    options.append(label);
-+  }
-+}
-+
- function textInput(label, value = "") {
-   const input = document.createElement("input");
-   input.type = "text";
-@@ -199,7 +248,7 @@ function renderIdeaRow(tbody, record) {
-   chevron.setAttribute("aria-hidden", "true");
-   chevron.dataset.ideaBoardChevron = record.ideaId;
-   chevron.dataset.ideaBoardChevronIcon = chevronIcon;
--  ideaLabel.append(ideaText, chevron);
-+  ideaLabel.append(chevron, ideaText);
-   idea.append(ideaLabel);
-   row.append(idea);
-   row.append(cell(record.pitch));
-@@ -214,11 +263,28 @@ function renderIdeaRow(tbody, record) {
-   row.append(notes);
-
-   const actions = document.createElement("td");
--  actions.append(
--    actionButton("Edit", "edit", "ideaBoardIdeaAction"),
--    " ",
--    actionButton("Delete", "delete", "ideaBoardIdeaAction"),
--  );
-+  if (isArchived(record)) {
-+    actions.append(
-+      actionButton("Restore", "restore", "ideaBoardIdeaAction"),
-+      " ",
-+      actionButton("Delete", "delete", "ideaBoardIdeaAction"),
-+    );
-+  } else {
-+    actions.append(actionButton("Edit", "edit", "ideaBoardIdeaAction"));
-+    if (record.status === "Ready") {
-+      actions.append(" ", actionButton("Create Project", "create-project", "ideaBoardIdeaAction", "primary"));
-+    }
-+    if (isProject(record)) {
-+      actions.append(
-+        " ",
-+        actionButton("Open Project", "open-project", "ideaBoardIdeaAction", "primary"),
-+        " ",
-+        actionButton("Archive", "archive", "ideaBoardIdeaAction"),
-+      );
-+    } else {
-+      actions.append(" ", actionButton("Delete", "delete", "ideaBoardIdeaAction"));
-+    }
-+  }
-   row.append(actions);
-   tbody.append(row);
- }
-@@ -322,8 +388,9 @@ function renderAddIdeaRow(tbody) {
- function render(root) {
-   const tbody = root.querySelector("[data-idea-board-ideas-body]");
-   if (!tbody) return;
-+  renderStatusFilter(root);
-   tbody.replaceChildren();
--  for (const record of ideaTable) {
-+  for (const record of visibleIdeas()) {
-     if (state.editingIdeaId === record.ideaId) {
-       renderIdeaInputRow(tbody, record);
-     } else {
-@@ -361,7 +428,11 @@ function saveIdeaRow(root, row) {
-     }
-     record.idea = idea;
-     record.pitch = pitch;
-+    if (status === "Archived" && record.status !== "Archived") {
-+      record.previousStatus = record.status;
-+    }
-     record.status = status;
-+    rememberPreviousStatus(record);
-     record.updated = today();
-     state.editingIdeaId = null;
-     updateStatus(root, `Updated ${record.idea}.`);
-@@ -427,6 +498,10 @@ function deleteIdea(root, ideaId) {
-     updateStatus(root, "Idea Board could not delete that idea.");
-     return;
-   }
-+  if (!canDeleteIdea(ideaTable[index])) {
-+    updateStatus(root, "Archive this project before deleting it.");
-+    return;
-+  }
-   const [removed] = ideaTable.splice(index, 1);
-   for (let noteIndex = noteTable.length - 1; noteIndex >= 0; noteIndex -= 1) {
-     if (noteTable[noteIndex].ideaId === ideaId) noteTable.splice(noteIndex, 1);
-@@ -438,6 +513,61 @@ function deleteIdea(root, ideaId) {
-   render(root);
- }
-
-+function createProject(root, ideaId) {
-+  const record = ideaRecord(ideaId);
-+  if (!record) {
-+    updateStatus(root, "Idea Board could not update that idea.");
-+    return;
-+  }
-+  if (record.status !== "Ready") {
-+    updateStatus(root, "Set this idea to Ready before creating a project.");
-+    return;
-+  }
-+  record.status = "Project";
-+  record.previousStatus = "Project";
-+  record.updated = today();
-+  updateStatus(root, `${record.idea} is now a project.`);
-+  render(root);
-+}
-+
-+function archiveIdea(root, ideaId) {
-+  const record = ideaRecord(ideaId);
-+  if (!record) {
-+    updateStatus(root, "Idea Board could not archive that idea.");
-+    return;
-+  }
-+  if (record.status !== "Archived") record.previousStatus = record.status;
-+  record.status = "Archived";
-+  record.updated = today();
-+  if (!state.visibleStatuses.has("Archived") && state.expandedIdeaId === ideaId) {
-+    state.expandedIdeaId = null;
-+  }
-+  updateStatus(root, `Archived ${record.idea}.`);
-+  render(root);
-+}
-+
-+function restoreIdea(root, ideaId) {
-+  const record = ideaRecord(ideaId);
-+  if (!record) {
-+    updateStatus(root, "Idea Board could not restore that idea.");
-+    return;
-+  }
-+  record.status = previousStatusForRestore(record);
-+  record.previousStatus = record.status;
-+  record.updated = today();
-+  updateStatus(root, `Restored ${record.idea}.`);
-+  render(root);
-+}
-+
-+function openProject(root, ideaId) {
-+  const record = ideaRecord(ideaId);
-+  if (!record) {
-+    updateStatus(root, "Idea Board could not open that project.");
-+    return;
-+  }
-+  updateStatus(root, `Opening ${record.idea}.`);
-+}
-+
- function handleIdeaAction(root, actionControl) {
-   const action = actionControl.dataset.ideaBoardIdeaAction;
-   const row = actionControl.closest("tr");
-@@ -454,6 +584,14 @@ function handleIdeaAction(root, actionControl) {
-     render(root);
-   } else if (action === "delete") {
-     deleteIdea(root, ideaId);
-+  } else if (action === "create-project") {
-+    createProject(root, ideaId);
-+  } else if (action === "open-project") {
-+    openProject(root, ideaId);
-+  } else if (action === "archive") {
-+    archiveIdea(root, ideaId);
-+  } else if (action === "restore") {
-+    restoreIdea(root, ideaId);
-   } else if (action === "cancel") {
-     state.editingIdeaId = null;
-     state.addingIdea = false;
-@@ -497,7 +635,38 @@ function handleNoteAction(root, actionControl) {
-   }
- }
-
-+function handleFilterAction(root, actionControl) {
-+  if (actionControl.matches("[data-idea-board-filter-select-all]")) {
-+    state.visibleStatuses = new Set(statusOptions);
-+    updateStatus(root, "Showing all statuses.");
-+  } else if (actionControl.matches("[data-idea-board-filter-clear-all]")) {
-+    state.visibleStatuses = new Set();
-+    state.expandedIdeaId = null;
-+    updateStatus(root, "Status filters cleared.");
-+  }
-+  render(root);
-+}
-+
-+function handleFilterChange(root, input) {
-+  if (input.checked) {
-+    state.visibleStatuses.add(input.value);
-+  } else {
-+    state.visibleStatuses.delete(input.value);
-+    if (state.expandedIdeaId && ideaRecord(state.expandedIdeaId)?.status === input.value) {
-+      state.expandedIdeaId = null;
-+    }
-+  }
-+  updateStatus(root, "Updated visible statuses.");
-+  render(root);
-+}
-+
- function handleClick(root, event) {
-+  const filterAction = event.target.closest("[data-idea-board-filter-select-all], [data-idea-board-filter-clear-all]");
-+  if (filterAction) {
-+    handleFilterAction(root, filterAction);
-+    return;
-+  }
-+
-   const toggle = event.target.closest("[data-idea-board-toggle-notes]");
-   if (toggle) {
-     toggleNotes(root, toggle.dataset.ideaBoardToggleNotes);
-@@ -514,6 +683,11 @@ function handleClick(root, event) {
-   if (noteAction) handleNoteAction(root, noteAction);
- }
-
-+function handleChange(root, event) {
-+  const statusFilter = event.target.closest("[data-idea-board-status-filter-option]");
-+  if (statusFilter) handleFilterChange(root, statusFilter);
-+}
-+
- function handleKeydown(root, event) {
-   const toggle = event.target.closest("[data-idea-board-toggle-notes]");
-   if (!toggle || (event.key !== "Enter" && event.key !== " ")) return;
-@@ -526,5 +700,6 @@ document.addEventListener("DOMContentLoaded", () => {
-   if (!root) return;
-   render(root);
-   root.addEventListener("click", (event) => handleClick(root, event));
-+  root.addEventListener("change", (event) => handleChange(root, event));
-   root.addEventListener("keydown", (event) => handleKeydown(root, event));
+ const TTS_OWNERSHIP = Object.freeze({
+   DESIGN: "Design",
+-  AUDIO: "Audio"
++  AUDIO: "Audio",
  });
+
+ const TTS_MESSAGE_STATUSES = Object.freeze([
+@@ -34,13 +11,17 @@ const TTS_MESSAGE_STATUSES = Object.freeze([
+   "speaking",
+   "stopped",
+   "blocked",
+-  "archived"
++  "archived",
+ ]);
+
+-const TTS_LANGUAGES = Object.freeze(TEXT_TO_SPEECH_LANGUAGE_OPTIONS.map((option) => ({
+-  code: option.value,
+-  name: option.label
+-})));
++const TTS_LANGUAGES = Object.freeze([
++  { code: "en-US", name: "English (United States)" },
++  { code: "en-GB", name: "English (United Kingdom)" },
++  { code: "es-ES", name: "Spanish (Spain)" },
++  { code: "fr-FR", name: "French (France)" },
++  { code: "de-DE", name: "German (Germany)" },
++  { code: "ja-JP", name: "Japanese (Japan)" },
++]);
+
+ const TTS_PROVIDER_ADAPTER_PLAN = Object.freeze([
+   {
+@@ -48,48 +29,48 @@ const TTS_PROVIDER_ADAPTER_PLAN = Object.freeze([
+     name: "Browser Speech Synthesis",
+     status: "implemented",
+     boundary: "Local browser Web Speech API preview; no generated files.",
+-    requiredCapabilities: ["text input", "voice selection", "rate", "pitch", "volume", "speak", "pause", "resume", "stop"]
++    requiredCapabilities: ["text input", "voice selection", "rate", "pitch", "volume", "speak", "stop"],
+   },
+   {
+     key: "openai",
+     name: "OpenAI",
+     status: "planned",
+     boundary: "External provider adapter; no implementation in this PR.",
+-    requiredCapabilities: ["text input", "voice selection", "generated audio file response", "usage metadata"]
++    requiredCapabilities: ["text input", "voice selection", "generated audio file response", "usage metadata"],
+   },
+   {
+     key: "elevenlabs",
+     name: "ElevenLabs",
+     status: "planned",
+     boundary: "External provider adapter; no implementation in this PR.",
+-    requiredCapabilities: ["text input", "voice profile mapping", "generated audio file response", "provider job metadata"]
++    requiredCapabilities: ["text input", "voice profile mapping", "generated audio file response", "provider job metadata"],
+   },
+   {
+     key: "azure",
+     name: "Azure AI Speech",
+     status: "planned",
+     boundary: "External provider adapter; no implementation in this PR.",
+-    requiredCapabilities: ["SSML-safe text", "language mapping", "voice deployment mapping", "generated audio file response"]
++    requiredCapabilities: ["SSML-safe text", "language mapping", "voice deployment mapping", "generated audio file response"],
+   },
+   {
+     key: "local",
+     name: "Local Provider",
+     status: "planned",
+     boundary: "Local/offline adapter; no implementation in this PR.",
+-    requiredCapabilities: ["local model availability", "voice preset mapping", "file output", "device/runtime capability reporting"]
+-  }
++    requiredCapabilities: ["local model availability", "voice preset mapping", "file output", "device/runtime capability reporting"],
++  },
+ ]);
+
+-function boundedNumber(value, { fallback, max, min, value: defaultValue }) {
+-  const number = Number(value);
+-  const fallbackValue = fallback ?? defaultValue ?? min;
+-  return Math.min(max, Math.max(min, Number.isFinite(number) ? number : fallbackValue));
+-}
++const RANGE_LIMITS = Object.freeze({
++  pitch: Object.freeze({ fallback: 1, max: 2, min: 0.1 }),
++  rate: Object.freeze({ fallback: 1, max: 2, min: 0.1 }),
++  volume: Object.freeze({ fallback: 1, max: 1, min: 0 }),
++});
+
+-function formatRangeValue(value, kind) {
+-  const limits = TEXT_TO_SPEECH_RANGE_DEFAULTS[kind] || TEXT_TO_SPEECH_RANGE_DEFAULTS.rate;
+-  const boundedValue = boundedNumber(value, limits);
+-  return String(Math.round(boundedValue * 100) / 100);
++function boundedNumber(value, { fallback, max, min }) {
++  const number = Number(value);
++  if (!Number.isFinite(number)) return fallback;
++  return Math.min(max, Math.max(min, number));
+ }
+
+ function createTtsMessage({
+@@ -100,7 +81,7 @@ function createTtsMessage({
+   voiceProfileKey = "browser-speech",
+   languageCode = "en-US",
+   status = "draft",
+-  metadata = {}
++  metadata = {},
+ } = {}) {
+   return {
+     id: String(id || "tts-message-draft"),
+@@ -116,9 +97,9 @@ function createTtsMessage({
+       creatorNotes: String(metadata.creatorNotes || ""),
+       intent: String(metadata.intent || ""),
+       sceneKey: String(metadata.sceneKey || ""),
+-      tags: Array.isArray(metadata.tags) ? metadata.tags.map(String) : []
++      tags: Array.isArray(metadata.tags) ? metadata.tags.map(String) : [],
+     },
+-    generatedAudio: null
++    generatedAudio: null,
+   };
+ }
+
+@@ -135,17 +116,17 @@ function createVoiceProfile({ key = "browser-speech", name = "Browser Speech", p
+     providerKey: String(providerKey),
+     voiceId: String(voiceId),
+     owner: TTS_OWNERSHIP.DESIGN,
+-    generatedAudioOwner: TTS_OWNERSHIP.AUDIO
++    generatedAudioOwner: TTS_OWNERSHIP.AUDIO,
+   };
+ }
+
+ function createSpeechPreviewRequest({
+-  pitch = TEXT_TO_SPEECH_DEFAULTS.pitch,
+-  rate = TEXT_TO_SPEECH_DEFAULTS.rate,
++  pitch = 1,
++  rate = 1,
+   text = "",
+   voice = "",
+   voiceOptions = [],
+-  volume = TEXT_TO_SPEECH_DEFAULTS.volume
++  volume = 1,
+ } = {}) {
+   const normalizedText = String(text || "").trim();
+   if (!normalizedText) {
+@@ -158,38 +139,30 @@ function createSpeechPreviewRequest({
+   }
+
+   return {
+-    language: selectedVoice.language || TEXT_TO_SPEECH_DEFAULTS.language,
++    language: selectedVoice.language || "en-US",
+     ok: true,
+-    pitch: boundedNumber(pitch, TEXT_TO_SPEECH_RANGE_DEFAULTS.pitch),
+-    rate: boundedNumber(rate, TEXT_TO_SPEECH_RANGE_DEFAULTS.rate),
++    pitch: boundedNumber(pitch, RANGE_LIMITS.pitch),
++    rate: boundedNumber(rate, RANGE_LIMITS.rate),
+     speechItemId: "browser-preview",
+     speechItemName: "Browser Preview",
+     text: normalizedText,
+     voice: selectedVoice.value,
+     voiceName: selectedVoice.name || selectedVoice.label || "selected voice",
+-    volume: boundedNumber(volume, TEXT_TO_SPEECH_RANGE_DEFAULTS.volume)
++    volume: boundedNumber(volume, RANGE_LIMITS.volume),
+   };
+ }
+
+ function previewTtsMessage(message, options = {}) {
+   return createSpeechPreviewRequest({
+     ...options,
+-    text: message?.tex
++    text: message?.text,
+   });
+ }
+
+-function populateSelect(select, options, selectedValue = "") {
+-  if (!select) return;
+-  select.replaceChildren(...options.map((option) => {
+-    const node = document.createElement("option");
+-    node.value = String(option.value);
+-    node.textContent = option.label;
+-    node.selected = String(option.value) === String(selectedValue);
+-    return node;
+-  }));
+-  if (options.some((option) => String(option.value) === String(selectedValue))) {
+-    select.value = String(selectedValue);
+-  }
++function formatRangeValue(value, kind) {
++  const limits = RANGE_LIMITS[kind] || RANGE_LIMITS.rate;
++  const boundedValue = boundedNumber(value, limits);
++  return String(Math.round(boundedValue * 100) / 100);
+ }
+
+ function setTextContent(root, selector, text) {
+@@ -197,682 +170,151 @@ function setTextContent(root, selector, text) {
+   if (node) node.textContent = text;
+ }
+
+-function readFileText(file) {
+-  return new Promise((resolve, reject) => {
+-    const reader = new FileReader();
+-    reader.addEventListener("load", () => resolve(String(reader.result || "")));
+-    reader.addEventListener("error", () => reject(reader.error || new Error("File read failed.")));
+-    reader.readAsText(file);
+-  });
+-}
+-
+-function downloadTextFile(text, filename, documentRef = document) {
+-  const blob = new Blob([text], { type: "application/json" });
+-  const url = URL.createObjectURL(blob);
+-  const link = documentRef.createElement("a");
+-  link.href = url;
+-  link.download = filename;
+-  documentRef.body.append(link);
+-  link.click();
+-  link.remove();
+-  URL.revokeObjectURL(url);
++function setStatus(root, message, state = "info") {
++  const status = root.querySelector("[data-tts-status]");
++  if (!status) return;
++  status.textContent = message;
++  status.dataset.ttsStatusState = state;
+ }
+
+-function isPlainObject(value) {
+-  return Boolean(value && typeof value === "object" && !Array.isArray(value));
+-}
+-
+-function validateTextToSpeechPayload(payload, sourceLabel = "payload") {
+-  if (!Array.isArray(payload)) {
+-    return { ok: false, message: `${TEXT_TO_SPEECH_DISPLAY_NAME} ${sourceLabel} must be a root array.` };
+-  }
+-  const required = ["id", "name", "text", "gender", "language", "voice", "voiceAge", "volume", "rate", "pitch", "characterPreset", "ssmlLikePreset"];
+-  for (const [index, item] of payload.entries()) {
+-    if (!isPlainObject(item)) {
+-      return { ok: false, message: `${TEXT_TO_SPEECH_DISPLAY_NAME} ${sourceLabel}[${index}] must be an object.` };
+-    }
+-    const missing = required.filter((key) => !Object.prototype.hasOwnProperty.call(item, key));
+-    if (missing.length) {
+-      return { ok: false, message: `${TEXT_TO_SPEECH_DISPLAY_NAME} ${sourceLabel}[${index}] missing: ${missing.join(", ")}.` };
+-    }
+-  }
+-  return { ok: true };
++function renderVoiceOptions(select, voiceOptions) {
++  select.replaceChildren();
++  if (voiceOptions.length === 0) {
++    const option = document.createElement("option");
++    option.value = "";
++    option.textContent = "No browser voices available";
++    select.append(option);
++    select.value = "";
++    return;
++  }
++  voiceOptions.forEach((voiceOption) => {
++    const option = document.createElement("option");
++    option.value = voiceOption.value;
++    option.textContent = voiceOption.label;
++    select.append(option);
++  });
++  select.value = voiceOptions[0].value;
+ }
+
+-function queueItemMeta(item) {
+-  return [
+-    item.language || "no language",
+-    item.characterPreset || "manual",
+-    item.voiceAge || "any"
+-  ].join(" / ");
++function collectSpeechRequest(root, voiceOptions) {
++  return createSpeechPreviewRequest({
++    pitch: root.querySelector("[data-tts-pitch]")?.value,
++    rate: root.querySelector("[data-tts-rate]")?.value,
++    text: root.querySelector("[data-tts-text-input]")?.value,
++    voice: root.querySelector("[data-tts-voice-select]")?.value,
++    voiceOptions,
++    volume: root.querySelector("[data-tts-volume]")?.value,
++  });
+ }
+
+ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeechEngine() } = {}) {
+-  const elements = {
+-    addItem: root.querySelector("[data-tts-add-item]"),
+-    age: root.querySelector("[data-tts-age-select]"),
+-    characterPreset: root.querySelector("[data-tts-character-preset-select]"),
+-    clearStatus: root.querySelector("[data-tts-clear-status]"),
+-    copyJson: root.querySelector("[data-tts-copy-json]"),
+-    deleteItem: root.querySelector("[data-tts-delete-item]"),
+-    duplicateItem: root.querySelector("[data-tts-duplicate-item]"),
+-    exportJson: root.querySelector("[data-tts-export-json]"),
+-    gender: root.querySelector("[data-tts-gender-select]"),
+-    importJson: root.querySelector("[data-tts-import-json]"),
+-    importJsonInput: root.querySelector("[data-tts-import-json-input]"),
+-    itemName: root.querySelector("[data-tts-item-name]"),
+-    language: root.querySelector("[data-tts-language-select]"),
+-    outputSummary: root.querySelector("[data-tts-output-summary]"),
+-    pause: root.querySelector("[data-tts-pause]"),
+-    pitch: root.querySelector("[data-tts-pitch]"),
+-    pitchValue: root.querySelector("[data-tts-pitch-value]"),
+-    queueList: root.querySelector("[data-tts-queue-list]"),
+-    rate: root.querySelector("[data-tts-rate]"),
+-    rateValue: root.querySelector("[data-tts-rate-value]"),
+-    resume: root.querySelector("[data-tts-resume]"),
+-    returnWorkspace: root.querySelector("[data-tts-return-workspace]"),
+-    speak: root.querySelector("[data-tts-speak]"),
+-    ssmlPreset: root.querySelector("[data-tts-ssml-preset-select]"),
+-    standaloneActions: root.querySelector("[data-tts-standalone-actions]"),
+-    status: root.querySelector("[data-tts-status]"),
+-    statusLog: root.querySelector("[data-tts-status-log]"),
+-    stop: root.querySelector("[data-tts-stop]"),
+-    text: root.querySelector("[data-tts-text-input]"),
+-    voice: root.querySelector("[data-tts-voice-select]"),
+-    volume: root.querySelector("[data-tts-volume]"),
+-    volumeValue: root.querySelector("[data-tts-volume-value]"),
+-    workspaceActions: root.querySelector("[data-tts-workspace-actions]")
+-  };
+-  const state = {
+-    applyingItem: false,
+-    queue: [],
+-    selectedItemId: "",
+-    sliderOverrides: { pitch: false, rate: false, volume: false },
+-    voiceOptions: []
+-  };
+-
+-  function writeStatus(message, level = "OK") {
+-    const line = `${level} ${message}`;
+-    if (elements.status) {
+-      elements.status.textContent = message;
+-      elements.status.dataset.ttsStatusState = level.toLowerCase();
+-    }
+-    if (elements.statusLog) {
+-      elements.statusLog.value = elements.statusLog.value ? `${elements.statusLog.value}\n${line}` : line;
+-      elements.statusLog.scrollTop = elements.statusLog.scrollHeight;
+-    }
+-  }
+-
+-  function selectedItem() {
+-    return state.queue.find((item) => item.id === state.selectedItemId) || null;
+-  }
+-
+-  function selectedVoiceOptions() {
+-    return Array.from(elements.voice?.options || []).map((option) => ({
+-      label: option.textContent || option.value,
+-      language: elements.language?.value || TEXT_TO_SPEECH_DEFAULTS.language,
+-      name: option.textContent || option.value,
+-      value: option.value
+-    })).filter((option) => option.value);
+-  }
+-
+-  function currentOptions() {
+-    return {
+-      characterPreset: elements.characterPreset?.value || TEXT_TO_SPEECH_DEFAULTS.characterPreset,
+-      gender: textToSpeechPayloadGenderValue(elements.gender?.value || TEXT_TO_SPEECH_DEFAULTS.gender),
+-      language: elements.language?.value || TEXT_TO_SPEECH_DEFAULTS.language,
+-      pitch: Number(elements.pitch?.value || TEXT_TO_SPEECH_DEFAULTS.pitch),
+-      rate: Number(elements.rate?.value || TEXT_TO_SPEECH_DEFAULTS.rate),
+-      ssmlLikePreset: elements.ssmlPreset?.value || TEXT_TO_SPEECH_DEFAULTS.ssmlLikePreset,
+-      voice: elements.voice?.value || "",
+-      voiceAge: elements.age?.value || TEXT_TO_SPEECH_DEFAULTS.voiceAge,
+-      volume: Number(elements.volume?.value || TEXT_TO_SPEECH_DEFAULTS.volume)
+-    };
+-  }
+-
+-  function itemFromControls(overrides = {}) {
+-    const currentItem = selectedItem();
+-    return createTextToSpeechQueueItem({
+-      ...currentOptions(),
+-      existingItems: state.queue.filter((item) => item.id !== currentItem?.id),
+-      id: overrides.id ?? currentItem?.id ?? "",
+-      name: overrides.name ?? elements.itemName?.value ?? currentItem?.name ?? "New speech item",
+-      text: overrides.text ?? elements.text?.value ?? currentItem?.text ?? ""
+-    });
+-  }
+-
+-  function syncRangeOutputs() {
+-    if (elements.rate) elements.rate.value = formatRangeValue(elements.rate.value, "rate");
+-    if (elements.pitch) elements.pitch.value = formatRangeValue(elements.pitch.value, "pitch");
+-    if (elements.volume) elements.volume.value = formatRangeValue(elements.volume.value, "volume");
+-    if (elements.rateValue) elements.rateValue.textContent = elements.rate?.value || "1";
+-    if (elements.pitchValue) elements.pitchValue.textContent = elements.pitch?.value || "1";
+-    if (elements.volumeValue) elements.volumeValue.textContent = elements.volume?.value || "1";
+-  }
+-
+-  function configureRanges() {
+-    [
+-      { input: elements.volume, kind: "volume" },
+-      { input: elements.rate, kind: "rate" },
+-      { input: elements.pitch, kind: "pitch" }
+-    ].forEach(({ input, kind }) => {
+-      const range = TEXT_TO_SPEECH_RANGE_DEFAULTS[kind];
+-      if (!input || !range) return;
+-      input.min = String(range.min);
+-      input.max = String(range.max);
+-      input.step = String(range.step);
+-      input.value = String(range.value);
+-    });
+-    syncRangeOutputs();
+-  }
+-
+-  function applyShapedOptions({ resetOverrides = false } = {}) {
+-    if (resetOverrides) {
+-      state.sliderOverrides = { pitch: false, rate: false, volume: false };
+-    }
+-    const shaped = shapeTextToSpeechOptions(currentOptions(), state.sliderOverrides);
+-    if (elements.rate && !state.sliderOverrides.rate) elements.rate.value = String(shaped.rate);
+-    if (elements.pitch && !state.sliderOverrides.pitch) elements.pitch.value = String(shaped.pitch);
+-    if (elements.volume && !state.sliderOverrides.volume) elements.volume.value = String(shaped.volume);
+-    syncRangeOutputs();
+-  }
+-
+-  function renderOutputSummary() {
+-    if (elements.outputSummary) {
+-      elements.outputSummary.textContent = JSON.stringify(state.queue, null, 2);
+-    }
+-    setTextContent(root, "[data-tts-text-count]", String(String(elements.text?.value || "").length));
+-  }
+-
+-  function renderQueue() {
+-    if (!elements.queueList) return;
+-    elements.queueList.replaceChildren(...state.queue.map((item) => {
+-      const button = document.createElement("button");
+-      button.type = "button";
+-      button.className = "btn";
+-      button.dataset.ttsQueueItem = item.id;
+-      button.setAttribute("role", "option");
+-      button.setAttribute("aria-selected", String(item.id === state.selectedItemId));
+-      button.textContent = `${item.name} - ${queueItemMeta(item)}`;
+-      return button;
+-    }));
+-    renderOutputSummary();
+-  }
+-
+-  function markWorkspaceDirty(reason, changedKeys = []) {
+-    if (!isWorkspaceLaunch()) return;
+-    const rawToolState = window.sessionStorage.getItem(WORKSPACE_TOOL_STATE_KEY);
+-    if (!rawToolState) {
+-      writeStatus(`Cannot mark ${TEXT_TO_SPEECH_DISPLAY_NAME} dirty: missing ${WORKSPACE_TOOL_STATE_KEY}.`, "FAIL");
+-      return;
+-    }
+-    try {
+-      const toolState = JSON.parse(rawToolState);
+-      window.sessionStorage.setItem(WORKSPACE_TOOL_STATE_KEY, JSON.stringify({
+-        ...toolState,
+-        data: state.queue,
+-        dirty: {
+-          changedAt: new Date().toISOString(),
+-          changedKeys,
+-          isDirty: true,
+-          reason
+-        }
+-      }));
+-      writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} dirty state: true; reason=${reason}.`);
+-    } catch (error) {
+-      writeStatus(`Cannot mark ${TEXT_TO_SPEECH_DISPLAY_NAME} dirty: ${error.message}`, "FAIL");
+-    }
+-  }
+-
+-  function syncSelectedItemFromControls(reason, changedKeys = []) {
+-    if (state.applyingItem) return;
+-    const item = selectedItem();
+-    if (!item) return;
+-    const nextItem = itemFromControls({ id: item.id, name: elements.itemName?.value || item.name });
+-    const index = state.queue.findIndex((entry) => entry.id === item.id);
+-    if (index >= 0) {
+-      state.queue[index] = nextItem;
+-      state.selectedItemId = nextItem.id;
+-      renderQueue();
+-      markWorkspaceDirty(reason, changedKeys);
+-    }
+-  }
+-
+-  function selectItem(itemId, { writeLog = true } = {}) {
+-    const item = state.queue.find((entry) => entry.id === itemId);
+-    if (!item) return;
+-    state.selectedItemId = item.id;
+-    state.applyingItem = true;
+-    try {
+-      if (elements.itemName) elements.itemName.value = item.name;
+-      if (elements.text) elements.text.value = item.text;
+-      if (elements.gender) elements.gender.value = item.gender === "any" ? "any" : item.gender;
+-      if (elements.age) elements.age.value = item.voiceAge;
+-      if (elements.characterPreset) elements.characterPreset.value = item.characterPreset;
+-      if (elements.ssmlPreset) elements.ssmlPreset.value = item.ssmlLikePreset;
+-      if (elements.rate) elements.rate.value = String(item.rate);
+-      if (elements.pitch) elements.pitch.value = String(item.pitch);
+-      if (elements.volume) elements.volume.value = String(item.volume);
+-      syncRangeOutputs();
+-      refreshVoices({ selectedVoice: item.voice });
+-    } finally {
+-      state.applyingItem = false;
+-    }
+-    renderQueue();
+-    refreshActionState();
+-    if (writeLog) writeStatus(`Selected speech item: ${item.name}.`);
+-  }
+-
+-  function addItem() {
+-    const requestedName = String(elements.itemName?.value || "").trim();
+-    if (!requestedName) {
+-      writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} Add blocked: Name is required before creating a named speech item.`, "FAIL");
+-      return;
+-    }
+-    const item = createTextToSpeechQueueItem({
+-      ...currentOptions(),
+-      existingItems: state.queue,
+-      name: requestedName,
+-      text: elements.text?.value || "New speech line."
+-    });
+-    state.queue.push(item);
+-    state.selectedItemId = item.id;
+-    renderQueue();
+-    selectItem(item.id, { writeLog: false });
+-    markWorkspaceDirty("speech-item-added", [`queue.${item.id}`]);
+-    writeStatus(`Added speech item: ${item.name}.`);
+-  }
+-
+-  function duplicateItem() {
+-    const item = itemFromControls();
+-    if (!selectedItem()) {
+-      writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} duplicate failed: no named sentence is selected.`, "FAIL");
+-      return;
+-    }
+-    const name = uniqueTextToSpeechName(`${item.name} copy`, state.queue);
+-    const copy = {
+-      ...item,
+-      id: uniqueTextToSpeechId(name, state.queue),
+-      name
+-    };
+-    state.queue.push(copy);
+-    selectItem(copy.id, { writeLog: false });
+-    markWorkspaceDirty("speech-item-duplicated", [`queue.${copy.id}`]);
+-    writeStatus(`Duplicated speech item: ${copy.name}.`);
+-  }
+-
+-  function deleteItem() {
+-    const item = selectedItem();
+-    if (!item) {
+-      writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} delete failed: no named sentence is selected.`, "FAIL");
+-      return;
+-    }
+-    const index = state.queue.findIndex((entry) => entry.id === item.id);
+-    state.queue.splice(index, 1);
+-    state.selectedItemId = state.queue[Math.min(index, state.queue.length - 1)]?.id || "";
+-    renderQueue();
+-    if (state.selectedItemId) {
+-      selectItem(state.selectedItemId, { writeLog: false });
+-    } else {
+-      if (elements.itemName) elements.itemName.value = "";
+-      if (elements.text) elements.text.value = "";
+-      renderOutputSummary();
+-    }
+-    markWorkspaceDirty("speech-item-deleted", ["queue"]);
+-    writeStatus(`Deleted speech item: ${item.name}.`);
+-  }
++  const textInput = root.querySelector("[data-tts-text-input]");
++  const voiceSelect = root.querySelector("[data-tts-voice-select]");
++  const speakButton = root.querySelector("[data-tts-speak]");
++  const stopButton = root.querySelector("[data-tts-stop]");
++  const rateInput = root.querySelector("[data-tts-rate]");
++  const pitchInput = root.querySelector("[data-tts-pitch]");
++  const volumeInput = root.querySelector("[data-tts-volume]");
++  let voiceOptions = [];
+
+-  function refreshVoices({ selectedVoice = elements.voice?.value || "" } = {}) {
+-    state.voiceOptions = engine.voiceOptions();
+-    const gender = elements.gender?.value || "any";
+-    const filteredByGender = filterTextToSpeechVoiceOptions(state.voiceOptions, { gender });
+-    const languageOptions = filteredByGender.languageOptions.length
+-      ? filteredByGender.languageOptions
+-      : TEXT_TO_SPEECH_LANGUAGE_OPTIONS;
+-    const previousLanguage = elements.language?.value || TEXT_TO_SPEECH_DEFAULTS.language;
+-    const language = languageOptions.some((option) => option.value === previousLanguage)
+-      ? previousLanguage
+-      : languageOptions[0]?.value || TEXT_TO_SPEECH_DEFAULTS.language;
+-    populateSelect(elements.language, languageOptions, language);
+-    const result = filterTextToSpeechVoiceOptions(state.voiceOptions, { gender, language });
+-    populateSelect(elements.voice, result.matchingVoices.map((option) => ({
+-      label: option.label,
+-      value: option.value
+-    })), selectedVoice);
+-    if (elements.voice && !elements.voice.value && result.matchingVoices[0]) {
+-      elements.voice.value = result.matchingVoices[0].value;
+-    }
+-    if (elements.voice && result.matchingVoices.length === 0) {
+-      const option = document.createElement("option");
+-      option.value = "";
+-      option.textContent = state.voiceOptions.length ? `No ${result.genderLabel} voices for ${language}` : "No browser voices available";
+-      elements.voice.replaceChildren(option);
+-    }
+-    setTextContent(root, "[data-tts-voice-count]", String(state.voiceOptions.length));
+-    setTextContent(root, "[data-tts-voice-details]", state.voiceOptions.length
+-      ? `${result.matchingVoices.length} matching ${result.genderLabel} voice${result.matchingVoices.length === 1 ? "" : "s"} for ${language}.`
+-      : "No SpeechSynthesis voices loaded.");
+-    refreshActionState();
+-    return result;
++  function syncRange(input, selector, kind) {
++    if (!input) return;
++    input.value = formatRangeValue(input.value, kind);
++    setTextContent(root, selector, input.value);
+   }
+
+   function refreshActionState() {
+-    const hasText = Boolean(String(elements.text?.value || "").trim());
+-    const hasVoice = Boolean(elements.voice?.value);
++    const hasText = Boolean(String(textInput?.value || "").trim());
++    const hasVoice = Boolean(voiceSelect?.value);
+     const supported = engine.isSupported();
+-    if (elements.speak) elements.speak.disabled = !(supported && hasText && hasVoice && selectedItem());
+-    if (elements.pause) elements.pause.disabled = !(engine.canPause() && selectedItem());
+-    if (elements.resume) elements.resume.disabled = !(engine.canResume() && selectedItem());
+-    if (elements.stop) elements.stop.disabled = !(supported && selectedItem());
+-    if (elements.copyJson) elements.copyJson.disabled = isWorkspaceLaunch();
+-    if (elements.exportJson) elements.exportJson.disabled = isWorkspaceLaunch();
+-    if (elements.importJson) elements.importJson.disabled = isWorkspaceLaunch();
+-    setTextContent(root, "[data-tts-text-count]", String(String(elements.text?.value || "").length));
+-  }
+-
+-  function isWorkspaceLaunch() {
+-    const params = new URLSearchParams(window.location.search);
+-    return params.get("launch") === "workspace"
+-      && params.get("fromTool") === "workspace-manager-v2"
+-      && Boolean(params.get("hostContextId"));
+-  }
+-
+-  function applyLaunchMode() {
+-    const workspaceLaunch = isWorkspaceLaunch();
+-    if (elements.standaloneActions) elements.standaloneActions.hidden = workspaceLaunch;
+-    if (elements.workspaceActions) elements.workspaceActions.hidden = !workspaceLaunch;
+-  }
+-
+-  function workspaceManagerUrl() {
+-    const url = new URL("../workspace-manager-v2/index.html", window.location.href);
+-    const params = new URLSearchParams(window.location.search);
+-    const hostContextId = params.get("hostContextId") || "";
+-    if (hostContextId) url.searchParams.set("hostContextId", hostContextId);
+-    if (params.get("workspaceMode")?.toLowerCase() === "uat") url.searchParams.set("workspace", "uat");
+-    return url.href;
+-  }
+-
+-  async function loadQueue() {
+-    if (isWorkspaceLaunch()) {
+-      const rawToolState = window.sessionStorage.getItem(WORKSPACE_TOOL_STATE_KEY);
+-      if (!rawToolState) {
+-        writeStatus(`Workspace launch missing ${WORKSPACE_TOOL_STATE_KEY}; queue cannot render.`, "FAIL");
+-        return;
+-      }
+-      try {
+-        const toolState = JSON.parse(rawToolState);
+-        const payload = toolState?.data ?? [];
+-        const validation = validateTextToSpeechPayload(payload, WORKSPACE_TOOL_STATE_KEY);
+-        if (!validation.ok) {
+-          writeStatus(validation.message, "FAIL");
+-          return;
+-        }
+-        state.queue = payload.map((item) => ({ ...item }));
+-        writeStatus(`Loaded ${state.queue.length} ${TEXT_TO_SPEECH_DISPLAY_NAME} item(s) from Project Workspace toolState.`);
+-      } catch (error) {
+-        writeStatus(`${WORKSPACE_TOOL_STATE_KEY} is invalid JSON: ${error.message}`, "FAIL");
+-        return;
+-      }
+-    } else {
+-      const params = new URLSearchParams(window.location.search);
+-      const samplePresetPath = String(params.get(TTS_URL_SOURCE_PARAM) || "").trim();
+-      if (samplePresetPath) {
+-        try {
+-          const response = await fetch(samplePresetPath, { cache: "no-store" });
+-          if (!response.ok) throw new Error(`${response.status}`);
+-          const payload = await response.json();
+-          const validation = validateTextToSpeechPayload(payload, samplePresetPath);
+-          if (!validation.ok) {
+-            writeStatus(validation.message, "FAIL");
+-            return;
+-          }
+-          state.queue = payload.map((item) => ({ ...item }));
+-          writeStatus(`Loaded preset for ${TEXT_TO_SPEECH_DISPLAY_NAME}: ${samplePresetPath}.`);
+-        } catch (error) {
+-          writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} URL JSON source ${samplePresetPath} failed: ${error.message}.`, "FAIL");
+-          return;
+-        }
++    if (speakButton) speakButton.disabled = !(supported && hasText && hasVoice);
++    if (stopButton) stopButton.disabled = !supported;
++    setTextContent(root, "[data-tts-text-count]", String(String(textInput?.value || "").length));
++  }
++
++  function refreshVoices({ preserveSelection = true } = {}) {
++    const previousVoice = voiceSelect?.value || "";
++    voiceOptions = engine.voiceOptions();
++    if (voiceSelect) {
++      renderVoiceOptions(voiceSelect, voiceOptions);
++      if (preserveSelection && voiceOptions.some((option) => option.value === previousVoice)) {
++        voiceSelect.value = previousVoice;
+       }
+     }
+-    if (state.queue.length === 0) {
+-      state.queue = [createTextToSpeechQueueItem({
+-        ...TEXT_TO_SPEECH_DEFAULTS,
+-        existingItems: [],
+-        name: "Narrator welcome",
+-        text: elements.text?.value || "Welcome to the arena, hero."
+-      })];
+-      writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} empty launch: created a local named sentence draft.`);
+-    }
+-    state.selectedItemId = state.queue[0]?.id || "";
+-    renderQueue();
+-    if (state.selectedItemId) selectItem(state.selectedItemId, { writeLog: false });
++    setTextContent(root, "[data-tts-voice-count]", String(voiceOptions.length));
++    setTextContent(root, "[data-tts-voice-details]", voiceOptions.length
++      ? `${voiceOptions.length} browser voice${voiceOptions.length === 1 ? "" : "s"} available.`
++      : "No browser voices are currently available.");
++    refreshActionState();
+   }
+
+-  async function importJson(file) {
+-    if (isWorkspaceLaunch()) {
+-      writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} Import JSON is only available during standalone launch.`, "FAIL");
+-      return;
+-    }
+-    if (!file) {
+-      writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} Import JSON blocked: choose a JSON file first.`, "FAIL");
+-      return;
+-    }
+-    try {
+-      const payload = JSON.parse(await readFileText(file));
+-      const validation = validateTextToSpeechPayload(payload, file.name || "selected JSON file");
+-      if (!validation.ok) {
+-        writeStatus(`Import JSON blocked: ${validation.message}`, "FAIL");
+-        return;
+-      }
+-      state.queue = payload.map((item) => ({ ...item }));
+-      state.selectedItemId = state.queue[0]?.id || "";
+-      renderQueue();
+-      if (state.selectedItemId) selectItem(state.selectedItemId, { writeLog: false });
+-      writeStatus(`Imported ${state.queue.length} ${TEXT_TO_SPEECH_DISPLAY_NAME} item(s) from ${file.name || "selected JSON file"}; schema=${TEXT_TO_SPEECH_SCHEMA_ID}.`);
+-    } catch (error) {
+-      writeStatus(`Import JSON failed: ${error.message}`, "FAIL");
++  function markUnavailable() {
++    setTextContent(root, "[data-tts-engine-label]", "Unavailable");
++    setTextContent(root, "[data-tts-engine-status]", "SpeechSynthesis is unavailable in this browser. Use a browser with Web Speech API support.");
++    setStatus(root, "SpeechSynthesis is unavailable in this browser. Use a browser with Web Speech API support.", "error");
++    if (voiceSelect) {
++      voiceSelect.disabled = true;
++      renderVoiceOptions(voiceSelect, []);
+     }
++    if (speakButton) speakButton.disabled = true;
++    if (stopButton) stopButton.disabled = true;
+   }
+
+-  async function copyJson() {
+-    const json = JSON.stringify(state.queue, null, 2);
+-    if (!navigator.clipboard || typeof navigator.clipboard.writeText !== "function") {
+-      writeStatus("Copy JSON failed: Clipboard API is unavailable.", "FAIL");
+-      return;
+-    }
+-    try {
+-      await navigator.clipboard.writeText(json);
+-      writeStatus(`Copied ${TEXT_TO_SPEECH_DISPLAY_NAME} JSON root array to clipboard (${state.queue.length} item(s)).`);
+-    } catch (error) {
+-      writeStatus(`Copy JSON failed: ${error.message}`, "FAIL");
+-    }
+-  }
++  syncRange(rateInput, "[data-tts-rate-value]", "rate");
++  syncRange(pitchInput, "[data-tts-pitch-value]", "pitch");
++  syncRange(volumeInput, "[data-tts-volume-value]", "volume");
+
+-  function exportJson() {
+-    downloadTextFile(JSON.stringify(state.queue, null, 2), "text-to-speech-v2.json");
+-    writeStatus(`Exported ${TEXT_TO_SPEECH_DISPLAY_NAME} JSON root array (${state.queue.length} item(s)).`);
++  if (!engine.isSupported()) {
++    markUnavailable();
++    return { engine, speechSupported: false, voiceOptions };
+   }
+
+-  function speak() {
+-    const item = selectedItem();
+-    if (!item) {
+-      writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} Speak blocked: select a named speech item with text first.`, "FAIL");
+-      return;
+-    }
+-    syncSelectedItemFromControls("speak-sync", ["speechOptions", "text"]);
+-    const request = createSpeechPreviewRequest({
+-      ...currentOptions(),
+-      text: elements.text?.value,
+-      voiceOptions: selectedVoiceOptions()
++  setTextContent(root, "[data-tts-engine-label]", "Ready");
++  setTextContent(root, "[data-tts-engine-status]", "Browser SpeechSynthesis is available for local preview.");
++  setStatus(root, "Browser Text To Speech ready. Enter text, choose a voice, then press Speak / Preview.", "ready");
++  refreshVoices({ preserveSelection: false });
++  engine.onVoicesChanged(() => {
++    refreshVoices();
++  });
++
++  [rateInput, pitchInput, volumeInput].forEach((input) => {
++    input?.addEventListener("input", () => {
++      const kind = input === rateInput ? "rate" : input === pitchInput ? "pitch" : "volume";
++      syncRange(input, `[data-tts-${kind}-value]`, kind);
++      refreshActionState();
+     });
++  });
++  textInput?.addEventListener("input", refreshActionState);
++  voiceSelect?.addEventListener("change", refreshActionState);
++
++  speakButton?.addEventListener("click", () => {
++    const request = collectSpeechRequest(root, voiceOptions);
+     if (!request.ok) {
+-      writeStatus(request.message, "FAIL");
++      setStatus(root, request.message, "error");
+       refreshActionState();
+       return;
+     }
+-    const result = engine.speak({
+-      ...currentOptions(),
+-      speechItemId: item.id,
+-      speechItemName: item.name,
+-      text: request.tex
+-    });
++    const result = engine.speak(request);
+     if (!result.ok) {
+-      writeStatus(result.message, "FAIL");
++      setStatus(root, result.message, "error");
+       refreshActionState();
+       return;
+     }
+-    writeStatus(`Speech queued: ${result.speechItemName}; ${result.language}; voice=${result.voiceName}; rate=${result.rate}; pitch=${result.pitch}; volume=${result.volume}; queuedItems=${result.queuedSpeechItems.length}.`);
+-    renderOutputSummary();
++    setStatus(root, `Speech queued with ${result.voiceName}; rate=${result.rate}; pitch=${result.pitch}; volume=${result.volume}.`, "ready");
+     refreshActionState();
+-  }
+-
+-  function pause() {
+-    const result = engine.pause();
+-    if (!result.ok) {
+-      writeStatus(result.message, "FAIL");
+-      return;
+-    }
+-    writeStatus("Speech paused.");
+-  }
+-
+-  function resume() {
+-    const result = engine.resume();
+-    if (!result.ok) {
+-      writeStatus(result.message, "FAIL");
+-      return;
+-    }
+-    writeStatus("Speech resumed.");
+-  }
++  });
+
+-  function stop() {
++  stopButton?.addEventListener("click", () => {
+     const result = engine.stop();
+     if (!result.ok) {
+-      writeStatus(result.message, "FAIL");
++      setStatus(root, result.message, "error");
+       return;
+     }
+-    writeStatus(`Speech stopped. Cleared ${result.stoppedCount} queued item${result.stoppedCount === 1 ? "" : "s"}.`);
+-    refreshActionState();
+-  }
+-
+-  function mountEvents() {
+-    elements.queueList?.addEventListener("click", (event) => {
+-      const itemButton = event.target.closest("[data-tts-queue-item]");
+-      if (itemButton) selectItem(itemButton.dataset.ttsQueueItem || "");
+-    });
+-    elements.addItem?.addEventListener("click", addItem);
+-    elements.duplicateItem?.addEventListener("click", duplicateItem);
+-    elements.deleteItem?.addEventListener("click", deleteItem);
+-    elements.speak?.addEventListener("click", speak);
+-    elements.pause?.addEventListener("click", pause);
+-    elements.resume?.addEventListener("click", resume);
+-    elements.stop?.addEventListener("click", stop);
+-    elements.clearStatus?.addEventListener("click", () => {
+-      if (elements.statusLog) elements.statusLog.value = "";
+-      if (elements.status) elements.status.textContent = "Status cleared.";
+-    });
+-    elements.importJson?.addEventListener("click", () => elements.importJsonInput?.click());
+-    elements.importJsonInput?.addEventListener("change", () => {
+-      void importJson(elements.importJsonInput.files?.[0] || null);
+-      elements.importJsonInput.value = "";
+-    });
+-    elements.copyJson?.addEventListener("click", () => {
+-      void copyJson();
+-    });
+-    elements.exportJson?.addEventListener("click", exportJson);
+-    elements.returnWorkspace?.addEventListener("click", () => {
+-      window.location.href = workspaceManagerUrl();
+-    });
+-    elements.itemName?.addEventListener("input", () => syncSelectedItemFromControls("speech-item-renamed", ["name"]));
+-    elements.text?.addEventListener("input", () => {
+-      syncSelectedItemFromControls("text-updated", ["text"]);
+-      refreshActionState();
+-    });
+-    [elements.gender, elements.language].forEach((select) => {
+-      select?.addEventListener("change", () => {
+-        refreshVoices();
+-        syncSelectedItemFromControls("voice-filter-updated", ["gender", "language", "voice"]);
+-      });
+-    });
+-    elements.voice?.addEventListener("change", () => syncSelectedItemFromControls("voice-updated", ["voice"]));
+-    elements.characterPreset?.addEventListener("change", () => {
+-      if (elements.ssmlPreset) {
+-        elements.ssmlPreset.value = TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS[elements.characterPreset.value]?.ssmlLikePreset || "normal";
+-      }
+-      applyShapedOptions({ resetOverrides: true });
+-      syncSelectedItemFromControls("character-preset-updated", ["characterPreset", "rate", "pitch", "volume"]);
+-    });
+-    [elements.age, elements.ssmlPreset].forEach((select) => {
+-      select?.addEventListener("change", () => {
+-        applyShapedOptions();
+-        syncSelectedItemFromControls("speech-shaping-updated", ["voiceAge", "ssmlLikePreset", "rate", "pitch", "volume"]);
+-      });
+-    });
+-    [
+-      { input: elements.pitch, kind: "pitch" },
+-      { input: elements.rate, kind: "rate" },
+-      { input: elements.volume, kind: "volume" }
+-    ].forEach(({ input, kind }) => {
+-      input?.addEventListener("input", () => {
+-        state.sliderOverrides[kind] = true;
+-        syncRangeOutputs();
+-        syncSelectedItemFromControls(`${kind}-updated`, [kind]);
+-        refreshActionState();
+-      });
+-      input?.addEventListener("dblclick", () => {
+-        state.sliderOverrides[kind] = false;
+-        applyShapedOptions();
+-        syncSelectedItemFromControls(`${kind}-reset`, [kind]);
+-      });
+-    });
+-  }
+-
+-  function populateStaticControls() {
+-    populateSelect(elements.gender, TEXT_TO_SPEECH_GENDER_FILTER_OPTIONS, TEXT_TO_SPEECH_DEFAULTS.gender);
+-    populateSelect(elements.age, TEXT_TO_SPEECH_AGE_FILTER_OPTIONS, TEXT_TO_SPEECH_DEFAULTS.voiceAge);
+-    populateSelect(elements.characterPreset, TEXT_TO_SPEECH_CHARACTER_PRESET_OPTIONS, TEXT_TO_SPEECH_DEFAULTS.characterPreset);
+-    populateSelect(elements.ssmlPreset, TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS, TEXT_TO_SPEECH_DEFAULTS.ssmlLikePreset);
+-    populateSelect(elements.language, TEXT_TO_SPEECH_LANGUAGE_OPTIONS, TEXT_TO_SPEECH_DEFAULTS.language);
+-    configureRanges();
+-  }
+-
+-  function markUnavailable() {
+-    setTextContent(root, "[data-tts-engine-label]", "Unavailable");
+-    setTextContent(root, "[data-tts-engine-status]", "SpeechSynthesis is unavailable in this browser. Use a browser with Web Speech API support.");
+-    writeStatus("SpeechSynthesis is unavailable in this browser. Use a browser with Web Speech API support.", "FAIL");
+-    populateSelect(elements.voice, [{ label: "No browser voices available", value: "" }], "");
++    setStatus(root, `Speech stopped. Cleared ${result.stoppedCount} queued item${result.stoppedCount === 1 ? "" : "s"}.`, "ready");
+     refreshActionState();
+-  }
+-
+-  async function start() {
+-    applyLaunchMode();
+-    populateStaticControls();
+-    mountEvents();
+-    if (!engine.isSupported()) {
+-      await loadQueue();
+-      markUnavailable();
+-      return;
+-    }
+-    setTextContent(root, "[data-tts-engine-label]", "Ready");
+-    setTextContent(root, "[data-tts-engine-status]", "Browser SpeechSynthesis is available for local preview.");
+-    refreshVoices();
+-    engine.onVoicesChanged(() => {
+-      refreshVoices();
+-      writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} voices updated from browser SpeechSynthesis.`);
+-    });
+-    await loadQueue();
+-    refreshVoices({ selectedVoice: selectedItem()?.voice || elements.voice?.value || "" });
+-    writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} ready. SpeechSynthesis is available.`);
+-  }
+-
+-  void start().catch((error) => {
+-    writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} startup failed: ${error.message}`, "FAIL");
+   });
+
+-  return {
+-    engine,
+-    queue: () => state.queue.map((item) => ({ ...item })),
+-    speechSupported: engine.isSupported()
+-  };
++  return { engine, speechSupported: true, voiceOptions };
+ }
+
+ if (typeof document !== "undefined") {
+@@ -890,5 +332,4 @@ export {
+   createVoiceProfile,
+   initializeTextToSpeechTool,
+   previewTtsMessage,
+-  validateTextToSpeechPayload
+ };
