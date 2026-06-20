@@ -225,8 +225,8 @@ test("Game Design renders identity and navigation rows with registry anchor link
 });
 
 test("Game Hub and Game Configuration use registry order without page hardcoding", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
-  const gameWorkspaceNavigation = getToolNavigationTargets("game-workspace");
+  const failures = await openRepoPage(page, "/toolbox/game-hub/index.html");
+  const gameWorkspaceNavigation = getToolNavigationTargets("game-hub");
   const gameConfigurationNavigation = getToolNavigationTargets("game-configuration");
 
   try {

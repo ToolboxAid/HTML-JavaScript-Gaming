@@ -125,8 +125,8 @@ test("Tool Display Mode renders build-order previous and next controls", async (
 });
 
 test("Game Hub Tool Display Mode follows registry route targets", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
-  const navigation = getToolNavigationTargets("game-workspace");
+  const failures = await openRepoPage(page, "/toolbox/game-hub/index.html");
+  const navigation = getToolNavigationTargets("game-hub");
 
   try {
     await expectNavigationTarget(page.locator("[data-tool-nav-previous]"), "Previous", navigation.previous);

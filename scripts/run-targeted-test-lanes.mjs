@@ -122,17 +122,17 @@ const laneDefinitions = Object.freeze({
     requiresPreflight: true,
     reason: "Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes."
   },
-  "game-workspace": {
-    affectedSurface: "Game Workspace mock repository, Game Workspace UI, and Toolbox Progress/Build Path game-state bridge",
+  "game-hub": {
+    affectedSurface: "Game Hub mock repository, Game Hub UI, and Toolbox Progress/Build Path game-state bridge",
     commands: [
-      playwrightCommand("tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs")
+      playwrightCommand("tests/playwright/tools/GameHubMockRepository.spec.mjs")
     ],
     dependencies: [],
     discoveryTargets: [
-      "tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs"
+      "tests/playwright/tools/GameHubMockRepository.spec.mjs"
     ],
     fixtures: [
-      "repo-served Game Workspace page",
+      "repo-served Game Hub page",
       "repo-served Toolbox page with role simulation",
       "in-memory SQL-shaped mock game repository"
     ],
@@ -140,7 +140,7 @@ const laneDefinitions = Object.freeze({
     ownership: "tools",
     playwrightDir: "tests/playwright/tools",
     requiresPreflight: true,
-    reason: "Game Workspace rebuild slice validates mock users/games/game_members data actions, game lifecycle controls, and game-driven Progress/Build Path copy without exercising unrelated toolbox routes."
+    reason: "Game Hub rebuild slice validates mock users/games/game_members data actions, game lifecycle controls, and game-driven Progress/Build Path copy without exercising unrelated toolbox routes."
   },
   "game-design": {
     affectedSurface: "Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff",
@@ -155,7 +155,7 @@ const laneDefinitions = Object.freeze({
       "repo-served Game Design page",
       "repo-served Toolbox Progress and Build Path views",
       "in-memory SQL-shaped Game Design mock repository",
-      "Game Workspace mock game context"
+      "Game Hub mock game context"
     ],
     fixturePaths: [],
     ownership: "tools",
@@ -218,7 +218,7 @@ const laneDefinitions = Object.freeze({
     fixtures: [
       "repo-served Toolbox page",
       "repo-served Admin Tools Progress page",
-      "Game Workspace mock game context",
+      "Game Hub mock game context",
       "Toolbox role simulation"
     ],
     fixturePaths: [],
@@ -259,7 +259,7 @@ const laneDefinitions = Object.freeze({
     ],
     fixtures: [
       "repo-served Admin Tools Progress page",
-      "repo-served Game Workspace, Game Design, and Game Configuration tool pages",
+      "repo-served Game Hub, Game Design, and Game Configuration tool pages",
       "repo-served Toolbox Group view with URL-selected accordion",
       "Toolbox registry build sequence and route metadata"
     ],
@@ -279,7 +279,7 @@ const laneDefinitions = Object.freeze({
       "tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs"
     ],
     fixtures: [
-      "repo-served Game Workspace, Game Design, Game Configuration, and AI Assistant tool pages",
+      "repo-served Game Hub, Game Design, Game Configuration, and AI Assistant tool pages",
       "repo-served Toolbox Group view with URL-selected accordion",
       "Toolbox registry build sequence and route metadata",
       "shared Theme V2 Tool Display Mode script"

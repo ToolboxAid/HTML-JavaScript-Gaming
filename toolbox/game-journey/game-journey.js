@@ -84,6 +84,7 @@ let completionMetricsDiagnostic = "";
 let addNoteRowOpen = false;
 let editingNoteKey = "";
 let itemTree = null;
+let routeForcesNoActiveGame = false;
 const recommendedTargetValues = new Map(
   GAME_JOURNEY_RECOMMENDED_TARGETS.map((target) => [target.key, target.suggestedCount]),
 );
@@ -112,17 +113,26 @@ function refreshCompletionMetricsSnapshot() {
 function applyInitialGameRoute() {
   const gameId = params.get("game");
   if (gameId === "none") {
-    repository.clearActiveGame();
+    routeForcesNoActiveGame = true;
     return;
   }
 
   if (gameId) {
+    routeForcesNoActiveGame = false;
     repository.openGame(gameId);
   }
 
   if (params.get("templateDiagnostic") === "all") {
     repository.injectTemplateDiagnostics();
   }
+}
+
+function routedActiveGame() {
+  return routeForcesNoActiveGame ? null : repository.getActiveGame();
+}
+
+function routedNotes(filterId) {
+  return routeForcesNoActiveGame ? [] : repository.listNotes(filterId);
 }
 
 function createElement(tagName, options = {}) {
@@ -1419,9 +1429,9 @@ function selectFirstVisibleNote(notes) {
 }
 
 function render() {
-  const activeGame = repository.getActiveGame();
+  const activeGame = routedActiveGame();
   const searchQuery = currentSearchQuery();
-  const notes = applySearch(repository.listNotes(activeFilter), searchQuery);
+  const notes = applySearch(routedNotes(activeFilter), searchQuery);
   const note = selectFirstVisibleNote(notes);
   ensureSelectedItemMatchesFilter(note);
   const displayNote = filterNoteItemsForDisplay(note);
@@ -1651,7 +1661,7 @@ summaryBody.addEventListener("input", (event) => {
   repository.updateItem(selectedItem.key, {
     userDetails: detailsInput.value,
   });
-  renderDiagnostics(repository.getActiveGame(), repository.getSelectedNote(), applySearch(repository.listNotes(activeFilter), currentSearchQuery()));
+  renderDiagnostics(routedActiveGame(), routeForcesNoActiveGame ? null : repository.getSelectedNote(), applySearch(routedNotes(activeFilter), currentSearchQuery()));
 });
 
 addItemButton.addEventListener("click", () => {

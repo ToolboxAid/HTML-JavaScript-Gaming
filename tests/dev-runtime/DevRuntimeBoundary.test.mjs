@@ -32,7 +32,7 @@ const retiredToolboxDevRuntimeFiles = [
   "toolbox/game-configuration/game-configuration-mock-repository.js",
   "toolbox/game-design/game-design-mock-repository.js",
   "toolbox/game-journey/game-journey-mock-repository.js",
-  "toolbox/game-workspace/game-workspace-mock-repository.js",
+  "toolbox/game-hub/game-workspace-mock-repository.js",
 ];
 
 const retiredBrowserCompatibilityModules = new Set([
@@ -123,6 +123,6 @@ test("server seed loading and guest package loading use dev-runtime modules with
   assert.doesNotMatch(router, /mock-db-state/);
   assert.match(router, /parts\[1\] === "guest"/);
   assert.match(router, /parts\[2\] === "seed"/);
-  assert.doesNotMatch(router, /toolbox\/(?:assets|colors|game-configuration|game-design|game-journey|game-workspace)\/.*mock-repository/);
+  assert.doesNotMatch(router, /toolbox\/(?:assets|colors|game-configuration|game-design|game-journey|game-hub)\/.*mock-repository/);
   assert.doesNotMatch(router, /toolbox\/colors\/palette-source-mock-db/);
 });

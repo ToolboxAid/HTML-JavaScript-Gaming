@@ -778,7 +778,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await expect(adminBuildVoteRow).toHaveAttribute("draggable", "true");
     await page.evaluate(() => {
       const source = document.querySelector("[data-toolbox-votes-tool-id='build-game']");
-      const target = document.querySelector("[data-toolbox-votes-tool-id='game-workspace']");
+      const target = document.querySelector("[data-toolbox-votes-tool-id='game-hub']");
       if (!source || !target) {
         throw new Error("Toolbox vote drag/drop rows were not available.");
       }
@@ -799,7 +799,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     });
     await expect(page.locator("[data-toolbox-votes-status]")).toContainText("Rows were renumbered with whole-number order values.");
     await expect(adminBuildVoteRow.locator("td").nth(1)).toHaveText("1");
-    await expect(page.locator("[data-toolbox-votes-tool-id='game-workspace'] td").nth(1)).toHaveText("2");
+    await expect(page.locator("[data-toolbox-votes-tool-id='game-hub'] td").nth(1)).toHaveText("2");
     await expect(adminBuildVoteRow).toHaveAttribute("aria-selected", "true");
     await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(5)).toHaveText("1");
     await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(7)).toHaveText("1");

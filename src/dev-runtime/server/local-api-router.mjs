@@ -201,7 +201,7 @@ const DB_VIEWER_GROUP_ORDER = Object.freeze([
   Object.freeze({ id: "game-configuration", label: "Game Configuration", ownerId: "game-configuration", type: "tool" }),
   Object.freeze({ id: "game-design", label: "Game Design", ownerId: "game-design", type: "tool" }),
   Object.freeze({ id: "game-journey", label: "Game Journey", ownerId: "game-journey", type: "tool" }),
-  Object.freeze({ id: "game-workspace", label: "Game Hub", ownerId: "game-workspace", type: "tool" }),
+  Object.freeze({ id: "game-hub", label: "Game Hub", ownerId: "game-hub", type: "tool" }),
   Object.freeze({ id: "objects", label: "Objects", ownerId: "objects", type: "tool" }),
   Object.freeze({ id: "palette", label: "Palette", ownerId: "palette", type: "tool" }),
   Object.freeze({ id: "tags", label: "Tags", ownerId: "tags", type: "tool" }),
@@ -1427,7 +1427,7 @@ function normalizedToolKey(row) {
   return String(row?.toolKey || row?.toolId || row?.id || "").trim();
 }
 
-const SOURCE_CONTROLLED_TOOLBOX_TOOL_IDS = new Set(["game-workspace", "idea-board", "messages", "tags", "text-to-speech", "users"]);
+const SOURCE_CONTROLLED_TOOLBOX_TOOL_IDS = new Set(["game-hub", "idea-board", "messages", "tags", "text-to-speech", "users"]);
 const SOURCE_CONTROLLED_TOOLBOX_METADATA_FIELDS = Object.freeze([
   "active",
   "adminOnly",
@@ -1450,6 +1450,20 @@ const SOURCE_CONTROLLED_TOOLBOX_METADATA_FIELDS = Object.freeze([
   "toolboxGroup",
   "visibleInToolsList",
 ]);
+
+function isGameHubToolId(toolId) {
+  return ["game-hub", "game-workspace"].includes(String(toolId || ""));
+}
+
+function isLegacyGameWorkspaceToolId(toolId) {
+  return String(toolId || "") === "game-workspace";
+}
+
+function withoutLegacyGameWorkspaceToolRows(rows) {
+  return Array.isArray(rows)
+    ? rows.filter((row) => !isLegacyGameWorkspaceToolId(normalizedToolKey(row)))
+    : [];
+}
 const SOURCE_CONTROLLED_TOOLBOX_PLANNING_FIELDS = Object.freeze([
   "progressChecklist",
 ]);
@@ -2027,7 +2041,7 @@ function gameWorkspaceGameKey(gameId) {
   if (isUlidKey(normalizedGameId)) {
     return normalizedGameId;
   }
-  return runtimeGeneratedKeyForSource(`game-workspace-game:${normalizedGameId}`);
+  return runtimeGeneratedKeyForSource(`game-hub-game:${normalizedGameId}`);
 }
 
 function votePercent(count, total) {
@@ -2055,11 +2069,11 @@ function gameWorkspaceTables(repository) {
     status: project.status,
   }));
   const activeGameKey = gameWorkspaceGameKey(activeGame?.id);
-  return normalizeOwnedTables("game-workspace", {
+  return normalizeOwnedTables("game-hub", {
     game_workspace_games: gameWorkspaceGames,
     game_workspace_progress: activeGame ? [{
       ...snapshotAuditFields(80, SEED_DB_KEYS.users.user1),
-      key: runtimeGeneratedKeyForSource(`game-workspace-progress:${activeGameKey}`),
+      key: runtimeGeneratedKeyForSource(`game-hub-progress:${activeGameKey}`),
       gameKey: activeGameKey,
       currentFocus: progress.currentFocus,
       gameProgress: progress.gameProgress,
@@ -4680,8 +4694,14 @@ LIMIT 1;
 
   ensureToolboxToolMetadataRows() {
     const rows = this.toolboxToolMetadataRows();
-    const activeTools = getActiveToolRegistry();
     let changed = false;
+    for (let index = rows.length - 1; index >= 0; index -= 1) {
+      if (isLegacyGameWorkspaceToolId(normalizedToolKey(rows[index]))) {
+        rows.splice(index, 1);
+        changed = true;
+      }
+    }
+    const activeTools = getActiveToolRegistry();
     activeTools.forEach((tool, index) => {
       const defaults = this.defaultToolboxMetadata(tool, index);
       const existingRow = rows.find((row) => (row.toolKey || row.toolId) === tool.id);
@@ -4796,7 +4816,7 @@ LIMIT 1;
 
   async supabaseToolboxToolMetadataRows() {
     const adapter = this.supabaseDatabaseAdapter("Reading Supabase Toolbox tool metadata");
-    const rows = await adapter.getProductTableRows("toolbox_tool_metadata");
+    const rows = withoutLegacyGameWorkspaceToolRows(await adapter.getProductTableRows("toolbox_tool_metadata"));
     const activeTools = getActiveToolRegistry();
     const rowsByToolKey = new Map(rows.map((row) => [row.toolKey || row.toolId, row]));
     const existingToolKeys = new Set(rowsByToolKey.keys());
@@ -4818,7 +4838,7 @@ LIMIT 1;
       });
     if (missingRows.length || syncedRows.length) {
       await adapter.upsertProductTable("toolbox_tool_metadata", [...missingRows, ...syncedRows]);
-      return adapter.getProductTableRows("toolbox_tool_metadata");
+      return withoutLegacyGameWorkspaceToolRows(await adapter.getProductTableRows("toolbox_tool_metadata"));
     }
     return rows;
   }
@@ -4912,7 +4932,7 @@ LIMIT 1;
   toolRegistrySnapshot() {
     const planningRows = this.ensureToolboxToolPlanningRows();
     const planningByToolKey = new Map(planningRows.map((row) => [row.toolKey, row]));
-    const tools = this.ensureToolboxToolMetadataRows()
+    const tools = withoutLegacyGameWorkspaceToolRows(this.ensureToolboxToolMetadataRows())
       .map((row, index) => serverRegistryTool({
         ...row,
         ...planningByToolKey.get(normalizedToolKey(row)),
@@ -5082,7 +5102,7 @@ LIMIT 1;
   repositoryForTool(toolId) {
     this.assertProductDatabaseProvider(`Opening ${toolId} repository`);
     if (toolId === "workspace") return this.gameWorkspaceRepository;
-    if (toolId === "game-workspace") return this.gameWorkspaceRepository;
+    if (isGameHubToolId(toolId)) return this.gameWorkspaceRepository;
     if (toolId === "game-design") return this.gameDesignRepository;
     if (toolId === "game-configuration") return this.gameConfigurationRepository;
     if (toolId === "objects") return this.objectsRepository;
@@ -5097,7 +5117,7 @@ LIMIT 1;
   }
 
   constantsForTool(toolId) {
-    if (toolId === "game-workspace") {
+    if (isGameHubToolId(toolId)) {
       return {
         GAME_WORKSPACE_MEMBER_ROLES,
         GAME_WORKSPACE_GAME_PURPOSES,
