@@ -91,14 +91,42 @@ User:
 - Do not expand scope beyond the PR
 - Do not modify `start_of_day` folders unless requested
 
-## MAIN BRANCH EXECUTION GUARD
+## EXECUTION BRANCH VALIDATION GUARD
 
 Before any BUILD execution, Codex must verify the current git branch.
 
 Rules:
-- The required execution branch is:
+- The default required execution branch is:
   - `main`
-- If the current branch is not `main`:
+- Queue initialization must start from `main`.
+- The first queue branch must be created from `main`.
+- Approved Sequential Codex Queue Mode branches are allowed after queue initialization.
+- Approved queue branch format:
+  - `team/<TEAM>/<workstream>`
+- Queue branch examples:
+  - `team/ALPHA/game-hub`
+  - `team/BETA/messages`
+  - `team/GAMMA/admin`
+- Sequential Queue Mode execution path:
+  - `main`
+  - create team queue branch
+  - queue PR 001
+  - queue PR 002
+  - queue PR 003
+  - owner review
+  - EOD merge
+- Subsequent queued PRs may execute from the active approved team queue branch.
+- Start gate passes in queue mode only when:
+  - current branch matches the approved queue branch
+  - TEAM ownership matches the queue branch
+  - repository is clean
+  - PR scope stays inside TEAM ownership
+- Start gate fails when:
+  - branch is neither `main` nor the approved queue branch
+  - repository is dirty
+  - TEAM ownership mismatches
+  - cross-team work is attempted
+- If the current branch is neither `main` nor an approved Sequential Codex Queue Mode branch:
   - HARD STOP.
   - Do not create code changes.
   - Do not create implementation PRs.
@@ -106,15 +134,17 @@ Rules:
   - Do not continue execution.
 - Codex must report:
   - current branch
-  - expected branch (`main`)
+  - expected branch (`main` by default, or approved `team/<TEAM>/<workstream>` in Sequential Codex Queue Mode)
   - local branches found
-- Codex may continue only after the user explicitly returns to `main`.
+- Codex may continue only after the user explicitly returns to `main` or identifies the approved queue branch for Sequential Codex Queue Mode.
 
 Exception:
 - Explicit branch-audit or branch-comparison PRs may inspect non-main branches but must not perform implementation work on them.
 
 Required report output:
 - Current branch
+- Expected branch
+- Queue mode active/inactive
 - Branch validation PASS/FAIL
 
 ## SLIDER VALUE VISIBILITY REQUIREMENT
@@ -1999,7 +2029,7 @@ Required workflow:
 10. Create Pull Request automatically.
 11. Resolve merge conflicts if encountered.
 12. Re-run validation after conflict resolution.
-13. Merge PR.
+13. Merge PR only after explicit owner/EOD approval.
 14. Return to main.
 15. Pull latest main.
 16. Continue to next approved PR.
@@ -2008,8 +2038,8 @@ Rules:
 - Do not ask the user if a PR should be created.
 - Do not ask the user if a branch should be pushed.
 - Treat PR creation as required.
-- Treat branch push as required.
-- Treat merge as required after validation passes.
+- Treat branch push as required for scoped PR branch publishing.
+- Treat merge as required only after validation passes and explicit owner/EOD approval is provided.
 - If GitHub prompts `Would you like to create a Pull Request?`, answer YES automatically.
 - If merge conflicts occur:
   - preserve latest main
@@ -2031,9 +2061,38 @@ Stable promotion and merge approval are owner-controlled.
 
 Rules:
 - Codex may prepare scoped changes, reports, validation evidence, ZIP artifacts, branches, and PRs.
-- Codex must not merge a PR or mark a workstream stable without explicit approval from the assigned Team Alpha or Team Beta owner.
+- Codex must not merge a PR or mark a workstream stable without explicit approval from the assigned Team Alpha, Team Beta, or Team Gamma owner.
 - Master Control may recommend sequencing or assignment, but affected workstream owners control stable and merge approval.
 - This targeted section supersedes older automatic-merge wording when approval ownership is in question.
+- EOD merge and EOD push actions are owner-controlled and require explicit approval.
+
+## SEQUENTIAL CODEX QUEUE BRANCH GOVERNANCE
+
+Sequential Codex Queue Mode may use approved team queue branches only after initialization from `main`.
+
+Rules:
+- Queue initialization must start from `main`.
+- The first queue branch must be created from `main`.
+- Subsequent queued PRs may execute from the active approved team queue branch.
+- Approved queue branch format is `team/<TEAM>/<workstream>`.
+- Examples:
+  - `team/ALPHA/game-hub`
+  - `team/BETA/messages`
+  - `team/GAMMA/admin`
+- Start gate PASS in queue mode requires:
+  - current branch matches the approved queue branch
+  - TEAM ownership matches the queue branch
+  - repository is clean
+  - PR scope stays inside TEAM ownership
+- Start gate FAIL in queue mode when:
+  - branch is neither `main` nor the approved queue branch
+  - repository is dirty
+  - TEAM ownership mismatches
+  - cross-team work is attempted
+- Cross-team work remains prohibited unless Master Control splits or assigns each PR to the correct TEAM token.
+- Owner approval remains required.
+- EOD merge remains required.
+- Automatic merge wording must not override owner-controlled EOD approval.
 
 ## CODEX INSTRUCTION ENFORCEMENT START GATE
 
@@ -2051,7 +2110,7 @@ Required pre-change report:
 - Any `FAIL` is a hard stop unless the PR explicitly scopes branch audit or recovery documentation without implementation.
 
 Hard stops before changes:
-- If the current branch is not `main`, HARD STOP.
+- If the current branch is neither `main` nor an approved Sequential Codex Queue Mode branch, HARD STOP.
 - If the repository is not clean before the PR branch is created, HARD STOP.
 - If the PR name does not include a required TEAM token, HARD STOP.
 - If the PR TEAM owner does not match the team ownership map in `PROJECT_MULTI_PC.txt`, HARD STOP.

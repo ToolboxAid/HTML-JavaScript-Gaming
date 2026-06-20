@@ -524,6 +524,30 @@ Governance, recovery, diagnostics, and instruction-hardening PRs:
 - Must document TEAM ownership compliance in the PR report.
 - Recovery reports must include TEAM ownership.
 
+Sequential Codex Queue branch governance:
+- Queue initialization must start from `main`.
+- The first queue branch must be created from `main`.
+- Subsequent queued PRs may execute from the active approved team queue branch.
+- Approved queue branch format:
+  - `team/<TEAM>/<workstream>`
+- Queue branch examples:
+  - `team/ALPHA/game-hub`
+  - `team/BETA/messages`
+  - `team/GAMMA/admin`
+- Start gate PASS in queue mode requires:
+  - current branch matches the approved queue branch
+  - TEAM ownership matches the queue branch
+  - repository is clean
+  - PR scope stays inside TEAM ownership
+- Start gate FAIL in queue mode when:
+  - branch is neither `main` nor the approved queue branch
+  - repository is dirty
+  - TEAM ownership mismatches
+  - cross-team work is attempted
+- Cross-team work remains prohibited unless Master Control splits or assigns each PR to the correct TEAM token.
+- Owner approval remains required.
+- EOD merge remains required.
+
 Stable and merge approval:
 - Stable promotion and merge approval are controlled by the assigned Team Alpha, Team Beta, or Team Gamma owner.
 - Master Control may recommend sequencing, but Codex must not merge or mark stable without explicit owner approval for the affected workstream.
