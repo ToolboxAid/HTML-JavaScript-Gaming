@@ -1,57 +1,39 @@
-# Codex Changed Files - PR_26171_039-table-first-workspace-governance
+# Codex Changed Files - PR_26171_059-rollback-restore-plan
 
 ## Git Workflow
-- Current branch: `codex/pr-26171-039-table-first-workspace-governance`.
-- Expected starting branch: `main` (PASS before branch creation).
-- Created branch: `codex/pr-26171-039-table-first-workspace-governance`.
+- Verified starting branch: `main`.
+- Verified repo scope: clean after removing leftover local-only PR_26171_057 report artifacts.
+- Pulled latest `origin/main`: `20fd280c608917b960b3080484a5d28c51990ccb`.
+- Created branch: `pr/26171-059-rollback-restore-plan`.
 - Push result: pending until after commit.
 - PR URL: pending until after push.
 - Merge result: pending until after PR validation/merge.
-- Final main commit: pending until after merge and final pull.
+- Final main sync: pending until after merge and final pull.
 
 ## Changed Files
-- docs_build/dev/PROJECT_INSTRUCTIONS.md
-- docs_build/dev/reports/codex_changed_files.txt
+- docs_build/dev/reports/PR_26171_059-rollback-restore-plan.md
+- docs_build/dev/reports/PR_26171_059-validation.md
+- docs_build/dev/reports/PR_26171_059-manual-validation-notes.md
 - docs_build/dev/reports/codex_review.diff
+- docs_build/dev/reports/codex_changed_files.txt
 
 ## Requirement Evidence
-- PASS: Added `TABLE-FIRST WORKSPACE GOVERNANCE` section to `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
-- PASS: Section states primary work surface is a table.
-- PASS: Section says to prefer inline table workflows over forms.
-- PASS: Section prohibits detached selected-item context panels.
-- PASS: Section prohibits detached notes/detail panels when child rows can render under the parent row.
-- PASS: Parent/child patterns include Idea 1-* Notes, Character 1-* Dialog, Quest 1-* Objectives, and Audio Profile 1-* Effects.
-- PASS: Section says parent name cell owns accordion behavior.
-- PASS: Section says chevron appears inside parent name cell.
-- PASS: Section says entire parent name cell toggles expansion.
-- PASS: Section says child count columns are informational only.
-- PASS: Section says only one parent row may be expanded at a time.
-- PASS: Section says default state is all collapsed.
-- PASS: Section says child rows are indented.
-- PASS: Section says child Add button aligns with child rows.
-- PASS: Section says metadata remains stored but hidden unless explicitly needed.
-- PASS: Section says Add buttons are left aligned and self-describing.
-- PASS: Section says enumerated fields become dropdowns during edit mode.
-- PASS: Visual examples include default collapsed table, expanded parent with indented child rows, normal Edit/Delete row, edit Save/Cancel row with dropdown status, and add Save/Cancel row.
-- PASS: Explicit row-state rules include Normal row actions: Edit Delete.
-- PASS: Explicit row-state rules include Edit row actions: Save Cancel.
-- PASS: Explicit row-state rules include Add row actions: Save Cancel.
-- PASS: Explicit row-state rules state Save/Cancel is row-level only.
-- PASS: Explicit row-state rules prohibit page-level Save for normal row editing.
-- PASS: Explicit row-state rules state Cancel restores previous row state.
-- PASS: Explicit row-state rules state Save commits only the edited row.
-- PASS: Explicit row-state rules prohibit multiple simultaneous row edits unless explicitly approved.
-- PASS: Runtime code was not changed.
-- PASS: Tests were not changed.
-- PASS: Roadmap status was not changed.
+- PASS: Documented Local API sign-in recovery requirements.
+- PASS: Documented env diagnostics and runtime port requirements.
+- PASS: Documented toolbox image restoration requirements.
+- PASS: Documented Text To Speech engine/audio rebuild requirements.
+- PASS: Documented Game Journey table correction requirements.
+- PASS: Documented Game Journey post-rollback verification requirements.
+- PASS: Documented reapply rules requiring clean `main`, scoped branches, and no disconnected branch reuse.
+- PASS: Documented discarded contaminated work list.
+- PASS: No implementation reapply in this PR.
 
 ## Validation
+- PASS: `npm run test:playwright:static`.
+- PASS: Restored unrelated generated validation report churn after static validation.
 - PASS: `git diff --check`.
-- PASS: Heading confirmation found `## TABLE-FIRST WORKSPACE GOVERNANCE`.
-- PASS: Visual examples confirmation found `Visual examples:` and numbered examples.
-- PASS: Save/Cancel row-state confirmation found edit/add examples and explicit row-state rules.
-- PASS: No Playwright impact; this PR is docs/workflow only.
+- NOT RUN: `npm run dev:local-api` by design for docs/static-only scope.
+- NOT RUN: `npm run test:workspace-v2` by design for docs/static-only scope.
 
 ## ZIP
-- Path: `tmp/PR_26171_039-table-first-workspace-governance_delta.zip`.
-- Size and contents: reported after final ZIP generation.
+- Path: `tmp/PR_26171_059-rollback-restore-plan_delta.zip`.

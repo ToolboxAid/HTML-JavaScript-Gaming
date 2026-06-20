@@ -1,182 +1,166 @@
-﻿diff --git a/docs_build/dev/PROJECT_INSTRUCTIONS.md b/docs_build/dev/PROJECT_INSTRUCTIONS.md
-index 8ec5d3681..6a2014f2f 100644
---- a/docs_build/dev/PROJECT_INSTRUCTIONS.md
-+++ b/docs_build/dev/PROJECT_INSTRUCTIONS.md
-@@ -1660,6 +1660,81 @@ For tools that present Summary Table or Notes Table note-management surfaces:
- - System-created notes may only have status changed when the tool explicitly allows status editing.
- - Selected Note Metadata must be shown as table columns, not as a separate detached panel.
-
-+## TABLE-FIRST WORKSPACE GOVERNANCE
+diff --git a/docs_build/dev/reports/PR_26171_059-manual-validation-notes.md b/docs_build/dev/reports/PR_26171_059-manual-validation-notes.md
+new file mode 100644
+index 000000000..d34d3d31c
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26171_059-manual-validation-notes.md
+@@ -0,0 +1,19 @@
++# PR_26171_059 Manual Validation Notes
 +
-+Primary tool work surfaces must be table-first unless a PR explicitly approves another interaction model.
++## Manual Review
 +
-+Rules:
-+- The primary work surface is a table.
-+- Prefer inline table workflows over forms.
-+- No detached selected-item context panels.
-+- No detached notes/detail panels when child rows can render under the parent row.
-+- Parent name cells own accordion behavior.
-+- The chevron appears inside the parent name cell.
-+- The entire parent name cell toggles expansion.
-+- Child count columns are informational only.
-+- Only one parent row may be expanded at a time.
-+- The default state is all collapsed.
-+- Child rows are indented.
-+- The child Add button aligns with child rows.
-+- Metadata remains stored but hidden unless explicitly needed.
-+- Add buttons are left aligned and self-describing.
-+- Enumerated fields become dropdowns during edit mode.
++- Confirmed this PR only documents the rollback restore plan.
++- Confirmed the restore list keeps Local API sign-in recovery, env diagnostics, toolbox image restoration, Text To Speech rebuild, and Game Journey corrections as separate future scoped PRs.
++- Confirmed this PR does not reapply implementation.
++- Confirmed this PR excludes disconnected PC branch reuse, broad cherry-picks, wrong-path `tools/text2speech/` work, placeholder Text To Speech shell work, and unrelated report churn.
 +
-+Parent/child table pattern examples:
-+- Idea 1-* Notes
-+- Character 1-* Dialog
-+- Quest 1-* Objectives
-+- Audio Profile 1-* Effects
++## Runtime Notes
 +
-+Visual examples:
++- No browser sign-in flow was manually exercised for this PR.
++- No Local API runtime was started for this PR.
++- No Project Workspace runtime validation was run for this PR.
++- No Text To Speech runtime validation was run for this PR.
++- No toolbox image runtime validation was run for this PR.
++- No Game Journey runtime validation was run for this PR.
 +
-+1. Default collapsed table.
++Runtime validation must happen in the future scoped implementation PRs listed in `PR_26171_059-rollback-restore-plan.md`.
+diff --git a/docs_build/dev/reports/PR_26171_059-rollback-restore-plan.md b/docs_build/dev/reports/PR_26171_059-rollback-restore-plan.md
+new file mode 100644
+index 000000000..83ddb4f7f
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26171_059-rollback-restore-plan.md
+@@ -0,0 +1,97 @@
++# PR_26171_059 Rollback Restore Plan
 +
-+| Idea | Pitch | Status | Updated | Notes | Actions |
-+| --- | --- | --- | --- | --- | --- |
-+| > Sky Orchard | Grow floating islands... | Exploring | 2026-06-20 | 3 Notes | Edit Delete |
-+| > Clockwork Courier | Deliver messages through looping city... | New | 2026-06-20 | 0 Notes | Edit Delete |
-+| Add Idea | | | | | |
++## Purpose
 +
-+2. Expanded parent with child rows indented.
++Commit the clean recovery state from latest `main` and document the work that must be restored after rollback.
 +
-+| Idea | Pitch | Status | Updated | Notes | Actions |
-+| --- | --- | --- | --- | --- | --- |
-+| v Sky Orchard | Grow floating islands... | Exploring | 2026-06-20 | 3 Notes | Edit Delete |
-+|   Note | Actions | | | | |
-+|   Wind test needs traversal risks. | Edit Delete | | | | |
-+|   Island height should read from camera. | Edit Delete | | | | |
-+|   Add Note | | | | | |
++This PR is documentation-only. It does not reapply implementation work, does not reuse the disconnected PC branch, and does not cherry-pick broad contaminated history.
 +
-+3. Normal row with Edit/Delete.
++## Baseline Evidence
 +
-+| Idea | Pitch | Status | Updated | Notes | Actions |
-+| --- | --- | --- | --- | --- | --- |
-+| > Sky Orchard | Grow floating islands... | Exploring | 2026-06-20 | 3 Notes | Edit Delete |
++- Verified starting branch: `main`.
++- Removed leftover local-only PR_26171_057 report artifacts before branching.
++- Pulled latest `origin/main` with a fast-forward update.
++- Recovery baseline commit used for this PR branch: `20fd280c608917b960b3080484a5d28c51990ccb`.
++- Created scoped branch: `pr/26171-059-rollback-restore-plan`.
++- No runtime, toolbox, engine, API, or test implementation files are changed by this PR.
 +
-+4. Edit row with Save/Cancel and dropdown status.
++## Restore List After Rollback
 +
-+| Idea | Pitch | Status | Updated | Notes | Actions |
-+| --- | --- | --- | --- | --- | --- |
-+| [Sky Orchard] | [Grow floating islands...] | [Exploring v] | 2026-06-20 | 3 Notes | Save Cancel |
++1. Local API sign-in recovery
++   - Inspect the sign-in page and its external JavaScript first.
++   - Remove preview-disabled sign-in behavior.
++   - Use the configured API URL instead of hardcoded preview-disabled behavior.
++   - Submit email and password to the Local API session auth endpoint used by `npm run dev:local-api`.
++   - On valid DEV credentials, create a Local API session and redirect to the expected signed-in destination.
++   - On invalid credentials, show a visible actionable error.
++   - Keep Continue Browsing for guest browsing.
++   - Do not create fake login.
++   - Do not use browser-owned auth as the source of truth.
++   - Do not create custom password tables.
++   - Do not change Create Account or Password Reset beyond keeping placeholders safe.
 +
-+5. Add row with Save/Cancel.
++2. Env diagnostics and runtime ports
++   - Print all env keys one per row.
++   - Mask secrets.
++   - Print the active site, API, and database ports.
 +
-+| Idea | Pitch | Status | Updated | Notes | Actions |
-+| --- | --- | --- | --- | --- | --- |
-+| [New idea] | [Pitch] | [New v] | auto | 0 Notes | Save Cancel |
++3. Toolbox image restoration
++   - Restore valid toolbox images.
++   - Remove excessive `image-missing.svg` fallbacks.
++   - Keep image restoration scoped to real existing assets or approved replacements.
 +
-+Explicit row-state rules:
-+- Normal row actions: Edit Delete.
-+- Edit row actions: Save Cancel.
-+- Add row actions: Save Cancel.
-+- Save/Cancel is row-level only.
-+- No page-level Save for normal row editing.
-+- Cancel restores previous row state.
-+- Save commits only the edited row.
-+- Multiple simultaneous row edits are prohibited unless explicitly approved.
++4. Text To Speech engine/audio rebuild
++   - Use `old_text2speech-V2` as the functionality sample.
++   - Move reusable Text To Speech engine code to `src/engine/audio/`.
++   - Make `toolbox/text-to-speech/` consume the reusable engine module.
++   - Restore old controls, options, and features from the working sample.
++   - Do not use the wrong `tools/text2speech/` path.
++   - Do not ship placeholder Text To Speech shell work that does not restore functionality.
 +
- ## INPUT RESOLUTION RULES
-
- - Discover real files and directories.
-diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index ac3c628b0..4a954a997 100644
---- a/docs_build/dev/reports/codex_changed_files.txt
-+++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,52 +1,57 @@
--# Codex Changed Files - PR_26171_033-idea-board-inline-accordion-cell
-+# Codex Changed Files - PR_26171_039-table-first-workspace-governance
-
- ## Git Workflow
--- Current branch: `codex/pr-26171-033-idea-board-inline-accordion-cell`.
-+- Current branch: `codex/pr-26171-039-table-first-workspace-governance`.
- - Expected starting branch: `main` (PASS before branch creation).
--- Created branch: `codex/pr-26171-033-idea-board-inline-accordion-cell`.
-+- Created branch: `codex/pr-26171-039-table-first-workspace-governance`.
- - Push result: pending until after commit.
- - PR URL: pending until after push.
- - Merge result: pending until after PR validation/merge.
- - Final main commit: pending until after merge and final pull.
-
- ## Changed Files
--- assets/theme-v2/images/gfs-chevron-down.svg
--- assets/theme-v2/images/gfs-chevron-up.svg
--- docs_build/dev/codex_commands.md
--- docs_build/dev/commit_comment.txt
-+- docs_build/dev/PROJECT_INSTRUCTIONS.md
- - docs_build/dev/reports/codex_changed_files.txt
- - docs_build/dev/reports/codex_review.diff
--- docs_build/dev/reports/coverage_changed_js_guardrail.txt
--- docs_build/dev/reports/playwright_v8_coverage_report.txt
--- docs_build/pr/APPLY_PR_26171_033-idea-board-inline-accordion-cell.md
--- docs_build/pr/BUILD_PR_26171_033-idea-board-inline-accordion-cell.md
--- docs_build/pr/PLAN_PR_26171_033-idea-board-inline-accordion-cell.md
--- tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
--- tests/playwright/tools/ToolboxRoutePages.spec.mjs
--- toolbox/idea-board/index.js
-
- ## Requirement Evidence
--- PASS: Separate `>` expand/collapse button removed from `toolbox/idea-board/index.js`; no `data-idea-board-notes-chevron` control remains.
--- PASS: No separate expand/collapse control column was added; the visible Idea table remains Idea, Pitch, Status, Updated, Notes, Actions.
--- PASS: Notes count is rendered as a plain informational span and no longer carries `data-idea-board-toggle-notes`.
--- PASS: Chevron image is rendered inside the Idea row header cell.
--- PASS: Collapsed rows use `assets/theme-v2/images/gfs-chevron-down.svg`.
--- PASS: Expanded rows use `assets/theme-v2/images/gfs-chevron-up.svg`.
--- PASS: The whole Idea cell carries the toggle target and handles click plus Enter/Space keyboard activation.
--- PASS: Expanded notes continue to render directly under the owning idea row.
--- PASS: Targeted Playwright verifies clicking Notes count does not expand from a collapsed state.
--- PASS: Targeted Playwright verifies clicking Notes count does not collapse from an expanded state.
--- PASS: Targeted Playwright verifies clicking the Idea cell expands/collapses and the chevron switches down/up.
--- PASS: Theme V2 chevron SVG assets were added under `assets/theme-v2/images/`.
-+- PASS: Added `TABLE-FIRST WORKSPACE GOVERNANCE` section to `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
-+- PASS: Section states primary work surface is a table.
-+- PASS: Section says to prefer inline table workflows over forms.
-+- PASS: Section prohibits detached selected-item context panels.
-+- PASS: Section prohibits detached notes/detail panels when child rows can render under the parent row.
-+- PASS: Parent/child patterns include Idea 1-* Notes, Character 1-* Dialog, Quest 1-* Objectives, and Audio Profile 1-* Effects.
-+- PASS: Section says parent name cell owns accordion behavior.
-+- PASS: Section says chevron appears inside parent name cell.
-+- PASS: Section says entire parent name cell toggles expansion.
-+- PASS: Section says child count columns are informational only.
-+- PASS: Section says only one parent row may be expanded at a time.
-+- PASS: Section says default state is all collapsed.
-+- PASS: Section says child rows are indented.
-+- PASS: Section says child Add button aligns with child rows.
-+- PASS: Section says metadata remains stored but hidden unless explicitly needed.
-+- PASS: Section says Add buttons are left aligned and self-describing.
-+- PASS: Section says enumerated fields become dropdowns during edit mode.
-+- PASS: Visual examples include default collapsed table, expanded parent with indented child rows, normal Edit/Delete row, edit Save/Cancel row with dropdown status, and add Save/Cancel row.
-+- PASS: Explicit row-state rules include Normal row actions: Edit Delete.
-+- PASS: Explicit row-state rules include Edit row actions: Save Cancel.
-+- PASS: Explicit row-state rules include Add row actions: Save Cancel.
-+- PASS: Explicit row-state rules state Save/Cancel is row-level only.
-+- PASS: Explicit row-state rules prohibit page-level Save for normal row editing.
-+- PASS: Explicit row-state rules state Cancel restores previous row state.
-+- PASS: Explicit row-state rules state Save commits only the edited row.
-+- PASS: Explicit row-state rules prohibit multiple simultaneous row edits unless explicitly approved.
-+- PASS: Runtime code was not changed.
-+- PASS: Tests were not changed.
-+- PASS: Roadmap status was not changed.
-
- ## Validation
--- PASS: `node --check toolbox/idea-board/index.js`.
--- PASS: `node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`.
--- PASS: `node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs`.
--- PASS: `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line` (1 passed).
--- PASS: `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches"` (1 passed).
--- SKIP: Full samples smoke was not run; it is not in scope for this PR.
-+- PASS: `git diff --check`.
-+- PASS: Heading confirmation found `## TABLE-FIRST WORKSPACE GOVERNANCE`.
-+- PASS: Visual examples confirmation found `Visual examples:` and numbered examples.
-+- PASS: Save/Cancel row-state confirmation found edit/add examples and explicit row-state rules.
-+- PASS: No Playwright impact; this PR is docs/workflow only.
-
- ## ZIP
--- Path: `tmp/PR_26171_033-idea-board-inline-accordion-cell_delta.zip`.
-+- Path: `tmp/PR_26171_039-table-first-workspace-governance_delta.zip`.
- - Size and contents: reported after final ZIP generation.
++5. Game Journey table correction
++   - Add row under the table.
++   - Support inline edit row behavior.
++   - Treat Note Tree as a subtable.
++   - Show metadata in table columns.
++   - Ensure system notes cannot be deleted.
++
++6. Game Journey post-rollback verification
++   - Confirm friendly descriptions.
++   - Confirm dashboard, targets, and insights only if those surfaces are still present on clean `main`.
++   - Reapply missing approved Journey work only from clean `main`.
++
++## Reapply Rules
++
++- Every reapply PR starts from clean `main`.
++- Every reapply PR gets its own branch.
++- Every reapply PR is scoped to one approved purpose.
++- Do not reuse the disconnected branch.
++- Do not merge the disconnected branch.
++- Do not cherry-pick broad PC commits.
++- Prefer file-level or diff-level reapplication for approved scoped changes.
++- Exclude wrong-path work such as `tools/text2speech/`.
++- Exclude placeholder Text To Speech shell work.
++- Exclude unrelated report churn.
++- Run targeted validation only after each reapply PR implements its scoped change.
++
++## Approved Reapply Order
++
++1. Local API sign-in recovery.
++2. Env diagnostics and runtime ports.
++3. Toolbox image restoration.
++4. Text To Speech engine/audio rebuild from the old working Text To Speech sample.
++5. Game Journey table corrections if still missing.
++6. Game Journey post-rollback verification and approved follow-up only if still needed.
++
++## Discarded Contaminated Work
++
++- Disconnected PC branch history.
++- Broad cherry-picks from contaminated commits.
++- Wrong-path `tools/text2speech/` work.
++- Placeholder Text To Speech shell work.
++- Unrelated report churn.
++- Any implementation work not revalidated from clean `main`.
++
++## Validation Boundary
++
++This PR is limited to docs/static validation. It intentionally does not run Local API sign-in validation, Text To Speech runtime validation, toolbox image runtime validation, or Project Workspace validation because implementation reapply is out of scope for PR_26171_059.
+diff --git a/docs_build/dev/reports/PR_26171_059-validation.md b/docs_build/dev/reports/PR_26171_059-validation.md
+new file mode 100644
+index 000000000..4504c6ddb
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26171_059-validation.md
+@@ -0,0 +1,32 @@
++# PR_26171_059 Validation Report
++
++## Scope
++
++Validation is docs/static only for this rollback restore plan PR.
++
++Implementation validation is intentionally deferred until each approved restore item is reapplied in its own scoped PR from clean `main`.
++
++## Commands
++
++- `git status --short --branch`
++  - PASS: starting branch was `main`.
++  - PASS: leftover PR_26171_057 local-only report artifacts were removed before branching.
++  - PASS: PR branch was created from clean latest `main`.
++- `git pull --ff-only origin main`
++  - PASS: local `main` fast-forwarded to `20fd280c608917b960b3080484a5d28c51990ccb`.
++- `npm run test:playwright:static`
++  - PASS: static-only validation completed successfully.
++  - Note: the command refreshed generated validation reports; those generated report changes were restored because they are unrelated to this rollback plan PR.
++- `git diff --check`
++  - PASS: no whitespace errors.
++
++## Not Run
++
++- `npm run dev:local-api`
++- `npm run test:workspace-v2`
++- Runtime sign-in validation
++- Text To Speech runtime validation
++- Toolbox image runtime validation
++- Game Journey runtime validation
++
++These commands are intentionally out of scope for this docs/static rollback plan PR.
