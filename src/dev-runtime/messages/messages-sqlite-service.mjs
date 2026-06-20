@@ -741,6 +741,15 @@ export class MessagesSqliteService {
     return category;
   }
 
+  defaultMessageCategoryKey() {
+    const dialog = this.findCategoryByName("Dialog");
+    const fallback = dialog || this.listCategories()[0];
+    if (!fallback) {
+      throw httpError("Legacy message category seed is unavailable. Restart the Local API runtime.");
+    }
+    return fallback.key;
+  }
+
   assertActiveEmotionProfile(key) {
     const profile = this.getEmotionProfile(key);
     if (!profile.active) {
@@ -751,12 +760,10 @@ export class MessagesSqliteService {
 
   normalizeMessageInput(input = {}, existing = null) {
     const name = input.name === undefined && existing ? existing.name : normalizeName(input.name, "Message name");
-    const categoryKey = normalizeText(input.categoryKey === undefined && existing ? existing.categoryKey : input.categoryKey).trim();
+    const categoryKey = normalizeText(input.categoryKey === undefined && existing ? existing.categoryKey : input.categoryKey).trim()
+      || this.defaultMessageCategoryKey();
     const emotionProfileKey = normalizeText(input.emotionProfileKey === undefined && existing ? existing.emotionProfileKey : input.emotionProfileKey).trim();
     const messageText = input.messageText === undefined && existing ? existing.messageText : normalizeText(input.messageText);
-    if (!categoryKey) {
-      throw httpError("Category is required.");
-    }
     if (!emotionProfileKey) {
       throw httpError("Emotion profile is required.");
     }

@@ -358,6 +358,22 @@ Prohibited product-data ownership:
 
 Toolbox and Admin tool metadata must use a shared DB-backed tool metadata source for `toolKey`, `toolName`, `group`, `path`, `order`, and `status`. Browser pages may render metadata returned by the API/service contract, but they must not own a separate runtime copy of that metadata.
 
+## DATABASE DIRECTION
+
+SQLite is deprecated.
+Postgres is authoritative.
+
+Rules:
+- New database work must target Postgres.
+- Local API -> Postgres is the required direction.
+- New PRs must not introduce SQLite persistence.
+- Do not add new SQLite services.
+- Do not add new SQLite DDL.
+- Do not add new SQLite seed data.
+- Do not add new SQLite runtime persistence.
+- Legacy SQLite references may remain only as documented technical debt when they already exist.
+- Browser code must not own product data or generate authoritative persistence keys.
+
 ## DEV RUNTIME BOUNDARY
 
 All mock/dev-only runtime implementation must live under `src/dev-runtime/`.
@@ -1874,3 +1890,46 @@ Rules:
 - Do not introduce new report/test prose that describes the current user-facing experience as `Workspace V2`.
 - Existing package scripts such as `npm run test:workspace-v2`, legacy lane identifiers, and historical test suite names may remain until renamed by a dedicated cleanup PR.
 - When a report invokes a legacy command name such as `npm run test:workspace-v2`, the report must explain that the command name is legacy and the user-facing product language is `Game Hub`.
+
+## CODEX GIT WORKFLOW OWNERSHIP
+
+Codex owns Git execution for implementation PRs.
+
+Required workflow:
+1. Verify current branch.
+2. Checkout main.
+3. Pull latest main.
+4. Verify clean repository.
+5. Create PR branch.
+6. Implement changes.
+7. Stage only scoped files.
+8. Commit.
+9. Push branch to GitHub.
+10. Create Pull Request automatically.
+11. Resolve merge conflicts if encountered.
+12. Re-run validation after conflict resolution.
+13. Merge PR.
+14. Return to main.
+15. Pull latest main.
+16. Continue to next approved PR.
+
+Rules:
+- Do not ask the user if a PR should be created.
+- Do not ask the user if a branch should be pushed.
+- Treat PR creation as required.
+- Treat branch push as required.
+- Treat merge as required after validation passes.
+- If GitHub prompts `Would you like to create a Pull Request?`, answer YES automatically.
+- If merge conflicts occur:
+  - preserve latest main
+  - preserve PR scope
+  - avoid unrelated cleanup
+  - revalidate before merge
+
+Required Git workflow report fields:
+- current branch
+- created branch
+- push result
+- PR URL
+- merge result
+- final main commit

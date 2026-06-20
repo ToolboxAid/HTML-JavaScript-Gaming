@@ -1,11 +1,6 @@
-﻿src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
-src/dev-runtime/server/local-api-router.mjs
-tests/playwright/tools/GameJourneyTool.spec.mjs
-toolbox/game-journey/game-journey.js
-toolbox/game-journey/index.html
-docs_build/dev/reports/PR_26171_023-game-journey-summary-table-correction.md
-docs_build/dev/reports/PR_26171_023-game-journey-summary-table-correction-validation.md
-docs_build/dev/reports/PR_26171_023-game-journey-summary-table-correction-manual-validation.md
-docs_build/dev/reports/PR_26171_023-game-journey-summary-table-correction-requirements.md
+﻿docs_build/dev/PROJECT_INSTRUCTIONS.md
+docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership.md
+docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-validation.md
+docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-manual-validation.md
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/codex_changed_files.txt

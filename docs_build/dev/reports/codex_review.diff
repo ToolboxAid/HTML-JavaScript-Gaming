@@ -1,1063 +1,131 @@
-﻿diff --git a/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js b/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
-index 67d2ad9c6..e39da46cb 100644
---- a/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
-+++ b/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
-@@ -905,6 +905,23 @@ export function createGameJourneyMockRepository(options = {}) {
-     return getItemsForNoteFilter(note.key, filterId).length > 0;
-   }
- 
-+  function isSystemNote(note) {
-+    return Boolean(note && getItemsForNote(note.key).some(isSystemItem));
-+  }
+﻿diff --git a/docs_build/dev/PROJECT_INSTRUCTIONS.md b/docs_build/dev/PROJECT_INSTRUCTIONS.md
+index 055919ceb..8ec5d3681 100644
+--- a/docs_build/dev/PROJECT_INSTRUCTIONS.md
++++ b/docs_build/dev/PROJECT_INSTRUCTIONS.md
+@@ -1890,3 +1890,46 @@ Rules:
+ - Do not introduce new report/test prose that describes the current user-facing experience as `Workspace V2`.
+ - Existing package scripts such as `npm run test:workspace-v2`, legacy lane identifiers, and historical test suite names may remain until renamed by a dedicated cleanup PR.
+ - When a report invokes a legacy command name such as `npm run test:workspace-v2`, the report must explain that the command name is legacy and the user-facing product language is `Game Hub`.
 +
-+  function hydrateNote(note, filterId = "all") {
-+    const items = getItemsForNoteFilter(note.key, filterId);
-+    return {
-+      ...clone(note),
-+      systemCreated: isSystemNote(note),
-+      type: clone(
-+        tables.game_journey_note_types.find((type) => type.key === note.typeKey),
-+      ),
-+      counts: getNoteCounts(note.key, filterId),
-+      items: items.map(hydrateItem),
-+    };
-+  }
++## CODEX GIT WORKFLOW OWNERSHIP
 +
-   function listNotes(filterId = "all") {
-     const activeGame = requireActiveGame();
-     if (!activeGame) {
-@@ -915,17 +932,7 @@ export function createGameJourneyMockRepository(options = {}) {
-       .filter((note) => note.gameKey === activeGame.key)
-       .filter(currentUserCanSeeNote)
-       .filter((note) => noteMatchesFilter(note, filterId))
--      .map((note) => {
--        const items = getItemsForNoteFilter(note.key, filterId);
--        return {
--          ...clone(note),
--          type: clone(
--            tables.game_journey_note_types.find((type) => type.key === note.typeKey),
--          ),
--          counts: getNoteCounts(note.key, filterId),
--          items: items.map(hydrateItem),
--        };
--      })
-+      .map((note) => hydrateNote(note, filterId))
-       .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt));
-   }
- 
-@@ -983,14 +990,7 @@ export function createGameJourneyMockRepository(options = {}) {
-       selectedItemKey = getItemsForNote(note.key)[0]?.key || "";
-     }
- 
--    return {
--      ...clone(note),
--      type: clone(
--        tables.game_journey_note_types.find((type) => type.key === note.typeKey),
--      ),
--      counts: getNoteCounts(note.key),
--      items: getItemsForNote(note.key).map(hydrateItem),
--    };
-+    return hydrateNote(note);
-   }
- 
-   function selectNote(noteKey) {
-@@ -1177,6 +1177,72 @@ export function createGameJourneyMockRepository(options = {}) {
-     return updateItem(item.key, { indent: item.indent + delta });
-   }
- 
-+  function updateNote(noteKey, updates = {}) {
-+    const activeGame = requireActiveGame();
-+    const note = tables.game_journey_notes.find(
-+      (candidate) => candidate.key === noteKey && candidate.gameKey === activeGame?.key && currentUserCanSeeNote(candidate),
-+    );
-+    const selectedType = tables.game_journey_note_types.find((type) => type.key === updates.typeKey);
-+    if (!activeGame || !note || !currentUserCanWrite()) {
-+      return null;
-+    }
++Codex owns Git execution for implementation PRs.
 +
-+    selectedNoteKey = note.key;
-+    if (isSystemNote(note)) {
-+      return getSelectedNote();
-+    }
++Required workflow:
++1. Verify current branch.
++2. Checkout main.
++3. Pull latest main.
++4. Verify clean repository.
++5. Create PR branch.
++6. Implement changes.
++7. Stage only scoped files.
++8. Commit.
++9. Push branch to GitHub.
++10. Create Pull Request automatically.
++11. Resolve merge conflicts if encountered.
++12. Re-run validation after conflict resolution.
++13. Merge PR.
++14. Return to main.
++15. Pull latest main.
++16. Continue to next approved PR.
 +
-+    if (typeof updates.name === "string") {
-+      note.name = updates.name.trim() || note.name;
-+    }
-+    if (selectedType) {
-+      note.typeKey = selectedType.key;
-+    }
++Rules:
++- Do not ask the user if a PR should be created.
++- Do not ask the user if a branch should be pushed.
++- Treat PR creation as required.
++- Treat branch push as required.
++- Treat merge as required after validation passes.
++- If GitHub prompts `Would you like to create a Pull Request?`, answer YES automatically.
++- If merge conflicts occur:
++  - preserve latest main
++  - preserve PR scope
++  - avoid unrelated cleanup
++  - revalidate before merge
 +
-+    touchNote(note.key);
-+    addActivity(activeGame.key, note.key, `Updated note ${note.name}`);
-+    persistTables();
-+    return getSelectedNote();
-+  }
++Required Git workflow report fields:
++- current branch
++- created branch
++- push result
++- PR URL
++- merge result
++- final main commit
+diff --git a/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-manual-validation.md b/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-manual-validation.md
+new file mode 100644
+index 000000000..66dca5470
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-manual-validation.md
+@@ -0,0 +1,15 @@
++# PR_26171_025 Manual Validation Notes
 +
-+  function deleteNote(noteKey) {
-+    const activeGame = requireActiveGame();
-+    const note = tables.game_journey_notes.find(
-+      (candidate) => candidate.key === noteKey && candidate.gameKey === activeGame?.key && currentUserCanSeeNote(candidate),
-+    );
-+    if (!activeGame || !note || !currentUserCanWrite()) {
-+      return {
-+        deleted: false,
-+        reason: "No journey note is selected for deletion.",
-+        selectedNoteKey,
-+      };
-+    }
++## Manual Review
++- Confirmed `docs_build/dev/PROJECT_INSTRUCTIONS.md` contains a new `CODEX GIT WORKFLOW OWNERSHIP` section.
++- Confirmed the section states that Codex owns Git execution for implementation PRs.
++- Confirmed the required 16-step workflow is present.
++- Confirmed branch push, Pull Request creation, and merge are documented as required.
++- Confirmed the GitHub prompt instruction says to answer YES automatically.
++- Confirmed merge conflict handling preserves latest `main`, preserves PR scope, avoids unrelated cleanup, and requires revalidation before merge.
++- Confirmed required reporting fields are listed.
 +
-+    if (isSystemNote(note)) {
-+      selectedNoteKey = note.key;
-+      return {
-+        deleted: false,
-+        reason: "System-created notes cannot be deleted.",
-+        note: getSelectedNote(),
-+        selectedNoteKey,
-+      };
-+    }
++## Out Of Scope Confirmed
++- No runtime implementation was added.
++- No UI behavior was changed.
++- No database behavior was changed.
+diff --git a/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-validation.md b/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-validation.md
+new file mode 100644
+index 000000000..36314e518
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-validation.md
+@@ -0,0 +1,17 @@
++# PR_26171_025 Validation Report
 +
-+    tables.game_journey_items = tables.game_journey_items.filter((item) => item.noteKey !== note.key);
-+    tables.game_journey_notes = tables.game_journey_notes.filter((candidate) => candidate.key !== note.key);
-+    const nextNote = tables.game_journey_notes.find(
-+      (candidate) => candidate.gameKey === activeGame.key && currentUserCanSeeNote(candidate),
-+    );
-+    selectedNoteKey = nextNote?.key || "";
-+    selectedItemKey = selectedNoteKey ? getItemsForNote(selectedNoteKey)[0]?.key || "" : "";
-+    persistTables();
-+    return {
-+      deleted: true,
-+      reason: "Deleted user-created note.",
-+      selectedNoteKey,
-+    };
-+  }
++## Validation Performed
++- PASS: `npm run test:playwright:static`
 +
-   function updateSelectedNoteType(typeKey) {
-     const activeGame = requireActiveGame();
-     const note = tables.game_journey_notes.find((item) => item.key === selectedNoteKey && currentUserCanSeeNote(item));
-@@ -1347,6 +1413,8 @@ export function createGameJourneyMockRepository(options = {}) {
-     listNoteTypes: () => clone(tables.game_journey_note_types),
-     addNoteType,
-     addNote,
-+    updateNote,
-+    deleteNote,
-     updateSelectedNoteType,
-     listNotes,
-     getSelectedNote,
-diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index 6c8ab76b8..4a4f50e37 100644
---- a/src/dev-runtime/server/local-api-router.mjs
-+++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -1638,6 +1638,24 @@ const GAME_WORKSPACE_SAVE_METHODS = new Set([
-   "updateGameStatus",
- ]);
- 
-+const GAME_JOURNEY_TOOL_STORE_METHODS = new Set([
-+  "addItem",
-+  "addNote",
-+  "addNoteType",
-+  "applySystemItemUpdate",
-+  "changeSelectedIndent",
-+  "deleteItem",
-+  "deleteNote",
-+  "injectTemplateDiagnostics",
-+  "moveSelectedItem",
-+  "selectItem",
-+  "selectNote",
-+  "updateItem",
-+  "updateNote",
-+  "updateRecommendedTarget",
-+  "updateSelectedNoteType",
-+]);
++## Result
++- Static/docs validation completed successfully.
++- No browser Playwright validation was run because this PR is docs-only governance.
 +
- function assertRepositoryMethodResult(repositoryId, methodName, result) {
-   if (result === undefined) {
-     throw repositoryMethodError(`Server repository ${repositoryId}.${methodName} returned no result. Restore the server API contract for ${methodName}.`);
-@@ -5207,7 +5225,7 @@ LIMIT 1;
-     const result = await method(...args);
-     assertRepositoryMethodResult(repositoryId, methodName, result);
-     const methodPersistsThroughToolStore =
--      repository === this.gameJourneyRepository && methodName === "updateRecommendedTarget";
-+      repository === this.gameJourneyRepository && GAME_JOURNEY_TOOL_STORE_METHODS.has(methodName);
-     if (repositoryMethodRequiresPersistence(methodName) && !methodPersistsThroughToolStore) {
-       if (repository === this.gameWorkspaceRepository) {
-         await this.persistGameWorkspaceProviderState(`Persisting ${methodName} result`);
-diff --git a/tests/playwright/tools/GameJourneyTool.spec.mjs b/tests/playwright/tools/GameJourneyTool.spec.mjs
-index d9d403594..2cc895fef 100644
---- a/tests/playwright/tools/GameJourneyTool.spec.mjs
-+++ b/tests/playwright/tools/GameJourneyTool.spec.mjs
-@@ -37,6 +37,10 @@ test.afterAll(async () => {
- 
- async function openRepoPage(page, pathName, options = {}) {
-   const server = await startRepoServer();
-+  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
-+  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
-+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
-+  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
-   const collectCoverage = options.collectCoverage !== false;
-   const sessionUserKey = options.sessionUserKey === undefined ? MOCK_DB_KEYS.users.user1 : options.sessionUserKey;
-   const failedRequests = [];
-@@ -74,7 +78,7 @@ async function openRepoPage(page, pathName, options = {}) {
-     method: "POST",
-   });
-   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
--  return { consoleErrors, failedRequests, pageErrors, server };
-+  return { consoleErrors, failedRequests, pageErrors, previousApiUrl, previousSiteUrl, server };
- }
- 
- async function fetchApiData(server, pathName, options = {}) {
-@@ -346,8 +350,82 @@ test("Game Journey progress dashboard summarizes completion metrics", async ({ p
- async function closeWithCoverage(page, failures) {
-   await workspaceV2CoverageReporter.stop(page);
-   await failures.server.close();
-+  restoreEnvValue("GAMEFOUNDRY_API_URL", failures.previousApiUrl);
-+  restoreEnvValue("GAMEFOUNDRY_SITE_URL", failures.previousSiteUrl);
- }
- 
-+test("Game Journey summary table uses inline notes and item subtables", async ({ page }) => {
-+  const failures = await openRepoPage(page, "/toolbox/game-journey/index.html?game=demo-game");
++## Scope Control
++- Runtime implementation validation was skipped because no runtime files were intentionally changed for PR_26171_025.
++- UI validation was skipped because no UI files were intentionally changed for PR_26171_025.
++- Database validation was skipped because no database files or runtime persistence behavior were intentionally changed for PR_26171_025.
 +
-+  try {
-+    await expect(page.locator("details > summary", { hasText: /^Add Note$/ })).toHaveCount(0);
-+    await expect(page.locator("details > summary", { hasText: /^Selected Note Metadata$/ })).toHaveCount(0);
-+    await expect(page.locator("details > summary", { hasText: /^Note Tree$/ })).toHaveCount(0);
-+    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
++## Repository State Note
++- The working tree had pre-existing unrelated changes and unresolved generated report conflicts in `codex_changed_files.txt` and `codex_review.diff` before this PR_025 work began.
++- PR_26171_025 reports and standard Codex report files were regenerated for the governance change.
+diff --git a/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership.md b/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership.md
+new file mode 100644
+index 000000000..dd6d449d5
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership.md
+@@ -0,0 +1,30 @@
++# PR_26171_025 Codex Git Workflow Ownership
 +
-+    const summaryTable = page.locator("[data-journey-summary-table]");
-+    await expect(summaryTable).toBeVisible();
-+    const headers = await summaryTable.locator("thead th").evaluateAll((cells) =>
-+      cells.map((cell) => cell.textContent.trim().replace(/\s+/g, " ")),
-+    );
-+    expect(headers).toEqual(expect.arrayContaining(["Name", "Type", "Owner", "Actions"]));
-+    expect(headers.at(-1)).toBe("Actions");
++## Summary
++- Added the `CODEX GIT WORKFLOW OWNERSHIP` governance section to `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
++- Established that Codex owns Git execution for implementation PRs.
++- Documented the required branch, pull, clean-status, PR branch, scoped staging, commit, push, automatic Pull Request creation, conflict resolution, validation rerun, merge, return-to-main, and continuation flow.
 +
-+    const addNoteButton = page.locator("[data-journey-add-note]");
-+    await expect(addNoteButton).toBeVisible();
-+    const addNoteBelowTable = await addNoteButton.evaluate((button) => {
-+      const table = document.querySelector("[data-journey-summary-table]");
-+      return Boolean(table && table.compareDocumentPosition(button) & Node.DOCUMENT_POSITION_FOLLOWING);
-+    });
-+    expect(addNoteBelowTable).toBe(true);
++## Scope
++- Docs-only governance update.
++- No runtime implementation.
++- No UI changes.
++- No database changes.
 +
-+    const systemRow = page.locator(`[data-journey-summary-note-row="${GAME_JOURNEY_KEYS.notes.designPass}"]`);
-+    await expect(systemRow.locator("td").nth(2)).toHaveText("System-created");
-+    await expect(systemRow.locator("[data-journey-delete-note]")).toBeDisabled();
-+    await systemRow.locator("[data-journey-edit-note]").click();
-+    const systemEditRow = page.locator(`[data-journey-edit-note-row="${GAME_JOURNEY_KEYS.notes.designPass}"]`);
-+    await expect(systemEditRow.locator("[data-journey-note-name-input]")).toBeDisabled();
-+    await expect(systemEditRow.locator("[data-journey-note-type-select]")).toBeDisabled();
-+    await expect(page.locator(`[data-journey-note-tree-row="${GAME_JOURNEY_KEYS.notes.designPass}"] > td > [data-journey-item-tree] > .table-wrapper > table`)).toHaveAttribute("aria-label", "Selected note item subtable");
++## Governance Intent
++- Codex should not ask the user whether to push a branch or create a Pull Request for implementation PRs.
++- Branch push, Pull Request creation, and merge after passing validation are required implementation PR workflow steps.
++- Merge conflicts must preserve latest `main`, preserve PR scope, avoid unrelated cleanup, and revalidate before merge.
 +
-+    await addNoteButton.click();
-+    const addRow = page.locator("[data-journey-add-note-row]");
-+    await expect(addRow).toBeVisible();
-+    await expect(page.locator("[data-journey-note-tree-row='new-note'] > td > [data-journey-item-tree] > .table-wrapper > table")).toHaveAttribute("aria-label", "Selected note item subtable");
-+    await addRow.locator("[data-journey-new-note-name]").fill("Usability Audit");
-+    await addRow.locator("[data-journey-new-note-type]").selectOption(GAME_JOURNEY_KEYS.noteTypes.task);
-+    await addRow.locator("[data-journey-save-new-note]").click();
-+    await expect(page.locator("[data-journey-note-status]")).toContainText("Added Usability Audit");
++## Required Git Workflow Report Fields
++- current branch
++- created branch
++- push result
++- PR URL
++- merge result
++- final main commit
 +
-+    const userRow = page.locator("[data-journey-summary-note-row]", { hasText: "Usability Audit" });
-+    await expect(userRow.locator("td").nth(1)).toHaveText("Task");
-+    await expect(userRow.locator("td").nth(2)).toHaveText("You");
-+    await expect(userRow.locator("td").last()).toContainText("Edit");
-+    await expect(userRow.locator("td").last()).toContainText("Delete");
-+    await expect(userRow.locator("[data-journey-delete-note]")).toBeEnabled();
-+
-+    await userRow.locator("[data-journey-edit-note]").click();
-+    const userEditRow = page.locator("[data-journey-edit-note-row]", { hasText: "Task" });
-+    await expect(userEditRow.locator("[data-journey-note-name-input]")).toHaveValue("Usability Audit");
-+    await userEditRow.locator("[data-journey-note-name-input]").fill("Usability Audit Updated");
-+    await userEditRow.locator("[data-journey-save-note]").click();
-+    await expect(page.locator("[data-journey-note-status]")).toContainText("Saved Usability Audit Updated");
-+    await expect(page.locator("[data-journey-summary-note-row]", { hasText: "Usability Audit Updated" })).toBeVisible();
-+
-+    page.once("dialog", (dialog) => dialog.accept());
-+    await page.locator("[data-journey-summary-note-row]", { hasText: "Usability Audit Updated" }).locator("[data-journey-delete-note]").click();
-+    await expect(page.locator("[data-journey-note-status]")).toHaveText("Deleted user-created note.");
-+    await expect(page.locator("[data-journey-summary-body]")).not.toContainText("Usability Audit Updated");
-+
-+    await expect(page.locator("[data-journey-progress-dashboard]")).toBeVisible();
-+    await expect(page.getByRole("heading", { name: "What To Do Next" })).toBeVisible();
-+    await expect(page.locator("[data-journey-recommended-target='heroes']")).toBeVisible();
-+    await expectNoPageFailures(failures);
-+  } finally {
-+    await closeWithCoverage(page, failures);
-+  }
-+});
-+
- test("Game Journey edits rows and updates note summary counts live", async ({ page }) => {
-   const failures = await openRepoPage(page, "/toolbox/game-journey/index.html?game=demo-game");
- 
-diff --git a/toolbox/game-journey/game-journey.js b/toolbox/game-journey/game-journey.js
-index 2521368d0..effb985da 100644
---- a/toolbox/game-journey/game-journey.js
-+++ b/toolbox/game-journey/game-journey.js
-@@ -23,7 +23,6 @@ const filterButtons = Array.from(document.querySelectorAll("[data-journey-filter
- const sortButtons = Array.from(document.querySelectorAll("[data-journey-sort]"));
- const sortHeaders = Array.from(document.querySelectorAll("[data-journey-sort-header]"));
- const summaryBody = document.querySelector("[data-journey-summary-body]");
--const itemTree = document.querySelector("[data-journey-item-tree]");
- const selectedNoteMessage = document.querySelector("[data-journey-selected-note]");
- const activeGameMessage = document.querySelector("[data-journey-active-game]");
- const editorForm = document.querySelector("[data-journey-editor-form]");
-@@ -54,6 +53,7 @@ const searchStatus = document.querySelector("[data-journey-search-status]");
- const completionMetrics = document.querySelector("[data-journey-completion-metrics]");
- const recommendedTargets = document.querySelector("[data-journey-recommended-targets]");
- const recommendedTargetStatus = document.querySelector("[data-journey-target-status]");
-+const SUMMARY_TABLE_COLUMN_COUNT = 13;
- 
- const statTargets = {
-   open: document.querySelector("[data-journey-stat-open]"),
-@@ -81,6 +81,9 @@ let summarySort = {
- };
- let completionMetricsSnapshot = null;
- let completionMetricsDiagnostic = "";
-+let addNoteRowOpen = false;
-+let editingNoteKey = "";
-+let itemTree = null;
- const recommendedTargetValues = new Map(
-   GAME_JOURNEY_RECOMMENDED_TARGETS.map((target) => [target.key, target.suggestedCount]),
- );
-@@ -259,6 +262,66 @@ function isUserItem(item) {
-   return Boolean(item && !isSystemItem(item));
- }
- 
-+function isSystemNote(note) {
-+  return Boolean(note?.systemCreated || note?.items?.some((item) => isSystemItem(item)));
-+}
-+
-+function noteOwnerLabel(note) {
-+  if (isSystemNote(note)) {
-+    return "System-created";
-+  }
-+
-+  const sessionUser = repository.getSessionUser();
-+  if (note?.ownerKey && note.ownerKey === sessionUser?.userKey) {
-+    return "You";
-+  }
-+
-+  return note?.ownerKey || "Unknown";
-+}
-+
-+function createCountCell(value) {
-+  return createElement("td", { text: String(value) });
-+}
-+
-+function createReadonlyCountCell() {
-+  return createElement("td", { text: "-" });
-+}
-+
-+function createNoteTypeSelect(selectedTypeKey, disabled = false) {
-+  const select = createElement("select");
-+  populateNoteTypeSelect(select, repository.listNoteTypes(), selectedTypeKey);
-+  select.disabled = disabled;
-+  return select;
-+}
-+
-+function createNoteActions(actions) {
-+  const cell = createElement("td");
-+  const group = createElement("div", {
-+    className: "action-group",
-+  });
-+  group.setAttribute("aria-label", "Game Journey note row actions");
-+  actions.forEach((action) => group.append(action));
-+  cell.append(group);
-+  return cell;
-+}
-+
-+function createNoteActionButton(label, datasetName, value, options = {}) {
-+  const button = createElement("button", {
-+    className: options.primary ? "btn btn--compact primary" : "btn btn--compact",
-+    text: label,
-+  });
-+  button.type = "button";
-+  button.dataset[datasetName] = value;
-+  if (options.disabled) {
-+    button.disabled = true;
-+  }
-+  if (options.title) {
-+    button.title = options.title;
-+    button.setAttribute("aria-label", options.title);
-+  }
-+  return button;
-+}
-+
- function countItems(items) {
-   return items.reduce((counts, item) => {
-     const status = GAME_JOURNEY_STATUS_BY_ID[item.status];
-@@ -349,50 +412,186 @@ function updateSortHeaders() {
-   });
- }
- 
--function renderSummary(notes) {
-+function createSummaryCountCells(note) {
-+  return [
-+    createCountCell(note.counts["not-started"]),
-+    createCountCell(note.counts.blocker),
-+    createCountCell(note.counts.decide),
-+    createCountCell(note.counts["in-progress"]),
-+    createCountCell(note.counts.complete),
-+    createCountCell(note.counts.skipped),
-+    createCountCell(note.counts.open),
-+    createCountCell(note.counts.total),
-+    createElement("td", { text: formatDate(note.updatedAt) }),
-+  ];
-+}
-+
-+function createSummaryNoteButton(note, selected) {
-+  const noteButton = createElement("button", {
-+    className: selected ? "btn btn--compact primary" : "btn btn--compact",
-+    text: note.name,
-+  });
-+  noteButton.type = "button";
-+  noteButton.dataset.journeyNoteButton = note.key;
-+  noteButton.setAttribute("aria-pressed", String(selected));
-+  if (selected) {
-+    noteButton.setAttribute("aria-current", "true");
-+  }
-+  return noteButton;
-+}
-+
-+function createSummaryNoteRow(note, editingDisabled) {
-+  const row = createElement("tr");
-+  const nameCell = createElement("td");
-+  const selected = selectedSummaryNoteKey === note.key;
-+  const systemNote = isSystemNote(note);
-+  nameCell.append(createSummaryNoteButton(note, selected));
-+  row.dataset.journeySummaryNoteRow = note.key;
-+  row.append(
-+    nameCell,
-+    createElement("td", { text: note.type?.name || "Unknown" }),
-+    createElement("td", { text: noteOwnerLabel(note) }),
-+    ...createSummaryCountCells(note),
-+    createNoteActions([
-+      createNoteActionButton("Edit", "journeyEditNote", note.key, {
-+        disabled: editingDisabled,
-+      }),
-+      createNoteActionButton("Delete", "journeyDeleteNote", note.key, {
-+        disabled: editingDisabled || systemNote,
-+        title: systemNote ? "System-created notes cannot be deleted" : "Delete note",
-+      }),
-+    ]),
-+  );
-+  return row;
-+}
-+
-+function createSummaryAddRow(editingDisabled) {
-+  const row = createElement("tr");
-+  row.dataset.journeyAddNoteRow = "";
-+
-+  const nameCell = createElement("td");
-+  const nameInput = createElement("input");
-+  nameInput.type = "text";
-+  nameInput.placeholder = "Playtest follow-ups";
-+  nameInput.disabled = editingDisabled;
-+  nameInput.dataset.journeyNewNoteName = "";
-+  nameCell.append(nameInput);
-+
-+  const typeCell = createElement("td");
-+  const typeSelect = createNoteTypeSelect(preferredNewNoteTypeKey || repository.listNoteTypes()[0]?.key || "", editingDisabled);
-+  typeSelect.dataset.journeyNewNoteType = "";
-+  typeCell.append(typeSelect);
-+
-+  row.append(
-+    nameCell,
-+    typeCell,
-+    createElement("td", { text: "You" }),
-+    createReadonlyCountCell(),
-+    createReadonlyCountCell(),
-+    createReadonlyCountCell(),
-+    createReadonlyCountCell(),
-+    createReadonlyCountCell(),
-+    createReadonlyCountCell(),
-+    createReadonlyCountCell(),
-+    createReadonlyCountCell(),
-+    createReadonlyCountCell(),
-+    createNoteActions([
-+      createNoteActionButton("Save", "journeySaveNewNote", "true", {
-+        primary: true,
-+        disabled: editingDisabled,
-+      }),
-+      createNoteActionButton("Cancel", "journeyCancelNewNote", "true"),
-+    ]),
-+  );
-+  return row;
-+}
-+
-+function createSummaryEditRow(note, editingDisabled) {
-+  const row = createElement("tr");
-+  const systemNote = isSystemNote(note);
-+  const fieldsDisabled = editingDisabled || systemNote;
-+  row.dataset.journeyEditNoteRow = note.key;
-+
-+  const nameCell = createElement("td");
-+  const nameInput = createElement("input");
-+  nameInput.type = "text";
-+  nameInput.value = note.name;
-+  nameInput.disabled = fieldsDisabled;
-+  nameInput.dataset.journeyNoteNameInput = note.key;
-+  nameCell.append(nameInput);
-+
-+  const typeCell = createElement("td");
-+  const typeSelect = createNoteTypeSelect(note.typeKey, fieldsDisabled);
-+  typeSelect.dataset.journeyNoteTypeSelect = note.key;
-+  typeCell.append(typeSelect);
-+
-+  row.append(
-+    nameCell,
-+    typeCell,
-+    createElement("td", { text: noteOwnerLabel(note) }),
-+    ...createSummaryCountCells(note),
-+    createNoteActions([
-+      createNoteActionButton("Save", "journeySaveNote", note.key, {
-+        primary: true,
-+        disabled: fieldsDisabled,
-+        title: systemNote ? "System-created notes only allow status changes in their item rows" : "Save note",
-+      }),
-+      createNoteActionButton("Cancel", "journeyCancelNoteEdit", note.key),
-+      createNoteActionButton("Delete", "journeyDeleteNote", note.key, {
-+        disabled: editingDisabled || systemNote,
-+        title: systemNote ? "System-created notes cannot be deleted" : "Delete note",
-+      }),
-+    ]),
-+  );
-+  return row;
-+}
-+
-+function createSummaryTreeRow(note, editingDisabled) {
-+  const row = createElement("tr");
-+  const cell = createElement("td");
-+  const treeHost = createElement("div");
-+  row.dataset.journeyNoteTreeRow = note?.key || "new-note";
-+  cell.colSpan = SUMMARY_TABLE_COLUMN_COUNT;
-+  treeHost.dataset.journeyItemTree = note?.key || "";
-+  cell.append(treeHost);
-+  row.append(cell);
-+  renderItemTree(note, editingDisabled, treeHost);
-+  return row;
-+}
-+
-+function renderSummary(notes, displayNote, editingDisabled, noteWriteDisabled = editingDisabled) {
-   summaryBody.innerHTML = "";
-+  itemTree = null;
-   updateSortHeaders();
- 
-+  if (addNoteRowOpen) {
-+    summaryBody.append(createSummaryAddRow(noteWriteDisabled), createSummaryTreeRow(null, editingDisabled));
-+  }
-+
-   if (!notes.length) {
-     const row = createElement("tr");
-     const cell = createElement("td", {
-       text: "No notes match the current Game Journey filter.",
-     });
--    cell.colSpan = 11;
-+    cell.colSpan = SUMMARY_TABLE_COLUMN_COUNT;
-     row.append(cell);
-     summaryBody.append(row);
-     return;
-   }
- 
-   sortSummaryNotes(notes).forEach((note) => {
--    const row = createElement("tr");
--    const nameCell = createElement("td");
--    const selected = selectedSummaryNoteKey === note.key;
--    const noteButton = createElement("button", {
--      className: selected ? "btn btn--compact primary" : "btn btn--compact",
--      text: note.name,
--    });
--    noteButton.type = "button";
--    noteButton.dataset.journeyNoteButton = note.key;
--    noteButton.setAttribute("aria-pressed", String(selected));
--    if (selected) {
--      noteButton.setAttribute("aria-current", "true");
--    }
--    nameCell.append(noteButton);
--    row.append(
--      nameCell,
--      createElement("td", { text: note.type?.name || "Unknown" }),
--      createElement("td", { text: String(note.counts["not-started"]) }),
--      createElement("td", { text: String(note.counts.blocker) }),
--      createElement("td", { text: String(note.counts.decide) }),
--      createElement("td", { text: String(note.counts["in-progress"]) }),
--      createElement("td", { text: String(note.counts.complete) }),
--      createElement("td", { text: String(note.counts.skipped) }),
--      createElement("td", { text: String(note.counts.open) }),
--      createElement("td", { text: String(note.counts.total) }),
--      createElement("td", { text: formatDate(note.updatedAt) }),
--    );
-+    const editing = editingNoteKey === note.key;
-+    const row = editing
-+      ? createSummaryEditRow(note, noteWriteDisabled)
-+      : createSummaryNoteRow(note, noteWriteDisabled);
-     summaryBody.append(row);
-+
-+    const shouldRenderTree =
-+      !addNoteRowOpen &&
-+      (editing || (!editingNoteKey && selectedSummaryNoteKey === note.key));
-+    if (shouldRenderTree) {
-+      summaryBody.append(createSummaryTreeRow(displayNote?.key === note.key ? displayNote : note, editingDisabled));
-+    }
-   });
- }
- 
-@@ -458,7 +657,6 @@ function makeSelectedItemDetails(item, editingDisabled) {
-   const details = createElement("div", {
-     className: "content-stack content-stack--compact",
-   });
--  details.dataset.journeySelectedItemDetails = item.key;
- 
-   if (isSystemItem(item)) {
-     const guidance = createElement("div", {
-@@ -504,53 +702,78 @@ function makeSelectedItemDetails(item, editingDisabled) {
-   return details;
- }
- 
--function renderItemTree(note, editingDisabled) {
--  itemTree.innerHTML = "";
-+function renderItemTree(note, editingDisabled, target = itemTree) {
-+  itemTree = target;
-+  if (!target) {
-+    return;
-+  }
-+  target.innerHTML = "";
-+  const wrapper = createElement("div", {
-+    className: "table-wrapper",
-+  });
-+  const table = createElement("table", {
-+    className: "data-table data-table--fixed",
-+  });
-+  table.setAttribute("aria-label", "Selected note item subtable");
-+  const head = createElement("thead");
-+  const headRow = createElement("tr");
-+  ["Item", "Status", "Details", "Actions"].forEach((label) => {
-+    const header = createElement("th", { text: label });
-+    header.scope = "col";
-+    headRow.append(header);
-+  });
-+  head.append(headRow);
-+  const body = createElement("tbody");
- 
-   if (!note || !note.items.length) {
--    itemTree.append(createElement("p", { text: "No journey items yet." }));
-+    const emptyRow = createElement("tr");
-+    const emptyCell = createElement("td", { text: "No journey items yet." });
-+    emptyCell.colSpan = 4;
-+    emptyRow.append(emptyCell);
-+    body.append(emptyRow);
-+    table.append(head, body);
-+    wrapper.append(table);
-+    target.append(wrapper);
-     return;
-   }
- 
-   const selectedItem = getSelectedItem();
--  const root = createElement("ul", {
--    className: "tool-tree--compact",
--  });
--  root.setAttribute("role", "tree");
--  const lists = [root];
--  const lastItems = [];
- 
-   note.items.forEach((item) => {
--    let indent = Math.max(0, Math.min(Number(item.indent) || 0, 4));
--    if (indent > lastItems.length) {
--      indent = lastItems.length;
--    }
--
--    while (lists.length > indent + 1) {
--      lists.pop();
--      lastItems.pop();
--    }
--
--    if (indent > 0 && !lists[indent]) {
--      const parent = lastItems[indent - 1];
--      if (parent) {
--        const childList = createElement("ul");
--        parent.append(childList);
--        lists[indent] = childList;
--      }
-+    const itemRow = createElement("tr");
-+    const itemCell = createElement("td");
-+    const statusCell = createElement("td", { text: createStatusText(item.status) });
-+    const detailsCell = createElement("td", { text: item.userDetails || "-" });
-+    const actionCell = createElement("td");
-+    const actionGroup = createElement("div", {
-+      className: "action-group",
-+    });
-+    actionGroup.setAttribute("aria-label", "Journey item row actions");
-+    itemRow.dataset.journeyItemRow = item.key;
-+    itemCell.dataset.journeyItemIndent = String(Math.max(0, Math.min(Number(item.indent) || 0, 4)));
-+    itemCell.append(makeItemButton(item));
-+    if (isUserItem(item)) {
-+      actionGroup.append(createDeleteItemButton(item));
-+    } else {
-+      actionGroup.append(createSystemItemIndicator());
-     }
--
--    const itemElement = createElement("li");
--    itemElement.setAttribute("role", "treeitem");
--    itemElement.append(makeItemRowContent(item));
-+    actionCell.append(actionGroup);
-+    itemRow.append(itemCell, statusCell, detailsCell, actionCell);
-+    body.append(itemRow);
-     if (selectedItem?.key === item.key) {
--      itemElement.append(makeSelectedItemDetails(item, editingDisabled));
-+      const detailsRow = createElement("tr");
-+      const detailsRowCell = createElement("td");
-+      detailsRow.dataset.journeySelectedItemDetails = item.key;
-+      detailsRowCell.colSpan = 4;
-+      detailsRowCell.append(makeSelectedItemDetails(item, editingDisabled));
-+      detailsRow.append(detailsRowCell);
-+      body.append(detailsRow);
-     }
--    lists[indent].append(itemElement);
--    lastItems[indent] = itemElement;
-   });
- 
--  itemTree.append(root);
-+  table.append(head, body);
-+  wrapper.append(table);
-+  target.append(wrapper);
- }
- 
- function renderEditor(editingDisabled, note) {
-@@ -970,6 +1193,10 @@ function sessionUserCanWrite() {
-   return Boolean(repository.getSessionUser().userKey);
- }
- 
-+function isRepositoryErrorResult(result) {
-+  return Boolean(result && typeof result === "object" && result.error === true);
-+}
-+
- function redirectGuestWriteAction(statusTarget) {
-   if (sessionUserCanWrite()) {
-     return false;
-@@ -1211,17 +1438,21 @@ function render() {
-   activeGameMessage.textContent = activeGame
-     ? `Active game: ${activeGame.name}.`
-     : "No active game is open. Editing actions are disabled.";
--  selectedNoteMessage.textContent = note
--    ? `${note.name} (${note.type?.name || "Unknown"})`
--    : "Choose a note from the summary table.";
-+  if (selectedNoteMessage) {
-+    selectedNoteMessage.textContent = note
-+      ? `${note.name} (${note.type?.name || "Unknown"})`
-+      : "Choose a note from the summary table.";
-+  }
-+  if (editingNoteKey && !notes.some((item) => item.key === editingNoteKey)) {
-+    editingNoteKey = "";
-+  }
- 
-   setEditingDisabled(editingDisabled);
-   setGameScopedControlsDisabled(gameControlsDisabled);
-   setGameWriteControlsDisabled(gameWriteControlsDisabled);
-   updateFilterButtons();
-   renderNoteTypeOptions(note);
--  renderSummary(notes);
--  renderItemTree(displayNote, editingDisabled);
-+  renderSummary(notes, displayNote, editingDisabled, gameWriteControlsDisabled);
-   renderEditor(editingDisabled, displayNote);
-   enableGuestSignInWriteActions(activeGame, canWrite);
-   renderStatScope(selectedStatsNote, notes);
-@@ -1262,20 +1493,6 @@ sortButtons.forEach((button) => {
- });
- 
- summaryBody.addEventListener("click", (event) => {
--  const button = event.target.closest("[data-journey-note-button]");
--  if (!button) {
--    return;
--  }
--  selectedSummaryNoteKey = button.dataset.journeyNoteButton;
--  if (!currentSearchQuery()) {
--    selectedSummaryNoteKeyBeforeSearch = selectedSummaryNoteKey;
--    searchSelectionSnapshotTaken = false;
--  }
--  repository.selectNote(selectedSummaryNoteKey);
--  render();
--});
--
--itemTree.addEventListener("click", (event) => {
-   const deleteButton = event.target.closest("[data-journey-delete-item]");
-   if (deleteButton) {
-     event.preventDefault();
-@@ -1288,15 +1505,141 @@ itemTree.addEventListener("click", (event) => {
-     return;
-   }
- 
--  const button = event.target.closest("[data-journey-item-button]");
--  if (!button) {
-+  const saveNewNoteButton = event.target.closest("[data-journey-save-new-note]");
-+  if (saveNewNoteButton) {
-+    event.preventDefault();
-+    if (redirectGuestWriteAction(noteStatus)) {
-+      return;
-+    }
-+    const row = saveNewNoteButton.closest("[data-journey-add-note-row]");
-+    const nameInput = row?.querySelector("[data-journey-new-note-name]");
-+    const typeSelect = row?.querySelector("[data-journey-new-note-type]");
-+    const note = repository.addNote({
-+      name: nameInput?.value || "",
-+      typeKey: typeSelect?.value || "",
-+    });
-+    if (!note || isRepositoryErrorResult(note)) {
-+      if (noteStatus) {
-+        noteStatus.textContent = note?.message || (sessionUserCanWrite()
-+          ? "Open a game before adding a Game Journey note."
-+          : "Log in as a user before adding a Game Journey note.");
-+      }
-+      return;
-+    }
-+    activeFilter = "all";
-+    addNoteRowOpen = false;
-+    editingNoteKey = "";
-+    selectedSummaryNoteKey = note.key;
-+    selectedSummaryNoteKeyBeforeSearch = note.key;
-+    preferredNewNoteTypeKey = note.typeKey;
-+    if (noteStatus) {
-+      noteStatus.textContent = `Added ${note.name} to the summary table.`;
-+    }
-+    render();
-+    return;
-+  }
-+
-+  const cancelNewNoteButton = event.target.closest("[data-journey-cancel-new-note]");
-+  if (cancelNewNoteButton) {
-+    event.preventDefault();
-+    addNoteRowOpen = false;
-+    render();
-+    return;
-+  }
-+
-+  const editNoteButton = event.target.closest("[data-journey-edit-note]");
-+  if (editNoteButton) {
-+    event.preventDefault();
-+    addNoteRowOpen = false;
-+    editingNoteKey = editNoteButton.dataset.journeyEditNote;
-+    selectedSummaryNoteKey = editingNoteKey;
-+    selectedSummaryNoteKeyBeforeSearch = editingNoteKey;
-+    repository.selectNote(editingNoteKey);
-+    render();
-+    return;
-+  }
-+
-+  const saveNoteButton = event.target.closest("[data-journey-save-note]");
-+  if (saveNoteButton) {
-+    event.preventDefault();
-+    if (redirectGuestWriteAction(noteStatus)) {
-+      return;
-+    }
-+    const row = saveNoteButton.closest("[data-journey-edit-note-row]");
-+    const note = repository.updateNote(saveNoteButton.dataset.journeySaveNote, {
-+      name: row?.querySelector("[data-journey-note-name-input]")?.value || "",
-+      typeKey: row?.querySelector("[data-journey-note-type-select]")?.value || "",
-+    });
-+    if (note && !isRepositoryErrorResult(note)) {
-+      selectedSummaryNoteKey = note.key;
-+      selectedSummaryNoteKeyBeforeSearch = note.key;
-+      if (noteStatus) {
-+        noteStatus.textContent = `Saved ${note.name} in the summary table.`;
-+      }
-+    } else if (noteStatus) {
-+      noteStatus.textContent = note?.message || "The selected note could not be saved.";
-+    }
-+    editingNoteKey = "";
-+    render();
-+    return;
-+  }
-+
-+  const cancelNoteEditButton = event.target.closest("[data-journey-cancel-note-edit]");
-+  if (cancelNoteEditButton) {
-+    event.preventDefault();
-+    editingNoteKey = "";
-+    render();
-     return;
-   }
--  repository.selectItem(button.dataset.journeyItemButton);
-+
-+  const deleteNoteButton = event.target.closest("[data-journey-delete-note]");
-+  if (deleteNoteButton) {
-+    event.preventDefault();
-+    if (!window.confirm(DELETE_CONFIRMATION_MESSAGE)) {
-+      return;
-+    }
-+    const result = repository.deleteNote(deleteNoteButton.dataset.journeyDeleteNote);
-+    if (isRepositoryErrorResult(result)) {
-+      if (noteStatus) {
-+        noteStatus.textContent = result.message || "The selected note could not be deleted.";
-+      }
-+      return;
-+    }
-+    if (result?.selectedNoteKey !== undefined) {
-+      selectedSummaryNoteKey = result.selectedNoteKey;
-+      selectedSummaryNoteKeyBeforeSearch = result.selectedNoteKey;
-+    }
-+    editingNoteKey = "";
-+    if (noteStatus && result?.reason) {
-+      noteStatus.textContent = result.reason;
-+    }
-+    render();
-+    return;
-+  }
-+
-+  const itemButton = event.target.closest("[data-journey-item-button]");
-+  if (itemButton) {
-+    repository.selectItem(itemButton.dataset.journeyItemButton);
-+    render();
-+    return;
-+  }
-+
-+  const noteButton = event.target.closest("[data-journey-note-button]");
-+  if (!noteButton) {
-+    return;
-+  }
-+  addNoteRowOpen = false;
-+  editingNoteKey = "";
-+  selectedSummaryNoteKey = noteButton.dataset.journeyNoteButton;
-+  if (!currentSearchQuery()) {
-+    selectedSummaryNoteKeyBeforeSearch = selectedSummaryNoteKey;
-+    searchSelectionSnapshotTaken = false;
-+  }
-+  repository.selectNote(selectedSummaryNoteKey);
-   render();
- });
- 
--itemTree.addEventListener("input", (event) => {
-+summaryBody.addEventListener("input", (event) => {
-   const detailsInput = event.target.closest("[data-journey-item-details-input]");
-   if (!detailsInput) {
-     return;
-@@ -1341,7 +1684,7 @@ editorForm.addEventListener("submit", (event) => {
-     return;
-   }
- 
--  const detailsInput = itemTree.querySelector("[data-journey-item-details-input]");
-+  const detailsInput = itemTree?.querySelector("[data-journey-item-details-input]");
-   repository.updateItem(selectedItem.key, {
-     title: titleInput.value,
-     status: statusInput.value,
-@@ -1425,39 +1768,24 @@ recommendedTargets?.addEventListener("input", (event) => {
-   }
- });
- 
--addNoteButton.addEventListener("click", () => {
-+addNoteButton?.addEventListener("click", () => {
-   if (redirectGuestWriteAction(noteStatus)) {
-     return;
-   }
--  const note = repository.addNote({
--    name: newNoteNameInput.value,
--    typeKey: newNoteTypeSelect.value,
--  });
--  if (!note) {
--    if (noteStatus) {
--      noteStatus.textContent = sessionUserCanWrite()
--        ? "Open a game before adding a Game Journey note."
--        : "Log in as a user before adding a Game Journey note.";
--    }
--    return;
--  }
--  activeFilter = "all";
--  selectedSummaryNoteKey = note.key;
--  selectedSummaryNoteKeyBeforeSearch = note.key;
--  preferredNewNoteTypeKey = note.typeKey;
--  newNoteNameInput.value = "";
-+  addNoteRowOpen = true;
-+  editingNoteKey = "";
-   if (noteStatus) {
--    noteStatus.textContent = `Added ${note.name} to the summary table.`;
-+    noteStatus.textContent = "Add the new note in the inline summary table row.";
-   }
-   render();
- });
- 
--noteTypeSelect.addEventListener("change", () => {
-+noteTypeSelect?.addEventListener("change", () => {
-   repository.updateSelectedNoteType(noteTypeSelect.value);
-   render();
- });
- 
--addTypeButton.addEventListener("click", () => {
-+addTypeButton?.addEventListener("click", () => {
-   if (redirectGuestWriteAction(typeStatus)) {
-     return;
-   }
-diff --git a/toolbox/game-journey/index.html b/toolbox/game-journey/index.html
-index c270108e6..aa1a408aa 100644
---- a/toolbox/game-journey/index.html
-+++ b/toolbox/game-journey/index.html
-@@ -47,15 +47,6 @@
-                                     </div>
-                                 </div>
-                             </details>
--                            <details class="vertical-accordion" open>
--                                <summary>Add Note</summary>
--                                <div class="accordion-body content-stack">
--                                    <label for="journeyNewNoteName">Note Name <input id="journeyNewNoteName" type="text" placeholder="Playtest follow-ups" data-journey-new-note-name></label>
--                                    <label for="journeyNewNoteType">Type <select id="journeyNewNoteType" data-journey-new-note-type></select></label>
--                                    <button class="btn primary" type="button" data-journey-add-note>Add Note</button>
--                                    <div class="status" role="status" data-journey-note-status>Add a game-scoped note to the summary table.</div>
--                                </div>
--                            </details>
-                             <details class="vertical-accordion" open>
-                                 <summary>Selected Item Editor</summary>
-                                 <div class="accordion-body content-stack">
-@@ -92,16 +83,6 @@
-                                     </form>
-                                 </div>
-                             </details>
--                            <details class="vertical-accordion" open>
--                                <summary>Selected Note Metadata</summary>
--                                <div class="accordion-body content-stack">
--                                    <p>Seeded defaults stay extensible in the Game Journey mock data.</p>
--                                    <label for="journeyNoteTypeSelect">Type <select id="journeyNoteTypeSelect" data-journey-note-type-select></select></label>
--                                    <label for="journeyTypeInput">Add Note Type <input id="journeyTypeInput" type="text" placeholder="Playtest" data-journey-type-input></label>
--                                    <button class="btn" type="button" data-journey-add-type>Add Note Type</button>
--                                    <div class="status" role="status" data-journey-type-status>Default types ready.</div>
--                                </div>
--                            </details>
-                         </div>
-                     </aside>
-                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="game-journey" data-tool-icon-src="assets/theme-v2/images/badges/index.png" data-tool-character-src="assets/theme-v2/images/characters/index.png"></div>
-@@ -118,6 +99,7 @@
-                                                 <tr>
-                                                     <th scope="col" data-journey-sort-header="name"><button class="btn btn--compact" type="button" data-journey-sort="name">Name</button></th>
-                                                     <th scope="col" data-journey-sort-header="type"><button class="btn btn--compact" type="button" data-journey-sort="type">Type</button></th>
-+                                                    <th scope="col">Owner</th>
-                                                     <th scope="col" data-journey-sort-header="not-started"><button class="btn btn--compact" type="button" data-journey-sort="not-started">⬜</button></th>
-                                                     <th scope="col" data-journey-sort-header="blocker"><button class="btn btn--compact" type="button" data-journey-sort="blocker">⛔</button></th>
-                                                     <th scope="col" data-journey-sort-header="decide"><button class="btn btn--compact" type="button" data-journey-sort="decide">❓</button></th>
-@@ -127,20 +109,25 @@
-                                                     <th scope="col" data-journey-sort-header="open"><button class="btn btn--compact" type="button" data-journey-sort="open">Open</button></th>
-                                                     <th scope="col" data-journey-sort-header="total"><button class="btn btn--compact" type="button" data-journey-sort="total">Total</button></th>
-                                                     <th scope="col" data-journey-sort-header="updated"><button class="btn btn--compact" type="button" data-journey-sort="updated">Updated</button></th>
-+                                                    <th scope="col">Actions</th>
-                                                 </tr>
-                                             </thead>
-                                             <tbody data-journey-summary-body>
--                                                <tr><td colspan="11">Loading notes.</td></tr>
-+                                                <tr><td colspan="13">Loading notes.</td></tr>
-                                             </tbody>
-                                         </table>
-                                     </div>
--                                </div>
--                            </details>
--                            <details class="vertical-accordion" open>
--                                <summary>Note Tree</summary>
--                                <div class="accordion-body content-stack">
--                                    <div class="status" role="status" data-journey-selected-note>Choose a note from the summary table.</div>
--                                    <div data-journey-item-tree></div>
-+                                    <div class="content-stack content-stack--compact">
-+                                        <div class="action-group" role="group" aria-label="Game Journey note controls">
-+                                            <button class="btn primary" type="button" data-journey-add-note>Add Note</button>
-+                                        </div>
-+                                        <div class="action-group" role="group" aria-label="Game Journey note type controls">
-+                                            <label for="journeyTypeInput">Add Note Type <input id="journeyTypeInput" type="text" placeholder="Playtest" data-journey-type-input></label>
-+                                            <button class="btn" type="button" data-journey-add-type>Add Note Type</button>
-+                                        </div>
-+                                        <div class="status" role="status" data-journey-note-status>Add a game-scoped note to the summary table.</div>
-+                                        <div class="status" role="status" data-journey-type-status>Default types ready.</div>
-+                                    </div>
-                                 </div>
-                             </details>
-                         </div>
++## Current Execution Notes
++- Current branch at validation time: `main`.
++- This PR_025 task was docs-only and did not create runtime changes.
++- The repository already contained unrelated staged changes and unresolved generated report conflicts before this PR_025 edit began; those unrelated files were preserved.

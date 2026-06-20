@@ -1427,7 +1427,7 @@ function normalizedToolKey(row) {
   return String(row?.toolKey || row?.toolId || row?.id || "").trim();
 }
 
-const SOURCE_CONTROLLED_TOOLBOX_TOOL_IDS = new Set(["game-workspace", "tags", "users"]);
+const SOURCE_CONTROLLED_TOOLBOX_TOOL_IDS = new Set(["game-workspace", "messages", "tags", "users"]);
 const SOURCE_CONTROLLED_TOOLBOX_METADATA_FIELDS = Object.freeze([
   "adminOnly",
   "category",

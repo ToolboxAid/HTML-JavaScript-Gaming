@@ -17,18 +17,6 @@ function writeData(path, body, context) {
   );
 }
 
-export function listMessageCategories() {
-  return readData("/messages/categories", "Messages categories");
-}
-
-export function createMessageCategory(input) {
-  return writeData("/messages/categories", input, "Create message category");
-}
-
-export function updateMessageCategory(categoryKey, input) {
-  return writeData(`/messages/categories/${encodeURIComponent(categoryKey)}`, input, "Update message category");
-}
-
 export function listEmotionProfiles() {
   return readData("/messages/emotion-profiles", "Messages emotion profiles");
 }
