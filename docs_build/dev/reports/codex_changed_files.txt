@@ -1,78 +1,53 @@
-# PR_26171_042 Codex Changed Files Report
+# Codex Changed Files - PR_26171_065-message-studio-parent-child-table-foundation
 
-## Instruction Compliance Gate
+## Git Status Short
+```text
+M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+ M docs_build/dev/reports/playwright_v8_coverage_report.txt
+ M tests/playwright/tools/MessagesTool.spec.mjs
+ M toolbox/messages/index.html
+ M toolbox/messages/message-tts-service-registry.js
+ M toolbox/messages/messages.js
+?? docs_build/dev/reports/PR_26171_065-instruction-compliance-checklist.md
+?? docs_build/dev/reports/PR_26171_065-manual-validation-notes.md
+?? docs_build/dev/reports/PR_26171_065-message-studio-parent-child-table-foundation.md
+?? docs_build/dev/reports/PR_26171_065-parent-child-table-checklist.md
+?? docs_build/dev/reports/PR_26171_065-validation.md
+```
 
-- Current branch before execution: `main`
-- Required execution branch before PR branch: `main`
-- Branch validation: PASS
-- Clean repository before branch creation: PASS
-- PR owner/parity: PASS, `042` is even and Idea/Tool Display navigation scope maps to PC / Environment 1.
-- Implementation path: PASS, active Idea Board and Theme V2 files only.
-- Validation scope: PASS, targeted Idea Board, targeted Toolbox route for Idea Board, and workspace contract lane because shared Tool Display Mode behavior changed.
-- Required reports: PASS, `docs_build/dev/reports/codex_review.diff` and this report are updated.
-- ZIP requirement: PASS, `tmp/PR_26171_042-idea-board-navigation-fallback-cleanup_delta.zip` is required and produced before final delivery.
+## Scoped Diff Stat
+```text
+.../dev/reports/coverage_changed_js_guardrail.txt  |   2 +
+ .../dev/reports/playwright_v8_coverage_report.txt  |  43 +-
+ tests/playwright/tools/MessagesTool.spec.mjs       | 317 +++++---------
+ toolbox/messages/index.html                        |  29 +-
+ toolbox/messages/message-tts-service-registry.js   |   8 +-
+ toolbox/messages/messages.js                       | 486 ++++++++++++---------
+ 6 files changed, 415 insertions(+), 470 deletions(-)
+```
 
-## Git Workflow Fields
-
-- Created branch: `codex/pr-26171-042-idea-board-navigation-fallback-cleanup`
-- Push result: PASS, branch pushed to `origin/codex/pr-26171-042-idea-board-navigation-fallback-cleanup`.
-- PR URL: `https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/19`
-- Merge result: recorded in final Codex delivery after GitHub merge returns the merge SHA.
-- Final main commit: recorded in final Codex delivery after returning to `main` and pulling latest.
-- Conflict resolution: PASS, merged latest `origin/main` (`9df4942226b0c1a25cfc9567040fc237d90df8f9`) and resolved conflicts only in singleton generated report artifacts.
-
-## Scoped Files
-
-- `assets/theme-v2/js/tool-display-mode.js`
-- `tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`
-- `tests/playwright/tools/ToolboxRoutePages.spec.mjs`
-- `docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/PLAN_PR.md`
-- `docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/BUILD_PR.md`
-- `docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/APPLY_PR.md`
-- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
-- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
-- `docs_build/dev/reports/codex_review.diff`
-- `docs_build/dev/reports/codex_changed_files.txt`
-
-## Requirement Evidence
-
-- PASS: Removed creator-visible Tool Display Mode navigation diagnostic fallback. `tool-display-mode.js` now logs the navigation load failure to console only and appends no status paragraph.
-- PASS: Removed visible message `Tool navigation is temporarily unavailable. Refresh the page or try again shortly.`
-- PASS: Idea Board stays usable when registry-backed navigation cannot load. Static/no-registry Playwright path expands notes and adds a note successfully.
-- PASS: Creator-facing UI does not mention server, API, local server, port, registry, snapshot, or implementation details in the navigation fallback area.
-- PASS: Navigation failure does not affect Idea Board table functionality.
-- PASS: API-backed local route validated by targeted Idea Board and Toolbox route Playwright.
-- PASS: Static/no-registry route behavior validated by targeted Idea Board Playwright with the registry snapshot returning no data.
-- PASS: Optional previous/next navigation is omitted when unavailable.
-- PASS: Idea Board lifecycle, Show filter, Create Project, Archive, chevron, and table row editing behavior were not changed.
+## Changed Files
+- toolbox/messages/index.html
+- toolbox/messages/messages.js
+- toolbox/messages/message-tts-service-registry.js
+- tests/playwright/tools/MessagesTool.spec.mjs
+- docs_build/dev/reports/coverage_changed_js_guardrail.txt
+- docs_build/dev/reports/playwright_v8_coverage_report.txt
+- docs_build/dev/reports/PR_26171_065-message-studio-parent-child-table-foundation.md
+- docs_build/dev/reports/PR_26171_065-parent-child-table-checklist.md
+- docs_build/dev/reports/PR_26171_065-validation.md
+- docs_build/dev/reports/PR_26171_065-manual-validation-notes.md
+- docs_build/dev/reports/PR_26171_065-instruction-compliance-checklist.md
+- docs_build/dev/reports/codex_review.diff
+- docs_build/dev/reports/codex_changed_files.txt
 
 ## Validation
+- PASS: `node --check toolbox\messages\messages.js`.
+- PASS: `node --check toolbox\messages\message-tts-service-registry.js`.
+- PASS: `node --check tests\playwright\tools\MessagesTool.spec.mjs`.
+- PASS: HTML inline style/script/event scan for `toolbox/messages/index.html`.
+- PASS: `npx playwright test tests/playwright/tools/MessagesTool.spec.mjs --project=playwright --workers=1 --reporter=list`.
+- PASS: `npm run test:workspace-v2` (legacy command name; user-facing language is Project Workspace).
 
-- PASS: `node --check assets/theme-v2/js/tool-display-mode.js`
-- PASS: `node --check toolbox/idea-board/index.js`
-- PASS: `node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`
-- PASS: `node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs`
-- PASS: `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line --timeout=90000`
-- PASS: `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches" --timeout=90000`
-- PASS: `npm run test:workspace-v2`
-- PASS: `git diff --check`
-- SKIP: Full samples smoke, per user instruction.
-
-## Coverage Evidence
-
-- PASS: `docs_build/dev/reports/playwright_v8_coverage_report.txt` updated.
-- PASS: `docs_build/dev/reports/coverage_changed_js_guardrail.txt` updated.
-- PASS: Changed runtime JS coverage lists `assets/theme-v2/js/tool-display-mode.js` at 64% advisory function coverage.
-
-## ZIP Contents
-
-- `assets/theme-v2/js/tool-display-mode.js`
-- `docs_build/dev/reports/codex_changed_files.txt`
-- `docs_build/dev/reports/codex_review.diff`
-- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
-- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
-- `docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/APPLY_PR.md`
-- `docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/BUILD_PR.md`
-- `docs_build/pr/PR_26171_042-idea-board-navigation-fallback-cleanup/PLAN_PR.md`
-- `tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`
-- `tests/playwright/tools/ToolboxRoutePages.spec.mjs`
+## ZIP
+- Path: `tmp/PR_26171_065-message-studio-parent-child-table-foundation_delta.zip`.

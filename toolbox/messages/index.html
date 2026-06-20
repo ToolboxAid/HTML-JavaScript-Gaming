@@ -39,7 +39,7 @@
                             <details class="vertical-accordion" open>
                                 <summary>Row Workflow</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>Review existing rows, select one to update, or add a row from the Message Rows table.</p>
+                                    <p>Review messages, open a message to manage parts, or add a message from the Messages table.</p>
                                     <p>Disable rows instead of deleting game text.</p>
                                 </div>
                             </details>
@@ -48,9 +48,9 @@
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="messages" data-tool-icon-src="assets/theme-v2/images/badges/game-design.png" data-tool-character-src="assets/theme-v2/images/tools/game-design.png"></div>
                     <section class="tool-center-panel">
                         <h2>Message Studio</h2>
-                        <p>Message rows define what is said. Emotion profiles and TTS profiles define future delivery settings only.</p>
+                        <p>Messages own game text and ordered parts. Audio playback is delegated to the audio engine.</p>
                         <div class="grid cols-3" aria-label="Message Studio summary">
-                            <article class="mini-stat"><strong data-messages-count>0</strong>Message Rows</article>
+                            <article class="mini-stat"><strong data-messages-count>0</strong>Messages</article>
                             <article class="mini-stat"><strong data-messages-emotion-count>0</strong>Emotion Profiles</article>
                             <article class="mini-stat"><strong data-messages-tts-count>0</strong>TTS Profiles</article>
                         </div>
@@ -58,17 +58,17 @@
                             <div class="card-body content-stack">
                                 <div>
                                     <div class="kicker">Game Text Repository</div>
-                                    <h3>Message Rows</h3>
+                                    <h3>Messages</h3>
                                 </div>
                                 <div class="table-wrapper">
-                                    <table class="data-table" aria-label="Message rows">
+                                    <table class="data-table" aria-label="Messages">
                                         <thead>
                                             <tr>
-                                                <th scope="col">Name</th>
-                                                <th scope="col">Primary Emotion</th>
-                                                <th scope="col">Segments</th>
-                                                <th scope="col">Tags</th>
+                                                <th scope="col">Message Name</th>
+                                                <th scope="col">Type</th>
                                                 <th scope="col">Status</th>
+                                                <th scope="col">Parts</th>
+                                                <th scope="col">Default TTS Profile</th>
                                                 <th scope="col">Actions</th>
                                             </tr>
                                         </thead>
@@ -78,7 +78,7 @@
                                     </table>
                                 </div>
                                 <div class="action-group">
-                                    <button class="btn" type="button" data-messages-add-row>Add Message Row</button>
+                                    <button class="btn" type="button" data-messages-add-row>Add Message</button>
                                 </div>
                                 <div class="status" data-messages-validation-card hidden>
                                     <p>Message row needs required fields.</p>
@@ -118,7 +118,7 @@
                             <div class="card-body content-stack">
                                 <div>
                                     <div class="kicker">Delivery Configuration</div>
-                                    <h3>TTS Profiles</h3>
+                                    <h3>Available TTS Profiles</h3>
                                 </div>
                                 <div class="table-wrapper">
                                     <table class="data-table" aria-label="TTS profiles">
@@ -137,9 +137,6 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <div class="action-group">
-                                    <button class="btn" type="button" data-messages-tts-add-row>Add Profile</button>
-                                </div>
                             </div>
                         </article>
                     </section>
@@ -153,7 +150,7 @@
                                 <div class="accordion-body content-stack">
                                     <p>Name: <span data-messages-selected-name>None</span></p>
                                     <p>Emotion Profile: <span data-messages-selected-emotion>None</span></p>
-                                    <p>Segment: <span data-messages-selected-segment>None</span></p>
+                                    <p>Part: <span data-messages-selected-segment>None</span></p>
                                     <p>Status: <span data-messages-selected-status>None</span></p>
                                     <p>Text:</p>
                                     <pre data-messages-selected-text>No message selected.</pre>
@@ -184,7 +181,7 @@
                             <details class="vertical-accordion" open>
                                 <summary>Future Compatibility</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>Message segments are stored as ordered text with emotion profiles.</p>
+                                    <p>Message parts are stored as ordered text with emotion profiles.</p>
                                     <p>This tool stores message text exactly as entered.</p>
                                 </div>
                             </details>

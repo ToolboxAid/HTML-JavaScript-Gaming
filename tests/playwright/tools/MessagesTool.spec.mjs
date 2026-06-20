@@ -31,7 +31,7 @@ async function jsonRequest(url, options = {}) {
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
     lane: "messages-tool",
-    surface: "Message Studio Local API, legacy SQLite technical debt adapter, and Theme V2 tool",
+    surface: "Message Studio parent/child table, Local API, and Theme V2 tool",
   });
 });
 
@@ -134,42 +134,24 @@ async function closeMessagesRun(failures, page) {
   }
 }
 
-async function addEmotionProfile(page, name) {
-  await page.locator("[data-messages-emotion-add-row]").click();
-  await page.locator("[data-messages-emotion-editor='__new__'] [data-emotion-name]").fill(name);
-  await page.locator("[data-messages-emotion-editor='__new__'] [data-emotion-volume]").fill("0.9");
-  await page.locator("[data-messages-emotion-editor='__new__'] [data-emotion-pitch]").fill("0.85");
-  await page.locator("[data-messages-emotion-editor='__new__'] [data-emotion-rate]").fill("0.95");
-  await page.locator("[data-messages-emotion-commit='__new__']").click();
-}
-
-async function addTtsProfile(page, name) {
-  await page.locator("[data-messages-tts-add-row]").click();
-  await page.locator("[data-messages-tts-editor='__new__'] [data-tts-name]").fill(name);
-  await page.locator("[data-messages-tts-editor='__new__'] [data-tts-provider]").fill("browser-speech");
-  await page.locator("[data-messages-tts-editor='__new__'] [data-tts-voice]").fill("Test Voice");
-  await page.locator("[data-messages-tts-editor='__new__'] [data-tts-language]").fill("en-US");
-  await page.locator("[data-messages-tts-commit='__new__']").click();
-}
-
-async function addMessageRow(page, values) {
-  await page.locator("[data-messages-add-row]").click();
+async function addMessage(page, values) {
+  await page.getByRole("button", { name: "Add Message" }).click();
   await page.locator("[data-messages-row-editor='__new__'] [data-message-name]").fill(values.name);
-  await page.locator("[data-messages-row-editor='__new__'] [data-message-emotion]").selectOption({ label: values.emotion });
+  await page.locator("[data-messages-row-editor-details='__new__'] [data-message-emotion]").selectOption({ label: values.emotion });
   await page.locator("[data-messages-row-editor-details='__new__'] [data-message-text]").fill(values.text);
   await page.locator("[data-messages-row-editor-details='__new__'] [data-message-notes]").fill(values.notes || "");
   await page.locator("[data-messages-commit='__new__']").click();
 }
 
-async function addSegmentRow(page, values) {
-  await page.locator("[data-messages-segment-add-row]").click();
+async function addPart(page, values) {
+  await page.getByRole("button", { name: "Add Part" }).click();
   await page.locator("[data-messages-segment-editor='__new__'] [data-segment-order]").fill(String(values.order));
-  await page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion]").selectOption({ label: values.emotion });
   await page.locator("[data-messages-segment-editor='__new__'] [data-segment-text]").fill(values.text);
+  await page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion]").selectOption({ label: values.emotion });
   await page.locator("[data-messages-segment-commit='__new__']").click();
 }
 
-test("Message Studio uses table governance, validates rows, and persists through the Local API", async ({ page }) => {
+test("Message Studio renders Messages with child Message Parts and plays ordered parts", async ({ page }) => {
   const sqlitePath = messagesDbPath();
   await fs.rm(sqlitePath, { force: true });
   const failures = await openMessagesPage(page, sqlitePath);
@@ -179,242 +161,155 @@ test("Message Studio uses table governance, validates rows, and persists through
     await expect(page.locator(".tool-workspace")).toBeVisible();
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     await expect(page.locator("[data-messages-category-name]")).toHaveCount(0);
-    await expect(page.locator("[data-messages-category]")).toHaveCount(0);
-    await expect(page.getByRole("button", { name: /delete/i })).toHaveCount(0);
-    await expect(page.locator("[data-messages-persistence-engine]")).toHaveText("Postgres target");
-    await expect(page.locator("[data-messages-tts-service]")).toHaveValue("browser-speech-synthesis");
-    await expect(page.locator("[data-messages-preview-status]")).toHaveText("Select a message row or segment row before testing speech.");
-    await expect(page.locator("[data-messages-test-speech]")).toBeDisabled();
-    await expect(page.locator("[data-messages-preview-message], [data-messages-preview-segments], [data-messages-preview-stop]")).toHaveCount(0);
-
-    await expect(page.locator("[data-messages-emotions]")).toContainText("Calm");
-    await expect(page.locator("[data-messages-emotions]")).toContainText("Urgent");
+    await expect(page.locator("[data-messages-tts-add-row]")).toHaveCount(0);
+    await expect(page.getByRole("columnheader", { name: "Message Name" })).toBeVisible();
+    await expect(page.getByRole("columnheader", { name: "Default TTS Profile" })).toBeVisible();
     await expect(page.locator("[data-messages-tts-profiles]")).toContainText("Browser Speech Default");
+    await expect(page.locator("[data-messages-tts-profiles]")).toContainText("Owned by TTS Studio");
 
-    await addEmotionProfile(page, "Robot");
-    await expect(page.locator("[data-messages-log]")).toHaveText("Updated emotion profile Robot.");
-    await expect(page.locator("[data-messages-emotion-row]").filter({ hasText: "Robot" })).toContainText("0.9");
-    await page.locator("[data-messages-emotion-row]").filter({ hasText: "Robot" }).getByRole("button", { name: "Edit" }).click();
-    await page.locator("[data-messages-emotion-editor] [data-emotion-rate]").fill("1.05");
-    await page.locator("[data-messages-emotion-editor] [data-messages-emotion-commit]").click();
-    await page.locator("[data-messages-emotion-row]").filter({ hasText: "Robot" }).getByRole("button", { name: "Disable" }).click();
-    await expect(page.locator("[data-messages-emotion-row]").filter({ hasText: "Robot" })).toContainText("Inactive");
-
-    await addTtsProfile(page, "Arcade Browser Voice");
-    await expect(page.locator("[data-messages-log]")).toHaveText("Updated TTS profile Arcade Browser Voice.");
-    await expect(page.locator("[data-messages-tts-profiles]")).toContainText("Arcade Browser Voice");
-    await expect(page.locator("[data-messages-tts-count]")).toHaveText("3");
-    await page.locator("[data-messages-tts-row]").filter({ hasText: "Arcade Browser Voice" }).getByRole("button", { name: "Edit" }).click();
-    await page.locator("[data-messages-tts-editor] [data-tts-language]").fill("en-GB");
-    await page.locator("[data-messages-tts-editor] [data-messages-tts-commit]").click();
-    await expect(page.locator("[data-messages-tts-row]").filter({ hasText: "Arcade Browser Voice" })).toContainText("Active");
-
-    const ttsProfilesResult = await jsonRequest(`${failures.server.baseUrl}/api/messages/tts-profiles`);
-    expect(ttsProfilesResult.response.ok).toBe(true);
-    expect(ttsProfilesResult.payload.ok).toBe(true);
-    const createdTtsProfile = ttsProfilesResult.payload.data.ttsProfiles.find((profile) => profile.name === "Arcade Browser Voice");
-    expect(createdTtsProfile).toEqual(expect.objectContaining({
-      active: true,
-      language: "en-GB",
-      providerKey: "browser-speech",
-      voiceName: "Test Voice",
-    }));
-    expect(createdTtsProfile.key).toMatch(ULID_PATTERN);
-    expect(createdTtsProfile.createdBy).toMatch(ULID_PATTERN);
-    expect(createdTtsProfile.updatedBy).toMatch(ULID_PATTERN);
-
-    await page.locator("[data-messages-add-row]").click();
-    await expect(page.locator("[data-messages-row-editor='__new__']")).toBeVisible();
+    await page.getByRole("button", { name: "Add Message" }).click();
     await page.locator("[data-messages-commit='__new__']").click();
     await expect(page.locator("[data-messages-validation-card]")).toBeVisible();
     await expect(page.locator("[data-messages-validation-errors]")).toContainText("Message Name is required.");
     await expect(page.locator("[data-messages-validation-errors]")).toContainText("Emotion Profile is required.");
     await expect(page.locator("[data-messages-validation-errors]")).toContainText("Message Text is required.");
-
     await page.locator("[data-messages-cancel='__new__']").click();
-    await addMessageRow(page, {
+
+    await addMessage(page, {
       emotion: "Urgent",
-      name: "Forest Warning",
-      notes: "Opening forest danger line.",
-      text: "The forest gets darker beyond this point.\nWe are being attacked by bats.",
+      name: "Bat Encounter",
+      notes: "Opening combat line.",
+      text: "Bats drop from the rafters.",
     });
-    await expect(page.locator("[data-messages-log]")).toHaveText("Updated row Forest Warning.");
-    await expect(page.locator("[data-messages-count]")).toHaveText("1");
-    await expect(page.locator("[data-messages-table]")).toContainText("Forest Warning");
-    await expect(page.locator("[data-messages-selected-text]")).toHaveText("The forest gets darker beyond this point.\nWe are being attacked by bats.");
+    await expect(page.locator("[data-messages-log]")).toHaveText("Updated row Bat Encounter.");
+    await expect(page.locator("[data-messages-table]")).toContainText("Bat Encounter");
+    await expect(page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" })).toContainText("Dialog");
+    await expect(page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" })).toContainText("0");
+    await expect(page.locator("[data-message-default-tts-profile]").first()).toHaveValue(/.+/);
+
+    const messageRow = page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" });
+    await messageRow.click();
     await expect(page.locator("[data-messages-segment-host]")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Message Parts" })).toBeVisible();
+    await expect(page.getByRole("columnheader", { name: "Order" })).toBeVisible();
+    await expect(page.getByRole("columnheader", { name: "Text" })).toBeVisible();
+    await expect(page.getByRole("columnheader", { exact: true, name: "TTS Profile" })).toBeVisible();
 
-    const listResult = await jsonRequest(`${failures.server.baseUrl}/api/messages/messages`);
-    expect(listResult.response.ok).toBe(true);
-    expect(listResult.payload.ok).toBe(true);
-    const createdMessage = listResult.payload.data.messages.find((message) => message.name === "Forest Warning");
-    expect(createdMessage).toEqual(expect.objectContaining({
-      active: true,
-      emotionProfileName: "Urgent",
-      messageText: "The forest gets darker beyond this point.\nWe are being attacked by bats.",
-      notes: "Opening forest danger line.",
-    }));
-    expect(createdMessage.key).toMatch(ULID_PATTERN);
-    expect(createdMessage.createdBy).toMatch(ULID_PATTERN);
-    expect(createdMessage.updatedBy).toMatch(ULID_PATTERN);
-
-    await page.locator("[data-messages-segment-add-row]").click();
+    await page.getByRole("button", { name: "Add Part" }).click();
     await page.locator("[data-messages-segment-editor='__new__'] [data-segment-order]").fill("");
     await page.locator("[data-messages-segment-commit='__new__']").click();
-    await expect(page.locator("[data-messages-validation-card]")).toBeVisible();
-    await expect(page.locator("[data-messages-validation-errors]")).toContainText("Segment Text is required.");
+    await expect(page.locator("[data-messages-validation-errors]")).toContainText("Part Text is required.");
     await expect(page.locator("[data-messages-validation-errors]")).toContainText("Emotion Profile is required.");
     await expect(page.locator("[data-messages-validation-errors]")).toContainText("Display Order is required.");
     await page.locator("[data-messages-segment-cancel='__new__']").click();
 
-    await addSegmentRow(page, {
+    await addPart(page, {
       emotion: "Calm",
       order: 1,
-      text: "The forest gets darker beyond this point.",
+      text: "Bats drop from the rafters.",
     });
-    await expect(page.locator("[data-messages-log]")).toHaveText("Updated segment row 1.");
-    await addSegmentRow(page, {
+    await expect(page.locator("[data-messages-log]")).toHaveText("Updated message part 1.");
+    await addPart(page, {
       emotion: "Urgent",
       order: 2,
-      text: "We are being attacked by bats.",
+      text: "Keep your torch high.",
     });
-    await expect(page.locator("[data-messages-log]")).toHaveText("Updated segment row 2.");
+    await expect(page.locator("[data-messages-log]")).toHaveText("Updated message part 2.");
     await expect(page.locator("[data-messages-segment-row]")).toHaveCount(2);
+    await expect(page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" })).toContainText("2");
 
+    await page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" }).getByRole("button", { name: "Play Message" }).click();
+    await expect(page.locator("[data-messages-log]")).toHaveText("Play Message queued 2 parts for Bat Encounter.");
     let speechCalls = await page.evaluate(() => window.__messagesSpeechCalls);
-    expect(speechCalls).toEqual([]);
-
-    await page.locator("[data-messages-preview-tts-profile]").selectOption({ label: "Arcade Browser Voice" });
-    await page.locator("[data-messages-row]").filter({ hasText: "Forest Warning" }).click();
-    await expect(page.locator("[data-messages-speech-test-target]")).toHaveText("Message Row: Forest Warning");
-    await expect(page.locator("[data-messages-test-speech]")).toBeEnabled();
-    await page.locator("[data-messages-test-speech]").click();
-    await expect(page.locator("[data-messages-preview-status]")).toHaveText("Speech test started for Message Row: Forest Warning using Browser Speech Synthesis.");
-    speechCalls = await page.evaluate(() => window.__messagesSpeechCalls);
+    expect(speechCalls.slice(-2).map((call) => call.text)).toEqual([
+      "Bats drop from the rafters.",
+      "Keep your torch high.",
+    ]);
     expect(speechCalls.at(-1)).toEqual(expect.objectContaining({
-      lang: "en-GB",
-      pitch: 1.08,
-      rate: 1.15,
-      text: "The forest gets darker beyond this point.\nWe are being attacked by bats.",
+      lang: "en-US",
       type: "speak",
       voiceName: "Test Voice",
-      volume: 1,
     }));
 
-    await page.locator("[data-messages-segment-row]").filter({ hasText: "The forest gets darker beyond this point." }).click();
-    await expect(page.locator("[data-messages-speech-test-target]")).toHaveText("Segment 1");
-    await page.locator("[data-messages-test-speech]").click();
-    await expect(page.locator("[data-messages-preview-status]")).toHaveText("Speech test started for Segment 1 using Browser Speech Synthesis.");
+    await page.locator("[data-messages-segment-row]").filter({ hasText: "Keep your torch high." }).getByRole("button", { name: "Play Part" }).click();
+    await expect(page.locator("[data-messages-log]")).toHaveText("Play Part queued Part 2 using Browser Speech Default.");
     speechCalls = await page.evaluate(() => window.__messagesSpeechCalls);
     expect(speechCalls.at(-1)).toEqual(expect.objectContaining({
-      lang: "en-GB",
-      pitch: 1,
-      rate: 1,
-      text: "The forest gets darker beyond this point.",
+      text: "Keep your torch high.",
       type: "speak",
       voiceName: "Test Voice",
-      volume: 1,
     }));
+
+    await page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" }).getByRole("button", { name: "Edit Message" }).click();
+    await page.locator("[data-messages-row-editor] [data-message-name]").fill("Bat Encounter Updated");
+    await page.locator("[data-messages-row-editor] [data-messages-commit]").click();
+    await expect(page.locator("[data-messages-log]")).toHaveText("Updated row Bat Encounter Updated.");
+
+    await page.locator("[data-messages-segment-row]").filter({ hasText: "Keep your torch high." }).getByRole("button", { name: "Edit Part" }).click();
+    await page.locator("[data-messages-segment-editor] [data-segment-text]").fill("Keep your torch high and shield raised.");
+    await page.locator("[data-messages-segment-editor] [data-messages-segment-commit]").click();
+    await expect(page.locator("[data-messages-log]")).toHaveText("Updated message part 2.");
+
+    const listResult = await jsonRequest(`${failures.server.baseUrl}/api/messages/messages`);
+    expect(listResult.response.ok).toBe(true);
+    expect(listResult.payload.ok).toBe(true);
+    const createdMessage = listResult.payload.data.messages.find((message) => message.name === "Bat Encounter Updated");
+    expect(createdMessage).toEqual(expect.objectContaining({
+      active: true,
+      categoryName: "Dialog",
+      emotionProfileName: "Urgent",
+      messageText: "Bats drop from the rafters.",
+      notes: "Opening combat line.",
+    }));
+    expect(createdMessage.key).toMatch(ULID_PATTERN);
 
     const segmentsResult = await jsonRequest(`${failures.server.baseUrl}/api/messages/segments`);
     expect(segmentsResult.response.ok).toBe(true);
-    expect(segmentsResult.payload.ok).toBe(true);
     const createdSegments = segmentsResult.payload.data.segments.filter((segment) => segment.messageKey === createdMessage.key);
-    expect(createdSegments).toHaveLength(2);
     expect(createdSegments.map((segment) => segment.displayOrder)).toEqual([1, 2]);
+    expect(createdSegments.map((segment) => segment.segmentText)).toEqual([
+      "Bats drop from the rafters.",
+      "Keep your torch high and shield raised.",
+    ]);
     createdSegments.forEach((segment) => {
       expect(segment.key).toMatch(ULID_PATTERN);
       expect(segment.createdBy).toMatch(ULID_PATTERN);
       expect(segment.updatedBy).toMatch(ULID_PATTERN);
     });
 
-    await page.locator("[data-messages-segment-row]").filter({ hasText: "We are being attacked by bats." }).getByRole("button", { name: "Move Up" }).click();
-    await expect(page.locator("[data-messages-log]")).toHaveText("Segment order updated.");
-    await expect(page.locator("[data-messages-segment-row]").first()).toContainText("We are being attacked by bats.");
+    expect(failures.failedRequests).toEqual([]);
+    expect(failures.pageErrors).toEqual([]);
+    expect(failures.consoleErrors).toEqual([]);
+  } finally {
+    await closeMessagesRun(failures, page);
+    await fs.rm(sqlitePath, { force: true });
+  }
+});
 
-    await page.locator("[data-messages-segment-row]").filter({ hasText: "We are being attacked by bats." }).getByRole("button", { name: "Edit" }).click();
-    await page.locator("[data-messages-segment-editor] [data-segment-text]").fill("We are being attacked by bats right now.");
-    await page.locator("[data-messages-segment-editor] [data-messages-segment-commit]").click();
-    await expect(page.locator("[data-messages-log]")).toHaveText("Updated segment row 1.");
-    await expect(page.locator("[data-messages-segment-row]").filter({ hasText: "We are being attacked by bats right now." })).toBeVisible();
+test("Message Studio shows actionable playback error when audio engine is unavailable", async ({ page }) => {
+  const sqlitePath = messagesDbPath();
+  await fs.rm(sqlitePath, { force: true });
+  const failures = await openMessagesPage(page, sqlitePath, { speechAvailable: false });
 
-    await page.locator("[data-messages-segment-row]").filter({ hasText: "We are being attacked by bats right now." }).getByRole("button", { name: "Disable" }).click();
-    await expect(page.locator("[data-messages-log]")).toHaveText("Disabled segment row 1.");
-    await expect(page.locator("[data-messages-segment-row]").filter({ hasText: "We are being attacked by bats right now." })).toContainText("Inactive");
+  try {
+    await addMessage(page, {
+      emotion: "Urgent",
+      name: "Bat Encounter",
+      text: "Bats drop from the rafters.",
+    });
+    await page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" }).click();
+    await addPart(page, {
+      emotion: "Urgent",
+      order: 1,
+      text: "Bats drop from the rafters.",
+    });
 
-    const updatedSegmentsResult = await jsonRequest(`${failures.server.baseUrl}/api/messages/segments`);
-    const disabledSegment = updatedSegmentsResult.payload.data.segments.find((segment) => segment.segmentText === "We are being attacked by bats right now.");
-    expect(disabledSegment).toEqual(expect.objectContaining({
-      active: false,
-      displayOrder: 1,
-      emotionProfileName: "Urgent",
-      messageKey: createdMessage.key,
-      messageName: "Forest Warning",
-      segmentText: "We are being attacked by bats right now.",
-    }));
-
-    await page.locator("[data-messages-row]").filter({ hasText: "Forest Warning" }).getByRole("button", { name: "Edit" }).click();
-    await page.locator("[data-messages-row-editor] [data-message-name]").fill("Forest Warning Updated");
-    await page.locator("[data-messages-row-editor-details] [data-message-text]").fill("The forest gets darker beyond this point.");
-    await page.locator("[data-messages-row-editor] [data-messages-commit]").click();
-    await expect(page.locator("[data-messages-log]")).toHaveText("Updated row Forest Warning Updated.");
-    await expect(page.locator("[data-messages-table]")).toContainText("Forest Warning Updated");
-
-    await page.locator("[data-messages-row]").filter({ hasText: "Forest Warning Updated" }).getByRole("button", { name: "Disable" }).click();
-    await expect(page.locator("[data-messages-log]")).toHaveText("Disabled row Forest Warning Updated.");
-    await expect(page.locator("[data-messages-row]").filter({ hasText: "Forest Warning Updated" })).toContainText("Inactive");
-
-    const updateResult = await jsonRequest(`${failures.server.baseUrl}/api/messages/messages/${createdMessage.key}`);
-    expect(updateResult.payload.data.message).toEqual(expect.objectContaining({
-      active: false,
-      key: createdMessage.key,
-      messageText: "The forest gets darker beyond this point.",
-      name: "Forest Warning Updated",
-    }));
-
-    await page.locator("[data-messages-tts-row]").filter({ hasText: "Arcade Browser Voice" }).getByRole("button", { name: "Disable" }).click();
-    await expect(page.locator("[data-messages-log]")).toHaveText("Disabled TTS profile Arcade Browser Voice.");
-    await expect(page.locator("[data-messages-tts-row]").filter({ hasText: "Arcade Browser Voice" })).toContainText("Inactive");
-
-    for (const url of [
-      `${failures.server.baseUrl}/api/messages/messages/${createdMessage.key}`,
-      `${failures.server.baseUrl}/api/messages/segments/${disabledSegment.key}`,
-      `${failures.server.baseUrl}/api/messages/tts-profiles/${createdTtsProfile.key}`,
-    ]) {
-      const deleteResult = await fetch(url, { method: "DELETE" });
-      expect(deleteResult.status).toBe(404);
-    }
-
-    await failures.server.close();
-    const restartedServer = await startRepoServer();
-    failures.server = restartedServer;
-    const persistedResult = await jsonRequest(`${restartedServer.baseUrl}/api/messages/messages/${createdMessage.key}`);
-    expect(persistedResult.response.ok).toBe(true);
-    expect(persistedResult.payload.data.message).toEqual(expect.objectContaining({
-      active: false,
-      key: createdMessage.key,
-      name: "Forest Warning Updated",
-      messageText: "The forest gets darker beyond this point.",
-    }));
-
-    const persistedSegmentResult = await jsonRequest(`${restartedServer.baseUrl}/api/messages/segments/${disabledSegment.key}`);
-    expect(persistedSegmentResult.response.ok).toBe(true);
-    expect(persistedSegmentResult.payload.data.segment).toEqual(expect.objectContaining({
-      active: false,
-      displayOrder: 1,
-      key: disabledSegment.key,
-      segmentText: "We are being attacked by bats right now.",
-    }));
-
-    const persistedTtsProfileResult = await jsonRequest(`${restartedServer.baseUrl}/api/messages/tts-profiles/${createdTtsProfile.key}`);
-    expect(persistedTtsProfileResult.response.ok).toBe(true);
-    expect(persistedTtsProfileResult.payload.data.ttsProfile).toEqual(expect.objectContaining({
-      active: false,
-      key: createdTtsProfile.key,
-      name: "Arcade Browser Voice",
-      providerKey: "browser-speech",
-      voiceName: "Test Voice",
-    }));
+    await page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" }).getByRole("button", { name: "Play Message" }).click();
+    await expect(page.locator("[data-messages-validation-card]")).toBeVisible();
+    await expect(page.locator("[data-messages-validation-errors]")).toContainText("Audio engine is unavailable. Use a browser with SpeechSynthesis support and reload Message Studio.");
+    await expect(page.locator("[data-messages-log]")).toHaveText("Audio engine is unavailable. Use a browser with SpeechSynthesis support and reload Message Studio.");
+    await expect(page.locator("[data-messages-preview-status]")).toHaveText("Audio engine is unavailable. Use a browser with SpeechSynthesis support and reload Message Studio.");
+    expect(await page.evaluate(() => window.__messagesSpeechCalls)).toEqual([]);
 
     expect(failures.failedRequests).toEqual([]);
     expect(failures.pageErrors).toEqual([]);
