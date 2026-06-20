@@ -1,8 +1,6 @@
-docs_build/dev/reports/PR_26171_BETA_069-message-tts-profile-contract-alignment-manual-validation-notes.md
-docs_build/dev/reports/PR_26171_BETA_069-message-tts-profile-contract-alignment-message-tts-ownership-checklist.md
-docs_build/dev/reports/PR_26171_BETA_069-message-tts-profile-contract-alignment-parent-child-table-checklist.md
-docs_build/dev/reports/PR_26171_BETA_069-message-tts-profile-contract-alignment-validation.md
-docs_build/dev/reports/PR_26171_BETA_069-message-tts-profile-contract-alignment.md
+docs_build/dev/reports/PR_26171_BETA_071-tts-profile-emotion-table-manual-validation-notes.md
+docs_build/dev/reports/PR_26171_BETA_071-tts-profile-emotion-table-validation.md
+docs_build/dev/reports/PR_26171_BETA_071-tts-profile-emotion-table.md
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/coverage_changed_js_guardrail.txt
@@ -15,12 +13,9 @@ docs_build/dev/reports/incremental_validation_report.md
 docs_build/dev/reports/lane_compilation_report.md
 docs_build/dev/reports/lane_deduplication_report.md
 docs_build/dev/reports/lane_input_validation_report.md
-docs_build/dev/reports/lane_manifests/workspace-contract.json
 docs_build/dev/reports/lane_runtime_optimization_report.md
 docs_build/dev/reports/lane_snapshot_report.md
-docs_build/dev/reports/lane_snapshots/workspace-contract.json
 docs_build/dev/reports/lane_warm_start_report.md
-docs_build/dev/reports/lane_warm_starts/workspace-contract.json
 docs_build/dev/reports/monolith_trigger_removal_report.md
 docs_build/dev/reports/persistent_lane_manifest_report.md
 docs_build/dev/reports/playwright_discovery_ownership_report.md
@@ -36,7 +31,5 @@ docs_build/dev/reports/test_cleanup_routing_report.md
 docs_build/dev/reports/testing_lane_execution_report.md
 docs_build/dev/reports/validation_cache_report.md
 docs_build/dev/reports/zero_browser_preflight_report.md
-src/dev-runtime/messages/messages-sqlite-service.mjs
-tests/playwright/tools/MessagesTool.spec.mjs
-toolbox/messages/index.html
-toolbox/messages/messages.js
+tests/playwright/tools/TextToSpeechFunctional.spec.mjs
+toolbox/text-to-speech/text2speech.js

@@ -115,7 +115,7 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
     await page.locator("[data-tts-profile-row]").filter({ hasText: "Default Balanced Profile" }).click();
     await expect(page.getByRole("heading", { name: "Emotion Settings" })).toBeVisible();
     await expect(page.getByRole("columnheader", { name: "Emotion", exact: true })).toBeVisible();
-    await expect(page.getByRole("columnheader", { name: "SSML-like Preset" })).toBeVisible();
+    await expect(page.getByRole("columnheader", { name: "Preset" })).toBeVisible();
     await expect(page.locator("[data-tts-emotion-row]")).toHaveCount(4);
     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Neutral" }).getByRole("button", { name: "Delete" })).toBeDisabled();
     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Happy" })).toBeVisible();

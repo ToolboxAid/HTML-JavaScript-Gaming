@@ -17,8 +17,7 @@ Exercised tool entry points detected:
 (61%) Theme V2 Shared JS - exercised 7 runtime JS files
 
 Changed runtime JS files covered:
-(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) toolbox/messages/messages.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) toolbox/text-to-speech/text2speech.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 
 Files with executed line/function counts where available:
 (14%) assets/theme-v2/js/account-auth-service.js - executed lines 64/64; executed functions 1/7
@@ -49,10 +48,8 @@ Files with executed line/function counts where available:
 (100%) toolbox/game-design/game-design-api-client.js - executed lines 13/13; executed functions 2/2
 
 Uncovered or low-coverage changed JS files:
-(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: uncovered changed runtime JS file; advisory only
-(0%) toolbox/messages/messages.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) toolbox/text-to-speech/text2speech.js - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
-(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/MessagesTool.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) toolbox/messages/messages.js - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/TextToSpeechFunctional.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) toolbox/text-to-speech/text2speech.js - changed JS file not collected as browser runtime coverage
