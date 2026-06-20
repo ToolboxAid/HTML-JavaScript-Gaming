@@ -17,7 +17,7 @@ Exercised tool entry points detected:
 (61%) Theme V2 Shared JS - exercised 7 runtime JS files
 
 Changed runtime JS files covered:
-(0%) toolbox/idea-board/index.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(100%) none changed - no changed runtime JS files
 
 Files with executed line/function counts where available:
 (14%) assets/theme-v2/js/account-auth-service.js - executed lines 64/64; executed functions 1/7
@@ -48,10 +48,7 @@ Files with executed line/function counts where available:
 (100%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 20/20; executed functions 3/3
 
 Uncovered or low-coverage changed JS files:
-(0%) toolbox/idea-board/index.js - WARNING: uncovered changed runtime JS file; advisory only
+(100%) none changed - no changed runtime JS files
 
 Changed JS files considered:
-(0%) tests/playwright/tools/IdeaBoardTableNotes.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) toolbox/idea-board/index.js - changed JS file not collected as browser runtime coverage
+(100%) none - no changed JS files

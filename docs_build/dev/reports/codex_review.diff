@@ -83,10 +83,10 @@ index 99a545830..82a8f44c3 100644
 +- update targeted Playwright and workspace-v2 validation harness
 +- refresh Idea Board workflow docs and reports
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index a81ca9de5..30d00b792 100644
+index a81ca9de5..4bd294215 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,32 +1,151 @@
+@@ -1,32 +1,145 @@
 -# git status --short
 -M assets/theme-v2/partials/header-nav.html
 - M src/dev-runtime/admin/header-nav.local.html
@@ -109,6 +109,24 @@ index a81ca9de5..30d00b792 100644
 -docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild-validation.md
 -docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild.md
 -tests/playwright/tools/TextToSpeechFunctional.spec.mjs
++## Git Workflow
++- Branch: `codex/fix-idea-board-pr-workflow`
++- Base: `origin/main`
++- PR URL: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/4
++- Merge conflicts: resolved in `docs_build/dev/reports/codex_changed_files.txt` and `docs_build/dev/reports/codex_review.diff` by regenerating both reports from the final `origin/main` diff.
++- Commit hash, push result, merge result, and final main commit: reported after commit, push, PR merge, and final main pull.
+
+-# git diff --stat
+-assets/theme-v2/partials/header-nav.html           |   2 +-
+- src/dev-runtime/admin/header-nav.local.html        |   2 +-
+- .../game-journey-mock-repository.js                |   2 +-
+- src/dev-runtime/server/local-api-router.mjs        |  13 +-
+- src/shared/toolbox/tool-metadata-inventory.js      |  27 ++-
+- tests/tools/Text2SpeechShell.test.mjs              |  36 ++-
+- toolbox/text-to-speech/index.html                  |  78 ++++---
+- toolbox/text-to-speech/text2speech.js              | 260 +++++++++++++++++----
+- 8 files changed, 309 insertions(+), 111 deletions(-)
+\ No newline at end of file
 +## Changed Files
 +- docs_build/dev/codex_commands.md
 +- docs_build/dev/commit_comment.txt
@@ -165,22 +183,68 @@ index a81ca9de5..30d00b792 100644
 +- tests/playwright/tools/ToolboxRoutePages.spec.mjs
 +- toolbox/idea-board/index.html
 +- toolbox/idea-board/index.js
-
--# git diff --stat
--assets/theme-v2/partials/header-nav.html           |   2 +-
-- src/dev-runtime/admin/header-nav.local.html        |   2 +-
-- .../game-journey-mock-repository.js                |   2 +-
-- src/dev-runtime/server/local-api-router.mjs        |  13 +-
-- src/shared/toolbox/tool-metadata-inventory.js      |  27 ++-
-- tests/tools/Text2SpeechShell.test.mjs              |  36 ++-
-- toolbox/text-to-speech/index.html                  |  78 ++++---
-- toolbox/text-to-speech/text2speech.js              | 260 +++++++++++++++++----
-- 8 files changed, 309 insertions(+), 111 deletions(-)
-\ No newline at end of file
++
++## Name Status
++- M	docs_build/dev/codex_commands.md
++- M	docs_build/dev/commit_comment.txt
++- M	docs_build/dev/reports/codex_changed_files.txt
++- M	docs_build/dev/reports/codex_review.diff
++- M	docs_build/dev/reports/coverage_changed_js_guardrail.txt
++- M	docs_build/dev/reports/dependency_gating_report.md
++- M	docs_build/dev/reports/dependency_hydration_reuse_report.md
++- M	docs_build/dev/reports/execution_graph_reuse_report.md
++- M	docs_build/dev/reports/failure_fingerprint_report.md
++- M	docs_build/dev/reports/filesystem_scan_reduction_report.md
++- M	docs_build/dev/reports/incremental_validation_report.md
++- M	docs_build/dev/reports/lane_compilation_report.md
++- M	docs_build/dev/reports/lane_deduplication_report.md
++- M	docs_build/dev/reports/lane_input_validation_report.md
++- M	docs_build/dev/reports/lane_manifests/workspace-contract.json
++- M	docs_build/dev/reports/lane_runtime_optimization_report.md
++- M	docs_build/dev/reports/lane_snapshot_report.md
++- M	docs_build/dev/reports/lane_snapshots/workspace-contract.json
++- M	docs_build/dev/reports/lane_warm_start_report.md
++- M	docs_build/dev/reports/lane_warm_starts/workspace-contract.json
++- M	docs_build/dev/reports/monolith_trigger_removal_report.md
++- M	docs_build/dev/reports/persistent_lane_manifest_report.md
++- M	docs_build/dev/reports/playwright_discovery_ownership_report.md
++- M	docs_build/dev/reports/playwright_discovery_scope_report.md
++- M	docs_build/dev/reports/playwright_structure_audit.md
++- M	docs_build/dev/reports/playwright_v8_coverage_report.txt
++- M	docs_build/dev/reports/retry_suppression_report.md
++- M	docs_build/dev/reports/slow_path_pruning_report.md
++- M	docs_build/dev/reports/static_validation_report.md
++- M	docs_build/dev/reports/targeted_file_manifest_report.md
++- M	docs_build/dev/reports/test_cleanup_performance_report.md
++- M	docs_build/dev/reports/test_cleanup_routing_report.md
++- M	docs_build/dev/reports/testing_lane_execution_report.md
++- M	docs_build/dev/reports/validation_cache_report.md
++- M	docs_build/dev/reports/zero_browser_preflight_report.md
++- A	docs_build/pr/APPLY_PR_26171_026-idea-board-template-cleanup.md
++- A	docs_build/pr/APPLY_PR_26171_027-idea-board-table-work-surface.md
++- A	docs_build/pr/APPLY_PR_26171_028-idea-board-notes-table-governance.md
++- A	docs_build/pr/APPLY_PR_26171_029-idea-board-validation-playwright.md
++- A	docs_build/pr/APPLY_PR_26171_030-idea-board-workflow-fix.md
++- A	docs_build/pr/BUILD_PR_26171_026-idea-board-template-cleanup.md
++- A	docs_build/pr/BUILD_PR_26171_027-idea-board-table-work-surface.md
++- A	docs_build/pr/BUILD_PR_26171_028-idea-board-notes-table-governance.md
++- A	docs_build/pr/BUILD_PR_26171_029-idea-board-validation-playwright.md
++- A	docs_build/pr/BUILD_PR_26171_030-idea-board-workflow-fix.md
++- A	docs_build/pr/PLAN_PR_26171_026-idea-board-template-cleanup.md
++- A	docs_build/pr/PLAN_PR_26171_027-idea-board-table-work-surface.md
++- A	docs_build/pr/PLAN_PR_26171_028-idea-board-notes-table-governance.md
++- A	docs_build/pr/PLAN_PR_26171_029-idea-board-validation-playwright.md
++- A	docs_build/pr/PLAN_PR_26171_030-idea-board-workflow-fix.md
++- A	tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
++- M	tests/playwright/tools/RootToolsFutureState.spec.mjs
++- M	tests/playwright/tools/ToolboxRoutePages.spec.mjs
++- M	toolbox/idea-board/index.html
++- A	toolbox/idea-board/index.js
++
 +## Copied Files Verified
-+- PASS: Re-read `toolbox/_tool_template-v2/index.html`; the template source contains the Theme V2 stylesheet, header/footer partials, left/center/right `tool-workspace tool-workspace--wide` shell, accordion stack, ToolDisplayMode host, and external Theme V2 scripts.
++- PASS: Re-read `toolbox/_tool_template-v2/index.html`; verified Theme V2 stylesheet, header/footer partials, left/center/right `tool-workspace tool-workspace--wide` shell, accordion stack, ToolDisplayMode host, and external Theme V2 scripts.
 +- PASS: Verified `toolbox/_tool_template-v2` currently contains `index.html` only; there was no template-local JavaScript file to copy.
-+- PASS: Verified `toolbox/idea-board/index.html` preserves/adapts the template structure with Theme V2 CSS, header/footer partials, left and right tool columns, center panel, ToolDisplayMode host, accordions, and external scripts.
++- PASS: Verified `toolbox/idea-board/index.html` adapts the template structure with Theme V2 CSS, header/footer partials, left and right tool columns, center panel, ToolDisplayMode host, accordions, and external scripts.
 +- PASS: Verified no inline `<script>`, `<style>`, `style=`, or inline event handlers in `toolbox/idea-board/index.html`.
 +
 +## Requirement Evidence
@@ -188,89 +252,19 @@ index a81ca9de5..30d00b792 100644
 +- PASS 027: Idea Board is table-first; the primary work surface is `data-idea-board-table`, with selected idea row controls and no form-first primary workflow.
 +- PASS 028: Notes are scoped to the selected idea through `data-idea-board-selected-title`, `data-idea-board-notes-table`, and selected idea state in `toolbox/idea-board/index.js`; Add Note opens an inline row inside the selected notes table; creator notes expose Edit/Delete on the right; system notes expose neither Edit nor Delete; note metadata is table columns.
 +- PASS 029: Targeted Playwright coverage validates table columns, selected idea switching, scoped note add/edit/delete, system note lockout, placeholder-only Create Project, and no mutating API calls.
-+- PASS 030: Workspace V2 validation harness pins public API/site env to the ephemeral test server and updates current Message Studio registry/count expectations so the required workspace lane passes on the rebased branch.
++- PASS 030: Workspace V2 validation harness pins public API/site env to the ephemeral test server and updates current registry/count expectations so the required workspace lane passes on the rebased branch.
 +
-+## Validation
-+- PASS after rebase: `node --check toolbox/idea-board/index.js`.
-+- PASS after rebase: `node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`.
-+- PASS after rebase: `node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs`.
-+- PASS after rebase: `node --check tests/playwright/tools/RootToolsFutureState.spec.mjs`.
-+- PASS after rebase: `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line` (1 passed).
-+- PASS after rebase: `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches"` (1 passed when rerun alone; earlier parallel run failed in Playwright artifact cleanup only).
-+- PASS after rebase: `npm run test:workspace-v2` (5 passed).
-+- PASS: `git diff --cached --check`.
-+- SKIP: Full samples smoke, per user instruction.
-+
-+## Git Workflow Fields
-+- Current branch: codex/fix-idea-board-pr-workflow.
-+- Created branch: codex/fix-idea-board-pr-workflow from refreshed main.
-+- Conflict resolution: rebase onto `origin/main` conflicted only in generated Codex report files; reports were regenerated from the rebased PR diff.
-+- Push result: pushed before rebase; force-with-lease push pending after amend.
-+- PR URL: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/4.
-+- Merge result: pending.
-+- Final main commit: pending.
-+
-+## ZIP
-+- Path: tmp/PR_26171_030-idea-board-workflow-fix_delta.zip.
-+- Size: 101613 bytes.
-+- Contents:
-+- docs_build/dev/codex_commands.md
-+- docs_build/dev/commit_comment.txt
-+- docs_build/dev/reports/codex_changed_files.txt
-+- docs_build/dev/reports/codex_review.diff
-+- docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+- docs_build/dev/reports/dependency_gating_report.md
-+- docs_build/dev/reports/dependency_hydration_reuse_report.md
-+- docs_build/dev/reports/execution_graph_reuse_report.md
-+- docs_build/dev/reports/failure_fingerprint_report.md
-+- docs_build/dev/reports/filesystem_scan_reduction_report.md
-+- docs_build/dev/reports/incremental_validation_report.md
-+- docs_build/dev/reports/lane_compilation_report.md
-+- docs_build/dev/reports/lane_deduplication_report.md
-+- docs_build/dev/reports/lane_input_validation_report.md
-+- docs_build/dev/reports/lane_manifests/workspace-contract.json
-+- docs_build/dev/reports/lane_runtime_optimization_report.md
-+- docs_build/dev/reports/lane_snapshot_report.md
-+- docs_build/dev/reports/lane_snapshots/workspace-contract.json
-+- docs_build/dev/reports/lane_warm_start_report.md
-+- docs_build/dev/reports/lane_warm_starts/workspace-contract.json
-+- docs_build/dev/reports/monolith_trigger_removal_report.md
-+- docs_build/dev/reports/persistent_lane_manifest_report.md
-+- docs_build/dev/reports/playwright_discovery_ownership_report.md
-+- docs_build/dev/reports/playwright_discovery_scope_report.md
-+- docs_build/dev/reports/playwright_structure_audit.md
-+- docs_build/dev/reports/playwright_v8_coverage_report.txt
-+- docs_build/dev/reports/retry_suppression_report.md
-+- docs_build/dev/reports/slow_path_pruning_report.md
-+- docs_build/dev/reports/static_validation_report.md
-+- docs_build/dev/reports/targeted_file_manifest_report.md
-+- docs_build/dev/reports/test_cleanup_performance_report.md
-+- docs_build/dev/reports/test_cleanup_routing_report.md
-+- docs_build/dev/reports/testing_lane_execution_report.md
-+- docs_build/dev/reports/validation_cache_report.md
-+- docs_build/dev/reports/zero_browser_preflight_report.md
-+- docs_build/pr/APPLY_PR_26171_026-idea-board-template-cleanup.md
-+- docs_build/pr/APPLY_PR_26171_027-idea-board-table-work-surface.md
-+- docs_build/pr/APPLY_PR_26171_028-idea-board-notes-table-governance.md
-+- docs_build/pr/APPLY_PR_26171_029-idea-board-validation-playwright.md
-+- docs_build/pr/APPLY_PR_26171_030-idea-board-workflow-fix.md
-+- docs_build/pr/BUILD_PR_26171_026-idea-board-template-cleanup.md
-+- docs_build/pr/BUILD_PR_26171_027-idea-board-table-work-surface.md
-+- docs_build/pr/BUILD_PR_26171_028-idea-board-notes-table-governance.md
-+- docs_build/pr/BUILD_PR_26171_029-idea-board-validation-playwright.md
-+- docs_build/pr/BUILD_PR_26171_030-idea-board-workflow-fix.md
-+- docs_build/pr/PLAN_PR_26171_026-idea-board-template-cleanup.md
-+- docs_build/pr/PLAN_PR_26171_027-idea-board-table-work-surface.md
-+- docs_build/pr/PLAN_PR_26171_028-idea-board-notes-table-governance.md
-+- docs_build/pr/PLAN_PR_26171_029-idea-board-validation-playwright.md
-+- docs_build/pr/PLAN_PR_26171_030-idea-board-workflow-fix.md
-+- tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-+- tests/playwright/tools/RootToolsFutureState.spec.mjs
-+- tests/playwright/tools/ToolboxRoutePages.spec.mjs
-+- toolbox/idea-board/index.html
-+- toolbox/idea-board/index.js
++## Validation After Conflict Resolution
++- PASS: `node --check toolbox/idea-board/index.js`.
++- PASS: `node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`.
++- PASS: `node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs`.
++- PASS: `node --check tests/playwright/tools/RootToolsFutureState.spec.mjs`.
++- PASS: Idea Board inline HTML guard found no inline `<script>`, `<style>`, `style=`, or inline event handlers.
++- PASS: `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line` (1 passed).
++- PASS: `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches"` (1 passed).
++- PASS: `npm run test:workspace-v2` (5 passed).
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index e1886709a..e4434cc48 100644
+index e1886709a..7b1c51f19 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 @@ -6,10 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
@@ -281,32 +275,32 @@ index e1886709a..e4434cc48 100644
 -(79%) toolbox/messages/messages-api-client.js - executed lines 64/64; executed functions 15/19
 -(97%) toolbox/messages/messages.js - executed lines 1183/1183; executed functions 108/111
 -(100%) toolbox/messages/message-tts-service-registry.js - executed lines 36/36; executed functions 6/6
-+(0%) toolbox/idea-board/index.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(100%) none changed - no changed runtime JS files
 
  Guardrail warnings:
 -(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) toolbox/idea-board/index.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(100%) none changed - no changed runtime JS files
 diff --git a/docs_build/dev/reports/dependency_gating_report.md b/docs_build/dev/reports/dependency_gating_report.md
-index 0e8a30c76..43ed6022f 100644
+index 0e8a30c76..49a5f1867 100644
 --- a/docs_build/dev/reports/dependency_gating_report.md
 +++ b/docs_build/dev/reports/dependency_gating_report.md
 @@ -1,6 +1,6 @@
  # Dependency Gating Report
 
 -Generated: 2026-06-19T23:41:57.043Z
-+Generated: 2026-06-20T05:35:27.653Z
++Generated: 2026-06-20T05:44:40.304Z
  Status: PASS
 
  ## Gate Order
 diff --git a/docs_build/dev/reports/dependency_hydration_reuse_report.md b/docs_build/dev/reports/dependency_hydration_reuse_report.md
-index cc46c6784..3ed41a549 100644
+index cc46c6784..3b69608e4 100644
 --- a/docs_build/dev/reports/dependency_hydration_reuse_report.md
 +++ b/docs_build/dev/reports/dependency_hydration_reuse_report.md
 @@ -1,22 +1,22 @@
  # Dependency Hydration Reuse Report
 
 -Generated: 2026-06-19T23:41:57.043Z
-+Generated: 2026-06-20T05:35:27.654Z
++Generated: 2026-06-20T05:44:40.305Z
  Status: PASS
 
  ## Summary
@@ -327,19 +321,19 @@ index cc46c6784..3ed41a549 100644
  | Lane | Status | Helpers | Fixtures | Imports | Dependency Hydration Hash | Reason |
  | --- | --- | --- | --- | --- | --- | --- |
 -| workspace-contract | REUSED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 311b7eba10ae1e52 | Dependency hydration reused from validated warm-start state. |
-+| workspace-contract | INVALIDATED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 188285f97e4960d9 | Dependency hydration was refreshed after warm-start invalidation. |
++| workspace-contract | INVALIDATED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | c2315ccbd4c09b9c | Dependency hydration was refreshed after warm-start invalidation. |
 
  ## Safeguards
 
 diff --git a/docs_build/dev/reports/execution_graph_reuse_report.md b/docs_build/dev/reports/execution_graph_reuse_report.md
-index 56a1ee014..e8e99ced9 100644
+index 56a1ee014..da0a520c4 100644
 --- a/docs_build/dev/reports/execution_graph_reuse_report.md
 +++ b/docs_build/dev/reports/execution_graph_reuse_report.md
 @@ -1,22 +1,22 @@
  # Execution Graph Reuse Report
 
 -Generated: 2026-06-19T23:41:57.044Z
-+Generated: 2026-06-20T05:35:27.655Z
++Generated: 2026-06-20T05:44:40.305Z
  Status: PASS
 
  ## Summary
@@ -362,12 +356,12 @@ index 56a1ee014..e8e99ced9 100644
  | Lane | Status | Snapshot Status | Execution Graph Hash | Reason |
  | --- | --- | --- | --- | --- |
 -| workspace-contract | REUSED | REUSED | ce46f7586a3fe5cb | Lane snapshot is part of the selected targeted execution graph. |
-+| workspace-contract | INVALIDATED | INVALIDATED | 04a37117e2867bb1 | Lane snapshot is part of the selected targeted execution graph. |
++| workspace-contract | INVALIDATED | INVALIDATED | 6757c88f8a32946d | Lane snapshot is part of the selected targeted execution graph. |
 
  ## Safeguards
 
 diff --git a/docs_build/dev/reports/failure_fingerprint_report.md b/docs_build/dev/reports/failure_fingerprint_report.md
-index cd37432fc..100c88b9a 100644
+index cd37432fc..9179b5709 100644
 --- a/docs_build/dev/reports/failure_fingerprint_report.md
 +++ b/docs_build/dev/reports/failure_fingerprint_report.md
 @@ -1,12 +1,12 @@
@@ -375,7 +369,7 @@ index cd37432fc..100c88b9a 100644
 
 -Generated: 2026-06-19T23:42:59.854Z
 -Status: WARN
-+Generated: 2026-06-20T05:36:38.544Z
++Generated: 2026-06-20T05:45:42.507Z
 +Status: PASS
 
  ## Summary
@@ -396,26 +390,26 @@ index cd37432fc..100c88b9a 100644
  ## Known Deterministic Fingerprint Rules
 
 diff --git a/docs_build/dev/reports/filesystem_scan_reduction_report.md b/docs_build/dev/reports/filesystem_scan_reduction_report.md
-index d60e0bdca..537de6066 100644
+index d60e0bdca..7f57d454e 100644
 --- a/docs_build/dev/reports/filesystem_scan_reduction_report.md
 +++ b/docs_build/dev/reports/filesystem_scan_reduction_report.md
 @@ -1,6 +1,6 @@
  # Filesystem Scan Reduction Report
 
 -Generated: 2026-06-19T23:41:57.019Z
-+Generated: 2026-06-20T05:35:27.582Z
++Generated: 2026-06-20T05:44:40.265Z
  Status: PASS
 
  ## Scan Enforcement
 diff --git a/docs_build/dev/reports/incremental_validation_report.md b/docs_build/dev/reports/incremental_validation_report.md
-index f1a52c8a5..c6f012c82 100644
+index f1a52c8a5..82bbdd422 100644
 --- a/docs_build/dev/reports/incremental_validation_report.md
 +++ b/docs_build/dev/reports/incremental_validation_report.md
 @@ -1,24 +1,24 @@
  # Incremental Validation Report
 
 -Generated: 2026-06-19T23:41:57.045Z
-+Generated: 2026-06-20T05:35:27.656Z
++Generated: 2026-06-20T05:44:40.307Z
  Status: PASS
 
  ## Reuse Summary
@@ -439,19 +433,19 @@ index f1a52c8a5..c6f012c82 100644
  | Lane | Decision | Invalidated By | Runtime Savings Observation |
  | --- | --- | --- | --- |
 -| workspace-contract | REUSED | unchanged inputs | Reused 1 test input(s), 4 helper(s), and 0 fixture(s). |
-+| workspace-contract | INVALIDATED | Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. | Manifest was regenerated or skipped; no reuse savings for this lane. |
++| workspace-contract | INVALIDATED | Persistent manifest dependency graph hash changed for workspace-contract.; Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. | Manifest was regenerated or skipped; no reuse savings for this lane. |
 
  ## Invalidation Rules
 
 diff --git a/docs_build/dev/reports/lane_compilation_report.md b/docs_build/dev/reports/lane_compilation_report.md
-index 957a9dd48..73df23784 100644
+index 957a9dd48..1d4d53418 100644
 --- a/docs_build/dev/reports/lane_compilation_report.md
 +++ b/docs_build/dev/reports/lane_compilation_report.md
 @@ -1,26 +1,26 @@
  # Lane Compilation Report
 
 -Generated: 2026-06-19T23:41:57.042Z
-+Generated: 2026-06-20T05:35:27.653Z
++Generated: 2026-06-20T05:44:40.303Z
  Status: PASS
 
  ## Lane Graph
@@ -488,31 +482,31 @@ index 957a9dd48..73df23784 100644
 
  ## Compilation Failures
 diff --git a/docs_build/dev/reports/lane_deduplication_report.md b/docs_build/dev/reports/lane_deduplication_report.md
-index 49f38e57b..3d9a66326 100644
+index 49f38e57b..473fb4f8d 100644
 --- a/docs_build/dev/reports/lane_deduplication_report.md
 +++ b/docs_build/dev/reports/lane_deduplication_report.md
 @@ -1,6 +1,6 @@
  # Lane Deduplication Report
 
 -Generated: 2026-06-19T23:41:57.043Z
-+Generated: 2026-06-20T05:35:27.653Z
++Generated: 2026-06-20T05:44:40.304Z
  Status: PASS
 
  ## Summary
 diff --git a/docs_build/dev/reports/lane_input_validation_report.md b/docs_build/dev/reports/lane_input_validation_report.md
-index b594f7fc1..6ace7650d 100644
+index b594f7fc1..d1f0ff8e5 100644
 --- a/docs_build/dev/reports/lane_input_validation_report.md
 +++ b/docs_build/dev/reports/lane_input_validation_report.md
 @@ -1,6 +1,6 @@
  # Lane Input Validation Report
 
 -Generated: 2026-06-19T23:41:57.045Z
-+Generated: 2026-06-20T05:35:27.657Z
++Generated: 2026-06-20T05:44:40.307Z
  Status: PASS
 
  ## Input Files
 diff --git a/docs_build/dev/reports/lane_manifests/workspace-contract.json b/docs_build/dev/reports/lane_manifests/workspace-contract.json
-index de55dbe86..d2161b456 100644
+index de55dbe86..be4e484e3 100644
 --- a/docs_build/dev/reports/lane_manifests/workspace-contract.json
 +++ b/docs_build/dev/reports/lane_manifests/workspace-contract.json
 @@ -1,17 +1,17 @@
@@ -521,7 +515,7 @@ index de55dbe86..d2161b456 100644
 +  "commandsHash": "591781cab7ad23bf",
    "dependencies": [],
 -  "dependencyGraphHash": "a707a1d80d3773b6",
-+  "dependencyGraphHash": "4603f4a2407a0efb",
++  "dependencyGraphHash": "7ddc1041bdb425d1",
    "fileHashes": {
 -    "src/dev-runtime/admin/admin-notes-directory.mjs": "34d8268c1fc0dafd",
 -    "src/dev-runtime/admin/admin-notes-menu.mjs": "38ce15ab63418748",
@@ -535,7 +529,7 @@ index de55dbe86..d2161b456 100644
 +    "src/dev-runtime/admin/admin-notes-directory.mjs": "2eadf130de0ef0df",
 +    "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
 +    "src/dev-runtime/persistence/mock-db-store.js": "8c9c167f6c5adcfc",
-+    "src/dev-runtime/server/local-api-router.mjs": "a3aa80ae2c5b069e",
++    "src/dev-runtime/server/local-api-router.mjs": "7ed71e7402685ef5",
 +    "tests/helpers/playwrightRepoServer.mjs": "a1dc02a78c92807b",
 +    "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
 +    "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
@@ -549,30 +543,30 @@ index de55dbe86..d2161b456 100644
      "tests/helpers/workspaceV2CoverageReporter.mjs"
    ],
 -  "inputHash": "b12cb7c1b3b2cb3e",
-+  "inputHash": "364e42704db0aa4c",
++  "inputHash": "7b6ea10bf1c6c8ab",
    "lane": "workspace-contract",
 -  "laneDefinitionHash": "48c5c111705280dc",
 -  "manifestHash": "b337cfdf43f8cef1",
 +  "laneDefinitionHash": "c93cc3ce4d3672a0",
-+  "manifestHash": "f41e8c1703bbbd0f",
++  "manifestHash": "b1d93cf51c8a9dd5",
    "ownership": "tools",
    "tests": [
      "tests/playwright/tools/RootToolsFutureState.spec.mjs"
    ],
    "version": 1,
 -  "generatedAt": "2026-06-19T23:39:16.952Z",
-+  "generatedAt": "2026-06-20T05:35:24.430Z",
++  "generatedAt": "2026-06-20T05:44:38.843Z",
    "source": "generated"
  }
 diff --git a/docs_build/dev/reports/lane_runtime_optimization_report.md b/docs_build/dev/reports/lane_runtime_optimization_report.md
-index 30e402c60..8ce2cbfdf 100644
+index 30e402c60..082a2a78a 100644
 --- a/docs_build/dev/reports/lane_runtime_optimization_report.md
 +++ b/docs_build/dev/reports/lane_runtime_optimization_report.md
 @@ -1,16 +1,16 @@
  # Lane Runtime Optimization Report
 
 -Generated: 2026-06-19T23:41:57.043Z
-+Generated: 2026-06-20T05:35:27.654Z
++Generated: 2026-06-20T05:44:40.304Z
  Status: PASS
 
  ## Runtime Cost Summary
@@ -601,14 +595,14 @@ index 30e402c60..8ce2cbfdf 100644
  ## Runtime Savings Observations
 
 diff --git a/docs_build/dev/reports/lane_snapshot_report.md b/docs_build/dev/reports/lane_snapshot_report.md
-index ac32c5fe6..417883ecf 100644
+index ac32c5fe6..538dcfe7f 100644
 --- a/docs_build/dev/reports/lane_snapshot_report.md
 +++ b/docs_build/dev/reports/lane_snapshot_report.md
 @@ -1,23 +1,23 @@
  # Lane Snapshot Report
 
 -Generated: 2026-06-19T23:41:57.044Z
-+Generated: 2026-06-20T05:35:27.655Z
++Generated: 2026-06-20T05:44:40.305Z
  Status: PASS
  Snapshot directory: docs_build/dev/reports/lane_snapshots
 
@@ -630,12 +624,12 @@ index ac32c5fe6..417883ecf 100644
  | Lane | Status | Snapshot Path | Manifest Hash | Dependency Graph Hash | Helper Graph Hash | Fixture Graph Hash | Runtime Config Hash | Execution Graph Hash | Snapshot Hash | Reason |
  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 -| workspace-contract | REUSED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | b337cfdf43f8cef1 | a707a1d80d3773b6 | 0eddebde8ac86c34 | 6c4fac7630b0b6f3 | ee686a65c81bd4a9 | ce46f7586a3fe5cb | 1e38ee576f11c3f8 | Targeted files, manifest, dependency graph, helper graph, fixture graph, ownership, lane config, and runtime config are unchanged. |
-+| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | f41e8c1703bbbd0f | 4603f4a2407a0efb | 7d3db838f9f780e0 | 6c4fac7630b0b6f3 | 32fb60598a4cb1ee | 04a37117e2867bb1 | 660559b9b985b95c | Lane snapshot executionGraphHash changed for workspace-contract.; Lane snapshot inputHash changed for workspace-contract.; Lane snapshot manifestHash changed for workspace-contract.; Lane snapshot snapshotHash changed for workspace-contract.; Lane snapshot warmStartHash changed for workspace-contract. |
++| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | b1d93cf51c8a9dd5 | 7ddc1041bdb425d1 | 7d3db838f9f780e0 | 6c4fac7630b0b6f3 | 32fb60598a4cb1ee | 6757c88f8a32946d | 61cca917cea6be03 | Lane snapshot dependencyGraphHash changed for workspace-contract.; Lane snapshot executionGraphHash changed for workspace-contract.; Lane snapshot inputHash changed for workspace-contract.; Lane snapshot manifestHash changed for workspace-contract.; Lane snapshot snapshotHash changed for workspace-contract.; Lane snapshot warmStartHash changed for workspace-contract. |
 
  ## Snapshot Validation Findings
 
 diff --git a/docs_build/dev/reports/lane_snapshots/workspace-contract.json b/docs_build/dev/reports/lane_snapshots/workspace-contract.json
-index 1e70d2921..4ea4e4676 100644
+index 1e70d2921..33f41852b 100644
 --- a/docs_build/dev/reports/lane_snapshots/workspace-contract.json
 +++ b/docs_build/dev/reports/lane_snapshots/workspace-contract.json
 @@ -1,18 +1,18 @@
@@ -646,7 +640,7 @@ index 1e70d2921..4ea4e4676 100644
    "dependencyGraph": {
      "dependencies": [],
 -    "dependencyGraphHash": "a707a1d80d3773b6",
-+    "dependencyGraphHash": "4603f4a2407a0efb",
++    "dependencyGraphHash": "7ddc1041bdb425d1",
      "importHashes": {
 -      "src/dev-runtime/admin/admin-notes-directory.mjs": "34d8268c1fc0dafd",
 -      "src/dev-runtime/admin/admin-notes-menu.mjs": "38ce15ab63418748",
@@ -659,7 +653,7 @@ index 1e70d2921..4ea4e4676 100644
 +      "src/dev-runtime/admin/admin-notes-directory.mjs": "2eadf130de0ef0df",
 +      "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
 +      "src/dev-runtime/persistence/mock-db-store.js": "8c9c167f6c5adcfc",
-+      "src/dev-runtime/server/local-api-router.mjs": "a3aa80ae2c5b069e",
++      "src/dev-runtime/server/local-api-router.mjs": "7ed71e7402685ef5",
 +      "tests/helpers/playwrightRepoServer.mjs": "a1dc02a78c92807b",
 +      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
 +      "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
@@ -673,8 +667,8 @@ index 1e70d2921..4ea4e4676 100644
    },
 -  "dependencyGraphHash": "a707a1d80d3773b6",
 -  "executionGraphHash": "ce46f7586a3fe5cb",
-+  "dependencyGraphHash": "4603f4a2407a0efb",
-+  "executionGraphHash": "04a37117e2867bb1",
++  "dependencyGraphHash": "7ddc1041bdb425d1",
++  "executionGraphHash": "6757c88f8a32946d",
    "fixtureGraph": {
      "fixtureHashes": {},
      "fixtures": []
@@ -700,7 +694,7 @@ index 1e70d2921..4ea4e4676 100644
 -  "helperGraphHash": "0eddebde8ac86c34",
 -  "inputHash": "b12cb7c1b3b2cb3e",
 +  "helperGraphHash": "7d3db838f9f780e0",
-+  "inputHash": "364e42704db0aa4c",
++  "inputHash": "7b6ea10bf1c6c8ab",
    "lane": "workspace-contract",
    "laneCompilationStatus": "PASS",
 -  "laneDefinitionHash": "48c5c111705280dc",
@@ -719,7 +713,7 @@ index 1e70d2921..4ea4e4676 100644
 +      "src/dev-runtime/admin/admin-notes-directory.mjs": "2eadf130de0ef0df",
 +      "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
 +      "src/dev-runtime/persistence/mock-db-store.js": "8c9c167f6c5adcfc",
-+      "src/dev-runtime/server/local-api-router.mjs": "a3aa80ae2c5b069e",
++      "src/dev-runtime/server/local-api-router.mjs": "7ed71e7402685ef5",
 +      "tests/helpers/playwrightRepoServer.mjs": "a1dc02a78c92807b",
 +      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
 +      "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
@@ -733,7 +727,7 @@ index 1e70d2921..4ea4e4676 100644
        "tests/helpers/workspaceV2CoverageReporter.mjs"
      ],
 -    "manifestHash": "b337cfdf43f8cef1",
-+    "manifestHash": "f41e8c1703bbbd0f",
++    "manifestHash": "b1d93cf51c8a9dd5",
      "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
      "source": "generated",
      "tests": [
@@ -741,7 +735,7 @@ index 1e70d2921..4ea4e4676 100644
      ]
    },
 -  "manifestHash": "b337cfdf43f8cef1",
-+  "manifestHash": "f41e8c1703bbbd0f",
++  "manifestHash": "b1d93cf51c8a9dd5",
    "ownership": "tools",
    "runtimeConfiguration": {
      "affectedSurface": "Root tools future-state navigation and Tool Template V2 contract",
@@ -774,22 +768,22 @@ index 1e70d2921..4ea4e4676 100644
 -  "runtimeConfigurationHash": "ee686a65c81bd4a9",
 -  "snapshotHash": "1e38ee576f11c3f8",
 +  "runtimeConfigurationHash": "32fb60598a4cb1ee",
-+  "snapshotHash": "660559b9b985b95c",
++  "snapshotHash": "61cca917cea6be03",
    "version": 1,
 -  "warmStartHash": "546dbf7716376be4",
 -  "generatedAt": "2026-06-19T23:39:17.173Z"
-+  "warmStartHash": "6e879006813b2ac1",
-+  "generatedAt": "2026-06-20T05:35:27.643Z"
++  "warmStartHash": "20a97bb7208b833b",
++  "generatedAt": "2026-06-20T05:44:40.293Z"
  }
 diff --git a/docs_build/dev/reports/lane_warm_start_report.md b/docs_build/dev/reports/lane_warm_start_report.md
-index ed35b7ef6..8efb4c510 100644
+index ed35b7ef6..b34070c86 100644
 --- a/docs_build/dev/reports/lane_warm_start_report.md
 +++ b/docs_build/dev/reports/lane_warm_start_report.md
 @@ -1,23 +1,23 @@
  # Lane Warm-Start Report
 
 -Generated: 2026-06-19T23:41:57.043Z
-+Generated: 2026-06-20T05:35:27.654Z
++Generated: 2026-06-20T05:44:40.305Z
  Status: PASS
  Warm-start directory: docs_build/dev/reports/lane_warm_starts
 
@@ -811,12 +805,12 @@ index ed35b7ef6..8efb4c510 100644
  | Lane | Status | Warm-Start Path | Manifest Hash | Warm-Start Hash | Dependency Hydration Hash | Reason |
  | --- | --- | --- | --- | --- | --- | --- |
 -| workspace-contract | REUSED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | b337cfdf43f8cef1 | 546dbf7716376be4 | 311b7eba10ae1e52 | Manifest inputs, dependency graph, ownership metadata, helper placement, fixture placement, and lane configuration are unchanged. |
-+| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | f41e8c1703bbbd0f | 6e879006813b2ac1 | 188285f97e4960d9 | Warm-start inputHash changed for workspace-contract.; Warm-start manifestHash changed for workspace-contract.; Warm-start warmStartHash changed for workspace-contract. |
++| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | b1d93cf51c8a9dd5 | 20a97bb7208b833b | c2315ccbd4c09b9c | Warm-start dependencyGraphHash changed for workspace-contract.; Warm-start dependencyHydrationHash changed for workspace-contract.; Warm-start inputHash changed for workspace-contract.; Warm-start manifestHash changed for workspace-contract.; Warm-start warmStartHash changed for workspace-contract. |
 
  ## Fast-Fail Safeguards
 
 diff --git a/docs_build/dev/reports/lane_warm_starts/workspace-contract.json b/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
-index 15a63a0e5..c7719af18 100644
+index 15a63a0e5..8bedb337b 100644
 --- a/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
 +++ b/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
 @@ -1,15 +1,15 @@
@@ -824,10 +818,10 @@ index 15a63a0e5..c7719af18 100644
 -  "commandsHash": "5141d93b4551c125",
 -  "dependencyGraphHash": "a707a1d80d3773b6",
 +  "commandsHash": "591781cab7ad23bf",
-+  "dependencyGraphHash": "4603f4a2407a0efb",
++  "dependencyGraphHash": "7ddc1041bdb425d1",
    "dependencyHydration": {
 -    "dependencyHydrationHash": "311b7eba10ae1e52",
-+    "dependencyHydrationHash": "188285f97e4960d9",
++    "dependencyHydrationHash": "c2315ccbd4c09b9c",
      "fixtureHashes": {},
      "fixtures": [],
      "helperHashes": {
@@ -857,7 +851,7 @@ index 15a63a0e5..c7719af18 100644
 +      "src/dev-runtime/admin/admin-notes-directory.mjs": "2eadf130de0ef0df",
 +      "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
 +      "src/dev-runtime/persistence/mock-db-store.js": "8c9c167f6c5adcfc",
-+      "src/dev-runtime/server/local-api-router.mjs": "a3aa80ae2c5b069e",
++      "src/dev-runtime/server/local-api-router.mjs": "7ed71e7402685ef5",
 +      "tests/helpers/playwrightRepoServer.mjs": "a1dc02a78c92807b",
 +      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
 +      "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
@@ -871,45 +865,45 @@ index 15a63a0e5..c7719af18 100644
    },
 -  "dependencyHydrationHash": "311b7eba10ae1e52",
 -  "inputHash": "b12cb7c1b3b2cb3e",
-+  "dependencyHydrationHash": "188285f97e4960d9",
-+  "inputHash": "364e42704db0aa4c",
++  "dependencyHydrationHash": "c2315ccbd4c09b9c",
++  "inputHash": "7b6ea10bf1c6c8ab",
    "lane": "workspace-contract",
 -  "laneConfigHash": "766f10428ac09567",
 -  "laneDefinitionHash": "48c5c111705280dc",
 -  "manifestHash": "b337cfdf43f8cef1",
 +  "laneConfigHash": "990389bf77bad0d7",
 +  "laneDefinitionHash": "c93cc3ce4d3672a0",
-+  "manifestHash": "f41e8c1703bbbd0f",
++  "manifestHash": "b1d93cf51c8a9dd5",
    "ownership": "tools",
 -  "warmStartHash": "546dbf7716376be4",
-+  "warmStartHash": "6e879006813b2ac1",
++  "warmStartHash": "20a97bb7208b833b",
    "version": 1,
 -  "generatedAt": "2026-06-19T23:39:16.962Z",
-+  "generatedAt": "2026-06-20T05:35:24.625Z",
++  "generatedAt": "2026-06-20T05:44:38.862Z",
    "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
    "sourceManifest": "generated"
  }
 diff --git a/docs_build/dev/reports/monolith_trigger_removal_report.md b/docs_build/dev/reports/monolith_trigger_removal_report.md
-index 1b03976fd..3faf6ed1c 100644
+index 1b03976fd..d10053b47 100644
 --- a/docs_build/dev/reports/monolith_trigger_removal_report.md
 +++ b/docs_build/dev/reports/monolith_trigger_removal_report.md
 @@ -1,6 +1,6 @@
  # Monolith Trigger Removal Report
 
 -Generated: 2026-06-19T23:42:59.856Z
-+Generated: 2026-06-20T05:36:38.545Z
++Generated: 2026-06-20T05:45:42.508Z
  Status: PASS
 
  ## Removed Broad Execution Triggers
 diff --git a/docs_build/dev/reports/persistent_lane_manifest_report.md b/docs_build/dev/reports/persistent_lane_manifest_report.md
-index daf7b8986..a3a159220 100644
+index daf7b8986..13159be30 100644
 --- a/docs_build/dev/reports/persistent_lane_manifest_report.md
 +++ b/docs_build/dev/reports/persistent_lane_manifest_report.md
 @@ -1,27 +1,27 @@
  # Persistent Lane Manifest Report
 
 -Generated: 2026-06-19T23:41:57.045Z
-+Generated: 2026-06-20T05:35:27.656Z
++Generated: 2026-06-20T05:44:40.307Z
  Status: PASS
  Manifest directory: docs_build/dev/reports/lane_manifests
 
@@ -928,58 +922,58 @@ index daf7b8986..a3a159220 100644
  | Lane | Status | Manifest Path | Input Hash | Manifest Hash | Reason |
  | --- | --- | --- | --- | --- | --- |
 -| workspace-contract | REUSED | docs_build/dev/reports/lane_manifests/workspace-contract.json | b12cb7c1b3b2cb3e | b337cfdf43f8cef1 | Inputs unchanged; persisted lane manifest reused. |
-+| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_manifests/workspace-contract.json | 364e42704db0aa4c | f41e8c1703bbbd0f | Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. |
++| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_manifests/workspace-contract.json | 7b6ea10bf1c6c8ab | b1d93cf51c8a9dd5 | Persistent manifest dependency graph hash changed for workspace-contract.; Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. |
 
  ## Persisted Manifest Files
 
  | Lane | Ownership | Source | Tests | Helpers | Fixtures | Dependency Graph Hash | Manifest Hash |
  | --- | --- | --- | --- | --- | --- | --- | --- |
 -| workspace-contract | tools | persistent | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | a707a1d80d3773b6 | b337cfdf43f8cef1 |
-+| workspace-contract | tools | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 4603f4a2407a0efb | f41e8c1703bbbd0f |
++| workspace-contract | tools | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 7ddc1041bdb425d1 | b1d93cf51c8a9dd5 |
 
  ## Fast-Fail Enforcement
 
 diff --git a/docs_build/dev/reports/playwright_discovery_ownership_report.md b/docs_build/dev/reports/playwright_discovery_ownership_report.md
-index eb5b4713b..09a051eaf 100644
+index eb5b4713b..dcbb828ce 100644
 --- a/docs_build/dev/reports/playwright_discovery_ownership_report.md
 +++ b/docs_build/dev/reports/playwright_discovery_ownership_report.md
 @@ -1,6 +1,6 @@
  # Playwright Discovery Ownership Report
 
 -Generated: 2026-06-19T23:41:57.012Z
-+Generated: 2026-06-20T05:35:27.565Z
++Generated: 2026-06-20T05:44:40.256Z
  Status: PASS
 
  ## Discovery-Time Ownership
 diff --git a/docs_build/dev/reports/playwright_discovery_scope_report.md b/docs_build/dev/reports/playwright_discovery_scope_report.md
-index c983b2ce0..d6253dce4 100644
+index c983b2ce0..18e9df5b9 100644
 --- a/docs_build/dev/reports/playwright_discovery_scope_report.md
 +++ b/docs_build/dev/reports/playwright_discovery_scope_report.md
 @@ -1,6 +1,6 @@
  # Playwright Discovery Scope Report
 
 -Generated: 2026-06-19T23:41:57.014Z
-+Generated: 2026-06-20T05:35:27.574Z
++Generated: 2026-06-20T05:44:40.260Z
  Status: PASS
  Scoped discovery: Yes
 
 diff --git a/docs_build/dev/reports/playwright_structure_audit.md b/docs_build/dev/reports/playwright_structure_audit.md
-index 5b4ac4ef7..73de4cf0c 100644
+index 5b4ac4ef7..0b2354d1d 100644
 --- a/docs_build/dev/reports/playwright_structure_audit.md
 +++ b/docs_build/dev/reports/playwright_structure_audit.md
 @@ -1,6 +1,6 @@
  # Playwright Structure Audit
 
 -Generated: 2026-06-19T23:41:56.988Z
-+Generated: 2026-06-20T05:35:27.515Z
++Generated: 2026-06-20T05:44:40.218Z
  Status: PASS
 
  ## Lane Directories
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 81cee7250..5808376d3 100644
+index 81cee7250..7560c6da4 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -12,34 +12,46 @@ Note: entry percentages use function coverage when available, otherwise line cov
+@@ -12,34 +12,43 @@ Note: entry percentages use function coverage when available, otherwise line cov
  Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
  Exercised tool entry points detected:
@@ -994,7 +988,7 @@ index 81cee7250..5808376d3 100644
 -(79%) toolbox/messages/messages-api-client.js - executed lines 64/64; executed functions 15/19
 -(97%) toolbox/messages/messages.js - executed lines 1183/1183; executed functions 108/111
 -(100%) toolbox/messages/message-tts-service-registry.js - executed lines 36/36; executed functions 6/6
-+(0%) toolbox/idea-board/index.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(100%) none changed - no changed runtime JS files
 
  Files with executed line/function counts where available:
 -(36%) src/api/server-api-client.js - executed lines 167/167; executed functions 5/14
@@ -1035,7 +1029,7 @@ index 81cee7250..5808376d3 100644
 
  Uncovered or low-coverage changed JS files:
 -(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) toolbox/idea-board/index.js - WARNING: uncovered changed runtime JS file; advisory only
++(100%) none changed - no changed runtime JS files
 
  Changed JS files considered:
 -(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - changed JS file not collected as browser runtime coverage
@@ -1043,12 +1037,9 @@ index 81cee7250..5808376d3 100644
 -(79%) toolbox/messages/messages-api-client.js - changed JS file with browser V8 coverage
 -(97%) toolbox/messages/messages.js - changed JS file with browser V8 coverage
 -(100%) toolbox/messages/message-tts-service-registry.js - changed JS file with browser V8 coverage
-+(0%) tests/playwright/tools/IdeaBoardTableNotes.spec.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
-+(0%) toolbox/idea-board/index.js - changed JS file not collected as browser runtime coverage
++(100%) none - no changed JS files
 diff --git a/docs_build/dev/reports/retry_suppression_report.md b/docs_build/dev/reports/retry_suppression_report.md
-index 11f9d3101..d9f451d17 100644
+index 11f9d3101..9237bffd9 100644
 --- a/docs_build/dev/reports/retry_suppression_report.md
 +++ b/docs_build/dev/reports/retry_suppression_report.md
 @@ -1,7 +1,7 @@
@@ -1056,7 +1047,7 @@ index 11f9d3101..d9f451d17 100644
 
 -Generated: 2026-06-19T23:42:59.854Z
 -Status: WARN
-+Generated: 2026-06-20T05:36:38.544Z
++Generated: 2026-06-20T05:45:42.508Z
 +Status: PASS
 
  ## Summary
@@ -1071,14 +1062,14 @@ index 11f9d3101..d9f451d17 100644
  ## Enforcement Rules
 
 diff --git a/docs_build/dev/reports/slow_path_pruning_report.md b/docs_build/dev/reports/slow_path_pruning_report.md
-index cdf616780..289c6196c 100644
+index cdf616780..b218b11d0 100644
 --- a/docs_build/dev/reports/slow_path_pruning_report.md
 +++ b/docs_build/dev/reports/slow_path_pruning_report.md
 @@ -1,19 +1,19 @@
  # Slow Path Pruning Report
 
 -Generated: 2026-06-19T23:42:59.856Z
-+Generated: 2026-06-20T05:36:38.545Z
++Generated: 2026-06-20T05:45:42.508Z
  Status: PASS
  Source timing evidence: docs_build/dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
 
@@ -1086,7 +1077,7 @@ index cdf616780..289c6196c 100644
 
  PR_26146_038 measured lane elapsed time: 169.71s
 -Current measured lane elapsed time: 62.76s
-+Current measured lane elapsed time: 70.44s
++Current measured lane elapsed time: 62.12s
  PR_26146_038 actual browser launches: 4
  Current actual browser launches: 1
  Accidental no-argument browser launches prevented: 5
@@ -1107,11 +1098,11 @@ index cdf616780..289c6196c 100644
 -| current targeted run | workspace-contract | 9.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:246:1 > root tools surface links current tool pages without old_* routes |
 -| current targeted run | workspace-contract | 3.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:455:1 > common header renders primary navigation order across active pages |
 -| current targeted run | workspace-contract | 2.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:611:1 > tool template future-state page loads from root Theme V2 paths |
-+| current targeted run | workspace-contract | 16.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:662:1 > representative active tool pages align center cleanup and registry group colors |
-+| current targeted run | workspace-contract | 16.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes |
-+| current targeted run | workspace-contract | 13.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:560:1 > learn wireframe pages load with shared Theme V2 structure |
-+| current targeted run | workspace-contract | 10.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:480:1 > common header renders primary navigation order across active pages |
-+| current targeted run | workspace-contract | 1.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:639:1 > tool template future-state page loads from root Theme V2 paths |
++| current targeted run | workspace-contract | 14.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:662:1 > representative active tool pages align center cleanup and registry group colors |
++| current targeted run | workspace-contract | 14.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes |
++| current targeted run | workspace-contract | 12.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:560:1 > learn wireframe pages load with shared Theme V2 structure |
++| current targeted run | workspace-contract | 10.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:480:1 > common header renders primary navigation order across active pages |
++| current targeted run | workspace-contract | 1.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:639:1 > tool template future-state page loads from root Theme V2 paths |
 
  ## Guardrails
 
@@ -1122,14 +1113,14 @@ index cdf616780..289c6196c 100644
 
  - Only no-argument broad defaults and safe Workspace legacy routing were pruned.
 diff --git a/docs_build/dev/reports/static_validation_report.md b/docs_build/dev/reports/static_validation_report.md
-index 079d26b76..ff4996629 100644
+index 079d26b76..dcf5dccb4 100644
 --- a/docs_build/dev/reports/static_validation_report.md
 +++ b/docs_build/dev/reports/static_validation_report.md
 @@ -1,6 +1,6 @@
  # Static Validation Report
 
 -Generated: 2026-06-19T23:41:57.036Z
-+Generated: 2026-06-20T05:35:27.636Z
++Generated: 2026-06-20T05:44:40.289Z
  Status: PASS
  Static only: No
  Dry run: No
@@ -1141,7 +1132,7 @@ index 079d26b76..ff4996629 100644
 -| persistent lane manifests | PASS | workspace-contract:REUSED |
 -| lane warm-start reuse | PASS | workspace-contract:REUSED |
 -| dependency hydration reuse | PASS | workspace-contract:REUSED |
-+| targeted file manifests | PASS | workspace-contract:f41e8c1703bbbd0f |
++| targeted file manifests | PASS | workspace-contract:b1d93cf51c8a9dd5 |
 +| persistent lane manifests | PASS | workspace-contract:INVALIDATED |
 +| lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
 +| dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
@@ -1153,14 +1144,14 @@ index 079d26b76..ff4996629 100644
  | Windows quoting hazard detection | PASS | No shell-sensitive grep hazards found. |
  | duplicate lane registration detection | PASS | No duplicate lane registrations found. |
 diff --git a/docs_build/dev/reports/targeted_file_manifest_report.md b/docs_build/dev/reports/targeted_file_manifest_report.md
-index 708442bba..69d7d43f2 100644
+index 708442bba..6f4baf704 100644
 --- a/docs_build/dev/reports/targeted_file_manifest_report.md
 +++ b/docs_build/dev/reports/targeted_file_manifest_report.md
 @@ -1,19 +1,19 @@
  # Targeted File Manifest Report
 
 -Generated: 2026-06-19T23:41:57.044Z
-+Generated: 2026-06-20T05:35:27.656Z
++Generated: 2026-06-20T05:44:40.306Z
  Status: PASS
 
  ## Manifest-Generated Lane Inputs
@@ -1168,7 +1159,7 @@ index 708442bba..69d7d43f2 100644
  | Lane | Ownership | Status | Source | Tests | Helpers | Fixtures | Imports / Dependencies | Dependency Graph Hash | Manifest Hash | Reason |
  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 -| workspace-contract | tools | PASS | persistent | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | a707a1d80d3773b6 | b337cfdf43f8cef1 | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
-+| workspace-contract | tools | PASS | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 4603f4a2407a0efb | f41e8c1703bbbd0f | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
++| workspace-contract | tools | PASS | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 7ddc1041bdb425d1 | b1d93cf51c8a9dd5 | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
 
  ## Discovery Expansion Control
 
@@ -1181,7 +1172,7 @@ index 708442bba..69d7d43f2 100644
  ## Runtime Savings Observations
 
 diff --git a/docs_build/dev/reports/test_cleanup_performance_report.md b/docs_build/dev/reports/test_cleanup_performance_report.md
-index 01e2b661e..868779f12 100644
+index 01e2b661e..010dff785 100644
 --- a/docs_build/dev/reports/test_cleanup_performance_report.md
 +++ b/docs_build/dev/reports/test_cleanup_performance_report.md
 @@ -1,29 +1,29 @@
@@ -1189,13 +1180,13 @@ index 01e2b661e..868779f12 100644
 
 -Generated: 2026-06-19T23:42:59.855Z
 -Status: WARN
-+Generated: 2026-06-20T05:36:38.545Z
++Generated: 2026-06-20T05:45:42.508Z
 +Status: PASS
 
  ## Cost Summary
 
 -Total measured lane elapsed time: 62.76s
-+Total measured lane elapsed time: 70.44s
++Total measured lane elapsed time: 62.12s
  Actual browser launch count: 1
  Scheduled browser launch count: 1
  Baseline browser launch count: 1
@@ -1218,7 +1209,7 @@ index 01e2b661e..868779f12 100644
  | Lane | Status | Elapsed | Browser Launches | Reason |
  | --- | --- | --- | --- | --- |
 -| workspace-contract | FAIL | 62.76s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
-+| workspace-contract | PASS | 70.44s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
++| workspace-contract | PASS | 62.12s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
  | game-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
  | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
  | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
@@ -1231,35 +1222,35 @@ index 01e2b661e..868779f12 100644
 -| workspace-contract | 9.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:246:1 > root tools surface links current tool pages without old_* routes | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
 -| workspace-contract | 3.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:455:1 > common header renders primary navigation order across active pages | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
 -| workspace-contract | 2.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:611:1 > tool template future-state page loads from root Theme V2 paths | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 16.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:662:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 16.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 13.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:560:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 10.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:480:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 1.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:639:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 14.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:662:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 14.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 12.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:560:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 10.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:480:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 1.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:639:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
 
  ## Prevented Broad Execution
 
 diff --git a/docs_build/dev/reports/test_cleanup_routing_report.md b/docs_build/dev/reports/test_cleanup_routing_report.md
-index f636a1a72..83798c432 100644
+index f636a1a72..5f623e338 100644
 --- a/docs_build/dev/reports/test_cleanup_routing_report.md
 +++ b/docs_build/dev/reports/test_cleanup_routing_report.md
 @@ -1,6 +1,6 @@
  # Test Cleanup Routing Report
 
 -Generated: 2026-06-19T23:42:59.855Z
-+Generated: 2026-06-20T05:36:38.545Z
++Generated: 2026-06-20T05:45:42.508Z
  Status: PASS
 
  ## Representative Routing Cases
 diff --git a/docs_build/dev/reports/testing_lane_execution_report.md b/docs_build/dev/reports/testing_lane_execution_report.md
-index 4127a57f7..79b53e996 100644
+index 4127a57f7..cb83c373d 100644
 --- a/docs_build/dev/reports/testing_lane_execution_report.md
 +++ b/docs_build/dev/reports/testing_lane_execution_report.md
 @@ -1,15 +1,15 @@
  # Testing Lane Execution Report
 
 -Generated: 2026-06-19T23:42:59.894Z
-+Generated: 2026-06-20T05:36:38.593Z
++Generated: 2026-06-20T05:45:42.544Z
  Dry run: No
 
  ## Summary
@@ -1271,7 +1262,7 @@ index 4127a57f7..79b53e996 100644
 +FAIL: 0
  SKIP: 14
 -Total lane elapsed time: 62.76s
-+Total lane elapsed time: 70.44s
++Total lane elapsed time: 62.12s
  Actual browser launches: 1
 
  ## Full Samples Smoke
@@ -1367,7 +1358,7 @@ index 4127a57f7..79b53e996 100644
  | Lane | Status | Elapsed | Browser Launches | Executed/Skipped Reason | Affected Surface | Fixtures / Inputs |
  | --- | --- | --- | --- | --- | --- | --- |
 -| workspace-contract | FAIL | 62.76s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
-+| workspace-contract | PASS | 70.44s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
++| workspace-contract | PASS | 62.12s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
  | game-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Workspace mock repository, Game Workspace UI, and Toolbox Progress/Build Path game-state bridge | repo-served Game Workspace page; repo-served Toolbox page with role simulation; in-memory SQL-shaped mock game repository |
  | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | repo-served Game Design page; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Design mock repository; Game Workspace mock game context |
  | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | repo-served Game Configuration page; repo-served Game Design page for handoff checks; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Configuration mock repository; Game Design mock repository handoff |
@@ -1380,29 +1371,29 @@ index 4127a57f7..79b53e996 100644
 -| workspace-contract | 9.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:246:1 > root tools surface links current tool pages without old_* routes |
 -| workspace-contract | 3.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:455:1 > common header renders primary navigation order across active pages |
 -| workspace-contract | 2.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:611:1 > tool template future-state page loads from root Theme V2 paths |
-+| workspace-contract | 16.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:662:1 > representative active tool pages align center cleanup and registry group colors |
-+| workspace-contract | 16.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes |
-+| workspace-contract | 13.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:560:1 > learn wireframe pages load with shared Theme V2 structure |
-+| workspace-contract | 10.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:480:1 > common header renders primary navigation order across active pages |
-+| workspace-contract | 1.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:639:1 > tool template future-state page loads from root Theme V2 paths |
++| workspace-contract | 14.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:662:1 > representative active tool pages align center cleanup and registry group colors |
++| workspace-contract | 14.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes |
++| workspace-contract | 12.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:560:1 > learn wireframe pages load with shared Theme V2 structure |
++| workspace-contract | 10.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:480:1 > common header renders primary navigation order across active pages |
++| workspace-contract | 1.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:639:1 > tool template future-state page loads from root Theme V2 paths |
 
  ## Commands
 
  ### workspace-contract
 -- FAIL 62.76s "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
-+- PASS 70.44s C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
++- PASS 62.12s C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
 
  ### game-workspace
  - SKIP
 diff --git a/docs_build/dev/reports/validation_cache_report.md b/docs_build/dev/reports/validation_cache_report.md
-index 95c02a829..ff57aaa11 100644
+index 95c02a829..0e34656e5 100644
 --- a/docs_build/dev/reports/validation_cache_report.md
 +++ b/docs_build/dev/reports/validation_cache_report.md
 @@ -1,6 +1,6 @@
  # Validation Cache Report
 
 -Generated: 2026-06-19T23:41:57.047Z
-+Generated: 2026-06-20T05:35:27.660Z
++Generated: 2026-06-20T05:44:40.309Z
  Status: PASS
 
  ## Cache Summary
@@ -1441,26 +1432,26 @@ index 95c02a829..ff57aaa11 100644
 +| lane registration validation | MISS | 2e5779ed0ed947c7 | initial computation | lane definitions change; package.json lane scripts change |
 +| runner preflight validation | MISS | 82ebdc0c4e1e7794 | initial computation | lane definitions change; fixture ownership changes; targeted files change |
 +| scoped discovery map | MISS | 97bdfaa7c37c6c39 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
-+| targeted file manifest validation | MISS | 697b82a99ec21e97 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
-+| lane warm-start validation | MISS | 0d1a6f80c3633a5a | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
-+| structural ownership validation | MISS | 94f789ced8e5b9a7 | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
++| targeted file manifest validation | MISS | 569afc9ef4d65966 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
++| lane warm-start validation | MISS | ce69ece0978a145c | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
++| structural ownership validation | MISS | 7d16549767cccc93 | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
 +| lane compilation validation | MISS | c974136a7964ae67 | initial computation | lane definitions change; targeted files change; fixture ownership changes |
 +| lane compilation validation | HIT | c974136a7964ae67 | dependency validation input | unchanged within execution cycle |
 +| dependency validation | MISS | 46fe936f65e8a29d | initial computation | dependency graph changes; lane definitions change; lane compilation input changes |
-+| lane snapshot validation | MISS | 90e6f133fc403006 | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
++| lane snapshot validation | MISS | 34a15b2f8ce4e4f5 | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
 +| zero-browser preflight | MISS | e92e4238c2719b6f | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change; dependency graph changes |
-+| structural ownership validation | HIT | 94f789ced8e5b9a7 | static validation report | unchanged within execution cycle |
-+| structural ownership validation | HIT | 94f789ced8e5b9a7 | zero-browser preflight report | unchanged within execution cycle |
++| structural ownership validation | HIT | 7d16549767cccc93 | static validation report | unchanged within execution cycle |
++| structural ownership validation | HIT | 7d16549767cccc93 | zero-browser preflight report | unchanged within execution cycle |
 +| scoped discovery map | HIT | 97bdfaa7c37c6c39 | structural ownership validation input | unchanged within execution cycle |
 +| scoped discovery map | HIT | 97bdfaa7c37c6c39 | discovery scope reporting | unchanged within execution cycle |
-+| targeted file manifest validation | HIT | 697b82a99ec21e97 | lane input validation report | unchanged within execution cycle |
-+| targeted file manifest validation | HIT | 697b82a99ec21e97 | runtime scheduling blockers | unchanged within execution cycle |
-+| lane warm-start validation | HIT | 0d1a6f80c3633a5a | warm-start report | unchanged within execution cycle |
-+| lane warm-start validation | HIT | 0d1a6f80c3633a5a | dependency hydration reuse report | unchanged within execution cycle |
-+| lane warm-start validation | HIT | 0d1a6f80c3633a5a | runtime scheduling | unchanged within execution cycle |
-+| lane snapshot validation | HIT | 90e6f133fc403006 | lane snapshot report | unchanged within execution cycle |
-+| lane snapshot validation | HIT | 90e6f133fc403006 | execution graph reuse report | unchanged within execution cycle |
-+| lane snapshot validation | HIT | 90e6f133fc403006 | runtime scheduling | unchanged within execution cycle |
++| targeted file manifest validation | HIT | 569afc9ef4d65966 | lane input validation report | unchanged within execution cycle |
++| targeted file manifest validation | HIT | 569afc9ef4d65966 | runtime scheduling blockers | unchanged within execution cycle |
++| lane warm-start validation | HIT | ce69ece0978a145c | warm-start report | unchanged within execution cycle |
++| lane warm-start validation | HIT | ce69ece0978a145c | dependency hydration reuse report | unchanged within execution cycle |
++| lane warm-start validation | HIT | ce69ece0978a145c | runtime scheduling | unchanged within execution cycle |
++| lane snapshot validation | HIT | 34a15b2f8ce4e4f5 | lane snapshot report | unchanged within execution cycle |
++| lane snapshot validation | HIT | 34a15b2f8ce4e4f5 | execution graph reuse report | unchanged within execution cycle |
++| lane snapshot validation | HIT | 34a15b2f8ce4e4f5 | runtime scheduling | unchanged within execution cycle |
 +| lane compilation validation | HIT | c974136a7964ae67 | lane compilation report | unchanged within execution cycle |
 +| lane compilation validation | HIT | c974136a7964ae67 | runtime scheduling | unchanged within execution cycle |
 +| dependency validation | HIT | 46fe936f65e8a29d | dependency report | unchanged within execution cycle |
@@ -1470,14 +1461,14 @@ index 95c02a829..ff57aaa11 100644
  ## Deterministic Invalidation Rules
 
 diff --git a/docs_build/dev/reports/zero_browser_preflight_report.md b/docs_build/dev/reports/zero_browser_preflight_report.md
-index 403d61be3..b068348a1 100644
+index 403d61be3..810a3911b 100644
 --- a/docs_build/dev/reports/zero_browser_preflight_report.md
 +++ b/docs_build/dev/reports/zero_browser_preflight_report.md
 @@ -1,6 +1,6 @@
  # Zero-Browser Preflight Report
 
 -Generated: 2026-06-19T23:41:57.046Z
-+Generated: 2026-06-20T05:35:27.658Z
++Generated: 2026-06-20T05:44:40.308Z
  Status: PASS
 
  ## Prevented Browser Launches
