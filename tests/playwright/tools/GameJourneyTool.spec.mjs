@@ -264,30 +264,40 @@ test("Game Journey progress dashboard summarizes completion metrics", async ({ p
 
     await expect(page.locator("[data-journey-active-game]")).toHaveText("Active game: Demo Game.");
     await expect(page.locator("[data-journey-progress-dashboard]")).toBeVisible();
-    await expect(page.locator("details > summary", { hasText: /^Progress Dashboard$/ })).toHaveCount(1);
-    await expect(page.locator("[data-journey-completion-metrics]")).toContainText("Completion model: 0 of 66 planned items complete (0%). Active buckets: 10; inactive buckets: 4.");
+    await expect(page.locator("details > summary", { hasText: /^Journey Progress Dashboard$/ })).toHaveCount(1);
+    await expect(page.locator("[data-journey-completion-metrics]")).toContainText("Journey progress: 0 of 66 planned items done (0%). 10 sections are active focus areas; 4 are planning context.");
     await expect(page.locator("[data-journey-overall-progress] .mini-stat")).toHaveText([
-      "0%Progress",
-      "0Completed",
+      "0%Overall",
+      "0Done",
       "66Planned",
-      "10Active Sections",
+      "10Active Focus",
     ]);
     await expect(page.locator("[data-journey-section-progress] table")).toHaveAttribute("aria-label", "Game Journey section progress");
+    await expect(page.locator("[data-journey-section-progress] th")).toHaveText([
+      "Journey Area",
+      "Planned",
+      "Done",
+      "Complete",
+      "Focus",
+    ]);
     await expect(page.locator("[data-journey-completion-bucket]")).toHaveCount(14);
     await expect(page.locator("[data-journey-completion-bucket='001-idea'] td")).toHaveText([
       "Idea",
       "4",
       "0",
       "0%",
-      "inactive",
+      "Planning context",
     ]);
+    await expect(page.getByRole("heading", { name: "Strongest Areas" })).toBeVisible();
     await expect(page.locator("[data-journey-most-complete-areas] li")).toHaveCount(3);
-    await expect(page.locator("[data-journey-most-complete-areas] li").first()).toHaveText("Idea: 0% complete (0 of 4)");
+    await expect(page.locator("[data-journey-most-complete-areas] li").first()).toHaveText("Idea: 0% complete (0 of 4 planned)");
+    await expect(page.getByRole("heading", { name: "Start Next" })).toBeVisible();
     await expect(page.locator("[data-journey-least-complete-areas] li")).toHaveCount(3);
-    await expect(page.locator("[data-journey-least-complete-areas] li").first()).toHaveText("Idea: 0% complete (0 of 4)");
+    await expect(page.locator("[data-journey-least-complete-areas] li").first()).toHaveText("Idea: 0% complete (0 of 4 planned)");
+    await expect(page.getByRole("heading", { name: "What To Do Next" })).toBeVisible();
     await expect(page.locator("[data-journey-completion-insights] li")).toHaveText([
       "Completion is low because no planned items are complete yet.",
-      "4 sections are inactive, so they are visible as planning context but not active focus areas.",
+      "4 sections are planning context, so they stay visible without counting as active focus areas.",
       "Idea is one of the most complete areas with 0 of 4 planned items complete.",
       "Idea needs attention: complete one planned item or adjust the planned count if the scope changed.",
       "Next focus: Create, Design, and Graphics. Complete one small item in each area before expanding the plan.",
@@ -298,7 +308,7 @@ test("Game Journey progress dashboard summarizes completion metrics", async ({ p
     await expect(page.locator("[data-journey-recommended-target='heroes'] td").nth(1)).toHaveText("Objects");
     await expect(page.locator("[data-journey-target-input='heroes']")).toHaveValue("1");
     await page.locator("[data-journey-target-input='heroes']").fill("2");
-    await expect(page.locator("[data-journey-target-status]")).toHaveText("Saved Heroes suggested target at 2.");
+    await expect(page.locator("[data-journey-target-status]")).toHaveText("Saved Heroes target at 2.");
     await expect(page.locator("[data-journey-target-input='heroes']")).toHaveValue("2");
     await page.reload({ waitUntil: "networkidle" });
     await expect(page.locator("[data-journey-target-input='heroes']")).toHaveValue("2");
@@ -354,14 +364,14 @@ test("Game Journey edits rows and updates note summary counts live", async ({ pa
     await expect(page.locator("[data-journey-stat-in-progress]")).toHaveText("1");
     await expect(page.locator("[data-journey-stat-decide]")).toHaveText("1");
     await expect(page.locator("[data-journey-stat-skipped]")).toHaveText("0");
-    await expect(page.locator("[data-journey-completion-metrics]")).toContainText("Completion model: 0 of 66 planned items complete (0%). Active buckets: 10; inactive buckets: 4.");
+    await expect(page.locator("[data-journey-completion-metrics]")).toContainText("Journey progress: 0 of 66 planned items done (0%). 10 sections are active focus areas; 4 are planning context.");
     await expect(page.locator("[data-journey-completion-bucket]")).toHaveCount(14);
     await expect(page.locator("[data-journey-completion-bucket='001-idea'] td")).toHaveText([
       "Idea",
       "4",
       "0",
       "0%",
-      "inactive",
+      "Planning context",
     ]);
     await expect(page.locator("[data-journey-filter='all']")).toHaveClass(/primary/);
     await expect(page.locator("[data-journey-filter='all']")).toHaveAttribute("aria-current", "true");

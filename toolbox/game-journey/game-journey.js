@@ -102,7 +102,7 @@ function refreshCompletionMetricsSnapshot() {
     completionMetricsDiagnostic = "";
   } catch (error) {
     completionMetricsSnapshot = null;
-    completionMetricsDiagnostic = error instanceof Error ? error.message : String(error || "Completion metrics unavailable.");
+    completionMetricsDiagnostic = error instanceof Error ? error.message : String(error || "Journey progress unavailable.");
   }
 }
 
@@ -715,6 +715,10 @@ function renderStats(counts) {
   });
 }
 
+function formatCompletionFocusStatus(metric) {
+  return metric.active ? "Active focus" : "Planning context";
+}
+
 function renderCompletionMetrics() {
   if (!completionMetrics) {
     return;
@@ -724,7 +728,7 @@ function renderCompletionMetrics() {
     completionMetrics.append(
       createElement("p", {
         className: "status",
-        text: `Completion metrics unavailable: ${completionMetricsDiagnostic}`,
+        text: `Journey progress is unavailable right now: ${completionMetricsDiagnostic}`,
       }),
     );
     return;
@@ -732,7 +736,7 @@ function renderCompletionMetrics() {
 
   const records = completionMetricsSnapshot?.records || [];
   if (!records.length) {
-    completionMetrics.append(createElement("p", { text: "No completion metrics are available." }));
+    completionMetrics.append(createElement("p", { text: "No Journey progress targets are set yet. Add suggested targets to start tracking progress." }));
     return;
   }
 
@@ -740,16 +744,16 @@ function renderCompletionMetrics() {
   dashboard.dataset.journeyProgressDashboard = "";
   const summary = createElement("p", {
     className: "status",
-    text: `Completion model: ${completionMetricsSnapshot.completedCount} of ${completionMetricsSnapshot.plannedCount} planned items complete (${completionMetricsSnapshot.percentComplete}%). Active buckets: ${completionMetricsSnapshot.activeCount}; inactive buckets: ${completionMetricsSnapshot.inactiveCount}.`,
+    text: `Journey progress: ${completionMetricsSnapshot.completedCount} of ${completionMetricsSnapshot.plannedCount} planned items done (${completionMetricsSnapshot.percentComplete}%). ${completionMetricsSnapshot.activeCount} sections are active focus areas; ${completionMetricsSnapshot.inactiveCount} are planning context.`,
   });
   const overallHeading = createElement("h3", { text: "Overall Progress" });
   const overallGrid = createElement("div", { className: "grid cols-2" });
   overallGrid.dataset.journeyOverallProgress = "";
   [
-    ["Progress", `${completionMetricsSnapshot.percentComplete}%`],
-    ["Completed", String(completionMetricsSnapshot.completedCount)],
+    ["Overall", `${completionMetricsSnapshot.percentComplete}%`],
+    ["Done", String(completionMetricsSnapshot.completedCount)],
     ["Planned", String(completionMetricsSnapshot.plannedCount)],
-    ["Active Sections", String(completionMetricsSnapshot.activeCount)],
+    ["Active Focus", String(completionMetricsSnapshot.activeCount)],
   ].forEach(([label, value]) => {
     const stat = createElement("article", { className: "mini-stat mini-stat--inline" });
     stat.append(
@@ -766,7 +770,7 @@ function renderCompletionMetrics() {
   table.setAttribute("aria-label", "Game Journey section progress");
   const head = createElement("thead");
   const headRow = createElement("tr");
-  ["Section", "Planned", "Completed", "%", "Status"].forEach((heading) => {
+  ["Journey Area", "Planned", "Done", "Complete", "Focus"].forEach((heading) => {
     const cell = createElement("th", { text: heading });
     cell.scope = "col";
     headRow.append(cell);
@@ -781,7 +785,7 @@ function renderCompletionMetrics() {
       createElement("td", { text: String(metric.plannedCount) }),
       createElement("td", { text: String(metric.completedCount) }),
       createElement("td", { text: `${metric.percentComplete}%` }),
-      createElement("td", { text: metric.status }),
+      createElement("td", { text: formatCompletionFocusStatus(metric) }),
     );
     body.append(row);
   });
@@ -804,25 +808,25 @@ function renderCompletionMetrics() {
     )
     .slice(0, 3);
 
-  const mostHeading = createElement("h3", { text: "Most Complete Areas" });
+  const mostHeading = createElement("h3", { text: "Strongest Areas" });
   const mostList = createElement("ol");
   mostList.dataset.journeyMostCompleteAreas = "";
   mostComplete.forEach((metric) => {
     mostList.append(createElement("li", {
-      text: `${metric.bucketName}: ${metric.percentComplete}% complete (${metric.completedCount} of ${metric.plannedCount})`,
+      text: `${metric.bucketName}: ${metric.percentComplete}% complete (${metric.completedCount} of ${metric.plannedCount} planned)`,
     }));
   });
 
-  const leastHeading = createElement("h3", { text: "Least Complete Areas" });
+  const leastHeading = createElement("h3", { text: "Start Next" });
   const leastList = createElement("ol");
   leastList.dataset.journeyLeastCompleteAreas = "";
   leastComplete.forEach((metric) => {
     leastList.append(createElement("li", {
-      text: `${metric.bucketName}: ${metric.percentComplete}% complete (${metric.completedCount} of ${metric.plannedCount})`,
+      text: `${metric.bucketName}: ${metric.percentComplete}% complete (${metric.completedCount} of ${metric.plannedCount} planned)`,
     }));
   });
 
-  const insightHeading = createElement("h3", { text: "Completion Insights" });
+  const insightHeading = createElement("h3", { text: "What To Do Next" });
   const insightList = createElement("ul");
   insightList.dataset.journeyCompletionInsights = "";
   completionInsightMessages(completionMetricsSnapshot, records, mostComplete, leastComplete).forEach((message) => {
@@ -881,7 +885,7 @@ function completionInsightMessages(snapshot, records, mostComplete, leastComplet
   }
 
   if (snapshot.inactiveCount > 0) {
-    messages.push(`${snapshot.inactiveCount} section${snapshot.inactiveCount === 1 ? "" : "s"} are inactive, so they are visible as planning context but not active focus areas.`);
+    messages.push(`${snapshot.inactiveCount} section${snapshot.inactiveCount === 1 ? "" : "s"} are planning context, so they stay visible without counting as active focus areas.`);
   }
   const strongest = mostComplete[0];
   if (strongest) {
@@ -1417,7 +1421,7 @@ recommendedTargets?.addEventListener("input", (event) => {
   recommendedTargetValues.set(target.key, savedValue);
   input.value = String(savedValue);
   if (recommendedTargetStatus) {
-    recommendedTargetStatus.textContent = `Saved ${target.label} suggested target at ${savedValue}.`;
+    recommendedTargetStatus.textContent = `Saved ${target.label} target at ${savedValue}.`;
   }
 });
 
