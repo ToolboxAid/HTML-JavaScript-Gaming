@@ -1,29 +1,9 @@
 # Codex Changed Files - PR_26171_063-codex-instruction-enforcement-hardening
 
-## Git Status Short
-```text
- M docs_build/dev/PROJECT_INSTRUCTIONS.md
- M docs_build/dev/PROJECT_MULTI_PC.txt
- A docs_build/dev/reports/PR_26171_063-codex-instruction-enforcement-hardening.md
- A docs_build/dev/reports/PR_26171_063-instruction-compliance-checklist.md
- A docs_build/dev/reports/PR_26171_063-manual-validation-notes.md
- A docs_build/dev/reports/PR_26171_063-validation.md
- M docs_build/dev/reports/codex_changed_files.txt
- M docs_build/dev/reports/codex_review.diff
-```
-
-## Git Diff Stat
-```text
- docs_build/dev/PROJECT_INSTRUCTIONS.md             |  47 +++
- docs_build/dev/PROJECT_MULTI_PC.txt                |  58 +++
- ..._063-codex-instruction-enforcement-hardening.md |  48 +++
- ...R_26171_063-instruction-compliance-checklist.md |  37 ++
- .../PR_26171_063-manual-validation-notes.md        |  19 +
- docs_build/dev/reports/PR_26171_063-validation.md  |  32 ++
- docs_build/dev/reports/codex_changed_files.txt     |  65 ++--
- docs_build/dev/reports/codex_review.diff           | 395 +++++++++++++--------
- 8 files changed, 531 insertions(+), 170 deletions(-)
-```
+## Conflict Resolution Note
+- Merged latest `origin/main` into the PR branch after GitHub reported merge conflicts.
+- Regenerated Codex artifacts from the PR_063 delta against updated `origin/main`.
+- No implementation scope was changed while resolving conflicts.
 
 ## Changed Files
 - docs_build/dev/PROJECT_INSTRUCTIONS.md
@@ -35,9 +15,22 @@
 - docs_build/dev/reports/codex_review.diff
 - docs_build/dev/reports/codex_changed_files.txt
 
+## Git Diff Stat Against Updated origin/main
+```text
+ docs_build/dev/PROJECT_INSTRUCTIONS.md             |  47 ++
+ docs_build/dev/PROJECT_MULTI_PC.txt                |  58 ++
+ ..._063-codex-instruction-enforcement-hardening.md |  48 ++
+ ...R_26171_063-instruction-compliance-checklist.md |  37 ++
+ .../PR_26171_063-manual-validation-notes.md        |  19 +
+ docs_build/dev/reports/PR_26171_063-validation.md  |  32 +
+ docs_build/dev/reports/codex_changed_files.txt     |  48 ++
+ docs_build/dev/reports/codex_review.diff           | 699 +++++++++------------
+ 8 files changed, 569 insertions(+), 419 deletions(-)
+```
+
 ## Validation
-- PASS: `git diff --check` after artifact whitespace normalization.
-- PASS: targeted required-text validation for instruction hardening anchors.
+- PASS: `git diff --check` after conflict resolution.
+- PASS: targeted required instruction-anchor validation after conflict resolution.
 - SKIP: Playwright, because the PR explicitly requires no Playwright and changes docs/workflow only.
 
 ## ZIP
