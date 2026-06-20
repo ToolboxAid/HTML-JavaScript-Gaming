@@ -1,0 +1,18 @@
+PR_26171_016-message-studio-speech-test-and-tts-service-picker manual validation notes
+
+Reviewed Message Studio speech test behavior:
+- Speech Test accordion now includes TTS Service and TTS Profile selectors.
+- TTS Service is sourced from the existing TextToSpeechEngine browser path.
+- Test Speech is disabled before a message or segment target is selected.
+- Test Speech uses the selected message row text when a message row is selected.
+- Test Speech uses selected segment text when a segment row is selected.
+- Selected item readout updates between message row and segment row targets.
+- Browser speech synthesis unavailable state is visible and disables the service/test action.
+
+Reviewed prior Text to Speech locations:
+- Active engine remains in src/engine/audio/TextToSpeechEngine.js.
+- toolbox/text-to-speech/index.html is a placeholder Voice Output page.
+- archive/v1-v2/tools/old_text2speech-V2 contains the older full tool implementation.
+- No active toolbox/tts or toolbox/text2speech-V2 folder is present.
+
+No external providers, provider keys, AI voices, server audio generation, or audio persistence were manually exercised because they are out of scope.

@@ -153,6 +153,7 @@
                                 <div class="accordion-body content-stack">
                                     <p>Name: <span data-messages-selected-name>None</span></p>
                                     <p>Emotion Profile: <span data-messages-selected-emotion>None</span></p>
+                                    <p>Segment: <span data-messages-selected-segment>None</span></p>
                                     <p>Status: <span data-messages-selected-status>None</span></p>
                                     <p>Text:</p>
                                     <pre data-messages-selected-text>No message selected.</pre>
@@ -167,10 +168,17 @@
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
-                                <summary>Speech Preview</summary>
+                                <summary>Speech Test</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>Speech Preview is display-only.</p>
-                                    <div class="status" role="status" data-messages-preview-status>No playback, provider calls, or audio generation run from Message Studio.</div>
+                                    <label for="messagesTtsService">TTS Service</label>
+                                    <select id="messagesTtsService" data-messages-tts-service></select>
+                                    <label for="messagesPreviewTtsProfile">TTS Profile</label>
+                                    <select id="messagesPreviewTtsProfile" data-messages-preview-tts-profile></select>
+                                    <p>Selected item: <span data-messages-speech-test-target>None</span></p>
+                                    <div class="action-group action-group--tight">
+                                        <button class="btn btn--compact" type="button" data-messages-test-speech disabled>Test Speech</button>
+                                    </div>
+                                    <div class="status" role="status" data-messages-preview-status>Select a message row or segment row before testing speech.</div>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>

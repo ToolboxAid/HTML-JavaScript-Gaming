@@ -1,0 +1,32 @@
+PR_26171_016-message-studio-speech-test-and-tts-service-picker validation report
+
+Branch:
+PASS - Implemented on pr/26171-016-message-studio-speech-test-and-tts-service-picker.
+
+Static checks:
+PASS - node --check toolbox/messages/message-tts-service-registry.js
+PASS - node --check toolbox/messages/messages.js
+PASS - node --check tests/playwright/tools/MessagesTool.spec.mjs
+PASS - node --check src/engine/audio/TextToSpeechEngine.js
+PASS - git diff --check
+
+Targeted scans:
+PASS - Message Studio contains no external provider/API-key references.
+PASS - No new SQLite persistence was added. Existing SQLite references are limited to the pre-existing Messages Playwright harness/dev adapter path.
+
+Targeted Playwright:
+PASS - npx playwright test tests/playwright/tools/MessagesTool.spec.mjs --workers=1 --reporter=list
+Validated:
+- TTS service selector renders existing Browser Speech Synthesis service.
+- Test Speech button is disabled before required selections exist.
+- Message row speech test calls the existing browser-safe TextToSpeechEngine path.
+- Segment row speech test calls the existing browser-safe TextToSpeechEngine path.
+- No old Preview Message, Preview Segments, or Stop Preview controls are present.
+
+Requested workspace lane:
+FAIL - npm run test:workspace-v2
+Failure scope:
+- RootToolsFutureState.spec.mjs existing root/tool/navigation/API failures outside Message Studio.
+
+Samples:
+SKIPPED - Full samples smoke was out of scope.
