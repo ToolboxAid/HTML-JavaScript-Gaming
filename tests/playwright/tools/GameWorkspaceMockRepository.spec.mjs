@@ -2,6 +2,16 @@
 import http from "node:http";
 import process from "node:process";
 import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store.js";
+import {
+  TOOL_RELEASE_CHANNEL_HELP_TEXT,
+  TOOL_RELEASE_CHANNEL_LABELS,
+  TOOL_RELEASE_CHANNELS,
+  TOOL_STATUS_MODEL,
+  getActiveToolRegistry,
+  getToolProgressReadiness,
+  getToolRegistry,
+  getToolReleaseChannel,
+} from "../../../toolbox/toolRegistry.js";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
@@ -14,6 +24,65 @@ const SUPABASE_ENV_KEYS = Object.freeze([
 ]);
 let fakeSupabaseServer;
 let previousSupabaseEnv;
+
+const TOOLBOX_DEFAULT_RELEASE_CHANNELS = Object.freeze(["wireframe", "beta", "complete"]);
+const BUILD_PATH_DEFAULT_RELEASE_CHANNELS = Object.freeze(["complete"]);
+const TOOLBOX_RELEASE_CHANNEL_SWATCHES = Object.freeze({
+  beta: "swatch-gold",
+  complete: "swatch-green",
+  deprecated: "swatch-purple",
+  planned: "swatch-gray",
+  wireframe: "swatch-blue",
+});
+const TOOLBOX_ROLE_FOCUS_TOOLS = Object.freeze({
+  "Audio Creator": Object.freeze(["Audio", "Music", "Voices", "MIDI", "Audio Effects", "Voice Capture", "Text To Speech", "Assets"]),
+  Artist: Object.freeze(["Assets", "Colors", "Tags", "Fonts", "Sprites", "Characters", "Objects", "Animations"]),
+  Designer: Object.freeze(["Game Hub", "Game Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Characters", "Colors", "Assets", "Tags"]),
+  Owner: null,
+  Publisher: Object.freeze(["Publish", "Marketplace", "Community", "Cloud", "Languages"]),
+  Tester: Object.freeze(["Game Testing", "Controls", "Hitboxes", "Debug", "Performance", "Events"]),
+  Translator: Object.freeze(["Languages", "Voices", "Voice Capture", "Text To Speech"]),
+  Viewer: Object.freeze(["Game Hub", "Game Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Assets", "Colors", "Tags", "Audio", "Publish", "Marketplace", "Community", "Languages", "Achievements", "Ratings"]),
+  "World Builder": Object.freeze(["Worlds", "Objects", "Assets", "Colors", "Tags", "Animations"]),
+});
+
+function orderedUniqueValues(rows, accessor) {
+  return [...new Set(rows.map(accessor).filter(Boolean))];
+}
+
+function localToolboxContract(activeTools) {
+  return {
+    defaultReleaseChannels: {
+      buildPath: [...BUILD_PATH_DEFAULT_RELEASE_CHANNELS],
+      toolbox: [...TOOLBOX_DEFAULT_RELEASE_CHANNELS],
+    },
+    groupSwatches: {},
+    groups: orderedUniqueValues(activeTools, (tool) => tool.category || tool.group),
+    releaseChannelByStatus: Object.fromEntries(TOOL_STATUS_MODEL.map((status) => [
+      status,
+      getToolReleaseChannel({ status }),
+    ])),
+    releaseChannelHelpText: { ...TOOL_RELEASE_CHANNEL_HELP_TEXT },
+    releaseChannelLabels: { ...TOOL_RELEASE_CHANNEL_LABELS },
+    releaseChannelSwatches: { ...TOOLBOX_RELEASE_CHANNEL_SWATCHES },
+    releaseChannels: [...TOOL_RELEASE_CHANNELS],
+    roleFocusTools: { ...TOOLBOX_ROLE_FOCUS_TOOLS },
+    toolboxGroupOrder: orderedUniqueValues(activeTools, (tool) => tool.toolboxGroup),
+  };
+}
+
+function localRegistrySnapshot() {
+  const activeTools = getActiveToolRegistry();
+  return {
+    activeTools,
+    readinessByStatus: Object.fromEntries(TOOL_STATUS_MODEL.map((status) => [
+      status,
+      getToolProgressReadiness(status),
+    ])),
+    toolboxContract: localToolboxContract(activeTools),
+    tools: getToolRegistry(),
+  };
+}
 
 function restoreEnvValue(key, value) {
   if (value === undefined) {
@@ -183,31 +252,33 @@ async function openRepoPage(page, pathName, options = {}) {
     });
   }
 
-  if (pathName.includes("/toolbox/game-workspace/") || pathName.includes("/toolbox/project-workspace/")) {
-    await page.route("**/api/platform-settings/banner", async (route) => {
-      await route.fulfill({
-        contentType: "application/json",
-        body: JSON.stringify({
-          data: { banner: { active: false, message: "", tone: "info" } },
-          ok: true,
-        }),
-      });
+  await page.route("**/api/platform-settings/banner", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        data: { banner: { active: false, message: "", tone: "info" } },
+        ok: true,
+      }),
     });
-    await page.route("**/api/toolbox/registry/snapshot", async (route) => {
-      await route.fulfill({
-        contentType: "application/json",
-        body: JSON.stringify({
-          data: {
-            activeTools: [],
-            readinessByStatus: {},
-            tools: [],
-            toolboxContract: {},
-          },
-          ok: true,
-        }),
-      });
+  });
+  await page.route("**/api/toolbox/registry/snapshot", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        data: localRegistrySnapshot(),
+        ok: true,
+      }),
     });
-  }
+  });
+  await page.route("**/api/toolbox/votes/snapshot", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        data: { rows: [] },
+        ok: true,
+      }),
+    });
+  });
 
   await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
@@ -243,52 +314,91 @@ test("Deprecated project workspace route points creators to Game Hub", async ({ 
   }
 });
 
-test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
+test("Game Hub renders a table-first project accordion", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html", { session: creatorSession() });
 
   try {
     await expect(page.locator(".tool-workspace")).toBeVisible();
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-    await expect(page.getByRole("button", { name: "Create Game" })).toHaveClass("btn");
-    await expect(page.getByRole("button", { name: "Create Game" })).toBeEnabled();
-    await expect(page.getByRole("button", { name: "Delete Open Game" })).toHaveClass("btn");
-    await expect(page.getByRole("button", { name: "Delete Open Game" })).toBeEnabled();
-    await expect(page.locator("[data-project-record-status]")).toHaveText("Project Information loaded.");
-    await expect(page.locator("[data-game-project-information]")).toContainText("Project Information");
-    await expect(page.locator("[data-project-records-table]")).toContainText("Demo Game");
-    await expect(page.locator("[data-source-idea-section]")).toContainText("No source idea yet");
+    await expect(page.locator("[data-project-record-status]")).toHaveText("Projects loaded.");
+    await expect(page.getByRole("table", { name: "Projects" })).toBeVisible();
+    await expect(page.getByRole("columnheader")).toHaveText([
+      "Project",
+      "Description",
+      "Status",
+      "Updated",
+      "Journey",
+      "Actions"
+    ]);
+    await expect(page.locator("[data-game-project-information]")).toHaveCount(0);
+    await expect(page.locator("[data-project-records-table]")).toHaveCount(0);
+    await expect(page.locator("[data-game-workspace-foundation]")).toHaveCount(0);
+    await expect(page.locator("[data-game-output-panels]")).toHaveCount(0);
     await expect(page.locator("[data-active-game-name]")).toHaveText("Demo Game");
-    await expect(page.locator("[data-active-game-purpose]")).toHaveText("Game");
+    await expect(page.locator("[data-active-game-purpose]")).toHaveText("Game project");
+    await expect(page.locator("[data-active-game-status]")).toHaveText("Under Construction");
     await expect(page.locator("[data-current-user-role]")).toHaveText("Owner");
-    await expect(page.locator("[data-game-list]")).toContainText("Demo Game");
-    await expect(page.locator("[data-game-list]")).toContainText("Gravity Demo");
-    await expect(page.locator("[data-game-list]")).toContainText("Collision Demo");
-    await expect(page.locator("[data-game-list]")).toContainText("Camera Follow Demo");
-    const demoGameRow = page.locator("[data-game-row='demo-game']");
-    await expect(demoGameRow.locator("> .status")).toHaveCount(0);
-    await expect(demoGameRow.getByRole("button", { name: "Open Demo Game (Active)" })).toHaveClass(/primary/);
-    await expect(demoGameRow.getByRole("button", { name: "Open Demo Game (Active)" })).toHaveAttribute("aria-current", "true");
+    await expect(page.locator("[data-game-projects-table]")).toContainText("Demo Game");
+    await expect(page.locator("[data-game-projects-table]")).toContainText("Gravity Demo");
+    await expect(page.locator("[data-game-projects-table]")).toContainText("Collision Demo");
+    await expect(page.locator("[data-game-projects-table]")).toContainText("Camera Follow Demo");
+    await expect(page.locator("[data-game-project-expanded-row]")).toHaveCount(0);
 
-    await page.getByLabel("Game Name").fill("Launch Test Game");
-    await page.getByRole("button", { name: "Create Game" }).click();
+    const demoGameRow = page.locator("[data-game-row='demo-game']");
+    await expect(demoGameRow.locator(".table-parent-chevron--down")).toHaveCount(1);
+    await expect(demoGameRow.locator("td").nth(4)).toHaveText("0 Items");
+    await expect(demoGameRow.getByRole("button", { name: "Open Demo Game" })).toHaveClass(/primary/);
+    await expect(demoGameRow.getByRole("button", { name: "Open Demo Game" })).toHaveAttribute("aria-current", "true");
+
+    await page.getByRole("button", { name: "Demo Game", exact: true }).click();
+    await expect(page.locator("[data-game-project-expanded-row='demo-game']")).toBeVisible();
+    await expect(demoGameRow.locator(".table-parent-chevron--up")).toHaveCount(1);
+    await expect(page.locator("[data-game-project-child-surface] [data-source-idea-section]")).toContainText("No source idea yet");
+
+    await demoGameRow.getByText("0 Items").click();
+    await expect(page.locator("[data-game-project-expanded-row='demo-game']")).toBeVisible();
+
+    await page.getByRole("button", { name: "Gravity Demo", exact: true }).click();
+    await expect(page.locator("[data-game-project-expanded-row]")).toHaveCount(1);
+    await expect(page.locator("[data-game-project-expanded-row='gravity-demo']")).toBeVisible();
+    await expect(page.locator("[data-game-project-expanded-row='demo-game']")).toHaveCount(0);
+
+    await page.getByRole("button", { name: "Gravity Demo", exact: true }).click();
+    await expect(page.locator("[data-game-project-expanded-row]")).toHaveCount(0);
+
+    await expectNoPageFailures(failures);
+  } finally {
+    await failures.server.close();
+  }
+});
+
+test("Game Hub creates, opens, and deletes projects from table actions", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html", { session: creatorSession() });
+
+  try {
+    await expect(page.getByRole("button", { name: "Create Project" })).toHaveClass("btn");
+    await expect(page.getByRole("button", { name: "Create Project" })).toBeEnabled();
+
+    await page.getByLabel("Project Name").fill("Launch Test Game");
+    await page.getByRole("button", { name: "Create Project" }).click();
     await expect(page.locator("[data-active-game-name]")).toHaveText("Launch Test Game");
-    await expect(page.locator("[data-game-list]")).toContainText("Launch Test Game");
-    await expect(page.locator("[data-game-project-information]")).toContainText("Launch Test Game");
-    await expect(page.locator("[data-game-row='launch-test-game-1']").getByRole("button", { name: "Open Launch Test Game (Active)" })).toHaveClass(/primary/);
+    await expect(page.locator("[data-game-projects-table]")).toContainText("Launch Test Game");
+    await expect(page.locator("[data-game-project-expanded-row='launch-test-game-1']")).toBeVisible();
+    await expect(page.locator("[data-game-row='launch-test-game-1']").getByRole("button", { name: "Open Launch Test Game" })).toHaveClass(/primary/);
     await expect(page.locator("[data-game-workspace-log]")).toHaveText("Created and opened Launch Test Game.");
 
-    await page.getByLabel("Game Name").fill("Archive Game");
-    await page.getByRole("button", { name: "Create Game" }).click();
+    await page.getByLabel("Project Name").fill("Archive Game");
+    await page.getByRole("button", { name: "Create Project" }).click();
     await expect(page.locator("[data-active-game-name]")).toHaveText("Archive Game");
 
-    await page.getByRole("button", { name: "Open Launch Test Game" }).click();
+    await page.locator("[data-game-row='launch-test-game-1']").getByRole("button", { name: "Open Launch Test Game" }).click();
     await expect(page.locator("[data-active-game-name]")).toHaveText("Launch Test Game");
-    await expect(page.locator("[data-game-row='launch-test-game-1']").getByRole("button", { name: "Open Launch Test Game (Active)" })).toHaveAttribute("data-game-active", "true");
+    await expect(page.locator("[data-game-row='launch-test-game-1']").getByRole("button", { name: "Open Launch Test Game" })).toHaveAttribute("data-game-active", "true");
     await expect(page.locator("[data-game-workspace-log]")).toHaveText("Opened Launch Test Game.");
 
-    await page.getByRole("button", { name: "Delete Open Game" }).click();
+    await page.locator("[data-game-row='launch-test-game-1']").getByRole("button", { name: "Delete Launch Test Game" }).click();
     await expect(page.locator("[data-active-game-name]")).not.toHaveText("Launch Test Game");
-    await expect(page.locator("[data-game-list]")).not.toContainText("Launch Test Game");
+    await expect(page.locator("[data-game-projects-table]")).not.toContainText("Launch Test Game");
     await expect(page.locator("[data-game-workspace-log]")).toHaveText("Deleted Launch Test Game.");
 
     await expectNoPageFailures(failures);
@@ -302,17 +412,16 @@ test("Game Hub preserves guest browsing and blocks guest saves", async ({ page }
 
   try {
     await expect(page.locator("[data-active-game-name]")).toHaveText("Demo Game");
-    await expect(page.locator("[data-game-list]")).toContainText("Gravity Demo");
-    await expect(page.locator("[data-project-record-status]")).toHaveText("Project Information loaded. Sign in to save changes.");
-    await expect(page.locator("[data-project-records-table]")).toContainText("Demo Game");
-    await expect(page.getByRole("button", { name: "Create Game" })).toBeDisabled();
-    await expect(page.getByRole("button", { name: "Delete Open Game" })).toBeDisabled();
-    await expect(page.getByLabel("Game Name")).toBeDisabled();
-    await expect(page.getByLabel("Game Purpose")).toBeDisabled();
-    await expect(page.getByLabel("Game Status")).toBeDisabled();
-    await expect(page.getByLabel("Current User Role")).toBeDisabled();
+    await expect(page.locator("[data-game-projects-table]")).toContainText("Gravity Demo");
+    await expect(page.locator("[data-project-record-status]")).toHaveText("Projects loaded. Sign in to create or update projects.");
+    await expect(page.getByRole("button", { name: "Create Project" })).toBeDisabled();
+    await expect(page.locator("[data-game-row='demo-game']").getByRole("button", { name: "Delete Demo Game" })).toBeDisabled();
+    await expect(page.getByLabel("Project Name")).toBeDisabled();
+    await expect(page.getByLabel("Project Type")).toBeDisabled();
+    await expect(page.getByLabel("Project Status")).toBeDisabled();
+    await expect(page.getByLabel("Change Role")).toBeDisabled();
 
-    await page.getByRole("button", { name: "Open Gravity Demo" }).click();
+    await page.locator("[data-game-row='gravity-demo']").getByRole("button", { name: "Open Gravity Demo" }).click();
     await expect(page.locator("[data-active-game-name]")).toHaveText("Gravity Demo");
     await expect(page.locator("[data-game-workspace-log]")).toHaveText("Sign in to create or update Game Hub projects.");
 
@@ -338,8 +447,9 @@ test("Game Hub shows active-game errors without throwing", async ({ page }) => {
 
   try {
     expect(failures.failedRequests.some((request) => request.includes("502") && request.includes("/methods/getActiveGame"))).toBe(true);
-    await expect(page.locator("[data-active-game-name]")).toHaveText("No game open");
-    await expect(page.locator("[data-game-workspace-log]")).toContainText("Active game is temporarily unavailable.");
+    await expect(page.locator("[data-active-game-name]")).toHaveCount(0);
+    await expect(page.locator("[data-game-projects-table]")).toContainText("Demo Game");
+    await expect(page.locator("[data-game-workspace-log]")).toContainText("Active project is temporarily unavailable.");
     expect(failures.pageErrors).toEqual([]);
     expect(failures.consoleErrors.filter((message) => !message.includes("status of 502"))).toEqual([]);
   } finally {
@@ -367,10 +477,10 @@ test("Game Hub reports malformed active-game payloads without throwing", async (
   const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
 
   try {
-    await expect(page.locator("[data-active-game-name]")).toHaveText("No game open");
+    await expect(page.locator("[data-active-game-name]")).toHaveCount(0);
     await expect(page.locator("[data-current-user-role]")).toHaveText("Viewer");
-    await expect(page.locator("[data-game-workspace-log]")).toContainText("Active game is temporarily unavailable.");
-    await expect(page.getByLabel("Game Purpose")).toBeDisabled();
+    await expect(page.locator("[data-game-workspace-log]")).toContainText("Active project is temporarily unavailable.");
+    await expect(page.getByLabel("Project Type")).toBeDisabled();
 
     await expectNoPageFailures(failures);
   } finally {
@@ -378,7 +488,7 @@ test("Game Hub reports malformed active-game payloads without throwing", async (
   }
 });
 
-test("Game Hub displays and edits game purpose and member role", async ({ page }) => {
+test("Game Hub keeps project setup and role controls creator-facing", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html", { session: creatorSession() });
 
   try {
@@ -405,29 +515,23 @@ test("Game Hub displays and edits game purpose and member role", async ({ page }
       "Publisher",
       "Viewer"
     ]);
-    await expect(page.getByLabel("Game Purpose")).toHaveValue("Game");
-    await expect(page.getByLabel("Game Status")).toHaveValue("Under Construction");
-    await expect(page.getByLabel("Current User Role")).toHaveValue("Owner");
+    await expect(page.getByLabel("Project Type")).toHaveValue("Game");
+    await expect(page.getByLabel("Project Status")).toHaveValue("Under Construction");
+    await expect(page.getByLabel("Change Role")).toHaveValue("Owner");
 
-    await page.getByLabel("Game Purpose").selectOption("Learning Game");
-    await expect(page.locator("[data-active-game-purpose]")).toHaveText("Learning Game");
-    await expect(page.locator("[data-game-workspace-log]")).toHaveText("Updated Demo Game purpose to Learning Game.");
-
-    await page.getByLabel("Game Status").selectOption("Ready for Testing");
-    await expect(page.locator("[data-active-game-status]")).toHaveText("Ready for Testing");
-    await expect(page.locator("[data-game-workspace-log]")).toHaveText("Updated Demo Game status to Ready for Testing.");
-
-    await page.getByLabel("Current User Role").selectOption("Designer");
+    await page.getByLabel("Change Role").selectOption("Designer");
     await expect(page.locator("[data-current-user-role]")).toHaveText("Designer");
-    await expect(page.locator("[data-game-workspace-log]")).toHaveText("Updated current user role to Designer.");
+    await expect(page.locator("[data-game-workspace-log]")).toHaveText("Updated current role to Designer.");
 
-    await page.getByLabel("Game Purpose").selectOption("Capability Demo");
-    await page.getByLabel("Game Name").fill("Purpose Review Game");
-    await page.getByRole("button", { name: "Create Game" }).click();
+    await page.getByLabel("Project Type").selectOption("Capability Demo");
+    await page.getByLabel("Project Status").selectOption("Ready for Testing");
+    await page.getByLabel("Project Name").fill("Purpose Review Game");
+    await page.getByRole("button", { name: "Create Project" }).click();
     await expect(page.locator("[data-active-game-name]")).toHaveText("Purpose Review Game");
-    await expect(page.locator("[data-active-game-purpose]")).toHaveText("Capability Demo");
+    await expect(page.locator("[data-active-game-purpose]")).toHaveText("Capability Demo project");
+    await expect(page.locator("[data-active-game-status]")).toHaveText("Ready for Testing");
     await expect(page.locator("[data-current-user-role]")).toHaveText("Owner");
-    await expect(page.locator("[data-game-list]")).toContainText("Purpose Review Game");
+    await expect(page.locator("[data-game-projects-table]")).toContainText("Purpose Review Game");
 
     await expectNoPageFailures(failures);
   } finally {
@@ -435,46 +539,66 @@ test("Game Hub displays and edits game purpose and member role", async ({ page }
   }
 });
 
-test("Game Hub progress panels update from mock game state", async ({ page }) => {
+test("Game Hub opens handoff projects with Source Idea and Journey child rows", async ({ page }) => {
+  const handoffGame = {
+    id: "sky-orchard-1",
+    members: [
+      {
+        displayName: "User 1",
+        gameId: "sky-orchard-1",
+        permission: "Owner",
+        role: "Owner",
+        userKey: MOCK_DB_KEYS.users.user1,
+      },
+    ],
+    name: "Sky Orchard",
+    ownerDisplayName: "User 1",
+    ownerKey: MOCK_DB_KEYS.users.user1,
+    purpose: "Game",
+    sourceIdea: {
+      idea: "Sky Orchard",
+      notes: [
+        "Floating islands need a wind map.",
+        "Harvest routes should change with weather.",
+      ],
+      pitch: "Grow floating islands into a shared orchard.",
+    },
+    status: "Under Construction",
+  };
+
+  await page.route("**/api/toolbox/game-workspace/repositories/*/methods/getActiveGame", async (route) => {
+    await route.fulfill({
+      body: JSON.stringify({ data: { result: handoffGame }, ok: true }),
+      contentType: "application/json; charset=utf-8",
+    });
+  });
+  await page.route("**/api/toolbox/game-workspace/repositories/*/methods/openGame", async (route) => {
+    await route.fulfill({
+      body: JSON.stringify({ data: { result: handoffGame }, ok: true }),
+      contentType: "application/json; charset=utf-8",
+    });
+  });
+  await page.route("**/api/toolbox/game-workspace/repositories/*/methods/listGames", async (route) => {
+    await route.fulfill({
+      body: JSON.stringify({ data: { result: [handoffGame] }, ok: true }),
+      contentType: "application/json; charset=utf-8",
+    });
+  });
+
   const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html", { session: creatorSession() });
 
   try {
-    await expect(page.locator("[data-game-status]")).toHaveText("Under Construction");
-    await expect(page.locator("[data-game-progress]")).toHaveText("Demo Game identity ready");
-    await expect(page.locator("[data-publishing-progress]")).toHaveText("Publish blocked until configuration and required assets are ready");
-    await expect(page.locator("[data-current-focus]")).toHaveText("Complete Game Configuration");
-    await expect(page.locator("[data-recommended-next-tool]").first()).toHaveText("Game Configuration");
-    await expect(page.locator("[data-game-progress-checklist]")).toContainText("Game identity: Complete");
-    await expect(page.locator("[data-game-output-panels] summary")).toHaveText([
-      "Readiness Output"
-    ]);
-    await expect(page.locator("aside.tool-column").last().getByText("Readiness Output")).toHaveCount(0);
-    const panelOrderIsCorrect = await page.locator(".tool-center-panel").evaluate((panel) => {
-      const projectInformation = panel.querySelector("[data-game-project-information]");
-      const sourceIdea = panel.querySelector("[data-source-idea-section]");
-      const staticOverlay = panel.querySelector("[data-game-workspace-foundation]");
-      const outputPanels = panel.querySelector("[data-game-output-panels]");
-      return Boolean(
-        projectInformation &&
-        sourceIdea &&
-        staticOverlay &&
-        outputPanels &&
-        (projectInformation.compareDocumentPosition(sourceIdea) & Node.DOCUMENT_POSITION_FOLLOWING) &&
-        (sourceIdea.compareDocumentPosition(staticOverlay) & Node.DOCUMENT_POSITION_FOLLOWING) &&
-        (staticOverlay.compareDocumentPosition(outputPanels) & Node.DOCUMENT_POSITION_FOLLOWING)
-      );
-    });
-    expect(panelOrderIsCorrect).toBe(true);
-
-    await page.getByLabel("Game Name").fill("Progress Review Game");
-    await page.getByRole("button", { name: "Create Game" }).click();
-    await expect(page.locator("[data-game-status]")).toHaveText("Under Construction");
-    await expect(page.locator("[data-game-progress]")).toHaveText("Progress Review Game identity ready");
-    await expect(page.locator("[data-game-project-information]")).toContainText("Progress Review Game");
-
-    await page.getByRole("button", { name: "Delete Open Game" }).click();
-    await expect(page.locator("[data-active-game-name]")).toHaveText("Demo Game");
-    await expect(page.locator("[data-game-progress]")).toHaveText("Demo Game identity ready");
+    await page.goto(`${failures.server.baseUrl}/toolbox/game-workspace/index.html?game=sky-orchard-1`, { waitUntil: "networkidle" });
+    await expect(page.locator("[data-active-game-name]")).toHaveText("Sky Orchard");
+    await expect(page.locator("[data-active-game-purpose]")).toHaveText("Grow floating islands into a shared orchard.");
+    await expect(page.locator("[data-game-row='sky-orchard-1'] td").nth(4)).toHaveText("2 Items");
+    await expect(page.locator("[data-game-project-expanded-row='sky-orchard-1']")).toBeVisible();
+    await expect(page.locator("[data-source-idea-display]")).toHaveText("Sky Orchard");
+    await expect(page.locator("[data-source-idea-pitch]")).toHaveText("Grow floating islands into a shared orchard.");
+    await expect(page.locator("[data-source-idea-notes]")).toContainText("Floating islands need a wind map.");
+    await expect(page.getByRole("table", { name: "Game Journey Items for Sky Orchard" })).toContainText("Harvest routes should change with weather.");
+    await expect(page.getByRole("table", { name: "Game Journey Items for Sky Orchard" })).toContainText("Planned");
+    await expect(page.locator("[data-game-project-child-surface]")).toBeVisible();
 
     await expectNoPageFailures(failures);
   } finally {
@@ -609,7 +733,7 @@ test("Toolbox member-role filters focus tools without exposing admin-only contro
   const failures = await openRepoPage(page, "/toolbox/index.html");
 
   try {
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 11/39");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 14/42");
     await expect(page.locator("[data-toolbox-role-focus]")).toHaveCount(0);
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Hub$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Journey$/ }) })).toBeVisible();
@@ -620,7 +744,7 @@ test("Toolbox member-role filters focus tools without exposing admin-only contro
 
     await page.goto(`${failures.server.baseUrl}/toolbox/index.html?memberRole=Designer`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-toolbox-role-focus='Designer']")).toBeVisible();
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 7/39");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 8/42");
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Hub$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Journey$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Design$/ }) })).toBeVisible();
@@ -632,7 +756,7 @@ test("Toolbox member-role filters focus tools without exposing admin-only contro
 
     await page.goto(`${failures.server.baseUrl}/toolbox/index.html?memberRole=Audio%20Creator`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-toolbox-role-focus='Audio Creator']")).toBeVisible();
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 1/39");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 1/42");
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Assets$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Audio$/ }) })).toHaveCount(0);
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^MIDI$/ }) })).toHaveCount(0);
@@ -640,7 +764,7 @@ test("Toolbox member-role filters focus tools without exposing admin-only contro
 
     await page.goto(`${failures.server.baseUrl}/toolbox/index.html?memberRole=Viewer`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-toolbox-role-focus='Viewer']")).toBeVisible();
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 9/39");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 10/42");
     await expect(page.getByText("Viewer focus shows preview-safe read-only tiles only.")).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Hub$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Journey$/ }) })).toBeVisible();
@@ -649,7 +773,7 @@ test("Toolbox member-role filters focus tools without exposing admin-only contro
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Assets$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Debug$/ }) })).toHaveCount(0);
     await page.goto(`${failures.server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 11/39");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 14/42");
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Cloud$/ }) })).toHaveCount(0);
 
     await expectNoPageFailures(failures);

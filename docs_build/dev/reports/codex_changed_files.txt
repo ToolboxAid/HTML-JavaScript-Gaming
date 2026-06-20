@@ -1,7 +1,9 @@
-docs_build/dev/PROJECT_INSTRUCTIONS.md
-docs_build/dev/PROJECT_MULTI_PC.txt
-docs_build/dev/reports/PR_26171_ALPHA_075-team-based-pr-naming-manual-validation-notes.md
-docs_build/dev/reports/PR_26171_ALPHA_075-team-based-pr-naming-validation.md
-docs_build/dev/reports/PR_26171_ALPHA_075-team-based-pr-naming.md
-docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/codex_review.diff
+assets/theme-v2/css/tables.css / updated
+docs_build/pr/PR_26171_ALPHA_046-game-hub-table-standard-rebuild/APPLY_PR.md / added
+docs_build/pr/PR_26171_ALPHA_046-game-hub-table-standard-rebuild/BUILD_PR.md / added
+docs_build/pr/PR_26171_ALPHA_046-game-hub-table-standard-rebuild/PLAN_PR.md / added
+docs_build/dev/reports/codex_review.diff / updated
+docs_build/dev/reports/codex_changed_files.txt / updated
+tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs / updated
+toolbox/game-workspace/game-workspace.js / updated
+toolbox/game-workspace/index.html / updated

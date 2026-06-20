@@ -111,10 +111,17 @@ td {
   text-transform: none
 }
 
+.data-table [data-table-parent-cell],
 .data-table [data-idea-board-idea-cell] {
   cursor: pointer
 }
 
+.data-table [data-table-parent-cell]:focus-visible {
+  outline: var(--border-width-sm) solid var(--gold);
+  outline-offset: calc(var(--space-2) * -1)
+}
+
+.table-parent-label,
 .idea-board-idea-label {
   display: inline-flex;
   align-items: center;
@@ -126,10 +133,12 @@ td {
   white-space: nowrap
 }
 
+.table-parent-label__text,
 .idea-board-idea-label__text {
   line-height: var(--line-height-single)
 }
 
+.table-parent-chevron,
 .idea-board-idea-chevron {
   display: inline-block;
   width: 1em;
@@ -144,24 +153,33 @@ td {
   mask-size: contain
 }
 
+.table-parent-chevron--down,
 .idea-board-idea-chevron--down {
   -webkit-mask-image: url("../images/gfs-chevron-down.svg");
   mask-image: url("../images/gfs-chevron-down.svg")
 }
 
+.table-parent-chevron--up,
 .idea-board-idea-chevron--up {
   -webkit-mask-image: url("../images/gfs-chevron-up.svg");
   mask-image: url("../images/gfs-chevron-up.svg")
 }
 
+.table-child-surface,
 .idea-board-notes-child-surface {
   margin-left: calc(var(--space-14) * 2);
   max-width: calc(100% - (var(--space-14) * 2))
 }
 
+.table-child-actions,
 .idea-board-notes-child-actions {
   padding-left: var(--space-14);
   padding-top: var(--space-10)
+}
+
+.table-child-row > td:first-child,
+.table-child-indent {
+  padding-left: calc(var(--space-14) * 2)
 }
 
 .tool-form-table {
