@@ -227,8 +227,8 @@ const TOOLBOX_ROLE_FOCUS_TOOLS = Object.freeze({
   Designer: Object.freeze(["Game Hub", "Game Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Characters", "Colors", "Assets", "Tags"]),
   "World Builder": Object.freeze(["Worlds", "Objects", "Assets", "Colors", "Tags", "Animations"]),
   Artist: Object.freeze(["Assets", "Colors", "Tags", "Fonts", "Sprites", "Characters", "Objects", "Animations"]),
-  "Audio Creator": Object.freeze(["Audio", "Music", "Voices", "MIDI", "Audio Effects", "Voice Capture", "Voice Output", "Assets"]),
-  Translator: Object.freeze(["Languages", "Voices", "Voice Capture", "Voice Output"]),
+  "Audio Creator": Object.freeze(["Audio", "Music", "Voices", "MIDI", "Audio Effects", "Voice Capture", "Text To Speech", "Assets"]),
+  Translator: Object.freeze(["Languages", "Voices", "Voice Capture", "Text To Speech"]),
   Tester: Object.freeze(["Game Testing", "Controls", "Hitboxes", "Debug", "Performance", "Events"]),
   Publisher: Object.freeze(["Publish", "Marketplace", "Community", "Cloud", "Languages"]),
   Viewer: Object.freeze(["Game Hub", "Game Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Assets", "Colors", "Tags", "Audio", "Publish", "Marketplace", "Community", "Languages", "Achievements", "Ratings"]),
@@ -1427,18 +1427,25 @@ function normalizedToolKey(row) {
   return String(row?.toolKey || row?.toolId || row?.id || "").trim();
 }
 
-const SOURCE_CONTROLLED_TOOLBOX_TOOL_IDS = new Set(["game-workspace", "messages", "tags", "users"]);
+const SOURCE_CONTROLLED_TOOLBOX_TOOL_IDS = new Set(["game-workspace", "messages", "tags", "text-to-speech", "users"]);
 const SOURCE_CONTROLLED_TOOLBOX_METADATA_FIELDS = Object.freeze([
+  "active",
   "adminOnly",
+  "badge",
   "category",
   "colorGroup",
+  "deferred",
   "description",
   "group",
   "hidden",
   "path",
+  "releaseChannel",
+  "releaseChannelLabel",
   "shortDescription",
   "shortLabel",
+  "status",
   "subgroup",
+  "toolImage",
   "toolName",
   "toolboxGroup",
   "visibleInToolsList",

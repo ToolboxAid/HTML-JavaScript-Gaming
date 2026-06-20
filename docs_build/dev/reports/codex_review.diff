@@ -1,2043 +1,957 @@
-diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 58b5f9aa4..402777616 100644
---- a/docs_build/dev/reports/codex_changed_files.txt
-+++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,6 +1,34 @@
--﻿docs_build/dev/PROJECT_INSTRUCTIONS.md
--docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership.md
--docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-validation.md
--docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-manual-validation.md
--docs_build/dev/reports/codex_review.diff
--docs_build/dev/reports/codex_changed_files.txt
-+# git status --short
-+M docs_build/dev/reports/codex_changed_files.txt
-+ M docs_build/dev/reports/codex_review.diff
-+ M toolbox/text-to-speech/index.html
-+?? docs_build/dev/reports/PR_26171_027-text2speech-rebuild-foundation.md
-+?? docs_build/dev/reports/PR_26171_029-text2speech-tool-shell.md
-+?? docs_build/dev/reports/PR_26171_031-text2speech-message-model.md
-+?? docs_build/dev/reports/PR_26171_033-text2speech-generation-workflow.md
-+?? docs_build/dev/reports/PR_26171_035-text2speech-provider-adapter-plan.md
-+?? docs_build/dev/reports/PR_26171_text2speech-manual-validation.md
-+?? docs_build/dev/reports/PR_26171_text2speech-toolbox-path-correction.md
-+?? docs_build/dev/reports/PR_26171_text2speech-validation.md
-+?? docs_build/dev/reports/PR_26171_text2speech-zip-verification.md
-+?? tests/tools/Text2SpeechShell.test.mjs
-+?? toolbox/text-to-speech/text2speech.js
-+
-+# git ls-files --others --exclude-standard
-+docs_build/dev/reports/PR_26171_027-text2speech-rebuild-foundation.md
-+docs_build/dev/reports/PR_26171_029-text2speech-tool-shell.md
-+docs_build/dev/reports/PR_26171_031-text2speech-message-model.md
-+docs_build/dev/reports/PR_26171_033-text2speech-generation-workflow.md
-+docs_build/dev/reports/PR_26171_035-text2speech-provider-adapter-plan.md
-+docs_build/dev/reports/PR_26171_text2speech-manual-validation.md
-+docs_build/dev/reports/PR_26171_text2speech-toolbox-path-correction.md
-+docs_build/dev/reports/PR_26171_text2speech-validation.md
-+docs_build/dev/reports/PR_26171_text2speech-zip-verification.md
-+tests/tools/Text2SpeechShell.test.mjs
-+toolbox/text-to-speech/text2speech.js
-+
-+# git diff --stat
-+docs_build/dev/reports/codex_changed_files.txt |  16 +-
-+ docs_build/dev/reports/codex_review.diff       | 740 ++++++++++++++++++++-----
-+ toolbox/text-to-speech/index.html              |  76 ++-
-+ 3 files changed, 689 insertions(+), 143 deletions(-)
-\ No newline at end of file
-diff --git a/docs_build/dev/reports/codex_review.diff b/docs_build/dev/reports/codex_review.diff
-index 937e4526c..89effeec9 100644
---- a/docs_build/dev/reports/codex_review.diff
-+++ b/docs_build/dev/reports/codex_review.diff
-@@ -1,131 +1,1321 @@
--﻿diff --git a/docs_build/dev/PROJECT_INSTRUCTIONS.md b/docs_build/dev/PROJECT_INSTRUCTIONS.md
--index 055919ceb..8ec5d3681 100644
----- a/docs_build/dev/PROJECT_INSTRUCTIONS.md
--+++ b/docs_build/dev/PROJECT_INSTRUCTIONS.md
--@@ -1890,3 +1890,46 @@ Rules:
-- - Do not introduce new report/test prose that describes the current user-facing experience as `Workspace V2`.
-- - Existing package scripts such as `npm run test:workspace-v2`, legacy lane identifiers, and historical test suite names may remain until renamed by a dedicated cleanup PR.
-- - When a report invokes a legacy command name such as `npm run test:workspace-v2`, the report must explain that the command name is legacy and the user-facing product language is `Game Hub`.
--+
--+## CODEX GIT WORKFLOW OWNERSHIP
--+
--+Codex owns Git execution for implementation PRs.
--+
--+Required workflow:
--+1. Verify current branch.
--+2. Checkout main.
--+3. Pull latest main.
--+4. Verify clean repository.
--+5. Create PR branch.
--+6. Implement changes.
--+7. Stage only scoped files.
--+8. Commit.
--+9. Push branch to GitHub.
--+10. Create Pull Request automatically.
--+11. Resolve merge conflicts if encountered.
--+12. Re-run validation after conflict resolution.
--+13. Merge PR.
--+14. Return to main.
--+15. Pull latest main.
--+16. Continue to next approved PR.
--+
--+Rules:
--+- Do not ask the user if a PR should be created.
--+- Do not ask the user if a branch should be pushed.
--+- Treat PR creation as required.
--+- Treat branch push as required.
--+- Treat merge as required after validation passes.
--+- If GitHub prompts `Would you like to create a Pull Request?`, answer YES automatically.
--+- If merge conflicts occur:
--+  - preserve latest main
--+  - preserve PR scope
--+  - avoid unrelated cleanup
--+  - revalidate before merge
--+
--+Required Git workflow report fields:
--+- current branch
--+- created branch
--+- push result
--+- PR URL
--+- merge result
--+- final main commit
--diff --git a/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-manual-validation.md b/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-manual-validation.md
-+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-+index 58b5f9aa4..4939322ca 100644
-+--- a/docs_build/dev/reports/codex_changed_files.txt
-++++ b/docs_build/dev/reports/codex_changed_files.txt
-+@@ -1,6 +1,12 @@
-+-﻿docs_build/dev/PROJECT_INSTRUCTIONS.md
-+-docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership.md
-+-docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-validation.md
-+-docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-manual-validation.md
-+-docs_build/dev/reports/codex_review.diff
-++docs_build/dev/reports/PR_26171_027-text2speech-rebuild-foundation.md
-++docs_build/dev/reports/PR_26171_029-text2speech-tool-shell.md
-++docs_build/dev/reports/PR_26171_031-text2speech-message-model.md
-++docs_build/dev/reports/PR_26171_033-text2speech-generation-workflow.md
-++docs_build/dev/reports/PR_26171_035-text2speech-provider-adapter-plan.md
-++docs_build/dev/reports/PR_26171_text2speech-manual-validation.md
-++docs_build/dev/reports/PR_26171_text2speech-validation.md
-+ docs_build/dev/reports/codex_changed_files.txt
-++docs_build/dev/reports/codex_review.diff
-++tests/tools/Text2SpeechShell.test.mjs
-++tools/text2speech/index.html
-++tools/text2speech/text2speech.js
-+diff --git a/docs_build/dev/reports/codex_review.diff b/docs_build/dev/reports/codex_review.diff
-+index 937e4526c..31471e965 100644
-+--- a/docs_build/dev/reports/codex_review.diff
-++++ b/docs_build/dev/reports/codex_review.diff
-+@@ -1,131 +1,621 @@
-+-﻿diff --git a/docs_build/dev/PROJECT_INSTRUCTIONS.md b/docs_build/dev/PROJECT_INSTRUCTIONS.md
-+-index 055919ceb..8ec5d3681 100644
-+---- a/docs_build/dev/PROJECT_INSTRUCTIONS.md
-+-+++ b/docs_build/dev/PROJECT_INSTRUCTIONS.md
-+-@@ -1890,3 +1890,46 @@ Rules:
-+- - Do not introduce new report/test prose that describes the current user-facing experience as `Workspace V2`.
-+- - Existing package scripts such as `npm run test:workspace-v2`, legacy lane identifiers, and historical test suite names may remain until renamed by a dedicated cleanup PR.
-+- - When a report invokes a legacy command name such as `npm run test:workspace-v2`, the report must explain that the command name is legacy and the user-facing product language is `Game Hub`.
-+-+
-+-+## CODEX GIT WORKFLOW OWNERSHIP
-+-+
-+-+Codex owns Git execution for implementation PRs.
-+-+
-+-+Required workflow:
-+-+1. Verify current branch.
-+-+2. Checkout main.
-+-+3. Pull latest main.
-+-+4. Verify clean repository.
-+-+5. Create PR branch.
-+-+6. Implement changes.
-+-+7. Stage only scoped files.
-+-+8. Commit.
-+-+9. Push branch to GitHub.
-+-+10. Create Pull Request automatically.
-+-+11. Resolve merge conflicts if encountered.
-+-+12. Re-run validation after conflict resolution.
-+-+13. Merge PR.
-+-+14. Return to main.
-+-+15. Pull latest main.
-+-+16. Continue to next approved PR.
-+-+
-+-+Rules:
-+-+- Do not ask the user if a PR should be created.
-+-+- Do not ask the user if a branch should be pushed.
-+-+- Treat PR creation as required.
-+-+- Treat branch push as required.
-+-+- Treat merge as required after validation passes.
-+-+- If GitHub prompts `Would you like to create a Pull Request?`, answer YES automatically.
-+-+- If merge conflicts occur:
-+-+  - preserve latest main
-+-+  - preserve PR scope
-+-+  - avoid unrelated cleanup
-+-+  - revalidate before merge
-+-+
-+-+Required Git workflow report fields:
-+-+- current branch
-+-+- created branch
-+-+- push result
-+-+- PR URL
-+-+- merge result
-+-+- final main commit
-+-diff --git a/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-manual-validation.md b/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-manual-validation.md
-++diff --git a/docs_build/dev/reports/PR_26171_027-text2speech-rebuild-foundation.md b/docs_build/dev/reports/PR_26171_027-text2speech-rebuild-foundation.md
-+ new file mode 100644
-+-index 000000000..66dca5470
-++index 0000000..b691791
-+ --- /dev/null
-+-+++ b/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-manual-validation.md
-+-@@ -0,0 +1,15 @@
-+-+# PR_26171_025 Manual Validation Notes
-+-+
-+-+## Manual Review
-+-+- Confirmed `docs_build/dev/PROJECT_INSTRUCTIONS.md` contains a new `CODEX GIT WORKFLOW OWNERSHIP` section.
-+-+- Confirmed the section states that Codex owns Git execution for implementation PRs.
-+-+- Confirmed the required 16-step workflow is present.
-+-+- Confirmed branch push, Pull Request creation, and merge are documented as required.
-+-+- Confirmed the GitHub prompt instruction says to answer YES automatically.
-+-+- Confirmed merge conflict handling preserves latest `main`, preserves PR scope, avoids unrelated cleanup, and requires revalidation before merge.
-+-+- Confirmed required reporting fields are listed.
-+-+
-+-+## Out Of Scope Confirmed
-+-+- No runtime implementation was added.
-+-+- No UI behavior was changed.
-+-+- No database behavior was changed.
-+-diff --git a/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-validation.md b/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-validation.md
-+++++ b/docs_build/dev/reports/PR_26171_027-text2speech-rebuild-foundation.md
-++@@ -0,0 +1,39 @@
-+++# PR_26171_027 Text2Speech Rebuild Foundation
-+++
-+++## Reference source
-+++- Reviewed `archive/v1-v2/tools/old_text2speech-V2` as historical reference only.
-+++- No archived implementation, CSS, event handlers, or runtime code was copied.
-+++
-+++## Feature inventory
-+++- Script/message text entry and review.
-+++- Voice/profile selection concepts.
-+++- Emotion or delivery tuning concepts.
-+++- Preview/generate/export workflow concepts.
-+++- Provider choice as a future integration seam.
-+++
-+++## UX inventory
-+++- Creator needs a clear distinction between design-owned message text and audio-owned generated voice assets.
-+++- Creator needs workflow state labels before provider integration exists.
-+++- Creator needs visible blocked states instead of silent fallback behavior.
-+++- Creator needs future provider readiness notes without exposing fake generation.
-+++
-+++## Data model notes
-+++- Message: design-owned text, language, emotion, status, metadata, and optional project linkage.
-+++- Emotion: named delivery intent with safe scalar settings.
-+++- Voice Profile: creator-facing desired voice/provider settings; generated output remains audio-owned.
-+++- Language: BCP-47-style language code and display name.
-+++- Status: draft, ready for preview, pending generation, generated, exported, blocked, archived.
-+++- Audio ownership: generated clips, files, provider artifacts, and export bundles belong to Audio.
-+++
-+++## Gap analysis
-+++- Current hidden Voice Output shell has no creator workflow model.
-+++- Current Message Studio speech testing is browser preview oriented and not a generated-audio pipeline.
-+++- Provider adapters require planning before any external service implementation.
-+++- Export requires explicit generated asset references; no browser-owned product data should be persisted.
-+++
-+++## Rebuild plan
-+++1. Create a Theme V2 text2speech shell under `/tools/text2speech`.
-+++2. Add a TTS message model foundation with explicit ownership boundaries.
-+++3. Add preview/generate/export shell states with blocked provider behavior.
-+++4. Add provider adapter plan for future OpenAI, ElevenLabs, Azure, and local providers.
-+++5. Keep implementation provider-free until a later scoped PR adds a real adapter.
-++diff --git a/docs_build/dev/reports/PR_26171_029-text2speech-tool-shell.md b/docs_build/dev/reports/PR_26171_029-text2speech-tool-shell.md
-+ new file mode 100644
-+-index 000000000..36314e518
-++index 0000000..dbbd19e
-+ --- /dev/null
-+-+++ b/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-validation.md
-+-@@ -0,0 +1,17 @@
-+-+# PR_26171_025 Validation Report
-+-+
-+-+## Validation Performed
-+-+- PASS: `npm run test:playwright:static`
-+-+
-+-+## Result
-+-+- Static/docs validation completed successfully.
-+-+- No browser Playwright validation was run because this PR is docs-only governance.
-+-+
-+-+## Scope Control
-+-+- Runtime implementation validation was skipped because no runtime files were intentionally changed for PR_26171_025.
-+-+- UI validation was skipped because no UI files were intentionally changed for PR_26171_025.
-+-+- Database validation was skipped because no database files or runtime persistence behavior were intentionally changed for PR_26171_025.
-+-+
-+-+## Repository State Note
-+-+- The working tree had pre-existing unrelated changes and unresolved generated report conflicts in `codex_changed_files.txt` and `codex_review.diff` before this PR_025 work began.
-+-+- PR_26171_025 reports and standard Codex report files were regenerated for the governance change.
-+-diff --git a/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership.md b/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership.md
-+++++ b/docs_build/dev/reports/PR_26171_029-text2speech-tool-shell.md
-++@@ -0,0 +1,3 @@
-+++# PR_26171_029 Text2Speech Tool Shell
-+++
-+++Created `/tools/text2speech` with a Theme V2 page shell, current shared partials, ToolDisplayMode host usage, and Project Workspace-facing copy. No inline styles, style blocks, inline event handlers, page-local CSS, or tool-local CSS were added.
-++diff --git a/docs_build/dev/reports/PR_26171_031-text2speech-message-model.md b/docs_build/dev/reports/PR_26171_031-text2speech-message-model.md
-++new file mode 100644
-++index 0000000..fd778be
-++--- /dev/null
-+++++ b/docs_build/dev/reports/PR_26171_031-text2speech-message-model.md
-++@@ -0,0 +1,3 @@
-+++# PR_26171_031 Text2Speech Message Model
-+++
-+++Added a provider-free Text2Speech model foundation for Message, Emotion Profile, Voice Profile, Language, Status, and creator metadata. Message data is marked Design-owned. Generated voice/audio ownership is explicitly marked Audio-owned.
-++diff --git a/docs_build/dev/reports/PR_26171_033-text2speech-generation-workflow.md b/docs_build/dev/reports/PR_26171_033-text2speech-generation-workflow.md
-++new file mode 100644
-++index 0000000..57cdc3a
-++--- /dev/null
-+++++ b/docs_build/dev/reports/PR_26171_033-text2speech-generation-workflow.md
-++@@ -0,0 +1,3 @@
-+++# PR_26171_033 Text2Speech Generation Workflow
-+++
-+++Added preview/generate/export workflow shell functions and UI controls. Preview validates readiness. Generate is blocked because no provider adapter is implemented. Export is blocked until an Audio-owned generated asset exists. No fake generation or silent fallback was added.
-++diff --git a/docs_build/dev/reports/PR_26171_035-text2speech-provider-adapter-plan.md b/docs_build/dev/reports/PR_26171_035-text2speech-provider-adapter-plan.md
-+ new file mode 100644
-+-index 000000000..dd6d449d5
-++index 0000000..991fa4f
-+ --- /dev/null
-+-+++ b/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership.md
-+-@@ -0,0 +1,30 @@
-+-+# PR_26171_025 Codex Git Workflow Ownership
-+-+
-+-+## Summary
-+-+- Added the `CODEX GIT WORKFLOW OWNERSHIP` governance section to `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
-+-+- Established that Codex owns Git execution for implementation PRs.
-+-+- Documented the required branch, pull, clean-status, PR branch, scoped staging, commit, push, automatic Pull Request creation, conflict resolution, validation rerun, merge, return-to-main, and continuation flow.
-+-+
-+-+## Scope
-+-+- Docs-only governance update.
-+-+- No runtime implementation.
-+-+- No UI changes.
-+-+- No database changes.
-+-+
-+-+## Governance Intent
-+-+- Codex should not ask the user whether to push a branch or create a Pull Request for implementation PRs.
-+-+- Branch push, Pull Request creation, and merge after passing validation are required implementation PR workflow steps.
-+-+- Merge conflicts must preserve latest `main`, preserve PR scope, avoid unrelated cleanup, and revalidate before merge.
-+-+
-+-+## Required Git Workflow Report Fields
-+-+- current branch
-+-+- created branch
-+-+- push result
-+-+- PR URL
-+-+- merge result
-+-+- final main commit
-+-+
-+-+## Current Execution Notes
-+-+- Current branch at validation time: `main`.
-+-+- This PR_025 task was docs-only and did not create runtime changes.
-+-+- The repository already contained unrelated staged changes and unresolved generated report conflicts before this PR_025 edit began; those unrelated files were preserved.
-+++++ b/docs_build/dev/reports/PR_26171_035-text2speech-provider-adapter-plan.md
-++@@ -0,0 +1,3 @@
-+++# PR_26171_035 Text2Speech Provider Adapter Plan
-+++
-+++Added future provider planning entries for OpenAI, ElevenLabs, Azure AI Speech, and local providers. Entries document boundaries and required capabilities only; no provider implementation or external network integration was added.
-++diff --git a/docs_build/dev/reports/PR_26171_text2speech-manual-validation.md b/docs_build/dev/reports/PR_26171_text2speech-manual-validation.md
-++new file mode 100644
-++index 0000000..59723df
-++--- /dev/null
-+++++ b/docs_build/dev/reports/PR_26171_text2speech-manual-validation.md
-++@@ -0,0 +1,6 @@
-+++# Text2Speech Manual Validation Notes
-+++
-+++- Reviewed `/tools/text2speech/index.html` for Theme V2 stylesheet usage only.
-+++- Confirmed no inline styles, style blocks, inline event handlers, page-local CSS, or tool-local CSS were introduced.
-+++- Confirmed archived `old_text2speech-V2` code was treated as reference material only and not copied.
-+++- Browser screenshot was not captured because Playwright Chromium is not installed in this environment.
-++diff --git a/docs_build/dev/reports/PR_26171_text2speech-validation.md b/docs_build/dev/reports/PR_26171_text2speech-validation.md
-++new file mode 100644
-++index 0000000..27a843d
-++--- /dev/null
-+++++ b/docs_build/dev/reports/PR_26171_text2speech-validation.md
-++@@ -0,0 +1,11 @@
-+++# Text2Speech Validation Report
-+++
-+++## Commands
-+++- `node --test tests/tools/Text2SpeechShell.test.mjs` — passed.
-+++- `npm test -- tests/tools/Text2SpeechShell.test.mjs` — failed during existing shared extraction guard pretest before the targeted test ran; unexpected baseline violations are reported in existing files outside this change.
-+++- `npm run test:workspace-v2` — blocked by missing Playwright Chromium executable at `/root/.cache/ms-playwright/chromium-1217/chrome-linux64/chrome`.
-+++
-+++## Targeted assertions
-+++- Model ownership boundary is Design for messages/profiles and Audio for generated voice assets.
-+++- Preview/generate/export shell does not silently fall back.
-+++- Future provider adapter list is planning-only for OpenAI, ElevenLabs, Azure, and local providers.
-++diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-++index 58b5f9a..1c28b63 100644
-++--- a/docs_build/dev/reports/codex_changed_files.txt
-+++++ b/docs_build/dev/reports/codex_changed_files.txt
-++@@ -1,6 +1,11 @@
-++-﻿docs_build/dev/PROJECT_INSTRUCTIONS.md
-++-docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership.md
-++-docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-validation.md
-++-docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-manual-validation.md
-++-docs_build/dev/reports/codex_review.diff
-+++docs_build/dev/reports/PR_26171_027-text2speech-rebuild-foundation.md
-+++docs_build/dev/reports/PR_26171_029-text2speech-tool-shell.md
-+++docs_build/dev/reports/PR_26171_031-text2speech-message-model.md
-+++docs_build/dev/reports/PR_26171_033-text2speech-generation-workflow.md
-+++docs_build/dev/reports/PR_26171_035-text2speech-provider-adapter-plan.md
-+++docs_build/dev/reports/PR_26171_text2speech-manual-validation.md
-+++docs_build/dev/reports/PR_26171_text2speech-validation.md
-++ docs_build/dev/reports/codex_changed_files.txt
-+++docs_build/dev/reports/codex_review.diff
-+++tests/tools/Text2SpeechShell.test.mjs
-+++tools/
-++diff --git a/docs_build/dev/reports/codex_review.diff b/docs_build/dev/reports/codex_review.diff
-++index 937e452..0fd11f5 100644
-++--- a/docs_build/dev/reports/codex_review.diff
-+++++ b/docs_build/dev/reports/codex_review.diff
-++@@ -1,131 +0,0 @@
-++-﻿diff --git a/docs_build/dev/PROJECT_INSTRUCTIONS.md b/docs_build/dev/PROJECT_INSTRUCTIONS.md
-++-index 055919ceb..8ec5d3681 100644
-++---- a/docs_build/dev/PROJECT_INSTRUCTIONS.md
-++-+++ b/docs_build/dev/PROJECT_INSTRUCTIONS.md
-++-@@ -1890,3 +1890,46 @@ Rules:
-++- - Do not introduce new report/test prose that describes the current user-facing experience as `Workspace V2`.
-++- - Existing package scripts such as `npm run test:workspace-v2`, legacy lane identifiers, and historical test suite names may remain until renamed by a dedicated cleanup PR.
-++- - When a report invokes a legacy command name such as `npm run test:workspace-v2`, the report must explain that the command name is legacy and the user-facing product language is `Game Hub`.
-++-+
-++-+## CODEX GIT WORKFLOW OWNERSHIP
-++-+
-++-+Codex owns Git execution for implementation PRs.
-++-+
-++-+Required workflow:
-++-+1. Verify current branch.
-++-+2. Checkout main.
-++-+3. Pull latest main.
-++-+4. Verify clean repository.
-++-+5. Create PR branch.
-++-+6. Implement changes.
-++-+7. Stage only scoped files.
-++-+8. Commit.
-++-+9. Push branch to GitHub.
-++-+10. Create Pull Request automatically.
-++-+11. Resolve merge conflicts if encountered.
-++-+12. Re-run validation after conflict resolution.
-++-+13. Merge PR.
-++-+14. Return to main.
-++-+15. Pull latest main.
-++-+16. Continue to next approved PR.
-++-+
-++-+Rules:
-++-+- Do not ask the user if a PR should be created.
-++-+- Do not ask the user if a branch should be pushed.
-++-+- Treat PR creation as required.
-++-+- Treat branch push as required.
-++-+- Treat merge as required after validation passes.
-++-+- If GitHub prompts `Would you like to create a Pull Request?`, answer YES automatically.
-++-+- If merge conflicts occur:
-++-+  - preserve latest main
-++-+  - preserve PR scope
-++-+  - avoid unrelated cleanup
-++-+  - revalidate before merge
-++-+
-++-+Required Git workflow report fields:
-++-+- current branch
-++-+- created branch
-++-+- push result
-++-+- PR URL
-++-+- merge result
-++-+- final main commit
-++-diff --git a/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-manual-validation.md b/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-manual-validation.md
-++-new file mode 100644
-++-index 000000000..66dca5470
-++---- /dev/null
-++-+++ b/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-manual-validation.md
-++-@@ -0,0 +1,15 @@
-++-+# PR_26171_025 Manual Validation Notes
-++-+
-++-+## Manual Review
-++-+- Confirmed `docs_build/dev/PROJECT_INSTRUCTIONS.md` contains a new `CODEX GIT WORKFLOW OWNERSHIP` section.
-++-+- Confirmed the section states that Codex owns Git execution for implementation PRs.
-++-+- Confirmed the required 16-step workflow is present.
-++-+- Confirmed branch push, Pull Request creation, and merge are documented as required.
-++-+- Confirmed the GitHub prompt instruction says to answer YES automatically.
-++-+- Confirmed merge conflict handling preserves latest `main`, preserves PR scope, avoids unrelated cleanup, and requires revalidation before merge.
-++-+- Confirmed required reporting fields are listed.
-++-+
-++-+## Out Of Scope Confirmed
-++-+- No runtime implementation was added.
-++-+- No UI behavior was changed.
-++-+- No database behavior was changed.
-++-diff --git a/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-validation.md b/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-validation.md
-++-new file mode 100644
-++-index 000000000..36314e518
-++---- /dev/null
-++-+++ b/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-validation.md
-++-@@ -0,0 +1,17 @@
-++-+# PR_26171_025 Validation Report
-++-+
-++-+## Validation Performed
-++-+- PASS: `npm run test:playwright:static`
-++-+
-++-+## Result
-++-+- Static/docs validation completed successfully.
-++-+- No browser Playwright validation was run because this PR is docs-only governance.
-++-+
-++-+## Scope Control
-++-+- Runtime implementation validation was skipped because no runtime files were intentionally changed for PR_26171_025.
-++-+- UI validation was skipped because no UI files were intentionally changed for PR_26171_025.
-++-+- Database validation was skipped because no database files or runtime persistence behavior were intentionally changed for PR_26171_025.
-++-+
-++-+## Repository State Note
-++-+- The working tree had pre-existing unrelated changes and unresolved generated report conflicts in `codex_changed_files.txt` and `codex_review.diff` before this PR_025 work began.
-++-+- PR_26171_025 reports and standard Codex report files were regenerated for the governance change.
-++-diff --git a/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership.md b/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership.md
-++-new file mode 100644
-++-index 000000000..dd6d449d5
-++---- /dev/null
-++-+++ b/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership.md
-++-@@ -0,0 +1,30 @@
-++-+# PR_26171_025 Codex Git Workflow Ownership
-++-+
-++-+## Summary
-++-+- Added the `CODEX GIT WORKFLOW OWNERSHIP` governance section to `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
-++-+- Established that Codex owns Git execution for implementation PRs.
-++-+- Documented the required branch, pull, clean-status, PR branch, scoped staging, commit, push, automatic Pull Request creation, conflict resolution, validation rerun, merge, return-to-main, and continuation flow.
-++-+
-++-+## Scope
-++-+- Docs-only governance update.
-++-+- No runtime implementation.
-++-+- No UI changes.
-++-+- No database changes.
-++-+
-++-+## Governance Intent
-++-+- Codex should not ask the user whether to push a branch or create a Pull Request for implementation PRs.
-++-+- Branch push, Pull Request creation, and merge after passing validation are required implementation PR workflow steps.
-++-+- Merge conflicts must preserve latest `main`, preserve PR scope, avoid unrelated cleanup, and revalidate before merge.
-++-+
-++-+## Required Git Workflow Report Fields
-++-+- current branch
-++-+- created branch
-++-+- push result
-++-+- PR URL
-++-+- merge result
-++-+- final main commit
-++-+
-++-+## Current Execution Notes
-++-+- Current branch at validation time: `main`.
-++-+- This PR_025 task was docs-only and did not create runtime changes.
-++-+- The repository already contained unrelated staged changes and unresolved generated report conflicts before this PR_025 edit began; those unrelated files were preserved.
-++diff --git a/tests/tools/Text2SpeechShell.test.mjs b/tests/tools/Text2SpeechShell.test.mjs
-++new file mode 100644
-++index 0000000..addc8ae
-++--- /dev/null
-+++++ b/tests/tools/Text2SpeechShell.test.mjs
-++@@ -0,0 +1,49 @@
-+++import assert from "node:assert/strict";
-+++import test from "node:test";
-+++
-+++import {
-+++  TTS_MESSAGE_STATUSES,
-+++  TTS_PROVIDER_ADAPTER_PLAN,
-+++  createEmotionProfile,
-+++  createTtsMessage,
-+++  createVoiceProfile,
-+++  exportTtsMessage,
-+++  generateTtsMessage,
-+++  previewTtsMessage,
-+++} from "../../tools/text2speech/text2speech.js";
-+++
-+++test("Text2Speech message model separates Design and Audio ownership", () => {
-+++  const message = createTtsMessage({ text: "Hello", metadata: { tags: ["intro"] } });
-+++  const emotion = createEmotionProfile({ intensity: 2 });
-+++  const voice = createVoiceProfile({ providerKey: "openai" });
-+++
-+++  assert.equal(message.owner, "Design");
-+++  assert.equal(message.audioOwner, "Audio");
-+++  assert.equal(message.generatedAudio, null);
-+++  assert.deepEqual(message.metadata.tags, ["intro"]);
-+++  assert.equal(emotion.owner, "Design");
-+++  assert.equal(emotion.intensity, 1);
-+++  assert.equal(voice.owner, "Design");
-+++  assert.equal(voice.generatedAudioOwner, "Audio");
-+++  assert.ok(TTS_MESSAGE_STATUSES.includes("blocked"));
-+++});
-+++
-+++test("Text2Speech workflow blocks missing provider and missing generated asset without silent fallback", () => {
-+++  const ready = createTtsMessage({ text: "Welcome" });
-+++  const empty = createTtsMessage();
-+++
-+++  assert.equal(previewTtsMessage(ready).ok, true);
-+++  assert.equal(previewTtsMessage(empty).status, "blocked");
-+++  assert.equal(generateTtsMessage(ready).ok, false);
-+++  assert.match(generateTtsMessage(ready).message, /no TTS provider adapter/i);
-+++  assert.equal(exportTtsMessage(ready).ok, false);
-+++  assert.match(exportTtsMessage(ready).message, /Audio-owned voice asset/i);
-+++});
-+++
-+++test("Text2Speech provider adapter plan names expected future providers only", () => {
-+++  assert.deepEqual(
-+++    TTS_PROVIDER_ADAPTER_PLAN.map((provider) => provider.key),
-+++    ["openai", "elevenlabs", "azure", "local"],
-+++  );
-+++  assert.ok(TTS_PROVIDER_ADAPTER_PLAN.every((provider) => provider.status === "planned"));
-+++});
-++diff --git a/tools/text2speech/index.html b/tools/text2speech/index.html
-++new file mode 100644
-++index 0000000..e0d3ef8
-++--- /dev/null
-+++++ b/tools/text2speech/index.html
-++@@ -0,0 +1,112 @@
-+++<!doctype html>
-+++<html lang="en">
-+++
-+++<head>
-+++    <meta charset="utf-8">
-+++    <base href="/">
-+++    <meta name="viewport" content="width=device-width, initial-scale=1">
-+++    <title>Text2Speech - GameFoundryStudio</title>
-+++    <meta name="description" content="Text2Speech Theme V2 shell for message-owned text planning and future Audio-owned generated voice assets.">
-+++    <link rel="icon" href="/favicon.svg">
-+++    <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
-+++</head>
-+++
-+++<body class="meaning-molten-orange">
-+++    <div data-partial="header-nav"></div>
-+++    <main>
-+++        <section class="page-title">
-+++            <div class="container">
-+++                <div class="kicker">Project Workspace / Audio</div>
-+++                <h1>Text2Speech</h1>
-+++                <p class="lede">Plan spoken game messages while keeping message text Design-owned and generated voice/audio assets Audio-owned.</p>
-+++            </div>
-+++        </section>
-+++        <section class="section">
-+++            <div class="container container--tool-wide">
-+++                <div class="tool-workspace tool-workspace--wide">
-+++                    <aside class="tool-column tool-group-audio">
-+++                        <div class="tool-column-header">
-+++                            <h2>Message Model</h2>
-+++                        </div>
-+++                        <div class="accordion-stack">
-+++                            <details class="vertical-accordion" open>
-+++                                <summary>Design-owned fields</summary>
-+++                                <div class="accordion-body content-stack">
-+++                                    <p>Message, emotion, voice profile, language, status, and creator metadata belong to Design.</p>
-+++                                    <p>Generated voice files, provider artifacts, and exports belong to Audio.</p>
-+++                                </div>
-+++                            </details>
-+++                            <details class="vertical-accordion" open>
-+++                                <summary>Status Foundation</summary>
-+++                                <div class="accordion-body content-stack">
-+++                                    <p>Draft, ready for preview, pending generation, generated, exported, blocked, and archived states are modeled.</p>
-+++                                </div>
-+++                            </details>
-+++                        </div>
-+++                    </aside>
-+++                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="text-to-speech" data-tool-icon-src="assets/theme-v2/images/badges/text-to-speech.png" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
-+++                    <section class="tool-center-panel">
-+++                        <h2>Preview, Generate, Export</h2>
-+++                        <p>This workflow shell intentionally has no external provider integration, fake generation, or silent fallback.</p>
-+++                        <div class="grid cols-3" aria-label="Text2Speech workflow actions">
-+++                            <article class="mini-stat"><strong>1</strong>Preview request</article>
-+++                            <article class="mini-stat"><strong>0</strong>Providers implemented</article>
-+++                            <article class="mini-stat"><strong>Audio</strong>Generated owner</article>
-+++                        </div>
-+++                        <article class="card">
-+++                            <div class="card-body content-stack">
-+++                                <div>
-+++                                    <div class="kicker">Workflow Shell</div>
-+++                                    <h3>Provider-free actions</h3>
-+++                                </div>
-+++                                <p>Preview can validate message readiness. Generate and export stay blocked until a real provider and Audio-owned generated asset exist.</p>
-+++                                <div class="action-group">
-+++                                    <button class="btn" type="button" data-tts-action="preview">Preview Readiness</button>
-+++                                    <button class="btn" type="button" data-tts-action="generate">Generate Voice</button>
-+++                                    <button class="btn" type="button" data-tts-action="export">Export Audio</button>
-+++                                </div>
-+++                                <div class="status" role="status" data-tts-workflow-status>Loading Text2Speech shell.</div>
-+++                            </div>
-+++                        </article>
-+++                        <article class="card">
-+++                            <div class="card-body content-stack">
-+++                                <div>
-+++                                    <div class="kicker">Provider Adapter Plan</div>
-+++                                    <h3>Future provider seams</h3>
-+++                                </div>
-+++                                <ul data-tts-provider-plan></ul>
-+++                            </div>
-+++                        </article>
-+++                    </section>
-+++                    <aside class="tool-column tool-group-audio">
-+++                        <div class="tool-column-header">
-+++                            <h2>Inspector</h2>
-+++                        </div>
-+++                        <div class="accordion-stack">
-+++                            <details class="vertical-accordion" open>
-+++                                <summary>Ownership Boundary</summary>
-+++                                <div class="accordion-body content-stack">
-+++                                    <p>Design owns script intent and delivery metadata.</p>
-+++                                    <p>Audio owns generated clips and export-ready files.</p>
-+++                                </div>
-+++                            </details>
-+++                            <details class="vertical-accordion" open>
-+++                                <summary>Blocked States</summary>
-+++                                <div class="accordion-body content-stack">
-+++                                    <p>Generation is visibly blocked when no provider adapter is implemented.</p>
-+++                                    <p>Export is visibly blocked when no generated Audio-owned asset exists.</p>
-+++                                </div>
-+++                            </details>
-+++                        </div>
-+++                    </aside>
-+++                </div>
-+++            </div>
-+++        </section>
-+++    </main>
-+++    <div data-partial="footer"></div>
-+++    <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
-+++    <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
-+++    <script type="module" src="tools/text2speech/text2speech.js"></script>
-+++</body>
-+++
-+++</html>
-++diff --git a/tools/text2speech/text2speech.js b/tools/text2speech/text2speech.js
-++new file mode 100644
-++index 0000000..b9a4ce7
-++--- /dev/null
-+++++ b/tools/text2speech/text2speech.js
-++@@ -0,0 +1,175 @@
-+++const TTS_OWNERSHIP = Object.freeze({
-+++  DESIGN: "Design",
-+++  AUDIO: "Audio",
-+++});
-+++
-+++const TTS_MESSAGE_STATUSES = Object.freeze([
-+++  "draft",
-+++  "ready-for-preview",
-+++  "pending-generation",
-+++  "generated",
-+++  "exported",
-+++  "blocked",
-+++  "archived",
-+++]);
-+++
-+++const TTS_LANGUAGES = Object.freeze([
-+++  { code: "en-US", name: "English (United States)" },
-+++  { code: "en-GB", name: "English (United Kingdom)" },
-+++  { code: "es-ES", name: "Spanish (Spain)" },
-+++  { code: "fr-FR", name: "French (France)" },
-+++  { code: "de-DE", name: "German (Germany)" },
-+++  { code: "ja-JP", name: "Japanese (Japan)" },
-+++]);
-+++
-+++const TTS_PROVIDER_ADAPTER_PLAN = Object.freeze([
-+++  {
-+++    key: "openai",
-+++    name: "OpenAI",
-+++    status: "planned",
-+++    boundary: "External provider adapter; no implementation in this PR.",
-+++    requiredCapabilities: ["text input", "voice selection", "generated audio file response", "usage metadata"],
-+++  },
-+++  {
-+++    key: "elevenlabs",
-+++    name: "ElevenLabs",
-+++    status: "planned",
-+++    boundary: "External provider adapter; no implementation in this PR.",
-+++    requiredCapabilities: ["text input", "voice profile mapping", "generated audio file response", "provider job metadata"],
-+++  },
-+++  {
-+++    key: "azure",
-+++    name: "Azure AI Speech",
-+++    status: "planned",
-+++    boundary: "External provider adapter; no implementation in this PR.",
-+++    requiredCapabilities: ["SSML-safe text", "language mapping", "voice deployment mapping", "generated audio file response"],
-+++  },
-+++  {
-+++    key: "local",
-+++    name: "Local Provider",
-+++    status: "planned",
-+++    boundary: "Local/offline adapter; no implementation in this PR.",
-+++    requiredCapabilities: ["local model availability", "voice preset mapping", "file output", "device/runtime capability reporting"],
-+++  },
-+++]);
-+++
-+++function createTtsMessage({
-+++  id,
-+++  name,
-+++  text,
-+++  emotionKey = "neutral",
-+++  voiceProfileKey = "unassigned",
-+++  languageCode = "en-US",
-+++  status = "draft",
-+++  metadata = {},
-+++} = {}) {
-+++  return {
-+++    id: String(id || "tts-message-draft"),
-+++    name: String(name || "Untitled TTS Message"),
-+++    text: String(text || ""),
-+++    emotionKey: String(emotionKey || "neutral"),
-+++    voiceProfileKey: String(voiceProfileKey || "unassigned"),
-+++    languageCode: String(languageCode || "en-US"),
-+++    status: TTS_MESSAGE_STATUSES.includes(status) ? status : "draft",
-+++    owner: TTS_OWNERSHIP.DESIGN,
-+++    audioOwner: TTS_OWNERSHIP.AUDIO,
-+++    metadata: {
-+++      creatorNotes: String(metadata.creatorNotes || ""),
-+++      intent: String(metadata.intent || ""),
-+++      sceneKey: String(metadata.sceneKey || ""),
-+++      tags: Array.isArray(metadata.tags) ? metadata.tags.map(String) : [],
-+++    },
-+++    generatedAudio: null,
-+++  };
-+++}
-+++
-+++function createEmotionProfile({ key = "neutral", name = "Neutral", intensity = 0.5 } = {}) {
-+++  const numericIntensity = Number(intensity);
-+++  const safeIntensity = Number.isNaN(numericIntensity) ? 0.5 : Math.min(1, Math.max(0, numericIntensity));
-+++  return { key: String(key), name: String(name), intensity: safeIntensity, owner: TTS_OWNERSHIP.DESIGN };
-+++}
-+++
-+++function createVoiceProfile({ key = "unassigned", name = "Unassigned Voice", providerKey = "unassigned", voiceId = "" } = {}) {
-+++  return {
-+++    key: String(key),
-+++    name: String(name),
-+++    providerKey: String(providerKey),
-+++    voiceId: String(voiceId),
-+++    owner: TTS_OWNERSHIP.DESIGN,
-+++    generatedAudioOwner: TTS_OWNERSHIP.AUDIO,
-+++  };
-+++}
-+++
-+++function previewTtsMessage(message) {
-+++  if (!message || !message.text.trim()) {
-+++    return { ok: false, status: "blocked", message: "Preview blocked: message text is required." };
-+++  }
-+++  return { ok: true, status: "ready-for-preview", message: "Preview shell ready. Provider playback is not implemented yet." };
-+++}
-+++
-+++function generateTtsMessage() {
-+++  return { ok: false, status: "blocked", message: "Generation blocked: no TTS provider adapter is implemented yet." };
-+++}
-+++
-+++function exportTtsMessage(message) {
-+++  if (!message || !message.generatedAudio) {
-+++    return { ok: false, status: "blocked", message: "Export blocked: generated Audio-owned voice asset is required." };
-+++  }
-+++  return { ok: true, status: "exported", message: "Export shell ready for an Audio-owned generated voice asset." };
-+++}
-+++
-+++function renderProviderPlan(list, providers = TTS_PROVIDER_ADAPTER_PLAN) {
-+++  if (!list) return;
-+++  list.replaceChildren();
-+++  providers.forEach((provider) => {
-+++    const item = document.createElement("li");
-+++    const strong = document.createElement("strong");
-+++    strong.textContent = provider.name;
-+++    item.append(strong, ` — ${provider.status}. ${provider.boundary}`);
-+++    list.append(item);
-+++  });
-+++}
-+++
-+++function initializeText2SpeechShell(root = document) {
-+++  const status = root.querySelector("[data-tts-workflow-status]");
-+++  const sample = createTtsMessage({
-+++    id: "sample-message",
-+++    name: "Sample Message",
-+++    text: "Welcome to the arena, hero.",
-+++    emotionKey: "confident",
-+++    voiceProfileKey: "future-voice",
-+++    metadata: { intent: "Narration", tags: ["intro", "tutorial"] },
-+++  });
-+++  const actions = {
-+++    preview: previewTtsMessage(sample),
-+++    generate: generateTtsMessage(sample),
-+++    export: exportTtsMessage(sample),
-+++  };
-+++  root.querySelectorAll("[data-tts-action]").forEach((button) => {
-+++    button.addEventListener("click", () => {
-+++      const result = actions[button.dataset.ttsAction];
-+++      if (status && result) status.textContent = result.message;
-+++    });
-+++  });
-+++  renderProviderPlan(root.querySelector("[data-tts-provider-plan]"));
-+++  if (status) status.textContent = "Text2Speech shell loaded. Generation is blocked until a real provider adapter is implemented.";
-+++  return { sample, actions };
-+++}
-+++
-+++if (typeof document !== "undefined") {
-+++  initializeText2SpeechShell(document);
-+++}
-+++
-+++export {
-+++  TTS_LANGUAGES,
-+++  TTS_MESSAGE_STATUSES,
-+++  TTS_OWNERSHIP,
-+++  TTS_PROVIDER_ADAPTER_PLAN,
-+++  createEmotionProfile,
-+++  createTtsMessage,
-+++  createVoiceProfile,
-+++  exportTtsMessage,
-+++  generateTtsMessage,
-+++  initializeText2SpeechShell,
-+++  previewTtsMessage,
-+++};
-+diff --git a/toolbox/text-to-speech/index.html b/toolbox/text-to-speech/index.html
-+index 1a2532dd1..4cca0e6f1 100644
-+--- a/toolbox/text-to-speech/index.html
-++++ b/toolbox/text-to-speech/index.html
-+@@ -5,8 +5,8 @@
-+     <meta charset="utf-8">
-+     <base href="/">
-+     <meta name="viewport" content="width=device-width, initial-scale=1">
-+-    <title>Voice Output - GameFoundryStudio</title>
-+-    <meta name="description" content="Voice Output Toolbox wireframe. Plan generated narration and spoken output workflows.">
-++    <title>Text To Speech - GameFoundryStudio</title>
-++    <meta name="description" content="Text To Speech Theme V2 shell for message-owned text planning and future Audio-owned generated voice assets.">
-+     <link rel="icon" href="/favicon.svg">
-+     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
-+ </head>
-+@@ -16,9 +16,9 @@
-+     <main>
-+         <section class="page-title">
-+             <div class="container">
-+-                <div class="kicker">Toolbox / Voice Output</div>
-+-                <h1>Voice Output</h1>
-+-                <p class="lede">Plan generated narration and spoken output workflows. Static shell only; no database, persistence, save, load, or runtime behavior is implemented.</p>
-++                <div class="kicker">Project Workspace / Audio</div>
-++                <h1>Text To Speech</h1>
-++                <p class="lede">Plan spoken game messages while keeping message text Design-owned and generated voice/audio assets Audio-owned.</p>
-+             </div>
-+         </section>
-+         <section class="section">
-+@@ -26,18 +26,57 @@
-+                 <div class="tool-workspace tool-workspace--wide">
-+                     <aside class="tool-column tool-group-audio">
-+                         <div class="tool-column-header">
-+-                            <h2>Voice Output</h2>
-++                            <h2>Message Model</h2>
-+                         </div>
-+                         <div class="accordion-stack">
-+                             <details class="vertical-accordion" open>
-+-                                <summary>Setup</summary>
-+-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
-++                                <summary>Design-owned fields</summary>
-++                                <div class="accordion-body content-stack">
-++                                    <p>Message, emotion, voice profile, language, status, and creator metadata belong to Design.</p>
-++                                    <p>Generated voice files, provider artifacts, and exports belong to Audio.</p>
-++                                </div>
-++                            </details>
-++                            <details class="vertical-accordion" open>
-++                                <summary>Status Foundation</summary>
-++                                <div class="accordion-body content-stack">
-++                                    <p>Draft, ready for preview, pending generation, generated, exported, blocked, and archived states are modeled.</p>
-++                                </div>
-+                             </details>
-+                         </div>
-+                     </aside>
-+-                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="text-to-speech" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
-+-                    <section class="tool-center-panel"><h2>Workspace</h2>
-+-                        <p>Plan generated narration and spoken output workflows. This page preserves the shared Theme V2 tool template structure for future rebuild work.</p>
-++                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="text-to-speech" data-tool-icon-src="assets/theme-v2/images/badges/text-to-speech.png" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
-++                    <section class="tool-center-panel">
-++                        <h2>Preview, Generate, Export</h2>
-++                        <p>This workflow shell intentionally has no external provider integration, fake generation, or silent fallback.</p>
-++                        <div class="grid cols-3" aria-label="Text To Speech workflow actions">
-++                            <article class="mini-stat"><strong>1</strong>Preview request</article>
-++                            <article class="mini-stat"><strong>0</strong>Providers implemented</article>
-++                            <article class="mini-stat"><strong>Audio</strong>Generated owner</article>
-++                        </div>
-++                        <article class="card">
-++                            <div class="card-body content-stack">
-++                                <div>
-++                                    <div class="kicker">Workflow Shell</div>
-++                                    <h3>Provider-free actions</h3>
-++                                </div>
-++                                <p>Preview can validate message readiness. Generate and export stay blocked until a real provider and Audio-owned generated asset exist.</p>
-++                                <div class="action-group">
-++                                    <button class="btn" type="button" data-tts-action="preview">Preview Readiness</button>
-++                                    <button class="btn" type="button" data-tts-action="generate">Generate Voice</button>
-++                                    <button class="btn" type="button" data-tts-action="export">Export Audio</button>
-++                                </div>
-++                                <div class="status" role="status" data-tts-workflow-status>Loading Text To Speech shell.</div>
-++                            </div>
-++                        </article>
-++                        <article class="card">
-++                            <div class="card-body content-stack">
-++                                <div>
-++                                    <div class="kicker">Provider Adapter Plan</div>
-++                                    <h3>Future provider paths</h3>
-++                                </div>
-++                                <ul data-tts-provider-plan></ul>
-++                            </div>
-++                        </article>
-+                     </section>
-+                     <aside class="tool-column tool-group-audio">
-+                         <div class="tool-column-header">
-+@@ -45,8 +84,18 @@
-+                         </div>
-+                         <div class="accordion-stack">
-+                             <details class="vertical-accordion" open>
-+-                                <summary>Output</summary>
-+-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
-++                                <summary>Ownership Boundary</summary>
-++                                <div class="accordion-body content-stack">
-++                                    <p>Design owns script intent and delivery metadata.</p>
-++                                    <p>Audio owns generated clips and export-ready files.</p>
-++                                </div>
-++                            </details>
-++                            <details class="vertical-accordion" open>
-++                                <summary>Blocked States</summary>
-++                                <div class="accordion-body content-stack">
-++                                    <p>Generation is visibly blocked when no provider adapter is implemented.</p>
-++                                    <p>Export is visibly blocked when no generated Audio-owned asset exists.</p>
-++                                </div>
-+                             </details>
-+                         </div>
-+                     </aside>
-+@@ -57,6 +106,7 @@
-+     <div data-partial="footer"></div>
-+     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
-+     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
-++    <script type="module" src="toolbox/text-to-speech/text2speech.js"></script>
-+ </body>
-+ 
-+ </html>
-+diff --git a/docs_build/dev/reports/PR_26171_027-text2speech-rebuild-foundation.md b/docs_build/dev/reports/PR_26171_027-text2speech-rebuild-foundation.md
- new file mode 100644
--index 000000000..66dca5470
-+index 000000000..50091adb5
- --- /dev/null
--+++ b/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-manual-validation.md
--@@ -0,0 +1,15 @@
--+# PR_26171_025 Manual Validation Notes
--+
--+## Manual Review
--+- Confirmed `docs_build/dev/PROJECT_INSTRUCTIONS.md` contains a new `CODEX GIT WORKFLOW OWNERSHIP` section.
--+- Confirmed the section states that Codex owns Git execution for implementation PRs.
--+- Confirmed the required 16-step workflow is present.
--+- Confirmed branch push, Pull Request creation, and merge are documented as required.
--+- Confirmed the GitHub prompt instruction says to answer YES automatically.
--+- Confirmed merge conflict handling preserves latest `main`, preserves PR scope, avoids unrelated cleanup, and requires revalidation before merge.
--+- Confirmed required reporting fields are listed.
--+
--+## Out Of Scope Confirmed
--+- No runtime implementation was added.
--+- No UI behavior was changed.
--+- No database behavior was changed.
--diff --git a/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-validation.md b/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-validation.md
-++++ b/docs_build/dev/reports/PR_26171_027-text2speech-rebuild-foundation.md
-+@@ -0,0 +1,39 @@
-++# PR_26171_027 Text To Speech Rebuild Foundation
-++
-++## Reference source
-++- Reviewed `archive/v1-v2/tools/old_text2speech-V2` as historical reference only.
-++- No archived implementation, CSS, event handlers, or runtime code was copied.
-++
-++## Feature inventory
-++- Script/message text entry and review.
-++- Voice/profile selection concepts.
-++- Emotion or delivery tuning concepts.
-++- Preview/generate/export workflow concepts.
-++- Provider choice as a future integration path.
-++
-++## UX inventory
-++- Creator needs a clear distinction between design-owned message text and audio-owned generated voice assets.
-++- Creator needs workflow state labels before provider integration exists.
-++- Creator needs visible blocked states instead of silent fallback behavior.
-++- Creator needs future provider readiness notes without exposing fake generation.
-++
-++## Data model notes
-++- Message: design-owned text, language, emotion, status, metadata, and optional project linkage.
-++- Emotion: named delivery intent with safe scalar settings.
-++- Voice Profile: creator-facing desired voice/provider settings; generated output remains audio-owned.
-++- Language: BCP-47-style language code and display name.
-++- Status: draft, ready for preview, pending generation, generated, exported, blocked, archived.
-++- Audio ownership: generated clips, files, provider artifacts, and export bundles belong to Audio.
-++
-++## Gap analysis
-++- Current hidden Voice Output shell had no creator workflow model.
-++- Current Message Studio speech testing is browser preview oriented and not a generated-audio pipeline.
-++- Provider adapters require planning before any external service implementation.
-++- Export requires explicit generated asset references; no browser-owned product data should be persisted.
-++
-++## Rebuild plan
-++1. Create a Theme V2 Text To Speech shell under `toolbox/text-to-speech/`.
-++2. Add a TTS message model foundation with explicit ownership boundaries.
-++3. Add preview/generate/export shell states with blocked provider behavior.
-++4. Add provider adapter planning for future OpenAI, ElevenLabs, Azure, and local providers.
-++5. Keep implementation provider-free until a later scoped PR adds a real adapter.
-+diff --git a/docs_build/dev/reports/PR_26171_029-text2speech-tool-shell.md b/docs_build/dev/reports/PR_26171_029-text2speech-tool-shell.md
- new file mode 100644
--index 000000000..36314e518
-+index 000000000..54309403a
- --- /dev/null
--+++ b/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-validation.md
--@@ -0,0 +1,17 @@
--+# PR_26171_025 Validation Report
-++++ b/docs_build/dev/reports/PR_26171_029-text2speech-tool-shell.md
-+@@ -0,0 +1,5 @@
-++# PR_26171_029 Text To Speech Tool Shell
- +
--+## Validation Performed
--+- PASS: `npm run test:playwright:static`
-++Replaced the placeholder at `toolbox/text-to-speech/index.html` with the rebuilt Theme V2 page shell and wired its module from `toolbox/text-to-speech/text2speech.js`.
- +
--+## Result
--+- Static/docs validation completed successfully.
--+- No browser Playwright validation was run because this PR is docs-only governance.
--+
--+## Scope Control
--+- Runtime implementation validation was skipped because no runtime files were intentionally changed for PR_26171_025.
--+- UI validation was skipped because no UI files were intentionally changed for PR_26171_025.
--+- Database validation was skipped because no database files or runtime persistence behavior were intentionally changed for PR_26171_025.
--+
--+## Repository State Note
--+- The working tree had pre-existing unrelated changes and unresolved generated report conflicts in `codex_changed_files.txt` and `codex_review.diff` before this PR_025 work began.
--+- PR_26171_025 reports and standard Codex report files were regenerated for the governance change.
--diff --git a/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership.md b/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership.md
-++The active toolbox registration already points to `text-to-speech/index.html`, so registration was preserved. The incorrect root `tools/text2speech/` path was removed. No inline styles, style blocks, inline event handlers, page-local CSS, or tool-local CSS were added.
-+diff --git a/docs_build/dev/reports/PR_26171_031-text2speech-message-model.md b/docs_build/dev/reports/PR_26171_031-text2speech-message-model.md
- new file mode 100644
--index 000000000..dd6d449d5
-+index 000000000..de09080bc
- --- /dev/null
--+++ b/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership.md
--@@ -0,0 +1,30 @@
--+# PR_26171_025 Codex Git Workflow Ownership
-++++ b/docs_build/dev/reports/PR_26171_031-text2speech-message-model.md
-+@@ -0,0 +1,3 @@
-++# PR_26171_031 Text To Speech Message Model
-++
-++Added a provider-free Text To Speech model foundation for Message, Emotion Profile, Voice Profile, Language, Status, and creator metadata. Message data is marked Design-owned. Generated voice/audio ownership is explicitly marked Audio-owned.
-+diff --git a/docs_build/dev/reports/PR_26171_033-text2speech-generation-workflow.md b/docs_build/dev/reports/PR_26171_033-text2speech-generation-workflow.md
-+new file mode 100644
-+index 000000000..625538b3e
-+--- /dev/null
-++++ b/docs_build/dev/reports/PR_26171_033-text2speech-generation-workflow.md
-+@@ -0,0 +1,3 @@
-++# PR_26171_033 Text To Speech Generation Workflow
-++
-++Added preview/generate/export workflow shell functions and UI controls. Preview validates readiness. Generate is blocked because no provider adapter is implemented. Export is blocked until an Audio-owned generated asset exists. No fake generation or silent fallback was added.
-+diff --git a/docs_build/dev/reports/PR_26171_035-text2speech-provider-adapter-plan.md b/docs_build/dev/reports/PR_26171_035-text2speech-provider-adapter-plan.md
-+new file mode 100644
-+index 000000000..1b6dfbae5
-+--- /dev/null
-++++ b/docs_build/dev/reports/PR_26171_035-text2speech-provider-adapter-plan.md
-+@@ -0,0 +1,3 @@
-++# PR_26171_035 Text To Speech Provider Adapter Plan
-++
-++Added future provider planning entries for OpenAI, ElevenLabs, Azure AI Speech, and local providers. Entries document boundaries and required capabilities only; no provider implementation or external network integration was added.
-+diff --git a/docs_build/dev/reports/PR_26171_text2speech-manual-validation.md b/docs_build/dev/reports/PR_26171_text2speech-manual-validation.md
-+new file mode 100644
-+index 000000000..e76a5080d
-+--- /dev/null
-++++ b/docs_build/dev/reports/PR_26171_text2speech-manual-validation.md
-+@@ -0,0 +1,9 @@
-++# Text To Speech Manual Validation Notes
-++
-++- Reviewed `toolbox/text-to-speech/index.html` for Theme V2 stylesheet usage only.
-++- Reviewed `toolbox/text-to-speech/text2speech.js` for provider-free model/workflow behavior.
-++- Confirmed no inline styles, style blocks, inline event handlers, page-local CSS, or tool-local CSS were introduced.
-++- Confirmed `tools/text2speech/` no longer exists.
-++- Confirmed the current toolbox registration path remains `text-to-speech/index.html`.
-++- Confirmed archived `old_text2speech-V2` code was treated as reference material only and not copied.
-++- Confirmed no external provider integration, fake generation, or silent fallback was introduced.
-+diff --git a/docs_build/dev/reports/PR_26171_text2speech-toolbox-path-correction.md b/docs_build/dev/reports/PR_26171_text2speech-toolbox-path-correction.md
-+new file mode 100644
-+index 000000000..6705f448b
-+--- /dev/null
-++++ b/docs_build/dev/reports/PR_26171_text2speech-toolbox-path-correction.md
-+@@ -0,0 +1,22 @@
-++# PR_26171 Text To Speech Toolbox Path Correction
- +
- +## Summary
--+- Added the `CODEX GIT WORKFLOW OWNERSHIP` governance section to `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
--+- Established that Codex owns Git execution for implementation PRs.
--+- Documented the required branch, pull, clean-status, PR branch, scoped staging, commit, push, automatic Pull Request creation, conflict resolution, validation rerun, merge, return-to-main, and continuation flow.
-++- Moved the rebuilt Text To Speech shell into the active toolbox path: `toolbox/text-to-speech/`.
-++- Replaced the placeholder `toolbox/text-to-speech/index.html` with the Theme V2 / Tool Template V2 shell.
-++- Added `toolbox/text-to-speech/text2speech.js` for provider-free message model, workflow, and adapter planning behavior.
-++- Removed the incorrect root `tools/text2speech/` path.
-++- Preserved the existing toolbox registration path `text-to-speech/index.html`.
- +
- +## Scope
--+- Docs-only governance update.
--+- No runtime implementation.
--+- No UI changes.
--+- No database changes.
--+
--+## Governance Intent
--+- Codex should not ask the user whether to push a branch or create a Pull Request for implementation PRs.
--+- Branch push, Pull Request creation, and merge after passing validation are required implementation PR workflow steps.
--+- Merge conflicts must preserve latest `main`, preserve PR scope, avoid unrelated cleanup, and revalidate before merge.
--+
--+## Required Git Workflow Report Fields
--+- current branch
--+- created branch
--+- push result
--+- PR URL
--+- merge result
--+- final main commit
--+
--+## Current Execution Notes
--+- Current branch at validation time: `main`.
--+- This PR_025 task was docs-only and did not create runtime changes.
--+- The repository already contained unrelated staged changes and unresolved generated report conflicts before this PR_025 edit began; those unrelated files were preserved.
-++- Text To Speech page/module wiring only.
-++- Required reports and validation evidence only.
-++- No archived implementation was copied.
-++- No provider integration, fake generation, silent fallback, browser-owned product data, page-local CSS, or tool-local CSS was added.
-++
-++## Corrected Paths
-++- Active page: `toolbox/text-to-speech/index.html`
-++- Active module: `toolbox/text-to-speech/text2speech.js`
-++- Removed path: `tools/text2speech/`
-++
-++## Project Workspace Note
-++The validation command `npm run test:workspace-v2` retains a legacy command name. User-facing copy and reports refer to Project Workspace.
-+diff --git a/docs_build/dev/reports/PR_26171_text2speech-validation.md b/docs_build/dev/reports/PR_26171_text2speech-validation.md
-+new file mode 100644
-+index 000000000..694c12b7d
-+--- /dev/null
-++++ b/docs_build/dev/reports/PR_26171_text2speech-validation.md
-+@@ -0,0 +1,24 @@
-++# Text To Speech Validation Report
-++
-++## Commands
-++- PASS: `node --test tests/tools/Text2SpeechShell.test.mjs`
-++- PASS: targeted static validation for `toolbox/text-to-speech/index.html`
-++- FAIL: `npm run test:workspace-v2`
-++
-++`npm run test:workspace-v2` is a legacy command name. The user-facing product language is Project Workspace.
-++
-++## Workspace Lane Failure
-++- The command ran `tests/playwright/tools/RootToolsFutureState.spec.mjs`.
-++- 3 tests passed and 2 tests failed.
-++- Failure 1: `root tools surface links current tool pages without old_* routes` expected the default tool labels without `Message Studio`; the page currently includes `Message Studio`.
-++- Failure 2: `common header renders primary navigation order across active pages` found a generic `Studio` body-text match after stripping `GameFoundryStudio` / `Game Foundry Studio`.
-++- Neither failure points to the corrected Text To Speech path, module wiring, or removed `tools/text2speech/` directory.
-++
-++## Targeted assertions
-++- Model ownership boundary is Design for messages/profiles and Audio for generated voice assets.
-++- Preview/generate/export shell does not silently fall back.
-++- Future provider adapter list is planning-only for OpenAI, ElevenLabs, Azure, and local providers.
-++- Text To Speech page uses Theme V2 and ToolDisplayMode.
-++- Text To Speech page wires `toolbox/text-to-speech/text2speech.js`.
-++- Text To Speech page does not reference `tools/text2speech`.
-++- `tools/text2speech/` is absent.
-+diff --git a/docs_build/dev/reports/PR_26171_text2speech-zip-verification.md b/docs_build/dev/reports/PR_26171_text2speech-zip-verification.md
-+new file mode 100644
-+index 000000000..4b5430c8b
-+--- /dev/null
-++++ b/docs_build/dev/reports/PR_26171_text2speech-zip-verification.md
-+@@ -0,0 +1,29 @@
-++# Text To Speech ZIP Verification Report
-++
-++## ZIP Target
-++- `tmp/PR_26171_text2speech_delta.zip`
-++
-++## Verification Criteria
-++- ZIP is repo-structured from the repository root.
-++- ZIP contains the scoped Text To Speech correction files and required reports.
-++- ZIP does not contain files from `tmp/`.
-++- ZIP does not contain any `tools/text2speech/` path.
-++
-++## Expected Scoped Files
-++- `toolbox/text-to-speech/index.html`
-++- `toolbox/text-to-speech/text2speech.js`
-++- `tests/tools/Text2SpeechShell.test.mjs`
-++- `docs_build/dev/reports/PR_26171_027-text2speech-rebuild-foundation.md`
-++- `docs_build/dev/reports/PR_26171_029-text2speech-tool-shell.md`
-++- `docs_build/dev/reports/PR_26171_031-text2speech-message-model.md`
-++- `docs_build/dev/reports/PR_26171_033-text2speech-generation-workflow.md`
-++- `docs_build/dev/reports/PR_26171_035-text2speech-provider-adapter-plan.md`
-++- `docs_build/dev/reports/PR_26171_text2speech-toolbox-path-correction.md`
-++- `docs_build/dev/reports/PR_26171_text2speech-validation.md`
-++- `docs_build/dev/reports/PR_26171_text2speech-manual-validation.md`
-++- `docs_build/dev/reports/PR_26171_text2speech-zip-verification.md`
-++- `docs_build/dev/reports/codex_changed_files.txt`
-++- `docs_build/dev/reports/codex_review.diff`
-++
-++## Result
-++- Final ZIP verification is performed after packaging by listing the archive contents and checking the expected paths.
-+diff --git a/tests/tools/Text2SpeechShell.test.mjs b/tests/tools/Text2SpeechShell.test.mjs
-+new file mode 100644
-+index 000000000..d04dae4fe
-+--- /dev/null
-++++ b/tests/tools/Text2SpeechShell.test.mjs
-+@@ -0,0 +1,49 @@
-++import assert from "node:assert/strict";
-++import test from "node:test";
-++
-++import {
-++  TTS_MESSAGE_STATUSES,
-++  TTS_PROVIDER_ADAPTER_PLAN,
-++  createEmotionProfile,
-++  createTtsMessage,
-++  createVoiceProfile,
-++  exportTtsMessage,
-++  generateTtsMessage,
-++  previewTtsMessage,
-++} from "../../toolbox/text-to-speech/text2speech.js";
-++
-++test("Text2Speech message model separates Design and Audio ownership", () => {
-++  const message = createTtsMessage({ text: "Hello", metadata: { tags: ["intro"] } });
-++  const emotion = createEmotionProfile({ intensity: 2 });
-++  const voice = createVoiceProfile({ providerKey: "openai" });
-++
-++  assert.equal(message.owner, "Design");
-++  assert.equal(message.audioOwner, "Audio");
-++  assert.equal(message.generatedAudio, null);
-++  assert.deepEqual(message.metadata.tags, ["intro"]);
-++  assert.equal(emotion.owner, "Design");
-++  assert.equal(emotion.intensity, 1);
-++  assert.equal(voice.owner, "Design");
-++  assert.equal(voice.generatedAudioOwner, "Audio");
-++  assert.ok(TTS_MESSAGE_STATUSES.includes("blocked"));
-++});
-++
-++test("Text2Speech workflow blocks missing provider and missing generated asset without silent fallback", () => {
-++  const ready = createTtsMessage({ text: "Welcome" });
-++  const empty = createTtsMessage();
-++
-++  assert.equal(previewTtsMessage(ready).ok, true);
-++  assert.equal(previewTtsMessage(empty).status, "blocked");
-++  assert.equal(generateTtsMessage(ready).ok, false);
-++  assert.match(generateTtsMessage(ready).message, /no TTS provider adapter/i);
-++  assert.equal(exportTtsMessage(ready).ok, false);
-++  assert.match(exportTtsMessage(ready).message, /Audio-owned voice asset/i);
-++});
-++
-++test("Text2Speech provider adapter plan names expected future providers only", () => {
-++  assert.deepEqual(
-++    TTS_PROVIDER_ADAPTER_PLAN.map((provider) => provider.key),
-++    ["openai", "elevenlabs", "azure", "local"],
-++  );
-++  assert.ok(TTS_PROVIDER_ADAPTER_PLAN.every((provider) => provider.status === "planned"));
-++});
-+diff --git a/toolbox/text-to-speech/text2speech.js b/toolbox/text-to-speech/text2speech.js
-+new file mode 100644
-+index 000000000..bee7a6583
-+--- /dev/null
-++++ b/toolbox/text-to-speech/text2speech.js
-+@@ -0,0 +1,175 @@
-++const TTS_OWNERSHIP = Object.freeze({
-++  DESIGN: "Design",
-++  AUDIO: "Audio",
-++});
-++
-++const TTS_MESSAGE_STATUSES = Object.freeze([
-++  "draft",
-++  "ready-for-preview",
-++  "pending-generation",
-++  "generated",
-++  "exported",
-++  "blocked",
-++  "archived",
-++]);
-++
-++const TTS_LANGUAGES = Object.freeze([
-++  { code: "en-US", name: "English (United States)" },
-++  { code: "en-GB", name: "English (United Kingdom)" },
-++  { code: "es-ES", name: "Spanish (Spain)" },
-++  { code: "fr-FR", name: "French (France)" },
-++  { code: "de-DE", name: "German (Germany)" },
-++  { code: "ja-JP", name: "Japanese (Japan)" },
-++]);
-++
-++const TTS_PROVIDER_ADAPTER_PLAN = Object.freeze([
-++  {
-++    key: "openai",
-++    name: "OpenAI",
-++    status: "planned",
-++    boundary: "External provider adapter; no implementation in this PR.",
-++    requiredCapabilities: ["text input", "voice selection", "generated audio file response", "usage metadata"],
-++  },
-++  {
-++    key: "elevenlabs",
-++    name: "ElevenLabs",
-++    status: "planned",
-++    boundary: "External provider adapter; no implementation in this PR.",
-++    requiredCapabilities: ["text input", "voice profile mapping", "generated audio file response", "provider job metadata"],
-++  },
-++  {
-++    key: "azure",
-++    name: "Azure AI Speech",
-++    status: "planned",
-++    boundary: "External provider adapter; no implementation in this PR.",
-++    requiredCapabilities: ["SSML-safe text", "language mapping", "voice deployment mapping", "generated audio file response"],
-++  },
-++  {
-++    key: "local",
-++    name: "Local Provider",
-++    status: "planned",
-++    boundary: "Local/offline adapter; no implementation in this PR.",
-++    requiredCapabilities: ["local model availability", "voice preset mapping", "file output", "device/runtime capability reporting"],
-++  },
-++]);
-++
-++function createTtsMessage({
-++  id,
-++  name,
-++  text,
-++  emotionKey = "neutral",
-++  voiceProfileKey = "unassigned",
-++  languageCode = "en-US",
-++  status = "draft",
-++  metadata = {},
-++} = {}) {
-++  return {
-++    id: String(id || "tts-message-draft"),
-++    name: String(name || "Untitled TTS Message"),
-++    text: String(text || ""),
-++    emotionKey: String(emotionKey || "neutral"),
-++    voiceProfileKey: String(voiceProfileKey || "unassigned"),
-++    languageCode: String(languageCode || "en-US"),
-++    status: TTS_MESSAGE_STATUSES.includes(status) ? status : "draft",
-++    owner: TTS_OWNERSHIP.DESIGN,
-++    audioOwner: TTS_OWNERSHIP.AUDIO,
-++    metadata: {
-++      creatorNotes: String(metadata.creatorNotes || ""),
-++      intent: String(metadata.intent || ""),
-++      sceneKey: String(metadata.sceneKey || ""),
-++      tags: Array.isArray(metadata.tags) ? metadata.tags.map(String) : [],
-++    },
-++    generatedAudio: null,
-++  };
-++}
-++
-++function createEmotionProfile({ key = "neutral", name = "Neutral", intensity = 0.5 } = {}) {
-++  const numericIntensity = Number(intensity);
-++  const safeIntensity = Number.isNaN(numericIntensity) ? 0.5 : Math.min(1, Math.max(0, numericIntensity));
-++  return { key: String(key), name: String(name), intensity: safeIntensity, owner: TTS_OWNERSHIP.DESIGN };
-++}
-++
-++function createVoiceProfile({ key = "unassigned", name = "Unassigned Voice", providerKey = "unassigned", voiceId = "" } = {}) {
-++  return {
-++    key: String(key),
-++    name: String(name),
-++    providerKey: String(providerKey),
-++    voiceId: String(voiceId),
-++    owner: TTS_OWNERSHIP.DESIGN,
-++    generatedAudioOwner: TTS_OWNERSHIP.AUDIO,
-++  };
-++}
-++
-++function previewTtsMessage(message) {
-++  if (!message || !message.text.trim()) {
-++    return { ok: false, status: "blocked", message: "Preview blocked: message text is required." };
-++  }
-++  return { ok: true, status: "ready-for-preview", message: "Preview shell ready. Provider playback is not implemented yet." };
-++}
-++
-++function generateTtsMessage() {
-++  return { ok: false, status: "blocked", message: "Generation blocked: no TTS provider adapter is implemented yet." };
-++}
-++
-++function exportTtsMessage(message) {
-++  if (!message || !message.generatedAudio) {
-++    return { ok: false, status: "blocked", message: "Export blocked: generated Audio-owned voice asset is required." };
-++  }
-++  return { ok: true, status: "exported", message: "Export shell ready for an Audio-owned generated voice asset." };
-++}
-++
-++function renderProviderPlan(list, providers = TTS_PROVIDER_ADAPTER_PLAN) {
-++  if (!list) return;
-++  list.replaceChildren();
-++  providers.forEach((provider) => {
-++    const item = document.createElement("li");
-++    const strong = document.createElement("strong");
-++    strong.textContent = provider.name;
-++    item.append(strong, ` - ${provider.status}. ${provider.boundary}`);
-++    list.append(item);
-++  });
-++}
-++
-++function initializeText2SpeechShell(root = document) {
-++  const status = root.querySelector("[data-tts-workflow-status]");
-++  const sample = createTtsMessage({
-++    id: "sample-message",
-++    name: "Sample Message",
-++    text: "Welcome to the arena, hero.",
-++    emotionKey: "confident",
-++    voiceProfileKey: "future-voice",
-++    metadata: { intent: "Narration", tags: ["intro", "tutorial"] },
-++  });
-++  const actions = {
-++    preview: previewTtsMessage(sample),
-++    generate: generateTtsMessage(sample),
-++    export: exportTtsMessage(sample),
-++  };
-++  root.querySelectorAll("[data-tts-action]").forEach((button) => {
-++    button.addEventListener("click", () => {
-++      const result = actions[button.dataset.ttsAction];
-++      if (status && result) status.textContent = result.message;
-++    });
-++  });
-++  renderProviderPlan(root.querySelector("[data-tts-provider-plan]"));
-++  if (status) status.textContent = "Text To Speech shell loaded. Generation is blocked until a real provider adapter is implemented.";
-++  return { sample, actions };
-++}
-++
-++if (typeof document !== "undefined") {
-++  initializeText2SpeechShell(document);
-++}
-++
-++export {
-++  TTS_LANGUAGES,
-++  TTS_MESSAGE_STATUSES,
-++  TTS_OWNERSHIP,
-++  TTS_PROVIDER_ADAPTER_PLAN,
-++  createEmotionProfile,
-++  createTtsMessage,
-++  createVoiceProfile,
-++  exportTtsMessage,
-++  generateTtsMessage,
-++  initializeText2SpeechShell,
-++  previewTtsMessage,
-++};
+diff --git a/assets/theme-v2/partials/header-nav.html b/assets/theme-v2/partials/header-nav.html
+index 3e15e46dd..f2c805256 100644
+--- a/assets/theme-v2/partials/header-nav.html
++++ b/assets/theme-v2/partials/header-nav.html
+@@ -66,9 +66,9 @@
+               <a data-nav-link data-toolbox-menu-item data-route="midi" href="toolbox/midi/index.html">MIDI</a>
+               <a data-nav-link data-toolbox-menu-item data-route="music" href="toolbox/music/index.html">Music</a>
+               <a data-nav-link data-toolbox-menu-item data-route="particles" href="toolbox/particles/index.html">Particles</a>
++              <a data-nav-link data-toolbox-menu-item data-route="text-to-speech" href="toolbox/text-to-speech/index.html">Text To Speech</a>
+               <a data-nav-link data-toolbox-menu-item data-route="videos" href="toolbox/videos/index.html">Videos</a>
+               <a data-nav-link data-toolbox-menu-item data-route="speech-to-text" href="toolbox/speech-to-text/index.html">Voice Capture</a>
+-              <a data-nav-link data-toolbox-menu-item data-route="text-to-speech" href="toolbox/text-to-speech/index.html">Voice Output</a>
+               <a data-nav-link data-toolbox-menu-item data-route="voices" href="toolbox/voices/index.html">Voices</a>
+             </div>
+           </div>
+diff --git a/src/dev-runtime/admin/header-nav.local.html b/src/dev-runtime/admin/header-nav.local.html
+index 3e15e46dd..f2c805256 100644
+--- a/src/dev-runtime/admin/header-nav.local.html
++++ b/src/dev-runtime/admin/header-nav.local.html
+@@ -66,9 +66,9 @@
+               <a data-nav-link data-toolbox-menu-item data-route="midi" href="toolbox/midi/index.html">MIDI</a>
+               <a data-nav-link data-toolbox-menu-item data-route="music" href="toolbox/music/index.html">Music</a>
+               <a data-nav-link data-toolbox-menu-item data-route="particles" href="toolbox/particles/index.html">Particles</a>
++              <a data-nav-link data-toolbox-menu-item data-route="text-to-speech" href="toolbox/text-to-speech/index.html">Text To Speech</a>
+               <a data-nav-link data-toolbox-menu-item data-route="videos" href="toolbox/videos/index.html">Videos</a>
+               <a data-nav-link data-toolbox-menu-item data-route="speech-to-text" href="toolbox/speech-to-text/index.html">Voice Capture</a>
+-              <a data-nav-link data-toolbox-menu-item data-route="text-to-speech" href="toolbox/text-to-speech/index.html">Voice Output</a>
+               <a data-nav-link data-toolbox-menu-item data-route="voices" href="toolbox/voices/index.html">Voices</a>
+             </div>
+           </div>
+diff --git a/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js b/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
+index e39da46cb..bd537110b 100644
+--- a/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
++++ b/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
+@@ -187,7 +187,7 @@ export const GAME_JOURNEY_TOOL_OWNERSHIP_AREAS = Object.freeze([
+     sectionKey: "audio",
+     sectionName: "Audio",
+     ownershipArea: "Sound and voice planning",
+-    toolNames: Object.freeze(["Audio", "Music", "Audio Effects", "MIDI", "Voice Capture", "Voice Output"]),
++    toolNames: Object.freeze(["Audio", "Music", "Audio Effects", "MIDI", "Voice Capture", "Text To Speech"]),
+   }),
+   Object.freeze({
+     sectionKey: "objects",
+diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
+index 34edbd218..f272c970b 100644
+--- a/src/dev-runtime/server/local-api-router.mjs
++++ b/src/dev-runtime/server/local-api-router.mjs
+@@ -227,8 +227,8 @@ const TOOLBOX_ROLE_FOCUS_TOOLS = Object.freeze({
+   Designer: Object.freeze(["Game Hub", "Game Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Characters", "Colors", "Assets", "Tags"]),
+   "World Builder": Object.freeze(["Worlds", "Objects", "Assets", "Colors", "Tags", "Animations"]),
+   Artist: Object.freeze(["Assets", "Colors", "Tags", "Fonts", "Sprites", "Characters", "Objects", "Animations"]),
+-  "Audio Creator": Object.freeze(["Audio", "Music", "Voices", "MIDI", "Audio Effects", "Voice Capture", "Voice Output", "Assets"]),
+-  Translator: Object.freeze(["Languages", "Voices", "Voice Capture", "Voice Output"]),
++  "Audio Creator": Object.freeze(["Audio", "Music", "Voices", "MIDI", "Audio Effects", "Voice Capture", "Text To Speech", "Assets"]),
++  Translator: Object.freeze(["Languages", "Voices", "Voice Capture", "Text To Speech"]),
+   Tester: Object.freeze(["Game Testing", "Controls", "Hitboxes", "Debug", "Performance", "Events"]),
+   Publisher: Object.freeze(["Publish", "Marketplace", "Community", "Cloud", "Languages"]),
+   Viewer: Object.freeze(["Game Hub", "Game Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Assets", "Colors", "Tags", "Audio", "Publish", "Marketplace", "Community", "Languages", "Achievements", "Ratings"]),
+@@ -1427,18 +1427,25 @@ function normalizedToolKey(row) {
+   return String(row?.toolKey || row?.toolId || row?.id || "").trim();
+ }
+ 
+-const SOURCE_CONTROLLED_TOOLBOX_TOOL_IDS = new Set(["game-workspace", "messages", "tags", "users"]);
++const SOURCE_CONTROLLED_TOOLBOX_TOOL_IDS = new Set(["game-workspace", "messages", "tags", "text-to-speech", "users"]);
+ const SOURCE_CONTROLLED_TOOLBOX_METADATA_FIELDS = Object.freeze([
++  "active",
+   "adminOnly",
++  "badge",
+   "category",
+   "colorGroup",
++  "deferred",
+   "description",
+   "group",
+   "hidden",
+   "path",
++  "releaseChannel",
++  "releaseChannelLabel",
+   "shortDescription",
+   "shortLabel",
++  "status",
+   "subgroup",
++  "toolImage",
+   "toolName",
+   "toolboxGroup",
+   "visibleInToolsList",
+diff --git a/src/shared/toolbox/tool-metadata-inventory.js b/src/shared/toolbox/tool-metadata-inventory.js
+index 5f6575560..130f70814 100644
+--- a/src/shared/toolbox/tool-metadata-inventory.js
++++ b/src/shared/toolbox/tool-metadata-inventory.js
+@@ -1430,16 +1430,16 @@ export const TOOL_REGISTRY = Object.freeze([
+   },
+   {
+     "id": "text-to-speech",
+-    "name": "Voice Output",
+-    "displayName": "Voice Output",
+-    "shortDescription": "Hidden capability shell for generated narration and spoken output workflows.",
+-    "shortLabel": "Voice Output",
++    "name": "Text To Speech",
++    "displayName": "Text To Speech",
++    "shortDescription": "Preview spoken game text with local browser speech synthesis.",
++    "shortLabel": "Text To Speech",
+     "path": "text-to-speech",
+     "folderName": "text-to-speech",
+     "entryPoint": "text-to-speech/index.html",
+     "badge": "/assets/theme-v2/images/badges/text-to-speech.png",
+     "tool": "/assets/theme-v2/images/tools/text-to-speech.png",
+-    "description": "Hidden capability shell for generated narration and spoken output workflows.",
++    "description": "Preview spoken game text with local browser speech synthesis, selectable browser voices, and rate, pitch, and volume controls.",
+     "category": "Audio",
+     "colorGroup": "tool-group-audio",
+     "active": true,
+@@ -1448,17 +1448,20 @@ export const TOOL_REGISTRY = Object.freeze([
+     "requiredForTestable": false,
+     "requiredForPublish": false,
+     "requires": [],
+-    "status": "Hidden",
++    "status": "Beta",
+     "progressChecklist": [
+-      "Hidden planned capability",
+-      "Static planned text only"
++      "Browser Web Speech API preview",
++      "Creator text entry",
++      "Browser voice selection",
++      "Rate, pitch, and volume controls",
++      "Speak and Stop actions"
+     ],
+-    "deferred": true,
+-    "hidden": true,
++    "deferred": false,
++    "hidden": false,
+     "adminOnly": false,
+     "visibleInToolsList": true,
+-    "toolboxGroup": "Media",
+-    "subgroup": "Hidden planned"
++    "toolboxGroup": "Audio",
++    "subgroup": "Voice"
+   },
+   {
+     "id": "learn",
+diff --git a/tests/tools/Text2SpeechShell.test.mjs b/tests/tools/Text2SpeechShell.test.mjs
+index d04dae4fe..fbc6ac8e9 100644
+--- a/tests/tools/Text2SpeechShell.test.mjs
++++ b/tests/tools/Text2SpeechShell.test.mjs
+@@ -5,10 +5,9 @@ import {
+   TTS_MESSAGE_STATUSES,
+   TTS_PROVIDER_ADAPTER_PLAN,
+   createEmotionProfile,
++  createSpeechPreviewRequest,
+   createTtsMessage,
+   createVoiceProfile,
+-  exportTtsMessage,
+-  generateTtsMessage,
+   previewTtsMessage,
+ } from "../../toolbox/text-to-speech/text2speech.js";
+ 
+@@ -28,22 +27,35 @@ test("Text2Speech message model separates Design and Audio ownership", () => {
+   assert.ok(TTS_MESSAGE_STATUSES.includes("blocked"));
+ });
+ 
+-test("Text2Speech workflow blocks missing provider and missing generated asset without silent fallback", () => {
++test("Text2Speech browser preview builds a Web Speech request without provider blocking", () => {
++  const voiceOptions = [{ language: "en-US", label: "Test Voice (en-US)", name: "Test Voice", value: "test-voice" }];
+   const ready = createTtsMessage({ text: "Welcome" });
+   const empty = createTtsMessage();
+ 
+-  assert.equal(previewTtsMessage(ready).ok, true);
+-  assert.equal(previewTtsMessage(empty).status, "blocked");
+-  assert.equal(generateTtsMessage(ready).ok, false);
+-  assert.match(generateTtsMessage(ready).message, /no TTS provider adapter/i);
+-  assert.equal(exportTtsMessage(ready).ok, false);
+-  assert.match(exportTtsMessage(ready).message, /Audio-owned voice asset/i);
++  assert.deepEqual(previewTtsMessage(ready, { voice: "test-voice", voiceOptions }), {
++    language: "en-US",
++    ok: true,
++    pitch: 1,
++    rate: 1,
++    speechItemId: "browser-preview",
++    speechItemName: "Browser Preview",
++    text: "Welcome",
++    voice: "test-voice",
++    voiceName: "Test Voice",
++    volume: 1,
++  });
++  assert.equal(previewTtsMessage(empty, { voice: "test-voice", voiceOptions }).ok, false);
++  assert.match(previewTtsMessage(ready, { voiceOptions }).message, /select an available browser voice/i);
++  assert.equal(createSpeechPreviewRequest({ text: "Hi", voice: "test-voice", voiceOptions, rate: 9, pitch: 0, volume: 2 }).rate, 2);
++  assert.equal(createSpeechPreviewRequest({ text: "Hi", voice: "test-voice", voiceOptions, rate: 9, pitch: 0, volume: 2 }).pitch, 0.1);
++  assert.equal(createSpeechPreviewRequest({ text: "Hi", voice: "test-voice", voiceOptions, rate: 9, pitch: 0, volume: 2 }).volume, 1);
+ });
+ 
+-test("Text2Speech provider adapter plan names expected future providers only", () => {
++test("Text2Speech provider adapter plan keeps browser speech implemented and paid providers planned", () => {
+   assert.deepEqual(
+     TTS_PROVIDER_ADAPTER_PLAN.map((provider) => provider.key),
+-    ["openai", "elevenlabs", "azure", "local"],
++    ["browser-speech", "openai", "elevenlabs", "azure", "local"],
+   );
+-  assert.ok(TTS_PROVIDER_ADAPTER_PLAN.every((provider) => provider.status === "planned"));
++  assert.equal(TTS_PROVIDER_ADAPTER_PLAN[0].status, "implemented");
++  assert.ok(TTS_PROVIDER_ADAPTER_PLAN.slice(1).every((provider) => provider.status === "planned"));
+ });
 diff --git a/toolbox/text-to-speech/index.html b/toolbox/text-to-speech/index.html
-index 1a2532dd1..4cca0e6f1 100644
+index 4cca0e6f1..adaaff3a7 100644
 --- a/toolbox/text-to-speech/index.html
 +++ b/toolbox/text-to-speech/index.html
-@@ -5,8 +5,8 @@
-     <meta charset="utf-8">
+@@ -6,7 +6,7 @@
      <base href="/">
      <meta name="viewport" content="width=device-width, initial-scale=1">
--    <title>Voice Output - GameFoundryStudio</title>
--    <meta name="description" content="Voice Output Toolbox wireframe. Plan generated narration and spoken output workflows.">
-+    <title>Text To Speech - GameFoundryStudio</title>
-+    <meta name="description" content="Text To Speech Theme V2 shell for message-owned text planning and future Audio-owned generated voice assets.">
+     <title>Text To Speech - GameFoundryStudio</title>
+-    <meta name="description" content="Text To Speech Theme V2 shell for message-owned text planning and future Audio-owned generated voice assets.">
++    <meta name="description" content="Functional browser Text To Speech tool using Theme V2 and the Web Speech API.">
      <link rel="icon" href="/favicon.svg">
      <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
  </head>
-@@ -16,9 +16,9 @@
-     <main>
-         <section class="page-title">
+@@ -18,7 +18,7 @@
              <div class="container">
--                <div class="kicker">Toolbox / Voice Output</div>
--                <h1>Voice Output</h1>
--                <p class="lede">Plan generated narration and spoken output workflows. Static shell only; no database, persistence, save, load, or runtime behavior is implemented.</p>
-+                <div class="kicker">Project Workspace / Audio</div>
-+                <h1>Text To Speech</h1>
-+                <p class="lede">Plan spoken game messages while keeping message text Design-owned and generated voice/audio assets Audio-owned.</p>
+                 <div class="kicker">Project Workspace / Audio</div>
+                 <h1>Text To Speech</h1>
+-                <p class="lede">Plan spoken game messages while keeping message text Design-owned and generated voice/audio assets Audio-owned.</p>
++                <p class="lede">Preview spoken game text with local browser speech synthesis before deciding whether a generated audio provider is needed.</p>
              </div>
          </section>
          <section class="section">
-@@ -26,18 +26,57 @@
+@@ -26,75 +26,91 @@
                  <div class="tool-workspace tool-workspace--wide">
                      <aside class="tool-column tool-group-audio">
                          <div class="tool-column-header">
--                            <h2>Voice Output</h2>
-+                            <h2>Message Model</h2>
+-                            <h2>Message Model</h2>
++                            <h2>Script</h2>
                          </div>
                          <div class="accordion-stack">
                              <details class="vertical-accordion" open>
--                                <summary>Setup</summary>
--                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
-+                                <summary>Design-owned fields</summary>
-+                                <div class="accordion-body content-stack">
-+                                    <p>Message, emotion, voice profile, language, status, and creator metadata belong to Design.</p>
-+                                    <p>Generated voice files, provider artifacts, and exports belong to Audio.</p>
-+                                </div>
-+                            </details>
-+                            <details class="vertical-accordion" open>
-+                                <summary>Status Foundation</summary>
-+                                <div class="accordion-body content-stack">
-+                                    <p>Draft, ready for preview, pending generation, generated, exported, blocked, and archived states are modeled.</p>
-+                                </div>
+-                                <summary>Design-owned fields</summary>
++                                <summary>Text</summary>
+                                 <div class="accordion-body content-stack">
+-                                    <p>Message, emotion, voice profile, language, status, and creator metadata belong to Design.</p>
+-                                    <p>Generated voice files, provider artifacts, and exports belong to Audio.</p>
++                                    <label for="ttsTextInput">Speech Text</label>
++                                    <textarea id="ttsTextInput" data-tts-text-input>Welcome to the arena, hero.</textarea>
++                                    <p class="field-hint">Enter narration, dialog, tutorial text, menu feedback, or any short line you want to preview.</p>
+                                 </div>
+                             </details>
+                             <details class="vertical-accordion" open>
+-                                <summary>Status Foundation</summary>
++                                <summary>Browser Voice</summary>
+                                 <div class="accordion-body content-stack">
+-                                    <p>Draft, ready for preview, pending generation, generated, exported, blocked, and archived states are modeled.</p>
++                                    <label for="ttsVoiceSelect">Voice</label>
++                                    <select id="ttsVoiceSelect" data-tts-voice-select></select>
++                                    <p class="field-hint" data-tts-voice-details>No browser voices loaded yet.</p>
+                                 </div>
                              </details>
                          </div>
                      </aside>
--                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="text-to-speech" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
--                    <section class="tool-center-panel"><h2>Workspace</h2>
--                        <p>Plan generated narration and spoken output workflows. This page preserves the shared Theme V2 tool template structure for future rebuild work.</p>
-+                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="text-to-speech" data-tool-icon-src="assets/theme-v2/images/badges/text-to-speech.png" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
-+                    <section class="tool-center-panel">
-+                        <h2>Preview, Generate, Export</h2>
-+                        <p>This workflow shell intentionally has no external provider integration, fake generation, or silent fallback.</p>
-+                        <div class="grid cols-3" aria-label="Text To Speech workflow actions">
-+                            <article class="mini-stat"><strong>1</strong>Preview request</article>
-+                            <article class="mini-stat"><strong>0</strong>Providers implemented</article>
-+                            <article class="mini-stat"><strong>Audio</strong>Generated owner</article>
-+                        </div>
-+                        <article class="card">
-+                            <div class="card-body content-stack">
-+                                <div>
-+                                    <div class="kicker">Workflow Shell</div>
-+                                    <h3>Provider-free actions</h3>
-+                                </div>
-+                                <p>Preview can validate message readiness. Generate and export stay blocked until a real provider and Audio-owned generated asset exist.</p>
-+                                <div class="action-group">
-+                                    <button class="btn" type="button" data-tts-action="preview">Preview Readiness</button>
-+                                    <button class="btn" type="button" data-tts-action="generate">Generate Voice</button>
-+                                    <button class="btn" type="button" data-tts-action="export">Export Audio</button>
-+                                </div>
-+                                <div class="status" role="status" data-tts-workflow-status>Loading Text To Speech shell.</div>
-+                            </div>
-+                        </article>
-+                        <article class="card">
-+                            <div class="card-body content-stack">
-+                                <div>
-+                                    <div class="kicker">Provider Adapter Plan</div>
-+                                    <h3>Future provider paths</h3>
-+                                </div>
-+                                <ul data-tts-provider-plan></ul>
-+                            </div>
-+                        </article>
+                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="text-to-speech" data-tool-icon-src="assets/theme-v2/images/badges/text-to-speech.png" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
+                     <section class="tool-center-panel">
+-                        <h2>Preview, Generate, Export</h2>
+-                        <p>This workflow shell intentionally has no external provider integration, fake generation, or silent fallback.</p>
+-                        <div class="grid cols-3" aria-label="Text To Speech workflow actions">
+-                            <article class="mini-stat"><strong>1</strong>Preview request</article>
+-                            <article class="mini-stat"><strong>0</strong>Providers implemented</article>
+-                            <article class="mini-stat"><strong>Audio</strong>Generated owner</article>
++                        <h2>Browser Preview</h2>
++                        <p>Use the browser Web Speech API for immediate local preview. This does not create files, call paid providers, or fake generated audio.</p>
++                        <div class="grid cols-3" aria-label="Text To Speech browser preview summary">
++                            <article class="mini-stat"><strong data-tts-text-count>0</strong>Characters</article>
++                            <article class="mini-stat"><strong data-tts-voice-count>0</strong>Voices</article>
++                            <article class="mini-stat"><strong data-tts-engine-label>Checking</strong>Engine</article>
+                         </div>
+                         <article class="card">
+                             <div class="card-body content-stack">
+                                 <div>
+-                                    <div class="kicker">Workflow Shell</div>
+-                                    <h3>Provider-free actions</h3>
++                                    <div class="kicker">Preview Controls</div>
++                                    <h3>Speak Browser Preview</h3>
+                                 </div>
+-                                <p>Preview can validate message readiness. Generate and export stay blocked until a real provider and Audio-owned generated asset exist.</p>
+                                 <div class="action-group">
+-                                    <button class="btn" type="button" data-tts-action="preview">Preview Readiness</button>
+-                                    <button class="btn" type="button" data-tts-action="generate">Generate Voice</button>
+-                                    <button class="btn" type="button" data-tts-action="export">Export Audio</button>
++                                    <button class="btn" type="button" data-tts-speak>Speak / Preview</button>
++                                    <button class="btn" type="button" data-tts-stop>Stop</button>
+                                 </div>
+-                                <div class="status" role="status" data-tts-workflow-status>Loading Text To Speech shell.</div>
++                                <div class="status" role="status" data-tts-status>Loading browser Text To Speech.</div>
+                             </div>
+                         </article>
+                         <article class="card">
+                             <div class="card-body content-stack">
+                                 <div>
+-                                    <div class="kicker">Provider Adapter Plan</div>
+-                                    <h3>Future provider paths</h3>
++                                    <div class="kicker">Ownership Boundary</div>
++                                    <h3>Preview Only</h3>
+                                 </div>
+-                                <ul data-tts-provider-plan></ul>
++                                <p>Message text remains Design-owned. Browser preview is local playback only. Future generated audio files remain Audio-owned when a real provider/export flow is added.</p>
+                             </div>
+                         </article>
                      </section>
                      <aside class="tool-column tool-group-audio">
                          <div class="tool-column-header">
-@@ -45,8 +84,18 @@
+-                            <h2>Inspector</h2>
++                            <h2>Voice Settings</h2>
                          </div>
                          <div class="accordion-stack">
                              <details class="vertical-accordion" open>
--                                <summary>Output</summary>
--                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
-+                                <summary>Ownership Boundary</summary>
-+                                <div class="accordion-body content-stack">
-+                                    <p>Design owns script intent and delivery metadata.</p>
-+                                    <p>Audio owns generated clips and export-ready files.</p>
-+                                </div>
-+                            </details>
-+                            <details class="vertical-accordion" open>
-+                                <summary>Blocked States</summary>
-+                                <div class="accordion-body content-stack">
-+                                    <p>Generation is visibly blocked when no provider adapter is implemented.</p>
-+                                    <p>Export is visibly blocked when no generated Audio-owned asset exists.</p>
-+                                </div>
+-                                <summary>Ownership Boundary</summary>
++                                <summary>Delivery</summary>
+                                 <div class="accordion-body content-stack">
+-                                    <p>Design owns script intent and delivery metadata.</p>
+-                                    <p>Audio owns generated clips and export-ready files.</p>
++                                    <div class="field-group">
++                                        <div class="slider-value-row">
++                                            <label for="ttsRate">Rate</label>
++                                            <input id="ttsRate" type="range" min="0.1" max="2" step="0.1" value="1" data-tts-rate>
++                                            <output for="ttsRate" class="slider-current-value" data-tts-rate-value>1</output>
++                                        </div>
++                                        <div class="slider-value-row">
++                                            <label for="ttsPitch">Pitch</label>
++                                            <input id="ttsPitch" type="range" min="0.1" max="2" step="0.1" value="1" data-tts-pitch>
++                                            <output for="ttsPitch" class="slider-current-value" data-tts-pitch-value>1</output>
++                                        </div>
++                                        <div class="slider-value-row">
++                                            <label for="ttsVolume">Volume</label>
++                                            <input id="ttsVolume" type="range" min="0" max="1" step="0.01" value="1" data-tts-volume>
++                                            <output for="ttsVolume" class="slider-current-value" data-tts-volume-value>1</output>
++                                        </div>
++                                    </div>
+                                 </div>
+                             </details>
+                             <details class="vertical-accordion" open>
+-                                <summary>Blocked States</summary>
++                                <summary>Engine Status</summary>
+                                 <div class="accordion-body content-stack">
+-                                    <p>Generation is visibly blocked when no provider adapter is implemented.</p>
+-                                    <p>Export is visibly blocked when no generated Audio-owned asset exists.</p>
++                                    <p data-tts-engine-status>Checking browser speech synthesis.</p>
++                                    <p class="field-hint">If speech synthesis is unavailable, use a browser with Web Speech API support.</p>
+                                 </div>
                              </details>
                          </div>
-                     </aside>
-@@ -57,6 +106,7 @@
-     <div data-partial="footer"></div>
-     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
-     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
-+    <script type="module" src="toolbox/text-to-speech/text2speech.js"></script>
- </body>
+diff --git a/toolbox/text-to-speech/text2speech.js b/toolbox/text-to-speech/text2speech.js
+index bee7a6583..03d785410 100644
+--- a/toolbox/text-to-speech/text2speech.js
++++ b/toolbox/text-to-speech/text2speech.js
+@@ -1,3 +1,5 @@
++import { TextToSpeechEngine } from "../../src/engine/audio/TextToSpeechEngine.js";
++
+ const TTS_OWNERSHIP = Object.freeze({
+   DESIGN: "Design",
+   AUDIO: "Audio",
+@@ -6,9 +8,8 @@ const TTS_OWNERSHIP = Object.freeze({
+ const TTS_MESSAGE_STATUSES = Object.freeze([
+   "draft",
+   "ready-for-preview",
+-  "pending-generation",
+-  "generated",
+-  "exported",
++  "speaking",
++  "stopped",
+   "blocked",
+   "archived",
+ ]);
+@@ -23,6 +24,13 @@ const TTS_LANGUAGES = Object.freeze([
+ ]);
  
- </html>
-diff --git a/docs_build/dev/reports/PR_26171_027-text2speech-rebuild-foundation.md b/docs_build/dev/reports/PR_26171_027-text2speech-rebuild-foundation.md
+ const TTS_PROVIDER_ADAPTER_PLAN = Object.freeze([
++  {
++    key: "browser-speech",
++    name: "Browser Speech Synthesis",
++    status: "implemented",
++    boundary: "Local browser Web Speech API preview; no generated files.",
++    requiredCapabilities: ["text input", "voice selection", "rate", "pitch", "volume", "speak", "stop"],
++  },
+   {
+     key: "openai",
+     name: "OpenAI",
+@@ -53,12 +61,24 @@ const TTS_PROVIDER_ADAPTER_PLAN = Object.freeze([
+   },
+ ]);
+ 
++const RANGE_LIMITS = Object.freeze({
++  pitch: Object.freeze({ fallback: 1, max: 2, min: 0.1 }),
++  rate: Object.freeze({ fallback: 1, max: 2, min: 0.1 }),
++  volume: Object.freeze({ fallback: 1, max: 1, min: 0 }),
++});
++
++function boundedNumber(value, { fallback, max, min }) {
++  const number = Number(value);
++  if (!Number.isFinite(number)) return fallback;
++  return Math.min(max, Math.max(min, number));
++}
++
+ function createTtsMessage({
+   id,
+   name,
+   text,
+   emotionKey = "neutral",
+-  voiceProfileKey = "unassigned",
++  voiceProfileKey = "browser-speech",
+   languageCode = "en-US",
+   status = "draft",
+   metadata = {},
+@@ -68,7 +88,7 @@ function createTtsMessage({
+     name: String(name || "Untitled TTS Message"),
+     text: String(text || ""),
+     emotionKey: String(emotionKey || "neutral"),
+-    voiceProfileKey: String(voiceProfileKey || "unassigned"),
++    voiceProfileKey: String(voiceProfileKey || "browser-speech"),
+     languageCode: String(languageCode || "en-US"),
+     status: TTS_MESSAGE_STATUSES.includes(status) ? status : "draft",
+     owner: TTS_OWNERSHIP.DESIGN,
+@@ -89,7 +109,7 @@ function createEmotionProfile({ key = "neutral", name = "Neutral", intensity = 0
+   return { key: String(key), name: String(name), intensity: safeIntensity, owner: TTS_OWNERSHIP.DESIGN };
+ }
+ 
+-function createVoiceProfile({ key = "unassigned", name = "Unassigned Voice", providerKey = "unassigned", voiceId = "" } = {}) {
++function createVoiceProfile({ key = "browser-speech", name = "Browser Speech", providerKey = "browser-speech", voiceId = "" } = {}) {
+   return {
+     key: String(key),
+     name: String(name),
+@@ -100,64 +120,205 @@ function createVoiceProfile({ key = "unassigned", name = "Unassigned Voice", pro
+   };
+ }
+ 
+-function previewTtsMessage(message) {
+-  if (!message || !message.text.trim()) {
+-    return { ok: false, status: "blocked", message: "Preview blocked: message text is required." };
++function createSpeechPreviewRequest({
++  pitch = 1,
++  rate = 1,
++  text = "",
++  voice = "",
++  voiceOptions = [],
++  volume = 1,
++} = {}) {
++  const normalizedText = String(text || "").trim();
++  if (!normalizedText) {
++    return { ok: false, message: "Speech text is required before preview." };
++  }
++
++  const selectedVoice = voiceOptions.find((option) => String(option.value) === String(voice)) || null;
++  if (!selectedVoice) {
++    return { ok: false, message: "Select an available browser voice before preview." };
+   }
+-  return { ok: true, status: "ready-for-preview", message: "Preview shell ready. Provider playback is not implemented yet." };
++
++  return {
++    language: selectedVoice.language || "en-US",
++    ok: true,
++    pitch: boundedNumber(pitch, RANGE_LIMITS.pitch),
++    rate: boundedNumber(rate, RANGE_LIMITS.rate),
++    speechItemId: "browser-preview",
++    speechItemName: "Browser Preview",
++    text: normalizedText,
++    voice: selectedVoice.value,
++    voiceName: selectedVoice.name || selectedVoice.label || "selected voice",
++    volume: boundedNumber(volume, RANGE_LIMITS.volume),
++  };
++}
++
++function previewTtsMessage(message, options = {}) {
++  return createSpeechPreviewRequest({
++    ...options,
++    text: message?.text,
++  });
++}
++
++function formatRangeValue(value, kind) {
++  const limits = RANGE_LIMITS[kind] || RANGE_LIMITS.rate;
++  const boundedValue = boundedNumber(value, limits);
++  return String(Math.round(boundedValue * 100) / 100);
++}
++
++function setTextContent(root, selector, text) {
++  const node = root.querySelector(selector);
++  if (node) node.textContent = text;
+ }
+ 
+-function generateTtsMessage() {
+-  return { ok: false, status: "blocked", message: "Generation blocked: no TTS provider adapter is implemented yet." };
++function setStatus(root, message, state = "info") {
++  const status = root.querySelector("[data-tts-status]");
++  if (!status) return;
++  status.textContent = message;
++  status.dataset.ttsStatusState = state;
+ }
+ 
+-function exportTtsMessage(message) {
+-  if (!message || !message.generatedAudio) {
+-    return { ok: false, status: "blocked", message: "Export blocked: generated Audio-owned voice asset is required." };
++function renderVoiceOptions(select, voiceOptions) {
++  select.replaceChildren();
++  if (voiceOptions.length === 0) {
++    const option = document.createElement("option");
++    option.value = "";
++    option.textContent = "No browser voices available";
++    select.append(option);
++    select.value = "";
++    return;
+   }
+-  return { ok: true, status: "exported", message: "Export shell ready for an Audio-owned generated voice asset." };
++  voiceOptions.forEach((voiceOption) => {
++    const option = document.createElement("option");
++    option.value = voiceOption.value;
++    option.textContent = voiceOption.label;
++    select.append(option);
++  });
++  select.value = voiceOptions[0].value;
+ }
+ 
+-function renderProviderPlan(list, providers = TTS_PROVIDER_ADAPTER_PLAN) {
+-  if (!list) return;
+-  list.replaceChildren();
+-  providers.forEach((provider) => {
+-    const item = document.createElement("li");
+-    const strong = document.createElement("strong");
+-    strong.textContent = provider.name;
+-    item.append(strong, ` - ${provider.status}. ${provider.boundary}`);
+-    list.append(item);
++function collectSpeechRequest(root, voiceOptions) {
++  return createSpeechPreviewRequest({
++    pitch: root.querySelector("[data-tts-pitch]")?.value,
++    rate: root.querySelector("[data-tts-rate]")?.value,
++    text: root.querySelector("[data-tts-text-input]")?.value,
++    voice: root.querySelector("[data-tts-voice-select]")?.value,
++    voiceOptions,
++    volume: root.querySelector("[data-tts-volume]")?.value,
+   });
+ }
+ 
+-function initializeText2SpeechShell(root = document) {
+-  const status = root.querySelector("[data-tts-workflow-status]");
+-  const sample = createTtsMessage({
+-    id: "sample-message",
+-    name: "Sample Message",
+-    text: "Welcome to the arena, hero.",
+-    emotionKey: "confident",
+-    voiceProfileKey: "future-voice",
+-    metadata: { intent: "Narration", tags: ["intro", "tutorial"] },
++function initializeTextToSpeechTool(root = document, { engine = new TextToSpeechEngine() } = {}) {
++  const textInput = root.querySelector("[data-tts-text-input]");
++  const voiceSelect = root.querySelector("[data-tts-voice-select]");
++  const speakButton = root.querySelector("[data-tts-speak]");
++  const stopButton = root.querySelector("[data-tts-stop]");
++  const rateInput = root.querySelector("[data-tts-rate]");
++  const pitchInput = root.querySelector("[data-tts-pitch]");
++  const volumeInput = root.querySelector("[data-tts-volume]");
++  let voiceOptions = [];
++
++  function syncRange(input, selector, kind) {
++    if (!input) return;
++    input.value = formatRangeValue(input.value, kind);
++    setTextContent(root, selector, input.value);
++  }
++
++  function refreshActionState() {
++    const hasText = Boolean(String(textInput?.value || "").trim());
++    const hasVoice = Boolean(voiceSelect?.value);
++    const supported = engine.isSupported();
++    if (speakButton) speakButton.disabled = !(supported && hasText && hasVoice);
++    if (stopButton) stopButton.disabled = !supported;
++    setTextContent(root, "[data-tts-text-count]", String(String(textInput?.value || "").length));
++  }
++
++  function refreshVoices({ preserveSelection = true } = {}) {
++    const previousVoice = voiceSelect?.value || "";
++    voiceOptions = engine.voiceOptions();
++    if (voiceSelect) {
++      renderVoiceOptions(voiceSelect, voiceOptions);
++      if (preserveSelection && voiceOptions.some((option) => option.value === previousVoice)) {
++        voiceSelect.value = previousVoice;
++      }
++    }
++    setTextContent(root, "[data-tts-voice-count]", String(voiceOptions.length));
++    setTextContent(root, "[data-tts-voice-details]", voiceOptions.length
++      ? `${voiceOptions.length} browser voice${voiceOptions.length === 1 ? "" : "s"} available.`
++      : "No browser voices are currently available.");
++    refreshActionState();
++  }
++
++  function markUnavailable() {
++    setTextContent(root, "[data-tts-engine-label]", "Unavailable");
++    setTextContent(root, "[data-tts-engine-status]", "SpeechSynthesis is unavailable in this browser. Use a browser with Web Speech API support.");
++    setStatus(root, "SpeechSynthesis is unavailable in this browser. Use a browser with Web Speech API support.", "error");
++    if (voiceSelect) {
++      voiceSelect.disabled = true;
++      renderVoiceOptions(voiceSelect, []);
++    }
++    if (speakButton) speakButton.disabled = true;
++    if (stopButton) stopButton.disabled = true;
++  }
++
++  syncRange(rateInput, "[data-tts-rate-value]", "rate");
++  syncRange(pitchInput, "[data-tts-pitch-value]", "pitch");
++  syncRange(volumeInput, "[data-tts-volume-value]", "volume");
++
++  if (!engine.isSupported()) {
++    markUnavailable();
++    return { engine, speechSupported: false, voiceOptions };
++  }
++
++  setTextContent(root, "[data-tts-engine-label]", "Ready");
++  setTextContent(root, "[data-tts-engine-status]", "Browser SpeechSynthesis is available for local preview.");
++  setStatus(root, "Browser Text To Speech ready. Enter text, choose a voice, then press Speak / Preview.", "ready");
++  refreshVoices({ preserveSelection: false });
++  engine.onVoicesChanged(() => {
++    refreshVoices();
+   });
+-  const actions = {
+-    preview: previewTtsMessage(sample),
+-    generate: generateTtsMessage(sample),
+-    export: exportTtsMessage(sample),
+-  };
+-  root.querySelectorAll("[data-tts-action]").forEach((button) => {
+-    button.addEventListener("click", () => {
+-      const result = actions[button.dataset.ttsAction];
+-      if (status && result) status.textContent = result.message;
++
++  [rateInput, pitchInput, volumeInput].forEach((input) => {
++    input?.addEventListener("input", () => {
++      const kind = input === rateInput ? "rate" : input === pitchInput ? "pitch" : "volume";
++      syncRange(input, `[data-tts-${kind}-value]`, kind);
++      refreshActionState();
+     });
+   });
+-  renderProviderPlan(root.querySelector("[data-tts-provider-plan]"));
+-  if (status) status.textContent = "Text To Speech shell loaded. Generation is blocked until a real provider adapter is implemented.";
+-  return { sample, actions };
++  textInput?.addEventListener("input", refreshActionState);
++  voiceSelect?.addEventListener("change", refreshActionState);
++
++  speakButton?.addEventListener("click", () => {
++    const request = collectSpeechRequest(root, voiceOptions);
++    if (!request.ok) {
++      setStatus(root, request.message, "error");
++      refreshActionState();
++      return;
++    }
++    const result = engine.speak(request);
++    if (!result.ok) {
++      setStatus(root, result.message, "error");
++      refreshActionState();
++      return;
++    }
++    setStatus(root, `Speech queued with ${result.voiceName}; rate=${result.rate}; pitch=${result.pitch}; volume=${result.volume}.`, "ready");
++    refreshActionState();
++  });
++
++  stopButton?.addEventListener("click", () => {
++    const result = engine.stop();
++    if (!result.ok) {
++      setStatus(root, result.message, "error");
++      return;
++    }
++    setStatus(root, `Speech stopped. Cleared ${result.stoppedCount} queued item${result.stoppedCount === 1 ? "" : "s"}.`, "ready");
++    refreshActionState();
++  });
++
++  return { engine, speechSupported: true, voiceOptions };
+ }
+ 
+ if (typeof document !== "undefined") {
+-  initializeText2SpeechShell(document);
++  initializeTextToSpeechTool(document);
+ }
+ 
+ export {
+@@ -166,10 +327,9 @@ export {
+   TTS_OWNERSHIP,
+   TTS_PROVIDER_ADAPTER_PLAN,
+   createEmotionProfile,
++  createSpeechPreviewRequest,
+   createTtsMessage,
+   createVoiceProfile,
+-  exportTtsMessage,
+-  generateTtsMessage,
+-  initializeText2SpeechShell,
++  initializeTextToSpeechTool,
+   previewTtsMessage,
+ };
+diff --git a/docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild-manual-validation.md b/docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild-manual-validation.md
 new file mode 100644
-index 000000000..50091adb5
+index 000000000..46ad44610
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_027-text2speech-rebuild-foundation.md
-@@ -0,0 +1,39 @@
-+# PR_26171_027 Text To Speech Rebuild Foundation
++++ b/docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild-manual-validation.md
+@@ -0,0 +1,12 @@
++# PR_26171_037 Manual Validation Notes
 +
-+## Reference source
-+- Reviewed `archive/v1-v2/tools/old_text2speech-V2` as historical reference only.
-+- No archived implementation, CSS, event handlers, or runtime code was copied.
++## Manual Review
++- Reviewed the rebuilt active page at `toolbox/text-to-speech/index.html`.
++- Confirmed the page uses Theme V2 paths and shared toolbox partials.
++- Confirmed the creator workflow exposes text input, voice selection, rate, pitch, volume, Speak, and Stop controls.
++- Confirmed the page copy no longer blocks browser preview behind provider-not-implemented behavior.
++- Confirmed unavailable speech synthesis has visible actionable status text.
++- Confirmed the incorrect `tools/text2speech/` path is absent.
 +
-+## Feature inventory
-+- Script/message text entry and review.
-+- Voice/profile selection concepts.
-+- Emotion or delivery tuning concepts.
-+- Preview/generate/export workflow concepts.
-+- Provider choice as a future integration path.
-+
-+## UX inventory
-+- Creator needs a clear distinction between design-owned message text and audio-owned generated voice assets.
-+- Creator needs workflow state labels before provider integration exists.
-+- Creator needs visible blocked states instead of silent fallback behavior.
-+- Creator needs future provider readiness notes without exposing fake generation.
-+
-+## Data model notes
-+- Message: design-owned text, language, emotion, status, metadata, and optional project linkage.
-+- Emotion: named delivery intent with safe scalar settings.
-+- Voice Profile: creator-facing desired voice/provider settings; generated output remains audio-owned.
-+- Language: BCP-47-style language code and display name.
-+- Status: draft, ready for preview, pending generation, generated, exported, blocked, archived.
-+- Audio ownership: generated clips, files, provider artifacts, and export bundles belong to Audio.
-+
-+## Gap analysis
-+- Current hidden Voice Output shell had no creator workflow model.
-+- Current Message Studio speech testing is browser preview oriented and not a generated-audio pipeline.
-+- Provider adapters require planning before any external service implementation.
-+- Export requires explicit generated asset references; no browser-owned product data should be persisted.
-+
-+## Rebuild plan
-+1. Create a Theme V2 Text To Speech shell under `toolbox/text-to-speech/`.
-+2. Add a TTS message model foundation with explicit ownership boundaries.
-+3. Add preview/generate/export shell states with blocked provider behavior.
-+4. Add provider adapter planning for future OpenAI, ElevenLabs, Azure, and local providers.
-+5. Keep implementation provider-free until a later scoped PR adds a real adapter.
-diff --git a/docs_build/dev/reports/PR_26171_029-text2speech-tool-shell.md b/docs_build/dev/reports/PR_26171_029-text2speech-tool-shell.md
++## Environment Note
++Audio output was validated through a Playwright Web Speech API stub that records `speak` and `cancel` calls. Physical speaker playback was not audited in this headless validation environment.
+diff --git a/docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild-requirements.md b/docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild-requirements.md
 new file mode 100644
-index 000000000..54309403a
+index 000000000..694044c12
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_029-text2speech-tool-shell.md
-@@ -0,0 +1,5 @@
-+# PR_26171_029 Text To Speech Tool Shell
-+
-+Replaced the placeholder at `toolbox/text-to-speech/index.html` with the rebuilt Theme V2 page shell and wired its module from `toolbox/text-to-speech/text2speech.js`.
-+
-+The active toolbox registration already points to `text-to-speech/index.html`, so registration was preserved. The incorrect root `tools/text2speech/` path was removed. No inline styles, style blocks, inline event handlers, page-local CSS, or tool-local CSS were added.
-diff --git a/docs_build/dev/reports/PR_26171_031-text2speech-message-model.md b/docs_build/dev/reports/PR_26171_031-text2speech-message-model.md
-new file mode 100644
-index 000000000..de09080bc
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_031-text2speech-message-model.md
-@@ -0,0 +1,3 @@
-+# PR_26171_031 Text To Speech Message Model
-+
-+Added a provider-free Text To Speech model foundation for Message, Emotion Profile, Voice Profile, Language, Status, and creator metadata. Message data is marked Design-owned. Generated voice/audio ownership is explicitly marked Audio-owned.
-diff --git a/docs_build/dev/reports/PR_26171_033-text2speech-generation-workflow.md b/docs_build/dev/reports/PR_26171_033-text2speech-generation-workflow.md
-new file mode 100644
-index 000000000..625538b3e
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_033-text2speech-generation-workflow.md
-@@ -0,0 +1,3 @@
-+# PR_26171_033 Text To Speech Generation Workflow
-+
-+Added preview/generate/export workflow shell functions and UI controls. Preview validates readiness. Generate is blocked because no provider adapter is implemented. Export is blocked until an Audio-owned generated asset exists. No fake generation or silent fallback was added.
-diff --git a/docs_build/dev/reports/PR_26171_035-text2speech-provider-adapter-plan.md b/docs_build/dev/reports/PR_26171_035-text2speech-provider-adapter-plan.md
-new file mode 100644
-index 000000000..1b6dfbae5
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_035-text2speech-provider-adapter-plan.md
-@@ -0,0 +1,3 @@
-+# PR_26171_035 Text To Speech Provider Adapter Plan
-+
-+Added future provider planning entries for OpenAI, ElevenLabs, Azure AI Speech, and local providers. Entries document boundaries and required capabilities only; no provider implementation or external network integration was added.
-diff --git a/docs_build/dev/reports/PR_26171_text2speech-manual-validation.md b/docs_build/dev/reports/PR_26171_text2speech-manual-validation.md
-new file mode 100644
-index 000000000..e76a5080d
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_text2speech-manual-validation.md
-@@ -0,0 +1,9 @@
-+# Text To Speech Manual Validation Notes
-+
-+- Reviewed `toolbox/text-to-speech/index.html` for Theme V2 stylesheet usage only.
-+- Reviewed `toolbox/text-to-speech/text2speech.js` for provider-free model/workflow behavior.
-+- Confirmed no inline styles, style blocks, inline event handlers, page-local CSS, or tool-local CSS were introduced.
-+- Confirmed `tools/text2speech/` no longer exists.
-+- Confirmed the current toolbox registration path remains `text-to-speech/index.html`.
-+- Confirmed archived `old_text2speech-V2` code was treated as reference material only and not copied.
-+- Confirmed no external provider integration, fake generation, or silent fallback was introduced.
-diff --git a/docs_build/dev/reports/PR_26171_text2speech-toolbox-path-correction.md b/docs_build/dev/reports/PR_26171_text2speech-toolbox-path-correction.md
-new file mode 100644
-index 000000000..6705f448b
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_text2speech-toolbox-path-correction.md
++++ b/docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild-requirements.md
 @@ -0,0 +1,22 @@
-+# PR_26171 Text To Speech Toolbox Path Correction
++# PR_26171_037 Requirement Checklist
 +
-+## Summary
-+- Moved the rebuilt Text To Speech shell into the active toolbox path: `toolbox/text-to-speech/`.
-+- Replaced the placeholder `toolbox/text-to-speech/index.html` with the Theme V2 / Tool Template V2 shell.
-+- Added `toolbox/text-to-speech/text2speech.js` for provider-free message model, workflow, and adapter planning behavior.
-+- Removed the incorrect root `tools/text2speech/` path.
-+- Preserved the existing toolbox registration path `text-to-speech/index.html`.
-+
-+## Scope
-+- Text To Speech page/module wiring only.
-+- Required reports and validation evidence only.
-+- No archived implementation was copied.
-+- No provider integration, fake generation, silent fallback, browser-owned product data, page-local CSS, or tool-local CSS was added.
-+
-+## Corrected Paths
-+- Active page: `toolbox/text-to-speech/index.html`
-+- Active module: `toolbox/text-to-speech/text2speech.js`
-+- Removed path: `tools/text2speech/`
-+
-+## Project Workspace Note
-+The validation command `npm run test:workspace-v2` retains a legacy command name. User-facing copy and reports refer to Project Workspace.
-diff --git a/docs_build/dev/reports/PR_26171_text2speech-validation.md b/docs_build/dev/reports/PR_26171_text2speech-validation.md
++| Requirement | Result | Notes |
++| --- | --- | --- |
++| Use archive `old_text2speech-V2` as behavior reference only | PASS | Reviewed archive controls and engine behavior; rebuilt in current architecture. |
++| Active tool path is `toolbox/text-to-speech/` | PASS | Page and module live under the active toolbox path. |
++| Restore browser TTS capability | PASS | Browser preview uses `TextToSpeechEngine` and Web Speech API. |
++| Creator can enter text | PASS | Textarea is wired into preview request creation. |
++| Creator can select available browser voice | PASS | Voice select is populated from browser voices and handles empty state. |
++| Creator can adjust rate, pitch, and volume | PASS | Sliders update visible values and preview request options. |
++| Speak/Preview can call browser TTS | PASS | Playwright confirms `speechSynthesis.speak` path is called when available. |
++| Stop speech | PASS | Playwright confirms Stop calls cancel. |
++| Visible actionable unavailable-engine error | PASS | Missing Web Speech API shows an unavailable status and disables preview actions. |
++| Do not block browser TTS behind provider not implemented | PASS | Browser provider is implemented locally; paid providers remain planning only. |
++| Remove placeholder-only provider behavior | PASS | Placeholder generation/export shell behavior was removed from active preview path. |
++| JavaScript external only | PASS | Page references external scripts only. |
++| No inline script/style/event handlers | PASS | Targeted static validation passed. |
++| Theme V2 only | PASS | Page references Theme V2 stylesheet and shared partials. |
++| No fake generation | PASS | No fake audio generation added. |
++| No database tables | PASS | No schema or database table changes made. |
++| No external paid provider integration | PASS | Paid provider adapters are planning metadata only. |
++| Remove incorrect `tools/text2speech` path | PASS | Static check confirms the path is absent. |
+diff --git a/docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild-validation.md b/docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild-validation.md
 new file mode 100644
-index 000000000..694c12b7d
+index 000000000..65263eb9a
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_text2speech-validation.md
-@@ -0,0 +1,24 @@
-+# Text To Speech Validation Report
++++ b/docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild-validation.md
+@@ -0,0 +1,27 @@
++# PR_26171_037 Validation Report
 +
 +## Commands
-+- PASS: `node --test tests/tools/Text2SpeechShell.test.mjs`
-+- PASS: targeted static validation for `toolbox/text-to-speech/index.html`
-+- FAIL: `npm run test:workspace-v2`
++- `node --test tests\tools\Text2SpeechShell.test.mjs` - PASS
++- `npx playwright test tests/playwright/tools/TextToSpeechFunctional.spec.mjs --project=playwright --workers=1 --reporter=list` - PASS
++- Targeted static Text To Speech validation script - PASS
++- `git diff --check` - PASS
++- `npm run test:workspace-v2` - FAIL
 +
-+`npm run test:workspace-v2` is a legacy command name. The user-facing product language is Project Workspace.
++## Targeted Coverage
++- Page loads from `toolbox/text-to-speech/index.html`.
++- Text input updates the preview model.
++- Voice select renders the available browser voice list and empty/unavailable state.
++- Rate, pitch, and volume sliders update visible values.
++- Speak calls the browser TTS path when Web Speech API support is available.
++- Stop calls `speechSynthesis.cancel()` through the engine.
++- Missing Web Speech API support shows a visible actionable error.
++- No inline scripts, style blocks, inline styles, or inline event handlers were detected.
++- `tools/text2speech/` was absent.
 +
-+## Workspace Lane Failure
-+- The command ran `tests/playwright/tools/RootToolsFutureState.spec.mjs`.
-+- 3 tests passed and 2 tests failed.
-+- Failure 1: `root tools surface links current tool pages without old_* routes` expected the default tool labels without `Message Studio`; the page currently includes `Message Studio`.
-+- Failure 2: `common header renders primary navigation order across active pages` found a generic `Studio` body-text match after stripping `GameFoundryStudio` / `Game Foundry Studio`.
-+- Neither failure points to the corrected Text To Speech path, module wiring, or removed `tools/text2speech/` directory.
++## Project Workspace Command Note
++`npm run test:workspace-v2` is the legacy command name for Project Workspace validation. The command ran and failed in `tests/playwright/tools/RootToolsFutureState.spec.mjs` on five broad root/toolbox expectations:
++- Root tools list expected `[data-tools-accordion-list] .control-card` entries but found none.
++- Common header test did not find `header.site-header` on one active page.
++- Learn/tool template/representative tool tests reported failed requests to `http://127.0.0.1:5501/api/...`.
 +
-+## Targeted assertions
-+- Model ownership boundary is Design for messages/profiles and Audio for generated voice assets.
-+- Preview/generate/export shell does not silently fall back.
-+- Future provider adapter list is planning-only for OpenAI, ElevenLabs, Azure, and local providers.
-+- Text To Speech page uses Theme V2 and ToolDisplayMode.
-+- Text To Speech page wires `toolbox/text-to-speech/text2speech.js`.
-+- Text To Speech page does not reference `tools/text2speech`.
-+- `tools/text2speech/` is absent.
-diff --git a/docs_build/dev/reports/PR_26171_text2speech-zip-verification.md b/docs_build/dev/reports/PR_26171_text2speech-zip-verification.md
++The targeted Text To Speech unit, static, and Playwright validations passed after the functional rebuild.
+diff --git a/docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild.md b/docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild.md
 new file mode 100644
-index 000000000..d9230bf65
+index 000000000..da30e7bcb
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_text2speech-zip-verification.md
-@@ -0,0 +1,33 @@
-+# Text To Speech ZIP Verification Report
++++ b/docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild.md
+@@ -0,0 +1,23 @@
++# PR_26171_037 Text To Speech Functional Tool Rebuild
 +
-+## ZIP Target
-+- `tmp/PR_26171_text2speech_delta.zip`
++## Purpose
++- Rebuilt Text To Speech as a functional browser TTS tool in the active path `toolbox/text-to-speech/`.
++- Used `archive/v1-v2/tools/old_text2speech-V2` as behavior reference material only.
++- Kept browser Web Speech API as the local functional engine for this PR.
 +
-+## Verification Criteria
-+- ZIP is repo-structured from the repository root.
-+- ZIP contains the scoped Text To Speech correction files and required reports.
-+- ZIP does not contain files from `tmp/`.
-+- ZIP does not contain any `tools/text2speech/` path.
++## Implementation
++- Replaced the placeholder-only Text To Speech page with a Theme V2 / Tool Template V2 aligned workspace surface.
++- Added creator text entry, browser voice selection, rate, pitch, and volume controls with visible values.
++- Wired Speak and Stop actions through the existing `TextToSpeechEngine` Web Speech API wrapper.
++- Added visible actionable unavailable-engine messaging when `speechSynthesis` is not present.
++- Removed provider-not-implemented blocking behavior from the browser preview path.
++- Kept future paid provider adapters as planning metadata only.
++- Updated current toolbox registration and shared navigation labels from `Voice Output` to `Text To Speech`.
++- Confirmed `tools/text2speech/` does not exist.
 +
-+## Expected Scoped Files
-+- `toolbox/text-to-speech/index.html`
-+- `toolbox/text-to-speech/text2speech.js`
-+- `tests/tools/Text2SpeechShell.test.mjs`
-+- `docs_build/dev/reports/PR_26171_027-text2speech-rebuild-foundation.md`
-+- `docs_build/dev/reports/PR_26171_029-text2speech-tool-shell.md`
-+- `docs_build/dev/reports/PR_26171_031-text2speech-message-model.md`
-+- `docs_build/dev/reports/PR_26171_033-text2speech-generation-workflow.md`
-+- `docs_build/dev/reports/PR_26171_035-text2speech-provider-adapter-plan.md`
-+- `docs_build/dev/reports/PR_26171_text2speech-toolbox-path-correction.md`
-+- `docs_build/dev/reports/PR_26171_text2speech-validation.md`
-+- `docs_build/dev/reports/PR_26171_text2speech-manual-validation.md`
-+- `docs_build/dev/reports/PR_26171_text2speech-zip-verification.md`
-+- `docs_build/dev/reports/codex_changed_files.txt`
-+- `docs_build/dev/reports/codex_review.diff`
-+
-+## Result
-+- PASS: `tmp/PR_26171_text2speech_delta.zip` was created.
-+- PASS: Archive listing contained 14 entries.
-+- PASS: No expected files were missing from the archive listing.
-+- PASS: No archive entries were under `tmp/`.
-+- PASS: No archive entries were under `tools/text2speech/`.
-diff --git a/tests/tools/Text2SpeechShell.test.mjs b/tests/tools/Text2SpeechShell.test.mjs
++## Scope Notes
++- No archived implementation was copied directly.
++- No fake generation was added.
++- No database tables were added.
++- No external paid provider integration was added.
++- JavaScript remains external with no inline script blocks, style blocks, inline styles, or inline event handlers.
+diff --git a/tests/playwright/tools/TextToSpeechFunctional.spec.mjs b/tests/playwright/tools/TextToSpeechFunctional.spec.mjs
 new file mode 100644
-index 000000000..d04dae4fe
+index 000000000..ccf95e3e3
 --- /dev/null
-+++ b/tests/tools/Text2SpeechShell.test.mjs
-@@ -0,0 +1,49 @@
-+import assert from "node:assert/strict";
-+import test from "node:test";
++++ b/tests/playwright/tools/TextToSpeechFunctional.spec.mjs
+@@ -0,0 +1,159 @@
++import { expect, test } from "@playwright/test";
++import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
++import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 +
-+import {
-+  TTS_MESSAGE_STATUSES,
-+  TTS_PROVIDER_ADAPTER_PLAN,
-+  createEmotionProfile,
-+  createTtsMessage,
-+  createVoiceProfile,
-+  exportTtsMessage,
-+  generateTtsMessage,
-+  previewTtsMessage,
-+} from "../../toolbox/text-to-speech/text2speech.js";
-+
-+test("Text2Speech message model separates Design and Audio ownership", () => {
-+  const message = createTtsMessage({ text: "Hello", metadata: { tags: ["intro"] } });
-+  const emotion = createEmotionProfile({ intensity: 2 });
-+  const voice = createVoiceProfile({ providerKey: "openai" });
-+
-+  assert.equal(message.owner, "Design");
-+  assert.equal(message.audioOwner, "Audio");
-+  assert.equal(message.generatedAudio, null);
-+  assert.deepEqual(message.metadata.tags, ["intro"]);
-+  assert.equal(emotion.owner, "Design");
-+  assert.equal(emotion.intensity, 1);
-+  assert.equal(voice.owner, "Design");
-+  assert.equal(voice.generatedAudioOwner, "Audio");
-+  assert.ok(TTS_MESSAGE_STATUSES.includes("blocked"));
++test.afterAll(async () => {
++  await workspaceV2CoverageReporter.writeReport();
 +});
 +
-+test("Text2Speech workflow blocks missing provider and missing generated asset without silent fallback", () => {
-+  const ready = createTtsMessage({ text: "Welcome" });
-+  const empty = createTtsMessage();
-+
-+  assert.equal(previewTtsMessage(ready).ok, true);
-+  assert.equal(previewTtsMessage(empty).status, "blocked");
-+  assert.equal(generateTtsMessage(ready).ok, false);
-+  assert.match(generateTtsMessage(ready).message, /no TTS provider adapter/i);
-+  assert.equal(exportTtsMessage(ready).ok, false);
-+  assert.match(exportTtsMessage(ready).message, /Audio-owned voice asset/i);
-+});
-+
-+test("Text2Speech provider adapter plan names expected future providers only", () => {
-+  assert.deepEqual(
-+    TTS_PROVIDER_ADAPTER_PLAN.map((provider) => provider.key),
-+    ["openai", "elevenlabs", "azure", "local"],
-+  );
-+  assert.ok(TTS_PROVIDER_ADAPTER_PLAN.every((provider) => provider.status === "planned"));
-+});
-diff --git a/toolbox/text-to-speech/text2speech.js b/toolbox/text-to-speech/text2speech.js
-new file mode 100644
-index 000000000..bee7a6583
---- /dev/null
-+++ b/toolbox/text-to-speech/text2speech.js
-@@ -0,0 +1,175 @@
-+const TTS_OWNERSHIP = Object.freeze({
-+  DESIGN: "Design",
-+  AUDIO: "Audio",
-+});
-+
-+const TTS_MESSAGE_STATUSES = Object.freeze([
-+  "draft",
-+  "ready-for-preview",
-+  "pending-generation",
-+  "generated",
-+  "exported",
-+  "blocked",
-+  "archived",
-+]);
-+
-+const TTS_LANGUAGES = Object.freeze([
-+  { code: "en-US", name: "English (United States)" },
-+  { code: "en-GB", name: "English (United Kingdom)" },
-+  { code: "es-ES", name: "Spanish (Spain)" },
-+  { code: "fr-FR", name: "French (France)" },
-+  { code: "de-DE", name: "German (Germany)" },
-+  { code: "ja-JP", name: "Japanese (Japan)" },
-+]);
-+
-+const TTS_PROVIDER_ADAPTER_PLAN = Object.freeze([
-+  {
-+    key: "openai",
-+    name: "OpenAI",
-+    status: "planned",
-+    boundary: "External provider adapter; no implementation in this PR.",
-+    requiredCapabilities: ["text input", "voice selection", "generated audio file response", "usage metadata"],
-+  },
-+  {
-+    key: "elevenlabs",
-+    name: "ElevenLabs",
-+    status: "planned",
-+    boundary: "External provider adapter; no implementation in this PR.",
-+    requiredCapabilities: ["text input", "voice profile mapping", "generated audio file response", "provider job metadata"],
-+  },
-+  {
-+    key: "azure",
-+    name: "Azure AI Speech",
-+    status: "planned",
-+    boundary: "External provider adapter; no implementation in this PR.",
-+    requiredCapabilities: ["SSML-safe text", "language mapping", "voice deployment mapping", "generated audio file response"],
-+  },
-+  {
-+    key: "local",
-+    name: "Local Provider",
-+    status: "planned",
-+    boundary: "Local/offline adapter; no implementation in this PR.",
-+    requiredCapabilities: ["local model availability", "voice preset mapping", "file output", "device/runtime capability reporting"],
-+  },
-+]);
-+
-+function createTtsMessage({
-+  id,
-+  name,
-+  text,
-+  emotionKey = "neutral",
-+  voiceProfileKey = "unassigned",
-+  languageCode = "en-US",
-+  status = "draft",
-+  metadata = {},
-+} = {}) {
-+  return {
-+    id: String(id || "tts-message-draft"),
-+    name: String(name || "Untitled TTS Message"),
-+    text: String(text || ""),
-+    emotionKey: String(emotionKey || "neutral"),
-+    voiceProfileKey: String(voiceProfileKey || "unassigned"),
-+    languageCode: String(languageCode || "en-US"),
-+    status: TTS_MESSAGE_STATUSES.includes(status) ? status : "draft",
-+    owner: TTS_OWNERSHIP.DESIGN,
-+    audioOwner: TTS_OWNERSHIP.AUDIO,
-+    metadata: {
-+      creatorNotes: String(metadata.creatorNotes || ""),
-+      intent: String(metadata.intent || ""),
-+      sceneKey: String(metadata.sceneKey || ""),
-+      tags: Array.isArray(metadata.tags) ? metadata.tags.map(String) : [],
-+    },
-+    generatedAudio: null,
++async function openTextToSpeechPage(page, { speechAvailable = true } = {}) {
++  const server = await startRepoServer();
++  const failures = {
++    consoleErrors: [],
++    failedRequests: [],
++    pageErrors: [],
++    server,
 +  };
-+}
 +
-+function createEmotionProfile({ key = "neutral", name = "Neutral", intensity = 0.5 } = {}) {
-+  const numericIntensity = Number(intensity);
-+  const safeIntensity = Number.isNaN(numericIntensity) ? 0.5 : Math.min(1, Math.max(0, numericIntensity));
-+  return { key: String(key), name: String(name), intensity: safeIntensity, owner: TTS_OWNERSHIP.DESIGN };
-+}
-+
-+function createVoiceProfile({ key = "unassigned", name = "Unassigned Voice", providerKey = "unassigned", voiceId = "" } = {}) {
-+  return {
-+    key: String(key),
-+    name: String(name),
-+    providerKey: String(providerKey),
-+    voiceId: String(voiceId),
-+    owner: TTS_OWNERSHIP.DESIGN,
-+    generatedAudioOwner: TTS_OWNERSHIP.AUDIO,
-+  };
-+}
-+
-+function previewTtsMessage(message) {
-+  if (!message || !message.text.trim()) {
-+    return { ok: false, status: "blocked", message: "Preview blocked: message text is required." };
-+  }
-+  return { ok: true, status: "ready-for-preview", message: "Preview shell ready. Provider playback is not implemented yet." };
-+}
-+
-+function generateTtsMessage() {
-+  return { ok: false, status: "blocked", message: "Generation blocked: no TTS provider adapter is implemented yet." };
-+}
-+
-+function exportTtsMessage(message) {
-+  if (!message || !message.generatedAudio) {
-+    return { ok: false, status: "blocked", message: "Export blocked: generated Audio-owned voice asset is required." };
-+  }
-+  return { ok: true, status: "exported", message: "Export shell ready for an Audio-owned generated voice asset." };
-+}
-+
-+function renderProviderPlan(list, providers = TTS_PROVIDER_ADAPTER_PLAN) {
-+  if (!list) return;
-+  list.replaceChildren();
-+  providers.forEach((provider) => {
-+    const item = document.createElement("li");
-+    const strong = document.createElement("strong");
-+    strong.textContent = provider.name;
-+    item.append(strong, ` - ${provider.status}. ${provider.boundary}`);
-+    list.append(item);
++  page.on("pageerror", (error) => failures.pageErrors.push(error.message));
++  page.on("console", (message) => {
++    if (message.type() === "error") failures.consoleErrors.push(message.text());
 +  });
-+}
-+
-+function initializeText2SpeechShell(root = document) {
-+  const status = root.querySelector("[data-tts-workflow-status]");
-+  const sample = createTtsMessage({
-+    id: "sample-message",
-+    name: "Sample Message",
-+    text: "Welcome to the arena, hero.",
-+    emotionKey: "confident",
-+    voiceProfileKey: "future-voice",
-+    metadata: { intent: "Narration", tags: ["intro", "tutorial"] },
++  page.on("response", (response) => {
++    if (response.status() >= 400) failures.failedRequests.push(`${response.status()} ${response.url()}`);
 +  });
-+  const actions = {
-+    preview: previewTtsMessage(sample),
-+    generate: generateTtsMessage(sample),
-+    export: exportTtsMessage(sample),
-+  };
-+  root.querySelectorAll("[data-tts-action]").forEach((button) => {
-+    button.addEventListener("click", () => {
-+      const result = actions[button.dataset.ttsAction];
-+      if (status && result) status.textContent = result.message;
++  page.on("requestfailed", (request) => failures.failedRequests.push(`FAILED ${request.url()}`));
++
++  await page.addInitScript(({ apiUrl, siteUrl, speechAvailable: enabled }) => {
++    Object.defineProperty(Navigator.prototype, "webdriver", {
++      configurable: true,
++      get: () => true,
 +    });
-+  });
-+  renderProviderPlan(root.querySelector("[data-tts-provider-plan]"));
-+  if (status) status.textContent = "Text To Speech shell loaded. Generation is blocked until a real provider adapter is implemented.";
-+  return { sample, actions };
++    window.GameFoundryPublicConfig = {
++      apiUrl,
++      environmentLabel: "Development Environment",
++      siteUrl,
++    };
++    window.__textToSpeechCalls = [];
++    if (!enabled) {
++      Object.defineProperty(window, "SpeechSynthesisUtterance", { configurable: true, value: undefined });
++      Object.defineProperty(window, "speechSynthesis", { configurable: true, value: undefined });
++      return;
++    }
++
++    Object.defineProperty(window, "SpeechSynthesisUtterance", {
++      configurable: true,
++      value: class SpeechSynthesisUtterance {
++        constructor(text = "") {
++          this.text = text;
++        }
++      },
++    });
++
++    const voices = [
++      { lang: "en-US", name: "Arcade Voice", voiceURI: "arcade-voice-uri" },
++      { lang: "en-GB", name: "Narrator Voice", voiceURI: "narrator-voice-uri" },
++    ];
++    Object.defineProperty(window, "speechSynthesis", {
++      configurable: true,
++      value: {
++        addEventListener(type, callback) {
++          if (type === "voiceschanged") this.__voicesChanged = callback;
++        },
++        cancel() {
++          window.__textToSpeechCalls.push({ type: "cancel" });
++        },
++        getVoices() {
++          return voices;
++        },
++        removeEventListener() {},
++        speak(utterance) {
++          window.__textToSpeechCalls.push({
++            lang: utterance.lang,
++            pitch: utterance.pitch,
++            rate: utterance.rate,
++            text: utterance.text,
++            type: "speak",
++            voiceName: utterance.voice?.name || "",
++            volume: utterance.volume,
++          });
++        },
++      },
++    });
++  }, { apiUrl: `${server.baseUrl}/api`, siteUrl: server.baseUrl, speechAvailable });
++
++  await workspaceV2CoverageReporter.start(page);
++  await page.goto(`${server.baseUrl}/toolbox/text-to-speech/index.html`, { waitUntil: "networkidle" });
++  return failures;
 +}
 +
-+if (typeof document !== "undefined") {
-+  initializeText2SpeechShell(document);
++async function closeTextToSpeechRun(failures, page) {
++  await workspaceV2CoverageReporter.stop(page);
++  await failures.server.close();
 +}
 +
-+export {
-+  TTS_LANGUAGES,
-+  TTS_MESSAGE_STATUSES,
-+  TTS_OWNERSHIP,
-+  TTS_PROVIDER_ADAPTER_PLAN,
-+  createEmotionProfile,
-+  createTtsMessage,
-+  createVoiceProfile,
-+  exportTtsMessage,
-+  generateTtsMessage,
-+  initializeText2SpeechShell,
-+  previewTtsMessage,
-+};
++test("Text To Speech page loads and speaks through browser speech synthesis", async ({ page }) => {
++  const failures = await openTextToSpeechPage(page);
++  try {
++    await expect(page.getByRole("heading", { level: 1, name: "Text To Speech" })).toBeVisible();
++    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
++
++    await expect(page.locator("[data-tts-voice-select]")).toContainText("Arcade Voice");
++    await expect(page.locator("[data-tts-voice-count]")).toHaveText("2");
++    await expect(page.locator("[data-tts-engine-label]")).toHaveText("Ready");
++
++    await page.locator("[data-tts-text-input]").fill("Launch the next wave.");
++    await page.locator("[data-tts-voice-select]").selectOption("arcade-voice-uri");
++    await page.locator("[data-tts-rate]").fill("1.4");
++    await page.locator("[data-tts-pitch]").fill("0.8");
++    await page.locator("[data-tts-volume]").fill("0.55");
++    await expect(page.locator("[data-tts-rate-value]")).toHaveText("1.4");
++    await expect(page.locator("[data-tts-pitch-value]")).toHaveText("0.8");
++    await expect(page.locator("[data-tts-volume-value]")).toHaveText("0.55");
++    await expect(page.locator("[data-tts-text-count]")).toHaveText("21");
++
++    await expect(page.locator("[data-tts-speak]")).toBeEnabled();
++    await page.locator("[data-tts-speak]").click();
++    await expect(page.locator("[data-tts-status]")).toContainText("Speech queued");
++    let calls = await page.evaluate(() => window.__textToSpeechCalls);
++    expect(calls.at(-1)).toEqual(expect.objectContaining({
++      lang: "en-US",
++      pitch: 0.8,
++      rate: 1.4,
++      text: "Launch the next wave.",
++      type: "speak",
++      voiceName: "Arcade Voice",
++      volume: 0.55,
++    }));
++
++    await page.locator("[data-tts-stop]").click();
++    await expect(page.locator("[data-tts-status]")).toContainText("Speech stopped");
++    calls = await page.evaluate(() => window.__textToSpeechCalls);
++    expect(calls.at(-1)).toEqual({ type: "cancel" });
++
++    expect(failures.failedRequests).toEqual([]);
++    expect(failures.pageErrors).toEqual([]);
++    expect(failures.consoleErrors).toEqual([]);
++  } finally {
++    await closeTextToSpeechRun(failures, page);
++  }
++});
++
++test("Text To Speech shows actionable error when browser speech synthesis is unavailable", async ({ page }) => {
++  const failures = await openTextToSpeechPage(page, { speechAvailable: false });
++  try {
++    await expect(page.getByRole("heading", { level: 1, name: "Text To Speech" })).toBeVisible();
++    await expect(page.locator("[data-tts-engine-label]")).toHaveText("Unavailable");
++    await expect(page.locator("[data-tts-engine-status]")).toContainText("SpeechSynthesis is unavailable");
++    await expect(page.locator("[data-tts-status]")).toContainText("Use a browser with Web Speech API support");
++    await expect(page.locator("[data-tts-voice-select]")).toContainText("No browser voices available");
++    await expect(page.locator("[data-tts-speak]")).toBeDisabled();
++    await expect(page.locator("[data-tts-stop]")).toBeDisabled();
++
++    expect(failures.failedRequests).toEqual([]);
++    expect(failures.pageErrors).toEqual([]);
++    expect(failures.consoleErrors).toEqual([]);
++  } finally {
++    await closeTextToSpeechRun(failures, page);
++  }
++});

@@ -1,34 +1,32 @@
 # git status --short
-M docs_build/dev/reports/codex_changed_files.txt
- M docs_build/dev/reports/codex_review.diff
+M assets/theme-v2/partials/header-nav.html
+ M src/dev-runtime/admin/header-nav.local.html
+ M src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
+ M src/dev-runtime/server/local-api-router.mjs
+ M src/shared/toolbox/tool-metadata-inventory.js
+ M tests/tools/Text2SpeechShell.test.mjs
  M toolbox/text-to-speech/index.html
-?? docs_build/dev/reports/PR_26171_027-text2speech-rebuild-foundation.md
-?? docs_build/dev/reports/PR_26171_029-text2speech-tool-shell.md
-?? docs_build/dev/reports/PR_26171_031-text2speech-message-model.md
-?? docs_build/dev/reports/PR_26171_033-text2speech-generation-workflow.md
-?? docs_build/dev/reports/PR_26171_035-text2speech-provider-adapter-plan.md
-?? docs_build/dev/reports/PR_26171_text2speech-manual-validation.md
-?? docs_build/dev/reports/PR_26171_text2speech-toolbox-path-correction.md
-?? docs_build/dev/reports/PR_26171_text2speech-validation.md
-?? docs_build/dev/reports/PR_26171_text2speech-zip-verification.md
-?? tests/tools/Text2SpeechShell.test.mjs
-?? toolbox/text-to-speech/text2speech.js
+ M toolbox/text-to-speech/text2speech.js
+?? docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild-manual-validation.md
+?? docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild-requirements.md
+?? docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild-validation.md
+?? docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild.md
+?? tests/playwright/tools/TextToSpeechFunctional.spec.mjs
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26171_027-text2speech-rebuild-foundation.md
-docs_build/dev/reports/PR_26171_029-text2speech-tool-shell.md
-docs_build/dev/reports/PR_26171_031-text2speech-message-model.md
-docs_build/dev/reports/PR_26171_033-text2speech-generation-workflow.md
-docs_build/dev/reports/PR_26171_035-text2speech-provider-adapter-plan.md
-docs_build/dev/reports/PR_26171_text2speech-manual-validation.md
-docs_build/dev/reports/PR_26171_text2speech-toolbox-path-correction.md
-docs_build/dev/reports/PR_26171_text2speech-validation.md
-docs_build/dev/reports/PR_26171_text2speech-zip-verification.md
-tests/tools/Text2SpeechShell.test.mjs
-toolbox/text-to-speech/text2speech.js
+docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild-manual-validation.md
+docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild-requirements.md
+docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild-validation.md
+docs_build/dev/reports/PR_26171_037-text2speech-functional-tool-rebuild.md
+tests/playwright/tools/TextToSpeechFunctional.spec.mjs
 
 # git diff --stat
-docs_build/dev/reports/codex_changed_files.txt |   40 +-
- docs_build/dev/reports/codex_review.diff       | 1428 ++++++++++++++++++++++--
- toolbox/text-to-speech/index.html              |   76 +-
- 3 files changed, 1406 insertions(+), 138 deletions(-)
+assets/theme-v2/partials/header-nav.html           |   2 +-
+ src/dev-runtime/admin/header-nav.local.html        |   2 +-
+ .../game-journey-mock-repository.js                |   2 +-
+ src/dev-runtime/server/local-api-router.mjs        |  13 +-
+ src/shared/toolbox/tool-metadata-inventory.js      |  27 ++-
+ tests/tools/Text2SpeechShell.test.mjs              |  36 ++-
+ toolbox/text-to-speech/index.html                  |  78 ++++---
+ toolbox/text-to-speech/text2speech.js              | 260 +++++++++++++++++----
+ 8 files changed, 309 insertions(+), 111 deletions(-)
