@@ -103,6 +103,8 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
   try {
     await expect(page.getByRole("heading", { level: 1, name: "Text To Speech" })).toBeVisible();
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+    await expect(page.locator("[data-tts-summary]")).toHaveClass(/content-cluster--nowrap/);
+    await expect(page.locator("[data-tts-summary]")).toContainText("TTS Studio");
 
     await expect(page.locator("[data-tts-voice-select]")).toContainText("Arcade Voice");
     await expect(page.locator("[data-tts-voice-count]")).toHaveText("2");
@@ -220,6 +222,53 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
     expect(failures.consoleErrors).toEqual([]);
   } finally {
     await closeTextToSpeechRun(failures, page);
+  }
+});
+
+test("Text To Speech is registered on the toolbox index with the active toolbox path", async ({ page }) => {
+  const server = await startRepoServer();
+  const failures = {
+    consoleErrors: [],
+    failedRequests: [],
+    pageErrors: [],
+    server,
+  };
+
+  page.on("pageerror", (error) => failures.pageErrors.push(error.message));
+  page.on("console", (message) => {
+    if (message.type() === "error") failures.consoleErrors.push(message.text());
+  });
+  page.on("response", (response) => {
+    if (response.status() >= 400) failures.failedRequests.push(`${response.status()} ${response.url()}`);
+  });
+  page.on("requestfailed", (request) => failures.failedRequests.push(`FAILED ${request.url()}`));
+
+  await page.addInitScript(({ apiUrl, siteUrl }) => {
+    window.GameFoundryPublicConfig = {
+      apiUrl,
+      environmentLabel: "Development Environment",
+      siteUrl,
+    };
+  }, { apiUrl: `${server.baseUrl}/api`, siteUrl: server.baseUrl });
+
+  try {
+    await workspaceV2CoverageReporter.start(page);
+    await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+    const textToSpeechLink = page.locator("[data-toolbox-tool-name-link='Text To Speech']");
+    await expect(textToSpeechLink).toBeVisible();
+    await expect(textToSpeechLink).toHaveAttribute("href", "/toolbox/text-to-speech/index.html");
+    await expect(textToSpeechLink).toHaveAttribute("data-registered-tool-route", "toolbox/text-to-speech/index.html");
+    await expect(page.locator("a[href*='tools/text2speech']")).toHaveCount(0);
+    await textToSpeechLink.click();
+    await page.waitForURL(/\/toolbox\/text-to-speech\/index\.html$/);
+    await expect(page.getByRole("heading", { level: 1, name: "Text To Speech" })).toBeVisible();
+
+    expect(failures.failedRequests).toEqual([]);
+    expect(failures.pageErrors).toEqual([]);
+    expect(failures.consoleErrors).toEqual([]);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await server.close();
   }
 });
 
