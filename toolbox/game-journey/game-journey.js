@@ -85,6 +85,17 @@ const recommendedTargetValues = new Map(
   GAME_JOURNEY_RECOMMENDED_TARGETS.map((target) => [target.key, target.suggestedCount]),
 );
 
+function currentRecommendedTargets() {
+  const result = repository.listRecommendedTargets();
+  if (!Array.isArray(result)) {
+    return GAME_JOURNEY_RECOMMENDED_TARGETS;
+  }
+  result.forEach((target) => {
+    recommendedTargetValues.set(target.key, normalizeTargetCount(target.suggestedCount));
+  });
+  return result;
+}
+
 function refreshCompletionMetricsSnapshot() {
   try {
     completionMetricsSnapshot = readGameJourneyCompletionMetrics();
@@ -881,7 +892,8 @@ function renderRecommendedTargets() {
     return;
   }
   recommendedTargets.innerHTML = "";
-  if (!GAME_JOURNEY_RECOMMENDED_TARGETS.length) {
+  const targets = currentRecommendedTargets();
+  if (!targets.length) {
     recommendedTargets.append(createElement("p", { text: "No recommended planning targets are available." }));
     return;
   }
@@ -898,7 +910,7 @@ function renderRecommendedTargets() {
   });
   head.append(headRow);
   const body = createElement("tbody");
-  GAME_JOURNEY_RECOMMENDED_TARGETS.forEach((target) => {
+  targets.forEach((target) => {
     const row = createElement("tr");
     row.dataset.journeyRecommendedTarget = target.key;
     const labelCell = createElement("td", { text: target.label });
@@ -1368,10 +1380,23 @@ recommendedTargets?.addEventListener("input", (event) => {
     return;
   }
   const value = normalizeTargetCount(input.value);
-  recommendedTargetValues.set(target.key, value);
-  input.value = String(value);
+  if (redirectGuestWriteAction(recommendedTargetStatus)) {
+    input.value = String(recommendedTargetValues.get(target.key) ?? target.suggestedCount);
+    return;
+  }
+  const updated = repository.updateRecommendedTarget(target.key, value);
+  if (!updated || updated.error) {
+    if (recommendedTargetStatus) {
+      recommendedTargetStatus.textContent = "Open a game before saving recommended targets.";
+    }
+    input.value = String(recommendedTargetValues.get(target.key) ?? target.suggestedCount);
+    return;
+  }
+  const savedValue = normalizeTargetCount(updated.suggestedCount);
+  recommendedTargetValues.set(target.key, savedValue);
+  input.value = String(savedValue);
   if (recommendedTargetStatus) {
-    recommendedTargetStatus.textContent = `${target.label} suggested target set to ${value}.`;
+    recommendedTargetStatus.textContent = `Saved ${target.label} suggested target at ${savedValue}.`;
   }
 });
 

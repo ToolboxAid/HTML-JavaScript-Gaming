@@ -5206,7 +5206,9 @@ LIMIT 1;
     }
     const result = await method(...args);
     assertRepositoryMethodResult(repositoryId, methodName, result);
-    if (repositoryMethodRequiresPersistence(methodName)) {
+    const methodPersistsThroughToolStore =
+      repository === this.gameJourneyRepository && methodName === "updateRecommendedTarget";
+    if (repositoryMethodRequiresPersistence(methodName) && !methodPersistsThroughToolStore) {
       if (repository === this.gameWorkspaceRepository) {
         await this.persistGameWorkspaceProviderState(`Persisting ${methodName} result`);
       } else if (repository === this.assetRepository) {

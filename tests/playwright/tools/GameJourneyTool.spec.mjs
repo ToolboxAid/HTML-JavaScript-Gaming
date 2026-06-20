@@ -219,6 +219,9 @@ test("Game Journey exposes static tool ownership areas without automatic counts"
 });
 
 test("Game Journey progress dashboard summarizes completion metrics", async ({ page }) => {
+  const previousLocalDbPath = process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
+  const localDbPath = path.join(process.cwd(), "tmp", "local-db", `game-journey-targets-${process.pid}-${Date.now()}.sqlite`);
+  process.env.GAMEFOUNDRY_LOCAL_DB_PATH = localDbPath;
   const server = await startRepoServer();
   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
   const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
@@ -294,8 +297,26 @@ test("Game Journey progress dashboard summarizes completion metrics", async ({ p
     await expect(page.locator("[data-journey-recommended-target='heroes'] td").nth(1)).toHaveText("Objects");
     await expect(page.locator("[data-journey-target-input='heroes']")).toHaveValue("1");
     await page.locator("[data-journey-target-input='heroes']").fill("2");
-    await expect(page.locator("[data-journey-target-status]")).toHaveText("Heroes suggested target set to 2.");
+    await expect(page.locator("[data-journey-target-status]")).toHaveText("Saved Heroes suggested target at 2.");
     await expect(page.locator("[data-journey-target-input='heroes']")).toHaveValue("2");
+    await page.reload({ waitUntil: "networkidle" });
+    await expect(page.locator("[data-journey-target-input='heroes']")).toHaveValue("2");
+    const repositoryData = await fetchApiData(server, "/api/toolbox/game-journey/repositories", {
+      body: JSON.stringify({ options: {} }),
+      method: "POST",
+    });
+    const tablesData = await fetchApiData(server, `/api/toolbox/game-journey/repositories/${repositoryData.repositoryId}/methods/getTables`, {
+      body: JSON.stringify({ args: [] }),
+      method: "POST",
+    });
+    const persistedTarget = (tablesData.result.game_journey_items || []).find((item) =>
+      item.linkedRecordType === "recommended-target" && item.linkedRecordId === "heroes",
+    );
+    expect(persistedTarget).toMatchObject({
+      noteKey: GAME_JOURNEY_KEYS.notes.designPass,
+      title: "Recommended target: Heroes",
+    });
+    expect(JSON.parse(persistedTarget.userDetails)).toMatchObject({ suggestedCount: 2 });
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
 
     expect(failedRequests).toEqual([]);
@@ -304,6 +325,8 @@ test("Game Journey progress dashboard summarizes completion metrics", async ({ p
   } finally {
     await workspaceV2CoverageReporter.stop(page);
     await server.close();
+    await fs.rm(localDbPath, { force: true });
+    restoreEnvValue("GAMEFOUNDRY_LOCAL_DB_PATH", previousLocalDbPath);
     restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
     restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
   }

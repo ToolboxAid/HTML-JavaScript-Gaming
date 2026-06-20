@@ -98,6 +98,8 @@ const GENERATED_ULID_SEQUENCE = Object.freeze({
   note: 4001,
   diagnostic: 5001,
 });
+const RECOMMENDED_TARGET_LINKED_RECORD_TYPE = "recommended-target";
+const RECOMMENDED_TARGET_NOTE_KEY = GAME_JOURNEY_KEYS.notes.designPass;
 
 export const GAME_JOURNEY_STATUSES = [
   {
@@ -619,6 +621,14 @@ export function createGameJourneyMockRepository(options = {}) {
     return currentSessionUser().userKey;
   }
 
+  function safeCurrentUserKey() {
+    try {
+      return currentUserKey() || systemUserKey();
+    } catch {
+      return systemUserKey();
+    }
+  }
+
   function currentUserCanWrite() {
     return Boolean(currentUserKey());
   }
@@ -629,6 +639,10 @@ export function createGameJourneyMockRepository(options = {}) {
 
   function isSystemItem(item) {
     return Boolean(item && item.createdBy === systemUserKey());
+  }
+
+  function isRecommendedTargetItem(item) {
+    return item?.linkedRecordType === RECOMMENDED_TARGET_LINKED_RECORD_TYPE;
   }
 
   function currentUserCanSeeNote(note) {
@@ -745,8 +759,93 @@ export function createGameJourneyMockRepository(options = {}) {
 
   function getItemsForNote(noteKey) {
     return tables.game_journey_items
-      .filter((item) => item.noteKey === noteKey)
+      .filter((item) => item.noteKey === noteKey && !isRecommendedTargetItem(item))
       .sort((left, right) => left.order - right.order);
+  }
+
+  function normalizeTargetCount(value) {
+    const parsed = Number(value);
+    if (!Number.isFinite(parsed)) {
+      return 0;
+    }
+    return Math.max(0, Math.trunc(parsed));
+  }
+
+  function readTargetCount(item, fallbackCount) {
+    if (!item?.userDetails) {
+      return fallbackCount;
+    }
+    try {
+      const payload = JSON.parse(item.userDetails);
+      return normalizeTargetCount(payload.suggestedCount ?? fallbackCount);
+    } catch {
+      return fallbackCount;
+    }
+  }
+
+  function findRecommendedTargetItem(targetKey) {
+    return tables.game_journey_items.find((item) =>
+      item.gameKey === GAME_JOURNEY_KEYS.game &&
+      item.linkedRecordType === RECOMMENDED_TARGET_LINKED_RECORD_TYPE &&
+      item.linkedRecordId === targetKey,
+    );
+  }
+
+  function hydrateRecommendedTarget(target) {
+    const item = findRecommendedTargetItem(target.key);
+    return {
+      ...clone(target),
+      suggestedCount: readTargetCount(item, target.suggestedCount),
+      persisted: Boolean(item),
+      recordKey: item?.key || "",
+      updatedAt: item?.updatedAt || "",
+      updatedBy: item?.updatedBy || "",
+    };
+  }
+
+  function listRecommendedTargets() {
+    return GAME_JOURNEY_RECOMMENDED_TARGETS.map(hydrateRecommendedTarget);
+  }
+
+  function updateRecommendedTarget(targetKey, suggestedCount) {
+    const activeGame = requireActiveGame();
+    const target = GAME_JOURNEY_RECOMMENDED_TARGETS.find((item) => item.key === targetKey);
+    if (!activeGame || !target) {
+      return null;
+    }
+
+    const normalizedCount = normalizeTargetCount(suggestedCount);
+    const timestampValue = new Date().toISOString();
+    const userKey = safeCurrentUserKey();
+    let item = findRecommendedTargetItem(target.key);
+    if (!item) {
+      item = {
+        key: makeUlid(nextItemNumber),
+        gameKey: activeGame.key,
+        noteKey: RECOMMENDED_TARGET_NOTE_KEY,
+        status: "not-started",
+        title: `Recommended target: ${target.label}`,
+        userDetails: "",
+        createdBy: userKey,
+        updatedBy: userKey,
+        templateKey: "",
+        linkedRecordType: RECOMMENDED_TARGET_LINKED_RECORD_TYPE,
+        linkedRecordId: target.key,
+        indent: 0,
+        order: getItemsForNote(RECOMMENDED_TARGET_NOTE_KEY).length + 1,
+        createdAt: timestampValue,
+        updatedAt: timestampValue,
+      };
+      nextItemNumber += 1;
+      tables.game_journey_items.push(item);
+    }
+
+    item.userDetails = JSON.stringify({ suggestedCount: normalizedCount });
+    item.updatedAt = timestampValue;
+    item.updatedBy = userKey;
+    addActivity(activeGame.key, RECOMMENDED_TARGET_NOTE_KEY, `Updated ${target.label} recommended target to ${normalizedCount}`, userKey);
+    persistTables();
+    return hydrateRecommendedTarget(target);
   }
 
   function itemMatchesFilter(item, filterId) {
@@ -1238,6 +1337,8 @@ export function createGameJourneyMockRepository(options = {}) {
     getCompletionMetricsSnapshot: () => completionMetricsStore.snapshot(),
     listCompletionMetrics: () => completionMetricsStore.listMetrics(),
     updateCompletionMetric: (bucketKey, updates) => completionMetricsStore.updateMetric(bucketKey, updates),
+    listRecommendedTargets,
+    updateRecommendedTarget,
     getSessionUser: () => currentSessionUser(),
     getSystemUser: () => getMockDbSystemUser(),
     getActiveGame,
