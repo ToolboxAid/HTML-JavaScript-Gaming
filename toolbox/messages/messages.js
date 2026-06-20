@@ -12,8 +12,10 @@ import {
   updateMessageSegment,
   updateTtsProfile,
 } from "./messages-api-client.js";
+import { createMessageStudioTtsServiceRegistry } from "./message-tts-service-registry.js";
 
 const NEW_ROW_KEY = "__new__";
+const ttsServiceRegistry = createMessageStudioTtsServiceRegistry();
 
 const elements = {
   addMessageRow: document.querySelector("[data-messages-add-row]"),
@@ -26,14 +28,19 @@ const elements = {
   persistenceOwner: document.querySelector("[data-messages-persistence-owner]"),
   persistenceSource: document.querySelector("[data-messages-persistence-source]"),
   previewStatus: document.querySelector("[data-messages-preview-status]"),
+  previewTtsProfile: document.querySelector("[data-messages-preview-tts-profile]"),
   selectedEmotion: document.querySelector("[data-messages-selected-emotion]"),
   selectedName: document.querySelector("[data-messages-selected-name]"),
+  selectedSegment: document.querySelector("[data-messages-selected-segment]"),
   selectedStatus: document.querySelector("[data-messages-selected-status]"),
   selectedText: document.querySelector("[data-messages-selected-text]"),
+  speechTestTarget: document.querySelector("[data-messages-speech-test-target]"),
   table: document.querySelector("[data-messages-table]"),
+  testSpeech: document.querySelector("[data-messages-test-speech]"),
   ttsAddRow: document.querySelector("[data-messages-tts-add-row]"),
   ttsCount: document.querySelector("[data-messages-tts-count]"),
   ttsRows: document.querySelector("[data-messages-tts-profiles]"),
+  ttsService: document.querySelector("[data-messages-tts-service]"),
   validationCard: document.querySelector("[data-messages-validation-card]"),
   validationErrors: document.querySelector("[data-messages-validation-errors]"),
 };
@@ -47,6 +54,8 @@ const state = {
   messages: [],
   segments: [],
   selectedMessageKey: "",
+  selectedSegmentKey: "",
+  ttsServices: [],
   ttsProfiles: [],
 };
 
@@ -139,6 +148,28 @@ function createSelect(value, dataName, options, placeholder) {
   return select;
 }
 
+function populateSelect(select, options, placeholder) {
+  if (!select) {
+    return;
+  }
+  const currentValue = select.value;
+  select.replaceChildren();
+  const placeholderOption = document.createElement("option");
+  placeholderOption.value = "";
+  placeholderOption.textContent = placeholder;
+  select.append(placeholderOption);
+  options.forEach((optionValue) => {
+    const option = document.createElement("option");
+    option.value = optionValue.key;
+    option.textContent = optionValue.name;
+    option.disabled = optionValue.disabled === true;
+    select.append(option);
+  });
+  select.value = options.some((optionValue) => optionValue.key === currentValue && optionValue.disabled !== true)
+    ? currentValue
+    : "";
+}
+
 function createField(labelText, field) {
   const label = document.createElement("label");
   const span = document.createElement("span");
@@ -186,12 +217,50 @@ function selectedMessage() {
   return state.messages.find((message) => message.key === state.selectedMessageKey) || null;
 }
 
+function selectedSegment() {
+  return state.segments.find((segment) => segment.key === state.selectedSegmentKey) || null;
+}
+
 function emotionProfileByKey(profileKey) {
   return state.emotionProfiles.find((profile) => profile.key === profileKey) || null;
 }
 
 function ttsProfileByKey(profileKey) {
   return state.ttsProfiles.find((profile) => profile.key === profileKey) || null;
+}
+
+function selectedTtsProfile() {
+  return ttsProfileByKey(elements.previewTtsProfile?.value || "");
+}
+
+function selectedTtsService() {
+  return state.ttsServices.find((service) => service.key === elements.ttsService?.value) || null;
+}
+
+function selectedSpeechTarget() {
+  const segment = selectedSegment();
+  if (segment) {
+    return {
+      emotionProfile: emotionProfileByKey(segment.emotionProfileKey),
+      id: segment.key,
+      label: `Segment ${segment.displayOrder}`,
+      name: `${segment.messageName || "Message"} segment ${segment.displayOrder}`,
+      text: segment.segmentText,
+      type: "segment",
+    };
+  }
+  const message = selectedMessage();
+  if (!message) {
+    return null;
+  }
+  return {
+    emotionProfile: emotionProfileByKey(message.emotionProfileKey),
+    id: message.key,
+    label: `Message Row: ${message.name}`,
+    name: message.name,
+    text: message.messageText,
+    type: "message",
+  };
 }
 
 function messageSegments(messageKey) {
@@ -235,14 +304,85 @@ function renderPersistence(persistence = {}) {
 
 function renderSelectedMessage() {
   const selected = selectedMessage();
+  const segment = selectedSegment();
   setText(elements.selectedName, selected?.name || "None");
   setText(elements.selectedEmotion, selected?.emotionProfileName || "None");
+  setText(elements.selectedSegment, segment ? `${segment.displayOrder}: ${segment.segmentText}` : "None");
   setText(elements.selectedStatus, selected ? statusForActive(selected.active) : "None");
-  setText(elements.selectedText, selected?.messageText || "No message selected.");
+  setText(elements.selectedText, segment?.segmentText || selected?.messageText || "No message selected.");
 }
 
-function renderSpeechPreviewStatus() {
-  setText(elements.previewStatus, "No playback, provider calls, or audio generation run from Message Studio.");
+function renderTtsServiceOptions() {
+  state.ttsServices = ttsServiceRegistry.listServices();
+  const options = state.ttsServices.map((service) => ({
+    disabled: !service.available,
+    key: service.key,
+    name: service.available ? service.name : `${service.name} unavailable`,
+  }));
+  populateSelect(elements.ttsService, options, "No TTS service available");
+  const availableService = state.ttsServices.find((service) => service.available);
+  if (!elements.ttsService?.value && availableService) {
+    elements.ttsService.value = availableService.key;
+  }
+  if (elements.ttsService) {
+    elements.ttsService.disabled = !availableService;
+  }
+}
+
+function renderTtsProfileOptions() {
+  const activeProfiles = state.ttsProfiles.filter((profile) => profile.active);
+  populateSelect(elements.previewTtsProfile, activeProfiles, "Select TTS profile");
+  const selected = selectedTtsProfile();
+  if (!selected && activeProfiles[0]) {
+    elements.previewTtsProfile.value = activeProfiles[0].key;
+  }
+  if (elements.previewTtsProfile) {
+    elements.previewTtsProfile.disabled = activeProfiles.length === 0;
+  }
+}
+
+function speechTestReadiness() {
+  const service = selectedTtsService();
+  const profile = selectedTtsProfile();
+  const target = selectedSpeechTarget();
+  if (!service) {
+    const unavailableService = state.ttsServices.find((candidate) => !candidate.available);
+    if (unavailableService) {
+      return { message: unavailableService.unavailableMessage || "No TTS service is available in this browser.", ok: false };
+    }
+    return { message: "No TTS service is selected.", ok: false };
+  }
+  if (!service.available) {
+    return { message: service.unavailableMessage || "Selected TTS service is unavailable.", ok: false };
+  }
+  if (!target) {
+    return { message: "Select a message row or segment row before testing speech.", ok: false };
+  }
+  if (!profile) {
+    return { message: "Select an active TTS profile before testing speech.", ok: false };
+  }
+  if (!String(profile.voiceName || "").trim()) {
+    return { message: "Select a TTS profile with a voice before testing speech.", ok: false };
+  }
+  if (!target.emotionProfile) {
+    return { message: "Selected item needs an emotion profile before testing speech.", ok: false };
+  }
+  if (!String(target.text || "").trim()) {
+    return { message: "Selected item needs message text before testing speech.", ok: false };
+  }
+  return { message: `Ready to test ${target.label}.`, ok: true };
+}
+
+function renderSpeechTestControls() {
+  renderTtsServiceOptions();
+  renderTtsProfileOptions();
+  const target = selectedSpeechTarget();
+  const readiness = speechTestReadiness();
+  setText(elements.speechTestTarget, target?.label || "None");
+  setText(elements.previewStatus, readiness.message);
+  if (elements.testSpeech) {
+    elements.testSpeech.disabled = !readiness.ok;
+  }
 }
 
 function createMessageEditRows(message = null) {
@@ -566,7 +706,7 @@ function render(persistence = {}) {
   renderSelectedMessage();
   renderCounts();
   renderPersistence(persistence);
-  renderSpeechPreviewStatus();
+  renderSpeechTestControls();
 }
 
 function editorValue(root, selector) {
@@ -697,13 +837,17 @@ async function loadAll() {
   if (state.selectedMessageKey && !state.messages.some((message) => message.key === state.selectedMessageKey)) {
     state.selectedMessageKey = "";
   }
+  if (state.selectedSegmentKey && !state.segments.some((segment) => segment.key === state.selectedSegmentKey && segment.messageKey === state.selectedMessageKey)) {
+    state.selectedSegmentKey = "";
+  }
   render(messagesPayload.persistence || emotionPayload.persistence || ttsPayload.persistence || segmentsPayload.persistence);
   setText(elements.log, "Message Studio loaded from the Local API.");
 }
 
-async function reloadAfterChange(messageKey = state.selectedMessageKey) {
+async function reloadAfterChange(messageKey = state.selectedMessageKey, segmentKey = state.selectedSegmentKey) {
   await loadAll();
   state.selectedMessageKey = messageKey && state.messages.some((message) => message.key === messageKey) ? messageKey : "";
+  state.selectedSegmentKey = segmentKey && state.segments.some((segment) => segment.key === segmentKey && segment.messageKey === state.selectedMessageKey) ? segmentKey : "";
   render();
 }
 
@@ -722,6 +866,9 @@ async function commitMessage(key) {
       : updateMessage(key, values);
     state.editingMessageKey = "";
     state.selectedMessageKey = result.message.key;
+    if (key === NEW_ROW_KEY) {
+      state.selectedSegmentKey = "";
+    }
     await reloadAfterChange(result.message.key);
     setText(elements.log, `Updated row ${result.message.name}.`);
   } catch (error) {
@@ -744,7 +891,8 @@ async function commitSegment(key) {
       ? createMessageSegment(values)
       : updateMessageSegment(key, values);
     state.editingSegmentKey = "";
-    await reloadAfterChange(state.selectedMessageKey);
+    state.selectedSegmentKey = result.segment.key;
+    await reloadAfterChange(state.selectedMessageKey, result.segment.key);
     setText(elements.log, `Updated segment row ${result.segment.displayOrder}.`);
   } catch (error) {
     showValidation([error instanceof Error ? error.message : String(error || "Segment row update failed.")]);
@@ -831,12 +979,44 @@ async function disableSegment(key) {
       messageKey: segment.messageKey,
       segmentText: segment.segmentText,
     });
-    await reloadAfterChange(segment.messageKey);
+    state.selectedSegmentKey = result.segment.key;
+    await reloadAfterChange(segment.messageKey, result.segment.key);
     setText(elements.log, `Disabled segment row ${result.segment.displayOrder}.`);
   } catch (error) {
     showValidation([error instanceof Error ? error.message : String(error || "Segment status update failed.")]);
     setText(elements.log, "Segment status update failed.");
   }
+}
+
+function testSelectedSpeech() {
+  const readiness = speechTestReadiness();
+  if (!readiness.ok) {
+    setText(elements.previewStatus, readiness.message);
+    setText(elements.log, readiness.message);
+    return;
+  }
+  const service = selectedTtsService();
+  const profile = selectedTtsProfile();
+  const target = selectedSpeechTarget();
+  const emotion = target.emotionProfile;
+  const result = ttsServiceRegistry.speak(service.key, {
+    language: profile.language,
+    pitch: emotion.pitch,
+    rate: emotion.rate,
+    speechItemId: target.id,
+    speechItemName: target.name,
+    text: target.text,
+    voice: profile.voiceName,
+    volume: emotion.volume,
+  });
+  if (!result.ok) {
+    setText(elements.previewStatus, result.message || "Speech test failed.");
+    setText(elements.log, result.message || "Speech test failed.");
+    return;
+  }
+  const message = `Speech test started for ${target.label} using ${service.name}.`;
+  setText(elements.previewStatus, message);
+  setText(elements.log, message);
 }
 
 async function disableEmotion(key) {
@@ -911,7 +1091,7 @@ async function moveSegment(key, direction) {
       messageKey: target.messageKey,
       segmentText: target.segmentText,
     });
-    await reloadAfterChange(state.selectedMessageKey);
+    await reloadAfterChange(state.selectedMessageKey, current.key);
     setText(elements.log, "Segment order updated.");
   } catch (error) {
     showValidation([error instanceof Error ? error.message : String(error || "Segment reorder failed.")]);
@@ -941,8 +1121,25 @@ elements.ttsAddRow?.addEventListener("click", () => {
   setText(elements.log, "Ready to add a TTS profile.");
 });
 
+elements.previewTtsProfile?.addEventListener("change", () => {
+  renderSpeechTestControls();
+});
+
+elements.ttsService?.addEventListener("change", () => {
+  renderSpeechTestControls();
+});
+
+elements.testSpeech?.addEventListener("click", () => {
+  testSelectedSpeech();
+});
+
+ttsServiceRegistry.onServicesChanged(() => {
+  renderSpeechTestControls();
+});
+
 elements.table?.addEventListener("click", async (event) => {
   const row = event.target.closest("[data-messages-row]");
+  const segmentRow = event.target.closest("[data-messages-segment-row]");
   const editButton = event.target.closest("[data-messages-edit]");
   const commitButton = event.target.closest("[data-messages-commit]");
   const cancelButton = event.target.closest("[data-messages-cancel]");
@@ -959,6 +1156,7 @@ elements.table?.addEventListener("click", async (event) => {
     clearValidation();
     state.editingMessageKey = editButton.dataset.messagesEdit;
     state.selectedMessageKey = editButton.dataset.messagesEdit;
+    state.selectedSegmentKey = "";
     render();
     setText(elements.log, "Message row opened inline.");
     return;
@@ -988,6 +1186,7 @@ elements.table?.addEventListener("click", async (event) => {
   if (segmentEditButton) {
     clearValidation();
     state.editingSegmentKey = segmentEditButton.dataset.messagesSegmentEdit;
+    state.selectedSegmentKey = segmentEditButton.dataset.messagesSegmentEdit;
     render();
     setText(elements.log, "Segment row opened inline.");
     return;
@@ -1009,11 +1208,18 @@ elements.table?.addEventListener("click", async (event) => {
   }
   if (moveUpButton || moveDownButton) {
     const key = moveUpButton?.dataset.messagesSegmentMoveUp || moveDownButton?.dataset.messagesSegmentMoveDown;
+    state.selectedSegmentKey = key;
     await moveSegment(key, moveUpButton ? -1 : 1);
+    return;
+  }
+  if (segmentRow) {
+    state.selectedSegmentKey = segmentRow.dataset.messagesSegmentRow;
+    render();
     return;
   }
   if (row) {
     state.selectedMessageKey = row.dataset.messagesRow;
+    state.selectedSegmentKey = "";
     state.editingSegmentKey = "";
     render();
   }

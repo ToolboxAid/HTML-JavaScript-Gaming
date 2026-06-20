@@ -8,7 +8,8 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 Changed runtime JS files considered:
 (0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (79%) toolbox/messages/messages-api-client.js - executed lines 64/64; executed functions 15/19
-(100%) toolbox/messages/messages.js - executed lines 990/990; executed functions 88/88
+(97%) toolbox/messages/messages.js - executed lines 1183/1183; executed functions 108/111
+(100%) toolbox/messages/message-tts-service-registry.js - executed lines 36/36; executed functions 6/6
 
 Guardrail warnings:
 (0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
