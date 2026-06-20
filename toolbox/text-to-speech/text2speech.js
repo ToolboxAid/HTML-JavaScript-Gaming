@@ -5,13 +5,20 @@ import {
   TEXT_TO_SPEECH_DEFAULTS,
   TEXT_TO_SPEECH_GENDER_FILTER_OPTIONS,
   TEXT_TO_SPEECH_LANGUAGE_OPTIONS,
-  TEXT_TO_SPEECH_RANGE_DEFAULTS,
-  TEXT_TO_SPEECH_SCHEMA_ID,
-  TEXT_TO_SPEECH_SSML_LIKE_PRESET_DEFAULTS,
   TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS,
-  TEXT_TO_SPEECH_VOICE_AGE_PRESET_DEFAULTS,
 } from "../../src/engine/audio/TextToSpeechDefaults.js";
-import { TextToSpeechEngine } from "../../src/engine/audio/TextToSpeechEngine.js";
+import {
+  TextToSpeechEngine,
+  boundedTextToSpeechNumber,
+  createTextToSpeechQueueItem,
+  createTextToSpeechSpeakRequest,
+  normalizeTextToSpeechPayload,
+  resolveTextToSpeechDeliveryOptions,
+  textToSpeechLanguageOptionsFromVoices,
+  textToSpeechSlugFromName,
+  textToSpeechVoicesForGender,
+  validateTextToSpeechPayload,
+} from "../../src/engine/audio/TextToSpeechEngine.js";
 import {
   downloadTextFile,
   readFileText,
@@ -109,38 +116,6 @@ const TTS_PROVIDER_ADAPTER_PLAN = Object.freeze([
   },
 ]);
 
-const RANGE_LIMITS = Object.freeze({
-  pitch: Object.freeze({ fallback: TEXT_TO_SPEECH_DEFAULTS.pitch, max: TEXT_TO_SPEECH_RANGE_DEFAULTS.pitch.max, min: TEXT_TO_SPEECH_RANGE_DEFAULTS.pitch.min }),
-  rate: Object.freeze({ fallback: TEXT_TO_SPEECH_DEFAULTS.rate, max: TEXT_TO_SPEECH_RANGE_DEFAULTS.rate.max, min: TEXT_TO_SPEECH_RANGE_DEFAULTS.rate.min }),
-  volume: Object.freeze({ fallback: TEXT_TO_SPEECH_DEFAULTS.volume, max: TEXT_TO_SPEECH_RANGE_DEFAULTS.volume.max, min: TEXT_TO_SPEECH_RANGE_DEFAULTS.volume.min }),
-});
-
-const REQUIRED_QUEUE_ITEM_FIELDS = Object.freeze([
-  "id",
-  "name",
-  "text",
-  "gender",
-  "language",
-  "voice",
-  "voiceAge",
-  "volume",
-  "rate",
-  "pitch",
-  "characterPreset",
-  "ssmlLikePreset",
-]);
-
-const CHARACTER_PRESET_VALUES = new Set(TEXT_TO_SPEECH_CHARACTER_PRESET_OPTIONS.map((option) => option.value));
-const GENDER_VALUES = new Set(["any", "male-preferred", "female-preferred"]);
-const SSML_PRESET_VALUES = new Set(TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS.map((option) => option.value));
-const VOICE_AGE_VALUES = new Set(TEXT_TO_SPEECH_AGE_FILTER_OPTIONS.map((option) => option.value));
-
-function boundedNumber(value, { fallback, max, min }) {
-  const number = Number(value);
-  if (!Number.isFinite(number)) return fallback;
-  return Math.min(max, Math.max(min, number));
-}
-
 function createTtsMessage({
   id,
   name,
@@ -188,131 +163,12 @@ function createVoiceProfile({ key = "browser-speech", name = "Browser Speech", p
   };
 }
 
-function slugFromName(name) {
-  const slug = String(name || "")
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-  return slug || "speech-item";
-}
+const createSpeechQueueItem = createTextToSpeechQueueItem;
+const normalizeSpeechPayload = normalizeTextToSpeechPayload;
+const validateSpeechPayload = validateTextToSpeechPayload;
 
-function payloadGenderValue(value) {
-  return value === "neutral" ? "any" : String(value || "any");
-}
-
-function createSpeechQueueItem({
-  characterPreset = TEXT_TO_SPEECH_DEFAULTS.characterPreset,
-  gender = TEXT_TO_SPEECH_DEFAULTS.gender,
-  id,
-  language = TEXT_TO_SPEECH_DEFAULTS.language,
-  name,
-  pitch = TEXT_TO_SPEECH_DEFAULTS.pitch,
-  rate = TEXT_TO_SPEECH_DEFAULTS.rate,
-  ssmlLikePreset = TEXT_TO_SPEECH_DEFAULTS.ssmlLikePreset,
-  text = "",
-  voice = TEXT_TO_SPEECH_DEFAULTS.voice,
-  voiceAge = TEXT_TO_SPEECH_DEFAULTS.voiceAge,
-  volume = TEXT_TO_SPEECH_DEFAULTS.volume,
-} = {}) {
-  const itemName = String(name || "New speech item").trim() || "New speech item";
-  return {
-    id: String(id || slugFromName(itemName)),
-    name: itemName,
-    text: String(text || ""),
-    gender: GENDER_VALUES.has(payloadGenderValue(gender)) ? payloadGenderValue(gender) : TEXT_TO_SPEECH_DEFAULTS.gender,
-    language: String(language || TEXT_TO_SPEECH_DEFAULTS.language),
-    voice: String(voice || ""),
-    voiceAge: VOICE_AGE_VALUES.has(String(voiceAge)) ? String(voiceAge) : TEXT_TO_SPEECH_DEFAULTS.voiceAge,
-    volume: boundedNumber(volume, RANGE_LIMITS.volume),
-    rate: boundedNumber(rate, RANGE_LIMITS.rate),
-    pitch: boundedNumber(pitch, RANGE_LIMITS.pitch),
-    characterPreset: CHARACTER_PRESET_VALUES.has(String(characterPreset)) ? String(characterPreset) : TEXT_TO_SPEECH_DEFAULTS.characterPreset,
-    ssmlLikePreset: SSML_PRESET_VALUES.has(String(ssmlLikePreset)) ? String(ssmlLikePreset) : TEXT_TO_SPEECH_DEFAULTS.ssmlLikePreset,
-  };
-}
-
-function validateSpeechPayload(payload) {
-  if (!Array.isArray(payload)) {
-    return { ok: false, message: "Text To Speech JSON must be a root array of named speech items." };
-  }
-  const errors = [];
-  payload.forEach((item, index) => {
-    if (!item || typeof item !== "object" || Array.isArray(item)) {
-      errors.push(`item ${index + 1}: expected object`);
-      return;
-    }
-    REQUIRED_QUEUE_ITEM_FIELDS.forEach((field) => {
-      if (!Object.prototype.hasOwnProperty.call(item, field)) {
-        errors.push(`item ${index + 1}: ${field} is required`);
-      }
-    });
-    if (!String(item.id || "").trim()) errors.push(`item ${index + 1}: id is required`);
-    if (!String(item.name || "").trim()) errors.push(`item ${index + 1}: name is required`);
-    if (!String(item.text || "").trim()) errors.push(`item ${index + 1}: text is required`);
-    if (!GENDER_VALUES.has(String(item.gender))) errors.push(`item ${index + 1}: gender must be any, male-preferred, or female-preferred`);
-    if (!VOICE_AGE_VALUES.has(String(item.voiceAge))) errors.push(`item ${index + 1}: voiceAge is invalid`);
-    if (!CHARACTER_PRESET_VALUES.has(String(item.characterPreset))) errors.push(`item ${index + 1}: characterPreset is invalid`);
-    if (!SSML_PRESET_VALUES.has(String(item.ssmlLikePreset))) errors.push(`item ${index + 1}: ssmlLikePreset is invalid`);
-    if (boundedNumber(item.volume, RANGE_LIMITS.volume) !== Number(item.volume)) errors.push(`item ${index + 1}: volume must be 0-1`);
-    if (boundedNumber(item.rate, RANGE_LIMITS.rate) !== Number(item.rate)) errors.push(`item ${index + 1}: rate must be 0.1-2`);
-    if (boundedNumber(item.pitch, RANGE_LIMITS.pitch) !== Number(item.pitch)) errors.push(`item ${index + 1}: pitch must be 0.1-2`);
-  });
-  return errors.length
-    ? { ok: false, message: errors.join(" | ") }
-    : { ok: true };
-}
-
-function normalizeSpeechPayload(payload) {
-  const validation = validateSpeechPayload(payload);
-  if (!validation.ok) return validation;
-  return {
-    ok: true,
-    payload: payload.map((item) => createSpeechQueueItem(item)),
-  };
-}
-
-function createSpeechPreviewRequest({
-  characterPreset = TEXT_TO_SPEECH_DEFAULTS.characterPreset,
-  gender = TEXT_TO_SPEECH_DEFAULTS.gender,
-  language = TEXT_TO_SPEECH_DEFAULTS.language,
-  pitch = TEXT_TO_SPEECH_DEFAULTS.pitch,
-  rate = TEXT_TO_SPEECH_DEFAULTS.rate,
-  speechItemId = "browser-preview",
-  speechItemName = "Browser Preview",
-  ssmlLikePreset = TEXT_TO_SPEECH_DEFAULTS.ssmlLikePreset,
-  text = "",
-  voice = "",
-  voiceAge = TEXT_TO_SPEECH_DEFAULTS.voiceAge,
-  voiceOptions = [],
-  volume = TEXT_TO_SPEECH_DEFAULTS.volume,
-} = {}) {
-  const normalizedText = String(text || "").trim();
-  if (!normalizedText) {
-    return { ok: false, message: "Speech text is required before preview." };
-  }
-
-  const selectedVoice = voiceOptions.find((option) => String(option.value) === String(voice)) || null;
-  if (!selectedVoice) {
-    return { ok: false, message: "Select an available browser voice before preview." };
-  }
-
-  return {
-    characterPreset,
-    gender: payloadGenderValue(gender),
-    language: language || selectedVoice.language || TEXT_TO_SPEECH_DEFAULTS.language,
-    ok: true,
-    pitch: boundedNumber(pitch, RANGE_LIMITS.pitch),
-    rate: boundedNumber(rate, RANGE_LIMITS.rate),
-    speechItemId,
-    speechItemName,
-    ssmlLikePreset,
-    text: normalizedText,
-    voice: selectedVoice.value,
-    voiceAge,
-    voiceName: selectedVoice.name || selectedVoice.label || "selected voice",
-    volume: boundedNumber(volume, RANGE_LIMITS.volume),
-  };
+function createSpeechPreviewRequest(options = {}) {
+  return createTextToSpeechSpeakRequest(options);
 }
 
 function previewTtsMessage(message, options = {}) {
@@ -340,15 +196,6 @@ function optionLabelCompare(left, right) {
   });
 }
 
-function voiceGender(option) {
-  const voiceText = `${option.gender || ""} ${option.name || ""} ${option.label || ""}`;
-  const voiceLanguage = String(option.language || "").toLowerCase();
-  if (/\bneutral\b|\bnon[-\s]?binary\b|\bandrogynous\b/i.test(voiceText)) return "neutral";
-  if (voiceLanguage === "es-es" || /\bmale\b|\bman\b|\bdavid\b|\bmark\b/i.test(voiceText)) return "male";
-  if (/\bfemale\b|\bwoman\b|\bzira\b/i.test(voiceText)) return "female";
-  return "unknown";
-}
-
 function genderFilterLabel(value) {
   if (value === "male-preferred") return "Male";
   if (value === "female-preferred") return "Female";
@@ -362,24 +209,6 @@ function ageFilterLabel(value) {
   if (value === "elderly") return "Elderly";
   if (value === "teen") return "Teen";
   return "Any";
-}
-
-function voicesForGender(voiceOptions, genderFilter) {
-  if (genderFilter === "male-preferred") return voiceOptions.filter((option) => voiceGender(option) === "male");
-  if (genderFilter === "female-preferred") return voiceOptions.filter((option) => voiceGender(option) === "female");
-  if (genderFilter === "neutral") return voiceOptions.filter((option) => ["neutral", "unknown"].includes(voiceGender(option)));
-  return voiceOptions;
-}
-
-function languageOptionsFromVoices(voiceOptions) {
-  const languageCounts = new Map();
-  voiceOptions.forEach((option) => {
-    const language = String(option.language || "").trim();
-    if (language) languageCounts.set(language, (languageCounts.get(language) || 0) + 1);
-  });
-  return Array.from(languageCounts.entries())
-    .map(([language, count]) => ({ label: `${language} (${count} ${count === 1 ? "voice" : "voices"})`, value: language }))
-    .sort(optionLabelCompare);
 }
 
 function shapedSliderValue(value, input) {
@@ -501,7 +330,7 @@ function initializeTextToSpeechTool(root = document, {
 
   function uniqueItemId(baseName) {
     const ids = new Set(state.queue.map((item) => item.id));
-    const baseId = slugFromName(baseName);
+    const baseId = textToSpeechSlugFromName(baseName);
     if (!ids.has(baseId)) return baseId;
     for (let index = 2; index < 1000; index += 1) {
       const candidate = `${baseId}-${index}`;
@@ -575,7 +404,7 @@ function initializeTextToSpeechTool(root = document, {
 
   function syncRange(input, output, kind) {
     if (!input) return;
-    input.value = shapedSliderValue(boundedNumber(input.value, RANGE_LIMITS[kind]), input);
+    input.value = shapedSliderValue(boundedTextToSpeechNumber(input.value, kind), input);
     if (output) output.textContent = input.value;
   }
 
@@ -645,8 +474,8 @@ function initializeTextToSpeechTool(root = document, {
     const previousLanguage = controls.languageSelect?.value || TEXT_TO_SPEECH_DEFAULTS.language;
     const previousVoice = selectedVoice === undefined ? controls.voiceSelect?.value || "" : selectedVoice;
     state.voiceOptions = engine.voiceOptions();
-    state.filteredVoiceOptions = voicesForGender(state.voiceOptions, controls.genderFilter?.value || "any");
-    const voiceLanguageOptions = languageOptionsFromVoices(state.filteredVoiceOptions);
+    state.filteredVoiceOptions = textToSpeechVoicesForGender(state.voiceOptions, controls.genderFilter?.value || "any");
+    const voiceLanguageOptions = textToSpeechLanguageOptionsFromVoices(state.filteredVoiceOptions);
     const languageOptions = voiceLanguageOptions.length ? voiceLanguageOptions : TEXT_TO_SPEECH_LANGUAGE_OPTIONS;
     let selectedLanguage = previousLanguage;
     if (!languageOptions.some((option) => option.value === selectedLanguage)) {
@@ -682,18 +511,20 @@ function initializeTextToSpeechTool(root = document, {
 
   function applyPresetDerivedSliders({ resetOverrides = false } = {}) {
     if (resetOverrides) state.sliderOverrides = { pitch: false, rate: false, volume: false };
-    const characterPreset = TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS[controls.characterPreset?.value] || TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS.manual;
-    const voiceAgePreset = TEXT_TO_SPEECH_VOICE_AGE_PRESET_DEFAULTS[controls.ageFilter?.value] || TEXT_TO_SPEECH_VOICE_AGE_PRESET_DEFAULTS.any;
-    const ssmlPreset = TEXT_TO_SPEECH_SSML_LIKE_PRESET_DEFAULTS[controls.ssmlPreset?.value] || TEXT_TO_SPEECH_SSML_LIKE_PRESET_DEFAULTS.normal;
-    if (controls.volumeInput && !state.sliderOverrides.volume) {
-      controls.volumeInput.value = shapedSliderValue(Number(characterPreset.volume) * Number(ssmlPreset.volumeMultiplier), controls.volumeInput);
-    }
-    if (controls.rateInput && !state.sliderOverrides.rate) {
-      controls.rateInput.value = shapedSliderValue(Number(characterPreset.rate) * Number(voiceAgePreset.rateMultiplier) * Number(ssmlPreset.rateMultiplier), controls.rateInput);
-    }
-    if (controls.pitchInput && !state.sliderOverrides.pitch) {
-      controls.pitchInput.value = shapedSliderValue(Number(characterPreset.pitch) + Number(voiceAgePreset.pitchOffset) + Number(ssmlPreset.pitchOffset), controls.pitchInput);
-    }
+    const resolved = resolveTextToSpeechDeliveryOptions({
+      characterPreset: controls.characterPreset?.value,
+      manualPitch: state.sliderOverrides.pitch,
+      manualRate: state.sliderOverrides.rate,
+      manualVolume: state.sliderOverrides.volume,
+      pitch: controls.pitchInput?.value,
+      rate: controls.rateInput?.value,
+      ssmlLikePreset: controls.ssmlPreset?.value,
+      voiceAge: controls.ageFilter?.value,
+      volume: controls.volumeInput?.value,
+    });
+    if (controls.volumeInput) controls.volumeInput.value = shapedSliderValue(resolved.volume, controls.volumeInput);
+    if (controls.rateInput) controls.rateInput.value = shapedSliderValue(resolved.rate, controls.rateInput);
+    if (controls.pitchInput) controls.pitchInput.value = shapedSliderValue(resolved.pitch, controls.pitchInput);
     syncRanges();
   }
 

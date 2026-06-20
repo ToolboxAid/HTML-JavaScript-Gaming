@@ -1,509 +1,36 @@
-diff --git a/tests/playwright/tools/TextToSpeechFunctional.spec.mjs b/tests/playwright/tools/TextToSpeechFunctional.spec.mjs
-index ccf95e3e3..9f7ae827b 100644
---- a/tests/playwright/tools/TextToSpeechFunctional.spec.mjs
-+++ b/tests/playwright/tools/TextToSpeechFunctional.spec.mjs
-@@ -35,6 +35,15 @@ async function openTextToSpeechPage(page, { speechAvailable = true } = {}) {
-       siteUrl,
-     };
-     window.__textToSpeechCalls = [];
-+    Object.defineProperty(window.navigator, "clipboard", {
-+      configurable: true,
-+      value: {
-+        writeText(text) {
-+          window.__copiedTextToSpeechJson = String(text);
-+          return Promise.resolve();
-+        },
-+      },
-+    });
-     if (!enabled) {
-       Object.defineProperty(window, "SpeechSynthesisUtterance", { configurable: true, value: undefined });
-       Object.defineProperty(window, "speechSynthesis", { configurable: true, value: undefined });
-@@ -51,8 +60,8 @@ async function openTextToSpeechPage(page, { speechAvailable = true } = {}) {
-     });
- 
-     const voices = [
--      { lang: "en-US", name: "Arcade Voice", voiceURI: "arcade-voice-uri" },
--      { lang: "en-GB", name: "Narrator Voice", voiceURI: "narrator-voice-uri" },
-+      { lang: "en-US", name: "David Arcade Voice", voiceURI: "arcade-voice-uri" },
-+      { lang: "en-GB", name: "Zira Narrator Voice", voiceURI: "narrator-voice-uri" },
-     ];
-     Object.defineProperty(window, "speechSynthesis", {
-       configurable: true,
-@@ -66,7 +75,13 @@ async function openTextToSpeechPage(page, { speechAvailable = true } = {}) {
-         getVoices() {
-           return voices;
-         },
-+        pause() {
-+          window.__textToSpeechCalls.push({ type: "pause" });
-+        },
-         removeEventListener() {},
-+        resume() {
-+          window.__textToSpeechCalls.push({ type: "resume" });
-+        },
-         speak(utterance) {
-           window.__textToSpeechCalls.push({
-             lang: utterance.lang,
-@@ -101,9 +116,25 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
-     await expect(page.locator("[data-tts-voice-select]")).toContainText("Arcade Voice");
-     await expect(page.locator("[data-tts-voice-count]")).toHaveText("2");
-     await expect(page.locator("[data-tts-engine-label]")).toHaveText("Ready");
--
-+    await expect(page.locator("[data-tts-import-json]")).toBeVisible();
-+    await expect(page.locator("[data-tts-copy-json]")).toBeVisible();
-+    await expect(page.locator("[data-tts-export-json]")).toBeVisible();
-+    await expect(page.locator("[data-tts-add-item]")).toBeVisible();
-+    await expect(page.locator("[data-tts-duplicate-item]")).toBeDisabled();
-+    await expect(page.locator("[data-tts-delete-item]")).toBeDisabled();
-+    await expect(page.locator("[data-tts-age-filter]")).toBeVisible();
-+    await expect(page.locator("[data-tts-character-preset]")).toBeVisible();
-+    await expect(page.locator("[data-tts-ssml-preset]")).toBeVisible();
-+    await expect(page.locator("[data-tts-output-summary]")).toHaveText("[]");
-+
-+    await page.locator("[data-tts-name-input]").fill("Battle Call");
-     await page.locator("[data-tts-text-input]").fill("Launch the next wave.");
-+    await page.locator("[data-tts-gender-filter]").selectOption("male-preferred");
-+    await page.locator("[data-tts-language-select]").selectOption("en-US");
-     await page.locator("[data-tts-voice-select]").selectOption("arcade-voice-uri");
-+    await page.locator("[data-tts-age-filter]").selectOption("child");
-+    await page.locator("[data-tts-character-preset]").selectOption("robot");
-+    await page.locator("[data-tts-ssml-preset]").selectOption("slow");
-     await page.locator("[data-tts-rate]").fill("1.4");
-     await page.locator("[data-tts-pitch]").fill("0.8");
-     await page.locator("[data-tts-volume]").fill("0.55");
-@@ -112,6 +143,31 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
-     await expect(page.locator("[data-tts-volume-value]")).toHaveText("0.55");
-     await expect(page.locator("[data-tts-text-count]")).toHaveText("21");
- 
-+    await page.locator("[data-tts-add-item]").click();
-+    await expect(page.locator("[data-tts-queue-list] [data-tts-queue-item-id]")).toHaveCount(1);
-+    await expect(page.locator("[data-tts-output-summary]")).toContainText("Battle Call");
-+    await expect(page.locator("[data-tts-queue-count]")).toHaveText("1");
-+    await expect(page.locator("[data-tts-duplicate-item]")).toBeEnabled();
-+    await expect(page.locator("[data-tts-delete-item]")).toBeEnabled();
-+
-+    await page.locator("[data-tts-duplicate-item]").click();
-+    await expect(page.locator("[data-tts-queue-list] [data-tts-queue-item-id]")).toHaveCount(2);
-+    await expect(page.locator("[data-tts-output-summary]")).toContainText("Battle Call copy");
-+    await page.locator("[data-tts-delete-item]").click();
-+    await expect(page.locator("[data-tts-queue-list] [data-tts-queue-item-id]")).toHaveCount(1);
-+
-+    await page.locator("[data-tts-copy-json]").click();
-+    await expect(page.locator("[data-tts-status-log]")).toHaveValue(/Copied Text To Speech JSON/);
-+    const copiedJson = await page.evaluate(() => window.__copiedTextToSpeechJson);
-+    expect(JSON.parse(copiedJson)).toEqual([expect.objectContaining({
-+      characterPreset: "robot",
-+      name: "Battle Call",
-+      ssmlLikePreset: "slow",
-+      text: "Launch the next wave.",
-+      voice: "arcade-voice-uri",
-+      voiceAge: "child",
-+    })]);
-+
-     await expect(page.locator("[data-tts-speak]")).toBeEnabled();
-     await page.locator("[data-tts-speak]").click();
-     await expect(page.locator("[data-tts-status]")).toContainText("Speech queued");
-@@ -122,12 +178,20 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
-       rate: 1.4,
-       text: "Launch the next wave.",
-       type: "speak",
--      voiceName: "Arcade Voice",
-+      voiceName: "David Arcade Voice",
-       volume: 0.55,
-     }));
- 
-+    await expect(page.locator("[data-tts-pause]")).toBeEnabled();
-+    await page.locator("[data-tts-pause]").click();
-+    calls = await page.evaluate(() => window.__textToSpeechCalls);
-+    expect(calls.at(-1)).toEqual({ type: "pause" });
-+    await expect(page.locator("[data-tts-resume]")).toBeEnabled();
-+    await page.locator("[data-tts-resume]").click();
-+    calls = await page.evaluate(() => window.__textToSpeechCalls);
-+    expect(calls.at(-1)).toEqual({ type: "resume" });
-     await page.locator("[data-tts-stop]").click();
--    await expect(page.locator("[data-tts-status]")).toContainText("Speech stopped");
-+    await expect(page.locator("[data-tts-status]")).toContainText("Speech queue stopped");
-     calls = await page.evaluate(() => window.__textToSpeechCalls);
-     expect(calls.at(-1)).toEqual({ type: "cancel" });
- 
-@@ -148,6 +212,8 @@ test("Text To Speech shows actionable error when browser speech synthesis is una
-     await expect(page.locator("[data-tts-status]")).toContainText("Use a browser with Web Speech API support");
-     await expect(page.locator("[data-tts-voice-select]")).toContainText("No browser voices available");
-     await expect(page.locator("[data-tts-speak]")).toBeDisabled();
-+    await expect(page.locator("[data-tts-pause]")).toBeDisabled();
-+    await expect(page.locator("[data-tts-resume]")).toBeDisabled();
-     await expect(page.locator("[data-tts-stop]")).toBeDisabled();
- 
-     expect(failures.failedRequests).toEqual([]);
-diff --git a/tests/tools/Text2SpeechShell.test.mjs b/tests/tools/Text2SpeechShell.test.mjs
-index fbc6ac8e9..919528782 100644
---- a/tests/tools/Text2SpeechShell.test.mjs
-+++ b/tests/tools/Text2SpeechShell.test.mjs
-@@ -2,13 +2,17 @@ import assert from "node:assert/strict";
- import test from "node:test";
- 
+diff --git a/src/engine/audio/TextToSpeechEngine.js b/src/engine/audio/TextToSpeechEngine.js
+index c8e1dced3..a1ca55d60 100644
+--- a/src/engine/audio/TextToSpeechEngine.js
++++ b/src/engine/audio/TextToSpeechEngine.js
+@@ -1,7 +1,15 @@
  import {
-+  TTS_ARCHIVED_FEATURE_INVENTORY,
-   TTS_MESSAGE_STATUSES,
-   TTS_PROVIDER_ADAPTER_PLAN,
-   createEmotionProfile,
-   createSpeechPreviewRequest,
-+  createSpeechQueueItem,
-   createTtsMessage,
-   createVoiceProfile,
-+  normalizeSpeechPayload,
-   previewTtsMessage,
-+  validateSpeechPayload,
- } from "../../toolbox/text-to-speech/text2speech.js";
- 
- test("Text2Speech message model separates Design and Audio ownership", () => {
-@@ -33,14 +37,18 @@ test("Text2Speech browser preview builds a Web Speech request without provider b
-   const empty = createTtsMessage();
- 
-   assert.deepEqual(previewTtsMessage(ready, { voice: "test-voice", voiceOptions }), {
-+    characterPreset: "manual",
-+    gender: "any",
-     language: "en-US",
-     ok: true,
-     pitch: 1,
-     rate: 1,
-     speechItemId: "browser-preview",
-     speechItemName: "Browser Preview",
-+    ssmlLikePreset: "normal",
-     text: "Welcome",
-     voice: "test-voice",
-+    voiceAge: "any",
-     voiceName: "Test Voice",
-     volume: 1,
-   });
-@@ -51,6 +59,51 @@ test("Text2Speech browser preview builds a Web Speech request without provider b
-   assert.equal(createSpeechPreviewRequest({ text: "Hi", voice: "test-voice", voiceOptions, rate: 9, pitch: 0, volume: 2 }).volume, 1);
- });
- 
-+test("Text2Speech archived feature inventory covers current parity surface", () => {
-+  for (const feature of [
-+    "Import JSON",
-+    "Copy JSON",
-+    "Export JSON",
-+    "Add named sentence",
-+    "Duplicate named sentence",
-+    "Delete named sentence",
-+    "Gender helper filter",
-+    "Language voice filter",
-+    "Voice age shaping",
-+    "Character preset shaping",
-+    "SSML-like preset shaping",
-+    "Pause playback",
-+    "Resume playback",
-+    "Output summary JSON",
-+    "Status log with clear",
-+    "URL JSON sample source",
-+    "Workspace session payload loading",
-+  ]) {
-+    assert.ok(TTS_ARCHIVED_FEATURE_INVENTORY.includes(feature), `${feature} should be inventoried`);
-+  }
-+});
-+
-+test("Text2Speech named sentence JSON payload validates old tool fields", () => {
-+  const item = createSpeechQueueItem({
-+    gender: "neutral",
-+    name: "Battle Call",
-+    pitch: 9,
-+    rate: 0,
-+    text: "Launch the next wave.",
-+    voice: "test-voice",
-+    volume: 2,
-+  });
-+
-+  assert.equal(item.id, "battle-call");
-+  assert.equal(item.gender, "any");
-+  assert.equal(item.pitch, 2);
-+  assert.equal(item.rate, 0.1);
-+  assert.equal(item.volume, 1);
-+  assert.equal(validateSpeechPayload([item]).ok, true);
-+  assert.equal(normalizeSpeechPayload([item]).payload[0].name, "Battle Call");
-+  assert.equal(validateSpeechPayload([{ name: "Missing fields" }]).ok, false);
-+});
-+
- test("Text2Speech provider adapter plan keeps browser speech implemented and paid providers planned", () => {
-   assert.deepEqual(
-     TTS_PROVIDER_ADAPTER_PLAN.map((provider) => provider.key),
-diff --git a/toolbox/text-to-speech/index.html b/toolbox/text-to-speech/index.html
-index adaaff3a7..0b996ea33 100644
---- a/toolbox/text-to-speech/index.html
-+++ b/toolbox/text-to-speech/index.html
-@@ -18,7 +18,7 @@
-             <div class="container">
-                 <div class="kicker">Project Workspace / Audio</div>
-                 <h1>Text To Speech</h1>
--                <p class="lede">Preview spoken game text with local browser speech synthesis before deciding whether a generated audio provider is needed.</p>
-+                <p class="lede">Prepare named speech lines, preview browser speech synthesis, and export schema-ready voice prompt JSON.</p>
-             </div>
-         </section>
-         <section class="section">
-@@ -26,20 +26,47 @@
-                 <div class="tool-workspace tool-workspace--wide">
-                     <aside class="tool-column tool-group-audio">
-                         <div class="tool-column-header">
--                            <h2>Script</h2>
-+                            <h2>Speech Input</h2>
-                         </div>
-                         <div class="accordion-stack">
-+                            <details class="vertical-accordion" open>
-+                                <summary>JSON</summary>
-+                                <div class="accordion-body content-stack">
-+                                    <div class="action-group" data-tts-tool-json-actions>
-+                                        <button class="btn" type="button" data-tts-import-json>Import JSON</button>
-+                                        <button class="btn" type="button" data-tts-copy-json>Copy JSON</button>
-+                                        <button class="btn" type="button" data-tts-export-json>Export JSON</button>
-+                                    </div>
-+                                    <input id="ttsImportJsonInput" type="file" accept="application/json,.json" hidden data-tts-import-json-input>
-+                                    <button class="btn" type="button" hidden data-tts-return-workspace>Return to Project Workspace</button>
-+                                </div>
-+                            </details>
-+                            <details class="vertical-accordion" open>
-+                                <summary>Named Sentence</summary>
-+                                <div class="accordion-body content-stack">
-+                                    <label for="ttsSpeechName">Name</label>
-+                                    <input id="ttsSpeechName" type="text" autocomplete="off" data-tts-name-input>
-+                                    <div class="action-group">
-+                                        <button class="btn" type="button" data-tts-add-item>Add</button>
-+                                        <button class="btn" type="button" data-tts-duplicate-item>Duplicate</button>
-+                                        <button class="btn" type="button" data-tts-delete-item>Delete</button>
-+                                    </div>
-+                                </div>
-+                            </details>
-                             <details class="vertical-accordion" open>
-                                 <summary>Text</summary>
-                                 <div class="accordion-body content-stack">
-                                     <label for="ttsTextInput">Speech Text</label>
-                                     <textarea id="ttsTextInput" data-tts-text-input>Welcome to the arena, hero.</textarea>
--                                    <p class="field-hint">Enter narration, dialog, tutorial text, menu feedback, or any short line you want to preview.</p>
-                                 </div>
-                             </details>
-                             <details class="vertical-accordion" open>
-                                 <summary>Browser Voice</summary>
-                                 <div class="accordion-body content-stack">
-+                                    <label for="ttsGenderFilter">Gender</label>
-+                                    <select id="ttsGenderFilter" data-tts-gender-filter></select>
-+                                    <label for="ttsLanguageSelect">Language</label>
-+                                    <select id="ttsLanguageSelect" data-tts-language-select></select>
-                                     <label for="ttsVoiceSelect">Voice</label>
-                                     <select id="ttsVoiceSelect" data-tts-voice-select></select>
-                                     <p class="field-hint" data-tts-voice-details>No browser voices loaded yet.</p>
-@@ -50,9 +77,10 @@
-                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="text-to-speech" data-tool-icon-src="assets/theme-v2/images/badges/text-to-speech.png" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
-                     <section class="tool-center-panel">
-                         <h2>Browser Preview</h2>
--                        <p>Use the browser Web Speech API for immediate local preview. This does not create files, call paid providers, or fake generated audio.</p>
--                        <div class="grid cols-3" aria-label="Text To Speech browser preview summary">
-+                        <p>Use local Web Speech API playback for immediate browser preview. This does not call paid providers, create generated audio files, or fake output.</p>
-+                        <div class="grid cols-4" aria-label="Text To Speech browser preview summary">
-                             <article class="mini-stat"><strong data-tts-text-count>0</strong>Characters</article>
-+                            <article class="mini-stat"><strong data-tts-queue-count>0</strong>Sentences</article>
-                             <article class="mini-stat"><strong data-tts-voice-count>0</strong>Voices</article>
-                             <article class="mini-stat"><strong data-tts-engine-label>Checking</strong>Engine</article>
-                         </div>
-@@ -60,10 +88,12 @@
-                             <div class="card-body content-stack">
-                                 <div>
-                                     <div class="kicker">Preview Controls</div>
--                                    <h3>Speak Browser Preview</h3>
-+                                    <h3>Runtime Playback</h3>
-                                 </div>
-                                 <div class="action-group">
-                                     <button class="btn" type="button" data-tts-speak>Speak / Preview</button>
-+                                    <button class="btn" type="button" data-tts-pause>Pause</button>
-+                                    <button class="btn" type="button" data-tts-resume>Resume</button>
-                                     <button class="btn" type="button" data-tts-stop>Stop</button>
-                                 </div>
-                                 <div class="status" role="status" data-tts-status>Loading browser Text To Speech.</div>
-@@ -72,18 +102,30 @@
-                         <article class="card">
-                             <div class="card-body content-stack">
-                                 <div>
--                                    <div class="kicker">Ownership Boundary</div>
--                                    <h3>Preview Only</h3>
-+                                    <div class="kicker">Named Sentences</div>
-+                                    <h3>Queue</h3>
-                                 </div>
--                                <p>Message text remains Design-owned. Browser preview is local playback only. Future generated audio files remain Audio-owned when a real provider/export flow is added.</p>
-+                                <div role="listbox" aria-label="Named Sentences" data-tts-queue-list></div>
-                             </div>
-                         </article>
-                     </section>
-                     <aside class="tool-column tool-group-audio">
-                         <div class="tool-column-header">
--                            <h2>Voice Settings</h2>
-+                            <h2>Voice Output</h2>
-                         </div>
-                         <div class="accordion-stack">
-+                            <details class="vertical-accordion" open>
-+                                <summary>Presets</summary>
-+                                <div class="accordion-body content-stack">
-+                                    <label for="ttsAgeFilter">Voice Age</label>
-+                                    <select id="ttsAgeFilter" data-tts-age-filter></select>
-+                                    <label for="ttsCharacterPreset">Character Preset</label>
-+                                    <select id="ttsCharacterPreset" data-tts-character-preset></select>
-+                                    <label for="ttsSsmlPreset">SSML-like Preset</label>
-+                                    <select id="ttsSsmlPreset" data-tts-ssml-preset></select>
-+                                    <p class="field-hint">Male &lt; Neutral &gt; Female</p>
-+                                </div>
-+                            </details>
-                             <details class="vertical-accordion" open>
-                                 <summary>Delivery</summary>
-                                 <div class="accordion-body content-stack">
-@@ -106,6 +148,19 @@
-                                     </div>
-                                 </div>
-                             </details>
-+                            <details class="vertical-accordion" open>
-+                                <summary>Output Summary</summary>
-+                                <div class="accordion-body content-stack">
-+                                    <pre data-tts-output-summary>[]</pre>
-+                                </div>
-+                            </details>
-+                            <details class="vertical-accordion" open>
-+                                <summary>Status</summary>
-+                                <div class="accordion-body content-stack">
-+                                    <button class="btn" type="button" data-tts-clear-status>Clear</button>
-+                                    <textarea readonly rows="10" aria-label="Status log" data-tts-status-log></textarea>
-+                                </div>
-+                            </details>
-                             <details class="vertical-accordion" open>
-                                 <summary>Engine Status</summary>
-                                 <div class="accordion-body content-stack">
-diff --git a/toolbox/text-to-speech/text2speech.js b/toolbox/text-to-speech/text2speech.js
-index 03d785410..051611d31 100644
---- a/toolbox/text-to-speech/text2speech.js
-+++ b/toolbox/text-to-speech/text2speech.js
-@@ -1,4 +1,24 @@
-+import {
 +  TEXT_TO_SPEECH_AGE_FILTER_OPTIONS,
 +  TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS,
 +  TEXT_TO_SPEECH_CHARACTER_PRESET_OPTIONS,
-+  TEXT_TO_SPEECH_DEFAULTS,
+   TEXT_TO_SPEECH_DEFAULTS,
+   TEXT_TO_SPEECH_DISPLAY_NAME,
+-  TEXT_TO_SPEECH_RANGE_DEFAULTS
 +  TEXT_TO_SPEECH_GENDER_FILTER_OPTIONS,
-+  TEXT_TO_SPEECH_LANGUAGE_OPTIONS,
++  TEXT_TO_SPEECH_QUEUE_ITEM_REQUIRED_FIELDS,
 +  TEXT_TO_SPEECH_RANGE_DEFAULTS,
-+  TEXT_TO_SPEECH_SCHEMA_ID,
 +  TEXT_TO_SPEECH_SSML_LIKE_PRESET_DEFAULTS,
 +  TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS,
-+  TEXT_TO_SPEECH_VOICE_AGE_PRESET_DEFAULTS,
-+} from "../../src/engine/audio/TextToSpeechDefaults.js";
- import { TextToSpeechEngine } from "../../src/engine/audio/TextToSpeechEngine.js";
-+import {
-+  downloadTextFile,
-+  readFileText,
-+} from "../../src/engine/persistence/FilePersistenceService.js";
-+
-+const WORKSPACE_TOOL_STATE_KEY = "workspace.tools.text2speech-V2";
-+const URL_SOURCE_PARAM = "samplePresetPath";
++  TEXT_TO_SPEECH_VOICE_AGE_PRESET_DEFAULTS
+ } from "./TextToSpeechDefaults.js";
  
- const TTS_OWNERSHIP = Object.freeze({
-   DESIGN: "Design",
-@@ -9,18 +29,46 @@ const TTS_MESSAGE_STATUSES = Object.freeze([
-   "draft",
-   "ready-for-preview",
-   "speaking",
-+  "paused",
-   "stopped",
-   "blocked",
-   "archived",
- ]);
- 
--const TTS_LANGUAGES = Object.freeze([
--  { code: "en-US", name: "English (United States)" },
--  { code: "en-GB", name: "English (United Kingdom)" },
--  { code: "es-ES", name: "Spanish (Spain)" },
--  { code: "fr-FR", name: "French (France)" },
--  { code: "de-DE", name: "German (Germany)" },
--  { code: "ja-JP", name: "Japanese (Japan)" },
-+const TTS_LANGUAGES = Object.freeze(TEXT_TO_SPEECH_LANGUAGE_OPTIONS.map((option) => ({
-+  code: option.value,
-+  name: option.label,
-+})));
-+
-+const TTS_ARCHIVED_FEATURE_INVENTORY = Object.freeze([
-+  "Import JSON",
-+  "Copy JSON",
-+  "Export JSON",
-+  "Project Workspace return launch",
-+  "Name field for speech items",
-+  "Add named sentence",
-+  "Duplicate named sentence",
-+  "Delete named sentence",
-+  "Editable speech text",
-+  "Gender helper filter",
-+  "Language voice filter",
-+  "Browser voice selection",
-+  "Voice details",
-+  "Voice age shaping",
-+  "Character preset shaping",
-+  "SSML-like preset shaping",
-+  "Volume slider",
-+  "Rate slider",
-+  "Pitch slider",
-+  "Speak playback",
-+  "Pause playback",
-+  "Resume playback",
-+  "Stop playback",
-+  "Named sentence queue",
-+  "Output summary JSON",
-+  "Status log with clear",
-+  "URL JSON sample source",
-+  "Workspace session payload loading",
- ]);
- 
- const TTS_PROVIDER_ADAPTER_PLAN = Object.freeze([
-@@ -29,7 +77,7 @@ const TTS_PROVIDER_ADAPTER_PLAN = Object.freeze([
-     name: "Browser Speech Synthesis",
-     status: "implemented",
-     boundary: "Local browser Web Speech API preview; no generated files.",
--    requiredCapabilities: ["text input", "voice selection", "rate", "pitch", "volume", "speak", "stop"],
-+    requiredCapabilities: ["text input", "voice selection", "rate", "pitch", "volume", "speak", "pause", "resume", "stop"],
-   },
-   {
-     key: "openai",
-@@ -62,11 +110,31 @@ const TTS_PROVIDER_ADAPTER_PLAN = Object.freeze([
- ]);
- 
- const RANGE_LIMITS = Object.freeze({
--  pitch: Object.freeze({ fallback: 1, max: 2, min: 0.1 }),
--  rate: Object.freeze({ fallback: 1, max: 2, min: 0.1 }),
--  volume: Object.freeze({ fallback: 1, max: 1, min: 0 }),
-+  pitch: Object.freeze({ fallback: TEXT_TO_SPEECH_DEFAULTS.pitch, max: TEXT_TO_SPEECH_RANGE_DEFAULTS.pitch.max, min: TEXT_TO_SPEECH_RANGE_DEFAULTS.pitch.min }),
-+  rate: Object.freeze({ fallback: TEXT_TO_SPEECH_DEFAULTS.rate, max: TEXT_TO_SPEECH_RANGE_DEFAULTS.rate.max, min: TEXT_TO_SPEECH_RANGE_DEFAULTS.rate.min }),
-+  volume: Object.freeze({ fallback: TEXT_TO_SPEECH_DEFAULTS.volume, max: TEXT_TO_SPEECH_RANGE_DEFAULTS.volume.max, min: TEXT_TO_SPEECH_RANGE_DEFAULTS.volume.min }),
- });
- 
-+const REQUIRED_QUEUE_ITEM_FIELDS = Object.freeze([
-+  "id",
-+  "name",
-+  "text",
-+  "gender",
-+  "language",
-+  "voice",
-+  "voiceAge",
-+  "volume",
-+  "rate",
-+  "pitch",
-+  "characterPreset",
-+  "ssmlLikePreset",
-+]);
-+
-+const CHARACTER_PRESET_VALUES = new Set(TEXT_TO_SPEECH_CHARACTER_PRESET_OPTIONS.map((option) => option.value));
-+const GENDER_VALUES = new Set(["any", "male-preferred", "female-preferred"]);
-+const SSML_PRESET_VALUES = new Set(TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS.map((option) => option.value));
-+const VOICE_AGE_VALUES = new Set(TEXT_TO_SPEECH_AGE_FILTER_OPTIONS.map((option) => option.value));
-+
- function boundedNumber(value, { fallback, max, min }) {
-   const number = Number(value);
-   if (!Number.isFinite(number)) return fallback;
-@@ -120,13 +188,104 @@ function createVoiceProfile({ key = "browser-speech", name = "Browser Speech", p
-   };
+ function finiteNumber(value, fallback) {
+@@ -13,6 +21,241 @@ function boundedNumber(value, { fallback, max, min }) {
+   return Math.min(max, Math.max(min, finiteNumber(value, fallback)));
  }
  
-+function slugFromName(name) {
++const TEXT_TO_SPEECH_CHARACTER_PRESET_VALUES = new Set(TEXT_TO_SPEECH_CHARACTER_PRESET_OPTIONS.map((option) => option.value));
++const TEXT_TO_SPEECH_GENDER_VALUES = new Set(TEXT_TO_SPEECH_GENDER_FILTER_OPTIONS
++  .map((option) => option.value)
++  .filter((value) => value !== "neutral"));
++const TEXT_TO_SPEECH_SSML_LIKE_PRESET_VALUES = new Set(TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS.map((option) => option.value));
++const TEXT_TO_SPEECH_VOICE_AGE_VALUES = new Set(TEXT_TO_SPEECH_AGE_FILTER_OPTIONS.map((option) => option.value));
++
++function textToSpeechSlugFromName(name) {
 +  const slug = String(name || "")
 +    .trim()
 +    .toLowerCase()
@@ -512,11 +39,81 @@ index 03d785410..051611d31 100644
 +  return slug || "speech-item";
 +}
 +
-+function payloadGenderValue(value) {
++function textToSpeechPayloadGenderValue(value) {
 +  return value === "neutral" ? "any" : String(value || "any");
 +}
 +
-+function createSpeechQueueItem({
++function boundedTextToSpeechNumber(value, kind) {
++  const range = TEXT_TO_SPEECH_RANGE_DEFAULTS[kind] || TEXT_TO_SPEECH_RANGE_DEFAULTS.rate;
++  const fallback = Number.isFinite(TEXT_TO_SPEECH_DEFAULTS[kind])
++    ? TEXT_TO_SPEECH_DEFAULTS[kind]
++    : range.value;
++  return boundedNumber(value, { fallback, max: range.max, min: range.min });
++}
++
++function safeTextToSpeechCharacterPreset(value) {
++  const normalizedValue = String(value || TEXT_TO_SPEECH_DEFAULTS.characterPreset);
++  return TEXT_TO_SPEECH_CHARACTER_PRESET_VALUES.has(normalizedValue)
++    ? normalizedValue
++    : TEXT_TO_SPEECH_DEFAULTS.characterPreset;
++}
++
++function safeTextToSpeechSsmlLikePreset(value) {
++  const normalizedValue = String(value || TEXT_TO_SPEECH_DEFAULTS.ssmlLikePreset);
++  return TEXT_TO_SPEECH_SSML_LIKE_PRESET_VALUES.has(normalizedValue)
++    ? normalizedValue
++    : TEXT_TO_SPEECH_DEFAULTS.ssmlLikePreset;
++}
++
++function safeTextToSpeechVoiceAge(value) {
++  const normalizedValue = String(value || TEXT_TO_SPEECH_DEFAULTS.voiceAge);
++  return TEXT_TO_SPEECH_VOICE_AGE_VALUES.has(normalizedValue)
++    ? normalizedValue
++    : TEXT_TO_SPEECH_DEFAULTS.voiceAge;
++}
++
++function safeTextToSpeechGender(value) {
++  const normalizedValue = textToSpeechPayloadGenderValue(value);
++  return TEXT_TO_SPEECH_GENDER_VALUES.has(normalizedValue)
++    ? normalizedValue
++    : TEXT_TO_SPEECH_DEFAULTS.gender;
++}
++
++function resolveTextToSpeechDeliveryOptions({
++  characterPreset = TEXT_TO_SPEECH_DEFAULTS.characterPreset,
++  manualPitch = false,
++  manualRate = false,
++  manualVolume = false,
++  pitch = TEXT_TO_SPEECH_DEFAULTS.pitch,
++  rate = TEXT_TO_SPEECH_DEFAULTS.rate,
++  ssmlLikePreset = TEXT_TO_SPEECH_DEFAULTS.ssmlLikePreset,
++  voiceAge = TEXT_TO_SPEECH_DEFAULTS.voiceAge,
++  volume = TEXT_TO_SPEECH_DEFAULTS.volume
++} = {}) {
++  const safeCharacterPreset = safeTextToSpeechCharacterPreset(characterPreset);
++  const safeSsmlLikePreset = safeTextToSpeechSsmlLikePreset(ssmlLikePreset);
++  const safeVoiceAge = safeTextToSpeechVoiceAge(voiceAge);
++  const characterDefaults = TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS[safeCharacterPreset];
++  const ssmlDefaults = TEXT_TO_SPEECH_SSML_LIKE_PRESET_DEFAULTS[safeSsmlLikePreset];
++  const voiceAgeDefaults = TEXT_TO_SPEECH_VOICE_AGE_PRESET_DEFAULTS[safeVoiceAge];
++
++  return {
++    characterPreset: safeCharacterPreset,
++    pitch: boundedTextToSpeechNumber(manualPitch
++      ? pitch
++      : Number(characterDefaults.pitch) + Number(voiceAgeDefaults.pitchOffset) + Number(ssmlDefaults.pitchOffset), "pitch"),
++    rate: boundedTextToSpeechNumber(manualRate
++      ? rate
++      : Number(characterDefaults.rate) * Number(voiceAgeDefaults.rateMultiplier) * Number(ssmlDefaults.rateMultiplier), "rate"),
++    ssmlLikePreset: safeSsmlLikePreset,
++    voiceAge: safeVoiceAge,
++    volume: boundedTextToSpeechNumber(manualVolume
++      ? volume
++      : Number(characterDefaults.volume) * Number(ssmlDefaults.volumeMultiplier), "volume")
++  };
++}
++
++function createTextToSpeechQueueItem({
 +  characterPreset = TEXT_TO_SPEECH_DEFAULTS.characterPreset,
 +  gender = TEXT_TO_SPEECH_DEFAULTS.gender,
 +  id,
@@ -528,68 +125,67 @@ index 03d785410..051611d31 100644
 +  text = "",
 +  voice = TEXT_TO_SPEECH_DEFAULTS.voice,
 +  voiceAge = TEXT_TO_SPEECH_DEFAULTS.voiceAge,
-+  volume = TEXT_TO_SPEECH_DEFAULTS.volume,
++  volume = TEXT_TO_SPEECH_DEFAULTS.volume
 +} = {}) {
 +  const itemName = String(name || "New speech item").trim() || "New speech item";
 +  return {
-+    id: String(id || slugFromName(itemName)),
++    id: String(id || textToSpeechSlugFromName(itemName)),
 +    name: itemName,
 +    text: String(text || ""),
-+    gender: GENDER_VALUES.has(payloadGenderValue(gender)) ? payloadGenderValue(gender) : TEXT_TO_SPEECH_DEFAULTS.gender,
++    gender: safeTextToSpeechGender(gender),
 +    language: String(language || TEXT_TO_SPEECH_DEFAULTS.language),
 +    voice: String(voice || ""),
-+    voiceAge: VOICE_AGE_VALUES.has(String(voiceAge)) ? String(voiceAge) : TEXT_TO_SPEECH_DEFAULTS.voiceAge,
-+    volume: boundedNumber(volume, RANGE_LIMITS.volume),
-+    rate: boundedNumber(rate, RANGE_LIMITS.rate),
-+    pitch: boundedNumber(pitch, RANGE_LIMITS.pitch),
-+    characterPreset: CHARACTER_PRESET_VALUES.has(String(characterPreset)) ? String(characterPreset) : TEXT_TO_SPEECH_DEFAULTS.characterPreset,
-+    ssmlLikePreset: SSML_PRESET_VALUES.has(String(ssmlLikePreset)) ? String(ssmlLikePreset) : TEXT_TO_SPEECH_DEFAULTS.ssmlLikePreset,
++    voiceAge: safeTextToSpeechVoiceAge(voiceAge),
++    volume: boundedTextToSpeechNumber(volume, "volume"),
++    rate: boundedTextToSpeechNumber(rate, "rate"),
++    pitch: boundedTextToSpeechNumber(pitch, "pitch"),
++    characterPreset: safeTextToSpeechCharacterPreset(characterPreset),
++    ssmlLikePreset: safeTextToSpeechSsmlLikePreset(ssmlLikePreset)
 +  };
 +}
 +
-+function validateSpeechPayload(payload) {
++function validateTextToSpeechPayload(payload) {
 +  if (!Array.isArray(payload)) {
 +    return { ok: false, message: "Text To Speech JSON must be a root array of named speech items." };
 +  }
 +  const errors = [];
 +  payload.forEach((item, index) => {
++    const label = `item ${index + 1}`;
 +    if (!item || typeof item !== "object" || Array.isArray(item)) {
-+      errors.push(`item ${index + 1}: expected object`);
++      errors.push(`${label}: expected object`);
 +      return;
 +    }
-+    REQUIRED_QUEUE_ITEM_FIELDS.forEach((field) => {
++    TEXT_TO_SPEECH_QUEUE_ITEM_REQUIRED_FIELDS.forEach((field) => {
 +      if (!Object.prototype.hasOwnProperty.call(item, field)) {
-+        errors.push(`item ${index + 1}: ${field} is required`);
++        errors.push(`${label}: ${field} is required`);
 +      }
 +    });
-+    if (!String(item.id || "").trim()) errors.push(`item ${index + 1}: id is required`);
-+    if (!String(item.name || "").trim()) errors.push(`item ${index + 1}: name is required`);
-+    if (!String(item.text || "").trim()) errors.push(`item ${index + 1}: text is required`);
-+    if (!GENDER_VALUES.has(String(item.gender))) errors.push(`item ${index + 1}: gender must be any, male-preferred, or female-preferred`);
-+    if (!VOICE_AGE_VALUES.has(String(item.voiceAge))) errors.push(`item ${index + 1}: voiceAge is invalid`);
-+    if (!CHARACTER_PRESET_VALUES.has(String(item.characterPreset))) errors.push(`item ${index + 1}: characterPreset is invalid`);
-+    if (!SSML_PRESET_VALUES.has(String(item.ssmlLikePreset))) errors.push(`item ${index + 1}: ssmlLikePreset is invalid`);
-+    if (boundedNumber(item.volume, RANGE_LIMITS.volume) !== Number(item.volume)) errors.push(`item ${index + 1}: volume must be 0-1`);
-+    if (boundedNumber(item.rate, RANGE_LIMITS.rate) !== Number(item.rate)) errors.push(`item ${index + 1}: rate must be 0.1-2`);
-+    if (boundedNumber(item.pitch, RANGE_LIMITS.pitch) !== Number(item.pitch)) errors.push(`item ${index + 1}: pitch must be 0.1-2`);
++    if (!String(item.id || "").trim()) errors.push(`${label}: id is required`);
++    if (!String(item.name || "").trim()) errors.push(`${label}: name is required`);
++    if (!String(item.text || "").trim()) errors.push(`${label}: text is required`);
++    if (!TEXT_TO_SPEECH_GENDER_VALUES.has(String(item.gender))) errors.push(`${label}: gender must be any, male-preferred, or female-preferred`);
++    if (!TEXT_TO_SPEECH_VOICE_AGE_VALUES.has(String(item.voiceAge))) errors.push(`${label}: voiceAge is invalid`);
++    if (!TEXT_TO_SPEECH_CHARACTER_PRESET_VALUES.has(String(item.characterPreset))) errors.push(`${label}: characterPreset is invalid`);
++    if (!TEXT_TO_SPEECH_SSML_LIKE_PRESET_VALUES.has(String(item.ssmlLikePreset))) errors.push(`${label}: ssmlLikePreset is invalid`);
++    if (boundedTextToSpeechNumber(item.volume, "volume") !== Number(item.volume)) errors.push(`${label}: volume must be 0-1`);
++    if (boundedTextToSpeechNumber(item.rate, "rate") !== Number(item.rate)) errors.push(`${label}: rate must be 0.1-2`);
++    if (boundedTextToSpeechNumber(item.pitch, "pitch") !== Number(item.pitch)) errors.push(`${label}: pitch must be 0.1-2`);
 +  });
 +  return errors.length
 +    ? { ok: false, message: errors.join(" | ") }
 +    : { ok: true };
 +}
 +
-+function normalizeSpeechPayload(payload) {
-+  const validation = validateSpeechPayload(payload);
++function normalizeTextToSpeechPayload(payload) {
++  const validation = validateTextToSpeechPayload(payload);
 +  if (!validation.ok) return validation;
 +  return {
 +    ok: true,
-+    payload: payload.map((item) => createSpeechQueueItem(item)),
++    payload: payload.map((item) => createTextToSpeechQueueItem(item))
 +  };
 +}
 +
- function createSpeechPreviewRequest({
--  pitch = 1,
--  rate = 1,
++function createTextToSpeechSpeakRequest({
 +  characterPreset = TEXT_TO_SPEECH_DEFAULTS.characterPreset,
 +  gender = TEXT_TO_SPEECH_DEFAULTS.gender,
 +  language = TEXT_TO_SPEECH_DEFAULTS.language,
@@ -598,95 +194,57 @@ index 03d785410..051611d31 100644
 +  speechItemId = "browser-preview",
 +  speechItemName = "Browser Preview",
 +  ssmlLikePreset = TEXT_TO_SPEECH_DEFAULTS.ssmlLikePreset,
-   text = "",
-   voice = "",
++  text = "",
++  voice = "",
 +  voiceAge = TEXT_TO_SPEECH_DEFAULTS.voiceAge,
-   voiceOptions = [],
--  volume = 1,
-+  volume = TEXT_TO_SPEECH_DEFAULTS.volume,
- } = {}) {
-   const normalizedText = String(text || "").trim();
-   if (!normalizedText) {
-@@ -139,14 +298,18 @@ function createSpeechPreviewRequest({
-   }
- 
-   return {
--    language: selectedVoice.language || "en-US",
-+    characterPreset,
-+    gender: payloadGenderValue(gender),
++  voiceOptions = [],
++  volume = TEXT_TO_SPEECH_DEFAULTS.volume
++} = {}) {
++  const normalizedText = String(text || "").trim();
++  if (!normalizedText) {
++    return { ok: false, message: "Speech text is required before preview." };
++  }
++
++  const selectedVoice = voiceOptions.find((option) => String(option.value) === String(voice)) || null;
++  if (!selectedVoice) {
++    return { ok: false, message: "Select an available browser voice before preview." };
++  }
++
++  return {
++    characterPreset: safeTextToSpeechCharacterPreset(characterPreset),
++    gender: safeTextToSpeechGender(gender),
 +    language: language || selectedVoice.language || TEXT_TO_SPEECH_DEFAULTS.language,
-     ok: true,
-     pitch: boundedNumber(pitch, RANGE_LIMITS.pitch),
-     rate: boundedNumber(rate, RANGE_LIMITS.rate),
--    speechItemId: "browser-preview",
--    speechItemName: "Browser Preview",
++    ok: true,
++    pitch: boundedTextToSpeechNumber(pitch, "pitch"),
++    rate: boundedTextToSpeechNumber(rate, "rate"),
 +    speechItemId,
 +    speechItemName,
-+    ssmlLikePreset,
-     text: normalizedText,
-     voice: selectedVoice.value,
-+    voiceAge,
-     voiceName: selectedVoice.name || selectedVoice.label || "selected voice",
-     volume: boundedNumber(volume, RANGE_LIMITS.volume),
-   };
-@@ -159,10 +322,74 @@ function previewTtsMessage(message, options = {}) {
-   });
- }
- 
--function formatRangeValue(value, kind) {
--  const limits = RANGE_LIMITS[kind] || RANGE_LIMITS.rate;
--  const boundedValue = boundedNumber(value, limits);
--  return String(Math.round(boundedValue * 100) / 100);
-+function populateSelect(select, options, selectedValue) {
-+  if (!select) return;
-+  select.replaceChildren(...options.map((option) => {
-+    const node = document.createElement("option");
-+    node.value = String(option.value);
-+    node.textContent = String(option.label);
-+    node.selected = String(option.value) === String(selectedValue);
-+    return node;
-+  }));
++    ssmlLikePreset: safeTextToSpeechSsmlLikePreset(ssmlLikePreset),
++    text: normalizedText,
++    voice: selectedVoice.value,
++    voiceAge: safeTextToSpeechVoiceAge(voiceAge),
++    voiceName: selectedVoice.name || selectedVoice.label || "selected voice",
++    volume: boundedTextToSpeechNumber(volume, "volume")
++  };
 +}
 +
-+function optionLabelCompare(left, right) {
-+  return String(left.label).localeCompare(String(right.label), undefined, {
-+    numeric: true,
-+    sensitivity: "base",
-+  });
-+}
-+
-+function voiceGender(option) {
-+  const voiceText = `${option.gender || ""} ${option.name || ""} ${option.label || ""}`;
-+  const voiceLanguage = String(option.language || "").toLowerCase();
++function inferTextToSpeechVoiceGender(option) {
++  const voiceText = `${option?.gender || ""} ${option?.name || ""} ${option?.label || ""}`;
++  const voiceLanguage = String(option?.language || "").toLowerCase();
 +  if (/\bneutral\b|\bnon[-\s]?binary\b|\bandrogynous\b/i.test(voiceText)) return "neutral";
 +  if (voiceLanguage === "es-es" || /\bmale\b|\bman\b|\bdavid\b|\bmark\b/i.test(voiceText)) return "male";
 +  if (/\bfemale\b|\bwoman\b|\bzira\b/i.test(voiceText)) return "female";
 +  return "unknown";
 +}
 +
-+function genderFilterLabel(value) {
-+  if (value === "male-preferred") return "Male";
-+  if (value === "female-preferred") return "Female";
-+  if (value === "neutral") return "Neutral";
-+  return "Any";
-+}
-+
-+function ageFilterLabel(value) {
-+  if (value === "adult") return "Adult";
-+  if (value === "child") return "Child";
-+  if (value === "elderly") return "Elderly";
-+  if (value === "teen") return "Teen";
-+  return "Any";
-+}
-+
-+function voicesForGender(voiceOptions, genderFilter) {
-+  if (genderFilter === "male-preferred") return voiceOptions.filter((option) => voiceGender(option) === "male");
-+  if (genderFilter === "female-preferred") return voiceOptions.filter((option) => voiceGender(option) === "female");
-+  if (genderFilter === "neutral") return voiceOptions.filter((option) => ["neutral", "unknown"].includes(voiceGender(option)));
++function textToSpeechVoicesForGender(voiceOptions, genderFilter = "any") {
++  if (genderFilter === "male-preferred") return voiceOptions.filter((option) => inferTextToSpeechVoiceGender(option) === "male");
++  if (genderFilter === "female-preferred") return voiceOptions.filter((option) => inferTextToSpeechVoiceGender(option) === "female");
++  if (genderFilter === "neutral") return voiceOptions.filter((option) => ["neutral", "unknown"].includes(inferTextToSpeechVoiceGender(option)));
 +  return voiceOptions;
 +}
 +
-+function languageOptionsFromVoices(voiceOptions) {
++function textToSpeechLanguageOptionsFromVoices(voiceOptions) {
 +  const languageCounts = new Map();
 +  voiceOptions.forEach((option) => {
 +    const language = String(option.language || "").trim();
@@ -694,930 +252,694 @@ index 03d785410..051611d31 100644
 +  });
 +  return Array.from(languageCounts.entries())
 +    .map(([language, count]) => ({ label: `${language} (${count} ${count === 1 ? "voice" : "voices"})`, value: language }))
-+    .sort(optionLabelCompare);
++    .sort((left, right) => String(left.label).localeCompare(String(right.label), undefined, {
++      numeric: true,
++      sensitivity: "base"
++    }));
 +}
 +
-+function shapedSliderValue(value, input) {
-+  const min = Number(input?.min || 0);
-+  const max = Number(input?.max || 1);
-+  const clamped = Math.min(max, Math.max(min, Number(value)));
-+  const step = String(input?.step || "1");
-+  const decimalPart = step.includes(".") ? step.split(".")[1] : "";
-+  const multiplier = 10 ** decimalPart.length;
-+  return String(Math.round(clamped * multiplier) / multiplier);
+ class TextToSpeechEngine {
+   constructor({
+     speechSynthesisRef = globalThis.speechSynthesis,
+@@ -248,5 +491,22 @@ class TextToSpeechEngine {
+   }
  }
  
- function setTextContent(root, selector, text) {
-@@ -177,144 +404,643 @@ function setStatus(root, message, state = "info") {
-   status.dataset.ttsStatusState = state;
- }
+-export { TextToSpeechEngine };
++export {
++  TextToSpeechEngine,
++  boundedTextToSpeechNumber,
++  createTextToSpeechQueueItem,
++  createTextToSpeechSpeakRequest,
++  inferTextToSpeechVoiceGender,
++  normalizeTextToSpeechPayload,
++  resolveTextToSpeechDeliveryOptions,
++  safeTextToSpeechCharacterPreset,
++  safeTextToSpeechGender,
++  safeTextToSpeechSsmlLikePreset,
++  safeTextToSpeechVoiceAge,
++  textToSpeechLanguageOptionsFromVoices,
++  textToSpeechPayloadGenderValue,
++  textToSpeechSlugFromName,
++  textToSpeechVoicesForGender,
++  validateTextToSpeechPayload
++};
+ export default TextToSpeechEngine;
+diff --git a/toolbox/text-to-speech/text2speech.js b/toolbox/text-to-speech/text2speech.js
+index 051611d31..fa62c253f 100644
+--- a/toolbox/text-to-speech/text2speech.js
++++ b/toolbox/text-to-speech/text2speech.js
+@@ -5,13 +5,20 @@ import {
+   TEXT_TO_SPEECH_DEFAULTS,
+   TEXT_TO_SPEECH_GENDER_FILTER_OPTIONS,
+   TEXT_TO_SPEECH_LANGUAGE_OPTIONS,
+-  TEXT_TO_SPEECH_RANGE_DEFAULTS,
+-  TEXT_TO_SPEECH_SCHEMA_ID,
+-  TEXT_TO_SPEECH_SSML_LIKE_PRESET_DEFAULTS,
+   TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS,
+-  TEXT_TO_SPEECH_VOICE_AGE_PRESET_DEFAULTS,
+ } from "../../src/engine/audio/TextToSpeechDefaults.js";
+-import { TextToSpeechEngine } from "../../src/engine/audio/TextToSpeechEngine.js";
++import {
++  TextToSpeechEngine,
++  boundedTextToSpeechNumber,
++  createTextToSpeechQueueItem,
++  createTextToSpeechSpeakRequest,
++  normalizeTextToSpeechPayload,
++  resolveTextToSpeechDeliveryOptions,
++  textToSpeechLanguageOptionsFromVoices,
++  textToSpeechSlugFromName,
++  textToSpeechVoicesForGender,
++  validateTextToSpeechPayload,
++} from "../../src/engine/audio/TextToSpeechEngine.js";
+ import {
+   downloadTextFile,
+   readFileText,
+@@ -109,38 +116,6 @@ const TTS_PROVIDER_ADAPTER_PLAN = Object.freeze([
+   },
+ ]);
  
--function renderVoiceOptions(select, voiceOptions) {
--  select.replaceChildren();
--  if (voiceOptions.length === 0) {
--    const option = document.createElement("option");
--    option.value = "";
--    option.textContent = "No browser voices available";
--    select.append(option);
--    select.value = "";
--    return;
--  }
--  voiceOptions.forEach((voiceOption) => {
--    const option = document.createElement("option");
--    option.value = voiceOption.value;
--    option.textContent = voiceOption.label;
--    select.append(option);
--  });
--  select.value = voiceOptions[0].value;
-+function writeStatus(root, message, state = "ready") {
-+  const prefix = state === "error" ? "FAIL" : "OK";
-+  setStatus(root, message, state);
-+  const log = root.querySelector("[data-tts-status-log]");
-+  if (!log) return;
-+  const line = `${prefix} ${message}`;
-+  log.value = log.value ? `${log.value}\n${line}` : line;
-+  log.scrollTop = log.scrollHeight;
- }
- 
--function collectSpeechRequest(root, voiceOptions) {
--  return createSpeechPreviewRequest({
--    pitch: root.querySelector("[data-tts-pitch]")?.value,
--    rate: root.querySelector("[data-tts-rate]")?.value,
--    text: root.querySelector("[data-tts-text-input]")?.value,
--    voice: root.querySelector("[data-tts-voice-select]")?.value,
--    voiceOptions,
--    volume: root.querySelector("[data-tts-volume]")?.value,
--  });
-+function queueItemMeta(item) {
-+  return [item.language || "no language", item.characterPreset || "manual", item.voiceAge || "any"].join(" / ");
- }
- 
--function initializeTextToSpeechTool(root = document, { engine = new TextToSpeechEngine() } = {}) {
--  const textInput = root.querySelector("[data-tts-text-input]");
--  const voiceSelect = root.querySelector("[data-tts-voice-select]");
--  const speakButton = root.querySelector("[data-tts-speak]");
--  const stopButton = root.querySelector("[data-tts-stop]");
--  const rateInput = root.querySelector("[data-tts-rate]");
--  const pitchInput = root.querySelector("[data-tts-pitch]");
--  const volumeInput = root.querySelector("[data-tts-volume]");
--  let voiceOptions = [];
+-const RANGE_LIMITS = Object.freeze({
+-  pitch: Object.freeze({ fallback: TEXT_TO_SPEECH_DEFAULTS.pitch, max: TEXT_TO_SPEECH_RANGE_DEFAULTS.pitch.max, min: TEXT_TO_SPEECH_RANGE_DEFAULTS.pitch.min }),
+-  rate: Object.freeze({ fallback: TEXT_TO_SPEECH_DEFAULTS.rate, max: TEXT_TO_SPEECH_RANGE_DEFAULTS.rate.max, min: TEXT_TO_SPEECH_RANGE_DEFAULTS.rate.min }),
+-  volume: Object.freeze({ fallback: TEXT_TO_SPEECH_DEFAULTS.volume, max: TEXT_TO_SPEECH_RANGE_DEFAULTS.volume.max, min: TEXT_TO_SPEECH_RANGE_DEFAULTS.volume.min }),
+-});
 -
--  function syncRange(input, selector, kind) {
--    if (!input) return;
--    input.value = formatRangeValue(input.value, kind);
--    setTextContent(root, selector, input.value);
-+function controlsFromRoot(root) {
-+  return {
-+    addButton: root.querySelector("[data-tts-add-item]"),
-+    ageFilter: root.querySelector("[data-tts-age-filter]"),
-+    characterPreset: root.querySelector("[data-tts-character-preset]"),
-+    clearStatusButton: root.querySelector("[data-tts-clear-status]"),
-+    copyJsonButton: root.querySelector("[data-tts-copy-json]"),
-+    deleteButton: root.querySelector("[data-tts-delete-item]"),
-+    duplicateButton: root.querySelector("[data-tts-duplicate-item]"),
-+    exportJsonButton: root.querySelector("[data-tts-export-json]"),
-+    genderFilter: root.querySelector("[data-tts-gender-filter]"),
-+    importJsonButton: root.querySelector("[data-tts-import-json]"),
-+    importJsonInput: root.querySelector("[data-tts-import-json-input]"),
-+    jsonActions: root.querySelector("[data-tts-tool-json-actions]"),
-+    languageSelect: root.querySelector("[data-tts-language-select]"),
-+    nameInput: root.querySelector("[data-tts-name-input]"),
-+    outputSummary: root.querySelector("[data-tts-output-summary]"),
-+    pauseButton: root.querySelector("[data-tts-pause]"),
-+    pitchInput: root.querySelector("[data-tts-pitch]"),
-+    pitchValue: root.querySelector("[data-tts-pitch-value]"),
-+    queueList: root.querySelector("[data-tts-queue-list]"),
-+    rateInput: root.querySelector("[data-tts-rate]"),
-+    rateValue: root.querySelector("[data-tts-rate-value]"),
-+    resumeButton: root.querySelector("[data-tts-resume]"),
-+    returnWorkspaceButton: root.querySelector("[data-tts-return-workspace]"),
-+    speakButton: root.querySelector("[data-tts-speak]"),
-+    ssmlPreset: root.querySelector("[data-tts-ssml-preset]"),
-+    statusLog: root.querySelector("[data-tts-status-log]"),
-+    stopButton: root.querySelector("[data-tts-stop]"),
-+    textInput: root.querySelector("[data-tts-text-input]"),
-+    voiceSelect: root.querySelector("[data-tts-voice-select]"),
-+    volumeInput: root.querySelector("[data-tts-volume]"),
-+    volumeValue: root.querySelector("[data-tts-volume-value]"),
-+  };
-+}
-+
-+function isProjectWorkspaceLaunch(windowRef) {
-+  const params = new URLSearchParams(windowRef.location?.search || "");
-+  return params.get("launch") === "workspace"
-+    && params.get("fromTool") === "workspace-manager-v2"
-+    && Boolean(params.get("hostContextId"));
-+}
-+
-+function workspaceReturnUrl(windowRef) {
-+  const url = new URL("../workspace-manager-v2/index.html", windowRef.location?.href || "http://localhost/toolbox/text-to-speech/index.html");
-+  const params = new URLSearchParams(windowRef.location?.search || "");
-+  const hostContextId = params.get("hostContextId") || "";
-+  if (hostContextId) url.searchParams.set("hostContextId", hostContextId);
-+  if (params.get("workspaceMode")?.toLowerCase() === "uat") url.searchParams.set("workspace", "uat");
-+  return url.href;
-+}
-+
-+function initializeTextToSpeechTool(root = document, {
-+  engine = new TextToSpeechEngine(),
-+  windowRef = globalThis.window || globalThis,
-+} = {}) {
-+  const controls = controlsFromRoot(root);
-+  const state = {
-+    filteredVoiceOptions: [],
-+    matchingVoiceOptions: [],
-+    queue: [],
-+    selectedId: "",
-+    sliderOverrides: { pitch: false, rate: false, volume: false },
-+    voiceOptions: [],
-+  };
-+
-+  function selectedItem() {
-+    return state.queue.find((item) => item.id === state.selectedId) || null;
-+  }
-+
-+  function uniqueItemName(baseName) {
-+    const requestedName = String(baseName || "New speech item").trim() || "New speech item";
-+    const names = new Set(state.queue.map((item) => item.name));
-+    if (!names.has(requestedName)) return requestedName;
-+    for (let index = 2; index < 1000; index += 1) {
-+      const candidate = `${requestedName} ${index}`;
-+      if (!names.has(candidate)) return candidate;
-+    }
-+    return `${requestedName} ${Date.now().toString(36)}`;
-+  }
-+
-+  function uniqueItemId(baseName) {
-+    const ids = new Set(state.queue.map((item) => item.id));
-+    const baseId = slugFromName(baseName);
-+    if (!ids.has(baseId)) return baseId;
-+    for (let index = 2; index < 1000; index += 1) {
-+      const candidate = `${baseId}-${index}`;
-+      if (!ids.has(candidate)) return candidate;
-+    }
-+    return `${baseId}-${Date.now().toString(36)}`;
-+  }
-+
-+  function currentControlsItem(overrides = {}) {
-+    const itemName = String(overrides.name ?? controls.nameInput?.value ?? "").trim();
-+    return createSpeechQueueItem({
+-const REQUIRED_QUEUE_ITEM_FIELDS = Object.freeze([
+-  "id",
+-  "name",
+-  "text",
+-  "gender",
+-  "language",
+-  "voice",
+-  "voiceAge",
+-  "volume",
+-  "rate",
+-  "pitch",
+-  "characterPreset",
+-  "ssmlLikePreset",
+-]);
+-
+-const CHARACTER_PRESET_VALUES = new Set(TEXT_TO_SPEECH_CHARACTER_PRESET_OPTIONS.map((option) => option.value));
+-const GENDER_VALUES = new Set(["any", "male-preferred", "female-preferred"]);
+-const SSML_PRESET_VALUES = new Set(TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS.map((option) => option.value));
+-const VOICE_AGE_VALUES = new Set(TEXT_TO_SPEECH_AGE_FILTER_OPTIONS.map((option) => option.value));
+-
+-function boundedNumber(value, { fallback, max, min }) {
+-  const number = Number(value);
+-  if (!Number.isFinite(number)) return fallback;
+-  return Math.min(max, Math.max(min, number));
+-}
+-
+ function createTtsMessage({
+   id,
+   name,
+@@ -188,131 +163,12 @@ function createVoiceProfile({ key = "browser-speech", name = "Browser Speech", p
+   };
+ }
+ 
+-function slugFromName(name) {
+-  const slug = String(name || "")
+-    .trim()
+-    .toLowerCase()
+-    .replace(/[^a-z0-9]+/g, "-")
+-    .replace(/^-+|-+$/g, "");
+-  return slug || "speech-item";
+-}
+-
+-function payloadGenderValue(value) {
+-  return value === "neutral" ? "any" : String(value || "any");
+-}
+-
+-function createSpeechQueueItem({
+-  characterPreset = TEXT_TO_SPEECH_DEFAULTS.characterPreset,
+-  gender = TEXT_TO_SPEECH_DEFAULTS.gender,
+-  id,
+-  language = TEXT_TO_SPEECH_DEFAULTS.language,
+-  name,
+-  pitch = TEXT_TO_SPEECH_DEFAULTS.pitch,
+-  rate = TEXT_TO_SPEECH_DEFAULTS.rate,
+-  ssmlLikePreset = TEXT_TO_SPEECH_DEFAULTS.ssmlLikePreset,
+-  text = "",
+-  voice = TEXT_TO_SPEECH_DEFAULTS.voice,
+-  voiceAge = TEXT_TO_SPEECH_DEFAULTS.voiceAge,
+-  volume = TEXT_TO_SPEECH_DEFAULTS.volume,
+-} = {}) {
+-  const itemName = String(name || "New speech item").trim() || "New speech item";
+-  return {
+-    id: String(id || slugFromName(itemName)),
+-    name: itemName,
+-    text: String(text || ""),
+-    gender: GENDER_VALUES.has(payloadGenderValue(gender)) ? payloadGenderValue(gender) : TEXT_TO_SPEECH_DEFAULTS.gender,
+-    language: String(language || TEXT_TO_SPEECH_DEFAULTS.language),
+-    voice: String(voice || ""),
+-    voiceAge: VOICE_AGE_VALUES.has(String(voiceAge)) ? String(voiceAge) : TEXT_TO_SPEECH_DEFAULTS.voiceAge,
+-    volume: boundedNumber(volume, RANGE_LIMITS.volume),
+-    rate: boundedNumber(rate, RANGE_LIMITS.rate),
+-    pitch: boundedNumber(pitch, RANGE_LIMITS.pitch),
+-    characterPreset: CHARACTER_PRESET_VALUES.has(String(characterPreset)) ? String(characterPreset) : TEXT_TO_SPEECH_DEFAULTS.characterPreset,
+-    ssmlLikePreset: SSML_PRESET_VALUES.has(String(ssmlLikePreset)) ? String(ssmlLikePreset) : TEXT_TO_SPEECH_DEFAULTS.ssmlLikePreset,
+-  };
+-}
++const createSpeechQueueItem = createTextToSpeechQueueItem;
++const normalizeSpeechPayload = normalizeTextToSpeechPayload;
++const validateSpeechPayload = validateTextToSpeechPayload;
+ 
+-function validateSpeechPayload(payload) {
+-  if (!Array.isArray(payload)) {
+-    return { ok: false, message: "Text To Speech JSON must be a root array of named speech items." };
+-  }
+-  const errors = [];
+-  payload.forEach((item, index) => {
+-    if (!item || typeof item !== "object" || Array.isArray(item)) {
+-      errors.push(`item ${index + 1}: expected object`);
+-      return;
+-    }
+-    REQUIRED_QUEUE_ITEM_FIELDS.forEach((field) => {
+-      if (!Object.prototype.hasOwnProperty.call(item, field)) {
+-        errors.push(`item ${index + 1}: ${field} is required`);
+-      }
+-    });
+-    if (!String(item.id || "").trim()) errors.push(`item ${index + 1}: id is required`);
+-    if (!String(item.name || "").trim()) errors.push(`item ${index + 1}: name is required`);
+-    if (!String(item.text || "").trim()) errors.push(`item ${index + 1}: text is required`);
+-    if (!GENDER_VALUES.has(String(item.gender))) errors.push(`item ${index + 1}: gender must be any, male-preferred, or female-preferred`);
+-    if (!VOICE_AGE_VALUES.has(String(item.voiceAge))) errors.push(`item ${index + 1}: voiceAge is invalid`);
+-    if (!CHARACTER_PRESET_VALUES.has(String(item.characterPreset))) errors.push(`item ${index + 1}: characterPreset is invalid`);
+-    if (!SSML_PRESET_VALUES.has(String(item.ssmlLikePreset))) errors.push(`item ${index + 1}: ssmlLikePreset is invalid`);
+-    if (boundedNumber(item.volume, RANGE_LIMITS.volume) !== Number(item.volume)) errors.push(`item ${index + 1}: volume must be 0-1`);
+-    if (boundedNumber(item.rate, RANGE_LIMITS.rate) !== Number(item.rate)) errors.push(`item ${index + 1}: rate must be 0.1-2`);
+-    if (boundedNumber(item.pitch, RANGE_LIMITS.pitch) !== Number(item.pitch)) errors.push(`item ${index + 1}: pitch must be 0.1-2`);
+-  });
+-  return errors.length
+-    ? { ok: false, message: errors.join(" | ") }
+-    : { ok: true };
+-}
+-
+-function normalizeSpeechPayload(payload) {
+-  const validation = validateSpeechPayload(payload);
+-  if (!validation.ok) return validation;
+-  return {
+-    ok: true,
+-    payload: payload.map((item) => createSpeechQueueItem(item)),
+-  };
+-}
+-
+-function createSpeechPreviewRequest({
+-  characterPreset = TEXT_TO_SPEECH_DEFAULTS.characterPreset,
+-  gender = TEXT_TO_SPEECH_DEFAULTS.gender,
+-  language = TEXT_TO_SPEECH_DEFAULTS.language,
+-  pitch = TEXT_TO_SPEECH_DEFAULTS.pitch,
+-  rate = TEXT_TO_SPEECH_DEFAULTS.rate,
+-  speechItemId = "browser-preview",
+-  speechItemName = "Browser Preview",
+-  ssmlLikePreset = TEXT_TO_SPEECH_DEFAULTS.ssmlLikePreset,
+-  text = "",
+-  voice = "",
+-  voiceAge = TEXT_TO_SPEECH_DEFAULTS.voiceAge,
+-  voiceOptions = [],
+-  volume = TEXT_TO_SPEECH_DEFAULTS.volume,
+-} = {}) {
+-  const normalizedText = String(text || "").trim();
+-  if (!normalizedText) {
+-    return { ok: false, message: "Speech text is required before preview." };
+-  }
+-
+-  const selectedVoice = voiceOptions.find((option) => String(option.value) === String(voice)) || null;
+-  if (!selectedVoice) {
+-    return { ok: false, message: "Select an available browser voice before preview." };
+-  }
+-
+-  return {
+-    characterPreset,
+-    gender: payloadGenderValue(gender),
+-    language: language || selectedVoice.language || TEXT_TO_SPEECH_DEFAULTS.language,
+-    ok: true,
+-    pitch: boundedNumber(pitch, RANGE_LIMITS.pitch),
+-    rate: boundedNumber(rate, RANGE_LIMITS.rate),
+-    speechItemId,
+-    speechItemName,
+-    ssmlLikePreset,
+-    text: normalizedText,
+-    voice: selectedVoice.value,
+-    voiceAge,
+-    voiceName: selectedVoice.name || selectedVoice.label || "selected voice",
+-    volume: boundedNumber(volume, RANGE_LIMITS.volume),
+-  };
++function createSpeechPreviewRequest(options = {}) {
++  return createTextToSpeechSpeakRequest(options);
+ }
+ 
+ function previewTtsMessage(message, options = {}) {
+@@ -340,15 +196,6 @@ function optionLabelCompare(left, right) {
+   });
+ }
+ 
+-function voiceGender(option) {
+-  const voiceText = `${option.gender || ""} ${option.name || ""} ${option.label || ""}`;
+-  const voiceLanguage = String(option.language || "").toLowerCase();
+-  if (/\bneutral\b|\bnon[-\s]?binary\b|\bandrogynous\b/i.test(voiceText)) return "neutral";
+-  if (voiceLanguage === "es-es" || /\bmale\b|\bman\b|\bdavid\b|\bmark\b/i.test(voiceText)) return "male";
+-  if (/\bfemale\b|\bwoman\b|\bzira\b/i.test(voiceText)) return "female";
+-  return "unknown";
+-}
+-
+ function genderFilterLabel(value) {
+   if (value === "male-preferred") return "Male";
+   if (value === "female-preferred") return "Female";
+@@ -364,24 +211,6 @@ function ageFilterLabel(value) {
+   return "Any";
+ }
+ 
+-function voicesForGender(voiceOptions, genderFilter) {
+-  if (genderFilter === "male-preferred") return voiceOptions.filter((option) => voiceGender(option) === "male");
+-  if (genderFilter === "female-preferred") return voiceOptions.filter((option) => voiceGender(option) === "female");
+-  if (genderFilter === "neutral") return voiceOptions.filter((option) => ["neutral", "unknown"].includes(voiceGender(option)));
+-  return voiceOptions;
+-}
+-
+-function languageOptionsFromVoices(voiceOptions) {
+-  const languageCounts = new Map();
+-  voiceOptions.forEach((option) => {
+-    const language = String(option.language || "").trim();
+-    if (language) languageCounts.set(language, (languageCounts.get(language) || 0) + 1);
+-  });
+-  return Array.from(languageCounts.entries())
+-    .map(([language, count]) => ({ label: `${language} (${count} ${count === 1 ? "voice" : "voices"})`, value: language }))
+-    .sort(optionLabelCompare);
+-}
+-
+ function shapedSliderValue(value, input) {
+   const min = Number(input?.min || 0);
+   const max = Number(input?.max || 1);
+@@ -501,7 +330,7 @@ function initializeTextToSpeechTool(root = document, {
+ 
+   function uniqueItemId(baseName) {
+     const ids = new Set(state.queue.map((item) => item.id));
+-    const baseId = slugFromName(baseName);
++    const baseId = textToSpeechSlugFromName(baseName);
+     if (!ids.has(baseId)) return baseId;
+     for (let index = 2; index < 1000; index += 1) {
+       const candidate = `${baseId}-${index}`;
+@@ -575,7 +404,7 @@ function initializeTextToSpeechTool(root = document, {
+ 
+   function syncRange(input, output, kind) {
+     if (!input) return;
+-    input.value = shapedSliderValue(boundedNumber(input.value, RANGE_LIMITS[kind]), input);
++    input.value = shapedSliderValue(boundedTextToSpeechNumber(input.value, kind), input);
+     if (output) output.textContent = input.value;
+   }
+ 
+@@ -645,8 +474,8 @@ function initializeTextToSpeechTool(root = document, {
+     const previousLanguage = controls.languageSelect?.value || TEXT_TO_SPEECH_DEFAULTS.language;
+     const previousVoice = selectedVoice === undefined ? controls.voiceSelect?.value || "" : selectedVoice;
+     state.voiceOptions = engine.voiceOptions();
+-    state.filteredVoiceOptions = voicesForGender(state.voiceOptions, controls.genderFilter?.value || "any");
+-    const voiceLanguageOptions = languageOptionsFromVoices(state.filteredVoiceOptions);
++    state.filteredVoiceOptions = textToSpeechVoicesForGender(state.voiceOptions, controls.genderFilter?.value || "any");
++    const voiceLanguageOptions = textToSpeechLanguageOptionsFromVoices(state.filteredVoiceOptions);
+     const languageOptions = voiceLanguageOptions.length ? voiceLanguageOptions : TEXT_TO_SPEECH_LANGUAGE_OPTIONS;
+     let selectedLanguage = previousLanguage;
+     if (!languageOptions.some((option) => option.value === selectedLanguage)) {
+@@ -682,18 +511,20 @@ function initializeTextToSpeechTool(root = document, {
+ 
+   function applyPresetDerivedSliders({ resetOverrides = false } = {}) {
+     if (resetOverrides) state.sliderOverrides = { pitch: false, rate: false, volume: false };
+-    const characterPreset = TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS[controls.characterPreset?.value] || TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS.manual;
+-    const voiceAgePreset = TEXT_TO_SPEECH_VOICE_AGE_PRESET_DEFAULTS[controls.ageFilter?.value] || TEXT_TO_SPEECH_VOICE_AGE_PRESET_DEFAULTS.any;
+-    const ssmlPreset = TEXT_TO_SPEECH_SSML_LIKE_PRESET_DEFAULTS[controls.ssmlPreset?.value] || TEXT_TO_SPEECH_SSML_LIKE_PRESET_DEFAULTS.normal;
+-    if (controls.volumeInput && !state.sliderOverrides.volume) {
+-      controls.volumeInput.value = shapedSliderValue(Number(characterPreset.volume) * Number(ssmlPreset.volumeMultiplier), controls.volumeInput);
+-    }
+-    if (controls.rateInput && !state.sliderOverrides.rate) {
+-      controls.rateInput.value = shapedSliderValue(Number(characterPreset.rate) * Number(voiceAgePreset.rateMultiplier) * Number(ssmlPreset.rateMultiplier), controls.rateInput);
+-    }
+-    if (controls.pitchInput && !state.sliderOverrides.pitch) {
+-      controls.pitchInput.value = shapedSliderValue(Number(characterPreset.pitch) + Number(voiceAgePreset.pitchOffset) + Number(ssmlPreset.pitchOffset), controls.pitchInput);
+-    }
++    const resolved = resolveTextToSpeechDeliveryOptions({
 +      characterPreset: controls.characterPreset?.value,
-+      gender: controls.genderFilter?.value,
-+      id: overrides.id || selectedItem()?.id || uniqueItemId(itemName || "Browser Preview"),
-+      language: controls.languageSelect?.value,
-+      name: itemName || overrides.fallbackName || selectedItem()?.name || "Browser Preview",
++      manualPitch: state.sliderOverrides.pitch,
++      manualRate: state.sliderOverrides.rate,
++      manualVolume: state.sliderOverrides.volume,
 +      pitch: controls.pitchInput?.value,
 +      rate: controls.rateInput?.value,
 +      ssmlLikePreset: controls.ssmlPreset?.value,
-+      text: controls.textInput?.value,
-+      voice: controls.voiceSelect?.value,
 +      voiceAge: controls.ageFilter?.value,
 +      volume: controls.volumeInput?.value,
 +    });
-+  }
-+
-+  function renderSummary() {
-+    setTextContent(root, "[data-tts-queue-count]", String(state.queue.length));
-+    if (controls.outputSummary) {
-+      controls.outputSummary.textContent = JSON.stringify(state.queue, null, 2);
-+    }
-+  }
-+
-+  function renderQueue() {
-+    if (!controls.queueList) return;
-+    controls.queueList.replaceChildren();
-+    if (state.queue.length === 0) {
-+      const empty = document.createElement("p");
-+      empty.className = "field-hint";
-+      empty.textContent = "No named sentences.";
-+      controls.queueList.append(empty);
-+      renderSummary();
-+      return;
-+    }
-+    state.queue.forEach((item) => {
-+      const button = document.createElement("button");
-+      button.type = "button";
-+      button.className = "btn";
-+      button.dataset.ttsQueueItemId = item.id;
-+      button.setAttribute("role", "option");
-+      button.setAttribute("aria-selected", String(item.id === state.selectedId));
-+      button.textContent = `${item.name} - ${queueItemMeta(item)}`;
-+      controls.queueList.append(button);
-+    });
-+    renderSummary();
++    if (controls.volumeInput) controls.volumeInput.value = shapedSliderValue(resolved.volume, controls.volumeInput);
++    if (controls.rateInput) controls.rateInput.value = shapedSliderValue(resolved.rate, controls.rateInput);
++    if (controls.pitchInput) controls.pitchInput.value = shapedSliderValue(resolved.pitch, controls.pitchInput);
+     syncRanges();
    }
- 
-   function refreshActionState() {
--    const hasText = Boolean(String(textInput?.value || "").trim());
--    const hasVoice = Boolean(voiceSelect?.value);
-+    const hasText = Boolean(String(controls.textInput?.value || "").trim());
-+    const hasVoice = Boolean(controls.voiceSelect?.value);
-     const supported = engine.isSupported();
--    if (speakButton) speakButton.disabled = !(supported && hasText && hasVoice);
--    if (stopButton) stopButton.disabled = !supported;
--    setTextContent(root, "[data-tts-text-count]", String(String(textInput?.value || "").length));
--  }
--
--  function refreshVoices({ preserveSelection = true } = {}) {
--    const previousVoice = voiceSelect?.value || "";
--    voiceOptions = engine.voiceOptions();
--    if (voiceSelect) {
--      renderVoiceOptions(voiceSelect, voiceOptions);
--      if (preserveSelection && voiceOptions.some((option) => option.value === previousVoice)) {
--        voiceSelect.value = previousVoice;
--      }
-+    const canPreview = supported && hasText && hasVoice;
-+    if (controls.speakButton) controls.speakButton.disabled = !canPreview;
-+    if (controls.pauseButton) controls.pauseButton.disabled = !(canPreview && engine.canPause());
-+    if (controls.resumeButton) controls.resumeButton.disabled = !(canPreview && engine.canResume());
-+    if (controls.stopButton) controls.stopButton.disabled = !supported;
-+    if (controls.duplicateButton) controls.duplicateButton.disabled = !selectedItem();
-+    if (controls.deleteButton) controls.deleteButton.disabled = !selectedItem();
-+    setTextContent(root, "[data-tts-text-count]", String(String(controls.textInput?.value || "").length));
-+  }
-+
-+  function syncRange(input, output, kind) {
-+    if (!input) return;
-+    input.value = shapedSliderValue(boundedNumber(input.value, RANGE_LIMITS[kind]), input);
-+    if (output) output.textContent = input.value;
-+  }
-+
-+  function syncRanges() {
-+    syncRange(controls.rateInput, controls.rateValue, "rate");
-+    syncRange(controls.pitchInput, controls.pitchValue, "pitch");
-+    syncRange(controls.volumeInput, controls.volumeValue, "volume");
-+  }
-+
-+  function markWorkspaceDirty(reason, changedKeys) {
-+    if (!isProjectWorkspaceLaunch(windowRef)) return;
-+    const rawToolState = windowRef.sessionStorage?.getItem(WORKSPACE_TOOL_STATE_KEY);
-+    if (!rawToolState) {
-+      writeStatus(root, `Project Workspace dirty state skipped: missing ${WORKSPACE_TOOL_STATE_KEY}.`, "error");
-+      return;
-+    }
-+    try {
-+      const toolState = JSON.parse(rawToolState);
-+      windowRef.sessionStorage.setItem(WORKSPACE_TOOL_STATE_KEY, JSON.stringify({
-+        ...toolState,
-+        data: state.queue,
-+        dirty: {
-+          isDirty: true,
-+          reason,
-+          changedAt: new Date().toISOString(),
-+          changedKeys,
-+        },
-+      }));
-+      writeStatus(root, `Project Workspace dirty state: true; reason=${reason}; queue=${state.queue.length}.`, "ready");
-+    } catch (error) {
-+      writeStatus(root, `Project Workspace dirty state failed: ${error.message}`, "error");
-+    }
-+  }
-+
-+  function syncSelectedItem(reason = "settings-updated", changedKeys = ["speechOptions"]) {
-+    const item = selectedItem();
-+    if (!item) {
-+      renderSummary();
-+      refreshActionState();
-+      return;
-+    }
-+    const nextItem = currentControlsItem({ id: item.id, name: controls.nameInput?.value || item.name });
-+    const index = state.queue.findIndex((entry) => entry.id === item.id);
-+    if (index >= 0) {
-+      state.queue[index] = nextItem;
-+      state.selectedId = nextItem.id;
-+      renderQueue();
-+      markWorkspaceDirty(reason, changedKeys);
-     }
--    setTextContent(root, "[data-tts-voice-count]", String(voiceOptions.length));
--    setTextContent(root, "[data-tts-voice-details]", voiceOptions.length
--      ? `${voiceOptions.length} browser voice${voiceOptions.length === 1 ? "" : "s"} available.`
--      : "No browser voices are currently available.");
-     refreshActionState();
-   }
- 
--  function markUnavailable() {
--    setTextContent(root, "[data-tts-engine-label]", "Unavailable");
--    setTextContent(root, "[data-tts-engine-status]", "SpeechSynthesis is unavailable in this browser. Use a browser with Web Speech API support.");
--    setStatus(root, "SpeechSynthesis is unavailable in this browser. Use a browser with Web Speech API support.", "error");
--    if (voiceSelect) {
--      voiceSelect.disabled = true;
--      renderVoiceOptions(voiceSelect, []);
-+  function voiceDetailsText() {
-+    if (state.voiceOptions.length === 0) return "No SpeechSynthesis voices loaded.";
-+    if (state.filteredVoiceOptions.length === 0) {
-+      return `0 voices match ${genderFilterLabel(controls.genderFilter?.value)}.\n${state.voiceOptions.length} total voices loaded.`;
-+    }
-+    if (state.matchingVoiceOptions.length === 0) {
-+      return `0 voices match ${genderFilterLabel(controls.genderFilter?.value)} for ${controls.languageSelect?.value || "selected language"}.`;
-     }
--    if (speakButton) speakButton.disabled = true;
--    if (stopButton) stopButton.disabled = true;
-+    return `${state.matchingVoiceOptions.length} voices match ${genderFilterLabel(controls.genderFilter?.value)}:\n${state.matchingVoiceOptions
-+      .map((option) => `- ${option.language || "unknown"}: ${option.name || option.label}`)
-+      .join("\n")}`;
-   }
- 
--  syncRange(rateInput, "[data-tts-rate-value]", "rate");
--  syncRange(pitchInput, "[data-tts-pitch-value]", "pitch");
--  syncRange(volumeInput, "[data-tts-volume-value]", "volume");
-+  function refreshVoices({ selectedVoice = undefined, source = "initial" } = {}) {
-+    const previousLanguage = controls.languageSelect?.value || TEXT_TO_SPEECH_DEFAULTS.language;
-+    const previousVoice = selectedVoice === undefined ? controls.voiceSelect?.value || "" : selectedVoice;
-+    state.voiceOptions = engine.voiceOptions();
-+    state.filteredVoiceOptions = voicesForGender(state.voiceOptions, controls.genderFilter?.value || "any");
-+    const voiceLanguageOptions = languageOptionsFromVoices(state.filteredVoiceOptions);
-+    const languageOptions = voiceLanguageOptions.length ? voiceLanguageOptions : TEXT_TO_SPEECH_LANGUAGE_OPTIONS;
-+    let selectedLanguage = previousLanguage;
-+    if (!languageOptions.some((option) => option.value === selectedLanguage)) {
-+      selectedLanguage = languageOptions.some((option) => option.value === TEXT_TO_SPEECH_DEFAULTS.language)
-+        ? TEXT_TO_SPEECH_DEFAULTS.language
-+        : languageOptions[0]?.value || "";
-+    }
-+    populateSelect(controls.languageSelect, languageOptions, selectedLanguage);
-+    if (controls.languageSelect) controls.languageSelect.value = selectedLanguage;
- 
--  if (!engine.isSupported()) {
--    markUnavailable();
--    return { engine, speechSupported: false, voiceOptions };
-+    state.matchingVoiceOptions = state.filteredVoiceOptions
-+      .filter((option) => option.language === selectedLanguage)
-+      .sort(optionLabelCompare);
-+    if (state.voiceOptions.length === 0) {
-+      populateSelect(controls.voiceSelect, [{ label: "No SpeechSynthesis voices available", value: "" }], "");
-+    } else if (state.matchingVoiceOptions.length === 0) {
-+      populateSelect(controls.voiceSelect, [{ label: `No ${genderFilterLabel(controls.genderFilter?.value)} voices for ${selectedLanguage}`, value: "" }], "");
-+    } else {
-+      const selected = state.matchingVoiceOptions.some((option) => option.value === previousVoice)
-+        ? previousVoice
-+        : state.matchingVoiceOptions[0].value;
-+      populateSelect(controls.voiceSelect, state.matchingVoiceOptions, selected);
-+      if (controls.voiceSelect) controls.voiceSelect.value = selected;
-+    }
-+    setTextContent(root, "[data-tts-voice-count]", String(state.voiceOptions.length));
-+    setTextContent(root, "[data-tts-voice-details]", voiceDetailsText());
-+    if (source !== "initial") {
-+      writeStatus(root, `Voice filter updated: gender=${genderFilterLabel(controls.genderFilter?.value)}; language=${controls.languageSelect?.value || "(none)"}; voices=${state.matchingVoiceOptions.length}.`, state.matchingVoiceOptions.length ? "ready" : "error");
-+    }
-+    syncSelectedItem("voice-filter-updated", ["voice", "language", "gender"]);
-+    refreshActionState();
-   }
- 
--  setTextContent(root, "[data-tts-engine-label]", "Ready");
--  setTextContent(root, "[data-tts-engine-status]", "Browser SpeechSynthesis is available for local preview.");
--  setStatus(root, "Browser Text To Speech ready. Enter text, choose a voice, then press Speak / Preview.", "ready");
--  refreshVoices({ preserveSelection: false });
--  engine.onVoicesChanged(() => {
--    refreshVoices();
--  });
-+  function applyPresetDerivedSliders({ resetOverrides = false } = {}) {
-+    if (resetOverrides) state.sliderOverrides = { pitch: false, rate: false, volume: false };
-+    const characterPreset = TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS[controls.characterPreset?.value] || TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS.manual;
-+    const voiceAgePreset = TEXT_TO_SPEECH_VOICE_AGE_PRESET_DEFAULTS[controls.ageFilter?.value] || TEXT_TO_SPEECH_VOICE_AGE_PRESET_DEFAULTS.any;
-+    const ssmlPreset = TEXT_TO_SPEECH_SSML_LIKE_PRESET_DEFAULTS[controls.ssmlPreset?.value] || TEXT_TO_SPEECH_SSML_LIKE_PRESET_DEFAULTS.normal;
-+    if (controls.volumeInput && !state.sliderOverrides.volume) {
-+      controls.volumeInput.value = shapedSliderValue(Number(characterPreset.volume) * Number(ssmlPreset.volumeMultiplier), controls.volumeInput);
-+    }
-+    if (controls.rateInput && !state.sliderOverrides.rate) {
-+      controls.rateInput.value = shapedSliderValue(Number(characterPreset.rate) * Number(voiceAgePreset.rateMultiplier) * Number(ssmlPreset.rateMultiplier), controls.rateInput);
-+    }
-+    if (controls.pitchInput && !state.sliderOverrides.pitch) {
-+      controls.pitchInput.value = shapedSliderValue(Number(characterPreset.pitch) + Number(voiceAgePreset.pitchOffset) + Number(ssmlPreset.pitchOffset), controls.pitchInput);
-+    }
-+    syncRanges();
-+  }
-+
-+  function applyQueueItem(item, source = "queue-item-selected") {
-+    if (!item) return;
-+    state.selectedId = item.id;
-+    if (controls.nameInput) controls.nameInput.value = item.name;
-+    if (controls.textInput) controls.textInput.value = item.text;
-+    if (controls.genderFilter) controls.genderFilter.value = item.gender === "any" ? "any" : item.gender;
-+    if (controls.ageFilter) controls.ageFilter.value = item.voiceAge;
-+    if (controls.characterPreset) controls.characterPreset.value = item.characterPreset;
-+    if (controls.ssmlPreset) controls.ssmlPreset.value = item.ssmlLikePreset;
-+    if (controls.volumeInput) controls.volumeInput.value = String(item.volume);
-+    if (controls.rateInput) controls.rateInput.value = String(item.rate);
-+    if (controls.pitchInput) controls.pitchInput.value = String(item.pitch);
-+    syncRanges();
-+    refreshVoices({ selectedVoice: item.voice, source });
-+    renderQueue();
-+    refreshActionState();
-+  }
-+
-+  function replaceQueue(nextQueue, source = "queue-loaded") {
-+    state.queue = nextQueue.map((item) => createSpeechQueueItem(item));
-+    state.selectedId = state.queue[0]?.id || "";
-+    if (state.queue.length > 0) {
-+      applyQueueItem(state.queue[0], source);
-+    } else {
-+      renderQueue();
-+      refreshActionState();
-+    }
-+  }
-+
-+  function addSpeechItem() {
-+    const requestedName = String(controls.nameInput?.value || "").trim();
-+    if (!requestedName) {
-+      writeStatus(root, "Add blocked: Name is required before creating a named sentence.", "error");
-+      return;
-+    }
-+    const name = uniqueItemName(requestedName);
-+    const item = currentControlsItem({ fallbackName: name, id: uniqueItemId(name), name });
-+    state.queue.push(item);
-+    applyQueueItem(item, "queue-item-added");
-+    markWorkspaceDirty("speech-item-added", [`queue.${item.id}`]);
-+    writeStatus(root, `Added speech item: ${item.name}.`, "ready");
-+  }
-+
-+  function duplicateSpeechItem() {
-+    const item = selectedItem();
-+    if (!item) {
-+      writeStatus(root, "Duplicate failed: no named sentence is selected.", "error");
-+      return;
-+    }
-+    const syncedItem = currentControlsItem({ id: item.id, name: item.name });
-+    const name = uniqueItemName(`${syncedItem.name} copy`);
-+    const duplicate = createSpeechQueueItem({ ...syncedItem, id: uniqueItemId(name), name });
-+    state.queue.push(duplicate);
-+    applyQueueItem(duplicate, "queue-item-duplicated");
-+    markWorkspaceDirty("speech-item-duplicated", [`queue.${duplicate.id}`]);
-+    writeStatus(root, `Duplicated speech item: ${duplicate.name}.`, "ready");
-+  }
- 
--  [rateInput, pitchInput, volumeInput].forEach((input) => {
--    input?.addEventListener("input", () => {
--      const kind = input === rateInput ? "rate" : input === pitchInput ? "pitch" : "volume";
--      syncRange(input, `[data-tts-${kind}-value]`, kind);
-+  function deleteSpeechItem() {
-+    const item = selectedItem();
-+    if (!item) {
-+      writeStatus(root, "Delete failed: no named sentence is selected.", "error");
-+      return;
-+    }
-+    const index = state.queue.findIndex((entry) => entry.id === item.id);
-+    state.queue.splice(index, 1);
-+    const nextItem = state.queue[Math.min(index, state.queue.length - 1)] || null;
-+    state.selectedId = nextItem?.id || "";
-+    if (nextItem) {
-+      applyQueueItem(nextItem, "queue-item-deleted");
-+    } else {
-+      if (controls.nameInput) controls.nameInput.value = "";
-+      renderQueue();
-+      renderSummary();
-       refreshActionState();
-+    }
-+    markWorkspaceDirty("speech-item-deleted", ["queue"]);
-+    writeStatus(root, `Deleted speech item: ${item.name}.`, "ready");
-+  }
-+
-+  function collectSpeechRequest() {
-+    const currentItem = selectedItem();
-+    return createSpeechPreviewRequest({
-+      ...currentControlsItem({
-+        fallbackName: currentItem?.name || "Browser Preview",
-+        id: currentItem?.id || "browser-preview",
-+        name: currentItem?.name || "Browser Preview",
-+      }),
-+      speechItemId: currentItem?.id || "browser-preview",
-+      speechItemName: currentItem?.name || "Browser Preview",
-+      voiceOptions: state.voiceOptions,
-     });
--  });
--  textInput?.addEventListener("input", refreshActionState);
--  voiceSelect?.addEventListener("change", refreshActionState);
-+  }
- 
--  speakButton?.addEventListener("click", () => {
--    const request = collectSpeechRequest(root, voiceOptions);
-+  function speak() {
-+    const request = collectSpeechRequest();
-     if (!request.ok) {
--      setStatus(root, request.message, "error");
-+      writeStatus(root, request.message, "error");
-       refreshActionState();
-       return;
-     }
-     const result = engine.speak(request);
-     if (!result.ok) {
--      setStatus(root, result.message, "error");
-+      writeStatus(root, result.message, "error");
-       refreshActionState();
-       return;
-     }
--    setStatus(root, `Speech queued with ${result.voiceName}; rate=${result.rate}; pitch=${result.pitch}; volume=${result.volume}.`, "ready");
--    refreshActionState();
--  });
-+    writeStatus(root, `Speech queued: ${result.speechItemName}; ${result.language}; voice=${result.voiceName}; rate=${result.rate}; pitch=${result.pitch}; volume=${result.volume}; queuedItems=${result.queuedSpeechItems.length}.`, "ready");
-+    syncSelectedItem("speech-previewed", ["speech"]);
-+  }
-+
-+  function pause() {
-+    const result = engine.pause();
-+    if (!result.ok) {
-+      writeStatus(root, result.message, "error");
-+      return;
-+    }
-+    writeStatus(root, "Speech paused.", "ready");
-+  }
-+
-+  function resume() {
-+    const result = engine.resume();
-+    if (!result.ok) {
-+      writeStatus(root, result.message, "error");
-+      return;
-+    }
-+    writeStatus(root, "Speech resumed.", "ready");
-+  }
- 
--  stopButton?.addEventListener("click", () => {
-+  function stop() {
-     const result = engine.stop();
-     if (!result.ok) {
--      setStatus(root, result.message, "error");
-+      writeStatus(root, result.message, "error");
-+      return;
-+    }
-+    writeStatus(root, `Speech queue stopped: ${result.stoppedCount} queued item${result.stoppedCount === 1 ? "" : "s"} cleared.`, "ready");
-+  }
-+
-+  async function importJson(file) {
-+    if (!file) {
-+      writeStatus(root, "Import JSON blocked: choose a JSON file first.", "error");
-+      return;
-+    }
-+    try {
-+      const parsed = JSON.parse(await readFileText(file, { windowRef }));
-+      const normalized = normalizeSpeechPayload(parsed);
-+      if (!normalized.ok) {
-+        writeStatus(root, `Import JSON blocked: ${normalized.message}`, "error");
-+        return;
-+      }
-+      replaceQueue(normalized.payload, "json-imported");
-+      writeStatus(root, `Imported ${normalized.payload.length} Text To Speech item${normalized.payload.length === 1 ? "" : "s"} from ${file.name || "selected JSON file"}.`, "ready");
-+    } catch (error) {
-+      writeStatus(root, `Import JSON failed: ${error.message}`, "error");
-+    }
-+  }
-+
-+  async function copyJson() {
-+    if (!windowRef.navigator?.clipboard || typeof windowRef.navigator.clipboard.writeText !== "function") {
-+      writeStatus(root, "Copy JSON failed: Clipboard API is unavailable.", "error");
-       return;
-     }
--    setStatus(root, `Speech stopped. Cleared ${result.stoppedCount} queued item${result.stoppedCount === 1 ? "" : "s"}.`, "ready");
-+    try {
-+      await windowRef.navigator.clipboard.writeText(JSON.stringify(state.queue, null, 2));
-+      writeStatus(root, `Copied Text To Speech JSON root array to clipboard (${state.queue.length} item${state.queue.length === 1 ? "" : "s"}).`, "ready");
-+    } catch (error) {
-+      writeStatus(root, `Copy JSON failed: ${error.message}`, "error");
-+    }
-+  }
-+
-+  function exportJson() {
-+    const didExport = downloadTextFile(`${JSON.stringify(state.queue, null, 2)}\n`, "text-to-speech-v2.json", {
-+      appendToBody: true,
-+      documentRef: root,
-+      windowRef,
-+    });
-+    writeStatus(root, didExport
-+      ? `Exported Text To Speech JSON root array (${state.queue.length} item${state.queue.length === 1 ? "" : "s"}).`
-+      : "Export JSON failed: browser download APIs are unavailable.", didExport ? "ready" : "error");
-+  }
-+
-+  async function loadQueueFromUrlSource(sourcePath) {
-+    if (typeof windowRef.fetch !== "function") {
-+      writeStatus(root, "URL JSON source failed: Fetch API is unavailable.", "error");
-+      return false;
-+    }
-+    try {
-+      const response = await windowRef.fetch(sourcePath, { cache: "no-store" });
-+      if (!response.ok) {
-+        writeStatus(root, `URL JSON source ${sourcePath} failed: ${response.status}.`, "error");
-+        return false;
-+      }
-+      const normalized = normalizeSpeechPayload(await response.json());
-+      if (!normalized.ok) {
-+        writeStatus(root, `URL JSON source blocked: ${normalized.message}`, "error");
-+        return false;
-+      }
-+      replaceQueue(normalized.payload, "url-json-loaded");
-+      writeStatus(root, `Loaded preset for Text To Speech: ${sourcePath}.`, "ready");
-+      return true;
-+    } catch (error) {
-+      writeStatus(root, `URL JSON source ${sourcePath} failed: ${error.message}`, "error");
-+      return false;
-+    }
-+  }
-+
-+  function loadWorkspaceQueue() {
-+    const rawToolState = windowRef.sessionStorage?.getItem(WORKSPACE_TOOL_STATE_KEY);
-+    if (!rawToolState) {
-+      writeStatus(root, `Project Workspace launch missing ${WORKSPACE_TOOL_STATE_KEY}; queue cannot render.`, "error");
-+      return false;
-+    }
-+    try {
-+      const toolState = JSON.parse(rawToolState);
-+      if (!Object.prototype.hasOwnProperty.call(toolState, "data") || toolState.data === null) {
-+        writeStatus(root, "Project Workspace launch has no Text To Speech payload.", "ready");
-+        return false;
-+      }
-+      const normalized = normalizeSpeechPayload(toolState.data);
-+      if (!normalized.ok) {
-+        writeStatus(root, `Project Workspace payload blocked: ${normalized.message}`, "error");
-+        return false;
-+      }
-+      replaceQueue(normalized.payload, "workspace-loaded");
-+      writeStatus(root, `Loaded ${normalized.payload.length} Project Workspace Text To Speech item${normalized.payload.length === 1 ? "" : "s"}.`, "ready");
-+      return true;
-+    } catch (error) {
-+      writeStatus(root, `${WORKSPACE_TOOL_STATE_KEY} is invalid JSON: ${error.message}`, "error");
-+      return false;
-+    }
-+  }
-+
-+  async function loadInitialQueue() {
-+    const params = new URLSearchParams(windowRef.location?.search || "");
-+    if (isProjectWorkspaceLaunch(windowRef) && loadWorkspaceQueue()) return;
-+    const samplePresetPath = String(params.get(URL_SOURCE_PARAM) || "").trim();
-+    if (samplePresetPath && await loadQueueFromUrlSource(samplePresetPath)) return;
-+    renderQueue();
-+    writeStatus(root, "Text To Speech empty state: add a named sentence or preview the current text directly.", "ready");
-+  }
-+
-+  function markUnavailable() {
-+    setTextContent(root, "[data-tts-engine-label]", "Unavailable");
-+    setTextContent(root, "[data-tts-engine-status]", "SpeechSynthesis is unavailable in this browser. Use a browser with Web Speech API support.");
-+    writeStatus(root, "SpeechSynthesis is unavailable in this browser. Use a browser with Web Speech API support.", "error");
-+    populateSelect(controls.voiceSelect, [{ label: "No browser voices available", value: "" }], "");
-+    if (controls.voiceSelect) controls.voiceSelect.disabled = true;
-     refreshActionState();
--  });
-+  }
-+
-+  function bindEvents() {
-+    controls.queueList?.addEventListener("click", (event) => {
-+      const tile = event.target.closest("[data-tts-queue-item-id]");
-+      if (!tile) return;
-+      const item = state.queue.find((entry) => entry.id === tile.dataset.ttsQueueItemId);
-+      if (item) applyQueueItem(item, "queue-item-selected");
-+    });
-+    controls.addButton?.addEventListener("click", addSpeechItem);
-+    controls.duplicateButton?.addEventListener("click", duplicateSpeechItem);
-+    controls.deleteButton?.addEventListener("click", deleteSpeechItem);
-+    controls.speakButton?.addEventListener("click", speak);
-+    controls.pauseButton?.addEventListener("click", pause);
-+    controls.resumeButton?.addEventListener("click", resume);
-+    controls.stopButton?.addEventListener("click", stop);
-+    controls.importJsonButton?.addEventListener("click", () => controls.importJsonInput?.click());
-+    controls.importJsonInput?.addEventListener("change", () => {
-+      const file = controls.importJsonInput?.files?.[0] || null;
-+      void importJson(file);
-+      if (controls.importJsonInput) controls.importJsonInput.value = "";
-+    });
-+    controls.copyJsonButton?.addEventListener("click", () => {
-+      void copyJson();
-+    });
-+    controls.exportJsonButton?.addEventListener("click", exportJson);
-+    controls.clearStatusButton?.addEventListener("click", () => {
-+      if (controls.statusLog) controls.statusLog.value = "";
-+    });
-+    controls.returnWorkspaceButton?.addEventListener("click", () => {
-+      windowRef.location.href = workspaceReturnUrl(windowRef);
-+    });
-+    controls.nameInput?.addEventListener("input", () => syncSelectedItem("speech-item-renamed", ["name"]));
-+    controls.textInput?.addEventListener("input", () => syncSelectedItem("text-updated", ["text"]));
-+    controls.genderFilter?.addEventListener("change", () => refreshVoices({ source: "gender-changed" }));
-+    controls.languageSelect?.addEventListener("change", () => refreshVoices({ source: "language-changed", selectedVoice: controls.voiceSelect?.value || "" }));
-+    controls.voiceSelect?.addEventListener("change", () => syncSelectedItem("voice-updated", ["voice"]));
-+    controls.ageFilter?.addEventListener("change", () => {
-+      applyPresetDerivedSliders();
-+      writeStatus(root, `Voice Age shaping applied: ${ageFilterLabel(controls.ageFilter?.value)}; rate=${controls.rateInput?.value}; pitch=${controls.pitchInput?.value}.`, "ready");
-+      syncSelectedItem("age-updated", ["voiceAge", "rate", "pitch"]);
-+    });
-+    controls.characterPreset?.addEventListener("change", () => {
-+      const preset = TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS[controls.characterPreset?.value];
-+      if (preset?.ssmlLikePreset && controls.ssmlPreset) controls.ssmlPreset.value = preset.ssmlLikePreset;
-+      applyPresetDerivedSliders({ resetOverrides: true });
-+      syncSelectedItem("character-preset-updated", ["characterPreset", "ssmlLikePreset", "rate", "pitch", "volume"]);
-+    });
-+    controls.ssmlPreset?.addEventListener("change", () => {
-+      applyPresetDerivedSliders({ resetOverrides: true });
-+      writeStatus(root, `SSML-like preset applied: ${controls.ssmlPreset?.value}; rate=${controls.rateInput?.value}; pitch=${controls.pitchInput?.value}; volume=${controls.volumeInput?.value}.`, "ready");
-+      syncSelectedItem("ssml-preset-updated", ["ssmlLikePreset", "rate", "pitch", "volume"]);
-+    });
-+    [
-+      { input: controls.pitchInput, key: "pitch", output: controls.pitchValue },
-+      { input: controls.rateInput, key: "rate", output: controls.rateValue },
-+      { input: controls.volumeInput, key: "volume", output: controls.volumeValue },
-+    ].forEach(({ input, key, output }) => {
-+      input?.addEventListener("input", () => {
-+        state.sliderOverrides[key] = true;
-+        syncRange(input, output, key);
-+        syncSelectedItem(`${key}-updated`, [key]);
-+      });
-+    });
-+  }
-+
-+  populateSelect(controls.genderFilter, TEXT_TO_SPEECH_GENDER_FILTER_OPTIONS, TEXT_TO_SPEECH_DEFAULTS.gender);
-+  populateSelect(controls.ageFilter, TEXT_TO_SPEECH_AGE_FILTER_OPTIONS, TEXT_TO_SPEECH_DEFAULTS.voiceAge);
-+  populateSelect(controls.characterPreset, TEXT_TO_SPEECH_CHARACTER_PRESET_OPTIONS, TEXT_TO_SPEECH_DEFAULTS.characterPreset);
-+  populateSelect(controls.ssmlPreset, TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS, TEXT_TO_SPEECH_DEFAULTS.ssmlLikePreset);
-+  populateSelect(controls.languageSelect, TEXT_TO_SPEECH_LANGUAGE_OPTIONS, TEXT_TO_SPEECH_DEFAULTS.language);
-+  syncRanges();
-+  bindEvents();
-+
-+  if (isProjectWorkspaceLaunch(windowRef)) {
-+    if (controls.jsonActions) controls.jsonActions.hidden = true;
-+    if (controls.returnWorkspaceButton) controls.returnWorkspaceButton.hidden = false;
-+  }
- 
--  return { engine, speechSupported: true, voiceOptions };
-+  if (!engine.isSupported()) {
-+    markUnavailable();
-+    void loadInitialQueue().finally(() => {
-+      markUnavailable();
-+    });
-+    return { controls, engine, speechSupported: false, state };
-+  }
-+
-+  setTextContent(root, "[data-tts-engine-label]", "Ready");
-+  setTextContent(root, "[data-tts-engine-status]", "Browser SpeechSynthesis is available for local preview.");
-+  refreshVoices({ source: "initial" });
-+  engine.onVoicesChanged(() => {
-+    refreshVoices({ source: "voiceschanged" });
-+  });
-+  void loadInitialQueue();
-+  refreshActionState();
-+  return { controls, engine, speechSupported: true, state };
- }
- 
- if (typeof document !== "undefined") {
-@@ -322,14 +1048,18 @@ if (typeof document !== "undefined") {
- }
- 
- export {
-+  TTS_ARCHIVED_FEATURE_INVENTORY,
-   TTS_LANGUAGES,
-   TTS_MESSAGE_STATUSES,
-   TTS_OWNERSHIP,
-   TTS_PROVIDER_ADAPTER_PLAN,
-   createEmotionProfile,
-   createSpeechPreviewRequest,
-+  createSpeechQueueItem,
-   createTtsMessage,
-   createVoiceProfile,
-   initializeTextToSpeechTool,
-+  normalizeSpeechPayload,
-   previewTtsMessage,
-+  validateSpeechPayload,
- };
-diff --git a/docs_build/dev/reports/PR_26171_039-text2speech-archived-feature-parity.md b/docs_build/dev/reports/PR_26171_039-text2speech-archived-feature-parity.md
+diff --git a/docs_build/dev/reports/PR_26171_041-text2speech-engine-audio-foundation.md b/docs_build/dev/reports/PR_26171_041-text2speech-engine-audio-foundation.md
 new file mode 100644
-index 000000000..07db32694
+index 000000000..882e2fd49
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_039-text2speech-archived-feature-parity.md
-@@ -0,0 +1,20 @@
-+# PR_26171_039 Text To Speech Archived Feature Parity
++++ b/docs_build/dev/reports/PR_26171_041-text2speech-engine-audio-foundation.md
+@@ -0,0 +1,26 @@
++# PR_26171_041 Text To Speech Engine Audio Foundation
 +
 +## Purpose
-+- Rebuilt the current `toolbox/text-to-speech/` implementation toward feature parity with `archive/v1-v2/tools/old_text2speech-V2`.
-+- Used the archived tool as a required feature sample only; no legacy architecture was copied.
++- Rebuilt the Text To Speech foundation so reusable speech behavior lives under `src/engine/audio/`.
++- Kept `toolbox/text-to-speech/` focused on Creator-facing UI orchestration.
++- Preserved the old Text To Speech V2 feature surface from `archive/v1-v2/tools/old_text2speech-V2`.
 +
 +## Implementation
-+- Added named sentence queue editing with Name, Add, Duplicate, Delete, selectable queue rows, and JSON output summary.
-+- Added JSON Import, Copy JSON, and Export JSON workflows for schema-shaped Text To Speech payload arrays.
-+- Restored old speech controls beyond PR_037: Gender helper filter, Language filter, Voice selection/details, Voice Age, Character Preset, SSML-like Preset, rate, pitch, volume, Speak, Pause, Resume, and Stop.
-+- Added URL JSON sample loading via `samplePresetPath` and Project Workspace session payload loading through the old workspace tool state key.
-+- Kept Web Speech API preview as the local functional engine and kept future paid providers as planning-only metadata.
-+- Preserved Theme V2, external JavaScript, and active path `toolbox/text-to-speech/`.
++- Extended `src/engine/audio/TextToSpeechEngine.js` with reusable helpers for:
++  - queue item creation
++  - payload validation and normalization
++  - browser speak request creation
++  - preset delivery resolution
++  - voice gender inference
++  - language option extraction
++  - voice filtering
++- Kept `TextToSpeechEngine` as the Web Speech API wrapper for speak, stop, pause, resume, queued item tracking, voice lookup, and unavailable-engine errors.
++- Updated `toolbox/text-to-speech/text2speech.js` to consume engine-owned helpers instead of owning reusable speech behavior locally.
++- Added targeted engine/audio unit validation for the reusable engine and defaults baseline.
 +
 +## Scope Notes
-+- No database tables were added.
++- No fake generation was added.
 +- No external paid provider integration was added.
-+- No fake audio generation was added.
-+- No inline script blocks, style blocks, inline styles, or inline event handlers were added.
-+- Confirmed `tools/text2speech/` is absent.
-diff --git a/docs_build/dev/reports/PR_26171_039-text2speech-manual-validation.md b/docs_build/dev/reports/PR_26171_039-text2speech-manual-validation.md
++- No database tables were added.
++- No inline scripts, style blocks, inline styles, inline event handlers, page-local CSS, or tool-local CSS were added.
++- The incorrect `tools/text2speech/` path remains absent.
+diff --git a/docs_build/dev/reports/PR_26171_041-text2speech-engine-audio-ownership-checklist.md b/docs_build/dev/reports/PR_26171_041-text2speech-engine-audio-ownership-checklist.md
 new file mode 100644
-index 000000000..6ffe4d4a4
+index 000000000..ff3897123
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_039-text2speech-manual-validation.md
++++ b/docs_build/dev/reports/PR_26171_041-text2speech-engine-audio-ownership-checklist.md
 @@ -0,0 +1,15 @@
-+# PR_26171_039 Manual Validation Notes
++# PR_26171_041 Engine Audio Ownership Checklist
++
++| Ownership requirement | Result | Notes |
++| --- | --- | --- |
++| `src/engine/audio` owns reusable TextToSpeechEngine | PASS | `TextToSpeechEngine` remains in `src/engine/audio/TextToSpeechEngine.js`. |
++| `src/engine/audio` owns defaults/options baseline | PASS | `TextToSpeechDefaults.js` remains the defaults/options source. |
++| Engine is usable by games later | PASS | Reusable helpers are exported from engine module and tested without toolbox DOM. |
++| Tool consumes engine audio module | PASS | `toolbox/text-to-speech/text2speech.js` imports engine helpers and class. |
++| Tool owns Creator-facing UI only | PASS | UI keeps DOM controls, status rendering, file actions, and workspace launch orchestration. |
++| Queue payload behavior is reusable | PASS | Queue item creation, validation, and normalization are engine exports. |
++| Preset behavior is reusable | PASS | Delivery option resolver is an engine export. |
++| Voice filtering behavior is reusable | PASS | Voice gender inference, language options, and gender filtering are engine exports. |
++| Browser Web Speech API is the local engine | PASS | Engine uses `speechSynthesis` and `SpeechSynthesisUtterance`. |
++| No silent fallback | PASS | Missing support returns visible/actionable failure objects consumed by UI. |
++| No fake generation | PASS | No generated audio file path or fake provider result is produced. |
+diff --git a/docs_build/dev/reports/PR_26171_041-text2speech-manual-validation.md b/docs_build/dev/reports/PR_26171_041-text2speech-manual-validation.md
+new file mode 100644
+index 000000000..abd85a700
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26171_041-text2speech-manual-validation.md
+@@ -0,0 +1,13 @@
++# PR_26171_041 Manual Validation Notes
 +
 +## Manual Review
-+- Reviewed the active page and module under `toolbox/text-to-speech/`.
-+- Confirmed the archived implementation was used as a feature reference only.
-+- Confirmed Browser SpeechSynthesis preview remains the functional local engine.
-+- Confirmed named sentence queue workflows exist for Add, Duplicate, Delete, queue selection, and JSON output summary.
-+- Confirmed JSON Import, Copy JSON, and Export JSON workflows are present.
-+- Confirmed Gender, Language, Voice, Voice Age, Character Preset, SSML-like Preset, Volume, Rate, and Pitch controls are present.
-+- Confirmed Speak, Pause, Resume, and Stop are wired through the engine/browser speech path.
-+- Confirmed unavailable speech synthesis shows a visible actionable error.
-+- Confirmed the incorrect `tools/text2speech/` path is absent.
++- Reviewed `src/engine/audio/TextToSpeechDefaults.js` as the defaults/options baseline.
++- Reviewed `src/engine/audio/TextToSpeechEngine.js` as the reusable game/runtime engine owner.
++- Reviewed `toolbox/text-to-speech/text2speech.js` to confirm the tool consumes engine-owned helpers.
++- Confirmed the Creator-facing tool still exposes language, gender, age, voice age presets, character presets, SSML-like presets, pitch, rate, volume, voice selection, queue, output summary, status log, Speak, Stop, Pause, and Resume.
++- Confirmed browser Web Speech API remains the functional local engine.
++- Confirmed missing SpeechSynthesis produces visible actionable errors.
++- Confirmed no provider-not-implemented blocker, fake generation, database table, or incorrect `tools/text2speech/` path was added.
 +
 +## Environment Note
-+Audio behavior was validated in Playwright with a Web Speech API stub that records `speak`, `pause`, `resume`, and `cancel` calls. Physical speaker playback was not audited in this headless validation environment.
-diff --git a/docs_build/dev/reports/PR_26171_039-text2speech-old-feature-inventory.md b/docs_build/dev/reports/PR_26171_039-text2speech-old-feature-inventory.md
++Audio output was validated through unit stubs and Playwright Web Speech API stubs that record `speak`, `pause`, `resume`, and `cancel`. Physical speaker playback was not audited in this headless validation environment.
+diff --git a/docs_build/dev/reports/PR_26171_041-text2speech-old-feature-parity-checklist.md b/docs_build/dev/reports/PR_26171_041-text2speech-old-feature-parity-checklist.md
 new file mode 100644
-index 000000000..e85ddb532
+index 000000000..9113f3bed
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_039-text2speech-old-feature-inventory.md
-@@ -0,0 +1,34 @@
-+# PR_26171_039 Old Feature Inventory Checklist
++++ b/docs_build/dev/reports/PR_26171_041-text2speech-old-feature-parity-checklist.md
+@@ -0,0 +1,24 @@
++# PR_26171_041 Old TTS Feature Parity Checklist
 +
-+| Archived user-facing feature | Current parity result | Current implementation |
++| Old Text To Speech V2 feature | Result | Current ownership |
 +| --- | --- | --- |
-+| Browser speech synthesis tool page | PASS | Active Theme V2 page at `toolbox/text-to-speech/index.html`. |
-+| Import JSON | PASS | `data-tts-import-json` file input workflow validates root-array named sentence payloads. |
-+| Copy JSON | PASS | `data-tts-copy-json` writes the current queue JSON to Clipboard API. |
-+| Export JSON | PASS | `data-tts-export-json` downloads `text-to-speech-v2.json`. |
-+| Project Workspace return launch | PASS | Workspace launch hides standalone JSON actions and shows Return to Project Workspace. |
-+| Workspace session payload loading | PASS | Loads `workspace.tools.text2speech-V2` session payloads when launched from Project Workspace. |
-+| URL sample JSON loading | PASS | Supports `samplePresetPath` URL JSON payload source. |
-+| Name field | PASS | `data-tts-name-input`. |
-+| Add named sentence | PASS | `data-tts-add-item`. |
-+| Duplicate named sentence | PASS | `data-tts-duplicate-item`. |
-+| Delete named sentence | PASS | `data-tts-delete-item`. |
-+| Editable text to speak | PASS | `data-tts-text-input`. |
-+| Gender helper filter | PASS | `data-tts-gender-filter`; helper filter only, no voice transformation. |
-+| Language filter | PASS | `data-tts-language-select` populated from matching browser voices. |
-+| Browser voice selection | PASS | `data-tts-voice-select`. |
-+| Voice details | PASS | `data-tts-voice-details`. |
-+| Voice age shaping | PASS | `data-tts-age-filter` applies rate/pitch shaping. |
-+| Character preset shaping | PASS | `data-tts-character-preset` applies preset defaults. |
-+| SSML-like preset shaping | PASS | `data-tts-ssml-preset` applies rate/pitch/volume shaping without SSML provider output. |
-+| Volume slider and value | PASS | `data-tts-volume` / `data-tts-volume-value`. |
-+| Rate slider and value | PASS | `data-tts-rate` / `data-tts-rate-value`. |
-+| Pitch slider and value | PASS | `data-tts-pitch` / `data-tts-pitch-value`. |
-+| Speak playback | PASS | Calls `TextToSpeechEngine.speak()` and Web Speech API `speechSynthesis.speak`. |
-+| Pause playback | PASS | Calls `TextToSpeechEngine.pause()` when browser support exists. |
-+| Resume playback | PASS | Calls `TextToSpeechEngine.resume()` when browser support exists. |
-+| Stop playback | PASS | Calls `TextToSpeechEngine.stop()` and Web Speech API `speechSynthesis.cancel`. |
-+| Named sentence queue | PASS | `data-tts-queue-list`. |
-+| Output summary | PASS | `data-tts-output-summary` renders JSON array. |
-+| Status log and Clear | PASS | `data-tts-status-log` and `data-tts-clear-status`. |
-+| Unavailable SpeechSynthesis error | PASS | Visible status and engine status show Web Speech API support requirement. |
-diff --git a/docs_build/dev/reports/PR_26171_039-text2speech-requirements.md b/docs_build/dev/reports/PR_26171_039-text2speech-requirements.md
++| Language options | PASS | Defaults in `src/engine/audio/TextToSpeechDefaults.js`; UI select in toolbox. |
++| Gender helper filter | PASS | Reusable voice filter helper in engine; UI select in toolbox. |
++| Age filter | PASS | Defaults in engine defaults; UI select in toolbox. |
++| Voice age presets | PASS | Delivery resolver in engine. |
++| Character presets | PASS | Defaults and delivery resolver in engine. |
++| SSML-like presets | PASS | Defaults and delivery resolver in engine. |
++| Pitch | PASS | Engine request clamping and UI slider/value. |
++| Rate | PASS | Engine request clamping and UI slider/value. |
++| Volume | PASS | Engine request clamping and UI slider/value. |
++| Voice selection | PASS | Engine voice options/lookup; UI select. |
++| Queue | PASS | Engine queue item creation/validation; UI queue controls. |
++| Output summary | PASS | UI renders engine-normalized payload JSON. |
++| Status log | PASS | UI status log reflects engine/tool actions. |
++| Speak | PASS | Engine `speak()` calls browser SpeechSynthesis. |
++| Stop | PASS | Engine `stop()` calls browser cancel and clears queue. |
++| Pause | PASS | Engine `pause()` uses browser support when available. |
++| Resume | PASS | Engine `resume()` uses browser support when available. |
++| Unavailable engine error | PASS | Engine and UI return visible actionable Web Speech API errors. |
++| JSON import/copy/export | PASS | UI workflow uses engine payload validation/normalization. |
++| No provider blocker | PASS | Browser Web Speech API is the implemented local engine. |
+diff --git a/docs_build/dev/reports/PR_26171_041-text2speech-validation.md b/docs_build/dev/reports/PR_26171_041-text2speech-validation.md
 new file mode 100644
-index 000000000..8071688f4
+index 000000000..0925058cd
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_039-text2speech-requirements.md
-@@ -0,0 +1,19 @@
-+# PR_26171_039 Requirement Checklist
-+
-+| Requirement | Result | Notes |
-+| --- | --- | --- |
-+| Inventory every user-facing archive feature | PASS | See old-feature inventory checklist report. |
-+| Implement equivalent current-version feature in `toolbox/text-to-speech/` | PASS | Added parity workflows to the active current tool. |
-+| Restore engine/browser TTS behavior | PASS | Web Speech API path remains functional through `TextToSpeechEngine`. |
-+| Keep Web Speech API preview functional | PASS | Targeted Playwright confirms `speechSynthesis.speak` is called. |
-+| Keep voice selection functional | PASS | Voice select is populated, filtered, and used for playback. |
-+| Keep rate, pitch, and volume functional with visible values | PASS | Sliders update visible outputs and playback request values. |
-+| Add missing old-tool controls/workflows beyond PR_037 | PASS | Added JSON workflows, queue editing, filters, presets, Pause/Resume, summary, and status log. |
-+| Remove placeholder-only provider-blocking behavior | PASS | Browser speech is implemented locally; paid providers remain planning-only. |
-+| Keep archive as feature reference, not copied legacy architecture | PASS | Current module uses Theme V2/current page structure and local helpers. |
-+| Confirm no incorrect `tools/text2speech` path remains | PASS | `Test-Path tools\text2speech` returned `False`. |
-+| JavaScript external only | PASS | Active page references external scripts only. |
-+| No inline styles/style blocks/inline handlers | PASS | Targeted static validation passed. |
-+| No fake generation | PASS | Browser playback only; no fake generated audio file. |
-+| No database tables | PASS | No schema/database files changed. |
-+| No external paid provider integration | PASS | No provider implementation added. |
-diff --git a/docs_build/dev/reports/PR_26171_039-text2speech-validation.md b/docs_build/dev/reports/PR_26171_039-text2speech-validation.md
-new file mode 100644
-index 000000000..65050b4f2
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_039-text2speech-validation.md
-@@ -0,0 +1,32 @@
-+# PR_26171_039 Validation Report
++++ b/docs_build/dev/reports/PR_26171_041-text2speech-validation.md
+@@ -0,0 +1,27 @@
++# PR_26171_041 Validation Report
 +
 +## Commands
++- `node --test tests\engine\audio\TextToSpeechEngine.test.mjs` - PASS
 +- `node --test tests\tools\Text2SpeechShell.test.mjs` - PASS
 +- `npx playwright test tests/playwright/tools/TextToSpeechFunctional.spec.mjs --project=playwright --workers=1 --reporter=list` - PASS
-+- Targeted static Text To Speech validation script - PASS
++- Targeted static Text To Speech engine/tool validation script - PASS
 +- `git diff --check` - PASS
 +- `npm run test:workspace-v2` - FAIL
 +
 +## Targeted Coverage
-+- Page loads from `toolbox/text-to-speech/index.html`.
-+- Text input works.
-+- Voice select renders available voices and unavailable empty state.
-+- Gender and language filters affect the voice list.
-+- Voice age, character preset, and SSML-like preset controls are present and update payload settings.
-+- Rate, pitch, and volume controls update visible values.
-+- Add, Duplicate, and Delete update the named sentence queue.
-+- Output summary renders the schema-shaped JSON payload.
-+- Copy JSON writes the current queue payload to Clipboard API.
-+- Speak calls browser TTS path when available.
-+- Pause and Resume call browser speech controls when available.
-+- Stop cancels speech.
-+- Unavailable speech engine shows visible actionable error.
-+- No inline scripts, style blocks, inline styles, or inline event handlers were detected.
++- Engine support detection, voice options, voice lookup, speak, stop, pause, resume, queue tracking, and unavailable errors.
++- Engine defaults baseline for language, gender, age, character presets, SSML-like presets, pitch, rate, and volume.
++- Engine-owned queue payload creation, validation, and normalization.
++- Engine-owned delivery preset resolution and voice filtering helpers.
++- Tool page loads and consumes `src/engine/audio/TextToSpeechEngine.js`.
++- Tool supports text entry, voice selection, gender/language filters, age/character/SSML-like presets, queue workflows, output summary, status log, Copy JSON, Speak, Pause, Resume, Stop, and unavailable-engine error.
++- Static validation confirms no inline script blocks, style blocks, inline styles, or inline event handlers.
 +- `tools/text2speech/` is absent.
 +
 +## Project Workspace Command Note
 +`npm run test:workspace-v2` is the legacy command name for Project Workspace validation. It ran and failed in broad `tests/playwright/tools/RootToolsFutureState.spec.mjs` checks:
-+- `root tools surface links current tool pages without old_* routes`: expected `Tool Count: 14/43`, received `Tool Count: 14/42`.
-+- `common header renders primary navigation order across active pages`: existing generic `Studio` text assertion found `Studio` after replacing `GameFoundryStudio` and `Game Foundry Studio`.
++- Root tools list had zero `[data-tools-accordion-list] .control-card` entries.
++- Common header test did not find `header.site-header` on one page.
++- Learn/tool-template/representative active tool tests reported failed requests to `http://127.0.0.1:5501/api/...`.
 +
-+The targeted Text To Speech unit, static, and Playwright validations passed.
++The targeted Text To Speech engine and tool validations passed.
+diff --git a/tests/engine/audio/TextToSpeechEngine.test.mjs b/tests/engine/audio/TextToSpeechEngine.test.mjs
+new file mode 100644
+index 000000000..daed3d2d2
+--- /dev/null
++++ b/tests/engine/audio/TextToSpeechEngine.test.mjs
+@@ -0,0 +1,209 @@
++import assert from "node:assert/strict";
++import test from "node:test";
++
++import {
++  TextToSpeechEngine,
++  createTextToSpeechQueueItem,
++  createTextToSpeechSpeakRequest,
++  normalizeTextToSpeechPayload,
++  resolveTextToSpeechDeliveryOptions,
++  textToSpeechLanguageOptionsFromVoices,
++  textToSpeechPayloadGenderValue,
++  textToSpeechVoicesForGender,
++  validateTextToSpeechPayload,
++} from "../../../src/engine/audio/TextToSpeechEngine.js";
++import {
++  TEXT_TO_SPEECH_CHARACTER_PRESET_OPTIONS,
++  TEXT_TO_SPEECH_DEFAULTS,
++  TEXT_TO_SPEECH_LANGUAGE_OPTIONS,
++  TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS,
++} from "../../../src/engine/audio/TextToSpeechDefaults.js";
++
++class FakeUtterance {
++  constructor(text = "") {
++    this.text = text;
++  }
++}
++
++function createSpeechSynthesisStub({ includePauseResume = true } = {}) {
++  const calls = [];
++  const voices = [
++    { lang: "en-US", name: "David Arcade Voice", voiceURI: "arcade-voice-uri" },
++    { lang: "en-GB", name: "Zira Narrator Voice", voiceURI: "narrator-voice-uri" },
++  ];
++  return {
++    calls,
++    speechSynthesisRef: {
++      addEventListener(type, callback) {
++        calls.push({ callback: typeof callback, type });
++      },
++      cancel() {
++        calls.push({ type: "cancel" });
++      },
++      getVoices() {
++        return voices;
++      },
++      pause: includePauseResume ? () => {
++        calls.push({ type: "pause" });
++      } : undefined,
++      removeEventListener(type) {
++        calls.push({ type: `remove:${type}` });
++      },
++      resume: includePauseResume ? () => {
++        calls.push({ type: "resume" });
++      } : undefined,
++      speak(utterance) {
++        calls.push({
++          lang: utterance.lang,
++          pitch: utterance.pitch,
++          rate: utterance.rate,
++          text: utterance.text,
++          type: "speak",
++          voiceName: utterance.voice?.name || "",
++          volume: utterance.volume,
++        });
++      },
++    },
++    voices,
++  };
++}
++
++test("TextToSpeech defaults expose old baseline options", () => {
++  assert.deepEqual(TEXT_TO_SPEECH_DEFAULTS, {
++    characterPreset: "manual",
++    gender: "any",
++    language: "en-US",
++    pitch: 1,
++    rate: 1,
++    ssmlLikePreset: "normal",
++    voice: "",
++    voiceAge: "any",
++    volume: 1,
++  });
++  assert.ok(TEXT_TO_SPEECH_LANGUAGE_OPTIONS.some((option) => option.value === "en-US"));
++  assert.ok(TEXT_TO_SPEECH_CHARACTER_PRESET_OPTIONS.some((option) => option.value === "dnd-dungeon-master"));
++  assert.ok(TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS.some((option) => option.value === "whisper-ish"));
++});
++
++test("TextToSpeechEngine wraps browser SpeechSynthesis for games and tools", () => {
++  const { calls, speechSynthesisRef } = createSpeechSynthesisStub();
++  const engine = new TextToSpeechEngine({ speechSynthesisRef, utteranceCtor: FakeUtterance });
++
++  assert.equal(engine.isSupported(), true);
++  assert.equal(engine.canPause(), true);
++  assert.equal(engine.canResume(), true);
++  assert.equal(engine.voiceOptions().length, 2);
++  assert.equal(engine.voiceForValue("arcade-voice-uri").name, "David Arcade Voice");
++
++  const result = engine.speak({
++    language: "en-US",
++    pitch: 0,
++    rate: 9,
++    speechItemId: "intro",
++    speechItemName: "Intro",
++    text: "Welcome, creator.",
++    voice: "arcade-voice-uri",
++    volume: 2,
++  });
++
++  assert.equal(result.ok, true);
++  assert.equal(result.pitch, 0.1);
++  assert.equal(result.rate, 2);
++  assert.equal(result.volume, 1);
++  assert.equal(result.voiceName, "David Arcade Voice");
++  assert.deepEqual(calls.at(-1), {
++    lang: "en-US",
++    pitch: 0.1,
++    rate: 2,
++    text: "Welcome, creator.",
++    type: "speak",
++    voiceName: "David Arcade Voice",
++    volume: 1,
++  });
++
++  assert.equal(engine.pause().ok, true);
++  assert.equal(calls.at(-1).type, "pause");
++  assert.equal(engine.resume().ok, true);
++  assert.equal(calls.at(-1).type, "resume");
++  assert.equal(engine.stop().stoppedCount, 1);
++  assert.equal(calls.at(-1).type, "cancel");
++  assert.equal(engine.queuedSpeechItemList().length, 0);
++});
++
++test("TextToSpeechEngine reports actionable unsupported browser errors", () => {
++  const engine = new TextToSpeechEngine({ speechSynthesisRef: null, utteranceCtor: null });
++
++  assert.equal(engine.isSupported(), false);
++  assert.match(engine.speak({ text: "Hello", voice: "voice" }).message, /SpeechSynthesis is unavailable/);
++  assert.match(engine.pause().message, /pause is unavailable/);
++  assert.match(engine.resume().message, /resume is unavailable/);
++  assert.match(engine.stop().message, /SpeechSynthesis is unavailable/);
++});
++
++test("TextToSpeech engine helpers normalize payloads, presets, and voice filters", () => {
++  const voiceOptions = [
++    { language: "en-US", label: "David Arcade Voice (en-US)", name: "David Arcade Voice", value: "arcade-voice-uri" },
++    { language: "en-GB", label: "Zira Narrator Voice (en-GB)", name: "Zira Narrator Voice", value: "narrator-voice-uri" },
++  ];
++  const item = createTextToSpeechQueueItem({
++    gender: "neutral",
++    name: "Battle Call",
++    pitch: 9,
++    rate: 0,
++    ssmlLikePreset: "slow",
++    text: "Launch the next wave.",
++    voice: "arcade-voice-uri",
++    voiceAge: "child",
++    volume: 2,
++  });
++
++  assert.equal(textToSpeechPayloadGenderValue("neutral"), "any");
++  assert.equal(item.id, "battle-call");
++  assert.equal(item.gender, "any");
++  assert.equal(item.pitch, 2);
++  assert.equal(item.rate, 0.1);
++  assert.equal(item.volume, 1);
++  assert.equal(validateTextToSpeechPayload([item]).ok, true);
++  assert.equal(validateTextToSpeechPayload([{ name: "Missing fields" }]).ok, false);
++  assert.equal(normalizeTextToSpeechPayload([item]).payload[0].name, "Battle Call");
++
++  const resolved = resolveTextToSpeechDeliveryOptions({
++    characterPreset: "robot",
++    ssmlLikePreset: "slow",
++    voiceAge: "child",
++  });
++  assert.equal(resolved.characterPreset, "robot");
++  assert.equal(resolved.ssmlLikePreset, "slow");
++  assert.equal(resolved.voiceAge, "child");
++  assert.equal(resolved.pitch, 1.1);
++  assert.ok(Math.abs(resolved.rate - 0.77625) < Number.EPSILON);
++  assert.equal(resolved.volume, 0.95);
++
++  assert.deepEqual(textToSpeechLanguageOptionsFromVoices(voiceOptions).map((option) => option.value), ["en-GB", "en-US"]);
++  assert.deepEqual(textToSpeechVoicesForGender(voiceOptions, "male-preferred").map((option) => option.value), ["arcade-voice-uri"]);
++  assert.deepEqual(textToSpeechVoicesForGender(voiceOptions, "female-preferred").map((option) => option.value), ["narrator-voice-uri"]);
++
++  assert.deepEqual(createTextToSpeechSpeakRequest({
++    pitch: 9,
++    rate: 0,
++    text: "Launch",
++    voice: "arcade-voice-uri",
++    voiceOptions,
++    volume: 2,
++  }), {
++    characterPreset: "manual",
++    gender: "any",
++    language: "en-US",
++    ok: true,
++    pitch: 2,
++    rate: 0.1,
++    speechItemId: "browser-preview",
++    speechItemName: "Browser Preview",
++    ssmlLikePreset: "normal",
++    text: "Launch",
++    voice: "arcade-voice-uri",
++    voiceAge: "any",
++    voiceName: "David Arcade Voice",
++    volume: 1,
++  });
++});

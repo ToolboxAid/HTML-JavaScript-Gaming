@@ -1,24 +1,22 @@
 # git status --short
-M tests/playwright/tools/TextToSpeechFunctional.spec.mjs
- M tests/tools/Text2SpeechShell.test.mjs
- M toolbox/text-to-speech/index.html
+M src/engine/audio/TextToSpeechEngine.js
  M toolbox/text-to-speech/text2speech.js
-?? docs_build/dev/reports/PR_26171_039-text2speech-archived-feature-parity.md
-?? docs_build/dev/reports/PR_26171_039-text2speech-manual-validation.md
-?? docs_build/dev/reports/PR_26171_039-text2speech-old-feature-inventory.md
-?? docs_build/dev/reports/PR_26171_039-text2speech-requirements.md
-?? docs_build/dev/reports/PR_26171_039-text2speech-validation.md
+?? docs_build/dev/reports/PR_26171_041-text2speech-engine-audio-foundation.md
+?? docs_build/dev/reports/PR_26171_041-text2speech-engine-audio-ownership-checklist.md
+?? docs_build/dev/reports/PR_26171_041-text2speech-manual-validation.md
+?? docs_build/dev/reports/PR_26171_041-text2speech-old-feature-parity-checklist.md
+?? docs_build/dev/reports/PR_26171_041-text2speech-validation.md
+?? tests/engine/audio/
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26171_039-text2speech-archived-feature-parity.md
-docs_build/dev/reports/PR_26171_039-text2speech-manual-validation.md
-docs_build/dev/reports/PR_26171_039-text2speech-old-feature-inventory.md
-docs_build/dev/reports/PR_26171_039-text2speech-requirements.md
-docs_build/dev/reports/PR_26171_039-text2speech-validation.md
+docs_build/dev/reports/PR_26171_041-text2speech-engine-audio-foundation.md
+docs_build/dev/reports/PR_26171_041-text2speech-engine-audio-ownership-checklist.md
+docs_build/dev/reports/PR_26171_041-text2speech-manual-validation.md
+docs_build/dev/reports/PR_26171_041-text2speech-old-feature-parity-checklist.md
+docs_build/dev/reports/PR_26171_041-text2speech-validation.md
+tests/engine/audio/TextToSpeechEngine.test.mjs
 
 # git diff --stat
-.../tools/TextToSpeechFunctional.spec.mjs          |  76 +-
- tests/tools/Text2SpeechShell.test.mjs              |  53 ++
- toolbox/text-to-speech/index.html                  |  75 +-
- toolbox/text-to-speech/text2speech.js              | 972 ++++++++++++++++++---
- 4 files changed, 1040 insertions(+), 136 deletions(-)
+src/engine/audio/TextToSpeechEngine.js | 264 ++++++++++++++++++++++++++++++++-
+ toolbox/text-to-speech/text2speech.js  | 239 +++++------------------------
+ 2 files changed, 297 insertions(+), 206 deletions(-)
