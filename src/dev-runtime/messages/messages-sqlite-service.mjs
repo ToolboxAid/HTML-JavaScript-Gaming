@@ -26,6 +26,28 @@ const SEED_EMOTION_PROFILES = Object.freeze([
   Object.freeze({ description: "Soft delivery for loss, regret, or reflective moments.", name: "Sad", pauseAfterMs: 220, pauseBeforeMs: 100, pitch: 0.9, rate: 0.85, volume: 0.8 }),
   Object.freeze({ description: "Measured delivery for suspense, hidden lore, or strange events.", name: "Mysterious", pauseAfterMs: 260, pauseBeforeMs: 120, pitch: 0.92, rate: 0.88, volume: 0.85 }),
 ]);
+const SEED_TTS_PROFILES = Object.freeze([
+  Object.freeze({
+    description: "Default browser speech configuration reserved for future preview and playback.",
+    language: "en-US",
+    name: "Browser Speech Default",
+    pitch: 1,
+    providerKey: "browser-speech",
+    rate: 1,
+    voiceName: "",
+    volume: 1,
+  }),
+  Object.freeze({
+    description: "Narration-focused preview configuration for future spoken story text.",
+    language: "en-US",
+    name: "Narration Preview",
+    pitch: 0.95,
+    providerKey: "browser-speech",
+    rate: 0.9,
+    voiceName: "",
+    volume: 0.9,
+  }),
+]);
 
 function encodeUlidPart(value, length) {
   let remaining = BigInt(value);
@@ -160,6 +182,26 @@ function emotionProfileFromRow(row, usage = {}) {
   };
 }
 
+function ttsProfileFromRow(row) {
+  return {
+    active: activeFromDatabase(row.active),
+    createdAt: row.createdAt,
+    createdBy: row.createdBy,
+    description: row.description || "",
+    key: row.key,
+    language: row.language,
+    name: row.name,
+    pitch: Number(row.pitch),
+    providerKey: row.providerKey,
+    rate: Number(row.rate),
+    status: activeFromDatabase(row.active) ? "Active" : "Inactive",
+    updatedAt: row.updatedAt,
+    updatedBy: row.updatedBy,
+    voiceName: row.voiceName || "",
+    volume: Number(row.volume),
+  };
+}
+
 function messageSegmentFromRow(row) {
   return {
     active: activeFromDatabase(row.active),
@@ -260,6 +302,23 @@ export class MessagesSqliteService {
         updatedBy TEXT NOT NULL
       );
 
+      CREATE TABLE IF NOT EXISTS messages_tts_profiles (
+        key TEXT PRIMARY KEY,
+        name TEXT NOT NULL UNIQUE,
+        description TEXT NOT NULL DEFAULT '',
+        providerKey TEXT NOT NULL,
+        voiceName TEXT NOT NULL DEFAULT '',
+        language TEXT NOT NULL,
+        volume REAL NOT NULL DEFAULT 1,
+        pitch REAL NOT NULL DEFAULT 1,
+        rate REAL NOT NULL DEFAULT 1,
+        active INTEGER NOT NULL DEFAULT 1,
+        createdAt TEXT NOT NULL,
+        updatedAt TEXT NOT NULL,
+        createdBy TEXT NOT NULL,
+        updatedBy TEXT NOT NULL
+      );
+
       CREATE TABLE IF NOT EXISTS messages_segments (
         key TEXT PRIMARY KEY,
         messageKey TEXT NOT NULL REFERENCES messages_records(key),
@@ -282,6 +341,9 @@ export class MessagesSqliteService {
       CREATE INDEX IF NOT EXISTS idx_messages_segments_order ON messages_segments (messageKey, displayOrder);
       CREATE INDEX IF NOT EXISTS idx_messages_segments_createdby ON messages_segments (createdBy);
       CREATE INDEX IF NOT EXISTS idx_messages_segments_updatedby ON messages_segments (updatedBy);
+      CREATE INDEX IF NOT EXISTS idx_messages_tts_profiles_provider ON messages_tts_profiles (providerKey);
+      CREATE INDEX IF NOT EXISTS idx_messages_tts_profiles_createdby ON messages_tts_profiles (createdBy);
+      CREATE INDEX IF NOT EXISTS idx_messages_tts_profiles_updatedby ON messages_tts_profiles (updatedBy);
     `);
   }
 
@@ -301,6 +363,17 @@ export class MessagesSqliteService {
       const existing = this.findEmotionProfileByName(profile.name);
       if (!existing) {
         this.insertEmotionProfile({
+          ...profile,
+          active: true,
+          actorKey: SEED_DB_KEYS.users.forgeBot,
+        });
+      }
+    });
+
+    SEED_TTS_PROFILES.forEach((profile) => {
+      const existing = this.findTtsProfileByName(profile.name);
+      if (!existing) {
+        this.insertTtsProfile({
           ...profile,
           active: true,
           actorKey: SEED_DB_KEYS.users.forgeBot,
@@ -517,6 +590,117 @@ export class MessagesSqliteService {
       key,
     );
     return this.getEmotionProfile(key);
+  }
+
+  listTtsProfiles() {
+    return this.db().prepare(`
+      SELECT * FROM messages_tts_profiles
+      ORDER BY name COLLATE NOCASE ASC
+    `).all().map(ttsProfileFromRow);
+  }
+
+  getTtsProfile(key) {
+    const row = this.db().prepare("SELECT * FROM messages_tts_profiles WHERE key = ?").get(key);
+    if (!row) {
+      throw httpError("TTS profile was not found.", 404);
+    }
+    return ttsProfileFromRow(row);
+  }
+
+  findTtsProfileByName(name) {
+    const normalized = normalizeText(name).trim();
+    if (!normalized) {
+      return null;
+    }
+    const row = this.db().prepare("SELECT * FROM messages_tts_profiles WHERE lower(name) = lower(?)").get(normalized);
+    return row ? ttsProfileFromRow(row) : null;
+  }
+
+  normalizeTtsProfileInput(input = {}, existing = null) {
+    const name = input.name === undefined && existing ? existing.name : normalizeName(input.name, "TTS profile name");
+    return {
+      active: normalizeActive(input.active, existing ? existing.active : true),
+      description: input.description === undefined && existing ? existing.description : normalizeText(input.description),
+      language: input.language === undefined && existing ? existing.language : normalizeName(input.language, "TTS profile language"),
+      name,
+      pitch: normalizeNumber(input.pitch, existing ? existing.pitch : 1),
+      providerKey: input.providerKey === undefined && existing ? existing.providerKey : normalizeName(input.providerKey, "TTS provider key"),
+      rate: normalizeNumber(input.rate, existing ? existing.rate : 1),
+      voiceName: input.voiceName === undefined && existing ? existing.voiceName : normalizeText(input.voiceName),
+      volume: normalizeNumber(input.volume, existing ? existing.volume : 1),
+    };
+  }
+
+  insertTtsProfile(input = {}) {
+    const values = this.normalizeTtsProfileInput(input);
+    const key = createUlid();
+    const now = timestamp();
+    const actor = normalizeActorKey(input.actorKey);
+    this.db().prepare(`
+      INSERT INTO messages_tts_profiles (
+        key, name, description, providerKey, voiceName, language, volume, pitch, rate,
+        active, createdAt, updatedAt, createdBy, updatedBy
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      key,
+      values.name,
+      values.description,
+      values.providerKey,
+      values.voiceName,
+      values.language,
+      values.volume,
+      values.pitch,
+      values.rate,
+      activeToDatabase(values.active),
+      now,
+      now,
+      actor,
+      actor,
+    );
+    return this.getTtsProfile(key);
+  }
+
+  createTtsProfile(input = {}, actorKey = "") {
+    const values = this.normalizeTtsProfileInput(input);
+    const existing = this.findTtsProfileByName(values.name);
+    if (existing) {
+      throw httpError(`TTS profile ${values.name} already exists.`);
+    }
+    return this.insertTtsProfile({
+      ...values,
+      actorKey,
+    });
+  }
+
+  updateTtsProfile(key, input = {}, actorKey = "") {
+    const existing = this.getTtsProfile(key);
+    const values = this.normalizeTtsProfileInput(input, existing);
+    const duplicate = this.findTtsProfileByName(values.name);
+    if (duplicate && duplicate.key !== key) {
+      throw httpError(`TTS profile ${values.name} already exists.`);
+    }
+    const now = timestamp();
+    this.db().prepare(`
+      UPDATE messages_tts_profiles
+      SET name = ?, description = ?, providerKey = ?, voiceName = ?, language = ?,
+        volume = ?, pitch = ?, rate = ?, active = ?, updatedAt = ?, updatedBy = ?
+      WHERE key = ?
+    `).run(
+      values.name,
+      values.description,
+      values.providerKey,
+      values.voiceName,
+      values.language,
+      values.volume,
+      values.pitch,
+      values.rate,
+      activeToDatabase(values.active),
+      now,
+      normalizeActorKey(actorKey),
+      key,
+    );
+    return this.getTtsProfile(key);
   }
 
   listMessages() {
@@ -838,6 +1022,33 @@ export function handleMessagesApiContract({
       return {
         category: service.updateCategory(key, body, actorKey),
         persistence: service.persistenceSummary(),
+      };
+    }
+  }
+
+  if (resource === "tts-profiles") {
+    if (normalizedMethod === "GET" && !key) {
+      return {
+        persistence: service.persistenceSummary(),
+        ttsProfiles: service.listTtsProfiles(),
+      };
+    }
+    if (normalizedMethod === "GET" && key) {
+      return {
+        persistence: service.persistenceSummary(),
+        ttsProfile: service.getTtsProfile(key),
+      };
+    }
+    if (normalizedMethod === "POST" && !key) {
+      return {
+        persistence: service.persistenceSummary(),
+        ttsProfile: service.createTtsProfile(body, actorKey),
+      };
+    }
+    if (normalizedMethod === "POST" && key) {
+      return {
+        persistence: service.persistenceSummary(),
+        ttsProfile: service.updateTtsProfile(key, body, actorKey),
       };
     }
   }

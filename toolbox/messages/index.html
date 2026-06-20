@@ -131,6 +131,81 @@
                                     </div>
                                 </div>
                             </details>
+                            <details class="vertical-accordion" open>
+                                <summary>TTS Profiles</summary>
+                                <div class="accordion-body content-stack">
+                                    <form class="content-stack" data-messages-tts-form>
+                                        <input type="hidden" data-messages-tts-key>
+                                        <div class="table-wrapper">
+                                            <table class="data-table tool-form-table" aria-label="TTS profile fields">
+                                                <tbody>
+                                                    <tr>
+                                                        <th scope="row"><label for="messagesTtsName">Name</label></th>
+                                                        <td><input id="messagesTtsName" type="text" data-messages-tts-name></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="messagesTtsDescription">Description</label></th>
+                                                        <td><textarea id="messagesTtsDescription" rows="3" data-messages-tts-description></textarea></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="messagesTtsProviderKey">Provider Key</label></th>
+                                                        <td><input id="messagesTtsProviderKey" type="text" data-messages-tts-provider-key></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="messagesTtsVoiceName">Voice Name</label></th>
+                                                        <td><input id="messagesTtsVoiceName" type="text" data-messages-tts-voice-name></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="messagesTtsLanguage">Language</label></th>
+                                                        <td><input id="messagesTtsLanguage" type="text" data-messages-tts-language></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="messagesTtsVolume">Volume</label></th>
+                                                        <td><input id="messagesTtsVolume" type="number" min="0" max="2" step="0.01" value="1" data-messages-tts-volume></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="messagesTtsPitch">Pitch</label></th>
+                                                        <td><input id="messagesTtsPitch" type="number" min="0.25" max="2" step="0.01" value="1" data-messages-tts-pitch></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="messagesTtsRate">Rate</label></th>
+                                                        <td><input id="messagesTtsRate" type="number" min="0.25" max="2" step="0.01" value="1" data-messages-tts-rate></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row">Status</th>
+                                                        <td>
+                                                            <label>
+                                                                <input type="checkbox" data-messages-tts-active checked>
+                                                                Active
+                                                            </label>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="action-group action-group--tight">
+                                            <button class="btn btn--compact" type="submit">Save TTS Profile</button>
+                                            <button class="btn btn--compact" type="button" data-messages-tts-cancel>New TTS Profile</button>
+                                        </div>
+                                    </form>
+                                    <div class="table-wrapper">
+                                        <table class="data-table" aria-label="TTS profiles">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Name</th>
+                                                    <th scope="col">Provider</th>
+                                                    <th scope="col">Language</th>
+                                                    <th scope="col">Status</th>
+                                                    <th scope="col">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody data-messages-tts-profiles>
+                                                <tr><td colspan="5">Loading TTS profiles.</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </details>
                         </div>
                     </aside>
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="messages" data-tool-icon-src="assets/theme-v2/images/badges/game-design.png" data-tool-character-src="assets/theme-v2/images/tools/game-design.png"></div>
@@ -141,6 +216,7 @@
                             <article class="mini-stat"><strong data-messages-count>0</strong>Messages</article>
                             <article class="mini-stat"><strong data-messages-category-count>0</strong>Categories</article>
                             <article class="mini-stat"><strong data-messages-emotion-count>0</strong>Emotion Profiles</article>
+                            <article class="mini-stat"><strong data-messages-tts-count>0</strong>TTS Profiles</article>
                         </div>
                         <article class="card">
                             <div class="card-body content-stack">
