@@ -1,131 +1,2785 @@
-﻿diff --git a/docs_build/dev/PROJECT_INSTRUCTIONS.md b/docs_build/dev/PROJECT_INSTRUCTIONS.md
-index 055919ceb..8ec5d3681 100644
---- a/docs_build/dev/PROJECT_INSTRUCTIONS.md
-+++ b/docs_build/dev/PROJECT_INSTRUCTIONS.md
-@@ -1890,3 +1890,46 @@ Rules:
- - Do not introduce new report/test prose that describes the current user-facing experience as `Workspace V2`.
- - Existing package scripts such as `npm run test:workspace-v2`, legacy lane identifiers, and historical test suite names may remain until renamed by a dedicated cleanup PR.
- - When a report invokes a legacy command name such as `npm run test:workspace-v2`, the report must explain that the command name is legacy and the user-facing product language is `Game Hub`.
+diff --git a/docs_build/dev/codex_commands.md b/docs_build/dev/codex_commands.md
+index 0aef4fcb8..b10ca5027 100644
+--- a/docs_build/dev/codex_commands.md
++++ b/docs_build/dev/codex_commands.md
+@@ -1,47 +1,23 @@
+ # Codex Commands
+
+-## PR
+-- `PR_26169_019-admin-health-operations`
+-
+-## Source Documents
+-- `docs_build/dev/PROJECT_INSTRUCTIONS.md`
+-- `docs_build/pr/PLAN_PR_26169_019-admin-health-operations.md`
+-- `docs_build/pr/BUILD_PR_26169_019-admin-health-operations.md`
+-
+-## Validation Commands
+-```bash
+-git branch --show-current
+-```
+-
+-```bash
+-node --check src/dev-runtime/server/local-api-router.mjs
+-node --check assets/theme-v2/js/admin-system-health.js
+-node --check tests/dev-runtime/AdminHealthOperations.test.mjs
+-node --check tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+-```
+-
+-```bash
+-node -e "<static HTML restriction check for admin/system-health.html>"
+-```
+-
+-```bash
+-node --test tests/dev-runtime/AdminHealthOperations.test.mjs
+-```
+-
+-```bash
+-npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+-```
+-
+-```bash
+-git diff --check -- <PR_26169_019 scoped file list>
+-```
+-
+-## Artifact Commands
+-```bash
+-python - <<'PY'
+-# Generate docs_build/dev/reports/codex_changed_files.txt
+-# Generate docs_build/dev/reports/codex_review.diff
+-# Create tmp/PR_26169_019-admin-health-operations_delta.zip
+-# Verify ZIP size and repo-relative paths
+-PY
+-```
++- Read skill: repo-build.
++- Read skill: github:yeet.
++- Read source of truth: docs_build/dev/PROJECT_INSTRUCTIONS.md.
++- Re-read original Idea Board request from prior conversation and docs_build/pr/BUILD_PR_26170_002-idea-board-tool.md.
++- Inspected toolbox/_tool_template-v2/index.html.
++- Inspected toolbox/idea-board/index.html and toolbox/idea-board/index.js.
++- Inspected tests/playwright/tools/IdeaBoardTableNotes.spec.mjs.
++- Inspected tests/playwright/tools/ToolboxRoutePages.spec.mjs.
++- Inspected tests/playwright/tools/RootToolsFutureState.spec.mjs.
++- git fetch origin main --prune.
++- git pull --ff-only origin main.
++- git switch -c codex/fix-idea-board-pr-workflow.
++- node --check toolbox/idea-board/index.js.
++- node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs.
++- node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs.
++- node --check tests/playwright/tools/RootToolsFutureState.spec.mjs.
++- Inline HTML guard for toolbox/idea-board/index.html.
++- npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line.
++- npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches".
++- npm run test:workspace-v2.
++- git diff --check.
+diff --git a/docs_build/dev/commit_comment.txt b/docs_build/dev/commit_comment.txt
+index 99a545830..82a8f44c3 100644
+--- a/docs_build/dev/commit_comment.txt
++++ b/docs_build/dev/commit_comment.txt
+@@ -1 +1,5 @@
+-Add browser-local Messages speech preview - PR_26171_010
++PR_26171_030 idea board workflow fix
 +
-+## CODEX GIT WORKFLOW OWNERSHIP
++- fix Idea Board selected-idea notes context
++- update targeted Playwright and workspace-v2 validation harness
++- refresh Idea Board workflow docs and reports
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index 58b5f9aa4..42ebdbb57 100644
+--- a/docs_build/dev/reports/codex_changed_files.txt
++++ b/docs_build/dev/reports/codex_changed_files.txt
+@@ -1,6 +1,151 @@
+-ï»¿docs_build/dev/PROJECT_INSTRUCTIONS.md
+-docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership.md
+-docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-validation.md
+-docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-manual-validation.md
+-docs_build/dev/reports/codex_review.diff
+-docs_build/dev/reports/codex_changed_files.txt
++# Codex Changed Files - PR_26171_030-idea-board-workflow-fix
 +
-+Codex owns Git execution for implementation PRs.
++## Changed Files
++- docs_build/dev/codex_commands.md
++- docs_build/dev/commit_comment.txt
++- docs_build/dev/reports/codex_changed_files.txt
++- docs_build/dev/reports/codex_review.diff
++- docs_build/dev/reports/coverage_changed_js_guardrail.txt
++- docs_build/dev/reports/dependency_gating_report.md
++- docs_build/dev/reports/dependency_hydration_reuse_report.md
++- docs_build/dev/reports/execution_graph_reuse_report.md
++- docs_build/dev/reports/failure_fingerprint_report.md
++- docs_build/dev/reports/filesystem_scan_reduction_report.md
++- docs_build/dev/reports/incremental_validation_report.md
++- docs_build/dev/reports/lane_compilation_report.md
++- docs_build/dev/reports/lane_deduplication_report.md
++- docs_build/dev/reports/lane_input_validation_report.md
++- docs_build/dev/reports/lane_manifests/workspace-contract.json
++- docs_build/dev/reports/lane_runtime_optimization_report.md
++- docs_build/dev/reports/lane_snapshot_report.md
++- docs_build/dev/reports/lane_snapshots/workspace-contract.json
++- docs_build/dev/reports/lane_warm_start_report.md
++- docs_build/dev/reports/lane_warm_starts/workspace-contract.json
++- docs_build/dev/reports/monolith_trigger_removal_report.md
++- docs_build/dev/reports/persistent_lane_manifest_report.md
++- docs_build/dev/reports/playwright_discovery_ownership_report.md
++- docs_build/dev/reports/playwright_discovery_scope_report.md
++- docs_build/dev/reports/playwright_structure_audit.md
++- docs_build/dev/reports/playwright_v8_coverage_report.txt
++- docs_build/dev/reports/retry_suppression_report.md
++- docs_build/dev/reports/slow_path_pruning_report.md
++- docs_build/dev/reports/static_validation_report.md
++- docs_build/dev/reports/targeted_file_manifest_report.md
++- docs_build/dev/reports/test_cleanup_performance_report.md
++- docs_build/dev/reports/test_cleanup_routing_report.md
++- docs_build/dev/reports/testing_lane_execution_report.md
++- docs_build/dev/reports/validation_cache_report.md
++- docs_build/dev/reports/zero_browser_preflight_report.md
++- docs_build/pr/APPLY_PR_26171_026-idea-board-template-cleanup.md
++- docs_build/pr/APPLY_PR_26171_027-idea-board-table-work-surface.md
++- docs_build/pr/APPLY_PR_26171_028-idea-board-notes-table-governance.md
++- docs_build/pr/APPLY_PR_26171_029-idea-board-validation-playwright.md
++- docs_build/pr/APPLY_PR_26171_030-idea-board-workflow-fix.md
++- docs_build/pr/BUILD_PR_26171_026-idea-board-template-cleanup.md
++- docs_build/pr/BUILD_PR_26171_027-idea-board-table-work-surface.md
++- docs_build/pr/BUILD_PR_26171_028-idea-board-notes-table-governance.md
++- docs_build/pr/BUILD_PR_26171_029-idea-board-validation-playwright.md
++- docs_build/pr/BUILD_PR_26171_030-idea-board-workflow-fix.md
++- docs_build/pr/PLAN_PR_26171_026-idea-board-template-cleanup.md
++- docs_build/pr/PLAN_PR_26171_027-idea-board-table-work-surface.md
++- docs_build/pr/PLAN_PR_26171_028-idea-board-notes-table-governance.md
++- docs_build/pr/PLAN_PR_26171_029-idea-board-validation-playwright.md
++- docs_build/pr/PLAN_PR_26171_030-idea-board-workflow-fix.md
++- tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
++- tests/playwright/tools/RootToolsFutureState.spec.mjs
++- tests/playwright/tools/ToolboxRoutePages.spec.mjs
++- toolbox/idea-board/index.html
++- toolbox/idea-board/index.js
 +
-+Required workflow:
-+1. Verify current branch.
-+2. Checkout main.
-+3. Pull latest main.
-+4. Verify clean repository.
-+5. Create PR branch.
-+6. Implement changes.
-+7. Stage only scoped files.
-+8. Commit.
-+9. Push branch to GitHub.
-+10. Create Pull Request automatically.
-+11. Resolve merge conflicts if encountered.
-+12. Re-run validation after conflict resolution.
-+13. Merge PR.
-+14. Return to main.
-+15. Pull latest main.
-+16. Continue to next approved PR.
++## Copied Files Verified
++- PASS: Re-read `toolbox/_tool_template-v2/index.html`; the template source contains the Theme V2 stylesheet, header/footer partials, left/center/right `tool-workspace tool-workspace--wide` shell, accordion stack, ToolDisplayMode host, and external Theme V2 scripts.
++- PASS: Verified `toolbox/_tool_template-v2` currently contains `index.html` only; there was no template-local JavaScript file to copy.
++- PASS: Verified `toolbox/idea-board/index.html` preserves/adapts the template structure with Theme V2 CSS, header/footer partials, left and right tool columns, center panel, ToolDisplayMode host, accordions, and external scripts.
++- PASS: Verified no inline `<script>`, `<style>`, `style=`, or inline event handlers in `toolbox/idea-board/index.html`.
 +
-+Rules:
-+- Do not ask the user if a PR should be created.
-+- Do not ask the user if a branch should be pushed.
-+- Treat PR creation as required.
-+- Treat branch push as required.
-+- Treat merge as required after validation passes.
-+- If GitHub prompts `Would you like to create a Pull Request?`, answer YES automatically.
-+- If merge conflicts occur:
-+  - preserve latest main
-+  - preserve PR scope
-+  - avoid unrelated cleanup
-+  - revalidate before merge
++## Requirement Evidence
++- PASS 026: Idea Board is migrated to Tool Template V2 / Theme V2 shell with clean left/center/right layout and external-only JavaScript/CSS.
++- PASS 027: Idea Board is table-first; the primary work surface is `data-idea-board-table`, with selected idea row controls and no form-first primary workflow.
++- PASS 028: Notes are scoped to the selected idea through `data-idea-board-selected-title`, `data-idea-board-notes-table`, and selected idea state in `toolbox/idea-board/index.js`; Add Note opens an inline row inside the selected notes table; creator notes expose Edit/Delete on the right; system notes expose neither Edit nor Delete; note metadata is table columns.
++- PASS 029: Targeted Playwright coverage validates table columns, selected idea switching, scoped note add/edit/delete, system note lockout, placeholder-only Create Project, and no mutating API calls.
++- PASS 030: Workspace V2 validation harness now pins public API/site env to the ephemeral test server and updates current Message Studio registry expectations so the required workspace lane passes.
 +
-+Required Git workflow report fields:
-+- current branch
-+- created branch
-+- push result
-+- PR URL
-+- merge result
-+- final main commit
-diff --git a/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-manual-validation.md b/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-manual-validation.md
++## Validation
++- PASS: `node --check toolbox/idea-board/index.js`.
++- PASS: `node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`.
++- PASS: `node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs`.
++- PASS: `node --check tests/playwright/tools/RootToolsFutureState.spec.mjs`.
++- PASS: Inline HTML guard for `toolbox/idea-board/index.html`.
++- PASS: `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line` (1 passed).
++- PASS: `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches"` (1 passed).
++- PASS: `npm run test:workspace-v2` (5 passed).
++- PASS: `git diff --cached --check`.
++- SKIP: Full samples smoke, per user instruction.
++
++## Git Workflow Fields
++- Current branch: codex/fix-idea-board-pr-workflow.
++- Created branch: codex/fix-idea-board-pr-workflow from refreshed main.
++- Push result: pending.
++- PR URL: pending.
++- Merge result: pending.
++- Final main commit: pending.
++
++## ZIP
++- Path: tmp/PR_26171_030-idea-board-workflow-fix_delta.zip.
++- Size: 100283 bytes.
++- Contents:
++- docs_build/dev/codex_commands.md
++- docs_build/dev/commit_comment.txt
++- docs_build/dev/reports/codex_changed_files.txt
++- docs_build/dev/reports/codex_review.diff
++- docs_build/dev/reports/coverage_changed_js_guardrail.txt
++- docs_build/dev/reports/dependency_gating_report.md
++- docs_build/dev/reports/dependency_hydration_reuse_report.md
++- docs_build/dev/reports/execution_graph_reuse_report.md
++- docs_build/dev/reports/failure_fingerprint_report.md
++- docs_build/dev/reports/filesystem_scan_reduction_report.md
++- docs_build/dev/reports/incremental_validation_report.md
++- docs_build/dev/reports/lane_compilation_report.md
++- docs_build/dev/reports/lane_deduplication_report.md
++- docs_build/dev/reports/lane_input_validation_report.md
++- docs_build/dev/reports/lane_manifests/workspace-contract.json
++- docs_build/dev/reports/lane_runtime_optimization_report.md
++- docs_build/dev/reports/lane_snapshot_report.md
++- docs_build/dev/reports/lane_snapshots/workspace-contract.json
++- docs_build/dev/reports/lane_warm_start_report.md
++- docs_build/dev/reports/lane_warm_starts/workspace-contract.json
++- docs_build/dev/reports/monolith_trigger_removal_report.md
++- docs_build/dev/reports/persistent_lane_manifest_report.md
++- docs_build/dev/reports/playwright_discovery_ownership_report.md
++- docs_build/dev/reports/playwright_discovery_scope_report.md
++- docs_build/dev/reports/playwright_structure_audit.md
++- docs_build/dev/reports/playwright_v8_coverage_report.txt
++- docs_build/dev/reports/retry_suppression_report.md
++- docs_build/dev/reports/slow_path_pruning_report.md
++- docs_build/dev/reports/static_validation_report.md
++- docs_build/dev/reports/targeted_file_manifest_report.md
++- docs_build/dev/reports/test_cleanup_performance_report.md
++- docs_build/dev/reports/test_cleanup_routing_report.md
++- docs_build/dev/reports/testing_lane_execution_report.md
++- docs_build/dev/reports/validation_cache_report.md
++- docs_build/dev/reports/zero_browser_preflight_report.md
++- docs_build/pr/APPLY_PR_26171_026-idea-board-template-cleanup.md
++- docs_build/pr/APPLY_PR_26171_027-idea-board-table-work-surface.md
++- docs_build/pr/APPLY_PR_26171_028-idea-board-notes-table-governance.md
++- docs_build/pr/APPLY_PR_26171_029-idea-board-validation-playwright.md
++- docs_build/pr/APPLY_PR_26171_030-idea-board-workflow-fix.md
++- docs_build/pr/BUILD_PR_26171_026-idea-board-template-cleanup.md
++- docs_build/pr/BUILD_PR_26171_027-idea-board-table-work-surface.md
++- docs_build/pr/BUILD_PR_26171_028-idea-board-notes-table-governance.md
++- docs_build/pr/BUILD_PR_26171_029-idea-board-validation-playwright.md
++- docs_build/pr/BUILD_PR_26171_030-idea-board-workflow-fix.md
++- docs_build/pr/PLAN_PR_26171_026-idea-board-template-cleanup.md
++- docs_build/pr/PLAN_PR_26171_027-idea-board-table-work-surface.md
++- docs_build/pr/PLAN_PR_26171_028-idea-board-notes-table-governance.md
++- docs_build/pr/PLAN_PR_26171_029-idea-board-validation-playwright.md
++- docs_build/pr/PLAN_PR_26171_030-idea-board-workflow-fix.md
++- tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
++- tests/playwright/tools/RootToolsFutureState.spec.mjs
++- tests/playwright/tools/ToolboxRoutePages.spec.mjs
++- toolbox/idea-board/index.html
++- toolbox/idea-board/index.js
+diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+index e1886709a..fcb5bfa61 100644
+--- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+@@ -6,10 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
+ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+
+ Changed runtime JS files considered:
+-(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(79%) toolbox/messages/messages-api-client.js - executed lines 64/64; executed functions 15/19
+-(97%) toolbox/messages/messages.js - executed lines 1183/1183; executed functions 108/111
+-(100%) toolbox/messages/message-tts-service-registry.js - executed lines 36/36; executed functions 6/6
++(90%) toolbox/idea-board/index.js - executed lines 274/274; executed functions 18/20
+
+ Guardrail warnings:
+-(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++(100%) none - no changed runtime JS coverage warnings
+diff --git a/docs_build/dev/reports/dependency_gating_report.md b/docs_build/dev/reports/dependency_gating_report.md
+index 0e8a30c76..1d9a64865 100644
+--- a/docs_build/dev/reports/dependency_gating_report.md
++++ b/docs_build/dev/reports/dependency_gating_report.md
+@@ -1,6 +1,6 @@
+ # Dependency Gating Report
+
+-Generated: 2026-06-19T23:41:57.043Z
++Generated: 2026-06-20T05:14:54.983Z
+ Status: PASS
+
+ ## Gate Order
+diff --git a/docs_build/dev/reports/dependency_hydration_reuse_report.md b/docs_build/dev/reports/dependency_hydration_reuse_report.md
+index cc46c6784..eace6c302 100644
+--- a/docs_build/dev/reports/dependency_hydration_reuse_report.md
++++ b/docs_build/dev/reports/dependency_hydration_reuse_report.md
+@@ -1,22 +1,22 @@
+ # Dependency Hydration Reuse Report
+
+-Generated: 2026-06-19T23:41:57.043Z
++Generated: 2026-06-20T05:14:54.984Z
+ Status: PASS
+
+ ## Summary
+
+-Reused dependency hydration: 1
+-Invalidated dependency hydration: 0
++Reused dependency hydration: 0
++Invalidated dependency hydration: 1
+ Generated dependency hydration: 0
+-Prevented dependency graph hydration: 1
+-Prevented helper resolution passes: 4
++Prevented dependency graph hydration: 0
++Prevented helper resolution passes: 0
+ Prevented fixture ownership traversal: 0
+
+ ## Hydration Decisions
+
+ | Lane | Status | Helpers | Fixtures | Imports | Dependency Hydration Hash | Reason |
+ | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | REUSED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 311b7eba10ae1e52 | Dependency hydration reused from validated warm-start state. |
++| workspace-contract | INVALIDATED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 188285f97e4960d9 | Dependency hydration was refreshed after warm-start invalidation. |
+
+ ## Safeguards
+
+diff --git a/docs_build/dev/reports/execution_graph_reuse_report.md b/docs_build/dev/reports/execution_graph_reuse_report.md
+index 56a1ee014..19a0657bb 100644
+--- a/docs_build/dev/reports/execution_graph_reuse_report.md
++++ b/docs_build/dev/reports/execution_graph_reuse_report.md
+@@ -1,22 +1,22 @@
+ # Execution Graph Reuse Report
+
+-Generated: 2026-06-19T23:41:57.044Z
++Generated: 2026-06-20T05:14:54.985Z
+ Status: PASS
+
+ ## Summary
+
+-Reused execution graphs: 1
+-Prevented graph rebuilds: 1
+-Prevented redundant dependency traversal: 1
+-Prevented fixture/helper graph assembly: 4
+-Prevented manifest traversal: 1
+-Prevented targeted scheduling work: 1
++Reused execution graphs: 0
++Prevented graph rebuilds: 0
++Prevented redundant dependency traversal: 0
++Prevented fixture/helper graph assembly: 0
++Prevented manifest traversal: 0
++Prevented targeted scheduling work: 0
+
+ ## Execution Graph Decisions
+
+ | Lane | Status | Snapshot Status | Execution Graph Hash | Reason |
+ | --- | --- | --- | --- | --- |
+-| workspace-contract | REUSED | REUSED | ce46f7586a3fe5cb | Lane snapshot is part of the selected targeted execution graph. |
++| workspace-contract | INVALIDATED | INVALIDATED | 6793ca16e6add5c1 | Lane snapshot is part of the selected targeted execution graph. |
+
+ ## Safeguards
+
+diff --git a/docs_build/dev/reports/failure_fingerprint_report.md b/docs_build/dev/reports/failure_fingerprint_report.md
+index cd37432fc..4df23fb52 100644
+--- a/docs_build/dev/reports/failure_fingerprint_report.md
++++ b/docs_build/dev/reports/failure_fingerprint_report.md
+@@ -1,12 +1,12 @@
+ # Failure Fingerprint Report
+
+-Generated: 2026-06-19T23:42:59.854Z
+-Status: WARN
++Generated: 2026-06-20T05:15:57.130Z
++Status: PASS
+
+ ## Summary
+
+ Deterministic setup failures: 0
+-Runtime failures: 1
++Runtime failures: 0
+ Flaky/transient failures: 0
+ Infrastructure failures: 0
+
+@@ -14,7 +14,7 @@ Infrastructure failures: 0
+
+ | Fingerprint | Category | Rule | Lane | Source | Retry Allowed | Diagnostic |
+ | --- | --- | --- | --- | --- | --- | --- |
+-| 75f3490fba176a52 | runtime failure | runtime-failure | workspace-contract | runtime command | Yes | workspace-contract command failed: "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| none | none | none | none | none | No | No failures observed during deterministic classification. |
+
+ ## Known Deterministic Fingerprint Rules
+
+diff --git a/docs_build/dev/reports/filesystem_scan_reduction_report.md b/docs_build/dev/reports/filesystem_scan_reduction_report.md
+index d60e0bdca..691333968 100644
+--- a/docs_build/dev/reports/filesystem_scan_reduction_report.md
++++ b/docs_build/dev/reports/filesystem_scan_reduction_report.md
+@@ -1,6 +1,6 @@
+ # Filesystem Scan Reduction Report
+
+-Generated: 2026-06-19T23:41:57.019Z
++Generated: 2026-06-20T05:14:54.954Z
+ Status: PASS
+
+ ## Scan Enforcement
+diff --git a/docs_build/dev/reports/incremental_validation_report.md b/docs_build/dev/reports/incremental_validation_report.md
+index f1a52c8a5..1794ceae4 100644
+--- a/docs_build/dev/reports/incremental_validation_report.md
++++ b/docs_build/dev/reports/incremental_validation_report.md
+@@ -1,24 +1,24 @@
+ # Incremental Validation Report
+
+-Generated: 2026-06-19T23:41:57.045Z
++Generated: 2026-06-20T05:14:54.986Z
+ Status: PASS
+
+ ## Reuse Summary
+
+-Reused manifests: 1
+-Invalidated manifests: 0
++Reused manifests: 0
++Invalidated manifests: 1
+ Generated manifests: 0
+ Skipped manifests: 0
+-Prevented lane regeneration: 1
+-Prevented discovery scans: 1
+-Prevented helper resolution passes: 4
++Prevented lane regeneration: 0
++Prevented discovery scans: 0
++Prevented helper resolution passes: 0
+ Prevented fixture resolution passes: 0
+
+ ## Incremental Decisions
+
+ | Lane | Decision | Invalidated By | Runtime Savings Observation |
+ | --- | --- | --- | --- |
+-| workspace-contract | REUSED | unchanged inputs | Reused 1 test input(s), 4 helper(s), and 0 fixture(s). |
++| workspace-contract | INVALIDATED | Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. | Manifest was regenerated or skipped; no reuse savings for this lane. |
+
+ ## Invalidation Rules
+
+diff --git a/docs_build/dev/reports/lane_compilation_report.md b/docs_build/dev/reports/lane_compilation_report.md
+index 957a9dd48..5ddbf48f5 100644
+--- a/docs_build/dev/reports/lane_compilation_report.md
++++ b/docs_build/dev/reports/lane_compilation_report.md
+@@ -1,26 +1,26 @@
+ # Lane Compilation Report
+
+-Generated: 2026-06-19T23:41:57.042Z
++Generated: 2026-06-20T05:14:54.983Z
+ Status: PASS
+
+ ## Lane Graph
+
+ | Lane | Status | Affected Surface | Targets | Commands | Reason |
+ | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | PASS | Root tools future-state navigation and Tool Template V2 contract | tests/playwright/tools/RootToolsFutureState.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Lane graph, command shape, targets, fixtures, and ownership compile before runtime. |
+-| game-workspace | SKIP | Game Workspace mock repository, Game Workspace UI, and Toolbox Progress/Build Path game-state bridge | tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| game-design | SKIP | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | tests/playwright/tools/GameDesignMockRepository.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/GameDesignMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| game-configuration | SKIP | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | tests/playwright/tools/GameConfigurationMockRepository.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/GameConfigurationMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| asset-tool | SKIP | Asset Tool mock repository, Game Configuration readiness handoff, library records, import preview, and visible failure handling | tests/playwright/tools/AssetToolMockRepository.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/AssetToolMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| build-path | SKIP | Toolbox Build Path simplification, workflow status table, and Admin Tools Progress navigation | tests/playwright/tools/BuildPathProgressSimplification.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/BuildPathProgressSimplification.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| tools-progress | SKIP | Admin Tools Progress hydration, Toolbox Group view color model, and Game Build Path separation | tests/playwright/tools/ToolsProgressHydration.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/ToolsProgressHydration.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| tool-navigation | SKIP | Admin Tools Progress tool route links, Tool Display Mode build-order previous/next controls, and Toolbox group fallback routing | tests/playwright/tools/ToolNavigationPrevNext.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/ToolNavigationPrevNext.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| tool-display-mode | SKIP | Tool Display Mode identity row, registry-owned previous/next links, disabled text fallback, and multi-path group routing | tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| tool-images | SKIP | Toolbox registry image contract, Toolbox card image rendering, and Tool Display Mode image fallback | tests/playwright/tools/ToolImageRegistry.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/ToolImageRegistry.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| tool-runtime | SKIP | Active public toolbox and Tool Template V2 contract | tests/playwright/tools/RootToolsFutureState.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| workspace-contract | PASS | Root tools future-state navigation and Tool Template V2 contract | tests/playwright/tools/RootToolsFutureState.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Lane graph, command shape, targets, fixtures, and ownership compile before runtime. |
++| game-workspace | SKIP | Game Workspace mock repository, Game Workspace UI, and Toolbox Progress/Build Path game-state bridge | tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| game-design | SKIP | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | tests/playwright/tools/GameDesignMockRepository.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/GameDesignMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| game-configuration | SKIP | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | tests/playwright/tools/GameConfigurationMockRepository.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/GameConfigurationMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| asset-tool | SKIP | Asset Tool mock repository, Game Configuration readiness handoff, library records, import preview, and visible failure handling | tests/playwright/tools/AssetToolMockRepository.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/AssetToolMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| build-path | SKIP | Toolbox Build Path simplification, workflow status table, and Admin Tools Progress navigation | tests/playwright/tools/BuildPathProgressSimplification.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/BuildPathProgressSimplification.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| tools-progress | SKIP | Admin Tools Progress hydration, Toolbox Group view color model, and Game Build Path separation | tests/playwright/tools/ToolsProgressHydration.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/ToolsProgressHydration.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| tool-navigation | SKIP | Admin Tools Progress tool route links, Tool Display Mode build-order previous/next controls, and Toolbox group fallback routing | tests/playwright/tools/ToolNavigationPrevNext.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/ToolNavigationPrevNext.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| tool-display-mode | SKIP | Tool Display Mode identity row, registry-owned previous/next links, disabled text fallback, and multi-path group routing | tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| tool-images | SKIP | Toolbox registry image contract, Toolbox card image rendering, and Tool Display Mode image fallback | tests/playwright/tools/ToolImageRegistry.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/ToolImageRegistry.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| tool-runtime | SKIP | Active public toolbox and Tool Template V2 contract | tests/playwright/tools/RootToolsFutureState.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+ | game-runtime | SKIP | Deprecated archive/v1-v2/games reference coverage | none | none | Lane was not selected. |
+ | integration | SKIP | Integration handoff behavior | none | none | Lane was not selected. |
+-| engine-src | SKIP | src/ engine and shared runtime capability behavior | tests/core/EngineCoreBoundaryBaseline.test.mjs; tests/core/FrameClock.test.mjs; tests/core/FixedTicker.test.mjs; tests/assets/AssetLoaderSystem.test.mjs; tests/audio/AudioService.test.mjs; tests/input/InputMap.test.mjs; tests/input/KeyboardState.test.mjs; tests/input/MouseState.test.mjs; tests/input/GamepadInputAdapter.test.mjs; tests/input/GamepadHapticsService.test.mjs; tests/render/Renderer.test.mjs | "C:\\Program Files\\nodejs\\node.exe" scripts/run-node-test-files.mjs tests/core/EngineCoreBoundaryBaseline.test.mjs tests/core/FrameClock.test.mjs tests/core/FixedTicker.test.mjs tests/assets/AssetLoaderSystem.test.mjs tests/audio/AudioService.test.mjs tests/input/InputMap.test.mjs tests/input/KeyboardState.test.mjs tests/input/MouseState.test.mjs tests/input/GamepadInputAdapter.test.mjs tests/input/GamepadHapticsService.test.mjs tests/render/Renderer.test.mjs | Lane was not selected. |
++| engine-src | SKIP | src/ engine and shared runtime capability behavior | tests/core/EngineCoreBoundaryBaseline.test.mjs; tests/core/FrameClock.test.mjs; tests/core/FixedTicker.test.mjs; tests/assets/AssetLoaderSystem.test.mjs; tests/audio/AudioService.test.mjs; tests/input/InputMap.test.mjs; tests/input/KeyboardState.test.mjs; tests/input/MouseState.test.mjs; tests/input/GamepadInputAdapter.test.mjs; tests/input/GamepadHapticsService.test.mjs; tests/render/Renderer.test.mjs | C:\nvm4w\nodejs\node.exe scripts/run-node-test-files.mjs tests/core/EngineCoreBoundaryBaseline.test.mjs tests/core/FrameClock.test.mjs tests/core/FixedTicker.test.mjs tests/assets/AssetLoaderSystem.test.mjs tests/audio/AudioService.test.mjs tests/input/InputMap.test.mjs tests/input/KeyboardState.test.mjs tests/input/MouseState.test.mjs tests/input/GamepadInputAdapter.test.mjs tests/input/GamepadHapticsService.test.mjs tests/render/Renderer.test.mjs | Lane was not selected. |
+ | samples | SKIP | Deprecated archive/v1-v2/samples reference coverage | none | none | Lane was not selected. |
+
+ ## Compilation Failures
+diff --git a/docs_build/dev/reports/lane_deduplication_report.md b/docs_build/dev/reports/lane_deduplication_report.md
+index 49f38e57b..cd8de6a0e 100644
+--- a/docs_build/dev/reports/lane_deduplication_report.md
++++ b/docs_build/dev/reports/lane_deduplication_report.md
+@@ -1,6 +1,6 @@
+ # Lane Deduplication Report
+
+-Generated: 2026-06-19T23:41:57.043Z
++Generated: 2026-06-20T05:14:54.984Z
+ Status: PASS
+
+ ## Summary
+diff --git a/docs_build/dev/reports/lane_input_validation_report.md b/docs_build/dev/reports/lane_input_validation_report.md
+index b594f7fc1..890cff927 100644
+--- a/docs_build/dev/reports/lane_input_validation_report.md
++++ b/docs_build/dev/reports/lane_input_validation_report.md
+@@ -1,6 +1,6 @@
+ # Lane Input Validation Report
+
+-Generated: 2026-06-19T23:41:57.045Z
++Generated: 2026-06-20T05:14:54.986Z
+ Status: PASS
+
+ ## Input Files
+diff --git a/docs_build/dev/reports/lane_manifests/workspace-contract.json b/docs_build/dev/reports/lane_manifests/workspace-contract.json
+index de55dbe86..e574bab94 100644
+--- a/docs_build/dev/reports/lane_manifests/workspace-contract.json
++++ b/docs_build/dev/reports/lane_manifests/workspace-contract.json
+@@ -1,17 +1,17 @@
+ {
+-  "commandsHash": "5141d93b4551c125",
++  "commandsHash": "591781cab7ad23bf",
+   "dependencies": [],
+-  "dependencyGraphHash": "a707a1d80d3773b6",
++  "dependencyGraphHash": "4603f4a2407a0efb",
+   "fileHashes": {
+-    "src/dev-runtime/admin/admin-notes-directory.mjs": "34d8268c1fc0dafd",
+-    "src/dev-runtime/admin/admin-notes-menu.mjs": "38ce15ab63418748",
+-    "src/dev-runtime/persistence/mock-db-store.js": "f75dab3cf4607a7d",
+-    "src/dev-runtime/server/local-api-router.mjs": "841ef632cfd3c020",
+-    "tests/helpers/playwrightRepoServer.mjs": "00d98fb0a206fc5c",
+-    "tests/helpers/playwrightStorageIsolation.mjs": "8057ea0c3ec2c8ac",
+-    "tests/helpers/playwrightV8CoverageReporter.mjs": "290159be068de479",
+-    "tests/helpers/workspaceV2CoverageReporter.mjs": "08d4c995f88aebe1",
+-    "tests/playwright/tools/RootToolsFutureState.spec.mjs": "82558f78703dcf1c"
++    "src/dev-runtime/admin/admin-notes-directory.mjs": "2eadf130de0ef0df",
++    "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
++    "src/dev-runtime/persistence/mock-db-store.js": "8c9c167f6c5adcfc",
++    "src/dev-runtime/server/local-api-router.mjs": "a3aa80ae2c5b069e",
++    "tests/helpers/playwrightRepoServer.mjs": "a1dc02a78c92807b",
++    "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
++    "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
++    "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
++    "tests/playwright/tools/RootToolsFutureState.spec.mjs": "034e0fd0e02b16bb"
+   },
+   "fixtures": [],
+   "helpers": [
+@@ -30,15 +30,15 @@
+     "tests/helpers/playwrightV8CoverageReporter.mjs",
+     "tests/helpers/workspaceV2CoverageReporter.mjs"
+   ],
+-  "inputHash": "b12cb7c1b3b2cb3e",
++  "inputHash": "1182dccb1c7a19fa",
+   "lane": "workspace-contract",
+-  "laneDefinitionHash": "48c5c111705280dc",
+-  "manifestHash": "b337cfdf43f8cef1",
++  "laneDefinitionHash": "c93cc3ce4d3672a0",
++  "manifestHash": "67a77331702ee777",
+   "ownership": "tools",
+   "tests": [
+     "tests/playwright/tools/RootToolsFutureState.spec.mjs"
+   ],
+   "version": 1,
+-  "generatedAt": "2026-06-19T23:39:16.952Z",
++  "generatedAt": "2026-06-20T05:14:53.811Z",
+   "source": "generated"
+ }
+diff --git a/docs_build/dev/reports/lane_runtime_optimization_report.md b/docs_build/dev/reports/lane_runtime_optimization_report.md
+index 30e402c60..d1f0d08dc 100644
+--- a/docs_build/dev/reports/lane_runtime_optimization_report.md
++++ b/docs_build/dev/reports/lane_runtime_optimization_report.md
+@@ -1,16 +1,16 @@
+ # Lane Runtime Optimization Report
+
+-Generated: 2026-06-19T23:41:57.043Z
++Generated: 2026-06-20T05:14:54.984Z
+ Status: PASS
+
+ ## Runtime Cost Summary
+
+ Reused runtime sessions: 0
+-Reused lane snapshots: 1
+-Reused warm-start lanes: 1
+-Reused dependency hydration: 1
+-Prevented graph rebuilds: 1
+-Prevented redundant initialization: 1
++Reused lane snapshots: 0
++Reused warm-start lanes: 0
++Reused dependency hydration: 0
++Prevented graph rebuilds: 0
++Prevented redundant initialization: 0
+ Prevented redundant browser launches: 0
+ Prevented redundant lane execution: 14
+ Baseline Playwright/browser launches: 1
+@@ -28,7 +28,7 @@ No zero-browser, compilation, or dependency blockers were found.
+
+ | Lane | Snapshot | Warm Start | Hydration | Baseline Browser Launches | Scheduled Browser Launches | Commands | Reason |
+ | --- | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | REUSED | REUSED | REUSED | 1 | 1 | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
++| workspace-contract | INVALIDATED | INVALIDATED | INVALIDATED | 1 | 1 | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
+
+ ## Runtime Savings Observations
+
+diff --git a/docs_build/dev/reports/lane_snapshot_report.md b/docs_build/dev/reports/lane_snapshot_report.md
+index ac32c5fe6..c9ecc4b99 100644
+--- a/docs_build/dev/reports/lane_snapshot_report.md
++++ b/docs_build/dev/reports/lane_snapshot_report.md
+@@ -1,23 +1,23 @@
+ # Lane Snapshot Report
+
+-Generated: 2026-06-19T23:41:57.044Z
++Generated: 2026-06-20T05:14:54.984Z
+ Status: PASS
+ Snapshot directory: docs_build/dev/reports/lane_snapshots
+
+ ## Summary
+
+-Reused lane snapshots: 1
+-Invalidated snapshots: 0
++Reused lane snapshots: 0
++Invalidated snapshots: 1
+ Generated snapshots: 0
+ Skipped snapshots: 0
+-Prevented graph rebuilds: 1
+-Prevented manifest traversal: 1
++Prevented graph rebuilds: 0
++Prevented manifest traversal: 0
+
+ ## Snapshot Decisions
+
+ | Lane | Status | Snapshot Path | Manifest Hash | Dependency Graph Hash | Helper Graph Hash | Fixture Graph Hash | Runtime Config Hash | Execution Graph Hash | Snapshot Hash | Reason |
+ | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | REUSED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | b337cfdf43f8cef1 | a707a1d80d3773b6 | 0eddebde8ac86c34 | 6c4fac7630b0b6f3 | ee686a65c81bd4a9 | ce46f7586a3fe5cb | 1e38ee576f11c3f8 | Targeted files, manifest, dependency graph, helper graph, fixture graph, ownership, lane config, and runtime config are unchanged. |
++| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | 67a77331702ee777 | 4603f4a2407a0efb | 7d3db838f9f780e0 | 6c4fac7630b0b6f3 | 32fb60598a4cb1ee | 6793ca16e6add5c1 | c46f4bbe330fd2b2 | Lane snapshot executionGraphHash changed for workspace-contract.; Lane snapshot inputHash changed for workspace-contract.; Lane snapshot manifestHash changed for workspace-contract.; Lane snapshot snapshotHash changed for workspace-contract.; Lane snapshot warmStartHash changed for workspace-contract. |
+
+ ## Snapshot Validation Findings
+
+diff --git a/docs_build/dev/reports/lane_snapshots/workspace-contract.json b/docs_build/dev/reports/lane_snapshots/workspace-contract.json
+index 1e70d2921..dc895c39f 100644
+--- a/docs_build/dev/reports/lane_snapshots/workspace-contract.json
++++ b/docs_build/dev/reports/lane_snapshots/workspace-contract.json
+@@ -1,18 +1,18 @@
+ {
+-  "commandsHash": "5141d93b4551c125",
++  "commandsHash": "591781cab7ad23bf",
+   "dependencyGateStatus": "PASS",
+   "dependencyGraph": {
+     "dependencies": [],
+-    "dependencyGraphHash": "a707a1d80d3773b6",
++    "dependencyGraphHash": "4603f4a2407a0efb",
+     "importHashes": {
+-      "src/dev-runtime/admin/admin-notes-directory.mjs": "34d8268c1fc0dafd",
+-      "src/dev-runtime/admin/admin-notes-menu.mjs": "38ce15ab63418748",
+-      "src/dev-runtime/persistence/mock-db-store.js": "f75dab3cf4607a7d",
+-      "src/dev-runtime/server/local-api-router.mjs": "841ef632cfd3c020",
+-      "tests/helpers/playwrightRepoServer.mjs": "00d98fb0a206fc5c",
+-      "tests/helpers/playwrightStorageIsolation.mjs": "8057ea0c3ec2c8ac",
+-      "tests/helpers/playwrightV8CoverageReporter.mjs": "290159be068de479",
+-      "tests/helpers/workspaceV2CoverageReporter.mjs": "08d4c995f88aebe1"
++      "src/dev-runtime/admin/admin-notes-directory.mjs": "2eadf130de0ef0df",
++      "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
++      "src/dev-runtime/persistence/mock-db-store.js": "8c9c167f6c5adcfc",
++      "src/dev-runtime/server/local-api-router.mjs": "a3aa80ae2c5b069e",
++      "tests/helpers/playwrightRepoServer.mjs": "a1dc02a78c92807b",
++      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
++      "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
++      "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85"
+     },
+     "imports": [
+       "src/dev-runtime/admin/admin-notes-directory.mjs",
+@@ -25,8 +25,8 @@
+       "tests/helpers/workspaceV2CoverageReporter.mjs"
+     ]
+   },
+-  "dependencyGraphHash": "a707a1d80d3773b6",
+-  "executionGraphHash": "ce46f7586a3fe5cb",
++  "dependencyGraphHash": "4603f4a2407a0efb",
++  "executionGraphHash": "6793ca16e6add5c1",
+   "fixtureGraph": {
+     "fixtureHashes": {},
+     "fixtures": []
+@@ -34,10 +34,10 @@
+   "fixtureGraphHash": "6c4fac7630b0b6f3",
+   "helperGraph": {
+     "helperHashes": {
+-      "tests/helpers/playwrightRepoServer.mjs": "00d98fb0a206fc5c",
+-      "tests/helpers/playwrightStorageIsolation.mjs": "8057ea0c3ec2c8ac",
+-      "tests/helpers/playwrightV8CoverageReporter.mjs": "290159be068de479",
+-      "tests/helpers/workspaceV2CoverageReporter.mjs": "08d4c995f88aebe1"
++      "tests/helpers/playwrightRepoServer.mjs": "a1dc02a78c92807b",
++      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
++      "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
++      "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85"
+     },
+     "helpers": [
+       "tests/helpers/playwrightRepoServer.mjs",
+@@ -46,22 +46,22 @@
+       "tests/helpers/workspaceV2CoverageReporter.mjs"
+     ]
+   },
+-  "helperGraphHash": "0eddebde8ac86c34",
+-  "inputHash": "b12cb7c1b3b2cb3e",
++  "helperGraphHash": "7d3db838f9f780e0",
++  "inputHash": "1182dccb1c7a19fa",
+   "lane": "workspace-contract",
+   "laneCompilationStatus": "PASS",
+-  "laneDefinitionHash": "48c5c111705280dc",
++  "laneDefinitionHash": "c93cc3ce4d3672a0",
+   "manifest": {
+     "fileHashes": {
+-      "src/dev-runtime/admin/admin-notes-directory.mjs": "34d8268c1fc0dafd",
+-      "src/dev-runtime/admin/admin-notes-menu.mjs": "38ce15ab63418748",
+-      "src/dev-runtime/persistence/mock-db-store.js": "f75dab3cf4607a7d",
+-      "src/dev-runtime/server/local-api-router.mjs": "841ef632cfd3c020",
+-      "tests/helpers/playwrightRepoServer.mjs": "00d98fb0a206fc5c",
+-      "tests/helpers/playwrightStorageIsolation.mjs": "8057ea0c3ec2c8ac",
+-      "tests/helpers/playwrightV8CoverageReporter.mjs": "290159be068de479",
+-      "tests/helpers/workspaceV2CoverageReporter.mjs": "08d4c995f88aebe1",
+-      "tests/playwright/tools/RootToolsFutureState.spec.mjs": "82558f78703dcf1c"
++      "src/dev-runtime/admin/admin-notes-directory.mjs": "2eadf130de0ef0df",
++      "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
++      "src/dev-runtime/persistence/mock-db-store.js": "8c9c167f6c5adcfc",
++      "src/dev-runtime/server/local-api-router.mjs": "a3aa80ae2c5b069e",
++      "tests/helpers/playwrightRepoServer.mjs": "a1dc02a78c92807b",
++      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
++      "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
++      "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
++      "tests/playwright/tools/RootToolsFutureState.spec.mjs": "034e0fd0e02b16bb"
+     },
+     "fixtures": [],
+     "helpers": [
+@@ -80,42 +80,42 @@
+       "tests/helpers/playwrightV8CoverageReporter.mjs",
+       "tests/helpers/workspaceV2CoverageReporter.mjs"
+     ],
+-    "manifestHash": "b337cfdf43f8cef1",
++    "manifestHash": "67a77331702ee777",
+     "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
+     "source": "generated",
+     "tests": [
+       "tests/playwright/tools/RootToolsFutureState.spec.mjs"
+     ]
+   },
+-  "manifestHash": "b337cfdf43f8cef1",
++  "manifestHash": "67a77331702ee777",
+   "ownership": "tools",
+   "runtimeConfiguration": {
+     "affectedSurface": "Root tools future-state navigation and Tool Template V2 contract",
+     "commands": [
+       {
+         "args": [
+-          "C:\\Users\\DavidQ\\Documents\\GitHub\\HTML-JavaScript-Gaming\\node_modules\\@playwright\\test\\cli.js",
++          "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js",
+           "test",
+           "tests/playwright/tools/RootToolsFutureState.spec.mjs",
+           "--project=playwright",
+           "--workers=1",
+           "--reporter=list"
+         ],
+-        "command": "C:\\Program Files\\nodejs\\node.exe",
++        "command": "C:\\nvm4w\\nodejs\\node.exe",
+         "targets": [
+           "tests/playwright/tools/RootToolsFutureState.spec.mjs"
+         ],
+         "type": "playwright"
+       }
+     ],
+-    "commandsHash": "5141d93b4551c125",
+-    "laneConfigHash": "766f10428ac09567",
++    "commandsHash": "591781cab7ad23bf",
++    "laneConfigHash": "990389bf77bad0d7",
+     "requiresPreflight": true,
+     "requiresSamplesFlag": false
+   },
+-  "runtimeConfigurationHash": "ee686a65c81bd4a9",
+-  "snapshotHash": "1e38ee576f11c3f8",
++  "runtimeConfigurationHash": "32fb60598a4cb1ee",
++  "snapshotHash": "c46f4bbe330fd2b2",
+   "version": 1,
+-  "warmStartHash": "546dbf7716376be4",
+-  "generatedAt": "2026-06-19T23:39:17.173Z"
++  "warmStartHash": "9bbf59dc0730aac1",
++  "generatedAt": "2026-06-20T05:14:54.976Z"
+ }
+diff --git a/docs_build/dev/reports/lane_warm_start_report.md b/docs_build/dev/reports/lane_warm_start_report.md
+index ed35b7ef6..c4fe0f0c3 100644
+--- a/docs_build/dev/reports/lane_warm_start_report.md
++++ b/docs_build/dev/reports/lane_warm_start_report.md
+@@ -1,23 +1,23 @@
+ # Lane Warm-Start Report
+
+-Generated: 2026-06-19T23:41:57.043Z
++Generated: 2026-06-20T05:14:54.984Z
+ Status: PASS
+ Warm-start directory: docs_build/dev/reports/lane_warm_starts
+
+ ## Summary
+
+-Reused warm-start lanes: 1
+-Invalidated warm-start states: 0
++Reused warm-start lanes: 0
++Invalidated warm-start states: 1
+ Generated warm-start states: 0
+ Skipped warm-start states: 0
+-Prevented redundant initialization: 1
+-Prevented lane graph assembly: 1
++Prevented redundant initialization: 0
++Prevented lane graph assembly: 0
+
+ ## Warm-Start Decisions
+
+ | Lane | Status | Warm-Start Path | Manifest Hash | Warm-Start Hash | Dependency Hydration Hash | Reason |
+ | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | REUSED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | b337cfdf43f8cef1 | 546dbf7716376be4 | 311b7eba10ae1e52 | Manifest inputs, dependency graph, ownership metadata, helper placement, fixture placement, and lane configuration are unchanged. |
++| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | 67a77331702ee777 | 9bbf59dc0730aac1 | 188285f97e4960d9 | Warm-start inputHash changed for workspace-contract.; Warm-start manifestHash changed for workspace-contract.; Warm-start warmStartHash changed for workspace-contract. |
+
+ ## Fast-Fail Safeguards
+
+diff --git a/docs_build/dev/reports/lane_warm_starts/workspace-contract.json b/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
+index 15a63a0e5..15c46b242 100644
+--- a/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
++++ b/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
+@@ -1,15 +1,15 @@
+ {
+-  "commandsHash": "5141d93b4551c125",
+-  "dependencyGraphHash": "a707a1d80d3773b6",
++  "commandsHash": "591781cab7ad23bf",
++  "dependencyGraphHash": "4603f4a2407a0efb",
+   "dependencyHydration": {
+-    "dependencyHydrationHash": "311b7eba10ae1e52",
++    "dependencyHydrationHash": "188285f97e4960d9",
+     "fixtureHashes": {},
+     "fixtures": [],
+     "helperHashes": {
+-      "tests/helpers/playwrightRepoServer.mjs": "00d98fb0a206fc5c",
+-      "tests/helpers/playwrightStorageIsolation.mjs": "8057ea0c3ec2c8ac",
+-      "tests/helpers/playwrightV8CoverageReporter.mjs": "290159be068de479",
+-      "tests/helpers/workspaceV2CoverageReporter.mjs": "08d4c995f88aebe1"
++      "tests/helpers/playwrightRepoServer.mjs": "a1dc02a78c92807b",
++      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
++      "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
++      "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85"
+     },
+     "helpers": [
+       "tests/helpers/playwrightRepoServer.mjs",
+@@ -18,14 +18,14 @@
+       "tests/helpers/workspaceV2CoverageReporter.mjs"
+     ],
+     "importHashes": {
+-      "src/dev-runtime/admin/admin-notes-directory.mjs": "34d8268c1fc0dafd",
+-      "src/dev-runtime/admin/admin-notes-menu.mjs": "38ce15ab63418748",
+-      "src/dev-runtime/persistence/mock-db-store.js": "f75dab3cf4607a7d",
+-      "src/dev-runtime/server/local-api-router.mjs": "841ef632cfd3c020",
+-      "tests/helpers/playwrightRepoServer.mjs": "00d98fb0a206fc5c",
+-      "tests/helpers/playwrightStorageIsolation.mjs": "8057ea0c3ec2c8ac",
+-      "tests/helpers/playwrightV8CoverageReporter.mjs": "290159be068de479",
+-      "tests/helpers/workspaceV2CoverageReporter.mjs": "08d4c995f88aebe1"
++      "src/dev-runtime/admin/admin-notes-directory.mjs": "2eadf130de0ef0df",
++      "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
++      "src/dev-runtime/persistence/mock-db-store.js": "8c9c167f6c5adcfc",
++      "src/dev-runtime/server/local-api-router.mjs": "a3aa80ae2c5b069e",
++      "tests/helpers/playwrightRepoServer.mjs": "a1dc02a78c92807b",
++      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
++      "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
++      "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85"
+     },
+     "imports": [
+       "src/dev-runtime/admin/admin-notes-directory.mjs",
+@@ -38,16 +38,16 @@
+       "tests/helpers/workspaceV2CoverageReporter.mjs"
+     ]
+   },
+-  "dependencyHydrationHash": "311b7eba10ae1e52",
+-  "inputHash": "b12cb7c1b3b2cb3e",
++  "dependencyHydrationHash": "188285f97e4960d9",
++  "inputHash": "1182dccb1c7a19fa",
+   "lane": "workspace-contract",
+-  "laneConfigHash": "766f10428ac09567",
+-  "laneDefinitionHash": "48c5c111705280dc",
+-  "manifestHash": "b337cfdf43f8cef1",
++  "laneConfigHash": "990389bf77bad0d7",
++  "laneDefinitionHash": "c93cc3ce4d3672a0",
++  "manifestHash": "67a77331702ee777",
+   "ownership": "tools",
+-  "warmStartHash": "546dbf7716376be4",
++  "warmStartHash": "9bbf59dc0730aac1",
+   "version": 1,
+-  "generatedAt": "2026-06-19T23:39:16.962Z",
++  "generatedAt": "2026-06-20T05:14:53.822Z",
+   "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
+   "sourceManifest": "generated"
+ }
+diff --git a/docs_build/dev/reports/monolith_trigger_removal_report.md b/docs_build/dev/reports/monolith_trigger_removal_report.md
+index 1b03976fd..4e1a96182 100644
+--- a/docs_build/dev/reports/monolith_trigger_removal_report.md
++++ b/docs_build/dev/reports/monolith_trigger_removal_report.md
+@@ -1,6 +1,6 @@
+ # Monolith Trigger Removal Report
+
+-Generated: 2026-06-19T23:42:59.856Z
++Generated: 2026-06-20T05:15:57.131Z
+ Status: PASS
+
+ ## Removed Broad Execution Triggers
+diff --git a/docs_build/dev/reports/persistent_lane_manifest_report.md b/docs_build/dev/reports/persistent_lane_manifest_report.md
+index daf7b8986..5181586f8 100644
+--- a/docs_build/dev/reports/persistent_lane_manifest_report.md
++++ b/docs_build/dev/reports/persistent_lane_manifest_report.md
+@@ -1,27 +1,27 @@
+ # Persistent Lane Manifest Report
+
+-Generated: 2026-06-19T23:41:57.045Z
++Generated: 2026-06-20T05:14:54.985Z
+ Status: PASS
+ Manifest directory: docs_build/dev/reports/lane_manifests
+
+ ## Summary
+
+-Reused manifests: 1
+-Invalidated manifests: 0
++Reused manifests: 0
++Invalidated manifests: 1
+ Generated manifests: 0
+-Prevented discovery scans: 1
++Prevented discovery scans: 0
+
+ ## Manifest Events
+
+ | Lane | Status | Manifest Path | Input Hash | Manifest Hash | Reason |
+ | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | REUSED | docs_build/dev/reports/lane_manifests/workspace-contract.json | b12cb7c1b3b2cb3e | b337cfdf43f8cef1 | Inputs unchanged; persisted lane manifest reused. |
++| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_manifests/workspace-contract.json | 1182dccb1c7a19fa | 67a77331702ee777 | Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. |
+
+ ## Persisted Manifest Files
+
+ | Lane | Ownership | Source | Tests | Helpers | Fixtures | Dependency Graph Hash | Manifest Hash |
+ | --- | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | tools | persistent | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | a707a1d80d3773b6 | b337cfdf43f8cef1 |
++| workspace-contract | tools | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 4603f4a2407a0efb | 67a77331702ee777 |
+
+ ## Fast-Fail Enforcement
+
+diff --git a/docs_build/dev/reports/playwright_discovery_ownership_report.md b/docs_build/dev/reports/playwright_discovery_ownership_report.md
+index eb5b4713b..36d35e76e 100644
+--- a/docs_build/dev/reports/playwright_discovery_ownership_report.md
++++ b/docs_build/dev/reports/playwright_discovery_ownership_report.md
+@@ -1,6 +1,6 @@
+ # Playwright Discovery Ownership Report
+
+-Generated: 2026-06-19T23:41:57.012Z
++Generated: 2026-06-20T05:14:54.947Z
+ Status: PASS
+
+ ## Discovery-Time Ownership
+diff --git a/docs_build/dev/reports/playwright_discovery_scope_report.md b/docs_build/dev/reports/playwright_discovery_scope_report.md
+index c983b2ce0..b6d801118 100644
+--- a/docs_build/dev/reports/playwright_discovery_scope_report.md
++++ b/docs_build/dev/reports/playwright_discovery_scope_report.md
+@@ -1,6 +1,6 @@
+ # Playwright Discovery Scope Report
+
+-Generated: 2026-06-19T23:41:57.014Z
++Generated: 2026-06-20T05:14:54.952Z
+ Status: PASS
+ Scoped discovery: Yes
+
+diff --git a/docs_build/dev/reports/playwright_structure_audit.md b/docs_build/dev/reports/playwright_structure_audit.md
+index 5b4ac4ef7..11ed06b9e 100644
+--- a/docs_build/dev/reports/playwright_structure_audit.md
++++ b/docs_build/dev/reports/playwright_structure_audit.md
+@@ -1,6 +1,6 @@
+ # Playwright Structure Audit
+
+-Generated: 2026-06-19T23:41:56.988Z
++Generated: 2026-06-20T05:14:54.922Z
+ Status: PASS
+
+ ## Lane Directories
+diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+index 81cee7250..38bf26e27 100644
+--- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
++++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+@@ -12,34 +12,31 @@ Note: entry percentages use function coverage when available, otherwise line cov
+ Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
+
+ Exercised tool entry points detected:
+-(92%) Toolbox Index - exercised 4 runtime JS files
++(81%) Toolbox Index - exercised 4 runtime JS files
+ (0%) Tool Template V2 - not exercised by this Playwright run
+-(56%) Theme V2 Shared JS - exercised 2 runtime JS files
++(63%) Theme V2 Shared JS - exercised 2 runtime JS files
+
+ Changed runtime JS files covered:
+-(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(79%) toolbox/messages/messages-api-client.js - executed lines 64/64; executed functions 15/19
+-(97%) toolbox/messages/messages.js - executed lines 1183/1183; executed functions 108/111
+-(100%) toolbox/messages/message-tts-service-registry.js - executed lines 36/36; executed functions 6/6
++(90%) toolbox/idea-board/index.js - executed lines 274/274; executed functions 18/20
+
+ Files with executed line/function counts where available:
+-(36%) src/api/server-api-client.js - executed lines 167/167; executed functions 5/14
+-(38%) src/api/public-config-client.js - executed lines 209/209; executed functions 10/26
+-(50%) src/engine/audio/TextToSpeechEngine.js - executed lines 229/229; executed functions 13/26
+-(54%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 46/85
++(25%) src/api/session-api-client.js - executed lines 68/68; executed functions 3/12
++(33%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
++(44%) src/api/server-api-client.js - executed lines 167/167; executed functions 8/18
++(63%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 54/86
+ (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
+-(76%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 22/29
+-(79%) toolbox/messages/messages-api-client.js - executed lines 64/64; executed functions 15/19
+-(97%) toolbox/messages/messages.js - executed lines 1183/1183; executed functions 108/111
+-(100%) src/engine/audio/TextToSpeechDefaults.js - executed lines 108/108; executed functions 1/1
+-(100%) toolbox/messages/message-tts-service-registry.js - executed lines 36/36; executed functions 6/6
++(65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
++(67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
++(67%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 20/20; executed functions 2/3
++(78%) toolbox/tools-page-accordions.js - executed lines 1156/1156; executed functions 87/111
++(86%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 25/29
++(90%) toolbox/idea-board/index.js - executed lines 274/274; executed functions 18/20
+
+ Uncovered or low-coverage changed JS files:
+-(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: uncovered changed runtime JS file; advisory only
++(100%) none - no low-coverage changed runtime JS files
+
+ Changed JS files considered:
+-(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/MessagesTool.spec.mjs - changed JS file not collected as browser runtime coverage
+-(79%) toolbox/messages/messages-api-client.js - changed JS file with browser V8 coverage
+-(97%) toolbox/messages/messages.js - changed JS file with browser V8 coverage
+-(100%) toolbox/messages/message-tts-service-registry.js - changed JS file with browser V8 coverage
++(0%) tests/playwright/tools/IdeaBoardTableNotes.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
++(90%) toolbox/idea-board/index.js - changed JS file with browser V8 coverage
+diff --git a/docs_build/dev/reports/retry_suppression_report.md b/docs_build/dev/reports/retry_suppression_report.md
+index 11f9d3101..aacc63ee0 100644
+--- a/docs_build/dev/reports/retry_suppression_report.md
++++ b/docs_build/dev/reports/retry_suppression_report.md
+@@ -1,7 +1,7 @@
+ # Retry Suppression Report
+
+-Generated: 2026-06-19T23:42:59.854Z
+-Status: WARN
++Generated: 2026-06-20T05:15:57.131Z
++Status: PASS
+
+ ## Summary
+
+@@ -15,7 +15,7 @@ Prevented repeated lane hydration: 0
+
+ | Fingerprint | Lane | Category | Retry Decision | Reason |
+ | --- | --- | --- | --- | --- |
+-| 75f3490fba176a52 | workspace-contract | runtime failure | Allowed only on explicit targeted retry | Retry is allowed only when explicitly requested and must preserve the same targeted lane scope. |
++| none | none | none | No retry needed | No failures were observed. |
+
+ ## Enforcement Rules
+
+diff --git a/docs_build/dev/reports/slow_path_pruning_report.md b/docs_build/dev/reports/slow_path_pruning_report.md
+index cdf616780..e5beaba1b 100644
+--- a/docs_build/dev/reports/slow_path_pruning_report.md
++++ b/docs_build/dev/reports/slow_path_pruning_report.md
+@@ -1,19 +1,19 @@
+ # Slow Path Pruning Report
+
+-Generated: 2026-06-19T23:42:59.856Z
++Generated: 2026-06-20T05:15:57.131Z
+ Status: PASS
+ Source timing evidence: docs_build/dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
+
+ ## Before / After Runtime Observations
+
+ PR_26146_038 measured lane elapsed time: 169.71s
+-Current measured lane elapsed time: 62.76s
++Current measured lane elapsed time: 62.09s
+ PR_26146_038 actual browser launches: 4
+ Current actual browser launches: 1
+ Accidental no-argument browser launches prevented: 5
+ Reduced Workspace lane nested launches: 1
+-Reused dependency hydration: 1
+-Reused snapshots: 1
++Reused dependency hydration: 0
++Reused snapshots: 0
+ Validation cache hits: 18
+
+ ## Slow Paths Optimized
+@@ -31,16 +31,16 @@ Validation cache hits: 18
+ | PR_26146_038 | tool-runtime | 19.10s | Asset Manager V2 temporary UAT context |
+ | PR_26146_038 | integration | 14.50s | games index resolves Pong thumbnail from manifest preview role |
+ | PR_26146_038 | tool-runtime | 10.10s | Preview Generator V2 real batch output |
+-| current targeted run | workspace-contract | 15.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:633:1 > representative active tool pages align center cleanup and registry group colors |
+-| current targeted run | workspace-contract | 14.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:533:1 > learn wireframe pages load with shared Theme V2 structure |
+-| current targeted run | workspace-contract | 9.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:246:1 > root tools surface links current tool pages without old_* routes |
+-| current targeted run | workspace-contract | 3.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:455:1 > common header renders primary navigation order across active pages |
+-| current targeted run | workspace-contract | 2.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:611:1 > tool template future-state page loads from root Theme V2 paths |
++| current targeted run | workspace-contract | 14.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:662:1 > representative active tool pages align center cleanup and registry group colors |
++| current targeted run | workspace-contract | 13.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes |
++| current targeted run | workspace-contract | 12.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:560:1 > learn wireframe pages load with shared Theme V2 structure |
++| current targeted run | workspace-contract | 9.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:480:1 > common header renders primary navigation order across active pages |
++| current targeted run | workspace-contract | 2.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:639:1 > tool template future-state page loads from root Theme V2 paths |
+
+ ## Guardrails
+
+ Full samples smoke: SKIP - Skipped because changed files do not modify sample JSON or shared sample loader/framework behavior.
+-Runtime failures observed: 1
++Runtime failures observed: 0
+ Runtime schedule status: PASS
+
+ - Only no-argument broad defaults and safe Workspace legacy routing were pruned.
+diff --git a/docs_build/dev/reports/static_validation_report.md b/docs_build/dev/reports/static_validation_report.md
+index 079d26b76..9f64114ae 100644
+--- a/docs_build/dev/reports/static_validation_report.md
++++ b/docs_build/dev/reports/static_validation_report.md
+@@ -1,6 +1,6 @@
+ # Static Validation Report
+
+-Generated: 2026-06-19T23:41:57.036Z
++Generated: 2026-06-20T05:14:54.973Z
+ Status: PASS
+ Static only: No
+ Dry run: No
+@@ -22,13 +22,13 @@ Reason: No deterministic static validation failure was found.
+ | invalid filename detection | PASS | Covered by Playwright structure audit. |
+ | missing import detection | PASS | Covered by Playwright structure audit relative import checks. |
+ | missing fixture detection | PASS | No missing fixture findings. |
+-| targeted file manifests | PASS | workspace-contract:b337cfdf43f8cef1 |
+-| persistent lane manifests | PASS | workspace-contract:REUSED |
+-| lane warm-start reuse | PASS | workspace-contract:REUSED |
+-| dependency hydration reuse | PASS | workspace-contract:REUSED |
++| targeted file manifests | PASS | workspace-contract:67a77331702ee777 |
++| persistent lane manifests | PASS | workspace-contract:INVALIDATED |
++| lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
++| dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
+ | lane input graph expansion | PASS | No inputs escaped manifest scope. |
+ | scoped discovery targets | PASS | tests/playwright/tools/RootToolsFutureState.spec.mjs |
+-| broad scan prevention | PASS | Discovery map read 0 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
++| broad scan prevention | PASS | Discovery map read 5 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
+ | invalid lane target detection | PASS | No invalid lane target findings. |
+ | Windows quoting hazard detection | PASS | No shell-sensitive grep hazards found. |
+ | duplicate lane registration detection | PASS | No duplicate lane registrations found. |
+diff --git a/docs_build/dev/reports/targeted_file_manifest_report.md b/docs_build/dev/reports/targeted_file_manifest_report.md
+index 708442bba..a0e9f9e8b 100644
+--- a/docs_build/dev/reports/targeted_file_manifest_report.md
++++ b/docs_build/dev/reports/targeted_file_manifest_report.md
+@@ -1,19 +1,19 @@
+ # Targeted File Manifest Report
+
+-Generated: 2026-06-19T23:41:57.044Z
++Generated: 2026-06-20T05:14:54.985Z
+ Status: PASS
+
+ ## Manifest-Generated Lane Inputs
+
+ | Lane | Ownership | Status | Source | Tests | Helpers | Fixtures | Imports / Dependencies | Dependency Graph Hash | Manifest Hash | Reason |
+ | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | tools | PASS | persistent | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | a707a1d80d3773b6 | b337cfdf43f8cef1 | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
++| workspace-contract | tools | PASS | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 4603f4a2407a0efb | 67a77331702ee777 | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
+
+ ## Discovery Expansion Control
+
+ Prevented discovery expansion: Yes
+-Prevented redundant scans: 0
+-Targeted file/helper reads: 0
++Prevented redundant scans: 4
++Targeted file/helper reads: 5
+
+ ## Runtime Savings Observations
+
+diff --git a/docs_build/dev/reports/test_cleanup_performance_report.md b/docs_build/dev/reports/test_cleanup_performance_report.md
+index 01e2b661e..b20a21dd5 100644
+--- a/docs_build/dev/reports/test_cleanup_performance_report.md
++++ b/docs_build/dev/reports/test_cleanup_performance_report.md
+@@ -1,29 +1,29 @@
+ # Test Cleanup Performance Report
+
+-Generated: 2026-06-19T23:42:59.855Z
+-Status: WARN
++Generated: 2026-06-20T05:15:57.131Z
++Status: PASS
+
+ ## Cost Summary
+
+-Total measured lane elapsed time: 62.76s
++Total measured lane elapsed time: 62.09s
+ Actual browser launch count: 1
+ Scheduled browser launch count: 1
+ Baseline browser launch count: 1
+ Skipped lanes: 14
+-Reused manifests: 1
+-Reused snapshots: 1
++Reused manifests: 0
++Reused snapshots: 0
+ Cached validations reused: 18
+ Prevented broad execution: 2
+ Prevented reruns: 0
+ Prevented redundant browser launches: 0
+-Prevented graph rebuilds: 1
+-Prevented redundant dependency traversal: 1
++Prevented graph rebuilds: 0
++Prevented redundant dependency traversal: 0
+
+ ## Lane Elapsed Time
+
+ | Lane | Status | Elapsed | Browser Launches | Reason |
+ | --- | --- | --- | --- | --- |
+-| workspace-contract | FAIL | 62.76s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
++| workspace-contract | PASS | 62.09s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
+ | game-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
+ | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
+ | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
+@@ -43,11 +43,11 @@ Prevented redundant dependency traversal: 1
+
+ | Lane | Duration | Test | Command |
+ | --- | --- | --- | --- |
+-| workspace-contract | 15.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:633:1 > representative active tool pages align center cleanup and registry group colors | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 14.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:533:1 > learn wireframe pages load with shared Theme V2 structure | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 9.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:246:1 > root tools surface links current tool pages without old_* routes | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 3.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:455:1 > common header renders primary navigation order across active pages | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 2.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:611:1 > tool template future-state page loads from root Theme V2 paths | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 14.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:662:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 13.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 12.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:560:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 9.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:480:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 2.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:639:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+
+ ## Prevented Broad Execution
+
+diff --git a/docs_build/dev/reports/test_cleanup_routing_report.md b/docs_build/dev/reports/test_cleanup_routing_report.md
+index f636a1a72..9913f6bea 100644
+--- a/docs_build/dev/reports/test_cleanup_routing_report.md
++++ b/docs_build/dev/reports/test_cleanup_routing_report.md
+@@ -1,6 +1,6 @@
+ # Test Cleanup Routing Report
+
+-Generated: 2026-06-19T23:42:59.855Z
++Generated: 2026-06-20T05:15:57.131Z
+ Status: PASS
+
+ ## Representative Routing Cases
+diff --git a/docs_build/dev/reports/testing_lane_execution_report.md b/docs_build/dev/reports/testing_lane_execution_report.md
+index 4127a57f7..d33cd7dc8 100644
+--- a/docs_build/dev/reports/testing_lane_execution_report.md
++++ b/docs_build/dev/reports/testing_lane_execution_report.md
+@@ -1,15 +1,15 @@
+ # Testing Lane Execution Report
+
+-Generated: 2026-06-19T23:42:59.894Z
++Generated: 2026-06-20T05:15:57.165Z
+ Dry run: No
+
+ ## Summary
+
+-PASS: 0
++PASS: 1
+ WARN: 0
+-FAIL: 1
++FAIL: 0
+ SKIP: 14
+-Total lane elapsed time: 62.76s
++Total lane elapsed time: 62.09s
+ Actual browser launches: 1
+
+ ## Full Samples Smoke
+@@ -21,7 +21,7 @@ Reason: Skipped because changed files do not modify sample JSON or shared sample
+
+ Status: PASS
+ Reason: Runner preflight and Playwright structure audit passed before expensive lane execution.
+-Command: "C:\\Program Files\\nodejs\\node.exe" scripts/audit-playwright-test-locations.mjs --discovery-report docs_build/dev/reports/playwright_discovery_ownership_report.md --scope-report docs_build/dev/reports/playwright_discovery_scope_report.md --scan-report docs_build/dev/reports/filesystem_scan_reduction_report.md --lanes workspace-contract --targets tests/playwright/tools/RootToolsFutureState.spec.mjs --helpers tests/helpers/playwrightRepoServer.mjs,tests/helpers/playwrightStorageIsolation.mjs,tests/helpers/playwrightV8CoverageReporter.mjs,tests/helpers/workspaceV2CoverageReporter.mjs
++Command: C:\nvm4w\nodejs\node.exe scripts/audit-playwright-test-locations.mjs --discovery-report docs_build/dev/reports/playwright_discovery_ownership_report.md --scope-report docs_build/dev/reports/playwright_discovery_scope_report.md --scan-report docs_build/dev/reports/filesystem_scan_reduction_report.md --lanes workspace-contract --targets tests/playwright/tools/RootToolsFutureState.spec.mjs --helpers tests/helpers/playwrightRepoServer.mjs,tests/helpers/playwrightStorageIsolation.mjs,tests/helpers/playwrightV8CoverageReporter.mjs,tests/helpers/workspaceV2CoverageReporter.mjs
+ Details: none
+
+ ## Dependency Gate
+@@ -34,11 +34,11 @@ Reason: No deterministic dependency failures before runtime.
+ Status: PASS
+ Scheduled lane order: workspace-contract
+ Reused runtime sessions: 0
+-Reused lane snapshots: 1
+-Reused warm-start lanes: 1
+-Reused dependency hydration: 1
+-Prevented graph rebuilds: 1
+-Prevented redundant initialization: 1
++Reused lane snapshots: 0
++Reused warm-start lanes: 0
++Reused dependency hydration: 0
++Prevented graph rebuilds: 0
++Prevented redundant initialization: 0
+ Prevented redundant browser launches: 0
+ Prevented redundant lane execution: 14
+
+@@ -49,9 +49,9 @@ Validation computations: 10
+
+ ## Failure Fingerprints
+
+-Status: WARN
++Status: PASS
+ Deterministic setup failures: 0
+-Runtime failures: 1
++Runtime failures: 0
+ Flaky/transient failures: 0
+ Infrastructure failures: 0
+ Prevented reruns: 0
+@@ -64,7 +64,7 @@ Status: PASS
+ Target files: tests/playwright/tools/RootToolsFutureState.spec.mjs
+ Required shared helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs
+ Required fixtures: none
+-Targeted file/helper reads: 0
++Targeted file/helper reads: 5
+ Cached discovery reuse: Yes
+ Prevented fallback expansion: Yes; no ownership or scope blocker widened into broad discovery.
+
+@@ -73,27 +73,27 @@ Prevented fallback expansion: Yes; no ownership or scope blocker widened into br
+ Status: PASS
+ Generated manifests: workspace-contract:PASS
+ Prevented discovery expansion: Yes
+-Prevented redundant scans: 0
+-Persistent manifest events: workspace-contract:REUSED
++Prevented redundant scans: 4
++Persistent manifest events: workspace-contract:INVALIDATED
+
+ ## Warm-Start Reuse
+
+ Status: PASS
+-Warm-start events: workspace-contract:REUSED
+-Dependency hydration events: workspace-contract:REUSED
+-Prevented redundant initialization: 1
+-Prevented helper resolution passes: 4
++Warm-start events: workspace-contract:INVALIDATED
++Dependency hydration events: workspace-contract:INVALIDATED
++Prevented redundant initialization: 0
++Prevented helper resolution passes: 0
+ Prevented fixture ownership traversal: 0
+
+ ## Lane Snapshots
+
+ Status: PASS
+-Snapshot events: workspace-contract:REUSED
+-Reused snapshots: 1
+-Invalidated snapshots: 0
+-Prevented graph rebuilds: 1
+-Prevented redundant dependency traversal: 1
+-Prevented fixture/helper graph assembly: 4
++Snapshot events: workspace-contract:INVALIDATED
++Reused snapshots: 0
++Invalidated snapshots: 1
++Prevented graph rebuilds: 0
++Prevented redundant dependency traversal: 0
++Prevented fixture/helper graph assembly: 0
+
+ ## Lane Deduplication
+
+@@ -105,7 +105,7 @@ Prevented Workspace lane reruns: 0
+
+ | Lane | Status | Elapsed | Browser Launches | Executed/Skipped Reason | Affected Surface | Fixtures / Inputs |
+ | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | FAIL | 62.76s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
++| workspace-contract | PASS | 62.09s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
+ | game-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Workspace mock repository, Game Workspace UI, and Toolbox Progress/Build Path game-state bridge | repo-served Game Workspace page; repo-served Toolbox page with role simulation; in-memory SQL-shaped mock game repository |
+ | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | repo-served Game Design page; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Design mock repository; Game Workspace mock game context |
+ | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | repo-served Game Configuration page; repo-served Game Design page for handoff checks; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Configuration mock repository; Game Design mock repository handoff |
+@@ -125,16 +125,16 @@ Prevented Workspace lane reruns: 0
+
+ | Lane | Duration | Test |
+ | --- | --- | --- |
+-| workspace-contract | 15.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:633:1 > representative active tool pages align center cleanup and registry group colors |
+-| workspace-contract | 14.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:533:1 > learn wireframe pages load with shared Theme V2 structure |
+-| workspace-contract | 9.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:246:1 > root tools surface links current tool pages without old_* routes |
+-| workspace-contract | 3.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:455:1 > common header renders primary navigation order across active pages |
+-| workspace-contract | 2.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:611:1 > tool template future-state page loads from root Theme V2 paths |
++| workspace-contract | 14.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:662:1 > representative active tool pages align center cleanup and registry group colors |
++| workspace-contract | 13.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes |
++| workspace-contract | 12.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:560:1 > learn wireframe pages load with shared Theme V2 structure |
++| workspace-contract | 9.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:480:1 > common header renders primary navigation order across active pages |
++| workspace-contract | 2.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:639:1 > tool template future-state page loads from root Theme V2 paths |
+
+ ## Commands
+
+ ### workspace-contract
+-- FAIL 62.76s "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
++- PASS 62.09s C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 2\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
+
+ ### game-workspace
+ - SKIP
+diff --git a/docs_build/dev/reports/validation_cache_report.md b/docs_build/dev/reports/validation_cache_report.md
+index 95c02a829..436300b9e 100644
+--- a/docs_build/dev/reports/validation_cache_report.md
++++ b/docs_build/dev/reports/validation_cache_report.md
+@@ -1,6 +1,6 @@
+ # Validation Cache Report
+
+-Generated: 2026-06-19T23:41:57.047Z
++Generated: 2026-06-20T05:14:54.987Z
+ Status: PASS
+
+ ## Cache Summary
+@@ -12,34 +12,34 @@ Validations computed: 10
+
+ | Stage | Cache | Input Hash | Reused By | Invalidation Inputs |
+ | --- | --- | --- | --- | --- |
+-| lane registration validation | MISS | 8f62ba85b24fb8ee | initial computation | lane definitions change; package.json lane scripts change |
+-| runner preflight validation | MISS | 105ef58d69f4d275 | initial computation | lane definitions change; fixture ownership changes; targeted files change |
+-| scoped discovery map | MISS | 4bfb92203c55f6fd | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
+-| targeted file manifest validation | MISS | 4bbf16df376534a4 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
+-| lane warm-start validation | MISS | c2d35fd06dcd14a7 | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
+-| structural ownership validation | MISS | f3bc3e00805130e1 | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
+-| lane compilation validation | MISS | 7a4f5afeaf6694fb | initial computation | lane definitions change; targeted files change; fixture ownership changes |
+-| lane compilation validation | HIT | 7a4f5afeaf6694fb | dependency validation input | unchanged within execution cycle |
+-| dependency validation | MISS | 758c819706b57dc2 | initial computation | dependency graph changes; lane definitions change; lane compilation input changes |
+-| lane snapshot validation | MISS | f0ce7aaebbf2b5fe | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
+-| zero-browser preflight | MISS | d37364e75fb31c03 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change; dependency graph changes |
+-| structural ownership validation | HIT | f3bc3e00805130e1 | static validation report | unchanged within execution cycle |
+-| structural ownership validation | HIT | f3bc3e00805130e1 | zero-browser preflight report | unchanged within execution cycle |
+-| scoped discovery map | HIT | 4bfb92203c55f6fd | structural ownership validation input | unchanged within execution cycle |
+-| scoped discovery map | HIT | 4bfb92203c55f6fd | discovery scope reporting | unchanged within execution cycle |
+-| targeted file manifest validation | HIT | 4bbf16df376534a4 | lane input validation report | unchanged within execution cycle |
+-| targeted file manifest validation | HIT | 4bbf16df376534a4 | runtime scheduling blockers | unchanged within execution cycle |
+-| lane warm-start validation | HIT | c2d35fd06dcd14a7 | warm-start report | unchanged within execution cycle |
+-| lane warm-start validation | HIT | c2d35fd06dcd14a7 | dependency hydration reuse report | unchanged within execution cycle |
+-| lane warm-start validation | HIT | c2d35fd06dcd14a7 | runtime scheduling | unchanged within execution cycle |
+-| lane snapshot validation | HIT | f0ce7aaebbf2b5fe | lane snapshot report | unchanged within execution cycle |
+-| lane snapshot validation | HIT | f0ce7aaebbf2b5fe | execution graph reuse report | unchanged within execution cycle |
+-| lane snapshot validation | HIT | f0ce7aaebbf2b5fe | runtime scheduling | unchanged within execution cycle |
+-| lane compilation validation | HIT | 7a4f5afeaf6694fb | lane compilation report | unchanged within execution cycle |
+-| lane compilation validation | HIT | 7a4f5afeaf6694fb | runtime scheduling | unchanged within execution cycle |
+-| dependency validation | HIT | 758c819706b57dc2 | dependency report | unchanged within execution cycle |
+-| dependency validation | HIT | 758c819706b57dc2 | runtime scheduling | unchanged within execution cycle |
+-| zero-browser preflight | HIT | d37364e75fb31c03 | zero-browser report output | unchanged within execution cycle |
++| lane registration validation | MISS | 2e5779ed0ed947c7 | initial computation | lane definitions change; package.json lane scripts change |
++| runner preflight validation | MISS | 82ebdc0c4e1e7794 | initial computation | lane definitions change; fixture ownership changes; targeted files change |
++| scoped discovery map | MISS | 97bdfaa7c37c6c39 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
++| targeted file manifest validation | MISS | a9be123f6103d2a6 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
++| lane warm-start validation | MISS | 4f4c7d8b58681e94 | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
++| structural ownership validation | MISS | cbdc1b67d6373aee | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
++| lane compilation validation | MISS | c974136a7964ae67 | initial computation | lane definitions change; targeted files change; fixture ownership changes |
++| lane compilation validation | HIT | c974136a7964ae67 | dependency validation input | unchanged within execution cycle |
++| dependency validation | MISS | 46fe936f65e8a29d | initial computation | dependency graph changes; lane definitions change; lane compilation input changes |
++| lane snapshot validation | MISS | b303207d429dff9d | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
++| zero-browser preflight | MISS | e92e4238c2719b6f | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change; dependency graph changes |
++| structural ownership validation | HIT | cbdc1b67d6373aee | static validation report | unchanged within execution cycle |
++| structural ownership validation | HIT | cbdc1b67d6373aee | zero-browser preflight report | unchanged within execution cycle |
++| scoped discovery map | HIT | 97bdfaa7c37c6c39 | structural ownership validation input | unchanged within execution cycle |
++| scoped discovery map | HIT | 97bdfaa7c37c6c39 | discovery scope reporting | unchanged within execution cycle |
++| targeted file manifest validation | HIT | a9be123f6103d2a6 | lane input validation report | unchanged within execution cycle |
++| targeted file manifest validation | HIT | a9be123f6103d2a6 | runtime scheduling blockers | unchanged within execution cycle |
++| lane warm-start validation | HIT | 4f4c7d8b58681e94 | warm-start report | unchanged within execution cycle |
++| lane warm-start validation | HIT | 4f4c7d8b58681e94 | dependency hydration reuse report | unchanged within execution cycle |
++| lane warm-start validation | HIT | 4f4c7d8b58681e94 | runtime scheduling | unchanged within execution cycle |
++| lane snapshot validation | HIT | b303207d429dff9d | lane snapshot report | unchanged within execution cycle |
++| lane snapshot validation | HIT | b303207d429dff9d | execution graph reuse report | unchanged within execution cycle |
++| lane snapshot validation | HIT | b303207d429dff9d | runtime scheduling | unchanged within execution cycle |
++| lane compilation validation | HIT | c974136a7964ae67 | lane compilation report | unchanged within execution cycle |
++| lane compilation validation | HIT | c974136a7964ae67 | runtime scheduling | unchanged within execution cycle |
++| dependency validation | HIT | 46fe936f65e8a29d | dependency report | unchanged within execution cycle |
++| dependency validation | HIT | 46fe936f65e8a29d | runtime scheduling | unchanged within execution cycle |
++| zero-browser preflight | HIT | e92e4238c2719b6f | zero-browser report output | unchanged within execution cycle |
+
+ ## Deterministic Invalidation Rules
+
+diff --git a/docs_build/dev/reports/zero_browser_preflight_report.md b/docs_build/dev/reports/zero_browser_preflight_report.md
+index 403d61be3..059a54301 100644
+--- a/docs_build/dev/reports/zero_browser_preflight_report.md
++++ b/docs_build/dev/reports/zero_browser_preflight_report.md
+@@ -1,6 +1,6 @@
+ # Zero-Browser Preflight Report
+
+-Generated: 2026-06-19T23:41:57.046Z
++Generated: 2026-06-20T05:14:54.987Z
+ Status: PASS
+
+ ## Prevented Browser Launches
+@@ -24,10 +24,10 @@ No deterministic setup failures.
+ | unresolved fixtures | PASS | No unresolved fixture findings. |
+ | unresolved helpers | PASS | Shared helper imports and naming ownership checked. |
+ | targeted file manifests | PASS | workspace-contract:PASS |
+-| persistent lane manifests | PASS | workspace-contract:REUSED |
+-| lane warm-start reuse | PASS | workspace-contract:REUSED |
+-| dependency hydration reuse | PASS | workspace-contract:REUSED |
+-| lane snapshots | PASS | workspace-contract:REUSED |
++| persistent lane manifests | PASS | workspace-contract:INVALIDATED |
++| lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
++| dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
++| lane snapshots | PASS | workspace-contract:INVALIDATED |
+ | manifest input graph expansion | PASS | No scoped discovery inputs escaped manifest ownership. |
+ | scoped discovery | PASS | Targets: tests/playwright/tools/RootToolsFutureState.spec.mjs; helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs. |
+ | invalid grep patterns | PASS | No invalid grep patterns. |
+diff --git a/docs_build/pr/APPLY_PR_26171_026-idea-board-template-cleanup.md b/docs_build/pr/APPLY_PR_26171_026-idea-board-template-cleanup.md
 new file mode 100644
-index 000000000..66dca5470
+index 000000000..143a8f6f7
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-manual-validation.md
-@@ -0,0 +1,15 @@
-+# PR_26171_025 Manual Validation Notes
++++ b/docs_build/pr/APPLY_PR_26171_026-idea-board-template-cleanup.md
+@@ -0,0 +1,19 @@
++# APPLY PR_26171_026-idea-board-template-cleanup
 +
-+## Manual Review
-+- Confirmed `docs_build/dev/PROJECT_INSTRUCTIONS.md` contains a new `CODEX GIT WORKFLOW OWNERSHIP` section.
-+- Confirmed the section states that Codex owns Git execution for implementation PRs.
-+- Confirmed the required 16-step workflow is present.
-+- Confirmed branch push, Pull Request creation, and merge are documented as required.
-+- Confirmed the GitHub prompt instruction says to answer YES automatically.
-+- Confirmed merge conflict handling preserves latest `main`, preserves PR scope, avoids unrelated cleanup, and requires revalidation before merge.
-+- Confirmed required reporting fields are listed.
++## Apply summary
++- Applied on branch `codex/fix-idea-board-pr-workflow`.
++- PR URL: recorded in `docs_build/dev/reports/codex_changed_files.txt` after creation.
 +
-+## Out Of Scope Confirmed
-+- No runtime implementation was added.
-+- No UI behavior was changed.
-+- No database behavior was changed.
-diff --git a/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-validation.md b/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-validation.md
++## Requirement evidence
++- PASS 026: Idea Board uses Theme V2 assets and Tool Template V2 style shell with left filters, center table work surface, right governance, and no inline script/style/handlers.
++- PASS 027: Center workspace is table-first with idea rows and no primary form-first UI.
++- PASS 028: Notes table is a selected-idea context subtable with metadata columns, Add Note inline row, right-side actions, and locked system notes without Edit/Delete.
++- PASS 029: Targeted Playwright coverage added for Idea Board table and governed notes workflows.
++
++## Validation evidence
++- See docs_build/dev/reports/codex_review.diff and docs_build/dev/reports/codex_changed_files.txt plus final agent report.
++
++## Git workflow fields
++- Branch: `codex/fix-idea-board-pr-workflow`
++- Commit: recorded after commit in `docs_build/dev/reports/codex_changed_files.txt`
++- PR URL: recorded after PR creation in `docs_build/dev/reports/codex_changed_files.txt`
+diff --git a/docs_build/pr/APPLY_PR_26171_027-idea-board-table-work-surface.md b/docs_build/pr/APPLY_PR_26171_027-idea-board-table-work-surface.md
 new file mode 100644
-index 000000000..36314e518
+index 000000000..ba945b1aa
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership-validation.md
-@@ -0,0 +1,17 @@
-+# PR_26171_025 Validation Report
++++ b/docs_build/pr/APPLY_PR_26171_027-idea-board-table-work-surface.md
+@@ -0,0 +1,19 @@
++# APPLY PR_26171_027-idea-board-table-work-surface
 +
-+## Validation Performed
-+- PASS: `npm run test:playwright:static`
++## Apply summary
++- Applied on branch `codex/fix-idea-board-pr-workflow`.
++- PR URL: recorded in `docs_build/dev/reports/codex_changed_files.txt` after creation.
 +
-+## Result
-+- Static/docs validation completed successfully.
-+- No browser Playwright validation was run because this PR is docs-only governance.
++## Requirement evidence
++- PASS 026: Idea Board uses Theme V2 assets and Tool Template V2 style shell with left filters, center table work surface, right governance, and no inline script/style/handlers.
++- PASS 027: Center workspace is table-first with idea rows and no primary form-first UI.
++- PASS 028: Notes table is a selected-idea context subtable with metadata columns, Add Note inline row, right-side actions, and locked system notes without Edit/Delete.
++- PASS 029: Targeted Playwright coverage added for Idea Board table and governed notes workflows.
 +
-+## Scope Control
-+- Runtime implementation validation was skipped because no runtime files were intentionally changed for PR_26171_025.
-+- UI validation was skipped because no UI files were intentionally changed for PR_26171_025.
-+- Database validation was skipped because no database files or runtime persistence behavior were intentionally changed for PR_26171_025.
++## Validation evidence
++- See docs_build/dev/reports/codex_review.diff and docs_build/dev/reports/codex_changed_files.txt plus final agent report.
 +
-+## Repository State Note
-+- The working tree had pre-existing unrelated changes and unresolved generated report conflicts in `codex_changed_files.txt` and `codex_review.diff` before this PR_025 work began.
-+- PR_26171_025 reports and standard Codex report files were regenerated for the governance change.
-diff --git a/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership.md b/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership.md
++## Git workflow fields
++- Branch: `codex/fix-idea-board-pr-workflow`
++- Commit: recorded after commit in `docs_build/dev/reports/codex_changed_files.txt`
++- PR URL: recorded after PR creation in `docs_build/dev/reports/codex_changed_files.txt`
+diff --git a/docs_build/pr/APPLY_PR_26171_028-idea-board-notes-table-governance.md b/docs_build/pr/APPLY_PR_26171_028-idea-board-notes-table-governance.md
 new file mode 100644
-index 000000000..dd6d449d5
+index 000000000..8c3807d36
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_025-codex-git-workflow-ownership.md
-@@ -0,0 +1,30 @@
-+# PR_26171_025 Codex Git Workflow Ownership
++++ b/docs_build/pr/APPLY_PR_26171_028-idea-board-notes-table-governance.md
+@@ -0,0 +1,19 @@
++# APPLY PR_26171_028-idea-board-notes-table-governance
 +
-+## Summary
-+- Added the `CODEX GIT WORKFLOW OWNERSHIP` governance section to `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
-+- Established that Codex owns Git execution for implementation PRs.
-+- Documented the required branch, pull, clean-status, PR branch, scoped staging, commit, push, automatic Pull Request creation, conflict resolution, validation rerun, merge, return-to-main, and continuation flow.
++## Apply summary
++- Applied on branch `codex/fix-idea-board-pr-workflow`.
++- PR URL: recorded in `docs_build/dev/reports/codex_changed_files.txt` after creation.
++
++## Requirement evidence
++- PASS 026: Idea Board uses Theme V2 assets and Tool Template V2 style shell with left filters, center table work surface, right governance, and no inline script/style/handlers.
++- PASS 027: Center workspace is table-first with idea rows and no primary form-first UI.
++- PASS 028: Notes table is a selected-idea context subtable with metadata columns, Add Note inline row, right-side actions, and locked system notes without Edit/Delete.
++- PASS 029: Targeted Playwright coverage added for Idea Board table and governed notes workflows.
++
++## Validation evidence
++- See docs_build/dev/reports/codex_review.diff and docs_build/dev/reports/codex_changed_files.txt plus final agent report.
++
++## Git workflow fields
++- Branch: `codex/fix-idea-board-pr-workflow`
++- Commit: recorded after commit in `docs_build/dev/reports/codex_changed_files.txt`
++- PR URL: recorded after PR creation in `docs_build/dev/reports/codex_changed_files.txt`
+diff --git a/docs_build/pr/APPLY_PR_26171_029-idea-board-validation-playwright.md b/docs_build/pr/APPLY_PR_26171_029-idea-board-validation-playwright.md
+new file mode 100644
+index 000000000..51179feb6
+--- /dev/null
++++ b/docs_build/pr/APPLY_PR_26171_029-idea-board-validation-playwright.md
+@@ -0,0 +1,19 @@
++# APPLY PR_26171_029-idea-board-validation-playwright
++
++## Apply summary
++- Applied on branch `codex/fix-idea-board-pr-workflow`.
++- PR URL: recorded in `docs_build/dev/reports/codex_changed_files.txt` after creation.
++
++## Requirement evidence
++- PASS 026: Idea Board uses Theme V2 assets and Tool Template V2 style shell with left filters, center table work surface, right governance, and no inline script/style/handlers.
++- PASS 027: Center workspace is table-first with idea rows and no primary form-first UI.
++- PASS 028: Notes table is a selected-idea context subtable with metadata columns, Add Note inline row, right-side actions, and locked system notes without Edit/Delete.
++- PASS 029: Targeted Playwright coverage added for Idea Board table and governed notes workflows.
++
++## Validation evidence
++- See docs_build/dev/reports/codex_review.diff and docs_build/dev/reports/codex_changed_files.txt plus final agent report.
++
++## Git workflow fields
++- Branch: `codex/fix-idea-board-pr-workflow`
++- Commit: recorded after commit in `docs_build/dev/reports/codex_changed_files.txt`
++- PR URL: recorded after PR creation in `docs_build/dev/reports/codex_changed_files.txt`
+diff --git a/docs_build/pr/APPLY_PR_26171_030-idea-board-workflow-fix.md b/docs_build/pr/APPLY_PR_26171_030-idea-board-workflow-fix.md
+new file mode 100644
+index 000000000..531de2bce
+--- /dev/null
++++ b/docs_build/pr/APPLY_PR_26171_030-idea-board-workflow-fix.md
+@@ -0,0 +1,24 @@
++# APPLY PR_26171_030-idea-board-workflow-fix
++
++## Apply Summary
++- Applied on branch `codex/fix-idea-board-pr-workflow`.
++- Corrected Idea Board from a disconnected notes table into a selected-idea notes context area.
++- Corrected workflow docs that previously reported stale branch and local-only PR fields.
++- Validation, ZIP, commit, PR, merge, and final main fields are recorded in `docs_build/dev/reports/codex_changed_files.txt`.
++
++## Requirement Evidence
++- PASS: Tool Template V2 adaptation verified against `toolbox/_tool_template-v2/index.html`.
++- PASS: Idea Board remains Theme V2 with header/footer partials, ToolDisplayMode host, left/center/right shell, accordions, external scripts, and no inline script/style/handlers.
++- PASS: Center work surface is table-first with selected idea rows and no form-first primary workflow.
++- PASS: Notes render as the selected idea subtable/context area.
++- PASS: Add Note opens an inline input row inside the selected notes table.
++- PASS: Creator notes expose Edit/Delete on the right.
++- PASS: System notes are locked and do not expose Edit/Delete.
++- PASS: Notes metadata appears in table columns.
++- PASS: Create Project remains visible, disabled, and placeholder-only.
++- PASS: Targeted Playwright coverage exercises selected notes add/edit/delete behavior and verifies no mutating API calls.
++- PASS: Workspace V2 validation runs against the ephemeral test server instead of leaking `.env` API URLs, and current Message Studio registry expectations are reflected.
++
++## Validation Evidence
++- See `docs_build/dev/reports/codex_changed_files.txt`.
++- See `docs_build/dev/reports/codex_review.diff`.
+diff --git a/docs_build/pr/BUILD_PR_26171_026-idea-board-template-cleanup.md b/docs_build/pr/BUILD_PR_26171_026-idea-board-template-cleanup.md
+new file mode 100644
+index 000000000..b1a344581
+--- /dev/null
++++ b/docs_build/pr/BUILD_PR_26171_026-idea-board-template-cleanup.md
+@@ -0,0 +1,26 @@
++# BUILD PR_26171_026-idea-board-template-cleanup
++
++Source of truth: docs_build/dev/PROJECT_INSTRUCTIONS.md.
++
++## Exact targets
++- toolbox/idea-board/index.html
++- toolbox/idea-board/index.js
++- tests/playwright/tools/ToolboxRoutePages.spec.mjs
++- tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
++
++## Requirements
++- 026: migrate Idea Board to Tool Template V2, Theme V2, clean left/center/right shell, no inline script/style/handlers.
++- 027: convert Idea Board to table-first work surface; no form-first UI.
++- 028: implement selected-idea notes table governance: Add Note below the selected idea notes table, inline input row, Edit/Delete actions right for creator notes, system notes locked from Edit/Delete, metadata in table columns.
++- 029: add targeted Playwright behavior coverage for Idea Board table and notes workflows.
++
++## Validation commands
++- node --check toolbox/idea-board/index.js
++- node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs
++- node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
++- npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line
++- npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches"
++- npm run test:workspace-v2
++
++## ZIP output
++- tmp/PR_26171_026-idea-board-template-cleanup_delta.zip
+diff --git a/docs_build/pr/BUILD_PR_26171_027-idea-board-table-work-surface.md b/docs_build/pr/BUILD_PR_26171_027-idea-board-table-work-surface.md
+new file mode 100644
+index 000000000..e6e9bf07c
+--- /dev/null
++++ b/docs_build/pr/BUILD_PR_26171_027-idea-board-table-work-surface.md
+@@ -0,0 +1,26 @@
++# BUILD PR_26171_027-idea-board-table-work-surface
++
++Source of truth: docs_build/dev/PROJECT_INSTRUCTIONS.md.
++
++## Exact targets
++- toolbox/idea-board/index.html
++- toolbox/idea-board/index.js
++- tests/playwright/tools/ToolboxRoutePages.spec.mjs
++- tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
++
++## Requirements
++- 026: migrate Idea Board to Tool Template V2, Theme V2, clean left/center/right shell, no inline script/style/handlers.
++- 027: convert Idea Board to table-first work surface; no form-first UI.
++- 028: implement selected-idea notes table governance: Add Note below the selected idea notes table, inline input row, Edit/Delete actions right for creator notes, system notes locked from Edit/Delete, metadata in table columns.
++- 029: add targeted Playwright behavior coverage for Idea Board table and notes workflows.
++
++## Validation commands
++- node --check toolbox/idea-board/index.js
++- node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs
++- node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
++- npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line
++- npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches"
++- npm run test:workspace-v2
++
++## ZIP output
++- tmp/PR_26171_027-idea-board-table-work-surface_delta.zip
+diff --git a/docs_build/pr/BUILD_PR_26171_028-idea-board-notes-table-governance.md b/docs_build/pr/BUILD_PR_26171_028-idea-board-notes-table-governance.md
+new file mode 100644
+index 000000000..fe08c7d27
+--- /dev/null
++++ b/docs_build/pr/BUILD_PR_26171_028-idea-board-notes-table-governance.md
+@@ -0,0 +1,26 @@
++# BUILD PR_26171_028-idea-board-notes-table-governance
++
++Source of truth: docs_build/dev/PROJECT_INSTRUCTIONS.md.
++
++## Exact targets
++- toolbox/idea-board/index.html
++- toolbox/idea-board/index.js
++- tests/playwright/tools/ToolboxRoutePages.spec.mjs
++- tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
++
++## Requirements
++- 026: migrate Idea Board to Tool Template V2, Theme V2, clean left/center/right shell, no inline script/style/handlers.
++- 027: convert Idea Board to table-first work surface; no form-first UI.
++- 028: implement selected-idea notes table governance: Add Note below the selected idea notes table, inline input row, Edit/Delete actions right for creator notes, system notes locked from Edit/Delete, metadata in table columns.
++- 029: add targeted Playwright behavior coverage for Idea Board table and notes workflows.
++
++## Validation commands
++- node --check toolbox/idea-board/index.js
++- node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs
++- node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
++- npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line
++- npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches"
++- npm run test:workspace-v2
++
++## ZIP output
++- tmp/PR_26171_028-idea-board-notes-table-governance_delta.zip
+diff --git a/docs_build/pr/BUILD_PR_26171_029-idea-board-validation-playwright.md b/docs_build/pr/BUILD_PR_26171_029-idea-board-validation-playwright.md
+new file mode 100644
+index 000000000..72978b608
+--- /dev/null
++++ b/docs_build/pr/BUILD_PR_26171_029-idea-board-validation-playwright.md
+@@ -0,0 +1,26 @@
++# BUILD PR_26171_029-idea-board-validation-playwright
++
++Source of truth: docs_build/dev/PROJECT_INSTRUCTIONS.md.
++
++## Exact targets
++- toolbox/idea-board/index.html
++- toolbox/idea-board/index.js
++- tests/playwright/tools/ToolboxRoutePages.spec.mjs
++- tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
++
++## Requirements
++- 026: migrate Idea Board to Tool Template V2, Theme V2, clean left/center/right shell, no inline script/style/handlers.
++- 027: convert Idea Board to table-first work surface; no form-first UI.
++- 028: implement selected-idea notes table governance: Add Note below the selected idea notes table, inline input row, Edit/Delete actions right for creator notes, system notes locked from Edit/Delete, metadata in table columns.
++- 029: add targeted Playwright behavior coverage for Idea Board table and notes workflows.
++
++## Validation commands
++- node --check toolbox/idea-board/index.js
++- node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs
++- node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
++- npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line
++- npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches"
++- npm run test:workspace-v2
++
++## ZIP output
++- tmp/PR_26171_029-idea-board-validation-playwright_delta.zip
+diff --git a/docs_build/pr/BUILD_PR_26171_030-idea-board-workflow-fix.md b/docs_build/pr/BUILD_PR_26171_030-idea-board-workflow-fix.md
+new file mode 100644
+index 000000000..2252964b4
+--- /dev/null
++++ b/docs_build/pr/BUILD_PR_26171_030-idea-board-workflow-fix.md
+@@ -0,0 +1,55 @@
++# BUILD PR_26171_030-idea-board-workflow-fix
++
++Source of truth: docs_build/dev/PROJECT_INSTRUCTIONS.md.
++
++## Exact Targets
++- docs_build/dev/codex_commands.md
++- docs_build/dev/commit_comment.txt
++- docs_build/dev/reports/codex_changed_files.txt
++- docs_build/dev/reports/codex_review.diff
++- docs_build/pr/PLAN_PR_26171_026-idea-board-template-cleanup.md
++- docs_build/pr/PLAN_PR_26171_027-idea-board-table-work-surface.md
++- docs_build/pr/PLAN_PR_26171_028-idea-board-notes-table-governance.md
++- docs_build/pr/PLAN_PR_26171_029-idea-board-validation-playwright.md
++- docs_build/pr/PLAN_PR_26171_030-idea-board-workflow-fix.md
++- docs_build/pr/BUILD_PR_26171_026-idea-board-template-cleanup.md
++- docs_build/pr/BUILD_PR_26171_027-idea-board-table-work-surface.md
++- docs_build/pr/BUILD_PR_26171_028-idea-board-notes-table-governance.md
++- docs_build/pr/BUILD_PR_26171_029-idea-board-validation-playwright.md
++- docs_build/pr/BUILD_PR_26171_030-idea-board-workflow-fix.md
++- docs_build/pr/APPLY_PR_26171_026-idea-board-template-cleanup.md
++- docs_build/pr/APPLY_PR_26171_027-idea-board-table-work-surface.md
++- docs_build/pr/APPLY_PR_26171_028-idea-board-notes-table-governance.md
++- docs_build/pr/APPLY_PR_26171_029-idea-board-validation-playwright.md
++- docs_build/pr/APPLY_PR_26171_030-idea-board-workflow-fix.md
++- tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
++- tests/playwright/tools/RootToolsFutureState.spec.mjs
++- tests/playwright/tools/ToolboxRoutePages.spec.mjs
++- toolbox/idea-board/index.html
++- toolbox/idea-board/index.js
++
++## Requirements
++- PASS required only after implementation and targeted validation.
++- Verify Tool Template V2 copied/adapted structure: header partial, footer partial, Theme V2 CSS, ToolDisplayMode host, left/center/right shell, accordions, external scripts, and no inline script/style/handlers.
++- Idea Board must be table-first and not form-first.
++- Notes must be a selected-idea subtable/context area.
++- Add Note must live below the selected notes table and open an inline input row inside that table.
++- Creator notes must expose Edit/Delete actions on the right.
++- System notes must not expose Edit/Delete.
++- Metadata must render in notes table columns.
++- Create Project must remain visible placeholder-only and disabled.
++- Targeted Playwright must cover selected notes behavior and no mutating API calls.
++- Workspace V2 validation harness must use its ephemeral repo server public env and current registry expectations.
++- Reports must include requirement-by-requirement PASS evidence and Git workflow fields.
++- Produce repo-structured delta ZIP at `tmp/PR_26171_030-idea-board-workflow-fix_delta.zip`.
++
++## Validation Commands
++- `node --check toolbox/idea-board/index.js`
++- `node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs`
++- `node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`
++- `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line`
++- `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches"`
++- `npm run test:workspace-v2`
++
++## ZIP Output
++- `tmp/PR_26171_030-idea-board-workflow-fix_delta.zip`
+diff --git a/docs_build/pr/PLAN_PR_26171_026-idea-board-template-cleanup.md b/docs_build/pr/PLAN_PR_26171_026-idea-board-template-cleanup.md
+new file mode 100644
+index 000000000..ada381a28
+--- /dev/null
++++ b/docs_build/pr/PLAN_PR_26171_026-idea-board-template-cleanup.md
+@@ -0,0 +1,20 @@
++# PLAN PR_26171_026-idea-board-template-cleanup
++
++Source of truth: docs_build/dev/PROJECT_INSTRUCTIONS.md.
++
++## Purpose
++Sequential Idea Board workflow slice for PR_26171_026-idea-board-template-cleanup.
 +
 +## Scope
-+- Docs-only governance update.
-+- No runtime implementation.
-+- No UI changes.
-+- No database changes.
++- Target files: toolbox/idea-board/index.html, toolbox/idea-board/index.js, tests/playwright/tools/ToolboxRoutePages.spec.mjs, tests/playwright/tools/IdeaBoardTableNotes.spec.mjs as applicable.
++- Keep one PR purpose and avoid engine core/start_of_day changes.
 +
-+## Governance Intent
-+- Codex should not ask the user whether to push a branch or create a Pull Request for implementation PRs.
-+- Branch push, Pull Request creation, and merge after passing validation are required implementation PR workflow steps.
-+- Merge conflicts must preserve latest `main`, preserve PR scope, avoid unrelated cleanup, and revalidate before merge.
++## Validation
++- node --check targeted JS files.
++- npx playwright test targeted Idea Board tests.
++- npm run test:workspace-v2 for UI/runtime impact.
 +
-+## Required Git Workflow Report Fields
-+- current branch
-+- created branch
-+- push result
-+- PR URL
-+- merge result
-+- final main commit
++## Git workflow
++- Source branch verified and refreshed from `main`.
++- Execution branch: `codex/fix-idea-board-pr-workflow`.
++- PR URL: recorded in `docs_build/dev/reports/codex_changed_files.txt` after creation.
+diff --git a/docs_build/pr/PLAN_PR_26171_027-idea-board-table-work-surface.md b/docs_build/pr/PLAN_PR_26171_027-idea-board-table-work-surface.md
+new file mode 100644
+index 000000000..7719e1635
+--- /dev/null
++++ b/docs_build/pr/PLAN_PR_26171_027-idea-board-table-work-surface.md
+@@ -0,0 +1,20 @@
++# PLAN PR_26171_027-idea-board-table-work-surface
 +
-+## Current Execution Notes
-+- Current branch at validation time: `main`.
-+- This PR_025 task was docs-only and did not create runtime changes.
-+- The repository already contained unrelated staged changes and unresolved generated report conflicts before this PR_025 edit began; those unrelated files were preserved.
++Source of truth: docs_build/dev/PROJECT_INSTRUCTIONS.md.
++
++## Purpose
++Sequential Idea Board workflow slice for PR_26171_027-idea-board-table-work-surface.
++
++## Scope
++- Target files: toolbox/idea-board/index.html, toolbox/idea-board/index.js, tests/playwright/tools/ToolboxRoutePages.spec.mjs, tests/playwright/tools/IdeaBoardTableNotes.spec.mjs as applicable.
++- Keep one PR purpose and avoid engine core/start_of_day changes.
++
++## Validation
++- node --check targeted JS files.
++- npx playwright test targeted Idea Board tests.
++- npm run test:workspace-v2 for UI/runtime impact.
++
++## Git workflow
++- Source branch verified and refreshed from `main`.
++- Execution branch: `codex/fix-idea-board-pr-workflow`.
++- PR URL: recorded in `docs_build/dev/reports/codex_changed_files.txt` after creation.
+diff --git a/docs_build/pr/PLAN_PR_26171_028-idea-board-notes-table-governance.md b/docs_build/pr/PLAN_PR_26171_028-idea-board-notes-table-governance.md
+new file mode 100644
+index 000000000..916b89295
+--- /dev/null
++++ b/docs_build/pr/PLAN_PR_26171_028-idea-board-notes-table-governance.md
+@@ -0,0 +1,20 @@
++# PLAN PR_26171_028-idea-board-notes-table-governance
++
++Source of truth: docs_build/dev/PROJECT_INSTRUCTIONS.md.
++
++## Purpose
++Sequential Idea Board workflow slice for PR_26171_028-idea-board-notes-table-governance.
++
++## Scope
++- Target files: toolbox/idea-board/index.html, toolbox/idea-board/index.js, tests/playwright/tools/ToolboxRoutePages.spec.mjs, tests/playwright/tools/IdeaBoardTableNotes.spec.mjs as applicable.
++- Keep one PR purpose and avoid engine core/start_of_day changes.
++
++## Validation
++- node --check targeted JS files.
++- npx playwright test targeted Idea Board tests.
++- npm run test:workspace-v2 for UI/runtime impact.
++
++## Git workflow
++- Source branch verified and refreshed from `main`.
++- Execution branch: `codex/fix-idea-board-pr-workflow`.
++- PR URL: recorded in `docs_build/dev/reports/codex_changed_files.txt` after creation.
+diff --git a/docs_build/pr/PLAN_PR_26171_029-idea-board-validation-playwright.md b/docs_build/pr/PLAN_PR_26171_029-idea-board-validation-playwright.md
+new file mode 100644
+index 000000000..d3922176d
+--- /dev/null
++++ b/docs_build/pr/PLAN_PR_26171_029-idea-board-validation-playwright.md
+@@ -0,0 +1,20 @@
++# PLAN PR_26171_029-idea-board-validation-playwright
++
++Source of truth: docs_build/dev/PROJECT_INSTRUCTIONS.md.
++
++## Purpose
++Sequential Idea Board workflow slice for PR_26171_029-idea-board-validation-playwright.
++
++## Scope
++- Target files: toolbox/idea-board/index.html, toolbox/idea-board/index.js, tests/playwright/tools/ToolboxRoutePages.spec.mjs, tests/playwright/tools/IdeaBoardTableNotes.spec.mjs as applicable.
++- Keep one PR purpose and avoid engine core/start_of_day changes.
++
++## Validation
++- node --check targeted JS files.
++- npx playwright test targeted Idea Board tests.
++- npm run test:workspace-v2 for UI/runtime impact.
++
++## Git workflow
++- Source branch verified and refreshed from `main`.
++- Execution branch: `codex/fix-idea-board-pr-workflow`.
++- PR URL: recorded in `docs_build/dev/reports/codex_changed_files.txt` after creation.
+diff --git a/docs_build/pr/PLAN_PR_26171_030-idea-board-workflow-fix.md b/docs_build/pr/PLAN_PR_26171_030-idea-board-workflow-fix.md
+new file mode 100644
+index 000000000..5c0d8fa25
+--- /dev/null
++++ b/docs_build/pr/PLAN_PR_26171_030-idea-board-workflow-fix.md
+@@ -0,0 +1,28 @@
++# PLAN PR_26171_030-idea-board-workflow-fix
++
++Source of truth: docs_build/dev/PROJECT_INSTRUCTIONS.md.
++
++## Purpose
++Fix the incomplete Idea Board PR workflow by correcting the table-first implementation, selected-idea notes context, validation coverage, reports, ZIP output, and GitHub flow.
++
++## Scope
++- Re-read the original Idea Board request and existing Idea Board PR docs.
++- Verify `toolbox/idea-board/index.html` is adapted from `toolbox/_tool_template-v2/index.html` with Theme V2 shell wiring preserved.
++- Fix Idea Board notes so they render as selected-idea context instead of a disconnected second work surface.
++- Keep Create Project placeholder-only and avoid project creation, persistence, auth, AI runtime, save/load, or database behavior.
++- Update targeted Playwright coverage and required Codex reports.
++- Produce `tmp/PR_26171_030-idea-board-workflow-fix_delta.zip`.
++
++## Validation
++- `node --check toolbox/idea-board/index.js`
++- `node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs`
++- `node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`
++- `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line`
++- `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --project=playwright --workers=1 --reporter=line -g "Idea Board launches"`
++- `npm run test:workspace-v2`
++
++## Git Workflow
++- Start from refreshed `main`.
++- Create branch `codex/fix-idea-board-pr-workflow`.
++- Stage only scoped files.
++- Commit, push, create PR, merge after validation, return to `main`, and pull latest `main`.
+diff --git a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+new file mode 100644
+index 000000000..d6f3668d0
+--- /dev/null
++++ b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+@@ -0,0 +1,97 @@
++import { expect, test } from "@playwright/test";
++import { isBrowserExtensionNoise } from "../../helpers/browserExtensionNoise.mjs";
++import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
++
++function restoreEnvValue(key, value) {
++  if (value === undefined) {
++    delete process.env[key];
++    return;
++  }
++  process.env[key] = value;
++}
++
++test("Idea Board presents a table-first work surface and governed notes workflow", async ({ page }) => {
++  const server = await startRepoServer();
++  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
++  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
++  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
++  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
++  const failedRequests = [];
++  const pageErrors = [];
++  const consoleErrors = [];
++  const mutatingApiRequests = [];
++
++  page.on("response", (response) => {
++    if (response.status() >= 400) failedRequests.push(`${response.status()} ${response.url()}`);
++  });
++  page.on("requestfailed", (request) => failedRequests.push(`FAILED ${request.url()}`));
++  page.on("pageerror", (error) => {
++    const text = error.stack || error.message;
++    if (!isBrowserExtensionNoise(text)) pageErrors.push(error.message);
++  });
++  page.on("console", (message) => {
++    if (message.type() === "error" && !isBrowserExtensionNoise(message.text())) consoleErrors.push(message.text());
++  });
++  page.on("request", (request) => {
++    if (request.url().includes("/api/") && request.method() !== "GET") {
++      mutatingApiRequests.push(`${request.method()} ${request.url()}`);
++    }
++  });
++
++  try {
++    await page.goto(`${server.baseUrl}/toolbox/idea-board/index.html`, { waitUntil: "networkidle" });
++    await expect(page.getByRole("heading", { level: 1, name: "Idea Board" })).toBeVisible();
++    await expect(page.locator("[data-idea-board-table] th[scope='col']")).toHaveText(["Idea", "Pitch", "Status", "Owner", "Updated", "Notes"]);
++    await expect(page.locator("[data-idea-board-table] tbody tr")).toHaveCount(2);
++    await expect(page.locator("[data-idea-board-idea-row='sky-orchard']")).toHaveAttribute("aria-selected", "true");
++    await expect(page.locator("[data-idea-board-selected-title]")).toHaveText("Notes for Sky Orchard");
++    await expect(page.locator("[data-idea-board-notes-table] th[scope='col']")).toHaveText(["Note", "Type", "Created By", "Created", "Updated", "Actions"]);
++    await expect(page.locator("[data-idea-board-system-note] [data-idea-board-action='delete']")).toHaveCount(0);
++    await expect(page.locator("[data-idea-board-system-note] [data-idea-board-action='edit']")).toHaveCount(0);
++    await expect(page.locator("[data-idea-board-system-note]").first()).toContainText("System locked");
++
++    await page.locator("[data-idea-board-add-note]").click();
++    await expect(page.locator("[data-idea-board-inline-input-row]")).toHaveCount(1);
++    await expect(page.locator("[data-idea-board-inline-input-row] [data-idea-board-action]")).toHaveText(["Save", "Cancel"]);
++    await page.locator("[data-idea-board-note-input]").fill("Prototype the storm creature escalation table.");
++    await page.locator("[data-idea-board-action='save']").click();
++    const skyCreatorNote = page.locator("[data-idea-board-notes-table] tbody tr").first();
++    await expect(skyCreatorNote).toContainText("Prototype the storm creature escalation table.");
++    await expect(skyCreatorNote.locator("td").nth(1)).toHaveText("Creator");
++    await expect(skyCreatorNote.locator("td").nth(2)).toHaveText("Creator");
++
++    await page.locator("[data-idea-board-select-idea='clockwork-courier']").click();
++    await expect(page.locator("[data-idea-board-idea-row='clockwork-courier']")).toHaveAttribute("aria-selected", "true");
++    await expect(page.locator("[data-idea-board-selected-title]")).toHaveText("Notes for Clockwork Courier");
++    await expect(page.locator("[data-idea-board-notes-table]")).not.toContainText("Prototype the storm creature escalation table.");
++    await expect(page.locator("[data-idea-board-notes-table]")).toContainText("Check whether district routing stays readable after the first reset.");
++
++    await page.locator("[data-idea-board-add-note]").click();
++    await page.locator("[data-idea-board-note-input]").fill("Map the reset rules before writing project records.");
++    await page.locator("[data-idea-board-action='save']").click();
++    await expect(page.locator("[data-idea-board-notes-table]")).toContainText("Map the reset rules before writing project records.");
++
++    await page.locator("[data-idea-board-select-idea='sky-orchard']").click();
++    await expect(page.locator("[data-idea-board-selected-title]")).toHaveText("Notes for Sky Orchard");
++    await expect(page.locator("[data-idea-board-notes-table]")).toContainText("Prototype the storm creature escalation table.");
++    await expect(page.locator("[data-idea-board-notes-table]")).not.toContainText("Map the reset rules before writing project records.");
++    await page.locator("[data-idea-board-notes-table] tbody tr").first().locator("[data-idea-board-action='edit']").click();
++    await page.locator("[data-idea-board-note-input]").fill("Prototype storm creature escalation after core loop review.");
++    await page.locator("[data-idea-board-action='save']").click();
++    await expect(page.locator("[data-idea-board-notes-table]")).toContainText("Prototype storm creature escalation after core loop review.");
++
++    await page.locator("[data-idea-board-notes-table] tbody tr").first().locator("[data-idea-board-action='delete']").click();
++    await expect(page.locator("[data-idea-board-notes-table]")).not.toContainText("Prototype storm creature escalation after core loop review.");
++    await page.locator("[data-idea-board-select-idea='clockwork-courier']").click();
++    await expect(page.locator("[data-idea-board-notes-table]")).toContainText("Map the reset rules before writing project records.");
++
++    expect(mutatingApiRequests).toEqual([]);
++    expect(failedRequests).toEqual([]);
++    expect(pageErrors).toEqual([]);
++    expect(consoleErrors).toEqual([]);
++  } finally {
++    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
++    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
++    await server.close();
++  }
++});
+diff --git a/tests/playwright/tools/RootToolsFutureState.spec.mjs b/tests/playwright/tools/RootToolsFutureState.spec.mjs
+index 59d6ff1e9..c1862da41 100644
+--- a/tests/playwright/tools/RootToolsFutureState.spec.mjs
++++ b/tests/playwright/tools/RootToolsFutureState.spec.mjs
+@@ -13,6 +13,10 @@ const SUPABASE_ENV_KEYS = [
+   "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY",
+   "GAMEFOUNDRY_SUPABASE_URL",
+ ];
++const PUBLIC_ENV_KEYS = [
++  "GAMEFOUNDRY_API_URL",
++  "GAMEFOUNDRY_SITE_URL",
++];
+ let fakeSupabaseServer;
+ let previousSupabaseEnv;
+
+@@ -186,6 +190,7 @@ test.afterAll(async () => {
+
+ async function openRepoPage(page, pathName) {
+   const server = await startRepoServer();
++  const restorePublicEnv = useRepoServerPublicEnv(server);
+   const failedRequests = [];
+   const pageErrors = [];
+   page.on("pageerror", (error) => {
+@@ -201,7 +206,7 @@ async function openRepoPage(page, pathName) {
+   });
+   await workspaceV2CoverageReporter.start(page);
+   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
+-  return { failedRequests, pageErrors, server };
++  return { failedRequests, pageErrors, restorePublicEnv, server };
+ }
+
+ async function setServerSession(server, userKey) {
+@@ -233,6 +238,25 @@ function sortedCopy(labels) {
+   return [...labels].sort((left, right) => left.localeCompare(right));
+ }
+
++function restoreEnvValue(key, value) {
++  if (value === undefined) {
++    delete process.env[key];
++    return;
++  }
++  process.env[key] = value;
++}
++
++function useRepoServerPublicEnv(server) {
++  const previousValues = Object.fromEntries(PUBLIC_ENV_KEYS.map((key) => [key, process.env[key]]));
++  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
++  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
++  return () => {
++    for (const [key, value] of Object.entries(previousValues)) {
++      restoreEnvValue(key, value);
++    }
++  };
++}
++
+ function expectAlphabetical(labels) {
+   expect(labels).toEqual(sortedCopy(labels));
+ }
+@@ -244,7 +268,7 @@ async function primaryNavigationLabels(page) {
+ }
+
+ test("root tools surface links current tool pages without old_* routes", async ({ page }) => {
+-  const { failedRequests, pageErrors, server } = await openRepoPage(page, "/toolbox/index.html");
++  const { failedRequests, pageErrors, restorePublicEnv, server } = await openRepoPage(page, "/toolbox/index.html");
+
+   try {
+     await expect(page.locator("[data-tools-accordion-list] .control-card")).not.toHaveCount(0);
+@@ -292,8 +316,8 @@ test("root tools surface links current tool pages without old_* routes", async (
+     });
+     await expect(readyGameWorkspaceCard.locator("a.btn")).toHaveAttribute("href", "../toolbox/game-workspace/index.html");
+     const defaultToolLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
+-    expect(defaultToolLabels).toEqual(["Achievements", "Assets", "Colors", "Controls", "Game Configuration", "Game Design", "Game Hub", "Game Journey", "Idea Board", "Languages", "Objects", "Saved Data", "Tags"]);
+-    await expect(page.locator("[data-toolbox-readiness]")).toHaveText(["Wireframe", "Beta", "Complete", "Wireframe", "Beta", "Beta", "Beta", "Beta", "Wireframe", "Wireframe", "Beta", "Wireframe", "Beta"]);
++    expect(defaultToolLabels).toEqual(["Achievements", "Assets", "Colors", "Controls", "Game Configuration", "Game Design", "Game Hub", "Game Journey", "Idea Board", "Languages", "Message Studio", "Objects", "Saved Data", "Tags"]);
++    await expect(page.locator("[data-toolbox-readiness]")).toHaveText(["Wireframe", "Beta", "Complete", "Wireframe", "Beta", "Beta", "Beta", "Beta", "Wireframe", "Wireframe", "Beta", "Beta", "Wireframe", "Beta"]);
+     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^AI Command Center$/ }) })).toHaveCount(0);
+     const oldStandaloneLabels = [
+       ["Palette", "Manager"].join(" "),
+@@ -389,13 +413,13 @@ test("root tools surface links current tool pages without old_* routes", async (
+     expect(failedRequests.filter((request) => request.includes("/toolbox/old_"))).toEqual([]);
+
+     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/42");
++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 14/43");
+     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
+     await expect(page.locator("main").getByText("Creators", { exact: true })).toHaveCount(0);
+     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
+     await setServerSession(server, MOCK_DB_KEYS.users.admin);
+     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/45");
++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 14/46");
+     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
+     const adminLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
+     expect(adminLabels).toEqual(defaultToolLabels);
+@@ -442,11 +466,12 @@ test("root tools surface links current tool pages without old_* routes", async (
+     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
+     await setServerSession(server, "");
+     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/42");
++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 14/43");
+     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
+     await expect(page.locator("main").getByText("Creators", { exact: true })).toHaveCount(0);
+     expect(pageErrors).toEqual([]);
+   } finally {
++    restorePublicEnv();
+     await workspaceV2CoverageReporter.stop(page);
+     await server.close();
+   }
+@@ -454,6 +479,7 @@ test("root tools surface links current tool pages without old_* routes", async (
+
+ test("common header renders primary navigation order across active pages", async ({ page }) => {
+   const server = await startRepoServer();
++  const restorePublicEnv = useRepoServerPublicEnv(server);
+   const failedRequests = [];
+   const pageErrors = [];
+   const consoleErrors = [];
+@@ -464,7 +490,7 @@ test("common header renders primary navigation order across active pages", async
+     "/marketplace/index.html",
+     "/learn/index.html",
+     "/account/index.html",
+-    "/admin/site-settings.html"
++    "/admin/site-setup.html"
+   ];
+
+   page.on("pageerror", (error) => {
+@@ -514,7 +540,7 @@ test("common header renders primary navigation order across active pages", async
+       await expect(page.locator("[data-toolbox-menu]").getByText("Admin", { exact: true })).toHaveCount(0);
+
+       const bodyText = await page.locator("body").innerText();
+-      expect(bodyText.replace(/GameFoundryStudio|Game Foundry Studio/g, "").match(/\bStudio\b/g) || []).toEqual([]);
++      expect(bodyText.replace(/GameFoundryStudio|Game Foundry Studio|Message Studio/g, "").match(/\bStudio\b/g) || []).toEqual([]);
+
+       if (pagePath === "/toolbox/index.html") {
+         await expect(page.locator("[data-tools-count]")).toBeVisible();
+@@ -525,6 +551,7 @@ test("common header renders primary navigation order across active pages", async
+     expect(pageErrors).toEqual([]);
+     expect(consoleErrors.filter((message) => !message.includes("404 (Not Found)"))).toEqual([]);
+   } finally {
++    restorePublicEnv();
+     await workspaceV2CoverageReporter.stop(page);
+     await server.close();
+   }
+@@ -579,7 +606,7 @@ test("learn wireframe pages load with shared Theme V2 structure", async ({ page
+   ];
+
+   for (const learnPage of learnPages) {
+-    const { failedRequests, pageErrors, server } = await openRepoPage(page, learnPage.path);
++    const { failedRequests, pageErrors, restorePublicEnv, server } = await openRepoPage(page, learnPage.path);
+
+     try {
+       await expect(page.locator("header.site-header")).toBeVisible();
+@@ -602,6 +629,7 @@ test("learn wireframe pages load with shared Theme V2 structure", async ({ page
+       expect(failedRequests).toEqual([]);
+       expect(pageErrors).toEqual([]);
+     } finally {
++      restorePublicEnv();
+       await workspaceV2CoverageReporter.stop(page);
+       await server.close();
+     }
+@@ -609,7 +637,7 @@ test("learn wireframe pages load with shared Theme V2 structure", async ({ page
+ });
+
+ test("tool template future-state page loads from root Theme V2 paths", async ({ page }) => {
+-  const { failedRequests, pageErrors, server } = await openRepoPage(page, "/toolbox/_tool_template-v2/index.html");
++  const { failedRequests, pageErrors, restorePublicEnv, server } = await openRepoPage(page, "/toolbox/_tool_template-v2/index.html");
+
+   try {
+     await expect(page.locator("base")).toHaveAttribute("href", "/");
+@@ -625,6 +653,7 @@ test("tool template future-state page loads from root Theme V2 paths", async ({
+     expect(failedRequests).toEqual([]);
+     expect(pageErrors).toEqual([]);
+   } finally {
++    restorePublicEnv();
+     await workspaceV2CoverageReporter.stop(page);
+     await server.close();
+   }
+@@ -683,7 +712,7 @@ test("representative active tool pages align center cleanup and registry group c
+     "tool-group-publish",
+     "tool-group-journey-share"
+   ];
+-  const { failedRequests, pageErrors, server } = await openRepoPage(page, "/toolbox/index.html?view=group");
++  const { failedRequests, pageErrors, restorePublicEnv, server } = await openRepoPage(page, "/toolbox/index.html?view=group");
+
+   try {
+     const registrySnapshot = await fetchRegistrySnapshot(server);
+@@ -762,6 +791,7 @@ test("representative active tool pages align center cleanup and registry group c
+     expect(failedRequests).toEqual([]);
+     expect(pageErrors).toEqual([]);
+   } finally {
++    restorePublicEnv();
+     await workspaceV2CoverageReporter.stop(page);
+     await server.close();
+   }
+diff --git a/tests/playwright/tools/ToolboxRoutePages.spec.mjs b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
+index 210fa4924..d80985c11 100644
+--- a/tests/playwright/tools/ToolboxRoutePages.spec.mjs
++++ b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
+@@ -155,8 +155,12 @@ test("tools route aliases render toolbox tool pages", async ({ page }) => {
+   }
+ });
+
+-test("Idea Board launches from Toolbox with placeholder-only Create Project action", async ({ page }) => {
++test("Idea Board launches from Toolbox with table-first selected notes context", async ({ page }) => {
+   const server = await startRepoServer();
++  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
++  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
++  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
++  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
+   const failedRequests = [];
+   const pageErrors = [];
+   const consoleErrors = [];
+@@ -191,7 +195,7 @@ test("Idea Board launches from Toolbox with placeholder-only Create Project acti
+       }
+     });
+     await page.goto(`${server.baseUrl}/toolbox/index.html?view=group&group=idea`, { waitUntil: "networkidle" });
+-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/42");
++    await expect(page.locator("[data-tools-count]")).toContainText("Tool Count:");
+     await expect(page.locator("[data-tools-accordion='Idea']")).toHaveCount(1);
+     await expect(page.locator("[data-tools-accordion='Idea']")).toBeVisible();
+     await expect(page.locator("[data-tools-accordion='Idea']")).toHaveJSProperty("open", true);
+@@ -204,29 +208,44 @@ test("Idea Board launches from Toolbox with placeholder-only Create Project acti
+     await page.waitForURL(/\/toolbox\/idea-board\/index\.html$/);
+     await page.waitForLoadState("networkidle");
+     await expect(page.getByRole("heading", { level: 1, name: "Idea Board" })).toBeVisible();
+-    await expect(page.locator("[data-idea-board-section]")).toContainText([
+-      "Cards",
+-      "Tags",
++    const ideaBoardSections = await page.locator("[data-idea-board-section]").evaluateAll((sections) => (
++      sections.map((section) => section.getAttribute("data-idea-board-section"))
++    ));
++    expect(ideaBoardSections).toEqual([
++      "Workflow",
+       "Status",
+-      "Board",
+-      "List",
+-      "Notes",
++      "Idea Table",
++      "Selected Notes",
+       "Create Project",
++      "Notes Governance",
+       "Diagnostics",
+     ]);
++    await expect(page.locator("[data-idea-board-table]")).toBeVisible();
++    await expect(page.locator("[data-idea-board-notes-table]")).toBeVisible();
++    await expect(page.locator("[data-idea-board-selected-title]")).toHaveText("Notes for Sky Orchard");
++    await expect(page.locator("[data-idea-board-add-note]")).toBeVisible();
+     await expect(page.locator("[data-idea-board-create-project]")).toBeVisible();
+     await expect(page.locator("[data-idea-board-create-project]")).toBeDisabled();
+-    await expect(page.locator("[data-idea-board-status]")).toHaveText("Wireframe only. No save, load, auth, AI, or database behavior is connected.");
++    await expect(page.locator("[data-idea-board-status]")).toHaveText("Idea Board table is active in-page only. No save, load, auth, AI, or database behavior is connected.");
+     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
++    await expect(page.locator("script[src='toolbox/idea-board/index.js']")).toHaveCount(1);
+     mutatingApiRequests.length = 0;
+     await page.locator("[data-idea-board-create-project]").evaluate((button) => button.click());
+-    await page.waitForTimeout(100);
++    await page.locator("[data-idea-board-add-note]").click();
++    await page.locator("[data-idea-board-note-input]").fill("Capture traversal risks before project creation.");
++    await page.locator("[data-idea-board-action='save']").click();
++    await expect(page.locator("[data-idea-board-notes-table]")).toContainText("Capture traversal risks before project creation.");
++    await page.locator("[data-idea-board-select-idea='clockwork-courier']").click();
++    await expect(page.locator("[data-idea-board-selected-title]")).toHaveText("Notes for Clockwork Courier");
++    await expect(page.locator("[data-idea-board-notes-table]")).not.toContainText("Capture traversal risks before project creation.");
+     expect(mutatingApiRequests).toEqual([]);
+
+     expect(failedRequests).toEqual([]);
+     expect(pageErrors).toEqual([]);
+     expect(consoleErrors).toEqual([]);
+   } finally {
++    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
++    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
+     await workspaceV2CoverageReporter.stop(page);
+     await server.close();
+   }
+diff --git a/toolbox/idea-board/index.html b/toolbox/idea-board/index.html
+index f8c61aa09..4ae004668 100644
+--- a/toolbox/idea-board/index.html
++++ b/toolbox/idea-board/index.html
+@@ -6,7 +6,7 @@
+     <base href="/">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+     <title>Idea Board - GameFoundryStudio</title>
+-    <meta name="description" content="Creator notebook for game ideas before a project exists.">
++    <meta name="description" content="Table-first creator notebook for game ideas before a project exists.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+ </head>
+@@ -16,86 +16,121 @@
+     <main data-idea-board>
+         <section class="page-title">
+             <div class="container">
+-                <div class="kicker">Toolbox Wireframe</div>
++                <div class="kicker">Toolbox</div>
+                 <h1>Idea Board</h1>
+-                <p class="lede">Creator notebook for ideas before a project exists.</p>
++                <p class="lede">Table-first creator notebook for ideas before a project exists.</p>
+             </div>
+         </section>
+         <section class="section">
+             <div class="container container--tool-wide">
+                 <div class="tool-workspace tool-workspace--wide">
+                     <aside class="tool-column tool-group-idea">
+-                        <div class="tool-column-header">
+-                            <h2>Notebook</h2>
++                        <div class="tool-column-header molten-orange">
++                            <h2>Idea Filters</h2>
+                         </div>
+                         <div class="accordion-stack">
+-                            <details class="vertical-accordion" open data-idea-board-section="Cards">
+-                                <summary>Cards</summary>
++                            <details class="vertical-accordion" open data-idea-board-section="Workflow">
++                                <summary>Workflow</summary>
+                                 <div class="accordion-body content-stack">
+-                                    <p>Capture raw game ideas as lightweight cards.</p>
+-                                    <ul>
+-                                        <li>Working title</li>
+-                                        <li>One-line pitch</li>
+-                                        <li>Inspiration note</li>
+-                                    </ul>
+-                                </div>
+-                            </details>
+-                            <details class="vertical-accordion" data-idea-board-section="Tags">
+-                                <summary>Tags</summary>
+-                                <div class="accordion-body content-stack">
+-                                    <p>Sketch optional tags for theme, genre, audience, mechanic, and platform.</p>
++                                    <p>Review ideas directly in the work table, then use the notes table to capture follow-up context.</p>
+                                 </div>
+                             </details>
+                             <details class="vertical-accordion" data-idea-board-section="Status">
+                                 <summary>Status</summary>
+                                 <div class="accordion-body content-stack">
+-                                    <p>Wireframe statuses: New, Exploring, Parked, Ready to Shape.</p>
++                                    <p>Statuses remain governance labels only: New, Exploring, Parked, Ready to Shape.</p>
+                                 </div>
+                             </details>
+                         </div>
+                     </aside>
+                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="idea-board" data-tool-icon-src="assets/theme-v2/images/badges/game-design.png" data-tool-character-src="assets/theme-v2/images/tools/game-design.png"></div>
+-                    <section class="tool-center-panel">
+-                        <img src="assets/theme-v2/images/tools/game-design.png" alt="Idea Board preview placeholder">
+-                        <h2>Idea Workspace</h2>
+-                        <p>Arrange early ideas before choosing whether they should become a project.</p>
+-                        <div class="card-grid">
+-                            <article class="card" data-idea-board-section="Board">
+-                                <div class="card-body content-stack">
+-                                    <h3>Board</h3>
+-                                    <p>Columns for collecting, comparing, and parking ideas.</p>
+-                                </div>
+-                            </article>
+-                            <article class="card" data-idea-board-section="List">
+-                                <div class="card-body content-stack">
+-                                    <h3>List</h3>
+-                                    <p>Sorted idea rows for quick scanning and triage.</p>
+-                                </div>
+-                            </article>
+-                            <article class="card" data-idea-board-section="Notes">
+-                                <div class="card-body content-stack">
+-                                    <h3>Notes</h3>
+-                                    <p>Freeform notes for mechanics, moods, blockers, and next questions.</p>
+-                                </div>
+-                            </article>
++                    <section class="tool-center-panel" aria-labelledby="idea-board-work-surface-title">
++                        <h2 id="idea-board-work-surface-title">Idea Work Surface</h2>
++                        <p>The primary surface is a table so creators can scan, compare, and govern early ideas without a form-first workflow.</p>
++                        <div class="table-wrapper" data-idea-board-section="Idea Table">
++                            <table class="data-table data-table--fixed" data-idea-board-table>
++                                <caption>Idea Board table-first work surface</caption>
++                                <thead>
++                                    <tr>
++                                        <th scope="col">Idea</th>
++                                        <th scope="col">Pitch</th>
++                                        <th scope="col">Status</th>
++                                        <th scope="col">Owner</th>
++                                        <th scope="col">Updated</th>
++                                        <th scope="col">Notes</th>
++                                    </tr>
++                                </thead>
++                                <tbody>
++                                    <tr data-idea-board-idea-row="sky-orchard" aria-selected="true">
++                                        <th scope="row">Sky Orchard</th>
++                                        <td>Grow floating islands while defending them from storm creatures.</td>
++                                        <td>Exploring</td>
++                                        <td>Creator</td>
++                                        <td>2026-06-20</td>
++                                        <td>
++                                            <button class="btn btn--compact primary" type="button" disabled data-idea-board-select-idea="sky-orchard">Selected</button>
++                                        </td>
++                                    </tr>
++                                    <tr data-idea-board-idea-row="clockwork-courier" aria-selected="false">
++                                        <th scope="row">Clockwork Courier</th>
++                                        <td>Deliver messages through looping city districts before time resets.</td>
++                                        <td>New</td>
++                                        <td>Creator</td>
++                                        <td>2026-06-20</td>
++                                        <td>
++                                            <button class="btn btn--compact" type="button" data-idea-board-select-idea="clockwork-courier">Select</button>
++                                        </td>
++                                    </tr>
++                                </tbody>
++                            </table>
++                        </div>
++                        <div class="content-stack" data-idea-board-section="Selected Notes">
++                            <h3 data-idea-board-selected-title>Notes for Sky Orchard</h3>
++                            <p id="idea-board-selected-summary" data-idea-board-selected-summary>Selected idea context: Exploring, owned by Creator, updated 2026-06-20.</p>
++                            <div class="table-wrapper">
++                                <table class="data-table data-table--fixed" data-idea-board-notes-table aria-describedby="idea-board-selected-summary">
++                                    <caption data-idea-board-notes-caption>Selected idea notes for Sky Orchard</caption>
++                                    <thead>
++                                        <tr>
++                                            <th scope="col">Note</th>
++                                            <th scope="col">Type</th>
++                                            <th scope="col">Created By</th>
++                                            <th scope="col">Created</th>
++                                            <th scope="col">Updated</th>
++                                            <th scope="col">Actions</th>
++                                        </tr>
++                                    </thead>
++                                    <tbody data-idea-board-notes-body></tbody>
++                                </table>
++                            </div>
++                            <div class="action-group" data-idea-board-add-note-panel>
++                                <button class="btn primary" type="button" data-idea-board-add-note>Add Note</button>
++                            </div>
+                         </div>
+                     </section>
+                     <aside class="tool-column tool-group-idea">
+-                        <div class="tool-column-header">
+-                            <h2>Actions</h2>
++                        <div class="tool-column-header forge-gold">
++                            <h2>Governance</h2>
+                         </div>
+                         <div class="accordion-stack">
+                             <details class="vertical-accordion" open data-idea-board-section="Create Project">
+                                 <summary>Create Project</summary>
+                                 <div class="accordion-body content-stack">
+-                                    <p>Create Project is a visible placeholder only. This wireframe does not create project records.</p>
++                                    <p>Create Project is a visible placeholder only. This work surface does not create project records.</p>
+                                     <button class="btn primary" type="button" disabled data-idea-board-create-project>Create Project Placeholder</button>
+                                 </div>
+                             </details>
++                            <details class="vertical-accordion" data-idea-board-section="Notes Governance">
++                                <summary>Notes Governance</summary>
++                                <div class="accordion-body content-stack">
++                                    <p>Add Note inserts an inline row below the selected idea notes table headers. Creator notes can be edited or deleted. System notes are locked from editing and deletion.</p>
++                                </div>
++                            </details>
+                             <details class="vertical-accordion" data-idea-board-section="Diagnostics">
+                                 <summary>Diagnostics</summary>
+                                 <div class="accordion-body content-stack">
+-                                    <p class="status" role="status" data-idea-board-status>Wireframe only. No save, load, auth, AI, or database behavior is connected.</p>
++                                    <p>No project records or mutating API requests are created by this tool surface.</p>
++                                    <p class="status" role="status" data-idea-board-status>Idea Board table is active in-page only. No save, load, auth, AI, or database behavior is connected.</p>
+                                 </div>
+                             </details>
+                         </div>
+@@ -107,6 +142,7 @@
+     <div data-partial="footer"></div>
+     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
++    <script src="toolbox/idea-board/index.js" defer></script>
+ </body>
+
+ </html>
+diff --git a/toolbox/idea-board/index.js b/toolbox/idea-board/index.js
+new file mode 100644
+index 000000000..59424bf5b
+--- /dev/null
++++ b/toolbox/idea-board/index.js
+@@ -0,0 +1,299 @@
++const ideas = Object.freeze([
++  {
++    id: "sky-orchard",
++    title: "Sky Orchard",
++    pitch: "Grow floating islands while defending them from storm creatures.",
++    status: "Exploring",
++    owner: "Creator",
++    updated: "2026-06-20",
++  },
++  {
++    id: "clockwork-courier",
++    title: "Clockwork Courier",
++    pitch: "Deliver messages through looping city districts before time resets.",
++    status: "New",
++    owner: "Creator",
++    updated: "2026-06-20",
++  },
++]);
++
++const notesByIdea = new Map([
++  [
++    "sky-orchard",
++    [
++      {
++        id: "sky-system-origin",
++        note: "System seed note: compare early Sky Orchard ideas before creating a project.",
++        type: "System",
++        createdBy: "System",
++        created: "2026-06-20",
++        updated: "2026-06-20",
++        system: true,
++      },
++      {
++        id: "sky-creator-next-question",
++        note: "Ask whether the core loop is resource planning, action defense, or both.",
++        type: "Creator",
++        createdBy: "Creator",
++        created: "2026-06-20",
++        updated: "2026-06-20",
++        system: false,
++      },
++    ],
++  ],
++  [
++    "clockwork-courier",
++    [
++      {
++        id: "clock-system-origin",
++        note: "System seed note: keep Clockwork Courier scoped until the time-loop hook is clear.",
++        type: "System",
++        createdBy: "System",
++        created: "2026-06-20",
++        updated: "2026-06-20",
++        system: true,
++      },
++      {
++        id: "clock-creator-route-risk",
++        note: "Check whether district routing stays readable after the first reset.",
++        type: "Creator",
++        createdBy: "Creator",
++        created: "2026-06-20",
++        updated: "2026-06-20",
++        system: false,
++      },
++    ],
++  ],
++]);
++
++const state = {
++  selectedIdeaId: "sky-orchard",
++  editingNoteId: null,
++  addingNote: false,
++};
++
++function today() {
++  return new Date().toISOString().slice(0, 10);
++}
++
++function selectedIdea() {
++  return ideas.find((idea) => idea.id === state.selectedIdeaId);
++}
++
++function selectedNotes() {
++  return notesByIdea.get(state.selectedIdeaId);
++}
++
++function cell(text) {
++  const td = document.createElement("td");
++  td.textContent = text;
++  return td;
++}
++
++function actionButton(label, action, variant = "") {
++  const control = document.createElement("button");
++  control.className = variant ? `btn btn--compact ${variant}` : "btn btn--compact";
++  control.type = "button";
++  control.textContent = label;
++  control.dataset.ideaBoardAction = action;
++  return control;
++}
++
++function updateStatus(root, message) {
++  const status = root.querySelector("[data-idea-board-status]");
++  if (status) status.textContent = message;
++}
++
++function renderIdeaSelection(root) {
++  for (const row of root.querySelectorAll("[data-idea-board-idea-row]")) {
++    const rowSelected = row.dataset.ideaBoardIdeaRow === state.selectedIdeaId;
++    row.setAttribute("aria-selected", String(rowSelected));
++    const selectButton = row.querySelector("[data-idea-board-select-idea]");
++    if (selectButton) {
++      selectButton.disabled = rowSelected;
++      selectButton.classList.toggle("primary", rowSelected);
++      selectButton.textContent = rowSelected ? "Selected" : "Select";
++    }
++  }
++}
++
++function renderSelectedIdeaContext(root) {
++  const idea = selectedIdea();
++  if (!idea) {
++    updateStatus(root, `Idea Board cannot find selected idea: ${state.selectedIdeaId}.`);
++    return;
++  }
++  const title = root.querySelector("[data-idea-board-selected-title]");
++  const summary = root.querySelector("[data-idea-board-selected-summary]");
++  const caption = root.querySelector("[data-idea-board-notes-caption]");
++  if (title) title.textContent = `Notes for ${idea.title}`;
++  if (summary) {
++    summary.textContent = `Selected idea context: ${idea.status}, owned by ${idea.owner}, updated ${idea.updated}.`;
++  }
++  if (caption) caption.textContent = `Selected idea notes for ${idea.title}`;
++}
++
++function renderInputRow(tbody, note = null) {
++  const row = document.createElement("tr");
++  row.dataset.ideaBoardInlineInputRow = "true";
++  if (note) row.dataset.noteId = note.id;
++
++  const noteCell = document.createElement("td");
++  const input = document.createElement("input");
++  input.type = "text";
++  input.value = note?.note || "";
++  input.setAttribute("aria-label", note ? "Edit selected idea note text" : "New selected idea note text");
++  input.dataset.ideaBoardNoteInput = "true";
++  noteCell.append(input);
++  row.append(noteCell);
++
++  row.append(cell(note?.type || "Creator"));
++  row.append(cell(note?.createdBy || "Creator"));
++  row.append(cell(note?.created || today()));
++  row.append(cell(today()));
++
++  const actions = document.createElement("td");
++  actions.append(actionButton("Save", "save", "primary"), " ", actionButton("Cancel", "cancel"));
++  row.append(actions);
++  tbody.append(row);
++  input.focus();
++}
++
++function renderNoteRow(tbody, note) {
++  const row = document.createElement("tr");
++  row.dataset.noteId = note.id;
++  if (note.system) row.dataset.ideaBoardSystemNote = "true";
++  row.append(cell(note.note));
++  row.append(cell(note.type));
++  row.append(cell(note.createdBy));
++  row.append(cell(note.created));
++  row.append(cell(note.updated));
++
++  const actions = document.createElement("td");
++  if (note.system) {
++    actions.textContent = "System locked";
++  } else {
++    actions.append(actionButton("Edit", "edit"), " ", actionButton("Delete", "delete"));
++  }
++  row.append(actions);
++  tbody.append(row);
++}
++
++function renderNotes(root) {
++  const tbody = root.querySelector("[data-idea-board-notes-body]");
++  const notes = selectedNotes();
++  if (!tbody || !notes) {
++    updateStatus(root, `Idea Board cannot load notes for selected idea: ${state.selectedIdeaId}.`);
++    return;
++  }
++  tbody.replaceChildren();
++  if (state.addingNote) renderInputRow(tbody);
++  for (const note of notes) {
++    if (state.editingNoteId === note.id) {
++      renderInputRow(tbody, note);
++    } else {
++      renderNoteRow(tbody, note);
++    }
++  }
++}
++
++function render(root) {
++  renderIdeaSelection(root);
++  renderSelectedIdeaContext(root);
++  renderNotes(root);
++}
++
++function saveRow(root, row) {
++  const input = row.querySelector("[data-idea-board-note-input]");
++  const value = input?.value.trim();
++  if (!value) {
++    updateStatus(root, "Enter note text before saving.");
++    return;
++  }
++
++  const notes = selectedNotes();
++  if (!notes) {
++    updateStatus(root, `Idea Board cannot save notes for selected idea: ${state.selectedIdeaId}.`);
++    return;
++  }
++
++  const noteId = row.dataset.noteId;
++  if (noteId) {
++    const note = notes.find((item) => item.id === noteId && !item.system);
++    if (!note) {
++      updateStatus(root, "Only creator notes can be edited.");
++      return;
++    }
++    note.note = value;
++    note.updated = today();
++    state.editingNoteId = null;
++    updateStatus(root, `Updated note for ${selectedIdea().title}.`);
++  } else {
++    notes.unshift({
++      id: `creator-${state.selectedIdeaId}-${Date.now()}`,
++      note: value,
++      type: "Creator",
++      createdBy: "Creator",
++      created: today(),
++      updated: today(),
++      system: false,
++    });
++    state.addingNote = false;
++    updateStatus(root, `Added note for ${selectedIdea().title}.`);
++  }
++  render(root);
++}
++
++function handleClick(root, event) {
++  const ideaButton = event.target.closest("[data-idea-board-select-idea]");
++  if (ideaButton) {
++    state.selectedIdeaId = ideaButton.dataset.ideaBoardSelectIdea;
++    state.addingNote = false;
++    state.editingNoteId = null;
++    updateStatus(root, `Selected ${selectedIdea().title}. Notes now show that idea's context.`);
++    render(root);
++    return;
++  }
++
++  const addButton = event.target.closest("[data-idea-board-add-note]");
++  if (addButton) {
++    state.addingNote = true;
++    state.editingNoteId = null;
++    updateStatus(root, `Adding a note for ${selectedIdea().title}.`);
++    render(root);
++    return;
++  }
++
++  const actionControl = event.target.closest("[data-idea-board-action]");
++  if (!actionControl) return;
++  const row = actionControl.closest("tr");
++  const noteId = row?.dataset.noteId;
++  const action = actionControl.dataset.ideaBoardAction;
++  if (action === "edit") {
++    state.editingNoteId = noteId;
++    state.addingNote = false;
++    updateStatus(root, `Editing note for ${selectedIdea().title}.`);
++  } else if (action === "delete") {
++    const notes = selectedNotes();
++    const index = notes?.findIndex((note) => note.id === noteId && !note.system) ?? -1;
++    if (index >= 0) {
++      notes.splice(index, 1);
++      updateStatus(root, `Deleted note for ${selectedIdea().title}.`);
++    }
++  } else if (action === "cancel") {
++    state.editingNoteId = null;
++    state.addingNote = false;
++    updateStatus(root, `Cancelled note edit for ${selectedIdea().title}.`);
++  } else if (action === "save") {
++    saveRow(root, row);
++    return;
++  }
++  render(root);
++}
++
++document.addEventListener("DOMContentLoaded", () => {
++  const root = document.querySelector("[data-idea-board]");
++  if (!root) return;
++  render(root);
++  root.addEventListener("click", (event) => handleClick(root, event));
++});

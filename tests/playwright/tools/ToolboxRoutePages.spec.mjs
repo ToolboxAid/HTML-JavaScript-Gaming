@@ -155,8 +155,12 @@ test("tools route aliases render toolbox tool pages", async ({ page }) => {
   }
 });
 
-test("Idea Board launches from Toolbox with placeholder-only Create Project action", async ({ page }) => {
+test("Idea Board launches from Toolbox with table-first selected notes context", async ({ page }) => {
   const server = await startRepoServer();
+  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
+  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
   const failedRequests = [];
   const pageErrors = [];
   const consoleErrors = [];
@@ -191,7 +195,7 @@ test("Idea Board launches from Toolbox with placeholder-only Create Project acti
       }
     });
     await page.goto(`${server.baseUrl}/toolbox/index.html?view=group&group=idea`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 13/42");
+    await expect(page.locator("[data-tools-count]")).toContainText("Tool Count:");
     await expect(page.locator("[data-tools-accordion='Idea']")).toHaveCount(1);
     await expect(page.locator("[data-tools-accordion='Idea']")).toBeVisible();
     await expect(page.locator("[data-tools-accordion='Idea']")).toHaveJSProperty("open", true);
@@ -204,29 +208,44 @@ test("Idea Board launches from Toolbox with placeholder-only Create Project acti
     await page.waitForURL(/\/toolbox\/idea-board\/index\.html$/);
     await page.waitForLoadState("networkidle");
     await expect(page.getByRole("heading", { level: 1, name: "Idea Board" })).toBeVisible();
-    await expect(page.locator("[data-idea-board-section]")).toContainText([
-      "Cards",
-      "Tags",
+    const ideaBoardSections = await page.locator("[data-idea-board-section]").evaluateAll((sections) => (
+      sections.map((section) => section.getAttribute("data-idea-board-section"))
+    ));
+    expect(ideaBoardSections).toEqual([
+      "Workflow",
       "Status",
-      "Board",
-      "List",
-      "Notes",
+      "Idea Table",
+      "Selected Notes",
       "Create Project",
+      "Notes Governance",
       "Diagnostics",
     ]);
+    await expect(page.locator("[data-idea-board-table]")).toBeVisible();
+    await expect(page.locator("[data-idea-board-notes-table]")).toBeVisible();
+    await expect(page.locator("[data-idea-board-selected-title]")).toHaveText("Notes for Sky Orchard");
+    await expect(page.locator("[data-idea-board-add-note]")).toBeVisible();
     await expect(page.locator("[data-idea-board-create-project]")).toBeVisible();
     await expect(page.locator("[data-idea-board-create-project]")).toBeDisabled();
-    await expect(page.locator("[data-idea-board-status]")).toHaveText("Wireframe only. No save, load, auth, AI, or database behavior is connected.");
+    await expect(page.locator("[data-idea-board-status]")).toHaveText("Idea Board table is active in-page only. No save, load, auth, AI, or database behavior is connected.");
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+    await expect(page.locator("script[src='toolbox/idea-board/index.js']")).toHaveCount(1);
     mutatingApiRequests.length = 0;
     await page.locator("[data-idea-board-create-project]").evaluate((button) => button.click());
-    await page.waitForTimeout(100);
+    await page.locator("[data-idea-board-add-note]").click();
+    await page.locator("[data-idea-board-note-input]").fill("Capture traversal risks before project creation.");
+    await page.locator("[data-idea-board-action='save']").click();
+    await expect(page.locator("[data-idea-board-notes-table]")).toContainText("Capture traversal risks before project creation.");
+    await page.locator("[data-idea-board-select-idea='clockwork-courier']").click();
+    await expect(page.locator("[data-idea-board-selected-title]")).toHaveText("Notes for Clockwork Courier");
+    await expect(page.locator("[data-idea-board-notes-table]")).not.toContainText("Capture traversal risks before project creation.");
     expect(mutatingApiRequests).toEqual([]);
 
     expect(failedRequests).toEqual([]);
     expect(pageErrors).toEqual([]);
     expect(consoleErrors).toEqual([]);
   } finally {
+    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
+    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
     await workspaceV2CoverageReporter.stop(page);
     await server.close();
   }

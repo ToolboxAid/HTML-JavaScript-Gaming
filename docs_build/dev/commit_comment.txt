@@ -1,1 +1,5 @@
-Add browser-local Messages speech preview - PR_26171_010
+PR_26171_030 idea board workflow fix
+
+- fix Idea Board selected-idea notes context
+- update targeted Playwright and workspace-v2 validation harness
+- refresh Idea Board workflow docs and reports
