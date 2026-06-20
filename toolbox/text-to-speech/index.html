@@ -5,8 +5,8 @@
     <meta charset="utf-8">
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Voice Output - GameFoundryStudio</title>
-    <meta name="description" content="Voice Output Toolbox wireframe. Plan generated narration and spoken output workflows.">
+    <title>Text To Speech - GameFoundryStudio</title>
+    <meta name="description" content="Text To Speech Theme V2 shell for message-owned text planning and future Audio-owned generated voice assets.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -16,9 +16,9 @@
     <main>
         <section class="page-title">
             <div class="container">
-                <div class="kicker">Toolbox / Voice Output</div>
-                <h1>Voice Output</h1>
-                <p class="lede">Plan generated narration and spoken output workflows. Static shell only; no database, persistence, save, load, or runtime behavior is implemented.</p>
+                <div class="kicker">Project Workspace / Audio</div>
+                <h1>Text To Speech</h1>
+                <p class="lede">Plan spoken game messages while keeping message text Design-owned and generated voice/audio assets Audio-owned.</p>
             </div>
         </section>
         <section class="section">
@@ -26,18 +26,57 @@
                 <div class="tool-workspace tool-workspace--wide">
                     <aside class="tool-column tool-group-audio">
                         <div class="tool-column-header">
-                            <h2>Voice Output</h2>
+                            <h2>Message Model</h2>
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Setup</summary>
-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
+                                <summary>Design-owned fields</summary>
+                                <div class="accordion-body content-stack">
+                                    <p>Message, emotion, voice profile, language, status, and creator metadata belong to Design.</p>
+                                    <p>Generated voice files, provider artifacts, and exports belong to Audio.</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Status Foundation</summary>
+                                <div class="accordion-body content-stack">
+                                    <p>Draft, ready for preview, pending generation, generated, exported, blocked, and archived states are modeled.</p>
+                                </div>
                             </details>
                         </div>
                     </aside>
-                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="text-to-speech" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
-                    <section class="tool-center-panel"><h2>Workspace</h2>
-                        <p>Plan generated narration and spoken output workflows. This page preserves the shared Theme V2 tool template structure for future rebuild work.</p>
+                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="text-to-speech" data-tool-icon-src="assets/theme-v2/images/badges/text-to-speech.png" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
+                    <section class="tool-center-panel">
+                        <h2>Preview, Generate, Export</h2>
+                        <p>This workflow shell intentionally has no external provider integration, fake generation, or silent fallback.</p>
+                        <div class="grid cols-3" aria-label="Text To Speech workflow actions">
+                            <article class="mini-stat"><strong>1</strong>Preview request</article>
+                            <article class="mini-stat"><strong>0</strong>Providers implemented</article>
+                            <article class="mini-stat"><strong>Audio</strong>Generated owner</article>
+                        </div>
+                        <article class="card">
+                            <div class="card-body content-stack">
+                                <div>
+                                    <div class="kicker">Workflow Shell</div>
+                                    <h3>Provider-free actions</h3>
+                                </div>
+                                <p>Preview can validate message readiness. Generate and export stay blocked until a real provider and Audio-owned generated asset exist.</p>
+                                <div class="action-group">
+                                    <button class="btn" type="button" data-tts-action="preview">Preview Readiness</button>
+                                    <button class="btn" type="button" data-tts-action="generate">Generate Voice</button>
+                                    <button class="btn" type="button" data-tts-action="export">Export Audio</button>
+                                </div>
+                                <div class="status" role="status" data-tts-workflow-status>Loading Text To Speech shell.</div>
+                            </div>
+                        </article>
+                        <article class="card">
+                            <div class="card-body content-stack">
+                                <div>
+                                    <div class="kicker">Provider Adapter Plan</div>
+                                    <h3>Future provider paths</h3>
+                                </div>
+                                <ul data-tts-provider-plan></ul>
+                            </div>
+                        </article>
                     </section>
                     <aside class="tool-column tool-group-audio">
                         <div class="tool-column-header">
@@ -45,8 +84,18 @@
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Output</summary>
-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
+                                <summary>Ownership Boundary</summary>
+                                <div class="accordion-body content-stack">
+                                    <p>Design owns script intent and delivery metadata.</p>
+                                    <p>Audio owns generated clips and export-ready files.</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Blocked States</summary>
+                                <div class="accordion-body content-stack">
+                                    <p>Generation is visibly blocked when no provider adapter is implemented.</p>
+                                    <p>Export is visibly blocked when no generated Audio-owned asset exists.</p>
+                                </div>
                             </details>
                         </div>
                     </aside>
@@ -57,6 +106,7 @@
     <div data-partial="footer"></div>
     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+    <script type="module" src="toolbox/text-to-speech/text2speech.js"></script>
 </body>
 
 </html>
