@@ -31,7 +31,13 @@ function createMessageStudioTtsServiceRegistry({
           ok: false,
         };
       }
-      return engine.speak(options);
+      const selectedVoice = String(options?.voice || "").trim()
+        || engine.voiceOptions()[0]?.value
+        || "";
+      return engine.speak({
+        ...options,
+        voice: selectedVoice,
+      });
     },
   };
 }

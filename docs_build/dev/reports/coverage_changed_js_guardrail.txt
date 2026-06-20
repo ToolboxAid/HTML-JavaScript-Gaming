@@ -7,6 +7,8 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
 (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 204/204; executed functions 9/14
+(87%) toolbox/messages/messages.js - executed lines 1233/1233; executed functions 103/118
+(100%) toolbox/messages/message-tts-service-registry.js - executed lines 42/42; executed functions 6/6
 
 Guardrail warnings:
 (100%) none - no changed runtime JS coverage warnings
