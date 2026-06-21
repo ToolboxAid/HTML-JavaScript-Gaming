@@ -1,13 +1,19 @@
-docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/PR_26171_BETA_083-message-tts-polish-and-dead-code-dead-code-cleanup-checklist.md
-docs_build/dev/reports/PR_26171_BETA_083-message-tts-polish-and-dead-code-manual-validation-notes.md
-docs_build/dev/reports/PR_26171_BETA_083-message-tts-polish-and-dead-code-message-tts-ux-checklist.md
-docs_build/dev/reports/PR_26171_BETA_083-message-tts-polish-and-dead-code-validation-report.md
-docs_build/dev/reports/PR_26171_BETA_083-message-tts-polish-and-dead-code.md
-tests/playwright/tools/MessagesTool.spec.mjs
-tests/playwright/tools/TextToSpeechFunctional.spec.mjs
-toolbox/messages/index.html
-toolbox/messages/messages.js
-toolbox/text-to-speech/index.html
-toolbox/text-to-speech/text2speech.js
+# PR_26171_018-local-api-startup-diagnostics changed files
+
+## Source/test changes
+- scripts/start-local-api-server.mjs
+- tests/dev-runtime/LocalApiStartupLogging.test.mjs
+
+## Required reports
+- docs_build/dev/reports/codex_review.diff
+- docs_build/dev/reports/codex_changed_files.txt
+- docs_build/dev/reports/PR_26171_018-local-api-startup-diagnostics.md
+- docs_build/dev/reports/PR_26171_018-local-api-startup-diagnostics-validation-report.md
+- docs_build/dev/reports/PR_26171_018-local-api-startup-diagnostics-manual-validation-notes.md
+
+## Local package artifact
+- tmp/PR_26171_018-local-api-startup-diagnostics_delta.zip
+
+## Validation evidence
+- npm run test:workspace-v2: PASS
+- npm run dev:local-api startup capture: PASS
