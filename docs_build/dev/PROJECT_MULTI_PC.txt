@@ -1,8 +1,8 @@
 I think this is the right operating model for GFS at your current stage, with a few modifications to fit how we've already organized the project.
 
-Master Control Responsibilities
+OWNER Responsibilities
 
-Master Control should own:
+OWNER should own:
 
 Product roadmap
 Tool priority
@@ -189,7 +189,7 @@ These become valuable after creators can build complete games.
 
 Immediate Queue
 
-If we start using Master Control today, my queue would be:
+If we start using OWNER today, my queue would be:
 
 Team Alpha
 PR_26171_001-game-journey-completion-model
@@ -232,7 +232,7 @@ No TTS generation yet.
 
 This establishes the foundation for dialog, narration, and speech consistency across games.
 
-Master Control Rule
+OWNER Rule
 
 Before any new PR is created, ask:
 
@@ -257,7 +257,7 @@ until a complete game can be built start-to-finish entirely inside Game Foundry 
 ----------------------------------------------------------------------------------------
 If your goal is **maximum throughput**, I would have the three chats play different roles.
 
-## Master Control
+## OWNER
 
 Don't build anything here.
 
@@ -336,7 +336,7 @@ it keeps building there.
 
 ---
 
-## What should Master Control focus on?
+## What should OWNER focus on?
 
 Right now, for GFS, I would prioritize:
 
@@ -368,7 +368,7 @@ So I'd keep IST mostly as infrastructure work and focus development on tool comp
 
 ### 2. Create Tool Ownership Map
 
-Master Control should assign ownership:
+OWNER should assign ownership:
 
 ```text
 Team Alpha
@@ -411,9 +411,9 @@ Never have both teams working in the same tool at the same time.
 
 ## What I can do
 
-I can help you turn Master Control into a scheduler.
+I can help you turn OWNER into a scheduler.
 
-For example, in Master Control you can ask:
+For example, in OWNER you can ask:
 
 ```text
 Given everything we know about GFS:
@@ -424,7 +424,7 @@ What should Team Beta build next?
 Generate the next PR for each.
 ```
 
-Then Master Control outputs:
+Then OWNER outputs:
 
 ```text
 Team Alpha:
@@ -438,7 +438,7 @@ You paste those into the two development chats.
 
 Both Codex sessions work simultaneously.
 
-Then when PRs come back, Master Control decides:
+Then when PRs come back, OWNER decides:
 
 ```text
 Merge
@@ -478,6 +478,25 @@ Historical examples:
 - Older parity-only examples such as `PR_26171_064-*` and `PR_26171_063-*` are historical only.
 
 Owner map:
+
+Team OWNER owns owner-governance routing and explicit override decisions:
+- Product roadmap
+- Tool priority
+- Architecture
+- Naming governance
+- Workflow governance
+- Environment strategy
+- PR sequencing
+- Stable and merge approval recommendations
+- Team lock override decisions
+
+Team OWNER follows the same safety rules:
+- One active OWNER branch at a time.
+- One active OWNER assignment at a time.
+- OWNER may override team locks, but may not silently delete, rewrite, or remove protected instructions.
+- OWNER override must be explicitly documented.
+- Required override wording:
+  - `OWNER override approved: <reason>`
 
 Team Alpha owns Creator Journey work:
 - Game Journey
@@ -519,18 +538,26 @@ Team Gamma owns governance, recovery, diagnostics, and instruction-hardening wor
 - Static docs governance
 
 Governance, recovery, diagnostics, and instruction-hardening PRs:
-- Use the TEAM token assigned by Master Control.
+- Use the TEAM token assigned by OWNER.
+- OWNER governance PRs use the OWNER token going forward.
 - Must not implement tool/runtime work from the opposite owner.
 - Must document TEAM ownership compliance in the PR report.
 - Recovery reports must include TEAM ownership.
 
 Stable and merge approval:
 - Stable promotion and merge approval are controlled by the assigned Team Alpha, Team Beta, or Team Gamma owner.
-- Master Control may recommend sequencing, but Codex must not merge or mark stable without explicit owner approval for the affected workstream.
+- OWNER may recommend sequencing, but Codex must not merge or mark stable without explicit owner approval for the affected workstream.
+
+OWNER naming rule:
+- Use Team OWNER for owner-governance work going forward.
+- Use OWNER override wording going forward.
+- Required override wording is:
+  - `OWNER override approved: <reason>`
+- Existing uploaded PRs, branches, reports, and ZIPs with the prior governance token are historical and are not renamed by this rule unless separately scoped.
 
 Hard stop rules:
 - If the PR name does not include a TEAM token, stop before changes.
-- If the TEAM token does not match the owner map or explicit Master Control assignment, stop before changes.
+- If the TEAM token does not match the owner map or explicit OWNER assignment, stop before changes.
 - If the PR scope belongs to another TEAM owner, stop before changes.
-- If the PR crosses multiple team ownership areas, stop and require Master Control to split or assign the work.
+- If the PR crosses multiple team ownership areas, stop and require OWNER to split or assign the work.
 - If the requested implementation path conflicts with the active owner path, stop before changes.

@@ -1,138 +1,198 @@
-diff --git a/docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-instruction-compliance-checklist.md
-new file mode 100644
-index 000000000..a07705200
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-instruction-compliance-checklist.md
-@@ -0,0 +1,28 @@
-+# PR_26171_GAMMA_027 Instruction Compliance Checklist
+diff --git a/docs_build/dev/PROJECT_INSTRUCTIONS.md b/docs_build/dev/PROJECT_INSTRUCTIONS.md
+index dbc044b99..e78ba69d5 100644
+--- a/docs_build/dev/PROJECT_INSTRUCTIONS.md
++++ b/docs_build/dev/PROJECT_INSTRUCTIONS.md
+@@ -2032,9 +2032,29 @@ Stable promotion and merge approval are owner-controlled.
+ Rules:
+ - Codex may prepare scoped changes, reports, validation evidence, ZIP artifacts, branches, and PRs.
+ - Codex must not merge a PR or mark a workstream stable without explicit approval from the assigned Team Alpha or Team Beta owner.
+-- Master Control may recommend sequencing or assignment, but affected workstream owners control stable and merge approval.
++- OWNER may recommend sequencing or assignment, but affected workstream owners control stable and merge approval.
+ - This targeted section supersedes older automatic-merge wording when approval ownership is in question.
+
++## OWNER GOVERNANCE LANE
 +
-+## Start Gate
++The governance lane formerly referred to by the prior governance token is now OWNER.
 +
-+- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
-+- PASS: Read `docs_build/dev/PROJECT_MULTI_PC.txt`.
-+- PASS: PR name includes TEAM token `GAMMA`.
-+- PASS: Branch name mirrors TEAM token: `pr/26171-GAMMA-027-sqlite-doc-reference-cleanup`.
-+- PASS: Scope is diagnostics/cleanup and belongs to Team Gamma.
-+- PASS: Started from fresh `main` after PR 026 merged.
-+- PASS: Repository was clean before branch creation.
++Rules:
++- Use Team OWNER for owner-governance PRs going forward.
++- PR names use the OWNER token going forward:
++  - `PR_<YYJJJ>_OWNER_<###>-<short-description>`
++- Branch names mirror OWNER ownership going forward:
++  - `pr/<YYJJJ>-OWNER-<###>-<short-description>`
++- Existing PRs, branches, reports, and ZIPs already uploaded with the prior governance token are historical and must not be renamed unless separately scoped.
++- Required override wording is:
++  - `OWNER override approved: <reason>`
 +
-+## Scope Guard
++OWNER follows the same safety rules:
++- One active OWNER branch at a time.
++- One active OWNER assignment at a time.
++- OWNER may override team locks, but may not silently delete, rewrite, or remove protected instructions.
++- OWNER override must be explicitly documented.
 +
-+- PASS: One PR purpose only.
-+- PASS: Cleaned active docs/seed wording only.
-+- PASS: Preserved `PROJECT_INSTRUCTIONS.md` SQLite deprecation rules.
-+- PASS: Did not rewrite historical PR/report archives.
-+- PASS: Did not run samples.
+ ## CODEX INSTRUCTION ENFORCEMENT START GATE
+
+ Codex must run this gate before every PR execution and before any file changes.
+diff --git a/docs_build/dev/PROJECT_MULTI_PC.txt b/docs_build/dev/PROJECT_MULTI_PC.txt
+index 1f0ff3eb1..4127fd8ae 100644
+--- a/docs_build/dev/PROJECT_MULTI_PC.txt
++++ b/docs_build/dev/PROJECT_MULTI_PC.txt
+@@ -1,8 +1,8 @@
+ I think this is the right operating model for GFS at your current stage, with a few modifications to fit how we've already organized the project.
+
+-Master Control Responsibilities
++OWNER Responsibilities
+
+-Master Control should own:
++OWNER should own:
+
+ Product roadmap
+ Tool priority
+@@ -189,7 +189,7 @@ These become valuable after creators can build complete games.
+
+ Immediate Queue
+
+-If we start using Master Control today, my queue would be:
++If we start using OWNER today, my queue would be:
+
+ Team Alpha
+ PR_26171_001-game-journey-completion-model
+@@ -232,7 +232,7 @@ No TTS generation yet.
+
+ This establishes the foundation for dialog, narration, and speech consistency across games.
+
+-Master Control Rule
++OWNER Rule
+
+ Before any new PR is created, ask:
+
+@@ -257,7 +257,7 @@ until a complete game can be built start-to-finish entirely inside Game Foundry
+ ----------------------------------------------------------------------------------------
+ If your goal is **maximum throughput**, I would have the three chats play different roles.
+
+-## Master Control
++## OWNER
+
+ Don't build anything here.
+
+@@ -336,7 +336,7 @@ it keeps building there.
+
+ ---
+
+-## What should Master Control focus on?
++## What should OWNER focus on?
+
+ Right now, for GFS, I would prioritize:
+
+@@ -368,7 +368,7 @@ So I'd keep IST mostly as infrastructure work and focus development on tool comp
+
+ ### 2. Create Tool Ownership Map
+
+-Master Control should assign ownership:
++OWNER should assign ownership:
+
+ ```text
+ Team Alpha
+@@ -411,9 +411,9 @@ Never have both teams working in the same tool at the same time.
+
+ ## What I can do
+
+-I can help you turn Master Control into a scheduler.
++I can help you turn OWNER into a scheduler.
+
+-For example, in Master Control you can ask:
++For example, in OWNER you can ask:
+
+ ```text
+ Given everything we know about GFS:
+@@ -424,7 +424,7 @@ What should Team Beta build next?
+ Generate the next PR for each.
+ ```
+
+-Then Master Control outputs:
++Then OWNER outputs:
+
+ ```text
+ Team Alpha:
+@@ -438,7 +438,7 @@ You paste those into the two development chats.
+
+ Both Codex sessions work simultaneously.
+
+-Then when PRs come back, Master Control decides:
++Then when PRs come back, OWNER decides:
+
+ ```text
+ Merge
+@@ -479,6 +479,25 @@ Historical examples:
+
+ Owner map:
+
++Team OWNER owns owner-governance routing and explicit override decisions:
++- Product roadmap
++- Tool priority
++- Architecture
++- Naming governance
++- Workflow governance
++- Environment strategy
++- PR sequencing
++- Stable and merge approval recommendations
++- Team lock override decisions
 +
-+## Completion Gate
++Team OWNER follows the same safety rules:
++- One active OWNER branch at a time.
++- One active OWNER assignment at a time.
++- OWNER may override team locks, but may not silently delete, rewrite, or remove protected instructions.
++- OWNER override must be explicitly documented.
++- Required override wording:
++  - `OWNER override approved: <reason>`
 +
-+- PASS: PR-specific report exists.
-+- PASS: Manual validation notes exist.
-+- PASS: Instruction compliance checklist exists.
-+- PASS: `docs_build/dev/reports/codex_review.diff` exists.
-+- PASS: `docs_build/dev/reports/codex_changed_files.txt` exists.
-+- PASS: Repo-structured ZIP path is documented: `tmp/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup_delta.zip`.
-diff --git a/docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-manual-validation-notes.md b/docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-manual-validation-notes.md
-new file mode 100644
-index 000000000..415d83d27
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-manual-validation-notes.md
-@@ -0,0 +1,17 @@
-+# PR_26171_GAMMA_027 Manual Validation Notes
+ Team Alpha owns Creator Journey work:
+ - Game Journey
+ - Game Hub
+@@ -519,18 +538,26 @@ Team Gamma owns governance, recovery, diagnostics, and instruction-hardening wor
+ - Static docs governance
+
+ Governance, recovery, diagnostics, and instruction-hardening PRs:
+-- Use the TEAM token assigned by Master Control.
++- Use the TEAM token assigned by OWNER.
++- OWNER governance PRs use the OWNER token going forward.
+ - Must not implement tool/runtime work from the opposite owner.
+ - Must document TEAM ownership compliance in the PR report.
+ - Recovery reports must include TEAM ownership.
+
+ Stable and merge approval:
+ - Stable promotion and merge approval are controlled by the assigned Team Alpha, Team Beta, or Team Gamma owner.
+-- Master Control may recommend sequencing, but Codex must not merge or mark stable without explicit owner approval for the affected workstream.
++- OWNER may recommend sequencing, but Codex must not merge or mark stable without explicit owner approval for the affected workstream.
 +
-+Manual validation focused on active docs/seed wording.
-+
-+## Notes
-+
-+- Confirmed PR 027 branch was created from fresh `main` after PR 026 merged.
-+- Confirmed `PROJECT_INSTRUCTIONS.md` deprecation rules were preserved.
-+- Confirmed historical report and PR docs were not modified.
-+- Confirmed the only active seed wording change was the Local DB session-mode description.
-+- Confirmed remaining SQLite references in active paths are governance, validation guards, negative tests, or legacy data-preservation guard text.
-+
-+## Skipped
-+
-+- Playwright was skipped because no UI behavior changed.
-+- Samples were skipped by request.
-+- Broad tests were skipped because this is a wording-only cleanup.
-diff --git a/docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup.md b/docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup.md
-new file mode 100644
-index 000000000..ecb1a233d
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup.md
-@@ -0,0 +1,43 @@
-+# PR_26171_GAMMA_027-sqlite-doc-reference-cleanup
-+
-+TEAM ownership: GAMMA.
-+
-+## Scope
-+
-+Clean active docs/seed wording that implied SQLite is still an active persistence target.
-+
-+## Changes
-+
-+- Updated `src/dev-runtime/persistence/mock-db-store.js` session-mode description from SQLite-backed wording to neutral Local DB adapter wording.
-+- Preserved `PROJECT_INSTRUCTIONS.md` SQLite deprecation rules.
-+- Did not rewrite historical PR/report archives.
-+- Did not remove governance, validation guard, negative test, or legacy data-preservation references.
-+
-+## Validation
-+
-+Passed:
-+- `git diff --check`
-+- `node --check src/dev-runtime/persistence/mock-db-store.js`
-+- Targeted text check confirmed no active docs/seed wording still says `SQLite-backed`, `SQLite persistence`, `SQLite service`, or `backed by server SQLite storage`.
-+- Scoped active-source search confirmed remaining non-archive SQLite references are limited to:
-+  - governance rules in `PROJECT_INSTRUCTIONS.md`
-+  - validation guard patterns in `scripts/validate-browser-env-agnostic.mjs`
-+  - negative test assertions that SQLite is not exposed
-+  - Game Journey legacy SQLite data-preservation guard
-+
-+Skipped:
-+- Playwright: no UI/runtime behavior changed.
-+- Samples: skipped by request.
-+- Historical reports and PR docs: explicitly out of scope.
-+
-+## Reports
-+
-+- `docs_build/dev/reports/codex_review.diff`
-+- `docs_build/dev/reports/codex_changed_files.txt`
-+- `docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup.md`
-+- `docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-manual-validation-notes.md`
-+- `docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-instruction-compliance-checklist.md`
-+
-+## ZIP
-+
-+`tmp/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup_delta.zip`
++OWNER naming rule:
++- Use Team OWNER for owner-governance work going forward.
++- Use OWNER override wording going forward.
++- Required override wording is:
++  - `OWNER override approved: <reason>`
++- Existing uploaded PRs, branches, reports, and ZIPs with the prior governance token are historical and are not renamed by this rule unless separately scoped.
+
+ Hard stop rules:
+ - If the PR name does not include a TEAM token, stop before changes.
+-- If the TEAM token does not match the owner map or explicit Master Control assignment, stop before changes.
++- If the TEAM token does not match the owner map or explicit OWNER assignment, stop before changes.
+ - If the PR scope belongs to another TEAM owner, stop before changes.
+-- If the PR crosses multiple team ownership areas, stop and require Master Control to split or assign the work.
++- If the PR crosses multiple team ownership areas, stop and require OWNER to split or assign the work.
+ - If the requested implementation path conflicts with the active owner path, stop before changes.
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 4e23ae82e..5ebd4f6a7 100644
+index 5ebd4f6a7..a35f1b218 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,10 +1,6 @@
--﻿docs_build/dev/reports/PR_26171_GAMMA_026-sqlite-test-reference-cleanup-instruction-compliance-checklist.md
--docs_build/dev/reports/PR_26171_GAMMA_026-sqlite-test-reference-cleanup-manual-validation-notes.md
--docs_build/dev/reports/PR_26171_GAMMA_026-sqlite-test-reference-cleanup.md
-+docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-instruction-compliance-checklist.md
-+docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-manual-validation-notes.md
-+docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup.md
+@@ -1,6 +1,7 @@
+-docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-instruction-compliance-checklist.md
+-docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-manual-validation-notes.md
+-docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup.md
++docs_build/dev/PROJECT_INSTRUCTIONS.md
++docs_build/dev/PROJECT_MULTI_PC.txt
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
--tests/dev-runtime/DbSeedIntegrity.test.mjs
--tests/playwright/tools/AdminDbViewer.spec.mjs
--tests/playwright/tools/BrowserApiUrlConfig.spec.mjs
--tests/playwright/tools/GameJourneyTool.spec.mjs
--tests/playwright/tools/LoginSessionMode.spec.mjs
-+src/dev-runtime/persistence/mock-db-store.js
-diff --git a/src/dev-runtime/persistence/mock-db-store.js b/src/dev-runtime/persistence/mock-db-store.js
-index 2305910bc..c98c915b5 100644
---- a/src/dev-runtime/persistence/mock-db-store.js
-+++ b/src/dev-runtime/persistence/mock-db-store.js
-@@ -23,7 +23,7 @@ export const MOCK_DB_SESSION_MODES = Object.freeze([
-     adapterId: "local-db",
-     adapterName: "LocalDbAdapter",
-     configured: true,
--    description: "Uses LocalDbAdapter backed by server SQLite storage.",
-+    description: "Uses the Local DB adapter behind the server API boundary.",
-     environment: "Local DB",
-     id: "local-db",
-     label: "Local DB",
+-src/dev-runtime/persistence/mock-db-store.js
++docs_build/dev/reports/PR_26172_OWNER_010-owner-governance-rename.md
++docs_build/dev/reports/PR_26172_OWNER_010-owner-governance-rename-instruction-compliance-checklist.md
++docs_build/dev/reports/PR_26172_OWNER_010-owner-governance-rename-manual-validation-notes.md
