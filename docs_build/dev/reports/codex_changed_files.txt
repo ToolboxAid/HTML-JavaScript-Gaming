@@ -1,10 +1,66 @@
-M  docs_build/dev/reports/PR_26171_GAMMA_011-admin-system-health-foundation.md
+M  admin/system-health.html
+A  docs_build/dev/reports/PR_26171_GAMMA_012-admin-system-health-status-reason-cleanup-instruction-compliance-checklist.md
+A  docs_build/dev/reports/PR_26171_GAMMA_012-admin-system-health-status-reason-cleanup-manual-validation-notes.md
+A  docs_build/dev/reports/PR_26171_GAMMA_012-admin-system-health-status-reason-cleanup.md
+M  tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
 
- admin/system-health.html                           | 360 +++++----------------
- ...-foundation-instruction-compliance-checklist.md |  32 ++
+ admin/system-health.html                           | 360 +++--------
+ ...ble-cleanup-instruction-compliance-checklist.md |  14 -
+ ...essage-table-cleanup-manual-validation-notes.md |  10 -
+ ...-tts-message-table-cleanup-validation-report.md |  25 -
+ .../PR_26171_BETA_075-tts-message-table-cleanup.md |  42 --
+ ...e-parent-child-table-manual-validation-notes.md |  11 -
+ ...profile-parent-child-table-validation-report.md |  17 -
+ ...6171_BETA_077-tts-profile-parent-child-table.md |  19 -
+ ...ild-table-completion-manual-validation-notes.md |  11 -
+ ...ent-child-table-completion-validation-report.md |  17 -
+ ...message-studio-parent-child-table-completion.md |  20 -
+ ...k-through-tts-engine-manual-validation-notes.md |  11 -
+ ...layback-through-tts-engine-validation-report.md |  21 -
+ ...BETA_081-message-playback-through-tts-engine.md |  18 -
+ ...-foundation-instruction-compliance-checklist.md |  32 +
  ...em-health-foundation-manual-validation-notes.md |  34 ++
- ...171_GAMMA_011-admin-system-health-foundation.md |  65 ++++
+ ...171_GAMMA_011-admin-system-health-foundation.md |  65 ++
+ ...son-cleanup-instruction-compliance-checklist.md |  57 ++
+ ...tatus-reason-cleanup-manual-validation-notes.md |  26 +
+ ...12-admin-system-health-status-reason-cleanup.md |  69 +++
  .../dev/reports/coverage_changed_js_guardrail.txt  |   6 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |  31 +-
- .../tools/AdminHealthOperationsPage.spec.mjs       |  61 ++--
- 7 files changed, 268 insertions(+), 321 deletions(-)
+ docs_build/dev/reports/dependency_gating_report.md |   2 +-
+ .../reports/dependency_hydration_reuse_report.md   |   2 +-
+ .../dev/reports/execution_graph_reuse_report.md    |   4 +-
+ .../dev/reports/failure_fingerprint_report.md      |   2 +-
+ .../reports/filesystem_scan_reduction_report.md    |   2 +-
+ .../dev/reports/incremental_validation_report.md   |   2 +-
+ docs_build/dev/reports/lane_compilation_report.md  |   2 +-
+ .../dev/reports/lane_deduplication_report.md       |   2 +-
+ .../dev/reports/lane_input_validation_report.md    |   2 +-
+ .../reports/lane_manifests/workspace-contract.json |   8 +-
+ .../reports/lane_runtime_optimization_report.md    |   2 +-
+ docs_build/dev/reports/lane_snapshot_report.md     |   4 +-
+ .../reports/lane_snapshots/workspace-contract.json |  16 +-
+ docs_build/dev/reports/lane_warm_start_report.md   |   4 +-
+ .../lane_warm_starts/workspace-contract.json       |   8 +-
+ .../dev/reports/monolith_trigger_removal_report.md |   2 +-
+ .../dev/reports/persistent_lane_manifest_report.md |   6 +-
+ .../playwright_discovery_ownership_report.md       |   2 +-
+ .../reports/playwright_discovery_scope_report.md   |   2 +-
+ .../dev/reports/playwright_structure_audit.md      |   2 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |  43 +-
+ docs_build/dev/reports/retry_suppression_report.md |   2 +-
+ docs_build/dev/reports/slow_path_pruning_report.md |  14 +-
+ docs_build/dev/reports/static_validation_report.md |   4 +-
+ .../dev/reports/targeted_file_manifest_report.md   |   4 +-
+ .../dev/reports/test_cleanup_performance_report.md |  16 +-
+ .../dev/reports/test_cleanup_routing_report.md     |   2 +-
+ .../dev/reports/testing_lane_execution_report.md   |  18 +-
+ docs_build/dev/reports/validation_cache_report.md  |  30 +-
+ .../dev/reports/zero_browser_preflight_report.md   |   2 +-
+ .../messages/messages-sqlite-service.mjs           |  33 +-
+ .../tools/AdminHealthOperationsPage.spec.mjs       |  74 ++-
+ tests/playwright/tools/MessagesTool.spec.mjs       |  55 +-
+ .../playwright/tools/RootToolsFutureState.spec.mjs |  23 +-
+ .../tools/TextToSpeechFunctional.spec.mjs          |  86 ++-
+ toolbox/messages/messages.js                       |  71 +--
+ toolbox/text-to-speech/index.html                  |  87 ++-
+ toolbox/text-to-speech/text2speech.js              | 662 +++++++++++++++++----
+ 59 files changed, 1219 insertions(+), 968 deletions(-)

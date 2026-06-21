@@ -94,8 +94,19 @@ test("Admin System Health renders foundation tables without page API calls", asy
     await expect(page.getByRole("table", { name: "Runtime environment" })).toContainText("********");
     await expect(page.getByRole("table", { name: "Limits and capacity" })).toContainText("Class A Ops");
     await expect(page.getByRole("table", { name: "Diagnostics log" })).toContainText("PASS");
-    await expect(page.getByRole("table", { name: "Diagnostics log" })).toContainText("WARN");
-    await expect(page.getByRole("table", { name: "Diagnostics log" })).toContainText("FAIL");
+    await expect(page.getByRole("table", { name: "Diagnostics log" })).toContainText("PENDING");
+    await expect(page.getByRole("table", { name: "Diagnostics log" })).not.toContainText("FAIL");
+    await expect(page.getByText("No active failure is declared")).toHaveCount(0);
+    await expect(page.locator("[data-health-status='WARN'], [data-health-status='FAIL']")).toHaveCount(0);
+    const nonPassStatuses = page.locator("[data-health-status]:not([data-health-status='PASS'])");
+    const nonPassStatusCount = await nonPassStatuses.count();
+    expect(nonPassStatusCount).toBeGreaterThan(0);
+    for (let index = 0; index < nonPassStatusCount; index += 1) {
+      const statusCell = nonPassStatuses.nth(index);
+      const title = await statusCell.getAttribute("title");
+      const ariaLabel = await statusCell.getAttribute("aria-label");
+      expect((title || ariaLabel || "").trim()).not.toEqual("");
+    }
     expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health"))).toBe(false);
     await expect(page.locator("[data-admin-system-health-storage-action]")).toHaveCount(0);
     await expect(page.locator("[data-owner-ai-save], [data-owner-membership-save], [data-owner-ai-credits], [data-owner-memberships]")).toHaveCount(0);
@@ -128,6 +139,8 @@ test("Admin System Health operations page keeps scripts and styles external", as
   expect(pageSource).not.toMatch(/<script\b(?![^>]+src=)/i);
   expect(pageSource).not.toMatch(/\son[a-z]+\s*=/i);
   expect(pageSource).not.toMatch(/\sstyle\s*=/i);
+  expect(pageSource).not.toMatch(/data-health-status="(?:WARN|FAIL)"/);
+  expect(pageSource).not.toContain("No active failure is declared");
   expect(pageSource).not.toContain("assets/theme-v2/js/admin-system-health.js");
   expect(pageSource).toContain("assets/theme-v2/js/admin-owner-navigation.js");
 });

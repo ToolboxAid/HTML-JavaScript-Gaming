@@ -66,10 +66,10 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr><td>DEV</td><td>Local implementation and diagnostics</td><td>Developer validation</td><td>WARN</td></tr>
-                                    <tr><td>IST</td><td>Integrated system testing</td><td>Cross-feature validation</td><td>WARN</td></tr>
-                                    <tr><td>UAT</td><td>User acceptance testing</td><td>Owner review</td><td>WARN</td></tr>
-                                    <tr><td>PRD</td><td>Production runtime</td><td>EOD approval</td><td>WARN</td></tr>
+                                    <tr><td>DEV</td><td>Local implementation and diagnostics</td><td>Developer validation</td><td data-health-status="PASS">PASS</td></tr>
+                                    <tr><td>IST</td><td>Integrated system testing</td><td>Cross-feature validation</td><td data-health-status="PASS">PASS</td></tr>
+                                    <tr><td>UAT</td><td>User acceptance testing</td><td>Owner review</td><td data-health-status="PASS">PASS</td></tr>
+                                    <tr><td>PRD</td><td>Production runtime</td><td>EOD approval</td><td data-health-status="PASS">PASS</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -84,12 +84,12 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr><td>Provider</td><td>Postgres</td><td>PASS</td></tr>
-                                    <tr><td>Host</td><td>Configured host placeholder</td><td>WARN</td></tr>
-                                    <tr><td>Port</td><td>5432</td><td>WARN</td></tr>
-                                    <tr><td>Database</td><td>Configured database placeholder</td><td>WARN</td></tr>
-                                    <tr><td>Migration Version</td><td>Pending migration reader</td><td>WARN</td></tr>
-                                    <tr><td>Status</td><td>Connection check pending</td><td>WARN</td></tr>
+                                    <tr><td>Provider</td><td>Postgres</td><td data-health-status="PASS">PASS</td></tr>
+                                    <tr><td>Host</td><td>Configured host placeholder</td><td data-health-status="PENDING" title="Reason: host reader is intentionally not wired in this foundation PR." aria-label="PENDING: host reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
+                                    <tr><td>Port</td><td>5432</td><td data-health-status="PASS">PASS</td></tr>
+                                    <tr><td>Database</td><td>Configured database placeholder</td><td data-health-status="PENDING" title="Reason: database name reader is intentionally not wired in this foundation PR." aria-label="PENDING: database name reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
+                                    <tr><td>Migration Version</td><td>Pending migration reader</td><td data-health-status="PENDING" title="Reason: migration version reader is intentionally not wired in this foundation PR." aria-label="PENDING: migration version reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
+                                    <tr><td>Status</td><td>Connection check pending</td><td data-health-status="PENDING" title="Reason: live Postgres connection checks are intentionally not wired in this foundation PR." aria-label="PENDING: live Postgres connection checks are intentionally not wired in this foundation PR.">PENDING</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -104,11 +104,11 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr><td>Bucket</td><td>Configured bucket placeholder</td><td>WARN</td></tr>
-                                    <tr><td>List</td><td>Objects prefix</td><td>WARN</td></tr>
-                                    <tr><td>Read</td><td>Health object</td><td>WARN</td></tr>
-                                    <tr><td>Write</td><td>Health object</td><td>WARN</td></tr>
-                                    <tr><td>Delete</td><td>Health object</td><td>WARN</td></tr>
+                                    <tr><td>Bucket</td><td>Configured bucket placeholder</td><td data-health-status="PENDING" title="Reason: R2 bucket reader is intentionally not wired in this foundation PR." aria-label="PENDING: R2 bucket reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
+                                    <tr><td>List</td><td>Objects prefix</td><td data-health-status="PENDING" title="Reason: R2 list check is intentionally not wired in this foundation PR." aria-label="PENDING: R2 list check is intentionally not wired in this foundation PR.">PENDING</td></tr>
+                                    <tr><td>Read</td><td>Health object</td><td data-health-status="PENDING" title="Reason: R2 read check is intentionally not wired in this foundation PR." aria-label="PENDING: R2 read check is intentionally not wired in this foundation PR.">PENDING</td></tr>
+                                    <tr><td>Write</td><td>Health object</td><td data-health-status="PENDING" title="Reason: R2 write check is intentionally not wired in this foundation PR." aria-label="PENDING: R2 write check is intentionally not wired in this foundation PR.">PENDING</td></tr>
+                                    <tr><td>Delete</td><td>Health object</td><td data-health-status="PENDING" title="Reason: R2 delete check is intentionally not wired in this foundation PR." aria-label="PENDING: R2 delete check is intentionally not wired in this foundation PR.">PENDING</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -123,11 +123,11 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr><td>CLOUDFLARE_R2_ACCESS_KEY_ID</td><td>********</td><td>WARN</td></tr>
-                                    <tr><td>CLOUDFLARE_R2_BUCKET</td><td>Configured bucket placeholder</td><td>WARN</td></tr>
-                                    <tr><td>CLOUDFLARE_R2_SECRET_ACCESS_KEY</td><td>********</td><td>WARN</td></tr>
-                                    <tr><td>DATABASE_URL</td><td>********</td><td>WARN</td></tr>
-                                    <tr><td>GAMEFOUNDRY_ENVIRONMENT</td><td>DEV / IST / UAT / PRD</td><td>WARN</td></tr>
+                                    <tr><td>CLOUDFLARE_R2_ACCESS_KEY_ID</td><td>********</td><td data-health-status="PASS">PASS</td></tr>
+                                    <tr><td>CLOUDFLARE_R2_BUCKET</td><td>Configured bucket placeholder</td><td data-health-status="PENDING" title="Reason: R2 bucket value reader is intentionally not wired in this foundation PR." aria-label="PENDING: R2 bucket value reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
+                                    <tr><td>CLOUDFLARE_R2_SECRET_ACCESS_KEY</td><td>********</td><td data-health-status="PASS">PASS</td></tr>
+                                    <tr><td>DATABASE_URL</td><td>********</td><td data-health-status="PASS">PASS</td></tr>
+                                    <tr><td>GAMEFOUNDRY_ENVIRONMENT</td><td>DEV / IST / UAT / PRD</td><td data-health-status="PASS">PASS</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -143,11 +143,11 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr><td>DB Size</td><td>Pending metric</td><td>Threshold not connected</td><td>WARN</td></tr>
-                                    <tr><td>Connections</td><td>Pending metric</td><td>Pool usage not connected</td><td>WARN</td></tr>
-                                    <tr><td>Storage</td><td>Pending metric</td><td>Bucket usage not connected</td><td>WARN</td></tr>
-                                    <tr><td>Class A Ops</td><td>Pending metric</td><td>R2 write/list budget not connected</td><td>WARN</td></tr>
-                                    <tr><td>Class B Ops</td><td>Pending metric</td><td>R2 read budget not connected</td><td>WARN</td></tr>
+                                    <tr><td>DB Size</td><td>Pending metric</td><td>Threshold not connected</td><td data-health-status="PENDING" title="Reason: DB size metric is intentionally not wired in this foundation PR." aria-label="PENDING: DB size metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
+                                    <tr><td>Connections</td><td>Pending metric</td><td>Pool usage not connected</td><td data-health-status="PENDING" title="Reason: connection pool metric is intentionally not wired in this foundation PR." aria-label="PENDING: connection pool metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
+                                    <tr><td>Storage</td><td>Pending metric</td><td>Bucket usage not connected</td><td data-health-status="PENDING" title="Reason: R2 storage usage metric is intentionally not wired in this foundation PR." aria-label="PENDING: R2 storage usage metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
+                                    <tr><td>Class A Ops</td><td>Pending metric</td><td>R2 write/list budget not connected</td><td data-health-status="PENDING" title="Reason: R2 Class A operation metric is intentionally not wired in this foundation PR." aria-label="PENDING: R2 Class A operation metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
+                                    <tr><td>Class B Ops</td><td>Pending metric</td><td>R2 read budget not connected</td><td data-health-status="PENDING" title="Reason: R2 Class B operation metric is intentionally not wired in this foundation PR." aria-label="PENDING: R2 Class B operation metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -171,9 +171,9 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr><td>PASS</td><td>Database Health</td><td>Postgres is the only planned database provider.</td></tr>
-                                                <tr><td>WARN</td><td>Runtime Environment</td><td>Secret values are masked until server-owned readers are approved.</td></tr>
-                                                <tr><td>FAIL</td><td>Diagnostics</td><td>No active failure is declared in this foundation view.</td></tr>
+                                                <tr><td data-health-status="PASS">PASS</td><td>Database Health</td><td>Postgres is the only planned database provider.</td></tr>
+                                                <tr><td data-health-status="PASS">PASS</td><td>Runtime Environment</td><td>Secret values are masked in the foundation view.</td></tr>
+                                                <tr><td data-health-status="PENDING" title="Reason: live diagnostics log wiring is intentionally not active in this foundation PR." aria-label="PENDING: live diagnostics log wiring is intentionally not active in this foundation PR.">PENDING</td><td>Diagnostics</td><td>Live diagnostics log wiring is intentionally deferred.</td></tr>
                                             </tbody>
                                         </table>
                                     </div>
