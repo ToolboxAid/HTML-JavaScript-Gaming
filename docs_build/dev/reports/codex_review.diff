@@ -1,5 +1,5 @@
 diff --git a/admin/system-health.html b/admin/system-health.html
-index c5ef74f44..092a94f04 100644
+index c5ef74f44..8a0f6a010 100644
 --- a/admin/system-health.html
 +++ b/admin/system-health.html
 @@ -9 +9 @@
@@ -11,7 +11,7 @@ index c5ef74f44..092a94f04 100644
 @@ -39 +39 @@
 -                                <summary>Status Sources</summary>
 +                                <summary>Health Sections</summary>
-@@ -41,13 +41,6 @@
+@@ -41,13 +41,7 @@
 -                                    <p>Account/session readiness</p>
 -                                    <p>Product Data / Local DB</p>
 -                                    <p>Project Asset Storage / R2</p>
@@ -30,17 +30,23 @@ index c5ef74f44..092a94f04 100644
 +                                    <p>Storage Health</p>
 +                                    <p>Runtime Environment</p>
 +                                    <p>Limits &amp; Capacity</p>
++                                    <p>Diagnostics Plan</p>
 +                                    <p>Diagnostics Log</p>
-@@ -61,72 +54,2 @@
+@@ -61,2 +55,2 @@
 -                            <div class="kicker">Read-only Status</div>
 -                            <h2 id="admin-system-health-title">System Health Overview</h2>
--                        </div>
--                        <div class="table-wrapper">
++                            <div class="kicker">Foundation</div>
++                            <h2 id="admin-system-health-title">System Health Tables</h2>
+@@ -65,2 +59,2 @@
 -                            <table class="data-table" aria-label="System health dashboard summary">
 -                                <caption>System Health Dashboard Summary</caption>
--                                <thead>
--                                    <tr>
--                                        <th scope="col">Status</th>
++                            <table class="data-table" aria-label="Environment summary">
++                                <caption>Environment Summary</caption>
+@@ -68,0 +63,3 @@
++                                        <th scope="col">Environment</th>
++                                        <th scope="col">Purpose</th>
++                                        <th scope="col">Promotion Gate</th>
+@@ -70,50 +66,0 @@
 -                                        <th scope="col">Score</th>
 -                                        <th scope="col">PASS</th>
 -                                        <th scope="col">WARN</th>
@@ -91,9 +97,7 @@ index c5ef74f44..092a94f04 100644
 -                                    <tr>
 -                                        <th scope="col">Filter</th>
 -                                        <th scope="col">Value</th>
--                                    </tr>
--                                </thead>
--                                <tbody>
+@@ -123,8 +70,4 @@
 -                                    <tr>
 -                                        <td>Plan</td>
 -                                        <td>
@@ -102,22 +106,19 @@ index c5ef74f44..092a94f04 100644
 -                                            </select>
 -                                        </td>
 -                                    </tr>
--                                </tbody>
--                            </table>
-+                            <div class="kicker">Foundation</div>
-+                            <h2 id="admin-system-health-title">System Health Tables</h2>
-@@ -135,2 +58,2 @@
++                                    <tr><td>DEV</td><td>Local implementation and diagnostics</td><td>Developer validation</td><td data-health-status="PASS">PASS</td></tr>
++                                    <tr><td>IST</td><td>Integrated system testing</td><td>Cross-feature validation</td><td data-health-status="PASS">PASS</td></tr>
++                                    <tr><td>UAT</td><td>User acceptance testing</td><td>Owner review</td><td data-health-status="PASS">PASS</td></tr>
++                                    <tr><td>PRD</td><td>Production runtime</td><td>EOD approval</td><td data-health-status="PASS">PASS</td></tr>
+@@ -135,2 +78,2 @@
 -                            <table class="data-table" aria-label="Admin membership support rows">
 -                                <caption>Membership Assignments</caption>
-+                            <table class="data-table" aria-label="Environment summary">
-+                                <caption>Environment Summary</caption>
-@@ -139,2 +62,3 @@
++                            <table class="data-table" aria-label="Database health">
++                                <caption>Database Health - Postgres Only</caption>
+@@ -139,17 +82 @@
 -                                        <th scope="col">User</th>
 -                                        <th scope="col">Plan</th>
-+                                        <th scope="col">Environment</th>
-+                                        <th scope="col">Purpose</th>
-+                                        <th scope="col">Promotion Gate</th>
-@@ -142,52 +65,0 @@
+-                                        <th scope="col">Status</th>
 -                                        <th scope="col">Source</th>
 -                                    </tr>
 -                                </thead>
@@ -132,7 +133,8 @@ index c5ef74f44..092a94f04 100644
 -                                <thead>
 -                                    <tr>
 -                                        <th scope="col">Filter</th>
--                                        <th scope="col">Value</th>
++                                        <th scope="col">Field</th>
+@@ -157,20 +83,0 @@
 -                                    </tr>
 -                                </thead>
 -                                <tbody>
@@ -153,7 +155,7 @@ index c5ef74f44..092a94f04 100644
 -                                <thead>
 -                                    <tr>
 -                                        <th scope="col">Email</th>
--                                        <th scope="col">Status</th>
+@@ -178,16 +84,0 @@
 -                                        <th scope="col">Code</th>
 -                                        <th scope="col">Expires</th>
 -                                    </tr>
@@ -170,7 +172,7 @@ index c5ef74f44..092a94f04 100644
 -                                    <tr>
 -                                        <th scope="col">Filter</th>
 -                                        <th scope="col">Value</th>
-@@ -197,72 +69,4 @@
+@@ -197,72 +88,6 @@
 -                                    <tr>
 -                                        <td>Action</td>
 -                                        <td>
@@ -243,114 +245,123 @@ index c5ef74f44..092a94f04 100644
 -                                </thead>
 -                                <tbody data-admin-system-health-database-status-rows>
 -                                    <tr><td>Connection Configured</td><td>Loading</td><td>Loading database status.</td></tr>
-+                                    <tr><td>DEV</td><td>Local implementation and diagnostics</td><td>Developer validation</td><td data-health-status="PASS">PASS</td></tr>
-+                                    <tr><td>IST</td><td>Integrated system testing</td><td>Cross-feature validation</td><td data-health-status="PASS">PASS</td></tr>
-+                                    <tr><td>UAT</td><td>User acceptance testing</td><td>Owner review</td><td data-health-status="PASS">PASS</td></tr>
-+                                    <tr><td>PRD</td><td>Production runtime</td><td>EOD approval</td><td data-health-status="PASS">PASS</td></tr>
-@@ -273,2 +77,2 @@
--                            <table class="data-table" aria-label="System health storage status">
--                                <caption>Project Asset Storage Status</caption>
-+                            <table class="data-table" aria-label="Database health">
-+                                <caption>Database Health - Postgres Only</caption>
-@@ -278 +81,0 @@
--                                        <th scope="col">Status</th>
-@@ -280,14 +82,0 @@
--                                    </tr>
--                                </thead>
--                                <tbody data-admin-system-health-storage-status-rows>
--                                    <tr><td>Storage Configured</td><td>Loading</td><td>Loading storage status.</td></tr>
--                                </tbody>
--                            </table>
--                        </div>
--                        <div class="table-wrapper">
--                            <table class="data-table" aria-label="R2 operational readiness">
--                                <caption>R2 Operational Readiness</caption>
--                                <thead>
--                                    <tr>
--                                        <th scope="col">Area</th>
--                                        <th scope="col">Signal</th>
-@@ -295,2 +83,0 @@
--                                        <th scope="col">Value</th>
--                                        <th scope="col">Next Step</th>
-@@ -299,2 +86,7 @@
--                                <tbody data-admin-system-health-r2-readiness-rows>
--                                    <tr><td>Project Asset Storage / R2</td><td>Status</td><td>Loading</td><td>Loading</td><td>Loading R2 readiness.</td></tr>
-+                                <tbody>
 +                                    <tr><td>Provider</td><td>Postgres</td><td data-health-status="PASS">PASS</td></tr>
 +                                    <tr><td>Host</td><td>Configured host placeholder</td><td data-health-status="PENDING" title="Reason: host reader is intentionally not wired in this foundation PR." aria-label="PENDING: host reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
 +                                    <tr><td>Port</td><td>5432</td><td data-health-status="PASS">PASS</td></tr>
 +                                    <tr><td>Database</td><td>Configured database placeholder</td><td data-health-status="PENDING" title="Reason: database name reader is intentionally not wired in this foundation PR." aria-label="PENDING: database name reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
 +                                    <tr><td>Migration Version</td><td>Pending migration reader</td><td data-health-status="PENDING" title="Reason: migration version reader is intentionally not wired in this foundation PR." aria-label="PENDING: migration version reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
 +                                    <tr><td>Status</td><td>Connection check pending</td><td data-health-status="PENDING" title="Reason: live Postgres connection checks are intentionally not wired in this foundation PR." aria-label="PENDING: live Postgres connection checks are intentionally not wired in this foundation PR.">PENDING</td></tr>
-@@ -305,2 +97,2 @@
--                            <table class="data-table" aria-label="System health storage connectivity results">
--                                <caption>Storage Connectivity Results</caption>
+@@ -273,2 +98,2 @@
+-                            <table class="data-table" aria-label="System health storage status">
+-                                <caption>Project Asset Storage Status</caption>
 +                            <table class="data-table" aria-label="Storage health">
 +                                <caption>Storage Health - Cloudflare R2</caption>
-@@ -309 +101,2 @@
--                                        <th scope="col">Action</th>
+@@ -277 +102,2 @@
+-                                        <th scope="col">Field</th>
 +                                        <th scope="col">Check</th>
 +                                        <th scope="col">Target</th>
-@@ -311,2 +103,0 @@
--                                        <th scope="col">Executed</th>
--                                        <th scope="col">Message</th>
-@@ -315,2 +106,6 @@
--                                <tbody data-admin-system-health-storage-connectivity-result-rows>
--                                    <tr><td>startup</td><td>SKIP</td><td>no</td><td>Storage connectivity startup has not run yet.</td></tr>
+@@ -279 +104,0 @@
+-                                        <th scope="col">Value</th>
+@@ -282,2 +107,6 @@
+-                                <tbody data-admin-system-health-storage-status-rows>
+-                                    <tr><td>Storage Configured</td><td>Loading</td><td>Loading storage status.</td></tr>
 +                                <tbody>
 +                                    <tr><td>Bucket</td><td>Configured bucket placeholder</td><td data-health-status="PENDING" title="Reason: R2 bucket reader is intentionally not wired in this foundation PR." aria-label="PENDING: R2 bucket reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
 +                                    <tr><td>List</td><td>Objects prefix</td><td data-health-status="PENDING" title="Reason: R2 list check is intentionally not wired in this foundation PR." aria-label="PENDING: R2 list check is intentionally not wired in this foundation PR.">PENDING</td></tr>
 +                                    <tr><td>Read</td><td>Health object</td><td data-health-status="PENDING" title="Reason: R2 read check is intentionally not wired in this foundation PR." aria-label="PENDING: R2 read check is intentionally not wired in this foundation PR.">PENDING</td></tr>
 +                                    <tr><td>Write</td><td>Health object</td><td data-health-status="PENDING" title="Reason: R2 write check is intentionally not wired in this foundation PR." aria-label="PENDING: R2 write check is intentionally not wired in this foundation PR.">PENDING</td></tr>
 +                                    <tr><td>Delete</td><td>Health object</td><td data-health-status="PENDING" title="Reason: R2 delete check is intentionally not wired in this foundation PR." aria-label="PENDING: R2 delete check is intentionally not wired in this foundation PR.">PENDING</td></tr>
-@@ -321,2 +116,2 @@
--                            <table class="data-table" aria-label="System health details">
--                                <caption>System Health Details</caption>
+@@ -288,2 +117,2 @@
+-                            <table class="data-table" aria-label="R2 operational readiness">
+-                                <caption>R2 Operational Readiness</caption>
 +                            <table class="data-table" aria-label="Runtime environment">
 +                                <caption>Runtime Environment - Alphabetical Variables</caption>
-@@ -325,2 +120,2 @@
+@@ -292,2 +121,2 @@
 -                                        <th scope="col">Area</th>
--                                        <th scope="col">Field</th>
+-                                        <th scope="col">Signal</th>
 +                                        <th scope="col">Variable</th>
 +                                        <th scope="col">Display</th>
-@@ -328 +122,0 @@
+@@ -295,2 +123,0 @@
 -                                        <th scope="col">Value</th>
-@@ -331,2 +125,6 @@
--                                <tbody data-admin-system-health-detail-rows>
--                                    <tr><td>System Health</td><td>Status</td><td>Loading</td><td>Loading safe details.</td></tr>
+-                                        <th scope="col">Next Step</th>
+@@ -299,2 +126,6 @@
+-                                <tbody data-admin-system-health-r2-readiness-rows>
+-                                    <tr><td>Project Asset Storage / R2</td><td>Status</td><td>Loading</td><td>Loading</td><td>Loading R2 readiness.</td></tr>
 +                                <tbody>
 +                                    <tr><td>CLOUDFLARE_R2_ACCESS_KEY_ID</td><td>********</td><td data-health-status="PASS">PASS</td></tr>
 +                                    <tr><td>CLOUDFLARE_R2_BUCKET</td><td>Configured bucket placeholder</td><td data-health-status="PENDING" title="Reason: R2 bucket value reader is intentionally not wired in this foundation PR." aria-label="PENDING: R2 bucket value reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
 +                                    <tr><td>CLOUDFLARE_R2_SECRET_ACCESS_KEY</td><td>********</td><td data-health-status="PASS">PASS</td></tr>
 +                                    <tr><td>DATABASE_URL</td><td>********</td><td data-health-status="PASS">PASS</td></tr>
 +                                    <tr><td>GAMEFOUNDRY_ENVIRONMENT</td><td>DEV / IST / UAT / PRD</td><td data-health-status="PASS">PASS</td></tr>
-@@ -337,2 +135,2 @@
--                            <table class="data-table" aria-label="System health environment limits">
--                                <caption>Environment Limits from current .env; values may differ by DEV/IST/UAT/PRD</caption>
+@@ -305,2 +136,2 @@
+-                            <table class="data-table" aria-label="System health storage connectivity results">
+-                                <caption>Storage Connectivity Results</caption>
 +                            <table class="data-table" aria-label="Limits and capacity">
 +                                <caption>Limits &amp; Capacity</caption>
-@@ -341 +138,0 @@
--                                        <th scope="col">Variable</th>
-@@ -343,3 +140,3 @@
--                                        <th scope="col">Usage</th>
--                                        <th scope="col">Pressure</th>
--                                        <th scope="col">Next Step</th>
+@@ -309 +140,3 @@
+-                                        <th scope="col">Action</th>
++                                        <th scope="col">Limit</th>
 +                                        <th scope="col">Current</th>
 +                                        <th scope="col">Capacity Signal</th>
-+                                        <th scope="col">Status</th>
-@@ -348,2 +145,6 @@
--                                <tbody data-admin-system-health-limit-rows>
--                                    <tr><td>System Health</td><td>Loading</td><td>Loading</td><td>Loading</td><td>Loading limit diagnostics.</td></tr>
+@@ -311,2 +143,0 @@
+-                                        <th scope="col">Executed</th>
+-                                        <th scope="col">Message</th>
+@@ -315,2 +146,6 @@
+-                                <tbody data-admin-system-health-storage-connectivity-result-rows>
+-                                    <tr><td>startup</td><td>SKIP</td><td>no</td><td>Storage connectivity startup has not run yet.</td></tr>
 +                                <tbody>
 +                                    <tr><td>DB Size</td><td>Pending metric</td><td>Threshold not connected</td><td data-health-status="PENDING" title="Reason: DB size metric is intentionally not wired in this foundation PR." aria-label="PENDING: DB size metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
 +                                    <tr><td>Connections</td><td>Pending metric</td><td>Pool usage not connected</td><td data-health-status="PENDING" title="Reason: connection pool metric is intentionally not wired in this foundation PR." aria-label="PENDING: connection pool metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
 +                                    <tr><td>Storage</td><td>Pending metric</td><td>Bucket usage not connected</td><td data-health-status="PENDING" title="Reason: R2 storage usage metric is intentionally not wired in this foundation PR." aria-label="PENDING: R2 storage usage metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
 +                                    <tr><td>Class A Ops</td><td>Pending metric</td><td>R2 write/list budget not connected</td><td data-health-status="PENDING" title="Reason: R2 Class A operation metric is intentionally not wired in this foundation PR." aria-label="PENDING: R2 Class A operation metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
 +                                    <tr><td>Class B Ops</td><td>Pending metric</td><td>R2 read budget not connected</td><td data-health-status="PENDING" title="Reason: R2 Class B operation metric is intentionally not wired in this foundation PR." aria-label="PENDING: R2 Class B operation metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
-@@ -356 +157 @@
+@@ -321,2 +156,2 @@
+-                            <table class="data-table" aria-label="System health details">
+-                                <caption>System Health Details</caption>
++                            <table class="data-table" aria-label="Diagnostics plan">
++                                <caption>Diagnostics Plan</caption>
+@@ -325,2 +160,3 @@
+-                                        <th scope="col">Area</th>
+-                                        <th scope="col">Field</th>
++                                        <th scope="col">Diagnostic Check</th>
++                                        <th scope="col">Future Signal</th>
++                                        <th scope="col">Planned Source</th>
+@@ -328 +163,0 @@
+-                                        <th scope="col">Value</th>
+@@ -331,19 +166,10 @@
+-                                <tbody data-admin-system-health-detail-rows>
+-                                    <tr><td>System Health</td><td>Status</td><td>Loading</td><td>Loading safe details.</td></tr>
+-                                </tbody>
+-                            </table>
+-                        </div>
+-                        <div class="table-wrapper">
+-                            <table class="data-table" aria-label="System health environment limits">
+-                                <caption>Environment Limits from current .env; values may differ by DEV/IST/UAT/PRD</caption>
+-                                <thead>
+-                                    <tr>
+-                                        <th scope="col">Variable</th>
+-                                        <th scope="col">Limit</th>
+-                                        <th scope="col">Usage</th>
+-                                        <th scope="col">Pressure</th>
+-                                        <th scope="col">Next Step</th>
+-                                    </tr>
+-                                </thead>
+-                                <tbody data-admin-system-health-limit-rows>
+-                                    <tr><td>System Health</td><td>Loading</td><td>Loading</td><td>Loading</td><td>Loading limit diagnostics.</td></tr>
++                                <tbody>
++                                    <tr><td>Postgres Connection</td><td>Connection success, latency, and actionable failure detail</td><td>Server-owned Postgres health reader</td><td data-health-status="PENDING" title="Reason: live Postgres connection diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: live Postgres connection diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
++                                    <tr><td>Postgres Migration Reader</td><td>Current migration version and pending migration signal</td><td>Server-owned Postgres migration reader</td><td data-health-status="PENDING" title="Reason: Postgres migration diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: Postgres migration diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
++                                    <tr><td>R2 Bucket Configured</td><td>Configured bucket name presence without exposing secrets</td><td>Server-owned Cloudflare R2 configuration reader</td><td data-health-status="PENDING" title="Reason: R2 bucket configuration diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 bucket configuration diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
++                                    <tr><td>R2 List</td><td>List operation availability and scoped prefix result</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 list diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 list diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
++                                    <tr><td>R2 Read</td><td>Health object read availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 read diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 read diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
++                                    <tr><td>R2 Write</td><td>Health object write availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 write diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 write diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
++                                    <tr><td>R2 Delete</td><td>Health object cleanup availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 delete diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 delete diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
++                                    <tr><td>Runtime Environment Masking</td><td>Masked display verification for secret-bearing variables</td><td>Server-owned runtime environment diagnostic</td><td data-health-status="PENDING" title="Reason: automated runtime masking diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: automated runtime masking diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
++                                    <tr><td>Limits/Capacity Metrics</td><td>DB size, connections, storage usage, and R2 Class A/Class B operation signals</td><td>Server-owned metrics diagnostic</td><td data-health-status="PENDING" title="Reason: limits and capacity diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: limits and capacity diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
+@@ -356 +182 @@
 -                            <h2>Inspector</h2>
 +                            <h2>Diagnostics</h2>
-@@ -360,9 +161,19 @@
+@@ -360,9 +186,19 @@
 -                                <summary>Status</summary>
 -                                <div class="accordion-body content-stack">
 -                                    <p class="status" role="status" data-admin-system-health-status>Loading Admin System Health.</p>
@@ -379,7 +390,7 @@ index c5ef74f44..092a94f04 100644
 +                                            </tbody>
 +                                        </table>
 +                                    </div>
-@@ -375,9 +186 @@
+@@ -375,9 +211 @@
 -                                    <a class="btn btn--compact" href="/admin/operations.html">Admin Operations Actions</a>
 -                                </div>
 -                            </details>
@@ -390,7 +401,7 @@ index c5ef74f44..092a94f04 100644
 -                                    <p>Infrastructure remains the architecture reference page.</p>
 -                                    <p>Admin Operations remains the action page.</p>
 +                                    <a class="btn btn--compact" href="/admin/operations.html">Admin Operations</a>
-@@ -396 +198,0 @@
+@@ -396 +223,0 @@
 -    <script type="module" src="assets/theme-v2/js/admin-system-health.js"></script>
 diff --git a/docs_build/dev/reports/PR_26171_GAMMA_011-admin-system-health-foundation-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26171_GAMMA_011-admin-system-health-foundation-instruction-compliance-checklist.md
 new file mode 100644
@@ -712,6 +723,197 @@ index 000000000..cad4a23a7
 +## EOD Approval
 +
 +No merge was performed. EOD merge remains owner-controlled and requires explicit approval.
+diff --git a/docs_build/dev/reports/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan-instruction-compliance-checklist.md
+new file mode 100644
+index 000000000..3bd5d1bcd
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan-instruction-compliance-checklist.md
+@@ -0,0 +1,64 @@
++# PR_26171_GAMMA_013 Instruction Compliance Checklist
++
++## Required Reads
++
++- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
++- PASS: Read `docs_build/dev/PROJECT_MULTI_PC.txt`.
++- PASS: Read exact target file `admin/system-health.html`.
++- PASS: Read existing target route test `tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`.
++
++## Pre-Step Artifact Gate
++
++- PASS: Refreshed review artifacts before implementation.
++- PASS: Committed and pushed the artifact-only refresh before implementation because `codex_changed_files.txt` changed.
++- PASS: Verified `git status --short` was clean after artifact refresh commit.
++- PASS: Verified local/origin sync was `0 0` after artifact refresh commit.
++
++## Ownership And Branch
++
++- PASS: Queued PR name includes TEAM token `GAMMA`.
++- PASS: TEAM ownership was verified against `PROJECT_MULTI_PC.txt`.
++- PASS: User explicitly directed continuation on `team/GAMMA/admin`.
++- PASS: User explicitly directed updating existing draft PR #36 and not creating a separate PR013 GitHub PR.
++- PASS: Work remained within the Admin diagnostics/foundation scope.
++
++## Scope Compliance
++
++- PASS: Added clear diagnostics plan/foundation section to Admin System Health.
++- PASS: Defined future diagnostic check for Postgres connection.
++- PASS: Defined future diagnostic check for Postgres migration reader.
++- PASS: Defined future diagnostic check for R2 bucket configured.
++- PASS: Defined future diagnostic checks for R2 list/read/write/delete.
++- PASS: Defined future diagnostic check for runtime environment masking.
++- PASS: Defined future diagnostic check for limits/capacity metrics.
++- PASS: Kept all unwired checks as `PENDING`.
++- PASS: Added hover/accessibility reason text for every non-`PASS` status.
++- PASS: Did not add API wiring.
++- PASS: Did not add persistence.
++- PASS: Did not add SQLite.
++- PASS: Did not expose client-side secret values.
++- PASS: Preserved Theme V2-only implementation.
++
++## Validation Compliance
++
++- PASS: Ran `git diff --check`.
++- PASS: Ran targeted Admin System Health static validation.
++- PASS: Verified every non-`PASS` status has reason text.
++- PASS: Verified no `WARN` or `FAIL` placeholder health statuses exist.
++- PASS: Ran targeted Admin System Health Playwright route spec.
++- PASS: Did not run samples.
++
++## Reports And Packaging
++
++- PASS: Created queued-scope PR report.
++- PASS: Created manual validation notes.
++- PASS: Created instruction compliance checklist.
++- PASS: Generate `codex_review.diff` after staging scoped files.
++- PASS: Generate `codex_changed_files.txt` after staging scoped files.
++- PASS: Create repo-structured delta ZIP under `tmp/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan_delta.zip`.
++- PASS: Verify no report remains modified after ZIP creation.
++
++## Merge Control
++
++- PASS: No merge performed.
++- PASS: Owner-controlled EOD merge approval remains required.
+diff --git a/docs_build/dev/reports/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan-manual-validation-notes.md b/docs_build/dev/reports/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan-manual-validation-notes.md
+new file mode 100644
+index 000000000..3b2ae166a
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan-manual-validation-notes.md
+@@ -0,0 +1,27 @@
++# PR_26171_GAMMA_013 Manual Validation Notes
++
++## Manual Review Notes
++
++- Reviewed `admin/system-health.html` after adding the diagnostics plan section.
++- Confirmed `Diagnostics Plan` appears in the Health Sections list and as a table caption.
++- Confirmed future diagnostic rows exist for Postgres connection, Postgres migration reader, R2 bucket configuration, R2 list/read/write/delete, runtime environment masking, and limits/capacity metrics.
++- Confirmed all diagnostics plan rows are `PENDING`.
++- Confirmed every diagnostics plan `PENDING` status includes hover/accessibility reason text through `title` and `aria-label`.
++- Confirmed no `WARN` or `FAIL` health status placeholders were added.
++- Confirmed no fake failure text was reintroduced.
++- Confirmed Postgres-only and Cloudflare R2 wording remains present.
++- Confirmed secret-bearing runtime environment rows remain masked as `********`.
++- Confirmed no API wiring, persistence, SQLite, page-local CSS, or page-local JavaScript was added.
++
++## Validation Notes
++
++- `git diff --check` passed.
++- Targeted Admin System Health static validation passed.
++- Existing targeted Admin System Health Playwright route spec passed with 3 tests.
++- Samples were not run because samples are outside this queued diagnostics plan scope.
++
++## User Review Focus
++
++- Review whether the diagnostics plan row names match the desired future implementation sequence.
++- Review the `PENDING` reason text for enough clarity before future API/runtime wiring PRs.
++- Confirm owner approval before any EOD merge.
+diff --git a/docs_build/dev/reports/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan.md b/docs_build/dev/reports/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan.md
+new file mode 100644
+index 000000000..ad86bdccb
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan.md
+@@ -0,0 +1,82 @@
++# PR_26171_GAMMA_013-admin-system-health-diagnostics-plan
++
++## Summary
++
++Queued scope 013 was applied to the existing draft PR #36 workstream branch:
++
++- PR #36: `PR_26171_GAMMA_011-admin-system-health-foundation`
++- Branch: `team/GAMMA/admin`
++
++This queued scope adds a diagnostics plan/foundation section to Admin System Health without creating a separate GitHub PR.
++
++## Scope Evidence
++
++- Added a table-first `Diagnostics Plan` section to `admin/system-health.html`.
++- Added future diagnostic checks for:
++  - Postgres connection
++  - Postgres migration reader
++  - R2 bucket configured
++  - R2 list/read/write/delete
++  - runtime environment masking
++  - limits/capacity metrics
++- Kept all unwired diagnostics plan rows as `PENDING`.
++- Added `title` and `aria-label` reason text to each `PENDING` diagnostics plan status.
++- Preserved Postgres-only wording.
++- Preserved Cloudflare R2/R2 wording.
++- Preserved masked secret display and did not expose client-side secret values.
++- Did not add API wiring, persistence, SQLite, page-local CSS, or page-local JavaScript.
++
++## Pre-Step Artifact Gate
++
++- Refreshed review artifacts before implementation: PASS
++- Artifact refresh changed `docs_build/dev/reports/codex_changed_files.txt`: committed and pushed before implementation
++- Artifact-only pre-step commit: `0514f8583`
++- Clean status after artifact refresh commit: PASS
++- Local/origin sync after artifact refresh commit: PASS (`0 0`)
++
++## Instruction Start Gate
++
++- Instructions read: PASS
++- `docs_build/dev/PROJECT_INSTRUCTIONS.md`: read before edits
++- `docs_build/dev/PROJECT_MULTI_PC.txt`: read before edits
++- Current branch: `team/GAMMA/admin`
++- TEAM token: `GAMMA`
++- TEAM ownership: PASS by explicit Master Control/user assignment for diagnostics/admin workstream
++- Implementation path: `admin/system-health.html`
++- Existing draft PR target: PR #36
++- Separate PR creation: SKIP by explicit user instruction
++- Merge: SKIP, owner-controlled EOD approval remains required
++
++Note: the merged instruction file still contains the older main-only branch guard. This queued update proceeded only after explicit user instruction to continue on `team/GAMMA/admin` and update existing draft PR #36 rather than creating a separate PR.
++
++## Validation
++
++- PASS: `git diff --check`
++- PASS: targeted Admin System Health source check found 37 status cells and 25 non-`PASS` statuses with reasons.
++- PASS: targeted source check found no fake failure text, no `WARN`/`FAIL` health status cells, and no SQLite text in `admin/system-health.html`.
++- PASS: targeted source check verified Postgres, Cloudflare R2, and all requested diagnostics plan labels.
++- PASS: targeted source check verified secret-bearing runtime environment rows remain masked as `********`.
++- PASS: `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --config=codex_playwright_system_chrome.config.cjs --project=playwright` (3 passed)
++
++## Skipped Lanes
++
++- Full samples smoke: skipped by request because this diagnostics plan foundation does not touch samples.
++- Full Playwright suite: skipped because the existing targeted Admin System Health route spec covers the changed route.
++- Runtime/API validation: skipped because no API wiring or persistence was added.
++
++## Required Reports
++
++- `docs_build/dev/reports/codex_review.diff`
++- `docs_build/dev/reports/codex_changed_files.txt`
++- `docs_build/dev/reports/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan.md`
++- `docs_build/dev/reports/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan-manual-validation-notes.md`
++- `docs_build/dev/reports/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan-instruction-compliance-checklist.md`
++
++## ZIP Artifact
++
++- `tmp/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan_delta.zip`
++- Generated from the current `team/GAMMA/admin` branch delta against the branch merge-base with `origin/main`, preserving the existing PR #36 workstream context.
++
++## EOD Approval
++
++No merge was performed. EOD merge remains owner-controlled and requires explicit approval.
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 index 59de15fb6..7b1c51f19 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
@@ -767,7 +969,7 @@ index 94d5e709f..36e3b18b0 100644
 -(0%) toolbox/messages/messages.js - changed JS file not collected as browser runtime coverage
 +(0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
 diff --git a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-index e19b4da0b..b26a01036 100644
+index e19b4da0b..78afe5938 100644
 --- a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
 +++ b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
 @@ -8,0 +9,5 @@ async function setSessionUser(server, userKey) {
@@ -806,7 +1008,7 @@ index e19b4da0b..b26a01036 100644
 @@ -57 +83 @@ test.afterAll(async () => {
 -test("Admin System Health renders operational health summaries and filters", async ({ page }) => {
 +test("Admin System Health renders foundation tables without page API calls", async ({ page }) => {
-@@ -62,15 +88,24 @@ test("Admin System Health renders operational health summaries and filters", asy
+@@ -62,15 +88,33 @@ test("Admin System Health renders operational health summaries and filters", asy
 -    await expect(page.locator("[data-admin-system-health-status]")).toContainText("Admin System Health loaded safe status only.");
 -    await expect(page.locator("[data-admin-health-summary-rows]")).toContainText("Membership operations");
 -    await expect(page.locator("[data-admin-health-summary-rows]")).toContainText("Invitation support");
@@ -830,6 +1032,15 @@ index e19b4da0b..b26a01036 100644
 +    await expect(page.getByRole("table", { name: "Storage health" })).toContainText("Cloudflare R2");
 +    await expect(page.getByRole("table", { name: "Runtime environment" })).toContainText("********");
 +    await expect(page.getByRole("table", { name: "Limits and capacity" })).toContainText("Class A Ops");
++    await expect(page.getByRole("table", { name: "Diagnostics plan" })).toContainText("Postgres Connection");
++    await expect(page.getByRole("table", { name: "Diagnostics plan" })).toContainText("Postgres Migration Reader");
++    await expect(page.getByRole("table", { name: "Diagnostics plan" })).toContainText("R2 Bucket Configured");
++    await expect(page.getByRole("table", { name: "Diagnostics plan" })).toContainText("R2 List");
++    await expect(page.getByRole("table", { name: "Diagnostics plan" })).toContainText("R2 Read");
++    await expect(page.getByRole("table", { name: "Diagnostics plan" })).toContainText("R2 Write");
++    await expect(page.getByRole("table", { name: "Diagnostics plan" })).toContainText("R2 Delete");
++    await expect(page.getByRole("table", { name: "Diagnostics plan" })).toContainText("Runtime Environment Masking");
++    await expect(page.getByRole("table", { name: "Diagnostics plan" })).toContainText("Limits/Capacity Metrics");
 +    await expect(page.getByRole("table", { name: "Diagnostics log" })).toContainText("PASS");
 +    await expect(page.getByRole("table", { name: "Diagnostics log" })).toContainText("PENDING");
 +    await expect(page.getByRole("table", { name: "Diagnostics log" })).not.toContainText("FAIL");
@@ -846,12 +1057,16 @@ index e19b4da0b..b26a01036 100644
 +    }
 +    expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health"))).toBe(false);
 +    await expect(page.locator("[data-admin-system-health-storage-action]")).toHaveCount(0);
-@@ -92 +127 @@ test("Creator sessions cannot access Admin System Health operations", async ({ p
+@@ -92 +136 @@ test("Creator sessions cannot access Admin System Health operations", async ({ p
 -    await expect(page.locator("[data-admin-health-summary-rows]")).toHaveCount(0);
 +    await expect(page.getByRole("table", { name: "Environment summary" })).toHaveCount(0);
-@@ -107 +142,4 @@ test("Admin System Health operations page keeps scripts and styles external", as
+@@ -107 +151,8 @@ test("Admin System Health operations page keeps scripts and styles external", as
 -  expect(pageSource).toContain("assets/theme-v2/js/admin-system-health.js");
 +  expect(pageSource).not.toMatch(/data-health-status="(?:WARN|FAIL)"/);
 +  expect(pageSource).not.toContain("No active failure is declared");
++  expect(pageSource).not.toContain("SQLite");
++  expect(pageSource).toContain("Diagnostics Plan");
++  expect(pageSource).toContain("Server-owned Postgres health reader");
++  expect(pageSource).toContain("Server-owned Cloudflare R2 storage diagnostic");
 +  expect(pageSource).not.toContain("assets/theme-v2/js/admin-system-health.js");
 +  expect(pageSource).toContain("assets/theme-v2/js/admin-owner-navigation.js");

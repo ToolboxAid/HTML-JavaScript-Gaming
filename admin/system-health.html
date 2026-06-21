@@ -43,6 +43,7 @@
                                     <p>Storage Health</p>
                                     <p>Runtime Environment</p>
                                     <p>Limits &amp; Capacity</p>
+                                    <p>Diagnostics Plan</p>
                                     <p>Diagnostics Log</p>
                                 </div>
                             </details>
@@ -148,6 +149,30 @@
                                     <tr><td>Storage</td><td>Pending metric</td><td>Bucket usage not connected</td><td data-health-status="PENDING" title="Reason: R2 storage usage metric is intentionally not wired in this foundation PR." aria-label="PENDING: R2 storage usage metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
                                     <tr><td>Class A Ops</td><td>Pending metric</td><td>R2 write/list budget not connected</td><td data-health-status="PENDING" title="Reason: R2 Class A operation metric is intentionally not wired in this foundation PR." aria-label="PENDING: R2 Class A operation metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
                                     <tr><td>Class B Ops</td><td>Pending metric</td><td>R2 read budget not connected</td><td data-health-status="PENDING" title="Reason: R2 Class B operation metric is intentionally not wired in this foundation PR." aria-label="PENDING: R2 Class B operation metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Diagnostics plan">
+                                <caption>Diagnostics Plan</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Diagnostic Check</th>
+                                        <th scope="col">Future Signal</th>
+                                        <th scope="col">Planned Source</th>
+                                        <th scope="col">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>Postgres Connection</td><td>Connection success, latency, and actionable failure detail</td><td>Server-owned Postgres health reader</td><td data-health-status="PENDING" title="Reason: live Postgres connection diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: live Postgres connection diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
+                                    <tr><td>Postgres Migration Reader</td><td>Current migration version and pending migration signal</td><td>Server-owned Postgres migration reader</td><td data-health-status="PENDING" title="Reason: Postgres migration diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: Postgres migration diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
+                                    <tr><td>R2 Bucket Configured</td><td>Configured bucket name presence without exposing secrets</td><td>Server-owned Cloudflare R2 configuration reader</td><td data-health-status="PENDING" title="Reason: R2 bucket configuration diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 bucket configuration diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
+                                    <tr><td>R2 List</td><td>List operation availability and scoped prefix result</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 list diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 list diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
+                                    <tr><td>R2 Read</td><td>Health object read availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 read diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 read diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
+                                    <tr><td>R2 Write</td><td>Health object write availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 write diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 write diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
+                                    <tr><td>R2 Delete</td><td>Health object cleanup availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 delete diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 delete diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
+                                    <tr><td>Runtime Environment Masking</td><td>Masked display verification for secret-bearing variables</td><td>Server-owned runtime environment diagnostic</td><td data-health-status="PENDING" title="Reason: automated runtime masking diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: automated runtime masking diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
+                                    <tr><td>Limits/Capacity Metrics</td><td>DB size, connections, storage usage, and R2 Class A/Class B operation signals</td><td>Server-owned metrics diagnostic</td><td data-health-status="PENDING" title="Reason: limits and capacity diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: limits and capacity diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
                                 </tbody>
                             </table>
                         </div>

@@ -1,7 +1,12 @@
 Base merge-base: e8845dae6e990164072d4ee9b37ec81eda563fc3
-Head at artifact refresh: 2f4b8a5d493d479ed2442f5025cc2b2be863a3c3
+Head at artifact refresh: 0514f858342704357ec1cdf9b8af9497a9d40a1d
 
 Working tree status at artifact generation:
+M  admin/system-health.html
+A  docs_build/dev/reports/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan-instruction-compliance-checklist.md
+A  docs_build/dev/reports/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan-manual-validation-notes.md
+A  docs_build/dev/reports/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan.md
+M  tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
 
 Changed files against merge-base:
 M	admin/system-health.html
@@ -11,19 +16,25 @@ A	docs_build/dev/reports/PR_26171_GAMMA_011-admin-system-health-foundation.md
 A	docs_build/dev/reports/PR_26171_GAMMA_012-admin-system-health-status-reason-cleanup-instruction-compliance-checklist.md
 A	docs_build/dev/reports/PR_26171_GAMMA_012-admin-system-health-status-reason-cleanup-manual-validation-notes.md
 A	docs_build/dev/reports/PR_26171_GAMMA_012-admin-system-health-status-reason-cleanup.md
+A	docs_build/dev/reports/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan-instruction-compliance-checklist.md
+A	docs_build/dev/reports/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan-manual-validation-notes.md
+A	docs_build/dev/reports/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan.md
 M	docs_build/dev/reports/coverage_changed_js_guardrail.txt
 M	docs_build/dev/reports/playwright_v8_coverage_report.txt
 M	tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
 
 Stat against merge-base:
- admin/system-health.html                           | 360 +++++----------------
+ admin/system-health.html                           | 367 ++++++---------------
  ...-foundation-instruction-compliance-checklist.md |  32 ++
  ...em-health-foundation-manual-validation-notes.md |  34 ++
  ...171_GAMMA_011-admin-system-health-foundation.md |  65 ++++
  ...son-cleanup-instruction-compliance-checklist.md |  57 ++++
  ...tatus-reason-cleanup-manual-validation-notes.md |  26 ++
  ...12-admin-system-health-status-reason-cleanup.md |  70 ++++
+ ...ostics-plan-instruction-compliance-checklist.md |  64 ++++
+ ...lth-diagnostics-plan-manual-validation-notes.md |  27 ++
+ ...MMA_013-admin-system-health-diagnostics-plan.md |  82 +++++
  .../dev/reports/coverage_changed_js_guardrail.txt  |   6 +-
  .../dev/reports/playwright_v8_coverage_report.txt  |  31 +-
- .../tools/AdminHealthOperationsPage.spec.mjs       |  74 +++--
- 10 files changed, 434 insertions(+), 321 deletions(-)
+ .../tools/AdminHealthOperationsPage.spec.mjs       |  87 ++++-
+ 13 files changed, 636 insertions(+), 312 deletions(-)

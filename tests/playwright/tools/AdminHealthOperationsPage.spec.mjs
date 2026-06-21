@@ -93,6 +93,15 @@ test("Admin System Health renders foundation tables without page API calls", asy
     await expect(page.getByRole("table", { name: "Storage health" })).toContainText("Cloudflare R2");
     await expect(page.getByRole("table", { name: "Runtime environment" })).toContainText("********");
     await expect(page.getByRole("table", { name: "Limits and capacity" })).toContainText("Class A Ops");
+    await expect(page.getByRole("table", { name: "Diagnostics plan" })).toContainText("Postgres Connection");
+    await expect(page.getByRole("table", { name: "Diagnostics plan" })).toContainText("Postgres Migration Reader");
+    await expect(page.getByRole("table", { name: "Diagnostics plan" })).toContainText("R2 Bucket Configured");
+    await expect(page.getByRole("table", { name: "Diagnostics plan" })).toContainText("R2 List");
+    await expect(page.getByRole("table", { name: "Diagnostics plan" })).toContainText("R2 Read");
+    await expect(page.getByRole("table", { name: "Diagnostics plan" })).toContainText("R2 Write");
+    await expect(page.getByRole("table", { name: "Diagnostics plan" })).toContainText("R2 Delete");
+    await expect(page.getByRole("table", { name: "Diagnostics plan" })).toContainText("Runtime Environment Masking");
+    await expect(page.getByRole("table", { name: "Diagnostics plan" })).toContainText("Limits/Capacity Metrics");
     await expect(page.getByRole("table", { name: "Diagnostics log" })).toContainText("PASS");
     await expect(page.getByRole("table", { name: "Diagnostics log" })).toContainText("PENDING");
     await expect(page.getByRole("table", { name: "Diagnostics log" })).not.toContainText("FAIL");
@@ -141,6 +150,10 @@ test("Admin System Health operations page keeps scripts and styles external", as
   expect(pageSource).not.toMatch(/\sstyle\s*=/i);
   expect(pageSource).not.toMatch(/data-health-status="(?:WARN|FAIL)"/);
   expect(pageSource).not.toContain("No active failure is declared");
+  expect(pageSource).not.toContain("SQLite");
+  expect(pageSource).toContain("Diagnostics Plan");
+  expect(pageSource).toContain("Server-owned Postgres health reader");
+  expect(pageSource).toContain("Server-owned Cloudflare R2 storage diagnostic");
   expect(pageSource).not.toContain("assets/theme-v2/js/admin-system-health.js");
   expect(pageSource).toContain("assets/theme-v2/js/admin-owner-navigation.js");
 });
