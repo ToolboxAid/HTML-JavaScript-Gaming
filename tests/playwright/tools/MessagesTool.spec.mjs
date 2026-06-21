@@ -145,10 +145,13 @@ async function addMessage(page, values) {
 
 async function addPart(page, values) {
   await page.getByRole("button", { name: "Add Part" }).click();
-  await page.locator("[data-messages-segment-editor='__new__'] [data-segment-order]").fill(String(values.order));
   await page.locator("[data-messages-segment-editor='__new__'] [data-segment-text]").fill(values.text);
   await page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion]").selectOption({ label: values.emotion });
   await page.locator("[data-messages-segment-commit='__new__']").click();
+}
+
+async function openMessageParts(page, messageName) {
+  await page.locator("[data-messages-name-cell]").filter({ hasText: messageName }).click();
 }
 
 test("Message Studio renders Messages with child Message Parts and plays ordered parts", async ({ page }) => {
@@ -194,28 +197,29 @@ test("Message Studio renders Messages with child Message Parts and plays ordered
 
     const messageRow = page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" });
     const messageNameCell = page.locator("[data-messages-name-cell]").filter({ hasText: "Bat Encounter" });
-    await expect(page.locator("[data-messages-segment-host]")).toBeVisible();
-    await messageNameCell.click();
     await expect(page.locator("[data-messages-segment-host]")).toHaveCount(0);
     await messageRow.locator("td").nth(3).click();
     await expect(page.locator("[data-messages-segment-host]")).toHaveCount(0);
     await messageNameCell.click();
     await expect(page.locator("[data-messages-segment-host]")).toBeVisible();
     await expect(page.getByRole("heading", { name: "Message Parts" })).toBeVisible();
-    await expect(page.getByRole("columnheader", { name: "Order" })).toBeVisible();
-    await expect(page.getByRole("columnheader", { name: "Text" })).toBeVisible();
-    await expect(page.getByRole("columnheader", { exact: true, name: "TTS Profile" })).toBeVisible();
+    const partsTable = page.getByLabel("Message parts");
+    await expect(partsTable.getByRole("columnheader", { name: "Order" })).toHaveCount(0);
+    await expect(partsTable.getByRole("columnheader", { name: "Text" })).toBeVisible();
+    await expect(partsTable.getByRole("columnheader", { name: "Emotion" })).toBeVisible();
+    await expect(partsTable.getByRole("columnheader", { exact: true, name: "TTS Profile" })).toBeVisible();
+    await expect(partsTable.getByRole("columnheader", { name: "Status" })).toBeVisible();
+    await expect(partsTable.getByRole("columnheader", { name: "Actions" })).toBeVisible();
 
     await page.getByRole("button", { name: "Add Part" }).click();
     await expect(page.locator("[data-messages-segment-add-control-row]")).toHaveCount(0);
     await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-text]")).toBeVisible();
     await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion]")).toBeVisible();
     await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-tts-profile]")).toContainText("Default Balanced TTS Profile");
-    await page.locator("[data-messages-segment-editor='__new__'] [data-segment-order]").fill("");
     await page.locator("[data-messages-segment-commit='__new__']").click();
     await expect(page.locator("[data-messages-validation-errors]")).toContainText("Part Text is required.");
     await expect(page.locator("[data-messages-validation-errors]")).toContainText("Emotion is required.");
-    await expect(page.locator("[data-messages-validation-errors]")).toContainText("Display Order is required.");
+    await expect(page.locator("[data-messages-validation-errors]")).not.toContainText("Display Order is required.");
     await page.locator("[data-messages-segment-cancel='__new__']").click();
 
     await addPart(page, {
@@ -316,6 +320,7 @@ test("Message Studio shows actionable playback error when audio engine is unavai
       name: "Bat Encounter",
       text: "Bats drop from the rafters.",
     });
+    await openMessageParts(page, "Bat Encounter");
     await addPart(page, {
       emotion: "Urgent",
       order: 1,
