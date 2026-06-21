@@ -115,3 +115,24 @@
 - [ ] Bravo - Community
 - [ ] Bravo - Ratings
 - [ ] Bravo - Cloud
+
+# Governance
+
+100% Complete — Maintain project rules, team workflow, and Codex execution control
+
+- [x] OWNER - Governance system production-ready for multi-team Codex workflow
+
+  Notes:
+  - ProjectInstructions root installed.
+  - Preservation and archive governance installed.
+  - Backlog governance installed.
+  - Team assignment governance installed.
+  - NATO team naming installed.
+  - OWNER override governance installed.
+  - Branch persistence governance installed.
+  - Day Work / EOD Merge governance installed.
+  - Active Team Registry installed.
+  - Build Path synchronization rules installed.
+  - Tile overlay status rules installed.
+  - Deprecation workflow installed.
+  - Team start commands installed.
