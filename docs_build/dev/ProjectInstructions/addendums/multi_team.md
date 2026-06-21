@@ -83,6 +83,30 @@ Rules:
 - If merge succeeds but repository is not returned to main:
   closeout status = FAIL.
 
+## Workstream Hygiene Governance
+
+At workstream closeout, Codex must review repository collaboration state before reporting the workstream closed.
+
+Required review targets:
+- open PRs
+- draft PRs
+- local branches
+- remote branches
+
+Each reviewed item must be classified as one of:
+- Active
+- Merged
+- Superseded
+- Abandoned
+- Historical/Archive
+
+Rules:
+- Merged branches should be deleted after successful merge and main sync.
+- Superseded draft PRs should be closed.
+- Abandoned branches should be documented before removal.
+- Active workstream branches remain.
+- No branch deletion is performed by this governance rule unless a later owner-approved cleanup task explicitly scopes deletion.
+
 ## Conflict Note
 
 Existing ProjectInstructions wording that appears to require immediate or automatic merge remains preserved for traceability.
