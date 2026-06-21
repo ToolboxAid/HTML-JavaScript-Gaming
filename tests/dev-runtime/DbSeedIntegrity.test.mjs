@@ -7,14 +7,15 @@ import assert from "node:assert/strict";
 import { createLocalApiRouter } from "../../src/dev-runtime/server/local-api-router.mjs";
 import { MOCK_DB_KEYS } from "../../src/dev-runtime/persistence/mock-db-store.js";
 import { getActiveToolRegistry } from "../../src/dev-runtime/guest-seeds/tool-metadata-inventory.js";
+import { createMessagesPostgresClientStub } from "../helpers/messagesPostgresClientStub.mjs";
 
 const GUEST_SEED_GROUP_KEYS = getActiveToolRegistry()
   .filter((tool) => tool.visibleInToolsList !== false && tool.hidden !== true)
   .map((tool) => tool.id || tool.key || tool.slug || tool.name)
   .sort();
 
-function startApiServer() {
-  const handleRequest = createLocalApiRouter();
+function startApiServer(routerOptions = {}) {
+  const handleRequest = createLocalApiRouter(routerOptions);
   const server = http.createServer((request, response) => {
     const address = server.address();
     const port = address && typeof address !== "string" ? address.port : 0;
@@ -38,7 +39,10 @@ function startApiServer() {
       }
       resolve({
         baseUrl: `http://127.0.0.1:${address.port}`,
-        close: () => new Promise((closeResolve) => server.close(closeResolve)),
+        close: async () => {
+          await handleRequest.close?.();
+          await new Promise((closeResolve) => server.close(closeResolve));
+        },
       });
     });
   });
@@ -76,6 +80,57 @@ function sampleByKey(snapshot, sampleKey) {
   assert.ok(sample, `tool_state_samples should include ${sampleKey}`);
   return sample;
 }
+
+test("Messages Local API seeds through the Postgres service and preserves response shapes", async () => {
+  const server = await startApiServer({ messagesPostgresClient: createMessagesPostgresClientStub() });
+  try {
+    const categories = await apiJson(server.baseUrl, "/api/messages/categories");
+    assert.equal(categories.persistence.engine, "Postgres");
+    assert.equal(categories.persistence.owner, "messages");
+    assert.equal(categories.persistence.storage, "server-owned");
+    assert.equal(categories.categories.some((category) => category.name === "Dialog"), true);
+
+    const emotionProfiles = await apiJson(server.baseUrl, "/api/messages/emotion-profiles");
+    const urgent = emotionProfiles.emotionProfiles.find((profile) => profile.name === "Urgent");
+    assert.ok(urgent, "Messages emotion profiles should include Urgent");
+
+    const ttsProfiles = await apiJson(server.baseUrl, "/api/messages/tts-profiles");
+    assert.equal(ttsProfiles.ttsProfiles.some((profile) => profile.name === "Default Balanced TTS Profile"), true);
+    assert.equal(ttsProfiles.ttsProfiles[0].emotionSettings.some((setting) => setting.emotionLabel === "Urgent"), true);
+
+    const created = await apiJson(server.baseUrl, "/api/messages/messages", {
+      body: JSON.stringify({
+        emotionProfileKey: urgent.key,
+        messageText: "Postgres-backed message text.",
+        name: "Postgres Cutover Message",
+      }),
+      method: "POST",
+    });
+    assert.equal(created.persistence.engine, "Postgres");
+    assert.equal(created.message.categoryName, "Dialog");
+    assert.equal(created.message.emotionProfileName, "Urgent");
+    assert.equal(created.message.messageText, "Postgres-backed message text.");
+
+    const segment = await apiJson(server.baseUrl, "/api/messages/segments", {
+      body: JSON.stringify({
+        displayOrder: 1,
+        emotionProfileKey: urgent.key,
+        messageKey: created.message.key,
+        segmentText: "Postgres-backed message part.",
+      }),
+      method: "POST",
+    });
+    assert.equal(segment.segment.messageName, "Postgres Cutover Message");
+    assert.equal(segment.segment.emotionProfileName, "Urgent");
+
+    const list = await apiJson(server.baseUrl, "/api/messages/messages");
+    const listed = list.messages.find((message) => message.key === created.message.key);
+    assert.equal(listed.name, "Postgres Cutover Message");
+    assert.equal(listed.categoryName, "Dialog");
+  } finally {
+    await server.close();
+  }
+});
 
 async function replaceSampleLabel(baseUrl, sampleKey, sampleLabel) {
   const snapshot = await apiJson(baseUrl, "/api/local-db/snapshot");

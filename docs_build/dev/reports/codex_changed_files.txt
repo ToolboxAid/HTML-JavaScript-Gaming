@@ -1,69 +1,36 @@
-# PR_26171_GAMMA_019-admin-workstream-mergeability-recovery changed files
+﻿## git status --short
+M  docs_build/database/dml/DML_INDEX.md
+M  docs_build/database/dml/messages.sql
+M  docs_build/database/seed/messages.json
+A  docs_build/dev/reports/PR_26171_BETA_022-messages-postgres-service-cutover-instruction-compliance-checklist.md
+A  docs_build/dev/reports/PR_26171_BETA_022-messages-postgres-service-cutover-manual-validation-notes.md
+A  docs_build/dev/reports/PR_26171_BETA_022-messages-postgres-service-cutover.md
+M  docs_build/dev/reports/coverage_changed_js_guardrail.txt
+M  docs_build/dev/reports/playwright_v8_coverage_report.txt
+A  src/dev-runtime/messages/messages-postgres-service.mjs
+D  src/dev-runtime/messages/messages-sqlite-service.mjs
+M  src/dev-runtime/server/local-api-router.mjs
+M  tests/dev-runtime/DbSeedIntegrity.test.mjs
+A  tests/helpers/messagesPostgresClientStub.mjs
+M  tests/helpers/playwrightRepoServer.mjs
+M  tests/playwright/tools/MessagesTool.spec.mjs
 
-Base: origin/main 35b04c02ea54da8b13c10354126f1ee8ddd14a89
-Head before recovery merge commit: 1806adbf5df787f7072c6579d23b99bb4257466b
+## git diff --cached --stat
+ docs_build/database/dml/DML_INDEX.md               |    2 +-
+ docs_build/database/dml/messages.sql               |    2 +-
+ docs_build/database/seed/messages.json             |    2 +-
+ ...ice-cutover-instruction-compliance-checklist.md |   16 +
+ ...gres-service-cutover-manual-validation-notes.md |   21 +
+ ...1_BETA_022-messages-postgres-service-cutover.md |   39 +
+ .../dev/reports/coverage_changed_js_guardrail.txt  |   32 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |   91 +-
+ .../messages/messages-postgres-service.mjs         | 1117 +++++++++++++++++++
+ .../messages/messages-sqlite-service.mjs           | 1118 --------------------
+ src/dev-runtime/server/local-api-router.mjs        |   16 +-
+ tests/dev-runtime/DbSeedIntegrity.test.mjs         |   61 +-
+ tests/helpers/messagesPostgresClientStub.mjs       |   83 ++
+ tests/helpers/playwrightRepoServer.mjs             |    6 +-
+ tests/playwright/tools/MessagesTool.spec.mjs       |   39 +-
+ 15 files changed, 1377 insertions(+), 1268 deletions(-)
 
-## Changed files against origin/main
-M	admin/system-health.html
-M	assets/theme-v2/js/admin-system-health.js
-A	docs_build/dev/reports/PR_26171_GAMMA_011-admin-system-health-foundation-instruction-compliance-checklist.md
-A	docs_build/dev/reports/PR_26171_GAMMA_011-admin-system-health-foundation-manual-validation-notes.md
-A	docs_build/dev/reports/PR_26171_GAMMA_011-admin-system-health-foundation.md
-A	docs_build/dev/reports/PR_26171_GAMMA_012-admin-system-health-status-reason-cleanup-instruction-compliance-checklist.md
-A	docs_build/dev/reports/PR_26171_GAMMA_012-admin-system-health-status-reason-cleanup-manual-validation-notes.md
-A	docs_build/dev/reports/PR_26171_GAMMA_012-admin-system-health-status-reason-cleanup.md
-A	docs_build/dev/reports/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan-instruction-compliance-checklist.md
-A	docs_build/dev/reports/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan-manual-validation-notes.md
-A	docs_build/dev/reports/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan.md
-A	docs_build/dev/reports/PR_26171_GAMMA_014-admin-postgres-diagnostics-runtime-instruction-compliance-checklist.md
-A	docs_build/dev/reports/PR_26171_GAMMA_014-admin-postgres-diagnostics-runtime-manual-validation-notes.md
-A	docs_build/dev/reports/PR_26171_GAMMA_014-admin-postgres-diagnostics-runtime.md
-A	docs_build/dev/reports/PR_26171_GAMMA_015-admin-r2-diagnostics-runtime-instruction-compliance-checklist.md
-A	docs_build/dev/reports/PR_26171_GAMMA_015-admin-r2-diagnostics-runtime-manual-validation-notes.md
-A	docs_build/dev/reports/PR_26171_GAMMA_015-admin-r2-diagnostics-runtime.md
-A	docs_build/dev/reports/PR_26171_GAMMA_016-admin-runtime-environment-runtime-instruction-compliance-checklist.md
-A	docs_build/dev/reports/PR_26171_GAMMA_016-admin-runtime-environment-runtime-manual-validation-notes.md
-A	docs_build/dev/reports/PR_26171_GAMMA_016-admin-runtime-environment-runtime.md
-A	docs_build/dev/reports/PR_26171_GAMMA_019-admin-workstream-mergeability-recovery.md
-M	docs_build/dev/reports/codex_changed_files.txt
-M	docs_build/dev/reports/codex_review.diff
-M	docs_build/dev/reports/coverage_changed_js_guardrail.txt
-M	docs_build/dev/reports/playwright_v8_coverage_report.txt
-M	src/dev-runtime/server/local-api-router.mjs
-M	tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-
-## Diff stat against origin/main
- admin/system-health.html                           |  366 +--
- assets/theme-v2/js/admin-system-health.js          |  505 ++--
- ...-foundation-instruction-compliance-checklist.md |   32 +
- ...em-health-foundation-manual-validation-notes.md |   34 +
- ...171_GAMMA_011-admin-system-health-foundation.md |   65 +
- ...son-cleanup-instruction-compliance-checklist.md |   57 +
- ...tatus-reason-cleanup-manual-validation-notes.md |   26 +
- ...12-admin-system-health-status-reason-cleanup.md |   70 +
- ...ostics-plan-instruction-compliance-checklist.md |   64 +
- ...lth-diagnostics-plan-manual-validation-notes.md |   27 +
- ...MMA_013-admin-system-health-diagnostics-plan.md |   82 +
- ...ics-runtime-instruction-compliance-checklist.md |   64 +
- ...-diagnostics-runtime-manual-validation-notes.md |   27 +
- ...GAMMA_014-admin-postgres-diagnostics-runtime.md |   93 +
- ...ics-runtime-instruction-compliance-checklist.md |   62 +
- ...-diagnostics-runtime-manual-validation-notes.md |   26 +
- ...26171_GAMMA_015-admin-r2-diagnostics-runtime.md |   95 +
- ...ent-runtime-instruction-compliance-checklist.md |   66 +
- ...-environment-runtime-manual-validation-notes.md |   28 +
- ..._GAMMA_016-admin-runtime-environment-runtime.md |  102 +
- ...A_019-admin-workstream-mergeability-recovery.md |   50 +
- docs_build/dev/reports/codex_changed_files.txt     |   79 +-
- docs_build/dev/reports/codex_review.diff           | 2696 +++++++++++++++++---
- .../dev/reports/coverage_changed_js_guardrail.txt  |   28 +
- .../dev/reports/playwright_v8_coverage_report.txt  |   94 +-
- src/dev-runtime/server/local-api-router.mjs        |   46 +
- .../tools/AdminHealthOperationsPage.spec.mjs       |  151 +-
- 27 files changed, 4034 insertions(+), 1001 deletions(-)
-
-## Validation evidence
-- git diff --check: PASS
-- git diff --cached --check: PASS
-- npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --config=codex_playwright_system_chrome.config.cjs --project=playwright: PASS (3 passed)
-- samples smoke: SKIPPED by request
+## git diff --stat
