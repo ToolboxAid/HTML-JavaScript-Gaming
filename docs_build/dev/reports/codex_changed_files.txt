@@ -1,6 +1,6 @@
-docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-instruction-compliance-checklist.md
-docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-manual-validation-notes.md
-docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup.md
+﻿docs_build/dev/ProjectInstructions/addendums/multi_team.md
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
-src/dev-runtime/persistence/mock-db-store.js
+docs_build/dev/reports/PR_26172_MASTER_005-branch-main-scope-governance.md
+docs_build/dev/reports/PR_26172_MASTER_005-branch-main-scope-governance-instruction-compliance-checklist.md
+docs_build/dev/reports/PR_26172_MASTER_005-branch-main-scope-governance-manual-validation-notes.md
