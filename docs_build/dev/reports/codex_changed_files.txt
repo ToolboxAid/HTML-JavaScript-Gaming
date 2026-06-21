@@ -1,7 +1,7 @@
 ﻿docs_build/dev/PROJECT_INSTRUCTIONS.md
 docs_build/dev/ProjectInstructions/addendums/multi_team.md
-docs_build/dev/reports/PR_26172_OWNER_030-workstream-hygiene-governance.md
-docs_build/dev/reports/PR_26172_OWNER_030-workstream-hygiene-governance-manual-validation-notes.md
-docs_build/dev/reports/PR_26172_OWNER_030-workstream-hygiene-governance-instruction-compliance-checklist.md
+docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance.md
+docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance-manual-validation-notes.md
+docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance-instruction-compliance-checklist.md
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff

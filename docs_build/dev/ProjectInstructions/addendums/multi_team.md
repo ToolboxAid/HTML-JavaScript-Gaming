@@ -107,6 +107,35 @@ Rules:
 - Active workstream branches remain.
 - No branch deletion is performed by this governance rule unless a later owner-approved cleanup task explicitly scopes deletion.
 
+## PI Closeout Governance
+
+At PI completion, Codex must verify that the repository, GitHub workstream, and deferred-work record are ready for the next PI.
+
+Required PI completion checks:
+- all approved work merged
+- repository returned to main
+- main pulled clean
+- local/origin sync = 0 0
+- open PR review complete
+- branch review complete
+- active workstream review complete
+- deferred work list recorded
+- next PI queue recommendation recorded
+
+Required PI closeout report fields:
+- final main commit
+- active PRs
+- active branches
+- closed/superseded PRs
+- deleted branch candidates
+- deferred work
+- next PI priorities
+
+Rules:
+- EOD Workstream Closeout remains authoritative for final repository state.
+- PI closeout must not imply approval to merge, close PRs, delete branches, or remove deferred work without explicit owner approval.
+- If the repository is not on clean, synchronized main, PI closeout status = FAIL.
+
 ## Conflict Note
 
 Existing ProjectInstructions wording that appears to require immediate or automatic merge remains preserved for traceability.
