@@ -6,7 +6,7 @@
 - Active: team has one assignment in progress.
 - Blocked: team cannot pull work until blocker is cleared.
 
-## Team Alpha
+## Team Alfa
 
 Status: Available
 
@@ -14,7 +14,7 @@ Active assignment: none.
 
 Active branch: none.
 
-## Team Beta
+## Team Bravo
 
 Status: Available
 
@@ -22,7 +22,7 @@ Active assignment: none.
 
 Active branch: none.
 
-## Team Gamma
+## Team Charlie
 
 Status: Available
 
