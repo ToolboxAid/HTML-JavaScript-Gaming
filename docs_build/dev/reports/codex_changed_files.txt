@@ -1,8 +1,125 @@
-docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/PR_26171_BETA_081-message-playback-through-tts-engine-manual-validation-notes.md
-docs_build/dev/reports/PR_26171_BETA_081-message-playback-through-tts-engine-validation-report.md
-docs_build/dev/reports/PR_26171_BETA_081-message-playback-through-tts-engine.md
-src/dev-runtime/messages/messages-sqlite-service.mjs
-tests/playwright/tools/MessagesTool.spec.mjs
-toolbox/messages/messages.js
+PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff
+
+Git workflow:
+- Current branch: pr/26171-ALPHA-047-game-hub-canonical-path-journey-handoff
+- Created branch: pr/26171-ALPHA-047-game-hub-canonical-path-journey-handoff
+- Push result: PASS; pushed to origin/pr/26171-ALPHA-047-game-hub-canonical-path-journey-handoff
+- PR URL: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/32
+- Merge approval status: pending explicit Team Alpha owner approval
+- Merge result: not performed; merge is blocked until explicit Team Alpha owner approval
+- Rebase/conflict resolution: PASS; rebased onto origin/main at e8845dae6 after GitHub reported the branch was behind current main. Conflicts were limited to generated Codex report artifacts and reports were regenerated.
+- Latest rebase/conflict resolution: PASS; rebased onto origin/main at 195c90a64 after PR_26171_BETA_075 landed. Conflicts were resolved in generated Codex report artifacts and tests/playwright/tools/RootToolsFutureState.spec.mjs; the test expectations now preserve current-main Text To Speech coverage and ALPHA_047 canonical game-hub route/filter behavior.
+- Final approved rebase: PASS; Team Alpha approval granted for ALPHA_047, rebased onto origin/main at 1451a1173, with conflicts limited to generated Codex report artifacts.
+
+Instruction compliance:
+- PASS: docs_build/dev/PROJECT_INSTRUCTIONS.md was read before file changes.
+- PASS: docs_build/dev/PROJECT_MULTI_PC.txt was read before file changes.
+- PASS: BUILD_PR.md was created and read before implementation.
+- PASS: Team Alpha owner scope applies to Game Hub, Game Journey handoff, and Idea Board continuity.
+- PASS: Full samples smoke was not run.
+
+Validation:
+- PASS: node --check toolbox/game-hub/game-hub.js
+- PASS: node --check toolbox/game-hub/game-hub-api-client.js
+- PASS: node --check toolbox/idea-board/index.js
+- PASS: node --check toolbox/game-journey/game-journey.js
+- PASS: node --check src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
+- PASS: node --check src/dev-runtime/server/local-api-router.mjs
+- PASS: node --check tests/playwright/tools/GameHubMockRepository.spec.mjs
+- PASS: node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+- PASS: node --check tests/playwright/tools/GameJourneyTool.spec.mjs
+- PASS: npx playwright test tests/playwright/tools/GameHubMockRepository.spec.mjs --project=playwright --workers=1 --reporter=line (11 passed)
+- PASS: npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line (2 passed)
+- PASS: npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs --project=playwright --workers=1 --reporter=line --grep "Game Hub hands the active game route to Game Journey|Game Journey requires an active game" (2 passed)
+- PASS: npm run test:workspace-v2 (5 passed)
+- PASS: git diff --check (line-ending warnings only)
+- PASS: Completion revalidation for PR_26171_ALPHA_048 start-gate blocker; ALPHA_047 scoped validation was rerun while still on branch pr/26171-ALPHA-047-game-hub-canonical-path-journey-handoff, and ALPHA_048 implementation was not started.
+- PASS: Latest post-rebase validation after origin/main 195c90a64: syntax checks, targeted Game Hub Playwright, targeted Idea Board Playwright, targeted Game Journey handoff Playwright, and npm run test:workspace-v2.
+- PASS: Final approved validation after origin/main 1451a1173: syntax checks, targeted Game Hub Playwright, targeted Idea Board Playwright, targeted Game Journey handoff Playwright, and npm run test:workspace-v2.
+
+Requirement-by-requirement evidence:
+- PASS: Rename active path toolbox/game-workspace/ to toolbox/game-hub/.
+- PASS: Rename active game-workspace.js to game-hub.js.
+- PASS: Rename active game-workspace-api-client.js to game-hub-api-client.js.
+- PASS: Deep-audit and update imports, variables, data attributes, tests, toolbox navigation/registry, tool display mode slug, page titles, and creator-facing labels to Game Hub.
+- PASS: Do not leave active navigation pointing to toolbox/game-workspace; active route audit found no active legacy route.
+- PASS: Do not create duplicate active Game Hub paths; registry reads filter stale game-workspace rows and active metadata points to game-hub.
+- PASS: Idea Board Create Project creates/links a Game Hub project when a Ready idea becomes Project.
+- PASS: Project ideas lock original Idea, Pitch, and Notes.
+- PASS: Game Hub shows Source Idea/Pitch/Notes as read-only creator-facing content.
+- PASS: Game Journey receives executable Journey items from Idea notes when the linked project opens.
+- PASS: Original Idea notes are not mutated or moved.
+- PASS: Project/source-linked actions avoid Delete and use Open in Game Hub plus Archive.
+- PASS: No real database migration was added; existing shared mock/server contracts are reused.
+- PASS: Merge is not performed without explicit Team Alpha owner approval.
+
+Changed files:
+- deleted: assets/theme-v2/images/badges/game-workspace-1024.png
+- deleted: assets/theme-v2/images/badges/game-workspace.png
+- added: assets/theme-v2/images/badges/game-hub-1024.png
+- added: assets/theme-v2/images/badges/game-hub.png
+- deleted: assets/theme-v2/images/tools/game-workspace-1024.png
+- deleted: assets/theme-v2/images/tools/game-workspace.png
+- added: assets/theme-v2/images/tools/game-hub-1024.png
+- added: assets/theme-v2/images/tools/game-hub.png
+- updated: assets/theme-v2/js/account-achievements.js
+- updated: assets/theme-v2/js/gamefoundry-partials.js
+- updated: assets/theme-v2/partials/header-nav.html
+- updated: docs_build/database/ddl/game-workspace.sql
+- updated: docs_build/database/dml/DML_INDEX.md
+- updated: docs_build/database/dml/game-workspace.sql
+- updated: docs_build/database/seed/game-workspace.json
+- updated: docs_build/database/seed/guest/game-workspace.json
+- updated: docs_build/dev/admin-notes/deployment-uat-prod/index.txt
+- added: docs_build/dev/reports/codex_changed_files.txt
+- added: docs_build/dev/reports/codex_review.diff
+- added: docs_build/pr/PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff/APPLY_PR.md
+- added: docs_build/pr/PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff/BUILD_PR.md
+- added: docs_build/pr/PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff/PLAN_PR.md
+- deleted: learn/game-workspace/index.html
+- added: learn/game-hub/index.html
+- updated: learn/getting-started/index.html
+- updated: learn/index.html
+- updated: package.json
+- updated: scripts/run-targeted-test-lanes.mjs
+- updated: scripts/validate-browser-env-agnostic.mjs
+- updated: scripts/validate-local-postgres-runtime.mjs
+- updated: src/dev-runtime/admin/header-nav.local.html
+- updated: src/dev-runtime/persistence/mock-db-store.js
+- updated: src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
+- updated: src/dev-runtime/seed/server-seed-loader.mjs
+- updated: src/dev-runtime/server/local-api-router.mjs
+- updated: src/shared/toolbox/tool-metadata-inventory.js
+- updated: tests/dev-runtime/DevRuntimeBoundary.test.mjs
+- updated: tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
+- updated: tests/dev-runtime/SupabaseProductDataCutover.test.mjs
+- updated: tests/playwright/account/AchievementsPage.spec.mjs
+- updated: tests/playwright/tools/AdminDbViewer.spec.mjs
+- added: tests/playwright/tools/GameHubMockRepository.spec.mjs
+- updated: tests/playwright/tools/GameJourneyTool.spec.mjs
+- deleted: tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs
+- updated: tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+- updated: tests/playwright/tools/RootToolsFutureState.spec.mjs
+- updated: tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs
+- updated: tests/playwright/tools/ToolImageRegistry.spec.mjs
+- updated: tests/playwright/tools/ToolNavigationPrevNext.spec.mjs
+- updated: tests/playwright/tools/ToolboxRoutePages.spec.mjs
+- updated: toolbox/colors/index.html
+- updated: toolbox/controls/controls.js
+- updated: toolbox/controls/index.html
+- updated: toolbox/game-design/index.html
+- added: toolbox/game-hub/game-hub-api-client.js
+- added: toolbox/game-hub/game-hub.js
+- added: toolbox/game-hub/index.html
+- updated: toolbox/game-journey/game-journey.js
+- deleted: toolbox/game-workspace/game-workspace-api-client.js
+- deleted: toolbox/game-workspace/game-workspace.js
+- deleted: toolbox/game-workspace/index.html
+- updated: toolbox/idea-board/index.js
+- updated: toolbox/project-workspace/index.html
+- updated: toolbox/tools-page-accordions.js
+
+ZIP:
+- Path: tmp/PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff_delta.zip
+- Size: generated after branch push; final byte size is reported in the delivery response because the ZIP is not committed.
+- Contents: repo-structured scoped delta files. Deleted legacy paths are documented in the changed-files list and are not represented as physical files in the archive.

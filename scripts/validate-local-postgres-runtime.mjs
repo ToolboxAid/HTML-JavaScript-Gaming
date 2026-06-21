@@ -294,13 +294,13 @@ async function validateApiRuntime({ adapter, client }) {
     const messageRow = savedBannerRows.find((row) => row.settingKey === "platform.banner.message");
     assert(messageRow?.settingValue === message, "Local Postgres platform_settings message row was not updated.");
 
-    const repository = await apiJson(server.baseUrl, "/api/toolbox/game-workspace/repositories", {
+    const repository = await apiJson(server.baseUrl, "/api/toolbox/game-hub/repositories", {
       body: {},
       method: "POST",
     });
-    assert(repository.repositoryId, "Game Workspace repository was not created.");
+    assert(repository.repositoryId, "Game Hub repository was not created.");
 
-    const created = await apiJson(server.baseUrl, `/api/toolbox/game-workspace/repositories/${repository.repositoryId}/methods/createGame`, {
+    const created = await apiJson(server.baseUrl, `/api/toolbox/game-hub/repositories/${repository.repositoryId}/methods/createGame`, {
       body: {
         args: [
           {
@@ -312,14 +312,14 @@ async function validateApiRuntime({ adapter, client }) {
       },
       method: "POST",
     });
-    assert(created.result?.name === GAME_NAME, "Game Workspace create did not return the validation game.");
+    assert(created.result?.name === GAME_NAME, "Game Hub create did not return the validation game.");
 
-    const active = await apiJson(server.baseUrl, `/api/toolbox/game-workspace/repositories/${repository.repositoryId}/methods/getActiveGame`, {
+    const active = await apiJson(server.baseUrl, `/api/toolbox/game-hub/repositories/${repository.repositoryId}/methods/getActiveGame`, {
       body: { args: [] },
       method: "POST",
     });
-    assert(active.result?.name === GAME_NAME, "Game Workspace active game did not resolve the validation game.");
-    assert(Array.isArray(active.result?.members), "Game Workspace active game did not include members.");
+    assert(active.result?.name === GAME_NAME, "Game Hub active game did not resolve the validation game.");
+    assert(Array.isArray(active.result?.members), "Game Hub active game did not include members.");
 
     const gameRows = await adapter.getProductTableRows("game_workspace_games");
     assert(gameRows.some((row) => row.name === GAME_NAME), "Local Postgres game_workspace_games did not include the validation game.");
@@ -373,8 +373,8 @@ async function main() {
     console.log(`PASS - Seeded identity rows: users=${identity.written.users}, roles=${identity.written.roles}, user_roles=${identity.written.user_roles}.`);
     console.log(`PASS - Banner saved and read through API; local platform_settings banner rows observed=${apiEvidence.bannerRows}.`);
     console.log(`PASS - Supabase Auth health calls=${fakeSupabase.requests.filter((request) => request.path === "/auth/v1/health").length}; Supabase platform_settings REST calls=0.`);
-    console.log(`PASS - Game Workspace create/getActiveGame used repository ${apiEvidence.repositoryId}; local game rows observed=${apiEvidence.gameRows}.`);
-    console.log("PASS - Validation cleanup restored banner rows and removed PR197 Game Workspace rows.");
+    console.log(`PASS - Game Hub create/getActiveGame used repository ${apiEvidence.repositoryId}; local game rows observed=${apiEvidence.gameRows}.`);
+    console.log("PASS - Validation cleanup restored banner rows and removed PR197 Game Hub rows.");
   } finally {
     await fakeSupabase.close();
     Object.entries(originalSupabaseEnv).forEach(([key, value]) => {

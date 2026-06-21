@@ -1444,8 +1444,8 @@ test("Game Journey requires an active game before editing", async ({ page }) => 
     await expect(page.getByRole("button", { name: "Update Item" })).toBeDisabled();
     await expect(page.getByRole("button", { name: "Add Note", exact: true })).toBeDisabled();
     await expect(page.locator("[data-journey-title-input]")).toBeDisabled();
-    await expect(page.locator("[data-journey-note-type-select]")).toBeDisabled();
-    await expect(page.locator("[data-journey-new-note-type]")).toBeDisabled();
+    await expect(page.locator("[data-journey-note-type-select]")).toHaveCount(0);
+    await expect(page.locator("[data-journey-new-note-type]")).toHaveCount(0);
 
     await expectNoPageFailures(failures);
   } finally {
@@ -1454,7 +1454,7 @@ test("Game Journey requires an active game before editing", async ({ page }) => 
 });
 
 test("Game Hub hands the active game route to Game Journey", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
+  const failures = await openRepoPage(page, "/toolbox/game-hub/index.html");
 
   try {
     const journeyLink = page.getByRole("link", { name: "Open Game Journey" });

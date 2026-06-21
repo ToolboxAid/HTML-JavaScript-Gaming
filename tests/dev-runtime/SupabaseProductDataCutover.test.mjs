@@ -382,13 +382,13 @@ test("Supabase-selected toolbox repositories open and persist through product ta
   }, async () => {
     const server = await startApiServer();
     try {
-      const repository = await apiJson(server.baseUrl, "/api/toolbox/game-workspace/repositories", {
+      const repository = await apiJson(server.baseUrl, "/api/toolbox/game-hub/repositories", {
         body: { options: {} },
         method: "POST",
       });
-      assert.match(repository.repositoryId, /^game-workspace-\d+$/);
+      assert.match(repository.repositoryId, /^game-hub-\d+$/);
 
-      const snapshot = await apiJson(server.baseUrl, `/api/toolbox/game-workspace/repositories/${repository.repositoryId}/methods/getSnapshot`, {
+      const snapshot = await apiJson(server.baseUrl, `/api/toolbox/game-hub/repositories/${repository.repositoryId}/methods/getSnapshot`, {
         body: { args: [] },
         method: "POST",
       });

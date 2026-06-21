@@ -133,16 +133,16 @@ export const TOOL_REGISTRY = Object.freeze([
     "toolboxGroup": "Create"
   },
   {
-    "id": "game-workspace",
+    "id": "game-hub",
     "name": "Game Hub",
     "displayName": "Game Hub",
     "shortDescription": "Coordinate Build, Play, and Share readiness for one game project.",
     "shortLabel": "Game Hub",
-    "path": "game-workspace",
-    "folderName": "game-workspace",
-    "entryPoint": "game-workspace/index.html",
-    "badge": "/assets/theme-v2/images/badges/game-workspace.png",
-    "tool": "/assets/theme-v2/images/tools/game-workspace.png",
+    "path": "game-hub",
+    "folderName": "game-hub",
+    "entryPoint": "game-hub/index.html",
+    "badge": "/assets/theme-v2/images/badges/game-hub.png",
+    "tool": "/assets/theme-v2/images/tools/game-hub.png",
     "description": "Coordinate Build, Play, and Share readiness for one game project.",
     "category": "Build/Create",
     "colorGroup": "tool-group-build",
@@ -173,8 +173,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "path": "game-journey",
     "folderName": "game-journey",
     "entryPoint": "game-journey/index.html",
-    "badge": "/assets/theme-v2/images/badges/game-workspace.png",
-    "tool": "/assets/theme-v2/images/tools/game-workspace.png",
+    "badge": "/assets/theme-v2/images/badges/game-hub.png",
+    "tool": "/assets/theme-v2/images/tools/game-hub.png",
     "description": "Track game notes, nested work rows, status counts, and suggested toolbox handoffs.",
     "category": "Build/Create",
     "colorGroup": "tool-group-build",
@@ -184,7 +184,7 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForTestable": true,
     "requiredForPublish": true,
     "requires": [
-      "game-workspace"
+      "game-hub"
     ],
     "status": "beta",
     "releaseChannel": "beta",
@@ -219,7 +219,7 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForTestable": true,
     "requiredForPublish": true,
     "requires": [
-      "game-workspace"
+      "game-hub"
     ],
     "status": "Ready",
     "releaseChannel": "beta",
@@ -371,7 +371,7 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForTestable": true,
     "requiredForPublish": true,
     "requires": [
-      "game-workspace"
+      "game-hub"
     ],
     "status": "beta",
     "releaseChannel": "beta",
@@ -1680,7 +1680,7 @@ const AVAILABLE_TOOL_IMAGE_PATHS = Object.freeze([
   "/assets/theme-v2/images/badges/particles.png",
   "/assets/theme-v2/images/badges/performance.png",
   "/assets/theme-v2/images/badges/platform-settings.png",
-  "/assets/theme-v2/images/badges/game-workspace.png",
+  "/assets/theme-v2/images/badges/game-hub.png",
   "/assets/theme-v2/images/badges/publish-studio.png",
   "/assets/theme-v2/images/badges/publish.png",
   "/assets/theme-v2/images/badges/ratings.png",
@@ -1743,7 +1743,7 @@ const AVAILABLE_TOOL_IMAGE_PATHS = Object.freeze([
   "/assets/theme-v2/images/tools/particles.png",
   "/assets/theme-v2/images/tools/performance.png",
   "/assets/theme-v2/images/tools/platform-settings.png",
-  "/assets/theme-v2/images/tools/game-workspace.png",
+  "/assets/theme-v2/images/tools/game-hub.png",
   "/assets/theme-v2/images/tools/publish-studio.png",
   "/assets/theme-v2/images/tools/publish.png",
   "/assets/theme-v2/images/tools/ratings.png",

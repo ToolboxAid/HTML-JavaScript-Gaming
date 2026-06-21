@@ -346,15 +346,22 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
     await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] td").nth(1)).toHaveText("Project");
     await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action]")).toHaveText(["Open in Game Hub", "Archive"]);
     await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='open-project']").click();
-    await page.waitForURL(/\/toolbox\/game-workspace\/index\.html\?game=lantern-reef-\d+$/);
+    await page.waitForURL(/\/toolbox\/game-hub\/index\.html\?game=lantern-reef-\d+$/);
     await expect(page.getByRole("heading", { level: 1, name: "Game Hub" })).toBeVisible();
     await expect(page.locator("[data-active-game-name]")).toHaveText("Lantern Reef");
     await expect(page.locator("[data-source-idea-display]")).toHaveText("Lantern Reef");
     await expect(page.locator("[data-source-idea-pitch]")).toHaveText("Guide light through a reef that rearranges at dusk.");
     await expect(page.locator("[data-source-idea-notes]")).toContainText("Use dusk tide changes as the first Game Hub planning note.");
+    await expect(page.getByRole("button", { name: "Delete Open Game" })).toHaveCount(0);
     await expect(page.locator("main")).not.toContainText(/\bproject records\b|\bAPI\b|\bDB\b|\bmock\b|\bseed\b|\bdebug\b|\binternal\b/i);
+    await page.getByRole("link", { name: "Open Game Journey" }).click();
+    await page.waitForURL(/\/toolbox\/game-journey\/index\.html\?game=lantern-reef-\d+$/);
+    await expect(page.locator("[data-journey-active-game]")).toHaveText("Active game: Lantern Reef.");
+    await expect(page.locator("[data-journey-summary-body]")).toContainText("Source Idea: Lantern Reef");
+    await expect(page.locator("[data-journey-summary-body]")).toContainText("10000011");
+    await expect(page.locator("[data-journey-recent-activity]")).toContainText("Created 1 Game Journey item from Source Idea.");
 
-    expect(mutatingApiRequests.some((request) => request.includes("/api/toolbox/game-workspace/repositories"))).toBe(true);
+    expect(mutatingApiRequests.some((request) => request.includes("/api/toolbox/game-hub/repositories"))).toBe(true);
     expect(mutatingApiRequests.some((request) => request.includes("/methods/createGame"))).toBe(true);
     expect(failedRequests).toEqual([]);
     expect(pageErrors).toEqual([]);

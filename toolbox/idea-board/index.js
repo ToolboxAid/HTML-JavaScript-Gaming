@@ -3,7 +3,7 @@ import { createServerRepositoryClient } from "../../src/api/server-api-client.js
 const statusOptions = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project", "Archived"]);
 const defaultVisibleStatuses = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project"]);
 const userId = "user-1";
-const gameHubRoute = "toolbox/game-workspace/index.html";
+const gameHubRoute = "toolbox/game-hub/index.html";
 let gameHubRepository = null;
 
 const ideaTable = [
@@ -142,7 +142,7 @@ function isRepositoryErrorResult(value) {
 
 function gameHubProjectRepository() {
   if (!gameHubRepository) {
-    gameHubRepository = createServerRepositoryClient("game-workspace");
+    gameHubRepository = createServerRepositoryClient("game-hub");
   }
   return gameHubRepository;
 }

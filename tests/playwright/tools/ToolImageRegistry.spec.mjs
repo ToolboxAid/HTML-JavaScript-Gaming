@@ -157,7 +157,7 @@ test("Toolbox cards consume registry image sources and expose visible image diag
 
 test("representative tool pages consume registry images in Tool Display Mode", async ({ page }) => {
   const toolCases = [
-    { path: "/toolbox/game-workspace/index.html", toolId: "game-workspace" },
+    { path: "/toolbox/game-hub/index.html", toolId: "game-hub" },
     { path: "/toolbox/game-design/index.html", toolId: "game-design" },
     { path: "/toolbox/game-configuration/index.html", toolId: "game-configuration" },
     { path: "/toolbox/build-game/index.html", toolId: "build-game" }

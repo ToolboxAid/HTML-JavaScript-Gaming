@@ -141,7 +141,7 @@ Example:
   "requiredRoutes": [
     "/",
     "/toolbox/",
-    "/toolbox/game-workspace/",
+    "/toolbox/game-hub/",
     "/toolbox/game-journey/",
     "/toolbox/controls/",
     "/account/user-controls.html"

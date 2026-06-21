@@ -1,5 +1,5 @@
 -- Game Foundry Studio DEV database DDL
--- Group: Game Workspace
+-- Group: Game Hub
 -- Ownership: docs_build/database/ddl/game-workspace.sql
 -- Target DEV database: gamefoundry_dev
 -- Scope: executable grouped table DDL for active Supabase/server API migration.

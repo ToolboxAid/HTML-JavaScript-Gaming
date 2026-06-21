@@ -3,7 +3,7 @@
         home: "index.html",
         toolbox: "toolbox/index.html",
         "ai-assistant": "toolbox/ai-assistant/index.html",
-        "game-workspace": "toolbox/game-workspace/index.html",
+        "game-hub": "toolbox/game-hub/index.html",
         "game-journey": "toolbox/game-journey/index.html",
         "game-design": "toolbox/game-design/index.html",
         "game-configuration": "toolbox/game-configuration/index.html",

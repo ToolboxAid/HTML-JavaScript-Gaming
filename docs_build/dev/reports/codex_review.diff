@@ -1,303 +1,2086 @@
-diff --git a/docs_build/dev/reports/PR_26171_BETA_081-message-playback-through-tts-engine-manual-validation-notes.md b/docs_build/dev/reports/PR_26171_BETA_081-message-playback-through-tts-engine-manual-validation-notes.md
-new file mode 100644
-index 000000000..f9749c887
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_BETA_081-message-playback-through-tts-engine-manual-validation-notes.md
-@@ -0,0 +1,11 @@
-+# PR_26171_BETA_081 Manual Validation Notes
-+
-+## Review
-+- Confirmed /api/messages/tts-profiles returns server-owned emotionSettings for playback.
-+- Confirmed Play Message queues each active Message Part through the TextToSpeechEngine-backed registry.
-+- Confirmed Play Part uses the selected part TTS Profile and matching Emotion Setting values.
-+- Confirmed Stop continues through the TextToSpeechEngine-backed registry stop path.
-+- Confirmed missing Emotion Settings produce a visible validation error instead of falling back silently.
-+
-+## Manual Browser Coverage
-+- Covered by targeted Playwright validation for Message Studio playback, TTS profile emotion settings, Play Message, Play Part, and Stop.
-diff --git a/docs_build/dev/reports/PR_26171_BETA_081-message-playback-through-tts-engine-validation-report.md b/docs_build/dev/reports/PR_26171_BETA_081-message-playback-through-tts-engine-validation-report.md
-new file mode 100644
-index 000000000..7fbc9bb8d
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_BETA_081-message-playback-through-tts-engine-validation-report.md
-@@ -0,0 +1,21 @@
-+# PR_26171_BETA_081 Validation Report
-+
-+## Commands
-+- PASS: node --check toolbox/messages/messages.js
-+- PASS: node --check src/dev-runtime/messages/messages-sqlite-service.mjs
-+- PASS: npx playwright test tests/playwright/tools/MessagesTool.spec.mjs
-+- PASS: npx playwright test tests/playwright/tools/TextToSpeechFunctional.spec.mjs --reporter=list
-+- PASS: node --test tests/tools/Text2SpeechShell.test.mjs
-+- PASS: npm run test:workspace-v2
-+- PASS: git diff --check
-+
-+## Targeted Results
-+- Message Studio Playwright tests: 2 passed.
-+- Text To Speech compatibility Playwright tests: 3 passed.
-+- Text2Speech Node contract tests: 4 passed.
-+- Project Workspace legacy validation: 5 passed.
-+
-+## Notes
-+- A parallel Playwright run caused an HTML reporter file-copy collision after tests passed; the TTS compatibility lane was rerun with the list reporter and passed cleanly.
-+- npm run test:workspace-v2 is a legacy command name; user-facing language remains Project Workspace.
-+- Standard generated validation-report churn was restored before staging this PR.
-diff --git a/docs_build/dev/reports/PR_26171_BETA_081-message-playback-through-tts-engine.md b/docs_build/dev/reports/PR_26171_BETA_081-message-playback-through-tts-engine.md
-new file mode 100644
-index 000000000..261cae8e6
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_BETA_081-message-playback-through-tts-engine.md
-@@ -0,0 +1,18 @@
-+# PR_26171_BETA_081-message-playback-through-tts-engine
-+
-+## Team Ownership
-+- TEAM: BETA
-+- Ownership source: docs_build/dev/PROJECT_MULTI_PC.txt
-+- Scope confirmed: Audio, Messages, Text To Speech, and TTS are owned by Team BETA.
-+
-+## Summary
-+- Added server-owned Emotion Settings to Messages TTS profile API responses without changing database schema.
-+- Updated Message Studio playback readiness to require a matching Emotion Setting on the selected TTS Profile.
-+- Wired Play Part and Play Message playback values through the existing TextToSpeechEngine registry path using selected TTS Profile language/voice and Emotion Setting pitch/rate/volume/preset.
-+- Kept Stop routed through the existing TextToSpeechEngine stop path.
-+
-+## Scope Guard
-+- No database schema changes.
-+- No engine core changes.
-+- No silent playback fallback when a selected TTS Profile lacks the selected Emotion Setting.
-+- Theme V2 and external JS only.
+﻿diff --git a/assets/theme-v2/images/badges/game-workspace-1024.png b/assets/theme-v2/images/badges/game-hub-1024.png
+similarity index 100%
+rename from assets/theme-v2/images/badges/game-workspace-1024.png
+rename to assets/theme-v2/images/badges/game-hub-1024.png
+diff --git a/assets/theme-v2/images/badges/game-workspace.png b/assets/theme-v2/images/badges/game-hub.png
+similarity index 100%
+rename from assets/theme-v2/images/badges/game-workspace.png
+rename to assets/theme-v2/images/badges/game-hub.png
+diff --git a/assets/theme-v2/images/tools/game-workspace-1024.png b/assets/theme-v2/images/tools/game-hub-1024.png
+similarity index 100%
+rename from assets/theme-v2/images/tools/game-workspace-1024.png
+rename to assets/theme-v2/images/tools/game-hub-1024.png
+diff --git a/assets/theme-v2/images/tools/game-workspace.png b/assets/theme-v2/images/tools/game-hub.png
+similarity index 100%
+rename from assets/theme-v2/images/tools/game-workspace.png
+rename to assets/theme-v2/images/tools/game-hub.png
+diff --git a/assets/theme-v2/js/account-achievements.js b/assets/theme-v2/js/account-achievements.js
+index 365fbd818..184e4af67 100644
+--- a/assets/theme-v2/js/account-achievements.js
++++ b/assets/theme-v2/js/account-achievements.js
+@@ -7,7 +7,7 @@ const buildRows = document.querySelector("[data-achievements-build-rows]");
+ const buildStatus = document.querySelector("[data-achievements-build-status]");
+ const createdCount = document.querySelector("[data-achievements-build-created-count]");
+ const readyCount = document.querySelector("[data-achievements-build-ready-count]");
+-const repository = createServerRepositoryClient("game-workspace");
++const repository = createServerRepositoryClient("game-hub");
+
+ function setText(element, value) {
+     if (element) {
+diff --git a/assets/theme-v2/js/gamefoundry-partials.js b/assets/theme-v2/js/gamefoundry-partials.js
+index 862614796..44b301916 100644
+--- a/assets/theme-v2/js/gamefoundry-partials.js
++++ b/assets/theme-v2/js/gamefoundry-partials.js
+@@ -3,7 +3,7 @@
+         home: "index.html",
+         toolbox: "toolbox/index.html",
+         "ai-assistant": "toolbox/ai-assistant/index.html",
+-        "game-workspace": "toolbox/game-workspace/index.html",
++        "game-hub": "toolbox/game-hub/index.html",
+         "game-journey": "toolbox/game-journey/index.html",
+         "game-design": "toolbox/game-design/index.html",
+         "game-configuration": "toolbox/game-configuration/index.html",
+diff --git a/assets/theme-v2/partials/header-nav.html b/assets/theme-v2/partials/header-nav.html
+index f2c805256..f49f136ce 100644
+--- a/assets/theme-v2/partials/header-nav.html
++++ b/assets/theme-v2/partials/header-nav.html
+@@ -35,7 +35,7 @@
+               <a data-nav-link data-toolbox-menu-item data-route="code" href="toolbox/code/index.html">Custom Extensions</a>
+               <a data-nav-link data-toolbox-menu-item data-route="game-configuration" href="toolbox/game-configuration/index.html">Game Configuration</a>
+               <a data-nav-link data-toolbox-menu-item data-route="game-design" href="toolbox/game-design/index.html">Game Design</a>
+-              <a data-nav-link data-toolbox-menu-item data-route="game-workspace" href="toolbox/game-workspace/index.html">Game Hub</a>
++              <a data-nav-link data-toolbox-menu-item data-route="game-hub" href="toolbox/game-hub/index.html">Game Hub</a>
+               <a data-nav-link data-toolbox-menu-item data-route="game-journey" href="toolbox/game-journey/index.html">Game Journey</a>
+             </div>
+           </div>
+diff --git a/docs_build/database/ddl/game-workspace.sql b/docs_build/database/ddl/game-workspace.sql
+index 5ccff6878..b0b2f08e5 100644
+--- a/docs_build/database/ddl/game-workspace.sql
++++ b/docs_build/database/ddl/game-workspace.sql
+@@ -1,5 +1,5 @@
+ -- Game Foundry Studio DEV database DDL
+--- Group: Game Workspace
++-- Group: Game Hub
+ -- Ownership: docs_build/database/ddl/game-workspace.sql
+ -- Target DEV database: gamefoundry_dev
+ -- Scope: executable grouped table DDL for active Supabase/server API migration.
+diff --git a/docs_build/database/dml/DML_INDEX.md b/docs_build/database/dml/DML_INDEX.md
+index 642e3ebce..3d8ee81f8 100644
+--- a/docs_build/database/dml/DML_INDEX.md
++++ b/docs_build/database/dml/DML_INDEX.md
+@@ -13,7 +13,7 @@ Direct SQL setup is intentionally narrow. Account DEV users now require server-s
+ | Game Configuration | `game-configuration.sql` | Server-seed-owned | Server-side seed API |
+ | Game Design | `game-design.sql` | Server-seed-owned | Server-side seed API |
+ | Game Journey | `game-journey.sql` | Server-seed-owned | Server-side seed API |
+-| Game Workspace | `game-workspace.sql` | Server-seed-owned | Server-side seed API |
++| Game Hub | `game-workspace.sql` | Server-seed-owned | Server-side seed API |
+ | Messages | `messages.sql` | Server-seed-owned | Messages Local API/server-side SQLite service |
+ | Objects | `objects.sql` | Server-seed-owned | Server-side seed API |
+ | Palette | `palette.sql` | Server-seed-owned | Server-side seed API |
+diff --git a/docs_build/database/dml/game-workspace.sql b/docs_build/database/dml/game-workspace.sql
+index 331dacd82..a8257f6f6 100644
+--- a/docs_build/database/dml/game-workspace.sql
++++ b/docs_build/database/dml/game-workspace.sql
+@@ -1,5 +1,5 @@
+ -- Game Foundry Studio DEV database DML / seed review
+--- Group: Game Workspace
++-- Group: Game Hub
+ -- Ownership: docs_build/database/dml/game-workspace.sql
+ -- Runtime setup/seed operations for this group must run through server-side APIs.
+ -- Temporary scope: DEV/review artifact only until Admin Site Setup/server seed APIs fully own grouped setup.
+diff --git a/docs_build/database/seed/game-workspace.json b/docs_build/database/seed/game-workspace.json
+index bdc7afa85..bdc5eef4d 100644
+--- a/docs_build/database/seed/game-workspace.json
++++ b/docs_build/database/seed/game-workspace.json
+@@ -1,6 +1,6 @@
+ {
+-  "group": "Game Workspace",
+-  "groupKey": "game-workspace",
++  "group": "Game Hub",
++  "groupKey": "game-hub",
+   "owner": "docs_build/database/seed",
+   "serverSideSeedRequired": true,
+   "browserAuthoritativeKeyGenerationAllowed": false,
+diff --git a/docs_build/database/seed/guest/game-workspace.json b/docs_build/database/seed/guest/game-workspace.json
+index 434050b9f..a528c5318 100644
+--- a/docs_build/database/seed/guest/game-workspace.json
++++ b/docs_build/database/seed/guest/game-workspace.json
+@@ -1,6 +1,6 @@
+ {
+-  "group": "Game Workspace",
+-  "groupKey": "game-workspace",
++  "group": "Game Hub",
++  "groupKey": "game-hub",
+   "owner": "docs_build/database/seed/guest",
+   "readOnly": true,
+   "writableByGuest": false,
+@@ -11,18 +11,18 @@
+   },
+   "samplePackages": [
+     {
+-      "key": "guest-game-workspace-starter",
++      "key": "guest-game-hub-starter",
+       "audience": "guest",
+       "createdBy": "01K2GFSJ0Y0000000000000054",
+-      "groupKey": "game-workspace",
+-      "label": "Guest Game Workspace starter",
+-      "loadablePath": "toolbox/game-workspace/index.html",
++      "groupKey": "game-hub",
++      "label": "Guest Game Hub starter",
++      "loadablePath": "toolbox/game-hub/index.html",
+       "readOnly": true,
+       "sampleKind": "toolSeed",
+       "signInRedirect": "account/sign-in.html",
+       "source": "docs_build/database/seed/guest/game-workspace.json",
+-      "toolKey": "game-workspace",
+-      "toolName": "Game Workspace",
++      "toolKey": "game-hub",
++      "toolName": "Game Hub",
+       "writableByGuest": false
+     }
+   ]
+diff --git a/docs_build/dev/admin-notes/deployment-uat-prod/index.txt b/docs_build/dev/admin-notes/deployment-uat-prod/index.txt
+index 27ee1bf8f..0a8b67b53 100644
+--- a/docs_build/dev/admin-notes/deployment-uat-prod/index.txt
++++ b/docs_build/dev/admin-notes/deployment-uat-prod/index.txt
+@@ -141,7 +141,7 @@ Example:
+   "requiredRoutes": [
+     "/",
+     "/toolbox/",
+-    "/toolbox/game-workspace/",
++    "/toolbox/game-hub/",
+     "/toolbox/game-journey/",
+     "/toolbox/controls/",
+     "/account/user-controls.html"
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 795ac3621..5a25f4aef 100644
+index 5a25f4aef..60d4cdf24 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,7 +1,8 @@
- docs_build/dev/reports/codex_changed_files.txt
- docs_build/dev/reports/codex_review.diff
--docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion-manual-validation-notes.md
--docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion-validation-report.md
--docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion.md
-+docs_build/dev/reports/PR_26171_BETA_081-message-playback-through-tts-engine-manual-validation-notes.md
-+docs_build/dev/reports/PR_26171_BETA_081-message-playback-through-tts-engine-validation-report.md
-+docs_build/dev/reports/PR_26171_BETA_081-message-playback-through-tts-engine.md
-+src/dev-runtime/messages/messages-sqlite-service.mjs
- tests/playwright/tools/MessagesTool.spec.mjs
- toolbox/messages/messages.js
-diff --git a/src/dev-runtime/messages/messages-sqlite-service.mjs b/src/dev-runtime/messages/messages-sqlite-service.mjs
-index d1a1cee33..6d3894a85 100644
---- a/src/dev-runtime/messages/messages-sqlite-service.mjs
-+++ b/src/dev-runtime/messages/messages-sqlite-service.mjs
-@@ -96,6 +96,14 @@ function normalizeNumber(value, fallback) {
-   return Number.isFinite(numberValue) ? numberValue : fallback;
- }
-
-+function emotionSettingKey(value) {
-+  return normalizeText(value)
-+    .trim()
-+    .toLowerCase()
-+    .replace(/[^a-z0-9]+/g, "-")
-+    .replace(/^-+|-+$/g, "") || "neutral";
-+}
+@@ -1,8 +1,125 @@
+-docs_build/dev/reports/codex_changed_files.txt
+-docs_build/dev/reports/codex_review.diff
+-docs_build/dev/reports/PR_26171_BETA_081-message-playback-through-tts-engine-manual-validation-notes.md
+-docs_build/dev/reports/PR_26171_BETA_081-message-playback-through-tts-engine-validation-report.md
+-docs_build/dev/reports/PR_26171_BETA_081-message-playback-through-tts-engine.md
+-src/dev-runtime/messages/messages-sqlite-service.mjs
+-tests/playwright/tools/MessagesTool.spec.mjs
+-toolbox/messages/messages.js
++PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff
 +
- function normalizeInteger(value, fallback) {
-   const numberValue = Number(value);
-   return Number.isInteger(numberValue) ? numberValue : fallback;
-@@ -182,12 +190,25 @@ function emotionProfileFromRow(row, usage = {}) {
-   };
- }
-
--function ttsProfileFromRow(row) {
-+function ttsEmotionSettingFromEmotionProfile(profile) {
-+  return {
-+    active: profile.active !== false,
-+    emotion: emotionSettingKey(profile.name),
-+    emotionLabel: profile.name,
-+    pitch: Number(profile.pitch),
-+    rate: Number(profile.rate),
-+    ssmlLikePreset: "normal",
-+    volume: Number(profile.volume),
-+  };
-+}
++Git workflow:
++- Current branch: pr/26171-ALPHA-047-game-hub-canonical-path-journey-handoff
++- Created branch: pr/26171-ALPHA-047-game-hub-canonical-path-journey-handoff
++- Push result: PASS; pushed to origin/pr/26171-ALPHA-047-game-hub-canonical-path-journey-handoff
++- PR URL: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/32
++- Merge approval status: pending explicit Team Alpha owner approval
++- Merge result: not performed; merge is blocked until explicit Team Alpha owner approval
++- Rebase/conflict resolution: PASS; rebased onto origin/main at e8845dae6 after GitHub reported the branch was behind current main. Conflicts were limited to generated Codex report artifacts and reports were regenerated.
++- Latest rebase/conflict resolution: PASS; rebased onto origin/main at 195c90a64 after PR_26171_BETA_075 landed. Conflicts were resolved in generated Codex report artifacts and tests/playwright/tools/RootToolsFutureState.spec.mjs; the test expectations now preserve current-main Text To Speech coverage and ALPHA_047 canonical game-hub route/filter behavior.
++- Final approved rebase: PASS; Team Alpha approval granted for ALPHA_047, rebased onto origin/main at 1451a1173, with conflicts limited to generated Codex report artifacts.
 +
-+function ttsProfileFromRow(row, emotionSettings = []) {
-   return {
-     active: activeFromDatabase(row.active),
-     createdAt: row.createdAt,
-     createdBy: row.createdBy,
-     description: row.description || "",
-+    emotionSettings,
-     key: row.key,
-     language: row.language,
-     name: row.name,
-@@ -593,10 +614,13 @@ export class MessagesSqliteService {
++Instruction compliance:
++- PASS: docs_build/dev/PROJECT_INSTRUCTIONS.md was read before file changes.
++- PASS: docs_build/dev/PROJECT_MULTI_PC.txt was read before file changes.
++- PASS: BUILD_PR.md was created and read before implementation.
++- PASS: Team Alpha owner scope applies to Game Hub, Game Journey handoff, and Idea Board continuity.
++- PASS: Full samples smoke was not run.
++
++Validation:
++- PASS: node --check toolbox/game-hub/game-hub.js
++- PASS: node --check toolbox/game-hub/game-hub-api-client.js
++- PASS: node --check toolbox/idea-board/index.js
++- PASS: node --check toolbox/game-journey/game-journey.js
++- PASS: node --check src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
++- PASS: node --check src/dev-runtime/server/local-api-router.mjs
++- PASS: node --check tests/playwright/tools/GameHubMockRepository.spec.mjs
++- PASS: node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
++- PASS: node --check tests/playwright/tools/GameJourneyTool.spec.mjs
++- PASS: npx playwright test tests/playwright/tools/GameHubMockRepository.spec.mjs --project=playwright --workers=1 --reporter=line (11 passed)
++- PASS: npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line (2 passed)
++- PASS: npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs --project=playwright --workers=1 --reporter=line --grep "Game Hub hands the active game route to Game Journey|Game Journey requires an active game" (2 passed)
++- PASS: npm run test:workspace-v2 (5 passed)
++- PASS: git diff --check (line-ending warnings only)
++- PASS: Completion revalidation for PR_26171_ALPHA_048 start-gate blocker; ALPHA_047 scoped validation was rerun while still on branch pr/26171-ALPHA-047-game-hub-canonical-path-journey-handoff, and ALPHA_048 implementation was not started.
++- PASS: Latest post-rebase validation after origin/main 195c90a64: syntax checks, targeted Game Hub Playwright, targeted Idea Board Playwright, targeted Game Journey handoff Playwright, and npm run test:workspace-v2.
++- PASS: Final approved validation after origin/main 1451a1173: syntax checks, targeted Game Hub Playwright, targeted Idea Board Playwright, targeted Game Journey handoff Playwright, and npm run test:workspace-v2.
++
++Requirement-by-requirement evidence:
++- PASS: Rename active path toolbox/game-workspace/ to toolbox/game-hub/.
++- PASS: Rename active game-workspace.js to game-hub.js.
++- PASS: Rename active game-workspace-api-client.js to game-hub-api-client.js.
++- PASS: Deep-audit and update imports, variables, data attributes, tests, toolbox navigation/registry, tool display mode slug, page titles, and creator-facing labels to Game Hub.
++- PASS: Do not leave active navigation pointing to toolbox/game-workspace; active route audit found no active legacy route.
++- PASS: Do not create duplicate active Game Hub paths; registry reads filter stale game-workspace rows and active metadata points to game-hub.
++- PASS: Idea Board Create Project creates/links a Game Hub project when a Ready idea becomes Project.
++- PASS: Project ideas lock original Idea, Pitch, and Notes.
++- PASS: Game Hub shows Source Idea/Pitch/Notes as read-only creator-facing content.
++- PASS: Game Journey receives executable Journey items from Idea notes when the linked project opens.
++- PASS: Original Idea notes are not mutated or moved.
++- PASS: Project/source-linked actions avoid Delete and use Open in Game Hub plus Archive.
++- PASS: No real database migration was added; existing shared mock/server contracts are reused.
++- PASS: Merge is not performed without explicit Team Alpha owner approval.
++
++Changed files:
++- deleted: assets/theme-v2/images/badges/game-workspace-1024.png
++- deleted: assets/theme-v2/images/badges/game-workspace.png
++- added: assets/theme-v2/images/badges/game-hub-1024.png
++- added: assets/theme-v2/images/badges/game-hub.png
++- deleted: assets/theme-v2/images/tools/game-workspace-1024.png
++- deleted: assets/theme-v2/images/tools/game-workspace.png
++- added: assets/theme-v2/images/tools/game-hub-1024.png
++- added: assets/theme-v2/images/tools/game-hub.png
++- updated: assets/theme-v2/js/account-achievements.js
++- updated: assets/theme-v2/js/gamefoundry-partials.js
++- updated: assets/theme-v2/partials/header-nav.html
++- updated: docs_build/database/ddl/game-workspace.sql
++- updated: docs_build/database/dml/DML_INDEX.md
++- updated: docs_build/database/dml/game-workspace.sql
++- updated: docs_build/database/seed/game-workspace.json
++- updated: docs_build/database/seed/guest/game-workspace.json
++- updated: docs_build/dev/admin-notes/deployment-uat-prod/index.txt
++- added: docs_build/dev/reports/codex_changed_files.txt
++- added: docs_build/dev/reports/codex_review.diff
++- added: docs_build/pr/PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff/APPLY_PR.md
++- added: docs_build/pr/PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff/BUILD_PR.md
++- added: docs_build/pr/PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff/PLAN_PR.md
++- deleted: learn/game-workspace/index.html
++- added: learn/game-hub/index.html
++- updated: learn/getting-started/index.html
++- updated: learn/index.html
++- updated: package.json
++- updated: scripts/run-targeted-test-lanes.mjs
++- updated: scripts/validate-browser-env-agnostic.mjs
++- updated: scripts/validate-local-postgres-runtime.mjs
++- updated: src/dev-runtime/admin/header-nav.local.html
++- updated: src/dev-runtime/persistence/mock-db-store.js
++- updated: src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
++- updated: src/dev-runtime/seed/server-seed-loader.mjs
++- updated: src/dev-runtime/server/local-api-router.mjs
++- updated: src/shared/toolbox/tool-metadata-inventory.js
++- updated: tests/dev-runtime/DevRuntimeBoundary.test.mjs
++- updated: tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
++- updated: tests/dev-runtime/SupabaseProductDataCutover.test.mjs
++- updated: tests/playwright/account/AchievementsPage.spec.mjs
++- updated: tests/playwright/tools/AdminDbViewer.spec.mjs
++- added: tests/playwright/tools/GameHubMockRepository.spec.mjs
++- updated: tests/playwright/tools/GameJourneyTool.spec.mjs
++- deleted: tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs
++- updated: tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
++- updated: tests/playwright/tools/RootToolsFutureState.spec.mjs
++- updated: tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs
++- updated: tests/playwright/tools/ToolImageRegistry.spec.mjs
++- updated: tests/playwright/tools/ToolNavigationPrevNext.spec.mjs
++- updated: tests/playwright/tools/ToolboxRoutePages.spec.mjs
++- updated: toolbox/colors/index.html
++- updated: toolbox/controls/controls.js
++- updated: toolbox/controls/index.html
++- updated: toolbox/game-design/index.html
++- added: toolbox/game-hub/game-hub-api-client.js
++- added: toolbox/game-hub/game-hub.js
++- added: toolbox/game-hub/index.html
++- updated: toolbox/game-journey/game-journey.js
++- deleted: toolbox/game-workspace/game-workspace-api-client.js
++- deleted: toolbox/game-workspace/game-workspace.js
++- deleted: toolbox/game-workspace/index.html
++- updated: toolbox/idea-board/index.js
++- updated: toolbox/project-workspace/index.html
++- updated: toolbox/tools-page-accordions.js
++
++ZIP:
++- Path: tmp/PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff_delta.zip
++- Size: generated after branch push; final byte size is reported in the delivery response because the ZIP is not committed.
++- Contents: repo-structured scoped delta files. Deleted legacy paths are documented in the changed-files list and are not represented as physical files in the archive.
+diff --git a/docs_build/pr/PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff/APPLY_PR.md b/docs_build/pr/PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff/APPLY_PR.md
+new file mode 100644
+index 000000000..cc605d860
+--- /dev/null
++++ b/docs_build/pr/PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff/APPLY_PR.md
+@@ -0,0 +1,48 @@
++# PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff APPLY
++
++## Git Workflow
++- Created branch: `pr/26171-ALPHA-047-game-hub-canonical-path-journey-handoff`
++- Push result: PASS; pushed to `origin/pr/26171-ALPHA-047-game-hub-canonical-path-journey-handoff`
++- PR URL: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/32
++- Merge approval status: pending explicit Team Alpha owner approval
++- Merge result: not allowed without explicit Team Alpha owner approval
++- Rebase/conflict resolution: PASS; rebased onto `origin/main` at `e8845dae6` and resolved conflicts limited to generated Codex report artifacts.
++- Latest rebase/conflict resolution: PASS; rebased onto `origin/main` at `195c90a64`, resolved generated report conflicts and `tests/playwright/tools/RootToolsFutureState.spec.mjs` expectations for the canonical `game-hub` route and filtered legacy `game-workspace` registry row.
++- Final approved rebase: PASS; Team Alpha approval granted, rebased onto `origin/main` at `1451a1173`, with conflicts limited to generated Codex report artifacts.
++
++## Validation
++- `node --check toolbox/game-hub/game-hub.js`: PASS
++- `node --check toolbox/game-hub/game-hub-api-client.js`: PASS
++- `node --check toolbox/idea-board/index.js`: PASS
++- `node --check toolbox/game-journey/game-journey.js`: PASS
++- `node --check src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js`: PASS
++- `node --check src/dev-runtime/server/local-api-router.mjs`: PASS
++- `node --check tests/playwright/tools/GameHubMockRepository.spec.mjs`: PASS
++- `node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`: PASS
++- `node --check tests/playwright/tools/GameJourneyTool.spec.mjs`: PASS
++- `npx playwright test tests/playwright/tools/GameHubMockRepository.spec.mjs --project=playwright --workers=1 --reporter=line`: PASS, 11 passed
++- `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --project=playwright --workers=1 --reporter=line`: PASS, 2 passed
++- `npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs --project=playwright --workers=1 --reporter=line --grep "Game Hub hands the active game route to Game Journey|Game Journey requires an active game"`: PASS, 2 passed
++- `npm run test:workspace-v2`: PASS, 5 passed
++- `git diff --check`: PASS, line-ending warnings only
++- Completion revalidation for `PR_26171_ALPHA_048` start-gate blocker: PASS; ALPHA_047 scoped validation was rerun on branch `pr/26171-ALPHA-047-game-hub-canonical-path-journey-handoff` before starting ALPHA_048.
++- Latest post-rebase validation: PASS; syntax checks, targeted Game Hub Playwright, targeted Idea Board Playwright, targeted Game Journey handoff Playwright, and `npm run test:workspace-v2` were rerun after rebasing onto `195c90a64`.
++- Final approved validation: PASS; syntax checks, targeted Game Hub Playwright, targeted Idea Board Playwright, targeted Game Journey handoff Playwright, and `npm run test:workspace-v2` were rerun after rebasing onto `1451a1173`.
++
++## ZIP
++- Path: `tmp/PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff_delta.zip`
++- Size: generated after branch push; final byte size is reported in the delivery response because the ZIP is not committed.
++- Contents: repo-structured scoped delta files, with deleted legacy paths documented in `docs_build/dev/reports/codex_changed_files.txt`.
++
++## Requirement Evidence
++- Instruction compliance: PASS; PROJECT_INSTRUCTIONS.md, PROJECT_MULTI_PC.txt, and BUILD_PR.md were read before implementation.
++- Team Alpha owner: PASS; scope is Game Hub, Game Journey handoff, and Idea Board continuity.
++- Canonical active path: PASS; active route is `toolbox/game-hub/` with no active navigation pointing to `toolbox/game-workspace/`.
++- Active files renamed: PASS; active Game Hub JS files now use `game-hub.js` and `game-hub-api-client.js`.
++- Deep reference audit: PASS; imports, tests, navigation registry, tool display mode slug, titles, and creator labels were updated to Game Hub.
++- No duplicate active Game Hub path: PASS; legacy Game Workspace registry rows are filtered from active registry reads.
++- Idea to Hub handoff: PASS; Ready ideas create/link a Game Hub project, become Project, lock the source idea and notes, and expose Open in Game Hub/Archive actions.
++- Game Hub source display: PASS; Game Hub renders Source Idea, Pitch, and Notes read-only for source-linked projects.
++- Journey handoff: PASS; opening the project creates executable Game Journey items from source idea notes without moving or mutating the original notes.
++- Delete avoidance: PASS; source-linked projects do not expose Delete Open Game.
++- Merge gate: PASS; merge is intentionally blocked until explicit Team Alpha owner approval.
+diff --git a/docs_build/pr/PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff/BUILD_PR.md b/docs_build/pr/PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff/BUILD_PR.md
+new file mode 100644
+index 000000000..7b3a0d377
+--- /dev/null
++++ b/docs_build/pr/PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff/BUILD_PR.md
+@@ -0,0 +1,51 @@
++# PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff BUILD
++
++## Start Gate
++- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
++- Read `docs_build/dev/PROJECT_MULTI_PC.txt`.
++- Confirm current branch is clean latest `main` before branch creation.
++- Confirm Team Alpha owns Game Hub, Game Journey, and Idea flow work.
++- Confirm merge requires explicit Team Alpha owner approval.
++
++## Exact Targets
++- `toolbox/game-workspace/` -> `toolbox/game-hub/`
++- `toolbox/game-hub/index.html`
++- `toolbox/game-hub/game-hub.js`
++- `toolbox/game-hub/game-hub-api-client.js`
++- `toolbox/idea-board/index.js`
++- `toolbox/game-journey/game-journey.js`
++- Active navigation/registry references to `toolbox/game-workspace` or `game-workspace`
++- Targeted Playwright tests for Game Hub, Idea Board handoff, and navigation routes
++- `docs_build/dev/reports/codex_review.diff`
++- `docs_build/dev/reports/codex_changed_files.txt`
++
++## Required Implementation
++- Rename active path `toolbox/game-workspace/` to `toolbox/game-hub/`.
++- Rename active files to `game-hub.js` and `game-hub-api-client.js`.
++- Do not leave active navigation pointing to `toolbox/game-workspace`.
++- Do not create a duplicate active Game Hub path.
++- Update imports, route references, registry path/folder/entry point, tool display mode slug, page titles, creator-facing labels, and tests.
++- Preserve the existing repository/API contract unless a small compatibility alias is required.
++- Idea Board Create Project opens the canonical Game Hub route.
++- Project source-linked actions avoid Delete and use Open in Game Hub and Archive.
++- When an idea becomes Project, original Idea, Pitch, and Notes remain locked/read-only.
++- Game Hub displays Source Idea, Pitch, and Notes read-only.
++- Game Journey receives executable Journey items from Idea notes without mutating or moving original notes.
++
++## Required Validation
++- `node --check toolbox/game-hub/game-hub.js`
++- `node --check toolbox/idea-board/index.js`
++- Changed-file syntax checks for affected Game Journey JavaScript.
++- Targeted Game Hub Playwright.
++- Targeted Idea Board Playwright if handoff code changes.
++- `npm run test:workspace-v2`
++- Do not run full samples smoke.
++
++## Required Delivery
++- Update required reports.
++- Produce repo-structured ZIP under `tmp/PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff_delta.zip`.
++- Stage only scoped files.
++- Commit.
++- Push branch.
++- Create PR.
++- Stop before merge unless explicit Team Alpha owner approval is present.
+diff --git a/docs_build/pr/PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff/PLAN_PR.md b/docs_build/pr/PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff/PLAN_PR.md
+new file mode 100644
+index 000000000..b307026fb
+--- /dev/null
++++ b/docs_build/pr/PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff/PLAN_PR.md
+@@ -0,0 +1,27 @@
++# PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff PLAN
++
++## Source Of Truth
++- `docs_build/dev/PROJECT_INSTRUCTIONS.md`
++- `docs_build/dev/PROJECT_MULTI_PC.txt`
++- User request: `PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff`
++
++## Purpose
++Canonicalize the active Game Hub route from `toolbox/game-workspace/` to `toolbox/game-hub/` and preserve the Idea Board to Game Hub to Game Journey handoff.
++
++## Ownership
++- Team: Alpha
++- Area: Game Hub, Idea flow, Game Journey handoff
++- Merge gate: do not merge without explicit Team Alpha owner approval.
++
++## Scope
++- Rename active Game Hub path and active Game Hub JavaScript files.
++- Update active navigation, registry, imports, tests, tool display mode slug, and creator-facing paths.
++- Keep the existing shared repository/API contract unless a minimal alias is required for route compatibility.
++- Ensure Idea Board Create Project opens the canonical Game Hub route and preserves source Idea/Pitch/Notes.
++- Ensure Game Journey can display executable journey items created from source idea notes.
++
++## Non-Scope
++- No full database migration.
++- No real Postgres/API expansion.
++- No duplicate active Game Hub path.
++- No merge without Team Alpha approval.
+diff --git a/learn/game-workspace/index.html b/learn/game-hub/index.html
+similarity index 77%
+rename from learn/game-workspace/index.html
+rename to learn/game-hub/index.html
+index 5353eeb4b..ac0d7e308 100644
+--- a/learn/game-workspace/index.html
++++ b/learn/game-hub/index.html
+@@ -4,8 +4,8 @@
+ <head>
+     <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+-    <title>Game Workspace Learn - GameFoundryStudio</title>
+-    <meta name="description" content="GameFoundryStudio Learn wireframe for Game Workspace.">
++    <title>Game Hub Learn - GameFoundryStudio</title>
++    <meta name="description" content="GameFoundryStudio Learn wireframe for Game Hub.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="../../assets/theme-v2/css/theme.css">
+ </head>
+@@ -15,8 +15,8 @@
+     <main>
+         <section class="page-title">
+             <div class="container">
+-                <div class="kicker">Learn / Game Workspace</div>
+-                <h1>Game Workspace</h1>
++                <div class="kicker">Learn / Game Hub</div>
++                <h1>Game Hub</h1>
+                 <p class="lede">Plan current focus, readiness, and recommended next tool for one game project.</p>
+             </div>
+         </section>
+@@ -26,37 +26,37 @@
+                     <article class="control-card">
+                         <div class="card-body">
+                             <h2>Overview</h2>
+-                            <p>Game Workspace guidance overview placeholder for the future Learn system.</p>
++                            <p>Game Hub guidance overview placeholder for the future Learn system.</p>
+                         </div>
+                     </article>
+                     <article class="control-card">
+                         <div class="card-body">
+                             <h2>Quick Start</h2>
+-                            <p>Static quick-start checklist for reviewing Game Workspace before real tutorials exist.</p>
++                            <p>Static quick-start checklist for reviewing Game Hub before real tutorials exist.</p>
+                         </div>
+                     </article>
+                     <article class="control-card">
+                         <div class="card-body">
+                             <h2>Common Tasks</h2>
+-                            <p>Task cards will eventually describe frequent Game Workspace creator workflows.</p>
++                            <p>Task cards will eventually describe frequent Game Hub creator workflows.</p>
+                         </div>
+                     </article>
+                     <article class="control-card">
+                         <div class="card-body">
+                             <h2>Related Documentation</h2>
+-                            <p>Documentation links for Game Workspace will be connected after the docs registry exists.</p>
++                            <p>Documentation links for Game Hub will be connected after the docs registry exists.</p>
+                         </div>
+                     </article>
+                     <article class="control-card">
+                         <div class="card-body">
+                             <h2>Related Videos</h2>
+-                            <p>Video references for Game Workspace are planned; no embeds are active in this wireframe.</p>
++                            <p>Video references for Game Hub are planned; no embeds are active in this wireframe.</p>
+                         </div>
+                     </article>
+                     <article class="control-card">
+                         <div class="card-body">
+                             <h2>Examples</h2>
+-                            <p>Example games and snippets for Game Workspace will be linked in a future implementation.</p>
++                            <p>Example games and snippets for Game Hub will be linked in a future implementation.</p>
+                         </div>
+                     </article>
+                 </div>
+@@ -68,7 +68,7 @@
+                 <h2>Continue learning</h2>
+                 <div class="content-cluster">
+                     <a class="btn" href="../index.html">All Learn</a>
+-                    <a class="btn" href="../../toolbox/game-workspace/index.html">Open Tool</a>
++                    <a class="btn" href="../../toolbox/game-hub/index.html">Open Tool</a>
+                 </div>
+             </div>
+         </section>
+diff --git a/learn/getting-started/index.html b/learn/getting-started/index.html
+index e1d340e29..2ab1e9005 100644
+--- a/learn/getting-started/index.html
++++ b/learn/getting-started/index.html
+@@ -68,7 +68,7 @@
+                 <h2>Continue learning</h2>
+                 <div class="content-cluster">
+                     <a class="btn" href="../index.html">All Learn</a>
+-                    <a class="btn" href="../../toolbox/game-workspace/index.html">Open Game Workspace</a>
++                    <a class="btn" href="../../toolbox/game-hub/index.html">Open Game Hub</a>
+                 </div>
+             </div>
+         </section>
+diff --git a/learn/index.html b/learn/index.html
+index 9f40647b7..8c0ba1f40 100644
+--- a/learn/index.html
++++ b/learn/index.html
+@@ -79,7 +79,7 @@
+                     <a class="btn" href="colors/index.html">Colors</a>
+                     <a class="btn" href="game-configuration/index.html">Game Configuration</a>
+                     <a class="btn" href="game-design/index.html">Game Design</a>
+-                    <a class="btn" href="game-workspace/index.html">Game Workspace</a>
++                    <a class="btn" href="game-hub/index.html">Game Hub</a>
+                     <a class="btn" href="getting-started/index.html">Getting Started</a>
+                     <a class="btn" href="objects/index.html">Objects</a>
+                     <a class="btn" href="publish/index.html">Publish</a>
+diff --git a/package.json b/package.json
+index 505b71d5f..d13364e3f 100644
+--- a/package.json
++++ b/package.json
+@@ -17,7 +17,7 @@
+     "test:lane:tool-images": "node ./scripts/run-targeted-test-lanes.mjs --lane tool-images",
+     "test:lane:game-configuration": "node ./scripts/run-targeted-test-lanes.mjs --lane game-configuration",
+     "test:lane:game-design": "node ./scripts/run-targeted-test-lanes.mjs --lane game-design",
+-    "test:lane:game-workspace": "node ./scripts/run-targeted-test-lanes.mjs --lane game-workspace",
++    "test:lane:game-hub": "node ./scripts/run-targeted-test-lanes.mjs --lane game-hub",
+     "test:lane:tool-runtime": "node ./scripts/run-targeted-test-lanes.mjs --lane tool-runtime",
+     "test:lane:game-runtime": "node ./scripts/run-targeted-test-lanes.mjs --lane game-runtime",
+     "test:lane:integration": "node ./scripts/run-targeted-test-lanes.mjs --lane integration",
+diff --git a/scripts/run-targeted-test-lanes.mjs b/scripts/run-targeted-test-lanes.mjs
+index 095584f64..3fef73319 100644
+--- a/scripts/run-targeted-test-lanes.mjs
++++ b/scripts/run-targeted-test-lanes.mjs
+@@ -122,17 +122,17 @@ const laneDefinitions = Object.freeze({
+     requiresPreflight: true,
+     reason: "Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes."
+   },
+-  "game-workspace": {
+-    affectedSurface: "Game Workspace mock repository, Game Workspace UI, and Toolbox Progress/Build Path game-state bridge",
++  "game-hub": {
++    affectedSurface: "Game Hub mock repository, Game Hub UI, and Toolbox Progress/Build Path game-state bridge",
+     commands: [
+-      playwrightCommand("tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs")
++      playwrightCommand("tests/playwright/tools/GameHubMockRepository.spec.mjs")
+     ],
+     dependencies: [],
+     discoveryTargets: [
+-      "tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs"
++      "tests/playwright/tools/GameHubMockRepository.spec.mjs"
+     ],
+     fixtures: [
+-      "repo-served Game Workspace page",
++      "repo-served Game Hub page",
+       "repo-served Toolbox page with role simulation",
+       "in-memory SQL-shaped mock game repository"
+     ],
+@@ -140,7 +140,7 @@ const laneDefinitions = Object.freeze({
+     ownership: "tools",
+     playwrightDir: "tests/playwright/tools",
+     requiresPreflight: true,
+-    reason: "Game Workspace rebuild slice validates mock users/games/game_members data actions, game lifecycle controls, and game-driven Progress/Build Path copy without exercising unrelated toolbox routes."
++    reason: "Game Hub rebuild slice validates mock users/games/game_members data actions, game lifecycle controls, and game-driven Progress/Build Path copy without exercising unrelated toolbox routes."
+   },
+   "game-design": {
+     affectedSurface: "Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff",
+@@ -155,7 +155,7 @@ const laneDefinitions = Object.freeze({
+       "repo-served Game Design page",
+       "repo-served Toolbox Progress and Build Path views",
+       "in-memory SQL-shaped Game Design mock repository",
+-      "Game Workspace mock game context"
++      "Game Hub mock game context"
+     ],
+     fixturePaths: [],
+     ownership: "tools",
+@@ -218,7 +218,7 @@ const laneDefinitions = Object.freeze({
+     fixtures: [
+       "repo-served Toolbox page",
+       "repo-served Admin Tools Progress page",
+-      "Game Workspace mock game context",
++      "Game Hub mock game context",
+       "Toolbox role simulation"
+     ],
+     fixturePaths: [],
+@@ -259,7 +259,7 @@ const laneDefinitions = Object.freeze({
+     ],
+     fixtures: [
+       "repo-served Admin Tools Progress page",
+-      "repo-served Game Workspace, Game Design, and Game Configuration tool pages",
++      "repo-served Game Hub, Game Design, and Game Configuration tool pages",
+       "repo-served Toolbox Group view with URL-selected accordion",
+       "Toolbox registry build sequence and route metadata"
+     ],
+@@ -279,7 +279,7 @@ const laneDefinitions = Object.freeze({
+       "tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs"
+     ],
+     fixtures: [
+-      "repo-served Game Workspace, Game Design, Game Configuration, and AI Assistant tool pages",
++      "repo-served Game Hub, Game Design, Game Configuration, and AI Assistant tool pages",
+       "repo-served Toolbox Group view with URL-selected accordion",
+       "Toolbox registry build sequence and route metadata",
+       "shared Theme V2 Tool Display Mode script"
+diff --git a/scripts/validate-browser-env-agnostic.mjs b/scripts/validate-browser-env-agnostic.mjs
+index 2f8492652..ac69a4324 100644
+--- a/scripts/validate-browser-env-agnostic.mjs
++++ b/scripts/validate-browser-env-agnostic.mjs
+@@ -66,7 +66,7 @@ const productApiClientFiles = Object.freeze([
+   "toolbox/game-configuration/game-configuration-api-client.js",
+   "toolbox/game-design/game-design-api-client.js",
+   "toolbox/game-journey/game-journey-api-client.js",
+-  "toolbox/game-workspace/game-workspace-api-client.js",
++  "toolbox/game-hub/game-hub-api-client.js",
+   "toolbox/objects/objects-api-client.js",
+   "toolbox/tags/tags-api-client.js",
+ ]);
+diff --git a/scripts/validate-local-postgres-runtime.mjs b/scripts/validate-local-postgres-runtime.mjs
+index 26da8b5cd..23aeac932 100644
+--- a/scripts/validate-local-postgres-runtime.mjs
++++ b/scripts/validate-local-postgres-runtime.mjs
+@@ -294,13 +294,13 @@ async function validateApiRuntime({ adapter, client }) {
+     const messageRow = savedBannerRows.find((row) => row.settingKey === "platform.banner.message");
+     assert(messageRow?.settingValue === message, "Local Postgres platform_settings message row was not updated.");
+
+-    const repository = await apiJson(server.baseUrl, "/api/toolbox/game-workspace/repositories", {
++    const repository = await apiJson(server.baseUrl, "/api/toolbox/game-hub/repositories", {
+       body: {},
+       method: "POST",
+     });
+-    assert(repository.repositoryId, "Game Workspace repository was not created.");
++    assert(repository.repositoryId, "Game Hub repository was not created.");
+
+-    const created = await apiJson(server.baseUrl, `/api/toolbox/game-workspace/repositories/${repository.repositoryId}/methods/createGame`, {
++    const created = await apiJson(server.baseUrl, `/api/toolbox/game-hub/repositories/${repository.repositoryId}/methods/createGame`, {
+       body: {
+         args: [
+           {
+@@ -312,14 +312,14 @@ async function validateApiRuntime({ adapter, client }) {
+       },
+       method: "POST",
+     });
+-    assert(created.result?.name === GAME_NAME, "Game Workspace create did not return the validation game.");
++    assert(created.result?.name === GAME_NAME, "Game Hub create did not return the validation game.");
+
+-    const active = await apiJson(server.baseUrl, `/api/toolbox/game-workspace/repositories/${repository.repositoryId}/methods/getActiveGame`, {
++    const active = await apiJson(server.baseUrl, `/api/toolbox/game-hub/repositories/${repository.repositoryId}/methods/getActiveGame`, {
+       body: { args: [] },
+       method: "POST",
+     });
+-    assert(active.result?.name === GAME_NAME, "Game Workspace active game did not resolve the validation game.");
+-    assert(Array.isArray(active.result?.members), "Game Workspace active game did not include members.");
++    assert(active.result?.name === GAME_NAME, "Game Hub active game did not resolve the validation game.");
++    assert(Array.isArray(active.result?.members), "Game Hub active game did not include members.");
+
+     const gameRows = await adapter.getProductTableRows("game_workspace_games");
+     assert(gameRows.some((row) => row.name === GAME_NAME), "Local Postgres game_workspace_games did not include the validation game.");
+@@ -373,8 +373,8 @@ async function main() {
+     console.log(`PASS - Seeded identity rows: users=${identity.written.users}, roles=${identity.written.roles}, user_roles=${identity.written.user_roles}.`);
+     console.log(`PASS - Banner saved and read through API; local platform_settings banner rows observed=${apiEvidence.bannerRows}.`);
+     console.log(`PASS - Supabase Auth health calls=${fakeSupabase.requests.filter((request) => request.path === "/auth/v1/health").length}; Supabase platform_settings REST calls=0.`);
+-    console.log(`PASS - Game Workspace create/getActiveGame used repository ${apiEvidence.repositoryId}; local game rows observed=${apiEvidence.gameRows}.`);
+-    console.log("PASS - Validation cleanup restored banner rows and removed PR197 Game Workspace rows.");
++    console.log(`PASS - Game Hub create/getActiveGame used repository ${apiEvidence.repositoryId}; local game rows observed=${apiEvidence.gameRows}.`);
++    console.log("PASS - Validation cleanup restored banner rows and removed PR197 Game Hub rows.");
+   } finally {
+     await fakeSupabase.close();
+     Object.entries(originalSupabaseEnv).forEach(([key, value]) => {
+diff --git a/src/dev-runtime/admin/header-nav.local.html b/src/dev-runtime/admin/header-nav.local.html
+index f2c805256..f49f136ce 100644
+--- a/src/dev-runtime/admin/header-nav.local.html
++++ b/src/dev-runtime/admin/header-nav.local.html
+@@ -35,7 +35,7 @@
+               <a data-nav-link data-toolbox-menu-item data-route="code" href="toolbox/code/index.html">Custom Extensions</a>
+               <a data-nav-link data-toolbox-menu-item data-route="game-configuration" href="toolbox/game-configuration/index.html">Game Configuration</a>
+               <a data-nav-link data-toolbox-menu-item data-route="game-design" href="toolbox/game-design/index.html">Game Design</a>
+-              <a data-nav-link data-toolbox-menu-item data-route="game-workspace" href="toolbox/game-workspace/index.html">Game Hub</a>
++              <a data-nav-link data-toolbox-menu-item data-route="game-hub" href="toolbox/game-hub/index.html">Game Hub</a>
+               <a data-nav-link data-toolbox-menu-item data-route="game-journey" href="toolbox/game-journey/index.html">Game Journey</a>
+             </div>
+           </div>
+diff --git a/src/dev-runtime/persistence/mock-db-store.js b/src/dev-runtime/persistence/mock-db-store.js
+index 543834d94..2305910bc 100644
+--- a/src/dev-runtime/persistence/mock-db-store.js
++++ b/src/dev-runtime/persistence/mock-db-store.js
+@@ -34,7 +34,7 @@ export const MOCK_DB_SESSION_MODES = Object.freeze([
+ ]);
+
+ export const MOCK_DB_TOOL_GROUPS = Object.freeze({
+-  "game-workspace": Object.freeze({
++  "game-hub": Object.freeze({
+     label: "Game Hub",
+     tableNames: Object.freeze(["game_workspace_games", "game_workspace_progress"]),
+   }),
+diff --git a/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js b/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
+index bd537110b..1bbbc2527 100644
+--- a/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
++++ b/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
+@@ -100,6 +100,7 @@ const GENERATED_ULID_SEQUENCE = Object.freeze({
+ });
+ const RECOMMENDED_TARGET_LINKED_RECORD_TYPE = "recommended-target";
+ const RECOMMENDED_TARGET_NOTE_KEY = GAME_JOURNEY_KEYS.notes.designPass;
++const SOURCE_IDEA_LINKED_RECORD_TYPE = "source-idea-note";
+
+ export const GAME_JOURNEY_STATUSES = [
+   {
+@@ -645,6 +646,13 @@ export function createGameJourneyMockRepository(options = {}) {
+     return item?.linkedRecordType === RECOMMENDED_TARGET_LINKED_RECORD_TYPE;
    }
 
-   listTtsProfiles() {
-+    const emotionSettings = this.listEmotionProfiles()
-+      .filter((profile) => profile.active !== false)
-+      .map(ttsEmotionSettingFromEmotionProfile);
-     return this.db().prepare(`
-       SELECT * FROM messages_tts_profiles
-       ORDER BY name COLLATE NOCASE ASC
--    `).all().map(ttsProfileFromRow);
-+    `).all().map((row) => ttsProfileFromRow(row, emotionSettings));
++  function journeyGameKey(game) {
++    const gameId = String(game?.id || "").trim();
++    return !gameId || gameId === GAME_JOURNEY_ROUTE_GAME_ALIAS
++      ? GAME_JOURNEY_KEYS.game
++      : `game-hub:${gameId}`;
++  }
++
+   function currentUserCanSeeNote(note) {
+     const sessionUser = currentSessionUser();
+     return Boolean(sessionUser.userKey && (sessionUser.isAdmin || note.ownerKey === sessionUser.userKey));
+@@ -679,6 +687,102 @@ export function createGameJourneyMockRepository(options = {}) {
+     persistTables();
    }
 
-   getTtsProfile(key) {
-@@ -604,7 +628,10 @@ export class MessagesSqliteService {
-     if (!row) {
-       throw httpError("TTS profile was not found.", 404);
++  function slugSegment(value, fallback = "source-idea") {
++    const slug = String(value || "")
++      .toLowerCase()
++      .replace(/[^a-z0-9]+/g, "-")
++      .replace(/^-+|-+$/g, "");
++    return slug || fallback;
++  }
++
++  function normalizeSourceIdeaNotes(sourceIdea) {
++    return Array.isArray(sourceIdea?.notes)
++      ? sourceIdea.notes.map((note) => String(note || "").trim()).filter(Boolean)
++      : [];
++  }
++
++  function sourceIdeaJourneyNoteName(sourceIdea) {
++    const idea = String(sourceIdea?.idea || "").trim();
++    return idea ? `Source Idea: ${idea}` : "Source Idea";
++  }
++
++  function ensureSourceIdeaJourneyItems(activeGame) {
++    const sourceIdea = activeGame?.sourceIdea && typeof activeGame.sourceIdea === "object"
++      ? activeGame.sourceIdea
++      : null;
++    const sourceNotes = normalizeSourceIdeaNotes(sourceIdea);
++    if (!activeGame || !sourceNotes.length) {
++      return [];
++    }
++
++    const ownerKey = safeCurrentUserKey();
++    const timestampValue = new Date().toISOString();
++    const noteSlug = `source-idea-${slugSegment(activeGame.id || sourceIdea?.idea)}`;
++    let note = tables.game_journey_notes.find(
++      (candidate) => candidate.gameKey === activeGame.key && candidate.slug === noteSlug,
++    );
++
++    if (!note) {
++      note = {
++        key: makeUlid(nextNoteNumber),
++        slug: noteSlug,
++        gameKey: activeGame.key,
++        ownerKey,
++        name: sourceIdeaJourneyNoteName(sourceIdea),
++        typeKey: GAME_JOURNEY_KEYS.noteTypes.idea,
++        createdAt: timestampValue,
++        updatedAt: timestampValue,
++        createdBy: ownerKey,
++        updatedBy: ownerKey,
++      };
++      nextNoteNumber += 1;
++      tables.game_journey_notes.push(note);
++    }
++
++    const existingLinkedIds = new Set(
++      getItemsForNote(note.key)
++        .filter((item) => item.linkedRecordType === SOURCE_IDEA_LINKED_RECORD_TYPE)
++        .map((item) => item.linkedRecordId),
++    );
++    const created = [];
++    sourceNotes.forEach((sourceNote, index) => {
++      const linkedRecordId = `${slugSegment(activeGame.id || activeGame.key)}:${index + 1}:${slugSegment(sourceNote).slice(0, 48)}`;
++      if (existingLinkedIds.has(linkedRecordId)) {
++        return;
++      }
++      const existingItems = getItemsForNote(note.key);
++      const item = {
++        key: makeUlid(nextItemNumber),
++        gameKey: activeGame.key,
++        noteKey: note.key,
++        status: "not-started",
++        title: sourceNote,
++        userDetails: "",
++        createdBy: ownerKey,
++        updatedBy: ownerKey,
++        templateKey: "",
++        linkedRecordType: SOURCE_IDEA_LINKED_RECORD_TYPE,
++        linkedRecordId,
++        indent: 0,
++        order: existingItems.length + 1,
++        createdAt: timestampValue,
++        updatedAt: timestampValue,
++      };
++      nextItemNumber += 1;
++      tables.game_journey_items.push(item);
++      created.push(hydrateItem(item));
++    });
++
++    if (created.length) {
++      selectedNoteKey = note.key;
++      selectedItemKey = created[0]?.key || selectedItemKey;
++      touchNote(note.key, ownerKey);
++      addActivity(activeGame.key, note.key, `Created ${created.length} Game Journey item${created.length === 1 ? "" : "s"} from Source Idea.`, ownerKey);
++    }
++
++    return created;
++  }
++
+   function getActiveGame() {
+     const game = gameWorkspaceRepository.getActiveGame();
+     if (!game) {
+@@ -686,7 +790,7 @@ export function createGameJourneyMockRepository(options = {}) {
      }
--    return ttsProfileFromRow(row);
-+    const emotionSettings = this.listEmotionProfiles()
-+      .filter((profile) => profile.active !== false)
-+      .map(ttsEmotionSettingFromEmotionProfile);
-+    return ttsProfileFromRow(row, emotionSettings);
+     return {
+       ...game,
+-      key: GAME_JOURNEY_KEYS.game,
++      key: journeyGameKey(game),
+     };
    }
 
-   findTtsProfileByName(name) {
-diff --git a/tests/playwright/tools/MessagesTool.spec.mjs b/tests/playwright/tools/MessagesTool.spec.mjs
-index 220802b3e..6c00fa6f5 100644
---- a/tests/playwright/tools/MessagesTool.spec.mjs
-+++ b/tests/playwright/tools/MessagesTool.spec.mjs
-@@ -240,13 +240,34 @@ test("Message Studio renders Messages with child Message Parts and plays ordered
-     await expect(page.locator("[data-messages-log]")).toHaveText("Updated message part 2.");
-     await expect(page.locator("[data-messages-segment-row]")).toHaveCount(2);
-     await expect(page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" })).toContainText("2");
-+    const ttsProfilesResult = await jsonRequest(`${failures.server.baseUrl}/api/messages/tts-profiles`);
-+    expect(ttsProfilesResult.response.ok).toBe(true);
-+    expect(ttsProfilesResult.payload.data.ttsProfiles[0].emotionSettings).toEqual(expect.arrayContaining([
-+      expect.objectContaining({
-+        emotion: "urgent",
-+        emotionLabel: "Urgent",
-+        pitch: 1.08,
-+        rate: 1.15,
-+        volume: 1,
-+      }),
-+    ]));
+@@ -1392,7 +1496,11 @@ export function createGameJourneyMockRepository(options = {}) {
+   function openGame(gameId) {
+     const workspaceGameId =
+       gameId === GAME_JOURNEY_KEYS.game ? GAME_JOURNEY_ROUTE_GAME_ALIAS : gameId;
+-    return gameWorkspaceRepository.openGame(workspaceGameId);
++    const openedGame = gameWorkspaceRepository.openGame(workspaceGameId);
++    if (openedGame) {
++      ensureSourceIdeaJourneyItems(getActiveGame());
++    }
++    return openedGame;
+   }
 
-     await page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" }).getByRole("button", { name: "Play Message" }).click();
-     await expect(page.locator("[data-messages-log]")).toHaveText("Play Message queued 2 parts for Bat Encounter.");
-     let speechCalls = await page.evaluate(() => window.__messagesSpeechCalls);
--    expect(speechCalls.slice(-2).map((call) => call.text)).toEqual([
--      "Bats drop from the rafters.",
--      "Keep your torch high.",
-+    expect(speechCalls.slice(-2)).toEqual([
-+      expect.objectContaining({
-+        pitch: 1,
-+        rate: 1,
-+        text: "Bats drop from the rafters.",
-+        volume: 1,
-+      }),
-+      expect.objectContaining({
-+        pitch: 1.08,
-+        rate: 1.15,
-+        text: "Keep your torch high.",
-+        volume: 1,
-+      }),
-     ]);
-     expect(speechCalls.at(-1)).toEqual(expect.objectContaining({
-       lang: "en-US",
-@@ -262,9 +283,12 @@ test("Message Studio renders Messages with child Message Parts and plays ordered
-     await expect(page.locator("[data-messages-log]")).toHaveText("Play Part queued Part 2 using Default Balanced TTS Profile.");
-     speechCalls = await page.evaluate(() => window.__messagesSpeechCalls);
-     expect(speechCalls.at(-1)).toEqual(expect.objectContaining({
-+      pitch: 1.08,
-+      rate: 1.15,
-       text: "Keep your torch high.",
-       type: "speak",
-       voiceName: "Test Voice",
-+      volume: 1,
-     }));
-
-     await page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" }).getByRole("button", { name: "Edit Message" }).click();
-diff --git a/toolbox/messages/messages.js b/toolbox/messages/messages.js
-index 9165deabe..4af71adaa 100644
---- a/toolbox/messages/messages.js
-+++ b/toolbox/messages/messages.js
-@@ -12,9 +12,16 @@ import { createMessageStudioTtsServiceRegistry } from "./message-tts-service-reg
-
- const NEW_ROW_KEY = "__new__";
- const DEFAULT_TTS_PROFILE_KEY = "__default-balanced-tts__";
-+const DEFAULT_TTS_EMOTION_SETTINGS = Object.freeze([
-+  Object.freeze({ active: true, emotion: "calm", emotionLabel: "Calm", pitch: 1, rate: 1, ssmlLikePreset: "normal", volume: 1 }),
-+  Object.freeze({ active: true, emotion: "urgent", emotionLabel: "Urgent", pitch: 1.08, rate: 1.15, ssmlLikePreset: "normal", volume: 1 }),
-+  Object.freeze({ active: true, emotion: "whisper", emotionLabel: "Whisper", pitch: 0.95, rate: 0.9, ssmlLikePreset: "normal", volume: 0.55 }),
-+  Object.freeze({ active: true, emotion: "angry", emotionLabel: "Angry", pitch: 0.98, rate: 1.1, ssmlLikePreset: "normal", volume: 1 }),
-+]);
- const DEFAULT_TTS_PROFILE = Object.freeze({
-   active: true,
-   description: "Balanced local browser playback option until authored TTS profiles are available.",
-+  emotionSettings: DEFAULT_TTS_EMOTION_SETTINGS,
-   key: DEFAULT_TTS_PROFILE_KEY,
-   language: "en-US",
-   name: "Default Balanced TTS Profile",
-@@ -264,6 +271,32 @@ function emotionProfileByKey(profileKey) {
-   return state.emotionProfiles.find((profile) => profile.key === profileKey) || null;
+   return {
+diff --git a/src/dev-runtime/seed/server-seed-loader.mjs b/src/dev-runtime/seed/server-seed-loader.mjs
+index 170f40137..f67e53065 100644
+--- a/src/dev-runtime/seed/server-seed-loader.mjs
++++ b/src/dev-runtime/seed/server-seed-loader.mjs
+@@ -649,7 +649,7 @@ function humanToolStateSampleRows(generateKey) {
+     { displayName: "User 1", toolKey: "game-journey", userKey: SEED_DB_KEYS.users.user1 },
+     { displayName: "User 2", toolKey: "palette", userKey: SEED_DB_KEYS.users.user2 },
+     { displayName: "User 3", toolKey: "asset", userKey: SEED_DB_KEYS.users.user3 },
+-    { displayName: "DavidQ", toolKey: "game-workspace", userKey: SEED_DB_KEYS.users.admin },
++    { displayName: "DavidQ", toolKey: "game-hub", userKey: SEED_DB_KEYS.users.admin },
+   ];
+   return users.map((user, index) => {
+     const tool = toolByKey.get(user.toolKey) || tools[index] || {
+diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
+index 9b98fca14..79a846f6d 100644
+--- a/src/dev-runtime/server/local-api-router.mjs
++++ b/src/dev-runtime/server/local-api-router.mjs
+@@ -201,7 +201,7 @@ const DB_VIEWER_GROUP_ORDER = Object.freeze([
+   Object.freeze({ id: "game-configuration", label: "Game Configuration", ownerId: "game-configuration", type: "tool" }),
+   Object.freeze({ id: "game-design", label: "Game Design", ownerId: "game-design", type: "tool" }),
+   Object.freeze({ id: "game-journey", label: "Game Journey", ownerId: "game-journey", type: "tool" }),
+-  Object.freeze({ id: "game-workspace", label: "Game Hub", ownerId: "game-workspace", type: "tool" }),
++  Object.freeze({ id: "game-hub", label: "Game Hub", ownerId: "game-hub", type: "tool" }),
+   Object.freeze({ id: "objects", label: "Objects", ownerId: "objects", type: "tool" }),
+   Object.freeze({ id: "palette", label: "Palette", ownerId: "palette", type: "tool" }),
+   Object.freeze({ id: "tags", label: "Tags", ownerId: "tags", type: "tool" }),
+@@ -1427,7 +1427,7 @@ function normalizedToolKey(row) {
+   return String(row?.toolKey || row?.toolId || row?.id || "").trim();
  }
 
-+function emotionSettingKey(value) {
-+  return String(value || "")
-+    .trim()
-+    .toLowerCase()
-+    .replace(/[^a-z0-9]+/g, "-")
-+    .replace(/^-+|-+$/g, "") || "neutral";
+-const SOURCE_CONTROLLED_TOOLBOX_TOOL_IDS = new Set(["game-workspace", "idea-board", "messages", "tags", "text-to-speech", "users"]);
++const SOURCE_CONTROLLED_TOOLBOX_TOOL_IDS = new Set(["game-hub", "idea-board", "messages", "tags", "text-to-speech", "users"]);
+ const SOURCE_CONTROLLED_TOOLBOX_METADATA_FIELDS = Object.freeze([
+   "active",
+   "adminOnly",
+@@ -1450,6 +1450,20 @@ const SOURCE_CONTROLLED_TOOLBOX_METADATA_FIELDS = Object.freeze([
+   "toolboxGroup",
+   "visibleInToolsList",
+ ]);
++
++function isGameHubToolId(toolId) {
++  return ["game-hub", "game-workspace"].includes(String(toolId || ""));
 +}
 +
-+function selectedEmotionSettingForProfile(profile, emotionProfile) {
-+  const settings = Array.isArray(profile?.emotionSettings)
-+    ? profile.emotionSettings.filter((setting) => setting?.active !== false)
++function isLegacyGameWorkspaceToolId(toolId) {
++  return String(toolId || "") === "game-workspace";
++}
++
++function withoutLegacyGameWorkspaceToolRows(rows) {
++  return Array.isArray(rows)
++    ? rows.filter((row) => !isLegacyGameWorkspaceToolId(normalizedToolKey(row)))
 +    : [];
-+  const selectedEmotionKey = emotionSettingKey(emotionProfile?.name);
-+  const setting = settings.find((candidate) => (
-+    emotionSettingKey(candidate.emotion) === selectedEmotionKey
-+    || emotionSettingKey(candidate.emotionLabel) === selectedEmotionKey
-+  ));
-+  if (!setting) {
-+    return {
-+      message: `Selected TTS Profile "${profile?.name || "Unknown"}" does not include an Emotion Setting for "${emotionProfile?.name || "Unknown"}".`,
-+      ok: false,
-+    };
-+  }
-+  return { ok: true, setting };
++}
+ const SOURCE_CONTROLLED_TOOLBOX_PLANNING_FIELDS = Object.freeze([
+   "progressChecklist",
+ ]);
+@@ -2027,7 +2041,7 @@ function gameWorkspaceGameKey(gameId) {
+   if (isUlidKey(normalizedGameId)) {
+     return normalizedGameId;
+   }
+-  return runtimeGeneratedKeyForSource(`game-workspace-game:${normalizedGameId}`);
++  return runtimeGeneratedKeyForSource(`game-hub-game:${normalizedGameId}`);
+ }
+
+ function votePercent(count, total) {
+@@ -2055,11 +2069,11 @@ function gameWorkspaceTables(repository) {
+     status: project.status,
+   }));
+   const activeGameKey = gameWorkspaceGameKey(activeGame?.id);
+-  return normalizeOwnedTables("game-workspace", {
++  return normalizeOwnedTables("game-hub", {
+     game_workspace_games: gameWorkspaceGames,
+     game_workspace_progress: activeGame ? [{
+       ...snapshotAuditFields(80, SEED_DB_KEYS.users.user1),
+-      key: runtimeGeneratedKeyForSource(`game-workspace-progress:${activeGameKey}`),
++      key: runtimeGeneratedKeyForSource(`game-hub-progress:${activeGameKey}`),
+       gameKey: activeGameKey,
+       currentFocus: progress.currentFocus,
+       gameProgress: progress.gameProgress,
+@@ -4680,8 +4694,14 @@ LIMIT 1;
+
+   ensureToolboxToolMetadataRows() {
+     const rows = this.toolboxToolMetadataRows();
+-    const activeTools = getActiveToolRegistry();
+     let changed = false;
++    for (let index = rows.length - 1; index >= 0; index -= 1) {
++      if (isLegacyGameWorkspaceToolId(normalizedToolKey(rows[index]))) {
++        rows.splice(index, 1);
++        changed = true;
++      }
++    }
++    const activeTools = getActiveToolRegistry();
+     activeTools.forEach((tool, index) => {
+       const defaults = this.defaultToolboxMetadata(tool, index);
+       const existingRow = rows.find((row) => (row.toolKey || row.toolId) === tool.id);
+@@ -4796,7 +4816,7 @@ LIMIT 1;
+
+   async supabaseToolboxToolMetadataRows() {
+     const adapter = this.supabaseDatabaseAdapter("Reading Supabase Toolbox tool metadata");
+-    const rows = await adapter.getProductTableRows("toolbox_tool_metadata");
++    const rows = withoutLegacyGameWorkspaceToolRows(await adapter.getProductTableRows("toolbox_tool_metadata"));
+     const activeTools = getActiveToolRegistry();
+     const rowsByToolKey = new Map(rows.map((row) => [row.toolKey || row.toolId, row]));
+     const existingToolKeys = new Set(rowsByToolKey.keys());
+@@ -4818,7 +4838,7 @@ LIMIT 1;
+       });
+     if (missingRows.length || syncedRows.length) {
+       await adapter.upsertProductTable("toolbox_tool_metadata", [...missingRows, ...syncedRows]);
+-      return adapter.getProductTableRows("toolbox_tool_metadata");
++      return withoutLegacyGameWorkspaceToolRows(await adapter.getProductTableRows("toolbox_tool_metadata"));
+     }
+     return rows;
+   }
+@@ -4912,7 +4932,7 @@ LIMIT 1;
+   toolRegistrySnapshot() {
+     const planningRows = this.ensureToolboxToolPlanningRows();
+     const planningByToolKey = new Map(planningRows.map((row) => [row.toolKey, row]));
+-    const tools = this.ensureToolboxToolMetadataRows()
++    const tools = withoutLegacyGameWorkspaceToolRows(this.ensureToolboxToolMetadataRows())
+       .map((row, index) => serverRegistryTool({
+         ...row,
+         ...planningByToolKey.get(normalizedToolKey(row)),
+@@ -5082,7 +5102,7 @@ LIMIT 1;
+   repositoryForTool(toolId) {
+     this.assertProductDatabaseProvider(`Opening ${toolId} repository`);
+     if (toolId === "workspace") return this.gameWorkspaceRepository;
+-    if (toolId === "game-workspace") return this.gameWorkspaceRepository;
++    if (isGameHubToolId(toolId)) return this.gameWorkspaceRepository;
+     if (toolId === "game-design") return this.gameDesignRepository;
+     if (toolId === "game-configuration") return this.gameConfigurationRepository;
+     if (toolId === "objects") return this.objectsRepository;
+@@ -5097,7 +5117,7 @@ LIMIT 1;
+   }
+
+   constantsForTool(toolId) {
+-    if (toolId === "game-workspace") {
++    if (isGameHubToolId(toolId)) {
+       return {
+         GAME_WORKSPACE_MEMBER_ROLES,
+         GAME_WORKSPACE_GAME_PURPOSES,
+diff --git a/src/shared/toolbox/tool-metadata-inventory.js b/src/shared/toolbox/tool-metadata-inventory.js
+index 9c81eb6ef..7a4cb7587 100644
+--- a/src/shared/toolbox/tool-metadata-inventory.js
++++ b/src/shared/toolbox/tool-metadata-inventory.js
+@@ -133,16 +133,16 @@ export const TOOL_REGISTRY = Object.freeze([
+     "toolboxGroup": "Create"
+   },
+   {
+-    "id": "game-workspace",
++    "id": "game-hub",
+     "name": "Game Hub",
+     "displayName": "Game Hub",
+     "shortDescription": "Coordinate Build, Play, and Share readiness for one game project.",
+     "shortLabel": "Game Hub",
+-    "path": "game-workspace",
+-    "folderName": "game-workspace",
+-    "entryPoint": "game-workspace/index.html",
+-    "badge": "/assets/theme-v2/images/badges/game-workspace.png",
+-    "tool": "/assets/theme-v2/images/tools/game-workspace.png",
++    "path": "game-hub",
++    "folderName": "game-hub",
++    "entryPoint": "game-hub/index.html",
++    "badge": "/assets/theme-v2/images/badges/game-hub.png",
++    "tool": "/assets/theme-v2/images/tools/game-hub.png",
+     "description": "Coordinate Build, Play, and Share readiness for one game project.",
+     "category": "Build/Create",
+     "colorGroup": "tool-group-build",
+@@ -173,8 +173,8 @@ export const TOOL_REGISTRY = Object.freeze([
+     "path": "game-journey",
+     "folderName": "game-journey",
+     "entryPoint": "game-journey/index.html",
+-    "badge": "/assets/theme-v2/images/badges/game-workspace.png",
+-    "tool": "/assets/theme-v2/images/tools/game-workspace.png",
++    "badge": "/assets/theme-v2/images/badges/game-hub.png",
++    "tool": "/assets/theme-v2/images/tools/game-hub.png",
+     "description": "Track game notes, nested work rows, status counts, and suggested toolbox handoffs.",
+     "category": "Build/Create",
+     "colorGroup": "tool-group-build",
+@@ -184,7 +184,7 @@ export const TOOL_REGISTRY = Object.freeze([
+     "requiredForTestable": true,
+     "requiredForPublish": true,
+     "requires": [
+-      "game-workspace"
++      "game-hub"
+     ],
+     "status": "beta",
+     "releaseChannel": "beta",
+@@ -219,7 +219,7 @@ export const TOOL_REGISTRY = Object.freeze([
+     "requiredForTestable": true,
+     "requiredForPublish": true,
+     "requires": [
+-      "game-workspace"
++      "game-hub"
+     ],
+     "status": "Ready",
+     "releaseChannel": "beta",
+@@ -371,7 +371,7 @@ export const TOOL_REGISTRY = Object.freeze([
+     "requiredForTestable": true,
+     "requiredForPublish": true,
+     "requires": [
+-      "game-workspace"
++      "game-hub"
+     ],
+     "status": "beta",
+     "releaseChannel": "beta",
+@@ -1680,7 +1680,7 @@ const AVAILABLE_TOOL_IMAGE_PATHS = Object.freeze([
+   "/assets/theme-v2/images/badges/particles.png",
+   "/assets/theme-v2/images/badges/performance.png",
+   "/assets/theme-v2/images/badges/platform-settings.png",
+-  "/assets/theme-v2/images/badges/game-workspace.png",
++  "/assets/theme-v2/images/badges/game-hub.png",
+   "/assets/theme-v2/images/badges/publish-studio.png",
+   "/assets/theme-v2/images/badges/publish.png",
+   "/assets/theme-v2/images/badges/ratings.png",
+@@ -1743,7 +1743,7 @@ const AVAILABLE_TOOL_IMAGE_PATHS = Object.freeze([
+   "/assets/theme-v2/images/tools/particles.png",
+   "/assets/theme-v2/images/tools/performance.png",
+   "/assets/theme-v2/images/tools/platform-settings.png",
+-  "/assets/theme-v2/images/tools/game-workspace.png",
++  "/assets/theme-v2/images/tools/game-hub.png",
+   "/assets/theme-v2/images/tools/publish-studio.png",
+   "/assets/theme-v2/images/tools/publish.png",
+   "/assets/theme-v2/images/tools/ratings.png",
+diff --git a/tests/dev-runtime/DevRuntimeBoundary.test.mjs b/tests/dev-runtime/DevRuntimeBoundary.test.mjs
+index f2908a876..0b5b1660f 100644
+--- a/tests/dev-runtime/DevRuntimeBoundary.test.mjs
++++ b/tests/dev-runtime/DevRuntimeBoundary.test.mjs
+@@ -32,7 +32,7 @@ const retiredToolboxDevRuntimeFiles = [
+   "toolbox/game-configuration/game-configuration-mock-repository.js",
+   "toolbox/game-design/game-design-mock-repository.js",
+   "toolbox/game-journey/game-journey-mock-repository.js",
+-  "toolbox/game-workspace/game-workspace-mock-repository.js",
++  "toolbox/game-hub/game-workspace-mock-repository.js",
+ ];
+
+ const retiredBrowserCompatibilityModules = new Set([
+@@ -123,6 +123,6 @@ test("server seed loading and guest package loading use dev-runtime modules with
+   assert.doesNotMatch(router, /mock-db-state/);
+   assert.match(router, /parts\[1\] === "guest"/);
+   assert.match(router, /parts\[2\] === "seed"/);
+-  assert.doesNotMatch(router, /toolbox\/(?:assets|colors|game-configuration|game-design|game-journey|game-workspace)\/.*mock-repository/);
++  assert.doesNotMatch(router, /toolbox\/(?:assets|colors|game-configuration|game-design|game-journey|game-hub)\/.*mock-repository/);
+   assert.doesNotMatch(router, /toolbox\/colors\/palette-source-mock-db/);
+ });
+diff --git a/tests/dev-runtime/ProductDataProviderContractHardening.test.mjs b/tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
+index f0a342677..15fd5ae10 100644
+--- a/tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
++++ b/tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
+@@ -115,7 +115,7 @@ test("Active browser product-data entrypoints use API or service clients", () =>
+     "toolbox/game-configuration/game-configuration-api-client.js",
+     "toolbox/game-design/game-design-api-client.js",
+     "toolbox/game-journey/game-journey-api-client.js",
+-    "toolbox/game-workspace/game-workspace-api-client.js",
++    "toolbox/game-hub/game-hub-api-client.js",
+     "toolbox/objects/objects-api-client.js",
+     "toolbox/tags/tags-api-client.js",
+   ];
+@@ -128,7 +128,7 @@ test("Active browser product-data entrypoints use API or service clients", () =>
+
+   assert.match(readRepoFile("admin/tool-votes.js"), /src\/engine\/api\/toolbox-votes-api-client\.js/);
+   assert.match(readRepoFile("toolbox/tools-page-accordions.js"), /src\/engine\/api\/toolbox-votes-api-client\.js/);
+-  assert.match(readRepoFile("assets/theme-v2/js/account-achievements.js"), /createServerRepositoryClient\("game-workspace"\)/);
++  assert.match(readRepoFile("assets/theme-v2/js/account-achievements.js"), /createServerRepositoryClient\("game-hub"\)/);
+
+   [
+     "admin/tool-votes.js",
+diff --git a/tests/dev-runtime/SupabaseProductDataCutover.test.mjs b/tests/dev-runtime/SupabaseProductDataCutover.test.mjs
+index e28122bb9..5a1e05d3d 100644
+--- a/tests/dev-runtime/SupabaseProductDataCutover.test.mjs
++++ b/tests/dev-runtime/SupabaseProductDataCutover.test.mjs
+@@ -382,13 +382,13 @@ test("Supabase-selected toolbox repositories open and persist through product ta
+   }, async () => {
+     const server = await startApiServer();
+     try {
+-      const repository = await apiJson(server.baseUrl, "/api/toolbox/game-workspace/repositories", {
++      const repository = await apiJson(server.baseUrl, "/api/toolbox/game-hub/repositories", {
+         body: { options: {} },
+         method: "POST",
+       });
+-      assert.match(repository.repositoryId, /^game-workspace-\d+$/);
++      assert.match(repository.repositoryId, /^game-hub-\d+$/);
+
+-      const snapshot = await apiJson(server.baseUrl, `/api/toolbox/game-workspace/repositories/${repository.repositoryId}/methods/getSnapshot`, {
++      const snapshot = await apiJson(server.baseUrl, `/api/toolbox/game-hub/repositories/${repository.repositoryId}/methods/getSnapshot`, {
+         body: { args: [] },
+         method: "POST",
+       });
+diff --git a/tests/playwright/account/AchievementsPage.spec.mjs b/tests/playwright/account/AchievementsPage.spec.mjs
+index 4f6594aa2..9f27a0091 100644
+--- a/tests/playwright/account/AchievementsPage.spec.mjs
++++ b/tests/playwright/account/AchievementsPage.spec.mjs
+@@ -97,7 +97,7 @@ test("account achievements page switches Build Play Share views", async ({ page
+     await expect(page.getByText("Games I shared")).toBeHidden();
+     await expect(page.locator("[data-achievements-build-created-count]")).toHaveText("4");
+     await expect(page.locator("[data-achievements-build-ready-count]")).toHaveText("0");
+-    await expect(page.locator("[data-achievements-build-status]")).toContainText("Game Workspace game source");
++    await expect(page.locator("[data-achievements-build-status]")).toContainText("Game Hub game source");
+     const buildRows = await page.locator("[data-achievements-build-rows] tr").evaluateAll((rows) => rows.map((row) => {
+       const cells = Array.from(row.querySelectorAll("td")).map((cell) => cell.textContent.trim());
+       return {
+diff --git a/tests/playwright/tools/AdminDbViewer.spec.mjs b/tests/playwright/tools/AdminDbViewer.spec.mjs
+index 216019fd9..d4d9eb713 100644
+--- a/tests/playwright/tools/AdminDbViewer.spec.mjs
++++ b/tests/playwright/tools/AdminDbViewer.spec.mjs
+@@ -169,7 +169,7 @@ function configuredDbViewerGroups(tableNames) {
+     { id: "game-configuration", label: "Game Configuration", tableNames: include(["game_configuration_records", "game_configuration_validation_items"]), type: "tool" },
+     { id: "game-design", label: "Game Design", tableNames: include(["game_design_documents", "game_design_validation_items"]), type: "tool" },
+     { id: "game-journey", label: "Game Journey", tableNames: include(["game_journey_completion_metrics", "game_journey_note_types", "game_journey_notes", "game_journey_templates", "game_journey_items", "game_journey_activity"]), type: "tool" },
+-    { id: "game-workspace", label: "Game Hub", tableNames: include(["game_workspace_games", "game_workspace_progress"]), type: "tool" },
++    { id: "game-hub", label: "Game Hub", tableNames: include(["game_workspace_games", "game_workspace_progress"]), type: "tool" },
+     { id: "objects", label: "Objects", tableNames: include(["object_definition_records"]), type: "tool" },
+     { id: "palette", label: "Palette", tableNames: include(["palette_colors", "palette_source_swatches", "palette_swatch_usages", "project_workspace_palette_globals"]), type: "tool" },
+     { id: "tags", label: "Tags", tableNames: include(["workspace_tag_records"]), type: "tool" },
+diff --git a/tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs b/tests/playwright/tools/GameHubMockRepository.spec.mjs
+similarity index 91%
+rename from tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs
+rename to tests/playwright/tools/GameHubMockRepository.spec.mjs
+index 1c1f742a9..2d583e1d7 100644
+--- a/tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs
++++ b/tests/playwright/tools/GameHubMockRepository.spec.mjs
+@@ -99,15 +99,15 @@ function startFakeSupabaseServer() {
+ test.beforeAll(async () => {
+   previousSupabaseEnv = Object.fromEntries(SUPABASE_ENV_KEYS.map((key) => [key, process.env[key]]));
+   fakeSupabaseServer = await startFakeSupabaseServer();
+-  process.env.GAMEFOUNDRY_SUPABASE_ANON_KEY = "game-workspace-anon-key";
+-  process.env.GAMEFOUNDRY_DATABASE_URL = "postgres://game-workspace:test@127.0.0.1:5432/game_workspace";
+-  process.env.GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY = "game-workspace-service-role-key";
++  process.env.GAMEFOUNDRY_SUPABASE_ANON_KEY = "game-hub-anon-key";
++  delete process.env.GAMEFOUNDRY_DATABASE_URL;
++  process.env.GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY = "game-hub-service-role-key";
+   process.env.GAMEFOUNDRY_SUPABASE_URL = fakeSupabaseServer.baseUrl;
+ });
+
+ test.beforeEach(async ({ page }) => {
+   await installPlaywrightStorageIsolation(page, {
+-    lane: "game-workspace",
++    lane: "game-hub",
+     surface: "game workspace mock repository"
+   });
+ });
+@@ -183,7 +183,7 @@ async function openRepoPage(page, pathName, options = {}) {
+     });
+   }
+
+-  if (pathName.includes("/toolbox/game-workspace/") || pathName.includes("/toolbox/project-workspace/")) {
++  if (pathName.includes("/toolbox/game-hub/") || pathName.includes("/toolbox/project-workspace/")) {
+     await page.route("**/api/platform-settings/banner", async (route) => {
+       await route.fulfill({
+         contentType: "application/json",
+@@ -235,7 +235,7 @@ test("Deprecated project workspace route points creators to Game Hub", async ({
+     await expect(page.getByRole("heading", { name: "Game Hub" })).toBeVisible();
+     await expect(page.locator("main")).toContainText("This route is kept for older links.");
+     await expect(page.locator("main")).not.toContainText("Project Workspace");
+-    await expect(page.getByRole("link", { name: "Open Game Hub" })).toHaveAttribute("href", "toolbox/game-workspace/index.html");
++    await expect(page.getByRole("link", { name: "Open Game Hub" })).toHaveAttribute("href", "toolbox/game-hub/index.html");
+
+     await expectNoPageFailures(failures);
+   } finally {
+@@ -244,7 +244,7 @@ test("Deprecated project workspace route points creators to Game Hub", async ({
+ });
+
+ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
+-  const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html", { session: creatorSession() });
++  const failures = await openRepoPage(page, "/toolbox/game-hub/index.html", { session: creatorSession() });
+
+   try {
+     await expect(page.locator(".tool-workspace")).toBeVisible();
+@@ -275,7 +275,7 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
+     await expect(page.locator("[data-game-list]")).toContainText("Launch Test Game");
+     await expect(page.locator("[data-game-project-information]")).toContainText("Launch Test Game");
+     await expect(page.locator("[data-game-row='launch-test-game-1']").getByRole("button", { name: "Open Launch Test Game (Active)" })).toHaveClass(/primary/);
+-    await expect(page.locator("[data-game-workspace-log]")).toHaveText("Created and opened Launch Test Game.");
++    await expect(page.locator("[data-game-hub-log]")).toHaveText("Created and opened Launch Test Game.");
+
+     await page.getByLabel("Game Name").fill("Archive Game");
+     await page.getByRole("button", { name: "Create Game" }).click();
+@@ -284,12 +284,12 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
+     await page.getByRole("button", { name: "Open Launch Test Game" }).click();
+     await expect(page.locator("[data-active-game-name]")).toHaveText("Launch Test Game");
+     await expect(page.locator("[data-game-row='launch-test-game-1']").getByRole("button", { name: "Open Launch Test Game (Active)" })).toHaveAttribute("data-game-active", "true");
+-    await expect(page.locator("[data-game-workspace-log]")).toHaveText("Opened Launch Test Game.");
++    await expect(page.locator("[data-game-hub-log]")).toHaveText("Opened Launch Test Game.");
+
+     await page.getByRole("button", { name: "Delete Open Game" }).click();
+     await expect(page.locator("[data-active-game-name]")).not.toHaveText("Launch Test Game");
+     await expect(page.locator("[data-game-list]")).not.toContainText("Launch Test Game");
+-    await expect(page.locator("[data-game-workspace-log]")).toHaveText("Deleted Launch Test Game.");
++    await expect(page.locator("[data-game-hub-log]")).toHaveText("Deleted Launch Test Game.");
+
+     await expectNoPageFailures(failures);
+   } finally {
+@@ -298,7 +298,7 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
+ });
+
+ test("Game Hub preserves guest browsing and blocks guest saves", async ({ page }) => {
+-  const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
++  const failures = await openRepoPage(page, "/toolbox/game-hub/index.html");
+
+   try {
+     await expect(page.locator("[data-active-game-name]")).toHaveText("Demo Game");
+@@ -314,7 +314,7 @@ test("Game Hub preserves guest browsing and blocks guest saves", async ({ page }
+
+     await page.getByRole("button", { name: "Open Gravity Demo" }).click();
+     await expect(page.locator("[data-active-game-name]")).toHaveText("Gravity Demo");
+-    await expect(page.locator("[data-game-workspace-log]")).toHaveText("Sign in to create or update Game Hub projects.");
++    await expect(page.locator("[data-game-hub-log]")).toHaveText("Sign in to create or update Game Hub projects.");
+
+     await expectNoPageFailures(failures);
+   } finally {
+@@ -323,7 +323,7 @@ test("Game Hub preserves guest browsing and blocks guest saves", async ({ page }
+ });
+
+ test("Game Hub shows active-game errors without throwing", async ({ page }) => {
+-  await page.route("**/api/toolbox/game-workspace/repositories/*/methods/getActiveGame", async (route) => {
++  await page.route("**/api/toolbox/game-hub/repositories/*/methods/getActiveGame", async (route) => {
+     await route.fulfill({
+       body: JSON.stringify({
+         error: "Active game unavailable for validation.",
+@@ -334,12 +334,12 @@ test("Game Hub shows active-game errors without throwing", async ({ page }) => {
+       status: 502,
+     });
+   });
+-  const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
++  const failures = await openRepoPage(page, "/toolbox/game-hub/index.html");
+
+   try {
+     expect(failures.failedRequests.some((request) => request.includes("502") && request.includes("/methods/getActiveGame"))).toBe(true);
+     await expect(page.locator("[data-active-game-name]")).toHaveText("No game open");
+-    await expect(page.locator("[data-game-workspace-log]")).toContainText("Active game is temporarily unavailable.");
++    await expect(page.locator("[data-game-hub-log]")).toContainText("Active game is temporarily unavailable.");
+     expect(failures.pageErrors).toEqual([]);
+     expect(failures.consoleErrors.filter((message) => !message.includes("status of 502"))).toEqual([]);
+   } finally {
+@@ -348,7 +348,7 @@ test("Game Hub shows active-game errors without throwing", async ({ page }) => {
+ });
+
+ test("Game Hub reports malformed active-game payloads without throwing", async ({ page }) => {
+-  await page.route("**/api/toolbox/game-workspace/repositories/*/methods/getActiveGame", async (route) => {
++  await page.route("**/api/toolbox/game-hub/repositories/*/methods/getActiveGame", async (route) => {
+     await route.fulfill({
+       body: JSON.stringify({
+         data: {
+@@ -364,12 +364,12 @@ test("Game Hub reports malformed active-game payloads without throwing", async (
+       status: 200,
+     });
+   });
+-  const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
++  const failures = await openRepoPage(page, "/toolbox/game-hub/index.html");
+
+   try {
+     await expect(page.locator("[data-active-game-name]")).toHaveText("No game open");
+     await expect(page.locator("[data-current-user-role]")).toHaveText("Viewer");
+-    await expect(page.locator("[data-game-workspace-log]")).toContainText("Active game is temporarily unavailable.");
++    await expect(page.locator("[data-game-hub-log]")).toContainText("Active game is temporarily unavailable.");
+     await expect(page.getByLabel("Game Purpose")).toBeDisabled();
+
+     await expectNoPageFailures(failures);
+@@ -379,7 +379,7 @@ test("Game Hub reports malformed active-game payloads without throwing", async (
+ });
+
+ test("Game Hub displays and edits game purpose and member role", async ({ page }) => {
+-  const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html", { session: creatorSession() });
++  const failures = await openRepoPage(page, "/toolbox/game-hub/index.html", { session: creatorSession() });
+
+   try {
+     await expect(page.locator("#gamePurposeInput option")).toHaveText([
+@@ -411,15 +411,15 @@ test("Game Hub displays and edits game purpose and member role", async ({ page }
+
+     await page.getByLabel("Game Purpose").selectOption("Learning Game");
+     await expect(page.locator("[data-active-game-purpose]")).toHaveText("Learning Game");
+-    await expect(page.locator("[data-game-workspace-log]")).toHaveText("Updated Demo Game purpose to Learning Game.");
++    await expect(page.locator("[data-game-hub-log]")).toHaveText("Updated Demo Game purpose to Learning Game.");
+
+     await page.getByLabel("Game Status").selectOption("Ready for Testing");
+     await expect(page.locator("[data-active-game-status]")).toHaveText("Ready for Testing");
+-    await expect(page.locator("[data-game-workspace-log]")).toHaveText("Updated Demo Game status to Ready for Testing.");
++    await expect(page.locator("[data-game-hub-log]")).toHaveText("Updated Demo Game status to Ready for Testing.");
+
+     await page.getByLabel("Current User Role").selectOption("Designer");
+     await expect(page.locator("[data-current-user-role]")).toHaveText("Designer");
+-    await expect(page.locator("[data-game-workspace-log]")).toHaveText("Updated current user role to Designer.");
++    await expect(page.locator("[data-game-hub-log]")).toHaveText("Updated current user role to Designer.");
+
+     await page.getByLabel("Game Purpose").selectOption("Capability Demo");
+     await page.getByLabel("Game Name").fill("Purpose Review Game");
+@@ -436,7 +436,7 @@ test("Game Hub displays and edits game purpose and member role", async ({ page }
+ });
+
+ test("Game Hub progress panels update from mock game state", async ({ page }) => {
+-  const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html", { session: creatorSession() });
++  const failures = await openRepoPage(page, "/toolbox/game-hub/index.html", { session: creatorSession() });
+
+   try {
+     await expect(page.locator("[data-game-status]")).toHaveText("Under Construction");
+@@ -452,7 +452,7 @@ test("Game Hub progress panels update from mock game state", async ({ page }) =>
+     const panelOrderIsCorrect = await page.locator(".tool-center-panel").evaluate((panel) => {
+       const projectInformation = panel.querySelector("[data-game-project-information]");
+       const sourceIdea = panel.querySelector("[data-source-idea-section]");
+-      const staticOverlay = panel.querySelector("[data-game-workspace-foundation]");
++      const staticOverlay = panel.querySelector("[data-game-hub-foundation]");
+       const outputPanels = panel.querySelector("[data-game-output-panels]");
+       return Boolean(
+         projectInformation &&
+@@ -484,7 +484,7 @@ test("Game Hub progress panels update from mock game state", async ({ page }) =>
+
+ test("Game Hub uses the wide Theme V2 tool layout at desktop widths", async ({ page }) => {
+   await page.setViewportSize({ width: 1440, height: 1100 });
+-  const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
++  const failures = await openRepoPage(page, "/toolbox/game-hub/index.html");
+
+   try {
+     await expect(page.locator(".container--tool-wide")).toBeVisible();
+@@ -609,7 +609,7 @@ test("Toolbox member-role filters focus tools without exposing admin-only contro
+   const failures = await openRepoPage(page, "/toolbox/index.html");
+
+   try {
+-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 11/39");
++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 15/43");
+     await expect(page.locator("[data-toolbox-role-focus]")).toHaveCount(0);
+     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Hub$/ }) })).toBeVisible();
+     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Journey$/ }) })).toBeVisible();
+@@ -620,7 +620,7 @@ test("Toolbox member-role filters focus tools without exposing admin-only contro
+
+     await page.goto(`${failures.server.baseUrl}/toolbox/index.html?memberRole=Designer`, { waitUntil: "networkidle" });
+     await expect(page.locator("[data-toolbox-role-focus='Designer']")).toBeVisible();
+-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 7/39");
++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 8/43");
+     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Hub$/ }) })).toBeVisible();
+     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Journey$/ }) })).toBeVisible();
+     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Design$/ }) })).toBeVisible();
+@@ -632,15 +632,16 @@ test("Toolbox member-role filters focus tools without exposing admin-only contro
+
+     await page.goto(`${failures.server.baseUrl}/toolbox/index.html?memberRole=Audio%20Creator`, { waitUntil: "networkidle" });
+     await expect(page.locator("[data-toolbox-role-focus='Audio Creator']")).toBeVisible();
+-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 1/39");
++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 2/43");
+     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Assets$/ }) })).toBeVisible();
++    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Text To Speech$/ }) })).toBeVisible();
+     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Audio$/ }) })).toHaveCount(0);
+     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^MIDI$/ }) })).toHaveCount(0);
+     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Design$/ }) })).toHaveCount(0);
+
+     await page.goto(`${failures.server.baseUrl}/toolbox/index.html?memberRole=Viewer`, { waitUntil: "networkidle" });
+     await expect(page.locator("[data-toolbox-role-focus='Viewer']")).toBeVisible();
+-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 9/39");
++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 10/43");
+     await expect(page.getByText("Viewer focus shows preview-safe read-only tiles only.")).toBeVisible();
+     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Hub$/ }) })).toBeVisible();
+     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Journey$/ }) })).toBeVisible();
+@@ -649,7 +650,7 @@ test("Toolbox member-role filters focus tools without exposing admin-only contro
+     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Assets$/ }) })).toBeVisible();
+     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Debug$/ }) })).toHaveCount(0);
+     await page.goto(`${failures.server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 11/39");
++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 15/43");
+     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Cloud$/ }) })).toHaveCount(0);
+
+     await expectNoPageFailures(failures);
+diff --git a/tests/playwright/tools/GameJourneyTool.spec.mjs b/tests/playwright/tools/GameJourneyTool.spec.mjs
+index 2cc895fef..429f6f381 100644
+--- a/tests/playwright/tools/GameJourneyTool.spec.mjs
++++ b/tests/playwright/tools/GameJourneyTool.spec.mjs
+@@ -1444,8 +1444,8 @@ test("Game Journey requires an active game before editing", async ({ page }) =>
+     await expect(page.getByRole("button", { name: "Update Item" })).toBeDisabled();
+     await expect(page.getByRole("button", { name: "Add Note", exact: true })).toBeDisabled();
+     await expect(page.locator("[data-journey-title-input]")).toBeDisabled();
+-    await expect(page.locator("[data-journey-note-type-select]")).toBeDisabled();
+-    await expect(page.locator("[data-journey-new-note-type]")).toBeDisabled();
++    await expect(page.locator("[data-journey-note-type-select]")).toHaveCount(0);
++    await expect(page.locator("[data-journey-new-note-type]")).toHaveCount(0);
+
+     await expectNoPageFailures(failures);
+   } finally {
+@@ -1454,7 +1454,7 @@ test("Game Journey requires an active game before editing", async ({ page }) =>
+ });
+
+ test("Game Hub hands the active game route to Game Journey", async ({ page }) => {
+-  const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
++  const failures = await openRepoPage(page, "/toolbox/game-hub/index.html");
+
+   try {
+     const journeyLink = page.getByRole("link", { name: "Open Game Journey" });
+diff --git a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+index a18205fa4..934faf46f 100644
+--- a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
++++ b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+@@ -346,15 +346,22 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
+     await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] td").nth(1)).toHaveText("Project");
+     await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action]")).toHaveText(["Open in Game Hub", "Archive"]);
+     await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='open-project']").click();
+-    await page.waitForURL(/\/toolbox\/game-workspace\/index\.html\?game=lantern-reef-\d+$/);
++    await page.waitForURL(/\/toolbox\/game-hub\/index\.html\?game=lantern-reef-\d+$/);
+     await expect(page.getByRole("heading", { level: 1, name: "Game Hub" })).toBeVisible();
+     await expect(page.locator("[data-active-game-name]")).toHaveText("Lantern Reef");
+     await expect(page.locator("[data-source-idea-display]")).toHaveText("Lantern Reef");
+     await expect(page.locator("[data-source-idea-pitch]")).toHaveText("Guide light through a reef that rearranges at dusk.");
+     await expect(page.locator("[data-source-idea-notes]")).toContainText("Use dusk tide changes as the first Game Hub planning note.");
++    await expect(page.getByRole("button", { name: "Delete Open Game" })).toHaveCount(0);
+     await expect(page.locator("main")).not.toContainText(/\bproject records\b|\bAPI\b|\bDB\b|\bmock\b|\bseed\b|\bdebug\b|\binternal\b/i);
++    await page.getByRole("link", { name: "Open Game Journey" }).click();
++    await page.waitForURL(/\/toolbox\/game-journey\/index\.html\?game=lantern-reef-\d+$/);
++    await expect(page.locator("[data-journey-active-game]")).toHaveText("Active game: Lantern Reef.");
++    await expect(page.locator("[data-journey-summary-body]")).toContainText("Source Idea: Lantern Reef");
++    await expect(page.locator("[data-journey-summary-body]")).toContainText("10000011");
++    await expect(page.locator("[data-journey-recent-activity]")).toContainText("Created 1 Game Journey item from Source Idea.");
+
+-    expect(mutatingApiRequests.some((request) => request.includes("/api/toolbox/game-workspace/repositories"))).toBe(true);
++    expect(mutatingApiRequests.some((request) => request.includes("/api/toolbox/game-hub/repositories"))).toBe(true);
+     expect(mutatingApiRequests.some((request) => request.includes("/methods/createGame"))).toBe(true);
+     expect(failedRequests).toEqual([]);
+     expect(pageErrors).toEqual([]);
+diff --git a/tests/playwright/tools/RootToolsFutureState.spec.mjs b/tests/playwright/tools/RootToolsFutureState.spec.mjs
+index ba97f5c6a..8110dbe04 100644
+--- a/tests/playwright/tools/RootToolsFutureState.spec.mjs
++++ b/tests/playwright/tools/RootToolsFutureState.spec.mjs
+@@ -277,7 +277,7 @@ test("root tools surface links current tool pages without old_* routes", async (
+     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
+     await expect(page.getByRole("button", { name: "Build Path" })).toBeVisible();
+     await expect(page.getByRole("button", { name: "Build Path" })).not.toHaveAttribute("aria-disabled", "true");
+-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 16/44");
++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 15/43");
+     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
+     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='admin']")).toHaveCount(0);
+     await expect(page.locator("nav.nav-links > a[data-route='learn']")).toHaveCount(1);
+@@ -311,15 +311,18 @@ test("root tools surface links current tool pages without old_* routes", async (
+     await expect(page.getByText("Build Path Wireframe")).toHaveCount(0);
+     await expect(page.locator("[data-toolbox-wireframe]")).toHaveCount(0);
+     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+-    await expect(page.locator("main a.btn[data-toolbox-launch-link='Game Hub'][href='../toolbox/game-workspace/index.html']")).toBeVisible();
++    const readyGameWorkspaceCard = page.locator("main .control-card").filter({
++      has: page.locator("h3", { hasText: "Game Hub" })
++    });
++    await expect(readyGameWorkspaceCard.locator("a.btn")).toHaveAttribute("href", "../toolbox/game-hub/index.html");
+     const defaultToolLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
+-    expect(defaultToolLabels).toEqual(["Achievements", "Assets", "Colors", "Controls", "Game Configuration", "Game Design", "Game Hub", "Game Hub", "Game Journey", "Idea Board", "Languages", "Message Studio", "Objects", "Saved Data", "Tags", "Text To Speech"]);
++    expect(defaultToolLabels).toEqual(["Achievements", "Assets", "Colors", "Controls", "Game Configuration", "Game Design", "Game Hub", "Game Journey", "Idea Board", "Languages", "Message Studio", "Objects", "Saved Data", "Tags", "Text To Speech"]);
+     const textToSpeechCard = page.locator("main .control-card").filter({
+       has: page.locator("h3", { hasText: /^Text To Speech$/ })
+     });
+     await expect(textToSpeechCard.locator("[data-toolbox-tool-name-link='Text To Speech']")).toHaveAttribute("href", "/toolbox/text-to-speech/index.html");
+     await expect(textToSpeechCard.locator("[data-toolbox-tool-name-link='Text To Speech']")).toHaveAttribute("data-registered-tool-route", "toolbox/text-to-speech/index.html");
+-    await expect(page.locator("[data-toolbox-readiness]")).toHaveText(["Wireframe", "Beta", "Complete", "Wireframe", "Beta", "Beta", "Beta", "Beta", "Beta", "Wireframe", "Wireframe", "Beta", "Beta", "Wireframe", "Beta", "Beta"]);
++    await expect(page.locator("[data-toolbox-readiness]")).toHaveText(["Wireframe", "Beta", "Complete", "Wireframe", "Beta", "Beta", "Beta", "Beta", "Wireframe", "Wireframe", "Beta", "Beta", "Wireframe", "Beta", "Beta"]);
+     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^AI Command Center$/ }) })).toHaveCount(0);
+     const oldStandaloneLabels = [
+       ["Palette", "Manager"].join(" "),
+@@ -389,7 +392,7 @@ test("root tools surface links current tool pages without old_* routes", async (
+     const guestGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
+       groups.map((group) => group.dataset.toolsAccordion)
+     ));
+-    expect(guestGroupLabels).toEqual(["Idea", "Design", "Graphics", "Audio", "Objects", "Interface", "Controls", "Progression", "Publish"]);
++    expect(guestGroupLabels).toEqual(["Idea", "Design", "Graphics", "Audio", "Objects", "Interface", "Controls", "Progression"]);
+     await expect(page.locator("[data-tools-accordion='Admin']")).toHaveCount(0);
+     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
+     await expect(page.locator("[data-tools-accordion-list] .control-card h3", { hasText: /^Progress$/ })).toHaveCount(0);
+@@ -415,13 +418,13 @@ test("root tools surface links current tool pages without old_* routes", async (
+     expect(failedRequests.filter((request) => request.includes("/toolbox/old_"))).toEqual([]);
+
+     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 16/44");
++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 15/43");
+     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
+     await expect(page.locator("main").getByText("Creators", { exact: true })).toHaveCount(0);
+     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
+     await setServerSession(server, MOCK_DB_KEYS.users.admin);
+     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 16/47");
++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 15/46");
+     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
+     const adminLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
+     expect(adminLabels).toEqual(defaultToolLabels);
+@@ -432,7 +435,7 @@ test("root tools surface links current tool pages without old_* routes", async (
+       "Platform Settings"
+     ]));
+     await expect(page.locator("main .control-card").filter({
+-      has: page.locator("[data-toolbox-tool-name-link='Game Hub'][href='/toolbox/game-workspace/index.html']")
++      has: page.locator("[data-toolbox-tool-name-link='Game Hub'][href='/toolbox/game-hub/index.html']")
+     }).locator("[data-toolbox-readiness]")).toHaveText("Beta");
+     await expect(page.locator("main .control-card").filter({
+       has: page.locator("h3", { hasText: /^Game Configuration$/ })
+@@ -458,7 +461,7 @@ test("root tools surface links current tool pages without old_* routes", async (
+     const adminGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
+       groups.map((group) => group.dataset.toolsAccordion)
+     ));
+-    expect(adminGroupLabels).toEqual(["Idea", "Design", "Graphics", "Audio", "Objects", "Interface", "Controls", "Progression", "Publish"]);
++    expect(adminGroupLabels).toEqual(["Idea", "Design", "Graphics", "Audio", "Objects", "Interface", "Controls", "Progression"]);
+     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
+     await page.getByRole("button", { name: "Build Path" }).click();
+     await expect(page.locator("[data-build-path-table='workflow']")).toBeVisible();
+@@ -468,7 +471,7 @@ test("root tools surface links current tool pages without old_* routes", async (
+     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
+     await setServerSession(server, "");
+     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 16/44");
++    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 15/43");
+     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
+     await expect(page.locator("main").getByText("Creators", { exact: true })).toHaveCount(0);
+     expect(pageErrors).toEqual([]);
+@@ -570,7 +573,7 @@ test("learn wireframe pages load with shared Theme V2 structure", async ({ page
+       headings: ["Desktop Target", "Ideal Width", "Minimum Comfortable Width", "Panel Layout", "Smaller Screens", "Wireframe Status"]
+     },
+     {
+-      path: "/learn/game-workspace/index.html",
++      path: "/learn/game-hub/index.html",
+       headings: ["Overview", "Quick Start", "Common Tasks", "Related Documentation", "Related Videos", "Examples"]
+     },
+     {
+@@ -664,7 +667,7 @@ test("tool template future-state page loads from root Theme V2 paths", async ({
+ test("representative active tool pages align center cleanup and registry group colors", async ({ page }) => {
+   const representativeToolIds = [
+     "ai-assistant",
+-    "game-workspace",
++    "game-hub",
+     "game-design",
+     "colors",
+     "audio",
+diff --git a/tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs b/tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs
+index ace2d1a03..45de2a0c6 100644
+--- a/tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs
++++ b/tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs
+@@ -225,8 +225,8 @@ test("Game Design renders identity and navigation rows with registry anchor link
+ });
+
+ test("Game Hub and Game Configuration use registry order without page hardcoding", async ({ page }) => {
+-  const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
+-  const gameWorkspaceNavigation = getToolNavigationTargets("game-workspace");
++  const failures = await openRepoPage(page, "/toolbox/game-hub/index.html");
++  const gameWorkspaceNavigation = getToolNavigationTargets("game-hub");
+   const gameConfigurationNavigation = getToolNavigationTargets("game-configuration");
+
+   try {
+diff --git a/tests/playwright/tools/ToolImageRegistry.spec.mjs b/tests/playwright/tools/ToolImageRegistry.spec.mjs
+index d4d03175a..3827e38e8 100644
+--- a/tests/playwright/tools/ToolImageRegistry.spec.mjs
++++ b/tests/playwright/tools/ToolImageRegistry.spec.mjs
+@@ -157,7 +157,7 @@ test("Toolbox cards consume registry image sources and expose visible image diag
+
+ test("representative tool pages consume registry images in Tool Display Mode", async ({ page }) => {
+   const toolCases = [
+-    { path: "/toolbox/game-workspace/index.html", toolId: "game-workspace" },
++    { path: "/toolbox/game-hub/index.html", toolId: "game-hub" },
+     { path: "/toolbox/game-design/index.html", toolId: "game-design" },
+     { path: "/toolbox/game-configuration/index.html", toolId: "game-configuration" },
+     { path: "/toolbox/build-game/index.html", toolId: "build-game" }
+diff --git a/tests/playwright/tools/ToolNavigationPrevNext.spec.mjs b/tests/playwright/tools/ToolNavigationPrevNext.spec.mjs
+index b2c71bdc9..d2aab4f10 100644
+--- a/tests/playwright/tools/ToolNavigationPrevNext.spec.mjs
++++ b/tests/playwright/tools/ToolNavigationPrevNext.spec.mjs
+@@ -125,8 +125,8 @@ test("Tool Display Mode renders build-order previous and next controls", async (
+ });
+
+ test("Game Hub Tool Display Mode follows registry route targets", async ({ page }) => {
+-  const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
+-  const navigation = getToolNavigationTargets("game-workspace");
++  const failures = await openRepoPage(page, "/toolbox/game-hub/index.html");
++  const navigation = getToolNavigationTargets("game-hub");
+
+   try {
+     await expectNavigationTarget(page.locator("[data-tool-nav-previous]"), "Previous", navigation.previous);
+diff --git a/tests/playwright/tools/ToolboxRoutePages.spec.mjs b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
+index 0cf4d475c..12e463488 100644
+--- a/tests/playwright/tools/ToolboxRoutePages.spec.mjs
++++ b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
+@@ -778,7 +778,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
+     await expect(adminBuildVoteRow).toHaveAttribute("draggable", "true");
+     await page.evaluate(() => {
+       const source = document.querySelector("[data-toolbox-votes-tool-id='build-game']");
+-      const target = document.querySelector("[data-toolbox-votes-tool-id='game-workspace']");
++      const target = document.querySelector("[data-toolbox-votes-tool-id='game-hub']");
+       if (!source || !target) {
+         throw new Error("Toolbox vote drag/drop rows were not available.");
+       }
+@@ -799,7 +799,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
+     });
+     await expect(page.locator("[data-toolbox-votes-status]")).toContainText("Rows were renumbered with whole-number order values.");
+     await expect(adminBuildVoteRow.locator("td").nth(1)).toHaveText("1");
+-    await expect(page.locator("[data-toolbox-votes-tool-id='game-workspace'] td").nth(1)).toHaveText("2");
++    await expect(page.locator("[data-toolbox-votes-tool-id='game-hub'] td").nth(1)).toHaveText("2");
+     await expect(adminBuildVoteRow).toHaveAttribute("aria-selected", "true");
+     await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(5)).toHaveText("1");
+     await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(7)).toHaveText("1");
+diff --git a/toolbox/colors/index.html b/toolbox/colors/index.html
+index 4c7e98f44..a0e9e8276 100644
+--- a/toolbox/colors/index.html
++++ b/toolbox/colors/index.html
+@@ -34,7 +34,7 @@
+                                 <div class="accordion-body content-stack">
+                                     <p data-palette-active-project>No active project.</p>
+                                     <p class="status" role="status" data-palette-project-diagnostic>Active project required.</p>
+-                                    <a class="btn" href="toolbox/game-workspace/index.html">Open Game Hub</a>
++                                    <a class="btn" href="toolbox/game-hub/index.html">Open Game Hub</a>
+                                 </div>
+                             </details>
+                             <details class="vertical-accordion" open data-palette-picker-accordion>
+@@ -222,7 +222,7 @@
+                                     <h3 id="palette-tool-project-overlay-title">Active Project Required</h3>
+                                 </div>
+                                 <p>Open Game Hub before editing project swatches.</p>
+-                                <a class="btn" href="toolbox/game-workspace/index.html">Open Game Hub</a>
++                                <a class="btn" href="toolbox/game-hub/index.html">Open Game Hub</a>
+                             </div>
+                         </article>
+                         <div class="content-stack accordion-fill-stack" data-palette-fullscreen-panels>
+diff --git a/toolbox/controls/controls.js b/toolbox/controls/controls.js
+index 901288790..c3355a91e 100644
+--- a/toolbox/controls/controls.js
++++ b/toolbox/controls/controls.js
+@@ -642,7 +642,7 @@ function showWorkspaceReturnIfNeeded() {
+   const params = new URLSearchParams(window.location.search);
+   const returnTo = normalizeText(params.get("returnTo"));
+   const shouldShow = params.has("workspace") || params.has("project") || params.get("source") === "workspace" || params.has("workspaceLaunch") || returnTo;
+-  if (returnTo.startsWith("/toolbox/game-workspace/")) {
++  if (returnTo.startsWith("/toolbox/game-hub/")) {
+     elements.returnWorkspace.href = returnTo;
+   }
+   elements.returnWorkspace.hidden = !shouldShow;
+diff --git a/toolbox/controls/index.html b/toolbox/controls/index.html
+index dc3d404eb..5e23377e8 100644
+--- a/toolbox/controls/index.html
++++ b/toolbox/controls/index.html
+@@ -19,7 +19,7 @@
+                 <div class="kicker">Toolbox / Controls</div>
+                 <h1>Controls</h1>
+                 <p class="lede">Define game-owned controls with normalized actions and creator-facing usage labels.</p>
+-                <p><a class="btn btn--compact" href="/toolbox/game-workspace/index.html" hidden data-input-return-workspace>Return to Game Hub</a></p>
++                <p><a class="btn btn--compact" href="/toolbox/game-hub/index.html" hidden data-input-return-workspace>Return to Game Hub</a></p>
+             </div>
+         </section>
+         <section class="section">
+diff --git a/toolbox/game-design/index.html b/toolbox/game-design/index.html
+index 14215637c..3335515ac 100644
+--- a/toolbox/game-design/index.html
++++ b/toolbox/game-design/index.html
+@@ -46,7 +46,7 @@
+                                 <summary>Actions</summary>
+                                 <div class="accordion-body">
+                                     <div class="content-stack">
+-                                        <a class="btn" href="toolbox/game-workspace/index.html">Open Game Hub</a>
++                                        <a class="btn" href="toolbox/game-hub/index.html">Open Game Hub</a>
+                                         <a class="btn" href="toolbox/game-configuration/index.html" data-game-design-configuration-link>Review Game Configuration</a>
+                                     </div>
+                                 </div>
+@@ -142,7 +142,7 @@
+                                                 <h3 id="game-design-game-overlay-title">Missing Game</h3>
+                                             </div>
+                                             <p>Open or seed a Game Hub game before saving Game Design.</p>
+-                                            <a class="btn" href="toolbox/game-workspace/index.html">Open Game Hub</a>
++                                            <a class="btn" href="toolbox/game-hub/index.html">Open Game Hub</a>
+                                         </div>
+                                     </article>
+                                     <article class="card" role="dialog" aria-labelledby="game-design-validation-title" data-game-design-validation-overlay hidden>
+diff --git a/toolbox/game-hub/game-hub-api-client.js b/toolbox/game-hub/game-hub-api-client.js
+new file mode 100644
+index 000000000..6088a99d0
+--- /dev/null
++++ b/toolbox/game-hub/game-hub-api-client.js
+@@ -0,0 +1,32 @@
++import {
++  createServerRepositoryClient,
++  requireServerApiData,
++  readServerToolConstants,
++  requireServerConstant,
++  safeRequestServerApi,
++} from "../../src/api/server-api-client.js";
++
++const constants = readServerToolConstants("game-hub");
++
++export const GAME_HUB_MEMBER_ROLES = Object.freeze(requireServerConstant(constants, "GAME_WORKSPACE_MEMBER_ROLES", "game-hub"));
++export const GAME_HUB_GAME_PURPOSES = Object.freeze(requireServerConstant(constants, "GAME_WORKSPACE_GAME_PURPOSES", "game-hub"));
++export const GAME_HUB_GAME_STATUSES = Object.freeze(requireServerConstant(constants, "GAME_WORKSPACE_GAME_STATUSES", "game-hub"));
++
++export function createGameHubApiRepository(options = {}) {
++  return createServerRepositoryClient("game-hub", options);
 +}
 +
- function activeTtsProfileOptions() {
-   const activeProfiles = state.ttsProfiles.filter((profile) => profile.active);
-   return activeProfiles.length ? activeProfiles : [DEFAULT_TTS_PROFILE];
-@@ -428,6 +461,10 @@ function speechTestReadiness() {
-   if (!target.emotionProfile) {
-     return { message: "Selected item needs an Emotion before testing speech.", ok: false };
-   }
-+  const emotionSetting = selectedEmotionSettingForProfile(profile, target.emotionProfile);
-+  if (!emotionSetting.ok) {
-+    return { message: emotionSetting.message, ok: false };
-+  }
-   if (!String(target.text || "").trim()) {
-     return { message: "Selected item needs message text before testing speech.", ok: false };
-   }
-@@ -923,18 +960,23 @@ function speakTarget(service, target, profile) {
-   if (!target.emotionProfile) {
-     return visiblePlaybackError("Selected message or part needs an Emotion before playback.");
-   }
-+  const emotionSetting = selectedEmotionSettingForProfile(profile, target.emotionProfile);
-+  if (!emotionSetting.ok) {
-+    return visiblePlaybackError(emotionSetting.message);
-+  }
-   if (!String(target.text || "").trim()) {
-     return visiblePlaybackError("Selected message or part needs text before playback.");
-   }
-   return ttsServiceRegistry.speak(service.key, {
-     language: profile.language,
--    pitch: target.emotionProfile.pitch ?? profile.pitch ?? 1,
--    rate: target.emotionProfile.rate ?? profile.rate ?? 1,
-+    pitch: emotionSetting.setting.pitch ?? profile.pitch ?? 1,
-+    rate: emotionSetting.setting.rate ?? profile.rate ?? 1,
-     speechItemId: target.id,
-     speechItemName: target.name,
-+    ssmlLikePreset: emotionSetting.setting.ssmlLikePreset || "normal",
-     text: target.text,
-     voice: profile.voiceName,
--    volume: target.emotionProfile.volume ?? profile.volume ?? 1,
-+    volume: emotionSetting.setting.volume ?? profile.volume ?? 1,
-   });
++export const GAME_WORKSPACE_MEMBER_ROLES = GAME_HUB_MEMBER_ROLES;
++export const GAME_WORKSPACE_GAME_PURPOSES = GAME_HUB_GAME_PURPOSES;
++export const GAME_WORKSPACE_GAME_STATUSES = GAME_HUB_GAME_STATUSES;
++
++export function createGameWorkspaceApiRepository(options = {}) {
++  return createGameHubApiRepository(options);
++}
++
++export function readProjectWorkspaceProjectRecords() {
++  return requireServerApiData(
++    safeRequestServerApi("/project-workspace/projects"),
++    "Game Hub project records",
++  );
++}
+diff --git a/toolbox/game-workspace/game-workspace.js b/toolbox/game-hub/game-hub.js
+similarity index 94%
+rename from toolbox/game-workspace/game-workspace.js
+rename to toolbox/game-hub/game-hub.js
+index 90aea08f8..d2260fe04 100644
+--- a/toolbox/game-workspace/game-workspace.js
++++ b/toolbox/game-hub/game-hub.js
+@@ -1,12 +1,12 @@
+ import {
+-  GAME_WORKSPACE_MEMBER_ROLES,
+-  GAME_WORKSPACE_GAME_PURPOSES,
+-  GAME_WORKSPACE_GAME_STATUSES,
+-  createGameWorkspaceApiRepository,
+-} from "./game-workspace-api-client.js";
++  GAME_HUB_MEMBER_ROLES,
++  GAME_HUB_GAME_PURPOSES,
++  GAME_HUB_GAME_STATUSES,
++  createGameHubApiRepository,
++} from "./game-hub-api-client.js";
+ import { getSessionCurrent } from "../../src/api/session-api-client.js";
+
+-const repository = createGameWorkspaceApiRepository();
++const repository = createGameHubApiRepository();
+
+ const elements = {
+   activeGameName: document.querySelector("[data-active-game-name]"),
+@@ -35,7 +35,7 @@ const elements = {
+   gameStatusInput: document.querySelector("[data-game-status-input]"),
+   publishingProgress: document.querySelector("[data-publishing-progress]"),
+   recommendedNextTool: document.querySelectorAll("[data-recommended-next-tool]"),
+-  statusLog: document.querySelector("[data-game-workspace-log]"),
++  statusLog: document.querySelector("[data-game-hub-log]"),
+   tableCounts: document.querySelector("[data-game-table-counts]"),
+ };
+
+@@ -64,6 +64,10 @@ function isRepositoryErrorResult(value) {
+   return isRecord(value) && value.error === true;
  }
+
++function isSourceLinkedGame(activeGame) {
++  return isRecord(activeGame?.sourceIdea);
++}
++
+ function repositoryErrorMessage(value, context) {
+   return `${context} is temporarily unavailable. Refresh the page or try again shortly.`;
+ }
+@@ -137,7 +141,7 @@ function setProjectRecordStatus(message) {
+   setText(elements.projectRecordStatus, message);
+ }
+
+-function refreshSaveControls() {
++function refreshSaveControls(activeGame = null) {
+   const saveAllowed = projectRecordsSaveAllowed();
+   [elements.nameInput, elements.purposeInput, elements.gameStatusInput, elements.currentUserRoleInput].forEach((control) => {
+     if (control) {
+@@ -149,7 +153,9 @@ function refreshSaveControls() {
+     submitButton.disabled = !saveAllowed;
+   }
+   if (elements.deleteOpenGame) {
+-    elements.deleteOpenGame.disabled = !saveAllowed;
++    const sourceLinked = isSourceLinkedGame(activeGame);
++    elements.deleteOpenGame.disabled = !saveAllowed || sourceLinked;
++    elements.deleteOpenGame.hidden = sourceLinked;
+   }
+   if (!saveAllowed) {
+     const currentStatus = String(elements.statusLog?.textContent || "");
+@@ -424,7 +430,7 @@ function renderWorkspace() {
+   renderChecklist(progress);
+   renderProjectInformation(activeGame, currentMember, progress);
+   renderSourceIdea(activeGame);
+-  refreshSaveControls();
++  refreshSaveControls(activeGame);
+ }
+
+ elements.form?.addEventListener("submit", (event) => {
+@@ -481,6 +487,11 @@ elements.deleteOpenGame?.addEventListener("click", () => {
+     renderWorkspace();
+     return;
+   }
++  if (isSourceLinkedGame(activeGame)) {
++    setStatusLog("Source-linked projects stay connected to Idea Board.");
++    renderWorkspace();
++    return;
++  }
+
+   repository.deleteGame(activeGame.id);
+   setStatusLog(`Deleted ${activeGame.name}.`);
+@@ -529,9 +540,9 @@ elements.currentUserRoleInput?.addEventListener("change", () => {
+   renderWorkspace();
+ });
+
+-populateSelect(elements.purposeInput, GAME_WORKSPACE_GAME_PURPOSES);
+-populateSelect(elements.gameStatusInput, GAME_WORKSPACE_GAME_STATUSES);
+-populateSelect(elements.currentUserRoleInput, GAME_WORKSPACE_MEMBER_ROLES);
++populateSelect(elements.purposeInput, GAME_HUB_GAME_PURPOSES);
++populateSelect(elements.gameStatusInput, GAME_HUB_GAME_STATUSES);
++populateSelect(elements.currentUserRoleInput, GAME_HUB_MEMBER_ROLES);
+ const requestedGameId = new URL(window.location.href).searchParams.get("game");
+ if (requestedGameId) {
+   const openedGame = repository.openGame(requestedGameId);
+diff --git a/toolbox/game-workspace/index.html b/toolbox/game-hub/index.html
+similarity index 96%
+rename from toolbox/game-workspace/index.html
+rename to toolbox/game-hub/index.html
+index f204166d8..ef7b50004 100644
+--- a/toolbox/game-workspace/index.html
++++ b/toolbox/game-hub/index.html
+@@ -65,7 +65,7 @@
+                             </details>
+                         </div>
+                     </aside>
+-                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="game-workspace" data-tool-icon-src="assets/theme-v2/images/badges/index.png" data-tool-character-src="assets/theme-v2/images/characters/index.png"></div>
++                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="game-hub" data-tool-icon-src="assets/theme-v2/images/badges/index.png" data-tool-character-src="assets/theme-v2/images/characters/index.png"></div>
+                     <section class="tool-center-panel"><h2>Project Information</h2>
+                         <p>Review the open project and its source idea.</p>
+                         <div class="status" role="status" data-project-record-status>Project Information ready.</div>
+@@ -118,7 +118,7 @@
+                                 </div>
+                             </div>
+                         </article>
+-                        <article class="card" data-game-workspace-foundation>
++                        <article class="card" data-game-hub-foundation>
+                             <div class="card-body content-stack">
+                                 <div>
+                                     <div class="kicker">Game Foundation</div>
+@@ -134,7 +134,7 @@
+                                     <article class="callout"><h3>Recommended Next Tool</h3><p data-recommended-next-tool>Game Configuration</p></article>
+                                     <article class="callout"><h3>Checklist</h3><ul data-game-progress-checklist><li>Game identity: Complete</li></ul></article>
+                                 </div>
+-                                <div class="status" role="status" data-game-workspace-log>Game Hub ready.</div>
++                                <div class="status" role="status" data-game-hub-log>Game Hub ready.</div>
+                             </div>
+                         </article>
+                         <div class="accordion-stack" data-game-output-panels>
+@@ -179,7 +179,7 @@
+     <div data-partial="footer"></div>
+     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+-    <script type="module" src="toolbox/game-workspace/game-workspace.js"></script>
++    <script type="module" src="toolbox/game-hub/game-hub.js"></script>
+ </body>
+
+ </html>
+diff --git a/toolbox/game-journey/game-journey.js b/toolbox/game-journey/game-journey.js
+index effb985da..c2b2f876c 100644
+--- a/toolbox/game-journey/game-journey.js
++++ b/toolbox/game-journey/game-journey.js
+@@ -84,6 +84,7 @@ let completionMetricsDiagnostic = "";
+ let addNoteRowOpen = false;
+ let editingNoteKey = "";
+ let itemTree = null;
++let routeForcesNoActiveGame = false;
+ const recommendedTargetValues = new Map(
+   GAME_JOURNEY_RECOMMENDED_TARGETS.map((target) => [target.key, target.suggestedCount]),
+ );
+@@ -112,11 +113,12 @@ function refreshCompletionMetricsSnapshot() {
+ function applyInitialGameRoute() {
+   const gameId = params.get("game");
+   if (gameId === "none") {
+-    repository.clearActiveGame();
++    routeForcesNoActiveGame = true;
+     return;
+   }
+
+   if (gameId) {
++    routeForcesNoActiveGame = false;
+     repository.openGame(gameId);
+   }
+
+@@ -125,6 +127,14 @@ function applyInitialGameRoute() {
+   }
+ }
+
++function routedActiveGame() {
++  return routeForcesNoActiveGame ? null : repository.getActiveGame();
++}
++
++function routedNotes(filterId) {
++  return routeForcesNoActiveGame ? [] : repository.listNotes(filterId);
++}
++
+ function createElement(tagName, options = {}) {
+   const element = document.createElement(tagName);
+   if (options.className) {
+@@ -1419,9 +1429,9 @@ function selectFirstVisibleNote(notes) {
+ }
+
+ function render() {
+-  const activeGame = repository.getActiveGame();
++  const activeGame = routedActiveGame();
+   const searchQuery = currentSearchQuery();
+-  const notes = applySearch(repository.listNotes(activeFilter), searchQuery);
++  const notes = applySearch(routedNotes(activeFilter), searchQuery);
+   const note = selectFirstVisibleNote(notes);
+   ensureSelectedItemMatchesFilter(note);
+   const displayNote = filterNoteItemsForDisplay(note);
+@@ -1651,7 +1661,7 @@ summaryBody.addEventListener("input", (event) => {
+   repository.updateItem(selectedItem.key, {
+     userDetails: detailsInput.value,
+   });
+-  renderDiagnostics(repository.getActiveGame(), repository.getSelectedNote(), applySearch(repository.listNotes(activeFilter), currentSearchQuery()));
++  renderDiagnostics(routedActiveGame(), routeForcesNoActiveGame ? null : repository.getSelectedNote(), applySearch(routedNotes(activeFilter), currentSearchQuery()));
+ });
+
+ addItemButton.addEventListener("click", () => {
+diff --git a/toolbox/game-workspace/game-workspace-api-client.js b/toolbox/game-workspace/game-workspace-api-client.js
+deleted file mode 100644
+index 191602e40..000000000
+--- a/toolbox/game-workspace/game-workspace-api-client.js
++++ /dev/null
+@@ -1,24 +0,0 @@
+-import {
+-  createServerRepositoryClient,
+-  requireServerApiData,
+-  readServerToolConstants,
+-  requireServerConstant,
+-  safeRequestServerApi,
+-} from "../../src/api/server-api-client.js";
+-
+-const constants = readServerToolConstants("game-workspace");
+-
+-export const GAME_WORKSPACE_MEMBER_ROLES = Object.freeze(requireServerConstant(constants, "GAME_WORKSPACE_MEMBER_ROLES", "game-workspace"));
+-export const GAME_WORKSPACE_GAME_PURPOSES = Object.freeze(requireServerConstant(constants, "GAME_WORKSPACE_GAME_PURPOSES", "game-workspace"));
+-export const GAME_WORKSPACE_GAME_STATUSES = Object.freeze(requireServerConstant(constants, "GAME_WORKSPACE_GAME_STATUSES", "game-workspace"));
+-
+-export function createGameWorkspaceApiRepository(options = {}) {
+-  return createServerRepositoryClient("game-workspace", options);
+-}
+-
+-export function readProjectWorkspaceProjectRecords() {
+-  return requireServerApiData(
+-    safeRequestServerApi("/project-workspace/projects"),
+-    "Game Hub project records",
+-  );
+-}
+diff --git a/toolbox/idea-board/index.js b/toolbox/idea-board/index.js
+index 74364a996..d1e339336 100644
+--- a/toolbox/idea-board/index.js
++++ b/toolbox/idea-board/index.js
+@@ -3,7 +3,7 @@ import { createServerRepositoryClient } from "../../src/api/server-api-client.js
+ const statusOptions = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project", "Archived"]);
+ const defaultVisibleStatuses = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project"]);
+ const userId = "user-1";
+-const gameHubRoute = "toolbox/game-workspace/index.html";
++const gameHubRoute = "toolbox/game-hub/index.html";
+ let gameHubRepository = null;
+
+ const ideaTable = [
+@@ -142,7 +142,7 @@ function isRepositoryErrorResult(value) {
+
+ function gameHubProjectRepository() {
+   if (!gameHubRepository) {
+-    gameHubRepository = createServerRepositoryClient("game-workspace");
++    gameHubRepository = createServerRepositoryClient("game-hub");
+   }
+   return gameHubRepository;
+ }
+diff --git a/toolbox/project-workspace/index.html b/toolbox/project-workspace/index.html
+index 42c6f2bc5..a2e46640e 100644
+--- a/toolbox/project-workspace/index.html
++++ b/toolbox/project-workspace/index.html
+@@ -19,7 +19,7 @@
+                 <div class="kicker">Toolbox / Game Hub</div>
+                 <h1>Game Hub</h1>
+                 <p class="lede">This route is kept for older links. The active workspace is Game Hub.</p>
+-                <p><a class="btn primary" href="toolbox/game-workspace/index.html">Open Game Hub</a></p>
++                <p><a class="btn primary" href="toolbox/game-hub/index.html">Open Game Hub</a></p>
+             </div>
+         </section>
+     </main>
+diff --git a/toolbox/tools-page-accordions.js b/toolbox/tools-page-accordions.js
+index 8c5c6061b..f2b6641e1 100644
+--- a/toolbox/tools-page-accordions.js
++++ b/toolbox/tools-page-accordions.js
+@@ -1,7 +1,7 @@
+ import {
+-    GAME_WORKSPACE_MEMBER_ROLES,
+-    createGameWorkspaceApiRepository
+-} from "./game-workspace/game-workspace-api-client.js";
++    GAME_HUB_MEMBER_ROLES,
++    createGameHubApiRepository
++} from "./game-hub/game-hub-api-client.js";
+ import {
+     readGameJourneyCompletionMetrics
+ } from "../src/api/game-journey-completion-api-client.js";
+@@ -34,10 +34,10 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
+     const statusFilterList = document.querySelector("[data-toolbox-status-filters]");
+     const launchStatus = document.querySelector("[data-toolbox-launch-status]");
+     const searchParams = new URLSearchParams(window.location.search);
+-    const gameWorkspaceRepository = createGameWorkspaceApiRepository();
++    const gameHubRepository = createGameHubApiRepository();
+     const urlMemberRole = searchParams.get("memberRole");
+     const defaultGameMemberRole = "Owner";
+-    const gameMemberRole = GAME_WORKSPACE_MEMBER_ROLES.includes(urlMemberRole)
++    const gameMemberRole = GAME_HUB_MEMBER_ROLES.includes(urlMemberRole)
+         ? urlMemberRole
+         : defaultGameMemberRole;
+     const session = getSessionCurrent();
+@@ -154,7 +154,7 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
+         "game-journey": "Progression",
+         "game-migration": "Publish",
+         "game-testing": "Play Test",
+-        "game-workspace": "Design",
++        "game-hub": "Design",
+         "hitboxes": "Controls",
+         "idea-board": "Idea",
+         "input-mapping-v2": "Controls",
+@@ -183,7 +183,7 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
+     const toolboxGroupPositions = new Map(toolboxGroupOrder.map((group, index) => [group, index]));
+     const workflowToolOrderByGroup = Object.freeze({
+         "Design": Object.freeze({
+-            "game-workspace": 1,
++            "game-hub": 1,
+             "users": 2,
+             "game-crew": 2,
+             "game-configuration": 3,
+@@ -244,8 +244,8 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
+     }
+
+     function getGameProgressSummary() {
+-        const activeGame = gameWorkspaceRepository.getActiveGame();
+-        const progress = gameWorkspaceRepository.getGameProgress();
++        const activeGame = gameHubRepository.getActiveGame();
++        const progress = gameHubRepository.getGameProgress();
+         return {
+             activeGameName: activeGame?.name || "No active game",
+             gameProgress: progress.gameProgress,

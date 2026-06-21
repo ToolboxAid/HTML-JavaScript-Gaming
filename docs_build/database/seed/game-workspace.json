@@ -1,6 +1,6 @@
 {
-  "group": "Game Workspace",
-  "groupKey": "game-workspace",
+  "group": "Game Hub",
+  "groupKey": "game-hub",
   "owner": "docs_build/database/seed",
   "serverSideSeedRequired": true,
   "browserAuthoritativeKeyGenerationAllowed": false,
