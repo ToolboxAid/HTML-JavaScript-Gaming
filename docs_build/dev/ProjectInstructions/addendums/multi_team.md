@@ -48,6 +48,41 @@ Commit/push during the day is allowed only on assigned team/OWNER/PR branches.
 Merge to main is EOD-only and owner-approved, unless the owner explicitly says:
 "Merge this PR now."
 
+## EOD Workstream Closeout
+
+At completion of a merged PR or approved workstream:
+
+Required steps:
+
+1. Merge approved PR.
+2. Checkout main.
+3. Pull latest main.
+4. Verify:
+   - current branch = main
+   - worktree clean
+   - local/origin sync = 0 0
+5. Record final main commit.
+6. Report final repository state.
+
+Required final state:
+
+Branch:
+main
+
+Worktree:
+clean
+
+Local/origin:
+0 0
+
+Rules:
+
+- A workstream is not considered closed until the repository is returned to main.
+- A PI is not considered complete until main is current and synchronized.
+- Do not leave Codex on a feature, team, workstream, recovery, governance, or owner branch after successful merge.
+- If merge succeeds but repository is not returned to main:
+  closeout status = FAIL.
+
 ## Conflict Note
 
 Existing ProjectInstructions wording that appears to require immediate or automatic merge remains preserved for traceability.

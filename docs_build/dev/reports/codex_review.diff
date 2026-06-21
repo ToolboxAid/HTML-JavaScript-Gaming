@@ -1,892 +1,230 @@
-diff --git a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-new file mode 100644
-index 000000000..40db33c44
---- /dev/null
-+++ b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-@@ -0,0 +1,46 @@
-+# Project Instructions Operating System
+﻿diff --git a/docs_build/dev/PROJECT_INSTRUCTIONS.md b/docs_build/dev/PROJECT_INSTRUCTIONS.md
+index e78ba69d5..cfc3576a1 100644
+--- a/docs_build/dev/PROJECT_INSTRUCTIONS.md
++++ b/docs_build/dev/PROJECT_INSTRUCTIONS.md
+@@ -2002,7 +2002,11 @@ Required workflow:
+ 13. Merge PR.
+ 14. Return to main.
+ 15. Pull latest main.
+-16. Continue to next approved PR.
++16. Verify clean worktree.
++17. Verify local/origin sync.
++18. Record final main commit.
++19. Report final repository state.
++20. Continue to next approved PR.
+
+ Rules:
+ - Do not ask the user if a PR should be created.
+@@ -2025,6 +2029,41 @@ Required Git workflow report fields:
+ - merge result
+ - final main commit
+
++## EOD WORKSTREAM CLOSEOUT
 +
-+Read `README.txt` first.
++At completion of a merged PR or approved workstream:
 +
-+This file is the root index for the append-first Project Instructions operating system under `docs_build/dev/ProjectInstructions/`.
++Required steps:
 +
-+## Purpose
++1. Merge approved PR.
++2. Checkout main.
++3. Pull latest main.
++4. Verify:
++   - current branch = main
++   - worktree clean
++   - local/origin sync = 0 0
++5. Record final main commit.
++6. Report final repository state.
 +
-+The Project Instructions operating system provides additive governance for:
++Required final state:
 +
-+- backlog ownership
-+- team assignments
-+- multi-team branch and scope rules
-+- Build Path status synchronization
-+- tile overlay status behavior
-+- deprecation workflow
-+- archive and history preservation
++Branch:
++main
 +
-+## Preservation
++Worktree:
++clean
 +
-+Existing Project Instructions remain preserved in their current locations. This operating system adds structure without deleting or rewriting existing documentation.
-+
-+## Folders
-+
-+- `addendums/` contains additive governance rules.
-+- `backlog/` contains the central backlog file, `BACKLOG_MASTER.md`.
-+- `team_assignments/` contains current team assignment records.
-+- `deprecation/` contains deprecation workflow documentation.
-+- `archive/` contains retained reference material.
-+- `archive/history/` contains timestamped history snapshots.
-+
-+## Merge Control
-+
-+No PR in this operating system is merged without explicit owner approval.
-+
-+## OWNER Governance
-+
-+OWNER override wording:
-+
-+`OWNER override approved: <reason>`
-+
-+OWNER follows the same safety rules:
-+- One active OWNER branch at a time.
-+- One active OWNER assignment at a time.
-+- OWNER may override team locks, but may not silently delete, rewrite, or remove protected instructions.
-+- OWNER override must be explicitly documented.
-diff --git a/docs_build/dev/ProjectInstructions/README.txt b/docs_build/dev/ProjectInstructions/README.txt
-new file mode 100644
-index 000000000..27495ad8f
---- /dev/null
-+++ b/docs_build/dev/ProjectInstructions/README.txt
-@@ -0,0 +1,28 @@
-+Read this file first.
-+
-+Folder purpose:
-+This folder is the append-first Project Instructions operating system for Game Foundry Studio. It organizes active governance, backlog, team assignment, deprecation, and history material without deleting or rewriting the existing Project Instructions files elsewhere in the repository.
-+
-+Preservation rules:
-+Preserve all existing documentation. Add new files or append explicit references unless the owner explicitly approves deletion or rewrite. When a conflict appears, stop, explain the conflict, and request owner approval before changing existing instruction text.
-+
-+Backlog workflow:
-+Backlog work is tracked under backlog/. BACKLOG_MASTER.md is the planned source for backlog item status, notes, and references. Backlog item text is treated as immutable once created; status and notes may change under the governance addendums.
-+
-+Team assignment workflow:
-+Team assignments are tracked under team_assignments/. A team pulls work from BACKLOG_MASTER.md, marks the item building when assigned, and records the active assignment under the owning team. Teams work only on assigned items unless an OWNER override explicitly changes the assignment.
-+
-+No direct commits to main:
-+Do not commit directly to main unless the owner explicitly instructs that exception. Normal work must use PR branches, draft PRs, validation evidence, and owner-controlled merge approval.
-+
-+OWNER override rule:
-+An OWNER override must use this wording:
-+OWNER override approved: <reason>
-+
-+The override must explain why normal team, branch, assignment, or backlog routing is being changed.
-+
-+History snapshot rule:
-+When a governance or instruction state needs a history snapshot, add a new file under archive/history/ using:
-+CCYYMMDD_HHMMSS.md
-+
-+Do not rewrite history snapshots after creation unless the owner explicitly approves.
-diff --git a/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md b/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
-new file mode 100644
-index 000000000..3490df216
---- /dev/null
-+++ b/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
-@@ -0,0 +1,80 @@
-+# TEAM_START_COMMANDS
-+
-+## Start Team Alpha
-+
-+Ready-to-copy command:
-+
-+```text
-+OWNER override approved: Start Team Alpha from the ProjectInstructions release gate.
-+
-+Read docs_build/dev/ProjectInstructions/README.txt first.
-+Read docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md.
-+Read docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
-+
-+Pull one [ ] item for Team Alpha from BACKLOG_MASTER.md.
-+Stop if Team Alpha already has an active branch.
-+Stop if Team Alpha already has an active assignment.
-+Stop if no [ ] Team Alpha backlog item is available.
-+
-+Change the selected backlog item from [ ] to [.].
-+Add the selected assignment under Team Alpha in TEAM_ASSIGNMENTS.md.
-+Create one Team Alpha branch for the selected assignment.
-+Work only that assignment.
-+```
-+
-+## Start Team Beta
-+
-+Ready-to-copy command:
-+
-+```text
-+OWNER override approved: Start Team Beta from the ProjectInstructions release gate.
-+
-+Read docs_build/dev/ProjectInstructions/README.txt first.
-+Read docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md.
-+Read docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
-+
-+Pull one [ ] item for Team Beta from BACKLOG_MASTER.md.
-+Stop if Team Beta already has an active branch.
-+Stop if Team Beta already has an active assignment.
-+Stop if no [ ] Team Beta backlog item is available.
-+
-+Change the selected backlog item from [ ] to [.].
-+Add the selected assignment under Team Beta in TEAM_ASSIGNMENTS.md.
-+Create one Team Beta branch for the selected assignment.
-+Work only that assignment.
-+```
-+
-+## Start Team Gamma
-+
-+Ready-to-copy command:
-+
-+```text
-+OWNER override approved: Start Team Gamma from the ProjectInstructions release gate.
-+
-+Read docs_build/dev/ProjectInstructions/README.txt first.
-+Read docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md.
-+Read docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
-+
-+Pull one [ ] item for Team Gamma from BACKLOG_MASTER.md.
-+Stop if Team Gamma already has an active branch.
-+Stop if Team Gamma already has an active assignment.
-+Stop if no [ ] Team Gamma backlog item is available.
-+
-+Change the selected backlog item from [ ] to [.].
-+Add the selected assignment under Team Gamma in TEAM_ASSIGNMENTS.md.
-+Create one Team Gamma branch for the selected assignment.
-+Work only that assignment.
-+```
-+
-+## Day Work / EOD Merge Reminder
-+
-+Ready-to-copy reminder:
-+
-+```text
-+Commit/push during the day is allowed only on assigned team/OWNER/PR branches.
-+
-+Merge to main is EOD-only and owner-approved, unless the owner explicitly says:
-+"Merge this PR now."
-+
-+Do not treat sequential PR completion as merge approval.
-+```
-diff --git a/docs_build/dev/ProjectInstructions/addendums/build_path_sync.md b/docs_build/dev/ProjectInstructions/addendums/build_path_sync.md
-new file mode 100644
-index 000000000..ad7195d1c
---- /dev/null
-+++ b/docs_build/dev/ProjectInstructions/addendums/build_path_sync.md
-@@ -0,0 +1,35 @@
-+﻿# Build Path Status Sync Governance
-+
-+## Purpose
-+
-+This addendum keeps the central backlog and Toolbox Build Path aligned.
-+
-+## Source Of Truth
-+
-+`docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md` is the source of truth for tool status.
-+
-+## Build Path Sync
-+
-+`toolbox/index.html` Build Path tiles must match tool status from `BACKLOG_MASTER.md`.
-+
-+When a central backlog tool status changes, update the matching Build Path tile.
-+
-+Status and Build Path changes should be in the same PR when practical.
-+
-+## Phase Percentages
-+
-+Phase percentages are calculated from tools in each phase.
++Local/origin:
++0 0
 +
 +Rules:
-+- completed tools count as complete
-+- planned, wireframe, building, and blocked tools remain in the denominator
-+- deprecated tools are excluded from the denominator
-+- phase percentage must be recalculated when a tool status changes
 +
-+## Validation
++- A workstream is not considered closed until the repository is returned to main.
++- A PI is not considered complete until main is current and synchronized.
++- Do not leave Codex on a feature, team, workstream, recovery, governance, or owner branch after successful merge.
++- If merge succeeds but repository is not returned to main:
++  closeout status = FAIL.
 +
-+PRs that change backlog status or Build Path status must document:
-+- backlog item changed
-+- matching Build Path tile changed
-+- phase percentage before and after
-+- skipped sync, if any, with reason
-diff --git a/docs_build/dev/ProjectInstructions/addendums/deprecation.md b/docs_build/dev/ProjectInstructions/addendums/deprecation.md
-new file mode 100644
-index 000000000..2268b30bc
---- /dev/null
-+++ b/docs_build/dev/ProjectInstructions/addendums/deprecation.md
-@@ -0,0 +1,32 @@
-+﻿# Deprecation Governance
-+
-+## Purpose
-+
-+This addendum defines how Project Instructions backlog and Build Path items become deprecated while staying traceable.
-+
-+## Deprecation Group
-+
-+Deprecation is its own group and must not be hidden inside normal completion work.
-+
-+## Traceability
-+
-+Deprecated items must preserve:
-+- original item text
-+- deprecated status
-+- owner approval reference
-+- replacement path, if any
-+- archive/removal decision, if any
-+
-+## Owner Approval
-+
-+Owner approval is required before archive or removal.
-+
-+No team may remove a deprecated item solely because it is deprecated.
-+
-+## Build Path Display
-+
-+Deprecated Build Path items use red overlay if visible.
-+
-+Deprecated items do not count against current MVP completion.
-+
-+If a deprecated item remains visible, it must communicate Deprecated status to creators without relying on color alone.
+ ## OWNER-CONTROLLED STABLE AND MERGE APPROVAL
+
+ Stable promotion and merge approval are owner-controlled.
 diff --git a/docs_build/dev/ProjectInstructions/addendums/multi_team.md b/docs_build/dev/ProjectInstructions/addendums/multi_team.md
-new file mode 100644
-index 000000000..373a51ed0
---- /dev/null
+index 373a51ed0..fc597aa40 100644
+--- a/docs_build/dev/ProjectInstructions/addendums/multi_team.md
 +++ b/docs_build/dev/ProjectInstructions/addendums/multi_team.md
-@@ -0,0 +1,55 @@
-+# Multi-Team Codex Execution Governance
+@@ -48,6 +48,41 @@ Commit/push during the day is allowed only on assigned team/OWNER/PR branches.
+ Merge to main is EOD-only and owner-approved, unless the owner explicitly says:
+ "Merge this PR now."
+
++## EOD Workstream Closeout
 +
-+## All-Team Preferred Codex Execution Method
++At completion of a merged PR or approved workstream:
 +
-+Preferred execution model:
-+Single Codex session with multiple sequential PRs.
++Required steps:
 +
-+Applies to:
-+- Team Alfa through Team Zulu
-+- Team OWNER
++1. Merge approved PR.
++2. Checkout main.
++3. Pull latest main.
++4. Verify:
++   - current branch = main
++   - worktree clean
++   - local/origin sync = 0 0
++5. Record final main commit.
++6. Report final repository state.
 +
-+Purpose:
-+Reduce back-and-forth between owner and Codex while keeping PRs reviewable and scoped.
++Required final state:
++
++Branch:
++main
++
++Worktree:
++clean
++
++Local/origin:
++0 0
 +
 +Rules:
-+- One Codex session may execute multiple sequential PRs.
-+- Each PR must still have one clear purpose.
-+- Each PR must create or use its own approved branch.
-+- Each PR may be committed and pushed during active work.
-+- Each PR may be opened as a draft PR during active work.
-+- Do not commit directly to main.
-+- Do not merge to main during active work unless the owner explicitly says: "Merge this PR now."
-+- If later PRs depend on earlier unmerged PRs, Codex must either:
-+  - stack the dependent PRs, or
-+  - stop and request owner approval for the dependency model.
-+- Codex should reduce chit-chat by planning the full sequence before starting.
-+- Codex must still hard-stop for conflicts, dirty worktree, scope mismatch, missing assignment, or protected instruction deletion.
 +
-+## Day Work / EOD Merge Rule
++- A workstream is not considered closed until the repository is returned to main.
++- A PI is not considered complete until main is current and synchronized.
++- Do not leave Codex on a feature, team, workstream, recovery, governance, or owner branch after successful merge.
++- If merge succeeds but repository is not returned to main:
++  closeout status = FAIL.
 +
-+During active work:
-+- Work happens on assigned team branches, OWNER branches, or scoped PR branches.
-+- Commits are allowed only on assigned non-main branches.
-+- Pushes are allowed and expected.
-+- Draft PRs are allowed and expected.
-+- Direct commits to main are prohibited.
-+- Merges to main are prohibited unless explicitly approved by the owner.
-+
-+At end of day:
-+- Owner reviews ready PRs.
-+- Owner explicitly approves which PRs merge.
-+- Only owner-approved PRs may merge to main.
-+- After merge, return to main and pull latest main.
-+- Do not treat sequential PR completion as merge approval.
-+
-+Commit/push during the day is allowed only on assigned team/OWNER/PR branches.
-+
-+Merge to main is EOD-only and owner-approved, unless the owner explicitly says:
-+"Merge this PR now."
-+
-+## Conflict Note
-+
-+Existing ProjectInstructions wording that appears to require immediate or automatic merge remains preserved for traceability.
-+
-+This addendum clarifies that merge to `main` remains owner-controlled. If a workflow rule appears to conflict with this addendum, stop and request explicit owner approval before merging.
-diff --git a/docs_build/dev/ProjectInstructions/addendums/preservation.md b/docs_build/dev/ProjectInstructions/addendums/preservation.md
+ ## Conflict Note
+
+ Existing ProjectInstructions wording that appears to require immediate or automatic merge remains preserved for traceability.
+diff --git a/docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-instruction-compliance-checklist.md
 new file mode 100644
-index 000000000..9344992c0
+index 000000000..59f5bbd19
 --- /dev/null
-+++ b/docs_build/dev/ProjectInstructions/addendums/preservation.md
-@@ -0,0 +1,42 @@
-+# Preservation And Archive Governance
-+
-+## Purpose
-+
-+This addendum protects Project Instructions material from accidental deletion, rewrite, or drift.
-+
-+## Append-First Documentation
-+
-+Project Instructions documentation is append-first.
-+
-+Allowed default actions:
-+- add new files
-+- append dated notes
-+- append references
-+- add new governance addendums
-+- add archive snapshots
-+
-+## Owner Approval Required
-+
-+Do not delete Project Instructions material unless the owner explicitly approves deletion.
-+
-+Do not rewrite Project Instructions material unless the owner explicitly approves rewrite.
-+
-+If a requested change conflicts with existing Project Instructions, stop before editing. Explain:
-+- the conflicting files
-+- the conflicting rule text
-+- the requested change
-+- the recommended action
-+
-+Then request owner approval.
-+
-+## Archive Instead Of Delete
-+
-+When material is no longer active, archive it instead of deleting it. Archive entries must preserve enough context to explain why the material moved out of active use.
-+
-+## History Snapshots
-+
-+History snapshots go to:
-+
-+`docs_build/dev/ProjectInstructions/archive/history/CCYYMMDD_HHMMSS.md`
-+
-+Use 24-hour local time for `HHMMSS` unless the owner specifies another time basis.
-diff --git a/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md b/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
-new file mode 100644
-index 000000000..f492806d8
---- /dev/null
-+++ b/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
-@@ -0,0 +1,31 @@
-+# Team Release Readiness Gate
-+
-+## Purpose
-+
-+This gate prevents Team Alpha, Team Beta, Team Gamma, or Team OWNER from starting regular assigned work before the ProjectInstructions operating system is ready.
-+
-+## Release Rule
-+
-+Teams may start only when all of the following are true:
-+
-+- `docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md` exists and is populated.
-+- `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md` exists.
-+- OWNER governance exists.
-+- One-active-branch-per-team rule exists.
-+- No-direct-main rule exists.
-+- Out-of-scope stop rule exists.
-+- Build Path sync rule exists.
-+
-+## Gate Outcome
-+
-+If every requirement is true, team start commands may be issued.
-+
-+If any requirement is missing, stop and report:
-+- missing requirement
-+- expected file or rule
-+- current branch
-+- recommended owner action
-+
-+## No Silent Starts
-+
-+Teams must not infer readiness from an incomplete stack. Readiness must be documented before team work begins.
-diff --git a/docs_build/dev/ProjectInstructions/addendums/tile_overlay_status.md b/docs_build/dev/ProjectInstructions/addendums/tile_overlay_status.md
-new file mode 100644
-index 000000000..a1a1b75e0
---- /dev/null
-+++ b/docs_build/dev/ProjectInstructions/addendums/tile_overlay_status.md
-@@ -0,0 +1,36 @@
-+﻿# Build Path Tile Overlay Status Governance
-+
-+## Purpose
-+
-+This addendum defines visual overlay status rules for Build Path tiles.
-+
-+## Overlay Mapping
-+
-+| Backlog Status | Meaning | Tile Overlay |
-+| --- | --- | --- |
-+| `[ ]` Planned | Planned | black overlay 70% |
-+| `[?]` Wireframe | Wireframe | black overlay 80% |
-+| `[.]` Building | Building | black overlay 90% |
-+| `[x]` Complete | Complete | 100% transparent / no visible overlay |
-+| `[!]` Blocked | Blocked | yellow overlay 80% |
-+| `[-]` Deprecated | Deprecated | red overlay 80% |
-+
-+## Completion Denominator
-+
-+Blocked items remain in the completion denominator.
-+
-+Deprecated items are excluded from the completion denominator.
-+
-+## Badge Text
-+
-+Blocked and Deprecated tiles must show badge text.
-+
-+Badge text must be visible enough for a creator to understand why the tile is blocked or deprecated without relying on color alone.
-+
-+## Validation
-+
-+PRs that change tile overlay behavior must document:
-+- status mapping affected
-+- badge text affected
-+- phase percentage denominator effect
-+- skipped UI validation, if any, with reason
-diff --git a/docs_build/dev/ProjectInstructions/archive/README.md b/docs_build/dev/ProjectInstructions/archive/README.md
-new file mode 100644
-index 000000000..dbc07a1d2
---- /dev/null
-+++ b/docs_build/dev/ProjectInstructions/archive/README.md
-@@ -0,0 +1,12 @@
-+# Project Instructions Archive
-+
-+This archive retains Project Instructions reference material that is no longer active but must remain traceable.
-+
-+## Rules
-+
-+- Archive instead of delete.
-+- Keep archived material readable.
-+- Preserve original meaning and context.
-+- Do not rewrite archive entries unless the owner explicitly approves.
-+- Use `history/CCYYMMDD_HHMMSS.md` for history snapshots.
-+- If archive placement is unclear, stop and request owner approval.
-diff --git a/docs_build/dev/ProjectInstructions/archive/history/.gitkeep b/docs_build/dev/ProjectInstructions/archive/history/.gitkeep
-new file mode 100644
-index 000000000..351adb8ef
---- /dev/null
-+++ b/docs_build/dev/ProjectInstructions/archive/history/.gitkeep
-@@ -0,0 +1 @@
-+Tracked placeholder for Project Instructions history snapshots.
-diff --git a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-new file mode 100644
-index 000000000..6ecd9bac8
---- /dev/null
-+++ b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-@@ -0,0 +1,117 @@
-+# BACKLOG_MASTER
-+
-+## Game Journey MVP
-+
-+### Idea
-+
-+0% Complete — Dream, brainstorm, and explore early game concepts
-+
-+- [ ] Alpha - Idea Board
-+- [ ] Alpha - Game Concept Notes
-+- [ ] Alpha - Creator Learning
-+
-+### Design
-+
-+0% Complete — Shape the game's story, structure, and systems
-+
-+- [ ] Alpha - Game Hub
-+- [ ] Alpha - Game Design
-+- [ ] Alpha - Game Configuration
-+- [ ] Alpha - Game Crew
-+- [ ] Alpha - Tags
-+- [ ] Beta - Messages
-+
-+### Graphics
-+
-+0% Complete — Create the visual look of your game
-+
-+- [ ] Beta - Asset Studio V2
-+- [ ] Beta - Sprite Studio V2
-+- [ ] Beta - Animation Studio V2
-+- [ ] Beta - Palette Manager
-+- [ ] Beta - Video Studio
-+
-+### Audio
-+
-+0% Complete — Build sounds, music, and voices
-+
-+- [ ] Beta - Audio Studio V2
-+- [ ] Beta - Audio Effects
-+- [ ] Beta - MIDI Studio V2
-+- [ ] Beta - Messages
-+- [ ] Beta - Text To Speech
-+- [ ] Beta - Voice Profiles
-+
-+### Objects
-+
-+0% Complete — Create the things players interact with
-+
-+- [ ] Alpha - Objects
-+- [ ] Alpha - Characters
-+- [ ] Alpha - Object Behaviors
-+
-+### Worlds
-+
-+0% Complete — Build levels, maps, and places to explore
-+
-+- [ ] Alpha - Worlds
-+- [ ] Alpha - Environment Settings
-+- [ ] Alpha - Level Layouts
-+
-+### Interface
-+
-+0% Complete — Design menus, HUDs, and player screens
-+
-+- [ ] Alpha - Interface Layouts
-+- [ ] Alpha - Fonts
-+- [ ] Alpha - Languages
-+
-+### Controls
-+
-+0% Complete — Define how players interact with your game
-+
-+- [ ] Alpha - Controls
-+- [ ] Alpha - Input Mapping
-+- [ ] Alpha - Hitboxes
-+
-+### Rules
-+
-+0% Complete — Create gameplay behavior and events
-+
-+- [ ] Alpha - Events
-+- [ ] Alpha - Rules
-+- [ ] Alpha - Custom Extensions
-+
-+### Progression
-+
-+0% Complete — Build rewards, unlocks, and advancement
-+
-+- [ ] Alpha - Game Journey
-+- [ ] Alpha - Achievements
-+- [ ] Alpha - Saved Data
-+
-+### Play Test
-+
-+0% Complete — Test, debug, and improve your game
-+
-+- [ ] Alpha - Game Testing
-+- [ ] Alpha - Debug
-+- [ ] Alpha - Performance
-+
-+### Publish
-+
-+0% Complete — Prepare and release your game
-+
-+- [ ] Beta - Publish
-+- [ ] Beta - Build Game
-+- [ ] Beta - Platform Settings
-+- [ ] Beta - Game Migration
-+
-+### Share
-+
-+0% Complete — Grow your audience and community
-+
-+- [ ] Beta - Marketplace
-+- [ ] Beta - Community
-+- [ ] Beta - Ratings
-+- [ ] Beta - Cloud
-diff --git a/docs_build/dev/ProjectInstructions/deprecation/README.md b/docs_build/dev/ProjectInstructions/deprecation/README.md
-new file mode 100644
-index 000000000..55c1637da
---- /dev/null
-+++ b/docs_build/dev/ProjectInstructions/deprecation/README.md
++++ b/docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-instruction-compliance-checklist.md
 @@ -0,0 +1,20 @@
-+﻿# Deprecation Workflow
++# Instruction Compliance Checklist
 +
-+Deprecation is its own governance group.
-+
-+Deprecated items remain traceable from backlog status through any visible Build Path representation and any later archive/removal decision.
-+
-+## Rules
-+
-+- Deprecation uses status `[-]`.
-+- Deprecated items are traceable.
-+- Owner approval is required before archive or removal.
-+- Deprecated Build Path items use red overlay if visible.
-+- Deprecated items do not count against current MVP completion.
-+- Deprecated items should include a note explaining replacement path, retention reason, or removal blocker.
-+
-+## Archive And Removal
-+
-+Do not archive or remove deprecated material until the owner explicitly approves.
-+
-+When approved, archive before removal whenever traceability is needed.
-diff --git a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
-new file mode 100644
-index 000000000..0b63c376f
---- /dev/null
-+++ b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
-@@ -0,0 +1,143 @@
-+# TEAM_ASSIGNMENTS
-+
-+## Assignment Status Legend
-+
-+- Available: team may pull one `[ ]` backlog item when explicitly instructed.
-+- Active: team has one assignment in progress.
-+- Blocked: team cannot pull work until blocker is cleared.
-+
-+## Team Alpha
-+
-+Status: Available
-+
-+Active assignment: none.
-+
-+Active branch: none.
-+
-+## Team Beta
-+
-+Status: Available
-+
-+Active assignment: none.
-+
-+Active branch: none.
-+
-+## Team Gamma
-+
-+Status: Available
-+
-+Active assignment: none.
-+
-+Active branch: none.
-+
-+## Team OWNER
-+
-+Status: Available
-+
-+Active assignment: none.
-+
-+Active branch: none.
-+
-+## Team Name Registry
-+
-+- Team Alfa
-+- Team Bravo
-+- Team Charlie
-+- Team Delta
-+- Team Echo
-+- Team Foxtrot
-+- Team Golf
-+- Team Hotel
-+- Team India
-+- Team Juliett
-+- Team Kilo
-+- Team Lima
-+- Team Mike
-+- Team November
-+- Team Oscar
-+- Team Papa
-+- Team Quebec
-+- Team Romeo
-+- Team Sierra
-+- Team Tango
-+- Team Uniform
-+- Team Victor
-+- Team Whiskey
-+- Team X-ray
-+- Team Yankee
-+- Team Zulu
-+- Team OWNER
-+
-+## Preferred Codex Execution Method
-+
-+Preferred execution model:
-+Single Codex session with multiple sequential PRs.
-+
-+Purpose:
-+Reduce back-and-forth between owner and Codex while keeping PRs reviewable and scoped.
-+
-+Rules:
-+- One Codex session may execute multiple sequential PRs.
-+- Each PR must still have one clear purpose.
-+- Each PR must create its own branch.
-+- Each PR must be committed, pushed, and opened as a draft PR.
-+- Do not commit directly to main.
-+- Do not merge without explicit owner approval.
-+- If later PRs depend on earlier unmerged PRs, Codex must either:
-+  - stack the dependent PRs, or
-+  - stop and request owner approval for the dependency model.
-+- Codex should reduce chit-chat by planning the full sequence before starting.
-+- Codex must still hard-stop for conflicts, dirty worktree, scope mismatch, missing assignment, or protected instruction deletion.
-+
-+### All-Team Codex Execution Clarification
-+
-+Preferred execution model:
-+Single Codex session with multiple sequential PRs.
-+
-+Applies to:
-+- Team Alfa through Team Zulu
-+- Team OWNER
-+
-+Purpose:
-+Reduce back-and-forth between owner and Codex while keeping PRs reviewable and scoped.
-+
-+Rules:
-+- One Codex session may execute multiple sequential PRs.
-+- Each PR must still have one clear purpose.
-+- Each PR must create or use its own approved branch.
-+- Each PR may be committed and pushed during active work.
-+- Each PR may be opened as a draft PR during active work.
-+- Do not commit directly to main.
-+- Do not merge to main during active work unless the owner explicitly says: "Merge this PR now."
-+- If later PRs depend on earlier unmerged PRs, Codex must either:
-+  - stack the dependent PRs, or
-+  - stop and request owner approval for the dependency model.
-+- Codex should reduce chit-chat by planning the full sequence before starting.
-+- Codex must still hard-stop for conflicts, dirty worktree, scope mismatch, missing assignment, or protected instruction deletion.
-+
-+Conflict note:
-+- Older wording that says each PR must create its own branch remains preserved.
-+- This all-team clarification allows an approved existing team, OWNER, or scoped PR branch when the owner assigns that dependency model.
-+- If a branch model is unclear, owner approval is required before continuing.
-+
-+## Day Work / EOD Merge Rule
-+
-+During active work:
-+- Work happens on assigned team branches, OWNER branches, or scoped PR branches.
-+- Commits are allowed only on assigned non-main branches.
-+- Pushes are allowed and expected.
-+- Draft PRs are allowed and expected.
-+- Direct commits to main are prohibited.
-+- Merges to main are prohibited unless explicitly approved by the owner.
-+
-+At end of day:
-+- Owner reviews ready PRs.
-+- Owner explicitly approves which PRs merge.
-+- Only owner-approved PRs may merge to main.
-+- After merge, return to main and pull latest main.
-+- Do not treat sequential PR completion as merge approval.
-+
-+Commit/push during the day is allowed only on assigned team/OWNER/PR branches.
-+
-+Merge to main is EOD-only and owner-approved, unless the owner explicitly says:
-+"Merge this PR now."
-diff --git a/docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install-instruction-compliance-checklist.md
-new file mode 100644
-index 000000000..af8e94480
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install-instruction-compliance-checklist.md
-@@ -0,0 +1,17 @@
-+# PR_26172_OWNER_017 Instruction Compliance Checklist
++PR: `PR_26172_OWNER_028-eod-mainline-closeout-governance`
 +
 +- [x] Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
 +- [x] Read `docs_build/dev/PROJECT_MULTI_PC.txt`.
-+- [x] OWNER override documented by user.
-+- [x] Started from latest `main`.
-+- [x] Created branch `pr/26172-OWNER-017-project-instructions-bootstrap-install`.
-+- [x] Installed ProjectInstructions physical structure.
-+- [x] Created required anchor files.
-+- [x] Populated files with approved governance from OWNER PRs 001-016.
-+- [x] Did not redesign governance.
-+- [x] Did not create unrelated new governance.
-+- [x] Did not delete existing documentation.
-+- [x] Did not commit directly to `main`.
-+- [x] Did not merge any PR.
-+- [x] Ran docs/static validation.
-+- [x] Created repo-structured delta ZIP.
-diff --git a/docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install-manual-validation-notes.md b/docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install-manual-validation-notes.md
++- [x] Verified current branch was `main` before creating the PR branch.
++- [x] Verified repository was clean before creating the PR branch.
++- [x] Verified local/origin sync was `0 0` before creating the PR branch.
++- [x] Verified PR TEAM token is `OWNER`.
++- [x] Verified OWNER governance scope matches TEAM ownership.
++- [x] Created branch `pr/26172-OWNER-028-eod-mainline-closeout-governance`.
++- [x] Updated only scoped governance documentation and required reports.
++- [x] Ran `git diff --check`.
++- [x] Verified EOD closeout section exists.
++- [x] Verified Git workflow section updated.
++- [x] Verified no conflicting closeout governance section remains.
++- [x] Documented skipped Playwright and samples lanes.
++- [x] Created required Codex reports.
++- [x] Created repo-structured delta ZIP under `tmp/`.
+diff --git a/docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-manual-validation-notes.md b/docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-manual-validation-notes.md
 new file mode 100644
-index 000000000..4e7f24dd2
+index 000000000..b418c5889
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install-manual-validation-notes.md
-@@ -0,0 +1,12 @@
-+# PR_26172_OWNER_017 Manual Validation Notes
++++ b/docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-manual-validation-notes.md
+@@ -0,0 +1,19 @@
++# Manual Validation Notes
 +
-+- Verified branch was created from latest `main`.
-+- Verified `docs_build/dev/ProjectInstructions/` did not exist on `main` before installation.
-+- Verified required physical structure exists.
-+- Verified required anchor files exist.
-+- Verified installed files preserve approved ProjectInstructions governance content.
-+- Verified active override wording uses OWNER.
-+- Verified `BACKLOG_MASTER.md` filename remains preserved.
-+- Verified no existing documentation was deleted.
-+- Verified no runtime, UI, Playwright, or sample files changed.
-+- Verified no merge to `main` was performed.
-diff --git a/docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install-tree.txt b/docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install-tree.txt
++PR: `PR_26172_OWNER_028-eod-mainline-closeout-governance`
++
++## Checks Performed
++
++- Confirmed the EOD closeout rule was added to `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
++- Confirmed the existing Git workflow list now includes clean worktree verification, local/origin sync verification, final main commit recording, and final repository state reporting.
++- Confirmed the active ProjectInstructions multi-team addendum includes matching EOD closeout governance.
++- Confirmed existing return-to-main wording is not conflicting; it is strengthened by the new required final-state checks.
++
++## Manual Result
++
++PASS
++
++## Skipped Validation
++
++- Playwright was not run because no UI or runtime behavior changed.
++- Samples were not run because no samples or sample-impacting runtime changed.
+diff --git a/docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance.md b/docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance.md
 new file mode 100644
-index 000000000..81c6d761b
+index 000000000..180cacf3d
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install-tree.txt
-@@ -0,0 +1,21 @@
-+docs_build/dev/ProjectInstructions/
-+|-- PROJECT_INSTRUCTIONS.md
-+|-- README.txt
-+|-- TEAM_START_COMMANDS.md
-+|-- addendums/
-+|   |-- build_path_sync.md
-+|   |-- deprecation.md
-+|   |-- multi_team.md
-+|   |-- preservation.md
-+|   |-- team_release_readiness.md
-+|   `-- tile_overlay_status.md
-+|-- archive/
-+|   |-- README.md
-+|   `-- history/
-+|       `-- .gitkeep
-+|-- backlog/
-+|   `-- BACKLOG_MASTER.md
-+|-- deprecation/
-+|   `-- README.md
-+`-- team_assignments/
-+    `-- TEAM_ASSIGNMENTS.md
-diff --git a/docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install.md b/docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install.md
-new file mode 100644
-index 000000000..8ecbc95af
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install.md
-@@ -0,0 +1,56 @@
-+# PR_26172_OWNER_017-project-instructions-bootstrap-install
++++ b/docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance.md
+@@ -0,0 +1,39 @@
++# PR_26172_OWNER_028-eod-mainline-closeout-governance
 +
-+## Purpose
++## Scope
 +
-+Install the missing ProjectInstructions operating system into the repository.
++Add governance requiring final repository normalization after a merged PR or approved workstream.
 +
-+This is an installation PR, not a governance-design PR.
++## Team Ownership
 +
-+## Source
++- TEAM token: OWNER
++- Ownership classification: governance / workflow governance
++- TEAM ownership result: PASS
 +
-+The installed files use governance already approved across OWNER/Master-to-OWNER ProjectInstructions PRs 001-016:
++## Files Changed
 +
-+- ProjectInstructions root and README bootstrap
-+- preservation and archive governance
-+- backlog governance and Game Journey MVP population
-+- team assignments and team registry
-+- release readiness gate
-+- team start commands
-+- all-team Codex execution method
-+- Day Work / EOD Merge rule
-+- Build Path sync and tile overlay status governance
-+- deprecation workflow
-+- OWNER override and OWNER safety rules
-+
-+## Files Installed
-+
-+- `docs_build/dev/ProjectInstructions/README.txt`
-+- `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
-+- `docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md`
-+- `docs_build/dev/ProjectInstructions/addendums/build_path_sync.md`
-+- `docs_build/dev/ProjectInstructions/addendums/deprecation.md`
++- `docs_build/dev/PROJECT_INSTRUCTIONS.md`
 +- `docs_build/dev/ProjectInstructions/addendums/multi_team.md`
-+- `docs_build/dev/ProjectInstructions/addendums/preservation.md`
-+- `docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md`
-+- `docs_build/dev/ProjectInstructions/addendums/tile_overlay_status.md`
-+- `docs_build/dev/ProjectInstructions/archive/README.md`
-+- `docs_build/dev/ProjectInstructions/archive/history/.gitkeep`
-+- `docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md`
-+- `docs_build/dev/ProjectInstructions/deprecation/README.md`
-+- `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md`
++- `docs_build/dev/reports/codex_changed_files.txt`
++- `docs_build/dev/reports/codex_review.diff`
++- `docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance.md`
++- `docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-manual-validation-notes.md`
++- `docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-instruction-compliance-checklist.md`
++
++## Change Summary
++
++- Added `## EOD WORKSTREAM CLOSEOUT` to the legacy Project Instructions workflow.
++- Updated the `CODEX GIT WORKFLOW OWNERSHIP` required workflow to verify clean worktree, verify local/origin sync, record final main commit, and report final repository state before continuing.
++- Added matching EOD Workstream Closeout governance to the active ProjectInstructions multi-team addendum.
 +
 +## Validation
 +
-+- `git diff --check`
-+- `git diff --cached --check`
-+- Physical tree verification for `docs_build/dev/ProjectInstructions/`
-+- Targeted text verification for OWNER override, OWNER safety rules, team registry, EOD merge rule, and required anchor files
++- `git diff --check`: PASS
++- Verified EOD closeout section exists: PASS
++- Verified Git workflow section updated: PASS
++- Verified no conflicting closeout governance section: PASS
 +
 +## Skipped Lanes
 +
-+- Playwright skipped: documentation-only installation.
-+- Samples skipped: documentation-only installation.
-+
-+## Package
-+
-+- `tmp/PR_26172_OWNER_017-project-instructions-bootstrap-install_delta.zip`
++- Playwright: skipped because this is docs/governance-only.
++- Samples: skipped because no runtime, sample, or UI files changed.
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index b0b99997b..735167f9e 100644
+--- a/docs_build/dev/reports/codex_changed_files.txt
++++ b/docs_build/dev/reports/codex_changed_files.txt
+@@ -1,20 +1,7 @@
+-docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+-docs_build/dev/ProjectInstructions/README.txt
+-docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
+-docs_build/dev/ProjectInstructions/addendums/build_path_sync.md
+-docs_build/dev/ProjectInstructions/addendums/deprecation.md
++﻿docs_build/dev/PROJECT_INSTRUCTIONS.md
+ docs_build/dev/ProjectInstructions/addendums/multi_team.md
+-docs_build/dev/ProjectInstructions/addendums/preservation.md
+-docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
+-docs_build/dev/ProjectInstructions/addendums/tile_overlay_status.md
+-docs_build/dev/ProjectInstructions/archive/README.md
+-docs_build/dev/ProjectInstructions/archive/history/.gitkeep
+-docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
+-docs_build/dev/ProjectInstructions/deprecation/README.md
+-docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
+-docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install-instruction-compliance-checklist.md
+-docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install-manual-validation-notes.md
+-docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install-tree.txt
+-docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install.md
++docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance.md
++docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-manual-validation-notes.md
++docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-instruction-compliance-checklist.md
+ docs_build/dev/reports/codex_changed_files.txt
+ docs_build/dev/reports/codex_review.diff
