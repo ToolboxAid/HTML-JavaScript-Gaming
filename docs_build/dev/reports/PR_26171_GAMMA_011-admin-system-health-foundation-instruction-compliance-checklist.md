@@ -1,0 +1,32 @@
+# Instruction Compliance Checklist - PR_26171_GAMMA_011
+
+- PR has one purpose only: PASS
+- Exact PR name provided: PASS
+- PR name includes TEAM token `GAMMA`: PASS
+- Exact branch name provided by user: PASS
+- Branch started from latest `main`: PASS
+- `docs_build/dev/PROJECT_INSTRUCTIONS.md` read before changes: PASS
+- `docs_build/dev/PROJECT_MULTI_PC.txt` read before changes: PASS
+- Instruction enforcement start gate run before changes: PASS
+- Repository clean before branch creation: PASS
+- `main` local/origin sync verified before branch creation: PASS
+- TEAM ownership verified as Gamma diagnostics/admin foundation work: PASS
+- Theme V2 only: PASS
+- Postgres only: PASS
+- No new persistence: PASS
+- No page-specific System Health API calls: PASS
+- Wireframe/foundation only: PASS
+- Table-first presentation where practical: PASS
+- Environment Summary section complete: PASS
+- Database Health section complete: PASS
+- Storage Health section complete: PASS
+- Runtime Environment section complete: PASS
+- Limits & Capacity section complete: PASS
+- Diagnostics Log section complete: PASS
+- Runtime code unchanged: PASS
+- Required reports created: PASS
+- Manual validation notes created: PASS
+- ZIP required and pending final packaging: PASS
+- Targeted Admin page validation run: PASS
+- Samples skipped with reason documented: PASS
+- PR merge withheld until explicit EOD approval: PASS
