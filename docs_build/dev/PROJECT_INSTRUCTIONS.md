@@ -2002,7 +2002,11 @@ Required workflow:
 13. Merge PR.
 14. Return to main.
 15. Pull latest main.
-16. Continue to next approved PR.
+16. Verify clean worktree.
+17. Verify local/origin sync.
+18. Record final main commit.
+19. Report final repository state.
+20. Continue to next approved PR.
 
 Rules:
 - Do not ask the user if a PR should be created.
@@ -2024,6 +2028,41 @@ Required Git workflow report fields:
 - PR URL
 - merge result
 - final main commit
+
+## EOD WORKSTREAM CLOSEOUT
+
+At completion of a merged PR or approved workstream:
+
+Required steps:
+
+1. Merge approved PR.
+2. Checkout main.
+3. Pull latest main.
+4. Verify:
+   - current branch = main
+   - worktree clean
+   - local/origin sync = 0 0
+5. Record final main commit.
+6. Report final repository state.
+
+Required final state:
+
+Branch:
+main
+
+Worktree:
+clean
+
+Local/origin:
+0 0
+
+Rules:
+
+- A workstream is not considered closed until the repository is returned to main.
+- A PI is not considered complete until main is current and synchronized.
+- Do not leave Codex on a feature, team, workstream, recovery, governance, or owner branch after successful merge.
+- If merge succeeds but repository is not returned to main:
+  closeout status = FAIL.
 
 ## OWNER-CONTROLLED STABLE AND MERGE APPROVAL
 
