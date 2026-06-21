@@ -1,6 +1,8 @@
+docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
+docs_build/dev/ProjectInstructions/addendums/multi_team.md
 docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
-docs_build/dev/reports/PR_26172_OWNER_015-nato-team-registry-and-codex-execution-method-instruction-compliance-checklist.md
-docs_build/dev/reports/PR_26172_OWNER_015-nato-team-registry-and-codex-execution-method-manual-validation-notes.md
-docs_build/dev/reports/PR_26172_OWNER_015-nato-team-registry-and-codex-execution-method.md
+docs_build/dev/reports/PR_26172_OWNER_016-all-team-codex-execution-and-eod-merge-rule-instruction-compliance-checklist.md
+docs_build/dev/reports/PR_26172_OWNER_016-all-team-codex-execution-and-eod-merge-rule-manual-validation-notes.md
+docs_build/dev/reports/PR_26172_OWNER_016-all-team-codex-execution-and-eod-merge-rule.md
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff

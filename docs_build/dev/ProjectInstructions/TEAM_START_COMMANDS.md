@@ -65,3 +65,16 @@ Add the selected assignment under Team Gamma in TEAM_ASSIGNMENTS.md.
 Create one Team Gamma branch for the selected assignment.
 Work only that assignment.
 ```
+
+## Day Work / EOD Merge Reminder
+
+Ready-to-copy reminder:
+
+```text
+Commit/push during the day is allowed only on assigned team/OWNER/PR branches.
+
+Merge to main is EOD-only and owner-approved, unless the owner explicitly says:
+"Merge this PR now."
+
+Do not treat sequential PR completion as merge approval.
+```
