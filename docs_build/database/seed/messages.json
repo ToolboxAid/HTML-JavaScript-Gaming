@@ -31,5 +31,5 @@
     "messages_records": [],
     "messages_segments": []
   },
-  "note": "Seed names are applied by the server-side Messages SQLite service. Browser pages must not seed authoritative records."
+  "note": "Seed names are applied by the server-side Messages Postgres service. Browser pages must not seed authoritative records."
 }

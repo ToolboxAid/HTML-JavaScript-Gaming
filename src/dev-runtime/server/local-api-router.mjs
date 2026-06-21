@@ -121,9 +121,9 @@ import {
 } from "../marketplace/marketplace-revenue-service.mjs";
 import { handleAdminNotesDirectoryApiRequest } from "../admin/admin-notes-directory.mjs";
 import {
-  createMessagesSqliteService,
+  createMessagesPostgresService,
   handleMessagesApiContract,
-} from "../messages/messages-sqlite-service.mjs";
+} from "../messages/messages-postgres-service.mjs";
 import {
   LegalDocumentError,
   readPublishedLegalDocument,
@@ -2320,9 +2320,11 @@ class ApiRuntimeDataSource {
   constructor({
     gameJourneyCompletionMetricsLegacyDbPath = undefined,
     gameJourneyCompletionMetricsPostgresClient = null,
+    messagesPostgresClient = null,
+    messagesService = null,
     repoRoot = process.cwd(),
   } = {}) {
-    this.messagesService = createMessagesSqliteService({ repoRoot });
+    this.messagesService = messagesService || createMessagesPostgresService({ postgresClient: messagesPostgresClient });
     this.gameJourneyCompletionMetricsLegacyDbPath = gameJourneyCompletionMetricsLegacyDbPath;
     this.gameJourneyCompletionMetricsPostgresClient = gameJourneyCompletionMetricsPostgresClient;
     this.repositoryCounter = 1;
@@ -4853,7 +4855,7 @@ LIMIT 1;
     return this.sessionUserKey || SEED_DB_KEYS.users.forgeBot;
   }
 
-  messagesApiContract(method, parts, body) {
+  async messagesApiContract(method, parts, body) {
     return handleMessagesApiContract({
       actorKey: this.messagesActorKey(),
       body,
@@ -5455,11 +5457,15 @@ LIMIT 1;
 export function createLocalApiRouter({
   gameJourneyCompletionMetricsLegacyDbPath = undefined,
   gameJourneyCompletionMetricsPostgresClient = null,
+  messagesPostgresClient = null,
+  messagesService = null,
   repoRoot = process.cwd(),
 } = {}) {
   const dataSource = new ApiRuntimeDataSource({
     gameJourneyCompletionMetricsLegacyDbPath,
     gameJourneyCompletionMetricsPostgresClient,
+    messagesPostgresClient,
+    messagesService,
     repoRoot,
   });
 
@@ -5685,7 +5691,7 @@ export function createLocalApiRouter({
 
       if (parts[1] === "messages") {
         const body = request.method === "POST" ? await readRequestJson(request) : {};
-        ok(response, dataSource.messagesApiContract(request.method, parts.slice(2), body));
+        ok(response, await dataSource.messagesApiContract(request.method, parts.slice(2), body));
         return true;
       }
 
