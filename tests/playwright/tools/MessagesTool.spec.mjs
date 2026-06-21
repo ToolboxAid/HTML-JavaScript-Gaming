@@ -167,11 +167,16 @@ test("Message Studio renders Messages with child Message Parts and plays ordered
     await expect(page.locator("[data-messages-tts-add-row]")).toHaveCount(0);
     await expect(page.locator("[data-messages-emotions]")).toHaveCount(0);
     await expect(page.locator("[data-messages-tts-profiles]")).toHaveCount(0);
-    await expect(page.getByRole("columnheader", { name: "Message Name" })).toBeVisible();
-    await expect(page.getByRole("columnheader", { name: "Default TTS Profile" })).toBeVisible();
+    await expect(page.locator("[data-messages-preview-tts-profile]")).toHaveCount(0);
+    await expect(page.locator("[data-messages-tts-service]")).toHaveCount(0);
+    await expect(page.locator("[data-messages-test-speech]")).toHaveCount(0);
+    await expect(page.getByText("Speech Test", { exact: true })).toHaveCount(0);
+    await expect(page.getByRole("columnheader", { name: "Message", exact: true })).toBeVisible();
+    await expect(page.getByRole("columnheader", { exact: true, name: "TTS Profile" })).toBeVisible();
     await expect(page.locator("[data-messages-segment-count]")).toHaveText("0");
     await expect(page.locator("[data-messages-add-control-row]")).toBeVisible();
-    await expect(page.getByRole("button", { name: "Stop" })).toBeEnabled();
+    await expect(page.getByRole("button", { name: "Stop Playback" })).toBeEnabled();
+    await expect(page.locator("[data-messages-playback-status]")).toHaveText("Ready for Message Studio playback.");
 
     await page.getByRole("button", { name: "Add Message" }).click();
     await expect(page.locator("[data-messages-row-editor='__new__']")).toBeVisible();
@@ -209,7 +214,7 @@ test("Message Studio renders Messages with child Message Parts and plays ordered
     await expect(page.getByRole("heading", { name: "Message Parts" })).toBeVisible();
     const partsTable = page.getByLabel("Message parts");
     await expect(partsTable.getByRole("columnheader", { name: "Order" })).toHaveCount(0);
-    await expect(partsTable.getByRole("columnheader", { name: "Text" })).toBeVisible();
+    await expect(partsTable.getByRole("columnheader", { name: "Part Text" })).toBeVisible();
     await expect(partsTable.getByRole("columnheader", { name: "Emotion" })).toBeVisible();
     await expect(partsTable.getByRole("columnheader", { exact: true, name: "TTS Profile" })).toBeVisible();
     await expect(partsTable.getByRole("columnheader", { name: "Status" })).toBeVisible();
@@ -251,6 +256,20 @@ test("Message Studio renders Messages with child Message Parts and plays ordered
         volume: 1,
       }),
     ]));
+    const urgentPartRow = page.locator("[data-messages-segment-row]").filter({ hasText: "Keep your torch high." });
+    await urgentPartRow.locator("[data-segment-tts-profile]").evaluate((select) => {
+      const option = document.createElement("option");
+      option.value = "missing-profile";
+      option.textContent = "Missing Profile";
+      select.append(option);
+      select.value = option.value;
+      select.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+    await urgentPartRow.getByRole("button", { name: "Play Part" }).click();
+    await expect(page.locator("[data-messages-validation-card]")).toBeVisible();
+    await expect(page.locator("[data-messages-validation-errors]")).toContainText("Select a TTS profile before playback.");
+    await expect(page.locator("[data-messages-playback-status]")).toHaveText("Select a TTS profile before playback.");
+    await page.locator("[data-messages-segment-row]").filter({ hasText: "Keep your torch high." }).locator("[data-segment-tts-profile]").selectOption({ label: "Default Balanced TTS Profile" });
 
     await page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" }).getByRole("button", { name: "Play Message" }).click();
     await expect(page.locator("[data-messages-log]")).toHaveText("Play Message queued 2 parts for Bat Encounter.");
@@ -274,7 +293,7 @@ test("Message Studio renders Messages with child Message Parts and plays ordered
       type: "speak",
       voiceName: "Test Voice",
     }));
-    await page.getByRole("button", { name: "Stop" }).click();
+    await page.getByRole("button", { name: "Stop Playback" }).click();
     await expect(page.locator("[data-messages-log]")).toHaveText("Message Studio playback stopped. Cleared 2 queued items.");
     speechCalls = await page.evaluate(() => window.__messagesSpeechCalls);
     expect(speechCalls.at(-1)).toEqual({ type: "cancel" });
@@ -359,13 +378,72 @@ test("Message Studio shows actionable playback error when audio engine is unavai
     await expect(page.locator("[data-messages-validation-card]")).toBeVisible();
     await expect(page.locator("[data-messages-validation-errors]")).toContainText("Audio engine is unavailable. Use a browser with SpeechSynthesis support and reload Message Studio.");
     await expect(page.locator("[data-messages-log]")).toHaveText("Audio engine is unavailable. Use a browser with SpeechSynthesis support and reload Message Studio.");
-    await expect(page.locator("[data-messages-preview-status]")).toHaveText("Audio engine is unavailable. Use a browser with SpeechSynthesis support and reload Message Studio.");
+    await expect(page.locator("[data-messages-playback-status]")).toHaveText("Audio engine is unavailable. Use a browser with SpeechSynthesis support and reload Message Studio.");
     expect(await page.evaluate(() => window.__messagesSpeechCalls)).toEqual([]);
 
     expect(failures.failedRequests).toEqual([]);
     expect(failures.pageErrors).toEqual([]);
     expect(failures.consoleErrors).toEqual([]);
   } finally {
+    await closeMessagesRun(failures, page);
+    await fs.rm(sqlitePath, { force: true });
+  }
+});
+
+test("Message Studio shows actionable playback error when selected TTS profile lacks the selected emotion", async ({ page }) => {
+  const sqlitePath = messagesDbPath();
+  await fs.rm(sqlitePath, { force: true });
+  await page.route("**/api/messages/tts-profiles", async (route) => {
+    if (route.request().method() !== "GET") {
+      await route.continue();
+      return;
+    }
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        data: {
+          persistence: { owner: "messages" },
+          ttsProfiles: [{
+            active: true,
+            emotionSettings: [{ active: true, emotion: "calm", emotionLabel: "Calm", pitch: 1, rate: 1, ssmlLikePreset: "normal", volume: 1 }],
+            key: "calm-only-profile",
+            language: "en-US",
+            name: "Calm Only Profile",
+            providerKey: "browser-speech",
+            voiceName: "",
+          }],
+        },
+        ok: true,
+      }),
+    });
+  });
+  const failures = await openMessagesPage(page, sqlitePath);
+
+  try {
+    await addMessage(page, {
+      emotion: "Urgent",
+      name: "Urgent Encounter",
+      text: "Danger is close.",
+    });
+    await openMessageParts(page, "Urgent Encounter");
+    await addPart(page, {
+      emotion: "Urgent",
+      order: 1,
+      text: "Danger is close.",
+    });
+
+    await page.locator("[data-messages-segment-row]").filter({ hasText: "Danger is close." }).getByRole("button", { name: "Play Part" }).click();
+    const expectedError = 'Selected TTS Profile "Calm Only Profile" does not include an Emotion Setting for "Urgent".';
+    await expect(page.locator("[data-messages-validation-card]")).toBeVisible();
+    await expect(page.locator("[data-messages-validation-errors]")).toContainText(expectedError);
+    await expect(page.locator("[data-messages-playback-status]")).toHaveText(expectedError);
+    expect(await page.evaluate(() => window.__messagesSpeechCalls)).toEqual([]);
+
+    expect(failures.failedRequests).toEqual([]);
+    expect(failures.pageErrors).toEqual([]);
+    expect(failures.consoleErrors).toEqual([]);
+  } finally {
+    await page.unroute("**/api/messages/tts-profiles");
     await closeMessagesRun(failures, page);
     await fs.rm(sqlitePath, { force: true });
   }

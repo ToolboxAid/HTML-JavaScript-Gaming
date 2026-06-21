@@ -120,6 +120,8 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
     await expect(page.locator("[data-tts-profile-table]")).toContainText("Default Balanced Profile");
     await expect(page.locator("[data-tts-profile-table]")).toContainText("Man Profile 1");
     await expect(page.locator("[data-tts-profile-table]")).toContainText("Woman Profile 2");
+    await expect(page.getByRole("columnheader", { exact: true, name: "Profile" })).toBeVisible();
+    await expect(page.getByRole("columnheader", { name: "Age Filter" })).toBeVisible();
     const defaultProfileRow = page.locator("[data-tts-profile-row]").filter({ hasText: "Default Balanced Profile" });
     await expect(defaultProfileRow.getByRole("button", { name: "Delete" })).toBeDisabled();
     await expect(page.locator("[data-tts-emotion-host]")).toHaveCount(0);
@@ -130,7 +132,7 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
     await expect(defaultProfileRow.locator("[data-tts-profile-name-cell]")).toHaveAttribute("aria-expanded", "true");
     await expect(page.getByRole("heading", { name: "Emotion Settings" })).toBeVisible();
     await expect(page.getByRole("columnheader", { name: "Emotion", exact: true })).toBeVisible();
-    await expect(page.getByRole("columnheader", { name: "Preset" })).toBeVisible();
+    await expect(page.getByRole("columnheader", { name: "Delivery Preset" })).toBeVisible();
     await expect(page.locator("[data-tts-emotion-row]")).toHaveCount(4);
     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Neutral" }).getByRole("button", { name: "Delete" })).toBeDisabled();
     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Happy" })).toBeVisible();
