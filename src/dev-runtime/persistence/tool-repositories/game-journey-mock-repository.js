@@ -604,6 +604,8 @@ export function createGameJourneyMockRepository(options = {}) {
   const completionMetricsStore =
     options.completionMetricsStore || createGameJourneyCompletionMetricsStore({
       dbPath: options.completionMetricsDbPath,
+      legacyDbPath: options.completionMetricsLegacyDbPath,
+      postgresClient: options.completionMetricsPostgresClient,
     });
   const tables = loadMockDbTables(GAME_JOURNEY_DB_OWNER, getSeedTables(), options).tables;
   let selectedNoteKey = GAME_JOURNEY_KEYS.notes.designPass;
@@ -1504,8 +1506,8 @@ export function createGameJourneyMockRepository(options = {}) {
   }
 
   return {
-    getTables: () => clone({
-      game_journey_completion_metrics: completionMetricsStore.listMetrics(),
+    getTables: async () => clone({
+      game_journey_completion_metrics: await completionMetricsStore.listMetrics(),
       ...tables,
     }),
     getCompletionMetricsSnapshot: () => completionMetricsStore.snapshot(),

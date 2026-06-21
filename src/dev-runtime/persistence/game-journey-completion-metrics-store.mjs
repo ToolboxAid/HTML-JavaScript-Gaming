@@ -1,10 +1,35 @@
-import { mkdirSync } from "node:fs";
+import { existsSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
-import { DatabaseSync } from "node:sqlite";
+import { createPostgresConnectionClient } from "./postgres-connection-client.mjs";
 import { SEED_DB_KEYS, makeSeedUlid } from "../seed/seed-db-keys.mjs";
 
 export const GAME_JOURNEY_COMPLETION_METRICS_TABLE = "game_journey_completion_metrics";
+
+const GAME_JOURNEY_COMPLETION_METRICS_SCHEMA_SQL = `
+CREATE TABLE IF NOT EXISTS game_journey_completion_metrics (
+  key text PRIMARY KEY,
+  "bucketKey" text NOT NULL UNIQUE,
+  "bucketOrder" integer NOT NULL DEFAULT 0,
+  "bucketName" text NOT NULL,
+  "friendlyDescription" text NOT NULL,
+  "requiredForMvp" boolean NOT NULL DEFAULT false,
+  "canSkip" boolean NOT NULL DEFAULT false,
+  "plannedCount" integer NOT NULL DEFAULT 0,
+  "completedCount" integer NOT NULL DEFAULT 0,
+  "active" boolean NOT NULL DEFAULT true,
+  "status" text NOT NULL DEFAULT 'active',
+  "createdAt" timestamptz NOT NULL DEFAULT now(),
+  "updatedAt" timestamptz NOT NULL DEFAULT now(),
+  "createdBy" text NOT NULL REFERENCES users(key),
+  "updatedBy" text NOT NULL REFERENCES users(key)
+);
+
+CREATE INDEX IF NOT EXISTS idx_game_journey_completion_metrics_active ON game_journey_completion_metrics ("active");
+CREATE INDEX IF NOT EXISTS idx_game_journey_completion_metrics_status ON game_journey_completion_metrics ("status");
+CREATE INDEX IF NOT EXISTS idx_game_journey_completion_metrics_createdby ON game_journey_completion_metrics ("createdBy");
+CREATE INDEX IF NOT EXISTS idx_game_journey_completion_metrics_updatedby ON game_journey_completion_metrics ("updatedBy");
+`;
 
 function makeCompletionBucket({ order, ...bucket }) {
   return Object.freeze({
@@ -35,12 +60,32 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
-function defaultDatabasePath() {
-  const configured = String(process.env.GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH || "").trim();
+function defaultLegacySqlitePath(env = process.env) {
+  const configured = String(env.GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH || "").trim();
   if (configured) {
     return path.resolve(configured);
   }
   return path.join(process.cwd(), "tmp", "local-api", "game-journey-completion-metrics.sqlite");
+}
+
+function resolveLegacySqlitePath({ dbPath, env, legacyDbPath }) {
+  if (legacyDbPath === null) {
+    return "";
+  }
+  if (legacyDbPath !== undefined) {
+    return path.resolve(legacyDbPath);
+  }
+  if (dbPath) {
+    return path.resolve(dbPath);
+  }
+  return defaultLegacySqlitePath(env);
+}
+
+function assertNoUnmigratedLegacySqlite(legacyDbPath) {
+  if (!legacyDbPath || !existsSync(legacyDbPath)) {
+    return;
+  }
+  throw new Error(`Legacy Game Journey completion metrics SQLite data exists at ${legacyDbPath}. No data was removed or overwritten. Export or migrate that data into Postgres, then move the legacy file before using the Postgres metrics store.`);
 }
 
 function normalizeCount(value, fallback = 0) {
@@ -52,10 +97,10 @@ function normalizeCount(value, fallback = 0) {
 }
 
 function normalizeActive(value, fallback = true) {
-  if (value === true || value === 1 || value === "1" || value === "active") {
+  if (value === true || value === 1 || value === "1" || value === "true" || value === "active") {
     return true;
   }
-  if (value === false || value === 0 || value === "0" || value === "inactive") {
+  if (value === false || value === 0 || value === "0" || value === "false" || value === "inactive") {
     return false;
   }
   return fallback;
@@ -92,192 +137,184 @@ function normalizeMetric(row, fallback = {}) {
   };
 }
 
-function addMissingColumn(database, columns, name, ddl) {
-  if (!columns.has(name)) {
-    database.exec(`ALTER TABLE ${GAME_JOURNEY_COMPLETION_METRICS_TABLE} ADD COLUMN ${ddl}`);
-  }
+function queryForBucketKey(bucketKey) {
+  return `select=*&bucketKey=eq.${encodeURIComponent(bucketKey)}`;
 }
 
-function ensureMetricColumns(database) {
-  const columns = new Set(
-    database.prepare(`PRAGMA table_info(${GAME_JOURNEY_COMPLETION_METRICS_TABLE})`)
-      .all()
-      .map((column) => column.name),
-  );
-  addMissingColumn(database, columns, "status", "\"status\" TEXT NOT NULL DEFAULT 'active'");
-  addMissingColumn(database, columns, "createdBy", `"createdBy" TEXT NOT NULL DEFAULT '${SEED_DB_KEYS.users.forgeBot}'`);
-  addMissingColumn(database, columns, "updatedBy", `"updatedBy" TEXT NOT NULL DEFAULT '${SEED_DB_KEYS.users.forgeBot}'`);
-  addMissingColumn(database, columns, "key", `"key" TEXT NOT NULL DEFAULT '${makeSeedUlid(6000)}'`);
+function sortByBucketOrder(left, right) {
+  return Number(left.bucketOrder) - Number(right.bucketOrder)
+    || String(left.bucketKey).localeCompare(String(right.bucketKey));
 }
 
-function openDatabase(dbPath) {
-  mkdirSync(path.dirname(dbPath), { recursive: true });
-  const database = new DatabaseSync(dbPath);
-  database.exec(`
-    CREATE TABLE IF NOT EXISTS ${GAME_JOURNEY_COMPLETION_METRICS_TABLE} (
-      "key" TEXT PRIMARY KEY,
-      "bucketKey" TEXT NOT NULL UNIQUE,
-      "bucketOrder" INTEGER NOT NULL,
-      "bucketName" TEXT NOT NULL,
-      "friendlyDescription" TEXT NOT NULL,
-      "requiredForMvp" INTEGER NOT NULL DEFAULT 0,
-      "canSkip" INTEGER NOT NULL DEFAULT 0,
-      "plannedCount" INTEGER NOT NULL DEFAULT 0,
-      "completedCount" INTEGER NOT NULL DEFAULT 0,
-      "active" INTEGER NOT NULL DEFAULT 1,
-      "status" TEXT NOT NULL DEFAULT 'active',
-      "createdAt" TEXT NOT NULL,
-      "updatedAt" TEXT NOT NULL,
-      "createdBy" TEXT NOT NULL,
-      "updatedBy" TEXT NOT NULL
-    );
-    CREATE INDEX IF NOT EXISTS idx_game_journey_completion_metrics_active
-      ON ${GAME_JOURNEY_COMPLETION_METRICS_TABLE} ("active");
-  `);
-  ensureMetricColumns(database);
-  return database;
-}
-
-function seedDefaultBuckets(database, buckets) {
-  const now = new Date().toISOString();
-  const statement = database.prepare(`
-    INSERT INTO ${GAME_JOURNEY_COMPLETION_METRICS_TABLE} (
-      "bucketKey",
-      "key",
-      "bucketOrder",
-      "bucketName",
-      "friendlyDescription",
-      "requiredForMvp",
-      "canSkip",
-      "plannedCount",
-      "completedCount",
-      "active",
-      "status",
-      "createdAt",
-      "updatedAt",
-      "createdBy",
-      "updatedBy"
-    )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ON CONFLICT("bucketKey") DO UPDATE SET
-      "bucketOrder" = excluded."bucketOrder",
-      "bucketName" = excluded."bucketName",
-      "friendlyDescription" = excluded."friendlyDescription",
-      "requiredForMvp" = excluded."requiredForMvp",
-      "canSkip" = excluded."canSkip"
-  `);
-  buckets.forEach((bucket) => {
-    statement.run(
-      bucket.bucketKey,
-      bucket.key,
-      bucket.order,
-      bucket.bucketName,
-      bucket.friendlyDescription,
-      bucket.requiredForMvp ? 1 : 0,
-      bucket.canSkip ? 1 : 0,
-      bucket.plannedCount,
-      bucket.completedCount,
-      bucket.active ? 1 : 0,
-      bucket.active ? "active" : "inactive",
-      now,
-      now,
-      SEED_DB_KEYS.users.forgeBot,
-      SEED_DB_KEYS.users.forgeBot,
-    );
-  });
-}
-
-function readMetrics(database, buckets) {
-  seedDefaultBuckets(database, buckets);
-  const rows = database.prepare(`
-    SELECT
-      "bucketKey",
-      "key",
-      "bucketOrder",
-      "bucketName",
-      "friendlyDescription",
-      "requiredForMvp",
-      "canSkip",
-      "plannedCount",
-      "completedCount",
-      "active",
-      "status",
-      "createdAt",
-      "updatedAt",
-      "createdBy",
-      "updatedBy"
-    FROM ${GAME_JOURNEY_COMPLETION_METRICS_TABLE}
-    ORDER BY "bucketOrder" ASC
-  `).all();
-  const fallbackByKey = new Map(buckets.map((bucket) => [bucket.bucketKey, bucket]));
-  return rows.map((row) => normalizeMetric(row, fallbackByKey.get(row.bucketKey) || {}));
+function bucketSeedRow(bucket, now) {
+  return {
+    active: bucket.active,
+    bucketKey: bucket.bucketKey,
+    bucketName: bucket.bucketName,
+    bucketOrder: bucket.order,
+    canSkip: bucket.canSkip,
+    completedCount: bucket.completedCount,
+    createdAt: now,
+    createdBy: SEED_DB_KEYS.users.forgeBot,
+    friendlyDescription: bucket.friendlyDescription,
+    key: bucket.key,
+    plannedCount: bucket.plannedCount,
+    requiredForMvp: bucket.requiredForMvp,
+    status: bucket.active ? "active" : "inactive",
+    updatedAt: now,
+    updatedBy: SEED_DB_KEYS.users.forgeBot,
+  };
 }
 
 export function createGameJourneyCompletionMetricsStore(options = {}) {
-  const dbPath = path.resolve(options.dbPath || defaultDatabasePath());
+  const env = options.env || process.env;
   const bucketSeeds = Object.freeze((options.buckets || GAME_JOURNEY_COMPLETION_BUCKETS).map(clone));
+  const legacyDbPath = resolveLegacySqlitePath({
+    dbPath: options.dbPath,
+    env,
+    legacyDbPath: options.legacyDbPath,
+  });
+  let postgresClient = options.postgresClient || null;
+  let readyPromise = null;
 
-  function withDatabase(callback) {
-    const database = openDatabase(dbPath);
+  function client() {
+    if (postgresClient) {
+      return postgresClient;
+    }
     try {
-      return callback(database);
-    } finally {
-      database.close();
+      postgresClient = createPostgresConnectionClient({ env });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error || "Unknown Postgres configuration error.");
+      throw new Error(`Game Journey completion metrics Postgres storage is not configured. ${message}`);
+    }
+    return postgresClient;
+  }
+
+  async function tableRows() {
+    const rows = await client().requestTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE, {
+      method: "GET",
+      query: "select=*",
+    });
+    return Array.isArray(rows) ? clone(rows) : [];
+  }
+
+  async function rowByBucketKey(bucketKey) {
+    const rows = await client().requestTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE, {
+      method: "GET",
+      query: queryForBucketKey(bucketKey),
+    });
+    return clone(Array.isArray(rows) ? rows[0] || null : null);
+  }
+
+  async function upsertRow(row) {
+    const rows = await client().requestTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE, {
+      body: row,
+      method: "POST",
+    });
+    return clone(Array.isArray(rows) ? rows[0] || row : row);
+  }
+
+  async function patchRow(bucketKey, row) {
+    const rows = await client().requestTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE, {
+      body: row,
+      method: "PATCH",
+      query: queryForBucketKey(bucketKey),
+    });
+    return clone(Array.isArray(rows) ? rows[0] || null : null);
+  }
+
+  async function seedDefaultBuckets() {
+    const now = new Date().toISOString();
+    const existingByBucketKey = new Map((await tableRows()).map((row) => [row.bucketKey, row]));
+    for (const bucket of bucketSeeds) {
+      const existing = existingByBucketKey.get(bucket.bucketKey);
+      if (!existing) {
+        await upsertRow(bucketSeedRow(bucket, now));
+        continue;
+      }
+      await patchRow(bucket.bucketKey, {
+        bucketName: bucket.bucketName,
+        bucketOrder: bucket.order,
+        canSkip: bucket.canSkip,
+        friendlyDescription: bucket.friendlyDescription,
+        requiredForMvp: bucket.requiredForMvp,
+      });
     }
   }
 
-  function listMetrics() {
-    return withDatabase((database) => readMetrics(database, bucketSeeds));
+  async function ensureReady() {
+    if (!readyPromise) {
+      readyPromise = (async () => {
+        assertNoUnmigratedLegacySqlite(legacyDbPath);
+        await client().query(GAME_JOURNEY_COMPLETION_METRICS_SCHEMA_SQL);
+        await seedDefaultBuckets();
+      })();
+    }
+    return readyPromise;
   }
 
-  function updateMetric(bucketKey, updates = {}) {
+  async function listMetrics() {
+    await ensureReady();
+    const fallbackByKey = new Map(bucketSeeds.map((bucket) => [bucket.bucketKey, bucket]));
+    return (await tableRows())
+      .map((row) => normalizeMetric(row, fallbackByKey.get(row.bucketKey) || {}))
+      .sort(sortByBucketOrder);
+  }
+
+  async function updateMetric(bucketKey, updates = {}) {
+    await ensureReady();
     const key = String(bucketKey || updates.bucketKey || "").trim();
     if (!key) {
       throw new Error("Game Journey completion metric update requires a bucketKey.");
     }
-    return withDatabase((database) => {
-      const current = readMetrics(database, bucketSeeds).find((metric) => metric.bucketKey === key);
-      if (!current) {
-        throw new Error(`Unknown Game Journey completion metric bucket: ${key}.`);
-      }
-      const plannedCount = updates.plannedCount === undefined
-        ? current.plannedCount
-        : normalizeCount(updates.plannedCount, current.plannedCount);
-      const completedCount = Math.min(
-        updates.completedCount === undefined
-          ? current.completedCount
-          : normalizeCount(updates.completedCount, current.completedCount),
-        plannedCount,
-      );
-      const active = updates.active === undefined && updates.status === undefined
-        ? current.active
-        : normalizeActive(updates.active ?? updates.status, current.active);
-      const updatedAt = new Date().toISOString();
-      database.prepare(`
-        UPDATE ${GAME_JOURNEY_COMPLETION_METRICS_TABLE}
-        SET
-          "plannedCount" = ?,
-          "completedCount" = ?,
-          "active" = ?,
-          "status" = ?,
-          "updatedAt" = ?
-        WHERE "bucketKey" = ?
-      `).run(plannedCount, completedCount, active ? 1 : 0, active ? "active" : "inactive", updatedAt, key);
-      return readMetrics(database, bucketSeeds).find((metric) => metric.bucketKey === key);
+    const current = (await listMetrics()).find((metric) => metric.bucketKey === key);
+    if (!current) {
+      throw new Error(`Unknown Game Journey completion metric bucket: ${key}.`);
+    }
+    const plannedCount = updates.plannedCount === undefined
+      ? current.plannedCount
+      : normalizeCount(updates.plannedCount, current.plannedCount);
+    const completedCount = Math.min(
+      updates.completedCount === undefined
+        ? current.completedCount
+        : normalizeCount(updates.completedCount, current.completedCount),
+      plannedCount,
+    );
+    const active = updates.active === undefined && updates.status === undefined
+      ? current.active
+      : normalizeActive(updates.active ?? updates.status, current.active);
+    const updatedAt = new Date().toISOString();
+    const row = await patchRow(key, {
+      active,
+      completedCount,
+      plannedCount,
+      status: active ? "active" : "inactive",
+      updatedAt,
+      updatedBy: current.updatedBy || SEED_DB_KEYS.users.forgeBot,
     });
+    return normalizeMetric(row || {
+      ...current,
+      active,
+      completedCount,
+      plannedCount,
+      status: active ? "active" : "inactive",
+      updatedAt,
+    }, current);
   }
 
-  function snapshot() {
-    const metrics = listMetrics();
+  async function snapshot() {
+    const metrics = await listMetrics();
     const activeCount = metrics.filter((metric) => metric.active).length;
     const plannedCount = metrics.reduce((total, metric) => total + metric.plannedCount, 0);
     const completedCount = metrics.reduce((total, metric) => total + metric.completedCount, 0);
     return {
       api: "Local API",
-      database: "Local DB",
-      databaseEngine: "SQLite",
-      databasePath: dbPath,
-      serviceContract: "Web UI -> Local API/Service Contract -> Local DB",
+      database: "Postgres",
+      databaseConfigKey: "GAMEFOUNDRY_DATABASE_URL",
+      databaseEngine: "Postgres",
+      databasePath: "GAMEFOUNDRY_DATABASE_URL",
+      legacySqlitePath: legacyDbPath,
+      serviceContract: "Web UI -> Local API/Service Contract -> Postgres",
       source: GAME_JOURNEY_COMPLETION_METRICS_TABLE,
       tableName: GAME_JOURNEY_COMPLETION_METRICS_TABLE,
       activeCount,
@@ -290,7 +327,7 @@ export function createGameJourneyCompletionMetricsStore(options = {}) {
   }
 
   return {
-    dbPath,
+    legacyDbPath,
     listMetrics,
     snapshot,
     updateMetric,

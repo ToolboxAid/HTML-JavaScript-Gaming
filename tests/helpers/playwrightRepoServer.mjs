@@ -91,10 +91,17 @@ function resolveBrowserRoutePath(decodedPath) {
 }
 
 export async function startRepoServer({
+  gameJourneyCompletionMetricsLegacyDbPath = undefined,
+  gameJourneyCompletionMetricsPostgresClient = null,
   messagesPostgresClient = null,
 } = {}) {
   await loadRuntimeEnv();
-  const handleLocalApiRequest = createLocalApiRouter({ messagesPostgresClient, repoRoot });
+  const handleLocalApiRequest = createLocalApiRouter({
+    gameJourneyCompletionMetricsLegacyDbPath,
+    gameJourneyCompletionMetricsPostgresClient,
+    messagesPostgresClient,
+    repoRoot,
+  });
   const server = http.createServer(async (request, response) => {
     try {
       const requestUrl = new URL(request.url || "/", "http://127.0.0.1");

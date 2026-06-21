@@ -12,34 +12,34 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(87%) Toolbox Index - exercised 4 runtime JS files
+(74%) Toolbox Index - exercised 3 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
-(56%) Theme V2 Shared JS - exercised 2 runtime JS files
+(63%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
-(0%) src/dev-runtime/messages/messages-postgres-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 
 Files with executed line/function counts where available:
-(36%) src/api/server-api-client.js - executed lines 167/167; executed functions 5/14
-(36%) src/engine/audio/TextToSpeechEngine.js - executed lines 412/412; executed functions 16/44
-(38%) src/api/public-config-client.js - executed lines 209/209; executed functions 10/26
-(54%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 46/85
-(58%) toolbox/messages/messages-api-client.js - executed lines 64/64; executed functions 11/19
+(53%) src/api/server-api-client.js - executed lines 167/167; executed functions 10/19
+(63%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 54/86
 (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 204/204; executed functions 9/14
+(65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
+(67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
+(74%) toolbox/game-journey/game-journey.js - executed lines 1652/1652; executed functions 110/149
 (76%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 22/29
-(95%) toolbox/messages/messages.js - executed lines 1019/1019; executed functions 98/103
-(100%) src/engine/audio/TextToSpeechDefaults.js - executed lines 108/108; executed functions 1/1
-(100%) toolbox/messages/message-tts-service-registry.js - executed lines 45/45; executed functions 7/7
+(100%) toolbox/game-journey/game-journey-api-client.js - executed lines 19/19; executed functions 2/2
 
 Uncovered or low-coverage changed JS files:
-(0%) src/dev-runtime/messages/messages-postgres-service.mjs - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
-(0%) src/dev-runtime/messages/messages-postgres-service.mjs - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/dev-runtime/DbSeedIntegrity.test.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/helpers/messagesPostgresClientStub.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/helpers/playwrightRepoServer.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/MessagesTool.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/GameJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
