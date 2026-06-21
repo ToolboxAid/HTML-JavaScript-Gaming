@@ -1,138 +1,16 @@
-diff --git a/docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-instruction-compliance-checklist.md
-new file mode 100644
-index 000000000..a07705200
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-instruction-compliance-checklist.md
-@@ -0,0 +1,28 @@
-+# PR_26171_GAMMA_027 Instruction Compliance Checklist
-+
-+## Start Gate
-+
-+- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
-+- PASS: Read `docs_build/dev/PROJECT_MULTI_PC.txt`.
-+- PASS: PR name includes TEAM token `GAMMA`.
-+- PASS: Branch name mirrors TEAM token: `pr/26171-GAMMA-027-sqlite-doc-reference-cleanup`.
-+- PASS: Scope is diagnostics/cleanup and belongs to Team Gamma.
-+- PASS: Started from fresh `main` after PR 026 merged.
-+- PASS: Repository was clean before branch creation.
-+
-+## Scope Guard
-+
-+- PASS: One PR purpose only.
-+- PASS: Cleaned active docs/seed wording only.
-+- PASS: Preserved `PROJECT_INSTRUCTIONS.md` SQLite deprecation rules.
-+- PASS: Did not rewrite historical PR/report archives.
-+- PASS: Did not run samples.
-+
-+## Completion Gate
-+
-+- PASS: PR-specific report exists.
-+- PASS: Manual validation notes exist.
-+- PASS: Instruction compliance checklist exists.
-+- PASS: `docs_build/dev/reports/codex_review.diff` exists.
-+- PASS: `docs_build/dev/reports/codex_changed_files.txt` exists.
-+- PASS: Repo-structured ZIP path is documented: `tmp/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup_delta.zip`.
-diff --git a/docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-manual-validation-notes.md b/docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-manual-validation-notes.md
-new file mode 100644
-index 000000000..415d83d27
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-manual-validation-notes.md
-@@ -0,0 +1,17 @@
-+# PR_26171_GAMMA_027 Manual Validation Notes
-+
-+Manual validation focused on active docs/seed wording.
-+
-+## Notes
-+
-+- Confirmed PR 027 branch was created from fresh `main` after PR 026 merged.
-+- Confirmed `PROJECT_INSTRUCTIONS.md` deprecation rules were preserved.
-+- Confirmed historical report and PR docs were not modified.
-+- Confirmed the only active seed wording change was the Local DB session-mode description.
-+- Confirmed remaining SQLite references in active paths are governance, validation guards, negative tests, or legacy data-preservation guard text.
-+
-+## Skipped
-+
-+- Playwright was skipped because no UI behavior changed.
-+- Samples were skipped by request.
-+- Broad tests were skipped because this is a wording-only cleanup.
-diff --git a/docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup.md b/docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup.md
-new file mode 100644
-index 000000000..ecb1a233d
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup.md
-@@ -0,0 +1,43 @@
-+# PR_26171_GAMMA_027-sqlite-doc-reference-cleanup
-+
-+TEAM ownership: GAMMA.
-+
-+## Scope
-+
-+Clean active docs/seed wording that implied SQLite is still an active persistence target.
-+
-+## Changes
-+
-+- Updated `src/dev-runtime/persistence/mock-db-store.js` session-mode description from SQLite-backed wording to neutral Local DB adapter wording.
-+- Preserved `PROJECT_INSTRUCTIONS.md` SQLite deprecation rules.
-+- Did not rewrite historical PR/report archives.
-+- Did not remove governance, validation guard, negative test, or legacy data-preservation references.
-+
-+## Validation
-+
-+Passed:
-+- `git diff --check`
-+- `node --check src/dev-runtime/persistence/mock-db-store.js`
-+- Targeted text check confirmed no active docs/seed wording still says `SQLite-backed`, `SQLite persistence`, `SQLite service`, or `backed by server SQLite storage`.
-+- Scoped active-source search confirmed remaining non-archive SQLite references are limited to:
-+  - governance rules in `PROJECT_INSTRUCTIONS.md`
-+  - validation guard patterns in `scripts/validate-browser-env-agnostic.mjs`
-+  - negative test assertions that SQLite is not exposed
-+  - Game Journey legacy SQLite data-preservation guard
-+
-+Skipped:
-+- Playwright: no UI/runtime behavior changed.
-+- Samples: skipped by request.
-+- Historical reports and PR docs: explicitly out of scope.
-+
-+## Reports
-+
-+- `docs_build/dev/reports/codex_review.diff`
-+- `docs_build/dev/reports/codex_changed_files.txt`
-+- `docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup.md`
-+- `docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-manual-validation-notes.md`
-+- `docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-instruction-compliance-checklist.md`
-+
-+## ZIP
-+
-+`tmp/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup_delta.zip`
-diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 4e23ae82e..5ebd4f6a7 100644
+﻿diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index 5ebd4f6a7..3a2b1772c 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,10 +1,6 @@
--﻿docs_build/dev/reports/PR_26171_GAMMA_026-sqlite-test-reference-cleanup-instruction-compliance-checklist.md
--docs_build/dev/reports/PR_26171_GAMMA_026-sqlite-test-reference-cleanup-manual-validation-notes.md
--docs_build/dev/reports/PR_26171_GAMMA_026-sqlite-test-reference-cleanup.md
-+docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-instruction-compliance-checklist.md
-+docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-manual-validation-notes.md
-+docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup.md
+@@ -1,6 +1,7 @@
+-docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-instruction-compliance-checklist.md
+-docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-manual-validation-notes.md
+-docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup.md
++﻿docs_build/dev/ProjectInstructions/addendums/backlog_governance.md
++docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
--tests/dev-runtime/DbSeedIntegrity.test.mjs
--tests/playwright/tools/AdminDbViewer.spec.mjs
--tests/playwright/tools/BrowserApiUrlConfig.spec.mjs
--tests/playwright/tools/GameJourneyTool.spec.mjs
--tests/playwright/tools/LoginSessionMode.spec.mjs
-+src/dev-runtime/persistence/mock-db-store.js
-diff --git a/src/dev-runtime/persistence/mock-db-store.js b/src/dev-runtime/persistence/mock-db-store.js
-index 2305910bc..c98c915b5 100644
---- a/src/dev-runtime/persistence/mock-db-store.js
-+++ b/src/dev-runtime/persistence/mock-db-store.js
-@@ -23,7 +23,7 @@ export const MOCK_DB_SESSION_MODES = Object.freeze([
-     adapterId: "local-db",
-     adapterName: "LocalDbAdapter",
-     configured: true,
--    description: "Uses LocalDbAdapter backed by server SQLite storage.",
-+    description: "Uses the Local DB adapter behind the server API boundary.",
-     environment: "Local DB",
-     id: "local-db",
-     label: "Local DB",
+-src/dev-runtime/persistence/mock-db-store.js
++docs_build/dev/reports/PR_26172_MASTER_003-backlog-master-governance.md
++docs_build/dev/reports/PR_26172_MASTER_003-backlog-master-governance-instruction-compliance-checklist.md
++docs_build/dev/reports/PR_26172_MASTER_003-backlog-master-governance-manual-validation-notes.md
