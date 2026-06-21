@@ -362,7 +362,6 @@ function setTextContent(root, selector, text) {
 
 function initializeTextToSpeechTool(root = document, { engine = new TextToSpeechEngine() } = {}) {
   const elements = {
-    addProfile: root.querySelector("[data-tts-add-profile]"),
     clearStatus: root.querySelector("[data-tts-clear-status]"),
     pause: root.querySelector("[data-tts-pause]"),
     profileCount: root.querySelector("[data-tts-profile-count]"),
@@ -459,6 +458,15 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
     return row;
   }
 
+  function tableActionRow(colSpan, ...buttons) {
+    const row = document.createElement("tr");
+    const cell = document.createElement("td");
+    cell.colSpan = colSpan;
+    cell.append(createActionGroup(...buttons));
+    row.append(cell);
+    return row;
+  }
+
   function createTextInput(value, dataName) {
     const input = document.createElement("input");
     input.dataset[dataName] = "";
@@ -547,6 +555,10 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
       row.dataset.ttsProfileRow = profile.id;
       const nameCell = document.createElement("td");
       nameCell.dataset.ttsProfileNameCell = profile.id;
+      nameCell.setAttribute("role", "button");
+      nameCell.tabIndex = 0;
+      nameCell.setAttribute("aria-expanded", String(state.selectedProfileId === profile.id));
+      nameCell.title = "Open Emotion Settings";
       nameCell.textContent = `${state.selectedProfileId === profile.id ? "v" : ">"} ${profile.name}`;
       const deleteButton = createButton("Delete", "ttsDeleteProfile", profile.id);
       if (profileInUseByMessageStudio(profile)) {
@@ -582,7 +594,16 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
     if (!state.profiles.length && state.editingProfileId !== NEW_ROW_KEY) {
       elements.profileTable.append(tableMessage(8, "No TTS profiles yet."));
     }
+    if (!state.editingProfileId) {
+      elements.profileTable.append(createProfileAddControlRow());
+    }
     renderProfileCounts();
+  }
+
+  function createProfileAddControlRow() {
+    const row = tableActionRow(8, createButton("Add Profile", "ttsAddProfileRow", NEW_ROW_KEY));
+    row.dataset.ttsProfileAddControlRow = "";
+    return row;
   }
 
   function createProfileEditRow(profile = null) {
@@ -689,14 +710,20 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
     if (state.editingEmotionId === NEW_ROW_KEY) {
       tbody.append(createEmotionEditRow(null));
     }
+    if (!state.editingEmotionId) {
+      tbody.append(createEmotionAddControlRow(profileId));
+    }
 
     table.append(thead, tbody);
     tableWrapper.append(table);
-    const actionGroup = document.createElement("div");
-    actionGroup.className = "action-group";
-    actionGroup.append(createButton("Add Emotion", "ttsAddEmotion", profileId));
-    wrapper.append(tableWrapper, actionGroup);
+    wrapper.append(tableWrapper);
     return wrapper;
+  }
+
+  function createEmotionAddControlRow(profileId) {
+    const row = tableActionRow(7, createButton("Add Emotion", "ttsAddEmotion", profileId));
+    row.dataset.ttsEmotionAddControlRow = profileId;
+    return row;
   }
 
   function createEmotionEditRow(emotion = null) {
@@ -1024,8 +1051,8 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
   }
 
   function mountEvents() {
-    elements.addProfile?.addEventListener("click", addProfile);
     elements.profileTable?.addEventListener("click", (event) => {
+      const addProfileButton = event.target.closest("[data-tts-add-profile-row]");
       const addEmotionButton = event.target.closest("[data-tts-add-emotion]");
       const commitEmotionButton = event.target.closest("[data-tts-commit-emotion]");
       const cancelEmotionButton = event.target.closest("[data-tts-cancel-emotion]");
@@ -1036,8 +1063,12 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
       const editProfileButton = event.target.closest("[data-tts-edit-profile]");
       const commitProfileButton = event.target.closest("[data-tts-commit-profile]");
       const cancelProfileButton = event.target.closest("[data-tts-cancel-profile]");
-      const profileRow = event.target.closest("[data-tts-profile-row]");
+      const profileNameCell = event.target.closest("[data-tts-profile-name-cell]");
 
+      if (addProfileButton) {
+        addProfile();
+        return;
+      }
       if (commitProfileButton) {
         commitProfile(commitProfileButton.dataset.ttsCommitProfile);
         return;
@@ -1092,9 +1123,16 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
         writeStatus(`Selected Emotion Setting: ${previewEmotion()?.emotionLabel || "Unknown"}.`);
         return;
       }
-      if (profileRow) {
-        selectProfile(profileRow.dataset.ttsProfileRow);
+      if (profileNameCell) {
+        selectProfile(profileNameCell.dataset.ttsProfileNameCell);
       }
+    });
+    elements.profileTable?.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      const profileNameCell = event.target.closest("[data-tts-profile-name-cell]");
+      if (!profileNameCell) return;
+      event.preventDefault();
+      selectProfile(profileNameCell.dataset.ttsProfileNameCell);
     });
     elements.speak?.addEventListener("click", speak);
     elements.pause?.addEventListener("click", pause);

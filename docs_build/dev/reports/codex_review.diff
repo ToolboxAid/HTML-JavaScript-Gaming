@@ -1,2186 +1,317 @@
-diff --git a/docs_build/dev/reports/PR_26171_BETA_075-tts-message-table-cleanup-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26171_BETA_075-tts-message-table-cleanup-instruction-compliance-checklist.md
+diff --git a/docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table-manual-validation-notes.md b/docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table-manual-validation-notes.md
 new file mode 100644
-index 000000000..5a5c8e58d
+index 000000000..b050febf8
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_BETA_075-tts-message-table-cleanup-instruction-compliance-checklist.md
-@@ -0,0 +1,14 @@
-+# PR_26171_BETA_075 Instruction Compliance Checklist
++++ b/docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table-manual-validation-notes.md
+@@ -0,0 +1,11 @@
++# PR_26171_BETA_077 Manual Validation Notes
 +
-+Team: BETA
++## Review
++- Confirmed the TTS Profiles table keeps profile fields in the parent row.
++- Confirmed Emotion Settings open below the selected profile as a child table.
++- Confirmed Add Profile and Add Emotion controls render as table rows.
++- Confirmed non-name parent table cells do not open Emotion Settings.
++- Confirmed no separate Emotion Studio or duplicate left-column controls were introduced.
 +
-+- PASS: Started from `main`.
-+- PASS: Pulled latest `origin/main` before branch creation.
-+- PASS: Repository was clean before creating `pr/26171-BETA-075-tts-message-table-cleanup`.
-+- PASS: PR name includes required TEAM token `BETA`.
-+- PASS: `docs_build/dev/PROJECT_MULTI_PC.txt` assigns Messages, Text To Speech, and TTS work to Team BETA.
-+- PASS: Active implementation paths are `toolbox/text-to-speech/` and `toolbox/messages/`.
-+- PASS: No `tools/text2speech/` path was created.
-+- PASS: Theme V2 only; no inline styles, style blocks, inline handlers, page-local CSS, or tool-local CSS were added.
-+- PASS: Validation scope includes targeted TTS Studio, targeted Message Studio, and legacy `npm run test:workspace-v2`.
-+- PASS: Required reports and repo ZIP under `tmp/` are required before completion.
-diff --git a/docs_build/dev/reports/PR_26171_BETA_075-tts-message-table-cleanup-manual-validation-notes.md b/docs_build/dev/reports/PR_26171_BETA_075-tts-message-table-cleanup-manual-validation-notes.md
++## Manual Browser Coverage
++- Covered by targeted Playwright validation for TTS Studio load, profile expansion, child emotion rows, inline add/edit, and speech preview.
+diff --git a/docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table-validation-report.md b/docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table-validation-report.md
 new file mode 100644
-index 000000000..2fab2dae1
+index 000000000..43ad39062
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_BETA_075-tts-message-table-cleanup-manual-validation-notes.md
-@@ -0,0 +1,10 @@
-+# PR_26171_BETA_075 Manual Validation Notes
-+
-+Team: BETA
-+
-+- Reviewed `toolbox/text-to-speech/index.html` and confirmed no Named Sentence, Queue, or Output Summary surface remains.
-+- Reviewed `toolbox/text-to-speech/text2speech.js` and confirmed preview playback uses TTS Profile plus Emotion Settings instead of a named-sentence queue.
-+- Reviewed `toolbox/messages/messages.js` and confirmed Message Parts visible columns are Text, Emotion, TTS Profile, Status, and Actions.
-+- Confirmed no inline styles, style blocks, inline event handlers, page-local CSS, or tool-local CSS were added.
-+- Confirmed no `tools/text2speech/` path was created.
-+- Confirmed required delta ZIP path: `tmp/PR_26171_BETA_075-tts-message-table-cleanup_delta.zip`.
-diff --git a/docs_build/dev/reports/PR_26171_BETA_075-tts-message-table-cleanup-validation-report.md b/docs_build/dev/reports/PR_26171_BETA_075-tts-message-table-cleanup-validation-report.md
-new file mode 100644
-index 000000000..09b7cba7a
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_BETA_075-tts-message-table-cleanup-validation-report.md
-@@ -0,0 +1,25 @@
-+# PR_26171_BETA_075 Validation Report
-+
-+Team: BETA
++++ b/docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table-validation-report.md
+@@ -0,0 +1,17 @@
++# PR_26171_BETA_077 Validation Report
 +
 +## Commands
++- PASS: node --check toolbox/text-to-speech/text2speech.js
++- PASS: node --test tests/tools/Text2SpeechShell.test.mjs
++- PASS: npx playwright test tests/playwright/tools/TextToSpeechFunctional.spec.mjs
++- PASS: npm run test:workspace-v2
++- PASS: git diff --check
 +
-+- PASS: `node --check toolbox/text-to-speech/text2speech.js`
-+- PASS: `node --check toolbox/messages/messages.js`
-+- PASS: `npx playwright test tests/playwright/tools/TextToSpeechFunctional.spec.mjs`
-+  - Result: 3 passed.
-+- PASS: `npx playwright test tests/playwright/tools/MessagesTool.spec.mjs --trace=off`
-+  - Result: 2 passed after scoping the Message Parts table assertion.
-+- PASS: `node --test tests/tools/Text2SpeechShell.test.mjs`
-+  - Result: 4 passed.
-+- PASS: `npm run test:workspace-v2`
-+  - Result: 5 passed.
-+  - Note: Command name is legacy; user-facing language is Project Workspace and Game Hub.
-+- PASS: `git diff --check`
-+  - Result: no whitespace errors; Git reported line-ending notices only.
-+
-+## Validation Notes
-+
-+- Initial `npm run test:workspace-v2` runs exposed stale root toolbox expectations for the current registered toolbox count, duplicate Game Hub entries, and Publish group visibility.
-+- Those expectations were updated in the targeted workspace test file, then the legacy workspace command passed.
-+- Node emitted experimental SQLite warnings during validation; no validation failed because of those warnings.
-diff --git a/docs_build/dev/reports/PR_26171_BETA_075-tts-message-table-cleanup.md b/docs_build/dev/reports/PR_26171_BETA_075-tts-message-table-cleanup.md
-new file mode 100644
-index 000000000..0da2fe50c
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_BETA_075-tts-message-table-cleanup.md
-@@ -0,0 +1,42 @@
-+# PR_26171_BETA_075 TTS Message Table Cleanup
-+
-+Team: BETA
-+
-+## Summary
-+
-+- Removed the duplicate center summary text `TTS Studio` from the Text To Speech summary row.
-+- Removed the stale Text To Speech left-column Voice Filters, Presets, Delivery, and Named Sentence controls.
-+- Removed the stale Text To Speech Queue and right-column Output Summary surfaces.
-+- Kept voice, language, gender, and age editing in the TTS Profile inline table row.
-+- Kept pitch, rate, volume, and preset editing in the Emotion Settings inline table row.
-+- Updated Text To Speech preview playback to speak the current text through the selected TTS Profile and selected/neutral Emotion Setting.
-+- Updated Message Studio Message Parts to show Text, Emotion, TTS Profile, Status, and Actions while preserving internal display order.
-+- Updated focused Playwright tests and workspace count/group expectations to match the current registered toolbox surface.
-+
-+## Requirement Checklist
-+
-+- PASS: Removed duplicate center-column `TTS Studio` summary text.
-+- PASS: Removed duplicate left-column items that belong to Profile or Emotion Settings rows.
-+- PASS: Delivery values are owned by Emotion Settings through Pitch, Rate, and Volume fields.
-+- PASS: Preset value is owned by Emotion Settings through the Preset field.
-+- PASS: Removed right-column Output Summary.
-+- PASS: Voice Filters are owned by the Profile row dropdowns.
-+- PASS: Removed Named Sentence and queue UI.
-+- PASS: Removed related dead HTML, JavaScript, and test code for the stale queue/output controls.
-+- PASS: Message Studio child table uses the approved visible Message Parts columns.
-+- PASS: Theme V2 only; no local CSS or inline handlers/styles were added.
-+
-+## Validation
-+
-+- PASS: `npx playwright test tests/playwright/tools/TextToSpeechFunctional.spec.mjs`
-+- PASS: `npx playwright test tests/playwright/tools/MessagesTool.spec.mjs --trace=off`
-+- PASS: `node --test tests/tools/Text2SpeechShell.test.mjs`
-+- PASS: `npm run test:workspace-v2`
-+- PASS: `git diff --check`
-+
-+`npm run test:workspace-v2` is a legacy command name; the user-facing product language remains Project Workspace and Game Hub.
++## Targeted Results
++- Text2Speech Node contract tests: 4 passed.
++- Text To Speech Playwright tests: 3 passed.
++- Project Workspace legacy validation: 5 passed.
 +
 +## Notes
++- npm run test:workspace-v2 is a legacy command name; user-facing language remains Project Workspace.
++- Standard generated validation-report churn was restored before staging this PR.
+diff --git a/docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table.md b/docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table.md
+new file mode 100644
+index 000000000..3cafc0697
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table.md
+@@ -0,0 +1,19 @@
++# PR_26171_BETA_077-tts-profile-parent-child-table
 +
-+- The Text To Speech page still supports local preview playback through the shared engine audio module.
-+- Message Part display order remains persisted internally and is managed with Move Up and Move Down actions rather than a visible Order column.
++## Team Ownership
++- TEAM: BETA
++- Ownership source: docs_build/dev/PROJECT_MULTI_PC.txt
++- Scope confirmed: Text To Speech / TTS Studio work is owned by Team BETA.
++
++## Summary
++- Converted the TTS Profile add action into an inline parent-table action row.
++- Converted the Emotion Setting add action into an inline child-table action row.
++- Restricted profile expansion to the Profile Name cell so non-control parent cells remain table data.
++- Added keyboard support and aria-expanded state for the Profile Name accordion trigger.
++
++## Scope Guard
++- Theme V2 only.
++- External JS only.
++- No inline styles, style blocks, inline handlers, page-local CSS, or tool-local CSS.
++- No duplicate left-column controls added.
++- Delivery and Preset values remain in the Emotion Settings child table.
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 3f04bddfd..b4ebfab2a 100644
+index b4ebfab2a..10f75398a 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -22,13 +22,10 @@ docs_build/dev/reports/playwright_discovery_ownership_report.md
- docs_build/dev/reports/playwright_discovery_scope_report.md
- docs_build/dev/reports/playwright_structure_audit.md
- docs_build/dev/reports/playwright_v8_coverage_report.txt
--docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-instruction-compliance-checklist.md
--docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-manual-validation-notes.md
--docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-message-parent-child-table-checklist.md
--docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-tts-summary-layout-checklist.md
--docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-tts-tools-registration-checklist.md
--docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction-validation-report.md
--docs_build/dev/reports/PR_26171_BETA_073-message-tts-table-ui-correction.md
-+docs_build/dev/reports/PR_26171_BETA_075-tts-message-table-cleanup-instruction-compliance-checklist.md
-+docs_build/dev/reports/PR_26171_BETA_075-tts-message-table-cleanup-manual-validation-notes.md
-+docs_build/dev/reports/PR_26171_BETA_075-tts-message-table-cleanup-validation-report.md
-+docs_build/dev/reports/PR_26171_BETA_075-tts-message-table-cleanup.md
- docs_build/dev/reports/retry_suppression_report.md
- docs_build/dev/reports/slow_path_pruning_report.md
- docs_build/dev/reports/static_validation_report.md
-@@ -38,11 +35,9 @@ docs_build/dev/reports/test_cleanup_routing_report.md
- docs_build/dev/reports/testing_lane_execution_report.md
- docs_build/dev/reports/validation_cache_report.md
- docs_build/dev/reports/zero_browser_preflight_report.md
--src/shared/toolbox/tool-metadata-inventory.js
- tests/playwright/tools/MessagesTool.spec.mjs
- tests/playwright/tools/RootToolsFutureState.spec.mjs
+@@ -1,43 +1,8 @@
+ docs_build/dev/reports/codex_changed_files.txt
+ docs_build/dev/reports/codex_review.diff
+-docs_build/dev/reports/coverage_changed_js_guardrail.txt
+-docs_build/dev/reports/dependency_gating_report.md
+-docs_build/dev/reports/dependency_hydration_reuse_report.md
+-docs_build/dev/reports/execution_graph_reuse_report.md
+-docs_build/dev/reports/failure_fingerprint_report.md
+-docs_build/dev/reports/filesystem_scan_reduction_report.md
+-docs_build/dev/reports/incremental_validation_report.md
+-docs_build/dev/reports/lane_compilation_report.md
+-docs_build/dev/reports/lane_deduplication_report.md
+-docs_build/dev/reports/lane_input_validation_report.md
+-docs_build/dev/reports/lane_manifests/workspace-contract.json
+-docs_build/dev/reports/lane_runtime_optimization_report.md
+-docs_build/dev/reports/lane_snapshot_report.md
+-docs_build/dev/reports/lane_snapshots/workspace-contract.json
+-docs_build/dev/reports/lane_warm_start_report.md
+-docs_build/dev/reports/lane_warm_starts/workspace-contract.json
+-docs_build/dev/reports/monolith_trigger_removal_report.md
+-docs_build/dev/reports/persistent_lane_manifest_report.md
+-docs_build/dev/reports/playwright_discovery_ownership_report.md
+-docs_build/dev/reports/playwright_discovery_scope_report.md
+-docs_build/dev/reports/playwright_structure_audit.md
+-docs_build/dev/reports/playwright_v8_coverage_report.txt
+-docs_build/dev/reports/PR_26171_BETA_075-tts-message-table-cleanup-instruction-compliance-checklist.md
+-docs_build/dev/reports/PR_26171_BETA_075-tts-message-table-cleanup-manual-validation-notes.md
+-docs_build/dev/reports/PR_26171_BETA_075-tts-message-table-cleanup-validation-report.md
+-docs_build/dev/reports/PR_26171_BETA_075-tts-message-table-cleanup.md
+-docs_build/dev/reports/retry_suppression_report.md
+-docs_build/dev/reports/slow_path_pruning_report.md
+-docs_build/dev/reports/static_validation_report.md
+-docs_build/dev/reports/targeted_file_manifest_report.md
+-docs_build/dev/reports/test_cleanup_performance_report.md
+-docs_build/dev/reports/test_cleanup_routing_report.md
+-docs_build/dev/reports/testing_lane_execution_report.md
+-docs_build/dev/reports/validation_cache_report.md
+-docs_build/dev/reports/zero_browser_preflight_report.md
+-tests/playwright/tools/MessagesTool.spec.mjs
+-tests/playwright/tools/RootToolsFutureState.spec.mjs
++docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table-manual-validation-notes.md
++docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table-validation-report.md
++docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table.md
  tests/playwright/tools/TextToSpeechFunctional.spec.mjs
--tests/playwright/tools/ToolboxRoutePages.spec.mjs
--toolbox/messages/index.html
- toolbox/messages/messages.js
+-toolbox/messages/messages.js
  toolbox/text-to-speech/index.html
-+toolbox/text-to-speech/text2speech.js
-diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 59de15fb6..86850b15b 100644
---- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,9 +6,9 @@ Missing changed runtime JS files are WARN, not FAIL.
- Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
-
- Changed runtime JS files considered:
--(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) toolbox/messages/messages.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) toolbox/text-to-speech/text2speech.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-
- Guardrail warnings:
--(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
- (0%) toolbox/messages/messages.js - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) toolbox/text-to-speech/text2speech.js - WARNING: changed runtime JS file missing from coverage; advisory only
-diff --git a/docs_build/dev/reports/dependency_gating_report.md b/docs_build/dev/reports/dependency_gating_report.md
-index 3c18f9166..319848da9 100644
---- a/docs_build/dev/reports/dependency_gating_report.md
-+++ b/docs_build/dev/reports/dependency_gating_report.md
-@@ -1,6 +1,6 @@
- # Dependency Gating Report
-
--Generated: 2026-06-20T22:58:20.683Z
-+Generated: 2026-06-21T00:10:10.215Z
- Status: PASS
-
- ## Gate Order
-diff --git a/docs_build/dev/reports/dependency_hydration_reuse_report.md b/docs_build/dev/reports/dependency_hydration_reuse_report.md
-index 88a4c3471..0f8c874e3 100644
---- a/docs_build/dev/reports/dependency_hydration_reuse_report.md
-+++ b/docs_build/dev/reports/dependency_hydration_reuse_report.md
-@@ -1,6 +1,6 @@
- # Dependency Hydration Reuse Report
-
--Generated: 2026-06-20T22:58:20.684Z
-+Generated: 2026-06-21T00:10:10.216Z
- Status: PASS
-
- ## Summary
-diff --git a/docs_build/dev/reports/execution_graph_reuse_report.md b/docs_build/dev/reports/execution_graph_reuse_report.md
-index 977ef5c81..ddbdf90a1 100644
---- a/docs_build/dev/reports/execution_graph_reuse_report.md
-+++ b/docs_build/dev/reports/execution_graph_reuse_report.md
-@@ -1,6 +1,6 @@
- # Execution Graph Reuse Report
-
--Generated: 2026-06-20T22:58:20.684Z
-+Generated: 2026-06-21T00:10:10.216Z
- Status: PASS
-
- ## Summary
-@@ -16,7 +16,7 @@ Prevented targeted scheduling work: 0
-
- | Lane | Status | Snapshot Status | Execution Graph Hash | Reason |
- | --- | --- | --- | --- | --- |
--| workspace-contract | INVALIDATED | INVALIDATED | 744556e5d675e213 | Lane snapshot is part of the selected targeted execution graph. |
-+| workspace-contract | INVALIDATED | INVALIDATED | 51dc9d019b71a923 | Lane snapshot is part of the selected targeted execution graph. |
-
- ## Safeguards
-
-diff --git a/docs_build/dev/reports/failure_fingerprint_report.md b/docs_build/dev/reports/failure_fingerprint_report.md
-index 5e9437dba..c9822fe4a 100644
---- a/docs_build/dev/reports/failure_fingerprint_report.md
-+++ b/docs_build/dev/reports/failure_fingerprint_report.md
-@@ -1,6 +1,6 @@
- # Failure Fingerprint Report
-
--Generated: 2026-06-20T22:59:39.176Z
-+Generated: 2026-06-21T00:11:18.106Z
- Status: PASS
-
- ## Summary
-diff --git a/docs_build/dev/reports/filesystem_scan_reduction_report.md b/docs_build/dev/reports/filesystem_scan_reduction_report.md
-index 4164a7dd3..3fc7accce 100644
---- a/docs_build/dev/reports/filesystem_scan_reduction_report.md
-+++ b/docs_build/dev/reports/filesystem_scan_reduction_report.md
-@@ -1,6 +1,6 @@
- # Filesystem Scan Reduction Report
-
--Generated: 2026-06-20T22:58:20.655Z
-+Generated: 2026-06-21T00:10:10.181Z
- Status: PASS
-
- ## Scan Enforcement
-diff --git a/docs_build/dev/reports/incremental_validation_report.md b/docs_build/dev/reports/incremental_validation_report.md
-index efee248fd..d4aa9a02b 100644
---- a/docs_build/dev/reports/incremental_validation_report.md
-+++ b/docs_build/dev/reports/incremental_validation_report.md
-@@ -1,6 +1,6 @@
- # Incremental Validation Report
-
--Generated: 2026-06-20T22:58:20.685Z
-+Generated: 2026-06-21T00:10:10.218Z
- Status: PASS
-
- ## Reuse Summary
-diff --git a/docs_build/dev/reports/lane_compilation_report.md b/docs_build/dev/reports/lane_compilation_report.md
-index 9e3895ceb..1b65b72a4 100644
---- a/docs_build/dev/reports/lane_compilation_report.md
-+++ b/docs_build/dev/reports/lane_compilation_report.md
-@@ -1,6 +1,6 @@
- # Lane Compilation Report
-
--Generated: 2026-06-20T22:58:20.683Z
-+Generated: 2026-06-21T00:10:10.215Z
- Status: PASS
-
- ## Lane Graph
-diff --git a/docs_build/dev/reports/lane_deduplication_report.md b/docs_build/dev/reports/lane_deduplication_report.md
-index 5b55db348..ca9adb0a3 100644
---- a/docs_build/dev/reports/lane_deduplication_report.md
-+++ b/docs_build/dev/reports/lane_deduplication_report.md
-@@ -1,6 +1,6 @@
- # Lane Deduplication Report
-
--Generated: 2026-06-20T22:58:20.683Z
-+Generated: 2026-06-21T00:10:10.215Z
- Status: PASS
-
- ## Summary
-diff --git a/docs_build/dev/reports/lane_input_validation_report.md b/docs_build/dev/reports/lane_input_validation_report.md
-index 998c71c08..0c7546c68 100644
---- a/docs_build/dev/reports/lane_input_validation_report.md
-+++ b/docs_build/dev/reports/lane_input_validation_report.md
-@@ -1,6 +1,6 @@
- # Lane Input Validation Report
-
--Generated: 2026-06-20T22:58:20.685Z
-+Generated: 2026-06-21T00:10:10.218Z
- Status: PASS
-
- ## Input Files
-diff --git a/docs_build/dev/reports/lane_manifests/workspace-contract.json b/docs_build/dev/reports/lane_manifests/workspace-contract.json
-index 9d5178fda..fb867147c 100644
---- a/docs_build/dev/reports/lane_manifests/workspace-contract.json
-+++ b/docs_build/dev/reports/lane_manifests/workspace-contract.json
-@@ -11,7 +11,7 @@
-     "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
-     "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
-     "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
--    "tests/playwright/tools/RootToolsFutureState.spec.mjs": "7094370f23d8085e"
-+    "tests/playwright/tools/RootToolsFutureState.spec.mjs": "032c57abb5289a23"
-   },
-   "fixtures": [],
-   "helpers": [
-@@ -30,15 +30,15 @@
-     "tests/helpers/playwrightV8CoverageReporter.mjs",
-     "tests/helpers/workspaceV2CoverageReporter.mjs"
-   ],
--  "inputHash": "63bec7503b20624b",
-+  "inputHash": "5145d05e2885e902",
-   "lane": "workspace-contract",
-   "laneDefinitionHash": "95059517ac8a6497",
--  "manifestHash": "1291241716cd7ab6",
-+  "manifestHash": "d98d3245976c92f4",
-   "ownership": "tools",
-   "tests": [
-     "tests/playwright/tools/RootToolsFutureState.spec.mjs"
-   ],
-   "version": 1,
--  "generatedAt": "2026-06-20T22:58:19.300Z",
-+  "generatedAt": "2026-06-21T00:10:08.792Z",
-   "source": "generated"
- }
-diff --git a/docs_build/dev/reports/lane_runtime_optimization_report.md b/docs_build/dev/reports/lane_runtime_optimization_report.md
-index 8667df0bd..a8d52d441 100644
---- a/docs_build/dev/reports/lane_runtime_optimization_report.md
-+++ b/docs_build/dev/reports/lane_runtime_optimization_report.md
-@@ -1,6 +1,6 @@
- # Lane Runtime Optimization Report
-
--Generated: 2026-06-20T22:58:20.683Z
-+Generated: 2026-06-21T00:10:10.215Z
- Status: PASS
-
- ## Runtime Cost Summary
-diff --git a/docs_build/dev/reports/lane_snapshot_report.md b/docs_build/dev/reports/lane_snapshot_report.md
-index 190ba8c41..5037cf0b8 100644
---- a/docs_build/dev/reports/lane_snapshot_report.md
-+++ b/docs_build/dev/reports/lane_snapshot_report.md
-@@ -1,6 +1,6 @@
- # Lane Snapshot Report
-
--Generated: 2026-06-20T22:58:20.684Z
-+Generated: 2026-06-21T00:10:10.216Z
- Status: PASS
- Snapshot directory: docs_build/dev/reports/lane_snapshots
-
-@@ -17,7 +17,7 @@ Prevented manifest traversal: 0
-
- | Lane | Status | Snapshot Path | Manifest Hash | Dependency Graph Hash | Helper Graph Hash | Fixture Graph Hash | Runtime Config Hash | Execution Graph Hash | Snapshot Hash | Reason |
- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | 1291241716cd7ab6 | 53e56ebae6e84541 | 7d3db838f9f780e0 | 6c4fac7630b0b6f3 | e5ac9cbc103c3984 | 744556e5d675e213 | 7135cba84942c652 | Lane snapshot executionGraphHash changed for workspace-contract.; Lane snapshot inputHash changed for workspace-contract.; Lane snapshot manifestHash changed for workspace-contract.; Lane snapshot snapshotHash changed for workspace-contract.; Lane snapshot warmStartHash changed for workspace-contract. |
-+| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | d98d3245976c92f4 | 53e56ebae6e84541 | 7d3db838f9f780e0 | 6c4fac7630b0b6f3 | e5ac9cbc103c3984 | 51dc9d019b71a923 | 13ffd9b4d27b4d42 | Lane snapshot executionGraphHash changed for workspace-contract.; Lane snapshot inputHash changed for workspace-contract.; Lane snapshot manifestHash changed for workspace-contract.; Lane snapshot snapshotHash changed for workspace-contract.; Lane snapshot warmStartHash changed for workspace-contract. |
-
- ## Snapshot Validation Findings
-
-diff --git a/docs_build/dev/reports/lane_snapshots/workspace-contract.json b/docs_build/dev/reports/lane_snapshots/workspace-contract.json
-index ac4f12de1..e0fe4f05f 100644
---- a/docs_build/dev/reports/lane_snapshots/workspace-contract.json
-+++ b/docs_build/dev/reports/lane_snapshots/workspace-contract.json
-@@ -26,7 +26,7 @@
-     ]
-   },
-   "dependencyGraphHash": "53e56ebae6e84541",
--  "executionGraphHash": "744556e5d675e213",
-+  "executionGraphHash": "51dc9d019b71a923",
-   "fixtureGraph": {
-     "fixtureHashes": {},
-     "fixtures": []
-@@ -47,7 +47,7 @@
-     ]
-   },
-   "helperGraphHash": "7d3db838f9f780e0",
--  "inputHash": "63bec7503b20624b",
-+  "inputHash": "5145d05e2885e902",
-   "lane": "workspace-contract",
-   "laneCompilationStatus": "PASS",
-   "laneDefinitionHash": "95059517ac8a6497",
-@@ -61,7 +61,7 @@
-       "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
-       "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
-       "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
--      "tests/playwright/tools/RootToolsFutureState.spec.mjs": "7094370f23d8085e"
-+      "tests/playwright/tools/RootToolsFutureState.spec.mjs": "032c57abb5289a23"
-     },
-     "fixtures": [],
-     "helpers": [
-@@ -80,14 +80,14 @@
-       "tests/helpers/playwrightV8CoverageReporter.mjs",
-       "tests/helpers/workspaceV2CoverageReporter.mjs"
-     ],
--    "manifestHash": "1291241716cd7ab6",
-+    "manifestHash": "d98d3245976c92f4",
-     "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
-     "source": "generated",
-     "tests": [
-       "tests/playwright/tools/RootToolsFutureState.spec.mjs"
-     ]
-   },
--  "manifestHash": "1291241716cd7ab6",
-+  "manifestHash": "d98d3245976c92f4",
-   "ownership": "tools",
-   "runtimeConfiguration": {
-     "affectedSurface": "Root tools future-state navigation and Tool Template V2 contract",
-@@ -114,8 +114,8 @@
-     "requiresSamplesFlag": false
-   },
-   "runtimeConfigurationHash": "e5ac9cbc103c3984",
--  "snapshotHash": "7135cba84942c652",
-+  "snapshotHash": "13ffd9b4d27b4d42",
-   "version": 1,
--  "warmStartHash": "fe298d7913eac5ca",
--  "generatedAt": "2026-06-20T22:58:20.677Z"
-+  "warmStartHash": "f32a5831d6b39914",
-+  "generatedAt": "2026-06-21T00:10:10.207Z"
- }
-diff --git a/docs_build/dev/reports/lane_warm_start_report.md b/docs_build/dev/reports/lane_warm_start_report.md
-index 806f7dbc5..d06a40a33 100644
---- a/docs_build/dev/reports/lane_warm_start_report.md
-+++ b/docs_build/dev/reports/lane_warm_start_report.md
-@@ -1,6 +1,6 @@
- # Lane Warm-Start Report
-
--Generated: 2026-06-20T22:58:20.684Z
-+Generated: 2026-06-21T00:10:10.216Z
- Status: PASS
- Warm-start directory: docs_build/dev/reports/lane_warm_starts
-
-@@ -17,7 +17,7 @@ Prevented lane graph assembly: 0
-
- | Lane | Status | Warm-Start Path | Manifest Hash | Warm-Start Hash | Dependency Hydration Hash | Reason |
- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | 1291241716cd7ab6 | fe298d7913eac5ca | 355ba7a85dbb3cdb | Warm-start inputHash changed for workspace-contract.; Warm-start manifestHash changed for workspace-contract.; Warm-start warmStartHash changed for workspace-contract. |
-+| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | d98d3245976c92f4 | f32a5831d6b39914 | 355ba7a85dbb3cdb | Warm-start inputHash changed for workspace-contract.; Warm-start manifestHash changed for workspace-contract.; Warm-start warmStartHash changed for workspace-contract. |
-
- ## Fast-Fail Safeguards
-
-diff --git a/docs_build/dev/reports/lane_warm_starts/workspace-contract.json b/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
-index fc55da06b..3c29e890d 100644
---- a/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
-+++ b/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
-@@ -39,15 +39,15 @@
-     ]
-   },
-   "dependencyHydrationHash": "355ba7a85dbb3cdb",
--  "inputHash": "63bec7503b20624b",
-+  "inputHash": "5145d05e2885e902",
-   "lane": "workspace-contract",
-   "laneConfigHash": "09eaf9063f7694e3",
-   "laneDefinitionHash": "95059517ac8a6497",
--  "manifestHash": "1291241716cd7ab6",
-+  "manifestHash": "d98d3245976c92f4",
-   "ownership": "tools",
--  "warmStartHash": "fe298d7913eac5ca",
-+  "warmStartHash": "f32a5831d6b39914",
-   "version": 1,
--  "generatedAt": "2026-06-20T22:58:19.312Z",
-+  "generatedAt": "2026-06-21T00:10:08.802Z",
-   "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
-   "sourceManifest": "generated"
- }
-diff --git a/docs_build/dev/reports/monolith_trigger_removal_report.md b/docs_build/dev/reports/monolith_trigger_removal_report.md
-index 7141f5d34..97a55c340 100644
---- a/docs_build/dev/reports/monolith_trigger_removal_report.md
-+++ b/docs_build/dev/reports/monolith_trigger_removal_report.md
-@@ -1,6 +1,6 @@
- # Monolith Trigger Removal Report
-
--Generated: 2026-06-20T22:59:39.177Z
-+Generated: 2026-06-21T00:11:18.108Z
- Status: PASS
-
- ## Removed Broad Execution Triggers
-diff --git a/docs_build/dev/reports/persistent_lane_manifest_report.md b/docs_build/dev/reports/persistent_lane_manifest_report.md
-index f4baf21cb..f3f131d4a 100644
---- a/docs_build/dev/reports/persistent_lane_manifest_report.md
-+++ b/docs_build/dev/reports/persistent_lane_manifest_report.md
-@@ -1,6 +1,6 @@
- # Persistent Lane Manifest Report
-
--Generated: 2026-06-20T22:58:20.685Z
-+Generated: 2026-06-21T00:10:10.218Z
- Status: PASS
- Manifest directory: docs_build/dev/reports/lane_manifests
-
-@@ -15,13 +15,13 @@ Prevented discovery scans: 0
-
- | Lane | Status | Manifest Path | Input Hash | Manifest Hash | Reason |
- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_manifests/workspace-contract.json | 63bec7503b20624b | 1291241716cd7ab6 | Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. |
-+| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_manifests/workspace-contract.json | 5145d05e2885e902 | d98d3245976c92f4 | Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. |
-
- ## Persisted Manifest Files
-
- | Lane | Ownership | Source | Tests | Helpers | Fixtures | Dependency Graph Hash | Manifest Hash |
- | --- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | tools | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 53e56ebae6e84541 | 1291241716cd7ab6 |
-+| workspace-contract | tools | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 53e56ebae6e84541 | d98d3245976c92f4 |
-
- ## Fast-Fail Enforcement
-
-diff --git a/docs_build/dev/reports/playwright_discovery_ownership_report.md b/docs_build/dev/reports/playwright_discovery_ownership_report.md
-index 977875caf..a5a1b3dea 100644
---- a/docs_build/dev/reports/playwright_discovery_ownership_report.md
-+++ b/docs_build/dev/reports/playwright_discovery_ownership_report.md
-@@ -1,6 +1,6 @@
- # Playwright Discovery Ownership Report
-
--Generated: 2026-06-20T22:58:20.646Z
-+Generated: 2026-06-21T00:10:10.169Z
- Status: PASS
-
- ## Discovery-Time Ownership
-diff --git a/docs_build/dev/reports/playwright_discovery_scope_report.md b/docs_build/dev/reports/playwright_discovery_scope_report.md
-index 69c83d957..7ba7a7a0e 100644
---- a/docs_build/dev/reports/playwright_discovery_scope_report.md
-+++ b/docs_build/dev/reports/playwright_discovery_scope_report.md
-@@ -1,6 +1,6 @@
- # Playwright Discovery Scope Report
-
--Generated: 2026-06-20T22:58:20.652Z
-+Generated: 2026-06-21T00:10:10.176Z
- Status: PASS
- Scoped discovery: Yes
-
-diff --git a/docs_build/dev/reports/playwright_structure_audit.md b/docs_build/dev/reports/playwright_structure_audit.md
-index 392a08ee3..dc6386691 100644
---- a/docs_build/dev/reports/playwright_structure_audit.md
-+++ b/docs_build/dev/reports/playwright_structure_audit.md
-@@ -1,6 +1,6 @@
- # Playwright Structure Audit
-
--Generated: 2026-06-20T22:58:20.624Z
-+Generated: 2026-06-21T00:10:10.141Z
- Status: PASS
-
- ## Lane Directories
-diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 94d5e709f..e8623a06d 100644
---- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
-+++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -12,33 +12,49 @@ Note: entry percentages use function coverage when available, otherwise line cov
- Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
-
- Exercised tool entry points detected:
--(70%) Toolbox Index - exercised 3 runtime JS files
-+(71%) Toolbox Index - exercised 10 runtime JS files
- (0%) Tool Template V2 - not exercised by this Playwright run
--(72%) Theme V2 Shared JS - exercised 1 runtime JS files
-+(61%) Theme V2 Shared JS - exercised 7 runtime JS files
-
- Changed runtime JS files covered:
--(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) toolbox/messages/messages.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) toolbox/text-to-speech/text2speech.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-
- Files with executed line/function counts where available:
-+(14%) assets/theme-v2/js/account-auth-service.js - executed lines 64/64; executed functions 1/7
-+(14%) assets/theme-v2/js/admin-setup-actions.js - executed lines 55/55; executed functions 1/7
-+(18%) assets/theme-v2/js/account-page-data.js - executed lines 150/150; executed functions 3/17
-+(20%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 2/10
-+(25%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 1/4
- (25%) src/api/session-api-client.js - executed lines 68/68; executed functions 3/12
-+(29%) src/engine/input/NormalizedInputRegistry.js - executed lines 341/341; executed functions 6/21
-+(33%) src/api/admin-setup-api-client.js - executed lines 13/13; executed functions 1/3
- (33%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
--(44%) src/api/server-api-client.js - executed lines 167/167; executed functions 8/18
--(48%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 11/23
-+(56%) toolbox/colors/colors.js - executed lines 1848/1848; executed functions 115/204
-+(58%) src/api/server-api-client.js - executed lines 167/167; executed functions 11/19
-+(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 204/204; executed functions 9/14
-+(64%) toolbox/controls/controls.js - executed lines 610/610; executed functions 36/56
- (65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
- (67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
- (67%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 20/20; executed functions 2/3
--(72%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 65/90
--(74%) toolbox/tools-page-accordions.js - executed lines 1156/1156; executed functions 81/109
-+(71%) toolbox/game-workspace/game-workspace.js - executed lines 472/472; executed functions 32/45
-+(74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 67/90
-+(89%) toolbox/tools-page-accordions.js - executed lines 1156/1156; executed functions 105/118
-+(90%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 26/29
-+(91%) toolbox/game-design/game-design.js - executed lines 254/254; executed functions 21/23
-+(94%) assets/theme-v2/js/marketplace-page.js - executed lines 170/170; executed functions 16/17
-+(100%) src/api/marketplace-api-client.js - executed lines 16/16; executed functions 3/3
-+(100%) toolbox/colors/palette-api-client.js - executed lines 28/28; executed functions 4/4
-+(100%) toolbox/controls/controls-api-client.js - executed lines 33/33; executed functions 5/5
-+(100%) toolbox/game-design/game-design-api-client.js - executed lines 13/13; executed functions 2/2
-
- Uncovered or low-coverage changed JS files:
--(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
- (0%) toolbox/messages/messages.js - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) toolbox/text-to-speech/text2speech.js - WARNING: uncovered changed runtime JS file; advisory only
-
- Changed JS files considered:
--(0%) src/shared/toolbox/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
- (0%) tests/playwright/tools/MessagesTool.spec.mjs - changed JS file not collected as browser runtime coverage
- (0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
- (0%) tests/playwright/tools/TextToSpeechFunctional.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
- (0%) toolbox/messages/messages.js - changed JS file not collected as browser runtime coverage
-+(0%) toolbox/text-to-speech/text2speech.js - changed JS file not collected as browser runtime coverage
-diff --git a/docs_build/dev/reports/retry_suppression_report.md b/docs_build/dev/reports/retry_suppression_report.md
-index b85b2ce3f..5391d7a38 100644
---- a/docs_build/dev/reports/retry_suppression_report.md
-+++ b/docs_build/dev/reports/retry_suppression_report.md
-@@ -1,6 +1,6 @@
- # Retry Suppression Report
-
--Generated: 2026-06-20T22:59:39.176Z
-+Generated: 2026-06-21T00:11:18.107Z
- Status: PASS
-
- ## Summary
-diff --git a/docs_build/dev/reports/slow_path_pruning_report.md b/docs_build/dev/reports/slow_path_pruning_report.md
-index 4aa32ba0e..0fc071745 100644
---- a/docs_build/dev/reports/slow_path_pruning_report.md
-+++ b/docs_build/dev/reports/slow_path_pruning_report.md
-@@ -1,13 +1,13 @@
- # Slow Path Pruning Report
-
--Generated: 2026-06-20T22:59:39.177Z
-+Generated: 2026-06-21T00:11:18.108Z
- Status: PASS
- Source timing evidence: docs_build/dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
-
- ## Before / After Runtime Observations
-
- PR_26146_038 measured lane elapsed time: 169.71s
--Current measured lane elapsed time: 78.45s
-+Current measured lane elapsed time: 67.79s
- PR_26146_038 actual browser launches: 4
- Current actual browser launches: 1
- Accidental no-argument browser launches prevented: 5
-@@ -31,11 +31,11 @@ Validation cache hits: 18
- | PR_26146_038 | tool-runtime | 19.10s | Asset Manager V2 temporary UAT context |
- | PR_26146_038 | integration | 14.50s | games index resolves Pong thumbnail from manifest preview role |
- | PR_26146_038 | tool-runtime | 10.10s | Preview Generator V2 real batch output |
--| current targeted run | workspace-contract | 18.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:667:1 > representative active tool pages align center cleanup and registry group colors |
--| current targeted run | workspace-contract | 17.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:565:1 > learn wireframe pages load with shared Theme V2 structure |
--| current targeted run | workspace-contract | 14.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes |
--| current targeted run | workspace-contract | 10.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:485:1 > common header renders primary navigation order across active pages |
--| current targeted run | workspace-contract | 2.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:644:1 > tool template future-state page loads from root Theme V2 paths |
-+| current targeted run | workspace-contract | 15.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes |
-+| current targeted run | workspace-contract | 14.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:664:1 > representative active tool pages align center cleanup and registry group colors |
-+| current targeted run | workspace-contract | 13.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:562:1 > learn wireframe pages load with shared Theme V2 structure |
-+| current targeted run | workspace-contract | 11.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:482:1 > common header renders primary navigation order across active pages |
-+| current targeted run | workspace-contract | 2.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:641:1 > tool template future-state page loads from root Theme V2 paths |
-
- ## Guardrails
-
-diff --git a/docs_build/dev/reports/static_validation_report.md b/docs_build/dev/reports/static_validation_report.md
-index 3752d284f..ef23805b9 100644
---- a/docs_build/dev/reports/static_validation_report.md
-+++ b/docs_build/dev/reports/static_validation_report.md
-@@ -1,6 +1,6 @@
- # Static Validation Report
-
--Generated: 2026-06-20T22:58:20.674Z
-+Generated: 2026-06-21T00:10:10.202Z
- Status: PASS
- Static only: No
- Dry run: No
-@@ -22,7 +22,7 @@ Reason: No deterministic static validation failure was found.
- | invalid filename detection | PASS | Covered by Playwright structure audit. |
- | missing import detection | PASS | Covered by Playwright structure audit relative import checks. |
- | missing fixture detection | PASS | No missing fixture findings. |
--| targeted file manifests | PASS | workspace-contract:1291241716cd7ab6 |
-+| targeted file manifests | PASS | workspace-contract:d98d3245976c92f4 |
- | persistent lane manifests | PASS | workspace-contract:INVALIDATED |
- | lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
- | dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
-diff --git a/docs_build/dev/reports/targeted_file_manifest_report.md b/docs_build/dev/reports/targeted_file_manifest_report.md
-index d06980143..fd6fbb064 100644
---- a/docs_build/dev/reports/targeted_file_manifest_report.md
-+++ b/docs_build/dev/reports/targeted_file_manifest_report.md
-@@ -1,13 +1,13 @@
- # Targeted File Manifest Report
-
--Generated: 2026-06-20T22:58:20.685Z
-+Generated: 2026-06-21T00:10:10.217Z
- Status: PASS
-
- ## Manifest-Generated Lane Inputs
-
- | Lane | Ownership | Status | Source | Tests | Helpers | Fixtures | Imports / Dependencies | Dependency Graph Hash | Manifest Hash | Reason |
- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | tools | PASS | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 53e56ebae6e84541 | 1291241716cd7ab6 | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
-+| workspace-contract | tools | PASS | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 53e56ebae6e84541 | d98d3245976c92f4 | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
-
- ## Discovery Expansion Control
-
-diff --git a/docs_build/dev/reports/test_cleanup_performance_report.md b/docs_build/dev/reports/test_cleanup_performance_report.md
-index 3aa560665..db3a814e7 100644
---- a/docs_build/dev/reports/test_cleanup_performance_report.md
-+++ b/docs_build/dev/reports/test_cleanup_performance_report.md
-@@ -1,11 +1,11 @@
- # Test Cleanup Performance Report
-
--Generated: 2026-06-20T22:59:39.177Z
-+Generated: 2026-06-21T00:11:18.107Z
- Status: PASS
-
- ## Cost Summary
-
--Total measured lane elapsed time: 78.45s
-+Total measured lane elapsed time: 67.79s
- Actual browser launch count: 1
- Scheduled browser launch count: 1
- Baseline browser launch count: 1
-@@ -23,7 +23,7 @@ Prevented redundant dependency traversal: 0
-
- | Lane | Status | Elapsed | Browser Launches | Reason |
- | --- | --- | --- | --- | --- |
--| workspace-contract | PASS | 78.45s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
-+| workspace-contract | PASS | 67.79s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
- | game-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
- | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
- | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
-@@ -43,11 +43,11 @@ Prevented redundant dependency traversal: 0
-
- | Lane | Duration | Test | Command |
- | --- | --- | --- | --- |
--| workspace-contract | 18.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:667:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
--| workspace-contract | 17.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:565:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
--| workspace-contract | 14.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
--| workspace-contract | 10.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:485:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
--| workspace-contract | 2.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:644:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 15.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 14.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:664:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 13.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:562:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 11.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:482:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 2.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:641:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-
- ## Prevented Broad Execution
-
-diff --git a/docs_build/dev/reports/test_cleanup_routing_report.md b/docs_build/dev/reports/test_cleanup_routing_report.md
-index 51d699234..ed7ec4550 100644
---- a/docs_build/dev/reports/test_cleanup_routing_report.md
-+++ b/docs_build/dev/reports/test_cleanup_routing_report.md
-@@ -1,6 +1,6 @@
- # Test Cleanup Routing Report
-
--Generated: 2026-06-20T22:59:39.177Z
-+Generated: 2026-06-21T00:11:18.108Z
- Status: PASS
-
- ## Representative Routing Cases
-diff --git a/docs_build/dev/reports/testing_lane_execution_report.md b/docs_build/dev/reports/testing_lane_execution_report.md
-index 7713de7a1..c9cbce468 100644
---- a/docs_build/dev/reports/testing_lane_execution_report.md
-+++ b/docs_build/dev/reports/testing_lane_execution_report.md
-@@ -1,6 +1,6 @@
- # Testing Lane Execution Report
-
--Generated: 2026-06-20T22:59:39.207Z
-+Generated: 2026-06-21T00:11:18.159Z
- Dry run: No
-
- ## Summary
-@@ -9,7 +9,7 @@ PASS: 1
- WARN: 0
- FAIL: 0
- SKIP: 14
--Total lane elapsed time: 78.45s
-+Total lane elapsed time: 67.79s
- Actual browser launches: 1
-
- ## Full Samples Smoke
-@@ -105,7 +105,7 @@ Prevented Workspace lane reruns: 0
-
- | Lane | Status | Elapsed | Browser Launches | Executed/Skipped Reason | Affected Surface | Fixtures / Inputs |
- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | PASS | 78.45s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
-+| workspace-contract | PASS | 67.79s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
- | game-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Workspace mock repository, Game Workspace UI, and Toolbox Progress/Build Path game-state bridge | repo-served Game Workspace page; repo-served Toolbox page with role simulation; in-memory SQL-shaped mock game repository |
- | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | repo-served Game Design page; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Design mock repository; Game Workspace mock game context |
- | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | repo-served Game Configuration page; repo-served Game Design page for handoff checks; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Configuration mock repository; Game Design mock repository handoff |
-@@ -125,16 +125,16 @@ Prevented Workspace lane reruns: 0
-
- | Lane | Duration | Test |
- | --- | --- | --- |
--| workspace-contract | 18.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:667:1 > representative active tool pages align center cleanup and registry group colors |
--| workspace-contract | 17.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:565:1 > learn wireframe pages load with shared Theme V2 structure |
--| workspace-contract | 14.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes |
--| workspace-contract | 10.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:485:1 > common header renders primary navigation order across active pages |
--| workspace-contract | 2.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:644:1 > tool template future-state page loads from root Theme V2 paths |
-+| workspace-contract | 15.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes |
-+| workspace-contract | 14.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:664:1 > representative active tool pages align center cleanup and registry group colors |
-+| workspace-contract | 13.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:562:1 > learn wireframe pages load with shared Theme V2 structure |
-+| workspace-contract | 11.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:482:1 > common header renders primary navigation order across active pages |
-+| workspace-contract | 2.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:641:1 > tool template future-state page loads from root Theme V2 paths |
-
- ## Commands
-
- ### workspace-contract
--- PASS 78.44s C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
-+- PASS 67.79s C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
-
- ### game-workspace
- - SKIP
-diff --git a/docs_build/dev/reports/validation_cache_report.md b/docs_build/dev/reports/validation_cache_report.md
-index e19c36558..2afd84b03 100644
---- a/docs_build/dev/reports/validation_cache_report.md
-+++ b/docs_build/dev/reports/validation_cache_report.md
-@@ -1,6 +1,6 @@
- # Validation Cache Report
-
--Generated: 2026-06-20T22:58:20.687Z
-+Generated: 2026-06-21T00:10:10.220Z
- Status: PASS
-
- ## Cache Summary
-@@ -15,26 +15,26 @@ Validations computed: 10
- | lane registration validation | MISS | 6a5b13bb47c3fad3 | initial computation | lane definitions change; package.json lane scripts change |
- | runner preflight validation | MISS | 0633df51b798654a | initial computation | lane definitions change; fixture ownership changes; targeted files change |
- | scoped discovery map | MISS | e195476e1978ec54 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
--| targeted file manifest validation | MISS | 070fd74956239d48 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
--| lane warm-start validation | MISS | 6f24967ea6249f42 | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
--| structural ownership validation | MISS | ce9fb480b7ef245b | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
-+| targeted file manifest validation | MISS | c5c4b7876c948959 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
-+| lane warm-start validation | MISS | a00444576ec05d24 | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
-+| structural ownership validation | MISS | f0b916009d8b7a2e | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
- | lane compilation validation | MISS | 0e1346462ea720dd | initial computation | lane definitions change; targeted files change; fixture ownership changes |
- | lane compilation validation | HIT | 0e1346462ea720dd | dependency validation input | unchanged within execution cycle |
- | dependency validation | MISS | 94d1bf1c7924d46d | initial computation | dependency graph changes; lane definitions change; lane compilation input changes |
--| lane snapshot validation | MISS | 5d2cdac11ae1ca38 | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
-+| lane snapshot validation | MISS | 7ebcc49fd0ce56c8 | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
- | zero-browser preflight | MISS | 568caf8342cb4bc0 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change; dependency graph changes |
--| structural ownership validation | HIT | ce9fb480b7ef245b | static validation report | unchanged within execution cycle |
--| structural ownership validation | HIT | ce9fb480b7ef245b | zero-browser preflight report | unchanged within execution cycle |
-+| structural ownership validation | HIT | f0b916009d8b7a2e | static validation report | unchanged within execution cycle |
-+| structural ownership validation | HIT | f0b916009d8b7a2e | zero-browser preflight report | unchanged within execution cycle |
- | scoped discovery map | HIT | e195476e1978ec54 | structural ownership validation input | unchanged within execution cycle |
- | scoped discovery map | HIT | e195476e1978ec54 | discovery scope reporting | unchanged within execution cycle |
--| targeted file manifest validation | HIT | 070fd74956239d48 | lane input validation report | unchanged within execution cycle |
--| targeted file manifest validation | HIT | 070fd74956239d48 | runtime scheduling blockers | unchanged within execution cycle |
--| lane warm-start validation | HIT | 6f24967ea6249f42 | warm-start report | unchanged within execution cycle |
--| lane warm-start validation | HIT | 6f24967ea6249f42 | dependency hydration reuse report | unchanged within execution cycle |
--| lane warm-start validation | HIT | 6f24967ea6249f42 | runtime scheduling | unchanged within execution cycle |
--| lane snapshot validation | HIT | 5d2cdac11ae1ca38 | lane snapshot report | unchanged within execution cycle |
--| lane snapshot validation | HIT | 5d2cdac11ae1ca38 | execution graph reuse report | unchanged within execution cycle |
--| lane snapshot validation | HIT | 5d2cdac11ae1ca38 | runtime scheduling | unchanged within execution cycle |
-+| targeted file manifest validation | HIT | c5c4b7876c948959 | lane input validation report | unchanged within execution cycle |
-+| targeted file manifest validation | HIT | c5c4b7876c948959 | runtime scheduling blockers | unchanged within execution cycle |
-+| lane warm-start validation | HIT | a00444576ec05d24 | warm-start report | unchanged within execution cycle |
-+| lane warm-start validation | HIT | a00444576ec05d24 | dependency hydration reuse report | unchanged within execution cycle |
-+| lane warm-start validation | HIT | a00444576ec05d24 | runtime scheduling | unchanged within execution cycle |
-+| lane snapshot validation | HIT | 7ebcc49fd0ce56c8 | lane snapshot report | unchanged within execution cycle |
-+| lane snapshot validation | HIT | 7ebcc49fd0ce56c8 | execution graph reuse report | unchanged within execution cycle |
-+| lane snapshot validation | HIT | 7ebcc49fd0ce56c8 | runtime scheduling | unchanged within execution cycle |
- | lane compilation validation | HIT | 0e1346462ea720dd | lane compilation report | unchanged within execution cycle |
- | lane compilation validation | HIT | 0e1346462ea720dd | runtime scheduling | unchanged within execution cycle |
- | dependency validation | HIT | 94d1bf1c7924d46d | dependency report | unchanged within execution cycle |
-diff --git a/docs_build/dev/reports/zero_browser_preflight_report.md b/docs_build/dev/reports/zero_browser_preflight_report.md
-index 19b494b64..6b9f2cec7 100644
---- a/docs_build/dev/reports/zero_browser_preflight_report.md
-+++ b/docs_build/dev/reports/zero_browser_preflight_report.md
-@@ -1,6 +1,6 @@
- # Zero-Browser Preflight Report
-
--Generated: 2026-06-20T22:58:20.686Z
-+Generated: 2026-06-21T00:10:10.219Z
- Status: PASS
-
- ## Prevented Browser Launches
-diff --git a/tests/playwright/tools/MessagesTool.spec.mjs b/tests/playwright/tools/MessagesTool.spec.mjs
-index 5c2e1a212..e10e79dac 100644
---- a/tests/playwright/tools/MessagesTool.spec.mjs
-+++ b/tests/playwright/tools/MessagesTool.spec.mjs
-@@ -145,12 +145,15 @@ async function addMessage(page, values) {
-
- async function addPart(page, values) {
-   await page.getByRole("button", { name: "Add Part" }).click();
--  await page.locator("[data-messages-segment-editor='__new__'] [data-segment-order]").fill(String(values.order));
-   await page.locator("[data-messages-segment-editor='__new__'] [data-segment-text]").fill(values.text);
-   await page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion]").selectOption({ label: values.emotion });
-   await page.locator("[data-messages-segment-commit='__new__']").click();
- }
-
-+async function openMessageParts(page, messageName) {
-+  await page.locator("[data-messages-name-cell]").filter({ hasText: messageName }).click();
-+}
-+
- test("Message Studio renders Messages with child Message Parts and plays ordered parts", async ({ page }) => {
-   const sqlitePath = messagesDbPath();
-   await fs.rm(sqlitePath, { force: true });
-@@ -194,28 +197,29 @@ test("Message Studio renders Messages with child Message Parts and plays ordered
-
-     const messageRow = page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" });
-     const messageNameCell = page.locator("[data-messages-name-cell]").filter({ hasText: "Bat Encounter" });
--    await expect(page.locator("[data-messages-segment-host]")).toBeVisible();
--    await messageNameCell.click();
-     await expect(page.locator("[data-messages-segment-host]")).toHaveCount(0);
-     await messageRow.locator("td").nth(3).click();
-     await expect(page.locator("[data-messages-segment-host]")).toHaveCount(0);
-     await messageNameCell.click();
-     await expect(page.locator("[data-messages-segment-host]")).toBeVisible();
-     await expect(page.getByRole("heading", { name: "Message Parts" })).toBeVisible();
--    await expect(page.getByRole("columnheader", { name: "Order" })).toBeVisible();
--    await expect(page.getByRole("columnheader", { name: "Text" })).toBeVisible();
--    await expect(page.getByRole("columnheader", { exact: true, name: "TTS Profile" })).toBeVisible();
-+    const partsTable = page.getByLabel("Message parts");
-+    await expect(partsTable.getByRole("columnheader", { name: "Order" })).toHaveCount(0);
-+    await expect(partsTable.getByRole("columnheader", { name: "Text" })).toBeVisible();
-+    await expect(partsTable.getByRole("columnheader", { name: "Emotion" })).toBeVisible();
-+    await expect(partsTable.getByRole("columnheader", { exact: true, name: "TTS Profile" })).toBeVisible();
-+    await expect(partsTable.getByRole("columnheader", { name: "Status" })).toBeVisible();
-+    await expect(partsTable.getByRole("columnheader", { name: "Actions" })).toBeVisible();
-
-     await page.getByRole("button", { name: "Add Part" }).click();
-     await expect(page.locator("[data-messages-segment-add-control-row]")).toHaveCount(0);
-     await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-text]")).toBeVisible();
-     await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion]")).toBeVisible();
-     await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-tts-profile]")).toContainText("Default Balanced TTS Profile");
--    await page.locator("[data-messages-segment-editor='__new__'] [data-segment-order]").fill("");
-     await page.locator("[data-messages-segment-commit='__new__']").click();
-     await expect(page.locator("[data-messages-validation-errors]")).toContainText("Part Text is required.");
-     await expect(page.locator("[data-messages-validation-errors]")).toContainText("Emotion is required.");
--    await expect(page.locator("[data-messages-validation-errors]")).toContainText("Display Order is required.");
-+    await expect(page.locator("[data-messages-validation-errors]")).not.toContainText("Display Order is required.");
-     await page.locator("[data-messages-segment-cancel='__new__']").click();
-
-     await addPart(page, {
-@@ -316,6 +320,7 @@ test("Message Studio shows actionable playback error when audio engine is unavai
-       name: "Bat Encounter",
-       text: "Bats drop from the rafters.",
-     });
-+    await openMessageParts(page, "Bat Encounter");
-     await addPart(page, {
-       emotion: "Urgent",
-       order: 1,
-diff --git a/tests/playwright/tools/RootToolsFutureState.spec.mjs b/tests/playwright/tools/RootToolsFutureState.spec.mjs
-index 1f043323e..ba97f5c6a 100644
---- a/tests/playwright/tools/RootToolsFutureState.spec.mjs
-+++ b/tests/playwright/tools/RootToolsFutureState.spec.mjs
-@@ -277,7 +277,7 @@ test("root tools surface links current tool pages without old_* routes", async (
-     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
-     await expect(page.getByRole("button", { name: "Build Path" })).toBeVisible();
-     await expect(page.getByRole("button", { name: "Build Path" })).not.toHaveAttribute("aria-disabled", "true");
--    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 15/43");
-+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 16/44");
-     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
-     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='admin']")).toHaveCount(0);
-     await expect(page.locator("nav.nav-links > a[data-route='learn']")).toHaveCount(1);
-@@ -311,18 +311,15 @@ test("root tools surface links current tool pages without old_* routes", async (
-     await expect(page.getByText("Build Path Wireframe")).toHaveCount(0);
-     await expect(page.locator("[data-toolbox-wireframe]")).toHaveCount(0);
-     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
--    const readyGameWorkspaceCard = page.locator("main .control-card").filter({
--      has: page.locator("h3", { hasText: "Game Hub" })
--    });
--    await expect(readyGameWorkspaceCard.locator("a.btn")).toHaveAttribute("href", "../toolbox/game-workspace/index.html");
-+    await expect(page.locator("main a.btn[data-toolbox-launch-link='Game Hub'][href='../toolbox/game-workspace/index.html']")).toBeVisible();
-     const defaultToolLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
--    expect(defaultToolLabels).toEqual(["Achievements", "Assets", "Colors", "Controls", "Game Configuration", "Game Design", "Game Hub", "Game Journey", "Idea Board", "Languages", "Message Studio", "Objects", "Saved Data", "Tags", "Text To Speech"]);
-+    expect(defaultToolLabels).toEqual(["Achievements", "Assets", "Colors", "Controls", "Game Configuration", "Game Design", "Game Hub", "Game Hub", "Game Journey", "Idea Board", "Languages", "Message Studio", "Objects", "Saved Data", "Tags", "Text To Speech"]);
-     const textToSpeechCard = page.locator("main .control-card").filter({
-       has: page.locator("h3", { hasText: /^Text To Speech$/ })
-     });
-     await expect(textToSpeechCard.locator("[data-toolbox-tool-name-link='Text To Speech']")).toHaveAttribute("href", "/toolbox/text-to-speech/index.html");
-     await expect(textToSpeechCard.locator("[data-toolbox-tool-name-link='Text To Speech']")).toHaveAttribute("data-registered-tool-route", "toolbox/text-to-speech/index.html");
--    await expect(page.locator("[data-toolbox-readiness]")).toHaveText(["Wireframe", "Beta", "Complete", "Wireframe", "Beta", "Beta", "Beta", "Beta", "Wireframe", "Wireframe", "Beta", "Beta", "Wireframe", "Beta", "Beta"]);
-+    await expect(page.locator("[data-toolbox-readiness]")).toHaveText(["Wireframe", "Beta", "Complete", "Wireframe", "Beta", "Beta", "Beta", "Beta", "Beta", "Wireframe", "Wireframe", "Beta", "Beta", "Wireframe", "Beta", "Beta"]);
-     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^AI Command Center$/ }) })).toHaveCount(0);
-     const oldStandaloneLabels = [
-       ["Palette", "Manager"].join(" "),
-@@ -392,7 +389,7 @@ test("root tools surface links current tool pages without old_* routes", async (
-     const guestGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
-       groups.map((group) => group.dataset.toolsAccordion)
-     ));
--    expect(guestGroupLabels).toEqual(["Idea", "Design", "Graphics", "Audio", "Objects", "Interface", "Controls", "Progression"]);
-+    expect(guestGroupLabels).toEqual(["Idea", "Design", "Graphics", "Audio", "Objects", "Interface", "Controls", "Progression", "Publish"]);
-     await expect(page.locator("[data-tools-accordion='Admin']")).toHaveCount(0);
-     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
-     await expect(page.locator("[data-tools-accordion-list] .control-card h3", { hasText: /^Progress$/ })).toHaveCount(0);
-@@ -418,13 +415,13 @@ test("root tools surface links current tool pages without old_* routes", async (
-     expect(failedRequests.filter((request) => request.includes("/toolbox/old_"))).toEqual([]);
-
-     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
--    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 15/43");
-+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 16/44");
-     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
-     await expect(page.locator("main").getByText("Creators", { exact: true })).toHaveCount(0);
-     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
-     await setServerSession(server, MOCK_DB_KEYS.users.admin);
-     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
--    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 15/46");
-+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 16/47");
-     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
-     const adminLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
-     expect(adminLabels).toEqual(defaultToolLabels);
-@@ -435,7 +432,7 @@ test("root tools surface links current tool pages without old_* routes", async (
-       "Platform Settings"
-     ]));
-     await expect(page.locator("main .control-card").filter({
--      has: page.locator("h3", { hasText: /^Game Hub$/ })
-+      has: page.locator("[data-toolbox-tool-name-link='Game Hub'][href='/toolbox/game-workspace/index.html']")
-     }).locator("[data-toolbox-readiness]")).toHaveText("Beta");
-     await expect(page.locator("main .control-card").filter({
-       has: page.locator("h3", { hasText: /^Game Configuration$/ })
-@@ -461,7 +458,7 @@ test("root tools surface links current tool pages without old_* routes", async (
-     const adminGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
-       groups.map((group) => group.dataset.toolsAccordion)
-     ));
--    expect(adminGroupLabels).toEqual(["Idea", "Design", "Graphics", "Audio", "Objects", "Interface", "Controls", "Progression"]);
-+    expect(adminGroupLabels).toEqual(["Idea", "Design", "Graphics", "Audio", "Objects", "Interface", "Controls", "Progression", "Publish"]);
-     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
-     await page.getByRole("button", { name: "Build Path" }).click();
-     await expect(page.locator("[data-build-path-table='workflow']")).toBeVisible();
-@@ -471,7 +468,7 @@ test("root tools surface links current tool pages without old_* routes", async (
-     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
-     await setServerSession(server, "");
-     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
--    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 15/43");
-+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 16/44");
-     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
-     await expect(page.locator("main").getByText("Creators", { exact: true })).toHaveCount(0);
-     expect(pageErrors).toEqual([]);
+ toolbox/text-to-speech/text2speech.js
 diff --git a/tests/playwright/tools/TextToSpeechFunctional.spec.mjs b/tests/playwright/tools/TextToSpeechFunctional.spec.mjs
-index fa1050126..2661b957d 100644
+index 2661b957d..c9a659a4d 100644
 --- a/tests/playwright/tools/TextToSpeechFunctional.spec.mjs
 +++ b/tests/playwright/tools/TextToSpeechFunctional.spec.mjs
-@@ -104,9 +104,16 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
-     await expect(page.getByRole("heading", { level: 1, name: "Text To Speech" })).toBeVisible();
-     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-     await expect(page.locator("[data-tts-summary]")).toHaveClass(/content-cluster--nowrap/);
--    await expect(page.locator("[data-tts-summary]")).toContainText("TTS Studio");
-+    await expect(page.locator("[data-tts-summary]")).not.toContainText("TTS Studio");
-+    await expect(page.locator("[data-tts-output-summary]")).toHaveCount(0);
-+    await expect(page.locator("[data-tts-queue-list]")).toHaveCount(0);
-+    await expect(page.locator("[data-tts-item-name]")).toHaveCount(0);
-+    await expect(page.getByText("Named Sentence", { exact: true })).toHaveCount(0);
-+    await expect(page.getByText("Output Summary", { exact: true })).toHaveCount(0);
-+    await expect(page.getByText("Voice Filters", { exact: true })).toHaveCount(0);
-+    await expect(page.getByText("Delivery", { exact: true })).toHaveCount(0);
-+    await expect(page.getByText("Presets", { exact: true })).toHaveCount(0);
+@@ -120,8 +120,14 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
+     await expect(page.locator("[data-tts-profile-table]")).toContainText("Default Balanced Profile");
+     await expect(page.locator("[data-tts-profile-table]")).toContainText("Man Profile 1");
+     await expect(page.locator("[data-tts-profile-table]")).toContainText("Woman Profile 2");
+-    await expect(page.locator("[data-tts-profile-row]").filter({ hasText: "Default Balanced Profile" }).getByRole("button", { name: "Delete" })).toBeDisabled();
+-    await page.locator("[data-tts-profile-row]").filter({ hasText: "Default Balanced Profile" }).click();
++    const defaultProfileRow = page.locator("[data-tts-profile-row]").filter({ hasText: "Default Balanced Profile" });
++    await expect(defaultProfileRow.getByRole("button", { name: "Delete" })).toBeDisabled();
++    await expect(page.locator("[data-tts-emotion-host]")).toHaveCount(0);
++    await defaultProfileRow.locator("td").nth(5).click();
++    await expect(page.locator("[data-tts-emotion-host]")).toHaveCount(0);
++    await expect(defaultProfileRow.locator("[data-tts-profile-name-cell]")).toHaveAttribute("aria-expanded", "false");
++    await defaultProfileRow.locator("[data-tts-profile-name-cell]").click();
++    await expect(defaultProfileRow.locator("[data-tts-profile-name-cell]")).toHaveAttribute("aria-expanded", "true");
+     await expect(page.getByRole("heading", { name: "Emotion Settings" })).toBeVisible();
+     await expect(page.getByRole("columnheader", { name: "Emotion", exact: true })).toBeVisible();
+     await expect(page.getByRole("columnheader", { name: "Preset" })).toBeVisible();
+@@ -130,20 +136,22 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
+     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Happy" })).toBeVisible();
+     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Angry" })).toBeVisible();
+     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Scared" })).toBeVisible();
+-    await page.locator("[data-tts-profile-row]").filter({ hasText: "Man Profile 1" }).click();
++    await expect(page.locator("[data-tts-emotion-add-control-row]").getByRole("button", { name: "Add Emotion" })).toBeVisible();
++    await page.locator("[data-tts-profile-row]").filter({ hasText: "Man Profile 1" }).locator("[data-tts-profile-name-cell]").click();
+     await expect(page.locator("[data-tts-emotion-row]")).toHaveCount(4);
+     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Neutral" })).toBeVisible();
+     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Happy" })).toBeVisible();
+     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Angry" })).toBeVisible();
+     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Scared" })).toBeVisible();
+-    await page.locator("[data-tts-profile-row]").filter({ hasText: "Woman Profile 2" }).click();
++    await page.locator("[data-tts-profile-row]").filter({ hasText: "Woman Profile 2" }).locator("[data-tts-profile-name-cell]").click();
+     await expect(page.locator("[data-tts-emotion-row]")).toHaveCount(4);
+     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Neutral" })).toBeVisible();
+     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Happy" })).toBeVisible();
+     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Angry" })).toBeVisible();
+     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Scared" })).toBeVisible();
 
--    await expect(page.locator("[data-tts-voice-select]")).toContainText("Arcade Voice");
-     await expect(page.locator("[data-tts-voice-count]")).toHaveText("2");
-     await expect(page.locator("[data-tts-profile-count]")).toHaveText("3");
-     await expect(page.locator("[data-tts-emotion-count]")).toHaveText("12");
-@@ -160,40 +167,25 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
-     await page.locator("[data-tts-emotion-editor] [data-tts-emotion-volume]").fill("0.7");
-     await page.locator("[data-tts-emotion-editor] [data-tts-commit-emotion]").click();
-     await expect(page.locator("[data-tts-status]")).toHaveText("Saved emotion setting: Urgent.");
--    await expect(page.locator("[data-tts-output-summary]")).toContainText("\"contractVersion\": \"tts-profile-emotion-v1\"");
--    await expect(page.locator("[data-tts-output-summary]")).toContainText("\"name\": \"Creature Profile Updated\"");
-+    await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Urgent" })).toContainText("Whisper-ish");
-
--    await expect(page.locator("[data-tts-gender-select]")).toBeVisible();
--    await expect(page.locator("[data-tts-language-select]")).toBeVisible();
--    await expect(page.locator("[data-tts-age-select]")).toBeVisible();
--    await expect(page.locator("[data-tts-character-preset-select]")).toBeVisible();
--    await expect(page.locator("[data-tts-ssml-preset-select]")).toBeVisible();
--    await expect(page.locator("[data-tts-import-json]")).toBeEnabled();
--    await expect(page.locator("[data-tts-copy-json]")).toBeEnabled();
--    await expect(page.locator("[data-tts-export-json]")).toBeEnabled();
-+    await expect(page.locator("[data-tts-gender-select]")).toHaveCount(0);
-+    await expect(page.locator("[data-tts-language-select]")).toHaveCount(0);
-+    await expect(page.locator("[data-tts-age-select]")).toHaveCount(0);
-+    await expect(page.locator("[data-tts-character-preset-select]")).toHaveCount(0);
-+    await expect(page.locator("[data-tts-ssml-preset-select]")).toHaveCount(0);
-+    await expect(page.locator("[data-tts-import-json]")).toHaveCount(0);
-+    await expect(page.locator("[data-tts-copy-json]")).toHaveCount(0);
-+    await expect(page.locator("[data-tts-export-json]")).toHaveCount(0);
-+    await page.locator("[data-tts-profile-row]").filter({ hasText: "Creature Profile Updated" }).getByRole("button", { name: "Edit Profile" }).click();
-+    await expect(page.locator("[data-tts-profile-editor] [data-tts-profile-voice]")).toBeVisible();
-+    await expect(page.locator("[data-tts-profile-editor] [data-tts-profile-language]")).toBeVisible();
-+    await expect(page.locator("[data-tts-profile-editor] [data-tts-profile-gender]")).toBeVisible();
-+    await expect(page.locator("[data-tts-profile-editor] [data-tts-profile-age]")).toBeVisible();
-+    await page.locator("[data-tts-profile-editor] [data-tts-cancel-profile]").click();
-
-     await page.locator("[data-tts-text-input]").fill("Launch the next wave.");
--    await page.locator("[data-tts-item-name]").fill("Wave intro");
--    await page.locator("[data-tts-character-preset-select]").selectOption("dramatic");
--    await page.locator("[data-tts-age-select]").selectOption("teen");
--    await page.locator("[data-tts-ssml-preset-select]").selectOption("whisper-ish");
--    await expect(page.locator("[data-tts-pitch-value]")).toHaveText("1.1");
--    await expect(page.locator("[data-tts-volume-value]")).toHaveText("0.6");
--    await page.locator("[data-tts-voice-select]").selectOption("arcade-voice-uri");
--    await page.locator("[data-tts-rate]").fill("1.4");
--    await page.locator("[data-tts-pitch]").fill("0.8");
--    await page.locator("[data-tts-volume]").fill("0.55");
--    await expect(page.locator("[data-tts-rate-value]")).toHaveText("1.4");
--    await expect(page.locator("[data-tts-pitch-value]")).toHaveText("0.8");
--    await expect(page.locator("[data-tts-volume-value]")).toHaveText("0.55");
-     await expect(page.locator("[data-tts-text-count]")).toHaveText("21");
--    await page.locator("[data-tts-add-item]").click();
--    await expect(page.locator("[data-tts-queue-list]")).toContainText("Wave intro");
--    await expect(page.locator("[data-tts-output-summary]")).toContainText("\"name\": \"Wave intro\"");
--    await page.locator("[data-tts-duplicate-item]").click();
--    await expect(page.locator("[data-tts-queue-list]")).toContainText("Wave intro 2 copy");
--    await page.locator("[data-tts-delete-item]").click();
--    await expect(page.locator("[data-tts-queue-list] [data-tts-queue-item]")).toHaveCount(2);
-
-     await expect(page.locator("[data-tts-speak]")).toBeEnabled();
-     await page.locator("[data-tts-speak]").click();
-@@ -201,12 +193,12 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
-     let calls = await page.evaluate(() => window.__textToSpeechCalls);
-     expect(calls.at(-1)).toEqual(expect.objectContaining({
-       lang: "en-US",
--      pitch: 0.8,
--      rate: 1.4,
-+      pitch: 1.2,
-+      rate: 1.1,
-       text: "Launch the next wave.",
-       type: "speak",
-       voiceName: "Arcade Voice",
--      volume: 0.55,
-+      volume: 0.7,
-     }));
-
-     await page.locator("[data-tts-pause]").click();
-@@ -280,7 +272,7 @@ test("Text To Speech shows actionable error when browser speech synthesis is una
-     await expect(page.locator("[data-tts-emotion-count]")).toHaveText("12");
-     await expect(page.locator("[data-tts-engine-status]")).toContainText("SpeechSynthesis is unavailable");
-     await expect(page.locator("[data-tts-status]")).toContainText("Use a browser with Web Speech API support");
--    await expect(page.locator("[data-tts-voice-select]")).toContainText("No browser voices available");
-+    await expect(page.locator("[data-tts-voice-select]")).toHaveCount(0);
-     await expect(page.locator("[data-tts-speak]")).toBeDisabled();
-     await expect(page.locator("[data-tts-stop]")).toBeDisabled();
-
-diff --git a/toolbox/messages/messages.js b/toolbox/messages/messages.js
-index c881cc0b4..4cb02f9bf 100644
---- a/toolbox/messages/messages.js
-+++ b/toolbox/messages/messages.js
-@@ -221,7 +221,7 @@ function createMessageAddControlRow() {
- }
-
- function createSegmentAddControlRow() {
--  const row = tableActionRow(6, createButton("Add Part", "messagesSegmentAddRow", state.selectedMessageKey));
-+  const row = tableActionRow(5, createButton("Add Part", "messagesSegmentAddRow", state.selectedMessageKey));
-   row.dataset.messagesSegmentAddControlRow = state.selectedMessageKey;
-   return row;
- }
-@@ -514,7 +514,7 @@ function createMessageSegmentTable() {
-   table.setAttribute("aria-label", "Message parts");
-   const thead = document.createElement("thead");
-   const headerRow = document.createElement("tr");
--  ["Order", "Text", "Emotion", "TTS Profile", "Status", "Actions"].forEach((label) => {
-+  ["Text", "Emotion", "TTS Profile", "Status", "Actions"].forEach((label) => {
-     const header = document.createElement("th");
-     header.scope = "col";
-     header.textContent = label;
-@@ -526,7 +526,7 @@ function createMessageSegmentTable() {
-
-   const segments = selectedMessageSegments();
-   if (!segments.length && state.editingSegmentKey !== NEW_ROW_KEY) {
--    tbody.append(tableMessage(6, "No message parts saved for this message."));
-+    tbody.append(tableMessage(5, "No message parts saved for this message."));
-   }
-
-   segments.forEach((segment, index) => {
-@@ -555,7 +555,6 @@ function createMessageSegmentTable() {
-       segment.key,
-     ));
-     row.append(
--      createCell(String(segment.displayOrder)),
-       createCell(segment.segmentText),
-       createCell(segment.emotionProfileName || "Unknown"),
-       ttsCell,
-@@ -581,9 +580,7 @@ function createSegmentEditRow(segment = null) {
-   const key = segment?.key || NEW_ROW_KEY;
-   const row = document.createElement("tr");
-   row.dataset.messagesSegmentEditor = key;
--
--  const orderCell = document.createElement("td");
--  orderCell.append(createNumberInput(segment?.displayOrder || nextSegmentOrder(), "segmentOrder", { min: 1, step: 1 }));
-+  row.dataset.messagesSegmentOrder = String(segment?.displayOrder || nextSegmentOrder());
-
-   const textCell = document.createElement("td");
-   textCell.append(createTextarea(segment?.segmentText || "", "segmentText", 3));
-@@ -607,7 +604,7 @@ function createSegmentEditRow(segment = null) {
-     createButton("Cancel", "messagesSegmentCancel", key),
-   ));
-
--  row.append(orderCell, textCell, emotionCell, ttsCell, statusCell, actions);
-+  row.append(textCell, emotionCell, ttsCell, statusCell, actions);
-   return row;
- }
-
-@@ -728,7 +725,7 @@ function segmentValues(key) {
-   const root = elements.table?.querySelector(`[data-messages-segment-editor="${key}"]`);
-   return {
-     active: editorChecked(root, "[data-segment-active]"),
--    displayOrder: editorValue(root, "[data-segment-order]"),
-+    displayOrder: editorValue(root, "[data-segment-order]") || root?.dataset.messagesSegmentOrder || String(nextSegmentOrder()),
-     emotionProfileKey: editorValue(root, "[data-segment-emotion]"),
-     messageKey: state.selectedMessageKey,
-     segmentText: editorValue(root, "[data-segment-text]"),
-@@ -797,11 +794,13 @@ async function commitMessage(key) {
-       ? createMessage(values)
-       : updateMessage(key, values);
-     state.editingMessageKey = "";
--    state.selectedMessageKey = result.message.key;
-     if (key === NEW_ROW_KEY) {
-+      state.selectedMessageKey = "";
-       state.selectedSegmentKey = "";
-+    } else {
-+      state.selectedMessageKey = result.message.key;
-     }
--    await reloadAfterChange(result.message.key);
-+    await reloadAfterChange(state.selectedMessageKey, state.selectedSegmentKey);
-     setText(elements.log, `Updated row ${result.message.name}.`);
-   } catch (error) {
-     showValidation([error instanceof Error ? error.message : String(error || "Message row update failed.")]);
+-    await page.getByRole("button", { name: "Add Profile" }).click();
++    await expect(page.locator("[data-tts-profile-add-control-row]").getByRole("button", { name: "Add Profile" })).toBeVisible();
++    await page.locator("[data-tts-profile-add-control-row]").getByRole("button", { name: "Add Profile" }).click();
+     await expect(page.locator("[data-tts-profile-editor='__new__']")).toBeVisible();
+     await page.locator("[data-tts-profile-editor='__new__'] [data-tts-profile-name]").fill("Creature Profile");
+     await page.locator("[data-tts-profile-editor='__new__'] [data-tts-profile-gender]").selectOption("neutral");
+@@ -154,7 +162,9 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
+     await page.locator("[data-tts-profile-editor] [data-tts-profile-name]").fill("Creature Profile Updated");
+     await page.locator("[data-tts-profile-editor] [data-tts-commit-profile]").click();
+     await expect(page.locator("[data-tts-status]")).toHaveText("Saved TTS profile: Creature Profile Updated.");
+-    await page.getByRole("button", { name: "Add Emotion" }).click();
++    await expect(page.locator("[data-tts-emotion-add-control-row]").getByRole("button", { name: "Add Emotion" })).toBeVisible();
++    await page.locator("[data-tts-emotion-add-control-row]").getByRole("button", { name: "Add Emotion" }).click();
++    await expect(page.locator("[data-tts-emotion-add-control-row]")).toHaveCount(0);
+     await page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-name]").selectOption("urgent");
+     await page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-pitch]").fill("1.2");
+     await page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-rate]").fill("1.1");
 diff --git a/toolbox/text-to-speech/index.html b/toolbox/text-to-speech/index.html
-index 95672aa69..60724366e 100644
+index 60724366e..7989b8309 100644
 --- a/toolbox/text-to-speech/index.html
 +++ b/toolbox/text-to-speech/index.html
-@@ -6,7 +6,7 @@
-     <base href="/">
-     <meta name="viewport" content="width=device-width, initial-scale=1">
-     <title>Text To Speech - GameFoundryStudio</title>
--    <meta name="description" content="Functional browser Text To Speech tool using Theme V2 and the shared engine audio Text To Speech module.">
-+    <meta name="description" content="Functional browser Text To Speech profile tool using Theme V2 and the shared engine audio Text To Speech module.">
-     <link rel="icon" href="/favicon.svg">
-     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
- </head>
-@@ -18,80 +18,32 @@
-             <div class="container">
-                 <div class="kicker">Project Workspace / Audio</div>
-                 <h1>Text To Speech</h1>
--                <p class="lede">Create named speech lines, shape browser voices, and preview spoken game text through the shared engine audio Text To Speech module.</p>
-+                <p class="lede">Create reusable speech profiles, tune emotion settings, and preview spoken game text through the shared engine audio Text To Speech module.</p>
-             </div>
-         </section>
-         <section class="section">
-             <div class="container container--tool-wide">
--                <nav class="action-group" aria-label="Text To Speech JSON actions" data-tts-standalone-actions>
--                    <button class="btn" type="button" data-tts-import-json>Import JSON</button>
--                    <input type="file" accept="application/json,.json" hidden data-tts-import-json-input>
--                    <button class="btn" type="button" data-tts-copy-json>Copy JSON</button>
--                    <button class="btn" type="button" data-tts-export-json>Export JSON</button>
--                </nav>
-                 <nav class="action-group" aria-label="Project Workspace actions" hidden data-tts-workspace-actions>
-                     <button class="btn" type="button" data-tts-return-workspace>Return to Project Workspace</button>
-                 </nav>
-                 <div class="tool-workspace tool-workspace--wide">
-                     <aside class="tool-column tool-group-audio">
-                         <div class="tool-column-header">
--                            <h2>Speech Options</h2>
-+                            <h2>Studio Setup</h2>
-                         </div>
-                         <div class="accordion-stack">
-                             <details class="vertical-accordion" open>
--                                <summary>Voice Filters</summary>
--                                <div class="accordion-body content-stack">
--                                    <label for="ttsGenderSelect">Gender</label>
--                                    <select id="ttsGenderSelect" data-tts-gender-select></select>
--                                    <label for="ttsLanguageSelect">Language</label>
--                                    <select id="ttsLanguageSelect" data-tts-language-select></select>
--                                    <label for="ttsVoiceSelect">Voice</label>
--                                    <select id="ttsVoiceSelect" data-tts-voice-select></select>
--                                    <p class="field-hint" data-tts-voice-details>No browser voices loaded yet.</p>
--                                </div>
--                            </details>
--                            <details class="vertical-accordion" open>
--                                <summary>Presets</summary>
-+                                <summary>Profile Ownership</summary>
-                                 <div class="accordion-body content-stack">
--                                    <label for="ttsVoiceAgeSelect">Voice Age</label>
--                                    <select id="ttsVoiceAgeSelect" data-tts-age-select></select>
--                                    <label for="ttsCharacterPresetSelect">Character Preset</label>
--                                    <select id="ttsCharacterPresetSelect" data-tts-character-preset-select></select>
--                                    <label for="ttsSsmlPresetSelect">SSML-like Preset</label>
--                                    <select id="ttsSsmlPresetSelect" data-tts-ssml-preset-select></select>
-+                                    <p>TTS Profiles own voice, language, gender, age, and availability.</p>
-+                                    <p>Use inline Profile rows to add or edit voice filters.</p>
+@@ -82,9 +82,6 @@
+                                         </tbody>
+                                     </table>
                                  </div>
-                             </details>
-                             <details class="vertical-accordion" open>
--                                <summary>Delivery</summary>
-+                                <summary>Emotion Ownership</summary>
-                                 <div class="accordion-body content-stack">
--                                    <div class="slider-value-row">
--                                        <label for="ttsVolume">Volume</label>
--                                        <input id="ttsVolume" type="range" data-tts-volume>
--                                        <output for="ttsVolume" class="slider-current-value" data-tts-volume-value>1</output>
--                                    </div>
--                                    <div class="slider-value-row">
--                                        <label for="ttsRate">Rate / Speed</label>
--                                        <input id="ttsRate" type="range" data-tts-rate>
--                                        <output for="ttsRate" class="slider-current-value" data-tts-rate-value>1</output>
--                                    </div>
--                                    <div class="slider-value-row">
--                                        <label for="ttsPitch">Pitch</label>
--                                        <input id="ttsPitch" type="range" data-tts-pitch>
--                                        <output for="ttsPitch" class="slider-current-value" data-tts-pitch-value>1</output>
--                                    </div>
--                                    <p class="field-hint">Voice Age and SSML-like presets shape rate, pitch, and volume. Manual slider changes are preserved until a new character preset is selected.</p>
+-                                <div class="action-group">
+-                                    <button class="btn" type="button" data-tts-add-profile>Add Profile</button>
 -                                </div>
--                            </details>
--                            <details class="vertical-accordion" open>
--                                <summary>Named Sentence</summary>
--                                <div class="accordion-body content-stack">
--                                    <label for="ttsSpeechItemName">Name</label>
--                                    <input id="ttsSpeechItemName" type="text" autocomplete="off" data-tts-item-name>
--                                    <div class="action-group" aria-label="Named sentence actions">
--                                        <button class="btn" type="button" data-tts-add-item>Add</button>
--                                        <button class="btn" type="button" data-tts-duplicate-item>Duplicate</button>
--                                        <button class="btn" type="button" data-tts-delete-item>Delete</button>
--                                    </div>
-+                                    <p>Emotion Settings own pitch, rate, volume, and preset values for the selected profile.</p>
-+                                    <p>Message Studio selects a TTS Profile and Emotion for playback.</p>
-                                 </div>
-                             </details>
-                         </div>
-@@ -99,7 +51,6 @@
-                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="text-to-speech" data-tool-icon-src="assets/theme-v2/images/badges/text-to-speech.png" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
-                     <section class="tool-center-panel">
-                         <div class="content-cluster content-cluster--nowrap" aria-label="Text To Speech summary" data-tts-summary>
--                            <span class="pill">TTS Studio</span>
-                             <article class="mini-stat mini-stat--inline"><span>Characters</span> <strong data-tts-text-count>0</strong></article>
-                             <article class="mini-stat mini-stat--inline"><span>TTS Profiles</span> <strong data-tts-profile-count>0</strong></article>
-                             <article class="mini-stat mini-stat--inline"><span>Emotion Settings</span> <strong data-tts-emotion-count>0</strong></article>
-@@ -153,27 +104,12 @@
-                                 <div class="status" role="status" data-tts-status>Loading browser Text To Speech.</div>
                              </div>
                          </article>
--                        <article class="card">
--                            <div class="card-body content-stack">
--                                <div>
--                                    <div class="kicker">Named Sentences</div>
--                                    <h3>Queue</h3>
--                                </div>
--                                <div role="listbox" aria-label="Named Sentences" data-tts-queue-list></div>
--                            </div>
--                        </article>
-                     </section>
-                     <aside class="tool-column tool-group-audio">
-                         <div class="tool-column-header">
--                            <h2>Output</h2>
-+                            <h2>Status</h2>
-                         </div>
-                         <div class="accordion-stack">
--                            <details class="vertical-accordion" open>
--                                <summary>Output Summary</summary>
--                                <div class="accordion-body content-stack">
--                                    <pre data-tts-output-summary>[]</pre>
--                                </div>
--                            </details>
-                             <details class="vertical-accordion" open>
-                                 <summary>Engine Status</summary>
-                                 <div class="accordion-body content-stack">
+                         <article class="card">
 diff --git a/toolbox/text-to-speech/text2speech.js b/toolbox/text-to-speech/text2speech.js
-index 36f3e9278..530d5356c 100644
+index 530d5356c..5174c8d5e 100644
 --- a/toolbox/text-to-speech/text2speech.js
 +++ b/toolbox/text-to-speech/text2speech.js
-@@ -1,29 +1,16 @@
- import {
--  createTextToSpeechQueueItem,
--  filterTextToSpeechVoiceOptions,
--  shapeTextToSpeechOptions,
-   textToSpeechLanguageOptionsFromVoices,
--  textToSpeechPayloadGenderValue,
-   TextToSpeechEngine,
--  uniqueTextToSpeechId,
--  uniqueTextToSpeechName
- } from "../../src/engine/audio/TextToSpeechEngine.js";
- import {
-   TEXT_TO_SPEECH_AGE_FILTER_OPTIONS,
--  TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS,
--  TEXT_TO_SPEECH_CHARACTER_PRESET_OPTIONS,
-   TEXT_TO_SPEECH_DEFAULTS,
-   TEXT_TO_SPEECH_DISPLAY_NAME,
--  TEXT_TO_SPEECH_GENDER_FILTER_OPTIONS,
-   TEXT_TO_SPEECH_LANGUAGE_OPTIONS,
-   TEXT_TO_SPEECH_RANGE_DEFAULTS,
--  TEXT_TO_SPEECH_SCHEMA_ID,
-   TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS
- } from "../../src/engine/audio/TextToSpeechDefaults.js";
+@@ -362,7 +362,6 @@ function setTextContent(root, selector, text) {
 
--const WORKSPACE_TOOL_STATE_KEY = "workspace.tools.text2speech-V2";
--const TTS_URL_SOURCE_PARAM = "samplePresetPath";
--
- const TTS_OWNERSHIP = Object.freeze({
-   DESIGN: "Design",
-   AUDIO: "Audio"
-@@ -373,105 +360,29 @@ function setTextContent(root, selector, text) {
-   if (node) node.textContent = text;
- }
-
--function readFileText(file) {
--  return new Promise((resolve, reject) => {
--    const reader = new FileReader();
--    reader.addEventListener("load", () => resolve(String(reader.result || "")));
--    reader.addEventListener("error", () => reject(reader.error || new Error("File read failed.")));
--    reader.readAsText(file);
--  });
--}
--
--function downloadTextFile(text, filename, documentRef = document) {
--  const blob = new Blob([text], { type: "application/json" });
--  const url = URL.createObjectURL(blob);
--  const link = documentRef.createElement("a");
--  link.href = url;
--  link.download = filename;
--  documentRef.body.append(link);
--  link.click();
--  link.remove();
--  URL.revokeObjectURL(url);
--}
--
--function isPlainObject(value) {
--  return Boolean(value && typeof value === "object" && !Array.isArray(value));
--}
--
--function validateTextToSpeechPayload(payload, sourceLabel = "payload") {
--  if (!Array.isArray(payload)) {
--    return { ok: false, message: `${TEXT_TO_SPEECH_DISPLAY_NAME} ${sourceLabel} must be a root array.` };
--  }
--  const required = ["id", "name", "text", "gender", "language", "voice", "voiceAge", "volume", "rate", "pitch", "characterPreset", "ssmlLikePreset"];
--  for (const [index, item] of payload.entries()) {
--    if (!isPlainObject(item)) {
--      return { ok: false, message: `${TEXT_TO_SPEECH_DISPLAY_NAME} ${sourceLabel}[${index}] must be an object.` };
--    }
--    const missing = required.filter((key) => !Object.prototype.hasOwnProperty.call(item, key));
--    if (missing.length) {
--      return { ok: false, message: `${TEXT_TO_SPEECH_DISPLAY_NAME} ${sourceLabel}[${index}] missing: ${missing.join(", ")}.` };
--    }
--  }
--  return { ok: true };
--}
--
--function queueItemMeta(item) {
--  return [
--    item.language || "no language",
--    item.characterPreset || "manual",
--    item.voiceAge || "any"
--  ].join(" / ");
--}
--
  function initializeTextToSpeechTool(root = document, { engine = new TextToSpeechEngine() } = {}) {
    const elements = {
--    addItem: root.querySelector("[data-tts-add-item]"),
-     addProfile: root.querySelector("[data-tts-add-profile]"),
--    age: root.querySelector("[data-tts-age-select]"),
--    characterPreset: root.querySelector("[data-tts-character-preset-select]"),
+-    addProfile: root.querySelector("[data-tts-add-profile]"),
      clearStatus: root.querySelector("[data-tts-clear-status]"),
--    copyJson: root.querySelector("[data-tts-copy-json]"),
--    deleteItem: root.querySelector("[data-tts-delete-item]"),
--    duplicateItem: root.querySelector("[data-tts-duplicate-item]"),
--    exportJson: root.querySelector("[data-tts-export-json]"),
--    gender: root.querySelector("[data-tts-gender-select]"),
--    importJson: root.querySelector("[data-tts-import-json]"),
--    importJsonInput: root.querySelector("[data-tts-import-json-input]"),
--    itemName: root.querySelector("[data-tts-item-name]"),
--    language: root.querySelector("[data-tts-language-select]"),
--    outputSummary: root.querySelector("[data-tts-output-summary]"),
      pause: root.querySelector("[data-tts-pause]"),
--    pitch: root.querySelector("[data-tts-pitch]"),
--    pitchValue: root.querySelector("[data-tts-pitch-value]"),
      profileCount: root.querySelector("[data-tts-profile-count]"),
-     profileEmotionCount: root.querySelector("[data-tts-emotion-count]"),
-     profileTable: root.querySelector("[data-tts-profile-table]"),
--    queueList: root.querySelector("[data-tts-queue-list]"),
--    rate: root.querySelector("[data-tts-rate]"),
--    rateValue: root.querySelector("[data-tts-rate-value]"),
-     resume: root.querySelector("[data-tts-resume]"),
-     returnWorkspace: root.querySelector("[data-tts-return-workspace]"),
-     speak: root.querySelector("[data-tts-speak]"),
--    ssmlPreset: root.querySelector("[data-tts-ssml-preset-select]"),
--    standaloneActions: root.querySelector("[data-tts-standalone-actions]"),
-     status: root.querySelector("[data-tts-status]"),
-     statusLog: root.querySelector("[data-tts-status-log]"),
-     stop: root.querySelector("[data-tts-stop]"),
-     text: root.querySelector("[data-tts-text-input]"),
--    voice: root.querySelector("[data-tts-voice-select]"),
--    volume: root.querySelector("[data-tts-volume]"),
--    volumeValue: root.querySelector("[data-tts-volume-value]"),
-     workspaceActions: root.querySelector("[data-tts-workspace-actions]")
-   };
-   const state = {
--    applyingItem: false,
-     editingEmotionId: "",
-     editingProfileId: "",
-     profiles: [],
--    queue: [],
-+    selectedEmotionId: "",
-     selectedProfileId: "",
--    selectedItemId: "",
--    sliderOverrides: { pitch: false, rate: false, volume: false },
-     voiceOptions: []
-   };
+@@ -459,6 +458,15 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
+     return row;
+   }
 
-@@ -487,35 +398,26 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
++  function tableActionRow(colSpan, ...buttons) {
++    const row = document.createElement("tr");
++    const cell = document.createElement("td");
++    cell.colSpan = colSpan;
++    cell.append(createActionGroup(...buttons));
++    row.append(cell);
++    return row;
++  }
++
+   function createTextInput(value, dataName) {
+     const input = document.createElement("input");
+     input.dataset[dataName] = "";
+@@ -547,6 +555,10 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
+       row.dataset.ttsProfileRow = profile.id;
+       const nameCell = document.createElement("td");
+       nameCell.dataset.ttsProfileNameCell = profile.id;
++      nameCell.setAttribute("role", "button");
++      nameCell.tabIndex = 0;
++      nameCell.setAttribute("aria-expanded", String(state.selectedProfileId === profile.id));
++      nameCell.title = "Open Emotion Settings";
+       nameCell.textContent = `${state.selectedProfileId === profile.id ? "v" : ">"} ${profile.name}`;
+       const deleteButton = createButton("Delete", "ttsDeleteProfile", profile.id);
+       if (profileInUseByMessageStudio(profile)) {
+@@ -582,9 +594,18 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
+     if (!state.profiles.length && state.editingProfileId !== NEW_ROW_KEY) {
+       elements.profileTable.append(tableMessage(8, "No TTS profiles yet."));
      }
-   }
-
--  function selectedItem() {
--    return state.queue.find((item) => item.id === state.selectedItemId) || null;
-+  function selectedProfile() {
-+    return state.profiles.find((profile) => profile.id === state.selectedProfileId) || null;
-   }
-
--  function selectedVoiceOptions() {
--    return Array.from(elements.voice?.options || []).map((option) => ({
--      label: option.textContent || option.value,
--      language: elements.language?.value || TEXT_TO_SPEECH_DEFAULTS.language,
--      name: option.textContent || option.value,
--      value: option.value
--    })).filter((option) => option.value);
-+  function previewProfile() {
-+    return selectedProfile() || state.profiles.find((profile) => profile.active) || state.profiles[0] || null;
-   }
-
--  function currentOptions() {
--    return {
--      characterPreset: elements.characterPreset?.value || TEXT_TO_SPEECH_DEFAULTS.characterPreset,
--      gender: textToSpeechPayloadGenderValue(elements.gender?.value || TEXT_TO_SPEECH_DEFAULTS.gender),
--      language: elements.language?.value || TEXT_TO_SPEECH_DEFAULTS.language,
--      pitch: Number(elements.pitch?.value || TEXT_TO_SPEECH_DEFAULTS.pitch),
--      rate: Number(elements.rate?.value || TEXT_TO_SPEECH_DEFAULTS.rate),
--      ssmlLikePreset: elements.ssmlPreset?.value || TEXT_TO_SPEECH_DEFAULTS.ssmlLikePreset,
--      voice: elements.voice?.value || "",
--      voiceAge: elements.age?.value || TEXT_TO_SPEECH_DEFAULTS.voiceAge,
--      volume: Number(elements.volume?.value || TEXT_TO_SPEECH_DEFAULTS.volume)
--    };
-+  function previewEmotion(profile = previewProfile()) {
-+    if (!profile?.emotions?.length) {
-+      return null;
++    if (!state.editingProfileId) {
++      elements.profileTable.append(createProfileAddControlRow());
 +    }
-+    return profile.emotions.find((emotion) => emotion.id === state.selectedEmotionId)
-+      || profile.emotions.find((emotion) => emotion.emotion === "neutral" && emotion.active !== false)
-+      || profile.emotions.find((emotion) => emotion.active !== false)
-+      || profile.emotions[0];
+     renderProfileCounts();
    }
 
--  function selectedProfile() {
--    return state.profiles.find((profile) => profile.id === state.selectedProfileId) || null;
-+  function previewSpeechLabel(profile, emotion) {
-+    return `${profile?.name || "TTS Profile"} / ${emotion?.emotionLabel || "Emotion"}`;
-   }
-
-   function profileInUseByMessageStudio(profile) {
-@@ -908,9 +810,10 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
-       };
++  function createProfileAddControlRow() {
++    const row = tableActionRow(8, createButton("Add Profile", "ttsAddProfileRow", NEW_ROW_KEY));
++    row.dataset.ttsProfileAddControlRow = "";
++    return row;
++  }
++
+   function createProfileEditRow(profile = null) {
+     const key = profile?.id || NEW_ROW_KEY;
+     const row = document.createElement("tr");
+@@ -689,16 +710,22 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
+     if (state.editingEmotionId === NEW_ROW_KEY) {
+       tbody.append(createEmotionEditRow(null));
      }
-     state.selectedProfileId = profile.id;
-+    state.selectedEmotionId = previewEmotion(profile)?.id || "";
-     state.editingProfileId = "";
-     renderProfileRows();
--    renderOutputSummary();
-+    refreshActionState();
-     writeStatus(`Saved TTS profile: ${profile.name}.`);
++    if (!state.editingEmotionId) {
++      tbody.append(createEmotionAddControlRow(profileId));
++    }
+
+     table.append(thead, tbody);
+     tableWrapper.append(table);
+-    const actionGroup = document.createElement("div");
+-    actionGroup.className = "action-group";
+-    actionGroup.append(createButton("Add Emotion", "ttsAddEmotion", profileId));
+-    wrapper.append(tableWrapper, actionGroup);
++    wrapper.append(tableWrapper);
+     return wrapper;
    }
 
-@@ -923,8 +826,9 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
-     }
-     state.profiles = state.profiles.filter((candidate) => candidate.id !== key);
-     if (state.selectedProfileId === key) state.selectedProfileId = state.profiles[0]?.id || "";
-+    if (!state.selectedProfileId) state.selectedEmotionId = "";
-     renderProfileRows();
--    renderOutputSummary();
-+    refreshActionState();
-     writeStatus(`Deleted TTS profile: ${profile.name}.`);
++  function createEmotionAddControlRow(profileId) {
++    const row = tableActionRow(7, createButton("Add Emotion", "ttsAddEmotion", profileId));
++    row.dataset.ttsEmotionAddControlRow = profileId;
++    return row;
++  }
++
+   function createEmotionEditRow(emotion = null) {
+     const key = emotion?.id || NEW_ROW_KEY;
+     const row = document.createElement("tr");
+@@ -1024,8 +1051,8 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
    }
 
-@@ -956,8 +860,9 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
-       };
-     }
-     state.editingEmotionId = "";
-+    state.selectedEmotionId = emotion.id;
-     renderProfileRows();
--    renderOutputSummary();
-+    refreshActionState();
-     writeStatus(`Saved emotion setting: ${emotion.emotionLabel}.`);
-   }
-
-@@ -970,250 +875,33 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
-       return;
-     }
-     profile.emotions = profile.emotions.filter((candidate) => candidate.id !== key);
-+    if (state.selectedEmotionId === key) state.selectedEmotionId = previewEmotion(profile)?.id || "";
-     renderProfileRows();
--    renderOutputSummary();
-+    refreshActionState();
-     writeStatus(`Deleted emotion setting: ${emotion.emotionLabel}.`);
-   }
-
-   function selectProfile(profileId) {
-     if (!state.profiles.some((profile) => profile.id === profileId)) return;
-     state.selectedProfileId = state.selectedProfileId === profileId ? "" : profileId;
-+    state.selectedEmotionId = state.selectedProfileId ? previewEmotion(selectedProfile())?.id || "" : "";
-     state.editingEmotionId = "";
-     renderProfileRows();
-+    refreshActionState();
-     if (state.selectedProfileId) {
-       writeStatus(`Opened Emotion Settings for ${selectedProfile()?.name}.`);
-     }
-   }
-
--  function itemFromControls(overrides = {}) {
--    const currentItem = selectedItem();
--    return createTextToSpeechQueueItem({
--      ...currentOptions(),
--      existingItems: state.queue.filter((item) => item.id !== currentItem?.id),
--      id: overrides.id ?? currentItem?.id ?? "",
--      name: overrides.name ?? elements.itemName?.value ?? currentItem?.name ?? "New speech item",
--      text: overrides.text ?? elements.text?.value ?? currentItem?.text ?? ""
--    });
--  }
--
--  function syncRangeOutputs() {
--    if (elements.rate) elements.rate.value = formatRangeValue(elements.rate.value, "rate");
--    if (elements.pitch) elements.pitch.value = formatRangeValue(elements.pitch.value, "pitch");
--    if (elements.volume) elements.volume.value = formatRangeValue(elements.volume.value, "volume");
--    if (elements.rateValue) elements.rateValue.textContent = elements.rate?.value || "1";
--    if (elements.pitchValue) elements.pitchValue.textContent = elements.pitch?.value || "1";
--    if (elements.volumeValue) elements.volumeValue.textContent = elements.volume?.value || "1";
--  }
--
--  function configureRanges() {
--    [
--      { input: elements.volume, kind: "volume" },
--      { input: elements.rate, kind: "rate" },
--      { input: elements.pitch, kind: "pitch" }
--    ].forEach(({ input, kind }) => {
--      const range = TEXT_TO_SPEECH_RANGE_DEFAULTS[kind];
--      if (!input || !range) return;
--      input.min = String(range.min);
--      input.max = String(range.max);
--      input.step = String(range.step);
--      input.value = String(range.value);
--    });
--    syncRangeOutputs();
--  }
--
--  function applyShapedOptions({ resetOverrides = false } = {}) {
--    if (resetOverrides) {
--      state.sliderOverrides = { pitch: false, rate: false, volume: false };
--    }
--    const shaped = shapeTextToSpeechOptions(currentOptions(), state.sliderOverrides);
--    if (elements.rate && !state.sliderOverrides.rate) elements.rate.value = String(shaped.rate);
--    if (elements.pitch && !state.sliderOverrides.pitch) elements.pitch.value = String(shaped.pitch);
--    if (elements.volume && !state.sliderOverrides.volume) elements.volume.value = String(shaped.volume);
--    syncRangeOutputs();
--  }
--
--  function renderOutputSummary() {
--    if (elements.outputSummary) {
--      elements.outputSummary.textContent = JSON.stringify({
--        contractVersion: TTS_PROFILE_CONTRACT_VERSION,
--        messageStudioOptions: createMessageStudioTtsProfileOptions(state.profiles),
--        profiles: state.profiles,
--        queue: state.queue
--      }, null, 2);
--    }
-+  function renderPreviewSummary() {
-     setTextContent(root, "[data-tts-text-count]", String(String(elements.text?.value || "").length));
-   }
-
--  function renderQueue() {
--    if (!elements.queueList) return;
--    elements.queueList.replaceChildren(...state.queue.map((item) => {
--      const button = document.createElement("button");
--      button.type = "button";
--      button.className = "btn";
--      button.dataset.ttsQueueItem = item.id;
--      button.setAttribute("role", "option");
--      button.setAttribute("aria-selected", String(item.id === state.selectedItemId));
--      button.textContent = `${item.name} - ${queueItemMeta(item)}`;
--      return button;
--    }));
--    renderOutputSummary();
--  }
--
--  function markWorkspaceDirty(reason, changedKeys = []) {
--    if (!isWorkspaceLaunch()) return;
--    const rawToolState = window.sessionStorage.getItem(WORKSPACE_TOOL_STATE_KEY);
--    if (!rawToolState) {
--      writeStatus(`Cannot mark ${TEXT_TO_SPEECH_DISPLAY_NAME} dirty: missing ${WORKSPACE_TOOL_STATE_KEY}.`, "FAIL");
--      return;
--    }
--    try {
--      const toolState = JSON.parse(rawToolState);
--      window.sessionStorage.setItem(WORKSPACE_TOOL_STATE_KEY, JSON.stringify({
--        ...toolState,
--        data: state.queue,
--        dirty: {
--          changedAt: new Date().toISOString(),
--          changedKeys,
--          isDirty: true,
--          reason
--        }
--      }));
--      writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} dirty state: true; reason=${reason}.`);
--    } catch (error) {
--      writeStatus(`Cannot mark ${TEXT_TO_SPEECH_DISPLAY_NAME} dirty: ${error.message}`, "FAIL");
--    }
--  }
--
--  function syncSelectedItemFromControls(reason, changedKeys = []) {
--    if (state.applyingItem) return;
--    const item = selectedItem();
--    if (!item) return;
--    const nextItem = itemFromControls({ id: item.id, name: elements.itemName?.value || item.name });
--    const index = state.queue.findIndex((entry) => entry.id === item.id);
--    if (index >= 0) {
--      state.queue[index] = nextItem;
--      state.selectedItemId = nextItem.id;
--      renderQueue();
--      markWorkspaceDirty(reason, changedKeys);
--    }
--  }
--
--  function selectItem(itemId, { writeLog = true } = {}) {
--    const item = state.queue.find((entry) => entry.id === itemId);
--    if (!item) return;
--    state.selectedItemId = item.id;
--    state.applyingItem = true;
--    try {
--      if (elements.itemName) elements.itemName.value = item.name;
--      if (elements.text) elements.text.value = item.text;
--      if (elements.gender) elements.gender.value = item.gender === "any" ? "any" : item.gender;
--      if (elements.age) elements.age.value = item.voiceAge;
--      if (elements.characterPreset) elements.characterPreset.value = item.characterPreset;
--      if (elements.ssmlPreset) elements.ssmlPreset.value = item.ssmlLikePreset;
--      if (elements.rate) elements.rate.value = String(item.rate);
--      if (elements.pitch) elements.pitch.value = String(item.pitch);
--      if (elements.volume) elements.volume.value = String(item.volume);
--      syncRangeOutputs();
--      refreshVoices({ selectedVoice: item.voice });
--    } finally {
--      state.applyingItem = false;
--    }
--    renderQueue();
--    refreshActionState();
--    if (writeLog) writeStatus(`Selected speech item: ${item.name}.`);
--  }
--
--  function addItem() {
--    const requestedName = String(elements.itemName?.value || "").trim();
--    if (!requestedName) {
--      writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} Add blocked: Name is required before creating a named speech item.`, "FAIL");
--      return;
--    }
--    const item = createTextToSpeechQueueItem({
--      ...currentOptions(),
--      existingItems: state.queue,
--      name: requestedName,
--      text: elements.text?.value || "New speech line."
--    });
--    state.queue.push(item);
--    state.selectedItemId = item.id;
--    renderQueue();
--    selectItem(item.id, { writeLog: false });
--    markWorkspaceDirty("speech-item-added", [`queue.${item.id}`]);
--    writeStatus(`Added speech item: ${item.name}.`);
--  }
--
--  function duplicateItem() {
--    const item = itemFromControls();
--    if (!selectedItem()) {
--      writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} duplicate failed: no named sentence is selected.`, "FAIL");
--      return;
--    }
--    const name = uniqueTextToSpeechName(`${item.name} copy`, state.queue);
--    const copy = {
--      ...item,
--      id: uniqueTextToSpeechId(name, state.queue),
--      name
--    };
--    state.queue.push(copy);
--    selectItem(copy.id, { writeLog: false });
--    markWorkspaceDirty("speech-item-duplicated", [`queue.${copy.id}`]);
--    writeStatus(`Duplicated speech item: ${copy.name}.`);
--  }
--
--  function deleteItem() {
--    const item = selectedItem();
--    if (!item) {
--      writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} delete failed: no named sentence is selected.`, "FAIL");
--      return;
--    }
--    const index = state.queue.findIndex((entry) => entry.id === item.id);
--    state.queue.splice(index, 1);
--    state.selectedItemId = state.queue[Math.min(index, state.queue.length - 1)]?.id || "";
--    renderQueue();
--    if (state.selectedItemId) {
--      selectItem(state.selectedItemId, { writeLog: false });
--    } else {
--      if (elements.itemName) elements.itemName.value = "";
--      if (elements.text) elements.text.value = "";
--      renderOutputSummary();
--    }
--    markWorkspaceDirty("speech-item-deleted", ["queue"]);
--    writeStatus(`Deleted speech item: ${item.name}.`);
--  }
--
--  function refreshVoices({ selectedVoice = elements.voice?.value || "" } = {}) {
-+  function refreshVoices() {
-     state.voiceOptions = engine.voiceOptions();
--    const gender = elements.gender?.value || "any";
--    const filteredByGender = filterTextToSpeechVoiceOptions(state.voiceOptions, { gender });
--    const languageOptions = filteredByGender.languageOptions.length
--      ? filteredByGender.languageOptions
--      : TEXT_TO_SPEECH_LANGUAGE_OPTIONS;
--    const previousLanguage = elements.language?.value || TEXT_TO_SPEECH_DEFAULTS.language;
--    const language = languageOptions.some((option) => option.value === previousLanguage)
--      ? previousLanguage
--      : languageOptions[0]?.value || TEXT_TO_SPEECH_DEFAULTS.language;
--    populateSelect(elements.language, languageOptions, language);
--    const result = filterTextToSpeechVoiceOptions(state.voiceOptions, { gender, language });
--    populateSelect(elements.voice, result.matchingVoices.map((option) => ({
--      label: option.label,
--      value: option.value
--    })), selectedVoice);
--    if (elements.voice && !elements.voice.value && result.matchingVoices[0]) {
--      elements.voice.value = result.matchingVoices[0].value;
--    }
--    if (elements.voice && result.matchingVoices.length === 0) {
--      const option = document.createElement("option");
--      option.value = "";
--      option.textContent = state.voiceOptions.length ? `No ${result.genderLabel} voices for ${language}` : "No browser voices available";
--      elements.voice.replaceChildren(option);
--    }
-     setTextContent(root, "[data-tts-voice-count]", String(state.voiceOptions.length));
--    setTextContent(root, "[data-tts-voice-details]", state.voiceOptions.length
--      ? `${result.matchingVoices.length} matching ${result.genderLabel} voice${result.matchingVoices.length === 1 ? "" : "s"} for ${language}.`
--      : "No SpeechSynthesis voices loaded.");
-     refreshActionState();
--    return result;
-+    return state.voiceOptions;
-   }
-
-   function ensureDefaultProfiles() {
-@@ -1222,22 +910,21 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
-     }
-     state.profiles = createDefaultTextToSpeechProfiles(state.voiceOptions);
-     state.selectedProfileId = "";
-+    state.selectedEmotionId = "";
-     renderProfileRows();
--    renderOutputSummary();
-+    refreshActionState();
-   }
-
-   function refreshActionState() {
-     const hasText = Boolean(String(elements.text?.value || "").trim());
--    const hasVoice = Boolean(elements.voice?.value);
-+    const profile = previewProfile();
-+    const hasVoice = Boolean(profile?.voice);
-     const supported = engine.isSupported();
--    if (elements.speak) elements.speak.disabled = !(supported && hasText && hasVoice && selectedItem());
--    if (elements.pause) elements.pause.disabled = !(engine.canPause() && selectedItem());
--    if (elements.resume) elements.resume.disabled = !(engine.canResume() && selectedItem());
--    if (elements.stop) elements.stop.disabled = !(supported && selectedItem());
--    if (elements.copyJson) elements.copyJson.disabled = isWorkspaceLaunch();
--    if (elements.exportJson) elements.exportJson.disabled = isWorkspaceLaunch();
--    if (elements.importJson) elements.importJson.disabled = isWorkspaceLaunch();
--    setTextContent(root, "[data-tts-text-count]", String(String(elements.text?.value || "").length));
-+    if (elements.speak) elements.speak.disabled = !(supported && hasText && hasVoice);
-+    if (elements.pause) elements.pause.disabled = !engine.canPause();
-+    if (elements.resume) elements.resume.disabled = !engine.canResume();
-+    if (elements.stop) elements.stop.disabled = !supported;
-+    renderPreviewSummary();
-   }
-
-   function isWorkspaceLaunch() {
-@@ -1249,7 +936,6 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
-
-   function applyLaunchMode() {
-     const workspaceLaunch = isWorkspaceLaunch();
--    if (elements.standaloneActions) elements.standaloneActions.hidden = workspaceLaunch;
-     if (elements.workspaceActions) elements.workspaceActions.hidden = !workspaceLaunch;
-   }
-
-@@ -1262,118 +948,25 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
-     return url.href;
-   }
-
--  async function loadQueue() {
--    if (isWorkspaceLaunch()) {
--      const rawToolState = window.sessionStorage.getItem(WORKSPACE_TOOL_STATE_KEY);
--      if (!rawToolState) {
--        writeStatus(`Workspace launch missing ${WORKSPACE_TOOL_STATE_KEY}; queue cannot render.`, "FAIL");
--        return;
--      }
--      try {
--        const toolState = JSON.parse(rawToolState);
--        const payload = toolState?.data ?? [];
--        const validation = validateTextToSpeechPayload(payload, WORKSPACE_TOOL_STATE_KEY);
--        if (!validation.ok) {
--          writeStatus(validation.message, "FAIL");
--          return;
--        }
--        state.queue = payload.map((item) => ({ ...item }));
--        writeStatus(`Loaded ${state.queue.length} ${TEXT_TO_SPEECH_DISPLAY_NAME} item(s) from Project Workspace toolState.`);
--      } catch (error) {
--        writeStatus(`${WORKSPACE_TOOL_STATE_KEY} is invalid JSON: ${error.message}`, "FAIL");
--        return;
--      }
--    } else {
--      const params = new URLSearchParams(window.location.search);
--      const samplePresetPath = String(params.get(TTS_URL_SOURCE_PARAM) || "").trim();
--      if (samplePresetPath) {
--        try {
--          const response = await fetch(samplePresetPath, { cache: "no-store" });
--          if (!response.ok) throw new Error(`${response.status}`);
--          const payload = await response.json();
--          const validation = validateTextToSpeechPayload(payload, samplePresetPath);
--          if (!validation.ok) {
--            writeStatus(validation.message, "FAIL");
--            return;
--          }
--          state.queue = payload.map((item) => ({ ...item }));
--          writeStatus(`Loaded preset for ${TEXT_TO_SPEECH_DISPLAY_NAME}: ${samplePresetPath}.`);
--        } catch (error) {
--          writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} URL JSON source ${samplePresetPath} failed: ${error.message}.`, "FAIL");
--          return;
--        }
--      }
--    }
--    if (state.queue.length === 0) {
--      state.queue = [createTextToSpeechQueueItem({
--        ...TEXT_TO_SPEECH_DEFAULTS,
--        existingItems: [],
--        name: "Narrator welcome",
--        text: elements.text?.value || "Welcome to the arena, hero."
--      })];
--      writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} empty launch: created a local named sentence draft.`);
--    }
--    state.selectedItemId = state.queue[0]?.id || "";
--    renderQueue();
--    if (state.selectedItemId) selectItem(state.selectedItemId, { writeLog: false });
--  }
--
--  async function importJson(file) {
--    if (isWorkspaceLaunch()) {
--      writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} Import JSON is only available during standalone launch.`, "FAIL");
--      return;
--    }
--    if (!file) {
--      writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} Import JSON blocked: choose a JSON file first.`, "FAIL");
--      return;
--    }
--    try {
--      const payload = JSON.parse(await readFileText(file));
--      const validation = validateTextToSpeechPayload(payload, file.name || "selected JSON file");
--      if (!validation.ok) {
--        writeStatus(`Import JSON blocked: ${validation.message}`, "FAIL");
--        return;
--      }
--      state.queue = payload.map((item) => ({ ...item }));
--      state.selectedItemId = state.queue[0]?.id || "";
--      renderQueue();
--      if (state.selectedItemId) selectItem(state.selectedItemId, { writeLog: false });
--      writeStatus(`Imported ${state.queue.length} ${TEXT_TO_SPEECH_DISPLAY_NAME} item(s) from ${file.name || "selected JSON file"}; schema=${TEXT_TO_SPEECH_SCHEMA_ID}.`);
--    } catch (error) {
--      writeStatus(`Import JSON failed: ${error.message}`, "FAIL");
--    }
--  }
--
--  async function copyJson() {
--    const json = JSON.stringify(state.queue, null, 2);
--    if (!navigator.clipboard || typeof navigator.clipboard.writeText !== "function") {
--      writeStatus("Copy JSON failed: Clipboard API is unavailable.", "FAIL");
-+  function speak() {
-+    const profile = previewProfile();
-+    const emotion = previewEmotion(profile);
-+    if (!profile) {
-+      writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} Speak blocked: add or select a TTS Profile first.`, "FAIL");
-       return;
-     }
--    try {
--      await navigator.clipboard.writeText(json);
--      writeStatus(`Copied ${TEXT_TO_SPEECH_DISPLAY_NAME} JSON root array to clipboard (${state.queue.length} item(s)).`);
--    } catch (error) {
--      writeStatus(`Copy JSON failed: ${error.message}`, "FAIL");
--    }
--  }
--
--  function exportJson() {
--    downloadTextFile(JSON.stringify(state.queue, null, 2), "text-to-speech-v2.json");
--    writeStatus(`Exported ${TEXT_TO_SPEECH_DISPLAY_NAME} JSON root array (${state.queue.length} item(s)).`);
--  }
--
--  function speak() {
--    const item = selectedItem();
--    if (!item) {
--      writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} Speak blocked: select a named speech item with text first.`, "FAIL");
-+    if (!emotion) {
-+      writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} Speak blocked: add or select an Emotion Setting first.`, "FAIL");
-       return;
-     }
--    syncSelectedItemFromControls("speak-sync", ["speechOptions", "text"]);
-     const request = createSpeechPreviewRequest({
--      ...currentOptions(),
-+      language: profile.language,
-+      pitch: emotion.pitch,
-+      rate: emotion.rate,
-       text: elements.text?.value,
--      voiceOptions: selectedVoiceOptions()
-+      voice: profile.voice,
-+      voiceOptions: state.voiceOptions,
-+      volume: emotion.volume,
-     });
-     if (!request.ok) {
-       writeStatus(request.message, "FAIL");
-@@ -1381,10 +974,16 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
-       return;
-     }
-     const result = engine.speak({
--      ...currentOptions(),
--      speechItemId: item.id,
--      speechItemName: item.name,
--      text: request.text
-+      language: profile.language,
-+      pitch: request.pitch,
-+      rate: request.rate,
-+      speechItemId: `${profile.id}:${emotion.id}:preview`,
-+      speechItemName: previewSpeechLabel(profile, emotion),
-+      ssmlLikePreset: emotion.ssmlLikePreset,
-+      text: request.text,
-+      voice: profile.voice,
-+      voiceAge: profile.age,
-+      volume: request.volume,
-     });
-     if (!result.ok) {
-       writeStatus(result.message, "FAIL");
-@@ -1392,7 +991,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
-       return;
-     }
-     writeStatus(`Speech queued: ${result.speechItemName}; ${result.language}; voice=${result.voiceName}; rate=${result.rate}; pitch=${result.pitch}; volume=${result.volume}; queuedItems=${result.queuedSpeechItems.length}.`);
--    renderOutputSummary();
-+    renderPreviewSummary();
-     refreshActionState();
-   }
-
-@@ -1432,6 +1031,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
+   function mountEvents() {
+-    elements.addProfile?.addEventListener("click", addProfile);
+     elements.profileTable?.addEventListener("click", (event) => {
++      const addProfileButton = event.target.closest("[data-tts-add-profile-row]");
+       const addEmotionButton = event.target.closest("[data-tts-add-emotion]");
+       const commitEmotionButton = event.target.closest("[data-tts-commit-emotion]");
        const cancelEmotionButton = event.target.closest("[data-tts-cancel-emotion]");
-       const deleteEmotionButton = event.target.closest("[data-tts-delete-emotion]");
-       const deleteProfileButton = event.target.closest("[data-tts-delete-profile]");
-+      const emotionRow = event.target.closest("[data-tts-emotion-row]");
-       const editEmotionButton = event.target.closest("[data-tts-edit-emotion]");
+@@ -1036,8 +1063,12 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
        const editProfileButton = event.target.closest("[data-tts-edit-profile]");
        const commitProfileButton = event.target.closest("[data-tts-commit-profile]");
-@@ -1451,6 +1051,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
-       if (editProfileButton) {
-         state.editingProfileId = editProfileButton.dataset.ttsEditProfile;
-         state.selectedProfileId = editProfileButton.dataset.ttsEditProfile;
-+        state.selectedEmotionId = previewEmotion(selectedProfile())?.id || "";
-         state.editingEmotionId = "";
-         renderProfileRows();
-         writeStatus("TTS profile opened inline.");
-@@ -1476,6 +1077,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
-       }
-       if (editEmotionButton) {
-         state.editingEmotionId = editEmotionButton.dataset.ttsEditEmotion;
-+        state.selectedEmotionId = editEmotionButton.dataset.ttsEditEmotion;
-         renderProfileRows();
-         writeStatus("Emotion setting opened inline.");
-         return;
-@@ -1484,17 +1086,16 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
-         deleteEmotion(deleteEmotionButton.dataset.ttsDeleteEmotion);
-         return;
-       }
-+      if (emotionRow) {
-+        state.selectedEmotionId = emotionRow.dataset.ttsEmotionRow;
-+        refreshActionState();
-+        writeStatus(`Selected Emotion Setting: ${previewEmotion()?.emotionLabel || "Unknown"}.`);
+       const cancelProfileButton = event.target.closest("[data-tts-cancel-profile]");
+-      const profileRow = event.target.closest("[data-tts-profile-row]");
++      const profileNameCell = event.target.closest("[data-tts-profile-name-cell]");
+
++      if (addProfileButton) {
++        addProfile();
 +        return;
 +      }
-       if (profileRow) {
-         selectProfile(profileRow.dataset.ttsProfileRow);
+       if (commitProfileButton) {
+         commitProfile(commitProfileButton.dataset.ttsCommitProfile);
+         return;
+@@ -1092,10 +1123,17 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
+         writeStatus(`Selected Emotion Setting: ${previewEmotion()?.emotionLabel || "Unknown"}.`);
+         return;
+       }
+-      if (profileRow) {
+-        selectProfile(profileRow.dataset.ttsProfileRow);
++      if (profileNameCell) {
++        selectProfile(profileNameCell.dataset.ttsProfileNameCell);
        }
      });
--    elements.queueList?.addEventListener("click", (event) => {
--      const itemButton = event.target.closest("[data-tts-queue-item]");
--      if (itemButton) selectItem(itemButton.dataset.ttsQueueItem || "");
--    });
--    elements.addItem?.addEventListener("click", addItem);
--    elements.duplicateItem?.addEventListener("click", duplicateItem);
--    elements.deleteItem?.addEventListener("click", deleteItem);
++    elements.profileTable?.addEventListener("keydown", (event) => {
++      if (event.key !== "Enter" && event.key !== " ") return;
++      const profileNameCell = event.target.closest("[data-tts-profile-name-cell]");
++      if (!profileNameCell) return;
++      event.preventDefault();
++      selectProfile(profileNameCell.dataset.ttsProfileNameCell);
++    });
      elements.speak?.addEventListener("click", speak);
      elements.pause?.addEventListener("click", pause);
      elements.resume?.addEventListener("click", resume);
-@@ -1503,85 +1104,26 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
-       if (elements.statusLog) elements.statusLog.value = "";
-       if (elements.status) elements.status.textContent = "Status cleared.";
-     });
--    elements.importJson?.addEventListener("click", () => elements.importJsonInput?.click());
--    elements.importJsonInput?.addEventListener("change", () => {
--      void importJson(elements.importJsonInput.files?.[0] || null);
--      elements.importJsonInput.value = "";
--    });
--    elements.copyJson?.addEventListener("click", () => {
--      void copyJson();
--    });
--    elements.exportJson?.addEventListener("click", exportJson);
-     elements.returnWorkspace?.addEventListener("click", () => {
-       window.location.href = workspaceManagerUrl();
-     });
--    elements.itemName?.addEventListener("input", () => syncSelectedItemFromControls("speech-item-renamed", ["name"]));
-     elements.text?.addEventListener("input", () => {
--      syncSelectedItemFromControls("text-updated", ["text"]);
-       refreshActionState();
-     });
--    [elements.gender, elements.language].forEach((select) => {
--      select?.addEventListener("change", () => {
--        refreshVoices();
--        syncSelectedItemFromControls("voice-filter-updated", ["gender", "language", "voice"]);
--      });
--    });
--    elements.voice?.addEventListener("change", () => syncSelectedItemFromControls("voice-updated", ["voice"]));
--    elements.characterPreset?.addEventListener("change", () => {
--      if (elements.ssmlPreset) {
--        elements.ssmlPreset.value = TEXT_TO_SPEECH_CHARACTER_PRESET_DEFAULTS[elements.characterPreset.value]?.ssmlLikePreset || "normal";
--      }
--      applyShapedOptions({ resetOverrides: true });
--      syncSelectedItemFromControls("character-preset-updated", ["characterPreset", "rate", "pitch", "volume"]);
--    });
--    [elements.age, elements.ssmlPreset].forEach((select) => {
--      select?.addEventListener("change", () => {
--        applyShapedOptions();
--        syncSelectedItemFromControls("speech-shaping-updated", ["voiceAge", "ssmlLikePreset", "rate", "pitch", "volume"]);
--      });
--    });
--    [
--      { input: elements.pitch, kind: "pitch" },
--      { input: elements.rate, kind: "rate" },
--      { input: elements.volume, kind: "volume" }
--    ].forEach(({ input, kind }) => {
--      input?.addEventListener("input", () => {
--        state.sliderOverrides[kind] = true;
--        syncRangeOutputs();
--        syncSelectedItemFromControls(`${kind}-updated`, [kind]);
--        refreshActionState();
--      });
--      input?.addEventListener("dblclick", () => {
--        state.sliderOverrides[kind] = false;
--        applyShapedOptions();
--        syncSelectedItemFromControls(`${kind}-reset`, [kind]);
--      });
--    });
--  }
--
--  function populateStaticControls() {
--    populateSelect(elements.gender, TEXT_TO_SPEECH_GENDER_FILTER_OPTIONS, TEXT_TO_SPEECH_DEFAULTS.gender);
--    populateSelect(elements.age, TEXT_TO_SPEECH_AGE_FILTER_OPTIONS, TEXT_TO_SPEECH_DEFAULTS.voiceAge);
--    populateSelect(elements.characterPreset, TEXT_TO_SPEECH_CHARACTER_PRESET_OPTIONS, TEXT_TO_SPEECH_DEFAULTS.characterPreset);
--    populateSelect(elements.ssmlPreset, TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS, TEXT_TO_SPEECH_DEFAULTS.ssmlLikePreset);
--    populateSelect(elements.language, TEXT_TO_SPEECH_LANGUAGE_OPTIONS, TEXT_TO_SPEECH_DEFAULTS.language);
--    configureRanges();
-   }
-
-   function markUnavailable() {
-     setTextContent(root, "[data-tts-engine-label]", "Unavailable");
-     setTextContent(root, "[data-tts-engine-status]", "SpeechSynthesis is unavailable in this browser. Use a browser with Web Speech API support.");
-     writeStatus("SpeechSynthesis is unavailable in this browser. Use a browser with Web Speech API support.", "FAIL");
--    populateSelect(elements.voice, [{ label: "No browser voices available", value: "" }], "");
-+    setTextContent(root, "[data-tts-voice-count]", "0");
-     refreshActionState();
-   }
-
-   async function start() {
-     applyLaunchMode();
--    populateStaticControls();
-     mountEvents();
-     if (!engine.isSupported()) {
--      await loadQueue();
-       ensureDefaultProfiles();
-       markUnavailable();
-       return;
-@@ -1593,11 +1135,8 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
-     engine.onVoicesChanged(() => {
-       refreshVoices();
-       renderProfileRows();
--      renderOutputSummary();
-       writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} voices updated from browser SpeechSynthesis.`);
-     });
--    await loadQueue();
--    refreshVoices({ selectedVoice: selectedItem()?.voice || elements.voice?.value || "" });
-     writeStatus(`${TEXT_TO_SPEECH_DISPLAY_NAME} ready. SpeechSynthesis is available.`);
-   }
-
-@@ -1607,7 +1146,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
-
-   return {
-     engine,
--    queue: () => state.queue.map((item) => ({ ...item })),
-+    profiles: () => state.profiles.map((profile) => ({ ...profile })),
-     speechSupported: engine.isSupported()
-   };
- }
-@@ -1631,6 +1170,5 @@ export {
-   createTtsMessage,
-   createVoiceProfile,
-   initializeTextToSpeechTool,
--  previewTtsMessage,
--  validateTextToSpeechPayload
-+  previewTtsMessage
- };
