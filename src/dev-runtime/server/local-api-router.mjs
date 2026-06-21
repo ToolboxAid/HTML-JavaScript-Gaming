@@ -2212,8 +2212,8 @@ function controlsTables(repository) {
   return normalizeOwnedTables("controls", repository.getTables());
 }
 
-function gameJourneyTables(repository) {
-  return normalizeOwnedTables("game-journey", repository.getTables());
+async function gameJourneyTables(repository) {
+  return normalizeOwnedTables("game-journey", await repository.getTables());
 }
 
 function paletteTables(repository) {
@@ -2318,9 +2318,13 @@ function productTablesFromSnapshot(snapshot) {
 
 class ApiRuntimeDataSource {
   constructor({
+    gameJourneyCompletionMetricsLegacyDbPath = undefined,
+    gameJourneyCompletionMetricsPostgresClient = null,
     repoRoot = process.cwd(),
   } = {}) {
     this.messagesService = createMessagesSqliteService({ repoRoot });
+    this.gameJourneyCompletionMetricsLegacyDbPath = gameJourneyCompletionMetricsLegacyDbPath;
+    this.gameJourneyCompletionMetricsPostgresClient = gameJourneyCompletionMetricsPostgresClient;
     this.repositoryCounter = 1;
     this.repositoryById = new Map();
     this.sessionModeId = FIXED_ACCOUNT_SESSION_MODE.id;
@@ -2421,7 +2425,8 @@ class ApiRuntimeDataSource {
   }
 
   async persistSupabaseProductSnapshot(action) {
-    return this.upsertSupabaseProductTables(this.snapshot().tables, action);
+    const snapshot = await this.snapshot();
+    return this.upsertSupabaseProductTables(snapshot.tables, action);
   }
 
   async persistSupabaseGameWorkspaceSnapshot(action) {
@@ -2535,7 +2540,7 @@ class ApiRuntimeDataSource {
     return this.currentSessionForRoute();
   }
 
-  currentStateSnapshot() {
+  async currentStateSnapshot() {
     return this.snapshot();
   }
 
@@ -2563,6 +2568,8 @@ class ApiRuntimeDataSource {
       this.standaloneTables.invitations = [];
     }
     this.sharedOptions = {
+      completionMetricsLegacyDbPath: this.gameJourneyCompletionMetricsLegacyDbPath,
+      completionMetricsPostgresClient: this.gameJourneyCompletionMetricsPostgresClient,
       memoryDbTables: this.standaloneTables,
       sessionMode: this.sessionModeId,
       sessionUserKey: this.sessionUserKey,
@@ -3660,14 +3667,14 @@ LIMIT 1;
     };
   }
 
-  gameJourneyCompletionMetricsForRoute() {
+  async gameJourneyCompletionMetricsForRoute() {
     return this.gameJourneyRepository.getCompletionMetricsSnapshot();
   }
 
-  updateGameJourneyCompletionMetricForRoute(bucketKey, updates = {}) {
-    const metric = this.gameJourneyRepository.updateCompletionMetric(bucketKey, updates);
+  async updateGameJourneyCompletionMetricForRoute(bucketKey, updates = {}) {
+    const metric = await this.gameJourneyRepository.updateCompletionMetric(bucketKey, updates);
     return {
-      ...this.gameJourneyCompletionMetricsForRoute(),
+      ...(await this.gameJourneyCompletionMetricsForRoute()),
       updatedMetric: metric,
     };
   }
@@ -5311,7 +5318,7 @@ LIMIT 1;
     return result;
   }
 
-  snapshot() {
+  async snapshot() {
     const schemas = getMockDbTableSchemas();
     const toolGroups = getMockDbToolGroups();
     const owners = {
@@ -5361,7 +5368,7 @@ LIMIT 1;
       ...gameConfigurationTables(this.gameConfigurationRepository),
       ...objectsTables(this.objectsRepository),
       ...controlsTables(this.inputMappingRepository),
-      ...gameJourneyTables(this.gameJourneyRepository),
+      ...(await gameJourneyTables(this.gameJourneyRepository)),
       ...paletteTables(this.paletteRepository),
       ...tagsTables(this.tagsRepository),
       ...assetTables(this.assetRepository),
@@ -5410,7 +5417,7 @@ LIMIT 1;
   async snapshotForRoute() {
     const adapter = this.supabaseDatabaseAdapter("Reading Supabase product database state");
     const providerSnapshot = await adapter.getDbViewerSnapshot();
-    const baseline = this.snapshot();
+    const baseline = await this.snapshot();
     const schemas = getMockDbTableSchemas();
     const tableDiagnostics = Array.isArray(providerSnapshot.tableDiagnostics)
       ? providerSnapshot.tableDiagnostics
@@ -5446,9 +5453,15 @@ LIMIT 1;
  * The router itself serves the configured server API contract.
  */
 export function createLocalApiRouter({
+  gameJourneyCompletionMetricsLegacyDbPath = undefined,
+  gameJourneyCompletionMetricsPostgresClient = null,
   repoRoot = process.cwd(),
 } = {}) {
-  const dataSource = new ApiRuntimeDataSource({ repoRoot });
+  const dataSource = new ApiRuntimeDataSource({
+    gameJourneyCompletionMetricsLegacyDbPath,
+    gameJourneyCompletionMetricsPostgresClient,
+    repoRoot,
+  });
 
   async function handleApiRuntimeRequest(request, response, requestUrl) {
     if (!requestUrl.pathname.startsWith("/api/")) {
@@ -5543,12 +5556,12 @@ export function createLocalApiRouter({
 
       if (parts[1] === "game-journey" && parts[2] === "completion-metrics") {
         if (request.method === "GET") {
-          ok(response, dataSource.gameJourneyCompletionMetricsForRoute());
+          ok(response, await dataSource.gameJourneyCompletionMetricsForRoute());
           return true;
         }
         if ((request.method === "POST" || request.method === "PATCH") && parts[3]) {
           const body = await readRequestJson(request);
-          ok(response, dataSource.updateGameJourneyCompletionMetricForRoute(parts[3], body));
+          ok(response, await dataSource.updateGameJourneyCompletionMetricForRoute(parts[3], body));
           return true;
         }
       }

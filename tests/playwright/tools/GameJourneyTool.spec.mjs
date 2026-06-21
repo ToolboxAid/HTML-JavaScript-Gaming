@@ -3,6 +3,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
+import { createGameJourneyCompletionMetricsPostgresClientStub } from "../../helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 import {
@@ -13,6 +14,7 @@ import {
   GAME_JOURNEY_TOOL_OWNERSHIP_AREAS,
   createGameJourneyMockRepository,
 } from "../../../src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js";
+import { createGameJourneyCompletionMetricsStore } from "../../../src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs";
 import { MOCK_DB_KEYS, getStandaloneMockDbSeedTables } from "../../../src/dev-runtime/persistence/mock-db-store.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -36,7 +38,11 @@ test.afterAll(async () => {
 });
 
 async function openRepoPage(page, pathName, options = {}) {
-  const server = await startRepoServer();
+  const gameJourneyCompletionMetricsPostgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
+  const server = await startRepoServer({
+    gameJourneyCompletionMetricsLegacyDbPath: null,
+    gameJourneyCompletionMetricsPostgresClient,
+  });
   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
   const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
   process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
@@ -78,7 +84,15 @@ async function openRepoPage(page, pathName, options = {}) {
     method: "POST",
   });
   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
-  return { consoleErrors, failedRequests, pageErrors, previousApiUrl, previousSiteUrl, server };
+  return {
+    consoleErrors,
+    failedRequests,
+    gameJourneyCompletionMetricsPostgresClient,
+    pageErrors,
+    previousApiUrl,
+    previousSiteUrl,
+    server,
+  };
 }
 
 async function fetchApiData(server, pathName, options = {}) {
@@ -207,7 +221,11 @@ test("Game Journey exposes static tool ownership areas without automatic counts"
     "Audio",
   ]);
 
-  const server = await startRepoServer();
+  const gameJourneyCompletionMetricsPostgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
+  const server = await startRepoServer({
+    gameJourneyCompletionMetricsLegacyDbPath: null,
+    gameJourneyCompletionMetricsPostgresClient,
+  });
   try {
     const constants = await fetchApiData(server, "/api/toolbox/game-journey/constants");
     expectStaticToolOwnershipAreas(constants.GAME_JOURNEY_TOOL_OWNERSHIP_AREAS);
@@ -226,7 +244,11 @@ test("Game Journey progress dashboard summarizes completion metrics", async ({ p
   const previousLocalDbPath = process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
   const localDbPath = path.join(process.cwd(), "tmp", "local-db", `game-journey-targets-${process.pid}-${Date.now()}.sqlite`);
   process.env.GAMEFOUNDRY_LOCAL_DB_PATH = localDbPath;
-  const server = await startRepoServer();
+  const gameJourneyCompletionMetricsPostgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
+  const server = await startRepoServer({
+    gameJourneyCompletionMetricsLegacyDbPath: null,
+    gameJourneyCompletionMetricsPostgresClient,
+  });
   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
   const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
   process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
@@ -1199,15 +1221,17 @@ test("Game Journey displays system template diagnostics", async ({ page }) => {
   }
 });
 
-test("Game Journey mock data keeps system guidance template-owned", () => {
+test("Game Journey mock data keeps system guidance template-owned", async () => {
   const repository = createGameJourneyMockRepository({
+    completionMetricsLegacyDbPath: null,
+    completionMetricsPostgresClient: createGameJourneyCompletionMetricsPostgresClientStub(),
     memoryDbTables: standaloneSeedTables,
     persist: false,
     sessionUserKey: MOCK_DB_KEYS.users.user1,
   });
   repository.openGame("demo-game");
 
-  const tables = repository.getTables();
+  const tables = await repository.getTables();
   expect(tables.game_journey_items).toBeTruthy();
   expect(tables.game_journey_templates).toBeTruthy();
   expect(tables.game_journey_entries).toBeUndefined();
@@ -1363,14 +1387,16 @@ test("Game Journey mock data keeps system guidance template-owned", () => {
   expect(firstAddedItem.title).toBe("First editable user item");
 });
 
-test("Game Journey Local API persists completion metrics to SQLite", async () => {
-  const previousMetricsPath = process.env.GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH;
-  const metricsPath = path.join(process.cwd(), "tmp", "local-api", `game-journey-metrics-${process.pid}-${Date.now()}.sqlite`);
-  process.env.GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH = metricsPath;
-  const server = await startRepoServer();
+test("Game Journey Local API persists completion metrics to Postgres", async () => {
+  const gameJourneyCompletionMetricsPostgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
+  const server = await startRepoServer({
+    gameJourneyCompletionMetricsLegacyDbPath: null,
+    gameJourneyCompletionMetricsPostgresClient,
+  });
   try {
     const initial = await fetchApiData(server, "/api/game-journey/completion-metrics");
-    expect(initial.databaseEngine).toBe("SQLite");
+    expect(initial.databaseEngine).toBe("Postgres");
+    expect(initial.databaseConfigKey).toBe("GAMEFOUNDRY_DATABASE_URL");
     expect(initial.records).toHaveLength(14);
     expect(initial.records.find((metric) => metric.bucketKey === "001-idea")).toMatchObject({
       active: false,
@@ -1406,31 +1432,43 @@ test("Game Journey Local API persists completion metrics to SQLite", async () =>
       status: "active",
     });
 
-    const { DatabaseSync } = await import("node:sqlite");
-    const database = new DatabaseSync(metricsPath);
-    try {
-      const row = database.prepare(`
-        SELECT "plannedCount", "completedCount", "active", "status"
-        FROM game_journey_completion_metrics
-        WHERE "bucketKey" = ?
-      `).get("001-idea");
-      expect(row).toMatchObject({
-        active: 1,
-        completedCount: 2,
-        plannedCount: 4,
-        status: "active",
-      });
-    } finally {
-      database.close();
-    }
+    const row = gameJourneyCompletionMetricsPostgresClient
+      .dumpTable("game_journey_completion_metrics")
+      .find((metric) => metric.bucketKey === "001-idea");
+    expect(row).toMatchObject({
+      active: true,
+      completedCount: 2,
+      plannedCount: 4,
+      status: "active",
+    });
   } finally {
     await server.close();
-    await fs.rm(metricsPath, { force: true });
-    if (previousMetricsPath) {
-      process.env.GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH = previousMetricsPath;
-    } else {
-      delete process.env.GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH;
-    }
+  }
+});
+
+test("Game Journey completion metrics fail visibly when Postgres is not configured", async () => {
+  const store = createGameJourneyCompletionMetricsStore({
+    env: {},
+    legacyDbPath: null,
+  });
+
+  await expect(store.listMetrics()).rejects.toThrow(/GAMEFOUNDRY_DATABASE_URL/);
+});
+
+test("Game Journey completion metrics protect legacy SQLite data from silent drop", async () => {
+  const legacyDbPath = path.join(process.cwd(), "tmp", "local-api", `game-journey-legacy-guard-${process.pid}-${Date.now()}.sqlite`);
+  await fs.mkdir(path.dirname(legacyDbPath), { recursive: true });
+  await fs.writeFile(legacyDbPath, "legacy metrics placeholder");
+
+  const store = createGameJourneyCompletionMetricsStore({
+    legacyDbPath,
+    postgresClient: createGameJourneyCompletionMetricsPostgresClientStub(),
+  });
+
+  try {
+    await expect(store.listMetrics()).rejects.toThrow(/Legacy Game Journey completion metrics SQLite data exists/);
+  } finally {
+    await fs.rm(legacyDbPath, { force: true });
   }
 });
 
