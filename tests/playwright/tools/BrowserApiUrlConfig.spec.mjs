@@ -21,7 +21,7 @@ let localDbRunId = 0;
 
 function nextLocalDbStoragePath() {
   localDbRunId += 1;
-  return path.join(process.cwd(), "tmp", "local-db", `browser-api-url-config-${process.pid}-${localDbRunId}.sqlite`);
+  return path.join(process.cwd(), "tmp", "local-db", `browser-api-url-config-${process.pid}-${localDbRunId}.local-db-state`);
 }
 
 function contentTypeForPath(filePath) {
