@@ -78,3 +78,47 @@ Merge to main is EOD-only and owner-approved, unless the owner explicitly says:
 
 Do not treat sequential PR completion as merge approval.
 ```
+
+## Branch Persistence And Context Reminder
+
+Ready-to-copy reminder:
+
+```text
+After a branch is created, the team remains on that active branch.
+
+This applies to:
+- Team Alfa through Team Zulu
+- Team OWNER
+
+Do not automatically return to main after:
+- commit
+- push
+- draft PR creation
+- testing
+- bug fixes
+- additional commits
+
+Only return to main when:
+- the PR is merged
+- the branch is retired
+- the owner explicitly says: "Return to main"
+
+The active branch is the working context.
+
+At the beginning of every work session, Codex must report:
+- current branch
+- expected branch
+- active team
+- active assignment
+
+If not on the assigned team/OWNER branch:
+
+STOP.
+
+Report:
+- expected branch
+- current branch
+- required action
+
+Do not continue until the branch context is corrected or owner override is provided.
+```

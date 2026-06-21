@@ -26,6 +26,51 @@ Rules:
 - Codex should reduce chit-chat by planning the full sequence before starting.
 - Codex must still hard-stop for conflicts, dirty worktree, scope mismatch, missing assignment, or protected instruction deletion.
 
+## Branch Persistence Rule
+
+After a branch is created, the team remains on that active branch.
+
+This applies to:
+- Team Alfa through Team Zulu
+- Team OWNER
+
+Do not automatically return to main after:
+- commit
+- push
+- draft PR creation
+- testing
+- bug fixes
+- additional commits
+
+Only return to main when:
+- the PR is merged
+- the branch is retired
+- the owner explicitly says: "Return to main"
+
+Purpose:
+Allow continued testing, validation, bug fixes, and owner review on the active branch before EOD merge approval.
+
+## Branch Context Rule
+
+The active branch is the working context.
+
+At the beginning of every work session, Codex must report:
+- current branch
+- expected branch
+- active team
+- active assignment
+
+If not on the assigned team/OWNER branch:
+
+STOP.
+
+Report:
+- expected branch
+- current branch
+- required action
+
+Do not continue until the branch context is corrected or owner override is provided.
+
 ## Day Work / EOD Merge Rule
 
 During active work:
