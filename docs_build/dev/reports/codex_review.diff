@@ -1,317 +1,122 @@
-diff --git a/docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table-manual-validation-notes.md b/docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table-manual-validation-notes.md
+diff --git a/docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion-manual-validation-notes.md b/docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion-manual-validation-notes.md
 new file mode 100644
-index 000000000..b050febf8
+index 000000000..61db9dd99
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table-manual-validation-notes.md
++++ b/docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion-manual-validation-notes.md
 @@ -0,0 +1,11 @@
-+# PR_26171_BETA_077 Manual Validation Notes
++# PR_26171_BETA_079 Manual Validation Notes
 +
 +## Review
-+- Confirmed the TTS Profiles table keeps profile fields in the parent row.
-+- Confirmed Emotion Settings open below the selected profile as a child table.
-+- Confirmed Add Profile and Add Emotion controls render as table rows.
-+- Confirmed non-name parent table cells do not open Emotion Settings.
-+- Confirmed no separate Emotion Studio or duplicate left-column controls were introduced.
++- Confirmed the Messages table remains the parent table.
++- Confirmed clicking a non-control Message row cell opens the Message Parts child table.
++- Confirmed Message Parts expose Text, Emotion, TTS Profile, Status, and Actions columns.
++- Confirmed Add Part opens an inline child-table editor with Emotion and TTS Profile selectors.
++- Confirmed TTS Studio compatibility validation still passes.
 +
 +## Manual Browser Coverage
-+- Covered by targeted Playwright validation for TTS Studio load, profile expansion, child emotion rows, inline add/edit, and speech preview.
-diff --git a/docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table-validation-report.md b/docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table-validation-report.md
++- Covered by targeted Playwright validation for Message Studio load, row expansion, add/edit flows, and Message Part selectors.
+diff --git a/docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion-validation-report.md b/docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion-validation-report.md
 new file mode 100644
-index 000000000..43ad39062
+index 000000000..19361ead5
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table-validation-report.md
++++ b/docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion-validation-report.md
 @@ -0,0 +1,17 @@
-+# PR_26171_BETA_077 Validation Report
++# PR_26171_BETA_079 Validation Report
 +
 +## Commands
-+- PASS: node --check toolbox/text-to-speech/text2speech.js
-+- PASS: node --test tests/tools/Text2SpeechShell.test.mjs
++- PASS: node --check toolbox/messages/messages.js
++- PASS: npx playwright test tests/playwright/tools/MessagesTool.spec.mjs
 +- PASS: npx playwright test tests/playwright/tools/TextToSpeechFunctional.spec.mjs
 +- PASS: npm run test:workspace-v2
 +- PASS: git diff --check
 +
 +## Targeted Results
-+- Text2Speech Node contract tests: 4 passed.
-+- Text To Speech Playwright tests: 3 passed.
++- Message Studio Playwright tests: 2 passed.
++- Text To Speech compatibility Playwright tests: 3 passed.
 +- Project Workspace legacy validation: 5 passed.
 +
 +## Notes
 +- npm run test:workspace-v2 is a legacy command name; user-facing language remains Project Workspace.
 +- Standard generated validation-report churn was restored before staging this PR.
-diff --git a/docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table.md b/docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table.md
+diff --git a/docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion.md b/docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion.md
 new file mode 100644
-index 000000000..3cafc0697
+index 000000000..dd4c6c13c
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table.md
-@@ -0,0 +1,19 @@
-+# PR_26171_BETA_077-tts-profile-parent-child-table
++++ b/docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion.md
+@@ -0,0 +1,20 @@
++# PR_26171_BETA_079-message-studio-parent-child-table-completion
 +
 +## Team Ownership
 +- TEAM: BETA
 +- Ownership source: docs_build/dev/PROJECT_MULTI_PC.txt
-+- Scope confirmed: Text To Speech / TTS Studio work is owned by Team BETA.
++- Scope confirmed: Message Studio, Messages, and TTS selection integration are owned by Team BETA.
 +
 +## Summary
-+- Converted the TTS Profile add action into an inline parent-table action row.
-+- Converted the Emotion Setting add action into an inline child-table action row.
-+- Restricted profile expansion to the Profile Name cell so non-control parent cells remain table data.
-+- Added keyboard support and aria-expanded state for the Profile Name accordion trigger.
++- Completed Message Studio row-click behavior for the Messages parent table.
++- Kept Message Parts as the selected Message child table.
++- Kept Message Part controls for Text, Emotion, TTS Profile, Status, and Actions.
++- Preserved existing Play Part, Play Message, and Stop controls for the next playback PR.
 +
 +## Scope Guard
 +- Theme V2 only.
 +- External JS only.
 +- No inline styles, style blocks, inline handlers, page-local CSS, or tool-local CSS.
-+- No duplicate left-column controls added.
-+- Delivery and Preset values remain in the Emotion Settings child table.
++- No database schema changes.
++- No separate Emotion Studio.
++- No browser-owned product data source of truth added.
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index b4ebfab2a..10f75398a 100644
+index 10f75398a..795ac3621 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,43 +1,8 @@
+@@ -1,8 +1,7 @@
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
--docs_build/dev/reports/coverage_changed_js_guardrail.txt
--docs_build/dev/reports/dependency_gating_report.md
--docs_build/dev/reports/dependency_hydration_reuse_report.md
--docs_build/dev/reports/execution_graph_reuse_report.md
--docs_build/dev/reports/failure_fingerprint_report.md
--docs_build/dev/reports/filesystem_scan_reduction_report.md
--docs_build/dev/reports/incremental_validation_report.md
--docs_build/dev/reports/lane_compilation_report.md
--docs_build/dev/reports/lane_deduplication_report.md
--docs_build/dev/reports/lane_input_validation_report.md
--docs_build/dev/reports/lane_manifests/workspace-contract.json
--docs_build/dev/reports/lane_runtime_optimization_report.md
--docs_build/dev/reports/lane_snapshot_report.md
--docs_build/dev/reports/lane_snapshots/workspace-contract.json
--docs_build/dev/reports/lane_warm_start_report.md
--docs_build/dev/reports/lane_warm_starts/workspace-contract.json
--docs_build/dev/reports/monolith_trigger_removal_report.md
--docs_build/dev/reports/persistent_lane_manifest_report.md
--docs_build/dev/reports/playwright_discovery_ownership_report.md
--docs_build/dev/reports/playwright_discovery_scope_report.md
--docs_build/dev/reports/playwright_structure_audit.md
--docs_build/dev/reports/playwright_v8_coverage_report.txt
--docs_build/dev/reports/PR_26171_BETA_075-tts-message-table-cleanup-instruction-compliance-checklist.md
--docs_build/dev/reports/PR_26171_BETA_075-tts-message-table-cleanup-manual-validation-notes.md
--docs_build/dev/reports/PR_26171_BETA_075-tts-message-table-cleanup-validation-report.md
--docs_build/dev/reports/PR_26171_BETA_075-tts-message-table-cleanup.md
--docs_build/dev/reports/retry_suppression_report.md
--docs_build/dev/reports/slow_path_pruning_report.md
--docs_build/dev/reports/static_validation_report.md
--docs_build/dev/reports/targeted_file_manifest_report.md
--docs_build/dev/reports/test_cleanup_performance_report.md
--docs_build/dev/reports/test_cleanup_routing_report.md
--docs_build/dev/reports/testing_lane_execution_report.md
--docs_build/dev/reports/validation_cache_report.md
--docs_build/dev/reports/zero_browser_preflight_report.md
--tests/playwright/tools/MessagesTool.spec.mjs
--tests/playwright/tools/RootToolsFutureState.spec.mjs
-+docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table-manual-validation-notes.md
-+docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table-validation-report.md
-+docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table.md
- tests/playwright/tools/TextToSpeechFunctional.spec.mjs
--toolbox/messages/messages.js
- toolbox/text-to-speech/index.html
- toolbox/text-to-speech/text2speech.js
-diff --git a/tests/playwright/tools/TextToSpeechFunctional.spec.mjs b/tests/playwright/tools/TextToSpeechFunctional.spec.mjs
-index 2661b957d..c9a659a4d 100644
---- a/tests/playwright/tools/TextToSpeechFunctional.spec.mjs
-+++ b/tests/playwright/tools/TextToSpeechFunctional.spec.mjs
-@@ -120,8 +120,14 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
-     await expect(page.locator("[data-tts-profile-table]")).toContainText("Default Balanced Profile");
-     await expect(page.locator("[data-tts-profile-table]")).toContainText("Man Profile 1");
-     await expect(page.locator("[data-tts-profile-table]")).toContainText("Woman Profile 2");
--    await expect(page.locator("[data-tts-profile-row]").filter({ hasText: "Default Balanced Profile" }).getByRole("button", { name: "Delete" })).toBeDisabled();
--    await page.locator("[data-tts-profile-row]").filter({ hasText: "Default Balanced Profile" }).click();
-+    const defaultProfileRow = page.locator("[data-tts-profile-row]").filter({ hasText: "Default Balanced Profile" });
-+    await expect(defaultProfileRow.getByRole("button", { name: "Delete" })).toBeDisabled();
-+    await expect(page.locator("[data-tts-emotion-host]")).toHaveCount(0);
-+    await defaultProfileRow.locator("td").nth(5).click();
-+    await expect(page.locator("[data-tts-emotion-host]")).toHaveCount(0);
-+    await expect(defaultProfileRow.locator("[data-tts-profile-name-cell]")).toHaveAttribute("aria-expanded", "false");
-+    await defaultProfileRow.locator("[data-tts-profile-name-cell]").click();
-+    await expect(defaultProfileRow.locator("[data-tts-profile-name-cell]")).toHaveAttribute("aria-expanded", "true");
-     await expect(page.getByRole("heading", { name: "Emotion Settings" })).toBeVisible();
-     await expect(page.getByRole("columnheader", { name: "Emotion", exact: true })).toBeVisible();
-     await expect(page.getByRole("columnheader", { name: "Preset" })).toBeVisible();
-@@ -130,20 +136,22 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
-     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Happy" })).toBeVisible();
-     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Angry" })).toBeVisible();
-     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Scared" })).toBeVisible();
--    await page.locator("[data-tts-profile-row]").filter({ hasText: "Man Profile 1" }).click();
-+    await expect(page.locator("[data-tts-emotion-add-control-row]").getByRole("button", { name: "Add Emotion" })).toBeVisible();
-+    await page.locator("[data-tts-profile-row]").filter({ hasText: "Man Profile 1" }).locator("[data-tts-profile-name-cell]").click();
-     await expect(page.locator("[data-tts-emotion-row]")).toHaveCount(4);
-     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Neutral" })).toBeVisible();
-     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Happy" })).toBeVisible();
-     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Angry" })).toBeVisible();
-     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Scared" })).toBeVisible();
--    await page.locator("[data-tts-profile-row]").filter({ hasText: "Woman Profile 2" }).click();
-+    await page.locator("[data-tts-profile-row]").filter({ hasText: "Woman Profile 2" }).locator("[data-tts-profile-name-cell]").click();
-     await expect(page.locator("[data-tts-emotion-row]")).toHaveCount(4);
-     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Neutral" })).toBeVisible();
-     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Happy" })).toBeVisible();
-     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Angry" })).toBeVisible();
-     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Scared" })).toBeVisible();
+-docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table-manual-validation-notes.md
+-docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table-validation-report.md
+-docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table.md
+-tests/playwright/tools/TextToSpeechFunctional.spec.mjs
+-toolbox/text-to-speech/index.html
+-toolbox/text-to-speech/text2speech.js
++docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion-manual-validation-notes.md
++docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion-validation-report.md
++docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion.md
++tests/playwright/tools/MessagesTool.spec.mjs
++toolbox/messages/messages.js
+diff --git a/tests/playwright/tools/MessagesTool.spec.mjs b/tests/playwright/tools/MessagesTool.spec.mjs
+index e10e79dac..220802b3e 100644
+--- a/tests/playwright/tools/MessagesTool.spec.mjs
++++ b/tests/playwright/tools/MessagesTool.spec.mjs
+@@ -151,7 +151,7 @@ async function addPart(page, values) {
+ }
 
--    await page.getByRole("button", { name: "Add Profile" }).click();
-+    await expect(page.locator("[data-tts-profile-add-control-row]").getByRole("button", { name: "Add Profile" })).toBeVisible();
-+    await page.locator("[data-tts-profile-add-control-row]").getByRole("button", { name: "Add Profile" }).click();
-     await expect(page.locator("[data-tts-profile-editor='__new__']")).toBeVisible();
-     await page.locator("[data-tts-profile-editor='__new__'] [data-tts-profile-name]").fill("Creature Profile");
-     await page.locator("[data-tts-profile-editor='__new__'] [data-tts-profile-gender]").selectOption("neutral");
-@@ -154,7 +162,9 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
-     await page.locator("[data-tts-profile-editor] [data-tts-profile-name]").fill("Creature Profile Updated");
-     await page.locator("[data-tts-profile-editor] [data-tts-commit-profile]").click();
-     await expect(page.locator("[data-tts-status]")).toHaveText("Saved TTS profile: Creature Profile Updated.");
--    await page.getByRole("button", { name: "Add Emotion" }).click();
-+    await expect(page.locator("[data-tts-emotion-add-control-row]").getByRole("button", { name: "Add Emotion" })).toBeVisible();
-+    await page.locator("[data-tts-emotion-add-control-row]").getByRole("button", { name: "Add Emotion" }).click();
-+    await expect(page.locator("[data-tts-emotion-add-control-row]")).toHaveCount(0);
-     await page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-name]").selectOption("urgent");
-     await page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-pitch]").fill("1.2");
-     await page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-rate]").fill("1.1");
-diff --git a/toolbox/text-to-speech/index.html b/toolbox/text-to-speech/index.html
-index 60724366e..7989b8309 100644
---- a/toolbox/text-to-speech/index.html
-+++ b/toolbox/text-to-speech/index.html
-@@ -82,9 +82,6 @@
-                                         </tbody>
-                                     </table>
-                                 </div>
--                                <div class="action-group">
--                                    <button class="btn" type="button" data-tts-add-profile>Add Profile</button>
--                                </div>
-                             </div>
-                         </article>
-                         <article class="card">
-diff --git a/toolbox/text-to-speech/text2speech.js b/toolbox/text-to-speech/text2speech.js
-index 530d5356c..5174c8d5e 100644
---- a/toolbox/text-to-speech/text2speech.js
-+++ b/toolbox/text-to-speech/text2speech.js
-@@ -362,7 +362,6 @@ function setTextContent(root, selector, text) {
+ async function openMessageParts(page, messageName) {
+-  await page.locator("[data-messages-name-cell]").filter({ hasText: messageName }).click();
++  await page.locator("[data-messages-row]").filter({ hasText: messageName }).locator("td").nth(1).click();
+ }
 
- function initializeTextToSpeechTool(root = document, { engine = new TextToSpeechEngine() } = {}) {
-   const elements = {
--    addProfile: root.querySelector("[data-tts-add-profile]"),
-     clearStatus: root.querySelector("[data-tts-clear-status]"),
-     pause: root.querySelector("[data-tts-pause]"),
-     profileCount: root.querySelector("[data-tts-profile-count]"),
-@@ -459,6 +458,15 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
-     return row;
+ test("Message Studio renders Messages with child Message Parts and plays ordered parts", async ({ page }) => {
+@@ -198,7 +198,11 @@ test("Message Studio renders Messages with child Message Parts and plays ordered
+     const messageRow = page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" });
+     const messageNameCell = page.locator("[data-messages-name-cell]").filter({ hasText: "Bat Encounter" });
+     await expect(page.locator("[data-messages-segment-host]")).toHaveCount(0);
++    await expect(messageNameCell).toHaveAttribute("aria-expanded", "false");
+     await messageRow.locator("td").nth(3).click();
++    await expect(page.locator("[data-messages-segment-host]")).toBeVisible();
++    await expect(messageNameCell).toHaveAttribute("aria-expanded", "true");
++    await messageRow.locator("td").nth(2).click();
+     await expect(page.locator("[data-messages-segment-host]")).toHaveCount(0);
+     await messageNameCell.click();
+     await expect(page.locator("[data-messages-segment-host]")).toBeVisible();
+diff --git a/toolbox/messages/messages.js b/toolbox/messages/messages.js
+index 4cb02f9bf..9165deabe 100644
+--- a/toolbox/messages/messages.js
++++ b/toolbox/messages/messages.js
+@@ -1188,7 +1188,7 @@ elements.table?.addEventListener("click", async (event) => {
+     render();
+     return;
    }
-
-+  function tableActionRow(colSpan, ...buttons) {
-+    const row = document.createElement("tr");
-+    const cell = document.createElement("td");
-+    cell.colSpan = colSpan;
-+    cell.append(createActionGroup(...buttons));
-+    row.append(cell);
-+    return row;
-+  }
-+
-   function createTextInput(value, dataName) {
-     const input = document.createElement("input");
-     input.dataset[dataName] = "";
-@@ -547,6 +555,10 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
-       row.dataset.ttsProfileRow = profile.id;
-       const nameCell = document.createElement("td");
-       nameCell.dataset.ttsProfileNameCell = profile.id;
-+      nameCell.setAttribute("role", "button");
-+      nameCell.tabIndex = 0;
-+      nameCell.setAttribute("aria-expanded", String(state.selectedProfileId === profile.id));
-+      nameCell.title = "Open Emotion Settings";
-       nameCell.textContent = `${state.selectedProfileId === profile.id ? "v" : ">"} ${profile.name}`;
-       const deleteButton = createButton("Delete", "ttsDeleteProfile", profile.id);
-       if (profileInUseByMessageStudio(profile)) {
-@@ -582,9 +594,18 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
-     if (!state.profiles.length && state.editingProfileId !== NEW_ROW_KEY) {
-       elements.profileTable.append(tableMessage(8, "No TTS profiles yet."));
-     }
-+    if (!state.editingProfileId) {
-+      elements.profileTable.append(createProfileAddControlRow());
-+    }
-     renderProfileCounts();
-   }
-
-+  function createProfileAddControlRow() {
-+    const row = tableActionRow(8, createButton("Add Profile", "ttsAddProfileRow", NEW_ROW_KEY));
-+    row.dataset.ttsProfileAddControlRow = "";
-+    return row;
-+  }
-+
-   function createProfileEditRow(profile = null) {
-     const key = profile?.id || NEW_ROW_KEY;
-     const row = document.createElement("tr");
-@@ -689,16 +710,22 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
-     if (state.editingEmotionId === NEW_ROW_KEY) {
-       tbody.append(createEmotionEditRow(null));
-     }
-+    if (!state.editingEmotionId) {
-+      tbody.append(createEmotionAddControlRow(profileId));
-+    }
-
-     table.append(thead, tbody);
-     tableWrapper.append(table);
--    const actionGroup = document.createElement("div");
--    actionGroup.className = "action-group";
--    actionGroup.append(createButton("Add Emotion", "ttsAddEmotion", profileId));
--    wrapper.append(tableWrapper, actionGroup);
-+    wrapper.append(tableWrapper);
-     return wrapper;
-   }
-
-+  function createEmotionAddControlRow(profileId) {
-+    const row = tableActionRow(7, createButton("Add Emotion", "ttsAddEmotion", profileId));
-+    row.dataset.ttsEmotionAddControlRow = profileId;
-+    return row;
-+  }
-+
-   function createEmotionEditRow(emotion = null) {
-     const key = emotion?.id || NEW_ROW_KEY;
-     const row = document.createElement("tr");
-@@ -1024,8 +1051,8 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
-   }
-
-   function mountEvents() {
--    elements.addProfile?.addEventListener("click", addProfile);
-     elements.profileTable?.addEventListener("click", (event) => {
-+      const addProfileButton = event.target.closest("[data-tts-add-profile-row]");
-       const addEmotionButton = event.target.closest("[data-tts-add-emotion]");
-       const commitEmotionButton = event.target.closest("[data-tts-commit-emotion]");
-       const cancelEmotionButton = event.target.closest("[data-tts-cancel-emotion]");
-@@ -1036,8 +1063,12 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
-       const editProfileButton = event.target.closest("[data-tts-edit-profile]");
-       const commitProfileButton = event.target.closest("[data-tts-commit-profile]");
-       const cancelProfileButton = event.target.closest("[data-tts-cancel-profile]");
--      const profileRow = event.target.closest("[data-tts-profile-row]");
-+      const profileNameCell = event.target.closest("[data-tts-profile-name-cell]");
-
-+      if (addProfileButton) {
-+        addProfile();
-+        return;
-+      }
-       if (commitProfileButton) {
-         commitProfile(commitProfileButton.dataset.ttsCommitProfile);
-         return;
-@@ -1092,10 +1123,17 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
-         writeStatus(`Selected Emotion Setting: ${previewEmotion()?.emotionLabel || "Unknown"}.`);
-         return;
-       }
--      if (profileRow) {
--        selectProfile(profileRow.dataset.ttsProfileRow);
-+      if (profileNameCell) {
-+        selectProfile(profileNameCell.dataset.ttsProfileNameCell);
-       }
-     });
-+    elements.profileTable?.addEventListener("keydown", (event) => {
-+      if (event.key !== "Enter" && event.key !== " ") return;
-+      const profileNameCell = event.target.closest("[data-tts-profile-name-cell]");
-+      if (!profileNameCell) return;
-+      event.preventDefault();
-+      selectProfile(profileNameCell.dataset.ttsProfileNameCell);
-+    });
-     elements.speak?.addEventListener("click", speak);
-     elements.pause?.addEventListener("click", pause);
-     elements.resume?.addEventListener("click", resume);
+-  if (messageNameCell && row) {
++  if ((messageNameCell || row) && row) {
+     state.selectedMessageKey = state.selectedMessageKey === row.dataset.messagesRow ? "" : row.dataset.messagesRow;
+     state.selectedSegmentKey = "";
+     state.editingSegmentKey = "";
