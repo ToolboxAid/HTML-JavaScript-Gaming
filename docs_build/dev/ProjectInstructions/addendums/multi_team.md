@@ -83,6 +83,110 @@ Rules:
 - If merge succeeds but repository is not returned to main:
   closeout status = FAIL.
 
+## Workstream Hygiene Governance
+
+At workstream closeout, Codex must review repository collaboration state before reporting the workstream closed.
+
+Required review targets:
+- open PRs
+- draft PRs
+- local branches
+- remote branches
+
+Each reviewed item must be classified as one of:
+- Active
+- Merged
+- Superseded
+- Abandoned
+- Historical/Archive
+
+Rules:
+- Merged branches should be deleted after successful merge and main sync.
+- Superseded draft PRs should be closed.
+- Abandoned branches should be documented before removal.
+- Active workstream branches remain.
+- No branch deletion is performed by this governance rule unless a later owner-approved cleanup task explicitly scopes deletion.
+
+## PI Closeout Governance
+
+At PI completion, Codex must verify that the repository, GitHub workstream, and deferred-work record are ready for the next PI.
+
+Required PI completion checks:
+- all approved work merged
+- repository returned to main
+- main pulled clean
+- local/origin sync = 0 0
+- open PR review complete
+- branch review complete
+- active workstream review complete
+- deferred work list recorded
+- next PI queue recommendation recorded
+
+Required PI closeout report fields:
+- final main commit
+- active PRs
+- active branches
+- closed/superseded PRs
+- deleted branch candidates
+- deferred work
+- next PI priorities
+
+Rules:
+- EOD Workstream Closeout remains authoritative for final repository state.
+- PI closeout must not imply approval to merge, close PRs, delete branches, or remove deferred work without explicit owner approval.
+- If the repository is not on clean, synchronized main, PI closeout status = FAIL.
+
+## GitHub Hygiene Audit Governance
+
+GitHub hygiene cleanup must begin with an audit-only pass.
+
+Audit targets:
+- open PRs
+- draft PRs
+- merged PR branches
+- stale remote branches
+- stale local branches
+
+Recommendation-only first pass values:
+- keep
+- close
+- delete local
+- delete remote
+- defer
+
+Rules:
+- Do not delete branches during the audit-only pass.
+- Do not close PRs during the audit-only pass.
+- Do not delete local branches without explicit owner approval.
+- Do not delete remote branches without explicit owner approval.
+- Do not close open or draft PRs without explicit owner approval.
+- Cleanup actions must preserve EOD Workstream Closeout final-state requirements.
+
+Command expectations for cleanup audits:
+- report current branch
+- report worktree status
+- report local/origin sync
+- list open PRs
+- list draft PRs
+- list local branches
+- list remote branches
+- identify merged branch candidates
+- identify stale branch candidates
+
+Required cleanup audit report fields:
+- audit date
+- repository
+- final main commit, if on main
+- current branch
+- local/origin sync
+- open PR recommendations
+- draft PR recommendations
+- merged PR branch recommendations
+- stale remote branch recommendations
+- stale local branch recommendations
+- deferred cleanup items
+- owner approvals required before action
+
 ## Conflict Note
 
 Existing ProjectInstructions wording that appears to require immediate or automatic merge remains preserved for traceability.

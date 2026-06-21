@@ -1,150 +1,269 @@
 ﻿diff --git a/docs_build/dev/PROJECT_INSTRUCTIONS.md b/docs_build/dev/PROJECT_INSTRUCTIONS.md
-index e78ba69d5..cfc3576a1 100644
+index cfc3576a1..ad4e491e0 100644
 --- a/docs_build/dev/PROJECT_INSTRUCTIONS.md
 +++ b/docs_build/dev/PROJECT_INSTRUCTIONS.md
-@@ -2002,7 +2002,11 @@ Required workflow:
- 13. Merge PR.
- 14. Return to main.
- 15. Pull latest main.
--16. Continue to next approved PR.
-+16. Verify clean worktree.
-+17. Verify local/origin sync.
-+18. Record final main commit.
-+19. Report final repository state.
-+20. Continue to next approved PR.
+@@ -2064,6 +2064,110 @@ Rules:
+ - If merge succeeds but repository is not returned to main:
+   closeout status = FAIL.
 
- Rules:
- - Do not ask the user if a PR should be created.
-@@ -2025,6 +2029,41 @@ Required Git workflow report fields:
- - merge result
- - final main commit
-
-+## EOD WORKSTREAM CLOSEOUT
++## WORKSTREAM HYGIENE GOVERNANCE
 +
-+At completion of a merged PR or approved workstream:
++At workstream closeout, Codex must review repository collaboration state before reporting the workstream closed.
 +
-+Required steps:
++Required review targets:
++- open PRs
++- draft PRs
++- local branches
++- remote branches
 +
-+1. Merge approved PR.
-+2. Checkout main.
-+3. Pull latest main.
-+4. Verify:
-+   - current branch = main
-+   - worktree clean
-+   - local/origin sync = 0 0
-+5. Record final main commit.
-+6. Report final repository state.
-+
-+Required final state:
-+
-+Branch:
-+main
-+
-+Worktree:
-+clean
-+
-+Local/origin:
-+0 0
++Each reviewed item must be classified as one of:
++- Active
++- Merged
++- Superseded
++- Abandoned
++- Historical/Archive
 +
 +Rules:
++- Merged branches should be deleted after successful merge and main sync.
++- Superseded draft PRs should be closed.
++- Abandoned branches should be documented before removal.
++- Active workstream branches remain.
++- No branch deletion is performed by this governance rule unless a later owner-approved cleanup task explicitly scopes deletion.
 +
-+- A workstream is not considered closed until the repository is returned to main.
-+- A PI is not considered complete until main is current and synchronized.
-+- Do not leave Codex on a feature, team, workstream, recovery, governance, or owner branch after successful merge.
-+- If merge succeeds but repository is not returned to main:
-+  closeout status = FAIL.
++## PI CLOSEOUT GOVERNANCE
++
++At PI completion, Codex must verify that the repository, GitHub workstream, and deferred-work record are ready for the next PI.
++
++Required PI completion checks:
++- all approved work merged
++- repository returned to main
++- main pulled clean
++- local/origin sync = 0 0
++- open PR review complete
++- branch review complete
++- active workstream review complete
++- deferred work list recorded
++- next PI queue recommendation recorded
++
++Required PI closeout report fields:
++- final main commit
++- active PRs
++- active branches
++- closed/superseded PRs
++- deleted branch candidates
++- deferred work
++- next PI priorities
++
++Rules:
++- EOD Workstream Closeout remains authoritative for final repository state.
++- PI closeout must not imply approval to merge, close PRs, delete branches, or remove deferred work without explicit owner approval.
++- If the repository is not on clean, synchronized main, PI closeout status = FAIL.
++
++## GITHUB HYGIENE AUDIT GOVERNANCE
++
++GitHub hygiene cleanup must begin with an audit-only pass.
++
++Audit targets:
++- open PRs
++- draft PRs
++- merged PR branches
++- stale remote branches
++- stale local branches
++
++Recommendation-only first pass values:
++- keep
++- close
++- delete local
++- delete remote
++- defer
++
++Rules:
++- Do not delete branches during the audit-only pass.
++- Do not close PRs during the audit-only pass.
++- Do not delete local branches without explicit owner approval.
++- Do not delete remote branches without explicit owner approval.
++- Do not close open or draft PRs without explicit owner approval.
++- Cleanup actions must preserve EOD Workstream Closeout final-state requirements.
++
++Command expectations for cleanup audits:
++- report current branch
++- report worktree status
++- report local/origin sync
++- list open PRs
++- list draft PRs
++- list local branches
++- list remote branches
++- identify merged branch candidates
++- identify stale branch candidates
++
++Required cleanup audit report fields:
++- audit date
++- repository
++- final main commit, if on main
++- current branch
++- local/origin sync
++- open PR recommendations
++- draft PR recommendations
++- merged PR branch recommendations
++- stale remote branch recommendations
++- stale local branch recommendations
++- deferred cleanup items
++- owner approvals required before action
 +
  ## OWNER-CONTROLLED STABLE AND MERGE APPROVAL
 
  Stable promotion and merge approval are owner-controlled.
 diff --git a/docs_build/dev/ProjectInstructions/addendums/multi_team.md b/docs_build/dev/ProjectInstructions/addendums/multi_team.md
-index 373a51ed0..fc597aa40 100644
+index fc597aa40..4b45257b0 100644
 --- a/docs_build/dev/ProjectInstructions/addendums/multi_team.md
 +++ b/docs_build/dev/ProjectInstructions/addendums/multi_team.md
-@@ -48,6 +48,41 @@ Commit/push during the day is allowed only on assigned team/OWNER/PR branches.
- Merge to main is EOD-only and owner-approved, unless the owner explicitly says:
- "Merge this PR now."
+@@ -83,6 +83,110 @@ Rules:
+ - If merge succeeds but repository is not returned to main:
+   closeout status = FAIL.
 
-+## EOD Workstream Closeout
++## Workstream Hygiene Governance
 +
-+At completion of a merged PR or approved workstream:
++At workstream closeout, Codex must review repository collaboration state before reporting the workstream closed.
 +
-+Required steps:
++Required review targets:
++- open PRs
++- draft PRs
++- local branches
++- remote branches
 +
-+1. Merge approved PR.
-+2. Checkout main.
-+3. Pull latest main.
-+4. Verify:
-+   - current branch = main
-+   - worktree clean
-+   - local/origin sync = 0 0
-+5. Record final main commit.
-+6. Report final repository state.
-+
-+Required final state:
-+
-+Branch:
-+main
-+
-+Worktree:
-+clean
-+
-+Local/origin:
-+0 0
++Each reviewed item must be classified as one of:
++- Active
++- Merged
++- Superseded
++- Abandoned
++- Historical/Archive
 +
 +Rules:
++- Merged branches should be deleted after successful merge and main sync.
++- Superseded draft PRs should be closed.
++- Abandoned branches should be documented before removal.
++- Active workstream branches remain.
++- No branch deletion is performed by this governance rule unless a later owner-approved cleanup task explicitly scopes deletion.
 +
-+- A workstream is not considered closed until the repository is returned to main.
-+- A PI is not considered complete until main is current and synchronized.
-+- Do not leave Codex on a feature, team, workstream, recovery, governance, or owner branch after successful merge.
-+- If merge succeeds but repository is not returned to main:
-+  closeout status = FAIL.
++## PI Closeout Governance
++
++At PI completion, Codex must verify that the repository, GitHub workstream, and deferred-work record are ready for the next PI.
++
++Required PI completion checks:
++- all approved work merged
++- repository returned to main
++- main pulled clean
++- local/origin sync = 0 0
++- open PR review complete
++- branch review complete
++- active workstream review complete
++- deferred work list recorded
++- next PI queue recommendation recorded
++
++Required PI closeout report fields:
++- final main commit
++- active PRs
++- active branches
++- closed/superseded PRs
++- deleted branch candidates
++- deferred work
++- next PI priorities
++
++Rules:
++- EOD Workstream Closeout remains authoritative for final repository state.
++- PI closeout must not imply approval to merge, close PRs, delete branches, or remove deferred work without explicit owner approval.
++- If the repository is not on clean, synchronized main, PI closeout status = FAIL.
++
++## GitHub Hygiene Audit Governance
++
++GitHub hygiene cleanup must begin with an audit-only pass.
++
++Audit targets:
++- open PRs
++- draft PRs
++- merged PR branches
++- stale remote branches
++- stale local branches
++
++Recommendation-only first pass values:
++- keep
++- close
++- delete local
++- delete remote
++- defer
++
++Rules:
++- Do not delete branches during the audit-only pass.
++- Do not close PRs during the audit-only pass.
++- Do not delete local branches without explicit owner approval.
++- Do not delete remote branches without explicit owner approval.
++- Do not close open or draft PRs without explicit owner approval.
++- Cleanup actions must preserve EOD Workstream Closeout final-state requirements.
++
++Command expectations for cleanup audits:
++- report current branch
++- report worktree status
++- report local/origin sync
++- list open PRs
++- list draft PRs
++- list local branches
++- list remote branches
++- identify merged branch candidates
++- identify stale branch candidates
++
++Required cleanup audit report fields:
++- audit date
++- repository
++- final main commit, if on main
++- current branch
++- local/origin sync
++- open PR recommendations
++- draft PR recommendations
++- merged PR branch recommendations
++- stale remote branch recommendations
++- stale local branch recommendations
++- deferred cleanup items
++- owner approvals required before action
 +
  ## Conflict Note
 
  Existing ProjectInstructions wording that appears to require immediate or automatic merge remains preserved for traceability.
-diff --git a/docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-instruction-compliance-checklist.md
+diff --git a/docs_build/dev/reports/PR_26172_OWNER_030-workstream-hygiene-governance-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26172_OWNER_030-workstream-hygiene-governance-instruction-compliance-checklist.md
 new file mode 100644
-index 000000000..59f5bbd19
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-instruction-compliance-checklist.md
-@@ -0,0 +1,20 @@
-+# Instruction Compliance Checklist
-+
-+PR: `PR_26172_OWNER_028-eod-mainline-closeout-governance`
-+
-+- [x] Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
-+- [x] Read `docs_build/dev/PROJECT_MULTI_PC.txt`.
-+- [x] Verified current branch was `main` before creating the PR branch.
-+- [x] Verified repository was clean before creating the PR branch.
-+- [x] Verified local/origin sync was `0 0` before creating the PR branch.
-+- [x] Verified PR TEAM token is `OWNER`.
-+- [x] Verified OWNER governance scope matches TEAM ownership.
-+- [x] Created branch `pr/26172-OWNER-028-eod-mainline-closeout-governance`.
-+- [x] Updated only scoped governance documentation and required reports.
-+- [x] Ran `git diff --check`.
-+- [x] Verified EOD closeout section exists.
-+- [x] Verified Git workflow section updated.
-+- [x] Verified no conflicting closeout governance section remains.
-+- [x] Documented skipped Playwright and samples lanes.
-+- [x] Created required Codex reports.
-+- [x] Created repo-structured delta ZIP under `tmp/`.
-diff --git a/docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-manual-validation-notes.md b/docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-manual-validation-notes.md
+index 0000000000000000000000000000000000000000..d6ba2a7373aca3631557c0d16ccb5fd34ba46be4
+GIT binary patch
+literal 906
+zcmbVL&5qMB5avprVkEe_EsF#aw^g=>AhwONDM+AI<=T_Rs$(15X`5%`z$5J|Fv&J8
+zq8GF$OZLn+-_Q8z*Y7uwnGk&|qOt~3+c>Sb5eR9GVy9JzNs<?z;H~pX!r;g85enoI
+zq!nSkX_b~!iTi0@EI-fFa-A(6%3_t4*>dqPY2@TTTJBe0%50sdlX#3{{a5s=QYb;R
+z-lK`I@kFYI0}s$}WnhDq^$5ZvkIHNz)(8jdcO(UQb1J_=^XP0)(fV#c5*qnSp|llT
+zPpwy5ViP(e2E<n|dm**FfO39&57F+>fC{kuwwM=J3Wi(Q+C6$R#1w>eNS;JdV|a$J
+z2ZKJ;%8lJ=?-H4LGST_z&4+g%Z`c6FX76Y0Vjbf~GN)MGZ50}1mr*0y%E<xE8r{J#
+zUj9vp7Ncz_GRlP(iqOF0&sKSw-`nqF7=a2hf2$%$RaL+k2@t#S?YscSg0QC2iWZb|
+zzR>C8mUMO1F<;(+&^DlLBaQ6WB>-<@O=0z{_BgiOov0GEuv5;_nQPu1DAYO*)B~sg
+tK)z~j@XUL(^Q<ei5|96?yHq*Lo_|=|n;=m~4&SpJS|icJ>&8td$sdidI~f1~
+
+literal 0
+HcmV?d00001
+
+diff --git a/docs_build/dev/reports/PR_26172_OWNER_030-workstream-hygiene-governance-manual-validation-notes.md b/docs_build/dev/reports/PR_26172_OWNER_030-workstream-hygiene-governance-manual-validation-notes.md
 new file mode 100644
-index 000000000..b418c5889
+index 000000000..4b037bee8
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-manual-validation-notes.md
-@@ -0,0 +1,19 @@
-+# Manual Validation Notes
++++ b/docs_build/dev/reports/PR_26172_OWNER_030-workstream-hygiene-governance-manual-validation-notes.md
+@@ -0,0 +1,21 @@
++﻿# Manual Validation Notes
 +
-+PR: `PR_26172_OWNER_028-eod-mainline-closeout-governance`
++PR: $pr
 +
 +## Checks Performed
 +
-+- Confirmed the EOD closeout rule was added to `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
-+- Confirmed the existing Git workflow list now includes clean worktree verification, local/origin sync verification, final main commit recording, and final repository state reporting.
-+- Confirmed the active ProjectInstructions multi-team addendum includes matching EOD closeout governance.
-+- Confirmed existing return-to-main wording is not conflicting; it is strengthened by the new required final-state checks.
++- Confirmed Workstream Hygiene governance was added to legacy and active ProjectInstructions governance.
++- Confirmed closeout review targets include open PRs, draft PRs, local branches, and remote branches.
++- Confirmed each reviewed item must be classified as Active, Merged, Superseded, Abandoned, or Historical/Archive.
++- Confirmed merged branches are recommendation-only deletion candidates after successful merge and main sync.
++- Confirmed this PR does not delete branches or close PRs.
++- Confirmed EOD closeout remains present and authoritative.
 +
 +## Manual Result
 +
@@ -154,17 +273,17 @@ index 000000000..b418c5889
 +
 +- Playwright was not run because no UI or runtime behavior changed.
 +- Samples were not run because no samples or sample-impacting runtime changed.
-diff --git a/docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance.md b/docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance.md
+diff --git a/docs_build/dev/reports/PR_26172_OWNER_030-workstream-hygiene-governance.md b/docs_build/dev/reports/PR_26172_OWNER_030-workstream-hygiene-governance.md
 new file mode 100644
-index 000000000..180cacf3d
+index 000000000..0dd7dae52
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance.md
-@@ -0,0 +1,39 @@
-+# PR_26172_OWNER_028-eod-mainline-closeout-governance
++++ b/docs_build/dev/reports/PR_26172_OWNER_030-workstream-hygiene-governance.md
+@@ -0,0 +1,40 @@
++﻿# PR_26172_OWNER_030-workstream-hygiene-governance
 +
 +## Scope
 +
-+Add governance requiring final repository normalization after a merged PR or approved workstream.
++Add Workstream Hygiene governance for closeout review of PR and branch state.
 +
 +## Team Ownership
 +
@@ -174,57 +293,594 @@ index 000000000..180cacf3d
 +
 +## Files Changed
 +
-+- `docs_build/dev/PROJECT_INSTRUCTIONS.md`
-+- `docs_build/dev/ProjectInstructions/addendums/multi_team.md`
-+- `docs_build/dev/reports/codex_changed_files.txt`
-+- `docs_build/dev/reports/codex_review.diff`
-+- `docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance.md`
-+- `docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-manual-validation-notes.md`
-+- `docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-instruction-compliance-checklist.md`
++- docs_build/dev/PROJECT_INSTRUCTIONS.md
++- docs_build/dev/ProjectInstructions/addendums/multi_team.md
++- docs_build/dev/reports/codex_changed_files.txt
++- docs_build/dev/reports/codex_review.diff
++- docs_build/dev/reports/PR_26172_OWNER_030-workstream-hygiene-governance.md
++- docs_build/dev/reports/PR_26172_OWNER_030-workstream-hygiene-governance-manual-validation-notes.md
++- docs_build/dev/reports/PR_26172_OWNER_030-workstream-hygiene-governance-instruction-compliance-checklist.md
 +
 +## Change Summary
 +
-+- Added `## EOD WORKSTREAM CLOSEOUT` to the legacy Project Instructions workflow.
-+- Updated the `CODEX GIT WORKFLOW OWNERSHIP` required workflow to verify clean worktree, verify local/origin sync, record final main commit, and report final repository state before continuing.
-+- Added matching EOD Workstream Closeout governance to the active ProjectInstructions multi-team addendum.
++- Added Workstream Hygiene governance to require review of open PRs, draft PRs, local branches, and remote branches at closeout.
++- Added classifications: Active, Merged, Superseded, Abandoned, Historical/Archive.
++- Documented recommendation-only outcomes for merged, superseded, abandoned, and active branches.
++- Explicitly prohibited branch deletion in this PR.
 +
 +## Validation
 +
-+- `git diff --check`: PASS
-+- Verified EOD closeout section exists: PASS
-+- Verified Git workflow section updated: PASS
-+- Verified no conflicting closeout governance section: PASS
++- git diff --check: PASS
++- Verified Workstream Hygiene governance exists: PASS
++- Verified EOD closeout remains authoritative: PASS
++- Verified no conflicting governance wording: PASS
++
++## Skipped Lanes
++
++- Playwright: skipped because this is docs/governance-only.
++- Samples: skipped because no runtime, sample, or UI files changed.
+diff --git a/docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance-instruction-compliance-checklist.md
+new file mode 100644
+index 000000000..9daeb8e41
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance-instruction-compliance-checklist.md
+@@ -0,0 +1,17 @@
++﻿# Instruction Compliance Checklist
++
++PR: $pr
++
++- [x] Read docs_build/dev/PROJECT_INSTRUCTIONS.md.
++- [x] Read docs_build/dev/PROJECT_MULTI_PC.txt.
++- [x] Verified current branch was the approved OWNER workstream branch.
++- [x] Verified repository was clean/synced after PR 030 push before PR 031 edits.
++- [x] Verified PR TEAM token is OWNER.
++- [x] Verified OWNER governance scope matches TEAM ownership.
++- [x] Updated only scoped governance documentation and required reports.
++- [x] Ran git diff --check.
++- [x] Verified no conflicting governance wording.
++- [x] Verified EOD closeout remains authoritative.
++- [x] Documented skipped Playwright and samples lanes.
++- [x] Created required Codex reports.
++- [x] Created repo-structured delta ZIP under 	mp/.
+diff --git a/docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance-manual-validation-notes.md b/docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance-manual-validation-notes.md
+new file mode 100644
+index 000000000..01fc9f1e7
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance-manual-validation-notes.md
+@@ -0,0 +1,20 @@
++﻿# Manual Validation Notes
++
++PR: $pr
++
++## Checks Performed
++
++- Confirmed PI Closeout governance was added to legacy and active ProjectInstructions governance.
++- Confirmed PI completion checks include all approved work merged, repository returned to main, clean pull, local/origin sync, open PR review, branch review, active workstream review, deferred work, and next PI queue recommendation.
++- Confirmed required PI closeout report fields include final main commit, active PRs, active branches, closed/superseded PRs, deleted branch candidates, deferred work, and next PI priorities.
++- Confirmed EOD Workstream Closeout remains authoritative for final repository state.
++- Confirmed the governance does not approve merging, PR closure, branch deletion, or deferred-work removal without owner approval.
++
++## Manual Result
++
++PASS
++
++## Skipped Validation
++
++- Playwright was not run because no UI or runtime behavior changed.
++- Samples were not run because no samples or sample-impacting runtime changed.
+diff --git a/docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance.md b/docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance.md
+new file mode 100644
+index 000000000..f05eba1d7
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance.md
+@@ -0,0 +1,41 @@
++﻿# PR_26172_OWNER_031-pi-closeout-governance
++
++## Scope
++
++Add PI Closeout governance for final PI repository and GitHub hygiene review.
++
++## Team Ownership
++
++- TEAM token: OWNER
++- Ownership classification: governance / workflow governance
++- TEAM ownership result: PASS
++
++## Files Changed
++
++- docs_build/dev/PROJECT_INSTRUCTIONS.md
++- docs_build/dev/ProjectInstructions/addendums/multi_team.md
++- docs_build/dev/reports/codex_changed_files.txt
++- docs_build/dev/reports/codex_review.diff
++- docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance.md
++- docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance-manual-validation-notes.md
++- docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance-instruction-compliance-checklist.md
++
++## Change Summary
++
++- Added PI Closeout governance to require approved-work merge status, clean synchronized main, open PR review, branch review, active workstream review, deferred work list, and next PI queue recommendations.
++- Added required PI closeout report fields.
++- Preserved EOD Workstream Closeout as authoritative for final repository state.
++- Prohibited PI closeout from implying approval to merge, close PRs, delete branches, or remove deferred work without explicit owner approval.
++
++## Validation
++
++- git diff --check: PASS
++- Verified PI Closeout governance exists: PASS
++- Verified required PI closeout report fields exist: PASS
++- Verified no conflicting governance wording: PASS
++- Verified EOD closeout remains authoritative: PASS
++
++## Skipped Lanes
++
++- Playwright: skipped because this is docs/governance-only.
++- Samples: skipped because no runtime, sample, or UI files changed.
+diff --git a/docs_build/dev/reports/PR_26172_OWNER_032-github-hygiene-audit-template-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26172_OWNER_032-github-hygiene-audit-template-instruction-compliance-checklist.md
+new file mode 100644
+index 000000000..f9e0086ff
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26172_OWNER_032-github-hygiene-audit-template-instruction-compliance-checklist.md
+@@ -0,0 +1,18 @@
++﻿# Instruction Compliance Checklist
++
++PR: $pr
++
++- [x] Read docs_build/dev/PROJECT_INSTRUCTIONS.md.
++- [x] Read docs_build/dev/PROJECT_MULTI_PC.txt.
++- [x] Verified current branch was the approved OWNER workstream branch.
++- [x] Verified repository was clean/synced after PR 031 push before PR 032 edits.
++- [x] Verified PR TEAM token is OWNER.
++- [x] Verified OWNER governance scope matches TEAM ownership.
++- [x] Updated only scoped governance documentation and required reports.
++- [x] Ran git diff --check.
++- [x] Verified no conflicting governance wording.
++- [x] Verified EOD closeout remains authoritative.
++- [x] Verified no branch deletion or PR closing was performed.
++- [x] Documented skipped Playwright and samples lanes.
++- [x] Created required Codex reports.
++- [x] Created repo-structured delta ZIP under 	mp/.
+diff --git a/docs_build/dev/reports/PR_26172_OWNER_032-github-hygiene-audit-template-manual-validation-notes.md b/docs_build/dev/reports/PR_26172_OWNER_032-github-hygiene-audit-template-manual-validation-notes.md
+new file mode 100644
+index 000000000..5bf6fdd5b
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26172_OWNER_032-github-hygiene-audit-template-manual-validation-notes.md
+@@ -0,0 +1,21 @@
++﻿# Manual Validation Notes
++
++PR: $pr
++
++## Checks Performed
++
++- Confirmed GitHub Hygiene Audit governance was added to legacy and active ProjectInstructions governance.
++- Confirmed audit targets include open PRs, draft PRs, merged PR branches, stale remote branches, and stale local branches.
++- Confirmed recommendation-only first pass values include keep, close, delete local, delete remote, and defer.
++- Confirmed branch deletion and PR closure require explicit owner approval.
++- Confirmed command expectations and cleanup audit report fields are present.
++- Confirmed cleanup actions must preserve EOD Workstream Closeout final-state requirements.
++
++## Manual Result
++
++PASS
++
++## Skipped Validation
++
++- Playwright was not run because no UI or runtime behavior changed.
++- Samples were not run because no samples or sample-impacting runtime changed.
+diff --git a/docs_build/dev/reports/PR_26172_OWNER_032-github-hygiene-audit-template.md b/docs_build/dev/reports/PR_26172_OWNER_032-github-hygiene-audit-template.md
+new file mode 100644
+index 000000000..0454e7bfb
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26172_OWNER_032-github-hygiene-audit-template.md
+@@ -0,0 +1,43 @@
++﻿# PR_26172_OWNER_032-github-hygiene-audit-template
++
++## Scope
++
++Add GitHub hygiene audit template/process for recommendation-only cleanup review.
++
++## Team Ownership
++
++- TEAM token: OWNER
++- Ownership classification: governance / workflow governance
++- TEAM ownership result: PASS
++
++## Files Changed
++
++- docs_build/dev/PROJECT_INSTRUCTIONS.md
++- docs_build/dev/ProjectInstructions/addendums/multi_team.md
++- docs_build/dev/reports/codex_changed_files.txt
++- docs_build/dev/reports/codex_review.diff
++- docs_build/dev/reports/PR_26172_OWNER_032-github-hygiene-audit-template.md
++- docs_build/dev/reports/PR_26172_OWNER_032-github-hygiene-audit-template-manual-validation-notes.md
++- docs_build/dev/reports/PR_26172_OWNER_032-github-hygiene-audit-template-instruction-compliance-checklist.md
++
++## Change Summary
++
++- Added GitHub Hygiene Audit governance to require an audit-only first pass.
++- Defined audit targets for open PRs, draft PRs, merged PR branches, stale remote branches, and stale local branches.
++- Added recommendation values: keep, close, delete local, delete remote, defer.
++- Prohibited branch deletion and PR closure without explicit owner approval.
++- Added command expectations and required cleanup audit report fields.
++
++## Validation
++
++- git diff --check: PASS
++- Verified GitHub Hygiene Audit governance exists: PASS
++- Verified audit targets and recommendation values exist: PASS
++- Verified no branch deletion or PR closing without owner approval: PASS
++- Verified no conflicting governance wording: PASS
++- Verified EOD closeout remains authoritative: PASS
 +
 +## Skipped Lanes
 +
 +- Playwright: skipped because this is docs/governance-only.
 +- Samples: skipped because no runtime, sample, or UI files changed.
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index b0b99997b..735167f9e 100644
+index 735167f9e..bef983eeb 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,20 +1,7 @@
--docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
--docs_build/dev/ProjectInstructions/README.txt
--docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
--docs_build/dev/ProjectInstructions/addendums/build_path_sync.md
--docs_build/dev/ProjectInstructions/addendums/deprecation.md
-+﻿docs_build/dev/PROJECT_INSTRUCTIONS.md
+@@ -1,7 +1,13 @@
+ ﻿docs_build/dev/PROJECT_INSTRUCTIONS.md
  docs_build/dev/ProjectInstructions/addendums/multi_team.md
--docs_build/dev/ProjectInstructions/addendums/preservation.md
--docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
--docs_build/dev/ProjectInstructions/addendums/tile_overlay_status.md
--docs_build/dev/ProjectInstructions/archive/README.md
--docs_build/dev/ProjectInstructions/archive/history/.gitkeep
--docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
--docs_build/dev/ProjectInstructions/deprecation/README.md
--docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
--docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install-instruction-compliance-checklist.md
--docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install-manual-validation-notes.md
--docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install-tree.txt
--docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install.md
-+docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance.md
-+docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-manual-validation-notes.md
-+docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-instruction-compliance-checklist.md
+-docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance.md
+-docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-manual-validation-notes.md
+-docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-instruction-compliance-checklist.md
++docs_build/dev/reports/PR_26172_OWNER_030-workstream-hygiene-governance-instruction-compliance-checklist.md
++docs_build/dev/reports/PR_26172_OWNER_030-workstream-hygiene-governance-manual-validation-notes.md
++docs_build/dev/reports/PR_26172_OWNER_030-workstream-hygiene-governance.md
++docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance-instruction-compliance-checklist.md
++docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance-manual-validation-notes.md
++docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance.md
++docs_build/dev/reports/PR_26172_OWNER_032-github-hygiene-audit-template-instruction-compliance-checklist.md
++docs_build/dev/reports/PR_26172_OWNER_032-github-hygiene-audit-template-manual-validation-notes.md
++docs_build/dev/reports/PR_26172_OWNER_032-github-hygiene-audit-template.md
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
+diff --git a/docs_build/dev/reports/codex_review.diff b/docs_build/dev/reports/codex_review.diff
+index 49823fd7b..a4e03c549 100644
+--- a/docs_build/dev/reports/codex_review.diff
++++ b/docs_build/dev/reports/codex_review.diff
+@@ -1,150 +1,123 @@
+ ﻿diff --git a/docs_build/dev/PROJECT_INSTRUCTIONS.md b/docs_build/dev/PROJECT_INSTRUCTIONS.md
+-index e78ba69d5..cfc3576a1 100644
++index 92412cd7a..0146ca547 100644
+ --- a/docs_build/dev/PROJECT_INSTRUCTIONS.md
+ +++ b/docs_build/dev/PROJECT_INSTRUCTIONS.md
+-@@ -2002,7 +2002,11 @@ Required workflow:
+- 13. Merge PR.
+- 14. Return to main.
+- 15. Pull latest main.
+--16. Continue to next approved PR.
+-+16. Verify clean worktree.
+-+17. Verify local/origin sync.
+-+18. Record final main commit.
+-+19. Report final repository state.
+-+20. Continue to next approved PR.
++@@ -2088,6 +2088,35 @@ Rules:
++ - Active workstream branches remain.
++ - No branch deletion is performed by this governance rule unless a later owner-approved cleanup task explicitly scopes deletion.
+
+- Rules:
+- - Do not ask the user if a PR should be created.
+-@@ -2025,6 +2029,41 @@ Required Git workflow report fields:
+- - merge result
+- - final main commit
+-
+-+## EOD WORKSTREAM CLOSEOUT
+-+
+-+At completion of a merged PR or approved workstream:
+-+
+-+Required steps:
+-+
+-+1. Merge approved PR.
+-+2. Checkout main.
+-+3. Pull latest main.
+-+4. Verify:
+-+   - current branch = main
+-+   - worktree clean
+-+   - local/origin sync = 0 0
+-+5. Record final main commit.
+-+6. Report final repository state.
+-+
+-+Required final state:
+-+
+-+Branch:
+-+main
+-+
+-+Worktree:
+-+clean
+-+
+-+Local/origin:
+-+0 0
+++## PI CLOSEOUT GOVERNANCE
+++
+++At PI completion, Codex must verify that the repository, GitHub workstream, and deferred-work record are ready for the next PI.
+++
+++Required PI completion checks:
+++- all approved work merged
+++- repository returned to main
+++- main pulled clean
+++- local/origin sync = 0 0
+++- open PR review complete
+++- branch review complete
+++- active workstream review complete
+++- deferred work list recorded
+++- next PI queue recommendation recorded
+++
+++Required PI closeout report fields:
+++- final main commit
+++- active PRs
+++- active branches
+++- closed/superseded PRs
+++- deleted branch candidates
+++- deferred work
+++- next PI priorities
+ +
+ +Rules:
+-+
+-+- A workstream is not considered closed until the repository is returned to main.
+-+- A PI is not considered complete until main is current and synchronized.
+-+- Do not leave Codex on a feature, team, workstream, recovery, governance, or owner branch after successful merge.
+-+- If merge succeeds but repository is not returned to main:
+-+  closeout status = FAIL.
+++- EOD Workstream Closeout remains authoritative for final repository state.
+++- PI closeout must not imply approval to merge, close PRs, delete branches, or remove deferred work without explicit owner approval.
+++- If the repository is not on clean, synchronized main, PI closeout status = FAIL.
+ +
+  ## OWNER-CONTROLLED STABLE AND MERGE APPROVAL
+
+  Stable promotion and merge approval are owner-controlled.
+ diff --git a/docs_build/dev/ProjectInstructions/addendums/multi_team.md b/docs_build/dev/ProjectInstructions/addendums/multi_team.md
+-index 373a51ed0..fc597aa40 100644
++index d99f15882..87de7c63a 100644
+ --- a/docs_build/dev/ProjectInstructions/addendums/multi_team.md
+ +++ b/docs_build/dev/ProjectInstructions/addendums/multi_team.md
+-@@ -48,6 +48,41 @@ Commit/push during the day is allowed only on assigned team/OWNER/PR branches.
+- Merge to main is EOD-only and owner-approved, unless the owner explicitly says:
+- "Merge this PR now."
++@@ -107,6 +107,35 @@ Rules:
++ - Active workstream branches remain.
++ - No branch deletion is performed by this governance rule unless a later owner-approved cleanup task explicitly scopes deletion.
+
+-+## EOD Workstream Closeout
+-+
+-+At completion of a merged PR or approved workstream:
+-+
+-+Required steps:
+-+
+-+1. Merge approved PR.
+-+2. Checkout main.
+-+3. Pull latest main.
+-+4. Verify:
+-+   - current branch = main
+-+   - worktree clean
+-+   - local/origin sync = 0 0
+-+5. Record final main commit.
+-+6. Report final repository state.
+-+
+-+Required final state:
+-+
+-+Branch:
+-+main
+-+
+-+Worktree:
+-+clean
+-+
+-+Local/origin:
+-+0 0
+++## PI Closeout Governance
+++
+++At PI completion, Codex must verify that the repository, GitHub workstream, and deferred-work record are ready for the next PI.
+++
+++Required PI completion checks:
+++- all approved work merged
+++- repository returned to main
+++- main pulled clean
+++- local/origin sync = 0 0
+++- open PR review complete
+++- branch review complete
+++- active workstream review complete
+++- deferred work list recorded
+++- next PI queue recommendation recorded
+++
+++Required PI closeout report fields:
+++- final main commit
+++- active PRs
+++- active branches
+++- closed/superseded PRs
+++- deleted branch candidates
+++- deferred work
+++- next PI priorities
+ +
+ +Rules:
+-+
+-+- A workstream is not considered closed until the repository is returned to main.
+-+- A PI is not considered complete until main is current and synchronized.
+-+- Do not leave Codex on a feature, team, workstream, recovery, governance, or owner branch after successful merge.
+-+- If merge succeeds but repository is not returned to main:
+-+  closeout status = FAIL.
+++- EOD Workstream Closeout remains authoritative for final repository state.
+++- PI closeout must not imply approval to merge, close PRs, delete branches, or remove deferred work without explicit owner approval.
+++- If the repository is not on clean, synchronized main, PI closeout status = FAIL.
+ +
+  ## Conflict Note
+
+  Existing ProjectInstructions wording that appears to require immediate or automatic merge remains preserved for traceability.
+-diff --git a/docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-instruction-compliance-checklist.md
++diff --git a/docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance-instruction-compliance-checklist.md
+ new file mode 100644
+-index 000000000..59f5bbd19
++index 000000000..9daeb8e41
+ --- /dev/null
+-+++ b/docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-instruction-compliance-checklist.md
+-@@ -0,0 +1,20 @@
+-+# Instruction Compliance Checklist
+++++ b/docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance-instruction-compliance-checklist.md
++@@ -0,0 +1,17 @@
+++﻿# Instruction Compliance Checklist
+ +
+-+PR: `PR_26172_OWNER_028-eod-mainline-closeout-governance`
+++PR: $pr
+ +
+-+- [x] Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+-+- [x] Read `docs_build/dev/PROJECT_MULTI_PC.txt`.
+-+- [x] Verified current branch was `main` before creating the PR branch.
+-+- [x] Verified repository was clean before creating the PR branch.
+-+- [x] Verified local/origin sync was `0 0` before creating the PR branch.
+-+- [x] Verified PR TEAM token is `OWNER`.
+++- [x] Read docs_build/dev/PROJECT_INSTRUCTIONS.md.
+++- [x] Read docs_build/dev/PROJECT_MULTI_PC.txt.
+++- [x] Verified current branch was the approved OWNER workstream branch.
+++- [x] Verified repository was clean/synced after PR 030 push before PR 031 edits.
+++- [x] Verified PR TEAM token is OWNER.
+ +- [x] Verified OWNER governance scope matches TEAM ownership.
+-+- [x] Created branch `pr/26172-OWNER-028-eod-mainline-closeout-governance`.
+ +- [x] Updated only scoped governance documentation and required reports.
+-+- [x] Ran `git diff --check`.
+-+- [x] Verified EOD closeout section exists.
+-+- [x] Verified Git workflow section updated.
+-+- [x] Verified no conflicting closeout governance section remains.
+++- [x] Ran git diff --check.
+++- [x] Verified no conflicting governance wording.
+++- [x] Verified EOD closeout remains authoritative.
+ +- [x] Documented skipped Playwright and samples lanes.
+ +- [x] Created required Codex reports.
+-+- [x] Created repo-structured delta ZIP under `tmp/`.
+-diff --git a/docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-manual-validation-notes.md b/docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-manual-validation-notes.md
+++- [x] Created repo-structured delta ZIP under 	mp/.
++diff --git a/docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance-manual-validation-notes.md b/docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance-manual-validation-notes.md
+ new file mode 100644
+-index 000000000..b418c5889
++index 000000000..01fc9f1e7
+ --- /dev/null
+-+++ b/docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-manual-validation-notes.md
+-@@ -0,0 +1,19 @@
+-+# Manual Validation Notes
+++++ b/docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance-manual-validation-notes.md
++@@ -0,0 +1,20 @@
+++﻿# Manual Validation Notes
+ +
+-+PR: `PR_26172_OWNER_028-eod-mainline-closeout-governance`
+++PR: $pr
+ +
+ +## Checks Performed
+ +
+-+- Confirmed the EOD closeout rule was added to `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+-+- Confirmed the existing Git workflow list now includes clean worktree verification, local/origin sync verification, final main commit recording, and final repository state reporting.
+-+- Confirmed the active ProjectInstructions multi-team addendum includes matching EOD closeout governance.
+-+- Confirmed existing return-to-main wording is not conflicting; it is strengthened by the new required final-state checks.
+++- Confirmed PI Closeout governance was added to legacy and active ProjectInstructions governance.
+++- Confirmed PI completion checks include all approved work merged, repository returned to main, clean pull, local/origin sync, open PR review, branch review, active workstream review, deferred work, and next PI queue recommendation.
+++- Confirmed required PI closeout report fields include final main commit, active PRs, active branches, closed/superseded PRs, deleted branch candidates, deferred work, and next PI priorities.
+++- Confirmed EOD Workstream Closeout remains authoritative for final repository state.
+++- Confirmed the governance does not approve merging, PR closure, branch deletion, or deferred-work removal without owner approval.
+ +
+ +## Manual Result
+ +
+@@ -154,17 +127,17 @@ index 000000000..b418c5889
+ +
+ +- Playwright was not run because no UI or runtime behavior changed.
+ +- Samples were not run because no samples or sample-impacting runtime changed.
+-diff --git a/docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance.md b/docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance.md
++diff --git a/docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance.md b/docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance.md
+ new file mode 100644
+-index 000000000..180cacf3d
++index 000000000..f05eba1d7
+ --- /dev/null
+-+++ b/docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance.md
+-@@ -0,0 +1,39 @@
+-+# PR_26172_OWNER_028-eod-mainline-closeout-governance
+++++ b/docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance.md
++@@ -0,0 +1,41 @@
+++﻿# PR_26172_OWNER_031-pi-closeout-governance
+ +
+ +## Scope
+ +
+-+Add governance requiring final repository normalization after a merged PR or approved workstream.
+++Add PI Closeout governance for final PI repository and GitHub hygiene review.
+ +
+ +## Team Ownership
+ +
+@@ -174,57 +147,45 @@ index 000000000..180cacf3d
+ +
+ +## Files Changed
+ +
+-+- `docs_build/dev/PROJECT_INSTRUCTIONS.md`
+-+- `docs_build/dev/ProjectInstructions/addendums/multi_team.md`
+-+- `docs_build/dev/reports/codex_changed_files.txt`
+-+- `docs_build/dev/reports/codex_review.diff`
+-+- `docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance.md`
+-+- `docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-manual-validation-notes.md`
+-+- `docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-instruction-compliance-checklist.md`
+++- docs_build/dev/PROJECT_INSTRUCTIONS.md
+++- docs_build/dev/ProjectInstructions/addendums/multi_team.md
+++- docs_build/dev/reports/codex_changed_files.txt
+++- docs_build/dev/reports/codex_review.diff
+++- docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance.md
+++- docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance-manual-validation-notes.md
+++- docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance-instruction-compliance-checklist.md
+ +
+ +## Change Summary
+ +
+-+- Added `## EOD WORKSTREAM CLOSEOUT` to the legacy Project Instructions workflow.
+-+- Updated the `CODEX GIT WORKFLOW OWNERSHIP` required workflow to verify clean worktree, verify local/origin sync, record final main commit, and report final repository state before continuing.
+-+- Added matching EOD Workstream Closeout governance to the active ProjectInstructions multi-team addendum.
+++- Added PI Closeout governance to require approved-work merge status, clean synchronized main, open PR review, branch review, active workstream review, deferred work list, and next PI queue recommendations.
+++- Added required PI closeout report fields.
+++- Preserved EOD Workstream Closeout as authoritative for final repository state.
+++- Prohibited PI closeout from implying approval to merge, close PRs, delete branches, or remove deferred work without explicit owner approval.
+ +
+ +## Validation
+ +
+-+- `git diff --check`: PASS
+-+- Verified EOD closeout section exists: PASS
+-+- Verified Git workflow section updated: PASS
+-+- Verified no conflicting closeout governance section: PASS
+++- git diff --check: PASS
+++- Verified PI Closeout governance exists: PASS
+++- Verified required PI closeout report fields exist: PASS
+++- Verified no conflicting governance wording: PASS
+++- Verified EOD closeout remains authoritative: PASS
+ +
+ +## Skipped Lanes
+ +
+ +- Playwright: skipped because this is docs/governance-only.
+ +- Samples: skipped because no runtime, sample, or UI files changed.
+ diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+-index b0b99997b..735167f9e 100644
++index e6186f4d7..2aec878f2 100644
+ --- a/docs_build/dev/reports/codex_changed_files.txt
+ +++ b/docs_build/dev/reports/codex_changed_files.txt
+-@@ -1,20 +1,7 @@
+--docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+--docs_build/dev/ProjectInstructions/README.txt
+--docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
+--docs_build/dev/ProjectInstructions/addendums/build_path_sync.md
+--docs_build/dev/ProjectInstructions/addendums/deprecation.md
+-+﻿docs_build/dev/PROJECT_INSTRUCTIONS.md
++@@ -1,7 +1,7 @@
++ ﻿docs_build/dev/PROJECT_INSTRUCTIONS.md
+  docs_build/dev/ProjectInstructions/addendums/multi_team.md
+--docs_build/dev/ProjectInstructions/addendums/preservation.md
+--docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
+--docs_build/dev/ProjectInstructions/addendums/tile_overlay_status.md
+--docs_build/dev/ProjectInstructions/archive/README.md
+--docs_build/dev/ProjectInstructions/archive/history/.gitkeep
+--docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
+--docs_build/dev/ProjectInstructions/deprecation/README.md
+--docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
+--docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install-instruction-compliance-checklist.md
+--docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install-manual-validation-notes.md
+--docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install-tree.txt
+--docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install.md
+-+docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance.md
+-+docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-manual-validation-notes.md
+-+docs_build/dev/reports/PR_26172_OWNER_028-eod-mainline-closeout-governance-instruction-compliance-checklist.md
++-docs_build/dev/reports/PR_26172_OWNER_030-workstream-hygiene-governance.md
++-docs_build/dev/reports/PR_26172_OWNER_030-workstream-hygiene-governance-manual-validation-notes.md
++-docs_build/dev/reports/PR_26172_OWNER_030-workstream-hygiene-governance-instruction-compliance-checklist.md
+++docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance.md
+++docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance-manual-validation-notes.md
+++docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance-instruction-compliance-checklist.md
+  docs_build/dev/reports/codex_changed_files.txt
+  docs_build/dev/reports/codex_review.diff
