@@ -121,9 +121,9 @@ import {
 } from "../marketplace/marketplace-revenue-service.mjs";
 import { handleAdminNotesDirectoryApiRequest } from "../admin/admin-notes-directory.mjs";
 import {
-  createMessagesSqliteService,
+  createMessagesPostgresService,
   handleMessagesApiContract,
-} from "../messages/messages-sqlite-service.mjs";
+} from "../messages/messages-postgres-service.mjs";
 import {
   LegalDocumentError,
   readPublishedLegalDocument,
@@ -2318,9 +2318,11 @@ function productTablesFromSnapshot(snapshot) {
 
 class ApiRuntimeDataSource {
   constructor({
+    messagesPostgresClient = null,
+    messagesService = null,
     repoRoot = process.cwd(),
   } = {}) {
-    this.messagesService = createMessagesSqliteService({ repoRoot });
+    this.messagesService = messagesService || createMessagesPostgresService({ postgresClient: messagesPostgresClient });
     this.repositoryCounter = 1;
     this.repositoryById = new Map();
     this.sessionModeId = FIXED_ACCOUNT_SESSION_MODE.id;
@@ -4846,7 +4848,7 @@ LIMIT 1;
     return this.sessionUserKey || SEED_DB_KEYS.users.forgeBot;
   }
 
-  messagesApiContract(method, parts, body) {
+  async messagesApiContract(method, parts, body) {
     return handleMessagesApiContract({
       actorKey: this.messagesActorKey(),
       body,
@@ -5446,9 +5448,11 @@ LIMIT 1;
  * The router itself serves the configured server API contract.
  */
 export function createLocalApiRouter({
+  messagesPostgresClient = null,
+  messagesService = null,
   repoRoot = process.cwd(),
 } = {}) {
-  const dataSource = new ApiRuntimeDataSource({ repoRoot });
+  const dataSource = new ApiRuntimeDataSource({ messagesPostgresClient, messagesService, repoRoot });
 
   async function handleApiRuntimeRequest(request, response, requestUrl) {
     if (!requestUrl.pathname.startsWith("/api/")) {
@@ -5672,7 +5676,7 @@ export function createLocalApiRouter({
 
       if (parts[1] === "messages") {
         const body = request.method === "POST" ? await readRequestJson(request) : {};
-        ok(response, dataSource.messagesApiContract(request.method, parts.slice(2), body));
+        ok(response, await dataSource.messagesApiContract(request.method, parts.slice(2), body));
         return true;
       }
 

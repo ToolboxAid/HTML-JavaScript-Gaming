@@ -90,9 +90,11 @@ function resolveBrowserRoutePath(decodedPath) {
   return normalizedPath;
 }
 
-export async function startRepoServer() {
+export async function startRepoServer({
+  messagesPostgresClient = null,
+} = {}) {
   await loadRuntimeEnv();
-  const handleLocalApiRequest = createLocalApiRouter({ repoRoot });
+  const handleLocalApiRequest = createLocalApiRouter({ messagesPostgresClient, repoRoot });
   const server = http.createServer(async (request, response) => {
     try {
       const requestUrl = new URL(request.url || "/", "http://127.0.0.1");

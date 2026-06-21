@@ -1,17 +1,10 @@
-import fs from "node:fs/promises";
-import path from "node:path";
 import { expect, test } from "@playwright/test";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
+import { createMessagesPostgresClientStub } from "../../helpers/messagesPostgresClientStub.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
 const ULID_PATTERN = /^[0-9A-HJKMNP-TV-Z]{26}$/;
-let messagesRunId = 0;
-
-function messagesDbPath() {
-  messagesRunId += 1;
-  return path.join(process.cwd(), "tmp", `messages-tool-${process.pid}-${messagesRunId}.sqlite`);
-}
 
 async function jsonRequest(url, options = {}) {
   const response = await fetch(url, {
@@ -43,17 +36,15 @@ test.afterAll(async () => {
   await workspaceV2CoverageReporter.writeReport();
 });
 
-async function openMessagesPage(page, sqlitePath, options = {}) {
-  const previousMessagesSqlitePath = process.env.GAMEFOUNDRY_MESSAGES_SQLITE_PATH;
-  process.env.GAMEFOUNDRY_MESSAGES_SQLITE_PATH = sqlitePath;
-  const server = await startRepoServer();
+async function openMessagesPage(page, options = {}) {
+  const messagesPostgresClient = createMessagesPostgresClientStub();
+  const server = await startRepoServer({ messagesPostgresClient });
   const failures = {
     consoleErrors: [],
     failedRequests: [],
+    messagesPostgresClient,
     pageErrors: [],
-    previousMessagesSqlitePath,
     server,
-    sqlitePath,
   };
 
   page.on("pageerror", (error) => {
@@ -127,11 +118,6 @@ async function openMessagesPage(page, sqlitePath, options = {}) {
 async function closeMessagesRun(failures, page) {
   await workspaceV2CoverageReporter.stop(page);
   await failures.server.close();
-  if (failures.previousMessagesSqlitePath === undefined) {
-    delete process.env.GAMEFOUNDRY_MESSAGES_SQLITE_PATH;
-  } else {
-    process.env.GAMEFOUNDRY_MESSAGES_SQLITE_PATH = failures.previousMessagesSqlitePath;
-  }
 }
 
 async function addMessage(page, values) {
@@ -155,9 +141,7 @@ async function openMessageParts(page, messageName) {
 }
 
 test("Message Studio renders Messages with child Message Parts and plays ordered parts", async ({ page }) => {
-  const sqlitePath = messagesDbPath();
-  await fs.rm(sqlitePath, { force: true });
-  const failures = await openMessagesPage(page, sqlitePath);
+  const failures = await openMessagesPage(page);
 
   try {
     await expect(page.getByRole("heading", { level: 1, name: "Message Studio" })).toBeVisible();
@@ -352,14 +336,11 @@ test("Message Studio renders Messages with child Message Parts and plays ordered
     expect(failures.consoleErrors).toEqual([]);
   } finally {
     await closeMessagesRun(failures, page);
-    await fs.rm(sqlitePath, { force: true });
   }
 });
 
 test("Message Studio shows actionable playback error when audio engine is unavailable", async ({ page }) => {
-  const sqlitePath = messagesDbPath();
-  await fs.rm(sqlitePath, { force: true });
-  const failures = await openMessagesPage(page, sqlitePath, { speechAvailable: false });
+  const failures = await openMessagesPage(page, { speechAvailable: false });
 
   try {
     await addMessage(page, {
@@ -386,13 +367,10 @@ test("Message Studio shows actionable playback error when audio engine is unavai
     expect(failures.consoleErrors).toEqual([]);
   } finally {
     await closeMessagesRun(failures, page);
-    await fs.rm(sqlitePath, { force: true });
   }
 });
 
 test("Message Studio shows actionable playback error when selected TTS profile lacks the selected emotion", async ({ page }) => {
-  const sqlitePath = messagesDbPath();
-  await fs.rm(sqlitePath, { force: true });
   await page.route("**/api/messages/tts-profiles", async (route) => {
     if (route.request().method() !== "GET") {
       await route.continue();
@@ -417,7 +395,7 @@ test("Message Studio shows actionable playback error when selected TTS profile l
       }),
     });
   });
-  const failures = await openMessagesPage(page, sqlitePath);
+  const failures = await openMessagesPage(page);
 
   try {
     await addMessage(page, {
@@ -445,6 +423,5 @@ test("Message Studio shows actionable playback error when selected TTS profile l
   } finally {
     await page.unroute("**/api/messages/tts-profiles");
     await closeMessagesRun(failures, page);
-    await fs.rm(sqlitePath, { force: true });
   }
 });

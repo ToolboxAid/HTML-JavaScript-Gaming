@@ -6,7 +6,7 @@
 -- Owned tables: messages_categories, messages_emotion_profiles, messages_tts_profiles, messages_records, messages_segments
 
 -- DML status: Server-seed-owned.
--- Setup is performed through the Messages Local API / server-side SQLite service for this PR.
+-- Setup is performed through the Messages Local API / server-side Postgres service for this PR.
 -- Browser pages must not seed authoritative records.
 -- The server/API layer generates all keys and audit fields.
 -- This SQL file intentionally has no direct INSERT statements because direct SQL would bypass key/audit ownership.
