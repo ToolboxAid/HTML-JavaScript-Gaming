@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This gate prevents Team Alpha, Team Beta, Team Gamma, or Team OWNER from starting regular assigned work before the ProjectInstructions operating system is ready.
+This gate prevents Team Alfa, Team Bravo, Team Charlie, or Team OWNER from starting regular assigned work before the ProjectInstructions operating system is ready.
 
 ## Release Rule
 

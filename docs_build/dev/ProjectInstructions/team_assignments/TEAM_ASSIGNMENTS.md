@@ -1,12 +1,39 @@
 # TEAM_ASSIGNMENTS
 
+# Active Team Registry
+
+| Team | Assignment | Branch | PR | Status |
+|------|------------|--------|----|--------|
+
+Rules:
+- Registry is the authoritative active-work view.
+- Registry must match `TEAM_ASSIGNMENTS.md`.
+- Registry must be updated when assignments change.
+- Registry must be updated when branches are retired.
+- Registry must be updated when PRs merge.
+- Teams with no active work are omitted.
+
+A team is Active when:
+- it has an assigned backlog item
+- or it owns an active branch
+- or it owns an active draft/open PR
+
+A team is not listed in Active Team Registry when:
+- it has no assignment
+- it has no active branch
+- it has no active PR
+
+Result:
+If a team is missing from Active Team Registry:
+it is currently inactive.
+
 ## Assignment Status Legend
 
 - Available: team may pull one `[ ]` backlog item when explicitly instructed.
 - Active: team has one assignment in progress.
 - Blocked: team cannot pull work until blocker is cleared.
 
-## Team Alpha
+## Team Alfa
 
 Status: Available
 
@@ -14,7 +41,7 @@ Active assignment: none.
 
 Active branch: none.
 
-## Team Beta
+## Team Bravo
 
 Status: Available
 
@@ -22,7 +49,7 @@ Active assignment: none.
 
 Active branch: none.
 
-## Team Gamma
+## Team Charlie
 
 Status: Available
 

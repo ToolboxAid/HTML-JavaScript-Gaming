@@ -1,68 +1,68 @@
 # TEAM_START_COMMANDS
 
-## Start Team Alpha
+## Start Team Alfa
 
 Ready-to-copy command:
 
 ```text
-OWNER override approved: Start Team Alpha from the ProjectInstructions release gate.
+OWNER override approved: Start Team Alfa from the ProjectInstructions release gate.
 
 Read docs_build/dev/ProjectInstructions/README.txt first.
 Read docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md.
 Read docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
 
-Pull one [ ] item for Team Alpha from BACKLOG_MASTER.md.
-Stop if Team Alpha already has an active branch.
-Stop if Team Alpha already has an active assignment.
-Stop if no [ ] Team Alpha backlog item is available.
+Pull one [ ] item for Team Alfa from BACKLOG_MASTER.md.
+Stop if Team Alfa already has an active branch.
+Stop if Team Alfa already has an active assignment.
+Stop if no [ ] Team Alfa backlog item is available.
 
 Change the selected backlog item from [ ] to [.].
-Add the selected assignment under Team Alpha in TEAM_ASSIGNMENTS.md.
-Create one Team Alpha branch for the selected assignment.
+Add the selected assignment under Team Alfa in TEAM_ASSIGNMENTS.md.
+Create one Team Alfa branch for the selected assignment.
 Work only that assignment.
 ```
 
-## Start Team Beta
+## Start Team Bravo
 
 Ready-to-copy command:
 
 ```text
-OWNER override approved: Start Team Beta from the ProjectInstructions release gate.
+OWNER override approved: Start Team Bravo from the ProjectInstructions release gate.
 
 Read docs_build/dev/ProjectInstructions/README.txt first.
 Read docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md.
 Read docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
 
-Pull one [ ] item for Team Beta from BACKLOG_MASTER.md.
-Stop if Team Beta already has an active branch.
-Stop if Team Beta already has an active assignment.
-Stop if no [ ] Team Beta backlog item is available.
+Pull one [ ] item for Team Bravo from BACKLOG_MASTER.md.
+Stop if Team Bravo already has an active branch.
+Stop if Team Bravo already has an active assignment.
+Stop if no [ ] Team Bravo backlog item is available.
 
 Change the selected backlog item from [ ] to [.].
-Add the selected assignment under Team Beta in TEAM_ASSIGNMENTS.md.
-Create one Team Beta branch for the selected assignment.
+Add the selected assignment under Team Bravo in TEAM_ASSIGNMENTS.md.
+Create one Team Bravo branch for the selected assignment.
 Work only that assignment.
 ```
 
-## Start Team Gamma
+## Start Team Charlie
 
 Ready-to-copy command:
 
 ```text
-OWNER override approved: Start Team Gamma from the ProjectInstructions release gate.
+OWNER override approved: Start Team Charlie from the ProjectInstructions release gate.
 
 Read docs_build/dev/ProjectInstructions/README.txt first.
 Read docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md.
 Read docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
 
-Pull one [ ] item for Team Gamma from BACKLOG_MASTER.md.
-Stop if Team Gamma already has an active branch.
-Stop if Team Gamma already has an active assignment.
-Stop if no [ ] Team Gamma backlog item is available.
+Pull one [ ] item for Team Charlie from BACKLOG_MASTER.md.
+Stop if Team Charlie already has an active branch.
+Stop if Team Charlie already has an active assignment.
+Stop if no [ ] Team Charlie backlog item is available.
 
 Change the selected backlog item from [ ] to [.].
-Add the selected assignment under Team Gamma in TEAM_ASSIGNMENTS.md.
-Create one Team Gamma branch for the selected assignment.
+Add the selected assignment under Team Charlie in TEAM_ASSIGNMENTS.md.
+Create one Team Charlie branch for the selected assignment.
 Work only that assignment.
 ```
 
