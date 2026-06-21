@@ -12,9 +12,16 @@ import { createMessageStudioTtsServiceRegistry } from "./message-tts-service-reg
 
 const NEW_ROW_KEY = "__new__";
 const DEFAULT_TTS_PROFILE_KEY = "__default-balanced-tts__";
+const DEFAULT_TTS_EMOTION_SETTINGS = Object.freeze([
+  Object.freeze({ active: true, emotion: "calm", emotionLabel: "Calm", pitch: 1, rate: 1, ssmlLikePreset: "normal", volume: 1 }),
+  Object.freeze({ active: true, emotion: "urgent", emotionLabel: "Urgent", pitch: 1.08, rate: 1.15, ssmlLikePreset: "normal", volume: 1 }),
+  Object.freeze({ active: true, emotion: "whisper", emotionLabel: "Whisper", pitch: 0.95, rate: 0.9, ssmlLikePreset: "normal", volume: 0.55 }),
+  Object.freeze({ active: true, emotion: "angry", emotionLabel: "Angry", pitch: 0.98, rate: 1.1, ssmlLikePreset: "normal", volume: 1 }),
+]);
 const DEFAULT_TTS_PROFILE = Object.freeze({
   active: true,
   description: "Balanced local browser playback option until authored TTS profiles are available.",
+  emotionSettings: DEFAULT_TTS_EMOTION_SETTINGS,
   key: DEFAULT_TTS_PROFILE_KEY,
   language: "en-US",
   name: "Default Balanced TTS Profile",
@@ -264,6 +271,32 @@ function emotionProfileByKey(profileKey) {
   return state.emotionProfiles.find((profile) => profile.key === profileKey) || null;
 }
 
+function emotionSettingKey(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "neutral";
+}
+
+function selectedEmotionSettingForProfile(profile, emotionProfile) {
+  const settings = Array.isArray(profile?.emotionSettings)
+    ? profile.emotionSettings.filter((setting) => setting?.active !== false)
+    : [];
+  const selectedEmotionKey = emotionSettingKey(emotionProfile?.name);
+  const setting = settings.find((candidate) => (
+    emotionSettingKey(candidate.emotion) === selectedEmotionKey
+    || emotionSettingKey(candidate.emotionLabel) === selectedEmotionKey
+  ));
+  if (!setting) {
+    return {
+      message: `Selected TTS Profile "${profile?.name || "Unknown"}" does not include an Emotion Setting for "${emotionProfile?.name || "Unknown"}".`,
+      ok: false,
+    };
+  }
+  return { ok: true, setting };
+}
+
 function activeTtsProfileOptions() {
   const activeProfiles = state.ttsProfiles.filter((profile) => profile.active);
   return activeProfiles.length ? activeProfiles : [DEFAULT_TTS_PROFILE];
@@ -427,6 +460,10 @@ function speechTestReadiness() {
   }
   if (!target.emotionProfile) {
     return { message: "Selected item needs an Emotion before testing speech.", ok: false };
+  }
+  const emotionSetting = selectedEmotionSettingForProfile(profile, target.emotionProfile);
+  if (!emotionSetting.ok) {
+    return { message: emotionSetting.message, ok: false };
   }
   if (!String(target.text || "").trim()) {
     return { message: "Selected item needs message text before testing speech.", ok: false };
@@ -923,18 +960,23 @@ function speakTarget(service, target, profile) {
   if (!target.emotionProfile) {
     return visiblePlaybackError("Selected message or part needs an Emotion before playback.");
   }
+  const emotionSetting = selectedEmotionSettingForProfile(profile, target.emotionProfile);
+  if (!emotionSetting.ok) {
+    return visiblePlaybackError(emotionSetting.message);
+  }
   if (!String(target.text || "").trim()) {
     return visiblePlaybackError("Selected message or part needs text before playback.");
   }
   return ttsServiceRegistry.speak(service.key, {
     language: profile.language,
-    pitch: target.emotionProfile.pitch ?? profile.pitch ?? 1,
-    rate: target.emotionProfile.rate ?? profile.rate ?? 1,
+    pitch: emotionSetting.setting.pitch ?? profile.pitch ?? 1,
+    rate: emotionSetting.setting.rate ?? profile.rate ?? 1,
     speechItemId: target.id,
     speechItemName: target.name,
+    ssmlLikePreset: emotionSetting.setting.ssmlLikePreset || "normal",
     text: target.text,
     voice: profile.voiceName,
-    volume: target.emotionProfile.volume ?? profile.volume ?? 1,
+    volume: emotionSetting.setting.volume ?? profile.volume ?? 1,
   });
 }
 
