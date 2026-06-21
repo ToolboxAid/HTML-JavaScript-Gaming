@@ -7,6 +7,40 @@ import { startLocalApiServer } from "../src/dev-runtime/server/local-api-server.
 
 const RUNTIME_ENV_FILE = ".env";
 const NOT_CONFIGURED = "(not configured)";
+const PORT_NOT_CONFIGURED = "not configured";
+const SECTION_DIVIDER = "=========================================";
+const MASKED_ENV_VALUE = "********";
+const SECRET_ENV_KEY_PARTS = Object.freeze([
+  "PASSWORD",
+  "SECRET",
+  "TOKEN",
+  "KEY",
+  "SERVICE_ROLE",
+  "JWT",
+]);
+const DEFAULT_PORT_BY_PROTOCOL = Object.freeze({
+  "http:": "80",
+  "https:": "443",
+  "postgres:": "5432",
+  "postgresql:": "5432",
+});
+
+function parseRuntimeEnvLine(line) {
+  const trimmed = line.trim();
+  if (!trimmed || trimmed.startsWith("#") || !trimmed.includes("=")) {
+    return null;
+  }
+  const index = trimmed.indexOf("=");
+  const key = trimmed.slice(0, index).trim();
+  let value = trimmed.slice(index + 1).trim();
+  if (!key) {
+    return null;
+  }
+  if ((value.startsWith("\"") && value.endsWith("\"")) || (value.startsWith("'") && value.endsWith("'"))) {
+    value = value.slice(1, -1);
+  }
+  return { key, value };
+}
 
 function loadRuntimeEnv() {
   const envPath = path.resolve(process.cwd(), RUNTIME_ENV_FILE);
@@ -14,22 +48,32 @@ function loadRuntimeEnv() {
     return {
       loaded: false,
       loadedKeys: 0,
+      variables: [],
     };
   }
+  const envValuesBeforeLoad = new Map(
+    Object.keys(process.env)
+      .filter((key) => process.env[key] !== undefined)
+      .map((key) => [key, process.env[key]])
+  );
+  const variablesByKey = new Map();
   let loadedKeys = 0;
   readFileSync(envPath, "utf8").split(/\r?\n/).forEach((line) => {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith("#") || !trimmed.includes("=")) {
+    const parsed = parseRuntimeEnvLine(line);
+    if (!parsed) {
       return;
     }
-    const index = trimmed.indexOf("=");
-    const key = trimmed.slice(0, index).trim();
-    let value = trimmed.slice(index + 1).trim();
-    if (!key || process.env[key] !== undefined) {
-      return;
+    const { key, value } = parsed;
+    const wasAlreadySet = envValuesBeforeLoad.has(key);
+    if (!variablesByKey.has(key)) {
+      variablesByKey.set(key, {
+        applied: !wasAlreadySet,
+        key,
+        value: wasAlreadySet ? envValuesBeforeLoad.get(key) : value,
+      });
     }
-    if ((value.startsWith("\"") && value.endsWith("\"")) || (value.startsWith("'") && value.endsWith("'"))) {
-      value = value.slice(1, -1);
+    if (process.env[key] !== undefined) {
+      return;
     }
     process.env[key] = value;
     loadedKeys += 1;
@@ -37,6 +81,7 @@ function loadRuntimeEnv() {
   return {
     loaded: true,
     loadedKeys,
+    variables: Array.from(variablesByKey.values()).sort((left, right) => left.key.localeCompare(right.key)),
   };
 }
 
@@ -60,6 +105,82 @@ function connectionStatusLine(label, connection) {
   return `Configured ${label} connection: ${connection.ready ? "configured" : `missing ${connection.missingKeys.join(", ")}`}.`;
 }
 
+function shouldMaskEnvValue(key) {
+  const normalizedKey = String(key || "").toUpperCase();
+  return SECRET_ENV_KEY_PARTS.some((part) => normalizedKey.includes(part));
+}
+
+function redactUrlCredentials(value) {
+  const rawValue = String(value ?? "");
+  try {
+    const url = new URL(rawValue);
+    if (!url.username && !url.password) {
+      return rawValue;
+    }
+    if (url.username) {
+      url.username = MASKED_ENV_VALUE;
+    }
+    if (url.password) {
+      url.password = MASKED_ENV_VALUE;
+    }
+    return url.toString();
+  } catch {
+    return rawValue;
+  }
+}
+
+function formatEnvValue(key, value) {
+  if (shouldMaskEnvValue(key)) {
+    return MASKED_ENV_VALUE;
+  }
+  return redactUrlCredentials(value);
+}
+
+function formatEnvironmentVariableLogLines(runtimeEnv) {
+  if (!runtimeEnv.loaded) {
+    return [".env was not found for API runtime."];
+  }
+  return [
+    SECTION_DIVIDER,
+    "Environment Variables",
+    SECTION_DIVIDER,
+    ...(runtimeEnv.variables || [])
+      .slice()
+      .sort((left, right) => left.key.localeCompare(right.key))
+      .map(
+        ({ applied, key, value }) => `${applied ? "+" : "-"} ${key}=${formatEnvValue(key, value)}`
+      ),
+  ];
+}
+
+function portFromUrl(value) {
+  const trimmed = String(value || "").trim();
+  if (!trimmed) {
+    return PORT_NOT_CONFIGURED;
+  }
+  try {
+    const url = new URL(trimmed);
+    return url.port || DEFAULT_PORT_BY_PROTOCOL[url.protocol] || PORT_NOT_CONFIGURED;
+  } catch {
+    return PORT_NOT_CONFIGURED;
+  }
+}
+
+function formatRuntimePortLogLines({ env, localServer }) {
+  const configuredApiUrl = String(env.GAMEFOUNDRY_API_URL || "").trim() || defaultApiUrl(localServer.baseUrl);
+  return [
+    SECTION_DIVIDER,
+    "All Runtime Ports being used by Service",
+    SECTION_DIVIDER,
+    `live server port: ${portFromUrl(env.GAMEFOUNDRY_SITE_URL)}`,
+    `API server port: ${portFromUrl(localServer.baseUrl)}`,
+    `configured API URL port: ${portFromUrl(configuredApiUrl)}`,
+    `DB/Postgres port: ${portFromUrl(env.GAMEFOUNDRY_DATABASE_URL)}`,
+    `Supabase service port: ${portFromUrl(env.GAMEFOUNDRY_SUPABASE_URL)}`,
+    `Storage service port: ${portFromUrl(env.GAMEFOUNDRY_STORAGE_ENDPOINT)}`,
+  ];
+}
+
 export function formatStartupLogLines({
   accountConnection,
   configuredDatabaseSslMode,
@@ -73,9 +194,8 @@ export function formatStartupLogLines({
     `GameFoundry API runtime server running at ${localServer.baseUrl}`,
     `Configured site URL: ${configuredValue(env.GAMEFOUNDRY_SITE_URL)}`,
     `Configured API URL: ${String(env.GAMEFOUNDRY_API_URL || "").trim() || defaultApiUrl(localServer.baseUrl)}`,
-    runtimeEnv.loaded
-      ? `.env loaded for API runtime (${runtimeEnv.loadedKeys} key(s) applied).`
-      : ".env was not found for API runtime.",
+    ...formatEnvironmentVariableLogLines(runtimeEnv),
+    ...formatRuntimePortLogLines({ env, localServer }),
     connectionStatusLine("auth", accountConnection),
     connectionStatusLine("database", databaseConnection),
     `Database SSL mode: ${configuredDatabaseSslMode || `invalid (${databaseSslModeError})`}`,
