@@ -1,8 +1,5 @@
-﻿docs_build/dev/reports/PR_26171_GAMMA_024-local-api-sqlite-reference-cleanup-instruction-compliance-checklist.md
-docs_build/dev/reports/PR_26171_GAMMA_024-local-api-sqlite-reference-cleanup-manual-validation-notes.md
-docs_build/dev/reports/PR_26171_GAMMA_024-local-api-sqlite-reference-cleanup.md
+﻿docs_build/dev/reports/PR_26171_GAMMA_025-final-sqlite-runtime-inventory-instruction-compliance-checklist.md
+docs_build/dev/reports/PR_26171_GAMMA_025-final-sqlite-runtime-inventory-manual-validation-notes.md
+docs_build/dev/reports/PR_26171_GAMMA_025-final-sqlite-runtime-inventory.md
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/coverage_changed_js_guardrail.txt
-docs_build/dev/reports/playwright_v8_coverage_report.txt
-src/dev-runtime/server/local-api-router.mjs
