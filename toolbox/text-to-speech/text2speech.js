@@ -663,7 +663,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
     table.setAttribute("aria-label", "Emotion Settings");
     const thead = document.createElement("thead");
     const headerRow = document.createElement("tr");
-    ["Emotion", "Pitch", "Rate", "Volume", "Preset", "Status", "Actions"].forEach((label) => {
+    ["Emotion", "Pitch", "Rate", "Volume", "Delivery Preset", "Status", "Actions"].forEach((label) => {
       const header = document.createElement("th");
       header.scope = "col";
       header.textContent = label;
