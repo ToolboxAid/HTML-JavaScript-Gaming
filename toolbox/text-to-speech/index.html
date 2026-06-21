@@ -6,7 +6,7 @@
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Text To Speech - GameFoundryStudio</title>
-    <meta name="description" content="Functional browser Text To Speech tool using Theme V2 and the shared engine audio Text To Speech module.">
+    <meta name="description" content="Functional browser Text To Speech profile tool using Theme V2 and the shared engine audio Text To Speech module.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -18,80 +18,32 @@
             <div class="container">
                 <div class="kicker">Project Workspace / Audio</div>
                 <h1>Text To Speech</h1>
-                <p class="lede">Create named speech lines, shape browser voices, and preview spoken game text through the shared engine audio Text To Speech module.</p>
+                <p class="lede">Create reusable speech profiles, tune emotion settings, and preview spoken game text through the shared engine audio Text To Speech module.</p>
             </div>
         </section>
         <section class="section">
             <div class="container container--tool-wide">
-                <nav class="action-group" aria-label="Text To Speech JSON actions" data-tts-standalone-actions>
-                    <button class="btn" type="button" data-tts-import-json>Import JSON</button>
-                    <input type="file" accept="application/json,.json" hidden data-tts-import-json-input>
-                    <button class="btn" type="button" data-tts-copy-json>Copy JSON</button>
-                    <button class="btn" type="button" data-tts-export-json>Export JSON</button>
-                </nav>
                 <nav class="action-group" aria-label="Project Workspace actions" hidden data-tts-workspace-actions>
                     <button class="btn" type="button" data-tts-return-workspace>Return to Project Workspace</button>
                 </nav>
                 <div class="tool-workspace tool-workspace--wide">
                     <aside class="tool-column tool-group-audio">
                         <div class="tool-column-header">
-                            <h2>Speech Options</h2>
+                            <h2>Studio Setup</h2>
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Voice Filters</summary>
+                                <summary>Profile Ownership</summary>
                                 <div class="accordion-body content-stack">
-                                    <label for="ttsGenderSelect">Gender</label>
-                                    <select id="ttsGenderSelect" data-tts-gender-select></select>
-                                    <label for="ttsLanguageSelect">Language</label>
-                                    <select id="ttsLanguageSelect" data-tts-language-select></select>
-                                    <label for="ttsVoiceSelect">Voice</label>
-                                    <select id="ttsVoiceSelect" data-tts-voice-select></select>
-                                    <p class="field-hint" data-tts-voice-details>No browser voices loaded yet.</p>
+                                    <p>TTS Profiles own voice, language, gender, age, and availability.</p>
+                                    <p>Use inline Profile rows to add or edit voice filters.</p>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
-                                <summary>Presets</summary>
+                                <summary>Emotion Ownership</summary>
                                 <div class="accordion-body content-stack">
-                                    <label for="ttsVoiceAgeSelect">Voice Age</label>
-                                    <select id="ttsVoiceAgeSelect" data-tts-age-select></select>
-                                    <label for="ttsCharacterPresetSelect">Character Preset</label>
-                                    <select id="ttsCharacterPresetSelect" data-tts-character-preset-select></select>
-                                    <label for="ttsSsmlPresetSelect">SSML-like Preset</label>
-                                    <select id="ttsSsmlPresetSelect" data-tts-ssml-preset-select></select>
-                                </div>
-                            </details>
-                            <details class="vertical-accordion" open>
-                                <summary>Delivery</summary>
-                                <div class="accordion-body content-stack">
-                                    <div class="slider-value-row">
-                                        <label for="ttsVolume">Volume</label>
-                                        <input id="ttsVolume" type="range" data-tts-volume>
-                                        <output for="ttsVolume" class="slider-current-value" data-tts-volume-value>1</output>
-                                    </div>
-                                    <div class="slider-value-row">
-                                        <label for="ttsRate">Rate / Speed</label>
-                                        <input id="ttsRate" type="range" data-tts-rate>
-                                        <output for="ttsRate" class="slider-current-value" data-tts-rate-value>1</output>
-                                    </div>
-                                    <div class="slider-value-row">
-                                        <label for="ttsPitch">Pitch</label>
-                                        <input id="ttsPitch" type="range" data-tts-pitch>
-                                        <output for="ttsPitch" class="slider-current-value" data-tts-pitch-value>1</output>
-                                    </div>
-                                    <p class="field-hint">Voice Age and SSML-like presets shape rate, pitch, and volume. Manual slider changes are preserved until a new character preset is selected.</p>
-                                </div>
-                            </details>
-                            <details class="vertical-accordion" open>
-                                <summary>Named Sentence</summary>
-                                <div class="accordion-body content-stack">
-                                    <label for="ttsSpeechItemName">Name</label>
-                                    <input id="ttsSpeechItemName" type="text" autocomplete="off" data-tts-item-name>
-                                    <div class="action-group" aria-label="Named sentence actions">
-                                        <button class="btn" type="button" data-tts-add-item>Add</button>
-                                        <button class="btn" type="button" data-tts-duplicate-item>Duplicate</button>
-                                        <button class="btn" type="button" data-tts-delete-item>Delete</button>
-                                    </div>
+                                    <p>Emotion Settings own pitch, rate, volume, and preset values for the selected profile.</p>
+                                    <p>Message Studio selects a TTS Profile and Emotion for playback.</p>
                                 </div>
                             </details>
                         </div>
@@ -99,7 +51,6 @@
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="text-to-speech" data-tool-icon-src="assets/theme-v2/images/badges/text-to-speech.png" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
                     <section class="tool-center-panel">
                         <div class="content-cluster content-cluster--nowrap" aria-label="Text To Speech summary" data-tts-summary>
-                            <span class="pill">TTS Studio</span>
                             <article class="mini-stat mini-stat--inline"><span>Characters</span> <strong data-tts-text-count>0</strong></article>
                             <article class="mini-stat mini-stat--inline"><span>TTS Profiles</span> <strong data-tts-profile-count>0</strong></article>
                             <article class="mini-stat mini-stat--inline"><span>Emotion Settings</span> <strong data-tts-emotion-count>0</strong></article>
@@ -153,27 +104,12 @@
                                 <div class="status" role="status" data-tts-status>Loading browser Text To Speech.</div>
                             </div>
                         </article>
-                        <article class="card">
-                            <div class="card-body content-stack">
-                                <div>
-                                    <div class="kicker">Named Sentences</div>
-                                    <h3>Queue</h3>
-                                </div>
-                                <div role="listbox" aria-label="Named Sentences" data-tts-queue-list></div>
-                            </div>
-                        </article>
                     </section>
                     <aside class="tool-column tool-group-audio">
                         <div class="tool-column-header">
-                            <h2>Output</h2>
+                            <h2>Status</h2>
                         </div>
                         <div class="accordion-stack">
-                            <details class="vertical-accordion" open>
-                                <summary>Output Summary</summary>
-                                <div class="accordion-body content-stack">
-                                    <pre data-tts-output-summary>[]</pre>
-                                </div>
-                            </details>
                             <details class="vertical-accordion" open>
                                 <summary>Engine Status</summary>
                                 <div class="accordion-body content-stack">

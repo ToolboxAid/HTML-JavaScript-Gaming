@@ -221,7 +221,7 @@ function createMessageAddControlRow() {
 }
 
 function createSegmentAddControlRow() {
-  const row = tableActionRow(6, createButton("Add Part", "messagesSegmentAddRow", state.selectedMessageKey));
+  const row = tableActionRow(5, createButton("Add Part", "messagesSegmentAddRow", state.selectedMessageKey));
   row.dataset.messagesSegmentAddControlRow = state.selectedMessageKey;
   return row;
 }
@@ -514,7 +514,7 @@ function createMessageSegmentTable() {
   table.setAttribute("aria-label", "Message parts");
   const thead = document.createElement("thead");
   const headerRow = document.createElement("tr");
-  ["Order", "Text", "Emotion", "TTS Profile", "Status", "Actions"].forEach((label) => {
+  ["Text", "Emotion", "TTS Profile", "Status", "Actions"].forEach((label) => {
     const header = document.createElement("th");
     header.scope = "col";
     header.textContent = label;
@@ -526,7 +526,7 @@ function createMessageSegmentTable() {
 
   const segments = selectedMessageSegments();
   if (!segments.length && state.editingSegmentKey !== NEW_ROW_KEY) {
-    tbody.append(tableMessage(6, "No message parts saved for this message."));
+    tbody.append(tableMessage(5, "No message parts saved for this message."));
   }
 
   segments.forEach((segment, index) => {
@@ -555,7 +555,6 @@ function createMessageSegmentTable() {
       segment.key,
     ));
     row.append(
-      createCell(String(segment.displayOrder)),
       createCell(segment.segmentText),
       createCell(segment.emotionProfileName || "Unknown"),
       ttsCell,
@@ -581,9 +580,7 @@ function createSegmentEditRow(segment = null) {
   const key = segment?.key || NEW_ROW_KEY;
   const row = document.createElement("tr");
   row.dataset.messagesSegmentEditor = key;
-
-  const orderCell = document.createElement("td");
-  orderCell.append(createNumberInput(segment?.displayOrder || nextSegmentOrder(), "segmentOrder", { min: 1, step: 1 }));
+  row.dataset.messagesSegmentOrder = String(segment?.displayOrder || nextSegmentOrder());
 
   const textCell = document.createElement("td");
   textCell.append(createTextarea(segment?.segmentText || "", "segmentText", 3));
@@ -607,7 +604,7 @@ function createSegmentEditRow(segment = null) {
     createButton("Cancel", "messagesSegmentCancel", key),
   ));
 
-  row.append(orderCell, textCell, emotionCell, ttsCell, statusCell, actions);
+  row.append(textCell, emotionCell, ttsCell, statusCell, actions);
   return row;
 }
 
@@ -728,7 +725,7 @@ function segmentValues(key) {
   const root = elements.table?.querySelector(`[data-messages-segment-editor="${key}"]`);
   return {
     active: editorChecked(root, "[data-segment-active]"),
-    displayOrder: editorValue(root, "[data-segment-order]"),
+    displayOrder: editorValue(root, "[data-segment-order]") || root?.dataset.messagesSegmentOrder || String(nextSegmentOrder()),
     emotionProfileKey: editorValue(root, "[data-segment-emotion]"),
     messageKey: state.selectedMessageKey,
     segmentText: editorValue(root, "[data-segment-text]"),
@@ -797,11 +794,13 @@ async function commitMessage(key) {
       ? createMessage(values)
       : updateMessage(key, values);
     state.editingMessageKey = "";
-    state.selectedMessageKey = result.message.key;
     if (key === NEW_ROW_KEY) {
+      state.selectedMessageKey = "";
       state.selectedSegmentKey = "";
+    } else {
+      state.selectedMessageKey = result.message.key;
     }
-    await reloadAfterChange(result.message.key);
+    await reloadAfterChange(state.selectedMessageKey, state.selectedSegmentKey);
     setText(elements.log, `Updated row ${result.message.name}.`);
   } catch (error) {
     showValidation([error instanceof Error ? error.message : String(error || "Message row update failed.")]);
