@@ -1,29 +1,27 @@
-diff --git a/docs_build/dev/reports/PR_26171_GAMMA_026-sqlite-test-reference-cleanup-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26171_GAMMA_026-sqlite-test-reference-cleanup-instruction-compliance-checklist.md
+diff --git a/docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-instruction-compliance-checklist.md
 new file mode 100644
-index 000000000..9d7242bb3
+index 000000000..a07705200
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_GAMMA_026-sqlite-test-reference-cleanup-instruction-compliance-checklist.md
-@@ -0,0 +1,30 @@
-+# PR_26171_GAMMA_026 Instruction Compliance Checklist
++++ b/docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-instruction-compliance-checklist.md
+@@ -0,0 +1,28 @@
++# PR_26171_GAMMA_027 Instruction Compliance Checklist
 +
 +## Start Gate
 +
 +- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
 +- PASS: Read `docs_build/dev/PROJECT_MULTI_PC.txt`.
 +- PASS: PR name includes TEAM token `GAMMA`.
-+- PASS: Branch name mirrors TEAM token: `pr/26171-GAMMA-026-sqlite-test-reference-cleanup`.
++- PASS: Branch name mirrors TEAM token: `pr/26171-GAMMA-027-sqlite-doc-reference-cleanup`.
 +- PASS: Scope is diagnostics/cleanup and belongs to Team Gamma.
-+- PASS: Started from fresh `main`.
++- PASS: Started from fresh `main` after PR 026 merged.
 +- PASS: Repository was clean before branch creation.
 +
 +## Scope Guard
 +
 +- PASS: One PR purpose only.
-+- PASS: Updated only scoped test references and required reports.
-+- PASS: Preserved negative assertions that ensure SQLite is not exposed.
-+- PASS: Preserved the explicit Game Journey legacy SQLite guard.
-+- PASS: Did not touch runtime code.
-+- PASS: Did not touch archive reports.
++- PASS: Cleaned active docs/seed wording only.
++- PASS: Preserved `PROJECT_INSTRUCTIONS.md` SQLite deprecation rules.
++- PASS: Did not rewrite historical PR/report archives.
 +- PASS: Did not run samples.
 +
 +## Completion Gate
@@ -33,178 +31,108 @@ index 000000000..9d7242bb3
 +- PASS: Instruction compliance checklist exists.
 +- PASS: `docs_build/dev/reports/codex_review.diff` exists.
 +- PASS: `docs_build/dev/reports/codex_changed_files.txt` exists.
-+- PASS: Repo-structured ZIP path is documented: `tmp/PR_26171_GAMMA_026-sqlite-test-reference-cleanup_delta.zip`.
-diff --git a/docs_build/dev/reports/PR_26171_GAMMA_026-sqlite-test-reference-cleanup-manual-validation-notes.md b/docs_build/dev/reports/PR_26171_GAMMA_026-sqlite-test-reference-cleanup-manual-validation-notes.md
++- PASS: Repo-structured ZIP path is documented: `tmp/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup_delta.zip`.
+diff --git a/docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-manual-validation-notes.md b/docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-manual-validation-notes.md
 new file mode 100644
-index 000000000..66684071a
+index 000000000..415d83d27
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_GAMMA_026-sqlite-test-reference-cleanup-manual-validation-notes.md
-@@ -0,0 +1,19 @@
-+# PR_26171_GAMMA_026 Manual Validation Notes
++++ b/docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-manual-validation-notes.md
+@@ -0,0 +1,17 @@
++# PR_26171_GAMMA_027 Manual Validation Notes
 +
-+Manual validation was limited to scoped test reference cleanup.
++Manual validation focused on active docs/seed wording.
 +
 +## Notes
 +
-+- Confirmed PR 026 branch was created from fresh `main` after PR 025 merged.
-+- Confirmed only test files and required report artifacts were changed.
-+- Confirmed neutral temporary Local DB state filenames now use `.local-db-state`.
-+- Confirmed Admin System Health negative assertions still check that SQLite is not exposed.
-+- Confirmed Game Journey legacy SQLite guard coverage remains in place.
-+- Confirmed no runtime files were modified.
-+- Confirmed no archive reports were modified.
++- Confirmed PR 027 branch was created from fresh `main` after PR 026 merged.
++- Confirmed `PROJECT_INSTRUCTIONS.md` deprecation rules were preserved.
++- Confirmed historical report and PR docs were not modified.
++- Confirmed the only active seed wording change was the Local DB session-mode description.
++- Confirmed remaining SQLite references in active paths are governance, validation guards, negative tests, or legacy data-preservation guard text.
 +
 +## Skipped
 +
-+- Playwright was skipped because the touched lines are test-only path literals and do not change browser behavior.
++- Playwright was skipped because no UI behavior changed.
 +- Samples were skipped by request.
-+- Broad test suite was skipped because this cleanup is limited to test reference text.
-diff --git a/docs_build/dev/reports/PR_26171_GAMMA_026-sqlite-test-reference-cleanup.md b/docs_build/dev/reports/PR_26171_GAMMA_026-sqlite-test-reference-cleanup.md
++- Broad tests were skipped because this is a wording-only cleanup.
+diff --git a/docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup.md b/docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup.md
 new file mode 100644
-index 000000000..4f4d64d59
+index 000000000..ecb1a233d
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_GAMMA_026-sqlite-test-reference-cleanup.md
-@@ -0,0 +1,51 @@
-+# PR_26171_GAMMA_026-sqlite-test-reference-cleanup
++++ b/docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup.md
+@@ -0,0 +1,43 @@
++# PR_26171_GAMMA_027-sqlite-doc-reference-cleanup
 +
 +TEAM ownership: GAMMA.
 +
 +## Scope
 +
-+Update remaining test references that still used temporary `.sqlite` names where the test no longer validates SQLite behavior.
++Clean active docs/seed wording that implied SQLite is still an active persistence target.
 +
 +## Changes
 +
-+- Updated neutral Local DB temp state filenames from `.sqlite` to `.local-db-state` in:
-+  - `tests/dev-runtime/DbSeedIntegrity.test.mjs`
-+  - `tests/playwright/tools/AdminDbViewer.spec.mjs`
-+  - `tests/playwright/tools/BrowserApiUrlConfig.spec.mjs`
-+  - `tests/playwright/tools/GameJourneyTool.spec.mjs`
-+  - `tests/playwright/tools/LoginSessionMode.spec.mjs`
-+- Preserved negative assertions that ensure SQLite is not exposed:
-+  - `tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`
-+- Preserved explicit legacy SQLite behavior coverage:
-+  - `tests/playwright/tools/GameJourneyTool.spec.mjs` legacy data guard test.
-+- Did not modify runtime code.
-+- Did not touch archive reports.
++- Updated `src/dev-runtime/persistence/mock-db-store.js` session-mode description from SQLite-backed wording to neutral Local DB adapter wording.
++- Preserved `PROJECT_INSTRUCTIONS.md` SQLite deprecation rules.
++- Did not rewrite historical PR/report archives.
++- Did not remove governance, validation guard, negative test, or legacy data-preservation references.
 +
 +## Validation
 +
 +Passed:
 +- `git diff --check`
-+- `node --check tests/dev-runtime/DbSeedIntegrity.test.mjs`
-+- `node --check tests/playwright/tools/LoginSessionMode.spec.mjs`
-+- `node --check tests/playwright/tools/BrowserApiUrlConfig.spec.mjs`
-+- `node --check tests/playwright/tools/AdminDbViewer.spec.mjs`
-+- `node --check tests/playwright/tools/GameJourneyTool.spec.mjs`
-+- Targeted text check confirmed primary touched Local DB temp names no longer use `.sqlite`.
-+- Targeted text check confirmed remaining test SQLite references are only the Admin health negative assertions and the Game Journey legacy SQLite data guard.
++- `node --check src/dev-runtime/persistence/mock-db-store.js`
++- Targeted text check confirmed no active docs/seed wording still says `SQLite-backed`, `SQLite persistence`, `SQLite service`, or `backed by server SQLite storage`.
++- Scoped active-source search confirmed remaining non-archive SQLite references are limited to:
++  - governance rules in `PROJECT_INSTRUCTIONS.md`
++  - validation guard patterns in `scripts/validate-browser-env-agnostic.mjs`
++  - negative test assertions that SQLite is not exposed
++  - Game Journey legacy SQLite data-preservation guard
 +
 +Skipped:
-+- Playwright: skipped because the changes are filename suffix cleanup only and no browser/runtime behavior changed.
-+- Samples: skipped by request and no sample files changed.
-+- Archive/history cleanup: explicitly out of scope.
++- Playwright: no UI/runtime behavior changed.
++- Samples: skipped by request.
++- Historical reports and PR docs: explicitly out of scope.
 +
 +## Reports
 +
 +- `docs_build/dev/reports/codex_review.diff`
 +- `docs_build/dev/reports/codex_changed_files.txt`
-+- `docs_build/dev/reports/PR_26171_GAMMA_026-sqlite-test-reference-cleanup.md`
-+- `docs_build/dev/reports/PR_26171_GAMMA_026-sqlite-test-reference-cleanup-manual-validation-notes.md`
-+- `docs_build/dev/reports/PR_26171_GAMMA_026-sqlite-test-reference-cleanup-instruction-compliance-checklist.md`
++- `docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup.md`
++- `docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-manual-validation-notes.md`
++- `docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-instruction-compliance-checklist.md`
 +
 +## ZIP
 +
-+`tmp/PR_26171_GAMMA_026-sqlite-test-reference-cleanup_delta.zip`
++`tmp/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup_delta.zip`
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 82cdb2152..4e23ae82e 100644
+index 4e23ae82e..5ebd4f6a7 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,5 +1,10 @@
--﻿docs_build/dev/reports/PR_26171_GAMMA_025-final-sqlite-runtime-inventory-instruction-compliance-checklist.md
--docs_build/dev/reports/PR_26171_GAMMA_025-final-sqlite-runtime-inventory-manual-validation-notes.md
--docs_build/dev/reports/PR_26171_GAMMA_025-final-sqlite-runtime-inventory.md
-+﻿docs_build/dev/reports/PR_26171_GAMMA_026-sqlite-test-reference-cleanup-instruction-compliance-checklist.md
-+docs_build/dev/reports/PR_26171_GAMMA_026-sqlite-test-reference-cleanup-manual-validation-notes.md
-+docs_build/dev/reports/PR_26171_GAMMA_026-sqlite-test-reference-cleanup.md
+@@ -1,10 +1,6 @@
+-﻿docs_build/dev/reports/PR_26171_GAMMA_026-sqlite-test-reference-cleanup-instruction-compliance-checklist.md
+-docs_build/dev/reports/PR_26171_GAMMA_026-sqlite-test-reference-cleanup-manual-validation-notes.md
+-docs_build/dev/reports/PR_26171_GAMMA_026-sqlite-test-reference-cleanup.md
++docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-instruction-compliance-checklist.md
++docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-manual-validation-notes.md
++docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup.md
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
-+tests/dev-runtime/DbSeedIntegrity.test.mjs
-+tests/playwright/tools/AdminDbViewer.spec.mjs
-+tests/playwright/tools/BrowserApiUrlConfig.spec.mjs
-+tests/playwright/tools/GameJourneyTool.spec.mjs
-+tests/playwright/tools/LoginSessionMode.spec.mjs
-diff --git a/tests/dev-runtime/DbSeedIntegrity.test.mjs b/tests/dev-runtime/DbSeedIntegrity.test.mjs
-index 2f16458c8..873dc1566 100644
---- a/tests/dev-runtime/DbSeedIntegrity.test.mjs
-+++ b/tests/dev-runtime/DbSeedIntegrity.test.mjs
-@@ -145,7 +145,7 @@ async function replaceSampleLabel(baseUrl, sampleKey, sampleLabel) {
-
- test("server Local DB seed includes runtime timestamps, read-only guest packages, and unique user-owned samples", async () => {
-   const previousLocalDbPath = process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
--  const localDbPath = path.join(process.cwd(), "tmp", "local-db", `db-seed-integrity-${process.pid}.sqlite`);
-+  const localDbPath = path.join(process.cwd(), "tmp", "local-db", `db-seed-integrity-${process.pid}.local-db-state`);
-   process.env.GAMEFOUNDRY_LOCAL_DB_PATH = localDbPath;
-   const server = await startApiServer();
-   try {
-@@ -190,7 +190,7 @@ test("server Local DB seed includes runtime timestamps, read-only guest packages
-
- test("server reseed targets Local DB and rejects retired Local Mem mode", async () => {
-   const previousLocalDbPath = process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
--  const localDbPath = path.join(process.cwd(), "tmp", "local-db", `db-reseed-integrity-${process.pid}.sqlite`);
-+  const localDbPath = path.join(process.cwd(), "tmp", "local-db", `db-reseed-integrity-${process.pid}.local-db-state`);
-   process.env.GAMEFOUNDRY_LOCAL_DB_PATH = localDbPath;
-   const server = await startApiServer();
-   try {
-diff --git a/tests/playwright/tools/AdminDbViewer.spec.mjs b/tests/playwright/tools/AdminDbViewer.spec.mjs
-index d4d9eb713..59acfef4c 100644
---- a/tests/playwright/tools/AdminDbViewer.spec.mjs
-+++ b/tests/playwright/tools/AdminDbViewer.spec.mjs
-@@ -77,7 +77,7 @@ test.afterAll(async () => {
-
- function nextLocalDbStoragePath() {
-   localDbRunId += 1;
--  return path.join(process.cwd(), "tmp", "local-db", `admin-db-viewer-${process.pid}-${localDbRunId}.sqlite`);
-+  return path.join(process.cwd(), "tmp", "local-db", `admin-db-viewer-${process.pid}-${localDbRunId}.local-db-state`);
- }
-
- async function withSupabaseEnv(baseUrl, callback) {
-diff --git a/tests/playwright/tools/BrowserApiUrlConfig.spec.mjs b/tests/playwright/tools/BrowserApiUrlConfig.spec.mjs
-index 16bc4fc2f..db3162346 100644
---- a/tests/playwright/tools/BrowserApiUrlConfig.spec.mjs
-+++ b/tests/playwright/tools/BrowserApiUrlConfig.spec.mjs
-@@ -21,7 +21,7 @@ let localDbRunId = 0;
-
- function nextLocalDbStoragePath() {
-   localDbRunId += 1;
--  return path.join(process.cwd(), "tmp", "local-db", `browser-api-url-config-${process.pid}-${localDbRunId}.sqlite`);
-+  return path.join(process.cwd(), "tmp", "local-db", `browser-api-url-config-${process.pid}-${localDbRunId}.local-db-state`);
- }
-
- function contentTypeForPath(filePath) {
-diff --git a/tests/playwright/tools/GameJourneyTool.spec.mjs b/tests/playwright/tools/GameJourneyTool.spec.mjs
-index 2e3896550..390d1cc89 100644
---- a/tests/playwright/tools/GameJourneyTool.spec.mjs
-+++ b/tests/playwright/tools/GameJourneyTool.spec.mjs
-@@ -242,7 +242,7 @@ test("Game Journey exposes static tool ownership areas without automatic counts"
-
- test("Game Journey progress dashboard summarizes completion metrics", async ({ page }) => {
-   const previousLocalDbPath = process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
--  const localDbPath = path.join(process.cwd(), "tmp", "local-db", `game-journey-targets-${process.pid}-${Date.now()}.sqlite`);
-+  const localDbPath = path.join(process.cwd(), "tmp", "local-db", `game-journey-targets-${process.pid}-${Date.now()}.local-db-state`);
-   process.env.GAMEFOUNDRY_LOCAL_DB_PATH = localDbPath;
-   const gameJourneyCompletionMetricsPostgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
-   const server = await startRepoServer({
-diff --git a/tests/playwright/tools/LoginSessionMode.spec.mjs b/tests/playwright/tools/LoginSessionMode.spec.mjs
-index fd73dcdc1..cd510184c 100644
---- a/tests/playwright/tools/LoginSessionMode.spec.mjs
-+++ b/tests/playwright/tools/LoginSessionMode.spec.mjs
-@@ -53,7 +53,7 @@ const UAT_PROD_ADMIN_LABELS = [
-
- function nextLocalDbStoragePath() {
-   localDbRunId += 1;
--  return path.join(process.cwd(), "tmp", "local-db", `login-session-mode-${process.pid}-${localDbRunId}.sqlite`);
-+  return path.join(process.cwd(), "tmp", "local-db", `login-session-mode-${process.pid}-${localDbRunId}.local-db-state`);
- }
-
- async function withSupabaseEnv(nextEnv, callback) {
+-tests/dev-runtime/DbSeedIntegrity.test.mjs
+-tests/playwright/tools/AdminDbViewer.spec.mjs
+-tests/playwright/tools/BrowserApiUrlConfig.spec.mjs
+-tests/playwright/tools/GameJourneyTool.spec.mjs
+-tests/playwright/tools/LoginSessionMode.spec.mjs
++src/dev-runtime/persistence/mock-db-store.js
+diff --git a/src/dev-runtime/persistence/mock-db-store.js b/src/dev-runtime/persistence/mock-db-store.js
+index 2305910bc..c98c915b5 100644
+--- a/src/dev-runtime/persistence/mock-db-store.js
++++ b/src/dev-runtime/persistence/mock-db-store.js
+@@ -23,7 +23,7 @@ export const MOCK_DB_SESSION_MODES = Object.freeze([
+     adapterId: "local-db",
+     adapterName: "LocalDbAdapter",
+     configured: true,
+-    description: "Uses LocalDbAdapter backed by server SQLite storage.",
++    description: "Uses the Local DB adapter behind the server API boundary.",
+     environment: "Local DB",
+     id: "local-db",
+     label: "Local DB",

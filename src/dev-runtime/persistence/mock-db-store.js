@@ -23,7 +23,7 @@ export const MOCK_DB_SESSION_MODES = Object.freeze([
     adapterId: "local-db",
     adapterName: "LocalDbAdapter",
     configured: true,
-    description: "Uses LocalDbAdapter backed by server SQLite storage.",
+    description: "Uses the Local DB adapter behind the server API boundary.",
     environment: "Local DB",
     id: "local-db",
     label: "Local DB",
