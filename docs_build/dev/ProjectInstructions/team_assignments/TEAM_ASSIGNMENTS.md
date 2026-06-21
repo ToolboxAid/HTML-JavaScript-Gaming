@@ -1,5 +1,33 @@
 # TEAM_ASSIGNMENTS
 
+# Active Team Registry
+
+| Team | Assignment | Branch | PR | Status |
+|--------|--------|--------|--------|--------|
+| Team OWNER | Active Team Registry | pr/26172-OWNER-024-active-team-registry | PR_26172_OWNER_024-active-team-registry | Active |
+
+Rules:
+- Registry is the authoritative active-work view.
+- Registry must match `TEAM_ASSIGNMENTS.md`.
+- Registry must be updated when assignments change.
+- Registry must be updated when branches are retired.
+- Registry must be updated when PRs merge.
+- Teams with no active work are omitted.
+
+A team is Active when:
+- it has an assigned backlog item
+- or it owns an active branch
+- or it owns an active draft/open PR
+
+A team is not listed in Active Team Registry when:
+- it has no assignment
+- it has no active branch
+- it has no active PR
+
+Result:
+If a team is missing from Active Team Registry:
+it is currently inactive.
+
 ## Assignment Status Legend
 
 - Available: team may pull one `[ ]` backlog item when explicitly instructed.
@@ -32,11 +60,11 @@ Active branch: none.
 
 ## Team OWNER
 
-Status: Available
+Status: Active
 
-Active assignment: none.
+Active assignment: Active Team Registry.
 
-Active branch: none.
+Active branch: pr/26172-OWNER-024-active-team-registry.
 
 ## Team Name Registry
 
