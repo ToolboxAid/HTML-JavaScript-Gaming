@@ -1,8 +1,7 @@
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table-manual-validation-notes.md
-docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table-validation-report.md
-docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table.md
-tests/playwright/tools/TextToSpeechFunctional.spec.mjs
-toolbox/text-to-speech/index.html
-toolbox/text-to-speech/text2speech.js
+docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion-manual-validation-notes.md
+docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion-validation-report.md
+docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion.md
+tests/playwright/tools/MessagesTool.spec.mjs
+toolbox/messages/messages.js

@@ -1188,7 +1188,7 @@ elements.table?.addEventListener("click", async (event) => {
     render();
     return;
   }
-  if (messageNameCell && row) {
+  if ((messageNameCell || row) && row) {
     state.selectedMessageKey = state.selectedMessageKey === row.dataset.messagesRow ? "" : row.dataset.messagesRow;
     state.selectedSegmentKey = "";
     state.editingSegmentKey = "";

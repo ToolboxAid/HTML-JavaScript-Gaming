@@ -151,7 +151,7 @@ async function addPart(page, values) {
 }
 
 async function openMessageParts(page, messageName) {
-  await page.locator("[data-messages-name-cell]").filter({ hasText: messageName }).click();
+  await page.locator("[data-messages-row]").filter({ hasText: messageName }).locator("td").nth(1).click();
 }
 
 test("Message Studio renders Messages with child Message Parts and plays ordered parts", async ({ page }) => {
@@ -198,7 +198,11 @@ test("Message Studio renders Messages with child Message Parts and plays ordered
     const messageRow = page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" });
     const messageNameCell = page.locator("[data-messages-name-cell]").filter({ hasText: "Bat Encounter" });
     await expect(page.locator("[data-messages-segment-host]")).toHaveCount(0);
+    await expect(messageNameCell).toHaveAttribute("aria-expanded", "false");
     await messageRow.locator("td").nth(3).click();
+    await expect(page.locator("[data-messages-segment-host]")).toBeVisible();
+    await expect(messageNameCell).toHaveAttribute("aria-expanded", "true");
+    await messageRow.locator("td").nth(2).click();
     await expect(page.locator("[data-messages-segment-host]")).toHaveCount(0);
     await messageNameCell.click();
     await expect(page.locator("[data-messages-segment-host]")).toBeVisible();
