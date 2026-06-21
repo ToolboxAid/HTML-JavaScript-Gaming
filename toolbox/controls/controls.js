@@ -642,7 +642,7 @@ function showWorkspaceReturnIfNeeded() {
   const params = new URLSearchParams(window.location.search);
   const returnTo = normalizeText(params.get("returnTo"));
   const shouldShow = params.has("workspace") || params.has("project") || params.get("source") === "workspace" || params.has("workspaceLaunch") || returnTo;
-  if (returnTo.startsWith("/toolbox/game-workspace/")) {
+  if (returnTo.startsWith("/toolbox/game-hub/")) {
     elements.returnWorkspace.href = returnTo;
   }
   elements.returnWorkspace.hidden = !shouldShow;

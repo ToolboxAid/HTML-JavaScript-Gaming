@@ -17,7 +17,22 @@ Exercised tool entry points detected:
 (78%) Theme V2 Shared JS - exercised 4 runtime JS files
 
 Changed runtime JS files covered:
+(0%) assets/theme-v2/js/account-achievements.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) toolbox/controls/controls.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) toolbox/game-hub/game-hub-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) toolbox/game-hub/game-hub.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) toolbox/game-journey/game-journey.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) toolbox/idea-board/index.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) toolbox/messages/messages.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) toolbox/text-to-speech/text2speech.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) toolbox/tools-page-accordions.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 67/90
 (90%) assets/theme-v2/js/admin-system-health.js - executed lines 227/227; executed functions 28/31
 
 Files with executed line/function counts where available:
@@ -32,9 +47,58 @@ Files with executed line/function counts where available:
 (100%) src/api/admin-system-health-api-client.js - executed lines 19/19; executed functions 3/3
 
 Uncovered or low-coverage changed JS files:
+(0%) assets/theme-v2/js/account-achievements.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) toolbox/controls/controls.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) toolbox/game-hub/game-hub-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) toolbox/game-hub/game-hub.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) toolbox/game-journey/game-journey.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) toolbox/idea-board/index.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) toolbox/messages/messages.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) toolbox/text-to-speech/text2speech.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) toolbox/tools-page-accordions.js - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
+(0%) assets/theme-v2/js/account-achievements.js - changed JS file not collected as browser runtime coverage
+(0%) scripts/run-targeted-test-lanes.mjs - changed JS file not collected as browser runtime coverage
+(0%) scripts/start-local-api-server.mjs - changed JS file not collected as browser runtime coverage
+(0%) scripts/validate-browser-env-agnostic.mjs - changed JS file not collected as browser runtime coverage
+(0%) scripts/validate-local-postgres-runtime.mjs - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/seed/server-seed-loader.mjs - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
+(0%) src/shared/toolbox/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
+(0%) tests/dev-runtime/DevRuntimeBoundary.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/dev-runtime/LocalApiStartupLogging.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/dev-runtime/ProductDataProviderContractHardening.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/dev-runtime/SupabaseProductDataCutover.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/account/AchievementsPage.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/GameHubMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/GameJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/IdeaBoardTableNotes.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/MessagesTool.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/TextToSpeechFunctional.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/ToolImageRegistry.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/ToolNavigationPrevNext.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) toolbox/controls/controls.js - changed JS file not collected as browser runtime coverage
+(0%) toolbox/game-hub/game-hub-api-client.js - changed JS file not collected as browser runtime coverage
+(0%) toolbox/game-hub/game-hub.js - changed JS file not collected as browser runtime coverage
+(0%) toolbox/game-journey/game-journey.js - changed JS file not collected as browser runtime coverage
+(0%) toolbox/idea-board/index.js - changed JS file not collected as browser runtime coverage
+(0%) toolbox/messages/messages.js - changed JS file not collected as browser runtime coverage
+(0%) toolbox/text-to-speech/text2speech.js - changed JS file not collected as browser runtime coverage
+(0%) toolbox/tools-page-accordions.js - changed JS file not collected as browser runtime coverage
+(74%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
 (90%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage

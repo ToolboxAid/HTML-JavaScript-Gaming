@@ -649,7 +649,7 @@ function humanToolStateSampleRows(generateKey) {
     { displayName: "User 1", toolKey: "game-journey", userKey: SEED_DB_KEYS.users.user1 },
     { displayName: "User 2", toolKey: "palette", userKey: SEED_DB_KEYS.users.user2 },
     { displayName: "User 3", toolKey: "asset", userKey: SEED_DB_KEYS.users.user3 },
-    { displayName: "DavidQ", toolKey: "game-workspace", userKey: SEED_DB_KEYS.users.admin },
+    { displayName: "DavidQ", toolKey: "game-hub", userKey: SEED_DB_KEYS.users.admin },
   ];
   return users.map((user, index) => {
     const tool = toolByKey.get(user.toolKey) || tools[index] || {

@@ -1,5 +1,5 @@
 -- Game Foundry Studio DEV database DML / seed review
--- Group: Game Workspace
+-- Group: Game Hub
 -- Ownership: docs_build/database/dml/game-workspace.sql
 -- Runtime setup/seed operations for this group must run through server-side APIs.
 -- Temporary scope: DEV/review artifact only until Admin Site Setup/server seed APIs fully own grouped setup.

@@ -7,7 +7,7 @@ const buildRows = document.querySelector("[data-achievements-build-rows]");
 const buildStatus = document.querySelector("[data-achievements-build-status]");
 const createdCount = document.querySelector("[data-achievements-build-created-count]");
 const readyCount = document.querySelector("[data-achievements-build-ready-count]");
-const repository = createServerRepositoryClient("game-workspace");
+const repository = createServerRepositoryClient("game-hub");
 
 function setText(element, value) {
     if (element) {

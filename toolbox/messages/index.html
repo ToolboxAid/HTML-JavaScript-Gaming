@@ -64,11 +64,11 @@
                                     <table class="data-table" aria-label="Messages">
                                         <thead>
                                             <tr>
-                                                <th scope="col">Message Name</th>
+                                                <th scope="col">Message</th>
                                                 <th scope="col">Type</th>
                                                 <th scope="col">Status</th>
                                                 <th scope="col">Parts</th>
-                                                <th scope="col">Default TTS Profile</th>
+                                                <th scope="col">TTS Profile</th>
                                                 <th scope="col">Actions</th>
                                             </tr>
                                         </thead>
@@ -109,18 +109,12 @@
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
-                                <summary>Speech Test</summary>
+                                <summary>Playback</summary>
                                 <div class="accordion-body content-stack">
-                                    <label for="messagesTtsService">TTS Service</label>
-                                    <select id="messagesTtsService" data-messages-tts-service></select>
-                                    <label for="messagesPreviewTtsProfile">TTS Profile</label>
-                                    <select id="messagesPreviewTtsProfile" data-messages-preview-tts-profile></select>
-                                    <p>Selected item: <span data-messages-speech-test-target>None</span></p>
                                     <div class="action-group action-group--tight">
-                                        <button class="btn btn--compact" type="button" data-messages-test-speech disabled>Test Speech</button>
-                                        <button class="btn btn--compact" type="button" data-messages-stop-speech disabled>Stop</button>
+                                        <button class="btn btn--compact" type="button" data-messages-stop-speech disabled>Stop Playback</button>
                                     </div>
-                                    <div class="status" role="status" data-messages-preview-status>Select a message row or segment row before testing speech.</div>
+                                    <div class="status" role="status" data-messages-playback-status>Loading playback engine.</div>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>

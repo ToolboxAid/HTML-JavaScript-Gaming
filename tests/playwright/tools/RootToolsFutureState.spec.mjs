@@ -314,7 +314,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     const readyGameWorkspaceCard = page.locator("main .control-card").filter({
       has: page.locator("h3", { hasText: "Game Hub" })
     });
-    await expect(readyGameWorkspaceCard.locator("a.btn")).toHaveAttribute("href", "../toolbox/game-workspace/index.html");
+    await expect(readyGameWorkspaceCard.locator("a.btn")).toHaveAttribute("href", "../toolbox/game-hub/index.html");
     const defaultToolLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
     expect(defaultToolLabels).toEqual(["Achievements", "Assets", "Colors", "Controls", "Game Configuration", "Game Design", "Game Hub", "Game Journey", "Idea Board", "Languages", "Message Studio", "Objects", "Saved Data", "Tags", "Text To Speech"]);
     const textToSpeechCard = page.locator("main .control-card").filter({
@@ -435,7 +435,7 @@ test("root tools surface links current tool pages without old_* routes", async (
       "Platform Settings"
     ]));
     await expect(page.locator("main .control-card").filter({
-      has: page.locator("h3", { hasText: /^Game Hub$/ })
+      has: page.locator("[data-toolbox-tool-name-link='Game Hub'][href='/toolbox/game-hub/index.html']")
     }).locator("[data-toolbox-readiness]")).toHaveText("Beta");
     await expect(page.locator("main .control-card").filter({
       has: page.locator("h3", { hasText: /^Game Configuration$/ })
@@ -573,7 +573,7 @@ test("learn wireframe pages load with shared Theme V2 structure", async ({ page 
       headings: ["Desktop Target", "Ideal Width", "Minimum Comfortable Width", "Panel Layout", "Smaller Screens", "Wireframe Status"]
     },
     {
-      path: "/learn/game-workspace/index.html",
+      path: "/learn/game-hub/index.html",
       headings: ["Overview", "Quick Start", "Common Tasks", "Related Documentation", "Related Videos", "Examples"]
     },
     {
@@ -667,7 +667,7 @@ test("tool template future-state page loads from root Theme V2 paths", async ({ 
 test("representative active tool pages align center cleanup and registry group colors", async ({ page }) => {
   const representativeToolIds = [
     "ai-assistant",
-    "game-workspace",
+    "game-hub",
     "game-design",
     "colors",
     "audio",

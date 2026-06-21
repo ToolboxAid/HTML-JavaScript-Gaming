@@ -115,7 +115,7 @@ test("Active browser product-data entrypoints use API or service clients", () =>
     "toolbox/game-configuration/game-configuration-api-client.js",
     "toolbox/game-design/game-design-api-client.js",
     "toolbox/game-journey/game-journey-api-client.js",
-    "toolbox/game-workspace/game-workspace-api-client.js",
+    "toolbox/game-hub/game-hub-api-client.js",
     "toolbox/objects/objects-api-client.js",
     "toolbox/tags/tags-api-client.js",
   ];
@@ -128,7 +128,7 @@ test("Active browser product-data entrypoints use API or service clients", () =>
 
   assert.match(readRepoFile("admin/tool-votes.js"), /src\/engine\/api\/toolbox-votes-api-client\.js/);
   assert.match(readRepoFile("toolbox/tools-page-accordions.js"), /src\/engine\/api\/toolbox-votes-api-client\.js/);
-  assert.match(readRepoFile("assets/theme-v2/js/account-achievements.js"), /createServerRepositoryClient\("game-workspace"\)/);
+  assert.match(readRepoFile("assets/theme-v2/js/account-achievements.js"), /createServerRepositoryClient\("game-hub"\)/);
 
   [
     "admin/tool-votes.js",

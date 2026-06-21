@@ -1,7 +1,7 @@
 import {
-    GAME_WORKSPACE_MEMBER_ROLES,
-    createGameWorkspaceApiRepository
-} from "./game-workspace/game-workspace-api-client.js";
+    GAME_HUB_MEMBER_ROLES,
+    createGameHubApiRepository
+} from "./game-hub/game-hub-api-client.js";
 import {
     readGameJourneyCompletionMetrics
 } from "../src/api/game-journey-completion-api-client.js";
@@ -34,10 +34,10 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
     const statusFilterList = document.querySelector("[data-toolbox-status-filters]");
     const launchStatus = document.querySelector("[data-toolbox-launch-status]");
     const searchParams = new URLSearchParams(window.location.search);
-    const gameWorkspaceRepository = createGameWorkspaceApiRepository();
+    const gameHubRepository = createGameHubApiRepository();
     const urlMemberRole = searchParams.get("memberRole");
     const defaultGameMemberRole = "Owner";
-    const gameMemberRole = GAME_WORKSPACE_MEMBER_ROLES.includes(urlMemberRole)
+    const gameMemberRole = GAME_HUB_MEMBER_ROLES.includes(urlMemberRole)
         ? urlMemberRole
         : defaultGameMemberRole;
     const session = getSessionCurrent();
@@ -154,7 +154,7 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
         "game-journey": "Progression",
         "game-migration": "Publish",
         "game-testing": "Play Test",
-        "game-workspace": "Design",
+        "game-hub": "Design",
         "hitboxes": "Controls",
         "idea-board": "Idea",
         "input-mapping-v2": "Controls",
@@ -183,7 +183,7 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
     const toolboxGroupPositions = new Map(toolboxGroupOrder.map((group, index) => [group, index]));
     const workflowToolOrderByGroup = Object.freeze({
         "Design": Object.freeze({
-            "game-workspace": 1,
+            "game-hub": 1,
             "users": 2,
             "game-crew": 2,
             "game-configuration": 3,
@@ -244,8 +244,8 @@ import { getSessionCurrent } from "../src/api/session-api-client.js";
     }
 
     function getGameProgressSummary() {
-        const activeGame = gameWorkspaceRepository.getActiveGame();
-        const progress = gameWorkspaceRepository.getGameProgress();
+        const activeGame = gameHubRepository.getActiveGame();
+        const progress = gameHubRepository.getGameProgress();
         return {
             activeGameName: activeGame?.name || "No active game",
             gameProgress: progress.gameProgress,

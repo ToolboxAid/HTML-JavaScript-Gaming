@@ -100,6 +100,7 @@ const GENERATED_ULID_SEQUENCE = Object.freeze({
 });
 const RECOMMENDED_TARGET_LINKED_RECORD_TYPE = "recommended-target";
 const RECOMMENDED_TARGET_NOTE_KEY = GAME_JOURNEY_KEYS.notes.designPass;
+const SOURCE_IDEA_LINKED_RECORD_TYPE = "source-idea-note";
 
 export const GAME_JOURNEY_STATUSES = [
   {
@@ -645,6 +646,13 @@ export function createGameJourneyMockRepository(options = {}) {
     return item?.linkedRecordType === RECOMMENDED_TARGET_LINKED_RECORD_TYPE;
   }
 
+  function journeyGameKey(game) {
+    const gameId = String(game?.id || "").trim();
+    return !gameId || gameId === GAME_JOURNEY_ROUTE_GAME_ALIAS
+      ? GAME_JOURNEY_KEYS.game
+      : `game-hub:${gameId}`;
+  }
+
   function currentUserCanSeeNote(note) {
     const sessionUser = currentSessionUser();
     return Boolean(sessionUser.userKey && (sessionUser.isAdmin || note.ownerKey === sessionUser.userKey));
@@ -679,6 +687,102 @@ export function createGameJourneyMockRepository(options = {}) {
     persistTables();
   }
 
+  function slugSegment(value, fallback = "source-idea") {
+    const slug = String(value || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+    return slug || fallback;
+  }
+
+  function normalizeSourceIdeaNotes(sourceIdea) {
+    return Array.isArray(sourceIdea?.notes)
+      ? sourceIdea.notes.map((note) => String(note || "").trim()).filter(Boolean)
+      : [];
+  }
+
+  function sourceIdeaJourneyNoteName(sourceIdea) {
+    const idea = String(sourceIdea?.idea || "").trim();
+    return idea ? `Source Idea: ${idea}` : "Source Idea";
+  }
+
+  function ensureSourceIdeaJourneyItems(activeGame) {
+    const sourceIdea = activeGame?.sourceIdea && typeof activeGame.sourceIdea === "object"
+      ? activeGame.sourceIdea
+      : null;
+    const sourceNotes = normalizeSourceIdeaNotes(sourceIdea);
+    if (!activeGame || !sourceNotes.length) {
+      return [];
+    }
+
+    const ownerKey = safeCurrentUserKey();
+    const timestampValue = new Date().toISOString();
+    const noteSlug = `source-idea-${slugSegment(activeGame.id || sourceIdea?.idea)}`;
+    let note = tables.game_journey_notes.find(
+      (candidate) => candidate.gameKey === activeGame.key && candidate.slug === noteSlug,
+    );
+
+    if (!note) {
+      note = {
+        key: makeUlid(nextNoteNumber),
+        slug: noteSlug,
+        gameKey: activeGame.key,
+        ownerKey,
+        name: sourceIdeaJourneyNoteName(sourceIdea),
+        typeKey: GAME_JOURNEY_KEYS.noteTypes.idea,
+        createdAt: timestampValue,
+        updatedAt: timestampValue,
+        createdBy: ownerKey,
+        updatedBy: ownerKey,
+      };
+      nextNoteNumber += 1;
+      tables.game_journey_notes.push(note);
+    }
+
+    const existingLinkedIds = new Set(
+      getItemsForNote(note.key)
+        .filter((item) => item.linkedRecordType === SOURCE_IDEA_LINKED_RECORD_TYPE)
+        .map((item) => item.linkedRecordId),
+    );
+    const created = [];
+    sourceNotes.forEach((sourceNote, index) => {
+      const linkedRecordId = `${slugSegment(activeGame.id || activeGame.key)}:${index + 1}:${slugSegment(sourceNote).slice(0, 48)}`;
+      if (existingLinkedIds.has(linkedRecordId)) {
+        return;
+      }
+      const existingItems = getItemsForNote(note.key);
+      const item = {
+        key: makeUlid(nextItemNumber),
+        gameKey: activeGame.key,
+        noteKey: note.key,
+        status: "not-started",
+        title: sourceNote,
+        userDetails: "",
+        createdBy: ownerKey,
+        updatedBy: ownerKey,
+        templateKey: "",
+        linkedRecordType: SOURCE_IDEA_LINKED_RECORD_TYPE,
+        linkedRecordId,
+        indent: 0,
+        order: existingItems.length + 1,
+        createdAt: timestampValue,
+        updatedAt: timestampValue,
+      };
+      nextItemNumber += 1;
+      tables.game_journey_items.push(item);
+      created.push(hydrateItem(item));
+    });
+
+    if (created.length) {
+      selectedNoteKey = note.key;
+      selectedItemKey = created[0]?.key || selectedItemKey;
+      touchNote(note.key, ownerKey);
+      addActivity(activeGame.key, note.key, `Created ${created.length} Game Journey item${created.length === 1 ? "" : "s"} from Source Idea.`, ownerKey);
+    }
+
+    return created;
+  }
+
   function getActiveGame() {
     const game = gameWorkspaceRepository.getActiveGame();
     if (!game) {
@@ -686,7 +790,7 @@ export function createGameJourneyMockRepository(options = {}) {
     }
     return {
       ...game,
-      key: GAME_JOURNEY_KEYS.game,
+      key: journeyGameKey(game),
     };
   }
 
@@ -1392,7 +1496,11 @@ export function createGameJourneyMockRepository(options = {}) {
   function openGame(gameId) {
     const workspaceGameId =
       gameId === GAME_JOURNEY_KEYS.game ? GAME_JOURNEY_ROUTE_GAME_ALIAS : gameId;
-    return gameWorkspaceRepository.openGame(workspaceGameId);
+    const openedGame = gameWorkspaceRepository.openGame(workspaceGameId);
+    if (openedGame) {
+      ensureSourceIdeaJourneyItems(getActiveGame());
+    }
+    return openedGame;
   }
 
   return {

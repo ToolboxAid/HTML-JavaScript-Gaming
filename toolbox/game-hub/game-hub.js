@@ -1,12 +1,12 @@
 import {
-  GAME_WORKSPACE_MEMBER_ROLES,
-  GAME_WORKSPACE_GAME_PURPOSES,
-  GAME_WORKSPACE_GAME_STATUSES,
-  createGameWorkspaceApiRepository,
-} from "./game-workspace-api-client.js";
+  GAME_HUB_MEMBER_ROLES,
+  GAME_HUB_GAME_PURPOSES,
+  GAME_HUB_GAME_STATUSES,
+  createGameHubApiRepository,
+} from "./game-hub-api-client.js";
 import { getSessionCurrent } from "../../src/api/session-api-client.js";
 
-const repository = createGameWorkspaceApiRepository();
+const repository = createGameHubApiRepository();
 
 const elements = {
   activeGameName: document.querySelector("[data-active-game-name]"),
@@ -35,7 +35,7 @@ const elements = {
   gameStatusInput: document.querySelector("[data-game-status-input]"),
   publishingProgress: document.querySelector("[data-publishing-progress]"),
   recommendedNextTool: document.querySelectorAll("[data-recommended-next-tool]"),
-  statusLog: document.querySelector("[data-game-workspace-log]"),
+  statusLog: document.querySelector("[data-game-hub-log]"),
   tableCounts: document.querySelector("[data-game-table-counts]"),
 };
 
@@ -62,6 +62,10 @@ function isRecord(value) {
 
 function isRepositoryErrorResult(value) {
   return isRecord(value) && value.error === true;
+}
+
+function isSourceLinkedGame(activeGame) {
+  return isRecord(activeGame?.sourceIdea);
 }
 
 function repositoryErrorMessage(value, context) {
@@ -137,7 +141,7 @@ function setProjectRecordStatus(message) {
   setText(elements.projectRecordStatus, message);
 }
 
-function refreshSaveControls() {
+function refreshSaveControls(activeGame = null) {
   const saveAllowed = projectRecordsSaveAllowed();
   [elements.nameInput, elements.purposeInput, elements.gameStatusInput, elements.currentUserRoleInput].forEach((control) => {
     if (control) {
@@ -149,7 +153,9 @@ function refreshSaveControls() {
     submitButton.disabled = !saveAllowed;
   }
   if (elements.deleteOpenGame) {
-    elements.deleteOpenGame.disabled = !saveAllowed;
+    const sourceLinked = isSourceLinkedGame(activeGame);
+    elements.deleteOpenGame.disabled = !saveAllowed || sourceLinked;
+    elements.deleteOpenGame.hidden = sourceLinked;
   }
   if (!saveAllowed) {
     const currentStatus = String(elements.statusLog?.textContent || "");
@@ -424,7 +430,7 @@ function renderWorkspace() {
   renderChecklist(progress);
   renderProjectInformation(activeGame, currentMember, progress);
   renderSourceIdea(activeGame);
-  refreshSaveControls();
+  refreshSaveControls(activeGame);
 }
 
 elements.form?.addEventListener("submit", (event) => {
@@ -481,6 +487,11 @@ elements.deleteOpenGame?.addEventListener("click", () => {
     renderWorkspace();
     return;
   }
+  if (isSourceLinkedGame(activeGame)) {
+    setStatusLog("Source-linked projects stay connected to Idea Board.");
+    renderWorkspace();
+    return;
+  }
 
   repository.deleteGame(activeGame.id);
   setStatusLog(`Deleted ${activeGame.name}.`);
@@ -529,9 +540,9 @@ elements.currentUserRoleInput?.addEventListener("change", () => {
   renderWorkspace();
 });
 
-populateSelect(elements.purposeInput, GAME_WORKSPACE_GAME_PURPOSES);
-populateSelect(elements.gameStatusInput, GAME_WORKSPACE_GAME_STATUSES);
-populateSelect(elements.currentUserRoleInput, GAME_WORKSPACE_MEMBER_ROLES);
+populateSelect(elements.purposeInput, GAME_HUB_GAME_PURPOSES);
+populateSelect(elements.gameStatusInput, GAME_HUB_GAME_STATUSES);
+populateSelect(elements.currentUserRoleInput, GAME_HUB_MEMBER_ROLES);
 const requestedGameId = new URL(window.location.href).searchParams.get("game");
 if (requestedGameId) {
   const openedGame = repository.openGame(requestedGameId);

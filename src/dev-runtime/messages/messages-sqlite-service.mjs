@@ -96,6 +96,14 @@ function normalizeNumber(value, fallback) {
   return Number.isFinite(numberValue) ? numberValue : fallback;
 }
 
+function emotionSettingKey(value) {
+  return normalizeText(value)
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "neutral";
+}
+
 function normalizeInteger(value, fallback) {
   const numberValue = Number(value);
   return Number.isInteger(numberValue) ? numberValue : fallback;
@@ -182,12 +190,25 @@ function emotionProfileFromRow(row, usage = {}) {
   };
 }
 
-function ttsProfileFromRow(row) {
+function ttsEmotionSettingFromEmotionProfile(profile) {
+  return {
+    active: profile.active !== false,
+    emotion: emotionSettingKey(profile.name),
+    emotionLabel: profile.name,
+    pitch: Number(profile.pitch),
+    rate: Number(profile.rate),
+    ssmlLikePreset: "normal",
+    volume: Number(profile.volume),
+  };
+}
+
+function ttsProfileFromRow(row, emotionSettings = []) {
   return {
     active: activeFromDatabase(row.active),
     createdAt: row.createdAt,
     createdBy: row.createdBy,
     description: row.description || "",
+    emotionSettings,
     key: row.key,
     language: row.language,
     name: row.name,
@@ -593,10 +614,13 @@ export class MessagesSqliteService {
   }
 
   listTtsProfiles() {
+    const emotionSettings = this.listEmotionProfiles()
+      .filter((profile) => profile.active !== false)
+      .map(ttsEmotionSettingFromEmotionProfile);
     return this.db().prepare(`
       SELECT * FROM messages_tts_profiles
       ORDER BY name COLLATE NOCASE ASC
-    `).all().map(ttsProfileFromRow);
+    `).all().map((row) => ttsProfileFromRow(row, emotionSettings));
   }
 
   getTtsProfile(key) {
@@ -604,7 +628,10 @@ export class MessagesSqliteService {
     if (!row) {
       throw httpError("TTS profile was not found.", 404);
     }
-    return ttsProfileFromRow(row);
+    const emotionSettings = this.listEmotionProfiles()
+      .filter((profile) => profile.active !== false)
+      .map(ttsEmotionSettingFromEmotionProfile);
+    return ttsProfileFromRow(row, emotionSettings);
   }
 
   findTtsProfileByName(name) {

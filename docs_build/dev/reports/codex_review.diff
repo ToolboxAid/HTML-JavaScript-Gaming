@@ -2,16 +2,31 @@ diff --git a/admin/system-health.html b/admin/system-health.html
 index c5ef74f44..f5330bcdd 100644
 --- a/admin/system-health.html
 +++ b/admin/system-health.html
-@@ -9 +9 @@
+@@ -6,7 +6,7 @@
+     <base href="/">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+     <title>System Health - Game Foundry Studio LLC</title>
 -    <meta name="description" content="Admin read-only system health status for account, product data, storage, environment, migrations, packages, and promotion safety.">
 +    <meta name="description" content="Admin system health foundation for environment, Postgres, R2, runtime, limits, and diagnostics planning.">
-@@ -21 +21 @@
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+ </head>
+@@ -18,7 +18,7 @@
+             <div class="container">
+                 <div class="kicker">Admin</div>
+                 <h1>System Health</h1>
 -                <p class="lede">Review safe runtime readiness across account, Local DB, R2 storage, migrations, package planning, promotion safety, and storage connectivity.</p>
 +                <p class="lede">Review the foundation view for environment, Postgres, Cloudflare R2, runtime configuration, capacity, and diagnostics.</p>
-@@ -39 +39 @@
+             </div>
+         </section>
+         <section class="section">
+@@ -36,21 +36,15 @@
+                                 </nav>
+                             </details>
+                             <details class="vertical-accordion" open>
 -                                <summary>Status Sources</summary>
 +                                <summary>Health Sections</summary>
-@@ -41,13 +41,7 @@
+                                 <div class="accordion-body content-stack">
 -                                    <p>Account/session readiness</p>
 -                                    <p>Product Data / Local DB</p>
 -                                    <p>Project Asset Storage / R2</p>
@@ -32,21 +47,29 @@ index c5ef74f44..f5330bcdd 100644
 +                                    <p>Limits &amp; Capacity</p>
 +                                    <p>Diagnostics Plan</p>
 +                                    <p>Diagnostics Log</p>
-@@ -61,2 +55,2 @@
+                                 </div>
+                             </details>
+                         </div>
+@@ -58,329 +52,163 @@
+                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="admin-system-health" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
+                     <section class="tool-center-panel content-stack" aria-labelledby="admin-system-health-title">
+                         <div>
 -                            <div class="kicker">Read-only Status</div>
 -                            <h2 id="admin-system-health-title">System Health Overview</h2>
 +                            <div class="kicker">Foundation</div>
 +                            <h2 id="admin-system-health-title">System Health Tables</h2>
-@@ -65,2 +59,2 @@
+                         </div>
+                         <div class="table-wrapper">
 -                            <table class="data-table" aria-label="System health dashboard summary">
 -                                <caption>System Health Dashboard Summary</caption>
 +                            <table class="data-table" aria-label="Environment summary">
 +                                <caption>Environment Summary</caption>
-@@ -68,0 +63,3 @@
+                                 <thead>
+                                     <tr>
 +                                        <th scope="col">Environment</th>
 +                                        <th scope="col">Purpose</th>
 +                                        <th scope="col">Promotion Gate</th>
-@@ -70,50 +66,0 @@
+                                         <th scope="col">Status</th>
 -                                        <th scope="col">Score</th>
 -                                        <th scope="col">PASS</th>
 -                                        <th scope="col">WARN</th>
@@ -97,7 +120,9 @@ index c5ef74f44..f5330bcdd 100644
 -                                    <tr>
 -                                        <th scope="col">Filter</th>
 -                                        <th scope="col">Value</th>
-@@ -123,8 +70,4 @@
+                                     </tr>
+                                 </thead>
+                                 <tbody>
 -                                    <tr>
 -                                        <td>Plan</td>
 -                                        <td>
@@ -110,12 +135,16 @@ index c5ef74f44..f5330bcdd 100644
 +                                    <tr><td>IST</td><td>Integrated system testing</td><td>Cross-feature validation</td><td data-health-status="PASS">PASS</td></tr>
 +                                    <tr><td>UAT</td><td>User acceptance testing</td><td>Owner review</td><td data-health-status="PASS">PASS</td></tr>
 +                                    <tr><td>PRD</td><td>Production runtime</td><td>EOD approval</td><td data-health-status="PASS">PASS</td></tr>
-@@ -135,2 +78,2 @@
+                                 </tbody>
+                             </table>
+                         </div>
+                         <div class="table-wrapper">
 -                            <table class="data-table" aria-label="Admin membership support rows">
 -                                <caption>Membership Assignments</caption>
 +                            <table class="data-table" aria-label="Database health">
 +                                <caption>Database Health - Postgres Only</caption>
-@@ -139,17 +82 @@
+                                 <thead>
+                                     <tr>
 -                                        <th scope="col">User</th>
 -                                        <th scope="col">Plan</th>
 -                                        <th scope="col">Status</th>
@@ -134,7 +163,7 @@ index c5ef74f44..f5330bcdd 100644
 -                                    <tr>
 -                                        <th scope="col">Filter</th>
 +                                        <th scope="col">Field</th>
-@@ -157,20 +83,0 @@
+                                         <th scope="col">Value</th>
 -                                    </tr>
 -                                </thead>
 -                                <tbody>
@@ -155,7 +184,7 @@ index c5ef74f44..f5330bcdd 100644
 -                                <thead>
 -                                    <tr>
 -                                        <th scope="col">Email</th>
-@@ -178,16 +84,0 @@
+                                         <th scope="col">Status</th>
 -                                        <th scope="col">Code</th>
 -                                        <th scope="col">Expires</th>
 -                                    </tr>
@@ -172,7 +201,9 @@ index c5ef74f44..f5330bcdd 100644
 -                                    <tr>
 -                                        <th scope="col">Filter</th>
 -                                        <th scope="col">Value</th>
-@@ -197,8 +88,6 @@
+                                     </tr>
+                                 </thead>
+                                 <tbody>
 -                                    <tr>
 -                                        <td>Action</td>
 -                                        <td>
@@ -187,12 +218,16 @@ index c5ef74f44..f5330bcdd 100644
 +                                    <tr><td>Database</td><td data-admin-system-health-db-value="database">Configured database placeholder</td><td data-health-status="PENDING" data-admin-system-health-db-status="database" title="Reason: database name reader is intentionally not wired in this foundation PR." aria-label="PENDING: database name reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
 +                                    <tr><td>Migration Version</td><td data-admin-system-health-db-value="migration">Pending migration reader</td><td data-health-status="PENDING" data-admin-system-health-db-status="migration" title="Reason: migration version reader is intentionally not wired in this foundation PR." aria-label="PENDING: migration version reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
 +                                    <tr><td>Status</td><td data-admin-system-health-db-value="connection">Connection check pending</td><td data-health-status="PENDING" data-admin-system-health-db-status="connection" title="Reason: live Postgres connection checks are intentionally not wired in this foundation PR." aria-label="PENDING: live Postgres connection checks are intentionally not wired in this foundation PR.">PENDING</td></tr>
-@@ -209,2 +98,2 @@
+                                 </tbody>
+                             </table>
+                         </div>
+                         <div class="table-wrapper">
 -                            <table class="data-table" aria-label="Admin AI usage support rows">
 -                                <caption>AI Usage Rows</caption>
 +                            <table class="data-table" aria-label="Storage health">
 +                                <caption>Storage Health - Cloudflare R2</caption>
-@@ -213,18 +102,2 @@
+                                 <thead>
+                                     <tr>
 -                                        <th scope="col">User</th>
 -                                        <th scope="col">Action</th>
 -                                        <th scope="col">Source</th>
@@ -213,11 +248,12 @@ index c5ef74f44..f5330bcdd 100644
 -                                        <th scope="col">Area</th>
 +                                        <th scope="col">Check</th>
 +                                        <th scope="col">Target</th>
-@@ -232,3 +104,0 @@
+                                         <th scope="col">Status</th>
 -                                        <th scope="col">Table</th>
 -                                        <th scope="col">Issue</th>
 -                                        <th scope="col">Next Step</th>
-@@ -237,47 +107,6 @@
+                                     </tr>
+                                 </thead>
 -                                <tbody data-admin-health-config-issue-rows>
 -                                    <tr><td>Operations</td><td>Loading</td><td>Loading</td><td>Loading configuration issues.</td><td>Loading next step.</td></tr>
 -                                </tbody>
@@ -271,20 +307,25 @@ index c5ef74f44..f5330bcdd 100644
 +                                    <tr><td>Read</td><td data-admin-system-health-storage-value="read">Health object</td><td data-health-status="PENDING" data-admin-system-health-storage-status="read" title="Reason: R2 read check is intentionally not wired in this foundation PR." aria-label="PENDING: R2 read check is intentionally not wired in this foundation PR.">PENDING</td></tr>
 +                                    <tr><td>Write</td><td data-admin-system-health-storage-value="write">Health object</td><td data-health-status="PENDING" data-admin-system-health-storage-status="write" title="Reason: R2 write check is intentionally not wired in this foundation PR." aria-label="PENDING: R2 write check is intentionally not wired in this foundation PR.">PENDING</td></tr>
 +                                    <tr><td>Delete</td><td data-admin-system-health-storage-value="delete">Health object</td><td data-health-status="PENDING" data-admin-system-health-storage-status="delete" title="Reason: R2 delete check is intentionally not wired in this foundation PR." aria-label="PENDING: R2 delete check is intentionally not wired in this foundation PR.">PENDING</td></tr>
-@@ -288,2 +117,2 @@
+                                 </tbody>
+                             </table>
+                         </div>
+                         <div class="table-wrapper">
 -                            <table class="data-table" aria-label="R2 operational readiness">
 -                                <caption>R2 Operational Readiness</caption>
 +                            <table class="data-table" aria-label="Runtime environment">
 +                                <caption>Runtime Environment - Alphabetical Variables</caption>
-@@ -292,2 +121,2 @@
+                                 <thead>
+                                     <tr>
 -                                        <th scope="col">Area</th>
 -                                        <th scope="col">Signal</th>
 +                                        <th scope="col">Variable</th>
 +                                        <th scope="col">Display</th>
-@@ -295,2 +123,0 @@
+                                         <th scope="col">Status</th>
 -                                        <th scope="col">Value</th>
 -                                        <th scope="col">Next Step</th>
-@@ -299,2 +126,6 @@
+                                     </tr>
+                                 </thead>
 -                                <tbody data-admin-system-health-r2-readiness-rows>
 -                                    <tr><td>Project Asset Storage / R2</td><td>Status</td><td>Loading</td><td>Loading</td><td>Loading R2 readiness.</td></tr>
 +                                <tbody data-admin-system-health-runtime-rows>
@@ -293,20 +334,25 @@ index c5ef74f44..f5330bcdd 100644
 +                                    <tr><td>CLOUDFLARE_R2_SECRET_ACCESS_KEY</td><td>********</td><td data-health-status="PASS">PASS</td></tr>
 +                                    <tr><td>DATABASE_URL</td><td>********</td><td data-health-status="PASS">PASS</td></tr>
 +                                    <tr><td>GAMEFOUNDRY_ENVIRONMENT</td><td>DEV / IST / UAT / PRD</td><td data-health-status="PASS">PASS</td></tr>
-@@ -305,2 +136,2 @@
+                                 </tbody>
+                             </table>
+                         </div>
+                         <div class="table-wrapper">
 -                            <table class="data-table" aria-label="System health storage connectivity results">
 -                                <caption>Storage Connectivity Results</caption>
 +                            <table class="data-table" aria-label="Limits and capacity">
 +                                <caption>Limits &amp; Capacity</caption>
-@@ -309 +140,3 @@
+                                 <thead>
+                                     <tr>
 -                                        <th scope="col">Action</th>
 +                                        <th scope="col">Limit</th>
 +                                        <th scope="col">Current</th>
 +                                        <th scope="col">Capacity Signal</th>
-@@ -311,2 +143,0 @@
+                                         <th scope="col">Status</th>
 -                                        <th scope="col">Executed</th>
 -                                        <th scope="col">Message</th>
-@@ -315,2 +146,6 @@
+                                     </tr>
+                                 </thead>
 -                                <tbody data-admin-system-health-storage-connectivity-result-rows>
 -                                    <tr><td>startup</td><td>SKIP</td><td>no</td><td>Storage connectivity startup has not run yet.</td></tr>
 +                                <tbody>
@@ -315,18 +361,22 @@ index c5ef74f44..f5330bcdd 100644
 +                                    <tr><td>Storage</td><td>Pending metric</td><td>Bucket usage not connected</td><td data-health-status="PENDING" title="Reason: R2 storage usage metric is intentionally not wired in this foundation PR." aria-label="PENDING: R2 storage usage metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
 +                                    <tr><td>Class A Ops</td><td>Pending metric</td><td>R2 write/list budget not connected</td><td data-health-status="PENDING" title="Reason: R2 Class A operation metric is intentionally not wired in this foundation PR." aria-label="PENDING: R2 Class A operation metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
 +                                    <tr><td>Class B Ops</td><td>Pending metric</td><td>R2 read budget not connected</td><td data-health-status="PENDING" title="Reason: R2 Class B operation metric is intentionally not wired in this foundation PR." aria-label="PENDING: R2 Class B operation metric is intentionally not wired in this foundation PR.">PENDING</td></tr>
-@@ -321,2 +156,2 @@
+                                 </tbody>
+                             </table>
+                         </div>
+                         <div class="table-wrapper">
 -                            <table class="data-table" aria-label="System health details">
 -                                <caption>System Health Details</caption>
 +                            <table class="data-table" aria-label="Diagnostics plan">
 +                                <caption>Diagnostics Plan</caption>
-@@ -325,2 +160,3 @@
+                                 <thead>
+                                     <tr>
 -                                        <th scope="col">Area</th>
 -                                        <th scope="col">Field</th>
 +                                        <th scope="col">Diagnostic Check</th>
 +                                        <th scope="col">Future Signal</th>
 +                                        <th scope="col">Planned Source</th>
-@@ -328,18 +163,0 @@
+                                         <th scope="col">Status</th>
 -                                        <th scope="col">Value</th>
 -                                    </tr>
 -                                </thead>
@@ -345,7 +395,8 @@ index c5ef74f44..f5330bcdd 100644
 -                                        <th scope="col">Usage</th>
 -                                        <th scope="col">Pressure</th>
 -                                        <th scope="col">Next Step</th>
-@@ -348,2 +166,10 @@
+                                     </tr>
+                                 </thead>
 -                                <tbody data-admin-system-health-limit-rows>
 -                                    <tr><td>System Health</td><td>Loading</td><td>Loading</td><td>Loading</td><td>Loading limit diagnostics.</td></tr>
 +                                <tbody>
@@ -358,10 +409,17 @@ index c5ef74f44..f5330bcdd 100644
 +                                    <tr><td>R2 Delete</td><td>Health object cleanup availability</td><td>Server-owned Cloudflare R2 storage diagnostic</td><td data-health-status="PENDING" title="Reason: R2 delete diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: R2 delete diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
 +                                    <tr><td>Runtime Environment Masking</td><td>Masked display verification for secret-bearing variables</td><td>Server-owned runtime environment diagnostic</td><td data-health-status="PENDING" title="Reason: automated runtime masking diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: automated runtime masking diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
 +                                    <tr><td>Limits/Capacity Metrics</td><td>DB size, connections, storage usage, and R2 Class A/Class B operation signals</td><td>Server-owned metrics diagnostic</td><td data-health-status="PENDING" title="Reason: limits and capacity diagnostics are intentionally not wired in this foundation PR." aria-label="PENDING: limits and capacity diagnostics are intentionally not wired in this foundation PR.">PENDING</td></tr>
-@@ -356 +182 @@
+                                 </tbody>
+                             </table>
+                         </div>
+                     </section>
+                     <aside class="tool-column tool-group-platform">
+                         <div class="tool-column-header">
 -                            <h2>Inspector</h2>
 +                            <h2>Diagnostics</h2>
-@@ -360,9 +186,19 @@
+                         </div>
+                         <div class="accordion-stack">
+                             <details class="vertical-accordion" open>
 -                                <summary>Status</summary>
 -                                <div class="accordion-body content-stack">
 -                                    <p class="status" role="status" data-admin-system-health-status>Loading Admin System Health.</p>
@@ -390,7 +448,12 @@ index c5ef74f44..f5330bcdd 100644
 +                                            </tbody>
 +                                        </table>
 +                                    </div>
-@@ -375,9 +211 @@
+                                 </div>
+                             </details>
+                             <details class="vertical-accordion" open>
+                                 <summary>Related Pages</summary>
+                                 <div class="accordion-body content-stack">
+                                     <a class="btn btn--compact" href="/admin/infrastructure.html">Infrastructure Reference</a>
 -                                    <a class="btn btn--compact" href="/admin/operations.html">Admin Operations Actions</a>
 -                                </div>
 -                            </details>
@@ -401,14 +464,20 @@ index c5ef74f44..f5330bcdd 100644
 -                                    <p>Infrastructure remains the architecture reference page.</p>
 -                                    <p>Admin Operations remains the action page.</p>
 +                                    <a class="btn btn--compact" href="/admin/operations.html">Admin Operations</a>
+                                 </div>
+                             </details>
+                         </div>
 diff --git a/assets/theme-v2/js/admin-system-health.js b/assets/theme-v2/js/admin-system-health.js
 index 38e143867..dfe67df79 100644
 --- a/assets/theme-v2/js/admin-system-health.js
 +++ b/assets/theme-v2/js/admin-system-health.js
-@@ -3 +3 @@ import {
+@@ -1,386 +1,253 @@
+ import {
+     readAdminSystemHealthStatus,
 -    runAdminSystemHealthStorageConnectivityAction
 +    runAdminSystemHealthStorageConnectivityAction,
-@@ -6,5 +6,6 @@ import {
+ } from "../../../src/api/admin-system-health-api-client.js";
+
 -const STORAGE_CONNECTIVITY_ACTIONS = Object.freeze([
 -    "storage-list",
 -    "storage-write-test-object",
@@ -420,7 +489,8 @@ index 38e143867..dfe67df79 100644
 +    Object.freeze({ actionId: "storage-write-test-object", key: "write" }),
 +    Object.freeze({ actionId: "storage-read-test-object", key: "read" }),
 +    Object.freeze({ actionId: "storage-delete-test-object", key: "delete" }),
-@@ -12,0 +14,15 @@ const STORAGE_CONNECTIVITY_ACTIONS = Object.freeze([
+ ]);
+
 +function asText(value, fallback = "not available") {
 +    const text = String(value ?? "").trim();
 +    return text || fallback;
@@ -436,7 +506,9 @@ index 38e143867..dfe67df79 100644
 +    return `${status}: ${message}`;
 +}
 +
-@@ -16,21 +32,17 @@ class AdminSystemHealthController {
+ class AdminSystemHealthController {
+     constructor(root) {
+         this.root = root;
 -        this.connectionSummary = root.querySelector("[data-admin-system-health-connection-summary]");
 -        this.databaseStatusRows = root.querySelector("[data-admin-system-health-database-status-rows]");
 -        this.details = root.querySelector("[data-admin-system-health-detail-rows]");
@@ -475,17 +547,22 @@ index 38e143867..dfe67df79 100644
 +            node,
 +        ]));
 +        this.runtimeRows = root.querySelector("[data-admin-system-health-runtime-rows]");
-@@ -40 +52 @@ class AdminSystemHealthController {
+     }
+
+     init() {
 -        if (!this.connectionSummary || !this.databaseStatusRows || !this.details || !this.healthAiActionFilter || !this.healthAiUsageRows || !this.healthConfigIssueRows || !this.healthInvitationRows || !this.healthInvitationStatusFilter || !this.healthMembershipPlanFilter || !this.healthMembershipRows || !this.healthSummaryRows || !this.limits || !this.overview || !this.r2Readiness || !this.status || !this.storageConnectivityRows || !this.storageConnectivityStatus || !this.storageStatusRows || !this.summary) {
 +        if ((!this.dbValues.size && !this.storageValues.size) || document.querySelector("[data-session-access-blocked='admin']") || window.GameFoundrySessionGuard?.blocked === true) {
-@@ -43,6 +54,0 @@ class AdminSystemHealthController {
+             return;
+         }
 -        this.storageActionButtons.forEach((button) => {
 -            button.addEventListener("click", () => this.runStorageConnectivityAction(button.dataset.adminSystemHealthStorageAction));
 -        });
 -        this.healthMembershipPlanFilter.addEventListener("change", () => this.renderMembershipRows(this.operationsHealth?.memberships || {}));
 -        this.healthInvitationStatusFilter.addEventListener("change", () => this.renderInvitationRows(this.operationsHealth?.invitations || {}));
 -        this.healthAiActionFilter.addEventListener("change", () => this.renderAiUsageRows(this.operationsHealth?.aiCredits || {}));
-@@ -52,16 +58,5 @@ class AdminSystemHealthController {
+         this.load();
+     }
+
 -    setStatus(status, message) {
 -        this.status.textContent = `${status}: ${message}`;
 -    }
@@ -507,7 +584,8 @@ index 38e143867..dfe67df79 100644
 +        if (node) {
 +            node.textContent = asText(value, fallback);
 +        }
-@@ -70,9 +65,5 @@ class AdminSystemHealthController {
+     }
+
 -    renderOverview(rows) {
 -        this.overview.replaceChildren();
 -        rows.forEach((row) => {
@@ -522,7 +600,8 @@ index 38e143867..dfe67df79 100644
 +        if (node) {
 +            node.textContent = asText(value, fallback);
 +        }
-@@ -81,14 +72,3 @@ class AdminSystemHealthController {
+     }
+
 -    replaceFilterOptions(select, options, allLabel) {
 -        const currentValue = select.value;
 -        select.replaceChildren();
@@ -540,7 +619,8 @@ index 38e143867..dfe67df79 100644
 +    setStatus(key, status, reason = "") {
 +        const node = this.dbStatuses.get(key);
 +        this.setStatusNode(node, status, reason);
-@@ -97,10 +77,3 @@ class AdminSystemHealthController {
+     }
+
 -    renderHealthSummary(rows) {
 -        this.healthSummaryRows.replaceChildren();
 -        (rows.length ? rows : [{ area: "Operations", count: 0, diagnostic: "Operational health unavailable.", status: "WARN" }]).forEach((row) => {
@@ -554,7 +634,8 @@ index 38e143867..dfe67df79 100644
 +    setStorageStatus(key, status, reason = "") {
 +        const node = this.storageStatuses.get(key);
 +        this.setStatusNode(node, status, reason);
-@@ -109,35 +82,3 @@ class AdminSystemHealthController {
+     }
+
 -    renderMembershipRows(memberships = {}) {
 -        const selectedPlan = this.healthMembershipPlanFilter.value;
 -        const rows = Array.isArray(memberships.rows) ? memberships.rows : [];
@@ -593,7 +674,7 @@ index 38e143867..dfe67df79 100644
 +    setStatusNode(node, status, reason = "") {
 +        if (!node) {
 +            return;
-@@ -145,19 +86,7 @@ class AdminSystemHealthController {
+         }
 -    }
 -
 -    renderAiUsageRows(aiCredits = {}) {
@@ -620,11 +701,12 @@ index 38e143867..dfe67df79 100644
 +            node.removeAttribute("title");
 +            node.removeAttribute("aria-label");
 +            return;
-@@ -164,0 +94,3 @@ class AdminSystemHealthController {
+         }
 +        const resolvedReason = reasonText(normalized, reason);
 +        node.setAttribute("title", `Reason: ${asText(reason, "Safe server diagnostics returned this non-PASS status.")}`);
 +        node.setAttribute("aria-label", resolvedReason);
-@@ -167,10 +99,3 @@ class AdminSystemHealthController {
+     }
+
 -    renderConfigIssues(rows) {
 -        this.healthConfigIssueRows.replaceChildren();
 -        (rows.length ? rows : [{ area: "Operations", issue: "Operational configuration unavailable.", nextStep: "Reload Admin System Health.", status: "WARN", tableName: "unknown" }]).forEach((row) => {
@@ -638,9 +720,10 @@ index 38e143867..dfe67df79 100644
 +    renderPending(reason) {
 +        ["host", "database", "migration", "connection"].forEach((key) => {
 +            this.setStatus(key, "PENDING", reason);
-@@ -177,0 +103 @@ class AdminSystemHealthController {
+         });
 +        this.renderStoragePending(reason);
-@@ -180,34 +106,3 @@ class AdminSystemHealthController {
+     }
+
 -    renderOperationsHealth(operationsHealth = {}) {
 -        this.operationsHealth = operationsHealth;
 -        this.replaceFilterOptions(this.healthMembershipPlanFilter, operationsHealth.memberships?.planOptions || [], "All plans");
@@ -678,12 +761,14 @@ index 38e143867..dfe67df79 100644
 +    renderStoragePending(reason) {
 +        ["bucket", "list", "read", "write", "delete"].forEach((key) => {
 +            this.setStorageStatus(key, "PENDING", reason);
-@@ -214,0 +110 @@ class AdminSystemHealthController {
+         });
 +        this.renderRuntimePending(reason);
-@@ -217 +113 @@ class AdminSystemHealthController {
+     }
+
 -    renderDatabaseStatus(databaseStatus = {}) {
 +    renderPostgresStatus(databaseStatus = {}) {
-@@ -220,12 +116,17 @@ class AdminSystemHealthController {
+         const migrationCounts = databaseStatus.migrationCounts || {};
+         const lastMigration = databaseStatus.lastMigration || {};
 -        this.databaseStatusRows.replaceChildren();
 -        [
 -            ["Connection Configured", databaseStatus.configured === true ? "PASS" : "WARN", databaseStatus.configured === true ? "yes" : "no"],
@@ -713,7 +798,8 @@ index 38e143867..dfe67df79 100644
 +        this.setStatus("migration", databaseStatus.lastMigrationStatus || databaseStatus.migrationStatus, connectionReason);
 +        this.setValue("connection", databaseStatus.configured === true ? connectionReason : databaseStatus.message || "Postgres configuration is not complete.");
 +        this.setStatus("connection", databaseStatus.status, connectionReason);
-@@ -234,10 +135,4 @@ class AdminSystemHealthController {
+     }
+
 -    renderDetails(rows) {
 -        this.details.replaceChildren();
 -        rows.forEach((row) => {
@@ -728,7 +814,8 @@ index 38e143867..dfe67df79 100644
 +        const reason = storageStatus.message || "Cloudflare R2 configuration status returned by the safe Admin System Health API.";
 +        this.setStorageValue("bucket", storageStatus.bucket, "not configured");
 +        this.setStorageStatus("bucket", storageStatus.bucketStatus || storageStatus.status, reason);
-@@ -246,12 +141,5 @@ class AdminSystemHealthController {
+     }
+
 -    renderStorageStatus(storageStatus = {}) {
 -        this.storageStatusRows.replaceChildren();
 -        [
@@ -746,7 +833,8 @@ index 38e143867..dfe67df79 100644
 +            return `${result.keysListed} object(s) under ${asText(result.projectsPrefix, "configured prefix")}`;
 +        }
 +        return result.testObjectKey || result.projectsPrefix || result.message || "diagnostic target unavailable";
-@@ -260,11 +148,7 @@ class AdminSystemHealthController {
+     }
+
 -    renderLimits(rows) {
 -        this.limits.replaceChildren();
 -        rows.forEach((row) => {
@@ -765,7 +853,8 @@ index 38e143867..dfe67df79 100644
 +        }
 +        this.setStorageValue(key, this.storageResultTarget(result));
 +        this.setStorageStatus(key, result.status, result.message || "R2 diagnostic returned without a message.");
-@@ -273,11 +157,11 @@ class AdminSystemHealthController {
+     }
+
 -    renderR2Readiness(readiness) {
 -        this.r2Readiness.replaceChildren();
 -        const rows = Array.isArray(readiness?.rows) ? readiness.rows : [];
@@ -788,7 +877,9 @@ index 38e143867..dfe67df79 100644
 +                const message = error instanceof Error ? error.message : "Safe R2 diagnostic API is unavailable.";
 +                this.setStorageStatus(key, "PENDING", message);
 +            }
-@@ -287,7 +171,4 @@ class AdminSystemHealthController {
+         });
+     }
+
 -    appendStorageConnectivityResult(result = {}) {
 -        this.storageConnectivityRows.prepend(this.createRow([
 -            result.actionId || "storage-connectivity",
@@ -800,7 +891,8 @@ index 38e143867..dfe67df79 100644
 +        const cell = document.createElement("td");
 +        cell.textContent = asText(text);
 +        return cell;
-@@ -296,2 +177,5 @@ class AdminSystemHealthController {
+     }
+
 -    clearStorageConnectivityResults() {
 -        this.storageConnectivityRows.replaceChildren();
 +    createStatusCell(status, reason) {
@@ -808,7 +900,8 @@ index 38e143867..dfe67df79 100644
 +        cell.dataset.healthStatus = statusValue(status);
 +        this.setStatusNode(cell, status, reason);
 +        return cell;
-@@ -300,16 +184,3 @@ class AdminSystemHealthController {
+     }
+
 -    runStorageConnectivityAction(actionId) {
 -        try {
 -            const result = runAdminSystemHealthStorageConnectivityAction(actionId);
@@ -828,7 +921,7 @@ index 38e143867..dfe67df79 100644
 +    renderRuntimePending(reason) {
 +        if (!this.runtimeRows) {
 +            return;
-@@ -316,0 +188,7 @@ class AdminSystemHealthController {
+         }
 +        const row = document.createElement("tr");
 +        row.append(
 +            this.createCell("Runtime environment"),
@@ -836,7 +929,8 @@ index 38e143867..dfe67df79 100644
 +            this.createStatusCell("PENDING", reason),
 +        );
 +        this.runtimeRows.replaceChildren(row);
-@@ -319,15 +197,7 @@ class AdminSystemHealthController {
+     }
+
 -    runStartupStorageConnectivity() {
 -        this.clearStorageConnectivityResults();
 -        this.setStorageConnectivityStatus("SKIP", "Storage connectivity startup running.");
@@ -859,7 +953,7 @@ index 38e143867..dfe67df79 100644
 +        if (runtimeEnvironment?.secretsExposed === true || runtimeEnvironment?.secretEditingAllowed === true) {
 +            this.renderRuntimePending("Safe runtime environment diagnostics were blocked because the response exposed secret controls.");
 +            return;
-@@ -334,0 +205,18 @@ class AdminSystemHealthController {
+         }
 +        const rows = Array.isArray(runtimeEnvironment.rows) ? runtimeEnvironment.rows : [];
 +        if (!rows.length) {
 +            this.renderRuntimePending("Safe runtime environment diagnostics returned no loaded keys.");
@@ -878,7 +972,10 @@ index 38e143867..dfe67df79 100644
 +            fragment.append(row);
 +        });
 +        this.runtimeRows.replaceChildren(fragment);
-@@ -339,12 +227,9 @@ class AdminSystemHealthController {
+     }
+
+     load() {
+         try {
 -            const payload = readAdminSystemHealthStatus();
 -            this.renderSummary(payload.summary || {});
 -            this.renderOverview(Array.isArray(payload.overview) ? payload.overview : []);
@@ -900,7 +997,7 @@ index 38e143867..dfe67df79 100644
 +            this.renderStorageStatus(data?.storageStatus || {});
 +            this.runStorageDiagnostics();
 +            this.renderRuntimeEnvironment(data?.runtimeEnvironment || {});
-@@ -352,24 +237,2 @@ class AdminSystemHealthController {
+         } catch (error) {
 -            this.renderSummary({ counts: { FAIL: 1, PASS: 0, WARN: 0 }, lastRefreshAt: "not available", score: 0, status: "FAIL" });
 -            this.renderConnectionSummary({});
 -            this.renderDatabaseStatus({});
@@ -927,15 +1024,18 @@ index 38e143867..dfe67df79 100644
 -            this.setStorageConnectivityStatus("SKIP", "Storage connectivity startup skipped because Admin System Health failed to load.");
 +            const message = error instanceof Error ? error.message : "Safe Admin System Health API is unavailable.";
 +            this.renderPending(message);
-@@ -380 +243 @@ class AdminSystemHealthController {
+         }
+     }
+ }
+
 -document.addEventListener("DOMContentLoaded", () => {
 +function bootAdminSystemHealth() {
-@@ -382,3 +245 @@ document.addEventListener("DOMContentLoaded", () => {
+     const root = document.querySelector("[data-admin-system-health]");
 -    if (!root) {
 -        return;
 -    }
 +    if (!root) return;
-@@ -386 +247,7 @@ document.addEventListener("DOMContentLoaded", () => {
+     new AdminSystemHealthController(root).init();
 -});
 +}
 +
@@ -2072,71 +2172,322 @@ index 000000000..de4750007
 +## EOD Approval
 +
 +No merge was performed. EOD merge remains owner-controlled and requires explicit approval.
+diff --git a/docs_build/dev/reports/PR_26171_GAMMA_019-admin-workstream-mergeability-recovery.md b/docs_build/dev/reports/PR_26171_GAMMA_019-admin-workstream-mergeability-recovery.md
+new file mode 100644
+index 000000000..0e4a84ff2
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26171_GAMMA_019-admin-workstream-mergeability-recovery.md
+@@ -0,0 +1,50 @@
++# PR_26171_GAMMA_019-admin-workstream-mergeability-recovery
++
++## Scope
++
++Recover mergeability for PR #36 on `team/GAMMA/admin` without adding feature work.
++
++## Preflight
++
++- Branch verified: `team/GAMMA/admin`
++- Worktree before recovery: clean
++- Local/origin sync before recovery: `0 0`
++- PR #36 before recovery: open, ready for review, `mergeable:false`
++- PR #36 head before recovery: `1806adbf5df787f7072c6579d23b99bb4257466b`
++- Current `origin/main` fetched with `git -c http.sslBackend=schannel fetch origin main`
++- `origin/main` at recovery: `35b04c02ea54da8b13c10354126f1ee8ddd14a89`
++
++## Diagnosis
++
++`git merge-tree --write-tree origin/main HEAD` returned conflict status and identified only generated report artifact conflicts:
++
++- `docs_build/dev/reports/codex_changed_files.txt`
++- `docs_build/dev/reports/codex_review.diff`
++- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
++- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++
++No Admin System Health source file had a content conflict. `src/dev-runtime/server/local-api-router.mjs` auto-merged cleanly.
++
++## Resolution
++
++- Merged latest `origin/main` into `team/GAMMA/admin` with `git merge --no-ff --no-commit origin/main`.
++- Resolved the four generated report artifact conflicts.
++- Preserved PR #36 Admin System Health source work.
++- Preserved latest `origin/main` governance files; no governance file conflict occurred.
++- Did not add new feature work.
++- Did not remove SQLite code.
++
++## Validation
++
++- `git diff --check`: PASS
++- `git diff --cached --check`: PASS
++- `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --config=codex_playwright_system_chrome.config.cjs --project=playwright`: PASS, 3 passed
++- Samples smoke: skipped by request
++
++## Closeout
++
++- Conflicted files resolved: 4 generated report artifacts
++- Source conflicts resolved: none
++- Push target: `origin/team/GAMMA/admin`
++- Final PR #36 mergeable status: rechecked after push in recovery closeout
++- Final local/origin sync: rechecked after push in recovery closeout
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index e6db7843b..421f81abd 100644
+--- a/docs_build/dev/reports/codex_changed_files.txt
++++ b/docs_build/dev/reports/codex_changed_files.txt
+@@ -1,19 +1,66 @@
+-# PR_26171_018-local-api-startup-diagnostics changed files
++Base merge-base: e8845dae6e990164072d4ee9b37ec81eda563fc3
++Head at artifact refresh: d69a02c15e8791ab2d9463313a536b71e8553eb0
+
+-## Source/test changes
+-- scripts/start-local-api-server.mjs
+-- tests/dev-runtime/LocalApiStartupLogging.test.mjs
++Working tree status at artifact generation:
++M  admin/system-health.html
++M  assets/theme-v2/js/admin-system-health.js
++A  docs_build/dev/reports/PR_26171_GAMMA_016-admin-runtime-environment-runtime-instruction-compliance-checklist.md
++A  docs_build/dev/reports/PR_26171_GAMMA_016-admin-runtime-environment-runtime-manual-validation-notes.md
++A  docs_build/dev/reports/PR_26171_GAMMA_016-admin-runtime-environment-runtime.md
++M  docs_build/dev/reports/coverage_changed_js_guardrail.txt
++M  docs_build/dev/reports/playwright_v8_coverage_report.txt
++M  src/dev-runtime/server/local-api-router.mjs
++M  tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+
+-## Required reports
+-- docs_build/dev/reports/codex_review.diff
+-- docs_build/dev/reports/codex_changed_files.txt
+-- docs_build/dev/reports/PR_26171_018-local-api-startup-diagnostics.md
+-- docs_build/dev/reports/PR_26171_018-local-api-startup-diagnostics-validation-report.md
+-- docs_build/dev/reports/PR_26171_018-local-api-startup-diagnostics-manual-validation-notes.md
++Changed files against merge-base:
++M	admin/system-health.html
++M	assets/theme-v2/js/admin-system-health.js
++A	docs_build/dev/reports/PR_26171_GAMMA_011-admin-system-health-foundation-instruction-compliance-checklist.md
++A	docs_build/dev/reports/PR_26171_GAMMA_011-admin-system-health-foundation-manual-validation-notes.md
++A	docs_build/dev/reports/PR_26171_GAMMA_011-admin-system-health-foundation.md
++A	docs_build/dev/reports/PR_26171_GAMMA_012-admin-system-health-status-reason-cleanup-instruction-compliance-checklist.md
++A	docs_build/dev/reports/PR_26171_GAMMA_012-admin-system-health-status-reason-cleanup-manual-validation-notes.md
++A	docs_build/dev/reports/PR_26171_GAMMA_012-admin-system-health-status-reason-cleanup.md
++A	docs_build/dev/reports/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan-instruction-compliance-checklist.md
++A	docs_build/dev/reports/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan-manual-validation-notes.md
++A	docs_build/dev/reports/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan.md
++A	docs_build/dev/reports/PR_26171_GAMMA_014-admin-postgres-diagnostics-runtime-instruction-compliance-checklist.md
++A	docs_build/dev/reports/PR_26171_GAMMA_014-admin-postgres-diagnostics-runtime-manual-validation-notes.md
++A	docs_build/dev/reports/PR_26171_GAMMA_014-admin-postgres-diagnostics-runtime.md
++A	docs_build/dev/reports/PR_26171_GAMMA_015-admin-r2-diagnostics-runtime-instruction-compliance-checklist.md
++A	docs_build/dev/reports/PR_26171_GAMMA_015-admin-r2-diagnostics-runtime-manual-validation-notes.md
++A	docs_build/dev/reports/PR_26171_GAMMA_015-admin-r2-diagnostics-runtime.md
++A	docs_build/dev/reports/PR_26171_GAMMA_016-admin-runtime-environment-runtime-instruction-compliance-checklist.md
++A	docs_build/dev/reports/PR_26171_GAMMA_016-admin-runtime-environment-runtime-manual-validation-notes.md
++A	docs_build/dev/reports/PR_26171_GAMMA_016-admin-runtime-environment-runtime.md
++M	docs_build/dev/reports/coverage_changed_js_guardrail.txt
++M	docs_build/dev/reports/playwright_v8_coverage_report.txt
++M	src/dev-runtime/server/local-api-router.mjs
++M	tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+
+-## Local package artifact
+-- tmp/PR_26171_018-local-api-startup-diagnostics_delta.zip
+-
+-## Validation evidence
+-- npm run test:workspace-v2: PASS
+-- npm run dev:local-api startup capture: PASS
++Stat against merge-base:
++ admin/system-health.html                           | 366 ++++-----------
++ assets/theme-v2/js/admin-system-health.js          | 505 ++++++++-------------
++ ...-foundation-instruction-compliance-checklist.md |  32 ++
++ ...em-health-foundation-manual-validation-notes.md |  34 ++
++ ...171_GAMMA_011-admin-system-health-foundation.md |  65 +++
++ ...son-cleanup-instruction-compliance-checklist.md |  57 +++
++ ...tatus-reason-cleanup-manual-validation-notes.md |  26 ++
++ ...12-admin-system-health-status-reason-cleanup.md |  70 +++
++ ...ostics-plan-instruction-compliance-checklist.md |  64 +++
++ ...lth-diagnostics-plan-manual-validation-notes.md |  27 ++
++ ...MMA_013-admin-system-health-diagnostics-plan.md |  82 ++++
++ ...ics-runtime-instruction-compliance-checklist.md |  64 +++
++ ...-diagnostics-runtime-manual-validation-notes.md |  27 ++
++ ...GAMMA_014-admin-postgres-diagnostics-runtime.md |  93 ++++
++ ...ics-runtime-instruction-compliance-checklist.md |  62 +++
++ ...-diagnostics-runtime-manual-validation-notes.md |  26 ++
++ ...26171_GAMMA_015-admin-r2-diagnostics-runtime.md |  95 ++++
++ ...ent-runtime-instruction-compliance-checklist.md |  66 +++
++ ...-environment-runtime-manual-validation-notes.md |  28 ++
++ ..._GAMMA_016-admin-runtime-environment-runtime.md | 102 +++++
++ .../dev/reports/coverage_changed_js_guardrail.txt  |   7 +-
++ .../dev/reports/playwright_v8_coverage_report.txt  |  36 +-
++ src/dev-runtime/server/local-api-router.mjs        |  46 ++
++ .../tools/AdminHealthOperationsPage.spec.mjs       | 151 +++++-
++ 24 files changed, 1502 insertions(+), 629 deletions(-)
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 59de15fb6..bd67f29f4 100644
+index 86850b15b..f5b74d4eb 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -9,2 +9,2 @@ Changed runtime JS files considered:
--(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) toolbox/messages/messages.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+@@ -6,9 +6,37 @@ Missing changed runtime JS files are WARN, not FAIL.
+ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+
+ Changed runtime JS files considered:
++(0%) assets/theme-v2/js/account-achievements.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 +(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) toolbox/controls/controls.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) toolbox/game-hub/game-hub-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) toolbox/game-hub/game-hub.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) toolbox/game-journey/game-journey.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) toolbox/idea-board/index.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) toolbox/messages/messages.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) toolbox/text-to-speech/text2speech.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) toolbox/tools-page-accordions.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 67/90
 +(90%) assets/theme-v2/js/admin-system-health.js - executed lines 227/227; executed functions 28/31
-@@ -13,2 +13 @@ Guardrail warnings:
--(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) toolbox/messages/messages.js - WARNING: changed runtime JS file missing from coverage; advisory only
+
+ Guardrail warnings:
++(0%) assets/theme-v2/js/account-achievements.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 +(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) toolbox/controls/controls.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) toolbox/game-hub/game-hub-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) toolbox/game-hub/game-hub.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) toolbox/game-journey/game-journey.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) toolbox/idea-board/index.js - WARNING: changed runtime JS file missing from coverage; advisory only
+ (0%) toolbox/messages/messages.js - WARNING: changed runtime JS file missing from coverage; advisory only
+ (0%) toolbox/text-to-speech/text2speech.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) toolbox/tools-page-accordions.js - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 94d5e709f..3d9e70087 100644
+index e8623a06d..0d5722de2 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -15 +15 @@ Exercised tool entry points detected:
--(70%) Toolbox Index - exercised 3 runtime JS files
+@@ -12,49 +12,93 @@ Note: entry percentages use function coverage when available, otherwise line cov
+ Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
+
+ Exercised tool entry points detected:
+-(71%) Toolbox Index - exercised 10 runtime JS files
 +(46%) Toolbox Index - exercised 1 runtime JS files
-@@ -17 +17 @@ Exercised tool entry points detected:
--(72%) Theme V2 Shared JS - exercised 1 runtime JS files
+ (0%) Tool Template V2 - not exercised by this Playwright run
+-(61%) Theme V2 Shared JS - exercised 7 runtime JS files
 +(78%) Theme V2 Shared JS - exercised 4 runtime JS files
-@@ -20,2 +20,2 @@ Changed runtime JS files covered:
--(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) toolbox/messages/messages.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+
+ Changed runtime JS files covered:
++(0%) assets/theme-v2/js/account-achievements.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 +(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) toolbox/controls/controls.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) toolbox/game-hub/game-hub-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) toolbox/game-hub/game-hub.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) toolbox/game-journey/game-journey.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) toolbox/idea-board/index.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) toolbox/messages/messages.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) toolbox/text-to-speech/text2speech.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) toolbox/tools-page-accordions.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 67/90
 +(90%) assets/theme-v2/js/admin-system-health.js - executed lines 227/227; executed functions 28/31
-@@ -24,4 +24,3 @@ Files with executed line/function counts where available:
+
+ Files with executed line/function counts where available:
+-(14%) assets/theme-v2/js/account-auth-service.js - executed lines 64/64; executed functions 1/7
+-(14%) assets/theme-v2/js/admin-setup-actions.js - executed lines 55/55; executed functions 1/7
+-(18%) assets/theme-v2/js/account-page-data.js - executed lines 150/150; executed functions 3/17
+-(20%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 2/10
+-(25%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 1/4
 -(25%) src/api/session-api-client.js - executed lines 68/68; executed functions 3/12
+-(29%) src/engine/input/NormalizedInputRegistry.js - executed lines 341/341; executed functions 6/21
+-(33%) src/api/admin-setup-api-client.js - executed lines 13/13; executed functions 1/3
 -(33%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
--(44%) src/api/server-api-client.js - executed lines 167/167; executed functions 8/18
--(48%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 11/23
+-(56%) toolbox/colors/colors.js - executed lines 1848/1848; executed functions 115/204
+-(58%) src/api/server-api-client.js - executed lines 167/167; executed functions 11/19
 +(36%) src/api/server-api-client.js - executed lines 167/167; executed functions 5/14
 +(46%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 12/26
-+(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 204/204; executed functions 9/14
-@@ -29,4 +28,5 @@ Files with executed line/function counts where available:
+ (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 204/204; executed functions 9/14
+-(64%) toolbox/controls/controls.js - executed lines 610/610; executed functions 36/56
+ (65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
 -(67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
 -(67%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 20/20; executed functions 2/3
--(72%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 65/90
--(74%) toolbox/tools-page-accordions.js - executed lines 1156/1156; executed functions 81/109
-+(74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 67/90
+-(71%) toolbox/game-workspace/game-workspace.js - executed lines 472/472; executed functions 32/45
+ (74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 67/90
+-(89%) toolbox/tools-page-accordions.js - executed lines 1156/1156; executed functions 105/118
+-(90%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 26/29
+-(91%) toolbox/game-design/game-design.js - executed lines 254/254; executed functions 21/23
+-(94%) assets/theme-v2/js/marketplace-page.js - executed lines 170/170; executed functions 16/17
+-(100%) src/api/marketplace-api-client.js - executed lines 16/16; executed functions 3/3
+-(100%) toolbox/colors/palette-api-client.js - executed lines 28/28; executed functions 4/4
+-(100%) toolbox/controls/controls-api-client.js - executed lines 33/33; executed functions 5/5
+-(100%) toolbox/game-design/game-design-api-client.js - executed lines 13/13; executed functions 2/2
 +(80%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 4/5
 +(90%) assets/theme-v2/js/admin-system-health.js - executed lines 227/227; executed functions 28/31
 +(91%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 10/11
 +(100%) src/api/admin-system-health-api-client.js - executed lines 19/19; executed functions 3/3
-@@ -35,2 +35 @@ Uncovered or low-coverage changed JS files:
--(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) toolbox/messages/messages.js - WARNING: uncovered changed runtime JS file; advisory only
+
+ Uncovered or low-coverage changed JS files:
++(0%) assets/theme-v2/js/account-achievements.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: uncovered changed runtime JS file; advisory only
 +(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
-@@ -39,6 +38,3 @@ Changed JS files considered:
--(0%) src/shared/toolbox/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/MessagesTool.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/TextToSpeechFunctional.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) toolbox/messages/messages.js - changed JS file not collected as browser runtime coverage
++(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) toolbox/controls/controls.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) toolbox/game-hub/game-hub-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) toolbox/game-hub/game-hub.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) toolbox/game-journey/game-journey.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) toolbox/idea-board/index.js - WARNING: uncovered changed runtime JS file; advisory only
+ (0%) toolbox/messages/messages.js - WARNING: uncovered changed runtime JS file; advisory only
+ (0%) toolbox/text-to-speech/text2speech.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) toolbox/tools-page-accordions.js - WARNING: uncovered changed runtime JS file; advisory only
+
+ Changed JS files considered:
++(0%) assets/theme-v2/js/account-achievements.js - changed JS file not collected as browser runtime coverage
++(0%) scripts/run-targeted-test-lanes.mjs - changed JS file not collected as browser runtime coverage
++(0%) scripts/start-local-api-server.mjs - changed JS file not collected as browser runtime coverage
++(0%) scripts/validate-browser-env-agnostic.mjs - changed JS file not collected as browser runtime coverage
++(0%) scripts/validate-local-postgres-runtime.mjs - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/messages/messages-sqlite-service.mjs - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/seed/server-seed-loader.mjs - changed JS file not collected as browser runtime coverage
 +(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
++(0%) src/shared/toolbox/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
++(0%) tests/dev-runtime/DevRuntimeBoundary.test.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/dev-runtime/LocalApiStartupLogging.test.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/dev-runtime/ProductDataProviderContractHardening.test.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/dev-runtime/SupabaseProductDataCutover.test.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/account/AchievementsPage.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
 +(0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/GameHubMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/GameJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/IdeaBoardTableNotes.spec.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/MessagesTool.spec.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/TextToSpeechFunctional.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/ToolImageRegistry.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/ToolNavigationPrevNext.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) toolbox/controls/controls.js - changed JS file not collected as browser runtime coverage
++(0%) toolbox/game-hub/game-hub-api-client.js - changed JS file not collected as browser runtime coverage
++(0%) toolbox/game-hub/game-hub.js - changed JS file not collected as browser runtime coverage
++(0%) toolbox/game-journey/game-journey.js - changed JS file not collected as browser runtime coverage
++(0%) toolbox/idea-board/index.js - changed JS file not collected as browser runtime coverage
+ (0%) toolbox/messages/messages.js - changed JS file not collected as browser runtime coverage
+ (0%) toolbox/text-to-speech/text2speech.js - changed JS file not collected as browser runtime coverage
++(0%) toolbox/tools-page-accordions.js - changed JS file not collected as browser runtime coverage
++(74%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
 +(90%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
 diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index 9b98fca14..080a970f6 100644
+index 79a846f6d..4eed49c54 100644
 --- a/src/dev-runtime/server/local-api-router.mjs
 +++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -304,0 +305,9 @@ const SYSTEM_HEALTH_LIMIT_PRESSURE_LABELS = Object.freeze(["OK", "WATCH", "UPGRA
+@@ -302,6 +302,15 @@ const SYSTEM_HEALTH_LIMIT_ENV_KEYS = Object.freeze([
+   }),
+ ]);
+ const SYSTEM_HEALTH_LIMIT_PRESSURE_LABELS = Object.freeze(["OK", "WATCH", "UPGRADE SOON", "RISK"]);
 +const RUNTIME_ENV_SECRET_MARKERS = Object.freeze([
 +  "PASSWORD",
 +  "SECRET",
@@ -2146,7 +2497,13 @@ index 9b98fca14..080a970f6 100644
 +  "JWT",
 +  "DATABASE_URL",
 +]);
-@@ -740,0 +750,35 @@ function systemHealthSummary(rows) {
+ const SYSTEM_HEALTH_USAGE_NOT_AVAILABLE = "NOT AVAILABLE";
+ const SYSTEM_HEALTH_USAGE_CONTRACTS = Object.freeze({
+   GAMEFOUNDRY_DB_CONNECTION_LIMIT: Object.freeze({
+@@ -738,6 +747,41 @@ function systemHealthSummary(rows) {
+   };
+ }
+
 +function isSecretLikeRuntimeEnvKey(key) {
 +  const upperKey = String(key || "").toUpperCase();
 +  return RUNTIME_ENV_SECRET_MARKERS.some((marker) => upperKey.includes(marker));
@@ -2182,15 +2539,33 @@ index 9b98fca14..080a970f6 100644
 +  };
 +}
 +
-@@ -3452,0 +3497 @@ LIMIT 1;
+ function systemHealthR2Readiness(storageStatus) {
+   const credentialsConfigured = storageStatus.accessKeyConfigured === true && storageStatus.secretKeyConfigured === true;
+   const configurationReady = storageStatus.configured === true
+@@ -3464,6 +3508,7 @@ LIMIT 1;
+     const packageStatus = projectPackageReadinessStatus();
+     const promotionFoundation = this.ownerPromotionFoundation();
+     const r2Readiness = systemHealthR2Readiness(storageStatus);
 +    const runtimeEnvironment = systemHealthRuntimeEnvironment();
-@@ -3558,0 +3604 @@ LIMIT 1;
+     const operationsHealth = adminOperationsHealth(this.standaloneTables);
+     const importBlocked = promotionFoundation.importOverwriteAllowed === false
+       && promotionFoundation.browserExecutionAllowed === false
+@@ -3570,6 +3615,7 @@ LIMIT 1;
+       r2Readiness,
+       secretEditingAllowed: false,
+       secretsExposed: false,
 +      runtimeEnvironment,
+       storageStatus,
+       summary: systemHealthSummary(overview),
+       status: overallHealthStatus(overview),
 diff --git a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
 index e19b4da0b..9287e4310 100644
 --- a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
 +++ b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-@@ -7,0 +8,7 @@ import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageRe
+@@ -5,7 +5,19 @@ import { SEED_DB_KEYS } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
+ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
+ import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
+
 +const TEST_RUNTIME_ENV_VALUES = Object.freeze({
 +  GAMEFOUNDRY_ADMIN_HEALTH_DATABASE_URL: "postgresql://env-user:env-secret@example.invalid:5432/admin_health",
 +  GAMEFOUNDRY_ADMIN_HEALTH_PASSWORD: "admin-health-password-secret",
@@ -2198,45 +2573,68 @@ index e19b4da0b..9287e4310 100644
 +  GAMEFOUNDRY_ADMIN_HEALTH_TOKEN: "admin-health-token-secret",
 +});
 +
-@@ -8,0 +16,5 @@ async function setSessionUser(server, userKey) {
+ async function setSessionUser(server, userKey) {
 +  await fetch(`${server.baseUrl}/api/session/mode`, {
 +    body: JSON.stringify({ modeId: "local-db" }),
 +    headers: { "content-type": "application/json" },
 +    method: "POST",
 +  });
-@@ -16,0 +29,5 @@ async function openAdminSystemHealthPage(page, userKey) {
+   await fetch(`${server.baseUrl}/api/session/user`, {
+     body: JSON.stringify({ userKey }),
+     headers: { "content-type": "application/json" },
+@@ -14,10 +26,21 @@ async function setSessionUser(server, userKey) {
+ }
+
+ async function openAdminSystemHealthPage(page, userKey) {
 +  const previousRuntimeEnvValues = {};
 +  Object.entries(TEST_RUNTIME_ENV_VALUES).forEach(([key, value]) => {
 +    previousRuntimeEnvValues[key] = process.env[key];
 +    process.env[key] = value;
 +  });
-@@ -17,0 +35,4 @@ async function openAdminSystemHealthPage(page, userKey) {
+   const server = await startRepoServer();
 +  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
 +  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
 +  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
 +  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
-@@ -18,0 +40 @@ async function openAdminSystemHealthPage(page, userKey) {
+   const failedRequests = [];
 +  const apiResponseTextPromises = [];
-@@ -20,0 +43 @@ async function openAdminSystemHealthPage(page, userKey) {
+   const pageErrors = [];
+   const consoleErrors = [];
 +  const requestUrls = [];
-@@ -32,0 +56,3 @@ async function openAdminSystemHealthPage(page, userKey) {
+   page.on("pageerror", (error) => {
+     pageErrors.push(error.message);
+   });
+@@ -30,50 +53,130 @@ async function openAdminSystemHealthPage(page, userKey) {
+     if (response.status() >= 400) {
+       failedRequests.push(`${response.status()} ${response.url()}`);
+     }
 +    if (response.url().includes("/api/admin/system-health")) {
 +      apiResponseTextPromises.push(response.text().catch((error) => `response text unavailable: ${error.message}`));
 +    }
-@@ -36,0 +63,3 @@ async function openAdminSystemHealthPage(page, userKey) {
+   });
+   page.on("requestfailed", (request) => {
+     failedRequests.push(`FAILED ${request.url()}`);
+   });
 +  page.on("request", (request) => {
 +    requestUrls.push(request.url());
 +  });
-@@ -39,0 +69 @@ async function openAdminSystemHealthPage(page, userKey) {
+   await setSessionUser(server, userKey);
+   await workspaceV2CoverageReporter.start(page);
+   await page.goto(`${server.baseUrl}/admin/system-health.html`, { waitUntil: "networkidle" });
 +  const apiResponseTexts = await Promise.all(apiResponseTextPromises);
-@@ -40,0 +71 @@ async function openAdminSystemHealthPage(page, userKey) {
+   return {
 +    apiResponseTexts,
-@@ -43,0 +75,4 @@ async function openAdminSystemHealthPage(page, userKey) {
+     consoleErrors,
+     failedRequests,
+     pageErrors,
 +    previousApiUrl,
 +    previousRuntimeEnvValues,
 +    previousSiteUrl,
 +    requestUrls,
-@@ -47,0 +83,8 @@ async function openAdminSystemHealthPage(page, userKey) {
+     server,
+   };
+ }
+
 +function restoreEnvValue(key, value) {
 +  if (value === undefined) {
 +    delete process.env[key];
@@ -2245,7 +2643,9 @@ index e19b4da0b..9287e4310 100644
 +  process.env[key] = value;
 +}
 +
-@@ -50,0 +94,23 @@ async function closeAdminSystemHealthPage(page, context) {
+ async function closeAdminSystemHealthPage(page, context) {
+   await workspaceV2CoverageReporter.stop(page);
+   await context.server.close();
 +  restoreEnvValue("GAMEFOUNDRY_API_URL", context.previousApiUrl);
 +  restoreEnvValue("GAMEFOUNDRY_SITE_URL", context.previousSiteUrl);
 +  Object.entries(context.previousRuntimeEnvValues || {}).forEach(([key, value]) => {
@@ -2269,10 +2669,18 @@ index e19b4da0b..9287e4310 100644
 +      expect(clientVisibleText).not.toContain(value);
 +    }
 +  });
-@@ -57 +123 @@ test.afterAll(async () => {
+ }
+
+ test.afterAll(async () => {
+   await workspaceV2CoverageReporter.writeReport();
+ });
+
 -test("Admin System Health renders operational health summaries and filters", async ({ page }) => {
 +test("Admin System Health renders Postgres diagnostics through the safe status API", async ({ page }) => {
-@@ -62,15 +128,52 @@ test("Admin System Health renders operational health summaries and filters", asy
+   const context = await openAdminSystemHealthPage(page, SEED_DB_KEYS.users.admin);
+   try {
+     await expect(page).toHaveTitle(/System Health - Game Foundry Studio LLC/);
+     await expect(page.getByRole("heading", { exact: true, name: "System Health" })).toBeVisible();
 -    await expect(page.locator("[data-admin-system-health-status]")).toContainText("Admin System Health loaded safe status only.");
 -    await expect(page.locator("[data-admin-health-summary-rows]")).toContainText("Membership operations");
 -    await expect(page.locator("[data-admin-health-summary-rows]")).toContainText("Invitation support");
@@ -2340,22 +2748,35 @@ index e19b4da0b..9287e4310 100644
 +    expect(context.requestUrls.filter((url) => url.includes("/api/admin/system-health/storage-connectivity-action"))).toHaveLength(4);
 +    await expectClientToHideSecretValues(page, context);
 +    await expect(page.locator("[data-admin-system-health-storage-action]")).toHaveCount(0);
-@@ -92 +195,3 @@ test("Creator sessions cannot access Admin System Health operations", async ({ p
+     await expect(page.locator("[data-owner-ai-save], [data-owner-membership-save], [data-owner-ai-credits], [data-owner-memberships]")).toHaveCount(0);
+     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+     expect(context.pageErrors).toEqual([]);
+@@ -89,7 +192,9 @@ test("Creator sessions cannot access Admin System Health operations", async ({ p
+   try {
+     await expect(page.getByRole("heading", { name: "Admin role required" })).toBeVisible();
+     await expect(page.locator("[data-session-access-blocked='admin']")).toBeVisible();
 -    await expect(page.locator("[data-admin-health-summary-rows]")).toHaveCount(0);
 +    await expect(page.getByRole("table", { name: "Environment summary" })).toHaveCount(0);
 +    expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/status"))).toBe(false);
 +    expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/storage-connectivity-action"))).toBe(false);
-@@ -106,0 +212,6 @@ test("Admin System Health operations page keeps scripts and styles external", as
+     expect(context.pageErrors).toEqual([]);
+     expect(context.consoleErrors).toEqual([]);
+     expect(context.failedRequests).toEqual([]);
+@@ -104,5 +209,17 @@ test("Admin System Health operations page keeps scripts and styles external", as
+   expect(pageSource).not.toMatch(/<script\b(?![^>]+src=)/i);
+   expect(pageSource).not.toMatch(/\son[a-z]+\s*=/i);
+   expect(pageSource).not.toMatch(/\sstyle\s*=/i);
 +  expect(pageSource).not.toMatch(/data-health-status="(?:WARN|FAIL)"/);
 +  expect(pageSource).not.toContain("No active failure is declared");
 +  expect(pageSource).not.toContain("SQLite");
 +  expect(pageSource).toContain("Diagnostics Plan");
 +  expect(pageSource).toContain("Server-owned Postgres health reader");
 +  expect(pageSource).toContain("Server-owned Cloudflare R2 storage diagnostic");
-@@ -107,0 +219,6 @@ test("Admin System Health operations page keeps scripts and styles external", as
+   expect(pageSource).toContain("assets/theme-v2/js/admin-system-health.js");
 +  expect(pageSource).toContain("assets/theme-v2/js/admin-owner-navigation.js");
 +  const runtimeSource = await fs.readFile(path.resolve("assets/theme-v2/js/admin-system-health.js"), "utf8");
 +  expect(runtimeSource).not.toContain("SQLite");
 +  expect(runtimeSource).not.toContain("localStorage");
 +  expect(runtimeSource).not.toContain("sessionStorage");
 +  expect(runtimeSource).toContain("runAdminSystemHealthStorageConnectivityAction");
+ });

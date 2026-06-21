@@ -13,7 +13,7 @@ Direct SQL setup is intentionally narrow. Account DEV users now require server-s
 | Game Configuration | `game-configuration.sql` | Server-seed-owned | Server-side seed API |
 | Game Design | `game-design.sql` | Server-seed-owned | Server-side seed API |
 | Game Journey | `game-journey.sql` | Server-seed-owned | Server-side seed API |
-| Game Workspace | `game-workspace.sql` | Server-seed-owned | Server-side seed API |
+| Game Hub | `game-workspace.sql` | Server-seed-owned | Server-side seed API |
 | Messages | `messages.sql` | Server-seed-owned | Messages Local API/server-side SQLite service |
 | Objects | `objects.sql` | Server-seed-owned | Server-side seed API |
 | Palette | `palette.sql` | Server-seed-owned | Server-side seed API |
