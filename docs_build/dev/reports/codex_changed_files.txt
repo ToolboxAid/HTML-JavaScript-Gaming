@@ -1,30 +1,8 @@
-﻿## git status --short
-A  docs_build/dev/reports/PR_26171_ALPHA_023-game-journey-postgres-metrics-migration-data-preservation-notes.md
-A  docs_build/dev/reports/PR_26171_ALPHA_023-game-journey-postgres-metrics-migration-instruction-compliance-checklist.md
-A  docs_build/dev/reports/PR_26171_ALPHA_023-game-journey-postgres-metrics-migration-manual-validation-notes.md
-A  docs_build/dev/reports/PR_26171_ALPHA_023-game-journey-postgres-metrics-migration.md
-M  docs_build/dev/reports/coverage_changed_js_guardrail.txt
-M  docs_build/dev/reports/playwright_v8_coverage_report.txt
-M  src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs
-M  src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
-M  src/dev-runtime/server/local-api-router.mjs
-A  tests/helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs
-M  tests/helpers/playwrightRepoServer.mjs
-M  tests/playwright/tools/GameJourneyTool.spec.mjs
-
-## git diff --cached --stat
- ...es-metrics-migration-data-preservation-notes.md |  19 ++
- ...s-migration-instruction-compliance-checklist.md |  16 +
- ...es-metrics-migration-manual-validation-notes.md |  20 ++
- ..._023-game-journey-postgres-metrics-migration.md |  45 +++
- .../dev/reports/coverage_changed_js_guardrail.txt  |  30 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |  85 +----
- .../game-journey-completion-metrics-store.mjs      | 369 ++++++++++++---------
- .../game-journey-mock-repository.js                |   6 +-
- src/dev-runtime/server/local-api-router.mjs        |  41 ++-
- ...eJourneyCompletionMetricsPostgresClientStub.mjs |  87 +++++
- tests/helpers/playwrightRepoServer.mjs             |  11 +-
- tests/playwright/tools/GameJourneyTool.spec.mjs    | 108 ++++--
- 12 files changed, 518 insertions(+), 319 deletions(-)
-
-## git diff --stat
+﻿docs_build/dev/reports/PR_26171_GAMMA_024-local-api-sqlite-reference-cleanup-instruction-compliance-checklist.md
+docs_build/dev/reports/PR_26171_GAMMA_024-local-api-sqlite-reference-cleanup-manual-validation-notes.md
+docs_build/dev/reports/PR_26171_GAMMA_024-local-api-sqlite-reference-cleanup.md
+docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/codex_review.diff
+docs_build/dev/reports/coverage_changed_js_guardrail.txt
+docs_build/dev/reports/playwright_v8_coverage_report.txt
+src/dev-runtime/server/local-api-router.mjs

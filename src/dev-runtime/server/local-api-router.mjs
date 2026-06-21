@@ -2626,7 +2626,7 @@ class ApiRuntimeDataSource {
     return {
       action,
       database: "Local DB",
-      databaseEngine: "SQLite",
+      databaseEngine: "Local DB adapter",
       providerId: "local-api-project-workspace",
       serviceContract: "Web UI -> Local API/Service Contract -> Local DB",
       status: "PASS",
@@ -3335,7 +3335,7 @@ class ApiRuntimeDataSource {
         safetyDiagnostic: "Read-only export planning only; no project records, asset references, or storage objects are changed.",
         safetyStatus: "PASS",
         status: "PLAN",
-        message: "Plan a read-only DEV export through Local API from Local DB/SQLite metadata, asset references, and configured project asset storage object keys.",
+        message: "Plan a read-only DEV export through Local API from project metadata, asset references, and configured project asset storage object keys.",
       },
       {
         id: "ist-import-plan",
@@ -3648,7 +3648,7 @@ LIMIT 1;
         : true,
       browserProductDataSsoT: false,
       database: "Local DB",
-      databaseEngine: "SQLite",
+      databaseEngine: "Local DB adapter",
       guestBrowsingAllowed: true,
       guestSavingAllowed: false,
       pageLocalProductDataArrays: false,
