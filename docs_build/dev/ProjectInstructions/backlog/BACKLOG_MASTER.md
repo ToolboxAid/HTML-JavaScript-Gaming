@@ -4,114 +4,114 @@
 
 ### Idea
 
-0% Complete — Dream, brainstorm, and explore early game concepts
+0% Complete â€” Dream, brainstorm, and explore early game concepts
 
-- [ ] Alpha - Idea Board
-- [ ] Alpha - Game Concept Notes
-- [ ] Alpha - Creator Learning
+- [ ] Alfa - Idea Board
+- [ ] Alfa - Game Concept Notes
+- [ ] Alfa - Creator Learning
 
 ### Design
 
-0% Complete — Shape the game's story, structure, and systems
+0% Complete â€” Shape the game's story, structure, and systems
 
-- [ ] Alpha - Game Hub
-- [ ] Alpha - Game Design
-- [ ] Alpha - Game Configuration
-- [ ] Alpha - Game Crew
-- [ ] Alpha - Tags
-- [ ] Beta - Messages
+- [ ] Alfa - Game Hub
+- [ ] Alfa - Game Design
+- [ ] Alfa - Game Configuration
+- [ ] Alfa - Game Crew
+- [ ] Alfa - Tags
+- [ ] Bravo - Messages
 
 ### Graphics
 
-0% Complete — Create the visual look of your game
+0% Complete â€” Create the visual look of your game
 
-- [ ] Beta - Asset Studio V2
-- [ ] Beta - Sprite Studio V2
-- [ ] Beta - Animation Studio V2
-- [ ] Beta - Palette Manager
-- [ ] Beta - Video Studio
+- [ ] Bravo - Asset Studio V2
+- [ ] Bravo - Sprite Studio V2
+- [ ] Bravo - Animation Studio V2
+- [ ] Bravo - Palette Manager
+- [ ] Bravo - Video Studio
 
 ### Audio
 
-0% Complete — Build sounds, music, and voices
+0% Complete â€” Build sounds, music, and voices
 
-- [ ] Beta - Audio Studio V2
-- [ ] Beta - Audio Effects
-- [ ] Beta - MIDI Studio V2
-- [ ] Beta - Messages
-- [ ] Beta - Text To Speech
-- [ ] Beta - Voice Profiles
+- [ ] Bravo - Audio Studio V2
+- [ ] Bravo - Audio Effects
+- [ ] Bravo - MIDI Studio V2
+- [ ] Bravo - Messages
+- [ ] Bravo - Text To Speech
+- [ ] Bravo - Voice Profiles
 
 ### Objects
 
-0% Complete — Create the things players interact with
+0% Complete â€” Create the things players interact with
 
-- [ ] Alpha - Objects
-- [ ] Alpha - Characters
-- [ ] Alpha - Object Behaviors
+- [ ] Alfa - Objects
+- [ ] Alfa - Characters
+- [ ] Alfa - Object Behaviors
 
 ### Worlds
 
-0% Complete — Build levels, maps, and places to explore
+0% Complete â€” Build levels, maps, and places to explore
 
-- [ ] Alpha - Worlds
-- [ ] Alpha - Environment Settings
-- [ ] Alpha - Level Layouts
+- [ ] Alfa - Worlds
+- [ ] Alfa - Environment Settings
+- [ ] Alfa - Level Layouts
 
 ### Interface
 
-0% Complete — Design menus, HUDs, and player screens
+0% Complete â€” Design menus, HUDs, and player screens
 
-- [ ] Alpha - Interface Layouts
-- [ ] Alpha - Fonts
-- [ ] Alpha - Languages
+- [ ] Alfa - Interface Layouts
+- [ ] Alfa - Fonts
+- [ ] Alfa - Languages
 
 ### Controls
 
-0% Complete — Define how players interact with your game
+0% Complete â€” Define how players interact with your game
 
-- [ ] Alpha - Controls
-- [ ] Alpha - Input Mapping
-- [ ] Alpha - Hitboxes
+- [ ] Alfa - Controls
+- [ ] Alfa - Input Mapping
+- [ ] Alfa - Hitboxes
 
 ### Rules
 
-0% Complete — Create gameplay behavior and events
+0% Complete â€” Create gameplay behavior and events
 
-- [ ] Alpha - Events
-- [ ] Alpha - Rules
-- [ ] Alpha - Custom Extensions
+- [ ] Alfa - Events
+- [ ] Alfa - Rules
+- [ ] Alfa - Custom Extensions
 
 ### Progression
 
-0% Complete — Build rewards, unlocks, and advancement
+0% Complete â€” Build rewards, unlocks, and advancement
 
-- [ ] Alpha - Game Journey
-- [ ] Alpha - Achievements
-- [ ] Alpha - Saved Data
+- [ ] Alfa - Game Journey
+- [ ] Alfa - Achievements
+- [ ] Alfa - Saved Data
 
 ### Play Test
 
-0% Complete — Test, debug, and improve your game
+0% Complete â€” Test, debug, and improve your game
 
-- [ ] Alpha - Game Testing
-- [ ] Alpha - Debug
-- [ ] Alpha - Performance
+- [ ] Alfa - Game Testing
+- [ ] Alfa - Debug
+- [ ] Alfa - Performance
 
 ### Publish
 
-0% Complete — Prepare and release your game
+0% Complete â€” Prepare and release your game
 
-- [ ] Beta - Publish
-- [ ] Beta - Build Game
-- [ ] Beta - Platform Settings
-- [ ] Beta - Game Migration
+- [ ] Bravo - Publish
+- [ ] Bravo - Build Game
+- [ ] Bravo - Platform Settings
+- [ ] Bravo - Game Migration
 
 ### Share
 
-0% Complete — Grow your audience and community
+0% Complete â€” Grow your audience and community
 
-- [ ] Beta - Marketplace
-- [ ] Beta - Community
-- [ ] Beta - Ratings
-- [ ] Beta - Cloud
+- [ ] Bravo - Marketplace
+- [ ] Bravo - Community
+- [ ] Bravo - Ratings
+- [ ] Bravo - Cloud

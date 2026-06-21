@@ -1,4 +1,4 @@
-﻿# Deprecation Governance
+# Deprecation Governance
 
 ## Purpose
 

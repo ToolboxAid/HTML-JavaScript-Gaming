@@ -1,4 +1,4 @@
-﻿# Build Path Tile Overlay Status Governance
+# Build Path Tile Overlay Status Governance
 
 ## Purpose
 

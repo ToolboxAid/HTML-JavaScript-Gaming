@@ -1,4 +1,4 @@
-﻿# Build Path Status Sync Governance
+# Build Path Status Sync Governance
 
 ## Purpose
 
