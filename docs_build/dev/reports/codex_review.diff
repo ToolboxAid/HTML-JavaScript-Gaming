@@ -1,198 +1,892 @@
-diff --git a/docs_build/dev/PROJECT_INSTRUCTIONS.md b/docs_build/dev/PROJECT_INSTRUCTIONS.md
-index dbc044b99..e78ba69d5 100644
---- a/docs_build/dev/PROJECT_INSTRUCTIONS.md
-+++ b/docs_build/dev/PROJECT_INSTRUCTIONS.md
-@@ -2032,9 +2032,29 @@ Stable promotion and merge approval are owner-controlled.
- Rules:
- - Codex may prepare scoped changes, reports, validation evidence, ZIP artifacts, branches, and PRs.
- - Codex must not merge a PR or mark a workstream stable without explicit approval from the assigned Team Alpha or Team Beta owner.
--- Master Control may recommend sequencing or assignment, but affected workstream owners control stable and merge approval.
-+- OWNER may recommend sequencing or assignment, but affected workstream owners control stable and merge approval.
- - This targeted section supersedes older automatic-merge wording when approval ownership is in question.
-
-+## OWNER GOVERNANCE LANE
+diff --git a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+new file mode 100644
+index 000000000..40db33c44
+--- /dev/null
++++ b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+@@ -0,0 +1,46 @@
++# Project Instructions Operating System
 +
-+The governance lane formerly referred to by the prior governance token is now OWNER.
++Read `README.txt` first.
 +
-+Rules:
-+- Use Team OWNER for owner-governance PRs going forward.
-+- PR names use the OWNER token going forward:
-+  - `PR_<YYJJJ>_OWNER_<###>-<short-description>`
-+- Branch names mirror OWNER ownership going forward:
-+  - `pr/<YYJJJ>-OWNER-<###>-<short-description>`
-+- Existing PRs, branches, reports, and ZIPs already uploaded with the prior governance token are historical and must not be renamed unless separately scoped.
-+- Required override wording is:
-+  - `OWNER override approved: <reason>`
++This file is the root index for the append-first Project Instructions operating system under `docs_build/dev/ProjectInstructions/`.
++
++## Purpose
++
++The Project Instructions operating system provides additive governance for:
++
++- backlog ownership
++- team assignments
++- multi-team branch and scope rules
++- Build Path status synchronization
++- tile overlay status behavior
++- deprecation workflow
++- archive and history preservation
++
++## Preservation
++
++Existing Project Instructions remain preserved in their current locations. This operating system adds structure without deleting or rewriting existing documentation.
++
++## Folders
++
++- `addendums/` contains additive governance rules.
++- `backlog/` contains the central backlog file, `BACKLOG_MASTER.md`.
++- `team_assignments/` contains current team assignment records.
++- `deprecation/` contains deprecation workflow documentation.
++- `archive/` contains retained reference material.
++- `archive/history/` contains timestamped history snapshots.
++
++## Merge Control
++
++No PR in this operating system is merged without explicit owner approval.
++
++## OWNER Governance
++
++OWNER override wording:
++
++`OWNER override approved: <reason>`
 +
 +OWNER follows the same safety rules:
 +- One active OWNER branch at a time.
 +- One active OWNER assignment at a time.
 +- OWNER may override team locks, but may not silently delete, rewrite, or remove protected instructions.
 +- OWNER override must be explicitly documented.
+diff --git a/docs_build/dev/ProjectInstructions/README.txt b/docs_build/dev/ProjectInstructions/README.txt
+new file mode 100644
+index 000000000..27495ad8f
+--- /dev/null
++++ b/docs_build/dev/ProjectInstructions/README.txt
+@@ -0,0 +1,28 @@
++Read this file first.
 +
- ## CODEX INSTRUCTION ENFORCEMENT START GATE
-
- Codex must run this gate before every PR execution and before any file changes.
-diff --git a/docs_build/dev/PROJECT_MULTI_PC.txt b/docs_build/dev/PROJECT_MULTI_PC.txt
-index 1f0ff3eb1..4127fd8ae 100644
---- a/docs_build/dev/PROJECT_MULTI_PC.txt
-+++ b/docs_build/dev/PROJECT_MULTI_PC.txt
-@@ -1,8 +1,8 @@
- I think this is the right operating model for GFS at your current stage, with a few modifications to fit how we've already organized the project.
-
--Master Control Responsibilities
-+OWNER Responsibilities
-
--Master Control should own:
-+OWNER should own:
-
- Product roadmap
- Tool priority
-@@ -189,7 +189,7 @@ These become valuable after creators can build complete games.
-
- Immediate Queue
-
--If we start using Master Control today, my queue would be:
-+If we start using OWNER today, my queue would be:
-
- Team Alpha
- PR_26171_001-game-journey-completion-model
-@@ -232,7 +232,7 @@ No TTS generation yet.
-
- This establishes the foundation for dialog, narration, and speech consistency across games.
-
--Master Control Rule
-+OWNER Rule
-
- Before any new PR is created, ask:
-
-@@ -257,7 +257,7 @@ until a complete game can be built start-to-finish entirely inside Game Foundry
- ----------------------------------------------------------------------------------------
- If your goal is **maximum throughput**, I would have the three chats play different roles.
-
--## Master Control
-+## OWNER
-
- Don't build anything here.
-
-@@ -336,7 +336,7 @@ it keeps building there.
-
- ---
-
--## What should Master Control focus on?
-+## What should OWNER focus on?
-
- Right now, for GFS, I would prioritize:
-
-@@ -368,7 +368,7 @@ So I'd keep IST mostly as infrastructure work and focus development on tool comp
-
- ### 2. Create Tool Ownership Map
-
--Master Control should assign ownership:
-+OWNER should assign ownership:
-
- ```text
- Team Alpha
-@@ -411,9 +411,9 @@ Never have both teams working in the same tool at the same time.
-
- ## What I can do
-
--I can help you turn Master Control into a scheduler.
-+I can help you turn OWNER into a scheduler.
-
--For example, in Master Control you can ask:
-+For example, in OWNER you can ask:
-
- ```text
- Given everything we know about GFS:
-@@ -424,7 +424,7 @@ What should Team Beta build next?
- Generate the next PR for each.
- ```
-
--Then Master Control outputs:
-+Then OWNER outputs:
-
- ```text
- Team Alpha:
-@@ -438,7 +438,7 @@ You paste those into the two development chats.
-
- Both Codex sessions work simultaneously.
-
--Then when PRs come back, Master Control decides:
-+Then when PRs come back, OWNER decides:
-
- ```text
- Merge
-@@ -479,6 +479,25 @@ Historical examples:
-
- Owner map:
-
-+Team OWNER owns owner-governance routing and explicit override decisions:
-+- Product roadmap
-+- Tool priority
-+- Architecture
-+- Naming governance
-+- Workflow governance
-+- Environment strategy
-+- PR sequencing
-+- Stable and merge approval recommendations
-+- Team lock override decisions
++Folder purpose:
++This folder is the append-first Project Instructions operating system for Game Foundry Studio. It organizes active governance, backlog, team assignment, deprecation, and history material without deleting or rewriting the existing Project Instructions files elsewhere in the repository.
 +
-+Team OWNER follows the same safety rules:
-+- One active OWNER branch at a time.
-+- One active OWNER assignment at a time.
-+- OWNER may override team locks, but may not silently delete, rewrite, or remove protected instructions.
-+- OWNER override must be explicitly documented.
-+- Required override wording:
-+  - `OWNER override approved: <reason>`
++Preservation rules:
++Preserve all existing documentation. Add new files or append explicit references unless the owner explicitly approves deletion or rewrite. When a conflict appears, stop, explain the conflict, and request owner approval before changing existing instruction text.
 +
- Team Alpha owns Creator Journey work:
- - Game Journey
- - Game Hub
-@@ -519,18 +538,26 @@ Team Gamma owns governance, recovery, diagnostics, and instruction-hardening wor
- - Static docs governance
-
- Governance, recovery, diagnostics, and instruction-hardening PRs:
--- Use the TEAM token assigned by Master Control.
-+- Use the TEAM token assigned by OWNER.
-+- OWNER governance PRs use the OWNER token going forward.
- - Must not implement tool/runtime work from the opposite owner.
- - Must document TEAM ownership compliance in the PR report.
- - Recovery reports must include TEAM ownership.
-
- Stable and merge approval:
- - Stable promotion and merge approval are controlled by the assigned Team Alpha, Team Beta, or Team Gamma owner.
--- Master Control may recommend sequencing, but Codex must not merge or mark stable without explicit owner approval for the affected workstream.
-+- OWNER may recommend sequencing, but Codex must not merge or mark stable without explicit owner approval for the affected workstream.
++Backlog workflow:
++Backlog work is tracked under backlog/. BACKLOG_MASTER.md is the planned source for backlog item status, notes, and references. Backlog item text is treated as immutable once created; status and notes may change under the governance addendums.
 +
-+OWNER naming rule:
-+- Use Team OWNER for owner-governance work going forward.
-+- Use OWNER override wording going forward.
-+- Required override wording is:
-+  - `OWNER override approved: <reason>`
-+- Existing uploaded PRs, branches, reports, and ZIPs with the prior governance token are historical and are not renamed by this rule unless separately scoped.
-
- Hard stop rules:
- - If the PR name does not include a TEAM token, stop before changes.
--- If the TEAM token does not match the owner map or explicit Master Control assignment, stop before changes.
-+- If the TEAM token does not match the owner map or explicit OWNER assignment, stop before changes.
- - If the PR scope belongs to another TEAM owner, stop before changes.
--- If the PR crosses multiple team ownership areas, stop and require Master Control to split or assign the work.
-+- If the PR crosses multiple team ownership areas, stop and require OWNER to split or assign the work.
- - If the requested implementation path conflicts with the active owner path, stop before changes.
-diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 5ebd4f6a7..a35f1b218 100644
---- a/docs_build/dev/reports/codex_changed_files.txt
-+++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,6 +1,7 @@
--docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-instruction-compliance-checklist.md
--docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-manual-validation-notes.md
--docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup.md
-+docs_build/dev/PROJECT_INSTRUCTIONS.md
-+docs_build/dev/PROJECT_MULTI_PC.txt
- docs_build/dev/reports/codex_changed_files.txt
- docs_build/dev/reports/codex_review.diff
--src/dev-runtime/persistence/mock-db-store.js
-+docs_build/dev/reports/PR_26172_OWNER_010-owner-governance-rename.md
-+docs_build/dev/reports/PR_26172_OWNER_010-owner-governance-rename-instruction-compliance-checklist.md
-+docs_build/dev/reports/PR_26172_OWNER_010-owner-governance-rename-manual-validation-notes.md
++Team assignment workflow:
++Team assignments are tracked under team_assignments/. A team pulls work from BACKLOG_MASTER.md, marks the item building when assigned, and records the active assignment under the owning team. Teams work only on assigned items unless an OWNER override explicitly changes the assignment.
++
++No direct commits to main:
++Do not commit directly to main unless the owner explicitly instructs that exception. Normal work must use PR branches, draft PRs, validation evidence, and owner-controlled merge approval.
++
++OWNER override rule:
++An OWNER override must use this wording:
++OWNER override approved: <reason>
++
++The override must explain why normal team, branch, assignment, or backlog routing is being changed.
++
++History snapshot rule:
++When a governance or instruction state needs a history snapshot, add a new file under archive/history/ using:
++CCYYMMDD_HHMMSS.md
++
++Do not rewrite history snapshots after creation unless the owner explicitly approves.
+diff --git a/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md b/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
+new file mode 100644
+index 000000000..3490df216
+--- /dev/null
++++ b/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
+@@ -0,0 +1,80 @@
++# TEAM_START_COMMANDS
++
++## Start Team Alpha
++
++Ready-to-copy command:
++
++```text
++OWNER override approved: Start Team Alpha from the ProjectInstructions release gate.
++
++Read docs_build/dev/ProjectInstructions/README.txt first.
++Read docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md.
++Read docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
++
++Pull one [ ] item for Team Alpha from BACKLOG_MASTER.md.
++Stop if Team Alpha already has an active branch.
++Stop if Team Alpha already has an active assignment.
++Stop if no [ ] Team Alpha backlog item is available.
++
++Change the selected backlog item from [ ] to [.].
++Add the selected assignment under Team Alpha in TEAM_ASSIGNMENTS.md.
++Create one Team Alpha branch for the selected assignment.
++Work only that assignment.
++```
++
++## Start Team Beta
++
++Ready-to-copy command:
++
++```text
++OWNER override approved: Start Team Beta from the ProjectInstructions release gate.
++
++Read docs_build/dev/ProjectInstructions/README.txt first.
++Read docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md.
++Read docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
++
++Pull one [ ] item for Team Beta from BACKLOG_MASTER.md.
++Stop if Team Beta already has an active branch.
++Stop if Team Beta already has an active assignment.
++Stop if no [ ] Team Beta backlog item is available.
++
++Change the selected backlog item from [ ] to [.].
++Add the selected assignment under Team Beta in TEAM_ASSIGNMENTS.md.
++Create one Team Beta branch for the selected assignment.
++Work only that assignment.
++```
++
++## Start Team Gamma
++
++Ready-to-copy command:
++
++```text
++OWNER override approved: Start Team Gamma from the ProjectInstructions release gate.
++
++Read docs_build/dev/ProjectInstructions/README.txt first.
++Read docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md.
++Read docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
++
++Pull one [ ] item for Team Gamma from BACKLOG_MASTER.md.
++Stop if Team Gamma already has an active branch.
++Stop if Team Gamma already has an active assignment.
++Stop if no [ ] Team Gamma backlog item is available.
++
++Change the selected backlog item from [ ] to [.].
++Add the selected assignment under Team Gamma in TEAM_ASSIGNMENTS.md.
++Create one Team Gamma branch for the selected assignment.
++Work only that assignment.
++```
++
++## Day Work / EOD Merge Reminder
++
++Ready-to-copy reminder:
++
++```text
++Commit/push during the day is allowed only on assigned team/OWNER/PR branches.
++
++Merge to main is EOD-only and owner-approved, unless the owner explicitly says:
++"Merge this PR now."
++
++Do not treat sequential PR completion as merge approval.
++```
+diff --git a/docs_build/dev/ProjectInstructions/addendums/build_path_sync.md b/docs_build/dev/ProjectInstructions/addendums/build_path_sync.md
+new file mode 100644
+index 000000000..ad7195d1c
+--- /dev/null
++++ b/docs_build/dev/ProjectInstructions/addendums/build_path_sync.md
+@@ -0,0 +1,35 @@
++﻿# Build Path Status Sync Governance
++
++## Purpose
++
++This addendum keeps the central backlog and Toolbox Build Path aligned.
++
++## Source Of Truth
++
++`docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md` is the source of truth for tool status.
++
++## Build Path Sync
++
++`toolbox/index.html` Build Path tiles must match tool status from `BACKLOG_MASTER.md`.
++
++When a central backlog tool status changes, update the matching Build Path tile.
++
++Status and Build Path changes should be in the same PR when practical.
++
++## Phase Percentages
++
++Phase percentages are calculated from tools in each phase.
++
++Rules:
++- completed tools count as complete
++- planned, wireframe, building, and blocked tools remain in the denominator
++- deprecated tools are excluded from the denominator
++- phase percentage must be recalculated when a tool status changes
++
++## Validation
++
++PRs that change backlog status or Build Path status must document:
++- backlog item changed
++- matching Build Path tile changed
++- phase percentage before and after
++- skipped sync, if any, with reason
+diff --git a/docs_build/dev/ProjectInstructions/addendums/deprecation.md b/docs_build/dev/ProjectInstructions/addendums/deprecation.md
+new file mode 100644
+index 000000000..2268b30bc
+--- /dev/null
++++ b/docs_build/dev/ProjectInstructions/addendums/deprecation.md
+@@ -0,0 +1,32 @@
++﻿# Deprecation Governance
++
++## Purpose
++
++This addendum defines how Project Instructions backlog and Build Path items become deprecated while staying traceable.
++
++## Deprecation Group
++
++Deprecation is its own group and must not be hidden inside normal completion work.
++
++## Traceability
++
++Deprecated items must preserve:
++- original item text
++- deprecated status
++- owner approval reference
++- replacement path, if any
++- archive/removal decision, if any
++
++## Owner Approval
++
++Owner approval is required before archive or removal.
++
++No team may remove a deprecated item solely because it is deprecated.
++
++## Build Path Display
++
++Deprecated Build Path items use red overlay if visible.
++
++Deprecated items do not count against current MVP completion.
++
++If a deprecated item remains visible, it must communicate Deprecated status to creators without relying on color alone.
+diff --git a/docs_build/dev/ProjectInstructions/addendums/multi_team.md b/docs_build/dev/ProjectInstructions/addendums/multi_team.md
+new file mode 100644
+index 000000000..373a51ed0
+--- /dev/null
++++ b/docs_build/dev/ProjectInstructions/addendums/multi_team.md
+@@ -0,0 +1,55 @@
++# Multi-Team Codex Execution Governance
++
++## All-Team Preferred Codex Execution Method
++
++Preferred execution model:
++Single Codex session with multiple sequential PRs.
++
++Applies to:
++- Team Alfa through Team Zulu
++- Team OWNER
++
++Purpose:
++Reduce back-and-forth between owner and Codex while keeping PRs reviewable and scoped.
++
++Rules:
++- One Codex session may execute multiple sequential PRs.
++- Each PR must still have one clear purpose.
++- Each PR must create or use its own approved branch.
++- Each PR may be committed and pushed during active work.
++- Each PR may be opened as a draft PR during active work.
++- Do not commit directly to main.
++- Do not merge to main during active work unless the owner explicitly says: "Merge this PR now."
++- If later PRs depend on earlier unmerged PRs, Codex must either:
++  - stack the dependent PRs, or
++  - stop and request owner approval for the dependency model.
++- Codex should reduce chit-chat by planning the full sequence before starting.
++- Codex must still hard-stop for conflicts, dirty worktree, scope mismatch, missing assignment, or protected instruction deletion.
++
++## Day Work / EOD Merge Rule
++
++During active work:
++- Work happens on assigned team branches, OWNER branches, or scoped PR branches.
++- Commits are allowed only on assigned non-main branches.
++- Pushes are allowed and expected.
++- Draft PRs are allowed and expected.
++- Direct commits to main are prohibited.
++- Merges to main are prohibited unless explicitly approved by the owner.
++
++At end of day:
++- Owner reviews ready PRs.
++- Owner explicitly approves which PRs merge.
++- Only owner-approved PRs may merge to main.
++- After merge, return to main and pull latest main.
++- Do not treat sequential PR completion as merge approval.
++
++Commit/push during the day is allowed only on assigned team/OWNER/PR branches.
++
++Merge to main is EOD-only and owner-approved, unless the owner explicitly says:
++"Merge this PR now."
++
++## Conflict Note
++
++Existing ProjectInstructions wording that appears to require immediate or automatic merge remains preserved for traceability.
++
++This addendum clarifies that merge to `main` remains owner-controlled. If a workflow rule appears to conflict with this addendum, stop and request explicit owner approval before merging.
+diff --git a/docs_build/dev/ProjectInstructions/addendums/preservation.md b/docs_build/dev/ProjectInstructions/addendums/preservation.md
+new file mode 100644
+index 000000000..9344992c0
+--- /dev/null
++++ b/docs_build/dev/ProjectInstructions/addendums/preservation.md
+@@ -0,0 +1,42 @@
++# Preservation And Archive Governance
++
++## Purpose
++
++This addendum protects Project Instructions material from accidental deletion, rewrite, or drift.
++
++## Append-First Documentation
++
++Project Instructions documentation is append-first.
++
++Allowed default actions:
++- add new files
++- append dated notes
++- append references
++- add new governance addendums
++- add archive snapshots
++
++## Owner Approval Required
++
++Do not delete Project Instructions material unless the owner explicitly approves deletion.
++
++Do not rewrite Project Instructions material unless the owner explicitly approves rewrite.
++
++If a requested change conflicts with existing Project Instructions, stop before editing. Explain:
++- the conflicting files
++- the conflicting rule text
++- the requested change
++- the recommended action
++
++Then request owner approval.
++
++## Archive Instead Of Delete
++
++When material is no longer active, archive it instead of deleting it. Archive entries must preserve enough context to explain why the material moved out of active use.
++
++## History Snapshots
++
++History snapshots go to:
++
++`docs_build/dev/ProjectInstructions/archive/history/CCYYMMDD_HHMMSS.md`
++
++Use 24-hour local time for `HHMMSS` unless the owner specifies another time basis.
+diff --git a/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md b/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
+new file mode 100644
+index 000000000..f492806d8
+--- /dev/null
++++ b/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
+@@ -0,0 +1,31 @@
++# Team Release Readiness Gate
++
++## Purpose
++
++This gate prevents Team Alpha, Team Beta, Team Gamma, or Team OWNER from starting regular assigned work before the ProjectInstructions operating system is ready.
++
++## Release Rule
++
++Teams may start only when all of the following are true:
++
++- `docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md` exists and is populated.
++- `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md` exists.
++- OWNER governance exists.
++- One-active-branch-per-team rule exists.
++- No-direct-main rule exists.
++- Out-of-scope stop rule exists.
++- Build Path sync rule exists.
++
++## Gate Outcome
++
++If every requirement is true, team start commands may be issued.
++
++If any requirement is missing, stop and report:
++- missing requirement
++- expected file or rule
++- current branch
++- recommended owner action
++
++## No Silent Starts
++
++Teams must not infer readiness from an incomplete stack. Readiness must be documented before team work begins.
+diff --git a/docs_build/dev/ProjectInstructions/addendums/tile_overlay_status.md b/docs_build/dev/ProjectInstructions/addendums/tile_overlay_status.md
+new file mode 100644
+index 000000000..a1a1b75e0
+--- /dev/null
++++ b/docs_build/dev/ProjectInstructions/addendums/tile_overlay_status.md
+@@ -0,0 +1,36 @@
++﻿# Build Path Tile Overlay Status Governance
++
++## Purpose
++
++This addendum defines visual overlay status rules for Build Path tiles.
++
++## Overlay Mapping
++
++| Backlog Status | Meaning | Tile Overlay |
++| --- | --- | --- |
++| `[ ]` Planned | Planned | black overlay 70% |
++| `[?]` Wireframe | Wireframe | black overlay 80% |
++| `[.]` Building | Building | black overlay 90% |
++| `[x]` Complete | Complete | 100% transparent / no visible overlay |
++| `[!]` Blocked | Blocked | yellow overlay 80% |
++| `[-]` Deprecated | Deprecated | red overlay 80% |
++
++## Completion Denominator
++
++Blocked items remain in the completion denominator.
++
++Deprecated items are excluded from the completion denominator.
++
++## Badge Text
++
++Blocked and Deprecated tiles must show badge text.
++
++Badge text must be visible enough for a creator to understand why the tile is blocked or deprecated without relying on color alone.
++
++## Validation
++
++PRs that change tile overlay behavior must document:
++- status mapping affected
++- badge text affected
++- phase percentage denominator effect
++- skipped UI validation, if any, with reason
+diff --git a/docs_build/dev/ProjectInstructions/archive/README.md b/docs_build/dev/ProjectInstructions/archive/README.md
+new file mode 100644
+index 000000000..dbc07a1d2
+--- /dev/null
++++ b/docs_build/dev/ProjectInstructions/archive/README.md
+@@ -0,0 +1,12 @@
++# Project Instructions Archive
++
++This archive retains Project Instructions reference material that is no longer active but must remain traceable.
++
++## Rules
++
++- Archive instead of delete.
++- Keep archived material readable.
++- Preserve original meaning and context.
++- Do not rewrite archive entries unless the owner explicitly approves.
++- Use `history/CCYYMMDD_HHMMSS.md` for history snapshots.
++- If archive placement is unclear, stop and request owner approval.
+diff --git a/docs_build/dev/ProjectInstructions/archive/history/.gitkeep b/docs_build/dev/ProjectInstructions/archive/history/.gitkeep
+new file mode 100644
+index 000000000..351adb8ef
+--- /dev/null
++++ b/docs_build/dev/ProjectInstructions/archive/history/.gitkeep
+@@ -0,0 +1 @@
++Tracked placeholder for Project Instructions history snapshots.
+diff --git a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
+new file mode 100644
+index 000000000..6ecd9bac8
+--- /dev/null
++++ b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
+@@ -0,0 +1,117 @@
++# BACKLOG_MASTER
++
++## Game Journey MVP
++
++### Idea
++
++0% Complete — Dream, brainstorm, and explore early game concepts
++
++- [ ] Alpha - Idea Board
++- [ ] Alpha - Game Concept Notes
++- [ ] Alpha - Creator Learning
++
++### Design
++
++0% Complete — Shape the game's story, structure, and systems
++
++- [ ] Alpha - Game Hub
++- [ ] Alpha - Game Design
++- [ ] Alpha - Game Configuration
++- [ ] Alpha - Game Crew
++- [ ] Alpha - Tags
++- [ ] Beta - Messages
++
++### Graphics
++
++0% Complete — Create the visual look of your game
++
++- [ ] Beta - Asset Studio V2
++- [ ] Beta - Sprite Studio V2
++- [ ] Beta - Animation Studio V2
++- [ ] Beta - Palette Manager
++- [ ] Beta - Video Studio
++
++### Audio
++
++0% Complete — Build sounds, music, and voices
++
++- [ ] Beta - Audio Studio V2
++- [ ] Beta - Audio Effects
++- [ ] Beta - MIDI Studio V2
++- [ ] Beta - Messages
++- [ ] Beta - Text To Speech
++- [ ] Beta - Voice Profiles
++
++### Objects
++
++0% Complete — Create the things players interact with
++
++- [ ] Alpha - Objects
++- [ ] Alpha - Characters
++- [ ] Alpha - Object Behaviors
++
++### Worlds
++
++0% Complete — Build levels, maps, and places to explore
++
++- [ ] Alpha - Worlds
++- [ ] Alpha - Environment Settings
++- [ ] Alpha - Level Layouts
++
++### Interface
++
++0% Complete — Design menus, HUDs, and player screens
++
++- [ ] Alpha - Interface Layouts
++- [ ] Alpha - Fonts
++- [ ] Alpha - Languages
++
++### Controls
++
++0% Complete — Define how players interact with your game
++
++- [ ] Alpha - Controls
++- [ ] Alpha - Input Mapping
++- [ ] Alpha - Hitboxes
++
++### Rules
++
++0% Complete — Create gameplay behavior and events
++
++- [ ] Alpha - Events
++- [ ] Alpha - Rules
++- [ ] Alpha - Custom Extensions
++
++### Progression
++
++0% Complete — Build rewards, unlocks, and advancement
++
++- [ ] Alpha - Game Journey
++- [ ] Alpha - Achievements
++- [ ] Alpha - Saved Data
++
++### Play Test
++
++0% Complete — Test, debug, and improve your game
++
++- [ ] Alpha - Game Testing
++- [ ] Alpha - Debug
++- [ ] Alpha - Performance
++
++### Publish
++
++0% Complete — Prepare and release your game
++
++- [ ] Beta - Publish
++- [ ] Beta - Build Game
++- [ ] Beta - Platform Settings
++- [ ] Beta - Game Migration
++
++### Share
++
++0% Complete — Grow your audience and community
++
++- [ ] Beta - Marketplace
++- [ ] Beta - Community
++- [ ] Beta - Ratings
++- [ ] Beta - Cloud
+diff --git a/docs_build/dev/ProjectInstructions/deprecation/README.md b/docs_build/dev/ProjectInstructions/deprecation/README.md
+new file mode 100644
+index 000000000..55c1637da
+--- /dev/null
++++ b/docs_build/dev/ProjectInstructions/deprecation/README.md
+@@ -0,0 +1,20 @@
++﻿# Deprecation Workflow
++
++Deprecation is its own governance group.
++
++Deprecated items remain traceable from backlog status through any visible Build Path representation and any later archive/removal decision.
++
++## Rules
++
++- Deprecation uses status `[-]`.
++- Deprecated items are traceable.
++- Owner approval is required before archive or removal.
++- Deprecated Build Path items use red overlay if visible.
++- Deprecated items do not count against current MVP completion.
++- Deprecated items should include a note explaining replacement path, retention reason, or removal blocker.
++
++## Archive And Removal
++
++Do not archive or remove deprecated material until the owner explicitly approves.
++
++When approved, archive before removal whenever traceability is needed.
+diff --git a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
+new file mode 100644
+index 000000000..0b63c376f
+--- /dev/null
++++ b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
+@@ -0,0 +1,143 @@
++# TEAM_ASSIGNMENTS
++
++## Assignment Status Legend
++
++- Available: team may pull one `[ ]` backlog item when explicitly instructed.
++- Active: team has one assignment in progress.
++- Blocked: team cannot pull work until blocker is cleared.
++
++## Team Alpha
++
++Status: Available
++
++Active assignment: none.
++
++Active branch: none.
++
++## Team Beta
++
++Status: Available
++
++Active assignment: none.
++
++Active branch: none.
++
++## Team Gamma
++
++Status: Available
++
++Active assignment: none.
++
++Active branch: none.
++
++## Team OWNER
++
++Status: Available
++
++Active assignment: none.
++
++Active branch: none.
++
++## Team Name Registry
++
++- Team Alfa
++- Team Bravo
++- Team Charlie
++- Team Delta
++- Team Echo
++- Team Foxtrot
++- Team Golf
++- Team Hotel
++- Team India
++- Team Juliett
++- Team Kilo
++- Team Lima
++- Team Mike
++- Team November
++- Team Oscar
++- Team Papa
++- Team Quebec
++- Team Romeo
++- Team Sierra
++- Team Tango
++- Team Uniform
++- Team Victor
++- Team Whiskey
++- Team X-ray
++- Team Yankee
++- Team Zulu
++- Team OWNER
++
++## Preferred Codex Execution Method
++
++Preferred execution model:
++Single Codex session with multiple sequential PRs.
++
++Purpose:
++Reduce back-and-forth between owner and Codex while keeping PRs reviewable and scoped.
++
++Rules:
++- One Codex session may execute multiple sequential PRs.
++- Each PR must still have one clear purpose.
++- Each PR must create its own branch.
++- Each PR must be committed, pushed, and opened as a draft PR.
++- Do not commit directly to main.
++- Do not merge without explicit owner approval.
++- If later PRs depend on earlier unmerged PRs, Codex must either:
++  - stack the dependent PRs, or
++  - stop and request owner approval for the dependency model.
++- Codex should reduce chit-chat by planning the full sequence before starting.
++- Codex must still hard-stop for conflicts, dirty worktree, scope mismatch, missing assignment, or protected instruction deletion.
++
++### All-Team Codex Execution Clarification
++
++Preferred execution model:
++Single Codex session with multiple sequential PRs.
++
++Applies to:
++- Team Alfa through Team Zulu
++- Team OWNER
++
++Purpose:
++Reduce back-and-forth between owner and Codex while keeping PRs reviewable and scoped.
++
++Rules:
++- One Codex session may execute multiple sequential PRs.
++- Each PR must still have one clear purpose.
++- Each PR must create or use its own approved branch.
++- Each PR may be committed and pushed during active work.
++- Each PR may be opened as a draft PR during active work.
++- Do not commit directly to main.
++- Do not merge to main during active work unless the owner explicitly says: "Merge this PR now."
++- If later PRs depend on earlier unmerged PRs, Codex must either:
++  - stack the dependent PRs, or
++  - stop and request owner approval for the dependency model.
++- Codex should reduce chit-chat by planning the full sequence before starting.
++- Codex must still hard-stop for conflicts, dirty worktree, scope mismatch, missing assignment, or protected instruction deletion.
++
++Conflict note:
++- Older wording that says each PR must create its own branch remains preserved.
++- This all-team clarification allows an approved existing team, OWNER, or scoped PR branch when the owner assigns that dependency model.
++- If a branch model is unclear, owner approval is required before continuing.
++
++## Day Work / EOD Merge Rule
++
++During active work:
++- Work happens on assigned team branches, OWNER branches, or scoped PR branches.
++- Commits are allowed only on assigned non-main branches.
++- Pushes are allowed and expected.
++- Draft PRs are allowed and expected.
++- Direct commits to main are prohibited.
++- Merges to main are prohibited unless explicitly approved by the owner.
++
++At end of day:
++- Owner reviews ready PRs.
++- Owner explicitly approves which PRs merge.
++- Only owner-approved PRs may merge to main.
++- After merge, return to main and pull latest main.
++- Do not treat sequential PR completion as merge approval.
++
++Commit/push during the day is allowed only on assigned team/OWNER/PR branches.
++
++Merge to main is EOD-only and owner-approved, unless the owner explicitly says:
++"Merge this PR now."
+diff --git a/docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install-instruction-compliance-checklist.md
+new file mode 100644
+index 000000000..af8e94480
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install-instruction-compliance-checklist.md
+@@ -0,0 +1,17 @@
++# PR_26172_OWNER_017 Instruction Compliance Checklist
++
++- [x] Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
++- [x] Read `docs_build/dev/PROJECT_MULTI_PC.txt`.
++- [x] OWNER override documented by user.
++- [x] Started from latest `main`.
++- [x] Created branch `pr/26172-OWNER-017-project-instructions-bootstrap-install`.
++- [x] Installed ProjectInstructions physical structure.
++- [x] Created required anchor files.
++- [x] Populated files with approved governance from OWNER PRs 001-016.
++- [x] Did not redesign governance.
++- [x] Did not create unrelated new governance.
++- [x] Did not delete existing documentation.
++- [x] Did not commit directly to `main`.
++- [x] Did not merge any PR.
++- [x] Ran docs/static validation.
++- [x] Created repo-structured delta ZIP.
+diff --git a/docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install-manual-validation-notes.md b/docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install-manual-validation-notes.md
+new file mode 100644
+index 000000000..4e7f24dd2
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install-manual-validation-notes.md
+@@ -0,0 +1,12 @@
++# PR_26172_OWNER_017 Manual Validation Notes
++
++- Verified branch was created from latest `main`.
++- Verified `docs_build/dev/ProjectInstructions/` did not exist on `main` before installation.
++- Verified required physical structure exists.
++- Verified required anchor files exist.
++- Verified installed files preserve approved ProjectInstructions governance content.
++- Verified active override wording uses OWNER.
++- Verified `BACKLOG_MASTER.md` filename remains preserved.
++- Verified no existing documentation was deleted.
++- Verified no runtime, UI, Playwright, or sample files changed.
++- Verified no merge to `main` was performed.
+diff --git a/docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install-tree.txt b/docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install-tree.txt
+new file mode 100644
+index 000000000..81c6d761b
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install-tree.txt
+@@ -0,0 +1,21 @@
++docs_build/dev/ProjectInstructions/
++|-- PROJECT_INSTRUCTIONS.md
++|-- README.txt
++|-- TEAM_START_COMMANDS.md
++|-- addendums/
++|   |-- build_path_sync.md
++|   |-- deprecation.md
++|   |-- multi_team.md
++|   |-- preservation.md
++|   |-- team_release_readiness.md
++|   `-- tile_overlay_status.md
++|-- archive/
++|   |-- README.md
++|   `-- history/
++|       `-- .gitkeep
++|-- backlog/
++|   `-- BACKLOG_MASTER.md
++|-- deprecation/
++|   `-- README.md
++`-- team_assignments/
++    `-- TEAM_ASSIGNMENTS.md
+diff --git a/docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install.md b/docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install.md
+new file mode 100644
+index 000000000..8ecbc95af
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26172_OWNER_017-project-instructions-bootstrap-install.md
+@@ -0,0 +1,56 @@
++# PR_26172_OWNER_017-project-instructions-bootstrap-install
++
++## Purpose
++
++Install the missing ProjectInstructions operating system into the repository.
++
++This is an installation PR, not a governance-design PR.
++
++## Source
++
++The installed files use governance already approved across OWNER/Master-to-OWNER ProjectInstructions PRs 001-016:
++
++- ProjectInstructions root and README bootstrap
++- preservation and archive governance
++- backlog governance and Game Journey MVP population
++- team assignments and team registry
++- release readiness gate
++- team start commands
++- all-team Codex execution method
++- Day Work / EOD Merge rule
++- Build Path sync and tile overlay status governance
++- deprecation workflow
++- OWNER override and OWNER safety rules
++
++## Files Installed
++
++- `docs_build/dev/ProjectInstructions/README.txt`
++- `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
++- `docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md`
++- `docs_build/dev/ProjectInstructions/addendums/build_path_sync.md`
++- `docs_build/dev/ProjectInstructions/addendums/deprecation.md`
++- `docs_build/dev/ProjectInstructions/addendums/multi_team.md`
++- `docs_build/dev/ProjectInstructions/addendums/preservation.md`
++- `docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md`
++- `docs_build/dev/ProjectInstructions/addendums/tile_overlay_status.md`
++- `docs_build/dev/ProjectInstructions/archive/README.md`
++- `docs_build/dev/ProjectInstructions/archive/history/.gitkeep`
++- `docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md`
++- `docs_build/dev/ProjectInstructions/deprecation/README.md`
++- `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md`
++
++## Validation
++
++- `git diff --check`
++- `git diff --cached --check`
++- Physical tree verification for `docs_build/dev/ProjectInstructions/`
++- Targeted text verification for OWNER override, OWNER safety rules, team registry, EOD merge rule, and required anchor files
++
++## Skipped Lanes
++
++- Playwright skipped: documentation-only installation.
++- Samples skipped: documentation-only installation.
++
++## Package
++
++- `tmp/PR_26172_OWNER_017-project-instructions-bootstrap-install_delta.zip`
