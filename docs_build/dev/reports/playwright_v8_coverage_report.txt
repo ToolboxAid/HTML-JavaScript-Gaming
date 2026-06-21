@@ -14,22 +14,25 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
 Exercised tool entry points detected:
 (46%) Toolbox Index - exercised 1 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
-(75%) Theme V2 Shared JS - exercised 3 runtime JS files
+(77%) Theme V2 Shared JS - exercised 4 runtime JS files
 
 Changed runtime JS files covered:
-(100%) none changed - no changed runtime JS files
+(93%) assets/theme-v2/js/admin-system-health.js - executed lines 104/104; executed functions 13/14
 
 Files with executed line/function counts where available:
 (36%) src/api/server-api-client.js - executed lines 167/167; executed functions 5/14
 (46%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 12/26
 (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 204/204; executed functions 9/14
 (65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
+(67%) src/api/admin-system-health-api-client.js - executed lines 19/19; executed functions 2/3
 (74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 67/90
 (80%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 4/5
 (91%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 10/11
+(93%) assets/theme-v2/js/admin-system-health.js - executed lines 104/104; executed functions 13/14
 
 Uncovered or low-coverage changed JS files:
-(100%) none changed - no changed runtime JS files
+(100%) none - no low-coverage changed runtime JS files
 
 Changed JS files considered:
 (0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
+(93%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage

@@ -76,11 +76,27 @@ async function closeAdminSystemHealthPage(page, context) {
   restoreEnvValue("GAMEFOUNDRY_SITE_URL", context.previousSiteUrl);
 }
 
+async function expectPageToHideSecretValues(page) {
+  const pageText = await page.locator("body").textContent();
+  [
+    "GAMEFOUNDRY_DATABASE_URL",
+    "GAMEFOUNDRY_STORAGE_ACCESS_KEY_ID",
+    "GAMEFOUNDRY_STORAGE_SECRET_ACCESS_KEY",
+    "CLOUDFLARE_R2_ACCESS_KEY_ID",
+    "CLOUDFLARE_R2_SECRET_ACCESS_KEY",
+  ].forEach((key) => {
+    const value = String(process.env[key] || "").trim();
+    if (value.length > 8) {
+      expect(pageText).not.toContain(value);
+    }
+  });
+}
+
 test.afterAll(async () => {
   await workspaceV2CoverageReporter.writeReport();
 });
 
-test("Admin System Health renders foundation tables without page API calls", async ({ page }) => {
+test("Admin System Health renders Postgres diagnostics through the safe status API", async ({ page }) => {
   const context = await openAdminSystemHealthPage(page, SEED_DB_KEYS.users.admin);
   try {
     await expect(page).toHaveTitle(/System Health - Game Foundry Studio LLC/);
@@ -90,6 +106,12 @@ test("Admin System Health renders foundation tables without page API calls", asy
     await expect(page.getByRole("table", { name: "Environment summary" })).toContainText("UAT");
     await expect(page.getByRole("table", { name: "Environment summary" })).toContainText("PRD");
     await expect(page.getByRole("table", { name: "Database health" })).toContainText("Postgres");
+    await expect(page.locator("[data-admin-system-health-db-value='provider']")).toHaveText("Postgres");
+    await expect(page.locator("[data-admin-system-health-db-value='host']")).not.toHaveText("Configured host placeholder");
+    await expect(page.locator("[data-admin-system-health-db-value='database']")).not.toHaveText("Configured database placeholder");
+    await expect(page.locator("[data-admin-system-health-db-value='connection']")).not.toHaveText("Connection check pending");
+    await expect(page.getByRole("table", { name: "Database health" })).not.toContainText("postgres://");
+    await expect(page.getByRole("table", { name: "Database health" })).not.toContainText("postgresql://");
     await expect(page.getByRole("table", { name: "Storage health" })).toContainText("Cloudflare R2");
     await expect(page.getByRole("table", { name: "Runtime environment" })).toContainText("********");
     await expect(page.getByRole("table", { name: "Limits and capacity" })).toContainText("Class A Ops");
@@ -106,7 +128,6 @@ test("Admin System Health renders foundation tables without page API calls", asy
     await expect(page.getByRole("table", { name: "Diagnostics log" })).toContainText("PENDING");
     await expect(page.getByRole("table", { name: "Diagnostics log" })).not.toContainText("FAIL");
     await expect(page.getByText("No active failure is declared")).toHaveCount(0);
-    await expect(page.locator("[data-health-status='WARN'], [data-health-status='FAIL']")).toHaveCount(0);
     const nonPassStatuses = page.locator("[data-health-status]:not([data-health-status='PASS'])");
     const nonPassStatusCount = await nonPassStatuses.count();
     expect(nonPassStatusCount).toBeGreaterThan(0);
@@ -116,7 +137,9 @@ test("Admin System Health renders foundation tables without page API calls", asy
       const ariaLabel = await statusCell.getAttribute("aria-label");
       expect((title || ariaLabel || "").trim()).not.toEqual("");
     }
-    expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health"))).toBe(false);
+    expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/status"))).toBe(true);
+    expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/storage-connectivity-action"))).toBe(false);
+    await expectPageToHideSecretValues(page);
     await expect(page.locator("[data-admin-system-health-storage-action]")).toHaveCount(0);
     await expect(page.locator("[data-owner-ai-save], [data-owner-membership-save], [data-owner-ai-credits], [data-owner-memberships]")).toHaveCount(0);
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
@@ -134,6 +157,7 @@ test("Creator sessions cannot access Admin System Health operations", async ({ p
     await expect(page.getByRole("heading", { name: "Admin role required" })).toBeVisible();
     await expect(page.locator("[data-session-access-blocked='admin']")).toBeVisible();
     await expect(page.getByRole("table", { name: "Environment summary" })).toHaveCount(0);
+    expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/status"))).toBe(false);
     expect(context.pageErrors).toEqual([]);
     expect(context.consoleErrors).toEqual([]);
     expect(context.failedRequests).toEqual([]);
@@ -154,6 +178,11 @@ test("Admin System Health operations page keeps scripts and styles external", as
   expect(pageSource).toContain("Diagnostics Plan");
   expect(pageSource).toContain("Server-owned Postgres health reader");
   expect(pageSource).toContain("Server-owned Cloudflare R2 storage diagnostic");
-  expect(pageSource).not.toContain("assets/theme-v2/js/admin-system-health.js");
+  expect(pageSource).toContain("assets/theme-v2/js/admin-system-health.js");
   expect(pageSource).toContain("assets/theme-v2/js/admin-owner-navigation.js");
+  const runtimeSource = await fs.readFile(path.resolve("assets/theme-v2/js/admin-system-health.js"), "utf8");
+  expect(runtimeSource).not.toContain("SQLite");
+  expect(runtimeSource).not.toContain("localStorage");
+  expect(runtimeSource).not.toContain("sessionStorage");
+  expect(runtimeSource).not.toContain("runAdminSystemHealthStorageConnectivityAction");
 });

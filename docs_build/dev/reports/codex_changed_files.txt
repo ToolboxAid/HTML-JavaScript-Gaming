@@ -1,15 +1,21 @@
 Base merge-base: e8845dae6e990164072d4ee9b37ec81eda563fc3
-Head at artifact refresh: 0514f858342704357ec1cdf9b8af9497a9d40a1d
+Head at artifact refresh: 49e4cca2a249909b569a2dd710c2df6d3a3fe679
 
 Working tree status at artifact generation:
 M  admin/system-health.html
-A  docs_build/dev/reports/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan-instruction-compliance-checklist.md
-A  docs_build/dev/reports/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan-manual-validation-notes.md
-A  docs_build/dev/reports/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan.md
+M  assets/theme-v2/js/admin-system-health.js
+A  docs_build/dev/reports/PR_26171_GAMMA_014-admin-postgres-diagnostics-runtime-instruction-compliance-checklist.md
+A  docs_build/dev/reports/PR_26171_GAMMA_014-admin-postgres-diagnostics-runtime-manual-validation-notes.md
+A  docs_build/dev/reports/PR_26171_GAMMA_014-admin-postgres-diagnostics-runtime.md
+ M docs_build/dev/reports/codex_changed_files.txt
+ M docs_build/dev/reports/codex_review.diff
+M  docs_build/dev/reports/coverage_changed_js_guardrail.txt
+M  docs_build/dev/reports/playwright_v8_coverage_report.txt
 M  tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
 
 Changed files against merge-base:
 M	admin/system-health.html
+M	assets/theme-v2/js/admin-system-health.js
 A	docs_build/dev/reports/PR_26171_GAMMA_011-admin-system-health-foundation-instruction-compliance-checklist.md
 A	docs_build/dev/reports/PR_26171_GAMMA_011-admin-system-health-foundation-manual-validation-notes.md
 A	docs_build/dev/reports/PR_26171_GAMMA_011-admin-system-health-foundation.md
@@ -19,22 +25,29 @@ A	docs_build/dev/reports/PR_26171_GAMMA_012-admin-system-health-status-reason-cl
 A	docs_build/dev/reports/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan-instruction-compliance-checklist.md
 A	docs_build/dev/reports/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan-manual-validation-notes.md
 A	docs_build/dev/reports/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan.md
+A	docs_build/dev/reports/PR_26171_GAMMA_014-admin-postgres-diagnostics-runtime-instruction-compliance-checklist.md
+A	docs_build/dev/reports/PR_26171_GAMMA_014-admin-postgres-diagnostics-runtime-manual-validation-notes.md
+A	docs_build/dev/reports/PR_26171_GAMMA_014-admin-postgres-diagnostics-runtime.md
 M	docs_build/dev/reports/coverage_changed_js_guardrail.txt
 M	docs_build/dev/reports/playwright_v8_coverage_report.txt
 M	tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
 
 Stat against merge-base:
- admin/system-health.html                           | 367 ++++++---------------
+ admin/system-health.html                           | 366 +++++------------
+ assets/theme-v2/js/admin-system-health.js          | 432 ++++-----------------
  ...-foundation-instruction-compliance-checklist.md |  32 ++
  ...em-health-foundation-manual-validation-notes.md |  34 ++
  ...171_GAMMA_011-admin-system-health-foundation.md |  65 ++++
- ...son-cleanup-instruction-compliance-checklist.md |  57 ++++
+ ...son-cleanup-instruction-compliance-checklist.md |  57 +++
  ...tatus-reason-cleanup-manual-validation-notes.md |  26 ++
  ...12-admin-system-health-status-reason-cleanup.md |  70 ++++
- ...ostics-plan-instruction-compliance-checklist.md |  64 ++++
+ ...ostics-plan-instruction-compliance-checklist.md |  64 +++
  ...lth-diagnostics-plan-manual-validation-notes.md |  27 ++
- ...MMA_013-admin-system-health-diagnostics-plan.md |  82 +++++
+ ...MMA_013-admin-system-health-diagnostics-plan.md |  82 ++++
+ ...ics-runtime-instruction-compliance-checklist.md |  64 +++
+ ...-diagnostics-runtime-manual-validation-notes.md |  27 ++
+ ...GAMMA_014-admin-postgres-diagnostics-runtime.md |  93 +++++
  .../dev/reports/coverage_changed_js_guardrail.txt  |   6 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |  31 +-
- .../tools/AdminHealthOperationsPage.spec.mjs       |  87 ++++-
- 13 files changed, 636 insertions(+), 312 deletions(-)
+ .../dev/reports/playwright_v8_coverage_report.txt  |  34 +-
+ .../tools/AdminHealthOperationsPage.spec.mjs       | 114 +++++-
+ 17 files changed, 933 insertions(+), 660 deletions(-)

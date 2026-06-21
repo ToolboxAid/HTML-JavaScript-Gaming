@@ -85,12 +85,12 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr><td>Provider</td><td>Postgres</td><td data-health-status="PASS">PASS</td></tr>
-                                    <tr><td>Host</td><td>Configured host placeholder</td><td data-health-status="PENDING" title="Reason: host reader is intentionally not wired in this foundation PR." aria-label="PENDING: host reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
-                                    <tr><td>Port</td><td>5432</td><td data-health-status="PASS">PASS</td></tr>
-                                    <tr><td>Database</td><td>Configured database placeholder</td><td data-health-status="PENDING" title="Reason: database name reader is intentionally not wired in this foundation PR." aria-label="PENDING: database name reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
-                                    <tr><td>Migration Version</td><td>Pending migration reader</td><td data-health-status="PENDING" title="Reason: migration version reader is intentionally not wired in this foundation PR." aria-label="PENDING: migration version reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
-                                    <tr><td>Status</td><td>Connection check pending</td><td data-health-status="PENDING" title="Reason: live Postgres connection checks are intentionally not wired in this foundation PR." aria-label="PENDING: live Postgres connection checks are intentionally not wired in this foundation PR.">PENDING</td></tr>
+                                    <tr><td>Provider</td><td data-admin-system-health-db-value="provider">Postgres</td><td data-health-status="PASS" data-admin-system-health-db-status="provider">PASS</td></tr>
+                                    <tr><td>Host</td><td data-admin-system-health-db-value="host">Configured host placeholder</td><td data-health-status="PENDING" data-admin-system-health-db-status="host" title="Reason: host reader is intentionally not wired in this foundation PR." aria-label="PENDING: host reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
+                                    <tr><td>Port</td><td data-admin-system-health-db-value="port">5432</td><td data-health-status="PASS" data-admin-system-health-db-status="port">PASS</td></tr>
+                                    <tr><td>Database</td><td data-admin-system-health-db-value="database">Configured database placeholder</td><td data-health-status="PENDING" data-admin-system-health-db-status="database" title="Reason: database name reader is intentionally not wired in this foundation PR." aria-label="PENDING: database name reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
+                                    <tr><td>Migration Version</td><td data-admin-system-health-db-value="migration">Pending migration reader</td><td data-health-status="PENDING" data-admin-system-health-db-status="migration" title="Reason: migration version reader is intentionally not wired in this foundation PR." aria-label="PENDING: migration version reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
+                                    <tr><td>Status</td><td data-admin-system-health-db-value="connection">Connection check pending</td><td data-health-status="PENDING" data-admin-system-health-db-status="connection" title="Reason: live Postgres connection checks are intentionally not wired in this foundation PR." aria-label="PENDING: live Postgres connection checks are intentionally not wired in this foundation PR.">PENDING</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -221,6 +221,7 @@
     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
     <script type="module" src="assets/theme-v2/js/admin-owner-navigation.js"></script>
+    <script type="module" src="assets/theme-v2/js/admin-system-health.js"></script>
 </body>
 
 </html>
