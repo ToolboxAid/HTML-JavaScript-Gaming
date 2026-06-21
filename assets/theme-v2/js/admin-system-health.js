@@ -45,6 +45,7 @@ class AdminSystemHealthController {
             node.dataset.adminSystemHealthStorageStatus,
             node,
         ]));
+        this.runtimeRows = root.querySelector("[data-admin-system-health-runtime-rows]");
     }
 
     init() {
@@ -106,6 +107,7 @@ class AdminSystemHealthController {
         ["bucket", "list", "read", "write", "delete"].forEach((key) => {
             this.setStorageStatus(key, "PENDING", reason);
         });
+        this.renderRuntimePending(reason);
     }
 
     renderPostgresStatus(databaseStatus = {}) {
@@ -166,6 +168,60 @@ class AdminSystemHealthController {
         });
     }
 
+    createCell(text) {
+        const cell = document.createElement("td");
+        cell.textContent = asText(text);
+        return cell;
+    }
+
+    createStatusCell(status, reason) {
+        const cell = document.createElement("td");
+        cell.dataset.healthStatus = statusValue(status);
+        this.setStatusNode(cell, status, reason);
+        return cell;
+    }
+
+    renderRuntimePending(reason) {
+        if (!this.runtimeRows) {
+            return;
+        }
+        const row = document.createElement("tr");
+        row.append(
+            this.createCell("Runtime environment"),
+            this.createCell("not available"),
+            this.createStatusCell("PENDING", reason),
+        );
+        this.runtimeRows.replaceChildren(row);
+    }
+
+    renderRuntimeEnvironment(runtimeEnvironment = {}) {
+        if (!this.runtimeRows) {
+            return;
+        }
+        if (runtimeEnvironment?.secretsExposed === true || runtimeEnvironment?.secretEditingAllowed === true) {
+            this.renderRuntimePending("Safe runtime environment diagnostics were blocked because the response exposed secret controls.");
+            return;
+        }
+        const rows = Array.isArray(runtimeEnvironment.rows) ? runtimeEnvironment.rows : [];
+        if (!rows.length) {
+            this.renderRuntimePending("Safe runtime environment diagnostics returned no loaded keys.");
+            return;
+        }
+        const fragment = document.createDocumentFragment();
+        rows.forEach((runtimeRow) => {
+            const row = document.createElement("tr");
+            const keyCell = this.createCell(runtimeRow.key);
+            keyCell.dataset.adminSystemHealthRuntimeKey = "";
+            row.append(
+                keyCell,
+                this.createCell(runtimeRow.display),
+                this.createStatusCell(runtimeRow.status, runtimeRow.reason),
+            );
+            fragment.append(row);
+        });
+        this.runtimeRows.replaceChildren(fragment);
+    }
+
     load() {
         try {
             const data = readAdminSystemHealthStatus();
@@ -176,6 +232,7 @@ class AdminSystemHealthController {
             this.renderPostgresStatus(data?.databaseStatus || {});
             this.renderStorageStatus(data?.storageStatus || {});
             this.runStorageDiagnostics();
+            this.renderRuntimeEnvironment(data?.runtimeEnvironment || {});
         } catch (error) {
             const message = error instanceof Error ? error.message : "Safe Admin System Health API is unavailable.";
             this.renderPending(message);

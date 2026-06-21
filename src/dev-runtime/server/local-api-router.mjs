@@ -302,6 +302,15 @@ const SYSTEM_HEALTH_LIMIT_ENV_KEYS = Object.freeze([
   }),
 ]);
 const SYSTEM_HEALTH_LIMIT_PRESSURE_LABELS = Object.freeze(["OK", "WATCH", "UPGRADE SOON", "RISK"]);
+const RUNTIME_ENV_SECRET_MARKERS = Object.freeze([
+  "PASSWORD",
+  "SECRET",
+  "TOKEN",
+  "KEY",
+  "SERVICE_ROLE",
+  "JWT",
+  "DATABASE_URL",
+]);
 const SYSTEM_HEALTH_USAGE_NOT_AVAILABLE = "NOT AVAILABLE";
 const SYSTEM_HEALTH_USAGE_CONTRACTS = Object.freeze({
   GAMEFOUNDRY_DB_CONNECTION_LIMIT: Object.freeze({
@@ -735,6 +744,41 @@ function systemHealthSummary(rows) {
     score: total ? Math.round((counts.PASS / total) * 100) : 0,
     status: overallHealthStatus(rows),
     total,
+  };
+}
+
+function isSecretLikeRuntimeEnvKey(key) {
+  const upperKey = String(key || "").toUpperCase();
+  return RUNTIME_ENV_SECRET_MARKERS.some((marker) => upperKey.includes(marker));
+}
+
+function systemHealthRuntimeEnvironment(env = process.env) {
+  const rows = Object.keys(env || {})
+    .filter((key) => String(key || "").trim())
+    .sort((left, right) => left.localeCompare(right))
+    .map((key) => {
+      const configured = String(env[key] ?? "").trim().length > 0;
+      const secretLike = isSecretLikeRuntimeEnvKey(key);
+      return {
+        configured,
+        display: configured ? (secretLike ? "********" : "configured") : "not configured",
+        key,
+        reason: configured
+          ? (secretLike ? "Value is loaded and masked because the key is secret-like." : "Value is loaded; raw runtime values are hidden.")
+          : "Variable is present but empty.",
+        secretLike,
+        status: configured ? "PASS" : "WARN",
+      };
+    });
+  const maskedSecretCount = rows.filter((row) => row.secretLike && row.configured).length;
+  return {
+    maskedSecretCount,
+    message: `${rows.length} runtime environment key(s) loaded; ${maskedSecretCount} secret-like value(s) masked.`,
+    rows,
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    status: rows.some((row) => row.status !== "PASS") ? "WARN" : "PASS",
+    totalCount: rows.length,
   };
 }
 
@@ -3450,6 +3494,7 @@ LIMIT 1;
     const packageStatus = projectPackageReadinessStatus();
     const promotionFoundation = this.ownerPromotionFoundation();
     const r2Readiness = systemHealthR2Readiness(storageStatus);
+    const runtimeEnvironment = systemHealthRuntimeEnvironment();
     const operationsHealth = adminOperationsHealth(this.standaloneTables);
     const importBlocked = promotionFoundation.importOverwriteAllowed === false
       && promotionFoundation.browserExecutionAllowed === false
@@ -3556,6 +3601,7 @@ LIMIT 1;
       r2Readiness,
       secretEditingAllowed: false,
       secretsExposed: false,
+      runtimeEnvironment,
       storageStatus,
       summary: systemHealthSummary(overview),
       status: overallHealthStatus(overview),

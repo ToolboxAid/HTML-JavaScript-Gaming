@@ -1,5 +1,5 @@
 diff --git a/admin/system-health.html b/admin/system-health.html
-index c5ef74f44..84e869822 100644
+index c5ef74f44..f5330bcdd 100644
 --- a/admin/system-health.html
 +++ b/admin/system-health.html
 @@ -9 +9 @@
@@ -172,7 +172,7 @@ index c5ef74f44..84e869822 100644
 -                                    <tr>
 -                                        <th scope="col">Filter</th>
 -                                        <th scope="col">Value</th>
-@@ -197,72 +88,6 @@
+@@ -197,8 +88,6 @@
 -                                    <tr>
 -                                        <td>Action</td>
 -                                        <td>
@@ -181,14 +181,18 @@ index c5ef74f44..84e869822 100644
 -                                            </select>
 -                                        </td>
 -                                    </tr>
--                                </tbody>
--                            </table>
--                        </div>
--                        <div class="table-wrapper">
++                                    <tr><td>Provider</td><td data-admin-system-health-db-value="provider">Postgres</td><td data-health-status="PASS" data-admin-system-health-db-status="provider">PASS</td></tr>
++                                    <tr><td>Host</td><td data-admin-system-health-db-value="host">Configured host placeholder</td><td data-health-status="PENDING" data-admin-system-health-db-status="host" title="Reason: host reader is intentionally not wired in this foundation PR." aria-label="PENDING: host reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
++                                    <tr><td>Port</td><td data-admin-system-health-db-value="port">5432</td><td data-health-status="PASS" data-admin-system-health-db-status="port">PASS</td></tr>
++                                    <tr><td>Database</td><td data-admin-system-health-db-value="database">Configured database placeholder</td><td data-health-status="PENDING" data-admin-system-health-db-status="database" title="Reason: database name reader is intentionally not wired in this foundation PR." aria-label="PENDING: database name reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
++                                    <tr><td>Migration Version</td><td data-admin-system-health-db-value="migration">Pending migration reader</td><td data-health-status="PENDING" data-admin-system-health-db-status="migration" title="Reason: migration version reader is intentionally not wired in this foundation PR." aria-label="PENDING: migration version reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
++                                    <tr><td>Status</td><td data-admin-system-health-db-value="connection">Connection check pending</td><td data-health-status="PENDING" data-admin-system-health-db-status="connection" title="Reason: live Postgres connection checks are intentionally not wired in this foundation PR." aria-label="PENDING: live Postgres connection checks are intentionally not wired in this foundation PR.">PENDING</td></tr>
+@@ -209,2 +98,2 @@
 -                            <table class="data-table" aria-label="Admin AI usage support rows">
 -                                <caption>AI Usage Rows</caption>
--                                <thead>
--                                    <tr>
++                            <table class="data-table" aria-label="Storage health">
++                                <caption>Storage Health - Cloudflare R2</caption>
+@@ -213,18 +102,2 @@
 -                                        <th scope="col">User</th>
 -                                        <th scope="col">Action</th>
 -                                        <th scope="col">Source</th>
@@ -207,12 +211,13 @@ index c5ef74f44..84e869822 100644
 -                                <thead>
 -                                    <tr>
 -                                        <th scope="col">Area</th>
--                                        <th scope="col">Status</th>
++                                        <th scope="col">Check</th>
++                                        <th scope="col">Target</th>
+@@ -232,3 +104,0 @@
 -                                        <th scope="col">Table</th>
 -                                        <th scope="col">Issue</th>
 -                                        <th scope="col">Next Step</th>
--                                    </tr>
--                                </thead>
+@@ -237,47 +107,6 @@
 -                                <tbody data-admin-health-config-issue-rows>
 -                                    <tr><td>Operations</td><td>Loading</td><td>Loading</td><td>Loading configuration issues.</td><td>Loading next step.</td></tr>
 -                                </tbody>
@@ -245,24 +250,19 @@ index c5ef74f44..84e869822 100644
 -                                </thead>
 -                                <tbody data-admin-system-health-database-status-rows>
 -                                    <tr><td>Connection Configured</td><td>Loading</td><td>Loading database status.</td></tr>
-+                                    <tr><td>Provider</td><td data-admin-system-health-db-value="provider">Postgres</td><td data-health-status="PASS" data-admin-system-health-db-status="provider">PASS</td></tr>
-+                                    <tr><td>Host</td><td data-admin-system-health-db-value="host">Configured host placeholder</td><td data-health-status="PENDING" data-admin-system-health-db-status="host" title="Reason: host reader is intentionally not wired in this foundation PR." aria-label="PENDING: host reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
-+                                    <tr><td>Port</td><td data-admin-system-health-db-value="port">5432</td><td data-health-status="PASS" data-admin-system-health-db-status="port">PASS</td></tr>
-+                                    <tr><td>Database</td><td data-admin-system-health-db-value="database">Configured database placeholder</td><td data-health-status="PENDING" data-admin-system-health-db-status="database" title="Reason: database name reader is intentionally not wired in this foundation PR." aria-label="PENDING: database name reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
-+                                    <tr><td>Migration Version</td><td data-admin-system-health-db-value="migration">Pending migration reader</td><td data-health-status="PENDING" data-admin-system-health-db-status="migration" title="Reason: migration version reader is intentionally not wired in this foundation PR." aria-label="PENDING: migration version reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
-+                                    <tr><td>Status</td><td data-admin-system-health-db-value="connection">Connection check pending</td><td data-health-status="PENDING" data-admin-system-health-db-status="connection" title="Reason: live Postgres connection checks are intentionally not wired in this foundation PR." aria-label="PENDING: live Postgres connection checks are intentionally not wired in this foundation PR.">PENDING</td></tr>
-@@ -273,2 +98,2 @@
+-                                </tbody>
+-                            </table>
+-                        </div>
+-                        <div class="table-wrapper">
 -                            <table class="data-table" aria-label="System health storage status">
 -                                <caption>Project Asset Storage Status</caption>
-+                            <table class="data-table" aria-label="Storage health">
-+                                <caption>Storage Health - Cloudflare R2</caption>
-@@ -277 +102,2 @@
+-                                <thead>
+-                                    <tr>
 -                                        <th scope="col">Field</th>
-+                                        <th scope="col">Check</th>
-+                                        <th scope="col">Target</th>
-@@ -279 +104,0 @@
+-                                        <th scope="col">Status</th>
 -                                        <th scope="col">Value</th>
-@@ -282,2 +107,6 @@
+-                                    </tr>
+-                                </thead>
 -                                <tbody data-admin-system-health-storage-status-rows>
 -                                    <tr><td>Storage Configured</td><td>Loading</td><td>Loading storage status.</td></tr>
 +                                <tbody>
@@ -287,7 +287,7 @@ index c5ef74f44..84e869822 100644
 @@ -299,2 +126,6 @@
 -                                <tbody data-admin-system-health-r2-readiness-rows>
 -                                    <tr><td>Project Asset Storage / R2</td><td>Status</td><td>Loading</td><td>Loading</td><td>Loading R2 readiness.</td></tr>
-+                                <tbody>
++                                <tbody data-admin-system-health-runtime-rows>
 +                                    <tr><td>CLOUDFLARE_R2_ACCESS_KEY_ID</td><td>********</td><td data-health-status="PASS">PASS</td></tr>
 +                                    <tr><td>CLOUDFLARE_R2_BUCKET</td><td>Configured bucket placeholder</td><td data-health-status="PENDING" title="Reason: R2 bucket value reader is intentionally not wired in this foundation PR." aria-label="PENDING: R2 bucket value reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
 +                                    <tr><td>CLOUDFLARE_R2_SECRET_ACCESS_KEY</td><td>********</td><td data-health-status="PASS">PASS</td></tr>
@@ -326,9 +326,10 @@ index c5ef74f44..84e869822 100644
 +                                        <th scope="col">Diagnostic Check</th>
 +                                        <th scope="col">Future Signal</th>
 +                                        <th scope="col">Planned Source</th>
-@@ -328 +163,0 @@
+@@ -328,18 +163,0 @@
 -                                        <th scope="col">Value</th>
-@@ -331,19 +166,10 @@
+-                                    </tr>
+-                                </thead>
 -                                <tbody data-admin-system-health-detail-rows>
 -                                    <tr><td>System Health</td><td>Status</td><td>Loading</td><td>Loading safe details.</td></tr>
 -                                </tbody>
@@ -344,8 +345,7 @@ index c5ef74f44..84e869822 100644
 -                                        <th scope="col">Usage</th>
 -                                        <th scope="col">Pressure</th>
 -                                        <th scope="col">Next Step</th>
--                                    </tr>
--                                </thead>
+@@ -348,2 +166,10 @@
 -                                <tbody data-admin-system-health-limit-rows>
 -                                    <tr><td>System Health</td><td>Loading</td><td>Loading</td><td>Loading</td><td>Loading limit diagnostics.</td></tr>
 +                                <tbody>
@@ -402,7 +402,7 @@ index c5ef74f44..84e869822 100644
 -                                    <p>Admin Operations remains the action page.</p>
 +                                    <a class="btn btn--compact" href="/admin/operations.html">Admin Operations</a>
 diff --git a/assets/theme-v2/js/admin-system-health.js b/assets/theme-v2/js/admin-system-health.js
-index 38e143867..4ef03a981 100644
+index 38e143867..dfe67df79 100644
 --- a/assets/theme-v2/js/admin-system-health.js
 +++ b/assets/theme-v2/js/admin-system-health.js
 @@ -3 +3 @@ import {
@@ -436,7 +436,7 @@ index 38e143867..4ef03a981 100644
 +    return `${status}: ${message}`;
 +}
 +
-@@ -16,21 +32,16 @@ class AdminSystemHealthController {
+@@ -16,21 +32,17 @@ class AdminSystemHealthController {
 -        this.connectionSummary = root.querySelector("[data-admin-system-health-connection-summary]");
 -        this.databaseStatusRows = root.querySelector("[data-admin-system-health-database-status-rows]");
 -        this.details = root.querySelector("[data-admin-system-health-detail-rows]");
@@ -474,17 +474,18 @@ index 38e143867..4ef03a981 100644
 +            node.dataset.adminSystemHealthStorageStatus,
 +            node,
 +        ]));
-@@ -40 +51 @@ class AdminSystemHealthController {
++        this.runtimeRows = root.querySelector("[data-admin-system-health-runtime-rows]");
+@@ -40 +52 @@ class AdminSystemHealthController {
 -        if (!this.connectionSummary || !this.databaseStatusRows || !this.details || !this.healthAiActionFilter || !this.healthAiUsageRows || !this.healthConfigIssueRows || !this.healthInvitationRows || !this.healthInvitationStatusFilter || !this.healthMembershipPlanFilter || !this.healthMembershipRows || !this.healthSummaryRows || !this.limits || !this.overview || !this.r2Readiness || !this.status || !this.storageConnectivityRows || !this.storageConnectivityStatus || !this.storageStatusRows || !this.summary) {
 +        if ((!this.dbValues.size && !this.storageValues.size) || document.querySelector("[data-session-access-blocked='admin']") || window.GameFoundrySessionGuard?.blocked === true) {
-@@ -43,6 +53,0 @@ class AdminSystemHealthController {
+@@ -43,6 +54,0 @@ class AdminSystemHealthController {
 -        this.storageActionButtons.forEach((button) => {
 -            button.addEventListener("click", () => this.runStorageConnectivityAction(button.dataset.adminSystemHealthStorageAction));
 -        });
 -        this.healthMembershipPlanFilter.addEventListener("change", () => this.renderMembershipRows(this.operationsHealth?.memberships || {}));
 -        this.healthInvitationStatusFilter.addEventListener("change", () => this.renderInvitationRows(this.operationsHealth?.invitations || {}));
 -        this.healthAiActionFilter.addEventListener("change", () => this.renderAiUsageRows(this.operationsHealth?.aiCredits || {}));
-@@ -52,27 +57,5 @@ class AdminSystemHealthController {
+@@ -52,16 +58,5 @@ class AdminSystemHealthController {
 -    setStatus(status, message) {
 -        this.status.textContent = `${status}: ${message}`;
 -    }
@@ -501,8 +502,12 @@ index 38e143867..4ef03a981 100644
 -            row.append(cell);
 -        });
 -        return row;
--    }
--
++    setValue(key, value, fallback) {
++        const node = this.dbValues.get(key);
++        if (node) {
++            node.textContent = asText(value, fallback);
++        }
+@@ -70,9 +65,5 @@ class AdminSystemHealthController {
 -    renderOverview(rows) {
 -        this.overview.replaceChildren();
 -        rows.forEach((row) => {
@@ -512,12 +517,12 @@ index 38e143867..4ef03a981 100644
 -                row.summary || "Status unavailable.",
 -            ]));
 -        });
-+    setValue(key, value, fallback) {
-+        const node = this.dbValues.get(key);
++    setStorageValue(key, value, fallback) {
++        const node = this.storageValues.get(key);
 +        if (node) {
 +            node.textContent = asText(value, fallback);
 +        }
-@@ -81,14 +64,5 @@ class AdminSystemHealthController {
+@@ -81,14 +72,3 @@ class AdminSystemHealthController {
 -    replaceFilterOptions(select, options, allLabel) {
 -        const currentValue = select.value;
 -        select.replaceChildren();
@@ -532,12 +537,10 @@ index 38e143867..4ef03a981 100644
 -            select.append(option);
 -        });
 -        select.value = options.includes(currentValue) ? currentValue : "";
-+    setStorageValue(key, value, fallback) {
-+        const node = this.storageValues.get(key);
-+        if (node) {
-+            node.textContent = asText(value, fallback);
-+        }
-@@ -97,10 +71,3 @@ class AdminSystemHealthController {
++    setStatus(key, status, reason = "") {
++        const node = this.dbStatuses.get(key);
++        this.setStatusNode(node, status, reason);
+@@ -97,10 +77,3 @@ class AdminSystemHealthController {
 -    renderHealthSummary(rows) {
 -        this.healthSummaryRows.replaceChildren();
 -        (rows.length ? rows : [{ area: "Operations", count: 0, diagnostic: "Operational health unavailable.", status: "WARN" }]).forEach((row) => {
@@ -548,10 +551,10 @@ index 38e143867..4ef03a981 100644
 -                row.diagnostic || "No diagnostic returned.",
 -            ]));
 -        });
-+    setStatus(key, status, reason = "") {
-+        const node = this.dbStatuses.get(key);
++    setStorageStatus(key, status, reason = "") {
++        const node = this.storageStatuses.get(key);
 +        this.setStatusNode(node, status, reason);
-@@ -109,17 +76,3 @@ class AdminSystemHealthController {
+@@ -109,35 +82,3 @@ class AdminSystemHealthController {
 -    renderMembershipRows(memberships = {}) {
 -        const selectedPlan = this.healthMembershipPlanFilter.value;
 -        const rows = Array.isArray(memberships.rows) ? memberships.rows : [];
@@ -569,10 +572,8 @@ index 38e143867..4ef03a981 100644
 -        if (!this.healthMembershipRows.children.length) {
 -            this.healthMembershipRows.append(this.createRow(["No rows", selectedPlan || "All plans", "SKIP", "No matching membership assignments."]));
 -        }
-+    setStorageStatus(key, status, reason = "") {
-+        const node = this.storageStatuses.get(key);
-+        this.setStatusNode(node, status, reason);
-@@ -128,16 +81,3 @@ class AdminSystemHealthController {
+-    }
+-
 -    renderInvitationRows(invitations = {}) {
 -        const selectedStatus = this.healthInvitationStatusFilter.value;
 -        const rows = Array.isArray(invitations.rows) ? invitations.rows : [];
@@ -592,7 +593,7 @@ index 38e143867..4ef03a981 100644
 +    setStatusNode(node, status, reason = "") {
 +        if (!node) {
 +            return;
-@@ -145,19 +85,7 @@ class AdminSystemHealthController {
+@@ -145,19 +86,7 @@ class AdminSystemHealthController {
 -    }
 -
 -    renderAiUsageRows(aiCredits = {}) {
@@ -619,11 +620,11 @@ index 38e143867..4ef03a981 100644
 +            node.removeAttribute("title");
 +            node.removeAttribute("aria-label");
 +            return;
-@@ -164,0 +93,3 @@ class AdminSystemHealthController {
+@@ -164,0 +94,3 @@ class AdminSystemHealthController {
 +        const resolvedReason = reasonText(normalized, reason);
 +        node.setAttribute("title", `Reason: ${asText(reason, "Safe server diagnostics returned this non-PASS status.")}`);
 +        node.setAttribute("aria-label", resolvedReason);
-@@ -167,10 +98,3 @@ class AdminSystemHealthController {
+@@ -167,10 +99,3 @@ class AdminSystemHealthController {
 -    renderConfigIssues(rows) {
 -        this.healthConfigIssueRows.replaceChildren();
 -        (rows.length ? rows : [{ area: "Operations", issue: "Operational configuration unavailable.", nextStep: "Reload Admin System Health.", status: "WARN", tableName: "unknown" }]).forEach((row) => {
@@ -637,9 +638,9 @@ index 38e143867..4ef03a981 100644
 +    renderPending(reason) {
 +        ["host", "database", "migration", "connection"].forEach((key) => {
 +            this.setStatus(key, "PENDING", reason);
-@@ -177,0 +102 @@ class AdminSystemHealthController {
+@@ -177,0 +103 @@ class AdminSystemHealthController {
 +        this.renderStoragePending(reason);
-@@ -180,34 +105,3 @@ class AdminSystemHealthController {
+@@ -180,34 +106,3 @@ class AdminSystemHealthController {
 -    renderOperationsHealth(operationsHealth = {}) {
 -        this.operationsHealth = operationsHealth;
 -        this.replaceFilterOptions(this.healthMembershipPlanFilter, operationsHealth.memberships?.planOptions || [], "All plans");
@@ -677,10 +678,12 @@ index 38e143867..4ef03a981 100644
 +    renderStoragePending(reason) {
 +        ["bucket", "list", "read", "write", "delete"].forEach((key) => {
 +            this.setStorageStatus(key, "PENDING", reason);
-@@ -217 +111 @@ class AdminSystemHealthController {
+@@ -214,0 +110 @@ class AdminSystemHealthController {
++        this.renderRuntimePending(reason);
+@@ -217 +113 @@ class AdminSystemHealthController {
 -    renderDatabaseStatus(databaseStatus = {}) {
 +    renderPostgresStatus(databaseStatus = {}) {
-@@ -220,24 +114,17 @@ class AdminSystemHealthController {
+@@ -220,12 +116,17 @@ class AdminSystemHealthController {
 -        this.databaseStatusRows.replaceChildren();
 -        [
 -            ["Connection Configured", databaseStatus.configured === true ? "PASS" : "WARN", databaseStatus.configured === true ? "yes" : "no"],
@@ -692,18 +695,6 @@ index 38e143867..4ef03a981 100644
 -            ["Last Migration", databaseStatus.lastMigrationStatus || "WARN", lastMigration.name && lastMigration.appliedAt ? `${lastMigration.type || "unknown"} ${lastMigration.name} at ${lastMigration.appliedAt}` : "not recorded"],
 -        ].forEach((row) => {
 -            this.databaseStatusRows.append(this.createRow(row));
--        });
--    }
--
--    renderDetails(rows) {
--        this.details.replaceChildren();
--        rows.forEach((row) => {
--            this.details.append(this.createRow([
--                row.area || "Unknown",
--                row.field || "Status",
--                row.status || "WARN",
--                row.value || "not available",
--            ]));
 -        });
 +        const migrationSummary = lastMigration.name
 +            ? `${asText(lastMigration.type, "migration")} ${lastMigration.name}${lastMigration.appliedAt ? ` at ${lastMigration.appliedAt}` : ""}`
@@ -722,7 +713,23 @@ index 38e143867..4ef03a981 100644
 +        this.setStatus("migration", databaseStatus.lastMigrationStatus || databaseStatus.migrationStatus, connectionReason);
 +        this.setValue("connection", databaseStatus.configured === true ? connectionReason : databaseStatus.message || "Postgres configuration is not complete.");
 +        this.setStatus("connection", databaseStatus.status, connectionReason);
-@@ -247,38 +134,3 @@ class AdminSystemHealthController {
+@@ -234,10 +135,4 @@ class AdminSystemHealthController {
+-    renderDetails(rows) {
+-        this.details.replaceChildren();
+-        rows.forEach((row) => {
+-            this.details.append(this.createRow([
+-                row.area || "Unknown",
+-                row.field || "Status",
+-                row.status || "WARN",
+-                row.value || "not available",
+-            ]));
+-        });
++    renderStorageStatus(storageStatus = {}) {
++        const reason = storageStatus.message || "Cloudflare R2 configuration status returned by the safe Admin System Health API.";
++        this.setStorageValue("bucket", storageStatus.bucket, "not configured");
++        this.setStorageStatus("bucket", storageStatus.bucketStatus || storageStatus.status, reason);
+@@ -246,12 +141,5 @@ class AdminSystemHealthController {
+-    renderStorageStatus(storageStatus = {}) {
 -        this.storageStatusRows.replaceChildren();
 -        [
 -            ["Storage Configured", storageStatus.configured === true ? "PASS" : "WARN", storageStatus.configured === true ? "yes" : "no"],
@@ -734,8 +741,12 @@ index 38e143867..4ef03a981 100644
 -        ].forEach((row) => {
 -            this.storageStatusRows.append(this.createRow(row));
 -        });
--    }
--
++    storageResultTarget(result = {}) {
++        if (typeof result.keysListed === "number" && result.actionId === "storage-list") {
++            return `${result.keysListed} object(s) under ${asText(result.projectsPrefix, "configured prefix")}`;
++        }
++        return result.testObjectKey || result.projectsPrefix || result.message || "diagnostic target unavailable";
+@@ -260,11 +148,7 @@ class AdminSystemHealthController {
 -    renderLimits(rows) {
 -        this.limits.replaceChildren();
 -        rows.forEach((row) => {
@@ -747,8 +758,14 @@ index 38e143867..4ef03a981 100644
 -                row.nextStep || "Add safe service usage reporting through the Local API.",
 -            ]));
 -        });
--    }
--
++    renderStorageResult(key, result = {}) {
++        if (result?.secretsExposed === true || result?.secretEditingAllowed === true) {
++            this.setStorageStatus(key, "PENDING", "Safe R2 diagnostic response was blocked because it exposed secret controls.");
++            return;
++        }
++        this.setStorageValue(key, this.storageResultTarget(result));
++        this.setStorageStatus(key, result.status, result.message || "R2 diagnostic returned without a message.");
+@@ -273,11 +157,11 @@ class AdminSystemHealthController {
 -    renderR2Readiness(readiness) {
 -        this.r2Readiness.replaceChildren();
 -        const rows = Array.isArray(readiness?.rows) ? readiness.rows : [];
@@ -760,11 +777,18 @@ index 38e143867..4ef03a981 100644
 -                row.value || "not configured",
 -                row.nextStep || "Review R2 configuration.",
 -            ]));
--        });
-+        const reason = storageStatus.message || "Cloudflare R2 configuration status returned by the safe Admin System Health API.";
-+        this.setStorageValue("bucket", storageStatus.bucket, "not configured");
-+        this.setStorageStatus("bucket", storageStatus.bucketStatus || storageStatus.status, reason);
-@@ -287,11 +139,5 @@ class AdminSystemHealthController {
++    runStorageDiagnostics() {
++        STORAGE_DIAGNOSTIC_ACTIONS.forEach(({ key }) => {
++            this.setStorageStatus(key, "PENDING", "R2 diagnostic is running through the safe Admin System Health API.");
++        });
++        STORAGE_DIAGNOSTIC_ACTIONS.forEach(({ actionId, key }) => {
++            try {
++                this.renderStorageResult(key, runAdminSystemHealthStorageConnectivityAction(actionId));
++            } catch (error) {
++                const message = error instanceof Error ? error.message : "Safe R2 diagnostic API is unavailable.";
++                this.setStorageStatus(key, "PENDING", message);
++            }
+@@ -287,7 +171,4 @@ class AdminSystemHealthController {
 -    appendStorageConnectivityResult(result = {}) {
 -        this.storageConnectivityRows.prepend(this.createRow([
 -            result.actionId || "storage-connectivity",
@@ -772,16 +796,19 @@ index 38e143867..4ef03a981 100644
 -            result.executed === true ? "yes" : "no",
 -            result.message || "No storage connectivity message returned.",
 -        ]));
--    }
--
++    createCell(text) {
++        const cell = document.createElement("td");
++        cell.textContent = asText(text);
++        return cell;
+@@ -296,2 +177,5 @@ class AdminSystemHealthController {
 -    clearStorageConnectivityResults() {
 -        this.storageConnectivityRows.replaceChildren();
-+    storageResultTarget(result = {}) {
-+        if (typeof result.keysListed === "number" && result.actionId === "storage-list") {
-+            return `${result.keysListed} object(s) under ${asText(result.projectsPrefix, "configured prefix")}`;
-+        }
-+        return result.testObjectKey || result.projectsPrefix || result.message || "diagnostic target unavailable";
-@@ -300,16 +146,4 @@ class AdminSystemHealthController {
++    createStatusCell(status, reason) {
++        const cell = document.createElement("td");
++        cell.dataset.healthStatus = statusValue(status);
++        this.setStatusNode(cell, status, reason);
++        return cell;
+@@ -300,16 +184,3 @@ class AdminSystemHealthController {
 -    runStorageConnectivityAction(actionId) {
 -        try {
 -            const result = runAdminSystemHealthStorageConnectivityAction(actionId);
@@ -798,14 +825,18 @@ index 38e143867..4ef03a981 100644
 -            this.appendStorageConnectivityResult(result);
 -            this.setStorageConnectivityStatus("FAIL", result.message);
 -            return result;
-+    renderStorageResult(key, result = {}) {
-+        if (result?.secretsExposed === true || result?.secretEditingAllowed === true) {
-+            this.setStorageStatus(key, "PENDING", "Safe R2 diagnostic response was blocked because it exposed secret controls.");
++    renderRuntimePending(reason) {
++        if (!this.runtimeRows) {
 +            return;
-@@ -316,0 +151,2 @@ class AdminSystemHealthController {
-+        this.setStorageValue(key, this.storageResultTarget(result));
-+        this.setStorageStatus(key, result.status, result.message || "R2 diagnostic returned without a message.");
-@@ -319,16 +155,12 @@ class AdminSystemHealthController {
+@@ -316,0 +188,7 @@ class AdminSystemHealthController {
++        const row = document.createElement("tr");
++        row.append(
++            this.createCell("Runtime environment"),
++            this.createCell("not available"),
++            this.createStatusCell("PENDING", reason),
++        );
++        this.runtimeRows.replaceChildren(row);
+@@ -319,15 +197,7 @@ class AdminSystemHealthController {
 -    runStartupStorageConnectivity() {
 -        this.clearStorageConnectivityResults();
 -        this.setStorageConnectivityStatus("SKIP", "Storage connectivity startup running.");
@@ -821,20 +852,33 @@ index 38e143867..4ef03a981 100644
 -            this.setStorageConnectivityStatus("SKIP", "Storage connectivity startup skipped one or more actions. Review result diagnostics.");
 -        } else {
 -            this.setStorageConnectivityStatus("PASS", "Storage connectivity startup completed List, Write Test Object, Read Test Object, and Delete Test Object.");
--        }
-+    runStorageDiagnostics() {
-+        STORAGE_DIAGNOSTIC_ACTIONS.forEach(({ key }) => {
-+            this.setStorageStatus(key, "PENDING", "R2 diagnostic is running through the safe Admin System Health API.");
++    renderRuntimeEnvironment(runtimeEnvironment = {}) {
++        if (!this.runtimeRows) {
++            return;
++        }
++        if (runtimeEnvironment?.secretsExposed === true || runtimeEnvironment?.secretEditingAllowed === true) {
++            this.renderRuntimePending("Safe runtime environment diagnostics were blocked because the response exposed secret controls.");
++            return;
+@@ -334,0 +205,18 @@ class AdminSystemHealthController {
++        const rows = Array.isArray(runtimeEnvironment.rows) ? runtimeEnvironment.rows : [];
++        if (!rows.length) {
++            this.renderRuntimePending("Safe runtime environment diagnostics returned no loaded keys.");
++            return;
++        }
++        const fragment = document.createDocumentFragment();
++        rows.forEach((runtimeRow) => {
++            const row = document.createElement("tr");
++            const keyCell = this.createCell(runtimeRow.key);
++            keyCell.dataset.adminSystemHealthRuntimeKey = "";
++            row.append(
++                keyCell,
++                this.createCell(runtimeRow.display),
++                this.createStatusCell(runtimeRow.status, runtimeRow.reason),
++            );
++            fragment.append(row);
 +        });
-+        STORAGE_DIAGNOSTIC_ACTIONS.forEach(({ actionId, key }) => {
-+            try {
-+                this.renderStorageResult(key, runAdminSystemHealthStorageConnectivityAction(actionId));
-+            } catch (error) {
-+                const message = error instanceof Error ? error.message : "Safe R2 diagnostic API is unavailable.";
-+                this.setStorageStatus(key, "PENDING", message);
-+            }
-+        });
-@@ -339,12 +171,8 @@ class AdminSystemHealthController {
++        this.runtimeRows.replaceChildren(fragment);
+@@ -339,12 +227,9 @@ class AdminSystemHealthController {
 -            const payload = readAdminSystemHealthStatus();
 -            this.renderSummary(payload.summary || {});
 -            this.renderOverview(Array.isArray(payload.overview) ? payload.overview : []);
@@ -855,7 +899,8 @@ index 38e143867..4ef03a981 100644
 +            this.renderPostgresStatus(data?.databaseStatus || {});
 +            this.renderStorageStatus(data?.storageStatus || {});
 +            this.runStorageDiagnostics();
-@@ -352,24 +180,2 @@ class AdminSystemHealthController {
++            this.renderRuntimeEnvironment(data?.runtimeEnvironment || {});
+@@ -352,24 +237,2 @@ class AdminSystemHealthController {
 -            this.renderSummary({ counts: { FAIL: 1, PASS: 0, WARN: 0 }, lastRefreshAt: "not available", score: 0, status: "FAIL" });
 -            this.renderConnectionSummary({});
 -            this.renderDatabaseStatus({});
@@ -882,15 +927,15 @@ index 38e143867..4ef03a981 100644
 -            this.setStorageConnectivityStatus("SKIP", "Storage connectivity startup skipped because Admin System Health failed to load.");
 +            const message = error instanceof Error ? error.message : "Safe Admin System Health API is unavailable.";
 +            this.renderPending(message);
-@@ -380 +186 @@ class AdminSystemHealthController {
+@@ -380 +243 @@ class AdminSystemHealthController {
 -document.addEventListener("DOMContentLoaded", () => {
 +function bootAdminSystemHealth() {
-@@ -382,3 +188 @@ document.addEventListener("DOMContentLoaded", () => {
+@@ -382,3 +245 @@ document.addEventListener("DOMContentLoaded", () => {
 -    if (!root) {
 -        return;
 -    }
 +    if (!root) return;
-@@ -386 +190,7 @@ document.addEventListener("DOMContentLoaded", () => {
+@@ -386 +247,7 @@ document.addEventListener("DOMContentLoaded", () => {
 -});
 +}
 +
@@ -1813,20 +1858,235 @@ index 000000000..889bd0c0f
 +## EOD Approval
 +
 +No merge was performed. EOD merge remains owner-controlled and requires explicit approval.
+diff --git a/docs_build/dev/reports/PR_26171_GAMMA_016-admin-runtime-environment-runtime-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26171_GAMMA_016-admin-runtime-environment-runtime-instruction-compliance-checklist.md
+new file mode 100644
+index 000000000..1d9129256
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26171_GAMMA_016-admin-runtime-environment-runtime-instruction-compliance-checklist.md
+@@ -0,0 +1,66 @@
++# PR_26171_GAMMA_016 Instruction Compliance Checklist
++
++## Required Reads
++
++- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
++- PASS: Read `docs_build/dev/PROJECT_MULTI_PC.txt`.
++- PASS: Read exact target file `admin/system-health.html`.
++- PASS: Read existing runtime target `assets/theme-v2/js/admin-system-health.js`.
++- PASS: Read existing safe server contract in `src/dev-runtime/server/local-api-router.mjs`.
++- PASS: Read existing target route test `tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`.
++
++## Ownership And Branch
++
++- PASS: Queued PR name includes TEAM token `GAMMA`.
++- PASS: TEAM ownership was verified against `PROJECT_MULTI_PC.txt`.
++- PASS: User explicitly directed continuation on `team/GAMMA/admin`.
++- PASS: Verified clean status and local/origin sync `0 0` after PR015 before PR016 edits.
++- PASS: User explicitly directed updating existing draft PR #36 and not creating a separate PR016 GitHub PR.
++- PASS: Work remained within the Admin diagnostics/runtime scope.
++
++## Scope Compliance
++
++- PASS: Wired Admin System Health runtime environment visibility.
++- PASS: Displayed loaded runtime env keys alphabetically.
++- PASS: Masked secret-like values for `PASSWORD`.
++- PASS: Masked secret-like values for `SECRET`.
++- PASS: Masked secret-like values for `TOKEN`.
++- PASS: Masked secret-like values for `KEY`.
++- PASS: Masked secret-like values for `SERVICE_ROLE`.
++- PASS: Masked secret-like values for `JWT`.
++- PASS: Masked secret-like values for `DATABASE_URL`.
++- PASS: Showed applied/configured state safely.
++- PASS: Did not expose secret values in page text.
++- PASS: Did not expose secret values in client-visible API response bodies.
++- PASS: Did not introduce SQLite.
++- PASS: Preserved Theme V2 only.
++- PASS: Preserved Postgres-only database direction.
++- PASS: Preserved R2-only storage direction.
++- PASS: Added reason text for every non-`PASS` status rendered by PR016 code.
++
++## Validation Compliance
++
++- PASS: Ran `git diff --check`.
++- PASS: Ran targeted Admin System Health source validation.
++- PASS: Ran targeted Admin System Health Playwright route/behavior validation.
++- PASS: Verified no SQLite was introduced by the PR016 diff.
++- PASS: Verified no raw env value fields were introduced by the PR016 diff.
++- PASS: Verified no secret values are exposed by the page or API payload behavior.
++- PASS: Verified every non-`PASS` status has reason text.
++- PASS/WARN: Produced Playwright V8 coverage notes for changed runtime JavaScript; server-side router coverage is advisory WARN because browser V8 coverage cannot collect it.
++- PASS: Did not run samples.
++
++## Reports And Packaging
++
++- PASS: Created queued-scope PR report.
++- PASS: Created manual validation notes.
++- PASS: Created instruction compliance checklist.
++- PASS: Generate `codex_review.diff` after scoped changes.
++- PASS: Generate `codex_changed_files.txt` after scoped changes.
++- PASS: Create repo-structured delta ZIP under `tmp/PR_26171_GAMMA_016-admin-runtime-environment-runtime_delta.zip`.
++- PASS: Verify no report remains modified after ZIP creation.
++
++## Merge Control
++
++- PASS: No merge performed.
++- PASS: Owner-controlled EOD merge approval remains required.
+diff --git a/docs_build/dev/reports/PR_26171_GAMMA_016-admin-runtime-environment-runtime-manual-validation-notes.md b/docs_build/dev/reports/PR_26171_GAMMA_016-admin-runtime-environment-runtime-manual-validation-notes.md
+new file mode 100644
+index 000000000..dc240ccdd
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26171_GAMMA_016-admin-runtime-environment-runtime-manual-validation-notes.md
+@@ -0,0 +1,28 @@
++# PR_26171_GAMMA_016 Manual Validation Notes
++
++## Manual Review Notes
++
++- Reviewed the safe runtime environment payload in `src/dev-runtime/server/local-api-router.mjs`.
++- Confirmed the server returns key names, display state, configured state, status, and reason text only.
++- Confirmed raw environment values are not included in the runtime environment payload.
++- Confirmed secret-like keys are displayed as `********`.
++- Confirmed non-secret loaded keys are displayed as `configured` rather than exposing raw values.
++- Confirmed Runtime Environment rows render alphabetically from server-owned data.
++- Confirmed non-`PASS` status cells include hover/accessibility reason text.
++- Confirmed no SQLite runtime or persistence code was introduced.
++
++## Validation Notes
++
++- `git diff --check` passed.
++- Targeted Admin System Health source validation passed.
++- Targeted Admin System Health Playwright route/behavior spec passed with 3 tests.
++- Playwright verified test env secret values were absent from both page text and client-visible Admin System Health API response bodies.
++- Playwright V8 coverage report includes `assets/theme-v2/js/admin-system-health.js`.
++- Playwright V8 coverage report warns that `src/dev-runtime/server/local-api-router.mjs` is server-side and not collected by browser V8 coverage.
++- Samples were not run because samples are outside this queued Admin diagnostics scope.
++
++## User Review Focus
++
++- Review whether listing all loaded runtime environment key names is the desired Admin visibility level.
++- Review whether non-secret env values should remain `configured` only, as implemented, to avoid accidental exposure.
++- Confirm owner approval before any EOD merge.
+diff --git a/docs_build/dev/reports/PR_26171_GAMMA_016-admin-runtime-environment-runtime.md b/docs_build/dev/reports/PR_26171_GAMMA_016-admin-runtime-environment-runtime.md
+new file mode 100644
+index 000000000..de4750007
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26171_GAMMA_016-admin-runtime-environment-runtime.md
+@@ -0,0 +1,102 @@
++# PR_26171_GAMMA_016-admin-runtime-environment-runtime
++
++## Summary
++
++Queued scope 016 was applied to the existing draft PR #36 workstream branch:
++
++- PR #36: `PR_26171_GAMMA_011-admin-system-health-foundation`
++- Branch: `team/GAMMA/admin`
++
++This queued scope wires Admin System Health runtime environment visibility through the existing safe Admin System Health status endpoint without creating a separate GitHub PR.
++
++## Scope Evidence
++
++- Added a server-owned runtime environment payload to `GET /api/admin/system-health/status`.
++- Displayed loaded runtime environment keys alphabetically in the Runtime Environment table.
++- Returned safe display states only:
++  - `configured`
++  - `not configured`
++  - `********` for secret-like keys
++- Masked keys containing:
++  - `PASSWORD`
++  - `SECRET`
++  - `TOKEN`
++  - `KEY`
++  - `SERVICE_ROLE`
++  - `JWT`
++  - `DATABASE_URL`
++- Added runtime table rendering in `assets/theme-v2/js/admin-system-health.js`.
++- Preserved Postgres-only database direction and R2-only storage direction.
++- Did not expose raw runtime values in the API response or page.
++- Did not introduce SQLite, new persistence, inline CSS, or inline JavaScript.
++
++## Safe Backend Contract
++
++- Extended existing safe status contract: `GET /api/admin/system-health/status`.
++- The server payload includes runtime key names, configured state, masked display text, status, and reason text.
++- The server payload does not include raw environment variable values.
++- The payload includes `secretEditingAllowed: false` and `secretsExposed: false`.
++- The browser refuses to render runtime rows if the runtime environment payload reports unsafe secret controls.
++
++## Instruction Start Gate
++
++- Instructions read: PASS
++- `docs_build/dev/PROJECT_INSTRUCTIONS.md`: read before queued edits
++- `docs_build/dev/PROJECT_MULTI_PC.txt`: read before queued edits
++- Current branch: `team/GAMMA/admin`
++- Clean status before PR016 edits: PASS
++- Local/origin sync before PR016 edits: PASS (`0 0`)
++- TEAM token: `GAMMA`
++- TEAM ownership: PASS by explicit Master Control/user assignment for diagnostics/admin workstream
++- Implementation path: `src/dev-runtime/server/local-api-router.mjs`, `admin/system-health.html`, `assets/theme-v2/js/admin-system-health.js`, `tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`
++- Existing draft PR target: PR #36
++- Separate PR creation: SKIP by explicit user instruction
++- Merge: SKIP, owner-controlled EOD approval remains required
++
++## Validation
++
++- PASS: `git diff --check`
++- PASS: targeted diff check verified PR016 introduced no SQLite text.
++- PASS: targeted diff check verified PR016 introduced no raw env value field such as `value: env[...]`, `rawValue`, or `actualValue`.
++- PASS: targeted source check verified every static non-`PASS` status in `admin/system-health.html` has `title` or `aria-label` reason text.
++- PASS: targeted source check verified exactly one runtime table hook.
++- PASS: targeted source check verified the server mask marker list includes all required tokens.
++- PASS: Playwright verified runtime keys are displayed alphabetically.
++- PASS: Playwright verified secret-like test env values are masked in both rendered page text and client-visible Admin System Health API response bodies.
++- PASS: Playwright verified non-admin sessions do not call Admin System Health status or storage connectivity endpoints.
++- PASS: `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --config=codex_playwright_system_chrome.config.cjs --project=playwright` (3 passed)
++- PASS/WARN: Playwright V8 coverage report lists changed browser runtime JS `assets/theme-v2/js/admin-system-health.js`; `src/dev-runtime/server/local-api-router.mjs` is reported as advisory WARN because Playwright V8 coverage does not collect server-side runtime files.
++
++## Playwright Coverage Notes
++
++- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
++- Changed browser runtime JS coverage: `(90%) assets/theme-v2/js/admin-system-health.js - executed lines 227/227; executed functions 28/31`
++- Advisory warning: `(0%) src/dev-runtime/server/local-api-router.mjs - changed runtime JS file was not collected by Playwright V8 coverage; advisory only`
++- Coverage is advisory only; no threshold is enforced.
++
++## Skipped Lanes
++
++- Full samples smoke: skipped by request because this Admin diagnostics runtime PR does not touch samples.
++- Full Playwright suite: skipped because the targeted Admin System Health route/behavior spec covers the changed page, browser runtime module, and server status payload behavior.
++- R2 diagnostics validation beyond the existing targeted Admin page spec: skipped because PR015 already covered R2 runtime wiring and PR016 touched only runtime environment visibility.
++- Postgres diagnostics validation beyond the existing targeted Admin page spec: skipped because PR014 already covered Postgres runtime wiring and PR016 touched only runtime environment visibility.
++
++## Required Reports
++
++- `docs_build/dev/reports/codex_review.diff`
++- `docs_build/dev/reports/codex_changed_files.txt`
++- `docs_build/dev/reports/PR_26171_GAMMA_016-admin-runtime-environment-runtime.md`
++- `docs_build/dev/reports/PR_26171_GAMMA_016-admin-runtime-environment-runtime-manual-validation-notes.md`
++- `docs_build/dev/reports/PR_26171_GAMMA_016-admin-runtime-environment-runtime-instruction-compliance-checklist.md`
++- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
++
++## ZIP Artifact
++
++- `tmp/PR_26171_GAMMA_016-admin-runtime-environment-runtime_delta.zip`
++- Generated from the current `team/GAMMA/admin` branch delta against the branch merge-base with `origin/main`, preserving the existing PR #36 workstream context.
++
++## EOD Approval
++
++No merge was performed. EOD merge remains owner-controlled and requires explicit approval.
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 59de15fb6..1d9599f98 100644
+index 59de15fb6..bd67f29f4 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -9,2 +9 @@ Changed runtime JS files considered:
+@@ -9,2 +9,2 @@ Changed runtime JS files considered:
 -(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 -(0%) toolbox/messages/messages.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(92%) assets/theme-v2/js/admin-system-health.js - executed lines 174/174; executed functions 24/26
-@@ -13,2 +12 @@ Guardrail warnings:
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(90%) assets/theme-v2/js/admin-system-health.js - executed lines 227/227; executed functions 28/31
+@@ -13,2 +13 @@ Guardrail warnings:
 -(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
 -(0%) toolbox/messages/messages.js - WARNING: changed runtime JS file missing from coverage; advisory only
-+(100%) none - no changed runtime JS coverage warnings
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 94d5e709f..461bcbf45 100644
+index 94d5e709f..3d9e70087 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
 @@ -15 +15 @@ Exercised tool entry points detected:
@@ -1835,11 +2095,12 @@ index 94d5e709f..461bcbf45 100644
 @@ -17 +17 @@ Exercised tool entry points detected:
 -(72%) Theme V2 Shared JS - exercised 1 runtime JS files
 +(78%) Theme V2 Shared JS - exercised 4 runtime JS files
-@@ -20,2 +20 @@ Changed runtime JS files covered:
+@@ -20,2 +20,2 @@ Changed runtime JS files covered:
 -(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 -(0%) toolbox/messages/messages.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(92%) assets/theme-v2/js/admin-system-health.js - executed lines 174/174; executed functions 24/26
-@@ -24,4 +23,3 @@ Files with executed line/function counts where available:
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(90%) assets/theme-v2/js/admin-system-health.js - executed lines 227/227; executed functions 28/31
+@@ -24,4 +24,3 @@ Files with executed line/function counts where available:
 -(25%) src/api/session-api-client.js - executed lines 68/68; executed functions 3/12
 -(33%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
 -(44%) src/api/server-api-client.js - executed lines 167/167; executed functions 8/18
@@ -1847,55 +2108,135 @@ index 94d5e709f..461bcbf45 100644
 +(36%) src/api/server-api-client.js - executed lines 167/167; executed functions 5/14
 +(46%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 12/26
 +(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 204/204; executed functions 9/14
-@@ -29,4 +27,5 @@ Files with executed line/function counts where available:
+@@ -29,4 +28,5 @@ Files with executed line/function counts where available:
 -(67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
 -(67%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 20/20; executed functions 2/3
 -(72%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 65/90
 -(74%) toolbox/tools-page-accordions.js - executed lines 1156/1156; executed functions 81/109
 +(74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 67/90
 +(80%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 4/5
++(90%) assets/theme-v2/js/admin-system-health.js - executed lines 227/227; executed functions 28/31
 +(91%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 10/11
-+(92%) assets/theme-v2/js/admin-system-health.js - executed lines 174/174; executed functions 24/26
 +(100%) src/api/admin-system-health-api-client.js - executed lines 19/19; executed functions 3/3
-@@ -35,2 +34 @@ Uncovered or low-coverage changed JS files:
+@@ -35,2 +35 @@ Uncovered or low-coverage changed JS files:
 -(0%) src/shared/toolbox/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
 -(0%) toolbox/messages/messages.js - WARNING: uncovered changed runtime JS file; advisory only
-+(100%) none - no low-coverage changed runtime JS files
-@@ -39,6 +37,2 @@ Changed JS files considered:
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+@@ -39,6 +38,3 @@ Changed JS files considered:
 -(0%) src/shared/toolbox/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
 -(0%) tests/playwright/tools/MessagesTool.spec.mjs - changed JS file not collected as browser runtime coverage
 -(0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
 -(0%) tests/playwright/tools/TextToSpeechFunctional.spec.mjs - changed JS file not collected as browser runtime coverage
 -(0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
 -(0%) toolbox/messages/messages.js - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
 +(0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
-+(92%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
++(90%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
+diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
+index 9b98fca14..080a970f6 100644
+--- a/src/dev-runtime/server/local-api-router.mjs
++++ b/src/dev-runtime/server/local-api-router.mjs
+@@ -304,0 +305,9 @@ const SYSTEM_HEALTH_LIMIT_PRESSURE_LABELS = Object.freeze(["OK", "WATCH", "UPGRA
++const RUNTIME_ENV_SECRET_MARKERS = Object.freeze([
++  "PASSWORD",
++  "SECRET",
++  "TOKEN",
++  "KEY",
++  "SERVICE_ROLE",
++  "JWT",
++  "DATABASE_URL",
++]);
+@@ -740,0 +750,35 @@ function systemHealthSummary(rows) {
++function isSecretLikeRuntimeEnvKey(key) {
++  const upperKey = String(key || "").toUpperCase();
++  return RUNTIME_ENV_SECRET_MARKERS.some((marker) => upperKey.includes(marker));
++}
++
++function systemHealthRuntimeEnvironment(env = process.env) {
++  const rows = Object.keys(env || {})
++    .filter((key) => String(key || "").trim())
++    .sort((left, right) => left.localeCompare(right))
++    .map((key) => {
++      const configured = String(env[key] ?? "").trim().length > 0;
++      const secretLike = isSecretLikeRuntimeEnvKey(key);
++      return {
++        configured,
++        display: configured ? (secretLike ? "********" : "configured") : "not configured",
++        key,
++        reason: configured
++          ? (secretLike ? "Value is loaded and masked because the key is secret-like." : "Value is loaded; raw runtime values are hidden.")
++          : "Variable is present but empty.",
++        secretLike,
++        status: configured ? "PASS" : "WARN",
++      };
++    });
++  const maskedSecretCount = rows.filter((row) => row.secretLike && row.configured).length;
++  return {
++    maskedSecretCount,
++    message: `${rows.length} runtime environment key(s) loaded; ${maskedSecretCount} secret-like value(s) masked.`,
++    rows,
++    secretEditingAllowed: false,
++    secretsExposed: false,
++    status: rows.some((row) => row.status !== "PASS") ? "WARN" : "PASS",
++    totalCount: rows.length,
++  };
++}
++
+@@ -3452,0 +3497 @@ LIMIT 1;
++    const runtimeEnvironment = systemHealthRuntimeEnvironment();
+@@ -3558,0 +3604 @@ LIMIT 1;
++      runtimeEnvironment,
 diff --git a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-index e19b4da0b..3cdfc65cb 100644
+index e19b4da0b..9287e4310 100644
 --- a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
 +++ b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-@@ -8,0 +9,5 @@ async function setSessionUser(server, userKey) {
+@@ -7,0 +8,7 @@ import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageRe
++const TEST_RUNTIME_ENV_VALUES = Object.freeze({
++  GAMEFOUNDRY_ADMIN_HEALTH_DATABASE_URL: "postgresql://env-user:env-secret@example.invalid:5432/admin_health",
++  GAMEFOUNDRY_ADMIN_HEALTH_PASSWORD: "admin-health-password-secret",
++  GAMEFOUNDRY_ADMIN_HEALTH_PUBLIC_FLAG: "enabled",
++  GAMEFOUNDRY_ADMIN_HEALTH_TOKEN: "admin-health-token-secret",
++});
++
+@@ -8,0 +16,5 @@ async function setSessionUser(server, userKey) {
 +  await fetch(`${server.baseUrl}/api/session/mode`, {
 +    body: JSON.stringify({ modeId: "local-db" }),
 +    headers: { "content-type": "application/json" },
 +    method: "POST",
 +  });
-@@ -17,0 +23,4 @@ async function openAdminSystemHealthPage(page, userKey) {
+@@ -16,0 +29,5 @@ async function openAdminSystemHealthPage(page, userKey) {
++  const previousRuntimeEnvValues = {};
++  Object.entries(TEST_RUNTIME_ENV_VALUES).forEach(([key, value]) => {
++    previousRuntimeEnvValues[key] = process.env[key];
++    process.env[key] = value;
++  });
+@@ -17,0 +35,4 @@ async function openAdminSystemHealthPage(page, userKey) {
 +  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
 +  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
 +  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
 +  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
-@@ -20,0 +30 @@ async function openAdminSystemHealthPage(page, userKey) {
+@@ -18,0 +40 @@ async function openAdminSystemHealthPage(page, userKey) {
++  const apiResponseTextPromises = [];
+@@ -20,0 +43 @@ async function openAdminSystemHealthPage(page, userKey) {
 +  const requestUrls = [];
-@@ -36,0 +47,3 @@ async function openAdminSystemHealthPage(page, userKey) {
+@@ -32,0 +56,3 @@ async function openAdminSystemHealthPage(page, userKey) {
++    if (response.url().includes("/api/admin/system-health")) {
++      apiResponseTextPromises.push(response.text().catch((error) => `response text unavailable: ${error.message}`));
++    }
+@@ -36,0 +63,3 @@ async function openAdminSystemHealthPage(page, userKey) {
 +  page.on("request", (request) => {
 +    requestUrls.push(request.url());
 +  });
-@@ -43,0 +57,3 @@ async function openAdminSystemHealthPage(page, userKey) {
+@@ -39,0 +69 @@ async function openAdminSystemHealthPage(page, userKey) {
++  const apiResponseTexts = await Promise.all(apiResponseTextPromises);
+@@ -40,0 +71 @@ async function openAdminSystemHealthPage(page, userKey) {
++    apiResponseTexts,
+@@ -43,0 +75,4 @@ async function openAdminSystemHealthPage(page, userKey) {
 +    previousApiUrl,
++    previousRuntimeEnvValues,
 +    previousSiteUrl,
 +    requestUrls,
-@@ -47,0 +64,8 @@ async function openAdminSystemHealthPage(page, userKey) {
+@@ -47,0 +83,8 @@ async function openAdminSystemHealthPage(page, userKey) {
 +function restoreEnvValue(key, value) {
 +  if (value === undefined) {
 +    delete process.env[key];
@@ -1904,29 +2245,34 @@ index e19b4da0b..3cdfc65cb 100644
 +  process.env[key] = value;
 +}
 +
-@@ -50,0 +75,18 @@ async function closeAdminSystemHealthPage(page, context) {
+@@ -50,0 +94,23 @@ async function closeAdminSystemHealthPage(page, context) {
 +  restoreEnvValue("GAMEFOUNDRY_API_URL", context.previousApiUrl);
 +  restoreEnvValue("GAMEFOUNDRY_SITE_URL", context.previousSiteUrl);
++  Object.entries(context.previousRuntimeEnvValues || {}).forEach(([key, value]) => {
++    restoreEnvValue(key, value);
++  });
 +}
 +
-+async function expectPageToHideSecretValues(page) {
++async function expectClientToHideSecretValues(page, context) {
 +  const pageText = await page.locator("body").textContent();
++  const clientVisibleText = `${pageText || ""}\n${(context.apiResponseTexts || []).join("\n")}`;
 +  [
 +    "GAMEFOUNDRY_DATABASE_URL",
 +    "GAMEFOUNDRY_STORAGE_ACCESS_KEY_ID",
 +    "GAMEFOUNDRY_STORAGE_SECRET_ACCESS_KEY",
 +    "CLOUDFLARE_R2_ACCESS_KEY_ID",
 +    "CLOUDFLARE_R2_SECRET_ACCESS_KEY",
++    ...Object.keys(TEST_RUNTIME_ENV_VALUES),
 +  ].forEach((key) => {
 +    const value = String(process.env[key] || "").trim();
 +    if (value.length > 8) {
-+      expect(pageText).not.toContain(value);
++      expect(clientVisibleText).not.toContain(value);
 +    }
 +  });
-@@ -57 +99 @@ test.afterAll(async () => {
+@@ -57 +123 @@ test.afterAll(async () => {
 -test("Admin System Health renders operational health summaries and filters", async ({ page }) => {
 +test("Admin System Health renders Postgres diagnostics through the safe status API", async ({ page }) => {
-@@ -62,15 +104,45 @@ test("Admin System Health renders operational health summaries and filters", asy
+@@ -62,15 +128,52 @@ test("Admin System Health renders operational health summaries and filters", asy
 -    await expect(page.locator("[data-admin-system-health-status]")).toContainText("Admin System Health loaded safe status only.");
 -    await expect(page.locator("[data-admin-health-summary-rows]")).toContainText("Membership operations");
 -    await expect(page.locator("[data-admin-health-summary-rows]")).toContainText("Invitation support");
@@ -1960,6 +2306,13 @@ index e19b4da0b..3cdfc65cb 100644
 +    await expect(page.locator("[data-admin-system-health-storage-value='write']")).not.toHaveText("Health object");
 +    await expect(page.locator("[data-admin-system-health-storage-value='delete']")).not.toHaveText("Health object");
 +    await expect(page.getByRole("table", { name: "Runtime environment" })).toContainText("********");
++    await expect(page.getByRole("table", { name: "Runtime environment" })).toContainText("GAMEFOUNDRY_ADMIN_HEALTH_DATABASE_URL");
++    await expect(page.getByRole("table", { name: "Runtime environment" })).toContainText("GAMEFOUNDRY_ADMIN_HEALTH_PUBLIC_FLAG");
++    await expect(page.getByRole("table", { name: "Runtime environment" })).not.toContainText(TEST_RUNTIME_ENV_VALUES.GAMEFOUNDRY_ADMIN_HEALTH_DATABASE_URL);
++    await expect(page.getByRole("table", { name: "Runtime environment" })).not.toContainText(TEST_RUNTIME_ENV_VALUES.GAMEFOUNDRY_ADMIN_HEALTH_PASSWORD);
++    await expect(page.getByRole("table", { name: "Runtime environment" })).not.toContainText(TEST_RUNTIME_ENV_VALUES.GAMEFOUNDRY_ADMIN_HEALTH_TOKEN);
++    const runtimeKeys = await page.locator("[data-admin-system-health-runtime-key]").allTextContents();
++    expect(runtimeKeys).toEqual([...runtimeKeys].sort((left, right) => left.localeCompare(right)));
 +    await expect(page.getByRole("table", { name: "Limits and capacity" })).toContainText("Class A Ops");
 +    await expect(page.getByRole("table", { name: "Diagnostics plan" })).toContainText("Postgres Connection");
 +    await expect(page.getByRole("table", { name: "Diagnostics plan" })).toContainText("Postgres Migration Reader");
@@ -1985,21 +2338,21 @@ index e19b4da0b..3cdfc65cb 100644
 +    }
 +    expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/status"))).toBe(true);
 +    expect(context.requestUrls.filter((url) => url.includes("/api/admin/system-health/storage-connectivity-action"))).toHaveLength(4);
-+    await expectPageToHideSecretValues(page);
++    await expectClientToHideSecretValues(page, context);
 +    await expect(page.locator("[data-admin-system-health-storage-action]")).toHaveCount(0);
-@@ -92 +164,3 @@ test("Creator sessions cannot access Admin System Health operations", async ({ p
+@@ -92 +195,3 @@ test("Creator sessions cannot access Admin System Health operations", async ({ p
 -    await expect(page.locator("[data-admin-health-summary-rows]")).toHaveCount(0);
 +    await expect(page.getByRole("table", { name: "Environment summary" })).toHaveCount(0);
 +    expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/status"))).toBe(false);
 +    expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/storage-connectivity-action"))).toBe(false);
-@@ -106,0 +181,6 @@ test("Admin System Health operations page keeps scripts and styles external", as
+@@ -106,0 +212,6 @@ test("Admin System Health operations page keeps scripts and styles external", as
 +  expect(pageSource).not.toMatch(/data-health-status="(?:WARN|FAIL)"/);
 +  expect(pageSource).not.toContain("No active failure is declared");
 +  expect(pageSource).not.toContain("SQLite");
 +  expect(pageSource).toContain("Diagnostics Plan");
 +  expect(pageSource).toContain("Server-owned Postgres health reader");
 +  expect(pageSource).toContain("Server-owned Cloudflare R2 storage diagnostic");
-@@ -107,0 +188,6 @@ test("Admin System Health operations page keeps scripts and styles external", as
+@@ -107,0 +219,6 @@ test("Admin System Health operations page keeps scripts and styles external", as
 +  expect(pageSource).toContain("assets/theme-v2/js/admin-owner-navigation.js");
 +  const runtimeSource = await fs.readFile(path.resolve("assets/theme-v2/js/admin-system-health.js"), "utf8");
 +  expect(runtimeSource).not.toContain("SQLite");
