@@ -1,14 +1,12 @@
 Base merge-base: e8845dae6e990164072d4ee9b37ec81eda563fc3
-Head at artifact refresh: 49e4cca2a249909b569a2dd710c2df6d3a3fe679
+Head at artifact refresh: 297108b152b96f52e52e26cf2164eeae8652d6b1
 
 Working tree status at artifact generation:
 M  admin/system-health.html
 M  assets/theme-v2/js/admin-system-health.js
-A  docs_build/dev/reports/PR_26171_GAMMA_014-admin-postgres-diagnostics-runtime-instruction-compliance-checklist.md
-A  docs_build/dev/reports/PR_26171_GAMMA_014-admin-postgres-diagnostics-runtime-manual-validation-notes.md
-A  docs_build/dev/reports/PR_26171_GAMMA_014-admin-postgres-diagnostics-runtime.md
- M docs_build/dev/reports/codex_changed_files.txt
- M docs_build/dev/reports/codex_review.diff
+A  docs_build/dev/reports/PR_26171_GAMMA_015-admin-r2-diagnostics-runtime-instruction-compliance-checklist.md
+A  docs_build/dev/reports/PR_26171_GAMMA_015-admin-r2-diagnostics-runtime-manual-validation-notes.md
+A  docs_build/dev/reports/PR_26171_GAMMA_015-admin-r2-diagnostics-runtime.md
 M  docs_build/dev/reports/coverage_changed_js_guardrail.txt
 M  docs_build/dev/reports/playwright_v8_coverage_report.txt
 M  tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
@@ -28,16 +26,19 @@ A	docs_build/dev/reports/PR_26171_GAMMA_013-admin-system-health-diagnostics-plan
 A	docs_build/dev/reports/PR_26171_GAMMA_014-admin-postgres-diagnostics-runtime-instruction-compliance-checklist.md
 A	docs_build/dev/reports/PR_26171_GAMMA_014-admin-postgres-diagnostics-runtime-manual-validation-notes.md
 A	docs_build/dev/reports/PR_26171_GAMMA_014-admin-postgres-diagnostics-runtime.md
+A	docs_build/dev/reports/PR_26171_GAMMA_015-admin-r2-diagnostics-runtime-instruction-compliance-checklist.md
+A	docs_build/dev/reports/PR_26171_GAMMA_015-admin-r2-diagnostics-runtime-manual-validation-notes.md
+A	docs_build/dev/reports/PR_26171_GAMMA_015-admin-r2-diagnostics-runtime.md
 M	docs_build/dev/reports/coverage_changed_js_guardrail.txt
 M	docs_build/dev/reports/playwright_v8_coverage_report.txt
 M	tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
 
 Stat against merge-base:
- admin/system-health.html                           | 366 +++++------------
- assets/theme-v2/js/admin-system-health.js          | 432 ++++-----------------
+ admin/system-health.html                           | 366 +++++-----------
+ assets/theme-v2/js/admin-system-health.js          | 466 ++++++---------------
  ...-foundation-instruction-compliance-checklist.md |  32 ++
  ...em-health-foundation-manual-validation-notes.md |  34 ++
- ...171_GAMMA_011-admin-system-health-foundation.md |  65 ++++
+ ...171_GAMMA_011-admin-system-health-foundation.md |  65 +++
  ...son-cleanup-instruction-compliance-checklist.md |  57 +++
  ...tatus-reason-cleanup-manual-validation-notes.md |  26 ++
  ...12-admin-system-health-status-reason-cleanup.md |  70 ++++
@@ -46,8 +47,11 @@ Stat against merge-base:
  ...MMA_013-admin-system-health-diagnostics-plan.md |  82 ++++
  ...ics-runtime-instruction-compliance-checklist.md |  64 +++
  ...-diagnostics-runtime-manual-validation-notes.md |  27 ++
- ...GAMMA_014-admin-postgres-diagnostics-runtime.md |  93 +++++
+ ...GAMMA_014-admin-postgres-diagnostics-runtime.md |  93 ++++
+ ...ics-runtime-instruction-compliance-checklist.md |  62 +++
+ ...-diagnostics-runtime-manual-validation-notes.md |  26 ++
+ ...26171_GAMMA_015-admin-r2-diagnostics-runtime.md |  95 +++++
  .../dev/reports/coverage_changed_js_guardrail.txt  |   6 +-
  .../dev/reports/playwright_v8_coverage_report.txt  |  34 +-
- .../tools/AdminHealthOperationsPage.spec.mjs       | 114 +++++-
- 17 files changed, 933 insertions(+), 660 deletions(-)
+ .../tools/AdminHealthOperationsPage.spec.mjs       | 120 +++++-
+ 20 files changed, 1178 insertions(+), 638 deletions(-)

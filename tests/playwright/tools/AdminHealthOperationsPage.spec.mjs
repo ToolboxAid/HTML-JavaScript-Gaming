@@ -113,6 +113,11 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
     await expect(page.getByRole("table", { name: "Database health" })).not.toContainText("postgres://");
     await expect(page.getByRole("table", { name: "Database health" })).not.toContainText("postgresql://");
     await expect(page.getByRole("table", { name: "Storage health" })).toContainText("Cloudflare R2");
+    await expect(page.locator("[data-admin-system-health-storage-value='bucket']")).not.toHaveText("Configured bucket placeholder");
+    await expect(page.locator("[data-admin-system-health-storage-value='list']")).not.toHaveText("Objects prefix");
+    await expect(page.locator("[data-admin-system-health-storage-value='read']")).not.toHaveText("Health object");
+    await expect(page.locator("[data-admin-system-health-storage-value='write']")).not.toHaveText("Health object");
+    await expect(page.locator("[data-admin-system-health-storage-value='delete']")).not.toHaveText("Health object");
     await expect(page.getByRole("table", { name: "Runtime environment" })).toContainText("********");
     await expect(page.getByRole("table", { name: "Limits and capacity" })).toContainText("Class A Ops");
     await expect(page.getByRole("table", { name: "Diagnostics plan" })).toContainText("Postgres Connection");
@@ -138,7 +143,7 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
       expect((title || ariaLabel || "").trim()).not.toEqual("");
     }
     expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/status"))).toBe(true);
-    expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/storage-connectivity-action"))).toBe(false);
+    expect(context.requestUrls.filter((url) => url.includes("/api/admin/system-health/storage-connectivity-action"))).toHaveLength(4);
     await expectPageToHideSecretValues(page);
     await expect(page.locator("[data-admin-system-health-storage-action]")).toHaveCount(0);
     await expect(page.locator("[data-owner-ai-save], [data-owner-membership-save], [data-owner-ai-credits], [data-owner-memberships]")).toHaveCount(0);
@@ -158,6 +163,7 @@ test("Creator sessions cannot access Admin System Health operations", async ({ p
     await expect(page.locator("[data-session-access-blocked='admin']")).toBeVisible();
     await expect(page.getByRole("table", { name: "Environment summary" })).toHaveCount(0);
     expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/status"))).toBe(false);
+    expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/storage-connectivity-action"))).toBe(false);
     expect(context.pageErrors).toEqual([]);
     expect(context.consoleErrors).toEqual([]);
     expect(context.failedRequests).toEqual([]);
@@ -184,5 +190,5 @@ test("Admin System Health operations page keeps scripts and styles external", as
   expect(runtimeSource).not.toContain("SQLite");
   expect(runtimeSource).not.toContain("localStorage");
   expect(runtimeSource).not.toContain("sessionStorage");
-  expect(runtimeSource).not.toContain("runAdminSystemHealthStorageConnectivityAction");
+  expect(runtimeSource).toContain("runAdminSystemHealthStorageConnectivityAction");
 });
