@@ -1457,7 +1457,7 @@ test("Game Hub hands the active game route to Game Journey", async ({ page }) =>
   const failures = await openRepoPage(page, "/toolbox/game-hub/index.html");
 
   try {
-    const journeyLink = page.getByRole("link", { name: "Open Game Journey" });
+    const journeyLink = page.getByRole("link", { name: "Open Journey" });
     await expect(journeyLink).toHaveAttribute("href", /toolbox\/game-journey\/index\.html\?game=demo-game$/);
     await journeyLink.click();
     await page.waitForURL(/toolbox\/game-journey\/index\.html\?game=demo-game$/);
