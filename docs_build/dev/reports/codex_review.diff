@@ -1,257 +1,217 @@
-diff --git a/docs_build/dev/reports/PR_26171_GAMMA_024-local-api-sqlite-reference-cleanup-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26171_GAMMA_024-local-api-sqlite-reference-cleanup-instruction-compliance-checklist.md
+diff --git a/docs_build/dev/reports/PR_26171_GAMMA_025-final-sqlite-runtime-inventory-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26171_GAMMA_025-final-sqlite-runtime-inventory-instruction-compliance-checklist.md
 new file mode 100644
-index 000000000..7e55465d3
+index 000000000..6a0712896
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_GAMMA_024-local-api-sqlite-reference-cleanup-instruction-compliance-checklist.md
-@@ -0,0 +1,35 @@
-+# PR_26171_GAMMA_024 Instruction Compliance Checklist
++++ b/docs_build/dev/reports/PR_26171_GAMMA_025-final-sqlite-runtime-inventory-instruction-compliance-checklist.md
+@@ -0,0 +1,31 @@
++# PR_26171_GAMMA_025 Instruction Compliance Checklist
 +
 +## Start Gate
 +
 +- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
 +- PASS: Read `docs_build/dev/PROJECT_MULTI_PC.txt`.
 +- PASS: PR name includes TEAM token `GAMMA`.
-+- PASS: Branch name mirrors TEAM token: `pr/26171-GAMMA-024-local-api-sqlite-reference-cleanup`.
-+- PASS: Started from `main`.
-+- PASS: Pulled latest `main`.
-+- PASS: Verified clean/synced `main` before branch creation.
-+- PASS: Verified PR #44 dependency head is in `main`.
-+- PASS: Verified PR #45 dependency head is in `main`.
-+- PASS: Implementation path is the active scoped Local API file: `src/dev-runtime/server/local-api-router.mjs`.
++- PASS: Branch name mirrors TEAM token: `pr/26171-GAMMA-025-final-sqlite-runtime-inventory`.
++- PASS: Scope is diagnostics/inventory and belongs to Team Gamma.
++- PASS: PR #46 dependency was merged before starting the inventory branch.
++- PASS: Started PR 025 from fresh `main`.
++- PASS: Repository was clean before branch creation.
 +
 +## Scope Guard
 +
 +- PASS: One PR purpose only.
-+- PASS: Updated only scoped active files and required reports.
-+- PASS: Preserved Postgres-backed Messages routes.
-+- PASS: Preserved Postgres-backed Game Journey metrics routes.
-+- PASS: Did not pull or depend on PR #43 / `team/GAMMA/admin`.
-+- PASS: Did not touch archive/history references.
-+- PASS: Did not add feature work.
++- PASS: Inventory-only PR.
++- PASS: No runtime code was modified.
++- PASS: Remaining SQLite references were classified into active runtime, Local API, tests, docs, archive/reference, and allowed technical debt.
++- PASS: Declared whether active runtime/local API SQLite migration is complete.
++- PASS: Did not run Playwright.
 +- PASS: Did not run samples.
 +
 +## Completion Gate
 +
-+- PASS: `docs_build/dev/reports/codex_review.diff` exists.
-+- PASS: `docs_build/dev/reports/codex_changed_files.txt` exists.
-+- PASS: PR-specific report exists.
++- PASS: SQLite inventory report exists.
 +- PASS: Manual validation notes exist.
 +- PASS: Instruction compliance checklist exists.
-+- PASS: Runtime JavaScript coverage notes were refreshed and included.
-+- PASS: Repo-structured ZIP path is documented: `tmp/PR_26171_GAMMA_024-local-api-sqlite-reference-cleanup_delta.zip`.
-diff --git a/docs_build/dev/reports/PR_26171_GAMMA_024-local-api-sqlite-reference-cleanup-manual-validation-notes.md b/docs_build/dev/reports/PR_26171_GAMMA_024-local-api-sqlite-reference-cleanup-manual-validation-notes.md
++- PASS: `docs_build/dev/reports/codex_review.diff` exists.
++- PASS: `docs_build/dev/reports/codex_changed_files.txt` exists.
++- PASS: Repo-structured ZIP path is documented: `tmp/PR_26171_GAMMA_025-final-sqlite-runtime-inventory_delta.zip`.
+diff --git a/docs_build/dev/reports/PR_26171_GAMMA_025-final-sqlite-runtime-inventory-manual-validation-notes.md b/docs_build/dev/reports/PR_26171_GAMMA_025-final-sqlite-runtime-inventory-manual-validation-notes.md
 new file mode 100644
-index 000000000..162e58229
+index 000000000..ec382b827
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_GAMMA_024-local-api-sqlite-reference-cleanup-manual-validation-notes.md
-@@ -0,0 +1,19 @@
-+# PR_26171_GAMMA_024 Manual Validation Notes
++++ b/docs_build/dev/reports/PR_26171_GAMMA_025-final-sqlite-runtime-inventory-manual-validation-notes.md
+@@ -0,0 +1,28 @@
++# PR_26171_GAMMA_025 Manual Validation Notes
 +
-+Manual validation focused on the active Local API cleanup scope.
++Manual validation was inventory-only.
 +
-+## Notes
++## Dependency Closeout
 +
-+- Confirmed `main` was clean/synced before branch creation.
-+- Confirmed PR #44 head commit `c62f16e49cfd5ae252f48ac9b9078a7f997a28c6` is in `main`.
-+- Confirmed PR #45 head commit `6f3c4d0b044eceb41dd207fe1e4786039e3f66ac` is in `main`.
-+- Confirmed the branch was created from fresh `main` and does not depend on open PR #43 / `team/GAMMA/admin`.
-+- Confirmed Local API still imports `createMessagesPostgresService` from `messages-postgres-service.mjs`.
-+- Confirmed Game Journey completion metrics still report Postgres through the targeted Playwright Local API route test.
-+- Confirmed no archive/history paths were changed.
++- Confirmed current branch was `pr/26171-GAMMA-024-local-api-sqlite-reference-cleanup`.
++- Confirmed PR #46 worktree was clean.
++- Confirmed PR #46 local/origin sync was `0 0`.
++- Marked PR #46 ready for review.
++- Confirmed PR #46 was mergeable.
++- Merged PR #46 to `main`: `6e03515e75a673e912b1bc44e7e08073a7cfe731`.
++- Checked out `main`, pulled latest, and confirmed clean/synced `0 0`.
 +
-+## Skipped Lanes
++## Inventory Verification
 +
-+- Samples: skipped because no sample files or sample runtime behavior changed.
-+- Full Playwright: skipped because the change is limited to Local API route metadata labels.
-+- Archive report rewrite: skipped because archive/history references are explicitly out of scope.
-diff --git a/docs_build/dev/reports/PR_26171_GAMMA_024-local-api-sqlite-reference-cleanup.md b/docs_build/dev/reports/PR_26171_GAMMA_024-local-api-sqlite-reference-cleanup.md
++- Confirmed the PR 025 branch was created from fresh `main` commit `6e03515e75a673e912b1bc44e7e08073a7cfe731`.
++- Ran repo inventory for `sqlite`, `node:sqlite`, `DatabaseSync`, and `.sqlite`.
++- Confirmed remaining inventory totals before this report was created: 131 files and 356 lines.
++- Confirmed no active SQLite implementation markers remain in `src`.
++- Confirmed no SQLite references remain in `src/dev-runtime/server/local-api-router.mjs`.
++- Confirmed no matches were found under `archive/`.
++
++## Skipped
++
++- Playwright: skipped by request because this PR is report-only.
++- Samples: skipped by request because no samples changed.
++- Runtime code validation beyond static inventory checks: skipped because this PR does not modify runtime code.
+diff --git a/docs_build/dev/reports/PR_26171_GAMMA_025-final-sqlite-runtime-inventory.md b/docs_build/dev/reports/PR_26171_GAMMA_025-final-sqlite-runtime-inventory.md
 new file mode 100644
-index 000000000..d2c36baae
+index 000000000..2ddfadeb0
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_GAMMA_024-local-api-sqlite-reference-cleanup.md
-@@ -0,0 +1,53 @@
-+# PR_26171_GAMMA_024-local-api-sqlite-reference-cleanup
++++ b/docs_build/dev/reports/PR_26171_GAMMA_025-final-sqlite-runtime-inventory.md
+@@ -0,0 +1,124 @@
++# PR_26171_GAMMA_025-final-sqlite-runtime-inventory
 +
 +TEAM ownership: GAMMA.
 +
-+## Scope
++## Dependency Closeout
 +
-+Clean remaining Local API SQLite references after the Messages and Game Journey Postgres migrations landed in main.
++- PR #46 / `PR_26171_GAMMA_024-local-api-sqlite-reference-cleanup` was marked ready for review.
++- PR #46 merge result: `6e03515e75a673e912b1bc44e7e08073a7cfe731`.
++- Final `main` commit after PR #46 pull: `6e03515e75a673e912b1bc44e7e08073a7cfe731`.
++- PR #46 head `a6cd320756e07d1b050034044654572661d1cd94` is an ancestor of `main`.
 +
-+## Changes
++## Inventory Scope
 +
-+- Updated `src/dev-runtime/server/local-api-router.mjs`.
-+- Removed the remaining literal `SQLite` route metadata from Local API project workspace responses.
-+- Removed the stale `Local DB/SQLite metadata` promotion-planning label.
-+- Preserved the Postgres-backed Messages Local API route and response shapes.
-+- Preserved the Postgres-backed Game Journey completion metrics route and response shapes.
-+- Did not pull or depend on open PR #43 / `team/GAMMA/admin`.
-+- Did not touch archive/history references.
++Inventory was run from fresh `main` after PR #46 merged, before this PR's inventory report files were created.
 +
-+## Validation
++Search command:
 +
-+Passed:
-+- `git diff --check`
-+- `node --check src/dev-runtime/server/local-api-router.mjs`
-+- `node --test --test-name-pattern "Messages Local API" tests/dev-runtime/DbSeedIntegrity.test.mjs`
-+- `npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs --config=codex_playwright_system_chrome.config.cjs --project=playwright -g "Game Journey Local API persists completion metrics to Postgres"`
-+- Inline Local API route check for `/api/project-workspace/projects`, verifying the cleaned `Local DB adapter` label and no `SQLite` text in that response.
-+- Targeted text check confirmed no `sqlite`, `messages-sqlite`, `createMessagesSqliteService`, `DatabaseSync`, `node:sqlite`, `messages.sqlite`, or `GAMEFOUNDRY_MESSAGES_SQLITE_PATH` match remains in `src/dev-runtime/server/local-api-router.mjs`.
++```text
++rg -n -i "sqlite|node:sqlite|DatabaseSync|\.sqlite" --glob '!node_modules/**' --glob '!tmp/**' --glob '!.git/**' .
++```
 +
-+Observed outside scoped lane:
-+- A broad `node --test tests/dev-runtime/DbSeedIntegrity.test.mjs` run passed the Messages Local API case but failed two unrelated `/api/local-db/snapshot` seed/reseed cases. Those local-db snapshot cases are outside this cleanup scope and were not used as completion evidence.
++Verification commands:
 +
-+Skipped:
-+- Full samples smoke: no samples are in scope.
-+- Full Playwright suite: this PR only changes Local API route metadata labels and targeted route validation covered the touched surfaces.
-+- Archive/history cleanup: explicitly out of scope.
++```text
++rg -n -i "node:sqlite|DatabaseSync|better-sqlite|sqlite3|createMessagesSqliteService|messages-sqlite-service|messages\.sqlite|GAMEFOUNDRY_MESSAGES_SQLITE_PATH" src
++rg -n -i "sqlite|node:sqlite|DatabaseSync|\.sqlite" src/dev-runtime/server/local-api-router.mjs
++```
 +
-+## Reports
++## Inventory Summary
 +
-+- `docs_build/dev/reports/codex_review.diff`
-+- `docs_build/dev/reports/codex_changed_files.txt`
-+- `docs_build/dev/reports/PR_26171_GAMMA_024-local-api-sqlite-reference-cleanup.md`
-+- `docs_build/dev/reports/PR_26171_GAMMA_024-local-api-sqlite-reference-cleanup-manual-validation-notes.md`
-+- `docs_build/dev/reports/PR_26171_GAMMA_024-local-api-sqlite-reference-cleanup-instruction-compliance-checklist.md`
-+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
-+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
++Remaining file count: 131.
 +
-+## ZIP
++Remaining line count: 356.
 +
-+`tmp/PR_26171_GAMMA_024-local-api-sqlite-reference-cleanup_delta.zip`
++| Classification | Files | Lines | Result |
++| --- | ---: | ---: | --- |
++| Active Runtime | 0 | 0 | No active SQLite runtime implementation remains. |
++| Local API | 0 | 0 | No SQLite references remain in `src/dev-runtime/server/local-api-router.mjs`. |
++| Tests | 6 | 11 | Test cleanup candidates remain. |
++| Docs | 1 | 7 | Current governance wording remains intentionally. |
++| Archive/Reference | 121 | 320 | Historical report and PR docs only. |
++| Allowed Technical Debt | 3 | 18 | Non-implementation references retained for guards and validation rules. |
 +
-+## Merge Control
++## Completion Declaration
 +
-+Not merged. EOD merge remains owner-controlled and requires explicit approval.
++SQLite runtime migration complete.
++
++Active Runtime count is 0 and Local API count is 0.
++
++## Active Runtime SQLite References
++
++None.
++
++Strict source verification found no active implementation markers in `src`:
++
++- `node:sqlite`
++- `DatabaseSync`
++- `better-sqlite`
++- `sqlite3`
++- `createMessagesSqliteService`
++- `messages-sqlite-service`
++- `messages.sqlite`
++- `GAMEFOUNDRY_MESSAGES_SQLITE_PATH`
++
++Remaining `src` references are classified as allowed technical debt because they do not import, open, write, read, or fall back to SQLite.
++
++## Active Local API SQLite References
++
++None.
++
++`src/dev-runtime/server/local-api-router.mjs` has zero SQLite matches after PR #46.
++
++## Remaining Tests Requiring Cleanup
++
++- `tests/dev-runtime/DbSeedIntegrity.test.mjs`
++  - Lines 148, 193 use temporary `.sqlite` file names for Local DB seed/reseed validation.
++- `tests/playwright/tools/LoginSessionMode.spec.mjs`
++  - Line 56 uses a temporary `.sqlite` file name for Local DB login/session validation.
++- `tests/playwright/tools/BrowserApiUrlConfig.spec.mjs`
++  - Line 24 uses a temporary `.sqlite` file name for browser API URL config validation.
++- `tests/playwright/tools/AdminDbViewer.spec.mjs`
++  - Line 80 uses a temporary `.sqlite` file name for Admin DB Viewer Local DB validation.
++- `tests/playwright/tools/GameJourneyTool.spec.mjs`
++  - Line 245 uses a temporary `.sqlite` file name for a Game Journey test helper.
++  - Lines 1458, 1459, 1469 verify the legacy SQLite data guard and should remain until the migration guard is retired.
++- `tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`
++  - Lines 214 and 221 are negative assertions that Admin health page/runtime source does not expose `SQLite`; these do not require cleanup unless the assertion wording changes.
++
++## Remaining Docs Requiring Cleanup
++
++No current active docs require cleanup for this PR.
++
++`docs_build/dev/PROJECT_INSTRUCTIONS.md` has 7 intentional SQLite governance lines documenting deprecation and preventing new SQLite persistence.
++
++## Archive References
++
++Archive/reference inventory contains 121 files and 320 lines.
++
++These matches are historical records under:
++
++- `docs_build/dev/reports/`
++- `docs_build/pr/`
++
++No matches were found under the `archive/` directory.
++
++Historical references include prior PR reports, validation logs, and old BUILD/PLAN/APPLY docs that mention prior SQLite work. They are retained for traceability and are not active runtime ownership.
++
++## Allowed Technical Debt
++
++- `src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs`
++  - Lines 63, 68, 71, 81, 84, 88, 172, 248, 316.
++  - Purpose: legacy SQLite data-preservation guard. The Postgres metrics store fails visibly if an unmigrated legacy SQLite file exists. It does not import or open SQLite and does not fall back to SQLite.
++- `src/dev-runtime/persistence/mock-db-store.js`
++  - Line 26.
++  - Purpose: legacy Local DB mode description string. It is not an implementation marker.
++- `scripts/validate-browser-env-agnostic.mjs`
++  - Lines 37, 38, 289, 298, 303, 309, 320, 389.
++  - Purpose: validation rules that reject SQLite/provider/environment implementation details from browser/runtime surfaces.
++
++## Skipped Lanes
++
++- Playwright: skipped by request. This is an inventory/report-only PR.
++- Samples: skipped by request. No sample files or runtime behavior changed.
++- Runtime tests: skipped because this PR does not modify runtime code.
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 9f07c7577..78783a10a 100644
+index 78783a10a..82cdb2152 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,30 +1,8 @@
--﻿## git status --short
--A  docs_build/dev/reports/PR_26171_ALPHA_023-game-journey-postgres-metrics-migration-data-preservation-notes.md
--A  docs_build/dev/reports/PR_26171_ALPHA_023-game-journey-postgres-metrics-migration-instruction-compliance-checklist.md
--A  docs_build/dev/reports/PR_26171_ALPHA_023-game-journey-postgres-metrics-migration-manual-validation-notes.md
--A  docs_build/dev/reports/PR_26171_ALPHA_023-game-journey-postgres-metrics-migration.md
--M  docs_build/dev/reports/coverage_changed_js_guardrail.txt
--M  docs_build/dev/reports/playwright_v8_coverage_report.txt
--M  src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs
--M  src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
--M  src/dev-runtime/server/local-api-router.mjs
--A  tests/helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs
--M  tests/helpers/playwrightRepoServer.mjs
--M  tests/playwright/tools/GameJourneyTool.spec.mjs
--
--## git diff --cached --stat
-- ...es-metrics-migration-data-preservation-notes.md |  19 ++
-- ...s-migration-instruction-compliance-checklist.md |  16 +
-- ...es-metrics-migration-manual-validation-notes.md |  20 ++
-- ..._023-game-journey-postgres-metrics-migration.md |  45 +++
-- .../dev/reports/coverage_changed_js_guardrail.txt  |  30 +-
-- .../dev/reports/playwright_v8_coverage_report.txt  |  85 +----
-- .../game-journey-completion-metrics-store.mjs      | 369 ++++++++++++---------
-- .../game-journey-mock-repository.js                |   6 +-
-- src/dev-runtime/server/local-api-router.mjs        |  41 ++-
-- ...eJourneyCompletionMetricsPostgresClientStub.mjs |  87 +++++
-- tests/helpers/playwrightRepoServer.mjs             |  11 +-
-- tests/playwright/tools/GameJourneyTool.spec.mjs    | 108 ++++--
-- 12 files changed, 518 insertions(+), 319 deletions(-)
--
--## git diff --stat
-+﻿docs_build/dev/reports/PR_26171_GAMMA_024-local-api-sqlite-reference-cleanup-instruction-compliance-checklist.md
-+docs_build/dev/reports/PR_26171_GAMMA_024-local-api-sqlite-reference-cleanup-manual-validation-notes.md
-+docs_build/dev/reports/PR_26171_GAMMA_024-local-api-sqlite-reference-cleanup.md
-+docs_build/dev/reports/codex_changed_files.txt
-+docs_build/dev/reports/codex_review.diff
-+docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+docs_build/dev/reports/playwright_v8_coverage_report.txt
-+src/dev-runtime/server/local-api-router.mjs
-diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index aaedf0c8c..74a29674c 100644
---- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,11 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
- Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
-
- Changed runtime JS files considered:
--(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-
- Guardrail warnings:
--(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 750d7c7da..86cc56dfe 100644
---- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
-+++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -12,34 +12,18 @@ Note: entry percentages use function coverage when available, otherwise line cov
- Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
-
- Exercised tool entry points detected:
--(74%) Toolbox Index - exercised 3 runtime JS files
-+(0%) Toolbox Index - not exercised by this Playwright run
- (0%) Tool Template V2 - not exercised by this Playwright run
--(63%) Theme V2 Shared JS - exercised 2 runtime JS files
-+(0%) Theme V2 Shared JS - not exercised by this Playwright run
-
- Changed runtime JS files covered:
--(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-
- Files with executed line/function counts where available:
--(53%) src/api/server-api-client.js - executed lines 167/167; executed functions 10/19
--(63%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 977/977; executed functions 54/86
--(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 204/204; executed functions 9/14
--(65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
--(67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
--(74%) toolbox/game-journey/game-journey.js - executed lines 1652/1652; executed functions 110/149
--(76%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 22/29
--(100%) toolbox/game-journey/game-journey-api-client.js - executed lines 19/19; executed functions 2/2
-+(100%) none - no covered runtime files
-
- Uncovered or low-coverage changed JS files:
--(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
-
- Changed JS files considered:
--(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - changed JS file not collected as browser runtime coverage
- (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/helpers/playwrightRepoServer.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/GameJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
-diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index 0a4c82fca..314a35d03 100644
---- a/src/dev-runtime/server/local-api-router.mjs
-+++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -2626,7 +2626,7 @@ class ApiRuntimeDataSource {
-     return {
-       action,
-       database: "Local DB",
--      databaseEngine: "SQLite",
-+      databaseEngine: "Local DB adapter",
-       providerId: "local-api-project-workspace",
-       serviceContract: "Web UI -> Local API/Service Contract -> Local DB",
-       status: "PASS",
-@@ -3335,7 +3335,7 @@ class ApiRuntimeDataSource {
-         safetyDiagnostic: "Read-only export planning only; no project records, asset references, or storage objects are changed.",
-         safetyStatus: "PASS",
-         status: "PLAN",
--        message: "Plan a read-only DEV export through Local API from Local DB/SQLite metadata, asset references, and configured project asset storage object keys.",
-+        message: "Plan a read-only DEV export through Local API from project metadata, asset references, and configured project asset storage object keys.",
-       },
-       {
-         id: "ist-import-plan",
-@@ -3648,7 +3648,7 @@ LIMIT 1;
-         : true,
-       browserProductDataSsoT: false,
-       database: "Local DB",
--      databaseEngine: "SQLite",
-+      databaseEngine: "Local DB adapter",
-       guestBrowsingAllowed: true,
-       guestSavingAllowed: false,
-       pageLocalProductDataArrays: false,
+@@ -1,8 +1,5 @@
+-﻿docs_build/dev/reports/PR_26171_GAMMA_024-local-api-sqlite-reference-cleanup-instruction-compliance-checklist.md
+-docs_build/dev/reports/PR_26171_GAMMA_024-local-api-sqlite-reference-cleanup-manual-validation-notes.md
+-docs_build/dev/reports/PR_26171_GAMMA_024-local-api-sqlite-reference-cleanup.md
++﻿docs_build/dev/reports/PR_26171_GAMMA_025-final-sqlite-runtime-inventory-instruction-compliance-checklist.md
++docs_build/dev/reports/PR_26171_GAMMA_025-final-sqlite-runtime-inventory-manual-validation-notes.md
++docs_build/dev/reports/PR_26171_GAMMA_025-final-sqlite-runtime-inventory.md
+ docs_build/dev/reports/codex_changed_files.txt
+ docs_build/dev/reports/codex_review.diff
+-docs_build/dev/reports/coverage_changed_js_guardrail.txt
+-docs_build/dev/reports/playwright_v8_coverage_report.txt
+-src/dev-runtime/server/local-api-router.mjs
