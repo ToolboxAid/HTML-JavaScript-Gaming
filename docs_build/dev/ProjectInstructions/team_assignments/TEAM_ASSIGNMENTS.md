@@ -3,8 +3,7 @@
 # Active Team Registry
 
 | Team | Assignment | Branch | PR | Status |
-|--------|--------|--------|--------|--------|
-| Team OWNER | Active Team Registry | pr/26172-OWNER-024-active-team-registry | PR_26172_OWNER_024-active-team-registry | Active |
+|------|------------|--------|----|--------|
 
 Rules:
 - Registry is the authoritative active-work view.
@@ -60,11 +59,11 @@ Active branch: none.
 
 ## Team OWNER
 
-Status: Active
+Status: Available
 
-Active assignment: Active Team Registry.
+Active assignment: none.
 
-Active branch: pr/26172-OWNER-024-active-team-registry.
+Active branch: none.
 
 ## Team Name Registry
 
