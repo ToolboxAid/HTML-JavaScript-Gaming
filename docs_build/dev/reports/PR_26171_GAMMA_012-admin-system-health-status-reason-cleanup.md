@@ -63,6 +63,7 @@ Note: the merged instruction file still contains the older main-only branch guar
 ## ZIP Artifact
 
 - `tmp/PR_26171_GAMMA_012-admin-system-health-status-reason-cleanup_delta.zip`
+- Generated from the current `team/GAMMA/admin` branch delta against the branch merge-base with `origin/main`, preserving the existing PR #36 workstream context.
 
 ## EOD Approval
 
