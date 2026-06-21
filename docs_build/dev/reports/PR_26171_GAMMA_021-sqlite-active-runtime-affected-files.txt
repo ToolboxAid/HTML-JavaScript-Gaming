@@ -1,0 +1,52 @@
+PR_26171_GAMMA_021-sqlite-active-runtime-removal-plan affected files
+
+Fresh-main baseline:
+1b27b0a9a3d67821fa586e34d5331567ec6f49b7
+
+Active runtime removal targets:
+src/dev-runtime/messages/messages-sqlite-service.mjs
+src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs
+src/dev-runtime/persistence/mock-db-store.js
+
+Local API removal target:
+src/dev-runtime/server/local-api-router.mjs
+
+Direct SQLite test references:
+tests/dev-runtime/DbSeedIntegrity.test.mjs
+tests/playwright/tools/AdminDbViewer.spec.mjs
+tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+tests/playwright/tools/BrowserApiUrlConfig.spec.mjs
+tests/playwright/tools/GameJourneyTool.spec.mjs
+tests/playwright/tools/LoginSessionMode.spec.mjs
+tests/playwright/tools/MessagesTool.spec.mjs
+
+Shared mock-db-store dependency tests:
+tests/dev-runtime/AiCreditFoundation.test.mjs
+tests/dev-runtime/LegalFoundation.test.mjs
+tests/dev-runtime/MarketplaceCategories.test.mjs
+tests/dev-runtime/MembershipDataModel.test.mjs
+tests/dev-runtime/SupabaseDevAuthTestUserCleanup.test.mjs
+tests/dev-runtime/TeamsFoundation.test.mjs
+tests/playwright/account/AchievementsPage.spec.mjs
+tests/playwright/tools/AdminNotesLocalViewer.spec.mjs
+tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
+tests/playwright/tools/AssetToolMockRepository.spec.mjs
+tests/playwright/tools/BuildPathProgressSimplification.spec.mjs
+tests/playwright/tools/GameHubMockRepository.spec.mjs
+tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+tests/playwright/tools/InputMappingV2Tool.spec.mjs
+tests/playwright/tools/PaletteToolMockRepository.spec.mjs
+tests/playwright/tools/RootToolsFutureState.spec.mjs
+tests/playwright/tools/TagsTool.spec.mjs
+tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
+tests/playwright/tools/ToolboxRoutePages.spec.mjs
+
+Active docs/data references:
+docs_build/dev/PROJECT_INSTRUCTIONS.md
+docs_build/database/dml/DML_INDEX.md
+docs_build/database/dml/messages.sql
+docs_build/database/seed/messages.json
+
+Explicitly excluded archive/reference paths:
+docs_build/dev/reports/**
+docs_build/pr/**
