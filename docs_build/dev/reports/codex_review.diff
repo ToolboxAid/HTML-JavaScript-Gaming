@@ -1,122 +1,303 @@
-diff --git a/docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion-manual-validation-notes.md b/docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion-manual-validation-notes.md
+diff --git a/docs_build/dev/reports/PR_26171_BETA_081-message-playback-through-tts-engine-manual-validation-notes.md b/docs_build/dev/reports/PR_26171_BETA_081-message-playback-through-tts-engine-manual-validation-notes.md
 new file mode 100644
-index 000000000..61db9dd99
+index 000000000..f9749c887
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion-manual-validation-notes.md
++++ b/docs_build/dev/reports/PR_26171_BETA_081-message-playback-through-tts-engine-manual-validation-notes.md
 @@ -0,0 +1,11 @@
-+# PR_26171_BETA_079 Manual Validation Notes
++# PR_26171_BETA_081 Manual Validation Notes
 +
 +## Review
-+- Confirmed the Messages table remains the parent table.
-+- Confirmed clicking a non-control Message row cell opens the Message Parts child table.
-+- Confirmed Message Parts expose Text, Emotion, TTS Profile, Status, and Actions columns.
-+- Confirmed Add Part opens an inline child-table editor with Emotion and TTS Profile selectors.
-+- Confirmed TTS Studio compatibility validation still passes.
++- Confirmed /api/messages/tts-profiles returns server-owned emotionSettings for playback.
++- Confirmed Play Message queues each active Message Part through the TextToSpeechEngine-backed registry.
++- Confirmed Play Part uses the selected part TTS Profile and matching Emotion Setting values.
++- Confirmed Stop continues through the TextToSpeechEngine-backed registry stop path.
++- Confirmed missing Emotion Settings produce a visible validation error instead of falling back silently.
 +
 +## Manual Browser Coverage
-+- Covered by targeted Playwright validation for Message Studio load, row expansion, add/edit flows, and Message Part selectors.
-diff --git a/docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion-validation-report.md b/docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion-validation-report.md
++- Covered by targeted Playwright validation for Message Studio playback, TTS profile emotion settings, Play Message, Play Part, and Stop.
+diff --git a/docs_build/dev/reports/PR_26171_BETA_081-message-playback-through-tts-engine-validation-report.md b/docs_build/dev/reports/PR_26171_BETA_081-message-playback-through-tts-engine-validation-report.md
 new file mode 100644
-index 000000000..19361ead5
+index 000000000..7fbc9bb8d
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion-validation-report.md
-@@ -0,0 +1,17 @@
-+# PR_26171_BETA_079 Validation Report
++++ b/docs_build/dev/reports/PR_26171_BETA_081-message-playback-through-tts-engine-validation-report.md
+@@ -0,0 +1,21 @@
++# PR_26171_BETA_081 Validation Report
 +
 +## Commands
 +- PASS: node --check toolbox/messages/messages.js
++- PASS: node --check src/dev-runtime/messages/messages-sqlite-service.mjs
 +- PASS: npx playwright test tests/playwright/tools/MessagesTool.spec.mjs
-+- PASS: npx playwright test tests/playwright/tools/TextToSpeechFunctional.spec.mjs
++- PASS: npx playwright test tests/playwright/tools/TextToSpeechFunctional.spec.mjs --reporter=list
++- PASS: node --test tests/tools/Text2SpeechShell.test.mjs
 +- PASS: npm run test:workspace-v2
 +- PASS: git diff --check
 +
 +## Targeted Results
 +- Message Studio Playwright tests: 2 passed.
 +- Text To Speech compatibility Playwright tests: 3 passed.
++- Text2Speech Node contract tests: 4 passed.
 +- Project Workspace legacy validation: 5 passed.
 +
 +## Notes
++- A parallel Playwright run caused an HTML reporter file-copy collision after tests passed; the TTS compatibility lane was rerun with the list reporter and passed cleanly.
 +- npm run test:workspace-v2 is a legacy command name; user-facing language remains Project Workspace.
 +- Standard generated validation-report churn was restored before staging this PR.
-diff --git a/docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion.md b/docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion.md
+diff --git a/docs_build/dev/reports/PR_26171_BETA_081-message-playback-through-tts-engine.md b/docs_build/dev/reports/PR_26171_BETA_081-message-playback-through-tts-engine.md
 new file mode 100644
-index 000000000..dd4c6c13c
+index 000000000..261cae8e6
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion.md
-@@ -0,0 +1,20 @@
-+# PR_26171_BETA_079-message-studio-parent-child-table-completion
++++ b/docs_build/dev/reports/PR_26171_BETA_081-message-playback-through-tts-engine.md
+@@ -0,0 +1,18 @@
++# PR_26171_BETA_081-message-playback-through-tts-engine
 +
 +## Team Ownership
 +- TEAM: BETA
 +- Ownership source: docs_build/dev/PROJECT_MULTI_PC.txt
-+- Scope confirmed: Message Studio, Messages, and TTS selection integration are owned by Team BETA.
++- Scope confirmed: Audio, Messages, Text To Speech, and TTS are owned by Team BETA.
 +
 +## Summary
-+- Completed Message Studio row-click behavior for the Messages parent table.
-+- Kept Message Parts as the selected Message child table.
-+- Kept Message Part controls for Text, Emotion, TTS Profile, Status, and Actions.
-+- Preserved existing Play Part, Play Message, and Stop controls for the next playback PR.
++- Added server-owned Emotion Settings to Messages TTS profile API responses without changing database schema.
++- Updated Message Studio playback readiness to require a matching Emotion Setting on the selected TTS Profile.
++- Wired Play Part and Play Message playback values through the existing TextToSpeechEngine registry path using selected TTS Profile language/voice and Emotion Setting pitch/rate/volume/preset.
++- Kept Stop routed through the existing TextToSpeechEngine stop path.
 +
 +## Scope Guard
-+- Theme V2 only.
-+- External JS only.
-+- No inline styles, style blocks, inline handlers, page-local CSS, or tool-local CSS.
 +- No database schema changes.
-+- No separate Emotion Studio.
-+- No browser-owned product data source of truth added.
++- No engine core changes.
++- No silent playback fallback when a selected TTS Profile lacks the selected Emotion Setting.
++- Theme V2 and external JS only.
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 10f75398a..795ac3621 100644
+index 795ac3621..5a25f4aef 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,8 +1,7 @@
+@@ -1,7 +1,8 @@
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
--docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table-manual-validation-notes.md
--docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table-validation-report.md
--docs_build/dev/reports/PR_26171_BETA_077-tts-profile-parent-child-table.md
--tests/playwright/tools/TextToSpeechFunctional.spec.mjs
--toolbox/text-to-speech/index.html
--toolbox/text-to-speech/text2speech.js
-+docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion-manual-validation-notes.md
-+docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion-validation-report.md
-+docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion.md
-+tests/playwright/tools/MessagesTool.spec.mjs
-+toolbox/messages/messages.js
+-docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion-manual-validation-notes.md
+-docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion-validation-report.md
+-docs_build/dev/reports/PR_26171_BETA_079-message-studio-parent-child-table-completion.md
++docs_build/dev/reports/PR_26171_BETA_081-message-playback-through-tts-engine-manual-validation-notes.md
++docs_build/dev/reports/PR_26171_BETA_081-message-playback-through-tts-engine-validation-report.md
++docs_build/dev/reports/PR_26171_BETA_081-message-playback-through-tts-engine.md
++src/dev-runtime/messages/messages-sqlite-service.mjs
+ tests/playwright/tools/MessagesTool.spec.mjs
+ toolbox/messages/messages.js
+diff --git a/src/dev-runtime/messages/messages-sqlite-service.mjs b/src/dev-runtime/messages/messages-sqlite-service.mjs
+index d1a1cee33..6d3894a85 100644
+--- a/src/dev-runtime/messages/messages-sqlite-service.mjs
++++ b/src/dev-runtime/messages/messages-sqlite-service.mjs
+@@ -96,6 +96,14 @@ function normalizeNumber(value, fallback) {
+   return Number.isFinite(numberValue) ? numberValue : fallback;
+ }
+
++function emotionSettingKey(value) {
++  return normalizeText(value)
++    .trim()
++    .toLowerCase()
++    .replace(/[^a-z0-9]+/g, "-")
++    .replace(/^-+|-+$/g, "") || "neutral";
++}
++
+ function normalizeInteger(value, fallback) {
+   const numberValue = Number(value);
+   return Number.isInteger(numberValue) ? numberValue : fallback;
+@@ -182,12 +190,25 @@ function emotionProfileFromRow(row, usage = {}) {
+   };
+ }
+
+-function ttsProfileFromRow(row) {
++function ttsEmotionSettingFromEmotionProfile(profile) {
++  return {
++    active: profile.active !== false,
++    emotion: emotionSettingKey(profile.name),
++    emotionLabel: profile.name,
++    pitch: Number(profile.pitch),
++    rate: Number(profile.rate),
++    ssmlLikePreset: "normal",
++    volume: Number(profile.volume),
++  };
++}
++
++function ttsProfileFromRow(row, emotionSettings = []) {
+   return {
+     active: activeFromDatabase(row.active),
+     createdAt: row.createdAt,
+     createdBy: row.createdBy,
+     description: row.description || "",
++    emotionSettings,
+     key: row.key,
+     language: row.language,
+     name: row.name,
+@@ -593,10 +614,13 @@ export class MessagesSqliteService {
+   }
+
+   listTtsProfiles() {
++    const emotionSettings = this.listEmotionProfiles()
++      .filter((profile) => profile.active !== false)
++      .map(ttsEmotionSettingFromEmotionProfile);
+     return this.db().prepare(`
+       SELECT * FROM messages_tts_profiles
+       ORDER BY name COLLATE NOCASE ASC
+-    `).all().map(ttsProfileFromRow);
++    `).all().map((row) => ttsProfileFromRow(row, emotionSettings));
+   }
+
+   getTtsProfile(key) {
+@@ -604,7 +628,10 @@ export class MessagesSqliteService {
+     if (!row) {
+       throw httpError("TTS profile was not found.", 404);
+     }
+-    return ttsProfileFromRow(row);
++    const emotionSettings = this.listEmotionProfiles()
++      .filter((profile) => profile.active !== false)
++      .map(ttsEmotionSettingFromEmotionProfile);
++    return ttsProfileFromRow(row, emotionSettings);
+   }
+
+   findTtsProfileByName(name) {
 diff --git a/tests/playwright/tools/MessagesTool.spec.mjs b/tests/playwright/tools/MessagesTool.spec.mjs
-index e10e79dac..220802b3e 100644
+index 220802b3e..6c00fa6f5 100644
 --- a/tests/playwright/tools/MessagesTool.spec.mjs
 +++ b/tests/playwright/tools/MessagesTool.spec.mjs
-@@ -151,7 +151,7 @@ async function addPart(page, values) {
- }
+@@ -240,13 +240,34 @@ test("Message Studio renders Messages with child Message Parts and plays ordered
+     await expect(page.locator("[data-messages-log]")).toHaveText("Updated message part 2.");
+     await expect(page.locator("[data-messages-segment-row]")).toHaveCount(2);
+     await expect(page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" })).toContainText("2");
++    const ttsProfilesResult = await jsonRequest(`${failures.server.baseUrl}/api/messages/tts-profiles`);
++    expect(ttsProfilesResult.response.ok).toBe(true);
++    expect(ttsProfilesResult.payload.data.ttsProfiles[0].emotionSettings).toEqual(expect.arrayContaining([
++      expect.objectContaining({
++        emotion: "urgent",
++        emotionLabel: "Urgent",
++        pitch: 1.08,
++        rate: 1.15,
++        volume: 1,
++      }),
++    ]));
 
- async function openMessageParts(page, messageName) {
--  await page.locator("[data-messages-name-cell]").filter({ hasText: messageName }).click();
-+  await page.locator("[data-messages-row]").filter({ hasText: messageName }).locator("td").nth(1).click();
- }
+     await page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" }).getByRole("button", { name: "Play Message" }).click();
+     await expect(page.locator("[data-messages-log]")).toHaveText("Play Message queued 2 parts for Bat Encounter.");
+     let speechCalls = await page.evaluate(() => window.__messagesSpeechCalls);
+-    expect(speechCalls.slice(-2).map((call) => call.text)).toEqual([
+-      "Bats drop from the rafters.",
+-      "Keep your torch high.",
++    expect(speechCalls.slice(-2)).toEqual([
++      expect.objectContaining({
++        pitch: 1,
++        rate: 1,
++        text: "Bats drop from the rafters.",
++        volume: 1,
++      }),
++      expect.objectContaining({
++        pitch: 1.08,
++        rate: 1.15,
++        text: "Keep your torch high.",
++        volume: 1,
++      }),
+     ]);
+     expect(speechCalls.at(-1)).toEqual(expect.objectContaining({
+       lang: "en-US",
+@@ -262,9 +283,12 @@ test("Message Studio renders Messages with child Message Parts and plays ordered
+     await expect(page.locator("[data-messages-log]")).toHaveText("Play Part queued Part 2 using Default Balanced TTS Profile.");
+     speechCalls = await page.evaluate(() => window.__messagesSpeechCalls);
+     expect(speechCalls.at(-1)).toEqual(expect.objectContaining({
++      pitch: 1.08,
++      rate: 1.15,
+       text: "Keep your torch high.",
+       type: "speak",
+       voiceName: "Test Voice",
++      volume: 1,
+     }));
 
- test("Message Studio renders Messages with child Message Parts and plays ordered parts", async ({ page }) => {
-@@ -198,7 +198,11 @@ test("Message Studio renders Messages with child Message Parts and plays ordered
-     const messageRow = page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" });
-     const messageNameCell = page.locator("[data-messages-name-cell]").filter({ hasText: "Bat Encounter" });
-     await expect(page.locator("[data-messages-segment-host]")).toHaveCount(0);
-+    await expect(messageNameCell).toHaveAttribute("aria-expanded", "false");
-     await messageRow.locator("td").nth(3).click();
-+    await expect(page.locator("[data-messages-segment-host]")).toBeVisible();
-+    await expect(messageNameCell).toHaveAttribute("aria-expanded", "true");
-+    await messageRow.locator("td").nth(2).click();
-     await expect(page.locator("[data-messages-segment-host]")).toHaveCount(0);
-     await messageNameCell.click();
-     await expect(page.locator("[data-messages-segment-host]")).toBeVisible();
+     await page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" }).getByRole("button", { name: "Edit Message" }).click();
 diff --git a/toolbox/messages/messages.js b/toolbox/messages/messages.js
-index 4cb02f9bf..9165deabe 100644
+index 9165deabe..4af71adaa 100644
 --- a/toolbox/messages/messages.js
 +++ b/toolbox/messages/messages.js
-@@ -1188,7 +1188,7 @@ elements.table?.addEventListener("click", async (event) => {
-     render();
-     return;
+@@ -12,9 +12,16 @@ import { createMessageStudioTtsServiceRegistry } from "./message-tts-service-reg
+
+ const NEW_ROW_KEY = "__new__";
+ const DEFAULT_TTS_PROFILE_KEY = "__default-balanced-tts__";
++const DEFAULT_TTS_EMOTION_SETTINGS = Object.freeze([
++  Object.freeze({ active: true, emotion: "calm", emotionLabel: "Calm", pitch: 1, rate: 1, ssmlLikePreset: "normal", volume: 1 }),
++  Object.freeze({ active: true, emotion: "urgent", emotionLabel: "Urgent", pitch: 1.08, rate: 1.15, ssmlLikePreset: "normal", volume: 1 }),
++  Object.freeze({ active: true, emotion: "whisper", emotionLabel: "Whisper", pitch: 0.95, rate: 0.9, ssmlLikePreset: "normal", volume: 0.55 }),
++  Object.freeze({ active: true, emotion: "angry", emotionLabel: "Angry", pitch: 0.98, rate: 1.1, ssmlLikePreset: "normal", volume: 1 }),
++]);
+ const DEFAULT_TTS_PROFILE = Object.freeze({
+   active: true,
+   description: "Balanced local browser playback option until authored TTS profiles are available.",
++  emotionSettings: DEFAULT_TTS_EMOTION_SETTINGS,
+   key: DEFAULT_TTS_PROFILE_KEY,
+   language: "en-US",
+   name: "Default Balanced TTS Profile",
+@@ -264,6 +271,32 @@ function emotionProfileByKey(profileKey) {
+   return state.emotionProfiles.find((profile) => profile.key === profileKey) || null;
+ }
+
++function emotionSettingKey(value) {
++  return String(value || "")
++    .trim()
++    .toLowerCase()
++    .replace(/[^a-z0-9]+/g, "-")
++    .replace(/^-+|-+$/g, "") || "neutral";
++}
++
++function selectedEmotionSettingForProfile(profile, emotionProfile) {
++  const settings = Array.isArray(profile?.emotionSettings)
++    ? profile.emotionSettings.filter((setting) => setting?.active !== false)
++    : [];
++  const selectedEmotionKey = emotionSettingKey(emotionProfile?.name);
++  const setting = settings.find((candidate) => (
++    emotionSettingKey(candidate.emotion) === selectedEmotionKey
++    || emotionSettingKey(candidate.emotionLabel) === selectedEmotionKey
++  ));
++  if (!setting) {
++    return {
++      message: `Selected TTS Profile "${profile?.name || "Unknown"}" does not include an Emotion Setting for "${emotionProfile?.name || "Unknown"}".`,
++      ok: false,
++    };
++  }
++  return { ok: true, setting };
++}
++
+ function activeTtsProfileOptions() {
+   const activeProfiles = state.ttsProfiles.filter((profile) => profile.active);
+   return activeProfiles.length ? activeProfiles : [DEFAULT_TTS_PROFILE];
+@@ -428,6 +461,10 @@ function speechTestReadiness() {
+   if (!target.emotionProfile) {
+     return { message: "Selected item needs an Emotion before testing speech.", ok: false };
    }
--  if (messageNameCell && row) {
-+  if ((messageNameCell || row) && row) {
-     state.selectedMessageKey = state.selectedMessageKey === row.dataset.messagesRow ? "" : row.dataset.messagesRow;
-     state.selectedSegmentKey = "";
-     state.editingSegmentKey = "";
++  const emotionSetting = selectedEmotionSettingForProfile(profile, target.emotionProfile);
++  if (!emotionSetting.ok) {
++    return { message: emotionSetting.message, ok: false };
++  }
+   if (!String(target.text || "").trim()) {
+     return { message: "Selected item needs message text before testing speech.", ok: false };
+   }
+@@ -923,18 +960,23 @@ function speakTarget(service, target, profile) {
+   if (!target.emotionProfile) {
+     return visiblePlaybackError("Selected message or part needs an Emotion before playback.");
+   }
++  const emotionSetting = selectedEmotionSettingForProfile(profile, target.emotionProfile);
++  if (!emotionSetting.ok) {
++    return visiblePlaybackError(emotionSetting.message);
++  }
+   if (!String(target.text || "").trim()) {
+     return visiblePlaybackError("Selected message or part needs text before playback.");
+   }
+   return ttsServiceRegistry.speak(service.key, {
+     language: profile.language,
+-    pitch: target.emotionProfile.pitch ?? profile.pitch ?? 1,
+-    rate: target.emotionProfile.rate ?? profile.rate ?? 1,
++    pitch: emotionSetting.setting.pitch ?? profile.pitch ?? 1,
++    rate: emotionSetting.setting.rate ?? profile.rate ?? 1,
+     speechItemId: target.id,
+     speechItemName: target.name,
++    ssmlLikePreset: emotionSetting.setting.ssmlLikePreset || "normal",
+     text: target.text,
+     voice: profile.voiceName,
+-    volume: target.emotionProfile.volume ?? profile.volume ?? 1,
++    volume: emotionSetting.setting.volume ?? profile.volume ?? 1,
+   });
+ }

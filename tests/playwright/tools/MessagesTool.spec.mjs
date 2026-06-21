@@ -240,13 +240,34 @@ test("Message Studio renders Messages with child Message Parts and plays ordered
     await expect(page.locator("[data-messages-log]")).toHaveText("Updated message part 2.");
     await expect(page.locator("[data-messages-segment-row]")).toHaveCount(2);
     await expect(page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" })).toContainText("2");
+    const ttsProfilesResult = await jsonRequest(`${failures.server.baseUrl}/api/messages/tts-profiles`);
+    expect(ttsProfilesResult.response.ok).toBe(true);
+    expect(ttsProfilesResult.payload.data.ttsProfiles[0].emotionSettings).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        emotion: "urgent",
+        emotionLabel: "Urgent",
+        pitch: 1.08,
+        rate: 1.15,
+        volume: 1,
+      }),
+    ]));
 
     await page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" }).getByRole("button", { name: "Play Message" }).click();
     await expect(page.locator("[data-messages-log]")).toHaveText("Play Message queued 2 parts for Bat Encounter.");
     let speechCalls = await page.evaluate(() => window.__messagesSpeechCalls);
-    expect(speechCalls.slice(-2).map((call) => call.text)).toEqual([
-      "Bats drop from the rafters.",
-      "Keep your torch high.",
+    expect(speechCalls.slice(-2)).toEqual([
+      expect.objectContaining({
+        pitch: 1,
+        rate: 1,
+        text: "Bats drop from the rafters.",
+        volume: 1,
+      }),
+      expect.objectContaining({
+        pitch: 1.08,
+        rate: 1.15,
+        text: "Keep your torch high.",
+        volume: 1,
+      }),
     ]);
     expect(speechCalls.at(-1)).toEqual(expect.objectContaining({
       lang: "en-US",
@@ -262,9 +283,12 @@ test("Message Studio renders Messages with child Message Parts and plays ordered
     await expect(page.locator("[data-messages-log]")).toHaveText("Play Part queued Part 2 using Default Balanced TTS Profile.");
     speechCalls = await page.evaluate(() => window.__messagesSpeechCalls);
     expect(speechCalls.at(-1)).toEqual(expect.objectContaining({
+      pitch: 1.08,
+      rate: 1.15,
       text: "Keep your torch high.",
       type: "speak",
       voiceName: "Test Voice",
+      volume: 1,
     }));
 
     await page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" }).getByRole("button", { name: "Edit Message" }).click();
