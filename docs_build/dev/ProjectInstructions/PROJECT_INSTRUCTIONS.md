@@ -33,6 +33,15 @@ Existing Project Instructions remain preserved in their current locations. This 
 
 No PR in this operating system is merged without explicit owner approval.
 
+## Day Work / EOD Merge Rule
+
+Commit/push during the day is allowed only on assigned team/OWNER/PR branches.
+
+Merge to main is EOD-only and owner-approved, unless the owner explicitly says:
+"Merge this PR now."
+
+Do not treat sequential PR completion as merge approval.
+
 ## OWNER Governance
 
 OWNER override wording:

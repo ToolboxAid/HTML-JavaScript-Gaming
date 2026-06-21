@@ -28,6 +28,8 @@ Rules:
 
 ## Day Work / EOD Merge Rule
 
+Confirmed required rule:
+
 During active work:
 - Work happens on assigned team branches, OWNER branches, or scoped PR branches.
 - Commits are allowed only on assigned non-main branches.

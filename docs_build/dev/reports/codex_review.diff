@@ -1,351 +1,46 @@
+diff --git a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+index 40db33c44..9636e2d41 100644
+--- a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
++++ b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+@@ -33,6 +33,15 @@ Existing Project Instructions remain preserved in their current locations. This
+
+ No PR in this operating system is merged without explicit owner approval.
+
++## Day Work / EOD Merge Rule
++
++Commit/push during the day is allowed only on assigned team/OWNER/PR branches.
++
++Merge to main is EOD-only and owner-approved, unless the owner explicitly says:
++"Merge this PR now."
++
++Do not treat sequential PR completion as merge approval.
++
+ ## OWNER Governance
+
+ OWNER override wording:
 diff --git a/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md b/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
-index 3490df216..35279e8f1 100644
+index 35279e8f1..ff60e7bbb 100644
 --- a/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
 +++ b/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
-@@ -1,68 +1,68 @@
- # TEAM_START_COMMANDS
+@@ -70,6 +70,8 @@ Work only that assignment.
 
--## Start Team Alpha
-+## Start Team Alfa
+ Ready-to-copy reminder:
 
- Ready-to-copy command:
-
++Confirmed required rule:
++
  ```text
--OWNER override approved: Start Team Alpha from the ProjectInstructions release gate.
-+OWNER override approved: Start Team Alfa from the ProjectInstructions release gate.
-
- Read docs_build/dev/ProjectInstructions/README.txt first.
- Read docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md.
- Read docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
-
--Pull one [ ] item for Team Alpha from BACKLOG_MASTER.md.
--Stop if Team Alpha already has an active branch.
--Stop if Team Alpha already has an active assignment.
--Stop if no [ ] Team Alpha backlog item is available.
-+Pull one [ ] item for Team Alfa from BACKLOG_MASTER.md.
-+Stop if Team Alfa already has an active branch.
-+Stop if Team Alfa already has an active assignment.
-+Stop if no [ ] Team Alfa backlog item is available.
-
- Change the selected backlog item from [ ] to [.].
--Add the selected assignment under Team Alpha in TEAM_ASSIGNMENTS.md.
--Create one Team Alpha branch for the selected assignment.
-+Add the selected assignment under Team Alfa in TEAM_ASSIGNMENTS.md.
-+Create one Team Alfa branch for the selected assignment.
- Work only that assignment.
- ```
-
--## Start Team Beta
-+## Start Team Bravo
-
- Ready-to-copy command:
-
- ```text
--OWNER override approved: Start Team Beta from the ProjectInstructions release gate.
-+OWNER override approved: Start Team Bravo from the ProjectInstructions release gate.
-
- Read docs_build/dev/ProjectInstructions/README.txt first.
- Read docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md.
- Read docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
-
--Pull one [ ] item for Team Beta from BACKLOG_MASTER.md.
--Stop if Team Beta already has an active branch.
--Stop if Team Beta already has an active assignment.
--Stop if no [ ] Team Beta backlog item is available.
-+Pull one [ ] item for Team Bravo from BACKLOG_MASTER.md.
-+Stop if Team Bravo already has an active branch.
-+Stop if Team Bravo already has an active assignment.
-+Stop if no [ ] Team Bravo backlog item is available.
-
- Change the selected backlog item from [ ] to [.].
--Add the selected assignment under Team Beta in TEAM_ASSIGNMENTS.md.
--Create one Team Beta branch for the selected assignment.
-+Add the selected assignment under Team Bravo in TEAM_ASSIGNMENTS.md.
-+Create one Team Bravo branch for the selected assignment.
- Work only that assignment.
- ```
-
--## Start Team Gamma
-+## Start Team Charlie
-
- Ready-to-copy command:
-
- ```text
--OWNER override approved: Start Team Gamma from the ProjectInstructions release gate.
-+OWNER override approved: Start Team Charlie from the ProjectInstructions release gate.
-
- Read docs_build/dev/ProjectInstructions/README.txt first.
- Read docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md.
- Read docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
-
--Pull one [ ] item for Team Gamma from BACKLOG_MASTER.md.
--Stop if Team Gamma already has an active branch.
--Stop if Team Gamma already has an active assignment.
--Stop if no [ ] Team Gamma backlog item is available.
-+Pull one [ ] item for Team Charlie from BACKLOG_MASTER.md.
-+Stop if Team Charlie already has an active branch.
-+Stop if Team Charlie already has an active assignment.
-+Stop if no [ ] Team Charlie backlog item is available.
-
- Change the selected backlog item from [ ] to [.].
--Add the selected assignment under Team Gamma in TEAM_ASSIGNMENTS.md.
--Create one Team Gamma branch for the selected assignment.
-+Add the selected assignment under Team Charlie in TEAM_ASSIGNMENTS.md.
-+Create one Team Charlie branch for the selected assignment.
- Work only that assignment.
- ```
-
-diff --git a/docs_build/dev/ProjectInstructions/addendums/build_path_sync.md b/docs_build/dev/ProjectInstructions/addendums/build_path_sync.md
-index ad7195d1c..fe8d44537 100644
---- a/docs_build/dev/ProjectInstructions/addendums/build_path_sync.md
-+++ b/docs_build/dev/ProjectInstructions/addendums/build_path_sync.md
-@@ -1,4 +1,4 @@
--Ã¯Â»Â¿# Build Path Status Sync Governance
-+# Build Path Status Sync Governance
-
- ## Purpose
-
-diff --git a/docs_build/dev/ProjectInstructions/addendums/deprecation.md b/docs_build/dev/ProjectInstructions/addendums/deprecation.md
-index 2268b30bc..6b2b585a6 100644
---- a/docs_build/dev/ProjectInstructions/addendums/deprecation.md
-+++ b/docs_build/dev/ProjectInstructions/addendums/deprecation.md
-@@ -1,4 +1,4 @@
--Ã¯Â»Â¿# Deprecation Governance
-+# Deprecation Governance
-
- ## Purpose
-
-diff --git a/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md b/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
-index f492806d8..d73cfcb9f 100644
---- a/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
-+++ b/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
-@@ -2,7 +2,7 @@
-
- ## Purpose
-
--This gate prevents Team Alpha, Team Beta, Team Gamma, or Team OWNER from starting regular assigned work before the ProjectInstructions operating system is ready.
-+This gate prevents Team Alfa, Team Bravo, Team Charlie, or Team OWNER from starting regular assigned work before the ProjectInstructions operating system is ready.
-
- ## Release Rule
-
-diff --git a/docs_build/dev/ProjectInstructions/addendums/tile_overlay_status.md b/docs_build/dev/ProjectInstructions/addendums/tile_overlay_status.md
-index a1a1b75e0..175dc6765 100644
---- a/docs_build/dev/ProjectInstructions/addendums/tile_overlay_status.md
-+++ b/docs_build/dev/ProjectInstructions/addendums/tile_overlay_status.md
-@@ -1,4 +1,4 @@
--Ã¯Â»Â¿# Build Path Tile Overlay Status Governance
-+# Build Path Tile Overlay Status Governance
-
- ## Purpose
-
-diff --git a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-index 6ecd9bac8..1eee148cb 100644
---- a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-+++ b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-@@ -4,114 +4,114 @@
-
- ### Idea
-
--0% Complete Ã¢â‚¬â€ Dream, brainstorm, and explore early game concepts
-+0% Complete ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Dream, brainstorm, and explore early game concepts
-
--- [ ] Alpha - Idea Board
--- [ ] Alpha - Game Concept Notes
--- [ ] Alpha - Creator Learning
-+- [ ] Alfa - Idea Board
-+- [ ] Alfa - Game Concept Notes
-+- [ ] Alfa - Creator Learning
-
- ### Design
-
--0% Complete Ã¢â‚¬â€ Shape the game's story, structure, and systems
-+0% Complete ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Shape the game's story, structure, and systems
-
--- [ ] Alpha - Game Hub
--- [ ] Alpha - Game Design
--- [ ] Alpha - Game Configuration
--- [ ] Alpha - Game Crew
--- [ ] Alpha - Tags
--- [ ] Beta - Messages
-+- [ ] Alfa - Game Hub
-+- [ ] Alfa - Game Design
-+- [ ] Alfa - Game Configuration
-+- [ ] Alfa - Game Crew
-+- [ ] Alfa - Tags
-+- [ ] Bravo - Messages
-
- ### Graphics
-
--0% Complete Ã¢â‚¬â€ Create the visual look of your game
-+0% Complete ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Create the visual look of your game
-
--- [ ] Beta - Asset Studio V2
--- [ ] Beta - Sprite Studio V2
--- [ ] Beta - Animation Studio V2
--- [ ] Beta - Palette Manager
--- [ ] Beta - Video Studio
-+- [ ] Bravo - Asset Studio V2
-+- [ ] Bravo - Sprite Studio V2
-+- [ ] Bravo - Animation Studio V2
-+- [ ] Bravo - Palette Manager
-+- [ ] Bravo - Video Studio
-
- ### Audio
-
--0% Complete Ã¢â‚¬â€ Build sounds, music, and voices
-+0% Complete ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Build sounds, music, and voices
-
--- [ ] Beta - Audio Studio V2
--- [ ] Beta - Audio Effects
--- [ ] Beta - MIDI Studio V2
--- [ ] Beta - Messages
--- [ ] Beta - Text To Speech
--- [ ] Beta - Voice Profiles
-+- [ ] Bravo - Audio Studio V2
-+- [ ] Bravo - Audio Effects
-+- [ ] Bravo - MIDI Studio V2
-+- [ ] Bravo - Messages
-+- [ ] Bravo - Text To Speech
-+- [ ] Bravo - Voice Profiles
-
- ### Objects
-
--0% Complete Ã¢â‚¬â€ Create the things players interact with
-+0% Complete ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Create the things players interact with
-
--- [ ] Alpha - Objects
--- [ ] Alpha - Characters
--- [ ] Alpha - Object Behaviors
-+- [ ] Alfa - Objects
-+- [ ] Alfa - Characters
-+- [ ] Alfa - Object Behaviors
-
- ### Worlds
-
--0% Complete Ã¢â‚¬â€ Build levels, maps, and places to explore
-+0% Complete ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Build levels, maps, and places to explore
-
--- [ ] Alpha - Worlds
--- [ ] Alpha - Environment Settings
--- [ ] Alpha - Level Layouts
-+- [ ] Alfa - Worlds
-+- [ ] Alfa - Environment Settings
-+- [ ] Alfa - Level Layouts
-
- ### Interface
-
--0% Complete Ã¢â‚¬â€ Design menus, HUDs, and player screens
-+0% Complete ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Design menus, HUDs, and player screens
-
--- [ ] Alpha - Interface Layouts
--- [ ] Alpha - Fonts
--- [ ] Alpha - Languages
-+- [ ] Alfa - Interface Layouts
-+- [ ] Alfa - Fonts
-+- [ ] Alfa - Languages
-
- ### Controls
-
--0% Complete Ã¢â‚¬â€ Define how players interact with your game
-+0% Complete ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Define how players interact with your game
-
--- [ ] Alpha - Controls
--- [ ] Alpha - Input Mapping
--- [ ] Alpha - Hitboxes
-+- [ ] Alfa - Controls
-+- [ ] Alfa - Input Mapping
-+- [ ] Alfa - Hitboxes
-
- ### Rules
-
--0% Complete Ã¢â‚¬â€ Create gameplay behavior and events
-+0% Complete ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Create gameplay behavior and events
-
--- [ ] Alpha - Events
--- [ ] Alpha - Rules
--- [ ] Alpha - Custom Extensions
-+- [ ] Alfa - Events
-+- [ ] Alfa - Rules
-+- [ ] Alfa - Custom Extensions
-
- ### Progression
-
--0% Complete Ã¢â‚¬â€ Build rewards, unlocks, and advancement
-+0% Complete ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Build rewards, unlocks, and advancement
-
--- [ ] Alpha - Game Journey
--- [ ] Alpha - Achievements
--- [ ] Alpha - Saved Data
-+- [ ] Alfa - Game Journey
-+- [ ] Alfa - Achievements
-+- [ ] Alfa - Saved Data
-
- ### Play Test
-
--0% Complete Ã¢â‚¬â€ Test, debug, and improve your game
-+0% Complete ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Test, debug, and improve your game
-
--- [ ] Alpha - Game Testing
--- [ ] Alpha - Debug
--- [ ] Alpha - Performance
-+- [ ] Alfa - Game Testing
-+- [ ] Alfa - Debug
-+- [ ] Alfa - Performance
-
- ### Publish
-
--0% Complete Ã¢â‚¬â€ Prepare and release your game
-+0% Complete ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Prepare and release your game
-
--- [ ] Beta - Publish
--- [ ] Beta - Build Game
--- [ ] Beta - Platform Settings
--- [ ] Beta - Game Migration
-+- [ ] Bravo - Publish
-+- [ ] Bravo - Build Game
-+- [ ] Bravo - Platform Settings
-+- [ ] Bravo - Game Migration
-
- ### Share
-
--0% Complete Ã¢â‚¬â€ Grow your audience and community
-+0% Complete ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Grow your audience and community
-
--- [ ] Beta - Marketplace
--- [ ] Beta - Community
--- [ ] Beta - Ratings
--- [ ] Beta - Cloud
-+- [ ] Bravo - Marketplace
-+- [ ] Bravo - Community
-+- [ ] Bravo - Ratings
-+- [ ] Bravo - Cloud
-diff --git a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
-index 0b63c376f..b7c5df692 100644
---- a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
-+++ b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
-@@ -6,7 +6,7 @@
- - Active: team has one assignment in progress.
- - Blocked: team cannot pull work until blocker is cleared.
-
--## Team Alpha
-+## Team Alfa
-
- Status: Available
-
-@@ -14,7 +14,7 @@ Active assignment: none.
-
- Active branch: none.
-
--## Team Beta
-+## Team Bravo
-
- Status: Available
-
-@@ -22,7 +22,7 @@ Active assignment: none.
-
- Active branch: none.
-
--## Team Gamma
-+## Team Charlie
-
- Status: Available
+ Commit/push during the day is allowed only on assigned team/OWNER/PR branches.
+
+diff --git a/docs_build/dev/ProjectInstructions/addendums/multi_team.md b/docs_build/dev/ProjectInstructions/addendums/multi_team.md
+index 373a51ed0..f0a369ee9 100644
+--- a/docs_build/dev/ProjectInstructions/addendums/multi_team.md
++++ b/docs_build/dev/ProjectInstructions/addendums/multi_team.md
+@@ -28,6 +28,8 @@ Rules:
+
+ ## Day Work / EOD Merge Rule
+
++Confirmed required rule:
++
+ During active work:
+ - Work happens on assigned team branches, OWNER branches, or scoped PR branches.
+ - Commits are allowed only on assigned non-main branches.

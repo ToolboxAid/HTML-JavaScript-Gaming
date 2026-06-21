@@ -70,6 +70,8 @@ Work only that assignment.
 
 Ready-to-copy reminder:
 
+Confirmed required rule:
+
 ```text
 Commit/push during the day is allowed only on assigned team/OWNER/PR branches.
 
