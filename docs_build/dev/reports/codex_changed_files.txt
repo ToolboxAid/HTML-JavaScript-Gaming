@@ -1,5 +1,10 @@
-﻿docs_build/dev/reports/PR_26171_GAMMA_025-final-sqlite-runtime-inventory-instruction-compliance-checklist.md
-docs_build/dev/reports/PR_26171_GAMMA_025-final-sqlite-runtime-inventory-manual-validation-notes.md
-docs_build/dev/reports/PR_26171_GAMMA_025-final-sqlite-runtime-inventory.md
+﻿docs_build/dev/reports/PR_26171_GAMMA_026-sqlite-test-reference-cleanup-instruction-compliance-checklist.md
+docs_build/dev/reports/PR_26171_GAMMA_026-sqlite-test-reference-cleanup-manual-validation-notes.md
+docs_build/dev/reports/PR_26171_GAMMA_026-sqlite-test-reference-cleanup.md
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
+tests/dev-runtime/DbSeedIntegrity.test.mjs
+tests/playwright/tools/AdminDbViewer.spec.mjs
+tests/playwright/tools/BrowserApiUrlConfig.spec.mjs
+tests/playwright/tools/GameJourneyTool.spec.mjs
+tests/playwright/tools/LoginSessionMode.spec.mjs
