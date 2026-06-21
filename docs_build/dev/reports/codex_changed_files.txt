@@ -1,6 +1,12 @@
-docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-instruction-compliance-checklist.md
-docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-manual-validation-notes.md
-docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup.md
+﻿docs_build/dev/ProjectInstructions/addendums/.gitkeep
+docs_build/dev/ProjectInstructions/archive/history/.gitkeep
+docs_build/dev/ProjectInstructions/backlog/.gitkeep
+docs_build/dev/ProjectInstructions/deprecation/.gitkeep
+docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+docs_build/dev/ProjectInstructions/README.txt
+docs_build/dev/ProjectInstructions/team_assignments/.gitkeep
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
-src/dev-runtime/persistence/mock-db-store.js
+docs_build/dev/reports/PR_26172_MASTER_001-project-instructions-readme-and-root.md
+docs_build/dev/reports/PR_26172_MASTER_001-project-instructions-readme-and-root-instruction-compliance-checklist.md
+docs_build/dev/reports/PR_26172_MASTER_001-project-instructions-readme-and-root-manual-validation-notes.md
