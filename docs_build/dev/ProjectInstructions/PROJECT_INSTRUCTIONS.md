@@ -53,3 +53,11 @@ OWNER follows the same safety rules:
 - One active OWNER assignment at a time.
 - OWNER may override team locks, but may not silently delete, rewrite, or remove protected instructions.
 - OWNER override must be explicitly documented.
+
+### OWNER Branch Lock Governance
+
+- OWNER may override team locks.
+- OWNER still has one active assignment at a time.
+- OWNER still has one active branch at a time.
+- OWNER may not silently delete, rewrite, or remove protected instructions.
+- OWNER override must be documented.

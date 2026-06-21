@@ -38,6 +38,14 @@ Active assignment: none.
 
 Active branch: none.
 
+### OWNER Branch Lock Governance
+
+- OWNER may override team locks.
+- OWNER still has one active assignment at a time.
+- OWNER still has one active branch at a time.
+- OWNER may not silently delete, rewrite, or remove protected instructions.
+- OWNER override must be documented.
+
 ## Team Name Registry
 
 - Team Alfa

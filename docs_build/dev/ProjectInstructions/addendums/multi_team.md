@@ -55,3 +55,11 @@ Merge to main is EOD-only and owner-approved, unless the owner explicitly says:
 Existing ProjectInstructions wording that appears to require immediate or automatic merge remains preserved for traceability.
 
 This addendum clarifies that merge to `main` remains owner-controlled. If a workflow rule appears to conflict with this addendum, stop and request explicit owner approval before merging.
+
+## OWNER Branch Lock Governance
+
+- OWNER may override team locks.
+- OWNER still has one active assignment at a time.
+- OWNER still has one active branch at a time.
+- OWNER may not silently delete, rewrite, or remove protected instructions.
+- OWNER override must be documented.

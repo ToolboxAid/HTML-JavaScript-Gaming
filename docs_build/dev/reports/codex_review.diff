@@ -1,46 +1,51 @@
 diff --git a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-index 40db33c44..9636e2d41 100644
+index 9636e2d41..96c4e5622 100644
 --- a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 +++ b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-@@ -33,6 +33,15 @@ Existing Project Instructions remain preserved in their current locations. This
-
- No PR in this operating system is merged without explicit owner approval.
-
-+## Day Work / EOD Merge Rule
+@@ -53,3 +53,11 @@ OWNER follows the same safety rules:
+ - One active OWNER assignment at a time.
+ - OWNER may override team locks, but may not silently delete, rewrite, or remove protected instructions.
+ - OWNER override must be explicitly documented.
 +
-+Commit/push during the day is allowed only on assigned team/OWNER/PR branches.
++### OWNER Branch Lock Governance
 +
-+Merge to main is EOD-only and owner-approved, unless the owner explicitly says:
-+"Merge this PR now."
-+
-+Do not treat sequential PR completion as merge approval.
-+
- ## OWNER Governance
-
- OWNER override wording:
-diff --git a/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md b/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
-index 35279e8f1..ff60e7bbb 100644
---- a/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
-+++ b/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
-@@ -70,6 +70,8 @@ Work only that assignment.
-
- Ready-to-copy reminder:
-
-+Confirmed required rule:
-+
- ```text
- Commit/push during the day is allowed only on assigned team/OWNER/PR branches.
-
++- OWNER may override team locks.
++- OWNER still has one active assignment at a time.
++- OWNER still has one active branch at a time.
++- OWNER may not silently delete, rewrite, or remove protected instructions.
++- OWNER override must be documented.
 diff --git a/docs_build/dev/ProjectInstructions/addendums/multi_team.md b/docs_build/dev/ProjectInstructions/addendums/multi_team.md
-index 373a51ed0..f0a369ee9 100644
+index f0a369ee9..670543d1a 100644
 --- a/docs_build/dev/ProjectInstructions/addendums/multi_team.md
 +++ b/docs_build/dev/ProjectInstructions/addendums/multi_team.md
-@@ -28,6 +28,8 @@ Rules:
+@@ -55,3 +55,11 @@ Merge to main is EOD-only and owner-approved, unless the owner explicitly says:
+ Existing ProjectInstructions wording that appears to require immediate or automatic merge remains preserved for traceability.
 
- ## Day Work / EOD Merge Rule
-
-+Confirmed required rule:
+ This addendum clarifies that merge to `main` remains owner-controlled. If a workflow rule appears to conflict with this addendum, stop and request explicit owner approval before merging.
 +
- During active work:
- - Work happens on assigned team branches, OWNER branches, or scoped PR branches.
- - Commits are allowed only on assigned non-main branches.
++## OWNER Branch Lock Governance
++
++- OWNER may override team locks.
++- OWNER still has one active assignment at a time.
++- OWNER still has one active branch at a time.
++- OWNER may not silently delete, rewrite, or remove protected instructions.
++- OWNER override must be documented.
+diff --git a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
+index b7c5df692..04ff72616 100644
+--- a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
++++ b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
+@@ -38,6 +38,14 @@ Active assignment: none.
+
+ Active branch: none.
+
++### OWNER Branch Lock Governance
++
++- OWNER may override team locks.
++- OWNER still has one active assignment at a time.
++- OWNER still has one active branch at a time.
++- OWNER may not silently delete, rewrite, or remove protected instructions.
++- OWNER override must be documented.
++
+ ## Team Name Registry
+
+ - Team Alfa
