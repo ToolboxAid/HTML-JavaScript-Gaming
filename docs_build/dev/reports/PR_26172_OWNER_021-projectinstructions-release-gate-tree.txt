@@ -1,0 +1,22 @@
+docs_build/dev/ProjectInstructions/
+|-- PROJECT_INSTRUCTIONS.md
+|-- README.txt
+|-- RELEASE_GATE.md
+|-- TEAM_START_COMMANDS.md
+|-- addendums/
+|   |-- build_path_sync.md
+|   |-- deprecation.md
+|   |-- multi_team.md
+|   |-- preservation.md
+|   |-- team_release_readiness.md
+|   `-- tile_overlay_status.md
+|-- archive/
+|   |-- README.md
+|   `-- history/
+|       `-- .gitkeep
+|-- backlog/
+|   `-- BACKLOG_MASTER.md
+|-- deprecation/
+|   `-- README.md
+`-- team_assignments/
+    `-- TEAM_ASSIGNMENTS.md

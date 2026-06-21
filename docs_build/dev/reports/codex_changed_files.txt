@@ -1,8 +1,7 @@
-docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-docs_build/dev/ProjectInstructions/addendums/multi_team.md
-docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
-docs_build/dev/reports/PR_26172_OWNER_020-owner-branch-lock-governance-instruction-compliance-checklist.md
-docs_build/dev/reports/PR_26172_OWNER_020-owner-branch-lock-governance-manual-validation-notes.md
-docs_build/dev/reports/PR_26172_OWNER_020-owner-branch-lock-governance.md
+docs_build/dev/ProjectInstructions/RELEASE_GATE.md
+docs_build/dev/reports/PR_26172_OWNER_021-projectinstructions-release-gate-instruction-compliance-checklist.md
+docs_build/dev/reports/PR_26172_OWNER_021-projectinstructions-release-gate-manual-validation-notes.md
+docs_build/dev/reports/PR_26172_OWNER_021-projectinstructions-release-gate-tree.txt
+docs_build/dev/reports/PR_26172_OWNER_021-projectinstructions-release-gate.md
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
