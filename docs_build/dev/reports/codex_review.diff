@@ -1,15 +1,1 @@
-diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 7859a88ae..644c0fa9c 100644
---- a/docs_build/dev/reports/codex_changed_files.txt
-+++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,6 +1,6 @@
--docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
-+docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
- docs_build/dev/reports/codex_changed_files.txt
- docs_build/dev/reports/codex_review.diff
--docs_build/dev/reports/PR_26172_OWNER_012-initial-team-assignments.md
--docs_build/dev/reports/PR_26172_OWNER_012-initial-team-assignments-instruction-compliance-checklist.md
--docs_build/dev/reports/PR_26172_OWNER_012-initial-team-assignments-manual-validation-notes.md
-+docs_build/dev/reports/PR_26172_OWNER_013-team-release-readiness-gate.md
-+docs_build/dev/reports/PR_26172_OWNER_013-team-release-readiness-gate-instruction-compliance-checklist.md
-+docs_build/dev/reports/PR_26172_OWNER_013-team-release-readiness-gate-manual-validation-notes.md
+

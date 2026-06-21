@@ -1,6 +1,6 @@
-docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
+docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
+docs_build/dev/reports/PR_26172_OWNER_014-owner-team-start-command-instruction-compliance-checklist.md
+docs_build/dev/reports/PR_26172_OWNER_014-owner-team-start-command-manual-validation-notes.md
+docs_build/dev/reports/PR_26172_OWNER_014-owner-team-start-command.md
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/PR_26172_OWNER_013-team-release-readiness-gate.md
-docs_build/dev/reports/PR_26172_OWNER_013-team-release-readiness-gate-instruction-compliance-checklist.md
-docs_build/dev/reports/PR_26172_OWNER_013-team-release-readiness-gate-manual-validation-notes.md
