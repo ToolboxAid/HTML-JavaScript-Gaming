@@ -2032,8 +2032,28 @@ Stable promotion and merge approval are owner-controlled.
 Rules:
 - Codex may prepare scoped changes, reports, validation evidence, ZIP artifacts, branches, and PRs.
 - Codex must not merge a PR or mark a workstream stable without explicit approval from the assigned Team Alpha or Team Beta owner.
-- Master Control may recommend sequencing or assignment, but affected workstream owners control stable and merge approval.
+- OWNER may recommend sequencing or assignment, but affected workstream owners control stable and merge approval.
 - This targeted section supersedes older automatic-merge wording when approval ownership is in question.
+
+## OWNER GOVERNANCE LANE
+
+The governance lane formerly referred to by the prior governance token is now OWNER.
+
+Rules:
+- Use Team OWNER for owner-governance PRs going forward.
+- PR names use the OWNER token going forward:
+  - `PR_<YYJJJ>_OWNER_<###>-<short-description>`
+- Branch names mirror OWNER ownership going forward:
+  - `pr/<YYJJJ>-OWNER-<###>-<short-description>`
+- Existing PRs, branches, reports, and ZIPs already uploaded with the prior governance token are historical and must not be renamed unless separately scoped.
+- Required override wording is:
+  - `OWNER override approved: <reason>`
+
+OWNER follows the same safety rules:
+- One active OWNER branch at a time.
+- One active OWNER assignment at a time.
+- OWNER may override team locks, but may not silently delete, rewrite, or remove protected instructions.
+- OWNER override must be explicitly documented.
 
 ## CODEX INSTRUCTION ENFORCEMENT START GATE
 
