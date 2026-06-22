@@ -28,7 +28,6 @@ export const APPROVED_LEGACY_JS_PATHS = Object.freeze(new Set([
   "toolbox/objects/objects.js",
   "toolbox/tags/tags-api-client.js",
   "toolbox/tags/tags.js",
-  "toolbox/text-to-speech/text2speech.js",
   "toolbox/tool-registry-api-client.js",
   "toolbox/toolRegistry.js",
   "toolbox/tools-page-accordions.js",

@@ -1,7 +1,7 @@
 import {
   textToSpeechLanguageOptionsFromVoices,
   TextToSpeechEngine,
-} from "../../src/engine/audio/TextToSpeechEngine.js";
+} from "../../../../src/engine/audio/TextToSpeechEngine.js";
 import {
   TEXT_TO_SPEECH_AGE_FILTER_OPTIONS,
   TEXT_TO_SPEECH_DEFAULTS,
@@ -9,7 +9,7 @@ import {
   TEXT_TO_SPEECH_LANGUAGE_OPTIONS,
   TEXT_TO_SPEECH_RANGE_DEFAULTS,
   TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS
-} from "../../src/engine/audio/TextToSpeechDefaults.js";
+} from "../../../../src/engine/audio/TextToSpeechDefaults.js";
 
 const TTS_OWNERSHIP = Object.freeze({
   DESIGN: "Design",

@@ -14,7 +14,7 @@ import {
   createTtsMessage,
   createVoiceProfile,
   previewTtsMessage,
-} from "../../toolbox/text-to-speech/text2speech.js";
+} from "../../assets/toolbox/text-to-speech/js/index.js";
 
 test("Text2Speech message model separates Design and Audio ownership", () => {
   const message = createTtsMessage({ text: "Hello", metadata: { tags: ["intro"] } });

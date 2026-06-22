@@ -1,113 +1,163 @@
-diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_013-tool-js-css-canonical-migration-audit.md b/docs_build/dev/reports/PR_26172_CHARLIE_013-tool-js-css-canonical-migration-audit.md
+diff --git a/assets/toolbox/text-to-speech/js/index.js b/assets/toolbox/text-to-speech/js/index.js
+index b8b2afcce..2d19193c2 100644
+--- a/assets/toolbox/text-to-speech/js/index.js
++++ b/assets/toolbox/text-to-speech/js/index.js
+@@ -1,7 +1,7 @@
+ import {
+   textToSpeechLanguageOptionsFromVoices,
+   TextToSpeechEngine,
+-} from "../../src/engine/audio/TextToSpeechEngine.js";
++} from "../../../../src/engine/audio/TextToSpeechEngine.js";
+ import {
+   TEXT_TO_SPEECH_AGE_FILTER_OPTIONS,
+   TEXT_TO_SPEECH_DEFAULTS,
+@@ -9,7 +9,7 @@ import {
+   TEXT_TO_SPEECH_LANGUAGE_OPTIONS,
+   TEXT_TO_SPEECH_RANGE_DEFAULTS,
+   TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS
+-} from "../../src/engine/audio/TextToSpeechDefaults.js";
++} from "../../../../src/engine/audio/TextToSpeechDefaults.js";
+
+ const TTS_OWNERSHIP = Object.freeze({
+   DESIGN: "Design",
+diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_014-low-risk-tool-migration-1.md b/docs_build/dev/reports/PR_26172_CHARLIE_014-low-risk-tool-migration-1.md
 new file mode 100644
-index 000000000..7d9ad158e
+index 000000000..6e2af371d
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_CHARLIE_013-tool-js-css-canonical-migration-audit.md
-@@ -0,0 +1,107 @@
-+# PR_26172_CHARLIE_013 Tool JS/CSS Canonical Migration Audit
++++ b/docs_build/dev/reports/PR_26172_CHARLIE_014-low-risk-tool-migration-1.md
+@@ -0,0 +1,97 @@
++# PR_26172_CHARLIE_014 Low-Risk Tool Migration 1
 +
 +## Purpose
 +
-+Use prior Charlie audits to identify the next five safest tool migrations into the canonical structure.
++Migrate the safest single tool from `PR_26172_CHARLIE_013-tool-js-css-canonical-migration-audit`.
 +
-+Reviewed areas:
++Selected tool:
 +
-+- `toolbox/`
-+- `assets/toolbox/`
-+- `assets/theme-v2/`
++- Text To Speech
 +
-+## Executive Summary
++## Scope Summary
 +
-+| Check | Status | Result |
++| Requirement | Status | Evidence |
 +| --- | --- | --- |
-+| Tool JS outside canonical locations | FAIL | Legacy toolbox JS sidecars remain under `toolbox/{tool}/`. |
-+| Tool CSS outside canonical locations | PASS | No active toolbox CSS sidecars were found in the reviewed tool paths. |
-+| Inline script violations | PASS | Reviewed active tool index pages do not use inline `<script>` blocks. |
-+| Inline style violations | PASS | Reviewed active tool index pages do not use inline `<style>` blocks or `style=` attributes. |
-+| Migration candidates ranked | PASS | Five lowest-risk candidates are listed below. |
++| Move JS to canonical structure | PASS | `toolbox/text-to-speech/text2speech.js` moved to `assets/toolbox/text-to-speech/js/index.js`. |
++| Move CSS only if required | PASS | No Text To Speech tool-specific CSS sidecar exists; Theme V2 CSS remains unchanged. |
++| Preserve behavior | PASS | Targeted Text To Speech Node tests passed; page-level Playwright behavior passed except for the pre-existing Game Journey metrics failure described below. |
++| Update references | PASS | Tool page module script and direct Text To Speech test import now use the canonical path. |
++| Targeted validation only | PASS | Ran targeted Node, guardrail, and Text To Speech Playwright validation only. |
 +
-+## Candidate Ranking Method
++## Files Changed
 +
-+Candidates were ranked by:
-+
-+1. lowest behavior risk;
-+2. fewest files;
-+3. fewest active references.
-+
-+Reference counts exclude `archive/`, generated report history, `tmp/`, and `node_modules/`.
-+
-+## Recommended Next Five Tool Migrations
-+
-+| Rank | Tool | Current Non-Canonical Files | Active Reference Count | Canonical Target | Risk | Notes |
-+| ---: | --- | --- | ---: | --- | --- | --- |
-+| 1 | Text To Speech | `toolbox/text-to-speech/text2speech.js` | 4 | `assets/toolbox/text-to-speech/js/index.js` | Lowest | One tool JS file, one tool page script reference, and one direct active test import. |
-+| 2 | Tags | `toolbox/tags/tags.js`, `toolbox/tags/tags-api-client.js` | 5 | `assets/toolbox/tags/js/index.js` | Low | Smallest two-file tool; consolidate API wrapper into canonical entrypoint to satisfy the current guardrail. |
-+| 3 | Game Configuration | `toolbox/game-configuration/game-configuration.js`, `toolbox/game-configuration/game-configuration-api-client.js` | 5 | `assets/toolbox/game-configuration/js/index.js` | Low/Medium | Two files and low reference count; validation overlay behavior should be checked after Tags. |
-+| 4 | Colors | `toolbox/colors/colors.js`, `toolbox/colors/palette-api-client.js` | 5 | `assets/toolbox/colors/js/index.js` | Medium | Color/palette behavior is broader than Tags, but still has few references. |
-+| 5 | Objects | `toolbox/objects/objects.js`, `toolbox/objects/objects-api-client.js` | 6 | `assets/toolbox/objects/js/index.js` | Medium | Object tool touches engine object-model and asset repository behavior; migrate after simpler API-backed tools. |
-+
-+## Deferred Candidates
-+
-+| Tool | Reason Deferred |
++| File | Change |
 +| --- | --- |
-+| Controls | Active references include account/user control pages and Playwright source fetch assertions. |
-+| Game Hub | Shared root toolbox accordions import `game-hub-api-client.js`; defer until root toolbox script migration strategy is scoped. |
-+| Game Journey | Prior validation showed a pre-existing `/api/game-journey/completion-metrics` 500 from legacy preservation behavior; defer until owner accepts that risk. |
-+| Assets | Includes a worker script and upload behavior; more than one runtime asset path must be preserved. |
-+| Messages | Three files and TTS service registry dependency make it higher risk than the first five. |
++| `assets/toolbox/text-to-speech/js/index.js` | Added via move from `toolbox/text-to-speech/text2speech.js`; import paths adjusted for new canonical depth. |
++| `toolbox/text-to-speech/index.html` | Updated module script source to canonical JS path. |
++| `tests/tools/Text2SpeechShell.test.mjs` | Updated direct import to canonical JS path. |
++| `scripts/validate-canonical-repository-structure.mjs` | Removed retired Text To Speech legacy JS exception. |
 +
-+## Inline Script And Style Review
++## Reference Check
 +
-+| Area | Status | Notes |
++Active references to the retired module path were searched with:
++
++```text
++rg -n "toolbox/text-to-speech/text2speech\.js|text-to-speech/text2speech\.js|text2speech\.js" . --glob "!archive/**" --glob "!docs_build/dev/reports/**" --glob "!tmp/**" --glob "!node_modules/**"
++```
++
++Result:
++
++- PASS for active runtime/test references.
++- One historical `docs_build/pr/PR_26171_069-message-tts-profile-contract-alignment/BUILD_PR.md` reference remains intentionally unchanged.
++
++## Validation Results
++
++| Command | Status | Notes |
 +| --- | --- | --- |
-+| `toolbox/` active tool pages | PASS | Tool pages use external Theme V2 scripts and module script references. |
-+| `assets/toolbox/` | PASS | Existing canonical Idea Board JS is already under `assets/toolbox/idea-board/js/index.js`. |
-+| `assets/theme-v2/` | PASS | Theme V2 JS/CSS live under approved theme asset paths. |
++| `node --check assets/toolbox/text-to-speech/js/index.js` | PASS | Syntax check for moved module. |
++| `node --check scripts/validate-canonical-repository-structure.mjs` | PASS | Syntax check for updated guardrail. |
++| `node --check tests/tools/Text2SpeechShell.test.mjs` | PASS | Syntax check for updated test import. |
++| `node scripts/run-node-test-files.mjs tests/tools/Text2SpeechShell.test.mjs` | PASS | 4/4 Text To Speech targeted Node tests passed. |
++| `npm run validate:canonical-structure` | PASS | Blocking violations: 0; approved legacy exceptions: 494. |
++| `npx playwright test tests/playwright/tools/TextToSpeechFunctional.spec.mjs` | PARTIAL | 2/3 passed. The failing registration test reached the Text To Speech page but failed because the toolbox index emitted the known pre-existing `500 /api/game-journey/completion-metrics` request documented by PR_006A. |
++| `git diff --check` | PASS | No whitespace errors. |
 +
-+## Recommended Execution Order
++## Playwright Failure Classification
 +
-+1. `PR_26172_CHARLIE_014-low-risk-tool-migration-1`: migrate Text To Speech.
-+2. `PR_26172_CHARLIE_015-low-risk-tool-migration-2`: migrate Tags.
-+3. Future Charlie PR: migrate Game Configuration.
-+4. Future Charlie PR: migrate Colors.
-+5. Future Charlie PR: migrate Objects.
++Root cause:
++
++- The failed Playwright assertion records `500 http://127.0.0.1:<port>/api/game-journey/completion-metrics`.
++
++Whether PR_014 caused it:
++
++- No. The failure matches the previously documented PR_006A validation failure from legacy SQLite preservation protection.
++- The Text To Speech page load and browser speech behavior tests passed.
++- The failed test confirms the Text To Speech toolbox registration path still navigates to `/toolbox/text-to-speech/index.html`.
++
++Action:
++
++- Do not expand this PR into Game Journey API work.
++- Continue stack because this migration did not introduce the known failure.
 +
 +## Branch Validation
 +
 +| Check | Status | Evidence |
 +| --- | --- | --- |
 +| Current branch | PASS | `PR_26172_CHARLIE_repository-compliance-stack`. |
-+| Worktree clean before PR_013 edits | PASS | `git status --short` produced no output before this report was created. |
-+| Local/origin sync before PR_013 edits | PASS | `0 0`. |
++| Worktree clean before PR_014 edits | PASS | PR_013 was committed and pushed before this scope. |
++| Local/origin sync before PR_014 edits | PASS | `0 0` after PR_013 push. |
 +| Main merge avoided | PASS | No merge to `main` was performed. |
 +
 +## Requirement Checklist
 +
 +| Requirement | Status | Evidence |
 +| --- | --- | --- |
-+| Review `toolbox/` | PASS | Active tool pages and legacy sidecar JS files were inventoried. |
-+| Review `assets/toolbox/` | PASS | Existing canonical Idea Board asset path was verified. |
-+| Review `assets/theme-v2/` | PASS | Theme V2 JS/CSS paths were verified as canonical. |
-+| Identify tool JS outside canonical locations | PASS | Candidate list includes legacy toolbox JS sidecars. |
-+| Identify tool CSS outside canonical locations | PASS | No active toolbox CSS sidecars found. |
-+| Identify inline script violations | PASS | No inline script blocks found in reviewed active tool pages. |
-+| Identify inline style violations | PASS | No inline style blocks/attributes found in reviewed active tool pages. |
-+| Rank next five safest migrations | PASS | See Recommended Next Five Tool Migrations. |
-+| Produce ZIP artifact | PASS | `tmp/PR_26172_CHARLIE_013-tool-js-css-canonical-migration-audit_delta.zip` generated. |
-+
-+## Validation Lane Report
-+
-+| Lane | Status | Notes |
-+| --- | --- | --- |
-+| Candidate inventory | PASS | Legacy sidecar files, script references, and inline script/style counts were reviewed. |
-+| Markdown/text review | PASS | This report contains candidate list and execution order. |
-+| Playwright | SKIP | Audit-only scope; no browser behavior changed. |
-+| Samples | SKIP | No sample files changed. |
-+| Full smoke | SKIP | Out of scope for audit-only PR. |
++| Use safest tool from PR_013 | PASS | Text To Speech ranked #1. |
++| Move JS to canonical structure | PASS | Canonical path added. |
++| Move CSS only if required | PASS | No CSS move required. |
++| Preserve behavior | PASS | Targeted TTS behavior passed; unrelated known failure documented. |
++| Update references | PASS | HTML/test references updated. |
++| Targeted validation only | PASS | No samples or full smoke run. |
++| Produce ZIP artifact | PASS | `tmp/PR_26172_CHARLIE_014-low-risk-tool-migration-1_delta.zip` generated. |
 +
 +## Manual Validation Notes
 +
-+- Text To Speech is the first migration because it is the only one-file tool JS sidecar in the current approved legacy list.
-+- Tags is the second migration because it has the fewest practical files and references after Text To Speech.
-+- The current guardrail only permits `assets/toolbox/{tool}/js/index.js`, so multi-file tools should be consolidated into the canonical entrypoint unless a future governance PR broadens the canonical tool asset shape.
-+- No runtime files were changed in this audit PR.
++- This PR removes one approved legacy JS exception from the guardrail.
++- The Text To Speech module remains the same executable implementation after the move, except for relative import path depth.
++- The known Game Journey metrics 500 remains outside Charlie PR_014 scope.
+diff --git a/scripts/validate-canonical-repository-structure.mjs b/scripts/validate-canonical-repository-structure.mjs
+index e5b4c4d78..e2033f742 100644
+--- a/scripts/validate-canonical-repository-structure.mjs
++++ b/scripts/validate-canonical-repository-structure.mjs
+@@ -28,7 +28,6 @@ export const APPROVED_LEGACY_JS_PATHS = Object.freeze(new Set([
+   "toolbox/objects/objects.js",
+   "toolbox/tags/tags-api-client.js",
+   "toolbox/tags/tags.js",
+-  "toolbox/text-to-speech/text2speech.js",
+   "toolbox/tool-registry-api-client.js",
+   "toolbox/toolRegistry.js",
+   "toolbox/tools-page-accordions.js",
+diff --git a/tests/tools/Text2SpeechShell.test.mjs b/tests/tools/Text2SpeechShell.test.mjs
+index 719243bff..38dbbf960 100644
+--- a/tests/tools/Text2SpeechShell.test.mjs
++++ b/tests/tools/Text2SpeechShell.test.mjs
+@@ -14,7 +14,7 @@ import {
+   createTtsMessage,
+   createVoiceProfile,
+   previewTtsMessage,
+-} from "../../toolbox/text-to-speech/text2speech.js";
++} from "../../assets/toolbox/text-to-speech/js/index.js";
+
+ test("Text2Speech message model separates Design and Audio ownership", () => {
+   const message = createTtsMessage({ text: "Hello", metadata: { tags: ["intro"] } });
+diff --git a/toolbox/text-to-speech/index.html b/toolbox/text-to-speech/index.html
+index 9f509977a..f86090509 100644
+--- a/toolbox/text-to-speech/index.html
++++ b/toolbox/text-to-speech/index.html
+@@ -124,7 +124,7 @@
+     <div data-partial="footer"></div>
+     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+-    <script type="module" src="toolbox/text-to-speech/text2speech.js"></script>
++    <script type="module" src="assets/toolbox/text-to-speech/js/index.js"></script>
+ </body>
+
+ </html>

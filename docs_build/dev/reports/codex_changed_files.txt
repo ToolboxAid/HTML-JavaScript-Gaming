@@ -1,3 +1,7 @@
-docs_build/dev/reports/PR_26172_CHARLIE_013-tool-js-css-canonical-migration-audit.md
-docs_build/dev/reports/codex_review.diff
+assets/toolbox/text-to-speech/js/index.js
+docs_build/dev/reports/PR_26172_CHARLIE_014-low-risk-tool-migration-1.md
 docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/codex_review.diff
+scripts/validate-canonical-repository-structure.mjs
+tests/tools/Text2SpeechShell.test.mjs
+toolbox/text-to-speech/index.html
