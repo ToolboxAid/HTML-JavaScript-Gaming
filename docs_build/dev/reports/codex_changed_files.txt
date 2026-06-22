@@ -1,9 +1,9 @@
-toolbox/game-hub/game-hub.js
-tests/playwright/tools/GameHubMockRepository.spec.mjs
+toolbox/game-journey/game-journey.js
+tests/playwright/tools/GameJourneyTool.spec.mjs
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/PR_26174_ALFA_006-game-hub-empty-and-error-states.md
-docs_build/dev/reports/PR_26174_ALFA_006-game-hub-empty-and-error-states-branch-validation.txt
-docs_build/dev/reports/PR_26174_ALFA_006-game-hub-empty-and-error-states-requirement-checklist.txt
-docs_build/dev/reports/PR_26174_ALFA_006-game-hub-empty-and-error-states-validation-lane.txt
-docs_build/dev/reports/PR_26174_ALFA_006-game-hub-empty-and-error-states-manual-validation-notes.txt
+docs_build/dev/reports/PR_26174_ALFA_007-game-journey-count-ui-polish.md
+docs_build/dev/reports/PR_26174_ALFA_007-game-journey-count-ui-polish-branch-validation.txt
+docs_build/dev/reports/PR_26174_ALFA_007-game-journey-count-ui-polish-requirement-checklist.txt
+docs_build/dev/reports/PR_26174_ALFA_007-game-journey-count-ui-polish-validation-lane.txt
+docs_build/dev/reports/PR_26174_ALFA_007-game-journey-count-ui-polish-manual-validation-notes.txt
