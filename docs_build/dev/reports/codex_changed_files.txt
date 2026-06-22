@@ -1,7 +1,3 @@
-assets/toolbox/idea-board/js/index.js
-toolbox/idea-board/index.html
-toolbox/idea-board/index.js
-tests/playwright/tools/ToolboxRoutePages.spec.mjs
-docs_build/dev/reports/PR_26172_CHARLIE_006-low-risk-tool-asset-migration.md
-docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/PR_26172_CHARLIE_006A-game-journey-validation-failure-investigation.md
 docs_build/dev/reports/codex_review.diff
+docs_build/dev/reports/codex_changed_files.txt
