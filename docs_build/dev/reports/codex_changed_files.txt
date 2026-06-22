@@ -1,9 +1,8 @@
-toolbox/game-hub/game-hub.js
 tests/playwright/tools/GameHubMockRepository.spec.mjs
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/PR_26174_ALFA_011-game-hub-readiness-output-child-table.md
-docs_build/dev/reports/PR_26174_ALFA_011-game-hub-readiness-output-child-table-branch-validation.txt
-docs_build/dev/reports/PR_26174_ALFA_011-game-hub-readiness-output-child-table-requirement-checklist.txt
-docs_build/dev/reports/PR_26174_ALFA_011-game-hub-readiness-output-child-table-validation-lane.txt
-docs_build/dev/reports/PR_26174_ALFA_011-game-hub-readiness-output-child-table-manual-validation-notes.txt
+docs_build/dev/reports/PR_26174_ALFA_012-game-hub-parent-child-final-validation.md
+docs_build/dev/reports/PR_26174_ALFA_012-game-hub-parent-child-final-validation-branch-validation.txt
+docs_build/dev/reports/PR_26174_ALFA_012-game-hub-parent-child-final-validation-requirement-checklist.txt
+docs_build/dev/reports/PR_26174_ALFA_012-game-hub-parent-child-final-validation-validation-lane.txt
+docs_build/dev/reports/PR_26174_ALFA_012-game-hub-parent-child-final-validation-manual-validation-notes.txt

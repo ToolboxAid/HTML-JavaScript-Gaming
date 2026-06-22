@@ -1,149 +1,135 @@
 diff --git a/tests/playwright/tools/GameHubMockRepository.spec.mjs b/tests/playwright/tools/GameHubMockRepository.spec.mjs
-index 695b0a609..dac65c676 100644
+index dac65c676..4e617ed35 100644
 --- a/tests/playwright/tools/GameHubMockRepository.spec.mjs
 +++ b/tests/playwright/tools/GameHubMockRepository.spec.mjs
-@@ -288,6 +288,22 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
-       "StatusUnder Construction",
-       "OwnerUser 1",
-     ]);
-+    await expect(page.locator("[data-game-expanded-row='demo-game'] [data-game-child-table]")).toHaveCount(3);
-+    await expect(page.locator("[data-game-expanded-row='demo-game'] [data-game-child-table='source-idea'] caption")).toHaveText("Source Idea");
-+    const readinessOutputTable = page.locator("[data-game-expanded-row='demo-game'] [data-game-child-table='readiness-output']");
+@@ -335,6 +335,131 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
+   }
+ });
+
++test("Game Hub validates Open Games parent and child tables", async ({ page }) => {
++  const sourceLinkedGame = {
++    id: "lantern-reef",
++    ownerKey: MOCK_DB_KEYS.users.user1,
++    name: "Lantern Reef",
++    purpose: "Game",
++    status: "Ready for Testing",
++    ownerDisplayName: "User 1",
++    members: [
++      {
++        displayName: "User 1",
++        gameId: "lantern-reef",
++        permission: "Owner",
++        role: "Owner",
++        userKey: MOCK_DB_KEYS.users.user1,
++      },
++    ],
++    sourceIdea: {
++      idea: "Lantern Reef",
++      pitch: "Guide reef keepers through dusk storms.",
++      notes: [
++        "Keep traversal gentle.",
++        "Use warm lantern art.",
++      ],
++    },
++  };
++  const journeyBuckets = [
++    "Idea",
++    "Design",
++    "Graphics",
++    "Audio",
++    "Objects",
++    "Worlds",
++    "Interface",
++    "Controls",
++    "Rules",
++    "Progression",
++    "Play Test",
++    "Publish",
++    "Share",
++  ];
++
++  await page.route("**/api/toolbox/game-hub/repositories/*/methods/getActiveGame", async (route) => {
++    await route.fulfill({
++      body: JSON.stringify({
++        data: { result: sourceLinkedGame },
++        ok: true,
++        rule: "Browser -> Server API -> Data Source",
++      }),
++      contentType: "application/json; charset=utf-8",
++      status: 200,
++    });
++  });
++  await page.route("**/api/toolbox/game-hub/repositories/*/methods/getGameProgress", async (route) => {
++    await route.fulfill({
++      body: JSON.stringify({
++        data: {
++          result: {
++            currentFocus: "Review source idea context",
++            gameProgress: "Lantern Reef identity ready",
++            gameStatus: "Ready for Testing",
++            publishingProgress: "Launch review pending",
++            recommendedNextTool: "Game Journey",
++            progressChecklist: journeyBuckets.map((label) => ({ label, status: "Planned" })),
++          },
++        },
++        ok: true,
++        rule: "Browser -> Server API -> Data Source",
++      }),
++      contentType: "application/json; charset=utf-8",
++      status: 200,
++    });
++  });
++  await page.route("**/api/toolbox/game-hub/repositories/*/methods/listGames", async (route) => {
++    await route.fulfill({
++      body: JSON.stringify({
++        data: { result: [sourceLinkedGame] },
++        ok: true,
++        rule: "Browser -> Server API -> Data Source",
++      }),
++      contentType: "application/json; charset=utf-8",
++      status: 200,
++    });
++  });
++  const failures = await openRepoPage(page, "/toolbox/game-hub/index.html", { session: creatorSession() });
++
++  try {
++    await expect(page.locator("[data-game-parent-table='open-games'] caption")).toHaveText("Open Games");
++    const parentRows = page.locator("[data-game-parent-table='open-games'] tbody > [data-game-row]");
++    await expect(parentRows).toHaveCount(1);
++    const gameRow = page.locator("[data-game-row='lantern-reef']");
++    await expect(gameRow).toContainText("Lantern Reef");
++    await expect(gameRow.locator("[data-game-toggle='lantern-reef']")).toHaveAttribute("aria-expanded", "false");
++
++    await gameRow.locator("[data-game-toggle='lantern-reef']").click();
++    await expect(gameRow.locator("[data-game-toggle='lantern-reef']")).toHaveAttribute("aria-expanded", "true");
++    const expandedRow = page.locator("[data-game-expanded-row='lantern-reef']");
++    await expect(expandedRow).toHaveCount(1);
++    await expect(expandedRow.locator("[data-game-child-table]")).toHaveCount(3);
++
++    const sourceIdeaTable = expandedRow.locator("[data-game-child-table='source-idea']");
++    await expect(sourceIdeaTable.locator("caption")).toHaveText("Source Idea");
++    await expect(sourceIdeaTable.locator("tbody tr")).toHaveText([
++      "IdeaLantern Reef",
++      "PitchGuide reef keepers through dusk storms.",
++      "Note 1Keep traversal gentle.",
++      "Note 2Use warm lantern art.",
++    ]);
++    await expect(sourceIdeaTable.locator("button, input, textarea, select, [contenteditable='true'], [role='button']")).toHaveCount(0);
++    await expect(sourceIdeaTable).not.toContainText(/Edit|Delete|Current Focus|Recommended Next Tool/);
++
++    const readinessOutputTable = expandedRow.locator("[data-game-child-table='readiness-output']");
 +    await expect(readinessOutputTable.locator("caption")).toHaveText("Readiness Output");
 +    await expect(readinessOutputTable.locator("thead th")).toHaveText(["Output", "Status"]);
-+    await expect(readinessOutputTable.locator("tbody tr")).toHaveText([
-+      "Game StatusUnder Construction",
-+      "Game ProgressDemo Game identity ready",
-+      "Launch ProgressPublish blocked until configuration and required assets are ready",
-+      "Current FocusComplete Game Configuration",
-+      "Recommended Next ToolGame Configuration",
-+      "Game identityComplete",
-+      "Game configurationUnder Construction",
-+      "Playable buildPlanned",
-+      "Publishing reviewPlanned",
-+    ]);
-     await demoGameRow.locator("[data-game-toggle='demo-game']").click();
-     await expect(page.locator("[data-game-expanded-row='demo-game']")).toHaveCount(0);
-
-diff --git a/toolbox/game-hub/game-hub.js b/toolbox/game-hub/game-hub.js
-index 67f56ca41..4b21814d7 100644
---- a/toolbox/game-hub/game-hub.js
-+++ b/toolbox/game-hub/game-hub.js
-@@ -319,7 +319,53 @@ function renderSourceIdeaChildTable(parent, game) {
-   parent.append(wrapper);
- }
-
--function renderExpandedGameRow(tbody, game) {
-+function renderReadinessOutputChildTable(parent, game, progress, active) {
-+  const readiness = active && isRecord(progress)
-+    ? progress
-+    : {
-+      currentFocus: "Open this game to review readiness",
-+      gameProgress: `${game.name} identity ready`,
-+      gameStatus: game.status || "No status",
-+      publishingProgress: "Open this game to review launch progress",
-+      recommendedNextTool: "Game Hub",
-+      progressChecklist: [],
-+    };
-+  const wrapper = document.createElement("div");
-+  wrapper.className = "table-wrapper";
-+  const table = document.createElement("table");
-+  table.className = "data-table data-table--fixed";
-+  table.dataset.gameChildTable = "readiness-output";
-+  table.setAttribute("aria-label", `${game.name} readiness output`);
-+  table.innerHTML = "<caption>Readiness Output</caption><thead><tr><th scope=\"col\">Output</th><th scope=\"col\">Status</th></tr></thead>";
-+  const body = document.createElement("tbody");
-+  [
-+    ["Game Status", readiness.gameStatus],
-+    ["Game Progress", readiness.gameProgress],
-+    ["Launch Progress", readiness.publishingProgress],
-+    ["Current Focus", readiness.currentFocus],
-+    ["Recommended Next Tool", readiness.recommendedNextTool],
-+  ].forEach(([label, value]) => {
-+    const row = document.createElement("tr");
-+    row.append(createCell(label, "th"), createCell(value || "Not available"));
-+    row.firstElementChild.scope = "row";
-+    body.append(row);
-+  });
++    await expect(readinessOutputTable).not.toContainText(/Guide reef keepers|Keep traversal gentle|Use warm lantern art/);
++    await expect(readinessOutputTable.locator("[data-readiness-checklist-row] th")).toHaveText(journeyBuckets);
 +
-+  const checklist = Array.isArray(readiness.progressChecklist) ? readiness.progressChecklist : [];
-+  checklist.forEach((item) => {
-+    const row = document.createElement("tr");
-+    row.dataset.readinessChecklistRow = item.label || "Checklist";
-+    row.append(createCell(item.label || "Checklist", "th"), createCell(item.status || "Not available"));
-+    row.firstElementChild.scope = "row";
-+    body.append(row);
-+  });
++    await expect(page.locator("[data-game-list] [data-game-list-status='empty']")).toHaveCount(0);
++    await expect(page.locator("[data-game-list] [data-game-list-status='unavailable']")).toHaveCount(0);
++    await expectNoPageFailures(failures);
++  } finally {
++    await failures.server.close();
++  }
++});
 +
-+  table.append(body);
-+  wrapper.append(table);
-+  parent.append(wrapper);
-+}
-+
-+function renderExpandedGameRow(tbody, game, progress, active) {
-   const row = document.createElement("tr");
-   row.dataset.gameExpandedRow = game.id;
-   row.id = `game-child-${game.id}`;
-@@ -329,16 +375,18 @@ function renderExpandedGameRow(tbody, game) {
-   stack.className = "content-stack content-stack--compact";
-   renderGameSummaryChildTable(stack, game);
-   renderSourceIdeaChildTable(stack, game);
-+  renderReadinessOutputChildTable(stack, game, progress, active);
-   content.append(stack);
-   row.append(content);
-   tbody.append(row);
- }
-
--function renderGameParentRow(tbody, game, activeGame) {
-+function renderGameParentRow(tbody, game, activeGame, progress) {
-   const expanded = state.expandedGameId === game.id;
-+  const active = activeGame?.id === game.id;
-   const row = document.createElement("tr");
-   row.dataset.gameRow = game.id;
--  if (activeGame?.id === game.id) {
-+  if (active) {
-     row.dataset.gameActive = "true";
-   }
-
-@@ -353,12 +401,12 @@ function renderGameParentRow(tbody, game, activeGame) {
-   );
-
-   const actions = document.createElement("td");
--  actions.append(createGameButton(game, activeGame?.id === game.id));
-+  actions.append(createGameButton(game, active));
-   row.append(actions);
-   tbody.append(row);
-
-   if (expanded) {
--    renderExpandedGameRow(tbody, game);
-+    renderExpandedGameRow(tbody, game, progress, active);
-   }
- }
-
-@@ -389,7 +437,7 @@ function renderProjectInformation(activeGame, currentMember, progress) {
-     : "Project Information loaded. Sign in to save changes.");
- }
-
--function renderGameList() {
-+function renderGameList(progress) {
-   if (!elements.gameList) {
-     return;
-   }
-@@ -421,7 +469,7 @@ function renderGameList() {
-   table.setAttribute("aria-label", "Open Games");
-   table.innerHTML = "<caption>Open Games</caption><thead><tr><th scope=\"col\">Game</th><th scope=\"col\">Purpose</th><th scope=\"col\">Status</th><th scope=\"col\">Owner</th><th scope=\"col\">Actions</th></tr></thead>";
-   const body = document.createElement("tbody");
--  listResult.forEach((game) => renderGameParentRow(body, game, activeGame));
-+  listResult.forEach((game) => renderGameParentRow(body, game, activeGame, progress));
-   table.append(body);
-   wrapper.append(table);
-   elements.gameList.append(wrapper);
-@@ -558,7 +606,7 @@ function renderWorkspace() {
-     }
-   }
-
--  renderGameList();
-+  renderGameList(progress);
-   renderMembersTable(activeGame);
-   renderTableCounts();
-   renderChecklist(progress);
+ test("Game Hub preserves guest browsing and blocks guest saves", async ({ page }) => {
+   const failures = await openRepoPage(page, "/toolbox/game-hub/index.html");
