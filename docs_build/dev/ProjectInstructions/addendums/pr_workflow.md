@@ -40,3 +40,41 @@ Define the standard pull request workflow for Game Foundry Studio.
 For governance, documentation, and administrative work, use Batch Governance Mode by default.
 
 Use stacked sequential PRs only when dependency order requires it.
+
+## OWNER Shortcut: PRs
+
+Keyword:
+PRs
+
+Meaning:
+Generate the complete stacked sequential Codex PR chain required to finish the current workstream.
+
+Applies to:
+- OWNER
+- Team Alfa
+- Team Bravo
+- Team Charlie
+- Any future NATO-named team
+
+Behavior:
+- Determine completed work.
+- Determine open work.
+- Determine remaining work.
+- Batch related work where practical.
+- Generate the complete PR chain.
+- Include start gates.
+- Include validation.
+- Include commit messages.
+- Include PR names.
+- Include merge dependencies.
+
+Default assumptions:
+- Batch Governance Mode
+- Throughput-first execution
+- Minimal conversational checkpoints
+
+Stop only for:
+- Start gate failure
+- Merge conflict
+- Validation failure
+- OWNER decision

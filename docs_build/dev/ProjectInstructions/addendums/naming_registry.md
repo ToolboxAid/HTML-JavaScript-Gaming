@@ -25,10 +25,11 @@ Capture approved Game Foundry Studio names to reduce rename churn.
 
 ## Approved Environment Names
 
-- DEV
-- IST
-- UAT
-- PROD
+- Local - VS Code environment
+- DEV - local Docker
+- IST - local Docker
+- UAT - VPS
+- PROD - VPS
 
 ## Approved Package Terms
 
