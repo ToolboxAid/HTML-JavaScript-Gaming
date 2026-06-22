@@ -1,73 +1,122 @@
-diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_004-src-dev-runtime-low-risk-test-move.md b/docs_build/dev/reports/PR_26172_CHARLIE_004-src-dev-runtime-low-risk-test-move.md
+diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_005-scattered-tool-js-css-audit.md b/docs_build/dev/reports/PR_26172_CHARLIE_005-scattered-tool-js-css-audit.md
 new file mode 100644
-index 000000000..ec6a12d10
+index 000000000..e4f37ddca
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_CHARLIE_004-src-dev-runtime-low-risk-test-move.md
-@@ -0,0 +1,58 @@
-+# PR_26172_CHARLIE_004 Src Dev-Runtime Low-Risk Test Move
++++ b/docs_build/dev/reports/PR_26172_CHARLIE_005-scattered-tool-js-css-audit.md
+@@ -0,0 +1,107 @@
++# PR_26172_CHARLIE_005 Scattered Tool JS/CSS Audit
 +
 +## Scope
 +
-+Move only low-risk `src/dev-runtime` test files into canonical `tests/` paths.
++Audit `toolbox/` and `assets/` for non-canonical tool JavaScript and CSS locations against the canonical repository structure.
 +
-+## Stop Gate Result
++Canonical tool asset targets:
 +
-+Status: STOP GATE - no low-risk moves exist.
++- `assets/toolbox/{tool}/js/index.js`
++- `assets/toolbox/{tool}/css/index.css`
 +
-+Reason:
++This PR is audit-only. No implementation files were moved.
 +
-+- PR_26172_CHARLIE_003 found no test files under `src/dev-runtime/`.
-+- PR_004 re-ran the low-risk eligibility check and found no `*.test.*`, `*.spec.*`, `*Test*`, or `*Spec*` files under `src/dev-runtime/`.
-+- The two files under `src/dev-runtime/testing/` are DEV-only utility modules imported by scripts, not test source.
++## Summary
 +
-+Because there are no source-path test files, moving files would either move runtime/dev utility code or expand scope into broader `tests/dev-runtime/` standardization. Both are outside this PR.
++| Finding | Count | Status |
++| --- | ---: | --- |
++| Toolbox HTML pages reviewed | 50 | PASS |
++| Tool JS files under `toolbox/` | 27 | FAIL |
++| Tool CSS files under `toolbox/` | 0 | PASS |
++| Canonical tool JS files under `assets/toolbox/` | 0 | FAIL |
++| Canonical tool CSS files under `assets/toolbox/` | 0 | N/A |
++| Non-canonical tool JS/CSS under `assets/toolbox/` | 0 | PASS |
++| Inline `<style>`, inline `<script>`, inline event handlers, or inline `style=` in toolbox HTML | 0 | PASS |
 +
-+## Files Moved
++## Non-Canonical Tool JS
 +
-+None.
++These active JavaScript files are not under the canonical `assets/toolbox/{tool}/js/index.js` structure:
 +
-+## Retained Files
-+
-+| Path | Reason Retained |
++| Tool/Area | Files |
 +| --- | --- |
-+| `src/dev-runtime/testing/supabase-dev-auth-test-user-cleanup.mjs` | DEV-only cleanup utility; not a test file. |
-+| `src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs` | DEV-only seed sync utility; not a test file. |
++| Shared toolbox root | `toolbox/tool-registry-api-client.js`; `toolbox/toolRegistry.js`; `toolbox/tools-page-accordions.js` |
++| Assets | `toolbox/assets/assets-api-client.js`; `toolbox/assets/assets-upload-worker.js`; `toolbox/assets/assets.js` |
++| Colors | `toolbox/colors/colors.js`; `toolbox/colors/palette-api-client.js` |
++| Controls | `toolbox/controls/controls-api-client.js`; `toolbox/controls/controls.js` |
++| Game Configuration | `toolbox/game-configuration/game-configuration-api-client.js`; `toolbox/game-configuration/game-configuration.js` |
++| Game Design | `toolbox/game-design/game-design-api-client.js`; `toolbox/game-design/game-design.js` |
++| Game Hub | `toolbox/game-hub/game-hub-api-client.js`; `toolbox/game-hub/game-hub.js` |
++| Game Journey | `toolbox/game-journey/game-journey-api-client.js`; `toolbox/game-journey/game-journey.js` |
++| Idea Board | `toolbox/idea-board/index.js` |
++| Messages | `toolbox/messages/message-tts-service-registry.js`; `toolbox/messages/messages-api-client.js`; `toolbox/messages/messages.js` |
++| Objects | `toolbox/objects/objects-api-client.js`; `toolbox/objects/objects.js` |
++| Tags | `toolbox/tags/tags-api-client.js`; `toolbox/tags/tags.js` |
++| Text To Speech | `toolbox/text-to-speech/text2speech.js` |
++
++## Non-Canonical Tool CSS
++
++No tool-specific CSS files were found under `toolbox/`.
++
++No CSS files were found under `assets/toolbox/`.
++
++## Toolbox HTML Reference Findings
++
++These pages reference local non-canonical tool scripts:
++
++- `toolbox/assets/index.html` -> `toolbox/assets/assets.js`
++- `toolbox/colors/index.html` -> `toolbox/colors/colors.js`
++- `toolbox/controls/index.html` -> `toolbox/controls/controls.js`
++- `toolbox/game-configuration/index.html` -> `toolbox/game-configuration/game-configuration.js`
++- `toolbox/game-design/index.html` -> `toolbox/game-design/game-design.js`
++- `toolbox/game-hub/index.html` -> `toolbox/game-hub/game-hub.js`
++- `toolbox/game-journey/index.html` -> `toolbox/game-journey/game-journey.js`
++- `toolbox/idea-board/index.html` -> `toolbox/idea-board/index.js`
++- `toolbox/index.html` -> `tools-page-accordions.js`
++- `toolbox/messages/index.html` -> `toolbox/messages/messages.js`
++- `toolbox/objects/index.html` -> `toolbox/objects/objects.js`
++- `toolbox/tags/index.html` -> `toolbox/tags/tags.js`
++- `toolbox/text-to-speech/index.html` -> `toolbox/text-to-speech/text2speech.js`
++
++## Inline Script/Style Findings
++
++No toolbox HTML matches were found for:
++
++- `<style`
++- `<script` without `src=`
++- inline event handler attributes such as `onclick=`
++- inline `style=`
++
++## Prioritized Remediation List
++
++1. Start with a single-file, single-tool migration: `toolbox/idea-board/index.js` -> `assets/toolbox/idea-board/js/index.js`.
++2. Next migrate single-entry tools that have one main JS plus one API client: Tags, Controls, Colors, Objects, Game Configuration, Game Design, Game Hub, and Game Journey.
++3. Migrate complex tools with workers or multiple collaborators after explicit dependency review: Assets and Messages.
++4. Migrate `toolbox/text-to-speech/text2speech.js` after deciding whether the canonical file should be renamed to `index.js` only or retain a bridge.
++5. Move shared toolbox root modules into `assets/js/shared/` or an approved shared toolbox module path before changing page-level imports.
++
++## Recommended Next PRs
++
++- `PR_26172_CHARLIE_006-low-risk-tool-asset-migration`
++- `PR_26172_CHARLIE_012-toolbox-single-entry-asset-migrations`
++- `PR_26172_CHARLIE_013-toolbox-complex-asset-migration-plan`
++- `PR_26172_CHARLIE_014-shared-toolbox-root-js-migration-plan`
 +
 +## Validation
 +
 +| Check | Status | Evidence |
 +| --- | --- | --- |
-+| PR_003 audit used | PASS | PR_003 report found no movable source-path tests. |
-+| Low-risk move scan rerun | PASS | `rg --files src/dev-runtime -g "*.test.*" -g "*.spec.*" -g "*Test*" -g "*Spec*"` returned no matches. |
-+| Runtime source unchanged | PASS | No runtime source files changed. |
-+| Old paths no longer referenced | N/A | No files were moved, so no path reference update was required. |
-+| New paths follow canonical tests roots | N/A | No files were moved. |
-+| Targeted tests for moved files | SKIP | No files were moved. |
-+| ZIP exists | PASS | `tmp/PR_26172_CHARLIE_004-src-dev-runtime-low-risk-test-move_delta.zip` exists. |
-+
-+## Requirement Checklist
-+
-+| Requirement | Status | Evidence |
-+| --- | --- | --- |
-+| Use PR_003 audit | PASS | PR_003 was the input for this stop gate. |
-+| Move only obvious low-risk files | PASS | No candidates existed, so no move was attempted. |
-+| Update package/test references if required | N/A | No move occurred. |
-+| Do not change test logic unless imports/paths require it | PASS | No test logic changed. |
-+| Do not modify runtime source | PASS | Runtime source unchanged. |
-+| Do not move ambiguous files | PASS | No ambiguous files moved. |
-+| Continue to next audit PR if safe | PASS | Next scope is audit-only and independent. |
++| Audit includes prioritized remediation list | PASS | See "Prioritized Remediation List". |
++| Runtime source unchanged | PASS | This PR adds reports only. |
++| ZIP exists | PASS | `tmp/PR_26172_CHARLIE_005-scattered-tool-js-css-audit_delta.zip` exists. |
++| Implementation files moved | PASS | None moved. |
 +
 +## Manual Validation Notes
 +
-+- This is a successful stop-gate deliverable, not a failed PR.
-+- The broader migration target is existing `tests/dev-runtime/` coverage, which should be planned separately under an owner-approved canonical destination.
-+- No executable implementation files were changed.
++- `assets/toolbox/` does not currently exist, so PR_006 will create the first canonical tool asset path if a low-risk candidate is selected.
++- No tool CSS migration is needed in the first low-risk pass because no tool-specific CSS files were found under `toolbox/`.
++- The audit treats page references to `toolbox/.../*.js` as non-canonical sidecar references, not inline-script violations.
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index a96c69972..a0a4c800f 100644
+index a0a4c800f..2ca427052 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
 @@ -1,3 +1,3 @@
--docs_build/dev/reports/PR_26172_CHARLIE_003-src-dev-runtime-test-migration-audit.md
-+docs_build/dev/reports/PR_26172_CHARLIE_004-src-dev-runtime-low-risk-test-move.md
+-docs_build/dev/reports/PR_26172_CHARLIE_004-src-dev-runtime-low-risk-test-move.md
++docs_build/dev/reports/PR_26172_CHARLIE_005-scattered-tool-js-css-audit.md
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
