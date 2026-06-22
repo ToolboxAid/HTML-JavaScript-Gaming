@@ -45,3 +45,4 @@ Addendum index:
 - Canonical Repository Structure: project-instructions/addendums/canonical-repository-structure.md
 - Test Structure Standardization: project-instructions/addendums/test-structure-standardization.md
 - Legacy Migration Policy: project-instructions/addendums/legacy-migration-policy.md
+- Assistant Execution Modes: project-instructions/addendums/assistant-execution-modes.md
