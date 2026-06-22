@@ -1,5 +1,7 @@
+toolbox/game-hub/index.html
 toolbox/game-hub/game-hub.js
 tests/playwright/tools/GameHubMockRepository.spec.mjs
+tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/PR_26174_ALFA_013-game-hub-game-row-child-rows.md

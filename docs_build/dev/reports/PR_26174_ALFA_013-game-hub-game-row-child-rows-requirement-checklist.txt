@@ -1,11 +1,13 @@
 Requirement Checklist: PASS
 
-PASS - Open Games is no longer used as the wrapper/accordion table identity.
-PASS - Parent rows are games.
-PASS - Each game row expands/collapses.
-PASS - Expanded game rows show Source Idea child table first.
-PASS - Expanded game rows show Readiness Output child table second.
-PASS - Source Idea and Readiness Output render as child rows under the game parent row.
+PASS - table_first_ui.md was used as the parent/child table reference.
+PASS - Game row is the parent row.
+PASS - Source Idea is a child row/table under the game row.
+PASS - Readiness Output is a child row/table under the game row.
+PASS - Source Idea and Readiness Output are no longer separate card/panel sections.
+PASS - Open Games wrapper/table identity is not used.
+PASS - Game rows expand/collapse.
+PASS - Expanded game rows show Source Idea first and Readiness Output second.
 PASS - No new readiness math was added.
 PASS - Existing API/service contract was preserved.
 PASS - Safe empty/unavailable states were preserved by targeted validation.

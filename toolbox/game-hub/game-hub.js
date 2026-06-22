@@ -27,10 +27,6 @@ const elements = {
   projectRecordStatus: document.querySelector("[data-project-record-status]"),
   projectRecordsTable: document.querySelector("[data-project-records-table]"),
   purposeInput: document.querySelector("[data-game-purpose-input]"),
-  sourceIdeaDisplay: document.querySelector("[data-source-idea-display]"),
-  sourceIdeaName: document.querySelector("[data-source-idea-name]"),
-  sourceIdeaNotes: document.querySelector("[data-source-idea-notes]"),
-  sourceIdeaPitch: document.querySelector("[data-source-idea-pitch]"),
   gameStatus: document.querySelector("[data-game-status]"),
   gameStatusInput: document.querySelector("[data-game-status-input]"),
   publishingProgress: document.querySelector("[data-publishing-progress]"),
@@ -523,24 +519,6 @@ function renderTableCounts() {
   });
 }
 
-function renderSourceIdea(activeGame) {
-  const sourceIdea = gameSourceIdeaDetails(activeGame);
-
-  setText(elements.sourceIdeaName, sourceIdea.name || "No source idea yet");
-  setText(elements.sourceIdeaDisplay, sourceIdea.name || "No source idea yet");
-  setText(elements.sourceIdeaPitch, sourceIdea.pitch || "Create a project from Idea Board to see source details.");
-
-  if (elements.sourceIdeaNotes) {
-    elements.sourceIdeaNotes.replaceChildren();
-    const visibleNotes = sourceIdea.notes.length ? sourceIdea.notes : ["No source notes."];
-    visibleNotes.forEach((note) => {
-      const item = document.createElement("li");
-      item.textContent = note;
-      elements.sourceIdeaNotes.append(item);
-    });
-  }
-}
-
 function renderChecklist(progress) {
   if (!elements.progressChecklist) {
     return;
@@ -595,7 +573,6 @@ function renderWorkspace() {
   renderTableCounts();
   renderChecklist(progress);
   renderProjectInformation(activeGame, currentMember, progress);
-  renderSourceIdea(activeGame);
   refreshSaveControls(activeGame);
 }
 

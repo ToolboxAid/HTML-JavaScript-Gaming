@@ -1,8 +1,19 @@
 diff --git a/tests/playwright/tools/GameHubMockRepository.spec.mjs b/tests/playwright/tools/GameHubMockRepository.spec.mjs
-index 4e617ed35..b89ff51fe 100644
+index 4e617ed35..7008e8bda 100644
 --- a/tests/playwright/tools/GameHubMockRepository.spec.mjs
 +++ b/tests/playwright/tools/GameHubMockRepository.spec.mjs
-@@ -264,9 +264,10 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
+@@ -256,7 +256,9 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
+     await expect(page.locator("[data-project-record-status]")).toHaveText("Project Information loaded.");
+     await expect(page.locator("[data-game-project-information]")).toContainText("Project Information");
+     await expect(page.locator("[data-project-records-table]")).toContainText("Demo Game");
+-    await expect(page.locator("[data-source-idea-section]")).toContainText("No source idea yet");
++    await expect(page.locator("[data-source-idea-section]")).toHaveCount(0);
++    await expect(page.locator("[data-game-output-panels]")).toHaveCount(0);
++    await expect(page.locator("[data-game-hub-foundation]")).toHaveCount(0);
+     await expect(page.locator("[data-active-game-name]")).toHaveText("Demo Game");
+     await expect(page.locator("[data-active-game-purpose]")).toHaveText("Game");
+     await expect(page.locator("[data-current-user-role]")).toHaveText("Owner");
+@@ -264,9 +266,10 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
      await expect(page.locator("[data-game-list]")).toContainText("Gravity Demo");
      await expect(page.locator("[data-game-list]")).toContainText("Collision Demo");
      await expect(page.locator("[data-game-list]")).toContainText("Camera Follow Demo");
@@ -16,7 +27,7 @@ index 4e617ed35..b89ff51fe 100644
        "Game",
        "Purpose",
        "Status",
-@@ -280,17 +281,14 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
+@@ -280,17 +283,14 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
      await expect(demoGameRow.getByRole("button", { name: "Open Demo Game (Active)" })).toHaveAttribute("aria-current", "true");
      await demoGameRow.locator("[data-game-toggle='demo-game']").click();
      await expect(demoGameRow.locator("[data-game-toggle='demo-game']")).toHaveAttribute("aria-expanded", "true");
@@ -42,7 +53,7 @@ index 4e617ed35..b89ff51fe 100644
      await expect(readinessOutputTable.locator("caption")).toHaveText("Readiness Output");
      await expect(readinessOutputTable.locator("thead th")).toHaveText(["Output", "Status"]);
      await expect(readinessOutputTable.locator("tbody tr")).toHaveText([
-@@ -335,7 +333,7 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
+@@ -335,7 +335,7 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
    }
  });
 
@@ -51,7 +62,7 @@ index 4e617ed35..b89ff51fe 100644
    const sourceLinkedGame = {
      id: "lantern-reef",
      ownerKey: MOCK_DB_KEYS.users.user1,
-@@ -422,8 +420,10 @@ test("Game Hub validates Open Games parent and child tables", async ({ page }) =
+@@ -422,8 +422,10 @@ test("Game Hub validates Open Games parent and child tables", async ({ page }) =
    const failures = await openRepoPage(page, "/toolbox/game-hub/index.html", { session: creatorSession() });
 
    try {
@@ -64,7 +75,7 @@ index 4e617ed35..b89ff51fe 100644
      await expect(parentRows).toHaveCount(1);
      const gameRow = page.locator("[data-game-row='lantern-reef']");
      await expect(gameRow).toContainText("Lantern Reef");
-@@ -431,11 +431,14 @@ test("Game Hub validates Open Games parent and child tables", async ({ page }) =
+@@ -431,11 +433,14 @@ test("Game Hub validates Open Games parent and child tables", async ({ page }) =
 
      await gameRow.locator("[data-game-toggle='lantern-reef']").click();
      await expect(gameRow.locator("[data-game-toggle='lantern-reef']")).toHaveAttribute("aria-expanded", "true");
@@ -84,7 +95,7 @@ index 4e617ed35..b89ff51fe 100644
      await expect(sourceIdeaTable.locator("caption")).toHaveText("Source Idea");
      await expect(sourceIdeaTable.locator("tbody tr")).toHaveText([
        "IdeaLantern Reef",
-@@ -446,7 +449,7 @@ test("Game Hub validates Open Games parent and child tables", async ({ page }) =
+@@ -446,7 +451,7 @@ test("Game Hub validates Open Games parent and child tables", async ({ page }) =
      await expect(sourceIdeaTable.locator("button, input, textarea, select, [contenteditable='true'], [role='button']")).toHaveCount(0);
      await expect(sourceIdeaTable).not.toContainText(/Edit|Delete|Current Focus|Recommended Next Tool/);
 
@@ -93,11 +104,149 @@ index 4e617ed35..b89ff51fe 100644
      await expect(readinessOutputTable.locator("caption")).toHaveText("Readiness Output");
      await expect(readinessOutputTable.locator("thead th")).toHaveText(["Output", "Status"]);
      await expect(readinessOutputTable).not.toContainText(/Guide reef keepers|Keep traversal gentle|Use warm lantern art/);
+@@ -681,46 +686,43 @@ test("Game Hub displays and edits game purpose and member role", async ({ page }
+   }
+ });
+
+-test("Game Hub progress panels update from mock game state", async ({ page }) => {
++test("Game Hub readiness child rows update from mock game state", async ({ page }) => {
+   const failures = await openRepoPage(page, "/toolbox/game-hub/index.html", { session: creatorSession() });
+
+   try {
+-    await expect(page.locator("[data-game-status]")).toHaveText("Under Construction");
+-    await expect(page.locator("[data-game-progress]")).toHaveText("Demo Game identity ready");
+-    await expect(page.locator("[data-publishing-progress]")).toHaveText("Publish blocked until configuration and required assets are ready");
+-    await expect(page.locator("[data-current-focus]")).toHaveText("Complete Game Configuration");
+     await expect(page.locator("[data-recommended-next-tool]").first()).toHaveText("Game Configuration");
+-    await expect(page.locator("[data-game-progress-checklist]")).toContainText("Game identity: Complete");
+-    await expect(page.locator("[data-game-output-panels] summary")).toHaveText([
+-      "Readiness Output"
++    await expect(page.locator("[data-source-idea-section]")).toHaveCount(0);
++    await expect(page.locator("[data-game-output-panels]")).toHaveCount(0);
++    await expect(page.locator("[data-game-hub-foundation]")).toHaveCount(0);
++
++    const demoGameRow = page.locator("[data-game-row='demo-game']");
++    await demoGameRow.locator("[data-game-toggle='demo-game']").click();
++    let readinessOutputTable = page.locator("[data-game-expanded-row='demo-game'][data-game-child-row='readiness-output'] [data-game-child-table='readiness-output']");
++    await expect(readinessOutputTable.locator("tbody tr")).toHaveText([
++      "Game StatusUnder Construction",
++      "Game ProgressDemo Game identity ready",
++      "Launch ProgressPublish blocked until configuration and required assets are ready",
++      "Current FocusComplete Game Configuration",
++      "Recommended Next ToolGame Configuration",
++      "Game identityComplete",
++      "Game configurationUnder Construction",
++      "Playable buildPlanned",
++      "Publishing reviewPlanned",
+     ]);
+-    await expect(page.locator("aside.tool-column").last().getByText("Readiness Output")).toHaveCount(0);
+-    const panelOrderIsCorrect = await page.locator(".tool-center-panel").evaluate((panel) => {
+-      const projectInformation = panel.querySelector("[data-game-project-information]");
+-      const sourceIdea = panel.querySelector("[data-source-idea-section]");
+-      const staticOverlay = panel.querySelector("[data-game-hub-foundation]");
+-      const outputPanels = panel.querySelector("[data-game-output-panels]");
+-      return Boolean(
+-        projectInformation &&
+-        sourceIdea &&
+-        staticOverlay &&
+-        outputPanels &&
+-        (projectInformation.compareDocumentPosition(sourceIdea) & Node.DOCUMENT_POSITION_FOLLOWING) &&
+-        (sourceIdea.compareDocumentPosition(staticOverlay) & Node.DOCUMENT_POSITION_FOLLOWING) &&
+-        (staticOverlay.compareDocumentPosition(outputPanels) & Node.DOCUMENT_POSITION_FOLLOWING)
+-      );
+-    });
+-    expect(panelOrderIsCorrect).toBe(true);
+
+     await page.getByLabel("Game Name").fill("Progress Review Game");
+     await page.getByRole("button", { name: "Create Game" }).click();
+-    await expect(page.locator("[data-game-status]")).toHaveText("Under Construction");
+-    await expect(page.locator("[data-game-progress]")).toHaveText("Progress Review Game identity ready");
+     await expect(page.locator("[data-game-project-information]")).toContainText("Progress Review Game");
++    const progressReviewRow = page.locator("[data-game-row='progress-review-game-1']");
++    await progressReviewRow.locator("[data-game-toggle='progress-review-game-1']").click();
++    readinessOutputTable = page.locator("[data-game-expanded-row='progress-review-game-1'][data-game-child-row='readiness-output'] [data-game-child-table='readiness-output']");
++    await expect(readinessOutputTable).toContainText("Progress Review Game identity ready");
+
+     await page.getByRole("button", { name: "Delete Open Game" }).click();
+     await expect(page.locator("[data-active-game-name]")).toHaveText("Demo Game");
+-    await expect(page.locator("[data-game-progress]")).toHaveText("Demo Game identity ready");
++    await demoGameRow.locator("[data-game-toggle='demo-game']").click();
++    readinessOutputTable = page.locator("[data-game-expanded-row='demo-game'][data-game-child-row='readiness-output'] [data-game-child-table='readiness-output']");
++    await expect(readinessOutputTable).toContainText("Demo Game identity ready");
+
+     await expectNoPageFailures(failures);
+   } finally {
+diff --git a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+index f861f1f44..2c7b70b5d 100644
+--- a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
++++ b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+@@ -387,15 +387,18 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
+     await expect(page.getByRole("heading", { level: 1, name: "Game Hub" })).toBeVisible();
+     await expect(page.locator("[data-active-game-name]")).toHaveText("Lantern Reef");
+     await expect(page.locator("[data-game-list]")).toContainText("Lantern Reef");
+-    await expect(page.locator("[data-source-idea-display]")).toHaveText("Lantern Reef");
+-    await expect(page.locator("[data-source-idea-pitch]")).toHaveText("Guide light through a reef that rearranges at dusk.");
+-    await expect(page.locator("[data-source-idea-notes]")).toContainText("Use dusk tide changes as the first Game Hub planning note.");
+-    await expect(page.locator("[data-source-idea-section] :is(input, textarea, select, button)")).toHaveCount(0);
++    await expect(page.locator("[data-source-idea-section]")).toHaveCount(0);
++    await expect(page.locator("[data-game-output-panels]")).toHaveCount(0);
++    await expect(page.locator("[data-game-hub-foundation]")).toHaveCount(0);
+     await expect(page.getByRole("button", { name: "Delete Open Game" })).toHaveCount(0);
+     const activeGameRow = page.locator("[data-game-row][data-game-active='true']");
+     await expect(activeGameRow).toContainText("Lantern Reef");
+     await activeGameRow.locator("[data-game-toggle]").click();
+-    const sourceIdeaChildTable = page.locator("[data-game-expanded-row] [data-game-child-table='source-idea']");
++    let expandedRows = page.locator("[data-game-expanded-row]");
++    await expect(expandedRows).toHaveCount(2);
++    await expect(expandedRows.nth(0)).toHaveAttribute("data-game-child-row", "source-idea");
++    await expect(expandedRows.nth(1)).toHaveAttribute("data-game-child-row", "readiness-output");
++    let sourceIdeaChildTable = expandedRows.nth(0).locator("[data-game-child-table='source-idea']");
+     await expect(sourceIdeaChildTable.locator("caption")).toHaveText("Source Idea");
+     await expect(sourceIdeaChildTable.locator("thead th")).toHaveText(["Context", "Details"]);
+     await expect(sourceIdeaChildTable.locator("tbody tr")).toHaveText([
+@@ -404,13 +407,22 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
+       "Note 1Use dusk tide changes as the first Game Hub planning note.",
+     ]);
+     await expect(sourceIdeaChildTable.locator(":is(input, textarea, select, button)")).toHaveCount(0);
++    await expect(expandedRows.nth(1).locator("[data-game-child-table='readiness-output'] caption")).toHaveText("Readiness Output");
+     await page.reload({ waitUntil: "networkidle" });
+     await expect(page.locator("[data-active-game-name]")).toHaveText("Lantern Reef");
+     await expect(page.locator("[data-game-list]")).toContainText("Lantern Reef");
+-    await expect(page.locator("[data-source-idea-display]")).toHaveText("Lantern Reef");
+-    await expect(page.locator("[data-source-idea-pitch]")).toHaveText("Guide light through a reef that rearranges at dusk.");
+-    await expect(page.locator("[data-source-idea-notes]")).toContainText("Use dusk tide changes as the first Game Hub planning note.");
+-    await expect(page.locator("[data-source-idea-section] :is(input, textarea, select, button)")).toHaveCount(0);
++    await expect(page.locator("[data-source-idea-section]")).toHaveCount(0);
++    await expect(page.locator("[data-game-output-panels]")).toHaveCount(0);
++    await expect(page.locator("[data-game-hub-foundation]")).toHaveCount(0);
++    await activeGameRow.locator("[data-game-toggle]").click();
++    expandedRows = page.locator("[data-game-expanded-row]");
++    await expect(expandedRows).toHaveCount(2);
++    sourceIdeaChildTable = expandedRows.nth(0).locator("[data-game-child-table='source-idea']");
++    await expect(sourceIdeaChildTable.locator("tbody tr")).toHaveText([
++      "IdeaLantern Reef",
++      "PitchGuide light through a reef that rearranges at dusk.",
++      "Note 1Use dusk tide changes as the first Game Hub planning note.",
++    ]);
+     await expect(page.getByRole("button", { name: "Delete Open Game" })).toHaveCount(0);
+     await expect(page.locator("main")).not.toContainText(/\bproject records\b|\bAPI\b|\bDB\b|\bmock\b|\bseed\b|\bdebug\b|\binternal\b/i);
+     await page.getByRole("link", { name: "Open Game Journey" }).click();
 diff --git a/toolbox/game-hub/game-hub.js b/toolbox/game-hub/game-hub.js
-index 4b21814d7..56e5de4aa 100644
+index 4b21814d7..029936527 100644
 --- a/toolbox/game-hub/game-hub.js
 +++ b/toolbox/game-hub/game-hub.js
-@@ -241,36 +241,11 @@ function createGameToggleButton(game, expanded) {
+@@ -27,10 +27,6 @@ const elements = {
+   projectRecordStatus: document.querySelector("[data-project-record-status]"),
+   projectRecordsTable: document.querySelector("[data-project-records-table]"),
+   purposeInput: document.querySelector("[data-game-purpose-input]"),
+-  sourceIdeaDisplay: document.querySelector("[data-source-idea-display]"),
+-  sourceIdeaName: document.querySelector("[data-source-idea-name]"),
+-  sourceIdeaNotes: document.querySelector("[data-source-idea-notes]"),
+-  sourceIdeaPitch: document.querySelector("[data-source-idea-pitch]"),
+   gameStatus: document.querySelector("[data-game-status]"),
+   gameStatusInput: document.querySelector("[data-game-status-input]"),
+   publishingProgress: document.querySelector("[data-publishing-progress]"),
+@@ -241,36 +237,11 @@ function createGameToggleButton(game, expanded) {
    button.type = "button";
    button.dataset.gameToggle = game.id;
    button.setAttribute("aria-expanded", String(expanded));
@@ -135,7 +284,7 @@ index 4b21814d7..56e5de4aa 100644
  function gameSourceIdeaDetails(game) {
    const sourceIdea = isRecord(game?.sourceIdea) ? game.sourceIdea : null;
    const name = String(sourceIdea?.idea || "").trim();
-@@ -366,19 +341,28 @@ function renderReadinessOutputChildTable(parent, game, progress, active) {
+@@ -366,19 +337,28 @@ function renderReadinessOutputChildTable(parent, game, progress, active) {
  }
 
  function renderExpandedGameRow(tbody, game, progress, active) {
@@ -177,7 +326,7 @@ index 4b21814d7..56e5de4aa 100644
  }
 
  function renderGameParentRow(tbody, game, activeGame, progress) {
-@@ -465,9 +449,9 @@ function renderGameList(progress) {
+@@ -465,9 +445,9 @@ function renderGameList(progress) {
    wrapper.className = "table-wrapper";
    const table = document.createElement("table");
    table.className = "data-table data-table--fixed";
@@ -190,3 +339,114 @@ index 4b21814d7..56e5de4aa 100644
    const body = document.createElement("tbody");
    listResult.forEach((game) => renderGameParentRow(body, game, activeGame, progress));
    table.append(body);
+@@ -539,24 +519,6 @@ function renderTableCounts() {
+   });
+ }
+
+-function renderSourceIdea(activeGame) {
+-  const sourceIdea = gameSourceIdeaDetails(activeGame);
+-
+-  setText(elements.sourceIdeaName, sourceIdea.name || "No source idea yet");
+-  setText(elements.sourceIdeaDisplay, sourceIdea.name || "No source idea yet");
+-  setText(elements.sourceIdeaPitch, sourceIdea.pitch || "Create a project from Idea Board to see source details.");
+-
+-  if (elements.sourceIdeaNotes) {
+-    elements.sourceIdeaNotes.replaceChildren();
+-    const visibleNotes = sourceIdea.notes.length ? sourceIdea.notes : ["No source notes."];
+-    visibleNotes.forEach((note) => {
+-      const item = document.createElement("li");
+-      item.textContent = note;
+-      elements.sourceIdeaNotes.append(item);
+-    });
+-  }
+-}
+-
+ function renderChecklist(progress) {
+   if (!elements.progressChecklist) {
+     return;
+@@ -611,7 +573,6 @@ function renderWorkspace() {
+   renderTableCounts();
+   renderChecklist(progress);
+   renderProjectInformation(activeGame, currentMember, progress);
+-  renderSourceIdea(activeGame);
+   refreshSaveControls(activeGame);
+ }
+
+diff --git a/toolbox/game-hub/index.html b/toolbox/game-hub/index.html
+index ef7b50004..8f209db21 100644
+--- a/toolbox/game-hub/index.html
++++ b/toolbox/game-hub/index.html
+@@ -67,7 +67,7 @@
+                     </aside>
+                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="game-hub" data-tool-icon-src="assets/theme-v2/images/badges/index.png" data-tool-character-src="assets/theme-v2/images/characters/index.png"></div>
+                     <section class="tool-center-panel"><h2>Project Information</h2>
+-                        <p>Review the open project and its source idea.</p>
++                        <p>Review the open project, then expand its game row to see Source Idea and Readiness Output.</p>
+                         <div class="status" role="status" data-project-record-status>Project Information ready.</div>
+                         <article class="card" data-game-project-information>
+                             <div class="card-body content-stack">
+@@ -99,64 +99,9 @@
+                                 <div class="action-group">
+                                     <a class="btn primary" href="toolbox/game-journey/index.html?game=demo-game" data-game-journey-link>Open Game Journey</a>
+                                 </div>
+-                            </div>
+-                        </article>
+-                        <article class="card" data-source-idea-section>
+-                            <div class="card-body content-stack">
+-                                <div>
+-                                    <div class="kicker">Source Idea</div>
+-                                    <h3 data-source-idea-name>No source idea yet</h3>
+-                                </div>
+-                                <div class="table-wrapper">
+-                                    <table class="data-table" aria-label="Source Idea">
+-                                        <tbody>
+-                                            <tr><th scope="row">Idea</th><td data-source-idea-display>No source idea yet</td></tr>
+-                                            <tr><th scope="row">Pitch</th><td data-source-idea-pitch>Create a project from Idea Board to see source details.</td></tr>
+-                                            <tr><th scope="row">Notes</th><td><ul class="content-list" data-source-idea-notes><li>No source notes.</li></ul></td></tr>
+-                                        </tbody>
+-                                    </table>
+-                                </div>
+-                            </div>
+-                        </article>
+-                        <article class="card" data-game-hub-foundation>
+-                            <div class="card-body content-stack">
+-                                <div>
+-                                    <div class="kicker">Game Foundation</div>
+-                                    <h3>Game Progress</h3>
+-                                </div>
+-                                <div class="grid cols-3">
+-                                    <article class="callout"><h3>Game Status</h3><p data-game-status>Under Construction</p></article>
+-                                    <article class="callout"><h3>Game Progress</h3><p data-game-progress>Demo Game identity ready</p></article>
+-                                    <article class="callout"><h3>Launch Progress</h3><p data-publishing-progress>Publish blocked until configuration and required assets are ready</p></article>
+-                                </div>
+-                                <div class="grid cols-3">
+-                                    <article class="callout"><h3>Current Focus</h3><p data-current-focus>Complete Game Configuration</p></article>
+-                                    <article class="callout"><h3>Recommended Next Tool</h3><p data-recommended-next-tool>Game Configuration</p></article>
+-                                    <article class="callout"><h3>Checklist</h3><ul data-game-progress-checklist><li>Game identity: Complete</li></ul></article>
+-                                </div>
+                                 <div class="status" role="status" data-game-hub-log>Game Hub ready.</div>
+                             </div>
+                         </article>
+-                        <div class="accordion-stack" data-game-output-panels>
+-                            <details class="vertical-accordion" open>
+-                                <summary>Readiness Output</summary>
+-                                <div class="accordion-body">
+-                                    <div class="table-wrapper">
+-                                        <table class="data-table">
+-                                            <caption>Readiness output</caption>
+-                                            <thead>
+-                                                <tr><th scope="col">Path</th><th scope="col">Status</th><th scope="col">Next Tool</th></tr>
+-                                            </thead>
+-                                            <tbody>
+-                                                <tr><td>Plan</td><td>Under Construction</td><td>Game Configuration</td></tr>
+-                                                <tr><td>Configure</td><td>Planned</td><td>Build Game</td></tr>
+-                                                <tr><td>Release</td><td>Planned</td><td>Publish</td></tr>
+-                                            </tbody>
+-                                        </table>
+-                                    </div>
+-                                </div>
+-                            </details>
+-                        </div>
+                     </section>
+                     <aside class="tool-column tool-group-build">
+                         <div class="tool-column-header">
