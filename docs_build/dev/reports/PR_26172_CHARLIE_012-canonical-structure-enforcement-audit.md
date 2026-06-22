@@ -1,0 +1,208 @@
+# PR_26172_CHARLIE_012 Canonical Structure Enforcement Audit
+
+## Purpose
+
+Re-run repository compliance audit after Charlie migrations.
+
+Verification targets:
+
+- PR_034 Canonical Repository Structure
+- PR_035 Test Structure Standardization
+- PR_036 Legacy Migration Policy
+- PR_008 canonical structure guardrail
+- PR_009 guardrail preflight wiring
+
+## Executive Summary
+
+| Check | Status | Result |
+| --- | --- | --- |
+| Canonical structure guardrail | PASS | `npm run validate:canonical-structure` reports 0 blocking violations. |
+| Approved legacy exceptions | PASS | 495 remaining legacy exceptions are classified by the guardrail. |
+| Shared JS migration progress | PASS | `assets/js/shared/status.js` is canonical and used by real Theme V2 code. |
+| Test location remediation progress | PASS | Three engine-core tests moved to `tests/engine/core/`; legacy exception count dropped from 498 to 495. |
+| Charlie stack safe for Owner review | PASS | Safe for review as a scoped, unmerged stack with known remaining backlog documented. |
+
+## Repository Area Results
+
+| Area | Status | Findings |
+| --- | --- | --- |
+| `assets/` | PASS | New shared status helper lives under canonical `assets/js/shared/`. Theme V2 assets remain under approved Theme V2 paths. |
+| `toolbox/` | FAIL | Known legacy toolbox JS sidecars remain and are classified as approved legacy exceptions, not new guardrail blockers. |
+| `tests/` | FAIL | Three tests were remediated, but large legacy test buckets remain outside PR_035 canonical roots. |
+| `api/` | FAIL | Top-level canonical `api/{feature-name}/` root remains absent. No runtime API move was in this stack scope. |
+| `serverside/` | FAIL | Top-level canonical `serverside/{feature-name}/` root remains absent. No server-side move was in this stack scope. |
+| `src/engine/` | FAIL | `src/engine/paletteList.js` and `src/engine/ui/*.css` remain approved legacy exceptions. |
+| Guardrail enforcement | PASS | PR_008/PR_009 guardrail reports 0 unapproved violations. |
+
+## Guardrail Result
+
+Command:
+
+```text
+npm run validate:canonical-structure
+```
+
+Result:
+
+```text
+Canonical repository structure guardrail: PASS
+Blocking violations: 0
+Approved legacy exceptions: 495
+```
+
+## Remaining Non-Compliant JS Paths
+
+These paths remain approved legacy exceptions and should be handled by future scoped migration PRs:
+
+- `src/engine/paletteList.js`
+- `toolbox/assets/assets-api-client.js`
+- `toolbox/assets/assets-upload-worker.js`
+- `toolbox/assets/assets.js`
+- `toolbox/colors/colors.js`
+- `toolbox/colors/palette-api-client.js`
+- `toolbox/controls/controls-api-client.js`
+- `toolbox/controls/controls.js`
+- `toolbox/game-configuration/game-configuration-api-client.js`
+- `toolbox/game-configuration/game-configuration.js`
+- `toolbox/game-design/game-design-api-client.js`
+- `toolbox/game-design/game-design.js`
+- `toolbox/game-hub/game-hub-api-client.js`
+- `toolbox/game-hub/game-hub.js`
+- `toolbox/game-journey/game-journey-api-client.js`
+- `toolbox/game-journey/game-journey.js`
+- `toolbox/messages/message-tts-service-registry.js`
+- `toolbox/messages/messages-api-client.js`
+- `toolbox/messages/messages.js`
+- `toolbox/objects/objects-api-client.js`
+- `toolbox/objects/objects.js`
+- `toolbox/tags/tags-api-client.js`
+- `toolbox/tags/tags.js`
+- `toolbox/text-to-speech/text2speech.js`
+- `toolbox/tool-registry-api-client.js`
+- `toolbox/toolRegistry.js`
+- `toolbox/tools-page-accordions.js`
+
+## Remaining Non-Compliant CSS Paths
+
+These paths remain approved legacy exceptions:
+
+- `src/engine/ui/baseLayout.css`
+- `src/engine/ui/hubCommon.css`
+- `src/engine/ui/spriteEditor.css`
+
+## Remaining Non-Compliant Test Paths
+
+Remaining approved legacy test buckets:
+
+| Test Path/Bucket | Remaining Count |
+| --- | ---: |
+| `tests/ai/` | 1 |
+| `tests/assets/` | 1 |
+| `tests/audio/` | 1 |
+| `tests/combat/` | 1 |
+| `tests/config/` | 1 |
+| `tests/core/` | 8 |
+| `tests/dev-runtime/` | 31 |
+| `tests/entity/` | 1 |
+| `tests/events/` | 2 |
+| `tests/final/` | 11 |
+| `tests/fixtures/` | 52 |
+| `tests/fx/` | 1 |
+| `tests/games/` | 35 |
+| `tests/helpers/` | 11 |
+| `tests/index.html` | 1 |
+| `tests/input/` | 8 |
+| `tests/persistence/` | 1 |
+| `tests/playwright/` | 44 |
+| `tests/playwright_installation.txt` | 1 |
+| `tests/production/` | 3 |
+| `tests/README.md` | 1 |
+| `tests/render/` | 1 |
+| `tests/replay/` | 2 |
+| `tests/run-tests.mjs` | 1 |
+| `tests/runtime/` | 81 |
+| `tests/samples/` | 1 |
+| `tests/scenes/` | 3 |
+| `tests/schemas/` | 1 |
+| `tests/shared/` | 92 |
+| `tests/testRunner.html` | 1 |
+| `tests/testRunner.js` | 1 |
+| `tests/tools/` | 57 |
+| `tests/validation/` | 3 |
+| `tests/vector/` | 1 |
+| `tests/world/` | 4 |
+
+## Updated Remediation Backlog
+
+1. Continue toolbox JS sidecar migrations one tool at a time.
+2. Create a separate migration plan for shared toolbox root scripts:
+   - `toolbox/toolRegistry.js`
+   - `toolbox/tool-registry-api-client.js`
+   - `toolbox/tools-page-accordions.js`
+3. Continue low-risk test remediation by feature bucket:
+   - remaining `tests/core/` engine tests;
+   - small one-file buckets such as `tests/assets/`, `tests/audio/`, `tests/combat/`, `tests/config/`, `tests/entity/`, `tests/fx/`, `tests/persistence/`, `tests/render/`, `tests/vector/`;
+   - defer broad buckets such as `tests/runtime/`, `tests/shared/`, `tests/tools/`, and `tests/playwright/`.
+4. Resolve `src/engine/paletteList.js` into an engine feature folder after import-impact review.
+5. Resolve `src/engine/ui/*.css` with an explicit engine UI CSS policy or Theme V2 migration plan.
+6. Add `api/{feature-name}/` and `serverside/{feature-name}/` roots only when a scoped API/server migration requires them.
+
+## Stack Safety For Owner Review
+
+Status: SAFE FOR OWNER REVIEW.
+
+Reason:
+
+- The stack remains unmerged.
+- Current branch remains `PR_26172_CHARLIE_repository-compliance-stack`.
+- Canonical structure guardrail passes with 0 blocking violations.
+- PR_010 made one low-risk shared status-helper consolidation.
+- PR_011 made one low-risk test-location remediation slice.
+- Remaining non-compliance is classified as approved legacy debt and documented in the backlog above.
+
+## Branch Validation
+
+| Check | Status | Evidence |
+| --- | --- | --- |
+| Current branch | PASS | `PR_26172_CHARLIE_repository-compliance-stack`. |
+| Worktree clean before PR_012 edits | PASS | PR_011 was committed and pushed before this scope. |
+| Local/origin sync before PR_012 edits | PASS | `0 0` after PR_011 push. |
+| Stack remains unmerged | PASS | No merge to `main` was performed. |
+| Returned to main avoided | PASS | Work remained on the Charlie branch. |
+
+## Requirement Checklist
+
+| Requirement | Status | Evidence |
+| --- | --- | --- |
+| Verify PR_034 Canonical Repository Structure | PASS | Area results and remaining JS/CSS paths documented. |
+| Verify PR_035 Test Structure Standardization | PASS | Remaining test buckets and PR_011 remediation documented. |
+| Verify PR_036 Legacy Migration Policy | PASS | Remaining debt is classified as approved legacy and deferred by scoped backlog. |
+| Verify PR_008 guardrail | PASS | Guardrail command passes with 0 blocking violations. |
+| Verify PR_009 preflight wiring | PASS | `npm run validate:canonical-structure` is the targeted preflight command. |
+| Include PASS/FAIL by repository area | PASS | See Repository Area Results. |
+| Include remaining non-compliant JS paths | PASS | Listed above. |
+| Include remaining non-compliant CSS paths | PASS | Listed above. |
+| Include remaining non-compliant test paths | PASS | Listed by bucket and count. |
+| Include updated remediation backlog | PASS | Listed above. |
+| State whether stack is safe for Owner review | PASS | Safe for Owner review. |
+| Confirm audit report exists | PASS | This report. |
+| Confirm ZIP exists | PASS | `tmp/PR_26172_CHARLIE_012-canonical-structure-enforcement-audit_delta.zip` generated. |
+| Confirm stack remains unmerged | PASS | No merge performed. |
+
+## Validation Lane Report
+
+| Lane | Status | Notes |
+| --- | --- | --- |
+| Canonical structure guardrail | PASS | `npm run validate:canonical-structure`. |
+| Report existence | PASS | This PR_012 report exists. |
+| ZIP artifact | PASS | ZIP generated under `tmp/`. |
+| Playwright | SKIP | Audit-only scope; no browser route behavior changed in PR_012. |
+| Samples | SKIP | No sample files or sample loaders changed. |
+| Full smoke | SKIP | Out of scope per targeted validation rules. |
+
+## Manual Validation Notes
+
+- The enforcement guardrail now distinguishes new blocking violations from approved legacy exceptions.
+- Remaining FAIL statuses by repository area are legacy compliance statuses, not current guardrail failures.
+- Historical reports and generated lane snapshot reports were not rewritten.
+- The Charlie stack should remain on this branch for Owner review.

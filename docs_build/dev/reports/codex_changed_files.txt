@@ -1,8 +1,3 @@
-tests/core/FrameClock.test.mjs -> tests/engine/core/FrameClock.test.mjs
-tests/core/FixedTicker.test.mjs -> tests/engine/core/FixedTicker.test.mjs
-tests/core/RuntimeMetrics.test.mjs -> tests/engine/core/RuntimeMetrics.test.mjs
-tests/run-tests.mjs
-scripts/run-targeted-test-lanes.mjs
-docs_build/dev/reports/PR_26172_CHARLIE_011-test-location-remediation.md
+docs_build/dev/reports/PR_26172_CHARLIE_012-canonical-structure-enforcement-audit.md
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/codex_changed_files.txt

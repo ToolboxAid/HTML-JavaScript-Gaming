@@ -1,174 +1,214 @@
-diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_011-test-location-remediation.md b/docs_build/dev/reports/PR_26172_CHARLIE_011-test-location-remediation.md
+diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_012-canonical-structure-enforcement-audit.md b/docs_build/dev/reports/PR_26172_CHARLIE_012-canonical-structure-enforcement-audit.md
 new file mode 100644
-index 000000000..b2be82e3c
+index 000000000..4bd771882
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_CHARLIE_011-test-location-remediation.md
-@@ -0,0 +1,82 @@
-+# PR_26172_CHARLIE_011 Test Location Remediation
++++ b/docs_build/dev/reports/PR_26172_CHARLIE_012-canonical-structure-enforcement-audit.md
+@@ -0,0 +1,208 @@
++# PR_26172_CHARLIE_012 Canonical Structure Enforcement Audit
 +
 +## Purpose
 +
-+Apply PR_035 Test Structure Standardization to remaining obvious non-canonical test locations.
++Re-run repository compliance audit after Charlie migrations.
 +
-+## Selected Move Set
++Verification targets:
 +
-+Moved only low-risk engine-core unit tests with obvious canonical destinations:
++- PR_034 Canonical Repository Structure
++- PR_035 Test Structure Standardization
++- PR_036 Legacy Migration Policy
++- PR_008 canonical structure guardrail
++- PR_009 guardrail preflight wiring
 +
-+| Old Path | New Path | Reason |
++## Executive Summary
++
++| Check | Status | Result |
 +| --- | --- | --- |
-+| `tests/core/FrameClock.test.mjs` | `tests/engine/core/FrameClock.test.mjs` | Engine core unit test for `src/engine/core/FrameClock.js`. |
-+| `tests/core/FixedTicker.test.mjs` | `tests/engine/core/FixedTicker.test.mjs` | Engine core unit test for `src/engine/core/FixedTicker.js`. |
-+| `tests/core/RuntimeMetrics.test.mjs` | `tests/engine/core/RuntimeMetrics.test.mjs` | Engine core unit test for `src/engine/core/RuntimeMetrics.js`. |
++| Canonical structure guardrail | PASS | `npm run validate:canonical-structure` reports 0 blocking violations. |
++| Approved legacy exceptions | PASS | 495 remaining legacy exceptions are classified by the guardrail. |
++| Shared JS migration progress | PASS | `assets/js/shared/status.js` is canonical and used by real Theme V2 code. |
++| Test location remediation progress | PASS | Three engine-core tests moved to `tests/engine/core/`; legacy exception count dropped from 498 to 495. |
++| Charlie stack safe for Owner review | PASS | Safe for review as a scoped, unmerged stack with known remaining backlog documented. |
 +
-+Ambiguous tests were not moved.
++## Repository Area Results
 +
-+## Scope
-+
-+| File | Change |
-+| --- | --- |
-+| `tests/engine/core/FrameClock.test.mjs` | Moved from `tests/core/` and updated import path. |
-+| `tests/engine/core/FixedTicker.test.mjs` | Moved from `tests/core/` and updated import path. |
-+| `tests/engine/core/RuntimeMetrics.test.mjs` | Moved from `tests/core/` and updated import path. |
-+| `tests/run-tests.mjs` | Updated explicit runner imports to new canonical paths. |
-+| `scripts/run-targeted-test-lanes.mjs` | Updated engine-src lane target paths to new canonical paths. |
-+| `docs_build/dev/reports/PR_26172_CHARLIE_011-test-location-remediation.md` | Added this PR report. |
-+| `docs_build/dev/reports/codex_review.diff` | Refreshed Codex review diff. |
-+| `docs_build/dev/reports/codex_changed_files.txt` | Refreshed changed-file list. |
-+
-+## Validation
-+
-+| Validation | Status | Result |
++| Area | Status | Findings |
 +| --- | --- | --- |
-+| `node scripts/run-node-test-files.mjs tests/engine/core/FrameClock.test.mjs tests/engine/core/FixedTicker.test.mjs tests/engine/core/RuntimeMetrics.test.mjs` | PASS | 3/3 targeted node test files passed. |
-+| `npm run validate:canonical-structure` | PASS | Guardrail passed; approved legacy exceptions dropped from 498 to 495 after the three moves. |
-+| `rg -n 'tests/core/(FrameClock\|FixedTicker\|RuntimeMetrics)\\.test\\.mjs' scripts tests package.json` | PASS | No old active path references remain. |
-+| `rg -n '\\./core/(FrameClock\|FixedTicker\|RuntimeMetrics)\\.test\\.mjs' scripts tests package.json` | PASS | No old runner import references remain. |
-+| `node --check scripts/run-targeted-test-lanes.mjs` | PASS | Updated lane runner syntax is valid. |
-+| `node --check tests/run-tests.mjs` | PASS | Updated explicit test runner syntax is valid. |
-+| `node --check tests/engine/core/FrameClock.test.mjs` | PASS | Moved test syntax is valid. |
-+| `node --check tests/engine/core/FixedTicker.test.mjs` | PASS | Moved test syntax is valid. |
-+| `node --check tests/engine/core/RuntimeMetrics.test.mjs` | PASS | Moved test syntax is valid. |
-+| `git diff --check` | PASS | No whitespace errors. |
-+| ZIP artifact exists | PASS | `tmp/PR_26172_CHARLIE_011-test-location-remediation_delta.zip` generated. |
++| `assets/` | PASS | New shared status helper lives under canonical `assets/js/shared/`. Theme V2 assets remain under approved Theme V2 paths. |
++| `toolbox/` | FAIL | Known legacy toolbox JS sidecars remain and are classified as approved legacy exceptions, not new guardrail blockers. |
++| `tests/` | FAIL | Three tests were remediated, but large legacy test buckets remain outside PR_035 canonical roots. |
++| `api/` | FAIL | Top-level canonical `api/{feature-name}/` root remains absent. No runtime API move was in this stack scope. |
++| `serverside/` | FAIL | Top-level canonical `serverside/{feature-name}/` root remains absent. No server-side move was in this stack scope. |
++| `src/engine/` | FAIL | `src/engine/paletteList.js` and `src/engine/ui/*.css` remain approved legacy exceptions. |
++| Guardrail enforcement | PASS | PR_008/PR_009 guardrail reports 0 unapproved violations. |
 +
-+## Stop Gate
++## Guardrail Result
 +
-+Status: NOT TRIGGERED.
++Command:
 +
-+Three low-risk engine-core tests had clear canonical destinations and were safe to move.
++```text
++npm run validate:canonical-structure
++```
++
++Result:
++
++```text
++Canonical repository structure guardrail: PASS
++Blocking violations: 0
++Approved legacy exceptions: 495
++```
++
++## Remaining Non-Compliant JS Paths
++
++These paths remain approved legacy exceptions and should be handled by future scoped migration PRs:
++
++- `src/engine/paletteList.js`
++- `toolbox/assets/assets-api-client.js`
++- `toolbox/assets/assets-upload-worker.js`
++- `toolbox/assets/assets.js`
++- `toolbox/colors/colors.js`
++- `toolbox/colors/palette-api-client.js`
++- `toolbox/controls/controls-api-client.js`
++- `toolbox/controls/controls.js`
++- `toolbox/game-configuration/game-configuration-api-client.js`
++- `toolbox/game-configuration/game-configuration.js`
++- `toolbox/game-design/game-design-api-client.js`
++- `toolbox/game-design/game-design.js`
++- `toolbox/game-hub/game-hub-api-client.js`
++- `toolbox/game-hub/game-hub.js`
++- `toolbox/game-journey/game-journey-api-client.js`
++- `toolbox/game-journey/game-journey.js`
++- `toolbox/messages/message-tts-service-registry.js`
++- `toolbox/messages/messages-api-client.js`
++- `toolbox/messages/messages.js`
++- `toolbox/objects/objects-api-client.js`
++- `toolbox/objects/objects.js`
++- `toolbox/tags/tags-api-client.js`
++- `toolbox/tags/tags.js`
++- `toolbox/text-to-speech/text2speech.js`
++- `toolbox/tool-registry-api-client.js`
++- `toolbox/toolRegistry.js`
++- `toolbox/tools-page-accordions.js`
++
++## Remaining Non-Compliant CSS Paths
++
++These paths remain approved legacy exceptions:
++
++- `src/engine/ui/baseLayout.css`
++- `src/engine/ui/hubCommon.css`
++- `src/engine/ui/spriteEditor.css`
++
++## Remaining Non-Compliant Test Paths
++
++Remaining approved legacy test buckets:
++
++| Test Path/Bucket | Remaining Count |
++| --- | ---: |
++| `tests/ai/` | 1 |
++| `tests/assets/` | 1 |
++| `tests/audio/` | 1 |
++| `tests/combat/` | 1 |
++| `tests/config/` | 1 |
++| `tests/core/` | 8 |
++| `tests/dev-runtime/` | 31 |
++| `tests/entity/` | 1 |
++| `tests/events/` | 2 |
++| `tests/final/` | 11 |
++| `tests/fixtures/` | 52 |
++| `tests/fx/` | 1 |
++| `tests/games/` | 35 |
++| `tests/helpers/` | 11 |
++| `tests/index.html` | 1 |
++| `tests/input/` | 8 |
++| `tests/persistence/` | 1 |
++| `tests/playwright/` | 44 |
++| `tests/playwright_installation.txt` | 1 |
++| `tests/production/` | 3 |
++| `tests/README.md` | 1 |
++| `tests/render/` | 1 |
++| `tests/replay/` | 2 |
++| `tests/run-tests.mjs` | 1 |
++| `tests/runtime/` | 81 |
++| `tests/samples/` | 1 |
++| `tests/scenes/` | 3 |
++| `tests/schemas/` | 1 |
++| `tests/shared/` | 92 |
++| `tests/testRunner.html` | 1 |
++| `tests/testRunner.js` | 1 |
++| `tests/tools/` | 57 |
++| `tests/validation/` | 3 |
++| `tests/vector/` | 1 |
++| `tests/world/` | 4 |
++
++## Updated Remediation Backlog
++
++1. Continue toolbox JS sidecar migrations one tool at a time.
++2. Create a separate migration plan for shared toolbox root scripts:
++   - `toolbox/toolRegistry.js`
++   - `toolbox/tool-registry-api-client.js`
++   - `toolbox/tools-page-accordions.js`
++3. Continue low-risk test remediation by feature bucket:
++   - remaining `tests/core/` engine tests;
++   - small one-file buckets such as `tests/assets/`, `tests/audio/`, `tests/combat/`, `tests/config/`, `tests/entity/`, `tests/fx/`, `tests/persistence/`, `tests/render/`, `tests/vector/`;
++   - defer broad buckets such as `tests/runtime/`, `tests/shared/`, `tests/tools/`, and `tests/playwright/`.
++4. Resolve `src/engine/paletteList.js` into an engine feature folder after import-impact review.
++5. Resolve `src/engine/ui/*.css` with an explicit engine UI CSS policy or Theme V2 migration plan.
++6. Add `api/{feature-name}/` and `serverside/{feature-name}/` roots only when a scoped API/server migration requires them.
++
++## Stack Safety For Owner Review
++
++Status: SAFE FOR OWNER REVIEW.
++
++Reason:
++
++- The stack remains unmerged.
++- Current branch remains `PR_26172_CHARLIE_repository-compliance-stack`.
++- Canonical structure guardrail passes with 0 blocking violations.
++- PR_010 made one low-risk shared status-helper consolidation.
++- PR_011 made one low-risk test-location remediation slice.
++- Remaining non-compliance is classified as approved legacy debt and documented in the backlog above.
 +
 +## Branch Validation
 +
 +| Check | Status | Evidence |
 +| --- | --- | --- |
 +| Current branch | PASS | `PR_26172_CHARLIE_repository-compliance-stack`. |
-+| Worktree clean before PR_011 edits | PASS | PR_010 was committed and pushed before this scope. |
-+| Local/origin sync before PR_011 edits | PASS | `0 0` after PR_010 push. |
-+| Main merge avoided | PASS | No merge to `main` was performed. |
-+| Returned to main avoided | PASS | Work remained on the Charlie stack branch. |
++| Worktree clean before PR_012 edits | PASS | PR_011 was committed and pushed before this scope. |
++| Local/origin sync before PR_012 edits | PASS | `0 0` after PR_011 push. |
++| Stack remains unmerged | PASS | No merge to `main` was performed. |
++| Returned to main avoided | PASS | Work remained on the Charlie branch. |
 +
 +## Requirement Checklist
 +
 +| Requirement | Status | Evidence |
 +| --- | --- | --- |
-+| Use prior audit findings | PASS | PR_001 listed `tests/core/` as non-canonical; PR_035 canonicalizes engine tests under `tests/engine/{feature-name}/`. |
-+| Move only low-risk tests | PASS | Moved three small engine core unit tests only. |
-+| Use obvious canonical destinations | PASS | Tests now live under `tests/engine/core/`. |
-+| Update references | PASS | Updated `tests/run-tests.mjs` and `scripts/run-targeted-test-lanes.mjs`. |
-+| Preserve behavior | PASS | Targeted moved tests passed. |
-+| Do not move ambiguous tests | PASS | Other `tests/core/` files were left in place. |
-+| Do not modify runtime source | PASS | Only tests, validation runner references, and reports changed. |
-+| Confirm new paths follow Project Instructions | PASS | Paths follow `tests/engine/{feature-name}/`. |
-+| ZIP artifact exists | PASS | ZIP generated under `tmp/`. |
++| Verify PR_034 Canonical Repository Structure | PASS | Area results and remaining JS/CSS paths documented. |
++| Verify PR_035 Test Structure Standardization | PASS | Remaining test buckets and PR_011 remediation documented. |
++| Verify PR_036 Legacy Migration Policy | PASS | Remaining debt is classified as approved legacy and deferred by scoped backlog. |
++| Verify PR_008 guardrail | PASS | Guardrail command passes with 0 blocking violations. |
++| Verify PR_009 preflight wiring | PASS | `npm run validate:canonical-structure` is the targeted preflight command. |
++| Include PASS/FAIL by repository area | PASS | See Repository Area Results. |
++| Include remaining non-compliant JS paths | PASS | Listed above. |
++| Include remaining non-compliant CSS paths | PASS | Listed above. |
++| Include remaining non-compliant test paths | PASS | Listed by bucket and count. |
++| Include updated remediation backlog | PASS | Listed above. |
++| State whether stack is safe for Owner review | PASS | Safe for Owner review. |
++| Confirm audit report exists | PASS | This report. |
++| Confirm ZIP exists | PASS | `tmp/PR_26172_CHARLIE_012-canonical-structure-enforcement-audit_delta.zip` generated. |
++| Confirm stack remains unmerged | PASS | No merge performed. |
++
++## Validation Lane Report
++
++| Lane | Status | Notes |
++| --- | --- | --- |
++| Canonical structure guardrail | PASS | `npm run validate:canonical-structure`. |
++| Report existence | PASS | This PR_012 report exists. |
++| ZIP artifact | PASS | ZIP generated under `tmp/`. |
++| Playwright | SKIP | Audit-only scope; no browser route behavior changed in PR_012. |
++| Samples | SKIP | No sample files or sample loaders changed. |
++| Full smoke | SKIP | Out of scope per targeted validation rules. |
 +
 +## Manual Validation Notes
 +
-+- Historical report references under `docs_build/` were not rewritten.
-+- `tests/core/` still contains other legacy tests that require separate impact review before moving.
-+- This PR intentionally avoids broad test-tree restructuring.
-diff --git a/scripts/run-targeted-test-lanes.mjs b/scripts/run-targeted-test-lanes.mjs
-index 3fef73319..42ecb1b71 100644
---- a/scripts/run-targeted-test-lanes.mjs
-+++ b/scripts/run-targeted-test-lanes.mjs
-@@ -363,8 +363,8 @@ const laneDefinitions = Object.freeze({
-       nodeCommand(
-         "scripts/run-node-test-files.mjs",
-         "tests/core/EngineCoreBoundaryBaseline.test.mjs",
--        "tests/core/FrameClock.test.mjs",
--        "tests/core/FixedTicker.test.mjs",
-+        "tests/engine/core/FrameClock.test.mjs",
-+        "tests/engine/core/FixedTicker.test.mjs",
-         "tests/assets/AssetLoaderSystem.test.mjs",
-         "tests/audio/AudioService.test.mjs",
-         "tests/input/InputMap.test.mjs",
-@@ -380,8 +380,8 @@ const laneDefinitions = Object.freeze({
-       "tests/assets/AssetLoaderSystem.test.mjs",
-       "tests/audio/AudioService.test.mjs",
-       "tests/core/EngineCoreBoundaryBaseline.test.mjs",
--      "tests/core/FixedTicker.test.mjs",
--      "tests/core/FrameClock.test.mjs",
-+      "tests/engine/core/FixedTicker.test.mjs",
-+      "tests/engine/core/FrameClock.test.mjs",
-       "tests/input/GamepadHapticsService.test.mjs",
-       "tests/input/GamepadInputAdapter.test.mjs",
-       "tests/input/InputMap.test.mjs",
-diff --git a/tests/engine/core/FixedTicker.test.mjs b/tests/engine/core/FixedTicker.test.mjs
-index ed83c2069..8c42ed386 100644
---- a/tests/engine/core/FixedTicker.test.mjs
-+++ b/tests/engine/core/FixedTicker.test.mjs
-@@ -5,7 +5,7 @@ David Quesenberry
- FixedTicker.test.mjs
- */
- import assert from "node:assert/strict";
--import FixedTicker from "../../src/engine/core/FixedTicker.js";
-+import FixedTicker from "../../../src/engine/core/FixedTicker.js";
-
- export function run() {
-     const ticker = new FixedTicker({ stepMs: 10, maxCatchUpSteps: 3 });
-diff --git a/tests/engine/core/FrameClock.test.mjs b/tests/engine/core/FrameClock.test.mjs
-index da1f20401..a89f7c102 100644
---- a/tests/engine/core/FrameClock.test.mjs
-+++ b/tests/engine/core/FrameClock.test.mjs
-@@ -5,7 +5,7 @@ David Quesenberry
- FrameClock.test.mjs
- */
- import assert from "node:assert/strict";
--import FrameClock from "../../src/engine/core/FrameClock.js";
-+import FrameClock from "../../../src/engine/core/FrameClock.js";
-
- export function run() {
-     const clock = new FrameClock({ maxDeltaMs: 50 });
-diff --git a/tests/engine/core/RuntimeMetrics.test.mjs b/tests/engine/core/RuntimeMetrics.test.mjs
-index 89b37376c..30a0af924 100644
---- a/tests/engine/core/RuntimeMetrics.test.mjs
-+++ b/tests/engine/core/RuntimeMetrics.test.mjs
-@@ -5,7 +5,7 @@ David Quesenberry
- RuntimeMetrics.test.mjs
- */
- import assert from 'node:assert/strict';
--import RuntimeMetrics from '../../src/engine/core/RuntimeMetrics.js';
-+import RuntimeMetrics from '../../../src/engine/core/RuntimeMetrics.js';
-
- export function run() {
-   const metrics = new RuntimeMetrics({ sampleWindowSeconds: 0.25 });
-diff --git a/tests/run-tests.mjs b/tests/run-tests.mjs
-index 01f866e4a..3f554ca1a 100644
---- a/tests/run-tests.mjs
-+++ b/tests/run-tests.mjs
-@@ -7,13 +7,13 @@ run-tests.mjs
- import { run as runAIBehaviors } from './ai/AIBehaviors.test.mjs';
- import { run as runAssetLoaderSystem } from './assets/AssetLoaderSystem.test.mjs';
- import { run as runConfigStore } from './config/ConfigStore.test.mjs';
--import { run as runFixedTicker } from './core/FixedTicker.test.mjs';
-+import { run as runFixedTicker } from './engine/core/FixedTicker.test.mjs';
- import { run as runBackgroundImageAndFullscreenBezel } from './core/BackgroundImageAndFullscreenBezel.test.mjs';
- import { run as runEngineFullscreen } from './core/EngineFullscreen.test.mjs';
- import { run as runEngineSceneLifecycle } from './core/EngineSceneLifecycle.test.mjs';
- import { run as runEngineTiming } from './core/EngineTiming.test.mjs';
--import { run as runFrameClock } from './core/FrameClock.test.mjs';
--import { run as runRuntimeMetrics } from './core/RuntimeMetrics.test.mjs';
-+import { run as runFrameClock } from './engine/core/FrameClock.test.mjs';
-+import { run as runRuntimeMetrics } from './engine/core/RuntimeMetrics.test.mjs';
- import { run as runParticleSystem } from './fx/ParticleSystem.test.mjs';
- import { run as runAudioService } from './audio/AudioService.test.mjs';
- import { run as runFinalSystems } from './final/FinalSystems.test.mjs';
++- The enforcement guardrail now distinguishes new blocking violations from approved legacy exceptions.
++- Remaining FAIL statuses by repository area are legacy compliance statuses, not current guardrail failures.
++- Historical reports and generated lane snapshot reports were not rewritten.
++- The Charlie stack should remain on this branch for Owner review.
