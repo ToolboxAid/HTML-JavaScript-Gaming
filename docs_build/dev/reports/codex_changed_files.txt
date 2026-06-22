@@ -1,8 +1,9 @@
-.gitignore
+toolbox/idea-board/index.js
+tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/PR_26174_ALFA_000-projectinstructions-archive-ignore.md
-docs_build/dev/reports/PR_26174_ALFA_000-projectinstructions-archive-ignore-branch-validation.txt
-docs_build/dev/reports/PR_26174_ALFA_000-projectinstructions-archive-ignore-requirement-checklist.txt
-docs_build/dev/reports/PR_26174_ALFA_000-projectinstructions-archive-ignore-validation-lane.txt
-docs_build/dev/reports/PR_26174_ALFA_000-projectinstructions-archive-ignore-manual-validation-notes.txt
+docs_build/dev/reports/PR_26174_ALFA_001-idea-board-create-project-api-contract.md
+docs_build/dev/reports/PR_26174_ALFA_001-idea-board-create-project-api-contract-branch-validation.txt
+docs_build/dev/reports/PR_26174_ALFA_001-idea-board-create-project-api-contract-requirement-checklist.txt
+docs_build/dev/reports/PR_26174_ALFA_001-idea-board-create-project-api-contract-validation-lane.txt
+docs_build/dev/reports/PR_26174_ALFA_001-idea-board-create-project-api-contract-manual-validation-notes.txt
