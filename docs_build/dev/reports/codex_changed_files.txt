@@ -1,3 +1,4 @@
-docs_build/dev/reports/PR_26172_CHARLIE_001-repository-compliance-audit.md
+.gitignore
+docs_build/dev/reports/PR_26172_CHARLIE_002-test-results-artifact-cleanup.md
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
