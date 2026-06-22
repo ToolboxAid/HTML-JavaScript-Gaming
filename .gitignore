@@ -13,10 +13,12 @@
 # Ignore the NEXT_COMMAND.txt file
 NEXT_COMMAND.txt
 
-# Ignore the tests results and temporary files
+# Ignore generated dependency, test result, and temporary files
 node_modules/
 tests/results/
+tests/results/**
 tmp/test-results/
+tmp/test-results/**
 tmp/
 scripts/untracked/
 projects/
