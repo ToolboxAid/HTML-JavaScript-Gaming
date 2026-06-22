@@ -46,3 +46,4 @@ Addendum index:
 - Test Structure Standardization: project-instructions/addendums/test-structure-standardization.md
 - Legacy Migration Policy: project-instructions/addendums/legacy-migration-policy.md
 - Assistant Execution Modes: project-instructions/addendums/assistant-execution-modes.md
+- Codex Artifact and Reporting Standard: project-instructions/addendums/codex-artifact-and-reporting-standard.md
