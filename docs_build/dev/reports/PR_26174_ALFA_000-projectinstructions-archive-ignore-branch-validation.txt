@@ -1,0 +1,9 @@
+Branch Validation: PASS
+
+Expected starting branch: main
+Actual starting branch: main
+Working branch: pr/26174-ALFA-000-projectinstructions-archive-ignore
+Base pull: origin/main already up to date before branch creation
+Start dirty state: `.gitignore` only, matching this PR scope
+Protected instruction changes: none
+Scope mismatch: none
