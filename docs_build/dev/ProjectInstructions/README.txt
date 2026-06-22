@@ -43,3 +43,4 @@ READ THIS FIRST
 
 Addendum index:
 - Canonical Repository Structure: project-instructions/addendums/canonical-repository-structure.md
+- Test Structure Standardization: project-instructions/addendums/test-structure-standardization.md
