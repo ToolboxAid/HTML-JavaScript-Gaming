@@ -1,294 +1,229 @@
-diff --git a/src/dev-runtime/persistence/mock-db-store.js b/src/dev-runtime/persistence/mock-db-store.js
-index c98c915b5..e96fb833f 100644
---- a/src/dev-runtime/persistence/mock-db-store.js
-+++ b/src/dev-runtime/persistence/mock-db-store.js
-@@ -125,7 +125,7 @@ const MOCK_DB_TABLE_SCHEMAS = Object.freeze({
-   input_custom_action_records: Object.freeze(["key", "id", "gameId", "label", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-   game_journey_note_types: Object.freeze(["key", "typeSlug", "name", "seeded", "userExtensible", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-   game_journey_completion_metrics: Object.freeze(["key", "bucketKey", "bucketOrder", "bucketName", "friendlyDescription", "requiredForMvp", "canSkip", "plannedCount", "completedCount", "active", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
--  game_journey_notes: Object.freeze(["key", "slug", "gameKey", "ownerKey", "name", "typeKey", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-+  game_journey_notes: Object.freeze(["key", "slug", "gameKey", "ownerKey", "name", "typeKey", "bucketOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-   game_journey_templates: Object.freeze(["key", "templateSlug", "originalMeaning", "systemGuidance", "linkedToolContexts", "version", "isActive", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-   game_journey_items: Object.freeze(["key", "gameKey", "noteKey", "status", "title", "userDetails", "templateKey", "linkedRecordType", "linkedRecordId", "indent", "order", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-   game_journey_activity: Object.freeze(["key", "gameKey", "noteKey", "message", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
 diff --git a/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js b/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
-index 905b1dba6..a2c831ed1 100644
+index a2c831ed1..db24253af 100644
 --- a/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
 +++ b/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
-@@ -101,6 +101,23 @@ const GENERATED_ULID_SEQUENCE = Object.freeze({
- const RECOMMENDED_TARGET_LINKED_RECORD_TYPE = "recommended-target";
- const RECOMMENDED_TARGET_NOTE_KEY = GAME_JOURNEY_KEYS.notes.designPass;
- const SOURCE_IDEA_LINKED_RECORD_TYPE = "source-idea-note";
-+const JOURNEY_BOOTSTRAP_LINKED_RECORD_TYPE = "journey-bootstrap-bucket";
-+
-+export const GAME_JOURNEY_BOOTSTRAP_BUCKETS = Object.freeze([
-+  "Idea",
-+  "Design",
-+  "Graphics",
-+  "Audio",
-+  "Objects",
-+  "Worlds",
-+  "Interface",
-+  "Controls",
-+  "Rules",
-+  "Progression",
-+  "Play Test",
-+  "Publish",
-+  "Share",
-+]);
+@@ -265,28 +265,34 @@ export const GAME_JOURNEY_TOOL_OWNERSHIP_AREAS = Object.freeze([
 
- export const GAME_JOURNEY_STATUSES = [
-   {
-@@ -708,6 +725,106 @@ export function createGameJourneyMockRepository(options = {}) {
-     return idea ? `Source Idea: ${idea}` : "Source Idea";
+ export const GAME_JOURNEY_RECOMMENDED_TARGETS = Object.freeze([
+   Object.freeze({
+-    key: "heroes",
+-    label: "Heroes",
++    key: "hero",
++    label: "Hero",
+     sectionName: "Objects",
+     suggestedCount: 1,
+   }),
+   Object.freeze({
+-    key: "enemies",
+-    label: "Enemies",
++    key: "enemy",
++    label: "Enemy",
+     sectionName: "Objects",
+-    suggestedCount: 3,
++    suggestedCount: 4,
+   }),
+   Object.freeze({
+-    key: "levels",
+-    label: "Levels",
+-    sectionName: "Worlds",
+-    suggestedCount: 5,
++    key: "boss",
++    label: "Boss",
++    sectionName: "Objects",
++    suggestedCount: 1,
+   }),
+   Object.freeze({
+-    key: "audio",
+-    label: "Audio",
++    key: "background",
++    label: "Background",
++    sectionName: "Graphics",
++    suggestedCount: 3,
++  }),
++  Object.freeze({
++    key: "music",
++    label: "Music",
+     sectionName: "Audio",
+-    suggestedCount: 6,
++    suggestedCount: 5,
+   }),
+ ]);
+
+@@ -1006,16 +1012,17 @@ export function createGameJourneyMockRepository(options = {}) {
+     }
    }
 
-+  function noteTypeKeyForBootstrapBucket(bucketName) {
-+    const slug = slugSegment(bucketName, "task");
-+    const matchingType = tables.game_journey_note_types.find((type) => type.typeSlug === slug);
-+    return matchingType?.key || GAME_JOURNEY_KEYS.noteTypes.task;
+-  function findRecommendedTargetItem(targetKey) {
++  function findRecommendedTargetItem(targetKey, gameKey = requireActiveGame()?.key) {
+     return tables.game_journey_items.find((item) =>
+-      item.gameKey === GAME_JOURNEY_KEYS.game &&
++      item.gameKey === gameKey &&
+       item.linkedRecordType === RECOMMENDED_TARGET_LINKED_RECORD_TYPE &&
+       item.linkedRecordId === targetKey,
+     );
+   }
+
+   function hydrateRecommendedTarget(target) {
+-    const item = findRecommendedTargetItem(target.key);
++    const activeGame = requireActiveGame();
++    const item = activeGame ? findRecommendedTargetItem(target.key, activeGame.key) : null;
+     return {
+       ...clone(target),
+       suggestedCount: readTargetCount(item, target.suggestedCount),
+@@ -1030,6 +1037,16 @@ export function createGameJourneyMockRepository(options = {}) {
+     return GAME_JOURNEY_RECOMMENDED_TARGETS.map(hydrateRecommendedTarget);
+   }
+
++  function findRecommendedTargetNoteKey(target, activeGame) {
++    const sectionNote = tables.game_journey_notes.find(
++      (note) => note.gameKey === activeGame.key && note.name === target.sectionName,
++    );
++    if (sectionNote) {
++      return sectionNote.key;
++    }
++    return activeGame.key === GAME_JOURNEY_KEYS.game ? RECOMMENDED_TARGET_NOTE_KEY : "";
 +  }
 +
-+  function ensureJourneyBootstrapBuckets(activeGame) {
-+    if (!activeGame) {
+   function updateRecommendedTarget(targetKey, suggestedCount) {
+     const activeGame = requireActiveGame();
+     const target = GAME_JOURNEY_RECOMMENDED_TARGETS.find((item) => item.key === targetKey);
+@@ -1037,15 +1054,23 @@ export function createGameJourneyMockRepository(options = {}) {
+       return null;
+     }
+
++    const noteKey = findRecommendedTargetNoteKey(target, activeGame);
++    if (!noteKey) {
 +      return {
-+        buckets: [],
-+        createdItems: 0,
-+        createdNotes: 0,
++        error: true,
++        message: `Game Journey ${target.sectionName} bucket is not available for ${activeGame.name}.`,
 +      };
 +    }
 +
-+    const ownerKey = safeCurrentUserKey();
-+    const timestampValue = new Date().toISOString();
-+    let createdNotes = 0;
-+    let createdItems = 0;
-+    const bucketSummaries = [];
-+    GAME_JOURNEY_BOOTSTRAP_BUCKETS.forEach((bucketName, index) => {
-+      const bucketOrder = index + 1;
-+      const bucketSlug = slugSegment(bucketName, "bucket");
-+      const noteSlug = `journey-bucket-${slugSegment(activeGame.id || activeGame.key)}-${String(bucketOrder).padStart(2, "0")}-${bucketSlug}`;
-+      let note = tables.game_journey_notes.find(
-+        (candidate) => candidate.gameKey === activeGame.key && candidate.slug === noteSlug,
-+      );
-+
-+      if (!note) {
-+        note = {
-+          key: makeUlid(nextNoteNumber),
-+          slug: noteSlug,
-+          gameKey: activeGame.key,
-+          ownerKey,
-+          name: bucketName,
-+          typeKey: noteTypeKeyForBootstrapBucket(bucketName),
-+          bucketOrder,
-+          createdAt: timestampValue,
-+          updatedAt: timestampValue,
-+          createdBy: ownerKey,
-+          updatedBy: ownerKey,
-+        };
-+        nextNoteNumber += 1;
-+        tables.game_journey_notes.push(note);
-+        createdNotes += 1;
-+      }
-+
-+      const linkedRecordId = `${slugSegment(activeGame.id || activeGame.key)}:${String(bucketOrder).padStart(2, "0")}:${bucketSlug}`;
-+      let item = getItemsForNote(note.key).find(
-+        (candidate) =>
-+          candidate.linkedRecordType === JOURNEY_BOOTSTRAP_LINKED_RECORD_TYPE &&
-+          candidate.linkedRecordId === linkedRecordId,
-+      );
-+
-+      if (!item) {
-+        item = {
-+          key: makeUlid(nextItemNumber),
-+          gameKey: activeGame.key,
-+          noteKey: note.key,
-+          status: "not-started",
-+          title: `${bucketName} progress placeholder`,
-+          userDetails: "",
-+          createdBy: ownerKey,
-+          updatedBy: ownerKey,
-+          templateKey: "",
-+          linkedRecordType: JOURNEY_BOOTSTRAP_LINKED_RECORD_TYPE,
-+          linkedRecordId,
-+          indent: 0,
-+          order: 1,
-+          createdAt: timestampValue,
-+          updatedAt: timestampValue,
-+        };
-+        nextItemNumber += 1;
-+        tables.game_journey_items.push(item);
-+        createdItems += 1;
-+      }
-+
-+      bucketSummaries.push({
-+        bucketName,
-+        itemKey: item.key,
-+        noteKey: note.key,
-+        order: bucketOrder,
-+      });
-+    });
-+
-+    if (createdNotes || createdItems) {
-+      const firstBucket = bucketSummaries[0];
-+      selectedNoteKey = firstBucket?.noteKey || selectedNoteKey;
-+      selectedItemKey = firstBucket?.itemKey || selectedItemKey;
-+      addActivity(activeGame.key, firstBucket?.noteKey || "", `Created ${GAME_JOURNEY_BOOTSTRAP_BUCKETS.length} Game Journey starter buckets.`, ownerKey);
-+      persistTables();
-+    }
-+
-+    return {
-+      buckets: bucketSummaries,
-+      createdItems,
-+      createdNotes,
-+    };
-+  }
-+
-   function ensureSourceIdeaJourneyItems(activeGame) {
-     const sourceIdea = activeGame?.sourceIdea && typeof activeGame.sourceIdea === "object"
-       ? activeGame.sourceIdea
-@@ -1039,7 +1156,11 @@ export function createGameJourneyMockRepository(options = {}) {
-       .filter(currentUserCanSeeNote)
-       .filter((note) => noteMatchesFilter(note, filterId))
-       .map((note) => hydrateNote(note, filterId))
--      .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt));
-+      .sort((left, right) => {
-+        const leftOrder = Number.isFinite(Number(left.bucketOrder)) ? Number(left.bucketOrder) : Number.POSITIVE_INFINITY;
-+        const rightOrder = Number.isFinite(Number(right.bucketOrder)) ? Number(right.bucketOrder) : Number.POSITIVE_INFINITY;
-+        return leftOrder - rightOrder || right.updatedAt.localeCompare(left.updatedAt);
-+      });
-   }
-
-   function addNote({ name, typeKey } = {}) {
-@@ -1500,11 +1621,29 @@ export function createGameJourneyMockRepository(options = {}) {
-       gameId === GAME_JOURNEY_KEYS.game ? GAME_JOURNEY_ROUTE_GAME_ALIAS : gameId;
-     const openedGame = gameWorkspaceRepository.openGame(workspaceGameId);
-     if (openedGame) {
--      ensureSourceIdeaJourneyItems(getActiveGame());
-+      bootstrapGameJourneyForGame(getActiveGame());
+     const normalizedCount = normalizeTargetCount(suggestedCount);
+     const timestampValue = new Date().toISOString();
+     const userKey = safeCurrentUserKey();
+-    let item = findRecommendedTargetItem(target.key);
++    let item = findRecommendedTargetItem(target.key, activeGame.key);
+     if (!item) {
+       item = {
+         key: makeUlid(nextItemNumber),
+         gameKey: activeGame.key,
+-        noteKey: RECOMMENDED_TARGET_NOTE_KEY,
++        noteKey,
+         status: "not-started",
+         title: `Recommended target: ${target.label}`,
+         userDetails: "",
+@@ -1064,9 +1089,10 @@ export function createGameJourneyMockRepository(options = {}) {
      }
-     return openedGame;
+
+     item.userDetails = JSON.stringify({ suggestedCount: normalizedCount });
++    item.noteKey = noteKey;
+     item.updatedAt = timestampValue;
+     item.updatedBy = userKey;
+-    addActivity(activeGame.key, RECOMMENDED_TARGET_NOTE_KEY, `Updated ${target.label} recommended target to ${normalizedCount}`, userKey);
++    addActivity(activeGame.key, noteKey, `Updated ${target.label} recommended target to ${normalizedCount}`, userKey);
+     persistTables();
+     return hydrateRecommendedTarget(target);
    }
+diff --git a/tests/playwright/tools/GameJourneyTool.spec.mjs b/tests/playwright/tools/GameJourneyTool.spec.mjs
+index 390d1cc89..e9005f08b 100644
+--- a/tests/playwright/tools/GameJourneyTool.spec.mjs
++++ b/tests/playwright/tools/GameJourneyTool.spec.mjs
+@@ -215,10 +215,11 @@ async function expectFilteredSummaryRows(page, statusId, expectedRows) {
+ test("Game Journey exposes static tool ownership areas without automatic counts", async () => {
+   expectStaticToolOwnershipAreas(GAME_JOURNEY_TOOL_OWNERSHIP_AREAS);
+   expect(GAME_JOURNEY_RECOMMENDED_TARGETS.map((target) => target.label)).toEqual([
+-    "Heroes",
+-    "Enemies",
+-    "Levels",
+-    "Audio",
++    "Hero",
++    "Enemy",
++    "Boss",
++    "Background",
++    "Music",
+   ]);
 
-+  function bootstrapGameJourneyForGame(game = getActiveGame()) {
-+    const activeGame = game?.key ? game : game ? { ...game, key: journeyGameKey(game) } : getActiveGame();
-+    if (!activeGame) {
-+      return {
-+        buckets: [],
-+        createdItems: 0,
-+        createdNotes: 0,
-+        sourceIdeaItems: [],
-+      };
-+    }
-+    const bucketResult = ensureJourneyBootstrapBuckets(activeGame);
-+    const sourceIdeaItems = ensureSourceIdeaJourneyItems(activeGame);
-+    return {
-+      ...bucketResult,
-+      sourceIdeaItems,
-+    };
-+  }
-+
-   return {
-     getTables: async () => clone({
-       game_journey_completion_metrics: await completionMetricsStore.listMetrics(),
-@@ -1519,6 +1658,7 @@ export function createGameJourneyMockRepository(options = {}) {
-     getSystemUser: () => getMockDbSystemUser(),
-     getActiveGame,
-     openGame,
-+    bootstrapGameJourneyForGame,
-     clearActiveGame: () => gameWorkspaceRepository.clearTestData(),
-     listNoteTypes: () => clone(tables.game_journey_note_types),
-     addNoteType,
-diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index 314a35d03..577375844 100644
---- a/src/dev-runtime/server/local-api-router.mjs
-+++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -5306,6 +5306,13 @@ LIMIT 1;
-     }
-     const result = await method(...args);
-     assertRepositoryMethodResult(repositoryId, methodName, result);
-+    if (repository === this.gameWorkspaceRepository && methodName === "createGame") {
-+      const journeyBootstrap = this.gameJourneyRepository.bootstrapGameJourneyForGame(result);
-+      if (!journeyBootstrap || !Array.isArray(journeyBootstrap.buckets)) {
-+        throw repositoryMethodError("Game Journey bootstrap did not return starter bucket records. Restore the Local API/service contract.");
-+      }
-+      result.journeyBootstrap = journeyBootstrap;
-+    }
-     const methodPersistsThroughToolStore =
-       repository === this.gameJourneyRepository && GAME_JOURNEY_TOOL_STORE_METHODS.has(methodName);
-     if (repositoryMethodRequiresPersistence(methodName) && !methodPersistsThroughToolStore) {
-diff --git a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-index 1372df8be..5d0ccfaff 100644
---- a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-+++ b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-@@ -1,4 +1,5 @@
- import { expect, test } from "@playwright/test";
-+import { GAME_JOURNEY_BOOTSTRAP_BUCKETS } from "../../../src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js";
- import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store.js";
- import { isBrowserExtensionNoise } from "../../helpers/browserExtensionNoise.mjs";
- import { createGameJourneyCompletionMetricsPostgresClientStub } from "../../helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs";
-@@ -136,10 +137,15 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-   const consoleErrors = [];
-   const mutatingApiRequests = [];
-   const createGamePayloads = [];
-+  const createGameResponsePromises = [];
-   const gameHubRepositoryRequests = [];
-
-   page.on("response", (response) => {
-     if (response.status() >= 400) failedRequests.push(`${response.status()} ${response.url()}`);
-+    const responseUrl = response.url();
-+    if (responseUrl.includes("/api/toolbox/game-hub/repositories/") && responseUrl.includes("/methods/createGame")) {
-+      createGameResponsePromises.push(response.json());
-+    }
-   });
-   page.on("requestfailed", (request) => failedRequests.push(`FAILED ${request.url()}`));
-   page.on("pageerror", (error) => {
-@@ -363,6 +369,10 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-       },
-       status: "Planning",
-     });
-+    const [createGameResponse] = await Promise.all(createGameResponsePromises);
-+    const createdProject = createGameResponse?.data?.result;
-+    expect(createdProject?.journeyBootstrap?.buckets.map((bucket) => bucket.bucketName)).toEqual(GAME_JOURNEY_BOOTSTRAP_BUCKETS);
-+    expect(createdProject?.journeyBootstrap?.buckets.every((bucket) => bucket.noteKey && bucket.itemKey)).toBe(true);
-     await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='archive']").click();
-     await expect(page.locator("[data-idea-board-idea-row='lantern-reef']")).toHaveCount(0);
-     await page.locator("[data-idea-board-status-filter-option][value='Archived']").check();
-@@ -394,8 +404,14 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-     await page.getByRole("link", { name: "Open Game Journey" }).click();
-     await page.waitForURL(/\/toolbox\/game-journey\/index\.html\?game=lantern-reef-\d+$/);
-     await expect(page.locator("[data-journey-active-game]")).toHaveText("Active game: Lantern Reef.");
-+    const journeyNoteNames = await page.locator("[data-journey-summary-body] [data-journey-note-button]").evaluateAll((buttons) => (
-+      buttons.map((button) => button.textContent.trim())
-+    ));
-+    const journeyBucketNames = journeyNoteNames.filter((name) => GAME_JOURNEY_BOOTSTRAP_BUCKETS.includes(name));
-+    expect(journeyBucketNames).toEqual(GAME_JOURNEY_BOOTSTRAP_BUCKETS);
-     await expect(page.locator("[data-journey-summary-body]")).toContainText("Source Idea: Lantern Reef");
-     await expect(page.locator("[data-journey-summary-body]")).toContainText("10000011");
-+    await expect(page.locator("[data-journey-recent-activity]")).toContainText("Created 13 Game Journey starter buckets.");
-     await expect(page.locator("[data-journey-recent-activity]")).toContainText("Created 1 Game Journey item from Source Idea.");
-
-     expect(mutatingApiRequests.some((request) => request.includes("/api/toolbox/game-hub/repositories"))).toBe(true);
-@@ -417,7 +433,6 @@ test("Idea Board guest Create Project redirects to sign in without creating a pr
-   const server = await startRepoServer();
-   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
-   const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
--  const previousMetricsDbPath = process.env.GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH;
-   const previousSupabaseEnv = {
-     GAMEFOUNDRY_DATABASE_URL: process.env.GAMEFOUNDRY_DATABASE_URL,
-     GAMEFOUNDRY_SUPABASE_ANON_KEY: process.env.GAMEFOUNDRY_SUPABASE_ANON_KEY,
-@@ -427,7 +442,6 @@ test("Idea Board guest Create Project redirects to sign in without creating a pr
-   process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
-   process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
-   process.env.GAMEFOUNDRY_DATABASE_URL = "postgres://idea-board:test@127.0.0.1:5432/idea_board";
--  process.env.GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH = `tmp/test-results/idea-board-${process.pid}-${Date.now()}.sqlite`;
-   process.env.GAMEFOUNDRY_SUPABASE_ANON_KEY = "idea-board-anon-key";
-   process.env.GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY = "idea-board-service-role-key";
-   process.env.GAMEFOUNDRY_SUPABASE_URL = `${server.baseUrl}/fake-supabase`;
-@@ -479,7 +493,6 @@ test("Idea Board guest Create Project redirects to sign in without creating a pr
+   const gameJourneyCompletionMetricsPostgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
+@@ -230,10 +231,11 @@ test("Game Journey exposes static tool ownership areas without automatic counts"
+     const constants = await fetchApiData(server, "/api/toolbox/game-journey/constants");
+     expectStaticToolOwnershipAreas(constants.GAME_JOURNEY_TOOL_OWNERSHIP_AREAS);
+     expect(constants.GAME_JOURNEY_RECOMMENDED_TARGETS.map((target) => target.label)).toEqual([
+-      "Heroes",
+-      "Enemies",
+-      "Levels",
+-      "Audio",
++      "Hero",
++      "Enemy",
++      "Boss",
++      "Background",
++      "Music",
+     ]);
    } finally {
-     restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
-     restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
--    restoreEnvValue("GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH", previousMetricsDbPath);
-     Object.entries(previousSupabaseEnv).forEach(([key, value]) => restoreEnvValue(key, value));
      await server.close();
-   }
+@@ -329,15 +331,29 @@ test("Game Journey progress dashboard summarizes completion metrics", async ({ p
+       "Next focus: Create, Design, and Graphics. Complete one small item in each area before expanding the plan.",
+       "Next action: mark one finished section item complete so overall progress can rise above 0%.",
+     ]);
+-    await expect(page.locator("[data-journey-recommended-target]")).toHaveCount(4);
+-    await expect(page.locator("[data-journey-recommended-target='heroes'] td").nth(0)).toHaveText("Heroes");
+-    await expect(page.locator("[data-journey-recommended-target='heroes'] td").nth(1)).toHaveText("Objects");
+-    await expect(page.locator("[data-journey-target-input='heroes']")).toHaveValue("1");
+-    await page.locator("[data-journey-target-input='heroes']").fill("2");
+-    await expect(page.locator("[data-journey-target-status]")).toHaveText("Saved Heroes target at 2.");
+-    await expect(page.locator("[data-journey-target-input='heroes']")).toHaveValue("2");
++    await expect(page.locator("[data-journey-recommended-target]")).toHaveCount(5);
++    await expect(page.locator("[data-journey-recommended-target] td:first-child")).toHaveText([
++      "Hero",
++      "Enemy",
++      "Boss",
++      "Background",
++      "Music",
++    ]);
++    await expect(page.locator("[data-journey-recommended-target='hero'] td").nth(1)).toHaveText("Objects");
++    await expect(page.locator("[data-journey-recommended-target='enemy'] td").nth(1)).toHaveText("Objects");
++    await expect(page.locator("[data-journey-recommended-target='boss'] td").nth(1)).toHaveText("Objects");
++    await expect(page.locator("[data-journey-recommended-target='background'] td").nth(1)).toHaveText("Graphics");
++    await expect(page.locator("[data-journey-recommended-target='music'] td").nth(1)).toHaveText("Audio");
++    await expect(page.locator("[data-journey-target-input='hero']")).toHaveValue("1");
++    await expect(page.locator("[data-journey-target-input='enemy']")).toHaveValue("4");
++    await expect(page.locator("[data-journey-target-input='boss']")).toHaveValue("1");
++    await expect(page.locator("[data-journey-target-input='background']")).toHaveValue("3");
++    await expect(page.locator("[data-journey-target-input='music']")).toHaveValue("5");
++    await page.locator("[data-journey-target-input='hero']").fill("2");
++    await expect(page.locator("[data-journey-target-status]")).toHaveText("Saved Hero target at 2.");
++    await expect(page.locator("[data-journey-target-input='hero']")).toHaveValue("2");
+     await page.reload({ waitUntil: "networkidle" });
+-    await expect(page.locator("[data-journey-target-input='heroes']")).toHaveValue("2");
++    await expect(page.locator("[data-journey-target-input='hero']")).toHaveValue("2");
+     const repositoryData = await fetchApiData(server, "/api/toolbox/game-journey/repositories", {
+       body: JSON.stringify({ options: {} }),
+       method: "POST",
+@@ -347,11 +363,15 @@ test("Game Journey progress dashboard summarizes completion metrics", async ({ p
+       method: "POST",
+     });
+     const persistedTarget = (tablesData.result.game_journey_items || []).find((item) =>
+-      item.linkedRecordType === "recommended-target" && item.linkedRecordId === "heroes",
++      item.linkedRecordType === "recommended-target" && item.linkedRecordId === "hero",
++    );
++    const objectsBucketNote = (tablesData.result.game_journey_notes || []).find((note) =>
++      note.gameKey === GAME_JOURNEY_KEYS.game && note.name === "Objects",
+     );
++    expect(objectsBucketNote?.key).toMatch(ULID_PATTERN);
+     expect(persistedTarget).toMatchObject({
+-      noteKey: GAME_JOURNEY_KEYS.notes.designPass,
+-      title: "Recommended target: Heroes",
++      noteKey: objectsBucketNote.key,
++      title: "Recommended target: Hero",
+     });
+     expect(JSON.parse(persistedTarget.userDetails)).toMatchObject({ suggestedCount: 2 });
+     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+@@ -441,7 +461,7 @@ test("Game Journey summary table uses inline notes and item subtables", async ({
+
+     await expect(page.locator("[data-journey-progress-dashboard]")).toBeVisible();
+     await expect(page.getByRole("heading", { name: "What To Do Next" })).toBeVisible();
+-    await expect(page.locator("[data-journey-recommended-target='heroes']")).toBeVisible();
++    await expect(page.locator("[data-journey-recommended-target='hero']")).toBeVisible();
+     await expectNoPageFailures(failures);
+   } finally {
+     await closeWithCoverage(page, failures);
