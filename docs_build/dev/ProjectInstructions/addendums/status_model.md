@@ -22,3 +22,4 @@
 
 BACKLOG_MASTER.md is the source of truth for Build Path and Game Journey tile status.
 Manual tile status changes are prohibited.
+Toolbox Build Path and Game Journey visual status indicators must be derived from backlog status values and may not maintain independent status state.
