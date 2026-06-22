@@ -117,7 +117,7 @@ test("Active browser product-data entrypoints use API or service clients", () =>
     "toolbox/game-journey/game-journey-api-client.js",
     "toolbox/game-hub/game-hub-api-client.js",
     "toolbox/objects/objects-api-client.js",
-    "toolbox/tags/tags-api-client.js",
+    "assets/toolbox/tags/js/index.js",
   ];
   productApiClients.forEach((filePath) => {
     assert.equal(existsSync(path.join(repoRoot, filePath)), true, `${filePath} missing`);

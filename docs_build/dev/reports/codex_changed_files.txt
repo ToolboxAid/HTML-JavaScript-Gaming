@@ -1,7 +1,9 @@
-assets/toolbox/text-to-speech/js/index.js
-docs_build/dev/reports/PR_26172_CHARLIE_014-low-risk-tool-migration-1.md
+assets/toolbox/tags/js/index.js
+docs_build/dev/reports/PR_26172_CHARLIE_015-low-risk-tool-migration-2.md
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
+scripts/validate-browser-env-agnostic.mjs
 scripts/validate-canonical-repository-structure.mjs
-tests/tools/Text2SpeechShell.test.mjs
-toolbox/text-to-speech/index.html
+tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
+toolbox/tags/index.html
+toolbox/tags/tags-api-client.js

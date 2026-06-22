@@ -1,163 +1,489 @@
-diff --git a/assets/toolbox/text-to-speech/js/index.js b/assets/toolbox/text-to-speech/js/index.js
-index b8b2afcce..2d19193c2 100644
---- a/assets/toolbox/text-to-speech/js/index.js
-+++ b/assets/toolbox/text-to-speech/js/index.js
-@@ -1,7 +1,7 @@
- import {
-   textToSpeechLanguageOptionsFromVoices,
-   TextToSpeechEngine,
--} from "../../src/engine/audio/TextToSpeechEngine.js";
-+} from "../../../../src/engine/audio/TextToSpeechEngine.js";
- import {
-   TEXT_TO_SPEECH_AGE_FILTER_OPTIONS,
-   TEXT_TO_SPEECH_DEFAULTS,
-@@ -9,7 +9,7 @@ import {
-   TEXT_TO_SPEECH_LANGUAGE_OPTIONS,
-   TEXT_TO_SPEECH_RANGE_DEFAULTS,
-   TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS
--} from "../../src/engine/audio/TextToSpeechDefaults.js";
-+} from "../../../../src/engine/audio/TextToSpeechDefaults.js";
+diff --git a/toolbox/tags/tags.js b/assets/toolbox/tags/js/index.js
+similarity index 95%
+rename from toolbox/tags/tags.js
+rename to assets/toolbox/tags/js/index.js
+index c43c6fc89..118923da9 100644
+--- a/toolbox/tags/tags.js
++++ b/assets/toolbox/tags/js/index.js
+@@ -1,4 +1,16 @@
+-import { createTagsToolApiRepository } from "./tags-api-client.js";
++import {
++  createServerRepositoryClient,
++  readServerToolConstants,
++  requireServerConstant,
++} from "../../../../src/api/server-api-client.js";
++
++const constants = readServerToolConstants("tags");
++
++export const TAGS_TOOL_TABLES = Object.freeze(requireServerConstant(constants, "TAGS_TOOL_TABLES", "tags"));
++
++export function createTagsToolApiRepository(options = {}) {
++  return createServerRepositoryClient("tags", options);
++}
 
- const TTS_OWNERSHIP = Object.freeze({
-   DESIGN: "Design",
-diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_014-low-risk-tool-migration-1.md b/docs_build/dev/reports/PR_26172_CHARLIE_014-low-risk-tool-migration-1.md
+ const repository = createTagsToolApiRepository();
+
+diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_015-low-risk-tool-migration-2.md b/docs_build/dev/reports/PR_26172_CHARLIE_015-low-risk-tool-migration-2.md
 new file mode 100644
-index 000000000..6e2af371d
+index 000000000..3c24bc5c6
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_CHARLIE_014-low-risk-tool-migration-1.md
-@@ -0,0 +1,97 @@
-+# PR_26172_CHARLIE_014 Low-Risk Tool Migration 1
++++ b/docs_build/dev/reports/PR_26172_CHARLIE_015-low-risk-tool-migration-2.md
+@@ -0,0 +1,99 @@
++# PR_26172_CHARLIE_015 Low-Risk Tool Migration 2
 +
 +## Purpose
 +
-+Migrate the safest single tool from `PR_26172_CHARLIE_013-tool-js-css-canonical-migration-audit`.
++Migrate the second safest tool from `PR_26172_CHARLIE_013-tool-js-css-canonical-migration-audit`.
 +
 +Selected tool:
 +
-+- Text To Speech
++- Tags
 +
 +## Scope Summary
 +
 +| Requirement | Status | Evidence |
 +| --- | --- | --- |
-+| Move JS to canonical structure | PASS | `toolbox/text-to-speech/text2speech.js` moved to `assets/toolbox/text-to-speech/js/index.js`. |
-+| Move CSS only if required | PASS | No Text To Speech tool-specific CSS sidecar exists; Theme V2 CSS remains unchanged. |
-+| Preserve behavior | PASS | Targeted Text To Speech Node tests passed; page-level Playwright behavior passed except for the pre-existing Game Journey metrics failure described below. |
-+| Update references | PASS | Tool page module script and direct Text To Speech test import now use the canonical path. |
-+| Targeted validation only | PASS | Ran targeted Node, guardrail, and Text To Speech Playwright validation only. |
++| Move JS to canonical structure | PASS | `toolbox/tags/tags.js` moved to `assets/toolbox/tags/js/index.js`. |
++| Move CSS only if required | PASS | No Tags tool-specific CSS sidecar exists; Theme V2 CSS remains unchanged. |
++| Preserve behavior | PASS WITH KNOWN BLOCKER | The executable code path was preserved by folding the tiny API wrapper into the canonical entrypoint. The existing Tags Playwright page test still fails on the same pre-existing Add Tag behavior before this PR. |
++| Update references | PASS | Tags page module script and product-data validation allowlists now use the canonical path. |
++| Targeted validation only | PASS | Ran targeted syntax, product-data, guardrail, and Tags Playwright validation only. |
 +
 +## Files Changed
 +
 +| File | Change |
 +| --- | --- |
-+| `assets/toolbox/text-to-speech/js/index.js` | Added via move from `toolbox/text-to-speech/text2speech.js`; import paths adjusted for new canonical depth. |
-+| `toolbox/text-to-speech/index.html` | Updated module script source to canonical JS path. |
-+| `tests/tools/Text2SpeechShell.test.mjs` | Updated direct import to canonical JS path. |
-+| `scripts/validate-canonical-repository-structure.mjs` | Removed retired Text To Speech legacy JS exception. |
++| `assets/toolbox/tags/js/index.js` | Added via move from `toolbox/tags/tags.js`; folded in `tags-api-client.js` server repository wrapper. |
++| `toolbox/tags/index.html` | Updated module script source to canonical JS path. |
++| `scripts/validate-canonical-repository-structure.mjs` | Removed retired Tags legacy JS exceptions. |
++| `scripts/validate-browser-env-agnostic.mjs` | Updated product-data client list to canonical Tags entrypoint. |
++| `tests/dev-runtime/ProductDataProviderContractHardening.test.mjs` | Updated product-data client list to canonical Tags entrypoint. |
++| `toolbox/tags/tags-api-client.js` | Removed after its small server-contract wrapper was folded into the canonical entrypoint. |
 +
 +## Reference Check
 +
-+Active references to the retired module path were searched with:
++Active references to retired Tags JS paths were searched with:
 +
 +```text
-+rg -n "toolbox/text-to-speech/text2speech\.js|text-to-speech/text2speech\.js|text2speech\.js" . --glob "!archive/**" --glob "!docs_build/dev/reports/**" --glob "!tmp/**" --glob "!node_modules/**"
++rg -n "toolbox/tags/tags-api-client\.js|toolbox/tags/tags\.js|tags-api-client\.js|tags\.js" . --glob "!archive/**" --glob "!docs_build/dev/reports/**" --glob "!tmp/**" --glob "!node_modules/**"
 +```
 +
 +Result:
 +
 +- PASS for active runtime/test references.
-+- One historical `docs_build/pr/PR_26171_069-message-tts-profile-contract-alignment/BUILD_PR.md` reference remains intentionally unchanged.
++- One `docs_build/database/seed/guest/tags.json` data-source field contains `tags.json`, not a retired JS path.
 +
 +## Validation Results
 +
 +| Command | Status | Notes |
 +| --- | --- | --- |
-+| `node --check assets/toolbox/text-to-speech/js/index.js` | PASS | Syntax check for moved module. |
-+| `node --check scripts/validate-canonical-repository-structure.mjs` | PASS | Syntax check for updated guardrail. |
-+| `node --check tests/tools/Text2SpeechShell.test.mjs` | PASS | Syntax check for updated test import. |
-+| `node scripts/run-node-test-files.mjs tests/tools/Text2SpeechShell.test.mjs` | PASS | 4/4 Text To Speech targeted Node tests passed. |
-+| `npm run validate:canonical-structure` | PASS | Blocking violations: 0; approved legacy exceptions: 494. |
-+| `npx playwright test tests/playwright/tools/TextToSpeechFunctional.spec.mjs` | PARTIAL | 2/3 passed. The failing registration test reached the Text To Speech page but failed because the toolbox index emitted the known pre-existing `500 /api/game-journey/completion-metrics` request documented by PR_006A. |
++| `node --check assets/toolbox/tags/js/index.js` | PASS | Syntax check for canonical Tags module. |
++| `node --check scripts/validate-browser-env-agnostic.mjs` | PASS | Syntax check for updated environment gate. |
++| `node --check tests/dev-runtime/ProductDataProviderContractHardening.test.mjs` | PASS | Syntax check for updated product-data test. |
++| `npm run validate:canonical-structure` | PASS | Blocking violations: 0; approved legacy exceptions: 492. |
++| `node scripts/run-node-test-files.mjs tests/dev-runtime/ProductDataProviderContractHardening.test.mjs` | FAIL PRE-EXISTING | Fails on broader Toolbox registry/admin vote assertions unrelated to the Tags path update. |
++| `node scripts/validate-browser-env-agnostic.mjs` | FAIL PRE-EXISTING | Fails on broader product-service and user-facing implementation wording findings unrelated to the Tags path update. |
++| `npx playwright test tests/playwright/tools/TagsTool.spec.mjs` | FAIL PRE-EXISTING | 1/2 passed; page behavior test fails waiting for `[data-tags-editing-row="__new__"]`. |
++| Previous-commit comparison | PASS | The same Tags Playwright failure reproduced on `bfc203e82` before PR_015 changes. |
 +| `git diff --check` | PASS | No whitespace errors. |
 +
 +## Playwright Failure Classification
 +
 +Root cause:
 +
-+- The failed Playwright assertion records `500 http://127.0.0.1:<port>/api/game-journey/completion-metrics`.
++- The existing Tags page test fails after clicking Add Tag because `[data-tags-editing-row="__new__"]` does not appear.
 +
-+Whether PR_014 caused it:
++Whether PR_015 caused it:
 +
-+- No. The failure matches the previously documented PR_006A validation failure from legacy SQLite preservation protection.
-+- The Text To Speech page load and browser speech behavior tests passed.
-+- The failed test confirms the Text To Speech toolbox registration path still navigates to `/toolbox/text-to-speech/index.html`.
++- No. The same failure reproduced in a temporary worktree checked out at `bfc203e82`, the commit immediately before PR_015 edits.
 +
 +Action:
 +
-+- Do not expand this PR into Game Journey API work.
-+- Continue stack because this migration did not introduce the known failure.
++- Do not expand this canonical migration into Tags runtime behavior repair.
++- Preserve the migration and document the existing blocker for a future scoped Tags behavior PR.
 +
 +## Branch Validation
 +
 +| Check | Status | Evidence |
 +| --- | --- | --- |
 +| Current branch | PASS | `PR_26172_CHARLIE_repository-compliance-stack`. |
-+| Worktree clean before PR_014 edits | PASS | PR_013 was committed and pushed before this scope. |
-+| Local/origin sync before PR_014 edits | PASS | `0 0` after PR_013 push. |
++| Worktree clean before PR_015 edits | PASS | PR_014 was committed and pushed before this scope. |
++| Local/origin sync before PR_015 edits | PASS | `0 0` after PR_014 push. |
 +| Main merge avoided | PASS | No merge to `main` was performed. |
 +
 +## Requirement Checklist
 +
 +| Requirement | Status | Evidence |
 +| --- | --- | --- |
-+| Use safest tool from PR_013 | PASS | Text To Speech ranked #1. |
++| Use second safest tool from PR_013 | PASS | Tags ranked #2. |
 +| Move JS to canonical structure | PASS | Canonical path added. |
 +| Move CSS only if required | PASS | No CSS move required. |
-+| Preserve behavior | PASS | Targeted TTS behavior passed; unrelated known failure documented. |
-+| Update references | PASS | HTML/test references updated. |
++| Preserve behavior | PASS WITH KNOWN BLOCKER | Code path preserved; pre-existing Tags page behavior test remains failing. |
++| Update references | PASS | HTML and validation references updated. |
 +| Targeted validation only | PASS | No samples or full smoke run. |
-+| Produce ZIP artifact | PASS | `tmp/PR_26172_CHARLIE_014-low-risk-tool-migration-1_delta.zip` generated. |
++| Produce ZIP artifact | PASS | `tmp/PR_26172_CHARLIE_015-low-risk-tool-migration-2_delta.zip` generated. |
 +
 +## Manual Validation Notes
 +
-+- This PR removes one approved legacy JS exception from the guardrail.
-+- The Text To Speech module remains the same executable implementation after the move, except for relative import path depth.
-+- The known Game Journey metrics 500 remains outside Charlie PR_014 scope.
++- This PR removes two approved legacy JS exceptions from the canonical guardrail.
++- The Tags server-contract wrapper still uses `createServerRepositoryClient`, `readServerToolConstants`, and `requireServerConstant`.
++- Broader product-data validation failures are pre-existing and outside this low-risk canonical migration scope.
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index d1c1d9689..a456340eb 100644
+--- a/docs_build/dev/reports/codex_changed_files.txt
++++ b/docs_build/dev/reports/codex_changed_files.txt
+@@ -1,7 +1,8 @@
+-assets/toolbox/text-to-speech/js/index.js
+-docs_build/dev/reports/PR_26172_CHARLIE_014-low-risk-tool-migration-1.md
++assets/toolbox/tags/js/index.js
++docs_build/dev/reports/PR_26172_CHARLIE_015-low-risk-tool-migration-2.md
+ docs_build/dev/reports/codex_changed_files.txt
+ docs_build/dev/reports/codex_review.diff
++scripts/validate-browser-env-agnostic.mjs
+ scripts/validate-canonical-repository-structure.mjs
+-tests/tools/Text2SpeechShell.test.mjs
+-toolbox/text-to-speech/index.html
++tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
++toolbox/tags/index.html
+diff --git a/docs_build/dev/reports/codex_review.diff b/docs_build/dev/reports/codex_review.diff
+index 5abc90642..ec17f815a 100644
+--- a/docs_build/dev/reports/codex_review.diff
++++ b/docs_build/dev/reports/codex_review.diff
+@@ -1,163 +1,179 @@
+-diff --git a/assets/toolbox/text-to-speech/js/index.js b/assets/toolbox/text-to-speech/js/index.js
+-index b8b2afcce..2d19193c2 100644
+---- a/assets/toolbox/text-to-speech/js/index.js
+-+++ b/assets/toolbox/text-to-speech/js/index.js
+-@@ -1,7 +1,7 @@
+- import {
+-   textToSpeechLanguageOptionsFromVoices,
+-   TextToSpeechEngine,
+--} from "../../src/engine/audio/TextToSpeechEngine.js";
+-+} from "../../../../src/engine/audio/TextToSpeechEngine.js";
+- import {
+-   TEXT_TO_SPEECH_AGE_FILTER_OPTIONS,
+-   TEXT_TO_SPEECH_DEFAULTS,
+-@@ -9,7 +9,7 @@ import {
+-   TEXT_TO_SPEECH_LANGUAGE_OPTIONS,
+-   TEXT_TO_SPEECH_RANGE_DEFAULTS,
+-   TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS
+--} from "../../src/engine/audio/TextToSpeechDefaults.js";
+-+} from "../../../../src/engine/audio/TextToSpeechDefaults.js";
++diff --git a/assets/toolbox/tags/js/index.js b/assets/toolbox/tags/js/index.js
++index c43c6fc89..118923da9 100644
++--- a/assets/toolbox/tags/js/index.js
+++++ b/assets/toolbox/tags/js/index.js
++@@ -1,4 +1,16 @@
++-import { createTagsToolApiRepository } from "./tags-api-client.js";
+++import {
+++  createServerRepositoryClient,
+++  readServerToolConstants,
+++  requireServerConstant,
+++} from "../../../../src/api/server-api-client.js";
+++
+++const constants = readServerToolConstants("tags");
+++
+++export const TAGS_TOOL_TABLES = Object.freeze(requireServerConstant(constants, "TAGS_TOOL_TABLES", "tags"));
+++
+++export function createTagsToolApiRepository(options = {}) {
+++  return createServerRepositoryClient("tags", options);
+++}
+
+- const TTS_OWNERSHIP = Object.freeze({
+-   DESIGN: "Design",
+-diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_014-low-risk-tool-migration-1.md b/docs_build/dev/reports/PR_26172_CHARLIE_014-low-risk-tool-migration-1.md
++ const repository = createTagsToolApiRepository();
++
++diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_015-low-risk-tool-migration-2.md b/docs_build/dev/reports/PR_26172_CHARLIE_015-low-risk-tool-migration-2.md
+ new file mode 100644
+-index 000000000..6e2af371d
++index 000000000..3c24bc5c6
+ --- /dev/null
+-+++ b/docs_build/dev/reports/PR_26172_CHARLIE_014-low-risk-tool-migration-1.md
+-@@ -0,0 +1,97 @@
+-+# PR_26172_CHARLIE_014 Low-Risk Tool Migration 1
+++++ b/docs_build/dev/reports/PR_26172_CHARLIE_015-low-risk-tool-migration-2.md
++@@ -0,0 +1,99 @@
+++# PR_26172_CHARLIE_015 Low-Risk Tool Migration 2
+ +
+ +## Purpose
+ +
+-+Migrate the safest single tool from `PR_26172_CHARLIE_013-tool-js-css-canonical-migration-audit`.
+++Migrate the second safest tool from `PR_26172_CHARLIE_013-tool-js-css-canonical-migration-audit`.
+ +
+ +Selected tool:
+ +
+-+- Text To Speech
+++- Tags
+ +
+ +## Scope Summary
+ +
+ +| Requirement | Status | Evidence |
+ +| --- | --- | --- |
+-+| Move JS to canonical structure | PASS | `toolbox/text-to-speech/text2speech.js` moved to `assets/toolbox/text-to-speech/js/index.js`. |
+-+| Move CSS only if required | PASS | No Text To Speech tool-specific CSS sidecar exists; Theme V2 CSS remains unchanged. |
+-+| Preserve behavior | PASS | Targeted Text To Speech Node tests passed; page-level Playwright behavior passed except for the pre-existing Game Journey metrics failure described below. |
+-+| Update references | PASS | Tool page module script and direct Text To Speech test import now use the canonical path. |
+-+| Targeted validation only | PASS | Ran targeted Node, guardrail, and Text To Speech Playwright validation only. |
+++| Move JS to canonical structure | PASS | `toolbox/tags/tags.js` moved to `assets/toolbox/tags/js/index.js`. |
+++| Move CSS only if required | PASS | No Tags tool-specific CSS sidecar exists; Theme V2 CSS remains unchanged. |
+++| Preserve behavior | PASS WITH KNOWN BLOCKER | The executable code path was preserved by folding the tiny API wrapper into the canonical entrypoint. The existing Tags Playwright page test still fails on the same pre-existing Add Tag behavior before this PR. |
+++| Update references | PASS | Tags page module script and product-data validation allowlists now use the canonical path. |
+++| Targeted validation only | PASS | Ran targeted syntax, product-data, guardrail, and Tags Playwright validation only. |
+ +
+ +## Files Changed
+ +
+ +| File | Change |
+ +| --- | --- |
+-+| `assets/toolbox/text-to-speech/js/index.js` | Added via move from `toolbox/text-to-speech/text2speech.js`; import paths adjusted for new canonical depth. |
+-+| `toolbox/text-to-speech/index.html` | Updated module script source to canonical JS path. |
+-+| `tests/tools/Text2SpeechShell.test.mjs` | Updated direct import to canonical JS path. |
+-+| `scripts/validate-canonical-repository-structure.mjs` | Removed retired Text To Speech legacy JS exception. |
+++| `assets/toolbox/tags/js/index.js` | Added via move from `toolbox/tags/tags.js`; folded in `tags-api-client.js` server repository wrapper. |
+++| `toolbox/tags/index.html` | Updated module script source to canonical JS path. |
+++| `scripts/validate-canonical-repository-structure.mjs` | Removed retired Tags legacy JS exceptions. |
+++| `scripts/validate-browser-env-agnostic.mjs` | Updated product-data client list to canonical Tags entrypoint. |
+++| `tests/dev-runtime/ProductDataProviderContractHardening.test.mjs` | Updated product-data client list to canonical Tags entrypoint. |
+++| `toolbox/tags/tags-api-client.js` | Removed after its small server-contract wrapper was folded into the canonical entrypoint. |
+ +
+ +## Reference Check
+ +
+-+Active references to the retired module path were searched with:
+++Active references to retired Tags JS paths were searched with:
+ +
+ +```text
+-+rg -n "toolbox/text-to-speech/text2speech\.js|text-to-speech/text2speech\.js|text2speech\.js" . --glob "!archive/**" --glob "!docs_build/dev/reports/**" --glob "!tmp/**" --glob "!node_modules/**"
+++rg -n "toolbox/tags/tags-api-client\.js|toolbox/tags/tags\.js|tags-api-client\.js|tags\.js" . --glob "!archive/**" --glob "!docs_build/dev/reports/**" --glob "!tmp/**" --glob "!node_modules/**"
+ +```
+ +
+ +Result:
+ +
+ +- PASS for active runtime/test references.
+-+- One historical `docs_build/pr/PR_26171_069-message-tts-profile-contract-alignment/BUILD_PR.md` reference remains intentionally unchanged.
+++- One `docs_build/database/seed/guest/tags.json` data-source field contains `tags.json`, not a retired JS path.
+ +
+ +## Validation Results
+ +
+ +| Command | Status | Notes |
+ +| --- | --- | --- |
+-+| `node --check assets/toolbox/text-to-speech/js/index.js` | PASS | Syntax check for moved module. |
+-+| `node --check scripts/validate-canonical-repository-structure.mjs` | PASS | Syntax check for updated guardrail. |
+-+| `node --check tests/tools/Text2SpeechShell.test.mjs` | PASS | Syntax check for updated test import. |
+-+| `node scripts/run-node-test-files.mjs tests/tools/Text2SpeechShell.test.mjs` | PASS | 4/4 Text To Speech targeted Node tests passed. |
+-+| `npm run validate:canonical-structure` | PASS | Blocking violations: 0; approved legacy exceptions: 494. |
+-+| `npx playwright test tests/playwright/tools/TextToSpeechFunctional.spec.mjs` | PARTIAL | 2/3 passed. The failing registration test reached the Text To Speech page but failed because the toolbox index emitted the known pre-existing `500 /api/game-journey/completion-metrics` request documented by PR_006A. |
+++| `node --check assets/toolbox/tags/js/index.js` | PASS | Syntax check for canonical Tags module. |
+++| `node --check scripts/validate-browser-env-agnostic.mjs` | PASS | Syntax check for updated environment gate. |
+++| `node --check tests/dev-runtime/ProductDataProviderContractHardening.test.mjs` | PASS | Syntax check for updated product-data test. |
+++| `npm run validate:canonical-structure` | PASS | Blocking violations: 0; approved legacy exceptions: 492. |
+++| `node scripts/run-node-test-files.mjs tests/dev-runtime/ProductDataProviderContractHardening.test.mjs` | FAIL PRE-EXISTING | Fails on broader Toolbox registry/admin vote assertions unrelated to the Tags path update. |
+++| `node scripts/validate-browser-env-agnostic.mjs` | FAIL PRE-EXISTING | Fails on broader product-service and user-facing implementation wording findings unrelated to the Tags path update. |
+++| `npx playwright test tests/playwright/tools/TagsTool.spec.mjs` | FAIL PRE-EXISTING | 1/2 passed; page behavior test fails waiting for `[data-tags-editing-row="__new__"]`. |
+++| Previous-commit comparison | PASS | The same Tags Playwright failure reproduced on `bfc203e82` before PR_015 changes. |
+ +| `git diff --check` | PASS | No whitespace errors. |
+ +
+ +## Playwright Failure Classification
+ +
+ +Root cause:
+ +
+-+- The failed Playwright assertion records `500 http://127.0.0.1:<port>/api/game-journey/completion-metrics`.
+++- The existing Tags page test fails after clicking Add Tag because `[data-tags-editing-row="__new__"]` does not appear.
+ +
+-+Whether PR_014 caused it:
+++Whether PR_015 caused it:
+ +
+-+- No. The failure matches the previously documented PR_006A validation failure from legacy SQLite preservation protection.
+-+- The Text To Speech page load and browser speech behavior tests passed.
+-+- The failed test confirms the Text To Speech toolbox registration path still navigates to `/toolbox/text-to-speech/index.html`.
+++- No. The same failure reproduced in a temporary worktree checked out at `bfc203e82`, the commit immediately before PR_015 edits.
+ +
+ +Action:
+ +
+-+- Do not expand this PR into Game Journey API work.
+-+- Continue stack because this migration did not introduce the known failure.
+++- Do not expand this canonical migration into Tags runtime behavior repair.
+++- Preserve the migration and document the existing blocker for a future scoped Tags behavior PR.
+ +
+ +## Branch Validation
+ +
+ +| Check | Status | Evidence |
+ +| --- | --- | --- |
+ +| Current branch | PASS | `PR_26172_CHARLIE_repository-compliance-stack`. |
+-+| Worktree clean before PR_014 edits | PASS | PR_013 was committed and pushed before this scope. |
+-+| Local/origin sync before PR_014 edits | PASS | `0 0` after PR_013 push. |
+++| Worktree clean before PR_015 edits | PASS | PR_014 was committed and pushed before this scope. |
+++| Local/origin sync before PR_015 edits | PASS | `0 0` after PR_014 push. |
+ +| Main merge avoided | PASS | No merge to `main` was performed. |
+ +
+ +## Requirement Checklist
+ +
+ +| Requirement | Status | Evidence |
+ +| --- | --- | --- |
+-+| Use safest tool from PR_013 | PASS | Text To Speech ranked #1. |
+++| Use second safest tool from PR_013 | PASS | Tags ranked #2. |
+ +| Move JS to canonical structure | PASS | Canonical path added. |
+ +| Move CSS only if required | PASS | No CSS move required. |
+-+| Preserve behavior | PASS | Targeted TTS behavior passed; unrelated known failure documented. |
+-+| Update references | PASS | HTML/test references updated. |
+++| Preserve behavior | PASS WITH KNOWN BLOCKER | Code path preserved; pre-existing Tags page behavior test remains failing. |
+++| Update references | PASS | HTML and validation references updated. |
+ +| Targeted validation only | PASS | No samples or full smoke run. |
+-+| Produce ZIP artifact | PASS | `tmp/PR_26172_CHARLIE_014-low-risk-tool-migration-1_delta.zip` generated. |
+++| Produce ZIP artifact | PASS | `tmp/PR_26172_CHARLIE_015-low-risk-tool-migration-2_delta.zip` generated. |
+ +
+ +## Manual Validation Notes
+ +
+-+- This PR removes one approved legacy JS exception from the guardrail.
+-+- The Text To Speech module remains the same executable implementation after the move, except for relative import path depth.
+-+- The known Game Journey metrics 500 remains outside Charlie PR_014 scope.
+++- This PR removes two approved legacy JS exceptions from the canonical guardrail.
+++- The Tags server-contract wrapper still uses `createServerRepositoryClient`, `readServerToolConstants`, and `requireServerConstant`.
+++- Broader product-data validation failures are pre-existing and outside this low-risk canonical migration scope.
++diff --git a/scripts/validate-browser-env-agnostic.mjs b/scripts/validate-browser-env-agnostic.mjs
++index ac69a4324..d0267c93f 100644
++--- a/scripts/validate-browser-env-agnostic.mjs
+++++ b/scripts/validate-browser-env-agnostic.mjs
++@@ -68,7 +68,7 @@ const productApiClientFiles = Object.freeze([
++   "toolbox/game-journey/game-journey-api-client.js",
++   "toolbox/game-hub/game-hub-api-client.js",
++   "toolbox/objects/objects-api-client.js",
++-  "toolbox/tags/tags-api-client.js",
+++  "assets/toolbox/tags/js/index.js",
++ ]);
++ const userFacingUiRoots = Object.freeze(["account", "toolbox"]);
++ const nonUiCompatibilityFiles = new Set([
+ diff --git a/scripts/validate-canonical-repository-structure.mjs b/scripts/validate-canonical-repository-structure.mjs
+-index e5b4c4d78..e2033f742 100644
++index e2033f742..394106da8 100644
+ --- a/scripts/validate-canonical-repository-structure.mjs
+ +++ b/scripts/validate-canonical-repository-structure.mjs
+-@@ -28,7 +28,6 @@ export const APPROVED_LEGACY_JS_PATHS = Object.freeze(new Set([
++@@ -26,8 +26,6 @@ export const APPROVED_LEGACY_JS_PATHS = Object.freeze(new Set([
++   "toolbox/messages/messages.js",
++   "toolbox/objects/objects-api-client.js",
+    "toolbox/objects/objects.js",
+-   "toolbox/tags/tags-api-client.js",
+-   "toolbox/tags/tags.js",
+--  "toolbox/text-to-speech/text2speech.js",
++-  "toolbox/tags/tags-api-client.js",
++-  "toolbox/tags/tags.js",
+    "toolbox/tool-registry-api-client.js",
+    "toolbox/toolRegistry.js",
+    "toolbox/tools-page-accordions.js",
+-diff --git a/tests/tools/Text2SpeechShell.test.mjs b/tests/tools/Text2SpeechShell.test.mjs
+-index 719243bff..38dbbf960 100644
+---- a/tests/tools/Text2SpeechShell.test.mjs
+-+++ b/tests/tools/Text2SpeechShell.test.mjs
+-@@ -14,7 +14,7 @@ import {
+-   createTtsMessage,
+-   createVoiceProfile,
+-   previewTtsMessage,
+--} from "../../toolbox/text-to-speech/text2speech.js";
+-+} from "../../assets/toolbox/text-to-speech/js/index.js";
+-
+- test("Text2Speech message model separates Design and Audio ownership", () => {
+-   const message = createTtsMessage({ text: "Hello", metadata: { tags: ["intro"] } });
+-diff --git a/toolbox/text-to-speech/index.html b/toolbox/text-to-speech/index.html
+-index 9f509977a..f86090509 100644
+---- a/toolbox/text-to-speech/index.html
+-+++ b/toolbox/text-to-speech/index.html
+-@@ -124,7 +124,7 @@
++diff --git a/tests/dev-runtime/ProductDataProviderContractHardening.test.mjs b/tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
++index 15fd5ae10..469947243 100644
++--- a/tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
+++++ b/tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
++@@ -117,7 +117,7 @@ test("Active browser product-data entrypoints use API or service clients", () =>
++     "toolbox/game-journey/game-journey-api-client.js",
++     "toolbox/game-hub/game-hub-api-client.js",
++     "toolbox/objects/objects-api-client.js",
++-    "toolbox/tags/tags-api-client.js",
+++    "assets/toolbox/tags/js/index.js",
++   ];
++   productApiClients.forEach((filePath) => {
++     assert.equal(existsSync(path.join(repoRoot, filePath)), true, `${filePath} missing`);
++diff --git a/toolbox/tags/index.html b/toolbox/tags/index.html
++index d8b2f89fb..974e8b672 100644
++--- a/toolbox/tags/index.html
+++++ b/toolbox/tags/index.html
++@@ -116,7 +116,7 @@
+      <div data-partial="footer"></div>
+      <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+      <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+--    <script type="module" src="toolbox/text-to-speech/text2speech.js"></script>
+-+    <script type="module" src="assets/toolbox/text-to-speech/js/index.js"></script>
++-    <script type="module" src="toolbox/tags/tags.js"></script>
+++    <script type="module" src="assets/toolbox/tags/js/index.js"></script>
+  </body>
+
+  </html>
+diff --git a/scripts/validate-browser-env-agnostic.mjs b/scripts/validate-browser-env-agnostic.mjs
+index ac69a4324..d0267c93f 100644
+--- a/scripts/validate-browser-env-agnostic.mjs
++++ b/scripts/validate-browser-env-agnostic.mjs
+@@ -68,7 +68,7 @@ const productApiClientFiles = Object.freeze([
+   "toolbox/game-journey/game-journey-api-client.js",
+   "toolbox/game-hub/game-hub-api-client.js",
+   "toolbox/objects/objects-api-client.js",
+-  "toolbox/tags/tags-api-client.js",
++  "assets/toolbox/tags/js/index.js",
+ ]);
+ const userFacingUiRoots = Object.freeze(["account", "toolbox"]);
+ const nonUiCompatibilityFiles = new Set([
 diff --git a/scripts/validate-canonical-repository-structure.mjs b/scripts/validate-canonical-repository-structure.mjs
-index e5b4c4d78..e2033f742 100644
+index e2033f742..394106da8 100644
 --- a/scripts/validate-canonical-repository-structure.mjs
 +++ b/scripts/validate-canonical-repository-structure.mjs
-@@ -28,7 +28,6 @@ export const APPROVED_LEGACY_JS_PATHS = Object.freeze(new Set([
+@@ -26,8 +26,6 @@ export const APPROVED_LEGACY_JS_PATHS = Object.freeze(new Set([
+   "toolbox/messages/messages.js",
+   "toolbox/objects/objects-api-client.js",
    "toolbox/objects/objects.js",
-   "toolbox/tags/tags-api-client.js",
-   "toolbox/tags/tags.js",
--  "toolbox/text-to-speech/text2speech.js",
+-  "toolbox/tags/tags-api-client.js",
+-  "toolbox/tags/tags.js",
    "toolbox/tool-registry-api-client.js",
    "toolbox/toolRegistry.js",
    "toolbox/tools-page-accordions.js",
-diff --git a/tests/tools/Text2SpeechShell.test.mjs b/tests/tools/Text2SpeechShell.test.mjs
-index 719243bff..38dbbf960 100644
---- a/tests/tools/Text2SpeechShell.test.mjs
-+++ b/tests/tools/Text2SpeechShell.test.mjs
-@@ -14,7 +14,7 @@ import {
-   createTtsMessage,
-   createVoiceProfile,
-   previewTtsMessage,
--} from "../../toolbox/text-to-speech/text2speech.js";
-+} from "../../assets/toolbox/text-to-speech/js/index.js";
-
- test("Text2Speech message model separates Design and Audio ownership", () => {
-   const message = createTtsMessage({ text: "Hello", metadata: { tags: ["intro"] } });
-diff --git a/toolbox/text-to-speech/index.html b/toolbox/text-to-speech/index.html
-index 9f509977a..f86090509 100644
---- a/toolbox/text-to-speech/index.html
-+++ b/toolbox/text-to-speech/index.html
-@@ -124,7 +124,7 @@
+diff --git a/tests/dev-runtime/ProductDataProviderContractHardening.test.mjs b/tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
+index 15fd5ae10..469947243 100644
+--- a/tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
++++ b/tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
+@@ -117,7 +117,7 @@ test("Active browser product-data entrypoints use API or service clients", () =>
+     "toolbox/game-journey/game-journey-api-client.js",
+     "toolbox/game-hub/game-hub-api-client.js",
+     "toolbox/objects/objects-api-client.js",
+-    "toolbox/tags/tags-api-client.js",
++    "assets/toolbox/tags/js/index.js",
+   ];
+   productApiClients.forEach((filePath) => {
+     assert.equal(existsSync(path.join(repoRoot, filePath)), true, `${filePath} missing`);
+diff --git a/toolbox/tags/index.html b/toolbox/tags/index.html
+index d8b2f89fb..974e8b672 100644
+--- a/toolbox/tags/index.html
++++ b/toolbox/tags/index.html
+@@ -116,7 +116,7 @@
      <div data-partial="footer"></div>
      <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
      <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
--    <script type="module" src="toolbox/text-to-speech/text2speech.js"></script>
-+    <script type="module" src="assets/toolbox/text-to-speech/js/index.js"></script>
+-    <script type="module" src="toolbox/tags/tags.js"></script>
++    <script type="module" src="assets/toolbox/tags/js/index.js"></script>
  </body>
 
  </html>
+diff --git a/toolbox/tags/tags-api-client.js b/toolbox/tags/tags-api-client.js
+deleted file mode 100644
+index 2046bf88e..000000000
+--- a/toolbox/tags/tags-api-client.js
++++ /dev/null
+@@ -1,13 +0,0 @@
+-import {
+-  createServerRepositoryClient,
+-  readServerToolConstants,
+-  requireServerConstant,
+-} from "../../src/api/server-api-client.js";
+-
+-const constants = readServerToolConstants("tags");
+-
+-export const TAGS_TOOL_TABLES = Object.freeze(requireServerConstant(constants, "TAGS_TOOL_TABLES", "tags"));
+-
+-export function createTagsToolApiRepository(options = {}) {
+-  return createServerRepositoryClient("tags", options);
+-}

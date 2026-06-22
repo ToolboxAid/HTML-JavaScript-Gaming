@@ -68,7 +68,7 @@ const productApiClientFiles = Object.freeze([
   "toolbox/game-journey/game-journey-api-client.js",
   "toolbox/game-hub/game-hub-api-client.js",
   "toolbox/objects/objects-api-client.js",
-  "toolbox/tags/tags-api-client.js",
+  "assets/toolbox/tags/js/index.js",
 ]);
 const userFacingUiRoots = Object.freeze(["account", "toolbox"]);
 const nonUiCompatibilityFiles = new Set([
