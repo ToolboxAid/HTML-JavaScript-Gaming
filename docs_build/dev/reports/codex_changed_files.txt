@@ -1,9 +1,3 @@
-assets/toolbox/tags/js/index.js
-docs_build/dev/reports/PR_26172_CHARLIE_015-low-risk-tool-migration-2.md
+docs_build/dev/reports/PR_26172_CHARLIE_016-repository-compliance-reaudit.md
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
-scripts/validate-browser-env-agnostic.mjs
-scripts/validate-canonical-repository-structure.mjs
-tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
-toolbox/tags/index.html
-toolbox/tags/tags-api-client.js
