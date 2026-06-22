@@ -1,138 +1,254 @@
-﻿diff --git a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-index ab10302ff..09cc34579 100644
---- a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-+++ b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-@@ -136,3 +136,26 @@
-   - Tile overlay status rules installed.
-   - Deprecation workflow installed.
-   - Team start commands installed.
-+
-+- [x] OWNER - Governance hygiene initiative complete
-+
-+  Notes:
-+  - Workstream Hygiene governance verified.
-+  - PI Closeout governance verified.
-+  - GitHub Hygiene Audit governance verified.
-+  - EOD Workstream Closeout governance verified.
-+  - GitHub-authoritative workstream enforcement verified through push, local/origin sync, and GitHub hygiene review requirements.
-+
-+- [x] OWNER - Multi-team workflow governance complete
-+
-+  Notes:
-+  - Sequential Codex Queue governance verified through the all-team sequential PR execution model.
-+  - OWNER merge approval and EOD merge governance verified.
-+  - Team ownership governance verified through the authoritative ownership map.
-+
-+- [x] OWNER - Repository hygiene governance complete
-+
-+  Notes:
-+  - Open PR, draft PR, local branch, and remote branch review requirements verified.
-+  - Recommendation-only hygiene audit process verified.
-+  - Branch deletion and PR closure remain prohibited without explicit owner approval.
-diff --git a/docs_build/dev/reports/PR_26172_OWNER_033-governance-hygiene-closeout-governance-closeout-report.md b/docs_build/dev/reports/PR_26172_OWNER_033-governance-hygiene-closeout-governance-closeout-report.md
+diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_001-repository-compliance-audit.md b/docs_build/dev/reports/PR_26172_CHARLIE_001-repository-compliance-audit.md
 new file mode 100644
-index 0000000000000000000000000000000000000000..25afe742506df1b222ffa8f8e3056e6f1abb2f6f
-GIT binary patch
-literal 2315
-zcmd5;O>^5e5bZ59`V~9lt10GVrk$}*vZ^RbYl$W0<fwtkm53MwRD4L*jQ?2={Ym``
-zU4RrxC$e%(F0u?Puy1$q-qU~o{CfdOx_bNTo8R897N6&nboKh(yJ(|!s3ns*M&)6{
-zQDT$}Wl%W_({>NW$F&r<O54HU;sUZ<ZE-LNTj1kuiO}5#&3(Wnx13qNLtwH1jk(eV
-zthr<YjAhmtSSx+v<Rw&2SRPqq73`IMSPQl9#a%Y{ZI$6x=|h{b12GIpm;QpqUZOT7
-z-wp;5EGMH|u<8Nj6@+HcS{nelV8-w@&k41ni0(exYMK+DLUg=Y9dl8&hHAKiWRztA
-zORuS)P`612gC|JwZ^t!OC@nleR=4H}COcjr4G5knCW<23>wVJNXKIbH+86nuo?#y`
-zK5}CX9r6(9PoZ+Nx_4X@ae=!yNf#d{<K=2L&z9-kcsX0lvtd<Se-o$G7tHNUQYM%C
-zzL=O51gvnCiNl~)eo%ClCY}pd;CW!fP){=J-d3;8KM?e3L^awew;$Yn+vSlfxcy0b
-z{T*mE{>kF^{!m(0{~VqFKDz!CBIazVG$)#PY4Q5dkl;);)TNHMy5^gKdrbmZ!q%CR
-zL;>nnUIXEY={2;JZ{k6yoQarHZ@2_=kU9JUudkb9Up<aCM>C%!4WiX#)VSlgudB)k
-z4KbgSDvniwkMNg6_e@Z~CdG(oNR=nwG7}0UeMK-_ZUi>>86;6t67Ugo=LrmZZp&I@
-zw-jYM07+_y#6cxjq#Cp7{B|;5dR++UU!CTCUB^glOBUatW$~0%6@yL;&kW`TRl2?V
-zb2(cj<Dq@Dq@@+((gdG*KK$SiU7m_<gQW!B4|pyieD|no*9iXxeAmEU?xQmZ^U-nv
-zl2vG6B-V8PMzfu&uNjw23y!{WZ;3Z7e-LVO)b6`&!7LhYIMdEcPxxZ4Dw=@BAw}Mv
-z^*rc@dNY2}`g)Nb+SD;!XvRf=lRA276+&Jzxj}OUQpu40J(3~onoiv+RqP2;Ab|{y
-zcnqiK?CC)#j=?_HCnh*mPLaO!4RNmE>ovJnUSj^xnBlXY7_t`sBI(CSYl&@KBG_S1
-fY%9q}vp;6ZW$>oBdrgs&;^2FiG2cfj=UmwT(`Pdp
-
-literal 0
-HcmV?d00001
-
-diff --git a/docs_build/dev/reports/PR_26172_OWNER_033-governance-hygiene-closeout-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26172_OWNER_033-governance-hygiene-closeout-instruction-compliance-checklist.md
-new file mode 100644
-index 000000000..0c4b589e4
+index 000000000..ff09afb85
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_OWNER_033-governance-hygiene-closeout-instruction-compliance-checklist.md
-@@ -0,0 +1,22 @@
-+﻿# Instruction Compliance Checklist
++++ b/docs_build/dev/reports/PR_26172_CHARLIE_001-repository-compliance-audit.md
+@@ -0,0 +1,236 @@
++# PR_26172_CHARLIE_001 Repository Compliance Audit
 +
-+PR: $pr
++## Scope
 +
-+- [x] Read docs_build/dev/PROJECT_INSTRUCTIONS.md.
-+- [x] Read docs_build/dev/PROJECT_MULTI_PC.txt.
-+- [x] Verified current branch was the approved OWNER workstream branch before PR 033 branch creation.
-+- [x] Verified repository was clean/synced before PR 033 edits.
-+- [x] Verified PR TEAM token is OWNER.
-+- [x] Verified OWNER governance closeout scope matches TEAM ownership.
-+- [x] Updated only scoped governance backlog and required reports.
-+- [x] Ran git diff --check.
-+- [x] Verified Workstream Hygiene governance exists.
-+- [x] Verified PI Closeout governance exists.
-+- [x] Verified GitHub Hygiene Audit governance exists.
-+- [x] Verified EOD Workstream Closeout governance exists.
-+- [x] Verified GitHub-authoritative workstream controls exist.
-+- [x] Verified Sequential Codex Queue governance exists.
-+- [x] Verified Alpha/Beta/Gamma ownership governance exists.
-+- [x] Documented skipped Playwright and samples lanes.
-+- [x] Created required Codex reports.
-+- [x] Created repo-structured delta ZIP under 	mp/.
-diff --git a/docs_build/dev/reports/PR_26172_OWNER_033-governance-hygiene-closeout-manual-validation-notes.md b/docs_build/dev/reports/PR_26172_OWNER_033-governance-hygiene-closeout-manual-validation-notes.md
-new file mode 100644
-index 000000000..4a3661d3e
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_OWNER_033-governance-hygiene-closeout-manual-validation-notes.md
-@@ -0,0 +1,25 @@
-+﻿# Manual Validation Notes
++Audit repository compliance against:
 +
-+PR: $pr
++- PR_034 Canonical Repository Structure
++- PR_035 Test Structure Standardization
++- PR_036 Legacy Migration Policy
 +
-+## Checks Performed
++Reviewed areas:
 +
-+- Verified Workstream Hygiene governance exists.
-+- Verified PI Closeout governance exists.
-+- Verified GitHub Hygiene Audit governance exists.
-+- Verified EOD Workstream Closeout governance exists.
-+- Verified GitHub-authoritative workstream controls through push, local/origin sync, and GitHub hygiene audit requirements.
-+- Verified Sequential Codex Queue governance through the all-team sequential PR execution model.
-+- Verified Alpha/Beta/Gamma ownership governance in the authoritative team ownership map and NATO-normalized active ProjectInstructions team names.
-+- Confirmed no runtime code changed.
-+- Confirmed no feature work was added.
-+- Confirmed no branch deletion or PR closure was performed.
++- `toolbox/`
++- `assets/`
++- `tests/`
++- `api/`
++- `serverside/`
++- `src/engine/`
 +
-+## Manual Result
++This PR is audit-only. No executable implementation changes were made.
 +
-+PASS
++## Team Ownership
 +
-+## Skipped Validation
++- TEAM token: CHARLIE
++- Ownership classification: governance / repository compliance / diagnostics
++- TEAM ownership result: PASS
 +
-+- Playwright was not run because no UI or runtime behavior changed.
-+- Samples were not run because no samples or sample-impacting runtime changed.
++## Branch Validation
++
++| Requirement | Status | Evidence |
++| --- | --- | --- |
++| Started from latest main | PASS | `main` was pulled before branch creation; source commit `c4a495f0aa8e32d499ca64555c4a3547e6fcb298`. |
++| Worktree clean before branch | PASS | `git status --short` returned no output before branch creation. |
++| Local/origin sync before branch | PASS | `git rev-list --left-right --count HEAD...origin/main` returned `0 0`. |
++| PR branch created from main | PASS | Branch `pr/26172-CHARLIE-001-repository-compliance-audit` was created from latest `main`. |
++| Runtime/source edits avoided | PASS | Planned changed files are reports only under `docs_build/dev/reports/`. |
++
++## Repository Area Results
++
++| Area | Status | Findings |
++| --- | --- | --- |
++| `toolbox/` | FAIL | Active tool JavaScript remains beside tool HTML entries instead of canonical `assets/toolbox/{tool-name}/js/index.js` or shared asset roots. |
++| `assets/` | PASS | No non-compliant JS or CSS files were found in `assets/`; scanned JS/CSS lives under `assets/theme-v2/`. |
++| `tests/` | FAIL | 494 files are in non-canonical top-level test locations outside `tests/toolbox/`, `tests/engine/`, `tests/api/`, `tests/server/`, `tests/js/shared/`, or `tests/regression/`. |
++| `api/` | FAIL | Canonical root is absent. No API files were found to classify, but the expected top-level API area is not physically present. |
++| `serverside/` | FAIL | Canonical root is absent. No serverside files were found to classify, but the expected top-level serverside area is not physically present. |
++| `src/engine/` | FAIL | Most engine JS is under feature folders, but `src/engine/paletteList.js` is a root-level JS file and `src/engine/ui/*.css` contains CSS outside canonical asset/theme roots. |
++
++## Non-Compliant JS Locations
++
++### `toolbox/`
++
++These active JavaScript files are outside the canonical tool asset structure:
++
++- `toolbox/assets/assets-api-client.js`
++- `toolbox/assets/assets-upload-worker.js`
++- `toolbox/assets/assets.js`
++- `toolbox/colors/colors.js`
++- `toolbox/colors/palette-api-client.js`
++- `toolbox/controls/controls-api-client.js`
++- `toolbox/controls/controls.js`
++- `toolbox/game-configuration/game-configuration-api-client.js`
++- `toolbox/game-configuration/game-configuration.js`
++- `toolbox/game-design/game-design-api-client.js`
++- `toolbox/game-design/game-design.js`
++- `toolbox/game-hub/game-hub-api-client.js`
++- `toolbox/game-hub/game-hub.js`
++- `toolbox/game-journey/game-journey-api-client.js`
++- `toolbox/game-journey/game-journey.js`
++- `toolbox/idea-board/index.js`
++- `toolbox/messages/message-tts-service-registry.js`
++- `toolbox/messages/messages-api-client.js`
++- `toolbox/messages/messages.js`
++- `toolbox/objects/objects-api-client.js`
++- `toolbox/objects/objects.js`
++- `toolbox/tags/tags-api-client.js`
++- `toolbox/tags/tags.js`
++- `toolbox/text-to-speech/text2speech.js`
++- `toolbox/tool-registry-api-client.js`
++- `toolbox/toolRegistry.js`
++- `toolbox/tools-page-accordions.js`
++
++Recommended target pattern:
++
++- Tool-specific JS: `assets/toolbox/{tool-name}/js/index.js`
++- Shared toolbox JS: `assets/js/shared/`
++
++### `src/engine/`
++
++- `src/engine/paletteList.js`
++
++Recommended target pattern:
++
++- Move under a feature folder such as `src/engine/palette/` after import-impact review.
++
++## Non-Compliant CSS Locations
++
++### `toolbox/`
++
++- None found.
++
++### `assets/`
++
++- None found.
++
++### `src/engine/`
++
++These CSS files are active style assets under engine source:
++
++- `src/engine/ui/baseLayout.css`
++- `src/engine/ui/hubCommon.css`
++- `src/engine/ui/spriteEditor.css`
++
++Recommended target pattern:
++
++- Move shared UI/theme styling into `assets/theme-v2/css/` or create an approved engine UI style policy before relocation.
++
++## Non-Compliant Test Locations
++
++Canonical test roots from PR_035:
++
++- `tests/toolbox/{tool-name}/`
++- `tests/engine/{feature-name}/`
++- `tests/api/{feature-name}/`
++- `tests/server/{feature-name}/`
++- `tests/js/shared/`
++- `tests/regression/`
++
++The audit found 494 files in non-canonical test locations:
++
++| Path | File Count | Examples |
++| --- | ---: | --- |
++| `tests/ai/` | 1 | `tests/ai/AIBehaviors.test.mjs` |
++| `tests/assets/` | 1 | `tests/assets/AssetLoaderSystem.test.mjs` |
++| `tests/audio/` | 1 | `tests/audio/AudioService.test.mjs` |
++| `tests/combat/` | 1 | `tests/combat/Combat.test.mjs` |
++| `tests/config/` | 1 | `tests/config/ConfigStore.test.mjs` |
++| `tests/core/` | 11 | `tests/core/EngineCoreBoundaryBaseline.test.mjs` |
++| `tests/dev-runtime/` | 31 | `tests/dev-runtime/AdminHealthOperations.test.mjs` |
++| `tests/entity/` | 1 | `tests/entity/Entity.test.mjs` |
++| `tests/events/` | 2 | `tests/events/EventBus.test.mjs` |
++| `tests/final/` | 11 | `tests/final/ReleaseReadinessSystems.test.mjs` |
++| `tests/fixtures/` | 52 | `tests/fixtures/assets/asset-scenarios.json` |
++| `tests/fx/` | 1 | `tests/fx/ParticleSystem.test.mjs` |
++| `tests/games/` | 35 | `tests/games/AsteroidsValidation.test.mjs` |
++| `tests/helpers/` | 11 | `tests/helpers/playwrightRepoServer.mjs` |
++| `tests/index.html` | 1 | `tests/index.html` |
++| `tests/input/` | 8 | `tests/input/InputService.test.mjs` |
++| `tests/persistence/` | 1 | `tests/persistence/StorageService.test.mjs` |
++| `tests/playwright/` | 44 | `tests/playwright/tools/GameJourneyTool.spec.mjs` |
++| `tests/playwright_installation.txt` | 1 | `tests/playwright_installation.txt` |
++| `tests/production/` | 3 | `tests/production/ProductionReadiness.test.mjs` |
++| `tests/README.md` | 1 | `tests/README.md` |
++| `tests/render/` | 1 | `tests/render/Renderer.test.mjs` |
++| `tests/replay/` | 2 | `tests/replay/ReplaySystem.test.mjs` |
++| `tests/results/` | 26 | `tests/results/playwright-results.json` |
++| `tests/run-tests.mjs` | 1 | `tests/run-tests.mjs` |
++| `tests/runtime/` | 81 | `tests/runtime/V2SessionPersistence.test.mjs` |
++| `tests/samples/` | 1 | `tests/samples/FullscreenRuleEnforcement.test.mjs` |
++| `tests/scenes/` | 3 | `tests/scenes/SceneManager.test.mjs` |
++| `tests/schemas/` | 1 | `tests/schemas/tool.manifest.schema.json` |
++| `tests/shared/` | 92 | `tests/shared/ProjectContract.test.mjs` |
++| `tests/testRunner.html` | 1 | `tests/testRunner.html` |
++| `tests/testRunner.js` | 1 | `tests/testRunner.js` |
++| `tests/tools/` | 57 | `tests/tools/ToolBoundaryEnforcement.test.mjs` |
++| `tests/validation/` | 3 | `tests/validation/samples.runtime.validation.report.json` |
++| `tests/vector/` | 1 | `tests/vector/VectorMath.test.mjs` |
++| `tests/world/` | 4 | `tests/world/WorldSystems.test.mjs` |
++
++Generated Playwright result artifacts under `tests/results/` should be treated as cleanup/archive candidates rather than active test source.
++
++## Legacy Migration Candidates
++
++| Priority | Candidate | Reason | Recommended Handling |
++| --- | --- | --- | --- |
++| P0 | `tests/results/` | Generated result artifacts are tracked under active tests. | Move to ignored output or archive/report storage after owner approval. |
++| P1 | `toolbox/*/*.js` and shared `toolbox/*.js` | Active JS is colocated with HTML entries instead of canonical asset roots. | Migrate tool JS to `assets/toolbox/{tool-name}/js/index.js`; migrate shared JS to `assets/js/shared/`. |
++| P1 | `tests/dev-runtime/`, `tests/playwright/`, `tests/runtime/`, `tests/shared/`, `tests/tools/` | Large active test buckets conflict with PR_035 canonical test roots. | Split by ownership into `tests/toolbox/`, `tests/engine/`, `tests/api/`, `tests/server/`, `tests/js/shared/`, and `tests/regression/`. |
++| P2 | `src/engine/paletteList.js` | Root-level engine JS file is outside `src/engine/{feature-name}/`. | Move to an approved feature folder with import compatibility reviewed. |
++| P2 | `src/engine/ui/*.css` | CSS lives under engine source instead of theme/tool asset roots. | Move to `assets/theme-v2/css/` or define an explicit engine UI CSS policy. |
++| P3 | Missing `api/` and `serverside/` roots | Canonical target roots are absent. | Create roots when the first API/server migration needs them, with placeholder README only if governance permits. |
++
++## Prioritized Remediation List
++
++1. Remove or archive tracked generated artifacts under `tests/results/`.
++2. Create a staged migration plan for `toolbox/` JavaScript sidecars, starting with shared files (`toolRegistry.js`, `tool-registry-api-client.js`, `tools-page-accordions.js`).
++3. Standardize high-volume test buckets in phases: `tests/dev-runtime/`, `tests/playwright/`, `tests/runtime/`, `tests/shared/`, then `tests/tools/`.
++4. Move `src/engine/paletteList.js` into an engine feature folder after import-impact review.
++5. Resolve engine CSS placement for `src/engine/ui/*.css`.
++6. Add or defer canonical `api/` and `serverside/` roots with explicit owner-approved scope.
++
++## Recommended Next Charlie PRs
++
++- `PR_26172_CHARLIE_002-test-results-artifact-cleanup-plan`
++- `PR_26172_CHARLIE_003-toolbox-js-canonical-asset-migration-plan`
++- `PR_26172_CHARLIE_004-test-structure-standardization-plan`
++- `PR_26172_CHARLIE_005-engine-root-js-and-css-migration-plan`
++- `PR_26172_CHARLIE_006-api-serverside-root-readiness-plan`
++
++## Requirement Checklist
++
++| Requirement | Status | Evidence |
++| --- | --- | --- |
++| Follow ProjectInstructions | PASS | Read active `docs_build/dev/ProjectInstructions/` governance before work. |
++| Start from latest main | PASS | Main pulled and branch created from `c4a495f0aa8e32d499ca64555c4a3547e6fcb298`. |
++| Worktree clean before work | PASS | `git status --short` returned no output before edits. |
++| Audit PR_034 structure | PASS | Compared scoped paths to canonical toolbox, assets, engine, API, and serverside roots. |
++| Audit PR_035 tests | PASS | Compared `tests/` contents to canonical test roots. |
++| Audit PR_036 legacy migration policy | PASS | Classified migration candidates without moving or deleting files. |
++| Review `toolbox/` | PASS | Identified 27 non-compliant JS files. |
++| Review `assets/` | PASS | Found no non-compliant active JS/CSS in `assets/`. |
++| Review `tests/` | PASS | Identified 494 files in non-canonical test locations. |
++| Review `api/` | PASS | Directory absent; recorded as structural failure. |
++| Review `serverside/` | PASS | Directory absent; recorded as structural failure. |
++| Review `src/engine/` | PASS | Identified root JS and engine CSS placement issues. |
++| No executable implementation changes | PASS | Audit/report-only scope. |
++| Create audit report | PASS | This file. |
++| Create standard Codex reports | PASS | `docs_build/dev/reports/codex_review.diff` and `docs_build/dev/reports/codex_changed_files.txt` exist. |
++| Create ZIP artifact | PASS | `tmp/PR_26172_CHARLIE_001-repository-compliance-audit_delta.zip` exists. |
++
++## Validation Lane Report
++
++- `git diff --check`: PASS.
++- Report exists: PASS.
++- Required Codex reports exist: PASS.
++- ZIP artifact exists: PASS.
++- Runtime source files changed: PASS, changed files are limited to `docs_build/dev/reports/`.
++- Playwright: SKIP, audit-only documentation/report PR.
++- Samples: SKIP, audit-only documentation/report PR.
++
++## Manual Validation Notes
++
++- The audit intentionally did not move files, delete generated artifacts, create canonical roots, or modify executable source.
++- `api/` and `serverside/` were missing from the working tree; this was recorded as a structural finding, not remediated in this PR.
++- Non-canonical test locations were counted by top-level path under `tests/` to keep the report actionable without rewriting the test tree.
++- Tracked generated artifacts under `tests/results/` are listed as a high-priority cleanup candidate because they are active repository files but not active test source.
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index bef983eeb..de36ff823 100644
+index de36ff823..d2e0439c1 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,13 +1,6 @@
--﻿docs_build/dev/PROJECT_INSTRUCTIONS.md
--docs_build/dev/ProjectInstructions/addendums/multi_team.md
--docs_build/dev/reports/PR_26172_OWNER_030-workstream-hygiene-governance-instruction-compliance-checklist.md
--docs_build/dev/reports/PR_26172_OWNER_030-workstream-hygiene-governance-manual-validation-notes.md
--docs_build/dev/reports/PR_26172_OWNER_030-workstream-hygiene-governance.md
--docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance-instruction-compliance-checklist.md
--docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance-manual-validation-notes.md
--docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance.md
--docs_build/dev/reports/PR_26172_OWNER_032-github-hygiene-audit-template-instruction-compliance-checklist.md
--docs_build/dev/reports/PR_26172_OWNER_032-github-hygiene-audit-template-manual-validation-notes.md
--docs_build/dev/reports/PR_26172_OWNER_032-github-hygiene-audit-template.md
-+﻿docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-+docs_build/dev/reports/PR_26172_OWNER_033-governance-hygiene-closeout-governance-closeout-report.md
-+docs_build/dev/reports/PR_26172_OWNER_033-governance-hygiene-closeout-manual-validation-notes.md
-+docs_build/dev/reports/PR_26172_OWNER_033-governance-hygiene-closeout-instruction-compliance-checklist.md
+@@ -1,6 +1,3 @@
+-﻿docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
+-docs_build/dev/reports/PR_26172_OWNER_033-governance-hygiene-closeout-governance-closeout-report.md
+-docs_build/dev/reports/PR_26172_OWNER_033-governance-hygiene-closeout-manual-validation-notes.md
+-docs_build/dev/reports/PR_26172_OWNER_033-governance-hygiene-closeout-instruction-compliance-checklist.md
++docs_build/dev/reports/PR_26172_CHARLIE_001-repository-compliance-audit.md
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff

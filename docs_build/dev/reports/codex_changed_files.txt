@@ -1,6 +1,3 @@
-﻿docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-docs_build/dev/reports/PR_26172_OWNER_033-governance-hygiene-closeout-governance-closeout-report.md
-docs_build/dev/reports/PR_26172_OWNER_033-governance-hygiene-closeout-manual-validation-notes.md
-docs_build/dev/reports/PR_26172_OWNER_033-governance-hygiene-closeout-instruction-compliance-checklist.md
+docs_build/dev/reports/PR_26172_CHARLIE_001-repository-compliance-audit.md
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
