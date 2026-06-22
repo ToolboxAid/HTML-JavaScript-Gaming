@@ -1,12 +1,11 @@
-docs_build/dev/ProjectInstructions/addendums/table_first_ui.md
 toolbox/game-hub/index.html
 toolbox/game-hub/game-hub.js
 tests/playwright/tools/GameHubMockRepository.spec.mjs
 tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/PR_26174_ALFA_013-game-hub-game-row-child-rows.md
-docs_build/dev/reports/PR_26174_ALFA_013-game-hub-game-row-child-rows-branch-validation.txt
-docs_build/dev/reports/PR_26174_ALFA_013-game-hub-game-row-child-rows-requirement-checklist.txt
-docs_build/dev/reports/PR_26174_ALFA_013-game-hub-game-row-child-rows-validation-lane.txt
-docs_build/dev/reports/PR_26174_ALFA_013-game-hub-game-row-child-rows-manual-validation-notes.txt
+docs_build/dev/reports/PR_26174_ALFA_014-game-hub-parent-columns-center.md
+docs_build/dev/reports/PR_26174_ALFA_014-game-hub-parent-columns-center-branch-validation.txt
+docs_build/dev/reports/PR_26174_ALFA_014-game-hub-parent-columns-center-requirement-checklist.txt
+docs_build/dev/reports/PR_26174_ALFA_014-game-hub-parent-columns-center-validation-lane.txt
+docs_build/dev/reports/PR_26174_ALFA_014-game-hub-parent-columns-center-manual-validation-notes.txt

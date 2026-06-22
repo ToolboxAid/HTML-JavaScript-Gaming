@@ -1,0 +1,13 @@
+Requirement Checklist: PASS
+
+PASS - Parent table columns are Game, Purpose, Status, Owner, Actions.
+PASS - Old Project Information layout was removed.
+PASS - Role is not shown in the parent row.
+PASS - Next Tool is not shown in the parent row.
+PASS - Each game remains the parent row.
+PASS - Source Idea remains a child row/table under the game row.
+PASS - Readiness Output remains a child row/table under the game row.
+PASS - Existing API/service contract was preserved.
+PASS - No browser-owned project data was introduced.
+PASS - No new readiness math was added.
+PASS - table_first_ui.md examples were followed by keeping the parent-row plus expanded child-row table pattern.

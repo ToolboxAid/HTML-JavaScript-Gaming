@@ -9,12 +9,6 @@ import { getSessionCurrent } from "../../src/api/session-api-client.js";
 const repository = createGameHubApiRepository();
 
 const elements = {
-  activeGameName: document.querySelector("[data-active-game-name]"),
-  activeGameOwner: document.querySelector("[data-active-game-owner]"),
-  activeGamePurpose: document.querySelector("[data-active-game-purpose]"),
-  activeGameStatus: document.querySelector("[data-active-game-status]"),
-  currentFocus: document.querySelector("[data-current-focus]"),
-  currentUserRole: document.querySelector("[data-current-user-role]"),
   currentUserRoleInput: document.querySelector("[data-current-user-role-input]"),
   deleteOpenGame: document.querySelector("[data-game-delete-active]"),
   form: document.querySelector("[data-game-form]"),
@@ -22,15 +16,10 @@ const elements = {
   nameInput: document.querySelector("[data-game-name-input]"),
   progressChecklist: document.querySelector("[data-game-progress-checklist]"),
   gameList: document.querySelector("[data-game-list]"),
-  gameProgress: document.querySelector("[data-game-progress]"),
   gameJourneyLink: document.querySelector("[data-game-journey-link]"),
   projectRecordStatus: document.querySelector("[data-project-record-status]"),
-  projectRecordsTable: document.querySelector("[data-project-records-table]"),
   purposeInput: document.querySelector("[data-game-purpose-input]"),
-  gameStatus: document.querySelector("[data-game-status]"),
   gameStatusInput: document.querySelector("[data-game-status-input]"),
-  publishingProgress: document.querySelector("[data-publishing-progress]"),
-  recommendedNextTool: document.querySelectorAll("[data-recommended-next-tool]"),
   statusLog: document.querySelector("[data-game-hub-log]"),
   tableCounts: document.querySelector("[data-game-table-counts]"),
 };
@@ -390,31 +379,10 @@ function renderGameParentRow(tbody, game, activeGame, progress) {
   }
 }
 
-function renderProjectInformation(activeGame, currentMember, progress) {
-  if (!elements.projectRecordsTable) {
-    return;
-  }
-
-  elements.projectRecordsTable.replaceChildren();
-  const row = document.createElement("tr");
-  [
-    { datasetName: "activeGameName", value: activeGame?.name || "No game open" },
-    { datasetName: "activeGameStatus", value: activeGame?.status || progress?.gameStatus || "No Game" },
-    { datasetName: "activeGamePurpose", value: activeGame?.purpose || "No purpose" },
-    { datasetName: "activeGameOwner", value: activeGame?.ownerDisplayName || "No owner" },
-    { datasetName: "currentUserRole", value: currentMember?.role || "Viewer" },
-    { datasetName: "recommendedNextTool", value: progress?.recommendedNextTool || "Game Hub" },
-  ].forEach(({ datasetName, value }) => {
-    const cell = document.createElement("td");
-    cell.dataset[datasetName] = "true";
-    cell.textContent = value;
-    row.append(cell);
-  });
-  elements.projectRecordsTable.append(row);
-
+function renderGameTableStatus() {
   setProjectRecordStatus(projectRecordsSaveAllowed()
-    ? "Project Information loaded."
-    : "Project Information loaded. Sign in to save changes.");
+    ? "Game table loaded."
+    : "Game table loaded. Sign in to save changes.");
 }
 
 function renderGameList(progress) {
@@ -539,16 +507,6 @@ function renderWorkspace() {
   const progress = normalizeProgress(repository.getGameProgress());
   const currentMember = currentGameMember(activeGame);
 
-  setText(elements.activeGameName, activeGame?.name || "No game open");
-  setText(elements.activeGameOwner, activeGame?.ownerDisplayName || "No owner");
-  setText(elements.activeGamePurpose, activeGame?.purpose || "No purpose");
-  setText(elements.activeGameStatus, activeGame?.status || "No Game");
-  setText(elements.currentUserRole, currentMember?.role || "Viewer");
-  setText(elements.gameStatus, progress.gameStatus);
-  setText(elements.gameProgress, progress.gameProgress);
-  setText(elements.publishingProgress, progress.publishingProgress);
-  setText(elements.currentFocus, progress.currentFocus);
-  setText(elements.recommendedNextTool, progress.recommendedNextTool);
   if (elements.purposeInput && activeGame?.purpose) {
     elements.purposeInput.value = activeGame.purpose;
   }
@@ -572,7 +530,7 @@ function renderWorkspace() {
   renderMembersTable(activeGame);
   renderTableCounts();
   renderChecklist(progress);
-  renderProjectInformation(activeGame, currentMember, progress);
+  renderGameTableStatus();
   refreshSaveControls(activeGame);
 }
 
