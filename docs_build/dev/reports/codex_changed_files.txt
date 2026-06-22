@@ -1,9 +1,9 @@
 toolbox/game-hub/game-hub.js
-tests/playwright/tools/GameHubMockRepository.spec.mjs
+tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/PR_26174_ALFA_009-game-hub-parent-child-table-layout.md
-docs_build/dev/reports/PR_26174_ALFA_009-game-hub-parent-child-table-layout-branch-validation.txt
-docs_build/dev/reports/PR_26174_ALFA_009-game-hub-parent-child-table-layout-requirement-checklist.txt
-docs_build/dev/reports/PR_26174_ALFA_009-game-hub-parent-child-table-layout-validation-lane.txt
-docs_build/dev/reports/PR_26174_ALFA_009-game-hub-parent-child-table-layout-manual-validation-notes.txt
+docs_build/dev/reports/PR_26174_ALFA_010-game-hub-source-idea-child-table-polish.md
+docs_build/dev/reports/PR_26174_ALFA_010-game-hub-source-idea-child-table-polish-branch-validation.txt
+docs_build/dev/reports/PR_26174_ALFA_010-game-hub-source-idea-child-table-polish-requirement-checklist.txt
+docs_build/dev/reports/PR_26174_ALFA_010-game-hub-source-idea-child-table-polish-validation-lane.txt
+docs_build/dev/reports/PR_26174_ALFA_010-game-hub-source-idea-child-table-polish-manual-validation-notes.txt
