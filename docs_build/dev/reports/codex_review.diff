@@ -1,216 +1,51 @@
 diff --git a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-index 934faf46f..b2872b432 100644
+index b2872b432..1372df8be 100644
 --- a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
 +++ b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-@@ -1,6 +1,7 @@
- import { expect, test } from "@playwright/test";
- import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store.js";
- import { isBrowserExtensionNoise } from "../../helpers/browserExtensionNoise.mjs";
-+import { createGameJourneyCompletionMetricsPostgresClientStub } from "../../helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs";
- import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
-
- function restoreEnvValue(key, value) {
-@@ -112,7 +113,10 @@ async function expectNoNavigationFallbackUi(page) {
- }
-
- test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
--  const server = await startRepoServer();
-+  const server = await startRepoServer({
-+    gameJourneyCompletionMetricsLegacyDbPath: null,
-+    gameJourneyCompletionMetricsPostgresClient: createGameJourneyCompletionMetricsPostgresClientStub(),
-+  });
-   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
-   const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
-   const previousSupabaseEnv = {
-@@ -131,6 +135,7 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-   const pageErrors = [];
+@@ -136,6 +136,7 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
    const consoleErrors = [];
    const mutatingApiRequests = [];
-+  const createGamePayloads = [];
+   const createGamePayloads = [];
++  const gameHubRepositoryRequests = [];
 
    page.on("response", (response) => {
      if (response.status() >= 400) failedRequests.push(`${response.status()} ${response.url()}`);
-@@ -144,8 +149,12 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-     if (message.type() === "error" && !isBrowserExtensionNoise(message.text())) consoleErrors.push(message.text());
-   });
-   page.on("request", (request) => {
--    if (request.url().includes("/api/") && request.method() !== "GET") {
--      mutatingApiRequests.push(`${request.method()} ${request.url()}`);
-+    const requestUrl = request.url();
-+    if (requestUrl.includes("/api/") && request.method() !== "GET") {
-+      mutatingApiRequests.push(`${request.method()} ${requestUrl}`);
-+    }
-+    if (requestUrl.includes("/api/toolbox/game-hub/repositories/") && requestUrl.includes("/methods/createGame")) {
-+      createGamePayloads.push(request.postDataJSON());
+@@ -156,6 +157,9 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
+     if (requestUrl.includes("/api/toolbox/game-hub/repositories/") && requestUrl.includes("/methods/createGame")) {
+       createGamePayloads.push(request.postDataJSON());
      }
++    if (requestUrl.includes("/api/toolbox/game-hub/repositories/")) {
++      gameHubRepositoryRequests.push(`${request.method()} ${requestUrl}`);
++    }
    });
 
-@@ -228,6 +237,7 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-     await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] td").nth(2)).toHaveText("2026-06-20");
-     await expect(page.locator("[data-idea-board-notes-count='top-thoughts']")).toHaveText("3 Notes");
-     await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Delete"]);
-+    await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] [data-idea-board-idea-action='create-project']")).toHaveCount(0);
+   try {
+@@ -372,9 +376,19 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
+     await page.waitForURL(/\/toolbox\/game-hub\/index\.html\?game=lantern-reef-\d+$/);
+     await expect(page.getByRole("heading", { level: 1, name: "Game Hub" })).toBeVisible();
+     await expect(page.locator("[data-active-game-name]")).toHaveText("Lantern Reef");
++    await expect(page.locator("[data-game-list]")).toContainText("Lantern Reef");
++    await expect(page.locator("[data-source-idea-display]")).toHaveText("Lantern Reef");
++    await expect(page.locator("[data-source-idea-pitch]")).toHaveText("Guide light through a reef that rearranges at dusk.");
++    await expect(page.locator("[data-source-idea-notes]")).toContainText("Use dusk tide changes as the first Game Hub planning note.");
++    await expect(page.locator("[data-source-idea-section] :is(input, textarea, select, button)")).toHaveCount(0);
++    await expect(page.getByRole("button", { name: "Delete Open Game" })).toHaveCount(0);
++    await page.reload({ waitUntil: "networkidle" });
++    await expect(page.locator("[data-active-game-name]")).toHaveText("Lantern Reef");
++    await expect(page.locator("[data-game-list]")).toContainText("Lantern Reef");
+     await expect(page.locator("[data-source-idea-display]")).toHaveText("Lantern Reef");
+     await expect(page.locator("[data-source-idea-pitch]")).toHaveText("Guide light through a reef that rearranges at dusk.");
+     await expect(page.locator("[data-source-idea-notes]")).toContainText("Use dusk tide changes as the first Game Hub planning note.");
++    await expect(page.locator("[data-source-idea-section] :is(input, textarea, select, button)")).toHaveCount(0);
+     await expect(page.getByRole("button", { name: "Delete Open Game" })).toHaveCount(0);
+     await expect(page.locator("main")).not.toContainText(/\bproject records\b|\bAPI\b|\bDB\b|\bmock\b|\bseed\b|\bdebug\b|\binternal\b/i);
+     await page.getByRole("link", { name: "Open Game Journey" }).click();
+@@ -386,6 +400,8 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
 
-     await expect(page.locator("[data-idea-board-idea-row='sky-orchard'] th")).toHaveText("Sky Orchard");
-     await expectIdeaChevron(page, "sky-orchard", "gfs-chevron-down.svg");
-@@ -336,6 +346,19 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-     await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='delete']")).toHaveCount(0);
-     await expect(page.locator("[data-idea-board-add-note='lantern-reef']")).toHaveCount(0);
-     await expect(page.locator("[data-idea-board-notes-table='lantern-reef'] [data-idea-board-note-action]")).toHaveCount(0);
-+    expect(createGamePayloads).toHaveLength(1);
-+    const [createGameInput] = createGamePayloads[0].args;
-+    expect(Object.keys(createGameInput).sort()).toEqual(["name", "purpose", "sourceIdea", "status"]);
-+    expect(createGameInput).toMatchObject({
-+      name: "Lantern Reef",
-+      purpose: "Game",
-+      sourceIdea: {
-+        idea: "Lantern Reef",
-+        pitch: "Guide light through a reef that rearranges at dusk.",
-+        notes: ["Use dusk tide changes as the first Game Hub planning note."],
-+      },
-+      status: "Planning",
-+    });
-     await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='archive']").click();
-     await expect(page.locator("[data-idea-board-idea-row='lantern-reef']")).toHaveCount(0);
-     await page.locator("[data-idea-board-status-filter-option][value='Archived']").check();
-@@ -374,6 +397,78 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-   }
- });
-
-+test("Idea Board guest Create Project redirects to sign in without creating a project", async ({ page }) => {
-+  const server = await startRepoServer();
-+  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
-+  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
-+  const previousMetricsDbPath = process.env.GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH;
-+  const previousSupabaseEnv = {
-+    GAMEFOUNDRY_DATABASE_URL: process.env.GAMEFOUNDRY_DATABASE_URL,
-+    GAMEFOUNDRY_SUPABASE_ANON_KEY: process.env.GAMEFOUNDRY_SUPABASE_ANON_KEY,
-+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: process.env.GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY,
-+    GAMEFOUNDRY_SUPABASE_URL: process.env.GAMEFOUNDRY_SUPABASE_URL,
-+  };
-+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
-+  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
-+  process.env.GAMEFOUNDRY_DATABASE_URL = "postgres://idea-board:test@127.0.0.1:5432/idea_board";
-+  process.env.GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH = `tmp/test-results/idea-board-${process.pid}-${Date.now()}.sqlite`;
-+  process.env.GAMEFOUNDRY_SUPABASE_ANON_KEY = "idea-board-anon-key";
-+  process.env.GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY = "idea-board-service-role-key";
-+  process.env.GAMEFOUNDRY_SUPABASE_URL = `${server.baseUrl}/fake-supabase`;
-+  const createGameRequests = [];
-+
-+  page.on("request", (request) => {
-+    const requestUrl = request.url();
-+    if (requestUrl.includes("/api/toolbox/game-hub/repositories/") && requestUrl.includes("/methods/createGame")) {
-+      createGameRequests.push(requestUrl);
-+    }
-+  });
-+
-+  try {
-+    await page.route("**/api/platform-settings/banner", async (route) => {
-+      await route.fulfill({
-+        contentType: "application/json",
-+        body: JSON.stringify({
-+          data: { banner: { active: false, message: "", tone: "info" } },
-+          ok: true,
-+        }),
-+      });
-+    });
-+    await page.route("**/api/toolbox/registry/snapshot", async (route) => {
-+      await route.fulfill({
-+        contentType: "application/json",
-+        body: JSON.stringify({
-+          data: {
-+            activeTools: [],
-+            readinessByStatus: {},
-+            tools: [],
-+            toolboxContract: {},
-+          },
-+          ok: true,
-+        }),
-+      });
-+    });
-+
-+    await page.goto(`${server.baseUrl}/toolbox/idea-board/index.html`, { waitUntil: "networkidle" });
-+    await page.locator("[data-idea-board-add-idea]").click();
-+    await page.locator("[data-idea-board-idea-input]").fill("Guest Reef");
-+    await page.locator("[data-idea-board-pitch-input]").fill("Guest cannot create authoritative project keys.");
-+    await page.locator("[data-idea-board-idea-status-input]").selectOption("Ready");
-+    await page.locator("[data-idea-board-idea-action='save']").click();
-+    await expect(page.locator("[data-idea-board-idea-row='guest-reef'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Create Project", "Delete"]);
-+
-+    await page.locator("[data-idea-board-idea-row='guest-reef'] [data-idea-board-idea-action='create-project']").click();
-+    await page.waitForURL(/\/account\/sign-in\.html$/);
-+    expect(createGameRequests).toEqual([]);
-+  } finally {
-+    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
-+    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
-+    restoreEnvValue("GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH", previousMetricsDbPath);
-+    Object.entries(previousSupabaseEnv).forEach(([key, value]) => restoreEnvValue(key, value));
-+    await server.close();
-+  }
-+});
-+
- test("Idea Board remains usable without visible navigation fallback when registry navigation is unavailable", async ({ page }) => {
-   const server = await startRepoServer();
-   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
-diff --git a/toolbox/idea-board/index.js b/toolbox/idea-board/index.js
-index d1e339336..0ae02bd7a 100644
---- a/toolbox/idea-board/index.js
-+++ b/toolbox/idea-board/index.js
-@@ -1,9 +1,11 @@
- import { createServerRepositoryClient } from "../../src/api/server-api-client.js";
-+import { getSessionCurrent } from "../../src/api/session-api-client.js";
-
- const statusOptions = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project", "Archived"]);
- const defaultVisibleStatuses = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project"]);
- const userId = "user-1";
- const gameHubRoute = "toolbox/game-hub/index.html";
-+const signInRoute = "account/sign-in.html";
- let gameHubRepository = null;
-
- const ideaTable = [
-@@ -561,6 +563,28 @@ function gameHubUrl(record) {
-   return `${gameHubRoute}${suffix}`;
- }
-
-+function signInUrl() {
-+  return new URL(signInRoute, document.baseURI || window.location.href).href;
-+}
-+
-+function currentSessionState() {
-+  try {
-+    const session = getSessionCurrent();
-+    return {
-+      apiAvailable: true,
-+      authenticated: Boolean(session?.authenticated && session.userKey),
-+      session,
-+    };
-+  } catch (error) {
-+    console.warn("Idea Board could not verify the current session.", error instanceof Error ? error.message : String(error || ""));
-+    return {
-+      apiAvailable: false,
-+      authenticated: false,
-+      session: null,
-+    };
-+  }
-+}
-+
- function createProject(root, ideaId) {
-   const record = ideaRecord(ideaId);
-   if (!record) {
-@@ -571,6 +595,16 @@ function createProject(root, ideaId) {
-     updateStatus(root, "Set this idea to Ready before creating a project.");
-     return;
-   }
-+  const sessionState = currentSessionState();
-+  if (!sessionState.apiAvailable) {
-+    updateStatus(root, "Sign-in status could not be verified. Try again shortly.");
-+    return;
-+  }
-+  if (!sessionState.authenticated) {
-+    updateStatus(root, "Sign in to create a Game Hub project.");
-+    window.location.href = signInUrl();
-+    return;
-+  }
-   const repository = gameHubProjectRepository();
-   const project = repository.createGame({
-     name: record.idea,
+     expect(mutatingApiRequests.some((request) => request.includes("/api/toolbox/game-hub/repositories"))).toBe(true);
+     expect(mutatingApiRequests.some((request) => request.includes("/methods/createGame"))).toBe(true);
++    expect(gameHubRepositoryRequests.some((request) => request.includes("/methods/openGame"))).toBe(true);
++    expect(gameHubRepositoryRequests.some((request) => request.includes("/methods/listGames"))).toBe(true);
+     expect(failedRequests).toEqual([]);
+     expect(pageErrors).toEqual([]);
+     expect(consoleErrors).toEqual([]);
