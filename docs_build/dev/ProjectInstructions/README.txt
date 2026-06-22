@@ -47,3 +47,4 @@ Addendum index:
 - Legacy Migration Policy: project-instructions/addendums/legacy-migration-policy.md
 - Assistant Execution Modes: project-instructions/addendums/assistant-execution-modes.md
 - Codex Artifact and Reporting Standard: project-instructions/addendums/codex-artifact-and-reporting-standard.md
+- Codex Project Instructions Startup: project-instructions/addendums/codex-project-instructions-startup.md
