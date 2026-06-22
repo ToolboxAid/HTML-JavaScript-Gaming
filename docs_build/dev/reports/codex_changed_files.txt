@@ -1,9 +1,8 @@
-src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
-tests/playwright/tools/GameJourneyTool.spec.mjs
+tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/PR_26174_ALFA_004-game-hub-progress-count-model.md
-docs_build/dev/reports/PR_26174_ALFA_004-game-hub-progress-count-model-branch-validation.txt
-docs_build/dev/reports/PR_26174_ALFA_004-game-hub-progress-count-model-requirement-checklist.txt
-docs_build/dev/reports/PR_26174_ALFA_004-game-hub-progress-count-model-validation-lane.txt
-docs_build/dev/reports/PR_26174_ALFA_004-game-hub-progress-count-model-manual-validation-notes.txt
+docs_build/dev/reports/PR_26174_ALFA_005-idea-project-validation-polish.md
+docs_build/dev/reports/PR_26174_ALFA_005-idea-project-validation-polish-branch-validation.txt
+docs_build/dev/reports/PR_26174_ALFA_005-idea-project-validation-polish-requirement-checklist.txt
+docs_build/dev/reports/PR_26174_ALFA_005-idea-project-validation-polish-validation-lane.txt
+docs_build/dev/reports/PR_26174_ALFA_005-idea-project-validation-polish-manual-validation-notes.txt

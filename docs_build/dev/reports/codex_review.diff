@@ -1,229 +1,128 @@
-diff --git a/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js b/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
-index a2c831ed1..db24253af 100644
---- a/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
-+++ b/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
-@@ -265,28 +265,34 @@ export const GAME_JOURNEY_TOOL_OWNERSHIP_AREAS = Object.freeze([
-
- export const GAME_JOURNEY_RECOMMENDED_TARGETS = Object.freeze([
-   Object.freeze({
--    key: "heroes",
--    label: "Heroes",
-+    key: "hero",
-+    label: "Hero",
-     sectionName: "Objects",
-     suggestedCount: 1,
-   }),
-   Object.freeze({
--    key: "enemies",
--    label: "Enemies",
-+    key: "enemy",
-+    label: "Enemy",
-     sectionName: "Objects",
--    suggestedCount: 3,
-+    suggestedCount: 4,
-   }),
-   Object.freeze({
--    key: "levels",
--    label: "Levels",
--    sectionName: "Worlds",
--    suggestedCount: 5,
-+    key: "boss",
-+    label: "Boss",
-+    sectionName: "Objects",
-+    suggestedCount: 1,
-   }),
-   Object.freeze({
--    key: "audio",
--    label: "Audio",
-+    key: "background",
-+    label: "Background",
-+    sectionName: "Graphics",
-+    suggestedCount: 3,
-+  }),
-+  Object.freeze({
-+    key: "music",
-+    label: "Music",
-     sectionName: "Audio",
--    suggestedCount: 6,
-+    suggestedCount: 5,
-   }),
- ]);
-
-@@ -1006,16 +1012,17 @@ export function createGameJourneyMockRepository(options = {}) {
-     }
+diff --git a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+index 5d0ccfaff..722595ae9 100644
+--- a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
++++ b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+@@ -429,6 +429,123 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
    }
+ });
 
--  function findRecommendedTargetItem(targetKey) {
-+  function findRecommendedTargetItem(targetKey, gameKey = requireActiveGame()?.key) {
-     return tables.game_journey_items.find((item) =>
--      item.gameKey === GAME_JOURNEY_KEYS.game &&
-+      item.gameKey === gameKey &&
-       item.linkedRecordType === RECOMMENDED_TARGET_LINKED_RECORD_TYPE &&
-       item.linkedRecordId === targetKey,
-     );
-   }
-
-   function hydrateRecommendedTarget(target) {
--    const item = findRecommendedTargetItem(target.key);
-+    const activeGame = requireActiveGame();
-+    const item = activeGame ? findRecommendedTargetItem(target.key, activeGame.key) : null;
-     return {
-       ...clone(target),
-       suggestedCount: readTargetCount(item, target.suggestedCount),
-@@ -1030,6 +1037,16 @@ export function createGameJourneyMockRepository(options = {}) {
-     return GAME_JOURNEY_RECOMMENDED_TARGETS.map(hydrateRecommendedTarget);
-   }
-
-+  function findRecommendedTargetNoteKey(target, activeGame) {
-+    const sectionNote = tables.game_journey_notes.find(
-+      (note) => note.gameKey === activeGame.key && note.name === target.sectionName,
-+    );
-+    if (sectionNote) {
-+      return sectionNote.key;
++test("Idea Board gates Create Project to Ready ideas and locks converted projects", async ({ page }) => {
++  const server = await startRepoServer({
++    gameJourneyCompletionMetricsLegacyDbPath: null,
++    gameJourneyCompletionMetricsPostgresClient: createGameJourneyCompletionMetricsPostgresClientStub(),
++  });
++  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
++  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
++  const previousSupabaseEnv = {
++    GAMEFOUNDRY_DATABASE_URL: process.env.GAMEFOUNDRY_DATABASE_URL,
++    GAMEFOUNDRY_SUPABASE_ANON_KEY: process.env.GAMEFOUNDRY_SUPABASE_ANON_KEY,
++    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: process.env.GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY,
++    GAMEFOUNDRY_SUPABASE_URL: process.env.GAMEFOUNDRY_SUPABASE_URL,
++  };
++  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
++  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
++  process.env.GAMEFOUNDRY_DATABASE_URL = "postgres://idea-board:test@127.0.0.1:5432/idea_board";
++  process.env.GAMEFOUNDRY_SUPABASE_ANON_KEY = "idea-board-anon-key";
++  process.env.GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY = "idea-board-service-role-key";
++  process.env.GAMEFOUNDRY_SUPABASE_URL = `${server.baseUrl}/fake-supabase`;
++  const createGameRequests = [];
++  const failedRequests = [];
++  const pageErrors = [];
++  const consoleErrors = [];
++
++  page.on("request", (request) => {
++    const requestUrl = request.url();
++    if (requestUrl.includes("/api/toolbox/game-hub/repositories/") && requestUrl.includes("/methods/createGame")) {
++      createGameRequests.push(request.postDataJSON());
 +    }
-+    return activeGame.key === GAME_JOURNEY_KEYS.game ? RECOMMENDED_TARGET_NOTE_KEY : "";
++  });
++  page.on("response", (response) => {
++    if (response.status() >= 400) failedRequests.push(`${response.status()} ${response.url()}`);
++  });
++  page.on("pageerror", (error) => {
++    const text = error.stack || error.message;
++    if (!isBrowserExtensionNoise(text)) pageErrors.push(error.message);
++  });
++  page.on("console", (message) => {
++    if (message.type() === "error" && !isBrowserExtensionNoise(message.text())) consoleErrors.push(message.text());
++  });
++
++  try {
++    await page.route("**/api/platform-settings/banner", async (route) => {
++      await route.fulfill({
++        contentType: "application/json",
++        body: JSON.stringify({
++          data: { banner: { active: false, message: "", tone: "info" } },
++          ok: true,
++        }),
++      });
++    });
++    await page.route("**/api/toolbox/registry/snapshot", async (route) => {
++      await route.fulfill({
++        contentType: "application/json",
++        body: JSON.stringify({
++          data: {
++            activeTools: [],
++            readinessByStatus: {},
++            tools: [],
++            toolboxContract: {},
++          },
++          ok: true,
++        }),
++      });
++    });
++    await page.request.post(`${server.baseUrl}/api/session/user`, {
++      data: { userKey: MOCK_DB_KEYS.users.user1 },
++    });
++
++    await page.goto(`${server.baseUrl}/toolbox/idea-board/index.html`, { waitUntil: "networkidle" });
++    await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] [data-idea-board-idea-action='create-project']")).toHaveCount(0);
++    await expect(page.locator("[data-idea-board-idea-row='sky-orchard'] [data-idea-board-idea-action='create-project']")).toHaveCount(0);
++    await expect(page.locator("[data-idea-board-idea-row='clockwork-courier'] [data-idea-board-idea-action='create-project']")).toHaveCount(0);
++
++    await page.locator("[data-idea-board-add-idea]").click();
++    await page.locator("[data-idea-board-idea-input]").fill("Validation Reef");
++    await page.locator("[data-idea-board-pitch-input]").fill("Verify project gating and read-only conversion.");
++    await page.locator("[data-idea-board-idea-status-input]").selectOption("Refining");
++    await page.locator("[data-idea-board-idea-action='save']").click();
++    await expect(page.locator("[data-idea-board-idea-row='validation-reef'] td").nth(1)).toHaveText("Refining");
++    await expect(page.locator("[data-idea-board-idea-row='validation-reef'] [data-idea-board-idea-action='create-project']")).toHaveCount(0);
++    expect(createGameRequests).toEqual([]);
++
++    await page.locator("[data-idea-board-idea-cell='validation-reef']").click();
++    await page.locator("[data-idea-board-add-note='validation-reef']").click();
++    await page.locator("[data-idea-board-note-input]").fill("This note should become read-only project context.");
++    await page.locator("[data-idea-board-note-action='save']").click();
++    await expect(page.locator("[data-idea-board-notes-count='validation-reef']")).toHaveText("1 Note");
++
++    await page.locator("[data-idea-board-idea-row='validation-reef'] [data-idea-board-idea-action='edit']").click();
++    await page.locator("[data-idea-board-idea-status-input]").selectOption("Ready");
++    await page.locator("[data-idea-board-idea-action='save']").click();
++    await expect(page.locator("[data-idea-board-idea-row='validation-reef'] td").nth(1)).toHaveText("Ready");
++    await expect(page.locator("[data-idea-board-idea-row='validation-reef'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Create Project", "Delete"]);
++
++    await page.locator("[data-idea-board-idea-row='validation-reef'] [data-idea-board-idea-action='create-project']").click();
++    await expect(page.locator("[data-idea-board-idea-row='validation-reef'] td").nth(1)).toHaveText("Project");
++    await expect(page.locator("[data-idea-board-idea-row='validation-reef'] [data-idea-board-idea-action]")).toHaveText(["Open in Game Hub", "Archive"]);
++    await expect(page.locator("[data-idea-board-idea-row='validation-reef'] [data-idea-board-idea-action='edit']")).toHaveCount(0);
++    await expect(page.locator("[data-idea-board-idea-row='validation-reef'] [data-idea-board-idea-action='delete']")).toHaveCount(0);
++    await expect(page.locator("[data-idea-board-add-note='validation-reef']")).toHaveCount(0);
++    await expect(page.locator("[data-idea-board-notes-table='validation-reef'] [data-idea-board-note-action]")).toHaveCount(0);
++    await expect(page.locator("[data-idea-board-note-input-row]")).toHaveCount(0);
++    expect(createGameRequests).toHaveLength(1);
++    expect(Object.keys(createGameRequests[0].args[0]).sort()).toEqual(["name", "purpose", "sourceIdea", "status"]);
++
++    expect(failedRequests).toEqual([]);
++    expect(pageErrors).toEqual([]);
++    expect(consoleErrors).toEqual([]);
++  } finally {
++    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
++    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
++    Object.entries(previousSupabaseEnv).forEach(([key, value]) => restoreEnvValue(key, value));
++    await server.close();
 +  }
++});
 +
-   function updateRecommendedTarget(targetKey, suggestedCount) {
-     const activeGame = requireActiveGame();
-     const target = GAME_JOURNEY_RECOMMENDED_TARGETS.find((item) => item.key === targetKey);
-@@ -1037,15 +1054,23 @@ export function createGameJourneyMockRepository(options = {}) {
-       return null;
-     }
-
-+    const noteKey = findRecommendedTargetNoteKey(target, activeGame);
-+    if (!noteKey) {
-+      return {
-+        error: true,
-+        message: `Game Journey ${target.sectionName} bucket is not available for ${activeGame.name}.`,
-+      };
-+    }
-+
-     const normalizedCount = normalizeTargetCount(suggestedCount);
-     const timestampValue = new Date().toISOString();
-     const userKey = safeCurrentUserKey();
--    let item = findRecommendedTargetItem(target.key);
-+    let item = findRecommendedTargetItem(target.key, activeGame.key);
-     if (!item) {
-       item = {
-         key: makeUlid(nextItemNumber),
-         gameKey: activeGame.key,
--        noteKey: RECOMMENDED_TARGET_NOTE_KEY,
-+        noteKey,
-         status: "not-started",
-         title: `Recommended target: ${target.label}`,
-         userDetails: "",
-@@ -1064,9 +1089,10 @@ export function createGameJourneyMockRepository(options = {}) {
-     }
-
-     item.userDetails = JSON.stringify({ suggestedCount: normalizedCount });
-+    item.noteKey = noteKey;
-     item.updatedAt = timestampValue;
-     item.updatedBy = userKey;
--    addActivity(activeGame.key, RECOMMENDED_TARGET_NOTE_KEY, `Updated ${target.label} recommended target to ${normalizedCount}`, userKey);
-+    addActivity(activeGame.key, noteKey, `Updated ${target.label} recommended target to ${normalizedCount}`, userKey);
-     persistTables();
-     return hydrateRecommendedTarget(target);
-   }
-diff --git a/tests/playwright/tools/GameJourneyTool.spec.mjs b/tests/playwright/tools/GameJourneyTool.spec.mjs
-index 390d1cc89..e9005f08b 100644
---- a/tests/playwright/tools/GameJourneyTool.spec.mjs
-+++ b/tests/playwright/tools/GameJourneyTool.spec.mjs
-@@ -215,10 +215,11 @@ async function expectFilteredSummaryRows(page, statusId, expectedRows) {
- test("Game Journey exposes static tool ownership areas without automatic counts", async () => {
-   expectStaticToolOwnershipAreas(GAME_JOURNEY_TOOL_OWNERSHIP_AREAS);
-   expect(GAME_JOURNEY_RECOMMENDED_TARGETS.map((target) => target.label)).toEqual([
--    "Heroes",
--    "Enemies",
--    "Levels",
--    "Audio",
-+    "Hero",
-+    "Enemy",
-+    "Boss",
-+    "Background",
-+    "Music",
-   ]);
-
-   const gameJourneyCompletionMetricsPostgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
-@@ -230,10 +231,11 @@ test("Game Journey exposes static tool ownership areas without automatic counts"
-     const constants = await fetchApiData(server, "/api/toolbox/game-journey/constants");
-     expectStaticToolOwnershipAreas(constants.GAME_JOURNEY_TOOL_OWNERSHIP_AREAS);
-     expect(constants.GAME_JOURNEY_RECOMMENDED_TARGETS.map((target) => target.label)).toEqual([
--      "Heroes",
--      "Enemies",
--      "Levels",
--      "Audio",
-+      "Hero",
-+      "Enemy",
-+      "Boss",
-+      "Background",
-+      "Music",
-     ]);
-   } finally {
-     await server.close();
-@@ -329,15 +331,29 @@ test("Game Journey progress dashboard summarizes completion metrics", async ({ p
-       "Next focus: Create, Design, and Graphics. Complete one small item in each area before expanding the plan.",
-       "Next action: mark one finished section item complete so overall progress can rise above 0%.",
-     ]);
--    await expect(page.locator("[data-journey-recommended-target]")).toHaveCount(4);
--    await expect(page.locator("[data-journey-recommended-target='heroes'] td").nth(0)).toHaveText("Heroes");
--    await expect(page.locator("[data-journey-recommended-target='heroes'] td").nth(1)).toHaveText("Objects");
--    await expect(page.locator("[data-journey-target-input='heroes']")).toHaveValue("1");
--    await page.locator("[data-journey-target-input='heroes']").fill("2");
--    await expect(page.locator("[data-journey-target-status]")).toHaveText("Saved Heroes target at 2.");
--    await expect(page.locator("[data-journey-target-input='heroes']")).toHaveValue("2");
-+    await expect(page.locator("[data-journey-recommended-target]")).toHaveCount(5);
-+    await expect(page.locator("[data-journey-recommended-target] td:first-child")).toHaveText([
-+      "Hero",
-+      "Enemy",
-+      "Boss",
-+      "Background",
-+      "Music",
-+    ]);
-+    await expect(page.locator("[data-journey-recommended-target='hero'] td").nth(1)).toHaveText("Objects");
-+    await expect(page.locator("[data-journey-recommended-target='enemy'] td").nth(1)).toHaveText("Objects");
-+    await expect(page.locator("[data-journey-recommended-target='boss'] td").nth(1)).toHaveText("Objects");
-+    await expect(page.locator("[data-journey-recommended-target='background'] td").nth(1)).toHaveText("Graphics");
-+    await expect(page.locator("[data-journey-recommended-target='music'] td").nth(1)).toHaveText("Audio");
-+    await expect(page.locator("[data-journey-target-input='hero']")).toHaveValue("1");
-+    await expect(page.locator("[data-journey-target-input='enemy']")).toHaveValue("4");
-+    await expect(page.locator("[data-journey-target-input='boss']")).toHaveValue("1");
-+    await expect(page.locator("[data-journey-target-input='background']")).toHaveValue("3");
-+    await expect(page.locator("[data-journey-target-input='music']")).toHaveValue("5");
-+    await page.locator("[data-journey-target-input='hero']").fill("2");
-+    await expect(page.locator("[data-journey-target-status]")).toHaveText("Saved Hero target at 2.");
-+    await expect(page.locator("[data-journey-target-input='hero']")).toHaveValue("2");
-     await page.reload({ waitUntil: "networkidle" });
--    await expect(page.locator("[data-journey-target-input='heroes']")).toHaveValue("2");
-+    await expect(page.locator("[data-journey-target-input='hero']")).toHaveValue("2");
-     const repositoryData = await fetchApiData(server, "/api/toolbox/game-journey/repositories", {
-       body: JSON.stringify({ options: {} }),
-       method: "POST",
-@@ -347,11 +363,15 @@ test("Game Journey progress dashboard summarizes completion metrics", async ({ p
-       method: "POST",
-     });
-     const persistedTarget = (tablesData.result.game_journey_items || []).find((item) =>
--      item.linkedRecordType === "recommended-target" && item.linkedRecordId === "heroes",
-+      item.linkedRecordType === "recommended-target" && item.linkedRecordId === "hero",
-+    );
-+    const objectsBucketNote = (tablesData.result.game_journey_notes || []).find((note) =>
-+      note.gameKey === GAME_JOURNEY_KEYS.game && note.name === "Objects",
-     );
-+    expect(objectsBucketNote?.key).toMatch(ULID_PATTERN);
-     expect(persistedTarget).toMatchObject({
--      noteKey: GAME_JOURNEY_KEYS.notes.designPass,
--      title: "Recommended target: Heroes",
-+      noteKey: objectsBucketNote.key,
-+      title: "Recommended target: Hero",
-     });
-     expect(JSON.parse(persistedTarget.userDetails)).toMatchObject({ suggestedCount: 2 });
-     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-@@ -441,7 +461,7 @@ test("Game Journey summary table uses inline notes and item subtables", async ({
-
-     await expect(page.locator("[data-journey-progress-dashboard]")).toBeVisible();
-     await expect(page.getByRole("heading", { name: "What To Do Next" })).toBeVisible();
--    await expect(page.locator("[data-journey-recommended-target='heroes']")).toBeVisible();
-+    await expect(page.locator("[data-journey-recommended-target='hero']")).toBeVisible();
-     await expectNoPageFailures(failures);
-   } finally {
-     await closeWithCoverage(page, failures);
+ test("Idea Board guest Create Project redirects to sign in without creating a project", async ({ page }) => {
+   const server = await startRepoServer();
+   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
