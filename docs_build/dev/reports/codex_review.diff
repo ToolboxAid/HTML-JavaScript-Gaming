@@ -1,214 +1,113 @@
-diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_012-canonical-structure-enforcement-audit.md b/docs_build/dev/reports/PR_26172_CHARLIE_012-canonical-structure-enforcement-audit.md
+diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_013-tool-js-css-canonical-migration-audit.md b/docs_build/dev/reports/PR_26172_CHARLIE_013-tool-js-css-canonical-migration-audit.md
 new file mode 100644
-index 000000000..4bd771882
+index 000000000..7d9ad158e
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_CHARLIE_012-canonical-structure-enforcement-audit.md
-@@ -0,0 +1,208 @@
-+# PR_26172_CHARLIE_012 Canonical Structure Enforcement Audit
++++ b/docs_build/dev/reports/PR_26172_CHARLIE_013-tool-js-css-canonical-migration-audit.md
+@@ -0,0 +1,107 @@
++# PR_26172_CHARLIE_013 Tool JS/CSS Canonical Migration Audit
 +
 +## Purpose
 +
-+Re-run repository compliance audit after Charlie migrations.
++Use prior Charlie audits to identify the next five safest tool migrations into the canonical structure.
 +
-+Verification targets:
++Reviewed areas:
 +
-+- PR_034 Canonical Repository Structure
-+- PR_035 Test Structure Standardization
-+- PR_036 Legacy Migration Policy
-+- PR_008 canonical structure guardrail
-+- PR_009 guardrail preflight wiring
++- `toolbox/`
++- `assets/toolbox/`
++- `assets/theme-v2/`
 +
 +## Executive Summary
 +
 +| Check | Status | Result |
 +| --- | --- | --- |
-+| Canonical structure guardrail | PASS | `npm run validate:canonical-structure` reports 0 blocking violations. |
-+| Approved legacy exceptions | PASS | 495 remaining legacy exceptions are classified by the guardrail. |
-+| Shared JS migration progress | PASS | `assets/js/shared/status.js` is canonical and used by real Theme V2 code. |
-+| Test location remediation progress | PASS | Three engine-core tests moved to `tests/engine/core/`; legacy exception count dropped from 498 to 495. |
-+| Charlie stack safe for Owner review | PASS | Safe for review as a scoped, unmerged stack with known remaining backlog documented. |
++| Tool JS outside canonical locations | FAIL | Legacy toolbox JS sidecars remain under `toolbox/{tool}/`. |
++| Tool CSS outside canonical locations | PASS | No active toolbox CSS sidecars were found in the reviewed tool paths. |
++| Inline script violations | PASS | Reviewed active tool index pages do not use inline `<script>` blocks. |
++| Inline style violations | PASS | Reviewed active tool index pages do not use inline `<style>` blocks or `style=` attributes. |
++| Migration candidates ranked | PASS | Five lowest-risk candidates are listed below. |
 +
-+## Repository Area Results
++## Candidate Ranking Method
 +
-+| Area | Status | Findings |
++Candidates were ranked by:
++
++1. lowest behavior risk;
++2. fewest files;
++3. fewest active references.
++
++Reference counts exclude `archive/`, generated report history, `tmp/`, and `node_modules/`.
++
++## Recommended Next Five Tool Migrations
++
++| Rank | Tool | Current Non-Canonical Files | Active Reference Count | Canonical Target | Risk | Notes |
++| ---: | --- | --- | ---: | --- | --- | --- |
++| 1 | Text To Speech | `toolbox/text-to-speech/text2speech.js` | 4 | `assets/toolbox/text-to-speech/js/index.js` | Lowest | One tool JS file, one tool page script reference, and one direct active test import. |
++| 2 | Tags | `toolbox/tags/tags.js`, `toolbox/tags/tags-api-client.js` | 5 | `assets/toolbox/tags/js/index.js` | Low | Smallest two-file tool; consolidate API wrapper into canonical entrypoint to satisfy the current guardrail. |
++| 3 | Game Configuration | `toolbox/game-configuration/game-configuration.js`, `toolbox/game-configuration/game-configuration-api-client.js` | 5 | `assets/toolbox/game-configuration/js/index.js` | Low/Medium | Two files and low reference count; validation overlay behavior should be checked after Tags. |
++| 4 | Colors | `toolbox/colors/colors.js`, `toolbox/colors/palette-api-client.js` | 5 | `assets/toolbox/colors/js/index.js` | Medium | Color/palette behavior is broader than Tags, but still has few references. |
++| 5 | Objects | `toolbox/objects/objects.js`, `toolbox/objects/objects-api-client.js` | 6 | `assets/toolbox/objects/js/index.js` | Medium | Object tool touches engine object-model and asset repository behavior; migrate after simpler API-backed tools. |
++
++## Deferred Candidates
++
++| Tool | Reason Deferred |
++| --- | --- |
++| Controls | Active references include account/user control pages and Playwright source fetch assertions. |
++| Game Hub | Shared root toolbox accordions import `game-hub-api-client.js`; defer until root toolbox script migration strategy is scoped. |
++| Game Journey | Prior validation showed a pre-existing `/api/game-journey/completion-metrics` 500 from legacy preservation behavior; defer until owner accepts that risk. |
++| Assets | Includes a worker script and upload behavior; more than one runtime asset path must be preserved. |
++| Messages | Three files and TTS service registry dependency make it higher risk than the first five. |
++
++## Inline Script And Style Review
++
++| Area | Status | Notes |
 +| --- | --- | --- |
-+| `assets/` | PASS | New shared status helper lives under canonical `assets/js/shared/`. Theme V2 assets remain under approved Theme V2 paths. |
-+| `toolbox/` | FAIL | Known legacy toolbox JS sidecars remain and are classified as approved legacy exceptions, not new guardrail blockers. |
-+| `tests/` | FAIL | Three tests were remediated, but large legacy test buckets remain outside PR_035 canonical roots. |
-+| `api/` | FAIL | Top-level canonical `api/{feature-name}/` root remains absent. No runtime API move was in this stack scope. |
-+| `serverside/` | FAIL | Top-level canonical `serverside/{feature-name}/` root remains absent. No server-side move was in this stack scope. |
-+| `src/engine/` | FAIL | `src/engine/paletteList.js` and `src/engine/ui/*.css` remain approved legacy exceptions. |
-+| Guardrail enforcement | PASS | PR_008/PR_009 guardrail reports 0 unapproved violations. |
++| `toolbox/` active tool pages | PASS | Tool pages use external Theme V2 scripts and module script references. |
++| `assets/toolbox/` | PASS | Existing canonical Idea Board JS is already under `assets/toolbox/idea-board/js/index.js`. |
++| `assets/theme-v2/` | PASS | Theme V2 JS/CSS live under approved theme asset paths. |
 +
-+## Guardrail Result
++## Recommended Execution Order
 +
-+Command:
-+
-+```text
-+npm run validate:canonical-structure
-+```
-+
-+Result:
-+
-+```text
-+Canonical repository structure guardrail: PASS
-+Blocking violations: 0
-+Approved legacy exceptions: 495
-+```
-+
-+## Remaining Non-Compliant JS Paths
-+
-+These paths remain approved legacy exceptions and should be handled by future scoped migration PRs:
-+
-+- `src/engine/paletteList.js`
-+- `toolbox/assets/assets-api-client.js`
-+- `toolbox/assets/assets-upload-worker.js`
-+- `toolbox/assets/assets.js`
-+- `toolbox/colors/colors.js`
-+- `toolbox/colors/palette-api-client.js`
-+- `toolbox/controls/controls-api-client.js`
-+- `toolbox/controls/controls.js`
-+- `toolbox/game-configuration/game-configuration-api-client.js`
-+- `toolbox/game-configuration/game-configuration.js`
-+- `toolbox/game-design/game-design-api-client.js`
-+- `toolbox/game-design/game-design.js`
-+- `toolbox/game-hub/game-hub-api-client.js`
-+- `toolbox/game-hub/game-hub.js`
-+- `toolbox/game-journey/game-journey-api-client.js`
-+- `toolbox/game-journey/game-journey.js`
-+- `toolbox/messages/message-tts-service-registry.js`
-+- `toolbox/messages/messages-api-client.js`
-+- `toolbox/messages/messages.js`
-+- `toolbox/objects/objects-api-client.js`
-+- `toolbox/objects/objects.js`
-+- `toolbox/tags/tags-api-client.js`
-+- `toolbox/tags/tags.js`
-+- `toolbox/text-to-speech/text2speech.js`
-+- `toolbox/tool-registry-api-client.js`
-+- `toolbox/toolRegistry.js`
-+- `toolbox/tools-page-accordions.js`
-+
-+## Remaining Non-Compliant CSS Paths
-+
-+These paths remain approved legacy exceptions:
-+
-+- `src/engine/ui/baseLayout.css`
-+- `src/engine/ui/hubCommon.css`
-+- `src/engine/ui/spriteEditor.css`
-+
-+## Remaining Non-Compliant Test Paths
-+
-+Remaining approved legacy test buckets:
-+
-+| Test Path/Bucket | Remaining Count |
-+| --- | ---: |
-+| `tests/ai/` | 1 |
-+| `tests/assets/` | 1 |
-+| `tests/audio/` | 1 |
-+| `tests/combat/` | 1 |
-+| `tests/config/` | 1 |
-+| `tests/core/` | 8 |
-+| `tests/dev-runtime/` | 31 |
-+| `tests/entity/` | 1 |
-+| `tests/events/` | 2 |
-+| `tests/final/` | 11 |
-+| `tests/fixtures/` | 52 |
-+| `tests/fx/` | 1 |
-+| `tests/games/` | 35 |
-+| `tests/helpers/` | 11 |
-+| `tests/index.html` | 1 |
-+| `tests/input/` | 8 |
-+| `tests/persistence/` | 1 |
-+| `tests/playwright/` | 44 |
-+| `tests/playwright_installation.txt` | 1 |
-+| `tests/production/` | 3 |
-+| `tests/README.md` | 1 |
-+| `tests/render/` | 1 |
-+| `tests/replay/` | 2 |
-+| `tests/run-tests.mjs` | 1 |
-+| `tests/runtime/` | 81 |
-+| `tests/samples/` | 1 |
-+| `tests/scenes/` | 3 |
-+| `tests/schemas/` | 1 |
-+| `tests/shared/` | 92 |
-+| `tests/testRunner.html` | 1 |
-+| `tests/testRunner.js` | 1 |
-+| `tests/tools/` | 57 |
-+| `tests/validation/` | 3 |
-+| `tests/vector/` | 1 |
-+| `tests/world/` | 4 |
-+
-+## Updated Remediation Backlog
-+
-+1. Continue toolbox JS sidecar migrations one tool at a time.
-+2. Create a separate migration plan for shared toolbox root scripts:
-+   - `toolbox/toolRegistry.js`
-+   - `toolbox/tool-registry-api-client.js`
-+   - `toolbox/tools-page-accordions.js`
-+3. Continue low-risk test remediation by feature bucket:
-+   - remaining `tests/core/` engine tests;
-+   - small one-file buckets such as `tests/assets/`, `tests/audio/`, `tests/combat/`, `tests/config/`, `tests/entity/`, `tests/fx/`, `tests/persistence/`, `tests/render/`, `tests/vector/`;
-+   - defer broad buckets such as `tests/runtime/`, `tests/shared/`, `tests/tools/`, and `tests/playwright/`.
-+4. Resolve `src/engine/paletteList.js` into an engine feature folder after import-impact review.
-+5. Resolve `src/engine/ui/*.css` with an explicit engine UI CSS policy or Theme V2 migration plan.
-+6. Add `api/{feature-name}/` and `serverside/{feature-name}/` roots only when a scoped API/server migration requires them.
-+
-+## Stack Safety For Owner Review
-+
-+Status: SAFE FOR OWNER REVIEW.
-+
-+Reason:
-+
-+- The stack remains unmerged.
-+- Current branch remains `PR_26172_CHARLIE_repository-compliance-stack`.
-+- Canonical structure guardrail passes with 0 blocking violations.
-+- PR_010 made one low-risk shared status-helper consolidation.
-+- PR_011 made one low-risk test-location remediation slice.
-+- Remaining non-compliance is classified as approved legacy debt and documented in the backlog above.
++1. `PR_26172_CHARLIE_014-low-risk-tool-migration-1`: migrate Text To Speech.
++2. `PR_26172_CHARLIE_015-low-risk-tool-migration-2`: migrate Tags.
++3. Future Charlie PR: migrate Game Configuration.
++4. Future Charlie PR: migrate Colors.
++5. Future Charlie PR: migrate Objects.
 +
 +## Branch Validation
 +
 +| Check | Status | Evidence |
 +| --- | --- | --- |
 +| Current branch | PASS | `PR_26172_CHARLIE_repository-compliance-stack`. |
-+| Worktree clean before PR_012 edits | PASS | PR_011 was committed and pushed before this scope. |
-+| Local/origin sync before PR_012 edits | PASS | `0 0` after PR_011 push. |
-+| Stack remains unmerged | PASS | No merge to `main` was performed. |
-+| Returned to main avoided | PASS | Work remained on the Charlie branch. |
++| Worktree clean before PR_013 edits | PASS | `git status --short` produced no output before this report was created. |
++| Local/origin sync before PR_013 edits | PASS | `0 0`. |
++| Main merge avoided | PASS | No merge to `main` was performed. |
 +
 +## Requirement Checklist
 +
 +| Requirement | Status | Evidence |
 +| --- | --- | --- |
-+| Verify PR_034 Canonical Repository Structure | PASS | Area results and remaining JS/CSS paths documented. |
-+| Verify PR_035 Test Structure Standardization | PASS | Remaining test buckets and PR_011 remediation documented. |
-+| Verify PR_036 Legacy Migration Policy | PASS | Remaining debt is classified as approved legacy and deferred by scoped backlog. |
-+| Verify PR_008 guardrail | PASS | Guardrail command passes with 0 blocking violations. |
-+| Verify PR_009 preflight wiring | PASS | `npm run validate:canonical-structure` is the targeted preflight command. |
-+| Include PASS/FAIL by repository area | PASS | See Repository Area Results. |
-+| Include remaining non-compliant JS paths | PASS | Listed above. |
-+| Include remaining non-compliant CSS paths | PASS | Listed above. |
-+| Include remaining non-compliant test paths | PASS | Listed by bucket and count. |
-+| Include updated remediation backlog | PASS | Listed above. |
-+| State whether stack is safe for Owner review | PASS | Safe for Owner review. |
-+| Confirm audit report exists | PASS | This report. |
-+| Confirm ZIP exists | PASS | `tmp/PR_26172_CHARLIE_012-canonical-structure-enforcement-audit_delta.zip` generated. |
-+| Confirm stack remains unmerged | PASS | No merge performed. |
++| Review `toolbox/` | PASS | Active tool pages and legacy sidecar JS files were inventoried. |
++| Review `assets/toolbox/` | PASS | Existing canonical Idea Board asset path was verified. |
++| Review `assets/theme-v2/` | PASS | Theme V2 JS/CSS paths were verified as canonical. |
++| Identify tool JS outside canonical locations | PASS | Candidate list includes legacy toolbox JS sidecars. |
++| Identify tool CSS outside canonical locations | PASS | No active toolbox CSS sidecars found. |
++| Identify inline script violations | PASS | No inline script blocks found in reviewed active tool pages. |
++| Identify inline style violations | PASS | No inline style blocks/attributes found in reviewed active tool pages. |
++| Rank next five safest migrations | PASS | See Recommended Next Five Tool Migrations. |
++| Produce ZIP artifact | PASS | `tmp/PR_26172_CHARLIE_013-tool-js-css-canonical-migration-audit_delta.zip` generated. |
 +
 +## Validation Lane Report
 +
 +| Lane | Status | Notes |
 +| --- | --- | --- |
-+| Canonical structure guardrail | PASS | `npm run validate:canonical-structure`. |
-+| Report existence | PASS | This PR_012 report exists. |
-+| ZIP artifact | PASS | ZIP generated under `tmp/`. |
-+| Playwright | SKIP | Audit-only scope; no browser route behavior changed in PR_012. |
-+| Samples | SKIP | No sample files or sample loaders changed. |
-+| Full smoke | SKIP | Out of scope per targeted validation rules. |
++| Candidate inventory | PASS | Legacy sidecar files, script references, and inline script/style counts were reviewed. |
++| Markdown/text review | PASS | This report contains candidate list and execution order. |
++| Playwright | SKIP | Audit-only scope; no browser behavior changed. |
++| Samples | SKIP | No sample files changed. |
++| Full smoke | SKIP | Out of scope for audit-only PR. |
 +
 +## Manual Validation Notes
 +
-+- The enforcement guardrail now distinguishes new blocking violations from approved legacy exceptions.
-+- Remaining FAIL statuses by repository area are legacy compliance statuses, not current guardrail failures.
-+- Historical reports and generated lane snapshot reports were not rewritten.
-+- The Charlie stack should remain on this branch for Owner review.
++- Text To Speech is the first migration because it is the only one-file tool JS sidecar in the current approved legacy list.
++- Tags is the second migration because it has the fewest practical files and references after Text To Speech.
++- The current guardrail only permits `assets/toolbox/{tool}/js/index.js`, so multi-file tools should be consolidated into the canonical entrypoint unless a future governance PR broadens the canonical tool asset shape.
++- No runtime files were changed in this audit PR.
