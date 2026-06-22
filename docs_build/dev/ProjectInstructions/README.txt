@@ -26,3 +26,17 @@ When a governance or instruction state needs a history snapshot, add a new file 
 CCYYMMDD_HHMMSS.md
 
 Do not rewrite history snapshots after creation unless the owner explicitly approves.
+
+READ THIS FIRST
+
+1. Read Project Instructions before making changes.
+2. Project Instructions are append-only.
+3. Existing approved guidance may not be removed.
+4. Team ownership must be respected.
+5. BACKLOG_MASTER.md is the authoritative backlog.
+6. Build Path status derives from backlog status.
+7. Direct-to-main commits are prohibited.
+8. Use approved PR workflow.
+9. Follow OWNER governance decisions.
+10. When guidance conflicts, newest OWNER-approved guidance wins.
+11. Batch Governance Mode is the default for governance, documentation, and administrative work.
