@@ -43,3 +43,4 @@ READ THIS FIRST
 
 Addendum index:
 - Canonical Repository Structure: project-instructions/addendums/canonical-repository-structure.md
+- Platform Development Standards: project-instructions/addendums/platform-development-standards.md
