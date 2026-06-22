@@ -1,253 +1,69 @@
-diff --git a/assets/js/shared/status.js b/assets/js/shared/status.js
+diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_011-test-location-remediation.md b/docs_build/dev/reports/PR_26172_CHARLIE_011-test-location-remediation.md
 new file mode 100644
-index 000000000..26bb6926f
+index 000000000..b2be82e3c
 --- /dev/null
-+++ b/assets/js/shared/status.js
-@@ -0,0 +1,42 @@
-+export const STATUS_VALUES = Object.freeze(["PASS", "WARN", "FAIL", "PENDING", "INFO", "SKIP"]);
-+
-+export function statusText(value, fallback = "not available") {
-+    const text = String(value ?? "").trim();
-+    return text || fallback;
-+}
-+
-+export function normalizeStatusValue(value, fallback = "PENDING") {
-+    const normalized = String(value || "").trim().toUpperCase();
-+    return STATUS_VALUES.includes(normalized) ? normalized : fallback;
-+}
-+
-+export function formatStatusMessage(status, message, options = {}) {
-+    const normalized = normalizeStatusValue(status, options.fallbackStatus || "PENDING");
-+    const resolvedMessage = Object.hasOwn(options, "fallbackMessage")
-+        ? statusText(message, options.fallbackMessage)
-+        : String(message);
-+    return `${normalized}: ${resolvedMessage}`;
-+}
-+
-+export function formatStatusReason(status, reason, options = {}) {
-+    const normalized = normalizeStatusValue(status, options.fallbackStatus || "PENDING");
-+    return `${normalized}: ${statusText(reason, options.fallbackReason || "Safe server diagnostics did not provide a reason.")}`;
-+}
-+
-+export function applyStatusNode(node, status, options = {}) {
-+    if (!node) {
-+        return "";
-+    }
-+    const normalized = normalizeStatusValue(status, options.fallbackStatus || "PENDING");
-+    node.textContent = normalized;
-+    node.dataset.healthStatus = normalized;
-+    if (normalized === "PASS" && !options.reason) {
-+        node.removeAttribute("title");
-+        node.removeAttribute("aria-label");
-+        return normalized;
-+    }
-+    const reason = statusText(options.reason, options.titleFallback || "Safe server diagnostics returned this non-PASS status.");
-+    node.setAttribute("title", `${options.titlePrefix || "Reason: "}${reason}`);
-+    node.setAttribute("aria-label", formatStatusReason(normalized, options.reason, options));
-+    return normalized;
-+}
-diff --git a/assets/theme-v2/js/admin-invitations.js b/assets/theme-v2/js/admin-invitations.js
-index 5299093f3..3e3c9e829 100644
---- a/assets/theme-v2/js/admin-invitations.js
-+++ b/assets/theme-v2/js/admin-invitations.js
-@@ -3,6 +3,7 @@ import {
-     readAdminInvites,
-     revokeAdminBetaInvite
- } from "../../../src/api/admin-invitations-api-client.js";
-+import { formatStatusMessage } from "../../js/shared/status.js";
-
- function text(value) {
-     if (value === undefined || value === null || value === "") {
-@@ -53,7 +54,7 @@ class AdminInvitesController {
-     }
-
-     setStatus(status, message) {
--        this.status.textContent = `${status}: ${message}`;
-+        this.status.textContent = formatStatusMessage(status, message);
-     }
-
-     setSummary(payload = {}) {
-diff --git a/assets/theme-v2/js/admin-operations.js b/assets/theme-v2/js/admin-operations.js
-index 306faca9b..fd669562f 100644
---- a/assets/theme-v2/js/admin-operations.js
-+++ b/assets/theme-v2/js/admin-operations.js
-@@ -2,6 +2,7 @@ import {
-     readAdminOperationsStatus,
-     runAdminOperationAction
- } from "../../../src/api/admin-operations-api-client.js";
-+import { formatStatusMessage } from "../../js/shared/status.js";
-
- class AdminOperationsController {
-     constructor(root) {
-@@ -25,7 +26,7 @@ class AdminOperationsController {
-     }
-
-     setStatus(status, message) {
--        this.status.textContent = `${status}: ${message}`;
-+        this.status.textContent = formatStatusMessage(status, message);
-     }
-
-     createLabeledControl(labelText, control) {
-diff --git a/assets/theme-v2/js/admin-setup-actions.js b/assets/theme-v2/js/admin-setup-actions.js
-index 27ddbd1aa..84f39fcd9 100644
---- a/assets/theme-v2/js/admin-setup-actions.js
-+++ b/assets/theme-v2/js/admin-setup-actions.js
-@@ -1,11 +1,12 @@
- import { readAdminSetupStatus } from "../../../src/api/admin-setup-api-client.js";
-+import { formatStatusMessage } from "../../js/shared/status.js";
-
- const refreshButtons = Array.from(document.querySelectorAll("[data-admin-setup-refresh]"));
- const statusFields = Array.from(document.querySelectorAll("[data-admin-setup-status]"));
- const statusRows = Array.from(document.querySelectorAll("[data-admin-setup-status-rows]"));
-
- function setStatus(message, status = "PASS") {
--  const text = `${status}: ${message}`;
-+  const text = formatStatusMessage(status, message);
-   statusFields.forEach((field) => {
-     field.textContent = text;
-   });
-diff --git a/assets/theme-v2/js/admin-system-health.js b/assets/theme-v2/js/admin-system-health.js
-index dfe67df79..09e7a3bb3 100644
---- a/assets/theme-v2/js/admin-system-health.js
-+++ b/assets/theme-v2/js/admin-system-health.js
-@@ -2,8 +2,12 @@ import {
-     readAdminSystemHealthStatus,
-     runAdminSystemHealthStorageConnectivityAction,
- } from "../../../src/api/admin-system-health-api-client.js";
-+import {
-+    applyStatusNode,
-+    normalizeStatusValue,
-+    statusText,
-+} from "../../js/shared/status.js";
-
--const STATUS_VALUES = Object.freeze(["PASS", "WARN", "FAIL", "PENDING", "INFO", "SKIP"]);
- const STORAGE_DIAGNOSTIC_ACTIONS = Object.freeze([
-     Object.freeze({ actionId: "storage-list", key: "list" }),
-     Object.freeze({ actionId: "storage-write-test-object", key: "write" }),
-@@ -12,18 +16,7 @@ const STORAGE_DIAGNOSTIC_ACTIONS = Object.freeze([
- ]);
-
- function asText(value, fallback = "not available") {
--    const text = String(value ?? "").trim();
--    return text || fallback;
--}
--
--function statusValue(value, fallback = "PENDING") {
--    const normalized = String(value || "").trim().toUpperCase();
--    return STATUS_VALUES.includes(normalized) ? normalized : fallback;
--}
--
--function reasonText(status, reason) {
--    const message = asText(reason, "Safe server diagnostics did not provide a reason.");
--    return `${status}: ${message}`;
-+    return statusText(value, fallback);
- }
-
- class AdminSystemHealthController {
-@@ -80,20 +73,7 @@ class AdminSystemHealthController {
-     }
-
-     setStatusNode(node, status, reason = "") {
--        if (!node) {
--            return;
--        }
--        const normalized = statusValue(status);
--        node.textContent = normalized;
--        node.dataset.healthStatus = normalized;
--        if (normalized === "PASS" && !reason) {
--            node.removeAttribute("title");
--            node.removeAttribute("aria-label");
--            return;
--        }
--        const resolvedReason = reasonText(normalized, reason);
--        node.setAttribute("title", `Reason: ${asText(reason, "Safe server diagnostics returned this non-PASS status.")}`);
--        node.setAttribute("aria-label", resolvedReason);
-+        applyStatusNode(node, status, { reason });
-     }
-
-     renderPending(reason) {
-@@ -176,7 +156,7 @@ class AdminSystemHealthController {
-
-     createStatusCell(status, reason) {
-         const cell = document.createElement("td");
--        cell.dataset.healthStatus = statusValue(status);
-+        cell.dataset.healthStatus = normalizeStatusValue(status);
-         this.setStatusNode(cell, status, reason);
-         return cell;
-     }
-diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_010-shared-js-low-risk-consolidation.md b/docs_build/dev/reports/PR_26172_CHARLIE_010-shared-js-low-risk-consolidation.md
-new file mode 100644
-index 000000000..c5bdf30cc
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_CHARLIE_010-shared-js-low-risk-consolidation.md
-@@ -0,0 +1,90 @@
-+# PR_26172_CHARLIE_010 Shared JS Low-Risk Consolidation
++++ b/docs_build/dev/reports/PR_26172_CHARLIE_011-test-location-remediation.md
+@@ -0,0 +1,82 @@
++# PR_26172_CHARLIE_011 Test Location Remediation
 +
 +## Purpose
 +
-+Perform the first low-risk migration into `assets/js/shared/` using findings from `PR_26172_CHARLIE_007-shared-js-candidate-audit`.
++Apply PR_035 Test Structure Standardization to remaining obvious non-canonical test locations.
 +
-+## Selected Helper Family
++## Selected Move Set
 +
-+Selected family: Status helpers.
++Moved only low-risk engine-core unit tests with obvious canonical destinations:
 +
-+Reason:
++| Old Path | New Path | Reason |
++| --- | --- | --- |
++| `tests/core/FrameClock.test.mjs` | `tests/engine/core/FrameClock.test.mjs` | Engine core unit test for `src/engine/core/FrameClock.js`. |
++| `tests/core/FixedTicker.test.mjs` | `tests/engine/core/FixedTicker.test.mjs` | Engine core unit test for `src/engine/core/FixedTicker.js`. |
++| `tests/core/RuntimeMetrics.test.mjs` | `tests/engine/core/RuntimeMetrics.test.mjs` | Engine core unit test for `src/engine/core/RuntimeMetrics.js`. |
 +
-+- Status helpers were explicitly identified as a candidate in PR_007.
-+- The affected code already used repeated status formatting and status cell accessibility behavior.
-+- The extraction can be limited to one helper family without table, DOM, validation-overlay, dialog, or API refactors.
++Ambiguous tests were not moved.
 +
 +## Scope
 +
 +| File | Change |
 +| --- | --- |
-+| `assets/js/shared/status.js` | Added shared status normalization, status message formatting, status reason formatting, and accessible status node application helpers. |
-+| `assets/theme-v2/js/admin-system-health.js` | Reused shared status helpers for health status normalization and accessible non-PASS reason text. |
-+| `assets/theme-v2/js/admin-setup-actions.js` | Reused shared status message formatter. |
-+| `assets/theme-v2/js/admin-operations.js` | Reused shared status message formatter. |
-+| `assets/theme-v2/js/admin-invitations.js` | Reused shared status message formatter. |
-+| `docs_build/dev/reports/PR_26172_CHARLIE_010-shared-js-low-risk-consolidation.md` | Added this PR report. |
++| `tests/engine/core/FrameClock.test.mjs` | Moved from `tests/core/` and updated import path. |
++| `tests/engine/core/FixedTicker.test.mjs` | Moved from `tests/core/` and updated import path. |
++| `tests/engine/core/RuntimeMetrics.test.mjs` | Moved from `tests/core/` and updated import path. |
++| `tests/run-tests.mjs` | Updated explicit runner imports to new canonical paths. |
++| `scripts/run-targeted-test-lanes.mjs` | Updated engine-src lane target paths to new canonical paths. |
++| `docs_build/dev/reports/PR_26172_CHARLIE_011-test-location-remediation.md` | Added this PR report. |
 +| `docs_build/dev/reports/codex_review.diff` | Refreshed Codex review diff. |
 +| `docs_build/dev/reports/codex_changed_files.txt` | Refreshed changed-file list. |
-+
-+## Behavior Preservation
-+
-+- `formatStatusMessage(status, message)` preserves the prior template-string behavior used by simple status setters: `` `${status}: ${message}` `` with normalized known status casing.
-+- Admin System Health keeps the same non-PASS reason behavior:
-+  - status text remains normalized;
-+  - `data-health-status` is preserved;
-+  - PASS without a reason removes `title` and `aria-label`;
-+  - non-PASS or reason-bearing statuses get `title` and `aria-label` text.
-+- No table, validation overlay, DOM selector, dialog, or API helpers were moved.
 +
 +## Validation
 +
 +| Validation | Status | Result |
 +| --- | --- | --- |
-+| `node --check assets/js/shared/status.js` | PASS | Shared helper syntax is valid. |
-+| `node --check assets/theme-v2/js/admin-system-health.js` | PASS | Affected Admin System Health user syntax is valid. |
-+| `node --check assets/theme-v2/js/admin-setup-actions.js` | PASS | Affected Admin Setup user syntax is valid. |
-+| `node --check assets/theme-v2/js/admin-operations.js` | PASS | Affected Admin Operations user syntax is valid. |
-+| `node --check assets/theme-v2/js/admin-invitations.js` | PASS | Affected Admin Invitations user syntax is valid. |
-+| Direct helper behavior check with `node --input-type=module` | PASS | Status normalization, message formatting, reason formatting, and status node title/aria behavior passed. |
-+| `npm run validate:canonical-structure` | PASS | New `assets/js/shared/status.js` path is canonical; 0 blocking violations. |
-+| `rg -n 'shared/status\\.js\|assets/js/shared/status\\.js' assets toolbox src tests package.json` | PASS | Real Theme V2 code imports the shared helper. |
++| `node scripts/run-node-test-files.mjs tests/engine/core/FrameClock.test.mjs tests/engine/core/FixedTicker.test.mjs tests/engine/core/RuntimeMetrics.test.mjs` | PASS | 3/3 targeted node test files passed. |
++| `npm run validate:canonical-structure` | PASS | Guardrail passed; approved legacy exceptions dropped from 498 to 495 after the three moves. |
++| `rg -n 'tests/core/(FrameClock\|FixedTicker\|RuntimeMetrics)\\.test\\.mjs' scripts tests package.json` | PASS | No old active path references remain. |
++| `rg -n '\\./core/(FrameClock\|FixedTicker\|RuntimeMetrics)\\.test\\.mjs' scripts tests package.json` | PASS | No old runner import references remain. |
++| `node --check scripts/run-targeted-test-lanes.mjs` | PASS | Updated lane runner syntax is valid. |
++| `node --check tests/run-tests.mjs` | PASS | Updated explicit test runner syntax is valid. |
++| `node --check tests/engine/core/FrameClock.test.mjs` | PASS | Moved test syntax is valid. |
++| `node --check tests/engine/core/FixedTicker.test.mjs` | PASS | Moved test syntax is valid. |
++| `node --check tests/engine/core/RuntimeMetrics.test.mjs` | PASS | Moved test syntax is valid. |
 +| `git diff --check` | PASS | No whitespace errors. |
-+| ZIP artifact exists | PASS | `tmp/PR_26172_CHARLIE_010-shared-js-low-risk-consolidation_delta.zip` generated. |
++| ZIP artifact exists | PASS | `tmp/PR_26172_CHARLIE_011-test-location-remediation_delta.zip` generated. |
 +
 +## Stop Gate
 +
 +Status: NOT TRIGGERED.
 +
-+A low-risk status helper family was safe to consolidate.
++Three low-risk engine-core tests had clear canonical destinations and were safe to move.
 +
 +## Branch Validation
 +
 +| Check | Status | Evidence |
 +| --- | --- | --- |
 +| Current branch | PASS | `PR_26172_CHARLIE_repository-compliance-stack`. |
-+| Worktree clean before PR_010 edits | PASS | Branch was clean before this scope. |
-+| Local/origin sync before PR_010 edits | PASS | `0 0` before this scope. |
++| Worktree clean before PR_011 edits | PASS | PR_010 was committed and pushed before this scope. |
++| Local/origin sync before PR_011 edits | PASS | `0 0` after PR_010 push. |
 +| Main merge avoided | PASS | No merge to `main` was performed. |
 +| Returned to main avoided | PASS | Work remained on the Charlie stack branch. |
 +
@@ -255,19 +71,104 @@ index 000000000..c5bdf30cc
 +
 +| Requirement | Status | Evidence |
 +| --- | --- | --- |
-+| Use PR_007 findings | PASS | Selected the PR_007 status-helper candidate. |
-+| Select only one helper category | PASS | Only status helpers were consolidated. |
-+| Follow preferred order | PASS | Status helpers are first in the preferred order. |
-+| Move only one helper family | PASS | No validation, table, DOM, dialog, or API helpers were moved. |
-+| Create shared implementation under `assets/js/shared/` | PASS | `assets/js/shared/status.js`. |
-+| Update references | PASS | Four Theme V2 status users import the helper. |
-+| Preserve behavior | PASS | Targeted syntax and direct behavior checks passed. |
-+| Avoid large refactors | PASS | Changes are limited to helper extraction and imports. |
-+| Confirm `assets/js/shared/` is used by real code | PASS | Theme V2 users import `../../js/shared/status.js`. |
++| Use prior audit findings | PASS | PR_001 listed `tests/core/` as non-canonical; PR_035 canonicalizes engine tests under `tests/engine/{feature-name}/`. |
++| Move only low-risk tests | PASS | Moved three small engine core unit tests only. |
++| Use obvious canonical destinations | PASS | Tests now live under `tests/engine/core/`. |
++| Update references | PASS | Updated `tests/run-tests.mjs` and `scripts/run-targeted-test-lanes.mjs`. |
++| Preserve behavior | PASS | Targeted moved tests passed. |
++| Do not move ambiguous tests | PASS | Other `tests/core/` files were left in place. |
++| Do not modify runtime source | PASS | Only tests, validation runner references, and reports changed. |
++| Confirm new paths follow Project Instructions | PASS | Paths follow `tests/engine/{feature-name}/`. |
 +| ZIP artifact exists | PASS | ZIP generated under `tmp/`. |
 +
 +## Manual Validation Notes
 +
-+- This PR intentionally avoids table rendering, DOM helper, validation-overlay, dialog, and API helper extraction.
-+- No Playwright run was needed because the affected change is a small browser helper extraction with targeted syntax and behavior validation.
-+- The canonical structure guardrail accepts `assets/js/shared/status.js` as an approved shared JavaScript path.
++- Historical report references under `docs_build/` were not rewritten.
++- `tests/core/` still contains other legacy tests that require separate impact review before moving.
++- This PR intentionally avoids broad test-tree restructuring.
+diff --git a/scripts/run-targeted-test-lanes.mjs b/scripts/run-targeted-test-lanes.mjs
+index 3fef73319..42ecb1b71 100644
+--- a/scripts/run-targeted-test-lanes.mjs
++++ b/scripts/run-targeted-test-lanes.mjs
+@@ -363,8 +363,8 @@ const laneDefinitions = Object.freeze({
+       nodeCommand(
+         "scripts/run-node-test-files.mjs",
+         "tests/core/EngineCoreBoundaryBaseline.test.mjs",
+-        "tests/core/FrameClock.test.mjs",
+-        "tests/core/FixedTicker.test.mjs",
++        "tests/engine/core/FrameClock.test.mjs",
++        "tests/engine/core/FixedTicker.test.mjs",
+         "tests/assets/AssetLoaderSystem.test.mjs",
+         "tests/audio/AudioService.test.mjs",
+         "tests/input/InputMap.test.mjs",
+@@ -380,8 +380,8 @@ const laneDefinitions = Object.freeze({
+       "tests/assets/AssetLoaderSystem.test.mjs",
+       "tests/audio/AudioService.test.mjs",
+       "tests/core/EngineCoreBoundaryBaseline.test.mjs",
+-      "tests/core/FixedTicker.test.mjs",
+-      "tests/core/FrameClock.test.mjs",
++      "tests/engine/core/FixedTicker.test.mjs",
++      "tests/engine/core/FrameClock.test.mjs",
+       "tests/input/GamepadHapticsService.test.mjs",
+       "tests/input/GamepadInputAdapter.test.mjs",
+       "tests/input/InputMap.test.mjs",
+diff --git a/tests/engine/core/FixedTicker.test.mjs b/tests/engine/core/FixedTicker.test.mjs
+index ed83c2069..8c42ed386 100644
+--- a/tests/engine/core/FixedTicker.test.mjs
++++ b/tests/engine/core/FixedTicker.test.mjs
+@@ -5,7 +5,7 @@ David Quesenberry
+ FixedTicker.test.mjs
+ */
+ import assert from "node:assert/strict";
+-import FixedTicker from "../../src/engine/core/FixedTicker.js";
++import FixedTicker from "../../../src/engine/core/FixedTicker.js";
+
+ export function run() {
+     const ticker = new FixedTicker({ stepMs: 10, maxCatchUpSteps: 3 });
+diff --git a/tests/engine/core/FrameClock.test.mjs b/tests/engine/core/FrameClock.test.mjs
+index da1f20401..a89f7c102 100644
+--- a/tests/engine/core/FrameClock.test.mjs
++++ b/tests/engine/core/FrameClock.test.mjs
+@@ -5,7 +5,7 @@ David Quesenberry
+ FrameClock.test.mjs
+ */
+ import assert from "node:assert/strict";
+-import FrameClock from "../../src/engine/core/FrameClock.js";
++import FrameClock from "../../../src/engine/core/FrameClock.js";
+
+ export function run() {
+     const clock = new FrameClock({ maxDeltaMs: 50 });
+diff --git a/tests/engine/core/RuntimeMetrics.test.mjs b/tests/engine/core/RuntimeMetrics.test.mjs
+index 89b37376c..30a0af924 100644
+--- a/tests/engine/core/RuntimeMetrics.test.mjs
++++ b/tests/engine/core/RuntimeMetrics.test.mjs
+@@ -5,7 +5,7 @@ David Quesenberry
+ RuntimeMetrics.test.mjs
+ */
+ import assert from 'node:assert/strict';
+-import RuntimeMetrics from '../../src/engine/core/RuntimeMetrics.js';
++import RuntimeMetrics from '../../../src/engine/core/RuntimeMetrics.js';
+
+ export function run() {
+   const metrics = new RuntimeMetrics({ sampleWindowSeconds: 0.25 });
+diff --git a/tests/run-tests.mjs b/tests/run-tests.mjs
+index 01f866e4a..3f554ca1a 100644
+--- a/tests/run-tests.mjs
++++ b/tests/run-tests.mjs
+@@ -7,13 +7,13 @@ run-tests.mjs
+ import { run as runAIBehaviors } from './ai/AIBehaviors.test.mjs';
+ import { run as runAssetLoaderSystem } from './assets/AssetLoaderSystem.test.mjs';
+ import { run as runConfigStore } from './config/ConfigStore.test.mjs';
+-import { run as runFixedTicker } from './core/FixedTicker.test.mjs';
++import { run as runFixedTicker } from './engine/core/FixedTicker.test.mjs';
+ import { run as runBackgroundImageAndFullscreenBezel } from './core/BackgroundImageAndFullscreenBezel.test.mjs';
+ import { run as runEngineFullscreen } from './core/EngineFullscreen.test.mjs';
+ import { run as runEngineSceneLifecycle } from './core/EngineSceneLifecycle.test.mjs';
+ import { run as runEngineTiming } from './core/EngineTiming.test.mjs';
+-import { run as runFrameClock } from './core/FrameClock.test.mjs';
+-import { run as runRuntimeMetrics } from './core/RuntimeMetrics.test.mjs';
++import { run as runFrameClock } from './engine/core/FrameClock.test.mjs';
++import { run as runRuntimeMetrics } from './engine/core/RuntimeMetrics.test.mjs';
+ import { run as runParticleSystem } from './fx/ParticleSystem.test.mjs';
+ import { run as runAudioService } from './audio/AudioService.test.mjs';
+ import { run as runFinalSystems } from './final/FinalSystems.test.mjs';
