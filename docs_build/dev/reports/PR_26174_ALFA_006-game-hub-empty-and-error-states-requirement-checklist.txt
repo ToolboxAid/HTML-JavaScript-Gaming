@@ -1,0 +1,6 @@
+Requirement Checklist: PASS
+
+PASS - Added creator-safe empty state for no Game Hub projects.
+PASS - Added creator-safe API unavailable message.
+PASS - No server/internal technical error details are shown to creators.
+PASS - No silent fallbacks were added; unavailable project lists render an explicit unavailable state.

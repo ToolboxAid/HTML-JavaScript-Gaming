@@ -1,8 +1,9 @@
-tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+toolbox/game-hub/game-hub.js
+tests/playwright/tools/GameHubMockRepository.spec.mjs
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/PR_26174_ALFA_005-idea-project-validation-polish.md
-docs_build/dev/reports/PR_26174_ALFA_005-idea-project-validation-polish-branch-validation.txt
-docs_build/dev/reports/PR_26174_ALFA_005-idea-project-validation-polish-requirement-checklist.txt
-docs_build/dev/reports/PR_26174_ALFA_005-idea-project-validation-polish-validation-lane.txt
-docs_build/dev/reports/PR_26174_ALFA_005-idea-project-validation-polish-manual-validation-notes.txt
+docs_build/dev/reports/PR_26174_ALFA_006-game-hub-empty-and-error-states.md
+docs_build/dev/reports/PR_26174_ALFA_006-game-hub-empty-and-error-states-branch-validation.txt
+docs_build/dev/reports/PR_26174_ALFA_006-game-hub-empty-and-error-states-requirement-checklist.txt
+docs_build/dev/reports/PR_26174_ALFA_006-game-hub-empty-and-error-states-validation-lane.txt
+docs_build/dev/reports/PR_26174_ALFA_006-game-hub-empty-and-error-states-manual-validation-notes.txt

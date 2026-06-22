@@ -217,6 +217,14 @@ function createGameButton(game, isActive) {
   return button;
 }
 
+function createGameListStatus(message, state) {
+  const emptyState = document.createElement("p");
+  emptyState.className = "status";
+  emptyState.dataset.gameListStatus = state;
+  emptyState.textContent = message;
+  return emptyState;
+}
+
 function renderProjectInformation(activeGame, currentMember, progress) {
   if (!elements.projectRecordsTable) {
     return;
@@ -252,22 +260,23 @@ function renderGameList() {
   const activeGame = normalizeActiveGame(repository.getActiveGame());
   const gameUserKey = currentGameUserKey(activeGame);
   const listResult = repository.listGames(gameUserKey ? { userKey: gameUserKey } : {});
-  const games = Array.isArray(listResult) ? listResult : [];
-  if (!Array.isArray(listResult) && !reportRepositoryError(listResult, "Game list")) {
-    setStatusLog("Game list is temporarily unavailable. Refresh the page or try again shortly.");
-  }
 
   elements.gameList.replaceChildren();
 
-  if (games.length === 0) {
-    const emptyState = document.createElement("p");
-    emptyState.className = "status";
-    emptyState.textContent = "No games. Create a game to continue.";
-    elements.gameList.append(emptyState);
+  if (!Array.isArray(listResult)) {
+    const message = "Game Hub projects are temporarily unavailable. Refresh the page or try again shortly.";
+    reportRepositoryError(listResult, "Game Hub projects");
+    setStatusLog(message);
+    elements.gameList.append(createGameListStatus(message, "unavailable"));
     return;
   }
 
-  games.forEach((game) => {
+  if (listResult.length === 0) {
+    elements.gameList.append(createGameListStatus("No Game Hub projects yet. Create a game to start building.", "empty"));
+    return;
+  }
+
+  listResult.forEach((game) => {
     const row = document.createElement("article");
     row.className = "callout";
     row.dataset.gameRow = game.id;

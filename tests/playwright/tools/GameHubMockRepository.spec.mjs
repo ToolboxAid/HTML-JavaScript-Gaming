@@ -322,6 +322,89 @@ test("Game Hub preserves guest browsing and blocks guest saves", async ({ page }
   }
 });
 
+test("Game Hub shows a creator-safe empty state when no projects exist", async ({ page }) => {
+  await page.route("**/api/toolbox/game-hub/repositories/*/methods/getActiveGame", async (route) => {
+    await route.fulfill({
+      body: JSON.stringify({
+        data: { result: null },
+        ok: true,
+        rule: "Browser -> Server API -> Data Source",
+      }),
+      contentType: "application/json; charset=utf-8",
+      status: 200,
+    });
+  });
+  await page.route("**/api/toolbox/game-hub/repositories/*/methods/getGameProgress", async (route) => {
+    await route.fulfill({
+      body: JSON.stringify({
+        data: {
+          result: {
+            gameStatus: "No Game",
+            gameProgress: "No active game",
+            publishingProgress: "Not started",
+            currentFocus: "Create a game",
+            recommendedNextTool: "Game Hub",
+            progressChecklist: [],
+          },
+        },
+        ok: true,
+        rule: "Browser -> Server API -> Data Source",
+      }),
+      contentType: "application/json; charset=utf-8",
+      status: 200,
+    });
+  });
+  await page.route("**/api/toolbox/game-hub/repositories/*/methods/listGames", async (route) => {
+    await route.fulfill({
+      body: JSON.stringify({
+        data: { result: [] },
+        ok: true,
+        rule: "Browser -> Server API -> Data Source",
+      }),
+      contentType: "application/json; charset=utf-8",
+      status: 200,
+    });
+  });
+  const failures = await openRepoPage(page, "/toolbox/game-hub/index.html", { session: creatorSession() });
+
+  try {
+    await expect(page.locator("[data-active-game-name]")).toHaveText("No game open");
+    await expect(page.locator("[data-game-list] [data-game-list-status='empty']")).toHaveText("No Game Hub projects yet. Create a game to start building.");
+    await expect(page.locator("[data-game-list] [data-game-row]")).toHaveCount(0);
+    await expect(page.locator("[data-game-hub-log]")).not.toContainText(/server|API|repository|database|stack|error/i);
+    await expectNoPageFailures(failures);
+  } finally {
+    await failures.server.close();
+  }
+});
+
+test("Game Hub shows a creator-safe unavailable state when project list API fails", async ({ page }) => {
+  await page.route("**/api/toolbox/game-hub/repositories/*/methods/listGames", async (route) => {
+    await route.fulfill({
+      body: JSON.stringify({
+        error: "postgres://service-role-secret@internal.example:5432/gamefoundry failed with stack trace",
+        ok: false,
+        rule: "Browser -> Server API -> Data Source",
+      }),
+      contentType: "application/json; charset=utf-8",
+      status: 503,
+    });
+  });
+  const failures = await openRepoPage(page, "/toolbox/game-hub/index.html", { session: creatorSession() });
+
+  try {
+    expect(failures.failedRequests.some((request) => request.includes("503") && request.includes("/methods/listGames"))).toBe(true);
+    await expect(page.locator("[data-game-list] [data-game-list-status='unavailable']")).toHaveText("Game Hub projects are temporarily unavailable. Refresh the page or try again shortly.");
+    await expect(page.locator("[data-game-list] [data-game-row]")).toHaveCount(0);
+    await expect(page.locator("[data-game-hub-log]")).toHaveText("Game Hub projects are temporarily unavailable. Refresh the page or try again shortly.");
+    await expect(page.locator("main")).not.toContainText(/postgres|service-role-secret|internal\.example|stack trace|repository|database/i);
+    expect(failures.pageErrors).toEqual([]);
+    expect(failures.consoleErrors.filter((message) => !message.includes("status of 503"))).toEqual([]);
+  } finally {
+    await failures.server.close();
+  }
+});
+
 test("Game Hub shows active-game errors without throwing", async ({ page }) => {
   await page.route("**/api/toolbox/game-hub/repositories/*/methods/getActiveGame", async (route) => {
     await route.fulfill({
