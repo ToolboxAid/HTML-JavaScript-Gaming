@@ -1,3 +1,5 @@
-docs_build/dev/reports/PR_26172_CHARLIE_007-shared-js-candidate-audit.md
+scripts/validate-canonical-repository-structure.mjs
+tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs
+docs_build/dev/reports/PR_26172_CHARLIE_008-canonical-structure-guardrail-script.md
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/codex_changed_files.txt

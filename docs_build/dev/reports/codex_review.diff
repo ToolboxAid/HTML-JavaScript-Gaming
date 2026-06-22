@@ -1,185 +1,572 @@
-diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_007-shared-js-candidate-audit.md b/docs_build/dev/reports/PR_26172_CHARLIE_007-shared-js-candidate-audit.md
+diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_008-canonical-structure-guardrail-script.md b/docs_build/dev/reports/PR_26172_CHARLIE_008-canonical-structure-guardrail-script.md
 new file mode 100644
-index 000000000..00484d0bf
+index 000000000..54f9fd99b
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_CHARLIE_007-shared-js-candidate-audit.md
-@@ -0,0 +1,179 @@
-+# PR_26172_CHARLIE_007 Shared JS Candidate Audit
++++ b/docs_build/dev/reports/PR_26172_CHARLIE_008-canonical-structure-guardrail-script.md
+@@ -0,0 +1,101 @@
++# PR_26172_CHARLIE_008 Canonical Structure Guardrail Script
 +
 +## Purpose
 +
-+Identify duplicated browser helper logic that should be considered for future extraction to:
++Add repository guardrail validation for:
 +
-+`assets/js/shared/`
++- JS structure
++- CSS structure
++- Test structure
 +
-+This PR is audit-only. No implementation was moved.
++The guardrail reports violations only. It does not move, delete, or rewrite repository files.
 +
-+## Scope Reviewed
++## Scope
 +
-+| Area | Status | Notes |
-+| --- | --- | --- |
-+| `assets/` | PASS | Reviewed Theme V2 page scripts, toolbox asset scripts, and shared UI patterns. |
-+| `toolbox/` | PASS | Reviewed active tool page scripts and tool API client wrappers. |
-+| `src/engine/` | PASS | Reviewed engine UI, debug, runtime, rendering, and validation helper patterns for overlap with browser UI code. |
++| File | Change |
++| --- | --- |
++| `scripts/validate-canonical-repository-structure.mjs` | Added reusable/CLI guardrail for canonical JS, CSS, and test path checks. |
++| `tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs` | Added targeted regression test for clean paths, approved legacy exceptions, and failing violation fixtures. |
++| `docs_build/dev/reports/PR_26172_CHARLIE_008-canonical-structure-guardrail-script.md` | Added this PR report. |
++| `docs_build/dev/reports/codex_review.diff` | Refreshed Codex review diff. |
++| `docs_build/dev/reports/codex_changed_files.txt` | Refreshed changed-file list. |
 +
-+## Candidate Summary
++## Guardrail Behavior
 +
-+| Priority | Candidate | Proposed Shared Location | Source Files | Recommendation |
-+| --- | --- | --- | --- | --- |
-+| P1 | DOM text and element helpers | `assets/js/shared/dom.js` | `toolbox/game-design/game-design.js`, `toolbox/game-configuration/game-configuration.js`, `assets/theme-v2/js/account-page-data.js`, `assets/theme-v2/js/admin-service-page-data.js`, `assets/theme-v2/js/admin-setup-actions.js`, `assets/theme-v2/js/admin-system-health.js` | Extract small browser-safe helpers such as `setText`, `textOrFallback`, `appendCell`, and common selector helpers after one tool/page migration proves import paths. |
-+| P1 | Table rendering helpers | `assets/js/shared/table-rendering.js` | `assets/theme-v2/js/account-page-data.js`, `assets/theme-v2/js/admin-service-page-data.js`, `assets/theme-v2/js/admin-setup-actions.js`, `assets/theme-v2/js/admin-system-health.js`, `toolbox/game-design/game-design.js`, `toolbox/messages/messages.js`, `toolbox/objects/objects.js` | Create a configurable `renderDataTable` helper for caption, headers, rows, dataset name, empty-state row, and cell text normalization. |
-+| P1 | Validation overlay rendering | `assets/js/shared/validation-overlay.js` | `toolbox/game-design/game-design.js`, `toolbox/game-configuration/game-configuration.js`, `toolbox/objects/objects.js`, `toolbox/colors/colors.js`, `toolbox/assets/assets.js` | Extract shared render behavior for `validation.findings`, hidden overlay state, and status list item text. Keep tool-specific labels and data attributes local. |
-+| P2 | Status text and badge helpers | `assets/js/shared/status.js` | `assets/theme-v2/js/admin-system-health.js`, `assets/theme-v2/js/admin-operations.js`, `assets/theme-v2/js/admin-invitations.js`, `assets/theme-v2/js/account-ai-credits.js`, `assets/theme-v2/js/admin-setup-actions.js`, `assets/theme-v2/js/admin-db-status-panel.js` | Normalize `PASS/WARN/FAIL/PENDING/INFO/SKIP` formatting, title/aria reason text, and status element updates without changing service semantics. |
-+| P2 | Callout/follow-up card helpers | `assets/js/shared/callouts.js` | `assets/theme-v2/js/account-page-data.js`, `assets/theme-v2/js/admin-service-page-data.js` | Extract common callout creation for title, status/reason, and next action. |
-+| P2 | API client wrapper conventions | `assets/js/shared/api-client-adapters.js` | `toolbox/objects/objects-api-client.js`, `toolbox/colors/palette-api-client.js`, `toolbox/game-design/game-design-api-client.js`, `toolbox/game-configuration/game-configuration-api-client.js`, `toolbox/game-hub/game-hub-api-client.js`, `toolbox/game-journey/game-journey-api-client.js`, `toolbox/tags/tags-api-client.js`, `toolbox/messages/messages-api-client.js` | Do not duplicate `src/api/server-api-client.js`; instead add browser-facing adapter helpers only if future migrations need common constant freezing or repository factory naming. |
-+| P3 | Dialog and overlay helpers | `assets/js/shared/dialogs.js` | `assets/theme-v2/js/image-zoom-dialog.js`, `src/engine/ui/CanvasDialogPrimitives.js`, `toolbox/colors/colors.js`, `toolbox/assets/assets.js`, `toolbox/game-design/game-design.js`, `toolbox/game-configuration/game-configuration.js` | Keep canvas-specific primitives in `src/engine/ui/`. Consider shared DOM dialog/overlay open-close helpers separately for Theme V2/tool pages. |
-+| P3 | Form select/list helpers | `assets/js/shared/forms.js` | `toolbox/game-design/game-design.js`, `toolbox/messages/messages.js`, `toolbox/objects/objects.js`, `assets/theme-v2/js/admin-operations.js` | Extract later if repeated option/list generation remains after table and validation helpers are settled. |
-+| P3 | Runtime validation predicates | No browser shared move yet | `src/engine/debug/Validation.js`, `src/engine/runtime/engineV2DialogueSystem.js`, `src/engine/runtime/engineV2StatusEffectSystem.js`, `src/engine/object-model/objectDefinitionValidator.js` | Engine validators are domain/runtime logic, not immediate `assets/js/shared/` candidates. Keep under `src/engine/` unless a future UI-only wrapper is needed. |
++The new script:
 +
-+## Category Findings
++- checks tracked repository paths by default with `git ls-files`;
++- falls back to filesystem walking when Git tracked-file discovery is unavailable;
++- reports unapproved JS structure violations;
++- reports unapproved CSS structure violations;
++- reports unapproved test structure violations;
++- treats documented current repository debt as approved legacy exceptions;
++- exits nonzero only for unapproved violations;
++- writes an optional Markdown report when `--report <path>` is supplied;
++- makes no repository changes unless an explicit report path is provided.
 +
-+### API Helpers
++## Approved Legacy Exceptions
 +
-+Status: CANDIDATE.
++The guardrail intentionally does not fail the current repository for already documented debt from PR_001 and PR_005:
 +
-+Tool API clients already share core behavior through `src/api/server-api-client.js`. Remaining duplicated logic is mostly thin adapter code around:
++- known toolbox JS sidecars awaiting canonical migration;
++- `src/engine/paletteList.js`;
++- `src/engine/ui/*.css`;
++- existing non-canonical legacy test buckets;
++- Theme V2 vendored font CSS under `assets/theme-v2/fonts/`;
++- top-level legacy test support files such as `tests/index.html`.
 +
-+- `readServerToolConstants`
-+- `requireServerConstant`
-+- `createServerRepositoryClient`
-+- optional freezing of returned constants
-+- tool-specific repository factory naming
-+
-+Recommended path:
-+
-+- Keep server contract logic in `src/api/`.
-+- Add `assets/js/shared/api-client-adapters.js` only if browser scripts need common adapter helpers during a future migration.
-+
-+### DOM Helpers
-+
-+Status: STRONG CANDIDATE.
-+
-+Repeated helpers include:
-+
-+- `setText(element, value)`
-+- `text(value)` or `asText(value, fallback)`
-+- `clearContent(root)`
-+- `appendCell(row, text)`
-+- common `querySelector`/root mapping patterns
-+
-+Recommended path:
-+
-+- Start with `assets/js/shared/dom.js`.
-+- Migrate one low-risk Theme V2 page and one low-risk toolbox script before broader rollout.
-+
-+### Table Helpers
-+
-+Status: STRONG CANDIDATE.
-+
-+Multiple files build tables by hand with the same structure:
-+
-+- wrapper
-+- `table.data-table`
-+- caption
-+- `thead`
-+- header row
-+- body rows
-+- fallback text normalization
-+
-+Recommended path:
-+
-+- Create `assets/js/shared/table-rendering.js`.
-+- Keep data ownership, row mapping, and service calls local.
-+
-+### Status Helpers
-+
-+Status: CANDIDATE.
-+
-+Theme V2 scripts repeatedly set status strings and sometimes attach accessibility details for non-PASS states.
-+
-+Recommended path:
-+
-+- Create `assets/js/shared/status.js`.
-+- Support status normalization, `title`, `aria-label`, and `textContent`.
-+- Do not change status semantics in the extraction PR.
-+
-+### Dialog Helpers
-+
-+Status: CANDIDATE WITH SPLIT OWNERSHIP.
-+
-+DOM dialogs and overlays exist in Theme V2/tool scripts, while canvas dialog primitives belong to engine UI.
-+
-+Recommended path:
-+
-+- Use `assets/js/shared/dialogs.js` only for DOM dialog helpers.
-+- Leave `src/engine/ui/CanvasDialogPrimitives.js` in engine ownership.
-+
-+### Validation Helpers
-+
-+Status: STRONG CANDIDATE FOR UI VALIDATION OVERLAYS.
-+
-+Tool scripts repeatedly render `validation.findings` into a list and hide/show overlays.
-+
-+Recommended path:
-+
-+- Create `assets/js/shared/validation-overlay.js`.
-+- Keep tool-specific validation rules and repository calls local.
-+- Do not move engine domain validators into browser shared assets.
-+
-+## Prioritized Follow-Up PRs
-+
-+1. `PR_26172_CHARLIE_shared-dom-table-foundation`
-+   - Add `assets/js/shared/dom.js` and `assets/js/shared/table-rendering.js`.
-+   - Migrate one Theme V2 page and one low-risk toolbox script.
-+
-+2. `PR_26172_CHARLIE_validation-overlay-shared-helper`
-+   - Add `assets/js/shared/validation-overlay.js`.
-+   - Migrate `game-design` and `game-configuration` validation overlay rendering first.
-+
-+3. `PR_26172_CHARLIE_status-helper-foundation`
-+   - Add `assets/js/shared/status.js`.
-+   - Migrate Admin System Health or Admin Setup status rendering only after status accessibility semantics are preserved.
-+
-+4. `PR_26172_CHARLIE_dom-dialog-helper-audit`
-+   - Audit DOM dialog/overlay behavior separately from engine canvas dialog primitives.
++Generated files under `tests/results/` remain blocking violations if tracked.
 +
 +## Validation
 +
 +| Validation | Status | Result |
 +| --- | --- | --- |
-+| Candidate list includes source files | PASS | Each candidate row includes source file examples. |
-+| Candidate list includes proposed shared location | PASS | Each extractable candidate includes an `assets/js/shared/` path. |
-+| No runtime source changed | PASS | This PR adds report artifacts only. |
-+| No implementation moved | PASS | No source extraction was performed. |
++| `node --check scripts/validate-canonical-repository-structure.mjs` | PASS | Script syntax is valid. |
++| `node --test tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs` | PASS | Clean/legacy case passed; unapproved violation fixture failed as expected. |
++| `node scripts/validate-canonical-repository-structure.mjs` | PASS | Current repository produced 0 blocking violations and 498 approved legacy exceptions. |
++| `git diff --check` | PASS | No whitespace errors. |
++| ZIP artifact exists | PASS | `tmp/PR_26172_CHARLIE_008-canonical-structure-guardrail-script_delta.zip` generated. |
++
++## Violation Fixture Result
++
++The targeted test confirms the guardrail fails these unapproved fixture paths:
++
++- `toolbox/new-tool/new-tool.js`
++- `toolbox/new-tool/new-tool.css`
++- `assets/toolbox/new-tool/js/view.js`
++- `src/engine/rootRuntime.js`
++- `src/engine/ui/newPanel.css`
++- `tests/results/generated-result.json`
++- `tests/new-lane/NewLane.test.mjs`
 +
 +## Branch Validation
 +
 +| Check | Status | Evidence |
 +| --- | --- | --- |
 +| Current branch | PASS | `PR_26172_CHARLIE_repository-compliance-stack`. |
-+| Worktree clean before PR_007 edits | PASS | `git status --short` produced no output before report creation. |
-+| Local/origin sync before PR_007 edits | PASS | `0 0`. |
++| Worktree clean before PR_008 edits | PASS | PR_007 was committed and pushed before PR_008 edits began. |
++| Local/origin sync before PR_008 edits | PASS | `0 0` after PR_007 push. |
 +| Main merge avoided | PASS | No merge to `main` was performed. |
 +
 +## Requirement Checklist
 +
 +| Requirement | Status | Evidence |
 +| --- | --- | --- |
-+| Review `assets/` | PASS | Theme V2 scripts and Idea Board canonical asset path reviewed. |
-+| Review `toolbox/` | PASS | Active tool scripts and API clients reviewed. |
-+| Review `src/engine/` | PASS | Engine UI/debug/runtime helper patterns reviewed. |
-+| Identify API helpers | PASS | Tool API client adapters listed. |
-+| Identify DOM helpers | PASS | Text, selector, cell, and content helpers listed. |
-+| Identify table helpers | PASS | Repeated table rendering listed. |
-+| Identify status helpers | PASS | Theme V2 status update patterns listed. |
-+| Identify dialog helpers | PASS | DOM dialog and canvas dialog ownership split documented. |
-+| Identify validation helpers | PASS | Validation overlay rendering listed. |
-+| Do not move implementation | PASS | Audit-only report. |
-+| ZIP artifact exists | PASS | `tmp/PR_26172_CHARLIE_007-shared-js-candidate-audit_delta.zip` generated. |
++| Add script under `scripts/` | PASS | `scripts/validate-canonical-repository-structure.mjs`. |
++| Validate JS structure | PASS | Script checks toolbox JS sidecars, asset JS placement, and root engine JS. |
++| Validate CSS structure | PASS | Script checks toolbox CSS, asset CSS placement, and engine CSS placement. |
++| Validate test structure | PASS | Script checks test paths against canonical roots and approved legacy buckets. |
++| Report violations only | PASS | Script reports findings and exits; it does not modify source paths. |
++| Respect approved legacy exceptions | PASS | Known PR_001/PR_005 debt is listed as `LEGACY` instead of blocking. |
++| Add targeted validation test | PASS | `tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs`. |
++| Targeted guardrail test passes | PASS | Node test passed. |
++| Violation fixture fails | PASS | Node test asserted `FAIL` for unapproved fixture paths. |
++| No runtime source changes | PASS | No application runtime files were modified. |
 +
 +## Manual Validation Notes
 +
-+- The highest-value extraction candidates are DOM text helpers, table rendering, and validation overlay rendering.
-+- API helper extraction should be cautious because existing tool clients already depend on `src/api/server-api-client.js`.
-+- Canvas dialog primitives should remain in `src/engine/ui/`; only DOM dialog behavior should be considered for `assets/js/shared/`.
-+- No runtime or executable source files were modified by this PR.
++- This PR introduces a guardrail foundation, not a full cleanup.
++- The guardrail is intentionally compatible with the current repository by distinguishing approved legacy exceptions from new unapproved violations.
++- The optional `--report` flag is available for future CI/preflight reporting without requiring this PR to commit generated guardrail output.
++- PR_009 should wire the script into targeted repository validation without running full samples smoke.
+diff --git a/scripts/validate-canonical-repository-structure.mjs b/scripts/validate-canonical-repository-structure.mjs
+new file mode 100644
+index 000000000..e5b4c4d78
+--- /dev/null
++++ b/scripts/validate-canonical-repository-structure.mjs
+@@ -0,0 +1,410 @@
++import { spawnSync } from "node:child_process";
++import fs from "node:fs/promises";
++import path from "node:path";
++import { fileURLToPath } from "node:url";
++
++const repoRoot = path.resolve(fileURLToPath(new URL("..", import.meta.url)));
++
++export const APPROVED_LEGACY_JS_PATHS = Object.freeze(new Set([
++  "toolbox/assets/assets-api-client.js",
++  "toolbox/assets/assets-upload-worker.js",
++  "toolbox/assets/assets.js",
++  "toolbox/colors/colors.js",
++  "toolbox/colors/palette-api-client.js",
++  "toolbox/controls/controls-api-client.js",
++  "toolbox/controls/controls.js",
++  "toolbox/game-configuration/game-configuration-api-client.js",
++  "toolbox/game-configuration/game-configuration.js",
++  "toolbox/game-design/game-design-api-client.js",
++  "toolbox/game-design/game-design.js",
++  "toolbox/game-hub/game-hub-api-client.js",
++  "toolbox/game-hub/game-hub.js",
++  "toolbox/game-journey/game-journey-api-client.js",
++  "toolbox/game-journey/game-journey.js",
++  "toolbox/messages/message-tts-service-registry.js",
++  "toolbox/messages/messages-api-client.js",
++  "toolbox/messages/messages.js",
++  "toolbox/objects/objects-api-client.js",
++  "toolbox/objects/objects.js",
++  "toolbox/tags/tags-api-client.js",
++  "toolbox/tags/tags.js",
++  "toolbox/text-to-speech/text2speech.js",
++  "toolbox/tool-registry-api-client.js",
++  "toolbox/toolRegistry.js",
++  "toolbox/tools-page-accordions.js",
++  "src/engine/paletteList.js",
++]));
++
++export const APPROVED_LEGACY_CSS_PATHS = Object.freeze(new Set([
++  "src/engine/ui/baseLayout.css",
++  "src/engine/ui/hubCommon.css",
++  "src/engine/ui/spriteEditor.css",
++]));
++
++export const APPROVED_LEGACY_TEST_SEGMENTS = Object.freeze(new Set([
++  "ai",
++  "assets",
++  "audio",
++  "combat",
++  "config",
++  "core",
++  "dev-runtime",
++  "engine",
++  "entity",
++  "events",
++  "final",
++  "fixtures",
++  "fx",
++  "games",
++  "helpers",
++  "index.html",
++  "input",
++  "persistence",
++  "playwright",
++  "playwright_installation.txt",
++  "production",
++  "README.md",
++  "render",
++  "replay",
++  "run-tests.mjs",
++  "runtime",
++  "samples",
++  "scenes",
++  "schemas",
++  "shared",
++  "testRunner.html",
++  "testRunner.js",
++  "tools",
++  "validation",
++  "vector",
++  "world",
++]));
++
++const canonicalTestPrefixes = Object.freeze([
++  "tests/toolbox/",
++  "tests/engine/",
++  "tests/api/",
++  "tests/server/",
++  "tests/js/shared/",
++  "tests/regression/",
++]);
++
++function normalizeRepoPath(filePath) {
++  return String(filePath || "")
++    .replace(/\\/g, "/")
++    .replace(/^\.\//, "")
++    .replace(/^\/+/, "");
++}
++
++function fileExtension(filePath) {
++  return path.posix.extname(normalizeRepoPath(filePath)).toLowerCase();
++}
++
++function isJavaScript(filePath) {
++  return [".js", ".mjs"].includes(fileExtension(filePath));
++}
++
++function isCss(filePath) {
++  return fileExtension(filePath) === ".css";
++}
++
++function relevantPath(filePath) {
++  return filePath.startsWith("assets/") ||
++    filePath.startsWith("toolbox/") ||
++    filePath.startsWith("src/engine/") ||
++    filePath.startsWith("tests/");
++}
++
++function record(severity, area, file, message, expected) {
++  return Object.freeze({ area, expected, file, message, severity });
++}
++
++function isCanonicalAssetJs(filePath) {
++  return /^assets\/toolbox\/[^/]+\/js\/index\.js$/.test(filePath) ||
++    filePath.startsWith("assets/js/shared/") ||
++    filePath.startsWith("assets/theme-v2/js/");
++}
++
++function isCanonicalAssetCss(filePath) {
++  return /^assets\/toolbox\/[^/]+\/css\/index\.css$/.test(filePath) ||
++    filePath.startsWith("assets/theme-v2/css/") ||
++    filePath.startsWith("assets/theme-v2/fonts/");
++}
++
++function auditJavaScript(filePath) {
++  if (!isJavaScript(filePath)) {
++    return null;
++  }
++  if (filePath.startsWith("assets/") && !isCanonicalAssetJs(filePath)) {
++    return record(
++      "FAIL",
++      "JS",
++      filePath,
++      "JavaScript under assets must use assets/toolbox/{tool}/js/index.js, assets/js/shared/, or assets/theme-v2/js/.",
++      "assets/toolbox/{tool}/js/index.js or assets/js/shared/",
++    );
++  }
++  if (filePath.startsWith("toolbox/")) {
++    if (APPROVED_LEGACY_JS_PATHS.has(filePath)) {
++      return record(
++        "LEGACY",
++        "JS",
++        filePath,
++        "Approved legacy toolbox JavaScript sidecar awaiting canonical migration.",
++        "assets/toolbox/{tool}/js/index.js or assets/js/shared/",
++      );
++    }
++    return record(
++      "FAIL",
++      "JS",
++      filePath,
++      "New or unapproved toolbox JavaScript sidecar is outside canonical structure.",
++      "assets/toolbox/{tool}/js/index.js or assets/js/shared/",
++    );
++  }
++  if (/^src\/engine\/[^/]+\.m?js$/.test(filePath)) {
++    if (APPROVED_LEGACY_JS_PATHS.has(filePath)) {
++      return record(
++        "LEGACY",
++        "JS",
++        filePath,
++        "Approved legacy root-level engine JavaScript awaiting feature-folder migration.",
++        "src/engine/{feature-name}/",
++      );
++    }
++    return record(
++      "FAIL",
++      "JS",
++      filePath,
++      "Root-level engine JavaScript is outside src/engine/{feature-name}/.",
++      "src/engine/{feature-name}/",
++    );
++  }
++  return null;
++}
++
++function auditCss(filePath) {
++  if (!isCss(filePath)) {
++    return null;
++  }
++  if (filePath.startsWith("assets/") && !isCanonicalAssetCss(filePath)) {
++    return record(
++      "FAIL",
++      "CSS",
++      filePath,
++      "CSS under assets must use assets/toolbox/{tool}/css/index.css or assets/theme-v2/css/.",
++      "assets/toolbox/{tool}/css/index.css or assets/theme-v2/css/",
++    );
++  }
++  if (filePath.startsWith("toolbox/")) {
++    return record(
++      "FAIL",
++      "CSS",
++      filePath,
++      "Toolbox CSS sidecar is outside canonical tool asset structure.",
++      "assets/toolbox/{tool}/css/index.css",
++    );
++  }
++  if (filePath.startsWith("src/engine/") && APPROVED_LEGACY_CSS_PATHS.has(filePath)) {
++    return record(
++      "LEGACY",
++      "CSS",
++      filePath,
++      "Approved legacy engine UI CSS awaiting asset/theme placement decision.",
++      "assets/theme-v2/css/ or approved engine UI style policy",
++    );
++  }
++  if (filePath.startsWith("src/engine/")) {
++    return record(
++      "FAIL",
++      "CSS",
++      filePath,
++      "Engine CSS is outside canonical asset/theme roots.",
++      "assets/theme-v2/css/ or approved engine UI style policy",
++    );
++  }
++  return null;
++}
++
++function auditTestPath(filePath) {
++  if (!filePath.startsWith("tests/")) {
++    return null;
++  }
++  if (canonicalTestPrefixes.some((prefix) => filePath.startsWith(prefix))) {
++    return null;
++  }
++  const segment = filePath.slice("tests/".length).split("/")[0] || "";
++  if (segment === "results") {
++    return record(
++      "FAIL",
++      "Tests",
++      filePath,
++      "Generated test result artifacts must not be tracked under active tests/results/.",
++      "ignored tmp/test-results/ or docs_build/dev/reports/",
++    );
++  }
++  if (APPROVED_LEGACY_TEST_SEGMENTS.has(segment)) {
++    return record(
++      "LEGACY",
++      "Tests",
++      filePath,
++      "Approved legacy test location awaiting canonical test structure migration.",
++      "tests/toolbox/, tests/engine/, tests/api/, tests/server/, tests/js/shared/, or tests/regression/",
++    );
++  }
++  return record(
++    "FAIL",
++    "Tests",
++    filePath,
++    "New or unapproved test location is outside canonical test roots.",
++    "tests/toolbox/, tests/engine/, tests/api/, tests/server/, tests/js/shared/, or tests/regression/",
++  );
++}
++
++export function auditCanonicalRepositoryStructure(files) {
++  const findings = [];
++  const legacy = [];
++  [...new Set(files.map(normalizeRepoPath).filter(Boolean))]
++    .filter(relevantPath)
++    .sort((left, right) => left.localeCompare(right))
++    .forEach((filePath) => {
++      const records = [
++        auditJavaScript(filePath),
++        auditCss(filePath),
++        auditTestPath(filePath),
++      ].filter(Boolean);
++      records.forEach((entry) => {
++        if (entry.severity === "FAIL") {
++          findings.push(entry);
++        } else {
++          legacy.push(entry);
++        }
++      });
++    });
++
++  return Object.freeze({
++    findings,
++    legacy,
++    status: findings.length === 0 ? "PASS" : "FAIL",
++  });
++}
++
++async function walkFiles(root) {
++  const results = [];
++  async function visit(absolutePath) {
++    let entries = [];
++    try {
++      entries = await fs.readdir(absolutePath, { withFileTypes: true });
++    } catch {
++      return;
++    }
++    for (const entry of entries) {
++      if ([".git", "node_modules", "tmp"].includes(entry.name)) {
++        continue;
++      }
++      const child = path.join(absolutePath, entry.name);
++      if (entry.isDirectory()) {
++        await visit(child);
++      } else if (entry.isFile()) {
++        results.push(path.relative(root, child).replace(/\\/g, "/"));
++      }
++    }
++  }
++  await visit(root);
++  return results;
++}
++
++export async function collectRepositoryFiles(root = repoRoot) {
++  const result = spawnSync("git", ["ls-files"], {
++    cwd: root,
++    encoding: "utf8",
++    shell: false,
++  });
++  if (result.status === 0 && result.stdout.trim()) {
++    return result.stdout.split(/\r?\n/).map(normalizeRepoPath).filter(Boolean);
++  }
++  return walkFiles(root);
++}
++
++function markdownRows(records) {
++  if (!records.length) {
++    return ["| none | none | PASS | none |"];
++  }
++  return records.map((entry) =>
++    `| ${entry.area} | \`${entry.file}\` | ${entry.severity} | ${entry.message} Expected: \`${entry.expected}\`. |`
++  );
++}
++
++export function formatCanonicalStructureReport(result) {
++  return [
++    "# Canonical Repository Structure Guardrail",
++    "",
++    `Status: ${result.status}`,
++    "",
++    "## Blocking Violations",
++    "",
++    "| Area | File | Severity | Details |",
++    "| --- | --- | --- | --- |",
++    ...markdownRows(result.findings),
++    "",
++    "## Approved Legacy Exceptions",
++    "",
++    "| Area | File | Severity | Details |",
++    "| --- | --- | --- | --- |",
++    ...markdownRows(result.legacy),
++    "",
++    "## Result",
++    "",
++    result.status === "PASS"
++      ? "- PASS - No unapproved JS, CSS, or test structure violations were found."
++      : "- FAIL - Unapproved JS, CSS, or test structure violations were found.",
++    "",
++  ].join("\n");
++}
++
++function parseArgs(argv) {
++  const options = { reportPath: "", root: repoRoot };
++  for (let index = 0; index < argv.length; index += 1) {
++    const argument = argv[index];
++    if (argument === "--report") {
++      options.reportPath = argv[index + 1] || "";
++      index += 1;
++    } else if (argument.startsWith("--report=")) {
++      options.reportPath = argument.slice("--report=".length);
++    } else if (argument === "--root") {
++      options.root = path.resolve(argv[index + 1] || repoRoot);
++      index += 1;
++    } else if (argument.startsWith("--root=")) {
++      options.root = path.resolve(argument.slice("--root=".length));
++    } else {
++      throw new Error(`Unknown argument: ${argument}`);
++    }
++  }
++  return options;
++}
++
++async function main() {
++  const options = parseArgs(process.argv.slice(2));
++  const files = await collectRepositoryFiles(options.root);
++  const result = auditCanonicalRepositoryStructure(files);
++  const report = formatCanonicalStructureReport(result);
++  if (options.reportPath) {
++    const absoluteReportPath = path.resolve(options.root, options.reportPath);
++    await fs.mkdir(path.dirname(absoluteReportPath), { recursive: true });
++    await fs.writeFile(absoluteReportPath, report, "utf8");
++  }
++  console.log(`Canonical repository structure guardrail: ${result.status}`);
++  console.log(`Blocking violations: ${result.findings.length}`);
++  console.log(`Approved legacy exceptions: ${result.legacy.length}`);
++  if (result.findings.length > 0) {
++    console.error(report);
++    process.exitCode = 1;
++  }
++}
++
++if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
++  main().catch((error) => {
++    console.error(error instanceof Error ? error.stack || error.message : error);
++    process.exitCode = 1;
++  });
++}
+diff --git a/tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs b/tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs
+new file mode 100644
+index 000000000..20adc8b0b
+--- /dev/null
++++ b/tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs
+@@ -0,0 +1,43 @@
++import assert from "node:assert/strict";
++import test from "node:test";
++
++import {
++  auditCanonicalRepositoryStructure,
++  formatCanonicalStructureReport,
++} from "../../scripts/validate-canonical-repository-structure.mjs";
++
++test("canonical repository structure guardrail accepts canonical paths and approved legacy exceptions", () => {
++  const result = auditCanonicalRepositoryStructure([
++    "assets/toolbox/idea-board/js/index.js",
++    "assets/toolbox/idea-board/css/index.css",
++    "assets/js/shared/dom.js",
++    "assets/theme-v2/js/admin-system-health.js",
++    "assets/theme-v2/css/theme.css",
++    "src/engine/rendering/Renderer.js",
++    "toolbox/game-design/game-design.js",
++    "src/engine/ui/baseLayout.css",
++    "tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs",
++    "tests/runtime/V2SessionValidation.test.mjs",
++  ]);
++
++  assert.equal(result.status, "PASS");
++  assert.equal(result.findings.length, 0);
++  assert.equal(result.legacy.length, 3);
++});
++
++test("canonical repository structure guardrail fails unapproved violation fixture paths", () => {
++  const result = auditCanonicalRepositoryStructure([
++    "toolbox/new-tool/new-tool.js",
++    "toolbox/new-tool/new-tool.css",
++    "assets/toolbox/new-tool/js/view.js",
++    "src/engine/rootRuntime.js",
++    "src/engine/ui/newPanel.css",
++    "tests/results/generated-result.json",
++    "tests/new-lane/NewLane.test.mjs",
++  ]);
++
++  assert.equal(result.status, "FAIL");
++  assert.equal(result.findings.length, 7);
++  assert.match(formatCanonicalStructureReport(result), /New or unapproved toolbox JavaScript sidecar/);
++  assert.match(formatCanonicalStructureReport(result), /Generated test result artifacts must not be tracked/);
++});
