@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { GAME_JOURNEY_BOOTSTRAP_BUCKETS } from "../../../src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js";
 import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store.js";
 import { isBrowserExtensionNoise } from "../../helpers/browserExtensionNoise.mjs";
 import { createGameJourneyCompletionMetricsPostgresClientStub } from "../../helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs";
@@ -136,10 +137,15 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
   const consoleErrors = [];
   const mutatingApiRequests = [];
   const createGamePayloads = [];
+  const createGameResponsePromises = [];
   const gameHubRepositoryRequests = [];
 
   page.on("response", (response) => {
     if (response.status() >= 400) failedRequests.push(`${response.status()} ${response.url()}`);
+    const responseUrl = response.url();
+    if (responseUrl.includes("/api/toolbox/game-hub/repositories/") && responseUrl.includes("/methods/createGame")) {
+      createGameResponsePromises.push(response.json());
+    }
   });
   page.on("requestfailed", (request) => failedRequests.push(`FAILED ${request.url()}`));
   page.on("pageerror", (error) => {
@@ -363,6 +369,10 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
       },
       status: "Planning",
     });
+    const [createGameResponse] = await Promise.all(createGameResponsePromises);
+    const createdProject = createGameResponse?.data?.result;
+    expect(createdProject?.journeyBootstrap?.buckets.map((bucket) => bucket.bucketName)).toEqual(GAME_JOURNEY_BOOTSTRAP_BUCKETS);
+    expect(createdProject?.journeyBootstrap?.buckets.every((bucket) => bucket.noteKey && bucket.itemKey)).toBe(true);
     await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='archive']").click();
     await expect(page.locator("[data-idea-board-idea-row='lantern-reef']")).toHaveCount(0);
     await page.locator("[data-idea-board-status-filter-option][value='Archived']").check();
@@ -394,8 +404,14 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
     await page.getByRole("link", { name: "Open Game Journey" }).click();
     await page.waitForURL(/\/toolbox\/game-journey\/index\.html\?game=lantern-reef-\d+$/);
     await expect(page.locator("[data-journey-active-game]")).toHaveText("Active game: Lantern Reef.");
+    const journeyNoteNames = await page.locator("[data-journey-summary-body] [data-journey-note-button]").evaluateAll((buttons) => (
+      buttons.map((button) => button.textContent.trim())
+    ));
+    const journeyBucketNames = journeyNoteNames.filter((name) => GAME_JOURNEY_BOOTSTRAP_BUCKETS.includes(name));
+    expect(journeyBucketNames).toEqual(GAME_JOURNEY_BOOTSTRAP_BUCKETS);
     await expect(page.locator("[data-journey-summary-body]")).toContainText("Source Idea: Lantern Reef");
     await expect(page.locator("[data-journey-summary-body]")).toContainText("10000011");
+    await expect(page.locator("[data-journey-recent-activity]")).toContainText("Created 13 Game Journey starter buckets.");
     await expect(page.locator("[data-journey-recent-activity]")).toContainText("Created 1 Game Journey item from Source Idea.");
 
     expect(mutatingApiRequests.some((request) => request.includes("/api/toolbox/game-hub/repositories"))).toBe(true);
@@ -417,7 +433,6 @@ test("Idea Board guest Create Project redirects to sign in without creating a pr
   const server = await startRepoServer();
   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
   const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
-  const previousMetricsDbPath = process.env.GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH;
   const previousSupabaseEnv = {
     GAMEFOUNDRY_DATABASE_URL: process.env.GAMEFOUNDRY_DATABASE_URL,
     GAMEFOUNDRY_SUPABASE_ANON_KEY: process.env.GAMEFOUNDRY_SUPABASE_ANON_KEY,
@@ -427,7 +442,6 @@ test("Idea Board guest Create Project redirects to sign in without creating a pr
   process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
   process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
   process.env.GAMEFOUNDRY_DATABASE_URL = "postgres://idea-board:test@127.0.0.1:5432/idea_board";
-  process.env.GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH = `tmp/test-results/idea-board-${process.pid}-${Date.now()}.sqlite`;
   process.env.GAMEFOUNDRY_SUPABASE_ANON_KEY = "idea-board-anon-key";
   process.env.GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY = "idea-board-service-role-key";
   process.env.GAMEFOUNDRY_SUPABASE_URL = `${server.baseUrl}/fake-supabase`;
@@ -479,7 +493,6 @@ test("Idea Board guest Create Project redirects to sign in without creating a pr
   } finally {
     restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
     restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
-    restoreEnvValue("GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH", previousMetricsDbPath);
     Object.entries(previousSupabaseEnv).forEach(([key, value]) => restoreEnvValue(key, value));
     await server.close();
   }

@@ -1,8 +1,11 @@
+src/dev-runtime/persistence/mock-db-store.js
+src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
+src/dev-runtime/server/local-api-router.mjs
 tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/PR_26174_ALFA_002-game-hub-project-intake-display.md
-docs_build/dev/reports/PR_26174_ALFA_002-game-hub-project-intake-display-branch-validation.txt
-docs_build/dev/reports/PR_26174_ALFA_002-game-hub-project-intake-display-requirement-checklist.txt
-docs_build/dev/reports/PR_26174_ALFA_002-game-hub-project-intake-display-validation-lane.txt
-docs_build/dev/reports/PR_26174_ALFA_002-game-hub-project-intake-display-manual-validation-notes.txt
+docs_build/dev/reports/PR_26174_ALFA_003-game-hub-journey-bootstrap.md
+docs_build/dev/reports/PR_26174_ALFA_003-game-hub-journey-bootstrap-branch-validation.txt
+docs_build/dev/reports/PR_26174_ALFA_003-game-hub-journey-bootstrap-requirement-checklist.txt
+docs_build/dev/reports/PR_26174_ALFA_003-game-hub-journey-bootstrap-validation-lane.txt
+docs_build/dev/reports/PR_26174_ALFA_003-game-hub-journey-bootstrap-manual-validation-notes.txt

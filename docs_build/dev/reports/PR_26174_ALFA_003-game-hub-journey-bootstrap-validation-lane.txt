@@ -1,0 +1,8 @@
+Validation Lane: PASS
+
+Targeted Playwright impacted lane:
+PASS - npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+
+Notes:
+- Full workspace smoke was not run; targeted impacted Playwright validation was used per request.
+- User-facing terminology remains Game Hub / Game Journey.

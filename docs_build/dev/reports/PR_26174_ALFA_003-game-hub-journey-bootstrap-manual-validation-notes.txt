@@ -1,0 +1,6 @@
+Manual Validation Notes: PASS
+
+PASS - Confirmed createGame response includes journeyBootstrap bucket records with noteKey and itemKey.
+PASS - Confirmed Game Journey displays all required starter bucket notes for the created Game Hub project.
+PASS - Confirmed source idea Journey item remains present after bootstrap.
+PASS - Confirmed bootstrap records are produced by the repository/Local API layer, not browser arrays.
