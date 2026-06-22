@@ -3,6 +3,7 @@ import {
     readAdminInvites,
     revokeAdminBetaInvite
 } from "../../../src/api/admin-invitations-api-client.js";
+import { formatStatusMessage } from "../../js/shared/status.js";
 
 function text(value) {
     if (value === undefined || value === null || value === "") {
@@ -53,7 +54,7 @@ class AdminInvitesController {
     }
 
     setStatus(status, message) {
-        this.status.textContent = `${status}: ${message}`;
+        this.status.textContent = formatStatusMessage(status, message);
     }
 
     setSummary(payload = {}) {

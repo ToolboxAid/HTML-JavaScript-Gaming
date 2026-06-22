@@ -1,11 +1,12 @@
 import { readAdminSetupStatus } from "../../../src/api/admin-setup-api-client.js";
+import { formatStatusMessage } from "../../js/shared/status.js";
 
 const refreshButtons = Array.from(document.querySelectorAll("[data-admin-setup-refresh]"));
 const statusFields = Array.from(document.querySelectorAll("[data-admin-setup-status]"));
 const statusRows = Array.from(document.querySelectorAll("[data-admin-setup-status-rows]"));
 
 function setStatus(message, status = "PASS") {
-  const text = `${status}: ${message}`;
+  const text = formatStatusMessage(status, message);
   statusFields.forEach((field) => {
     field.textContent = text;
   });

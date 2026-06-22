@@ -1,4 +1,8 @@
-package.json
-docs_build/dev/reports/PR_26172_CHARLIE_009-guardrail-preflight-wireup.md
+assets/js/shared/status.js
+assets/theme-v2/js/admin-system-health.js
+assets/theme-v2/js/admin-setup-actions.js
+assets/theme-v2/js/admin-operations.js
+assets/theme-v2/js/admin-invitations.js
+docs_build/dev/reports/PR_26172_CHARLIE_010-shared-js-low-risk-consolidation.md
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/codex_changed_files.txt

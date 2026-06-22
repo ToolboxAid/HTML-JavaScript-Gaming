@@ -1,84 +1,273 @@
-diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_009-guardrail-preflight-wireup.md b/docs_build/dev/reports/PR_26172_CHARLIE_009-guardrail-preflight-wireup.md
+diff --git a/assets/js/shared/status.js b/assets/js/shared/status.js
 new file mode 100644
-index 000000000..c94048fa5
+index 000000000..26bb6926f
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_CHARLIE_009-guardrail-preflight-wireup.md
-@@ -0,0 +1,66 @@
-+# PR_26172_CHARLIE_009 Guardrail Preflight Wireup
++++ b/assets/js/shared/status.js
+@@ -0,0 +1,42 @@
++export const STATUS_VALUES = Object.freeze(["PASS", "WARN", "FAIL", "PENDING", "INFO", "SKIP"]);
++
++export function statusText(value, fallback = "not available") {
++    const text = String(value ?? "").trim();
++    return text || fallback;
++}
++
++export function normalizeStatusValue(value, fallback = "PENDING") {
++    const normalized = String(value || "").trim().toUpperCase();
++    return STATUS_VALUES.includes(normalized) ? normalized : fallback;
++}
++
++export function formatStatusMessage(status, message, options = {}) {
++    const normalized = normalizeStatusValue(status, options.fallbackStatus || "PENDING");
++    const resolvedMessage = Object.hasOwn(options, "fallbackMessage")
++        ? statusText(message, options.fallbackMessage)
++        : String(message);
++    return `${normalized}: ${resolvedMessage}`;
++}
++
++export function formatStatusReason(status, reason, options = {}) {
++    const normalized = normalizeStatusValue(status, options.fallbackStatus || "PENDING");
++    return `${normalized}: ${statusText(reason, options.fallbackReason || "Safe server diagnostics did not provide a reason.")}`;
++}
++
++export function applyStatusNode(node, status, options = {}) {
++    if (!node) {
++        return "";
++    }
++    const normalized = normalizeStatusValue(status, options.fallbackStatus || "PENDING");
++    node.textContent = normalized;
++    node.dataset.healthStatus = normalized;
++    if (normalized === "PASS" && !options.reason) {
++        node.removeAttribute("title");
++        node.removeAttribute("aria-label");
++        return normalized;
++    }
++    const reason = statusText(options.reason, options.titleFallback || "Safe server diagnostics returned this non-PASS status.");
++    node.setAttribute("title", `${options.titlePrefix || "Reason: "}${reason}`);
++    node.setAttribute("aria-label", formatStatusReason(normalized, options.reason, options));
++    return normalized;
++}
+diff --git a/assets/theme-v2/js/admin-invitations.js b/assets/theme-v2/js/admin-invitations.js
+index 5299093f3..3e3c9e829 100644
+--- a/assets/theme-v2/js/admin-invitations.js
++++ b/assets/theme-v2/js/admin-invitations.js
+@@ -3,6 +3,7 @@ import {
+     readAdminInvites,
+     revokeAdminBetaInvite
+ } from "../../../src/api/admin-invitations-api-client.js";
++import { formatStatusMessage } from "../../js/shared/status.js";
+
+ function text(value) {
+     if (value === undefined || value === null || value === "") {
+@@ -53,7 +54,7 @@ class AdminInvitesController {
+     }
+
+     setStatus(status, message) {
+-        this.status.textContent = `${status}: ${message}`;
++        this.status.textContent = formatStatusMessage(status, message);
+     }
+
+     setSummary(payload = {}) {
+diff --git a/assets/theme-v2/js/admin-operations.js b/assets/theme-v2/js/admin-operations.js
+index 306faca9b..fd669562f 100644
+--- a/assets/theme-v2/js/admin-operations.js
++++ b/assets/theme-v2/js/admin-operations.js
+@@ -2,6 +2,7 @@ import {
+     readAdminOperationsStatus,
+     runAdminOperationAction
+ } from "../../../src/api/admin-operations-api-client.js";
++import { formatStatusMessage } from "../../js/shared/status.js";
+
+ class AdminOperationsController {
+     constructor(root) {
+@@ -25,7 +26,7 @@ class AdminOperationsController {
+     }
+
+     setStatus(status, message) {
+-        this.status.textContent = `${status}: ${message}`;
++        this.status.textContent = formatStatusMessage(status, message);
+     }
+
+     createLabeledControl(labelText, control) {
+diff --git a/assets/theme-v2/js/admin-setup-actions.js b/assets/theme-v2/js/admin-setup-actions.js
+index 27ddbd1aa..84f39fcd9 100644
+--- a/assets/theme-v2/js/admin-setup-actions.js
++++ b/assets/theme-v2/js/admin-setup-actions.js
+@@ -1,11 +1,12 @@
+ import { readAdminSetupStatus } from "../../../src/api/admin-setup-api-client.js";
++import { formatStatusMessage } from "../../js/shared/status.js";
+
+ const refreshButtons = Array.from(document.querySelectorAll("[data-admin-setup-refresh]"));
+ const statusFields = Array.from(document.querySelectorAll("[data-admin-setup-status]"));
+ const statusRows = Array.from(document.querySelectorAll("[data-admin-setup-status-rows]"));
+
+ function setStatus(message, status = "PASS") {
+-  const text = `${status}: ${message}`;
++  const text = formatStatusMessage(status, message);
+   statusFields.forEach((field) => {
+     field.textContent = text;
+   });
+diff --git a/assets/theme-v2/js/admin-system-health.js b/assets/theme-v2/js/admin-system-health.js
+index dfe67df79..09e7a3bb3 100644
+--- a/assets/theme-v2/js/admin-system-health.js
++++ b/assets/theme-v2/js/admin-system-health.js
+@@ -2,8 +2,12 @@ import {
+     readAdminSystemHealthStatus,
+     runAdminSystemHealthStorageConnectivityAction,
+ } from "../../../src/api/admin-system-health-api-client.js";
++import {
++    applyStatusNode,
++    normalizeStatusValue,
++    statusText,
++} from "../../js/shared/status.js";
+
+-const STATUS_VALUES = Object.freeze(["PASS", "WARN", "FAIL", "PENDING", "INFO", "SKIP"]);
+ const STORAGE_DIAGNOSTIC_ACTIONS = Object.freeze([
+     Object.freeze({ actionId: "storage-list", key: "list" }),
+     Object.freeze({ actionId: "storage-write-test-object", key: "write" }),
+@@ -12,18 +16,7 @@ const STORAGE_DIAGNOSTIC_ACTIONS = Object.freeze([
+ ]);
+
+ function asText(value, fallback = "not available") {
+-    const text = String(value ?? "").trim();
+-    return text || fallback;
+-}
+-
+-function statusValue(value, fallback = "PENDING") {
+-    const normalized = String(value || "").trim().toUpperCase();
+-    return STATUS_VALUES.includes(normalized) ? normalized : fallback;
+-}
+-
+-function reasonText(status, reason) {
+-    const message = asText(reason, "Safe server diagnostics did not provide a reason.");
+-    return `${status}: ${message}`;
++    return statusText(value, fallback);
+ }
+
+ class AdminSystemHealthController {
+@@ -80,20 +73,7 @@ class AdminSystemHealthController {
+     }
+
+     setStatusNode(node, status, reason = "") {
+-        if (!node) {
+-            return;
+-        }
+-        const normalized = statusValue(status);
+-        node.textContent = normalized;
+-        node.dataset.healthStatus = normalized;
+-        if (normalized === "PASS" && !reason) {
+-            node.removeAttribute("title");
+-            node.removeAttribute("aria-label");
+-            return;
+-        }
+-        const resolvedReason = reasonText(normalized, reason);
+-        node.setAttribute("title", `Reason: ${asText(reason, "Safe server diagnostics returned this non-PASS status.")}`);
+-        node.setAttribute("aria-label", resolvedReason);
++        applyStatusNode(node, status, { reason });
+     }
+
+     renderPending(reason) {
+@@ -176,7 +156,7 @@ class AdminSystemHealthController {
+
+     createStatusCell(status, reason) {
+         const cell = document.createElement("td");
+-        cell.dataset.healthStatus = statusValue(status);
++        cell.dataset.healthStatus = normalizeStatusValue(status);
+         this.setStatusNode(cell, status, reason);
+         return cell;
+     }
+diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_010-shared-js-low-risk-consolidation.md b/docs_build/dev/reports/PR_26172_CHARLIE_010-shared-js-low-risk-consolidation.md
+new file mode 100644
+index 000000000..c5bdf30cc
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26172_CHARLIE_010-shared-js-low-risk-consolidation.md
+@@ -0,0 +1,90 @@
++# PR_26172_CHARLIE_010 Shared JS Low-Risk Consolidation
 +
 +## Purpose
 +
-+Wire canonical repository structure guardrail validation into targeted repository validation.
++Perform the first low-risk migration into `assets/js/shared/` using findings from `PR_26172_CHARLIE_007-shared-js-candidate-audit`.
++
++## Selected Helper Family
++
++Selected family: Status helpers.
++
++Reason:
++
++- Status helpers were explicitly identified as a candidate in PR_007.
++- The affected code already used repeated status formatting and status cell accessibility behavior.
++- The extraction can be limited to one helper family without table, DOM, validation-overlay, dialog, or API refactors.
 +
 +## Scope
 +
 +| File | Change |
 +| --- | --- |
-+| `package.json` | Added `validate:canonical-structure` npm script. |
-+| `docs_build/dev/reports/PR_26172_CHARLIE_009-guardrail-preflight-wireup.md` | Added this PR report. |
++| `assets/js/shared/status.js` | Added shared status normalization, status message formatting, status reason formatting, and accessible status node application helpers. |
++| `assets/theme-v2/js/admin-system-health.js` | Reused shared status helpers for health status normalization and accessible non-PASS reason text. |
++| `assets/theme-v2/js/admin-setup-actions.js` | Reused shared status message formatter. |
++| `assets/theme-v2/js/admin-operations.js` | Reused shared status message formatter. |
++| `assets/theme-v2/js/admin-invitations.js` | Reused shared status message formatter. |
++| `docs_build/dev/reports/PR_26172_CHARLIE_010-shared-js-low-risk-consolidation.md` | Added this PR report. |
 +| `docs_build/dev/reports/codex_review.diff` | Refreshed Codex review diff. |
 +| `docs_build/dev/reports/codex_changed_files.txt` | Refreshed changed-file list. |
 +
-+## Wireup
++## Behavior Preservation
 +
-+Added targeted validation command:
-+
-+```text
-+npm run validate:canonical-structure
-+```
-+
-+Script target:
-+
-+```text
-+node ./scripts/validate-canonical-repository-structure.mjs
-+```
-+
-+This provides a direct preflight entry point for the PR_008 guardrail without invoking full smoke tests, samples, or broad Playwright lanes.
++- `formatStatusMessage(status, message)` preserves the prior template-string behavior used by simple status setters: `` `${status}: ${message}` `` with normalized known status casing.
++- Admin System Health keeps the same non-PASS reason behavior:
++  - status text remains normalized;
++  - `data-health-status` is preserved;
++  - PASS without a reason removes `title` and `aria-label`;
++  - non-PASS or reason-bearing statuses get `title` and `aria-label` text.
++- No table, validation overlay, DOM selector, dialog, or API helpers were moved.
 +
 +## Validation
 +
 +| Validation | Status | Result |
 +| --- | --- | --- |
-+| `npm run validate:canonical-structure` | PASS | Guardrail ran and reported 0 blocking violations with 498 approved legacy exceptions. |
++| `node --check assets/js/shared/status.js` | PASS | Shared helper syntax is valid. |
++| `node --check assets/theme-v2/js/admin-system-health.js` | PASS | Affected Admin System Health user syntax is valid. |
++| `node --check assets/theme-v2/js/admin-setup-actions.js` | PASS | Affected Admin Setup user syntax is valid. |
++| `node --check assets/theme-v2/js/admin-operations.js` | PASS | Affected Admin Operations user syntax is valid. |
++| `node --check assets/theme-v2/js/admin-invitations.js` | PASS | Affected Admin Invitations user syntax is valid. |
++| Direct helper behavior check with `node --input-type=module` | PASS | Status normalization, message formatting, reason formatting, and status node title/aria behavior passed. |
++| `npm run validate:canonical-structure` | PASS | New `assets/js/shared/status.js` path is canonical; 0 blocking violations. |
++| `rg -n 'shared/status\\.js\|assets/js/shared/status\\.js' assets toolbox src tests package.json` | PASS | Real Theme V2 code imports the shared helper. |
 +| `git diff --check` | PASS | No whitespace errors. |
-+| Full smoke tests | SKIP | Out of scope; this PR only wires a targeted validation command. |
-+| Samples | SKIP | Out of scope; no sample files or sample loaders changed. |
-+| ZIP artifact exists | PASS | `tmp/PR_26172_CHARLIE_009-guardrail-preflight-wireup_delta.zip` generated. |
++| ZIP artifact exists | PASS | `tmp/PR_26172_CHARLIE_010-shared-js-low-risk-consolidation_delta.zip` generated. |
++
++## Stop Gate
++
++Status: NOT TRIGGERED.
++
++A low-risk status helper family was safe to consolidate.
 +
 +## Branch Validation
 +
 +| Check | Status | Evidence |
 +| --- | --- | --- |
 +| Current branch | PASS | `PR_26172_CHARLIE_repository-compliance-stack`. |
-+| Worktree clean before PR_009 edits | PASS | PR_008 was committed and pushed before PR_009 edits began. |
-+| Local/origin sync before PR_009 edits | PASS | `0 0` after PR_008 push. |
++| Worktree clean before PR_010 edits | PASS | Branch was clean before this scope. |
++| Local/origin sync before PR_010 edits | PASS | `0 0` before this scope. |
 +| Main merge avoided | PASS | No merge to `main` was performed. |
++| Returned to main avoided | PASS | Work remained on the Charlie stack branch. |
 +
 +## Requirement Checklist
 +
 +| Requirement | Status | Evidence |
 +| --- | --- | --- |
-+| Wire guardrail into targeted repository validation | PASS | Added `validate:canonical-structure`. |
-+| Add npm script if appropriate | PASS | Added one focused npm script. |
-+| No full smoke tests | PASS | Full smoke was not run. |
-+| No runtime source changes | PASS | Only `package.json` and report artifacts changed. |
-+| Guardrail runs | PASS | `npm run validate:canonical-structure` passed. |
-+| ZIP exists | PASS | ZIP artifact generated under `tmp/`. |
++| Use PR_007 findings | PASS | Selected the PR_007 status-helper candidate. |
++| Select only one helper category | PASS | Only status helpers were consolidated. |
++| Follow preferred order | PASS | Status helpers are first in the preferred order. |
++| Move only one helper family | PASS | No validation, table, DOM, dialog, or API helpers were moved. |
++| Create shared implementation under `assets/js/shared/` | PASS | `assets/js/shared/status.js`. |
++| Update references | PASS | Four Theme V2 status users import the helper. |
++| Preserve behavior | PASS | Targeted syntax and direct behavior checks passed. |
++| Avoid large refactors | PASS | Changes are limited to helper extraction and imports. |
++| Confirm `assets/js/shared/` is used by real code | PASS | Theme V2 users import `../../js/shared/status.js`. |
++| ZIP artifact exists | PASS | ZIP generated under `tmp/`. |
 +
 +## Manual Validation Notes
 +
-+- The npm script is intentionally separate from broad `test` and Playwright lane commands.
-+- Future OWNER/Charlie governance can decide whether to include this command in a larger preflight chain.
-+- No runtime source files were modified.
-diff --git a/package.json b/package.json
-index d13364e3f..72c3c9c32 100644
---- a/package.json
-+++ b/package.json
-@@ -28,6 +28,7 @@
-     "validate:database-drift": "node ./scripts/validate-database-drift.mjs",
-     "validate:runtime-connections": "node --use-system-ca ./scripts/validate-runtime-connections.mjs",
-     "validate:browser-env-agnostic": "node ./scripts/validate-browser-env-agnostic.mjs",
-+    "validate:canonical-structure": "node ./scripts/validate-canonical-repository-structure.mjs",
-     "apply:database-ddl": "node ./scripts/apply-database-ddl.mjs",
-     "apply:database-dml": "node ./scripts/apply-database-dml.mjs",
-     "seed:database-dev": "node --use-system-ca ./scripts/apply-database-seed.mjs",
++- This PR intentionally avoids table rendering, DOM helper, validation-overlay, dialog, and API helper extraction.
++- No Playwright run was needed because the affected change is a small browser helper extraction with targeted syntax and behavior validation.
++- The canonical structure guardrail accepts `assets/js/shared/status.js` as an approved shared JavaScript path.
