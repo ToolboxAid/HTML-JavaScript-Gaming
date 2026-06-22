@@ -1,4 +1,8 @@
 .gitignore
-docs_build/dev/reports/PR_26172_CHARLIE_002-test-results-artifact-cleanup.md
-docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
+docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/PR_26174_ALFA_000-projectinstructions-archive-ignore.md
+docs_build/dev/reports/PR_26174_ALFA_000-projectinstructions-archive-ignore-branch-validation.txt
+docs_build/dev/reports/PR_26174_ALFA_000-projectinstructions-archive-ignore-requirement-checklist.txt
+docs_build/dev/reports/PR_26174_ALFA_000-projectinstructions-archive-ignore-validation-lane.txt
+docs_build/dev/reports/PR_26174_ALFA_000-projectinstructions-archive-ignore-manual-validation-notes.txt

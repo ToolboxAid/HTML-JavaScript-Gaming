@@ -1,0 +1,11 @@
+Validation Lane Report: PASS
+
+Commands/run checks:
+- `git branch --show-current` -> main before branch creation.
+- `git status --short` -> `.gitignore` only before branch creation.
+- `git -c http.sslBackend=schannel pull --ff-only origin main` -> already up to date.
+- `Select-String -Path .gitignore -Pattern '^docs_build/dev/ProjectInstructions\.zip$'` -> exact entry found.
+- `git diff -- .gitignore` -> one-line ignore entry only.
+- `git diff --check` -> PASS.
+
+No runtime tests were required for this `.gitignore`-only BUILD_PR.

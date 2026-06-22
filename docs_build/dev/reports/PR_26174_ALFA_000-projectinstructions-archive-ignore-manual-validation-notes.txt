@@ -1,0 +1,6 @@
+Manual Validation Notes
+
+PASS - `.gitignore` now ignores `docs_build/dev/ProjectInstructions.zip`.
+PASS - The generated archive can remain in the workspace without appearing in `git status`.
+PASS - No Project Instructions content was modified.
+PASS - No source/runtime/test implementation files were modified.
