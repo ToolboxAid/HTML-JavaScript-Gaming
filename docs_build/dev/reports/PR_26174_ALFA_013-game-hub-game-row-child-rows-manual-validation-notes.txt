@@ -3,6 +3,7 @@ Manual Validation Notes: PASS
 - Reviewed docs_build/dev/ProjectInstructions/addendums/table_first_ui.md as the owner-updated table-first reference.
 - Compared Game Hub against the Idea Board parent row plus expanded child row pattern.
 - Confirmed Game Hub no longer renders standalone Source Idea, Game Foundation, or Readiness Output panel/card sections.
+- Confirmed Game Hub no longer uses an Open Games wrapper/accordion or Open Games table wrapper.
 - Confirmed expanding a game creates exactly two child rows: Source Idea, then Readiness Output.
 - Confirmed Source Idea remains read-only and the readiness rows use existing service-contract output.
 - Confirmed safe empty and unavailable state checks still pass.

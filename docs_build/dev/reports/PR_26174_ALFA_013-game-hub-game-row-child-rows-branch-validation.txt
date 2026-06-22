@@ -3,5 +3,5 @@ Branch Validation: PASS
 PASS - Current branch is pr/26174-ALFA-013-game-hub-game-row-child-rows.
 PASS - Expected branch is pr/26174-ALFA-013-game-hub-game-row-child-rows.
 PASS - Branch remains stacked on PR_26174_ALFA_012.
-PASS - Owner-updated docs_build/dev/ProjectInstructions/addendums/table_first_ui.md was reviewed as instruction content and left unstaged.
+PASS - Owner-updated docs_build/dev/ProjectInstructions/addendums/table_first_ui.md is committed on this branch and used as the parent/child table reference.
 PASS - Work stayed scoped to Game Hub row rendering, targeted Playwright expectations, and required reports.

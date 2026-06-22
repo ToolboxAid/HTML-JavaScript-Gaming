@@ -7,5 +7,5 @@ Result: 5 passed.
 2. npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs -g "Idea Board uses accordion table ideas and notes"
 Result: 1 passed.
 
-3. git diff --check -- toolbox/game-hub/index.html toolbox/game-hub/game-hub.js tests/playwright/tools/GameHubMockRepository.spec.mjs tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+3. git diff --check -- toolbox/game-hub/index.html toolbox/game-hub/game-hub.js tests/playwright/tools/GameHubMockRepository.spec.mjs tests/playwright/tools/IdeaBoardTableNotes.spec.mjs docs_build/dev/reports/codex_review.diff docs_build/dev/reports/codex_changed_files.txt docs_build/dev/reports/PR_26174_ALFA_013-game-hub-game-row-child-rows.md docs_build/dev/reports/PR_26174_ALFA_013-game-hub-game-row-child-rows-branch-validation.txt docs_build/dev/reports/PR_26174_ALFA_013-game-hub-game-row-child-rows-requirement-checklist.txt docs_build/dev/reports/PR_26174_ALFA_013-game-hub-game-row-child-rows-validation-lane.txt docs_build/dev/reports/PR_26174_ALFA_013-game-hub-game-row-child-rows-manual-validation-notes.txt
 Result: PASS.

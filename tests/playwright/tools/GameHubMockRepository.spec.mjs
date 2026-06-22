@@ -266,6 +266,7 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
     await expect(page.locator("[data-game-list]")).toContainText("Gravity Demo");
     await expect(page.locator("[data-game-list]")).toContainText("Collision Demo");
     await expect(page.locator("[data-game-list]")).toContainText("Camera Follow Demo");
+    await expect(page.locator("summary").filter({ hasText: /^Open Games$/ })).toHaveCount(0);
     await expect(page.locator("[data-game-parent-table='open-games']")).toHaveCount(0);
     await expect(page.locator("[data-game-rows-table='true']")).toHaveAttribute("aria-label", "Games");
     await expect(page.locator("[data-game-rows-table='true'] caption")).toHaveCount(0);
@@ -422,6 +423,7 @@ test("Game Hub validates game parent rows and child tables", async ({ page }) =>
   const failures = await openRepoPage(page, "/toolbox/game-hub/index.html", { session: creatorSession() });
 
   try {
+    await expect(page.locator("summary").filter({ hasText: /^Open Games$/ })).toHaveCount(0);
     await expect(page.locator("[data-game-parent-table='open-games']")).toHaveCount(0);
     await expect(page.locator("[data-game-rows-table='true']")).toHaveAttribute("aria-label", "Games");
     await expect(page.locator("[data-game-rows-table='true'] caption")).toHaveCount(0);

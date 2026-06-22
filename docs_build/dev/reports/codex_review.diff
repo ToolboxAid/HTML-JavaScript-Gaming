@@ -1,5 +1,79 @@
+diff --git a/docs_build/dev/ProjectInstructions/addendums/table_first_ui.md b/docs_build/dev/ProjectInstructions/addendums/table_first_ui.md
+index 23ceb1622..5645ebcbb 100644
+--- a/docs_build/dev/ProjectInstructions/addendums/table_first_ui.md
++++ b/docs_build/dev/ProjectInstructions/addendums/table_first_ui.md
+@@ -15,3 +15,69 @@ Avoid:
+
+ Reference implementation:
+ Idea Board is the reference implementation.
++
++
++DB base
++Creator Table 1
++Parent Table *-1 user
++Child Table -- *-1 Parent
++
++
++No selected Items
++┌──────────────────────────────────────────────────────────────────────────────────────────────────────┐
++│ Idea Board                                                                                           │
++├───────────────┬─────────────────────────────────────────┬───────────┬────────────┬─────────┬─────────┤
++│ Idea          │ Pitch                                   │ Status    │ Updated    │ Notes   │ Actions │
++├───────────────┼─────────────────────────────────────────┼───────────┼────────────┼─────────┼─────────┤
++│ Top Thougts   │ Smartest person wins...                 │ Exploring │ 2026-06-20 │ 3 Notes │ Edit Del│
++├───────────────┬─────────────────────────────────────────┬───────────┬────────────┬─────────┬─────────┤
++│ Sky Orchard   │ Grow floating islands...                │ Exploring │ 2026-06-20 │ 3 Notes │ Edit Del│
++├───────────────┴─────────────────────────────────────────┴───────────┴────────────┴─────────┴─────────┤
++│ Clockwork...  │ Deliver messages through looping city...│ New       │ 2026-06-20 │ 0 Notes │ Edit Del│
++├───────────────┴─────────────────────────────────────────┴───────────┴────────────┴─────────┴─────────┤
++│ [ Add Idea ]                                                                                         │
++└──────────────────────────────────────────────────────────────────────────────────────────────────────┘
++
++
++Clicking {Sky Orchard {chevron down arrow}] Expands/Acording the Note(s) for that Idea
++┌────────────────────────────────────────────────────────────────────────────────────────────────────┐
++│ Idea Board                                                                                         │
++├───────────────┬─────────────────────────────────────────┬───────────┬────────────┬─────────┬─────────┤
++│ Idea          │ Pitch                                   │ Status    │ Updated    │ Notes   │ Actions │
++├───────────────┼─────────────────────────────────────────┼───────────┼────────────┼─────────┼─────────┤
++│ Top Thougts   │ Smartest person wins...                 │ Exploring │ 2026-06-20 │ 3 Notes │ Edit Del│
++├───────────────┬─────────────────────────────────────────┬───────────┬────────────┬─────────┬─────────┤
++│ Sky Orchard[^}│ Grow floating islands...                │ Exploring │ 2026-06-20 │ 3 Notes │ Edit Del│
++├───────────────┴─────────────────────────────────────────┴───────────┴────────────┴─────────┴─────────┤
++│ Notes                                                                                               │
++│ --------------------------------------------------------------------------------------------------- │
++│ note 1                                                           [Edit] [Delete]                   │
++│ System seed note: compare early ideas before project creation. [Edit]                              │
++│ Ask whether the core loop is planning, defense, or both.    [Edit] [Delete]                       │
++│                                                                                                     │
++│ [ Add Note ]                                                                                        │
++├───────────────┬─────────────────────────────────────────┬───────────┬────────────┬─────────┬─────────┤
++│ Clockwork...  │ Deliver messages through looping city...│ New       │ 2026-06-20 │ 0 Notes │ Edit Del│
++├───────────────┴─────────────────────────────────────────┴───────────┴────────────┴─────────┴─────────┤
++│ [ Add Idea ]                                                                                         │
++└──────────────────────────────────────────────────────────────────────────────────────────────────────┘
++
++Clickin Add Idea
++┌────────────────────────────────────────────────────────────────────────────────────────────────────┐
++│ Idea Board                                                                                        │
++├───────────────┬─────────────────────────────────────────┬───────────┬────────────┬─────────┬─────────┤
++│ Idea          │ Pitch                                   │ Status    │ Updated    │ Notes   │ Actions │
++├───────────────┼─────────────────────────────────────────┼───────────┼────────────┼─────────┼─────────┤
++│ Top Thougts   │ Smartest person wins...                 │ Exploring │ 2026-06-20 │ 3 Notes │ Edit Del│
++├───────────────┬─────────────────────────────────────────┬───────────┬────────────┬─────────┬─────────┤
++│ Sky Orchard   │ Grow floating islands...                │ Exploring │ 2026-06-20 │ 3 Notes │ Edit Del│
++├───────────────┴─────────────────────────────────────────┴───────────┴────────────┴─────────┴─────────┤
++│ Clockwork...  │ Deliver messages through looping city...│ New       │ 2026-06-20 │ 0 Notes │ Edit Del│
++├───────────────┴─────────────────────────────────────────┴───────────┴────────────┴─────────┴─────────┤
++│ [input.....]  │ [input.....]                            │ [Dropdown]│ [autofile] │ 0 Notes │ Save Can│
++└──────────────────────────────────────────────────────────────────────────────────────────────────────┘
++
++
++
++
++
 diff --git a/tests/playwright/tools/GameHubMockRepository.spec.mjs b/tests/playwright/tools/GameHubMockRepository.spec.mjs
-index 4e617ed35..7008e8bda 100644
+index 4e617ed35..ae1de99c4 100644
 --- a/tests/playwright/tools/GameHubMockRepository.spec.mjs
 +++ b/tests/playwright/tools/GameHubMockRepository.spec.mjs
 @@ -256,7 +256,9 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
@@ -13,13 +87,14 @@ index 4e617ed35..7008e8bda 100644
      await expect(page.locator("[data-active-game-name]")).toHaveText("Demo Game");
      await expect(page.locator("[data-active-game-purpose]")).toHaveText("Game");
      await expect(page.locator("[data-current-user-role]")).toHaveText("Owner");
-@@ -264,9 +266,10 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
+@@ -264,9 +266,11 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
      await expect(page.locator("[data-game-list]")).toContainText("Gravity Demo");
      await expect(page.locator("[data-game-list]")).toContainText("Collision Demo");
      await expect(page.locator("[data-game-list]")).toContainText("Camera Follow Demo");
 -    await expect(page.locator("[data-game-parent-table='open-games']")).toHaveAttribute("aria-label", "Open Games");
 -    await expect(page.locator("[data-game-parent-table='open-games'] caption")).toHaveText("Open Games");
 -    await expect(page.locator("[data-game-parent-table='open-games'] thead th")).toHaveText([
++    await expect(page.locator("summary").filter({ hasText: /^Open Games$/ })).toHaveCount(0);
 +    await expect(page.locator("[data-game-parent-table='open-games']")).toHaveCount(0);
 +    await expect(page.locator("[data-game-rows-table='true']")).toHaveAttribute("aria-label", "Games");
 +    await expect(page.locator("[data-game-rows-table='true'] caption")).toHaveCount(0);
@@ -27,7 +102,7 @@ index 4e617ed35..7008e8bda 100644
        "Game",
        "Purpose",
        "Status",
-@@ -280,17 +283,14 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
+@@ -280,17 +284,14 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
      await expect(demoGameRow.getByRole("button", { name: "Open Demo Game (Active)" })).toHaveAttribute("aria-current", "true");
      await demoGameRow.locator("[data-game-toggle='demo-game']").click();
      await expect(demoGameRow.locator("[data-game-toggle='demo-game']")).toHaveAttribute("aria-expanded", "true");
@@ -53,7 +128,7 @@ index 4e617ed35..7008e8bda 100644
      await expect(readinessOutputTable.locator("caption")).toHaveText("Readiness Output");
      await expect(readinessOutputTable.locator("thead th")).toHaveText(["Output", "Status"]);
      await expect(readinessOutputTable.locator("tbody tr")).toHaveText([
-@@ -335,7 +335,7 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
+@@ -335,7 +336,7 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
    }
  });
 
@@ -62,12 +137,13 @@ index 4e617ed35..7008e8bda 100644
    const sourceLinkedGame = {
      id: "lantern-reef",
      ownerKey: MOCK_DB_KEYS.users.user1,
-@@ -422,8 +422,10 @@ test("Game Hub validates Open Games parent and child tables", async ({ page }) =
+@@ -422,8 +423,11 @@ test("Game Hub validates Open Games parent and child tables", async ({ page }) =
    const failures = await openRepoPage(page, "/toolbox/game-hub/index.html", { session: creatorSession() });
 
    try {
 -    await expect(page.locator("[data-game-parent-table='open-games'] caption")).toHaveText("Open Games");
 -    const parentRows = page.locator("[data-game-parent-table='open-games'] tbody > [data-game-row]");
++    await expect(page.locator("summary").filter({ hasText: /^Open Games$/ })).toHaveCount(0);
 +    await expect(page.locator("[data-game-parent-table='open-games']")).toHaveCount(0);
 +    await expect(page.locator("[data-game-rows-table='true']")).toHaveAttribute("aria-label", "Games");
 +    await expect(page.locator("[data-game-rows-table='true'] caption")).toHaveCount(0);
@@ -75,7 +151,7 @@ index 4e617ed35..7008e8bda 100644
      await expect(parentRows).toHaveCount(1);
      const gameRow = page.locator("[data-game-row='lantern-reef']");
      await expect(gameRow).toContainText("Lantern Reef");
-@@ -431,11 +433,14 @@ test("Game Hub validates Open Games parent and child tables", async ({ page }) =
+@@ -431,11 +435,14 @@ test("Game Hub validates Open Games parent and child tables", async ({ page }) =
 
      await gameRow.locator("[data-game-toggle='lantern-reef']").click();
      await expect(gameRow.locator("[data-game-toggle='lantern-reef']")).toHaveAttribute("aria-expanded", "true");
@@ -95,7 +171,7 @@ index 4e617ed35..7008e8bda 100644
      await expect(sourceIdeaTable.locator("caption")).toHaveText("Source Idea");
      await expect(sourceIdeaTable.locator("tbody tr")).toHaveText([
        "IdeaLantern Reef",
-@@ -446,7 +451,7 @@ test("Game Hub validates Open Games parent and child tables", async ({ page }) =
+@@ -446,7 +453,7 @@ test("Game Hub validates Open Games parent and child tables", async ({ page }) =
      await expect(sourceIdeaTable.locator("button, input, textarea, select, [contenteditable='true'], [role='button']")).toHaveCount(0);
      await expect(sourceIdeaTable).not.toContainText(/Edit|Delete|Current Focus|Recommended Next Tool/);
 
@@ -104,7 +180,7 @@ index 4e617ed35..7008e8bda 100644
      await expect(readinessOutputTable.locator("caption")).toHaveText("Readiness Output");
      await expect(readinessOutputTable.locator("thead th")).toHaveText(["Output", "Status"]);
      await expect(readinessOutputTable).not.toContainText(/Guide reef keepers|Keep traversal gentle|Use warm lantern art/);
-@@ -681,46 +686,43 @@ test("Game Hub displays and edits game purpose and member role", async ({ page }
+@@ -681,46 +688,43 @@ test("Game Hub displays and edits game purpose and member role", async ({ page }
    }
  });
 
@@ -373,10 +449,21 @@ index 4b21814d7..029936527 100644
  }
 
 diff --git a/toolbox/game-hub/index.html b/toolbox/game-hub/index.html
-index ef7b50004..8f209db21 100644
+index ef7b50004..538a8f0bc 100644
 --- a/toolbox/game-hub/index.html
 +++ b/toolbox/game-hub/index.html
-@@ -67,7 +67,7 @@
+@@ -57,17 +57,12 @@
+                                     <button class="btn" type="button" data-game-delete-active>Delete Open Game</button>
+                                 </div>
+                             </details>
+-                            <details class="vertical-accordion" open>
+-                                <summary>Open Games</summary>
+-                                <div class="accordion-body">
+-                                    <div class="content-stack content-stack--compact" aria-label="Games" data-game-list></div>
+-                                </div>
+-                            </details>
++                            <div class="content-stack content-stack--compact" aria-label="Games" data-game-list></div>
+                         </div>
                      </aside>
                      <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="game-hub" data-tool-icon-src="assets/theme-v2/images/badges/index.png" data-tool-character-src="assets/theme-v2/images/characters/index.png"></div>
                      <section class="tool-center-panel"><h2>Project Information</h2>
@@ -385,7 +472,7 @@ index ef7b50004..8f209db21 100644
                          <div class="status" role="status" data-project-record-status>Project Information ready.</div>
                          <article class="card" data-game-project-information>
                              <div class="card-body content-stack">
-@@ -99,64 +99,9 @@
+@@ -99,64 +94,9 @@
                                  <div class="action-group">
                                      <a class="btn primary" href="toolbox/game-journey/index.html?game=demo-game" data-game-journey-link>Open Game Journey</a>
                                  </div>

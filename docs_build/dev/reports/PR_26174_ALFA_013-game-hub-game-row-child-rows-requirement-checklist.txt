@@ -5,6 +5,7 @@ PASS - Game row is the parent row.
 PASS - Source Idea is a child row/table under the game row.
 PASS - Readiness Output is a child row/table under the game row.
 PASS - Source Idea and Readiness Output are no longer separate card/panel sections.
+PASS - Open Games wrapper/accordion is not used.
 PASS - Open Games wrapper/table identity is not used.
 PASS - Game rows expand/collapse.
 PASS - Expanded game rows show Source Idea first and Readiness Output second.

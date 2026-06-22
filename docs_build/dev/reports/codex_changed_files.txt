@@ -1,3 +1,4 @@
+docs_build/dev/ProjectInstructions/addendums/table_first_ui.md
 toolbox/game-hub/index.html
 toolbox/game-hub/game-hub.js
 tests/playwright/tools/GameHubMockRepository.spec.mjs
