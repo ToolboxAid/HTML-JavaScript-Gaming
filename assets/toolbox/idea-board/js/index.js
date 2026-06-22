@@ -1,4 +1,4 @@
-import { createServerRepositoryClient } from "../../src/api/server-api-client.js";
+import { createServerRepositoryClient } from "../../../../src/api/server-api-client.js";
 
 const statusOptions = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project", "Archived"]);
 const defaultVisibleStatuses = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project"]);

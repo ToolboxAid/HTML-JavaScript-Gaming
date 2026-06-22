@@ -1,122 +1,138 @@
-diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_005-scattered-tool-js-css-audit.md b/docs_build/dev/reports/PR_26172_CHARLIE_005-scattered-tool-js-css-audit.md
+diff --git a/toolbox/idea-board/index.js b/assets/toolbox/idea-board/js/index.js
+similarity index 99%
+rename from toolbox/idea-board/index.js
+rename to assets/toolbox/idea-board/js/index.js
+index d1e339336..b2f021005 100644
+--- a/toolbox/idea-board/index.js
++++ b/assets/toolbox/idea-board/js/index.js
+@@ -1,4 +1,4 @@
+-import { createServerRepositoryClient } from "../../src/api/server-api-client.js";
++import { createServerRepositoryClient } from "../../../../src/api/server-api-client.js";
+
+ const statusOptions = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project", "Archived"]);
+ const defaultVisibleStatuses = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project"]);
+diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_006-low-risk-tool-asset-migration.md b/docs_build/dev/reports/PR_26172_CHARLIE_006-low-risk-tool-asset-migration.md
 new file mode 100644
-index 000000000..e4f37ddca
+index 000000000..8180fbab9
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_CHARLIE_005-scattered-tool-js-css-audit.md
-@@ -0,0 +1,107 @@
-+# PR_26172_CHARLIE_005 Scattered Tool JS/CSS Audit
++++ b/docs_build/dev/reports/PR_26172_CHARLIE_006-low-risk-tool-asset-migration.md
+@@ -0,0 +1,80 @@
++# PR_26172_CHARLIE_006 Low-Risk Tool Asset Migration
 +
 +## Scope
 +
-+Audit `toolbox/` and `assets/` for non-canonical tool JavaScript and CSS locations against the canonical repository structure.
++Move one low-risk tool asset set into canonical structure.
 +
-+Canonical tool asset targets:
++Selected tool:
 +
-+- `assets/toolbox/{tool}/js/index.js`
-+- `assets/toolbox/{tool}/css/index.css`
++- Idea Board
 +
-+This PR is audit-only. No implementation files were moved.
++Reason selected:
 +
-+## Summary
++- Single active tool JS file.
++- No tool-specific CSS.
++- One active HTML script reference.
++- One active Playwright route assertion requiring path update.
 +
-+| Finding | Count | Status |
-+| --- | ---: | --- |
-+| Toolbox HTML pages reviewed | 50 | PASS |
-+| Tool JS files under `toolbox/` | 27 | FAIL |
-+| Tool CSS files under `toolbox/` | 0 | PASS |
-+| Canonical tool JS files under `assets/toolbox/` | 0 | FAIL |
-+| Canonical tool CSS files under `assets/toolbox/` | 0 | N/A |
-+| Non-canonical tool JS/CSS under `assets/toolbox/` | 0 | PASS |
-+| Inline `<style>`, inline `<script>`, inline event handlers, or inline `style=` in toolbox HTML | 0 | PASS |
++## Changes
 +
-+## Non-Canonical Tool JS
-+
-+These active JavaScript files are not under the canonical `assets/toolbox/{tool}/js/index.js` structure:
-+
-+| Tool/Area | Files |
++| File | Change |
 +| --- | --- |
-+| Shared toolbox root | `toolbox/tool-registry-api-client.js`; `toolbox/toolRegistry.js`; `toolbox/tools-page-accordions.js` |
-+| Assets | `toolbox/assets/assets-api-client.js`; `toolbox/assets/assets-upload-worker.js`; `toolbox/assets/assets.js` |
-+| Colors | `toolbox/colors/colors.js`; `toolbox/colors/palette-api-client.js` |
-+| Controls | `toolbox/controls/controls-api-client.js`; `toolbox/controls/controls.js` |
-+| Game Configuration | `toolbox/game-configuration/game-configuration-api-client.js`; `toolbox/game-configuration/game-configuration.js` |
-+| Game Design | `toolbox/game-design/game-design-api-client.js`; `toolbox/game-design/game-design.js` |
-+| Game Hub | `toolbox/game-hub/game-hub-api-client.js`; `toolbox/game-hub/game-hub.js` |
-+| Game Journey | `toolbox/game-journey/game-journey-api-client.js`; `toolbox/game-journey/game-journey.js` |
-+| Idea Board | `toolbox/idea-board/index.js` |
-+| Messages | `toolbox/messages/message-tts-service-registry.js`; `toolbox/messages/messages-api-client.js`; `toolbox/messages/messages.js` |
-+| Objects | `toolbox/objects/objects-api-client.js`; `toolbox/objects/objects.js` |
-+| Tags | `toolbox/tags/tags-api-client.js`; `toolbox/tags/tags.js` |
-+| Text To Speech | `toolbox/text-to-speech/text2speech.js` |
++| `toolbox/idea-board/index.js` | Moved to canonical path. |
++| `assets/toolbox/idea-board/js/index.js` | Added by move; import path updated for new location. |
++| `toolbox/idea-board/index.html` | Updated script source to `assets/toolbox/idea-board/js/index.js`. |
++| `tests/playwright/tools/ToolboxRoutePages.spec.mjs` | Updated route assertion to the canonical script source. |
 +
-+## Non-Canonical Tool CSS
++No tool CSS was moved because no Idea Board tool CSS file exists.
 +
-+No tool-specific CSS files were found under `toolbox/`.
-+
-+No CSS files were found under `assets/toolbox/`.
-+
-+## Toolbox HTML Reference Findings
-+
-+These pages reference local non-canonical tool scripts:
-+
-+- `toolbox/assets/index.html` -> `toolbox/assets/assets.js`
-+- `toolbox/colors/index.html` -> `toolbox/colors/colors.js`
-+- `toolbox/controls/index.html` -> `toolbox/controls/controls.js`
-+- `toolbox/game-configuration/index.html` -> `toolbox/game-configuration/game-configuration.js`
-+- `toolbox/game-design/index.html` -> `toolbox/game-design/game-design.js`
-+- `toolbox/game-hub/index.html` -> `toolbox/game-hub/game-hub.js`
-+- `toolbox/game-journey/index.html` -> `toolbox/game-journey/game-journey.js`
-+- `toolbox/idea-board/index.html` -> `toolbox/idea-board/index.js`
-+- `toolbox/index.html` -> `tools-page-accordions.js`
-+- `toolbox/messages/index.html` -> `toolbox/messages/messages.js`
-+- `toolbox/objects/index.html` -> `toolbox/objects/objects.js`
-+- `toolbox/tags/index.html` -> `toolbox/tags/tags.js`
-+- `toolbox/text-to-speech/index.html` -> `toolbox/text-to-speech/text2speech.js`
-+
-+## Inline Script/Style Findings
-+
-+No toolbox HTML matches were found for:
-+
-+- `<style`
-+- `<script` without `src=`
-+- inline event handler attributes such as `onclick=`
-+- inline `style=`
-+
-+## Prioritized Remediation List
-+
-+1. Start with a single-file, single-tool migration: `toolbox/idea-board/index.js` -> `assets/toolbox/idea-board/js/index.js`.
-+2. Next migrate single-entry tools that have one main JS plus one API client: Tags, Controls, Colors, Objects, Game Configuration, Game Design, Game Hub, and Game Journey.
-+3. Migrate complex tools with workers or multiple collaborators after explicit dependency review: Assets and Messages.
-+4. Migrate `toolbox/text-to-speech/text2speech.js` after deciding whether the canonical file should be renamed to `index.js` only or retain a bridge.
-+5. Move shared toolbox root modules into `assets/js/shared/` or an approved shared toolbox module path before changing page-level imports.
-+
-+## Recommended Next PRs
-+
-+- `PR_26172_CHARLIE_006-low-risk-tool-asset-migration`
-+- `PR_26172_CHARLIE_012-toolbox-single-entry-asset-migrations`
-+- `PR_26172_CHARLIE_013-toolbox-complex-asset-migration-plan`
-+- `PR_26172_CHARLIE_014-shared-toolbox-root-js-migration-plan`
-+
-+## Validation
++## Canonical Path Verification
 +
 +| Check | Status | Evidence |
 +| --- | --- | --- |
-+| Audit includes prioritized remediation list | PASS | See "Prioritized Remediation List". |
-+| Runtime source unchanged | PASS | This PR adds reports only. |
-+| ZIP exists | PASS | `tmp/PR_26172_CHARLIE_005-scattered-tool-js-css-audit_delta.zip` exists. |
-+| Implementation files moved | PASS | None moved. |
++| JS moved to canonical tool path | PASS | `assets/toolbox/idea-board/js/index.js` exists. |
++| CSS move avoided when absent | PASS | No `toolbox/idea-board/*.css` file exists. |
++| HTML references canonical JS | PASS | `toolbox/idea-board/index.html` references `assets/toolbox/idea-board/js/index.js`. |
++| Old active JS references removed | PASS | Active `toolbox`, `assets`, `tests`, `src`, `scripts`, and `package.json` scan found no `toolbox/idea-board/index.js` references. |
++| Runtime behavior intentionally unchanged | PASS | Code body was moved without behavior edits; only relative import path changed. |
++
++## Validation
++
++| Validation | Status | Result |
++| --- | --- | --- |
++| `node --check assets/toolbox/idea-board/js/index.js` | PASS | Module syntax is valid. |
++| Old-path active reference scan | PASS | No active old-path references found. |
++| Canonical-path reference scan | PASS | HTML and targeted Playwright assertion reference new path. |
++| `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs -g "Idea Board launches from Toolbox" --timeout=180000 --trace=off --output=tmp/test-results/charlie-pr006-idea-board` | FAIL | Test reached the updated script assertion, then failed on `500 /api/game-journey/completion-metrics`. |
++| `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --timeout=180000 --trace=off --output=tmp/test-results/charlie-pr006-idea-board-direct` | FAIL | One test failed on `500 /api/game-journey/completion-metrics`; the fallback Idea Board test passed. |
++
++## Validation Stop
++
++Status: STOP.
++
++Reason:
++
++- Targeted Playwright validation did not complete cleanly.
++- The failure is the Game Journey completion metrics API returning HTTP 500 during Idea Board flows that navigate through Game Hub/Game Journey behavior.
++- The failure is not caused by the canonical script path move, because the new script path assertion passed before the failed request assertion.
++- Fixing the Game Journey metrics API or broadening the tests to mock that endpoint is outside this PR's migration-only scope.
++
++## Requirement Checklist
++
++| Requirement | Status | Evidence |
++| --- | --- | --- |
++| Use PR_005 audit | PASS | PR_005 identified Idea Board as the first low-risk candidate. |
++| Select only one tool | PASS | Only Idea Board was migrated. |
++| Move JS to `assets/toolbox/{tool}/js/index.js` | PASS | Moved to `assets/toolbox/idea-board/js/index.js`. |
++| Move CSS only if needed | PASS | No CSS move needed. |
++| Update HTML references | PASS | Script path updated. |
++| Do not change behavior | PASS | Runtime code moved with only relative import path adjustment. |
++| Do not migrate multiple tools | PASS | Only one tool touched. |
++| Run targeted validation | FAIL | Playwright validations failed on unrelated `game-journey/completion-metrics` 500. |
++| Confirm no broken old JS/CSS references | PASS | Old active path scan passed. |
++| Confirm canonical path used | PASS | HTML and test assertion use canonical path. |
++| ZIP exists | PASS | `tmp/PR_26172_CHARLIE_006-low-risk-tool-asset-migration_delta.zip` exists. |
 +
 +## Manual Validation Notes
 +
-+- `assets/toolbox/` does not currently exist, so PR_006 will create the first canonical tool asset path if a low-risk candidate is selected.
-+- No tool CSS migration is needed in the first low-risk pass because no tool-specific CSS files were found under `toolbox/`.
-+- The audit treats page references to `toolbox/.../*.js` as non-canonical sidecar references, not inline-script violations.
++- This PR is a partial implementation with validation stop.
++- The stack should not continue to PR_007 until owner/Codex resolves whether to accept the migration with a known external validation blocker or to fix the Game Journey metrics endpoint in a separate scoped PR.
++- No merge to `main` was performed.
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index a0a4c800f..2ca427052 100644
+index 2ca427052..d65b60acd 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,3 +1,3 @@
--docs_build/dev/reports/PR_26172_CHARLIE_004-src-dev-runtime-low-risk-test-move.md
-+docs_build/dev/reports/PR_26172_CHARLIE_005-scattered-tool-js-css-audit.md
+@@ -1,3 +1,7 @@
+-docs_build/dev/reports/PR_26172_CHARLIE_005-scattered-tool-js-css-audit.md
++assets/toolbox/idea-board/js/index.js
++toolbox/idea-board/index.html
++toolbox/idea-board/index.js
++tests/playwright/tools/ToolboxRoutePages.spec.mjs
++docs_build/dev/reports/PR_26172_CHARLIE_006-low-risk-tool-asset-migration.md
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
+diff --git a/tests/playwright/tools/ToolboxRoutePages.spec.mjs b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
+index 12e463488..0ac875d9f 100644
+--- a/tests/playwright/tools/ToolboxRoutePages.spec.mjs
++++ b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
+@@ -351,7 +351,7 @@ test("Idea Board launches from Toolbox with accordion table notes model", async
+     await expectExpandedNotesChildIndentation(page, "top-thoughts");
+     await expect(page.locator("[data-idea-board-create-project]")).toHaveCount(0);
+     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+-    await expect(page.locator("script[src='toolbox/idea-board/index.js']")).toHaveCount(1);
++    await expect(page.locator("script[src='assets/toolbox/idea-board/js/index.js']")).toHaveCount(1);
+     mutatingApiRequests.length = 0;
+     await page.locator("[data-idea-board-add-note='top-thoughts']").click();
+     await page.locator("[data-idea-board-note-input]").fill("Capture traversal risks before project creation.");
+diff --git a/toolbox/idea-board/index.html b/toolbox/idea-board/index.html
+index 5734f4703..d06f2fcf0 100644
+--- a/toolbox/idea-board/index.html
++++ b/toolbox/idea-board/index.html
+@@ -103,7 +103,7 @@
+     <div data-partial="footer"></div>
+     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+-    <script type="module" src="toolbox/idea-board/index.js"></script>
++    <script type="module" src="assets/toolbox/idea-board/js/index.js"></script>
+ </body>
+
+ </html>

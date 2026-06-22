@@ -351,7 +351,7 @@ test("Idea Board launches from Toolbox with accordion table notes model", async 
     await expectExpandedNotesChildIndentation(page, "top-thoughts");
     await expect(page.locator("[data-idea-board-create-project]")).toHaveCount(0);
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-    await expect(page.locator("script[src='toolbox/idea-board/index.js']")).toHaveCount(1);
+    await expect(page.locator("script[src='assets/toolbox/idea-board/js/index.js']")).toHaveCount(1);
     mutatingApiRequests.length = 0;
     await page.locator("[data-idea-board-add-note='top-thoughts']").click();
     await page.locator("[data-idea-board-note-input]").fill("Capture traversal risks before project creation.");
