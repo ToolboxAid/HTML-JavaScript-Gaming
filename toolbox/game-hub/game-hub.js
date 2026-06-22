@@ -39,6 +39,10 @@ const elements = {
   tableCounts: document.querySelector("[data-game-table-counts]"),
 };
 
+const state = {
+  expandedGameId: "",
+};
+
 function setText(element, value) {
   if (element && typeof element.forEach === "function" && !element.nodeType) {
     element.forEach((item) => {
@@ -225,6 +229,90 @@ function createGameListStatus(message, state) {
   return emptyState;
 }
 
+function createCell(value, tagName = "td") {
+  const cell = document.createElement(tagName);
+  cell.textContent = value;
+  return cell;
+}
+
+function createGameToggleButton(game, expanded) {
+  const button = document.createElement("button");
+  button.className = expanded ? "btn btn--compact primary" : "btn btn--compact";
+  button.type = "button";
+  button.dataset.gameToggle = game.id;
+  button.setAttribute("aria-expanded", String(expanded));
+  button.setAttribute("aria-controls", `game-child-${game.id}`);
+  button.textContent = game.name;
+  return button;
+}
+
+function renderGameSummaryChildTable(parent, game) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "table-wrapper";
+  const table = document.createElement("table");
+  table.className = "data-table data-table--fixed";
+  table.dataset.gameChildTable = "summary";
+  table.setAttribute("aria-label", `${game.name} game summary`);
+  table.innerHTML = "<caption>Game Summary</caption><thead><tr><th scope=\"col\">Field</th><th scope=\"col\">Value</th></tr></thead>";
+  const body = document.createElement("tbody");
+  [
+    ["Project", game.name],
+    ["Purpose", game.purpose],
+    ["Status", game.status],
+    ["Owner", game.ownerDisplayName],
+  ].forEach(([label, value]) => {
+    const row = document.createElement("tr");
+    row.append(createCell(label, "th"), createCell(value || "Not set"));
+    row.firstElementChild.scope = "row";
+    body.append(row);
+  });
+  table.append(body);
+  wrapper.append(table);
+  parent.append(wrapper);
+}
+
+function renderExpandedGameRow(tbody, game) {
+  const row = document.createElement("tr");
+  row.dataset.gameExpandedRow = game.id;
+  row.id = `game-child-${game.id}`;
+  const content = document.createElement("td");
+  content.colSpan = 5;
+  const stack = document.createElement("div");
+  stack.className = "content-stack content-stack--compact";
+  renderGameSummaryChildTable(stack, game);
+  content.append(stack);
+  row.append(content);
+  tbody.append(row);
+}
+
+function renderGameParentRow(tbody, game, activeGame) {
+  const expanded = state.expandedGameId === game.id;
+  const row = document.createElement("tr");
+  row.dataset.gameRow = game.id;
+  if (activeGame?.id === game.id) {
+    row.dataset.gameActive = "true";
+  }
+
+  const nameCell = document.createElement("th");
+  nameCell.scope = "row";
+  nameCell.append(createGameToggleButton(game, expanded));
+  row.append(
+    nameCell,
+    createCell(game.purpose || "Game"),
+    createCell(game.status || "No status"),
+    createCell(game.ownerDisplayName || "No owner"),
+  );
+
+  const actions = document.createElement("td");
+  actions.append(createGameButton(game, activeGame?.id === game.id));
+  row.append(actions);
+  tbody.append(row);
+
+  if (expanded) {
+    renderExpandedGameRow(tbody, game);
+  }
+}
+
 function renderProjectInformation(activeGame, currentMember, progress) {
   if (!elements.projectRecordsTable) {
     return;
@@ -276,25 +364,18 @@ function renderGameList() {
     return;
   }
 
-  listResult.forEach((game) => {
-    const row = document.createElement("article");
-    row.className = "callout";
-    row.dataset.gameRow = game.id;
-
-    const title = document.createElement("h4");
-    title.textContent = game.name;
-
-    const meta = document.createElement("p");
-    meta.className = "eyebrow";
-    meta.textContent = `${game.purpose} | ${game.status} | ${game.ownerDisplayName}`;
-
-    const isActive = activeGame?.id === game.id;
-    const action = createGameButton(game, isActive);
-
-    row.append(title, meta, action);
-
-    elements.gameList.append(row);
-  });
+  const wrapper = document.createElement("div");
+  wrapper.className = "table-wrapper";
+  const table = document.createElement("table");
+  table.className = "data-table data-table--fixed";
+  table.dataset.gameParentTable = "open-games";
+  table.setAttribute("aria-label", "Open Games");
+  table.innerHTML = "<caption>Open Games</caption><thead><tr><th scope=\"col\">Game</th><th scope=\"col\">Purpose</th><th scope=\"col\">Status</th><th scope=\"col\">Owner</th><th scope=\"col\">Actions</th></tr></thead>";
+  const body = document.createElement("tbody");
+  listResult.forEach((game) => renderGameParentRow(body, game, activeGame));
+  table.append(body);
+  wrapper.append(table);
+  elements.gameList.append(wrapper);
 }
 
 function renderMembersTable(activeGame) {
@@ -471,6 +552,13 @@ elements.form?.addEventListener("submit", (event) => {
 });
 
 elements.gameList?.addEventListener("click", (event) => {
+  const toggle = event.target.closest("[data-game-toggle]");
+  if (toggle) {
+    state.expandedGameId = state.expandedGameId === toggle.dataset.gameToggle ? "" : toggle.dataset.gameToggle;
+    renderWorkspace();
+    return;
+  }
+
   const button = event.target.closest("[data-game-open]");
 
   if (!button) {

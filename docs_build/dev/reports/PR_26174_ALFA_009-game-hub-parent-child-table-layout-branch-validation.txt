@@ -1,0 +1,6 @@
+Branch Validation: PASS
+
+PASS - Current branch: pr/26174-ALFA-009-game-hub-parent-child-table-layout.
+PASS - Stack base: pr/26174-ALFA-008-alpha-stack-final-validation.
+PASS - Changes are scoped to Game Hub Open Games parent/child table layout, targeted tests, and required reports.
+PASS - No merge to main performed.

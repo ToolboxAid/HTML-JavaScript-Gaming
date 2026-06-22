@@ -264,10 +264,32 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
     await expect(page.locator("[data-game-list]")).toContainText("Gravity Demo");
     await expect(page.locator("[data-game-list]")).toContainText("Collision Demo");
     await expect(page.locator("[data-game-list]")).toContainText("Camera Follow Demo");
+    await expect(page.locator("[data-game-parent-table='open-games']")).toHaveAttribute("aria-label", "Open Games");
+    await expect(page.locator("[data-game-parent-table='open-games'] caption")).toHaveText("Open Games");
+    await expect(page.locator("[data-game-parent-table='open-games'] thead th")).toHaveText([
+      "Game",
+      "Purpose",
+      "Status",
+      "Owner",
+      "Actions",
+    ]);
     const demoGameRow = page.locator("[data-game-row='demo-game']");
     await expect(demoGameRow.locator("> .status")).toHaveCount(0);
+    await expect(demoGameRow.locator("[data-game-toggle='demo-game']")).toHaveAttribute("aria-expanded", "false");
     await expect(demoGameRow.getByRole("button", { name: "Open Demo Game (Active)" })).toHaveClass(/primary/);
     await expect(demoGameRow.getByRole("button", { name: "Open Demo Game (Active)" })).toHaveAttribute("aria-current", "true");
+    await demoGameRow.locator("[data-game-toggle='demo-game']").click();
+    await expect(demoGameRow.locator("[data-game-toggle='demo-game']")).toHaveAttribute("aria-expanded", "true");
+    await expect(page.locator("[data-game-row='demo-game'] + [data-game-expanded-row='demo-game']")).toHaveCount(1);
+    await expect(page.locator("[data-game-expanded-row='demo-game'] [data-game-child-table='summary']")).toContainText("Game Summary");
+    await expect(page.locator("[data-game-expanded-row='demo-game'] [data-game-child-table='summary'] tbody tr")).toHaveText([
+      "ProjectDemo Game",
+      "PurposeGame",
+      "StatusUnder Construction",
+      "OwnerUser 1",
+    ]);
+    await demoGameRow.locator("[data-game-toggle='demo-game']").click();
+    await expect(page.locator("[data-game-expanded-row='demo-game']")).toHaveCount(0);
 
     await page.getByLabel("Game Name").fill("Launch Test Game");
     await page.getByRole("button", { name: "Create Game" }).click();
