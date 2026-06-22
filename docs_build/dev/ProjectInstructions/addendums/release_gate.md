@@ -1,0 +1,50 @@
+# Release Gate Governance
+
+Status: Approved
+Owner: OWNER
+
+## Purpose
+
+Define release gates for Project Instructions governance without making governance a blocker by default.
+
+## Rule
+
+Release gates are validation gates.
+They do not block development unless OWNER says governance is blocking.
+
+## Project Instructions Release Gate
+
+Before a governance, documentation, or administrative PR is merged, validate:
+
+- Project Instructions folder exists.
+- Required source-of-truth files still exist.
+- Governance Phase 1 completion guidance remains intact.
+- PR workflow guidance remains intact.
+- Team assignment governance remains intact.
+- Active team registry guidance remains compatible with temporary active teams.
+- No protected Project Instructions guidance was deleted.
+- No permanent team roster or permanent discipline ownership was restored.
+- No direct-to-main commit rule was bypassed.
+- No application code changed unless the PR explicitly scopes application code.
+
+## Required Source Files
+
+The release gate should confirm these files when relevant to the PR:
+
+- `docs_build/dev/ProjectInstructions/README.txt`
+- `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
+- `docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md`
+- `docs_build/dev/ProjectInstructions/addendums/governance_phase1_complete.md`
+- `docs_build/dev/ProjectInstructions/addendums/pr_workflow.md`
+- `docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md`
+
+## Validation Result
+
+If a gate fails, stop and report:
+
+- failing check
+- current branch
+- current worktree status
+- recommended OWNER action
+
+If every relevant check passes, the PR may proceed through the standard PR workflow.
