@@ -1,9 +1,8 @@
-toolbox/game-journey/game-journey.js
-tests/playwright/tools/GameJourneyTool.spec.mjs
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/PR_26174_ALFA_007-game-journey-count-ui-polish.md
-docs_build/dev/reports/PR_26174_ALFA_007-game-journey-count-ui-polish-branch-validation.txt
-docs_build/dev/reports/PR_26174_ALFA_007-game-journey-count-ui-polish-requirement-checklist.txt
-docs_build/dev/reports/PR_26174_ALFA_007-game-journey-count-ui-polish-validation-lane.txt
-docs_build/dev/reports/PR_26174_ALFA_007-game-journey-count-ui-polish-manual-validation-notes.txt
+docs_build/dev/reports/PR_26174_ALFA_008-alpha-stack-final-validation.md
+docs_build/dev/reports/PR_26174_ALFA_008-alpha-stack-final-validation-final-stack-report.md
+docs_build/dev/reports/PR_26174_ALFA_008-alpha-stack-final-validation-branch-validation.txt
+docs_build/dev/reports/PR_26174_ALFA_008-alpha-stack-final-validation-requirement-checklist.txt
+docs_build/dev/reports/PR_26174_ALFA_008-alpha-stack-final-validation-validation-lane.txt
+docs_build/dev/reports/PR_26174_ALFA_008-alpha-stack-final-validation-manual-validation-notes.txt
