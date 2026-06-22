@@ -241,34 +241,9 @@ function createGameToggleButton(game, expanded) {
   button.type = "button";
   button.dataset.gameToggle = game.id;
   button.setAttribute("aria-expanded", String(expanded));
-  button.setAttribute("aria-controls", `game-child-${game.id}`);
+  button.setAttribute("aria-controls", `game-child-source-idea-${game.id} game-child-readiness-output-${game.id}`);
   button.textContent = game.name;
   return button;
-}
-
-function renderGameSummaryChildTable(parent, game) {
-  const wrapper = document.createElement("div");
-  wrapper.className = "table-wrapper";
-  const table = document.createElement("table");
-  table.className = "data-table data-table--fixed";
-  table.dataset.gameChildTable = "summary";
-  table.setAttribute("aria-label", `${game.name} game summary`);
-  table.innerHTML = "<caption>Game Summary</caption><thead><tr><th scope=\"col\">Field</th><th scope=\"col\">Value</th></tr></thead>";
-  const body = document.createElement("tbody");
-  [
-    ["Project", game.name],
-    ["Purpose", game.purpose],
-    ["Status", game.status],
-    ["Owner", game.ownerDisplayName],
-  ].forEach(([label, value]) => {
-    const row = document.createElement("tr");
-    row.append(createCell(label, "th"), createCell(value || "Not set"));
-    row.firstElementChild.scope = "row";
-    body.append(row);
-  });
-  table.append(body);
-  wrapper.append(table);
-  parent.append(wrapper);
 }
 
 function gameSourceIdeaDetails(game) {
@@ -366,19 +341,28 @@ function renderReadinessOutputChildTable(parent, game, progress, active) {
 }
 
 function renderExpandedGameRow(tbody, game, progress, active) {
-  const row = document.createElement("tr");
-  row.dataset.gameExpandedRow = game.id;
-  row.id = `game-child-${game.id}`;
-  const content = document.createElement("td");
-  content.colSpan = 5;
-  const stack = document.createElement("div");
-  stack.className = "content-stack content-stack--compact";
-  renderGameSummaryChildTable(stack, game);
-  renderSourceIdeaChildTable(stack, game);
-  renderReadinessOutputChildTable(stack, game, progress, active);
-  content.append(stack);
-  row.append(content);
-  tbody.append(row);
+  [
+    {
+      id: `game-child-source-idea-${game.id}`,
+      render: (parent) => renderSourceIdeaChildTable(parent, game),
+      type: "source-idea",
+    },
+    {
+      id: `game-child-readiness-output-${game.id}`,
+      render: (parent) => renderReadinessOutputChildTable(parent, game, progress, active),
+      type: "readiness-output",
+    },
+  ].forEach(({ id, render, type }) => {
+    const row = document.createElement("tr");
+    row.dataset.gameExpandedRow = game.id;
+    row.dataset.gameChildRow = type;
+    row.id = id;
+    const content = document.createElement("td");
+    content.colSpan = 5;
+    render(content);
+    row.append(content);
+    tbody.append(row);
+  });
 }
 
 function renderGameParentRow(tbody, game, activeGame, progress) {
@@ -465,9 +449,9 @@ function renderGameList(progress) {
   wrapper.className = "table-wrapper";
   const table = document.createElement("table");
   table.className = "data-table data-table--fixed";
-  table.dataset.gameParentTable = "open-games";
-  table.setAttribute("aria-label", "Open Games");
-  table.innerHTML = "<caption>Open Games</caption><thead><tr><th scope=\"col\">Game</th><th scope=\"col\">Purpose</th><th scope=\"col\">Status</th><th scope=\"col\">Owner</th><th scope=\"col\">Actions</th></tr></thead>";
+  table.dataset.gameRowsTable = "true";
+  table.setAttribute("aria-label", "Games");
+  table.innerHTML = "<thead><tr><th scope=\"col\">Game</th><th scope=\"col\">Purpose</th><th scope=\"col\">Status</th><th scope=\"col\">Owner</th><th scope=\"col\">Actions</th></tr></thead>";
   const body = document.createElement("tbody");
   listResult.forEach((game) => renderGameParentRow(body, game, activeGame, progress));
   table.append(body);

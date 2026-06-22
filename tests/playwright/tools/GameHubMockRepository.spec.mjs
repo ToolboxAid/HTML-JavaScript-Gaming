@@ -264,9 +264,10 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
     await expect(page.locator("[data-game-list]")).toContainText("Gravity Demo");
     await expect(page.locator("[data-game-list]")).toContainText("Collision Demo");
     await expect(page.locator("[data-game-list]")).toContainText("Camera Follow Demo");
-    await expect(page.locator("[data-game-parent-table='open-games']")).toHaveAttribute("aria-label", "Open Games");
-    await expect(page.locator("[data-game-parent-table='open-games'] caption")).toHaveText("Open Games");
-    await expect(page.locator("[data-game-parent-table='open-games'] thead th")).toHaveText([
+    await expect(page.locator("[data-game-parent-table='open-games']")).toHaveCount(0);
+    await expect(page.locator("[data-game-rows-table='true']")).toHaveAttribute("aria-label", "Games");
+    await expect(page.locator("[data-game-rows-table='true'] caption")).toHaveCount(0);
+    await expect(page.locator("[data-game-rows-table='true'] thead th")).toHaveText([
       "Game",
       "Purpose",
       "Status",
@@ -280,17 +281,14 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
     await expect(demoGameRow.getByRole("button", { name: "Open Demo Game (Active)" })).toHaveAttribute("aria-current", "true");
     await demoGameRow.locator("[data-game-toggle='demo-game']").click();
     await expect(demoGameRow.locator("[data-game-toggle='demo-game']")).toHaveAttribute("aria-expanded", "true");
-    await expect(page.locator("[data-game-row='demo-game'] + [data-game-expanded-row='demo-game']")).toHaveCount(1);
-    await expect(page.locator("[data-game-expanded-row='demo-game'] [data-game-child-table='summary']")).toContainText("Game Summary");
-    await expect(page.locator("[data-game-expanded-row='demo-game'] [data-game-child-table='summary'] tbody tr")).toHaveText([
-      "ProjectDemo Game",
-      "PurposeGame",
-      "StatusUnder Construction",
-      "OwnerUser 1",
-    ]);
-    await expect(page.locator("[data-game-expanded-row='demo-game'] [data-game-child-table]")).toHaveCount(3);
-    await expect(page.locator("[data-game-expanded-row='demo-game'] [data-game-child-table='source-idea'] caption")).toHaveText("Source Idea");
-    const readinessOutputTable = page.locator("[data-game-expanded-row='demo-game'] [data-game-child-table='readiness-output']");
+    const demoChildRows = page.locator("[data-game-expanded-row='demo-game']");
+    await expect(demoChildRows).toHaveCount(2);
+    await expect(demoChildRows.nth(0)).toHaveAttribute("data-game-child-row", "source-idea");
+    await expect(demoChildRows.nth(1)).toHaveAttribute("data-game-child-row", "readiness-output");
+    await expect(page.locator("[data-game-expanded-row='demo-game'] [data-game-child-table='summary']")).toHaveCount(0);
+    await expect(page.locator("[data-game-expanded-row='demo-game'] [data-game-child-table]")).toHaveCount(2);
+    await expect(demoChildRows.nth(0).locator("[data-game-child-table='source-idea'] caption")).toHaveText("Source Idea");
+    const readinessOutputTable = demoChildRows.nth(1).locator("[data-game-child-table='readiness-output']");
     await expect(readinessOutputTable.locator("caption")).toHaveText("Readiness Output");
     await expect(readinessOutputTable.locator("thead th")).toHaveText(["Output", "Status"]);
     await expect(readinessOutputTable.locator("tbody tr")).toHaveText([
@@ -335,7 +333,7 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
   }
 });
 
-test("Game Hub validates Open Games parent and child tables", async ({ page }) => {
+test("Game Hub validates game parent rows and child tables", async ({ page }) => {
   const sourceLinkedGame = {
     id: "lantern-reef",
     ownerKey: MOCK_DB_KEYS.users.user1,
@@ -422,8 +420,10 @@ test("Game Hub validates Open Games parent and child tables", async ({ page }) =
   const failures = await openRepoPage(page, "/toolbox/game-hub/index.html", { session: creatorSession() });
 
   try {
-    await expect(page.locator("[data-game-parent-table='open-games'] caption")).toHaveText("Open Games");
-    const parentRows = page.locator("[data-game-parent-table='open-games'] tbody > [data-game-row]");
+    await expect(page.locator("[data-game-parent-table='open-games']")).toHaveCount(0);
+    await expect(page.locator("[data-game-rows-table='true']")).toHaveAttribute("aria-label", "Games");
+    await expect(page.locator("[data-game-rows-table='true'] caption")).toHaveCount(0);
+    const parentRows = page.locator("[data-game-rows-table='true'] tbody > [data-game-row]");
     await expect(parentRows).toHaveCount(1);
     const gameRow = page.locator("[data-game-row='lantern-reef']");
     await expect(gameRow).toContainText("Lantern Reef");
@@ -431,11 +431,14 @@ test("Game Hub validates Open Games parent and child tables", async ({ page }) =
 
     await gameRow.locator("[data-game-toggle='lantern-reef']").click();
     await expect(gameRow.locator("[data-game-toggle='lantern-reef']")).toHaveAttribute("aria-expanded", "true");
-    const expandedRow = page.locator("[data-game-expanded-row='lantern-reef']");
-    await expect(expandedRow).toHaveCount(1);
-    await expect(expandedRow.locator("[data-game-child-table]")).toHaveCount(3);
+    const expandedRows = page.locator("[data-game-expanded-row='lantern-reef']");
+    await expect(expandedRows).toHaveCount(2);
+    await expect(expandedRows.nth(0)).toHaveAttribute("data-game-child-row", "source-idea");
+    await expect(expandedRows.nth(1)).toHaveAttribute("data-game-child-row", "readiness-output");
+    await expect(expandedRows.locator("[data-game-child-table]")).toHaveCount(2);
+    await expect(expandedRows.locator("[data-game-child-table='summary']")).toHaveCount(0);
 
-    const sourceIdeaTable = expandedRow.locator("[data-game-child-table='source-idea']");
+    const sourceIdeaTable = expandedRows.nth(0).locator("[data-game-child-table='source-idea']");
     await expect(sourceIdeaTable.locator("caption")).toHaveText("Source Idea");
     await expect(sourceIdeaTable.locator("tbody tr")).toHaveText([
       "IdeaLantern Reef",
@@ -446,7 +449,7 @@ test("Game Hub validates Open Games parent and child tables", async ({ page }) =
     await expect(sourceIdeaTable.locator("button, input, textarea, select, [contenteditable='true'], [role='button']")).toHaveCount(0);
     await expect(sourceIdeaTable).not.toContainText(/Edit|Delete|Current Focus|Recommended Next Tool/);
 
-    const readinessOutputTable = expandedRow.locator("[data-game-child-table='readiness-output']");
+    const readinessOutputTable = expandedRows.nth(1).locator("[data-game-child-table='readiness-output']");
     await expect(readinessOutputTable.locator("caption")).toHaveText("Readiness Output");
     await expect(readinessOutputTable.locator("thead th")).toHaveText(["Output", "Status"]);
     await expect(readinessOutputTable).not.toContainText(/Guide reef keepers|Keep traversal gentle|Use warm lantern art/);

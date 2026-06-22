@@ -1,0 +1,13 @@
+Requirement Checklist: PASS
+
+PASS - Open Games is no longer used as the wrapper/accordion table identity.
+PASS - Parent rows are games.
+PASS - Each game row expands/collapses.
+PASS - Expanded game rows show Source Idea child table first.
+PASS - Expanded game rows show Readiness Output child table second.
+PASS - Source Idea and Readiness Output render as child rows under the game parent row.
+PASS - No new readiness math was added.
+PASS - Existing API/service contract was preserved.
+PASS - Safe empty/unavailable states were preserved by targeted validation.
+PASS - No browser-owned project data was introduced.
+PASS - No silent fallbacks were introduced.

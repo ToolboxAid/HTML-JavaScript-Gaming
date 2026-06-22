@@ -1,0 +1,9 @@
+Manual Validation Notes: PASS
+
+- Confirmed the Game Hub table uses game rows as the parent rows.
+- Confirmed the previous Open Games table identity and caption are absent.
+- Confirmed expanding a game creates exactly two child rows.
+- Confirmed Source Idea appears before Readiness Output.
+- Confirmed the old Game Summary child table is absent.
+- Confirmed safe empty and unavailable state checks still pass.
+- Confirmed Idea Board-created Source Idea context still appears in Game Hub.
