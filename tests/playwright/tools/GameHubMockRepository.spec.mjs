@@ -288,6 +288,22 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
       "StatusUnder Construction",
       "OwnerUser 1",
     ]);
+    await expect(page.locator("[data-game-expanded-row='demo-game'] [data-game-child-table]")).toHaveCount(3);
+    await expect(page.locator("[data-game-expanded-row='demo-game'] [data-game-child-table='source-idea'] caption")).toHaveText("Source Idea");
+    const readinessOutputTable = page.locator("[data-game-expanded-row='demo-game'] [data-game-child-table='readiness-output']");
+    await expect(readinessOutputTable.locator("caption")).toHaveText("Readiness Output");
+    await expect(readinessOutputTable.locator("thead th")).toHaveText(["Output", "Status"]);
+    await expect(readinessOutputTable.locator("tbody tr")).toHaveText([
+      "Game StatusUnder Construction",
+      "Game ProgressDemo Game identity ready",
+      "Launch ProgressPublish blocked until configuration and required assets are ready",
+      "Current FocusComplete Game Configuration",
+      "Recommended Next ToolGame Configuration",
+      "Game identityComplete",
+      "Game configurationUnder Construction",
+      "Playable buildPlanned",
+      "Publishing reviewPlanned",
+    ]);
     await demoGameRow.locator("[data-game-toggle='demo-game']").click();
     await expect(page.locator("[data-game-expanded-row='demo-game']")).toHaveCount(0);
 
