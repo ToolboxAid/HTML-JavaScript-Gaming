@@ -40,3 +40,6 @@ READ THIS FIRST
 9. Follow OWNER governance decisions.
 10. When guidance conflicts, newest OWNER-approved guidance wins.
 11. Batch Governance Mode is the default for governance, documentation, and administrative work.
+
+Addendum index:
+- Canonical Repository Structure: project-instructions/addendums/canonical-repository-structure.md
