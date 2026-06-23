@@ -26,16 +26,20 @@
                 <div class="tool-workspace tool-workspace--wide">
                     <aside class="tool-column tool-group-build">
                         <div class="tool-column-header">
-                            <h2>Game Hub</h2>
+                            <h2>Game Crew</h2>
                         </div>
-                        <div class="content-stack content-stack--compact">
-                            <label for="currentUserRoleInput">Current User Role <select id="currentUserRoleInput" data-current-user-role-input></select></label>
-                            <button class="btn" type="button" data-game-delete-active>Delete Open Game</button>
+                        <div class="accordion-stack">
+                            <details class="vertical-accordion" open>
+                                <summary>Game Crew</summary>
+                                <div class="accordion-body content-stack content-stack--compact">
+                                    <label for="currentUserRoleInput">Current User Role <select id="currentUserRoleInput" data-current-user-role-input></select></label>
+                                    <button class="btn" type="button" data-game-delete-active>Delete Open Game</button>
+                                </div>
+                            </details>
                         </div>
                     </aside>
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="game-hub" data-tool-icon-src="assets/theme-v2/images/badges/index.png" data-tool-character-src="assets/theme-v2/images/characters/index.png"></div>
                     <section class="tool-center-panel"><h2>Games</h2>
-                        <p>Review games in the parent table, then expand a game row to see Source Idea and Readiness Output.</p>
                         <div class="status" role="status" data-project-record-status>Game table ready.</div>
                         <div class="content-stack content-stack--compact" aria-label="Games" data-game-list></div>
                         <div class="status" role="status" data-game-hub-log>Game Hub ready.</div>

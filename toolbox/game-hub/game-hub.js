@@ -158,6 +158,18 @@ function ensureProjectRecordsSaveAllowed(action) {
   return false;
 }
 
+function redirectGuestToSignIn() {
+  window.location.href = "account/sign-in.html";
+}
+
+function ensureProjectRecordsSaveAllowedForSave() {
+  if (projectRecordsSaveAllowed()) {
+    return true;
+  }
+  redirectGuestToSignIn();
+  return false;
+}
+
 function populateSelect(select, options) {
   if (!select) {
     return;
@@ -188,7 +200,7 @@ function currentGameMember(activeGame) {
 
 function createActionButton(label, action, options = {}) {
   const button = document.createElement("button");
-  button.className = options.primary ? "btn primary" : "btn";
+  button.className = options.primary ? "btn btn--compact primary" : "btn btn--compact";
   button.type = "button";
   button.dataset.gameAction = action;
   if (options.gameId) {
@@ -207,7 +219,6 @@ function createActionButton(label, action, options = {}) {
 function createGameButton(game) {
   const button = createActionButton("Edit", "edit-game", {
     ariaLabel: `Edit ${game.name}`,
-    disabled: !projectRecordsSaveAllowed(),
     gameId: game.id,
   });
   return button;
@@ -381,7 +392,7 @@ function renderExpandedGameRow(tbody, game, progress, active) {
     row.dataset.gameChildRow = type;
     row.id = id;
     const content = document.createElement("td");
-    content.colSpan = 5;
+    content.colSpan = 4;
     render(content);
     row.append(content);
     tbody.append(row);
@@ -394,10 +405,8 @@ function renderAddGameRow(tbody) {
 
   if (!state.addingGame) {
     const cell = document.createElement("td");
-    cell.colSpan = 5;
-    cell.append(createActionButton("Add Game", "start-add-game", {
-      disabled: !projectRecordsSaveAllowed(),
-    }));
+    cell.colSpan = 4;
+    cell.append(createActionButton("Add Game", "start-add-game"));
     row.append(cell);
     tbody.append(row);
     return;
@@ -415,14 +424,13 @@ function renderAddGameRow(tbody) {
   const statusCell = document.createElement("td");
   statusCell.append(createSelect(GAME_HUB_GAME_STATUSES, "Planning", "gameStatusInput", "Status"));
 
-  const ownerCell = createCell("Current user");
   const actions = document.createElement("td");
   actions.append(
     createActionButton("Save", "save-add-game", { primary: true }),
     createActionButton("Cancel", "cancel-add-game"),
   );
 
-  row.append(nameCell, purposeCell, statusCell, ownerCell, actions);
+  row.append(nameCell, purposeCell, statusCell, actions);
   tbody.append(row);
 }
 
@@ -457,7 +465,6 @@ function renderEditGameRow(tbody, game) {
     nameCell,
     purposeCell,
     statusCell,
-    createCell(game.ownerDisplayName || "No owner"),
     actions,
   );
   tbody.append(row);
@@ -490,7 +497,6 @@ function renderGameParentRow(tbody, game, activeGame, progress) {
     nameCell,
     createCell(game.purpose || "Game"),
     createCell(game.status || "No status"),
-    createCell(game.ownerDisplayName || "No owner"),
   );
 
   const actions = document.createElement("td");
@@ -538,7 +544,7 @@ function renderGameList(progress) {
   table.className = "data-table data-table--fixed";
   table.dataset.gameRowsTable = "true";
   table.setAttribute("aria-label", "Games");
-  table.innerHTML = "<thead><tr><th scope=\"col\">Game</th><th scope=\"col\">Purpose</th><th scope=\"col\">Status</th><th scope=\"col\">Owner</th><th scope=\"col\">Actions</th></tr></thead>";
+  table.innerHTML = "<thead><tr><th scope=\"col\">Game</th><th scope=\"col\">Purpose</th><th scope=\"col\">Status</th><th scope=\"col\">Actions</th></tr></thead>";
   const body = document.createElement("tbody");
   listResult.forEach((game) => renderGameParentRow(body, game, activeGame, progress));
   renderAddGameRow(body);
@@ -652,7 +658,7 @@ function readGameRowFields(row) {
 }
 
 function saveAddedGame(row) {
-  if (!ensureProjectRecordsSaveAllowed("create")) {
+  if (!ensureProjectRecordsSaveAllowedForSave()) {
     return;
   }
   const input = readGameRowFields(row);
@@ -677,7 +683,7 @@ function saveAddedGame(row) {
 }
 
 function saveEditedGame(row, gameId) {
-  if (!ensureProjectRecordsSaveAllowed("update")) {
+  if (!ensureProjectRecordsSaveAllowedForSave()) {
     return;
   }
   const input = readGameRowFields(row);
@@ -740,9 +746,6 @@ elements.gameList?.addEventListener("click", (event) => {
   }
 
   if (action.dataset.gameAction === "start-add-game") {
-    if (!ensureProjectRecordsSaveAllowed("create")) {
-      return;
-    }
     state.addingGame = true;
     state.editingGameId = "";
     renderWorkspace();
@@ -762,9 +765,6 @@ elements.gameList?.addEventListener("click", (event) => {
   }
 
   if (action.dataset.gameAction === "edit-game") {
-    if (!ensureProjectRecordsSaveAllowed("update")) {
-      return;
-    }
     const game = repository.openGame(action.dataset.gameId);
     if (reportRepositoryError(game, "Edit game") || !isRecord(game)) {
       if (!isRepositoryErrorResult(game)) {
