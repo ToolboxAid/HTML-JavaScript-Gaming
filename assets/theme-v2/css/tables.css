@@ -116,10 +116,7 @@ td {
 }
 
 .data-table [data-game-active-cell="true"] {
-  background: color-mix(in srgb, var(--gold) 14%, var(--panel))
-}
-
-.data-table [data-game-active-cell="true"] {
+  box-shadow: inset var(--space-3) 0 0 var(--gold);
   border-bottom-color: var(--gold-border-muted)
 }
 

@@ -290,12 +290,19 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
     await expect(demoGameRow).toHaveAttribute("data-game-active", "true");
     await expect(demoGameRow).toHaveAttribute("aria-current", "true");
     await expect(demoGameRow.locator("th[data-game-active-cell='true']")).toContainText("Demo Game");
-    const activeCellBackground = await demoGameRow.locator("th[data-game-active-cell='true']").evaluate((cell) => getComputedStyle(cell).backgroundColor);
-    expect(activeCellBackground).not.toBe("rgba(0, 0, 0, 0)");
-    expect(activeCellBackground).not.toBe("transparent");
+    const activeCellStyle = await demoGameRow.locator("th[data-game-active-cell='true']").evaluate((cell) => {
+      const styles = getComputedStyle(cell);
+      return {
+        backgroundColor: styles.backgroundColor,
+        boxShadow: styles.boxShadow,
+      };
+    });
+    const inactiveCellBackground = await page.locator("[data-game-row='gravity-demo'] th").evaluate((cell) => getComputedStyle(cell).backgroundColor);
+    expect(activeCellStyle.backgroundColor).toBe(inactiveCellBackground);
+    expect(activeCellStyle.boxShadow).not.toBe("none");
     await expect(demoGameRow.locator("> .status")).toHaveCount(0);
     await expect(demoGameRow.locator("[data-game-toggle='demo-game']")).toHaveAttribute("aria-expanded", "false");
-    await expect(demoGameRow.locator("[data-game-toggle='demo-game']")).toHaveClass(/primary/);
+    await expect(demoGameRow.locator("[data-game-toggle='demo-game']")).not.toHaveClass(/primary/);
     await expect(demoGameRow.locator("[data-game-toggle='demo-game']")).toHaveAttribute("aria-current", "true");
     await expect(demoGameRow.getByRole("button", { name: "Edit Demo Game" })).toHaveText("Edit");
     await expect(demoGameRow.getByRole("button", { name: "Edit Demo Game" })).not.toHaveClass(/primary/);
@@ -335,7 +342,7 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
     await addGameRow.getByRole("button", { name: "Save" }).click();
     await expect(page.locator("[data-game-list]")).toContainText("Launch Test Game");
     await expect(page.locator("[data-game-row='launch-test-game-1']")).toHaveAttribute("data-game-active", "true");
-    await expect(page.locator("[data-game-row='launch-test-game-1'] [data-game-toggle='launch-test-game-1']")).toHaveClass(/primary/);
+    await expect(page.locator("[data-game-row='launch-test-game-1'] [data-game-toggle='launch-test-game-1']")).not.toHaveClass(/primary/);
     await expect(page.locator("[data-game-row='launch-test-game-1']").getByRole("button", { name: "Edit Launch Test Game" })).not.toHaveClass(/primary/);
     await expect(page.locator("[data-game-row='launch-test-game-1'] td").nth(0)).toHaveText("Learning Game");
     await expect(page.locator("[data-game-row='launch-test-game-1'] td").nth(1)).toHaveText("Ready for Testing");
@@ -362,11 +369,11 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
     await page.locator("[data-game-add-row='input']").getByLabel("Game").fill("Archive Game");
     await page.locator("[data-game-add-row='input']").getByRole("button", { name: "Save" }).click();
     await expect(page.locator("[data-game-row='archive-game-2']")).toHaveAttribute("data-game-active", "true");
-    await expect(page.locator("[data-game-row='archive-game-2'] [data-game-toggle='archive-game-2']")).toHaveClass(/primary/);
+    await expect(page.locator("[data-game-row='archive-game-2'] [data-game-toggle='archive-game-2']")).not.toHaveClass(/primary/);
 
     await page.locator("[data-game-row='launch-test-game-1'] [data-game-toggle='launch-test-game-1']").click();
     await expect(page.locator("[data-game-row='launch-test-game-1']")).toHaveAttribute("data-game-active", "true");
-    await expect(page.locator("[data-game-row='launch-test-game-1'] [data-game-toggle='launch-test-game-1']")).toHaveClass(/primary/);
+    await expect(page.locator("[data-game-row='launch-test-game-1'] [data-game-toggle='launch-test-game-1']")).not.toHaveClass(/primary/);
     await expect(page.locator("[data-game-row='launch-test-game-1']").getByRole("button", { name: "Edit Launch Test Game" })).not.toHaveClass(/primary/);
     await expect(page.locator("[data-game-hub-log]")).toHaveText("Selected Launch Test Game.");
 
@@ -516,7 +523,7 @@ test("Game Hub preserves guest browsing and blocks guest saves", async ({ page }
   const failures = await openRepoPage(page, "/toolbox/game-hub/index.html");
 
   try {
-    await expect(page.locator("[data-game-row='demo-game'] [data-game-toggle='demo-game']")).toHaveClass(/primary/);
+    await expect(page.locator("[data-game-row='demo-game'] [data-game-toggle='demo-game']")).not.toHaveClass(/primary/);
     await expect(page.locator("[data-game-row='demo-game']").getByRole("button", { name: "Edit Demo Game" })).not.toHaveClass(/primary/);
     await expect(page.locator("[data-game-row='demo-game']").getByRole("button", { name: "Edit Demo Game" })).toBeDisabled();
     await expect(page.locator("[data-game-list]")).toContainText("Gravity Demo");
@@ -530,7 +537,7 @@ test("Game Hub preserves guest browsing and blocks guest saves", async ({ page }
     await expect(page.getByLabel("Current User Role")).toBeDisabled();
 
     await page.locator("[data-game-row='gravity-demo'] [data-game-toggle='gravity-demo']").click();
-    await expect(page.locator("[data-game-row='gravity-demo'] [data-game-toggle='gravity-demo']")).toHaveClass(/primary/);
+    await expect(page.locator("[data-game-row='gravity-demo'] [data-game-toggle='gravity-demo']")).not.toHaveClass(/primary/);
     await expect(page.locator("[data-game-row='gravity-demo']").getByRole("button", { name: "Edit Gravity Demo" })).toBeDisabled();
     await expect(page.locator("[data-game-hub-log]")).toHaveText("Sign in to create or update Game Hub projects.");
 
@@ -738,7 +745,7 @@ test("Game Hub displays and edits game purpose and member role", async ({ page }
     await addRow.getByLabel("Game").fill("Purpose Review Game");
     await addRow.getByLabel("Purpose").selectOption("Capability Demo");
     await addRow.getByRole("button", { name: "Save" }).click();
-    await expect(page.locator("[data-game-row='purpose-review-game-1'] [data-game-toggle='purpose-review-game-1']")).toHaveClass(/primary/);
+    await expect(page.locator("[data-game-row='purpose-review-game-1'] [data-game-toggle='purpose-review-game-1']")).not.toHaveClass(/primary/);
     await expect(page.locator("[data-game-row='purpose-review-game-1']").getByRole("button", { name: "Edit Purpose Review Game" })).not.toHaveClass(/primary/);
     await expect(page.locator("[data-game-row='purpose-review-game-1'] td").nth(0)).toHaveText("Capability Demo");
     await expect(page.getByLabel("Current User Role")).toHaveValue("Owner");
@@ -785,7 +792,7 @@ test("Game Hub readiness child rows update from mock game state", async ({ page 
     await expect(readinessOutputTable).toContainText("Progress Review Game identity ready");
 
     await page.getByRole("button", { name: "Delete Open Game" }).click();
-    await expect(page.locator("[data-game-row='demo-game'] [data-game-toggle='demo-game']")).toHaveClass(/primary/);
+    await expect(page.locator("[data-game-row='demo-game'] [data-game-toggle='demo-game']")).not.toHaveClass(/primary/);
     await expect(page.locator("[data-game-row='demo-game']").getByRole("button", { name: "Edit Demo Game" })).not.toHaveClass(/primary/);
     await demoGameRow.locator("[data-game-toggle='demo-game']").click();
     readinessOutputTable = page.locator("[data-game-expanded-row='demo-game'][data-game-child-row='readiness-output'] [data-game-child-table='readiness-output']");

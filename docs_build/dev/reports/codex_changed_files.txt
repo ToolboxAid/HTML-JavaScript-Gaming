@@ -1,4 +1,3 @@
 assets/theme-v2/css/tables.css
 tests/playwright/tools/GameHubMockRepository.spec.mjs
 toolbox/game-hub/game-hub.js
-toolbox/game-hub/index.html

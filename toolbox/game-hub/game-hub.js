@@ -256,7 +256,7 @@ function createInput(value, datasetName, ariaLabel, options = {}) {
 
 function createGameToggleButton(game, expanded, active) {
   const button = document.createElement("button");
-  button.className = active ? "btn btn--compact primary" : "btn btn--compact";
+  button.className = "btn btn--compact";
   button.type = "button";
   button.dataset.gameToggle = game.id;
   if (active) {

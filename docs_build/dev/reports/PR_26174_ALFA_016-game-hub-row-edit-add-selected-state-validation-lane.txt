@@ -7,6 +7,5 @@ Result: PASS - 7 passed.
 2. npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs -g "Idea Board uses accordion table ideas and notes"
 Result: PASS - 1 passed.
 
-3. git diff --check -- assets/theme-v2/css/tables.css toolbox/game-hub/index.html toolbox/game-hub/game-hub.js tests/playwright/tools/GameHubMockRepository.spec.mjs
+3. git diff --check -- assets/theme-v2/css/tables.css toolbox/game-hub/game-hub.js tests/playwright/tools/GameHubMockRepository.spec.mjs
 Result: PASS.
-
