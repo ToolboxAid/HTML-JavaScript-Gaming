@@ -5306,6 +5306,13 @@ LIMIT 1;
     }
     const result = await method(...args);
     assertRepositoryMethodResult(repositoryId, methodName, result);
+    if (repository === this.gameWorkspaceRepository && methodName === "createGame") {
+      const journeyBootstrap = this.gameJourneyRepository.bootstrapGameJourneyForGame(result);
+      if (!journeyBootstrap || !Array.isArray(journeyBootstrap.buckets)) {
+        throw repositoryMethodError("Game Journey bootstrap did not return starter bucket records. Restore the Local API/service contract.");
+      }
+      result.journeyBootstrap = journeyBootstrap;
+    }
     const methodPersistsThroughToolStore =
       repository === this.gameJourneyRepository && GAME_JOURNEY_TOOL_STORE_METHODS.has(methodName);
     if (repositoryMethodRequiresPersistence(methodName) && !methodPersistsThroughToolStore) {
