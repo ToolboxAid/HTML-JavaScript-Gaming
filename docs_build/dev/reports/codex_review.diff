@@ -1,18 +1,18 @@
 diff --git a/docs_build/dev/BUILD_PR.md b/docs_build/dev/BUILD_PR.md
-index 65c4d9709..32898beed 100644
+index 65c4d9709..cf7378880 100644
 --- a/docs_build/dev/BUILD_PR.md
 +++ b/docs_build/dev/BUILD_PR.md
-@@ -1,40 +1,41 @@
+@@ -1,59 +1,59 @@
 -# PR_26175_ALFA_002-toolbox-status-bar-context-polish
-+# PR_26175_ALFA_005-game-hub-audit-findings-cleanup
++# PR_26175_ALFA_006-game-hub-create-project-validation
 
  ## Purpose
 -Polish the shared toolbox status bar context display so it shows only selected-game name/purpose on the left and categorized tool context in the center.
-+Clean up the targeted Game Hub audit findings from `PR_26175_ALFA_004-game-hub-completion-status-audit`.
++Add creator-facing validation for the Game Hub create-project row so blank game names do not silently create fallback projects.
 
  ## Source Of Truth
 -This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_002-toolbox-status-bar-context-polish`.
-+This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_005-game-hub-audit-findings-cleanup`.
++This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_006-game-hub-create-project-validation`.
 
  ## Exact Scope
 -- Do not include environment text in the status bar because environment already appears in the platform banner.
@@ -24,18 +24,15 @@ index 65c4d9709..32898beed 100644
 -- Preserve Game Hub as selected-game owner through the existing repository contract.
 -- Keep the shared Theme V2 toolbox component model.
 -- Update targeted Playwright coverage for the polished left and center context.
-+- Resolve the targeted Game Hub Playwright failures recorded by the ALFA_004 audit.
-+- Keep the cleanup focused on stale or over-broad test expectations unless product code is required by validation.
-+- Preserve the existing Game Hub table workflow behavior.
-+- Preserve the shared toolbox selected-game status bar behavior.
-+- Preserve Game Journey completion-metrics API/service behavior.
-+- Do not implement unrelated product or UI changes.
-+
-+## ALFA_004 Findings To Clean Up
-+- `tests/playwright/tools/GameHubMockRepository.spec.mjs:238`: duplicate `Open Game Hub` link strict-mode conflict after the shared toolbox status bar added its own Game Hub action.
-+- `tests/playwright/tools/GameHubMockRepository.spec.mjs:257`: stale expectation that no `Game Status` label exists.
-+- `tests/playwright/tools/GameHubMockRepository.spec.mjs:582`: stale guest-mode expectation that no `Game Status` label exists.
-+- `tests/playwright/tools/GameHubMockRepository.spec.mjs:1019`: toolbox role-filter lane records known `500 /api/game-journey/completion-metrics` requests outside the Game Hub table workflow.
++- Validate the Game Hub add-game row before calling the repository create method.
++- Block signed-in creator saves when the game name is blank or whitespace-only.
++- Keep the add-game row open after validation failure.
++- Show a creator-safe validation message in the existing Game Hub status log.
++- Mark the game name input invalid for accessibility.
++- Preserve valid create/open/delete behavior.
++- Preserve guest save redirect behavior.
++- Preserve API/service/repository contracts.
++- Add targeted Playwright coverage for the create validation path.
 
  ## Exact Targets
  - `docs_build/dev/BUILD_PR.md`
@@ -45,10 +42,11 @@ index 65c4d9709..32898beed 100644
 -- `docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_report.md`
 -- `docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_validation-lane.md`
 -- `docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_requirements-checklist.md`
++- `toolbox/game-hub/game-hub.js`
 +- `tests/playwright/tools/GameHubMockRepository.spec.mjs`
-+- `docs_build/dev/reports/PR_26175_ALFA_005-game-hub-audit-findings-cleanup_report.md`
-+- `docs_build/dev/reports/PR_26175_ALFA_005-game-hub-audit-findings-cleanup_validation-lane.md`
-+- `docs_build/dev/reports/PR_26175_ALFA_005-game-hub-audit-findings-cleanup_requirements-checklist.md`
++- `docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_report.md`
++- `docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_validation-lane.md`
++- `docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_requirements-checklist.md`
  - `docs_build/dev/reports/codex_review.diff`
  - `docs_build/dev/reports/codex_changed_files.txt`
 
@@ -57,29 +55,32 @@ index 65c4d9709..32898beed 100644
 -- No row highlights.
 -- No large banners.
 -- No modal-style status messages.
--- No inline styles, style blocks, or page-local CSS.
-+- No Game Hub product or UI behavior changes unless targeted validation proves they are required.
-+- No Game Journey completion-metrics product/API/service changes.
- - No API/service contract changes.
++- No repository/API/service contract changes.
++- No Game Journey completion-metrics changes.
++- No shared toolbox status bar changes.
++- No unrelated Game Hub workflow changes.
 +- No browser-owned product data as source of truth.
-+- No silent fallbacks.
-+- No inline styles, style blocks, or page-local CSS.
++- No silent create-name fallback in the Game Hub page flow.
+ - No inline styles, style blocks, or page-local CSS.
+-- No API/service contract changes.
  - No engine core changes.
  - No `start_of_day` folder changes.
 
-@@ -42,18 +43,18 @@ This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_002-toolbox-status-
- Run:
+ ## Validation
+-Run:
++Run targeted create-project validation:
 
  ```powershell
 -npx playwright test tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs --workers=1
-+npx playwright test tests/playwright/tools/GameHubMockRepository.spec.mjs --workers=1
++npx playwright test tests/playwright/tools/GameHubMockRepository.spec.mjs --workers=1 --grep "Game Hub creates, opens, and deletes mock games"
  ```
 
- Also verify the changed source does not introduce inline styles or style blocks:
+-Also verify the changed source does not introduce inline styles or style blocks:
++Also verify changed source does not introduce inline styles or style blocks:
 
  ```powershell
 -rg -n "<style|style=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-+rg -n "<[s]tyle|[s]tyle=" tests/playwright/tools/GameHubMockRepository.spec.mjs docs_build/dev/BUILD_PR.md docs_build/dev/reports/PR_26175_ALFA_005-game-hub-audit-findings-cleanup_report.md docs_build/dev/reports/PR_26175_ALFA_005-game-hub-audit-findings-cleanup_validation-lane.md docs_build/dev/reports/PR_26175_ALFA_005-game-hub-audit-findings-cleanup_requirements-checklist.md
++rg -n "<[s]tyle|[s]tyle=" toolbox/game-hub/game-hub.js tests/playwright/tools/GameHubMockRepository.spec.mjs docs_build/dev/BUILD_PR.md docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_report.md docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_validation-lane.md docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_requirements-checklist.md
  ```
 
  ## Artifact
@@ -87,137 +88,110 @@ index 65c4d9709..32898beed 100644
 
  ```text
 -tmp/PR_26175_ALFA_002-toolbox-status-bar-context-polish_delta.zip
-+tmp/PR_26175_ALFA_005-game-hub-audit-findings-cleanup_delta.zip
++tmp/PR_26175_ALFA_006-game-hub-create-project-validation_delta.zip
  ```
-diff --git a/docs_build/dev/reports/PR_26175_ALFA_005-game-hub-audit-findings-cleanup_report.md b/docs_build/dev/reports/PR_26175_ALFA_005-game-hub-audit-findings-cleanup_report.md
+diff --git a/docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_report.md b/docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_report.md
 new file mode 100644
-index 000000000..556f5636c
+index 000000000..9daf67f38
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_ALFA_005-game-hub-audit-findings-cleanup_report.md
++++ b/docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_report.md
 @@ -0,0 +1,24 @@
-+# PR_26175_ALFA_005-game-hub-audit-findings-cleanup Report
++# PR_26175_ALFA_006-game-hub-create-project-validation Report
 +
 +## Overall Status
 +PASS
 +
-+ALFA_005 cleaned up the targeted Game Hub audit findings from ALFA_004 without changing Game Hub product UI, Game Journey API/service behavior, or repository contracts.
++Game Hub now validates the add-game row before a signed-in creator can create a project with a blank or whitespace-only name. The fix stays in the Game Hub page boundary and preserves the repository/API/service contract.
 +
-+## Cleanup Evidence
++## Evidence Matrix
 +
 +| Requirement | Status | Evidence |
 +| --- | --- | --- |
-+| Replace stale BUILD source of truth with ALFA_005 | PASS | `docs_build/dev/BUILD_PR.md:1` defines `PR_26175_ALFA_005-game-hub-audit-findings-cleanup`. |
-+| Resolve duplicate `Open Game Hub` strict-mode finding | PASS | Deprecated-route assertion now scopes the link lookup to `main`, avoiding the shared toolbox status bar action while preserving the route check: `tests/playwright/tools/GameHubMockRepository.spec.mjs:251`. |
-+| Resolve stale creator `Game Status` label finding | PASS | The create/open/delete test now verifies absence of legacy `Game Status` form controls instead of rejecting valid table/readiness text: `tests/playwright/tools/GameHubMockRepository.spec.mjs:270`. |
-+| Resolve stale guest `Game Status` label finding | PASS | The guest save-blocking test uses the same legacy form-control assertion: `tests/playwright/tools/GameHubMockRepository.spec.mjs:595`. |
-+| Resolve role-filter completion-metrics validation finding | PASS | Toolbox index role-filter setup now provides an explicit server API fixture for `/api/game-journey/completion-metrics`, preserving the Browser -> Server API -> Data Source response shape without changing production API behavior: `tests/playwright/tools/GameHubMockRepository.spec.mjs:213`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:984`. |
-+| Preserve Game Hub table workflow behavior | PASS | Cleanup is limited to Playwright selectors and route fixture setup; no Game Hub product files changed. |
-+| Preserve shared toolbox status bar behavior | PASS | No status bar source or CSS files changed. The deprecated-route test now coexists with the status bar Game Hub action. |
-+| Preserve Game Journey completion-metrics API/service behavior | PASS | No Game Journey API, service, or persistence files changed. The spec uses a targeted Playwright route fixture only for the toolbox role-filter lane. |
-+| Avoid unrelated product/UI changes | PASS | Changed implementation file is limited to `tests/playwright/tools/GameHubMockRepository.spec.mjs`. |
++| Replace BUILD source of truth with ALFA_006 | PASS | `docs_build/dev/BUILD_PR.md:1` identifies `PR_26175_ALFA_006-game-hub-create-project-validation`. |
++| Validate create row before repository create | PASS | `saveAddedGame` calls `validateAddedGameFields` before `repository.createGame`: `toolbox/game-hub/game-hub.js:681`, `toolbox/game-hub/game-hub.js:703`, `toolbox/game-hub/game-hub.js:707`. |
++| Block blank or whitespace-only names | PASS | Validation trims the name and returns before save when empty: `toolbox/game-hub/game-hub.js:684`, `toolbox/game-hub/game-hub.js:685`, `toolbox/game-hub/game-hub.js:691`. |
++| Keep add row open and show creator-safe message | PASS | Validation does not re-render or call the repository on failure and writes `Enter a game name before saving.` to the existing status log: `toolbox/game-hub/game-hub.js:690`. |
++| Mark invalid input accessibly | PASS | The add-game input is required and receives `aria-invalid`: `toolbox/game-hub/game-hub.js:445`, `toolbox/game-hub/game-hub.js:687`. |
++| Preserve valid create/open/delete behavior | PASS | Existing create/open/delete test still creates `Launch Test Game`, opens it, edits it, creates an archive game, and deletes the open game: `tests/playwright/tools/GameHubMockRepository.spec.mjs:386`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:425`. |
++| Preserve guest save redirect behavior | PASS | `ensureProjectRecordsSaveAllowedForSave` still runs before validation, so guest save handling remains unchanged: `toolbox/game-hub/game-hub.js:700`. |
++| Preserve API/service/repository contract | PASS | No API, service, or repository files changed. |
++| No silent create-name fallback in page flow | PASS | Targeted test verifies blank and whitespace saves do not create `Untitled Game`: `tests/playwright/tools/GameHubMockRepository.spec.mjs:379`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:384`. |
 +
 +## Validation Summary
-+- PASS: `npx playwright test tests/playwright/tools/GameHubMockRepository.spec.mjs --workers=1` produced 14 passed, 0 failed.
++- PASS: `npx playwright test tests/playwright/tools/GameHubMockRepository.spec.mjs --workers=1 --grep "Game Hub creates, opens, and deletes mock games"` produced 1 passed, 0 failed.
 +- PASS: changed-source style scan found no inline style or style-block matches.
-diff --git a/docs_build/dev/reports/PR_26175_ALFA_005-game-hub-audit-findings-cleanup_requirements-checklist.md b/docs_build/dev/reports/PR_26175_ALFA_005-game-hub-audit-findings-cleanup_requirements-checklist.md
+diff --git a/docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_requirements-checklist.md b/docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_requirements-checklist.md
 new file mode 100644
-index 000000000..2c6bc1b09
+index 000000000..ba6464b52
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_ALFA_005-game-hub-audit-findings-cleanup_requirements-checklist.md
-@@ -0,0 +1,16 @@
-+# PR_26175_ALFA_005-game-hub-audit-findings-cleanup Requirements Checklist
++++ b/docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_requirements-checklist.md
+@@ -0,0 +1,18 @@
++# PR_26175_ALFA_006-game-hub-create-project-validation Requirements Checklist
 +
-+- PASS: BUILD_PR.md was replaced with ALFA_005 as the source of truth.
-+- PASS: Cleanup stayed focused on ALFA_004 Game Hub audit findings.
-+- PASS: Duplicate `Open Game Hub` link strict-mode finding was resolved.
-+- PASS: Stale creator-mode `Game Status` label assertion was resolved.
-+- PASS: Stale guest-mode `Game Status` label assertion was resolved.
-+- PASS: Toolbox role-filter completion-metrics validation finding was resolved with a targeted Playwright fixture.
-+- PASS: Game Hub table workflow behavior was preserved.
-+- PASS: Shared toolbox status bar behavior was preserved.
-+- PASS: Game Journey completion-metrics API/service behavior was preserved.
-+- PASS: No product or UI implementation files changed.
-+- PASS: Targeted Game Hub validation passed.
-+- PASS: Changed-source style scan passed.
++- PASS: BUILD_PR.md was replaced with ALFA_006 as the source of truth.
++- PASS: Game Hub validates the add-game row before repository create.
++- PASS: Blank creator saves are blocked.
++- PASS: Whitespace-only creator saves are blocked.
++- PASS: The add-game row stays open after validation failure.
++- PASS: A creator-safe validation message appears in the existing Game Hub status log.
++- PASS: The game name input is marked invalid for accessibility.
++- PASS: Valid create/open/delete behavior is preserved.
++- PASS: Guest save redirect behavior is preserved.
++- PASS: API/service/repository contracts are preserved.
++- PASS: No browser-owned product data is used as source of truth.
++- PASS: No silent create-name fallback remains in the Game Hub page flow.
++- PASS: No inline styles, style blocks, or page-local CSS were added.
++- PASS: Targeted Playwright validation passed.
 +- PASS: Required reports were created.
 +- PASS: Repo-structured delta ZIP was created.
-diff --git a/docs_build/dev/reports/PR_26175_ALFA_005-game-hub-audit-findings-cleanup_validation-lane.md b/docs_build/dev/reports/PR_26175_ALFA_005-game-hub-audit-findings-cleanup_validation-lane.md
+diff --git a/docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_validation-lane.md b/docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_validation-lane.md
 new file mode 100644
-index 000000000..72e27c1e7
+index 000000000..62e085e08
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_ALFA_005-game-hub-audit-findings-cleanup_validation-lane.md
-@@ -0,0 +1,19 @@
-+# PR_26175_ALFA_005-game-hub-audit-findings-cleanup Validation Lane
++++ b/docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_validation-lane.md
+@@ -0,0 +1,18 @@
++# PR_26175_ALFA_006-game-hub-create-project-validation Validation Lane
 +
 +## Commands
 +```powershell
-+npx playwright test tests/playwright/tools/GameHubMockRepository.spec.mjs --workers=1
++npx playwright test tests/playwright/tools/GameHubMockRepository.spec.mjs --workers=1 --grep "Game Hub creates, opens, and deletes mock games"
 +```
 +
-+Result: PASS, 14 passed and 0 failed.
++Result: PASS, 1 passed and 0 failed.
 +
 +```powershell
-+rg -n "<[s]tyle|[s]tyle=" tests/playwright/tools/GameHubMockRepository.spec.mjs docs_build/dev/BUILD_PR.md docs_build/dev/reports/PR_26175_ALFA_005-game-hub-audit-findings-cleanup_report.md docs_build/dev/reports/PR_26175_ALFA_005-game-hub-audit-findings-cleanup_validation-lane.md docs_build/dev/reports/PR_26175_ALFA_005-game-hub-audit-findings-cleanup_requirements-checklist.md
++rg -n "<[s]tyle|[s]tyle=" toolbox/game-hub/game-hub.js tests/playwright/tools/GameHubMockRepository.spec.mjs docs_build/dev/BUILD_PR.md docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_report.md docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_validation-lane.md docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_requirements-checklist.md
 +```
 +
 +Result: PASS, no matches.
 +
 +## Notes
-+- The ALFA_004 validation lane reported 10 passed and 4 failed.
-+- The same impacted Game Hub spec now passes completely after the scoped cleanup.
-+- No product or UI implementation changes were required.
++- The targeted lane verifies blank-name validation, whitespace-name validation, valid create/open/delete behavior, and existing Game Hub table behavior in the create workflow.
++- No product data source, API, service, or repository contract changes were made.
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index fb32c88ea..2950b73e5 100644
+index fb32c88ea..46244144a 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,9 +1,7 @@
+@@ -1,9 +1,8 @@
 -assets/theme-v2/css/status.css
 -assets/theme-v2/js/toolbox-status-bar.js
  docs_build/dev/BUILD_PR.md
 -docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_report.md
 -docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_validation-lane.md
 -docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_requirements-checklist.md
++toolbox/game-hub/game-hub.js
 +tests/playwright/tools/GameHubMockRepository.spec.mjs
-+docs_build/dev/reports/PR_26175_ALFA_005-game-hub-audit-findings-cleanup_report.md
-+docs_build/dev/reports/PR_26175_ALFA_005-game-hub-audit-findings-cleanup_validation-lane.md
-+docs_build/dev/reports/PR_26175_ALFA_005-game-hub-audit-findings-cleanup_requirements-checklist.md
++docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_report.md
++docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_validation-lane.md
++docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_requirements-checklist.md
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
 -tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
 diff --git a/tests/playwright/tools/GameHubMockRepository.spec.mjs b/tests/playwright/tools/GameHubMockRepository.spec.mjs
-index 6f6d046d2..9c8cecd49 100644
+index 6f6d046d2..5bae39718 100644
 --- a/tests/playwright/tools/GameHubMockRepository.spec.mjs
 +++ b/tests/playwright/tools/GameHubMockRepository.spec.mjs
-@@ -209,6 +209,19 @@ async function openRepoPage(page, pathName, options = {}) {
-     });
-   }
-
-+  if (pathName.includes("/toolbox/index.html")) {
-+    await page.route("**/api/game-journey/completion-metrics", async (route) => {
-+      await route.fulfill({
-+        contentType: "application/json",
-+        body: JSON.stringify({
-+          data: { records: [] },
-+          ok: true,
-+          rule: "Browser -> Server API -> Data Source",
-+        }),
-+      });
-+    });
-+  }
-+
-   await workspaceV2CoverageReporter.start(page);
-   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
-   return { failedRequests, pageErrors, consoleErrors, server };
-@@ -235,7 +248,7 @@ test("Deprecated project workspace route points creators to Game Hub", async ({
-     await expect(page.getByRole("heading", { name: "Game Hub" })).toBeVisible();
-     await expect(page.locator("main")).toContainText("This route is kept for older links.");
-     await expect(page.locator("main")).not.toContainText("Project Workspace");
--    await expect(page.getByRole("link", { name: "Open Game Hub" })).toHaveAttribute("href", "toolbox/game-hub/index.html");
-+    await expect(page.locator("main").getByRole("link", { name: "Open Game Hub" })).toHaveAttribute("href", "toolbox/game-hub/index.html");
-
-     await expectNoPageFailures(failures);
-   } finally {
-@@ -254,7 +267,7 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
+@@ -254,7 +254,7 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
      await expect(page.getByRole("button", { name: "Add Game" })).toBeEnabled();
      await expect(page.getByLabel("Game Name")).toHaveCount(0);
      await expect(page.getByLabel("Game Purpose")).toHaveCount(0);
@@ -226,12 +200,80 @@ index 6f6d046d2..9c8cecd49 100644
      await expect(page.getByRole("button", { name: "Delete Open Game" })).toHaveClass("btn");
      await expect(page.getByRole("button", { name: "Delete Open Game" })).toBeEnabled();
      await expect(page.locator("summary").filter({ hasText: /^Game Setup$/ })).toHaveCount(0);
-@@ -579,7 +592,7 @@ test("Game Hub preserves guest browsing and blocks guest saves", async ({ page }
-     await expect(page.getByRole("button", { name: "Delete Open Game" })).toBeDisabled();
-     await expect(page.getByLabel("Game Name")).toHaveCount(0);
-     await expect(page.getByLabel("Game Purpose")).toHaveCount(0);
--    await expect(page.getByLabel("Game Status")).toHaveCount(0);
-+    await expect(page.locator("input[aria-label='Game Status'], textarea[aria-label='Game Status'], select[aria-label='Game Status']")).toHaveCount(0);
-     await expect(page.getByLabel("Current User Role")).toHaveCount(0);
+@@ -370,7 +370,19 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
+     await expect(addGameRow.getByRole("button", { name: "Save" })).toHaveClass("btn btn--compact primary");
+     await expect(demoGameRow.locator("[data-game-toggle='demo-game']")).toHaveClass("btn btn--compact primary");
+     await expect(addGameRow.locator("td")).toHaveCount(3);
+-    await addGameRow.getByLabel("Game").fill("Launch Test Game");
++    const addGameNameInput = addGameRow.getByLabel("Game");
++    await expect(addGameNameInput).toHaveAttribute("required", "");
++    await addGameRow.getByRole("button", { name: "Save" }).click();
++    await expect(addGameNameInput).toHaveAttribute("aria-invalid", "true");
++    await expect(addGameNameInput).toBeFocused();
++    await expect(page.locator("[data-game-hub-log]")).toHaveText("Enter a game name before saving.");
++    await expect(page.locator("[data-game-list]")).not.toContainText("Untitled Game");
++    await addGameNameInput.fill("   ");
++    await addGameRow.getByRole("button", { name: "Save" }).click();
++    await expect(addGameNameInput).toHaveAttribute("aria-invalid", "true");
++    await expect(page.locator("[data-game-hub-log]")).toHaveText("Enter a game name before saving.");
++    await expect(page.locator("[data-game-list]")).not.toContainText("Untitled Game");
++    await addGameNameInput.fill("Launch Test Game");
+     await addGameRow.getByLabel("Purpose").selectOption("Learning Game");
+     await addGameRow.getByLabel("Status").selectOption("Ready for Testing");
+     await addGameRow.getByRole("button", { name: "Save" }).click();
+diff --git a/toolbox/game-hub/game-hub.js b/toolbox/game-hub/game-hub.js
+index b59da1c43..50bbe46f1 100644
+--- a/toolbox/game-hub/game-hub.js
++++ b/toolbox/game-hub/game-hub.js
+@@ -268,6 +268,9 @@ function createInput(value, datasetName, ariaLabel, options = {}) {
+   input.value = value || "";
+   input.placeholder = options.placeholder || "";
+   input.setAttribute("aria-label", ariaLabel);
++  if (options.required) {
++    input.required = true;
++  }
+   if (options.readOnly) {
+     input.readOnly = true;
+   }
+@@ -439,6 +442,7 @@ function renderAddGameRow(tbody) {
+   nameCell.scope = "row";
+   nameCell.append(createInput("", "gameNameInput", "Game", {
+     placeholder: "Untitled game",
++    required: true,
+   }));
 
-     await page.locator("[data-game-row='gravity-demo'] [data-game-toggle='gravity-demo']").click();
+   const purposeCell = document.createElement("td");
+@@ -674,11 +678,32 @@ function readGameRowFields(row) {
+   };
+ }
+
++function validateAddedGameFields(row) {
++  const input = readGameRowFields(row);
++  const nameInput = row?.querySelector("[data-game-name-input]");
++  input.name = String(input.name || "").trim();
++  if (!input.name) {
++    if (nameInput) {
++      nameInput.setAttribute("aria-invalid", "true");
++      nameInput.focus();
++    }
++    setStatusLog("Enter a game name before saving.");
++    return null;
++  }
++  if (nameInput) {
++    nameInput.removeAttribute("aria-invalid");
++  }
++  return input;
++}
++
+ function saveAddedGame(row) {
+   if (!ensureProjectRecordsSaveAllowedForSave()) {
+     return;
+   }
+-  const input = readGameRowFields(row);
++  const input = validateAddedGameFields(row);
++  if (!input) {
++    return;
++  }
+   const game = repository.createGame({
+     name: input.name,
+     purpose: input.purpose,

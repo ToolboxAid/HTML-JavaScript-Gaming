@@ -268,6 +268,9 @@ function createInput(value, datasetName, ariaLabel, options = {}) {
   input.value = value || "";
   input.placeholder = options.placeholder || "";
   input.setAttribute("aria-label", ariaLabel);
+  if (options.required) {
+    input.required = true;
+  }
   if (options.readOnly) {
     input.readOnly = true;
   }
@@ -439,6 +442,7 @@ function renderAddGameRow(tbody) {
   nameCell.scope = "row";
   nameCell.append(createInput("", "gameNameInput", "Game", {
     placeholder: "Untitled game",
+    required: true,
   }));
 
   const purposeCell = document.createElement("td");
@@ -674,11 +678,32 @@ function readGameRowFields(row) {
   };
 }
 
+function validateAddedGameFields(row) {
+  const input = readGameRowFields(row);
+  const nameInput = row?.querySelector("[data-game-name-input]");
+  input.name = String(input.name || "").trim();
+  if (!input.name) {
+    if (nameInput) {
+      nameInput.setAttribute("aria-invalid", "true");
+      nameInput.focus();
+    }
+    setStatusLog("Enter a game name before saving.");
+    return null;
+  }
+  if (nameInput) {
+    nameInput.removeAttribute("aria-invalid");
+  }
+  return input;
+}
+
 function saveAddedGame(row) {
   if (!ensureProjectRecordsSaveAllowedForSave()) {
     return;
   }
-  const input = readGameRowFields(row);
+  const input = validateAddedGameFields(row);
+  if (!input) {
+    return;
+  }
   const game = repository.createGame({
     name: input.name,
     purpose: input.purpose,
