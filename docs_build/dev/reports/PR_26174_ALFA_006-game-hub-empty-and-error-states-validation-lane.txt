@@ -1,0 +1,7 @@
+Validation Lane: PASS
+
+Targeted Playwright impacted lane:
+PASS - npx playwright test tests/playwright/tools/GameHubMockRepository.spec.mjs -g "Game Hub shows a creator-safe empty state|Game Hub shows a creator-safe unavailable state"
+
+Notes:
+- Full workspace smoke was not run; targeted impacted Playwright validation was used per request.

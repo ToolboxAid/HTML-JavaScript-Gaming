@@ -1,0 +1,6 @@
+Manual Validation Notes: PASS
+
+PASS - Confirmed no-project list renders a creator-safe empty state and no game rows.
+PASS - Confirmed listGames failure renders a creator-safe unavailable state and no game rows.
+PASS - Confirmed intentionally sensitive upstream error text is not visible in main Game Hub UI.
+PASS - Confirmed unavailable state is explicit, not a silent empty-list fallback.
