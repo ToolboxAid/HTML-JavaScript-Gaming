@@ -1,0 +1,14 @@
+Branch validation: PASS
+
+Branch:
+pr/26174-ALFA-019-game-hub-selected-button-and-crew-label
+
+Base stack branch:
+pr/26174-ALFA-018-game-selection-button-state
+
+Checks:
+- Current branch is the ALFA_019 branch: PASS
+- Worktree was clean before ALFA_019 edits: PASS
+- Scope limited to selected game button style, crew label validation, targeted Playwright coverage, and required reports: PASS
+- No protected Project Instructions changes: PASS
+- No merge to main performed: PASS

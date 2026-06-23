@@ -1,9 +1,9 @@
 assets/theme-v2/css/tables.css
-docs_build/dev/reports/PR_26174_ALFA_018-game-selection-button-state.md
-docs_build/dev/reports/PR_26174_ALFA_018-game-selection-button-state_branch-validation.txt
-docs_build/dev/reports/PR_26174_ALFA_018-game-selection-button-state_manual-validation-notes.txt
-docs_build/dev/reports/PR_26174_ALFA_018-game-selection-button-state_requirement-checklist.txt
-docs_build/dev/reports/PR_26174_ALFA_018-game-selection-button-state_validation-lane.txt
+docs_build/dev/reports/PR_26174_ALFA_019-game-hub-selected-button-and-crew-label.md
+docs_build/dev/reports/PR_26174_ALFA_019-game-hub-selected-button-and-crew-label_branch-validation.txt
+docs_build/dev/reports/PR_26174_ALFA_019-game-hub-selected-button-and-crew-label_manual-validation-notes.txt
+docs_build/dev/reports/PR_26174_ALFA_019-game-hub-selected-button-and-crew-label_requirement-checklist.txt
+docs_build/dev/reports/PR_26174_ALFA_019-game-hub-selected-button-and-crew-label_validation-lane.txt
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
 tests/playwright/tools/GameHubMockRepository.spec.mjs
