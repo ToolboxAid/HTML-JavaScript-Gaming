@@ -1,90 +1,99 @@
-diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_033-game-journey-canonical-js-migration-audit.md b/docs_build/dev/reports/PR_26172_CHARLIE_033-game-journey-canonical-js-migration-audit.md
+diff --git a/toolbox/game-journey/game-journey.js b/assets/toolbox/game-journey/js/index.js
+similarity index 99%
+rename from toolbox/game-journey/game-journey.js
+rename to assets/toolbox/game-journey/js/index.js
+index c2b2f876c..0ebc4f2ca 100644
+--- a/toolbox/game-journey/game-journey.js
++++ b/assets/toolbox/game-journey/js/index.js
+@@ -6,11 +6,11 @@ import {
+   GAME_JOURNEY_SUGGESTED_TOOLS,
+   createGameJourneyApiRepository,
+   readGameJourneyCompletionMetrics,
+-} from "./game-journey-api-client.js";
++} from "../../../../toolbox/game-journey/game-journey-api-client.js";
+ import {
+   getActiveToolRegistry,
+   getToolRegistryApiDiagnostic,
+-} from "../tool-registry-api-client.js";
++} from "../../../../toolbox/tool-registry-api-client.js";
+
+ const repository = createGameJourneyApiRepository();
+ const registryDiagnostic = getToolRegistryApiDiagnostic();
+diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_034-game-journey-safe-entrypoint-migration.md b/docs_build/dev/reports/PR_26172_CHARLIE_034-game-journey-safe-entrypoint-migration.md
 new file mode 100644
-index 000000000..5ca46e8ab
+index 000000000..c03cd09f5
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_CHARLIE_033-game-journey-canonical-js-migration-audit.md
-@@ -0,0 +1,110 @@
-+# PR_26172_CHARLIE_033-game-journey-canonical-js-migration-audit
++++ b/docs_build/dev/reports/PR_26172_CHARLIE_034-game-journey-safe-entrypoint-migration.md
+@@ -0,0 +1,98 @@
++# PR_26172_CHARLIE_034-game-journey-safe-entrypoint-migration
 +
 +## Summary
 +
 +Status: PASS.
 +
-+This audit reviewed Game Journey for canonical JS migration readiness without implementation changes.
++The Game Journey browser entrypoint was moved from the active legacy toolbox path to the canonical tool asset path:
++
++- From: `toolbox/game-journey/game-journey.js`
++- To: `assets/toolbox/game-journey/js/index.js`
++
++The Game Journey API client was retained for PR_035 review.
 +
 +## Files Reviewed
 +
 +- `docs_build/dev/ProjectInstructions/README.txt`
 +- `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
-+- `docs_build/dev/reports/PR_26172_CHARLIE_006A-game-journey-validation-failure-investigation.md`
++- `docs_build/dev/reports/PR_26172_CHARLIE_033-game-journey-canonical-js-migration-audit.md`
 +- `toolbox/game-journey/index.html`
 +- `toolbox/game-journey/game-journey.js`
 +- `toolbox/game-journey/game-journey-api-client.js`
 +- `tests/playwright/tools/GameJourneyTool.spec.mjs`
 +- `scripts/validate-canonical-repository-structure.mjs`
-+- `src/dev-runtime/server/local-api-router.mjs`
-+- `src/api/game-journey-completion-api-client.js`
 +
-+## Current Active JS Entrypoints
++## Files Changed
 +
-+| Current path | Role | Current status | Target path |
-+| --- | --- | --- | --- |
-+| `toolbox/game-journey/game-journey.js` | Browser entrypoint | Active legacy JS | `assets/toolbox/game-journey/js/index.js` |
-+| `toolbox/game-journey/game-journey-api-client.js` | Tool API client and completion metrics re-export | Active legacy JS | Temporary exception unless guardrail/shared-client placement is approved |
-+
-+## HTML Script References
-+
++- `assets/toolbox/game-journey/js/index.js`
 +- `toolbox/game-journey/index.html`
-+  - Current: `toolbox/game-journey/game-journey.js`
-+  - Proposed PR_034 value: `assets/toolbox/game-journey/js/index.js`
++- `scripts/validate-canonical-repository-structure.mjs`
++- `tests/playwright/tools/GameJourneyTool.spec.mjs`
++- `docs_build/dev/reports/PR_26172_CHARLIE_034-game-journey-safe-entrypoint-migration.md`
++- `docs_build/dev/reports/codex_review.diff`
++- `docs_build/dev/reports/codex_changed_files.txt`
 +
-+## API Client References
++## Migration Notes
 +
-+- `toolbox/game-journey/game-journey.js` imports:
-+  - `./game-journey-api-client.js`
-+  - `../tool-registry-api-client.js`
-+- After moving the entrypoint, imports should become:
-+  - `../../../../toolbox/game-journey/game-journey-api-client.js`
-+  - `../../../../toolbox/tool-registry-api-client.js`
++- Updated the Game Journey page module script to load `assets/toolbox/game-journey/js/index.js`.
++- Updated the moved module imports to continue using:
++  - `toolbox/game-journey/game-journey-api-client.js`
++  - `toolbox/tool-registry-api-client.js`
++- Removed `toolbox/game-journey/game-journey.js` from the approved legacy JS exception list.
++- Updated the Game Journey source separation test to read the canonical entrypoint path.
 +
-+## Completion Metrics Risk
++## Retained Exception
 +
-+PR_26172_CHARLIE_006A determined that `/api/game-journey/completion-metrics` can return HTTP 500 when local legacy SQLite preservation protection is triggered by:
++- `toolbox/game-journey/game-journey-api-client.js`
++  - Reason: reviewed separately in PR_035.
++  - Risk: the canonical guardrail currently approves the tool `index.js` entrypoint path but does not approve additional tool JS files under the same folder.
 +
-+- `tmp/local-api/game-journey-completion-metrics.sqlite`
-+
-+That behavior is intentional and prevents silent data loss. It is not caused by prior Charlie JS/CSS migrations. PR_034 validation must document this separately if it appears and must not misattribute the known HTTP 500 to the entrypoint move without direct evidence.
-+
-+## Migration Decision
-+
-+### `game-journey.js`
-+
-+Decision: safe to migrate in PR_034 with targeted import and HTML updates.
-+
-+Reason:
-+
-+- It is a single browser entrypoint.
-+- It is referenced directly by the Game Journey page.
-+- It can keep existing behavior by importing the retained API client and tool registry client through adjusted relative paths.
-+- No CSS move is required.
-+
-+### `game-journey-api-client.js`
-+
-+Decision: do not move in PR_034. Review in PR_035.
-+
-+Reason:
-+
-+- The canonical guardrail currently approves the tool entrypoint path `assets/toolbox/{tool}/js/index.js`.
-+- Adding a second JS file under `assets/toolbox/game-journey/js/` would require either guardrail expansion or a folded/shared-client migration.
-+- The API client re-exports completion metrics helpers, so it should not be moved in the same PR as the entrypoint unless validation proves it is safe.
-+
-+## Validation Plan for PR_034
++## Validation Lane Report
 +
 +- `node --check assets/toolbox/game-journey/js/index.js`
++  - Result: PASS
 +- `git diff --check`
++  - Result: PASS
 +- `npm run validate:canonical-structure`
++  - Result: PASS
++  - Blocking violations: 0
++  - Approved legacy exceptions: 481
 +- Active stale reference check for `toolbox/game-journey/game-journey.js`
-+- Targeted Game Journey Playwright validation, with any known completion-metrics legacy SQLite HTTP 500 documented separately.
++  - Result: PASS
++  - Only historical `docs_build/pr` references remain.
++- Targeted Game Journey Playwright validation:
++  - Command: `npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs --grep "Game Journey summary table uses inline notes" --workers=1 --reporter=line --timeout=90000`
++  - Result: PASS
++
++## Completion Metrics Note
++
++The targeted Playwright route test uses the existing Postgres completion-metrics stub and passed. The known local legacy SQLite preservation failure documented in PR_26172_CHARLIE_006A did not appear in this validation lane.
 +
 +## Branch Validation
 +
@@ -95,22 +104,60 @@ index 000000000..5ca46e8ab
 +
 +## Requirement Checklist
 +
-+- Review `game-journey.js`: PASS
-+- Review `game-journey-api-client.js`: PASS
-+- Review `index.html`: PASS
-+- Review Game Journey tests: PASS
-+- Review Local API completion metrics route: PASS
-+- Review prior PR_006A findings: PASS
-+- Determine whether `game-journey.js` can safely move: PASS
-+- Determine whether API client should move, remain, or become shared: PASS
-+- Define validation that avoids confusing known SQLite preservation behavior with migration failure: PASS
-+- No implementation changes: PASS
-+- ZIP artifact exists: PASS after artifact creation.
++- Use PR_033 audit: PASS
++- Move only `game-journey.js` to canonical path: PASS
++- Update `toolbox/game-journey/index.html`: PASS
++- Update tests/references for old path: PASS
++- Preserve behavior: PASS
++- Do not move API client unless PR_033 proves safe: PASS, retained.
++- No feature changes: PASS
++- Run targeted Game Journey validation: PASS
++- Run canonical structure guardrail: PASS
++- Document known SQLite preservation blocker separately if encountered: PASS, not encountered.
++- Confirm ZIP exists: PASS after artifact creation.
 +
 +## Manual Validation Notes
 +
-+The next safe implementation step is a focused entrypoint move only. The API client should remain an exception until PR_035 because the guardrail does not currently allow a second canonical tool JS file.
++The entrypoint migration is isolated and validated. The retained API client should be resolved in PR_035 without changing completion-metrics behavior.
 +
 +## Recommendation
 +
-+Continue to PR_034 and migrate only `game-journey.js` to `assets/toolbox/game-journey/js/index.js`.
++Continue to PR_035 and keep `toolbox/game-journey/game-journey-api-client.js` as an exception unless a safe guardrail-compliant placement is available.
+diff --git a/scripts/validate-canonical-repository-structure.mjs b/scripts/validate-canonical-repository-structure.mjs
+index 62ef269c2..ef3cfd8db 100644
+--- a/scripts/validate-canonical-repository-structure.mjs
++++ b/scripts/validate-canonical-repository-structure.mjs
+@@ -12,7 +12,6 @@ export const APPROVED_LEGACY_JS_PATHS = Object.freeze(new Set([
+   "toolbox/game-hub/game-hub-api-client.js",
+   "toolbox/game-hub/game-hub.js",
+   "toolbox/game-journey/game-journey-api-client.js",
+-  "toolbox/game-journey/game-journey.js",
+   "toolbox/messages/message-tts-service-registry.js",
+   "toolbox/messages/messages-api-client.js",
+   "toolbox/messages/messages.js",
+diff --git a/tests/playwright/tools/GameJourneyTool.spec.mjs b/tests/playwright/tools/GameJourneyTool.spec.mjs
+index 390d1cc89..4d8f05378 100644
+--- a/tests/playwright/tools/GameJourneyTool.spec.mjs
++++ b/tests/playwright/tools/GameJourneyTool.spec.mjs
+@@ -1531,7 +1531,7 @@ test("Toolbox registration exposes Game Journey navigation", async ({ page }) =>
+ test("Game Journey source stays separate from notes files and browser persistence", async () => {
+   const sourcePaths = [
+     "toolbox/game-journey/index.html",
+-    "toolbox/game-journey/game-journey.js",
++    "assets/toolbox/game-journey/js/index.js",
+     "src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js"
+   ];
+   const banned = [
+diff --git a/toolbox/game-journey/index.html b/toolbox/game-journey/index.html
+index aa1a408aa..2965e2b19 100644
+--- a/toolbox/game-journey/index.html
++++ b/toolbox/game-journey/index.html
+@@ -195,7 +195,7 @@
+     <div data-partial="footer"></div>
+     <script src="assets/theme-v2/js/gamefoundry-partials.js"></script>
+     <script src="assets/theme-v2/js/tool-display-mode.js"></script>
+-    <script type="module" src="toolbox/game-journey/game-journey.js"></script>
++    <script type="module" src="assets/toolbox/game-journey/js/index.js"></script>
+ </body>
+
+ </html>

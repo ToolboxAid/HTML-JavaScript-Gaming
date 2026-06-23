@@ -6,11 +6,11 @@ import {
   GAME_JOURNEY_SUGGESTED_TOOLS,
   createGameJourneyApiRepository,
   readGameJourneyCompletionMetrics,
-} from "./game-journey-api-client.js";
+} from "../../../../toolbox/game-journey/game-journey-api-client.js";
 import {
   getActiveToolRegistry,
   getToolRegistryApiDiagnostic,
-} from "../tool-registry-api-client.js";
+} from "../../../../toolbox/tool-registry-api-client.js";
 
 const repository = createGameJourneyApiRepository();
 const registryDiagnostic = getToolRegistryApiDiagnostic();
