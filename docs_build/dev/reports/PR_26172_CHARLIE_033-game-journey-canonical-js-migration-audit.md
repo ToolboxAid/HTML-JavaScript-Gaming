@@ -1,0 +1,110 @@
+# PR_26172_CHARLIE_033-game-journey-canonical-js-migration-audit
+
+## Summary
+
+Status: PASS.
+
+This audit reviewed Game Journey for canonical JS migration readiness without implementation changes.
+
+## Files Reviewed
+
+- `docs_build/dev/ProjectInstructions/README.txt`
+- `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
+- `docs_build/dev/reports/PR_26172_CHARLIE_006A-game-journey-validation-failure-investigation.md`
+- `toolbox/game-journey/index.html`
+- `toolbox/game-journey/game-journey.js`
+- `toolbox/game-journey/game-journey-api-client.js`
+- `tests/playwright/tools/GameJourneyTool.spec.mjs`
+- `scripts/validate-canonical-repository-structure.mjs`
+- `src/dev-runtime/server/local-api-router.mjs`
+- `src/api/game-journey-completion-api-client.js`
+
+## Current Active JS Entrypoints
+
+| Current path | Role | Current status | Target path |
+| --- | --- | --- | --- |
+| `toolbox/game-journey/game-journey.js` | Browser entrypoint | Active legacy JS | `assets/toolbox/game-journey/js/index.js` |
+| `toolbox/game-journey/game-journey-api-client.js` | Tool API client and completion metrics re-export | Active legacy JS | Temporary exception unless guardrail/shared-client placement is approved |
+
+## HTML Script References
+
+- `toolbox/game-journey/index.html`
+  - Current: `toolbox/game-journey/game-journey.js`
+  - Proposed PR_034 value: `assets/toolbox/game-journey/js/index.js`
+
+## API Client References
+
+- `toolbox/game-journey/game-journey.js` imports:
+  - `./game-journey-api-client.js`
+  - `../tool-registry-api-client.js`
+- After moving the entrypoint, imports should become:
+  - `../../../../toolbox/game-journey/game-journey-api-client.js`
+  - `../../../../toolbox/tool-registry-api-client.js`
+
+## Completion Metrics Risk
+
+PR_26172_CHARLIE_006A determined that `/api/game-journey/completion-metrics` can return HTTP 500 when local legacy SQLite preservation protection is triggered by:
+
+- `tmp/local-api/game-journey-completion-metrics.sqlite`
+
+That behavior is intentional and prevents silent data loss. It is not caused by prior Charlie JS/CSS migrations. PR_034 validation must document this separately if it appears and must not misattribute the known HTTP 500 to the entrypoint move without direct evidence.
+
+## Migration Decision
+
+### `game-journey.js`
+
+Decision: safe to migrate in PR_034 with targeted import and HTML updates.
+
+Reason:
+
+- It is a single browser entrypoint.
+- It is referenced directly by the Game Journey page.
+- It can keep existing behavior by importing the retained API client and tool registry client through adjusted relative paths.
+- No CSS move is required.
+
+### `game-journey-api-client.js`
+
+Decision: do not move in PR_034. Review in PR_035.
+
+Reason:
+
+- The canonical guardrail currently approves the tool entrypoint path `assets/toolbox/{tool}/js/index.js`.
+- Adding a second JS file under `assets/toolbox/game-journey/js/` would require either guardrail expansion or a folded/shared-client migration.
+- The API client re-exports completion metrics helpers, so it should not be moved in the same PR as the entrypoint unless validation proves it is safe.
+
+## Validation Plan for PR_034
+
+- `node --check assets/toolbox/game-journey/js/index.js`
+- `git diff --check`
+- `npm run validate:canonical-structure`
+- Active stale reference check for `toolbox/game-journey/game-journey.js`
+- Targeted Game Journey Playwright validation, with any known completion-metrics legacy SQLite HTTP 500 documented separately.
+
+## Branch Validation
+
+- Current branch: `PR_26172_CHARLIE_repository-compliance-stack`
+- Expected branch: `PR_26172_CHARLIE_repository-compliance-stack`
+- Local/origin sync before PR: `0 0`
+- Branch validation: PASS
+
+## Requirement Checklist
+
+- Review `game-journey.js`: PASS
+- Review `game-journey-api-client.js`: PASS
+- Review `index.html`: PASS
+- Review Game Journey tests: PASS
+- Review Local API completion metrics route: PASS
+- Review prior PR_006A findings: PASS
+- Determine whether `game-journey.js` can safely move: PASS
+- Determine whether API client should move, remain, or become shared: PASS
+- Define validation that avoids confusing known SQLite preservation behavior with migration failure: PASS
+- No implementation changes: PASS
+- ZIP artifact exists: PASS after artifact creation.
+
+## Manual Validation Notes
+
+The next safe implementation step is a focused entrypoint move only. The API client should remain an exception until PR_035 because the guardrail does not currently allow a second canonical tool JS file.
+
+## Recommendation
+
+Continue to PR_034 and migrate only `game-journey.js` to `assets/toolbox/game-journey/js/index.js`.

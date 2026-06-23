@@ -28,6 +28,7 @@
     "validate:database-drift": "node ./scripts/validate-database-drift.mjs",
     "validate:runtime-connections": "node --use-system-ca ./scripts/validate-runtime-connections.mjs",
     "validate:browser-env-agnostic": "node ./scripts/validate-browser-env-agnostic.mjs",
+    "validate:canonical-structure": "node ./scripts/validate-canonical-repository-structure.mjs",
     "apply:database-ddl": "node ./scripts/apply-database-ddl.mjs",
     "apply:database-dml": "node ./scripts/apply-database-dml.mjs",
     "seed:database-dev": "node --use-system-ca ./scripts/apply-database-seed.mjs",

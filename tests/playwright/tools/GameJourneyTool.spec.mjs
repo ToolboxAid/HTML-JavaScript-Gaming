@@ -1531,7 +1531,7 @@ test("Toolbox registration exposes Game Journey navigation", async ({ page }) =>
 test("Game Journey source stays separate from notes files and browser persistence", async () => {
   const sourcePaths = [
     "toolbox/game-journey/index.html",
-    "toolbox/game-journey/game-journey.js",
+    "assets/toolbox/game-journey/js/index.js",
     "src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js"
   ];
   const banned = [

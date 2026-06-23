@@ -1,0 +1,107 @@
+# PR_26172_CHARLIE_005 Scattered Tool JS/CSS Audit
+
+## Scope
+
+Audit `toolbox/` and `assets/` for non-canonical tool JavaScript and CSS locations against the canonical repository structure.
+
+Canonical tool asset targets:
+
+- `assets/toolbox/{tool}/js/index.js`
+- `assets/toolbox/{tool}/css/index.css`
+
+This PR is audit-only. No implementation files were moved.
+
+## Summary
+
+| Finding | Count | Status |
+| --- | ---: | --- |
+| Toolbox HTML pages reviewed | 50 | PASS |
+| Tool JS files under `toolbox/` | 27 | FAIL |
+| Tool CSS files under `toolbox/` | 0 | PASS |
+| Canonical tool JS files under `assets/toolbox/` | 0 | FAIL |
+| Canonical tool CSS files under `assets/toolbox/` | 0 | N/A |
+| Non-canonical tool JS/CSS under `assets/toolbox/` | 0 | PASS |
+| Inline `<style>`, inline `<script>`, inline event handlers, or inline `style=` in toolbox HTML | 0 | PASS |
+
+## Non-Canonical Tool JS
+
+These active JavaScript files are not under the canonical `assets/toolbox/{tool}/js/index.js` structure:
+
+| Tool/Area | Files |
+| --- | --- |
+| Shared toolbox root | `toolbox/tool-registry-api-client.js`; `toolbox/toolRegistry.js`; `toolbox/tools-page-accordions.js` |
+| Assets | `toolbox/assets/assets-api-client.js`; `toolbox/assets/assets-upload-worker.js`; `toolbox/assets/assets.js` |
+| Colors | `toolbox/colors/colors.js`; `toolbox/colors/palette-api-client.js` |
+| Controls | `toolbox/controls/controls-api-client.js`; `toolbox/controls/controls.js` |
+| Game Configuration | `toolbox/game-configuration/game-configuration-api-client.js`; `toolbox/game-configuration/game-configuration.js` |
+| Game Design | `toolbox/game-design/game-design-api-client.js`; `toolbox/game-design/game-design.js` |
+| Game Hub | `toolbox/game-hub/game-hub-api-client.js`; `toolbox/game-hub/game-hub.js` |
+| Game Journey | `toolbox/game-journey/game-journey-api-client.js`; `toolbox/game-journey/game-journey.js` |
+| Idea Board | `toolbox/idea-board/index.js` |
+| Messages | `toolbox/messages/message-tts-service-registry.js`; `toolbox/messages/messages-api-client.js`; `toolbox/messages/messages.js` |
+| Objects | `toolbox/objects/objects-api-client.js`; `toolbox/objects/objects.js` |
+| Tags | `toolbox/tags/tags-api-client.js`; `toolbox/tags/tags.js` |
+| Text To Speech | `toolbox/text-to-speech/text2speech.js` |
+
+## Non-Canonical Tool CSS
+
+No tool-specific CSS files were found under `toolbox/`.
+
+No CSS files were found under `assets/toolbox/`.
+
+## Toolbox HTML Reference Findings
+
+These pages reference local non-canonical tool scripts:
+
+- `toolbox/assets/index.html` -> `toolbox/assets/assets.js`
+- `toolbox/colors/index.html` -> `toolbox/colors/colors.js`
+- `toolbox/controls/index.html` -> `toolbox/controls/controls.js`
+- `toolbox/game-configuration/index.html` -> `toolbox/game-configuration/game-configuration.js`
+- `toolbox/game-design/index.html` -> `toolbox/game-design/game-design.js`
+- `toolbox/game-hub/index.html` -> `toolbox/game-hub/game-hub.js`
+- `toolbox/game-journey/index.html` -> `toolbox/game-journey/game-journey.js`
+- `toolbox/idea-board/index.html` -> `toolbox/idea-board/index.js`
+- `toolbox/index.html` -> `tools-page-accordions.js`
+- `toolbox/messages/index.html` -> `toolbox/messages/messages.js`
+- `toolbox/objects/index.html` -> `toolbox/objects/objects.js`
+- `toolbox/tags/index.html` -> `toolbox/tags/tags.js`
+- `toolbox/text-to-speech/index.html` -> `toolbox/text-to-speech/text2speech.js`
+
+## Inline Script/Style Findings
+
+No toolbox HTML matches were found for:
+
+- `<style`
+- `<script` without `src=`
+- inline event handler attributes such as `onclick=`
+- inline `style=`
+
+## Prioritized Remediation List
+
+1. Start with a single-file, single-tool migration: `toolbox/idea-board/index.js` -> `assets/toolbox/idea-board/js/index.js`.
+2. Next migrate single-entry tools that have one main JS plus one API client: Tags, Controls, Colors, Objects, Game Configuration, Game Design, Game Hub, and Game Journey.
+3. Migrate complex tools with workers or multiple collaborators after explicit dependency review: Assets and Messages.
+4. Migrate `toolbox/text-to-speech/text2speech.js` after deciding whether the canonical file should be renamed to `index.js` only or retain a bridge.
+5. Move shared toolbox root modules into `assets/js/shared/` or an approved shared toolbox module path before changing page-level imports.
+
+## Recommended Next PRs
+
+- `PR_26172_CHARLIE_006-low-risk-tool-asset-migration`
+- `PR_26172_CHARLIE_012-toolbox-single-entry-asset-migrations`
+- `PR_26172_CHARLIE_013-toolbox-complex-asset-migration-plan`
+- `PR_26172_CHARLIE_014-shared-toolbox-root-js-migration-plan`
+
+## Validation
+
+| Check | Status | Evidence |
+| --- | --- | --- |
+| Audit includes prioritized remediation list | PASS | See "Prioritized Remediation List". |
+| Runtime source unchanged | PASS | This PR adds reports only. |
+| ZIP exists | PASS | `tmp/PR_26172_CHARLIE_005-scattered-tool-js-css-audit_delta.zip` exists. |
+| Implementation files moved | PASS | None moved. |
+
+## Manual Validation Notes
+
+- `assets/toolbox/` does not currently exist, so PR_006 will create the first canonical tool asset path if a low-risk candidate is selected.
+- No tool CSS migration is needed in the first low-risk pass because no tool-specific CSS files were found under `toolbox/`.
+- The audit treats page references to `toolbox/.../*.js` as non-canonical sidecar references, not inline-script violations.

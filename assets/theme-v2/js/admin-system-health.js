@@ -2,8 +2,12 @@ import {
     readAdminSystemHealthStatus,
     runAdminSystemHealthStorageConnectivityAction,
 } from "../../../src/api/admin-system-health-api-client.js";
+import {
+    applyStatusNode,
+    normalizeStatusValue,
+    statusText,
+} from "../../js/shared/status.js";
 
-const STATUS_VALUES = Object.freeze(["PASS", "WARN", "FAIL", "PENDING", "INFO", "SKIP"]);
 const STORAGE_DIAGNOSTIC_ACTIONS = Object.freeze([
     Object.freeze({ actionId: "storage-list", key: "list" }),
     Object.freeze({ actionId: "storage-write-test-object", key: "write" }),
@@ -12,18 +16,7 @@ const STORAGE_DIAGNOSTIC_ACTIONS = Object.freeze([
 ]);
 
 function asText(value, fallback = "not available") {
-    const text = String(value ?? "").trim();
-    return text || fallback;
-}
-
-function statusValue(value, fallback = "PENDING") {
-    const normalized = String(value || "").trim().toUpperCase();
-    return STATUS_VALUES.includes(normalized) ? normalized : fallback;
-}
-
-function reasonText(status, reason) {
-    const message = asText(reason, "Safe server diagnostics did not provide a reason.");
-    return `${status}: ${message}`;
+    return statusText(value, fallback);
 }
 
 class AdminSystemHealthController {
@@ -80,20 +73,7 @@ class AdminSystemHealthController {
     }
 
     setStatusNode(node, status, reason = "") {
-        if (!node) {
-            return;
-        }
-        const normalized = statusValue(status);
-        node.textContent = normalized;
-        node.dataset.healthStatus = normalized;
-        if (normalized === "PASS" && !reason) {
-            node.removeAttribute("title");
-            node.removeAttribute("aria-label");
-            return;
-        }
-        const resolvedReason = reasonText(normalized, reason);
-        node.setAttribute("title", `Reason: ${asText(reason, "Safe server diagnostics returned this non-PASS status.")}`);
-        node.setAttribute("aria-label", resolvedReason);
+        applyStatusNode(node, status, { reason });
     }
 
     renderPending(reason) {
@@ -176,7 +156,7 @@ class AdminSystemHealthController {
 
     createStatusCell(status, reason) {
         const cell = document.createElement("td");
-        cell.dataset.healthStatus = statusValue(status);
+        cell.dataset.healthStatus = normalizeStatusValue(status);
         this.setStatusNode(cell, status, reason);
         return cell;
     }

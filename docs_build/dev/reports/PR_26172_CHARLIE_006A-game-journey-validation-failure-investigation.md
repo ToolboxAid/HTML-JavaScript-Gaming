@@ -1,0 +1,127 @@
+# PR_26172_CHARLIE_006A Game Journey Validation Failure Investigation
+
+## Purpose
+
+Investigate the targeted Playwright validation failure from `PR_26172_CHARLIE_006-low-risk-tool-asset-migration`, where `/api/game-journey/completion-metrics` returned HTTP 500 during Idea Board validation.
+
+## Root Cause
+
+The failure is caused by an existing local legacy SQLite data file:
+
+`tmp/local-api/game-journey-completion-metrics.sqlite`
+
+`src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs` intentionally checks for that file before initializing the Postgres-backed completion metrics store. When the file exists, the store throws a data-preservation error instead of silently ignoring, overwriting, or migrating the legacy SQLite data.
+
+The Local API route `/api/game-journey/completion-metrics` calls the Game Journey completion metrics snapshot. That call reaches the guarded store initialization and returns HTTP 500 when the legacy SQLite file is present.
+
+## Did PR_006 Cause The Failure?
+
+No.
+
+`PR_26172_CHARLIE_006-low-risk-tool-asset-migration` changed only the Idea Board asset path, the Idea Board HTML script reference, the targeted Playwright script assertion, and report artifacts. It did not modify:
+
+- `src/dev-runtime/server/local-api-router.mjs`
+- `src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs`
+- Game Journey route behavior
+- Local API routing behavior
+- Postgres or SQLite persistence logic
+
+The PR_006 Playwright output also shows the targeted Idea Board script assertion reached the updated canonical path before the unrelated Game Journey completion metrics request failed.
+
+## Files Reviewed
+
+| File | Reason |
+| --- | --- |
+| `docs_build/dev/ProjectInstructions/README.txt` | Project Instructions startup and preservation rules. |
+| `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md` | Active Project Instructions index and OWNER governance. |
+| `project-instructions/addendums/codex-artifact-and-reporting-standard.md` | Required ZIP and reporting rules. |
+| `docs_build/dev/reports/PR_26172_CHARLIE_006-low-risk-tool-asset-migration.md` | Prior validation failure report. |
+| `tmp/test-results/charlie-pr006-idea-board/**/error-context.md` | Prior Playwright HTTP 500 evidence. |
+| `tmp/test-results/charlie-pr006-idea-board-direct/**/error-context.md` | Prior Playwright HTTP 500 and visible error text evidence. |
+| `src/dev-runtime/server/local-api-router.mjs` | Local API route handling for `/api/game-journey/completion-metrics`. |
+| `src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs` | Legacy SQLite guard and Postgres metrics initialization. |
+| `src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js` | Game Journey repository dependency on the metrics store. |
+| `assets/toolbox/idea-board/js/index.js` | PR_006 moved script syntax validation. |
+| `toolbox/idea-board/index.html` | PR_006 canonical script reference. |
+| `tests/playwright/tools/ToolboxRoutePages.spec.mjs` | PR_006 targeted assertion reference. |
+
+## Files Changed
+
+| File | Change |
+| --- | --- |
+| `docs_build/dev/reports/PR_26172_CHARLIE_006A-game-journey-validation-failure-investigation.md` | Added investigation report. |
+| `docs_build/dev/reports/codex_review.diff` | Refreshed Codex review diff. |
+| `docs_build/dev/reports/codex_changed_files.txt` | Refreshed changed-file list. |
+
+No executable implementation files were changed.
+
+## Validation Commands
+
+| Command | Status | Result |
+| --- | --- | --- |
+| `git branch --show-current` | PASS | Current branch is `PR_26172_CHARLIE_repository-compliance-stack`. |
+| `git status --short` | PASS | Worktree was clean before investigation edits. |
+| `git rev-list --left-right --count origin/PR_26172_CHARLIE_repository-compliance-stack...HEAD` | PASS | Local/origin sync was `0 0` before investigation edits. |
+| `Get-ChildItem -Force tmp/local-api` | PASS | Confirmed `game-journey-completion-metrics.sqlite` exists locally. |
+| `node --check assets/toolbox/idea-board/js/index.js` | PASS | PR_006 moved Idea Board script remains syntactically valid. |
+| `rg -n "toolbox/idea-board/index\\.js\|idea-board/index\\.js" toolbox assets tests src scripts package.json -g "!docs_build/**"` | PASS | No active old Idea Board script path references found. |
+| `rg -n "assets/toolbox/idea-board/js/index\\.js" toolbox assets tests` | PASS | Canonical Idea Board script path is referenced by HTML and targeted Playwright assertion. |
+| Direct `createGameJourneyCompletionMetricsStore(...).snapshot()` invocation | FAIL | Reproduced the data-preservation error caused by the local legacy SQLite file. |
+
+Direct failure text:
+
+```text
+Legacy Game Journey completion metrics SQLite data exists at C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\tmp\local-api\game-journey-completion-metrics.sqlite. No data was removed or overwritten. Export or migrate that data into Postgres, then move the legacy file before using the Postgres metrics store.
+```
+
+## Validation Result
+
+Status: FAIL.
+
+The failing path was investigated and reproduced. The HTTP 500 was not fixed because the root cause is an intentional data-preservation guard around local legacy SQLite data. Removing, moving, exporting, or migrating that local data is outside this Charlie asset-migration scope and could drop or hide data without owner-approved handling.
+
+## Branch Validation
+
+| Check | Status | Evidence |
+| --- | --- | --- |
+| Expected branch | PASS | `PR_26172_CHARLIE_repository-compliance-stack`. |
+| Worktree clean before edits | PASS | `git status --short` produced no output. |
+| Local/origin synced before edits | PASS | `0 0`. |
+| No merge to main | PASS | No merge was performed. |
+| PR_007, PR_008, PR_009 not started | PASS | No subsequent stack scopes were edited. |
+
+## Requirement Checklist
+
+| Requirement | Status | Evidence |
+| --- | --- | --- |
+| Review Project Instructions | PASS | Reviewed ProjectInstructions root files and artifact standard. |
+| Review PR_006 validation report and Playwright output | PASS | Reviewed PR_006 report and error contexts under `tmp/test-results/charlie-pr006-*`. |
+| Review Local API route handling | PASS | Reviewed `/api/game-journey/completion-metrics` handling in `local-api-router.mjs`. |
+| Review Idea Board migration impact | PASS | PR_006 touched only Idea Board asset path, HTML script reference, targeted assertion, and reports. |
+| Determine whether PR_006 caused the failure | PASS | Determined PR_006 did not cause the failure. |
+| Fix only if root cause is clear and within Charlie scope | PASS | Root cause is clear but outside safe Charlie scope, so no runtime fix was made. |
+| Do not start PR_007, PR_008, or PR_009 | PASS | Later stack items were not started. |
+| Do not add unrelated migrations/shared JS/guardrail work | PASS | No unrelated work was added. |
+| Do not merge to main | PASS | No merge was performed. |
+| Create required report | PASS | This report was created. |
+| Create required Codex reports | PASS | `codex_review.diff` and `codex_changed_files.txt` were refreshed. |
+| Create ZIP artifact | PASS | `tmp/PR_26172_CHARLIE_006A-game-journey-validation-failure-investigation_delta.zip` generated for this stop-gate investigation. |
+
+## Manual Validation Notes
+
+- The failing Playwright path is blocked by local legacy SQLite data, not by the Idea Board script relocation.
+- The Postgres metrics store explicitly refuses to continue while the legacy SQLite file exists.
+- This behavior protects data and should not be bypassed by a Charlie asset-migration PR.
+- The stack should remain stopped before PR_007, PR_008, and PR_009.
+
+## Recommendation
+
+STOP the Charlie stack.
+
+Do not continue PR_007, PR_008, or PR_009 until the owner approves one of these paths:
+
+1. Export or migrate `tmp/local-api/game-journey-completion-metrics.sqlite` into Postgres, then retire the local legacy file.
+2. Move the local legacy file out of the guarded path after confirming the data is no longer needed.
+3. Create a separately scoped Game Journey validation/recovery PR owned by the appropriate team.
+
+After the data-preservation blocker is resolved, rerun the PR_006 targeted Playwright validations before continuing the stack.

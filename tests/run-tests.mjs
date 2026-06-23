@@ -7,13 +7,13 @@ run-tests.mjs
 import { run as runAIBehaviors } from './ai/AIBehaviors.test.mjs';
 import { run as runAssetLoaderSystem } from './assets/AssetLoaderSystem.test.mjs';
 import { run as runConfigStore } from './config/ConfigStore.test.mjs';
-import { run as runFixedTicker } from './core/FixedTicker.test.mjs';
+import { run as runFixedTicker } from './engine/core/FixedTicker.test.mjs';
 import { run as runBackgroundImageAndFullscreenBezel } from './core/BackgroundImageAndFullscreenBezel.test.mjs';
 import { run as runEngineFullscreen } from './core/EngineFullscreen.test.mjs';
 import { run as runEngineSceneLifecycle } from './core/EngineSceneLifecycle.test.mjs';
 import { run as runEngineTiming } from './core/EngineTiming.test.mjs';
-import { run as runFrameClock } from './core/FrameClock.test.mjs';
-import { run as runRuntimeMetrics } from './core/RuntimeMetrics.test.mjs';
+import { run as runFrameClock } from './engine/core/FrameClock.test.mjs';
+import { run as runRuntimeMetrics } from './engine/core/RuntimeMetrics.test.mjs';
 import { run as runParticleSystem } from './fx/ParticleSystem.test.mjs';
 import { run as runAudioService } from './audio/AudioService.test.mjs';
 import { run as runFinalSystems } from './final/FinalSystems.test.mjs';

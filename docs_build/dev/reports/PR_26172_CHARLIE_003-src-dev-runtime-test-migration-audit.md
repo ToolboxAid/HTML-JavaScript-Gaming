@@ -1,0 +1,94 @@
+# PR_26172_CHARLIE_003 Src Dev-Runtime Test Migration Audit
+
+## Scope
+
+Audit `src/dev-runtime/` for test files that should move into canonical test paths.
+
+Canonical test targets reviewed:
+
+- `tests/server/`
+- `tests/api/`
+- `tests/engine/`
+- `tests/toolbox/`
+
+This PR is audit-only. No files were moved and no runtime source was modified.
+
+## Branch Validation
+
+| Requirement | Status | Evidence |
+| --- | --- | --- |
+| Started from latest main | PASS | Workstream branch was created from `main` at `b97893c78dcfed05d5b0de0c7d03127ec5575292`. |
+| Worktree clean before branch | PASS | `git status --short` returned no output before branch creation. |
+| Local/origin sync before branch | PASS | `git rev-list --left-right --count HEAD...origin/main` returned `0 0`. |
+| Active branch | PASS | `PR_26172_CHARLIE_repository-compliance-stack`. |
+| Team ownership | PASS | Team Charlie owns governance, infrastructure, operations, diagnostics, and system health. |
+
+## Files Reviewed
+
+`src/dev-runtime/` currently contains runtime, server, persistence, admin, storage, seed, auth, and dev utility modules.
+
+Test-pattern scans found:
+
+- `rg --files src/dev-runtime -g "*.test.*" -g "*.spec.*" -g "*Test*" -g "*Spec*"`: no matches.
+- `rg -n "node:test|describe\\(|it\\(|test\\(|assert\\." src/dev-runtime -g "*.js" -g "*.mjs" -g "*.cjs"`: no test harness matches.
+
+The `src/dev-runtime/testing/` directory was reviewed specifically:
+
+- `src/dev-runtime/testing/supabase-dev-auth-test-user-cleanup.mjs`
+- `src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs`
+
+These are DEV-only utility/runtime support modules, not test files. They are imported by scripts and covered by tests under `tests/dev-runtime/`.
+
+## Matching Canonical Target Paths
+
+No direct file moves are recommended because no test files live under `src/dev-runtime/`.
+
+Existing coverage already lives in active test locations:
+
+| Runtime utility | Existing coverage | Canonical target recommendation |
+| --- | --- | --- |
+| `src/dev-runtime/testing/supabase-dev-auth-test-user-cleanup.mjs` | `tests/dev-runtime/SupabaseDevAuthTestUserCleanup.test.mjs` | Future test-structure migration should move coverage to `tests/server/dev-runtime/SupabaseDevAuthTestUserCleanup.test.mjs` or an owner-approved equivalent under `tests/server/`. |
+| `src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs` | `tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs` | Future test-structure migration should move coverage to `tests/server/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs` or an owner-approved equivalent under `tests/server/`. |
+
+## Next Migration PRs
+
+Exact next PR recommendations:
+
+1. `PR_26172_CHARLIE_004-src-dev-runtime-low-risk-test-move`
+   - Expected result: STOP GATE unless new low-risk `src/dev-runtime` test files appear before execution.
+   - Reason: this audit found no movable tests under `src/dev-runtime/`.
+2. `PR_26172_CHARLIE_010-dev-runtime-test-structure-plan`
+   - Scope: define the owner-approved canonical destination for existing `tests/dev-runtime/` coverage.
+   - Reason: the broader test-standardization issue is under `tests/dev-runtime/`, not under `src/dev-runtime/`.
+3. `PR_26172_CHARLIE_011-dev-runtime-server-test-folder-migration`
+   - Scope: move clear server/dev-runtime tests from `tests/dev-runtime/` into `tests/server/dev-runtime/` after the canonical destination is approved.
+
+## Requirement Checklist
+
+| Requirement | Status | Evidence |
+| --- | --- | --- |
+| Review and use ProjectInstructions | PASS | Read active ProjectInstructions, branch governance, team ownership, and artifact/reporting rules. |
+| Review `src/dev-runtime/` | PASS | Scoped file and content scans completed. |
+| Identify test files under `src/dev-runtime/` | PASS | No test files found. |
+| Identify matching canonical target paths | PASS | No direct move targets; future coverage targets documented for existing `tests/dev-runtime/` files. |
+| Do not move files | PASS | No files moved. |
+| Do not modify runtime source | PASS | Runtime source unchanged. |
+| Confirm no executable runtime source changed | PASS | Changed files are reports only for this PR. |
+| Audit lists exact next migration PRs | PASS | See "Next Migration PRs". |
+| ZIP exists | PASS | `tmp/PR_26172_CHARLIE_003-src-dev-runtime-test-migration-audit_delta.zip` exists. |
+
+## Validation Lane Report
+
+- No executable runtime source changed: PASS.
+- Audit lists exact next migration PRs: PASS.
+- `git diff --check`: PASS.
+- Required reports exist: PASS.
+- ZIP artifact exists: PASS.
+- Playwright: SKIP, audit-only scope.
+- Samples: SKIP, audit-only scope.
+
+## Manual Validation Notes
+
+- The word `testing` in `src/dev-runtime/testing/` is directory naming for DEV-only utility modules, not evidence of colocated test source.
+- Existing active tests for those utilities are already outside `src/dev-runtime/`, under `tests/dev-runtime/`.
+- PR_004 should stop-gate if no new low-risk source-path test files are present when it runs.
