@@ -1,186 +1,189 @@
-diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_021-repository-compliance-reaudit-2.md b/docs_build/dev/reports/PR_26172_CHARLIE_021-repository-compliance-reaudit-2.md
+diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_022-target-tool-migration-audit.md b/docs_build/dev/reports/PR_26172_CHARLIE_022-target-tool-migration-audit.md
 new file mode 100644
-index 000000000..76b2b4b16
+index 000000000..77cb50a7f
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_CHARLIE_021-repository-compliance-reaudit-2.md
-@@ -0,0 +1,180 @@
-+# PR_26172_CHARLIE_021-repository-compliance-reaudit-2
++++ b/docs_build/dev/reports/PR_26172_CHARLIE_022-target-tool-migration-audit.md
+@@ -0,0 +1,183 @@
++# PR_26172_CHARLIE_022-target-tool-migration-audit
 +
 +## Summary
 +
 +Status: PASS
 +
-+This reaudit measured repository structure compliance after PR018, PR019, and PR020 migrated Game Configuration, Colors, and Game Design into canonical tool JS locations.
++This audit reviewed only the requested target tools for canonical JS/CSS migration readiness.
 +
-+Guardrail result:
++Recommended implementation path:
 +
-+- Blocking violations: 0
-+- Approved legacy exceptions: 486
-+- Inline script/style/event-handler findings in active toolbox HTML: 0
++1. PR_26172_CHARLIE_023 - Migrate Objects.
++2. PR_26172_CHARLIE_024 - Stop gate if no additional SAFE migration remains.
++3. PR_26172_CHARLIE_026 - Stop gate if no remaining SAFE migration remains.
++4. PR_26172_CHARLIE_027 - Reaudit target tools and document remaining NEEDS CARE / STOP items.
 +
-+Charlie stack status: safe for Owner review with documented runtime validation blockers unrelated to canonical path migration.
++No implementation files were changed in PR022.
 +
-+## Compliance Result By Area
++## Target Tool Audit
 +
-+| Area | Result | Notes |
++| Requested Tool | Actual Folder | Current JS | Current CSS | Inline Issues | Test Coverage Found | Rank |
++| --- | --- | --- | --- | --- | --- | --- |
++| Audio | `toolbox/audio/` | none | none | 0 | Broad audio/toolbox references | SAFE - no migration needed |
++| Audio Effects | `toolbox/audio-effects/` | none | none | 0 | none direct | SAFE - no migration needed |
++| Fonts | `toolbox/fonts/` | none | none | 0 | limited route/asset references | SAFE - no migration needed |
++| Characters | `toolbox/characters/` | none | none | 0 | limited asset references | SAFE - no migration needed |
++| Objects | `toolbox/objects/` | `objects.js`, `objects-api-client.js` | none | 0 | `tests/playwright/tools/ObjectsTool.spec.mjs` | SAFE - migrate first |
++| Worlds | `toolbox/worlds/` | none | none | 0 | route/asset references | SAFE - no migration needed |
++| Controls | `toolbox/controls/` | `controls.js`, `controls-api-client.js` | none | 0 | `InputMappingV2Tool`, admin metadata, route tests | NEEDS CARE |
++| Events | `toolbox/events/` | none | none | 0 | mostly engine/runtime event tests | SAFE - no migration needed |
++| Sprites | `toolbox/sprites/` | none | none | 0 | Objects/asset tests reference sprites | SAFE - no migration needed |
++| Vector Art | `toolbox/assets/` | `assets.js`, `assets-api-client.js`, `assets-upload-worker.js` | none | 0 | `AssetToolMockRepository.spec.mjs` | STOP / owner review |
++| MIDI Studio | `toolbox/midi/` | none | none | 0 | contract/fixture references | SAFE - no migration needed |
++| Asset Browser | `toolbox/assets/` | `assets.js`, `assets-api-client.js`, `assets-upload-worker.js` | none | 0 | `AssetToolMockRepository.spec.mjs` | STOP / owner review |
++| State Inspector | `toolbox/saved-data/` | none | none | 0 | route/tool baseline references | SAFE - no migration needed |
++| Game Journey | `toolbox/game-journey/` | `game-journey.js`, `game-journey-api-client.js` | none | 0 | `GameJourneyTool.spec.mjs` | STOP / owner review |
++
++## SAFE Migration Candidate
++
++### Objects
++
++Reason:
++
++- Only two legacy JS files.
++- No tool CSS sidecar.
++- No inline script/style/event issues.
++- Direct Playwright coverage exists.
++- The HTML page imports only `toolbox/objects/objects.js`.
++- The API client wrapper is only an active tool-side product-data wrapper and can be folded into the canonical module like prior low-risk migrations.
++
++Canonical target:
++
++- `assets/toolbox/objects/js/index.js`
++
++Expected direct updates:
++
++- `toolbox/objects/index.html`
++- `scripts/validate-canonical-repository-structure.mjs`
++- `scripts/validate-browser-env-agnostic.mjs`
++- `tests/dev-runtime/ProductDataProviderContractHardening.test.mjs`
++- `tests/playwright/tools/ObjectsTool.spec.mjs` if it references the legacy JS path directly
++
++## NEEDS CARE
++
++### Controls
++
++Reason:
++
++- `toolbox/controls/controls-api-client.js` is referenced outside the tool by account/input-mapping related surfaces.
++- A simple wrapper fold-in could make non-tool imports execute page DOM code if they import a canonical page module.
++- Requires a scoped design for shared API-only exports or a temporary migration bridge before the legacy path can be removed.
++
++Recommended next PR:
++
++- `PR_26172_CHARLIE_controls-api-wrapper-migration-plan`
++
++## STOP / Owner Review
++
++### Vector Art / Asset Browser
++
++Actual folder:
++
++- `toolbox/assets/`
++
++Reason:
++
++- The active tool has three JS files, including `assets-upload-worker.js`.
++- Worker canonical placement needs explicit owner-approved convention before migration.
++- Asset Browser and Vector Art both map to the same active folder, so ownership/scope should be clarified before changes.
++
++Recommended next PR:
++
++- Owner decision for worker canonical path and whether Vector Art and Asset Browser are one migration or separate scopes.
++
++### Game Journey
++
++Reason:
++
++- Known pre-existing `/api/game-journey/completion-metrics` validation blocker.
++- Prior Charlie reports documented legacy SQLite preservation protection as the failure cause.
++- Game Journey has likely Alfa ownership overlap because it is core journey/progression workflow.
++
++Recommended next PR:
++
++- Resolve or owner-accept the Game Journey completion metrics blocker before canonical migration.
++
++## No Migration Needed In This Queue
++
++These target tools have no active tool-specific JS or CSS sidecars under their toolbox folder:
++
++- Audio
++- Audio Effects
++- Fonts
++- Characters
++- Worlds
++- Events
++- Sprites
++- MIDI Studio
++- State Inspector (`toolbox/saved-data/`)
++
++No canonical JS/CSS file should be created for these tools in this queue because that would add new executable code without a behavior requirement.
++
++## Inline Issue Findings
++
++All requested target tool HTML pages were reviewed for inline script blocks, inline style blocks/attributes, and inline event handlers.
++
++Result:
++
++- Inline `<script>` blocks: 0
++- Inline `<style>` blocks or `style=` attributes: 0
++- Inline event handlers: 0
++
++## Ranking
++
++| Rank | Tool | Classification | Reason |
++| ---: | --- | --- | --- |
++| 1 | Objects | SAFE | Smallest real migration candidate with direct tests and no CSS/inline issues. |
++| 2 | Controls | NEEDS CARE | Shared API wrapper references outside the tool require a migration design. |
++| 3 | Asset Browser / Vector Art | STOP | Worker handling and duplicate target mapping need owner review. |
++| 4 | Game Journey | STOP | Known runtime blocker and ownership overlap. |
++| 5 | No-JS target tools | SAFE - no migration needed | Already have no non-canonical JS/CSS sidecars. |
++
++## Branch Validation
++
++| Check | Result | Evidence |
 +| --- | --- | --- |
-+| PR_034 Canonical Repository Structure | PASS | No unapproved JS, CSS, or test structure violations. Remaining items are approved legacy exceptions. |
-+| PR_035 Test Structure Standardization | PASS with legacy backlog | 465 approved legacy test paths remain. No `tests/results/` tracked generated artifacts were reported by the guardrail. |
-+| PR_036 Legacy Migration Policy | PASS | Legacy paths remain explicitly classified. No archive/history rewrite occurred. |
-+| PR_008 Canonical Structure Guardrail | PASS | `npm run validate:canonical-structure` passed. |
-+| PR_009 Guardrail Preflight Wiring | PASS | Canonical guardrail is available through npm script and was used for this reaudit. |
-+| Inline script/style review | PASS | 50 active toolbox HTML pages scanned; no inline script, inline style, or inline event handler findings. |
-+
-+## Remaining Approved Legacy JS Paths
-+
-+Count: 18
-+
-+- `src/engine/paletteList.js`
-+- `toolbox/assets/assets-api-client.js`
-+- `toolbox/assets/assets-upload-worker.js`
-+- `toolbox/assets/assets.js`
-+- `toolbox/controls/controls-api-client.js`
-+- `toolbox/controls/controls.js`
-+- `toolbox/game-hub/game-hub-api-client.js`
-+- `toolbox/game-hub/game-hub.js`
-+- `toolbox/game-journey/game-journey-api-client.js`
-+- `toolbox/game-journey/game-journey.js`
-+- `toolbox/messages/message-tts-service-registry.js`
-+- `toolbox/messages/messages-api-client.js`
-+- `toolbox/messages/messages.js`
-+- `toolbox/objects/objects-api-client.js`
-+- `toolbox/objects/objects.js`
-+- `toolbox/tool-registry-api-client.js`
-+- `toolbox/toolRegistry.js`
-+- `toolbox/tools-page-accordions.js`
-+
-+## Remaining Approved Legacy CSS Paths
-+
-+Count: 3
-+
-+- `src/engine/ui/baseLayout.css`
-+- `src/engine/ui/hubCommon.css`
-+- `src/engine/ui/spriteEditor.css`
-+
-+## Remaining Approved Legacy Test Paths
-+
-+Count: 465
-+
-+Legacy test paths remain approved by segment. They should be remediated in smaller follow-up PRs after owner prioritization.
-+
-+| Segment | Count |
-+| --- | ---: |
-+| `ai` | 1 |
-+| `assets` | 1 |
-+| `audio` | 1 |
-+| `combat` | 1 |
-+| `config` | 1 |
-+| `core` | 8 |
-+| `dev-runtime` | 31 |
-+| `entity` | 1 |
-+| `events` | 2 |
-+| `final` | 11 |
-+| `fixtures` | 52 |
-+| `fx` | 1 |
-+| `games` | 35 |
-+| `helpers` | 11 |
-+| `index.html` | 1 |
-+| `input` | 8 |
-+| `persistence` | 1 |
-+| `playwright` | 44 |
-+| `playwright_installation.txt` | 1 |
-+| `production` | 3 |
-+| `README.md` | 1 |
-+| `render` | 1 |
-+| `replay` | 2 |
-+| `run-tests.mjs` | 1 |
-+| `runtime` | 81 |
-+| `samples` | 1 |
-+| `scenes` | 3 |
-+| `schemas` | 1 |
-+| `shared` | 92 |
-+| `testRunner.html` | 1 |
-+| `testRunner.js` | 1 |
-+| `tools` | 57 |
-+| `validation` | 3 |
-+| `vector` | 1 |
-+| `world` | 4 |
-+
-+## Inline Issue Reaudit
-+
-+| Scan | Result |
-+| --- | --- |
-+| Active toolbox HTML files scanned | 50 |
-+| Inline `<script>` blocks | 0 |
-+| Inline `<style>` blocks or `style=` attributes | 0 |
-+| Inline event handlers | 0 |
-+
-+## Progress Since PR016
-+
-+Approved legacy JS exceptions reduced from 492 to 486.
-+
-+Canonical migrations completed in this queue:
-+
-+- Game Configuration: `assets/toolbox/game-configuration/js/index.js`
-+- Colors: `assets/toolbox/colors/js/index.js`
-+- Game Design: `assets/toolbox/game-design/js/index.js`
-+
-+## Updated Remediation Backlog
-+
-+Recommended next Charlie PRs:
-+
-+1. Objects canonical JS migration
-+2. Controls canonical JS migration
-+3. Assets canonical JS migration, including worker handling
-+4. Game Hub/root toolbox script migration plan
-+5. Engine UI CSS placement decision for `src/engine/ui/*.css`
-+6. Test structure migration plan for approved legacy test segments
-+
-+Deferred pending ownership or runtime blocker resolution:
-+
-+- Game Journey canonical migration: defer until completion metrics validation blocker is resolved or owner explicitly approves migration with blocker documentation.
-+- Messages canonical migration: coordinate with Bravo ownership before changing active Messages tool files.
-+
-+## Validation Lane Report
-+
-+Commands:
-+
-+- `git status --short`
-+- `git rev-list --left-right --count origin/PR_26172_CHARLIE_repository-compliance-stack...HEAD`
-+- `npm run validate:canonical-structure`
-+- Detailed guardrail inventory through `auditCanonicalRepositoryStructure(collectRepositoryFiles())`
-+- Active toolbox inline script/style/event-handler scan
-+- `git diff --check`
-+
-+Results:
-+
-+- Branch clean before PR021 edits: PASS
-+- Local/origin sync before PR021 edits: PASS, `0 0`
-+- Canonical guardrail: PASS
-+- Blocking violations: 0
-+- Approved legacy exceptions: 486
-+- Inline scan: PASS
++| Current branch | PASS | `PR_26172_CHARLIE_repository-compliance-stack` |
++| Worktree clean before edits | PASS | No tracked changes before report creation. |
++| Local/origin sync | PASS | `0 0` before report creation. |
++| Stack remains unmerged | PASS | No merge performed. |
++| Returned to main avoided | PASS | Work remained on Charlie stack branch. |
 +
 +## Requirement Checklist
 +
 +| Requirement | Result | Notes |
 +| --- | --- | --- |
-+| Verify PR_034 compliance | PASS | No blocking canonical structure violations. |
-+| Verify PR_035 compliance | PASS with legacy backlog | Remaining test paths are approved legacy exceptions. |
-+| Verify PR_036 compliance | PASS | Legacy backlog remains classified; no archive rewrite. |
-+| Verify PR_008 guardrail | PASS | Guardrail passed. |
-+| Verify PR_009 guardrail preflight wiring | PASS | npm guardrail script used. |
-+| Report PASS/FAIL by repository area | PASS | See compliance table. |
-+| Report remaining non-compliant JS paths | PASS | 18 approved legacy JS paths listed. |
-+| Report remaining non-compliant CSS paths | PASS | 3 approved legacy CSS paths listed. |
-+| Report remaining non-compliant test paths | PASS | 465 approved legacy paths summarized by segment. |
-+| Update remediation backlog | PASS | Next PR recommendations listed. |
-+| State whether Charlie stack is safe for Owner review | PASS | Safe for Owner review with runtime blockers documented. |
-+| Confirm stack remains unmerged | PASS | No merge performed. |
++| Identify actual folder names | PASS | Target mapping table included. |
++| Identify current JS/CSS locations | PASS | Target mapping table included. |
++| Identify inline issues | PASS | No inline issues found. |
++| Identify tests per tool | PASS | Coverage summarized in mapping table. |
++| Rank each tool | PASS | SAFE, NEEDS CARE, and STOP classifications included. |
++| No implementation changes | PASS | Audit-only PR. |
++| ZIP artifact produced | PASS | `tmp/PR_26172_CHARLIE_022-target-tool-migration-audit_delta.zip`. |
++
++## Validation Lane Report
++
++Commands:
++
++- `git branch --show-current`
++- `git status --short`
++- `git rev-list --left-right --count origin/PR_26172_CHARLIE_repository-compliance-stack...HEAD`
++- Targeted `rg` inventory for requested toolbox folders, references, tests, and inline patterns
++- `git diff --check`
++
++Result: PASS
++
++No Playwright or samples were run because this PR is audit-only.
 +
 +## Manual Validation Notes
 +
-+- No runtime source files were changed in PR021.
-+- The stack remains on `PR_26172_CHARLIE_repository-compliance-stack`.
-+- Targeted runtime Playwright lanes for PR018-PR020 exposed existing Local API/persistence blockers, especially legacy Game Journey completion metrics SQLite protection. Those failures should be handled outside canonical structure migration.
-+- The canonical path migrations themselves are complete for the three selected tools.
++- Continue to PR023 with Objects only.
++- Do not migrate Controls in this queue without first addressing the shared API wrapper import shape.
++- Do not migrate Assets/Asset Browser/Vector Art until owner approves worker canonical placement.
++- Do not migrate Game Journey until the known completion-metrics blocker is resolved or owner accepts it for that scope.

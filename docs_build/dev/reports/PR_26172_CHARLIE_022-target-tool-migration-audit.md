@@ -1,0 +1,183 @@
+# PR_26172_CHARLIE_022-target-tool-migration-audit
+
+## Summary
+
+Status: PASS
+
+This audit reviewed only the requested target tools for canonical JS/CSS migration readiness.
+
+Recommended implementation path:
+
+1. PR_26172_CHARLIE_023 - Migrate Objects.
+2. PR_26172_CHARLIE_024 - Stop gate if no additional SAFE migration remains.
+3. PR_26172_CHARLIE_026 - Stop gate if no remaining SAFE migration remains.
+4. PR_26172_CHARLIE_027 - Reaudit target tools and document remaining NEEDS CARE / STOP items.
+
+No implementation files were changed in PR022.
+
+## Target Tool Audit
+
+| Requested Tool | Actual Folder | Current JS | Current CSS | Inline Issues | Test Coverage Found | Rank |
+| --- | --- | --- | --- | --- | --- | --- |
+| Audio | `toolbox/audio/` | none | none | 0 | Broad audio/toolbox references | SAFE - no migration needed |
+| Audio Effects | `toolbox/audio-effects/` | none | none | 0 | none direct | SAFE - no migration needed |
+| Fonts | `toolbox/fonts/` | none | none | 0 | limited route/asset references | SAFE - no migration needed |
+| Characters | `toolbox/characters/` | none | none | 0 | limited asset references | SAFE - no migration needed |
+| Objects | `toolbox/objects/` | `objects.js`, `objects-api-client.js` | none | 0 | `tests/playwright/tools/ObjectsTool.spec.mjs` | SAFE - migrate first |
+| Worlds | `toolbox/worlds/` | none | none | 0 | route/asset references | SAFE - no migration needed |
+| Controls | `toolbox/controls/` | `controls.js`, `controls-api-client.js` | none | 0 | `InputMappingV2Tool`, admin metadata, route tests | NEEDS CARE |
+| Events | `toolbox/events/` | none | none | 0 | mostly engine/runtime event tests | SAFE - no migration needed |
+| Sprites | `toolbox/sprites/` | none | none | 0 | Objects/asset tests reference sprites | SAFE - no migration needed |
+| Vector Art | `toolbox/assets/` | `assets.js`, `assets-api-client.js`, `assets-upload-worker.js` | none | 0 | `AssetToolMockRepository.spec.mjs` | STOP / owner review |
+| MIDI Studio | `toolbox/midi/` | none | none | 0 | contract/fixture references | SAFE - no migration needed |
+| Asset Browser | `toolbox/assets/` | `assets.js`, `assets-api-client.js`, `assets-upload-worker.js` | none | 0 | `AssetToolMockRepository.spec.mjs` | STOP / owner review |
+| State Inspector | `toolbox/saved-data/` | none | none | 0 | route/tool baseline references | SAFE - no migration needed |
+| Game Journey | `toolbox/game-journey/` | `game-journey.js`, `game-journey-api-client.js` | none | 0 | `GameJourneyTool.spec.mjs` | STOP / owner review |
+
+## SAFE Migration Candidate
+
+### Objects
+
+Reason:
+
+- Only two legacy JS files.
+- No tool CSS sidecar.
+- No inline script/style/event issues.
+- Direct Playwright coverage exists.
+- The HTML page imports only `toolbox/objects/objects.js`.
+- The API client wrapper is only an active tool-side product-data wrapper and can be folded into the canonical module like prior low-risk migrations.
+
+Canonical target:
+
+- `assets/toolbox/objects/js/index.js`
+
+Expected direct updates:
+
+- `toolbox/objects/index.html`
+- `scripts/validate-canonical-repository-structure.mjs`
+- `scripts/validate-browser-env-agnostic.mjs`
+- `tests/dev-runtime/ProductDataProviderContractHardening.test.mjs`
+- `tests/playwright/tools/ObjectsTool.spec.mjs` if it references the legacy JS path directly
+
+## NEEDS CARE
+
+### Controls
+
+Reason:
+
+- `toolbox/controls/controls-api-client.js` is referenced outside the tool by account/input-mapping related surfaces.
+- A simple wrapper fold-in could make non-tool imports execute page DOM code if they import a canonical page module.
+- Requires a scoped design for shared API-only exports or a temporary migration bridge before the legacy path can be removed.
+
+Recommended next PR:
+
+- `PR_26172_CHARLIE_controls-api-wrapper-migration-plan`
+
+## STOP / Owner Review
+
+### Vector Art / Asset Browser
+
+Actual folder:
+
+- `toolbox/assets/`
+
+Reason:
+
+- The active tool has three JS files, including `assets-upload-worker.js`.
+- Worker canonical placement needs explicit owner-approved convention before migration.
+- Asset Browser and Vector Art both map to the same active folder, so ownership/scope should be clarified before changes.
+
+Recommended next PR:
+
+- Owner decision for worker canonical path and whether Vector Art and Asset Browser are one migration or separate scopes.
+
+### Game Journey
+
+Reason:
+
+- Known pre-existing `/api/game-journey/completion-metrics` validation blocker.
+- Prior Charlie reports documented legacy SQLite preservation protection as the failure cause.
+- Game Journey has likely Alfa ownership overlap because it is core journey/progression workflow.
+
+Recommended next PR:
+
+- Resolve or owner-accept the Game Journey completion metrics blocker before canonical migration.
+
+## No Migration Needed In This Queue
+
+These target tools have no active tool-specific JS or CSS sidecars under their toolbox folder:
+
+- Audio
+- Audio Effects
+- Fonts
+- Characters
+- Worlds
+- Events
+- Sprites
+- MIDI Studio
+- State Inspector (`toolbox/saved-data/`)
+
+No canonical JS/CSS file should be created for these tools in this queue because that would add new executable code without a behavior requirement.
+
+## Inline Issue Findings
+
+All requested target tool HTML pages were reviewed for inline script blocks, inline style blocks/attributes, and inline event handlers.
+
+Result:
+
+- Inline `<script>` blocks: 0
+- Inline `<style>` blocks or `style=` attributes: 0
+- Inline event handlers: 0
+
+## Ranking
+
+| Rank | Tool | Classification | Reason |
+| ---: | --- | --- | --- |
+| 1 | Objects | SAFE | Smallest real migration candidate with direct tests and no CSS/inline issues. |
+| 2 | Controls | NEEDS CARE | Shared API wrapper references outside the tool require a migration design. |
+| 3 | Asset Browser / Vector Art | STOP | Worker handling and duplicate target mapping need owner review. |
+| 4 | Game Journey | STOP | Known runtime blocker and ownership overlap. |
+| 5 | No-JS target tools | SAFE - no migration needed | Already have no non-canonical JS/CSS sidecars. |
+
+## Branch Validation
+
+| Check | Result | Evidence |
+| --- | --- | --- |
+| Current branch | PASS | `PR_26172_CHARLIE_repository-compliance-stack` |
+| Worktree clean before edits | PASS | No tracked changes before report creation. |
+| Local/origin sync | PASS | `0 0` before report creation. |
+| Stack remains unmerged | PASS | No merge performed. |
+| Returned to main avoided | PASS | Work remained on Charlie stack branch. |
+
+## Requirement Checklist
+
+| Requirement | Result | Notes |
+| --- | --- | --- |
+| Identify actual folder names | PASS | Target mapping table included. |
+| Identify current JS/CSS locations | PASS | Target mapping table included. |
+| Identify inline issues | PASS | No inline issues found. |
+| Identify tests per tool | PASS | Coverage summarized in mapping table. |
+| Rank each tool | PASS | SAFE, NEEDS CARE, and STOP classifications included. |
+| No implementation changes | PASS | Audit-only PR. |
+| ZIP artifact produced | PASS | `tmp/PR_26172_CHARLIE_022-target-tool-migration-audit_delta.zip`. |
+
+## Validation Lane Report
+
+Commands:
+
+- `git branch --show-current`
+- `git status --short`
+- `git rev-list --left-right --count origin/PR_26172_CHARLIE_repository-compliance-stack...HEAD`
+- Targeted `rg` inventory for requested toolbox folders, references, tests, and inline patterns
+- `git diff --check`
+
+Result: PASS
+
+No Playwright or samples were run because this PR is audit-only.
+
+## Manual Validation Notes
+
+- Continue to PR023 with Objects only.
+- Do not migrate Controls in this queue without first addressing the shared API wrapper import shape.
+- Do not migrate Assets/Asset Browser/Vector Art until owner approves worker canonical placement.
+- Do not migrate Game Journey until the known completion-metrics blocker is resolved or owner accepts it for that scope.
