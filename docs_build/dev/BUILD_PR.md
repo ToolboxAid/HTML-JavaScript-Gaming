@@ -1,59 +1,63 @@
-# PR_26175_ALFA_006-game-hub-create-project-validation
+# PR_26175_ALFA_008-game-hub-feature-matrix
 
 ## Purpose
-Add creator-facing validation for the Game Hub create-project row so blank game names do not silently create fallback projects.
+Audit the current Game Hub workflow and publish a feature matrix that maps implemented creator-facing behavior to code and Playwright evidence.
 
 ## Source Of Truth
-This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_006-game-hub-create-project-validation`.
+This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_008-game-hub-feature-matrix`.
 
 ## Exact Scope
-- Validate the Game Hub add-game row before calling the repository create method.
-- Block signed-in creator saves when the game name is blank or whitespace-only.
-- Keep the add-game row open after validation failure.
-- Show a creator-safe validation message in the existing Game Hub status log.
-- Mark the game name input invalid for accessibility.
-- Preserve valid create/open/delete behavior.
-- Preserve guest save redirect behavior.
+- Produce a Game Hub feature matrix only.
+- Audit Game Hub table workflow, selected/open game behavior, create/edit/delete actions, child tables, guest save gating, empty/error states, Theme V2 layout, and targeted Game Hub coverage.
+- Use current `main` behavior as evidence.
+- Preserve Game Hub UI/product behavior.
 - Preserve API/service/repository contracts.
-- Add targeted Playwright coverage for the create validation path.
+- Preserve previous ALFA Game Hub cleanup and create-validation behavior.
+- Do not implement product/UI changes unless validation exposes a requirement-critical defect.
 
 ## Exact Targets
 - `docs_build/dev/BUILD_PR.md`
-- `toolbox/game-hub/game-hub.js`
-- `tests/playwright/tools/GameHubMockRepository.spec.mjs`
-- `docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_report.md`
-- `docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_validation-lane.md`
-- `docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_requirements-checklist.md`
+- `docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_report.md`
+- `docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_validation-lane.md`
+- `docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_requirements-checklist.md`
 - `docs_build/dev/reports/codex_review.diff`
 - `docs_build/dev/reports/codex_changed_files.txt`
 
+## Evidence Sources
+- `toolbox/game-hub/index.html`
+- `toolbox/project-workspace/index.html`
+- `toolbox/game-hub/game-hub.js`
+- `toolbox/game-hub/game-hub-api-client.js`
+- `src/dev-runtime/persistence/tool-repositories/game-workspace-mock-repository.js`
+- `tests/playwright/tools/GameHubMockRepository.spec.mjs`
+
 ## Out Of Scope
-- No repository/API/service contract changes.
-- No Game Journey completion-metrics changes.
+- No Game Hub product or UI changes.
+- No Game Journey changes.
 - No shared toolbox status bar changes.
-- No unrelated Game Hub workflow changes.
 - No browser-owned product data as source of truth.
-- No silent create-name fallback in the Game Hub page flow.
+- No API/service/repository contract changes.
 - No inline styles, style blocks, or page-local CSS.
 - No engine core changes.
 - No `start_of_day` folder changes.
+- No ALFA_007 work.
 
 ## Validation
-Run targeted create-project validation:
+Run targeted Game Hub validation:
 
 ```powershell
-npx playwright test tests/playwright/tools/GameHubMockRepository.spec.mjs --workers=1 --grep "Game Hub creates, opens, and deletes mock games"
+npx playwright test tests/playwright/tools/GameHubMockRepository.spec.mjs --workers=1
 ```
 
-Also verify changed source does not introduce inline styles or style blocks:
+Also verify changed docs/reports do not introduce inline styles or style blocks:
 
 ```powershell
-rg -n "<[s]tyle|[s]tyle=" toolbox/game-hub/game-hub.js tests/playwright/tools/GameHubMockRepository.spec.mjs docs_build/dev/BUILD_PR.md docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_report.md docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_validation-lane.md docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_requirements-checklist.md
+rg -n "<[s]tyle|[s]tyle=" docs_build/dev/BUILD_PR.md docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_report.md docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_validation-lane.md docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_requirements-checklist.md
 ```
 
 ## Artifact
 Create repo-structured delta ZIP:
 
 ```text
-tmp/PR_26175_ALFA_006-game-hub-create-project-validation_delta.zip
+tmp/PR_26175_ALFA_008-game-hub-feature-matrix_delta.zip
 ```
