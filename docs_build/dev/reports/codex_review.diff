@@ -1,301 +1,784 @@
 diff --git a/assets/theme-v2/css/tables.css b/assets/theme-v2/css/tables.css
-index c39ef19f0..5e0d7cf18 100644
+index 5e0d7cf18..b4c74d66c 100644
 --- a/assets/theme-v2/css/tables.css
 +++ b/assets/theme-v2/css/tables.css
-@@ -115,6 +115,15 @@ td {
+@@ -115,12 +115,11 @@ td {
    cursor: pointer
  }
  
-+.data-table [data-game-row][data-game-active="true"] {
-+  background: color-mix(in srgb, var(--gold) 14%, var(--panel))
-+}
-+
-+.data-table [data-game-row][data-game-active="true"] > th,
-+.data-table [data-game-row][data-game-active="true"] > td {
-+  border-bottom-color: var(--gold-border-muted)
-+}
-+
- .idea-board-idea-label {
-   display: inline-flex;
-   align-items: center;
+-.data-table [data-game-row][data-game-active="true"] {
++.data-table [data-game-active-cell="true"] {
+   background: color-mix(in srgb, var(--gold) 14%, var(--panel))
+ }
+ 
+-.data-table [data-game-row][data-game-active="true"] > th,
+-.data-table [data-game-row][data-game-active="true"] > td {
++.data-table [data-game-active-cell="true"] {
+   border-bottom-color: var(--gold-border-muted)
+ }
+ 
 diff --git a/tests/playwright/tools/GameHubMockRepository.spec.mjs b/tests/playwright/tools/GameHubMockRepository.spec.mjs
-index c4bceb838..cf21ba090 100644
+index cf21ba090..88a06e1cc 100644
 --- a/tests/playwright/tools/GameHubMockRepository.spec.mjs
 +++ b/tests/playwright/tools/GameHubMockRepository.spec.mjs
-@@ -249,10 +249,12 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
+@@ -249,8 +249,11 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
    try {
      await expect(page.locator(".tool-workspace")).toBeVisible();
      await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
--    await expect(page.getByRole("button", { name: "Create Game" })).toHaveClass("btn");
--    await expect(page.getByRole("button", { name: "Create Game" })).toBeEnabled();
-+    await expect(page.getByRole("button", { name: "Add" })).toHaveClass("btn");
-+    await expect(page.getByRole("button", { name: "Add" })).toBeEnabled();
+-    await expect(page.getByRole("button", { name: "Add" })).toHaveClass("btn");
+-    await expect(page.getByRole("button", { name: "Add" })).toBeEnabled();
++    await expect(page.getByRole("button", { name: "Add Game" })).toHaveClass("btn");
++    await expect(page.getByRole("button", { name: "Add Game" })).toBeEnabled();
++    await expect(page.getByLabel("Game Name")).toHaveCount(0);
++    await expect(page.getByLabel("Game Purpose")).toHaveCount(0);
++    await expect(page.getByLabel("Game Status")).toHaveCount(0);
      await expect(page.getByRole("button", { name: "Delete Open Game" })).toHaveClass("btn");
      await expect(page.getByRole("button", { name: "Delete Open Game" })).toBeEnabled();
-+    await expect(page.locator("summary").filter({ hasText: /^Game Setup$/ })).toHaveCount(0);
-+    await expect(page.getByRole("link", { name: "Open Game Journey" })).toHaveCount(0);
-     await expect(page.locator("[data-project-record-status]")).toHaveText("Game table loaded.");
-     await expect(page.locator("[data-game-project-information]")).toHaveCount(0);
-     await expect(page.locator("[data-project-records-table]")).toHaveCount(0);
-@@ -281,11 +283,17 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
-     ]);
-     await expect(page.locator("[data-game-rows-table='true'] thead")).not.toContainText(/Role|Next Tool/);
-     const demoGameRow = page.locator("[data-game-row='demo-game']");
--    await expect(demoGameRow.locator("td")).toHaveText(["Game", "Under Construction", "User 1", "Open Demo Game (Active)"]);
-+    await expect(demoGameRow.locator("td")).toHaveText(["Game", "Under Construction", "User 1", "Edit"]);
-+    await expect(demoGameRow).toHaveAttribute("data-game-active", "true");
-+    await expect(demoGameRow).toHaveAttribute("aria-current", "true");
-+    const activeRowBackground = await demoGameRow.evaluate((row) => getComputedStyle(row).backgroundColor);
-+    expect(activeRowBackground).not.toBe("rgba(0, 0, 0, 0)");
-+    expect(activeRowBackground).not.toBe("transparent");
+     await expect(page.locator("summary").filter({ hasText: /^Game Setup$/ })).toHaveCount(0);
+@@ -286,14 +289,17 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
+     await expect(demoGameRow.locator("td")).toHaveText(["Game", "Under Construction", "User 1", "Edit"]);
+     await expect(demoGameRow).toHaveAttribute("data-game-active", "true");
+     await expect(demoGameRow).toHaveAttribute("aria-current", "true");
+-    const activeRowBackground = await demoGameRow.evaluate((row) => getComputedStyle(row).backgroundColor);
+-    expect(activeRowBackground).not.toBe("rgba(0, 0, 0, 0)");
+-    expect(activeRowBackground).not.toBe("transparent");
++    await expect(demoGameRow.locator("th[data-game-active-cell='true']")).toContainText("Demo Game");
++    const activeCellBackground = await demoGameRow.locator("th[data-game-active-cell='true']").evaluate((cell) => getComputedStyle(cell).backgroundColor);
++    expect(activeCellBackground).not.toBe("rgba(0, 0, 0, 0)");
++    expect(activeCellBackground).not.toBe("transparent");
      await expect(demoGameRow.locator("> .status")).toHaveCount(0);
      await expect(demoGameRow.locator("[data-game-toggle='demo-game']")).toHaveAttribute("aria-expanded", "false");
--    await expect(demoGameRow.getByRole("button", { name: "Open Demo Game (Active)" })).toHaveClass(/primary/);
--    await expect(demoGameRow.getByRole("button", { name: "Open Demo Game (Active)" })).toHaveAttribute("aria-current", "true");
-+    await expect(demoGameRow.getByRole("button", { name: "Edit Demo Game" })).toHaveText("Edit");
-+    await expect(demoGameRow.getByRole("button", { name: "Edit Demo Game" })).toHaveClass(/primary/);
-+    await expect(demoGameRow.getByRole("button", { name: "Edit Demo Game" })).toHaveAttribute("aria-current", "true");
++    await expect(demoGameRow.locator("[data-game-toggle='demo-game']")).toHaveClass(/primary/);
++    await expect(demoGameRow.locator("[data-game-toggle='demo-game']")).toHaveAttribute("aria-current", "true");
+     await expect(demoGameRow.getByRole("button", { name: "Edit Demo Game" })).toHaveText("Edit");
+-    await expect(demoGameRow.getByRole("button", { name: "Edit Demo Game" })).toHaveClass(/primary/);
+-    await expect(demoGameRow.getByRole("button", { name: "Edit Demo Game" })).toHaveAttribute("aria-current", "true");
++    await expect(demoGameRow.getByRole("button", { name: "Edit Demo Game" })).not.toHaveClass(/primary/);
++    await expect(demoGameRow.getByRole("button", { name: "Edit Demo Game" })).not.toHaveAttribute("aria-current", "true");
      await demoGameRow.locator("[data-game-toggle='demo-game']").click();
      await expect(demoGameRow.locator("[data-game-toggle='demo-game']")).toHaveAttribute("aria-expanded", "true");
      const demoChildRows = page.locator("[data-game-expanded-row='demo-game']");
-@@ -313,18 +321,21 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
+@@ -320,22 +326,49 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
+     await demoGameRow.locator("[data-game-toggle='demo-game']").click();
      await expect(page.locator("[data-game-expanded-row='demo-game']")).toHaveCount(0);
  
-     await page.getByLabel("Game Name").fill("Launch Test Game");
--    await page.getByRole("button", { name: "Create Game" }).click();
-+    await page.getByRole("button", { name: "Add" }).click();
+-    await page.getByLabel("Game Name").fill("Launch Test Game");
+-    await page.getByRole("button", { name: "Add" }).click();
++    await page.getByRole("button", { name: "Add Game" }).click();
++    const addGameRow = page.locator("[data-game-add-row='input']");
++    await expect(addGameRow.locator("[data-game-action]")).toHaveText(["Save", "Cancel"]);
++    await addGameRow.getByLabel("Game").fill("Launch Test Game");
++    await addGameRow.getByLabel("Purpose").selectOption("Learning Game");
++    await addGameRow.getByLabel("Status").selectOption("Ready for Testing");
++    await addGameRow.getByRole("button", { name: "Save" }).click();
      await expect(page.locator("[data-game-list]")).toContainText("Launch Test Game");
--    await expect(page.locator("[data-game-row='launch-test-game-1']").getByRole("button", { name: "Open Launch Test Game (Active)" })).toHaveClass(/primary/);
-+    await expect(page.locator("[data-game-row='launch-test-game-1']")).toHaveAttribute("data-game-active", "true");
-+    await expect(page.locator("[data-game-row='launch-test-game-1']").getByRole("button", { name: "Edit Launch Test Game" })).toHaveClass(/primary/);
+     await expect(page.locator("[data-game-row='launch-test-game-1']")).toHaveAttribute("data-game-active", "true");
+-    await expect(page.locator("[data-game-row='launch-test-game-1']").getByRole("button", { name: "Edit Launch Test Game" })).toHaveClass(/primary/);
++    await expect(page.locator("[data-game-row='launch-test-game-1'] [data-game-toggle='launch-test-game-1']")).toHaveClass(/primary/);
++    await expect(page.locator("[data-game-row='launch-test-game-1']").getByRole("button", { name: "Edit Launch Test Game" })).not.toHaveClass(/primary/);
++    await expect(page.locator("[data-game-row='launch-test-game-1'] td").nth(0)).toHaveText("Learning Game");
++    await expect(page.locator("[data-game-row='launch-test-game-1'] td").nth(1)).toHaveText("Ready for Testing");
      await expect(page.locator("[data-game-hub-log]")).toHaveText("Created and opened Launch Test Game.");
  
-     await page.getByLabel("Game Name").fill("Archive Game");
--    await page.getByRole("button", { name: "Create Game" }).click();
--    await expect(page.locator("[data-game-row='archive-game-2']").getByRole("button", { name: "Open Archive Game (Active)" })).toHaveClass(/primary/);
-+    await page.getByRole("button", { name: "Add" }).click();
-+    await expect(page.locator("[data-game-row='archive-game-2']")).toHaveAttribute("data-game-active", "true");
-+    await expect(page.locator("[data-game-row='archive-game-2']").getByRole("button", { name: "Edit Archive Game" })).toHaveClass(/primary/);
- 
--    await page.getByRole("button", { name: "Open Launch Test Game" }).click();
--    await expect(page.locator("[data-game-row='launch-test-game-1']").getByRole("button", { name: "Open Launch Test Game (Active)" })).toHaveAttribute("data-game-active", "true");
--    await expect(page.locator("[data-game-hub-log]")).toHaveText("Opened Launch Test Game.");
+-    await page.getByLabel("Game Name").fill("Archive Game");
+-    await page.getByRole("button", { name: "Add" }).click();
 +    await page.getByRole("button", { name: "Edit Launch Test Game" }).click();
-+    await expect(page.locator("[data-game-row='launch-test-game-1']")).toHaveAttribute("data-game-active", "true");
-+    await expect(page.locator("[data-game-row='launch-test-game-1']").getByRole("button", { name: "Edit Launch Test Game" })).toHaveAttribute("data-game-active", "true");
-+    await expect(page.locator("[data-game-hub-log]")).toHaveText("Editing Launch Test Game.");
++    const editGameRow = page.locator("[data-game-edit-row='launch-test-game-1']");
++    await expect(editGameRow.locator("[data-game-action]")).toHaveText(["Save", "Cancel"]);
++    await expect(editGameRow.getByLabel("Game")).toHaveValue("Launch Test Game");
++    await expect(editGameRow.getByLabel("Game")).toHaveAttribute("readonly", "");
++    await editGameRow.getByLabel("Purpose").selectOption("Capability Demo");
++    await editGameRow.getByLabel("Status").selectOption("Ready for Publish");
++    await editGameRow.getByRole("button", { name: "Save" }).click();
++    await expect(page.locator("[data-game-row='launch-test-game-1'] td").nth(0)).toHaveText("Capability Demo");
++    await expect(page.locator("[data-game-row='launch-test-game-1'] td").nth(1)).toHaveText("Ready for Publish");
++    await expect(page.locator("[data-game-hub-log]")).toHaveText("Saved Launch Test Game.");
++
++    await page.getByRole("button", { name: "Add Game" }).click();
++    const archiveAddRow = page.locator("[data-game-add-row='input']");
++    await archiveAddRow.getByLabel("Game").fill("Archive Game");
++    await archiveAddRow.getByRole("button", { name: "Cancel" }).click();
++    await expect(page.locator("[data-game-list]")).not.toContainText("Archive Game");
++    await page.getByRole("button", { name: "Add Game" }).click();
++    await page.locator("[data-game-add-row='input']").getByLabel("Game").fill("Archive Game");
++    await page.locator("[data-game-add-row='input']").getByRole("button", { name: "Save" }).click();
+     await expect(page.locator("[data-game-row='archive-game-2']")).toHaveAttribute("data-game-active", "true");
+-    await expect(page.locator("[data-game-row='archive-game-2']").getByRole("button", { name: "Edit Archive Game" })).toHaveClass(/primary/);
++    await expect(page.locator("[data-game-row='archive-game-2'] [data-game-toggle='archive-game-2']")).toHaveClass(/primary/);
+ 
+-    await page.getByRole("button", { name: "Edit Launch Test Game" }).click();
++    await page.locator("[data-game-row='launch-test-game-1'] [data-game-toggle='launch-test-game-1']").click();
+     await expect(page.locator("[data-game-row='launch-test-game-1']")).toHaveAttribute("data-game-active", "true");
+-    await expect(page.locator("[data-game-row='launch-test-game-1']").getByRole("button", { name: "Edit Launch Test Game" })).toHaveAttribute("data-game-active", "true");
+-    await expect(page.locator("[data-game-hub-log]")).toHaveText("Editing Launch Test Game.");
++    await expect(page.locator("[data-game-row='launch-test-game-1'] [data-game-toggle='launch-test-game-1']")).toHaveClass(/primary/);
++    await expect(page.locator("[data-game-row='launch-test-game-1']").getByRole("button", { name: "Edit Launch Test Game" })).not.toHaveClass(/primary/);
++    await expect(page.locator("[data-game-hub-log]")).toHaveText("Selected Launch Test Game.");
  
      await page.getByRole("button", { name: "Delete Open Game" }).click();
      await expect(page.locator("[data-game-row='launch-test-game-1']")).toHaveCount(0);
-@@ -472,19 +483,19 @@ test("Game Hub preserves guest browsing and blocks guest saves", async ({ page }
+@@ -483,19 +516,22 @@ test("Game Hub preserves guest browsing and blocks guest saves", async ({ page }
    const failures = await openRepoPage(page, "/toolbox/game-hub/index.html");
  
    try {
--    await expect(page.locator("[data-game-row='demo-game']").getByRole("button", { name: "Open Demo Game (Active)" })).toHaveClass(/primary/);
-+    await expect(page.locator("[data-game-row='demo-game']").getByRole("button", { name: "Edit Demo Game" })).toHaveClass(/primary/);
+-    await expect(page.locator("[data-game-row='demo-game']").getByRole("button", { name: "Edit Demo Game" })).toHaveClass(/primary/);
++    await expect(page.locator("[data-game-row='demo-game'] [data-game-toggle='demo-game']")).toHaveClass(/primary/);
++    await expect(page.locator("[data-game-row='demo-game']").getByRole("button", { name: "Edit Demo Game" })).not.toHaveClass(/primary/);
++    await expect(page.locator("[data-game-row='demo-game']").getByRole("button", { name: "Edit Demo Game" })).toBeDisabled();
      await expect(page.locator("[data-game-list]")).toContainText("Gravity Demo");
      await expect(page.locator("[data-project-record-status]")).toHaveText("Game table loaded. Sign in to save changes.");
      await expect(page.locator("[data-project-records-table]")).toHaveCount(0);
--    await expect(page.getByRole("button", { name: "Create Game" })).toBeDisabled();
-+    await expect(page.getByRole("button", { name: "Add" })).toBeDisabled();
+-    await expect(page.getByRole("button", { name: "Add" })).toBeDisabled();
++    await expect(page.getByRole("button", { name: "Add Game" })).toBeDisabled();
      await expect(page.getByRole("button", { name: "Delete Open Game" })).toBeDisabled();
-     await expect(page.getByLabel("Game Name")).toBeDisabled();
-     await expect(page.getByLabel("Game Purpose")).toBeDisabled();
-     await expect(page.getByLabel("Game Status")).toBeDisabled();
+-    await expect(page.getByLabel("Game Name")).toBeDisabled();
+-    await expect(page.getByLabel("Game Purpose")).toBeDisabled();
+-    await expect(page.getByLabel("Game Status")).toBeDisabled();
++    await expect(page.getByLabel("Game Name")).toHaveCount(0);
++    await expect(page.getByLabel("Game Purpose")).toHaveCount(0);
++    await expect(page.getByLabel("Game Status")).toHaveCount(0);
      await expect(page.getByLabel("Current User Role")).toBeDisabled();
  
--    await page.getByRole("button", { name: "Open Gravity Demo" }).click();
--    await expect(page.locator("[data-game-row='gravity-demo']").getByRole("button", { name: "Open Gravity Demo (Active)" })).toHaveClass(/primary/);
-+    await page.getByRole("button", { name: "Edit Gravity Demo" }).click();
-+    await expect(page.locator("[data-game-row='gravity-demo']").getByRole("button", { name: "Edit Gravity Demo" })).toHaveClass(/primary/);
+-    await page.getByRole("button", { name: "Edit Gravity Demo" }).click();
+-    await expect(page.locator("[data-game-row='gravity-demo']").getByRole("button", { name: "Edit Gravity Demo" })).toHaveClass(/primary/);
++    await page.locator("[data-game-row='gravity-demo'] [data-game-toggle='gravity-demo']").click();
++    await expect(page.locator("[data-game-row='gravity-demo'] [data-game-toggle='gravity-demo']")).toHaveClass(/primary/);
++    await expect(page.locator("[data-game-row='gravity-demo']").getByRole("button", { name: "Edit Gravity Demo" })).toBeDisabled();
      await expect(page.locator("[data-game-hub-log]")).toHaveText("Sign in to create or update Game Hub projects.");
  
      await expectNoPageFailures(failures);
-@@ -677,8 +688,8 @@ test("Game Hub displays and edits game purpose and member role", async ({ page }
+@@ -551,8 +587,17 @@ test("Game Hub shows a creator-safe empty state when no projects exist", async (
  
-     await page.getByLabel("Game Purpose").selectOption("Capability Demo");
-     await page.getByLabel("Game Name").fill("Purpose Review Game");
--    await page.getByRole("button", { name: "Create Game" }).click();
--    await expect(page.locator("[data-game-row='purpose-review-game-1']").getByRole("button", { name: "Open Purpose Review Game (Active)" })).toHaveClass(/primary/);
-+    await page.getByRole("button", { name: "Add" }).click();
-+    await expect(page.locator("[data-game-row='purpose-review-game-1']").getByRole("button", { name: "Edit Purpose Review Game" })).toHaveClass(/primary/);
+   try {
+     await expect(page.locator("[data-active-game-name]")).toHaveCount(0);
+-    await expect(page.locator("[data-game-list] [data-game-list-status='empty']")).toHaveText("No Game Hub projects yet. Create a game to start building.");
++    await expect(page.locator("[data-game-list] [data-game-list-status='empty']")).toHaveText("No Game Hub projects yet. Add a game to start building.");
++    await expect(page.locator("[data-game-rows-table='true'] thead th")).toHaveText([
++      "Game",
++      "Purpose",
++      "Status",
++      "Owner",
++      "Actions",
++    ]);
+     await expect(page.locator("[data-game-list] [data-game-row]")).toHaveCount(0);
++    await expect(page.locator("[data-game-list] [data-game-add-row='button']")).toHaveCount(1);
++    await expect(page.getByRole("button", { name: "Add Game" })).toBeEnabled();
+     await expect(page.locator("[data-game-hub-log]")).not.toContainText(/server|API|repository|database|stack|error/i);
+     await expectNoPageFailures(failures);
+   } finally {
+@@ -635,7 +680,7 @@ test("Game Hub reports malformed active-game payloads without throwing", async (
+     await expect(page.locator("[data-active-game-name]")).toHaveCount(0);
+     await expect(page.locator("[data-current-user-role]")).toHaveCount(0);
+     await expect(page.locator("[data-game-hub-log]")).toContainText("Active game is temporarily unavailable.");
+-    await expect(page.getByLabel("Game Purpose")).toBeDisabled();
++    await expect(page.getByRole("button", { name: "Add Game" })).toBeDisabled();
+ 
+     await expectNoPageFailures(failures);
+   } finally {
+@@ -647,18 +692,6 @@ test("Game Hub displays and edits game purpose and member role", async ({ page }
+   const failures = await openRepoPage(page, "/toolbox/game-hub/index.html", { session: creatorSession() });
+ 
+   try {
+-    await expect(page.locator("#gamePurposeInput option")).toHaveText([
+-      "Game",
+-      "Capability Demo",
+-      "Learning Game",
+-      "Template Game"
+-    ]);
+-    await expect(page.locator("#gameStatusInput option")).toHaveText([
+-      "Planning",
+-      "Under Construction",
+-      "Ready for Testing",
+-      "Ready for Publish"
+-    ]);
+     await expect(page.locator("#currentUserRoleInput option")).toHaveText([
+       "Owner",
+       "Designer",
+@@ -670,26 +703,43 @@ test("Game Hub displays and edits game purpose and member role", async ({ page }
+       "Publisher",
+       "Viewer"
+     ]);
+-    await expect(page.getByLabel("Game Purpose")).toHaveValue("Game");
+-    await expect(page.getByLabel("Game Status")).toHaveValue("Under Construction");
+     await expect(page.getByLabel("Current User Role")).toHaveValue("Owner");
+ 
+-    await page.getByLabel("Game Purpose").selectOption("Learning Game");
++    await page.getByRole("button", { name: "Edit Demo Game" }).click();
++    const editRow = page.locator("[data-game-edit-row='demo-game']");
++    await expect(editRow.locator("[data-game-action]")).toHaveText(["Save", "Cancel"]);
++    await expect(editRow.getByLabel("Purpose").locator("option")).toHaveText([
++      "Game",
++      "Capability Demo",
++      "Learning Game",
++      "Template Game"
++    ]);
++    await expect(editRow.getByLabel("Status").locator("option")).toHaveText([
++      "Planning",
++      "Under Construction",
++      "Ready for Testing",
++      "Ready for Publish"
++    ]);
++    await expect(editRow.getByLabel("Purpose")).toHaveValue("Game");
++    await expect(editRow.getByLabel("Status")).toHaveValue("Under Construction");
++    await editRow.getByLabel("Purpose").selectOption("Learning Game");
++    await editRow.getByLabel("Status").selectOption("Ready for Testing");
++    await editRow.getByRole("button", { name: "Save" }).click();
+     await expect(page.locator("[data-game-row='demo-game'] td").nth(0)).toHaveText("Learning Game");
+-    await expect(page.locator("[data-game-hub-log]")).toHaveText("Updated Demo Game purpose to Learning Game.");
+-
+-    await page.getByLabel("Game Status").selectOption("Ready for Testing");
+     await expect(page.locator("[data-game-row='demo-game'] td").nth(1)).toHaveText("Ready for Testing");
+-    await expect(page.locator("[data-game-hub-log]")).toHaveText("Updated Demo Game status to Ready for Testing.");
++    await expect(page.locator("[data-game-hub-log]")).toHaveText("Saved Demo Game.");
+ 
+     await page.getByLabel("Current User Role").selectOption("Designer");
+     await expect(page.getByLabel("Current User Role")).toHaveValue("Designer");
+     await expect(page.locator("[data-game-hub-log]")).toHaveText("Updated current user role to Designer.");
+ 
+-    await page.getByLabel("Game Purpose").selectOption("Capability Demo");
+-    await page.getByLabel("Game Name").fill("Purpose Review Game");
+-    await page.getByRole("button", { name: "Add" }).click();
+-    await expect(page.locator("[data-game-row='purpose-review-game-1']").getByRole("button", { name: "Edit Purpose Review Game" })).toHaveClass(/primary/);
++    await page.getByRole("button", { name: "Add Game" }).click();
++    const addRow = page.locator("[data-game-add-row='input']");
++    await addRow.getByLabel("Game").fill("Purpose Review Game");
++    await addRow.getByLabel("Purpose").selectOption("Capability Demo");
++    await addRow.getByRole("button", { name: "Save" }).click();
++    await expect(page.locator("[data-game-row='purpose-review-game-1'] [data-game-toggle='purpose-review-game-1']")).toHaveClass(/primary/);
++    await expect(page.locator("[data-game-row='purpose-review-game-1']").getByRole("button", { name: "Edit Purpose Review Game" })).not.toHaveClass(/primary/);
      await expect(page.locator("[data-game-row='purpose-review-game-1'] td").nth(0)).toHaveText("Capability Demo");
      await expect(page.getByLabel("Current User Role")).toHaveValue("Owner");
      await expect(page.locator("[data-game-list]")).toContainText("Purpose Review Game");
-@@ -714,7 +725,7 @@ test("Game Hub readiness child rows update from mock game state", async ({ page
+@@ -724,8 +774,9 @@ test("Game Hub readiness child rows update from mock game state", async ({ page
+       "Publishing reviewPlanned",
      ]);
  
-     await page.getByLabel("Game Name").fill("Progress Review Game");
--    await page.getByRole("button", { name: "Create Game" }).click();
-+    await page.getByRole("button", { name: "Add" }).click();
+-    await page.getByLabel("Game Name").fill("Progress Review Game");
+-    await page.getByRole("button", { name: "Add" }).click();
++    await page.getByRole("button", { name: "Add Game" }).click();
++    await page.locator("[data-game-add-row='input']").getByLabel("Game").fill("Progress Review Game");
++    await page.locator("[data-game-add-row='input']").getByRole("button", { name: "Save" }).click();
      await expect(page.locator("[data-game-project-information]")).toHaveCount(0);
      await expect(page.locator("[data-game-list]")).toContainText("Progress Review Game");
      const progressReviewRow = page.locator("[data-game-row='progress-review-game-1']");
-@@ -723,7 +734,7 @@ test("Game Hub readiness child rows update from mock game state", async ({ page
+@@ -734,7 +785,8 @@ test("Game Hub readiness child rows update from mock game state", async ({ page
      await expect(readinessOutputTable).toContainText("Progress Review Game identity ready");
  
      await page.getByRole("button", { name: "Delete Open Game" }).click();
--    await expect(page.locator("[data-game-row='demo-game']").getByRole("button", { name: "Open Demo Game (Active)" })).toHaveClass(/primary/);
-+    await expect(page.locator("[data-game-row='demo-game']").getByRole("button", { name: "Edit Demo Game" })).toHaveClass(/primary/);
+-    await expect(page.locator("[data-game-row='demo-game']").getByRole("button", { name: "Edit Demo Game" })).toHaveClass(/primary/);
++    await expect(page.locator("[data-game-row='demo-game'] [data-game-toggle='demo-game']")).toHaveClass(/primary/);
++    await expect(page.locator("[data-game-row='demo-game']").getByRole("button", { name: "Edit Demo Game" })).not.toHaveClass(/primary/);
      await demoGameRow.locator("[data-game-toggle='demo-game']").click();
      readinessOutputTable = page.locator("[data-game-expanded-row='demo-game'][data-game-child-row='readiness-output'] [data-game-child-table='readiness-output']");
      await expect(readinessOutputTable).toContainText("Demo Game identity ready");
-diff --git a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-index c7bfbe90c..b1faf33d8 100644
---- a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-+++ b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-@@ -427,7 +427,9 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-     ]);
-     await expect(page.getByRole("button", { name: "Delete Open Game" })).toHaveCount(0);
-     await expect(page.locator("main")).not.toContainText(/\bproject records\b|\bAPI\b|\bDB\b|\bmock\b|\bseed\b|\bdebug\b|\binternal\b/i);
--    await page.getByRole("link", { name: "Open Game Journey" }).click();
-+    await expect(page.getByRole("link", { name: "Open Game Journey" })).toHaveCount(0);
-+    const createdGameKey = new URL(page.url()).searchParams.get("game");
-+    await page.goto(`${server.baseUrl}/toolbox/game-journey/index.html?game=${createdGameKey}`, { waitUntil: "networkidle" });
-     await page.waitForURL(/\/toolbox\/game-journey\/index\.html\?game=lantern-reef-\d+$/);
-     await expect(page.locator("[data-journey-active-game]")).toHaveText("Active game: Lantern Reef.");
-     const journeyNoteNames = await page.locator("[data-journey-summary-body] [data-journey-note-button]").evaluateAll((buttons) => (
 diff --git a/toolbox/game-hub/game-hub.js b/toolbox/game-hub/game-hub.js
-index ad2eee2f4..661f342c0 100644
+index 661f342c0..096b588bc 100644
 --- a/toolbox/game-hub/game-hub.js
 +++ b/toolbox/game-hub/game-hub.js
-@@ -16,7 +16,6 @@ const elements = {
-   nameInput: document.querySelector("[data-game-name-input]"),
+@@ -11,19 +11,17 @@ const repository = createGameHubApiRepository();
+ const elements = {
+   currentUserRoleInput: document.querySelector("[data-current-user-role-input]"),
+   deleteOpenGame: document.querySelector("[data-game-delete-active]"),
+-  form: document.querySelector("[data-game-form]"),
+   membersTable: document.querySelector("[data-game-members-table]"),
+-  nameInput: document.querySelector("[data-game-name-input]"),
    progressChecklist: document.querySelector("[data-game-progress-checklist]"),
    gameList: document.querySelector("[data-game-list]"),
--  gameJourneyLink: document.querySelector("[data-game-journey-link]"),
    projectRecordStatus: document.querySelector("[data-project-record-status]"),
-   purposeInput: document.querySelector("[data-game-purpose-input]"),
-   gameStatusInput: document.querySelector("[data-game-status-input]"),
-@@ -198,11 +197,12 @@ function createGameButton(game, isActive) {
-   button.className = isActive ? "btn primary" : "btn";
+-  purposeInput: document.querySelector("[data-game-purpose-input]"),
+-  gameStatusInput: document.querySelector("[data-game-status-input]"),
+   statusLog: document.querySelector("[data-game-hub-log]"),
+   tableCounts: document.querySelector("[data-game-table-counts]"),
+ };
+ 
+ const state = {
++  addingGame: false,
++  editingGameId: "",
+   expandedGameId: "",
+ };
+ 
+@@ -131,15 +129,11 @@ function setProjectRecordStatus(message) {
+ 
+ function refreshSaveControls(activeGame = null) {
+   const saveAllowed = projectRecordsSaveAllowed();
+-  [elements.nameInput, elements.purposeInput, elements.gameStatusInput, elements.currentUserRoleInput].forEach((control) => {
++  [elements.currentUserRoleInput].forEach((control) => {
+     if (control) {
+       control.disabled = !saveAllowed;
+     }
+   });
+-  const submitButton = elements.form?.querySelector("button[type='submit']");
+-  if (submitButton) {
+-    submitButton.disabled = !saveAllowed;
+-  }
+   if (elements.deleteOpenGame) {
+     const sourceLinked = isSourceLinkedGame(activeGame);
+     elements.deleteOpenGame.disabled = !saveAllowed || sourceLinked;
+@@ -192,17 +186,30 @@ function currentGameMember(activeGame) {
+   return activeGameMembers(activeGame).find((member) => member.userKey === userKey) || null;
+ }
+ 
+-function createGameButton(game, isActive) {
++function createActionButton(label, action, options = {}) {
+   const button = document.createElement("button");
+-  button.className = isActive ? "btn primary" : "btn";
++  button.className = options.primary ? "btn primary" : "btn";
    button.type = "button";
-   button.dataset.gameOpen = game.id;
-+  button.setAttribute("aria-label", `Edit ${game.name}`);
-   if (isActive) {
-     button.dataset.gameActive = "true";
-     button.setAttribute("aria-current", "true");
+-  button.dataset.gameOpen = game.id;
+-  button.setAttribute("aria-label", `Edit ${game.name}`);
+-  if (isActive) {
+-    button.dataset.gameActive = "true";
+-    button.setAttribute("aria-current", "true");
++  button.dataset.gameAction = action;
++  if (options.gameId) {
++    button.dataset.gameId = options.gameId;
++  }
++  if (options.disabled) {
++    button.disabled = true;
++  }
++  if (options.ariaLabel) {
++    button.setAttribute("aria-label", options.ariaLabel);
    }
--  button.textContent = isActive ? `Open ${game.name} (Active)` : `Open ${game.name}`;
-+  button.textContent = "Edit";
+-  button.textContent = "Edit";
++  button.textContent = label;
++  return button;
++}
++
++function createGameButton(game) {
++  const button = createActionButton("Edit", "edit-game", {
++    ariaLabel: `Edit ${game.name}`,
++    disabled: !projectRecordsSaveAllowed(),
++    gameId: game.id,
++  });
    return button;
  }
  
-@@ -357,6 +357,7 @@ function renderGameParentRow(tbody, game, activeGame, progress) {
+@@ -220,11 +227,42 @@ function createCell(value, tagName = "td") {
+   return cell;
+ }
+ 
+-function createGameToggleButton(game, expanded) {
++function createSelect(options, selectedValue, datasetName, ariaLabel) {
++  const select = document.createElement("select");
++  select.dataset[datasetName] = "true";
++  select.setAttribute("aria-label", ariaLabel);
++  options.forEach((option) => {
++    const item = document.createElement("option");
++    item.value = option;
++    item.textContent = option;
++    select.append(item);
++  });
++  select.value = options.includes(selectedValue) ? selectedValue : options[0] || "";
++  return select;
++}
++
++function createInput(value, datasetName, ariaLabel, options = {}) {
++  const input = document.createElement("input");
++  input.dataset[datasetName] = "true";
++  input.type = "text";
++  input.value = value || "";
++  input.placeholder = options.placeholder || "";
++  input.setAttribute("aria-label", ariaLabel);
++  if (options.readOnly) {
++    input.readOnly = true;
++  }
++  return input;
++}
++
++function createGameToggleButton(game, expanded, active) {
+   const button = document.createElement("button");
+-  button.className = expanded ? "btn btn--compact primary" : "btn btn--compact";
++  button.className = active ? "btn btn--compact primary" : "btn btn--compact";
+   button.type = "button";
+   button.dataset.gameToggle = game.id;
++  if (active) {
++    button.dataset.gameActive = "true";
++    button.setAttribute("aria-current", "true");
++  }
+   button.setAttribute("aria-expanded", String(expanded));
+   button.setAttribute("aria-controls", `game-child-source-idea-${game.id} game-child-readiness-output-${game.id}`);
+   button.textContent = game.name;
+@@ -350,9 +388,91 @@ function renderExpandedGameRow(tbody, game, progress, active) {
+   });
+ }
+ 
++function renderAddGameRow(tbody) {
++  const row = document.createElement("tr");
++  row.dataset.gameAddRow = state.addingGame ? "input" : "button";
++
++  if (!state.addingGame) {
++    const cell = document.createElement("td");
++    cell.colSpan = 5;
++    cell.append(createActionButton("Add Game", "start-add-game", {
++      disabled: !projectRecordsSaveAllowed(),
++    }));
++    row.append(cell);
++    tbody.append(row);
++    return;
++  }
++
++  const nameCell = document.createElement("th");
++  nameCell.scope = "row";
++  nameCell.append(createInput("", "gameNameInput", "Game", {
++    placeholder: "Untitled game",
++  }));
++
++  const purposeCell = document.createElement("td");
++  purposeCell.append(createSelect(GAME_HUB_GAME_PURPOSES, "Game", "gamePurposeInput", "Purpose"));
++
++  const statusCell = document.createElement("td");
++  statusCell.append(createSelect(GAME_HUB_GAME_STATUSES, "Planning", "gameStatusInput", "Status"));
++
++  const ownerCell = createCell("Current user");
++  const actions = document.createElement("td");
++  actions.append(
++    createActionButton("Save", "save-add-game", { primary: true }),
++    createActionButton("Cancel", "cancel-add-game"),
++  );
++
++  row.append(nameCell, purposeCell, statusCell, ownerCell, actions);
++  tbody.append(row);
++}
++
++function renderEditGameRow(tbody, game) {
++  const row = document.createElement("tr");
++  row.dataset.gameEditRow = game.id;
++
++  const nameCell = document.createElement("th");
++  nameCell.scope = "row";
++  nameCell.append(createInput(game.name, "gameNameInput", "Game", {
++    readOnly: true,
++  }));
++
++  const purposeCell = document.createElement("td");
++  purposeCell.append(createSelect(GAME_HUB_GAME_PURPOSES, game.purpose, "gamePurposeInput", "Purpose"));
++
++  const statusCell = document.createElement("td");
++  statusCell.append(createSelect(GAME_HUB_GAME_STATUSES, game.status, "gameStatusInput", "Status"));
++
++  const actions = document.createElement("td");
++  actions.append(
++    createActionButton("Save", "save-edit-game", {
++      gameId: game.id,
++      primary: true,
++    }),
++    createActionButton("Cancel", "cancel-edit-game", {
++      gameId: game.id,
++    }),
++  );
++
++  row.append(
++    nameCell,
++    purposeCell,
++    statusCell,
++    createCell(game.ownerDisplayName || "No owner"),
++    actions,
++  );
++  tbody.append(row);
++}
++
+ function renderGameParentRow(tbody, game, activeGame, progress) {
+   const expanded = state.expandedGameId === game.id;
+   const active = activeGame?.id === game.id;
++  const editing = state.editingGameId === game.id;
++
++  if (editing) {
++    renderEditGameRow(tbody, game);
++    return;
++  }
++
+   const row = document.createElement("tr");
    row.dataset.gameRow = game.id;
    if (active) {
-     row.dataset.gameActive = "true";
-+    row.setAttribute("aria-current", "true");
-   }
+@@ -362,7 +482,10 @@ function renderGameParentRow(tbody, game, activeGame, progress) {
  
    const nameCell = document.createElement("th");
-@@ -516,15 +517,6 @@ function renderWorkspace() {
+   nameCell.scope = "row";
+-  nameCell.append(createGameToggleButton(game, expanded));
++  if (active) {
++    nameCell.dataset.gameActiveCell = "true";
++  }
++  nameCell.append(createGameToggleButton(game, expanded, active));
+   row.append(
+     nameCell,
+     createCell(game.purpose || "Game"),
+@@ -371,7 +494,7 @@ function renderGameParentRow(tbody, game, activeGame, progress) {
+   );
+ 
+   const actions = document.createElement("td");
+-  actions.append(createGameButton(game, active));
++  actions.append(createGameButton(game));
+   row.append(actions);
+   tbody.append(row);
+ 
+@@ -406,8 +529,7 @@ function renderGameList(progress) {
+   }
+ 
+   if (listResult.length === 0) {
+-    elements.gameList.append(createGameListStatus("No Game Hub projects yet. Create a game to start building.", "empty"));
+-    return;
++    elements.gameList.append(createGameListStatus("No Game Hub projects yet. Add a game to start building.", "empty"));
+   }
+ 
+   const wrapper = document.createElement("div");
+@@ -419,6 +541,7 @@ function renderGameList(progress) {
+   table.innerHTML = "<thead><tr><th scope=\"col\">Game</th><th scope=\"col\">Purpose</th><th scope=\"col\">Status</th><th scope=\"col\">Owner</th><th scope=\"col\">Actions</th></tr></thead>";
+   const body = document.createElement("tbody");
+   listResult.forEach((game) => renderGameParentRow(body, game, activeGame, progress));
++  renderAddGameRow(body);
+   table.append(body);
+   wrapper.append(table);
+   elements.gameList.append(wrapper);
+@@ -508,12 +631,6 @@ function renderWorkspace() {
+   const progress = normalizeProgress(repository.getGameProgress());
+   const currentMember = currentGameMember(activeGame);
+ 
+-  if (elements.purposeInput && activeGame?.purpose) {
+-    elements.purposeInput.value = activeGame.purpose;
+-  }
+-  if (elements.gameStatusInput && activeGame?.status) {
+-    elements.gameStatusInput.value = activeGame.status;
+-  }
    if (elements.currentUserRoleInput) {
      elements.currentUserRoleInput.value = currentMember?.role || "Viewer";
    }
--  if (elements.gameJourneyLink) {
--    if (activeGame) {
--      elements.gameJourneyLink.href = `toolbox/game-journey/index.html?game=${encodeURIComponent(activeGame.id)}`;
--      elements.gameJourneyLink.setAttribute("aria-disabled", "false");
--    } else {
--      elements.gameJourneyLink.href = "toolbox/game-journey/index.html?game=none";
--      elements.gameJourneyLink.setAttribute("aria-disabled", "true");
--    }
--  }
+@@ -526,16 +643,23 @@ function renderWorkspace() {
+   refreshSaveControls(activeGame);
+ }
  
-   renderGameList(progress);
-   renderMembersTable(activeGame);
-@@ -546,9 +538,9 @@ elements.form?.addEventListener("submit", (event) => {
-     status: elements.gameStatusInput?.value,
+-elements.form?.addEventListener("submit", (event) => {
+-  event.preventDefault();
++function readGameRowFields(row) {
++  return {
++    name: row?.querySelector("[data-game-name-input]")?.value,
++    purpose: row?.querySelector("[data-game-purpose-input]")?.value,
++    status: row?.querySelector("[data-game-status-input]")?.value,
++  };
++}
++
++function saveAddedGame(row) {
+   if (!ensureProjectRecordsSaveAllowed("create")) {
+     return;
+   }
+-  const activeGame = normalizeActiveGame(repository.getActiveGame());
++  const input = readGameRowFields(row);
+   const game = repository.createGame({
+-    name: elements.nameInput?.value,
+-    purpose: elements.purposeInput?.value,
+-    status: elements.gameStatusInput?.value,
++    name: input.name,
++    purpose: input.purpose,
++    status: input.status,
    });
  
--  if (reportRepositoryError(game, "Create Game") || !isRecord(game) || !String(game.name || "").trim()) {
-+  if (reportRepositoryError(game, "Add game") || !isRecord(game) || !String(game.name || "").trim()) {
-     if (!isRepositoryErrorResult(game)) {
--      setStatusLog("Create Game could not be completed. Refresh the page or try again shortly.");
-+      setStatusLog("Add game could not be completed. Refresh the page or try again shortly.");
-     }
+   if (reportRepositoryError(game, "Add game") || !isRecord(game) || !String(game.name || "").trim()) {
+@@ -546,33 +670,125 @@ elements.form?.addEventListener("submit", (event) => {
+     return;
+   }
+ 
+-  if (elements.nameInput) {
+-    elements.nameInput.value = "";
++  state.addingGame = false;
++  state.editingGameId = "";
++  setStatusLog(`Created and opened ${game.name}.`);
++  renderWorkspace();
++}
++
++function saveEditedGame(row, gameId) {
++  if (!ensureProjectRecordsSaveAllowed("update")) {
++    return;
++  }
++  const input = readGameRowFields(row);
++  let game = repository.openGame(gameId);
++  if (reportRepositoryError(game, "Edit game") || !isRecord(game)) {
++    if (!isRepositoryErrorResult(game)) {
++      setStatusLog("Edit game could not be completed. Refresh the page or try again shortly.");
++    }
++    renderWorkspace();
++    return;
+   }
+ 
+-  setStatusLog(`Created and opened ${game.name}.`);
++  if (input.purpose && input.purpose !== game.purpose) {
++    game = repository.updateGamePurpose(gameId, input.purpose);
++    if (reportRepositoryError(game, "Update game purpose") || !isRecord(game)) {
++      if (!isRepositoryErrorResult(game)) {
++        setStatusLog("Update game purpose could not be completed. Refresh the page or try again shortly.");
++      }
++      renderWorkspace();
++      return;
++    }
++  }
++
++  if (input.status && input.status !== game.status) {
++    game = repository.updateGameStatus(gameId, input.status);
++    if (reportRepositoryError(game, "Update game status") || !isRecord(game)) {
++      if (!isRepositoryErrorResult(game)) {
++        setStatusLog("Update game status could not be completed. Refresh the page or try again shortly.");
++      }
++      renderWorkspace();
++      return;
++    }
++  }
++
++  state.editingGameId = "";
++  setStatusLog(`Saved ${game.name}.`);
+   renderWorkspace();
+-});
++}
+ 
+ elements.gameList?.addEventListener("click", (event) => {
+   const toggle = event.target.closest("[data-game-toggle]");
+   if (toggle) {
++    const game = repository.openGame(toggle.dataset.gameToggle);
++    if (reportRepositoryError(game, "Select game")) {
++      renderWorkspace();
++      return;
++    }
++    if (game) {
++      setStatusLog(`Selected ${game.name}.`);
++    }
+     state.expandedGameId = state.expandedGameId === toggle.dataset.gameToggle ? "" : toggle.dataset.gameToggle;
      renderWorkspace();
      return;
-@@ -579,7 +571,7 @@ elements.gameList?.addEventListener("click", (event) => {
-   const game = repository.openGame(button.dataset.gameOpen);
+   }
  
-   if (game) {
--    setStatusLog(`Opened ${game.name}.`);
-+    setStatusLog(`Editing ${game.name}.`);
+-  const button = event.target.closest("[data-game-open]");
++  const action = event.target.closest("[data-game-action]");
++
++  if (!action) {
++    return;
++  }
++
++  if (action.dataset.gameAction === "start-add-game") {
++    if (!ensureProjectRecordsSaveAllowed("create")) {
++      return;
++    }
++    state.addingGame = true;
++    state.editingGameId = "";
++    renderWorkspace();
++    return;
++  }
+ 
+-  if (!button) {
++  if (action.dataset.gameAction === "cancel-add-game") {
++    state.addingGame = false;
++    setStatusLog("Cancelled game add.");
++    renderWorkspace();
+     return;
+   }
+ 
+-  const game = repository.openGame(button.dataset.gameOpen);
++  if (action.dataset.gameAction === "save-add-game") {
++    saveAddedGame(action.closest("[data-game-add-row='input']"));
++    return;
++  }
+ 
+-  if (game) {
++  if (action.dataset.gameAction === "edit-game") {
++    if (!ensureProjectRecordsSaveAllowed("update")) {
++      return;
++    }
++    const game = repository.openGame(action.dataset.gameId);
++    if (reportRepositoryError(game, "Edit game") || !isRecord(game)) {
++      if (!isRepositoryErrorResult(game)) {
++        setStatusLog("Edit game could not be completed. Refresh the page or try again shortly.");
++      }
++      renderWorkspace();
++      return;
++    }
++    state.addingGame = false;
++    state.editingGameId = game.id;
+     setStatusLog(`Editing ${game.name}.`);
      renderWorkspace();
++    return;
++  }
++
++  if (action.dataset.gameAction === "cancel-edit-game") {
++    state.editingGameId = "";
++    setStatusLog("Cancelled game edit.");
++    renderWorkspace();
++    return;
++  }
++
++  if (action.dataset.gameAction === "save-edit-game") {
++    saveEditedGame(action.closest("[data-game-edit-row]"), action.dataset.gameId);
    }
  });
+ 
+@@ -598,34 +814,6 @@ elements.deleteOpenGame?.addEventListener("click", () => {
+   renderWorkspace();
+ });
+ 
+-elements.purposeInput?.addEventListener("change", () => {
+-  if (!ensureProjectRecordsSaveAllowed("update")) {
+-    return;
+-  }
+-  const activeGame = normalizeActiveGame(repository.getActiveGame(), "Update game purpose");
+-  if (!activeGame) {
+-    return;
+-  }
+-
+-  const game = repository.updateGamePurpose(activeGame.id, elements.purposeInput.value);
+-  setStatusLog(`Updated ${game.name} purpose to ${game.purpose}.`);
+-  renderWorkspace();
+-});
+-
+-elements.gameStatusInput?.addEventListener("change", () => {
+-  if (!ensureProjectRecordsSaveAllowed("update")) {
+-    return;
+-  }
+-  const activeGame = normalizeActiveGame(repository.getActiveGame(), "Update game status");
+-  if (!activeGame) {
+-    return;
+-  }
+-
+-  const game = repository.updateGameStatus(activeGame.id, elements.gameStatusInput.value);
+-  setStatusLog(`Updated ${game.name} status to ${game.status}.`);
+-  renderWorkspace();
+-});
+-
+ elements.currentUserRoleInput?.addEventListener("change", () => {
+   if (!ensureProjectRecordsSaveAllowed("update")) {
+     return;
+@@ -640,8 +828,6 @@ elements.currentUserRoleInput?.addEventListener("change", () => {
+   renderWorkspace();
+ });
+ 
+-populateSelect(elements.purposeInput, GAME_HUB_GAME_PURPOSES);
+-populateSelect(elements.gameStatusInput, GAME_HUB_GAME_STATUSES);
+ populateSelect(elements.currentUserRoleInput, GAME_HUB_MEMBER_ROLES);
+ const requestedGameId = new URL(window.location.href).searchParams.get("game");
+ if (requestedGameId) {
 diff --git a/toolbox/game-hub/index.html b/toolbox/game-hub/index.html
-index b2da4cb57..d7d7017f5 100644
+index d7d7017f5..8306e6366 100644
 --- a/toolbox/game-hub/index.html
 +++ b/toolbox/game-hub/index.html
-@@ -28,35 +28,30 @@
-                         <div class="tool-column-header">
+@@ -29,27 +29,6 @@
                              <h2>Game Hub</h2>
                          </div>
--                        <div class="accordion-stack">
--                            <details class="vertical-accordion" open>
--                                <summary>Game Setup</summary>
--                                <div class="accordion-body content-stack">
--                                    <form class="content-stack content-stack--compact" data-game-form>
--                                        <div class="table-wrapper">
--                                            <table class="data-table tool-form-table" aria-label="Game setup fields">
--                                                <tbody>
--                                                    <tr>
--                                                        <th scope="row"><label for="gameNameInput">Game Name</label></th>
--                                                        <td><input id="gameNameInput" type="text" placeholder="Untitled game" data-game-name-input></td>
--                                                    </tr>
--                                                    <tr>
--                                                        <th scope="row"><label for="gamePurposeInput">Game Purpose</label></th>
--                                                        <td><select id="gamePurposeInput" data-game-purpose-input></select></td>
--                                                    </tr>
--                                                    <tr>
--                                                        <th scope="row"><label for="gameStatusInput">Game Status</label></th>
--                                                        <td><select id="gameStatusInput" data-game-status-input></select></td>
--                                                    </tr>
--                                                </tbody>
--                                            </table>
--                                        </div>
--                                        <button class="btn" type="submit">Create Game</button>
--                                    </form>
--                                    <label for="currentUserRoleInput">Current User Role <select id="currentUserRoleInput" data-current-user-role-input></select></label>
--                                    <button class="btn" type="button" data-game-delete-active>Delete Open Game</button>
-+                        <div class="content-stack content-stack--compact">
-+                            <form class="content-stack content-stack--compact" data-game-form aria-label="Add game">
-+                                <div class="table-wrapper">
-+                                    <table class="data-table tool-form-table" aria-label="Game fields">
-+                                        <tbody>
-+                                            <tr>
-+                                                <th scope="row"><label for="gameNameInput">Game Name</label></th>
-+                                                <td><input id="gameNameInput" type="text" placeholder="Untitled game" data-game-name-input></td>
-+                                            </tr>
-+                                            <tr>
-+                                                <th scope="row"><label for="gamePurposeInput">Game Purpose</label></th>
-+                                                <td><select id="gamePurposeInput" data-game-purpose-input></select></td>
-+                                            </tr>
-+                                            <tr>
-+                                                <th scope="row"><label for="gameStatusInput">Game Status</label></th>
-+                                                <td><select id="gameStatusInput" data-game-status-input></select></td>
-+                                            </tr>
-+                                        </tbody>
-+                                    </table>
-                                 </div>
--                            </details>
-+                                <button class="btn" type="submit">Add</button>
-+                            </form>
-+                            <label for="currentUserRoleInput">Current User Role <select id="currentUserRoleInput" data-current-user-role-input></select></label>
-+                            <button class="btn" type="button" data-game-delete-active>Delete Open Game</button>
+                         <div class="content-stack content-stack--compact">
+-                            <form class="content-stack content-stack--compact" data-game-form aria-label="Add game">
+-                                <div class="table-wrapper">
+-                                    <table class="data-table tool-form-table" aria-label="Game fields">
+-                                        <tbody>
+-                                            <tr>
+-                                                <th scope="row"><label for="gameNameInput">Game Name</label></th>
+-                                                <td><input id="gameNameInput" type="text" placeholder="Untitled game" data-game-name-input></td>
+-                                            </tr>
+-                                            <tr>
+-                                                <th scope="row"><label for="gamePurposeInput">Game Purpose</label></th>
+-                                                <td><select id="gamePurposeInput" data-game-purpose-input></select></td>
+-                                            </tr>
+-                                            <tr>
+-                                                <th scope="row"><label for="gameStatusInput">Game Status</label></th>
+-                                                <td><select id="gameStatusInput" data-game-status-input></select></td>
+-                                            </tr>
+-                                        </tbody>
+-                                    </table>
+-                                </div>
+-                                <button class="btn" type="submit">Add</button>
+-                            </form>
+                             <label for="currentUserRoleInput">Current User Role <select id="currentUserRoleInput" data-current-user-role-input></select></label>
+                             <button class="btn" type="button" data-game-delete-active>Delete Open Game</button>
                          </div>
-                     </aside>
-                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="game-hub" data-tool-icon-src="assets/theme-v2/images/badges/index.png" data-tool-character-src="assets/theme-v2/images/characters/index.png"></div>
-@@ -64,9 +59,6 @@
-                         <p>Review games in the parent table, then expand a game row to see Source Idea and Readiness Output.</p>
-                         <div class="status" role="status" data-project-record-status>Game table ready.</div>
-                         <div class="content-stack content-stack--compact" aria-label="Games" data-game-list></div>
--                        <div class="action-group">
--                            <a class="btn primary" href="toolbox/game-journey/index.html?game=demo-game" data-game-journey-link>Open Game Journey</a>
--                        </div>
-                         <div class="status" role="status" data-game-hub-log>Game Hub ready.</div>
-                     </section>
-                     <aside class="tool-column tool-group-build">

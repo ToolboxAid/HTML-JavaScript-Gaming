@@ -115,12 +115,11 @@ td {
   cursor: pointer
 }
 
-.data-table [data-game-row][data-game-active="true"] {
+.data-table [data-game-active-cell="true"] {
   background: color-mix(in srgb, var(--gold) 14%, var(--panel))
 }
 
-.data-table [data-game-row][data-game-active="true"] > th,
-.data-table [data-game-row][data-game-active="true"] > td {
+.data-table [data-game-active-cell="true"] {
   border-bottom-color: var(--gold-border-muted)
 }
 

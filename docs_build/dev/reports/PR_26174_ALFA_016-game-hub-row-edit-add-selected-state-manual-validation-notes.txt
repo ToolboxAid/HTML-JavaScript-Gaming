@@ -1,0 +1,11 @@
+Manual Validation Notes
+
+PASS - Confirmed active-game selected styling is on the Game table cell/button, not the Actions edit button.
+PASS - Confirmed Edit remains a plain action until it opens an inline edit row.
+PASS - Confirmed inline edit row shows Game, Purpose, Status, Owner, Actions columns with Save and Cancel.
+PASS - Confirmed Game textbox is visible during edit and read-only because no rename API exists in the current Game Hub contract.
+PASS - Confirmed Add Game row appears under the game table and expands to Game, Purpose, Status, Owner, Actions with Save and Cancel.
+PASS - Confirmed add and edit saves use the existing repository API/service methods.
+PASS - Confirmed Source Idea and Readiness Output child rows remain under expanded game parent rows.
+PASS - Confirmed guest users can browse/select games but cannot add or edit.
+
