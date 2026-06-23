@@ -1,216 +1,488 @@
+﻿diff --git a/.env.example b/.env.example
+index f293b6f83..9d5e4301b 100644
+--- a/.env.example
++++ b/.env.example
+@@ -50,6 +50,11 @@ GAMEFOUNDRY_DB_BACKUP_DIR=
+
+ # Server-only project asset storage configuration.
+ # Browser uploads must go through the server API and must not receive these secrets.
++# Approved GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX values:
++# DEV /dev/projects/
++# IST /ist/projects/
++# UAT /uat/projects/
++# PRD /prod/projects/
+ GAMEFOUNDRY_STORAGE_ENDPOINT=
+ GAMEFOUNDRY_STORAGE_ACCESS_KEY_ID=
+
+diff --git a/admin/infrastructure.html b/admin/infrastructure.html
+index 0c9e90b3e..89bf99e0d 100644
+--- a/admin/infrastructure.html
++++ b/admin/infrastructure.html
+@@ -41,7 +41,7 @@
+                                     <p>/dev/projects/</p>
+                                     <p>/ist/projects/</p>
+                                     <p>/uat/projects/</p>
+-                                    <p>/prd/projects/</p>
++                                    <p>/prod/projects/</p>
+                                 </div>
+                             </details>
+                         </div>
+@@ -81,7 +81,7 @@
+                                     <tr><td>DEV</td><td>/dev/projects/</td><td>Loading</td></tr>
+                                     <tr><td>IST</td><td>/ist/projects/</td><td>Loading</td></tr>
+                                     <tr><td>UAT</td><td>/uat/projects/</td><td>Loading</td></tr>
+-                                    <tr><td>PRD</td><td>/prd/projects/</td><td>Loading</td></tr>
++                                    <tr><td>PRD</td><td>/prod/projects/</td><td>Loading</td></tr>
+                                 </tbody>
+                             </table>
+                         </div>
+diff --git a/assets/theme-v2/js/admin-infrastructure.js b/assets/theme-v2/js/admin-infrastructure.js
+index 0251c32d6..b470c84df 100644
+--- a/assets/theme-v2/js/admin-infrastructure.js
++++ b/assets/theme-v2/js/admin-infrastructure.js
+@@ -6,7 +6,7 @@ const STORAGE_PATH_LANES = Object.freeze([
+     Object.freeze({ lane: "DEV", path: "/dev/projects/" }),
+     Object.freeze({ lane: "IST", path: "/ist/projects/" }),
+     Object.freeze({ lane: "UAT", path: "/uat/projects/" }),
+-    Object.freeze({ lane: "PRD", path: "/prd/projects/" }),
++    Object.freeze({ lane: "PRD", path: "/prod/projects/" }),
+ ]);
+
+ class AdminInfrastructureStoragePathStatus {
 diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization-instruction-compliance-checklist.md
-new file mode 100644
-index 000000000..0f6b67287
---- /dev/null
+index 0f6b67287..00ec50d7c 100644
+--- a/docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization-instruction-compliance-checklist.md
 +++ b/docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization-instruction-compliance-checklist.md
-@@ -0,0 +1,17 @@
-+# PR_26175_CHARLIE_003 Instruction Compliance Checklist
-+
-+| Requirement | Status | Evidence |
-+|---|---:|---|
-+| Active branch remains `PR_26172_CHARLIE_repository-compliance-stack` | PASS | Branch gate passed before PLAN changes. |
-+| Worktree clean before PLAN | PASS | `git status --short` returned no output. |
-+| Scope only R2 storage configuration standardization | PASS | PLAN is limited to `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX` and R2 storage config/status targets. |
-+| Standardize around `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX` | PASS | PLAN names this as the authoritative project storage prefix variable. |
-+| Include `/dev/projects/` | PASS | Approved prefix listed. |
-+| Include `/ist/projects/` | PASS | Approved prefix listed. |
-+| Include `/uat/projects/` | PASS | Approved prefix listed. |
-+| Include `/prod/projects/` | PASS | Approved prefix listed. |
-+| Do not implement telemetry | PASS | Telemetry is explicitly out of scope. |
-+| Do not implement configurable runtime ports | PASS | Runtime-port work is explicitly out of scope. |
-+| No implementation files changed in PLAN | PASS | PLAN creates report artifacts only. |
-+| Required reports under `docs_build/dev/reports/` | PASS | PLAN, manual notes, checklist, Codex diff, and changed-files reports are produced. |
-+| Repo-structured ZIP under `tmp/` | PASS | Planned artifact: `tmp/PR_26175_CHARLIE_003-r2-storage-standardization_PLAN_delta.zip`. |
+@@ -2,16 +2,21 @@
+
+ | Requirement | Status | Evidence |
+ |---|---:|---|
+-| Active branch remains `PR_26172_CHARLIE_repository-compliance-stack` | PASS | Branch gate passed before PLAN changes. |
+-| Worktree clean before PLAN | PASS | `git status --short` returned no output. |
+-| Scope only R2 storage configuration standardization | PASS | PLAN is limited to `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX` and R2 storage config/status targets. |
+-| Standardize around `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX` | PASS | PLAN names this as the authoritative project storage prefix variable. |
+-| Include `/dev/projects/` | PASS | Approved prefix listed. |
+-| Include `/ist/projects/` | PASS | Approved prefix listed. |
+-| Include `/uat/projects/` | PASS | Approved prefix listed. |
+-| Include `/prod/projects/` | PASS | Approved prefix listed. |
+-| Do not implement telemetry | PASS | Telemetry is explicitly out of scope. |
+-| Do not implement configurable runtime ports | PASS | Runtime-port work is explicitly out of scope. |
+-| No implementation files changed in PLAN | PASS | PLAN creates report artifacts only. |
+-| Required reports under `docs_build/dev/reports/` | PASS | PLAN, manual notes, checklist, Codex diff, and changed-files reports are produced. |
+-| Repo-structured ZIP under `tmp/` | PASS | Planned artifact: `tmp/PR_26175_CHARLIE_003-r2-storage-standardization_PLAN_delta.zip`. |
++| Active branch remains `PR_26172_CHARLIE_repository-compliance-stack` | PASS | Branch gate returned `PR_26172_CHARLIE_repository-compliance-stack`. |
++| Worktree clean before BUILD | PASS | `git status --short` returned no output before edits. |
++| Local/origin sync before BUILD is `0 0` | PASS | Sync check returned `0 0`. |
++| Scope only R2 storage configuration standardization | PASS | Changes are limited to prefix config, safe status surfaces, validation, tests, and reports. |
++| Standardize around `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX` | PASS | Shared approved prefix list added in `storage-config.mjs`. |
++| Allow `/dev/projects/` | PASS | Included in `STORAGE_PROJECTS_ALLOWED_PREFIXES`; covered by tests/status surfaces. |
++| Allow `/ist/projects/` | PASS | Included in `STORAGE_PROJECTS_ALLOWED_PREFIXES`; covered by tests/status surfaces. |
++| Allow `/uat/projects/` | PASS | Included in `STORAGE_PROJECTS_ALLOWED_PREFIXES`; covered by tests/status surfaces. |
++| Allow `/prod/projects/` | PASS | Included in `STORAGE_PROJECTS_ALLOWED_PREFIXES`; PRD lane references updated to `/prod/projects/`. |
++| Reject unapproved project prefixes | PASS | New storage-config test rejects `/production/projects/`, `/qa/projects/`, and `/projects/`. |
++| Preserve R2 list/read/write/delete behavior | PASS | Connectivity action code paths were not changed; storage validation list/readiness passed with `--use-system-ca`. |
++| Preserve System Health and Infrastructure safe status surfaces | PASS | Targeted Admin Health Operations and Infrastructure Playwright validations passed. |
++| Do not expose secrets | PASS | Safe config excludes access and secret keys; validation output did not print credential values. |
++| Do not implement telemetry | PASS | No telemetry implementation was added. |
++| Do not implement configurable runtime ports | PASS | Runtime port code was not changed. |
++| Do not edit ignored local `.env` files | PASS | Only `.env.example` was updated. |
++| Required reports under `docs_build/dev/reports/` | PASS | PR report, manual notes, checklist, codex diff, and changed-files reports are produced. |
++| Repo-structured ZIP under `tmp/` | PASS | ZIP produced as `tmp/PR_26175_CHARLIE_003-r2-storage-standardization_delta.zip`. |
 diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization-manual-validation-notes.md b/docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization-manual-validation-notes.md
-new file mode 100644
-index 000000000..54d0e1aa8
---- /dev/null
+index 54d0e1aa8..8a14de4ca 100644
+--- a/docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization-manual-validation-notes.md
 +++ b/docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization-manual-validation-notes.md
-@@ -0,0 +1,31 @@
-+# PR_26175_CHARLIE_003 Manual Validation Notes
+@@ -1,31 +1,34 @@
+ # PR_26175_CHARLIE_003 Manual Validation Notes
+
+-## Manual Checks Completed During PLAN
++## Manual Checks Completed During BUILD
+
+ - Confirmed active branch remained `PR_26172_CHARLIE_repository-compliance-stack`.
+-- Confirmed worktree was clean before PLAN artifacts were created.
+-- Confirmed branch local/origin sync was `0 0` before PLAN artifacts were created.
+-- Reviewed active ProjectInstructions and Team Charlie ownership.
+-- Reviewed R2 storage config, R2 provider, Admin Infrastructure, Admin System Health, storage validation script, and targeted Admin Playwright coverage.
+-
+-## Current State Observations
+-
+-- The active R2 storage config normalizes `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX`.
+-- Server-side status already recognizes the approved storage lanes for Admin Infrastructure/System Health.
+-- The storage config loader does not yet reject arbitrary normalized project prefixes.
+-- `.env.example` includes `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX=` but no lane value.
+-- Tracked `.env.dev`, `.env.ist`, `.env.uat`, and `.env.prd` files were not present in this workspace search.
+-
+-## Manual Checks Required During APPLY/Build
+-
+-- Verify project prefix validation accepts only `/dev/projects/`, `/ist/projects/`, `/uat/projects/`, and `/prod/projects/`.
+-- Verify invalid prefix status is visible and actionable.
+-- Verify R2 credential values are never printed.
+-- Verify existing R2 connectivity behavior still uses the configured approved prefix.
+-- Verify telemetry and configurable runtime ports were not implemented.
+-
+-## Skipped During PLAN
+-
+-- No implementation validation was run because this task is PLAN_PR only.
+-- No Playwright validation was run because no runtime/UI files were changed.
+-- No samples were run.
++- Confirmed worktree was clean before BUILD edits.
++- Confirmed branch local/origin sync was `0 0` before BUILD edits.
++- Reviewed ProjectInstructions and approved PLAN report.
++- Reviewed exact target files for R2 storage config, Local API status surface, Admin Infrastructure, storage validation, and targeted tests.
 +
-+## Manual Checks Completed During PLAN
++## Behavioral Notes
 +
-+- Confirmed active branch remained `PR_26172_CHARLIE_repository-compliance-stack`.
-+- Confirmed worktree was clean before PLAN artifacts were created.
-+- Confirmed branch local/origin sync was `0 0` before PLAN artifacts were created.
-+- Reviewed active ProjectInstructions and Team Charlie ownership.
-+- Reviewed R2 storage config, R2 provider, Admin Infrastructure, Admin System Health, storage validation script, and targeted Admin Playwright coverage.
++- `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX` now accepts only normalized project prefixes in the approved lane list.
++- PRD lane display now uses `/prod/projects/`.
++- Invalid project prefixes return a safe validation error that names approved values and does not expose credentials.
++- R2 list/read/write/delete code paths were not changed.
++- System Health and Infrastructure status surfaces continue to hide storage credentials.
 +
-+## Current State Observations
++## Validation Notes
 +
-+- The active R2 storage config normalizes `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX`.
-+- Server-side status already recognizes the approved storage lanes for Admin Infrastructure/System Health.
-+- The storage config loader does not yet reject arbitrary normalized project prefixes.
-+- `.env.example` includes `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX=` but no lane value.
-+- Tracked `.env.dev`, `.env.ist`, `.env.uat`, and `.env.prd` files were not present in this workspace search.
++- `git diff --check` passed.
++- `node --test tests/dev-runtime/StorageConfig.test.mjs` passed.
++- `node --test tests/dev-runtime/AdminHealthOperations.test.mjs` passed.
++- Targeted Admin Infrastructure Playwright storage path tests passed.
++- Targeted Admin System Health Playwright route tests passed.
++- `node scripts/validate-storage-config.mjs` failed on local certificate trust before a code failure was observed.
++- `node --use-system-ca scripts/validate-storage-config.mjs` passed and confirmed R2 list/readiness for `/dev/projects/`.
 +
-+## Manual Checks Required During APPLY/Build
++## Skipped Validation
 +
-+- Verify project prefix validation accepts only `/dev/projects/`, `/ist/projects/`, `/uat/projects/`, and `/prod/projects/`.
-+- Verify invalid prefix status is visible and actionable.
-+- Verify R2 credential values are never printed.
-+- Verify existing R2 connectivity behavior still uses the configured approved prefix.
-+- Verify telemetry and configurable runtime ports were not implemented.
-+
-+## Skipped During PLAN
-+
-+- No implementation validation was run because this task is PLAN_PR only.
-+- No Playwright validation was run because no runtime/UI files were changed.
-+- No samples were run.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization_PLAN.md b/docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization_PLAN.md
++- Full samples smoke was skipped because the approved scope was storage prefix standardization only.
++- Broad Playwright was skipped because targeted Admin status validations passed.
++- Telemetry validation was skipped because telemetry is out of scope.
++- Configurable runtime port validation was skipped because runtime ports are out of scope.
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization.md b/docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization.md
 new file mode 100644
-index 000000000..08cbb72cd
+index 000000000..2aa5109c2
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization_PLAN.md
-@@ -0,0 +1,150 @@
-+# PLAN_PR: PR_26175_CHARLIE_003-r2-storage-standardization
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization.md
+@@ -0,0 +1,82 @@
++# PR_26175_CHARLIE_003-r2-storage-standardization
 +
 +Team: Charlie
 +
-+Purpose: Plan a scoped R2 storage configuration standardization PR around `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX` and the approved project storage prefixes.
++Purpose: Standardize R2 project asset storage around `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX` and the approved project prefix set.
 +
-+## Branch and Context Validation
++## Branch Validation
 +
 +| Check | Expected | Actual | Status |
 +|---|---|---|---|
 +| Active branch | `PR_26172_CHARLIE_repository-compliance-stack` | `PR_26172_CHARLIE_repository-compliance-stack` | PASS |
-+| Worktree before PLAN changes | clean | clean | PASS |
-+| Local/origin sync before PLAN changes | `0 0` | `0 0` | PASS |
-+| Active team | Team Charlie | Team Charlie | PASS |
-+| Ownership scope | Infrastructure / Storage / System Health | R2 storage configuration standardization | PASS |
++| Worktree before BUILD | clean | clean | PASS |
++| Local/origin sync before BUILD | `0 0` | `0 0` | PASS |
++| Team ownership | Charlie storage/infrastructure | R2 storage configuration standardization | PASS |
 +
-+## Scope
++## Implementation Summary
 +
-+Plan only for R2 storage configuration standardization.
-+
-+Approved standard:
-+
-+- Configuration variable: `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX`
-+- Allowed project storage prefixes:
++- Added `STORAGE_PROJECTS_PREFIX_LANES` and `STORAGE_PROJECTS_ALLOWED_PREFIXES` as the shared approved project prefix contract.
++- Restricted `loadStorageConfig()` to normalized prefixes matching:
 +  - `/dev/projects/`
 +  - `/ist/projects/`
 +  - `/uat/projects/`
 +  - `/prod/projects/`
++- Updated Admin Infrastructure and Local API storage path status to use `/prod/projects/` for the PRD lane.
++- Kept R2 list/read/write/delete behavior unchanged and still routed through the configured project prefix.
++- Updated `.env.example` comments and `scripts/validate-storage-config.mjs` safe output to name approved prefixes.
++- Added focused `node:test` coverage for prefix normalization, allow-list validation, missing prefix handling, and safe config secret masking.
 +
-+Allowed APPLY/build scope:
++## Files Changed
 +
-+- Standardize project asset storage config validation around the approved prefix set.
-+- Keep R2 as the project asset storage provider direction.
-+- Keep object keys server-owned and under the configured prefix.
-+- Keep prefix normalization for slash and backslash cleanup, then validate against the approved prefix set.
-+- Keep safe status surfaces in Admin Infrastructure and Admin System Health aligned with the same allowed prefix set.
-+- Preserve existing R2 list/read/write/delete connectivity behavior.
-+- Preserve existing Postgres, Runtime Environment, Limits, Diagnostics Plan, and Diagnostics Log behavior.
-+- Preserve secret masking and never return access key or secret key values.
-+
-+Explicitly out of scope:
-+
-+- Telemetry implementation.
-+- Configurable runtime ports.
-+- New storage provider abstraction.
-+- Live R2 credential changes.
-+- New persistence tables or database schema.
-+- Backup prefix changes beyond checking for conflicts with project storage prefix rules.
-+- Editing local ignored `.env` files.
-+- Samples smoke.
-+
-+## Current Implementation Inventory
-+
-+Exact target files reviewed:
-+
-+- `src/dev-runtime/storage/storage-config.mjs`
-+- `src/dev-runtime/storage/r2-project-asset-storage.mjs`
-+- `src/dev-runtime/server/local-api-router.mjs`
-+- `scripts/validate-storage-config.mjs`
++- `.env.example`
 +- `admin/infrastructure.html`
 +- `assets/theme-v2/js/admin-infrastructure.js`
-+- `admin/system-health.html`
-+- `assets/theme-v2/js/admin-system-health.js`
++- `scripts/validate-storage-config.mjs`
++- `src/dev-runtime/server/local-api-router.mjs`
++- `src/dev-runtime/storage/storage-config.mjs`
++- `tests/dev-runtime/StorageConfig.test.mjs`
 +- `tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
 +
-+Current findings:
++## Scope Guardrails
 +
-+- `storage-config.mjs` normalizes `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX` but currently accepts any non-empty normalized prefix.
-+- `local-api-router.mjs` already has `STORAGE_PROJECTS_PREFIX_LANES` with the four approved prefixes and reports invalid paths in Infrastructure/System Health status.
-+- `admin/infrastructure.html` lists `/dev/projects/`, `/ist/projects/`, `/uat/projects/`, and `/prd/projects/`.
-+- `assets/theme-v2/js/admin-infrastructure.js` mirrors those four paths client-side for fallback/error rows.
-+- `AdminPlatformToolsWireframes.spec.mjs` has focused coverage for missing, invalid, DEV, and IST path status and includes the full four-prefix list.
-+- `scripts/validate-storage-config.mjs` validates configured R2 connectivity but depends on `loadStorageConfig()` for prefix acceptance.
-+- `.env.example` includes `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX=` but does not currently enforce a value.
-+- Tracked `.env.dev`, `.env.ist`, `.env.uat`, and `.env.prd` files were not present in this workspace when searched. Local ignored environment files must not be edited by this PR.
++| Requirement | Status | Notes |
++|---|---:|---|
++| Preserve R2 list/read/write/delete behavior | PASS | Connectivity action code paths were not changed. |
++| Preserve System Health safe status surface | PASS | Existing Admin Health Operations test and page spec passed. |
++| Preserve Infrastructure safe status surface | PASS | Storage path status rows now use the shared approved prefix list. |
++| Do not expose secrets | PASS | Safe config excludes access key and secret key values; validation output printed no secret values. |
++| Do not implement telemetry | PASS | No telemetry code was added. |
++| Do not implement configurable runtime ports | PASS | Runtime port logic was not changed. |
++| Do not edit local ignored `.env` files | PASS | Only `.env.example` was updated. |
 +
-+## Proposed APPLY/Build Steps
++## Validation Lane Report
 +
-+1. Add an exported approved project prefix list in `src/dev-runtime/storage/storage-config.mjs`, for example `STORAGE_PROJECTS_ALLOWED_PREFIXES`.
-+2. Update `loadStorageConfig()` so `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX` is normalized first, then accepted only when it matches one of:
-+   - `/dev/projects/`
-+   - `/ist/projects/`
-+   - `/uat/projects/`
-+   - `/prod/projects/`
-+3. Return a safe validation error when the prefix is missing or outside the approved list.
-+4. Update `src/dev-runtime/server/local-api-router.mjs` to reuse the storage-config approved prefix list where practical, or keep its lane metadata explicitly synchronized if importing would create an unwanted dependency.
-+5. Update `scripts/validate-storage-config.mjs` output so invalid prefixes report the approved values without printing secrets.
-+6. Update `.env.example` comments near `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX` to document the approved values. Leave the value blank if templates should not default to a lane.
-+7. Add or update targeted Node tests for `normalizeStorageProjectsPrefix()` and `loadStorageConfig()`:
-+   - accepts slash variants that normalize to approved prefixes;
-+   - rejects `/qa/projects/`;
-+   - rejects generic `/projects/`;
-+   - rejects empty values;
-+   - never exposes access key or secret key values in safe config.
-+8. Update targeted Admin/System Health validation only if the payload shape changes.
-+9. Produce required reports and repo-structured ZIP.
++| Command | Result |
++|---|---:|
++| `git diff --check` | PASS |
++| `node --test tests/dev-runtime/StorageConfig.test.mjs` | PASS, 5 tests |
++| `node --test tests/dev-runtime/AdminHealthOperations.test.mjs` | PASS, 4 tests |
++| `npx playwright test tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs --grep "Infrastructure storage path status"` | PASS, 4 tests |
++| `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs` | PASS, 3 tests |
++| `node scripts/validate-storage-config.mjs` | FAIL due local Node certificate trust error before code changes were needed |
++| `node --use-system-ca scripts/validate-storage-config.mjs` | PASS; R2 list/readiness succeeded for `/dev/projects/` with 0 objects |
 +
-+## Status and Severity Rules
++## Validation Notes
 +
-+Use existing status model:
++- The first `validate-storage-config` run loaded `.env`, confirmed all storage keys were present, and printed only safe endpoint, bucket, and prefix values. It failed on `UNABLE_TO_VERIFY_LEAF_SIGNATURE`.
++- The rerun with `--use-system-ca` passed and confirmed the R2 list/readiness behavior under the approved `/dev/projects/` prefix.
++- Active code, config, Admin UI, and targeted tests no longer use `/prd/projects/`.
++- Historical report references to `/prd/projects/` were left untouched as report history.
 +
-+- `PASS`: configured prefix matches exactly one approved lane.
-+- `WARN`: missing or incomplete storage configuration.
-+- `FAIL`: malformed or unsafe storage configuration if the existing caller expects failure semantics.
-+- `PENDING`: intentionally unwired future work only.
++## Skipped Lanes
 +
-+For this PR, invalid project prefixes should remain visible and actionable. The recommended server-facing status is `WARN` unless an existing route/test already treats invalid prefix as `ERROR` and preserving that behavior is safer. Browser-facing status must not expose secret values.
++- Full samples smoke: skipped; out of scope for R2 prefix standardization.
++- Broad Playwright: skipped; targeted Admin Infrastructure and System Health specs passed.
++- Telemetry validation: skipped; telemetry is explicitly out of scope.
++- Configurable runtime port validation: skipped; runtime ports are explicitly out of scope.
 +
-+## Validation Plan
++## BUILD Result
 +
-+Required targeted validation for APPLY/build:
++BUILD status: PASS.
 +
-+- `git diff --check`
-+- `node --test tests/dev-runtime/StorageConfig.test.mjs` or equivalent new targeted storage-config test
-+- `node --test tests/dev-runtime/AdminHealthOperations.test.mjs`
-+- `npx playwright test tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs --grep "Infrastructure storage path status"`
-+- `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`
-+- `node scripts/validate-storage-config.mjs` only when `.env` is present and configured; otherwise document SKIP from script output.
++Recommendation: Keep this commit on the Charlie stack for owner review.
+diff --git a/scripts/validate-storage-config.mjs b/scripts/validate-storage-config.mjs
+index 032195b24..e84193ba9 100644
+--- a/scripts/validate-storage-config.mjs
++++ b/scripts/validate-storage-config.mjs
+@@ -3,7 +3,11 @@ import fs from "node:fs";
+ import path from "node:path";
+ import process from "node:process";
+ import { createConfiguredProjectAssetStorage } from "../src/dev-runtime/storage/r2-project-asset-storage.mjs";
+-import { STORAGE_ENV_KEYS, loadStorageConfig } from "../src/dev-runtime/storage/storage-config.mjs";
++import {
++  STORAGE_ENV_KEYS,
++  STORAGE_PROJECTS_ALLOWED_PREFIXES,
++  loadStorageConfig,
++} from "../src/dev-runtime/storage/storage-config.mjs";
+
+ const ENV_FILE = ".env";
+
+@@ -64,6 +68,7 @@ console.log(`PASS - Storage env keys present=${presentKeys.length}/${STORAGE_ENV
+
+ if (!config.configured) {
+   console.log(`SKIP - Storage DEV values are not fully configured in .env (${config.missingKeys?.join(", ") || config.validationError}).`);
++  console.log(`SKIP - Approved project storage prefixes: ${STORAGE_PROJECTS_ALLOWED_PREFIXES.join(", ")}.`);
+   process.exit(0);
+ }
+
+diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
+index 989e4410e..28e015fe9 100644
+--- a/src/dev-runtime/server/local-api-router.mjs
++++ b/src/dev-runtime/server/local-api-router.mjs
+@@ -17,7 +17,11 @@ import {
+   createInputMappingToolMockRepository,
+ } from "../persistence/tool-repositories/input-mapping-mock-repository.js";
+ import { createConfiguredBackupStorage, createConfiguredProjectAssetStorage } from "../storage/r2-project-asset-storage.mjs";
+-import { loadStorageConfig } from "../storage/storage-config.mjs";
++import {
++  STORAGE_PROJECTS_PREFIX_LANES,
++  loadStorageConfig,
++  normalizeStorageProjectsPrefix,
++} from "../storage/storage-config.mjs";
+ import { createPostgresBackup } from "../database/postgres-backup-service.mjs";
+ import {
+   GFSP_PACKAGE_REQUIRED_FILES,
+@@ -335,12 +339,6 @@ const SYSTEM_HEALTH_USAGE_CONTRACTS = Object.freeze({
+     integrationPoint: "Future R2 provider telemetry can report project asset storage bytes used through the Local API.",
+   }),
+ });
+-const STORAGE_PROJECTS_PREFIX_LANES = Object.freeze([
+-  Object.freeze({ lane: "DEV", path: "/dev/projects/" }),
+-  Object.freeze({ lane: "IST", path: "/ist/projects/" }),
+-  Object.freeze({ lane: "UAT", path: "/uat/projects/" }),
+-  Object.freeze({ lane: "PRD", path: "/prd/projects/" }),
+-]);
+ const STORAGE_CONNECTIVITY_ACTIONS = Object.freeze([
+   Object.freeze({ id: "storage-list", label: "List" }),
+   Object.freeze({ id: "storage-write-test-object", label: "Write test object" }),
+@@ -503,8 +501,9 @@ function dotEnvValue(key) {
+
+ function storageProjectsPrefixStatus() {
+   const currentPath = dotEnvValue(STORAGE_PROJECTS_PREFIX_ENV_KEY);
+-  const matchedLane = STORAGE_PROJECTS_PREFIX_LANES.find((lane) => lane.path === currentPath.value);
+-  const invalidPath = !currentPath.found || !currentPath.value || !matchedLane;
++  const normalizedPath = normalizeStorageProjectsPrefix(currentPath.value);
++  const matchedLane = STORAGE_PROJECTS_PREFIX_LANES.find((lane) => lane.path === normalizedPath);
++  const invalidPath = !currentPath.found || !normalizedPath || !matchedLane;
+   const rows = STORAGE_PROJECTS_PREFIX_LANES.map((lane) => {
+     if (invalidPath) {
+       return {
+@@ -514,7 +513,7 @@ function storageProjectsPrefixStatus() {
+         value: "ERROR",
+       };
+     }
+-    const active = currentPath.value === lane.path;
++    const active = normalizedPath === lane.path;
+     return {
+       ...lane,
+       active,
+@@ -525,7 +524,7 @@ function storageProjectsPrefixStatus() {
+   return {
+     configured: !invalidPath,
+     invalidPath,
+-    missing: !currentPath.found || !currentPath.value,
++    missing: !currentPath.found || !normalizedPath,
+     rows,
+     secretsExposed: false,
+     status: invalidPath ? "ERROR" : "PASS",
+diff --git a/src/dev-runtime/storage/storage-config.mjs b/src/dev-runtime/storage/storage-config.mjs
+index e54f404cc..ceecc8469 100644
+--- a/src/dev-runtime/storage/storage-config.mjs
++++ b/src/dev-runtime/storage/storage-config.mjs
+@@ -8,6 +8,15 @@ export const STORAGE_ENV_KEYS = Object.freeze([
+   ...STORAGE_CONNECTION_ENV_KEYS,
+   "GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX",
+ ]);
++export const STORAGE_PROJECTS_PREFIX_LANES = Object.freeze([
++  Object.freeze({ lane: "DEV", path: "/dev/projects/" }),
++  Object.freeze({ lane: "IST", path: "/ist/projects/" }),
++  Object.freeze({ lane: "UAT", path: "/uat/projects/" }),
++  Object.freeze({ lane: "PRD", path: "/prod/projects/" }),
++]);
++export const STORAGE_PROJECTS_ALLOWED_PREFIXES = Object.freeze(
++  STORAGE_PROJECTS_PREFIX_LANES.map((lane) => lane.path),
++);
+ export const DB_BACKUP_STORAGE_PROVIDER_ENV = "GAMEFOUNDRY_DB_BACKUP_STORAGE_PROVIDER";
+ export const DB_BACKUP_PREFIX_ENV = "GAMEFOUNDRY_DB_BACKUP_PREFIX";
+ export const DB_BACKUP_STORAGE_ENV_KEYS = Object.freeze([
+@@ -38,6 +47,10 @@ export function normalizeStorageProjectsPrefix(value) {
+   return normalizeStoragePrefix(value);
+ }
+
++function storageProjectsPrefixValidationError() {
++  return `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX must be one of ${STORAGE_PROJECTS_ALLOWED_PREFIXES.join(", ")}.`;
++}
 +
-+Required static checks:
+ export function loadStorageConfig(env = process.env) {
+   const missingKeys = STORAGE_ENV_KEYS.filter((key) => !envValue(env, key));
+   if (missingKeys.length) {
+@@ -80,6 +93,18 @@ export function loadStorageConfig(env = process.env) {
+       },
+     };
+   }
++  if (!STORAGE_PROJECTS_ALLOWED_PREFIXES.includes(projectsPrefix)) {
++    return {
++      configured: false,
++      missingKeys: [],
++      safe: {
++        bucket: envValue(env, "GAMEFOUNDRY_STORAGE_BUCKET"),
++        endpoint: endpoint.origin,
++        projectsPrefix,
++      },
++      validationError: storageProjectsPrefixValidationError(),
++    };
++  }
+
+   return {
+     accessKeyId: envValue(env, "GAMEFOUNDRY_STORAGE_ACCESS_KEY_ID"),
+diff --git a/tests/dev-runtime/StorageConfig.test.mjs b/tests/dev-runtime/StorageConfig.test.mjs
+new file mode 100644
+index 000000000..b7e30cd6f
+--- /dev/null
++++ b/tests/dev-runtime/StorageConfig.test.mjs
+@@ -0,0 +1,72 @@
++import assert from "node:assert/strict";
++import test from "node:test";
++import {
++  STORAGE_PROJECTS_ALLOWED_PREFIXES,
++  loadStorageConfig,
++  normalizeStorageProjectsPrefix,
++} from "../../src/dev-runtime/storage/storage-config.mjs";
 +
-+- Verify `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX` appears in config/docs/status surfaces.
-+- Verify approved prefixes appear:
-+  - `/dev/projects/`
-+  - `/ist/projects/`
-+  - `/uat/projects/`
-+  - `/prod/projects/`
-+- Verify no raw R2 credentials are printed in reports, tests, or status payloads.
++function validStorageEnv(projectsPrefix = "/dev/projects/") {
++  return {
++    GAMEFOUNDRY_STORAGE_ACCESS_KEY_ID: "test-access-key",
++    GAMEFOUNDRY_STORAGE_BUCKET: "gamefoundry-test-assets",
++    GAMEFOUNDRY_STORAGE_ENDPOINT: "https://r2.example.invalid",
++    GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX: projectsPrefix,
++    GAMEFOUNDRY_STORAGE_SECRET_ACCESS_KEY: "test-secret-key",
++  };
++}
 +
-+Skipped lanes:
++test("storage projects prefix normalizes slash variants", () => {
++  assert.equal(normalizeStorageProjectsPrefix("dev/projects"), "/dev/projects/");
++  assert.equal(normalizeStorageProjectsPrefix("\\ist\\projects\\"), "/ist/projects/");
++  assert.equal(normalizeStorageProjectsPrefix(" /uat/projects/ "), "/uat/projects/");
++  assert.equal(normalizeStorageProjectsPrefix("prod/projects/"), "/prod/projects/");
++});
 +
-+- Full samples smoke: skipped because scope is R2 storage config standardization only.
-+- Broad Playwright: skipped unless targeted Admin/System Health validation fails.
-+- Telemetry validation: skipped because telemetry is explicitly out of scope.
-+- Runtime-port validation: skipped because configurable runtime ports are explicitly out of scope.
++test("storage config accepts only approved project storage prefixes", () => {
++  assert.deepEqual(STORAGE_PROJECTS_ALLOWED_PREFIXES, [
++    "/dev/projects/",
++    "/ist/projects/",
++    "/uat/projects/",
++    "/prod/projects/",
++  ]);
 +
-+## Required Reports for APPLY/Build
++  STORAGE_PROJECTS_ALLOWED_PREFIXES.forEach((projectsPrefix) => {
++    const config = loadStorageConfig(validStorageEnv(projectsPrefix));
++    assert.equal(config.configured, true);
++    assert.equal(config.safe.projectsPrefix, projectsPrefix);
++  });
++});
 +
-+- `docs_build/dev/reports/codex_review.diff`
-+- `docs_build/dev/reports/codex_changed_files.txt`
-+- `docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization.md`
-+- `docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization-manual-validation-notes.md`
-+- `docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization-instruction-compliance-checklist.md`
-+- repo-structured delta ZIP under `tmp/`
++test("storage config rejects unapproved project storage prefixes", () => {
++  ["/production/projects/", "/qa/projects/", "/projects/"].forEach((projectsPrefix) => {
++    const config = loadStorageConfig(validStorageEnv(projectsPrefix));
++    assert.equal(config.configured, false);
++    assert.equal(config.safe.projectsPrefix, projectsPrefix);
++    assert.match(config.validationError, /GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX must be one of/);
++    assert.equal(config.validationError.includes("/prod/projects/"), true);
++  });
++});
 +
-+## PLAN_PR Result
++test("storage config reports missing project storage prefix", () => {
++  const env = validStorageEnv("");
++  const config = loadStorageConfig(env);
++  assert.equal(config.configured, false);
++  assert.deepEqual(config.missingKeys, ["GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX"]);
++  assert.equal(config.safe.projectsPrefix, "");
++});
 +
-+PLAN status: PASS.
-+
-+Recommendation: Proceed to BUILD/APPLY on the active Charlie stack branch if owner approves the scoped server-side prefix validation and targeted test additions.
++test("storage safe config does not expose credential values", () => {
++  const env = validStorageEnv("/prod/projects/");
++  const config = loadStorageConfig(env);
++  assert.equal(config.configured, true);
++  assert.deepEqual(config.safe, {
++    bucket: "gamefoundry-test-assets",
++    endpoint: "https://r2.example.invalid",
++    projectsPrefix: "/prod/projects/",
++  });
++  assert.equal(Object.hasOwn(config.safe, "accessKeyId"), false);
++  assert.equal(Object.hasOwn(config.safe, "secretAccessKey"), false);
++  assert.equal(JSON.stringify(config.safe).includes("test-access-key"), false);
++  assert.equal(JSON.stringify(config.safe).includes("test-secret-key"), false);
++});
+diff --git a/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs b/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
+index bed813761..61ba37122 100644
+--- a/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
++++ b/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
+@@ -37,7 +37,7 @@ function storagePathStatusFor(configuredPath) {
+     { lane: "DEV", path: "/dev/projects/" },
+     { lane: "IST", path: "/ist/projects/" },
+     { lane: "UAT", path: "/uat/projects/" },
+-    { lane: "PRD", path: "/prd/projects/" },
++    { lane: "PRD", path: "/prod/projects/" },
+   ];
+   const matchedLane = lanes.find((lane) => lane.path === configuredPath);
+   const invalidPath = !matchedLane;
+@@ -480,7 +480,7 @@ async function expectStoragePathStatusRows(page, expectedValues) {
+   const storageRows = page.locator("[data-admin-storage-path-status-rows] tr");
+   await expect(storageRows).toHaveCount(4);
+   const lanes = ["DEV", "IST", "UAT", "PRD"];
+-  const paths = ["/dev/projects/", "/ist/projects/", "/uat/projects/", "/prd/projects/"];
++  const paths = ["/dev/projects/", "/ist/projects/", "/uat/projects/", "/prod/projects/"];
+   for (let index = 0; index < lanes.length; index += 1) {
+     await expect(storageRows.nth(index).locator("td")).toHaveText([
+       lanes[index],
+@@ -554,7 +554,7 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
+         await expect(page.locator("body")).toContainText("/dev/projects/");
+         await expect(page.locator("body")).toContainText("/ist/projects/");
+         await expect(page.locator("body")).toContainText("/uat/projects/");
+-        await expect(page.locator("body")).toContainText("/prd/projects/");
++        await expect(page.locator("body")).toContainText("/prod/projects/");
+         await expect(page.locator("body")).toContainText("GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX");
+         await expectStoragePathStatusRows(page, ["yes", "no", "no", "no"]);
+         const infrastructureImage = page.locator("[data-image-zoom-target='admin-infrastructure-image-zoom']");

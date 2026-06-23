@@ -17,7 +17,11 @@ import {
   createInputMappingToolMockRepository,
 } from "../persistence/tool-repositories/input-mapping-mock-repository.js";
 import { createConfiguredBackupStorage, createConfiguredProjectAssetStorage } from "../storage/r2-project-asset-storage.mjs";
-import { loadStorageConfig } from "../storage/storage-config.mjs";
+import {
+  STORAGE_PROJECTS_PREFIX_LANES,
+  loadStorageConfig,
+  normalizeStorageProjectsPrefix,
+} from "../storage/storage-config.mjs";
 import { createPostgresBackup } from "../database/postgres-backup-service.mjs";
 import {
   GFSP_PACKAGE_REQUIRED_FILES,
@@ -335,12 +339,6 @@ const SYSTEM_HEALTH_USAGE_CONTRACTS = Object.freeze({
     integrationPoint: "Future R2 provider telemetry can report project asset storage bytes used through the Local API.",
   }),
 });
-const STORAGE_PROJECTS_PREFIX_LANES = Object.freeze([
-  Object.freeze({ lane: "DEV", path: "/dev/projects/" }),
-  Object.freeze({ lane: "IST", path: "/ist/projects/" }),
-  Object.freeze({ lane: "UAT", path: "/uat/projects/" }),
-  Object.freeze({ lane: "PRD", path: "/prd/projects/" }),
-]);
 const STORAGE_CONNECTIVITY_ACTIONS = Object.freeze([
   Object.freeze({ id: "storage-list", label: "List" }),
   Object.freeze({ id: "storage-write-test-object", label: "Write test object" }),
@@ -503,8 +501,9 @@ function dotEnvValue(key) {
 
 function storageProjectsPrefixStatus() {
   const currentPath = dotEnvValue(STORAGE_PROJECTS_PREFIX_ENV_KEY);
-  const matchedLane = STORAGE_PROJECTS_PREFIX_LANES.find((lane) => lane.path === currentPath.value);
-  const invalidPath = !currentPath.found || !currentPath.value || !matchedLane;
+  const normalizedPath = normalizeStorageProjectsPrefix(currentPath.value);
+  const matchedLane = STORAGE_PROJECTS_PREFIX_LANES.find((lane) => lane.path === normalizedPath);
+  const invalidPath = !currentPath.found || !normalizedPath || !matchedLane;
   const rows = STORAGE_PROJECTS_PREFIX_LANES.map((lane) => {
     if (invalidPath) {
       return {
@@ -514,7 +513,7 @@ function storageProjectsPrefixStatus() {
         value: "ERROR",
       };
     }
-    const active = currentPath.value === lane.path;
+    const active = normalizedPath === lane.path;
     return {
       ...lane,
       active,
@@ -525,7 +524,7 @@ function storageProjectsPrefixStatus() {
   return {
     configured: !invalidPath,
     invalidPath,
-    missing: !currentPath.found || !currentPath.value,
+    missing: !currentPath.found || !normalizedPath,
     rows,
     secretsExposed: false,
     status: invalidPath ? "ERROR" : "PASS",

@@ -1,5 +1,11 @@
-docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization_PLAN.md
-docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization-manual-validation-notes.md
+﻿.env.example
+admin/infrastructure.html
+assets/theme-v2/js/admin-infrastructure.js
+docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization.md
 docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization-instruction-compliance-checklist.md
-docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization-manual-validation-notes.md
+scripts/validate-storage-config.mjs
+src/dev-runtime/server/local-api-router.mjs
+src/dev-runtime/storage/storage-config.mjs
+tests/dev-runtime/StorageConfig.test.mjs
+tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
