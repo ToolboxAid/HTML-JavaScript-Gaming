@@ -1,222 +1,526 @@
+diff --git a/admin/system-health.html b/admin/system-health.html
+index f5330bcdd..65ff3c12e 100644
+--- a/admin/system-health.html
++++ b/admin/system-health.html
+@@ -39,6 +39,7 @@
+                                 <summary>Health Sections</summary>
+                                 <div class="accordion-body content-stack">
+                                     <p>Environment Summary</p>
++                                    <p>Local API Startup</p>
+                                     <p>Database Health</p>
+                                     <p>Storage Health</p>
+                                     <p>Runtime Environment</p>
+@@ -74,6 +75,21 @@
+                                 </tbody>
+                             </table>
+                         </div>
++                        <div class="table-wrapper">
++                            <table class="data-table" aria-label="Local API startup diagnostics">
++                                <caption>Local API Startup Diagnostics</caption>
++                                <thead>
++                                    <tr>
++                                        <th scope="col">Field</th>
++                                        <th scope="col">Safe Value</th>
++                                        <th scope="col">Status</th>
++                                    </tr>
++                                </thead>
++                                <tbody data-admin-system-health-startup-rows>
++                                    <tr><td>Startup diagnostics</td><td>Waiting for safe API status</td><td data-health-status="PENDING" title="Reason: safe Local API startup diagnostics have not loaded yet." aria-label="PENDING: safe Local API startup diagnostics have not loaded yet.">PENDING</td></tr>
++                                </tbody>
++                            </table>
++                        </div>
+                         <div class="table-wrapper">
+                             <table class="data-table" aria-label="Database health">
+                                 <caption>Database Health - Postgres Only</caption>
+diff --git a/assets/theme-v2/js/admin-system-health.js b/assets/theme-v2/js/admin-system-health.js
+index 09e7a3bb3..72ddd7ea8 100644
+--- a/assets/theme-v2/js/admin-system-health.js
++++ b/assets/theme-v2/js/admin-system-health.js
+@@ -38,6 +38,7 @@ class AdminSystemHealthController {
+             node.dataset.adminSystemHealthStorageStatus,
+             node,
+         ]));
++        this.startupRows = root.querySelector("[data-admin-system-health-startup-rows]");
+         this.runtimeRows = root.querySelector("[data-admin-system-health-runtime-rows]");
+     }
+
+@@ -80,6 +81,7 @@ class AdminSystemHealthController {
+         ["host", "database", "migration", "connection"].forEach((key) => {
+             this.setStatus(key, "PENDING", reason);
+         });
++        this.renderStartupPending(reason);
+         this.renderStoragePending(reason);
+     }
+
+@@ -118,6 +120,45 @@ class AdminSystemHealthController {
+         this.setStorageStatus("bucket", storageStatus.bucketStatus || storageStatus.status, reason);
+     }
+
++    renderStartupPending(reason) {
++        if (!this.startupRows) {
++            return;
++        }
++        const row = document.createElement("tr");
++        row.append(
++            this.createCell("Local API startup diagnostics"),
++            this.createCell("not available"),
++            this.createStatusCell("PENDING", reason),
++        );
++        this.startupRows.replaceChildren(row);
++    }
++
++    renderStartupDiagnostics(localApiStartup = {}) {
++        if (!this.startupRows) {
++            return;
++        }
++        if (localApiStartup?.secretsExposed === true || localApiStartup?.secretEditingAllowed === true) {
++            this.renderStartupPending("Safe Local API startup diagnostics were blocked because the response exposed secret controls.");
++            return;
++        }
++        const rows = Array.isArray(localApiStartup.rows) ? localApiStartup.rows : [];
++        if (!rows.length) {
++            this.renderStartupPending("Safe Local API startup diagnostics returned no rows.");
++            return;
++        }
++        const fragment = document.createDocumentFragment();
++        rows.forEach((startupRow) => {
++            const row = document.createElement("tr");
++            row.append(
++                this.createCell(startupRow.field),
++                this.createCell(startupRow.value),
++                this.createStatusCell(startupRow.status, startupRow.reason || localApiStartup.message),
++            );
++            fragment.append(row);
++        });
++        this.startupRows.replaceChildren(fragment);
++    }
++
+     storageResultTarget(result = {}) {
+         if (typeof result.keysListed === "number" && result.actionId === "storage-list") {
+             return `${result.keysListed} object(s) under ${asText(result.projectsPrefix, "configured prefix")}`;
+@@ -210,6 +251,7 @@ class AdminSystemHealthController {
+                 return;
+             }
+             this.renderPostgresStatus(data?.databaseStatus || {});
++            this.renderStartupDiagnostics(data?.localApiStartup || {});
+             this.renderStorageStatus(data?.storageStatus || {});
+             this.runStorageDiagnostics();
+             this.renderRuntimeEnvironment(data?.runtimeEnvironment || {});
 diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-instruction-compliance-checklist.md
-new file mode 100644
-index 000000000..8daa1b736
---- /dev/null
+index 8daa1b736..977f218b5 100644
+--- a/docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-instruction-compliance-checklist.md
 +++ b/docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-instruction-compliance-checklist.md
-@@ -0,0 +1,16 @@
-+# PR_26175_CHARLIE_002 Instruction Compliance Checklist
-+
-+| Requirement | Status | Evidence |
-+|---|---:|---|
-+| Verify worktree clean before switching from Bravo | PASS | `git status --short` returned clean before checkout. |
-+| Do not merge Bravo | PASS | No merge command was run. |
-+| Do not modify Bravo | PASS | No Bravo files were changed. |
-+| Resolve Charlie branch | PASS | Existing `PR_26172_CHARLIE_repository-compliance-stack` branch checked out. |
-+| Sync Charlie if it exists | PASS | `git pull --ff-only` reported up to date. |
-+| Hard stop if Charlie branch cannot be resolved | PASS | Branch resolved; no stop required. |
-+| PLAN_PR only | PASS | Only planning/report artifacts are changed. |
-+| Scope only System Health dashboard plan | PASS | Report limits scope to Admin System Health dashboard diagnostics. |
-+| Do not implement configurable multiple runtime ports | PASS | Multiple runtime ports recorded as deferred/cancelled. |
-+| Return repo-structured ZIP under `tmp/` | PASS | Planned artifact: `tmp/PR_26175_CHARLIE_002-system-health-dashboard_PLAN_delta.zip`. |
-+| Required reports under `docs_build/dev/reports/` | PASS | PLAN, manual notes, checklist, codex diff, and changed-files reports are produced. |
-+| No implementation changes | PASS | No runtime/source/test files are modified by PLAN. |
+@@ -2,15 +2,19 @@
+
+ | Requirement | Status | Evidence |
+ |---|---:|---|
+-| Verify worktree clean before switching from Bravo | PASS | `git status --short` returned clean before checkout. |
+-| Do not merge Bravo | PASS | No merge command was run. |
+-| Do not modify Bravo | PASS | No Bravo files were changed. |
+-| Resolve Charlie branch | PASS | Existing `PR_26172_CHARLIE_repository-compliance-stack` branch checked out. |
+-| Sync Charlie if it exists | PASS | `git pull --ff-only` reported up to date. |
+-| Hard stop if Charlie branch cannot be resolved | PASS | Branch resolved; no stop required. |
+-| PLAN_PR only | PASS | Only planning/report artifacts are changed. |
+-| Scope only System Health dashboard plan | PASS | Report limits scope to Admin System Health dashboard diagnostics. |
+-| Do not implement configurable multiple runtime ports | PASS | Multiple runtime ports recorded as deferred/cancelled. |
+-| Return repo-structured ZIP under `tmp/` | PASS | Planned artifact: `tmp/PR_26175_CHARLIE_002-system-health-dashboard_PLAN_delta.zip`. |
+-| Required reports under `docs_build/dev/reports/` | PASS | PLAN, manual notes, checklist, codex diff, and changed-files reports are produced. |
+-| No implementation changes | PASS | No runtime/source/test files are modified by PLAN. |
++| Read active ProjectInstructions | PASS | Reviewed README, root Project Instructions, team ownership, and PLAN report. |
++| Active branch remains Charlie stack branch | PASS | Branch is `PR_26172_CHARLIE_repository-compliance-stack`. |
++| Worktree clean before implementation | PASS | Start gate showed clean worktree. |
++| Implement only approved System Health dashboard scope | PASS | Changes are limited to System Health page/controller/API status payload and targeted tests. |
++| Preserve existing Postgres behavior | PASS | Database Health rendering and payload remain in place. |
++| Preserve existing R2 behavior | PASS | Storage Health and connectivity action behavior remain in place. |
++| Preserve Runtime Environment behavior | PASS | Runtime environment rows continue to mask secret-like values. |
++| Preserve Limits behavior | PASS | Limits/capacity table and payload remain in place. |
++| Preserve Diagnostics Plan and Diagnostics Log behavior | PASS | Existing tables remain in the page. |
++| Use PASS/WARN/FAIL/PENDING correctly | PASS | Deferred configurable multiple runtime ports are `PENDING`; real status rows use `PASS`/`WARN`. |
++| Every non-PASS status has reason text | PASS | Startup rendering uses existing `applyStatusNode()` helper with reason text. |
++| Do not expose secrets | PASS | URL credentials are redacted; tests assert raw credentials are absent. |
++| Do not implement telemetry | PASS | No telemetry code or route added. |
++| Do not implement configurable runtime ports | PASS | Multiple runtime ports are only marked deferred/cancelled. |
++| Required reports created | PASS | PR report, manual notes, checklist, Codex diff, and changed-files report created. |
++| Repo-structured ZIP under `tmp/` | PASS | `tmp/PR_26175_CHARLIE_002-system-health-dashboard_delta.zip`. |
 diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-manual-validation-notes.md b/docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-manual-validation-notes.md
-new file mode 100644
-index 000000000..49d501fa5
---- /dev/null
+index 49d501fa5..6ea7cafe8 100644
+--- a/docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-manual-validation-notes.md
 +++ b/docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-manual-validation-notes.md
-@@ -0,0 +1,25 @@
-+# PR_26175_CHARLIE_002 System Health Dashboard Manual Validation Notes
+@@ -1,25 +1,29 @@
+-# PR_26175_CHARLIE_002 System Health Dashboard Manual Validation Notes
++# PR_26175_CHARLIE_002 Manual Validation Notes
+
+-## Manual Checks Completed During PLAN
++## Manual Review
+
+-- Confirmed Bravo branch was clean before switching.
+-- Confirmed Bravo branch was not merged or modified.
+-- Resolved existing Charlie branch: `PR_26172_CHARLIE_repository-compliance-stack`.
+-- Pulled/synced Charlie branch.
+-- Confirmed Charlie branch local/origin sync was `0 0`.
+-- Reviewed ProjectInstructions startup, branch context, branch lock, PR workflow, team assignment, and team ownership guidance.
+-- Reviewed existing System Health dashboard files and tests.
++- Confirmed active branch was `PR_26172_CHARLIE_repository-compliance-stack`.
++- Confirmed implementation stayed within Admin System Health dashboard and Local API status payload.
++- Confirmed no Team Bravo branch changes were made.
++- Confirmed no telemetry implementation was added.
++- Confirmed configurable multiple runtime ports are reported as `PENDING` / `deferred/cancelled` only.
++- Confirmed Postgres, R2, Runtime Environment, Limits, Diagnostics Plan, and Diagnostics Log sections remain present.
+
+-## Manual Checks Required During APPLY/Build
++## Secret Exposure Review
+
+-- Verify `PR_26175_CHARLIE_001-local-api-startup-diagnostics` is merged or included in the approved stack.
+-- Verify Local API startup output matches approved diagnostics format.
+-- Verify dashboard renders only safe sanitized startup diagnostics.
+-- Verify no secret values are visible in DOM text, API payloads, console output, reports, or ZIP contents.
+-- Verify configurable multiple runtime ports remain deferred/cancelled and are not implemented.
++- Local API startup diagnostic URL display removes username/password credentials.
++- Runtime secret masking behavior remains unchanged.
++- Targeted API test checks raw API URL and site URL credentials are not serialized in the `localApiStartup` payload.
++- Targeted Playwright test checks System Health page does not expose test secret values.
+
+-## Skipped During PLAN
++## Validation Results
+
+-- No implementation validation was run because this task is PLAN_PR only.
+-- No Playwright validation was run because no runtime or UI files were changed.
++- `git diff --check`: PASS.
++- `node --test tests/dev-runtime/LocalApiStartupLogging.test.mjs`: PASS.
++- `node --test tests/dev-runtime/AdminHealthOperations.test.mjs`: PASS.
++- `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`: PASS.
 +
-+## Manual Checks Completed During PLAN
++## Notes
 +
-+- Confirmed Bravo branch was clean before switching.
-+- Confirmed Bravo branch was not merged or modified.
-+- Resolved existing Charlie branch: `PR_26172_CHARLIE_repository-compliance-stack`.
-+- Pulled/synced Charlie branch.
-+- Confirmed Charlie branch local/origin sync was `0 0`.
-+- Reviewed ProjectInstructions startup, branch context, branch lock, PR workflow, team assignment, and team ownership guidance.
-+- Reviewed existing System Health dashboard files and tests.
-+
-+## Manual Checks Required During APPLY/Build
-+
-+- Verify `PR_26175_CHARLIE_001-local-api-startup-diagnostics` is merged or included in the approved stack.
-+- Verify Local API startup output matches approved diagnostics format.
-+- Verify dashboard renders only safe sanitized startup diagnostics.
-+- Verify no secret values are visible in DOM text, API payloads, console output, reports, or ZIP contents.
-+- Verify configurable multiple runtime ports remain deferred/cancelled and are not implemented.
-+
-+## Skipped During PLAN
-+
-+- No implementation validation was run because this task is PLAN_PR only.
-+- No Playwright validation was run because no runtime or UI files were changed.
-+- No samples were run.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard_PLAN.md b/docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard_PLAN.md
++- Playwright refreshed coverage report artifacts during validation; those generated changes were restored because they are outside this PR's required report set.
+ - No samples were run.
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard.md b/docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard.md
 new file mode 100644
-index 000000000..b486a097b
+index 000000000..3cd56805f
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard_PLAN.md
-@@ -0,0 +1,163 @@
-+# PLAN_PR: PR_26175_CHARLIE_002-system-health-dashboard
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard.md
+@@ -0,0 +1,88 @@
++# PR_26175_CHARLIE_002-system-health-dashboard
 +
-+Team: Charlie
++## Summary
 +
-+Purpose: Plan a scoped System Health dashboard increment that builds on the Local API startup diagnostics lane without implementing configurable multiple runtime ports or unrelated telemetry/governance work.
++Implemented the approved System Health dashboard increment for safe Local API startup diagnostics.
 +
-+## Branch and Context Validation
++The dashboard now surfaces a server-owned Local API Startup Diagnostics table that reports:
 +
-+| Check | Expected | Actual | Status |
-+|---|---|---|---|
-+| Starting branch before switch | `pr/26172-BRAVO-text2speech-messages-inventory` | `pr/26172-BRAVO-text2speech-messages-inventory` | PASS |
-+| Bravo worktree clean before switch | no output from `git status --short` | clean | PASS |
-+| Bravo branch merged | not merged | not merged | PASS |
-+| Bravo branch modified | no | no | PASS |
-+| Charlie branch resolved | existing Team Charlie branch | `PR_26172_CHARLIE_repository-compliance-stack` | PASS |
-+| Charlie branch synced | local equals remote | `0 0` against `origin/PR_26172_CHARLIE_repository-compliance-stack` | PASS |
-+| Active team | Team Charlie | Team Charlie | PASS |
-+| Active assignment | PLAN_PR for System Health dashboard | `PR_26175_CHARLIE_002-system-health-dashboard` | PASS |
++- approved startup diagnostics format availability
++- Environment Variables section masking/redaction behavior
++- configured startup bind target
++- configured site URL status
++- configured or derived API URL
++- configured API URL port
++- configurable multiple runtime ports as `PENDING` and `deferred/cancelled`
 +
-+## Dependency Gate
++The implementation preserves existing Postgres, R2, Runtime Environment, Limits, Diagnostics Plan, and Diagnostics Log behavior.
 +
-+This PR depends on:
++## Scope Controls
 +
-+- `PR_26175_CHARLIE_001-local-api-startup-diagnostics`
++| Requirement | Result | Notes |
++|---|---:|---|
++| Active branch remains `PR_26172_CHARLIE_repository-compliance-stack` | PASS | Work stayed on the Charlie stack branch. |
++| Implement only approved System Health dashboard scope | PASS | Changes are limited to Admin System Health dashboard/API status and targeted tests. |
++| Preserve existing Postgres behavior | PASS | Existing database status rendering and server payload remain intact. |
++| Preserve existing R2 behavior | PASS | Existing storage status and connectivity action behavior remain intact. |
++| Preserve Runtime Environment behavior | PASS | Existing runtime environment masking/rendering remains intact. |
++| Preserve Limits behavior | PASS | Existing limits/capacity rows and usage placeholders remain intact. |
++| Preserve Diagnostics Plan and Diagnostics Log behavior | PASS | Existing tables remain; only Local API startup diagnostics table was added. |
++| Use PASS/WARN/FAIL/PENDING correctly | PASS | Real known-good checks are `PASS`; missing configured site URL is `WARN`; deferred multiple runtime ports is `PENDING`. |
++| Do not expose secrets | PASS | URL credentials are redacted, secret values are not returned, and tests assert no raw credentials appear. |
++| Do not implement telemetry | PASS | No telemetry collection, storage, route, or metric implementation was added. |
++| Do not implement configurable runtime ports | PASS | Multiple runtime ports are explicitly reported as `PENDING` / `deferred/cancelled`. |
 +
-+Start gate for APPLY/build:
-+
-+- PASS only when PR_001 is merged or the approved stack branch includes its committed startup diagnostics work.
-+- PASS only when the Local API startup output matches the approved diagnostics format.
-+- FAIL if PR_001 is absent, unmerged, or if startup diagnostics output is still ambiguous.
-+
-+## Scope
-+
-+Plan only for a System Health dashboard increment.
-+
-+Allowed implementation scope for the later APPLY/build:
-+
-+- Use existing Admin System Health page and safe API client patterns.
-+- Surface Local API startup diagnostics inside the System Health dashboard only if PR_001 provides a safe structured contract or stable parseable output.
-+- Keep dashboard data server-owned and browser-safe.
-+- Preserve existing Theme V2 Admin System Health layout.
-+- Preserve existing Postgres, R2, runtime environment, limits/capacity, diagnostics plan, and diagnostics log sections unless a narrowly scoped dashboard row/section addition is required.
-+- Use PASS/WARN/FAIL indicators only when backed by real diagnostics.
-+- Use PENDING or equivalent non-failure status for intentionally unwired dashboard items.
-+- Provide hover/title or accessible reason text for every non-PASS status.
-+- Do not expose secrets, raw connection strings, access keys, tokens, service role values, or database credentials.
-+
-+Out of scope:
-+
-+- Configurable multiple runtime ports implementation.
-+- New telemetry foundation.
-+- In-use delete governance.
-+- New persistence.
-+- New database schema.
-+- New R2 write behavior beyond existing safe connectivity actions.
-+- Runtime feature work outside Admin/System Health.
-+- Any changes to Team Bravo branch or reports.
-+
-+Deferred/cancelled carry-forward:
-+
-+- Configurable multiple runtime ports remains cancelled/deferred for this System Health dashboard PR.
-+- `PR_26175_CHARLIE_004-telemetry-foundation` remains deferred.
-+- `PR_26175_CHARLIE_005-in-use-delete-governance-rule` remains future governance.
-+
-+## Current Relevant Implementation Inventory
-+
-+Existing files to review during APPLY/build:
++## Files Changed
 +
 +- `admin/system-health.html`
 +- `assets/theme-v2/js/admin-system-health.js`
-+- `src/api/admin-system-health-api-client.js`
 +- `src/dev-runtime/server/local-api-router.mjs`
-+- `scripts/start-local-api-server.mjs`
-+- `tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`
-+- `tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
 +- `tests/dev-runtime/AdminHealthOperations.test.mjs`
-+- `tests/dev-runtime/LocalApiStartupLogging.test.mjs`
-+
-+Existing System Health route/API surface:
-+
-+- Browser client calls `/api/admin/system-health/status`.
-+- Browser client calls `/api/admin/system-health/storage-connectivity-action`.
-+- Local API router already returns `databaseStatus`, `storageStatus`, `runtimeEnvironment`, `limitsStatus`, `operationsHealth`, `overview`, and `summary`.
-+- Admin System Health page already renders Postgres-only database diagnostics, R2 diagnostics, runtime environment rows, limits/capacity, diagnostics plan, and diagnostics log.
-+
-+Existing validation evidence:
-+
-+- `tests/playwright/tools/AdminHealthOperationsPage.spec.mjs` covers safe System Health rendering, Postgres diagnostics, R2 diagnostics, runtime key masking, admin-only access, and no inline scripts/styles.
-+- `tests/dev-runtime/AdminHealthOperations.test.mjs` covers `/api/admin/system-health/status` admin access and blocks Creator sessions.
-+- `docs_build/dev/reports/PR_26171_018-local-api-startup-diagnostics.md` documents an older startup diagnostics shape, including environment variable output and runtime port listing.
-+- `docs_build/dev/reports/PR_26169_026-local-api-startup-url-logging.md` documents earlier Local API startup URL logging behavior.
-+
-+## Proposed APPLY/Build Steps
-+
-+1. Start from the approved Charlie branch or the owner-approved stack branch containing PR_001.
-+2. Verify dependency:
-+   - confirm PR_001 commit/report exists in the branch or mainline dependency chain;
-+   - run the startup diagnostics unit test;
-+   - confirm approved startup output format.
-+3. Inspect `scripts/start-local-api-server.mjs` and the PR_001 startup diagnostics contract.
-+4. Add a System Health dashboard row/section for Local API startup diagnostics only if the data source is safe and stable.
-+5. If PR_001 exposes only console text, prefer a server-owned helper in `src/dev-runtime/server/local-api-router.mjs` that returns sanitized startup diagnostic metadata rather than browser-parsing console output.
-+6. Extend `src/api/admin-system-health-api-client.js` only if a new API route is needed; otherwise reuse `/admin/system-health/status`.
-+7. Extend `assets/theme-v2/js/admin-system-health.js` to render any new dashboard data with existing status helper functions.
-+8. Update `admin/system-health.html` only for scoped dashboard placeholders/rows required by the new diagnostics.
-+9. Update targeted tests only.
-+10. Produce reports and delta ZIP.
-+
-+## Approved Diagnostics Format Expectation
-+
-+The later APPLY/build must verify PR_001 startup output before changing dashboard behavior. Expected properties:
-+
-+- Environment variables are listed in a deterministic section.
-+- Secret-like values are masked.
-+- URL credentials are redacted.
-+- Runtime URL/API URL/database/storage information is shown only as safe diagnostics.
-+- Configurable multiple runtime ports are not implemented in this PR.
-+- Cancelled/deferred multiple-port work is documented rather than built.
-+
-+## Status Model
-+
-+Use existing status model:
-+
-+- `PASS`: known good, backed by real diagnostic evidence.
-+- `WARN`: actionable partial/missing configuration, not a placeholder.
-+- `FAIL`: actual failed diagnostic or blocked required behavior.
-+- `PENDING`: intentional future wiring or dependency not active yet.
-+
-+Every non-PASS status must include title or accessible reason text.
-+
-+## Validation Plan
-+
-+Required targeted validation for APPLY/build:
-+
-+- `git diff --check`
-+- `node --test tests/dev-runtime/LocalApiStartupLogging.test.mjs`
-+- `node --test tests/dev-runtime/AdminHealthOperations.test.mjs`
-+- `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`
-+- Targeted browser/static validation for no secret exposure:
-+  - no raw `DATABASE_URL`;
-+  - no `PASSWORD`, `SECRET`, `TOKEN`, `KEY`, `SERVICE_ROLE`, or `JWT` values exposed;
-+  - no inline scripts/styles introduced.
-+
-+Skipped lanes:
-+
-+- Full samples smoke: skipped because the scope is Admin System Health dashboard diagnostics only.
-+- Broad Playwright: skipped unless targeted Admin/System Health tests require support coverage.
-+- Runtime feature tests outside System Health: skipped as out of scope.
-+
-+## Required Reports for APPLY/Build
-+
-+- `docs_build/dev/reports/codex_review.diff`
-+- `docs_build/dev/reports/codex_changed_files.txt`
++- `tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`
 +- `docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard.md`
 +- `docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-manual-validation-notes.md`
 +- `docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-instruction-compliance-checklist.md`
-+- repo-structured delta ZIP under `tmp/`
++- `docs_build/dev/reports/codex_review.diff`
++- `docs_build/dev/reports/codex_changed_files.txt`
 +
-+## PLAN_PR Result
++## Implementation Notes
 +
-+PLAN status: PASS.
++- Added `systemHealthLocalApiStartupDiagnostics()` in the Local API router so the browser receives structured, sanitized diagnostics instead of parsing startup console output.
++- Added a `localApiStartup` payload to `/api/admin/system-health/status`.
++- Added Local API Startup Diagnostics table markup to `admin/system-health.html`.
++- Extended `assets/theme-v2/js/admin-system-health.js` to render startup diagnostic rows using the existing shared status helpers.
++- Added API-level tests for local startup diagnostics rows, deferred runtime ports, and URL credential redaction.
++- Added Playwright coverage for the new dashboard table and static markup.
 +
-+Recommendation: Continue to APPLY only after `PR_26175_CHARLIE_001-local-api-startup-diagnostics` is present in the approved dependency chain and its startup output format has been validated.
++## Validation Lane Report
++
++| Command | Result |
++|---|---:|
++| `git diff --check` | PASS |
++| `node --test tests/dev-runtime/LocalApiStartupLogging.test.mjs` | PASS, 2 tests |
++| `node --test tests/dev-runtime/AdminHealthOperations.test.mjs` | PASS, 4 tests |
++| `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs` | PASS, 3 tests |
++
++## Skipped Lanes
++
++- Full samples smoke: skipped; the scope is Admin System Health dashboard diagnostics only.
++- Broad Playwright suite: skipped; targeted System Health coverage passed.
++- Telemetry validation: skipped; telemetry was explicitly out of scope and not implemented.
++- Configurable runtime port validation: skipped; configurable multiple runtime ports were explicitly deferred/cancelled and not implemented.
++
++## Dependency Notes
++
++The current branch already contains the approved Local API startup diagnostics formatter shape:
++
++- deterministic `Environment Variables` section
++- deterministic `All Runtime Ports being used by Service` section
++- secret-like value masking
++- URL credential redaction
++
++Validation confirmed the startup formatter remains intact through `tests/dev-runtime/LocalApiStartupLogging.test.mjs`.
++
++## ZIP Artifact
++
++Repo-structured delta ZIP:
++
++- `tmp/PR_26175_CHARLIE_002-system-health-dashboard_delta.zip`
+diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
+index 314a35d03..989e4410e 100644
+--- a/src/dev-runtime/server/local-api-router.mjs
++++ b/src/dev-runtime/server/local-api-router.mjs
+@@ -311,6 +311,12 @@ const RUNTIME_ENV_SECRET_MARKERS = Object.freeze([
+   "JWT",
+   "DATABASE_URL",
+ ]);
++const LOCAL_API_STARTUP_DEFAULT_HOST = "127.0.0.1";
++const LOCAL_API_STARTUP_DEFAULT_PORT = "5501";
++const LOCAL_API_STARTUP_DEFAULT_PORT_BY_PROTOCOL = Object.freeze({
++  "http:": "80",
++  "https:": "443",
++});
+ const SYSTEM_HEALTH_USAGE_NOT_AVAILABLE = "NOT AVAILABLE";
+ const SYSTEM_HEALTH_USAGE_CONTRACTS = Object.freeze({
+   GAMEFOUNDRY_DB_CONNECTION_LIMIT: Object.freeze({
+@@ -735,6 +741,117 @@ function overallHealthStatus(rows) {
+   return "PASS";
+ }
+
++function localApiStartupPortFromUrl(value) {
++  const rawValue = String(value || "").trim();
++  if (!rawValue) {
++    return "not configured";
++  }
++  try {
++    const parsedUrl = new URL(rawValue);
++    return parsedUrl.port || LOCAL_API_STARTUP_DEFAULT_PORT_BY_PROTOCOL[parsedUrl.protocol] || "not configured";
++  } catch {
++    return "invalid URL";
++  }
++}
++
++function localApiStartupUrlDisplay(value, fallback = "not configured") {
++  const rawValue = String(value || "").trim();
++  if (!rawValue) {
++    return fallback;
++  }
++  try {
++    const parsedUrl = new URL(rawValue);
++    if (parsedUrl.username) {
++      parsedUrl.username = "********";
++    }
++    if (parsedUrl.password) {
++      parsedUrl.password = "********";
++    }
++    parsedUrl.search = "";
++    parsedUrl.hash = "";
++    return parsedUrl.toString();
++  } catch {
++    return "invalid URL";
++  }
++}
++
++function localApiStartupBindTarget(env = process.env) {
++  const host = String(env.GAMEFOUNDRY_LOCAL_API_HOST || LOCAL_API_STARTUP_DEFAULT_HOST).trim() || LOCAL_API_STARTUP_DEFAULT_HOST;
++  const port = String(env.GAMEFOUNDRY_LOCAL_API_PORT || LOCAL_API_STARTUP_DEFAULT_PORT).trim() || LOCAL_API_STARTUP_DEFAULT_PORT;
++  const portStatus = /^[1-9]\d*$/.test(port) ? "PASS" : "WARN";
++  return {
++    host,
++    port,
++    status: portStatus,
++    value: `${host}:${port}`,
++  };
++}
++
++function systemHealthLocalApiStartupDiagnostics(env = process.env) {
++  const bindTarget = localApiStartupBindTarget(env);
++  const configuredApiUrl = String(env.GAMEFOUNDRY_API_URL || "").trim();
++  const derivedApiUrl = `http://${bindTarget.value}/api`;
++  const siteUrl = String(env.GAMEFOUNDRY_SITE_URL || "").trim();
++  const rows = [
++    {
++      field: "Approved diagnostics format",
++      reason: "Startup output includes deterministic Environment Variables and All Runtime Ports sections.",
++      status: "PASS",
++      value: "Environment Variables + All Runtime Ports",
++    },
++    {
++      field: "Environment variable diagnostics",
++      reason: "Startup output masks secret-like values and redacts URL credentials before printing.",
++      status: "PASS",
++      value: "masked and redacted",
++    },
++    {
++      field: "Configured startup bind target",
++      reason: bindTarget.status === "PASS"
++        ? "Local API startup uses the configured or default host and port for the bind target."
++        : "GAMEFOUNDRY_LOCAL_API_PORT must be a positive integer.",
++      status: bindTarget.status,
++      value: bindTarget.value,
++    },
++    {
++      field: "Configured site URL",
++      reason: siteUrl
++        ? "GAMEFOUNDRY_SITE_URL is available for startup diagnostics."
++        : "GAMEFOUNDRY_SITE_URL is not configured; startup diagnostics will print not configured.",
++      status: siteUrl ? "PASS" : "WARN",
++      value: localApiStartupUrlDisplay(siteUrl),
++    },
++    {
++      field: "Configured API URL",
++      reason: configuredApiUrl
++        ? "GAMEFOUNDRY_API_URL is configured and displayed without URL credentials."
++        : "GAMEFOUNDRY_API_URL is not configured; startup diagnostics derive /api from the bind target.",
++      status: "PASS",
++      value: localApiStartupUrlDisplay(configuredApiUrl || derivedApiUrl),
++    },
++    {
++      field: "Configured API URL port",
++      reason: "Port is derived from the configured or startup-derived API URL for display only.",
++      status: "PASS",
++      value: localApiStartupPortFromUrl(configuredApiUrl || derivedApiUrl),
++    },
++    {
++      field: "Configurable multiple runtime ports",
++      reason: "Configurable multiple runtime ports are explicitly deferred/cancelled for this PR.",
++      status: "PENDING",
++      value: "deferred/cancelled",
++    },
++  ];
++  const actionableRows = rows.filter((row) => row.status !== "PENDING");
++  return {
++    message: "Local API startup diagnostics use the approved safe output format; configurable multiple runtime ports remain deferred.",
++    rows,
++    secretEditingAllowed: false,
++    secretsExposed: false,
++    status: overallHealthStatus(actionableRows),
++  };
++}
++
+ function systemHealthSummary(rows) {
+   const counts = systemHealthCounts(rows);
+   const total = counts.PASS + counts.WARN + counts.FAIL;
+@@ -3512,6 +3629,7 @@ LIMIT 1;
+     const databaseStatus = await this.ownerDatabaseStatus();
+     const storageStatus = this.ownerStorageStatus();
+     const environmentStatus = storageProjectsPrefixStatus();
++    const localApiStartup = systemHealthLocalApiStartupDiagnostics();
+     const limitRows = systemHealthLimitRows();
+     const limitsStatus = systemHealthLimitStatus(limitRows);
+     const packageStatus = projectPackageReadinessStatus();
+@@ -3563,6 +3681,11 @@ LIMIT 1;
+           ? "Required limits are configured correctly; live usage is NOT AVAILABLE until provider usage metrics are exposed safely."
+           : "One or more required limits are missing or invalid in current .env.",
+       },
++      {
++        area: "Local API startup diagnostics",
++        status: localApiStartup.status,
++        summary: localApiStartup.message,
++      },
+       {
+         area: "Migration status",
+         status: databaseStatus.migrationStatus || "WARN",
+@@ -3596,6 +3719,12 @@ LIMIT 1;
+         { area: "Environment configuration", field: environmentStatus.variableName, status: environmentStatus.status, value: environmentStatus.configured ? "valid lane match" : "missing or invalid" },
+         { area: "Secrets status", field: "Storage access key", status: storageStatus.accessKeyStatus || "WARN", value: storageStatus.accessKeyConfigured ? "configured; value hidden" : "not configured" },
+         { area: "Secrets status", field: "Storage secret key", status: storageStatus.secretKeyStatus || "WARN", value: storageStatus.secretKeyConfigured ? "configured; value hidden" : "not configured" },
++        ...localApiStartup.rows.map((row) => ({
++          area: "Local API startup diagnostics",
++          field: row.field,
++          status: row.status,
++          value: row.value,
++        })),
+         { area: "Migration status", field: "Migration counts", status: databaseStatus.migrationStatus || "WARN", value: `DDL=${databaseStatus.migrationCounts?.DDL || 0}; DML=${databaseStatus.migrationCounts?.DML || 0}` },
+         { area: "Project package readiness", field: ".gfsp decision", status: packageStatus.status, value: packageStatus.decisionPath },
+         { area: "Project package readiness", field: "Runtime scaffold", status: packageStatus.status, value: `${packageStatus.contract?.packageType || "Game Foundry Studio Project"} ${packageStatus.contract?.contractVersion || ""}`.trim() },
+@@ -3615,6 +3744,7 @@ LIMIT 1;
+         adminOperations: "/admin/operations.html",
+       },
+       limits: limitRows,
++      localApiStartup,
+       message: "Admin System Health loaded safe status only.",
+       operationsHealth,
+       overview,
+diff --git a/tests/dev-runtime/AdminHealthOperations.test.mjs b/tests/dev-runtime/AdminHealthOperations.test.mjs
+index 7f7ae4f3c..69f2b146d 100644
+--- a/tests/dev-runtime/AdminHealthOperations.test.mjs
++++ b/tests/dev-runtime/AdminHealthOperations.test.mjs
+@@ -108,6 +108,8 @@ async function apiJson(baseUrl, pathName, request = {}) {
+
+ test("Admin can view operational health while Creator sessions are blocked", async () => {
+   await withEnv({
++    GAMEFOUNDRY_API_URL: "http://api-user:api-secret@127.0.0.1:5501/api",
++    GAMEFOUNDRY_SITE_URL: "http://site-user:site-secret@127.0.0.1:5500",
+     GAMEFOUNDRY_SUPABASE_ANON_KEY: undefined,
+     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: undefined,
+     GAMEFOUNDRY_SUPABASE_URL: undefined,
+@@ -127,6 +129,22 @@ test("Admin can view operational health while Creator sessions are blocked", asy
+         method: "POST",
+       });
+       const health = await apiJson(server.baseUrl, "/api/admin/system-health/status");
++      assert.equal(health.localApiStartup.secretEditingAllowed, false);
++      assert.equal(health.localApiStartup.secretsExposed, false);
++      assert.equal(Array.isArray(health.localApiStartup.rows), true);
++      assert.equal(
++        health.localApiStartup.rows.some((row) => row.field === "Approved diagnostics format" && row.status === "PASS"),
++        true,
++      );
++      assert.equal(
++        health.localApiStartup.rows.some((row) => row.field === "Configurable multiple runtime ports" && row.status === "PENDING" && row.value === "deferred/cancelled"),
++        true,
++      );
++      const startupText = JSON.stringify(health.localApiStartup);
++      assert.equal(startupText.includes("api-user"), false);
++      assert.equal(startupText.includes("api-secret"), false);
++      assert.equal(startupText.includes("site-user"), false);
++      assert.equal(startupText.includes("site-secret"), false);
+       assert.equal(Array.isArray(health.operationsHealth.summaryRows), true);
+       assert.deepEqual(
+         health.operationsHealth.summaryRows.map((row) => row.area),
+diff --git a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+index 9287e4310..f3c860186 100644
+--- a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
++++ b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+@@ -129,6 +129,11 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
+     await expect(page.getByRole("table", { name: "Environment summary" })).toContainText("IST");
+     await expect(page.getByRole("table", { name: "Environment summary" })).toContainText("UAT");
+     await expect(page.getByRole("table", { name: "Environment summary" })).toContainText("PRD");
++    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Approved diagnostics format");
++    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Environment Variables + All Runtime Ports");
++    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Configurable multiple runtime ports");
++    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("deferred/cancelled");
++    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).not.toContainText("secret");
+     await expect(page.getByRole("table", { name: "Database health" })).toContainText("Postgres");
+     await expect(page.locator("[data-admin-system-health-db-value='provider']")).toHaveText("Postgres");
+     await expect(page.locator("[data-admin-system-health-db-value='host']")).not.toHaveText("Configured host placeholder");
+@@ -213,6 +218,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
+   expect(pageSource).not.toContain("No active failure is declared");
+   expect(pageSource).not.toContain("SQLite");
+   expect(pageSource).toContain("Diagnostics Plan");
++  expect(pageSource).toContain("Local API Startup Diagnostics");
+   expect(pageSource).toContain("Server-owned Postgres health reader");
+   expect(pageSource).toContain("Server-owned Cloudflare R2 storage diagnostic");
+   expect(pageSource).toContain("assets/theme-v2/js/admin-system-health.js");

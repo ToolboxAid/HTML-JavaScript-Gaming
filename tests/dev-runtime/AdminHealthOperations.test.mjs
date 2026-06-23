@@ -108,6 +108,8 @@ async function apiJson(baseUrl, pathName, request = {}) {
 
 test("Admin can view operational health while Creator sessions are blocked", async () => {
   await withEnv({
+    GAMEFOUNDRY_API_URL: "http://api-user:api-secret@127.0.0.1:5501/api",
+    GAMEFOUNDRY_SITE_URL: "http://site-user:site-secret@127.0.0.1:5500",
     GAMEFOUNDRY_SUPABASE_ANON_KEY: undefined,
     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: undefined,
     GAMEFOUNDRY_SUPABASE_URL: undefined,
@@ -127,6 +129,22 @@ test("Admin can view operational health while Creator sessions are blocked", asy
         method: "POST",
       });
       const health = await apiJson(server.baseUrl, "/api/admin/system-health/status");
+      assert.equal(health.localApiStartup.secretEditingAllowed, false);
+      assert.equal(health.localApiStartup.secretsExposed, false);
+      assert.equal(Array.isArray(health.localApiStartup.rows), true);
+      assert.equal(
+        health.localApiStartup.rows.some((row) => row.field === "Approved diagnostics format" && row.status === "PASS"),
+        true,
+      );
+      assert.equal(
+        health.localApiStartup.rows.some((row) => row.field === "Configurable multiple runtime ports" && row.status === "PENDING" && row.value === "deferred/cancelled"),
+        true,
+      );
+      const startupText = JSON.stringify(health.localApiStartup);
+      assert.equal(startupText.includes("api-user"), false);
+      assert.equal(startupText.includes("api-secret"), false);
+      assert.equal(startupText.includes("site-user"), false);
+      assert.equal(startupText.includes("site-secret"), false);
       assert.equal(Array.isArray(health.operationsHealth.summaryRows), true);
       assert.deepEqual(
         health.operationsHealth.summaryRows.map((row) => row.area),

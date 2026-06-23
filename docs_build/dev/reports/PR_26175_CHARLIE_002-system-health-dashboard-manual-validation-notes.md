@@ -1,25 +1,29 @@
-# PR_26175_CHARLIE_002 System Health Dashboard Manual Validation Notes
+# PR_26175_CHARLIE_002 Manual Validation Notes
 
-## Manual Checks Completed During PLAN
+## Manual Review
 
-- Confirmed Bravo branch was clean before switching.
-- Confirmed Bravo branch was not merged or modified.
-- Resolved existing Charlie branch: `PR_26172_CHARLIE_repository-compliance-stack`.
-- Pulled/synced Charlie branch.
-- Confirmed Charlie branch local/origin sync was `0 0`.
-- Reviewed ProjectInstructions startup, branch context, branch lock, PR workflow, team assignment, and team ownership guidance.
-- Reviewed existing System Health dashboard files and tests.
+- Confirmed active branch was `PR_26172_CHARLIE_repository-compliance-stack`.
+- Confirmed implementation stayed within Admin System Health dashboard and Local API status payload.
+- Confirmed no Team Bravo branch changes were made.
+- Confirmed no telemetry implementation was added.
+- Confirmed configurable multiple runtime ports are reported as `PENDING` / `deferred/cancelled` only.
+- Confirmed Postgres, R2, Runtime Environment, Limits, Diagnostics Plan, and Diagnostics Log sections remain present.
 
-## Manual Checks Required During APPLY/Build
+## Secret Exposure Review
 
-- Verify `PR_26175_CHARLIE_001-local-api-startup-diagnostics` is merged or included in the approved stack.
-- Verify Local API startup output matches approved diagnostics format.
-- Verify dashboard renders only safe sanitized startup diagnostics.
-- Verify no secret values are visible in DOM text, API payloads, console output, reports, or ZIP contents.
-- Verify configurable multiple runtime ports remain deferred/cancelled and are not implemented.
+- Local API startup diagnostic URL display removes username/password credentials.
+- Runtime secret masking behavior remains unchanged.
+- Targeted API test checks raw API URL and site URL credentials are not serialized in the `localApiStartup` payload.
+- Targeted Playwright test checks System Health page does not expose test secret values.
 
-## Skipped During PLAN
+## Validation Results
 
-- No implementation validation was run because this task is PLAN_PR only.
-- No Playwright validation was run because no runtime or UI files were changed.
+- `git diff --check`: PASS.
+- `node --test tests/dev-runtime/LocalApiStartupLogging.test.mjs`: PASS.
+- `node --test tests/dev-runtime/AdminHealthOperations.test.mjs`: PASS.
+- `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`: PASS.
+
+## Notes
+
+- Playwright refreshed coverage report artifacts during validation; those generated changes were restored because they are outside this PR's required report set.
 - No samples were run.
