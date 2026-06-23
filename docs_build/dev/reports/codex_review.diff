@@ -1,121 +1,122 @@
-diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_043-final-charlie-compliance-reaudit.md b/docs_build/dev/reports/PR_26172_CHARLIE_043-final-charlie-compliance-reaudit.md
+﻿diff --git a/docs_build/dev/reports/PR_26174_ALFA_MERGE_PUSH_CLOSEOUT.md b/docs_build/dev/reports/PR_26174_ALFA_MERGE_PUSH_CLOSEOUT.md
 new file mode 100644
-index 000000000..2dcc449fd
+index 000000000..928dd70ce
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_CHARLIE_043-final-charlie-compliance-reaudit.md
-@@ -0,0 +1,115 @@
-+# PR_26172_CHARLIE_043-final-charlie-compliance-reaudit
++++ b/docs_build/dev/reports/PR_26174_ALFA_MERGE_PUSH_CLOSEOUT.md
+@@ -0,0 +1,107 @@
++# PR_26174_ALFA_MERGE_PUSH_CLOSEOUT
 +
 +## Summary
 +
-+PASS with documented retained blockers outside Charlie scope.
++Owner-approved Team Alfa merge/push closeout completed.
 +
-+Charlie canonical migration work now has:
++All Team Alfa branch heads from PR_26174_ALFA_001 through PR_26174_ALFA_022, plus the two EOD closeout branches, were merged into local `main` in dependency order and pushed to `origin/main`.
 +
-+- Canonical tool entrypoints for the migrated target tools.
-+- Shared API clients under `assets/js/shared/`.
-+- Assets upload worker under the canonical tool-local worker path.
-+- Canonical structure guardrail passing with zero blocking violations.
++No feature work, refactoring, or new scope was added during merge closeout.
 +
-+## PASS/FAIL by Repository Area
++## Merge Order
 +
-+| Area | Status | Notes |
-+| --- | --- | --- |
-+| Canonical tool JS paths | PASS | Migrated tool entrypoints use `assets/toolbox/{tool-name}/js/index.js`. |
-+| Shared JS client paths | PASS | Assets, Controls, and Game Journey API clients use `assets/js/shared/`. |
-+| Tool-local worker placement | PASS | Assets upload worker uses `assets/toolbox/assets/js/assets-upload-worker.js`. |
-+| Retained exceptions from PR_037 list | PASS | No active retained exception remains for the audited list. |
-+| Canonical guardrail | PASS | `npm run validate:canonical-structure` reports zero blocking violations. |
-+| Guardrail regression test | PASS | `node --test tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs` passes. |
-+| Targeted route/worker validation | PASS | Assets page, canonical worker, and shared client routes return HTTP 200; worker processes file payload. |
-+| Browser environment validation | FAIL, documented blocker | Fails on product service contract and Messages user-facing `Local API` wording findings outside this Charlie migration scope. |
++PR_26174_ALFA_000 was already merged before this closeout.
 +
-+## Remaining Exceptions
++1. PR_26174_ALFA_001-idea-board-create-project-api-contract
++2. PR_26174_ALFA_002-game-hub-project-intake-display
++3. PR_26174_ALFA_003-game-hub-journey-bootstrap
++4. PR_26174_ALFA_004-game-hub-progress-count-model
++5. PR_26174_ALFA_005-idea-project-validation-polish
++6. PR_26174_ALFA_006-game-hub-empty-and-error-states
++7. PR_26174_ALFA_007-game-journey-count-ui-polish
++8. PR_26174_ALFA_008-alpha-stack-final-validation
++9. PR_26174_ALFA_009-game-hub-parent-child-table-layout
++10. PR_26174_ALFA_010-game-hub-source-idea-child-table-polish
++11. PR_26174_ALFA_011-game-hub-readiness-output-child-table
++12. PR_26174_ALFA_012-game-hub-parent-child-final-validation
++13. PR_26174_ALFA_013-game-hub-game-row-child-rows
++14. PR_26174_ALFA_014-game-hub-parent-columns-center
++15. PR_26174_ALFA_015-game-hub-actions-and-setup-cleanup
++16. PR_26174_ALFA_016-game-hub-row-edit-add-selected-state
++17. PR_26174_ALFA_017-game-hub-guest-save-and-crew-cleanup
++18. PR_26174_ALFA_018-game-selection-button-state
++19. PR_26174_ALFA_019-game-hub-selected-button-and-crew-label
++20. PR_26174_ALFA_020-game-hub-idea-board-cleanup
++21. PR_26174_ALFA_021-idea-board-status-filter-table-polish
++22. PR_26174_ALFA_022-idea-board-status-dropdown-fix
++23. PR_26174_ALFA_EOD-workstream-closeout
++24. PR_26174_ALFA_EOD-final-closeout
 +
-+No remaining exceptions from the retained-exception list:
++## Final Merge Commits
 +
-+- `toolbox/controls/controls-api-client.js`: resolved by shared client migration.
-+- `toolbox/assets/assets-api-client.js`: resolved by shared client migration.
-+- `toolbox/assets/assets-upload-worker.js`: resolved by canonical tool-local worker migration.
-+- `toolbox/game-journey/game-journey-api-client.js`: resolved by shared client migration.
++- PR_26174_ALFA_000-projectinstructions-archive-ignore: already on `main` at `b97893c78`.
++- PR_26174_ALFA_001-idea-board-create-project-api-contract: `5e7c75122`.
++- PR_26174_ALFA_002-game-hub-project-intake-display: `4764f3447`.
++- PR_26174_ALFA_003-game-hub-journey-bootstrap: `edb87038c`.
++- PR_26174_ALFA_004-game-hub-progress-count-model: `48e610e4a`.
++- PR_26174_ALFA_005-idea-project-validation-polish: `2de618849`.
++- PR_26174_ALFA_006-game-hub-empty-and-error-states: `894f3e65c`.
++- PR_26174_ALFA_007-game-journey-count-ui-polish: `44bcf73e0`.
++- PR_26174_ALFA_008-alpha-stack-final-validation: `b7aa0e60f`.
++- PR_26174_ALFA_009-game-hub-parent-child-table-layout: `0b540cab9`.
++- PR_26174_ALFA_010-game-hub-source-idea-child-table-polish: `2a9df24c1`.
++- PR_26174_ALFA_011-game-hub-readiness-output-child-table: `d6a55bafd`.
++- PR_26174_ALFA_012-game-hub-parent-child-final-validation: `541d34ddc`.
++- PR_26174_ALFA_013-game-hub-game-row-child-rows: `fa4b183db`.
++- PR_26174_ALFA_014-game-hub-parent-columns-center: `3a51ba7e7`.
++- PR_26174_ALFA_015-game-hub-actions-and-setup-cleanup: `2c20275ba`.
++- PR_26174_ALFA_016-game-hub-row-edit-add-selected-state: `0cdbd47e3`.
++- PR_26174_ALFA_017-game-hub-guest-save-and-crew-cleanup: `336b4f4b7`.
++- PR_26174_ALFA_018-game-selection-button-state: `20b093ac9`.
++- PR_26174_ALFA_019-game-hub-selected-button-and-crew-label: `b14fdc2d5`.
++- PR_26174_ALFA_020-game-hub-idea-board-cleanup: `41cb1eed4`.
++- PR_26174_ALFA_021-idea-board-status-filter-table-polish: `86dd28b1b`.
++- PR_26174_ALFA_022-idea-board-status-dropdown-fix: `a256069e0`.
++- PR_26174_ALFA_EOD-workstream-closeout: `f38af57c4`.
++- PR_26174_ALFA_EOD-final-closeout: `b4dc9f0dc`.
 +
-+Remaining approved legacy exceptions reported by the canonical guardrail are outside this targeted Charlie EOD workstream. Current guardrail count: 477 approved legacy exceptions, zero blocking violations.
++## Validation Summary
 +
-+## Known Blockers Not Caused by Charlie
++- PASS: `git fetch origin --prune`.
++- PASS: `git checkout main`.
++- PASS: `git pull origin main`.
++- PASS: merged PR_26174_ALFA_001 through PR_26174_ALFA_EOD-final-closeout in dependency order.
++- PASS: preserved current-main shared `docs_build/dev/reports/codex_changed_files.txt` and `docs_build/dev/reports/codex_review.diff` during repeated shared report conflicts.
++- PASS: resolved the PR_26174_ALFA_001 Idea Board JS conflict by keeping the canonical `assets/toolbox/idea-board/js/index.js` location and canonical relative imports.
++- PASS: every Team Alfa branch head from PR_001 through PR_022 and both EOD closeouts is an ancestor of `main`.
++- PASS: `node --check assets/toolbox/idea-board/js/index.js`.
++- PASS: `node --check toolbox/game-hub/game-hub.js`.
++- PASS: pushed merged `main` to `origin/main`.
++- PASS: `git pull origin main` after merge push reported already up to date.
++- PASS: `git status -sb` after merge push reported `## main...origin/main`.
++- PASS: `git rev-list --left-right --count origin/main...main` after merge push reported `0 0`.
 +
-+### Browser Environment Gate
++## Open Issues
 +
-+`npm run validate:browser-env-agnostic` fails with:
++- `git diff --check origin/main..HEAD` before this closeout report identified existing whitespace issues in approved Project Instructions/report files. They were not cleaned up because this task allowed no cleanup outside reporting.
++- Broader Toolbox route validation may still report `500 /api/game-journey/completion-metrics`, as documented in the Alfa PR validation reports.
++- GitHub draft PR records may still appear open because the approved integration was performed by local dependency-order merge commits into `main`.
 +
-+- Product service contract findings in `src/dev-runtime/server/local-api-router.mjs`.
-+- User-facing implementation wording findings in `toolbox/messages/index.html` and `toolbox/messages/messages.js`.
++## Deferred Items
 +
-+The report also confirms:
++- Optional follow-up: close or annotate superseded GitHub draft PR records after owner confirms the local merge/push integration is the canonical closure.
++- Optional follow-up: address existing whitespace warnings in a dedicated cleanup PR.
++- Optional follow-up: investigate the broader `game-journey/completion-metrics` warning outside the Alfa merge scope.
++- Optional follow-up: regenerate ignored ZIP artifacts if owner wants a fresh local artifact audit after merge.
 +
-+- Deployment-label branching findings: none.
-+- Deprecated SQLite/Local DB technical debt: none.
++## Final Repository Status
 +
-+These findings were not introduced by the Charlie canonical migration stack and require a separate product/runtime or Messages governance lane.
++After pushing the Alfa merge commits to `origin/main` and pulling latest `origin/main`:
 +
-+### Assets Upload Completion
++```text
++git status -sb
++## main...origin/main
 +
-+The full Assets worker Playwright flow still reaches the worker, then reports:
-+
-+`Batch upload complete: 0 written, 1 failed, 0 skipped, 0 warnings.`
-+
-+This matches the previously documented Assets upload persistence/API blocker from PR_038. The focused worker validation confirms the moved worker loads and processes payloads successfully.
-+
-+## Final Executable Code Change Summary
-+
-+- Added shared helper/status module support.
-+- Added canonical repository guardrail script and targeted regression coverage.
-+- Migrated low-risk tool JS to canonical `assets/toolbox/{tool}/js/index.js` paths.
-+- Migrated shared browser API clients to `assets/js/shared/`.
-+- Migrated Assets upload worker to `assets/toolbox/assets/js/assets-upload-worker.js`.
-+- Updated browser entrypoints, tests, and validation allowlists for the migrated paths.
-+
-+## Validation Commands
-+
-+- PASS: `git diff --check`
-+- PASS: `npm run validate:canonical-structure`
-+- PASS: `node --test tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs`
-+- PASS: Targeted route/worker validation probe:
-+  - `/toolbox/assets/index.html` HTTP 200
-+  - `/assets/toolbox/assets/js/index.js` HTTP 200
-+  - `/assets/toolbox/assets/js/assets-upload-worker.js` HTTP 200
-+  - `/assets/js/shared/assets-api-client.js` HTTP 200
-+  - `/assets/js/shared/controls-api-client.js` HTTP 200
-+  - `/assets/js/shared/game-journey-api-client.js` HTTP 200
-+  - Browser worker processed `final-worker-probe.bin` to completion
-+- FAIL, documented blocker: `npm run validate:browser-env-agnostic`
-+
-+## Branch Validation
-+
-+- PASS: Current branch was `PR_26172_CHARLIE_repository-compliance-stack`.
-+- PASS: Worktree was clean before PR_043 report generation.
-+- PASS: Local/origin sync was `0 0` before PR_043 report generation.
-+- PASS: No runtime code was changed by PR_043.
-+- PASS: Stack remains unmerged until EOD merge execution.
-+
-+## Requirement Checklist
-+
-+- PASS: Reviewed ProjectInstructions.
-+- PASS: Verified canonical tool JS paths.
-+- PASS: Verified shared JS client paths.
-+- PASS: Verified retained exceptions.
-+- PASS: Verified worker placement.
-+- PASS: Verified guardrail status.
-+- PASS: Reported browser validation status.
-+- PASS: Documented known unrelated blockers.
-+- PASS: Created ZIP artifact under `tmp/`.
-+
-+## Manual Validation Notes
-+
-+- The targeted worker validation avoids the known upload record write failure and directly verifies worker URL serving, browser module-worker construction, and worker payload processing.
-+- The browser environment gate failure should not block Charlie canonical merge review because its findings are in product/runtime and Messages wording areas outside this workstream.
-+
-+## Merge Readiness Recommendation
-+
-+READY for Owner EOD merge review.
-+
-+The Charlie stack is merge-ready with retained blockers documented as pre-existing or outside Charlie scope.
++git rev-list --left-right --count origin/main...main
++0 0
++```
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index 5ec1e4fd0..712d5c487 100644
+--- a/docs_build/dev/reports/codex_changed_files.txt
++++ b/docs_build/dev/reports/codex_changed_files.txt
+@@ -1 +1,3 @@
+-A	docs_build/dev/reports/PR_26172_CHARLIE_043-final-charlie-compliance-reaudit.md
++﻿docs_build/dev/reports/PR_26174_ALFA_MERGE_PUSH_CLOSEOUT.md
++docs_build/dev/reports/codex_review.diff
++docs_build/dev/reports/codex_changed_files.txt

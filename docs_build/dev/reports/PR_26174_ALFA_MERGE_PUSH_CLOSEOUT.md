@@ -1,0 +1,107 @@
+# PR_26174_ALFA_MERGE_PUSH_CLOSEOUT
+
+## Summary
+
+Owner-approved Team Alfa merge/push closeout completed.
+
+All Team Alfa branch heads from PR_26174_ALFA_001 through PR_26174_ALFA_022, plus the two EOD closeout branches, were merged into local `main` in dependency order and pushed to `origin/main`.
+
+No feature work, refactoring, or new scope was added during merge closeout.
+
+## Merge Order
+
+PR_26174_ALFA_000 was already merged before this closeout.
+
+1. PR_26174_ALFA_001-idea-board-create-project-api-contract
+2. PR_26174_ALFA_002-game-hub-project-intake-display
+3. PR_26174_ALFA_003-game-hub-journey-bootstrap
+4. PR_26174_ALFA_004-game-hub-progress-count-model
+5. PR_26174_ALFA_005-idea-project-validation-polish
+6. PR_26174_ALFA_006-game-hub-empty-and-error-states
+7. PR_26174_ALFA_007-game-journey-count-ui-polish
+8. PR_26174_ALFA_008-alpha-stack-final-validation
+9. PR_26174_ALFA_009-game-hub-parent-child-table-layout
+10. PR_26174_ALFA_010-game-hub-source-idea-child-table-polish
+11. PR_26174_ALFA_011-game-hub-readiness-output-child-table
+12. PR_26174_ALFA_012-game-hub-parent-child-final-validation
+13. PR_26174_ALFA_013-game-hub-game-row-child-rows
+14. PR_26174_ALFA_014-game-hub-parent-columns-center
+15. PR_26174_ALFA_015-game-hub-actions-and-setup-cleanup
+16. PR_26174_ALFA_016-game-hub-row-edit-add-selected-state
+17. PR_26174_ALFA_017-game-hub-guest-save-and-crew-cleanup
+18. PR_26174_ALFA_018-game-selection-button-state
+19. PR_26174_ALFA_019-game-hub-selected-button-and-crew-label
+20. PR_26174_ALFA_020-game-hub-idea-board-cleanup
+21. PR_26174_ALFA_021-idea-board-status-filter-table-polish
+22. PR_26174_ALFA_022-idea-board-status-dropdown-fix
+23. PR_26174_ALFA_EOD-workstream-closeout
+24. PR_26174_ALFA_EOD-final-closeout
+
+## Final Merge Commits
+
+- PR_26174_ALFA_000-projectinstructions-archive-ignore: already on `main` at `b97893c78`.
+- PR_26174_ALFA_001-idea-board-create-project-api-contract: `5e7c75122`.
+- PR_26174_ALFA_002-game-hub-project-intake-display: `4764f3447`.
+- PR_26174_ALFA_003-game-hub-journey-bootstrap: `edb87038c`.
+- PR_26174_ALFA_004-game-hub-progress-count-model: `48e610e4a`.
+- PR_26174_ALFA_005-idea-project-validation-polish: `2de618849`.
+- PR_26174_ALFA_006-game-hub-empty-and-error-states: `894f3e65c`.
+- PR_26174_ALFA_007-game-journey-count-ui-polish: `44bcf73e0`.
+- PR_26174_ALFA_008-alpha-stack-final-validation: `b7aa0e60f`.
+- PR_26174_ALFA_009-game-hub-parent-child-table-layout: `0b540cab9`.
+- PR_26174_ALFA_010-game-hub-source-idea-child-table-polish: `2a9df24c1`.
+- PR_26174_ALFA_011-game-hub-readiness-output-child-table: `d6a55bafd`.
+- PR_26174_ALFA_012-game-hub-parent-child-final-validation: `541d34ddc`.
+- PR_26174_ALFA_013-game-hub-game-row-child-rows: `fa4b183db`.
+- PR_26174_ALFA_014-game-hub-parent-columns-center: `3a51ba7e7`.
+- PR_26174_ALFA_015-game-hub-actions-and-setup-cleanup: `2c20275ba`.
+- PR_26174_ALFA_016-game-hub-row-edit-add-selected-state: `0cdbd47e3`.
+- PR_26174_ALFA_017-game-hub-guest-save-and-crew-cleanup: `336b4f4b7`.
+- PR_26174_ALFA_018-game-selection-button-state: `20b093ac9`.
+- PR_26174_ALFA_019-game-hub-selected-button-and-crew-label: `b14fdc2d5`.
+- PR_26174_ALFA_020-game-hub-idea-board-cleanup: `41cb1eed4`.
+- PR_26174_ALFA_021-idea-board-status-filter-table-polish: `86dd28b1b`.
+- PR_26174_ALFA_022-idea-board-status-dropdown-fix: `a256069e0`.
+- PR_26174_ALFA_EOD-workstream-closeout: `f38af57c4`.
+- PR_26174_ALFA_EOD-final-closeout: `b4dc9f0dc`.
+
+## Validation Summary
+
+- PASS: `git fetch origin --prune`.
+- PASS: `git checkout main`.
+- PASS: `git pull origin main`.
+- PASS: merged PR_26174_ALFA_001 through PR_26174_ALFA_EOD-final-closeout in dependency order.
+- PASS: preserved current-main shared `docs_build/dev/reports/codex_changed_files.txt` and `docs_build/dev/reports/codex_review.diff` during repeated shared report conflicts.
+- PASS: resolved the PR_26174_ALFA_001 Idea Board JS conflict by keeping the canonical `assets/toolbox/idea-board/js/index.js` location and canonical relative imports.
+- PASS: every Team Alfa branch head from PR_001 through PR_022 and both EOD closeouts is an ancestor of `main`.
+- PASS: `node --check assets/toolbox/idea-board/js/index.js`.
+- PASS: `node --check toolbox/game-hub/game-hub.js`.
+- PASS: pushed merged `main` to `origin/main`.
+- PASS: `git pull origin main` after merge push reported already up to date.
+- PASS: `git status -sb` after merge push reported `## main...origin/main`.
+- PASS: `git rev-list --left-right --count origin/main...main` after merge push reported `0 0`.
+
+## Open Issues
+
+- `git diff --check origin/main..HEAD` before this closeout report identified existing whitespace issues in approved Project Instructions/report files. They were not cleaned up because this task allowed no cleanup outside reporting.
+- Broader Toolbox route validation may still report `500 /api/game-journey/completion-metrics`, as documented in the Alfa PR validation reports.
+- GitHub draft PR records may still appear open because the approved integration was performed by local dependency-order merge commits into `main`.
+
+## Deferred Items
+
+- Optional follow-up: close or annotate superseded GitHub draft PR records after owner confirms the local merge/push integration is the canonical closure.
+- Optional follow-up: address existing whitespace warnings in a dedicated cleanup PR.
+- Optional follow-up: investigate the broader `game-journey/completion-metrics` warning outside the Alfa merge scope.
+- Optional follow-up: regenerate ignored ZIP artifacts if owner wants a fresh local artifact audit after merge.
+
+## Final Repository Status
+
+After pushing the Alfa merge commits to `origin/main` and pulling latest `origin/main`:
+
+```text
+git status -sb
+## main...origin/main
+
+git rev-list --left-right --count origin/main...main
+0 0
+```
