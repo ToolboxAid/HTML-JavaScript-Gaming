@@ -1,149 +1,174 @@
-﻿diff --git a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-index da7800ca0..61d8fdc68 100644
---- a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-+++ b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-@@ -5,6 +5,10 @@ import { isBrowserExtensionNoise } from "../../helpers/browserExtensionNoise.mjs
- import { createGameJourneyCompletionMetricsPostgresClientStub } from "../../helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs";
- import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
-
-+const EDITABLE_STATUS_OPTIONS = ["New", "Exploring", "Refining", "Ready"];
-+const FILTER_STATUS_OPTIONS = ["New", "Exploring", "Refining", "Ready", "Project", "Archived"];
-+const DEFAULT_VISIBLE_STATUS_OPTIONS = ["New", "Exploring", "Refining", "Ready", "Project"];
+﻿diff --git a/docs_build/dev/reports/PR_26174_ALFA_EOD-workstream-closeout_branch-validation.md b/docs_build/dev/reports/PR_26174_ALFA_EOD-workstream-closeout_branch-validation.md
+new file mode 100644
+index 000000000..754a05cbb
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26174_ALFA_EOD-workstream-closeout_branch-validation.md
+@@ -0,0 +1,19 @@
++# Branch Validation
 +
- function restoreEnvValue(key, value) {
-   if (value === undefined) {
-     delete process.env[key];
-@@ -213,7 +217,7 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-     await expect(statusFilterAccordion.locator("summary")).toHaveText("Status Filter");
-     await expect(statusFilterAccordion.locator("[data-idea-board-filter-select-all]")).toHaveText("Select All");
-     await expect(statusFilterAccordion.locator("[data-idea-board-filter-clear-all]")).toHaveText("Clear All");
--    await expect(statusFilterAccordion.locator("[data-idea-board-status-filter-option]")).toHaveCount(6);
-+    await expect(statusFilterAccordion.locator("[data-idea-board-status-filter-option]")).toHaveCount(FILTER_STATUS_OPTIONS.length);
-     const statusFilterTheme = await statusFilterAccordion.locator("[data-idea-board-status-filter-option][value='New']").evaluate((input) => ({
-       accentColor: getComputedStyle(input).accentColor,
-       toolGroupColor: getComputedStyle(input.closest(".control-lab")).getPropertyValue("--tool-group-color").trim(),
-@@ -222,18 +226,11 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-       accentColor: "rgb(255, 45, 45)",
-       toolGroupColor: "#ff2d2d",
-     });
--    await expect(statusFilterAccordion.locator(".idea-board-show-filter__option")).toHaveText([
--      "New",
--      "Exploring",
--      "Refining",
--      "Ready",
--      "Project",
--      "Archived",
--    ]);
-+    await expect(statusFilterAccordion.locator(".idea-board-show-filter__option")).toHaveText(FILTER_STATUS_OPTIONS);
-     const checkedStatuses = await page.locator("[data-idea-board-status-filter-option]:checked").evaluateAll((inputs) => (
-       inputs.map((input) => input.value)
-     ));
--    expect(checkedStatuses).toEqual(["New", "Exploring", "Refining", "Ready", "Project"]);
-+    expect(checkedStatuses).toEqual(DEFAULT_VISIBLE_STATUS_OPTIONS);
-     await expect(page.locator("[data-idea-board-status-filter-option][value='Archived']")).not.toBeChecked();
-     await expect(page.getByText(/another/i)).toHaveCount(0);
-     await expect(page.locator("[data-idea-board-notes-chevron]")).toHaveCount(0);
-@@ -330,12 +327,7 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-     const ideaInputRow = page.locator("[data-idea-board-idea-input-row]").last();
-     await expect(ideaInputRow.locator("[data-idea-board-idea-action]")).toHaveText(["Save", "Cancel"]);
-     await expect(ideaInputRow.locator("[data-idea-board-idea-status-input]")).toHaveCount(1);
--    await expect(ideaInputRow.locator("[data-idea-board-idea-status-input] option")).toHaveText([
--      "New",
--      "Exploring",
--      "Refining",
--      "Ready",
--    ]);
-+    await expect(ideaInputRow.locator("[data-idea-board-idea-status-input] option")).toHaveText(EDITABLE_STATUS_OPTIONS);
-     await expect(ideaInputRow.locator("td").nth(2)).toHaveText("0 Notes");
-     await page.locator("[data-idea-board-idea-input]").fill("Lantern Reef");
-     await page.locator("[data-idea-board-pitch-input]").fill("Guide light through a reef that rearranges at dusk.");
-@@ -355,6 +347,7 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-     await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='edit']").click();
-     await expect(page.locator("[data-idea-board-idea-input-row] [data-idea-board-idea-action]")).toHaveText(["Save", "Cancel"]);
-     await expect(page.locator("[data-idea-board-idea-status-input]")).toHaveCount(1);
-+    await expect(page.locator("[data-idea-board-idea-status-input] option")).toHaveText(EDITABLE_STATUS_OPTIONS);
-     await page.locator("[data-idea-board-idea-status-input]").selectOption("Ready");
-     await page.locator("[data-idea-board-idea-action='save']").click();
-     await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] td").nth(1)).toHaveText("Ready");
-diff --git a/tests/playwright/tools/ToolboxRoutePages.spec.mjs b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
-index a2622e969..1f2bf6e89 100644
---- a/tests/playwright/tools/ToolboxRoutePages.spec.mjs
-+++ b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
-@@ -4,6 +4,9 @@ import { isBrowserExtensionNoise } from "../../helpers/browserExtensionNoise.mjs
- import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
- import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
-
-+const IDEA_BOARD_EDITABLE_STATUS_OPTIONS = ["New", "Exploring", "Refining", "Ready"];
-+const IDEA_BOARD_FILTER_STATUS_OPTIONS = ["New", "Exploring", "Refining", "Ready", "Project", "Archived"];
++PR: PR_26174_ALFA_EOD-workstream-closeout
 +
- const TOOL_ROUTE_SMOKE_CASES = [
-   { heading: "Game Journey", route: "/tools/game-journey/index.html" },
-   { heading: "Idea Board", route: "/tools/idea-board/index.html" },
-@@ -319,6 +322,8 @@ test("Idea Board launches from Toolbox with accordion table notes model", async
-     ]);
-     await expect(page.locator("[data-idea-board-table]")).toBeVisible();
-     await expect(page.locator("[data-idea-board-table] > thead th[scope='col']")).toHaveText(["Idea", "Pitch", "Status", "Notes", "Actions"]);
-+    await expect(page.locator("[data-idea-board-status-filter-option]")).toHaveCount(IDEA_BOARD_FILTER_STATUS_OPTIONS.length);
-+    await expect(page.locator(".idea-board-show-filter__option")).toHaveText(IDEA_BOARD_FILTER_STATUS_OPTIONS);
-     await expect(page.locator("[data-idea-board-idea-row]")).toHaveCount(3);
-     await expect(page.locator("[data-idea-board-expanded-row]")).toHaveCount(0);
-     await expect(page.locator("[data-idea-board-add-idea]")).toHaveText("Add Idea");
-@@ -360,6 +365,7 @@ test("Idea Board launches from Toolbox with accordion table notes model", async
-     await page.locator("[data-idea-board-add-idea]").click();
-     await page.locator("[data-idea-board-idea-input]").fill("Launch Tile");
-     await page.locator("[data-idea-board-pitch-input]").fill("Turn a polished board idea into a project.");
-+    await expect(page.locator("[data-idea-board-idea-status-input] option")).toHaveText(IDEA_BOARD_EDITABLE_STATUS_OPTIONS);
-     await page.locator("[data-idea-board-idea-status-input]").selectOption("Ready");
-     await page.locator("[data-idea-board-idea-action='save']").click();
-     await expect(page.locator("[data-idea-board-idea-row='launch-tile'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Create Project", "Delete"]);
-diff --git a/toolbox/idea-board/index.js b/toolbox/idea-board/index.js
-index 8fcb7ad53..86d4dae4b 100644
---- a/toolbox/idea-board/index.js
-+++ b/toolbox/idea-board/index.js
-@@ -1,7 +1,8 @@
- import { createServerRepositoryClient } from "../../src/api/server-api-client.js";
- import { getSessionCurrent } from "../../src/api/session-api-client.js";
-
--const statusOptions = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project", "Archived"]);
-+const editableStatusOptions = Object.freeze(["New", "Exploring", "Refining", "Ready"]);
-+const filterStatusOptions = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project", "Archived"]);
- const defaultVisibleStatuses = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project"]);
- const userId = "user-1";
- const gameHubRoute = "toolbox/game-hub/index.html";
-@@ -123,7 +124,7 @@ function visibleIdeas() {
- }
-
- function previousStatusForRestore(record) {
--  return statusOptions.includes(record.previousStatus) && record.previousStatus !== "Archived"
-+  return filterStatusOptions.includes(record.previousStatus) && record.previousStatus !== "Archived"
-     ? record.previousStatus
-     : "Refining";
- }
-@@ -168,7 +169,7 @@ function renderStatusFilter(root) {
-   const options = root.querySelector("[data-idea-board-status-options]");
-   if (!options) return;
-   options.replaceChildren();
--  for (const status of statusOptions) {
-+  for (const status of filterStatusOptions) {
-     const label = document.createElement("label");
-     label.className = "idea-board-show-filter__option";
-     const input = document.createElement("input");
-@@ -195,8 +196,7 @@ function statusSelect(value) {
-   const select = document.createElement("select");
-   select.setAttribute("aria-label", "Idea status");
-   select.dataset.ideaBoardIdeaStatusInput = "true";
--  for (const optionValue of statusOptions) {
--    if (optionValue === "Project" || optionValue === "Archived") continue;
-+  for (const optionValue of editableStatusOptions) {
-     const option = document.createElement("option");
-     option.value = optionValue;
-     option.textContent = optionValue;
-@@ -756,7 +756,7 @@ function handleNoteAction(root, actionControl) {
-
- function handleFilterAction(root, actionControl) {
-   if (actionControl.matches("[data-idea-board-filter-select-all]")) {
--    state.visibleStatuses = new Set(statusOptions);
-+    state.visibleStatuses = new Set(filterStatusOptions);
-     updateStatus(root, "Showing all statuses.");
-   } else if (actionControl.matches("[data-idea-board-filter-clear-all]")) {
-     state.visibleStatuses = new Set();
++Status: PASS with local ZIP artifact verification gap documented
++
++## Checks
++
++- PASS: Started from clean `pr/26174-ALFA-022-idea-board-status-dropdown-fix`.
++- PASS: Fetched origin before branch creation.
++- PASS: `pr/26174-ALFA-022-idea-board-status-dropdown-fix` was synchronized with origin before branch creation.
++- PASS: Created report-only branch `pr/26174-ALFA-EOD-workstream-closeout`.
++- PASS: No feature files were changed.
++- PASS: No refactoring was performed.
++- PASS: No Project Instructions content was changed.
++
++## Gap
++
++- LOCAL VERIFY GAP: Prior PR ZIP artifacts were not present under local `tmp/` at closeout time.
+diff --git a/docs_build/dev/reports/PR_26174_ALFA_EOD-workstream-closeout_manual-validation-notes.md b/docs_build/dev/reports/PR_26174_ALFA_EOD-workstream-closeout_manual-validation-notes.md
+new file mode 100644
+index 000000000..d6ad4912d
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26174_ALFA_EOD-workstream-closeout_manual-validation-notes.md
+@@ -0,0 +1,8 @@
++# Manual Validation Notes
++
++- Confirmed PR #92 is merged.
++- Confirmed PRs #95 through #116 are open draft PRs.
++- Confirmed PRs #95 through #116 form the documented Alfa stack from PR_001 through PR_022.
++- Confirmed local report files exist for every PR from PR_000 through PR_022.
++- Confirmed local `tmp/` does not currently contain prior ignored ZIP artifacts.
++- Confirmed this closeout intentionally changes reports only.
+diff --git a/docs_build/dev/reports/PR_26174_ALFA_EOD-workstream-closeout_report.md b/docs_build/dev/reports/PR_26174_ALFA_EOD-workstream-closeout_report.md
+new file mode 100644
+index 000000000..166eba332
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26174_ALFA_EOD-workstream-closeout_report.md
+@@ -0,0 +1,69 @@
++# PR_26174_ALFA_EOD-workstream-closeout
++
++## Summary
++
++Team Alfa reviewed PR_26174_ALFA_000 through PR_26174_ALFA_022 for owner merge readiness.
++
++This closeout is report-only. No feature code, tests, runtime behavior, or Project Instructions content was changed.
++
++## Overall Status
++
++- PASS: PR_26174_ALFA_000 through PR_26174_ALFA_022 were reviewed.
++- PASS: GitHub PRs are documented below.
++- PASS: All open stacked Alfa PRs are draft PRs.
++- PASS: PR-specific summary, branch validation, requirement checklist, validation lane, and manual validation reports exist locally for PR_000 through PR_022.
++- PASS: `docs_build/dev/reports/codex_changed_files.txt` exists.
++- PASS: Worktree was clean before this report-only closeout branch was created.
++- PASS: ALFA_022 was synchronized with `origin/pr/26174-ALFA-022-idea-board-status-dropdown-fix` before this branch was created.
++- LOCAL VERIFY GAP: Expected prior ZIP artifact names are documented in the PR bodies, but the prior ZIP files are not present under local `tmp/` in this checkout at closeout time. `tmp/` artifacts are ignored and not committed.
++
++## GitHub PR Inventory
++
++| PR | Title | Status | Base | Head |
++| --- | --- | --- | --- | --- |
++| #92 | PR_26174_ALFA_000-projectinstructions-archive-ignore | merged | main | pr/26174-ALFA-000-projectinstructions-archive-ignore |
++| #95 | PR_26174_ALFA_001-idea-board-create-project-api-contract | open draft | main | pr/26174-ALFA-001-idea-board-create-project-api-contract |
++| #96 | PR_26174_ALFA_002-game-hub-project-intake-display | open draft | pr/26174-ALFA-001-idea-board-create-project-api-contract | pr/26174-ALFA-002-game-hub-project-intake-display |
++| #97 | PR_26174_ALFA_003-game-hub-journey-bootstrap | open draft | pr/26174-ALFA-002-game-hub-project-intake-display | pr/26174-ALFA-003-game-hub-journey-bootstrap |
++| #98 | PR_26174_ALFA_004-game-hub-progress-count-model | open draft | pr/26174-ALFA-003-game-hub-journey-bootstrap | pr/26174-ALFA-004-game-hub-progress-count-model |
++| #99 | PR_26174_ALFA_005-idea-project-validation-polish | open draft | pr/26174-ALFA-004-game-hub-progress-count-model | pr/26174-ALFA-005-idea-project-validation-polish |
++| #100 | PR_26174_ALFA_006-game-hub-empty-and-error-states | open draft | pr/26174-ALFA-005-idea-project-validation-polish | pr/26174-ALFA-006-game-hub-empty-and-error-states |
++| #101 | PR_26174_ALFA_007-game-journey-count-ui-polish | open draft | pr/26174-ALFA-006-game-hub-empty-and-error-states | pr/26174-ALFA-007-game-journey-count-ui-polish |
++| #102 | PR_26174_ALFA_008-alpha-stack-final-validation | open draft | pr/26174-ALFA-007-game-journey-count-ui-polish | pr/26174-ALFA-008-alpha-stack-final-validation |
++| #103 | PR_26174_ALFA_009-game-hub-parent-child-table-layout | open draft | pr/26174-ALFA-008-alpha-stack-final-validation | pr/26174-ALFA-009-game-hub-parent-child-table-layout |
++| #104 | PR_26174_ALFA_010-game-hub-source-idea-child-table-polish | open draft | pr/26174-ALFA-009-game-hub-parent-child-table-layout | pr/26174-ALFA-010-game-hub-source-idea-child-table-polish |
++| #105 | PR_26174_ALFA_011-game-hub-readiness-output-child-table | open draft | pr/26174-ALFA-010-game-hub-source-idea-child-table-polish | pr/26174-ALFA-011-game-hub-readiness-output-child-table |
++| #106 | PR_26174_ALFA_012-game-hub-parent-child-final-validation | open draft | pr/26174-ALFA-011-game-hub-readiness-output-child-table | pr/26174-ALFA-012-game-hub-parent-child-final-validation |
++| #107 | PR_26174_ALFA_013-game-hub-game-row-child-rows | open draft | pr/26174-ALFA-012-game-hub-parent-child-final-validation | pr/26174-ALFA-013-game-hub-game-row-child-rows |
++| #108 | PR_26174_ALFA_014-game-hub-parent-columns-center | open draft | pr/26174-ALFA-013-game-hub-game-row-child-rows | pr/26174-ALFA-014-game-hub-parent-columns-center |
++| #109 | PR_26174_ALFA_015-game-hub-actions-and-setup-cleanup | open draft | pr/26174-ALFA-014-game-hub-parent-columns-center | pr/26174-ALFA-015-game-hub-actions-and-setup-cleanup |
++| #110 | PR_26174_ALFA_016-game-hub-row-edit-add-selected-state | open draft | pr/26174-ALFA-015-game-hub-actions-and-setup-cleanup | pr/26174-ALFA-016-game-hub-row-edit-add-selected-state |
++| #111 | PR_26174_ALFA_017-game-hub-guest-save-and-crew-cleanup | open draft | pr/26174-ALFA-016-game-hub-row-edit-add-selected-state | pr/26174-ALFA-017-game-hub-guest-save-and-crew-cleanup |
++| #112 | PR_26174_ALFA_018-game-selection-button-state | open draft | pr/26174-ALFA-017-game-hub-guest-save-and-crew-cleanup | pr/26174-ALFA-018-game-selection-button-state |
++| #113 | PR_26174_ALFA_019-game-hub-selected-button-and-crew-label | open draft | pr/26174-ALFA-018-game-selection-button-state | pr/26174-ALFA-019-game-hub-selected-button-and-crew-label |
++| #114 | PR_26174_ALFA_020-game-hub-idea-board-cleanup | open draft | pr/26174-ALFA-019-game-hub-selected-button-and-crew-label | pr/26174-ALFA-020-game-hub-idea-board-cleanup |
++| #115 | PR_26174_ALFA_021-idea-board-status-filter-table-polish | open draft | pr/26174-ALFA-020-game-hub-idea-board-cleanup | pr/26174-ALFA-021-idea-board-status-filter-table-polish |
++| #116 | PR_26174_ALFA_022-idea-board-status-dropdown-fix | open draft | pr/26174-ALFA-021-idea-board-status-filter-table-polish | pr/26174-ALFA-022-idea-board-status-dropdown-fix |
++
++## Report Verification
++
++- PASS: PR_000 through PR_022 each have a local PR summary report.
++- PASS: PR_000 through PR_022 each have a local branch validation report.
++- PASS: PR_000 through PR_022 each have a local requirement checklist report.
++- PASS: PR_000 through PR_022 each have a local validation lane report.
++- PASS: PR_000 through PR_022 each have a local manual validation notes report.
++- PASS: Shared `docs_build/dev/reports/codex_changed_files.txt` exists at the current stack tip.
++- PASS: Shared `docs_build/dev/reports/codex_review.diff` exists at the current stack tip.
++
++## ZIP Artifact Verification
++
++- PASS: Each PR body from PR_000 through PR_022 documents the expected `tmp/<PR_NAME>_delta.zip` artifact path.
++- LOCAL VERIFY GAP: No prior PR ZIP artifacts were present under local `tmp/` during closeout verification.
++- PASS: This EOD closeout produces `tmp/PR_26174_ALFA_EOD-workstream-closeout_delta.zip`.
++
++## Owner Merge Review Notes
++
++- PR_000 is already merged.
++- PR_001 through PR_022 remain open draft PRs in a sequential stack.
++- The stack is ready for owner review with the local report set present.
++- Owner should not rely on this checkout for prior ignored ZIP artifacts unless those artifacts are regenerated or retrieved from the original run environment.
+diff --git a/docs_build/dev/reports/PR_26174_ALFA_EOD-workstream-closeout_requirements-checklist.md b/docs_build/dev/reports/PR_26174_ALFA_EOD-workstream-closeout_requirements-checklist.md
+new file mode 100644
+index 000000000..7221859e8
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26174_ALFA_EOD-workstream-closeout_requirements-checklist.md
+@@ -0,0 +1,14 @@
++# Requirement Checklist
++
++- PASS: Reviewed PR_26174_ALFA_000 through PR_26174_ALFA_022.
++- PASS: Generated final Alfa EOD report.
++- PASS: Verified all draft PRs are documented.
++- PASS: Verified validation reports exist for PR_000 through PR_022.
++- PASS: Verified `codex_changed_files.txt` exists.
++- LOCAL VERIFY GAP: Prior ZIP artifact paths are documented in PR bodies, but prior ZIP files are not present in local `tmp/`.
++- PASS: Verified worktree was clean before report-only closeout changes.
++- PASS: Verified ALFA_022 branch was synchronized before creating closeout branch.
++- PASS: Report-only scope preserved.
++- PASS: No feature work performed.
++- PASS: No scope expansion performed.
++- PASS: No refactoring performed.
+diff --git a/docs_build/dev/reports/PR_26174_ALFA_EOD-workstream-closeout_validation-lane.md b/docs_build/dev/reports/PR_26174_ALFA_EOD-workstream-closeout_validation-lane.md
+new file mode 100644
+index 000000000..373868a7a
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26174_ALFA_EOD-workstream-closeout_validation-lane.md
+@@ -0,0 +1,19 @@
++# Validation Lane
++
++## PASS
++
++- `git fetch origin`
++- `git status -sb`
++- `git rev-list --left-right --count HEAD...origin/pr/26174-ALFA-022-idea-board-status-dropdown-fix`
++- GitHub API metadata check for PRs #92 and #95 through #116.
++- Local report inventory check for PR_26174_ALFA_000 through PR_26174_ALFA_022.
++- Local `codex_changed_files.txt` existence check.
++- Local `codex_review.diff` existence check.
++
++## LOCAL VERIFY GAP
++
++- Local `tmp/` did not contain prior PR ZIP artifacts for PR_000 through PR_022.
++
++## Not Run
++
++- Runtime or Playwright validation was not run for this closeout because the PR is report-only.
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index 10031f5d7..f4795f6b2 100644
+--- a/docs_build/dev/reports/codex_changed_files.txt
++++ b/docs_build/dev/reports/codex_changed_files.txt
+@@ -1,3 +1,7 @@
+-﻿tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+-tests/playwright/tools/ToolboxRoutePages.spec.mjs
+-toolbox/idea-board/index.js
++﻿docs_build/dev/reports/PR_26174_ALFA_EOD-workstream-closeout_report.md
++docs_build/dev/reports/PR_26174_ALFA_EOD-workstream-closeout_branch-validation.md
++docs_build/dev/reports/PR_26174_ALFA_EOD-workstream-closeout_requirements-checklist.md
++docs_build/dev/reports/PR_26174_ALFA_EOD-workstream-closeout_validation-lane.md
++docs_build/dev/reports/PR_26174_ALFA_EOD-workstream-closeout_manual-validation-notes.md
++docs_build/dev/reports/codex_review.diff
++docs_build/dev/reports/codex_changed_files.txt
