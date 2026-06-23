@@ -129,6 +129,11 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
     await expect(page.getByRole("table", { name: "Environment summary" })).toContainText("IST");
     await expect(page.getByRole("table", { name: "Environment summary" })).toContainText("UAT");
     await expect(page.getByRole("table", { name: "Environment summary" })).toContainText("PRD");
+    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Approved diagnostics format");
+    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Environment Variables + All Runtime Ports");
+    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Configurable multiple runtime ports");
+    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("deferred/cancelled");
+    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).not.toContainText("secret");
     await expect(page.getByRole("table", { name: "Database health" })).toContainText("Postgres");
     await expect(page.locator("[data-admin-system-health-db-value='provider']")).toHaveText("Postgres");
     await expect(page.locator("[data-admin-system-health-db-value='host']")).not.toHaveText("Configured host placeholder");
@@ -213,6 +218,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
   expect(pageSource).not.toContain("No active failure is declared");
   expect(pageSource).not.toContain("SQLite");
   expect(pageSource).toContain("Diagnostics Plan");
+  expect(pageSource).toContain("Local API Startup Diagnostics");
   expect(pageSource).toContain("Server-owned Postgres health reader");
   expect(pageSource).toContain("Server-owned Cloudflare R2 storage diagnostic");
   expect(pageSource).toContain("assets/theme-v2/js/admin-system-health.js");

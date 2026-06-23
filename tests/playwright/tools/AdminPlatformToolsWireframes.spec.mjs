@@ -37,7 +37,7 @@ function storagePathStatusFor(configuredPath) {
     { lane: "DEV", path: "/dev/projects/" },
     { lane: "IST", path: "/ist/projects/" },
     { lane: "UAT", path: "/uat/projects/" },
-    { lane: "PRD", path: "/prd/projects/" },
+    { lane: "PRD", path: "/prod/projects/" },
   ];
   const matchedLane = lanes.find((lane) => lane.path === configuredPath);
   const invalidPath = !matchedLane;
@@ -480,7 +480,7 @@ async function expectStoragePathStatusRows(page, expectedValues) {
   const storageRows = page.locator("[data-admin-storage-path-status-rows] tr");
   await expect(storageRows).toHaveCount(4);
   const lanes = ["DEV", "IST", "UAT", "PRD"];
-  const paths = ["/dev/projects/", "/ist/projects/", "/uat/projects/", "/prd/projects/"];
+  const paths = ["/dev/projects/", "/ist/projects/", "/uat/projects/", "/prod/projects/"];
   for (let index = 0; index < lanes.length; index += 1) {
     await expect(storageRows.nth(index).locator("td")).toHaveText([
       lanes[index],
@@ -554,7 +554,7 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
         await expect(page.locator("body")).toContainText("/dev/projects/");
         await expect(page.locator("body")).toContainText("/ist/projects/");
         await expect(page.locator("body")).toContainText("/uat/projects/");
-        await expect(page.locator("body")).toContainText("/prd/projects/");
+        await expect(page.locator("body")).toContainText("/prod/projects/");
         await expect(page.locator("body")).toContainText("GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX");
         await expectStoragePathStatusRows(page, ["yes", "no", "no", "no"]);
         const infrastructureImage = page.locator("[data-image-zoom-target='admin-infrastructure-image-zoom']");

@@ -8,6 +8,15 @@ export const STORAGE_ENV_KEYS = Object.freeze([
   ...STORAGE_CONNECTION_ENV_KEYS,
   "GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX",
 ]);
+export const STORAGE_PROJECTS_PREFIX_LANES = Object.freeze([
+  Object.freeze({ lane: "DEV", path: "/dev/projects/" }),
+  Object.freeze({ lane: "IST", path: "/ist/projects/" }),
+  Object.freeze({ lane: "UAT", path: "/uat/projects/" }),
+  Object.freeze({ lane: "PRD", path: "/prod/projects/" }),
+]);
+export const STORAGE_PROJECTS_ALLOWED_PREFIXES = Object.freeze(
+  STORAGE_PROJECTS_PREFIX_LANES.map((lane) => lane.path),
+);
 export const DB_BACKUP_STORAGE_PROVIDER_ENV = "GAMEFOUNDRY_DB_BACKUP_STORAGE_PROVIDER";
 export const DB_BACKUP_PREFIX_ENV = "GAMEFOUNDRY_DB_BACKUP_PREFIX";
 export const DB_BACKUP_STORAGE_ENV_KEYS = Object.freeze([
@@ -36,6 +45,10 @@ export function normalizeStoragePrefix(value) {
 
 export function normalizeStorageProjectsPrefix(value) {
   return normalizeStoragePrefix(value);
+}
+
+function storageProjectsPrefixValidationError() {
+  return `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX must be one of ${STORAGE_PROJECTS_ALLOWED_PREFIXES.join(", ")}.`;
 }
 
 export function loadStorageConfig(env = process.env) {
@@ -78,6 +91,18 @@ export function loadStorageConfig(env = process.env) {
         endpoint: endpoint.origin,
         projectsPrefix: "",
       },
+    };
+  }
+  if (!STORAGE_PROJECTS_ALLOWED_PREFIXES.includes(projectsPrefix)) {
+    return {
+      configured: false,
+      missingKeys: [],
+      safe: {
+        bucket: envValue(env, "GAMEFOUNDRY_STORAGE_BUCKET"),
+        endpoint: endpoint.origin,
+        projectsPrefix,
+      },
+      validationError: storageProjectsPrefixValidationError(),
     };
   }
 

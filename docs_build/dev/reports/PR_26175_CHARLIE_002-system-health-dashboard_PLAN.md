@@ -1,0 +1,163 @@
+# PLAN_PR: PR_26175_CHARLIE_002-system-health-dashboard
+
+Team: Charlie
+
+Purpose: Plan a scoped System Health dashboard increment that builds on the Local API startup diagnostics lane without implementing configurable multiple runtime ports or unrelated telemetry/governance work.
+
+## Branch and Context Validation
+
+| Check | Expected | Actual | Status |
+|---|---|---|---|
+| Starting branch before switch | `pr/26172-BRAVO-text2speech-messages-inventory` | `pr/26172-BRAVO-text2speech-messages-inventory` | PASS |
+| Bravo worktree clean before switch | no output from `git status --short` | clean | PASS |
+| Bravo branch merged | not merged | not merged | PASS |
+| Bravo branch modified | no | no | PASS |
+| Charlie branch resolved | existing Team Charlie branch | `PR_26172_CHARLIE_repository-compliance-stack` | PASS |
+| Charlie branch synced | local equals remote | `0 0` against `origin/PR_26172_CHARLIE_repository-compliance-stack` | PASS |
+| Active team | Team Charlie | Team Charlie | PASS |
+| Active assignment | PLAN_PR for System Health dashboard | `PR_26175_CHARLIE_002-system-health-dashboard` | PASS |
+
+## Dependency Gate
+
+This PR depends on:
+
+- `PR_26175_CHARLIE_001-local-api-startup-diagnostics`
+
+Start gate for APPLY/build:
+
+- PASS only when PR_001 is merged or the approved stack branch includes its committed startup diagnostics work.
+- PASS only when the Local API startup output matches the approved diagnostics format.
+- FAIL if PR_001 is absent, unmerged, or if startup diagnostics output is still ambiguous.
+
+## Scope
+
+Plan only for a System Health dashboard increment.
+
+Allowed implementation scope for the later APPLY/build:
+
+- Use existing Admin System Health page and safe API client patterns.
+- Surface Local API startup diagnostics inside the System Health dashboard only if PR_001 provides a safe structured contract or stable parseable output.
+- Keep dashboard data server-owned and browser-safe.
+- Preserve existing Theme V2 Admin System Health layout.
+- Preserve existing Postgres, R2, runtime environment, limits/capacity, diagnostics plan, and diagnostics log sections unless a narrowly scoped dashboard row/section addition is required.
+- Use PASS/WARN/FAIL indicators only when backed by real diagnostics.
+- Use PENDING or equivalent non-failure status for intentionally unwired dashboard items.
+- Provide hover/title or accessible reason text for every non-PASS status.
+- Do not expose secrets, raw connection strings, access keys, tokens, service role values, or database credentials.
+
+Out of scope:
+
+- Configurable multiple runtime ports implementation.
+- New telemetry foundation.
+- In-use delete governance.
+- New persistence.
+- New database schema.
+- New R2 write behavior beyond existing safe connectivity actions.
+- Runtime feature work outside Admin/System Health.
+- Any changes to Team Bravo branch or reports.
+
+Deferred/cancelled carry-forward:
+
+- Configurable multiple runtime ports remains cancelled/deferred for this System Health dashboard PR.
+- `PR_26175_CHARLIE_004-telemetry-foundation` remains deferred.
+- `PR_26175_CHARLIE_005-in-use-delete-governance-rule` remains future governance.
+
+## Current Relevant Implementation Inventory
+
+Existing files to review during APPLY/build:
+
+- `admin/system-health.html`
+- `assets/theme-v2/js/admin-system-health.js`
+- `src/api/admin-system-health-api-client.js`
+- `src/dev-runtime/server/local-api-router.mjs`
+- `scripts/start-local-api-server.mjs`
+- `tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`
+- `tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
+- `tests/dev-runtime/AdminHealthOperations.test.mjs`
+- `tests/dev-runtime/LocalApiStartupLogging.test.mjs`
+
+Existing System Health route/API surface:
+
+- Browser client calls `/api/admin/system-health/status`.
+- Browser client calls `/api/admin/system-health/storage-connectivity-action`.
+- Local API router already returns `databaseStatus`, `storageStatus`, `runtimeEnvironment`, `limitsStatus`, `operationsHealth`, `overview`, and `summary`.
+- Admin System Health page already renders Postgres-only database diagnostics, R2 diagnostics, runtime environment rows, limits/capacity, diagnostics plan, and diagnostics log.
+
+Existing validation evidence:
+
+- `tests/playwright/tools/AdminHealthOperationsPage.spec.mjs` covers safe System Health rendering, Postgres diagnostics, R2 diagnostics, runtime key masking, admin-only access, and no inline scripts/styles.
+- `tests/dev-runtime/AdminHealthOperations.test.mjs` covers `/api/admin/system-health/status` admin access and blocks Creator sessions.
+- `docs_build/dev/reports/PR_26171_018-local-api-startup-diagnostics.md` documents an older startup diagnostics shape, including environment variable output and runtime port listing.
+- `docs_build/dev/reports/PR_26169_026-local-api-startup-url-logging.md` documents earlier Local API startup URL logging behavior.
+
+## Proposed APPLY/Build Steps
+
+1. Start from the approved Charlie branch or the owner-approved stack branch containing PR_001.
+2. Verify dependency:
+   - confirm PR_001 commit/report exists in the branch or mainline dependency chain;
+   - run the startup diagnostics unit test;
+   - confirm approved startup output format.
+3. Inspect `scripts/start-local-api-server.mjs` and the PR_001 startup diagnostics contract.
+4. Add a System Health dashboard row/section for Local API startup diagnostics only if the data source is safe and stable.
+5. If PR_001 exposes only console text, prefer a server-owned helper in `src/dev-runtime/server/local-api-router.mjs` that returns sanitized startup diagnostic metadata rather than browser-parsing console output.
+6. Extend `src/api/admin-system-health-api-client.js` only if a new API route is needed; otherwise reuse `/admin/system-health/status`.
+7. Extend `assets/theme-v2/js/admin-system-health.js` to render any new dashboard data with existing status helper functions.
+8. Update `admin/system-health.html` only for scoped dashboard placeholders/rows required by the new diagnostics.
+9. Update targeted tests only.
+10. Produce reports and delta ZIP.
+
+## Approved Diagnostics Format Expectation
+
+The later APPLY/build must verify PR_001 startup output before changing dashboard behavior. Expected properties:
+
+- Environment variables are listed in a deterministic section.
+- Secret-like values are masked.
+- URL credentials are redacted.
+- Runtime URL/API URL/database/storage information is shown only as safe diagnostics.
+- Configurable multiple runtime ports are not implemented in this PR.
+- Cancelled/deferred multiple-port work is documented rather than built.
+
+## Status Model
+
+Use existing status model:
+
+- `PASS`: known good, backed by real diagnostic evidence.
+- `WARN`: actionable partial/missing configuration, not a placeholder.
+- `FAIL`: actual failed diagnostic or blocked required behavior.
+- `PENDING`: intentional future wiring or dependency not active yet.
+
+Every non-PASS status must include title or accessible reason text.
+
+## Validation Plan
+
+Required targeted validation for APPLY/build:
+
+- `git diff --check`
+- `node --test tests/dev-runtime/LocalApiStartupLogging.test.mjs`
+- `node --test tests/dev-runtime/AdminHealthOperations.test.mjs`
+- `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`
+- Targeted browser/static validation for no secret exposure:
+  - no raw `DATABASE_URL`;
+  - no `PASSWORD`, `SECRET`, `TOKEN`, `KEY`, `SERVICE_ROLE`, or `JWT` values exposed;
+  - no inline scripts/styles introduced.
+
+Skipped lanes:
+
+- Full samples smoke: skipped because the scope is Admin System Health dashboard diagnostics only.
+- Broad Playwright: skipped unless targeted Admin/System Health tests require support coverage.
+- Runtime feature tests outside System Health: skipped as out of scope.
+
+## Required Reports for APPLY/Build
+
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard.md`
+- `docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-manual-validation-notes.md`
+- `docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-instruction-compliance-checklist.md`
+- repo-structured delta ZIP under `tmp/`
+
+## PLAN_PR Result
+
+PLAN status: PASS.
+
+Recommendation: Continue to APPLY only after `PR_26175_CHARLIE_001-local-api-startup-diagnostics` is present in the approved dependency chain and its startup output format has been validated.

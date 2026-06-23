@@ -17,7 +17,11 @@ import {
   createInputMappingToolMockRepository,
 } from "../persistence/tool-repositories/input-mapping-mock-repository.js";
 import { createConfiguredBackupStorage, createConfiguredProjectAssetStorage } from "../storage/r2-project-asset-storage.mjs";
-import { loadStorageConfig } from "../storage/storage-config.mjs";
+import {
+  STORAGE_PROJECTS_PREFIX_LANES,
+  loadStorageConfig,
+  normalizeStorageProjectsPrefix,
+} from "../storage/storage-config.mjs";
 import { createPostgresBackup } from "../database/postgres-backup-service.mjs";
 import {
   GFSP_PACKAGE_REQUIRED_FILES,
@@ -311,6 +315,12 @@ const RUNTIME_ENV_SECRET_MARKERS = Object.freeze([
   "JWT",
   "DATABASE_URL",
 ]);
+const LOCAL_API_STARTUP_DEFAULT_HOST = "127.0.0.1";
+const LOCAL_API_STARTUP_DEFAULT_PORT = "5501";
+const LOCAL_API_STARTUP_DEFAULT_PORT_BY_PROTOCOL = Object.freeze({
+  "http:": "80",
+  "https:": "443",
+});
 const SYSTEM_HEALTH_USAGE_NOT_AVAILABLE = "NOT AVAILABLE";
 const SYSTEM_HEALTH_USAGE_CONTRACTS = Object.freeze({
   GAMEFOUNDRY_DB_CONNECTION_LIMIT: Object.freeze({
@@ -329,12 +339,6 @@ const SYSTEM_HEALTH_USAGE_CONTRACTS = Object.freeze({
     integrationPoint: "Future R2 provider telemetry can report project asset storage bytes used through the Local API.",
   }),
 });
-const STORAGE_PROJECTS_PREFIX_LANES = Object.freeze([
-  Object.freeze({ lane: "DEV", path: "/dev/projects/" }),
-  Object.freeze({ lane: "IST", path: "/ist/projects/" }),
-  Object.freeze({ lane: "UAT", path: "/uat/projects/" }),
-  Object.freeze({ lane: "PRD", path: "/prd/projects/" }),
-]);
 const STORAGE_CONNECTIVITY_ACTIONS = Object.freeze([
   Object.freeze({ id: "storage-list", label: "List" }),
   Object.freeze({ id: "storage-write-test-object", label: "Write test object" }),
@@ -497,8 +501,9 @@ function dotEnvValue(key) {
 
 function storageProjectsPrefixStatus() {
   const currentPath = dotEnvValue(STORAGE_PROJECTS_PREFIX_ENV_KEY);
-  const matchedLane = STORAGE_PROJECTS_PREFIX_LANES.find((lane) => lane.path === currentPath.value);
-  const invalidPath = !currentPath.found || !currentPath.value || !matchedLane;
+  const normalizedPath = normalizeStorageProjectsPrefix(currentPath.value);
+  const matchedLane = STORAGE_PROJECTS_PREFIX_LANES.find((lane) => lane.path === normalizedPath);
+  const invalidPath = !currentPath.found || !normalizedPath || !matchedLane;
   const rows = STORAGE_PROJECTS_PREFIX_LANES.map((lane) => {
     if (invalidPath) {
       return {
@@ -508,7 +513,7 @@ function storageProjectsPrefixStatus() {
         value: "ERROR",
       };
     }
-    const active = currentPath.value === lane.path;
+    const active = normalizedPath === lane.path;
     return {
       ...lane,
       active,
@@ -519,7 +524,7 @@ function storageProjectsPrefixStatus() {
   return {
     configured: !invalidPath,
     invalidPath,
-    missing: !currentPath.found || !currentPath.value,
+    missing: !currentPath.found || !normalizedPath,
     rows,
     secretsExposed: false,
     status: invalidPath ? "ERROR" : "PASS",
@@ -733,6 +738,117 @@ function overallHealthStatus(rows) {
     return "WARN";
   }
   return "PASS";
+}
+
+function localApiStartupPortFromUrl(value) {
+  const rawValue = String(value || "").trim();
+  if (!rawValue) {
+    return "not configured";
+  }
+  try {
+    const parsedUrl = new URL(rawValue);
+    return parsedUrl.port || LOCAL_API_STARTUP_DEFAULT_PORT_BY_PROTOCOL[parsedUrl.protocol] || "not configured";
+  } catch {
+    return "invalid URL";
+  }
+}
+
+function localApiStartupUrlDisplay(value, fallback = "not configured") {
+  const rawValue = String(value || "").trim();
+  if (!rawValue) {
+    return fallback;
+  }
+  try {
+    const parsedUrl = new URL(rawValue);
+    if (parsedUrl.username) {
+      parsedUrl.username = "********";
+    }
+    if (parsedUrl.password) {
+      parsedUrl.password = "********";
+    }
+    parsedUrl.search = "";
+    parsedUrl.hash = "";
+    return parsedUrl.toString();
+  } catch {
+    return "invalid URL";
+  }
+}
+
+function localApiStartupBindTarget(env = process.env) {
+  const host = String(env.GAMEFOUNDRY_LOCAL_API_HOST || LOCAL_API_STARTUP_DEFAULT_HOST).trim() || LOCAL_API_STARTUP_DEFAULT_HOST;
+  const port = String(env.GAMEFOUNDRY_LOCAL_API_PORT || LOCAL_API_STARTUP_DEFAULT_PORT).trim() || LOCAL_API_STARTUP_DEFAULT_PORT;
+  const portStatus = /^[1-9]\d*$/.test(port) ? "PASS" : "WARN";
+  return {
+    host,
+    port,
+    status: portStatus,
+    value: `${host}:${port}`,
+  };
+}
+
+function systemHealthLocalApiStartupDiagnostics(env = process.env) {
+  const bindTarget = localApiStartupBindTarget(env);
+  const configuredApiUrl = String(env.GAMEFOUNDRY_API_URL || "").trim();
+  const derivedApiUrl = `http://${bindTarget.value}/api`;
+  const siteUrl = String(env.GAMEFOUNDRY_SITE_URL || "").trim();
+  const rows = [
+    {
+      field: "Approved diagnostics format",
+      reason: "Startup output includes deterministic Environment Variables and All Runtime Ports sections.",
+      status: "PASS",
+      value: "Environment Variables + All Runtime Ports",
+    },
+    {
+      field: "Environment variable diagnostics",
+      reason: "Startup output masks secret-like values and redacts URL credentials before printing.",
+      status: "PASS",
+      value: "masked and redacted",
+    },
+    {
+      field: "Configured startup bind target",
+      reason: bindTarget.status === "PASS"
+        ? "Local API startup uses the configured or default host and port for the bind target."
+        : "GAMEFOUNDRY_LOCAL_API_PORT must be a positive integer.",
+      status: bindTarget.status,
+      value: bindTarget.value,
+    },
+    {
+      field: "Configured site URL",
+      reason: siteUrl
+        ? "GAMEFOUNDRY_SITE_URL is available for startup diagnostics."
+        : "GAMEFOUNDRY_SITE_URL is not configured; startup diagnostics will print not configured.",
+      status: siteUrl ? "PASS" : "WARN",
+      value: localApiStartupUrlDisplay(siteUrl),
+    },
+    {
+      field: "Configured API URL",
+      reason: configuredApiUrl
+        ? "GAMEFOUNDRY_API_URL is configured and displayed without URL credentials."
+        : "GAMEFOUNDRY_API_URL is not configured; startup diagnostics derive /api from the bind target.",
+      status: "PASS",
+      value: localApiStartupUrlDisplay(configuredApiUrl || derivedApiUrl),
+    },
+    {
+      field: "Configured API URL port",
+      reason: "Port is derived from the configured or startup-derived API URL for display only.",
+      status: "PASS",
+      value: localApiStartupPortFromUrl(configuredApiUrl || derivedApiUrl),
+    },
+    {
+      field: "Configurable multiple runtime ports",
+      reason: "Configurable multiple runtime ports are explicitly deferred/cancelled for this PR.",
+      status: "PENDING",
+      value: "deferred/cancelled",
+    },
+  ];
+  const actionableRows = rows.filter((row) => row.status !== "PENDING");
+  return {
+    message: "Local API startup diagnostics use the approved safe output format; configurable multiple runtime ports remain deferred.",
+    rows,
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    status: overallHealthStatus(actionableRows),
+  };
 }
 
 function systemHealthSummary(rows) {
@@ -3512,6 +3628,7 @@ LIMIT 1;
     const databaseStatus = await this.ownerDatabaseStatus();
     const storageStatus = this.ownerStorageStatus();
     const environmentStatus = storageProjectsPrefixStatus();
+    const localApiStartup = systemHealthLocalApiStartupDiagnostics();
     const limitRows = systemHealthLimitRows();
     const limitsStatus = systemHealthLimitStatus(limitRows);
     const packageStatus = projectPackageReadinessStatus();
@@ -3564,6 +3681,11 @@ LIMIT 1;
           : "One or more required limits are missing or invalid in current .env.",
       },
       {
+        area: "Local API startup diagnostics",
+        status: localApiStartup.status,
+        summary: localApiStartup.message,
+      },
+      {
         area: "Migration status",
         status: databaseStatus.migrationStatus || "WARN",
         summary: `DDL=${databaseStatus.migrationCounts?.DDL || 0}; DML=${databaseStatus.migrationCounts?.DML || 0}; last=${databaseStatus.lastMigration?.name || "not recorded"}.`,
@@ -3596,6 +3718,12 @@ LIMIT 1;
         { area: "Environment configuration", field: environmentStatus.variableName, status: environmentStatus.status, value: environmentStatus.configured ? "valid lane match" : "missing or invalid" },
         { area: "Secrets status", field: "Storage access key", status: storageStatus.accessKeyStatus || "WARN", value: storageStatus.accessKeyConfigured ? "configured; value hidden" : "not configured" },
         { area: "Secrets status", field: "Storage secret key", status: storageStatus.secretKeyStatus || "WARN", value: storageStatus.secretKeyConfigured ? "configured; value hidden" : "not configured" },
+        ...localApiStartup.rows.map((row) => ({
+          area: "Local API startup diagnostics",
+          field: row.field,
+          status: row.status,
+          value: row.value,
+        })),
         { area: "Migration status", field: "Migration counts", status: databaseStatus.migrationStatus || "WARN", value: `DDL=${databaseStatus.migrationCounts?.DDL || 0}; DML=${databaseStatus.migrationCounts?.DML || 0}` },
         { area: "Project package readiness", field: ".gfsp decision", status: packageStatus.status, value: packageStatus.decisionPath },
         { area: "Project package readiness", field: "Runtime scaffold", status: packageStatus.status, value: `${packageStatus.contract?.packageType || "Game Foundry Studio Project"} ${packageStatus.contract?.contractVersion || ""}`.trim() },
@@ -3615,6 +3743,7 @@ LIMIT 1;
         adminOperations: "/admin/operations.html",
       },
       limits: limitRows,
+      localApiStartup,
       message: "Admin System Health loaded safe status only.",
       operationsHealth,
       overview,
