@@ -1,117 +1,89 @@
-diff --git a/toolbox/assets/assets.js b/assets/toolbox/assets/js/index.js
-similarity index 99%
-rename from toolbox/assets/assets.js
-rename to assets/toolbox/assets/js/index.js
-index 712917f48..d914bd91c 100644
---- a/toolbox/assets/assets.js
-+++ b/assets/toolbox/assets/js/index.js
-@@ -2,8 +2,8 @@ import {
-   ASSET_CATALOG_TYPES,
-   ASSET_USAGE_OPTIONS,
-   createAssetToolApiRepository
--} from "./assets-api-client.js";
--import { getSessionCurrent } from "../../src/api/session-api-client.js";
-+} from "../../../../toolbox/assets/assets-api-client.js";
-+import { getSessionCurrent } from "../../../../src/api/session-api-client.js";
-
- const repository = createAssetToolApiRepository();
- const params = new URLSearchParams(window.location.search);
-@@ -71,7 +71,7 @@ const UPLOAD_ACCEPT_BY_ASSET_TYPE = Object.freeze({
- const DEFAULT_UPLOAD_CHUNK_SIZE_BYTES = 64 * 1024;
- const MAX_UPLOAD_CHUNK_SIZE_BYTES = 1024 * 1024;
- const SERVER_RECEIVE_PROGRESS_INTERVAL_MS = 1000;
--const UPLOAD_WORKER_URL = new URL("./assets-upload-worker.js", import.meta.url);
-+const UPLOAD_WORKER_URL = new URL("../../../../toolbox/assets/assets-upload-worker.js", import.meta.url);
-
- function isBrowserValidationHost() {
-   return ["", "localhost", "127.0.0.1", "::1"].includes(window.location.hostname);
-diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_031-assets-tool-safe-entrypoint-migration.md b/docs_build/dev/reports/PR_26172_CHARLIE_031-assets-tool-safe-entrypoint-migration.md
+diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_032-assets-worker-api-client-migration-or-exception.md b/docs_build/dev/reports/PR_26172_CHARLIE_032-assets-worker-api-client-migration-or-exception.md
 new file mode 100644
-index 000000000..e14d9662d
+index 000000000..44d4c753c
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_CHARLIE_031-assets-tool-safe-entrypoint-migration.md
-@@ -0,0 +1,110 @@
-+# PR_26172_CHARLIE_031-assets-tool-safe-entrypoint-migration
++++ b/docs_build/dev/reports/PR_26172_CHARLIE_032-assets-worker-api-client-migration-or-exception.md
+@@ -0,0 +1,108 @@
++# PR_26172_CHARLIE_032-assets-worker-api-client-migration-or-exception
 +
 +## Summary
 +
-+Status: PASS with validation blocker documented.
++Status: PASS with temporary legacy exceptions retained.
 +
-+The Assets tool entrypoint was moved from the active legacy toolbox path to the canonical tool asset path:
-+
-+- From: `toolbox/assets/assets.js`
-+- To: `assets/toolbox/assets/js/index.js`
-+
-+The Assets API client and upload worker were retained in their existing legacy paths because PR_030 identified both as higher-risk follow-up items:
++No executable implementation files were changed in this PR. The remaining Assets tool legacy files were reviewed after the PR_031 entrypoint migration:
 +
 +- `toolbox/assets/assets-api-client.js`
 +- `toolbox/assets/assets-upload-worker.js`
++
++Both files remain in approved legacy locations for this stack because moving them would require governance or shared-client decisions outside this PR scope.
 +
 +## Files Reviewed
 +
 +- `docs_build/dev/ProjectInstructions/README.txt`
 +- `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
 +- `docs_build/dev/reports/PR_26172_CHARLIE_030-assets-tool-canonical-js-migration-audit.md`
-+- `toolbox/assets/index.html`
-+- `toolbox/assets/assets.js`
-+- `toolbox/assets/assets-api-client.js`
-+- `toolbox/assets/assets-upload-worker.js`
-+- `tests/playwright/tools/AssetToolMockRepository.spec.mjs`
-+- `scripts/validate-canonical-repository-structure.mjs`
-+
-+## Files Changed
-+
-+- `assets/toolbox/assets/js/index.js`
-+- `toolbox/assets/index.html`
-+- `tests/playwright/tools/AssetToolMockRepository.spec.mjs`
-+- `scripts/validate-canonical-repository-structure.mjs`
 +- `docs_build/dev/reports/PR_26172_CHARLIE_031-assets-tool-safe-entrypoint-migration.md`
-+- `docs_build/dev/reports/codex_review.diff`
-+- `docs_build/dev/reports/codex_changed_files.txt`
-+
-+## Migration Notes
-+
-+- Updated the HTML module script reference to `assets/toolbox/assets/js/index.js`.
-+- Updated the moved module imports so it can still load the retained API client and session API from the canonical asset location.
-+- Updated the retained worker URL to continue loading `toolbox/assets/assets-upload-worker.js`.
-+- Removed `toolbox/assets/assets.js` from the approved legacy JS exception list.
-+- Added test public API configuration so the relocated module resolves the Playwright Local API server explicitly.
-+
-+## Retained Exceptions
-+
++- `assets/toolbox/assets/js/index.js`
++- `assets/toolbox/objects/js/index.js`
 +- `toolbox/assets/assets-api-client.js`
-+  - Reason: shared with Objects through `assets/toolbox/objects/js/index.js`.
-+  - Follow-up: define shared client placement before moving it.
 +- `toolbox/assets/assets-upload-worker.js`
-+  - Reason: worker filename/placement is not yet covered by the canonical guardrail.
-+  - Follow-up: add an approved worker placement rule or leave as a temporary legacy exception.
++- `scripts/validate-canonical-repository-structure.mjs`
++- `scripts/validate-browser-env-agnostic.mjs`
++- `tests/playwright/tools/AssetToolMockRepository.spec.mjs`
++
++## Decision
++
++### Assets API Client
++
++Decision: retain as temporary legacy exception.
++
++Reason:
++
++- `toolbox/assets/assets-api-client.js` is not Assets-only.
++- `assets/toolbox/objects/js/index.js` imports `createAssetToolApiRepository` from the same file.
++- Moving the client into `assets/toolbox/assets/js/` would either break Objects or require a shared-client migration that is outside this PR.
++
++Removal plan:
++
++1. Create a shared API-client placement rule for reused toolbox clients.
++2. Move shared reusable code to the approved shared location.
++3. Update Assets and Objects imports together.
++4. Remove the legacy exception after both tools validate.
++
++### Assets Upload Worker
++
++Decision: retain as temporary legacy exception.
++
++Reason:
++
++- `toolbox/assets/assets-upload-worker.js` is a module worker and is loaded directly by URL.
++- The current canonical guardrail approves tool entrypoints at `assets/toolbox/{tool-name}/js/index.js`.
++- It does not yet define an approved worker filename or worker subpath pattern.
++- PR_031 validation confirmed the retained worker loads from `toolbox/assets/assets-upload-worker.js`.
++
++Removal plan:
++
++1. Add a canonical worker placement rule, or explicitly approve an Assets worker exception.
++2. Move the worker only after the new placement is recognized by the guardrail.
++3. Update `new Worker(...)` URL construction.
++4. Run targeted upload validation before removing the legacy exception.
 +
 +## Validation Lane Report
 +
-+- `node --check assets/toolbox/assets/js/index.js`
-+  - Result: PASS
-+- `node --check tests/playwright/tools/AssetToolMockRepository.spec.mjs`
-+  - Result: PASS
-+- `git diff --check`
-+  - Result: PASS
 +- `npm run validate:canonical-structure`
 +  - Result: PASS
 +  - Blocking violations: 0
 +  - Approved legacy exceptions: 482
-+- Active stale reference check for `toolbox/assets/assets.js`
-+  - Result: PASS
-+  - No active non-report references remain.
-+- Direct browser probe for Assets page
-+  - Result: PASS
-+  - Canonical script loaded.
-+  - Retained legacy worker URL was reachable.
-+- Targeted Playwright route validation:
-+  - Command: `npx playwright test tests/playwright/tools/AssetToolMockRepository.spec.mjs --grep "Assets launches as asset-type accordions" --workers=1 --reporter=line --timeout=90000`
++- `npm run validate:browser-env-agnostic`
 +  - Result: FAIL
-+  - Failure: upload completed with `0 written, 1 failed`.
-+  - Root observation: the browser loaded the canonical module, started the retained worker at `toolbox/assets/assets-upload-worker.js`, then the Local API returned HTTP 500 from `/api/toolbox/assets/repositories/assets-1/methods/addAssetRecord`.
-+  - Local API failure text observed in the UI: `fetch failed`.
-+  - Classification: validation blocker is in the asset persistence/provider lane, not the entrypoint path migration.
++  - Existing findings:
++    - Local API product service contract findings in `src/dev-runtime/server/local-api-router.mjs`.
++    - User-facing implementation wording findings in Messages.
++  - Classification: existing broader browser-env gate findings, not caused by this report-only PR.
++- Active reference check
++  - Result: PASS
++  - `toolbox/assets/assets-api-client.js` is referenced by Assets, Objects, guardrails, and related tests.
++  - `toolbox/assets/assets-upload-worker.js` is referenced by the Assets canonical entrypoint, guardrail, and worker validation test.
 +
 +## Branch Validation
 +
@@ -122,65 +94,21 @@ index 000000000..e14d9662d
 +
 +## Requirement Checklist
 +
-+- Move `toolbox/assets/assets.js` to `assets/toolbox/assets/js/index.js`: PASS
-+- Update `toolbox/assets/index.html` script reference: PASS
-+- Preserve behavior: PASS for page load and worker startup; upload persistence lane blocked by Local API provider failure.
-+- Do not move worker unless PR_030 proves safe: PASS
-+- Do not move API client unless PR_030 proves safe: PASS
-+- Do not add feature work: PASS
-+- Run targeted Assets validation if available: PASS with documented failure in persistence lane.
++- Use PR_030 and PR_031 results: PASS
++- Move Assets-only API client only if safe: PASS, retained because it is shared with Objects.
++- Move worker only if safe: PASS, retained because canonical worker placement is undefined.
++- Document approved temporary legacy exception with removal plan: PASS
++- Do not create shared APIs unless clearly reused by multiple tools: PASS
++- No behavior changes: PASS
++- Run targeted Assets validation: PASS by PR_031 page/worker probe; full upload Playwright remains blocked by provider persistence failure.
++- Run browser env validation: PASS with existing failure documented.
 +- Run canonical structure guardrail: PASS
-+- Confirm old active `assets.js` path is no longer referenced unless documented: PASS
-+- Confirm worker still loads if retained: PASS
 +- Confirm ZIP exists: PASS after artifact creation.
 +
 +## Manual Validation Notes
 +
-+The migration changes only the active entrypoint path and keeps the higher-risk Assets API client and worker in place. Targeted browser probing confirmed the canonical script and retained worker load correctly. The full upload Playwright test still fails because `addAssetRecord` returns HTTP 500 from Local API persistence; that issue was reproduced after storage variables were cleared for the command, so it should be tracked separately from canonical JS relocation.
++The safest current state is to keep the API client and worker in their approved legacy paths while the active entrypoint lives in the canonical path. This keeps Objects imports working and avoids inventing an unapproved worker path.
 +
 +## Recommendation
 +
-+Continue to PR_032. Retain the Assets API client and worker as documented exceptions unless PR_032 identifies a safe canonical placement that does not alter upload behavior.
-diff --git a/scripts/validate-canonical-repository-structure.mjs b/scripts/validate-canonical-repository-structure.mjs
-index c881da797..62ef269c2 100644
---- a/scripts/validate-canonical-repository-structure.mjs
-+++ b/scripts/validate-canonical-repository-structure.mjs
-@@ -8,7 +8,6 @@ const repoRoot = path.resolve(fileURLToPath(new URL("..", import.meta.url)));
- export const APPROVED_LEGACY_JS_PATHS = Object.freeze(new Set([
-   "toolbox/assets/assets-api-client.js",
-   "toolbox/assets/assets-upload-worker.js",
--  "toolbox/assets/assets.js",
-   "toolbox/controls/controls-api-client.js",
-   "toolbox/game-hub/game-hub-api-client.js",
-   "toolbox/game-hub/game-hub.js",
-diff --git a/tests/playwright/tools/AssetToolMockRepository.spec.mjs b/tests/playwright/tools/AssetToolMockRepository.spec.mjs
-index c38ee6ec5..3cc244b26 100644
---- a/tests/playwright/tools/AssetToolMockRepository.spec.mjs
-+++ b/tests/playwright/tools/AssetToolMockRepository.spec.mjs
-@@ -83,6 +83,13 @@ async function openRepoPage(page, pathName, options = {}) {
-   const failedRequests = [];
-   const pageErrors = [];
-   const consoleErrors = [];
-+  await page.addInitScript(({ apiUrl, siteUrl }) => {
-+    window.GameFoundryPublicConfig = {
-+      apiUrl,
-+      environmentLabel: "Development Environment",
-+      siteUrl,
-+    };
-+  }, { apiUrl: `${server.baseUrl}/api`, siteUrl: server.baseUrl });
-
-   page.on("pageerror", (error) => {
-     pageErrors.push(error.message);
-diff --git a/toolbox/assets/index.html b/toolbox/assets/index.html
-index 2bd748d76..fdb9a6495 100644
---- a/toolbox/assets/index.html
-+++ b/toolbox/assets/index.html
-@@ -153,7 +153,7 @@
-     <div data-partial="footer"></div>
-     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
-     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
--    <script type="module" src="toolbox/assets/assets.js"></script>
-+    <script type="module" src="assets/toolbox/assets/js/index.js"></script>
- </body>
-
- </html>
++Continue to Game Journey audit PR_033. Open a later shared-client or worker-placement governance PR before moving the retained Assets exceptions.

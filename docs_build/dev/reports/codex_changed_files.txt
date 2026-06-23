@@ -1,7 +1,1 @@
-R099	toolbox/assets/assets.js	assets/toolbox/assets/js/index.js
-A	docs_build/dev/reports/PR_26172_CHARLIE_031-assets-tool-safe-entrypoint-migration.md
-M	docs_build/dev/reports/codex_changed_files.txt
-M	docs_build/dev/reports/codex_review.diff
-M	scripts/validate-canonical-repository-structure.mjs
-M	tests/playwright/tools/AssetToolMockRepository.spec.mjs
-M	toolbox/assets/index.html
+A	docs_build/dev/reports/PR_26172_CHARLIE_032-assets-worker-api-client-migration-or-exception.md
