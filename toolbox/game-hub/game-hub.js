@@ -319,7 +319,53 @@ function renderSourceIdeaChildTable(parent, game) {
   parent.append(wrapper);
 }
 
-function renderExpandedGameRow(tbody, game) {
+function renderReadinessOutputChildTable(parent, game, progress, active) {
+  const readiness = active && isRecord(progress)
+    ? progress
+    : {
+      currentFocus: "Open this game to review readiness",
+      gameProgress: `${game.name} identity ready`,
+      gameStatus: game.status || "No status",
+      publishingProgress: "Open this game to review launch progress",
+      recommendedNextTool: "Game Hub",
+      progressChecklist: [],
+    };
+  const wrapper = document.createElement("div");
+  wrapper.className = "table-wrapper";
+  const table = document.createElement("table");
+  table.className = "data-table data-table--fixed";
+  table.dataset.gameChildTable = "readiness-output";
+  table.setAttribute("aria-label", `${game.name} readiness output`);
+  table.innerHTML = "<caption>Readiness Output</caption><thead><tr><th scope=\"col\">Output</th><th scope=\"col\">Status</th></tr></thead>";
+  const body = document.createElement("tbody");
+  [
+    ["Game Status", readiness.gameStatus],
+    ["Game Progress", readiness.gameProgress],
+    ["Launch Progress", readiness.publishingProgress],
+    ["Current Focus", readiness.currentFocus],
+    ["Recommended Next Tool", readiness.recommendedNextTool],
+  ].forEach(([label, value]) => {
+    const row = document.createElement("tr");
+    row.append(createCell(label, "th"), createCell(value || "Not available"));
+    row.firstElementChild.scope = "row";
+    body.append(row);
+  });
+
+  const checklist = Array.isArray(readiness.progressChecklist) ? readiness.progressChecklist : [];
+  checklist.forEach((item) => {
+    const row = document.createElement("tr");
+    row.dataset.readinessChecklistRow = item.label || "Checklist";
+    row.append(createCell(item.label || "Checklist", "th"), createCell(item.status || "Not available"));
+    row.firstElementChild.scope = "row";
+    body.append(row);
+  });
+
+  table.append(body);
+  wrapper.append(table);
+  parent.append(wrapper);
+}
+
+function renderExpandedGameRow(tbody, game, progress, active) {
   const row = document.createElement("tr");
   row.dataset.gameExpandedRow = game.id;
   row.id = `game-child-${game.id}`;
@@ -329,16 +375,18 @@ function renderExpandedGameRow(tbody, game) {
   stack.className = "content-stack content-stack--compact";
   renderGameSummaryChildTable(stack, game);
   renderSourceIdeaChildTable(stack, game);
+  renderReadinessOutputChildTable(stack, game, progress, active);
   content.append(stack);
   row.append(content);
   tbody.append(row);
 }
 
-function renderGameParentRow(tbody, game, activeGame) {
+function renderGameParentRow(tbody, game, activeGame, progress) {
   const expanded = state.expandedGameId === game.id;
+  const active = activeGame?.id === game.id;
   const row = document.createElement("tr");
   row.dataset.gameRow = game.id;
-  if (activeGame?.id === game.id) {
+  if (active) {
     row.dataset.gameActive = "true";
   }
 
@@ -353,12 +401,12 @@ function renderGameParentRow(tbody, game, activeGame) {
   );
 
   const actions = document.createElement("td");
-  actions.append(createGameButton(game, activeGame?.id === game.id));
+  actions.append(createGameButton(game, active));
   row.append(actions);
   tbody.append(row);
 
   if (expanded) {
-    renderExpandedGameRow(tbody, game);
+    renderExpandedGameRow(tbody, game, progress, active);
   }
 }
 
@@ -389,7 +437,7 @@ function renderProjectInformation(activeGame, currentMember, progress) {
     : "Project Information loaded. Sign in to save changes.");
 }
 
-function renderGameList() {
+function renderGameList(progress) {
   if (!elements.gameList) {
     return;
   }
@@ -421,7 +469,7 @@ function renderGameList() {
   table.setAttribute("aria-label", "Open Games");
   table.innerHTML = "<caption>Open Games</caption><thead><tr><th scope=\"col\">Game</th><th scope=\"col\">Purpose</th><th scope=\"col\">Status</th><th scope=\"col\">Owner</th><th scope=\"col\">Actions</th></tr></thead>";
   const body = document.createElement("tbody");
-  listResult.forEach((game) => renderGameParentRow(body, game, activeGame));
+  listResult.forEach((game) => renderGameParentRow(body, game, activeGame, progress));
   table.append(body);
   wrapper.append(table);
   elements.gameList.append(wrapper);
@@ -558,7 +606,7 @@ function renderWorkspace() {
     }
   }
 
-  renderGameList();
+  renderGameList(progress);
   renderMembersTable(activeGame);
   renderTableCounts();
   renderChecklist(progress);
