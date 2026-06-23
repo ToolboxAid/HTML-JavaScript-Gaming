@@ -1,0 +1,12 @@
+Requirement Checklist: PASS
+
+PASS - Only Ready ideas show Create Project.
+PASS - Non-Ready ideas do not show Create Project.
+PASS - Create Project calls the Local API/service repository contract.
+PASS - Server/API owns authoritative project key generation.
+PASS - Browser does not generate or send authoritative project keys.
+PASS - Converted idea status becomes Project.
+PASS - Converted idea becomes locked/read-only.
+PASS - Guest Create Project redirects to account/sign-in.html.
+PASS - No browser-owned project arrays were added.
+PASS - No silent fallback was added; API/session verification failures stop visibly.

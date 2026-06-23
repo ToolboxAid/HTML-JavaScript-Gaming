@@ -1,9 +1,11 @@
 import { createServerRepositoryClient } from "../../../../src/api/server-api-client.js";
+import { getSessionCurrent } from "../../../../src/api/session-api-client.js";
 
 const statusOptions = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project", "Archived"]);
 const defaultVisibleStatuses = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project"]);
 const userId = "user-1";
 const gameHubRoute = "toolbox/game-hub/index.html";
+const signInRoute = "account/sign-in.html";
 let gameHubRepository = null;
 
 const ideaTable = [
@@ -561,6 +563,28 @@ function gameHubUrl(record) {
   return `${gameHubRoute}${suffix}`;
 }
 
+function signInUrl() {
+  return new URL(signInRoute, document.baseURI || window.location.href).href;
+}
+
+function currentSessionState() {
+  try {
+    const session = getSessionCurrent();
+    return {
+      apiAvailable: true,
+      authenticated: Boolean(session?.authenticated && session.userKey),
+      session,
+    };
+  } catch (error) {
+    console.warn("Idea Board could not verify the current session.", error instanceof Error ? error.message : String(error || ""));
+    return {
+      apiAvailable: false,
+      authenticated: false,
+      session: null,
+    };
+  }
+}
+
 function createProject(root, ideaId) {
   const record = ideaRecord(ideaId);
   if (!record) {
@@ -569,6 +593,16 @@ function createProject(root, ideaId) {
   }
   if (record.status !== "Ready") {
     updateStatus(root, "Set this idea to Ready before creating a project.");
+    return;
+  }
+  const sessionState = currentSessionState();
+  if (!sessionState.apiAvailable) {
+    updateStatus(root, "Sign-in status could not be verified. Try again shortly.");
+    return;
+  }
+  if (!sessionState.authenticated) {
+    updateStatus(root, "Sign in to create a Game Hub project.");
+    window.location.href = signInUrl();
     return;
   }
   const repository = gameHubProjectRepository();

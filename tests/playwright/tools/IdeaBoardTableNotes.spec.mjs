@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store.js";
 import { isBrowserExtensionNoise } from "../../helpers/browserExtensionNoise.mjs";
+import { createGameJourneyCompletionMetricsPostgresClientStub } from "../../helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 
 function restoreEnvValue(key, value) {
@@ -112,7 +113,10 @@ async function expectNoNavigationFallbackUi(page) {
 }
 
 test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-  const server = await startRepoServer();
+  const server = await startRepoServer({
+    gameJourneyCompletionMetricsLegacyDbPath: null,
+    gameJourneyCompletionMetricsPostgresClient: createGameJourneyCompletionMetricsPostgresClientStub(),
+  });
   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
   const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
   const previousSupabaseEnv = {
@@ -131,6 +135,7 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
   const pageErrors = [];
   const consoleErrors = [];
   const mutatingApiRequests = [];
+  const createGamePayloads = [];
 
   page.on("response", (response) => {
     if (response.status() >= 400) failedRequests.push(`${response.status()} ${response.url()}`);
@@ -144,8 +149,12 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
     if (message.type() === "error" && !isBrowserExtensionNoise(message.text())) consoleErrors.push(message.text());
   });
   page.on("request", (request) => {
-    if (request.url().includes("/api/") && request.method() !== "GET") {
-      mutatingApiRequests.push(`${request.method()} ${request.url()}`);
+    const requestUrl = request.url();
+    if (requestUrl.includes("/api/") && request.method() !== "GET") {
+      mutatingApiRequests.push(`${request.method()} ${requestUrl}`);
+    }
+    if (requestUrl.includes("/api/toolbox/game-hub/repositories/") && requestUrl.includes("/methods/createGame")) {
+      createGamePayloads.push(request.postDataJSON());
     }
   });
 
@@ -228,6 +237,7 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
     await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] td").nth(2)).toHaveText("2026-06-20");
     await expect(page.locator("[data-idea-board-notes-count='top-thoughts']")).toHaveText("3 Notes");
     await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Delete"]);
+    await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] [data-idea-board-idea-action='create-project']")).toHaveCount(0);
 
     await expect(page.locator("[data-idea-board-idea-row='sky-orchard'] th")).toHaveText("Sky Orchard");
     await expectIdeaChevron(page, "sky-orchard", "gfs-chevron-down.svg");
@@ -336,6 +346,19 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
     await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='delete']")).toHaveCount(0);
     await expect(page.locator("[data-idea-board-add-note='lantern-reef']")).toHaveCount(0);
     await expect(page.locator("[data-idea-board-notes-table='lantern-reef'] [data-idea-board-note-action]")).toHaveCount(0);
+    expect(createGamePayloads).toHaveLength(1);
+    const [createGameInput] = createGamePayloads[0].args;
+    expect(Object.keys(createGameInput).sort()).toEqual(["name", "purpose", "sourceIdea", "status"]);
+    expect(createGameInput).toMatchObject({
+      name: "Lantern Reef",
+      purpose: "Game",
+      sourceIdea: {
+        idea: "Lantern Reef",
+        pitch: "Guide light through a reef that rearranges at dusk.",
+        notes: ["Use dusk tide changes as the first Game Hub planning note."],
+      },
+      status: "Planning",
+    });
     await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='archive']").click();
     await expect(page.locator("[data-idea-board-idea-row='lantern-reef']")).toHaveCount(0);
     await page.locator("[data-idea-board-status-filter-option][value='Archived']").check();
@@ -369,6 +392,78 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
   } finally {
     restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
     restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
+    Object.entries(previousSupabaseEnv).forEach(([key, value]) => restoreEnvValue(key, value));
+    await server.close();
+  }
+});
+
+test("Idea Board guest Create Project redirects to sign in without creating a project", async ({ page }) => {
+  const server = await startRepoServer();
+  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
+  const previousMetricsDbPath = process.env.GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH;
+  const previousSupabaseEnv = {
+    GAMEFOUNDRY_DATABASE_URL: process.env.GAMEFOUNDRY_DATABASE_URL,
+    GAMEFOUNDRY_SUPABASE_ANON_KEY: process.env.GAMEFOUNDRY_SUPABASE_ANON_KEY,
+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: process.env.GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY,
+    GAMEFOUNDRY_SUPABASE_URL: process.env.GAMEFOUNDRY_SUPABASE_URL,
+  };
+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
+  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
+  process.env.GAMEFOUNDRY_DATABASE_URL = "postgres://idea-board:test@127.0.0.1:5432/idea_board";
+  process.env.GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH = `tmp/test-results/idea-board-${process.pid}-${Date.now()}.sqlite`;
+  process.env.GAMEFOUNDRY_SUPABASE_ANON_KEY = "idea-board-anon-key";
+  process.env.GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY = "idea-board-service-role-key";
+  process.env.GAMEFOUNDRY_SUPABASE_URL = `${server.baseUrl}/fake-supabase`;
+  const createGameRequests = [];
+
+  page.on("request", (request) => {
+    const requestUrl = request.url();
+    if (requestUrl.includes("/api/toolbox/game-hub/repositories/") && requestUrl.includes("/methods/createGame")) {
+      createGameRequests.push(requestUrl);
+    }
+  });
+
+  try {
+    await page.route("**/api/platform-settings/banner", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: { banner: { active: false, message: "", tone: "info" } },
+          ok: true,
+        }),
+      });
+    });
+    await page.route("**/api/toolbox/registry/snapshot", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: {
+            activeTools: [],
+            readinessByStatus: {},
+            tools: [],
+            toolboxContract: {},
+          },
+          ok: true,
+        }),
+      });
+    });
+
+    await page.goto(`${server.baseUrl}/toolbox/idea-board/index.html`, { waitUntil: "networkidle" });
+    await page.locator("[data-idea-board-add-idea]").click();
+    await page.locator("[data-idea-board-idea-input]").fill("Guest Reef");
+    await page.locator("[data-idea-board-pitch-input]").fill("Guest cannot create authoritative project keys.");
+    await page.locator("[data-idea-board-idea-status-input]").selectOption("Ready");
+    await page.locator("[data-idea-board-idea-action='save']").click();
+    await expect(page.locator("[data-idea-board-idea-row='guest-reef'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Create Project", "Delete"]);
+
+    await page.locator("[data-idea-board-idea-row='guest-reef'] [data-idea-board-idea-action='create-project']").click();
+    await page.waitForURL(/\/account\/sign-in\.html$/);
+    expect(createGameRequests).toEqual([]);
+  } finally {
+    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
+    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
+    restoreEnvValue("GAMEFOUNDRY_GAME_JOURNEY_METRICS_DB_PATH", previousMetricsDbPath);
     Object.entries(previousSupabaseEnv).forEach(([key, value]) => restoreEnvValue(key, value));
     await server.close();
   }
