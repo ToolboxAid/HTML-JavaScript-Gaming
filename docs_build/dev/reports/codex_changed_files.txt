@@ -1,1 +1,5 @@
-A	docs_build/dev/reports/PR_26172_CHARLIE_043-final-charlie-compliance-reaudit.md
+docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard_PLAN.md
+docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-manual-validation-notes.md
+docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-instruction-compliance-checklist.md
+docs_build/dev/reports/codex_review.diff
+docs_build/dev/reports/codex_changed_files.txt
