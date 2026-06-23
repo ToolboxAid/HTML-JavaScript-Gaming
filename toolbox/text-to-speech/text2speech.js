@@ -10,6 +10,10 @@ import {
   TEXT_TO_SPEECH_RANGE_DEFAULTS,
   TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS
 } from "../../src/engine/audio/TextToSpeechDefaults.js";
+import {
+  readSavedTextToSpeechProfiles,
+  writeSavedTextToSpeechProfiles,
+} from "./tts-profile-store.js";
 
 const TTS_OWNERSHIP = Object.freeze({
   DESIGN: "Design",
@@ -278,66 +282,6 @@ function createDefaultTextToSpeechProfiles(voiceOptions = []) {
       voiceName: womanVoice?.name || womanVoice?.label || "Default browser voice"
     })
   ];
-}
-
-function createMessageStudioDefaultTtsProfiles(voiceOptions = []) {
-  const [balancedProfile, manProfile, womanProfile] = createDefaultTextToSpeechProfiles(voiceOptions);
-  const withStudioEmotions = (profile, emotions) => createTextToSpeechProfile({
-    active: profile.active,
-    age: profile.age,
-    emotions,
-    gender: profile.gender,
-    id: profile.id,
-    language: profile.language,
-    messageStudioUsageCount: profile.messageStudioUsageCount,
-    name: profile.name,
-    voice: profile.voice,
-    voiceName: profile.voiceName
-  });
-
-  return [
-    withStudioEmotions(balancedProfile, [
-      createTextToSpeechProfileEmotion({ emotion: "calm", messagePartsUsageCount: 1 }),
-      createTextToSpeechProfileEmotion({ emotion: "urgent", pitch: 1.08, rate: 1.15 }),
-    ]),
-    withStudioEmotions(manProfile, [
-      createTextToSpeechProfileEmotion({ emotion: "neutral" }),
-      createTextToSpeechProfileEmotion({ emotion: "calm" }),
-      createTextToSpeechProfileEmotion({ emotion: "urgent", pitch: 1.08, rate: 1.15 }),
-    ]),
-    withStudioEmotions(womanProfile, [
-      createTextToSpeechProfileEmotion({ emotion: "whisper", pitch: 0.95, rate: 0.9, volume: 0.55 }),
-      createTextToSpeechProfileEmotion({ emotion: "robot", pitch: 0.82, rate: 0.92, volume: 0.9 }),
-    ])
-  ];
-}
-
-function createMessageStudioTtsProfileOptions(profiles = []) {
-  return profiles
-    .filter((profile) => profile?.active !== false)
-    .map((profile) => ({
-      active: true,
-      age: profile.age,
-      ageFilter: profile.age,
-      emotionSettings: Array.isArray(profile.emotions)
-        ? profile.emotions.filter((emotion) => emotion.active !== false).map((emotion) => ({
-          emotion: emotion.emotion,
-          emotionLabel: emotion.emotionLabel,
-          key: emotion.id,
-          pitch: emotion.pitch,
-          rate: emotion.rate,
-          ssmlLikePreset: emotion.ssmlLikePreset,
-          volume: emotion.volume
-        }))
-        : [],
-      gender: profile.gender,
-      key: profile.id,
-      language: profile.language,
-      name: profile.name,
-      providerKey: profile.providerKey || "browser-speech",
-      voice: profile.voice,
-      voiceName: profile.voiceName || profile.voice || ""
-    }));
 }
 
 function createSpeechPreviewRequest({
@@ -817,6 +761,14 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
     return errors;
   }
 
+  function persistProfilesForMessages() {
+    try {
+      writeSavedTextToSpeechProfiles(state.profiles);
+    } catch {
+      writeStatus("Text To Speech profiles were saved for this tool but could not be shared with Messages. Try again after refreshing the browser.", "FAIL");
+    }
+  }
+
   function emotionValues(key) {
     const row = elements.profileTable?.querySelector(`[data-tts-emotion-editor="${key}"]`);
     const existing = selectedProfile()?.emotions.find((emotion) => emotion.id === key) || null;
@@ -874,6 +826,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
     state.selectedProfileId = profile.id;
     state.selectedEmotionId = previewEmotion(profile)?.id || "";
     state.editingProfileId = "";
+    persistProfilesForMessages();
     renderProfileRows();
     refreshActionState();
     writeStatus(`Saved TTS profile: ${profile.name}.`);
@@ -889,6 +842,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
     state.profiles = state.profiles.filter((candidate) => candidate.id !== key);
     if (state.selectedProfileId === key) state.selectedProfileId = state.profiles[0]?.id || "";
     if (!state.selectedProfileId) state.selectedEmotionId = "";
+    persistProfilesForMessages();
     renderProfileRows();
     refreshActionState();
     writeStatus(`Deleted TTS profile: ${profile.name}.`);
@@ -923,6 +877,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
     }
     state.editingEmotionId = "";
     state.selectedEmotionId = emotion.id;
+    persistProfilesForMessages();
     renderProfileRows();
     refreshActionState();
     writeStatus(`Saved emotion: ${emotion.emotionLabel}.`);
@@ -938,6 +893,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
     }
     profile.emotions = profile.emotions.filter((candidate) => candidate.id !== key);
     if (state.selectedEmotionId === key) state.selectedEmotionId = previewEmotion(profile)?.id || "";
+    persistProfilesForMessages();
     renderProfileRows();
     refreshActionState();
     writeStatus(`Deleted emotion: ${emotion.emotionLabel}.`);
@@ -970,9 +926,23 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
     if (state.profiles.length) {
       return;
     }
+    try {
+      const savedProfiles = readSavedTextToSpeechProfiles();
+      if (savedProfiles.length) {
+        state.profiles = savedProfiles;
+        state.selectedProfileId = "";
+        state.selectedEmotionId = "";
+        renderProfileRows();
+        refreshActionState();
+        return;
+      }
+    } catch {
+      writeStatus("Saved Text To Speech profiles could not be loaded. Default profiles are available for this session.", "FAIL");
+    }
     state.profiles = createDefaultTextToSpeechProfiles(state.voiceOptions);
     state.selectedProfileId = "";
     state.selectedEmotionId = "";
+    persistProfilesForMessages();
     renderProfileRows();
     refreshActionState();
   }
@@ -1255,8 +1225,6 @@ export {
   TTS_PROVIDER_ADAPTER_PLAN,
   createEmotionProfile,
   createDefaultTextToSpeechProfiles,
-  createMessageStudioDefaultTtsProfiles,
-  createMessageStudioTtsProfileOptions,
   createSpeechPreviewRequest,
   createTextToSpeechProfile,
   createTextToSpeechProfileEmotion,

@@ -20,9 +20,19 @@ test("Messages sentence emotion picker does not fall back to unrelated global em
 test("Messages wires profile dropdowns through the Text To Speech profile contract", async () => {
   const source = await readFile(new URL("../../toolbox/messages/messages.js", import.meta.url), "utf8");
 
-  assert.equal(source.includes("../text-to-speech/text2speech.js"), true);
-  assert.equal(source.includes("createMessageStudioDefaultTtsProfiles"), true);
-  assert.equal(source.includes("createMessageStudioTtsProfileOptions"), true);
+  assert.equal(source.includes("../text-to-speech/text2speech.js"), false);
+  assert.equal(source.includes("../text-to-speech/tts-profile-store.js"), true);
+  assert.equal(source.includes("createMessageStudioDefaultTtsProfiles"), false);
+  assert.equal(source.includes("createMessageStudioTtsProfileOptions"), false);
   assert.equal(source.includes("state.voiceProfiles = voicePayload.ttsProfiles || []"), false);
-  assert.equal(source.includes("messageStudioTtsProfilesFromContract(voicePayload.ttsProfiles || [])"), true);
+  assert.equal(source.includes("messageStudioTtsProfilesFromContract(voicePayload.ttsProfiles || [])"), false);
+  assert.equal(source.includes("activeTextToSpeechProfilesForMessages(voicePayload.ttsProfiles || [])"), true);
+});
+
+test("Messages dev runtime does not import browser Text To Speech UI modules", async () => {
+  const source = await readFile(new URL("../../src/dev-runtime/messages/messages-postgres-service.mjs", import.meta.url), "utf8");
+
+  assert.equal(source.includes("toolbox/text-to-speech/text2speech.js"), false);
+  assert.equal(source.includes("createMessageStudioDefaultTtsProfiles"), false);
+  assert.equal(source.includes("createMessageStudioTtsProfileOptions"), false);
 });

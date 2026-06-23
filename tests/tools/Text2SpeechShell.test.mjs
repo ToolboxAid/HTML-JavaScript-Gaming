@@ -7,8 +7,6 @@ import {
   TTS_PROVIDER_ADAPTER_PLAN,
   createDefaultTextToSpeechProfiles,
   createEmotionProfile,
-  createMessageStudioDefaultTtsProfiles,
-  createMessageStudioTtsProfileOptions,
   createSpeechPreviewRequest,
   createTextToSpeechProfile,
   createTextToSpeechProfileEmotion,
@@ -16,6 +14,12 @@ import {
   createVoiceProfile,
   previewTtsMessage,
 } from "../../toolbox/text-to-speech/text2speech.js";
+import {
+  TEXT_TO_SPEECH_PROFILE_STORAGE_KEY,
+  readSavedTextToSpeechProfiles,
+  textToSpeechProfilesToMessageOptions,
+  writeSavedTextToSpeechProfiles,
+} from "../../toolbox/text-to-speech/tts-profile-store.js";
 
 test("Text2Speech message model separates Design and Audio ownership", () => {
   const message = createTtsMessage({ text: "Hello", metadata: { tags: ["intro"] } });
@@ -66,10 +70,9 @@ test("Text2Speech provider adapter plan keeps browser speech implemented and pai
   assert.ok(TTS_PROVIDER_ADAPTER_PLAN.slice(1).every((provider) => provider.status === "planned"));
 });
 
-test("Text2Speech profile contract exposes Message Studio compatible profile options", () => {
+test("Text2Speech saved profile store exposes active profiles for Messages", () => {
   const voiceOptions = [{ language: "en-US", label: "Test Voice (en-US)", name: "Test Voice", value: "test-voice" }];
   const defaults = createDefaultTextToSpeechProfiles(voiceOptions);
-  const messageStudioDefaults = createMessageStudioDefaultTtsProfiles(voiceOptions);
   const custom = createTextToSpeechProfile({
     emotions: [
       createTextToSpeechProfileEmotion({
@@ -85,22 +88,34 @@ test("Text2Speech profile contract exposes Message Studio compatible profile opt
     voice: "test-voice",
     voiceName: "Test Voice",
   });
-  const options = createMessageStudioTtsProfileOptions([custom]);
+  const writes = new Map();
+  const storage = {
+    getItem(key) {
+      return writes.get(key) || "";
+    },
+    setItem(key, value) {
+      writes.set(key, value);
+    },
+  };
+
+  assert.equal(writeSavedTextToSpeechProfiles([custom], storage), true);
+  const savedProfiles = readSavedTextToSpeechProfiles(storage);
+  const options = textToSpeechProfilesToMessageOptions(savedProfiles);
 
   assert.equal(TTS_PROFILE_CONTRACT_VERSION, "tts-profile-emotion-v1");
+  assert.equal(writes.has(TEXT_TO_SPEECH_PROFILE_STORAGE_KEY), true);
   assert.equal(defaults[0].name, "Default Balanced Profile");
   assert.equal(defaults[0].messageStudioUsageCount, 1);
   assert.deepEqual(defaults[0].emotions.map((emotion) => emotion.emotionLabel), ["Neutral", "Happy", "Angry", "Scared"]);
   assert.deepEqual(defaults[1].emotions.map((emotion) => emotion.emotionLabel), ["Neutral", "Happy", "Angry", "Scared"]);
   assert.deepEqual(defaults[2].emotions.map((emotion) => emotion.emotionLabel), ["Neutral", "Happy", "Angry", "Scared"]);
-  assert.deepEqual(messageStudioDefaults[1].emotions.map((emotion) => emotion.emotionLabel), ["Neutral", "Calm", "Urgent"]);
-  assert.deepEqual(messageStudioDefaults[2].emotions.map((emotion) => emotion.emotionLabel), ["Whisper", "Robot"]);
   assert.equal(defaults[0].emotions.find((emotion) => emotion.emotion === "neutral").messagePartsUsageCount, 1);
   assert.deepEqual(options, [{
     active: true,
     age: "any",
     ageFilter: "any",
     emotionSettings: [{
+      active: true,
       emotion: "urgent",
       emotionLabel: "Urgent",
       key: "urgent",
@@ -114,6 +129,7 @@ test("Text2Speech profile contract exposes Message Studio compatible profile opt
     language: "en-US",
     name: "Custom Profile",
     providerKey: "browser-speech",
+    sourceProfileId: "custom-profile",
     voice: "test-voice",
     voiceName: "Test Voice",
   }]);

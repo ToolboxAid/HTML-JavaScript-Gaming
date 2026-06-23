@@ -1,571 +1,1388 @@
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index 9bb359709..899ecf86c 100644
+--- a/docs_build/dev/reports/codex_changed_files.txt
++++ b/docs_build/dev/reports/codex_changed_files.txt
+@@ -1,12 +1,42 @@
+-docs_build/dev/reports/PR_26174_BRAVO_021-wire-messages-to-tts-profile-contract.md
++docs_build/dev/reports/PR_26174_BRAVO_022-use-active-tts-profiles-in-messages.md
+ docs_build/dev/reports/codex_changed_files.txt
+ docs_build/dev/reports/codex_review.diff
++docs_build/dev/reports/coverage_changed_js_guardrail.txt
++docs_build/dev/reports/dependency_gating_report.md
++docs_build/dev/reports/dependency_hydration_reuse_report.md
++docs_build/dev/reports/execution_graph_reuse_report.md
++docs_build/dev/reports/failure_fingerprint_report.md
++docs_build/dev/reports/filesystem_scan_reduction_report.md
++docs_build/dev/reports/incremental_validation_report.md
++docs_build/dev/reports/lane_compilation_report.md
++docs_build/dev/reports/lane_deduplication_report.md
++docs_build/dev/reports/lane_input_validation_report.md
++docs_build/dev/reports/lane_manifests/workspace-contract.json
++docs_build/dev/reports/lane_runtime_optimization_report.md
++docs_build/dev/reports/lane_snapshot_report.md
++docs_build/dev/reports/lane_snapshots/workspace-contract.json
++docs_build/dev/reports/lane_warm_start_report.md
++docs_build/dev/reports/lane_warm_starts/workspace-contract.json
++docs_build/dev/reports/monolith_trigger_removal_report.md
++docs_build/dev/reports/persistent_lane_manifest_report.md
++docs_build/dev/reports/playwright_discovery_ownership_report.md
++docs_build/dev/reports/playwright_discovery_scope_report.md
++docs_build/dev/reports/playwright_structure_audit.md
++docs_build/dev/reports/playwright_v8_coverage_report.txt
++docs_build/dev/reports/retry_suppression_report.md
++docs_build/dev/reports/slow_path_pruning_report.md
++docs_build/dev/reports/static_validation_report.md
++docs_build/dev/reports/targeted_file_manifest_report.md
++docs_build/dev/reports/test_cleanup_performance_report.md
++docs_build/dev/reports/test_cleanup_routing_report.md
++docs_build/dev/reports/testing_lane_execution_report.md
++docs_build/dev/reports/validation_cache_report.md
++docs_build/dev/reports/zero_browser_preflight_report.md
+ src/dev-runtime/messages/messages-postgres-service.mjs
+ tests/dev-runtime/DbSeedIntegrity.test.mjs
+-tests/dev-runtime/MessagesPublishValidation.test.mjs
+-tests/playwright/tools/EventsTool.spec.mjs
+ tests/playwright/tools/MessagesTool.spec.mjs
+ tests/tools/MessagesPlaybackSource.test.mjs
+ tests/tools/Text2SpeechShell.test.mjs
+ toolbox/messages/messages.js
+ toolbox/text-to-speech/text2speech.js
++toolbox/text-to-speech/tts-profile-store.js
+diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+index 74a29674c..83a4ad849 100644
+--- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+@@ -6,7 +6,13 @@ Missing changed runtime JS files are WARN, not FAIL.
+ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+ 
+ Changed runtime JS files considered:
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/messages/messages-postgres-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) toolbox/messages/messages.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) toolbox/text-to-speech/text2speech.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) toolbox/text-to-speech/tts-profile-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ 
+ Guardrail warnings:
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/dev-runtime/messages/messages-postgres-service.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) toolbox/messages/messages.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) toolbox/text-to-speech/text2speech.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) toolbox/text-to-speech/tts-profile-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
+diff --git a/docs_build/dev/reports/dependency_gating_report.md b/docs_build/dev/reports/dependency_gating_report.md
+index 319848da9..10f49ad99 100644
+--- a/docs_build/dev/reports/dependency_gating_report.md
++++ b/docs_build/dev/reports/dependency_gating_report.md
+@@ -1,6 +1,6 @@
+ # Dependency Gating Report
+ 
+-Generated: 2026-06-21T00:10:10.215Z
++Generated: 2026-06-23T16:38:48.295Z
+ Status: PASS
+ 
+ ## Gate Order
+@@ -15,7 +15,7 @@ Status: PASS
+ | Lane | Selected | Status | Dependencies | Affected Surface | Reason |
+ | --- | --- | --- | --- | --- | --- |
+ | workspace-contract | Yes | PASS | none | Root tools future-state navigation and Tool Template V2 contract | Lane has no lane dependencies and is eligible after preflight and compilation pass. |
+-| game-workspace | No | SKIP | none | Game Workspace mock repository, Game Workspace UI, and Toolbox Progress/Build Path game-state bridge | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
++| game-hub | No | SKIP | none | Game Hub mock repository, Game Hub UI, and Toolbox Progress/Build Path game-state bridge | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
+ | game-design | No | SKIP | none | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
+ | game-configuration | No | SKIP | none | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
+ | asset-tool | No | SKIP | none | Asset Tool mock repository, Game Configuration readiness handoff, library records, import preview, and visible failure handling | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
+diff --git a/docs_build/dev/reports/dependency_hydration_reuse_report.md b/docs_build/dev/reports/dependency_hydration_reuse_report.md
+index 0f8c874e3..4546b7441 100644
+--- a/docs_build/dev/reports/dependency_hydration_reuse_report.md
++++ b/docs_build/dev/reports/dependency_hydration_reuse_report.md
+@@ -1,6 +1,6 @@
+ # Dependency Hydration Reuse Report
+ 
+-Generated: 2026-06-21T00:10:10.216Z
++Generated: 2026-06-23T16:38:48.296Z
+ Status: PASS
+ 
+ ## Summary
+@@ -16,7 +16,7 @@ Prevented fixture ownership traversal: 0
+ 
+ | Lane | Status | Helpers | Fixtures | Imports | Dependency Hydration Hash | Reason |
+ | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | INVALIDATED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 355ba7a85dbb3cdb | Dependency hydration was refreshed after warm-start invalidation. |
++| workspace-contract | INVALIDATED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | e9956a75c3585e86 | Dependency hydration was refreshed after warm-start invalidation. |
+ 
+ ## Safeguards
+ 
+diff --git a/docs_build/dev/reports/execution_graph_reuse_report.md b/docs_build/dev/reports/execution_graph_reuse_report.md
+index ddbdf90a1..b875bdac2 100644
+--- a/docs_build/dev/reports/execution_graph_reuse_report.md
++++ b/docs_build/dev/reports/execution_graph_reuse_report.md
+@@ -1,6 +1,6 @@
+ # Execution Graph Reuse Report
+ 
+-Generated: 2026-06-21T00:10:10.216Z
++Generated: 2026-06-23T16:38:48.296Z
+ Status: PASS
+ 
+ ## Summary
+@@ -16,7 +16,7 @@ Prevented targeted scheduling work: 0
+ 
+ | Lane | Status | Snapshot Status | Execution Graph Hash | Reason |
+ | --- | --- | --- | --- | --- |
+-| workspace-contract | INVALIDATED | INVALIDATED | 51dc9d019b71a923 | Lane snapshot is part of the selected targeted execution graph. |
++| workspace-contract | INVALIDATED | INVALIDATED | 98ec1cea6aaaef57 | Lane snapshot is part of the selected targeted execution graph. |
+ 
+ ## Safeguards
+ 
+diff --git a/docs_build/dev/reports/failure_fingerprint_report.md b/docs_build/dev/reports/failure_fingerprint_report.md
+index c9822fe4a..a1d3f0de6 100644
+--- a/docs_build/dev/reports/failure_fingerprint_report.md
++++ b/docs_build/dev/reports/failure_fingerprint_report.md
+@@ -1,12 +1,12 @@
+ # Failure Fingerprint Report
+ 
+-Generated: 2026-06-21T00:11:18.106Z
+-Status: PASS
++Generated: 2026-06-23T16:38:57.091Z
++Status: WARN
+ 
+ ## Summary
+ 
+ Deterministic setup failures: 0
+-Runtime failures: 0
++Runtime failures: 1
+ Flaky/transient failures: 0
+ Infrastructure failures: 0
+ 
+@@ -14,7 +14,7 @@ Infrastructure failures: 0
+ 
+ | Fingerprint | Category | Rule | Lane | Source | Retry Allowed | Diagnostic |
+ | --- | --- | --- | --- | --- | --- | --- |
+-| none | none | none | none | none | No | No failures observed during deterministic classification. |
++| fc8ad6ba552baa70 | runtime failure | runtime-failure | workspace-contract | runtime command | Yes | workspace-contract command failed: "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+ 
+ ## Known Deterministic Fingerprint Rules
+ 
+diff --git a/docs_build/dev/reports/filesystem_scan_reduction_report.md b/docs_build/dev/reports/filesystem_scan_reduction_report.md
+index 3fc7accce..062fbbe26 100644
+--- a/docs_build/dev/reports/filesystem_scan_reduction_report.md
++++ b/docs_build/dev/reports/filesystem_scan_reduction_report.md
+@@ -1,6 +1,6 @@
+ # Filesystem Scan Reduction Report
+ 
+-Generated: 2026-06-21T00:10:10.181Z
++Generated: 2026-06-23T16:38:48.280Z
+ Status: PASS
+ 
+ ## Scan Enforcement
+diff --git a/docs_build/dev/reports/incremental_validation_report.md b/docs_build/dev/reports/incremental_validation_report.md
+index d4aa9a02b..43aa18265 100644
+--- a/docs_build/dev/reports/incremental_validation_report.md
++++ b/docs_build/dev/reports/incremental_validation_report.md
+@@ -1,6 +1,6 @@
+ # Incremental Validation Report
+ 
+-Generated: 2026-06-21T00:10:10.218Z
++Generated: 2026-06-23T16:38:48.296Z
+ Status: PASS
+ 
+ ## Reuse Summary
+@@ -18,7 +18,7 @@ Prevented fixture resolution passes: 0
+ 
+ | Lane | Decision | Invalidated By | Runtime Savings Observation |
+ | --- | --- | --- | --- |
+-| workspace-contract | INVALIDATED | Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. | Manifest was regenerated or skipped; no reuse savings for this lane. |
++| workspace-contract | INVALIDATED | Persistent manifest lane definition hash changed for workspace-contract. | Manifest was regenerated or skipped; no reuse savings for this lane. |
+ 
+ ## Invalidation Rules
+ 
+diff --git a/docs_build/dev/reports/lane_compilation_report.md b/docs_build/dev/reports/lane_compilation_report.md
+index 1b65b72a4..c0a7442d4 100644
+--- a/docs_build/dev/reports/lane_compilation_report.md
++++ b/docs_build/dev/reports/lane_compilation_report.md
+@@ -1,26 +1,26 @@
+ # Lane Compilation Report
+ 
+-Generated: 2026-06-21T00:10:10.215Z
++Generated: 2026-06-23T16:38:48.295Z
+ Status: PASS
+ 
+ ## Lane Graph
+ 
+ | Lane | Status | Affected Surface | Targets | Commands | Reason |
+ | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | PASS | Root tools future-state navigation and Tool Template V2 contract | tests/playwright/tools/RootToolsFutureState.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Lane graph, command shape, targets, fixtures, and ownership compile before runtime. |
+-| game-workspace | SKIP | Game Workspace mock repository, Game Workspace UI, and Toolbox Progress/Build Path game-state bridge | tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| game-design | SKIP | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | tests/playwright/tools/GameDesignMockRepository.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/GameDesignMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| game-configuration | SKIP | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | tests/playwright/tools/GameConfigurationMockRepository.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/GameConfigurationMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| asset-tool | SKIP | Asset Tool mock repository, Game Configuration readiness handoff, library records, import preview, and visible failure handling | tests/playwright/tools/AssetToolMockRepository.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/AssetToolMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| build-path | SKIP | Toolbox Build Path simplification, workflow status table, and Admin Tools Progress navigation | tests/playwright/tools/BuildPathProgressSimplification.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/BuildPathProgressSimplification.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| tools-progress | SKIP | Admin Tools Progress hydration, Toolbox Group view color model, and Game Build Path separation | tests/playwright/tools/ToolsProgressHydration.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/ToolsProgressHydration.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| tool-navigation | SKIP | Admin Tools Progress tool route links, Tool Display Mode build-order previous/next controls, and Toolbox group fallback routing | tests/playwright/tools/ToolNavigationPrevNext.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/ToolNavigationPrevNext.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| tool-display-mode | SKIP | Tool Display Mode identity row, registry-owned previous/next links, disabled text fallback, and multi-path group routing | tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| tool-images | SKIP | Toolbox registry image contract, Toolbox card image rendering, and Tool Display Mode image fallback | tests/playwright/tools/ToolImageRegistry.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/ToolImageRegistry.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| tool-runtime | SKIP | Active public toolbox and Tool Template V2 contract | tests/playwright/tools/RootToolsFutureState.spec.mjs | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| workspace-contract | PASS | Root tools future-state navigation and Tool Template V2 contract | tests/playwright/tools/RootToolsFutureState.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Lane graph, command shape, targets, fixtures, and ownership compile before runtime. |
++| game-hub | SKIP | Game Hub mock repository, Game Hub UI, and Toolbox Progress/Build Path game-state bridge | tests/playwright/tools/GameHubMockRepository.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/GameHubMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| game-design | SKIP | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | tests/playwright/tools/GameDesignMockRepository.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/GameDesignMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| game-configuration | SKIP | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | tests/playwright/tools/GameConfigurationMockRepository.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/GameConfigurationMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| asset-tool | SKIP | Asset Tool mock repository, Game Configuration readiness handoff, library records, import preview, and visible failure handling | tests/playwright/tools/AssetToolMockRepository.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/AssetToolMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| build-path | SKIP | Toolbox Build Path simplification, workflow status table, and Admin Tools Progress navigation | tests/playwright/tools/BuildPathProgressSimplification.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/BuildPathProgressSimplification.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| tools-progress | SKIP | Admin Tools Progress hydration, Toolbox Group view color model, and Game Build Path separation | tests/playwright/tools/ToolsProgressHydration.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/ToolsProgressHydration.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| tool-navigation | SKIP | Admin Tools Progress tool route links, Tool Display Mode build-order previous/next controls, and Toolbox group fallback routing | tests/playwright/tools/ToolNavigationPrevNext.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/ToolNavigationPrevNext.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| tool-display-mode | SKIP | Tool Display Mode identity row, registry-owned previous/next links, disabled text fallback, and multi-path group routing | tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| tool-images | SKIP | Toolbox registry image contract, Toolbox card image rendering, and Tool Display Mode image fallback | tests/playwright/tools/ToolImageRegistry.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/ToolImageRegistry.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| tool-runtime | SKIP | Active public toolbox and Tool Template V2 contract | tests/playwright/tools/RootToolsFutureState.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+ | game-runtime | SKIP | Deprecated archive/v1-v2/games reference coverage | none | none | Lane was not selected. |
+ | integration | SKIP | Integration handoff behavior | none | none | Lane was not selected. |
+-| engine-src | SKIP | src/ engine and shared runtime capability behavior | tests/core/EngineCoreBoundaryBaseline.test.mjs; tests/core/FrameClock.test.mjs; tests/core/FixedTicker.test.mjs; tests/assets/AssetLoaderSystem.test.mjs; tests/audio/AudioService.test.mjs; tests/input/InputMap.test.mjs; tests/input/KeyboardState.test.mjs; tests/input/MouseState.test.mjs; tests/input/GamepadInputAdapter.test.mjs; tests/input/GamepadHapticsService.test.mjs; tests/render/Renderer.test.mjs | C:\nvm4w\nodejs\node.exe scripts/run-node-test-files.mjs tests/core/EngineCoreBoundaryBaseline.test.mjs tests/core/FrameClock.test.mjs tests/core/FixedTicker.test.mjs tests/assets/AssetLoaderSystem.test.mjs tests/audio/AudioService.test.mjs tests/input/InputMap.test.mjs tests/input/KeyboardState.test.mjs tests/input/MouseState.test.mjs tests/input/GamepadInputAdapter.test.mjs tests/input/GamepadHapticsService.test.mjs tests/render/Renderer.test.mjs | Lane was not selected. |
++| engine-src | SKIP | src/ engine and shared runtime capability behavior | tests/core/EngineCoreBoundaryBaseline.test.mjs; tests/core/FrameClock.test.mjs; tests/core/FixedTicker.test.mjs; tests/assets/AssetLoaderSystem.test.mjs; tests/audio/AudioService.test.mjs; tests/input/InputMap.test.mjs; tests/input/KeyboardState.test.mjs; tests/input/MouseState.test.mjs; tests/input/GamepadInputAdapter.test.mjs; tests/input/GamepadHapticsService.test.mjs; tests/render/Renderer.test.mjs | "C:\\Program Files\\nodejs\\node.exe" scripts/run-node-test-files.mjs tests/core/EngineCoreBoundaryBaseline.test.mjs tests/core/FrameClock.test.mjs tests/core/FixedTicker.test.mjs tests/assets/AssetLoaderSystem.test.mjs tests/audio/AudioService.test.mjs tests/input/InputMap.test.mjs tests/input/KeyboardState.test.mjs tests/input/MouseState.test.mjs tests/input/GamepadInputAdapter.test.mjs tests/input/GamepadHapticsService.test.mjs tests/render/Renderer.test.mjs | Lane was not selected. |
+ | samples | SKIP | Deprecated archive/v1-v2/samples reference coverage | none | none | Lane was not selected. |
+ 
+ ## Compilation Failures
+diff --git a/docs_build/dev/reports/lane_deduplication_report.md b/docs_build/dev/reports/lane_deduplication_report.md
+index ca9adb0a3..112fe485b 100644
+--- a/docs_build/dev/reports/lane_deduplication_report.md
++++ b/docs_build/dev/reports/lane_deduplication_report.md
+@@ -1,6 +1,6 @@
+ # Lane Deduplication Report
+ 
+-Generated: 2026-06-21T00:10:10.215Z
++Generated: 2026-06-23T16:38:48.295Z
+ Status: PASS
+ 
+ ## Summary
+diff --git a/docs_build/dev/reports/lane_input_validation_report.md b/docs_build/dev/reports/lane_input_validation_report.md
+index 0c7546c68..2911bcfe5 100644
+--- a/docs_build/dev/reports/lane_input_validation_report.md
++++ b/docs_build/dev/reports/lane_input_validation_report.md
+@@ -1,6 +1,6 @@
+ # Lane Input Validation Report
+ 
+-Generated: 2026-06-21T00:10:10.218Z
++Generated: 2026-06-23T16:38:48.296Z
+ Status: PASS
+ 
+ ## Input Files
+diff --git a/docs_build/dev/reports/lane_manifests/workspace-contract.json b/docs_build/dev/reports/lane_manifests/workspace-contract.json
+index fb867147c..84148f335 100644
+--- a/docs_build/dev/reports/lane_manifests/workspace-contract.json
++++ b/docs_build/dev/reports/lane_manifests/workspace-contract.json
+@@ -1,17 +1,17 @@
+ {
+-  "commandsHash": "43673d11b6eb7f6f",
++  "commandsHash": "e2ef303e88f244be",
+   "dependencies": [],
+-  "dependencyGraphHash": "53e56ebae6e84541",
++  "dependencyGraphHash": "4dcb31ccda1bdb5a",
+   "fileHashes": {
+     "src/dev-runtime/admin/admin-notes-directory.mjs": "2eadf130de0ef0df",
+-    "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
+-    "src/dev-runtime/persistence/mock-db-store.js": "8c9c167f6c5adcfc",
+-    "src/dev-runtime/server/local-api-router.mjs": "54200ad3dc0ef7b2",
+-    "tests/helpers/playwrightRepoServer.mjs": "a1dc02a78c92807b",
+-    "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
+-    "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
+-    "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
+-    "tests/playwright/tools/RootToolsFutureState.spec.mjs": "032c57abb5289a23"
++    "src/dev-runtime/admin/admin-notes-menu.mjs": "38ce15ab63418748",
++    "src/dev-runtime/persistence/mock-db-store.js": "894fdc5041524dca",
++    "src/dev-runtime/server/local-api-router.mjs": "c70f436e8933b52c",
++    "tests/helpers/playwrightRepoServer.mjs": "1cad2a3d1221ef95",
++    "tests/helpers/playwrightStorageIsolation.mjs": "8057ea0c3ec2c8ac",
++    "tests/helpers/playwrightV8CoverageReporter.mjs": "290159be068de479",
++    "tests/helpers/workspaceV2CoverageReporter.mjs": "08d4c995f88aebe1",
++    "tests/playwright/tools/RootToolsFutureState.spec.mjs": "fda17eab0bf8a418"
+   },
+   "fixtures": [],
+   "helpers": [
+@@ -30,15 +30,15 @@
+     "tests/helpers/playwrightV8CoverageReporter.mjs",
+     "tests/helpers/workspaceV2CoverageReporter.mjs"
+   ],
+-  "inputHash": "5145d05e2885e902",
++  "inputHash": "61358ffa71dc7104",
+   "lane": "workspace-contract",
+-  "laneDefinitionHash": "95059517ac8a6497",
+-  "manifestHash": "d98d3245976c92f4",
++  "laneDefinitionHash": "97570e267d472bc8",
++  "manifestHash": "fdada39983df06d5",
+   "ownership": "tools",
+   "tests": [
+     "tests/playwright/tools/RootToolsFutureState.spec.mjs"
+   ],
+   "version": 1,
+-  "generatedAt": "2026-06-21T00:10:08.792Z",
++  "generatedAt": "2026-06-23T16:38:47.630Z",
+   "source": "generated"
+ }
+diff --git a/docs_build/dev/reports/lane_runtime_optimization_report.md b/docs_build/dev/reports/lane_runtime_optimization_report.md
+index a8d52d441..4152520f7 100644
+--- a/docs_build/dev/reports/lane_runtime_optimization_report.md
++++ b/docs_build/dev/reports/lane_runtime_optimization_report.md
+@@ -1,6 +1,6 @@
+ # Lane Runtime Optimization Report
+ 
+-Generated: 2026-06-21T00:10:10.215Z
++Generated: 2026-06-23T16:38:48.295Z
+ Status: PASS
+ 
+ ## Runtime Cost Summary
+@@ -28,7 +28,7 @@ No zero-browser, compilation, or dependency blockers were found.
+ 
+ | Lane | Snapshot | Warm Start | Hydration | Baseline Browser Launches | Scheduled Browser Launches | Commands | Reason |
+ | --- | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | INVALIDATED | INVALIDATED | INVALIDATED | 1 | 1 | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
++| workspace-contract | INVALIDATED | INVALIDATED | INVALIDATED | 1 | 1 | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
+ 
+ ## Runtime Savings Observations
+ 
+diff --git a/docs_build/dev/reports/lane_snapshot_report.md b/docs_build/dev/reports/lane_snapshot_report.md
+index 5037cf0b8..727fddbd0 100644
+--- a/docs_build/dev/reports/lane_snapshot_report.md
++++ b/docs_build/dev/reports/lane_snapshot_report.md
+@@ -1,6 +1,6 @@
+ # Lane Snapshot Report
+ 
+-Generated: 2026-06-21T00:10:10.216Z
++Generated: 2026-06-23T16:38:48.296Z
+ Status: PASS
+ Snapshot directory: docs_build/dev/reports/lane_snapshots
+ 
+@@ -17,7 +17,7 @@ Prevented manifest traversal: 0
+ 
+ | Lane | Status | Snapshot Path | Manifest Hash | Dependency Graph Hash | Helper Graph Hash | Fixture Graph Hash | Runtime Config Hash | Execution Graph Hash | Snapshot Hash | Reason |
+ | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | d98d3245976c92f4 | 53e56ebae6e84541 | 7d3db838f9f780e0 | 6c4fac7630b0b6f3 | e5ac9cbc103c3984 | 51dc9d019b71a923 | 13ffd9b4d27b4d42 | Lane snapshot executionGraphHash changed for workspace-contract.; Lane snapshot inputHash changed for workspace-contract.; Lane snapshot manifestHash changed for workspace-contract.; Lane snapshot snapshotHash changed for workspace-contract.; Lane snapshot warmStartHash changed for workspace-contract. |
++| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | fdada39983df06d5 | 4dcb31ccda1bdb5a | 6cee3b9e8c76ce0d | 6c4fac7630b0b6f3 | 2ba7784af3a4df8d | 98ec1cea6aaaef57 | 54af1dc18e270910 | Lane snapshot commandsHash changed for workspace-contract.; Lane snapshot dependencyGraphHash changed for workspace-contract.; Lane snapshot executionGraphHash changed for workspace-contract.; Lane snapshot helperGraphHash changed for workspace-contract.; Lane snapshot inputHash changed for workspace-contract.; Lane snapshot laneDefinitionHash changed for workspace-contract.; Lane snapshot manifestHash changed for workspace-contract.; Lane snapshot runtimeConfigurationHash changed for workspace-contract.; Lane snapshot snapshotHash changed for workspace-contract.; Lane snapshot warmStartHash changed for workspace-contract. |
+ 
+ ## Snapshot Validation Findings
+ 
+diff --git a/docs_build/dev/reports/lane_snapshots/workspace-contract.json b/docs_build/dev/reports/lane_snapshots/workspace-contract.json
+index e0fe4f05f..c2111ff5a 100644
+--- a/docs_build/dev/reports/lane_snapshots/workspace-contract.json
++++ b/docs_build/dev/reports/lane_snapshots/workspace-contract.json
+@@ -1,18 +1,18 @@
+ {
+-  "commandsHash": "43673d11b6eb7f6f",
++  "commandsHash": "e2ef303e88f244be",
+   "dependencyGateStatus": "PASS",
+   "dependencyGraph": {
+     "dependencies": [],
+-    "dependencyGraphHash": "53e56ebae6e84541",
++    "dependencyGraphHash": "4dcb31ccda1bdb5a",
+     "importHashes": {
+       "src/dev-runtime/admin/admin-notes-directory.mjs": "2eadf130de0ef0df",
+-      "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
+-      "src/dev-runtime/persistence/mock-db-store.js": "8c9c167f6c5adcfc",
+-      "src/dev-runtime/server/local-api-router.mjs": "54200ad3dc0ef7b2",
+-      "tests/helpers/playwrightRepoServer.mjs": "a1dc02a78c92807b",
+-      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
+-      "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
+-      "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85"
++      "src/dev-runtime/admin/admin-notes-menu.mjs": "38ce15ab63418748",
++      "src/dev-runtime/persistence/mock-db-store.js": "894fdc5041524dca",
++      "src/dev-runtime/server/local-api-router.mjs": "c70f436e8933b52c",
++      "tests/helpers/playwrightRepoServer.mjs": "1cad2a3d1221ef95",
++      "tests/helpers/playwrightStorageIsolation.mjs": "8057ea0c3ec2c8ac",
++      "tests/helpers/playwrightV8CoverageReporter.mjs": "290159be068de479",
++      "tests/helpers/workspaceV2CoverageReporter.mjs": "08d4c995f88aebe1"
+     },
+     "imports": [
+       "src/dev-runtime/admin/admin-notes-directory.mjs",
+@@ -25,8 +25,8 @@
+       "tests/helpers/workspaceV2CoverageReporter.mjs"
+     ]
+   },
+-  "dependencyGraphHash": "53e56ebae6e84541",
+-  "executionGraphHash": "51dc9d019b71a923",
++  "dependencyGraphHash": "4dcb31ccda1bdb5a",
++  "executionGraphHash": "98ec1cea6aaaef57",
+   "fixtureGraph": {
+     "fixtureHashes": {},
+     "fixtures": []
+@@ -34,10 +34,10 @@
+   "fixtureGraphHash": "6c4fac7630b0b6f3",
+   "helperGraph": {
+     "helperHashes": {
+-      "tests/helpers/playwrightRepoServer.mjs": "a1dc02a78c92807b",
+-      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
+-      "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
+-      "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85"
++      "tests/helpers/playwrightRepoServer.mjs": "1cad2a3d1221ef95",
++      "tests/helpers/playwrightStorageIsolation.mjs": "8057ea0c3ec2c8ac",
++      "tests/helpers/playwrightV8CoverageReporter.mjs": "290159be068de479",
++      "tests/helpers/workspaceV2CoverageReporter.mjs": "08d4c995f88aebe1"
+     },
+     "helpers": [
+       "tests/helpers/playwrightRepoServer.mjs",
+@@ -46,22 +46,22 @@
+       "tests/helpers/workspaceV2CoverageReporter.mjs"
+     ]
+   },
+-  "helperGraphHash": "7d3db838f9f780e0",
+-  "inputHash": "5145d05e2885e902",
++  "helperGraphHash": "6cee3b9e8c76ce0d",
++  "inputHash": "61358ffa71dc7104",
+   "lane": "workspace-contract",
+   "laneCompilationStatus": "PASS",
+-  "laneDefinitionHash": "95059517ac8a6497",
++  "laneDefinitionHash": "97570e267d472bc8",
+   "manifest": {
+     "fileHashes": {
+       "src/dev-runtime/admin/admin-notes-directory.mjs": "2eadf130de0ef0df",
+-      "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
+-      "src/dev-runtime/persistence/mock-db-store.js": "8c9c167f6c5adcfc",
+-      "src/dev-runtime/server/local-api-router.mjs": "54200ad3dc0ef7b2",
+-      "tests/helpers/playwrightRepoServer.mjs": "a1dc02a78c92807b",
+-      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
+-      "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
+-      "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
+-      "tests/playwright/tools/RootToolsFutureState.spec.mjs": "032c57abb5289a23"
++      "src/dev-runtime/admin/admin-notes-menu.mjs": "38ce15ab63418748",
++      "src/dev-runtime/persistence/mock-db-store.js": "894fdc5041524dca",
++      "src/dev-runtime/server/local-api-router.mjs": "c70f436e8933b52c",
++      "tests/helpers/playwrightRepoServer.mjs": "1cad2a3d1221ef95",
++      "tests/helpers/playwrightStorageIsolation.mjs": "8057ea0c3ec2c8ac",
++      "tests/helpers/playwrightV8CoverageReporter.mjs": "290159be068de479",
++      "tests/helpers/workspaceV2CoverageReporter.mjs": "08d4c995f88aebe1",
++      "tests/playwright/tools/RootToolsFutureState.spec.mjs": "fda17eab0bf8a418"
+     },
+     "fixtures": [],
+     "helpers": [
+@@ -80,42 +80,42 @@
+       "tests/helpers/playwrightV8CoverageReporter.mjs",
+       "tests/helpers/workspaceV2CoverageReporter.mjs"
+     ],
+-    "manifestHash": "d98d3245976c92f4",
++    "manifestHash": "fdada39983df06d5",
+     "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
+     "source": "generated",
+     "tests": [
+       "tests/playwright/tools/RootToolsFutureState.spec.mjs"
+     ]
+   },
+-  "manifestHash": "d98d3245976c92f4",
++  "manifestHash": "fdada39983df06d5",
+   "ownership": "tools",
+   "runtimeConfiguration": {
+     "affectedSurface": "Root tools future-state navigation and Tool Template V2 contract",
+     "commands": [
+       {
+         "args": [
+-          "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js",
++          "C:\\Users\\davidq\\Documents\\github\\GameFoundryStudio\\node_modules\\@playwright\\test\\cli.js",
+           "test",
+           "tests/playwright/tools/RootToolsFutureState.spec.mjs",
+           "--project=playwright",
+           "--workers=1",
+           "--reporter=list"
+         ],
+-        "command": "C:\\nvm4w\\nodejs\\node.exe",
++        "command": "C:\\Program Files\\nodejs\\node.exe",
+         "targets": [
+           "tests/playwright/tools/RootToolsFutureState.spec.mjs"
+         ],
+         "type": "playwright"
+       }
+     ],
+-    "commandsHash": "43673d11b6eb7f6f",
+-    "laneConfigHash": "09eaf9063f7694e3",
++    "commandsHash": "e2ef303e88f244be",
++    "laneConfigHash": "66a7f2d814114595",
+     "requiresPreflight": true,
+     "requiresSamplesFlag": false
+   },
+-  "runtimeConfigurationHash": "e5ac9cbc103c3984",
+-  "snapshotHash": "13ffd9b4d27b4d42",
++  "runtimeConfigurationHash": "2ba7784af3a4df8d",
++  "snapshotHash": "54af1dc18e270910",
+   "version": 1,
+-  "warmStartHash": "f32a5831d6b39914",
+-  "generatedAt": "2026-06-21T00:10:10.207Z"
++  "warmStartHash": "89d30ba62849a51c",
++  "generatedAt": "2026-06-23T16:38:48.293Z"
+ }
+diff --git a/docs_build/dev/reports/lane_warm_start_report.md b/docs_build/dev/reports/lane_warm_start_report.md
+index d06a40a33..8ce74ca47 100644
+--- a/docs_build/dev/reports/lane_warm_start_report.md
++++ b/docs_build/dev/reports/lane_warm_start_report.md
+@@ -1,6 +1,6 @@
+ # Lane Warm-Start Report
+ 
+-Generated: 2026-06-21T00:10:10.216Z
++Generated: 2026-06-23T16:38:48.296Z
+ Status: PASS
+ Warm-start directory: docs_build/dev/reports/lane_warm_starts
+ 
+@@ -17,7 +17,7 @@ Prevented lane graph assembly: 0
+ 
+ | Lane | Status | Warm-Start Path | Manifest Hash | Warm-Start Hash | Dependency Hydration Hash | Reason |
+ | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | d98d3245976c92f4 | f32a5831d6b39914 | 355ba7a85dbb3cdb | Warm-start inputHash changed for workspace-contract.; Warm-start manifestHash changed for workspace-contract.; Warm-start warmStartHash changed for workspace-contract. |
++| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | fdada39983df06d5 | 89d30ba62849a51c | e9956a75c3585e86 | Warm-start commandsHash changed for workspace-contract.; Warm-start dependencyGraphHash changed for workspace-contract.; Warm-start dependencyHydrationHash changed for workspace-contract.; Warm-start inputHash changed for workspace-contract.; Warm-start laneConfigHash changed for workspace-contract.; Warm-start laneDefinitionHash changed for workspace-contract.; Warm-start manifestHash changed for workspace-contract.; Warm-start warmStartHash changed for workspace-contract. |
+ 
+ ## Fast-Fail Safeguards
+ 
+diff --git a/docs_build/dev/reports/lane_warm_starts/workspace-contract.json b/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
+index 3c29e890d..88a7c314a 100644
+--- a/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
++++ b/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
+@@ -1,15 +1,15 @@
+ {
+-  "commandsHash": "43673d11b6eb7f6f",
+-  "dependencyGraphHash": "53e56ebae6e84541",
++  "commandsHash": "e2ef303e88f244be",
++  "dependencyGraphHash": "4dcb31ccda1bdb5a",
+   "dependencyHydration": {
+-    "dependencyHydrationHash": "355ba7a85dbb3cdb",
++    "dependencyHydrationHash": "e9956a75c3585e86",
+     "fixtureHashes": {},
+     "fixtures": [],
+     "helperHashes": {
+-      "tests/helpers/playwrightRepoServer.mjs": "a1dc02a78c92807b",
+-      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
+-      "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
+-      "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85"
++      "tests/helpers/playwrightRepoServer.mjs": "1cad2a3d1221ef95",
++      "tests/helpers/playwrightStorageIsolation.mjs": "8057ea0c3ec2c8ac",
++      "tests/helpers/playwrightV8CoverageReporter.mjs": "290159be068de479",
++      "tests/helpers/workspaceV2CoverageReporter.mjs": "08d4c995f88aebe1"
+     },
+     "helpers": [
+       "tests/helpers/playwrightRepoServer.mjs",
+@@ -19,13 +19,13 @@
+     ],
+     "importHashes": {
+       "src/dev-runtime/admin/admin-notes-directory.mjs": "2eadf130de0ef0df",
+-      "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
+-      "src/dev-runtime/persistence/mock-db-store.js": "8c9c167f6c5adcfc",
+-      "src/dev-runtime/server/local-api-router.mjs": "54200ad3dc0ef7b2",
+-      "tests/helpers/playwrightRepoServer.mjs": "a1dc02a78c92807b",
+-      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
+-      "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
+-      "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85"
++      "src/dev-runtime/admin/admin-notes-menu.mjs": "38ce15ab63418748",
++      "src/dev-runtime/persistence/mock-db-store.js": "894fdc5041524dca",
++      "src/dev-runtime/server/local-api-router.mjs": "c70f436e8933b52c",
++      "tests/helpers/playwrightRepoServer.mjs": "1cad2a3d1221ef95",
++      "tests/helpers/playwrightStorageIsolation.mjs": "8057ea0c3ec2c8ac",
++      "tests/helpers/playwrightV8CoverageReporter.mjs": "290159be068de479",
++      "tests/helpers/workspaceV2CoverageReporter.mjs": "08d4c995f88aebe1"
+     },
+     "imports": [
+       "src/dev-runtime/admin/admin-notes-directory.mjs",
+@@ -38,16 +38,16 @@
+       "tests/helpers/workspaceV2CoverageReporter.mjs"
+     ]
+   },
+-  "dependencyHydrationHash": "355ba7a85dbb3cdb",
+-  "inputHash": "5145d05e2885e902",
++  "dependencyHydrationHash": "e9956a75c3585e86",
++  "inputHash": "61358ffa71dc7104",
+   "lane": "workspace-contract",
+-  "laneConfigHash": "09eaf9063f7694e3",
+-  "laneDefinitionHash": "95059517ac8a6497",
+-  "manifestHash": "d98d3245976c92f4",
++  "laneConfigHash": "66a7f2d814114595",
++  "laneDefinitionHash": "97570e267d472bc8",
++  "manifestHash": "fdada39983df06d5",
+   "ownership": "tools",
+-  "warmStartHash": "f32a5831d6b39914",
++  "warmStartHash": "89d30ba62849a51c",
+   "version": 1,
+-  "generatedAt": "2026-06-21T00:10:08.802Z",
++  "generatedAt": "2026-06-23T16:38:47.635Z",
+   "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
+   "sourceManifest": "generated"
+ }
+diff --git a/docs_build/dev/reports/monolith_trigger_removal_report.md b/docs_build/dev/reports/monolith_trigger_removal_report.md
+index 97a55c340..266ecc808 100644
+--- a/docs_build/dev/reports/monolith_trigger_removal_report.md
++++ b/docs_build/dev/reports/monolith_trigger_removal_report.md
+@@ -1,6 +1,6 @@
+ # Monolith Trigger Removal Report
+ 
+-Generated: 2026-06-21T00:11:18.108Z
++Generated: 2026-06-23T16:38:57.092Z
+ Status: PASS
+ 
+ ## Removed Broad Execution Triggers
+@@ -30,7 +30,7 @@ Status: PASS
+ No-argument safe mode active for this invocation: No
+ Scheduled runtime lanes: workspace-contract
+ Executed lanes: workspace-contract
+-Skipped lanes: game-workspace, game-design, game-configuration, asset-tool, build-path, tools-progress, tool-navigation, tool-display-mode, tool-images, tool-runtime, game-runtime, integration, engine-src, samples
++Skipped lanes: game-hub, game-design, game-configuration, asset-tool, build-path, tools-progress, tool-navigation, tool-display-mode, tool-images, tool-runtime, game-runtime, integration, engine-src, samples
+ Full samples smoke: SKIP - Skipped because changed files do not modify sample JSON or shared sample loader/framework behavior.
+ Unaffected lane execution blocked: Yes
+ 
+diff --git a/docs_build/dev/reports/persistent_lane_manifest_report.md b/docs_build/dev/reports/persistent_lane_manifest_report.md
+index f3f131d4a..30fff9f34 100644
+--- a/docs_build/dev/reports/persistent_lane_manifest_report.md
++++ b/docs_build/dev/reports/persistent_lane_manifest_report.md
+@@ -1,6 +1,6 @@
+ # Persistent Lane Manifest Report
+ 
+-Generated: 2026-06-21T00:10:10.218Z
++Generated: 2026-06-23T16:38:48.296Z
+ Status: PASS
+ Manifest directory: docs_build/dev/reports/lane_manifests
+ 
+@@ -15,13 +15,13 @@ Prevented discovery scans: 0
+ 
+ | Lane | Status | Manifest Path | Input Hash | Manifest Hash | Reason |
+ | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_manifests/workspace-contract.json | 5145d05e2885e902 | d98d3245976c92f4 | Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. |
++| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_manifests/workspace-contract.json | 61358ffa71dc7104 | fdada39983df06d5 | Persistent manifest lane definition hash changed for workspace-contract. |
+ 
+ ## Persisted Manifest Files
+ 
+ | Lane | Ownership | Source | Tests | Helpers | Fixtures | Dependency Graph Hash | Manifest Hash |
+ | --- | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | tools | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 53e56ebae6e84541 | d98d3245976c92f4 |
++| workspace-contract | tools | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 4dcb31ccda1bdb5a | fdada39983df06d5 |
+ 
+ ## Fast-Fail Enforcement
+ 
+diff --git a/docs_build/dev/reports/playwright_discovery_ownership_report.md b/docs_build/dev/reports/playwright_discovery_ownership_report.md
+index a5a1b3dea..b9ff99fa1 100644
+--- a/docs_build/dev/reports/playwright_discovery_ownership_report.md
++++ b/docs_build/dev/reports/playwright_discovery_ownership_report.md
+@@ -1,6 +1,6 @@
+ # Playwright Discovery Ownership Report
+ 
+-Generated: 2026-06-21T00:10:10.169Z
++Generated: 2026-06-23T16:38:48.277Z
+ Status: PASS
+ 
+ ## Discovery-Time Ownership
+diff --git a/docs_build/dev/reports/playwright_discovery_scope_report.md b/docs_build/dev/reports/playwright_discovery_scope_report.md
+index 7ba7a7a0e..9aac01c6c 100644
+--- a/docs_build/dev/reports/playwright_discovery_scope_report.md
++++ b/docs_build/dev/reports/playwright_discovery_scope_report.md
+@@ -1,6 +1,6 @@
+ # Playwright Discovery Scope Report
+ 
+-Generated: 2026-06-21T00:10:10.176Z
++Generated: 2026-06-23T16:38:48.279Z
+ Status: PASS
+ Scoped discovery: Yes
+ 
+diff --git a/docs_build/dev/reports/playwright_structure_audit.md b/docs_build/dev/reports/playwright_structure_audit.md
+index dc6386691..acc8a33b1 100644
+--- a/docs_build/dev/reports/playwright_structure_audit.md
++++ b/docs_build/dev/reports/playwright_structure_audit.md
+@@ -1,6 +1,6 @@
+ # Playwright Structure Audit
+ 
+-Generated: 2026-06-21T00:10:10.141Z
++Generated: 2026-06-23T16:38:48.260Z
+ Status: PASS
+ 
+ ## Lane Directories
+diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+index 86cc56dfe..5a0ac58e8 100644
+--- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
++++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+@@ -17,13 +17,26 @@ Exercised tool entry points detected:
+ (0%) Theme V2 Shared JS - not exercised by this Playwright run
+ 
+ Changed runtime JS files covered:
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/messages/messages-postgres-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) toolbox/messages/messages.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) toolbox/text-to-speech/text2speech.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) toolbox/text-to-speech/tts-profile-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ 
+ Files with executed line/function counts where available:
+ (100%) none - no covered runtime files
+ 
+ Uncovered or low-coverage changed JS files:
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/messages/messages-postgres-service.mjs - WARNING: uncovered changed runtime JS file; advisory only
++(0%) toolbox/messages/messages.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) toolbox/text-to-speech/text2speech.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) toolbox/text-to-speech/tts-profile-store.js - WARNING: uncovered changed runtime JS file; advisory only
+ 
+ Changed JS files considered:
+-(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/messages/messages-postgres-service.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/dev-runtime/DbSeedIntegrity.test.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/MessagesTool.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/tools/MessagesPlaybackSource.test.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/tools/Text2SpeechShell.test.mjs - changed JS file not collected as browser runtime coverage
++(0%) toolbox/messages/messages.js - changed JS file not collected as browser runtime coverage
++(0%) toolbox/text-to-speech/text2speech.js - changed JS file not collected as browser runtime coverage
++(0%) toolbox/text-to-speech/tts-profile-store.js - changed JS file not collected as browser runtime coverage
+diff --git a/docs_build/dev/reports/retry_suppression_report.md b/docs_build/dev/reports/retry_suppression_report.md
+index 5391d7a38..ec68cd7e2 100644
+--- a/docs_build/dev/reports/retry_suppression_report.md
++++ b/docs_build/dev/reports/retry_suppression_report.md
+@@ -1,7 +1,7 @@
+ # Retry Suppression Report
+ 
+-Generated: 2026-06-21T00:11:18.107Z
+-Status: PASS
++Generated: 2026-06-23T16:38:57.091Z
++Status: WARN
+ 
+ ## Summary
+ 
+@@ -15,7 +15,7 @@ Prevented repeated lane hydration: 0
+ 
+ | Fingerprint | Lane | Category | Retry Decision | Reason |
+ | --- | --- | --- | --- | --- |
+-| none | none | none | No retry needed | No failures were observed. |
++| fc8ad6ba552baa70 | workspace-contract | runtime failure | Allowed only on explicit targeted retry | Retry is allowed only when explicitly requested and must preserve the same targeted lane scope. |
+ 
+ ## Enforcement Rules
+ 
+diff --git a/docs_build/dev/reports/slow_path_pruning_report.md b/docs_build/dev/reports/slow_path_pruning_report.md
+index 0fc071745..c56867eb8 100644
+--- a/docs_build/dev/reports/slow_path_pruning_report.md
++++ b/docs_build/dev/reports/slow_path_pruning_report.md
+@@ -1,13 +1,13 @@
+ # Slow Path Pruning Report
+ 
+-Generated: 2026-06-21T00:11:18.108Z
++Generated: 2026-06-23T16:38:57.092Z
+ Status: PASS
+ Source timing evidence: docs_build/dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
+ 
+ ## Before / After Runtime Observations
+ 
+ PR_26146_038 measured lane elapsed time: 169.71s
+-Current measured lane elapsed time: 67.79s
++Current measured lane elapsed time: 8.76s
+ PR_26146_038 actual browser launches: 4
+ Current actual browser launches: 1
+ Accidental no-argument browser launches prevented: 5
+@@ -31,16 +31,16 @@ Validation cache hits: 18
+ | PR_26146_038 | tool-runtime | 19.10s | Asset Manager V2 temporary UAT context |
+ | PR_26146_038 | integration | 14.50s | games index resolves Pong thumbnail from manifest preview role |
+ | PR_26146_038 | tool-runtime | 10.10s | Preview Generator V2 real batch output |
+-| current targeted run | workspace-contract | 15.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes |
+-| current targeted run | workspace-contract | 14.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:664:1 > representative active tool pages align center cleanup and registry group colors |
+-| current targeted run | workspace-contract | 13.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:562:1 > learn wireframe pages load with shared Theme V2 structure |
+-| current targeted run | workspace-contract | 11.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:482:1 > common header renders primary navigation order across active pages |
+-| current targeted run | workspace-contract | 2.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:641:1 > tool template future-state page loads from root Theme V2 paths |
++| current targeted run | workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes |
++| current targeted run | workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:485:1 > common header renders primary navigation order across active pages |
++| current targeted run | workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:565:1 > learn wireframe pages load with shared Theme V2 structure |
++| current targeted run | workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:644:1 > tool template future-state page loads from root Theme V2 paths |
++| current targeted run | workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:667:1 > representative active tool pages align center cleanup and registry group colors |
+ 
+ ## Guardrails
+ 
+ Full samples smoke: SKIP - Skipped because changed files do not modify sample JSON or shared sample loader/framework behavior.
+-Runtime failures observed: 0
++Runtime failures observed: 1
+ Runtime schedule status: PASS
+ 
+ - Only no-argument broad defaults and safe Workspace legacy routing were pruned.
+diff --git a/docs_build/dev/reports/static_validation_report.md b/docs_build/dev/reports/static_validation_report.md
+index ef23805b9..1e75365b8 100644
+--- a/docs_build/dev/reports/static_validation_report.md
++++ b/docs_build/dev/reports/static_validation_report.md
+@@ -1,6 +1,6 @@
+ # Static Validation Report
+ 
+-Generated: 2026-06-21T00:10:10.202Z
++Generated: 2026-06-23T16:38:48.289Z
+ Status: PASS
+ Static only: No
+ Dry run: No
+@@ -22,7 +22,7 @@ Reason: No deterministic static validation failure was found.
+ | invalid filename detection | PASS | Covered by Playwright structure audit. |
+ | missing import detection | PASS | Covered by Playwright structure audit relative import checks. |
+ | missing fixture detection | PASS | No missing fixture findings. |
+-| targeted file manifests | PASS | workspace-contract:d98d3245976c92f4 |
++| targeted file manifests | PASS | workspace-contract:fdada39983df06d5 |
+ | persistent lane manifests | PASS | workspace-contract:INVALIDATED |
+ | lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
+ | dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
+diff --git a/docs_build/dev/reports/targeted_file_manifest_report.md b/docs_build/dev/reports/targeted_file_manifest_report.md
+index fd6fbb064..0c90657e2 100644
+--- a/docs_build/dev/reports/targeted_file_manifest_report.md
++++ b/docs_build/dev/reports/targeted_file_manifest_report.md
+@@ -1,13 +1,13 @@
+ # Targeted File Manifest Report
+ 
+-Generated: 2026-06-21T00:10:10.217Z
++Generated: 2026-06-23T16:38:48.296Z
+ Status: PASS
+ 
+ ## Manifest-Generated Lane Inputs
+ 
+ | Lane | Ownership | Status | Source | Tests | Helpers | Fixtures | Imports / Dependencies | Dependency Graph Hash | Manifest Hash | Reason |
+ | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | tools | PASS | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 53e56ebae6e84541 | d98d3245976c92f4 | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
++| workspace-contract | tools | PASS | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 4dcb31ccda1bdb5a | fdada39983df06d5 | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
+ 
+ ## Discovery Expansion Control
+ 
+diff --git a/docs_build/dev/reports/test_cleanup_performance_report.md b/docs_build/dev/reports/test_cleanup_performance_report.md
+index db3a814e7..00df617c4 100644
+--- a/docs_build/dev/reports/test_cleanup_performance_report.md
++++ b/docs_build/dev/reports/test_cleanup_performance_report.md
+@@ -1,11 +1,11 @@
+ # Test Cleanup Performance Report
+ 
+-Generated: 2026-06-21T00:11:18.107Z
+-Status: PASS
++Generated: 2026-06-23T16:38:57.091Z
++Status: WARN
+ 
+ ## Cost Summary
+ 
+-Total measured lane elapsed time: 67.79s
++Total measured lane elapsed time: 8.76s
+ Actual browser launch count: 1
+ Scheduled browser launch count: 1
+ Baseline browser launch count: 1
+@@ -23,8 +23,8 @@ Prevented redundant dependency traversal: 0
+ 
+ | Lane | Status | Elapsed | Browser Launches | Reason |
+ | --- | --- | --- | --- | --- |
+-| workspace-contract | PASS | 67.79s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
+-| game-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
++| workspace-contract | FAIL | 8.76s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
++| game-hub | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
+ | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
+ | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
+ | asset-tool | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
+@@ -43,11 +43,11 @@ Prevented redundant dependency traversal: 0
+ 
+ | Lane | Duration | Test | Command |
+ | --- | --- | --- | --- |
+-| workspace-contract | 15.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 14.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:664:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 13.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:562:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 11.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:482:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 2.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:641:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:485:1 > common header renders primary navigation order across active pages | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:565:1 > learn wireframe pages load with shared Theme V2 structure | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:644:1 > tool template future-state page loads from root Theme V2 paths | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:667:1 > representative active tool pages align center cleanup and registry group colors | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+ 
+ ## Prevented Broad Execution
+ 
+diff --git a/docs_build/dev/reports/test_cleanup_routing_report.md b/docs_build/dev/reports/test_cleanup_routing_report.md
+index ed7ec4550..542854bf0 100644
+--- a/docs_build/dev/reports/test_cleanup_routing_report.md
++++ b/docs_build/dev/reports/test_cleanup_routing_report.md
+@@ -1,6 +1,6 @@
+ # Test Cleanup Routing Report
+ 
+-Generated: 2026-06-21T00:11:18.108Z
++Generated: 2026-06-23T16:38:57.092Z
+ Status: PASS
+ 
+ ## Representative Routing Cases
+@@ -33,7 +33,7 @@ Full samples smoke decision: SKIP - Skipped because changed files do not modify
+ | test:lane:tool-images | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane tool-images |
+ | test:lane:game-configuration | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane game-configuration |
+ | test:lane:game-design | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane game-design |
+-| test:lane:game-workspace | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane game-workspace |
++| test:lane:game-hub | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane game-hub |
+ | test:lane:tool-runtime | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane tool-runtime |
+ | test:lane:game-runtime | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane game-runtime |
+ | test:lane:integration | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane integration |
+diff --git a/docs_build/dev/reports/testing_lane_execution_report.md b/docs_build/dev/reports/testing_lane_execution_report.md
+index c9cbce468..03e150e46 100644
+--- a/docs_build/dev/reports/testing_lane_execution_report.md
++++ b/docs_build/dev/reports/testing_lane_execution_report.md
+@@ -1,15 +1,15 @@
+ # Testing Lane Execution Report
+ 
+-Generated: 2026-06-21T00:11:18.159Z
++Generated: 2026-06-23T16:38:57.102Z
+ Dry run: No
+ 
+ ## Summary
+ 
+-PASS: 1
++PASS: 0
+ WARN: 0
+-FAIL: 0
++FAIL: 1
+ SKIP: 14
+-Total lane elapsed time: 67.79s
++Total lane elapsed time: 8.76s
+ Actual browser launches: 1
+ 
+ ## Full Samples Smoke
+@@ -21,7 +21,7 @@ Reason: Skipped because changed files do not modify sample JSON or shared sample
+ 
+ Status: PASS
+ Reason: Runner preflight and Playwright structure audit passed before expensive lane execution.
+-Command: C:\nvm4w\nodejs\node.exe scripts/audit-playwright-test-locations.mjs --discovery-report docs_build/dev/reports/playwright_discovery_ownership_report.md --scope-report docs_build/dev/reports/playwright_discovery_scope_report.md --scan-report docs_build/dev/reports/filesystem_scan_reduction_report.md --lanes workspace-contract --targets tests/playwright/tools/RootToolsFutureState.spec.mjs --helpers tests/helpers/playwrightRepoServer.mjs,tests/helpers/playwrightStorageIsolation.mjs,tests/helpers/playwrightV8CoverageReporter.mjs,tests/helpers/workspaceV2CoverageReporter.mjs
++Command: "C:\\Program Files\\nodejs\\node.exe" scripts/audit-playwright-test-locations.mjs --discovery-report docs_build/dev/reports/playwright_discovery_ownership_report.md --scope-report docs_build/dev/reports/playwright_discovery_scope_report.md --scan-report docs_build/dev/reports/filesystem_scan_reduction_report.md --lanes workspace-contract --targets tests/playwright/tools/RootToolsFutureState.spec.mjs --helpers tests/helpers/playwrightRepoServer.mjs,tests/helpers/playwrightStorageIsolation.mjs,tests/helpers/playwrightV8CoverageReporter.mjs,tests/helpers/workspaceV2CoverageReporter.mjs
+ Details: none
+ 
+ ## Dependency Gate
+@@ -49,9 +49,9 @@ Validation computations: 10
+ 
+ ## Failure Fingerprints
+ 
+-Status: PASS
++Status: WARN
+ Deterministic setup failures: 0
+-Runtime failures: 0
++Runtime failures: 1
+ Flaky/transient failures: 0
+ Infrastructure failures: 0
+ Prevented reruns: 0
+@@ -105,15 +105,15 @@ Prevented Workspace lane reruns: 0
+ 
+ | Lane | Status | Elapsed | Browser Launches | Executed/Skipped Reason | Affected Surface | Fixtures / Inputs |
+ | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | PASS | 67.79s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
+-| game-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Workspace mock repository, Game Workspace UI, and Toolbox Progress/Build Path game-state bridge | repo-served Game Workspace page; repo-served Toolbox page with role simulation; in-memory SQL-shaped mock game repository |
+-| game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | repo-served Game Design page; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Design mock repository; Game Workspace mock game context |
++| workspace-contract | FAIL | 8.76s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
++| game-hub | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Hub mock repository, Game Hub UI, and Toolbox Progress/Build Path game-state bridge | repo-served Game Hub page; repo-served Toolbox page with role simulation; in-memory SQL-shaped mock game repository |
++| game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | repo-served Game Design page; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Design mock repository; Game Hub mock game context |
+ | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | repo-served Game Configuration page; repo-served Game Design page for handoff checks; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Configuration mock repository; Game Design mock repository handoff |
+ | asset-tool | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Asset Tool mock repository, Game Configuration readiness handoff, library records, import preview, and visible failure handling | repo-served Assets page; in-memory SQL-shaped Asset Tool mock repository; Game Configuration mock repository handoff; file-name/path-based import preview |
+-| build-path | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Toolbox Build Path simplification, workflow status table, and Admin Tools Progress navigation | repo-served Toolbox page; repo-served Admin Tools Progress page; Game Workspace mock game context; Toolbox role simulation |
++| build-path | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Toolbox Build Path simplification, workflow status table, and Admin Tools Progress navigation | repo-served Toolbox page; repo-served Admin Tools Progress page; Game Hub mock game context; Toolbox role simulation |
+ | tools-progress | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Admin Tools Progress hydration, Toolbox Group view color model, and Game Build Path separation | repo-served Admin Tools Progress page; repo-served Toolbox Group view; Toolbox registry build sequence; Game Build Path workflow table |
+-| tool-navigation | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Admin Tools Progress tool route links, Tool Display Mode build-order previous/next controls, and Toolbox group fallback routing | repo-served Admin Tools Progress page; repo-served Game Workspace, Game Design, and Game Configuration tool pages; repo-served Toolbox Group view with URL-selected accordion; Toolbox registry build sequence and route metadata |
+-| tool-display-mode | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Tool Display Mode identity row, registry-owned previous/next links, disabled text fallback, and multi-path group routing | repo-served Game Workspace, Game Design, Game Configuration, and AI Assistant tool pages; repo-served Toolbox Group view with URL-selected accordion; Toolbox registry build sequence and route metadata; shared Theme V2 Tool Display Mode script |
++| tool-navigation | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Admin Tools Progress tool route links, Tool Display Mode build-order previous/next controls, and Toolbox group fallback routing | repo-served Admin Tools Progress page; repo-served Game Hub, Game Design, and Game Configuration tool pages; repo-served Toolbox Group view with URL-selected accordion; Toolbox registry build sequence and route metadata |
++| tool-display-mode | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Tool Display Mode identity row, registry-owned previous/next links, disabled text fallback, and multi-path group routing | repo-served Game Hub, Game Design, Game Configuration, and AI Assistant tool pages; repo-served Toolbox Group view with URL-selected accordion; Toolbox registry build sequence and route metadata; shared Theme V2 Tool Display Mode script |
+ | tool-images | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Toolbox registry image contract, Toolbox card image rendering, and Tool Display Mode image fallback | Toolbox registry badge/tool image contract; repo-served Toolbox page; repo-served representative Toolbox tool pages; shared registry image fallback |
+ | tool-runtime | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Active public toolbox and Tool Template V2 contract | repo-served root toolbox page; Tool Template V2 public page; Theme V2 shared partials and assets |
+ | game-runtime | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Deprecated archive/v1-v2/games reference coverage |  |
+@@ -125,18 +125,18 @@ Prevented Workspace lane reruns: 0
+ 
+ | Lane | Duration | Test |
+ | --- | --- | --- |
+-| workspace-contract | 15.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes |
+-| workspace-contract | 14.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:664:1 > representative active tool pages align center cleanup and registry group colors |
+-| workspace-contract | 13.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:562:1 > learn wireframe pages load with shared Theme V2 structure |
+-| workspace-contract | 11.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:482:1 > common header renders primary navigation order across active pages |
+-| workspace-contract | 2.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:641:1 > tool template future-state page loads from root Theme V2 paths |
++| workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes |
++| workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:485:1 > common header renders primary navigation order across active pages |
++| workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:565:1 > learn wireframe pages load with shared Theme V2 structure |
++| workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:644:1 > tool template future-state page loads from root Theme V2 paths |
++| workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:667:1 > representative active tool pages align center cleanup and registry group colors |
+ 
+ ## Commands
+ 
+ ### workspace-contract
+-- PASS 67.79s C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
++- FAIL 8.76s "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
+ 
+-### game-workspace
++### game-hub
+ - SKIP
+ 
+ ### game-design
+diff --git a/docs_build/dev/reports/validation_cache_report.md b/docs_build/dev/reports/validation_cache_report.md
+index 2afd84b03..f9d0e606d 100644
+--- a/docs_build/dev/reports/validation_cache_report.md
++++ b/docs_build/dev/reports/validation_cache_report.md
+@@ -1,6 +1,6 @@
+ # Validation Cache Report
+ 
+-Generated: 2026-06-21T00:10:10.220Z
++Generated: 2026-06-23T16:38:48.297Z
+ Status: PASS
+ 
+ ## Cache Summary
+@@ -12,34 +12,34 @@ Validations computed: 10
+ 
+ | Stage | Cache | Input Hash | Reused By | Invalidation Inputs |
+ | --- | --- | --- | --- | --- |
+-| lane registration validation | MISS | 6a5b13bb47c3fad3 | initial computation | lane definitions change; package.json lane scripts change |
+-| runner preflight validation | MISS | 0633df51b798654a | initial computation | lane definitions change; fixture ownership changes; targeted files change |
+-| scoped discovery map | MISS | e195476e1978ec54 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
+-| targeted file manifest validation | MISS | c5c4b7876c948959 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
+-| lane warm-start validation | MISS | a00444576ec05d24 | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
+-| structural ownership validation | MISS | f0b916009d8b7a2e | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
+-| lane compilation validation | MISS | 0e1346462ea720dd | initial computation | lane definitions change; targeted files change; fixture ownership changes |
+-| lane compilation validation | HIT | 0e1346462ea720dd | dependency validation input | unchanged within execution cycle |
+-| dependency validation | MISS | 94d1bf1c7924d46d | initial computation | dependency graph changes; lane definitions change; lane compilation input changes |
+-| lane snapshot validation | MISS | 7ebcc49fd0ce56c8 | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
+-| zero-browser preflight | MISS | 568caf8342cb4bc0 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change; dependency graph changes |
+-| structural ownership validation | HIT | f0b916009d8b7a2e | static validation report | unchanged within execution cycle |
+-| structural ownership validation | HIT | f0b916009d8b7a2e | zero-browser preflight report | unchanged within execution cycle |
+-| scoped discovery map | HIT | e195476e1978ec54 | structural ownership validation input | unchanged within execution cycle |
+-| scoped discovery map | HIT | e195476e1978ec54 | discovery scope reporting | unchanged within execution cycle |
+-| targeted file manifest validation | HIT | c5c4b7876c948959 | lane input validation report | unchanged within execution cycle |
+-| targeted file manifest validation | HIT | c5c4b7876c948959 | runtime scheduling blockers | unchanged within execution cycle |
+-| lane warm-start validation | HIT | a00444576ec05d24 | warm-start report | unchanged within execution cycle |
+-| lane warm-start validation | HIT | a00444576ec05d24 | dependency hydration reuse report | unchanged within execution cycle |
+-| lane warm-start validation | HIT | a00444576ec05d24 | runtime scheduling | unchanged within execution cycle |
+-| lane snapshot validation | HIT | 7ebcc49fd0ce56c8 | lane snapshot report | unchanged within execution cycle |
+-| lane snapshot validation | HIT | 7ebcc49fd0ce56c8 | execution graph reuse report | unchanged within execution cycle |
+-| lane snapshot validation | HIT | 7ebcc49fd0ce56c8 | runtime scheduling | unchanged within execution cycle |
+-| lane compilation validation | HIT | 0e1346462ea720dd | lane compilation report | unchanged within execution cycle |
+-| lane compilation validation | HIT | 0e1346462ea720dd | runtime scheduling | unchanged within execution cycle |
+-| dependency validation | HIT | 94d1bf1c7924d46d | dependency report | unchanged within execution cycle |
+-| dependency validation | HIT | 94d1bf1c7924d46d | runtime scheduling | unchanged within execution cycle |
+-| zero-browser preflight | HIT | 568caf8342cb4bc0 | zero-browser report output | unchanged within execution cycle |
++| lane registration validation | MISS | 52928e5ef56fae1e | initial computation | lane definitions change; package.json lane scripts change |
++| runner preflight validation | MISS | b766210e324f884f | initial computation | lane definitions change; fixture ownership changes; targeted files change |
++| scoped discovery map | MISS | 3b6288f10251cb39 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
++| targeted file manifest validation | MISS | 3f6048ccdda17a8d | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
++| lane warm-start validation | MISS | e24f0d440b1410dc | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
++| structural ownership validation | MISS | ecc95a2940cc1427 | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
++| lane compilation validation | MISS | d9318e7005141134 | initial computation | lane definitions change; targeted files change; fixture ownership changes |
++| lane compilation validation | HIT | d9318e7005141134 | dependency validation input | unchanged within execution cycle |
++| dependency validation | MISS | 22637e871065d383 | initial computation | dependency graph changes; lane definitions change; lane compilation input changes |
++| lane snapshot validation | MISS | a80d6a2d403c317b | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
++| zero-browser preflight | MISS | 56c385cc0885a49f | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change; dependency graph changes |
++| structural ownership validation | HIT | ecc95a2940cc1427 | static validation report | unchanged within execution cycle |
++| structural ownership validation | HIT | ecc95a2940cc1427 | zero-browser preflight report | unchanged within execution cycle |
++| scoped discovery map | HIT | 3b6288f10251cb39 | structural ownership validation input | unchanged within execution cycle |
++| scoped discovery map | HIT | 3b6288f10251cb39 | discovery scope reporting | unchanged within execution cycle |
++| targeted file manifest validation | HIT | 3f6048ccdda17a8d | lane input validation report | unchanged within execution cycle |
++| targeted file manifest validation | HIT | 3f6048ccdda17a8d | runtime scheduling blockers | unchanged within execution cycle |
++| lane warm-start validation | HIT | e24f0d440b1410dc | warm-start report | unchanged within execution cycle |
++| lane warm-start validation | HIT | e24f0d440b1410dc | dependency hydration reuse report | unchanged within execution cycle |
++| lane warm-start validation | HIT | e24f0d440b1410dc | runtime scheduling | unchanged within execution cycle |
++| lane snapshot validation | HIT | a80d6a2d403c317b | lane snapshot report | unchanged within execution cycle |
++| lane snapshot validation | HIT | a80d6a2d403c317b | execution graph reuse report | unchanged within execution cycle |
++| lane snapshot validation | HIT | a80d6a2d403c317b | runtime scheduling | unchanged within execution cycle |
++| lane compilation validation | HIT | d9318e7005141134 | lane compilation report | unchanged within execution cycle |
++| lane compilation validation | HIT | d9318e7005141134 | runtime scheduling | unchanged within execution cycle |
++| dependency validation | HIT | 22637e871065d383 | dependency report | unchanged within execution cycle |
++| dependency validation | HIT | 22637e871065d383 | runtime scheduling | unchanged within execution cycle |
++| zero-browser preflight | HIT | 56c385cc0885a49f | zero-browser report output | unchanged within execution cycle |
+ 
+ ## Deterministic Invalidation Rules
+ 
+diff --git a/docs_build/dev/reports/zero_browser_preflight_report.md b/docs_build/dev/reports/zero_browser_preflight_report.md
+index 6b9f2cec7..2417f5424 100644
+--- a/docs_build/dev/reports/zero_browser_preflight_report.md
++++ b/docs_build/dev/reports/zero_browser_preflight_report.md
+@@ -1,6 +1,6 @@
+ # Zero-Browser Preflight Report
+ 
+-Generated: 2026-06-21T00:10:10.219Z
++Generated: 2026-06-23T16:38:48.297Z
+ Status: PASS
+ 
+ ## Prevented Browser Launches
 diff --git a/src/dev-runtime/messages/messages-postgres-service.mjs b/src/dev-runtime/messages/messages-postgres-service.mjs
-index e52e3632d..a326dc9ae 100644
+index a326dc9ae..0d077b530 100644
 --- a/src/dev-runtime/messages/messages-postgres-service.mjs
 +++ b/src/dev-runtime/messages/messages-postgres-service.mjs
-@@ -1,4 +1,8 @@
+@@ -1,8 +1,4 @@
  import { randomBytes } from "node:crypto";
-+import {
-+  createMessageStudioDefaultTtsProfiles,
-+  createMessageStudioTtsProfileOptions,
-+} from "../../../toolbox/text-to-speech/text2speech.js";
+-import {
+-  createMessageStudioDefaultTtsProfiles,
+-  createMessageStudioTtsProfileOptions,
+-} from "../../../toolbox/text-to-speech/text2speech.js";
  import { createPostgresConnectionClient } from "../persistence/postgres-connection-client.mjs";
  import { SEED_DB_KEYS } from "../seed/seed-db-keys.mjs";
  
-@@ -14,6 +18,7 @@ const SEED_CATEGORY_NAMES = Object.freeze([
-   "Notification",
- ]);
- const SEED_EMOTION_PROFILES = Object.freeze([
-+  Object.freeze({ description: "Balanced spoken delivery for general narration or dialog.", name: "Neutral", pauseAfterMs: 150, pauseBeforeMs: 0, pitch: 1, rate: 1, volume: 1 }),
-   Object.freeze({ description: "Neutral spoken delivery for general narration or dialog.", name: "Calm", pauseAfterMs: 150, pauseBeforeMs: 0, pitch: 1, rate: 1, volume: 1 }),
-   Object.freeze({ description: "Fast, alert delivery for warnings and immediate danger.", name: "Urgent", pauseAfterMs: 80, pauseBeforeMs: 0, pitch: 1.08, rate: 1.15, volume: 1 }),
-   Object.freeze({ description: "Quiet delivery for secret, stealth, or intimate lines.", name: "Whisper", pauseAfterMs: 180, pauseBeforeMs: 80, pitch: 0.95, rate: 0.9, volume: 0.55 }),
-@@ -21,79 +26,23 @@ const SEED_EMOTION_PROFILES = Object.freeze([
-   Object.freeze({ description: "Bright delivery for reveals, wins, and high-energy moments.", name: "Excited", pauseAfterMs: 100, pauseBeforeMs: 0, pitch: 1.12, rate: 1.12, volume: 1 }),
-   Object.freeze({ description: "Soft delivery for loss, regret, or reflective moments.", name: "Sad", pauseAfterMs: 220, pauseBeforeMs: 100, pitch: 0.9, rate: 0.85, volume: 0.8 }),
+@@ -28,21 +24,11 @@ const SEED_EMOTION_PROFILES = Object.freeze([
    Object.freeze({ description: "Measured delivery for suspense, hidden lore, or strange events.", name: "Mysterious", pauseAfterMs: 260, pauseBeforeMs: 120, pitch: 0.92, rate: 0.88, volume: 0.85 }),
-+  Object.freeze({ description: "Synthetic delivery for mechanical or artificial characters.", name: "Robot", pauseAfterMs: 120, pauseBeforeMs: 40, pitch: 0.82, rate: 0.92, volume: 0.9 }),
+   Object.freeze({ description: "Synthetic delivery for mechanical or artificial characters.", name: "Robot", pauseAfterMs: 120, pauseBeforeMs: 40, pitch: 0.82, rate: 0.92, volume: 0.9 }),
  ]);
--const SEED_TTS_PROFILES = Object.freeze([
--  Object.freeze({
--    description: "Clear story narration voice profile for authored message playback.",
--    language: "en-US",
--    name: "Narrator",
--    pitch: 1,
--    providerKey: "browser-speech",
--    rate: 1,
--    voiceName: "Browser default",
--    volume: 1,
--  }),
--  Object.freeze({
--    description: "Confident player-facing hero voice profile.",
--    language: "en-US",
--    name: "Hero",
--    pitch: 1.04,
--    providerKey: "browser-speech",
--    rate: 1.02,
--    voiceName: "Browser hero",
--    volume: 1,
--  }),
--  Object.freeze({
--    description: "Friendly vendor dialog voice profile.",
--    language: "en-US",
--    name: "Merchant",
--    pitch: 0.98,
--    providerKey: "browser-speech",
--    rate: 0.95,
--    voiceName: "Browser merchant",
--    volume: 1,
--  }),
--  Object.freeze({
--    description: "Synthetic utility character voice profile.",
--    language: "en-US",
--    name: "Robot",
--    pitch: 0.88,
--    providerKey: "browser-speech",
--    rate: 0.9,
--    voiceName: "Browser robot",
--    volume: 0.9,
--  }),
--  Object.freeze({
--    description: "Low creature dialog voice profile.",
--    language: "en-US",
--    name: "Monster",
--    pitch: 0.78,
--    providerKey: "browser-speech",
--    rate: 0.86,
--    voiceName: "Browser monster",
--    volume: 1,
--  }),
--  Object.freeze({
--    description: "Balanced local browser playback option until authored TTS profiles are available.",
--    language: "en-US",
--    name: "Default Balanced TTS Profile",
--    pitch: 1,
--    providerKey: "browser-speech",
--    rate: 1,
--    voiceName: "Browser default",
--    volume: 1,
--  }),
--  Object.freeze({
--    description: "Narration-focused preview configuration for future spoken story text.",
--    language: "en-US",
--    name: "Narration Preview",
--    pitch: 0.95,
--    providerKey: "browser-speech",
--    rate: 0.9,
--    voiceName: "Browser narration",
--    volume: 0.9,
--  }),
--]);
-+const MESSAGE_STUDIO_TTS_PROFILE_OPTIONS = Object.freeze(createMessageStudioTtsProfileOptions(createMessageStudioDefaultTtsProfiles())
-+  .map((profile) => Object.freeze({
-+    ...profile,
-+    emotionSettings: Object.freeze(profile.emotionSettings.map((setting) => Object.freeze({ ...setting }))),
-+  })));
-+const SEED_TTS_PROFILES = Object.freeze(MESSAGE_STUDIO_TTS_PROFILE_OPTIONS.map((profile) => Object.freeze({
-+  description: `${profile.name} from Text To Speech profile ownership.`,
-+  language: profile.language || "en-US",
-+  name: profile.name,
-+  pitch: 1,
-+  providerKey: profile.providerKey || "browser-speech",
-+  rate: 1,
-+  voiceName: profile.voiceName || "Default browser voice",
-+  volume: 1,
-+})));
+-const MESSAGE_STUDIO_TTS_PROFILE_OPTIONS = Object.freeze(createMessageStudioTtsProfileOptions(createMessageStudioDefaultTtsProfiles())
+-  .map((profile) => Object.freeze({
+-    ...profile,
+-    emotionSettings: Object.freeze(profile.emotionSettings.map((setting) => Object.freeze({ ...setting }))),
+-  })));
+-const SEED_TTS_PROFILES = Object.freeze(MESSAGE_STUDIO_TTS_PROFILE_OPTIONS.map((profile) => Object.freeze({
+-  description: `${profile.name} from Text To Speech profile ownership.`,
+-  language: profile.language || "en-US",
+-  name: profile.name,
+-  pitch: 1,
+-  providerKey: profile.providerKey || "browser-speech",
+-  rate: 1,
+-  voiceName: profile.voiceName || "Default browser voice",
+-  volume: 1,
+-})));
++const SEED_TTS_PROFILES = Object.freeze([
++  Object.freeze({ description: "Default Text To Speech browser profile.", language: "en-US", name: "Default Balanced Profile", pitch: 1, providerKey: "browser-speech", rate: 1, voiceName: "Default browser voice", volume: 1 }),
++  Object.freeze({ description: "Starter Text To Speech browser profile.", language: "en-US", name: "Man Profile 1", pitch: 1, providerKey: "browser-speech", rate: 1, voiceName: "Default browser voice", volume: 1 }),
++  Object.freeze({ description: "Starter Text To Speech browser profile.", language: "en-US", name: "Woman Profile 2", pitch: 1, providerKey: "browser-speech", rate: 1, voiceName: "Default browser voice", volume: 1 }),
++]);
  const SUPPORTED_TTS_PROVIDER_KEYS = Object.freeze([
    "browser-speech",
    "elevenlabs",
-@@ -408,13 +357,54 @@ function ttsEmotionSettingFromEmotionProfile(profile) {
+@@ -357,54 +343,23 @@ function ttsEmotionSettingFromEmotionProfile(profile) {
    };
  }
  
-+function messageStudioTtsProfileOption(row) {
-+  const rowName = normalizeText(row?.name).trim().toLowerCase();
-+  const rowKey = normalizeText(row?.key).trim();
-+  return MESSAGE_STUDIO_TTS_PROFILE_OPTIONS.find((profile) => {
-+    return profile.key === rowKey || normalizeText(profile.name).trim().toLowerCase() === rowName;
-+  }) || null;
-+}
-+
-+function emotionSettingsForTtsProfileRow(row, emotionRows = []) {
-+  const option = messageStudioTtsProfileOption(row);
-+  if (!option) {
-+    return [];
-+  }
-+  const activeEmotionProfiles = emotionRows
-+    .map((profileRow) => emotionProfileFromRow(profileRow))
-+    .filter((profile) => profile.active !== false);
-+  const byLabel = new Map(activeEmotionProfiles.map((profile) => [normalizeText(profile.name).trim().toLowerCase(), profile]));
-+  const byEmotion = new Map(activeEmotionProfiles.map((profile) => [emotionSettingKey(profile.name), profile]));
-+  return option.emotionSettings
-+    .map((setting) => {
-+      const emotionProfile = byLabel.get(normalizeText(setting.emotionLabel).trim().toLowerCase())
-+        || byEmotion.get(emotionSettingKey(setting.emotion))
-+        || null;
-+      if (!emotionProfile) {
-+        return null;
-+      }
-+      return {
-+        ...ttsEmotionSettingFromEmotionProfile(emotionProfile),
-+        pitch: Number(setting.pitch),
-+        rate: Number(setting.rate),
-+        ssmlLikePreset: setting.ssmlLikePreset || "normal",
-+        volume: Number(setting.volume),
-+      };
-+    })
-+    .filter(Boolean);
-+}
-+
+-function messageStudioTtsProfileOption(row) {
+-  const rowName = normalizeText(row?.name).trim().toLowerCase();
+-  const rowKey = normalizeText(row?.key).trim();
+-  return MESSAGE_STUDIO_TTS_PROFILE_OPTIONS.find((profile) => {
+-    return profile.key === rowKey || normalizeText(profile.name).trim().toLowerCase() === rowName;
+-  }) || null;
+-}
+-
+-function emotionSettingsForTtsProfileRow(row, emotionRows = []) {
+-  const option = messageStudioTtsProfileOption(row);
+-  if (!option) {
+-    return [];
+-  }
+-  const activeEmotionProfiles = emotionRows
++function emotionSettingsForTtsProfileRow(_row, emotionRows = []) {
++  return emotionRows
+     .map((profileRow) => emotionProfileFromRow(profileRow))
+-    .filter((profile) => profile.active !== false);
+-  const byLabel = new Map(activeEmotionProfiles.map((profile) => [normalizeText(profile.name).trim().toLowerCase(), profile]));
+-  const byEmotion = new Map(activeEmotionProfiles.map((profile) => [emotionSettingKey(profile.name), profile]));
+-  return option.emotionSettings
+-    .map((setting) => {
+-      const emotionProfile = byLabel.get(normalizeText(setting.emotionLabel).trim().toLowerCase())
+-        || byEmotion.get(emotionSettingKey(setting.emotion))
+-        || null;
+-      if (!emotionProfile) {
+-        return null;
+-      }
+-      return {
+-        ...ttsEmotionSettingFromEmotionProfile(emotionProfile),
+-        pitch: Number(setting.pitch),
+-        rate: Number(setting.rate),
+-        ssmlLikePreset: setting.ssmlLikePreset || "normal",
+-        volume: Number(setting.volume),
+-      };
+-    })
+-    .filter(Boolean);
++    .filter((profile) => profile.active !== false)
++    .map((profile) => ttsEmotionSettingFromEmotionProfile(profile));
+ }
+ 
  function ttsProfileFromRow(row, emotionSettings = []) {
-+  const profileOption = messageStudioTtsProfileOption(row);
+-  const profileOption = messageStudioTtsProfileOption(row);
    return {
      active: activeFromDatabase(row.active),
-+    age: profileOption?.age || "",
-+    ageFilter: profileOption?.ageFilter || profileOption?.age || "",
+-    age: profileOption?.age || "",
+-    ageFilter: profileOption?.ageFilter || profileOption?.age || "",
++    age: "",
++    ageFilter: "",
      createdAt: row.createdAt,
      createdBy: row.createdBy,
      description: row.description || "",
      emotionSettings,
-+    gender: profileOption?.gender || "",
+-    gender: profileOption?.gender || "",
++    gender: "",
      key: row.key,
      language: row.language,
      name: row.name,
-@@ -424,6 +414,7 @@ function ttsProfileFromRow(row, emotionSettings = []) {
+@@ -414,7 +369,7 @@ function ttsProfileFromRow(row, emotionSettings = []) {
      status: activeFromDatabase(row.active) ? "Active" : "Inactive",
      updatedAt: row.updatedAt,
      updatedBy: row.updatedBy,
-+    voice: profileOption?.voice || row.voiceName || "",
+-    voice: profileOption?.voice || row.voiceName || "",
++    voice: row.voiceName || "",
      voiceName: row.voiceName || "",
      volume: Number(row.volume),
    };
-@@ -808,11 +799,10 @@ export class MessagesPostgresService {
- 
-   async listTtsProfiles() {
-     await this.ensureReady();
--    const emotionSettings = (await this.tableRows("messages_emotion_profiles"))
--      .map((profileRow) => emotionProfileFromRow(profileRow))
--      .filter((profile) => profile.active !== false)
--      .map(ttsEmotionSettingFromEmotionProfile);
--    return (await this.tableRows("messages_tts_profiles")).sort(compareName).map((row) => ttsProfileFromRow(row, emotionSettings));
-+    const emotionRows = await this.tableRows("messages_emotion_profiles");
-+    return (await this.tableRows("messages_tts_profiles"))
-+      .sort(compareName)
-+      .map((row) => ttsProfileFromRow(row, emotionSettingsForTtsProfileRow(row, emotionRows)));
-   }
- 
-   async getTtsProfile(key) {
-@@ -821,11 +811,8 @@ export class MessagesPostgresService {
-     if (!row) {
-       throw httpError("Voice profile was not found.", 404);
-     }
--    const emotionSettings = (await this.tableRows("messages_emotion_profiles"))
--      .map((profileRow) => emotionProfileFromRow(profileRow))
--      .filter((profile) => profile.active !== false)
--      .map(ttsEmotionSettingFromEmotionProfile);
--    return ttsProfileFromRow(row, emotionSettings);
-+    const emotionRows = await this.tableRows("messages_emotion_profiles");
-+    return ttsProfileFromRow(row, emotionSettingsForTtsProfileRow(row, emotionRows));
-   }
- 
-   async findTtsProfileByNameRaw(name) {
-@@ -843,9 +830,9 @@ export class MessagesPostgresService {
-   }
- 
-   async defaultVoiceProfileKeyRaw() {
--    const narrator = await this.findTtsProfileByNameRaw("Narrator");
--    if (narrator) {
--      return narrator.key;
-+    const defaultProfile = await this.findTtsProfileByNameRaw("Default Balanced Profile");
-+    if (defaultProfile) {
-+      return defaultProfile.key;
-     }
-     const fallback = (await this.tableRows("messages_tts_profiles")).sort(compareName)[0];
-     if (!fallback) {
-@@ -911,11 +898,8 @@ export class MessagesPostgresService {
-       volume: values.volume,
-     });
-     const row = await this.rowByKey("messages_tts_profiles", key);
--    const emotionSettings = (await this.tableRows("messages_emotion_profiles"))
--      .map((profileRow) => emotionProfileFromRow(profileRow))
--      .filter((profile) => profile.active !== false)
--      .map(ttsEmotionSettingFromEmotionProfile);
--    return ttsProfileFromRow(row, emotionSettings);
-+    const emotionRows = await this.tableRows("messages_emotion_profiles");
-+    return ttsProfileFromRow(row, emotionSettingsForTtsProfileRow(row, emotionRows));
-   }
- 
-   async createTtsProfile(input = {}, actorKey = "") {
 diff --git a/tests/dev-runtime/DbSeedIntegrity.test.mjs b/tests/dev-runtime/DbSeedIntegrity.test.mjs
-index 4b9406e50..fe3f5e70f 100644
+index fe3f5e70f..595a163d6 100644
 --- a/tests/dev-runtime/DbSeedIntegrity.test.mjs
 +++ b/tests/dev-runtime/DbSeedIntegrity.test.mjs
-@@ -95,17 +95,20 @@ test("Messages Local API seeds through the Postgres service and preserves respon
-     assert.ok(urgent, "Messages emotion profiles should include Urgent");
- 
-     const ttsProfiles = await apiJson(server.baseUrl, "/api/messages/tts-profiles");
--    const narrator = ttsProfiles.ttsProfiles.find((profile) => profile.name === "Narrator");
--    assert.ok(narrator, "Messages voice profiles should include Narrator");
--    assert.equal(ttsProfiles.ttsProfiles.some((profile) => profile.name === "Default Balanced TTS Profile"), true);
--    assert.equal(ttsProfiles.ttsProfiles[0].emotionSettings.some((setting) => setting.emotionLabel === "Urgent"), true);
-+    const manProfile = ttsProfiles.ttsProfiles.find((profile) => profile.name === "Man Profile 1");
-+    const womanProfile = ttsProfiles.ttsProfiles.find((profile) => profile.name === "Woman Profile 2");
-+    assert.ok(manProfile, "Messages TTS profiles should include Man Profile 1 from Text To Speech");
-+    assert.ok(womanProfile, "Messages TTS profiles should include Woman Profile 2 from Text To Speech");
-+    assert.equal(ttsProfiles.ttsProfiles.some((profile) => profile.name === "Default Balanced Profile"), true);
-+    assert.deepEqual(manProfile.emotionSettings.map((setting) => setting.emotionLabel), ["Neutral", "Calm", "Urgent"]);
-+    assert.deepEqual(womanProfile.emotionSettings.map((setting) => setting.emotionLabel), ["Whisper", "Robot"]);
+@@ -100,8 +100,10 @@ test("Messages Local API seeds through the Postgres service and preserves respon
+     assert.ok(manProfile, "Messages TTS profiles should include Man Profile 1 from Text To Speech");
+     assert.ok(womanProfile, "Messages TTS profiles should include Woman Profile 2 from Text To Speech");
+     assert.equal(ttsProfiles.ttsProfiles.some((profile) => profile.name === "Default Balanced Profile"), true);
+-    assert.deepEqual(manProfile.emotionSettings.map((setting) => setting.emotionLabel), ["Neutral", "Calm", "Urgent"]);
+-    assert.deepEqual(womanProfile.emotionSettings.map((setting) => setting.emotionLabel), ["Whisper", "Robot"]);
++    assert.equal(manProfile.emotionSettings.some((setting) => setting.emotionLabel === "Neutral"), true);
++    assert.equal(womanProfile.emotionSettings.some((setting) => setting.emotionLabel === "Robot"), true);
++    assert.equal(manProfile.gender, "");
++    assert.equal(womanProfile.gender, "");
  
      const created = await apiJson(server.baseUrl, "/api/messages/messages", {
        body: JSON.stringify({
-         emotionProfileKey: urgent.key,
-         messageText: "Postgres-backed message text.",
-         name: "Postgres Cutover Message",
--        voiceProfileKey: narrator.key,
-+        voiceProfileKey: manProfile.key,
-       }),
-       method: "POST",
-     });
-@@ -113,7 +116,7 @@ test("Messages Local API seeds through the Postgres service and preserves respon
-     assert.equal(created.message.categoryName, "Dialog");
-     assert.equal(created.message.emotionProfileName, "Urgent");
-     assert.equal(created.message.messageText, "Postgres-backed message text.");
--    assert.equal(created.message.voiceProfileName, "Narrator");
-+    assert.equal(created.message.voiceProfileName, "Man Profile 1");
- 
-     const segment = await apiJson(server.baseUrl, "/api/messages/segments", {
-       body: JSON.stringify({
-@@ -121,13 +124,13 @@ test("Messages Local API seeds through the Postgres service and preserves respon
-         emotionProfileKey: urgent.key,
-         messageKey: created.message.key,
-         segmentText: "Postgres-backed message part.",
--        voiceProfileKey: narrator.key,
-+        voiceProfileKey: manProfile.key,
-       }),
-       method: "POST",
-     });
-     assert.equal(segment.segment.messageName, "Postgres Cutover Message");
-     assert.equal(segment.segment.emotionProfileName, "Urgent");
--    assert.equal(segment.segment.voiceProfileName, "Narrator");
-+    assert.equal(segment.segment.voiceProfileName, "Man Profile 1");
- 
-     const list = await apiJson(server.baseUrl, "/api/messages/messages");
-     const listed = list.messages.find((message) => message.key === created.message.key);
-diff --git a/tests/dev-runtime/MessagesPublishValidation.test.mjs b/tests/dev-runtime/MessagesPublishValidation.test.mjs
-index 1afe0f8d4..0fcec6b18 100644
---- a/tests/dev-runtime/MessagesPublishValidation.test.mjs
-+++ b/tests/dev-runtime/MessagesPublishValidation.test.mjs
-@@ -29,7 +29,7 @@ test("Messages publish validation passes publish-ready message configuration", a
-   const { service } = createServiceHarness();
- 
-   const emotion = (await service.listEmotionProfiles()).find((profile) => profile.name === "Calm");
--  const voice = (await service.listTtsProfiles()).find((profile) => profile.name === "Narrator");
-+  const voice = (await service.listTtsProfiles()).find((profile) => profile.name === "Man Profile 1");
-   assert.ok(emotion);
-   assert.ok(voice);
- 
-diff --git a/tests/playwright/tools/EventsTool.spec.mjs b/tests/playwright/tools/EventsTool.spec.mjs
-index 7ddf63e3b..d17be8dd4 100644
---- a/tests/playwright/tools/EventsTool.spec.mjs
-+++ b/tests/playwright/tools/EventsTool.spec.mjs
-@@ -30,15 +30,15 @@ async function createMessage(server) {
-   const emotionResult = await jsonRequest(`${server.baseUrl}/api/messages/emotion-profiles`);
-   const voiceResult = await jsonRequest(`${server.baseUrl}/api/messages/tts-profiles`);
-   const urgent = emotionResult.payload.data.emotionProfiles.find((profile) => profile.name === "Urgent");
--  const narrator = voiceResult.payload.data.ttsProfiles.find((profile) => profile.name === "Narrator");
-+  const ttsProfile = voiceResult.payload.data.ttsProfiles.find((profile) => profile.name === "Man Profile 1");
-   expect(urgent).toBeTruthy();
--  expect(narrator).toBeTruthy();
-+  expect(ttsProfile).toBeTruthy();
-   const messageResult = await jsonRequest(`${server.baseUrl}/api/messages/messages`, {
-     body: JSON.stringify({
-       emotionProfileKey: urgent.key,
-       messageText: "Open the ancient door.",
-       name: "Door Prompt",
--      voiceProfileKey: narrator.key,
-+      voiceProfileKey: ttsProfile.key,
-     }),
-     method: "POST",
-   });
 diff --git a/tests/playwright/tools/MessagesTool.spec.mjs b/tests/playwright/tools/MessagesTool.spec.mjs
-index 3461f62e2..c4322ef24 100644
+index c4322ef24..cda607adc 100644
 --- a/tests/playwright/tools/MessagesTool.spec.mjs
 +++ b/tests/playwright/tools/MessagesTool.spec.mjs
-@@ -136,6 +136,15 @@ async function addSentence(page, values) {
-   await page.locator("[data-messages-segment-commit='__new__']").click();
+@@ -3,8 +3,57 @@ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
+ import { createMessagesPostgresClientStub } from "../../helpers/messagesPostgresClientStub.mjs";
+ import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
+ import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
++import { TEXT_TO_SPEECH_PROFILE_STORAGE_KEY } from "../../../toolbox/text-to-speech/tts-profile-store.js";
+ 
+ const ULID_PATTERN = /^[0-9A-HJKMNP-TV-Z]{26}$/;
++const SAVED_TTS_PROFILES_FIXTURE = Object.freeze([
++  Object.freeze({
++    active: true,
++    age: "any",
++    emotions: [
++      Object.freeze({ active: true, emotion: "calm", emotionLabel: "Calm", id: "calm", pitch: 1, rate: 1, volume: 1 }),
++      Object.freeze({ active: true, emotion: "urgent", emotionLabel: "Urgent", id: "urgent", pitch: 1.08, rate: 1.15, volume: 1 }),
++    ],
++    gender: "neutral",
++    id: "default-balanced-profile",
++    language: "en-US",
++    name: "Default Balanced Profile",
++    providerKey: "browser-speech",
++    voice: "Browser default",
++    voiceName: "Default browser voice",
++  }),
++  Object.freeze({
++    active: true,
++    age: "adult",
++    emotions: [
++      Object.freeze({ active: true, emotion: "neutral", emotionLabel: "Neutral", id: "neutral", pitch: 1, rate: 1, volume: 1 }),
++      Object.freeze({ active: true, emotion: "calm", emotionLabel: "Calm", id: "calm", pitch: 1, rate: 1, volume: 1 }),
++      Object.freeze({ active: true, emotion: "urgent", emotionLabel: "Urgent", id: "urgent", pitch: 1.08, rate: 1.15, volume: 1 }),
++    ],
++    gender: "male",
++    id: "man-profile-1",
++    language: "en-US",
++    name: "Man Profile 1",
++    providerKey: "browser-speech",
++    voice: "Browser default",
++    voiceName: "Default browser voice",
++  }),
++  Object.freeze({
++    active: true,
++    age: "adult",
++    emotions: [
++      Object.freeze({ active: true, emotion: "whisper", emotionLabel: "Whisper", id: "whisper", pitch: 0.95, rate: 0.9, volume: 0.55 }),
++      Object.freeze({ active: true, emotion: "robot", emotionLabel: "Robot", id: "robot", pitch: 0.82, rate: 0.92, volume: 0.9 }),
++    ],
++    gender: "female",
++    id: "woman-profile-2",
++    language: "en-US",
++    name: "Woman Profile 2",
++    providerKey: "browser-speech",
++    voice: "Browser default",
++    voiceName: "Default browser voice",
++  }),
++]);
+ 
+ async function jsonRequest(url, options = {}) {
+   const response = await fetch(url, {
+@@ -111,6 +160,18 @@ async function openMessagesPage(page, options = {}) {
+       },
+     };
+   });
++  if (options.seedSavedTtsProfiles !== false) {
++    await page.addInitScript(({ profiles, storageKey }) => {
++      window.localStorage?.setItem(storageKey, JSON.stringify({
++        profiles,
++        updatedAt: "2026-06-23T00:00:00.000Z",
++        version: "playwright-fixture",
++      }));
++    }, {
++      profiles: options.savedTtsProfiles || SAVED_TTS_PROFILES_FIXTURE,
++      storageKey: TEXT_TO_SPEECH_PROFILE_STORAGE_KEY,
++    });
++  }
+   await workspaceV2CoverageReporter.start(page);
+   await page.goto(`${server.baseUrl}/tools/messages/index.html`, { waitUntil: "networkidle" });
+   return failures;
+@@ -161,6 +222,14 @@ async function expectPlaybackDiagnostics(page, {
+   await expect(log).toContainText(`Age Filter: ${ageFilter}`);
  }
  
-+async function ensureSentencesExpanded(page, messageName) {
-+  const messageRow = page.locator("[data-messages-row]").filter({ hasText: messageName });
-+  if (await page.locator("[data-messages-parts-host]").count() === 0) {
-+    await messageRow.getByRole("button", { name: "Sentences" }).click();
-+  }
-+  await expect(page.locator("[data-messages-parts-host]")).toBeVisible();
-+  return messageRow;
++async function setRangeValue(locator, value) {
++  await locator.evaluate((input, nextValue) => {
++    input.value = nextValue;
++    input.dispatchEvent(new Event("input", { bubbles: true }));
++    input.dispatchEvent(new Event("change", { bubbles: true }));
++  }, String(value));
 +}
 +
- async function expectPlaybackDiagnostics(page, {
-   ageFilter = "Any",
-   gender = "Any",
-@@ -187,7 +196,7 @@ async function voiceProfiles(server) {
-   return profilesResult.payload.data.ttsProfiles;
- }
+ async function createdMessage(server, name) {
+   const listResult = await jsonRequest(`${server.baseUrl}/api/messages/messages`);
+   expect(listResult.response.ok).toBe(true);
+@@ -500,7 +569,6 @@ test("Message Studio uses the approved table-first Messages structure", async ({
  
--async function createReferencedSentence(server, message, emotionName = "Urgent", voiceName = "Narrator") {
-+async function createReferencedSentence(server, message, emotionName = "Urgent", voiceName = "Man Profile 1") {
-   const emotion = await emotionProfile(server, emotionName);
-   const voice = await voiceProfile(server, voiceName);
-   expect(emotion).toBeTruthy();
-@@ -225,6 +234,8 @@ test("Message Studio uses the approved table-first Messages structure", async ({
-     await expect(page.getByText("Reusable Assets", { exact: true })).toHaveCount(0);
-     await expect(page.getByRole("heading", { name: "Emotion Profiles" })).toHaveCount(0);
-     await expect(page.getByRole("heading", { name: "Voice Profiles" })).toHaveCount(0);
-+    await expect(page.getByText("TTS Profile / Emotion Settings", { exact: true })).toHaveCount(0);
-+    await expect(page.getByText("Emotion Settings", { exact: true })).toHaveCount(0);
-     await expect(page.getByLabel("Emotion Profiles")).toHaveCount(0);
-     await expect(page.getByLabel("Voice Profiles")).toHaveCount(0);
-     await expect(page.getByText("Message Parts", { exact: true })).toHaveCount(0);
-@@ -242,6 +253,12 @@ test("Message Studio uses the approved table-first Messages structure", async ({
-     await expect(page.locator("[data-messages-row-editor='__new__']")).toBeVisible();
-     await expect(page.locator("[data-messages-row-editor='__new__'] td")).toHaveCount(4);
-     await expect(page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile]")).toBeVisible();
-+    await expect(page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile] option")).toHaveText([
-+      "Select TTS profile",
-+      "Default Balanced Profile",
-+      "Man Profile 1",
-+      "Woman Profile 2",
-+    ]);
-     await expect(page.locator("[data-messages-row-editor='__new__']").getByRole("button", { name: "Save" })).toBeVisible();
-     await expect(page.locator("[data-messages-row-editor='__new__']").getByRole("button", { name: "Cancel" })).toBeVisible();
- 
-@@ -253,18 +270,18 @@ test("Message Studio uses the approved table-first Messages structure", async ({
- 
-     await addMessage(page, {
-       name: "Bat Encounter",
--      ttsProfile: "Hero",
-+      ttsProfile: "Man Profile 1",
-     });
-     await expect(page.locator("[data-messages-log]")).toHaveText("Saved message Bat Encounter.");
-     const messageRow = page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" });
--    await expect(messageRow).toContainText("Hero");
-+    await expect(messageRow).toContainText("Man Profile 1");
-     await expect(messageRow.getByRole("button", { name: "Sentences" })).toBeVisible();
-     await expect(messageRow.getByRole("button", { name: "Edit" })).toBeVisible();
-     await expect(messageRow.getByRole("button", { name: "Archive" })).toBeVisible();
-     await expect(messageRow.getByRole("button", { name: "Delete" })).toBeEnabled();
-     await expect(messageRow.getByRole("button", { name: "Play" })).toBeVisible();
- 
--    await messageRow.getByRole("button", { name: "Sentences" }).click();
-+    await ensureSentencesExpanded(page, "Bat Encounter");
-     await expect(page.locator("[data-messages-parts-host]")).toBeVisible();
-     const partsTable = page.getByLabel("Bat Encounter Sentences");
-     await expect(partsTable.getByRole("columnheader")).toHaveText(["Order", "Text", "Emotion", "Actions"]);
-@@ -273,6 +290,12 @@ test("Message Studio uses the approved table-first Messages structure", async ({
-     await page.getByRole("button", { name: "Add Sentence" }).click();
-     await expect(page.locator("[data-messages-segment-editor='__new__'] td")).toHaveCount(4);
-     await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-voice]")).toHaveCount(0);
-+    await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion] option")).toHaveText([
-+      "Select emotion",
-+      "Neutral",
-+      "Calm",
-+      "Urgent",
-+    ]);
-     await page.locator("[data-messages-segment-commit='__new__']").click();
-     await expect(page.locator("[data-messages-validation-errors]")).toContainText("Sentence text is required.");
-     await expect(page.locator("[data-messages-validation-errors]")).toContainText("Emotion is required.");
-@@ -315,8 +338,9 @@ test("Message Studio uses the approved table-first Messages structure", async ({
-     await expect(page.locator("[data-messages-validation-errors]")).not.toContainText(/before preview/i);
-     await expect(page.locator("[data-messages-log]")).not.toContainText(/before preview/i);
-     await expectPlaybackDiagnostics(page, {
--      profile: "Hero",
--      voice: "Browser hero",
-+      gender: "Male",
-+      profile: "Man Profile 1",
-+      voice: "Default browser voice",
-     });
- 
-     await addSentence(page, {
-@@ -348,8 +372,9 @@ test("Message Studio uses the approved table-first Messages structure", async ({
-     await expect(page.locator("[data-messages-validation-errors]")).not.toContainText(/before preview/i);
-     await expect(page.locator("[data-messages-log]")).not.toContainText(/before preview/i);
-     await expectPlaybackDiagnostics(page, {
--      profile: "Hero",
--      voice: "Browser hero",
-+      gender: "Male",
-+      profile: "Man Profile 1",
-+      voice: "Default browser voice",
-     });
- 
-     await page.getByRole("button", { name: "Run Validation" }).click();
-@@ -388,8 +413,9 @@ test("Message Studio uses the approved table-first Messages structure", async ({
-     await expect(page.locator("[data-messages-validation-errors]")).not.toContainText(/before preview/i);
-     await expect(page.locator("[data-messages-log]")).not.toContainText(/before preview/i);
-     await expectPlaybackDiagnostics(page, {
--      profile: "Hero",
--      voice: "Browser hero",
-+      gender: "Male",
-+      profile: "Man Profile 1",
-+      voice: "Default browser voice",
-     });
-     await page.getByRole("button", { name: "Stop Speech" }).click();
-     await expect(page.locator("[data-messages-speech-status]")).toHaveText("Speech playback stopped.");
-@@ -459,24 +485,25 @@ test("Message Studio uses the approved table-first Messages structure", async ({
-     await page.locator("[data-messages-row-editor] [data-message-name]").fill("Bat Encounter Updated");
-     await page.locator("[data-messages-row-editor] [data-messages-commit]").click();
-     await expect(page.locator("[data-messages-log]")).toHaveText("Saved message Bat Encounter Updated.");
--    await expect(page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter Updated" })).toContainText("Hero");
-+    await expect(page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter Updated" })).toContainText("Man Profile 1");
- 
-     const updatedMessage = await createdMessage(failures.server, "Bat Encounter Updated");
-     expect(updatedMessage).toEqual(expect.objectContaining({
-       active: true,
-       categoryName: "Dialog",
--      voiceProfileName: "Hero",
-+      voiceProfileName: "Man Profile 1",
-     }));
-     expect(updatedMessage.key).toMatch(ULID_PATTERN);
-     expect(updatedMessage).not.toHaveProperty("rate");
-     expect(updatedMessage).not.toHaveProperty("pitch");
-     expect(updatedMessage).not.toHaveProperty("volume");
- 
--    const heroProfile = (await voiceProfiles(failures.server)).find((profile) => profile.name === "Hero");
--    expect(heroProfile).toEqual(expect.objectContaining({
-+    const manProfile = (await voiceProfiles(failures.server)).find((profile) => profile.name === "Man Profile 1");
-+    expect(manProfile).toEqual(expect.objectContaining({
-+      gender: "male",
+     const manProfile = (await voiceProfiles(failures.server)).find((profile) => profile.name === "Man Profile 1");
+     expect(manProfile).toEqual(expect.objectContaining({
+-      gender: "male",
        language: "en-US",
        providerKey: "browser-speech",
--      voiceName: "Browser hero",
-+      voiceName: "Default browser voice",
-     }));
- 
-     await page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter Updated" }).getByRole("button", { name: "Delete" }).click();
-@@ -492,13 +519,105 @@ test("Message Studio uses the approved table-first Messages structure", async ({
+       voiceName: "Default browser voice",
+@@ -519,6 +587,95 @@ test("Message Studio uses the approved table-first Messages structure", async ({
    }
  });
  
-+test("Message Studio loads Text To Speech profiles and filters sentence emotions by selected profile", async ({ page }) => {
-+  const failures = await openMessagesPage(page);
++test("Message Studio consumes active saved Text To Speech profiles", async ({ page }) => {
++  const failures = await openMessagesPage(page, { seedSavedTtsProfiles: false });
 +
 +  try {
-+    await page.getByRole("button", { name: "Add Message" }).click();
-+    const profileOptions = page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile] option");
-+    await expect(profileOptions).toHaveText([
-+      "Select TTS profile",
-+      "Default Balanced Profile",
-+      "Man Profile 1",
-+      "Woman Profile 2",
-+    ]);
-+    await page.locator("[data-messages-row-editor='__new__'] [data-message-name]").fill("Profile Filter Test");
-+    await page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile]").selectOption({ label: "Man Profile 1" });
-+    await page.locator("[data-messages-commit='__new__']").click();
-+    await expect(page.locator("[data-messages-log]")).toHaveText("Saved message Profile Filter Test.");
++    await page.goto(`${failures.server.baseUrl}/tools/text-to-speech/index.html`, { waitUntil: "networkidle" });
++    await expect(page.getByRole("heading", { level: 1, name: "Text To Speech" })).toBeVisible();
 +
-+    await ensureSentencesExpanded(page, "Profile Filter Test");
++    await page.locator("[data-tts-profile-add-control-row]").getByRole("button", { name: "Add Profile" }).click();
++    await page.locator("[data-tts-profile-editor='__new__'] [data-tts-profile-name]").fill("Quest Profile Draft");
++    await page.locator("[data-tts-profile-editor='__new__'] [data-tts-profile-gender]").selectOption("male");
++    await page.locator("[data-tts-profile-editor='__new__'] [data-tts-profile-age]").selectOption("adult");
++    await page.locator("[data-tts-profile-editor='__new__'] [data-tts-profile-voice]").selectOption("Browser guide updated");
++    await page.locator("[data-tts-commit-profile='__new__']").click();
++    await expect(page.locator("[data-tts-status]")).toHaveText("Saved TTS profile: Quest Profile Draft.");
++
++    await page.locator("[data-tts-profile-row]").filter({ hasText: "Quest Profile Draft" }).getByRole("button", { name: "Edit Profile" }).click();
++    await page.locator("[data-tts-profile-editor] [data-tts-profile-name]").fill("Quest Profile Active");
++    await page.locator("[data-tts-profile-editor] [data-tts-commit-profile]").click();
++    await expect(page.locator("[data-tts-status]")).toHaveText("Saved TTS profile: Quest Profile Active.");
++
++    await page.locator("[data-tts-emotion-add-control-row]").getByRole("button", { name: "Add Emotion" }).click();
++    await page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-name]").selectOption("urgent");
++    await setRangeValue(page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-pitch]"), "1.2");
++    await setRangeValue(page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-rate]"), "1.1");
++    await setRangeValue(page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-volume]"), "0.7");
++    await page.locator("[data-tts-commit-emotion='__new__']").click();
++    await expect(page.locator("[data-tts-status]")).toHaveText("Saved emotion: Urgent.");
++
++    await page.goto(`${failures.server.baseUrl}/tools/messages/index.html`, { waitUntil: "networkidle" });
++    await page.getByRole("button", { name: "Add Message" }).click();
++    await expect(page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile]")).toContainText("Quest Profile Active");
++    await page.locator("[data-messages-row-editor='__new__'] [data-message-name]").fill("Quest Profile Message");
++    await page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile]").selectOption({ label: "Quest Profile Active" });
++    await page.locator("[data-messages-commit='__new__']").click();
++    await expect(page.locator("[data-messages-log]")).toHaveText("Saved message Quest Profile Message.");
++
++    const messageRow = await ensureSentencesExpanded(page, "Quest Profile Message");
 +    await page.getByRole("button", { name: "Add Sentence" }).click();
 +    await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion] option")).toHaveText([
 +      "Select emotion",
 +      "Neutral",
-+      "Calm",
 +      "Urgent",
 +    ]);
-+    await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion]")).not.toContainText("Whisper");
-+    await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion]")).not.toContainText("Robot");
-+    await page.locator("[data-messages-segment-cancel='__new__']").click();
-+
-+    const messageRow = page.locator("[data-messages-row]").filter({ hasText: "Profile Filter Test" });
-+    await messageRow.getByRole("button", { name: "Edit" }).click();
-+    await page.locator("[data-messages-row-editor] [data-message-tts-profile]").selectOption({ label: "Woman Profile 2" });
-+    await page.locator("[data-messages-row-editor] [data-messages-commit]").click();
-+    await expect(page.locator("[data-messages-log]")).toHaveText("Saved message Profile Filter Test.");
-+
-+    await ensureSentencesExpanded(page, "Profile Filter Test");
-+    await page.getByRole("button", { name: "Add Sentence" }).click();
-+    await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion] option")).toHaveText([
-+      "Select emotion",
-+      "Whisper",
-+      "Robot",
-+    ]);
-+    await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion]")).not.toContainText("Calm");
-+    await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion]")).not.toContainText("Urgent");
++    await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion]")).not.toContainText("Happy");
++    await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion]")).not.toContainText("Scared");
 +    await page.locator("[data-messages-segment-editor='__new__'] [data-segment-order]").fill("1");
-+    await page.locator("[data-messages-segment-editor='__new__'] [data-segment-text]").fill("Robot voice check.");
-+    await page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion]").selectOption({ label: "Robot" });
++    await page.locator("[data-messages-segment-editor='__new__'] [data-segment-text]").fill("The quest door opens.");
++    await page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion]").selectOption({ label: "Urgent" });
 +    await page.locator("[data-messages-segment-commit='__new__']").click();
 +    await expect(page.locator("[data-messages-log]")).toHaveText("Saved sentence 1.");
 +
-+    const sentenceRow = page.locator("[data-messages-segment-row]").filter({ hasText: "Robot voice check." });
++    const sentenceRow = page.locator("[data-messages-segment-row]").filter({ hasText: "The quest door opens." });
 +    await page.evaluate(() => {
 +      window.__spokenUtterances = [];
 +    });
 +    await sentenceRow.getByRole("button", { name: "Play" }).click();
 +    await page.waitForFunction(() => window.__spokenUtterances.length === 1);
-+    const spokenSentence = await page.evaluate(() => window.__spokenUtterances);
-+    expect(spokenSentence).toEqual([expect.objectContaining({
-+      pitch: 0.82,
-+      rate: 0.92,
-+      text: "Robot voice check.",
-+      volume: 0.9,
++    let utterances = await page.evaluate(() => window.__spokenUtterances);
++    expect(utterances).toEqual([expect.objectContaining({
++      pitch: 1.2,
++      rate: 1.1,
++      text: "The quest door opens.",
++      volume: 0.7,
 +    })]);
 +    await expectPlaybackDiagnostics(page, {
-+      gender: "Female",
-+      profile: "Woman Profile 2",
-+      voice: "Default browser voice",
++      ageFilter: "Adult",
++      gender: "Male",
++      profile: "Quest Profile Active",
++      voice: "Browser guide updated",
 +    });
-+    await expect(page.locator("[data-messages-validation-errors]")).not.toContainText(/before preview/i);
-+    await expect(page.locator("[data-messages-log]")).not.toContainText(/before preview/i);
 +
 +    await page.evaluate(() => {
 +      window.__spokenUtterances = [];
 +    });
 +    await messageRow.getByRole("button", { name: "Play" }).click();
 +    await page.waitForFunction(() => window.__spokenUtterances.length === 1);
-+    const spokenMessage = await page.evaluate(() => window.__spokenUtterances);
-+    expect(spokenMessage.map((utterance) => utterance.text)).toEqual(["Robot voice check."]);
-+    await expectPlaybackDiagnostics(page, {
-+      gender: "Female",
-+      profile: "Woman Profile 2",
-+      voice: "Default browser voice",
-+    });
++    utterances = await page.evaluate(() => window.__spokenUtterances);
++    expect(utterances.map((utterance) => utterance.text)).toEqual(["The quest door opens."]);
++    await expect(page.locator("[data-messages-validation-errors]")).not.toContainText(/before preview/i);
++    await expect(page.locator("[data-messages-log]")).not.toContainText(/before preview/i);
 +
 +    expect(failures.failedRequests).toEqual([]);
 +    expect(failures.pageErrors).toEqual([]);
@@ -575,346 +1392,745 @@ index 3461f62e2..c4322ef24 100644
 +  }
 +});
 +
- test("Message Studio disables Delete when a message is referenced", async ({ page }) => {
+ test("Message Studio loads Text To Speech profiles and filters sentence emotions by selected profile", async ({ page }) => {
    const failures = await openMessagesPage(page);
  
-   try {
-     await addMessage(page, {
-       name: "Referenced Encounter",
--      ttsProfile: "Narrator",
-+      ttsProfile: "Man Profile 1",
-     });
-     const message = await createdMessage(failures.server, "Referenced Encounter");
-     const segment = await createReferencedSentence(failures.server, message);
 diff --git a/tests/tools/MessagesPlaybackSource.test.mjs b/tests/tools/MessagesPlaybackSource.test.mjs
-index cea5e43e1..b0389d19a 100644
+index b0389d19a..5ee7607c0 100644
 --- a/tests/tools/MessagesPlaybackSource.test.mjs
 +++ b/tests/tools/MessagesPlaybackSource.test.mjs
-@@ -9,3 +9,20 @@ test("Messages playback runtime does not include preview voice validation text",
-   assert.equal(source.includes("available browser voice before preview"), false);
-   assert.equal(source.includes("Select an available browser voice before preview"), false);
+@@ -20,9 +20,19 @@ test("Messages sentence emotion picker does not fall back to unrelated global em
+ test("Messages wires profile dropdowns through the Text To Speech profile contract", async () => {
+   const source = await readFile(new URL("../../toolbox/messages/messages.js", import.meta.url), "utf8");
+ 
+-  assert.equal(source.includes("../text-to-speech/text2speech.js"), true);
+-  assert.equal(source.includes("createMessageStudioDefaultTtsProfiles"), true);
+-  assert.equal(source.includes("createMessageStudioTtsProfileOptions"), true);
++  assert.equal(source.includes("../text-to-speech/text2speech.js"), false);
++  assert.equal(source.includes("../text-to-speech/tts-profile-store.js"), true);
++  assert.equal(source.includes("createMessageStudioDefaultTtsProfiles"), false);
++  assert.equal(source.includes("createMessageStudioTtsProfileOptions"), false);
+   assert.equal(source.includes("state.voiceProfiles = voicePayload.ttsProfiles || []"), false);
+-  assert.equal(source.includes("messageStudioTtsProfilesFromContract(voicePayload.ttsProfiles || [])"), true);
++  assert.equal(source.includes("messageStudioTtsProfilesFromContract(voicePayload.ttsProfiles || [])"), false);
++  assert.equal(source.includes("activeTextToSpeechProfilesForMessages(voicePayload.ttsProfiles || [])"), true);
++});
++
++test("Messages dev runtime does not import browser Text To Speech UI modules", async () => {
++  const source = await readFile(new URL("../../src/dev-runtime/messages/messages-postgres-service.mjs", import.meta.url), "utf8");
++
++  assert.equal(source.includes("toolbox/text-to-speech/text2speech.js"), false);
++  assert.equal(source.includes("createMessageStudioDefaultTtsProfiles"), false);
++  assert.equal(source.includes("createMessageStudioTtsProfileOptions"), false);
  });
-+
-+test("Messages sentence emotion picker does not fall back to unrelated global emotions", async () => {
-+  const source = await readFile(new URL("../../toolbox/messages/messages.js", import.meta.url), "utf8");
-+
-+  assert.equal(source.includes("selectOptionsWithCurrent"), false);
-+  assert.equal(source.includes("return options.length ? options :"), false);
-+});
-+
-+test("Messages wires profile dropdowns through the Text To Speech profile contract", async () => {
-+  const source = await readFile(new URL("../../toolbox/messages/messages.js", import.meta.url), "utf8");
-+
-+  assert.equal(source.includes("../text-to-speech/text2speech.js"), true);
-+  assert.equal(source.includes("createMessageStudioDefaultTtsProfiles"), true);
-+  assert.equal(source.includes("createMessageStudioTtsProfileOptions"), true);
-+  assert.equal(source.includes("state.voiceProfiles = voicePayload.ttsProfiles || []"), false);
-+  assert.equal(source.includes("messageStudioTtsProfilesFromContract(voicePayload.ttsProfiles || [])"), true);
-+});
 diff --git a/tests/tools/Text2SpeechShell.test.mjs b/tests/tools/Text2SpeechShell.test.mjs
-index fa54dcbcc..eea35e2cb 100644
+index eea35e2cb..f857327f9 100644
 --- a/tests/tools/Text2SpeechShell.test.mjs
 +++ b/tests/tools/Text2SpeechShell.test.mjs
-@@ -7,6 +7,7 @@ import {
+@@ -7,8 +7,6 @@ import {
    TTS_PROVIDER_ADAPTER_PLAN,
    createDefaultTextToSpeechProfiles,
    createEmotionProfile,
-+  createMessageStudioDefaultTtsProfiles,
-   createMessageStudioTtsProfileOptions,
+-  createMessageStudioDefaultTtsProfiles,
+-  createMessageStudioTtsProfileOptions,
    createSpeechPreviewRequest,
    createTextToSpeechProfile,
-@@ -68,6 +69,7 @@ test("Text2Speech provider adapter plan keeps browser speech implemented and pai
- test("Text2Speech profile contract exposes Message Studio compatible profile options", () => {
+   createTextToSpeechProfileEmotion,
+@@ -16,6 +14,12 @@ import {
+   createVoiceProfile,
+   previewTtsMessage,
+ } from "../../toolbox/text-to-speech/text2speech.js";
++import {
++  TEXT_TO_SPEECH_PROFILE_STORAGE_KEY,
++  readSavedTextToSpeechProfiles,
++  textToSpeechProfilesToMessageOptions,
++  writeSavedTextToSpeechProfiles,
++} from "../../toolbox/text-to-speech/tts-profile-store.js";
+ 
+ test("Text2Speech message model separates Design and Audio ownership", () => {
+   const message = createTtsMessage({ text: "Hello", metadata: { tags: ["intro"] } });
+@@ -66,10 +70,9 @@ test("Text2Speech provider adapter plan keeps browser speech implemented and pai
+   assert.ok(TTS_PROVIDER_ADAPTER_PLAN.slice(1).every((provider) => provider.status === "planned"));
+ });
+ 
+-test("Text2Speech profile contract exposes Message Studio compatible profile options", () => {
++test("Text2Speech saved profile store exposes active profiles for Messages", () => {
    const voiceOptions = [{ language: "en-US", label: "Test Voice (en-US)", name: "Test Voice", value: "test-voice" }];
    const defaults = createDefaultTextToSpeechProfiles(voiceOptions);
-+  const messageStudioDefaults = createMessageStudioDefaultTtsProfiles(voiceOptions);
+-  const messageStudioDefaults = createMessageStudioDefaultTtsProfiles(voiceOptions);
    const custom = createTextToSpeechProfile({
      emotions: [
        createTextToSpeechProfileEmotion({
-@@ -91,9 +93,13 @@ test("Text2Speech profile contract exposes Message Studio compatible profile opt
+@@ -85,22 +88,34 @@ test("Text2Speech profile contract exposes Message Studio compatible profile opt
+     voice: "test-voice",
+     voiceName: "Test Voice",
+   });
+-  const options = createMessageStudioTtsProfileOptions([custom]);
++  const writes = new Map();
++  const storage = {
++    getItem(key) {
++      return writes.get(key) || "";
++    },
++    setItem(key, value) {
++      writes.set(key, value);
++    },
++  };
++
++  assert.equal(writeSavedTextToSpeechProfiles([custom], storage), true);
++  const savedProfiles = readSavedTextToSpeechProfiles(storage);
++  const options = textToSpeechProfilesToMessageOptions(savedProfiles);
+ 
+   assert.equal(TTS_PROFILE_CONTRACT_VERSION, "tts-profile-emotion-v1");
++  assert.equal(writes.has(TEXT_TO_SPEECH_PROFILE_STORAGE_KEY), true);
+   assert.equal(defaults[0].name, "Default Balanced Profile");
+   assert.equal(defaults[0].messageStudioUsageCount, 1);
    assert.deepEqual(defaults[0].emotions.map((emotion) => emotion.emotionLabel), ["Neutral", "Happy", "Angry", "Scared"]);
    assert.deepEqual(defaults[1].emotions.map((emotion) => emotion.emotionLabel), ["Neutral", "Happy", "Angry", "Scared"]);
    assert.deepEqual(defaults[2].emotions.map((emotion) => emotion.emotionLabel), ["Neutral", "Happy", "Angry", "Scared"]);
-+  assert.deepEqual(messageStudioDefaults[1].emotions.map((emotion) => emotion.emotionLabel), ["Neutral", "Calm", "Urgent"]);
-+  assert.deepEqual(messageStudioDefaults[2].emotions.map((emotion) => emotion.emotionLabel), ["Whisper", "Robot"]);
+-  assert.deepEqual(messageStudioDefaults[1].emotions.map((emotion) => emotion.emotionLabel), ["Neutral", "Calm", "Urgent"]);
+-  assert.deepEqual(messageStudioDefaults[2].emotions.map((emotion) => emotion.emotionLabel), ["Whisper", "Robot"]);
    assert.equal(defaults[0].emotions.find((emotion) => emotion.emotion === "neutral").messagePartsUsageCount, 1);
    assert.deepEqual(options, [{
      active: true,
-+    age: "any",
-+    ageFilter: "any",
+     age: "any",
+     ageFilter: "any",
      emotionSettings: [{
++      active: true,
        emotion: "urgent",
        emotionLabel: "Urgent",
-@@ -103,10 +109,12 @@ test("Text2Speech profile contract exposes Message Studio compatible profile opt
-       ssmlLikePreset: "whisper-ish",
-       volume: 0.8,
-     }],
-+    gender: "neutral",
-     key: "custom-profile",
+       key: "urgent",
+@@ -114,6 +129,7 @@ test("Text2Speech profile contract exposes Message Studio compatible profile opt
      language: "en-US",
      name: "Custom Profile",
      providerKey: "browser-speech",
-+    voice: "test-voice",
++    sourceProfileId: "custom-profile",
+     voice: "test-voice",
      voiceName: "Test Voice",
    }]);
- });
 diff --git a/toolbox/messages/messages.js b/toolbox/messages/messages.js
-index 01d26e441..72c339f58 100644
+index 72c339f58..6eb31f6f1 100644
 --- a/toolbox/messages/messages.js
 +++ b/toolbox/messages/messages.js
-@@ -1,3 +1,7 @@
-+import {
-+  createMessageStudioDefaultTtsProfiles,
-+  createMessageStudioTtsProfileOptions,
-+} from "../text-to-speech/text2speech.js";
+@@ -1,10 +1,12 @@
  import {
+-  createMessageStudioDefaultTtsProfiles,
+-  createMessageStudioTtsProfileOptions,
+-} from "../text-to-speech/text2speech.js";
++  readSavedTextToSpeechProfiles,
++  textToSpeechProfilesToMessageOptions,
++} from "../text-to-speech/tts-profile-store.js";
+ import {
++  createEmotionProfile,
    createMessage,
    createMessageSegment,
-@@ -21,6 +25,11 @@ const TTS_PROVIDER_REGISTRY = Object.freeze({
++  createTtsProfile,
+   deleteMessage,
+   deleteMessageSegment,
+   listEmotionProfiles,
+@@ -25,11 +27,6 @@ const TTS_PROVIDER_REGISTRY = Object.freeze({
    "openai": Object.freeze({ activeRuntime: false, label: "OpenAI", requiresConfig: true }),
    "polly": Object.freeze({ activeRuntime: false, label: "Polly", requiresConfig: true }),
  });
-+const MESSAGE_STUDIO_TTS_PROFILE_CONTRACT = Object.freeze(createMessageStudioTtsProfileOptions(createMessageStudioDefaultTtsProfiles())
-+  .map((profile) => Object.freeze({
-+    ...profile,
-+    emotionSettings: Object.freeze(profile.emotionSettings.map((setting) => Object.freeze({ ...setting }))),
-+  })));
+-const MESSAGE_STUDIO_TTS_PROFILE_CONTRACT = Object.freeze(createMessageStudioTtsProfileOptions(createMessageStudioDefaultTtsProfiles())
+-  .map((profile) => Object.freeze({
+-    ...profile,
+-    emotionSettings: Object.freeze(profile.emotionSettings.map((setting) => Object.freeze({ ...setting }))),
+-  })));
  
  const elements = {
    addMessage: document.querySelector("[data-messages-add-row]"),
-@@ -190,16 +199,55 @@ function showCreatorSafeFailure(message) {
-   setText(elements.log, safeMessage);
+@@ -203,47 +200,99 @@ function normalizedLookupKey(value) {
+   return String(value || "").trim().toLowerCase();
  }
  
--function activeEmotionProfiles() {
--  return state.emotionProfiles.filter((profile) => profile.active);
-+function normalizedLookupKey(value) {
-+  return String(value || "").trim().toLowerCase();
+-function apiTtsProfileByContractName(apiProfiles = []) {
++function apiTtsProfileByName(apiProfiles = []) {
+   return new Map(apiProfiles.map((profile) => [normalizedLookupKey(profile.name), profile]));
  }
  
--function activeVoiceProfiles() {
--  return state.voiceProfiles.filter((profile) => profile.active);
-+function apiTtsProfileByContractName(apiProfiles = []) {
+-function apiEmotionSettingForContract(apiProfile, contractSetting) {
+-  const settings = Array.isArray(apiProfile?.emotionSettings) ? apiProfile.emotionSettings : [];
+-  const label = normalizedLookupKey(contractSetting.emotionLabel || contractSetting.name || contractSetting.emotion);
+-  const emotion = normalizedLookupKey(contractSetting.emotion);
+-  return settings.find((setting) => normalizedLookupKey(setting.emotionLabel || setting.name) === label)
+-    || settings.find((setting) => normalizedLookupKey(setting.emotion) === emotion)
+-    || null;
++function apiEmotionProfileByName(apiProfiles = []) {
 +  return new Map(apiProfiles.map((profile) => [normalizedLookupKey(profile.name), profile]));
-+}
-+
-+function apiEmotionSettingForContract(apiProfile, contractSetting) {
-+  const settings = Array.isArray(apiProfile?.emotionSettings) ? apiProfile.emotionSettings : [];
-+  const label = normalizedLookupKey(contractSetting.emotionLabel || contractSetting.name || contractSetting.emotion);
-+  const emotion = normalizedLookupKey(contractSetting.emotion);
-+  return settings.find((setting) => normalizedLookupKey(setting.emotionLabel || setting.name) === label)
-+    || settings.find((setting) => normalizedLookupKey(setting.emotion) === emotion)
-+    || null;
-+}
-+
-+function messageStudioTtsProfilesFromContract(apiProfiles = []) {
-+  const apiByName = apiTtsProfileByContractName(apiProfiles);
-+  return MESSAGE_STUDIO_TTS_PROFILE_CONTRACT.map((contractProfile) => {
-+    const apiProfile = apiByName.get(normalizedLookupKey(contractProfile.name)) || null;
-+    return {
-+      ...contractProfile,
-+      active: apiProfile ? apiProfile.active !== false : contractProfile.active !== false,
-+      age: contractProfile.age || apiProfile?.age || "",
-+      ageFilter: contractProfile.ageFilter || apiProfile?.ageFilter || apiProfile?.age || "",
-+      emotionSettings: contractProfile.emotionSettings
-+        .map((contractSetting) => {
-+          const apiSetting = apiEmotionSettingForContract(apiProfile, contractSetting);
-+          const emotionProfile = emotionProfileByLabel(contractSetting.emotionLabel || apiSetting?.emotionLabel || contractSetting.emotion);
-+          return {
-+            ...contractSetting,
-+            active: apiSetting ? apiSetting.active !== false : contractSetting.active !== false,
-+            key: emotionProfile?.key || apiSetting?.key || contractSetting.key,
-+          };
-+        })
-+        .filter((setting) => setting.key && setting.active !== false),
-+      gender: contractProfile.gender || apiProfile?.gender || "",
-+      key: apiProfile?.key || contractProfile.key,
-+      language: contractProfile.language || apiProfile?.language || "",
-+      providerKey: contractProfile.providerKey || apiProfile?.providerKey || "browser-speech",
-+      voice: contractProfile.voice || apiProfile?.voice || apiProfile?.voiceName || "",
-+      voiceName: contractProfile.voiceName || apiProfile?.voiceName || "",
-+    };
+ }
+ 
+-function messageStudioTtsProfilesFromContract(apiProfiles = []) {
+-  const apiByName = apiTtsProfileByContractName(apiProfiles);
+-  return MESSAGE_STUDIO_TTS_PROFILE_CONTRACT.map((contractProfile) => {
+-    const apiProfile = apiByName.get(normalizedLookupKey(contractProfile.name)) || null;
++function ensureApiTtsProfileForSavedProfile(profile, apiByName) {
++  const name = profileValue(profile?.name, "");
++  if (!name) {
++    return null;
++  }
++  const existing = apiByName.get(normalizedLookupKey(name)) || null;
++  if (existing) {
++    return existing;
++  }
++  const result = createTtsProfile({
++    active: true,
++    description: `${name} from Text To Speech profile ownership.`,
++    language: profileValue(profile.language, "en-US"),
++    name,
++    pitch: 1,
++    providerKey: profileValue(profile.providerKey, "browser-speech"),
++    rate: 1,
++    voiceName: profileValue(profile.voiceName || profile.voice, "Default browser voice"),
++    volume: 1,
 +  });
++  const created = result.ttsProfile || null;
++  if (!created) {
++    throw new Error("Text To Speech profile could not be synced.");
++  }
++  apiByName.set(normalizedLookupKey(created.name), created);
++  return created;
++}
++
++function ensureApiEmotionProfileForSavedEmotion(setting, apiByName) {
++  const name = profileValue(setting?.emotionLabel || setting?.name || setting?.emotion, "");
++  if (!name) {
++    return null;
++  }
++  const existing = apiByName.get(normalizedLookupKey(name)) || null;
++  if (existing) {
++    return existing;
++  }
++  const result = createEmotionProfile({
++    active: true,
++    description: `${name} from Text To Speech profile ownership.`,
++    name,
++    pauseAfterMs: 0,
++    pauseBeforeMs: 0,
++    pitch: Number(setting.pitch) || 1,
++    rate: Number(setting.rate) || 1,
++    volume: Number.isFinite(Number(setting.volume)) ? Number(setting.volume) : 1,
++  });
++  const created = result.emotionProfile || null;
++  if (!created) {
++    throw new Error("Text To Speech emotion could not be synced.");
++  }
++  apiByName.set(normalizedLookupKey(created.name), created);
++  state.emotionProfiles.push(created);
++  return created;
++}
++
++function activeTextToSpeechProfilesForMessages(apiProfiles = []) {
++  const savedProfiles = readSavedTextToSpeechProfiles();
++  const savedOptions = textToSpeechProfilesToMessageOptions(savedProfiles);
++  const ttsProfilesByName = apiTtsProfileByName(apiProfiles);
++  const emotionProfilesByName = apiEmotionProfileByName(state.emotionProfiles);
++  return savedOptions.map((savedProfile) => {
++    const apiProfile = ensureApiTtsProfileForSavedProfile(savedProfile, ttsProfilesByName);
++    if (!apiProfile) {
++      return null;
++    }
+     return {
+-      ...contractProfile,
+-      active: apiProfile ? apiProfile.active !== false : contractProfile.active !== false,
+-      age: contractProfile.age || apiProfile?.age || "",
+-      ageFilter: contractProfile.ageFilter || apiProfile?.ageFilter || apiProfile?.age || "",
+-      emotionSettings: contractProfile.emotionSettings
+-        .map((contractSetting) => {
+-          const apiSetting = apiEmotionSettingForContract(apiProfile, contractSetting);
+-          const emotionProfile = emotionProfileByLabel(contractSetting.emotionLabel || apiSetting?.emotionLabel || contractSetting.emotion);
++      ...savedProfile,
++      active: apiProfile.active !== false && savedProfile.active !== false,
++      key: apiProfile.key,
++      emotionSettings: savedProfile.emotionSettings
++        .map((setting) => {
++          const emotionProfile = ensureApiEmotionProfileForSavedEmotion(setting, emotionProfilesByName);
++          if (!emotionProfile) {
++            return null;
++          }
+           return {
+-            ...contractSetting,
+-            active: apiSetting ? apiSetting.active !== false : contractSetting.active !== false,
+-            key: emotionProfile?.key || apiSetting?.key || contractSetting.key,
++            ...setting,
++            active: emotionProfile.active !== false && setting.active !== false,
++            key: emotionProfile.key,
+           };
+         })
+-        .filter((setting) => setting.key && setting.active !== false),
+-      gender: contractProfile.gender || apiProfile?.gender || "",
+-      key: apiProfile?.key || contractProfile.key,
+-      language: contractProfile.language || apiProfile?.language || "",
+-      providerKey: contractProfile.providerKey || apiProfile?.providerKey || "browser-speech",
+-      voice: contractProfile.voice || apiProfile?.voice || apiProfile?.voiceName || "",
+-      voiceName: contractProfile.voiceName || apiProfile?.voiceName || "",
++        .filter((setting) => setting?.key && setting.active !== false),
+     };
+-  });
++  }).filter((profile) => profile?.key);
  }
  
--function emotionProfileByKey(profileKey) {
--  return state.emotionProfiles.find((profile) => profile.key === profileKey) || null;
-+function activeVoiceProfiles() {
-+  return state.voiceProfiles.filter((profile) => profile.active);
- }
- 
- function voiceProfileByKey(profileKey) {
-@@ -210,15 +258,6 @@ function ttsProfileByKey(profileKey) {
-   return voiceProfileByKey(profileKey);
- }
- 
--function selectOptionsWithCurrent(currentKey) {
--  const active = activeEmotionProfiles();
--  const current = emotionProfileByKey(currentKey);
--  if (current && !active.some((profile) => profile.key === current.key)) {
--    return [...active, current];
--  }
--  return active;
--}
--
- function voiceOptionsWithCurrent(currentKey) {
-   const active = activeVoiceProfiles();
-   const current = voiceProfileByKey(currentKey);
-@@ -228,23 +267,16 @@ function voiceOptionsWithCurrent(currentKey) {
-   return active;
- }
- 
--function emotionOptionsForTtsProfile(profileKey, currentKey = "") {
-+function emotionOptionsForTtsProfile(profileKey) {
-   const profile = ttsProfileByKey(profileKey);
-   const settings = Array.isArray(profile?.emotionSettings) ? profile.emotionSettings : [];
--  const options = settings
-+  return settings
-     .filter((setting) => setting.active !== false)
-     .map((setting) => ({
-       key: setting.key || emotionProfileByLabel(setting.emotionLabel || setting.emotion)?.key || setting.emotion,
-       name: setting.emotionLabel || setting.name || setting.emotion,
-     }))
-     .filter((setting) => setting.key && setting.name);
--  if (currentKey && !options.some((option) => option.key === currentKey)) {
--    const current = emotionProfileByKey(currentKey);
--    if (current) {
--      options.push({ key: current.key, name: current.name });
--    }
--  }
--  return options.length ? options : selectOptionsWithCurrent(currentKey);
- }
- 
- function emotionProfileByLabel(label) {
-@@ -263,8 +295,9 @@ function emotionSettingForKey(profileKey, emotionKey) {
-     || null;
- }
- 
--function defaultEmotionKeyForTtsProfile(profileKey) {
--  return emotionOptionsForTtsProfile(profileKey)[0]?.key || "";
-+function profileEmotionKeyOrDefault(profileKey, currentKey = "") {
-+  const options = emotionOptionsForTtsProfile(profileKey);
-+  return options.some((option) => option.key === currentKey) ? currentKey : options[0]?.key || "";
- }
- 
- function selectedMessage() {
-@@ -716,7 +749,7 @@ function createMessageSegmentEditRow(messageKey, segment = null) {
-   emotionCell.append(createSelect(
-     segment?.emotionProfileKey || "",
-     "segmentEmotion",
--    emotionOptionsForTtsProfile(message?.voiceProfileKey || segment?.voiceProfileKey || "", segment?.emotionProfileKey || ""),
-+    emotionOptionsForTtsProfile(message?.voiceProfileKey || segment?.voiceProfileKey || ""),
-     "Select emotion",
-     "Sentence emotion",
-   ));
-@@ -911,9 +944,10 @@ function messageValues(key) {
-   const existing = state.messages.find((message) => message.key === key) || null;
-   const name = editorValue(root, "[data-message-name]");
-   const voiceProfileKey = editorValue(root, "[data-message-tts-profile]");
-+  const emotionProfileKey = profileEmotionKeyOrDefault(voiceProfileKey, existing?.emotionProfileKey || "");
-   return {
-     active: existing ? existing.active : true,
--    emotionProfileKey: existing?.emotionProfileKey || defaultEmotionKeyForTtsProfile(voiceProfileKey),
-+    emotionProfileKey,
-     messageText: existing?.messageText || name,
-     name,
-     notes: existing?.notes || "",
-@@ -994,7 +1028,7 @@ async function loadAll() {
+ function activeVoiceProfiles() {
+@@ -1028,7 +1077,12 @@ async function loadAll() {
    state.emotionProfiles = emotionPayload.emotionProfiles || [];
    state.messages = messagesPayload.messages || [];
    state.segments = segmentsPayload.segments || [];
--  state.voiceProfiles = voicePayload.ttsProfiles || [];
-+  state.voiceProfiles = messageStudioTtsProfilesFromContract(voicePayload.ttsProfiles || []);
+-  state.voiceProfiles = messageStudioTtsProfilesFromContract(voicePayload.ttsProfiles || []);
++  try {
++    state.voiceProfiles = activeTextToSpeechProfilesForMessages(voicePayload.ttsProfiles || []);
++  } catch {
++    state.voiceProfiles = [];
++    showCreatorSafeFailure("Text To Speech profiles could not be loaded. Save a TTS Profile in Text To Speech, then reload Messages.");
++  }
    if (state.selectedMessageKey && !state.messages.some((message) => message.key === state.selectedMessageKey)) {
      state.selectedMessageKey = "";
    }
+@@ -1036,6 +1090,10 @@ async function loadAll() {
+     state.selectedSegmentKey = "";
+   }
+   render(messagesPayload.persistence || emotionPayload.persistence || segmentsPayload.persistence || voicePayload.persistence);
++  if (!state.voiceProfiles.length) {
++    setText(elements.log, "Message Studio loaded. Save a TTS Profile in Text To Speech before adding playback.");
++    return;
++  }
+   setText(elements.log, "Message Studio loaded.");
+ }
+ 
 diff --git a/toolbox/text-to-speech/text2speech.js b/toolbox/text-to-speech/text2speech.js
-index c44c1d406..d98085336 100644
+index d98085336..081fa25b2 100644
 --- a/toolbox/text-to-speech/text2speech.js
 +++ b/toolbox/text-to-speech/text2speech.js
-@@ -88,7 +88,8 @@ const TTS_PROFILE_EMOTION_OPTIONS = Object.freeze([
-   Object.freeze({ label: "Calm", value: "calm" }),
-   Object.freeze({ label: "Urgent", value: "urgent" }),
-   Object.freeze({ label: "Whisper", value: "whisper" }),
--  Object.freeze({ label: "Excited", value: "excited" })
-+  Object.freeze({ label: "Excited", value: "excited" }),
-+  Object.freeze({ label: "Robot", value: "robot" })
- ]);
+@@ -10,6 +10,10 @@ import {
+   TEXT_TO_SPEECH_RANGE_DEFAULTS,
+   TEXT_TO_SPEECH_SSML_LIKE_PRESET_OPTIONS
+ } from "../../src/engine/audio/TextToSpeechDefaults.js";
++import {
++  readSavedTextToSpeechProfiles,
++  writeSavedTextToSpeechProfiles,
++} from "./tts-profile-store.js";
  
- function boundedNumber(value, { fallback, max, min, value: defaultValue }) {
-@@ -279,11 +280,45 @@ function createDefaultTextToSpeechProfiles(voiceOptions = []) {
+ const TTS_OWNERSHIP = Object.freeze({
+   DESIGN: "Design",
+@@ -280,66 +284,6 @@ function createDefaultTextToSpeechProfiles(voiceOptions = []) {
    ];
  }
  
-+function createMessageStudioDefaultTtsProfiles(voiceOptions = []) {
-+  const [balancedProfile, manProfile, womanProfile] = createDefaultTextToSpeechProfiles(voiceOptions);
-+  const withStudioEmotions = (profile, emotions) => createTextToSpeechProfile({
-+    active: profile.active,
-+    age: profile.age,
-+    emotions,
-+    gender: profile.gender,
-+    id: profile.id,
-+    language: profile.language,
-+    messageStudioUsageCount: profile.messageStudioUsageCount,
-+    name: profile.name,
-+    voice: profile.voice,
-+    voiceName: profile.voiceName
-+  });
-+
-+  return [
-+    withStudioEmotions(balancedProfile, [
-+      createTextToSpeechProfileEmotion({ emotion: "calm", messagePartsUsageCount: 1 }),
-+      createTextToSpeechProfileEmotion({ emotion: "urgent", pitch: 1.08, rate: 1.15 }),
-+    ]),
-+    withStudioEmotions(manProfile, [
-+      createTextToSpeechProfileEmotion({ emotion: "neutral" }),
-+      createTextToSpeechProfileEmotion({ emotion: "calm" }),
-+      createTextToSpeechProfileEmotion({ emotion: "urgent", pitch: 1.08, rate: 1.15 }),
-+    ]),
-+    withStudioEmotions(womanProfile, [
-+      createTextToSpeechProfileEmotion({ emotion: "whisper", pitch: 0.95, rate: 0.9, volume: 0.55 }),
-+      createTextToSpeechProfileEmotion({ emotion: "robot", pitch: 0.82, rate: 0.92, volume: 0.9 }),
-+    ])
-+  ];
-+}
-+
- function createMessageStudioTtsProfileOptions(profiles = []) {
-   return profiles
-     .filter((profile) => profile?.active !== false)
-     .map((profile) => ({
-       active: true,
-+      age: profile.age,
-+      ageFilter: profile.age,
-       emotionSettings: Array.isArray(profile.emotions)
-         ? profile.emotions.filter((emotion) => emotion.active !== false).map((emotion) => ({
-           emotion: emotion.emotion,
-@@ -295,10 +330,12 @@ function createMessageStudioTtsProfileOptions(profiles = []) {
-           volume: emotion.volume
-         }))
-         : [],
-+      gender: profile.gender,
-       key: profile.id,
-       language: profile.language,
-       name: profile.name,
-       providerKey: profile.providerKey || "browser-speech",
-+      voice: profile.voice,
-       voiceName: profile.voiceName || profile.voice || ""
-     }));
- }
-@@ -1206,7 +1243,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
-   };
- }
+-function createMessageStudioDefaultTtsProfiles(voiceOptions = []) {
+-  const [balancedProfile, manProfile, womanProfile] = createDefaultTextToSpeechProfiles(voiceOptions);
+-  const withStudioEmotions = (profile, emotions) => createTextToSpeechProfile({
+-    active: profile.active,
+-    age: profile.age,
+-    emotions,
+-    gender: profile.gender,
+-    id: profile.id,
+-    language: profile.language,
+-    messageStudioUsageCount: profile.messageStudioUsageCount,
+-    name: profile.name,
+-    voice: profile.voice,
+-    voiceName: profile.voiceName
+-  });
+-
+-  return [
+-    withStudioEmotions(balancedProfile, [
+-      createTextToSpeechProfileEmotion({ emotion: "calm", messagePartsUsageCount: 1 }),
+-      createTextToSpeechProfileEmotion({ emotion: "urgent", pitch: 1.08, rate: 1.15 }),
+-    ]),
+-    withStudioEmotions(manProfile, [
+-      createTextToSpeechProfileEmotion({ emotion: "neutral" }),
+-      createTextToSpeechProfileEmotion({ emotion: "calm" }),
+-      createTextToSpeechProfileEmotion({ emotion: "urgent", pitch: 1.08, rate: 1.15 }),
+-    ]),
+-    withStudioEmotions(womanProfile, [
+-      createTextToSpeechProfileEmotion({ emotion: "whisper", pitch: 0.95, rate: 0.9, volume: 0.55 }),
+-      createTextToSpeechProfileEmotion({ emotion: "robot", pitch: 0.82, rate: 0.92, volume: 0.9 }),
+-    ])
+-  ];
+-}
+-
+-function createMessageStudioTtsProfileOptions(profiles = []) {
+-  return profiles
+-    .filter((profile) => profile?.active !== false)
+-    .map((profile) => ({
+-      active: true,
+-      age: profile.age,
+-      ageFilter: profile.age,
+-      emotionSettings: Array.isArray(profile.emotions)
+-        ? profile.emotions.filter((emotion) => emotion.active !== false).map((emotion) => ({
+-          emotion: emotion.emotion,
+-          emotionLabel: emotion.emotionLabel,
+-          key: emotion.id,
+-          pitch: emotion.pitch,
+-          rate: emotion.rate,
+-          ssmlLikePreset: emotion.ssmlLikePreset,
+-          volume: emotion.volume
+-        }))
+-        : [],
+-      gender: profile.gender,
+-      key: profile.id,
+-      language: profile.language,
+-      name: profile.name,
+-      providerKey: profile.providerKey || "browser-speech",
+-      voice: profile.voice,
+-      voiceName: profile.voiceName || profile.voice || ""
+-    }));
+-}
+-
+ function createSpeechPreviewRequest({
+   pitch = TEXT_TO_SPEECH_DEFAULTS.pitch,
+   rate = TEXT_TO_SPEECH_DEFAULTS.rate,
+@@ -817,6 +761,14 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
+     return errors;
+   }
  
--if (typeof document !== "undefined") {
-+if (typeof document !== "undefined" && document.querySelector("[data-tts-profile-table]")) {
-   initializeTextToSpeechTool(document);
- }
- 
-@@ -1218,6 +1255,7 @@ export {
++  function persistProfilesForMessages() {
++    try {
++      writeSavedTextToSpeechProfiles(state.profiles);
++    } catch {
++      writeStatus("Text To Speech profiles were saved for this tool but could not be shared with Messages. Try again after refreshing the browser.", "FAIL");
++    }
++  }
++
+   function emotionValues(key) {
+     const row = elements.profileTable?.querySelector(`[data-tts-emotion-editor="${key}"]`);
+     const existing = selectedProfile()?.emotions.find((emotion) => emotion.id === key) || null;
+@@ -874,6 +826,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
+     state.selectedProfileId = profile.id;
+     state.selectedEmotionId = previewEmotion(profile)?.id || "";
+     state.editingProfileId = "";
++    persistProfilesForMessages();
+     renderProfileRows();
+     refreshActionState();
+     writeStatus(`Saved TTS profile: ${profile.name}.`);
+@@ -889,6 +842,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
+     state.profiles = state.profiles.filter((candidate) => candidate.id !== key);
+     if (state.selectedProfileId === key) state.selectedProfileId = state.profiles[0]?.id || "";
+     if (!state.selectedProfileId) state.selectedEmotionId = "";
++    persistProfilesForMessages();
+     renderProfileRows();
+     refreshActionState();
+     writeStatus(`Deleted TTS profile: ${profile.name}.`);
+@@ -923,6 +877,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
+     }
+     state.editingEmotionId = "";
+     state.selectedEmotionId = emotion.id;
++    persistProfilesForMessages();
+     renderProfileRows();
+     refreshActionState();
+     writeStatus(`Saved emotion: ${emotion.emotionLabel}.`);
+@@ -938,6 +893,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
+     }
+     profile.emotions = profile.emotions.filter((candidate) => candidate.id !== key);
+     if (state.selectedEmotionId === key) state.selectedEmotionId = previewEmotion(profile)?.id || "";
++    persistProfilesForMessages();
+     renderProfileRows();
+     refreshActionState();
+     writeStatus(`Deleted emotion: ${emotion.emotionLabel}.`);
+@@ -970,9 +926,23 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
+     if (state.profiles.length) {
+       return;
+     }
++    try {
++      const savedProfiles = readSavedTextToSpeechProfiles();
++      if (savedProfiles.length) {
++        state.profiles = savedProfiles;
++        state.selectedProfileId = "";
++        state.selectedEmotionId = "";
++        renderProfileRows();
++        refreshActionState();
++        return;
++      }
++    } catch {
++      writeStatus("Saved Text To Speech profiles could not be loaded. Default profiles are available for this session.", "FAIL");
++    }
+     state.profiles = createDefaultTextToSpeechProfiles(state.voiceOptions);
+     state.selectedProfileId = "";
+     state.selectedEmotionId = "";
++    persistProfilesForMessages();
+     renderProfileRows();
+     refreshActionState();
+   }
+@@ -1255,8 +1225,6 @@ export {
    TTS_PROVIDER_ADAPTER_PLAN,
    createEmotionProfile,
    createDefaultTextToSpeechProfiles,
-+  createMessageStudioDefaultTtsProfiles,
-   createMessageStudioTtsProfileOptions,
+-  createMessageStudioDefaultTtsProfiles,
+-  createMessageStudioTtsProfileOptions,
    createSpeechPreviewRequest,
    createTextToSpeechProfile,
+   createTextToSpeechProfileEmotion,
+
+diff --git a/toolbox/text-to-speech/tts-profile-store.js b/toolbox/text-to-speech/tts-profile-store.js
+new file mode 100644
+index 000000000..268854662
+--- /dev/null
++++ b/toolbox/text-to-speech/tts-profile-store.js
+@@ -0,0 +1,160 @@
++const TEXT_TO_SPEECH_PROFILE_STORAGE_KEY = "gamefoundry.textToSpeech.profiles.v1";
++const TEXT_TO_SPEECH_PROFILE_STORE_VERSION = "tts-profile-store-v1";
++
++const DEFAULT_LANGUAGE = "en-US";
++const DEFAULT_PROVIDER_KEY = "browser-speech";
++const DEFAULT_VOICE_AGE = "adult";
++
++function clampNumber(value, fallback, min, max) {
++  const numberValue = Number(value);
++  if (!Number.isFinite(numberValue)) {
++    return fallback;
++  }
++  return Math.min(max, Math.max(min, numberValue));
++}
++
++function normalizedText(value, fallback = "") {
++  const text = String(value || "").trim();
++  return text || fallback;
++}
++
++function slugFromText(value, fallback = "item") {
++  return normalizedText(value, fallback)
++    .toLowerCase()
++    .replace(/[^a-z0-9]+/g, "-")
++    .replace(/^-+|-+$/g, "") || fallback;
++}
++
++function labelFromSlug(value, fallback = "Neutral") {
++  return normalizedText(value, fallback)
++    .replace(/[-_]+/g, " ")
++    .replace(/\b\w/g, (letter) => letter.toUpperCase());
++}
++
++function defaultStorage() {
++  try {
++    return typeof window === "undefined" ? null : window.localStorage;
++  } catch {
++    return null;
++  }
++}
++
++function storagePayloadProfiles(payload) {
++  if (Array.isArray(payload)) {
++    return payload;
++  }
++  if (Array.isArray(payload?.profiles)) {
++    return payload.profiles;
++  }
++  return [];
++}
++
++function normalizeSavedEmotion(emotion = {}) {
++  const emotionKey = slugFromText(emotion.emotion || emotion.id || emotion.emotionLabel, "neutral");
++  const emotionLabel = normalizedText(emotion.emotionLabel || emotion.name, labelFromSlug(emotionKey));
++  return {
++    active: emotion.active !== false,
++    emotion: emotionKey,
++    emotionLabel,
++    id: normalizedText(emotion.id, emotionKey),
++    messagePartsUsageCount: Math.max(0, Number(emotion.messagePartsUsageCount) || 0),
++    pitch: clampNumber(emotion.pitch, 1, 0.1, 2),
++    rate: clampNumber(emotion.rate, 1, 0.1, 2),
++    ssmlLikePreset: normalizedText(emotion.ssmlLikePreset, "normal"),
++    volume: clampNumber(emotion.volume, 1, 0, 1),
++  };
++}
++
++function normalizeSavedProfile(profile = {}) {
++  const name = normalizedText(profile.name, "Default Balanced Profile");
++  const emotions = Array.isArray(profile.emotions) && profile.emotions.length
++    ? profile.emotions.map(normalizeSavedEmotion)
++    : [normalizeSavedEmotion()];
++  return {
++    active: profile.active !== false,
++    age: normalizedText(profile.age, DEFAULT_VOICE_AGE),
++    emotions,
++    gender: normalizedText(profile.gender, "neutral"),
++    id: normalizedText(profile.id, slugFromText(name, "tts-profile")),
++    language: normalizedText(profile.language, DEFAULT_LANGUAGE),
++    messageStudioUsageCount: Math.max(0, Number(profile.messageStudioUsageCount) || 0),
++    name,
++    owner: "Audio",
++    providerKey: normalizedText(profile.providerKey, DEFAULT_PROVIDER_KEY),
++    voice: normalizedText(profile.voice),
++    voiceName: normalizedText(profile.voiceName || profile.voice, "Default browser voice"),
++  };
++}
++
++function normalizeSavedTextToSpeechProfiles(profiles = []) {
++  return Array.isArray(profiles) ? profiles.map(normalizeSavedProfile) : [];
++}
++
++function readSavedTextToSpeechProfiles(storage = defaultStorage()) {
++  if (!storage || typeof storage.getItem !== "function") {
++    return [];
++  }
++  const raw = storage.getItem(TEXT_TO_SPEECH_PROFILE_STORAGE_KEY);
++  if (!raw) {
++    return [];
++  }
++  let payload;
++  try {
++    payload = JSON.parse(raw);
++  } catch {
++    throw new Error("Saved Text To Speech profiles could not be read.");
++  }
++  return normalizeSavedTextToSpeechProfiles(storagePayloadProfiles(payload));
++}
++
++function writeSavedTextToSpeechProfiles(profiles = [], storage = defaultStorage()) {
++  if (!storage || typeof storage.setItem !== "function") {
++    return false;
++  }
++  const payload = {
++    profiles: normalizeSavedTextToSpeechProfiles(profiles),
++    updatedAt: new Date().toISOString(),
++    version: TEXT_TO_SPEECH_PROFILE_STORE_VERSION,
++  };
++  storage.setItem(TEXT_TO_SPEECH_PROFILE_STORAGE_KEY, JSON.stringify(payload));
++  return true;
++}
++
++function textToSpeechProfilesToMessageOptions(profiles = []) {
++  return normalizeSavedTextToSpeechProfiles(profiles)
++    .filter((profile) => profile.active !== false)
++    .map((profile) => ({
++      active: true,
++      age: profile.age,
++      ageFilter: profile.age,
++      emotionSettings: profile.emotions
++        .filter((emotion) => emotion.active !== false)
++        .map((emotion) => ({
++          active: true,
++          emotion: emotion.emotion,
++          emotionLabel: emotion.emotionLabel,
++          key: emotion.id,
++          pitch: emotion.pitch,
++          rate: emotion.rate,
++          ssmlLikePreset: emotion.ssmlLikePreset,
++          volume: emotion.volume,
++        })),
++      gender: profile.gender,
++      key: profile.id,
++      language: profile.language,
++      name: profile.name,
++      providerKey: profile.providerKey,
++      sourceProfileId: profile.id,
++      voice: profile.voice,
++      voiceName: profile.voiceName || profile.voice || "Default browser voice",
++    }));
++}
++
++export {
++  TEXT_TO_SPEECH_PROFILE_STORAGE_KEY,
++  TEXT_TO_SPEECH_PROFILE_STORE_VERSION,
++  normalizeSavedTextToSpeechProfiles,
++  readSavedTextToSpeechProfiles,
++  textToSpeechProfilesToMessageOptions,
++  writeSavedTextToSpeechProfiles,
++};
+
+
+diff --git a/docs_build/dev/reports/PR_26174_BRAVO_022-use-active-tts-profiles-in-messages.md b/docs_build/dev/reports/PR_26174_BRAVO_022-use-active-tts-profiles-in-messages.md
+new file mode 100644
+index 000000000..69904e644
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26174_BRAVO_022-use-active-tts-profiles-in-messages.md
+@@ -0,0 +1,51 @@
++# PR_26174_BRAVO_022-use-active-tts-profiles-in-messages
++
++## Branch Validation
++PASS - Current branch is `team/BRAVO/messages`; main was not checked out, merged, or targeted.
++
++## Summary
++- Added a shared Text To Speech profile store/contract helper for active saved TTS profiles.
++- Text To Speech now persists its own profile/emotion model for sibling tools.
++- Messages now loads saved TTS profiles, syncs profile/emotion names to Local API-owned keys, filters Sentence emotions by selected parent profile, and keeps playback off Text To Speech Local Preview validation.
++- Removed the dev-runtime import of the browser Text To Speech UI module and removed separate Message Studio default TTS profile builders.
++
++## Requirement Checklist
++PASS - /toolbox/messages/ loads active saved TTS Profiles from /toolbox/text-to-speech/ via `tts-profile-store.js`.
++PASS - Parent Message TTS Profile dropdown is populated from saved active TTS profiles.
++PASS - Child Sentence Emotion dropdown is populated only from the selected parent profile's saved emotions.
++PASS - Parent Play remains in Message row Actions and resolves ordered Sentences through the selected parent profile.
++PASS - Child Play remains in Sentence row Actions and resolves only that Sentence through the parent profile.
++PASS - Messages playback does not call Text To Speech Local Preview validation and `toolbox/messages/messages.js` contains no `before preview` text.
++PASS - Browser UI module imports were removed from `src/dev-runtime/messages/messages-postgres-service.mjs`.
++PASS - Separate Message Studio default TTS profile builders were removed.
++PASS - No inline styles, inline scripts, style blocks, or inline handlers were added.
++PASS - Local API owns authoritative database keys; Messages syncs saved names to server-created TTS/emotion keys.
++PASS - Creator-safe guidance is used for Messages TTS profile load failures.
++
++## Validation Lane Report
++PASS - `node --check toolbox/messages/messages.js`.
++PASS - `node --check toolbox/text-to-speech/text2speech.js`.
++PASS - `node --check toolbox/text-to-speech/tts-profile-store.js`.
++PASS - `node --check src/dev-runtime/messages/messages-postgres-service.mjs`.
++PASS - `node --test tests/tools/Text2SpeechShell.test.mjs`.
++PASS - `node --test tests/tools/MessagesPlaybackSource.test.mjs`.
++PASS - `node --test tests/dev-runtime/MessagesPublishValidation.test.mjs`.
++PASS - `node --test --test-name-pattern "Messages Local API" tests/dev-runtime/DbSeedIntegrity.test.mjs`.
++BLOCKED - `npx playwright test tests/playwright/tools/MessagesTool.spec.mjs tests/playwright/tools/TextToSpeechFunctional.spec.mjs` could not launch because Chromium is not installed at `C:\Users\davidq\AppData\Local\ms-playwright\chromium-1217\chrome-win64\chrome.exe`.
++BLOCKED - Fallback `npm run test:workspace-v2` completed static preflight report generation, then hit the same missing Chromium executable.
++KNOWN - Full `tests/dev-runtime/DbSeedIntegrity.test.mjs` still has unrelated Local DB snapshot failures in non-Messages cases.
++
++## Manual Validation Notes
++- Browser manual validation was not completed because Playwright Chromium is missing in this environment.
++- Added Playwright coverage for creating/editing a TTS Profile in Text To Speech, opening Messages on the same origin, confirming the saved profile appears, confirming Sentence emotions are profile-filtered, and exercising Parent/Child Play.
++- Static grep confirmed Messages no longer contains `Select an available browser voice before preview` or `before preview` wording.
++
++## Branch Status
++- Branch: `team/BRAVO/messages`
++- Latest commit: `c45328678`
++- Ahead of main: 2
++- Behind main: 0
++- Existing unrelated local edit excluded from PR package: `.gitignore`.
++
++## ZIP
++- Expected ZIP: `tmp/PR_26174_BRAVO_022-use-active-tts-profiles-in-messages_delta.zip`
+
+
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+new file mode 100644
+index 000000000..899ecf86c
+--- /dev/null
++++ b/docs_build/dev/reports/codex_changed_files.txt
+@@ -0,0 +1,42 @@
++docs_build/dev/reports/PR_26174_BRAVO_022-use-active-tts-profiles-in-messages.md
++docs_build/dev/reports/codex_changed_files.txt
++docs_build/dev/reports/codex_review.diff
++docs_build/dev/reports/coverage_changed_js_guardrail.txt
++docs_build/dev/reports/dependency_gating_report.md
++docs_build/dev/reports/dependency_hydration_reuse_report.md
++docs_build/dev/reports/execution_graph_reuse_report.md
++docs_build/dev/reports/failure_fingerprint_report.md
++docs_build/dev/reports/filesystem_scan_reduction_report.md
++docs_build/dev/reports/incremental_validation_report.md
++docs_build/dev/reports/lane_compilation_report.md
++docs_build/dev/reports/lane_deduplication_report.md
++docs_build/dev/reports/lane_input_validation_report.md
++docs_build/dev/reports/lane_manifests/workspace-contract.json
++docs_build/dev/reports/lane_runtime_optimization_report.md
++docs_build/dev/reports/lane_snapshot_report.md
++docs_build/dev/reports/lane_snapshots/workspace-contract.json
++docs_build/dev/reports/lane_warm_start_report.md
++docs_build/dev/reports/lane_warm_starts/workspace-contract.json
++docs_build/dev/reports/monolith_trigger_removal_report.md
++docs_build/dev/reports/persistent_lane_manifest_report.md
++docs_build/dev/reports/playwright_discovery_ownership_report.md
++docs_build/dev/reports/playwright_discovery_scope_report.md
++docs_build/dev/reports/playwright_structure_audit.md
++docs_build/dev/reports/playwright_v8_coverage_report.txt
++docs_build/dev/reports/retry_suppression_report.md
++docs_build/dev/reports/slow_path_pruning_report.md
++docs_build/dev/reports/static_validation_report.md
++docs_build/dev/reports/targeted_file_manifest_report.md
++docs_build/dev/reports/test_cleanup_performance_report.md
++docs_build/dev/reports/test_cleanup_routing_report.md
++docs_build/dev/reports/testing_lane_execution_report.md
++docs_build/dev/reports/validation_cache_report.md
++docs_build/dev/reports/zero_browser_preflight_report.md
++src/dev-runtime/messages/messages-postgres-service.mjs
++tests/dev-runtime/DbSeedIntegrity.test.mjs
++tests/playwright/tools/MessagesTool.spec.mjs
++tests/tools/MessagesPlaybackSource.test.mjs
++tests/tools/Text2SpeechShell.test.mjs
++toolbox/messages/messages.js
++toolbox/text-to-speech/text2speech.js
++toolbox/text-to-speech/tts-profile-store.js
+

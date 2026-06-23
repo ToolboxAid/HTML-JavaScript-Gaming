@@ -1,10 +1,12 @@
 import {
-  createMessageStudioDefaultTtsProfiles,
-  createMessageStudioTtsProfileOptions,
-} from "../text-to-speech/text2speech.js";
+  readSavedTextToSpeechProfiles,
+  textToSpeechProfilesToMessageOptions,
+} from "../text-to-speech/tts-profile-store.js";
 import {
+  createEmotionProfile,
   createMessage,
   createMessageSegment,
+  createTtsProfile,
   deleteMessage,
   deleteMessageSegment,
   listEmotionProfiles,
@@ -25,11 +27,6 @@ const TTS_PROVIDER_REGISTRY = Object.freeze({
   "openai": Object.freeze({ activeRuntime: false, label: "OpenAI", requiresConfig: true }),
   "polly": Object.freeze({ activeRuntime: false, label: "Polly", requiresConfig: true }),
 });
-const MESSAGE_STUDIO_TTS_PROFILE_CONTRACT = Object.freeze(createMessageStudioTtsProfileOptions(createMessageStudioDefaultTtsProfiles())
-  .map((profile) => Object.freeze({
-    ...profile,
-    emotionSettings: Object.freeze(profile.emotionSettings.map((setting) => Object.freeze({ ...setting }))),
-  })));
 
 const elements = {
   addMessage: document.querySelector("[data-messages-add-row]"),
@@ -203,47 +200,99 @@ function normalizedLookupKey(value) {
   return String(value || "").trim().toLowerCase();
 }
 
-function apiTtsProfileByContractName(apiProfiles = []) {
+function apiTtsProfileByName(apiProfiles = []) {
   return new Map(apiProfiles.map((profile) => [normalizedLookupKey(profile.name), profile]));
 }
 
-function apiEmotionSettingForContract(apiProfile, contractSetting) {
-  const settings = Array.isArray(apiProfile?.emotionSettings) ? apiProfile.emotionSettings : [];
-  const label = normalizedLookupKey(contractSetting.emotionLabel || contractSetting.name || contractSetting.emotion);
-  const emotion = normalizedLookupKey(contractSetting.emotion);
-  return settings.find((setting) => normalizedLookupKey(setting.emotionLabel || setting.name) === label)
-    || settings.find((setting) => normalizedLookupKey(setting.emotion) === emotion)
-    || null;
+function apiEmotionProfileByName(apiProfiles = []) {
+  return new Map(apiProfiles.map((profile) => [normalizedLookupKey(profile.name), profile]));
 }
 
-function messageStudioTtsProfilesFromContract(apiProfiles = []) {
-  const apiByName = apiTtsProfileByContractName(apiProfiles);
-  return MESSAGE_STUDIO_TTS_PROFILE_CONTRACT.map((contractProfile) => {
-    const apiProfile = apiByName.get(normalizedLookupKey(contractProfile.name)) || null;
+function ensureApiTtsProfileForSavedProfile(profile, apiByName) {
+  const name = profileValue(profile?.name, "");
+  if (!name) {
+    return null;
+  }
+  const existing = apiByName.get(normalizedLookupKey(name)) || null;
+  if (existing) {
+    return existing;
+  }
+  const result = createTtsProfile({
+    active: true,
+    description: `${name} from Text To Speech profile ownership.`,
+    language: profileValue(profile.language, "en-US"),
+    name,
+    pitch: 1,
+    providerKey: profileValue(profile.providerKey, "browser-speech"),
+    rate: 1,
+    voiceName: profileValue(profile.voiceName || profile.voice, "Default browser voice"),
+    volume: 1,
+  });
+  const created = result.ttsProfile || null;
+  if (!created) {
+    throw new Error("Text To Speech profile could not be synced.");
+  }
+  apiByName.set(normalizedLookupKey(created.name), created);
+  return created;
+}
+
+function ensureApiEmotionProfileForSavedEmotion(setting, apiByName) {
+  const name = profileValue(setting?.emotionLabel || setting?.name || setting?.emotion, "");
+  if (!name) {
+    return null;
+  }
+  const existing = apiByName.get(normalizedLookupKey(name)) || null;
+  if (existing) {
+    return existing;
+  }
+  const result = createEmotionProfile({
+    active: true,
+    description: `${name} from Text To Speech profile ownership.`,
+    name,
+    pauseAfterMs: 0,
+    pauseBeforeMs: 0,
+    pitch: Number(setting.pitch) || 1,
+    rate: Number(setting.rate) || 1,
+    volume: Number.isFinite(Number(setting.volume)) ? Number(setting.volume) : 1,
+  });
+  const created = result.emotionProfile || null;
+  if (!created) {
+    throw new Error("Text To Speech emotion could not be synced.");
+  }
+  apiByName.set(normalizedLookupKey(created.name), created);
+  state.emotionProfiles.push(created);
+  return created;
+}
+
+function activeTextToSpeechProfilesForMessages(apiProfiles = []) {
+  const savedProfiles = readSavedTextToSpeechProfiles();
+  const savedOptions = textToSpeechProfilesToMessageOptions(savedProfiles);
+  const ttsProfilesByName = apiTtsProfileByName(apiProfiles);
+  const emotionProfilesByName = apiEmotionProfileByName(state.emotionProfiles);
+  return savedOptions.map((savedProfile) => {
+    const apiProfile = ensureApiTtsProfileForSavedProfile(savedProfile, ttsProfilesByName);
+    if (!apiProfile) {
+      return null;
+    }
     return {
-      ...contractProfile,
-      active: apiProfile ? apiProfile.active !== false : contractProfile.active !== false,
-      age: contractProfile.age || apiProfile?.age || "",
-      ageFilter: contractProfile.ageFilter || apiProfile?.ageFilter || apiProfile?.age || "",
-      emotionSettings: contractProfile.emotionSettings
-        .map((contractSetting) => {
-          const apiSetting = apiEmotionSettingForContract(apiProfile, contractSetting);
-          const emotionProfile = emotionProfileByLabel(contractSetting.emotionLabel || apiSetting?.emotionLabel || contractSetting.emotion);
+      ...savedProfile,
+      active: apiProfile.active !== false && savedProfile.active !== false,
+      key: apiProfile.key,
+      emotionSettings: savedProfile.emotionSettings
+        .map((setting) => {
+          const emotionProfile = ensureApiEmotionProfileForSavedEmotion(setting, emotionProfilesByName);
+          if (!emotionProfile) {
+            return null;
+          }
           return {
-            ...contractSetting,
-            active: apiSetting ? apiSetting.active !== false : contractSetting.active !== false,
-            key: emotionProfile?.key || apiSetting?.key || contractSetting.key,
+            ...setting,
+            active: emotionProfile.active !== false && setting.active !== false,
+            key: emotionProfile.key,
           };
         })
-        .filter((setting) => setting.key && setting.active !== false),
-      gender: contractProfile.gender || apiProfile?.gender || "",
-      key: apiProfile?.key || contractProfile.key,
-      language: contractProfile.language || apiProfile?.language || "",
-      providerKey: contractProfile.providerKey || apiProfile?.providerKey || "browser-speech",
-      voice: contractProfile.voice || apiProfile?.voice || apiProfile?.voiceName || "",
-      voiceName: contractProfile.voiceName || apiProfile?.voiceName || "",
+        .filter((setting) => setting?.key && setting.active !== false),
     };
-  });
+  }).filter((profile) => profile?.key);
 }
 
 function activeVoiceProfiles() {
@@ -1028,7 +1077,12 @@ async function loadAll() {
   state.emotionProfiles = emotionPayload.emotionProfiles || [];
   state.messages = messagesPayload.messages || [];
   state.segments = segmentsPayload.segments || [];
-  state.voiceProfiles = messageStudioTtsProfilesFromContract(voicePayload.ttsProfiles || []);
+  try {
+    state.voiceProfiles = activeTextToSpeechProfilesForMessages(voicePayload.ttsProfiles || []);
+  } catch {
+    state.voiceProfiles = [];
+    showCreatorSafeFailure("Text To Speech profiles could not be loaded. Save a TTS Profile in Text To Speech, then reload Messages.");
+  }
   if (state.selectedMessageKey && !state.messages.some((message) => message.key === state.selectedMessageKey)) {
     state.selectedMessageKey = "";
   }
@@ -1036,6 +1090,10 @@ async function loadAll() {
     state.selectedSegmentKey = "";
   }
   render(messagesPayload.persistence || emotionPayload.persistence || segmentsPayload.persistence || voicePayload.persistence);
+  if (!state.voiceProfiles.length) {
+    setText(elements.log, "Message Studio loaded. Save a TTS Profile in Text To Speech before adding playback.");
+    return;
+  }
   setText(elements.log, "Message Studio loaded.");
 }
 

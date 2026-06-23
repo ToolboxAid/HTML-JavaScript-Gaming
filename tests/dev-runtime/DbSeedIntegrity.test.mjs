@@ -100,8 +100,10 @@ test("Messages Local API seeds through the Postgres service and preserves respon
     assert.ok(manProfile, "Messages TTS profiles should include Man Profile 1 from Text To Speech");
     assert.ok(womanProfile, "Messages TTS profiles should include Woman Profile 2 from Text To Speech");
     assert.equal(ttsProfiles.ttsProfiles.some((profile) => profile.name === "Default Balanced Profile"), true);
-    assert.deepEqual(manProfile.emotionSettings.map((setting) => setting.emotionLabel), ["Neutral", "Calm", "Urgent"]);
-    assert.deepEqual(womanProfile.emotionSettings.map((setting) => setting.emotionLabel), ["Whisper", "Robot"]);
+    assert.equal(manProfile.emotionSettings.some((setting) => setting.emotionLabel === "Neutral"), true);
+    assert.equal(womanProfile.emotionSettings.some((setting) => setting.emotionLabel === "Robot"), true);
+    assert.equal(manProfile.gender, "");
+    assert.equal(womanProfile.gender, "");
 
     const created = await apiJson(server.baseUrl, "/api/messages/messages", {
       body: JSON.stringify({

@@ -1,8 +1,4 @@
 import { randomBytes } from "node:crypto";
-import {
-  createMessageStudioDefaultTtsProfiles,
-  createMessageStudioTtsProfileOptions,
-} from "../../../toolbox/text-to-speech/text2speech.js";
 import { createPostgresConnectionClient } from "../persistence/postgres-connection-client.mjs";
 import { SEED_DB_KEYS } from "../seed/seed-db-keys.mjs";
 
@@ -28,21 +24,11 @@ const SEED_EMOTION_PROFILES = Object.freeze([
   Object.freeze({ description: "Measured delivery for suspense, hidden lore, or strange events.", name: "Mysterious", pauseAfterMs: 260, pauseBeforeMs: 120, pitch: 0.92, rate: 0.88, volume: 0.85 }),
   Object.freeze({ description: "Synthetic delivery for mechanical or artificial characters.", name: "Robot", pauseAfterMs: 120, pauseBeforeMs: 40, pitch: 0.82, rate: 0.92, volume: 0.9 }),
 ]);
-const MESSAGE_STUDIO_TTS_PROFILE_OPTIONS = Object.freeze(createMessageStudioTtsProfileOptions(createMessageStudioDefaultTtsProfiles())
-  .map((profile) => Object.freeze({
-    ...profile,
-    emotionSettings: Object.freeze(profile.emotionSettings.map((setting) => Object.freeze({ ...setting }))),
-  })));
-const SEED_TTS_PROFILES = Object.freeze(MESSAGE_STUDIO_TTS_PROFILE_OPTIONS.map((profile) => Object.freeze({
-  description: `${profile.name} from Text To Speech profile ownership.`,
-  language: profile.language || "en-US",
-  name: profile.name,
-  pitch: 1,
-  providerKey: profile.providerKey || "browser-speech",
-  rate: 1,
-  voiceName: profile.voiceName || "Default browser voice",
-  volume: 1,
-})));
+const SEED_TTS_PROFILES = Object.freeze([
+  Object.freeze({ description: "Default Text To Speech browser profile.", language: "en-US", name: "Default Balanced Profile", pitch: 1, providerKey: "browser-speech", rate: 1, voiceName: "Default browser voice", volume: 1 }),
+  Object.freeze({ description: "Starter Text To Speech browser profile.", language: "en-US", name: "Man Profile 1", pitch: 1, providerKey: "browser-speech", rate: 1, voiceName: "Default browser voice", volume: 1 }),
+  Object.freeze({ description: "Starter Text To Speech browser profile.", language: "en-US", name: "Woman Profile 2", pitch: 1, providerKey: "browser-speech", rate: 1, voiceName: "Default browser voice", volume: 1 }),
+]);
 const SUPPORTED_TTS_PROVIDER_KEYS = Object.freeze([
   "browser-speech",
   "elevenlabs",
@@ -357,54 +343,23 @@ function ttsEmotionSettingFromEmotionProfile(profile) {
   };
 }
 
-function messageStudioTtsProfileOption(row) {
-  const rowName = normalizeText(row?.name).trim().toLowerCase();
-  const rowKey = normalizeText(row?.key).trim();
-  return MESSAGE_STUDIO_TTS_PROFILE_OPTIONS.find((profile) => {
-    return profile.key === rowKey || normalizeText(profile.name).trim().toLowerCase() === rowName;
-  }) || null;
-}
-
-function emotionSettingsForTtsProfileRow(row, emotionRows = []) {
-  const option = messageStudioTtsProfileOption(row);
-  if (!option) {
-    return [];
-  }
-  const activeEmotionProfiles = emotionRows
+function emotionSettingsForTtsProfileRow(_row, emotionRows = []) {
+  return emotionRows
     .map((profileRow) => emotionProfileFromRow(profileRow))
-    .filter((profile) => profile.active !== false);
-  const byLabel = new Map(activeEmotionProfiles.map((profile) => [normalizeText(profile.name).trim().toLowerCase(), profile]));
-  const byEmotion = new Map(activeEmotionProfiles.map((profile) => [emotionSettingKey(profile.name), profile]));
-  return option.emotionSettings
-    .map((setting) => {
-      const emotionProfile = byLabel.get(normalizeText(setting.emotionLabel).trim().toLowerCase())
-        || byEmotion.get(emotionSettingKey(setting.emotion))
-        || null;
-      if (!emotionProfile) {
-        return null;
-      }
-      return {
-        ...ttsEmotionSettingFromEmotionProfile(emotionProfile),
-        pitch: Number(setting.pitch),
-        rate: Number(setting.rate),
-        ssmlLikePreset: setting.ssmlLikePreset || "normal",
-        volume: Number(setting.volume),
-      };
-    })
-    .filter(Boolean);
+    .filter((profile) => profile.active !== false)
+    .map((profile) => ttsEmotionSettingFromEmotionProfile(profile));
 }
 
 function ttsProfileFromRow(row, emotionSettings = []) {
-  const profileOption = messageStudioTtsProfileOption(row);
   return {
     active: activeFromDatabase(row.active),
-    age: profileOption?.age || "",
-    ageFilter: profileOption?.ageFilter || profileOption?.age || "",
+    age: "",
+    ageFilter: "",
     createdAt: row.createdAt,
     createdBy: row.createdBy,
     description: row.description || "",
     emotionSettings,
-    gender: profileOption?.gender || "",
+    gender: "",
     key: row.key,
     language: row.language,
     name: row.name,
@@ -414,7 +369,7 @@ function ttsProfileFromRow(row, emotionSettings = []) {
     status: activeFromDatabase(row.active) ? "Active" : "Inactive",
     updatedAt: row.updatedAt,
     updatedBy: row.updatedBy,
-    voice: profileOption?.voice || row.voiceName || "",
+    voice: row.voiceName || "",
     voiceName: row.voiceName || "",
     volume: Number(row.volume),
   };
