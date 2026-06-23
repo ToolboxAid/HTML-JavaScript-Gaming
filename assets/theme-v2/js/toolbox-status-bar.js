@@ -7,6 +7,7 @@ let repository = null;
 let messageObserver = null;
 let listenersInstalled = false;
 let latestToolMessage = "";
+let pendingToolMessageRefresh = 0;
 let mountOptions = {
   gameHubHref: "toolbox/game-hub/index.html",
   pagePath: "",
@@ -89,16 +90,29 @@ function createStatusBar() {
   game.className = "toolbox-status-bar__game";
   game.dataset.toolboxSelectedGame = "";
 
-  const label = createText("span", "toolbox-status-bar__label", "toolboxSelectedGameLabel");
-  label.textContent = "Selected Game";
+  const nameField = document.createElement("div");
+  nameField.className = "toolbox-status-bar__field";
+  nameField.dataset.toolboxSelectedGameNameField = "";
+  const nameLabel = createText("span", "toolbox-status-bar__label", "toolboxSelectedGameNameLabel");
+  nameLabel.textContent = "Selected Game Name";
   const name = createText("strong", "toolbox-status-bar__game-name", "toolboxSelectedGameName");
-  const meta = createText("span", "toolbox-status-bar__meta", "toolboxSelectedGameMeta");
-  game.append(label, name, meta);
+  nameField.append(nameLabel, name);
+
+  const purposeField = document.createElement("div");
+  purposeField.className = "toolbox-status-bar__field";
+  purposeField.dataset.toolboxSelectedGamePurposeField = "";
+  const purposeLabel = createText("span", "toolbox-status-bar__label", "toolboxSelectedGamePurposeLabel");
+  purposeLabel.textContent = "Selected Game Purpose";
+  const purpose = createText("span", "toolbox-status-bar__purpose", "toolboxSelectedGamePurpose");
+  purpose.dataset.toolboxSelectedGameMeta = "";
+  purposeField.append(purposeLabel, purpose);
+  game.append(nameField, purposeField);
 
   const center = document.createElement("div");
   center.className = "toolbox-status-bar__center";
   center.dataset.toolboxStatusCenter = "";
 
+  const contextType = createText("span", "pill toolbox-status-bar__context-type", "toolboxStatusContextType");
   const message = createText("p", "toolbox-status-bar__message status", "toolboxStatusMessage");
   message.setAttribute("role", "status");
   const action = document.createElement("a");
@@ -106,7 +120,7 @@ function createStatusBar() {
   action.dataset.toolboxStatusAction = "";
   action.href = mountOptions.gameHubHref;
   action.textContent = "Open Game Hub";
-  center.append(message, action);
+  center.append(contextType, message, action);
 
   inner.append(game, center);
   bar.append(inner);
@@ -172,6 +186,12 @@ function updateLatestToolMessage() {
   }
 }
 
+function scheduleToolMessageRefresh() {
+  window.clearTimeout(pendingToolMessageRefresh);
+  pendingToolMessageRefresh = window.setTimeout(updateLatestToolMessage, 0);
+  window.setTimeout(updateLatestToolMessage, 120);
+}
+
 function observeToolMessages() {
   messageObserver?.disconnect();
   const main = document.querySelector("main");
@@ -211,51 +231,76 @@ function publishSelectedGameContext(selectedGame, state) {
   }));
 }
 
-function selectedGameMeta(selectedGame) {
-  return [selectedGame.purpose, selectedGame.status]
-    .map((value) => String(value || "").trim())
-    .filter(Boolean)
-    .join(" - ");
+function classifyToolContext(messageText, state, required) {
+  const text = String(messageText || "").trim();
+  if (state === "error") {
+    return { kind: "error", label: "Error" };
+  }
+  if (required && state === "missing") {
+    return { kind: "action", label: "Tool Action" };
+  }
+  if (/\b(error|failed|malformed|unavailable|could not)\b/i.test(text)) {
+    return { kind: "error", label: "Error" };
+  }
+  if (/\b(sign in|refresh|try again|temporarily|blocked)\b/i.test(text)) {
+    return { kind: "warning", label: "Warning" };
+  }
+  if (/\b(validation|requirement|requirements|missing|required|open or seed)\b/i.test(text)) {
+    return { kind: "validation", label: "Validation" };
+  }
+  if (/\b(saved|created|deleted|updated|loaded|save changes)\b/i.test(text)) {
+    return { kind: "save", label: "Save State" };
+  }
+  return { kind: "action", label: "Tool Action" };
 }
 
 function renderSelectedGame(bar, selectedGame, state, messageText) {
   const required = pageRequiresSelectedGame();
   const name = bar.querySelector("[data-toolbox-selected-game-name]");
-  const meta = bar.querySelector("[data-toolbox-selected-game-meta]");
+  const purpose = bar.querySelector("[data-toolbox-selected-game-purpose]");
+  const contextType = bar.querySelector("[data-toolbox-status-context-type]");
   const message = bar.querySelector("[data-toolbox-status-message]");
   const action = bar.querySelector("[data-toolbox-status-action]");
+  const nextMessage = messageText || latestToolMessage || (selectedGame
+    ? `Tool context is filtered to ${selectedGame.name}.`
+    : required
+      ? "Select or create a game in Game Hub before using this toolbox page."
+      : "Idea Board can capture ideas before a Game Hub game exists.");
+  const context = classifyToolContext(nextMessage, state, required);
 
   bar.dataset.selectedGameState = state;
   bar.dataset.selectedGameRequired = String(required);
+  bar.dataset.toolboxStatusContextKind = context.kind;
+  contextType.textContent = context.label;
   action.hidden = false;
   action.href = mountOptions.gameHubHref;
 
   if (selectedGame) {
     name.textContent = selectedGame.name;
-    meta.textContent = selectedGameMeta(selectedGame) || "Game Hub selected game";
-    message.textContent = messageText || latestToolMessage || `Data filtered to ${selectedGame.name}.`;
+    purpose.textContent = selectedGame.purpose || "Game";
+    message.textContent = nextMessage;
     action.textContent = "Open Game Hub";
     return;
   }
 
   if (!required) {
-    name.textContent = "Optional";
-    meta.textContent = "Idea Board can start before Game Hub creation";
-    message.textContent = latestToolMessage || "Idea Board can capture ideas before a Game Hub game exists.";
+    name.textContent = "No game selected";
+    purpose.textContent = "Idea Board optional";
+    message.textContent = nextMessage;
     action.textContent = "Open Game Hub";
     return;
   }
 
   if (state === "error") {
     name.textContent = "Unavailable";
-    meta.textContent = "Game Hub selected game could not be read";
-    message.textContent = messageText || "Game Hub selected game is unavailable. Refresh or restore the Local API.";
+    purpose.textContent = "Game Hub selected game could not be read";
+    message.textContent = nextMessage;
     action.textContent = "Open Game Hub";
     return;
   }
 
   name.textContent = "No game selected";
-  meta.textContent = "Game Hub owns game selection";
+  purpose.textContent = "Game Hub owns game selection";
   message.textContent = "Select or create a game in Game Hub before using this toolbox page.";
   action.textContent = "Select or Create in Game Hub";
 }
@@ -284,6 +329,9 @@ function installEventListeners() {
     return;
   }
   listenersInstalled = true;
+  document.addEventListener("click", scheduleToolMessageRefresh, true);
+  document.addEventListener("submit", scheduleToolMessageRefresh, true);
+  document.addEventListener("change", scheduleToolMessageRefresh, true);
   window.addEventListener("gamefoundry:toolbox-selected-game-changed", refreshToolboxStatusBar);
   window.addEventListener("gamefoundry:data-changed", refreshToolboxStatusBar);
 }

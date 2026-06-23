@@ -54,9 +54,17 @@
 
 .toolbox-status-bar__game {
   min-width: var(--space-0);
-  display: grid;
-  gap: var(--space-3);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-14);
   text-align: left
+}
+
+.toolbox-status-bar__field {
+  min-width: var(--space-0);
+  display: grid;
+  gap: var(--space-3)
 }
 
 .toolbox-status-bar__label {
@@ -73,7 +81,7 @@
   overflow-wrap: anywhere
 }
 
-.toolbox-status-bar__meta {
+.toolbox-status-bar__purpose {
   color: var(--muted);
   font-size: var(--font-size-sm);
   overflow-wrap: anywhere
@@ -87,6 +95,10 @@
   flex-wrap: wrap;
   gap: var(--space-10);
   text-align: center
+}
+
+.toolbox-status-bar__context-type {
+  flex: 0 0 auto
 }
 
 .toolbox-status-bar__message {
@@ -104,13 +116,27 @@
 }
 
 .toolbox-status-bar[data-selected-game-state="missing"] {
-  border-color: var(--gold-border-muted);
-  background: var(--gold-soft)
+  border-color: var(--gold-border-muted)
 }
 
 .toolbox-status-bar[data-selected-game-state="error"] {
-  border-color: color-mix(in srgb, var(--red) 52%, var(--line));
-  background: color-mix(in srgb, var(--red) 14%, var(--panel))
+  border-color: color-mix(in srgb, var(--red) 52%, var(--line))
+}
+
+.toolbox-status-bar[data-toolbox-status-context-kind="error"] .toolbox-status-bar__context-type {
+  border-color: color-mix(in srgb, var(--red) 62%, var(--line));
+  color: var(--red)
+}
+
+.toolbox-status-bar[data-toolbox-status-context-kind="warning"] .toolbox-status-bar__context-type,
+.toolbox-status-bar[data-toolbox-status-context-kind="validation"] .toolbox-status-bar__context-type {
+  border-color: var(--gold-border-muted);
+  color: var(--gold)
+}
+
+.toolbox-status-bar[data-toolbox-status-context-kind="save"] .toolbox-status-bar__context-type {
+  border-color: color-mix(in srgb, var(--green) 62%, var(--line));
+  color: var(--green)
 }
 
 body.tool-focus-mode .toolbox-status-bar {
@@ -240,6 +266,7 @@ body.tool-focus-mode .toolbox-status-bar {
   }
 
   .toolbox-status-bar__game {
+    justify-content: center;
     text-align: center
   }
 }

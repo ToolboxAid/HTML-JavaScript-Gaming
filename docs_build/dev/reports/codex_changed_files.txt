@@ -1,3 +1,9 @@
-﻿docs_build/dev/reports/PR_26174_ALFA_MERGE_PUSH_CLOSEOUT.md
-docs_build/dev/reports/codex_review.diff
+assets/theme-v2/css/status.css
+assets/theme-v2/js/toolbox-status-bar.js
+docs_build/dev/BUILD_PR.md
+docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_report.md
+docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_validation-lane.md
+docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_requirements-checklist.md
 docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/codex_review.diff
+tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs

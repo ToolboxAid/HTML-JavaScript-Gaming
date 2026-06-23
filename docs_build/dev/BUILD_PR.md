@@ -1,41 +1,42 @@
-# PR_26175_ALFA_001-toolbox-selected-game-status-bar
+# PR_26175_ALFA_002-toolbox-status-bar-context-polish
 
 ## Purpose
-Add one shared Theme V2 toolbox status bar that surfaces the Game Hub selected game and current tool messages across toolbox pages.
+Polish the shared toolbox status bar context display so it shows only selected-game name/purpose on the left and categorized tool context in the center.
 
 ## Source Of Truth
-This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_001-toolbox-selected-game-status-bar`.
+This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_002-toolbox-status-bar-context-polish`.
 
 ## Exact Scope
-- Add a shared toolbox status bar renderer loaded through Theme V2 shared partial bootstrapping.
-- Render the status bar above the footer in normal page mode.
-- Anchor the status bar to the viewport bottom while `body.tool-focus-mode` is active.
-- Read the selected game only from the Game Hub repository through the existing Local API/service contract.
-- Display the selected Game Hub game on the left side of the status bar.
-- Display tool actions, warnings, errors, save state, validation messages, or the missing-game prompt in the center of the status bar.
-- Expose the selected Game Hub game as derived page context for toolbox pages without persisting browser-owned product data.
-- Require selected-game context on toolbox pages except Idea Board, which remains excluded because ideas can exist before game creation.
-- Show a creator-safe prompt to select or create a game in Game Hub when no selected game exists.
-- Notify the shared status bar when Game Hub changes the selected game.
-- Add targeted Playwright coverage for placement, fullscreen anchoring, selected-game display/update, missing-game prompt, and Idea Board exclusion.
+- Do not include environment text in the status bar because environment already appears in the platform banner.
+- On the left side, display the selected Game Hub game name and selected Game Hub game purpose.
+- On the center side, display tool context messages for tool actions, save state, validation messages, warnings, or errors.
+- Preserve normal placement above the footer.
+- Preserve fullscreen/tool display mode bottom anchoring.
+- Preserve Idea Board selected-game filtering exclusion.
+- Preserve Game Hub as selected-game owner through the existing repository contract.
+- Keep the shared Theme V2 toolbox component model.
+- Update targeted Playwright coverage for the polished left and center context.
 
 ## Exact Targets
-- `assets/theme-v2/js/gamefoundry-partials.js`
+- `docs_build/dev/BUILD_PR.md`
 - `assets/theme-v2/js/toolbox-status-bar.js`
 - `assets/theme-v2/css/status.css`
-- `toolbox/game-hub/game-hub.js`
 - `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs`
-- `docs_build/dev/reports/PR_26175_ALFA_001-toolbox-selected-game-status-bar_report.md`
-- `docs_build/dev/reports/PR_26175_ALFA_001-toolbox-selected-game-status-bar_validation-lane.md`
-- `docs_build/dev/reports/PR_26175_ALFA_001-toolbox-selected-game-status-bar_requirements-checklist.md`
+- `docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_report.md`
+- `docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_validation-lane.md`
+- `docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_requirements-checklist.md`
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/codex_changed_files.txt`
 
 ## Out Of Scope
+- No environment status in the toolbox status bar.
+- No row highlights.
+- No large banners.
+- No modal-style status messages.
+- No inline styles, style blocks, or page-local CSS.
+- No API/service contract changes.
 - No engine core changes.
 - No `start_of_day` folder changes.
-- No API/service contract changes.
-- No page-local CSS, inline styles, or style blocks.
-- No browser storage or browser-owned product data as selected-game source of truth.
-- No Idea Board selected-game filtering.
 
 ## Validation
 Run:
@@ -47,12 +48,12 @@ npx playwright test tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
 Also verify the changed source does not introduce inline styles or style blocks:
 
 ```powershell
-rg -n "<style|style=" assets/theme-v2/js/gamefoundry-partials.js assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css toolbox/game-hub/game-hub.js tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
+rg -n "<style|style=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
 ```
 
 ## Artifact
 Create repo-structured delta ZIP:
 
 ```text
-tmp/PR_26175_ALFA_001-toolbox-selected-game-status-bar_delta.zip
+tmp/PR_26175_ALFA_002-toolbox-status-bar-context-polish_delta.zip
 ```
