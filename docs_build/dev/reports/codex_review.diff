@@ -1,1428 +1,780 @@
-﻿diff --git a/.env.example b/.env.example
-index f293b6f83..9d5e4301b 100644
---- a/.env.example
-+++ b/.env.example
-@@ -50,6 +50,11 @@ GAMEFOUNDRY_DB_BACKUP_DIR=
-
- # Server-only project asset storage configuration.
- # Browser uploads must go through the server API and must not receive these secrets.
-+# Approved GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX values:
-+# DEV /dev/projects/
-+# IST /ist/projects/
-+# UAT /uat/projects/
-+# PRD /prod/projects/
- GAMEFOUNDRY_STORAGE_ENDPOINT=
- GAMEFOUNDRY_STORAGE_ACCESS_KEY_ID=
-
-diff --git a/admin/infrastructure.html b/admin/infrastructure.html
-index 0c9e90b3e..89bf99e0d 100644
---- a/admin/infrastructure.html
-+++ b/admin/infrastructure.html
-@@ -41,7 +41,7 @@
-                                     <p>/dev/projects/</p>
-                                     <p>/ist/projects/</p>
-                                     <p>/uat/projects/</p>
--                                    <p>/prd/projects/</p>
-+                                    <p>/prod/projects/</p>
-                                 </div>
-                             </details>
-                         </div>
-@@ -81,7 +81,7 @@
-                                     <tr><td>DEV</td><td>/dev/projects/</td><td>Loading</td></tr>
-                                     <tr><td>IST</td><td>/ist/projects/</td><td>Loading</td></tr>
-                                     <tr><td>UAT</td><td>/uat/projects/</td><td>Loading</td></tr>
--                                    <tr><td>PRD</td><td>/prd/projects/</td><td>Loading</td></tr>
-+                                    <tr><td>PRD</td><td>/prod/projects/</td><td>Loading</td></tr>
-                                 </tbody>
-                             </table>
-                         </div>
-diff --git a/admin/system-health.html b/admin/system-health.html
-index f5330bcdd..65ff3c12e 100644
---- a/admin/system-health.html
-+++ b/admin/system-health.html
-@@ -39,6 +39,7 @@
-                                 <summary>Health Sections</summary>
-                                 <div class="accordion-body content-stack">
-                                     <p>Environment Summary</p>
-+                                    <p>Local API Startup</p>
-                                     <p>Database Health</p>
-                                     <p>Storage Health</p>
-                                     <p>Runtime Environment</p>
-@@ -74,6 +75,21 @@
-                                 </tbody>
-                             </table>
-                         </div>
-+                        <div class="table-wrapper">
-+                            <table class="data-table" aria-label="Local API startup diagnostics">
-+                                <caption>Local API Startup Diagnostics</caption>
-+                                <thead>
-+                                    <tr>
-+                                        <th scope="col">Field</th>
-+                                        <th scope="col">Safe Value</th>
-+                                        <th scope="col">Status</th>
-+                                    </tr>
-+                                </thead>
-+                                <tbody data-admin-system-health-startup-rows>
-+                                    <tr><td>Startup diagnostics</td><td>Waiting for safe API status</td><td data-health-status="PENDING" title="Reason: safe Local API startup diagnostics have not loaded yet." aria-label="PENDING: safe Local API startup diagnostics have not loaded yet.">PENDING</td></tr>
-+                                </tbody>
-+                            </table>
-+                        </div>
-                         <div class="table-wrapper">
-                             <table class="data-table" aria-label="Database health">
-                                 <caption>Database Health - Postgres Only</caption>
-diff --git a/assets/theme-v2/js/admin-infrastructure.js b/assets/theme-v2/js/admin-infrastructure.js
-index 0251c32d6..b470c84df 100644
---- a/assets/theme-v2/js/admin-infrastructure.js
-+++ b/assets/theme-v2/js/admin-infrastructure.js
-@@ -6,7 +6,7 @@ const STORAGE_PATH_LANES = Object.freeze([
-     Object.freeze({ lane: "DEV", path: "/dev/projects/" }),
-     Object.freeze({ lane: "IST", path: "/ist/projects/" }),
-     Object.freeze({ lane: "UAT", path: "/uat/projects/" }),
--    Object.freeze({ lane: "PRD", path: "/prd/projects/" }),
-+    Object.freeze({ lane: "PRD", path: "/prod/projects/" }),
- ]);
-
- class AdminInfrastructureStoragePathStatus {
-diff --git a/assets/theme-v2/js/admin-system-health.js b/assets/theme-v2/js/admin-system-health.js
-index 09e7a3bb3..72ddd7ea8 100644
---- a/assets/theme-v2/js/admin-system-health.js
-+++ b/assets/theme-v2/js/admin-system-health.js
-@@ -38,6 +38,7 @@ class AdminSystemHealthController {
-             node.dataset.adminSystemHealthStorageStatus,
-             node,
-         ]));
-+        this.startupRows = root.querySelector("[data-admin-system-health-startup-rows]");
-         this.runtimeRows = root.querySelector("[data-admin-system-health-runtime-rows]");
-     }
-
-@@ -80,6 +81,7 @@ class AdminSystemHealthController {
-         ["host", "database", "migration", "connection"].forEach((key) => {
-             this.setStatus(key, "PENDING", reason);
-         });
-+        this.renderStartupPending(reason);
-         this.renderStoragePending(reason);
-     }
-
-@@ -118,6 +120,45 @@ class AdminSystemHealthController {
-         this.setStorageStatus("bucket", storageStatus.bucketStatus || storageStatus.status, reason);
-     }
-
-+    renderStartupPending(reason) {
-+        if (!this.startupRows) {
-+            return;
-+        }
-+        const row = document.createElement("tr");
-+        row.append(
-+            this.createCell("Local API startup diagnostics"),
-+            this.createCell("not available"),
-+            this.createStatusCell("PENDING", reason),
-+        );
-+        this.startupRows.replaceChildren(row);
-+    }
+diff --git a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+index 3314b3dea..20d6ae342 100644
+--- a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
++++ b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+@@ -57,3 +57,25 @@ Rules:
+ - Teams pull backlog items only from their ownership area unless OWNER explicitly reassigns or splits the work.
+ - Cross-team work requires OWNER approval and must identify the owning team for each PR.
+ - Team start commands must remain aligned with this ownership model.
 +
-+    renderStartupDiagnostics(localApiStartup = {}) {
-+        if (!this.startupRows) {
-+            return;
-+        }
-+        if (localApiStartup?.secretsExposed === true || localApiStartup?.secretEditingAllowed === true) {
-+            this.renderStartupPending("Safe Local API startup diagnostics were blocked because the response exposed secret controls.");
-+            return;
-+        }
-+        const rows = Array.isArray(localApiStartup.rows) ? localApiStartup.rows : [];
-+        if (!rows.length) {
-+            this.renderStartupPending("Safe Local API startup diagnostics returned no rows.");
-+            return;
-+        }
-+        const fragment = document.createDocumentFragment();
-+        rows.forEach((startupRow) => {
-+            const row = document.createElement("tr");
-+            row.append(
-+                this.createCell(startupRow.field),
-+                this.createCell(startupRow.value),
-+                this.createStatusCell(startupRow.status, startupRow.reason || localApiStartup.message),
-+            );
-+            fragment.append(row);
-+        });
-+        this.startupRows.replaceChildren(fragment);
-+    }
++## Current Active Ownership Lanes
 +
-     storageResultTarget(result = {}) {
-         if (typeof result.keysListed === "number" && result.actionId === "storage-list") {
-             return `${result.keysListed} object(s) under ${asText(result.projectsPrefix, "configured prefix")}`;
-@@ -210,6 +251,7 @@ class AdminSystemHealthController {
-                 return;
-             }
-             this.renderPostgresStatus(data?.databaseStatus || {});
-+            this.renderStartupDiagnostics(data?.localApiStartup || {});
-             this.renderStorageStatus(data?.storageStatus || {});
-             this.runStorageDiagnostics();
-             this.renderRuntimeEnvironment(data?.runtimeEnvironment || {});
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-instruction-compliance-checklist.md
++OWNER override approved.
++
++The current active ownership lanes are:
++
++- Team Alfa
++- Team Bravo
++- Team Charlie
++- Team Delta
++- Team Golf
++- Team OWNER
++
++Migration note:
++Team Gamma is retired. Team Golf is the replacement active ownership lane.
++
++Rules:
++- Do not rewrite historical PR references that mention Team Gamma.
++- Do not rename historical branches that contain Gamma.
++- Team Golf may own newly assigned work, review packets, cleanup, release, or OWNER-directed cross-team work.
++- Team Golf must not silently take backlog ownership from Alfa, Bravo, Charlie, or Delta; cross-team work requires OWNER approval.
+diff --git a/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md b/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
+index 12f74cb1f..d0118f63a 100644
+--- a/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
++++ b/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
+@@ -90,6 +90,28 @@ Create one Team Delta branch for the selected assignment.
+ Work only that assignment.
+ ```
+
++## Start Team Golf
++
++Ready-to-copy command:
++
++```text
++OWNER override approved: Start Team Golf from the ProjectInstructions release gate.
++
++Read docs_build/dev/ProjectInstructions/README.txt first.
++Read docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md.
++Read docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
++Read docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md.
++
++Stop if Team Golf already has an active branch.
++Stop if Team Golf already has an active assignment.
++Stop if OWNER has not explicitly assigned Team Golf work.
++Stop if the selected work conflicts with current Alfa, Bravo, Charlie, or Delta ownership.
++
++Record the selected assignment under Team Golf in TEAM_ASSIGNMENTS.md.
++Create or use one Team Golf branch for the selected assignment.
++Work only that assignment.
++```
++
+ ## Day Work / EOD Merge Reminder
+
+ Ready-to-copy reminder:
+diff --git a/docs_build/dev/ProjectInstructions/addendums/multi_team.md b/docs_build/dev/ProjectInstructions/addendums/multi_team.md
+index 3d603aff9..3a2ebd2ec 100644
+--- a/docs_build/dev/ProjectInstructions/addendums/multi_team.md
++++ b/docs_build/dev/ProjectInstructions/addendums/multi_team.md
+@@ -13,6 +13,28 @@ Rules:
+ - Cross-team work requires OWNER approval and must identify the correct owning team for each PR.
+ - Team start commands must use the current ownership model before pulling a backlog item.
+
++## Current Active Ownership Lanes
++
++OWNER override approved.
++
++The current active ownership lanes are:
++
++- Team Alfa
++- Team Bravo
++- Team Charlie
++- Team Delta
++- Team Golf
++- Team OWNER
++
++Migration note:
++Team Gamma is retired. Team Golf is the replacement active ownership lane.
++
++Rules:
++- Historical PR references and branch names that mention Gamma remain unchanged for traceability.
++- New active work that would previously have used Team Gamma routes to Team Golf.
++- Team Golf work requires OWNER assignment, an active branch, an active draft/open PR, or active release/cleanup responsibility.
++- If Team Golf work touches Alfa, Bravo, Charlie, or Delta ownership areas, the PR must document the OWNER cross-team decision.
++
+ ## All-Team Preferred Codex Execution Method
+
+ Preferred execution model:
+diff --git a/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md b/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
+index cadfee261..e4b0ba1de 100644
+--- a/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
++++ b/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
+@@ -54,6 +54,8 @@ Applies to:
+ - Team Alfa
+ - Team Bravo
+ - Team Charlie
++- Team Delta
++- Team Golf
+ - Any future NATO-named team
+
+ Behavior:
+diff --git a/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md b/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
+index d73cfcb9f..521758eeb 100644
+--- a/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
++++ b/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
+@@ -4,6 +4,11 @@
+
+ This gate prevents Team Alfa, Team Bravo, Team Charlie, or Team OWNER from starting regular assigned work before the ProjectInstructions operating system is ready.
+
++Current OWNER clarification:
++- This gate also applies to Team Delta and Team Golf.
++- Team Gamma is retired. Team Golf is the replacement active ownership lane.
++- Historical wording that listed fewer teams remains traceable, but it must not exclude Delta or Golf from current active ownership governance.
++
+ ## Release Rule
+
+ Teams may start only when all of the following are true:
+diff --git a/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md b/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
+index e1018c155..d6af3271c 100644
+--- a/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
++++ b/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
+@@ -31,6 +31,28 @@ The current active delivery teams for backlog start commands are:
+
+ Each team start must confirm the selected backlog item is inside that team's ownership area.
+
++## Current Active Ownership Start Map
++
++OWNER override approved.
++
++The current active ownership start map includes:
++
++- Team Alfa
++- Team Bravo
++- Team Charlie
++- Team Delta
++- Team Golf
++- Team OWNER
++
++Migration note:
++Team Gamma is retired. Team Golf is the replacement active ownership lane.
++
++Clarification:
++- The four-team start set remains the backlog ownership start set for Alfa, Bravo, Charlie, and Delta.
++- Team Golf is valid for OWNER-assigned, branch-backed, PR-backed, release, review packet, or cleanup work.
++- Historical Gamma references and branch names must remain unchanged.
++- Golf work must not silently take ownership from Alfa, Bravo, Charlie, or Delta; cross-team work requires OWNER approval.
++
+ ## Assignment Flow
+
+ For backlog-driven work:
+diff --git a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
+index 0b8942261..ed2f85a4b 100644
+--- a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
++++ b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
+@@ -162,6 +162,13 @@
+
+ ## Four-Team Backlog Alignment
+
++Current OWNER clarification:
++- The backlog alignment below preserves the current Alfa, Bravo, Charlie, and Delta ownership model.
++- Team Gamma is retired. Team Golf is the replacement active ownership lane.
++- Team Golf has no standing backlog ownership area in this file unless OWNER assigns one.
++- Golf work may be OWNER-assigned, branch-backed, PR-backed, release, review packet, or cleanup work and must not silently replace Alfa, Bravo, Charlie, or Delta ownership.
++- Historical Gamma PR references and branch names are not renamed by this clarification.
++
+ ### Team Alfa
+
+ - [ ] Alfa - Game Hub polish
+diff --git a/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md b/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
+index 5ca625819..6ddf25619 100644
+--- a/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
++++ b/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
+@@ -28,8 +28,24 @@ If a team has no assignment, no active branch, and no active PR, it is inactive
+
+ | Team | Active Assignment | Branch | PR | Status | OWNER Decision |
+ |------|-------------------|--------|----|--------|----------------|
++| Team Alfa | none | none | none | Available | Active ownership lane |
++| Team Bravo | none | none | none | Available | Active ownership lane |
++| Team Charlie | none | none | none | Available | Active ownership lane |
++| Team Delta | none | none | none | Available | Active ownership lane |
++| Team Golf | none | none | none | Available | Replacement active ownership lane for retired Team Gamma |
+ | Team OWNER | none | none | none | Available | Governance Phase 1 complete |
+
++## Current Active Ownership Lanes
++
++OWNER override approved.
++
++The current active ownership lanes are Team Alfa, Team Bravo, Team Charlie, Team Delta, Team Golf, and Team OWNER.
++
++Migration note:
++Team Gamma is retired. Team Golf is the replacement active ownership lane.
++
++Historical Gamma PR references and branch names remain unchanged for traceability.
++
+ ## Update Rules
+
+ Update the registry when:
+diff --git a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
+index acefbba8e..afe4efa91 100644
+--- a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
++++ b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
+@@ -4,6 +4,12 @@
+
+ | Team | Assignment | Branch | PR | Status |
+ |------|------------|--------|----|--------|
++| Team Alfa | none | none | none | Available |
++| Team Bravo | none | none | none | Available |
++| Team Charlie | none | none | none | Available |
++| Team Delta | none | none | none | Available |
++| Team Golf | none | none | none | Available |
++| Team OWNER | none | none | none | Available |
+
+ Rules:
+ - Registry is the authoritative active-work view.
+@@ -27,6 +33,12 @@ Result:
+ If a team is missing from Active Team Registry:
+ it is currently inactive.
+
++Current OWNER clarification:
++- The active ownership lanes are Team Alfa, Team Bravo, Team Charlie, Team Delta, Team Golf, and Team OWNER.
++- Team Gamma is retired. Team Golf is the replacement active ownership lane.
++- Do not rewrite historical PR references that mention Team Gamma.
++- Do not rename historical branches that contain Gamma.
++
+ ## Assignment Status Legend
+
+ - Available: team may pull one `[ ]` backlog item when explicitly instructed.
+@@ -65,6 +77,16 @@ Active assignment: none.
+
+ Active branch: none.
+
++## Team Golf
++
++Status: Available
++
++Active assignment: none.
++
++Active branch: none.
++
++OWNER decision: Replacement active ownership lane for retired Team Gamma.
++
+ ## Team OWNER
+
+ Status: Available
+diff --git a/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md b/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
+index 865cca551..bc4808b6f 100644
+--- a/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
++++ b/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
+@@ -52,6 +52,29 @@ Alfa, Bravo, Charlie, and Delta are the four active delivery teams for backlog o
+
+ Each team may pull only from its ownership area unless OWNER explicitly reassigns, splits, or approves cross-team work.
+
++## Current Active Ownership Lanes
++
++OWNER override approved.
++
++The current active ownership lanes are:
++
++- Team Alfa
++- Team Bravo
++- Team Charlie
++- Team Delta
++- Team Golf
++- Team OWNER
++
++Migration note:
++Team Gamma is retired. Team Golf is the replacement active ownership lane.
++
++Clarification:
++- The four-team rule remains the current backlog ownership model for Alfa, Bravo, Charlie, and Delta.
++- Team Golf does not receive a standing backlog ownership area in this file.
++- Team Golf work requires OWNER assignment, an active branch, an active draft/open PR, or active release/review/cleanup responsibility.
++- Golf work that touches Alfa, Bravo, Charlie, or Delta areas must document the OWNER cross-team decision.
++- Historical Gamma PR references and branch names remain unchanged for traceability.
++
+ ## Rule
+
+ Ownership may only be reassigned by OWNER governance.
+diff --git a/docs_build/dev/reports/PR_26175_OWNER_046-pr-targeted-review-packets.md b/docs_build/dev/reports/PR_26175_OWNER_046-pr-targeted-review-packets.md
 new file mode 100644
-index 000000000..977f218b5
+index 000000000..055d7c1cb
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-instruction-compliance-checklist.md
-@@ -0,0 +1,20 @@
-+# PR_26175_CHARLIE_002 Instruction Compliance Checklist
++++ b/docs_build/dev/reports/PR_26175_OWNER_046-pr-targeted-review-packets.md
+@@ -0,0 +1,87 @@
++# PR_26175_OWNER_046-pr-targeted-review-packets
 +
-+| Requirement | Status | Evidence |
-+|---|---:|---|
-+| Read active ProjectInstructions | PASS | Reviewed README, root Project Instructions, team ownership, and PLAN report. |
-+| Active branch remains Charlie stack branch | PASS | Branch is `PR_26172_CHARLIE_repository-compliance-stack`. |
-+| Worktree clean before implementation | PASS | Start gate showed clean worktree. |
-+| Implement only approved System Health dashboard scope | PASS | Changes are limited to System Health page/controller/API status payload and targeted tests. |
-+| Preserve existing Postgres behavior | PASS | Database Health rendering and payload remain in place. |
-+| Preserve existing R2 behavior | PASS | Storage Health and connectivity action behavior remain in place. |
-+| Preserve Runtime Environment behavior | PASS | Runtime environment rows continue to mask secret-like values. |
-+| Preserve Limits behavior | PASS | Limits/capacity table and payload remain in place. |
-+| Preserve Diagnostics Plan and Diagnostics Log behavior | PASS | Existing tables remain in the page. |
-+| Use PASS/WARN/FAIL/PENDING correctly | PASS | Deferred configurable multiple runtime ports are `PENDING`; real status rows use `PASS`/`WARN`. |
-+| Every non-PASS status has reason text | PASS | Startup rendering uses existing `applyStatusNode()` helper with reason text. |
-+| Do not expose secrets | PASS | URL credentials are redacted; tests assert raw credentials are absent. |
-+| Do not implement telemetry | PASS | No telemetry code or route added. |
-+| Do not implement configurable runtime ports | PASS | Multiple runtime ports are only marked deferred/cancelled. |
-+| Required reports created | PASS | PR report, manual notes, checklist, Codex diff, and changed-files report created. |
-+| Repo-structured ZIP under `tmp/` | PASS | `tmp/PR_26175_CHARLIE_002-system-health-dashboard_delta.zip`. |
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-manual-validation-notes.md b/docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-manual-validation-notes.md
-new file mode 100644
-index 000000000..6ea7cafe8
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-manual-validation-notes.md
-@@ -0,0 +1,29 @@
-+# PR_26175_CHARLIE_002 Manual Validation Notes
-+
-+## Manual Review
-+
-+- Confirmed active branch was `PR_26172_CHARLIE_repository-compliance-stack`.
-+- Confirmed implementation stayed within Admin System Health dashboard and Local API status payload.
-+- Confirmed no Team Bravo branch changes were made.
-+- Confirmed no telemetry implementation was added.
-+- Confirmed configurable multiple runtime ports are reported as `PENDING` / `deferred/cancelled` only.
-+- Confirmed Postgres, R2, Runtime Environment, Limits, Diagnostics Plan, and Diagnostics Log sections remain present.
-+
-+## Secret Exposure Review
-+
-+- Local API startup diagnostic URL display removes username/password credentials.
-+- Runtime secret masking behavior remains unchanged.
-+- Targeted API test checks raw API URL and site URL credentials are not serialized in the `localApiStartup` payload.
-+- Targeted Playwright test checks System Health page does not expose test secret values.
-+
-+## Validation Results
-+
-+- `git diff --check`: PASS.
-+- `node --test tests/dev-runtime/LocalApiStartupLogging.test.mjs`: PASS.
-+- `node --test tests/dev-runtime/AdminHealthOperations.test.mjs`: PASS.
-+- `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`: PASS.
-+
-+## Notes
-+
-+- Playwright refreshed coverage report artifacts during validation; those generated changes were restored because they are outside this PR's required report set.
-+- No samples were run.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard.md b/docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard.md
-new file mode 100644
-index 000000000..3cd56805f
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard.md
-@@ -0,0 +1,88 @@
-+# PR_26175_CHARLIE_002-system-health-dashboard
++OWNER override approved.
 +
 +## Summary
 +
-+Implemented the approved System Health dashboard increment for safe Local API startup diagnostics.
++This PR updates active Project Instructions governance from Team Gamma to Team Golf and creates targeted GitHub-authoritative review packets for PR #3, #50, #51, and #118. No runtime behavior changes, PR merges, PR closures, or branch deletions were performed.
 +
-+The dashboard now surfaces a server-owned Local API Startup Diagnostics table that reports:
-+
-+- approved startup diagnostics format availability
-+- Environment Variables section masking/redaction behavior
-+- configured startup bind target
-+- configured site URL status
-+- configured or derived API URL
-+- configured API URL port
-+- configurable multiple runtime ports as `PENDING` and `deferred/cancelled`
-+
-+The implementation preserves existing Postgres, R2, Runtime Environment, Limits, Diagnostics Plan, and Diagnostics Log behavior.
-+
-+## Scope Controls
-+
-+| Requirement | Result | Notes |
-+|---|---:|---|
-+| Active branch remains `PR_26172_CHARLIE_repository-compliance-stack` | PASS | Work stayed on the Charlie stack branch. |
-+| Implement only approved System Health dashboard scope | PASS | Changes are limited to Admin System Health dashboard/API status and targeted tests. |
-+| Preserve existing Postgres behavior | PASS | Existing database status rendering and server payload remain intact. |
-+| Preserve existing R2 behavior | PASS | Existing storage status and connectivity action behavior remain intact. |
-+| Preserve Runtime Environment behavior | PASS | Existing runtime environment masking/rendering remains intact. |
-+| Preserve Limits behavior | PASS | Existing limits/capacity rows and usage placeholders remain intact. |
-+| Preserve Diagnostics Plan and Diagnostics Log behavior | PASS | Existing tables remain; only Local API startup diagnostics table was added. |
-+| Use PASS/WARN/FAIL/PENDING correctly | PASS | Real known-good checks are `PASS`; missing configured site URL is `WARN`; deferred multiple runtime ports is `PENDING`. |
-+| Do not expose secrets | PASS | URL credentials are redacted, secret values are not returned, and tests assert no raw credentials appear. |
-+| Do not implement telemetry | PASS | No telemetry collection, storage, route, or metric implementation was added. |
-+| Do not implement configurable runtime ports | PASS | Multiple runtime ports are explicitly reported as `PENDING` / `deferred/cancelled`. |
-+
-+## Files Changed
-+
-+- `admin/system-health.html`
-+- `assets/theme-v2/js/admin-system-health.js`
-+- `src/dev-runtime/server/local-api-router.mjs`
-+- `tests/dev-runtime/AdminHealthOperations.test.mjs`
-+- `tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`
-+- `docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard.md`
-+- `docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-manual-validation-notes.md`
-+- `docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-instruction-compliance-checklist.md`
-+- `docs_build/dev/reports/codex_review.diff`
-+- `docs_build/dev/reports/codex_changed_files.txt`
-+
-+## Implementation Notes
-+
-+- Added `systemHealthLocalApiStartupDiagnostics()` in the Local API router so the browser receives structured, sanitized diagnostics instead of parsing startup console output.
-+- Added a `localApiStartup` payload to `/api/admin/system-health/status`.
-+- Added Local API Startup Diagnostics table markup to `admin/system-health.html`.
-+- Extended `assets/theme-v2/js/admin-system-health.js` to render startup diagnostic rows using the existing shared status helpers.
-+- Added API-level tests for local startup diagnostics rows, deferred runtime ports, and URL credential redaction.
-+- Added Playwright coverage for the new dashboard table and static markup.
-+
-+## Validation Lane Report
-+
-+| Command | Result |
-+|---|---:|
-+| `git diff --check` | PASS |
-+| `node --test tests/dev-runtime/LocalApiStartupLogging.test.mjs` | PASS, 2 tests |
-+| `node --test tests/dev-runtime/AdminHealthOperations.test.mjs` | PASS, 4 tests |
-+| `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs` | PASS, 3 tests |
-+
-+## Skipped Lanes
-+
-+- Full samples smoke: skipped; the scope is Admin System Health dashboard diagnostics only.
-+- Broad Playwright suite: skipped; targeted System Health coverage passed.
-+- Telemetry validation: skipped; telemetry was explicitly out of scope and not implemented.
-+- Configurable runtime port validation: skipped; configurable multiple runtime ports were explicitly deferred/cancelled and not implemented.
-+
-+## Dependency Notes
-+
-+The current branch already contains the approved Local API startup diagnostics formatter shape:
-+
-+- deterministic `Environment Variables` section
-+- deterministic `All Runtime Ports being used by Service` section
-+- secret-like value masking
-+- URL credential redaction
-+
-+Validation confirmed the startup formatter remains intact through `tests/dev-runtime/LocalApiStartupLogging.test.mjs`.
-+
-+## ZIP Artifact
-+
-+Repo-structured delta ZIP:
-+
-+- `tmp/PR_26175_CHARLIE_002-system-health-dashboard_delta.zip`
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard_PLAN.md b/docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard_PLAN.md
-new file mode 100644
-index 000000000..b486a097b
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard_PLAN.md
-@@ -0,0 +1,163 @@
-+# PLAN_PR: PR_26175_CHARLIE_002-system-health-dashboard
-+
-+Team: Charlie
-+
-+Purpose: Plan a scoped System Health dashboard increment that builds on the Local API startup diagnostics lane without implementing configurable multiple runtime ports or unrelated telemetry/governance work.
-+
-+## Branch and Context Validation
-+
-+| Check | Expected | Actual | Status |
-+|---|---|---|---|
-+| Starting branch before switch | `pr/26172-BRAVO-text2speech-messages-inventory` | `pr/26172-BRAVO-text2speech-messages-inventory` | PASS |
-+| Bravo worktree clean before switch | no output from `git status --short` | clean | PASS |
-+| Bravo branch merged | not merged | not merged | PASS |
-+| Bravo branch modified | no | no | PASS |
-+| Charlie branch resolved | existing Team Charlie branch | `PR_26172_CHARLIE_repository-compliance-stack` | PASS |
-+| Charlie branch synced | local equals remote | `0 0` against `origin/PR_26172_CHARLIE_repository-compliance-stack` | PASS |
-+| Active team | Team Charlie | Team Charlie | PASS |
-+| Active assignment | PLAN_PR for System Health dashboard | `PR_26175_CHARLIE_002-system-health-dashboard` | PASS |
-+
-+## Dependency Gate
-+
-+This PR depends on:
-+
-+- `PR_26175_CHARLIE_001-local-api-startup-diagnostics`
-+
-+Start gate for APPLY/build:
-+
-+- PASS only when PR_001 is merged or the approved stack branch includes its committed startup diagnostics work.
-+- PASS only when the Local API startup output matches the approved diagnostics format.
-+- FAIL if PR_001 is absent, unmerged, or if startup diagnostics output is still ambiguous.
-+
-+## Scope
-+
-+Plan only for a System Health dashboard increment.
-+
-+Allowed implementation scope for the later APPLY/build:
-+
-+- Use existing Admin System Health page and safe API client patterns.
-+- Surface Local API startup diagnostics inside the System Health dashboard only if PR_001 provides a safe structured contract or stable parseable output.
-+- Keep dashboard data server-owned and browser-safe.
-+- Preserve existing Theme V2 Admin System Health layout.
-+- Preserve existing Postgres, R2, runtime environment, limits/capacity, diagnostics plan, and diagnostics log sections unless a narrowly scoped dashboard row/section addition is required.
-+- Use PASS/WARN/FAIL indicators only when backed by real diagnostics.
-+- Use PENDING or equivalent non-failure status for intentionally unwired dashboard items.
-+- Provide hover/title or accessible reason text for every non-PASS status.
-+- Do not expose secrets, raw connection strings, access keys, tokens, service role values, or database credentials.
-+
-+Out of scope:
-+
-+- Configurable multiple runtime ports implementation.
-+- New telemetry foundation.
-+- In-use delete governance.
-+- New persistence.
-+- New database schema.
-+- New R2 write behavior beyond existing safe connectivity actions.
-+- Runtime feature work outside Admin/System Health.
-+- Any changes to Team Bravo branch or reports.
-+
-+Deferred/cancelled carry-forward:
-+
-+- Configurable multiple runtime ports remains cancelled/deferred for this System Health dashboard PR.
-+- `PR_26175_CHARLIE_004-telemetry-foundation` remains deferred.
-+- `PR_26175_CHARLIE_005-in-use-delete-governance-rule` remains future governance.
-+
-+## Current Relevant Implementation Inventory
-+
-+Existing files to review during APPLY/build:
-+
-+- `admin/system-health.html`
-+- `assets/theme-v2/js/admin-system-health.js`
-+- `src/api/admin-system-health-api-client.js`
-+- `src/dev-runtime/server/local-api-router.mjs`
-+- `scripts/start-local-api-server.mjs`
-+- `tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`
-+- `tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
-+- `tests/dev-runtime/AdminHealthOperations.test.mjs`
-+- `tests/dev-runtime/LocalApiStartupLogging.test.mjs`
-+
-+Existing System Health route/API surface:
-+
-+- Browser client calls `/api/admin/system-health/status`.
-+- Browser client calls `/api/admin/system-health/storage-connectivity-action`.
-+- Local API router already returns `databaseStatus`, `storageStatus`, `runtimeEnvironment`, `limitsStatus`, `operationsHealth`, `overview`, and `summary`.
-+- Admin System Health page already renders Postgres-only database diagnostics, R2 diagnostics, runtime environment rows, limits/capacity, diagnostics plan, and diagnostics log.
-+
-+Existing validation evidence:
-+
-+- `tests/playwright/tools/AdminHealthOperationsPage.spec.mjs` covers safe System Health rendering, Postgres diagnostics, R2 diagnostics, runtime key masking, admin-only access, and no inline scripts/styles.
-+- `tests/dev-runtime/AdminHealthOperations.test.mjs` covers `/api/admin/system-health/status` admin access and blocks Creator sessions.
-+- `docs_build/dev/reports/PR_26171_018-local-api-startup-diagnostics.md` documents an older startup diagnostics shape, including environment variable output and runtime port listing.
-+- `docs_build/dev/reports/PR_26169_026-local-api-startup-url-logging.md` documents earlier Local API startup URL logging behavior.
-+
-+## Proposed APPLY/Build Steps
-+
-+1. Start from the approved Charlie branch or the owner-approved stack branch containing PR_001.
-+2. Verify dependency:
-+   - confirm PR_001 commit/report exists in the branch or mainline dependency chain;
-+   - run the startup diagnostics unit test;
-+   - confirm approved startup output format.
-+3. Inspect `scripts/start-local-api-server.mjs` and the PR_001 startup diagnostics contract.
-+4. Add a System Health dashboard row/section for Local API startup diagnostics only if the data source is safe and stable.
-+5. If PR_001 exposes only console text, prefer a server-owned helper in `src/dev-runtime/server/local-api-router.mjs` that returns sanitized startup diagnostic metadata rather than browser-parsing console output.
-+6. Extend `src/api/admin-system-health-api-client.js` only if a new API route is needed; otherwise reuse `/admin/system-health/status`.
-+7. Extend `assets/theme-v2/js/admin-system-health.js` to render any new dashboard data with existing status helper functions.
-+8. Update `admin/system-health.html` only for scoped dashboard placeholders/rows required by the new diagnostics.
-+9. Update targeted tests only.
-+10. Produce reports and delta ZIP.
-+
-+## Approved Diagnostics Format Expectation
-+
-+The later APPLY/build must verify PR_001 startup output before changing dashboard behavior. Expected properties:
-+
-+- Environment variables are listed in a deterministic section.
-+- Secret-like values are masked.
-+- URL credentials are redacted.
-+- Runtime URL/API URL/database/storage information is shown only as safe diagnostics.
-+- Configurable multiple runtime ports are not implemented in this PR.
-+- Cancelled/deferred multiple-port work is documented rather than built.
-+
-+## Status Model
-+
-+Use existing status model:
-+
-+- `PASS`: known good, backed by real diagnostic evidence.
-+- `WARN`: actionable partial/missing configuration, not a placeholder.
-+- `FAIL`: actual failed diagnostic or blocked required behavior.
-+- `PENDING`: intentional future wiring or dependency not active yet.
-+
-+Every non-PASS status must include title or accessible reason text.
-+
-+## Validation Plan
-+
-+Required targeted validation for APPLY/build:
-+
-+- `git diff --check`
-+- `node --test tests/dev-runtime/LocalApiStartupLogging.test.mjs`
-+- `node --test tests/dev-runtime/AdminHealthOperations.test.mjs`
-+- `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`
-+- Targeted browser/static validation for no secret exposure:
-+  - no raw `DATABASE_URL`;
-+  - no `PASSWORD`, `SECRET`, `TOKEN`, `KEY`, `SERVICE_ROLE`, or `JWT` values exposed;
-+  - no inline scripts/styles introduced.
-+
-+Skipped lanes:
-+
-+- Full samples smoke: skipped because the scope is Admin System Health dashboard diagnostics only.
-+- Broad Playwright: skipped unless targeted Admin/System Health tests require support coverage.
-+- Runtime feature tests outside System Health: skipped as out of scope.
-+
-+## Required Reports for APPLY/Build
-+
-+- `docs_build/dev/reports/codex_review.diff`
-+- `docs_build/dev/reports/codex_changed_files.txt`
-+- `docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard.md`
-+- `docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-manual-validation-notes.md`
-+- `docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-instruction-compliance-checklist.md`
-+- repo-structured delta ZIP under `tmp/`
-+
-+## PLAN_PR Result
-+
-+PLAN status: PASS.
-+
-+Recommendation: Continue to APPLY only after `PR_26175_CHARLIE_001-local-api-startup-diagnostics` is present in the approved dependency chain and its startup output format has been validated.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization-instruction-compliance-checklist.md
-new file mode 100644
-index 000000000..00ec50d7c
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization-instruction-compliance-checklist.md
-@@ -0,0 +1,22 @@
-+# PR_26175_CHARLIE_003 Instruction Compliance Checklist
-+
-+| Requirement | Status | Evidence |
-+|---|---:|---|
-+| Active branch remains `PR_26172_CHARLIE_repository-compliance-stack` | PASS | Branch gate returned `PR_26172_CHARLIE_repository-compliance-stack`. |
-+| Worktree clean before BUILD | PASS | `git status --short` returned no output before edits. |
-+| Local/origin sync before BUILD is `0 0` | PASS | Sync check returned `0 0`. |
-+| Scope only R2 storage configuration standardization | PASS | Changes are limited to prefix config, safe status surfaces, validation, tests, and reports. |
-+| Standardize around `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX` | PASS | Shared approved prefix list added in `storage-config.mjs`. |
-+| Allow `/dev/projects/` | PASS | Included in `STORAGE_PROJECTS_ALLOWED_PREFIXES`; covered by tests/status surfaces. |
-+| Allow `/ist/projects/` | PASS | Included in `STORAGE_PROJECTS_ALLOWED_PREFIXES`; covered by tests/status surfaces. |
-+| Allow `/uat/projects/` | PASS | Included in `STORAGE_PROJECTS_ALLOWED_PREFIXES`; covered by tests/status surfaces. |
-+| Allow `/prod/projects/` | PASS | Included in `STORAGE_PROJECTS_ALLOWED_PREFIXES`; PRD lane references updated to `/prod/projects/`. |
-+| Reject unapproved project prefixes | PASS | New storage-config test rejects `/production/projects/`, `/qa/projects/`, and `/projects/`. |
-+| Preserve R2 list/read/write/delete behavior | PASS | Connectivity action code paths were not changed; storage validation list/readiness passed with `--use-system-ca`. |
-+| Preserve System Health and Infrastructure safe status surfaces | PASS | Targeted Admin Health Operations and Infrastructure Playwright validations passed. |
-+| Do not expose secrets | PASS | Safe config excludes access and secret keys; validation output did not print credential values. |
-+| Do not implement telemetry | PASS | No telemetry implementation was added. |
-+| Do not implement configurable runtime ports | PASS | Runtime port code was not changed. |
-+| Do not edit ignored local `.env` files | PASS | Only `.env.example` was updated. |
-+| Required reports under `docs_build/dev/reports/` | PASS | PR report, manual notes, checklist, codex diff, and changed-files reports are produced. |
-+| Repo-structured ZIP under `tmp/` | PASS | ZIP produced as `tmp/PR_26175_CHARLIE_003-r2-storage-standardization_delta.zip`. |
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization-manual-validation-notes.md b/docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization-manual-validation-notes.md
-new file mode 100644
-index 000000000..8a14de4ca
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization-manual-validation-notes.md
-@@ -0,0 +1,34 @@
-+# PR_26175_CHARLIE_003 Manual Validation Notes
-+
-+## Manual Checks Completed During BUILD
-+
-+- Confirmed active branch remained `PR_26172_CHARLIE_repository-compliance-stack`.
-+- Confirmed worktree was clean before BUILD edits.
-+- Confirmed branch local/origin sync was `0 0` before BUILD edits.
-+- Reviewed ProjectInstructions and approved PLAN report.
-+- Reviewed exact target files for R2 storage config, Local API status surface, Admin Infrastructure, storage validation, and targeted tests.
-+
-+## Behavioral Notes
-+
-+- `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX` now accepts only normalized project prefixes in the approved lane list.
-+- PRD lane display now uses `/prod/projects/`.
-+- Invalid project prefixes return a safe validation error that names approved values and does not expose credentials.
-+- R2 list/read/write/delete code paths were not changed.
-+- System Health and Infrastructure status surfaces continue to hide storage credentials.
-+
-+## Validation Notes
-+
-+- `git diff --check` passed.
-+- `node --test tests/dev-runtime/StorageConfig.test.mjs` passed.
-+- `node --test tests/dev-runtime/AdminHealthOperations.test.mjs` passed.
-+- Targeted Admin Infrastructure Playwright storage path tests passed.
-+- Targeted Admin System Health Playwright route tests passed.
-+- `node scripts/validate-storage-config.mjs` failed on local certificate trust before a code failure was observed.
-+- `node --use-system-ca scripts/validate-storage-config.mjs` passed and confirmed R2 list/readiness for `/dev/projects/`.
-+
-+## Skipped Validation
-+
-+- Full samples smoke was skipped because the approved scope was storage prefix standardization only.
-+- Broad Playwright was skipped because targeted Admin status validations passed.
-+- Telemetry validation was skipped because telemetry is out of scope.
-+- Configurable runtime port validation was skipped because runtime ports are out of scope.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization.md b/docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization.md
-new file mode 100644
-index 000000000..2aa5109c2
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization.md
-@@ -0,0 +1,82 @@
-+# PR_26175_CHARLIE_003-r2-storage-standardization
-+
-+Team: Charlie
-+
-+Purpose: Standardize R2 project asset storage around `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX` and the approved project prefix set.
++Migration note:
++Team Gamma is retired. Team Golf is the replacement active ownership lane.
 +
 +## Branch Validation
 +
-+| Check | Expected | Actual | Status |
-+|---|---|---|---|
-+| Active branch | `PR_26172_CHARLIE_repository-compliance-stack` | `PR_26172_CHARLIE_repository-compliance-stack` | PASS |
-+| Worktree before BUILD | clean | clean | PASS |
-+| Local/origin sync before BUILD | `0 0` | `0 0` | PASS |
-+| Team ownership | Charlie storage/infrastructure | R2 storage configuration standardization | PASS |
++| Check | Result | Evidence |
++|---|---|---|
++| Started from main | PASS | Started from `main`, pulled with `--ff-only`, and created the OWNER_046 branch from updated main. |
++| Current branch | PASS | `PR_26175_OWNER_046-pr-targeted-review-packets` |
++| Expected branch | PASS | `PR_26175_OWNER_046-pr-targeted-review-packets` |
++| Base sync | PASS | Branch base `d39cc8c8e8f0673cb523547bc58264ab26bbcf3b`; main `d39cc8c8e8f0673cb523547bc58264ab26bbcf3b`; origin/main `d39cc8c8e8f0673cb523547bc58264ab26bbcf3b`. |
++| Worktree before edits | PASS | Clean before branch creation and file generation. |
 +
-+## Implementation Summary
++## Requirement Checklist
 +
-+- Added `STORAGE_PROJECTS_PREFIX_LANES` and `STORAGE_PROJECTS_ALLOWED_PREFIXES` as the shared approved project prefix contract.
-+- Restricted `loadStorageConfig()` to normalized prefixes matching:
-+  - `/dev/projects/`
-+  - `/ist/projects/`
-+  - `/uat/projects/`
-+  - `/prod/projects/`
-+- Updated Admin Infrastructure and Local API storage path status to use `/prod/projects/` for the PRD lane.
-+- Kept R2 list/read/write/delete behavior unchanged and still routed through the configured project prefix.
-+- Updated `.env.example` comments and `scripts/validate-storage-config.mjs` safe output to name approved prefixes.
-+- Added focused `node:test` coverage for prefix normalization, allow-list validation, missing prefix handling, and safe config secret masking.
-+
-+## Files Changed
-+
-+- `.env.example`
-+- `admin/infrastructure.html`
-+- `assets/theme-v2/js/admin-infrastructure.js`
-+- `scripts/validate-storage-config.mjs`
-+- `src/dev-runtime/server/local-api-router.mjs`
-+- `src/dev-runtime/storage/storage-config.mjs`
-+- `tests/dev-runtime/StorageConfig.test.mjs`
-+- `tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
-+
-+## Scope Guardrails
-+
-+| Requirement | Status | Notes |
-+|---|---:|---|
-+| Preserve R2 list/read/write/delete behavior | PASS | Connectivity action code paths were not changed. |
-+| Preserve System Health safe status surface | PASS | Existing Admin Health Operations test and page spec passed. |
-+| Preserve Infrastructure safe status surface | PASS | Storage path status rows now use the shared approved prefix list. |
-+| Do not expose secrets | PASS | Safe config excludes access key and secret key values; validation output printed no secret values. |
-+| Do not implement telemetry | PASS | No telemetry code was added. |
-+| Do not implement configurable runtime ports | PASS | Runtime port logic was not changed. |
-+| Do not edit local ignored `.env` files | PASS | Only `.env.example` was updated. |
++| Requirement | Result | Notes |
++|---|---|---|
++| Read all Project Instructions | PASS | Read 47 files under `docs_build/dev/ProjectInstructions/`. |
++| Replace active Team Gamma ownership with Team Golf | PASS | Active governance now routes retired Gamma lane to Team Golf. |
++| New active teams include Alfa | PASS | Active ownership map includes Team Alfa. |
++| New active teams include Bravo | PASS | Active ownership map includes Team Bravo. |
++| New active teams include Charlie | PASS | Active ownership map includes Team Charlie. |
++| New active teams include Delta | PASS | Active ownership map includes Team Delta. |
++| New active teams include Golf | PASS | Active ownership map includes Team Golf. |
++| New active teams include OWNER | PASS | Active ownership map includes Team OWNER. |
++| Do not rewrite historical PR references | PASS | No archive/history PR references were edited. |
++| Do not rename historical branches | PASS | Review packets preserve historical Gamma branch names exactly. |
++| Add migration note | PASS | Added exact note: "Team Gamma is retired. Team Golf is the replacement active ownership lane." |
++| Generate PR #3 packet | PASS | Created `docs_build/dev/reports/PR_REVIEW_003.md`. |
++| Generate PR #50 packet | PASS | Created `docs_build/dev/reports/PR_REVIEW_050.md`. |
++| Generate PR #51 packet | PASS | Created `docs_build/dev/reports/PR_REVIEW_051.md`. |
++| Generate PR #118 packet | PASS | Created `docs_build/dev/reports/PR_REVIEW_118.md`. |
++| Include required packet fields | PASS | Each packet includes title, team, branch, dates, file lists, diff summary, purpose, risks, dependencies, and recommendation. |
++| No merges | PASS | No merge action performed. |
++| No PR closures | PASS | No PR close action performed. |
++| No branch deletions | PASS | No branch deletion performed. |
++| No runtime behavior changes | PASS | Governance/report packet files changed only. |
++| Required reports | PASS | Generated summary report, `codex_changed_files.txt`, and `codex_review.diff`. |
++| Repo ZIP under tmp/ | PASS | Created `tmp/PR_26175_OWNER_046-pr-targeted-review-packets_delta.zip`. |
 +
 +## Validation Lane Report
 +
-+| Command | Result |
-+|---|---:|
-+| `git diff --check` | PASS |
-+| `node --test tests/dev-runtime/StorageConfig.test.mjs` | PASS, 5 tests |
-+| `node --test tests/dev-runtime/AdminHealthOperations.test.mjs` | PASS, 4 tests |
-+| `npx playwright test tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs --grep "Infrastructure storage path status"` | PASS, 4 tests |
-+| `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs` | PASS, 3 tests |
-+| `node scripts/validate-storage-config.mjs` | FAIL due local Node certificate trust error before code changes were needed |
-+| `node --use-system-ca scripts/validate-storage-config.mjs` | PASS; R2 list/readiness succeeded for `/dev/projects/` with 0 objects |
++| Lane | Result | Evidence |
++|---|---|---|
++| Governance lane | PASS | Updated active Project Instructions files only; history snapshots left untouched. |
++| GitHub authority lane | PASS | PR metadata and file lists fetched from GitHub REST API for #3, #50, #51, and #118. |
++| Review packet lane | PASS | Four review packet files generated. |
++| Scope lane | PASS | No runtime files modified by this branch. |
++| Whitespace lane | PASS | `git diff --check` passed after artifact generation. |
++| ZIP lane | PASS | ZIP created and contents verified as repo-structured. |
 +
-+## Validation Notes
++## Review Packet Index
 +
-+- The first `validate-storage-config` run loaded `.env`, confirmed all storage keys were present, and printed only safe endpoint, bucket, and prefix values. It failed on `UNABLE_TO_VERIFY_LEAF_SIGNATURE`.
-+- The rerun with `--use-system-ca` passed and confirmed the R2 list/readiness behavior under the approved `/dev/projects/` prefix.
-+- Active code, config, Admin UI, and targeted tests no longer use `/prd/projects/`.
-+- Historical report references to `/prd/projects/` were left untouched as report history.
++| PR | Team | Changed Files | Code Files | Recommendation | Packet |
++|---|---|---:|---:|---|---|
++| #3 | Team Bravo | 15 | 4 | Owner Decision Required. Review Bravo ownership, branch freshness, and current Messages/Emotion direction before merge/closure. | `docs_build/dev/reports/PR_REVIEW_003.md` |
++| #50 | Team Golf (historical Gamma lane) | 5 | 0 | Review First. Likely final historical Gamma/SQLite status packet, now routed to Team Golf for active ownership decisions. | `docs_build/dev/reports/PR_REVIEW_050.md` |
++| #51 | Team OWNER | 12 | 0 | Owner Decision Required. Historical governance bootstrap overlaps current ProjectInstructions state and must not be merged or archived without OWNER decision. | `docs_build/dev/reports/PR_REVIEW_051.md` |
++| #118 | Team Alfa | 7 | 0 | Review First. Treat as owner closeout evidence for the Alfa stack; do not merge until stack/order review is complete. | `docs_build/dev/reports/PR_REVIEW_118.md` |
 +
-+## Skipped Lanes
++## Changed Governance Files
 +
-+- Full samples smoke: skipped; out of scope for R2 prefix standardization.
-+- Broad Playwright: skipped; targeted Admin Infrastructure and System Health specs passed.
-+- Telemetry validation: skipped; telemetry is explicitly out of scope.
-+- Configurable runtime port validation: skipped; runtime ports are explicitly out of scope.
++- `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
++- `docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md`
++- `docs_build/dev/ProjectInstructions/addendums/multi_team.md`
++- `docs_build/dev/ProjectInstructions/addendums/pr_workflow.md`
++- `docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md`
++- `docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md`
++- `docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md`
++- `docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md`
++- `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md`
++- `docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md`
 +
-+## BUILD Result
++## Manual Validation Notes
 +
-+BUILD status: PASS.
-+
-+Recommendation: Keep this commit on the Charlie stack for owner review.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization_PLAN.md b/docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization_PLAN.md
++- Confirmed Team Gamma retirement was added as an active governance migration note without editing historical PR references or branch names.
++- Confirmed Team Golf is now the replacement active ownership lane in current governance.
++- Confirmed PR review packets preserve GitHub titles and branch names exactly, including historical Gamma/Master/Alfa naming.
++- Confirmed no runtime behavior files were edited for this branch.
+diff --git a/docs_build/dev/reports/PR_REVIEW_003.md b/docs_build/dev/reports/PR_REVIEW_003.md
 new file mode 100644
-index 000000000..08cbb72cd
+index 000000000..c5b44b288
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization_PLAN.md
-@@ -0,0 +1,150 @@
-+# PLAN_PR: PR_26175_CHARLIE_003-r2-storage-standardization
++++ b/docs_build/dev/reports/PR_REVIEW_003.md
+@@ -0,0 +1,98 @@
++# PR Review Packet #003
 +
-+Team: Charlie
++## 1. Title
 +
-+Purpose: Plan a scoped R2 storage configuration standardization PR around `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX` and the approved project storage prefixes.
++Pr/PR 26171 006 message emotion profile management
 +
-+## Branch and Context Validation
++## 2. Team
 +
-+| Check | Expected | Actual | Status |
-+|---|---|---|---|
-+| Active branch | `PR_26172_CHARLIE_repository-compliance-stack` | `PR_26172_CHARLIE_repository-compliance-stack` | PASS |
-+| Worktree before PLAN changes | clean | clean | PASS |
-+| Local/origin sync before PLAN changes | `0 0` | `0 0` | PASS |
-+| Active team | Team Charlie | Team Charlie | PASS |
-+| Ownership scope | Infrastructure / Storage / System Health | R2 storage configuration standardization | PASS |
++Team Bravo
 +
-+## Scope
++## 3. Branch
 +
-+Plan only for R2 storage configuration standardization.
++`pr/PR_26171_006-message-emotion-profile-management`
 +
-+Approved standard:
++## 4. Created Date
 +
-+- Configuration variable: `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX`
-+- Allowed project storage prefixes:
-+  - `/dev/projects/`
-+  - `/ist/projects/`
-+  - `/uat/projects/`
-+  - `/prod/projects/`
++2026-06-20T01:02:11Z
 +
-+Allowed APPLY/build scope:
++## 5. Updated Date
 +
-+- Standardize project asset storage config validation around the approved prefix set.
-+- Keep R2 as the project asset storage provider direction.
-+- Keep object keys server-owned and under the configured prefix.
-+- Keep prefix normalization for slash and backslash cleanup, then validate against the approved prefix set.
-+- Keep safe status surfaces in Admin Infrastructure and Admin System Health aligned with the same allowed prefix set.
-+- Preserve existing R2 list/read/write/delete connectivity behavior.
-+- Preserve existing Postgres, Runtime Environment, Limits, Diagnostics Plan, and Diagnostics Log behavior.
-+- Preserve secret masking and never return access key or secret key values.
++2026-06-20T01:08:39Z
 +
-+Explicitly out of scope:
++## Status And Age
 +
-+- Telemetry implementation.
-+- Configurable runtime ports.
-+- New storage provider abstraction.
-+- Live R2 credential changes.
-+- New persistence tables or database schema.
-+- Backup prefix changes beyond checking for conflicts with project storage prefix rules.
-+- Editing local ignored `.env` files.
-+- Samples smoke.
++- Status: Open
++- Age: 4d 2h
++- Author: ToolboxAid
++- URL: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/3
 +
-+## Current Implementation Inventory
++## 6. Full Changed File List
 +
-+Exact target files reviewed:
++- docs_build/dev/reports/PR_26171_006-message-emotion-profile-management-manual-validation.md (added, +11/-0)
++- docs_build/dev/reports/PR_26171_006-message-emotion-profile-management-validation.txt (added, +30/-0)
++- docs_build/dev/reports/PR_26171_006-message-emotion-profile-management.md (added, +53/-0)
++- docs_build/dev/reports/codex_changed_files.txt (updated, +8/-9)
++- docs_build/dev/reports/codex_review.diff (updated, +352/-305)
++- docs_build/pr/BUILD_PR_26171_006-message-emotion-profile-management.md (added, +83/-0)
++- docs_build/pr/BUILD_PR_26171_008-message-tts-profile-foundation.md (added, +98/-0)
++- docs_build/pr/BUILD_PR_26171_010-message-speech-preview.md (added, +84/-0)
++- docs_build/pr/BUILD_PR_26171_012-message-voice-provider-adapters.md (added, +86/-0)
++- docs_build/pr/BUILD_PR_26171_014-runtime-message-playback-foundation.md (added, +84/-0)
++- docs_build/pr/BUILD_PR_26171_016-midi-studio-roadmap-foundation.md (added, +74/-0)
++- src/dev-runtime/messages/messages-sqlite-service.mjs (updated, +54/-4)
++- tests/playwright/tools/MessagesTool.spec.mjs (updated, +37/-0)
++- toolbox/messages/index.html (updated, +5/-4)
++- toolbox/messages/messages.js (updated, +7/-1)
 +
-+- `src/dev-runtime/storage/storage-config.mjs`
-+- `src/dev-runtime/storage/r2-project-asset-storage.mjs`
-+- `src/dev-runtime/server/local-api-router.mjs`
-+- `scripts/validate-storage-config.mjs`
-+- `admin/infrastructure.html`
-+- `assets/theme-v2/js/admin-infrastructure.js`
-+- `admin/system-health.html`
-+- `assets/theme-v2/js/admin-system-health.js`
-+- `tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
++## 7. Code File List Only
 +
-+Current findings:
++- src/dev-runtime/messages/messages-sqlite-service.mjs (updated, +54/-4)
++- tests/playwright/tools/MessagesTool.spec.mjs (updated, +37/-0)
++- toolbox/messages/index.html (updated, +5/-4)
++- toolbox/messages/messages.js (updated, +7/-1)
 +
-+- `storage-config.mjs` normalizes `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX` but currently accepts any non-empty normalized prefix.
-+- `local-api-router.mjs` already has `STORAGE_PROJECTS_PREFIX_LANES` with the four approved prefixes and reports invalid paths in Infrastructure/System Health status.
-+- `admin/infrastructure.html` lists `/dev/projects/`, `/ist/projects/`, `/uat/projects/`, and `/prd/projects/`.
-+- `assets/theme-v2/js/admin-infrastructure.js` mirrors those four paths client-side for fallback/error rows.
-+- `AdminPlatformToolsWireframes.spec.mjs` has focused coverage for missing, invalid, DEV, and IST path status and includes the full four-prefix list.
-+- `scripts/validate-storage-config.mjs` validates configured R2 connectivity but depends on `loadStorageConfig()` for prefix acceptance.
-+- `.env.example` includes `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX=` but does not currently enforce a value.
-+- Tracked `.env.dev`, `.env.ist`, `.env.uat`, and `.env.prd` files were not present in this workspace when searched. Local ignored environment files must not be edited by this PR.
++## 8. Diff Summary By File
 +
-+## Proposed APPLY/Build Steps
++| File | Change | Size | Summary |
++|---|---|---:|---|
++| docs_build/dev/reports/PR_26171_006-message-emotion-profile-management-manual-validation.md | added | +11/-0 | added report artifact (11+/0-). |
++| docs_build/dev/reports/PR_26171_006-message-emotion-profile-management-validation.txt | added | +30/-0 | added report artifact (30+/0-). |
++| docs_build/dev/reports/PR_26171_006-message-emotion-profile-management.md | added | +53/-0 | added report artifact (53+/0-). |
++| docs_build/dev/reports/codex_changed_files.txt | updated | +8/-9 | updated report artifact (8+/9-). |
++| docs_build/dev/reports/codex_review.diff | updated | +352/-305 | updated report artifact (352+/305-). |
++| docs_build/pr/BUILD_PR_26171_006-message-emotion-profile-management.md | added | +83/-0 | added file (83+/0-); sample added: # BUILD PR_26171_006-message-emotion-profile-management. |
++| docs_build/pr/BUILD_PR_26171_008-message-tts-profile-foundation.md | added | +98/-0 | added file (98+/0-); sample added: # BUILD PR_26171_008-message-tts-profile-foundation. |
++| docs_build/pr/BUILD_PR_26171_010-message-speech-preview.md | added | +84/-0 | added file (84+/0-); sample added: # BUILD PR_26171_010-message-speech-preview. |
++| docs_build/pr/BUILD_PR_26171_012-message-voice-provider-adapters.md | added | +86/-0 | added file (86+/0-); sample added: # BUILD PR_26171_012-message-voice-provider-adapters. |
++| docs_build/pr/BUILD_PR_26171_014-runtime-message-playback-foundation.md | added | +84/-0 | added file (84+/0-); sample added: # BUILD PR_26171_014-runtime-message-playback-foundation. |
++| docs_build/pr/BUILD_PR_26171_016-midi-studio-roadmap-foundation.md | added | +74/-0 | added file (74+/0-); sample added: # BUILD PR_26171_016-midi-studio-roadmap-foundation. |
++| src/dev-runtime/messages/messages-sqlite-service.mjs | updated | +54/-4 | updated JavaScript module (54+/4-). |
++| tests/playwright/tools/MessagesTool.spec.mjs | updated | +37/-0 | updated JavaScript module (37+/0-). |
++| toolbox/messages/index.html | updated | +5/-4 | updated HTML page structure (5+/4-). |
++| toolbox/messages/messages.js | updated | +7/-1 | updated JavaScript module (7+/1-). |
 +
-+1. Add an exported approved project prefix list in `src/dev-runtime/storage/storage-config.mjs`, for example `STORAGE_PROJECTS_ALLOWED_PREFIXES`.
-+2. Update `loadStorageConfig()` so `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX` is normalized first, then accepted only when it matches one of:
-+   - `/dev/projects/`
-+   - `/ist/projects/`
-+   - `/uat/projects/`
-+   - `/prod/projects/`
-+3. Return a safe validation error when the prefix is missing or outside the approved list.
-+4. Update `src/dev-runtime/server/local-api-router.mjs` to reuse the storage-config approved prefix list where practical, or keep its lane metadata explicitly synchronized if importing would create an unwanted dependency.
-+5. Update `scripts/validate-storage-config.mjs` output so invalid prefixes report the approved values without printing secrets.
-+6. Update `.env.example` comments near `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX` to document the approved values. Leave the value blank if templates should not default to a lane.
-+7. Add or update targeted Node tests for `normalizeStorageProjectsPrefix()` and `loadStorageConfig()`:
-+   - accepts slash variants that normalize to approved prefixes;
-+   - rejects `/qa/projects/`;
-+   - rejects generic `/projects/`;
-+   - rejects empty values;
-+   - never exposes access key or secret key values in safe config.
-+8. Update targeted Admin/System Health validation only if the payload shape changes.
-+9. Produce required reports and repo-structured ZIP.
++## Changed Code File Details
 +
-+## Status and Severity Rules
++| Relative Path | Added/Updated/Deleted | Concise Change Summary |
++|---|---|---|
++| src/dev-runtime/messages/messages-sqlite-service.mjs | updated | updated JavaScript module (54+/4-). |
++| tests/playwright/tools/MessagesTool.spec.mjs | updated | updated JavaScript module (37+/0-). |
++| toolbox/messages/index.html | updated | updated HTML page structure (5+/4-). |
++| toolbox/messages/messages.js | updated | updated JavaScript module (7+/1-). |
 +
-+Use existing status model:
++## 9. Purpose
 +
-+- `PASS`: configured prefix matches exactly one approved lane.
-+- `WARN`: missing or incomplete storage configuration.
-+- `FAIL`: malformed or unsafe storage configuration if the existing caller expects failure semantics.
-+- `PENDING`: intentionally unwired future work only.
++No PR body provided.
 +
-+For this PR, invalid project prefixes should remain visible and actionable. The recommended server-facing status is `WARN` unless an existing route/test already treats invalid prefix as `ERROR` and preserving that behavior is safer. Browser-facing status must not expose secret values.
++## 10. Risks
 +
-+## Validation Plan
++Medium/high: 4 code file(s) changed, including tests/playwright/tools/MessagesTool.spec.mjs. Requires targeted validation review before merge.
 +
-+Required targeted validation for APPLY/build:
++## 11. Dependencies
 +
-+- `git diff --check`
-+- `node --test tests/dev-runtime/StorageConfig.test.mjs` or equivalent new targeted storage-config test
-+- `node --test tests/dev-runtime/AdminHealthOperations.test.mjs`
-+- `npx playwright test tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs --grep "Infrastructure storage path status"`
-+- `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs`
-+- `node scripts/validate-storage-config.mjs` only when `.env` is present and configured; otherwise document SKIP from script output.
++Bravo Messages/Emotion workstream; owner/team decision required because current dependency state is not fully inferable from the PR title alone.
 +
-+Required static checks:
++## 12. Recommendation
 +
-+- Verify `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX` appears in config/docs/status surfaces.
-+- Verify approved prefixes appear:
-+  - `/dev/projects/`
-+  - `/ist/projects/`
-+  - `/uat/projects/`
-+  - `/prod/projects/`
-+- Verify no raw R2 credentials are printed in reports, tests, or status payloads.
-+
-+Skipped lanes:
-+
-+- Full samples smoke: skipped because scope is R2 storage config standardization only.
-+- Broad Playwright: skipped unless targeted Admin/System Health validation fails.
-+- Telemetry validation: skipped because telemetry is explicitly out of scope.
-+- Runtime-port validation: skipped because configurable runtime ports are explicitly out of scope.
-+
-+## Required Reports for APPLY/Build
-+
-+- `docs_build/dev/reports/codex_review.diff`
-+- `docs_build/dev/reports/codex_changed_files.txt`
-+- `docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization.md`
-+- `docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization-manual-validation-notes.md`
-+- `docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization-instruction-compliance-checklist.md`
-+- repo-structured delta ZIP under `tmp/`
-+
-+## PLAN_PR Result
-+
-+PLAN status: PASS.
-+
-+Recommendation: Proceed to BUILD/APPLY on the active Charlie stack branch if owner approves the scoped server-side prefix validation and targeted test additions.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_EOD-branch-validation.md b/docs_build/dev/reports/PR_26175_CHARLIE_EOD-branch-validation.md
++Owner Decision Required. Review Bravo ownership, branch freshness, and current Messages/Emotion direction before merge/closure.
+diff --git a/docs_build/dev/reports/PR_REVIEW_050.md b/docs_build/dev/reports/PR_REVIEW_050.md
 new file mode 100644
-index 000000000..64dfdbb53
+index 000000000..d1521b998
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_EOD-branch-validation.md
-@@ -0,0 +1,35 @@
-+# PR_26175_CHARLIE EOD Branch Validation
-+
-+## Context
-+
-+| Check | Expected | Actual | Status |
-+|---|---|---|---|
-+| Current branch before EOD closeout | `PR_26172_CHARLIE_repository-compliance-stack` | `PR_26172_CHARLIE_repository-compliance-stack` | PASS |
-+| Active team | Team Charlie | Team Charlie | PASS |
-+| Worktree before committing PR_003 BUILD | clean | dirty with scoped PR_003 BUILD files | WARN |
-+| Action for dirty worktree | commit scoped completed BUILD work | `a7e05a124 BUILD_PR PR_26175_CHARLIE_003 r2 storage standardization` | PASS |
-+| Branch local/origin after PR_003 push | `0 0` | `0 0` | PASS |
-+| Latest main fetched | `origin/main` current | `793cf755c Merge PR_26175_ALFA_005 game hub audit findings cleanup` | PASS |
-+| Latest main reconciled into Charlie | required before main merge | `a401ac694 Merge latest main into Charlie compliance stack` | PASS |
-+| Merge conflicts | resolved only in generated Codex report artifacts | `codex_changed_files.txt`, `codex_review.diff` regenerated during EOD | PASS |
-+
-+## PR Review
-+
-+| PR Scope | Evidence | Status |
-+|---|---|---:|
-+| `PR_26175_CHARLIE_001-local-api-startup-diagnostics` | No matching `PR_26175_CHARLIE_001` commit or report found in fetched refs or current branch. Earlier startup diagnostics evidence exists under `PR_26171_018-local-api-startup-diagnostics`. | REVIEW NOTE |
-+| `PR_26175_CHARLIE_002-system-health-dashboard` | `446579503 PLAN_PR PR_26175_CHARLIE_002 system health dashboard`; `5de48d1f7 BUILD_PR PR_26175_CHARLIE_002 system health dashboard`; required reports present. | PASS |
-+| `PR_26175_CHARLIE_003-r2-storage-standardization` | `a2c0dd1b1 PLAN_PR PR_26175_CHARLIE_003 r2 storage standardization`; `a7e05a124 BUILD_PR PR_26175_CHARLIE_003 r2 storage standardization`; required reports present. | PASS |
-+
-+## Branch Status Before Main Merge
-+
-+- Branch: `PR_26172_CHARLIE_repository-compliance-stack`
-+- Worktree: clean before EOD report generation
-+- Branch relative to `origin/main` after latest-main reconciliation: ahead with Charlie PR_002/PR_003 closeout commits
-+- Branch relative to `origin/PR_26172_CHARLIE_repository-compliance-stack` before final EOD push: ahead due latest-main reconciliation and EOD reports
-+
-+## Hard Stops
-+
-+- PR_004 was not started.
-+- PR_005 was not started.
-+- No unrelated implementation work was added during EOD closeout.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_EOD-closeout.md b/docs_build/dev/reports/PR_26175_CHARLIE_EOD-closeout.md
-new file mode 100644
-index 000000000..b93f2636f
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_EOD-closeout.md
-@@ -0,0 +1,47 @@
-+# PR_26175_CHARLIE EOD Closeout Report
-+
-+## Summary
-+
-+Team Charlie EOD closeout prepared the `PR_26172_CHARLIE_repository-compliance-stack` branch for merge into `main`.
-+
-+## Completed Work Reviewed
-+
-+- `PR_26175_CHARLIE_002-system-health-dashboard`
-+- `PR_26175_CHARLIE_003-r2-storage-standardization`
-+
-+Review note:
-+
-+- `PR_26175_CHARLIE_001-local-api-startup-diagnostics` was requested for review, but no matching `PR_26175_CHARLIE_001` commit or report was found in current branch or fetched refs. Prior startup diagnostics material exists under `PR_26171_018-local-api-startup-diagnostics`.
-+
-+## Validation Performed During Closeout
-+
-+| Validation | Result |
-+|---|---:|
-+| Branch context check | PASS |
-+| Worktree check after PR_003 commit | PASS |
-+| Branch push after PR_003 commit | PASS |
-+| Latest main fetch with `schannel` | PASS |
-+| Merge latest `origin/main` into Charlie | PASS |
-+| Conflict resolution | PASS, generated Codex artifacts only |
-+| PR_004 not started | PASS |
-+| PR_005 not started | PASS |
-+
-+## EOD Artifact Set
-+
-+- `docs_build/dev/reports/PR_26175_CHARLIE_EOD-branch-validation.md`
-+- `docs_build/dev/reports/PR_26175_CHARLIE_EOD-merge-summary.md`
-+- `docs_build/dev/reports/PR_26175_CHARLIE_EOD-closeout.md`
-+- `docs_build/dev/reports/codex_review.diff`
-+- `docs_build/dev/reports/codex_changed_files.txt`
-+- `tmp/PR_26175_CHARLIE_EOD-closeout_delta.zip`
-+
-+## Deferred / Not Started
-+
-+- `PR_26175_CHARLIE_004-telemetry-foundation`
-+- `PR_26175_CHARLIE_005-in-use-delete-governance-rule`
-+
-+## Closeout Status
-+
-+Status before final main merge: READY FOR EOD MERGE.
-+
-+Final repository state is recorded after main checkout, pull, merge, push, and sync verification.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_EOD-merge-summary.md b/docs_build/dev/reports/PR_26175_CHARLIE_EOD-merge-summary.md
-new file mode 100644
-index 000000000..83a8af35b
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_EOD-merge-summary.md
-@@ -0,0 +1,57 @@
-+# PR_26175_CHARLIE EOD Merge Summary
-+
-+## Requested Action
-+
-+EOD Team Charlie closeout for `PR_26172_CHARLIE_repository-compliance-stack`.
-+
-+Owner instruction included:
-+
-+- Verify Charlie branch clean and synced.
-+- Review completed PRs 001, 002, and 003.
-+- Merge Team Charlie branch into main following repository governance.
-+- Push main.
-+- Generate EOD reports and ZIP artifact.
-+- Do not start PR_004 or PR_005.
-+
-+## Reconciliation Summary
-+
-+- Default `git fetch origin` failed because local OpenSSL certificate verification could not find the issuer certificate.
-+- `git -c http.sslBackend=schannel fetch origin` succeeded.
-+- `origin/main` advanced to `793cf755c Merge PR_26175_ALFA_005 game hub audit findings cleanup`.
-+- Charlie branch was clean and synced after committing and pushing PR_003 BUILD work.
-+- `origin/main` was merged into Charlie in `a401ac694 Merge latest main into Charlie compliance stack`.
-+- Conflicts occurred only in generated Codex report artifacts and were resolved by regenerating closeout reports.
-+
-+## Commits Reviewed
-+
-+| Commit | Summary |
-+|---|---|
-+| `446579503` | PLAN_PR PR_26175_CHARLIE_002 system health dashboard |
-+| `5de48d1f7` | BUILD_PR PR_26175_CHARLIE_002 system health dashboard |
-+| `a2c0dd1b1` | PLAN_PR PR_26175_CHARLIE_003 r2 storage standardization |
-+| `a7e05a124` | BUILD_PR PR_26175_CHARLIE_003 r2 storage standardization |
-+| `a401ac694` | Merge latest main into Charlie compliance stack |
-+
-+## Main Merge Plan
-+
-+After this EOD report commit:
-+
-+1. Push `PR_26172_CHARLIE_repository-compliance-stack`.
-+2. Checkout `main`.
-+3. Pull latest `origin/main`.
-+4. Merge `PR_26172_CHARLIE_repository-compliance-stack` into `main`.
-+5. Push `main`.
-+6. Verify final branch is `main`.
-+7. Verify worktree is clean.
-+8. Verify local/origin sync is `0 0`.
-+
-+## Final Main Merge Note
-+
-+- Main advanced again to `8ac1bb1d2` before the final Charlie merge.
-+- The final main merge had conflicts only in generated Codex report artifacts.
-+- The final Codex report artifacts were regenerated from the merge index before committing the main merge.
-+
-+## Notes
-+
-+- The actual final main commit is recorded in the final Codex response after the merge/push step completes.
-+- PR_004 and PR_005 were not started.
-diff --git a/scripts/validate-storage-config.mjs b/scripts/validate-storage-config.mjs
-index 032195b24..e84193ba9 100644
---- a/scripts/validate-storage-config.mjs
-+++ b/scripts/validate-storage-config.mjs
-@@ -3,7 +3,11 @@ import fs from "node:fs";
- import path from "node:path";
- import process from "node:process";
- import { createConfiguredProjectAssetStorage } from "../src/dev-runtime/storage/r2-project-asset-storage.mjs";
--import { STORAGE_ENV_KEYS, loadStorageConfig } from "../src/dev-runtime/storage/storage-config.mjs";
-+import {
-+  STORAGE_ENV_KEYS,
-+  STORAGE_PROJECTS_ALLOWED_PREFIXES,
-+  loadStorageConfig,
-+} from "../src/dev-runtime/storage/storage-config.mjs";
-
- const ENV_FILE = ".env";
-
-@@ -64,6 +68,7 @@ console.log(`PASS - Storage env keys present=${presentKeys.length}/${STORAGE_ENV
-
- if (!config.configured) {
-   console.log(`SKIP - Storage DEV values are not fully configured in .env (${config.missingKeys?.join(", ") || config.validationError}).`);
-+  console.log(`SKIP - Approved project storage prefixes: ${STORAGE_PROJECTS_ALLOWED_PREFIXES.join(", ")}.`);
-   process.exit(0);
- }
-
-diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index 577375844..1c6e9c126 100644
---- a/src/dev-runtime/server/local-api-router.mjs
-+++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -17,7 +17,11 @@ import {
-   createInputMappingToolMockRepository,
- } from "../persistence/tool-repositories/input-mapping-mock-repository.js";
- import { createConfiguredBackupStorage, createConfiguredProjectAssetStorage } from "../storage/r2-project-asset-storage.mjs";
--import { loadStorageConfig } from "../storage/storage-config.mjs";
-+import {
-+  STORAGE_PROJECTS_PREFIX_LANES,
-+  loadStorageConfig,
-+  normalizeStorageProjectsPrefix,
-+} from "../storage/storage-config.mjs";
- import { createPostgresBackup } from "../database/postgres-backup-service.mjs";
- import {
-   GFSP_PACKAGE_REQUIRED_FILES,
-@@ -311,6 +315,12 @@ const RUNTIME_ENV_SECRET_MARKERS = Object.freeze([
-   "JWT",
-   "DATABASE_URL",
- ]);
-+const LOCAL_API_STARTUP_DEFAULT_HOST = "127.0.0.1";
-+const LOCAL_API_STARTUP_DEFAULT_PORT = "5501";
-+const LOCAL_API_STARTUP_DEFAULT_PORT_BY_PROTOCOL = Object.freeze({
-+  "http:": "80",
-+  "https:": "443",
-+});
- const SYSTEM_HEALTH_USAGE_NOT_AVAILABLE = "NOT AVAILABLE";
- const SYSTEM_HEALTH_USAGE_CONTRACTS = Object.freeze({
-   GAMEFOUNDRY_DB_CONNECTION_LIMIT: Object.freeze({
-@@ -329,12 +339,6 @@ const SYSTEM_HEALTH_USAGE_CONTRACTS = Object.freeze({
-     integrationPoint: "Future R2 provider telemetry can report project asset storage bytes used through the Local API.",
-   }),
- });
--const STORAGE_PROJECTS_PREFIX_LANES = Object.freeze([
--  Object.freeze({ lane: "DEV", path: "/dev/projects/" }),
--  Object.freeze({ lane: "IST", path: "/ist/projects/" }),
--  Object.freeze({ lane: "UAT", path: "/uat/projects/" }),
--  Object.freeze({ lane: "PRD", path: "/prd/projects/" }),
--]);
- const STORAGE_CONNECTIVITY_ACTIONS = Object.freeze([
-   Object.freeze({ id: "storage-list", label: "List" }),
-   Object.freeze({ id: "storage-write-test-object", label: "Write test object" }),
-@@ -497,8 +501,9 @@ function dotEnvValue(key) {
-
- function storageProjectsPrefixStatus() {
-   const currentPath = dotEnvValue(STORAGE_PROJECTS_PREFIX_ENV_KEY);
--  const matchedLane = STORAGE_PROJECTS_PREFIX_LANES.find((lane) => lane.path === currentPath.value);
--  const invalidPath = !currentPath.found || !currentPath.value || !matchedLane;
-+  const normalizedPath = normalizeStorageProjectsPrefix(currentPath.value);
-+  const matchedLane = STORAGE_PROJECTS_PREFIX_LANES.find((lane) => lane.path === normalizedPath);
-+  const invalidPath = !currentPath.found || !normalizedPath || !matchedLane;
-   const rows = STORAGE_PROJECTS_PREFIX_LANES.map((lane) => {
-     if (invalidPath) {
-       return {
-@@ -508,7 +513,7 @@ function storageProjectsPrefixStatus() {
-         value: "ERROR",
-       };
-     }
--    const active = currentPath.value === lane.path;
-+    const active = normalizedPath === lane.path;
-     return {
-       ...lane,
-       active,
-@@ -519,7 +524,7 @@ function storageProjectsPrefixStatus() {
-   return {
-     configured: !invalidPath,
-     invalidPath,
--    missing: !currentPath.found || !currentPath.value,
-+    missing: !currentPath.found || !normalizedPath,
-     rows,
-     secretsExposed: false,
-     status: invalidPath ? "ERROR" : "PASS",
-@@ -735,6 +740,117 @@ function overallHealthStatus(rows) {
-   return "PASS";
- }
-
-+function localApiStartupPortFromUrl(value) {
-+  const rawValue = String(value || "").trim();
-+  if (!rawValue) {
-+    return "not configured";
-+  }
-+  try {
-+    const parsedUrl = new URL(rawValue);
-+    return parsedUrl.port || LOCAL_API_STARTUP_DEFAULT_PORT_BY_PROTOCOL[parsedUrl.protocol] || "not configured";
-+  } catch {
-+    return "invalid URL";
-+  }
-+}
-+
-+function localApiStartupUrlDisplay(value, fallback = "not configured") {
-+  const rawValue = String(value || "").trim();
-+  if (!rawValue) {
-+    return fallback;
-+  }
-+  try {
-+    const parsedUrl = new URL(rawValue);
-+    if (parsedUrl.username) {
-+      parsedUrl.username = "********";
-+    }
-+    if (parsedUrl.password) {
-+      parsedUrl.password = "********";
-+    }
-+    parsedUrl.search = "";
-+    parsedUrl.hash = "";
-+    return parsedUrl.toString();
-+  } catch {
-+    return "invalid URL";
-+  }
-+}
-+
-+function localApiStartupBindTarget(env = process.env) {
-+  const host = String(env.GAMEFOUNDRY_LOCAL_API_HOST || LOCAL_API_STARTUP_DEFAULT_HOST).trim() || LOCAL_API_STARTUP_DEFAULT_HOST;
-+  const port = String(env.GAMEFOUNDRY_LOCAL_API_PORT || LOCAL_API_STARTUP_DEFAULT_PORT).trim() || LOCAL_API_STARTUP_DEFAULT_PORT;
-+  const portStatus = /^[1-9]\d*$/.test(port) ? "PASS" : "WARN";
-+  return {
-+    host,
-+    port,
-+    status: portStatus,
-+    value: `${host}:${port}`,
-+  };
-+}
-+
-+function systemHealthLocalApiStartupDiagnostics(env = process.env) {
-+  const bindTarget = localApiStartupBindTarget(env);
-+  const configuredApiUrl = String(env.GAMEFOUNDRY_API_URL || "").trim();
-+  const derivedApiUrl = `http://${bindTarget.value}/api`;
-+  const siteUrl = String(env.GAMEFOUNDRY_SITE_URL || "").trim();
-+  const rows = [
-+    {
-+      field: "Approved diagnostics format",
-+      reason: "Startup output includes deterministic Environment Variables and All Runtime Ports sections.",
-+      status: "PASS",
-+      value: "Environment Variables + All Runtime Ports",
-+    },
-+    {
-+      field: "Environment variable diagnostics",
-+      reason: "Startup output masks secret-like values and redacts URL credentials before printing.",
-+      status: "PASS",
-+      value: "masked and redacted",
-+    },
-+    {
-+      field: "Configured startup bind target",
-+      reason: bindTarget.status === "PASS"
-+        ? "Local API startup uses the configured or default host and port for the bind target."
-+        : "GAMEFOUNDRY_LOCAL_API_PORT must be a positive integer.",
-+      status: bindTarget.status,
-+      value: bindTarget.value,
-+    },
-+    {
-+      field: "Configured site URL",
-+      reason: siteUrl
-+        ? "GAMEFOUNDRY_SITE_URL is available for startup diagnostics."
-+        : "GAMEFOUNDRY_SITE_URL is not configured; startup diagnostics will print not configured.",
-+      status: siteUrl ? "PASS" : "WARN",
-+      value: localApiStartupUrlDisplay(siteUrl),
-+    },
-+    {
-+      field: "Configured API URL",
-+      reason: configuredApiUrl
-+        ? "GAMEFOUNDRY_API_URL is configured and displayed without URL credentials."
-+        : "GAMEFOUNDRY_API_URL is not configured; startup diagnostics derive /api from the bind target.",
-+      status: "PASS",
-+      value: localApiStartupUrlDisplay(configuredApiUrl || derivedApiUrl),
-+    },
-+    {
-+      field: "Configured API URL port",
-+      reason: "Port is derived from the configured or startup-derived API URL for display only.",
-+      status: "PASS",
-+      value: localApiStartupPortFromUrl(configuredApiUrl || derivedApiUrl),
-+    },
-+    {
-+      field: "Configurable multiple runtime ports",
-+      reason: "Configurable multiple runtime ports are explicitly deferred/cancelled for this PR.",
-+      status: "PENDING",
-+      value: "deferred/cancelled",
-+    },
-+  ];
-+  const actionableRows = rows.filter((row) => row.status !== "PENDING");
-+  return {
-+    message: "Local API startup diagnostics use the approved safe output format; configurable multiple runtime ports remain deferred.",
-+    rows,
-+    secretEditingAllowed: false,
-+    secretsExposed: false,
-+    status: overallHealthStatus(actionableRows),
-+  };
-+}
-+
- function systemHealthSummary(rows) {
-   const counts = systemHealthCounts(rows);
-   const total = counts.PASS + counts.WARN + counts.FAIL;
-@@ -3512,6 +3628,7 @@ LIMIT 1;
-     const databaseStatus = await this.ownerDatabaseStatus();
-     const storageStatus = this.ownerStorageStatus();
-     const environmentStatus = storageProjectsPrefixStatus();
-+    const localApiStartup = systemHealthLocalApiStartupDiagnostics();
-     const limitRows = systemHealthLimitRows();
-     const limitsStatus = systemHealthLimitStatus(limitRows);
-     const packageStatus = projectPackageReadinessStatus();
-@@ -3563,6 +3680,11 @@ LIMIT 1;
-           ? "Required limits are configured correctly; live usage is NOT AVAILABLE until provider usage metrics are exposed safely."
-           : "One or more required limits are missing or invalid in current .env.",
-       },
-+      {
-+        area: "Local API startup diagnostics",
-+        status: localApiStartup.status,
-+        summary: localApiStartup.message,
-+      },
-       {
-         area: "Migration status",
-         status: databaseStatus.migrationStatus || "WARN",
-@@ -3596,6 +3718,12 @@ LIMIT 1;
-         { area: "Environment configuration", field: environmentStatus.variableName, status: environmentStatus.status, value: environmentStatus.configured ? "valid lane match" : "missing or invalid" },
-         { area: "Secrets status", field: "Storage access key", status: storageStatus.accessKeyStatus || "WARN", value: storageStatus.accessKeyConfigured ? "configured; value hidden" : "not configured" },
-         { area: "Secrets status", field: "Storage secret key", status: storageStatus.secretKeyStatus || "WARN", value: storageStatus.secretKeyConfigured ? "configured; value hidden" : "not configured" },
-+        ...localApiStartup.rows.map((row) => ({
-+          area: "Local API startup diagnostics",
-+          field: row.field,
-+          status: row.status,
-+          value: row.value,
-+        })),
-         { area: "Migration status", field: "Migration counts", status: databaseStatus.migrationStatus || "WARN", value: `DDL=${databaseStatus.migrationCounts?.DDL || 0}; DML=${databaseStatus.migrationCounts?.DML || 0}` },
-         { area: "Project package readiness", field: ".gfsp decision", status: packageStatus.status, value: packageStatus.decisionPath },
-         { area: "Project package readiness", field: "Runtime scaffold", status: packageStatus.status, value: `${packageStatus.contract?.packageType || "Game Foundry Studio Project"} ${packageStatus.contract?.contractVersion || ""}`.trim() },
-@@ -3615,6 +3743,7 @@ LIMIT 1;
-         adminOperations: "/admin/operations.html",
-       },
-       limits: limitRows,
-+      localApiStartup,
-       message: "Admin System Health loaded safe status only.",
-       operationsHealth,
-       overview,
-diff --git a/src/dev-runtime/storage/storage-config.mjs b/src/dev-runtime/storage/storage-config.mjs
-index e54f404cc..ceecc8469 100644
---- a/src/dev-runtime/storage/storage-config.mjs
-+++ b/src/dev-runtime/storage/storage-config.mjs
-@@ -8,6 +8,15 @@ export const STORAGE_ENV_KEYS = Object.freeze([
-   ...STORAGE_CONNECTION_ENV_KEYS,
-   "GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX",
- ]);
-+export const STORAGE_PROJECTS_PREFIX_LANES = Object.freeze([
-+  Object.freeze({ lane: "DEV", path: "/dev/projects/" }),
-+  Object.freeze({ lane: "IST", path: "/ist/projects/" }),
-+  Object.freeze({ lane: "UAT", path: "/uat/projects/" }),
-+  Object.freeze({ lane: "PRD", path: "/prod/projects/" }),
-+]);
-+export const STORAGE_PROJECTS_ALLOWED_PREFIXES = Object.freeze(
-+  STORAGE_PROJECTS_PREFIX_LANES.map((lane) => lane.path),
-+);
- export const DB_BACKUP_STORAGE_PROVIDER_ENV = "GAMEFOUNDRY_DB_BACKUP_STORAGE_PROVIDER";
- export const DB_BACKUP_PREFIX_ENV = "GAMEFOUNDRY_DB_BACKUP_PREFIX";
- export const DB_BACKUP_STORAGE_ENV_KEYS = Object.freeze([
-@@ -38,6 +47,10 @@ export function normalizeStorageProjectsPrefix(value) {
-   return normalizeStoragePrefix(value);
- }
-
-+function storageProjectsPrefixValidationError() {
-+  return `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX must be one of ${STORAGE_PROJECTS_ALLOWED_PREFIXES.join(", ")}.`;
-+}
-+
- export function loadStorageConfig(env = process.env) {
-   const missingKeys = STORAGE_ENV_KEYS.filter((key) => !envValue(env, key));
-   if (missingKeys.length) {
-@@ -80,6 +93,18 @@ export function loadStorageConfig(env = process.env) {
-       },
-     };
-   }
-+  if (!STORAGE_PROJECTS_ALLOWED_PREFIXES.includes(projectsPrefix)) {
-+    return {
-+      configured: false,
-+      missingKeys: [],
-+      safe: {
-+        bucket: envValue(env, "GAMEFOUNDRY_STORAGE_BUCKET"),
-+        endpoint: endpoint.origin,
-+        projectsPrefix,
-+      },
-+      validationError: storageProjectsPrefixValidationError(),
-+    };
-+  }
-
-   return {
-     accessKeyId: envValue(env, "GAMEFOUNDRY_STORAGE_ACCESS_KEY_ID"),
-diff --git a/tests/dev-runtime/AdminHealthOperations.test.mjs b/tests/dev-runtime/AdminHealthOperations.test.mjs
-index 7f7ae4f3c..69f2b146d 100644
---- a/tests/dev-runtime/AdminHealthOperations.test.mjs
-+++ b/tests/dev-runtime/AdminHealthOperations.test.mjs
-@@ -108,6 +108,8 @@ async function apiJson(baseUrl, pathName, request = {}) {
-
- test("Admin can view operational health while Creator sessions are blocked", async () => {
-   await withEnv({
-+    GAMEFOUNDRY_API_URL: "http://api-user:api-secret@127.0.0.1:5501/api",
-+    GAMEFOUNDRY_SITE_URL: "http://site-user:site-secret@127.0.0.1:5500",
-     GAMEFOUNDRY_SUPABASE_ANON_KEY: undefined,
-     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: undefined,
-     GAMEFOUNDRY_SUPABASE_URL: undefined,
-@@ -127,6 +129,22 @@ test("Admin can view operational health while Creator sessions are blocked", asy
-         method: "POST",
-       });
-       const health = await apiJson(server.baseUrl, "/api/admin/system-health/status");
-+      assert.equal(health.localApiStartup.secretEditingAllowed, false);
-+      assert.equal(health.localApiStartup.secretsExposed, false);
-+      assert.equal(Array.isArray(health.localApiStartup.rows), true);
-+      assert.equal(
-+        health.localApiStartup.rows.some((row) => row.field === "Approved diagnostics format" && row.status === "PASS"),
-+        true,
-+      );
-+      assert.equal(
-+        health.localApiStartup.rows.some((row) => row.field === "Configurable multiple runtime ports" && row.status === "PENDING" && row.value === "deferred/cancelled"),
-+        true,
-+      );
-+      const startupText = JSON.stringify(health.localApiStartup);
-+      assert.equal(startupText.includes("api-user"), false);
-+      assert.equal(startupText.includes("api-secret"), false);
-+      assert.equal(startupText.includes("site-user"), false);
-+      assert.equal(startupText.includes("site-secret"), false);
-       assert.equal(Array.isArray(health.operationsHealth.summaryRows), true);
-       assert.deepEqual(
-         health.operationsHealth.summaryRows.map((row) => row.area),
-diff --git a/tests/dev-runtime/StorageConfig.test.mjs b/tests/dev-runtime/StorageConfig.test.mjs
-new file mode 100644
-index 000000000..b7e30cd6f
---- /dev/null
-+++ b/tests/dev-runtime/StorageConfig.test.mjs
++++ b/docs_build/dev/reports/PR_REVIEW_050.md
 @@ -0,0 +1,72 @@
-+import assert from "node:assert/strict";
-+import test from "node:test";
-+import {
-+  STORAGE_PROJECTS_ALLOWED_PREFIXES,
-+  loadStorageConfig,
-+  normalizeStorageProjectsPrefix,
-+} from "../../src/dev-runtime/storage/storage-config.mjs";
++# PR Review Packet #050
 +
-+function validStorageEnv(projectsPrefix = "/dev/projects/") {
-+  return {
-+    GAMEFOUNDRY_STORAGE_ACCESS_KEY_ID: "test-access-key",
-+    GAMEFOUNDRY_STORAGE_BUCKET: "gamefoundry-test-assets",
-+    GAMEFOUNDRY_STORAGE_ENDPOINT: "https://r2.example.invalid",
-+    GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX: projectsPrefix,
-+    GAMEFOUNDRY_STORAGE_SECRET_ACCESS_KEY: "test-secret-key",
-+  };
-+}
++## 1. Title
 +
-+test("storage projects prefix normalizes slash variants", () => {
-+  assert.equal(normalizeStorageProjectsPrefix("dev/projects"), "/dev/projects/");
-+  assert.equal(normalizeStorageProjectsPrefix("\\ist\\projects\\"), "/ist/projects/");
-+  assert.equal(normalizeStorageProjectsPrefix(" /uat/projects/ "), "/uat/projects/");
-+  assert.equal(normalizeStorageProjectsPrefix("prod/projects/"), "/prod/projects/");
-+});
++PR_26171_GAMMA_028-final-sqlite-clean-status-report
 +
-+test("storage config accepts only approved project storage prefixes", () => {
-+  assert.deepEqual(STORAGE_PROJECTS_ALLOWED_PREFIXES, [
-+    "/dev/projects/",
-+    "/ist/projects/",
-+    "/uat/projects/",
-+    "/prod/projects/",
-+  ]);
++## 2. Team
 +
-+  STORAGE_PROJECTS_ALLOWED_PREFIXES.forEach((projectsPrefix) => {
-+    const config = loadStorageConfig(validStorageEnv(projectsPrefix));
-+    assert.equal(config.configured, true);
-+    assert.equal(config.safe.projectsPrefix, projectsPrefix);
-+  });
-+});
++Team Golf (historical Gamma lane)
 +
-+test("storage config rejects unapproved project storage prefixes", () => {
-+  ["/production/projects/", "/qa/projects/", "/projects/"].forEach((projectsPrefix) => {
-+    const config = loadStorageConfig(validStorageEnv(projectsPrefix));
-+    assert.equal(config.configured, false);
-+    assert.equal(config.safe.projectsPrefix, projectsPrefix);
-+    assert.match(config.validationError, /GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX must be one of/);
-+    assert.equal(config.validationError.includes("/prod/projects/"), true);
-+  });
-+});
++## 3. Branch
 +
-+test("storage config reports missing project storage prefix", () => {
-+  const env = validStorageEnv("");
-+  const config = loadStorageConfig(env);
-+  assert.equal(config.configured, false);
-+  assert.deepEqual(config.missingKeys, ["GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX"]);
-+  assert.equal(config.safe.projectsPrefix, "");
-+});
++`pr/26171-GAMMA-028-final-sqlite-clean-status-report`
 +
-+test("storage safe config does not expose credential values", () => {
-+  const env = validStorageEnv("/prod/projects/");
-+  const config = loadStorageConfig(env);
-+  assert.equal(config.configured, true);
-+  assert.deepEqual(config.safe, {
-+    bucket: "gamefoundry-test-assets",
-+    endpoint: "https://r2.example.invalid",
-+    projectsPrefix: "/prod/projects/",
-+  });
-+  assert.equal(Object.hasOwn(config.safe, "accessKeyId"), false);
-+  assert.equal(Object.hasOwn(config.safe, "secretAccessKey"), false);
-+  assert.equal(JSON.stringify(config.safe).includes("test-access-key"), false);
-+  assert.equal(JSON.stringify(config.safe).includes("test-secret-key"), false);
-+});
-diff --git a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-index 9287e4310..f3c860186 100644
---- a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-+++ b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-@@ -129,6 +129,11 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
-     await expect(page.getByRole("table", { name: "Environment summary" })).toContainText("IST");
-     await expect(page.getByRole("table", { name: "Environment summary" })).toContainText("UAT");
-     await expect(page.getByRole("table", { name: "Environment summary" })).toContainText("PRD");
-+    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Approved diagnostics format");
-+    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Environment Variables + All Runtime Ports");
-+    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Configurable multiple runtime ports");
-+    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("deferred/cancelled");
-+    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).not.toContainText("secret");
-     await expect(page.getByRole("table", { name: "Database health" })).toContainText("Postgres");
-     await expect(page.locator("[data-admin-system-health-db-value='provider']")).toHaveText("Postgres");
-     await expect(page.locator("[data-admin-system-health-db-value='host']")).not.toHaveText("Configured host placeholder");
-@@ -213,6 +218,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
-   expect(pageSource).not.toContain("No active failure is declared");
-   expect(pageSource).not.toContain("SQLite");
-   expect(pageSource).toContain("Diagnostics Plan");
-+  expect(pageSource).toContain("Local API Startup Diagnostics");
-   expect(pageSource).toContain("Server-owned Postgres health reader");
-   expect(pageSource).toContain("Server-owned Cloudflare R2 storage diagnostic");
-   expect(pageSource).toContain("assets/theme-v2/js/admin-system-health.js");
-diff --git a/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs b/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
-index bed813761..61ba37122 100644
---- a/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
-+++ b/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
-@@ -37,7 +37,7 @@ function storagePathStatusFor(configuredPath) {
-     { lane: "DEV", path: "/dev/projects/" },
-     { lane: "IST", path: "/ist/projects/" },
-     { lane: "UAT", path: "/uat/projects/" },
--    { lane: "PRD", path: "/prd/projects/" },
-+    { lane: "PRD", path: "/prod/projects/" },
-   ];
-   const matchedLane = lanes.find((lane) => lane.path === configuredPath);
-   const invalidPath = !matchedLane;
-@@ -480,7 +480,7 @@ async function expectStoragePathStatusRows(page, expectedValues) {
-   const storageRows = page.locator("[data-admin-storage-path-status-rows] tr");
-   await expect(storageRows).toHaveCount(4);
-   const lanes = ["DEV", "IST", "UAT", "PRD"];
--  const paths = ["/dev/projects/", "/ist/projects/", "/uat/projects/", "/prd/projects/"];
-+  const paths = ["/dev/projects/", "/ist/projects/", "/uat/projects/", "/prod/projects/"];
-   for (let index = 0; index < lanes.length; index += 1) {
-     await expect(storageRows.nth(index).locator("td")).toHaveText([
-       lanes[index],
-@@ -554,7 +554,7 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
-         await expect(page.locator("body")).toContainText("/dev/projects/");
-         await expect(page.locator("body")).toContainText("/ist/projects/");
-         await expect(page.locator("body")).toContainText("/uat/projects/");
--        await expect(page.locator("body")).toContainText("/prd/projects/");
-+        await expect(page.locator("body")).toContainText("/prod/projects/");
-         await expect(page.locator("body")).toContainText("GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX");
-         await expectStoragePathStatusRows(page, ["yes", "no", "no", "no"]);
-         const infrastructureImage = page.locator("[data-image-zoom-target='admin-infrastructure-image-zoom']");
++## 4. Created Date
++
++2026-06-21T16:18:04Z
++
++## 5. Updated Date
++
++2026-06-21T16:18:04Z
++
++## Status And Age
++
++- Status: Draft
++- Age: 2d 11h
++- Author: ToolboxAid
++- URL: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/50
++
++## 6. Full Changed File List
++
++- docs_build/dev/reports/PR_26171_GAMMA_028-final-sqlite-clean-status-report-instruction-compliance-checklist.md (added, +18/-0)
++- docs_build/dev/reports/PR_26171_GAMMA_028-final-sqlite-clean-status-report-manual-validation-notes.md (added, +12/-0)
++- docs_build/dev/reports/PR_26171_GAMMA_028-final-sqlite-clean-status-report.md (added, +69/-0)
++- docs_build/dev/reports/codex_changed_files.txt (updated, +4/-5)
++- docs_build/dev/reports/codex_review.diff (updated, +104/-110)
++
++## 7. Code File List Only
++
++- None
++
++## 8. Diff Summary By File
++
++| File | Change | Size | Summary |
++|---|---|---:|---|
++| docs_build/dev/reports/PR_26171_GAMMA_028-final-sqlite-clean-status-report-instruction-compliance-checklist.md | added | +18/-0 | added report artifact (18+/0-). |
++| docs_build/dev/reports/PR_26171_GAMMA_028-final-sqlite-clean-status-report-manual-validation-notes.md | added | +12/-0 | added report artifact (12+/0-). |
++| docs_build/dev/reports/PR_26171_GAMMA_028-final-sqlite-clean-status-report.md | added | +69/-0 | added report artifact (69+/0-). |
++| docs_build/dev/reports/codex_changed_files.txt | updated | +4/-5 | updated report artifact (4+/5-). |
++| docs_build/dev/reports/codex_review.diff | updated | +104/-110 | updated report artifact (104+/110-). |
++
++## Changed Code File Details
++
++| Relative Path | Added/Updated/Deleted | Concise Change Summary |
++|---|---|---|
++| None | none | No changed code files. |
++
++## 9. Purpose
++
++Captures the final SQLite inventory after PR026 and PR027.
++
++## 10. Risks
++
++Low runtime risk because changed files are reports/governance/docs only; review risk is traceability and owner approval sequencing.
++
++## 11. Dependencies
++
++Historical Gamma/SQLite chain. Team Gamma is retired; Team Golf is the replacement active ownership lane. Review with #30 and #43 context before acting on #50.
++
++## 12. Recommendation
++
++Review First. Likely final historical Gamma/SQLite status packet, now routed to Team Golf for active ownership decisions.
+diff --git a/docs_build/dev/reports/PR_REVIEW_051.md b/docs_build/dev/reports/PR_REVIEW_051.md
+new file mode 100644
+index 000000000..d4ae9373d
+--- /dev/null
++++ b/docs_build/dev/reports/PR_REVIEW_051.md
+@@ -0,0 +1,86 @@
++# PR Review Packet #051
++
++## 1. Title
++
++PR_26172_MASTER_001-project-instructions-readme-and-root
++
++## 2. Team
++
++Team OWNER
++
++## 3. Branch
++
++`pr/26172-MASTER-001-project-instructions-readme-and-root`
++
++## 4. Created Date
++
++2026-06-21T17:26:20Z
++
++## 5. Updated Date
++
++2026-06-21T17:26:20Z
++
++## Status And Age
++
++- Status: Draft
++- Age: 2d 10h
++- Author: ToolboxAid
++- URL: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/51
++
++## 6. Full Changed File List
++
++- docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md (added, +34/-0)
++- docs_build/dev/ProjectInstructions/README.txt (added, +28/-0)
++- docs_build/dev/ProjectInstructions/addendums/.gitkeep (added, +1/-0)
++- docs_build/dev/ProjectInstructions/archive/history/.gitkeep (added, +1/-0)
++- docs_build/dev/ProjectInstructions/backlog/.gitkeep (added, +1/-0)
++- docs_build/dev/ProjectInstructions/deprecation/.gitkeep (added, +1/-0)
++- docs_build/dev/ProjectInstructions/team_assignments/.gitkeep (added, +1/-0)
++- docs_build/dev/reports/PR_26172_MASTER_001-project-instructions-readme-and-root-instruction-compliance-checklist.md (added, +11/-0)
++- docs_build/dev/reports/PR_26172_MASTER_001-project-instructions-readme-and-root-manual-validation-notes.md (added, +9/-0)
++- docs_build/dev/reports/PR_26172_MASTER_001-project-instructions-readme-and-root.md (added, +22/-0)
++- docs_build/dev/reports/codex_changed_files.txt (updated, +10/-4)
++- docs_build/dev/reports/codex_review.diff (updated, +17/-134)
++
++## 7. Code File List Only
++
++- None
++
++## 8. Diff Summary By File
++
++| File | Change | Size | Summary |
++|---|---|---:|---|
++| docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md | added | +34/-0 | added Project Instructions governance text (34+/0-). |
++| docs_build/dev/ProjectInstructions/README.txt | added | +28/-0 | added Project Instructions governance text (28+/0-). |
++| docs_build/dev/ProjectInstructions/addendums/.gitkeep | added | +1/-0 | added Project Instructions governance text (1+/0-). |
++| docs_build/dev/ProjectInstructions/archive/history/.gitkeep | added | +1/-0 | added Project Instructions governance text (1+/0-). |
++| docs_build/dev/ProjectInstructions/backlog/.gitkeep | added | +1/-0 | added Project Instructions governance text (1+/0-). |
++| docs_build/dev/ProjectInstructions/deprecation/.gitkeep | added | +1/-0 | added Project Instructions governance text (1+/0-). |
++| docs_build/dev/ProjectInstructions/team_assignments/.gitkeep | added | +1/-0 | added Project Instructions governance text (1+/0-). |
++| docs_build/dev/reports/PR_26172_MASTER_001-project-instructions-readme-and-root-instruction-compliance-checklist.md | added | +11/-0 | added report artifact (11+/0-). |
++| docs_build/dev/reports/PR_26172_MASTER_001-project-instructions-readme-and-root-manual-validation-notes.md | added | +9/-0 | added report artifact (9+/0-). |
++| docs_build/dev/reports/PR_26172_MASTER_001-project-instructions-readme-and-root.md | added | +22/-0 | added report artifact (22+/0-). |
++| docs_build/dev/reports/codex_changed_files.txt | updated | +10/-4 | updated report artifact (10+/4-). |
++| docs_build/dev/reports/codex_review.diff | updated | +17/-134 | updated report artifact (17+/134-). |
++
++## Changed Code File Details
++
++| Relative Path | Added/Updated/Deleted | Concise Change Summary |
++|---|---|---|
++| None | none | No changed code files. |
++
++## 9. Purpose
++
++Adds the new `docs_build/dev/ProjectInstructions/` operating-system root.
++
++## 10. Risks
++
++Low runtime risk because changed files are reports/governance/docs only; review risk is traceability and owner approval sequencing.
++
++## 11. Dependencies
++
++ProjectInstructions governance chain; history-sensitive and requires OWNER approval before merge or closure.
++
++## 12. Recommendation
++
++Owner Decision Required. Historical governance bootstrap overlaps current ProjectInstructions state and must not be merged or archived without OWNER decision.
+diff --git a/docs_build/dev/reports/PR_REVIEW_118.md b/docs_build/dev/reports/PR_REVIEW_118.md
+new file mode 100644
+index 000000000..d7756231b
+--- /dev/null
++++ b/docs_build/dev/reports/PR_REVIEW_118.md
+@@ -0,0 +1,76 @@
++# PR Review Packet #118
++
++## 1. Title
++
++PR_26174_ALFA_EOD-final-closeout
++
++## 2. Team
++
++Team Alfa
++
++## 3. Branch
++
++`pr/26174-ALFA-EOD-final-closeout`
++
++## 4. Created Date
++
++2026-06-23T18:08:07Z
++
++## 5. Updated Date
++
++2026-06-23T18:10:12Z
++
++## Status And Age
++
++- Status: Draft
++- Age: 9h
++- Author: ToolboxAid
++- URL: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/118
++
++## 6. Full Changed File List
++
++- docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_branch-validation.md (added, +19/-0)
++- docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_manual-validation-notes.md (added, +8/-0)
++- docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_report.md (added, +93/-0)
++- docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_requirements-checklist.md (added, +16/-0)
++- docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_validation-lane.md (added, +17/-0)
++- docs_build/dev/reports/codex_changed_files.txt (updated, +5/-5)
++- docs_build/dev/reports/codex_review.diff (updated, +158/-132)
++
++## 7. Code File List Only
++
++- None
++
++## 8. Diff Summary By File
++
++| File | Change | Size | Summary |
++|---|---|---:|---|
++| docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_branch-validation.md | added | +19/-0 | added report artifact (19+/0-). |
++| docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_manual-validation-notes.md | added | +8/-0 | added report artifact (8+/0-). |
++| docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_report.md | added | +93/-0 | added report artifact (93+/0-). |
++| docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_requirements-checklist.md | added | +16/-0 | added report artifact (16+/0-). |
++| docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_validation-lane.md | added | +17/-0 | added report artifact (17+/0-). |
++| docs_build/dev/reports/codex_changed_files.txt | updated | +5/-5 | updated report artifact (5+/5-). |
++| docs_build/dev/reports/codex_review.diff | updated | +158/-132 | updated report artifact (158+/132-). |
++
++## Changed Code File Details
++
++| Relative Path | Added/Updated/Deleted | Concise Change Summary |
++|---|---|---|
++| None | none | No changed code files. |
++
++## 9. Purpose
++
++Report-only final Team Alfa closeout for owner merge review.
++
++## 10. Risks
++
++Low runtime risk because changed files are reports/governance/docs only; review risk is traceability and owner approval sequencing.
++
++## 11. Dependencies
++
++Part of the PR_26174 Alfa stack; owner should review stack order before merge. PR #118 appears to be a final closeout report dependent on #117 and the earlier Alfa stack.
++
++## 12. Recommendation
++
++Review First. Treat as owner closeout evidence for the Alfa stack; do not merge until stack/order review is complete.
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index 9dca38cd8..f54b81299 100644
+--- a/docs_build/dev/reports/codex_changed_files.txt
++++ b/docs_build/dev/reports/codex_changed_files.txt
+@@ -1,23 +1,17 @@
+-﻿.env.example
+-admin/infrastructure.html
+-admin/system-health.html
+-assets/theme-v2/js/admin-infrastructure.js
+-assets/theme-v2/js/admin-system-health.js
+-docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard.md
+-docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard_PLAN.md
+-docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-instruction-compliance-checklist.md
+-docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-manual-validation-notes.md
+-docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization.md
+-docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization_PLAN.md
+-docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization-instruction-compliance-checklist.md
+-docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization-manual-validation-notes.md
+-docs_build/dev/reports/PR_26175_CHARLIE_EOD-branch-validation.md
+-docs_build/dev/reports/PR_26175_CHARLIE_EOD-closeout.md
+-docs_build/dev/reports/PR_26175_CHARLIE_EOD-merge-summary.md
+-scripts/validate-storage-config.mjs
+-src/dev-runtime/server/local-api-router.mjs
+-src/dev-runtime/storage/storage-config.mjs
+-tests/dev-runtime/AdminHealthOperations.test.mjs
+-tests/dev-runtime/StorageConfig.test.mjs
+-tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+-tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
++docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
++docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
++docs_build/dev/ProjectInstructions/addendums/multi_team.md
++docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
++docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
++docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
++docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
++docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
++docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
++docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
++docs_build/dev/reports/PR_REVIEW_003.md
++docs_build/dev/reports/PR_REVIEW_050.md
++docs_build/dev/reports/PR_REVIEW_051.md
++docs_build/dev/reports/PR_REVIEW_118.md
++docs_build/dev/reports/PR_26175_OWNER_046-pr-targeted-review-packets.md
++docs_build/dev/reports/codex_changed_files.txt
++docs_build/dev/reports/codex_review.diff

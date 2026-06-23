@@ -4,6 +4,12 @@
 
 | Team | Assignment | Branch | PR | Status |
 |------|------------|--------|----|--------|
+| Team Alfa | none | none | none | Available |
+| Team Bravo | none | none | none | Available |
+| Team Charlie | none | none | none | Available |
+| Team Delta | none | none | none | Available |
+| Team Golf | none | none | none | Available |
+| Team OWNER | none | none | none | Available |
 
 Rules:
 - Registry is the authoritative active-work view.
@@ -26,6 +32,12 @@ A team is not listed in Active Team Registry when:
 Result:
 If a team is missing from Active Team Registry:
 it is currently inactive.
+
+Current OWNER clarification:
+- The active ownership lanes are Team Alfa, Team Bravo, Team Charlie, Team Delta, Team Golf, and Team OWNER.
+- Team Gamma is retired. Team Golf is the replacement active ownership lane.
+- Do not rewrite historical PR references that mention Team Gamma.
+- Do not rename historical branches that contain Gamma.
 
 ## Assignment Status Legend
 
@@ -64,6 +76,16 @@ Status: Available
 Active assignment: none.
 
 Active branch: none.
+
+## Team Golf
+
+Status: Available
+
+Active assignment: none.
+
+Active branch: none.
+
+OWNER decision: Replacement active ownership lane for retired Team Gamma.
 
 ## Team OWNER
 

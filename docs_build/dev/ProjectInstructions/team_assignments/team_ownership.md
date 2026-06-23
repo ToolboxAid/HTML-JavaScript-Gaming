@@ -52,6 +52,29 @@ Alfa, Bravo, Charlie, and Delta are the four active delivery teams for backlog o
 
 Each team may pull only from its ownership area unless OWNER explicitly reassigns, splits, or approves cross-team work.
 
+## Current Active Ownership Lanes
+
+OWNER override approved.
+
+The current active ownership lanes are:
+
+- Team Alfa
+- Team Bravo
+- Team Charlie
+- Team Delta
+- Team Golf
+- Team OWNER
+
+Migration note:
+Team Gamma is retired. Team Golf is the replacement active ownership lane.
+
+Clarification:
+- The four-team rule remains the current backlog ownership model for Alfa, Bravo, Charlie, and Delta.
+- Team Golf does not receive a standing backlog ownership area in this file.
+- Team Golf work requires OWNER assignment, an active branch, an active draft/open PR, or active release/review/cleanup responsibility.
+- Golf work that touches Alfa, Bravo, Charlie, or Delta areas must document the OWNER cross-team decision.
+- Historical Gamma PR references and branch names remain unchanged for traceability.
+
 ## Rule
 
 Ownership may only be reassigned by OWNER governance.
