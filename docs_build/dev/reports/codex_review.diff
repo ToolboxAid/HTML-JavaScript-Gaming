@@ -1,172 +1,81 @@
-diff --git a/account/user-controls-page.js b/account/user-controls-page.js
-index 02fb2c117..d42be3309 100644
---- a/account/user-controls-page.js
-+++ b/account/user-controls-page.js
-@@ -1,4 +1,4 @@
--import { createControlsToolApiRepository } from "../toolbox/controls/controls-api-client.js";
-+import { createControlsToolApiRepository } from "../assets/js/shared/controls-api-client.js";
- import { getSessionCurrent } from "../src/api/session-api-client.js";
- import InputService from "../src/engine/input/InputService.js";
- import InputCaptureService from "../src/engine/input/InputCaptureService.js";
-diff --git a/toolbox/controls/controls-api-client.js b/assets/js/shared/controls-api-client.js
-similarity index 96%
-rename from toolbox/controls/controls-api-client.js
-rename to assets/js/shared/controls-api-client.js
-index 89eb688be..3b382022b 100644
---- a/toolbox/controls/controls-api-client.js
-+++ b/assets/js/shared/controls-api-client.js
-@@ -2,7 +2,7 @@ import {
-   createServerRepositoryClient,
-   readServerToolConstants,
-   requireServerConstant,
--} from "../../src/api/server-api-client.js";
-+} from "../../../src/api/server-api-client.js";
-
- const constants = readServerToolConstants("controls");
-
-diff --git a/toolbox/game-journey/game-journey-api-client.js b/assets/js/shared/game-journey-api-client.js
-similarity index 91%
-rename from toolbox/game-journey/game-journey-api-client.js
-rename to assets/js/shared/game-journey-api-client.js
-index 4d9647bb2..fba67b725 100644
---- a/toolbox/game-journey/game-journey-api-client.js
-+++ b/assets/js/shared/game-journey-api-client.js
-@@ -2,11 +2,11 @@ import {
-   createServerRepositoryClient,
-   readServerToolConstants,
-   requireServerConstant,
--} from "../../src/api/server-api-client.js";
-+} from "../../../src/api/server-api-client.js";
- export {
-   readGameJourneyCompletionMetrics,
-   updateGameJourneyCompletionMetric,
--} from "../../src/api/game-journey-completion-api-client.js";
-+} from "../../../src/api/game-journey-completion-api-client.js";
-
- const constants = readServerToolConstants("game-journey");
-
-diff --git a/assets/toolbox/controls/js/index.js b/assets/toolbox/controls/js/index.js
-index e98f8cad6..6a648b878 100644
---- a/assets/toolbox/controls/js/index.js
-+++ b/assets/toolbox/controls/js/index.js
-@@ -5,7 +5,7 @@ import {
-   GAME_CONTROL_NORMALIZED_INPUTS,
-   NORMALIZED_USAGE_LABELS,
-   createControlsToolApiRepository,
--} from "../../../../toolbox/controls/controls-api-client.js";
-+} from "../../../js/shared/controls-api-client.js";
- import {
-   normalizeNormalizedInput,
-   normalizedInputOptions,
-diff --git a/assets/toolbox/game-journey/js/index.js b/assets/toolbox/game-journey/js/index.js
-index 0ebc4f2ca..370ba6669 100644
---- a/assets/toolbox/game-journey/js/index.js
-+++ b/assets/toolbox/game-journey/js/index.js
-@@ -6,7 +6,7 @@ import {
-   GAME_JOURNEY_SUGGESTED_TOOLS,
-   createGameJourneyApiRepository,
-   readGameJourneyCompletionMetrics,
--} from "../../../../toolbox/game-journey/game-journey-api-client.js";
-+} from "../../../js/shared/game-journey-api-client.js";
- import {
-   getActiveToolRegistry,
-   getToolRegistryApiDiagnostic,
-diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_040-controls-game-journey-api-client-resolution.md b/docs_build/dev/reports/PR_26172_CHARLIE_040-controls-game-journey-api-client-resolution.md
+diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_041-final-retained-exceptions-reaudit.md b/docs_build/dev/reports/PR_26172_CHARLIE_041-final-retained-exceptions-reaudit.md
 new file mode 100644
-index 000000000..94f2a9cc8
+index 000000000..0fa6d26cf
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_CHARLIE_040-controls-game-journey-api-client-resolution.md
-@@ -0,0 +1,111 @@
-+# PR_26172_CHARLIE_040-controls-game-journey-api-client-resolution
++++ b/docs_build/dev/reports/PR_26172_CHARLIE_041-final-retained-exceptions-reaudit.md
+@@ -0,0 +1,100 @@
++# PR_26172_CHARLIE_041-final-retained-exceptions-reaudit
 +
 +## Summary
 +
-+Status: PASS.
++Status: PASS with one retained owner-review exception.
 +
-+Resolved two retained API-client exceptions by moving them to canonical shared JavaScript:
++Final retained-exceptions status after PR_037 through PR_040:
 +
-+- `toolbox/controls/controls-api-client.js` -> `assets/js/shared/controls-api-client.js`
-+- `toolbox/game-journey/game-journey-api-client.js` -> `assets/js/shared/game-journey-api-client.js`
++- `toolbox/controls/controls-api-client.js`: resolved, moved to `assets/js/shared/controls-api-client.js`.
++- `toolbox/assets/assets-api-client.js`: resolved, moved to `assets/js/shared/assets-api-client.js`.
++- `toolbox/game-journey/game-journey-api-client.js`: resolved, moved to `assets/js/shared/game-journey-api-client.js`.
++- `toolbox/assets/assets-upload-worker.js`: retained temporary exception, owner review required for canonical worker placement.
 +
-+No feature behavior was changed.
++## Remaining Exception
 +
-+## Files Changed
++| Path | Status | Blocker | Owner review item |
++| --- | --- | --- | --- |
++| `toolbox/assets/assets-upload-worker.js` | Temporary exception | Canonical governance does not define tool-local worker module placement. | Approve a worker path rule before moving. |
 +
++## Migration Status
++
++| Original exception | Final status |
++| --- | --- |
++| `toolbox/controls/controls-api-client.js` | Migrated to shared |
++| `toolbox/assets/assets-api-client.js` | Migrated to shared |
++| `toolbox/assets/assets-upload-worker.js` | Retained exception |
++| `toolbox/game-journey/game-journey-api-client.js` | Migrated to shared |
++
++## Active Reference Audit
++
++Remaining active references from the original exception list:
++
++- `toolbox/assets/assets-upload-worker.js`
++  - `assets/toolbox/assets/js/index.js`
++  - `scripts/validate-canonical-repository-structure.mjs`
++  - `tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs`
++  - `tests/playwright/tools/AssetToolMockRepository.spec.mjs`
++
++Resolved shared client references:
++
++- `assets/js/shared/assets-api-client.js`
 +- `assets/js/shared/controls-api-client.js`
 +- `assets/js/shared/game-journey-api-client.js`
-+- `assets/toolbox/controls/js/index.js`
-+- `assets/toolbox/game-journey/js/index.js`
-+- `account/user-controls-page.js`
-+- `scripts/validate-canonical-repository-structure.mjs`
-+- `scripts/validate-browser-env-agnostic.mjs`
-+- `tests/dev-runtime/ProductDataProviderContractHardening.test.mjs`
-+- `tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs`
-+- `docs_build/dev/reports/PR_26172_CHARLIE_040-controls-game-journey-api-client-resolution.md`
-+- `docs_build/dev/reports/codex_review.diff`
-+- `docs_build/dev/reports/codex_changed_files.txt`
 +
-+## Controls API Client Resolution
++## Blockers
 +
-+Decision: migrated to shared.
++1. Assets upload worker placement:
++   - The canonical structure currently defines `assets/toolbox/{tool-name}/js/index.js` and `assets/js/shared/`.
++   - The worker is tool-specific, not shared.
++   - Moving it safely requires an approved worker path rule.
 +
-+Reason:
++2. Assets upload HTTP 500:
++   - PR_038 traced the failure to Local API persistence/provider behavior.
++   - This is separate from worker placement and should be fixed in a persistence/API validation PR.
 +
-+- The client is used by the Controls tool and the account User Controls page.
-+- `assets/js/shared/` is canonical for reusable browser helpers.
-+- Consumers validated through direct browser page-load probe.
++3. Browser-env gate:
++   - `npm run validate:browser-env-agnostic` still fails on existing Local API product service contract findings and Messages implementation wording.
++   - These findings are outside the retained-exceptions migration scope.
 +
-+Updated consumers:
++## Guardrail Status
 +
-+- `assets/toolbox/controls/js/index.js`
-+- `account/user-controls-page.js`
-+
-+## Game Journey API Client Resolution
-+
-+Decision: migrated to shared.
-+
-+Reason:
-+
-+- The canonical structure allows shared JS under `assets/js/shared/`.
-+- Moving to shared avoids creating an unapproved secondary tool-local JS file beside `index.js`.
-+- Targeted Game Journey browser probe validated the moved client and completion-metrics rendering with the existing Postgres stub.
-+
-+Updated consumer:
-+
-+- `assets/toolbox/game-journey/js/index.js`
-+
-+## Validation Lane Report
-+
-+- `node --check assets/js/shared/controls-api-client.js`
-+  - Result: PASS
-+- `node --check assets/js/shared/game-journey-api-client.js`
-+  - Result: PASS
-+- `node --check assets/toolbox/controls/js/index.js`
-+  - Result: PASS
-+- `node --check assets/toolbox/game-journey/js/index.js`
-+  - Result: PASS
-+- `node --check account/user-controls-page.js`
-+  - Result: PASS
-+- Active stale reference check for old Controls/Game Journey client paths
-+  - Result: PASS
-+  - No active non-report references remain.
-+- `git diff --check`
-+  - Result: PASS
 +- `npm run validate:canonical-structure`
 +  - Result: PASS
 +  - Blocking violations: 0
 +  - Approved legacy exceptions: 478
 +- `node --test tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs`
 +  - Result: PASS
-+- Direct browser page-load probe:
-+  - Controls: PASS, heading rendered and `assets/js/shared/controls-api-client.js` returned HTTP 200.
-+  - Game Journey: PASS, heading rendered, shared client returned HTTP 200, completion metrics rendered.
-+  - Account User Controls: PASS, heading rendered and shared Controls client returned HTTP 200.
-+- `node --test tests/dev-runtime/ProductDataProviderContractHardening.test.mjs`
++- `npm run validate:browser-env-agnostic`
 +  - Result: FAIL
-+  - Existing unrelated failures:
-+    - Public config request order expectation.
-+    - Admin/tool votes import expectation.
-+  - The moved Controls and Game Journey client path list was updated in this test; the remaining failures are outside this PR scope.
++  - Existing findings:
++    - Product service contract findings in `src/dev-runtime/server/local-api-router.mjs`.
++    - Messages user-facing implementation wording findings.
 +
 +## Branch Validation
 +
@@ -177,76 +86,21 @@ index 000000000..94f2a9cc8
 +
 +## Requirement Checklist
 +
-+- Resolve `controls-api-client.js`: PASS
-+- Resolve `game-journey-api-client.js`: PASS
-+- Migrate if safe: PASS
-+- Otherwise document exceptions: PASS, no exception retained for these two files.
-+- Preserve behavior: PASS
-+- No feature changes: PASS
++- Final audit remaining exceptions: PASS
++- Report migration status: PASS
++- Report blockers: PASS
++- Report owner review items: PASS
++- Report guardrail status: PASS
++- Do not merge: PASS
 +- Produce ZIP artifact: PASS after artifact creation.
 +
 +## Manual Validation Notes
 +
-+Controls and Game Journey API-client exceptions are resolved. The only remaining target-area exception after this PR is the Assets upload worker.
-diff --git a/scripts/validate-browser-env-agnostic.mjs b/scripts/validate-browser-env-agnostic.mjs
-index 798fd7b86..53a165d48 100644
---- a/scripts/validate-browser-env-agnostic.mjs
-+++ b/scripts/validate-browser-env-agnostic.mjs
-@@ -62,10 +62,10 @@ const accountAuthPages = Object.freeze([
- const productApiClientFiles = Object.freeze([
-   "assets/js/shared/assets-api-client.js",
-   "assets/toolbox/colors/js/index.js",
--  "toolbox/controls/controls-api-client.js",
-+  "assets/js/shared/controls-api-client.js",
-   "assets/toolbox/game-configuration/js/index.js",
-   "assets/toolbox/game-design/js/index.js",
--  "toolbox/game-journey/game-journey-api-client.js",
-+  "assets/js/shared/game-journey-api-client.js",
-   "toolbox/game-hub/game-hub-api-client.js",
-   "assets/toolbox/objects/js/index.js",
-   "assets/toolbox/tags/js/index.js",
-diff --git a/scripts/validate-canonical-repository-structure.mjs b/scripts/validate-canonical-repository-structure.mjs
-index e8ab79882..5d963a1ec 100644
---- a/scripts/validate-canonical-repository-structure.mjs
-+++ b/scripts/validate-canonical-repository-structure.mjs
-@@ -7,10 +7,8 @@ const repoRoot = path.resolve(fileURLToPath(new URL("..", import.meta.url)));
-
- export const APPROVED_LEGACY_JS_PATHS = Object.freeze(new Set([
-   "toolbox/assets/assets-upload-worker.js",
--  "toolbox/controls/controls-api-client.js",
-   "toolbox/game-hub/game-hub-api-client.js",
-   "toolbox/game-hub/game-hub.js",
--  "toolbox/game-journey/game-journey-api-client.js",
-   "toolbox/messages/message-tts-service-registry.js",
-   "toolbox/messages/messages-api-client.js",
-   "toolbox/messages/messages.js",
-diff --git a/tests/dev-runtime/ProductDataProviderContractHardening.test.mjs b/tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
-index aceb29d1a..d64d94340 100644
---- a/tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
-+++ b/tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
-@@ -111,10 +111,10 @@ test("Active browser product-data entrypoints use API or service clients", () =>
-   const productApiClients = [
-     "assets/js/shared/assets-api-client.js",
-     "assets/toolbox/colors/js/index.js",
--    "toolbox/controls/controls-api-client.js",
-+    "assets/js/shared/controls-api-client.js",
-     "assets/toolbox/game-configuration/js/index.js",
-     "assets/toolbox/game-design/js/index.js",
--    "toolbox/game-journey/game-journey-api-client.js",
-+    "assets/js/shared/game-journey-api-client.js",
-     "toolbox/game-hub/game-hub-api-client.js",
-     "assets/toolbox/objects/js/index.js",
-     "assets/toolbox/tags/js/index.js",
-diff --git a/tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs b/tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs
-index 454d94897..02029aed5 100644
---- a/tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs
-+++ b/tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs
-@@ -14,7 +14,7 @@ test("canonical repository structure guardrail accepts canonical paths and appro
-     "assets/theme-v2/js/admin-system-health.js",
-     "assets/theme-v2/css/theme.css",
-     "src/engine/rendering/Renderer.js",
--    "toolbox/controls/controls-api-client.js",
-+    "toolbox/assets/assets-upload-worker.js",
-     "src/engine/ui/baseLayout.css",
-     "tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs",
-     "tests/runtime/V2SessionValidation.test.mjs",
++The retained-exceptions workstream reduced the original target exception list from four active legacy files to one tool-specific worker exception. The remaining worker path should stay documented until the owner approves canonical worker placement.
++
++## Recommended Next PRs
++
++1. OWNER/Charlie worker placement governance for tool-local module workers.
++2. Assets upload persistence/API validation recovery for `addAssetRecord` HTTP 500.
++3. Assets worker migration after worker placement governance and upload persistence validation are complete.
++4. Browser-env gate cleanup for Local API product service contract and Messages wording findings.

@@ -1,10 +1,1 @@
-M	account/user-controls-page.js
-R096	toolbox/controls/controls-api-client.js	assets/js/shared/controls-api-client.js
-R091	toolbox/game-journey/game-journey-api-client.js	assets/js/shared/game-journey-api-client.js
-M	assets/toolbox/controls/js/index.js
-M	assets/toolbox/game-journey/js/index.js
-A	docs_build/dev/reports/PR_26172_CHARLIE_040-controls-game-journey-api-client-resolution.md
-M	scripts/validate-browser-env-agnostic.mjs
-M	scripts/validate-canonical-repository-structure.mjs
-M	tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
-M	tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs
+A	docs_build/dev/reports/PR_26172_CHARLIE_041-final-retained-exceptions-reaudit.md
