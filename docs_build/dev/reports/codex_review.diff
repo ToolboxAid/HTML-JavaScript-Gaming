@@ -1,10 +1,10 @@
-diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_025-target-tool-migration-batch-3.md b/docs_build/dev/reports/PR_26172_CHARLIE_025-target-tool-migration-batch-3.md
+diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_026-target-tool-migration-batch-4.md b/docs_build/dev/reports/PR_26172_CHARLIE_026-target-tool-migration-batch-4.md
 new file mode 100644
-index 000000000..0ed82a844
+index 000000000..40cb8a60a
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_CHARLIE_025-target-tool-migration-batch-3.md
-@@ -0,0 +1,57 @@
-+# PR_26172_CHARLIE_025-target-tool-migration-batch-3
++++ b/docs_build/dev/reports/PR_26172_CHARLIE_026-target-tool-migration-batch-4.md
+@@ -0,0 +1,71 @@
++# PR_26172_CHARLIE_026-target-tool-migration-batch-4
 +
 +Status: STOP GATE DOCUMENTED.
 +
@@ -12,24 +12,37 @@ index 000000000..0ed82a844
 +
 +## Purpose
 +
-+Migrate a third safe batch from `PR_26172_CHARLIE_022-target-tool-migration-audit`.
++Migrate any remaining SAFE target tools from `PR_26172_CHARLIE_022-target-tool-migration-audit`.
 +
 +## Stop Gate Result
 +
-+Stop gate triggered: no third SAFE target-tool migration exists after PR023 migrated Objects.
++Stop gate triggered: no remaining SAFE target-tool migration exists.
 +
-+## Safety Review
++Objects was the only SAFE implementation migration and was completed in PR023. PR024 and PR025 documented that no second or third safe batches were available. PR026 confirms the remaining target set still contains only NEEDS CARE, STOP / owner review, or no-op tools.
 +
-+Remaining target tools were not migrated because:
++## Remaining Target Tool Classification
 +
-+- Controls is NEEDS CARE due shared API wrapper references outside the tool surface.
-+- Asset Browser / Vector Art / Assets remain STOP / owner review due canonical worker placement ambiguity and shared ownership of the active assets scripts.
-+- Game Journey remains STOP / owner review due the known `/api/game-journey/completion-metrics` validation blocker and possible Alfa feature-work overlap.
-+- Audio, Audio Effects, Fonts, Characters, Worlds, Events, Sprites, MIDI Studio, and State Inspector have no active tool-specific JS/CSS migration to perform in this lane.
++NEEDS CARE:
++- Controls.
++
++STOP / owner review:
++- Asset Browser / Vector Art / Assets worker placement.
++- Game Journey.
++
++No active tool-specific JS/CSS migration needed:
++- Audio.
++- Audio Effects.
++- Fonts.
++- Characters.
++- Worlds.
++- Events.
++- Sprites.
++- MIDI Studio.
++- State Inspector.
 +
 +## Files Changed
 +
-+- `docs_build/dev/reports/PR_26172_CHARLIE_025-target-tool-migration-batch-3.md`
++- `docs_build/dev/reports/PR_26172_CHARLIE_026-target-tool-migration-batch-4.md`
 +- `docs_build/dev/reports/codex_review.diff`
 +- `docs_build/dev/reports/codex_changed_files.txt`
 +
@@ -52,12 +65,13 @@ index 000000000..0ed82a844
 +
 +## Requirement Checklist
 +
-+- [x] Select up to 3 additional SAFE tools only.
-+- [x] Do not repeat PR023 or PR024.
-+- [x] Stop if no third SAFE migration exists.
++- [x] Select remaining SAFE tools only.
++- [x] Maximum 3 tools.
++- [x] Do not touch NEEDS CARE or STOP tools.
++- [x] Stop if no remaining SAFE tools exist.
 +- [x] No runtime source changes.
 +- [x] ZIP artifact required under `tmp/`.
 +
 +## Manual Validation Notes
 +
-+This stop gate prevents migration of NEEDS CARE or STOP / owner review tools without explicit owner direction. The queue may continue to PR026 for the remaining-SAFE check.
++This closes the migration batch queue without forcing unsafe migrations. PR027 should re-audit the target tools and list the owner-review follow-ups.
