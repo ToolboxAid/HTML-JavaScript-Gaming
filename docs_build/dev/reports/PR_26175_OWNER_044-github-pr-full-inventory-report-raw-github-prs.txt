@@ -1,0 +1,573 @@
+PR #3
+title: Pr/PR 26171 006 message emotion profile management
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/3
+branch: pr/PR_26171_006-message-emotion-profile-management
+author: ToolboxAid
+state: open ready
+created_at: 2026-06-20T01:02:11Z
+updated_at: 2026-06-20T01:08:39Z
+age: 4d 2h
+team_mapping: Team Bravo
+dependency_chain: BRAVO_MESSAGES_EMOTION_CHAIN
+recommendation: owner-decision-required
+dependency_note: Bravo Messages/Emotion singleton or early chain; owner/team decision required.
+
+---
+
+PR #26
+title: PR_26171_ALPHA_046 game hub table standard rebuild
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/26
+branch: pr/26171-ALPHA-046-game-hub-table-standard-rebuild
+author: ToolboxAid
+state: open ready
+created_at: 2026-06-20T22:13:09Z
+updated_at: 2026-06-20T22:20:37Z
+age: 3d 5h
+team_mapping: Team Alfa
+dependency_chain: PR_26171_ALPHA_LEGACY_CHAIN
+recommendation: close-candidate-review
+dependency_note: Legacy Alpha chain; compare against newer Alfa/Alpha stack before merge or close.
+
+---
+
+PR #30
+title: PR_26171_GAMMA_006-sqlite-deprecation-audit
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/30
+branch: pr/26171-GAMMA-006-sqlite-deprecation-audit
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-20T23:03:05Z
+updated_at: 2026-06-20T23:03:49Z
+age: 3d 4h
+team_mapping: Team Gamma
+dependency_chain: PR_26171_GAMMA_SQLITE_CHAIN
+recommendation: close-candidate-review
+dependency_note: Gamma/SQLite report chain; likely order #30 -> #43 -> #50.
+
+---
+
+PR #41
+title: PR_26171_ALPHA_048 idea project journey execution flow
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/41
+branch: pr/26171-ALPHA-048-idea-project-journey-execution-flow
+author: ToolboxAid
+state: open ready
+created_at: 2026-06-21T01:31:13Z
+updated_at: 2026-06-21T01:36:33Z
+age: 3d 2h
+team_mapping: Team Alfa
+dependency_chain: PR_26171_ALPHA_LEGACY_CHAIN
+recommendation: close-candidate-review
+dependency_note: Legacy Alpha chain; compare against newer Alfa/Alpha stack before merge or close.
+
+---
+
+PR #43
+title: PR_26171_GAMMA_021-sqlite-active-runtime-removal-plan
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/43
+branch: team/GAMMA/admin
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-21T03:26:52Z
+updated_at: 2026-06-21T03:26:52Z
+age: 3d 0h
+team_mapping: Team Gamma
+dependency_chain: PR_26171_GAMMA_SQLITE_CHAIN
+recommendation: close-candidate-review
+dependency_note: Gamma/SQLite report chain; likely order #30 -> #43 -> #50.
+
+---
+
+PR #50
+title: PR_26171_GAMMA_028-final-sqlite-clean-status-report
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/50
+branch: pr/26171-GAMMA-028-final-sqlite-clean-status-report
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-21T16:18:04Z
+updated_at: 2026-06-21T16:18:04Z
+age: 2d 11h
+team_mapping: Team Gamma
+dependency_chain: PR_26171_GAMMA_SQLITE_CHAIN
+recommendation: merge-review-candidate
+dependency_note: Gamma/SQLite report chain; likely order #30 -> #43 -> #50.
+
+---
+
+PR #51
+title: PR_26172_MASTER_001-project-instructions-readme-and-root
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/51
+branch: pr/26172-MASTER-001-project-instructions-readme-and-root
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-21T17:26:20Z
+updated_at: 2026-06-21T17:26:20Z
+age: 2d 10h
+team_mapping: Team OWNER
+dependency_chain: PROJECT_INSTRUCTIONS_GOVERNANCE_CHAIN
+recommendation: owner-decision-required
+dependency_note: Governance/history-sensitive chain; owner decision required before merge or close.
+
+---
+
+PR #85
+title: [codex] Add Project Instructions governance addendums
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/85
+branch: codex/canonical-repository-structure-instructions
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-22T15:38:03Z
+updated_at: 2026-06-22T15:44:53Z
+age: 1d 12h
+team_mapping: Unknown/Needs Owner Decision
+dependency_chain: PROJECT_INSTRUCTIONS_GOVERNANCE_CHAIN
+recommendation: owner-decision-required
+dependency_note: Governance/history-sensitive chain; owner decision required before merge or close.
+
+---
+
+PR #96
+title: PR_26174_ALFA_002-game-hub-project-intake-display
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/96
+branch: pr/26174-ALFA-002-game-hub-project-intake-display
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-22T18:17:24Z
+updated_at: 2026-06-22T18:17:24Z
+age: 1d 9h
+team_mapping: Team Alfa
+dependency_chain: PR_26174_ALFA_ALPHA_STACK
+recommendation: defer-candidate
+dependency_note: Stacked Alfa/Alpha chain; review in sequence #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118.
+
+---
+
+PR #97
+title: PR_26174_ALFA_003-game-hub-journey-bootstrap
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/97
+branch: pr/26174-ALFA-003-game-hub-journey-bootstrap
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-22T18:27:42Z
+updated_at: 2026-06-22T18:27:42Z
+age: 1d 9h
+team_mapping: Team Alfa
+dependency_chain: PR_26174_ALFA_ALPHA_STACK
+recommendation: defer-candidate
+dependency_note: Stacked Alfa/Alpha chain; review in sequence #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118.
+
+---
+
+PR #98
+title: PR_26174_ALFA_004-game-hub-progress-count-model
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/98
+branch: pr/26174-ALFA-004-game-hub-progress-count-model
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-22T18:34:08Z
+updated_at: 2026-06-22T18:34:08Z
+age: 1d 9h
+team_mapping: Team Alfa
+dependency_chain: PR_26174_ALFA_ALPHA_STACK
+recommendation: defer-candidate
+dependency_note: Stacked Alfa/Alpha chain; review in sequence #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118.
+
+---
+
+PR #99
+title: PR_26174_ALFA_005-idea-project-validation-polish
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/99
+branch: pr/26174-ALFA-005-idea-project-validation-polish
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-22T20:53:36Z
+updated_at: 2026-06-22T20:53:36Z
+age: 1d 7h
+team_mapping: Team Alfa
+dependency_chain: PR_26174_ALFA_ALPHA_STACK
+recommendation: defer-candidate
+dependency_note: Stacked Alfa/Alpha chain; review in sequence #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118.
+
+---
+
+PR #100
+title: PR_26174_ALFA_006-game-hub-empty-and-error-states
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/100
+branch: pr/26174-ALFA-006-game-hub-empty-and-error-states
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-22T20:57:11Z
+updated_at: 2026-06-22T20:57:11Z
+age: 1d 7h
+team_mapping: Team Alfa
+dependency_chain: PR_26174_ALFA_ALPHA_STACK
+recommendation: defer-candidate
+dependency_note: Stacked Alfa/Alpha chain; review in sequence #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118.
+
+---
+
+PR #101
+title: PR_26174_ALFA_007-game-journey-count-ui-polish
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/101
+branch: pr/26174-ALFA-007-game-journey-count-ui-polish
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-22T21:01:21Z
+updated_at: 2026-06-22T21:01:21Z
+age: 1d 6h
+team_mapping: Team Alfa
+dependency_chain: PR_26174_ALFA_ALPHA_STACK
+recommendation: defer-candidate
+dependency_note: Stacked Alfa/Alpha chain; review in sequence #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118.
+
+---
+
+PR #102
+title: PR_26174_ALFA_008-alpha-stack-final-validation
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/102
+branch: pr/26174-ALFA-008-alpha-stack-final-validation
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-22T21:05:21Z
+updated_at: 2026-06-22T21:05:21Z
+age: 1d 6h
+team_mapping: Team Alfa
+dependency_chain: PR_26174_ALFA_ALPHA_STACK
+recommendation: defer-candidate
+dependency_note: Stacked Alfa/Alpha chain; review in sequence #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118.
+
+---
+
+PR #103
+title: PR_26174_ALFA_009-game-hub-parent-child-table-layout
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/103
+branch: pr/26174-ALFA-009-game-hub-parent-child-table-layout
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-22T21:51:58Z
+updated_at: 2026-06-22T21:51:58Z
+age: 1d 6h
+team_mapping: Team Alfa
+dependency_chain: PR_26174_ALFA_ALPHA_STACK
+recommendation: defer-candidate
+dependency_note: Stacked Alfa/Alpha chain; review in sequence #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118.
+
+---
+
+PR #104
+title: PR_26174_ALFA_010-game-hub-source-idea-child-table-polish
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/104
+branch: pr/26174-ALFA-010-game-hub-source-idea-child-table-polish
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-22T21:55:00Z
+updated_at: 2026-06-22T21:55:00Z
+age: 1d 6h
+team_mapping: Team Alfa
+dependency_chain: PR_26174_ALFA_ALPHA_STACK
+recommendation: defer-candidate
+dependency_note: Stacked Alfa/Alpha chain; review in sequence #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118.
+
+---
+
+PR #105
+title: PR_26174_ALFA_011-game-hub-readiness-output-child-table
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/105
+branch: pr/26174-ALFA-011-game-hub-readiness-output-child-table
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-22T21:59:02Z
+updated_at: 2026-06-22T21:59:02Z
+age: 1d 6h
+team_mapping: Team Alfa
+dependency_chain: PR_26174_ALFA_ALPHA_STACK
+recommendation: defer-candidate
+dependency_note: Stacked Alfa/Alpha chain; review in sequence #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118.
+
+---
+
+PR #106
+title: PR_26174_ALFA_012-game-hub-parent-child-final-validation
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/106
+branch: pr/26174-ALFA-012-game-hub-parent-child-final-validation
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-22T22:03:26Z
+updated_at: 2026-06-22T22:03:26Z
+age: 1d 5h
+team_mapping: Team Alfa
+dependency_chain: PR_26174_ALFA_ALPHA_STACK
+recommendation: defer-candidate
+dependency_note: Stacked Alfa/Alpha chain; review in sequence #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118.
+
+---
+
+PR #107
+title: PR_26174_ALFA_013-game-hub-game-row-child-rows
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/107
+branch: pr/26174-ALFA-013-game-hub-game-row-child-rows
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-22T22:28:49Z
+updated_at: 2026-06-22T23:09:28Z
+age: 1d 5h
+team_mapping: Team Alfa
+dependency_chain: PR_26174_ALFA_ALPHA_STACK
+recommendation: defer-candidate
+dependency_note: Stacked Alfa/Alpha chain; review in sequence #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118.
+
+---
+
+PR #108
+title: PR_26174_ALFA_014-game-hub-parent-columns-center
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/108
+branch: pr/26174-ALFA-014-game-hub-parent-columns-center
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-22T23:49:52Z
+updated_at: 2026-06-22T23:49:52Z
+age: 1d 4h
+team_mapping: Team Alfa
+dependency_chain: PR_26174_ALFA_ALPHA_STACK
+recommendation: defer-candidate
+dependency_note: Stacked Alfa/Alpha chain; review in sequence #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118.
+
+---
+
+PR #109
+title: PR_26174_ALFA_015-game-hub-actions-and-setup-cleanup
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/109
+branch: pr/26174-ALFA-015-game-hub-actions-and-setup-cleanup
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-23T00:27:42Z
+updated_at: 2026-06-23T00:27:42Z
+age: 1d 3h
+team_mapping: Team Alfa
+dependency_chain: PR_26174_ALFA_ALPHA_STACK
+recommendation: defer-candidate
+dependency_note: Stacked Alfa/Alpha chain; review in sequence #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118.
+
+---
+
+PR #110
+title: PR_26174_ALFA_016-game-hub-row-edit-add-selected-state
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/110
+branch: pr/26174-ALFA-016-game-hub-row-edit-add-selected-state
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-23T00:56:52Z
+updated_at: 2026-06-23T01:04:05Z
+age: 1d 3h
+team_mapping: Team Alfa
+dependency_chain: PR_26174_ALFA_ALPHA_STACK
+recommendation: defer-candidate
+dependency_note: Stacked Alfa/Alpha chain; review in sequence #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118.
+
+---
+
+PR #111
+title: PR_26174_ALFA_017-game-hub-guest-save-and-crew-cleanup
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/111
+branch: pr/26174-ALFA-017-game-hub-guest-save-and-crew-cleanup
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-23T01:18:50Z
+updated_at: 2026-06-23T01:18:50Z
+age: 1d 2h
+team_mapping: Team Alfa
+dependency_chain: PR_26174_ALFA_ALPHA_STACK
+recommendation: defer-candidate
+dependency_note: Stacked Alfa/Alpha chain; review in sequence #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118.
+
+---
+
+PR #112
+title: PR_26174_ALFA_018-game-selection-button-state
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/112
+branch: pr/26174-ALFA-018-game-selection-button-state
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-23T01:29:58Z
+updated_at: 2026-06-23T01:29:58Z
+age: 1d 2h
+team_mapping: Team Alfa
+dependency_chain: PR_26174_ALFA_ALPHA_STACK
+recommendation: defer-candidate
+dependency_note: Stacked Alfa/Alpha chain; review in sequence #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118.
+
+---
+
+PR #113
+title: PR_26174_ALFA_019-game-hub-selected-button-and-crew-label
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/113
+branch: pr/26174-ALFA-019-game-hub-selected-button-and-crew-label
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-23T01:51:00Z
+updated_at: 2026-06-23T01:51:00Z
+age: 1d 2h
+team_mapping: Team Alfa
+dependency_chain: PR_26174_ALFA_ALPHA_STACK
+recommendation: defer-candidate
+dependency_note: Stacked Alfa/Alpha chain; review in sequence #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118.
+
+---
+
+PR #114
+title: PR_26174_ALFA_020-game-hub-idea-board-cleanup
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/114
+branch: pr/26174-ALFA-020-game-hub-idea-board-cleanup
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-23T02:48:01Z
+updated_at: 2026-06-23T02:48:01Z
+age: 1d 1h
+team_mapping: Team Alfa
+dependency_chain: PR_26174_ALFA_ALPHA_STACK
+recommendation: defer-candidate
+dependency_note: Stacked Alfa/Alpha chain; review in sequence #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118.
+
+---
+
+PR #115
+title: PR_26174_ALFA_021-idea-board-status-filter-table-polish
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/115
+branch: pr/26174-ALFA-021-idea-board-status-filter-table-polish
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-23T15:57:57Z
+updated_at: 2026-06-23T15:57:57Z
+age: 12h
+team_mapping: Team Alfa
+dependency_chain: PR_26174_ALFA_ALPHA_STACK
+recommendation: defer-candidate
+dependency_note: Stacked Alfa/Alpha chain; review in sequence #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118.
+
+---
+
+PR #116
+title: PR_26174_ALFA_022-idea-board-status-dropdown-fix
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/116
+branch: pr/26174-ALFA-022-idea-board-status-dropdown-fix
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-23T17:39:07Z
+updated_at: 2026-06-23T17:39:07Z
+age: 10h
+team_mapping: Team Alfa
+dependency_chain: PR_26174_ALFA_ALPHA_STACK
+recommendation: defer-candidate
+dependency_note: Stacked Alfa/Alpha chain; review in sequence #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118.
+
+---
+
+PR #117
+title: PR_26174_ALFA_EOD-workstream-closeout
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/117
+branch: pr/26174-ALFA-EOD-workstream-closeout
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-23T17:56:54Z
+updated_at: 2026-06-23T17:56:54Z
+age: 10h
+team_mapping: Team Alfa
+dependency_chain: PR_26174_ALFA_ALPHA_STACK
+recommendation: close-candidate-review
+dependency_note: Stacked Alfa/Alpha chain; review in sequence #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118.
+
+---
+
+PR #118
+title: PR_26174_ALFA_EOD-final-closeout
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/118
+branch: pr/26174-ALFA-EOD-final-closeout
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-23T18:08:07Z
+updated_at: 2026-06-23T18:10:12Z
+age: 9h
+team_mapping: Team Alfa
+dependency_chain: PR_26174_ALFA_ALPHA_STACK
+recommendation: merge-review-candidate
+dependency_note: Stacked Alfa/Alpha chain; review in sequence #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118.
+
+---
+
+PR #120
+title: [codex] PR_26175_ALFA_003 toolbox status bar single row polish
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/120
+branch: codex/pr-26175-alfa-003-toolbox-status-bar-single-row-polish
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-23T21:00:28Z
+updated_at: 2026-06-23T21:11:06Z
+age: 6h
+team_mapping: Team Alfa
+dependency_chain: PR_26175_ALFA_ALPHA_CHAIN
+recommendation: defer-candidate
+dependency_note: Current PR_26175 Alfa/Alpha chain; preserve order #120 -> #121 -> #122.
+
+---
+
+PR #121
+title: [codex] PR_26175_ALFA_004 game hub completion status audit
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/121
+branch: codex/pr-26175-alfa-004-game-hub-completion-status-audit
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-23T21:35:20Z
+updated_at: 2026-06-23T21:35:20Z
+age: 6h
+team_mapping: Team Alfa
+dependency_chain: PR_26175_ALFA_ALPHA_CHAIN
+recommendation: defer-candidate
+dependency_note: Current PR_26175 Alfa/Alpha chain; preserve order #120 -> #121 -> #122.
+
+---
+
+PR #122
+title: [codex] PR_26175_ALFA_005 game hub audit findings cleanup
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/122
+branch: codex/pr-26175-alfa-005-game-hub-audit-findings-cleanup
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-23T22:16:08Z
+updated_at: 2026-06-23T22:16:08Z
+age: 5h
+team_mapping: Team Alfa
+dependency_chain: PR_26175_ALFA_ALPHA_CHAIN
+recommendation: defer-candidate
+dependency_note: Current PR_26175 Alfa/Alpha chain; preserve order #120 -> #121 -> #122.
+
+---
+
+PR #123
+title: [codex] PR_26175_OWNER_042 GitHub PR inventory audit
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/123
+branch: PR_26175_OWNER_042-github-pr-inventory-audit
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-23T22:18:21Z
+updated_at: 2026-06-23T22:18:21Z
+age: 5h
+team_mapping: Team OWNER
+dependency_chain: PR_26175_OWNER_GOVERNANCE_REPORTS
+recommendation: merge-review-candidate
+dependency_note: OWNER governance/report chain; #124 follows #123 in GitHub creation order.
+
+---
+
+PR #124
+title: [codex] PR_26175_OWNER_043 team registry Gamma Delta alignment
+url: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/124
+branch: PR_26175_OWNER_043-team-registry-gamma-delta-alignment
+author: ToolboxAid
+state: open draft
+created_at: 2026-06-23T22:33:43Z
+updated_at: 2026-06-23T22:33:43Z
+age: 5h
+team_mapping: Team OWNER
+dependency_chain: PR_26175_OWNER_GOVERNANCE_REPORTS
+recommendation: merge-review-candidate
+dependency_note: OWNER governance/report chain; #124 follows #123 in GitHub creation order.
