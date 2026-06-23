@@ -196,6 +196,7 @@ function statusSelect(value) {
   select.setAttribute("aria-label", "Idea status");
   select.dataset.ideaBoardIdeaStatusInput = "true";
   for (const optionValue of statusOptions) {
+    if (optionValue === "Project" || optionValue === "Archived") continue;
     const option = document.createElement("option");
     option.value = optionValue;
     option.textContent = optionValue;
@@ -231,7 +232,6 @@ function renderIdeaInputRow(tbody, record = null) {
   const statusCell = document.createElement("td");
   statusCell.append(statusSelect(record?.status || "New"));
   row.append(statusCell);
-  row.append(cell(record?.updated || today()));
   row.append(cell(record ? noteCountLabel(record.ideaId) : "0 Notes"));
 
   const actions = document.createElement("td");
@@ -274,7 +274,6 @@ function renderIdeaRow(tbody, record) {
   row.append(idea);
   row.append(cell(record.pitch));
   row.append(cell(record.status));
-  row.append(cell(record.updated));
 
   const notes = document.createElement("td");
   const notesCount = document.createElement("span");
@@ -353,7 +352,7 @@ function renderExpandedNotesRow(tbody, record) {
   row.dataset.ideaBoardExpandedRow = record.ideaId;
 
   const content = document.createElement("td");
-  content.colSpan = 6;
+  content.colSpan = 5;
 
   const childSurface = document.createElement("div");
   childSurface.className = "idea-board-notes-child-surface";
@@ -400,7 +399,7 @@ function renderAddIdeaRow(tbody) {
   const row = document.createElement("tr");
   row.dataset.ideaBoardAddIdeaRow = "true";
   const actions = document.createElement("td");
-  actions.colSpan = 6;
+  actions.colSpan = 5;
   const addIdea = actionButton("Add Idea", "add", "ideaBoardIdeaAction", "primary");
   addIdea.dataset.ideaBoardAddIdea = "true";
   actions.append(addIdea);

@@ -1,10 +1,5 @@
-﻿docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-src/shared/toolbox/tool-metadata-inventory.js
-tests/playwright/tools/BuildPathProgressSimplification.spec.mjs
-tests/playwright/tools/GameHubMockRepository.spec.mjs
+﻿assets/theme-v2/css/tables.css
 tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
 tests/playwright/tools/ToolboxRoutePages.spec.mjs
-toolbox/game-hub/game-hub.js
-toolbox/game-hub/index.html
 toolbox/idea-board/index.html
+toolbox/idea-board/index.js

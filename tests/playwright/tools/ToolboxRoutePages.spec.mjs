@@ -120,8 +120,6 @@ async function expectIdeaChevron(page, ideaId, iconName) {
     const cellStyles = getComputedStyle(cell);
     const labelStyles = getComputedStyle(label);
     const iconStyles = getComputedStyle(icon);
-    const textRect = text.getBoundingClientRect();
-    const iconRect = icon.getBoundingClientRect();
     return {
       iconName: icon.dataset.ideaBoardChevronIcon,
       labelDisplay: labelStyles.display,
@@ -129,21 +127,19 @@ async function expectIdeaChevron(page, ideaId, iconName) {
       iconHeight: Number.parseFloat(iconStyles.height),
       fontSize: Number.parseFloat(cellStyles.fontSize),
       iconColor: iconStyles.backgroundColor,
-      iconBottom: iconRect.bottom,
-      iconLeft: iconRect.left,
+      iconBeforeText: Boolean(icon.compareDocumentPosition(text) & Node.DOCUMENT_POSITION_FOLLOWING),
+      iconVerticalAlign: Number.parseFloat(iconStyles.verticalAlign),
       textColor: cellStyles.color,
-      textBottom: textRect.bottom,
-      textLeft: textRect.left,
       maskImage: iconStyles.getPropertyValue("-webkit-mask-image") || iconStyles.maskImage,
     };
   }, ideaId);
   expect(metrics.iconName).toBe(iconName);
-  expect(metrics.labelDisplay).toBe("inline-flex");
+  expect(metrics.labelDisplay).toBe("inline");
   expect(Math.abs(metrics.iconWidth - metrics.fontSize)).toBeLessThanOrEqual(1);
   expect(Math.abs(metrics.iconHeight - metrics.fontSize)).toBeLessThanOrEqual(1);
   expect(metrics.iconColor).toBe(metrics.textColor);
-  expect(metrics.iconLeft).toBeLessThan(metrics.textLeft);
-  expect(Math.abs(metrics.iconBottom - metrics.textBottom)).toBeLessThanOrEqual(2);
+  expect(metrics.iconBeforeText).toBe(true);
+  expect(metrics.iconVerticalAlign).toBeLessThan(0);
   expect(metrics.maskImage).toContain(iconName);
 }
 
@@ -314,14 +310,15 @@ test("Idea Board launches from Toolbox with accordion table notes model", async 
       sections.map((section) => section.getAttribute("data-idea-board-section"))
     ));
     expect(ideaBoardSections).toEqual([
-      "Workflow",
+      "Status Filter",
       "Status",
+      "Workflow",
       "Idea Table",
       "Notes Governance",
       "Diagnostics",
     ]);
     await expect(page.locator("[data-idea-board-table]")).toBeVisible();
-    await expect(page.locator("[data-idea-board-table] > thead th[scope='col']")).toHaveText(["Idea", "Pitch", "Status", "Updated", "Notes", "Actions"]);
+    await expect(page.locator("[data-idea-board-table] > thead th[scope='col']")).toHaveText(["Idea", "Pitch", "Status", "Notes", "Actions"]);
     await expect(page.locator("[data-idea-board-idea-row]")).toHaveCount(3);
     await expect(page.locator("[data-idea-board-expanded-row]")).toHaveCount(0);
     await expect(page.locator("[data-idea-board-add-idea]")).toHaveText("Add Idea");

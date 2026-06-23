@@ -21,8 +21,6 @@ async function expectIdeaChevron(page, ideaId, iconName) {
     const cellStyles = getComputedStyle(cell);
     const labelStyles = getComputedStyle(label);
     const iconStyles = getComputedStyle(icon);
-    const textRect = text.getBoundingClientRect();
-    const iconRect = icon.getBoundingClientRect();
     return {
       iconName: icon.dataset.ideaBoardChevronIcon,
       labelDisplay: labelStyles.display,
@@ -30,21 +28,19 @@ async function expectIdeaChevron(page, ideaId, iconName) {
       iconHeight: Number.parseFloat(iconStyles.height),
       fontSize: Number.parseFloat(cellStyles.fontSize),
       iconColor: iconStyles.backgroundColor,
-      iconBottom: iconRect.bottom,
-      iconLeft: iconRect.left,
+      iconBeforeText: Boolean(icon.compareDocumentPosition(text) & Node.DOCUMENT_POSITION_FOLLOWING),
+      iconVerticalAlign: Number.parseFloat(iconStyles.verticalAlign),
       textColor: cellStyles.color,
-      textBottom: textRect.bottom,
-      textLeft: textRect.left,
       maskImage: iconStyles.getPropertyValue("-webkit-mask-image") || iconStyles.maskImage,
     };
   }, ideaId);
   expect(metrics.iconName).toBe(iconName);
-  expect(metrics.labelDisplay).toBe("inline-flex");
+  expect(metrics.labelDisplay).toBe("inline");
   expect(Math.abs(metrics.iconWidth - metrics.fontSize)).toBeLessThanOrEqual(1);
   expect(Math.abs(metrics.iconHeight - metrics.fontSize)).toBeLessThanOrEqual(1);
   expect(metrics.iconColor).toBe(metrics.textColor);
-  expect(metrics.iconLeft).toBeLessThan(metrics.textLeft);
-  expect(Math.abs(metrics.iconBottom - metrics.textBottom)).toBeLessThanOrEqual(2);
+  expect(metrics.iconBeforeText).toBe(true);
+  expect(metrics.iconVerticalAlign).toBeLessThan(0);
   expect(metrics.maskImage).toContain(iconName);
 }
 
@@ -203,7 +199,6 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
       "Idea",
       "Pitch",
       "Status",
-      "Updated",
       "Notes",
       "Actions",
     ]);
@@ -219,6 +214,14 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
     await expect(statusFilterAccordion.locator("[data-idea-board-filter-select-all]")).toHaveText("Select All");
     await expect(statusFilterAccordion.locator("[data-idea-board-filter-clear-all]")).toHaveText("Clear All");
     await expect(statusFilterAccordion.locator("[data-idea-board-status-filter-option]")).toHaveCount(6);
+    const statusFilterTheme = await statusFilterAccordion.locator("[data-idea-board-status-filter-option][value='New']").evaluate((input) => ({
+      accentColor: getComputedStyle(input).accentColor,
+      toolGroupColor: getComputedStyle(input.closest(".control-lab")).getPropertyValue("--tool-group-color").trim(),
+    }));
+    expect(statusFilterTheme).toEqual({
+      accentColor: "rgb(255, 45, 45)",
+      toolGroupColor: "#ff2d2d",
+    });
     await expect(statusFilterAccordion.locator(".idea-board-show-filter__option")).toHaveText([
       "New",
       "Exploring",
@@ -242,10 +245,21 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
     await expectIdeaChevron(page, "top-thoughts", "gfs-chevron-down.svg");
     await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] td").nth(0)).toHaveText("Smartest person wins...");
     await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] td").nth(1)).toHaveText("Exploring");
-    await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] td").nth(2)).toHaveText("2026-06-20");
     await expect(page.locator("[data-idea-board-notes-count='top-thoughts']")).toHaveText("3 Notes");
     await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Delete"]);
     await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] [data-idea-board-idea-action='create-project']")).toHaveCount(0);
+    const ideaLabelWrapping = await page.locator("[data-idea-board-idea-row='top-thoughts'] .idea-board-idea-label").evaluate((label) => {
+      const labelStyles = getComputedStyle(label);
+      const textStyles = getComputedStyle(label.querySelector(".idea-board-idea-label__text"));
+      return {
+        overflowWrap: textStyles.overflowWrap,
+        whiteSpace: labelStyles.whiteSpace,
+      };
+    });
+    expect(ideaLabelWrapping).toEqual({
+      overflowWrap: "anywhere",
+      whiteSpace: "normal",
+    });
 
     await expect(page.locator("[data-idea-board-idea-row='sky-orchard'] th")).toHaveText("Sky Orchard");
     await expectIdeaChevron(page, "sky-orchard", "gfs-chevron-down.svg");
@@ -259,6 +273,7 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
     await expect(page.locator("[data-idea-board-expanded-row]")).toHaveCount(0);
     await page.locator("[data-idea-board-idea-cell='top-thoughts']").click();
     await expect(page.locator("[data-idea-board-expanded-row='top-thoughts']")).toBeVisible();
+    await expect(page.locator("[data-idea-board-expanded-row='top-thoughts'] > td")).toHaveAttribute("colspan", "5");
     await expectProductionCopy(page);
     await expectIdeaChevron(page, "top-thoughts", "gfs-chevron-up.svg");
     await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] + [data-idea-board-expanded-row='top-thoughts']")).toHaveCount(1);
@@ -320,11 +335,8 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
       "Exploring",
       "Refining",
       "Ready",
-      "Project",
-      "Archived",
     ]);
-    await expect(ideaInputRow.locator("td").nth(2)).toHaveText(/\d{4}-\d{2}-\d{2}/);
-    await expect(ideaInputRow.locator("td").nth(3)).toHaveText("0 Notes");
+    await expect(ideaInputRow.locator("td").nth(2)).toHaveText("0 Notes");
     await page.locator("[data-idea-board-idea-input]").fill("Lantern Reef");
     await page.locator("[data-idea-board-pitch-input]").fill("Guide light through a reef that rearranges at dusk.");
     await page.locator("[data-idea-board-idea-status-input]").selectOption("Refining");

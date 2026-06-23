@@ -1,541 +1,269 @@
-﻿diff --git a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-index 09cc34579..ec1b46b16 100644
---- a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-+++ b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-@@ -4,17 +4,17 @@
- 
- ### Idea
- 
--0% Complete — Dream, brainstorm, and explore early game concepts
-+33% Complete — Dream, brainstorm, and explore early game concepts
- 
--- [ ] Alfa - Idea Board
-+- [x] Alfa - Idea Board
- - [ ] Alfa - Game Concept Notes
- - [ ] Alfa - Creator Learning
- 
- ### Design
- 
--0% Complete — Shape the game's story, structure, and systems
-+17% Complete — Shape the game's story, structure, and systems
- 
--- [ ] Alfa - Game Hub
-+- [x] Alfa - Game Hub
- - [ ] Alfa - Game Design
- - [ ] Alfa - Game Configuration
- - [ ] Alfa - Game Crew
-diff --git a/src/shared/toolbox/tool-metadata-inventory.js b/src/shared/toolbox/tool-metadata-inventory.js
-index 7a4cb7587..955f54d8a 100644
---- a/src/shared/toolbox/tool-metadata-inventory.js
-+++ b/src/shared/toolbox/tool-metadata-inventory.js
-@@ -88,8 +88,8 @@ export const TOOL_REGISTRY = Object.freeze([
-     "requiredForTestable": false,
-     "requiredForPublish": false,
-     "requires": [],
--    "status": "Wireframe",
--    "releaseChannel": "wireframe",
-+    "status": "Ready",
-+    "releaseChannel": "complete",
-     "progressChecklist": [
-       "Idea table workflow visible",
-       "Add Idea and Add Note actions remain inline",
-@@ -153,7 +153,7 @@ export const TOOL_REGISTRY = Object.freeze([
-     "requiredForPublish": true,
-     "requires": [],
-     "status": "Ready",
--    "releaseChannel": "beta",
-+    "releaseChannel": "complete",
-     "progressChecklist": [
-       "Review readiness",
-       "Static planned text only"
-diff --git a/tests/playwright/tools/BuildPathProgressSimplification.spec.mjs b/tests/playwright/tools/BuildPathProgressSimplification.spec.mjs
-index f4644795e..68d71f7a7 100644
---- a/tests/playwright/tools/BuildPathProgressSimplification.spec.mjs
-+++ b/tests/playwright/tools/BuildPathProgressSimplification.spec.mjs
-@@ -101,18 +101,24 @@ test("Toolbox removes Progress view and renders the DB-backed Build Path table",
-     await expect(page.locator("[data-build-path-table='workflow']")).toBeVisible();
-     await expect(page.locator("[data-build-path-table='workflow'] th")).toHaveText(["Order", "Tool", "Status"]);
-     await expect(page.getByText("What should I do next? Game Configuration")).toBeVisible();
--    await expect(page.getByText("Game Progress: Demo Game identity ready")).toBeVisible();
-     await expect(page.getByText("Work top-to-bottom and left-to-right through the workflow table.")).toBeVisible();
- 
-     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
-       "Planned (27)",
--      "Wireframe (5)",
--      "Beta (7)",
--      "Complete (1)",
-+      "Wireframe (4)",
-+      "Beta (6)",
-+      "Complete (3)",
-       "Deprecated (1)",
-     ]);
-     const rows = await buildPathRows(page);
-     expect(rows).toEqual([
-+      expect.objectContaining({
-+        metadataSource: "toolbox_tool_metadata",
-+        order: 1,
-+        releaseChannel: "complete",
-+        status: "Complete",
-+        tool: "Game Hub",
-+      }),
-       expect.objectContaining({
-         metadataSource: "toolbox_tool_metadata",
-         order: 3,
-@@ -141,14 +147,16 @@ test("Build Path preserves DB order across selected status filters", async ({ pa
-       "Game Hub",
-       "Game Design",
-       "Colors",
-+      "Message Studio",
-       "Assets",
-       "Game Configuration",
-       "Objects",
-       "Tags",
-       "Game Journey",
-+      "Text To Speech",
-     ]);
--    expect(rows.map((row) => row.order)).toEqual([1, 2, 3, 4, 5, 6, 13, 14]);
--    expect(rows.map((row) => row.releaseChannel)).toEqual(["beta", "beta", "complete", "beta", "beta", "beta", "beta", "beta"]);
-+    expect(rows.map((row) => row.order)).toEqual([1, 2, 3, 3, 4, 5, 6, 13, 14, 38]);
-+    expect(rows.map((row) => row.releaseChannel)).toEqual(["complete", "beta", "complete", "beta", "beta", "beta", "beta", "beta", "beta", "beta"]);
-     expect(rows.every((row) => row.metadataSource === "toolbox_tool_metadata")).toBe(true);
- 
-     await expectNoPageFailures(failures);
-@@ -164,9 +172,10 @@ test("Build Path tool names link to registered routes and render badge images",
-   try {
-     await page.getByRole("button", { name: "Build Path" }).click();
-     const rows = page.locator("[data-build-path-table='workflow'] tbody tr");
--    await expect(rows).toHaveCount(1);
-+    await expect(rows).not.toHaveCount(0);
- 
--    const row = rows.first();
-+    const row = page.locator("[data-build-path-tool='Colors']");
-+    await expect(row).toHaveCount(1);
-     const toolName = await row.getAttribute("data-build-path-tool");
-     const registrySnapshot = await fetchApiData(failures.server, "/api/toolbox/registry/snapshot");
-     const registryToolsByDisplayName = new Map(registrySnapshot.activeTools.map((tool) => [tool.displayName, tool]));
-diff --git a/tests/playwright/tools/GameHubMockRepository.spec.mjs b/tests/playwright/tools/GameHubMockRepository.spec.mjs
-index f2dac0710..6f6d046d2 100644
---- a/tests/playwright/tools/GameHubMockRepository.spec.mjs
-+++ b/tests/playwright/tools/GameHubMockRepository.spec.mjs
-@@ -258,8 +258,9 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
-     await expect(page.getByRole("button", { name: "Delete Open Game" })).toHaveClass("btn");
-     await expect(page.getByRole("button", { name: "Delete Open Game" })).toBeEnabled();
-     await expect(page.locator("summary").filter({ hasText: /^Game Setup$/ })).toHaveCount(0);
--    await expect(page.locator("summary").filter({ hasText: /^Game Crew$/ })).toHaveCount(1);
-+    await expect(page.locator("summary").filter({ hasText: /^Game Crew$/ })).toHaveCount(0);
-     await expect(page.locator("main")).not.toContainText("game-hub/Game Crew");
-+    await expect(page.getByLabel("Current User Role")).toHaveCount(0);
-     await expect(page.getByRole("link", { name: "Open Game Journey" })).toHaveCount(0);
-     await expect(page.locator(".tool-center-panel")).not.toContainText("Review games in the parent table");
-     await expect(page.locator("[data-project-record-status]")).toHaveText("Game table loaded.");
-@@ -340,13 +341,12 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
-     await demoGameRow.locator("[data-game-toggle='demo-game']").click();
-     await expect(demoGameRow.locator("[data-game-toggle='demo-game']")).toHaveAttribute("aria-expanded", "true");
-     const demoChildRows = page.locator("[data-game-expanded-row='demo-game']");
--    await expect(demoChildRows).toHaveCount(2);
--    await expect(demoChildRows.nth(0)).toHaveAttribute("data-game-child-row", "source-idea");
--    await expect(demoChildRows.nth(1)).toHaveAttribute("data-game-child-row", "readiness-output");
-+    await expect(demoChildRows).toHaveCount(1);
-+    await expect(demoChildRows.nth(0)).toHaveAttribute("data-game-child-row", "readiness-output");
-     await expect(page.locator("[data-game-expanded-row='demo-game'] [data-game-child-table='summary']")).toHaveCount(0);
--    await expect(page.locator("[data-game-expanded-row='demo-game'] [data-game-child-table]")).toHaveCount(2);
--    await expect(demoChildRows.nth(0).locator("[data-game-child-table='source-idea'] caption")).toHaveText("Source Idea");
--    const readinessOutputTable = demoChildRows.nth(1).locator("[data-game-child-table='readiness-output']");
-+    await expect(page.locator("[data-game-expanded-row='demo-game'] [data-game-child-table]")).toHaveCount(1);
-+    await expect(page.locator("[data-game-expanded-row='demo-game'] [data-game-child-table='source-idea']")).toHaveCount(0);
-+    const readinessOutputTable = demoChildRows.nth(0).locator("[data-game-child-table='readiness-output']");
-     await expect(readinessOutputTable.locator("caption")).toHaveText("Readiness Output");
-     await expect(readinessOutputTable.locator("thead th")).toHaveText(["Output", "Status"]);
-     await expect(readinessOutputTable.locator("tbody tr")).toHaveText([
-@@ -416,7 +416,8 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
-     await expect(page.locator("[data-game-row='archive-game-2'] [data-game-toggle='archive-game-2']")).not.toHaveAttribute("aria-current", "true");
-     await expect(page.locator("[data-game-toggle][aria-current='true']")).toHaveCount(1);
-     await expect(page.locator("[data-game-toggle][data-game-active='true']")).toHaveCount(1);
--    await expect(page.locator("[data-game-expanded-row='launch-test-game-1']")).toHaveCount(2);
-+    await expect(page.locator("[data-game-expanded-row='launch-test-game-1']")).toHaveCount(1);
-+    await expect(page.locator("[data-game-expanded-row='launch-test-game-1']")).toHaveAttribute("data-game-child-row", "readiness-output");
-     await expect(page.locator("[data-game-expanded-row='archive-game-2']")).toHaveCount(0);
-     await expect(page.locator("[data-game-row='launch-test-game-1'] [data-game-toggle='launch-test-game-1']")).toHaveClass("btn btn--compact primary");
-     await expect(page.locator("[data-game-row='launch-test-game-1']").getByRole("button", { name: "Edit Launch Test Game" })).not.toHaveClass(/primary/);
-@@ -579,7 +580,7 @@ test("Game Hub preserves guest browsing and blocks guest saves", async ({ page }
-     await expect(page.getByLabel("Game Name")).toHaveCount(0);
-     await expect(page.getByLabel("Game Purpose")).toHaveCount(0);
-     await expect(page.getByLabel("Game Status")).toHaveCount(0);
--    await expect(page.getByLabel("Current User Role")).toBeDisabled();
-+    await expect(page.getByLabel("Current User Role")).toHaveCount(0);
- 
-     await page.locator("[data-game-row='gravity-demo'] [data-game-toggle='gravity-demo']").click();
-     await expect(page.locator("[data-game-row='gravity-demo'] [data-game-toggle='gravity-demo']")).toHaveClass("btn btn--compact primary");
-@@ -751,22 +752,11 @@ test("Game Hub reports malformed active-game payloads without throwing", async (
-   }
- });
- 
--test("Game Hub displays and edits game purpose and member role", async ({ page }) => {
-+test("Game Hub displays and edits game purpose", async ({ page }) => {
-   const failures = await openRepoPage(page, "/toolbox/game-hub/index.html", { session: creatorSession() });
- 
-   try {
--    await expect(page.locator("#currentUserRoleInput option")).toHaveText([
--      "Owner",
--      "Designer",
--      "World Builder",
--      "Artist",
--      "Audio Creator",
--      "Translator",
--      "Tester",
--      "Publisher",
--      "Viewer"
--    ]);
--    await expect(page.getByLabel("Current User Role")).toHaveValue("Owner");
-+    await expect(page.getByLabel("Current User Role")).toHaveCount(0);
- 
-     await page.getByRole("button", { name: "Edit Demo Game" }).click();
-     const editRow = page.locator("[data-game-edit-row='demo-game']");
-@@ -792,10 +782,6 @@ test("Game Hub displays and edits game purpose and member role", async ({ page }
-     await expect(page.locator("[data-game-row='demo-game'] td").nth(1)).toHaveText("Ready for Testing");
-     await expect(page.locator("[data-game-hub-log]")).toHaveText("Saved Demo Game.");
- 
--    await page.getByLabel("Current User Role").selectOption("Designer");
--    await expect(page.getByLabel("Current User Role")).toHaveValue("Designer");
--    await expect(page.locator("[data-game-hub-log]")).toHaveText("Updated current user role to Designer.");
--
-     await page.getByRole("button", { name: "Add Game" }).click();
-     const addRow = page.locator("[data-game-add-row='input']");
-     await addRow.getByLabel("Game").fill("Purpose Review Game");
-@@ -804,7 +790,6 @@ test("Game Hub displays and edits game purpose and member role", async ({ page }
-     await expect(page.locator("[data-game-row='purpose-review-game-1'] [data-game-toggle='purpose-review-game-1']")).toHaveClass("btn btn--compact primary");
-     await expect(page.locator("[data-game-row='purpose-review-game-1']").getByRole("button", { name: "Edit Purpose Review Game" })).not.toHaveClass(/primary/);
-     await expect(page.locator("[data-game-row='purpose-review-game-1'] td").nth(0)).toHaveText("Capability Demo");
--    await expect(page.getByLabel("Current User Role")).toHaveValue("Owner");
-     await expect(page.locator("[data-game-list]")).toContainText("Purpose Review Game");
- 
-     await expectNoPageFailures(failures);
+﻿diff --git a/assets/theme-v2/css/tables.css b/assets/theme-v2/css/tables.css
+index c39ef19f0..5575ff684 100644
+--- a/assets/theme-v2/css/tables.css
++++ b/assets/theme-v2/css/tables.css
+@@ -116,26 +116,26 @@ td {
+ }
+
+ .idea-board-idea-label {
+-  display: inline-flex;
+-  align-items: center;
+-  gap: .35em;
++  display: inline;
+   color: inherit;
+   font: inherit;
+   line-height: var(--line-height-single);
+   vertical-align: baseline;
+-  white-space: nowrap
++  white-space: normal
+ }
+
+ .idea-board-idea-label__text {
+-  line-height: var(--line-height-single)
++  overflow-wrap: anywhere;
++  line-height: inherit
+ }
+
+ .idea-board-idea-chevron {
+   display: inline-block;
+   width: 1em;
+   height: 1em;
+-  flex: 0 0 1em;
++  margin-right: .35em;
+   background: currentColor;
++  vertical-align: -0.125em;
+   -webkit-mask-position: center;
+   mask-position: center;
+   -webkit-mask-repeat: no-repeat;
 diff --git a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-index b1faf33d8..214c0081e 100644
+index 214c0081e..da7800ca0 100644
 --- a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
 +++ b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-@@ -212,23 +212,21 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-     await expect(page.locator("[data-idea-board-add-idea-row]")).toHaveCount(1);
-     await expect(page.locator("[data-idea-board-add-idea]")).toHaveText("Add Idea");
-     await expectButtonLeftAligned(page, "[data-idea-board-add-idea]", "[data-idea-board-add-idea-row] > td");
--    await expect(page.locator("[data-idea-board-show-filter] summary")).toHaveText("Show");
--    const captionMetrics = await page.locator(".idea-board-table-caption").evaluate((caption) => {
--      const label = caption.querySelector("span");
--      const filter = caption.querySelector("[data-idea-board-show-filter]");
--      const labelRect = label.getBoundingClientRect();
--      const filterRect = filter.getBoundingClientRect();
--      return {
--        filterRight: filterRect.right,
--        filterTop: filterRect.top,
--        labelRight: labelRect.right,
--        labelTop: labelRect.top,
--      };
--    });
--    expect(captionMetrics.filterRight).toBeGreaterThan(captionMetrics.labelRight);
--    expect(Math.abs(captionMetrics.filterTop - captionMetrics.labelTop)).toBeLessThanOrEqual(4);
--    await page.locator("[data-idea-board-show-filter] summary").click();
--    await expect(page.locator("[data-idea-board-status-filter-option]")).toHaveCount(6);
-+    await expect(page.locator(".tool-center-panel [data-idea-board-show-filter]")).toHaveCount(0);
-+    const statusFilterAccordion = page.locator("aside.tool-group-idea").first().locator("[data-idea-board-section='Status Filter']");
-+    await expect(page.locator("aside.tool-group-idea").first().locator(".accordion-stack > details").first()).toHaveAttribute("data-idea-board-section", "Status Filter");
-+    await expect(statusFilterAccordion.locator("summary")).toHaveText("Status Filter");
-+    await expect(statusFilterAccordion.locator("[data-idea-board-filter-select-all]")).toHaveText("Select All");
-+    await expect(statusFilterAccordion.locator("[data-idea-board-filter-clear-all]")).toHaveText("Clear All");
-+    await expect(statusFilterAccordion.locator("[data-idea-board-status-filter-option]")).toHaveCount(6);
-+    await expect(statusFilterAccordion.locator(".idea-board-show-filter__option")).toHaveText([
-+      "New",
-+      "Exploring",
-+      "Refining",
-+      "Ready",
-+      "Project",
-+      "Archived",
-+    ]);
-     const checkedStatuses = await page.locator("[data-idea-board-status-filter-option]:checked").evaluateAll((inputs) => (
-       inputs.map((input) => input.value)
-     ));
-@@ -393,9 +391,9 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-     await expect(page.locator("[data-game-output-panels]")).toHaveCount(0);
-     await expect(page.locator("[data-game-hub-foundation]")).toHaveCount(0);
-     await expect(page.getByRole("button", { name: "Delete Open Game" })).toHaveCount(0);
--    const activeGameRow = page.locator("[data-game-row][data-game-active='true']");
--    await expect(activeGameRow).toContainText("Lantern Reef");
--    await activeGameRow.locator("[data-game-toggle]").click();
-+    const activeGameToggle = page.locator("[data-game-toggle][data-game-active='true']");
-+    await expect(activeGameToggle).toHaveText("Lantern Reef");
-+    await activeGameToggle.click();
-     let expandedRows = page.locator("[data-game-expanded-row]");
-     await expect(expandedRows).toHaveCount(2);
-     await expect(expandedRows.nth(0)).toHaveAttribute("data-game-child-row", "source-idea");
-@@ -416,7 +414,7 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-     await expect(page.locator("[data-source-idea-section]")).toHaveCount(0);
-     await expect(page.locator("[data-game-output-panels]")).toHaveCount(0);
-     await expect(page.locator("[data-game-hub-foundation]")).toHaveCount(0);
--    await activeGameRow.locator("[data-game-toggle]").click();
-+    await activeGameToggle.click();
-     expandedRows = page.locator("[data-game-expanded-row]");
-     await expect(expandedRows).toHaveCount(2);
-     sourceIdeaChildTable = expandedRows.nth(0).locator("[data-game-child-table='source-idea']");
-diff --git a/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs b/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
-index 3743687e9..b138c4ba5 100644
---- a/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
-+++ b/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
-@@ -244,10 +244,10 @@ test("Toolbox and Admin Tool Votes share the same DB-backed metadata and plannin
-     const counts = countByStatus(snapshot.rows);
-     const visibleCounts = countByStatus(visibleSnapshotRows);
-     expect(counts).toMatchObject({
--      beta: 7,
--      complete: 1,
-+      beta: 6,
-+      complete: 3,
-       planned: 31,
--      wireframe: 5,
-+      wireframe: 4,
-       deprecated: 2,
-     });
-     const orderedSetupRows = snapshot.rows
+@@ -21,8 +21,6 @@ async function expectIdeaChevron(page, ideaId, iconName) {
+     const cellStyles = getComputedStyle(cell);
+     const labelStyles = getComputedStyle(label);
+     const iconStyles = getComputedStyle(icon);
+-    const textRect = text.getBoundingClientRect();
+-    const iconRect = icon.getBoundingClientRect();
+     return {
+       iconName: icon.dataset.ideaBoardChevronIcon,
+       labelDisplay: labelStyles.display,
+@@ -30,21 +28,19 @@ async function expectIdeaChevron(page, ideaId, iconName) {
+       iconHeight: Number.parseFloat(iconStyles.height),
+       fontSize: Number.parseFloat(cellStyles.fontSize),
+       iconColor: iconStyles.backgroundColor,
+-      iconBottom: iconRect.bottom,
+-      iconLeft: iconRect.left,
++      iconBeforeText: Boolean(icon.compareDocumentPosition(text) & Node.DOCUMENT_POSITION_FOLLOWING),
++      iconVerticalAlign: Number.parseFloat(iconStyles.verticalAlign),
+       textColor: cellStyles.color,
+-      textBottom: textRect.bottom,
+-      textLeft: textRect.left,
+       maskImage: iconStyles.getPropertyValue("-webkit-mask-image") || iconStyles.maskImage,
+     };
+   }, ideaId);
+   expect(metrics.iconName).toBe(iconName);
+-  expect(metrics.labelDisplay).toBe("inline-flex");
++  expect(metrics.labelDisplay).toBe("inline");
+   expect(Math.abs(metrics.iconWidth - metrics.fontSize)).toBeLessThanOrEqual(1);
+   expect(Math.abs(metrics.iconHeight - metrics.fontSize)).toBeLessThanOrEqual(1);
+   expect(metrics.iconColor).toBe(metrics.textColor);
+-  expect(metrics.iconLeft).toBeLessThan(metrics.textLeft);
+-  expect(Math.abs(metrics.iconBottom - metrics.textBottom)).toBeLessThanOrEqual(2);
++  expect(metrics.iconBeforeText).toBe(true);
++  expect(metrics.iconVerticalAlign).toBeLessThan(0);
+   expect(metrics.maskImage).toContain(iconName);
+ }
+
+@@ -203,7 +199,6 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
+       "Idea",
+       "Pitch",
+       "Status",
+-      "Updated",
+       "Notes",
+       "Actions",
+     ]);
+@@ -219,6 +214,14 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
+     await expect(statusFilterAccordion.locator("[data-idea-board-filter-select-all]")).toHaveText("Select All");
+     await expect(statusFilterAccordion.locator("[data-idea-board-filter-clear-all]")).toHaveText("Clear All");
+     await expect(statusFilterAccordion.locator("[data-idea-board-status-filter-option]")).toHaveCount(6);
++    const statusFilterTheme = await statusFilterAccordion.locator("[data-idea-board-status-filter-option][value='New']").evaluate((input) => ({
++      accentColor: getComputedStyle(input).accentColor,
++      toolGroupColor: getComputedStyle(input.closest(".control-lab")).getPropertyValue("--tool-group-color").trim(),
++    }));
++    expect(statusFilterTheme).toEqual({
++      accentColor: "rgb(255, 45, 45)",
++      toolGroupColor: "#ff2d2d",
++    });
+     await expect(statusFilterAccordion.locator(".idea-board-show-filter__option")).toHaveText([
+       "New",
+       "Exploring",
+@@ -242,10 +245,21 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
+     await expectIdeaChevron(page, "top-thoughts", "gfs-chevron-down.svg");
+     await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] td").nth(0)).toHaveText("Smartest person wins...");
+     await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] td").nth(1)).toHaveText("Exploring");
+-    await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] td").nth(2)).toHaveText("2026-06-20");
+     await expect(page.locator("[data-idea-board-notes-count='top-thoughts']")).toHaveText("3 Notes");
+     await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Delete"]);
+     await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] [data-idea-board-idea-action='create-project']")).toHaveCount(0);
++    const ideaLabelWrapping = await page.locator("[data-idea-board-idea-row='top-thoughts'] .idea-board-idea-label").evaluate((label) => {
++      const labelStyles = getComputedStyle(label);
++      const textStyles = getComputedStyle(label.querySelector(".idea-board-idea-label__text"));
++      return {
++        overflowWrap: textStyles.overflowWrap,
++        whiteSpace: labelStyles.whiteSpace,
++      };
++    });
++    expect(ideaLabelWrapping).toEqual({
++      overflowWrap: "anywhere",
++      whiteSpace: "normal",
++    });
+
+     await expect(page.locator("[data-idea-board-idea-row='sky-orchard'] th")).toHaveText("Sky Orchard");
+     await expectIdeaChevron(page, "sky-orchard", "gfs-chevron-down.svg");
+@@ -259,6 +273,7 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
+     await expect(page.locator("[data-idea-board-expanded-row]")).toHaveCount(0);
+     await page.locator("[data-idea-board-idea-cell='top-thoughts']").click();
+     await expect(page.locator("[data-idea-board-expanded-row='top-thoughts']")).toBeVisible();
++    await expect(page.locator("[data-idea-board-expanded-row='top-thoughts'] > td")).toHaveAttribute("colspan", "5");
+     await expectProductionCopy(page);
+     await expectIdeaChevron(page, "top-thoughts", "gfs-chevron-up.svg");
+     await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] + [data-idea-board-expanded-row='top-thoughts']")).toHaveCount(1);
+@@ -320,11 +335,8 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
+       "Exploring",
+       "Refining",
+       "Ready",
+-      "Project",
+-      "Archived",
+     ]);
+-    await expect(ideaInputRow.locator("td").nth(2)).toHaveText(/\d{4}-\d{2}-\d{2}/);
+-    await expect(ideaInputRow.locator("td").nth(3)).toHaveText("0 Notes");
++    await expect(ideaInputRow.locator("td").nth(2)).toHaveText("0 Notes");
+     await page.locator("[data-idea-board-idea-input]").fill("Lantern Reef");
+     await page.locator("[data-idea-board-pitch-input]").fill("Guide light through a reef that rearranges at dusk.");
+     await page.locator("[data-idea-board-idea-status-input]").selectOption("Refining");
 diff --git a/tests/playwright/tools/ToolboxRoutePages.spec.mjs b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
-index 12e463488..de9995354 100644
+index de9995354..a2622e969 100644
 --- a/tests/playwright/tools/ToolboxRoutePages.spec.mjs
 +++ b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
-@@ -510,9 +510,9 @@ test("toolbox status kickers, filters, card order, and voting controls work from
- 
-     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
-       "Planned (28)",
--      "Wireframe (5)",
--      "Beta (7)",
--      "Complete (1)",
-+      "Wireframe (4)",
-+      "Beta (6)",
-+      "Complete (3)",
-       "Deprecated (1)",
-     ]);
-     await expect(page.locator("[data-toolbox-status-filter='planned']")).toHaveAttribute("aria-pressed", "false");
-@@ -527,9 +527,9 @@ test("toolbox status kickers, filters, card order, and voting controls work from
-     await page.locator("[data-tools-view='build-path']").click();
-     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
-       "Planned (28)",
--      "Wireframe (5)",
--      "Beta (7)",
--      "Complete (1)",
-+      "Wireframe (4)",
-+      "Beta (6)",
-+      "Complete (3)",
-       "Deprecated (1)",
-     ]);
-     await expect(page.locator("[data-toolbox-status-filter='planned']")).toHaveAttribute("aria-pressed", "false");
-@@ -552,7 +552,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
-     await page.locator("[data-toolbox-status-filter='deprecated']").click();
-     await expect(page.locator("[data-toolbox-status-filter='deprecated']")).toHaveAttribute("aria-pressed", "true");
- 
--    for (const toolName of ["Assets", "Tags", "Game Configuration", "Game Design", "Game Journey", "Game Hub"]) {
-+    for (const toolName of ["Assets", "Tags", "Game Configuration", "Game Design", "Game Journey"]) {
-       const betaCard = page.locator(`[data-toolbox-tool-card='${toolName}']`);
-       await expect(betaCard).toBeVisible();
-       await expect(betaCard.locator("[data-toolbox-kicker]")).toHaveText("Beta");
-@@ -562,6 +562,16 @@ test("toolbox status kickers, filters, card order, and voting controls work from
-       );
-     }
- 
-+    for (const toolName of ["Colors", "Game Hub", "Idea Board"]) {
-+      const completeCard = page.locator(`[data-toolbox-tool-card='${toolName}']`);
-+      await expect(completeCard).toBeVisible();
-+      await expect(completeCard.locator("[data-toolbox-kicker]")).toHaveText("Complete");
-+      await expect(completeCard.locator("[data-toolbox-kicker]")).toHaveAttribute(
-+        "title",
-+        STATUS_HELP_TEXT.complete,
-+      );
-+    }
-+
-     const wireframeCard = page.locator("[data-toolbox-tool-card='Saved Data']");
-     await expect(wireframeCard).toBeVisible();
-     await expect(wireframeCard.locator("[data-toolbox-kicker]")).toHaveText("Wireframe");
-@@ -816,7 +826,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
- 
-     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
-     await page.locator("[data-tools-view='build-path']").click();
--    await expect(page.locator("[data-toolbox-status-filter='complete']")).toHaveText("Complete (0)");
-+    await expect(page.locator("[data-toolbox-status-filter='complete']")).toHaveText("Complete (2)");
-     await expect(page.locator("[data-build-path-tool='Colors']")).toHaveCount(0);
-     await page.locator("[data-toolbox-status-filter='beta']").click();
-     const colorsBuildPathRow = page.locator("[data-build-path-tool='Colors']");
-@@ -1235,19 +1245,19 @@ test("toolbox Build Path status filters support multi-select registry-matched to
- 
-     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
-       "Planned (28)",
--      "Wireframe (5)",
--      "Beta (7)",
--      "Complete (1)",
-+      "Wireframe (4)",
-+      "Beta (6)",
-+      "Complete (3)",
-       "Deprecated (1)",
-     ]);
-     await expectActiveFilters(["complete"]);
-     await expect(page.locator("[data-build-path-tool='Colors']")).toBeVisible();
--    await expectBuildPathChannels(["complete"], 1);
-+    await expectBuildPathChannels(["complete"], 3);
-     await expectBuildPathOrder("Colors", registryById.get("colors").order);
- 
-     await page.locator("[data-toolbox-status-filter='planned']").click();
-     await expectActiveFilters(["planned", "complete"]);
--    await expectBuildPathChannels(["planned", "complete"], 29);
-+    await expectBuildPathChannels(["planned", "complete"], 31);
-     await expect(page.locator("[data-build-path-tool='AI Command Center']")).toBeVisible();
-     await expectBuildPathOrder("AI Command Center", registryById.get("ai-assistant").order);
-     await expectBuildPathOrder("Colors", registryById.get("colors").order);
-@@ -1260,19 +1270,19 @@ test("toolbox Build Path status filters support multi-select registry-matched to
- 
-     await page.locator("[data-toolbox-status-filter='wireframe']").click();
-     await expectActiveFilters(["planned", "wireframe"]);
--    await expectBuildPathChannels(["planned", "wireframe"], 33);
-+    await expectBuildPathChannels(["planned", "wireframe"], 32);
-     await expect(page.locator("[data-build-path-tool='Saved Data']")).toBeVisible();
-     await expect(page.locator("[data-build-path-tool='Build Game']")).toHaveCount(0);
- 
-     await page.locator("[data-toolbox-status-filter='deprecated']").click();
-     await expectActiveFilters(["planned", "wireframe", "deprecated"]);
--    await expectBuildPathChannels(["planned", "wireframe", "deprecated"], 34);
-+    await expectBuildPathChannels(["planned", "wireframe", "deprecated"], 33);
-     await expect(page.locator("[data-build-path-tool='Build Game']")).toBeVisible();
-     await expectBuildPathOrder("Build Game", registryById.get("build-game").order);
- 
-     await page.locator("[data-toolbox-status-filter='beta']").click();
-     await expectActiveFilters(["planned", "wireframe", "beta", "deprecated"]);
--    await expectBuildPathChannels(["planned", "wireframe", "beta", "deprecated"], 41);
-+    await expectBuildPathChannels(["planned", "wireframe", "beta", "deprecated"], 39);
- 
-     expect(failedRequests).toEqual([]);
-     expect(pageErrors).toEqual([]);
-diff --git a/toolbox/game-hub/game-hub.js b/toolbox/game-hub/game-hub.js
-index 71e7a511d..b04c26882 100644
---- a/toolbox/game-hub/game-hub.js
-+++ b/toolbox/game-hub/game-hub.js
-@@ -275,7 +275,12 @@ function createGameToggleButton(game, expanded, active) {
-     button.setAttribute("aria-current", "true");
-   }
-   button.setAttribute("aria-expanded", String(expanded));
--  button.setAttribute("aria-controls", `game-child-source-idea-${game.id} game-child-readiness-output-${game.id}`);
-+  const controlledRows = [];
-+  if (hasSourceIdeaDetails(game)) {
-+    controlledRows.push(`game-child-source-idea-${game.id}`);
-+  }
-+  controlledRows.push(`game-child-readiness-output-${game.id}`);
-+  button.setAttribute("aria-controls", controlledRows.join(" "));
-   button.textContent = game.name;
-   return button;
+@@ -120,8 +120,6 @@ async function expectIdeaChevron(page, ideaId, iconName) {
+     const cellStyles = getComputedStyle(cell);
+     const labelStyles = getComputedStyle(label);
+     const iconStyles = getComputedStyle(icon);
+-    const textRect = text.getBoundingClientRect();
+-    const iconRect = icon.getBoundingClientRect();
+     return {
+       iconName: icon.dataset.ideaBoardChevronIcon,
+       labelDisplay: labelStyles.display,
+@@ -129,21 +127,19 @@ async function expectIdeaChevron(page, ideaId, iconName) {
+       iconHeight: Number.parseFloat(iconStyles.height),
+       fontSize: Number.parseFloat(cellStyles.fontSize),
+       iconColor: iconStyles.backgroundColor,
+-      iconBottom: iconRect.bottom,
+-      iconLeft: iconRect.left,
++      iconBeforeText: Boolean(icon.compareDocumentPosition(text) & Node.DOCUMENT_POSITION_FOLLOWING),
++      iconVerticalAlign: Number.parseFloat(iconStyles.verticalAlign),
+       textColor: cellStyles.color,
+-      textBottom: textRect.bottom,
+-      textLeft: textRect.left,
+       maskImage: iconStyles.getPropertyValue("-webkit-mask-image") || iconStyles.maskImage,
+     };
+   }, ideaId);
+   expect(metrics.iconName).toBe(iconName);
+-  expect(metrics.labelDisplay).toBe("inline-flex");
++  expect(metrics.labelDisplay).toBe("inline");
+   expect(Math.abs(metrics.iconWidth - metrics.fontSize)).toBeLessThanOrEqual(1);
+   expect(Math.abs(metrics.iconHeight - metrics.fontSize)).toBeLessThanOrEqual(1);
+   expect(metrics.iconColor).toBe(metrics.textColor);
+-  expect(metrics.iconLeft).toBeLessThan(metrics.textLeft);
+-  expect(Math.abs(metrics.iconBottom - metrics.textBottom)).toBeLessThanOrEqual(2);
++  expect(metrics.iconBeforeText).toBe(true);
++  expect(metrics.iconVerticalAlign).toBeLessThan(0);
+   expect(metrics.maskImage).toContain(iconName);
  }
-@@ -294,6 +299,11 @@ function gameSourceIdeaDetails(game) {
-   };
- }
- 
-+function hasSourceIdeaDetails(game) {
-+  const sourceIdea = gameSourceIdeaDetails(game);
-+  return Boolean(sourceIdea.name || sourceIdea.pitch || sourceIdea.notes.length);
-+}
-+
- function renderSourceIdeaChildTable(parent, game) {
-   const sourceIdea = gameSourceIdeaDetails(game);
-   const wrapper = document.createElement("div");
-@@ -375,18 +385,22 @@ function renderReadinessOutputChildTable(parent, game, progress, active) {
- }
- 
- function renderExpandedGameRow(tbody, game, progress, active) {
--  [
--    {
-+  const childRows = [];
-+  if (hasSourceIdeaDetails(game)) {
-+    childRows.push({
-       id: `game-child-source-idea-${game.id}`,
-       render: (parent) => renderSourceIdeaChildTable(parent, game),
-       type: "source-idea",
--    },
-+    });
-+  }
-+  childRows.push(
-     {
-       id: `game-child-readiness-output-${game.id}`,
-       render: (parent) => renderReadinessOutputChildTable(parent, game, progress, active),
-       type: "readiness-output",
-     },
--  ].forEach(({ id, render, type }) => {
-+  );
-+  childRows.forEach(({ id, render, type }) => {
-     const row = document.createElement("tr");
-     row.dataset.gameExpandedRow = game.id;
-     row.dataset.gameChildRow = type;
-diff --git a/toolbox/game-hub/index.html b/toolbox/game-hub/index.html
-index c313eeb7a..0b34801e9 100644
---- a/toolbox/game-hub/index.html
-+++ b/toolbox/game-hub/index.html
-@@ -26,16 +26,10 @@
-                 <div class="tool-workspace tool-workspace--wide">
-                     <aside class="tool-column tool-group-build">
-                         <div class="tool-column-header">
--                            <h2>Game Crew</h2>
-+                            <h2>Game Actions</h2>
-                         </div>
--                        <div class="accordion-stack">
--                            <details class="vertical-accordion" open>
--                                <summary>Game Crew</summary>
--                                <div class="accordion-body content-stack content-stack--compact">
--                                    <label for="currentUserRoleInput">Current User Role <select id="currentUserRoleInput" data-current-user-role-input></select></label>
--                                    <button class="btn" type="button" data-game-delete-active>Delete Open Game</button>
--                                </div>
--                            </details>
-+                        <div class="content-stack content-stack--compact">
-+                            <button class="btn" type="button" data-game-delete-active>Delete Open Game</button>
-                         </div>
-                     </aside>
-                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="game-hub" data-tool-icon-src="assets/theme-v2/images/badges/index.png" data-tool-character-src="assets/theme-v2/images/characters/index.png"></div>
+
+@@ -314,14 +310,15 @@ test("Idea Board launches from Toolbox with accordion table notes model", async
+       sections.map((section) => section.getAttribute("data-idea-board-section"))
+     ));
+     expect(ideaBoardSections).toEqual([
+-      "Workflow",
++      "Status Filter",
+       "Status",
++      "Workflow",
+       "Idea Table",
+       "Notes Governance",
+       "Diagnostics",
+     ]);
+     await expect(page.locator("[data-idea-board-table]")).toBeVisible();
+-    await expect(page.locator("[data-idea-board-table] > thead th[scope='col']")).toHaveText(["Idea", "Pitch", "Status", "Updated", "Notes", "Actions"]);
++    await expect(page.locator("[data-idea-board-table] > thead th[scope='col']")).toHaveText(["Idea", "Pitch", "Status", "Notes", "Actions"]);
+     await expect(page.locator("[data-idea-board-idea-row]")).toHaveCount(3);
+     await expect(page.locator("[data-idea-board-expanded-row]")).toHaveCount(0);
+     await expect(page.locator("[data-idea-board-add-idea]")).toHaveText("Add Idea");
 diff --git a/toolbox/idea-board/index.html b/toolbox/idea-board/index.html
-index 5734f4703..bf4d9a010 100644
+index bf4d9a010..db8b2f2ae 100644
 --- a/toolbox/idea-board/index.html
 +++ b/toolbox/idea-board/index.html
-@@ -29,10 +29,14 @@
-                             <h2>Idea Filters</h2>
-                         </div>
-                         <div class="accordion-stack">
--                            <details class="vertical-accordion" open data-idea-board-section="Workflow">
--                                <summary>Workflow</summary>
-+                            <details class="vertical-accordion" open data-idea-board-section="Status Filter">
-+                                <summary>Status Filter</summary>
-                                 <div class="accordion-body content-stack">
--                                    <p>Review ideas in the table, then expand an idea row to manage its notes.</p>
-+                                    <div class="action-group action-group--tight">
-+                                        <button class="btn btn--compact" type="button" data-idea-board-filter-select-all>Select All</button>
-+                                        <button class="btn btn--compact" type="button" data-idea-board-filter-clear-all>Clear All</button>
-+                                    </div>
-+                                    <div class="idea-board-show-filter__options" data-idea-board-status-options></div>
+@@ -36,7 +36,7 @@
+                                         <button class="btn btn--compact" type="button" data-idea-board-filter-select-all>Select All</button>
+                                         <button class="btn btn--compact" type="button" data-idea-board-filter-clear-all>Clear All</button>
+                                     </div>
+-                                    <div class="idea-board-show-filter__options" data-idea-board-status-options></div>
++                                    <div class="idea-board-show-filter__options control-lab tool-group-idea" data-idea-board-status-options></div>
                                  </div>
                              </details>
                              <details class="vertical-accordion" data-idea-board-section="Status">
-@@ -41,6 +45,12 @@
-                                     <p>Use status to show where each idea stands: New, Exploring, Refining, Ready, Project, or Archived.</p>
-                                 </div>
-                             </details>
-+                            <details class="vertical-accordion" data-idea-board-section="Workflow">
-+                                <summary>Workflow</summary>
-+                                <div class="accordion-body content-stack">
-+                                    <p>Review ideas in the table, then expand an idea row to manage its notes.</p>
-+                                </div>
-+                            </details>
-                         </div>
-                     </aside>
-                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="idea-board" data-tool-icon-src="assets/theme-v2/images/badges/game-design.png" data-tool-character-src="assets/theme-v2/images/tools/game-design.png"></div>
-@@ -49,16 +59,6 @@
-                         <p>Scan, compare, and update early ideas.</p>
-                         <div class="idea-board-table-caption">
-                             <span>Idea Board table with expandable notes rows</span>
--                            <details class="idea-board-show-filter" data-idea-board-show-filter>
--                                <summary>Show</summary>
--                                <div class="idea-board-show-filter__menu">
--                                    <div class="action-group action-group--tight">
--                                        <button class="btn btn--compact" type="button" data-idea-board-filter-select-all>Select All</button>
--                                        <button class="btn btn--compact" type="button" data-idea-board-filter-clear-all>Clear All</button>
--                                    </div>
--                                    <div class="idea-board-show-filter__options" data-idea-board-status-options></div>
--                                </div>
--                            </details>
-                         </div>
-                         <div class="table-wrapper" data-idea-board-section="Idea Table">
-                             <table class="data-table data-table--fixed" aria-label="Idea Board table with expandable notes rows" data-idea-board-table>
+@@ -67,7 +67,6 @@
+                                         <th scope="col">Idea</th>
+                                         <th scope="col">Pitch</th>
+                                         <th scope="col">Status</th>
+-                                        <th scope="col">Updated</th>
+                                         <th scope="col">Notes</th>
+                                         <th scope="col">Actions</th>
+                                     </tr>
+diff --git a/toolbox/idea-board/index.js b/toolbox/idea-board/index.js
+index 0ae02bd7a..8fcb7ad53 100644
+--- a/toolbox/idea-board/index.js
++++ b/toolbox/idea-board/index.js
+@@ -196,6 +196,7 @@ function statusSelect(value) {
+   select.setAttribute("aria-label", "Idea status");
+   select.dataset.ideaBoardIdeaStatusInput = "true";
+   for (const optionValue of statusOptions) {
++    if (optionValue === "Project" || optionValue === "Archived") continue;
+     const option = document.createElement("option");
+     option.value = optionValue;
+     option.textContent = optionValue;
+@@ -231,7 +232,6 @@ function renderIdeaInputRow(tbody, record = null) {
+   const statusCell = document.createElement("td");
+   statusCell.append(statusSelect(record?.status || "New"));
+   row.append(statusCell);
+-  row.append(cell(record?.updated || today()));
+   row.append(cell(record ? noteCountLabel(record.ideaId) : "0 Notes"));
+
+   const actions = document.createElement("td");
+@@ -274,7 +274,6 @@ function renderIdeaRow(tbody, record) {
+   row.append(idea);
+   row.append(cell(record.pitch));
+   row.append(cell(record.status));
+-  row.append(cell(record.updated));
+
+   const notes = document.createElement("td");
+   const notesCount = document.createElement("span");
+@@ -353,7 +352,7 @@ function renderExpandedNotesRow(tbody, record) {
+   row.dataset.ideaBoardExpandedRow = record.ideaId;
+
+   const content = document.createElement("td");
+-  content.colSpan = 6;
++  content.colSpan = 5;
+
+   const childSurface = document.createElement("div");
+   childSurface.className = "idea-board-notes-child-surface";
+@@ -400,7 +399,7 @@ function renderAddIdeaRow(tbody) {
+   const row = document.createElement("tr");
+   row.dataset.ideaBoardAddIdeaRow = "true";
+   const actions = document.createElement("td");
+-  actions.colSpan = 6;
++  actions.colSpan = 5;
+   const addIdea = actionButton("Add Idea", "add", "ideaBoardIdeaAction", "primary");
+   addIdea.dataset.ideaBoardAddIdea = "true";
+   actions.append(addIdea);
