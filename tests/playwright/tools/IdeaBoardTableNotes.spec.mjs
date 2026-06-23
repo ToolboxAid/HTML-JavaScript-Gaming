@@ -136,6 +136,7 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
   const consoleErrors = [];
   const mutatingApiRequests = [];
   const createGamePayloads = [];
+  const gameHubRepositoryRequests = [];
 
   page.on("response", (response) => {
     if (response.status() >= 400) failedRequests.push(`${response.status()} ${response.url()}`);
@@ -155,6 +156,9 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
     }
     if (requestUrl.includes("/api/toolbox/game-hub/repositories/") && requestUrl.includes("/methods/createGame")) {
       createGamePayloads.push(request.postDataJSON());
+    }
+    if (requestUrl.includes("/api/toolbox/game-hub/repositories/")) {
+      gameHubRepositoryRequests.push(`${request.method()} ${requestUrl}`);
     }
   });
 
@@ -372,9 +376,19 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
     await page.waitForURL(/\/toolbox\/game-hub\/index\.html\?game=lantern-reef-\d+$/);
     await expect(page.getByRole("heading", { level: 1, name: "Game Hub" })).toBeVisible();
     await expect(page.locator("[data-active-game-name]")).toHaveText("Lantern Reef");
+    await expect(page.locator("[data-game-list]")).toContainText("Lantern Reef");
     await expect(page.locator("[data-source-idea-display]")).toHaveText("Lantern Reef");
     await expect(page.locator("[data-source-idea-pitch]")).toHaveText("Guide light through a reef that rearranges at dusk.");
     await expect(page.locator("[data-source-idea-notes]")).toContainText("Use dusk tide changes as the first Game Hub planning note.");
+    await expect(page.locator("[data-source-idea-section] :is(input, textarea, select, button)")).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Delete Open Game" })).toHaveCount(0);
+    await page.reload({ waitUntil: "networkidle" });
+    await expect(page.locator("[data-active-game-name]")).toHaveText("Lantern Reef");
+    await expect(page.locator("[data-game-list]")).toContainText("Lantern Reef");
+    await expect(page.locator("[data-source-idea-display]")).toHaveText("Lantern Reef");
+    await expect(page.locator("[data-source-idea-pitch]")).toHaveText("Guide light through a reef that rearranges at dusk.");
+    await expect(page.locator("[data-source-idea-notes]")).toContainText("Use dusk tide changes as the first Game Hub planning note.");
+    await expect(page.locator("[data-source-idea-section] :is(input, textarea, select, button)")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Delete Open Game" })).toHaveCount(0);
     await expect(page.locator("main")).not.toContainText(/\bproject records\b|\bAPI\b|\bDB\b|\bmock\b|\bseed\b|\bdebug\b|\binternal\b/i);
     await page.getByRole("link", { name: "Open Game Journey" }).click();
@@ -386,6 +400,8 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
 
     expect(mutatingApiRequests.some((request) => request.includes("/api/toolbox/game-hub/repositories"))).toBe(true);
     expect(mutatingApiRequests.some((request) => request.includes("/methods/createGame"))).toBe(true);
+    expect(gameHubRepositoryRequests.some((request) => request.includes("/methods/openGame"))).toBe(true);
+    expect(gameHubRepositoryRequests.some((request) => request.includes("/methods/listGames"))).toBe(true);
     expect(failedRequests).toEqual([]);
     expect(pageErrors).toEqual([]);
     expect(consoleErrors).toEqual([]);
