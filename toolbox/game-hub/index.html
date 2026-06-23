@@ -28,35 +28,30 @@
                         <div class="tool-column-header">
                             <h2>Game Hub</h2>
                         </div>
-                        <div class="accordion-stack">
-                            <details class="vertical-accordion" open>
-                                <summary>Game Setup</summary>
-                                <div class="accordion-body content-stack">
-                                    <form class="content-stack content-stack--compact" data-game-form>
-                                        <div class="table-wrapper">
-                                            <table class="data-table tool-form-table" aria-label="Game setup fields">
-                                                <tbody>
-                                                    <tr>
-                                                        <th scope="row"><label for="gameNameInput">Game Name</label></th>
-                                                        <td><input id="gameNameInput" type="text" placeholder="Untitled game" data-game-name-input></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row"><label for="gamePurposeInput">Game Purpose</label></th>
-                                                        <td><select id="gamePurposeInput" data-game-purpose-input></select></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row"><label for="gameStatusInput">Game Status</label></th>
-                                                        <td><select id="gameStatusInput" data-game-status-input></select></td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        <button class="btn" type="submit">Create Game</button>
-                                    </form>
-                                    <label for="currentUserRoleInput">Current User Role <select id="currentUserRoleInput" data-current-user-role-input></select></label>
-                                    <button class="btn" type="button" data-game-delete-active>Delete Open Game</button>
+                        <div class="content-stack content-stack--compact">
+                            <form class="content-stack content-stack--compact" data-game-form aria-label="Add game">
+                                <div class="table-wrapper">
+                                    <table class="data-table tool-form-table" aria-label="Game fields">
+                                        <tbody>
+                                            <tr>
+                                                <th scope="row"><label for="gameNameInput">Game Name</label></th>
+                                                <td><input id="gameNameInput" type="text" placeholder="Untitled game" data-game-name-input></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row"><label for="gamePurposeInput">Game Purpose</label></th>
+                                                <td><select id="gamePurposeInput" data-game-purpose-input></select></td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row"><label for="gameStatusInput">Game Status</label></th>
+                                                <td><select id="gameStatusInput" data-game-status-input></select></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
-                            </details>
+                                <button class="btn" type="submit">Add</button>
+                            </form>
+                            <label for="currentUserRoleInput">Current User Role <select id="currentUserRoleInput" data-current-user-role-input></select></label>
+                            <button class="btn" type="button" data-game-delete-active>Delete Open Game</button>
                         </div>
                     </aside>
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="game-hub" data-tool-icon-src="assets/theme-v2/images/badges/index.png" data-tool-character-src="assets/theme-v2/images/characters/index.png"></div>
@@ -64,9 +59,6 @@
                         <p>Review games in the parent table, then expand a game row to see Source Idea and Readiness Output.</p>
                         <div class="status" role="status" data-project-record-status>Game table ready.</div>
                         <div class="content-stack content-stack--compact" aria-label="Games" data-game-list></div>
-                        <div class="action-group">
-                            <a class="btn primary" href="toolbox/game-journey/index.html?game=demo-game" data-game-journey-link>Open Game Journey</a>
-                        </div>
                         <div class="status" role="status" data-game-hub-log>Game Hub ready.</div>
                     </section>
                     <aside class="tool-column tool-group-build">

@@ -1,11 +1,5 @@
-toolbox/game-hub/index.html
-toolbox/game-hub/game-hub.js
+assets/theme-v2/css/tables.css
 tests/playwright/tools/GameHubMockRepository.spec.mjs
 tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/PR_26174_ALFA_014-game-hub-parent-columns-center.md
-docs_build/dev/reports/PR_26174_ALFA_014-game-hub-parent-columns-center-branch-validation.txt
-docs_build/dev/reports/PR_26174_ALFA_014-game-hub-parent-columns-center-requirement-checklist.txt
-docs_build/dev/reports/PR_26174_ALFA_014-game-hub-parent-columns-center-validation-lane.txt
-docs_build/dev/reports/PR_26174_ALFA_014-game-hub-parent-columns-center-manual-validation-notes.txt
+toolbox/game-hub/game-hub.js
+toolbox/game-hub/index.html

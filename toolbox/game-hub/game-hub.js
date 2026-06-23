@@ -16,7 +16,6 @@ const elements = {
   nameInput: document.querySelector("[data-game-name-input]"),
   progressChecklist: document.querySelector("[data-game-progress-checklist]"),
   gameList: document.querySelector("[data-game-list]"),
-  gameJourneyLink: document.querySelector("[data-game-journey-link]"),
   projectRecordStatus: document.querySelector("[data-project-record-status]"),
   purposeInput: document.querySelector("[data-game-purpose-input]"),
   gameStatusInput: document.querySelector("[data-game-status-input]"),
@@ -198,11 +197,12 @@ function createGameButton(game, isActive) {
   button.className = isActive ? "btn primary" : "btn";
   button.type = "button";
   button.dataset.gameOpen = game.id;
+  button.setAttribute("aria-label", `Edit ${game.name}`);
   if (isActive) {
     button.dataset.gameActive = "true";
     button.setAttribute("aria-current", "true");
   }
-  button.textContent = isActive ? `Open ${game.name} (Active)` : `Open ${game.name}`;
+  button.textContent = "Edit";
   return button;
 }
 
@@ -357,6 +357,7 @@ function renderGameParentRow(tbody, game, activeGame, progress) {
   row.dataset.gameRow = game.id;
   if (active) {
     row.dataset.gameActive = "true";
+    row.setAttribute("aria-current", "true");
   }
 
   const nameCell = document.createElement("th");
@@ -516,15 +517,6 @@ function renderWorkspace() {
   if (elements.currentUserRoleInput) {
     elements.currentUserRoleInput.value = currentMember?.role || "Viewer";
   }
-  if (elements.gameJourneyLink) {
-    if (activeGame) {
-      elements.gameJourneyLink.href = `toolbox/game-journey/index.html?game=${encodeURIComponent(activeGame.id)}`;
-      elements.gameJourneyLink.setAttribute("aria-disabled", "false");
-    } else {
-      elements.gameJourneyLink.href = "toolbox/game-journey/index.html?game=none";
-      elements.gameJourneyLink.setAttribute("aria-disabled", "true");
-    }
-  }
 
   renderGameList(progress);
   renderMembersTable(activeGame);
@@ -546,9 +538,9 @@ elements.form?.addEventListener("submit", (event) => {
     status: elements.gameStatusInput?.value,
   });
 
-  if (reportRepositoryError(game, "Create Game") || !isRecord(game) || !String(game.name || "").trim()) {
+  if (reportRepositoryError(game, "Add game") || !isRecord(game) || !String(game.name || "").trim()) {
     if (!isRepositoryErrorResult(game)) {
-      setStatusLog("Create Game could not be completed. Refresh the page or try again shortly.");
+      setStatusLog("Add game could not be completed. Refresh the page or try again shortly.");
     }
     renderWorkspace();
     return;
@@ -579,7 +571,7 @@ elements.gameList?.addEventListener("click", (event) => {
   const game = repository.openGame(button.dataset.gameOpen);
 
   if (game) {
-    setStatusLog(`Opened ${game.name}.`);
+    setStatusLog(`Editing ${game.name}.`);
     renderWorkspace();
   }
 });

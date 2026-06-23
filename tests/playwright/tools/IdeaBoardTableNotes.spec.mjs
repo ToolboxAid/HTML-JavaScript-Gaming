@@ -427,7 +427,9 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
     ]);
     await expect(page.getByRole("button", { name: "Delete Open Game" })).toHaveCount(0);
     await expect(page.locator("main")).not.toContainText(/\bproject records\b|\bAPI\b|\bDB\b|\bmock\b|\bseed\b|\bdebug\b|\binternal\b/i);
-    await page.getByRole("link", { name: "Open Game Journey" }).click();
+    await expect(page.getByRole("link", { name: "Open Game Journey" })).toHaveCount(0);
+    const createdGameKey = new URL(page.url()).searchParams.get("game");
+    await page.goto(`${server.baseUrl}/toolbox/game-journey/index.html?game=${createdGameKey}`, { waitUntil: "networkidle" });
     await page.waitForURL(/\/toolbox\/game-journey\/index\.html\?game=lantern-reef-\d+$/);
     await expect(page.locator("[data-journey-active-game]")).toHaveText("Active game: Lantern Reef.");
     const journeyNoteNames = await page.locator("[data-journey-summary-body] [data-journey-note-button]").evaluateAll((buttons) => (
