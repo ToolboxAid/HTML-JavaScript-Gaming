@@ -387,15 +387,18 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
     await expect(page.getByRole("heading", { level: 1, name: "Game Hub" })).toBeVisible();
     await expect(page.locator("[data-active-game-name]")).toHaveText("Lantern Reef");
     await expect(page.locator("[data-game-list]")).toContainText("Lantern Reef");
-    await expect(page.locator("[data-source-idea-display]")).toHaveText("Lantern Reef");
-    await expect(page.locator("[data-source-idea-pitch]")).toHaveText("Guide light through a reef that rearranges at dusk.");
-    await expect(page.locator("[data-source-idea-notes]")).toContainText("Use dusk tide changes as the first Game Hub planning note.");
-    await expect(page.locator("[data-source-idea-section] :is(input, textarea, select, button)")).toHaveCount(0);
+    await expect(page.locator("[data-source-idea-section]")).toHaveCount(0);
+    await expect(page.locator("[data-game-output-panels]")).toHaveCount(0);
+    await expect(page.locator("[data-game-hub-foundation]")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Delete Open Game" })).toHaveCount(0);
     const activeGameRow = page.locator("[data-game-row][data-game-active='true']");
     await expect(activeGameRow).toContainText("Lantern Reef");
     await activeGameRow.locator("[data-game-toggle]").click();
-    const sourceIdeaChildTable = page.locator("[data-game-expanded-row] [data-game-child-table='source-idea']");
+    let expandedRows = page.locator("[data-game-expanded-row]");
+    await expect(expandedRows).toHaveCount(2);
+    await expect(expandedRows.nth(0)).toHaveAttribute("data-game-child-row", "source-idea");
+    await expect(expandedRows.nth(1)).toHaveAttribute("data-game-child-row", "readiness-output");
+    let sourceIdeaChildTable = expandedRows.nth(0).locator("[data-game-child-table='source-idea']");
     await expect(sourceIdeaChildTable.locator("caption")).toHaveText("Source Idea");
     await expect(sourceIdeaChildTable.locator("thead th")).toHaveText(["Context", "Details"]);
     await expect(sourceIdeaChildTable.locator("tbody tr")).toHaveText([
@@ -404,13 +407,22 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
       "Note 1Use dusk tide changes as the first Game Hub planning note.",
     ]);
     await expect(sourceIdeaChildTable.locator(":is(input, textarea, select, button)")).toHaveCount(0);
+    await expect(expandedRows.nth(1).locator("[data-game-child-table='readiness-output'] caption")).toHaveText("Readiness Output");
     await page.reload({ waitUntil: "networkidle" });
     await expect(page.locator("[data-active-game-name]")).toHaveText("Lantern Reef");
     await expect(page.locator("[data-game-list]")).toContainText("Lantern Reef");
-    await expect(page.locator("[data-source-idea-display]")).toHaveText("Lantern Reef");
-    await expect(page.locator("[data-source-idea-pitch]")).toHaveText("Guide light through a reef that rearranges at dusk.");
-    await expect(page.locator("[data-source-idea-notes]")).toContainText("Use dusk tide changes as the first Game Hub planning note.");
-    await expect(page.locator("[data-source-idea-section] :is(input, textarea, select, button)")).toHaveCount(0);
+    await expect(page.locator("[data-source-idea-section]")).toHaveCount(0);
+    await expect(page.locator("[data-game-output-panels]")).toHaveCount(0);
+    await expect(page.locator("[data-game-hub-foundation]")).toHaveCount(0);
+    await activeGameRow.locator("[data-game-toggle]").click();
+    expandedRows = page.locator("[data-game-expanded-row]");
+    await expect(expandedRows).toHaveCount(2);
+    sourceIdeaChildTable = expandedRows.nth(0).locator("[data-game-child-table='source-idea']");
+    await expect(sourceIdeaChildTable.locator("tbody tr")).toHaveText([
+      "IdeaLantern Reef",
+      "PitchGuide light through a reef that rearranges at dusk.",
+      "Note 1Use dusk tide changes as the first Game Hub planning note.",
+    ]);
     await expect(page.getByRole("button", { name: "Delete Open Game" })).toHaveCount(0);
     await expect(page.locator("main")).not.toContainText(/\bproject records\b|\bAPI\b|\bDB\b|\bmock\b|\bseed\b|\bdebug\b|\binternal\b/i);
     await page.getByRole("link", { name: "Open Game Journey" }).click();
