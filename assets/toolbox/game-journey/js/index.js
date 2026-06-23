@@ -6,7 +6,7 @@ import {
   GAME_JOURNEY_SUGGESTED_TOOLS,
   createGameJourneyApiRepository,
   readGameJourneyCompletionMetrics,
-} from "../../../../toolbox/game-journey/game-journey-api-client.js";
+} from "../../../js/shared/game-journey-api-client.js";
 import {
   getActiveToolRegistry,
   getToolRegistryApiDiagnostic,

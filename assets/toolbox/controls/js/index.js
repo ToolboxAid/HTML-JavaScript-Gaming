@@ -5,7 +5,7 @@ import {
   GAME_CONTROL_NORMALIZED_INPUTS,
   NORMALIZED_USAGE_LABELS,
   createControlsToolApiRepository,
-} from "../../../../toolbox/controls/controls-api-client.js";
+} from "../../../js/shared/controls-api-client.js";
 import {
   normalizeNormalizedInput,
   normalizedInputOptions,

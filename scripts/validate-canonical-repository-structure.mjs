@@ -7,10 +7,8 @@ const repoRoot = path.resolve(fileURLToPath(new URL("..", import.meta.url)));
 
 export const APPROVED_LEGACY_JS_PATHS = Object.freeze(new Set([
   "toolbox/assets/assets-upload-worker.js",
-  "toolbox/controls/controls-api-client.js",
   "toolbox/game-hub/game-hub-api-client.js",
   "toolbox/game-hub/game-hub.js",
-  "toolbox/game-journey/game-journey-api-client.js",
   "toolbox/messages/message-tts-service-registry.js",
   "toolbox/messages/messages-api-client.js",
   "toolbox/messages/messages.js",
