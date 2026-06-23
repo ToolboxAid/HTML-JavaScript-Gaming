@@ -115,6 +115,15 @@ td {
   cursor: pointer
 }
 
+.data-table [data-game-row][data-game-active="true"] {
+  background: color-mix(in srgb, var(--gold) 14%, var(--panel))
+}
+
+.data-table [data-game-row][data-game-active="true"] > th,
+.data-table [data-game-row][data-game-active="true"] > td {
+  border-bottom-color: var(--gold-border-muted)
+}
+
 .idea-board-idea-label {
   display: inline-flex;
   align-items: center;

@@ -1,0 +1,16 @@
+Requirement Checklist: PASS
+
+PASS - Game Hub parent table Actions replaces Open {game} with Edit.
+PASS - A clear active-game visual state is applied to the active game row.
+PASS - Open Game Journey action was removed.
+PASS - An Add button is present for adding a game to the list.
+PASS - Game Setup accordion was removed.
+PASS - Parent columns remain Game, Purpose, Status, Owner, Actions.
+PASS - Source Idea remains a child row/table under the game parent row.
+PASS - Readiness Output remains a child row/table under the game parent row.
+PASS - Existing API/service contract was preserved.
+PASS - No browser-owned product data was introduced.
+PASS - No page-local arrays were introduced.
+PASS - No silent fallbacks were introduced.
+PASS - table_first_ui.md was followed by keeping game rows as parent rows with child tables beneath them.
+
