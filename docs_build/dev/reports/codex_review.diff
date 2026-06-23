@@ -1,318 +1,65 @@
-diff --git a/toolbox/objects/objects.js b/assets/toolbox/objects/js/index.js
-similarity index 96%
-rename from toolbox/objects/objects.js
-rename to assets/toolbox/objects/js/index.js
-index bd600c533..54484d5b6 100644
---- a/toolbox/objects/objects.js
-+++ b/assets/toolbox/objects/js/index.js
-@@ -1,16 +1,49 @@
-+import {
-+  createServerRepositoryClient,
-+  readServerToolConstants,
-+  requireServerConstant,
-+} from "../../../../src/api/server-api-client.js";
- import {
-   OBJECT_MODEL_TRAIT_LIST,
-   getObjectModelTrait,
-   getObjectModelType,
-   validateObjectDefinition,
--} from "../../src/engine/object-model/index.js";
--import { createAssetToolApiRepository } from "../assets/assets-api-client.js";
--import {
--  CAPABILITY_LABELS,
--  OBJECT_TYPE_TEMPLATES,
--  STARTER_OBJECTS,
--  createObjectsToolApiRepository,
--} from "./objects-api-client.js";
-+} from "../../../../src/engine/object-model/index.js";
-+import { createAssetToolApiRepository } from "../../../../toolbox/assets/assets-api-client.js";
-+
-+const constants = readServerToolConstants("objects");
-+
-+function freezeTemplate(template = {}) {
-+  return Object.freeze({
-+    ...template,
-+    capabilities: Object.freeze(Array.isArray(template.capabilities) ? [...template.capabilities] : []),
-+  });
-+}
-+
-+function freezeStarterObject(object = {}) {
-+  return Object.freeze({
-+    ...object,
-+    render: Object.freeze({ ...(object.render || {}) }),
-+  });
-+}
-+
-+export const CAPABILITY_LABELS = Object.freeze(
-+  { ...requireServerConstant(constants, "CAPABILITY_LABELS", "objects") },
-+);
-+
-+export const OBJECT_TYPE_TEMPLATES = Object.freeze(
-+  requireServerConstant(constants, "OBJECT_TYPE_TEMPLATES", "objects").map(freezeTemplate),
-+);
-+
-+export const OBJECTS_TOOL_TABLES = Object.freeze(requireServerConstant(constants, "OBJECTS_TOOL_TABLES", "objects"));
-+
-+export const STARTER_OBJECTS = Object.freeze(
-+  requireServerConstant(constants, "STARTER_OBJECTS", "objects").map(freezeStarterObject),
-+);
-+
-+export function createObjectsToolApiRepository(options = {}) {
-+  return createServerRepositoryClient("objects", options);
-+}
-
- let assetRepository = createAssetToolApiRepository();
- let objectsRepository = createObjectsToolApiRepository();
-diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_023-target-tool-migration-batch-1.md b/docs_build/dev/reports/PR_26172_CHARLIE_023-target-tool-migration-batch-1.md
+diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_024-target-tool-migration-batch-2.md b/docs_build/dev/reports/PR_26172_CHARLIE_024-target-tool-migration-batch-2.md
 new file mode 100644
-index 000000000..cf2fa697d
+index 000000000..7ecb41479
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_CHARLIE_023-target-tool-migration-batch-1.md
-@@ -0,0 +1,104 @@
-+# PR_26172_CHARLIE_023-target-tool-migration-batch-1
++++ b/docs_build/dev/reports/PR_26172_CHARLIE_024-target-tool-migration-batch-2.md
+@@ -0,0 +1,59 @@
++# PR_26172_CHARLIE_024-target-tool-migration-batch-2
 +
-+Status: PARTIAL PASS with documented external validation blockers.
++Status: STOP GATE DOCUMENTED.
 +
 +Branch: `PR_26172_CHARLIE_repository-compliance-stack`
 +
 +## Purpose
 +
-+Migrate the first SAFE target tool from `PR_26172_CHARLIE_022-target-tool-migration-audit` into canonical tool asset structure.
++Migrate the second safe batch from `PR_26172_CHARLIE_022-target-tool-migration-audit`.
 +
-+## Tool Selected
++## Stop Gate Result
 +
-+Selected SAFE tool: Objects.
++Stop gate triggered: no additional SAFE target tools remain after PR023 migrated Objects.
 +
-+Reason:
-+- Objects had one active page script and one small API wrapper.
-+- No tool-specific CSS was present.
-+- Inline script, inline style, and inline event handler findings were zero.
-+- Direct tests existed for the Objects tool.
++## Source Findings Used
++
++PR022 classified the target tools as follows:
++
++- SAFE and migrated in PR023: Objects.
++- NEEDS CARE: Controls.
++- STOP / owner review: Asset Browser / Vector Art / Assets worker placement.
++- STOP / owner review: Game Journey.
++- No active tool-specific JS/CSS migration needed: Audio, Audio Effects, Fonts, Characters, Worlds, Events, Sprites, MIDI Studio, State Inspector.
 +
 +## Files Changed
 +
-+- `assets/toolbox/objects/js/index.js`
-+- `toolbox/objects/index.html`
-+- `scripts/validate-browser-env-agnostic.mjs`
-+- `scripts/validate-canonical-repository-structure.mjs`
-+- `tests/dev-runtime/ProductDataProviderContractHardening.test.mjs`
-+- `tests/playwright/tools/ObjectsTool.spec.mjs`
-+- Removed `toolbox/objects/objects-api-client.js`
-+- Removed active path `toolbox/objects/objects.js`
++- `docs_build/dev/reports/PR_26172_CHARLIE_024-target-tool-migration-batch-2.md`
++- `docs_build/dev/reports/codex_review.diff`
++- `docs_build/dev/reports/codex_changed_files.txt`
 +
-+## Migration Notes
++## Runtime and Feature Changes
 +
-+- Moved Objects page JavaScript to `assets/toolbox/objects/js/index.js`.
-+- Folded the previous Objects API wrapper into the canonical module.
-+- Preserved server-owned constants through `readServerToolConstants("objects")` and `requireServerConstant(...)`.
-+- Preserved the existing Objects repository contract through `createServerRepositoryClient("objects", options)`.
-+- Updated the Objects HTML module reference to the canonical path.
-+- Removed Objects from the approved legacy toolbox JavaScript exception list.
-+- Updated browser environment and product-data contract path references.
-+- Updated the Objects Playwright source-path assertion for the canonical module.
-+
-+## CSS Review
-+
-+No Objects-specific CSS file was present, so no CSS migration was required.
++None.
 +
 +## Validation Lane Report
 +
 +PASS:
-+- `node --check assets/toolbox/objects/js/index.js`
-+- `node --check scripts/validate-canonical-repository-structure.mjs`
-+- `node --check scripts/validate-browser-env-agnostic.mjs`
-+- `node --check tests/dev-runtime/ProductDataProviderContractHardening.test.mjs`
-+- `node --check tests/playwright/tools/ObjectsTool.spec.mjs`
-+- `git diff --check`
-+- `npm run validate:canonical-structure`
-+  - Result: PASS
-+  - Blocking violations: 0
-+  - Approved legacy exceptions: 484
-+- Active stale-reference check for `toolbox/objects/objects.js` and `toolbox/objects/objects-api-client.js`
-+  - Result: no active matches outside reports/tmp/node_modules.
-+- Direct Objects-page Playwright probe
-+  - Result: PASS
-+  - Canonical module fetched successfully.
-+  - Template catalog hydrated.
-+  - No page errors, console errors, request failures, or HTTP >=400 responses.
++- Branch remained `PR_26172_CHARLIE_repository-compliance-stack`.
++- Worktree was clean before this stop-gate report.
++- Local/origin sync was `0 0` before this stop-gate report.
++- `git diff --check` completed for the report-only delta.
++- ZIP artifact required under `tmp/`.
 +
-+DOCUMENTED BLOCKERS:
-+- `npx playwright test tests/playwright/tools/ObjectsTool.spec.mjs --grep "Objects exposes production copy" --workers=1 --reporter=line --timeout=60000`
-+  - Result: FAIL
-+  - Failure: Objects seed action reported `Start the local server API or restore the server data source.`
-+  - Assessment: deeper Objects persistence validation requires a configured product-data repository and is outside this canonical file-move PR.
-+- `npx playwright test tests/playwright/tools/ObjectsTool.spec.mjs --grep "Objects is a clickable beta tool" --workers=1 --reporter=line --timeout=60000`
-+  - Result: FAIL
-+  - Failure: existing `/api/game-journey/completion-metrics` returned HTTP 500 from Toolbox index validation.
-+  - Assessment: matches the previously documented Game Journey validation blocker and was not caused by the Objects migration.
-+- `node --test tests/dev-runtime/ProductDataProviderContractHardening.test.mjs`
-+  - Result: FAIL
-+  - Failure: unrelated existing assertions around public API URL/config and admin tool votes import expectations failed.
-+  - Assessment: not caused by this Objects path migration.
++Skipped:
++- Tool Playwright validation was skipped because no tool migration was performed in this PR.
++- Canonical guardrail was not rerun because no JS/CSS/test structure changed in this PR.
++- Samples were not run per scope.
 +
 +## Requirement Checklist
 +
-+- [x] Select up to 3 SAFE tools only.
-+- [x] Migrated exactly one SAFE tool: Objects.
-+- [x] Moved JS to `assets/toolbox/objects/js/index.js`.
-+- [x] Moved CSS only if required. No Objects CSS migration was required.
-+- [x] Updated HTML references.
-+- [x] Updated affected tests/references.
-+- [x] Preserved behavior for the canonical module path and catalog hydration.
-+- [x] No feature changes.
-+- [x] No unrelated runtime behavior changes.
-+- [x] Canonical repository guardrail passes.
++- [x] Select up to 3 additional SAFE tools only.
++- [x] Do not repeat batch 1.
++- [x] Stop if no additional SAFE tools exist.
++- [x] No runtime source changes.
 +- [x] ZIP artifact required under `tmp/`.
 +
 +## Manual Validation Notes
 +
-+- The direct Objects-page probe validated the migrated module path without crossing unrelated Toolbox/Game Journey routes.
-+- Broader Objects Playwright interaction coverage remains blocked by product-data repository setup requirements.
-+- Toolbox index validation remains blocked by the previously documented Game Journey completion metrics HTTP 500.
-+
-+## Recommendation
-+
-+Continue the Charlie stack with stop-gate reports for PR024 through PR026 because PR022 identified no additional SAFE target-tool migrations after Objects.
-diff --git a/scripts/validate-browser-env-agnostic.mjs b/scripts/validate-browser-env-agnostic.mjs
-index 031e290a5..54c2c9852 100644
---- a/scripts/validate-browser-env-agnostic.mjs
-+++ b/scripts/validate-browser-env-agnostic.mjs
-@@ -67,7 +67,7 @@ const productApiClientFiles = Object.freeze([
-   "assets/toolbox/game-design/js/index.js",
-   "toolbox/game-journey/game-journey-api-client.js",
-   "toolbox/game-hub/game-hub-api-client.js",
--  "toolbox/objects/objects-api-client.js",
-+  "assets/toolbox/objects/js/index.js",
-   "assets/toolbox/tags/js/index.js",
- ]);
- const userFacingUiRoots = Object.freeze(["account", "toolbox"]);
-diff --git a/scripts/validate-canonical-repository-structure.mjs b/scripts/validate-canonical-repository-structure.mjs
-index 073499f4e..7177d4beb 100644
---- a/scripts/validate-canonical-repository-structure.mjs
-+++ b/scripts/validate-canonical-repository-structure.mjs
-@@ -18,8 +18,6 @@ export const APPROVED_LEGACY_JS_PATHS = Object.freeze(new Set([
-   "toolbox/messages/message-tts-service-registry.js",
-   "toolbox/messages/messages-api-client.js",
-   "toolbox/messages/messages.js",
--  "toolbox/objects/objects-api-client.js",
--  "toolbox/objects/objects.js",
-   "toolbox/tool-registry-api-client.js",
-   "toolbox/toolRegistry.js",
-   "toolbox/tools-page-accordions.js",
-diff --git a/tests/dev-runtime/ProductDataProviderContractHardening.test.mjs b/tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
-index d6ee4a607..22e2bdf54 100644
---- a/tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
-+++ b/tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
-@@ -116,7 +116,7 @@ test("Active browser product-data entrypoints use API or service clients", () =>
-     "assets/toolbox/game-design/js/index.js",
-     "toolbox/game-journey/game-journey-api-client.js",
-     "toolbox/game-hub/game-hub-api-client.js",
--    "toolbox/objects/objects-api-client.js",
-+    "assets/toolbox/objects/js/index.js",
-     "assets/toolbox/tags/js/index.js",
-   ];
-   productApiClients.forEach((filePath) => {
-diff --git a/tests/playwright/tools/ObjectsTool.spec.mjs b/tests/playwright/tools/ObjectsTool.spec.mjs
-index 49c86364a..7e7d967d4 100644
---- a/tests/playwright/tools/ObjectsTool.spec.mjs
-+++ b/tests/playwright/tools/ObjectsTool.spec.mjs
-@@ -77,6 +77,13 @@ function collectPageFailures(page) {
- async function openObjectsPage(page) {
-   const server = await startRepoServer();
-   const failures = collectPageFailures(page);
-+  await page.addInitScript(({ apiUrl, siteUrl }) => {
-+    window.GameFoundryPublicConfig = {
-+      apiUrl,
-+      environmentLabel: "Development Environment",
-+      siteUrl,
-+    };
-+  }, { apiUrl: `${server.baseUrl}/api`, siteUrl: server.baseUrl });
-   await workspaceV2CoverageReporter.start(page);
-   await page.goto(`${server.baseUrl}/toolbox/objects/index.html`, { waitUntil: "networkidle" });
-   return { ...failures, server };
-@@ -85,6 +92,13 @@ async function openObjectsPage(page) {
- async function openToolboxPage(page) {
-   const server = await startRepoServer();
-   const failures = collectPageFailures(page);
-+  await page.addInitScript(({ apiUrl, siteUrl }) => {
-+    window.GameFoundryPublicConfig = {
-+      apiUrl,
-+      environmentLabel: "Development Environment",
-+      siteUrl,
-+    };
-+  }, { apiUrl: `${server.baseUrl}/api`, siteUrl: server.baseUrl });
-   await workspaceV2CoverageReporter.start(page);
-   await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
-   return { ...failures, server };
-@@ -169,8 +183,11 @@ test("Objects exposes production copy, setup status, and broad table input", asy
-     expect(constants.OBJECT_TYPE_TEMPLATES.map((template) => template.type)).toEqual(TYPE_OPTIONS);
-     expect(constants.STARTER_OBJECTS.map((object) => object.name)).toEqual(["Hero", "Projectile", "Wall"]);
-     expect(constants.CAPABILITY_LABELS.movable).toBe("Can Move");
--    const objectsSource = await page.evaluate(async () => fetch("/toolbox/objects/objects.js").then((response) => response.text()));
--    expect(objectsSource).not.toMatch(/const\s+(CAPABILITY_LABELS|OBJECT_TYPE_TEMPLATES|STARTER_OBJECTS)\s*=/);
-+    const objectsSource = await page.evaluate(async () => fetch("/assets/toolbox/objects/js/index.js").then((response) => response.text()));
-+    expect(objectsSource).toContain('readServerToolConstants("objects")');
-+    expect(objectsSource).toContain('requireServerConstant(constants, "CAPABILITY_LABELS", "objects")');
-+    expect(objectsSource).toContain('requireServerConstant(constants, "OBJECT_TYPE_TEMPLATES", "objects")');
-+    expect(objectsSource).toContain('requireServerConstant(constants, "STARTER_OBJECTS", "objects")');
-     await expect(page.getByRole("heading", { level: 3, name: "Object Status" })).toHaveCount(0);
-     await expect(page.locator("[aria-label='Object status summary']")).toHaveCount(0);
-     await expect(page.locator("[data-objects-status-summary]")).toHaveCount(0);
-diff --git a/toolbox/objects/index.html b/toolbox/objects/index.html
-index 63056d723..117409b70 100644
---- a/toolbox/objects/index.html
-+++ b/toolbox/objects/index.html
-@@ -157,7 +157,7 @@
-     <div data-partial="footer"></div>
-     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
-     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
--    <script type="module" src="toolbox/objects/objects.js"></script>
-+    <script type="module" src="assets/toolbox/objects/js/index.js"></script>
- </body>
-
- </html>
-diff --git a/toolbox/objects/objects-api-client.js b/toolbox/objects/objects-api-client.js
-deleted file mode 100644
-index 658116553..000000000
---- a/toolbox/objects/objects-api-client.js
-+++ /dev/null
-@@ -1,39 +0,0 @@
--import {
--  createServerRepositoryClient,
--  readServerToolConstants,
--  requireServerConstant,
--} from "../../src/api/server-api-client.js";
--
--const constants = readServerToolConstants("objects");
--
--function freezeTemplate(template = {}) {
--  return Object.freeze({
--    ...template,
--    capabilities: Object.freeze(Array.isArray(template.capabilities) ? [...template.capabilities] : []),
--  });
--}
--
--function freezeStarterObject(object = {}) {
--  return Object.freeze({
--    ...object,
--    render: Object.freeze({ ...(object.render || {}) }),
--  });
--}
--
--export const CAPABILITY_LABELS = Object.freeze(
--  { ...requireServerConstant(constants, "CAPABILITY_LABELS", "objects") },
--);
--
--export const OBJECT_TYPE_TEMPLATES = Object.freeze(
--  requireServerConstant(constants, "OBJECT_TYPE_TEMPLATES", "objects").map(freezeTemplate),
--);
--
--export const OBJECTS_TOOL_TABLES = Object.freeze(requireServerConstant(constants, "OBJECTS_TOOL_TABLES", "objects"));
--
--export const STARTER_OBJECTS = Object.freeze(
--  requireServerConstant(constants, "STARTER_OBJECTS", "objects").map(freezeStarterObject),
--);
--
--export function createObjectsToolApiRepository(options = {}) {
--  return createServerRepositoryClient("objects", options);
--}
++This PR intentionally documents the stop gate rather than migrating a NEEDS CARE or STOP / owner review tool. The next queued scope may continue with PR025 as another stop-gate artifact unless owner guidance changes the safety classification.

@@ -1,8 +1,1 @@
-R096	toolbox/objects/objects.js	assets/toolbox/objects/js/index.js
-A	docs_build/dev/reports/PR_26172_CHARLIE_023-target-tool-migration-batch-1.md
-M	scripts/validate-browser-env-agnostic.mjs
-M	scripts/validate-canonical-repository-structure.mjs
-M	tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
-M	tests/playwright/tools/ObjectsTool.spec.mjs
-M	toolbox/objects/index.html
-D	toolbox/objects/objects-api-client.js
+A	docs_build/dev/reports/PR_26172_CHARLIE_024-target-tool-migration-batch-2.md
