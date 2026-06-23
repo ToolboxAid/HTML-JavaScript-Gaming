@@ -1,5 +1,1 @@
-R099	toolbox/game-journey/game-journey.js	assets/toolbox/game-journey/js/index.js
-A	docs_build/dev/reports/PR_26172_CHARLIE_034-game-journey-safe-entrypoint-migration.md
-M	scripts/validate-canonical-repository-structure.mjs
-M	tests/playwright/tools/GameJourneyTool.spec.mjs
-M	toolbox/game-journey/index.html
+A	docs_build/dev/reports/PR_26172_CHARLIE_035-game-journey-api-client-migration-or-exception.md
