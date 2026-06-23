@@ -52,45 +52,6 @@ Alfa, Bravo, Charlie, and Delta are the four active delivery teams for backlog o
 
 Each team may pull only from its ownership area unless OWNER explicitly reassigns, splits, or approves cross-team work.
 
-## OWNER
-
-- Architecture
-- Product Direction
-- Cross-Team Governance
-- Final Approval
-
-## Team Alfa
-
-- Idea Board
-- Game Hub
-- Game Journey
-- Design
-- Objects
-- Worlds
-- Interface
-- Controls
-- Rules
-- Progression
-
-## Team Bravo
-
-- Graphics
-- Audio
-- Messages
-- TTS
-- MIDI
-- Publishing
-- Community
-- Marketplace
-
-## Team Charlie
-
-- Governance
-- Infrastructure
-- Operations
-- Diagnostics
-- System Health
-
 ## Rule
 
 Ownership may only be reassigned by OWNER governance.

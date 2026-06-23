@@ -47,19 +47,11 @@ OWNER follows the same safety rules:
 
 ## Four-Team Ownership Alignment
 
-The current active team model uses four delivery teams:
+The single authoritative four-team ownership definition is:
 
-- Team Alfa
-- Team Bravo
-- Team Charlie
-- Team Delta
+`docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md`
 
-Team ownership guidance:
-
-- Team Alfa owns Game Hub, Game Journey, Idea Board, creator workflow, creator onboarding, and UX flow.
-- Team Bravo owns Audio, Audio Effects, Messages, Emotion Profiles, TTS Profiles, Asset Browser, Vector Art, MIDI Studio, and creator content tools.
-- Team Charlie owns repository compliance, validation, infrastructure, storage, environment management, System Health, and operations.
-- Team Delta owns engine, runtime, shared JS, API clients, event systems, performance, technical debt remediation, and runtime test coverage.
+Use the `Current Four-Team Ownership Model` section there for team ownership, assignment routing, and cross-team scope checks.
 
 Rules:
 - Teams pull backlog items only from their ownership area unless OWNER explicitly reassigns or splits the work.

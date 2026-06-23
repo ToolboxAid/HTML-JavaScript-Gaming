@@ -2,19 +2,11 @@
 
 ## Four Active Delivery Teams
 
-The current active delivery teams are:
+The single authoritative four-team ownership definition is:
 
-- Team Alfa
-- Team Bravo
-- Team Charlie
-- Team Delta
+`docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md`
 
-Ownership model:
-
-- Team Alfa: Game Hub, Game Journey, Idea Board, creator workflow, creator onboarding, and UX flow.
-- Team Bravo: Audio, Audio Effects, Messages, Emotion Profiles, TTS Profiles, Asset Browser, Vector Art, MIDI Studio, and creator content tools.
-- Team Charlie: repository compliance, validation, infrastructure, storage, environment management, System Health, and operations.
-- Team Delta: engine, runtime, shared JS, API clients, event systems, performance, technical debt remediation, and runtime test coverage.
+Use the `Current Four-Team Ownership Model` section there for active delivery team ownership.
 
 Rules:
 - Team work must stay inside the owning team's area.

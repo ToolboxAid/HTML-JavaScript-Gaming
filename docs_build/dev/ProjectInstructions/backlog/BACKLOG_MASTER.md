@@ -198,6 +198,6 @@
 - [ ] Delta - Runtime performance audit
 - [ ] Delta - Engine test coverage improvements
 - [ ] Delta - Event system audit
-- [ ] Delta - Controls runtime audit
-- [ ] Delta - Object runtime audit
-- [ ] Delta - World runtime audit
+- [ ] Delta - Controls runtime framework audit
+- [ ] Delta - Object runtime framework audit
+- [ ] Delta - World runtime framework audit

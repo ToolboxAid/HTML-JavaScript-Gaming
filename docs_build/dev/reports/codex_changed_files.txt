@@ -1,8 +1,5 @@
 M	docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-M	docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
 M	docs_build/dev/ProjectInstructions/addendums/multi_team.md
-M	docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
 M	docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-M	docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
 M	docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-A	docs_build/dev/reports/PR_26172_OWNER_040-four-team-backlog-alignment.md
+A	docs_build/dev/reports/PR_26172_OWNER_041-four-team-cleanup.md

@@ -1,356 +1,176 @@
 diff --git a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-index 40db33c44..b73c70eca 100644
+index b73c70eca..3314b3dea 100644
 --- a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 +++ b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-@@ -44,3 +44,24 @@ OWNER follows the same safety rules:
- - One active OWNER assignment at a time.
- - OWNER may override team locks, but may not silently delete, rewrite, or remove protected instructions.
- - OWNER override must be explicitly documented.
-+
-+## Four-Team Ownership Alignment
-+
-+The current active team model uses four delivery teams:
-+
-+- Team Alfa
-+- Team Bravo
-+- Team Charlie
-+- Team Delta
-+
-+Team ownership guidance:
-+
-+- Team Alfa owns Game Hub, Game Journey, Idea Board, creator workflow, creator onboarding, and UX flow.
-+- Team Bravo owns Audio, Audio Effects, Messages, Emotion Profiles, TTS Profiles, Asset Browser, Vector Art, MIDI Studio, and creator content tools.
-+- Team Charlie owns repository compliance, validation, infrastructure, storage, environment management, System Health, and operations.
-+- Team Delta owns engine, runtime, shared JS, API clients, event systems, performance, technical debt remediation, and runtime test coverage.
-+
-+Rules:
-+- Teams pull backlog items only from their ownership area unless OWNER explicitly reassigns or splits the work.
-+- Cross-team work requires OWNER approval and must identify the owning team for each PR.
-+- Team start commands must remain aligned with this ownership model.
-diff --git a/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md b/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
-index 35279e8f1..12f74cb1f 100644
---- a/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
-+++ b/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
-@@ -66,6 +66,30 @@ Create one Team Charlie branch for the selected assignment.
- Work only that assignment.
- ```
+@@ -47,19 +47,11 @@ OWNER follows the same safety rules:
  
-+## Start Team Delta
-+
-+Ready-to-copy command:
-+
-+```text
-+OWNER override approved: Start Team Delta from the ProjectInstructions release gate.
-+
-+Read docs_build/dev/ProjectInstructions/README.txt first.
-+Read docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md.
-+Read docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
-+Read docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md.
-+
-+Pull one [ ] item for Team Delta from BACKLOG_MASTER.md.
-+Stop if Team Delta already has an active branch.
-+Stop if Team Delta already has an active assignment.
-+Stop if no [ ] Team Delta backlog item is available.
-+Stop if the selected item is outside Team Delta ownership.
-+
-+Change the selected backlog item from [ ] to [.].
-+Add the selected assignment under Team Delta in TEAM_ASSIGNMENTS.md.
-+Create one Team Delta branch for the selected assignment.
-+Work only that assignment.
-+```
-+
- ## Day Work / EOD Merge Reminder
+ ## Four-Team Ownership Alignment
  
- Ready-to-copy reminder:
+-The current active team model uses four delivery teams:
++The single authoritative four-team ownership definition is:
+ 
+-- Team Alfa
+-- Team Bravo
+-- Team Charlie
+-- Team Delta
++`docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md`
+ 
+-Team ownership guidance:
+-
+-- Team Alfa owns Game Hub, Game Journey, Idea Board, creator workflow, creator onboarding, and UX flow.
+-- Team Bravo owns Audio, Audio Effects, Messages, Emotion Profiles, TTS Profiles, Asset Browser, Vector Art, MIDI Studio, and creator content tools.
+-- Team Charlie owns repository compliance, validation, infrastructure, storage, environment management, System Health, and operations.
+-- Team Delta owns engine, runtime, shared JS, API clients, event systems, performance, technical debt remediation, and runtime test coverage.
++Use the `Current Four-Team Ownership Model` section there for team ownership, assignment routing, and cross-team scope checks.
+ 
+ Rules:
+ - Teams pull backlog items only from their ownership area unless OWNER explicitly reassigns or splits the work.
 diff --git a/docs_build/dev/ProjectInstructions/addendums/multi_team.md b/docs_build/dev/ProjectInstructions/addendums/multi_team.md
-index 4b45257b0..67bacfd6b 100644
+index 67bacfd6b..3d603aff9 100644
 --- a/docs_build/dev/ProjectInstructions/addendums/multi_team.md
 +++ b/docs_build/dev/ProjectInstructions/addendums/multi_team.md
-@@ -1,5 +1,26 @@
- # Multi-Team Codex Execution Governance
+@@ -2,19 +2,11 @@
  
-+## Four Active Delivery Teams
-+
-+The current active delivery teams are:
-+
-+- Team Alfa
-+- Team Bravo
-+- Team Charlie
-+- Team Delta
-+
-+Ownership model:
-+
-+- Team Alfa: Game Hub, Game Journey, Idea Board, creator workflow, creator onboarding, and UX flow.
-+- Team Bravo: Audio, Audio Effects, Messages, Emotion Profiles, TTS Profiles, Asset Browser, Vector Art, MIDI Studio, and creator content tools.
-+- Team Charlie: repository compliance, validation, infrastructure, storage, environment management, System Health, and operations.
-+- Team Delta: engine, runtime, shared JS, API clients, event systems, performance, technical debt remediation, and runtime test coverage.
-+
-+Rules:
-+- Team work must stay inside the owning team's area.
-+- Cross-team work requires OWNER approval and must identify the correct owning team for each PR.
-+- Team start commands must use the current ownership model before pulling a backlog item.
-+
- ## All-Team Preferred Codex Execution Method
+ ## Four Active Delivery Teams
  
- Preferred execution model:
-diff --git a/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md b/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
-index 3f85bbf25..e1018c155 100644
---- a/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
-+++ b/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
-@@ -20,6 +20,17 @@ Before a team starts, validate:
- - assigned team uses NATO phonetic naming
- - work remains with the assigned team until complete or OWNER reassignment
+-The current active delivery teams are:
++The single authoritative four-team ownership definition is:
  
-+## Current Four-Team Start Set
-+
-+The current active delivery teams for backlog start commands are:
-+
-+- Team Alfa
-+- Team Bravo
-+- Team Charlie
-+- Team Delta
-+
-+Each team start must confirm the selected backlog item is inside that team's ownership area.
-+
- ## Assignment Flow
+-- Team Alfa
+-- Team Bravo
+-- Team Charlie
+-- Team Delta
++`docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md`
  
- For backlog-driven work:
+-Ownership model:
+-
+-- Team Alfa: Game Hub, Game Journey, Idea Board, creator workflow, creator onboarding, and UX flow.
+-- Team Bravo: Audio, Audio Effects, Messages, Emotion Profiles, TTS Profiles, Asset Browser, Vector Art, MIDI Studio, and creator content tools.
+-- Team Charlie: repository compliance, validation, infrastructure, storage, environment management, System Health, and operations.
+-- Team Delta: engine, runtime, shared JS, API clients, event systems, performance, technical debt remediation, and runtime test coverage.
++Use the `Current Four-Team Ownership Model` section there for active delivery team ownership.
+ 
+ Rules:
+ - Team work must stay inside the owning team's area.
 diff --git a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-index ec1b46b16..7b164c540 100644
+index 7b164c540..0b8942261 100644
 --- a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
 +++ b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-@@ -159,3 +159,45 @@
-   - Open PR, draft PR, local branch, and remote branch review requirements verified.
-   - Recommendation-only hygiene audit process verified.
-   - Branch deletion and PR closure remain prohibited without explicit owner approval.
-+
-+## Four-Team Backlog Alignment
-+
-+### Team Alfa
-+
-+- [ ] Alfa - Game Hub polish
-+- [ ] Alfa - Game Journey completion tracking
-+- [ ] Alfa - Journey progress calculations
-+- [ ] Alfa - Creator onboarding flow
-+- [ ] Alfa - Game Hub image integration
-+
-+### Team Bravo
-+
-+- [ ] Bravo - Audio tool improvements
-+- [ ] Bravo - Audio Effects tool
-+- [ ] Bravo - Messages tool
-+- [ ] Bravo - Emotion Profiles
-+- [ ] Bravo - TTS Profiles
-+- [ ] Bravo - Asset Browser enhancements
-+- [ ] Bravo - Vector Art improvements
-+- [ ] Bravo - MIDI Studio improvements
-+
-+### Team Charlie
-+
-+- [ ] Charlie - Guardrail hardening
-+- [ ] Charlie - Browser validation hardening
-+- [ ] Charlie - Remaining test relocation audit
-+- [ ] Charlie - Compliance baseline freeze
-+- [ ] Charlie - System Health improvements
-+- [ ] Charlie - Infrastructure dashboard
-+- [ ] Charlie - Environment validation
-+
-+### Team Delta
-+
-+- [ ] Delta - Shared JS consolidation
-+- [ ] Delta - API client consolidation
-+- [ ] Delta - Runtime performance audit
-+- [ ] Delta - Engine test coverage improvements
-+- [ ] Delta - Event system audit
-+- [ ] Delta - Controls runtime audit
-+- [ ] Delta - Object runtime audit
-+- [ ] Delta - World runtime audit
-diff --git a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
-index 9a3c515f7..acefbba8e 100644
---- a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
-+++ b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
-@@ -57,6 +57,14 @@ Active assignment: none.
- 
- Active branch: none.
- 
-+## Team Delta
-+
-+Status: Available
-+
-+Active assignment: none.
-+
-+Active branch: none.
-+
- ## Team OWNER
- 
- Status: Available
+@@ -198,6 +198,6 @@
+ - [ ] Delta - Runtime performance audit
+ - [ ] Delta - Engine test coverage improvements
+ - [ ] Delta - Event system audit
+-- [ ] Delta - Controls runtime audit
+-- [ ] Delta - Object runtime audit
+-- [ ] Delta - World runtime audit
++- [ ] Delta - Controls runtime framework audit
++- [ ] Delta - Object runtime framework audit
++- [ ] Delta - World runtime framework audit
 diff --git a/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md b/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-index baa1598b6..1343dd8ee 100644
+index 1343dd8ee..865cca551 100644
 --- a/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
 +++ b/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-@@ -1,5 +1,57 @@
- # Team Ownership Governance
+@@ -52,45 +52,6 @@ Alfa, Bravo, Charlie, and Delta are the four active delivery teams for backlog o
  
-+## Current Four-Team Ownership Model
-+
-+This section is the current OWNER-approved active ownership alignment.
-+
-+## Team Alfa
-+
-+- Game Hub
-+- Game Journey
-+- Idea Board
-+- Creator workflow
-+- Creator onboarding
-+- UX flow
-+
-+## Team Bravo
-+
-+- Audio
-+- Audio Effects
-+- Messages
-+- Emotion Profiles
-+- TTS Profiles
-+- Asset Browser
-+- Vector Art
-+- MIDI Studio
-+- Creator content tools
-+
-+## Team Charlie
-+
-+- Repository compliance
-+- Validation
-+- Infrastructure
-+- Storage
-+- Environment management
-+- System Health
-+- Operations
-+
-+## Team Delta
-+
-+- Engine
-+- Runtime
-+- Shared JS
-+- API clients
-+- Event systems
-+- Performance
-+- Technical debt remediation
-+- Runtime test coverage
-+
-+## Current Four-Team Rule
-+
-+Alfa, Bravo, Charlie, and Delta are the four active delivery teams for backlog ownership and team start routing.
-+
-+Each team may pull only from its ownership area unless OWNER explicitly reassigns, splits, or approves cross-team work.
-+
- ## OWNER
+ Each team may pull only from its ownership area unless OWNER explicitly reassigns, splits, or approves cross-team work.
  
- - Architecture
-diff --git a/docs_build/dev/reports/PR_26172_OWNER_040-four-team-backlog-alignment.md b/docs_build/dev/reports/PR_26172_OWNER_040-four-team-backlog-alignment.md
+-## OWNER
+-
+-- Architecture
+-- Product Direction
+-- Cross-Team Governance
+-- Final Approval
+-
+-## Team Alfa
+-
+-- Idea Board
+-- Game Hub
+-- Game Journey
+-- Design
+-- Objects
+-- Worlds
+-- Interface
+-- Controls
+-- Rules
+-- Progression
+-
+-## Team Bravo
+-
+-- Graphics
+-- Audio
+-- Messages
+-- TTS
+-- MIDI
+-- Publishing
+-- Community
+-- Marketplace
+-
+-## Team Charlie
+-
+-- Governance
+-- Infrastructure
+-- Operations
+-- Diagnostics
+-- System Health
+-
+ ## Rule
+ 
+ Ownership may only be reassigned by OWNER governance.
+diff --git a/docs_build/dev/reports/PR_26172_OWNER_041-four-team-cleanup.md b/docs_build/dev/reports/PR_26172_OWNER_041-four-team-cleanup.md
 new file mode 100644
-index 000000000..a132e74f2
+index 000000000..985dece70
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_OWNER_040-four-team-backlog-alignment.md
-@@ -0,0 +1,102 @@
-+# PR_26172_OWNER_040-four-team-backlog-alignment
++++ b/docs_build/dev/reports/PR_26172_OWNER_041-four-team-cleanup.md
+@@ -0,0 +1,52 @@
++# PR_26172_OWNER_041-four-team-cleanup
 +
 +## Summary
 +
-+PASS: Formalized the four active delivery teams:
++PASS: Cleaned up ownership and backlog issues found after PR_26172_OWNER_040.
 +
-+- Team Alfa
-+- Team Bravo
-+- Team Charlie
-+- Team Delta
++## Changes
 +
-+The update aligns backlog ownership, team ownership documentation, Project Instructions ownership guidance, and team start command documentation.
++- Removed the superseded ownership block from `team_ownership.md`.
++- Kept `Current Four-Team Ownership Model` as the single authoritative ownership definition.
++- Replaced duplicate ownership definitions in `PROJECT_INSTRUCTIONS.md` and `addendums/multi_team.md` with references to `team_ownership.md`.
++- Updated Delta backlog wording from tool-like ownership to runtime framework ownership:
++  - `Delta - Controls runtime framework audit`
++  - `Delta - Object runtime framework audit`
++  - `Delta - World runtime framework audit`
++- Verified the backlog ending is complete and not truncated.
 +
 +## Files Changed
 +
 +- `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
-+- `docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md`
 +- `docs_build/dev/ProjectInstructions/addendums/multi_team.md`
-+- `docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md`
 +- `docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md`
-+- `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md`
 +- `docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md`
-+
-+## Ownership Model
-+
-+### Alfa
-+
-+- Game Hub
-+- Game Journey
-+- Idea Board
-+- Creator workflow
-+- Creator onboarding
-+- UX flow
-+
-+### Bravo
-+
-+- Audio
-+- Audio Effects
-+- Messages
-+- Emotion Profiles
-+- TTS Profiles
-+- Asset Browser
-+- Vector Art
-+- MIDI Studio
-+- Creator content tools
-+
-+### Charlie
-+
-+- Repository compliance
-+- Validation
-+- Infrastructure
-+- Storage
-+- Environment management
-+- System Health
-+- Operations
-+
-+### Delta
-+
-+- Engine
-+- Runtime
-+- Shared JS
-+- API clients
-+- Event systems
-+- Performance
-+- Technical debt remediation
-+- Runtime test coverage
-+
-+## Backlog Entries
-+
-+PASS: Added requested backlog entries under `## Four-Team Backlog Alignment`:
-+
-+- Team Alfa: 5 entries
-+- Team Bravo: 8 entries
-+- Team Charlie: 7 entries
-+- Team Delta: 8 entries
 +
 +## Validation
 +
 +- PASS: `git diff --check`
-+- PASS: Team ownership documented in `PROJECT_INSTRUCTIONS.md`, `team_ownership.md`, and `multi_team.md`.
-+- PASS: Team start commands remain valid and now include `Start Team Delta`.
-+- PASS: Backlog entries are visible in `BACKLOG_MASTER.md`.
-+- PASS: No runtime, test, source, asset, or executable implementation files changed.
++- PASS: No duplicate active ownership definitions remain.
++- PASS: `Current Four-Team Ownership Model` appears as the single authoritative ownership model in `team_ownership.md`.
++- PASS: `PROJECT_INSTRUCTIONS.md` and `addendums/multi_team.md` now reference the authoritative ownership file instead of repeating ownership definitions.
++- PASS: Delta backlog wording updated to runtime framework audits.
++- PASS: Backlog ending includes complete Object and World runtime framework audit entries.
++- PASS: No executable implementation files changed.
 +- PASS: ZIP artifact created under `tmp/`.
 +
 +## Requirement Checklist
 +
-+- PASS: Reviewed `docs_build/dev/ProjectInstructions/`.
 +- PASS: Started from latest main.
 +- PASS: Worktree was clean before edits.
-+- PASS: Updated Project Instructions.
-+- PASS: Updated backlog.
-+- PASS: Updated team ownership guidance.
-+- PASS: Updated team start command documentation.
++- PASS: Reviewed `docs_build/dev/ProjectInstructions/`.
++- PASS: Removed superseded conflicting ownership definitions.
++- PASS: Preserved current four-team ownership model.
++- PASS: Clarified Delta ownership wording.
++- PASS: Verified backlog formatting.
 +- PASS: Created required Codex reports.
 +- PASS: Created ZIP artifact under `tmp/`.
 +
 +## Manual Validation Notes
 +
-+- Existing historical ownership guidance was preserved; new four-team ownership alignment was added as the current OWNER-approved model.
-+- Active Team Registry remains empty because this PR formalizes ownership and backlog availability, not active assignments.
-+- No executable implementation changes were made.
++- The superseded ownership block was removed under explicit OWNER PR_041 cleanup scope.
++- No historical archive files were changed.
++- No runtime code, tests, assets, scripts, or application implementation files were changed.
