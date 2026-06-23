@@ -1,0 +1,11 @@
+Validation lane: PASS
+
+Commands:
+- `git diff --check -- toolbox/game-hub/game-hub.js assets/theme-v2/css/tables.css tests/playwright/tools/GameHubMockRepository.spec.mjs`
+  - PASS
+- `node --check toolbox/game-hub/game-hub.js`
+  - PASS
+- `npx playwright test tests/playwright/tools/GameHubMockRepository.spec.mjs -g "Game Hub"`
+  - PASS, 11 passed
+
+Generated coverage reports were restored after Playwright validation to keep this PR scoped.
