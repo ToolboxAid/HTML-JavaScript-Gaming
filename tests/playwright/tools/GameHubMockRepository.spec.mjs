@@ -434,6 +434,131 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
   }
 });
 
+test("Game Hub proves project identity is read-only outside create", async ({ page }) => {
+  const sourceLinkedGame = {
+    id: "readonly-lantern-reef",
+    ownerKey: MOCK_DB_KEYS.users.user1,
+    name: "Readonly Lantern Reef",
+    purpose: "Game",
+    status: "Ready for Testing",
+    ownerDisplayName: "User 1",
+    members: [
+      {
+        displayName: "User 1",
+        gameId: "readonly-lantern-reef",
+        permission: "Owner",
+        role: "Owner",
+        userKey: MOCK_DB_KEYS.users.user1,
+      },
+    ],
+    sourceIdea: {
+      idea: "Readonly Lantern Reef",
+      pitch: "Guide reef keepers through dusk storms.",
+      notes: [
+        "Keep traversal gentle.",
+        "Use warm lantern art.",
+      ],
+    },
+  };
+
+  await page.route("**/api/toolbox/game-hub/repositories/*/methods/getActiveGame", async (route) => {
+    await route.fulfill({
+      body: JSON.stringify({
+        data: { result: sourceLinkedGame },
+        ok: true,
+        rule: "Browser -> Server API -> Data Source",
+      }),
+      contentType: "application/json; charset=utf-8",
+      status: 200,
+    });
+  });
+  await page.route("**/api/toolbox/game-hub/repositories/*/methods/listGames", async (route) => {
+    await route.fulfill({
+      body: JSON.stringify({
+        data: { result: [sourceLinkedGame] },
+        ok: true,
+        rule: "Browser -> Server API -> Data Source",
+      }),
+      contentType: "application/json; charset=utf-8",
+      status: 200,
+    });
+  });
+  await page.route("**/api/toolbox/game-hub/repositories/*/methods/openGame", async (route) => {
+    await route.fulfill({
+      body: JSON.stringify({
+        data: { result: sourceLinkedGame },
+        ok: true,
+        rule: "Browser -> Server API -> Data Source",
+      }),
+      contentType: "application/json; charset=utf-8",
+      status: 200,
+    });
+  });
+  await page.route("**/api/toolbox/game-hub/repositories/*/methods/getGameProgress", async (route) => {
+    await route.fulfill({
+      body: JSON.stringify({
+        data: {
+          result: {
+            currentFocus: "Review source idea context",
+            gameProgress: "Readonly Lantern Reef identity ready",
+            gameStatus: "Ready for Testing",
+            publishingProgress: "Launch review pending",
+            recommendedNextTool: "Game Journey",
+            progressChecklist: [],
+          },
+        },
+        ok: true,
+        rule: "Browser -> Server API -> Data Source",
+      }),
+      contentType: "application/json; charset=utf-8",
+      status: 200,
+    });
+  });
+
+  const failures = await openRepoPage(page, "/toolbox/game-hub/index.html", { session: creatorSession() });
+
+  try {
+    await expect(page.locator("[data-game-project-information]")).toHaveCount(0);
+    await expect(page.locator("[data-project-records-table]")).toHaveCount(0);
+    await expect(page.locator("[data-active-game-name]")).toHaveCount(0);
+    await expect(page.locator("[data-current-user-role]")).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Delete Open Game" })).toBeHidden();
+
+    const gameRow = page.locator("[data-game-row='readonly-lantern-reef']");
+    await expect(gameRow).toContainText("Readonly Lantern Reef");
+    await gameRow.locator("[data-game-toggle='readonly-lantern-reef']").click();
+
+    const sourceIdeaTable = page.locator("[data-game-expanded-row='readonly-lantern-reef'][data-game-child-row='source-idea'] [data-game-child-table='source-idea']");
+    await expect(sourceIdeaTable.locator("caption")).toHaveText("Source Idea");
+    await expect(sourceIdeaTable.locator("button, input, textarea, select, [contenteditable='true'], [role='button']")).toHaveCount(0);
+    await expect(sourceIdeaTable.locator("tbody tr")).toHaveText([
+      "IdeaReadonly Lantern Reef",
+      "PitchGuide reef keepers through dusk storms.",
+      "Note 1Keep traversal gentle.",
+      "Note 2Use warm lantern art.",
+    ]);
+
+    await gameRow.getByRole("button", { name: "Edit Readonly Lantern Reef" }).click();
+    const editRow = page.locator("[data-game-edit-row='readonly-lantern-reef']");
+    await expect(editRow.getByLabel("Game")).toHaveValue("Readonly Lantern Reef");
+    await expect(editRow.getByLabel("Game")).toHaveAttribute("readonly", "");
+    await expect(editRow.getByLabel("Purpose")).not.toHaveAttribute("readonly", "");
+    await expect(editRow.getByLabel("Status")).not.toHaveAttribute("readonly", "");
+    await editRow.getByRole("button", { name: "Cancel" }).click();
+
+    await page.getByRole("button", { name: "Add Game" }).click();
+    const addRow = page.locator("[data-game-add-row='input']");
+    await expect(addRow.getByLabel("Game")).toBeEditable();
+    await expect(addRow.getByLabel("Game")).not.toHaveAttribute("readonly", "");
+    await expect(addRow.getByLabel("Purpose")).toBeEnabled();
+    await expect(addRow.getByLabel("Status")).toBeEnabled();
+
+    await expectNoPageFailures(failures);
+  } finally {
+    await failures.server.close();
+  }
+});
+
 test("Game Hub validates game parent rows and child tables", async ({ page }) => {
   const sourceLinkedGame = {
     id: "lantern-reef",

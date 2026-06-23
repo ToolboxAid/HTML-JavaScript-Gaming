@@ -1,59 +1,55 @@
-# PR_26175_ALFA_002-toolbox-status-bar-context-polish
+# PR_26175_ALFA_007-game-hub-project-readonly-proof
 
 ## Purpose
-Polish the shared toolbox status bar context display so it shows only selected-game name/purpose on the left and categorized tool context in the center.
+Prove that Game Hub keeps existing project/game identity read-only while allowing normal create and metadata-edit workflows.
 
 ## Source Of Truth
-This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_002-toolbox-status-bar-context-polish`.
+This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_007-game-hub-project-readonly-proof`.
 
 ## Exact Scope
-- Do not include environment text in the status bar because environment already appears in the platform banner.
-- On the left side, display the selected Game Hub game name and selected Game Hub game purpose.
-- On the center side, display tool context messages for tool actions, save state, validation messages, warnings, or errors.
-- Preserve normal placement above the footer.
-- Preserve fullscreen/tool display mode bottom anchoring.
-- Preserve Idea Board selected-game filtering exclusion.
-- Preserve Game Hub as selected-game owner through the existing repository contract.
-- Keep the shared Theme V2 toolbox component model.
-- Update targeted Playwright coverage for the polished left and center context.
+- Add targeted Playwright proof that existing Game Hub project identity is read-only in edit mode.
+- Prove legacy Project Workspace project-information and project-record table controls are absent from Game Hub.
+- Prove source-idea child rows are read-only context, not editable project controls.
+- Prove add/create remains the only place where a new game name can be entered.
+- Preserve existing valid create/open/edit/delete behavior.
+- Do not change product UI or repository/API/service behavior unless targeted validation proves it is required.
 
 ## Exact Targets
 - `docs_build/dev/BUILD_PR.md`
-- `assets/theme-v2/js/toolbox-status-bar.js`
-- `assets/theme-v2/css/status.css`
-- `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs`
-- `docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_report.md`
-- `docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_validation-lane.md`
-- `docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_requirements-checklist.md`
+- `tests/playwright/tools/GameHubMockRepository.spec.mjs`
+- `docs_build/dev/reports/PR_26175_ALFA_007-game-hub-project-readonly-proof_report.md`
+- `docs_build/dev/reports/PR_26175_ALFA_007-game-hub-project-readonly-proof_validation-lane.md`
+- `docs_build/dev/reports/PR_26175_ALFA_007-game-hub-project-readonly-proof_requirements-checklist.md`
 - `docs_build/dev/reports/codex_review.diff`
 - `docs_build/dev/reports/codex_changed_files.txt`
 
 ## Out Of Scope
-- No environment status in the toolbox status bar.
-- No row highlights.
-- No large banners.
-- No modal-style status messages.
+- No product/UI implementation changes unless targeted validation fails because of a real read-only gap.
+- No repository/API/service contract changes.
+- No Game Journey completion-metrics changes.
+- No shared toolbox status bar changes.
+- No browser-owned product data as source of truth.
+- No silent fallbacks.
 - No inline styles, style blocks, or page-local CSS.
-- No API/service contract changes.
 - No engine core changes.
 - No `start_of_day` folder changes.
 
 ## Validation
-Run:
+Run targeted read-only proof validation:
 
 ```powershell
-npx playwright test tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs --workers=1
+npx playwright test tests/playwright/tools/GameHubMockRepository.spec.mjs --workers=1 --grep "Game Hub proves project identity is read-only outside create"
 ```
 
-Also verify the changed source does not introduce inline styles or style blocks:
+Also verify changed source does not introduce inline styles or style blocks:
 
 ```powershell
-rg -n "<style|style=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
+rg -n "<[s]tyle|[s]tyle=" tests/playwright/tools/GameHubMockRepository.spec.mjs docs_build/dev/BUILD_PR.md docs_build/dev/reports/PR_26175_ALFA_007-game-hub-project-readonly-proof_report.md docs_build/dev/reports/PR_26175_ALFA_007-game-hub-project-readonly-proof_validation-lane.md docs_build/dev/reports/PR_26175_ALFA_007-game-hub-project-readonly-proof_requirements-checklist.md
 ```
 
 ## Artifact
 Create repo-structured delta ZIP:
 
 ```text
-tmp/PR_26175_ALFA_002-toolbox-status-bar-context-polish_delta.zip
+tmp/PR_26175_ALFA_007-game-hub-project-readonly-proof_delta.zip
 ```
