@@ -159,3 +159,45 @@
   - Open PR, draft PR, local branch, and remote branch review requirements verified.
   - Recommendation-only hygiene audit process verified.
   - Branch deletion and PR closure remain prohibited without explicit owner approval.
+
+## Four-Team Backlog Alignment
+
+### Team Alfa
+
+- [ ] Alfa - Game Hub polish
+- [ ] Alfa - Game Journey completion tracking
+- [ ] Alfa - Journey progress calculations
+- [ ] Alfa - Creator onboarding flow
+- [ ] Alfa - Game Hub image integration
+
+### Team Bravo
+
+- [ ] Bravo - Audio tool improvements
+- [ ] Bravo - Audio Effects tool
+- [ ] Bravo - Messages tool
+- [ ] Bravo - Emotion Profiles
+- [ ] Bravo - TTS Profiles
+- [ ] Bravo - Asset Browser enhancements
+- [ ] Bravo - Vector Art improvements
+- [ ] Bravo - MIDI Studio improvements
+
+### Team Charlie
+
+- [ ] Charlie - Guardrail hardening
+- [ ] Charlie - Browser validation hardening
+- [ ] Charlie - Remaining test relocation audit
+- [ ] Charlie - Compliance baseline freeze
+- [ ] Charlie - System Health improvements
+- [ ] Charlie - Infrastructure dashboard
+- [ ] Charlie - Environment validation
+
+### Team Delta
+
+- [ ] Delta - Shared JS consolidation
+- [ ] Delta - API client consolidation
+- [ ] Delta - Runtime performance audit
+- [ ] Delta - Engine test coverage improvements
+- [ ] Delta - Event system audit
+- [ ] Delta - Controls runtime audit
+- [ ] Delta - Object runtime audit
+- [ ] Delta - World runtime audit
