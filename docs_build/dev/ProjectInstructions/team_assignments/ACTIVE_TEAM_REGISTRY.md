@@ -28,7 +28,22 @@ If a team has no assignment, no active branch, and no active PR, it is inactive 
 
 | Team | Active Assignment | Branch | PR | Status | OWNER Decision |
 |------|-------------------|--------|----|--------|----------------|
+| Team Alfa | none | none | none | Available | Active-capable under current OWNER map |
+| Team Bravo | none | none | none | Available | Active-capable under current OWNER map |
+| Team Charlie | none | none | none | Available | Active-capable under current OWNER map |
+| Team Delta | none | none | none | Available | Active-capable under current OWNER map |
+| Team Gamma | none | unknown external PC possible | unknown external PR possible | Active-capable | Do not retire Gamma without explicit OWNER approval |
 | Team OWNER | none | none | none | Available | Governance Phase 1 complete |
+
+## Current Active-Capable Team Map
+
+OWNER override approved: align active team governance with Delta and Gamma.
+
+The current active-capable team map includes Team Alfa, Team Bravo, Team Charlie, Team Delta, Team Gamma, and Team OWNER.
+
+Team Gamma remains valid and active-capable for now because another PC may be working on it. Do not retire Gamma unless OWNER explicitly approves retirement.
+
+Historical four-team wording remains preserved for backlog ownership traceability, but it must not be read as excluding Team Gamma from active-capable governance.
 
 ## Update Rules
 

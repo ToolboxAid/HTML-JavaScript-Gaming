@@ -90,6 +90,28 @@ Create one Team Delta branch for the selected assignment.
 Work only that assignment.
 ```
 
+## Start Team Gamma
+
+Ready-to-copy command:
+
+```text
+OWNER override approved: Start Team Gamma from the ProjectInstructions release gate.
+
+Read docs_build/dev/ProjectInstructions/README.txt first.
+Read docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md.
+Read docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
+Read docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md.
+
+Stop if Team Gamma already has an active branch.
+Stop if Team Gamma already has an active assignment.
+Stop if OWNER has not explicitly assigned Team Gamma work.
+Stop if the selected work conflicts with current Alfa, Bravo, Charlie, or Delta ownership.
+
+Record the selected assignment under Team Gamma in TEAM_ASSIGNMENTS.md.
+Create or use one Team Gamma branch for the selected assignment.
+Work only that assignment.
+```
+
 ## Day Work / EOD Merge Reminder
 
 Ready-to-copy reminder:

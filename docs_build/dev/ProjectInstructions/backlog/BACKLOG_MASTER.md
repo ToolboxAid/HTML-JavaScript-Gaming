@@ -162,6 +162,12 @@
 
 ## Four-Team Backlog Alignment
 
+Current OWNER clarification:
+- The backlog alignment below preserves the current Alfa, Bravo, Charlie, and Delta ownership model.
+- Team Gamma is valid and active-capable for now because another PC may be working on it, but no standing Gamma backlog ownership area is assigned here.
+- Do not retire Team Gamma unless OWNER explicitly approves retirement.
+- Gamma work must be OWNER-assigned, branch-backed, PR-backed, release, or cleanup work and must not silently replace Alfa, Bravo, Charlie, or Delta ownership.
+
 ### Team Alfa
 
 - [ ] Alfa - Game Hub polish

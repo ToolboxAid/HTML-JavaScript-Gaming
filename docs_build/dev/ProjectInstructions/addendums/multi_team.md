@@ -13,6 +13,26 @@ Rules:
 - Cross-team work requires OWNER approval and must identify the correct owning team for each PR.
 - Team start commands must use the current ownership model before pulling a backlog item.
 
+## Current Active-Capable Team Map
+
+OWNER override approved: align active team governance with Delta and Gamma.
+
+The active-capable team map currently includes:
+
+- Team Alfa
+- Team Bravo
+- Team Charlie
+- Team Delta
+- Team Gamma
+- Team OWNER
+
+Rules:
+- Historical four-team ownership wording remains preserved for backlog ownership traceability.
+- Team Gamma remains valid and active-capable for now because another PC may be working on it.
+- Do not retire Team Gamma unless OWNER explicitly approves retirement.
+- Team Gamma may be active when it has OWNER-assigned work, an active branch, an active draft/open PR, or active release/cleanup responsibility.
+- If Team Gamma work touches an Alfa, Bravo, Charlie, or Delta ownership area, the PR must document the OWNER assignment or cross-team decision.
+
 ## All-Team Preferred Codex Execution Method
 
 Preferred execution model:

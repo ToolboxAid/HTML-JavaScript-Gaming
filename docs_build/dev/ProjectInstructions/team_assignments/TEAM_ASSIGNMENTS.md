@@ -4,6 +4,12 @@
 
 | Team | Assignment | Branch | PR | Status |
 |------|------------|--------|----|--------|
+| Team Alfa | none | none | none | Available |
+| Team Bravo | none | none | none | Available |
+| Team Charlie | none | none | none | Available |
+| Team Delta | none | none | none | Available |
+| Team Gamma | none | unknown external PC possible | unknown external PR possible | Active-capable |
+| Team OWNER | none | none | none | Available |
 
 Rules:
 - Registry is the authoritative active-work view.
@@ -26,6 +32,12 @@ A team is not listed in Active Team Registry when:
 Result:
 If a team is missing from Active Team Registry:
 it is currently inactive.
+
+Current OWNER clarification:
+- The active-capable team map includes Team Alfa, Team Bravo, Team Charlie, Team Delta, Team Gamma, and Team OWNER.
+- Team Gamma remains valid and active-capable for now because another PC may be working on it.
+- Do not retire Team Gamma unless OWNER explicitly approves retirement.
+- Historical four-team wording remains preserved for backlog ownership traceability, but it must not exclude Gamma from active-capable governance.
 
 ## Assignment Status Legend
 
@@ -64,6 +76,18 @@ Status: Available
 Active assignment: none.
 
 Active branch: none.
+
+## Team Gamma
+
+Status: Active-capable
+
+Active assignment: none recorded locally.
+
+Active branch: unknown external PC possible.
+
+Active PR: unknown external PR possible.
+
+OWNER decision: Do not retire Gamma without explicit OWNER approval.
 
 ## Team OWNER
 

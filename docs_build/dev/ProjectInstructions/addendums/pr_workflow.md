@@ -54,6 +54,8 @@ Applies to:
 - Team Alfa
 - Team Bravo
 - Team Charlie
+- Team Delta
+- Team Gamma
 - Any future NATO-named team
 
 Behavior:

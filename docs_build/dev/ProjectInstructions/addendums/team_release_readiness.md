@@ -4,6 +4,12 @@
 
 This gate prevents Team Alfa, Team Bravo, Team Charlie, or Team OWNER from starting regular assigned work before the ProjectInstructions operating system is ready.
 
+Current OWNER clarification:
+- The current release-readiness gate also applies to Team Delta and Team Gamma.
+- Team Gamma is valid and active-capable for now because another PC may be working on it.
+- Do not retire Team Gamma unless OWNER explicitly approves retirement.
+- Historical wording that listed fewer teams remains traceable, but it must not exclude Delta or Gamma from current active-capable governance.
+
 ## Release Rule
 
 Teams may start only when all of the following are true:

@@ -31,6 +31,25 @@ The current active delivery teams for backlog start commands are:
 
 Each team start must confirm the selected backlog item is inside that team's ownership area.
 
+## Current Active-Capable Start Map
+
+OWNER override approved: align active team governance with Delta and Gamma.
+
+The current active-capable start map includes:
+
+- Team Alfa
+- Team Bravo
+- Team Charlie
+- Team Delta
+- Team Gamma
+- Team OWNER
+
+Clarification:
+- The four-team start set remains the backlog ownership start set for Alfa, Bravo, Charlie, and Delta.
+- Team Gamma is valid and active-capable for OWNER-assigned, branch-backed, PR-backed, release, or cleanup work.
+- Do not retire Team Gamma unless OWNER explicitly approves retirement.
+- Gamma work must not silently take ownership from Alfa, Bravo, Charlie, or Delta; cross-team work requires OWNER approval.
+
 ## Assignment Flow
 
 For backlog-driven work:

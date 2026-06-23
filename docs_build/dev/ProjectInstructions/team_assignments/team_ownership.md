@@ -52,6 +52,27 @@ Alfa, Bravo, Charlie, and Delta are the four active delivery teams for backlog o
 
 Each team may pull only from its ownership area unless OWNER explicitly reassigns, splits, or approves cross-team work.
 
+## Current Active-Capable Team Map
+
+OWNER override approved: align active team governance with Delta and Gamma.
+
+The current active-capable team map includes:
+
+- Team Alfa
+- Team Bravo
+- Team Charlie
+- Team Delta
+- Team Gamma
+- Team OWNER
+
+Clarification:
+- The four-team rule remains the current backlog ownership model for Alfa, Bravo, Charlie, and Delta.
+- Team Gamma is valid and active-capable for now because another PC may be working on it.
+- Team Gamma does not receive a standing backlog ownership area in this file.
+- Do not retire Team Gamma unless OWNER explicitly approves retirement.
+- Gamma work requires OWNER assignment, an active branch, an active draft/open PR, or active release/cleanup responsibility.
+- Gamma work that touches Alfa, Bravo, Charlie, or Delta areas must document the OWNER cross-team decision.
+
 ## Rule
 
 Ownership may only be reassigned by OWNER governance.
