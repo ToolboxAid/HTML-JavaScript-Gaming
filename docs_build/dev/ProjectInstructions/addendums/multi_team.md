@@ -1,5 +1,26 @@
 # Multi-Team Codex Execution Governance
 
+## Four Active Delivery Teams
+
+The current active delivery teams are:
+
+- Team Alfa
+- Team Bravo
+- Team Charlie
+- Team Delta
+
+Ownership model:
+
+- Team Alfa: Game Hub, Game Journey, Idea Board, creator workflow, creator onboarding, and UX flow.
+- Team Bravo: Audio, Audio Effects, Messages, Emotion Profiles, TTS Profiles, Asset Browser, Vector Art, MIDI Studio, and creator content tools.
+- Team Charlie: repository compliance, validation, infrastructure, storage, environment management, System Health, and operations.
+- Team Delta: engine, runtime, shared JS, API clients, event systems, performance, technical debt remediation, and runtime test coverage.
+
+Rules:
+- Team work must stay inside the owning team's area.
+- Cross-team work requires OWNER approval and must identify the correct owning team for each PR.
+- Team start commands must use the current ownership model before pulling a backlog item.
+
 ## All-Team Preferred Codex Execution Method
 
 Preferred execution model:

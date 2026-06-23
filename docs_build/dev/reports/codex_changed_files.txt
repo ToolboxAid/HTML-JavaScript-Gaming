@@ -1,3 +1,8 @@
-﻿docs_build/dev/reports/PR_26174_ALFA_MERGE_PUSH_CLOSEOUT.md
-docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/codex_changed_files.txt
+M	docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+M	docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
+M	docs_build/dev/ProjectInstructions/addendums/multi_team.md
+M	docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
+M	docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
+M	docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
+M	docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
+A	docs_build/dev/reports/PR_26172_OWNER_040-four-team-backlog-alignment.md

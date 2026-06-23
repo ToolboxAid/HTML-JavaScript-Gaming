@@ -20,6 +20,17 @@ Before a team starts, validate:
 - assigned team uses NATO phonetic naming
 - work remains with the assigned team until complete or OWNER reassignment
 
+## Current Four-Team Start Set
+
+The current active delivery teams for backlog start commands are:
+
+- Team Alfa
+- Team Bravo
+- Team Charlie
+- Team Delta
+
+Each team start must confirm the selected backlog item is inside that team's ownership area.
+
 ## Assignment Flow
 
 For backlog-driven work:
