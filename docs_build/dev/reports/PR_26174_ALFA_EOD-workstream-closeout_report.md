@@ -1,0 +1,69 @@
+# PR_26174_ALFA_EOD-workstream-closeout
+
+## Summary
+
+Team Alfa reviewed PR_26174_ALFA_000 through PR_26174_ALFA_022 for owner merge readiness.
+
+This closeout is report-only. No feature code, tests, runtime behavior, or Project Instructions content was changed.
+
+## Overall Status
+
+- PASS: PR_26174_ALFA_000 through PR_26174_ALFA_022 were reviewed.
+- PASS: GitHub PRs are documented below.
+- PASS: All open stacked Alfa PRs are draft PRs.
+- PASS: PR-specific summary, branch validation, requirement checklist, validation lane, and manual validation reports exist locally for PR_000 through PR_022.
+- PASS: `docs_build/dev/reports/codex_changed_files.txt` exists.
+- PASS: Worktree was clean before this report-only closeout branch was created.
+- PASS: ALFA_022 was synchronized with `origin/pr/26174-ALFA-022-idea-board-status-dropdown-fix` before this branch was created.
+- LOCAL VERIFY GAP: Expected prior ZIP artifact names are documented in the PR bodies, but the prior ZIP files are not present under local `tmp/` in this checkout at closeout time. `tmp/` artifacts are ignored and not committed.
+
+## GitHub PR Inventory
+
+| PR | Title | Status | Base | Head |
+| --- | --- | --- | --- | --- |
+| #92 | PR_26174_ALFA_000-projectinstructions-archive-ignore | merged | main | pr/26174-ALFA-000-projectinstructions-archive-ignore |
+| #95 | PR_26174_ALFA_001-idea-board-create-project-api-contract | open draft | main | pr/26174-ALFA-001-idea-board-create-project-api-contract |
+| #96 | PR_26174_ALFA_002-game-hub-project-intake-display | open draft | pr/26174-ALFA-001-idea-board-create-project-api-contract | pr/26174-ALFA-002-game-hub-project-intake-display |
+| #97 | PR_26174_ALFA_003-game-hub-journey-bootstrap | open draft | pr/26174-ALFA-002-game-hub-project-intake-display | pr/26174-ALFA-003-game-hub-journey-bootstrap |
+| #98 | PR_26174_ALFA_004-game-hub-progress-count-model | open draft | pr/26174-ALFA-003-game-hub-journey-bootstrap | pr/26174-ALFA-004-game-hub-progress-count-model |
+| #99 | PR_26174_ALFA_005-idea-project-validation-polish | open draft | pr/26174-ALFA-004-game-hub-progress-count-model | pr/26174-ALFA-005-idea-project-validation-polish |
+| #100 | PR_26174_ALFA_006-game-hub-empty-and-error-states | open draft | pr/26174-ALFA-005-idea-project-validation-polish | pr/26174-ALFA-006-game-hub-empty-and-error-states |
+| #101 | PR_26174_ALFA_007-game-journey-count-ui-polish | open draft | pr/26174-ALFA-006-game-hub-empty-and-error-states | pr/26174-ALFA-007-game-journey-count-ui-polish |
+| #102 | PR_26174_ALFA_008-alpha-stack-final-validation | open draft | pr/26174-ALFA-007-game-journey-count-ui-polish | pr/26174-ALFA-008-alpha-stack-final-validation |
+| #103 | PR_26174_ALFA_009-game-hub-parent-child-table-layout | open draft | pr/26174-ALFA-008-alpha-stack-final-validation | pr/26174-ALFA-009-game-hub-parent-child-table-layout |
+| #104 | PR_26174_ALFA_010-game-hub-source-idea-child-table-polish | open draft | pr/26174-ALFA-009-game-hub-parent-child-table-layout | pr/26174-ALFA-010-game-hub-source-idea-child-table-polish |
+| #105 | PR_26174_ALFA_011-game-hub-readiness-output-child-table | open draft | pr/26174-ALFA-010-game-hub-source-idea-child-table-polish | pr/26174-ALFA-011-game-hub-readiness-output-child-table |
+| #106 | PR_26174_ALFA_012-game-hub-parent-child-final-validation | open draft | pr/26174-ALFA-011-game-hub-readiness-output-child-table | pr/26174-ALFA-012-game-hub-parent-child-final-validation |
+| #107 | PR_26174_ALFA_013-game-hub-game-row-child-rows | open draft | pr/26174-ALFA-012-game-hub-parent-child-final-validation | pr/26174-ALFA-013-game-hub-game-row-child-rows |
+| #108 | PR_26174_ALFA_014-game-hub-parent-columns-center | open draft | pr/26174-ALFA-013-game-hub-game-row-child-rows | pr/26174-ALFA-014-game-hub-parent-columns-center |
+| #109 | PR_26174_ALFA_015-game-hub-actions-and-setup-cleanup | open draft | pr/26174-ALFA-014-game-hub-parent-columns-center | pr/26174-ALFA-015-game-hub-actions-and-setup-cleanup |
+| #110 | PR_26174_ALFA_016-game-hub-row-edit-add-selected-state | open draft | pr/26174-ALFA-015-game-hub-actions-and-setup-cleanup | pr/26174-ALFA-016-game-hub-row-edit-add-selected-state |
+| #111 | PR_26174_ALFA_017-game-hub-guest-save-and-crew-cleanup | open draft | pr/26174-ALFA-016-game-hub-row-edit-add-selected-state | pr/26174-ALFA-017-game-hub-guest-save-and-crew-cleanup |
+| #112 | PR_26174_ALFA_018-game-selection-button-state | open draft | pr/26174-ALFA-017-game-hub-guest-save-and-crew-cleanup | pr/26174-ALFA-018-game-selection-button-state |
+| #113 | PR_26174_ALFA_019-game-hub-selected-button-and-crew-label | open draft | pr/26174-ALFA-018-game-selection-button-state | pr/26174-ALFA-019-game-hub-selected-button-and-crew-label |
+| #114 | PR_26174_ALFA_020-game-hub-idea-board-cleanup | open draft | pr/26174-ALFA-019-game-hub-selected-button-and-crew-label | pr/26174-ALFA-020-game-hub-idea-board-cleanup |
+| #115 | PR_26174_ALFA_021-idea-board-status-filter-table-polish | open draft | pr/26174-ALFA-020-game-hub-idea-board-cleanup | pr/26174-ALFA-021-idea-board-status-filter-table-polish |
+| #116 | PR_26174_ALFA_022-idea-board-status-dropdown-fix | open draft | pr/26174-ALFA-021-idea-board-status-filter-table-polish | pr/26174-ALFA-022-idea-board-status-dropdown-fix |
+
+## Report Verification
+
+- PASS: PR_000 through PR_022 each have a local PR summary report.
+- PASS: PR_000 through PR_022 each have a local branch validation report.
+- PASS: PR_000 through PR_022 each have a local requirement checklist report.
+- PASS: PR_000 through PR_022 each have a local validation lane report.
+- PASS: PR_000 through PR_022 each have a local manual validation notes report.
+- PASS: Shared `docs_build/dev/reports/codex_changed_files.txt` exists at the current stack tip.
+- PASS: Shared `docs_build/dev/reports/codex_review.diff` exists at the current stack tip.
+
+## ZIP Artifact Verification
+
+- PASS: Each PR body from PR_000 through PR_022 documents the expected `tmp/<PR_NAME>_delta.zip` artifact path.
+- LOCAL VERIFY GAP: No prior PR ZIP artifacts were present under local `tmp/` during closeout verification.
+- PASS: This EOD closeout produces `tmp/PR_26174_ALFA_EOD-workstream-closeout_delta.zip`.
+
+## Owner Merge Review Notes
+
+- PR_000 is already merged.
+- PR_001 through PR_022 remain open draft PRs in a sequential stack.
+- The stack is ready for owner review with the local report set present.
+- Owner should not rely on this checkout for prior ignored ZIP artifacts unless those artifacts are regenerated or retrieved from the original run environment.
