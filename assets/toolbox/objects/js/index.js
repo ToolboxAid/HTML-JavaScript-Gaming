@@ -9,7 +9,7 @@ import {
   getObjectModelType,
   validateObjectDefinition,
 } from "../../../../src/engine/object-model/index.js";
-import { createAssetToolApiRepository } from "../../../../toolbox/assets/assets-api-client.js";
+import { createAssetToolApiRepository } from "../../../js/shared/assets-api-client.js";
 
 const constants = readServerToolConstants("objects");
 

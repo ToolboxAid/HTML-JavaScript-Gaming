@@ -2,7 +2,7 @@ import {
   ASSET_CATALOG_TYPES,
   ASSET_USAGE_OPTIONS,
   createAssetToolApiRepository
-} from "../../../../toolbox/assets/assets-api-client.js";
+} from "../../../js/shared/assets-api-client.js";
 import { getSessionCurrent } from "../../../../src/api/session-api-client.js";
 
 const repository = createAssetToolApiRepository();

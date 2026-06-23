@@ -109,7 +109,7 @@ test("Active browser product-data entrypoints use API or service clients", () =>
   assert.doesNotMatch(registryClient, /tools:\s*\[\]/);
 
   const productApiClients = [
-    "toolbox/assets/assets-api-client.js",
+    "assets/js/shared/assets-api-client.js",
     "assets/toolbox/colors/js/index.js",
     "toolbox/controls/controls-api-client.js",
     "assets/toolbox/game-configuration/js/index.js",
