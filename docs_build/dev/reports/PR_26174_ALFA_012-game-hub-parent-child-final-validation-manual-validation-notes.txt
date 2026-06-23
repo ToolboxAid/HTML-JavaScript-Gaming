@@ -1,0 +1,7 @@
+Manual Validation Notes: PASS
+
+- Reviewed the expanded Open Games row behavior through targeted Playwright assertions.
+- Confirmed Source Idea and Readiness Output use distinct child-table selectors and captions.
+- Confirmed Source Idea child context exposes no form controls, buttons, or editable regions.
+- Confirmed readiness checklist rows preserve the incoming service-contract order.
+- Confirmed creator-safe empty and unavailable states still pass targeted validation.

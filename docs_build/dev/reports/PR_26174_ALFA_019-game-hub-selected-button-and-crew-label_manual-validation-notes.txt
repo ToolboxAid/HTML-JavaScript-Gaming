@@ -1,0 +1,10 @@
+Manual validation notes: PASS
+
+- Reviewed `docs_build/dev/ProjectInstructions/addendums/table_first_ui.md`.
+- Confirmed selected game button and Save button share `btn btn--compact primary`.
+- Confirmed non-selected game buttons and Edit buttons are not primary.
+- Confirmed no row-level active attributes are added.
+- Confirmed no cell active markers are added.
+- Confirmed Theme V2 no longer contains the custom selected game table selector.
+- Confirmed the Game Crew accordion appears as `Game Crew`.
+- Confirmed Source Idea and Readiness Output child rows still render under the selected game.

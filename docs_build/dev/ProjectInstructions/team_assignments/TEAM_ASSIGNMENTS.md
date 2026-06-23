@@ -57,6 +57,14 @@ Active assignment: none.
 
 Active branch: none.
 
+## Team Delta
+
+Status: Available
+
+Active assignment: none.
+
+Active branch: none.
+
 ## Team OWNER
 
 Status: Available

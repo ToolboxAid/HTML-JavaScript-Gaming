@@ -1,0 +1,9 @@
+Requirement Checklist: PASS
+
+PASS - Uses creator-editable numeric counts, not checkboxes.
+PASS - Supports Hero [1], Enemy [4], Boss [1], Background [3], Music [5].
+PASS - Data flows Web UI -> API/service contract -> database through updateRecommendedTarget.
+PASS - Server/API owns authoritative target item keys.
+PASS - No browser-owned product data was added.
+PASS - No silent fallbacks were added; missing active Journey buckets return an explicit repository error.
+PASS - Final completion percentage math was not changed.

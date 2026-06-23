@@ -1,0 +1,9 @@
+Manual validation notes: PASS
+
+- Reviewed `docs_build/dev/ProjectInstructions/addendums/table_first_ui.md` and applied the game-row parent table pattern.
+- Confirmed the Game Hub center panel no longer includes the removed instructional copy.
+- Confirmed parent table headers display only Game, Purpose, Status, and Actions.
+- Confirmed parent rows no longer display Owner while keeping owner fields available to existing repository data.
+- Confirmed Source Idea and Readiness Output remain expanded child rows/tables under each game parent row.
+- Confirmed guest Add/Edit Save controls redirect to `account/sign-in.html`.
+- Confirmed Add, Edit, Save, and Cancel actions use compact button sizing consistent with game buttons.

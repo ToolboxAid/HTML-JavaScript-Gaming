@@ -1,0 +1,6 @@
+Branch Validation: PASS
+
+PASS - Current branch: pr/26174-ALFA-006-game-hub-empty-and-error-states.
+PASS - Stack base: pr/26174-ALFA-005-idea-project-validation-polish.
+PASS - Changes are scoped to Game Hub empty/error UI, targeted tests, and required reports.
+PASS - No merge to main performed.

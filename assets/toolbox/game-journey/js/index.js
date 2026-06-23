@@ -1161,7 +1161,7 @@ function renderRecommendedTargets() {
   table.setAttribute("aria-label", "Game Journey recommended planning targets");
   const head = createElement("thead");
   const headRow = createElement("tr");
-  ["Target", "Section", "Suggested"].forEach((heading) => {
+  ["Target", "Section", "Count"].forEach((heading) => {
     const cell = createElement("th", { text: heading });
     cell.scope = "col";
     headRow.append(cell);
@@ -1169,16 +1169,22 @@ function renderRecommendedTargets() {
   head.append(headRow);
   const body = createElement("tbody");
   targets.forEach((target) => {
+    const targetCount = recommendedTargetValues.get(target.key) ?? target.suggestedCount;
     const row = createElement("tr");
     row.dataset.journeyRecommendedTarget = target.key;
-    const labelCell = createElement("td", { text: target.label });
+    const labelCell = createElement("td");
+    const label = createElement("span", { text: target.label });
+    const countPreview = createElement("span", { text: ` [${targetCount}]` });
+    countPreview.dataset.journeyTargetCountPreview = target.key;
+    labelCell.append(label, countPreview);
     const sectionCell = createElement("td", { text: target.sectionName });
     const input = document.createElement("input");
     input.type = "number";
+    input.inputMode = "numeric";
     input.min = "0";
     input.step = "1";
-    input.value = String(recommendedTargetValues.get(target.key) ?? target.suggestedCount);
-    input.setAttribute("aria-label", `${target.label} suggested target`);
+    input.value = String(targetCount);
+    input.setAttribute("aria-label", `${target.label} count`);
     input.dataset.journeyTargetInput = target.key;
     const inputCell = createElement("td");
     inputCell.append(input);
@@ -1773,6 +1779,10 @@ recommendedTargets?.addEventListener("input", (event) => {
   const savedValue = normalizeTargetCount(updated.suggestedCount);
   recommendedTargetValues.set(target.key, savedValue);
   input.value = String(savedValue);
+  const preview = recommendedTargets.querySelector(`[data-journey-target-count-preview='${target.key}']`);
+  if (preview) {
+    preview.textContent = ` [${savedValue}]`;
+  }
   if (recommendedTargetStatus) {
     recommendedTargetStatus.textContent = `Saved ${target.label} target at ${savedValue}.`;
   }

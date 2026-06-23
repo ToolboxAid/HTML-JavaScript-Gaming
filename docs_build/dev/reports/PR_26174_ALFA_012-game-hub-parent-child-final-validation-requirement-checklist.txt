@@ -1,0 +1,10 @@
+Requirement Checklist: PASS
+
+PASS - Open Games parent rows are validated.
+PASS - Expanded game shows Source Idea child table.
+PASS - Expanded game shows Readiness Output child table.
+PASS - Source Idea is read-only with no edit/delete controls.
+PASS - Readiness Output is separate from Source Idea.
+PASS - Empty and unavailable states still pass targeted validation.
+PASS - Added targeted Playwright coverage only.
+PASS - No unrelated cleanup was introduced.

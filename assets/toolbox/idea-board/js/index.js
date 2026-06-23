@@ -1,9 +1,12 @@
 import { createServerRepositoryClient } from "../../../../src/api/server-api-client.js";
+import { getSessionCurrent } from "../../../../src/api/session-api-client.js";
 
-const statusOptions = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project", "Archived"]);
+const editableStatusOptions = Object.freeze(["New", "Exploring", "Refining", "Ready"]);
+const filterStatusOptions = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project", "Archived"]);
 const defaultVisibleStatuses = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project"]);
 const userId = "user-1";
 const gameHubRoute = "toolbox/game-hub/index.html";
+const signInRoute = "account/sign-in.html";
 let gameHubRepository = null;
 
 const ideaTable = [
@@ -121,7 +124,7 @@ function visibleIdeas() {
 }
 
 function previousStatusForRestore(record) {
-  return statusOptions.includes(record.previousStatus) && record.previousStatus !== "Archived"
+  return filterStatusOptions.includes(record.previousStatus) && record.previousStatus !== "Archived"
     ? record.previousStatus
     : "Refining";
 }
@@ -166,7 +169,7 @@ function renderStatusFilter(root) {
   const options = root.querySelector("[data-idea-board-status-options]");
   if (!options) return;
   options.replaceChildren();
-  for (const status of statusOptions) {
+  for (const status of filterStatusOptions) {
     const label = document.createElement("label");
     label.className = "idea-board-show-filter__option";
     const input = document.createElement("input");
@@ -193,7 +196,7 @@ function statusSelect(value) {
   const select = document.createElement("select");
   select.setAttribute("aria-label", "Idea status");
   select.dataset.ideaBoardIdeaStatusInput = "true";
-  for (const optionValue of statusOptions) {
+  for (const optionValue of editableStatusOptions) {
     const option = document.createElement("option");
     option.value = optionValue;
     option.textContent = optionValue;
@@ -229,7 +232,6 @@ function renderIdeaInputRow(tbody, record = null) {
   const statusCell = document.createElement("td");
   statusCell.append(statusSelect(record?.status || "New"));
   row.append(statusCell);
-  row.append(cell(record?.updated || today()));
   row.append(cell(record ? noteCountLabel(record.ideaId) : "0 Notes"));
 
   const actions = document.createElement("td");
@@ -272,7 +274,6 @@ function renderIdeaRow(tbody, record) {
   row.append(idea);
   row.append(cell(record.pitch));
   row.append(cell(record.status));
-  row.append(cell(record.updated));
 
   const notes = document.createElement("td");
   const notesCount = document.createElement("span");
@@ -351,7 +352,7 @@ function renderExpandedNotesRow(tbody, record) {
   row.dataset.ideaBoardExpandedRow = record.ideaId;
 
   const content = document.createElement("td");
-  content.colSpan = 6;
+  content.colSpan = 5;
 
   const childSurface = document.createElement("div");
   childSurface.className = "idea-board-notes-child-surface";
@@ -398,7 +399,7 @@ function renderAddIdeaRow(tbody) {
   const row = document.createElement("tr");
   row.dataset.ideaBoardAddIdeaRow = "true";
   const actions = document.createElement("td");
-  actions.colSpan = 6;
+  actions.colSpan = 5;
   const addIdea = actionButton("Add Idea", "add", "ideaBoardIdeaAction", "primary");
   addIdea.dataset.ideaBoardAddIdea = "true";
   actions.append(addIdea);
@@ -561,6 +562,28 @@ function gameHubUrl(record) {
   return `${gameHubRoute}${suffix}`;
 }
 
+function signInUrl() {
+  return new URL(signInRoute, document.baseURI || window.location.href).href;
+}
+
+function currentSessionState() {
+  try {
+    const session = getSessionCurrent();
+    return {
+      apiAvailable: true,
+      authenticated: Boolean(session?.authenticated && session.userKey),
+      session,
+    };
+  } catch (error) {
+    console.warn("Idea Board could not verify the current session.", error instanceof Error ? error.message : String(error || ""));
+    return {
+      apiAvailable: false,
+      authenticated: false,
+      session: null,
+    };
+  }
+}
+
 function createProject(root, ideaId) {
   const record = ideaRecord(ideaId);
   if (!record) {
@@ -569,6 +592,16 @@ function createProject(root, ideaId) {
   }
   if (record.status !== "Ready") {
     updateStatus(root, "Set this idea to Ready before creating a project.");
+    return;
+  }
+  const sessionState = currentSessionState();
+  if (!sessionState.apiAvailable) {
+    updateStatus(root, "Sign-in status could not be verified. Try again shortly.");
+    return;
+  }
+  if (!sessionState.authenticated) {
+    updateStatus(root, "Sign in to create a Game Hub project.");
+    window.location.href = signInUrl();
     return;
   }
   const repository = gameHubProjectRepository();
@@ -723,7 +756,7 @@ function handleNoteAction(root, actionControl) {
 
 function handleFilterAction(root, actionControl) {
   if (actionControl.matches("[data-idea-board-filter-select-all]")) {
-    state.visibleStatuses = new Set(statusOptions);
+    state.visibleStatuses = new Set(filterStatusOptions);
     updateStatus(root, "Showing all statuses.");
   } else if (actionControl.matches("[data-idea-board-filter-clear-all]")) {
     state.visibleStatuses = new Set();

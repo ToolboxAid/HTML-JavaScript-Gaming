@@ -1,0 +1,7 @@
+Manual Validation Notes
+
+PASS - Confirmed Create Project remains hidden for existing non-Ready rows.
+PASS - Confirmed Ready conversion sends a Game Hub repository createGame request through Local API.
+PASS - Confirmed createGame request body excludes id, key, projectKey, or other browser-owned authoritative project key fields.
+PASS - Confirmed converted idea has Project status, Open in Game Hub / Archive actions only, and no edit/delete/note edit controls.
+PASS - Confirmed guest conversion redirects to account/sign-in.html and sends no createGame request.

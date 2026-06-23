@@ -4,17 +4,17 @@
 
 ### Idea
 
-0% Complete — Dream, brainstorm, and explore early game concepts
+33% Complete — Dream, brainstorm, and explore early game concepts
 
-- [ ] Alfa - Idea Board
+- [x] Alfa - Idea Board
 - [ ] Alfa - Game Concept Notes
 - [ ] Alfa - Creator Learning
 
 ### Design
 
-0% Complete — Shape the game's story, structure, and systems
+17% Complete — Shape the game's story, structure, and systems
 
-- [ ] Alfa - Game Hub
+- [x] Alfa - Game Hub
 - [ ] Alfa - Game Design
 - [ ] Alfa - Game Configuration
 - [ ] Alfa - Game Crew
@@ -159,3 +159,45 @@
   - Open PR, draft PR, local branch, and remote branch review requirements verified.
   - Recommendation-only hygiene audit process verified.
   - Branch deletion and PR closure remain prohibited without explicit owner approval.
+
+## Four-Team Backlog Alignment
+
+### Team Alfa
+
+- [ ] Alfa - Game Hub polish
+- [ ] Alfa - Game Journey completion tracking
+- [ ] Alfa - Journey progress calculations
+- [ ] Alfa - Creator onboarding flow
+- [ ] Alfa - Game Hub image integration
+
+### Team Bravo
+
+- [ ] Bravo - Audio tool improvements
+- [ ] Bravo - Audio Effects tool
+- [ ] Bravo - Messages tool
+- [ ] Bravo - Emotion Profiles
+- [ ] Bravo - TTS Profiles
+- [ ] Bravo - Asset Browser enhancements
+- [ ] Bravo - Vector Art improvements
+- [ ] Bravo - MIDI Studio improvements
+
+### Team Charlie
+
+- [ ] Charlie - Guardrail hardening
+- [ ] Charlie - Browser validation hardening
+- [ ] Charlie - Remaining test relocation audit
+- [ ] Charlie - Compliance baseline freeze
+- [ ] Charlie - System Health improvements
+- [ ] Charlie - Infrastructure dashboard
+- [ ] Charlie - Environment validation
+
+### Team Delta
+
+- [ ] Delta - Shared JS consolidation
+- [ ] Delta - API client consolidation
+- [ ] Delta - Runtime performance audit
+- [ ] Delta - Engine test coverage improvements
+- [ ] Delta - Event system audit
+- [ ] Delta - Controls runtime framework audit
+- [ ] Delta - Object runtime framework audit
+- [ ] Delta - World runtime framework audit

@@ -1,0 +1,10 @@
+Requirement Checklist: PASS
+
+PASS - Parent table is Open Games.
+PASS - Each parent row represents one game.
+PASS - Game rows can expand and collapse.
+PASS - Used the existing parent-row plus expanded child-row table pattern.
+PASS - Preserved existing Local API/service contract.
+PASS - No browser-owned project data was added.
+PASS - No page-local project arrays were added.
+PASS - Empty and unavailable states remain explicit; no silent fallbacks were added.

@@ -101,6 +101,23 @@ const GENERATED_ULID_SEQUENCE = Object.freeze({
 const RECOMMENDED_TARGET_LINKED_RECORD_TYPE = "recommended-target";
 const RECOMMENDED_TARGET_NOTE_KEY = GAME_JOURNEY_KEYS.notes.designPass;
 const SOURCE_IDEA_LINKED_RECORD_TYPE = "source-idea-note";
+const JOURNEY_BOOTSTRAP_LINKED_RECORD_TYPE = "journey-bootstrap-bucket";
+
+export const GAME_JOURNEY_BOOTSTRAP_BUCKETS = Object.freeze([
+  "Idea",
+  "Design",
+  "Graphics",
+  "Audio",
+  "Objects",
+  "Worlds",
+  "Interface",
+  "Controls",
+  "Rules",
+  "Progression",
+  "Play Test",
+  "Publish",
+  "Share",
+]);
 
 export const GAME_JOURNEY_STATUSES = [
   {
@@ -248,28 +265,34 @@ export const GAME_JOURNEY_TOOL_OWNERSHIP_AREAS = Object.freeze([
 
 export const GAME_JOURNEY_RECOMMENDED_TARGETS = Object.freeze([
   Object.freeze({
-    key: "heroes",
-    label: "Heroes",
+    key: "hero",
+    label: "Hero",
     sectionName: "Objects",
     suggestedCount: 1,
   }),
   Object.freeze({
-    key: "enemies",
-    label: "Enemies",
+    key: "enemy",
+    label: "Enemy",
     sectionName: "Objects",
+    suggestedCount: 4,
+  }),
+  Object.freeze({
+    key: "boss",
+    label: "Boss",
+    sectionName: "Objects",
+    suggestedCount: 1,
+  }),
+  Object.freeze({
+    key: "background",
+    label: "Background",
+    sectionName: "Graphics",
     suggestedCount: 3,
   }),
   Object.freeze({
-    key: "levels",
-    label: "Levels",
-    sectionName: "Worlds",
-    suggestedCount: 5,
-  }),
-  Object.freeze({
-    key: "audio",
-    label: "Audio",
+    key: "music",
+    label: "Music",
     sectionName: "Audio",
-    suggestedCount: 6,
+    suggestedCount: 5,
   }),
 ]);
 
@@ -708,6 +731,106 @@ export function createGameJourneyMockRepository(options = {}) {
     return idea ? `Source Idea: ${idea}` : "Source Idea";
   }
 
+  function noteTypeKeyForBootstrapBucket(bucketName) {
+    const slug = slugSegment(bucketName, "task");
+    const matchingType = tables.game_journey_note_types.find((type) => type.typeSlug === slug);
+    return matchingType?.key || GAME_JOURNEY_KEYS.noteTypes.task;
+  }
+
+  function ensureJourneyBootstrapBuckets(activeGame) {
+    if (!activeGame) {
+      return {
+        buckets: [],
+        createdItems: 0,
+        createdNotes: 0,
+      };
+    }
+
+    const ownerKey = safeCurrentUserKey();
+    const timestampValue = new Date().toISOString();
+    let createdNotes = 0;
+    let createdItems = 0;
+    const bucketSummaries = [];
+    GAME_JOURNEY_BOOTSTRAP_BUCKETS.forEach((bucketName, index) => {
+      const bucketOrder = index + 1;
+      const bucketSlug = slugSegment(bucketName, "bucket");
+      const noteSlug = `journey-bucket-${slugSegment(activeGame.id || activeGame.key)}-${String(bucketOrder).padStart(2, "0")}-${bucketSlug}`;
+      let note = tables.game_journey_notes.find(
+        (candidate) => candidate.gameKey === activeGame.key && candidate.slug === noteSlug,
+      );
+
+      if (!note) {
+        note = {
+          key: makeUlid(nextNoteNumber),
+          slug: noteSlug,
+          gameKey: activeGame.key,
+          ownerKey,
+          name: bucketName,
+          typeKey: noteTypeKeyForBootstrapBucket(bucketName),
+          bucketOrder,
+          createdAt: timestampValue,
+          updatedAt: timestampValue,
+          createdBy: ownerKey,
+          updatedBy: ownerKey,
+        };
+        nextNoteNumber += 1;
+        tables.game_journey_notes.push(note);
+        createdNotes += 1;
+      }
+
+      const linkedRecordId = `${slugSegment(activeGame.id || activeGame.key)}:${String(bucketOrder).padStart(2, "0")}:${bucketSlug}`;
+      let item = getItemsForNote(note.key).find(
+        (candidate) =>
+          candidate.linkedRecordType === JOURNEY_BOOTSTRAP_LINKED_RECORD_TYPE &&
+          candidate.linkedRecordId === linkedRecordId,
+      );
+
+      if (!item) {
+        item = {
+          key: makeUlid(nextItemNumber),
+          gameKey: activeGame.key,
+          noteKey: note.key,
+          status: "not-started",
+          title: `${bucketName} progress placeholder`,
+          userDetails: "",
+          createdBy: ownerKey,
+          updatedBy: ownerKey,
+          templateKey: "",
+          linkedRecordType: JOURNEY_BOOTSTRAP_LINKED_RECORD_TYPE,
+          linkedRecordId,
+          indent: 0,
+          order: 1,
+          createdAt: timestampValue,
+          updatedAt: timestampValue,
+        };
+        nextItemNumber += 1;
+        tables.game_journey_items.push(item);
+        createdItems += 1;
+      }
+
+      bucketSummaries.push({
+        bucketName,
+        itemKey: item.key,
+        noteKey: note.key,
+        order: bucketOrder,
+      });
+    });
+
+    if (createdNotes || createdItems) {
+      const firstBucket = bucketSummaries[0];
+      selectedNoteKey = firstBucket?.noteKey || selectedNoteKey;
+      selectedItemKey = firstBucket?.itemKey || selectedItemKey;
+      addActivity(activeGame.key, firstBucket?.noteKey || "", `Created ${GAME_JOURNEY_BOOTSTRAP_BUCKETS.length} Game Journey starter buckets.`, ownerKey);
+      persistTables();
+    }
+
+    return {
+      buckets: bucketSummaries,
+      createdItems,
+      createdNotes,
+    };
+  }
+
   function ensureSourceIdeaJourneyItems(activeGame) {
     const sourceIdea = activeGame?.sourceIdea && typeof activeGame.sourceIdea === "object"
       ? activeGame.sourceIdea
@@ -889,16 +1012,17 @@ export function createGameJourneyMockRepository(options = {}) {
     }
   }
 
-  function findRecommendedTargetItem(targetKey) {
+  function findRecommendedTargetItem(targetKey, gameKey = requireActiveGame()?.key) {
     return tables.game_journey_items.find((item) =>
-      item.gameKey === GAME_JOURNEY_KEYS.game &&
+      item.gameKey === gameKey &&
       item.linkedRecordType === RECOMMENDED_TARGET_LINKED_RECORD_TYPE &&
       item.linkedRecordId === targetKey,
     );
   }
 
   function hydrateRecommendedTarget(target) {
-    const item = findRecommendedTargetItem(target.key);
+    const activeGame = requireActiveGame();
+    const item = activeGame ? findRecommendedTargetItem(target.key, activeGame.key) : null;
     return {
       ...clone(target),
       suggestedCount: readTargetCount(item, target.suggestedCount),
@@ -913,6 +1037,16 @@ export function createGameJourneyMockRepository(options = {}) {
     return GAME_JOURNEY_RECOMMENDED_TARGETS.map(hydrateRecommendedTarget);
   }
 
+  function findRecommendedTargetNoteKey(target, activeGame) {
+    const sectionNote = tables.game_journey_notes.find(
+      (note) => note.gameKey === activeGame.key && note.name === target.sectionName,
+    );
+    if (sectionNote) {
+      return sectionNote.key;
+    }
+    return activeGame.key === GAME_JOURNEY_KEYS.game ? RECOMMENDED_TARGET_NOTE_KEY : "";
+  }
+
   function updateRecommendedTarget(targetKey, suggestedCount) {
     const activeGame = requireActiveGame();
     const target = GAME_JOURNEY_RECOMMENDED_TARGETS.find((item) => item.key === targetKey);
@@ -920,15 +1054,23 @@ export function createGameJourneyMockRepository(options = {}) {
       return null;
     }
 
+    const noteKey = findRecommendedTargetNoteKey(target, activeGame);
+    if (!noteKey) {
+      return {
+        error: true,
+        message: `Game Journey ${target.sectionName} bucket is not available for ${activeGame.name}.`,
+      };
+    }
+
     const normalizedCount = normalizeTargetCount(suggestedCount);
     const timestampValue = new Date().toISOString();
     const userKey = safeCurrentUserKey();
-    let item = findRecommendedTargetItem(target.key);
+    let item = findRecommendedTargetItem(target.key, activeGame.key);
     if (!item) {
       item = {
         key: makeUlid(nextItemNumber),
         gameKey: activeGame.key,
-        noteKey: RECOMMENDED_TARGET_NOTE_KEY,
+        noteKey,
         status: "not-started",
         title: `Recommended target: ${target.label}`,
         userDetails: "",
@@ -947,9 +1089,10 @@ export function createGameJourneyMockRepository(options = {}) {
     }
 
     item.userDetails = JSON.stringify({ suggestedCount: normalizedCount });
+    item.noteKey = noteKey;
     item.updatedAt = timestampValue;
     item.updatedBy = userKey;
-    addActivity(activeGame.key, RECOMMENDED_TARGET_NOTE_KEY, `Updated ${target.label} recommended target to ${normalizedCount}`, userKey);
+    addActivity(activeGame.key, noteKey, `Updated ${target.label} recommended target to ${normalizedCount}`, userKey);
     persistTables();
     return hydrateRecommendedTarget(target);
   }
@@ -1039,7 +1182,11 @@ export function createGameJourneyMockRepository(options = {}) {
       .filter(currentUserCanSeeNote)
       .filter((note) => noteMatchesFilter(note, filterId))
       .map((note) => hydrateNote(note, filterId))
-      .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt));
+      .sort((left, right) => {
+        const leftOrder = Number.isFinite(Number(left.bucketOrder)) ? Number(left.bucketOrder) : Number.POSITIVE_INFINITY;
+        const rightOrder = Number.isFinite(Number(right.bucketOrder)) ? Number(right.bucketOrder) : Number.POSITIVE_INFINITY;
+        return leftOrder - rightOrder || right.updatedAt.localeCompare(left.updatedAt);
+      });
   }
 
   function addNote({ name, typeKey } = {}) {
@@ -1500,9 +1647,27 @@ export function createGameJourneyMockRepository(options = {}) {
       gameId === GAME_JOURNEY_KEYS.game ? GAME_JOURNEY_ROUTE_GAME_ALIAS : gameId;
     const openedGame = gameWorkspaceRepository.openGame(workspaceGameId);
     if (openedGame) {
-      ensureSourceIdeaJourneyItems(getActiveGame());
+      bootstrapGameJourneyForGame(getActiveGame());
     }
     return openedGame;
+  }
+
+  function bootstrapGameJourneyForGame(game = getActiveGame()) {
+    const activeGame = game?.key ? game : game ? { ...game, key: journeyGameKey(game) } : getActiveGame();
+    if (!activeGame) {
+      return {
+        buckets: [],
+        createdItems: 0,
+        createdNotes: 0,
+        sourceIdeaItems: [],
+      };
+    }
+    const bucketResult = ensureJourneyBootstrapBuckets(activeGame);
+    const sourceIdeaItems = ensureSourceIdeaJourneyItems(activeGame);
+    return {
+      ...bucketResult,
+      sourceIdeaItems,
+    };
   }
 
   return {
@@ -1519,6 +1684,7 @@ export function createGameJourneyMockRepository(options = {}) {
     getSystemUser: () => getMockDbSystemUser(),
     getActiveGame,
     openGame,
+    bootstrapGameJourneyForGame,
     clearActiveGame: () => gameWorkspaceRepository.clearTestData(),
     listNoteTypes: () => clone(tables.game_journey_note_types),
     addNoteType,

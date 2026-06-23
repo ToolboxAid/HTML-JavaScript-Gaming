@@ -1,0 +1,12 @@
+Validation lane: PASS
+
+Commands:
+- `git diff --check -- toolbox/game-hub/index.html toolbox/game-hub/game-hub.js tests/playwright/tools/GameHubMockRepository.spec.mjs`
+  - PASS
+- `node --check toolbox/game-hub/game-hub.js`
+  - PASS
+- `npx playwright test tests/playwright/tools/GameHubMockRepository.spec.mjs -g "Game Hub"`
+  - PASS, 11 passed
+
+Notes:
+- A broader unscoped run of `npx playwright test tests/playwright/tools/GameHubMockRepository.spec.mjs` was attempted before the final targeted lane. It reported 12 passed and 2 failed. One failure was the ALFA_017 guest redirect assertion and was fixed. The remaining failure was outside this PR's surface: `Toolbox member-role filters focus tools without exposing admin-only controls` received existing `500 /api/game-journey/completion-metrics` responses.
