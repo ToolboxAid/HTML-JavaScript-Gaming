@@ -18,8 +18,6 @@ export const APPROVED_LEGACY_JS_PATHS = Object.freeze(new Set([
   "toolbox/messages/message-tts-service-registry.js",
   "toolbox/messages/messages-api-client.js",
   "toolbox/messages/messages.js",
-  "toolbox/objects/objects-api-client.js",
-  "toolbox/objects/objects.js",
   "toolbox/tool-registry-api-client.js",
   "toolbox/toolRegistry.js",
   "toolbox/tools-page-accordions.js",

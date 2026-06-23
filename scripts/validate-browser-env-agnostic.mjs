@@ -67,7 +67,7 @@ const productApiClientFiles = Object.freeze([
   "assets/toolbox/game-design/js/index.js",
   "toolbox/game-journey/game-journey-api-client.js",
   "toolbox/game-hub/game-hub-api-client.js",
-  "toolbox/objects/objects-api-client.js",
+  "assets/toolbox/objects/js/index.js",
   "assets/toolbox/tags/js/index.js",
 ]);
 const userFacingUiRoots = Object.freeze(["account", "toolbox"]);

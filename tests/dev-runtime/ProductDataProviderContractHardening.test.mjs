@@ -116,7 +116,7 @@ test("Active browser product-data entrypoints use API or service clients", () =>
     "assets/toolbox/game-design/js/index.js",
     "toolbox/game-journey/game-journey-api-client.js",
     "toolbox/game-hub/game-hub-api-client.js",
-    "toolbox/objects/objects-api-client.js",
+    "assets/toolbox/objects/js/index.js",
     "assets/toolbox/tags/js/index.js",
   ];
   productApiClients.forEach((filePath) => {
