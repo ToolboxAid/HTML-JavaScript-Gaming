@@ -4,17 +4,17 @@
 
 ### Idea
 
-0% Complete — Dream, brainstorm, and explore early game concepts
+33% Complete — Dream, brainstorm, and explore early game concepts
 
-- [ ] Alfa - Idea Board
+- [x] Alfa - Idea Board
 - [ ] Alfa - Game Concept Notes
 - [ ] Alfa - Creator Learning
 
 ### Design
 
-0% Complete — Shape the game's story, structure, and systems
+17% Complete — Shape the game's story, structure, and systems
 
-- [ ] Alfa - Game Hub
+- [x] Alfa - Game Hub
 - [ ] Alfa - Game Design
 - [ ] Alfa - Game Configuration
 - [ ] Alfa - Game Crew
