@@ -1,31 +1,10 @@
-diff --git a/toolbox/controls/controls.js b/assets/toolbox/controls/js/index.js
-similarity index 99%
-rename from toolbox/controls/controls.js
-rename to assets/toolbox/controls/js/index.js
-index c3355a91e..e98f8cad6 100644
---- a/toolbox/controls/controls.js
-+++ b/assets/toolbox/controls/js/index.js
-@@ -5,11 +5,11 @@ import {
-   GAME_CONTROL_NORMALIZED_INPUTS,
-   NORMALIZED_USAGE_LABELS,
-   createControlsToolApiRepository,
--} from "./controls-api-client.js";
-+} from "../../../../toolbox/controls/controls-api-client.js";
- import {
-   normalizeNormalizedInput,
-   normalizedInputOptions,
--} from "../../src/engine/input/NormalizedInputRegistry.js";
-+} from "../../../../src/engine/input/NormalizedInputRegistry.js";
-
- const GAME_CONTROL_NORMALIZED_INPUT_IDS = new Set(GAME_CONTROL_NORMALIZED_INPUTS);
-
-diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_029-controls-canonical-js-migration.md b/docs_build/dev/reports/PR_26172_CHARLIE_029-controls-canonical-js-migration.md
+diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_030-assets-tool-canonical-js-migration-audit.md b/docs_build/dev/reports/PR_26172_CHARLIE_030-assets-tool-canonical-js-migration-audit.md
 new file mode 100644
-index 000000000..365139d56
+index 000000000..49a88be96
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_CHARLIE_029-controls-canonical-js-migration.md
-@@ -0,0 +1,75 @@
-+# PR_26172_CHARLIE_029-controls-canonical-js-migration
++++ b/docs_build/dev/reports/PR_26172_CHARLIE_030-assets-tool-canonical-js-migration-audit.md
+@@ -0,0 +1,135 @@
++# PR_26172_CHARLIE_030-assets-tool-canonical-js-migration-audit
 +
 +Status: PASS.
 +
@@ -33,144 +12,130 @@ index 000000000..365139d56
 +
 +## Purpose
 +
-+Migrate Controls active tool JavaScript into canonical structure.
++Perform detailed migration audit for Assets / Asset Browser / Vector Art because worker/API/client paths may be higher risk.
 +
-+## Files Changed
++## Files Reviewed
 +
-+- `assets/toolbox/controls/js/index.js`
-+- `toolbox/controls/index.html`
++- `toolbox/assets/assets.js`
++- `toolbox/assets/assets-api-client.js`
++- `toolbox/assets/assets-upload-worker.js`
++- `toolbox/assets/index.html`
++- `assets/toolbox/objects/js/index.js`
++- `tests/playwright/tools/AssetToolMockRepository.spec.mjs`
++- `tests/dev-runtime/ProductDataProviderContractHardening.test.mjs`
++- `scripts/validate-browser-env-agnostic.mjs`
 +- `scripts/validate-canonical-repository-structure.mjs`
-+- `tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs`
-+- `tests/playwright/tools/InputMappingV2Tool.spec.mjs`
-+- `docs_build/dev/reports/PR_26172_CHARLIE_029-controls-canonical-js-migration.md`
-+- `docs_build/dev/reports/codex_review.diff`
-+- `docs_build/dev/reports/codex_changed_files.txt`
 +
-+## Migration Notes
++## Findings
 +
-+- Moved `toolbox/controls/controls.js` to `assets/toolbox/controls/js/index.js`.
-+- Updated `toolbox/controls/index.html` to load the canonical module path.
-+- Updated Controls Playwright source-path checks to fetch `/assets/toolbox/controls/js/index.js`.
-+- Removed `toolbox/controls/controls.js` from canonical guardrail legacy exceptions.
-+- Kept `toolbox/controls/controls-api-client.js` in place.
++### `assets.js`
 +
-+## Retained Exception
++Current path:
++- `toolbox/assets/assets.js`
 +
-+Retained path:
-+- `toolbox/controls/controls-api-client.js`
++Current HTML reference:
++- `toolbox/assets/index.html` loads `toolbox/assets/assets.js`.
 +
-+Reason:
-+- It is shared by `account/user-controls-page.js` and the Controls tool page.
-+- Moving it as part of the entrypoint migration would cross from a single tool entrypoint change into shared account-surface API routing.
++Current imports:
++- `./assets-api-client.js`
++- `../../src/api/session-api-client.js`
 +
-+Removal plan:
-+- Create a later scoped PR to decide whether the shared Controls API client belongs under `assets/js/shared/` or another approved canonical shared API location.
++Worker construction:
++- `const UPLOAD_WORKER_URL = new URL("./assets-upload-worker.js", import.meta.url);`
++- `new Worker(UPLOAD_WORKER_URL, { type: "module" })`
++
++Decision:
++- `assets.js` can safely move to `assets/toolbox/assets/js/index.js` if imports are updated and the worker URL points back to the retained legacy worker path.
++
++Required path changes after entrypoint migration:
++- API client import becomes `../../../../toolbox/assets/assets-api-client.js`.
++- Session API import becomes `../../../../src/api/session-api-client.js`.
++- Worker URL becomes `new URL("../../../../toolbox/assets/assets-upload-worker.js", import.meta.url)`.
++
++### `assets-api-client.js`
++
++Current path:
++- `toolbox/assets/assets-api-client.js`
++
++References:
++- `toolbox/assets/assets.js`
++- `assets/toolbox/objects/js/index.js`
++- `tests/dev-runtime/ProductDataProviderContractHardening.test.mjs`
++- `scripts/validate-browser-env-agnostic.mjs`
++- `scripts/validate-canonical-repository-structure.mjs`
++
++Decision:
++- Do not move in the entrypoint PR.
++- It is not Assets-only because Objects imports it.
++- A later shared API placement decision is required before moving it safely.
++
++### `assets-upload-worker.js`
++
++Current path:
++- `toolbox/assets/assets-upload-worker.js`
++
++References:
++- `toolbox/assets/assets.js`
++- `tests/playwright/tools/AssetToolMockRepository.spec.mjs`
++- `scripts/validate-canonical-repository-structure.mjs`
++
++Decision:
++- Do not move in the entrypoint PR.
++- The active canonical guardrail only allows `assets/toolbox/{tool}/js/index.js`, `assets/js/shared/`, and `assets/theme-v2/js/`.
++- A worker-specific canonical filename/pattern does not exist yet.
++- Moving the worker without updating governance/guardrails would create a new canonical-structure violation or require a new exception pattern.
++
++## Exact Validation Needed
++
++For entrypoint migration:
++- `node --check assets/toolbox/assets/js/index.js`
++- `git diff --check`
++- `npm run validate:canonical-structure`
++- Active stale-reference check for `toolbox/assets/assets.js`
++- Direct Assets page probe to confirm:
++  - canonical module loads
++  - asset type accordions render
++  - no page errors/request failures
++- Worker behavior remains unchanged if worker stays at `toolbox/assets/assets-upload-worker.js`.
++
++For worker/API placement resolution:
++- `npm run validate:browser-env-agnostic`
++- `npm run validate:canonical-structure`
++- targeted Assets worker Playwright validation if worker path changes
++
++## Risk Classification
++
++- `assets.js`: SAFE for entrypoint-only migration with retained worker/API paths.
++- `assets-api-client.js`: NEEDS CARE; shared with Objects.
++- `assets-upload-worker.js`: STOP / owner review; canonical worker placement is undefined.
++
++## Requirement Checklist
++
++- [x] Reviewed Assets page script.
++- [x] Reviewed Assets API client.
++- [x] Reviewed upload worker.
++- [x] Reviewed Assets HTML.
++- [x] Reviewed asset-related tests.
++- [x] Reviewed worker construction path.
++- [x] Reviewed browser validation rules.
++- [x] Reviewed canonical structure guardrail rules.
++- [x] Determined whether entrypoint can safely move.
++- [x] Determined API client should remain pending shared placement.
++- [x] Determined worker should remain pending worker placement governance.
++- [x] No implementation changes.
 +
 +## Validation Lane Report
 +
 +PASS:
-+- `node --check assets/toolbox/controls/js/index.js`
-+- `node --check tests/playwright/tools/InputMappingV2Tool.spec.mjs`
-+- `git diff --check`
-+- `node --test tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs`
-+- `npm run validate:canonical-structure`
-+  - Canonical repository structure guardrail: PASS.
-+  - Blocking violations: 0.
-+  - Approved legacy exceptions: 483.
-+- Active stale-reference check for `toolbox/controls/controls.js`
-+  - Result: no active matches outside reports/tmp/node_modules.
-+- `npx playwright test tests/playwright/tools/InputMappingV2Tool.spec.mjs --grep "Toolbox Controls shows game controls" --workers=1 --reporter=line --timeout=60000`
-+  - Result: PASS.
++- Report exists.
++- Runtime source unchanged in this PR.
++- ZIP artifact required under `tmp/`.
 +
 +Skipped:
-+- Full Playwright was not run per scope.
-+- Samples were not run per scope.
-+
-+## Requirement Checklist
-+
-+- [x] Moved `toolbox/controls/controls.js` into `assets/toolbox/controls/js/index.js`.
-+- [x] Left shared `controls-api-client.js` in place and documented why.
-+- [x] Updated `toolbox/controls/index.html`.
-+- [x] Updated tests and validators referencing old Controls path.
-+- [x] Preserved behavior.
-+- [x] No feature changes.
-+- [x] Did not modify unrelated tools.
-+- [x] Confirmed ZIP artifact under `tmp/`.
++- Playwright not run because this PR is audit-only.
++- Canonical guardrail not rerun because this PR does not change JS/CSS/test structure.
++- Samples not run per scope.
 +
 +## Manual Validation Notes
 +
-+The targeted Playwright harness needed the same dynamic `GameFoundryPublicConfig` pattern used by other tool specs so browser API calls resolve to the active test server instead of the repository `.env` fallback. This is test-only and directly supports validating the migrated Controls module.
-diff --git a/scripts/validate-canonical-repository-structure.mjs b/scripts/validate-canonical-repository-structure.mjs
-index 7177d4beb..c881da797 100644
---- a/scripts/validate-canonical-repository-structure.mjs
-+++ b/scripts/validate-canonical-repository-structure.mjs
-@@ -10,7 +10,6 @@ export const APPROVED_LEGACY_JS_PATHS = Object.freeze(new Set([
-   "toolbox/assets/assets-upload-worker.js",
-   "toolbox/assets/assets.js",
-   "toolbox/controls/controls-api-client.js",
--  "toolbox/controls/controls.js",
-   "toolbox/game-hub/game-hub-api-client.js",
-   "toolbox/game-hub/game-hub.js",
-   "toolbox/game-journey/game-journey-api-client.js",
-diff --git a/tests/playwright/tools/InputMappingV2Tool.spec.mjs b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-index 11022e07b..c1aff52a5 100644
---- a/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-+++ b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-@@ -94,6 +94,13 @@ function collectPageFailures(page) {
- async function openRepoPage(page, path, options = {}) {
-   const server = await startRepoServer();
-   const failures = collectPageFailures(page);
-+  await page.addInitScript(({ apiUrl, siteUrl }) => {
-+    window.GameFoundryPublicConfig = {
-+      apiUrl,
-+      environmentLabel: "Development Environment",
-+      siteUrl,
-+    };
-+  }, { apiUrl: `${server.baseUrl}/api`, siteUrl: server.baseUrl });
-   if (options.sessionUserKey !== undefined) {
-     await fetch(`${server.baseUrl}/api/session/user`, {
-       body: JSON.stringify({ userKey: options.sessionUserKey || "" }),
-@@ -328,7 +335,7 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
-     expect(constants.ENGINE_OWNED_NORMALIZED_INPUTS).toEqual(["action.pause"]);
-     expect(constants.CONTROL_EVENT_OPTIONS.map((option) => option.field)).toEqual(["eventD", "eventH", "eventU", "eventDC"]);
-     expect(constants.NORMALIZED_USAGE_LABELS["action.primary"]).toBe("Primary Action");
--    const controlsSource = await page.evaluate(async () => fetch("/toolbox/controls/controls.js").then((response) => response.text()));
-+    const controlsSource = await page.evaluate(async () => fetch("/assets/toolbox/controls/js/index.js").then((response) => response.text()));
-     expect(controlsSource).not.toMatch(/const\s+(CONTROL_EVENT_OPTIONS|GAME_CONTROL_NORMALIZED_INPUTS|NORMALIZED_USAGE_LABELS|COMMON_DEFAULT_GAME_CONTROLS|ENGINE_OWNED_NORMALIZED_INPUTS)\s*=/);
-
-     const primaryRow = page.locator("[data-input-mapping-row]").filter({ hasText: "Primary Action" }).first();
-@@ -1465,7 +1472,7 @@ test("Controls split keeps shared engine input contracts in the account surface"
-   try {
-     const sources = await page.evaluate(async () => {
-       const [controls, accountControls] = await Promise.all([
--        fetch("/toolbox/controls/controls.js").then((response) => response.text()),
-+        fetch("/assets/toolbox/controls/js/index.js").then((response) => response.text()),
-         fetch("/account/user-controls-page.js").then((response) => response.text()),
-       ]);
-       return { accountControls, controls };
-diff --git a/tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs b/tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs
-index ea9ed180a..454d94897 100644
---- a/tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs
-+++ b/tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs
-@@ -14,7 +14,7 @@ test("canonical repository structure guardrail accepts canonical paths and appro
-     "assets/theme-v2/js/admin-system-health.js",
-     "assets/theme-v2/css/theme.css",
-     "src/engine/rendering/Renderer.js",
--    "toolbox/controls/controls.js",
-+    "toolbox/controls/controls-api-client.js",
-     "src/engine/ui/baseLayout.css",
-     "tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs",
-     "tests/runtime/V2SessionValidation.test.mjs",
-diff --git a/toolbox/controls/index.html b/toolbox/controls/index.html
-index 5e23377e8..99a8e8427 100644
---- a/toolbox/controls/index.html
-+++ b/toolbox/controls/index.html
-@@ -118,7 +118,7 @@
-     <div data-partial="footer"></div>
-     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
-     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
--    <script type="module" src="toolbox/controls/controls.js"></script>
-+    <script type="module" src="assets/toolbox/controls/js/index.js"></script>
- </body>
-
- </html>
++The safe next step is an entrypoint-only migration. Worker and API-client placement should be resolved separately, with retained exceptions documented if governance does not yet define canonical worker/shared API paths.
