@@ -63,7 +63,7 @@ const productApiClientFiles = Object.freeze([
   "toolbox/assets/assets-api-client.js",
   "toolbox/colors/palette-api-client.js",
   "toolbox/controls/controls-api-client.js",
-  "toolbox/game-configuration/game-configuration-api-client.js",
+  "assets/toolbox/game-configuration/js/index.js",
   "toolbox/game-design/game-design-api-client.js",
   "toolbox/game-journey/game-journey-api-client.js",
   "toolbox/game-hub/game-hub-api-client.js",

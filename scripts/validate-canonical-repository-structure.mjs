@@ -13,8 +13,6 @@ export const APPROVED_LEGACY_JS_PATHS = Object.freeze(new Set([
   "toolbox/colors/palette-api-client.js",
   "toolbox/controls/controls-api-client.js",
   "toolbox/controls/controls.js",
-  "toolbox/game-configuration/game-configuration-api-client.js",
-  "toolbox/game-configuration/game-configuration.js",
   "toolbox/game-design/game-design-api-client.js",
   "toolbox/game-design/game-design.js",
   "toolbox/game-hub/game-hub-api-client.js",

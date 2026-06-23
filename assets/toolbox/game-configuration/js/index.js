@@ -1,7 +1,17 @@
 import {
-  GAME_CONFIGURATION_SECTIONS,
-  createGameConfigurationApiRepository
-} from "./game-configuration-api-client.js";
+  createServerRepositoryClient,
+  readServerToolConstants,
+  requireServerConstant,
+} from "../../../../src/api/server-api-client.js";
+
+const constants = readServerToolConstants("game-configuration");
+
+export const GAME_CONFIGURATION_SECTIONS = Object.freeze(requireServerConstant(constants, "GAME_CONFIGURATION_SECTIONS", "game-configuration"));
+export const GAME_CONFIGURATION_PLAYER_MODES = Object.freeze(requireServerConstant(constants, "GAME_CONFIGURATION_PLAYER_MODES", "game-configuration"));
+
+export function createGameConfigurationApiRepository(options = {}) {
+  return createServerRepositoryClient("game-configuration", options);
+}
 
 const repository = createGameConfigurationApiRepository();
 const params = new URLSearchParams(window.location.search);
