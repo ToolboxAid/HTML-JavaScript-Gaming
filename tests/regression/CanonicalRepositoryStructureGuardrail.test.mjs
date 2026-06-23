@@ -14,7 +14,7 @@ test("canonical repository structure guardrail accepts canonical paths and appro
     "assets/theme-v2/js/admin-system-health.js",
     "assets/theme-v2/css/theme.css",
     "src/engine/rendering/Renderer.js",
-    "toolbox/controls/controls.js",
+    "toolbox/controls/controls-api-client.js",
     "src/engine/ui/baseLayout.css",
     "tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs",
     "tests/runtime/V2SessionValidation.test.mjs",

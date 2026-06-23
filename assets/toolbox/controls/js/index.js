@@ -5,11 +5,11 @@ import {
   GAME_CONTROL_NORMALIZED_INPUTS,
   NORMALIZED_USAGE_LABELS,
   createControlsToolApiRepository,
-} from "./controls-api-client.js";
+} from "../../../../toolbox/controls/controls-api-client.js";
 import {
   normalizeNormalizedInput,
   normalizedInputOptions,
-} from "../../src/engine/input/NormalizedInputRegistry.js";
+} from "../../../../src/engine/input/NormalizedInputRegistry.js";
 
 const GAME_CONTROL_NORMALIZED_INPUT_IDS = new Set(GAME_CONTROL_NORMALIZED_INPUTS);
 

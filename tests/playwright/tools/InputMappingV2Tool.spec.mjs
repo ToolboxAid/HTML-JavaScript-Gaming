@@ -94,6 +94,13 @@ function collectPageFailures(page) {
 async function openRepoPage(page, path, options = {}) {
   const server = await startRepoServer();
   const failures = collectPageFailures(page);
+  await page.addInitScript(({ apiUrl, siteUrl }) => {
+    window.GameFoundryPublicConfig = {
+      apiUrl,
+      environmentLabel: "Development Environment",
+      siteUrl,
+    };
+  }, { apiUrl: `${server.baseUrl}/api`, siteUrl: server.baseUrl });
   if (options.sessionUserKey !== undefined) {
     await fetch(`${server.baseUrl}/api/session/user`, {
       body: JSON.stringify({ userKey: options.sessionUserKey || "" }),
@@ -328,7 +335,7 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
     expect(constants.ENGINE_OWNED_NORMALIZED_INPUTS).toEqual(["action.pause"]);
     expect(constants.CONTROL_EVENT_OPTIONS.map((option) => option.field)).toEqual(["eventD", "eventH", "eventU", "eventDC"]);
     expect(constants.NORMALIZED_USAGE_LABELS["action.primary"]).toBe("Primary Action");
-    const controlsSource = await page.evaluate(async () => fetch("/toolbox/controls/controls.js").then((response) => response.text()));
+    const controlsSource = await page.evaluate(async () => fetch("/assets/toolbox/controls/js/index.js").then((response) => response.text()));
     expect(controlsSource).not.toMatch(/const\s+(CONTROL_EVENT_OPTIONS|GAME_CONTROL_NORMALIZED_INPUTS|NORMALIZED_USAGE_LABELS|COMMON_DEFAULT_GAME_CONTROLS|ENGINE_OWNED_NORMALIZED_INPUTS)\s*=/);
 
     const primaryRow = page.locator("[data-input-mapping-row]").filter({ hasText: "Primary Action" }).first();
@@ -1465,7 +1472,7 @@ test("Controls split keeps shared engine input contracts in the account surface"
   try {
     const sources = await page.evaluate(async () => {
       const [controls, accountControls] = await Promise.all([
-        fetch("/toolbox/controls/controls.js").then((response) => response.text()),
+        fetch("/assets/toolbox/controls/js/index.js").then((response) => response.text()),
         fetch("/account/user-controls-page.js").then((response) => response.text()),
       ]);
       return { accountControls, controls };

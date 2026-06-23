@@ -1,1 +1,6 @@
-A	docs_build/dev/reports/PR_26172_CHARLIE_028-remaining-target-tool-migration-audit.md
+R099	toolbox/controls/controls.js	assets/toolbox/controls/js/index.js
+A	docs_build/dev/reports/PR_26172_CHARLIE_029-controls-canonical-js-migration.md
+M	scripts/validate-canonical-repository-structure.mjs
+M	tests/playwright/tools/InputMappingV2Tool.spec.mjs
+M	tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs
+M	toolbox/controls/index.html
