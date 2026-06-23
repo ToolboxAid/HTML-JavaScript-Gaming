@@ -265,28 +265,34 @@ export const GAME_JOURNEY_TOOL_OWNERSHIP_AREAS = Object.freeze([
 
 export const GAME_JOURNEY_RECOMMENDED_TARGETS = Object.freeze([
   Object.freeze({
-    key: "heroes",
-    label: "Heroes",
+    key: "hero",
+    label: "Hero",
     sectionName: "Objects",
     suggestedCount: 1,
   }),
   Object.freeze({
-    key: "enemies",
-    label: "Enemies",
+    key: "enemy",
+    label: "Enemy",
     sectionName: "Objects",
+    suggestedCount: 4,
+  }),
+  Object.freeze({
+    key: "boss",
+    label: "Boss",
+    sectionName: "Objects",
+    suggestedCount: 1,
+  }),
+  Object.freeze({
+    key: "background",
+    label: "Background",
+    sectionName: "Graphics",
     suggestedCount: 3,
   }),
   Object.freeze({
-    key: "levels",
-    label: "Levels",
-    sectionName: "Worlds",
-    suggestedCount: 5,
-  }),
-  Object.freeze({
-    key: "audio",
-    label: "Audio",
+    key: "music",
+    label: "Music",
     sectionName: "Audio",
-    suggestedCount: 6,
+    suggestedCount: 5,
   }),
 ]);
 
@@ -1006,16 +1012,17 @@ export function createGameJourneyMockRepository(options = {}) {
     }
   }
 
-  function findRecommendedTargetItem(targetKey) {
+  function findRecommendedTargetItem(targetKey, gameKey = requireActiveGame()?.key) {
     return tables.game_journey_items.find((item) =>
-      item.gameKey === GAME_JOURNEY_KEYS.game &&
+      item.gameKey === gameKey &&
       item.linkedRecordType === RECOMMENDED_TARGET_LINKED_RECORD_TYPE &&
       item.linkedRecordId === targetKey,
     );
   }
 
   function hydrateRecommendedTarget(target) {
-    const item = findRecommendedTargetItem(target.key);
+    const activeGame = requireActiveGame();
+    const item = activeGame ? findRecommendedTargetItem(target.key, activeGame.key) : null;
     return {
       ...clone(target),
       suggestedCount: readTargetCount(item, target.suggestedCount),
@@ -1030,6 +1037,16 @@ export function createGameJourneyMockRepository(options = {}) {
     return GAME_JOURNEY_RECOMMENDED_TARGETS.map(hydrateRecommendedTarget);
   }
 
+  function findRecommendedTargetNoteKey(target, activeGame) {
+    const sectionNote = tables.game_journey_notes.find(
+      (note) => note.gameKey === activeGame.key && note.name === target.sectionName,
+    );
+    if (sectionNote) {
+      return sectionNote.key;
+    }
+    return activeGame.key === GAME_JOURNEY_KEYS.game ? RECOMMENDED_TARGET_NOTE_KEY : "";
+  }
+
   function updateRecommendedTarget(targetKey, suggestedCount) {
     const activeGame = requireActiveGame();
     const target = GAME_JOURNEY_RECOMMENDED_TARGETS.find((item) => item.key === targetKey);
@@ -1037,15 +1054,23 @@ export function createGameJourneyMockRepository(options = {}) {
       return null;
     }
 
+    const noteKey = findRecommendedTargetNoteKey(target, activeGame);
+    if (!noteKey) {
+      return {
+        error: true,
+        message: `Game Journey ${target.sectionName} bucket is not available for ${activeGame.name}.`,
+      };
+    }
+
     const normalizedCount = normalizeTargetCount(suggestedCount);
     const timestampValue = new Date().toISOString();
     const userKey = safeCurrentUserKey();
-    let item = findRecommendedTargetItem(target.key);
+    let item = findRecommendedTargetItem(target.key, activeGame.key);
     if (!item) {
       item = {
         key: makeUlid(nextItemNumber),
         gameKey: activeGame.key,
-        noteKey: RECOMMENDED_TARGET_NOTE_KEY,
+        noteKey,
         status: "not-started",
         title: `Recommended target: ${target.label}`,
         userDetails: "",
@@ -1064,9 +1089,10 @@ export function createGameJourneyMockRepository(options = {}) {
     }
 
     item.userDetails = JSON.stringify({ suggestedCount: normalizedCount });
+    item.noteKey = noteKey;
     item.updatedAt = timestampValue;
     item.updatedBy = userKey;
-    addActivity(activeGame.key, RECOMMENDED_TARGET_NOTE_KEY, `Updated ${target.label} recommended target to ${normalizedCount}`, userKey);
+    addActivity(activeGame.key, noteKey, `Updated ${target.label} recommended target to ${normalizedCount}`, userKey);
     persistTables();
     return hydrateRecommendedTarget(target);
   }

@@ -215,10 +215,11 @@ async function expectFilteredSummaryRows(page, statusId, expectedRows) {
 test("Game Journey exposes static tool ownership areas without automatic counts", async () => {
   expectStaticToolOwnershipAreas(GAME_JOURNEY_TOOL_OWNERSHIP_AREAS);
   expect(GAME_JOURNEY_RECOMMENDED_TARGETS.map((target) => target.label)).toEqual([
-    "Heroes",
-    "Enemies",
-    "Levels",
-    "Audio",
+    "Hero",
+    "Enemy",
+    "Boss",
+    "Background",
+    "Music",
   ]);
 
   const gameJourneyCompletionMetricsPostgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
@@ -230,10 +231,11 @@ test("Game Journey exposes static tool ownership areas without automatic counts"
     const constants = await fetchApiData(server, "/api/toolbox/game-journey/constants");
     expectStaticToolOwnershipAreas(constants.GAME_JOURNEY_TOOL_OWNERSHIP_AREAS);
     expect(constants.GAME_JOURNEY_RECOMMENDED_TARGETS.map((target) => target.label)).toEqual([
-      "Heroes",
-      "Enemies",
-      "Levels",
-      "Audio",
+      "Hero",
+      "Enemy",
+      "Boss",
+      "Background",
+      "Music",
     ]);
   } finally {
     await server.close();
@@ -329,15 +331,29 @@ test("Game Journey progress dashboard summarizes completion metrics", async ({ p
       "Next focus: Create, Design, and Graphics. Complete one small item in each area before expanding the plan.",
       "Next action: mark one finished section item complete so overall progress can rise above 0%.",
     ]);
-    await expect(page.locator("[data-journey-recommended-target]")).toHaveCount(4);
-    await expect(page.locator("[data-journey-recommended-target='heroes'] td").nth(0)).toHaveText("Heroes");
-    await expect(page.locator("[data-journey-recommended-target='heroes'] td").nth(1)).toHaveText("Objects");
-    await expect(page.locator("[data-journey-target-input='heroes']")).toHaveValue("1");
-    await page.locator("[data-journey-target-input='heroes']").fill("2");
-    await expect(page.locator("[data-journey-target-status]")).toHaveText("Saved Heroes target at 2.");
-    await expect(page.locator("[data-journey-target-input='heroes']")).toHaveValue("2");
+    await expect(page.locator("[data-journey-recommended-target]")).toHaveCount(5);
+    await expect(page.locator("[data-journey-recommended-target] td:first-child")).toHaveText([
+      "Hero",
+      "Enemy",
+      "Boss",
+      "Background",
+      "Music",
+    ]);
+    await expect(page.locator("[data-journey-recommended-target='hero'] td").nth(1)).toHaveText("Objects");
+    await expect(page.locator("[data-journey-recommended-target='enemy'] td").nth(1)).toHaveText("Objects");
+    await expect(page.locator("[data-journey-recommended-target='boss'] td").nth(1)).toHaveText("Objects");
+    await expect(page.locator("[data-journey-recommended-target='background'] td").nth(1)).toHaveText("Graphics");
+    await expect(page.locator("[data-journey-recommended-target='music'] td").nth(1)).toHaveText("Audio");
+    await expect(page.locator("[data-journey-target-input='hero']")).toHaveValue("1");
+    await expect(page.locator("[data-journey-target-input='enemy']")).toHaveValue("4");
+    await expect(page.locator("[data-journey-target-input='boss']")).toHaveValue("1");
+    await expect(page.locator("[data-journey-target-input='background']")).toHaveValue("3");
+    await expect(page.locator("[data-journey-target-input='music']")).toHaveValue("5");
+    await page.locator("[data-journey-target-input='hero']").fill("2");
+    await expect(page.locator("[data-journey-target-status]")).toHaveText("Saved Hero target at 2.");
+    await expect(page.locator("[data-journey-target-input='hero']")).toHaveValue("2");
     await page.reload({ waitUntil: "networkidle" });
-    await expect(page.locator("[data-journey-target-input='heroes']")).toHaveValue("2");
+    await expect(page.locator("[data-journey-target-input='hero']")).toHaveValue("2");
     const repositoryData = await fetchApiData(server, "/api/toolbox/game-journey/repositories", {
       body: JSON.stringify({ options: {} }),
       method: "POST",
@@ -347,11 +363,15 @@ test("Game Journey progress dashboard summarizes completion metrics", async ({ p
       method: "POST",
     });
     const persistedTarget = (tablesData.result.game_journey_items || []).find((item) =>
-      item.linkedRecordType === "recommended-target" && item.linkedRecordId === "heroes",
+      item.linkedRecordType === "recommended-target" && item.linkedRecordId === "hero",
     );
+    const objectsBucketNote = (tablesData.result.game_journey_notes || []).find((note) =>
+      note.gameKey === GAME_JOURNEY_KEYS.game && note.name === "Objects",
+    );
+    expect(objectsBucketNote?.key).toMatch(ULID_PATTERN);
     expect(persistedTarget).toMatchObject({
-      noteKey: GAME_JOURNEY_KEYS.notes.designPass,
-      title: "Recommended target: Heroes",
+      noteKey: objectsBucketNote.key,
+      title: "Recommended target: Hero",
     });
     expect(JSON.parse(persistedTarget.userDetails)).toMatchObject({ suggestedCount: 2 });
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
@@ -441,7 +461,7 @@ test("Game Journey summary table uses inline notes and item subtables", async ({
 
     await expect(page.locator("[data-journey-progress-dashboard]")).toBeVisible();
     await expect(page.getByRole("heading", { name: "What To Do Next" })).toBeVisible();
-    await expect(page.locator("[data-journey-recommended-target='heroes']")).toBeVisible();
+    await expect(page.locator("[data-journey-recommended-target='hero']")).toBeVisible();
     await expectNoPageFailures(failures);
   } finally {
     await closeWithCoverage(page, failures);
