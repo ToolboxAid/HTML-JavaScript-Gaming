@@ -35,6 +35,93 @@
   line-height: var(--line-height-copy)
 }
 
+.toolbox-status-bar {
+  width: 100%;
+  border-block: var(--border-standard);
+  background: var(--panel-overlay-strong);
+  color: var(--text)
+}
+
+.toolbox-status-bar__inner {
+  width: var(--container-width);
+  margin: var(--space-0) auto;
+  padding: var(--space-10) var(--space-0);
+  display: grid;
+  grid-template-columns: minmax(var(--space-0), 1fr) minmax(var(--space-0), 2fr);
+  gap: var(--space-16);
+  align-items: center
+}
+
+.toolbox-status-bar__game {
+  min-width: var(--space-0);
+  display: grid;
+  gap: var(--space-3);
+  text-align: left
+}
+
+.toolbox-status-bar__label {
+  color: var(--muted);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-heavy);
+  letter-spacing: var(--letter-spacing-kicker);
+  text-transform: uppercase
+}
+
+.toolbox-status-bar__game-name {
+  color: var(--text);
+  font-size: var(--font-size-base);
+  overflow-wrap: anywhere
+}
+
+.toolbox-status-bar__meta {
+  color: var(--muted);
+  font-size: var(--font-size-sm);
+  overflow-wrap: anywhere
+}
+
+.toolbox-status-bar__center {
+  min-width: var(--space-0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-10);
+  text-align: center
+}
+
+.toolbox-status-bar__message {
+  margin: var(--space-0);
+  max-width: var(--measure-lg);
+  overflow-wrap: anywhere
+}
+
+.toolbox-status-bar__action {
+  flex: 0 0 auto
+}
+
+.toolbox-status-bar[data-selected-game-state="active"] {
+  border-color: color-mix(in srgb, var(--green) 52%, var(--line))
+}
+
+.toolbox-status-bar[data-selected-game-state="missing"] {
+  border-color: var(--gold-border-muted);
+  background: var(--gold-soft)
+}
+
+.toolbox-status-bar[data-selected-game-state="error"] {
+  border-color: color-mix(in srgb, var(--red) 52%, var(--line));
+  background: color-mix(in srgb, var(--red) 14%, var(--panel))
+}
+
+body.tool-focus-mode .toolbox-status-bar {
+  position: fixed;
+  inset-block-end: var(--space-0);
+  inset-inline: var(--space-0);
+  z-index: var(--z-index-lg);
+  border-block-end: var(--space-0);
+  box-shadow: var(--shadow-md)
+}
+
 .platform-banner {
   width: 100%;
   border-bottom: var(--border-standard);
@@ -143,4 +230,16 @@
 .swatch-label.toolbox-group-play {
   color: var(--bg);
   text-shadow: none
+}
+
+@media (max-width: 720px) {
+  .toolbox-status-bar__inner {
+    width: var(--container-width);
+    grid-template-columns: 1fr;
+    text-align: center
+  }
+
+  .toolbox-status-bar__game {
+    text-align: center
+  }
 }

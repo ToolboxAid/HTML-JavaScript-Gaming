@@ -42,6 +42,15 @@ function setStatusLog(message) {
   setText(elements.statusLog, message);
 }
 
+function notifySelectedGameChanged(activeGame) {
+  window.dispatchEvent(new CustomEvent("gamefoundry:toolbox-selected-game-changed", {
+    detail: {
+      selectedGameId: activeGame?.id || "",
+      source: "game-hub",
+    },
+  }));
+}
+
 function isRecord(value) {
   return Boolean(value && typeof value === "object");
 }
@@ -654,6 +663,7 @@ function renderWorkspace() {
   renderChecklist(progress);
   renderGameTableStatus();
   refreshSaveControls(activeGame);
+  notifySelectedGameChanged(activeGame);
 }
 
 function readGameRowFields(row) {
