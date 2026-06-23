@@ -1,89 +1,90 @@
-diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_032-assets-worker-api-client-migration-or-exception.md b/docs_build/dev/reports/PR_26172_CHARLIE_032-assets-worker-api-client-migration-or-exception.md
+diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_033-game-journey-canonical-js-migration-audit.md b/docs_build/dev/reports/PR_26172_CHARLIE_033-game-journey-canonical-js-migration-audit.md
 new file mode 100644
-index 000000000..44d4c753c
+index 000000000..5ca46e8ab
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_CHARLIE_032-assets-worker-api-client-migration-or-exception.md
-@@ -0,0 +1,108 @@
-+# PR_26172_CHARLIE_032-assets-worker-api-client-migration-or-exception
++++ b/docs_build/dev/reports/PR_26172_CHARLIE_033-game-journey-canonical-js-migration-audit.md
+@@ -0,0 +1,110 @@
++# PR_26172_CHARLIE_033-game-journey-canonical-js-migration-audit
 +
 +## Summary
 +
-+Status: PASS with temporary legacy exceptions retained.
++Status: PASS.
 +
-+No executable implementation files were changed in this PR. The remaining Assets tool legacy files were reviewed after the PR_031 entrypoint migration:
-+
-+- `toolbox/assets/assets-api-client.js`
-+- `toolbox/assets/assets-upload-worker.js`
-+
-+Both files remain in approved legacy locations for this stack because moving them would require governance or shared-client decisions outside this PR scope.
++This audit reviewed Game Journey for canonical JS migration readiness without implementation changes.
 +
 +## Files Reviewed
 +
 +- `docs_build/dev/ProjectInstructions/README.txt`
 +- `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
-+- `docs_build/dev/reports/PR_26172_CHARLIE_030-assets-tool-canonical-js-migration-audit.md`
-+- `docs_build/dev/reports/PR_26172_CHARLIE_031-assets-tool-safe-entrypoint-migration.md`
-+- `assets/toolbox/assets/js/index.js`
-+- `assets/toolbox/objects/js/index.js`
-+- `toolbox/assets/assets-api-client.js`
-+- `toolbox/assets/assets-upload-worker.js`
++- `docs_build/dev/reports/PR_26172_CHARLIE_006A-game-journey-validation-failure-investigation.md`
++- `toolbox/game-journey/index.html`
++- `toolbox/game-journey/game-journey.js`
++- `toolbox/game-journey/game-journey-api-client.js`
++- `tests/playwright/tools/GameJourneyTool.spec.mjs`
 +- `scripts/validate-canonical-repository-structure.mjs`
-+- `scripts/validate-browser-env-agnostic.mjs`
-+- `tests/playwright/tools/AssetToolMockRepository.spec.mjs`
++- `src/dev-runtime/server/local-api-router.mjs`
++- `src/api/game-journey-completion-api-client.js`
 +
-+## Decision
++## Current Active JS Entrypoints
 +
-+### Assets API Client
++| Current path | Role | Current status | Target path |
++| --- | --- | --- | --- |
++| `toolbox/game-journey/game-journey.js` | Browser entrypoint | Active legacy JS | `assets/toolbox/game-journey/js/index.js` |
++| `toolbox/game-journey/game-journey-api-client.js` | Tool API client and completion metrics re-export | Active legacy JS | Temporary exception unless guardrail/shared-client placement is approved |
 +
-+Decision: retain as temporary legacy exception.
++## HTML Script References
++
++- `toolbox/game-journey/index.html`
++  - Current: `toolbox/game-journey/game-journey.js`
++  - Proposed PR_034 value: `assets/toolbox/game-journey/js/index.js`
++
++## API Client References
++
++- `toolbox/game-journey/game-journey.js` imports:
++  - `./game-journey-api-client.js`
++  - `../tool-registry-api-client.js`
++- After moving the entrypoint, imports should become:
++  - `../../../../toolbox/game-journey/game-journey-api-client.js`
++  - `../../../../toolbox/tool-registry-api-client.js`
++
++## Completion Metrics Risk
++
++PR_26172_CHARLIE_006A determined that `/api/game-journey/completion-metrics` can return HTTP 500 when local legacy SQLite preservation protection is triggered by:
++
++- `tmp/local-api/game-journey-completion-metrics.sqlite`
++
++That behavior is intentional and prevents silent data loss. It is not caused by prior Charlie JS/CSS migrations. PR_034 validation must document this separately if it appears and must not misattribute the known HTTP 500 to the entrypoint move without direct evidence.
++
++## Migration Decision
++
++### `game-journey.js`
++
++Decision: safe to migrate in PR_034 with targeted import and HTML updates.
 +
 +Reason:
 +
-+- `toolbox/assets/assets-api-client.js` is not Assets-only.
-+- `assets/toolbox/objects/js/index.js` imports `createAssetToolApiRepository` from the same file.
-+- Moving the client into `assets/toolbox/assets/js/` would either break Objects or require a shared-client migration that is outside this PR.
++- It is a single browser entrypoint.
++- It is referenced directly by the Game Journey page.
++- It can keep existing behavior by importing the retained API client and tool registry client through adjusted relative paths.
++- No CSS move is required.
 +
-+Removal plan:
++### `game-journey-api-client.js`
 +
-+1. Create a shared API-client placement rule for reused toolbox clients.
-+2. Move shared reusable code to the approved shared location.
-+3. Update Assets and Objects imports together.
-+4. Remove the legacy exception after both tools validate.
-+
-+### Assets Upload Worker
-+
-+Decision: retain as temporary legacy exception.
++Decision: do not move in PR_034. Review in PR_035.
 +
 +Reason:
 +
-+- `toolbox/assets/assets-upload-worker.js` is a module worker and is loaded directly by URL.
-+- The current canonical guardrail approves tool entrypoints at `assets/toolbox/{tool-name}/js/index.js`.
-+- It does not yet define an approved worker filename or worker subpath pattern.
-+- PR_031 validation confirmed the retained worker loads from `toolbox/assets/assets-upload-worker.js`.
++- The canonical guardrail currently approves the tool entrypoint path `assets/toolbox/{tool}/js/index.js`.
++- Adding a second JS file under `assets/toolbox/game-journey/js/` would require either guardrail expansion or a folded/shared-client migration.
++- The API client re-exports completion metrics helpers, so it should not be moved in the same PR as the entrypoint unless validation proves it is safe.
 +
-+Removal plan:
++## Validation Plan for PR_034
 +
-+1. Add a canonical worker placement rule, or explicitly approve an Assets worker exception.
-+2. Move the worker only after the new placement is recognized by the guardrail.
-+3. Update `new Worker(...)` URL construction.
-+4. Run targeted upload validation before removing the legacy exception.
-+
-+## Validation Lane Report
-+
++- `node --check assets/toolbox/game-journey/js/index.js`
++- `git diff --check`
 +- `npm run validate:canonical-structure`
-+  - Result: PASS
-+  - Blocking violations: 0
-+  - Approved legacy exceptions: 482
-+- `npm run validate:browser-env-agnostic`
-+  - Result: FAIL
-+  - Existing findings:
-+    - Local API product service contract findings in `src/dev-runtime/server/local-api-router.mjs`.
-+    - User-facing implementation wording findings in Messages.
-+  - Classification: existing broader browser-env gate findings, not caused by this report-only PR.
-+- Active reference check
-+  - Result: PASS
-+  - `toolbox/assets/assets-api-client.js` is referenced by Assets, Objects, guardrails, and related tests.
-+  - `toolbox/assets/assets-upload-worker.js` is referenced by the Assets canonical entrypoint, guardrail, and worker validation test.
++- Active stale reference check for `toolbox/game-journey/game-journey.js`
++- Targeted Game Journey Playwright validation, with any known completion-metrics legacy SQLite HTTP 500 documented separately.
 +
 +## Branch Validation
 +
@@ -94,21 +95,22 @@ index 000000000..44d4c753c
 +
 +## Requirement Checklist
 +
-+- Use PR_030 and PR_031 results: PASS
-+- Move Assets-only API client only if safe: PASS, retained because it is shared with Objects.
-+- Move worker only if safe: PASS, retained because canonical worker placement is undefined.
-+- Document approved temporary legacy exception with removal plan: PASS
-+- Do not create shared APIs unless clearly reused by multiple tools: PASS
-+- No behavior changes: PASS
-+- Run targeted Assets validation: PASS by PR_031 page/worker probe; full upload Playwright remains blocked by provider persistence failure.
-+- Run browser env validation: PASS with existing failure documented.
-+- Run canonical structure guardrail: PASS
-+- Confirm ZIP exists: PASS after artifact creation.
++- Review `game-journey.js`: PASS
++- Review `game-journey-api-client.js`: PASS
++- Review `index.html`: PASS
++- Review Game Journey tests: PASS
++- Review Local API completion metrics route: PASS
++- Review prior PR_006A findings: PASS
++- Determine whether `game-journey.js` can safely move: PASS
++- Determine whether API client should move, remain, or become shared: PASS
++- Define validation that avoids confusing known SQLite preservation behavior with migration failure: PASS
++- No implementation changes: PASS
++- ZIP artifact exists: PASS after artifact creation.
 +
 +## Manual Validation Notes
 +
-+The safest current state is to keep the API client and worker in their approved legacy paths while the active entrypoint lives in the canonical path. This keeps Objects imports working and avoids inventing an unapproved worker path.
++The next safe implementation step is a focused entrypoint move only. The API client should remain an exception until PR_035 because the guardrail does not currently allow a second canonical tool JS file.
 +
 +## Recommendation
 +
-+Continue to Game Journey audit PR_033. Open a later shared-client or worker-placement governance PR before moving the retained Assets exceptions.
++Continue to PR_034 and migrate only `game-journey.js` to `assets/toolbox/game-journey/js/index.js`.
