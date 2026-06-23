@@ -1,3 +1,4 @@
+assets/theme-v2/css/layout.css
 assets/theme-v2/css/status.css
 assets/theme-v2/js/toolbox-status-bar.js
 docs_build/dev/BUILD_PR.md

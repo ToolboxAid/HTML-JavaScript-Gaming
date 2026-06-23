@@ -13,6 +13,7 @@ This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_003-toolbox-status-
 - Remove selected game purpose from the visible status bar.
 - Keep the game name and status message on the same row at desktop/toolbox widths.
 - Preserve normal placement above the footer.
+- Remove redundant footer spacing below toolbox content by setting the shared Theme V2 footer top padding to `0px`.
 - Preserve fullscreen/tool display mode bottom anchoring.
 - Ensure fullscreen center tool content and its scrollbar stop above the fixed status bar.
 - Add bottom reserve equal to the status bar height for the fullscreen center tool area.
@@ -27,6 +28,7 @@ This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_003-toolbox-status-
 - `docs_build/dev/BUILD_PR.md`
 - `assets/theme-v2/js/toolbox-status-bar.js`
 - `assets/theme-v2/css/status.css`
+- `assets/theme-v2/css/layout.css`
 - `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs`
 - `docs_build/dev/reports/PR_26175_ALFA_003-toolbox-status-bar-single-row-polish_report.md`
 - `docs_build/dev/reports/PR_26175_ALFA_003-toolbox-status-bar-single-row-polish_validation-lane.md`
@@ -56,7 +58,7 @@ npx playwright test tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
 Also verify the changed source does not introduce inline styles or style blocks:
 
 ```powershell
-rg -n "<style|style=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
+rg -n "<style|style=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css assets/theme-v2/css/layout.css tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
 ```
 
 ## Artifact

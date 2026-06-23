@@ -8,7 +8,7 @@ npx playwright test tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
 Result: PASS, 6 tests passed.
 
 ```powershell
-rg -n "<style|style=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
+rg -n "<style|style=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css assets/theme-v2/css/layout.css tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
 ```
 
 Result: PASS, no matches.
@@ -20,6 +20,7 @@ Result: PASS, no matches.
 - Selected game purpose is not visible.
 - Status message is visible in the center area.
 - Game name and status message occupy the same row.
+- Shared Theme V2 footer top padding is `0px` beneath the status bar.
 - Fullscreen status bar remains fixed to the bottom.
 - Fullscreen center panel bottom is above the status bar.
 - Fullscreen center panel has a bottom reserve equal to the status bar height.

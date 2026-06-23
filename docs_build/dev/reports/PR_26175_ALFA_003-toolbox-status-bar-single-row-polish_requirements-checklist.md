@@ -6,6 +6,8 @@
 - PASS: Visible labels were removed.
 - PASS: Selected game purpose was removed from the visible status bar.
 - PASS: Game name and status message are on the same row.
+- PASS: Shared Theme V2 footer top padding is `0px`.
+- PASS: Redundant status bar/footer spacing below toolbox content was removed.
 - PASS: Fullscreen status bar remains fixed at the bottom.
 - PASS: Fullscreen center panel stops above the status bar.
 - PASS: Fullscreen center panel has bottom reserve equal to the status bar height.

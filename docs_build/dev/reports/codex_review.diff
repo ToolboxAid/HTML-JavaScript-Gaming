@@ -1,3 +1,16 @@
+diff --git a/assets/theme-v2/css/layout.css b/assets/theme-v2/css/layout.css
+index a9614b412..b392b3306 100644
+--- a/assets/theme-v2/css/layout.css
++++ b/assets/theme-v2/css/layout.css
+@@ -733,7 +733,7 @@ body.tool-focus-mode .tool-workspace--table-scroll-focus .tool-table-scroll-regi
+ .footer {
+   margin-top: var(--space-46);
+   border-top: var(--border-standard);
+-  padding: var(--space-24) var(--space-0);
++  padding: var(--space-0) var(--space-0) var(--space-24);
+   color: var(--muted)
+ }
+
 diff --git a/assets/theme-v2/css/status.css b/assets/theme-v2/css/status.css
 index 88e0d5e64..8fd18d811 100644
 --- a/assets/theme-v2/css/status.css
@@ -292,10 +305,10 @@ index fdb367328..24c935311 100644
 
  export function refreshToolboxStatusBar() {
 diff --git a/docs_build/dev/BUILD_PR.md b/docs_build/dev/BUILD_PR.md
-index 65c4d9709..43a7f37d3 100644
+index 65c4d9709..5cf00344c 100644
 --- a/docs_build/dev/BUILD_PR.md
 +++ b/docs_build/dev/BUILD_PR.md
-@@ -1,40 +1,48 @@
+@@ -1,40 +1,50 @@
 -# PR_26175_ALFA_002-toolbox-status-bar-context-polish
 +# PR_26175_ALFA_003-toolbox-status-bar-single-row-polish
 
@@ -317,6 +330,7 @@ index 65c4d9709..43a7f37d3 100644
 +- Remove selected game purpose from the visible status bar.
 +- Keep the game name and status message on the same row at desktop/toolbox widths.
  - Preserve normal placement above the footer.
++- Remove redundant footer spacing below toolbox content by setting the shared Theme V2 footer top padding to `0px`.
  - Preserve fullscreen/tool display mode bottom anchoring.
 +- Ensure fullscreen center tool content and its scrollbar stop above the fixed status bar.
 +- Add bottom reserve equal to the status bar height for the fullscreen center tool area.
@@ -332,6 +346,7 @@ index 65c4d9709..43a7f37d3 100644
  - `docs_build/dev/BUILD_PR.md`
  - `assets/theme-v2/js/toolbox-status-bar.js`
  - `assets/theme-v2/css/status.css`
++- `assets/theme-v2/css/layout.css`
  - `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs`
 -- `docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_report.md`
 -- `docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_validation-lane.md`
@@ -357,7 +372,15 @@ index 65c4d9709..43a7f37d3 100644
  - No engine core changes.
  - No `start_of_day` folder changes.
 
-@@ -55,5 +63,5 @@ rg -n "<style|style=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/c
+@@ -48,12 +58,12 @@ npx playwright test tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
+ Also verify the changed source does not introduce inline styles or style blocks:
+
+ ```powershell
+-rg -n "<style|style=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
++rg -n "<style|style=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css assets/theme-v2/css/layout.css tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
+ ```
+
+ ## Artifact
  Create repo-structured delta ZIP:
 
  ```text
@@ -366,10 +389,10 @@ index 65c4d9709..43a7f37d3 100644
  ```
 diff --git a/docs_build/dev/reports/PR_26175_ALFA_003-toolbox-status-bar-single-row-polish_report.md b/docs_build/dev/reports/PR_26175_ALFA_003-toolbox-status-bar-single-row-polish_report.md
 new file mode 100644
-index 000000000..7d05d0364
+index 000000000..46bb184b9
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26175_ALFA_003-toolbox-status-bar-single-row-polish_report.md
-@@ -0,0 +1,18 @@
+@@ -0,0 +1,19 @@
 +# PR_26175_ALFA_003-toolbox-status-bar-single-row-polish Report
 +
 +## Summary
@@ -380,6 +403,7 @@ index 000000000..7d05d0364
 +- Kept the visible status bar contract to selected game name on the left and current status message in the center.
 +- Preserved Game Hub ownership of selected-game context and Idea Board selected-game filtering exclusion.
 +- Preserved normal placement above the footer.
++- Removed redundant spacing beneath toolbox content by setting shared Theme V2 footer top padding to `0px`.
 +- Preserved fullscreen bottom anchoring and reserved the status-bar height for the fullscreen center tool area.
 +- Updated targeted Playwright coverage for removed labels, visible game/message text, same-row layout, and fullscreen center-panel bounds.
 +
@@ -390,10 +414,10 @@ index 000000000..7d05d0364
 +- Theme V2 shared CSS/classes remain the styling surface.
 diff --git a/docs_build/dev/reports/PR_26175_ALFA_003-toolbox-status-bar-single-row-polish_requirements-checklist.md b/docs_build/dev/reports/PR_26175_ALFA_003-toolbox-status-bar-single-row-polish_requirements-checklist.md
 new file mode 100644
-index 000000000..d6b988ef9
+index 000000000..8556dc162
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26175_ALFA_003-toolbox-status-bar-single-row-polish_requirements-checklist.md
-@@ -0,0 +1,18 @@
+@@ -0,0 +1,20 @@
 +# PR_26175_ALFA_003-toolbox-status-bar-single-row-polish Requirements Checklist
 +
 +- PASS: Status bar displays only selected game name and status message.
@@ -402,6 +426,8 @@ index 000000000..d6b988ef9
 +- PASS: Visible labels were removed.
 +- PASS: Selected game purpose was removed from the visible status bar.
 +- PASS: Game name and status message are on the same row.
++- PASS: Shared Theme V2 footer top padding is `0px`.
++- PASS: Redundant status bar/footer spacing below toolbox content was removed.
 +- PASS: Fullscreen status bar remains fixed at the bottom.
 +- PASS: Fullscreen center panel stops above the status bar.
 +- PASS: Fullscreen center panel has bottom reserve equal to the status bar height.
@@ -414,10 +440,10 @@ index 000000000..d6b988ef9
 +- PASS: Targeted Playwright coverage was updated and passed.
 diff --git a/docs_build/dev/reports/PR_26175_ALFA_003-toolbox-status-bar-single-row-polish_validation-lane.md b/docs_build/dev/reports/PR_26175_ALFA_003-toolbox-status-bar-single-row-polish_validation-lane.md
 new file mode 100644
-index 000000000..eba7f2a1e
+index 000000000..059266001
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26175_ALFA_003-toolbox-status-bar-single-row-polish_validation-lane.md
-@@ -0,0 +1,26 @@
+@@ -0,0 +1,27 @@
 +# PR_26175_ALFA_003-toolbox-status-bar-single-row-polish Validation Lane
 +
 +## Commands
@@ -428,7 +454,7 @@ index 000000000..eba7f2a1e
 +Result: PASS, 6 tests passed.
 +
 +```powershell
-+rg -n "<style|style=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
++rg -n "<style|style=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css assets/theme-v2/css/layout.css tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
 +```
 +
 +Result: PASS, no matches.
@@ -440,15 +466,17 @@ index 000000000..eba7f2a1e
 +- Selected game purpose is not visible.
 +- Status message is visible in the center area.
 +- Game name and status message occupy the same row.
++- Shared Theme V2 footer top padding is `0px` beneath the status bar.
 +- Fullscreen status bar remains fixed to the bottom.
 +- Fullscreen center panel bottom is above the status bar.
 +- Fullscreen center panel has a bottom reserve equal to the status bar height.
 +- Idea Board remains excluded from selected-game filtering.
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index fb32c88ea..8d10dee5a 100644
+index fb32c88ea..c218c84cc 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,9 +1,9 @@
+@@ -1,9 +1,10 @@
++assets/theme-v2/css/layout.css
  assets/theme-v2/css/status.css
  assets/theme-v2/js/toolbox-status-bar.js
  docs_build/dev/BUILD_PR.md
@@ -462,10 +490,10 @@ index fb32c88ea..8d10dee5a 100644
  docs_build/dev/reports/codex_review.diff
  tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
 diff --git a/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs b/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-index 065fbce4a..aacaa2c19 100644
+index 065fbce4a..9b54f9176 100644
 --- a/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
 +++ b/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-@@ -113,21 +113,62 @@ function creatorSession() {
+@@ -113,21 +113,64 @@ function creatorSession() {
    };
  }
 
@@ -500,6 +528,7 @@ index 065fbce4a..aacaa2c19 100644
 +      };
 +    };
      const footer = document.querySelector("footer.footer");
++    const footerStyle = footer ? getComputedStyle(footer) : null;
 +    const centerPanel = document.querySelector(".tool-center-panel");
 +    const gameName = bar.querySelector("[data-toolbox-selected-game-name]");
 +    const message = bar.querySelector("[data-toolbox-status-message]");
@@ -519,6 +548,7 @@ index 065fbce4a..aacaa2c19 100644
        dataset: { ...bar.dataset },
        filter: document.body.dataset.toolboxSelectedGameFilter || "",
        footerFollowsBar: footer ? Boolean(bar.compareDocumentPosition(footer) & Node.DOCUMENT_POSITION_FOLLOWING) : false,
++      footerPaddingTop: footerStyle ? parseFloat(footerStyle.paddingTop) || 0 : null,
        gameId: document.body.dataset.toolboxSelectedGameId || "",
 -      gameText: bar.querySelector("[data-toolbox-selected-game]")?.textContent.replace(/\s+/g, " ").trim() || "",
 -      messageText: bar.querySelector("[data-toolbox-status-center]")?.textContent.replace(/\s+/g, " ").trim() || "",
@@ -531,7 +561,7 @@ index 065fbce4a..aacaa2c19 100644
        topBeforeFooter: footerBox ? barBox.bottom <= footerBox.top + 1 : false,
      };
    });
-@@ -141,12 +182,12 @@ test("shared toolbox status bar shows selected Game Hub game above the footer",
+@@ -141,12 +184,12 @@ test("shared toolbox status bar shows selected Game Hub game above the footer",
      await expect(statusBar).toBeVisible();
      await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
      await expect(statusBar).not.toContainText("Environment");
@@ -548,7 +578,11 @@ index 065fbce4a..aacaa2c19 100644
      await expect(statusBar.locator("[data-toolbox-status-message]")).toContainText("Game Design mock repository ready.");
      await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-id", "demo-game");
      await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "active");
-@@ -157,6 +198,11 @@ test("shared toolbox status bar shows selected Game Hub game above the footer",
+@@ -154,9 +197,15 @@ test("shared toolbox status bar shows selected Game Hub game above the footer",
+     const snapshot = await statusBarSnapshot(page);
+     expect(snapshot.footerFollowsBar).toBe(true);
+     expect(snapshot.topBeforeFooter).toBe(true);
++    expect(snapshot.footerPaddingTop).toBe(0);
      expect(snapshot.position).not.toBe("fixed");
      expect(snapshot.dataset.selectedGameState).toBe("active");
      expect(snapshot.dataset.selectedGameRequired).toBe("true");
@@ -560,7 +594,7 @@ index 065fbce4a..aacaa2c19 100644
 
      expectNoPageFailures(failures);
    } finally {
-@@ -175,11 +221,14 @@ test("shared toolbox status bar center reports save state after Game Hub saves",
+@@ -175,11 +224,14 @@ test("shared toolbox status bar center reports save state after Game Hub saves",
      await addGameRow.getByLabel("Status").selectOption("Ready for Testing");
      await addGameRow.getByRole("button", { name: "Save" }).click();
 
@@ -580,7 +614,7 @@ index 065fbce4a..aacaa2c19 100644
 
      expectNoPageFailures(failures);
    } finally {
-@@ -199,6 +248,9 @@ test("shared toolbox status bar anchors to the bottom in tool display mode", asy
+@@ -199,6 +251,9 @@ test("shared toolbox status bar anchors to the bottom in tool display mode", asy
      expect(snapshot.position).toBe("fixed");
      expect(Math.abs(snapshot.bottomGap)).toBeLessThanOrEqual(2);
      expect(snapshot.gameText).toContain("Demo Game");
@@ -590,7 +624,7 @@ index 065fbce4a..aacaa2c19 100644
 
      expectNoPageFailures(failures);
    } finally {
-@@ -213,12 +265,15 @@ test("Game Hub owner selection updates the global toolbox status bar", async ({
+@@ -213,12 +268,15 @@ test("Game Hub owner selection updates the global toolbox status bar", async ({
      await expect(page.locator("[data-toolbox-selected-game-name]")).toHaveText("Demo Game");
      await page.locator("[data-game-toggle='gravity-demo']").click();
      await expect(page.locator("[data-toolbox-selected-game-name]")).toHaveText("Gravity Demo");
@@ -610,7 +644,7 @@ index 065fbce4a..aacaa2c19 100644
 
      expectNoPageFailures(failures);
    } finally {
-@@ -231,12 +286,12 @@ test("non-Idea Board toolbox pages show a creator-safe prompt when no Game Hub g
+@@ -231,12 +289,12 @@ test("non-Idea Board toolbox pages show a creator-safe prompt when no Game Hub g
 
    try {
      const statusBar = page.locator("[data-toolbox-status-bar]");
@@ -627,7 +661,7 @@ index 065fbce4a..aacaa2c19 100644
      await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "missing");
      await expect(page.locator("body")).not.toHaveAttribute("data-toolbox-selected-game-id", /.+/);
 
-@@ -256,9 +311,10 @@ test("Idea Board is excluded from selected-game filtering and does not show the
+@@ -256,9 +314,10 @@ test("Idea Board is excluded from selected-game filtering and does not show the
    try {
      const statusBar = page.locator("[data-toolbox-status-bar]");
      await expect(statusBar).toBeVisible();

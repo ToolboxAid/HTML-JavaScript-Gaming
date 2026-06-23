@@ -8,6 +8,7 @@ Updated the shared toolbox status bar to a single-row creator context bar.
 - Kept the visible status bar contract to selected game name on the left and current status message in the center.
 - Preserved Game Hub ownership of selected-game context and Idea Board selected-game filtering exclusion.
 - Preserved normal placement above the footer.
+- Removed redundant spacing beneath toolbox content by setting shared Theme V2 footer top padding to `0px`.
 - Preserved fullscreen bottom anchoring and reserved the status-bar height for the fullscreen center tool area.
 - Updated targeted Playwright coverage for removed labels, visible game/message text, same-row layout, and fullscreen center-panel bounds.
 

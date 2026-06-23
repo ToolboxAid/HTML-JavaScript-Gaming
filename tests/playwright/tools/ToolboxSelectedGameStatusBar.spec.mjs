@@ -144,6 +144,7 @@ async function statusBarSnapshot(page) {
       };
     };
     const footer = document.querySelector("footer.footer");
+    const footerStyle = footer ? getComputedStyle(footer) : null;
     const centerPanel = document.querySelector(".tool-center-panel");
     const gameName = bar.querySelector("[data-toolbox-selected-game-name]");
     const message = bar.querySelector("[data-toolbox-status-message]");
@@ -162,6 +163,7 @@ async function statusBarSnapshot(page) {
       dataset: { ...bar.dataset },
       filter: document.body.dataset.toolboxSelectedGameFilter || "",
       footerFollowsBar: footer ? Boolean(bar.compareDocumentPosition(footer) & Node.DOCUMENT_POSITION_FOLLOWING) : false,
+      footerPaddingTop: footerStyle ? parseFloat(footerStyle.paddingTop) || 0 : null,
       gameId: document.body.dataset.toolboxSelectedGameId || "",
       gameBox: boxSnapshot(gameName),
       gameText: gameName?.textContent.replace(/\s+/g, " ").trim() || "",
@@ -195,6 +197,7 @@ test("shared toolbox status bar shows selected Game Hub game above the footer", 
     const snapshot = await statusBarSnapshot(page);
     expect(snapshot.footerFollowsBar).toBe(true);
     expect(snapshot.topBeforeFooter).toBe(true);
+    expect(snapshot.footerPaddingTop).toBe(0);
     expect(snapshot.position).not.toBe("fixed");
     expect(snapshot.dataset.selectedGameState).toBe("active");
     expect(snapshot.dataset.selectedGameRequired).toBe("true");
