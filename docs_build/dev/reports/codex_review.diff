@@ -1,270 +1,186 @@
-diff --git a/toolbox/game-design/game-design.js b/assets/toolbox/game-design/js/index.js
-similarity index 92%
-rename from toolbox/game-design/game-design.js
-rename to assets/toolbox/game-design/js/index.js
-index 51466ecff..af61960cd 100644
---- a/toolbox/game-design/game-design.js
-+++ b/assets/toolbox/game-design/js/index.js
-@@ -1,10 +1,19 @@
- import {
--  GAME_DESIGN_GAME_TYPES,
--  GAME_DESIGN_GENRES,
--  GAME_DESIGN_PLAYER_MODES,
--  GAME_DESIGN_PLAY_STYLES,
--  createGameDesignApiRepository
--} from "./game-design-api-client.js";
-+  createServerRepositoryClient,
-+  readServerToolConstants,
-+  requireServerConstant,
-+} from "../../../../src/api/server-api-client.js";
-+
-+const constants = readServerToolConstants("game-design");
-+
-+export const GAME_DESIGN_GAME_TYPES = Object.freeze(requireServerConstant(constants, "GAME_DESIGN_GAME_TYPES", "game-design"));
-+export const GAME_DESIGN_GENRES = Object.freeze(requireServerConstant(constants, "GAME_DESIGN_GENRES", "game-design"));
-+export const GAME_DESIGN_PLAYER_MODES = Object.freeze(requireServerConstant(constants, "GAME_DESIGN_PLAYER_MODES", "game-design"));
-+export const GAME_DESIGN_PLAY_STYLES = Object.freeze(requireServerConstant(constants, "GAME_DESIGN_PLAY_STYLES", "game-design"));
-+
-+export function createGameDesignApiRepository(options = {}) {
-+  return createServerRepositoryClient("game-design", options);
-+}
-
- const repository = createGameDesignApiRepository();
- const params = new URLSearchParams(window.location.search);
-diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_020-low-risk-tool-migration-5.md b/docs_build/dev/reports/PR_26172_CHARLIE_020-low-risk-tool-migration-5.md
+diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_021-repository-compliance-reaudit-2.md b/docs_build/dev/reports/PR_26172_CHARLIE_021-repository-compliance-reaudit-2.md
 new file mode 100644
-index 000000000..1a9aed02a
+index 000000000..76b2b4b16
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_CHARLIE_020-low-risk-tool-migration-5.md
-@@ -0,0 +1,107 @@
-+# PR_26172_CHARLIE_020-low-risk-tool-migration-5
++++ b/docs_build/dev/reports/PR_26172_CHARLIE_021-repository-compliance-reaudit-2.md
+@@ -0,0 +1,180 @@
++# PR_26172_CHARLIE_021-repository-compliance-reaudit-2
 +
 +## Summary
 +
-+Status: PASS with documented validation blockers
++Status: PASS
 +
-+This PR migrated the Game Design toolbox JS family to the canonical tool asset structure selected by PR017.
++This reaudit measured repository structure compliance after PR018, PR019, and PR020 migrated Game Configuration, Colors, and Game Design into canonical tool JS locations.
 +
-+Canonical path:
++Guardrail result:
 +
-+- `assets/toolbox/game-design/js/index.js`
++- Blocking violations: 0
++- Approved legacy exceptions: 486
++- Inline script/style/event-handler findings in active toolbox HTML: 0
 +
-+Removed legacy active JS paths:
++Charlie stack status: safe for Owner review with documented runtime validation blockers unrelated to canonical path migration.
 +
-+- `toolbox/game-design/game-design.js`
-+- `toolbox/game-design/game-design-api-client.js`
++## Compliance Result By Area
 +
-+No CSS migration was required.
-+
-+## Files Reviewed
-+
-+- `toolbox/game-design/index.html`
-+- `toolbox/game-design/game-design.js`
-+- `toolbox/game-design/game-design-api-client.js`
-+- `assets/toolbox/game-design/js/index.js`
-+- `scripts/validate-canonical-repository-structure.mjs`
-+- `scripts/validate-browser-env-agnostic.mjs`
-+- `tests/dev-runtime/ProductDataProviderContractHardening.test.mjs`
-+- `tests/playwright/tools/GameDesignMockRepository.spec.mjs`
-+- `tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs`
-+
-+## Files Changed
-+
-+| File | Change |
-+| --- | --- |
-+| `assets/toolbox/game-design/js/index.js` | Moved Game Design page module into canonical location and folded in the API client wrapper. |
-+| `toolbox/game-design/game-design-api-client.js` | Removed after wrapper was consolidated into the canonical module. |
-+| `toolbox/game-design/index.html` | Updated module script source to canonical path. |
-+| `scripts/validate-canonical-repository-structure.mjs` | Removed Game Design legacy JS exceptions. |
-+| `scripts/validate-browser-env-agnostic.mjs` | Updated Game Design product-data entrypoint path. |
-+| `tests/dev-runtime/ProductDataProviderContractHardening.test.mjs` | Updated Game Design product-data entrypoint path. |
-+| `tests/playwright/tools/GameDesignMockRepository.spec.mjs` | Added test-server API URL isolation matching other toolbox specs so local `.env` does not force browser calls to `127.0.0.1:5501`. |
-+| `tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs` | Replaced the retired Game Design legacy fixture with a still-approved Controls legacy fixture. |
-+
-+## Behavior Preservation
-+
-+- The HTML route remains `toolbox/game-design/index.html`.
-+- The browser module still creates the Game Design repository through the existing server API client.
-+- Existing DOM selectors and handoff rendering logic were preserved.
-+- Game Design constants and repository factory were preserved in the canonical module.
-+- No persistence behavior was added.
-+- No additional tool family was migrated.
-+
-+## Validation Commands
-+
-+| Command | Result | Notes |
++| Area | Result | Notes |
 +| --- | --- | --- |
-+| `rg "toolbox/game-design/(game-design|game-design-api-client)\\.js|game-design-api-client" -n --glob '!docs_build/dev/reports/**' --glob '!tmp/**' --glob '!node_modules/**'` | PASS | No stale active Game Design JS references remain. |
-+| `node --check assets/toolbox/game-design/js/index.js` | PASS | Syntax valid. |
-+| `node --check scripts/validate-canonical-repository-structure.mjs` | PASS | Syntax valid. |
-+| `node --check scripts/validate-browser-env-agnostic.mjs` | PASS | Syntax valid. |
-+| `node --check tests/dev-runtime/ProductDataProviderContractHardening.test.mjs` | PASS | Syntax valid. |
-+| `node --check tests/playwright/tools/GameDesignMockRepository.spec.mjs` | PASS | Syntax valid. |
-+| `node --check tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs` | PASS | Syntax valid. |
-+| `node --test tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs` | PASS | Guardrail regression passed. |
-+| `npm run validate:canonical-structure` | PASS | Blocking violations: 0. Approved legacy exceptions reduced to 486. |
-+| `git diff --check` | PASS | Whitespace validation passed. |
-+| `npx playwright test tests/playwright/tools/GameDesignMockRepository.spec.mjs` | FAIL | Browser reached same-origin API after test isolation, but Local API returned 500 for Game Design mutating methods and known Game Journey completion metrics route. |
++| PR_034 Canonical Repository Structure | PASS | No unapproved JS, CSS, or test structure violations. Remaining items are approved legacy exceptions. |
++| PR_035 Test Structure Standardization | PASS with legacy backlog | 465 approved legacy test paths remain. No `tests/results/` tracked generated artifacts were reported by the guardrail. |
++| PR_036 Legacy Migration Policy | PASS | Legacy paths remain explicitly classified. No archive/history rewrite occurred. |
++| PR_008 Canonical Structure Guardrail | PASS | `npm run validate:canonical-structure` passed. |
++| PR_009 Guardrail Preflight Wiring | PASS | Canonical guardrail is available through npm script and was used for this reaudit. |
++| Inline script/style review | PASS | 50 active toolbox HTML pages scanned; no inline script, inline style, or inline event handler findings. |
 +
-+## Playwright Failure Notes
++## Remaining Approved Legacy JS Paths
 +
-+The targeted Game Design spec loaded the migrated canonical module. The failures were not missing script or 404 failures for the new canonical path.
++Count: 18
 +
-+Observed blockers:
++- `src/engine/paletteList.js`
++- `toolbox/assets/assets-api-client.js`
++- `toolbox/assets/assets-upload-worker.js`
++- `toolbox/assets/assets.js`
++- `toolbox/controls/controls-api-client.js`
++- `toolbox/controls/controls.js`
++- `toolbox/game-hub/game-hub-api-client.js`
++- `toolbox/game-hub/game-hub.js`
++- `toolbox/game-journey/game-journey-api-client.js`
++- `toolbox/game-journey/game-journey.js`
++- `toolbox/messages/message-tts-service-registry.js`
++- `toolbox/messages/messages-api-client.js`
++- `toolbox/messages/messages.js`
++- `toolbox/objects/objects-api-client.js`
++- `toolbox/objects/objects.js`
++- `toolbox/tool-registry-api-client.js`
++- `toolbox/toolRegistry.js`
++- `toolbox/tools-page-accordions.js`
 +
-+- `500 /api/toolbox/game-design/repositories/.../methods/saveDesign`
-+- Legacy Game Journey completion metrics SQLite protection message replacing expected Game Design status text
-+- `500 /api/game-journey/completion-metrics`
++## Remaining Approved Legacy CSS Paths
 +
-+The Game Journey completion metrics failure is the previously documented legacy SQLite preservation blocker from PR006A. The Game Design repository-method 500 is a Local API/persistence behavior outside this canonical path migration.
++Count: 3
++
++- `src/engine/ui/baseLayout.css`
++- `src/engine/ui/hubCommon.css`
++- `src/engine/ui/spriteEditor.css`
++
++## Remaining Approved Legacy Test Paths
++
++Count: 465
++
++Legacy test paths remain approved by segment. They should be remediated in smaller follow-up PRs after owner prioritization.
++
++| Segment | Count |
++| --- | ---: |
++| `ai` | 1 |
++| `assets` | 1 |
++| `audio` | 1 |
++| `combat` | 1 |
++| `config` | 1 |
++| `core` | 8 |
++| `dev-runtime` | 31 |
++| `entity` | 1 |
++| `events` | 2 |
++| `final` | 11 |
++| `fixtures` | 52 |
++| `fx` | 1 |
++| `games` | 35 |
++| `helpers` | 11 |
++| `index.html` | 1 |
++| `input` | 8 |
++| `persistence` | 1 |
++| `playwright` | 44 |
++| `playwright_installation.txt` | 1 |
++| `production` | 3 |
++| `README.md` | 1 |
++| `render` | 1 |
++| `replay` | 2 |
++| `run-tests.mjs` | 1 |
++| `runtime` | 81 |
++| `samples` | 1 |
++| `scenes` | 3 |
++| `schemas` | 1 |
++| `shared` | 92 |
++| `testRunner.html` | 1 |
++| `testRunner.js` | 1 |
++| `tools` | 57 |
++| `validation` | 3 |
++| `vector` | 1 |
++| `world` | 4 |
++
++## Inline Issue Reaudit
++
++| Scan | Result |
++| --- | --- |
++| Active toolbox HTML files scanned | 50 |
++| Inline `<script>` blocks | 0 |
++| Inline `<style>` blocks or `style=` attributes | 0 |
++| Inline event handlers | 0 |
++
++## Progress Since PR016
++
++Approved legacy JS exceptions reduced from 492 to 486.
++
++Canonical migrations completed in this queue:
++
++- Game Configuration: `assets/toolbox/game-configuration/js/index.js`
++- Colors: `assets/toolbox/colors/js/index.js`
++- Game Design: `assets/toolbox/game-design/js/index.js`
++
++## Updated Remediation Backlog
++
++Recommended next Charlie PRs:
++
++1. Objects canonical JS migration
++2. Controls canonical JS migration
++3. Assets canonical JS migration, including worker handling
++4. Game Hub/root toolbox script migration plan
++5. Engine UI CSS placement decision for `src/engine/ui/*.css`
++6. Test structure migration plan for approved legacy test segments
++
++Deferred pending ownership or runtime blocker resolution:
++
++- Game Journey canonical migration: defer until completion metrics validation blocker is resolved or owner explicitly approves migration with blocker documentation.
++- Messages canonical migration: coordinate with Bravo ownership before changing active Messages tool files.
++
++## Validation Lane Report
++
++Commands:
++
++- `git status --short`
++- `git rev-list --left-right --count origin/PR_26172_CHARLIE_repository-compliance-stack...HEAD`
++- `npm run validate:canonical-structure`
++- Detailed guardrail inventory through `auditCanonicalRepositoryStructure(collectRepositoryFiles())`
++- Active toolbox inline script/style/event-handler scan
++- `git diff --check`
++
++Results:
++
++- Branch clean before PR021 edits: PASS
++- Local/origin sync before PR021 edits: PASS, `0 0`
++- Canonical guardrail: PASS
++- Blocking violations: 0
++- Approved legacy exceptions: 486
++- Inline scan: PASS
 +
 +## Requirement Checklist
 +
 +| Requirement | Result | Notes |
 +| --- | --- | --- |
-+| Migrate third safest tool from PR017 | PASS | Game Design migrated. |
-+| Move JS to canonical structure | PASS | `assets/toolbox/game-design/js/index.js`. |
-+| Move CSS only if required | PASS | No CSS move required. |
-+| Preserve behavior | PASS with validation blocker | Code path preserved; full Playwright is blocked by existing API/persistence 500s. |
-+| Update references | PASS | HTML, guardrail, product-data, and guardrail regression references updated. |
-+| Targeted validation only | PASS | No samples or full smoke run. |
-+| Do not repeat PR018 or PR019 | PASS | Game Configuration and Colors were not modified in this PR. |
-+
-+## Branch Validation
-+
-+| Check | Result | Notes |
-+| --- | --- | --- |
-+| Current branch is Charlie stack branch | PASS | `PR_26172_CHARLIE_repository-compliance-stack` |
-+| Worktree clean before PR020 edits | PASS | PR019 was committed and pushed before PR020 edits. |
-+| Local/origin sync before PR020 edits | PASS | `0 0` before PR020 edits. |
-+| Stack remains unmerged | PASS | No merge performed. |
++| Verify PR_034 compliance | PASS | No blocking canonical structure violations. |
++| Verify PR_035 compliance | PASS with legacy backlog | Remaining test paths are approved legacy exceptions. |
++| Verify PR_036 compliance | PASS | Legacy backlog remains classified; no archive rewrite. |
++| Verify PR_008 guardrail | PASS | Guardrail passed. |
++| Verify PR_009 guardrail preflight wiring | PASS | npm guardrail script used. |
++| Report PASS/FAIL by repository area | PASS | See compliance table. |
++| Report remaining non-compliant JS paths | PASS | 18 approved legacy JS paths listed. |
++| Report remaining non-compliant CSS paths | PASS | 3 approved legacy CSS paths listed. |
++| Report remaining non-compliant test paths | PASS | 465 approved legacy paths summarized by segment. |
++| Update remediation backlog | PASS | Next PR recommendations listed. |
++| State whether Charlie stack is safe for Owner review | PASS | Safe for Owner review with runtime blockers documented. |
++| Confirm stack remains unmerged | PASS | No merge performed. |
 +
 +## Manual Validation Notes
 +
-+- Continue stack: YES.
-+- The migration reduced canonical legacy exceptions by two additional files.
-+- Owner review should treat remaining Game Design Playwright failures as Local API/persistence validation blockers, not canonical path migration blockers.
-diff --git a/scripts/validate-browser-env-agnostic.mjs b/scripts/validate-browser-env-agnostic.mjs
-index 74ad938a7..031e290a5 100644
---- a/scripts/validate-browser-env-agnostic.mjs
-+++ b/scripts/validate-browser-env-agnostic.mjs
-@@ -64,7 +64,7 @@ const productApiClientFiles = Object.freeze([
-   "assets/toolbox/colors/js/index.js",
-   "toolbox/controls/controls-api-client.js",
-   "assets/toolbox/game-configuration/js/index.js",
--  "toolbox/game-design/game-design-api-client.js",
-+  "assets/toolbox/game-design/js/index.js",
-   "toolbox/game-journey/game-journey-api-client.js",
-   "toolbox/game-hub/game-hub-api-client.js",
-   "toolbox/objects/objects-api-client.js",
-diff --git a/scripts/validate-canonical-repository-structure.mjs b/scripts/validate-canonical-repository-structure.mjs
-index d3cc7d985..073499f4e 100644
---- a/scripts/validate-canonical-repository-structure.mjs
-+++ b/scripts/validate-canonical-repository-structure.mjs
-@@ -11,8 +11,6 @@ export const APPROVED_LEGACY_JS_PATHS = Object.freeze(new Set([
-   "toolbox/assets/assets.js",
-   "toolbox/controls/controls-api-client.js",
-   "toolbox/controls/controls.js",
--  "toolbox/game-design/game-design-api-client.js",
--  "toolbox/game-design/game-design.js",
-   "toolbox/game-hub/game-hub-api-client.js",
-   "toolbox/game-hub/game-hub.js",
-   "toolbox/game-journey/game-journey-api-client.js",
-diff --git a/tests/dev-runtime/ProductDataProviderContractHardening.test.mjs b/tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
-index 2f156af8c..d6ee4a607 100644
---- a/tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
-+++ b/tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
-@@ -113,7 +113,7 @@ test("Active browser product-data entrypoints use API or service clients", () =>
-     "assets/toolbox/colors/js/index.js",
-     "toolbox/controls/controls-api-client.js",
-     "assets/toolbox/game-configuration/js/index.js",
--    "toolbox/game-design/game-design-api-client.js",
-+    "assets/toolbox/game-design/js/index.js",
-     "toolbox/game-journey/game-journey-api-client.js",
-     "toolbox/game-hub/game-hub-api-client.js",
-     "toolbox/objects/objects-api-client.js",
-diff --git a/tests/playwright/tools/GameDesignMockRepository.spec.mjs b/tests/playwright/tools/GameDesignMockRepository.spec.mjs
-index f6385183e..ebdaf6f9c 100644
---- a/tests/playwright/tools/GameDesignMockRepository.spec.mjs
-+++ b/tests/playwright/tools/GameDesignMockRepository.spec.mjs
-@@ -1,4 +1,5 @@
- import { expect, test } from "@playwright/test";
-+import process from "node:process";
- import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
- import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
- import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
-@@ -18,8 +19,26 @@ test.afterAll(async () => {
-   await workspaceV2CoverageReporter.writeReport();
- });
-
-+function restoreEnvValue(key, value) {
-+  if (value === undefined) {
-+    delete process.env[key];
-+    return;
-+  }
-+  process.env[key] = value;
-+}
-+
- async function openRepoPage(page, pathName) {
-   const server = await startRepoServer();
-+  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
-+  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
-+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
-+  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
-+  const closeServer = server.close.bind(server);
-+  server.close = async () => {
-+    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
-+    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
-+    await closeServer();
-+  };
-   const failedRequests = [];
-   const pageErrors = [];
-   const consoleErrors = [];
-diff --git a/tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs b/tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs
-index 20adc8b0b..ea9ed180a 100644
---- a/tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs
-+++ b/tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs
-@@ -14,7 +14,7 @@ test("canonical repository structure guardrail accepts canonical paths and appro
-     "assets/theme-v2/js/admin-system-health.js",
-     "assets/theme-v2/css/theme.css",
-     "src/engine/rendering/Renderer.js",
--    "toolbox/game-design/game-design.js",
-+    "toolbox/controls/controls.js",
-     "src/engine/ui/baseLayout.css",
-     "tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs",
-     "tests/runtime/V2SessionValidation.test.mjs",
-diff --git a/toolbox/game-design/game-design-api-client.js b/toolbox/game-design/game-design-api-client.js
-deleted file mode 100644
-index 561906791..000000000
---- a/toolbox/game-design/game-design-api-client.js
-+++ /dev/null
-@@ -1,16 +0,0 @@
--import {
--  createServerRepositoryClient,
--  readServerToolConstants,
--  requireServerConstant,
--} from "../../src/api/server-api-client.js";
--
--const constants = readServerToolConstants("game-design");
--
--export const GAME_DESIGN_GAME_TYPES = Object.freeze(requireServerConstant(constants, "GAME_DESIGN_GAME_TYPES", "game-design"));
--export const GAME_DESIGN_GENRES = Object.freeze(requireServerConstant(constants, "GAME_DESIGN_GENRES", "game-design"));
--export const GAME_DESIGN_PLAYER_MODES = Object.freeze(requireServerConstant(constants, "GAME_DESIGN_PLAYER_MODES", "game-design"));
--export const GAME_DESIGN_PLAY_STYLES = Object.freeze(requireServerConstant(constants, "GAME_DESIGN_PLAY_STYLES", "game-design"));
--
--export function createGameDesignApiRepository(options = {}) {
--  return createServerRepositoryClient("game-design", options);
--}
-diff --git a/toolbox/game-design/index.html b/toolbox/game-design/index.html
-index 3335515ac..e8fda5433 100644
---- a/toolbox/game-design/index.html
-+++ b/toolbox/game-design/index.html
-@@ -195,7 +195,7 @@
-     <div data-partial="footer"></div>
-     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
-     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
--    <script type="module" src="toolbox/game-design/game-design.js"></script>
-+    <script type="module" src="assets/toolbox/game-design/js/index.js"></script>
- </body>
-
- </html>
++- No runtime source files were changed in PR021.
++- The stack remains on `PR_26172_CHARLIE_repository-compliance-stack`.
++- Targeted runtime Playwright lanes for PR018-PR020 exposed existing Local API/persistence blockers, especially legacy Game Journey completion metrics SQLite protection. Those failures should be handled outside canonical structure migration.
++- The canonical path migrations themselves are complete for the three selected tools.
