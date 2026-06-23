@@ -6,7 +6,6 @@ import { fileURLToPath } from "node:url";
 const repoRoot = path.resolve(fileURLToPath(new URL("..", import.meta.url)));
 
 export const APPROVED_LEGACY_JS_PATHS = Object.freeze(new Set([
-  "toolbox/assets/assets-upload-worker.js",
   "toolbox/game-hub/game-hub-api-client.js",
   "toolbox/game-hub/game-hub.js",
   "toolbox/messages/message-tts-service-registry.js",
@@ -104,6 +103,7 @@ function record(severity, area, file, message, expected) {
 
 function isCanonicalAssetJs(filePath) {
   return /^assets\/toolbox\/[^/]+\/js\/index\.js$/.test(filePath) ||
+    /^assets\/toolbox\/[^/]+\/js\/[^/]+-worker\.js$/.test(filePath) ||
     filePath.startsWith("assets/js/shared/") ||
     filePath.startsWith("assets/theme-v2/js/");
 }
@@ -123,8 +123,8 @@ function auditJavaScript(filePath) {
       "FAIL",
       "JS",
       filePath,
-      "JavaScript under assets must use assets/toolbox/{tool}/js/index.js, assets/js/shared/, or assets/theme-v2/js/.",
-      "assets/toolbox/{tool}/js/index.js or assets/js/shared/",
+      "JavaScript under assets must use assets/toolbox/{tool}/js/index.js, assets/toolbox/{tool}/js/{worker-name}.js for tool-local workers, assets/js/shared/, or assets/theme-v2/js/.",
+      "assets/toolbox/{tool}/js/index.js, assets/toolbox/{tool}/js/{worker-name}.js, or assets/js/shared/",
     );
   }
   if (filePath.startsWith("toolbox/")) {
@@ -134,7 +134,7 @@ function auditJavaScript(filePath) {
         "JS",
         filePath,
         "Approved legacy toolbox JavaScript sidecar awaiting canonical migration.",
-        "assets/toolbox/{tool}/js/index.js or assets/js/shared/",
+        "assets/toolbox/{tool}/js/index.js, assets/toolbox/{tool}/js/{worker-name}.js, or assets/js/shared/",
       );
     }
     return record(

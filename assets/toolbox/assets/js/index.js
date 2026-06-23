@@ -71,7 +71,7 @@ const UPLOAD_ACCEPT_BY_ASSET_TYPE = Object.freeze({
 const DEFAULT_UPLOAD_CHUNK_SIZE_BYTES = 64 * 1024;
 const MAX_UPLOAD_CHUNK_SIZE_BYTES = 1024 * 1024;
 const SERVER_RECEIVE_PROGRESS_INTERVAL_MS = 1000;
-const UPLOAD_WORKER_URL = new URL("../../../../toolbox/assets/assets-upload-worker.js", import.meta.url);
+const UPLOAD_WORKER_URL = new URL("./assets-upload-worker.js", import.meta.url);
 
 function isBrowserValidationHost() {
   return ["", "localhost", "127.0.0.1", "::1"].includes(window.location.hostname);

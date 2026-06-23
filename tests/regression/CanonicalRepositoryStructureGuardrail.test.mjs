@@ -13,8 +13,8 @@ test("canonical repository structure guardrail accepts canonical paths and appro
     "assets/js/shared/dom.js",
     "assets/theme-v2/js/admin-system-health.js",
     "assets/theme-v2/css/theme.css",
+    "assets/toolbox/assets/js/assets-upload-worker.js",
     "src/engine/rendering/Renderer.js",
-    "toolbox/assets/assets-upload-worker.js",
     "src/engine/ui/baseLayout.css",
     "tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs",
     "tests/runtime/V2SessionValidation.test.mjs",
@@ -22,7 +22,7 @@ test("canonical repository structure guardrail accepts canonical paths and appro
 
   assert.equal(result.status, "PASS");
   assert.equal(result.findings.length, 0);
-  assert.equal(result.legacy.length, 3);
+  assert.equal(result.legacy.length, 2);
 });
 
 test("canonical repository structure guardrail fails unapproved violation fixture paths", () => {

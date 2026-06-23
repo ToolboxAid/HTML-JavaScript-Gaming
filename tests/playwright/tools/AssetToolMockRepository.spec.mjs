@@ -817,7 +817,7 @@ test("Assets worker keeps UI responsive while server-received upload progress dr
     const workerPromise = page.waitForEvent("worker");
     await editRow.getByLabel("Upload File").setInputFiles(uploadFile("worker-progress.png", "image/png", Buffer.alloc(48, 7)));
     const worker = await workerPromise;
-    expect(worker.url()).toContain("toolbox/assets/assets-upload-worker.js");
+    expect(worker.url()).toContain("assets/toolbox/assets/js/assets-upload-worker.js");
 
     await expect(inlineProgress).toBeVisible();
     await expect(progressBar).toHaveJSProperty("value", 0);
