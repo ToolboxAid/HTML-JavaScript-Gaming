@@ -1,6 +1,7 @@
 docs_build/dev/BUILD_PR.md
-docs_build/dev/reports/PR_26175_ALFA_004-game-hub-completion-status-audit_report.md
-docs_build/dev/reports/PR_26175_ALFA_004-game-hub-completion-status-audit_validation-lane.md
-docs_build/dev/reports/PR_26175_ALFA_004-game-hub-completion-status-audit_requirements-checklist.md
+tests/playwright/tools/GameHubMockRepository.spec.mjs
+docs_build/dev/reports/PR_26175_ALFA_005-game-hub-audit-findings-cleanup_report.md
+docs_build/dev/reports/PR_26175_ALFA_005-game-hub-audit-findings-cleanup_validation-lane.md
+docs_build/dev/reports/PR_26175_ALFA_005-game-hub-audit-findings-cleanup_requirements-checklist.md
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
