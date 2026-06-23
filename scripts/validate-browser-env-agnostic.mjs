@@ -61,7 +61,7 @@ const accountAuthPages = Object.freeze([
 ]);
 const productApiClientFiles = Object.freeze([
   "toolbox/assets/assets-api-client.js",
-  "toolbox/colors/palette-api-client.js",
+  "assets/toolbox/colors/js/index.js",
   "toolbox/controls/controls-api-client.js",
   "assets/toolbox/game-configuration/js/index.js",
   "toolbox/game-design/game-design-api-client.js",

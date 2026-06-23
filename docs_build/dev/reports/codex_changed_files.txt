@@ -1,10 +1,9 @@
-assets/toolbox/game-configuration/js/index.js
-docs_build/dev/reports/PR_26172_CHARLIE_018-low-risk-tool-migration-3.md
+assets/toolbox/colors/js/index.js
+docs_build/dev/reports/PR_26172_CHARLIE_019-low-risk-tool-migration-4.md
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
 scripts/validate-browser-env-agnostic.mjs
 scripts/validate-canonical-repository-structure.mjs
 tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
-tests/playwright/tools/GameConfigurationMockRepository.spec.mjs
-toolbox/game-configuration/game-configuration-api-client.js
-toolbox/game-configuration/index.html
+toolbox/colors/index.html
+toolbox/colors/palette-api-client.js

@@ -110,7 +110,7 @@ test("Active browser product-data entrypoints use API or service clients", () =>
 
   const productApiClients = [
     "toolbox/assets/assets-api-client.js",
-    "toolbox/colors/palette-api-client.js",
+    "assets/toolbox/colors/js/index.js",
     "toolbox/controls/controls-api-client.js",
     "assets/toolbox/game-configuration/js/index.js",
     "toolbox/game-design/game-design-api-client.js",

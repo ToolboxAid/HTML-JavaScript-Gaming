@@ -1,0 +1,103 @@
+# PR_26172_CHARLIE_019-low-risk-tool-migration-4
+
+## Summary
+
+Status: PASS with documented validation blockers
+
+This PR migrated the Colors toolbox JS family to the canonical tool asset structure selected by PR017.
+
+Canonical path:
+
+- `assets/toolbox/colors/js/index.js`
+
+Removed legacy active JS paths:
+
+- `toolbox/colors/colors.js`
+- `toolbox/colors/palette-api-client.js`
+
+No CSS migration was required.
+
+## Files Reviewed
+
+- `toolbox/colors/index.html`
+- `toolbox/colors/colors.js`
+- `toolbox/colors/palette-api-client.js`
+- `assets/toolbox/colors/js/index.js`
+- `scripts/validate-canonical-repository-structure.mjs`
+- `scripts/validate-browser-env-agnostic.mjs`
+- `tests/dev-runtime/ProductDataProviderContractHardening.test.mjs`
+- `tests/playwright/tools/PaletteToolMockRepository.spec.mjs`
+
+## Files Changed
+
+| File | Change |
+| --- | --- |
+| `assets/toolbox/colors/js/index.js` | Moved Colors page module into canonical location and folded in the palette API client wrapper. |
+| `toolbox/colors/palette-api-client.js` | Removed after wrapper was consolidated into the canonical module. |
+| `toolbox/colors/index.html` | Updated module script source to canonical path. |
+| `scripts/validate-canonical-repository-structure.mjs` | Removed Colors legacy JS exceptions. |
+| `scripts/validate-browser-env-agnostic.mjs` | Updated Colors product-data entrypoint path. |
+| `tests/dev-runtime/ProductDataProviderContractHardening.test.mjs` | Updated Colors product-data entrypoint path. |
+
+## Behavior Preservation
+
+- The HTML route remains `toolbox/colors/index.html`.
+- The browser module still creates the palette repository through the existing server API client.
+- Existing DOM selectors and palette rendering logic were preserved.
+- Palette constants and server helper functions were preserved in the canonical module.
+- No persistence behavior was added.
+- No additional tool family was migrated.
+
+## Validation Commands
+
+| Command | Result | Notes |
+| --- | --- | --- |
+| `rg "toolbox/colors/(colors|palette-api-client)\\.js|palette-api-client" -n --glob '!docs_build/dev/reports/**' --glob '!tmp/**' --glob '!node_modules/**'` | PASS | No active stale Colors JS references remain. |
+| `node --check assets/toolbox/colors/js/index.js` | PASS | Syntax valid. |
+| `node --check scripts/validate-canonical-repository-structure.mjs` | PASS | Syntax valid. |
+| `node --check scripts/validate-browser-env-agnostic.mjs` | PASS | Syntax valid. |
+| `node --check tests/dev-runtime/ProductDataProviderContractHardening.test.mjs` | PASS | Syntax valid. |
+| `npm run validate:canonical-structure` | PASS | Blocking violations: 0. Approved legacy exceptions reduced to 488. |
+| `git diff --check` | PASS | Whitespace validation passed. |
+| `npx playwright test tests/playwright/tools/PaletteToolMockRepository.spec.mjs` | FAIL | 1 test passed; 8 failed on pre-existing behavior/state/API expectations, including legacy Game Journey metrics SQLite protection surfacing in Colors log. |
+
+## Playwright Failure Notes
+
+The targeted Palette spec loaded the migrated canonical module and ran. The failures were not missing script or 404 failures for the new canonical path.
+
+Observed failing expectations included:
+
+- Seed naming drift: expected `Demo Project - Game Project`, received `Demo Game - Game`.
+- Palette state count drift across swatch/pin/tag flows.
+- Existing layout assertion failure in picker row alignment.
+- Known legacy Game Journey completion metrics SQLite protection message surfaced in the Colors invalid-payload test.
+- Admin Controls route expectation missing `Controls.` heading.
+
+These are outside this PR's one-tool canonical path migration and should be handled by separate test/API hardening work if owner requests it.
+
+## Requirement Checklist
+
+| Requirement | Result | Notes |
+| --- | --- | --- |
+| Migrate second safest tool from PR017 | PASS | Colors migrated. |
+| Move JS to canonical structure | PASS | `assets/toolbox/colors/js/index.js`. |
+| Move CSS only if required | PASS | No CSS move required. |
+| Preserve behavior | PASS with validation blocker | Code path preserved; full Playwright is blocked by unrelated behavioral assertions. |
+| Update references | PASS | HTML, guardrail, and product-data checks updated. |
+| Targeted validation only | PASS | No samples or full smoke run. |
+| Do not repeat PR018 | PASS | Game Configuration was not modified in this PR. |
+
+## Branch Validation
+
+| Check | Result | Notes |
+| --- | --- | --- |
+| Current branch is Charlie stack branch | PASS | `PR_26172_CHARLIE_repository-compliance-stack` |
+| Worktree clean before PR019 edits | PASS | PR018 was committed and pushed before PR019 edits. |
+| Local/origin sync before PR019 edits | PASS | `0 0` before PR019 edits. |
+| Stack remains unmerged | PASS | No merge performed. |
+
+## Manual Validation Notes
+
+- Continue stack: YES.
+- The migration reduced canonical legacy exceptions by two additional files.
+- Palette Playwright failures should be reviewed separately because the canonical script path is loading and the failures are behavioral/API expectations.
