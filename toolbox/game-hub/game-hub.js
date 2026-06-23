@@ -482,16 +482,9 @@ function renderGameParentRow(tbody, game, activeGame, progress) {
 
   const row = document.createElement("tr");
   row.dataset.gameRow = game.id;
-  if (active) {
-    row.dataset.gameActive = "true";
-    row.setAttribute("aria-current", "true");
-  }
 
   const nameCell = document.createElement("th");
   nameCell.scope = "row";
-  if (active) {
-    nameCell.dataset.gameActiveCell = "true";
-  }
   nameCell.append(createGameToggleButton(game, expanded, active));
   row.append(
     nameCell,
@@ -730,9 +723,6 @@ elements.gameList?.addEventListener("click", (event) => {
     if (reportRepositoryError(game, "Select game")) {
       renderWorkspace();
       return;
-    }
-    if (game) {
-      setStatusLog(`Selected ${game.name}.`);
     }
     state.expandedGameId = state.expandedGameId === toggle.dataset.gameToggle ? "" : toggle.dataset.gameToggle;
     renderWorkspace();

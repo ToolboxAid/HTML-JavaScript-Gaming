@@ -290,24 +290,48 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
     const demoGameRow = page.locator("[data-game-row='demo-game']");
     await expect(demoGameRow.locator("td")).toHaveText(["Game", "Under Construction", "Edit"]);
     await expect(demoGameRow).not.toContainText("User 1");
-    await expect(demoGameRow).toHaveAttribute("data-game-active", "true");
-    await expect(demoGameRow).toHaveAttribute("aria-current", "true");
-    await expect(demoGameRow.locator("th[data-game-active-cell='true']")).toContainText("Demo Game");
-    const activeCellStyle = await demoGameRow.locator("th[data-game-active-cell='true']").evaluate((cell) => {
-      const styles = getComputedStyle(cell);
-      return {
-        backgroundColor: styles.backgroundColor,
-        boxShadow: styles.boxShadow,
-      };
-    });
-    const inactiveCellBackground = await page.locator("[data-game-row='gravity-demo'] th").evaluate((cell) => getComputedStyle(cell).backgroundColor);
-    expect(activeCellStyle.backgroundColor).toBe(inactiveCellBackground);
-    expect(activeCellStyle.boxShadow).not.toBe("none");
+    await expect(demoGameRow).not.toHaveAttribute("data-game-active", "true");
+    await expect(demoGameRow).not.toHaveAttribute("aria-current", "true");
+    await expect(demoGameRow.locator("th[data-game-active-cell='true']")).toHaveCount(0);
+    await expect(page.locator("[data-game-row][data-game-active='true']")).toHaveCount(0);
+    await expect(page.locator("[data-game-row][aria-current='true']")).toHaveCount(0);
+    await expect(page.locator("[data-game-active-cell='true']")).toHaveCount(0);
+    const rowVisuals = await page.locator("[data-game-row]").evaluateAll((rows) => rows.map((row) => {
+      const cells = Array.from(row.children).slice(1);
+      return cells.map((cell) => {
+        const styles = getComputedStyle(cell);
+        return {
+          backgroundColor: styles.backgroundColor,
+          boxShadow: styles.boxShadow,
+        };
+      });
+    }));
+    expect(rowVisuals[0]).toEqual(rowVisuals[1]);
     await expect(demoGameRow.locator("> .status")).toHaveCount(0);
     await expect(demoGameRow.locator("[data-game-toggle='demo-game']")).toHaveAttribute("aria-expanded", "false");
     await expect(demoGameRow.locator("[data-game-toggle='demo-game']")).not.toHaveClass(/primary/);
     await expect(demoGameRow.locator("[data-game-toggle='demo-game']")).toHaveClass(/\bbtn--compact\b/);
+    await expect(demoGameRow.locator("[data-game-toggle='demo-game']")).toHaveAttribute("data-game-active", "true");
     await expect(demoGameRow.locator("[data-game-toggle='demo-game']")).toHaveAttribute("aria-current", "true");
+    await expect(page.locator("[data-game-toggle][aria-current='true']")).toHaveCount(1);
+    await expect(page.locator("[data-game-toggle][data-game-active='true']")).toHaveCount(1);
+    const activeButtonStyle = await demoGameRow.locator("[data-game-toggle='demo-game']").evaluate((button) => {
+      const styles = getComputedStyle(button);
+      return {
+        backgroundColor: styles.backgroundColor,
+        borderColor: styles.borderColor,
+        boxShadow: styles.boxShadow,
+      };
+    });
+    const inactiveButtonStyle = await page.locator("[data-game-row='gravity-demo'] [data-game-toggle='gravity-demo']").evaluate((button) => {
+      const styles = getComputedStyle(button);
+      return {
+        backgroundColor: styles.backgroundColor,
+        borderColor: styles.borderColor,
+        boxShadow: styles.boxShadow,
+      };
+    });
+    expect(activeButtonStyle).not.toEqual(inactiveButtonStyle);
     await expect(demoGameRow.getByRole("button", { name: "Edit Demo Game" })).toHaveText("Edit");
     await expect(demoGameRow.getByRole("button", { name: "Edit Demo Game" })).not.toHaveClass(/primary/);
     await expect(demoGameRow.getByRole("button", { name: "Edit Demo Game" })).toHaveClass(/\bbtn--compact\b/);
@@ -348,7 +372,10 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
     await addGameRow.getByLabel("Status").selectOption("Ready for Testing");
     await addGameRow.getByRole("button", { name: "Save" }).click();
     await expect(page.locator("[data-game-list]")).toContainText("Launch Test Game");
-    await expect(page.locator("[data-game-row='launch-test-game-1']")).toHaveAttribute("data-game-active", "true");
+    await expect(page.locator("[data-game-row='launch-test-game-1']")).not.toHaveAttribute("data-game-active", "true");
+    await expect(page.locator("[data-game-row='launch-test-game-1']")).not.toHaveAttribute("aria-current", "true");
+    await expect(page.locator("[data-game-toggle][aria-current='true']")).toHaveCount(1);
+    await expect(page.locator("[data-game-row='launch-test-game-1'] [data-game-toggle='launch-test-game-1']")).toHaveAttribute("aria-current", "true");
     await expect(page.locator("[data-game-row='launch-test-game-1'] [data-game-toggle='launch-test-game-1']")).not.toHaveClass(/primary/);
     await expect(page.locator("[data-game-row='launch-test-game-1']").getByRole("button", { name: "Edit Launch Test Game" })).not.toHaveClass(/primary/);
     await expect(page.locator("[data-game-row='launch-test-game-1'] td").nth(0)).toHaveText("Learning Game");
@@ -376,14 +403,21 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
     await page.getByRole("button", { name: "Add Game" }).click();
     await page.locator("[data-game-add-row='input']").getByLabel("Game").fill("Archive Game");
     await page.locator("[data-game-add-row='input']").getByRole("button", { name: "Save" }).click();
-    await expect(page.locator("[data-game-row='archive-game-2']")).toHaveAttribute("data-game-active", "true");
+    await expect(page.locator("[data-game-row='archive-game-2']")).not.toHaveAttribute("data-game-active", "true");
+    await expect(page.locator("[data-game-row='archive-game-2'] [data-game-toggle='archive-game-2']")).toHaveAttribute("aria-current", "true");
     await expect(page.locator("[data-game-row='archive-game-2'] [data-game-toggle='archive-game-2']")).not.toHaveClass(/primary/);
 
     await page.locator("[data-game-row='launch-test-game-1'] [data-game-toggle='launch-test-game-1']").click();
-    await expect(page.locator("[data-game-row='launch-test-game-1']")).toHaveAttribute("data-game-active", "true");
+    await expect(page.locator("[data-game-row='launch-test-game-1']")).not.toHaveAttribute("data-game-active", "true");
+    await expect(page.locator("[data-game-row='launch-test-game-1'] [data-game-toggle='launch-test-game-1']")).toHaveAttribute("aria-current", "true");
+    await expect(page.locator("[data-game-row='archive-game-2'] [data-game-toggle='archive-game-2']")).not.toHaveAttribute("aria-current", "true");
+    await expect(page.locator("[data-game-toggle][aria-current='true']")).toHaveCount(1);
+    await expect(page.locator("[data-game-toggle][data-game-active='true']")).toHaveCount(1);
+    await expect(page.locator("[data-game-expanded-row='launch-test-game-1']")).toHaveCount(2);
+    await expect(page.locator("[data-game-expanded-row='archive-game-2']")).toHaveCount(0);
     await expect(page.locator("[data-game-row='launch-test-game-1'] [data-game-toggle='launch-test-game-1']")).not.toHaveClass(/primary/);
     await expect(page.locator("[data-game-row='launch-test-game-1']").getByRole("button", { name: "Edit Launch Test Game" })).not.toHaveClass(/primary/);
-    await expect(page.locator("[data-game-hub-log]")).toHaveText("Selected Launch Test Game.");
+    await expect(page.locator("[data-game-hub-log]")).not.toHaveText("Selected Launch Test Game.");
 
     await page.getByRole("button", { name: "Delete Open Game" }).click();
     await expect(page.locator("[data-game-row='launch-test-game-1']")).toHaveCount(0);
