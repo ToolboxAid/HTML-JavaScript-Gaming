@@ -1,0 +1,6 @@
+Manual Validation Notes: PASS
+
+PASS - Confirmed non-Ready Idea Board rows do not expose Create Project.
+PASS - Confirmed a Refining idea exposes Create Project only after status changes to Ready.
+PASS - Confirmed a converted Project idea has no Edit/Delete controls, no Add Note control, and no note edit/delete actions.
+PASS - Confirmed guest Create Project redirects to /account/sign-in.html and does not call createGame.

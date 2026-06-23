@@ -429,6 +429,123 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
   }
 });
 
+test("Idea Board gates Create Project to Ready ideas and locks converted projects", async ({ page }) => {
+  const server = await startRepoServer({
+    gameJourneyCompletionMetricsLegacyDbPath: null,
+    gameJourneyCompletionMetricsPostgresClient: createGameJourneyCompletionMetricsPostgresClientStub(),
+  });
+  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
+  const previousSupabaseEnv = {
+    GAMEFOUNDRY_DATABASE_URL: process.env.GAMEFOUNDRY_DATABASE_URL,
+    GAMEFOUNDRY_SUPABASE_ANON_KEY: process.env.GAMEFOUNDRY_SUPABASE_ANON_KEY,
+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: process.env.GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY,
+    GAMEFOUNDRY_SUPABASE_URL: process.env.GAMEFOUNDRY_SUPABASE_URL,
+  };
+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
+  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
+  process.env.GAMEFOUNDRY_DATABASE_URL = "postgres://idea-board:test@127.0.0.1:5432/idea_board";
+  process.env.GAMEFOUNDRY_SUPABASE_ANON_KEY = "idea-board-anon-key";
+  process.env.GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY = "idea-board-service-role-key";
+  process.env.GAMEFOUNDRY_SUPABASE_URL = `${server.baseUrl}/fake-supabase`;
+  const createGameRequests = [];
+  const failedRequests = [];
+  const pageErrors = [];
+  const consoleErrors = [];
+
+  page.on("request", (request) => {
+    const requestUrl = request.url();
+    if (requestUrl.includes("/api/toolbox/game-hub/repositories/") && requestUrl.includes("/methods/createGame")) {
+      createGameRequests.push(request.postDataJSON());
+    }
+  });
+  page.on("response", (response) => {
+    if (response.status() >= 400) failedRequests.push(`${response.status()} ${response.url()}`);
+  });
+  page.on("pageerror", (error) => {
+    const text = error.stack || error.message;
+    if (!isBrowserExtensionNoise(text)) pageErrors.push(error.message);
+  });
+  page.on("console", (message) => {
+    if (message.type() === "error" && !isBrowserExtensionNoise(message.text())) consoleErrors.push(message.text());
+  });
+
+  try {
+    await page.route("**/api/platform-settings/banner", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: { banner: { active: false, message: "", tone: "info" } },
+          ok: true,
+        }),
+      });
+    });
+    await page.route("**/api/toolbox/registry/snapshot", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: {
+            activeTools: [],
+            readinessByStatus: {},
+            tools: [],
+            toolboxContract: {},
+          },
+          ok: true,
+        }),
+      });
+    });
+    await page.request.post(`${server.baseUrl}/api/session/user`, {
+      data: { userKey: MOCK_DB_KEYS.users.user1 },
+    });
+
+    await page.goto(`${server.baseUrl}/toolbox/idea-board/index.html`, { waitUntil: "networkidle" });
+    await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] [data-idea-board-idea-action='create-project']")).toHaveCount(0);
+    await expect(page.locator("[data-idea-board-idea-row='sky-orchard'] [data-idea-board-idea-action='create-project']")).toHaveCount(0);
+    await expect(page.locator("[data-idea-board-idea-row='clockwork-courier'] [data-idea-board-idea-action='create-project']")).toHaveCount(0);
+
+    await page.locator("[data-idea-board-add-idea]").click();
+    await page.locator("[data-idea-board-idea-input]").fill("Validation Reef");
+    await page.locator("[data-idea-board-pitch-input]").fill("Verify project gating and read-only conversion.");
+    await page.locator("[data-idea-board-idea-status-input]").selectOption("Refining");
+    await page.locator("[data-idea-board-idea-action='save']").click();
+    await expect(page.locator("[data-idea-board-idea-row='validation-reef'] td").nth(1)).toHaveText("Refining");
+    await expect(page.locator("[data-idea-board-idea-row='validation-reef'] [data-idea-board-idea-action='create-project']")).toHaveCount(0);
+    expect(createGameRequests).toEqual([]);
+
+    await page.locator("[data-idea-board-idea-cell='validation-reef']").click();
+    await page.locator("[data-idea-board-add-note='validation-reef']").click();
+    await page.locator("[data-idea-board-note-input]").fill("This note should become read-only project context.");
+    await page.locator("[data-idea-board-note-action='save']").click();
+    await expect(page.locator("[data-idea-board-notes-count='validation-reef']")).toHaveText("1 Note");
+
+    await page.locator("[data-idea-board-idea-row='validation-reef'] [data-idea-board-idea-action='edit']").click();
+    await page.locator("[data-idea-board-idea-status-input]").selectOption("Ready");
+    await page.locator("[data-idea-board-idea-action='save']").click();
+    await expect(page.locator("[data-idea-board-idea-row='validation-reef'] td").nth(1)).toHaveText("Ready");
+    await expect(page.locator("[data-idea-board-idea-row='validation-reef'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Create Project", "Delete"]);
+
+    await page.locator("[data-idea-board-idea-row='validation-reef'] [data-idea-board-idea-action='create-project']").click();
+    await expect(page.locator("[data-idea-board-idea-row='validation-reef'] td").nth(1)).toHaveText("Project");
+    await expect(page.locator("[data-idea-board-idea-row='validation-reef'] [data-idea-board-idea-action]")).toHaveText(["Open in Game Hub", "Archive"]);
+    await expect(page.locator("[data-idea-board-idea-row='validation-reef'] [data-idea-board-idea-action='edit']")).toHaveCount(0);
+    await expect(page.locator("[data-idea-board-idea-row='validation-reef'] [data-idea-board-idea-action='delete']")).toHaveCount(0);
+    await expect(page.locator("[data-idea-board-add-note='validation-reef']")).toHaveCount(0);
+    await expect(page.locator("[data-idea-board-notes-table='validation-reef'] [data-idea-board-note-action]")).toHaveCount(0);
+    await expect(page.locator("[data-idea-board-note-input-row]")).toHaveCount(0);
+    expect(createGameRequests).toHaveLength(1);
+    expect(Object.keys(createGameRequests[0].args[0]).sort()).toEqual(["name", "purpose", "sourceIdea", "status"]);
+
+    expect(failedRequests).toEqual([]);
+    expect(pageErrors).toEqual([]);
+    expect(consoleErrors).toEqual([]);
+  } finally {
+    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
+    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
+    Object.entries(previousSupabaseEnv).forEach(([key, value]) => restoreEnvValue(key, value));
+    await server.close();
+  }
+});
+
 test("Idea Board guest Create Project redirects to sign in without creating a project", async ({ page }) => {
   const server = await startRepoServer();
   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
