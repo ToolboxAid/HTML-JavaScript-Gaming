@@ -11,19 +11,17 @@ const repository = createGameHubApiRepository();
 const elements = {
   currentUserRoleInput: document.querySelector("[data-current-user-role-input]"),
   deleteOpenGame: document.querySelector("[data-game-delete-active]"),
-  form: document.querySelector("[data-game-form]"),
   membersTable: document.querySelector("[data-game-members-table]"),
-  nameInput: document.querySelector("[data-game-name-input]"),
   progressChecklist: document.querySelector("[data-game-progress-checklist]"),
   gameList: document.querySelector("[data-game-list]"),
   projectRecordStatus: document.querySelector("[data-project-record-status]"),
-  purposeInput: document.querySelector("[data-game-purpose-input]"),
-  gameStatusInput: document.querySelector("[data-game-status-input]"),
   statusLog: document.querySelector("[data-game-hub-log]"),
   tableCounts: document.querySelector("[data-game-table-counts]"),
 };
 
 const state = {
+  addingGame: false,
+  editingGameId: "",
   expandedGameId: "",
 };
 
@@ -131,15 +129,11 @@ function setProjectRecordStatus(message) {
 
 function refreshSaveControls(activeGame = null) {
   const saveAllowed = projectRecordsSaveAllowed();
-  [elements.nameInput, elements.purposeInput, elements.gameStatusInput, elements.currentUserRoleInput].forEach((control) => {
+  [elements.currentUserRoleInput].forEach((control) => {
     if (control) {
       control.disabled = !saveAllowed;
     }
   });
-  const submitButton = elements.form?.querySelector("button[type='submit']");
-  if (submitButton) {
-    submitButton.disabled = !saveAllowed;
-  }
   if (elements.deleteOpenGame) {
     const sourceLinked = isSourceLinkedGame(activeGame);
     elements.deleteOpenGame.disabled = !saveAllowed || sourceLinked;
@@ -192,17 +186,30 @@ function currentGameMember(activeGame) {
   return activeGameMembers(activeGame).find((member) => member.userKey === userKey) || null;
 }
 
-function createGameButton(game, isActive) {
+function createActionButton(label, action, options = {}) {
   const button = document.createElement("button");
-  button.className = isActive ? "btn primary" : "btn";
+  button.className = options.primary ? "btn primary" : "btn";
   button.type = "button";
-  button.dataset.gameOpen = game.id;
-  button.setAttribute("aria-label", `Edit ${game.name}`);
-  if (isActive) {
-    button.dataset.gameActive = "true";
-    button.setAttribute("aria-current", "true");
+  button.dataset.gameAction = action;
+  if (options.gameId) {
+    button.dataset.gameId = options.gameId;
   }
-  button.textContent = "Edit";
+  if (options.disabled) {
+    button.disabled = true;
+  }
+  if (options.ariaLabel) {
+    button.setAttribute("aria-label", options.ariaLabel);
+  }
+  button.textContent = label;
+  return button;
+}
+
+function createGameButton(game) {
+  const button = createActionButton("Edit", "edit-game", {
+    ariaLabel: `Edit ${game.name}`,
+    disabled: !projectRecordsSaveAllowed(),
+    gameId: game.id,
+  });
   return button;
 }
 
@@ -220,11 +227,42 @@ function createCell(value, tagName = "td") {
   return cell;
 }
 
-function createGameToggleButton(game, expanded) {
+function createSelect(options, selectedValue, datasetName, ariaLabel) {
+  const select = document.createElement("select");
+  select.dataset[datasetName] = "true";
+  select.setAttribute("aria-label", ariaLabel);
+  options.forEach((option) => {
+    const item = document.createElement("option");
+    item.value = option;
+    item.textContent = option;
+    select.append(item);
+  });
+  select.value = options.includes(selectedValue) ? selectedValue : options[0] || "";
+  return select;
+}
+
+function createInput(value, datasetName, ariaLabel, options = {}) {
+  const input = document.createElement("input");
+  input.dataset[datasetName] = "true";
+  input.type = "text";
+  input.value = value || "";
+  input.placeholder = options.placeholder || "";
+  input.setAttribute("aria-label", ariaLabel);
+  if (options.readOnly) {
+    input.readOnly = true;
+  }
+  return input;
+}
+
+function createGameToggleButton(game, expanded, active) {
   const button = document.createElement("button");
-  button.className = expanded ? "btn btn--compact primary" : "btn btn--compact";
+  button.className = "btn btn--compact";
   button.type = "button";
   button.dataset.gameToggle = game.id;
+  if (active) {
+    button.dataset.gameActive = "true";
+    button.setAttribute("aria-current", "true");
+  }
   button.setAttribute("aria-expanded", String(expanded));
   button.setAttribute("aria-controls", `game-child-source-idea-${game.id} game-child-readiness-output-${game.id}`);
   button.textContent = game.name;
@@ -350,9 +388,91 @@ function renderExpandedGameRow(tbody, game, progress, active) {
   });
 }
 
+function renderAddGameRow(tbody) {
+  const row = document.createElement("tr");
+  row.dataset.gameAddRow = state.addingGame ? "input" : "button";
+
+  if (!state.addingGame) {
+    const cell = document.createElement("td");
+    cell.colSpan = 5;
+    cell.append(createActionButton("Add Game", "start-add-game", {
+      disabled: !projectRecordsSaveAllowed(),
+    }));
+    row.append(cell);
+    tbody.append(row);
+    return;
+  }
+
+  const nameCell = document.createElement("th");
+  nameCell.scope = "row";
+  nameCell.append(createInput("", "gameNameInput", "Game", {
+    placeholder: "Untitled game",
+  }));
+
+  const purposeCell = document.createElement("td");
+  purposeCell.append(createSelect(GAME_HUB_GAME_PURPOSES, "Game", "gamePurposeInput", "Purpose"));
+
+  const statusCell = document.createElement("td");
+  statusCell.append(createSelect(GAME_HUB_GAME_STATUSES, "Planning", "gameStatusInput", "Status"));
+
+  const ownerCell = createCell("Current user");
+  const actions = document.createElement("td");
+  actions.append(
+    createActionButton("Save", "save-add-game", { primary: true }),
+    createActionButton("Cancel", "cancel-add-game"),
+  );
+
+  row.append(nameCell, purposeCell, statusCell, ownerCell, actions);
+  tbody.append(row);
+}
+
+function renderEditGameRow(tbody, game) {
+  const row = document.createElement("tr");
+  row.dataset.gameEditRow = game.id;
+
+  const nameCell = document.createElement("th");
+  nameCell.scope = "row";
+  nameCell.append(createInput(game.name, "gameNameInput", "Game", {
+    readOnly: true,
+  }));
+
+  const purposeCell = document.createElement("td");
+  purposeCell.append(createSelect(GAME_HUB_GAME_PURPOSES, game.purpose, "gamePurposeInput", "Purpose"));
+
+  const statusCell = document.createElement("td");
+  statusCell.append(createSelect(GAME_HUB_GAME_STATUSES, game.status, "gameStatusInput", "Status"));
+
+  const actions = document.createElement("td");
+  actions.append(
+    createActionButton("Save", "save-edit-game", {
+      gameId: game.id,
+      primary: true,
+    }),
+    createActionButton("Cancel", "cancel-edit-game", {
+      gameId: game.id,
+    }),
+  );
+
+  row.append(
+    nameCell,
+    purposeCell,
+    statusCell,
+    createCell(game.ownerDisplayName || "No owner"),
+    actions,
+  );
+  tbody.append(row);
+}
+
 function renderGameParentRow(tbody, game, activeGame, progress) {
   const expanded = state.expandedGameId === game.id;
   const active = activeGame?.id === game.id;
+  const editing = state.editingGameId === game.id;
+
+  if (editing) {
+    renderEditGameRow(tbody, game);
+    return;
+  }
+
   const row = document.createElement("tr");
   row.dataset.gameRow = game.id;
   if (active) {
@@ -362,7 +482,10 @@ function renderGameParentRow(tbody, game, activeGame, progress) {
 
   const nameCell = document.createElement("th");
   nameCell.scope = "row";
-  nameCell.append(createGameToggleButton(game, expanded));
+  if (active) {
+    nameCell.dataset.gameActiveCell = "true";
+  }
+  nameCell.append(createGameToggleButton(game, expanded, active));
   row.append(
     nameCell,
     createCell(game.purpose || "Game"),
@@ -371,7 +494,7 @@ function renderGameParentRow(tbody, game, activeGame, progress) {
   );
 
   const actions = document.createElement("td");
-  actions.append(createGameButton(game, active));
+  actions.append(createGameButton(game));
   row.append(actions);
   tbody.append(row);
 
@@ -406,8 +529,7 @@ function renderGameList(progress) {
   }
 
   if (listResult.length === 0) {
-    elements.gameList.append(createGameListStatus("No Game Hub projects yet. Create a game to start building.", "empty"));
-    return;
+    elements.gameList.append(createGameListStatus("No Game Hub projects yet. Add a game to start building.", "empty"));
   }
 
   const wrapper = document.createElement("div");
@@ -419,6 +541,7 @@ function renderGameList(progress) {
   table.innerHTML = "<thead><tr><th scope=\"col\">Game</th><th scope=\"col\">Purpose</th><th scope=\"col\">Status</th><th scope=\"col\">Owner</th><th scope=\"col\">Actions</th></tr></thead>";
   const body = document.createElement("tbody");
   listResult.forEach((game) => renderGameParentRow(body, game, activeGame, progress));
+  renderAddGameRow(body);
   table.append(body);
   wrapper.append(table);
   elements.gameList.append(wrapper);
@@ -508,12 +631,6 @@ function renderWorkspace() {
   const progress = normalizeProgress(repository.getGameProgress());
   const currentMember = currentGameMember(activeGame);
 
-  if (elements.purposeInput && activeGame?.purpose) {
-    elements.purposeInput.value = activeGame.purpose;
-  }
-  if (elements.gameStatusInput && activeGame?.status) {
-    elements.gameStatusInput.value = activeGame.status;
-  }
   if (elements.currentUserRoleInput) {
     elements.currentUserRoleInput.value = currentMember?.role || "Viewer";
   }
@@ -526,16 +643,23 @@ function renderWorkspace() {
   refreshSaveControls(activeGame);
 }
 
-elements.form?.addEventListener("submit", (event) => {
-  event.preventDefault();
+function readGameRowFields(row) {
+  return {
+    name: row?.querySelector("[data-game-name-input]")?.value,
+    purpose: row?.querySelector("[data-game-purpose-input]")?.value,
+    status: row?.querySelector("[data-game-status-input]")?.value,
+  };
+}
+
+function saveAddedGame(row) {
   if (!ensureProjectRecordsSaveAllowed("create")) {
     return;
   }
-  const activeGame = normalizeActiveGame(repository.getActiveGame());
+  const input = readGameRowFields(row);
   const game = repository.createGame({
-    name: elements.nameInput?.value,
-    purpose: elements.purposeInput?.value,
-    status: elements.gameStatusInput?.value,
+    name: input.name,
+    purpose: input.purpose,
+    status: input.status,
   });
 
   if (reportRepositoryError(game, "Add game") || !isRecord(game) || !String(game.name || "").trim()) {
@@ -546,33 +670,125 @@ elements.form?.addEventListener("submit", (event) => {
     return;
   }
 
-  if (elements.nameInput) {
-    elements.nameInput.value = "";
-  }
-
+  state.addingGame = false;
+  state.editingGameId = "";
   setStatusLog(`Created and opened ${game.name}.`);
   renderWorkspace();
-});
+}
+
+function saveEditedGame(row, gameId) {
+  if (!ensureProjectRecordsSaveAllowed("update")) {
+    return;
+  }
+  const input = readGameRowFields(row);
+  let game = repository.openGame(gameId);
+  if (reportRepositoryError(game, "Edit game") || !isRecord(game)) {
+    if (!isRepositoryErrorResult(game)) {
+      setStatusLog("Edit game could not be completed. Refresh the page or try again shortly.");
+    }
+    renderWorkspace();
+    return;
+  }
+
+  if (input.purpose && input.purpose !== game.purpose) {
+    game = repository.updateGamePurpose(gameId, input.purpose);
+    if (reportRepositoryError(game, "Update game purpose") || !isRecord(game)) {
+      if (!isRepositoryErrorResult(game)) {
+        setStatusLog("Update game purpose could not be completed. Refresh the page or try again shortly.");
+      }
+      renderWorkspace();
+      return;
+    }
+  }
+
+  if (input.status && input.status !== game.status) {
+    game = repository.updateGameStatus(gameId, input.status);
+    if (reportRepositoryError(game, "Update game status") || !isRecord(game)) {
+      if (!isRepositoryErrorResult(game)) {
+        setStatusLog("Update game status could not be completed. Refresh the page or try again shortly.");
+      }
+      renderWorkspace();
+      return;
+    }
+  }
+
+  state.editingGameId = "";
+  setStatusLog(`Saved ${game.name}.`);
+  renderWorkspace();
+}
 
 elements.gameList?.addEventListener("click", (event) => {
   const toggle = event.target.closest("[data-game-toggle]");
   if (toggle) {
+    const game = repository.openGame(toggle.dataset.gameToggle);
+    if (reportRepositoryError(game, "Select game")) {
+      renderWorkspace();
+      return;
+    }
+    if (game) {
+      setStatusLog(`Selected ${game.name}.`);
+    }
     state.expandedGameId = state.expandedGameId === toggle.dataset.gameToggle ? "" : toggle.dataset.gameToggle;
     renderWorkspace();
     return;
   }
 
-  const button = event.target.closest("[data-game-open]");
+  const action = event.target.closest("[data-game-action]");
 
-  if (!button) {
+  if (!action) {
     return;
   }
 
-  const game = repository.openGame(button.dataset.gameOpen);
+  if (action.dataset.gameAction === "start-add-game") {
+    if (!ensureProjectRecordsSaveAllowed("create")) {
+      return;
+    }
+    state.addingGame = true;
+    state.editingGameId = "";
+    renderWorkspace();
+    return;
+  }
 
-  if (game) {
+  if (action.dataset.gameAction === "cancel-add-game") {
+    state.addingGame = false;
+    setStatusLog("Cancelled game add.");
+    renderWorkspace();
+    return;
+  }
+
+  if (action.dataset.gameAction === "save-add-game") {
+    saveAddedGame(action.closest("[data-game-add-row='input']"));
+    return;
+  }
+
+  if (action.dataset.gameAction === "edit-game") {
+    if (!ensureProjectRecordsSaveAllowed("update")) {
+      return;
+    }
+    const game = repository.openGame(action.dataset.gameId);
+    if (reportRepositoryError(game, "Edit game") || !isRecord(game)) {
+      if (!isRepositoryErrorResult(game)) {
+        setStatusLog("Edit game could not be completed. Refresh the page or try again shortly.");
+      }
+      renderWorkspace();
+      return;
+    }
+    state.addingGame = false;
+    state.editingGameId = game.id;
     setStatusLog(`Editing ${game.name}.`);
     renderWorkspace();
+    return;
+  }
+
+  if (action.dataset.gameAction === "cancel-edit-game") {
+    state.editingGameId = "";
+    setStatusLog("Cancelled game edit.");
+    renderWorkspace();
+    return;
+  }
+
+  if (action.dataset.gameAction === "save-edit-game") {
+    saveEditedGame(action.closest("[data-game-edit-row]"), action.dataset.gameId);
   }
 });
 
@@ -598,34 +814,6 @@ elements.deleteOpenGame?.addEventListener("click", () => {
   renderWorkspace();
 });
 
-elements.purposeInput?.addEventListener("change", () => {
-  if (!ensureProjectRecordsSaveAllowed("update")) {
-    return;
-  }
-  const activeGame = normalizeActiveGame(repository.getActiveGame(), "Update game purpose");
-  if (!activeGame) {
-    return;
-  }
-
-  const game = repository.updateGamePurpose(activeGame.id, elements.purposeInput.value);
-  setStatusLog(`Updated ${game.name} purpose to ${game.purpose}.`);
-  renderWorkspace();
-});
-
-elements.gameStatusInput?.addEventListener("change", () => {
-  if (!ensureProjectRecordsSaveAllowed("update")) {
-    return;
-  }
-  const activeGame = normalizeActiveGame(repository.getActiveGame(), "Update game status");
-  if (!activeGame) {
-    return;
-  }
-
-  const game = repository.updateGameStatus(activeGame.id, elements.gameStatusInput.value);
-  setStatusLog(`Updated ${game.name} status to ${game.status}.`);
-  renderWorkspace();
-});
-
 elements.currentUserRoleInput?.addEventListener("change", () => {
   if (!ensureProjectRecordsSaveAllowed("update")) {
     return;
@@ -640,8 +828,6 @@ elements.currentUserRoleInput?.addEventListener("change", () => {
   renderWorkspace();
 });
 
-populateSelect(elements.purposeInput, GAME_HUB_GAME_PURPOSES);
-populateSelect(elements.gameStatusInput, GAME_HUB_GAME_STATUSES);
 populateSelect(elements.currentUserRoleInput, GAME_HUB_MEMBER_ROLES);
 const requestedGameId = new URL(window.location.href).searchParams.get("game");
 if (requestedGameId) {

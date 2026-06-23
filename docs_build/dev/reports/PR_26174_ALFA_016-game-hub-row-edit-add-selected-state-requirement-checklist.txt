@@ -1,0 +1,17 @@
+Requirement Checklist: PASS
+
+PASS - Selected state now appears as a thin indicator on the Game cell for the active game.
+PASS - Active game does not use a filled row background.
+PASS - Active game does not use a different background color.
+PASS - Active Game button does not use selected button styling.
+PASS - Edit button does not look selected while a row is merely active.
+PASS - Add Game button/row appears under the game table.
+PASS - Add row includes Game textbox, Purpose dropdown, and Status dropdown.
+PASS - Add row actions show Save and Cancel.
+PASS - Edit row actions show Save and Cancel.
+PASS - Columns remain Game, Purpose, Status, Owner, Actions.
+PASS - Source Idea child rows are preserved.
+PASS - Readiness Output child rows are preserved.
+PASS - table_first_ui.md and the Idea Board table-first add-row/edit-row pattern were followed.
+PASS - No browser-owned product data was introduced.
+PASS - No silent fallbacks were introduced.
