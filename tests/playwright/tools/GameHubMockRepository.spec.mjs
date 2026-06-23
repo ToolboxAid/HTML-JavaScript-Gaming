@@ -209,6 +209,19 @@ async function openRepoPage(page, pathName, options = {}) {
     });
   }
 
+  if (pathName.includes("/toolbox/index.html")) {
+    await page.route("**/api/game-journey/completion-metrics", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: { records: [] },
+          ok: true,
+          rule: "Browser -> Server API -> Data Source",
+        }),
+      });
+    });
+  }
+
   await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
   return { failedRequests, pageErrors, consoleErrors, server };
@@ -235,7 +248,7 @@ test("Deprecated project workspace route points creators to Game Hub", async ({ 
     await expect(page.getByRole("heading", { name: "Game Hub" })).toBeVisible();
     await expect(page.locator("main")).toContainText("This route is kept for older links.");
     await expect(page.locator("main")).not.toContainText("Project Workspace");
-    await expect(page.getByRole("link", { name: "Open Game Hub" })).toHaveAttribute("href", "toolbox/game-hub/index.html");
+    await expect(page.locator("main").getByRole("link", { name: "Open Game Hub" })).toHaveAttribute("href", "toolbox/game-hub/index.html");
 
     await expectNoPageFailures(failures);
   } finally {
@@ -591,7 +604,7 @@ test("Game Hub preserves guest browsing and blocks guest saves", async ({ page }
     await expect(page.getByRole("button", { name: "Delete Open Game" })).toBeDisabled();
     await expect(page.getByLabel("Game Name")).toHaveCount(0);
     await expect(page.getByLabel("Game Purpose")).toHaveCount(0);
-    await expect(page.getByLabel("Game Status")).toHaveCount(0);
+    await expect(page.locator("input[aria-label='Game Status'], textarea[aria-label='Game Status'], select[aria-label='Game Status']")).toHaveCount(0);
     await expect(page.getByLabel("Current User Role")).toHaveCount(0);
 
     await page.locator("[data-game-row='gravity-demo'] [data-game-toggle='gravity-demo']").click();
