@@ -1,269 +1,149 @@
-﻿diff --git a/assets/theme-v2/css/tables.css b/assets/theme-v2/css/tables.css
-index c39ef19f0..5575ff684 100644
---- a/assets/theme-v2/css/tables.css
-+++ b/assets/theme-v2/css/tables.css
-@@ -116,26 +116,26 @@ td {
- }
-
- .idea-board-idea-label {
--  display: inline-flex;
--  align-items: center;
--  gap: .35em;
-+  display: inline;
-   color: inherit;
-   font: inherit;
-   line-height: var(--line-height-single);
-   vertical-align: baseline;
--  white-space: nowrap
-+  white-space: normal
- }
-
- .idea-board-idea-label__text {
--  line-height: var(--line-height-single)
-+  overflow-wrap: anywhere;
-+  line-height: inherit
- }
-
- .idea-board-idea-chevron {
-   display: inline-block;
-   width: 1em;
-   height: 1em;
--  flex: 0 0 1em;
-+  margin-right: .35em;
-   background: currentColor;
-+  vertical-align: -0.125em;
-   -webkit-mask-position: center;
-   mask-position: center;
-   -webkit-mask-repeat: no-repeat;
-diff --git a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-index 214c0081e..da7800ca0 100644
+﻿diff --git a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+index da7800ca0..61d8fdc68 100644
 --- a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
 +++ b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-@@ -21,8 +21,6 @@ async function expectIdeaChevron(page, ideaId, iconName) {
-     const cellStyles = getComputedStyle(cell);
-     const labelStyles = getComputedStyle(label);
-     const iconStyles = getComputedStyle(icon);
--    const textRect = text.getBoundingClientRect();
--    const iconRect = icon.getBoundingClientRect();
-     return {
-       iconName: icon.dataset.ideaBoardChevronIcon,
-       labelDisplay: labelStyles.display,
-@@ -30,21 +28,19 @@ async function expectIdeaChevron(page, ideaId, iconName) {
-       iconHeight: Number.parseFloat(iconStyles.height),
-       fontSize: Number.parseFloat(cellStyles.fontSize),
-       iconColor: iconStyles.backgroundColor,
--      iconBottom: iconRect.bottom,
--      iconLeft: iconRect.left,
-+      iconBeforeText: Boolean(icon.compareDocumentPosition(text) & Node.DOCUMENT_POSITION_FOLLOWING),
-+      iconVerticalAlign: Number.parseFloat(iconStyles.verticalAlign),
-       textColor: cellStyles.color,
--      textBottom: textRect.bottom,
--      textLeft: textRect.left,
-       maskImage: iconStyles.getPropertyValue("-webkit-mask-image") || iconStyles.maskImage,
-     };
-   }, ideaId);
-   expect(metrics.iconName).toBe(iconName);
--  expect(metrics.labelDisplay).toBe("inline-flex");
-+  expect(metrics.labelDisplay).toBe("inline");
-   expect(Math.abs(metrics.iconWidth - metrics.fontSize)).toBeLessThanOrEqual(1);
-   expect(Math.abs(metrics.iconHeight - metrics.fontSize)).toBeLessThanOrEqual(1);
-   expect(metrics.iconColor).toBe(metrics.textColor);
--  expect(metrics.iconLeft).toBeLessThan(metrics.textLeft);
--  expect(Math.abs(metrics.iconBottom - metrics.textBottom)).toBeLessThanOrEqual(2);
-+  expect(metrics.iconBeforeText).toBe(true);
-+  expect(metrics.iconVerticalAlign).toBeLessThan(0);
-   expect(metrics.maskImage).toContain(iconName);
- }
+@@ -5,6 +5,10 @@ import { isBrowserExtensionNoise } from "../../helpers/browserExtensionNoise.mjs
+ import { createGameJourneyCompletionMetricsPostgresClientStub } from "../../helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs";
+ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 
-@@ -203,7 +199,6 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-       "Idea",
-       "Pitch",
-       "Status",
--      "Updated",
-       "Notes",
-       "Actions",
-     ]);
-@@ -219,6 +214,14 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
++const EDITABLE_STATUS_OPTIONS = ["New", "Exploring", "Refining", "Ready"];
++const FILTER_STATUS_OPTIONS = ["New", "Exploring", "Refining", "Ready", "Project", "Archived"];
++const DEFAULT_VISIBLE_STATUS_OPTIONS = ["New", "Exploring", "Refining", "Ready", "Project"];
++
+ function restoreEnvValue(key, value) {
+   if (value === undefined) {
+     delete process.env[key];
+@@ -213,7 +217,7 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
+     await expect(statusFilterAccordion.locator("summary")).toHaveText("Status Filter");
      await expect(statusFilterAccordion.locator("[data-idea-board-filter-select-all]")).toHaveText("Select All");
      await expect(statusFilterAccordion.locator("[data-idea-board-filter-clear-all]")).toHaveText("Clear All");
-     await expect(statusFilterAccordion.locator("[data-idea-board-status-filter-option]")).toHaveCount(6);
-+    const statusFilterTheme = await statusFilterAccordion.locator("[data-idea-board-status-filter-option][value='New']").evaluate((input) => ({
-+      accentColor: getComputedStyle(input).accentColor,
-+      toolGroupColor: getComputedStyle(input.closest(".control-lab")).getPropertyValue("--tool-group-color").trim(),
-+    }));
-+    expect(statusFilterTheme).toEqual({
-+      accentColor: "rgb(255, 45, 45)",
-+      toolGroupColor: "#ff2d2d",
-+    });
-     await expect(statusFilterAccordion.locator(".idea-board-show-filter__option")).toHaveText([
-       "New",
-       "Exploring",
-@@ -242,10 +245,21 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-     await expectIdeaChevron(page, "top-thoughts", "gfs-chevron-down.svg");
-     await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] td").nth(0)).toHaveText("Smartest person wins...");
-     await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] td").nth(1)).toHaveText("Exploring");
--    await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] td").nth(2)).toHaveText("2026-06-20");
-     await expect(page.locator("[data-idea-board-notes-count='top-thoughts']")).toHaveText("3 Notes");
-     await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Delete"]);
-     await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] [data-idea-board-idea-action='create-project']")).toHaveCount(0);
-+    const ideaLabelWrapping = await page.locator("[data-idea-board-idea-row='top-thoughts'] .idea-board-idea-label").evaluate((label) => {
-+      const labelStyles = getComputedStyle(label);
-+      const textStyles = getComputedStyle(label.querySelector(".idea-board-idea-label__text"));
-+      return {
-+        overflowWrap: textStyles.overflowWrap,
-+        whiteSpace: labelStyles.whiteSpace,
-+      };
-+    });
-+    expect(ideaLabelWrapping).toEqual({
-+      overflowWrap: "anywhere",
-+      whiteSpace: "normal",
-+    });
-
-     await expect(page.locator("[data-idea-board-idea-row='sky-orchard'] th")).toHaveText("Sky Orchard");
-     await expectIdeaChevron(page, "sky-orchard", "gfs-chevron-down.svg");
-@@ -259,6 +273,7 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-     await expect(page.locator("[data-idea-board-expanded-row]")).toHaveCount(0);
-     await page.locator("[data-idea-board-idea-cell='top-thoughts']").click();
-     await expect(page.locator("[data-idea-board-expanded-row='top-thoughts']")).toBeVisible();
-+    await expect(page.locator("[data-idea-board-expanded-row='top-thoughts'] > td")).toHaveAttribute("colspan", "5");
-     await expectProductionCopy(page);
-     await expectIdeaChevron(page, "top-thoughts", "gfs-chevron-up.svg");
-     await expect(page.locator("[data-idea-board-idea-row='top-thoughts'] + [data-idea-board-expanded-row='top-thoughts']")).toHaveCount(1);
-@@ -320,11 +335,8 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-       "Exploring",
-       "Refining",
-       "Ready",
+-    await expect(statusFilterAccordion.locator("[data-idea-board-status-filter-option]")).toHaveCount(6);
++    await expect(statusFilterAccordion.locator("[data-idea-board-status-filter-option]")).toHaveCount(FILTER_STATUS_OPTIONS.length);
+     const statusFilterTheme = await statusFilterAccordion.locator("[data-idea-board-status-filter-option][value='New']").evaluate((input) => ({
+       accentColor: getComputedStyle(input).accentColor,
+       toolGroupColor: getComputedStyle(input.closest(".control-lab")).getPropertyValue("--tool-group-color").trim(),
+@@ -222,18 +226,11 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
+       accentColor: "rgb(255, 45, 45)",
+       toolGroupColor: "#ff2d2d",
+     });
+-    await expect(statusFilterAccordion.locator(".idea-board-show-filter__option")).toHaveText([
+-      "New",
+-      "Exploring",
+-      "Refining",
+-      "Ready",
 -      "Project",
 -      "Archived",
-     ]);
--    await expect(ideaInputRow.locator("td").nth(2)).toHaveText(/\d{4}-\d{2}-\d{2}/);
--    await expect(ideaInputRow.locator("td").nth(3)).toHaveText("0 Notes");
-+    await expect(ideaInputRow.locator("td").nth(2)).toHaveText("0 Notes");
+-    ]);
++    await expect(statusFilterAccordion.locator(".idea-board-show-filter__option")).toHaveText(FILTER_STATUS_OPTIONS);
+     const checkedStatuses = await page.locator("[data-idea-board-status-filter-option]:checked").evaluateAll((inputs) => (
+       inputs.map((input) => input.value)
+     ));
+-    expect(checkedStatuses).toEqual(["New", "Exploring", "Refining", "Ready", "Project"]);
++    expect(checkedStatuses).toEqual(DEFAULT_VISIBLE_STATUS_OPTIONS);
+     await expect(page.locator("[data-idea-board-status-filter-option][value='Archived']")).not.toBeChecked();
+     await expect(page.getByText(/another/i)).toHaveCount(0);
+     await expect(page.locator("[data-idea-board-notes-chevron]")).toHaveCount(0);
+@@ -330,12 +327,7 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
+     const ideaInputRow = page.locator("[data-idea-board-idea-input-row]").last();
+     await expect(ideaInputRow.locator("[data-idea-board-idea-action]")).toHaveText(["Save", "Cancel"]);
+     await expect(ideaInputRow.locator("[data-idea-board-idea-status-input]")).toHaveCount(1);
+-    await expect(ideaInputRow.locator("[data-idea-board-idea-status-input] option")).toHaveText([
+-      "New",
+-      "Exploring",
+-      "Refining",
+-      "Ready",
+-    ]);
++    await expect(ideaInputRow.locator("[data-idea-board-idea-status-input] option")).toHaveText(EDITABLE_STATUS_OPTIONS);
+     await expect(ideaInputRow.locator("td").nth(2)).toHaveText("0 Notes");
      await page.locator("[data-idea-board-idea-input]").fill("Lantern Reef");
      await page.locator("[data-idea-board-pitch-input]").fill("Guide light through a reef that rearranges at dusk.");
-     await page.locator("[data-idea-board-idea-status-input]").selectOption("Refining");
+@@ -355,6 +347,7 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
+     await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='edit']").click();
+     await expect(page.locator("[data-idea-board-idea-input-row] [data-idea-board-idea-action]")).toHaveText(["Save", "Cancel"]);
+     await expect(page.locator("[data-idea-board-idea-status-input]")).toHaveCount(1);
++    await expect(page.locator("[data-idea-board-idea-status-input] option")).toHaveText(EDITABLE_STATUS_OPTIONS);
+     await page.locator("[data-idea-board-idea-status-input]").selectOption("Ready");
+     await page.locator("[data-idea-board-idea-action='save']").click();
+     await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] td").nth(1)).toHaveText("Ready");
 diff --git a/tests/playwright/tools/ToolboxRoutePages.spec.mjs b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
-index de9995354..a2622e969 100644
+index a2622e969..1f2bf6e89 100644
 --- a/tests/playwright/tools/ToolboxRoutePages.spec.mjs
 +++ b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
-@@ -120,8 +120,6 @@ async function expectIdeaChevron(page, ideaId, iconName) {
-     const cellStyles = getComputedStyle(cell);
-     const labelStyles = getComputedStyle(label);
-     const iconStyles = getComputedStyle(icon);
--    const textRect = text.getBoundingClientRect();
--    const iconRect = icon.getBoundingClientRect();
-     return {
-       iconName: icon.dataset.ideaBoardChevronIcon,
-       labelDisplay: labelStyles.display,
-@@ -129,21 +127,19 @@ async function expectIdeaChevron(page, ideaId, iconName) {
-       iconHeight: Number.parseFloat(iconStyles.height),
-       fontSize: Number.parseFloat(cellStyles.fontSize),
-       iconColor: iconStyles.backgroundColor,
--      iconBottom: iconRect.bottom,
--      iconLeft: iconRect.left,
-+      iconBeforeText: Boolean(icon.compareDocumentPosition(text) & Node.DOCUMENT_POSITION_FOLLOWING),
-+      iconVerticalAlign: Number.parseFloat(iconStyles.verticalAlign),
-       textColor: cellStyles.color,
--      textBottom: textRect.bottom,
--      textLeft: textRect.left,
-       maskImage: iconStyles.getPropertyValue("-webkit-mask-image") || iconStyles.maskImage,
-     };
-   }, ideaId);
-   expect(metrics.iconName).toBe(iconName);
--  expect(metrics.labelDisplay).toBe("inline-flex");
-+  expect(metrics.labelDisplay).toBe("inline");
-   expect(Math.abs(metrics.iconWidth - metrics.fontSize)).toBeLessThanOrEqual(1);
-   expect(Math.abs(metrics.iconHeight - metrics.fontSize)).toBeLessThanOrEqual(1);
-   expect(metrics.iconColor).toBe(metrics.textColor);
--  expect(metrics.iconLeft).toBeLessThan(metrics.textLeft);
--  expect(Math.abs(metrics.iconBottom - metrics.textBottom)).toBeLessThanOrEqual(2);
-+  expect(metrics.iconBeforeText).toBe(true);
-+  expect(metrics.iconVerticalAlign).toBeLessThan(0);
-   expect(metrics.maskImage).toContain(iconName);
- }
+@@ -4,6 +4,9 @@ import { isBrowserExtensionNoise } from "../../helpers/browserExtensionNoise.mjs
+ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
+ import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
-@@ -314,14 +310,15 @@ test("Idea Board launches from Toolbox with accordion table notes model", async
-       sections.map((section) => section.getAttribute("data-idea-board-section"))
-     ));
-     expect(ideaBoardSections).toEqual([
--      "Workflow",
-+      "Status Filter",
-       "Status",
-+      "Workflow",
-       "Idea Table",
-       "Notes Governance",
-       "Diagnostics",
++const IDEA_BOARD_EDITABLE_STATUS_OPTIONS = ["New", "Exploring", "Refining", "Ready"];
++const IDEA_BOARD_FILTER_STATUS_OPTIONS = ["New", "Exploring", "Refining", "Ready", "Project", "Archived"];
++
+ const TOOL_ROUTE_SMOKE_CASES = [
+   { heading: "Game Journey", route: "/tools/game-journey/index.html" },
+   { heading: "Idea Board", route: "/tools/idea-board/index.html" },
+@@ -319,6 +322,8 @@ test("Idea Board launches from Toolbox with accordion table notes model", async
      ]);
      await expect(page.locator("[data-idea-board-table]")).toBeVisible();
--    await expect(page.locator("[data-idea-board-table] > thead th[scope='col']")).toHaveText(["Idea", "Pitch", "Status", "Updated", "Notes", "Actions"]);
-+    await expect(page.locator("[data-idea-board-table] > thead th[scope='col']")).toHaveText(["Idea", "Pitch", "Status", "Notes", "Actions"]);
+     await expect(page.locator("[data-idea-board-table] > thead th[scope='col']")).toHaveText(["Idea", "Pitch", "Status", "Notes", "Actions"]);
++    await expect(page.locator("[data-idea-board-status-filter-option]")).toHaveCount(IDEA_BOARD_FILTER_STATUS_OPTIONS.length);
++    await expect(page.locator(".idea-board-show-filter__option")).toHaveText(IDEA_BOARD_FILTER_STATUS_OPTIONS);
      await expect(page.locator("[data-idea-board-idea-row]")).toHaveCount(3);
      await expect(page.locator("[data-idea-board-expanded-row]")).toHaveCount(0);
      await expect(page.locator("[data-idea-board-add-idea]")).toHaveText("Add Idea");
-diff --git a/toolbox/idea-board/index.html b/toolbox/idea-board/index.html
-index bf4d9a010..db8b2f2ae 100644
---- a/toolbox/idea-board/index.html
-+++ b/toolbox/idea-board/index.html
-@@ -36,7 +36,7 @@
-                                         <button class="btn btn--compact" type="button" data-idea-board-filter-select-all>Select All</button>
-                                         <button class="btn btn--compact" type="button" data-idea-board-filter-clear-all>Clear All</button>
-                                     </div>
--                                    <div class="idea-board-show-filter__options" data-idea-board-status-options></div>
-+                                    <div class="idea-board-show-filter__options control-lab tool-group-idea" data-idea-board-status-options></div>
-                                 </div>
-                             </details>
-                             <details class="vertical-accordion" data-idea-board-section="Status">
-@@ -67,7 +67,6 @@
-                                         <th scope="col">Idea</th>
-                                         <th scope="col">Pitch</th>
-                                         <th scope="col">Status</th>
--                                        <th scope="col">Updated</th>
-                                         <th scope="col">Notes</th>
-                                         <th scope="col">Actions</th>
-                                     </tr>
+@@ -360,6 +365,7 @@ test("Idea Board launches from Toolbox with accordion table notes model", async
+     await page.locator("[data-idea-board-add-idea]").click();
+     await page.locator("[data-idea-board-idea-input]").fill("Launch Tile");
+     await page.locator("[data-idea-board-pitch-input]").fill("Turn a polished board idea into a project.");
++    await expect(page.locator("[data-idea-board-idea-status-input] option")).toHaveText(IDEA_BOARD_EDITABLE_STATUS_OPTIONS);
+     await page.locator("[data-idea-board-idea-status-input]").selectOption("Ready");
+     await page.locator("[data-idea-board-idea-action='save']").click();
+     await expect(page.locator("[data-idea-board-idea-row='launch-tile'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Create Project", "Delete"]);
 diff --git a/toolbox/idea-board/index.js b/toolbox/idea-board/index.js
-index 0ae02bd7a..8fcb7ad53 100644
+index 8fcb7ad53..86d4dae4b 100644
 --- a/toolbox/idea-board/index.js
 +++ b/toolbox/idea-board/index.js
-@@ -196,6 +196,7 @@ function statusSelect(value) {
+@@ -1,7 +1,8 @@
+ import { createServerRepositoryClient } from "../../src/api/server-api-client.js";
+ import { getSessionCurrent } from "../../src/api/session-api-client.js";
+
+-const statusOptions = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project", "Archived"]);
++const editableStatusOptions = Object.freeze(["New", "Exploring", "Refining", "Ready"]);
++const filterStatusOptions = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project", "Archived"]);
+ const defaultVisibleStatuses = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project"]);
+ const userId = "user-1";
+ const gameHubRoute = "toolbox/game-hub/index.html";
+@@ -123,7 +124,7 @@ function visibleIdeas() {
+ }
+
+ function previousStatusForRestore(record) {
+-  return statusOptions.includes(record.previousStatus) && record.previousStatus !== "Archived"
++  return filterStatusOptions.includes(record.previousStatus) && record.previousStatus !== "Archived"
+     ? record.previousStatus
+     : "Refining";
+ }
+@@ -168,7 +169,7 @@ function renderStatusFilter(root) {
+   const options = root.querySelector("[data-idea-board-status-options]");
+   if (!options) return;
+   options.replaceChildren();
+-  for (const status of statusOptions) {
++  for (const status of filterStatusOptions) {
+     const label = document.createElement("label");
+     label.className = "idea-board-show-filter__option";
+     const input = document.createElement("input");
+@@ -195,8 +196,7 @@ function statusSelect(value) {
+   const select = document.createElement("select");
    select.setAttribute("aria-label", "Idea status");
    select.dataset.ideaBoardIdeaStatusInput = "true";
-   for (const optionValue of statusOptions) {
-+    if (optionValue === "Project" || optionValue === "Archived") continue;
+-  for (const optionValue of statusOptions) {
+-    if (optionValue === "Project" || optionValue === "Archived") continue;
++  for (const optionValue of editableStatusOptions) {
      const option = document.createElement("option");
      option.value = optionValue;
      option.textContent = optionValue;
-@@ -231,7 +232,6 @@ function renderIdeaInputRow(tbody, record = null) {
-   const statusCell = document.createElement("td");
-   statusCell.append(statusSelect(record?.status || "New"));
-   row.append(statusCell);
--  row.append(cell(record?.updated || today()));
-   row.append(cell(record ? noteCountLabel(record.ideaId) : "0 Notes"));
+@@ -756,7 +756,7 @@ function handleNoteAction(root, actionControl) {
 
-   const actions = document.createElement("td");
-@@ -274,7 +274,6 @@ function renderIdeaRow(tbody, record) {
-   row.append(idea);
-   row.append(cell(record.pitch));
-   row.append(cell(record.status));
--  row.append(cell(record.updated));
-
-   const notes = document.createElement("td");
-   const notesCount = document.createElement("span");
-@@ -353,7 +352,7 @@ function renderExpandedNotesRow(tbody, record) {
-   row.dataset.ideaBoardExpandedRow = record.ideaId;
-
-   const content = document.createElement("td");
--  content.colSpan = 6;
-+  content.colSpan = 5;
-
-   const childSurface = document.createElement("div");
-   childSurface.className = "idea-board-notes-child-surface";
-@@ -400,7 +399,7 @@ function renderAddIdeaRow(tbody) {
-   const row = document.createElement("tr");
-   row.dataset.ideaBoardAddIdeaRow = "true";
-   const actions = document.createElement("td");
--  actions.colSpan = 6;
-+  actions.colSpan = 5;
-   const addIdea = actionButton("Add Idea", "add", "ideaBoardIdeaAction", "primary");
-   addIdea.dataset.ideaBoardAddIdea = "true";
-   actions.append(addIdea);
+ function handleFilterAction(root, actionControl) {
+   if (actionControl.matches("[data-idea-board-filter-select-all]")) {
+-    state.visibleStatuses = new Set(statusOptions);
++    state.visibleStatuses = new Set(filterStatusOptions);
+     updateStatus(root, "Showing all statuses.");
+   } else if (actionControl.matches("[data-idea-board-filter-clear-all]")) {
+     state.visibleStatuses = new Set();

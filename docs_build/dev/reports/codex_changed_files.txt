@@ -1,5 +1,3 @@
-﻿assets/theme-v2/css/tables.css
-tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+﻿tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
 tests/playwright/tools/ToolboxRoutePages.spec.mjs
-toolbox/idea-board/index.html
 toolbox/idea-board/index.js
