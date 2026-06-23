@@ -271,6 +271,54 @@ function renderGameSummaryChildTable(parent, game) {
   parent.append(wrapper);
 }
 
+function gameSourceIdeaDetails(game) {
+  const sourceIdea = isRecord(game?.sourceIdea) ? game.sourceIdea : null;
+  const name = String(sourceIdea?.idea || "").trim();
+  const pitch = String(sourceIdea?.pitch || "").trim();
+  const notes = Array.isArray(sourceIdea?.notes)
+    ? sourceIdea.notes.map((note) => String(note || "").trim()).filter(Boolean)
+    : [];
+  return {
+    name,
+    notes,
+    pitch,
+  };
+}
+
+function renderSourceIdeaChildTable(parent, game) {
+  const sourceIdea = gameSourceIdeaDetails(game);
+  const wrapper = document.createElement("div");
+  wrapper.className = "table-wrapper";
+  const table = document.createElement("table");
+  table.className = "data-table data-table--fixed";
+  table.dataset.gameChildTable = "source-idea";
+  table.setAttribute("aria-label", `${game.name} source idea`);
+  table.innerHTML = "<caption>Source Idea</caption><thead><tr><th scope=\"col\">Context</th><th scope=\"col\">Details</th></tr></thead>";
+  const body = document.createElement("tbody");
+  [
+    ["Idea", sourceIdea.name || "No source idea yet"],
+    ["Pitch", sourceIdea.pitch || "Create a project from Idea Board to see source details."],
+  ].forEach(([label, value]) => {
+    const row = document.createElement("tr");
+    row.append(createCell(label, "th"), createCell(value));
+    row.firstElementChild.scope = "row";
+    body.append(row);
+  });
+
+  const notes = sourceIdea.notes.length ? sourceIdea.notes : ["No source notes."];
+  notes.forEach((note, index) => {
+    const row = document.createElement("tr");
+    row.dataset.sourceIdeaNoteRow = String(index + 1);
+    row.append(createCell(`Note ${index + 1}`, "th"), createCell(note));
+    row.firstElementChild.scope = "row";
+    body.append(row);
+  });
+
+  table.append(body);
+  wrapper.append(table);
+  parent.append(wrapper);
+}
+
 function renderExpandedGameRow(tbody, game) {
   const row = document.createElement("tr");
   row.dataset.gameExpandedRow = game.id;
@@ -280,6 +328,7 @@ function renderExpandedGameRow(tbody, game) {
   const stack = document.createElement("div");
   stack.className = "content-stack content-stack--compact";
   renderGameSummaryChildTable(stack, game);
+  renderSourceIdeaChildTable(stack, game);
   content.append(stack);
   row.append(content);
   tbody.append(row);
@@ -443,20 +492,15 @@ function renderTableCounts() {
 }
 
 function renderSourceIdea(activeGame) {
-  const sourceIdea = isRecord(activeGame?.sourceIdea) ? activeGame.sourceIdea : null;
-  const name = String(sourceIdea?.idea || "").trim();
-  const pitch = String(sourceIdea?.pitch || "").trim();
-  const notes = Array.isArray(sourceIdea?.notes)
-    ? sourceIdea.notes.map((note) => String(note || "").trim()).filter(Boolean)
-    : [];
+  const sourceIdea = gameSourceIdeaDetails(activeGame);
 
-  setText(elements.sourceIdeaName, name || "No source idea yet");
-  setText(elements.sourceIdeaDisplay, name || "No source idea yet");
-  setText(elements.sourceIdeaPitch, pitch || "Create a project from Idea Board to see source details.");
+  setText(elements.sourceIdeaName, sourceIdea.name || "No source idea yet");
+  setText(elements.sourceIdeaDisplay, sourceIdea.name || "No source idea yet");
+  setText(elements.sourceIdeaPitch, sourceIdea.pitch || "Create a project from Idea Board to see source details.");
 
   if (elements.sourceIdeaNotes) {
     elements.sourceIdeaNotes.replaceChildren();
-    const visibleNotes = notes.length ? notes : ["No source notes."];
+    const visibleNotes = sourceIdea.notes.length ? sourceIdea.notes : ["No source notes."];
     visibleNotes.forEach((note) => {
       const item = document.createElement("li");
       item.textContent = note;

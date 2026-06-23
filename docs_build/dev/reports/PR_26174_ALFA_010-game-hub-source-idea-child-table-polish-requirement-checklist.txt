@@ -1,0 +1,9 @@
+Requirement Checklist: PASS
+
+PASS - Source Idea appears as a child table under the game parent row.
+PASS - Source Idea includes source idea details.
+PASS - Source Idea includes notes as read-only child/context rows where data supports it.
+PASS - Source Idea is read-only.
+PASS - No edit/delete controls for source idea context.
+PASS - Creator-facing labels are clear and non-technical.
+PASS - Existing API/service contract is preserved.

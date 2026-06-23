@@ -1,0 +1,6 @@
+Manual Validation Notes: PASS
+
+PASS - Confirmed the Idea Board-created Lantern Reef project expands in Game Hub.
+PASS - Confirmed Source Idea child table shows Idea, Pitch, and Note 1 rows.
+PASS - Confirmed Source Idea child table has no input, textarea, select, or button controls.
+PASS - Confirmed source details still come from the existing Game Hub project record contract.
