@@ -1,404 +1,424 @@
 diff --git a/assets/theme-v2/css/status.css b/assets/theme-v2/css/status.css
-index 5ea748263..88e0d5e64 100644
+index 88e0d5e64..8fd18d811 100644
 --- a/assets/theme-v2/css/status.css
 +++ b/assets/theme-v2/css/status.css
-@@ -54,11 +54,19 @@
+@@ -36,7 +36,10 @@
+ }
 
- .toolbox-status-bar__game {
+ .toolbox-status-bar {
++  --toolbox-status-bar-height: var(--space-52);
++  --toolbox-status-game-max: 220px;
+   width: 100%;
++  min-block-size: var(--toolbox-status-bar-height);
+   border-block: var(--border-standard);
+   background: var(--panel-overlay-strong);
+   color: var(--text)
+@@ -47,7 +50,7 @@
+   margin: var(--space-0) auto;
+   padding: var(--space-10) var(--space-0);
+   display: grid;
+-  grid-template-columns: minmax(var(--space-0), 1fr) minmax(var(--space-0), 2fr);
++  grid-template-columns: minmax(var(--space-0), max-content) minmax(var(--space-0), 1fr);
+   gap: var(--space-16);
+   align-items: center
+ }
+@@ -56,34 +59,18 @@
    min-width: var(--space-0);
--  display: grid;
--  gap: var(--space-3);
-+  display: flex;
-+  align-items: center;
-+  flex-wrap: wrap;
-+  gap: var(--space-14);
+   display: flex;
+   align-items: center;
+-  flex-wrap: wrap;
+-  gap: var(--space-14);
++  justify-content: flex-start;
    text-align: left
  }
 
-+.toolbox-status-bar__field {
-+  min-width: var(--space-0);
-+  display: grid;
-+  gap: var(--space-3)
-+}
-+
- .toolbox-status-bar__label {
-   color: var(--muted);
-   font-size: var(--font-size-xs);
-@@ -73,7 +81,7 @@
+-.toolbox-status-bar__field {
+-  min-width: var(--space-0);
+-  display: grid;
+-  gap: var(--space-3)
+-}
+-
+-.toolbox-status-bar__label {
+-  color: var(--muted);
+-  font-size: var(--font-size-xs);
+-  font-weight: var(--font-weight-heavy);
+-  letter-spacing: var(--letter-spacing-kicker);
+-  text-transform: uppercase
+-}
+-
+ .toolbox-status-bar__game-name {
+   color: var(--text);
+   font-size: var(--font-size-base);
+-  overflow-wrap: anywhere
+-}
+-
+-.toolbox-status-bar__purpose {
+-  color: var(--muted);
+-  font-size: var(--font-size-sm);
++  line-height: var(--line-height-tight);
++  max-width: min(30vw, var(--toolbox-status-game-max));
++  overflow: hidden;
++  text-overflow: ellipsis;
++  white-space: nowrap;
    overflow-wrap: anywhere
  }
 
--.toolbox-status-bar__meta {
-+.toolbox-status-bar__purpose {
-   color: var(--muted);
-   font-size: var(--font-size-sm);
-   overflow-wrap: anywhere
-@@ -89,6 +97,10 @@
+@@ -92,25 +79,17 @@
+   display: flex;
+   align-items: center;
+   justify-content: center;
+-  flex-wrap: wrap;
+-  gap: var(--space-10);
++  justify-self: center;
    text-align: center
  }
 
-+.toolbox-status-bar__context-type {
-+  flex: 0 0 auto
-+}
-+
+-.toolbox-status-bar__context-type {
+-  flex: 0 0 auto
+-}
+-
  .toolbox-status-bar__message {
    margin: var(--space-0);
    max-width: var(--measure-lg);
-@@ -104,13 +116,27 @@
++  line-height: var(--line-height-copy);
+   overflow-wrap: anywhere
  }
 
- .toolbox-status-bar[data-selected-game-state="missing"] {
+-.toolbox-status-bar__action {
+-  flex: 0 0 auto
+-}
+-
+ .toolbox-status-bar[data-selected-game-state="active"] {
+   border-color: color-mix(in srgb, var(--green) 52%, var(--line))
+ }
+@@ -123,22 +102,6 @@
+   border-color: color-mix(in srgb, var(--red) 52%, var(--line))
+ }
+
+-.toolbox-status-bar[data-toolbox-status-context-kind="error"] .toolbox-status-bar__context-type {
+-  border-color: color-mix(in srgb, var(--red) 62%, var(--line));
+-  color: var(--red)
+-}
+-
+-.toolbox-status-bar[data-toolbox-status-context-kind="warning"] .toolbox-status-bar__context-type,
+-.toolbox-status-bar[data-toolbox-status-context-kind="validation"] .toolbox-status-bar__context-type {
 -  border-color: var(--gold-border-muted);
--  background: var(--gold-soft)
-+  border-color: var(--gold-border-muted)
- }
-
- .toolbox-status-bar[data-selected-game-state="error"] {
--  border-color: color-mix(in srgb, var(--red) 52%, var(--line));
--  background: color-mix(in srgb, var(--red) 14%, var(--panel))
-+  border-color: color-mix(in srgb, var(--red) 52%, var(--line))
-+}
-+
-+.toolbox-status-bar[data-toolbox-status-context-kind="error"] .toolbox-status-bar__context-type {
-+  border-color: color-mix(in srgb, var(--red) 62%, var(--line));
-+  color: var(--red)
-+}
-+
-+.toolbox-status-bar[data-toolbox-status-context-kind="warning"] .toolbox-status-bar__context-type,
-+.toolbox-status-bar[data-toolbox-status-context-kind="validation"] .toolbox-status-bar__context-type {
-+  border-color: var(--gold-border-muted);
-+  color: var(--gold)
-+}
-+
-+.toolbox-status-bar[data-toolbox-status-context-kind="save"] .toolbox-status-bar__context-type {
-+  border-color: color-mix(in srgb, var(--green) 62%, var(--line));
-+  color: var(--green)
- }
-
+-  color: var(--gold)
+-}
+-
+-.toolbox-status-bar[data-toolbox-status-context-kind="save"] .toolbox-status-bar__context-type {
+-  border-color: color-mix(in srgb, var(--green) 62%, var(--line));
+-  color: var(--green)
+-}
+-
  body.tool-focus-mode .toolbox-status-bar {
-@@ -240,6 +266,7 @@ body.tool-focus-mode .toolbox-status-bar {
+   position: fixed;
+   inset-block-end: var(--space-0);
+@@ -148,6 +111,31 @@ body.tool-focus-mode .toolbox-status-bar {
+   box-shadow: var(--shadow-md)
+ }
+
++body.tool-focus-mode {
++  --toolbox-status-bar-height: var(--space-52);
++  --toolbox-status-top-reserve: var(--space-0)
++}
++
++body.tool-focus-mode:has(.platform-banner) {
++  --toolbox-status-top-reserve: var(--space-52)
++}
++
++body.tool-focus-mode .tool-workspace {
++  height: calc(100vh - var(--toolbox-status-bar-height) - var(--toolbox-status-top-reserve));
++  max-height: calc(100vh - var(--toolbox-status-bar-height) - var(--toolbox-status-top-reserve))
++}
++
++body.tool-focus-mode .tool-column {
++  height: calc(100vh - var(--toolbox-status-bar-height) - var(--space-20));
++  max-height: calc(100vh - var(--toolbox-status-bar-height) - var(--space-20))
++}
++
++body.tool-focus-mode .tool-center-panel {
++  box-sizing: border-box;
++  margin-block-end: var(--toolbox-status-bar-height);
++  scroll-padding-block-end: var(--toolbox-status-bar-height)
++}
++
+ .platform-banner {
+   width: 100%;
+   border-bottom: var(--border-standard);
+@@ -261,12 +249,16 @@ body.tool-focus-mode .toolbox-status-bar {
+ @media (max-width: 720px) {
+   .toolbox-status-bar__inner {
+     width: var(--container-width);
+-    grid-template-columns: 1fr;
++    grid-template-columns: minmax(var(--space-0), max-content) minmax(var(--space-0), 1fr);
++    gap: var(--space-10);
+     text-align: center
    }
 
-   .toolbox-status-bar__game {
-+    justify-content: center;
-     text-align: center
+-  .toolbox-status-bar__game {
+-    justify-content: center;
+-    text-align: center
++  .toolbox-status-bar__game-name {
++    max-width: 34vw
++  }
++
++  .toolbox-status-bar__message {
++    font-size: var(--font-size-sm)
    }
  }
 diff --git a/assets/theme-v2/js/toolbox-status-bar.js b/assets/theme-v2/js/toolbox-status-bar.js
-index 5a611d33d..fdb367328 100644
+index fdb367328..24c935311 100644
 --- a/assets/theme-v2/js/toolbox-status-bar.js
 +++ b/assets/theme-v2/js/toolbox-status-bar.js
-@@ -7,6 +7,7 @@ let repository = null;
- let messageObserver = null;
- let listenersInstalled = false;
- let latestToolMessage = "";
-+let pendingToolMessageRefresh = 0;
- let mountOptions = {
-   gameHubHref: "toolbox/game-hub/index.html",
-   pagePath: "",
-@@ -89,16 +90,29 @@ function createStatusBar() {
+@@ -90,37 +90,16 @@ function createStatusBar() {
    game.className = "toolbox-status-bar__game";
    game.dataset.toolboxSelectedGame = "";
 
--  const label = createText("span", "toolbox-status-bar__label", "toolboxSelectedGameLabel");
--  label.textContent = "Selected Game";
-+  const nameField = document.createElement("div");
-+  nameField.className = "toolbox-status-bar__field";
-+  nameField.dataset.toolboxSelectedGameNameField = "";
-+  const nameLabel = createText("span", "toolbox-status-bar__label", "toolboxSelectedGameNameLabel");
-+  nameLabel.textContent = "Selected Game Name";
+-  const nameField = document.createElement("div");
+-  nameField.className = "toolbox-status-bar__field";
+-  nameField.dataset.toolboxSelectedGameNameField = "";
+-  const nameLabel = createText("span", "toolbox-status-bar__label", "toolboxSelectedGameNameLabel");
+-  nameLabel.textContent = "Selected Game Name";
    const name = createText("strong", "toolbox-status-bar__game-name", "toolboxSelectedGameName");
--  const meta = createText("span", "toolbox-status-bar__meta", "toolboxSelectedGameMeta");
--  game.append(label, name, meta);
-+  nameField.append(nameLabel, name);
-+
-+  const purposeField = document.createElement("div");
-+  purposeField.className = "toolbox-status-bar__field";
-+  purposeField.dataset.toolboxSelectedGamePurposeField = "";
-+  const purposeLabel = createText("span", "toolbox-status-bar__label", "toolboxSelectedGamePurposeLabel");
-+  purposeLabel.textContent = "Selected Game Purpose";
-+  const purpose = createText("span", "toolbox-status-bar__purpose", "toolboxSelectedGamePurpose");
-+  purpose.dataset.toolboxSelectedGameMeta = "";
-+  purposeField.append(purposeLabel, purpose);
-+  game.append(nameField, purposeField);
+-  nameField.append(nameLabel, name);
+-
+-  const purposeField = document.createElement("div");
+-  purposeField.className = "toolbox-status-bar__field";
+-  purposeField.dataset.toolboxSelectedGamePurposeField = "";
+-  const purposeLabel = createText("span", "toolbox-status-bar__label", "toolboxSelectedGamePurposeLabel");
+-  purposeLabel.textContent = "Selected Game Purpose";
+-  const purpose = createText("span", "toolbox-status-bar__purpose", "toolboxSelectedGamePurpose");
+-  purpose.dataset.toolboxSelectedGameMeta = "";
+-  purposeField.append(purposeLabel, purpose);
+-  game.append(nameField, purposeField);
++  game.append(name);
 
    const center = document.createElement("div");
    center.className = "toolbox-status-bar__center";
    center.dataset.toolboxStatusCenter = "";
 
-+  const contextType = createText("span", "pill toolbox-status-bar__context-type", "toolboxStatusContextType");
+-  const contextType = createText("span", "pill toolbox-status-bar__context-type", "toolboxStatusContextType");
    const message = createText("p", "toolbox-status-bar__message status", "toolboxStatusMessage");
    message.setAttribute("role", "status");
-   const action = document.createElement("a");
-@@ -106,7 +120,7 @@ function createStatusBar() {
-   action.dataset.toolboxStatusAction = "";
-   action.href = mountOptions.gameHubHref;
-   action.textContent = "Open Game Hub";
--  center.append(message, action);
-+  center.append(contextType, message, action);
+-  const action = document.createElement("a");
+-  action.className = "btn btn--compact toolbox-status-bar__action";
+-  action.dataset.toolboxStatusAction = "";
+-  action.href = mountOptions.gameHubHref;
+-  action.textContent = "Open Game Hub";
+-  center.append(contextType, message, action);
++  center.append(message);
 
    inner.append(game, center);
    bar.append(inner);
-@@ -172,6 +186,12 @@ function updateLatestToolMessage() {
+@@ -234,33 +213,30 @@ function publishSelectedGameContext(selectedGame, state) {
+ function classifyToolContext(messageText, state, required) {
+   const text = String(messageText || "").trim();
+   if (state === "error") {
+-    return { kind: "error", label: "Error" };
++    return { kind: "error" };
    }
- }
-
-+function scheduleToolMessageRefresh() {
-+  window.clearTimeout(pendingToolMessageRefresh);
-+  pendingToolMessageRefresh = window.setTimeout(updateLatestToolMessage, 0);
-+  window.setTimeout(updateLatestToolMessage, 120);
-+}
-+
- function observeToolMessages() {
-   messageObserver?.disconnect();
-   const main = document.querySelector("main");
-@@ -211,51 +231,76 @@ function publishSelectedGameContext(selectedGame, state) {
-   }));
- }
-
--function selectedGameMeta(selectedGame) {
--  return [selectedGame.purpose, selectedGame.status]
--    .map((value) => String(value || "").trim())
--    .filter(Boolean)
--    .join(" - ");
-+function classifyToolContext(messageText, state, required) {
-+  const text = String(messageText || "").trim();
-+  if (state === "error") {
-+    return { kind: "error", label: "Error" };
-+  }
-+  if (required && state === "missing") {
-+    return { kind: "action", label: "Tool Action" };
-+  }
-+  if (/\b(error|failed|malformed|unavailable|could not)\b/i.test(text)) {
-+    return { kind: "error", label: "Error" };
-+  }
-+  if (/\b(sign in|refresh|try again|temporarily|blocked)\b/i.test(text)) {
-+    return { kind: "warning", label: "Warning" };
-+  }
-+  if (/\b(validation|requirement|requirements|missing|required|open or seed)\b/i.test(text)) {
-+    return { kind: "validation", label: "Validation" };
-+  }
-+  if (/\b(saved|created|deleted|updated|loaded|save changes)\b/i.test(text)) {
-+    return { kind: "save", label: "Save State" };
-+  }
-+  return { kind: "action", label: "Tool Action" };
+   if (required && state === "missing") {
+-    return { kind: "action", label: "Tool Action" };
++    return { kind: "action" };
+   }
+   if (/\b(error|failed|malformed|unavailable|could not)\b/i.test(text)) {
+-    return { kind: "error", label: "Error" };
++    return { kind: "error" };
+   }
+   if (/\b(sign in|refresh|try again|temporarily|blocked)\b/i.test(text)) {
+-    return { kind: "warning", label: "Warning" };
++    return { kind: "warning" };
+   }
+   if (/\b(validation|requirement|requirements|missing|required|open or seed)\b/i.test(text)) {
+-    return { kind: "validation", label: "Validation" };
++    return { kind: "validation" };
+   }
+   if (/\b(saved|created|deleted|updated|loaded|save changes)\b/i.test(text)) {
+-    return { kind: "save", label: "Save State" };
++    return { kind: "save" };
+   }
+-  return { kind: "action", label: "Tool Action" };
++  return { kind: "action" };
  }
 
  function renderSelectedGame(bar, selectedGame, state, messageText) {
    const required = pageRequiresSelectedGame();
    const name = bar.querySelector("[data-toolbox-selected-game-name]");
--  const meta = bar.querySelector("[data-toolbox-selected-game-meta]");
-+  const purpose = bar.querySelector("[data-toolbox-selected-game-purpose]");
-+  const contextType = bar.querySelector("[data-toolbox-status-context-type]");
+-  const purpose = bar.querySelector("[data-toolbox-selected-game-purpose]");
+-  const contextType = bar.querySelector("[data-toolbox-status-context-type]");
    const message = bar.querySelector("[data-toolbox-status-message]");
-   const action = bar.querySelector("[data-toolbox-status-action]");
-+  const nextMessage = messageText || latestToolMessage || (selectedGame
-+    ? `Tool context is filtered to ${selectedGame.name}.`
-+    : required
-+      ? "Select or create a game in Game Hub before using this toolbox page."
-+      : "Idea Board can capture ideas before a Game Hub game exists.");
-+  const context = classifyToolContext(nextMessage, state, required);
-
+-  const action = bar.querySelector("[data-toolbox-status-action]");
+   const nextMessage = messageText || latestToolMessage || (selectedGame
+     ? `Tool context is filtered to ${selectedGame.name}.`
+     : required
+@@ -271,38 +247,27 @@ function renderSelectedGame(bar, selectedGame, state, messageText) {
    bar.dataset.selectedGameState = state;
    bar.dataset.selectedGameRequired = String(required);
-+  bar.dataset.toolboxStatusContextKind = context.kind;
-+  contextType.textContent = context.label;
-   action.hidden = false;
-   action.href = mountOptions.gameHubHref;
+   bar.dataset.toolboxStatusContextKind = context.kind;
+-  contextType.textContent = context.label;
+-  action.hidden = false;
+-  action.href = mountOptions.gameHubHref;
 
    if (selectedGame) {
      name.textContent = selectedGame.name;
--    meta.textContent = selectedGameMeta(selectedGame) || "Game Hub selected game";
--    message.textContent = messageText || latestToolMessage || `Data filtered to ${selectedGame.name}.`;
-+    purpose.textContent = selectedGame.purpose || "Game";
-+    message.textContent = nextMessage;
-     action.textContent = "Open Game Hub";
+-    purpose.textContent = selectedGame.purpose || "Game";
+     message.textContent = nextMessage;
+-    action.textContent = "Open Game Hub";
      return;
    }
 
    if (!required) {
--    name.textContent = "Optional";
--    meta.textContent = "Idea Board can start before Game Hub creation";
--    message.textContent = latestToolMessage || "Idea Board can capture ideas before a Game Hub game exists.";
-+    name.textContent = "No game selected";
-+    purpose.textContent = "Idea Board optional";
-+    message.textContent = nextMessage;
-     action.textContent = "Open Game Hub";
+     name.textContent = "No game selected";
+-    purpose.textContent = "Idea Board optional";
+     message.textContent = nextMessage;
+-    action.textContent = "Open Game Hub";
      return;
    }
 
    if (state === "error") {
      name.textContent = "Unavailable";
--    meta.textContent = "Game Hub selected game could not be read";
--    message.textContent = messageText || "Game Hub selected game is unavailable. Refresh or restore the Local API.";
-+    purpose.textContent = "Game Hub selected game could not be read";
-+    message.textContent = nextMessage;
-     action.textContent = "Open Game Hub";
+-    purpose.textContent = "Game Hub selected game could not be read";
+     message.textContent = nextMessage;
+-    action.textContent = "Open Game Hub";
      return;
    }
 
    name.textContent = "No game selected";
--  meta.textContent = "Game Hub owns game selection";
-+  purpose.textContent = "Game Hub owns game selection";
+-  purpose.textContent = "Game Hub owns game selection";
    message.textContent = "Select or create a game in Game Hub before using this toolbox page.";
-   action.textContent = "Select or Create in Game Hub";
+-  action.textContent = "Select or Create in Game Hub";
  }
-@@ -284,6 +329,9 @@ function installEventListeners() {
-     return;
-   }
-   listenersInstalled = true;
-+  document.addEventListener("click", scheduleToolMessageRefresh, true);
-+  document.addEventListener("submit", scheduleToolMessageRefresh, true);
-+  document.addEventListener("change", scheduleToolMessageRefresh, true);
-   window.addEventListener("gamefoundry:toolbox-selected-game-changed", refreshToolboxStatusBar);
-   window.addEventListener("gamefoundry:data-changed", refreshToolboxStatusBar);
- }
+
+ export function refreshToolboxStatusBar() {
 diff --git a/docs_build/dev/BUILD_PR.md b/docs_build/dev/BUILD_PR.md
-index 51d6abdeb..65c4d9709 100644
+index 65c4d9709..43a7f37d3 100644
 --- a/docs_build/dev/BUILD_PR.md
 +++ b/docs_build/dev/BUILD_PR.md
-@@ -1,41 +1,42 @@
--# PR_26175_ALFA_001-toolbox-selected-game-status-bar
-+# PR_26175_ALFA_002-toolbox-status-bar-context-polish
+@@ -1,40 +1,48 @@
+-# PR_26175_ALFA_002-toolbox-status-bar-context-polish
++# PR_26175_ALFA_003-toolbox-status-bar-single-row-polish
 
  ## Purpose
--Add one shared Theme V2 toolbox status bar that surfaces the Game Hub selected game and current tool messages across toolbox pages.
-+Polish the shared toolbox status bar context display so it shows only selected-game name/purpose on the left and categorized tool context in the center.
+-Polish the shared toolbox status bar context display so it shows only selected-game name/purpose on the left and categorized tool context in the center.
++Update the shared toolbox status bar to a single-row creator context bar.
 
  ## Source Of Truth
--This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_001-toolbox-selected-game-status-bar`.
-+This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_002-toolbox-status-bar-context-polish`.
+-This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_002-toolbox-status-bar-context-polish`.
++This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_003-toolbox-status-bar-single-row-polish`.
 
  ## Exact Scope
--- Add a shared toolbox status bar renderer loaded through Theme V2 shared partial bootstrapping.
--- Render the status bar above the footer in normal page mode.
--- Anchor the status bar to the viewport bottom while `body.tool-focus-mode` is active.
--- Read the selected game only from the Game Hub repository through the existing Local API/service contract.
--- Display the selected Game Hub game on the left side of the status bar.
--- Display tool actions, warnings, errors, save state, validation messages, or the missing-game prompt in the center of the status bar.
--- Expose the selected Game Hub game as derived page context for toolbox pages without persisting browser-owned product data.
--- Require selected-game context on toolbox pages except Idea Board, which remains excluded because ideas can exist before game creation.
--- Show a creator-safe prompt to select or create a game in Game Hub when no selected game exists.
--- Notify the shared status bar when Game Hub changes the selected game.
--- Add targeted Playwright coverage for placement, fullscreen anchoring, selected-game display/update, missing-game prompt, and Idea Board exclusion.
-+- Do not include environment text in the status bar because environment already appears in the platform banner.
-+- On the left side, display the selected Game Hub game name and selected Game Hub game purpose.
-+- On the center side, display tool context messages for tool actions, save state, validation messages, warnings, or errors.
-+- Preserve normal placement above the footer.
-+- Preserve fullscreen/tool display mode bottom anchoring.
-+- Preserve Idea Board selected-game filtering exclusion.
-+- Preserve Game Hub as selected-game owner through the existing repository contract.
-+- Keep the shared Theme V2 toolbox component model.
-+- Update targeted Playwright coverage for the polished left and center context.
+-- Do not include environment text in the status bar because environment already appears in the platform banner.
+-- On the left side, display the selected Game Hub game name and selected Game Hub game purpose.
+-- On the center side, display tool context messages for tool actions, save state, validation messages, warnings, or errors.
++- Display only the selected Game Hub game name on the left side.
++- Display only the current status message in the center.
++- Remove visible status bar labels: `Selected Game Name`, `Selected Game Purpose`, `Save State`, `Tool Action`, `Warning`, and `Error`.
++- Remove selected game purpose from the visible status bar.
++- Keep the game name and status message on the same row at desktop/toolbox widths.
+ - Preserve normal placement above the footer.
+ - Preserve fullscreen/tool display mode bottom anchoring.
++- Ensure fullscreen center tool content and its scrollbar stop above the fixed status bar.
++- Add bottom reserve equal to the status bar height for the fullscreen center tool area.
+ - Preserve Idea Board selected-game filtering exclusion.
+ - Preserve Game Hub as selected-game owner through the existing repository contract.
+ - Keep the shared Theme V2 toolbox component model.
+-- Update targeted Playwright coverage for the polished left and center context.
++- Keep creator-facing language simple.
++- Do not add environment/server details to the UI.
++- Update targeted Playwright coverage for the single-row layout and fullscreen bottom reserve.
 
  ## Exact Targets
--- `assets/theme-v2/js/gamefoundry-partials.js`
-+- `docs_build/dev/BUILD_PR.md`
+ - `docs_build/dev/BUILD_PR.md`
  - `assets/theme-v2/js/toolbox-status-bar.js`
  - `assets/theme-v2/css/status.css`
--- `toolbox/game-hub/game-hub.js`
  - `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs`
--- `docs_build/dev/reports/PR_26175_ALFA_001-toolbox-selected-game-status-bar_report.md`
--- `docs_build/dev/reports/PR_26175_ALFA_001-toolbox-selected-game-status-bar_validation-lane.md`
--- `docs_build/dev/reports/PR_26175_ALFA_001-toolbox-selected-game-status-bar_requirements-checklist.md`
-+- `docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_report.md`
-+- `docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_validation-lane.md`
-+- `docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_requirements-checklist.md`
-+- `docs_build/dev/reports/codex_review.diff`
-+- `docs_build/dev/reports/codex_changed_files.txt`
+-- `docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_report.md`
+-- `docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_validation-lane.md`
+-- `docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_requirements-checklist.md`
++- `docs_build/dev/reports/PR_26175_ALFA_003-toolbox-status-bar-single-row-polish_report.md`
++- `docs_build/dev/reports/PR_26175_ALFA_003-toolbox-status-bar-single-row-polish_validation-lane.md`
++- `docs_build/dev/reports/PR_26175_ALFA_003-toolbox-status-bar-single-row-polish_requirements-checklist.md`
+ - `docs_build/dev/reports/codex_review.diff`
+ - `docs_build/dev/reports/codex_changed_files.txt`
 
  ## Out Of Scope
-+- No environment status in the toolbox status bar.
+ - No environment status in the toolbox status bar.
+-- No row highlights.
+ - No large banners.
+-- No modal-style status messages.
+-- No inline styles, style blocks, or page-local CSS.
++- No modal messages or modal-style status messages.
 +- No row highlights.
-+- No large banners.
-+- No modal-style status messages.
++- No selected game purpose in the visible status bar.
++- No visible status category labels in the status bar.
+ - No API/service contract changes.
 +- No inline styles, style blocks, or page-local CSS.
-+- No API/service contract changes.
  - No engine core changes.
  - No `start_of_day` folder changes.
--- No API/service contract changes.
--- No page-local CSS, inline styles, or style blocks.
--- No browser storage or browser-owned product data as selected-game source of truth.
--- No Idea Board selected-game filtering.
 
- ## Validation
- Run:
-@@ -47,12 +48,12 @@ npx playwright test tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
- Also verify the changed source does not introduce inline styles or style blocks:
-
- ```powershell
--rg -n "<style|style=" assets/theme-v2/js/gamefoundry-partials.js assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css toolbox/game-hub/game-hub.js tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-+rg -n "<style|style=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
- ```
-
- ## Artifact
+@@ -55,5 +63,5 @@ rg -n "<style|style=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/c
  Create repo-structured delta ZIP:
 
  ```text
--tmp/PR_26175_ALFA_001-toolbox-selected-game-status-bar_delta.zip
-+tmp/PR_26175_ALFA_002-toolbox-status-bar-context-polish_delta.zip
+-tmp/PR_26175_ALFA_002-toolbox-status-bar-context-polish_delta.zip
++tmp/PR_26175_ALFA_003-toolbox-status-bar-single-row-polish_delta.zip
  ```
-diff --git a/docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_report.md b/docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_report.md
+diff --git a/docs_build/dev/reports/PR_26175_ALFA_003-toolbox-status-bar-single-row-polish_report.md b/docs_build/dev/reports/PR_26175_ALFA_003-toolbox-status-bar-single-row-polish_report.md
 new file mode 100644
-index 000000000..b895d6891
+index 000000000..7d05d0364
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_report.md
-@@ -0,0 +1,24 @@
-+# PR_26175_ALFA_002-toolbox-status-bar-context-polish Report
++++ b/docs_build/dev/reports/PR_26175_ALFA_003-toolbox-status-bar-single-row-polish_report.md
+@@ -0,0 +1,18 @@
++# PR_26175_ALFA_003-toolbox-status-bar-single-row-polish Report
 +
 +## Summary
-+Polished the shared toolbox status bar context display without changing ownership or placement behavior.
++Updated the shared toolbox status bar to a single-row creator context bar.
 +
 +## Changes
-+- Updated the left side to show `Selected Game Name` and `Selected Game Purpose`.
-+- Removed selected-game status from the left-side display so environment/status context stays outside the bar.
-+- Added a compact center context label for `Tool Action`, `Save State`, `Validation`, `Warning`, and `Error`.
-+- Kept the status bar as a compact shared Theme V2 component, not a large banner or modal-style message.
-+- Preserved normal placement above the footer and fullscreen bottom anchoring.
-+- Preserved Idea Board selected-game filtering exclusion.
++- Removed visible selected-game labels, selected-game purpose, status category pills, and status action links from the status bar.
++- Kept the visible status bar contract to selected game name on the left and current status message in the center.
++- Preserved Game Hub ownership of selected-game context and Idea Board selected-game filtering exclusion.
++- Preserved normal placement above the footer.
++- Preserved fullscreen bottom anchoring and reserved the status-bar height for the fullscreen center tool area.
++- Updated targeted Playwright coverage for removed labels, visible game/message text, same-row layout, and fullscreen center-panel bounds.
 +
 +## Contract Notes
-+- Game Hub remains the selected-game owner through the existing repository contract.
 +- No API/service contract changes were made.
 +- No browser-owned product data is used as selected-game source of truth.
-+- Environment text is not displayed in the status bar.
-+
-+## EOD Review
-+- Reviewed all ALFA_002 modified files before commit.
-+- Re-ran the targeted Playwright status bar coverage.
-+- Re-ran the inline style/style block guardrail.
-+- Updated the Codex review diff and changed-file report for closeout.
-diff --git a/docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_requirements-checklist.md b/docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_requirements-checklist.md
++- Environment/server details remain outside the status bar.
++- Theme V2 shared CSS/classes remain the styling surface.
+diff --git a/docs_build/dev/reports/PR_26175_ALFA_003-toolbox-status-bar-single-row-polish_requirements-checklist.md b/docs_build/dev/reports/PR_26175_ALFA_003-toolbox-status-bar-single-row-polish_requirements-checklist.md
 new file mode 100644
-index 000000000..4928f683c
+index 000000000..d6b988ef9
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_requirements-checklist.md
++++ b/docs_build/dev/reports/PR_26175_ALFA_003-toolbox-status-bar-single-row-polish_requirements-checklist.md
 @@ -0,0 +1,18 @@
-+# PR_26175_ALFA_002-toolbox-status-bar-context-polish Requirements Checklist
++# PR_26175_ALFA_003-toolbox-status-bar-single-row-polish Requirements Checklist
 +
-+- PASS: Active `BUILD_PR.md` is the source of truth for ALFA_002.
-+- PASS: Environment is not included in the status bar.
-+- PASS: Left side displays selected game name.
-+- PASS: Left side displays selected game purpose.
-+- PASS: Center displays tool action context.
-+- PASS: Center displays save state context.
-+- PASS: Center supports validation, warning, and error context categories.
-+- PASS: Fullscreen bottom anchoring is preserved.
++- PASS: Status bar displays only selected game name and status message.
++- PASS: Selected game name is left anchored.
++- PASS: Status message is center anchored.
++- PASS: Visible labels were removed.
++- PASS: Selected game purpose was removed from the visible status bar.
++- PASS: Game name and status message are on the same row.
++- PASS: Fullscreen status bar remains fixed at the bottom.
++- PASS: Fullscreen center panel stops above the status bar.
++- PASS: Fullscreen center panel has bottom reserve equal to the status bar height.
 +- PASS: Normal placement above the footer is preserved.
 +- PASS: Idea Board exclusion is preserved.
 +- PASS: Game Hub remains selected-game owner.
-+- PASS: No large banners were added.
-+- PASS: No modal-style status messages were added.
-+- PASS: No inline styles or style blocks were added.
++- PASS: No large banners or modal messages were added.
++- PASS: No inline styles, style blocks, or page-local CSS were added.
 +- PASS: Theme V2 shared CSS/classes are used.
 +- PASS: Targeted Playwright coverage was updated and passed.
-diff --git a/docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_validation-lane.md b/docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_validation-lane.md
+diff --git a/docs_build/dev/reports/PR_26175_ALFA_003-toolbox-status-bar-single-row-polish_validation-lane.md b/docs_build/dev/reports/PR_26175_ALFA_003-toolbox-status-bar-single-row-polish_validation-lane.md
 new file mode 100644
-index 000000000..5be25c454
+index 000000000..eba7f2a1e
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_validation-lane.md
-@@ -0,0 +1,28 @@
-+# PR_26175_ALFA_002-toolbox-status-bar-context-polish Validation Lane
++++ b/docs_build/dev/reports/PR_26175_ALFA_003-toolbox-status-bar-single-row-polish_validation-lane.md
+@@ -0,0 +1,26 @@
++# PR_26175_ALFA_003-toolbox-status-bar-single-row-polish Validation Lane
 +
 +## Commands
 +```powershell
@@ -415,162 +435,208 @@ index 000000000..5be25c454
 +
 +## Covered Assertions
 +- Status bar does not include environment text.
-+- Left side displays selected game name.
-+- Left side displays selected game purpose.
-+- Left side does not include selected-game status.
-+- Center displays tool action context.
-+- Center displays save state context after a Game Hub save.
-+- Center displays warning context for a Game Hub save-state warning.
-+- Missing selected game still shows the select/create tool action prompt.
++- Removed labels are not visible: `Selected Game Name`, `Selected Game Purpose`, `Save State`, `Tool Action`, `Warning`, and `Error`.
++- Selected game name is visible.
++- Selected game purpose is not visible.
++- Status message is visible in the center area.
++- Game name and status message occupy the same row.
++- Fullscreen status bar remains fixed to the bottom.
++- Fullscreen center panel bottom is above the status bar.
++- Fullscreen center panel has a bottom reserve equal to the status bar height.
 +- Idea Board remains excluded from selected-game filtering.
-+- Normal placement above footer is preserved.
-+- Fullscreen bottom anchoring is preserved.
-+- No inline styles or style blocks were added.
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 712d5c487..fb32c88ea 100644
+index fb32c88ea..8d10dee5a 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,3 +1,9 @@
--﻿docs_build/dev/reports/PR_26174_ALFA_MERGE_PUSH_CLOSEOUT.md
--docs_build/dev/reports/codex_review.diff
-+assets/theme-v2/css/status.css
-+assets/theme-v2/js/toolbox-status-bar.js
-+docs_build/dev/BUILD_PR.md
-+docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_report.md
-+docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_validation-lane.md
-+docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_requirements-checklist.md
+@@ -1,9 +1,9 @@
+ assets/theme-v2/css/status.css
+ assets/theme-v2/js/toolbox-status-bar.js
+ docs_build/dev/BUILD_PR.md
+-docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_report.md
+-docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_validation-lane.md
+-docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_requirements-checklist.md
++docs_build/dev/reports/PR_26175_ALFA_003-toolbox-status-bar-single-row-polish_report.md
++docs_build/dev/reports/PR_26175_ALFA_003-toolbox-status-bar-single-row-polish_validation-lane.md
++docs_build/dev/reports/PR_26175_ALFA_003-toolbox-status-bar-single-row-polish_requirements-checklist.md
  docs_build/dev/reports/codex_changed_files.txt
-+docs_build/dev/reports/codex_review.diff
-+tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
+ docs_build/dev/reports/codex_review.diff
+ tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
 diff --git a/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs b/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-index 71a7d32ee..065fbce4a 100644
+index 065fbce4a..aacaa2c19 100644
 --- a/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
 +++ b/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-@@ -1,5 +1,6 @@
- import { expect, test } from "@playwright/test";
- import process from "node:process";
-+import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store.js";
- import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
- import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
- import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
-@@ -72,6 +73,26 @@ async function openRepoPage(page, pathName, options = {}) {
-       });
-     });
-   }
-+  if (options.session) {
-+    const userKey = options.session.userKey || MOCK_DB_KEYS.users.user1;
-+    await page.route("**/api/session/current", async (route) => {
-+      await route.fulfill({
-+        contentType: "application/json",
-+        body: JSON.stringify({
-+          data: {
-+            authenticated: true,
-+            displayName: options.session.displayName || "User 1",
-+            roleSlugs: options.session.roleSlugs || ["creator"],
-+            userKey,
-+          },
-+          ok: true,
-+        }),
-+      });
-+    });
-+    await page.request.post(`${server.baseUrl}/api/session/user`, {
-+      data: { userKey },
-+    });
-+  }
-
-   await workspaceV2CoverageReporter.start(page);
-   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
-@@ -84,6 +105,14 @@ function expectNoPageFailures(failures) {
-   expect(failures.consoleErrors).toEqual([]);
+@@ -113,21 +113,62 @@ function creatorSession() {
+   };
  }
 
-+function creatorSession() {
-+  return {
-+    displayName: "User 1",
-+    roleSlugs: ["creator"],
-+    userKey: MOCK_DB_KEYS.users.user1,
-+  };
++const REMOVED_STATUS_BAR_LABELS = [
++  "Selected Game Name",
++  "Selected Game Purpose",
++  "Save State",
++  "Tool Action",
++  "Warning",
++  "Error",
++];
++
++async function expectRemovedStatusBarLabelsHidden(statusBar) {
++  for (const label of REMOVED_STATUS_BAR_LABELS) {
++    await expect(statusBar).not.toContainText(label);
++  }
 +}
 +
  async function statusBarSnapshot(page) {
    return page.locator("[data-toolbox-status-bar]").evaluate((bar) => {
++    const boxSnapshot = (element) => {
++      const box = element?.getBoundingClientRect();
++      if (!box) {
++        return null;
++      }
++      return {
++        bottom: box.bottom,
++        height: box.height,
++        left: box.left,
++        right: box.right,
++        top: box.top,
++      };
++    };
      const footer = document.querySelector("footer.footer");
-@@ -111,8 +140,13 @@ test("shared toolbox status bar shows selected Game Hub game above the footer",
-     const statusBar = page.locator("[data-toolbox-status-bar]");
++    const centerPanel = document.querySelector(".tool-center-panel");
++    const gameName = bar.querySelector("[data-toolbox-selected-game-name]");
++    const message = bar.querySelector("[data-toolbox-status-message]");
+     const position = getComputedStyle(bar).position;
+-    const barBox = bar.getBoundingClientRect();
+     const footerBox = footer?.getBoundingClientRect();
++    const centerPanelStyle = centerPanel ? getComputedStyle(centerPanel) : null;
++    const statusHeightReserve = parseFloat(getComputedStyle(document.body).getPropertyValue("--toolbox-status-bar-height")) || 0;
++    const barBox = bar.getBoundingClientRect();
+     return {
+       bottomGap: Math.round(window.innerHeight - barBox.bottom),
++      barBox: boxSnapshot(bar),
++      centerPanelBox: boxSnapshot(centerPanel),
++      centerPanelBottomReserve: centerPanelStyle
++        ? Math.max(parseFloat(centerPanelStyle.paddingBottom) || 0, parseFloat(centerPanelStyle.marginBottom) || 0)
++        : 0,
+       dataset: { ...bar.dataset },
+       filter: document.body.dataset.toolboxSelectedGameFilter || "",
+       footerFollowsBar: footer ? Boolean(bar.compareDocumentPosition(footer) & Node.DOCUMENT_POSITION_FOLLOWING) : false,
+       gameId: document.body.dataset.toolboxSelectedGameId || "",
+-      gameText: bar.querySelector("[data-toolbox-selected-game]")?.textContent.replace(/\s+/g, " ").trim() || "",
+-      messageText: bar.querySelector("[data-toolbox-status-center]")?.textContent.replace(/\s+/g, " ").trim() || "",
++      gameBox: boxSnapshot(gameName),
++      gameText: gameName?.textContent.replace(/\s+/g, " ").trim() || "",
++      messageBox: boxSnapshot(message),
++      messageText: message?.textContent.replace(/\s+/g, " ").trim() || "",
+       position,
++      statusHeightReserve,
+       topBeforeFooter: footerBox ? barBox.bottom <= footerBox.top + 1 : false,
+     };
+   });
+@@ -141,12 +182,12 @@ test("shared toolbox status bar shows selected Game Hub game above the footer",
      await expect(statusBar).toBeVisible();
      await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-+    await expect(statusBar).not.toContainText("Environment");
-+    await expect(statusBar.locator("[data-toolbox-selected-game-name-label]")).toHaveText("Selected Game Name");
+     await expect(statusBar).not.toContainText("Environment");
+-    await expect(statusBar.locator("[data-toolbox-selected-game-name-label]")).toHaveText("Selected Game Name");
++    await expectRemovedStatusBarLabelsHidden(statusBar);
      await expect(statusBar.locator("[data-toolbox-selected-game-name]")).toHaveText("Demo Game");
--    await expect(statusBar.locator("[data-toolbox-selected-game-meta]")).toHaveText("Game - Under Construction");
-+    await expect(statusBar.locator("[data-toolbox-selected-game-purpose-label]")).toHaveText("Selected Game Purpose");
-+    await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveText("Game");
-+    await expect(statusBar.locator("[data-toolbox-selected-game]")).not.toContainText("Under Construction");
-+    await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveText("Tool Action");
+-    await expect(statusBar.locator("[data-toolbox-selected-game-purpose-label]")).toHaveText("Selected Game Purpose");
+-    await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveText("Game");
++    await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveCount(0);
++    await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
++    await expect(statusBar.locator("[data-toolbox-status-action]")).toHaveCount(0);
+     await expect(statusBar.locator("[data-toolbox-selected-game]")).not.toContainText("Under Construction");
+-    await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveText("Tool Action");
      await expect(statusBar.locator("[data-toolbox-status-message]")).toContainText("Game Design mock repository ready.");
      await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-id", "demo-game");
      await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "active");
-@@ -130,6 +164,29 @@ test("shared toolbox status bar shows selected Game Hub game above the footer",
-   }
- });
+@@ -157,6 +198,11 @@ test("shared toolbox status bar shows selected Game Hub game above the footer",
+     expect(snapshot.position).not.toBe("fixed");
+     expect(snapshot.dataset.selectedGameState).toBe("active");
+     expect(snapshot.dataset.selectedGameRequired).toBe("true");
++    expect(snapshot.gameText).toBe("Demo Game");
++    expect(snapshot.messageText).toContain("Game Design mock repository ready.");
++    expect(Math.max(snapshot.gameBox.top, snapshot.messageBox.top)).toBeLessThanOrEqual(
++      Math.min(snapshot.gameBox.bottom, snapshot.messageBox.bottom),
++    );
 
-+test("shared toolbox status bar center reports save state after Game Hub saves", async ({ page }) => {
-+  const failures = await openRepoPage(page, "/toolbox/game-hub/index.html", { session: creatorSession() });
-+
-+  try {
-+    await page.getByRole("button", { name: "Add Game" }).click();
-+    const addGameRow = page.locator("[data-game-add-row='input']");
-+    await addGameRow.getByLabel("Game").fill("Status Bar Save");
-+    await addGameRow.getByLabel("Purpose").selectOption("Learning Game");
-+    await addGameRow.getByLabel("Status").selectOption("Ready for Testing");
-+    await addGameRow.getByRole("button", { name: "Save" }).click();
-+
-+    await expect(page.locator("[data-toolbox-status-context-type]")).toHaveText("Save State");
-+    await expect(page.locator("[data-toolbox-status-message]")).toHaveText("Created and opened Status Bar Save.");
-+    await expect(page.locator("[data-toolbox-selected-game-name]")).toHaveText("Status Bar Save");
-+    await expect(page.locator("[data-toolbox-selected-game-purpose]")).toHaveText("Learning Game");
-+    await expect(page.locator("[data-toolbox-status-bar]")).not.toContainText("Environment");
-+
-+    expectNoPageFailures(failures);
-+  } finally {
-+    await failures.server.close();
-+  }
-+});
-+
- test("shared toolbox status bar anchors to the bottom in tool display mode", async ({ page }) => {
-   const failures = await openRepoPage(page, "/toolbox/game-design/index.html");
+     expectNoPageFailures(failures);
+   } finally {
+@@ -175,11 +221,14 @@ test("shared toolbox status bar center reports save state after Game Hub saves",
+     await addGameRow.getByLabel("Status").selectOption("Ready for Testing");
+     await addGameRow.getByRole("button", { name: "Save" }).click();
 
-@@ -156,9 +213,11 @@ test("Game Hub owner selection updates the global toolbox status bar", async ({
+-    await expect(page.locator("[data-toolbox-status-context-type]")).toHaveText("Save State");
+-    await expect(page.locator("[data-toolbox-status-message]")).toHaveText("Created and opened Status Bar Save.");
+-    await expect(page.locator("[data-toolbox-selected-game-name]")).toHaveText("Status Bar Save");
+-    await expect(page.locator("[data-toolbox-selected-game-purpose]")).toHaveText("Learning Game");
+-    await expect(page.locator("[data-toolbox-status-bar]")).not.toContainText("Environment");
++    const statusBar = page.locator("[data-toolbox-status-bar]");
++    await expectRemovedStatusBarLabelsHidden(statusBar);
++    await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
++    await expect(statusBar.locator("[data-toolbox-status-message]")).toHaveText("Created and opened Status Bar Save.");
++    await expect(statusBar.locator("[data-toolbox-selected-game-name]")).toHaveText("Status Bar Save");
++    await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveCount(0);
++    await expect(statusBar).not.toContainText("Learning Game");
++    await expect(statusBar).not.toContainText("Environment");
+
+     expectNoPageFailures(failures);
+   } finally {
+@@ -199,6 +248,9 @@ test("shared toolbox status bar anchors to the bottom in tool display mode", asy
+     expect(snapshot.position).toBe("fixed");
+     expect(Math.abs(snapshot.bottomGap)).toBeLessThanOrEqual(2);
+     expect(snapshot.gameText).toContain("Demo Game");
++    expect(snapshot.messageText).toContain("Game Design mock repository ready.");
++    expect(snapshot.centerPanelBox.bottom).toBeLessThanOrEqual(snapshot.barBox.top + 1);
++    expect(Math.abs(snapshot.centerPanelBottomReserve - snapshot.statusHeightReserve)).toBeLessThanOrEqual(1);
+
+     expectNoPageFailures(failures);
+   } finally {
+@@ -213,12 +265,15 @@ test("Game Hub owner selection updates the global toolbox status bar", async ({
      await expect(page.locator("[data-toolbox-selected-game-name]")).toHaveText("Demo Game");
      await page.locator("[data-game-toggle='gravity-demo']").click();
      await expect(page.locator("[data-toolbox-selected-game-name]")).toHaveText("Gravity Demo");
--    await expect(page.locator("[data-toolbox-selected-game-meta]")).toHaveText("Capability Demo - Wireframe");
-+    await expect(page.locator("[data-toolbox-selected-game-purpose]")).toHaveText("Capability Demo");
-+    await expect(page.locator("[data-toolbox-selected-game]")).not.toContainText("Wireframe");
+-    await expect(page.locator("[data-toolbox-selected-game-purpose]")).toHaveText("Capability Demo");
+-    await expect(page.locator("[data-toolbox-selected-game]")).not.toContainText("Wireframe");
++    const statusBar = page.locator("[data-toolbox-status-bar]");
++    await expectRemovedStatusBarLabelsHidden(statusBar);
++    await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveCount(0);
++    await expect(statusBar.locator("[data-toolbox-selected-game]")).not.toContainText("Capability Demo");
++    await expect(statusBar.locator("[data-toolbox-selected-game]")).not.toContainText("Wireframe");
      await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-id", "gravity-demo");
      await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "active");
-+    await expect(page.locator("[data-toolbox-status-context-type]")).toHaveText("Warning");
-     await expect(page.locator("[data-toolbox-status-message]")).toContainText("Sign in to create or update Game Hub projects.");
+-    await expect(page.locator("[data-toolbox-status-context-type]")).toHaveText("Warning");
+-    await expect(page.locator("[data-toolbox-status-message]")).toContainText("Sign in to create or update Game Hub projects.");
++    await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
++    await expect(statusBar.locator("[data-toolbox-status-message]")).toContainText("Sign in to create or update Game Hub projects.");
 
      expectNoPageFailures(failures);
-@@ -173,6 +232,8 @@ test("non-Idea Board toolbox pages show a creator-safe prompt when no Game Hub g
+   } finally {
+@@ -231,12 +286,12 @@ test("non-Idea Board toolbox pages show a creator-safe prompt when no Game Hub g
+
    try {
      const statusBar = page.locator("[data-toolbox-status-bar]");
++    await expectRemovedStatusBarLabelsHidden(statusBar);
      await expect(statusBar.locator("[data-toolbox-selected-game-name]")).toHaveText("No game selected");
-+    await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveText("Game Hub owns game selection");
-+    await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveText("Tool Action");
+-    await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveText("Game Hub owns game selection");
+-    await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveText("Tool Action");
++    await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveCount(0);
++    await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
      await expect(statusBar.locator("[data-toolbox-status-message]")).toHaveText("Select or create a game in Game Hub before using this toolbox page.");
-     await expect(statusBar.locator("[data-toolbox-status-action]")).toHaveText("Select or Create in Game Hub");
-     await expect(statusBar.locator("[data-toolbox-status-action]")).toHaveAttribute("href", /toolbox\/game-hub\/index\.html$/);
-@@ -195,8 +256,9 @@ test("Idea Board is excluded from selected-game filtering and does not show the
+-    await expect(statusBar.locator("[data-toolbox-status-action]")).toHaveText("Select or Create in Game Hub");
+-    await expect(statusBar.locator("[data-toolbox-status-action]")).toHaveAttribute("href", /toolbox\/game-hub\/index\.html$/);
++    await expect(statusBar.locator("[data-toolbox-status-action]")).toHaveCount(0);
+     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "missing");
+     await expect(page.locator("body")).not.toHaveAttribute("data-toolbox-selected-game-id", /.+/);
+
+@@ -256,9 +311,10 @@ test("Idea Board is excluded from selected-game filtering and does not show the
    try {
      const statusBar = page.locator("[data-toolbox-status-bar]");
      await expect(statusBar).toBeVisible();
--    await expect(statusBar.locator("[data-toolbox-selected-game-name]")).toHaveText("Optional");
--    await expect(statusBar.locator("[data-toolbox-selected-game-meta]")).toHaveText("Idea Board can start before Game Hub creation");
-+    await expect(statusBar.locator("[data-toolbox-selected-game-name]")).toHaveText("No game selected");
-+    await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveText("Idea Board optional");
-+    await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveText("Tool Action");
++    await expectRemovedStatusBarLabelsHidden(statusBar);
+     await expect(statusBar.locator("[data-toolbox-selected-game-name]")).toHaveText("No game selected");
+-    await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveText("Idea Board optional");
+-    await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveText("Tool Action");
++    await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveCount(0);
++    await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
      await expect(statusBar.locator("[data-toolbox-status-message]")).toContainText("Ready to shape ideas and notes.");
      await expect(statusBar.locator("[data-toolbox-status-message]")).not.toContainText("Select or create a game");
      await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "optional");
