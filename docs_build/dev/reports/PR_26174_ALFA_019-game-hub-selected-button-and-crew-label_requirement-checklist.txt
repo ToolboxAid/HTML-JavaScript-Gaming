@@ -1,0 +1,11 @@
+Requirement checklist: PASS
+
+- Selected Game button uses the same style/scale as the Save button: PASS
+- Only the selected Game button is styled: PASS
+- Do not highlight the row: PASS
+- Do not highlight the cell background: PASS
+- Do not show left-border row highlight: PASS
+- Rename/move `game-hub/Game Crew` accordion to `Game Crew`: PASS
+- Preserve parent table columns Game, Purpose, Status, Actions: PASS
+- Preserve Source Idea and Readiness Output child rows: PASS
+- Follow table_first_ui.md: PASS

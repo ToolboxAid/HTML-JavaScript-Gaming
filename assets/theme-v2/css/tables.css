@@ -115,12 +115,6 @@ td {
   cursor: pointer
 }
 
-.data-table [data-game-toggle][aria-current="true"] {
-  border-color: var(--gold);
-  background: color-mix(in srgb, var(--gold) 18%, var(--panel-soft));
-  box-shadow: inset 0 0 0 1px var(--gold-border-muted)
-}
-
 .idea-board-idea-label {
   display: inline-flex;
   align-items: center;
