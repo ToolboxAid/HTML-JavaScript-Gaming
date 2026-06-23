@@ -1,59 +1,59 @@
-# PR_26175_ALFA_002-toolbox-status-bar-context-polish
+# PR_26175_ALFA_006-game-hub-create-project-validation
 
 ## Purpose
-Polish the shared toolbox status bar context display so it shows only selected-game name/purpose on the left and categorized tool context in the center.
+Add creator-facing validation for the Game Hub create-project row so blank game names do not silently create fallback projects.
 
 ## Source Of Truth
-This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_002-toolbox-status-bar-context-polish`.
+This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_006-game-hub-create-project-validation`.
 
 ## Exact Scope
-- Do not include environment text in the status bar because environment already appears in the platform banner.
-- On the left side, display the selected Game Hub game name and selected Game Hub game purpose.
-- On the center side, display tool context messages for tool actions, save state, validation messages, warnings, or errors.
-- Preserve normal placement above the footer.
-- Preserve fullscreen/tool display mode bottom anchoring.
-- Preserve Idea Board selected-game filtering exclusion.
-- Preserve Game Hub as selected-game owner through the existing repository contract.
-- Keep the shared Theme V2 toolbox component model.
-- Update targeted Playwright coverage for the polished left and center context.
+- Validate the Game Hub add-game row before calling the repository create method.
+- Block signed-in creator saves when the game name is blank or whitespace-only.
+- Keep the add-game row open after validation failure.
+- Show a creator-safe validation message in the existing Game Hub status log.
+- Mark the game name input invalid for accessibility.
+- Preserve valid create/open/delete behavior.
+- Preserve guest save redirect behavior.
+- Preserve API/service/repository contracts.
+- Add targeted Playwright coverage for the create validation path.
 
 ## Exact Targets
 - `docs_build/dev/BUILD_PR.md`
-- `assets/theme-v2/js/toolbox-status-bar.js`
-- `assets/theme-v2/css/status.css`
-- `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs`
-- `docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_report.md`
-- `docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_validation-lane.md`
-- `docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_requirements-checklist.md`
+- `toolbox/game-hub/game-hub.js`
+- `tests/playwright/tools/GameHubMockRepository.spec.mjs`
+- `docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_report.md`
+- `docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_validation-lane.md`
+- `docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_requirements-checklist.md`
 - `docs_build/dev/reports/codex_review.diff`
 - `docs_build/dev/reports/codex_changed_files.txt`
 
 ## Out Of Scope
-- No environment status in the toolbox status bar.
-- No row highlights.
-- No large banners.
-- No modal-style status messages.
+- No repository/API/service contract changes.
+- No Game Journey completion-metrics changes.
+- No shared toolbox status bar changes.
+- No unrelated Game Hub workflow changes.
+- No browser-owned product data as source of truth.
+- No silent create-name fallback in the Game Hub page flow.
 - No inline styles, style blocks, or page-local CSS.
-- No API/service contract changes.
 - No engine core changes.
 - No `start_of_day` folder changes.
 
 ## Validation
-Run:
+Run targeted create-project validation:
 
 ```powershell
-npx playwright test tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs --workers=1
+npx playwright test tests/playwright/tools/GameHubMockRepository.spec.mjs --workers=1 --grep "Game Hub creates, opens, and deletes mock games"
 ```
 
-Also verify the changed source does not introduce inline styles or style blocks:
+Also verify changed source does not introduce inline styles or style blocks:
 
 ```powershell
-rg -n "<style|style=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
+rg -n "<[s]tyle|[s]tyle=" toolbox/game-hub/game-hub.js tests/playwright/tools/GameHubMockRepository.spec.mjs docs_build/dev/BUILD_PR.md docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_report.md docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_validation-lane.md docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_requirements-checklist.md
 ```
 
 ## Artifact
 Create repo-structured delta ZIP:
 
 ```text
-tmp/PR_26175_ALFA_002-toolbox-status-bar-context-polish_delta.zip
+tmp/PR_26175_ALFA_006-game-hub-create-project-validation_delta.zip
 ```

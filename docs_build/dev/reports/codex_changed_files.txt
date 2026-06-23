@@ -1,9 +1,8 @@
-assets/theme-v2/css/status.css
-assets/theme-v2/js/toolbox-status-bar.js
 docs_build/dev/BUILD_PR.md
-docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_report.md
-docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_validation-lane.md
-docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_requirements-checklist.md
+toolbox/game-hub/game-hub.js
+tests/playwright/tools/GameHubMockRepository.spec.mjs
+docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_report.md
+docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_validation-lane.md
+docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_requirements-checklist.md
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
-tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
