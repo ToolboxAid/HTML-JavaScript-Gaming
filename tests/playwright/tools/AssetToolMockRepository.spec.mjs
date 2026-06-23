@@ -83,6 +83,13 @@ async function openRepoPage(page, pathName, options = {}) {
   const failedRequests = [];
   const pageErrors = [];
   const consoleErrors = [];
+  await page.addInitScript(({ apiUrl, siteUrl }) => {
+    window.GameFoundryPublicConfig = {
+      apiUrl,
+      environmentLabel: "Development Environment",
+      siteUrl,
+    };
+  }, { apiUrl: `${server.baseUrl}/api`, siteUrl: server.baseUrl });
 
   page.on("pageerror", (error) => {
     pageErrors.push(error.message);

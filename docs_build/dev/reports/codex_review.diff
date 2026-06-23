@@ -1,141 +1,186 @@
-diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_030-assets-tool-canonical-js-migration-audit.md b/docs_build/dev/reports/PR_26172_CHARLIE_030-assets-tool-canonical-js-migration-audit.md
+diff --git a/toolbox/assets/assets.js b/assets/toolbox/assets/js/index.js
+similarity index 99%
+rename from toolbox/assets/assets.js
+rename to assets/toolbox/assets/js/index.js
+index 712917f48..d914bd91c 100644
+--- a/toolbox/assets/assets.js
++++ b/assets/toolbox/assets/js/index.js
+@@ -2,8 +2,8 @@ import {
+   ASSET_CATALOG_TYPES,
+   ASSET_USAGE_OPTIONS,
+   createAssetToolApiRepository
+-} from "./assets-api-client.js";
+-import { getSessionCurrent } from "../../src/api/session-api-client.js";
++} from "../../../../toolbox/assets/assets-api-client.js";
++import { getSessionCurrent } from "../../../../src/api/session-api-client.js";
+
+ const repository = createAssetToolApiRepository();
+ const params = new URLSearchParams(window.location.search);
+@@ -71,7 +71,7 @@ const UPLOAD_ACCEPT_BY_ASSET_TYPE = Object.freeze({
+ const DEFAULT_UPLOAD_CHUNK_SIZE_BYTES = 64 * 1024;
+ const MAX_UPLOAD_CHUNK_SIZE_BYTES = 1024 * 1024;
+ const SERVER_RECEIVE_PROGRESS_INTERVAL_MS = 1000;
+-const UPLOAD_WORKER_URL = new URL("./assets-upload-worker.js", import.meta.url);
++const UPLOAD_WORKER_URL = new URL("../../../../toolbox/assets/assets-upload-worker.js", import.meta.url);
+
+ function isBrowserValidationHost() {
+   return ["", "localhost", "127.0.0.1", "::1"].includes(window.location.hostname);
+diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_031-assets-tool-safe-entrypoint-migration.md b/docs_build/dev/reports/PR_26172_CHARLIE_031-assets-tool-safe-entrypoint-migration.md
 new file mode 100644
-index 000000000..49a88be96
+index 000000000..e14d9662d
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_CHARLIE_030-assets-tool-canonical-js-migration-audit.md
-@@ -0,0 +1,135 @@
-+# PR_26172_CHARLIE_030-assets-tool-canonical-js-migration-audit
++++ b/docs_build/dev/reports/PR_26172_CHARLIE_031-assets-tool-safe-entrypoint-migration.md
+@@ -0,0 +1,110 @@
++# PR_26172_CHARLIE_031-assets-tool-safe-entrypoint-migration
 +
-+Status: PASS.
++## Summary
 +
-+Branch: `PR_26172_CHARLIE_repository-compliance-stack`
++Status: PASS with validation blocker documented.
 +
-+## Purpose
++The Assets tool entrypoint was moved from the active legacy toolbox path to the canonical tool asset path:
 +
-+Perform detailed migration audit for Assets / Asset Browser / Vector Art because worker/API/client paths may be higher risk.
++- From: `toolbox/assets/assets.js`
++- To: `assets/toolbox/assets/js/index.js`
++
++The Assets API client and upload worker were retained in their existing legacy paths because PR_030 identified both as higher-risk follow-up items:
++
++- `toolbox/assets/assets-api-client.js`
++- `toolbox/assets/assets-upload-worker.js`
 +
 +## Files Reviewed
 +
-+- `toolbox/assets/assets.js`
-+- `toolbox/assets/assets-api-client.js`
-+- `toolbox/assets/assets-upload-worker.js`
++- `docs_build/dev/ProjectInstructions/README.txt`
++- `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
++- `docs_build/dev/reports/PR_26172_CHARLIE_030-assets-tool-canonical-js-migration-audit.md`
 +- `toolbox/assets/index.html`
-+- `assets/toolbox/objects/js/index.js`
-+- `tests/playwright/tools/AssetToolMockRepository.spec.mjs`
-+- `tests/dev-runtime/ProductDataProviderContractHardening.test.mjs`
-+- `scripts/validate-browser-env-agnostic.mjs`
-+- `scripts/validate-canonical-repository-structure.mjs`
-+
-+## Findings
-+
-+### `assets.js`
-+
-+Current path:
 +- `toolbox/assets/assets.js`
-+
-+Current HTML reference:
-+- `toolbox/assets/index.html` loads `toolbox/assets/assets.js`.
-+
-+Current imports:
-+- `./assets-api-client.js`
-+- `../../src/api/session-api-client.js`
-+
-+Worker construction:
-+- `const UPLOAD_WORKER_URL = new URL("./assets-upload-worker.js", import.meta.url);`
-+- `new Worker(UPLOAD_WORKER_URL, { type: "module" })`
-+
-+Decision:
-+- `assets.js` can safely move to `assets/toolbox/assets/js/index.js` if imports are updated and the worker URL points back to the retained legacy worker path.
-+
-+Required path changes after entrypoint migration:
-+- API client import becomes `../../../../toolbox/assets/assets-api-client.js`.
-+- Session API import becomes `../../../../src/api/session-api-client.js`.
-+- Worker URL becomes `new URL("../../../../toolbox/assets/assets-upload-worker.js", import.meta.url)`.
-+
-+### `assets-api-client.js`
-+
-+Current path:
 +- `toolbox/assets/assets-api-client.js`
-+
-+References:
-+- `toolbox/assets/assets.js`
-+- `assets/toolbox/objects/js/index.js`
-+- `tests/dev-runtime/ProductDataProviderContractHardening.test.mjs`
-+- `scripts/validate-browser-env-agnostic.mjs`
-+- `scripts/validate-canonical-repository-structure.mjs`
-+
-+Decision:
-+- Do not move in the entrypoint PR.
-+- It is not Assets-only because Objects imports it.
-+- A later shared API placement decision is required before moving it safely.
-+
-+### `assets-upload-worker.js`
-+
-+Current path:
 +- `toolbox/assets/assets-upload-worker.js`
-+
-+References:
-+- `toolbox/assets/assets.js`
 +- `tests/playwright/tools/AssetToolMockRepository.spec.mjs`
 +- `scripts/validate-canonical-repository-structure.mjs`
 +
-+Decision:
-+- Do not move in the entrypoint PR.
-+- The active canonical guardrail only allows `assets/toolbox/{tool}/js/index.js`, `assets/js/shared/`, and `assets/theme-v2/js/`.
-+- A worker-specific canonical filename/pattern does not exist yet.
-+- Moving the worker without updating governance/guardrails would create a new canonical-structure violation or require a new exception pattern.
++## Files Changed
 +
-+## Exact Validation Needed
++- `assets/toolbox/assets/js/index.js`
++- `toolbox/assets/index.html`
++- `tests/playwright/tools/AssetToolMockRepository.spec.mjs`
++- `scripts/validate-canonical-repository-structure.mjs`
++- `docs_build/dev/reports/PR_26172_CHARLIE_031-assets-tool-safe-entrypoint-migration.md`
++- `docs_build/dev/reports/codex_review.diff`
++- `docs_build/dev/reports/codex_changed_files.txt`
 +
-+For entrypoint migration:
-+- `node --check assets/toolbox/assets/js/index.js`
-+- `git diff --check`
-+- `npm run validate:canonical-structure`
-+- Active stale-reference check for `toolbox/assets/assets.js`
-+- Direct Assets page probe to confirm:
-+  - canonical module loads
-+  - asset type accordions render
-+  - no page errors/request failures
-+- Worker behavior remains unchanged if worker stays at `toolbox/assets/assets-upload-worker.js`.
++## Migration Notes
 +
-+For worker/API placement resolution:
-+- `npm run validate:browser-env-agnostic`
-+- `npm run validate:canonical-structure`
-+- targeted Assets worker Playwright validation if worker path changes
++- Updated the HTML module script reference to `assets/toolbox/assets/js/index.js`.
++- Updated the moved module imports so it can still load the retained API client and session API from the canonical asset location.
++- Updated the retained worker URL to continue loading `toolbox/assets/assets-upload-worker.js`.
++- Removed `toolbox/assets/assets.js` from the approved legacy JS exception list.
++- Added test public API configuration so the relocated module resolves the Playwright Local API server explicitly.
 +
-+## Risk Classification
++## Retained Exceptions
 +
-+- `assets.js`: SAFE for entrypoint-only migration with retained worker/API paths.
-+- `assets-api-client.js`: NEEDS CARE; shared with Objects.
-+- `assets-upload-worker.js`: STOP / owner review; canonical worker placement is undefined.
-+
-+## Requirement Checklist
-+
-+- [x] Reviewed Assets page script.
-+- [x] Reviewed Assets API client.
-+- [x] Reviewed upload worker.
-+- [x] Reviewed Assets HTML.
-+- [x] Reviewed asset-related tests.
-+- [x] Reviewed worker construction path.
-+- [x] Reviewed browser validation rules.
-+- [x] Reviewed canonical structure guardrail rules.
-+- [x] Determined whether entrypoint can safely move.
-+- [x] Determined API client should remain pending shared placement.
-+- [x] Determined worker should remain pending worker placement governance.
-+- [x] No implementation changes.
++- `toolbox/assets/assets-api-client.js`
++  - Reason: shared with Objects through `assets/toolbox/objects/js/index.js`.
++  - Follow-up: define shared client placement before moving it.
++- `toolbox/assets/assets-upload-worker.js`
++  - Reason: worker filename/placement is not yet covered by the canonical guardrail.
++  - Follow-up: add an approved worker placement rule or leave as a temporary legacy exception.
 +
 +## Validation Lane Report
 +
-+PASS:
-+- Report exists.
-+- Runtime source unchanged in this PR.
-+- ZIP artifact required under `tmp/`.
++- `node --check assets/toolbox/assets/js/index.js`
++  - Result: PASS
++- `node --check tests/playwright/tools/AssetToolMockRepository.spec.mjs`
++  - Result: PASS
++- `git diff --check`
++  - Result: PASS
++- `npm run validate:canonical-structure`
++  - Result: PASS
++  - Blocking violations: 0
++  - Approved legacy exceptions: 482
++- Active stale reference check for `toolbox/assets/assets.js`
++  - Result: PASS
++  - No active non-report references remain.
++- Direct browser probe for Assets page
++  - Result: PASS
++  - Canonical script loaded.
++  - Retained legacy worker URL was reachable.
++- Targeted Playwright route validation:
++  - Command: `npx playwright test tests/playwright/tools/AssetToolMockRepository.spec.mjs --grep "Assets launches as asset-type accordions" --workers=1 --reporter=line --timeout=90000`
++  - Result: FAIL
++  - Failure: upload completed with `0 written, 1 failed`.
++  - Root observation: the browser loaded the canonical module, started the retained worker at `toolbox/assets/assets-upload-worker.js`, then the Local API returned HTTP 500 from `/api/toolbox/assets/repositories/assets-1/methods/addAssetRecord`.
++  - Local API failure text observed in the UI: `fetch failed`.
++  - Classification: validation blocker is in the asset persistence/provider lane, not the entrypoint path migration.
 +
-+Skipped:
-+- Playwright not run because this PR is audit-only.
-+- Canonical guardrail not rerun because this PR does not change JS/CSS/test structure.
-+- Samples not run per scope.
++## Branch Validation
++
++- Current branch: `PR_26172_CHARLIE_repository-compliance-stack`
++- Expected branch: `PR_26172_CHARLIE_repository-compliance-stack`
++- Local/origin sync before PR: `0 0`
++- Branch validation: PASS
++
++## Requirement Checklist
++
++- Move `toolbox/assets/assets.js` to `assets/toolbox/assets/js/index.js`: PASS
++- Update `toolbox/assets/index.html` script reference: PASS
++- Preserve behavior: PASS for page load and worker startup; upload persistence lane blocked by Local API provider failure.
++- Do not move worker unless PR_030 proves safe: PASS
++- Do not move API client unless PR_030 proves safe: PASS
++- Do not add feature work: PASS
++- Run targeted Assets validation if available: PASS with documented failure in persistence lane.
++- Run canonical structure guardrail: PASS
++- Confirm old active `assets.js` path is no longer referenced unless documented: PASS
++- Confirm worker still loads if retained: PASS
++- Confirm ZIP exists: PASS after artifact creation.
 +
 +## Manual Validation Notes
 +
-+The safe next step is an entrypoint-only migration. Worker and API-client placement should be resolved separately, with retained exceptions documented if governance does not yet define canonical worker/shared API paths.
++The migration changes only the active entrypoint path and keeps the higher-risk Assets API client and worker in place. Targeted browser probing confirmed the canonical script and retained worker load correctly. The full upload Playwright test still fails because `addAssetRecord` returns HTTP 500 from Local API persistence; that issue was reproduced after storage variables were cleared for the command, so it should be tracked separately from canonical JS relocation.
++
++## Recommendation
++
++Continue to PR_032. Retain the Assets API client and worker as documented exceptions unless PR_032 identifies a safe canonical placement that does not alter upload behavior.
+diff --git a/scripts/validate-canonical-repository-structure.mjs b/scripts/validate-canonical-repository-structure.mjs
+index c881da797..62ef269c2 100644
+--- a/scripts/validate-canonical-repository-structure.mjs
++++ b/scripts/validate-canonical-repository-structure.mjs
+@@ -8,7 +8,6 @@ const repoRoot = path.resolve(fileURLToPath(new URL("..", import.meta.url)));
+ export const APPROVED_LEGACY_JS_PATHS = Object.freeze(new Set([
+   "toolbox/assets/assets-api-client.js",
+   "toolbox/assets/assets-upload-worker.js",
+-  "toolbox/assets/assets.js",
+   "toolbox/controls/controls-api-client.js",
+   "toolbox/game-hub/game-hub-api-client.js",
+   "toolbox/game-hub/game-hub.js",
+diff --git a/tests/playwright/tools/AssetToolMockRepository.spec.mjs b/tests/playwright/tools/AssetToolMockRepository.spec.mjs
+index c38ee6ec5..3cc244b26 100644
+--- a/tests/playwright/tools/AssetToolMockRepository.spec.mjs
++++ b/tests/playwright/tools/AssetToolMockRepository.spec.mjs
+@@ -83,6 +83,13 @@ async function openRepoPage(page, pathName, options = {}) {
+   const failedRequests = [];
+   const pageErrors = [];
+   const consoleErrors = [];
++  await page.addInitScript(({ apiUrl, siteUrl }) => {
++    window.GameFoundryPublicConfig = {
++      apiUrl,
++      environmentLabel: "Development Environment",
++      siteUrl,
++    };
++  }, { apiUrl: `${server.baseUrl}/api`, siteUrl: server.baseUrl });
+
+   page.on("pageerror", (error) => {
+     pageErrors.push(error.message);
+diff --git a/toolbox/assets/index.html b/toolbox/assets/index.html
+index 2bd748d76..fdb9a6495 100644
+--- a/toolbox/assets/index.html
++++ b/toolbox/assets/index.html
+@@ -153,7 +153,7 @@
+     <div data-partial="footer"></div>
+     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+-    <script type="module" src="toolbox/assets/assets.js"></script>
++    <script type="module" src="assets/toolbox/assets/js/index.js"></script>
+ </body>
+
+ </html>
