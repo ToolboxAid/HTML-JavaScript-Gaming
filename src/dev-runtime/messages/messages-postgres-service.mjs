@@ -1,4 +1,8 @@
 import { randomBytes } from "node:crypto";
+import {
+  createMessageStudioDefaultTtsProfiles,
+  createMessageStudioTtsProfileOptions,
+} from "../../../toolbox/text-to-speech/text2speech.js";
 import { createPostgresConnectionClient } from "../persistence/postgres-connection-client.mjs";
 import { SEED_DB_KEYS } from "../seed/seed-db-keys.mjs";
 
@@ -14,6 +18,7 @@ const SEED_CATEGORY_NAMES = Object.freeze([
   "Notification",
 ]);
 const SEED_EMOTION_PROFILES = Object.freeze([
+  Object.freeze({ description: "Balanced spoken delivery for general narration or dialog.", name: "Neutral", pauseAfterMs: 150, pauseBeforeMs: 0, pitch: 1, rate: 1, volume: 1 }),
   Object.freeze({ description: "Neutral spoken delivery for general narration or dialog.", name: "Calm", pauseAfterMs: 150, pauseBeforeMs: 0, pitch: 1, rate: 1, volume: 1 }),
   Object.freeze({ description: "Fast, alert delivery for warnings and immediate danger.", name: "Urgent", pauseAfterMs: 80, pauseBeforeMs: 0, pitch: 1.08, rate: 1.15, volume: 1 }),
   Object.freeze({ description: "Quiet delivery for secret, stealth, or intimate lines.", name: "Whisper", pauseAfterMs: 180, pauseBeforeMs: 80, pitch: 0.95, rate: 0.9, volume: 0.55 }),
@@ -21,28 +26,37 @@ const SEED_EMOTION_PROFILES = Object.freeze([
   Object.freeze({ description: "Bright delivery for reveals, wins, and high-energy moments.", name: "Excited", pauseAfterMs: 100, pauseBeforeMs: 0, pitch: 1.12, rate: 1.12, volume: 1 }),
   Object.freeze({ description: "Soft delivery for loss, regret, or reflective moments.", name: "Sad", pauseAfterMs: 220, pauseBeforeMs: 100, pitch: 0.9, rate: 0.85, volume: 0.8 }),
   Object.freeze({ description: "Measured delivery for suspense, hidden lore, or strange events.", name: "Mysterious", pauseAfterMs: 260, pauseBeforeMs: 120, pitch: 0.92, rate: 0.88, volume: 0.85 }),
+  Object.freeze({ description: "Synthetic delivery for mechanical or artificial characters.", name: "Robot", pauseAfterMs: 120, pauseBeforeMs: 40, pitch: 0.82, rate: 0.92, volume: 0.9 }),
 ]);
-const SEED_TTS_PROFILES = Object.freeze([
-  Object.freeze({
-    description: "Balanced local browser playback option until authored TTS profiles are available.",
-    language: "en-US",
-    name: "Default Balanced TTS Profile",
-    pitch: 1,
-    providerKey: "browser-speech",
-    rate: 1,
-    voiceName: "",
-    volume: 1,
-  }),
-  Object.freeze({
-    description: "Narration-focused preview configuration for future spoken story text.",
-    language: "en-US",
-    name: "Narration Preview",
-    pitch: 0.95,
-    providerKey: "browser-speech",
-    rate: 0.9,
-    voiceName: "",
-    volume: 0.9,
-  }),
+const MESSAGE_STUDIO_TTS_PROFILE_OPTIONS = Object.freeze(createMessageStudioTtsProfileOptions(createMessageStudioDefaultTtsProfiles())
+  .map((profile) => Object.freeze({
+    ...profile,
+    emotionSettings: Object.freeze(profile.emotionSettings.map((setting) => Object.freeze({ ...setting }))),
+  })));
+const SEED_TTS_PROFILES = Object.freeze(MESSAGE_STUDIO_TTS_PROFILE_OPTIONS.map((profile) => Object.freeze({
+  description: `${profile.name} from Text To Speech profile ownership.`,
+  language: profile.language || "en-US",
+  name: profile.name,
+  pitch: 1,
+  providerKey: profile.providerKey || "browser-speech",
+  rate: 1,
+  voiceName: profile.voiceName || "Default browser voice",
+  volume: 1,
+})));
+const SUPPORTED_TTS_PROVIDER_KEYS = Object.freeze([
+  "browser-speech",
+  "elevenlabs",
+  "openai",
+  "azure",
+  "polly",
+]);
+const ACTIVE_PUBLISH_TTS_PROVIDER_KEYS = Object.freeze([
+  "browser-speech",
+]);
+const MESSAGE_EVENT_ACTION_TYPES = Object.freeze([
+  Object.freeze({ key: "show-message", label: "Show Message", requiresMessage: true }),
+  Object.freeze({ key: "speak-message", label: "Speak Message", requiresMessage: true }),
+  Object.freeze({ key: "wait-for-continue", label: "Wait For Continue", requiresMessage: false }),
 ]);
 
 const MESSAGES_POSTGRES_SCHEMA_SQL = `
@@ -72,20 +86,6 @@ CREATE TABLE IF NOT EXISTS messages_emotion_profiles (
   "updatedBy" text NOT NULL REFERENCES users(key)
 );
 
-CREATE TABLE IF NOT EXISTS messages_records (
-  key text PRIMARY KEY,
-  "name" text NOT NULL,
-  "categoryKey" text NOT NULL REFERENCES messages_categories(key),
-  "emotionProfileKey" text NOT NULL REFERENCES messages_emotion_profiles(key),
-  "messageText" text NOT NULL,
-  "notes" text NOT NULL DEFAULT '',
-  "active" boolean NOT NULL DEFAULT true,
-  "createdAt" timestamptz NOT NULL DEFAULT now(),
-  "updatedAt" timestamptz NOT NULL DEFAULT now(),
-  "createdBy" text NOT NULL REFERENCES users(key),
-  "updatedBy" text NOT NULL REFERENCES users(key)
-);
-
 CREATE TABLE IF NOT EXISTS messages_tts_profiles (
   key text PRIMARY KEY,
   "name" text NOT NULL UNIQUE,
@@ -103,10 +103,26 @@ CREATE TABLE IF NOT EXISTS messages_tts_profiles (
   "updatedBy" text NOT NULL REFERENCES users(key)
 );
 
+CREATE TABLE IF NOT EXISTS messages_records (
+  key text PRIMARY KEY,
+  "name" text NOT NULL,
+  "categoryKey" text NOT NULL REFERENCES messages_categories(key),
+  "emotionProfileKey" text NOT NULL REFERENCES messages_emotion_profiles(key),
+  "voiceProfileKey" text NOT NULL REFERENCES messages_tts_profiles(key),
+  "messageText" text NOT NULL,
+  "notes" text NOT NULL DEFAULT '',
+  "active" boolean NOT NULL DEFAULT true,
+  "createdAt" timestamptz NOT NULL DEFAULT now(),
+  "updatedAt" timestamptz NOT NULL DEFAULT now(),
+  "createdBy" text NOT NULL REFERENCES users(key),
+  "updatedBy" text NOT NULL REFERENCES users(key)
+);
+
 CREATE TABLE IF NOT EXISTS messages_segments (
   key text PRIMARY KEY,
   "messageKey" text NOT NULL REFERENCES messages_records(key),
   "emotionProfileKey" text NOT NULL REFERENCES messages_emotion_profiles(key),
+  "voiceProfileKey" text NOT NULL REFERENCES messages_tts_profiles(key),
   "segmentText" text NOT NULL,
   "displayOrder" integer NOT NULL,
   "active" boolean NOT NULL DEFAULT true,
@@ -116,15 +132,36 @@ CREATE TABLE IF NOT EXISTS messages_segments (
   "updatedBy" text NOT NULL REFERENCES users(key)
 );
 
+CREATE TABLE IF NOT EXISTS messages_event_actions (
+  key text PRIMARY KEY,
+  "name" text NOT NULL,
+  "actionType" text NOT NULL,
+  "messageKey" text REFERENCES messages_records(key),
+  "active" boolean NOT NULL DEFAULT true,
+  "createdAt" timestamptz NOT NULL DEFAULT now(),
+  "updatedAt" timestamptz NOT NULL DEFAULT now(),
+  "createdBy" text NOT NULL REFERENCES users(key),
+  "updatedBy" text NOT NULL REFERENCES users(key)
+);
+
+ALTER TABLE messages_records ADD COLUMN IF NOT EXISTS "voiceProfileKey" text REFERENCES messages_tts_profiles(key);
+ALTER TABLE messages_segments ADD COLUMN IF NOT EXISTS "voiceProfileKey" text REFERENCES messages_tts_profiles(key);
+
 CREATE INDEX IF NOT EXISTS idx_messages_records_categorykey ON messages_records ("categoryKey");
 CREATE INDEX IF NOT EXISTS idx_messages_records_emotionprofilekey ON messages_records ("emotionProfileKey");
+CREATE INDEX IF NOT EXISTS idx_messages_records_voiceprofilekey ON messages_records ("voiceProfileKey");
 CREATE INDEX IF NOT EXISTS idx_messages_records_createdby ON messages_records ("createdBy");
 CREATE INDEX IF NOT EXISTS idx_messages_records_updatedby ON messages_records ("updatedBy");
 CREATE INDEX IF NOT EXISTS idx_messages_segments_messagekey ON messages_segments ("messageKey");
 CREATE INDEX IF NOT EXISTS idx_messages_segments_emotionprofilekey ON messages_segments ("emotionProfileKey");
+CREATE INDEX IF NOT EXISTS idx_messages_segments_voiceprofilekey ON messages_segments ("voiceProfileKey");
 CREATE INDEX IF NOT EXISTS idx_messages_segments_order ON messages_segments ("messageKey", "displayOrder");
 CREATE INDEX IF NOT EXISTS idx_messages_segments_createdby ON messages_segments ("createdBy");
 CREATE INDEX IF NOT EXISTS idx_messages_segments_updatedby ON messages_segments ("updatedBy");
+CREATE INDEX IF NOT EXISTS idx_messages_event_actions_actiontype ON messages_event_actions ("actionType");
+CREATE INDEX IF NOT EXISTS idx_messages_event_actions_messagekey ON messages_event_actions ("messageKey");
+CREATE INDEX IF NOT EXISTS idx_messages_event_actions_createdby ON messages_event_actions ("createdBy");
+CREATE INDEX IF NOT EXISTS idx_messages_event_actions_updatedby ON messages_event_actions ("updatedBy");
 CREATE INDEX IF NOT EXISTS idx_messages_tts_profiles_providerkey ON messages_tts_profiles ("providerKey");
 CREATE INDEX IF NOT EXISTS idx_messages_tts_profiles_createdby ON messages_tts_profiles ("createdBy");
 CREATE INDEX IF NOT EXISTS idx_messages_tts_profiles_updatedby ON messages_tts_profiles ("updatedBy");
@@ -177,6 +214,41 @@ function normalizeNumber(value, fallback) {
   return Number.isFinite(numberValue) ? numberValue : fallback;
 }
 
+function normalizeRequiredNumber(value, label) {
+  if (value === undefined || value === null || String(value).trim() === "") {
+    throw httpError(`${label} is required.`);
+  }
+  const numberValue = Number(value);
+  if (!Number.isFinite(numberValue)) {
+    throw httpError(`${label} must be a number.`);
+  }
+  return numberValue;
+}
+
+function normalizeEditableNumber(value, fallback, label) {
+  return value === undefined ? fallback : normalizeRequiredNumber(value, label);
+}
+
+function normalizeTtsProviderKey(value) {
+  const providerKey = normalizeName(value, "Voice profile provider");
+  if (!SUPPORTED_TTS_PROVIDER_KEYS.includes(providerKey)) {
+    throw httpError("Voice profile provider is not supported.");
+  }
+  return providerKey;
+}
+
+function eventActionTypeDefinition(actionType) {
+  return MESSAGE_EVENT_ACTION_TYPES.find((candidate) => candidate.key === actionType) || null;
+}
+
+function normalizeEventActionType(value) {
+  const actionType = normalizeName(value, "Event action");
+  if (!eventActionTypeDefinition(actionType)) {
+    throw httpError("Event action is not supported.");
+  }
+  return actionType;
+}
+
 function emotionSettingKey(value) {
   return normalizeText(value)
     .trim()
@@ -214,7 +286,7 @@ function queryForKey(key) {
   return `select=*&key=eq.${encodeURIComponent(key)}`;
 }
 
-function messageRecordFromRow(row, { categoryName = "", emotionProfileName = "" } = {}) {
+function messageRecordFromRow(row, { categoryName = "", emotionProfileName = "", voiceProfileName = "" } = {}) {
   return {
     active: activeFromDatabase(row.active),
     categoryKey: row.categoryKey,
@@ -229,6 +301,8 @@ function messageRecordFromRow(row, { categoryName = "", emotionProfileName = "" 
     notes: row.notes || "",
     updatedAt: row.updatedAt,
     updatedBy: row.updatedBy,
+    voiceProfileKey: row.voiceProfileKey || "",
+    voiceProfileName,
   };
 }
 
@@ -275,6 +349,7 @@ function ttsEmotionSettingFromEmotionProfile(profile) {
     active: profile.active !== false,
     emotion: emotionSettingKey(profile.name),
     emotionLabel: profile.name,
+    key: profile.key,
     pitch: Number(profile.pitch),
     rate: Number(profile.rate),
     ssmlLikePreset: "normal",
@@ -282,13 +357,54 @@ function ttsEmotionSettingFromEmotionProfile(profile) {
   };
 }
 
+function messageStudioTtsProfileOption(row) {
+  const rowName = normalizeText(row?.name).trim().toLowerCase();
+  const rowKey = normalizeText(row?.key).trim();
+  return MESSAGE_STUDIO_TTS_PROFILE_OPTIONS.find((profile) => {
+    return profile.key === rowKey || normalizeText(profile.name).trim().toLowerCase() === rowName;
+  }) || null;
+}
+
+function emotionSettingsForTtsProfileRow(row, emotionRows = []) {
+  const option = messageStudioTtsProfileOption(row);
+  if (!option) {
+    return [];
+  }
+  const activeEmotionProfiles = emotionRows
+    .map((profileRow) => emotionProfileFromRow(profileRow))
+    .filter((profile) => profile.active !== false);
+  const byLabel = new Map(activeEmotionProfiles.map((profile) => [normalizeText(profile.name).trim().toLowerCase(), profile]));
+  const byEmotion = new Map(activeEmotionProfiles.map((profile) => [emotionSettingKey(profile.name), profile]));
+  return option.emotionSettings
+    .map((setting) => {
+      const emotionProfile = byLabel.get(normalizeText(setting.emotionLabel).trim().toLowerCase())
+        || byEmotion.get(emotionSettingKey(setting.emotion))
+        || null;
+      if (!emotionProfile) {
+        return null;
+      }
+      return {
+        ...ttsEmotionSettingFromEmotionProfile(emotionProfile),
+        pitch: Number(setting.pitch),
+        rate: Number(setting.rate),
+        ssmlLikePreset: setting.ssmlLikePreset || "normal",
+        volume: Number(setting.volume),
+      };
+    })
+    .filter(Boolean);
+}
+
 function ttsProfileFromRow(row, emotionSettings = []) {
+  const profileOption = messageStudioTtsProfileOption(row);
   return {
     active: activeFromDatabase(row.active),
+    age: profileOption?.age || "",
+    ageFilter: profileOption?.ageFilter || profileOption?.age || "",
     createdAt: row.createdAt,
     createdBy: row.createdBy,
     description: row.description || "",
     emotionSettings,
+    gender: profileOption?.gender || "",
     key: row.key,
     language: row.language,
     name: row.name,
@@ -298,12 +414,13 @@ function ttsProfileFromRow(row, emotionSettings = []) {
     status: activeFromDatabase(row.active) ? "Active" : "Inactive",
     updatedAt: row.updatedAt,
     updatedBy: row.updatedBy,
+    voice: profileOption?.voice || row.voiceName || "",
     voiceName: row.voiceName || "",
     volume: Number(row.volume),
   };
 }
 
-function messageSegmentFromRow(row, { emotionProfileName = "", messageName = "" } = {}) {
+function messageSegmentFromRow(row, { emotionProfileName = "", messageName = "", voiceProfileName = "" } = {}) {
   return {
     active: activeFromDatabase(row.active),
     createdAt: row.createdAt,
@@ -317,6 +434,36 @@ function messageSegmentFromRow(row, { emotionProfileName = "", messageName = "" 
     segmentText: row.segmentText,
     updatedAt: row.updatedAt,
     updatedBy: row.updatedBy,
+    voiceProfileKey: row.voiceProfileKey || "",
+    voiceProfileName,
+  };
+}
+
+function messageEventActionFromRow(row, { messageName = "" } = {}) {
+  const actionType = row.actionType || "";
+  return {
+    actionLabel: eventActionTypeDefinition(actionType)?.label || actionType,
+    actionType,
+    active: activeFromDatabase(row.active),
+    createdAt: row.createdAt,
+    createdBy: row.createdBy,
+    key: row.key,
+    messageKey: row.messageKey || "",
+    messageName,
+    name: row.name,
+    updatedAt: row.updatedAt,
+    updatedBy: row.updatedBy,
+  };
+}
+
+function publishValidationIssue({ code, field, message, targetKey = "", targetName = "", targetType }) {
+  return {
+    code,
+    field,
+    message,
+    targetKey: normalizeText(targetKey),
+    targetName: normalizeText(targetName),
+    targetType,
   };
 }
 
@@ -385,6 +532,14 @@ export class MessagesPostgresService {
     return cloneRows(rows)[0] || null;
   }
 
+  async deleteRow(tableName, key) {
+    const rows = await this.client().requestTable(tableName, {
+      method: "DELETE",
+      query: queryForKey(key),
+    });
+    return cloneRows(rows)[0] || null;
+  }
+
   async rowByKey(tableName, key) {
     const rows = await this.client().requestTable(tableName, { method: "GET", query: queryForKey(key) });
     return cloneRows(rows)[0] || null;
@@ -421,6 +576,7 @@ export class MessagesPostgresService {
         }, { skipEnsure: true });
       }
     }
+    await this.backfillDefaultVoiceProfileReferences();
   }
 
   persistenceSummary() {
@@ -592,11 +748,11 @@ export class MessagesPostgresService {
       name: normalizeName(input.name, "Emotion profile name"),
       pauseAfterMs: normalizeInteger(input.pauseAfterMs, 0),
       pauseBeforeMs: normalizeInteger(input.pauseBeforeMs, 0),
-      pitch: normalizeNumber(input.pitch, 1),
-      rate: normalizeNumber(input.rate, 1),
+      pitch: normalizeRequiredNumber(input.pitch, "Emotion profile pitch"),
+      rate: normalizeRequiredNumber(input.rate, "Emotion profile rate"),
       updatedAt: now,
       updatedBy: actor,
-      volume: normalizeNumber(input.volume, 1),
+      volume: normalizeRequiredNumber(input.volume, "Emotion profile volume"),
     });
     const row = await this.rowByKey("messages_emotion_profiles", key);
     return emotionProfileFromRow(row, await this.emotionProfileUsage(key));
@@ -632,35 +788,31 @@ export class MessagesPostgresService {
       name,
       pauseAfterMs: normalizeInteger(input.pauseAfterMs, existing.pauseAfterMs),
       pauseBeforeMs: normalizeInteger(input.pauseBeforeMs, existing.pauseBeforeMs),
-      pitch: normalizeNumber(input.pitch, existing.pitch),
-      rate: normalizeNumber(input.rate, existing.rate),
+      pitch: normalizeEditableNumber(input.pitch, existing.pitch, "Emotion profile pitch"),
+      rate: normalizeEditableNumber(input.rate, existing.rate, "Emotion profile rate"),
       updatedAt: timestamp(),
       updatedBy: normalizeActorKey(actorKey),
-      volume: normalizeNumber(input.volume, existing.volume),
+      volume: normalizeEditableNumber(input.volume, existing.volume, "Emotion profile volume"),
     });
     return this.getEmotionProfile(key);
   }
 
   async listTtsProfiles() {
     await this.ensureReady();
-    const emotionSettings = (await this.tableRows("messages_emotion_profiles"))
-      .map((profileRow) => emotionProfileFromRow(profileRow))
-      .filter((profile) => profile.active !== false)
-      .map(ttsEmotionSettingFromEmotionProfile);
-    return (await this.tableRows("messages_tts_profiles")).sort(compareName).map((row) => ttsProfileFromRow(row, emotionSettings));
+    const emotionRows = await this.tableRows("messages_emotion_profiles");
+    return (await this.tableRows("messages_tts_profiles"))
+      .sort(compareName)
+      .map((row) => ttsProfileFromRow(row, emotionSettingsForTtsProfileRow(row, emotionRows)));
   }
 
   async getTtsProfile(key) {
     await this.ensureReady();
     const row = await this.rowByKey("messages_tts_profiles", key);
     if (!row) {
-      throw httpError("TTS profile was not found.", 404);
+      throw httpError("Voice profile was not found.", 404);
     }
-    const emotionSettings = (await this.tableRows("messages_emotion_profiles"))
-      .map((profileRow) => emotionProfileFromRow(profileRow))
-      .filter((profile) => profile.active !== false)
-      .map(ttsEmotionSettingFromEmotionProfile);
-    return ttsProfileFromRow(row, emotionSettings);
+    const emotionRows = await this.tableRows("messages_emotion_profiles");
+    return ttsProfileFromRow(row, emotionSettingsForTtsProfileRow(row, emotionRows));
   }
 
   async findTtsProfileByNameRaw(name) {
@@ -677,17 +829,46 @@ export class MessagesPostgresService {
     return row ? ttsProfileFromRow(row) : null;
   }
 
+  async defaultVoiceProfileKeyRaw() {
+    const defaultProfile = await this.findTtsProfileByNameRaw("Default Balanced Profile");
+    if (defaultProfile) {
+      return defaultProfile.key;
+    }
+    const fallback = (await this.tableRows("messages_tts_profiles")).sort(compareName)[0];
+    if (!fallback) {
+      throw httpError("Voice profile seed is unavailable. Restart the Local API runtime.");
+    }
+    return fallback.key;
+  }
+
+  async backfillDefaultVoiceProfileReferences() {
+    const voiceProfileKey = await this.defaultVoiceProfileKeyRaw();
+    for (const tableName of ["messages_records", "messages_segments"]) {
+      const rows = await this.tableRows(tableName);
+      for (const row of rows) {
+        if (normalizeText(row.voiceProfileKey).trim()) {
+          continue;
+        }
+        await this.patchRow(tableName, row.key, {
+          updatedAt: timestamp(),
+          updatedBy: normalizeActorKey(row.updatedBy),
+          voiceProfileKey,
+        });
+      }
+    }
+  }
+
   normalizeTtsProfileInput(input = {}, existing = null) {
-    const name = input.name === undefined && existing ? existing.name : normalizeName(input.name, "TTS profile name");
+    const name = input.name === undefined && existing ? existing.name : normalizeName(input.name, "Voice profile name");
     return {
       active: normalizeActive(input.active, existing ? existing.active : true),
       description: input.description === undefined && existing ? existing.description : normalizeText(input.description),
-      language: input.language === undefined && existing ? existing.language : normalizeName(input.language, "TTS profile language"),
+      language: input.language === undefined && existing ? existing.language : normalizeName(input.language, "Voice profile language"),
       name,
       pitch: normalizeNumber(input.pitch, existing ? existing.pitch : 1),
-      providerKey: input.providerKey === undefined && existing ? existing.providerKey : normalizeName(input.providerKey, "TTS provider key"),
+      providerKey: input.providerKey === undefined && existing ? existing.providerKey : normalizeTtsProviderKey(input.providerKey),
       rate: normalizeNumber(input.rate, existing ? existing.rate : 1),
-      voiceName: input.voiceName === undefined && existing ? existing.voiceName : normalizeText(input.voiceName),
+      voiceName: input.voiceName === undefined && existing ? existing.voiceName : normalizeName(input.voiceName, "Voice profile voice name"),
       volume: normalizeNumber(input.volume, existing ? existing.volume : 1),
     };
   }
@@ -717,18 +898,15 @@ export class MessagesPostgresService {
       volume: values.volume,
     });
     const row = await this.rowByKey("messages_tts_profiles", key);
-    const emotionSettings = (await this.tableRows("messages_emotion_profiles"))
-      .map((profileRow) => emotionProfileFromRow(profileRow))
-      .filter((profile) => profile.active !== false)
-      .map(ttsEmotionSettingFromEmotionProfile);
-    return ttsProfileFromRow(row, emotionSettings);
+    const emotionRows = await this.tableRows("messages_emotion_profiles");
+    return ttsProfileFromRow(row, emotionSettingsForTtsProfileRow(row, emotionRows));
   }
 
   async createTtsProfile(input = {}, actorKey = "") {
     const values = this.normalizeTtsProfileInput(input);
     const existing = await this.findTtsProfileByName(values.name);
     if (existing) {
-      throw httpError(`TTS profile ${values.name} already exists.`);
+      throw httpError(`Voice profile ${values.name} already exists.`);
     }
     return this.insertTtsProfile({
       ...values,
@@ -741,7 +919,7 @@ export class MessagesPostgresService {
     const values = this.normalizeTtsProfileInput(input, existing);
     const duplicate = await this.findTtsProfileByName(values.name);
     if (duplicate && duplicate.key !== key) {
-      throw httpError(`TTS profile ${values.name} already exists.`);
+      throw httpError(`Voice profile ${values.name} already exists.`);
     }
     await this.patchRow("messages_tts_profiles", key, {
       active: values.active,
@@ -763,11 +941,13 @@ export class MessagesPostgresService {
     await this.ensureReady();
     const categories = new Map((await this.tableRows("messages_categories")).map((row) => [row.key, row.name]));
     const emotions = new Map((await this.tableRows("messages_emotion_profiles")).map((row) => [row.key, row.name]));
+    const voices = new Map((await this.tableRows("messages_tts_profiles")).map((row) => [row.key, row.name]));
     return (await this.tableRows("messages_records"))
       .sort((left, right) => String(right.updatedAt).localeCompare(String(left.updatedAt)) || compareName(left, right))
       .map((row) => messageRecordFromRow(row, {
         categoryName: categories.get(row.categoryKey) || "",
         emotionProfileName: emotions.get(row.emotionProfileKey) || "",
+        voiceProfileName: voices.get(row.voiceProfileKey) || "",
       }));
   }
 
@@ -779,9 +959,11 @@ export class MessagesPostgresService {
     }
     const category = await this.rowByKey("messages_categories", row.categoryKey);
     const emotion = await this.rowByKey("messages_emotion_profiles", row.emotionProfileKey);
+    const voice = await this.rowByKey("messages_tts_profiles", row.voiceProfileKey);
     return messageRecordFromRow(row, {
       categoryName: category?.name || "",
       emotionProfileName: emotion?.name || "",
+      voiceProfileName: voice?.name || "",
     });
   }
 
@@ -810,20 +992,33 @@ export class MessagesPostgresService {
     return profile;
   }
 
+  async assertActiveVoiceProfile(key) {
+    const profile = await this.getTtsProfile(key);
+    if (!profile.active) {
+      throw httpError("Voice profile is inactive. Choose an active voice profile before saving a message.");
+    }
+    return profile;
+  }
+
   async normalizeMessageInput(input = {}, existing = null) {
     const name = input.name === undefined && existing ? existing.name : normalizeName(input.name, "Message name");
     const categoryKey = normalizeText(input.categoryKey === undefined && existing ? existing.categoryKey : input.categoryKey).trim()
       || await this.defaultMessageCategoryKey();
     const emotionProfileKey = normalizeText(input.emotionProfileKey === undefined && existing ? existing.emotionProfileKey : input.emotionProfileKey).trim();
+    const voiceProfileKey = normalizeText(input.voiceProfileKey === undefined && existing ? existing.voiceProfileKey : input.voiceProfileKey).trim();
     const messageText = input.messageText === undefined && existing ? existing.messageText : normalizeText(input.messageText);
     if (!emotionProfileKey) {
       throw httpError("Emotion profile is required.");
+    }
+    if (!voiceProfileKey) {
+      throw httpError("Voice profile is required.");
     }
     if (!messageText.trim()) {
       throw httpError("Message text is required.");
     }
     await this.assertActiveCategory(categoryKey);
     await this.assertActiveEmotionProfile(emotionProfileKey);
+    await this.assertActiveVoiceProfile(voiceProfileKey);
     return {
       active: normalizeActive(input.active, existing ? existing.active : true),
       categoryKey,
@@ -831,6 +1026,7 @@ export class MessagesPostgresService {
       messageText,
       name,
       notes: input.notes === undefined && existing ? existing.notes : normalizeText(input.notes),
+      voiceProfileKey,
     };
   }
 
@@ -852,6 +1048,7 @@ export class MessagesPostgresService {
       notes: values.notes,
       updatedAt: now,
       updatedBy: actor,
+      voiceProfileKey: values.voiceProfileKey,
     });
     return this.getMessage(key);
   }
@@ -868,14 +1065,27 @@ export class MessagesPostgresService {
       notes: values.notes,
       updatedAt: timestamp(),
       updatedBy: normalizeActorKey(actorKey),
+      voiceProfileKey: values.voiceProfileKey,
     });
     return this.getMessage(key);
+  }
+
+  async deleteMessage(key) {
+    const existing = await this.getMessage(key);
+    const referenced = (await this.tableRows("messages_segments"))
+      .some((segment) => segment.messageKey === existing.key);
+    if (referenced) {
+      throw httpError("Message is referenced by message parts. Remove those references before deleting this message.", 409);
+    }
+    await this.deleteRow("messages_records", existing.key);
+    return existing;
   }
 
   async listMessageSegments() {
     await this.ensureReady();
     const messages = new Map((await this.tableRows("messages_records")).map((row) => [row.key, row.name]));
     const emotions = new Map((await this.tableRows("messages_emotion_profiles")).map((row) => [row.key, row.name]));
+    const voices = new Map((await this.tableRows("messages_tts_profiles")).map((row) => [row.key, row.name]));
     return (await this.tableRows("messages_segments"))
       .sort((left, right) => String(left.messageKey).localeCompare(String(right.messageKey))
         || Number(left.displayOrder) - Number(right.displayOrder)
@@ -884,6 +1094,7 @@ export class MessagesPostgresService {
       .map((row) => messageSegmentFromRow(row, {
         emotionProfileName: emotions.get(row.emotionProfileKey) || "",
         messageName: messages.get(row.messageKey) || "",
+        voiceProfileName: voices.get(row.voiceProfileKey) || "",
       }));
   }
 
@@ -895,15 +1106,18 @@ export class MessagesPostgresService {
     }
     const message = await this.rowByKey("messages_records", row.messageKey);
     const emotion = await this.rowByKey("messages_emotion_profiles", row.emotionProfileKey);
+    const voice = await this.rowByKey("messages_tts_profiles", row.voiceProfileKey);
     return messageSegmentFromRow(row, {
       emotionProfileName: emotion?.name || "",
       messageName: message?.name || "",
+      voiceProfileName: voice?.name || "",
     });
   }
 
   async normalizeMessageSegmentInput(input = {}, existing = null) {
     const messageKey = normalizeText(input.messageKey === undefined && existing ? existing.messageKey : input.messageKey).trim();
     const emotionProfileKey = normalizeText(input.emotionProfileKey === undefined && existing ? existing.emotionProfileKey : input.emotionProfileKey).trim();
+    const voiceProfileKey = normalizeText(input.voiceProfileKey === undefined && existing ? existing.voiceProfileKey : input.voiceProfileKey).trim();
     const segmentText = input.segmentText === undefined && existing ? existing.segmentText : normalizeText(input.segmentText);
     const displayOrder = normalizeRequiredInteger(
       input.displayOrder === undefined && existing ? existing.displayOrder : input.displayOrder,
@@ -915,17 +1129,22 @@ export class MessagesPostgresService {
     if (!emotionProfileKey) {
       throw httpError("Emotion profile is required.");
     }
+    if (!voiceProfileKey) {
+      throw httpError("Voice profile is required.");
+    }
     if (!segmentText.trim()) {
       throw httpError("Segment text is required.");
     }
     await this.getMessage(messageKey);
     await this.assertActiveEmotionProfile(emotionProfileKey);
+    await this.assertActiveVoiceProfile(voiceProfileKey);
     return {
       active: normalizeActive(input.active, existing ? existing.active : true),
       displayOrder,
       emotionProfileKey,
       messageKey,
       segmentText,
+      voiceProfileKey,
     };
   }
 
@@ -946,6 +1165,7 @@ export class MessagesPostgresService {
       segmentText: values.segmentText,
       updatedAt: now,
       updatedBy: actor,
+      voiceProfileKey: values.voiceProfileKey,
     });
     return this.getMessageSegment(key);
   }
@@ -961,8 +1181,273 @@ export class MessagesPostgresService {
       segmentText: values.segmentText,
       updatedAt: timestamp(),
       updatedBy: normalizeActorKey(actorKey),
+      voiceProfileKey: values.voiceProfileKey,
     });
     return this.getMessageSegment(key);
+  }
+
+  async deleteMessageSegment(key) {
+    const existing = await this.getMessageSegment(key);
+    await this.deleteRow("messages_segments", existing.key);
+    return existing;
+  }
+
+  async listMessageEventActions() {
+    await this.ensureReady();
+    const messages = new Map((await this.tableRows("messages_records")).map((row) => [row.key, row.name]));
+    return (await this.tableRows("messages_event_actions"))
+      .sort((left, right) => String(right.updatedAt).localeCompare(String(left.updatedAt)) || compareName(left, right))
+      .map((row) => messageEventActionFromRow(row, {
+        messageName: messages.get(row.messageKey) || "",
+      }));
+  }
+
+  async getMessageEventAction(key) {
+    await this.ensureReady();
+    const row = await this.rowByKey("messages_event_actions", key);
+    if (!row) {
+      throw httpError("Message event action was not found.", 404);
+    }
+    const message = row.messageKey ? await this.rowByKey("messages_records", row.messageKey) : null;
+    return messageEventActionFromRow(row, {
+      messageName: message?.name || "",
+    });
+  }
+
+  async normalizeMessageEventActionInput(input = {}, existing = null) {
+    const actionType = input.actionType === undefined && existing ? existing.actionType : normalizeEventActionType(input.actionType);
+    const actionDefinition = eventActionTypeDefinition(actionType);
+    const rawMessageKey = input.messageKey === undefined && existing ? existing.messageKey : input.messageKey;
+    const messageKey = normalizeText(rawMessageKey).trim();
+    const name = input.name === undefined && existing ? existing.name : normalizeName(input.name, "Event action name");
+    if (actionDefinition?.requiresMessage && !messageKey) {
+      throw httpError("Message is required for this event action.");
+    }
+    if (!actionDefinition?.requiresMessage && messageKey) {
+      throw httpError("Message is not used by this event action.");
+    }
+    if (messageKey) {
+      await this.getMessage(messageKey);
+    }
+    return {
+      actionType,
+      active: normalizeActive(input.active, existing ? existing.active : true),
+      messageKey,
+      name,
+    };
+  }
+
+  async createMessageEventAction(input = {}, actorKey = "") {
+    await this.ensureReady();
+    const values = await this.normalizeMessageEventActionInput(input);
+    const key = createUlid();
+    const now = timestamp();
+    const actor = normalizeActorKey(actorKey);
+    await this.upsertRow("messages_event_actions", {
+      actionType: values.actionType,
+      active: values.active,
+      createdAt: now,
+      createdBy: actor,
+      key,
+      messageKey: values.messageKey || null,
+      name: values.name,
+      updatedAt: now,
+      updatedBy: actor,
+    });
+    return this.getMessageEventAction(key);
+  }
+
+  async updateMessageEventAction(key, input = {}, actorKey = "") {
+    const existing = await this.getMessageEventAction(key);
+    const values = await this.normalizeMessageEventActionInput(input, existing);
+    await this.patchRow("messages_event_actions", key, {
+      actionType: values.actionType,
+      active: values.active,
+      messageKey: values.messageKey || null,
+      name: values.name,
+      updatedAt: timestamp(),
+      updatedBy: normalizeActorKey(actorKey),
+    });
+    return this.getMessageEventAction(key);
+  }
+
+  async validateMessagePublishConfiguration() {
+    await this.ensureReady();
+    const messages = await this.tableRows("messages_records");
+    const segments = await this.tableRows("messages_segments");
+    const emotions = new Map((await this.tableRows("messages_emotion_profiles")).map((row) => [row.key, row]));
+    const voices = new Map((await this.tableRows("messages_tts_profiles")).map((row) => [row.key, row]));
+    const eventActions = await this.tableRows("messages_event_actions");
+    const messagesByKey = new Map(messages.map((row) => [row.key, row]));
+    const issues = [];
+
+    const addIssue = (issue) => {
+      issues.push(publishValidationIssue(issue));
+    };
+
+    const validateEmotionReference = (row, targetType, targetName) => {
+      const emotionProfileKey = normalizeText(row.emotionProfileKey).trim();
+      if (!emotionProfileKey) {
+        addIssue({
+          code: "missing-emotion-profile",
+          field: "emotionProfileKey",
+          message: "Choose an Emotion Profile before publishing.",
+          targetKey: row.key,
+          targetName,
+          targetType,
+        });
+        return;
+      }
+      if (!emotions.has(emotionProfileKey)) {
+        addIssue({
+          code: "broken-reference",
+          field: "emotionProfileKey",
+          message: "Choose an existing Emotion Profile before publishing.",
+          targetKey: row.key,
+          targetName,
+          targetType,
+        });
+      }
+    };
+
+    const validateVoiceReference = (row, targetType, targetName) => {
+      const voiceProfileKey = normalizeText(row.voiceProfileKey).trim();
+      if (!voiceProfileKey) {
+        addIssue({
+          code: "missing-voice-profile",
+          field: "voiceProfileKey",
+          message: "Choose a Voice Profile before publishing.",
+          targetKey: row.key,
+          targetName,
+          targetType,
+        });
+        return;
+      }
+      const voiceProfile = voices.get(voiceProfileKey);
+      if (!voiceProfile) {
+        addIssue({
+          code: "broken-reference",
+          field: "voiceProfileKey",
+          message: "Choose an existing Voice Profile before publishing.",
+          targetKey: row.key,
+          targetName,
+          targetType,
+        });
+        return;
+      }
+      const providerKey = normalizeText(voiceProfile.providerKey).trim();
+      if (!SUPPORTED_TTS_PROVIDER_KEYS.includes(providerKey) || !ACTIVE_PUBLISH_TTS_PROVIDER_KEYS.includes(providerKey)) {
+        addIssue({
+          code: "invalid-provider-assignment",
+          field: "providerKey",
+          message: "Use Browser Speech API for publish-ready message voice playback.",
+          targetKey: row.key,
+          targetName,
+          targetType,
+        });
+      }
+    };
+
+    messages.forEach((message) => {
+      const targetName = normalizeText(message.name) || "Message";
+      if (!normalizeText(message.messageText).trim()) {
+        addIssue({
+          code: "missing-message-text",
+          field: "messageText",
+          message: "Add message text before publishing.",
+          targetKey: message.key,
+          targetName,
+          targetType: "message",
+        });
+      }
+      validateEmotionReference(message, "message", targetName);
+      validateVoiceReference(message, "message", targetName);
+    });
+
+    segments.forEach((segment) => {
+      const targetName = segment.displayOrder ? `Part ${segment.displayOrder}` : "Message Part";
+      const messageKey = normalizeText(segment.messageKey).trim();
+      if (!messageKey || !messagesByKey.has(messageKey)) {
+        addIssue({
+          code: "broken-reference",
+          field: "messageKey",
+          message: "Connect this Message Part to an existing Message before publishing.",
+          targetKey: segment.key,
+          targetName,
+          targetType: "message-part",
+        });
+      }
+      if (!normalizeText(segment.segmentText).trim()) {
+        addIssue({
+          code: "missing-message-text",
+          field: "segmentText",
+          message: "Add Message Part text before publishing.",
+          targetKey: segment.key,
+          targetName,
+          targetType: "message-part",
+        });
+      }
+      validateEmotionReference(segment, "message-part", targetName);
+      validateVoiceReference(segment, "message-part", targetName);
+    });
+
+    eventActions.forEach((eventAction) => {
+      const actionType = normalizeText(eventAction.actionType).trim();
+      const actionDefinition = eventActionTypeDefinition(actionType);
+      const messageKey = normalizeText(eventAction.messageKey).trim();
+      const targetName = normalizeText(eventAction.name) || actionDefinition?.label || "Message Event Action";
+      if (!actionDefinition) {
+        addIssue({
+          code: "broken-reference",
+          field: "actionType",
+          message: "Choose a supported Message Event Action before publishing.",
+          targetKey: eventAction.key,
+          targetName,
+          targetType: "event-action",
+        });
+        return;
+      }
+      if (actionDefinition.requiresMessage && !messageKey) {
+        addIssue({
+          code: "broken-reference",
+          field: "messageKey",
+          message: "Choose a Message for this Event Action before publishing.",
+          targetKey: eventAction.key,
+          targetName,
+          targetType: "event-action",
+        });
+        return;
+      }
+      if (messageKey && !messagesByKey.has(messageKey)) {
+        addIssue({
+          code: "broken-reference",
+          field: "messageKey",
+          message: "Choose an existing Message for this Event Action before publishing.",
+          targetKey: eventAction.key,
+          targetName,
+          targetType: "event-action",
+        });
+      }
+      if (!actionDefinition.requiresMessage && messageKey) {
+        addIssue({
+          code: "broken-reference",
+          field: "messageKey",
+          message: "Remove the Message reference from Wait For Continue before publishing.",
+          targetKey: eventAction.key,
+          targetName,
+          targetType: "event-action",
+        });
+      }
+    });
+
+    return {
+      canPublish: issues.length === 0,
+      checkedAt: timestamp(),
+      issueCount: issues.length,
+      issues,
+      status: issues.length ? "Blocked" : "Ready",
+      valid: issues.length === 0,
+    };
   }
 }
 
@@ -983,6 +1468,14 @@ export async function handleMessagesApiContract({
   const normalizedMethod = String(method || "GET").toUpperCase();
   const resource = parts[0] || "";
   const key = parts[1] || "";
+  const action = parts[2] || "";
+
+  if (resource === "publish-validation" && normalizedMethod === "GET" && !key) {
+    return {
+      persistence: service.persistenceSummary(),
+      publishValidation: await service.validateMessagePublishConfiguration(),
+    };
+  }
 
   if (resource === "messages") {
     if (normalizedMethod === "GET" && !key) {
@@ -1003,7 +1496,13 @@ export async function handleMessagesApiContract({
         persistence: service.persistenceSummary(),
       };
     }
-    if (normalizedMethod === "POST" && key) {
+    if (normalizedMethod === "POST" && key && action === "delete") {
+      return {
+        message: await service.deleteMessage(key),
+        persistence: service.persistenceSummary(),
+      };
+    }
+    if (normalizedMethod === "POST" && key && !action) {
       return {
         message: await service.updateMessage(key, body, actorKey),
         persistence: service.persistenceSummary(),
@@ -1086,6 +1585,33 @@ export async function handleMessagesApiContract({
     }
   }
 
+  if (resource === "event-actions") {
+    if (normalizedMethod === "GET" && !key) {
+      return {
+        eventActions: await service.listMessageEventActions(),
+        persistence: service.persistenceSummary(),
+      };
+    }
+    if (normalizedMethod === "GET" && key) {
+      return {
+        eventAction: await service.getMessageEventAction(key),
+        persistence: service.persistenceSummary(),
+      };
+    }
+    if (normalizedMethod === "POST" && !key) {
+      return {
+        eventAction: await service.createMessageEventAction(body, actorKey),
+        persistence: service.persistenceSummary(),
+      };
+    }
+    if (normalizedMethod === "POST" && key) {
+      return {
+        eventAction: await service.updateMessageEventAction(key, body, actorKey),
+        persistence: service.persistenceSummary(),
+      };
+    }
+  }
+
   if (resource === "segments") {
     if (normalizedMethod === "GET" && !key) {
       return {
@@ -1105,7 +1631,13 @@ export async function handleMessagesApiContract({
         segment: await service.createMessageSegment(body, actorKey),
       };
     }
-    if (normalizedMethod === "POST" && key) {
+    if (normalizedMethod === "POST" && key && action === "delete") {
+      return {
+        persistence: service.persistenceSummary(),
+        segment: await service.deleteMessageSegment(key),
+      };
+    }
+    if (normalizedMethod === "POST" && key && !action) {
       return {
         persistence: service.persistenceSummary(),
         segment: await service.updateMessageSegment(key, body, actorKey),

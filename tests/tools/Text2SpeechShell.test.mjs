@@ -7,6 +7,7 @@ import {
   TTS_PROVIDER_ADAPTER_PLAN,
   createDefaultTextToSpeechProfiles,
   createEmotionProfile,
+  createMessageStudioDefaultTtsProfiles,
   createMessageStudioTtsProfileOptions,
   createSpeechPreviewRequest,
   createTextToSpeechProfile,
@@ -25,9 +26,9 @@ test("Text2Speech message model separates Design and Audio ownership", () => {
   assert.equal(message.audioOwner, "Audio");
   assert.equal(message.generatedAudio, null);
   assert.deepEqual(message.metadata.tags, ["intro"]);
-  assert.equal(emotion.owner, "Design");
+  assert.equal(emotion.owner, "Audio");
   assert.equal(emotion.intensity, 1);
-  assert.equal(voice.owner, "Design");
+  assert.equal(voice.owner, "Audio");
   assert.equal(voice.generatedAudioOwner, "Audio");
   assert.ok(TTS_MESSAGE_STATUSES.includes("blocked"));
 });
@@ -68,6 +69,7 @@ test("Text2Speech provider adapter plan keeps browser speech implemented and pai
 test("Text2Speech profile contract exposes Message Studio compatible profile options", () => {
   const voiceOptions = [{ language: "en-US", label: "Test Voice (en-US)", name: "Test Voice", value: "test-voice" }];
   const defaults = createDefaultTextToSpeechProfiles(voiceOptions);
+  const messageStudioDefaults = createMessageStudioDefaultTtsProfiles(voiceOptions);
   const custom = createTextToSpeechProfile({
     emotions: [
       createTextToSpeechProfileEmotion({
@@ -91,21 +93,28 @@ test("Text2Speech profile contract exposes Message Studio compatible profile opt
   assert.deepEqual(defaults[0].emotions.map((emotion) => emotion.emotionLabel), ["Neutral", "Happy", "Angry", "Scared"]);
   assert.deepEqual(defaults[1].emotions.map((emotion) => emotion.emotionLabel), ["Neutral", "Happy", "Angry", "Scared"]);
   assert.deepEqual(defaults[2].emotions.map((emotion) => emotion.emotionLabel), ["Neutral", "Happy", "Angry", "Scared"]);
+  assert.deepEqual(messageStudioDefaults[1].emotions.map((emotion) => emotion.emotionLabel), ["Neutral", "Calm", "Urgent"]);
+  assert.deepEqual(messageStudioDefaults[2].emotions.map((emotion) => emotion.emotionLabel), ["Whisper", "Robot"]);
   assert.equal(defaults[0].emotions.find((emotion) => emotion.emotion === "neutral").messagePartsUsageCount, 1);
   assert.deepEqual(options, [{
     active: true,
+    age: "any",
+    ageFilter: "any",
     emotionSettings: [{
       emotion: "urgent",
       emotionLabel: "Urgent",
+      key: "urgent",
       pitch: 1.2,
       rate: 1.1,
       ssmlLikePreset: "whisper-ish",
       volume: 0.8,
     }],
+    gender: "neutral",
     key: "custom-profile",
     language: "en-US",
     name: "Custom Profile",
     providerKey: "browser-speech",
+    voice: "test-voice",
     voiceName: "Test Voice",
   }]);
 });

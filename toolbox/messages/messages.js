@@ -1,70 +1,73 @@
 import {
+  createMessageStudioDefaultTtsProfiles,
+  createMessageStudioTtsProfileOptions,
+} from "../text-to-speech/text2speech.js";
+import {
   createMessage,
   createMessageSegment,
+  deleteMessage,
+  deleteMessageSegment,
   listEmotionProfiles,
   listMessages,
   listMessageSegments,
   listTtsProfiles,
   updateMessage,
   updateMessageSegment,
+  validatePublishConfiguration,
 } from "./messages-api-client.js";
-import { createMessageStudioTtsServiceRegistry } from "./message-tts-service-registry.js";
 
 const NEW_ROW_KEY = "__new__";
-const DEFAULT_TTS_PROFILE_KEY = "__default-balanced-tts__";
-const DEFAULT_TTS_EMOTION_SETTINGS = Object.freeze([
-  Object.freeze({ active: true, emotion: "calm", emotionLabel: "Calm", pitch: 1, rate: 1, ssmlLikePreset: "normal", volume: 1 }),
-  Object.freeze({ active: true, emotion: "urgent", emotionLabel: "Urgent", pitch: 1.08, rate: 1.15, ssmlLikePreset: "normal", volume: 1 }),
-  Object.freeze({ active: true, emotion: "whisper", emotionLabel: "Whisper", pitch: 0.95, rate: 0.9, ssmlLikePreset: "normal", volume: 0.55 }),
-  Object.freeze({ active: true, emotion: "angry", emotionLabel: "Angry", pitch: 0.98, rate: 1.1, ssmlLikePreset: "normal", volume: 1 }),
-]);
-const DEFAULT_TTS_PROFILE = Object.freeze({
-  active: true,
-  description: "Balanced local browser playback option until authored TTS profiles are available.",
-  emotionSettings: DEFAULT_TTS_EMOTION_SETTINGS,
-  key: DEFAULT_TTS_PROFILE_KEY,
-  language: "en-US",
-  name: "Default Balanced TTS Profile",
-  pitch: 1,
-  providerKey: "browser-speech",
-  rate: 1,
-  voiceName: "",
-  volume: 1,
+const MESSAGE_TABLE_COLSPAN = 4;
+const TTS_PROVIDER_REGISTRY = Object.freeze({
+  "azure": Object.freeze({ activeRuntime: false, label: "Azure", requiresConfig: true }),
+  "browser-speech": Object.freeze({ activeRuntime: true, label: "Browser Speech API", requiresConfig: false }),
+  "elevenlabs": Object.freeze({ activeRuntime: false, label: "ElevenLabs", requiresConfig: true }),
+  "openai": Object.freeze({ activeRuntime: false, label: "OpenAI", requiresConfig: true }),
+  "polly": Object.freeze({ activeRuntime: false, label: "Polly", requiresConfig: true }),
 });
-const ttsServiceRegistry = createMessageStudioTtsServiceRegistry();
+const MESSAGE_STUDIO_TTS_PROFILE_CONTRACT = Object.freeze(createMessageStudioTtsProfileOptions(createMessageStudioDefaultTtsProfiles())
+  .map((profile) => Object.freeze({
+    ...profile,
+    emotionSettings: Object.freeze(profile.emotionSettings.map((setting) => Object.freeze({ ...setting }))),
+  })));
 
 const elements = {
+  addMessage: document.querySelector("[data-messages-add-row]"),
   count: document.querySelector("[data-messages-count]"),
   log: document.querySelector("[data-messages-log]"),
   persistenceEngine: document.querySelector("[data-messages-persistence-engine]"),
   persistenceOwner: document.querySelector("[data-messages-persistence-owner]"),
   persistenceSource: document.querySelector("[data-messages-persistence-source]"),
-  playbackStatus: document.querySelector("[data-messages-playback-status]"),
+  publishIssues: document.querySelector("[data-messages-publish-issues]"),
+  publishStatus: document.querySelector("[data-messages-publish-status]"),
+  publishValidate: document.querySelector("[data-messages-publish-validate]"),
+  referencedCount: document.querySelector("[data-messages-referenced-count]"),
   selectedEmotion: document.querySelector("[data-messages-selected-emotion]"),
   selectedName: document.querySelector("[data-messages-selected-name]"),
   selectedSegment: document.querySelector("[data-messages-selected-segment]"),
   selectedStatus: document.querySelector("[data-messages-selected-status]"),
   selectedText: document.querySelector("[data-messages-selected-text]"),
   segmentCount: document.querySelector("[data-messages-segment-count]"),
+  speechStatus: document.querySelector("[data-messages-speech-status]"),
   stopSpeech: document.querySelector("[data-messages-stop-speech]"),
   table: document.querySelector("[data-messages-table]"),
-  ttsCount: document.querySelector("[data-messages-tts-count]"),
+  usageCount: document.querySelector("[data-messages-usage-count]"),
   validationCard: document.querySelector("[data-messages-validation-card]"),
   validationErrors: document.querySelector("[data-messages-validation-errors]"),
+  referenceList: document.querySelector("[data-messages-reference-list]"),
 };
 
 const state = {
   editingMessageKey: "",
   editingSegmentKey: "",
+  editingSegmentMessageKey: "",
   emotionProfiles: [],
-  messageTtsProfileKeys: new Map(),
   messages: [],
-  segmentTtsProfileKeys: new Map(),
+  publishValidation: null,
   segments: [],
   selectedMessageKey: "",
   selectedSegmentKey: "",
-  ttsServices: [],
-  ttsProfiles: [],
+  voiceProfiles: [],
 };
 
 function setText(element, value) {
@@ -73,22 +76,34 @@ function setText(element, value) {
   }
 }
 
-function statusForActive(active) {
-  return active ? "Active" : "Inactive";
-}
-
 function createCell(text) {
   const cell = document.createElement("td");
   cell.textContent = text;
   return cell;
 }
 
-function createButton(label, dataName, value) {
+function createRowHeader(text) {
+  const cell = document.createElement("th");
+  cell.scope = "row";
+  cell.textContent = text;
+  return cell;
+}
+
+function createButton(label, dataName, value, options = {}) {
   const button = document.createElement("button");
-  button.className = "btn btn--compact";
+  button.className = options.primary ? "btn btn--compact primary" : "btn btn--compact";
   button.type = "button";
   button.dataset[dataName] = value;
   button.textContent = label;
+  if (options.disabled) {
+    button.disabled = true;
+  }
+  if (options.title) {
+    button.title = options.title;
+  }
+  if (options.ariaLabel) {
+    button.setAttribute("aria-label", options.ariaLabel);
+  }
   return button;
 }
 
@@ -99,21 +114,20 @@ function createActionGroup(...buttons) {
   return group;
 }
 
-function createInput(value, dataName, type = "text") {
+function createInput(value, dataName, ariaLabel) {
   const input = document.createElement("input");
   input.dataset[dataName] = "";
-  input.type = type;
+  input.type = "text";
   input.value = value ?? "";
+  input.setAttribute("aria-label", ariaLabel);
   return input;
 }
 
-function createNumberInput(value, dataName, options = {}) {
-  const input = createInput(String(value ?? ""), dataName, "number");
+function createNumberInput(value, dataName, ariaLabel, options = {}) {
+  const input = createInput(String(value ?? ""), dataName, ariaLabel);
+  input.type = "number";
   if (options.min !== undefined) {
     input.min = String(options.min);
-  }
-  if (options.max !== undefined) {
-    input.max = String(options.max);
   }
   if (options.step !== undefined) {
     input.step = String(options.step);
@@ -121,27 +135,19 @@ function createNumberInput(value, dataName, options = {}) {
   return input;
 }
 
-function createCheckbox(checked, dataName) {
-  const label = document.createElement("label");
-  const input = document.createElement("input");
-  input.dataset[dataName] = "";
-  input.type = "checkbox";
-  input.checked = checked !== false;
-  label.append(input, " Active");
-  return label;
-}
-
-function createTextarea(value, dataName, rows = 4) {
+function createTextarea(value, dataName, ariaLabel) {
   const textarea = document.createElement("textarea");
   textarea.dataset[dataName] = "";
-  textarea.rows = rows;
+  textarea.rows = 3;
   textarea.value = value ?? "";
+  textarea.setAttribute("aria-label", ariaLabel);
   return textarea;
 }
 
-function createSelect(value, dataName, options, placeholder) {
+function createSelect(value, dataName, options, placeholder, ariaLabel) {
   const select = document.createElement("select");
   select.dataset[dataName] = "";
+  select.setAttribute("aria-label", ariaLabel);
   const placeholderOption = document.createElement("option");
   placeholderOption.value = "";
   placeholderOption.textContent = placeholder;
@@ -156,54 +162,12 @@ function createSelect(value, dataName, options, placeholder) {
   return select;
 }
 
-function createTtsProfileSelect(value, dataName, identityKey) {
-  const select = createSelect(
-    value || defaultTtsProfileKey(),
-    dataName,
-    activeTtsProfileOptions(),
-    "Select TTS profile",
-  );
-  if (identityKey) {
-    select.dataset.messagesTtsIdentity = identityKey;
-  }
-  return select;
-}
-
-function createField(labelText, field) {
-  const label = document.createElement("label");
-  const span = document.createElement("span");
-  span.textContent = labelText;
-  label.append(span, field);
-  return label;
-}
-
 function tableMessage(colSpan, text) {
   const row = document.createElement("tr");
   const cell = document.createElement("td");
   cell.colSpan = colSpan;
   cell.textContent = text;
   row.append(cell);
-  return row;
-}
-
-function tableActionRow(colSpan, button) {
-  const row = document.createElement("tr");
-  const cell = document.createElement("td");
-  cell.colSpan = colSpan;
-  cell.append(createActionGroup(button));
-  row.append(cell);
-  return row;
-}
-
-function createMessageAddControlRow() {
-  const row = tableActionRow(6, createButton("Add Message", "messagesAddRow", NEW_ROW_KEY));
-  row.dataset.messagesAddControlRow = "";
-  return row;
-}
-
-function createSegmentAddControlRow() {
-  const row = tableActionRow(5, createButton("Add Part", "messagesSegmentAddRow", state.selectedMessageKey));
-  row.dataset.messagesSegmentAddControlRow = state.selectedMessageKey;
   return row;
 }
 
@@ -229,8 +193,111 @@ function showValidation(errors) {
   elements.validationCard.hidden = errors.length === 0;
 }
 
-function activeEmotionProfiles() {
-  return state.emotionProfiles.filter((profile) => profile.active);
+function showCreatorSafeFailure(message) {
+  const safeMessage = message || "Message Studio could not finish that action. Check the Local API connection and try again.";
+  showValidation([safeMessage]);
+  setText(elements.log, safeMessage);
+}
+
+function normalizedLookupKey(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function apiTtsProfileByContractName(apiProfiles = []) {
+  return new Map(apiProfiles.map((profile) => [normalizedLookupKey(profile.name), profile]));
+}
+
+function apiEmotionSettingForContract(apiProfile, contractSetting) {
+  const settings = Array.isArray(apiProfile?.emotionSettings) ? apiProfile.emotionSettings : [];
+  const label = normalizedLookupKey(contractSetting.emotionLabel || contractSetting.name || contractSetting.emotion);
+  const emotion = normalizedLookupKey(contractSetting.emotion);
+  return settings.find((setting) => normalizedLookupKey(setting.emotionLabel || setting.name) === label)
+    || settings.find((setting) => normalizedLookupKey(setting.emotion) === emotion)
+    || null;
+}
+
+function messageStudioTtsProfilesFromContract(apiProfiles = []) {
+  const apiByName = apiTtsProfileByContractName(apiProfiles);
+  return MESSAGE_STUDIO_TTS_PROFILE_CONTRACT.map((contractProfile) => {
+    const apiProfile = apiByName.get(normalizedLookupKey(contractProfile.name)) || null;
+    return {
+      ...contractProfile,
+      active: apiProfile ? apiProfile.active !== false : contractProfile.active !== false,
+      age: contractProfile.age || apiProfile?.age || "",
+      ageFilter: contractProfile.ageFilter || apiProfile?.ageFilter || apiProfile?.age || "",
+      emotionSettings: contractProfile.emotionSettings
+        .map((contractSetting) => {
+          const apiSetting = apiEmotionSettingForContract(apiProfile, contractSetting);
+          const emotionProfile = emotionProfileByLabel(contractSetting.emotionLabel || apiSetting?.emotionLabel || contractSetting.emotion);
+          return {
+            ...contractSetting,
+            active: apiSetting ? apiSetting.active !== false : contractSetting.active !== false,
+            key: emotionProfile?.key || apiSetting?.key || contractSetting.key,
+          };
+        })
+        .filter((setting) => setting.key && setting.active !== false),
+      gender: contractProfile.gender || apiProfile?.gender || "",
+      key: apiProfile?.key || contractProfile.key,
+      language: contractProfile.language || apiProfile?.language || "",
+      providerKey: contractProfile.providerKey || apiProfile?.providerKey || "browser-speech",
+      voice: contractProfile.voice || apiProfile?.voice || apiProfile?.voiceName || "",
+      voiceName: contractProfile.voiceName || apiProfile?.voiceName || "",
+    };
+  });
+}
+
+function activeVoiceProfiles() {
+  return state.voiceProfiles.filter((profile) => profile.active);
+}
+
+function voiceProfileByKey(profileKey) {
+  return state.voiceProfiles.find((profile) => profile.key === profileKey) || null;
+}
+
+function ttsProfileByKey(profileKey) {
+  return voiceProfileByKey(profileKey);
+}
+
+function voiceOptionsWithCurrent(currentKey) {
+  const active = activeVoiceProfiles();
+  const current = voiceProfileByKey(currentKey);
+  if (current && !active.some((profile) => profile.key === current.key)) {
+    return [...active, current];
+  }
+  return active;
+}
+
+function emotionOptionsForTtsProfile(profileKey) {
+  const profile = ttsProfileByKey(profileKey);
+  const settings = Array.isArray(profile?.emotionSettings) ? profile.emotionSettings : [];
+  return settings
+    .filter((setting) => setting.active !== false)
+    .map((setting) => ({
+      key: setting.key || emotionProfileByLabel(setting.emotionLabel || setting.emotion)?.key || setting.emotion,
+      name: setting.emotionLabel || setting.name || setting.emotion,
+    }))
+    .filter((setting) => setting.key && setting.name);
+}
+
+function emotionProfileByLabel(label) {
+  const normalized = String(label || "").trim().toLowerCase();
+  if (!normalized) {
+    return null;
+  }
+  return state.emotionProfiles.find((profile) => String(profile.name || "").trim().toLowerCase() === normalized) || null;
+}
+
+function emotionSettingForKey(profileKey, emotionKey) {
+  const profile = ttsProfileByKey(profileKey);
+  const settings = Array.isArray(profile?.emotionSettings) ? profile.emotionSettings : [];
+  return settings.find((candidate) => candidate.key === emotionKey)
+    || settings.find((candidate) => candidate.emotion === emotionKey)
+    || null;
+}
+
+function profileEmotionKeyOrDefault(profileKey, currentKey = "") {
+  const options = emotionOptionsForTtsProfile(profileKey);
+  return options.some((option) => option.key === currentKey) ? currentKey : options[0]?.key || "";
 }
 
 function selectedMessage() {
@@ -241,110 +308,55 @@ function selectedSegment() {
   return state.segments.find((segment) => segment.key === state.selectedSegmentKey) || null;
 }
 
-function emotionProfileByKey(profileKey) {
-  return state.emotionProfiles.find((profile) => profile.key === profileKey) || null;
-}
-
-function emotionSettingKey(value) {
-  return String(value || "")
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "") || "neutral";
-}
-
-function selectedEmotionSettingForProfile(profile, emotionProfile) {
-  const settings = Array.isArray(profile?.emotionSettings)
-    ? profile.emotionSettings.filter((setting) => setting?.active !== false)
-    : [];
-  const selectedEmotionKey = emotionSettingKey(emotionProfile?.name);
-  const setting = settings.find((candidate) => (
-    emotionSettingKey(candidate.emotion) === selectedEmotionKey
-    || emotionSettingKey(candidate.emotionLabel) === selectedEmotionKey
-  ));
-  if (!setting) {
-    return {
-      message: `Selected TTS Profile "${profile?.name || "Unknown"}" does not include an Emotion Setting for "${emotionProfile?.name || "Unknown"}".`,
-      ok: false,
-    };
-  }
-  return { ok: true, setting };
-}
-
-function activeTtsProfileOptions() {
-  const activeProfiles = state.ttsProfiles.filter((profile) => profile.active);
-  return activeProfiles.length ? activeProfiles : [DEFAULT_TTS_PROFILE];
-}
-
-function defaultTtsProfileKey() {
-  return activeTtsProfileOptions()[0]?.key || DEFAULT_TTS_PROFILE_KEY;
-}
-
-function ttsProfileOptionByKey(profileKey) {
-  const activeProfiles = activeTtsProfileOptions();
-  if (!profileKey) {
-    return activeProfiles[0] || DEFAULT_TTS_PROFILE;
-  }
-  return activeProfiles.find((profile) => profile.key === profileKey) || null;
-}
-
-function selectedTtsProfileForMessage(messageKey) {
-  const profileKey = state.messageTtsProfileKeys.get(messageKey);
-  return ttsProfileOptionByKey(profileKey || defaultTtsProfileKey());
-}
-
-function selectedTtsProfileForSegment(segmentKey, messageKey = state.selectedMessageKey) {
-  const segmentProfileKey = state.segmentTtsProfileKeys.get(segmentKey);
-  if (segmentProfileKey) {
-    return ttsProfileOptionByKey(segmentProfileKey);
-  }
-  const messageProfileKey = state.messageTtsProfileKeys.get(messageKey);
-  if (messageProfileKey) {
-    return ttsProfileOptionByKey(messageProfileKey);
-  }
-  return ttsProfileOptionByKey(defaultTtsProfileKey());
-}
-
-function selectedTtsService() {
-  return state.ttsServices.find((service) => service.available) || null;
-}
-
 function messageSegments(messageKey) {
   return state.segments
     .filter((segment) => segment.messageKey === messageKey)
     .sort((left, right) => left.displayOrder - right.displayOrder || left.createdAt.localeCompare(right.createdAt) || left.key.localeCompare(right.key));
 }
 
-function selectedMessageSegments() {
-  return messageSegments(state.selectedMessageKey);
-}
-
-function nextSegmentOrder() {
-  const segments = selectedMessageSegments();
+function nextSegmentOrder(messageKey) {
+  const segments = messageSegments(messageKey);
   if (!segments.length) {
     return 1;
   }
-  return Math.max(...segments.map((segment) => segment.displayOrder)) + 1;
+  return Math.max(...segments.map((segment) => Number(segment.displayOrder) || 0)) + 1;
 }
 
-function selectOptionsWithCurrent(currentKey) {
-  const active = activeEmotionProfiles();
-  const current = emotionProfileByKey(currentKey);
-  if (current && !active.some((profile) => profile.key === current.key)) {
-    return [...active, current];
+function messageReferenceCount(messageKey) {
+  return messageSegments(messageKey).length;
+}
+
+function isMessageReferenced(messageKey) {
+  return messageReferenceCount(messageKey) > 0;
+}
+
+function tagsForMessage(message) {
+  return message?.categoryName || "No tags";
+}
+
+function formatUpdated(value) {
+  const date = new Date(value || "");
+  if (Number.isNaN(date.getTime())) {
+    return "Unknown";
   }
-  return active;
+  return date.toLocaleString(undefined, {
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
 }
 
 function renderCounts() {
   setText(elements.count, String(state.messages.length));
   setText(elements.segmentCount, String(state.segments.length));
-  setText(elements.ttsCount, String(activeTtsProfileOptions().length));
+  setText(elements.referencedCount, String(state.messages.filter((message) => isMessageReferenced(message.key)).length));
 }
 
 function renderPersistence(persistence = {}) {
   setText(elements.persistenceSource, "Local API");
-  setText(elements.persistenceEngine, "Postgres target");
+  setText(elements.persistenceEngine, "Local DB target");
   setText(elements.persistenceOwner, persistence.owner || "messages");
 }
 
@@ -352,206 +364,541 @@ function renderSelectedMessage() {
   const selected = selectedMessage();
   const segment = selectedSegment();
   setText(elements.selectedName, selected?.name || "None");
-  setText(elements.selectedEmotion, selected?.emotionProfileName || "None");
-  setText(elements.selectedSegment, segment ? `${segment.displayOrder}: ${segment.segmentText}` : "None");
-  setText(elements.selectedStatus, selected ? statusForActive(selected.active) : "None");
+  setText(elements.selectedEmotion, segment?.emotionProfileName || selected?.emotionProfileName || "None");
+  setText(elements.selectedSegment, segment ? `Sentence ${segment.displayOrder}` : selected ? `${messageReferenceCount(selected.key)} sentence${messageReferenceCount(selected.key) === 1 ? "" : "s"}` : "None");
+  setText(elements.selectedStatus, selected ? `${selected.active === false ? "Archived" : "Active"} / ${isMessageReferenced(selected.key) ? "Referenced" : "Unreferenced"}` : "None");
   setText(elements.selectedText, segment?.segmentText || selected?.messageText || "No message selected.");
 }
 
-function refreshTtsServices() {
-  state.ttsServices = ttsServiceRegistry.listServices();
+function renderReferenceUsage() {
+  if (!elements.referenceList) {
+    return;
+  }
+  const selected = selectedMessage();
+  const references = selected ? messageSegments(selected.key) : [];
+  setText(elements.usageCount, String(references.length));
+  elements.referenceList.replaceChildren();
+  if (!selected) {
+    const item = document.createElement("li");
+    item.textContent = "Select a message to view references.";
+    elements.referenceList.append(item);
+    return;
+  }
+  if (!references.length) {
+    const item = document.createElement("li");
+    item.textContent = "This message has no sentences yet.";
+    elements.referenceList.append(item);
+    return;
+  }
+  references.forEach((reference) => {
+    const item = document.createElement("li");
+    const snippet = reference.segmentText ? `: ${reference.segmentText}` : "";
+    item.textContent = `Sentence ${reference.displayOrder}${snippet}`;
+    elements.referenceList.append(item);
+  });
 }
 
-function playbackReadinessMessage() {
-  refreshTtsServices();
-  const service = selectedTtsService();
-  if (!service) {
-    const unavailableService = state.ttsServices.find((candidate) => !candidate.available);
-    if (unavailableService) {
-      return unavailableService.unavailableMessage || "No TTS service is available in this browser.";
+function renderPublishValidation() {
+  if (!elements.publishIssues || !elements.publishStatus) {
+    return;
+  }
+  elements.publishIssues.replaceChildren();
+  if (!state.publishValidation) {
+    setText(elements.publishStatus, "Not checked");
+    const item = document.createElement("li");
+    item.textContent = "Run validation before publishing.";
+    elements.publishIssues.append(item);
+    return;
+  }
+  if (state.publishValidation.valid) {
+    setText(elements.publishStatus, "Ready");
+    const item = document.createElement("li");
+    item.textContent = "No message publish issues.";
+    elements.publishIssues.append(item);
+    return;
+  }
+  setText(elements.publishStatus, "Blocked");
+  const issues = Array.isArray(state.publishValidation.issues) ? state.publishValidation.issues : [];
+  if (!issues.length) {
+    const item = document.createElement("li");
+    item.textContent = "Message publish validation is blocked. Review messages and profile references.";
+    elements.publishIssues.append(item);
+    return;
+  }
+  issues.forEach((issue) => {
+    const item = document.createElement("li");
+    const targetName = issue.targetName ? `${issue.targetName}: ` : "";
+    item.textContent = `${targetName}${issue.message || "Review this message before publishing."}`;
+    elements.publishIssues.append(item);
+  });
+}
+
+function speechRuntime() {
+  const synthesis = window.speechSynthesis;
+  const Utterance = window.SpeechSynthesisUtterance;
+  if (!synthesis || !Utterance) {
+    throw new Error("Browser Speech API is unavailable.");
+  }
+  return { synthesis, Utterance };
+}
+
+function profilePreferenceLabel(value, fallback = "Any") {
+  const normalized = String(value || "").trim();
+  if (!normalized) {
+    return fallback;
+  }
+  const labels = new Map([
+    ["adult", "Adult"],
+    ["any", "Any"],
+    ["child", "Child"],
+    ["elderly", "Elderly"],
+    ["female", "Female"],
+    ["female-preferred", "Female"],
+    ["male", "Male"],
+    ["male-preferred", "Male"],
+    ["neutral", "Neutral"],
+    ["teen", "Teen"],
+  ]);
+  const key = normalized.toLowerCase();
+  if (labels.has(key)) {
+    return labels.get(key);
+  }
+  return normalized
+    .replace(/[-_]+/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function profileValue(value, fallback) {
+  const normalized = String(value || "").trim();
+  return normalized || fallback;
+}
+
+function playbackProfileDetails(profile) {
+  return {
+    ageFilter: profilePreferenceLabel(profile?.ageFilter || profile?.voiceAge || profile?.age, "Any"),
+    gender: profilePreferenceLabel(profile?.gender || profile?.genderFilter || profile?.voiceGender, "Any"),
+    language: profileValue(profile?.language, "No language selected"),
+    profile: profileValue(profile?.name, "No TTS Profile"),
+    voice: profileValue(profile?.voiceName || profile?.voice, "No voice selected"),
+  };
+}
+
+function playbackDiagnostics(profile) {
+  const details = playbackProfileDetails(profile);
+  return [
+    "Playing:",
+    `Profile: ${details.profile}`,
+    `Gender: ${details.gender}`,
+    `Voice: ${details.voice}`,
+    `Language: ${details.language}`,
+    `Age Filter: ${details.ageFilter}`,
+  ].join("\n");
+}
+
+function playbackStatus(profile, label) {
+  const details = playbackProfileDetails(profile);
+  return `Speaking ${label}. Profile: ${details.profile}; Gender: ${details.gender}; Voice: ${details.voice}; Language: ${details.language}; Age Filter: ${details.ageFilter}.`;
+}
+
+function browserVoiceForProfile(synthesis, voiceProfile) {
+  const voiceName = String(voiceProfile?.voiceName || "").trim();
+  if (!voiceName) {
+    throw new Error("Select a voice for this TTS Profile before playing.");
+  }
+  if (voiceName === "Browser default") {
+    return null;
+  }
+  const voices = typeof synthesis.getVoices === "function" ? synthesis.getVoices() : [];
+  return voices.find((voice) => voice.name === voiceName || voice.voiceURI === voiceName) || null;
+}
+
+function runtimeProviderForProfile(voiceProfile) {
+  const provider = TTS_PROVIDER_REGISTRY[voiceProfile?.providerKey || ""];
+  if (!provider) {
+    throw new Error("Voice profile provider is not supported.");
+  }
+  if (!provider.activeRuntime || provider.requiresConfig) {
+    throw new Error("Voice profile provider is not active for browser playback.");
+  }
+  return provider;
+}
+
+function speechItemFromMessage(message) {
+  const profileKey = message.voiceProfileKey || "";
+  const emotionKey = message.emotionProfileKey || "";
+  const voice = ttsProfileByKey(profileKey);
+  const emotion = emotionSettingForKey(profileKey, emotionKey);
+  return {
+    emotion,
+    emotionKey,
+    label: message.name,
+    profileKey,
+    text: message.messageText,
+    voice,
+  };
+}
+
+function speechItemFromSegment(segment) {
+  const message = state.messages.find((candidate) => candidate.key === segment.messageKey) || null;
+  const profileKey = message?.voiceProfileKey || "";
+  const emotionKey = segment.emotionProfileKey || "";
+  const emotion = emotionSettingForKey(profileKey, emotionKey);
+  const voice = ttsProfileByKey(profileKey);
+  return {
+    emotion,
+    emotionKey,
+    label: `${segment.messageName || "Message"} sentence ${segment.displayOrder}`,
+    profileKey,
+    text: segment.segmentText,
+    voice,
+  };
+}
+
+function selectedSpeechItems() {
+  const segment = selectedSegment();
+  if (segment) {
+    return [speechItemFromSegment(segment)];
+  }
+  const message = selectedMessage();
+  if (!message) {
+    return [];
+  }
+  const segments = messageSegments(message.key);
+  return segments.length ? segments.map(speechItemFromSegment) : [speechItemFromMessage(message)];
+}
+
+function assertSpeechItem(item) {
+  if (!String(item?.text || "").trim()) {
+    throw new Error("Add sentence text before playback.");
+  }
+  if (!item.profileKey) {
+    throw new Error("Select a TTS Profile for this message before playing.");
+  }
+  if (!item.voice) {
+    throw new Error("Select a TTS Profile for this message before playing.");
+  }
+  if (!String(item.voice.voiceName || "").trim()) {
+    throw new Error("Select a voice for this TTS Profile before playing.");
+  }
+  if (!item.emotionKey) {
+    throw new Error("Select an emotion for this sentence before playing.");
+  }
+  if (!item.emotion) {
+    throw new Error("Add this emotion to the selected TTS Profile before playing.");
+  }
+  runtimeProviderForProfile(item.voice);
+}
+
+function speechPlaybackGuidance(error) {
+  const message = error instanceof Error ? error.message : "";
+  return message || "Speech playback could not start. Check the selected message, emotion, and TTS Profile.";
+}
+
+function speakQueue(items, runtime, index = 0) {
+  if (index >= items.length) {
+    setText(elements.speechStatus, "Speech playback complete.");
+    return;
+  }
+  const item = items[index];
+  try {
+    assertSpeechItem(item);
+    const utterance = new runtime.Utterance(item.text);
+    utterance.rate = Number(item.emotion.rate);
+    utterance.pitch = Number(item.emotion.pitch);
+    utterance.volume = Number(item.emotion.volume);
+    utterance.lang = item.voice.language || "en-US";
+    utterance.voice = browserVoiceForProfile(runtime.synthesis, item.voice);
+    utterance.onend = () => speakQueue(items, runtime, index + 1);
+    utterance.onerror = () => {
+      showCreatorSafeFailure("Speech playback stopped before it finished. Check the selected profiles and try again.");
+      setText(elements.speechStatus, "Speech playback stopped.");
+    };
+    if (index === 0) {
+      setText(elements.log, playbackDiagnostics(item.voice));
     }
-    return "No TTS service is available in this browser.";
-  }
-  return "Ready for Message Studio playback.";
-}
-
-function renderPlaybackControls() {
-  setText(elements.playbackStatus, playbackReadinessMessage());
-  if (elements.stopSpeech) {
-    elements.stopSpeech.disabled = !selectedTtsService()?.available;
+    setText(elements.speechStatus, playbackStatus(item.voice, item.label));
+    runtime.synthesis.speak(utterance);
+  } catch (error) {
+    showCreatorSafeFailure(speechPlaybackGuidance(error));
+    setText(elements.speechStatus, "Speech playback unavailable.");
   }
 }
 
-function createMessageEditRows(message = null) {
+function speakSelected() {
+  clearValidation();
+  const items = selectedSpeechItems();
+  if (!items.length) {
+    showCreatorSafeFailure("Select a message or sentence before starting speech playback.");
+    setText(elements.speechStatus, "No selection.");
+    return;
+  }
+  try {
+    const runtime = speechRuntime();
+    runtime.synthesis.cancel();
+    speakQueue(items, runtime);
+  } catch {
+    showCreatorSafeFailure("Browser speech playback is unavailable in this browser.");
+    setText(elements.speechStatus, "Speech playback unavailable.");
+  }
+}
+
+function playMessage(key) {
+  clearValidation();
+  state.selectedMessageKey = key;
+  state.selectedSegmentKey = "";
+  const message = selectedMessage();
+  if (!message) {
+    showCreatorSafeFailure("Select a message before starting speech playback.");
+    setText(elements.speechStatus, "No selection.");
+    return;
+  }
+  const segments = messageSegments(message.key);
+  if (!segments.length) {
+    showCreatorSafeFailure("Add at least one sentence before playing this message.");
+    setText(elements.speechStatus, "No sentences available.");
+    return;
+  }
+  const items = segments.map(speechItemFromSegment);
+  try {
+    const runtime = speechRuntime();
+    runtime.synthesis.cancel();
+    speakQueue(items, runtime);
+  } catch {
+    showCreatorSafeFailure("Browser speech playback is unavailable in this browser.");
+    setText(elements.speechStatus, "Speech playback unavailable.");
+  }
+}
+
+function playSentence(key) {
+  clearValidation();
+  const segment = state.segments.find((candidate) => candidate.key === key);
+  if (!segment) {
+    showCreatorSafeFailure("Select a sentence before starting speech playback.");
+    setText(elements.speechStatus, "No selection.");
+    return;
+  }
+  state.selectedMessageKey = segment.messageKey;
+  state.selectedSegmentKey = segment.key;
+  try {
+    const runtime = speechRuntime();
+    runtime.synthesis.cancel();
+    speakQueue([speechItemFromSegment(segment)], runtime);
+  } catch {
+    showCreatorSafeFailure("Browser speech playback is unavailable in this browser.");
+    setText(elements.speechStatus, "Speech playback unavailable.");
+  }
+}
+
+function stopSpeech() {
+  try {
+    window.speechSynthesis?.cancel?.();
+  } catch {
+    showCreatorSafeFailure("Speech playback could not be stopped. Reload the tool and try again.");
+    return;
+  }
+  setText(elements.speechStatus, "Speech playback stopped.");
+  setText(elements.log, "Speech playback stopped.");
+}
+
+function createMessageEditRow(message = null) {
   const key = message?.key || NEW_ROW_KEY;
   const row = document.createElement("tr");
   row.dataset.messagesRowEditor = key;
 
-  const nameCell = document.createElement("td");
-  nameCell.append(createInput(message?.name || "", "messageName"));
+  const messageCell = document.createElement("td");
+  messageCell.append(createInput(message?.name || "", "messageName", "Message"));
 
-  const typeCell = createCell(message?.categoryName || "Dialog");
-
-  const statusCell = document.createElement("td");
-  statusCell.append(createCheckbox(message?.active !== false, "messageActive"));
-
-  const partCell = createCell(message ? String(messageSegments(message.key).length) : "0");
-
-  const ttsCell = document.createElement("td");
-  ttsCell.append(createTtsProfileSelect(
-    message ? selectedTtsProfileForMessage(message.key)?.key : defaultTtsProfileKey(),
-    "messageDefaultTtsProfile",
-    key,
+  const profileCell = document.createElement("td");
+  profileCell.append(createSelect(
+    message?.voiceProfileKey || "",
+    "messageTtsProfile",
+    voiceOptionsWithCurrent(message?.voiceProfileKey || ""),
+    "Select TTS profile",
+    "TTS Profile",
   ));
 
   const actions = document.createElement("td");
   actions.append(createActionGroup(
-    createButton("Save", "messagesCommit", key),
+    createButton("Save", "messagesCommit", key, { primary: true }),
     createButton("Cancel", "messagesCancel", key),
   ));
 
-  row.append(nameCell, typeCell, statusCell, partCell, ttsCell, actions);
-
-  const detailRow = document.createElement("tr");
-  detailRow.dataset.messagesRowEditorDetails = key;
-  const detailCell = document.createElement("td");
-  detailCell.colSpan = 6;
-  const stack = document.createElement("div");
-  stack.className = "content-stack";
-  stack.append(
-    createField("Primary Emotion", createSelect(message?.emotionProfileKey || "", "messageEmotion", selectOptionsWithCurrent(message?.emotionProfileKey || ""), "Select emotion")),
-    createField("Message Text", createTextarea(message?.messageText || "", "messageText", 6)),
-    createField("Notes", createTextarea(message?.notes || "", "messageNotes", 3)),
+  row.append(
+    messageCell,
+    profileCell,
+    createCell(message ? formatUpdated(message.updatedAt) : "New"),
+    actions,
   );
-  detailCell.append(stack);
-  detailRow.append(detailCell);
-
-  return [row, detailRow];
+  return row;
 }
 
-function createMessageSegmentTable() {
+function createMessageSegmentEditRow(messageKey, segment = null) {
+  const key = segment?.key || NEW_ROW_KEY;
+  const row = document.createElement("tr");
+  row.dataset.messagesSegmentEditor = key;
+  row.dataset.messagesSegmentMessage = messageKey;
+
+  const orderCell = document.createElement("td");
+  orderCell.append(createNumberInput(segment?.displayOrder || nextSegmentOrder(messageKey), "segmentOrder", "Order", { min: 1, step: 1 }));
+
+  const textCell = document.createElement("td");
+  textCell.append(createTextarea(segment?.segmentText || "", "segmentText", "Sentence text"));
+
+  const emotionCell = document.createElement("td");
+  const message = state.messages.find((candidate) => candidate.key === messageKey) || null;
+  emotionCell.append(createSelect(
+    segment?.emotionProfileKey || "",
+    "segmentEmotion",
+    emotionOptionsForTtsProfile(message?.voiceProfileKey || segment?.voiceProfileKey || ""),
+    "Select emotion",
+    "Sentence emotion",
+  ));
+
+  const actions = document.createElement("td");
+  actions.append(createActionGroup(
+    createButton("Save", "messagesSegmentCommit", key, { primary: true }),
+    createButton("Cancel", "messagesSegmentCancel", key),
+  ));
+
+  row.append(
+    orderCell,
+    textCell,
+    emotionCell,
+    actions,
+  );
+  return row;
+}
+
+function createMessageSegmentRow(segment) {
+  const row = document.createElement("tr");
+  row.dataset.messagesSegmentRow = segment.key;
+  row.setAttribute("aria-selected", String(state.selectedSegmentKey === segment.key));
+  const archiveButton = createButton(segment.active === false ? "Restore" : "Archive", "messagesSegmentArchive", segment.key, {
+    ariaLabel: `${segment.active === false ? "Restore" : "Archive"} sentence ${segment.displayOrder}`,
+  });
+  const actions = document.createElement("td");
+  actions.append(createActionGroup(
+    createButton("Play", "messagesSegmentPlay", segment.key, {
+      ariaLabel: `Play sentence ${segment.displayOrder}`,
+    }),
+    createButton("Edit", "messagesSegmentEdit", segment.key),
+    archiveButton,
+    createButton("Delete", "messagesSegmentDelete", segment.key),
+  ));
+  row.append(
+    createCell(segment.active === false ? `${segment.displayOrder} (Archived)` : String(segment.displayOrder)),
+    createCell(segment.segmentText || "No text"),
+    createCell(segment.emotionProfileName || "No emotion"),
+    actions,
+  );
+  return row;
+}
+
+function createMessagePartsTable(message) {
   const wrapper = document.createElement("div");
   wrapper.className = "content-stack";
 
-  const context = document.createElement("div");
-  context.className = "kicker";
-  context.textContent = "Message / Message Parts";
-  const heading = document.createElement("h3");
-  heading.textContent = "Message Parts";
-  wrapper.append(context, heading);
+  const header = document.createElement("div");
+  header.className = "surface-header";
+  const title = document.createElement("div");
+  const kicker = document.createElement("div");
+  kicker.className = "kicker";
+  kicker.textContent = "Message / Sentences";
+  const heading = document.createElement("h4");
+  heading.textContent = `${message.name} Sentences`;
+  title.append(kicker, heading);
+  const actions = document.createElement("div");
+  actions.className = "action-group action-group--tight";
+  actions.append(createButton("Add Sentence", "messagesSegmentAdd", message.key));
+  header.append(title, actions);
 
   const tableWrapper = document.createElement("div");
   tableWrapper.className = "table-wrapper";
   const table = document.createElement("table");
-  table.className = "data-table";
-  table.setAttribute("aria-label", "Message parts");
+  table.className = "data-table data-table--fixed";
+  table.setAttribute("aria-label", `${message.name} Sentences`);
   const thead = document.createElement("thead");
   const headerRow = document.createElement("tr");
-    ["Part Text", "Emotion", "TTS Profile", "Status", "Actions"].forEach((label) => {
-    const header = document.createElement("th");
-    header.scope = "col";
-    header.textContent = label;
-    headerRow.append(header);
+  ["Order", "Text", "Emotion", "Actions"].forEach((label) => {
+    const cell = document.createElement("th");
+    cell.scope = "col";
+    cell.textContent = label;
+    headerRow.append(cell);
   });
   thead.append(headerRow);
   const tbody = document.createElement("tbody");
-  tbody.dataset.messagesSegments = "";
+  tbody.dataset.messagesSegmentTable = message.key;
 
-  const segments = selectedMessageSegments();
-  if (!segments.length && state.editingSegmentKey !== NEW_ROW_KEY) {
-    tbody.append(tableMessage(5, "No message parts saved for this message."));
+  const segments = messageSegments(message.key);
+  if (!segments.length && !(state.editingSegmentKey === NEW_ROW_KEY && state.editingSegmentMessageKey === message.key)) {
+    tbody.append(tableMessage(4, "No sentences yet. Add a sentence for this message when ready."));
   }
-
-  segments.forEach((segment, index) => {
+  segments.forEach((segment) => {
     if (state.editingSegmentKey === segment.key) {
-      tbody.append(createSegmentEditRow(segment));
+      tbody.append(createMessageSegmentEditRow(message.key, segment));
       return;
     }
-    const row = document.createElement("tr");
-    row.dataset.messagesSegmentRow = segment.key;
-    const actions = document.createElement("td");
-    const moveUp = createButton("Move Up", "messagesSegmentMoveUp", segment.key);
-    const moveDown = createButton("Move Down", "messagesSegmentMoveDown", segment.key);
-    moveUp.disabled = index === 0;
-    moveDown.disabled = index === segments.length - 1;
-    actions.append(createActionGroup(
-      createButton("Play Part", "messagesSegmentPlay", segment.key),
-      createButton("Edit Part", "messagesSegmentEdit", segment.key),
-      moveUp,
-      moveDown,
-      segment.active ? createButton("Disable", "messagesSegmentDisable", segment.key) : null,
-    ));
-    const ttsCell = document.createElement("td");
-    ttsCell.append(createTtsProfileSelect(
-      selectedTtsProfileForSegment(segment.key, segment.messageKey)?.key || "",
-      "segmentTtsProfile",
-      segment.key,
-    ));
-    row.append(
-      createCell(segment.segmentText),
-      createCell(segment.emotionProfileName || "Unknown"),
-      ttsCell,
-      createCell(statusForActive(segment.active)),
-      actions,
-    );
-    tbody.append(row);
+    tbody.append(createMessageSegmentRow(segment));
   });
-
-  if (state.editingSegmentKey === NEW_ROW_KEY) {
-    tbody.append(createSegmentEditRow(null));
-  } else {
-    tbody.append(createSegmentAddControlRow());
+  if (state.editingSegmentKey === NEW_ROW_KEY && state.editingSegmentMessageKey === message.key) {
+    tbody.append(createMessageSegmentEditRow(message.key, null));
   }
 
   table.append(thead, tbody);
   tableWrapper.append(table);
-  wrapper.append(tableWrapper);
+  wrapper.append(header, tableWrapper);
   return wrapper;
 }
 
-function createSegmentEditRow(segment = null) {
-  const key = segment?.key || NEW_ROW_KEY;
-  const row = document.createElement("tr");
-  row.dataset.messagesSegmentEditor = key;
-  row.dataset.messagesSegmentOrder = String(segment?.displayOrder || nextSegmentOrder());
-
-  const textCell = document.createElement("td");
-  textCell.append(createTextarea(segment?.segmentText || "", "segmentText", 3));
-
-  const emotionCell = document.createElement("td");
-  emotionCell.append(createSelect(segment?.emotionProfileKey || "", "segmentEmotion", selectOptionsWithCurrent(segment?.emotionProfileKey || ""), "Select emotion"));
-
-  const ttsCell = document.createElement("td");
-  ttsCell.append(createTtsProfileSelect(
-    segment ? selectedTtsProfileForSegment(segment.key, segment.messageKey)?.key : selectedTtsProfileForMessage(state.selectedMessageKey)?.key,
-    "segmentTtsProfile",
-    key,
-  ));
-
-  const statusCell = document.createElement("td");
-  statusCell.append(createCheckbox(segment?.active !== false, "segmentActive"));
-
-  const actions = document.createElement("td");
-  actions.append(createActionGroup(
-    createButton("Save", "messagesSegmentCommit", key),
-    createButton("Cancel", "messagesSegmentCancel", key),
-  ));
-
-  row.append(textCell, emotionCell, ttsCell, statusCell, actions);
-  return row;
-}
-
-function appendSelectedSegmentsHost(messageKey) {
-  if (state.selectedMessageKey !== messageKey) {
+function appendMessagePartsHost(message) {
+  if (state.selectedMessageKey !== message.key) {
     return;
   }
   const hostRow = document.createElement("tr");
-  hostRow.dataset.messagesSegmentHost = messageKey;
+  hostRow.dataset.messagesPartsHost = message.key;
   const cell = document.createElement("td");
-  cell.colSpan = 6;
-  cell.append(createMessageSegmentTable());
+  cell.colSpan = MESSAGE_TABLE_COLSPAN;
+  cell.append(createMessagePartsTable(message));
   hostRow.append(cell);
   elements.table.append(hostRow);
+}
+
+function createMessageRow(message) {
+  const row = document.createElement("tr");
+  row.dataset.messagesRow = message.key;
+  row.tabIndex = 0;
+  row.setAttribute("aria-selected", String(state.selectedMessageKey === message.key));
+  row.setAttribute("aria-expanded", String(state.selectedMessageKey === message.key));
+
+  const referenced = isMessageReferenced(message.key);
+  const deleteButton = createButton("Delete", "messagesDelete", message.key, {
+    ariaLabel: referenced ? `Delete disabled for referenced message ${message.name}` : `Delete ${message.name}`,
+    disabled: referenced,
+    title: referenced ? "Delete disabled: this message has sentences." : "Delete message",
+  });
+  const archiveButton = createButton(message.active === false ? "Restore" : "Archive", "messagesArchive", message.key, {
+    ariaLabel: `${message.active === false ? "Restore" : "Archive"} ${message.name}`,
+  });
+  const actions = document.createElement("td");
+  actions.append(createActionGroup(
+    createButton("Play", "messagesPlay", message.key, {
+      ariaLabel: `Play ${message.name}`,
+    }),
+    createButton("Sentences", "messagesToggleParts", message.key, {
+      ariaLabel: `${state.selectedMessageKey === message.key ? "Hide" : "Show"} sentences for ${message.name}`,
+    }),
+    createButton("Edit", "messagesEdit", message.key),
+    archiveButton,
+    deleteButton,
+  ));
+
+  row.append(
+    createRowHeader(message.active === false ? `${message.name} (Archived)` : message.name),
+    createCell(message.voiceProfileName || "No TTS profile"),
+    createCell(formatUpdated(message.updatedAt)),
+    actions,
+  );
+  return row;
 }
 
 function renderMessageRows() {
@@ -559,157 +906,143 @@ function renderMessageRows() {
     return;
   }
   elements.table.replaceChildren();
+
+  if (state.editingMessageKey === NEW_ROW_KEY) {
+    elements.table.append(createMessageEditRow(null));
+  }
+
   if (!state.messages.length && state.editingMessageKey !== NEW_ROW_KEY) {
-    elements.table.append(tableMessage(6, "No messages saved yet. Add a message such as Bat Encounter."));
-    elements.table.append(createMessageAddControlRow());
+    elements.table.append(tableMessage(MESSAGE_TABLE_COLSPAN, "No messages yet. Add your first message when you are ready."));
     return;
   }
 
   state.messages.forEach((message) => {
     if (state.editingMessageKey === message.key) {
-      createMessageEditRows(message).forEach((row) => elements.table.append(row));
-      appendSelectedSegmentsHost(message.key);
+      elements.table.append(createMessageEditRow(message));
       return;
     }
-
-    const row = document.createElement("tr");
-    row.dataset.messagesRow = message.key;
-    const nameCell = document.createElement("td");
-    const isExpanded = state.selectedMessageKey === message.key;
-    nameCell.dataset.messagesNameCell = message.key;
-    nameCell.tabIndex = 0;
-    nameCell.setAttribute("role", "button");
-    nameCell.setAttribute("aria-expanded", String(isExpanded));
-    nameCell.textContent = `${isExpanded ? "v" : ">"} ${message.name}`;
-    const ttsCell = document.createElement("td");
-    ttsCell.append(createTtsProfileSelect(
-      selectedTtsProfileForMessage(message.key)?.key || "",
-      "messageDefaultTtsProfile",
-      message.key,
-    ));
-    const actions = document.createElement("td");
-    actions.append(createActionGroup(
-      createButton("Play Message", "messagesPlay", message.key),
-      createButton("Edit Message", "messagesEdit", message.key),
-      message.active ? createButton("Disable", "messagesDisable", message.key) : null,
-    ));
-    row.append(
-      nameCell,
-      createCell(message.categoryName || "Dialog"),
-      createCell(statusForActive(message.active)),
-      createCell(String(messageSegments(message.key).length)),
-      ttsCell,
-      actions,
-    );
-    elements.table.append(row);
-    appendSelectedSegmentsHost(message.key);
+    elements.table.append(createMessageRow(message));
+    appendMessagePartsHost(message);
   });
-
-  if (state.editingMessageKey === NEW_ROW_KEY) {
-    createMessageEditRows(null).forEach((row) => elements.table.append(row));
-  } else {
-    elements.table.append(createMessageAddControlRow());
-  }
 }
 
 function render(persistence = {}) {
   renderMessageRows();
   renderSelectedMessage();
+  renderReferenceUsage();
+  renderPublishValidation();
   renderCounts();
   renderPersistence(persistence);
-  renderPlaybackControls();
 }
 
 function editorValue(root, selector) {
   return root?.querySelector(selector)?.value || "";
 }
 
-function editorChecked(root, selector) {
-  return root?.querySelector(selector)?.checked !== false;
-}
-
 function messageValues(key) {
   const root = elements.table?.querySelector(`[data-messages-row-editor="${key}"]`);
-  const details = elements.table?.querySelector(`[data-messages-row-editor-details="${key}"]`);
+  const existing = state.messages.find((message) => message.key === key) || null;
+  const name = editorValue(root, "[data-message-name]");
+  const voiceProfileKey = editorValue(root, "[data-message-tts-profile]");
+  const emotionProfileKey = profileEmotionKeyOrDefault(voiceProfileKey, existing?.emotionProfileKey || "");
   return {
-    active: editorChecked(root, "[data-message-active]"),
-    emotionProfileKey: editorValue(details, "[data-message-emotion]"),
-    messageText: editorValue(details, "[data-message-text]"),
-    name: editorValue(root, "[data-message-name]"),
-    notes: editorValue(details, "[data-message-notes]"),
+    active: existing ? existing.active : true,
+    emotionProfileKey,
+    messageText: existing?.messageText || name,
+    name,
+    notes: existing?.notes || "",
+    voiceProfileKey,
   };
 }
 
 function validateMessage(values) {
   const errors = [];
   if (!values.name.trim()) {
-    errors.push("Message Name is required.");
+    errors.push("Message is required.");
+  }
+  if (!values.voiceProfileKey) {
+    errors.push("TTS Profile is required.");
   }
   if (!values.emotionProfileKey) {
-    errors.push("Emotion is required.");
-  }
-  if (!values.messageText.trim()) {
-    errors.push("Message Text is required.");
+    errors.push("The selected TTS Profile needs at least one emotion before saving a message.");
   }
   return errors;
 }
 
 function segmentValues(key) {
   const root = elements.table?.querySelector(`[data-messages-segment-editor="${key}"]`);
+  const existing = state.segments.find((segment) => segment.key === key) || null;
+  const messageKey = root?.dataset.messagesSegmentMessage || existing?.messageKey || state.selectedMessageKey;
+  const message = state.messages.find((candidate) => candidate.key === messageKey) || null;
   return {
-    active: editorChecked(root, "[data-segment-active]"),
-    displayOrder: editorValue(root, "[data-segment-order]") || root?.dataset.messagesSegmentOrder || String(nextSegmentOrder()),
+    active: existing ? existing.active : true,
+    displayOrder: editorValue(root, "[data-segment-order]"),
     emotionProfileKey: editorValue(root, "[data-segment-emotion]"),
-    messageKey: state.selectedMessageKey,
+    messageKey,
     segmentText: editorValue(root, "[data-segment-text]"),
+    voiceProfileKey: message?.voiceProfileKey || existing?.voiceProfileKey || "",
   };
 }
 
 function validateSegment(values) {
   const errors = [];
-  if (!state.selectedMessageKey) {
-    errors.push("Select a message before adding parts.");
+  if (!values.messageKey) {
+    errors.push("Select a message before adding a sentence.");
   }
   if (!values.segmentText.trim()) {
-    errors.push("Part Text is required.");
+    errors.push("Sentence text is required.");
   }
   if (!values.emotionProfileKey) {
     errors.push("Emotion is required.");
   }
-  if (String(values.displayOrder).trim() === "") {
-    errors.push("Display Order is required.");
-  } else {
-    const displayOrder = Number(values.displayOrder);
-    if (!Number.isInteger(displayOrder) || displayOrder < 1) {
-      errors.push("Display Order must be a whole number of 1 or greater.");
-    }
+  const displayOrder = Number(values.displayOrder);
+  if (!Number.isInteger(displayOrder) || displayOrder < 1) {
+    errors.push("Order must be a whole number of 1 or greater.");
   }
   return errors;
 }
 
+function markPublishValidationStale() {
+  state.publishValidation = null;
+}
+
+async function runPublishValidation() {
+  clearValidation();
+  try {
+    const result = validatePublishConfiguration();
+    state.publishValidation = result.publishValidation || null;
+    renderPublishValidation();
+    setText(elements.log, state.publishValidation?.valid
+      ? "Publish validation passed."
+      : "Publish blocked by message validation.");
+  } catch {
+    showCreatorSafeFailure("Publish validation could not run. Check the Local API connection and try again.");
+  }
+}
+
 async function loadAll() {
   const emotionPayload = listEmotionProfiles();
-  const ttsPayload = listTtsProfiles();
   const messagesPayload = listMessages();
   const segmentsPayload = listMessageSegments();
+  const voicePayload = listTtsProfiles();
   state.emotionProfiles = emotionPayload.emotionProfiles || [];
-  state.ttsProfiles = ttsPayload.ttsProfiles || [];
   state.messages = messagesPayload.messages || [];
   state.segments = segmentsPayload.segments || [];
+  state.voiceProfiles = messageStudioTtsProfilesFromContract(voicePayload.ttsProfiles || []);
   if (state.selectedMessageKey && !state.messages.some((message) => message.key === state.selectedMessageKey)) {
     state.selectedMessageKey = "";
   }
-  if (state.selectedSegmentKey && !state.segments.some((segment) => segment.key === state.selectedSegmentKey && segment.messageKey === state.selectedMessageKey)) {
+  if (state.selectedSegmentKey && !state.segments.some((segment) => segment.key === state.selectedSegmentKey)) {
     state.selectedSegmentKey = "";
   }
-  render(messagesPayload.persistence || emotionPayload.persistence || ttsPayload.persistence || segmentsPayload.persistence);
-  setText(elements.log, "Message Studio loaded from the Local API.");
+  render(messagesPayload.persistence || emotionPayload.persistence || segmentsPayload.persistence || voicePayload.persistence);
+  setText(elements.log, "Message Studio loaded.");
 }
 
-async function reloadAfterChange(messageKey = state.selectedMessageKey, segmentKey = state.selectedSegmentKey) {
+async function reloadAfterChange(messageKey = state.selectedMessageKey) {
+  markPublishValidationStale();
   await loadAll();
   state.selectedMessageKey = messageKey && state.messages.some((message) => message.key === messageKey) ? messageKey : "";
-  state.selectedSegmentKey = segmentKey && state.segments.some((segment) => segment.key === segmentKey && segment.messageKey === state.selectedMessageKey) ? segmentKey : "";
   render();
 }
 
@@ -718,7 +1051,7 @@ async function commitMessage(key) {
   const errors = validateMessage(values);
   if (errors.length) {
     showValidation(errors);
-    setText(elements.log, "Message row update blocked by validation.");
+    setText(elements.log, "Message row needs required fields.");
     return;
   }
   clearValidation();
@@ -727,17 +1060,51 @@ async function commitMessage(key) {
       ? createMessage(values)
       : updateMessage(key, values);
     state.editingMessageKey = "";
-    if (key === NEW_ROW_KEY) {
-      state.selectedMessageKey = "";
-      state.selectedSegmentKey = "";
-    } else {
-      state.selectedMessageKey = result.message.key;
-    }
-    await reloadAfterChange(state.selectedMessageKey, state.selectedSegmentKey);
-    setText(elements.log, `Updated row ${result.message.name}.`);
+    await reloadAfterChange(result.message.key);
+    setText(elements.log, `Saved message ${result.message.name}.`);
+  } catch {
+    showCreatorSafeFailure("Message was not saved. Check required fields and try again.");
+  }
+}
+
+async function deleteMessageRecord(key) {
+  const message = state.messages.find((candidate) => candidate.key === key);
+  if (!message) {
+    return;
+  }
+  if (isMessageReferenced(key)) {
+    showCreatorSafeFailure("Delete is blocked because this message has sentences.");
+    return;
+  }
+  clearValidation();
+  try {
+    deleteMessage(key);
+    state.editingMessageKey = "";
+    state.selectedMessageKey = "";
+    await reloadAfterChange("");
+    setText(elements.log, `Deleted message ${message.name}.`);
   } catch (error) {
-    showValidation([error instanceof Error ? error.message : String(error || "Message row update failed.")]);
-    setText(elements.log, "Message row update failed.");
+    const messageText = error instanceof Error ? error.message : "";
+    showCreatorSafeFailure(
+      messageText.toLowerCase().includes("referenced")
+        ? "Delete is blocked because this message has sentences."
+        : "Message was not deleted. Check the Local API connection and try again.",
+    );
+  }
+}
+
+async function archiveMessageRecord(key) {
+  const message = state.messages.find((candidate) => candidate.key === key);
+  if (!message) {
+    return;
+  }
+  clearValidation();
+  try {
+    const result = updateMessage(key, { active: message.active === false });
+    await reloadAfterChange(result.message.key);
+    setText(elements.log, `${result.message.active === false ? "Archived" : "Restored"} message ${result.message.name}.`);
+  } catch {
+    showCreatorSafeFailure("Message archive status was not changed. Check the Local API connection and try again.");
   }
 }
 
@@ -746,286 +1113,178 @@ async function commitSegment(key) {
   const errors = validateSegment(values);
   if (errors.length) {
     showValidation(errors);
-    setText(elements.log, "Segment row update blocked by validation.");
+    setText(elements.log, "Sentence row needs required fields.");
     return;
   }
   clearValidation();
   try {
+    const payload = {
+      ...values,
+      displayOrder: Number(values.displayOrder),
+    };
     const result = key === NEW_ROW_KEY
-      ? createMessageSegment(values)
-      : updateMessageSegment(key, values);
+      ? createMessageSegment(payload)
+      : updateMessageSegment(key, payload);
     state.editingSegmentKey = "";
+    state.editingSegmentMessageKey = "";
+    state.selectedMessageKey = result.segment.messageKey;
     state.selectedSegmentKey = result.segment.key;
-    await reloadAfterChange(state.selectedMessageKey, result.segment.key);
-    setText(elements.log, `Updated message part ${result.segment.displayOrder}.`);
-  } catch (error) {
-    showValidation([error instanceof Error ? error.message : String(error || "Segment row update failed.")]);
-    setText(elements.log, "Message part update failed.");
+    await reloadAfterChange(result.segment.messageKey);
+    setText(elements.log, `Saved sentence ${result.segment.displayOrder}.`);
+  } catch {
+    showCreatorSafeFailure("Sentence was not saved. Check required fields and try again.");
   }
 }
 
-async function disableMessage(key) {
-  const message = state.messages.find((candidate) => candidate.key === key);
-  if (!message) {
-    return;
-  }
-  try {
-    const result = updateMessage(key, {
-      active: false,
-      emotionProfileKey: message.emotionProfileKey,
-      messageText: message.messageText,
-      name: message.name,
-      notes: message.notes,
-    });
-    state.selectedMessageKey = result.message.key;
-    await reloadAfterChange(result.message.key);
-    setText(elements.log, `Disabled row ${result.message.name}.`);
-  } catch (error) {
-    showValidation([error instanceof Error ? error.message : String(error || "Message row status update failed.")]);
-    setText(elements.log, "Message row status update failed.");
-  }
-}
-
-async function disableSegment(key) {
+async function deleteSegmentRecord(key) {
   const segment = state.segments.find((candidate) => candidate.key === key);
   if (!segment) {
     return;
   }
+  clearValidation();
+  try {
+    deleteMessageSegment(key);
+    state.editingSegmentKey = "";
+    state.editingSegmentMessageKey = "";
+    state.selectedSegmentKey = "";
+    await reloadAfterChange(segment.messageKey);
+    setText(elements.log, `Deleted sentence ${segment.displayOrder}.`);
+  } catch {
+    showCreatorSafeFailure("Sentence was not deleted. Check the Local API connection and try again.");
+  }
+}
+
+async function archiveSegmentRecord(key) {
+  const segment = state.segments.find((candidate) => candidate.key === key);
+  if (!segment) {
+    return;
+  }
+  clearValidation();
   try {
     const result = updateMessageSegment(key, {
-      active: false,
+      active: segment.active === false,
       displayOrder: segment.displayOrder,
       emotionProfileKey: segment.emotionProfileKey,
       messageKey: segment.messageKey,
       segmentText: segment.segmentText,
+      voiceProfileKey: segment.voiceProfileKey,
     });
+    state.editingSegmentKey = "";
+    state.editingSegmentMessageKey = "";
+    state.selectedMessageKey = result.segment.messageKey;
     state.selectedSegmentKey = result.segment.key;
-    await reloadAfterChange(segment.messageKey, result.segment.key);
-    setText(elements.log, `Disabled message part ${result.segment.displayOrder}.`);
-  } catch (error) {
-    showValidation([error instanceof Error ? error.message : String(error || "Segment status update failed.")]);
-    setText(elements.log, "Message part status update failed.");
+    await reloadAfterChange(result.segment.messageKey);
+    setText(elements.log, `${result.segment.active === false ? "Archived" : "Restored"} sentence ${result.segment.displayOrder}.`);
+  } catch {
+    showCreatorSafeFailure("Sentence archive status was not changed. Check the Local API connection and try again.");
   }
 }
 
-function visiblePlaybackError(message) {
-  const safeMessage = message || "Message Studio playback failed. Check the selected message, part, and TTS profile.";
-  showValidation([safeMessage]);
-  setText(elements.playbackStatus, safeMessage);
-  setText(elements.log, safeMessage);
-  return { message: safeMessage, ok: false };
+function beginAddMessage() {
+  clearValidation();
+  state.editingMessageKey = NEW_ROW_KEY;
+  state.editingSegmentKey = "";
+  state.editingSegmentMessageKey = "";
+  state.selectedMessageKey = "";
+  render();
+  setText(elements.log, "Ready to add a message.");
 }
 
-function playbackService() {
-  return selectedTtsService();
+function beginEditMessage(key) {
+  clearValidation();
+  state.editingMessageKey = key;
+  state.editingSegmentKey = "";
+  state.editingSegmentMessageKey = "";
+  state.selectedMessageKey = key;
+  state.selectedSegmentKey = "";
+  render();
+  setText(elements.log, "Message row opened inline.");
 }
 
-function speakTarget(service, target, profile) {
-  if (!service) {
-    return visiblePlaybackError("Audio engine is unavailable. Use a browser with SpeechSynthesis support and reload Message Studio.");
-  }
-  if (!service.available) {
-    return visiblePlaybackError(service.unavailableMessage || "Audio engine is unavailable for Message Studio playback.");
-  }
-  if (!target) {
-    return visiblePlaybackError("Select a message or message part before playback.");
-  }
-  if (!profile) {
-    return visiblePlaybackError("Select a TTS profile before playback.");
-  }
-  if (!target.emotionProfile) {
-    return visiblePlaybackError("Selected message or part needs an Emotion before playback.");
-  }
-  const emotionSetting = selectedEmotionSettingForProfile(profile, target.emotionProfile);
-  if (!emotionSetting.ok) {
-    return visiblePlaybackError(emotionSetting.message);
-  }
-  if (!String(target.text || "").trim()) {
-    return visiblePlaybackError("Selected message or part needs text before playback.");
-  }
-  return ttsServiceRegistry.speak(service.key, {
-    language: profile.language,
-    pitch: emotionSetting.setting.pitch ?? profile.pitch ?? 1,
-    rate: emotionSetting.setting.rate ?? profile.rate ?? 1,
-    speechItemId: target.id,
-    speechItemName: target.name,
-    ssmlLikePreset: emotionSetting.setting.ssmlLikePreset || "normal",
-    text: target.text,
-    voice: profile.voiceName,
-    volume: emotionSetting.setting.volume ?? profile.volume ?? 1,
-  });
+function cancelMessageEdit() {
+  state.editingMessageKey = "";
+  clearValidation();
+  render();
+  setText(elements.log, "Message row edit canceled.");
 }
 
-function segmentPlaybackTarget(segment) {
-  if (!segment) {
-    return null;
-  }
-  return {
-    emotionProfile: emotionProfileByKey(segment.emotionProfileKey),
-    id: segment.key,
-    label: `Part ${segment.displayOrder}`,
-    name: `${segment.messageName || "Message"} part ${segment.displayOrder}`,
-    profile: selectedTtsProfileForSegment(segment.key, segment.messageKey),
-    text: segment.segmentText,
-    type: "part",
-  };
+function beginAddSegment(messageKey) {
+  clearValidation();
+  state.editingMessageKey = "";
+  state.editingSegmentKey = NEW_ROW_KEY;
+  state.editingSegmentMessageKey = messageKey;
+  state.selectedMessageKey = messageKey;
+  state.selectedSegmentKey = "";
+  render();
+  setText(elements.log, "Ready to add a sentence.");
 }
 
-function playPart(key) {
+function beginEditSegment(key) {
   const segment = state.segments.find((candidate) => candidate.key === key);
-  const target = segmentPlaybackTarget(segment);
-  const result = speakTarget(playbackService(), target, target?.profile);
-  if (!result.ok) {
+  if (!segment) {
     return;
   }
   clearValidation();
-  const message = `Play Part queued ${target.label} using ${target.profile.name}.`;
-  setText(elements.playbackStatus, message);
-  setText(elements.log, message);
+  state.editingMessageKey = "";
+  state.editingSegmentKey = key;
+  state.editingSegmentMessageKey = segment.messageKey;
+  state.selectedMessageKey = segment.messageKey;
+  state.selectedSegmentKey = key;
+  render();
+  setText(elements.log, "Sentence row opened inline.");
 }
 
-function playMessage(key) {
-  const messageRecord = state.messages.find((candidate) => candidate.key === key);
-  if (!messageRecord) {
-    visiblePlaybackError("Choose an existing message before playback.");
-    return;
-  }
-  const parts = messageSegments(messageRecord.key).filter((segment) => segment.active);
-  if (!parts.length) {
-    visiblePlaybackError("Add at least one active Message Part before playing this message.");
-    return;
-  }
-  const service = playbackService();
-  for (const part of parts) {
-    const target = segmentPlaybackTarget(part);
-    const result = speakTarget(service, target, target?.profile || selectedTtsProfileForMessage(messageRecord.key));
-    if (!result.ok) {
-      return;
-    }
-  }
+function cancelSegmentEdit() {
+  state.editingSegmentKey = "";
+  state.editingSegmentMessageKey = "";
   clearValidation();
-  const message = `Play Message queued ${parts.length} parts for ${messageRecord.name}.`;
-  setText(elements.playbackStatus, message);
-  setText(elements.log, message);
+  render();
+  setText(elements.log, "Sentence row edit canceled.");
 }
 
-function stopSpeech() {
-  const result = ttsServiceRegistry.stop();
-  if (!result.ok) {
-    visiblePlaybackError(result.message || "Message Studio playback could not be stopped.");
-    return;
-  }
-  clearValidation();
-  const message = `Message Studio playback stopped. Cleared ${result.stoppedCount} queued item${result.stoppedCount === 1 ? "" : "s"}.`;
-  setText(elements.playbackStatus, message);
-  setText(elements.log, message);
-}
-
-async function moveSegment(key, direction) {
-  const segments = selectedMessageSegments();
-  const currentIndex = segments.findIndex((segment) => segment.key === key);
-  const current = segments[currentIndex];
-  const target = segments[currentIndex + direction];
-  if (!current || !target) {
-    return;
-  }
-  try {
-    updateMessageSegment(current.key, {
-      active: current.active,
-      displayOrder: target.displayOrder,
-      emotionProfileKey: current.emotionProfileKey,
-      messageKey: current.messageKey,
-      segmentText: current.segmentText,
-    });
-    updateMessageSegment(target.key, {
-      active: target.active,
-      displayOrder: current.displayOrder,
-      emotionProfileKey: target.emotionProfileKey,
-      messageKey: target.messageKey,
-      segmentText: target.segmentText,
-    });
-    await reloadAfterChange(state.selectedMessageKey, current.key);
-    setText(elements.log, "Message part order updated.");
-  } catch (error) {
-    showValidation([error instanceof Error ? error.message : String(error || "Segment reorder failed.")]);
-    setText(elements.log, "Message part reorder failed.");
-  }
-}
+elements.addMessage?.addEventListener("click", () => {
+  beginAddMessage();
+});
 
 elements.stopSpeech?.addEventListener("click", () => {
   stopSpeech();
 });
 
-ttsServiceRegistry.onServicesChanged(() => {
-  renderPlaybackControls();
-});
-
-elements.table?.addEventListener("change", (event) => {
-  const messageSelect = event.target.closest("[data-message-default-tts-profile]");
-  const segmentSelect = event.target.closest("[data-segment-tts-profile]");
-  if (messageSelect) {
-    const key = messageSelect.dataset.messagesTtsIdentity || state.selectedMessageKey;
-    if (key && key !== NEW_ROW_KEY) {
-      state.messageTtsProfileKeys.set(key, messageSelect.value || defaultTtsProfileKey());
-    }
-    renderPlaybackControls();
-    setText(elements.log, "Default TTS profile selected for this message playback session.");
-  }
-  if (segmentSelect) {
-    const key = segmentSelect.dataset.messagesTtsIdentity || state.selectedSegmentKey;
-    if (key && key !== NEW_ROW_KEY) {
-      state.segmentTtsProfileKeys.set(key, segmentSelect.value || defaultTtsProfileKey());
-    }
-    renderPlaybackControls();
-    setText(elements.log, "TTS profile selected for this part playback session.");
-  }
+elements.publishValidate?.addEventListener("click", () => {
+  runPublishValidation();
 });
 
 elements.table?.addEventListener("click", async (event) => {
-  if (event.target.closest("[data-message-default-tts-profile], [data-segment-tts-profile]")) {
-    return;
-  }
-  const row = event.target.closest("[data-messages-row]");
-  const messageAddButton = event.target.closest("[data-messages-add-row]");
-  const messageNameCell = event.target.closest("[data-messages-name-cell]");
-  const segmentRow = event.target.closest("[data-messages-segment-row]");
-  const playButton = event.target.closest("[data-messages-play]");
+  const togglePartsButton = event.target.closest("[data-messages-toggle-parts]");
   const editButton = event.target.closest("[data-messages-edit]");
   const commitButton = event.target.closest("[data-messages-commit]");
   const cancelButton = event.target.closest("[data-messages-cancel]");
-  const disableButton = event.target.closest("[data-messages-disable]");
-  const segmentAddButton = event.target.closest("[data-messages-segment-add-row]");
-  const segmentPlayButton = event.target.closest("[data-messages-segment-play]");
+  const archiveButton = event.target.closest("[data-messages-archive]");
+  const deleteButton = event.target.closest("[data-messages-delete]");
+  const playButton = event.target.closest("[data-messages-play]");
+  const segmentAddButton = event.target.closest("[data-messages-segment-add]");
   const segmentEditButton = event.target.closest("[data-messages-segment-edit]");
   const segmentCommitButton = event.target.closest("[data-messages-segment-commit]");
   const segmentCancelButton = event.target.closest("[data-messages-segment-cancel]");
-  const segmentDisableButton = event.target.closest("[data-messages-segment-disable]");
-  const moveUpButton = event.target.closest("[data-messages-segment-move-up]");
-  const moveDownButton = event.target.closest("[data-messages-segment-move-down]");
+  const segmentArchiveButton = event.target.closest("[data-messages-segment-archive]");
+  const segmentDeleteButton = event.target.closest("[data-messages-segment-delete]");
+  const segmentPlayButton = event.target.closest("[data-messages-segment-play]");
+  const segmentRow = event.target.closest("[data-messages-segment-row]");
+  const row = event.target.closest("[data-messages-row]");
 
-  if (messageAddButton) {
-    clearValidation();
-    state.editingMessageKey = NEW_ROW_KEY;
-    state.editingSegmentKey = "";
-    render();
-    setText(elements.log, "Ready to add a message row.");
-    return;
-  }
-  if (playButton) {
-    state.selectedMessageKey = playButton.dataset.messagesPlay;
+  if (togglePartsButton) {
+    const key = togglePartsButton.dataset.messagesToggleParts;
+    state.selectedMessageKey = state.selectedMessageKey === key ? "" : key;
     state.selectedSegmentKey = "";
     state.editingSegmentKey = "";
+    state.editingSegmentMessageKey = "";
+    clearValidation();
     render();
-    playMessage(playButton.dataset.messagesPlay);
+    setText(elements.log, state.selectedMessageKey ? "Sentences expanded." : "Sentences collapsed.");
     return;
   }
   if (editButton) {
-    clearValidation();
-    state.editingMessageKey = editButton.dataset.messagesEdit;
-    state.selectedMessageKey = editButton.dataset.messagesEdit;
-    state.selectedSegmentKey = "";
-    render();
-    setText(elements.log, "Message row opened inline.");
+    beginEditMessage(editButton.dataset.messagesEdit);
     return;
   }
   if (commitButton) {
@@ -1033,39 +1292,27 @@ elements.table?.addEventListener("click", async (event) => {
     return;
   }
   if (cancelButton) {
-    state.editingMessageKey = "";
-    clearValidation();
-    render();
-    setText(elements.log, "Message row edit canceled.");
+    cancelMessageEdit();
     return;
   }
-  if (disableButton) {
-    await disableMessage(disableButton.dataset.messagesDisable);
+  if (archiveButton) {
+    await archiveMessageRecord(archiveButton.dataset.messagesArchive);
+    return;
+  }
+  if (deleteButton) {
+    await deleteMessageRecord(deleteButton.dataset.messagesDelete);
+    return;
+  }
+  if (playButton) {
+    playMessage(playButton.dataset.messagesPlay);
     return;
   }
   if (segmentAddButton) {
-    clearValidation();
-    state.editingSegmentKey = NEW_ROW_KEY;
-    render();
-    setText(elements.log, "Ready to add a message part.");
-    return;
-  }
-  if (segmentPlayButton) {
-    const segment = state.segments.find((candidate) => candidate.key === segmentPlayButton.dataset.messagesSegmentPlay);
-    if (segment) {
-      state.selectedMessageKey = segment.messageKey;
-      state.selectedSegmentKey = segment.key;
-      render();
-    }
-    playPart(segmentPlayButton.dataset.messagesSegmentPlay);
+    beginAddSegment(segmentAddButton.dataset.messagesSegmentAdd);
     return;
   }
   if (segmentEditButton) {
-    clearValidation();
-    state.editingSegmentKey = segmentEditButton.dataset.messagesSegmentEdit;
-    state.selectedSegmentKey = segmentEditButton.dataset.messagesSegmentEdit;
-    render();
-    setText(elements.log, "Message part opened inline.");
+    beginEditSegment(segmentEditButton.dataset.messagesSegmentEdit);
     return;
   }
   if (segmentCommitButton) {
@@ -1073,47 +1320,51 @@ elements.table?.addEventListener("click", async (event) => {
     return;
   }
   if (segmentCancelButton) {
-    state.editingSegmentKey = "";
-    clearValidation();
-    render();
-    setText(elements.log, "Message part edit canceled.");
+    cancelSegmentEdit();
     return;
   }
-  if (segmentDisableButton) {
-    await disableSegment(segmentDisableButton.dataset.messagesSegmentDisable);
+  if (segmentArchiveButton) {
+    await archiveSegmentRecord(segmentArchiveButton.dataset.messagesSegmentArchive);
     return;
   }
-  if (moveUpButton || moveDownButton) {
-    const key = moveUpButton?.dataset.messagesSegmentMoveUp || moveDownButton?.dataset.messagesSegmentMoveDown;
-    state.selectedSegmentKey = key;
-    await moveSegment(key, moveUpButton ? -1 : 1);
+  if (segmentDeleteButton) {
+    await deleteSegmentRecord(segmentDeleteButton.dataset.messagesSegmentDelete);
     return;
   }
-  if (segmentRow) {
-    state.selectedSegmentKey = segmentRow.dataset.messagesSegmentRow;
-    render();
+  if (segmentPlayButton) {
+    playSentence(segmentPlayButton.dataset.messagesSegmentPlay);
     return;
   }
-  if ((messageNameCell || row) && row) {
+  if (segmentRow && !event.target.closest("button, input, select, textarea")) {
+    const segment = state.segments.find((candidate) => candidate.key === segmentRow.dataset.messagesSegmentRow);
+    if (segment) {
+      state.selectedMessageKey = segment.messageKey;
+      state.selectedSegmentKey = segment.key;
+      render();
+    }
+    return;
+  }
+  if (row && !event.target.closest("button, input, select, textarea")) {
     state.selectedMessageKey = state.selectedMessageKey === row.dataset.messagesRow ? "" : row.dataset.messagesRow;
     state.selectedSegmentKey = "";
     state.editingSegmentKey = "";
+    state.editingSegmentMessageKey = "";
     render();
   }
 });
 
 elements.table?.addEventListener("keydown", (event) => {
-  const messageNameCell = event.target.closest("[data-messages-name-cell]");
-  if (!messageNameCell || !["Enter", " "].includes(event.key)) {
+  const row = event.target.closest("[data-messages-row]");
+  if (!row || !["Enter", " "].includes(event.key)) {
     return;
   }
   event.preventDefault();
-  messageNameCell.click();
+  state.selectedMessageKey = state.selectedMessageKey === row.dataset.messagesRow ? "" : row.dataset.messagesRow;
+  render();
 });
 
 try {
   await loadAll();
-} catch (error) {
-  setText(elements.log, error instanceof Error ? error.message : String(error || "Messages failed to load."));
-  showValidation(["Message Studio could not load from the Local API. Start the Local API server and reload this tool."]);
+} catch {
+  showCreatorSafeFailure("Message Studio could not load messages. Start the Local API and reload this tool.");
 }

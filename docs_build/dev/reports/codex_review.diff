@@ -1,138 +1,920 @@
-﻿diff --git a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-index ab10302ff..09cc34579 100644
---- a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-+++ b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-@@ -136,3 +136,26 @@
-   - Tile overlay status rules installed.
-   - Deprecation workflow installed.
-   - Team start commands installed.
+diff --git a/src/dev-runtime/messages/messages-postgres-service.mjs b/src/dev-runtime/messages/messages-postgres-service.mjs
+index e52e3632d..a326dc9ae 100644
+--- a/src/dev-runtime/messages/messages-postgres-service.mjs
++++ b/src/dev-runtime/messages/messages-postgres-service.mjs
+@@ -1,4 +1,8 @@
+ import { randomBytes } from "node:crypto";
++import {
++  createMessageStudioDefaultTtsProfiles,
++  createMessageStudioTtsProfileOptions,
++} from "../../../toolbox/text-to-speech/text2speech.js";
+ import { createPostgresConnectionClient } from "../persistence/postgres-connection-client.mjs";
+ import { SEED_DB_KEYS } from "../seed/seed-db-keys.mjs";
+ 
+@@ -14,6 +18,7 @@ const SEED_CATEGORY_NAMES = Object.freeze([
+   "Notification",
+ ]);
+ const SEED_EMOTION_PROFILES = Object.freeze([
++  Object.freeze({ description: "Balanced spoken delivery for general narration or dialog.", name: "Neutral", pauseAfterMs: 150, pauseBeforeMs: 0, pitch: 1, rate: 1, volume: 1 }),
+   Object.freeze({ description: "Neutral spoken delivery for general narration or dialog.", name: "Calm", pauseAfterMs: 150, pauseBeforeMs: 0, pitch: 1, rate: 1, volume: 1 }),
+   Object.freeze({ description: "Fast, alert delivery for warnings and immediate danger.", name: "Urgent", pauseAfterMs: 80, pauseBeforeMs: 0, pitch: 1.08, rate: 1.15, volume: 1 }),
+   Object.freeze({ description: "Quiet delivery for secret, stealth, or intimate lines.", name: "Whisper", pauseAfterMs: 180, pauseBeforeMs: 80, pitch: 0.95, rate: 0.9, volume: 0.55 }),
+@@ -21,79 +26,23 @@ const SEED_EMOTION_PROFILES = Object.freeze([
+   Object.freeze({ description: "Bright delivery for reveals, wins, and high-energy moments.", name: "Excited", pauseAfterMs: 100, pauseBeforeMs: 0, pitch: 1.12, rate: 1.12, volume: 1 }),
+   Object.freeze({ description: "Soft delivery for loss, regret, or reflective moments.", name: "Sad", pauseAfterMs: 220, pauseBeforeMs: 100, pitch: 0.9, rate: 0.85, volume: 0.8 }),
+   Object.freeze({ description: "Measured delivery for suspense, hidden lore, or strange events.", name: "Mysterious", pauseAfterMs: 260, pauseBeforeMs: 120, pitch: 0.92, rate: 0.88, volume: 0.85 }),
++  Object.freeze({ description: "Synthetic delivery for mechanical or artificial characters.", name: "Robot", pauseAfterMs: 120, pauseBeforeMs: 40, pitch: 0.82, rate: 0.92, volume: 0.9 }),
+ ]);
+-const SEED_TTS_PROFILES = Object.freeze([
+-  Object.freeze({
+-    description: "Clear story narration voice profile for authored message playback.",
+-    language: "en-US",
+-    name: "Narrator",
+-    pitch: 1,
+-    providerKey: "browser-speech",
+-    rate: 1,
+-    voiceName: "Browser default",
+-    volume: 1,
+-  }),
+-  Object.freeze({
+-    description: "Confident player-facing hero voice profile.",
+-    language: "en-US",
+-    name: "Hero",
+-    pitch: 1.04,
+-    providerKey: "browser-speech",
+-    rate: 1.02,
+-    voiceName: "Browser hero",
+-    volume: 1,
+-  }),
+-  Object.freeze({
+-    description: "Friendly vendor dialog voice profile.",
+-    language: "en-US",
+-    name: "Merchant",
+-    pitch: 0.98,
+-    providerKey: "browser-speech",
+-    rate: 0.95,
+-    voiceName: "Browser merchant",
+-    volume: 1,
+-  }),
+-  Object.freeze({
+-    description: "Synthetic utility character voice profile.",
+-    language: "en-US",
+-    name: "Robot",
+-    pitch: 0.88,
+-    providerKey: "browser-speech",
+-    rate: 0.9,
+-    voiceName: "Browser robot",
+-    volume: 0.9,
+-  }),
+-  Object.freeze({
+-    description: "Low creature dialog voice profile.",
+-    language: "en-US",
+-    name: "Monster",
+-    pitch: 0.78,
+-    providerKey: "browser-speech",
+-    rate: 0.86,
+-    voiceName: "Browser monster",
+-    volume: 1,
+-  }),
+-  Object.freeze({
+-    description: "Balanced local browser playback option until authored TTS profiles are available.",
+-    language: "en-US",
+-    name: "Default Balanced TTS Profile",
+-    pitch: 1,
+-    providerKey: "browser-speech",
+-    rate: 1,
+-    voiceName: "Browser default",
+-    volume: 1,
+-  }),
+-  Object.freeze({
+-    description: "Narration-focused preview configuration for future spoken story text.",
+-    language: "en-US",
+-    name: "Narration Preview",
+-    pitch: 0.95,
+-    providerKey: "browser-speech",
+-    rate: 0.9,
+-    voiceName: "Browser narration",
+-    volume: 0.9,
+-  }),
+-]);
++const MESSAGE_STUDIO_TTS_PROFILE_OPTIONS = Object.freeze(createMessageStudioTtsProfileOptions(createMessageStudioDefaultTtsProfiles())
++  .map((profile) => Object.freeze({
++    ...profile,
++    emotionSettings: Object.freeze(profile.emotionSettings.map((setting) => Object.freeze({ ...setting }))),
++  })));
++const SEED_TTS_PROFILES = Object.freeze(MESSAGE_STUDIO_TTS_PROFILE_OPTIONS.map((profile) => Object.freeze({
++  description: `${profile.name} from Text To Speech profile ownership.`,
++  language: profile.language || "en-US",
++  name: profile.name,
++  pitch: 1,
++  providerKey: profile.providerKey || "browser-speech",
++  rate: 1,
++  voiceName: profile.voiceName || "Default browser voice",
++  volume: 1,
++})));
+ const SUPPORTED_TTS_PROVIDER_KEYS = Object.freeze([
+   "browser-speech",
+   "elevenlabs",
+@@ -408,13 +357,54 @@ function ttsEmotionSettingFromEmotionProfile(profile) {
+   };
+ }
+ 
++function messageStudioTtsProfileOption(row) {
++  const rowName = normalizeText(row?.name).trim().toLowerCase();
++  const rowKey = normalizeText(row?.key).trim();
++  return MESSAGE_STUDIO_TTS_PROFILE_OPTIONS.find((profile) => {
++    return profile.key === rowKey || normalizeText(profile.name).trim().toLowerCase() === rowName;
++  }) || null;
++}
 +
-+- [x] OWNER - Governance hygiene initiative complete
++function emotionSettingsForTtsProfileRow(row, emotionRows = []) {
++  const option = messageStudioTtsProfileOption(row);
++  if (!option) {
++    return [];
++  }
++  const activeEmotionProfiles = emotionRows
++    .map((profileRow) => emotionProfileFromRow(profileRow))
++    .filter((profile) => profile.active !== false);
++  const byLabel = new Map(activeEmotionProfiles.map((profile) => [normalizeText(profile.name).trim().toLowerCase(), profile]));
++  const byEmotion = new Map(activeEmotionProfiles.map((profile) => [emotionSettingKey(profile.name), profile]));
++  return option.emotionSettings
++    .map((setting) => {
++      const emotionProfile = byLabel.get(normalizeText(setting.emotionLabel).trim().toLowerCase())
++        || byEmotion.get(emotionSettingKey(setting.emotion))
++        || null;
++      if (!emotionProfile) {
++        return null;
++      }
++      return {
++        ...ttsEmotionSettingFromEmotionProfile(emotionProfile),
++        pitch: Number(setting.pitch),
++        rate: Number(setting.rate),
++        ssmlLikePreset: setting.ssmlLikePreset || "normal",
++        volume: Number(setting.volume),
++      };
++    })
++    .filter(Boolean);
++}
 +
-+  Notes:
-+  - Workstream Hygiene governance verified.
-+  - PI Closeout governance verified.
-+  - GitHub Hygiene Audit governance verified.
-+  - EOD Workstream Closeout governance verified.
-+  - GitHub-authoritative workstream enforcement verified through push, local/origin sync, and GitHub hygiene review requirements.
+ function ttsProfileFromRow(row, emotionSettings = []) {
++  const profileOption = messageStudioTtsProfileOption(row);
+   return {
+     active: activeFromDatabase(row.active),
++    age: profileOption?.age || "",
++    ageFilter: profileOption?.ageFilter || profileOption?.age || "",
+     createdAt: row.createdAt,
+     createdBy: row.createdBy,
+     description: row.description || "",
+     emotionSettings,
++    gender: profileOption?.gender || "",
+     key: row.key,
+     language: row.language,
+     name: row.name,
+@@ -424,6 +414,7 @@ function ttsProfileFromRow(row, emotionSettings = []) {
+     status: activeFromDatabase(row.active) ? "Active" : "Inactive",
+     updatedAt: row.updatedAt,
+     updatedBy: row.updatedBy,
++    voice: profileOption?.voice || row.voiceName || "",
+     voiceName: row.voiceName || "",
+     volume: Number(row.volume),
+   };
+@@ -808,11 +799,10 @@ export class MessagesPostgresService {
+ 
+   async listTtsProfiles() {
+     await this.ensureReady();
+-    const emotionSettings = (await this.tableRows("messages_emotion_profiles"))
+-      .map((profileRow) => emotionProfileFromRow(profileRow))
+-      .filter((profile) => profile.active !== false)
+-      .map(ttsEmotionSettingFromEmotionProfile);
+-    return (await this.tableRows("messages_tts_profiles")).sort(compareName).map((row) => ttsProfileFromRow(row, emotionSettings));
++    const emotionRows = await this.tableRows("messages_emotion_profiles");
++    return (await this.tableRows("messages_tts_profiles"))
++      .sort(compareName)
++      .map((row) => ttsProfileFromRow(row, emotionSettingsForTtsProfileRow(row, emotionRows)));
+   }
+ 
+   async getTtsProfile(key) {
+@@ -821,11 +811,8 @@ export class MessagesPostgresService {
+     if (!row) {
+       throw httpError("Voice profile was not found.", 404);
+     }
+-    const emotionSettings = (await this.tableRows("messages_emotion_profiles"))
+-      .map((profileRow) => emotionProfileFromRow(profileRow))
+-      .filter((profile) => profile.active !== false)
+-      .map(ttsEmotionSettingFromEmotionProfile);
+-    return ttsProfileFromRow(row, emotionSettings);
++    const emotionRows = await this.tableRows("messages_emotion_profiles");
++    return ttsProfileFromRow(row, emotionSettingsForTtsProfileRow(row, emotionRows));
+   }
+ 
+   async findTtsProfileByNameRaw(name) {
+@@ -843,9 +830,9 @@ export class MessagesPostgresService {
+   }
+ 
+   async defaultVoiceProfileKeyRaw() {
+-    const narrator = await this.findTtsProfileByNameRaw("Narrator");
+-    if (narrator) {
+-      return narrator.key;
++    const defaultProfile = await this.findTtsProfileByNameRaw("Default Balanced Profile");
++    if (defaultProfile) {
++      return defaultProfile.key;
+     }
+     const fallback = (await this.tableRows("messages_tts_profiles")).sort(compareName)[0];
+     if (!fallback) {
+@@ -911,11 +898,8 @@ export class MessagesPostgresService {
+       volume: values.volume,
+     });
+     const row = await this.rowByKey("messages_tts_profiles", key);
+-    const emotionSettings = (await this.tableRows("messages_emotion_profiles"))
+-      .map((profileRow) => emotionProfileFromRow(profileRow))
+-      .filter((profile) => profile.active !== false)
+-      .map(ttsEmotionSettingFromEmotionProfile);
+-    return ttsProfileFromRow(row, emotionSettings);
++    const emotionRows = await this.tableRows("messages_emotion_profiles");
++    return ttsProfileFromRow(row, emotionSettingsForTtsProfileRow(row, emotionRows));
+   }
+ 
+   async createTtsProfile(input = {}, actorKey = "") {
+diff --git a/tests/dev-runtime/DbSeedIntegrity.test.mjs b/tests/dev-runtime/DbSeedIntegrity.test.mjs
+index 4b9406e50..fe3f5e70f 100644
+--- a/tests/dev-runtime/DbSeedIntegrity.test.mjs
++++ b/tests/dev-runtime/DbSeedIntegrity.test.mjs
+@@ -95,17 +95,20 @@ test("Messages Local API seeds through the Postgres service and preserves respon
+     assert.ok(urgent, "Messages emotion profiles should include Urgent");
+ 
+     const ttsProfiles = await apiJson(server.baseUrl, "/api/messages/tts-profiles");
+-    const narrator = ttsProfiles.ttsProfiles.find((profile) => profile.name === "Narrator");
+-    assert.ok(narrator, "Messages voice profiles should include Narrator");
+-    assert.equal(ttsProfiles.ttsProfiles.some((profile) => profile.name === "Default Balanced TTS Profile"), true);
+-    assert.equal(ttsProfiles.ttsProfiles[0].emotionSettings.some((setting) => setting.emotionLabel === "Urgent"), true);
++    const manProfile = ttsProfiles.ttsProfiles.find((profile) => profile.name === "Man Profile 1");
++    const womanProfile = ttsProfiles.ttsProfiles.find((profile) => profile.name === "Woman Profile 2");
++    assert.ok(manProfile, "Messages TTS profiles should include Man Profile 1 from Text To Speech");
++    assert.ok(womanProfile, "Messages TTS profiles should include Woman Profile 2 from Text To Speech");
++    assert.equal(ttsProfiles.ttsProfiles.some((profile) => profile.name === "Default Balanced Profile"), true);
++    assert.deepEqual(manProfile.emotionSettings.map((setting) => setting.emotionLabel), ["Neutral", "Calm", "Urgent"]);
++    assert.deepEqual(womanProfile.emotionSettings.map((setting) => setting.emotionLabel), ["Whisper", "Robot"]);
+ 
+     const created = await apiJson(server.baseUrl, "/api/messages/messages", {
+       body: JSON.stringify({
+         emotionProfileKey: urgent.key,
+         messageText: "Postgres-backed message text.",
+         name: "Postgres Cutover Message",
+-        voiceProfileKey: narrator.key,
++        voiceProfileKey: manProfile.key,
+       }),
+       method: "POST",
+     });
+@@ -113,7 +116,7 @@ test("Messages Local API seeds through the Postgres service and preserves respon
+     assert.equal(created.message.categoryName, "Dialog");
+     assert.equal(created.message.emotionProfileName, "Urgent");
+     assert.equal(created.message.messageText, "Postgres-backed message text.");
+-    assert.equal(created.message.voiceProfileName, "Narrator");
++    assert.equal(created.message.voiceProfileName, "Man Profile 1");
+ 
+     const segment = await apiJson(server.baseUrl, "/api/messages/segments", {
+       body: JSON.stringify({
+@@ -121,13 +124,13 @@ test("Messages Local API seeds through the Postgres service and preserves respon
+         emotionProfileKey: urgent.key,
+         messageKey: created.message.key,
+         segmentText: "Postgres-backed message part.",
+-        voiceProfileKey: narrator.key,
++        voiceProfileKey: manProfile.key,
+       }),
+       method: "POST",
+     });
+     assert.equal(segment.segment.messageName, "Postgres Cutover Message");
+     assert.equal(segment.segment.emotionProfileName, "Urgent");
+-    assert.equal(segment.segment.voiceProfileName, "Narrator");
++    assert.equal(segment.segment.voiceProfileName, "Man Profile 1");
+ 
+     const list = await apiJson(server.baseUrl, "/api/messages/messages");
+     const listed = list.messages.find((message) => message.key === created.message.key);
+diff --git a/tests/dev-runtime/MessagesPublishValidation.test.mjs b/tests/dev-runtime/MessagesPublishValidation.test.mjs
+index 1afe0f8d4..0fcec6b18 100644
+--- a/tests/dev-runtime/MessagesPublishValidation.test.mjs
++++ b/tests/dev-runtime/MessagesPublishValidation.test.mjs
+@@ -29,7 +29,7 @@ test("Messages publish validation passes publish-ready message configuration", a
+   const { service } = createServiceHarness();
+ 
+   const emotion = (await service.listEmotionProfiles()).find((profile) => profile.name === "Calm");
+-  const voice = (await service.listTtsProfiles()).find((profile) => profile.name === "Narrator");
++  const voice = (await service.listTtsProfiles()).find((profile) => profile.name === "Man Profile 1");
+   assert.ok(emotion);
+   assert.ok(voice);
+ 
+diff --git a/tests/playwright/tools/EventsTool.spec.mjs b/tests/playwright/tools/EventsTool.spec.mjs
+index 7ddf63e3b..d17be8dd4 100644
+--- a/tests/playwright/tools/EventsTool.spec.mjs
++++ b/tests/playwright/tools/EventsTool.spec.mjs
+@@ -30,15 +30,15 @@ async function createMessage(server) {
+   const emotionResult = await jsonRequest(`${server.baseUrl}/api/messages/emotion-profiles`);
+   const voiceResult = await jsonRequest(`${server.baseUrl}/api/messages/tts-profiles`);
+   const urgent = emotionResult.payload.data.emotionProfiles.find((profile) => profile.name === "Urgent");
+-  const narrator = voiceResult.payload.data.ttsProfiles.find((profile) => profile.name === "Narrator");
++  const ttsProfile = voiceResult.payload.data.ttsProfiles.find((profile) => profile.name === "Man Profile 1");
+   expect(urgent).toBeTruthy();
+-  expect(narrator).toBeTruthy();
++  expect(ttsProfile).toBeTruthy();
+   const messageResult = await jsonRequest(`${server.baseUrl}/api/messages/messages`, {
+     body: JSON.stringify({
+       emotionProfileKey: urgent.key,
+       messageText: "Open the ancient door.",
+       name: "Door Prompt",
+-      voiceProfileKey: narrator.key,
++      voiceProfileKey: ttsProfile.key,
+     }),
+     method: "POST",
+   });
+diff --git a/tests/playwright/tools/MessagesTool.spec.mjs b/tests/playwright/tools/MessagesTool.spec.mjs
+index 3461f62e2..c4322ef24 100644
+--- a/tests/playwright/tools/MessagesTool.spec.mjs
++++ b/tests/playwright/tools/MessagesTool.spec.mjs
+@@ -136,6 +136,15 @@ async function addSentence(page, values) {
+   await page.locator("[data-messages-segment-commit='__new__']").click();
+ }
+ 
++async function ensureSentencesExpanded(page, messageName) {
++  const messageRow = page.locator("[data-messages-row]").filter({ hasText: messageName });
++  if (await page.locator("[data-messages-parts-host]").count() === 0) {
++    await messageRow.getByRole("button", { name: "Sentences" }).click();
++  }
++  await expect(page.locator("[data-messages-parts-host]")).toBeVisible();
++  return messageRow;
++}
 +
-+- [x] OWNER - Multi-team workflow governance complete
+ async function expectPlaybackDiagnostics(page, {
+   ageFilter = "Any",
+   gender = "Any",
+@@ -187,7 +196,7 @@ async function voiceProfiles(server) {
+   return profilesResult.payload.data.ttsProfiles;
+ }
+ 
+-async function createReferencedSentence(server, message, emotionName = "Urgent", voiceName = "Narrator") {
++async function createReferencedSentence(server, message, emotionName = "Urgent", voiceName = "Man Profile 1") {
+   const emotion = await emotionProfile(server, emotionName);
+   const voice = await voiceProfile(server, voiceName);
+   expect(emotion).toBeTruthy();
+@@ -225,6 +234,8 @@ test("Message Studio uses the approved table-first Messages structure", async ({
+     await expect(page.getByText("Reusable Assets", { exact: true })).toHaveCount(0);
+     await expect(page.getByRole("heading", { name: "Emotion Profiles" })).toHaveCount(0);
+     await expect(page.getByRole("heading", { name: "Voice Profiles" })).toHaveCount(0);
++    await expect(page.getByText("TTS Profile / Emotion Settings", { exact: true })).toHaveCount(0);
++    await expect(page.getByText("Emotion Settings", { exact: true })).toHaveCount(0);
+     await expect(page.getByLabel("Emotion Profiles")).toHaveCount(0);
+     await expect(page.getByLabel("Voice Profiles")).toHaveCount(0);
+     await expect(page.getByText("Message Parts", { exact: true })).toHaveCount(0);
+@@ -242,6 +253,12 @@ test("Message Studio uses the approved table-first Messages structure", async ({
+     await expect(page.locator("[data-messages-row-editor='__new__']")).toBeVisible();
+     await expect(page.locator("[data-messages-row-editor='__new__'] td")).toHaveCount(4);
+     await expect(page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile]")).toBeVisible();
++    await expect(page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile] option")).toHaveText([
++      "Select TTS profile",
++      "Default Balanced Profile",
++      "Man Profile 1",
++      "Woman Profile 2",
++    ]);
+     await expect(page.locator("[data-messages-row-editor='__new__']").getByRole("button", { name: "Save" })).toBeVisible();
+     await expect(page.locator("[data-messages-row-editor='__new__']").getByRole("button", { name: "Cancel" })).toBeVisible();
+ 
+@@ -253,18 +270,18 @@ test("Message Studio uses the approved table-first Messages structure", async ({
+ 
+     await addMessage(page, {
+       name: "Bat Encounter",
+-      ttsProfile: "Hero",
++      ttsProfile: "Man Profile 1",
+     });
+     await expect(page.locator("[data-messages-log]")).toHaveText("Saved message Bat Encounter.");
+     const messageRow = page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter" });
+-    await expect(messageRow).toContainText("Hero");
++    await expect(messageRow).toContainText("Man Profile 1");
+     await expect(messageRow.getByRole("button", { name: "Sentences" })).toBeVisible();
+     await expect(messageRow.getByRole("button", { name: "Edit" })).toBeVisible();
+     await expect(messageRow.getByRole("button", { name: "Archive" })).toBeVisible();
+     await expect(messageRow.getByRole("button", { name: "Delete" })).toBeEnabled();
+     await expect(messageRow.getByRole("button", { name: "Play" })).toBeVisible();
+ 
+-    await messageRow.getByRole("button", { name: "Sentences" }).click();
++    await ensureSentencesExpanded(page, "Bat Encounter");
+     await expect(page.locator("[data-messages-parts-host]")).toBeVisible();
+     const partsTable = page.getByLabel("Bat Encounter Sentences");
+     await expect(partsTable.getByRole("columnheader")).toHaveText(["Order", "Text", "Emotion", "Actions"]);
+@@ -273,6 +290,12 @@ test("Message Studio uses the approved table-first Messages structure", async ({
+     await page.getByRole("button", { name: "Add Sentence" }).click();
+     await expect(page.locator("[data-messages-segment-editor='__new__'] td")).toHaveCount(4);
+     await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-voice]")).toHaveCount(0);
++    await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion] option")).toHaveText([
++      "Select emotion",
++      "Neutral",
++      "Calm",
++      "Urgent",
++    ]);
+     await page.locator("[data-messages-segment-commit='__new__']").click();
+     await expect(page.locator("[data-messages-validation-errors]")).toContainText("Sentence text is required.");
+     await expect(page.locator("[data-messages-validation-errors]")).toContainText("Emotion is required.");
+@@ -315,8 +338,9 @@ test("Message Studio uses the approved table-first Messages structure", async ({
+     await expect(page.locator("[data-messages-validation-errors]")).not.toContainText(/before preview/i);
+     await expect(page.locator("[data-messages-log]")).not.toContainText(/before preview/i);
+     await expectPlaybackDiagnostics(page, {
+-      profile: "Hero",
+-      voice: "Browser hero",
++      gender: "Male",
++      profile: "Man Profile 1",
++      voice: "Default browser voice",
+     });
+ 
+     await addSentence(page, {
+@@ -348,8 +372,9 @@ test("Message Studio uses the approved table-first Messages structure", async ({
+     await expect(page.locator("[data-messages-validation-errors]")).not.toContainText(/before preview/i);
+     await expect(page.locator("[data-messages-log]")).not.toContainText(/before preview/i);
+     await expectPlaybackDiagnostics(page, {
+-      profile: "Hero",
+-      voice: "Browser hero",
++      gender: "Male",
++      profile: "Man Profile 1",
++      voice: "Default browser voice",
+     });
+ 
+     await page.getByRole("button", { name: "Run Validation" }).click();
+@@ -388,8 +413,9 @@ test("Message Studio uses the approved table-first Messages structure", async ({
+     await expect(page.locator("[data-messages-validation-errors]")).not.toContainText(/before preview/i);
+     await expect(page.locator("[data-messages-log]")).not.toContainText(/before preview/i);
+     await expectPlaybackDiagnostics(page, {
+-      profile: "Hero",
+-      voice: "Browser hero",
++      gender: "Male",
++      profile: "Man Profile 1",
++      voice: "Default browser voice",
+     });
+     await page.getByRole("button", { name: "Stop Speech" }).click();
+     await expect(page.locator("[data-messages-speech-status]")).toHaveText("Speech playback stopped.");
+@@ -459,24 +485,25 @@ test("Message Studio uses the approved table-first Messages structure", async ({
+     await page.locator("[data-messages-row-editor] [data-message-name]").fill("Bat Encounter Updated");
+     await page.locator("[data-messages-row-editor] [data-messages-commit]").click();
+     await expect(page.locator("[data-messages-log]")).toHaveText("Saved message Bat Encounter Updated.");
+-    await expect(page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter Updated" })).toContainText("Hero");
++    await expect(page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter Updated" })).toContainText("Man Profile 1");
+ 
+     const updatedMessage = await createdMessage(failures.server, "Bat Encounter Updated");
+     expect(updatedMessage).toEqual(expect.objectContaining({
+       active: true,
+       categoryName: "Dialog",
+-      voiceProfileName: "Hero",
++      voiceProfileName: "Man Profile 1",
+     }));
+     expect(updatedMessage.key).toMatch(ULID_PATTERN);
+     expect(updatedMessage).not.toHaveProperty("rate");
+     expect(updatedMessage).not.toHaveProperty("pitch");
+     expect(updatedMessage).not.toHaveProperty("volume");
+ 
+-    const heroProfile = (await voiceProfiles(failures.server)).find((profile) => profile.name === "Hero");
+-    expect(heroProfile).toEqual(expect.objectContaining({
++    const manProfile = (await voiceProfiles(failures.server)).find((profile) => profile.name === "Man Profile 1");
++    expect(manProfile).toEqual(expect.objectContaining({
++      gender: "male",
+       language: "en-US",
+       providerKey: "browser-speech",
+-      voiceName: "Browser hero",
++      voiceName: "Default browser voice",
+     }));
+ 
+     await page.locator("[data-messages-row]").filter({ hasText: "Bat Encounter Updated" }).getByRole("button", { name: "Delete" }).click();
+@@ -492,13 +519,105 @@ test("Message Studio uses the approved table-first Messages structure", async ({
+   }
+ });
+ 
++test("Message Studio loads Text To Speech profiles and filters sentence emotions by selected profile", async ({ page }) => {
++  const failures = await openMessagesPage(page);
 +
-+  Notes:
-+  - Sequential Codex Queue governance verified through the all-team sequential PR execution model.
-+  - OWNER merge approval and EOD merge governance verified.
-+  - Team ownership governance verified through the authoritative ownership map.
++  try {
++    await page.getByRole("button", { name: "Add Message" }).click();
++    const profileOptions = page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile] option");
++    await expect(profileOptions).toHaveText([
++      "Select TTS profile",
++      "Default Balanced Profile",
++      "Man Profile 1",
++      "Woman Profile 2",
++    ]);
++    await page.locator("[data-messages-row-editor='__new__'] [data-message-name]").fill("Profile Filter Test");
++    await page.locator("[data-messages-row-editor='__new__'] [data-message-tts-profile]").selectOption({ label: "Man Profile 1" });
++    await page.locator("[data-messages-commit='__new__']").click();
++    await expect(page.locator("[data-messages-log]")).toHaveText("Saved message Profile Filter Test.");
 +
-+- [x] OWNER - Repository hygiene governance complete
++    await ensureSentencesExpanded(page, "Profile Filter Test");
++    await page.getByRole("button", { name: "Add Sentence" }).click();
++    await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion] option")).toHaveText([
++      "Select emotion",
++      "Neutral",
++      "Calm",
++      "Urgent",
++    ]);
++    await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion]")).not.toContainText("Whisper");
++    await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion]")).not.toContainText("Robot");
++    await page.locator("[data-messages-segment-cancel='__new__']").click();
 +
-+  Notes:
-+  - Open PR, draft PR, local branch, and remote branch review requirements verified.
-+  - Recommendation-only hygiene audit process verified.
-+  - Branch deletion and PR closure remain prohibited without explicit owner approval.
-diff --git a/docs_build/dev/reports/PR_26172_OWNER_033-governance-hygiene-closeout-governance-closeout-report.md b/docs_build/dev/reports/PR_26172_OWNER_033-governance-hygiene-closeout-governance-closeout-report.md
-new file mode 100644
-index 0000000000000000000000000000000000000000..25afe742506df1b222ffa8f8e3056e6f1abb2f6f
-GIT binary patch
-literal 2315
-zcmd5;O>^5e5bZ59`V~9lt10GVrk$}*vZ^RbYl$W0<fwtkm53MwRD4L*jQ?2={Ym``
-zU4RrxC$e%(F0u?Puy1$q-qU~o{CfdOx_bNTo8R897N6&nboKh(yJ(|!s3ns*M&)6{
-zQDT$}Wl%W_({>NW$F&r<O54HU;sUZ<ZE-LNTj1kuiO}5#&3(Wnx13qNLtwH1jk(eV
-zthr<YjAhmtSSx+v<Rw&2SRPqq73`IMSPQl9#a%Y{ZI$6x=|h{b12GIpm;QpqUZOT7
-z-wp;5EGMH|u<8Nj6@+HcS{nelV8-w@&k41ni0(exYMK+DLUg=Y9dl8&hHAKiWRztA
-zORuS)P`612gC|JwZ^t!OC@nleR=4H}COcjr4G5knCW<23>wVJNXKIbH+86nuo?#y`
-zK5}CX9r6(9PoZ+Nx_4X@ae=!yNf#d{<K=2L&z9-kcsX0lvtd<Se-o$G7tHNUQYM%C
-zzL=O51gvnCiNl~)eo%ClCY}pd;CW!fP){=J-d3;8KM?e3L^awew;$Yn+vSlfxcy0b
-z{T*mE{>kF^{!m(0{~VqFKDz!CBIazVG$)#PY4Q5dkl;);)TNHMy5^gKdrbmZ!q%CR
-zL;>nnUIXEY={2;JZ{k6yoQarHZ@2_=kU9JUudkb9Up<aCM>C%!4WiX#)VSlgudB)k
-z4KbgSDvniwkMNg6_e@Z~CdG(oNR=nwG7}0UeMK-_ZUi>>86;6t67Ugo=LrmZZp&I@
-zw-jYM07+_y#6cxjq#Cp7{B|;5dR++UU!CTCUB^glOBUatW$~0%6@yL;&kW`TRl2?V
-zb2(cj<Dq@Dq@@+((gdG*KK$SiU7m_<gQW!B4|pyieD|no*9iXxeAmEU?xQmZ^U-nv
-zl2vG6B-V8PMzfu&uNjw23y!{WZ;3Z7e-LVO)b6`&!7LhYIMdEcPxxZ4Dw=@BAw}Mv
-z^*rc@dNY2}`g)Nb+SD;!XvRf=lRA276+&Jzxj}OUQpu40J(3~onoiv+RqP2;Ab|{y
-zcnqiK?CC)#j=?_HCnh*mPLaO!4RNmE>ovJnUSj^xnBlXY7_t`sBI(CSYl&@KBG_S1
-fY%9q}vp;6ZW$>oBdrgs&;^2FiG2cfj=UmwT(`Pdp
-
-literal 0
-HcmV?d00001
-
-diff --git a/docs_build/dev/reports/PR_26172_OWNER_033-governance-hygiene-closeout-instruction-compliance-checklist.md b/docs_build/dev/reports/PR_26172_OWNER_033-governance-hygiene-closeout-instruction-compliance-checklist.md
-new file mode 100644
-index 000000000..0c4b589e4
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_OWNER_033-governance-hygiene-closeout-instruction-compliance-checklist.md
-@@ -0,0 +1,22 @@
-+﻿# Instruction Compliance Checklist
++    const messageRow = page.locator("[data-messages-row]").filter({ hasText: "Profile Filter Test" });
++    await messageRow.getByRole("button", { name: "Edit" }).click();
++    await page.locator("[data-messages-row-editor] [data-message-tts-profile]").selectOption({ label: "Woman Profile 2" });
++    await page.locator("[data-messages-row-editor] [data-messages-commit]").click();
++    await expect(page.locator("[data-messages-log]")).toHaveText("Saved message Profile Filter Test.");
 +
-+PR: $pr
++    await ensureSentencesExpanded(page, "Profile Filter Test");
++    await page.getByRole("button", { name: "Add Sentence" }).click();
++    await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion] option")).toHaveText([
++      "Select emotion",
++      "Whisper",
++      "Robot",
++    ]);
++    await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion]")).not.toContainText("Calm");
++    await expect(page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion]")).not.toContainText("Urgent");
++    await page.locator("[data-messages-segment-editor='__new__'] [data-segment-order]").fill("1");
++    await page.locator("[data-messages-segment-editor='__new__'] [data-segment-text]").fill("Robot voice check.");
++    await page.locator("[data-messages-segment-editor='__new__'] [data-segment-emotion]").selectOption({ label: "Robot" });
++    await page.locator("[data-messages-segment-commit='__new__']").click();
++    await expect(page.locator("[data-messages-log]")).toHaveText("Saved sentence 1.");
 +
-+- [x] Read docs_build/dev/PROJECT_INSTRUCTIONS.md.
-+- [x] Read docs_build/dev/PROJECT_MULTI_PC.txt.
-+- [x] Verified current branch was the approved OWNER workstream branch before PR 033 branch creation.
-+- [x] Verified repository was clean/synced before PR 033 edits.
-+- [x] Verified PR TEAM token is OWNER.
-+- [x] Verified OWNER governance closeout scope matches TEAM ownership.
-+- [x] Updated only scoped governance backlog and required reports.
-+- [x] Ran git diff --check.
-+- [x] Verified Workstream Hygiene governance exists.
-+- [x] Verified PI Closeout governance exists.
-+- [x] Verified GitHub Hygiene Audit governance exists.
-+- [x] Verified EOD Workstream Closeout governance exists.
-+- [x] Verified GitHub-authoritative workstream controls exist.
-+- [x] Verified Sequential Codex Queue governance exists.
-+- [x] Verified Alpha/Beta/Gamma ownership governance exists.
-+- [x] Documented skipped Playwright and samples lanes.
-+- [x] Created required Codex reports.
-+- [x] Created repo-structured delta ZIP under 	mp/.
-diff --git a/docs_build/dev/reports/PR_26172_OWNER_033-governance-hygiene-closeout-manual-validation-notes.md b/docs_build/dev/reports/PR_26172_OWNER_033-governance-hygiene-closeout-manual-validation-notes.md
-new file mode 100644
-index 000000000..4a3661d3e
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_OWNER_033-governance-hygiene-closeout-manual-validation-notes.md
-@@ -0,0 +1,25 @@
-+﻿# Manual Validation Notes
++    const sentenceRow = page.locator("[data-messages-segment-row]").filter({ hasText: "Robot voice check." });
++    await page.evaluate(() => {
++      window.__spokenUtterances = [];
++    });
++    await sentenceRow.getByRole("button", { name: "Play" }).click();
++    await page.waitForFunction(() => window.__spokenUtterances.length === 1);
++    const spokenSentence = await page.evaluate(() => window.__spokenUtterances);
++    expect(spokenSentence).toEqual([expect.objectContaining({
++      pitch: 0.82,
++      rate: 0.92,
++      text: "Robot voice check.",
++      volume: 0.9,
++    })]);
++    await expectPlaybackDiagnostics(page, {
++      gender: "Female",
++      profile: "Woman Profile 2",
++      voice: "Default browser voice",
++    });
++    await expect(page.locator("[data-messages-validation-errors]")).not.toContainText(/before preview/i);
++    await expect(page.locator("[data-messages-log]")).not.toContainText(/before preview/i);
 +
-+PR: $pr
++    await page.evaluate(() => {
++      window.__spokenUtterances = [];
++    });
++    await messageRow.getByRole("button", { name: "Play" }).click();
++    await page.waitForFunction(() => window.__spokenUtterances.length === 1);
++    const spokenMessage = await page.evaluate(() => window.__spokenUtterances);
++    expect(spokenMessage.map((utterance) => utterance.text)).toEqual(["Robot voice check."]);
++    await expectPlaybackDiagnostics(page, {
++      gender: "Female",
++      profile: "Woman Profile 2",
++      voice: "Default browser voice",
++    });
 +
-+## Checks Performed
++    expect(failures.failedRequests).toEqual([]);
++    expect(failures.pageErrors).toEqual([]);
++    expect(failures.consoleErrors).toEqual([]);
++  } finally {
++    await closeMessagesRun(failures, page);
++  }
++});
 +
-+- Verified Workstream Hygiene governance exists.
-+- Verified PI Closeout governance exists.
-+- Verified GitHub Hygiene Audit governance exists.
-+- Verified EOD Workstream Closeout governance exists.
-+- Verified GitHub-authoritative workstream controls through push, local/origin sync, and GitHub hygiene audit requirements.
-+- Verified Sequential Codex Queue governance through the all-team sequential PR execution model.
-+- Verified Alpha/Beta/Gamma ownership governance in the authoritative team ownership map and NATO-normalized active ProjectInstructions team names.
-+- Confirmed no runtime code changed.
-+- Confirmed no feature work was added.
-+- Confirmed no branch deletion or PR closure was performed.
+ test("Message Studio disables Delete when a message is referenced", async ({ page }) => {
+   const failures = await openMessagesPage(page);
+ 
+   try {
+     await addMessage(page, {
+       name: "Referenced Encounter",
+-      ttsProfile: "Narrator",
++      ttsProfile: "Man Profile 1",
+     });
+     const message = await createdMessage(failures.server, "Referenced Encounter");
+     const segment = await createReferencedSentence(failures.server, message);
+diff --git a/tests/tools/MessagesPlaybackSource.test.mjs b/tests/tools/MessagesPlaybackSource.test.mjs
+index cea5e43e1..b0389d19a 100644
+--- a/tests/tools/MessagesPlaybackSource.test.mjs
++++ b/tests/tools/MessagesPlaybackSource.test.mjs
+@@ -9,3 +9,20 @@ test("Messages playback runtime does not include preview voice validation text",
+   assert.equal(source.includes("available browser voice before preview"), false);
+   assert.equal(source.includes("Select an available browser voice before preview"), false);
+ });
 +
-+## Manual Result
++test("Messages sentence emotion picker does not fall back to unrelated global emotions", async () => {
++  const source = await readFile(new URL("../../toolbox/messages/messages.js", import.meta.url), "utf8");
 +
-+PASS
++  assert.equal(source.includes("selectOptionsWithCurrent"), false);
++  assert.equal(source.includes("return options.length ? options :"), false);
++});
 +
-+## Skipped Validation
++test("Messages wires profile dropdowns through the Text To Speech profile contract", async () => {
++  const source = await readFile(new URL("../../toolbox/messages/messages.js", import.meta.url), "utf8");
 +
-+- Playwright was not run because no UI or runtime behavior changed.
-+- Samples were not run because no samples or sample-impacting runtime changed.
-diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index bef983eeb..de36ff823 100644
---- a/docs_build/dev/reports/codex_changed_files.txt
-+++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,13 +1,6 @@
--﻿docs_build/dev/PROJECT_INSTRUCTIONS.md
--docs_build/dev/ProjectInstructions/addendums/multi_team.md
--docs_build/dev/reports/PR_26172_OWNER_030-workstream-hygiene-governance-instruction-compliance-checklist.md
--docs_build/dev/reports/PR_26172_OWNER_030-workstream-hygiene-governance-manual-validation-notes.md
--docs_build/dev/reports/PR_26172_OWNER_030-workstream-hygiene-governance.md
--docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance-instruction-compliance-checklist.md
--docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance-manual-validation-notes.md
--docs_build/dev/reports/PR_26172_OWNER_031-pi-closeout-governance.md
--docs_build/dev/reports/PR_26172_OWNER_032-github-hygiene-audit-template-instruction-compliance-checklist.md
--docs_build/dev/reports/PR_26172_OWNER_032-github-hygiene-audit-template-manual-validation-notes.md
--docs_build/dev/reports/PR_26172_OWNER_032-github-hygiene-audit-template.md
-+﻿docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-+docs_build/dev/reports/PR_26172_OWNER_033-governance-hygiene-closeout-governance-closeout-report.md
-+docs_build/dev/reports/PR_26172_OWNER_033-governance-hygiene-closeout-manual-validation-notes.md
-+docs_build/dev/reports/PR_26172_OWNER_033-governance-hygiene-closeout-instruction-compliance-checklist.md
- docs_build/dev/reports/codex_changed_files.txt
- docs_build/dev/reports/codex_review.diff
++  assert.equal(source.includes("../text-to-speech/text2speech.js"), true);
++  assert.equal(source.includes("createMessageStudioDefaultTtsProfiles"), true);
++  assert.equal(source.includes("createMessageStudioTtsProfileOptions"), true);
++  assert.equal(source.includes("state.voiceProfiles = voicePayload.ttsProfiles || []"), false);
++  assert.equal(source.includes("messageStudioTtsProfilesFromContract(voicePayload.ttsProfiles || [])"), true);
++});
+diff --git a/tests/tools/Text2SpeechShell.test.mjs b/tests/tools/Text2SpeechShell.test.mjs
+index fa54dcbcc..eea35e2cb 100644
+--- a/tests/tools/Text2SpeechShell.test.mjs
++++ b/tests/tools/Text2SpeechShell.test.mjs
+@@ -7,6 +7,7 @@ import {
+   TTS_PROVIDER_ADAPTER_PLAN,
+   createDefaultTextToSpeechProfiles,
+   createEmotionProfile,
++  createMessageStudioDefaultTtsProfiles,
+   createMessageStudioTtsProfileOptions,
+   createSpeechPreviewRequest,
+   createTextToSpeechProfile,
+@@ -68,6 +69,7 @@ test("Text2Speech provider adapter plan keeps browser speech implemented and pai
+ test("Text2Speech profile contract exposes Message Studio compatible profile options", () => {
+   const voiceOptions = [{ language: "en-US", label: "Test Voice (en-US)", name: "Test Voice", value: "test-voice" }];
+   const defaults = createDefaultTextToSpeechProfiles(voiceOptions);
++  const messageStudioDefaults = createMessageStudioDefaultTtsProfiles(voiceOptions);
+   const custom = createTextToSpeechProfile({
+     emotions: [
+       createTextToSpeechProfileEmotion({
+@@ -91,9 +93,13 @@ test("Text2Speech profile contract exposes Message Studio compatible profile opt
+   assert.deepEqual(defaults[0].emotions.map((emotion) => emotion.emotionLabel), ["Neutral", "Happy", "Angry", "Scared"]);
+   assert.deepEqual(defaults[1].emotions.map((emotion) => emotion.emotionLabel), ["Neutral", "Happy", "Angry", "Scared"]);
+   assert.deepEqual(defaults[2].emotions.map((emotion) => emotion.emotionLabel), ["Neutral", "Happy", "Angry", "Scared"]);
++  assert.deepEqual(messageStudioDefaults[1].emotions.map((emotion) => emotion.emotionLabel), ["Neutral", "Calm", "Urgent"]);
++  assert.deepEqual(messageStudioDefaults[2].emotions.map((emotion) => emotion.emotionLabel), ["Whisper", "Robot"]);
+   assert.equal(defaults[0].emotions.find((emotion) => emotion.emotion === "neutral").messagePartsUsageCount, 1);
+   assert.deepEqual(options, [{
+     active: true,
++    age: "any",
++    ageFilter: "any",
+     emotionSettings: [{
+       emotion: "urgent",
+       emotionLabel: "Urgent",
+@@ -103,10 +109,12 @@ test("Text2Speech profile contract exposes Message Studio compatible profile opt
+       ssmlLikePreset: "whisper-ish",
+       volume: 0.8,
+     }],
++    gender: "neutral",
+     key: "custom-profile",
+     language: "en-US",
+     name: "Custom Profile",
+     providerKey: "browser-speech",
++    voice: "test-voice",
+     voiceName: "Test Voice",
+   }]);
+ });
+diff --git a/toolbox/messages/messages.js b/toolbox/messages/messages.js
+index 01d26e441..72c339f58 100644
+--- a/toolbox/messages/messages.js
++++ b/toolbox/messages/messages.js
+@@ -1,3 +1,7 @@
++import {
++  createMessageStudioDefaultTtsProfiles,
++  createMessageStudioTtsProfileOptions,
++} from "../text-to-speech/text2speech.js";
+ import {
+   createMessage,
+   createMessageSegment,
+@@ -21,6 +25,11 @@ const TTS_PROVIDER_REGISTRY = Object.freeze({
+   "openai": Object.freeze({ activeRuntime: false, label: "OpenAI", requiresConfig: true }),
+   "polly": Object.freeze({ activeRuntime: false, label: "Polly", requiresConfig: true }),
+ });
++const MESSAGE_STUDIO_TTS_PROFILE_CONTRACT = Object.freeze(createMessageStudioTtsProfileOptions(createMessageStudioDefaultTtsProfiles())
++  .map((profile) => Object.freeze({
++    ...profile,
++    emotionSettings: Object.freeze(profile.emotionSettings.map((setting) => Object.freeze({ ...setting }))),
++  })));
+ 
+ const elements = {
+   addMessage: document.querySelector("[data-messages-add-row]"),
+@@ -190,16 +199,55 @@ function showCreatorSafeFailure(message) {
+   setText(elements.log, safeMessage);
+ }
+ 
+-function activeEmotionProfiles() {
+-  return state.emotionProfiles.filter((profile) => profile.active);
++function normalizedLookupKey(value) {
++  return String(value || "").trim().toLowerCase();
+ }
+ 
+-function activeVoiceProfiles() {
+-  return state.voiceProfiles.filter((profile) => profile.active);
++function apiTtsProfileByContractName(apiProfiles = []) {
++  return new Map(apiProfiles.map((profile) => [normalizedLookupKey(profile.name), profile]));
++}
++
++function apiEmotionSettingForContract(apiProfile, contractSetting) {
++  const settings = Array.isArray(apiProfile?.emotionSettings) ? apiProfile.emotionSettings : [];
++  const label = normalizedLookupKey(contractSetting.emotionLabel || contractSetting.name || contractSetting.emotion);
++  const emotion = normalizedLookupKey(contractSetting.emotion);
++  return settings.find((setting) => normalizedLookupKey(setting.emotionLabel || setting.name) === label)
++    || settings.find((setting) => normalizedLookupKey(setting.emotion) === emotion)
++    || null;
++}
++
++function messageStudioTtsProfilesFromContract(apiProfiles = []) {
++  const apiByName = apiTtsProfileByContractName(apiProfiles);
++  return MESSAGE_STUDIO_TTS_PROFILE_CONTRACT.map((contractProfile) => {
++    const apiProfile = apiByName.get(normalizedLookupKey(contractProfile.name)) || null;
++    return {
++      ...contractProfile,
++      active: apiProfile ? apiProfile.active !== false : contractProfile.active !== false,
++      age: contractProfile.age || apiProfile?.age || "",
++      ageFilter: contractProfile.ageFilter || apiProfile?.ageFilter || apiProfile?.age || "",
++      emotionSettings: contractProfile.emotionSettings
++        .map((contractSetting) => {
++          const apiSetting = apiEmotionSettingForContract(apiProfile, contractSetting);
++          const emotionProfile = emotionProfileByLabel(contractSetting.emotionLabel || apiSetting?.emotionLabel || contractSetting.emotion);
++          return {
++            ...contractSetting,
++            active: apiSetting ? apiSetting.active !== false : contractSetting.active !== false,
++            key: emotionProfile?.key || apiSetting?.key || contractSetting.key,
++          };
++        })
++        .filter((setting) => setting.key && setting.active !== false),
++      gender: contractProfile.gender || apiProfile?.gender || "",
++      key: apiProfile?.key || contractProfile.key,
++      language: contractProfile.language || apiProfile?.language || "",
++      providerKey: contractProfile.providerKey || apiProfile?.providerKey || "browser-speech",
++      voice: contractProfile.voice || apiProfile?.voice || apiProfile?.voiceName || "",
++      voiceName: contractProfile.voiceName || apiProfile?.voiceName || "",
++    };
++  });
+ }
+ 
+-function emotionProfileByKey(profileKey) {
+-  return state.emotionProfiles.find((profile) => profile.key === profileKey) || null;
++function activeVoiceProfiles() {
++  return state.voiceProfiles.filter((profile) => profile.active);
+ }
+ 
+ function voiceProfileByKey(profileKey) {
+@@ -210,15 +258,6 @@ function ttsProfileByKey(profileKey) {
+   return voiceProfileByKey(profileKey);
+ }
+ 
+-function selectOptionsWithCurrent(currentKey) {
+-  const active = activeEmotionProfiles();
+-  const current = emotionProfileByKey(currentKey);
+-  if (current && !active.some((profile) => profile.key === current.key)) {
+-    return [...active, current];
+-  }
+-  return active;
+-}
+-
+ function voiceOptionsWithCurrent(currentKey) {
+   const active = activeVoiceProfiles();
+   const current = voiceProfileByKey(currentKey);
+@@ -228,23 +267,16 @@ function voiceOptionsWithCurrent(currentKey) {
+   return active;
+ }
+ 
+-function emotionOptionsForTtsProfile(profileKey, currentKey = "") {
++function emotionOptionsForTtsProfile(profileKey) {
+   const profile = ttsProfileByKey(profileKey);
+   const settings = Array.isArray(profile?.emotionSettings) ? profile.emotionSettings : [];
+-  const options = settings
++  return settings
+     .filter((setting) => setting.active !== false)
+     .map((setting) => ({
+       key: setting.key || emotionProfileByLabel(setting.emotionLabel || setting.emotion)?.key || setting.emotion,
+       name: setting.emotionLabel || setting.name || setting.emotion,
+     }))
+     .filter((setting) => setting.key && setting.name);
+-  if (currentKey && !options.some((option) => option.key === currentKey)) {
+-    const current = emotionProfileByKey(currentKey);
+-    if (current) {
+-      options.push({ key: current.key, name: current.name });
+-    }
+-  }
+-  return options.length ? options : selectOptionsWithCurrent(currentKey);
+ }
+ 
+ function emotionProfileByLabel(label) {
+@@ -263,8 +295,9 @@ function emotionSettingForKey(profileKey, emotionKey) {
+     || null;
+ }
+ 
+-function defaultEmotionKeyForTtsProfile(profileKey) {
+-  return emotionOptionsForTtsProfile(profileKey)[0]?.key || "";
++function profileEmotionKeyOrDefault(profileKey, currentKey = "") {
++  const options = emotionOptionsForTtsProfile(profileKey);
++  return options.some((option) => option.key === currentKey) ? currentKey : options[0]?.key || "";
+ }
+ 
+ function selectedMessage() {
+@@ -716,7 +749,7 @@ function createMessageSegmentEditRow(messageKey, segment = null) {
+   emotionCell.append(createSelect(
+     segment?.emotionProfileKey || "",
+     "segmentEmotion",
+-    emotionOptionsForTtsProfile(message?.voiceProfileKey || segment?.voiceProfileKey || "", segment?.emotionProfileKey || ""),
++    emotionOptionsForTtsProfile(message?.voiceProfileKey || segment?.voiceProfileKey || ""),
+     "Select emotion",
+     "Sentence emotion",
+   ));
+@@ -911,9 +944,10 @@ function messageValues(key) {
+   const existing = state.messages.find((message) => message.key === key) || null;
+   const name = editorValue(root, "[data-message-name]");
+   const voiceProfileKey = editorValue(root, "[data-message-tts-profile]");
++  const emotionProfileKey = profileEmotionKeyOrDefault(voiceProfileKey, existing?.emotionProfileKey || "");
+   return {
+     active: existing ? existing.active : true,
+-    emotionProfileKey: existing?.emotionProfileKey || defaultEmotionKeyForTtsProfile(voiceProfileKey),
++    emotionProfileKey,
+     messageText: existing?.messageText || name,
+     name,
+     notes: existing?.notes || "",
+@@ -994,7 +1028,7 @@ async function loadAll() {
+   state.emotionProfiles = emotionPayload.emotionProfiles || [];
+   state.messages = messagesPayload.messages || [];
+   state.segments = segmentsPayload.segments || [];
+-  state.voiceProfiles = voicePayload.ttsProfiles || [];
++  state.voiceProfiles = messageStudioTtsProfilesFromContract(voicePayload.ttsProfiles || []);
+   if (state.selectedMessageKey && !state.messages.some((message) => message.key === state.selectedMessageKey)) {
+     state.selectedMessageKey = "";
+   }
+diff --git a/toolbox/text-to-speech/text2speech.js b/toolbox/text-to-speech/text2speech.js
+index c44c1d406..d98085336 100644
+--- a/toolbox/text-to-speech/text2speech.js
++++ b/toolbox/text-to-speech/text2speech.js
+@@ -88,7 +88,8 @@ const TTS_PROFILE_EMOTION_OPTIONS = Object.freeze([
+   Object.freeze({ label: "Calm", value: "calm" }),
+   Object.freeze({ label: "Urgent", value: "urgent" }),
+   Object.freeze({ label: "Whisper", value: "whisper" }),
+-  Object.freeze({ label: "Excited", value: "excited" })
++  Object.freeze({ label: "Excited", value: "excited" }),
++  Object.freeze({ label: "Robot", value: "robot" })
+ ]);
+ 
+ function boundedNumber(value, { fallback, max, min, value: defaultValue }) {
+@@ -279,11 +280,45 @@ function createDefaultTextToSpeechProfiles(voiceOptions = []) {
+   ];
+ }
+ 
++function createMessageStudioDefaultTtsProfiles(voiceOptions = []) {
++  const [balancedProfile, manProfile, womanProfile] = createDefaultTextToSpeechProfiles(voiceOptions);
++  const withStudioEmotions = (profile, emotions) => createTextToSpeechProfile({
++    active: profile.active,
++    age: profile.age,
++    emotions,
++    gender: profile.gender,
++    id: profile.id,
++    language: profile.language,
++    messageStudioUsageCount: profile.messageStudioUsageCount,
++    name: profile.name,
++    voice: profile.voice,
++    voiceName: profile.voiceName
++  });
++
++  return [
++    withStudioEmotions(balancedProfile, [
++      createTextToSpeechProfileEmotion({ emotion: "calm", messagePartsUsageCount: 1 }),
++      createTextToSpeechProfileEmotion({ emotion: "urgent", pitch: 1.08, rate: 1.15 }),
++    ]),
++    withStudioEmotions(manProfile, [
++      createTextToSpeechProfileEmotion({ emotion: "neutral" }),
++      createTextToSpeechProfileEmotion({ emotion: "calm" }),
++      createTextToSpeechProfileEmotion({ emotion: "urgent", pitch: 1.08, rate: 1.15 }),
++    ]),
++    withStudioEmotions(womanProfile, [
++      createTextToSpeechProfileEmotion({ emotion: "whisper", pitch: 0.95, rate: 0.9, volume: 0.55 }),
++      createTextToSpeechProfileEmotion({ emotion: "robot", pitch: 0.82, rate: 0.92, volume: 0.9 }),
++    ])
++  ];
++}
++
+ function createMessageStudioTtsProfileOptions(profiles = []) {
+   return profiles
+     .filter((profile) => profile?.active !== false)
+     .map((profile) => ({
+       active: true,
++      age: profile.age,
++      ageFilter: profile.age,
+       emotionSettings: Array.isArray(profile.emotions)
+         ? profile.emotions.filter((emotion) => emotion.active !== false).map((emotion) => ({
+           emotion: emotion.emotion,
+@@ -295,10 +330,12 @@ function createMessageStudioTtsProfileOptions(profiles = []) {
+           volume: emotion.volume
+         }))
+         : [],
++      gender: profile.gender,
+       key: profile.id,
+       language: profile.language,
+       name: profile.name,
+       providerKey: profile.providerKey || "browser-speech",
++      voice: profile.voice,
+       voiceName: profile.voiceName || profile.voice || ""
+     }));
+ }
+@@ -1206,7 +1243,7 @@ function initializeTextToSpeechTool(root = document, { engine = new TextToSpeech
+   };
+ }
+ 
+-if (typeof document !== "undefined") {
++if (typeof document !== "undefined" && document.querySelector("[data-tts-profile-table]")) {
+   initializeTextToSpeechTool(document);
+ }
+ 
+@@ -1218,6 +1255,7 @@ export {
+   TTS_PROVIDER_ADAPTER_PLAN,
+   createEmotionProfile,
+   createDefaultTextToSpeechProfiles,
++  createMessageStudioDefaultTtsProfiles,
+   createMessageStudioTtsProfileOptions,
+   createSpeechPreviewRequest,
+   createTextToSpeechProfile,
