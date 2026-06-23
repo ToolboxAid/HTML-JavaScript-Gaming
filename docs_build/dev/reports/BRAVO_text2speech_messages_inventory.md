@@ -1,0 +1,218 @@
+# BRAVO Text To Speech and Messages Inventory
+
+Task: Evaluate current Text To Speech and Messages status for Team Bravo without implementation changes.
+
+## Start Gate
+
+| Check | Result | Notes |
+|---|---:|---|
+| Started from `main` | PASS | Initial branch was `main`. |
+| Clean worktree before evaluation | PASS | `git status --short` returned no output before the report branch was created. |
+| Local/origin sync before evaluation | PASS | `git rev-list --left-right --count HEAD...origin/main` returned `0 0`. |
+| Evaluation branch | PASS | Report-only work is on `pr/26172-BRAVO-text2speech-messages-inventory` to avoid direct commits to `main`. |
+
+## Git Branch Inventory
+
+Relevant local branches:
+
+| Branch | Status | Notes |
+|---|---|---|
+| `pr/26171-016-message-studio-speech-test-and-tts-service-picker` | Merged | Historical Messages speech picker work. |
+| `pr/PR_26171_006-message-emotion-profile-management` | Merged locally | Historical emotion profile management work. |
+| `pr/PR_26171_008-message-tts-profile-foundation` | Merged locally | Historical TTS profile foundation work. |
+| `team/BETA/messages` | Merged | Postgres Messages service cutover branch. |
+| `pr/26172-BRAVO-text2speech-messages-inventory` | Active evaluation branch | Current report-only branch. |
+
+Relevant remote branches merged into `main`:
+
+- `origin/codex/fix-text-to-speech-toolbox-path`
+- `origin/pr/26171-016-message-studio-speech-test-and-tts-service-picker`
+- `origin/pr/26171-BETA-069-message-tts-profile-contract-alignment`
+- `origin/pr/26171-BETA-071-tts-profile-emotion-table`
+- `origin/pr/26171-BETA-073-message-tts-table-ui-correction`
+- `origin/pr/26171-BETA-075-tts-message-table-cleanup`
+- `origin/team/BETA/messages`
+
+Relevant remote branches not merged into `main`:
+
+- `origin/codex/pr-26171-037-text2speech-functional-tool-rebuild`
+- `origin/codex/pr-26171-039-text2speech-archived-feature-parity`
+- `origin/codex/pr-26171-041-text2speech-engine-audio-foundation`
+- `origin/codex/pr-26171-069-message-tts-profile-contract-alignment`
+- `origin/pr/26171-061-text2speech-engine-audio-feature-parity`
+- `origin/pr/26171-067-tts-profile-emotion-table-foundation`
+- `origin/pr/26171-BETA-077-tts-profile-parent-child-table`
+- `origin/pr/26171-BETA-081-message-playback-through-tts-engine`
+- `origin/pr/26171-BETA-083-message-tts-polish-and-dead-code`
+- `origin/pr/PR_26171_006-message-emotion-profile-management`
+
+Interpretation: several unmerged remote refs appear to duplicate or predate work that is already present on `main` by equivalent commit subjects. Treat them as stale/superseded candidates for an owner-approved GitHub hygiene audit, not as active implementation evidence.
+
+## Relevant Commit and PR Inventory
+
+Git commit inventory from `main` shows these relevant completed lanes:
+
+| Commit | Subject | Status |
+|---|---|---|
+| `ca72eadae` | Merge PR #44: `PR_26171_BETA_022-messages-postgres-service-cutover` | Merged |
+| `c62f16e49` | `PR_26171_BETA_022 messages postgres service cutover` | Merged |
+| `06d4a0fc6` | `PR_26171_BETA_083-message-tts-polish-and-dead-code` | Merged |
+| `1451a1173` | `PR_26171_BETA_081-message-playback-through-tts-engine` | Merged |
+| `607df5531` | `PR_26171_BETA_077-tts-profile-parent-child-table` | Merged |
+| `a569fef61` | `PR_26171_BETA_075 tts message table cleanup` | Merged |
+| `44b6aceeb` | `PR_26171_BETA_073 message tts table ui correction` | Merged |
+| `9ff8afd4f` | `PR_26171_BETA_071 tts profile emotion table` | Merged |
+| `06b262d25` | `PR_26171_BETA_069 message tts profile contract alignment` | Merged |
+| `83fa8ad9d` | `PR_26171_067 tts profile emotion table foundation` | Merged |
+| `9df494222` | `PR_26171_061 text to speech engine audio feature parity` | Merged |
+| `79a7abb94` | `Rebuild Text To Speech browser preview` | Merged |
+| `d3f3a1b73` | `Fix Text To Speech toolbox path` | Merged |
+| `083839b38` | `PR_26171_016 Message Studio speech test and TTS service picker` | Merged |
+| `d2cf55505` | `Add browser-local Messages speech preview - PR_26171_010` | Merged |
+| `c385f691c` | `Add Messages TTS profile foundation - PR_26171_008` | Merged |
+| `32dafbbad` | `Manage referenced Messages emotion profiles - PR_26171_006` | Merged |
+
+GitHub PR metadata was not required for this evaluation beyond available repository refs and report artifacts. Local and remote git evidence is sufficient to classify the implementation state.
+
+## Text To Speech File Inventory
+
+Active implementation files:
+
+- `toolbox/text-to-speech/index.html`
+- `assets/toolbox/text-to-speech/js/index.js`
+- `src/engine/audio/TextToSpeechEngine.js`
+- `src/engine/audio/TextToSpeechDefaults.js`
+- `src/shared/contracts/tools/textToSpeechContract.js`
+- `src/shared/schemas/tools/text2speech-V2.schema.json`
+
+Active tests:
+
+- `tests/playwright/tools/TextToSpeechFunctional.spec.mjs`
+- `tests/tools/Text2SpeechShell.test.mjs`
+- `tests/shared/tools/Text2SpeechV2ToolContract.test.mjs`
+
+Active metadata and visual references:
+
+- `src/shared/toolbox/tool-metadata-inventory.js`
+- `toolbox/index.html`
+- `assets/theme-v2/images/tools/text-to-speech.png`
+- `assets/theme-v2/images/badges/text-to-speech.png`
+
+Text To Speech status:
+
+- The active toolbox page is present and uses Theme V2.
+- The page loads canonical tool JS from `assets/toolbox/text-to-speech/js/index.js`.
+- Browser speech synthesis is implemented through `TextToSpeechEngine`.
+- Profiles, emotion settings, voice selection, and preview controls are present.
+- The shared tool contract and schema remain present for `text2speech-V2`.
+- External provider adapters are represented as planned/provider metadata, not as complete server-backed generation.
+- Persisted generated audio output is not implemented as an active runtime feature in the audited files.
+
+## Messages File Inventory
+
+Active implementation files:
+
+- `toolbox/messages/index.html`
+- `toolbox/messages/messages.js`
+- `toolbox/messages/messages-api-client.js`
+- `toolbox/messages/message-tts-service-registry.js`
+- `src/dev-runtime/messages/messages-postgres-service.mjs`
+- `src/dev-runtime/server/local-api-router.mjs`
+
+Active database and seed files:
+
+- `docs_build/database/ddl/messages.sql`
+- `docs_build/database/dml/messages.sql`
+- `docs_build/database/seed/messages.json`
+
+Active tests:
+
+- `tests/playwright/tools/MessagesTool.spec.mjs`
+- `tests/helpers/messagesPostgresClientStub.mjs`
+
+Messages status:
+
+- Message Studio is present and uses Theme V2.
+- Messages are backed by the Local API and the active service is Postgres-backed.
+- Active Postgres tables include categories, emotion profiles, messages, TTS profiles, and message segments.
+- The tool supports parent/child message and segment editing, profile assignment, emotion settings, and browser speech playback through the TTS service registry.
+- Tests cover the Messages page, Local API integration, Postgres direction, profile and segment behavior, and speech playback stubs.
+- `toolbox/messages/messages.js` and related sidecar files are still under `toolbox/messages/`, so canonical tool JS migration is not complete for Messages. That is repository-compliance work and may overlap with Team Charlie or Team Delta ownership.
+
+## Completed Work
+
+- Text To Speech browser preview and toolbox path are present on `main`.
+- Text To Speech engine audio foundation and feature parity are present on `main`.
+- Messages emotion profile management is present on `main`.
+- Messages TTS profile foundation and profile/emotion table work are present on `main`.
+- Messages browser-local speech preview and playback through the TTS engine are present on `main`.
+- Messages Postgres service cutover is merged on `main`.
+- SQLite-backed Messages runtime has been replaced by Postgres-backed service code.
+
+## Missing or Incomplete Work
+
+- Backlog still lists Bravo Messages and Text To Speech items as open even though substantial implementation is merged.
+- Text To Speech external provider generation remains planned rather than fully wired.
+- Text To Speech generated audio persistence/output contract is not fully implemented in the active audited files.
+- Messages has user-facing wording that still exposes implementation terms such as Local API, which may be undesirable for final product UX.
+- Messages JS remains in legacy `toolbox/messages/` sidecar locations rather than canonical `assets/toolbox/messages/js/index.js`.
+- Several remote branches look stale, duplicated, or superseded by merged work and should be handled only through owner-approved GitHub hygiene workflow.
+
+## Active, Abandoned, Duplicated, or Documented Classification
+
+| Area | Classification | Evidence |
+|---|---|---|
+| Text To Speech browser tool | Merged/active | Active page, canonical JS, engine, tests, and metadata exist on `main`. |
+| Text To Speech external providers | Documented/planned | Provider plan exists in active JS; full external generation is not complete. |
+| Messages Postgres service | Merged/active | `messages-postgres-service.mjs` and Local API routes exist on `main`. |
+| Messages speech playback | Merged/active | TTS registry and Playwright speech tests exist. |
+| Emotion Profiles | Merged/active | Messages service, seed/schema, and tests include emotion profiles. |
+| TTS Profiles | Merged/active | Messages service, seed/schema, UI, and tests include TTS profiles. |
+| Remote unmerged BETA/TTS branches | Likely superseded/duplicated | Multiple branch subjects match commits already present on `main`; owner cleanup should confirm before closing/deleting. |
+| Historical reports and PR build docs | Documented/history | `docs_build/dev/reports/` and `docs_build/pr/` preserve prior work history. |
+
+## Recommended Next Smallest Team Bravo PR
+
+Recommended PR name:
+
+`PR_26172_BRAVO_001-messages-user-facing-runtime-wording-cleanup`
+
+Recommended scope:
+
+- Update Message Studio user-facing wording that exposes implementation detail such as `Local API`.
+- Preserve Postgres-backed runtime behavior and all response shapes.
+- Do not change persistence, database contracts, or route behavior.
+- Do not migrate JS file locations in this PR.
+- Keep Theme V2 and existing Messages tests intact.
+
+Why this is the smallest valid Bravo PR:
+
+- It stays within Bravo-owned Messages UX/content tooling.
+- It avoids Delta-owned runtime/API consolidation and Charlie-owned repository compliance migration.
+- It addresses product-facing polish without risky backend changes.
+- It can be validated narrowly with existing Messages tests.
+
+## Validation Lane Recommendation
+
+For the recommended next PR:
+
+- `git diff --check`
+- `npm run validate:browser-env-agnostic` if the changed wording affects browser-facing implementation terminology checks.
+- `npx playwright test tests/playwright/tools/MessagesTool.spec.mjs`
+- No samples.
+- No full smoke unless required by a failed targeted lane.
+
+For this evaluation PR:
+
+- `git diff --check`
+- Confirm required report files exist.
+- Confirm no implementation files changed.
+- Create standard repo delta ZIP because project packaging rules require it.
+
+## Manual Validation Notes
+
+- The evaluation did not modify runtime, toolbox, source, test, or `start_of_day` files.
+- The active implementation evidence was gathered from tracked files, local/remote git refs, and repository report/build artifacts.
+- Remote stale branch cleanup is intentionally recommendation-only and requires explicit owner approval before branch deletion or PR closure.
+- Messages appears implementation-complete enough for active use, with remaining work focused on UX wording, backlog alignment, and ownership-separated canonical migration.
+- Text To Speech appears implementation-complete for browser speech preview and shared engine use, with provider-backed generation still planned.
