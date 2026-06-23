@@ -1,0 +1,74 @@
+# PR_26172_CHARLIE_037-retained-exceptions-audit
+
+## Summary
+
+Status: PASS.
+
+This audit reviewed the four retained JavaScript exceptions from the target-tool migration stack and classified each next action.
+
+No implementation files were changed.
+
+## Files Reviewed
+
+- `docs_build/dev/ProjectInstructions/README.txt`
+- `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
+- `project-instructions/addendums/canonical-repository-structure.md`
+- `project-instructions/addendums/legacy-migration-policy.md`
+- `project-instructions/addendums/codex-artifact-and-reporting-standard.md`
+- `toolbox/controls/controls-api-client.js`
+- `toolbox/assets/assets-api-client.js`
+- `toolbox/assets/assets-upload-worker.js`
+- `toolbox/game-journey/game-journey-api-client.js`
+- `assets/toolbox/controls/js/index.js`
+- `assets/toolbox/assets/js/index.js`
+- `assets/toolbox/objects/js/index.js`
+- `assets/toolbox/game-journey/js/index.js`
+- `account/user-controls-page.js`
+- `scripts/validate-canonical-repository-structure.mjs`
+- `scripts/validate-browser-env-agnostic.mjs`
+- `tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs`
+- `tests/dev-runtime/ProductDataProviderContractHardening.test.mjs`
+
+## Classification
+
+| Exception | Current consumers | Decision | Rationale |
+| --- | --- | --- | --- |
+| `toolbox/controls/controls-api-client.js` | Controls tool and `account/user-controls-page.js` | Move to shared | The file is a browser API helper used by more than one surface. `assets/js/shared/` is canonical and already accepted by the structure guardrail. |
+| `toolbox/assets/assets-api-client.js` | Assets tool and Objects tool | Move to shared | The file is shared by multiple tools. Moving to `assets/js/shared/` avoids placing a second JS file under one tool folder and removes one retained exception. |
+| `toolbox/assets/assets-upload-worker.js` | Assets tool only | Owner review required / keep temporary exception | The canonical rules define tool entrypoints and shared JS, but not tool-local worker module placement. Moving now would require either a new worker path rule or a possibly misleading shared location. |
+| `toolbox/game-journey/game-journey-api-client.js` | Game Journey tool | Move to shared if validation stays clean | The file is a browser API helper. It is not currently shared, but moving to `assets/js/shared/` is guardrail-compliant and avoids introducing an unapproved secondary tool-local JS file. |
+
+## Recommended Execution
+
+1. PR_26172_CHARLIE_038: investigate the existing Assets upload HTTP 500 before touching worker placement.
+2. PR_26172_CHARLIE_039: move `assets-api-client.js` to `assets/js/shared/` if PR_038 confirms upload behavior is not path-coupled; keep the worker as a documented exception unless owner approves a worker path rule.
+3. PR_26172_CHARLIE_040: move `controls-api-client.js` and `game-journey-api-client.js` to `assets/js/shared/` if targeted validation passes.
+4. PR_26172_CHARLIE_041: re-run guardrail and report remaining exceptions.
+
+## Validation Lane Report
+
+- Report exists: PASS
+- No runtime source changed: PASS
+- Active reference audit: PASS
+- ZIP artifact exists: PASS after artifact creation.
+
+## Branch Validation
+
+- Current branch: `PR_26172_CHARLIE_repository-compliance-stack`
+- Expected branch: `PR_26172_CHARLIE_repository-compliance-stack`
+- Local/origin sync before PR: `0 0`
+- Branch validation: PASS
+
+## Requirement Checklist
+
+- Audit `toolbox/controls/controls-api-client.js`: PASS
+- Audit `toolbox/assets/assets-api-client.js`: PASS
+- Audit `toolbox/assets/assets-upload-worker.js`: PASS
+- Audit `toolbox/game-journey/game-journey-api-client.js`: PASS
+- Determine migrate now / keep temporary exception / move to shared / owner review required: PASS
+- Do not merge: PASS
+- Produce ZIP artifact: PASS after artifact creation.
+
+## Manual Validation Notes
+
+The safest next code changes are shared-client relocations. The Assets worker should remain a temporary exception until the owner approves canonical worker placement or a guardrail update explicitly permits tool-local worker modules.
