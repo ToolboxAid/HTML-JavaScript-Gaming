@@ -1,576 +1,284 @@
-diff --git a/assets/theme-v2/css/status.css b/assets/theme-v2/css/status.css
-index 5ea748263..88e0d5e64 100644
---- a/assets/theme-v2/css/status.css
-+++ b/assets/theme-v2/css/status.css
-@@ -54,11 +54,19 @@
-
- .toolbox-status-bar__game {
-   min-width: var(--space-0);
--  display: grid;
--  gap: var(--space-3);
-+  display: flex;
-+  align-items: center;
-+  flex-wrap: wrap;
-+  gap: var(--space-14);
-   text-align: left
- }
-
-+.toolbox-status-bar__field {
-+  min-width: var(--space-0);
-+  display: grid;
-+  gap: var(--space-3)
-+}
-+
- .toolbox-status-bar__label {
-   color: var(--muted);
-   font-size: var(--font-size-xs);
-@@ -73,7 +81,7 @@
-   overflow-wrap: anywhere
- }
-
--.toolbox-status-bar__meta {
-+.toolbox-status-bar__purpose {
-   color: var(--muted);
-   font-size: var(--font-size-sm);
-   overflow-wrap: anywhere
-@@ -89,6 +97,10 @@
-   text-align: center
- }
-
-+.toolbox-status-bar__context-type {
-+  flex: 0 0 auto
-+}
-+
- .toolbox-status-bar__message {
-   margin: var(--space-0);
-   max-width: var(--measure-lg);
-@@ -104,13 +116,27 @@
- }
-
- .toolbox-status-bar[data-selected-game-state="missing"] {
--  border-color: var(--gold-border-muted);
--  background: var(--gold-soft)
-+  border-color: var(--gold-border-muted)
- }
-
- .toolbox-status-bar[data-selected-game-state="error"] {
--  border-color: color-mix(in srgb, var(--red) 52%, var(--line));
--  background: color-mix(in srgb, var(--red) 14%, var(--panel))
-+  border-color: color-mix(in srgb, var(--red) 52%, var(--line))
-+}
-+
-+.toolbox-status-bar[data-toolbox-status-context-kind="error"] .toolbox-status-bar__context-type {
-+  border-color: color-mix(in srgb, var(--red) 62%, var(--line));
-+  color: var(--red)
-+}
-+
-+.toolbox-status-bar[data-toolbox-status-context-kind="warning"] .toolbox-status-bar__context-type,
-+.toolbox-status-bar[data-toolbox-status-context-kind="validation"] .toolbox-status-bar__context-type {
-+  border-color: var(--gold-border-muted);
-+  color: var(--gold)
-+}
-+
-+.toolbox-status-bar[data-toolbox-status-context-kind="save"] .toolbox-status-bar__context-type {
-+  border-color: color-mix(in srgb, var(--green) 62%, var(--line));
-+  color: var(--green)
- }
-
- body.tool-focus-mode .toolbox-status-bar {
-@@ -240,6 +266,7 @@ body.tool-focus-mode .toolbox-status-bar {
-   }
-
-   .toolbox-status-bar__game {
-+    justify-content: center;
-     text-align: center
-   }
- }
-diff --git a/assets/theme-v2/js/toolbox-status-bar.js b/assets/theme-v2/js/toolbox-status-bar.js
-index 5a611d33d..fdb367328 100644
---- a/assets/theme-v2/js/toolbox-status-bar.js
-+++ b/assets/theme-v2/js/toolbox-status-bar.js
-@@ -7,6 +7,7 @@ let repository = null;
- let messageObserver = null;
- let listenersInstalled = false;
- let latestToolMessage = "";
-+let pendingToolMessageRefresh = 0;
- let mountOptions = {
-   gameHubHref: "toolbox/game-hub/index.html",
-   pagePath: "",
-@@ -89,16 +90,29 @@ function createStatusBar() {
-   game.className = "toolbox-status-bar__game";
-   game.dataset.toolboxSelectedGame = "";
-
--  const label = createText("span", "toolbox-status-bar__label", "toolboxSelectedGameLabel");
--  label.textContent = "Selected Game";
-+  const nameField = document.createElement("div");
-+  nameField.className = "toolbox-status-bar__field";
-+  nameField.dataset.toolboxSelectedGameNameField = "";
-+  const nameLabel = createText("span", "toolbox-status-bar__label", "toolboxSelectedGameNameLabel");
-+  nameLabel.textContent = "Selected Game Name";
-   const name = createText("strong", "toolbox-status-bar__game-name", "toolboxSelectedGameName");
--  const meta = createText("span", "toolbox-status-bar__meta", "toolboxSelectedGameMeta");
--  game.append(label, name, meta);
-+  nameField.append(nameLabel, name);
-+
-+  const purposeField = document.createElement("div");
-+  purposeField.className = "toolbox-status-bar__field";
-+  purposeField.dataset.toolboxSelectedGamePurposeField = "";
-+  const purposeLabel = createText("span", "toolbox-status-bar__label", "toolboxSelectedGamePurposeLabel");
-+  purposeLabel.textContent = "Selected Game Purpose";
-+  const purpose = createText("span", "toolbox-status-bar__purpose", "toolboxSelectedGamePurpose");
-+  purpose.dataset.toolboxSelectedGameMeta = "";
-+  purposeField.append(purposeLabel, purpose);
-+  game.append(nameField, purposeField);
-
-   const center = document.createElement("div");
-   center.className = "toolbox-status-bar__center";
-   center.dataset.toolboxStatusCenter = "";
-
-+  const contextType = createText("span", "pill toolbox-status-bar__context-type", "toolboxStatusContextType");
-   const message = createText("p", "toolbox-status-bar__message status", "toolboxStatusMessage");
-   message.setAttribute("role", "status");
-   const action = document.createElement("a");
-@@ -106,7 +120,7 @@ function createStatusBar() {
-   action.dataset.toolboxStatusAction = "";
-   action.href = mountOptions.gameHubHref;
-   action.textContent = "Open Game Hub";
--  center.append(message, action);
-+  center.append(contextType, message, action);
-
-   inner.append(game, center);
-   bar.append(inner);
-@@ -172,6 +186,12 @@ function updateLatestToolMessage() {
-   }
- }
-
-+function scheduleToolMessageRefresh() {
-+  window.clearTimeout(pendingToolMessageRefresh);
-+  pendingToolMessageRefresh = window.setTimeout(updateLatestToolMessage, 0);
-+  window.setTimeout(updateLatestToolMessage, 120);
-+}
-+
- function observeToolMessages() {
-   messageObserver?.disconnect();
-   const main = document.querySelector("main");
-@@ -211,51 +231,76 @@ function publishSelectedGameContext(selectedGame, state) {
-   }));
- }
-
--function selectedGameMeta(selectedGame) {
--  return [selectedGame.purpose, selectedGame.status]
--    .map((value) => String(value || "").trim())
--    .filter(Boolean)
--    .join(" - ");
-+function classifyToolContext(messageText, state, required) {
-+  const text = String(messageText || "").trim();
-+  if (state === "error") {
-+    return { kind: "error", label: "Error" };
-+  }
-+  if (required && state === "missing") {
-+    return { kind: "action", label: "Tool Action" };
-+  }
-+  if (/\b(error|failed|malformed|unavailable|could not)\b/i.test(text)) {
-+    return { kind: "error", label: "Error" };
-+  }
-+  if (/\b(sign in|refresh|try again|temporarily|blocked)\b/i.test(text)) {
-+    return { kind: "warning", label: "Warning" };
-+  }
-+  if (/\b(validation|requirement|requirements|missing|required|open or seed)\b/i.test(text)) {
-+    return { kind: "validation", label: "Validation" };
-+  }
-+  if (/\b(saved|created|deleted|updated|loaded|save changes)\b/i.test(text)) {
-+    return { kind: "save", label: "Save State" };
-+  }
-+  return { kind: "action", label: "Tool Action" };
- }
-
- function renderSelectedGame(bar, selectedGame, state, messageText) {
-   const required = pageRequiresSelectedGame();
-   const name = bar.querySelector("[data-toolbox-selected-game-name]");
--  const meta = bar.querySelector("[data-toolbox-selected-game-meta]");
-+  const purpose = bar.querySelector("[data-toolbox-selected-game-purpose]");
-+  const contextType = bar.querySelector("[data-toolbox-status-context-type]");
-   const message = bar.querySelector("[data-toolbox-status-message]");
-   const action = bar.querySelector("[data-toolbox-status-action]");
-+  const nextMessage = messageText || latestToolMessage || (selectedGame
-+    ? `Tool context is filtered to ${selectedGame.name}.`
-+    : required
-+      ? "Select or create a game in Game Hub before using this toolbox page."
-+      : "Idea Board can capture ideas before a Game Hub game exists.");
-+  const context = classifyToolContext(nextMessage, state, required);
-
-   bar.dataset.selectedGameState = state;
-   bar.dataset.selectedGameRequired = String(required);
-+  bar.dataset.toolboxStatusContextKind = context.kind;
-+  contextType.textContent = context.label;
-   action.hidden = false;
-   action.href = mountOptions.gameHubHref;
-
-   if (selectedGame) {
-     name.textContent = selectedGame.name;
--    meta.textContent = selectedGameMeta(selectedGame) || "Game Hub selected game";
--    message.textContent = messageText || latestToolMessage || `Data filtered to ${selectedGame.name}.`;
-+    purpose.textContent = selectedGame.purpose || "Game";
-+    message.textContent = nextMessage;
-     action.textContent = "Open Game Hub";
-     return;
-   }
-
-   if (!required) {
--    name.textContent = "Optional";
--    meta.textContent = "Idea Board can start before Game Hub creation";
--    message.textContent = latestToolMessage || "Idea Board can capture ideas before a Game Hub game exists.";
-+    name.textContent = "No game selected";
-+    purpose.textContent = "Idea Board optional";
-+    message.textContent = nextMessage;
-     action.textContent = "Open Game Hub";
-     return;
-   }
-
-   if (state === "error") {
-     name.textContent = "Unavailable";
--    meta.textContent = "Game Hub selected game could not be read";
--    message.textContent = messageText || "Game Hub selected game is unavailable. Refresh or restore the Local API.";
-+    purpose.textContent = "Game Hub selected game could not be read";
-+    message.textContent = nextMessage;
-     action.textContent = "Open Game Hub";
-     return;
-   }
-
-   name.textContent = "No game selected";
--  meta.textContent = "Game Hub owns game selection";
-+  purpose.textContent = "Game Hub owns game selection";
-   message.textContent = "Select or create a game in Game Hub before using this toolbox page.";
-   action.textContent = "Select or Create in Game Hub";
- }
-@@ -284,6 +329,9 @@ function installEventListeners() {
-     return;
-   }
-   listenersInstalled = true;
-+  document.addEventListener("click", scheduleToolMessageRefresh, true);
-+  document.addEventListener("submit", scheduleToolMessageRefresh, true);
-+  document.addEventListener("change", scheduleToolMessageRefresh, true);
-   window.addEventListener("gamefoundry:toolbox-selected-game-changed", refreshToolboxStatusBar);
-   window.addEventListener("gamefoundry:data-changed", refreshToolboxStatusBar);
- }
-diff --git a/docs_build/dev/BUILD_PR.md b/docs_build/dev/BUILD_PR.md
-index 51d6abdeb..65c4d9709 100644
---- a/docs_build/dev/BUILD_PR.md
-+++ b/docs_build/dev/BUILD_PR.md
-@@ -1,41 +1,42 @@
--# PR_26175_ALFA_001-toolbox-selected-game-status-bar
-+# PR_26175_ALFA_002-toolbox-status-bar-context-polish
-
- ## Purpose
--Add one shared Theme V2 toolbox status bar that surfaces the Game Hub selected game and current tool messages across toolbox pages.
-+Polish the shared toolbox status bar context display so it shows only selected-game name/purpose on the left and categorized tool context in the center.
-
- ## Source Of Truth
--This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_001-toolbox-selected-game-status-bar`.
-+This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_002-toolbox-status-bar-context-polish`.
-
- ## Exact Scope
--- Add a shared toolbox status bar renderer loaded through Theme V2 shared partial bootstrapping.
--- Render the status bar above the footer in normal page mode.
--- Anchor the status bar to the viewport bottom while `body.tool-focus-mode` is active.
--- Read the selected game only from the Game Hub repository through the existing Local API/service contract.
--- Display the selected Game Hub game on the left side of the status bar.
--- Display tool actions, warnings, errors, save state, validation messages, or the missing-game prompt in the center of the status bar.
--- Expose the selected Game Hub game as derived page context for toolbox pages without persisting browser-owned product data.
--- Require selected-game context on toolbox pages except Idea Board, which remains excluded because ideas can exist before game creation.
--- Show a creator-safe prompt to select or create a game in Game Hub when no selected game exists.
--- Notify the shared status bar when Game Hub changes the selected game.
--- Add targeted Playwright coverage for placement, fullscreen anchoring, selected-game display/update, missing-game prompt, and Idea Board exclusion.
-+- Do not include environment text in the status bar because environment already appears in the platform banner.
-+- On the left side, display the selected Game Hub game name and selected Game Hub game purpose.
-+- On the center side, display tool context messages for tool actions, save state, validation messages, warnings, or errors.
-+- Preserve normal placement above the footer.
-+- Preserve fullscreen/tool display mode bottom anchoring.
-+- Preserve Idea Board selected-game filtering exclusion.
-+- Preserve Game Hub as selected-game owner through the existing repository contract.
-+- Keep the shared Theme V2 toolbox component model.
-+- Update targeted Playwright coverage for the polished left and center context.
-
- ## Exact Targets
--- `assets/theme-v2/js/gamefoundry-partials.js`
-+- `docs_build/dev/BUILD_PR.md`
- - `assets/theme-v2/js/toolbox-status-bar.js`
- - `assets/theme-v2/css/status.css`
--- `toolbox/game-hub/game-hub.js`
- - `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs`
--- `docs_build/dev/reports/PR_26175_ALFA_001-toolbox-selected-game-status-bar_report.md`
--- `docs_build/dev/reports/PR_26175_ALFA_001-toolbox-selected-game-status-bar_validation-lane.md`
--- `docs_build/dev/reports/PR_26175_ALFA_001-toolbox-selected-game-status-bar_requirements-checklist.md`
-+- `docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_report.md`
-+- `docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_validation-lane.md`
-+- `docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_requirements-checklist.md`
-+- `docs_build/dev/reports/codex_review.diff`
-+- `docs_build/dev/reports/codex_changed_files.txt`
-
- ## Out Of Scope
-+- No environment status in the toolbox status bar.
-+- No row highlights.
-+- No large banners.
-+- No modal-style status messages.
-+- No inline styles, style blocks, or page-local CSS.
-+- No API/service contract changes.
- - No engine core changes.
- - No `start_of_day` folder changes.
--- No API/service contract changes.
--- No page-local CSS, inline styles, or style blocks.
--- No browser storage or browser-owned product data as selected-game source of truth.
--- No Idea Board selected-game filtering.
-
- ## Validation
- Run:
-@@ -47,12 +48,12 @@ npx playwright test tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
- Also verify the changed source does not introduce inline styles or style blocks:
-
- ```powershell
--rg -n "<style|style=" assets/theme-v2/js/gamefoundry-partials.js assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css toolbox/game-hub/game-hub.js tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-+rg -n "<style|style=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
- ```
-
- ## Artifact
- Create repo-structured delta ZIP:
-
- ```text
--tmp/PR_26175_ALFA_001-toolbox-selected-game-status-bar_delta.zip
-+tmp/PR_26175_ALFA_002-toolbox-status-bar-context-polish_delta.zip
- ```
-diff --git a/docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_report.md b/docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_report.md
+diff --git a/docs_build/dev/reports/PR_26175_OWNER_045-github-pr-expanded-inventory-report.md b/docs_build/dev/reports/PR_26175_OWNER_045-github-pr-expanded-inventory-report.md
 new file mode 100644
-index 000000000..b895d6891
+index 000000000..8947e4899
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_report.md
-@@ -0,0 +1,24 @@
-+# PR_26175_ALFA_002-toolbox-status-bar-context-polish Report
++++ b/docs_build/dev/reports/PR_26175_OWNER_045-github-pr-expanded-inventory-report.md
+@@ -0,0 +1,263 @@
++# PR_26175_OWNER_045-github-pr-expanded-inventory-report
 +
-+## Summary
-+Polished the shared toolbox status bar context display without changing ownership or placement behavior.
++OWNER override approved.
 +
-+## Changes
-+- Updated the left side to show `Selected Game Name` and `Selected Game Purpose`.
-+- Removed selected-game status from the left-side display so environment/status context stays outside the bar.
-+- Added a compact center context label for `Tool Action`, `Save State`, `Validation`, `Warning`, and `Error`.
-+- Kept the status bar as a compact shared Theme V2 component, not a large banner or modal-style message.
-+- Preserved normal placement above the footer and fullscreen bottom anchoring.
-+- Preserved Idea Board selected-game filtering exclusion.
++## 1. Executive Summary
 +
-+## Contract Notes
-+- Game Hub remains the selected-game owner through the existing repository contract.
-+- No API/service contract changes were made.
-+- No browser-owned product data is used as selected-game source of truth.
-+- Environment text is not displayed in the status bar.
++This is an audit/report-only OWNER action report built from GitHub open PR data. GitHub is the authority for open and draft PR state. No PRs were merged, closed, or edited; no branches were deleted; no runtime code was modified.
 +
-+## EOD Review
-+- Reviewed all ALFA_002 modified files before commit.
-+- Re-ran the targeted Playwright status bar coverage.
-+- Re-ran the inline style/style block guardrail.
-+- Updated the Codex review diff and changed-file report for closeout.
-diff --git a/docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_requirements-checklist.md b/docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_requirements-checklist.md
-new file mode 100644
-index 000000000..4928f683c
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_requirements-checklist.md
-@@ -0,0 +1,18 @@
-+# PR_26175_ALFA_002-toolbox-status-bar-context-polish Requirements Checklist
++- Repository: ToolboxAid/HTML-JavaScript-Gaming
++- Source API: https://api.github.com/repos/ToolboxAid/HTML-JavaScript-Gaming/pulls?state=open&per_page=100&sort=created&direction=asc
++- API pages fetched: 1
++- Open PRs found: 38
++- Draft PRs found: 35
++- Open non-draft PRs found: 3
++- Current branch while generating report: `PR_26175_OWNER_045-github-pr-expanded-inventory-report`
++- Branch base: `6d94477bb0ae9f63dd1466dbb89e4a437b8749b0`; main/origin-main: `6d94477bb0ae9f63dd1466dbb89e4a437b8749b0` / `6d94477bb0ae9f63dd1466dbb89e4a437b8749b0`
++- Recommendation vocabulary used exactly: Merge Now, Review First, Waiting On Dependency, Owner Decision Required, Superseded Candidate, Archive Candidate.
 +
-+- PASS: Active `BUILD_PR.md` is the source of truth for ALFA_002.
-+- PASS: Environment is not included in the status bar.
-+- PASS: Left side displays selected game name.
-+- PASS: Left side displays selected game purpose.
-+- PASS: Center displays tool action context.
-+- PASS: Center displays save state context.
-+- PASS: Center supports validation, warning, and error context categories.
-+- PASS: Fullscreen bottom anchoring is preserved.
-+- PASS: Normal placement above the footer is preserved.
-+- PASS: Idea Board exclusion is preserved.
-+- PASS: Game Hub remains selected-game owner.
-+- PASS: No large banners were added.
-+- PASS: No modal-style status messages were added.
-+- PASS: No inline styles or style blocks were added.
-+- PASS: Theme V2 shared CSS/classes are used.
-+- PASS: Targeted Playwright coverage was updated and passed.
-diff --git a/docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_validation-lane.md b/docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_validation-lane.md
-new file mode 100644
-index 000000000..5be25c454
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_validation-lane.md
-@@ -0,0 +1,28 @@
-+# PR_26175_ALFA_002-toolbox-status-bar-context-polish Validation Lane
++Priority readout:
++- Merge Now: 0
++- Review First: 5
++- Waiting On Dependency: 25
++- Owner Decision Required: 3
++- Superseded Candidate: 4
++- Archive Candidate: 1
 +
-+## Commands
-+```powershell
-+npx playwright test tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs --workers=1
-+```
++## PASS/FAIL Checklist
 +
-+Result: PASS, 6 tests passed.
++| Requirement | Result | Evidence |
++|---|---|---|
++| Start from main | PASS | Started from clean, synced `main`; post-pull sync was `0 0`. |
++| Read every ProjectInstructions file | PASS | Read 46 files under `docs_build/dev/ProjectInstructions/`. |
++| Use GitHub as authority | PASS | Fetched open PRs from GitHub REST API. |
++| Gather all open PRs | PASS | 38 open PRs returned and reported. |
++| Gather all draft PRs | PASS | 35 draft PRs returned and reported. |
++| Include required PR fields | PASS | Required fields are represented in the Full PR Inventory Table; author/date/status/age/purpose are in Notes. |
++| Support required team mapping | PASS | Team Summary includes Alfa, Bravo, Charlie, Delta, Gamma, OWNER, and Unknown / Needs Owner Decision. |
++| Use required output table format | PASS | Full inventory uses `PR / Team / Title / Branch / Notes / Dependencies / Recommendation`. |
++| Recommendations limited to approved values | PASS | Only the six approved recommendation strings are emitted. |
++| Include required sections | PASS | Sections 1 through 7 are present. |
++| Identify Gamma chain | PASS | See Dependency Chains and Gamma subsection. |
++| Identify OWNER chain | PASS | See Dependency Chains and OWNER subsection. |
++| Identify Alfa stack | PASS | See Dependency Chains and Alfa subsection. |
++| Identify Bravo PRs | PASS | See Team Summary and Bravo subsection. |
++| Identify Charlie PRs | PASS | See Team Summary and Charlie subsection. |
++| Identify Delta PRs | PASS | See Team Summary and Delta subsection. |
++| Do not merge PRs | PASS | No merge action performed. |
++| Do not close PRs | PASS | No close action performed. |
++| Do not delete branches | PASS | No branch deletion performed. |
++| Do not modify runtime code | PASS | Only report files changed. |
++| Create repo-structured ZIP | PASS | ZIP generated under `tmp/` and contents verified. |
 +
-+```powershell
-+rg -n "<style|style=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-+```
++## Validation Lane Report
 +
-+Result: PASS, no matches.
++| Lane | Result | Evidence |
++|---|---|---|
++| Branch lane | PASS | Branch `PR_26175_OWNER_045-github-pr-expanded-inventory-report` created after clean/synced main gate. |
++| GitHub inventory lane | PASS | GitHub API returned 38 open PR records. |
++| Report completeness lane | PASS | Every fetched PR appears in the full inventory table. |
++| Scope lane | PASS | Report-only changes under `docs_build/dev/reports/`. |
++| Whitespace lane | PASS | `git diff --check` passed after report generation. |
++| ZIP lane | PASS | `tmp/PR_26175_OWNER_045-github-pr-expanded-inventory-report_delta.zip` created with repo-structured report entries. |
 +
-+## Covered Assertions
-+- Status bar does not include environment text.
-+- Left side displays selected game name.
-+- Left side displays selected game purpose.
-+- Left side does not include selected-game status.
-+- Center displays tool action context.
-+- Center displays save state context after a Game Hub save.
-+- Center displays warning context for a Game Hub save-state warning.
-+- Missing selected game still shows the select/create tool action prompt.
-+- Idea Board remains excluded from selected-game filtering.
-+- Normal placement above footer is preserved.
-+- Fullscreen bottom anchoring is preserved.
-+- No inline styles or style blocks were added.
++## 2. Team Summary
++
++| Team | Open PRs | Draft | Open Non-Draft | Recommendation Counts |
++|---|---:|---:|---:|---|
++| Alfa | 29 | 27 | 2 | Merge Now: 0; Review First: 1; Waiting On Dependency: 25; Owner Decision Required: 0; Superseded Candidate: 2; Archive Candidate: 1 |
++| Bravo | 1 | 0 | 1 | Merge Now: 0; Review First: 0; Waiting On Dependency: 0; Owner Decision Required: 1; Superseded Candidate: 0; Archive Candidate: 0 |
++| Charlie | 0 | 0 | 0 | Merge Now: 0; Review First: 0; Waiting On Dependency: 0; Owner Decision Required: 0; Superseded Candidate: 0; Archive Candidate: 0 |
++| Delta | 0 | 0 | 0 | Merge Now: 0; Review First: 0; Waiting On Dependency: 0; Owner Decision Required: 0; Superseded Candidate: 0; Archive Candidate: 0 |
++| Gamma | 3 | 3 | 0 | Merge Now: 0; Review First: 1; Waiting On Dependency: 0; Owner Decision Required: 0; Superseded Candidate: 2; Archive Candidate: 0 |
++| OWNER | 4 | 4 | 0 | Merge Now: 0; Review First: 3; Waiting On Dependency: 0; Owner Decision Required: 1; Superseded Candidate: 0; Archive Candidate: 0 |
++| Unknown / Needs Owner Decision | 1 | 1 | 0 | Merge Now: 0; Review First: 0; Waiting On Dependency: 0; Owner Decision Required: 1; Superseded Candidate: 0; Archive Candidate: 0 |
++
++Explicit team identification:
++- Alfa stack: #26, #41, #96, #97, #98, #99, #100, #101, #102, #103, #104, #105, #106, #107, #108, #109, #110, #111, #112, #113, #114, #115, #116, #117, #118, #120, #121, #122, #126
++- Bravo PRs: #3
++- Charlie PRs: None found
++- Delta PRs: None found
++- Gamma chain: #30, #43, #50
++- OWNER chain: #51, #123, #124, #125
++
++## 3. Dependency Chains
++
++| Chain | PR Order | Recommendations |
++|---|---|---|
++| Alfa stack: PR_26171 legacy ALPHA workstream | #26 -> #41 | Alfa #26: Superseded Candidate; Alfa #41: Superseded Candidate |
++| Alfa stack: PR_26174 ALFA/ALPHA workstream | #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118 | Alfa #96: Waiting On Dependency; Alfa #97: Waiting On Dependency; Alfa #98: Waiting On Dependency; Alfa #99: Waiting On Dependency; Alfa #100: Waiting On Dependency; Alfa #101: Waiting On Dependency; Alfa #102: Waiting On Dependency; Alfa #103: Waiting On Dependency; Alfa #104: Waiting On Dependency; Alfa #105: Waiting On Dependency; Alfa #106: Waiting On Dependency; Alfa #107: Waiting On Dependency; Alfa #108: Waiting On Dependency; Alfa #109: Waiting On Dependency; Alfa #110: Waiting On Dependency; Alfa #111: Waiting On Dependency; Alfa #112: Waiting On Dependency; Alfa #113: Waiting On Dependency; Alfa #114: Waiting On Dependency; Alfa #115: Waiting On Dependency; Alfa #116: Waiting On Dependency; Alfa #117: Archive Candidate; Alfa #118: Review First |
++| Alfa stack: PR_26175 ALFA/ALPHA workstream | #120 -> #121 -> #122 -> #126 | Alfa #120: Waiting On Dependency; Alfa #121: Waiting On Dependency; Alfa #122: Waiting On Dependency; Alfa #126: Waiting On Dependency |
++| Bravo PRs: Messages/Emotion workstream | #3 | Bravo #3: Owner Decision Required |
++| Gamma chain: PR_26171 SQLite/governance workstream | #30 -> #43 -> #50 | Gamma #30: Superseded Candidate; Gamma #43: Superseded Candidate; Gamma #50: Review First |
++| OWNER chain: PR_26175 governance/report workstream | #123 -> #124 -> #125 | OWNER #123: Review First; OWNER #124: Review First; OWNER #125: Review First |
++| OWNER chain: ProjectInstructions governance workstream | #51 -> #85 | OWNER #51: Owner Decision Required; Unknown / Needs Owner Decision #85: Owner Decision Required |
++
++### Gamma Chain
++
++- #30 (Gamma): PR_26171_GAMMA_006-sqlite-deprecation-audit; Draft; branch `pr/26171-GAMMA-006-sqlite-deprecation-audit`; recommendation: Superseded Candidate; dependency: Gamma chain #30 -> #43 -> #50; #50 appears to be final report candidate.
++- #43 (Gamma): PR_26171_GAMMA_021-sqlite-active-runtime-removal-plan; Draft; branch `team/GAMMA/admin`; recommendation: Superseded Candidate; dependency: Gamma chain #30 -> #43 -> #50; #50 appears to be final report candidate.
++- #50 (Gamma): PR_26171_GAMMA_028-final-sqlite-clean-status-report; Draft; branch `pr/26171-GAMMA-028-final-sqlite-clean-status-report`; recommendation: Review First; dependency: Gamma chain #30 -> #43 -> #50; #50 appears to be final report candidate.
++
++### OWNER Chain
++
++- #51 (OWNER): PR_26172_MASTER_001-project-instructions-readme-and-root; Draft; branch `pr/26172-MASTER-001-project-instructions-readme-and-root`; recommendation: Owner Decision Required; dependency: Governance chain #51 -> #85; history-sensitive owner decision required.
++- #123 (OWNER): [codex] PR_26175_OWNER_042 GitHub PR inventory audit; Draft; branch `PR_26175_OWNER_042-github-pr-inventory-audit`; recommendation: Review First; dependency: OWNER report chain #123 -> #124 -> #125; review latest report before action.
++- #124 (OWNER): [codex] PR_26175_OWNER_043 team registry Gamma Delta alignment; Draft; branch `PR_26175_OWNER_043-team-registry-gamma-delta-alignment`; recommendation: Review First; dependency: OWNER report chain #123 -> #124 -> #125; review latest report before action.
++- #125 (OWNER): [codex] PR_26175_OWNER_044 full GitHub PR inventory report; Draft; branch `PR_26175_OWNER_044-github-pr-full-inventory-report`; recommendation: Review First; dependency: OWNER report chain #123 -> #124 -> #125; review latest report before action.
++
++### Alfa Stack
++
++- #26 (Alfa): PR_26171_ALPHA_046 game hub table standard rebuild; Open; branch `pr/26171-ALPHA-046-game-hub-table-standard-rebuild`; recommendation: Superseded Candidate; dependency: Legacy Alpha chain #26 -> #41; compare against newer Alfa stack before action.
++- #41 (Alfa): PR_26171_ALPHA_048 idea project journey execution flow; Open; branch `pr/26171-ALPHA-048-idea-project-journey-execution-flow`; recommendation: Superseded Candidate; dependency: Legacy Alpha chain #26 -> #41; compare against newer Alfa stack before action.
++- #96 (Alfa): PR_26174_ALFA_002-game-hub-project-intake-display; Draft; branch `pr/26174-ALFA-002-game-hub-project-intake-display`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #97 (Alfa): PR_26174_ALFA_003-game-hub-journey-bootstrap; Draft; branch `pr/26174-ALFA-003-game-hub-journey-bootstrap`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #98 (Alfa): PR_26174_ALFA_004-game-hub-progress-count-model; Draft; branch `pr/26174-ALFA-004-game-hub-progress-count-model`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #99 (Alfa): PR_26174_ALFA_005-idea-project-validation-polish; Draft; branch `pr/26174-ALFA-005-idea-project-validation-polish`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #100 (Alfa): PR_26174_ALFA_006-game-hub-empty-and-error-states; Draft; branch `pr/26174-ALFA-006-game-hub-empty-and-error-states`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #101 (Alfa): PR_26174_ALFA_007-game-journey-count-ui-polish; Draft; branch `pr/26174-ALFA-007-game-journey-count-ui-polish`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #102 (Alfa): PR_26174_ALFA_008-alpha-stack-final-validation; Draft; branch `pr/26174-ALFA-008-alpha-stack-final-validation`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #103 (Alfa): PR_26174_ALFA_009-game-hub-parent-child-table-layout; Draft; branch `pr/26174-ALFA-009-game-hub-parent-child-table-layout`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #104 (Alfa): PR_26174_ALFA_010-game-hub-source-idea-child-table-polish; Draft; branch `pr/26174-ALFA-010-game-hub-source-idea-child-table-polish`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #105 (Alfa): PR_26174_ALFA_011-game-hub-readiness-output-child-table; Draft; branch `pr/26174-ALFA-011-game-hub-readiness-output-child-table`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #106 (Alfa): PR_26174_ALFA_012-game-hub-parent-child-final-validation; Draft; branch `pr/26174-ALFA-012-game-hub-parent-child-final-validation`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #107 (Alfa): PR_26174_ALFA_013-game-hub-game-row-child-rows; Draft; branch `pr/26174-ALFA-013-game-hub-game-row-child-rows`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #108 (Alfa): PR_26174_ALFA_014-game-hub-parent-columns-center; Draft; branch `pr/26174-ALFA-014-game-hub-parent-columns-center`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #109 (Alfa): PR_26174_ALFA_015-game-hub-actions-and-setup-cleanup; Draft; branch `pr/26174-ALFA-015-game-hub-actions-and-setup-cleanup`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #110 (Alfa): PR_26174_ALFA_016-game-hub-row-edit-add-selected-state; Draft; branch `pr/26174-ALFA-016-game-hub-row-edit-add-selected-state`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #111 (Alfa): PR_26174_ALFA_017-game-hub-guest-save-and-crew-cleanup; Draft; branch `pr/26174-ALFA-017-game-hub-guest-save-and-crew-cleanup`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #112 (Alfa): PR_26174_ALFA_018-game-selection-button-state; Draft; branch `pr/26174-ALFA-018-game-selection-button-state`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #113 (Alfa): PR_26174_ALFA_019-game-hub-selected-button-and-crew-label; Draft; branch `pr/26174-ALFA-019-game-hub-selected-button-and-crew-label`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #114 (Alfa): PR_26174_ALFA_020-game-hub-idea-board-cleanup; Draft; branch `pr/26174-ALFA-020-game-hub-idea-board-cleanup`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #115 (Alfa): PR_26174_ALFA_021-idea-board-status-filter-table-polish; Draft; branch `pr/26174-ALFA-021-idea-board-status-filter-table-polish`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #116 (Alfa): PR_26174_ALFA_022-idea-board-status-dropdown-fix; Draft; branch `pr/26174-ALFA-022-idea-board-status-dropdown-fix`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #117 (Alfa): PR_26174_ALFA_EOD-workstream-closeout; Draft; branch `pr/26174-ALFA-EOD-workstream-closeout`; recommendation: Archive Candidate; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #118 (Alfa): PR_26174_ALFA_EOD-final-closeout; Draft; branch `pr/26174-ALFA-EOD-final-closeout`; recommendation: Review First; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #120 (Alfa): [codex] PR_26175_ALFA_003 toolbox status bar single row polish; Draft; branch `codex/pr-26175-alfa-003-toolbox-status-bar-single-row-polish`; recommendation: Waiting On Dependency; dependency: Current Alfa stack #120 -> #121 -> #122 -> #126; wait for preceding dependency review.
++- #121 (Alfa): [codex] PR_26175_ALFA_004 game hub completion status audit; Draft; branch `codex/pr-26175-alfa-004-game-hub-completion-status-audit`; recommendation: Waiting On Dependency; dependency: Current Alfa stack #120 -> #121 -> #122 -> #126; wait for preceding dependency review.
++- #122 (Alfa): [codex] PR_26175_ALFA_005 game hub audit findings cleanup; Draft; branch `codex/pr-26175-alfa-005-game-hub-audit-findings-cleanup`; recommendation: Waiting On Dependency; dependency: Current Alfa stack #120 -> #121 -> #122 -> #126; wait for preceding dependency review.
++- #126 (Alfa): [codex] PR_26175_ALFA_006 game hub create project validation; Draft; branch `codex/pr-26175-alfa-006-game-hub-create-project-validation`; recommendation: Waiting On Dependency; dependency: Current Alfa stack #120 -> #121 -> #122 -> #126; wait for preceding dependency review.
++
++### Bravo PRs
++
++- #3 (Bravo): Pr/PR 26171 006 message emotion profile management; Open; branch `pr/PR_26171_006-message-emotion-profile-management`; recommendation: Owner Decision Required; dependency: Bravo PR set #3; owner/team decision required.
++
++### Charlie PRs
++
++- None
++
++### Delta PRs
++
++- None
++
++## 4. Merge Queue Candidates
++
++### Merge Now
++
++- None
++
++### Review First
++
++- #50 (Gamma): PR_26171_GAMMA_028-final-sqlite-clean-status-report; Draft; branch `pr/26171-GAMMA-028-final-sqlite-clean-status-report`; recommendation: Review First; dependency: Gamma chain #30 -> #43 -> #50; #50 appears to be final report candidate.
++- #118 (Alfa): PR_26174_ALFA_EOD-final-closeout; Draft; branch `pr/26174-ALFA-EOD-final-closeout`; recommendation: Review First; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #123 (OWNER): [codex] PR_26175_OWNER_042 GitHub PR inventory audit; Draft; branch `PR_26175_OWNER_042-github-pr-inventory-audit`; recommendation: Review First; dependency: OWNER report chain #123 -> #124 -> #125; review latest report before action.
++- #124 (OWNER): [codex] PR_26175_OWNER_043 team registry Gamma Delta alignment; Draft; branch `PR_26175_OWNER_043-team-registry-gamma-delta-alignment`; recommendation: Review First; dependency: OWNER report chain #123 -> #124 -> #125; review latest report before action.
++- #125 (OWNER): [codex] PR_26175_OWNER_044 full GitHub PR inventory report; Draft; branch `PR_26175_OWNER_044-github-pr-full-inventory-report`; recommendation: Review First; dependency: OWNER report chain #123 -> #124 -> #125; review latest report before action.
++
++## 5. Owner Decision Queue
++
++- #3 (Bravo): Pr/PR 26171 006 message emotion profile management; Open; branch `pr/PR_26171_006-message-emotion-profile-management`; recommendation: Owner Decision Required; dependency: Bravo PR set #3; owner/team decision required.
++- #51 (OWNER): PR_26172_MASTER_001-project-instructions-readme-and-root; Draft; branch `pr/26172-MASTER-001-project-instructions-readme-and-root`; recommendation: Owner Decision Required; dependency: Governance chain #51 -> #85; history-sensitive owner decision required.
++- #85 (Unknown / Needs Owner Decision): [codex] Add Project Instructions governance addendums; Draft; branch `codex/canonical-repository-structure-instructions`; recommendation: Owner Decision Required; dependency: Governance chain #51 -> #85; history-sensitive owner decision required.
++
++## 6. Superseded / Archive Candidates
++
++### Superseded Candidate
++
++- #26 (Alfa): PR_26171_ALPHA_046 game hub table standard rebuild; Open; branch `pr/26171-ALPHA-046-game-hub-table-standard-rebuild`; recommendation: Superseded Candidate; dependency: Legacy Alpha chain #26 -> #41; compare against newer Alfa stack before action.
++- #30 (Gamma): PR_26171_GAMMA_006-sqlite-deprecation-audit; Draft; branch `pr/26171-GAMMA-006-sqlite-deprecation-audit`; recommendation: Superseded Candidate; dependency: Gamma chain #30 -> #43 -> #50; #50 appears to be final report candidate.
++- #41 (Alfa): PR_26171_ALPHA_048 idea project journey execution flow; Open; branch `pr/26171-ALPHA-048-idea-project-journey-execution-flow`; recommendation: Superseded Candidate; dependency: Legacy Alpha chain #26 -> #41; compare against newer Alfa stack before action.
++- #43 (Gamma): PR_26171_GAMMA_021-sqlite-active-runtime-removal-plan; Draft; branch `team/GAMMA/admin`; recommendation: Superseded Candidate; dependency: Gamma chain #30 -> #43 -> #50; #50 appears to be final report candidate.
++
++### Archive Candidate
++
++- #117 (Alfa): PR_26174_ALFA_EOD-workstream-closeout; Draft; branch `pr/26174-ALFA-EOD-workstream-closeout`; recommendation: Archive Candidate; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++
++### Waiting On Dependency
++
++- #96 (Alfa): PR_26174_ALFA_002-game-hub-project-intake-display; Draft; branch `pr/26174-ALFA-002-game-hub-project-intake-display`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #97 (Alfa): PR_26174_ALFA_003-game-hub-journey-bootstrap; Draft; branch `pr/26174-ALFA-003-game-hub-journey-bootstrap`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #98 (Alfa): PR_26174_ALFA_004-game-hub-progress-count-model; Draft; branch `pr/26174-ALFA-004-game-hub-progress-count-model`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #99 (Alfa): PR_26174_ALFA_005-idea-project-validation-polish; Draft; branch `pr/26174-ALFA-005-idea-project-validation-polish`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #100 (Alfa): PR_26174_ALFA_006-game-hub-empty-and-error-states; Draft; branch `pr/26174-ALFA-006-game-hub-empty-and-error-states`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #101 (Alfa): PR_26174_ALFA_007-game-journey-count-ui-polish; Draft; branch `pr/26174-ALFA-007-game-journey-count-ui-polish`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #102 (Alfa): PR_26174_ALFA_008-alpha-stack-final-validation; Draft; branch `pr/26174-ALFA-008-alpha-stack-final-validation`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #103 (Alfa): PR_26174_ALFA_009-game-hub-parent-child-table-layout; Draft; branch `pr/26174-ALFA-009-game-hub-parent-child-table-layout`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #104 (Alfa): PR_26174_ALFA_010-game-hub-source-idea-child-table-polish; Draft; branch `pr/26174-ALFA-010-game-hub-source-idea-child-table-polish`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #105 (Alfa): PR_26174_ALFA_011-game-hub-readiness-output-child-table; Draft; branch `pr/26174-ALFA-011-game-hub-readiness-output-child-table`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #106 (Alfa): PR_26174_ALFA_012-game-hub-parent-child-final-validation; Draft; branch `pr/26174-ALFA-012-game-hub-parent-child-final-validation`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #107 (Alfa): PR_26174_ALFA_013-game-hub-game-row-child-rows; Draft; branch `pr/26174-ALFA-013-game-hub-game-row-child-rows`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #108 (Alfa): PR_26174_ALFA_014-game-hub-parent-columns-center; Draft; branch `pr/26174-ALFA-014-game-hub-parent-columns-center`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #109 (Alfa): PR_26174_ALFA_015-game-hub-actions-and-setup-cleanup; Draft; branch `pr/26174-ALFA-015-game-hub-actions-and-setup-cleanup`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #110 (Alfa): PR_26174_ALFA_016-game-hub-row-edit-add-selected-state; Draft; branch `pr/26174-ALFA-016-game-hub-row-edit-add-selected-state`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #111 (Alfa): PR_26174_ALFA_017-game-hub-guest-save-and-crew-cleanup; Draft; branch `pr/26174-ALFA-017-game-hub-guest-save-and-crew-cleanup`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #112 (Alfa): PR_26174_ALFA_018-game-selection-button-state; Draft; branch `pr/26174-ALFA-018-game-selection-button-state`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #113 (Alfa): PR_26174_ALFA_019-game-hub-selected-button-and-crew-label; Draft; branch `pr/26174-ALFA-019-game-hub-selected-button-and-crew-label`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #114 (Alfa): PR_26174_ALFA_020-game-hub-idea-board-cleanup; Draft; branch `pr/26174-ALFA-020-game-hub-idea-board-cleanup`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #115 (Alfa): PR_26174_ALFA_021-idea-board-status-filter-table-polish; Draft; branch `pr/26174-ALFA-021-idea-board-status-filter-table-polish`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #116 (Alfa): PR_26174_ALFA_022-idea-board-status-dropdown-fix; Draft; branch `pr/26174-ALFA-022-idea-board-status-dropdown-fix`; recommendation: Waiting On Dependency; dependency: Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence.
++- #120 (Alfa): [codex] PR_26175_ALFA_003 toolbox status bar single row polish; Draft; branch `codex/pr-26175-alfa-003-toolbox-status-bar-single-row-polish`; recommendation: Waiting On Dependency; dependency: Current Alfa stack #120 -> #121 -> #122 -> #126; wait for preceding dependency review.
++- #121 (Alfa): [codex] PR_26175_ALFA_004 game hub completion status audit; Draft; branch `codex/pr-26175-alfa-004-game-hub-completion-status-audit`; recommendation: Waiting On Dependency; dependency: Current Alfa stack #120 -> #121 -> #122 -> #126; wait for preceding dependency review.
++- #122 (Alfa): [codex] PR_26175_ALFA_005 game hub audit findings cleanup; Draft; branch `codex/pr-26175-alfa-005-game-hub-audit-findings-cleanup`; recommendation: Waiting On Dependency; dependency: Current Alfa stack #120 -> #121 -> #122 -> #126; wait for preceding dependency review.
++- #126 (Alfa): [codex] PR_26175_ALFA_006 game hub create project validation; Draft; branch `codex/pr-26175-alfa-006-game-hub-create-project-validation`; recommendation: Waiting On Dependency; dependency: Current Alfa stack #120 -> #121 -> #122 -> #126; wait for preceding dependency review.
++
++## 7. Full PR Inventory Table
++
++| PR | Team | Title | Branch | Notes | Dependencies | Recommendation |
++|---|---|---|---|---|---|---|
++| #3 | Bravo | Pr/PR 26171 006 message emotion profile management | pr/PR_26171_006-message-emotion-profile-management | Author: ToolboxAid; Status: Open; Created: 2026-06-20T01:02:11Z; Updated: 2026-06-20T01:08:39Z; Age: 4d 2h; Purpose/notes: No PR body notes available. | Bravo PR set #3; owner/team decision required. | Owner Decision Required |
++| #26 | Alfa | PR_26171_ALPHA_046 game hub table standard rebuild | pr/26171-ALPHA-046-game-hub-table-standard-rebuild | Author: ToolboxAid; Status: Open; Created: 2026-06-20T22:13:09Z; Updated: 2026-06-20T22:20:37Z; Age: 3d 5h; Purpose/notes: Rebuilds Game Hub around a table-first Projects parent table with direct child accordion rows. | Legacy Alpha chain #26 -> #41; compare against newer Alfa stack before action. | Superseded Candidate |
++| #30 | Gamma | PR_26171_GAMMA_006-sqlite-deprecation-audit | pr/26171-GAMMA-006-sqlite-deprecation-audit | Author: ToolboxAid; Status: Draft; Created: 2026-06-20T23:03:05Z; Updated: 2026-06-20T23:03:49Z; Age: 3d 4h; Purpose/notes: Audits SQLite references across active repo paths, classifies the remaining references, creates a removal backlog, and confirms Postgres remains authoritative. | Gamma chain #30 -> #43 -> #50; #50 appears to be final report candidate. | Superseded Candidate |
++| #41 | Alfa | PR_26171_ALPHA_048 idea project journey execution flow | pr/26171-ALPHA-048-idea-project-journey-execution-flow | Author: ToolboxAid; Status: Open; Created: 2026-06-21T01:31:13Z; Updated: 2026-06-21T01:36:33Z; Age: 3d 2h; Purpose/notes: Updates Game Hub handoff action copy to `Open Journey`. | Legacy Alpha chain #26 -> #41; compare against newer Alfa stack before action. | Superseded Candidate |
++| #43 | Gamma | PR_26171_GAMMA_021-sqlite-active-runtime-removal-plan | team/GAMMA/admin | Author: ToolboxAid; Status: Draft; Created: 2026-06-21T03:26:52Z; Updated: 2026-06-21T03:26:52Z; Age: 3d 0h; Purpose/notes: Adds a focused active SQLite runtime removal plan from the fresh-main inventory. | Gamma chain #30 -> #43 -> #50; #50 appears to be final report candidate. | Superseded Candidate |
++| #50 | Gamma | PR_26171_GAMMA_028-final-sqlite-clean-status-report | pr/26171-GAMMA-028-final-sqlite-clean-status-report | Author: ToolboxAid; Status: Draft; Created: 2026-06-21T16:18:04Z; Updated: 2026-06-21T16:18:04Z; Age: 2d 11h; Purpose/notes: Captures the final SQLite inventory after PR026 and PR027. | Gamma chain #30 -> #43 -> #50; #50 appears to be final report candidate. | Review First |
++| #51 | OWNER | PR_26172_MASTER_001-project-instructions-readme-and-root | pr/26172-MASTER-001-project-instructions-readme-and-root | Author: ToolboxAid; Status: Draft; Created: 2026-06-21T17:26:20Z; Updated: 2026-06-21T17:26:20Z; Age: 2d 10h; Purpose/notes: Adds the new `docs_build/dev/ProjectInstructions/` operating-system root. | Governance chain #51 -> #85; history-sensitive owner decision required. | Owner Decision Required |
++| #85 | Unknown / Needs Owner Decision | [codex] Add Project Instructions governance addendums | codex/canonical-repository-structure-instructions | Author: ToolboxAid; Status: Draft; Created: 2026-06-22T15:38:03Z; Updated: 2026-06-22T15:44:53Z; Age: 1d 12h; Purpose/notes: Added a canonical repository structure governance addendum at `project-instructions/addendums/canonical-repository-structure.md`. | Governance chain #51 -> #85; history-sensitive owner decision required. | Owner Decision Required |
++| #96 | Alfa | PR_26174_ALFA_002-game-hub-project-intake-display | pr/26174-ALFA-002-game-hub-project-intake-display | Author: ToolboxAid; Status: Draft; Created: 2026-06-22T18:17:24Z; Updated: 2026-06-22T18:17:24Z; Age: 1d 9h; Purpose/notes: Display Idea Board-created projects in Game Hub. | Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence. | Waiting On Dependency |
++| #97 | Alfa | PR_26174_ALFA_003-game-hub-journey-bootstrap | pr/26174-ALFA-003-game-hub-journey-bootstrap | Author: ToolboxAid; Status: Draft; Created: 2026-06-22T18:27:42Z; Updated: 2026-06-22T18:27:42Z; Age: 1d 9h; Purpose/notes: Create starter Game Journey records when an Idea Board idea becomes a Game Hub project. | Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence. | Waiting On Dependency |
++| #98 | Alfa | PR_26174_ALFA_004-game-hub-progress-count-model | pr/26174-ALFA-004-game-hub-progress-count-model | Author: ToolboxAid; Status: Draft; Created: 2026-06-22T18:34:08Z; Updated: 2026-06-22T18:34:08Z; Age: 1d 9h; Purpose/notes: Add the count-based Game Journey progress model foundation. | Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence. | Waiting On Dependency |
++| #99 | Alfa | PR_26174_ALFA_005-idea-project-validation-polish | pr/26174-ALFA-005-idea-project-validation-polish | Author: ToolboxAid; Status: Draft; Created: 2026-06-22T20:53:36Z; Updated: 2026-06-22T20:53:36Z; Age: 1d 7h; Purpose/notes: Polish Idea Board project-creation validation coverage. | Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence. | Waiting On Dependency |
++| #100 | Alfa | PR_26174_ALFA_006-game-hub-empty-and-error-states | pr/26174-ALFA-006-game-hub-empty-and-error-states | Author: ToolboxAid; Status: Draft; Created: 2026-06-22T20:57:11Z; Updated: 2026-06-22T20:57:11Z; Age: 1d 7h; Purpose/notes: Add creator-safe empty and API-unavailable states for Game Hub projects. | Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence. | Waiting On Dependency |
++| #101 | Alfa | PR_26174_ALFA_007-game-journey-count-ui-polish | pr/26174-ALFA-007-game-journey-count-ui-polish | Author: ToolboxAid; Status: Draft; Created: 2026-06-22T21:01:21Z; Updated: 2026-06-22T21:01:21Z; Age: 1d 6h; Purpose/notes: Polish count-based Game Journey inputs. | Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence. | Waiting On Dependency |
++| #102 | Alfa | PR_26174_ALFA_008-alpha-stack-final-validation | pr/26174-ALFA-008-alpha-stack-final-validation | Author: ToolboxAid; Status: Draft; Created: 2026-06-22T21:05:21Z; Updated: 2026-06-22T21:05:21Z; Age: 1d 6h; Purpose/notes: Run targeted validation for ALFA_001 through ALFA_007 and produce the final stack report. | Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence. | Waiting On Dependency |
++| #103 | Alfa | PR_26174_ALFA_009-game-hub-parent-child-table-layout | pr/26174-ALFA-009-game-hub-parent-child-table-layout | Author: ToolboxAid; Status: Draft; Created: 2026-06-22T21:51:58Z; Updated: 2026-06-22T21:51:58Z; Age: 1d 6h; Purpose/notes: Convert Game Hub Open Games into reusable parent-table / child-table structure. | Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence. | Waiting On Dependency |
++| #104 | Alfa | PR_26174_ALFA_010-game-hub-source-idea-child-table-polish | pr/26174-ALFA-010-game-hub-source-idea-child-table-polish | Author: ToolboxAid; Status: Draft; Created: 2026-06-22T21:55:00Z; Updated: 2026-06-22T21:55:00Z; Age: 1d 6h; Purpose/notes: Make Source Idea a dedicated child table under the expanded game row. | Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence. | Waiting On Dependency |
++| #105 | Alfa | PR_26174_ALFA_011-game-hub-readiness-output-child-table | pr/26174-ALFA-011-game-hub-readiness-output-child-table | Author: ToolboxAid; Status: Draft; Created: 2026-06-22T21:59:02Z; Updated: 2026-06-22T21:59:02Z; Age: 1d 6h; Purpose/notes: Make Readiness Output a separate child table under the expanded game row. | Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence. | Waiting On Dependency |
++| #106 | Alfa | PR_26174_ALFA_012-game-hub-parent-child-final-validation | pr/26174-ALFA-012-game-hub-parent-child-final-validation | Author: ToolboxAid; Status: Draft; Created: 2026-06-22T22:03:26Z; Updated: 2026-06-22T22:03:26Z; Age: 1d 5h; Purpose/notes: Final validation and report pass for the Game Hub parent/child table stack. | Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence. | Waiting On Dependency |
++| #107 | Alfa | PR_26174_ALFA_013-game-hub-game-row-child-rows | pr/26174-ALFA-013-game-hub-game-row-child-rows | Author: ToolboxAid; Status: Draft; Created: 2026-06-22T22:28:49Z; Updated: 2026-06-22T23:09:28Z; Age: 1d 5h; Purpose/notes: Correct Game Hub so each game is a parent row with Source Idea and Readiness Output as child rows/child tables. | Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence. | Waiting On Dependency |
++| #108 | Alfa | PR_26174_ALFA_014-game-hub-parent-columns-center | pr/26174-ALFA-014-game-hub-parent-columns-center | Author: ToolboxAid; Status: Draft; Created: 2026-06-22T23:49:52Z; Updated: 2026-06-22T23:49:52Z; Age: 1d 4h; Purpose/notes: Update Game Hub parent table columns to the approved centered parent-row structure. | Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence. | Waiting On Dependency |
++| #109 | Alfa | PR_26174_ALFA_015-game-hub-actions-and-setup-cleanup | pr/26174-ALFA-015-game-hub-actions-and-setup-cleanup | Author: ToolboxAid; Status: Draft; Created: 2026-06-23T00:27:42Z; Updated: 2026-06-23T00:27:42Z; Age: 1d 3h; Purpose/notes: Replace Game Hub parent-row Open actions with Edit while keeping game rows as the parent rows. | Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence. | Waiting On Dependency |
++| #110 | Alfa | PR_26174_ALFA_016-game-hub-row-edit-add-selected-state | pr/26174-ALFA-016-game-hub-row-edit-add-selected-state | Author: ToolboxAid; Status: Draft; Created: 2026-06-23T00:56:52Z; Updated: 2026-06-23T01:04:05Z; Age: 1d 3h; Purpose/notes: Move Game Hub add/edit behavior into table rows with Save/Cancel actions. | Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence. | Waiting On Dependency |
++| #111 | Alfa | PR_26174_ALFA_017-game-hub-guest-save-and-crew-cleanup | pr/26174-ALFA-017-game-hub-guest-save-and-crew-cleanup | Author: ToolboxAid; Status: Draft; Created: 2026-06-23T01:18:50Z; Updated: 2026-06-23T01:18:50Z; Age: 1d 2h; Purpose/notes: redirects guest Add/Edit Save actions to `account/sign-in.html` | Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence. | Waiting On Dependency |
++| #112 | Alfa | PR_26174_ALFA_018-game-selection-button-state | pr/26174-ALFA-018-game-selection-button-state | Author: ToolboxAid; Status: Draft; Created: 2026-06-23T01:29:58Z; Updated: 2026-06-23T01:29:58Z; Age: 1d 2h; Purpose/notes: moves selected-game visual state to the game button only | Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence. | Waiting On Dependency |
++| #113 | Alfa | PR_26174_ALFA_019-game-hub-selected-button-and-crew-label | pr/26174-ALFA-019-game-hub-selected-button-and-crew-label | Author: ToolboxAid; Status: Draft; Created: 2026-06-23T01:51:00Z; Updated: 2026-06-23T01:51:00Z; Age: 1d 2h; Purpose/notes: makes the selected Game button use the same `btn btn--compact primary` styling/scale as Save buttons | Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence. | Waiting On Dependency |
++| #114 | Alfa | PR_26174_ALFA_020-game-hub-idea-board-cleanup | pr/26174-ALFA-020-game-hub-idea-board-cleanup | Author: ToolboxAid; Status: Draft; Created: 2026-06-23T02:48:01Z; Updated: 2026-06-23T02:48:01Z; Age: 1d 1h; Purpose/notes: Removed the Game Crew accordion from Game Hub. | Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence. | Waiting On Dependency |
++| #115 | Alfa | PR_26174_ALFA_021-idea-board-status-filter-table-polish | pr/26174-ALFA-021-idea-board-status-filter-table-polish | Author: ToolboxAid; Status: Draft; Created: 2026-06-23T15:57:57Z; Updated: 2026-06-23T15:57:57Z; Age: 12h; Purpose/notes: Polishes the Idea Board status filter and parent table display while preserving the existing table-first notes model. | Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence. | Waiting On Dependency |
++| #116 | Alfa | PR_26174_ALFA_022-idea-board-status-dropdown-fix | pr/26174-ALFA-022-idea-board-status-dropdown-fix | Author: ToolboxAid; Status: Draft; Created: 2026-06-23T17:39:07Z; Updated: 2026-06-23T17:39:07Z; Age: 10h; Purpose/notes: Splits Idea Board status options into explicit editable and filter lists. | Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence. | Waiting On Dependency |
++| #117 | Alfa | PR_26174_ALFA_EOD-workstream-closeout | pr/26174-ALFA-EOD-workstream-closeout | Author: ToolboxAid; Status: Draft; Created: 2026-06-23T17:56:54Z; Updated: 2026-06-23T17:56:54Z; Age: 10h; Purpose/notes: Report-only Team Alfa EOD closeout for PR_26174_ALFA_000 through PR_26174_ALFA_022. | Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence. | Archive Candidate |
++| #118 | Alfa | PR_26174_ALFA_EOD-final-closeout | pr/26174-ALFA-EOD-final-closeout | Author: ToolboxAid; Status: Draft; Created: 2026-06-23T18:08:07Z; Updated: 2026-06-23T18:10:12Z; Age: 9h; Purpose/notes: Report-only final Team Alfa closeout for owner merge review. | Stack order #96 -> #97 -> #98 -> #99 -> #100 -> #101 -> #102 -> #103 -> #104 -> #105 -> #106 -> #107 -> #108 -> #109 -> #110 -> #111 -> #112 -> #113 -> #114 -> #115 -> #116 -> #117 -> #118; merge only in owner-approved sequence. | Review First |
++| #120 | Alfa | [codex] PR_26175_ALFA_003 toolbox status bar single row polish | codex/pr-26175-alfa-003-toolbox-status-bar-single-row-polish | Author: ToolboxAid; Status: Draft; Created: 2026-06-23T21:00:28Z; Updated: 2026-06-23T21:11:06Z; Age: 6h; Purpose/notes: Reduced the shared toolbox status bar to a single visible row: selected game name on the left and status message in the center. | Current Alfa stack #120 -> #121 -> #122 -> #126; wait for preceding dependency review. | Waiting On Dependency |
++| #121 | Alfa | [codex] PR_26175_ALFA_004 game hub completion status audit | codex/pr-26175-alfa-004-game-hub-completion-status-audit | Author: ToolboxAid; Status: Draft; Created: 2026-06-23T21:35:20Z; Updated: 2026-06-23T21:35:20Z; Age: 6h; Purpose/notes: Replaced the active BUILD_PR.md with PR_26175_ALFA_004 as the source of truth. | Current Alfa stack #120 -> #121 -> #122 -> #126; wait for preceding dependency review. | Waiting On Dependency |
++| #122 | Alfa | [codex] PR_26175_ALFA_005 game hub audit findings cleanup | codex/pr-26175-alfa-005-game-hub-audit-findings-cleanup | Author: ToolboxAid; Status: Draft; Created: 2026-06-23T22:16:08Z; Updated: 2026-06-23T22:16:08Z; Age: 5h; Purpose/notes: Replaced the active BUILD_PR.md with PR_26175_ALFA_005 as the source of truth. | Current Alfa stack #120 -> #121 -> #122 -> #126; wait for preceding dependency review. | Waiting On Dependency |
++| #123 | OWNER | [codex] PR_26175_OWNER_042 GitHub PR inventory audit | PR_26175_OWNER_042-github-pr-inventory-audit | Author: ToolboxAid; Status: Draft; Created: 2026-06-23T22:18:21Z; Updated: 2026-06-23T22:18:21Z; Age: 5h; Purpose/notes: Report-only OWNER audit of the GitHub open PR inventory. | OWNER report chain #123 -> #124 -> #125; review latest report before action. | Review First |
++| #124 | OWNER | [codex] PR_26175_OWNER_043 team registry Gamma Delta alignment | PR_26175_OWNER_043-team-registry-gamma-delta-alignment | Author: ToolboxAid; Status: Draft; Created: 2026-06-23T22:33:43Z; Updated: 2026-06-23T22:33:43Z; Age: 5h; Purpose/notes: Aligns Project Instructions active team governance with the current OWNER-approved active-capable team map. | OWNER report chain #123 -> #124 -> #125; review latest report before action. | Review First |
++| #125 | OWNER | [codex] PR_26175_OWNER_044 full GitHub PR inventory report | PR_26175_OWNER_044-github-pr-full-inventory-report | Author: ToolboxAid; Status: Draft; Created: 2026-06-23T22:37:41Z; Updated: 2026-06-23T22:37:41Z; Age: 5h; Purpose/notes: Adds a complete report-only GitHub open PR inventory using GitHub as the authority. | OWNER report chain #123 -> #124 -> #125; review latest report before action. | Review First |
++| #126 | Alfa | [codex] PR_26175_ALFA_006 game hub create project validation | codex/pr-26175-alfa-006-game-hub-create-project-validation | Author: ToolboxAid; Status: Draft; Created: 2026-06-23T22:40:19Z; Updated: 2026-06-23T22:40:19Z; Age: 5h; Purpose/notes: Replaced the active BUILD_PR.md with PR_26175_ALFA_006 as the source of truth. | Current Alfa stack #120 -> #121 -> #122 -> #126; wait for preceding dependency review. | Waiting On Dependency |
++
++## Manual Validation Notes
++
++- Confirmed main was clean and synchronized before creating the OWNER_045 branch.
++- Confirmed this report uses GitHub open PR API data as the authority.
++- Confirmed the table includes author, status, created date, updated date, age, and purpose/notes inside the Notes column to preserve the requested table format.
++- Confirmed recommendation values are limited to the approved six-value vocabulary.
++- Confirmed no runtime code, branch cleanup, PR close, or merge action was performed.
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 712d5c487..fb32c88ea 100644
+index fb32c88ea..bece3df01 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,3 +1,9 @@
--﻿docs_build/dev/reports/PR_26174_ALFA_MERGE_PUSH_CLOSEOUT.md
--docs_build/dev/reports/codex_review.diff
-+assets/theme-v2/css/status.css
-+assets/theme-v2/js/toolbox-status-bar.js
-+docs_build/dev/BUILD_PR.md
-+docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_report.md
-+docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_validation-lane.md
-+docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_requirements-checklist.md
+@@ -1,9 +1,3 @@
+-assets/theme-v2/css/status.css
+-assets/theme-v2/js/toolbox-status-bar.js
+-docs_build/dev/BUILD_PR.md
+-docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_report.md
+-docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_validation-lane.md
+-docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_requirements-checklist.md
++docs_build/dev/reports/PR_26175_OWNER_045-github-pr-expanded-inventory-report.md
  docs_build/dev/reports/codex_changed_files.txt
-+docs_build/dev/reports/codex_review.diff
-+tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-diff --git a/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs b/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-index 71a7d32ee..065fbce4a 100644
---- a/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-+++ b/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-@@ -1,5 +1,6 @@
- import { expect, test } from "@playwright/test";
- import process from "node:process";
-+import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store.js";
- import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
- import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
- import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
-@@ -72,6 +73,26 @@ async function openRepoPage(page, pathName, options = {}) {
-       });
-     });
-   }
-+  if (options.session) {
-+    const userKey = options.session.userKey || MOCK_DB_KEYS.users.user1;
-+    await page.route("**/api/session/current", async (route) => {
-+      await route.fulfill({
-+        contentType: "application/json",
-+        body: JSON.stringify({
-+          data: {
-+            authenticated: true,
-+            displayName: options.session.displayName || "User 1",
-+            roleSlugs: options.session.roleSlugs || ["creator"],
-+            userKey,
-+          },
-+          ok: true,
-+        }),
-+      });
-+    });
-+    await page.request.post(`${server.baseUrl}/api/session/user`, {
-+      data: { userKey },
-+    });
-+  }
-
-   await workspaceV2CoverageReporter.start(page);
-   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
-@@ -84,6 +105,14 @@ function expectNoPageFailures(failures) {
-   expect(failures.consoleErrors).toEqual([]);
- }
-
-+function creatorSession() {
-+  return {
-+    displayName: "User 1",
-+    roleSlugs: ["creator"],
-+    userKey: MOCK_DB_KEYS.users.user1,
-+  };
-+}
-+
- async function statusBarSnapshot(page) {
-   return page.locator("[data-toolbox-status-bar]").evaluate((bar) => {
-     const footer = document.querySelector("footer.footer");
-@@ -111,8 +140,13 @@ test("shared toolbox status bar shows selected Game Hub game above the footer",
-     const statusBar = page.locator("[data-toolbox-status-bar]");
-     await expect(statusBar).toBeVisible();
-     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-+    await expect(statusBar).not.toContainText("Environment");
-+    await expect(statusBar.locator("[data-toolbox-selected-game-name-label]")).toHaveText("Selected Game Name");
-     await expect(statusBar.locator("[data-toolbox-selected-game-name]")).toHaveText("Demo Game");
--    await expect(statusBar.locator("[data-toolbox-selected-game-meta]")).toHaveText("Game - Under Construction");
-+    await expect(statusBar.locator("[data-toolbox-selected-game-purpose-label]")).toHaveText("Selected Game Purpose");
-+    await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveText("Game");
-+    await expect(statusBar.locator("[data-toolbox-selected-game]")).not.toContainText("Under Construction");
-+    await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveText("Tool Action");
-     await expect(statusBar.locator("[data-toolbox-status-message]")).toContainText("Game Design mock repository ready.");
-     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-id", "demo-game");
-     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "active");
-@@ -130,6 +164,29 @@ test("shared toolbox status bar shows selected Game Hub game above the footer",
-   }
- });
-
-+test("shared toolbox status bar center reports save state after Game Hub saves", async ({ page }) => {
-+  const failures = await openRepoPage(page, "/toolbox/game-hub/index.html", { session: creatorSession() });
-+
-+  try {
-+    await page.getByRole("button", { name: "Add Game" }).click();
-+    const addGameRow = page.locator("[data-game-add-row='input']");
-+    await addGameRow.getByLabel("Game").fill("Status Bar Save");
-+    await addGameRow.getByLabel("Purpose").selectOption("Learning Game");
-+    await addGameRow.getByLabel("Status").selectOption("Ready for Testing");
-+    await addGameRow.getByRole("button", { name: "Save" }).click();
-+
-+    await expect(page.locator("[data-toolbox-status-context-type]")).toHaveText("Save State");
-+    await expect(page.locator("[data-toolbox-status-message]")).toHaveText("Created and opened Status Bar Save.");
-+    await expect(page.locator("[data-toolbox-selected-game-name]")).toHaveText("Status Bar Save");
-+    await expect(page.locator("[data-toolbox-selected-game-purpose]")).toHaveText("Learning Game");
-+    await expect(page.locator("[data-toolbox-status-bar]")).not.toContainText("Environment");
-+
-+    expectNoPageFailures(failures);
-+  } finally {
-+    await failures.server.close();
-+  }
-+});
-+
- test("shared toolbox status bar anchors to the bottom in tool display mode", async ({ page }) => {
-   const failures = await openRepoPage(page, "/toolbox/game-design/index.html");
-
-@@ -156,9 +213,11 @@ test("Game Hub owner selection updates the global toolbox status bar", async ({
-     await expect(page.locator("[data-toolbox-selected-game-name]")).toHaveText("Demo Game");
-     await page.locator("[data-game-toggle='gravity-demo']").click();
-     await expect(page.locator("[data-toolbox-selected-game-name]")).toHaveText("Gravity Demo");
--    await expect(page.locator("[data-toolbox-selected-game-meta]")).toHaveText("Capability Demo - Wireframe");
-+    await expect(page.locator("[data-toolbox-selected-game-purpose]")).toHaveText("Capability Demo");
-+    await expect(page.locator("[data-toolbox-selected-game]")).not.toContainText("Wireframe");
-     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-id", "gravity-demo");
-     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "active");
-+    await expect(page.locator("[data-toolbox-status-context-type]")).toHaveText("Warning");
-     await expect(page.locator("[data-toolbox-status-message]")).toContainText("Sign in to create or update Game Hub projects.");
-
-     expectNoPageFailures(failures);
-@@ -173,6 +232,8 @@ test("non-Idea Board toolbox pages show a creator-safe prompt when no Game Hub g
-   try {
-     const statusBar = page.locator("[data-toolbox-status-bar]");
-     await expect(statusBar.locator("[data-toolbox-selected-game-name]")).toHaveText("No game selected");
-+    await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveText("Game Hub owns game selection");
-+    await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveText("Tool Action");
-     await expect(statusBar.locator("[data-toolbox-status-message]")).toHaveText("Select or create a game in Game Hub before using this toolbox page.");
-     await expect(statusBar.locator("[data-toolbox-status-action]")).toHaveText("Select or Create in Game Hub");
-     await expect(statusBar.locator("[data-toolbox-status-action]")).toHaveAttribute("href", /toolbox\/game-hub\/index\.html$/);
-@@ -195,8 +256,9 @@ test("Idea Board is excluded from selected-game filtering and does not show the
-   try {
-     const statusBar = page.locator("[data-toolbox-status-bar]");
-     await expect(statusBar).toBeVisible();
--    await expect(statusBar.locator("[data-toolbox-selected-game-name]")).toHaveText("Optional");
--    await expect(statusBar.locator("[data-toolbox-selected-game-meta]")).toHaveText("Idea Board can start before Game Hub creation");
-+    await expect(statusBar.locator("[data-toolbox-selected-game-name]")).toHaveText("No game selected");
-+    await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveText("Idea Board optional");
-+    await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveText("Tool Action");
-     await expect(statusBar.locator("[data-toolbox-status-message]")).toContainText("Ready to shape ideas and notes.");
-     await expect(statusBar.locator("[data-toolbox-status-message]")).not.toContainText("Select or create a game");
-     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "optional");
+ docs_build/dev/reports/codex_review.diff
+-tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
