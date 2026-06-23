@@ -385,8 +385,10 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
     await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='open-project']").click();
     await page.waitForURL(/\/toolbox\/game-hub\/index\.html\?game=lantern-reef-\d+$/);
     await expect(page.getByRole("heading", { level: 1, name: "Game Hub" })).toBeVisible();
-    await expect(page.locator("[data-active-game-name]")).toHaveText("Lantern Reef");
+    await expect(page.locator("[data-active-game-name]")).toHaveCount(0);
     await expect(page.locator("[data-game-list]")).toContainText("Lantern Reef");
+    await expect(page.locator("aside [data-game-list]")).toHaveCount(0);
+    await expect(page.locator(".tool-center-panel [data-game-list]")).toContainText("Lantern Reef");
     await expect(page.locator("[data-source-idea-section]")).toHaveCount(0);
     await expect(page.locator("[data-game-output-panels]")).toHaveCount(0);
     await expect(page.locator("[data-game-hub-foundation]")).toHaveCount(0);
@@ -409,7 +411,7 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
     await expect(sourceIdeaChildTable.locator(":is(input, textarea, select, button)")).toHaveCount(0);
     await expect(expandedRows.nth(1).locator("[data-game-child-table='readiness-output'] caption")).toHaveText("Readiness Output");
     await page.reload({ waitUntil: "networkidle" });
-    await expect(page.locator("[data-active-game-name]")).toHaveText("Lantern Reef");
+    await expect(page.locator("[data-active-game-name]")).toHaveCount(0);
     await expect(page.locator("[data-game-list]")).toContainText("Lantern Reef");
     await expect(page.locator("[data-source-idea-section]")).toHaveCount(0);
     await expect(page.locator("[data-game-output-panels]")).toHaveCount(0);

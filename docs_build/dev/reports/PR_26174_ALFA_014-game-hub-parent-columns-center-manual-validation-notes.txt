@@ -1,0 +1,9 @@
+Manual Validation Notes: PASS
+
+- Reviewed table_first_ui.md and kept the Idea Board-style parent row plus expanded child row model.
+- Confirmed the game table renders in the center panel instead of the left tool column.
+- Confirmed the old Project Information table/card is absent.
+- Confirmed parent headers are exactly Game, Purpose, Status, Owner, Actions.
+- Confirmed Role and Next Tool are absent from the parent row.
+- Confirmed Source Idea and Readiness Output remain child tables under expanded game rows.
+- Confirmed safe empty/unavailable states still pass targeted validation.
