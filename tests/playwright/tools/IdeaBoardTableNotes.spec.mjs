@@ -212,23 +212,21 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
     await expect(page.locator("[data-idea-board-add-idea-row]")).toHaveCount(1);
     await expect(page.locator("[data-idea-board-add-idea]")).toHaveText("Add Idea");
     await expectButtonLeftAligned(page, "[data-idea-board-add-idea]", "[data-idea-board-add-idea-row] > td");
-    await expect(page.locator("[data-idea-board-show-filter] summary")).toHaveText("Show");
-    const captionMetrics = await page.locator(".idea-board-table-caption").evaluate((caption) => {
-      const label = caption.querySelector("span");
-      const filter = caption.querySelector("[data-idea-board-show-filter]");
-      const labelRect = label.getBoundingClientRect();
-      const filterRect = filter.getBoundingClientRect();
-      return {
-        filterRight: filterRect.right,
-        filterTop: filterRect.top,
-        labelRight: labelRect.right,
-        labelTop: labelRect.top,
-      };
-    });
-    expect(captionMetrics.filterRight).toBeGreaterThan(captionMetrics.labelRight);
-    expect(Math.abs(captionMetrics.filterTop - captionMetrics.labelTop)).toBeLessThanOrEqual(4);
-    await page.locator("[data-idea-board-show-filter] summary").click();
-    await expect(page.locator("[data-idea-board-status-filter-option]")).toHaveCount(6);
+    await expect(page.locator(".tool-center-panel [data-idea-board-show-filter]")).toHaveCount(0);
+    const statusFilterAccordion = page.locator("aside.tool-group-idea").first().locator("[data-idea-board-section='Status Filter']");
+    await expect(page.locator("aside.tool-group-idea").first().locator(".accordion-stack > details").first()).toHaveAttribute("data-idea-board-section", "Status Filter");
+    await expect(statusFilterAccordion.locator("summary")).toHaveText("Status Filter");
+    await expect(statusFilterAccordion.locator("[data-idea-board-filter-select-all]")).toHaveText("Select All");
+    await expect(statusFilterAccordion.locator("[data-idea-board-filter-clear-all]")).toHaveText("Clear All");
+    await expect(statusFilterAccordion.locator("[data-idea-board-status-filter-option]")).toHaveCount(6);
+    await expect(statusFilterAccordion.locator(".idea-board-show-filter__option")).toHaveText([
+      "New",
+      "Exploring",
+      "Refining",
+      "Ready",
+      "Project",
+      "Archived",
+    ]);
     const checkedStatuses = await page.locator("[data-idea-board-status-filter-option]:checked").evaluateAll((inputs) => (
       inputs.map((input) => input.value)
     ));
@@ -393,9 +391,9 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
     await expect(page.locator("[data-game-output-panels]")).toHaveCount(0);
     await expect(page.locator("[data-game-hub-foundation]")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Delete Open Game" })).toHaveCount(0);
-    const activeGameRow = page.locator("[data-game-row][data-game-active='true']");
-    await expect(activeGameRow).toContainText("Lantern Reef");
-    await activeGameRow.locator("[data-game-toggle]").click();
+    const activeGameToggle = page.locator("[data-game-toggle][data-game-active='true']");
+    await expect(activeGameToggle).toHaveText("Lantern Reef");
+    await activeGameToggle.click();
     let expandedRows = page.locator("[data-game-expanded-row]");
     await expect(expandedRows).toHaveCount(2);
     await expect(expandedRows.nth(0)).toHaveAttribute("data-game-child-row", "source-idea");
@@ -416,7 +414,7 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
     await expect(page.locator("[data-source-idea-section]")).toHaveCount(0);
     await expect(page.locator("[data-game-output-panels]")).toHaveCount(0);
     await expect(page.locator("[data-game-hub-foundation]")).toHaveCount(0);
-    await activeGameRow.locator("[data-game-toggle]").click();
+    await activeGameToggle.click();
     expandedRows = page.locator("[data-game-expanded-row]");
     await expect(expandedRows).toHaveCount(2);
     sourceIdeaChildTable = expandedRows.nth(0).locator("[data-game-child-table='source-idea']");

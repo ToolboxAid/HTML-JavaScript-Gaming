@@ -29,16 +29,26 @@
                             <h2>Idea Filters</h2>
                         </div>
                         <div class="accordion-stack">
-                            <details class="vertical-accordion" open data-idea-board-section="Workflow">
-                                <summary>Workflow</summary>
+                            <details class="vertical-accordion" open data-idea-board-section="Status Filter">
+                                <summary>Status Filter</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>Review ideas in the table, then expand an idea row to manage its notes.</p>
+                                    <div class="action-group action-group--tight">
+                                        <button class="btn btn--compact" type="button" data-idea-board-filter-select-all>Select All</button>
+                                        <button class="btn btn--compact" type="button" data-idea-board-filter-clear-all>Clear All</button>
+                                    </div>
+                                    <div class="idea-board-show-filter__options" data-idea-board-status-options></div>
                                 </div>
                             </details>
                             <details class="vertical-accordion" data-idea-board-section="Status">
                                 <summary>Status</summary>
                                 <div class="accordion-body content-stack">
                                     <p>Use status to show where each idea stands: New, Exploring, Refining, Ready, Project, or Archived.</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" data-idea-board-section="Workflow">
+                                <summary>Workflow</summary>
+                                <div class="accordion-body content-stack">
+                                    <p>Review ideas in the table, then expand an idea row to manage its notes.</p>
                                 </div>
                             </details>
                         </div>
@@ -49,16 +59,6 @@
                         <p>Scan, compare, and update early ideas.</p>
                         <div class="idea-board-table-caption">
                             <span>Idea Board table with expandable notes rows</span>
-                            <details class="idea-board-show-filter" data-idea-board-show-filter>
-                                <summary>Show</summary>
-                                <div class="idea-board-show-filter__menu">
-                                    <div class="action-group action-group--tight">
-                                        <button class="btn btn--compact" type="button" data-idea-board-filter-select-all>Select All</button>
-                                        <button class="btn btn--compact" type="button" data-idea-board-filter-clear-all>Clear All</button>
-                                    </div>
-                                    <div class="idea-board-show-filter__options" data-idea-board-status-options></div>
-                                </div>
-                            </details>
                         </div>
                         <div class="table-wrapper" data-idea-board-section="Idea Table">
                             <table class="data-table data-table--fixed" aria-label="Idea Board table with expandable notes rows" data-idea-board-table>

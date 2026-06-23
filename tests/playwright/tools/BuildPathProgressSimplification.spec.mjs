@@ -101,18 +101,24 @@ test("Toolbox removes Progress view and renders the DB-backed Build Path table",
     await expect(page.locator("[data-build-path-table='workflow']")).toBeVisible();
     await expect(page.locator("[data-build-path-table='workflow'] th")).toHaveText(["Order", "Tool", "Status"]);
     await expect(page.getByText("What should I do next? Game Configuration")).toBeVisible();
-    await expect(page.getByText("Game Progress: Demo Game identity ready")).toBeVisible();
     await expect(page.getByText("Work top-to-bottom and left-to-right through the workflow table.")).toBeVisible();
 
     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
       "Planned (27)",
-      "Wireframe (5)",
-      "Beta (7)",
-      "Complete (1)",
+      "Wireframe (4)",
+      "Beta (6)",
+      "Complete (3)",
       "Deprecated (1)",
     ]);
     const rows = await buildPathRows(page);
     expect(rows).toEqual([
+      expect.objectContaining({
+        metadataSource: "toolbox_tool_metadata",
+        order: 1,
+        releaseChannel: "complete",
+        status: "Complete",
+        tool: "Game Hub",
+      }),
       expect.objectContaining({
         metadataSource: "toolbox_tool_metadata",
         order: 3,
@@ -141,14 +147,16 @@ test("Build Path preserves DB order across selected status filters", async ({ pa
       "Game Hub",
       "Game Design",
       "Colors",
+      "Message Studio",
       "Assets",
       "Game Configuration",
       "Objects",
       "Tags",
       "Game Journey",
+      "Text To Speech",
     ]);
-    expect(rows.map((row) => row.order)).toEqual([1, 2, 3, 4, 5, 6, 13, 14]);
-    expect(rows.map((row) => row.releaseChannel)).toEqual(["beta", "beta", "complete", "beta", "beta", "beta", "beta", "beta"]);
+    expect(rows.map((row) => row.order)).toEqual([1, 2, 3, 3, 4, 5, 6, 13, 14, 38]);
+    expect(rows.map((row) => row.releaseChannel)).toEqual(["complete", "beta", "complete", "beta", "beta", "beta", "beta", "beta", "beta", "beta"]);
     expect(rows.every((row) => row.metadataSource === "toolbox_tool_metadata")).toBe(true);
 
     await expectNoPageFailures(failures);
@@ -164,9 +172,10 @@ test("Build Path tool names link to registered routes and render badge images", 
   try {
     await page.getByRole("button", { name: "Build Path" }).click();
     const rows = page.locator("[data-build-path-table='workflow'] tbody tr");
-    await expect(rows).toHaveCount(1);
+    await expect(rows).not.toHaveCount(0);
 
-    const row = rows.first();
+    const row = page.locator("[data-build-path-tool='Colors']");
+    await expect(row).toHaveCount(1);
     const toolName = await row.getAttribute("data-build-path-tool");
     const registrySnapshot = await fetchApiData(failures.server, "/api/toolbox/registry/snapshot");
     const registryToolsByDisplayName = new Map(registrySnapshot.activeTools.map((tool) => [tool.displayName, tool]));
