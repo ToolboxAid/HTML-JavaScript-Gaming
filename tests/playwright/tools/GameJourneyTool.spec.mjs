@@ -69,7 +69,6 @@ async function openRepoPage(page, pathName, options = {}) {
   page.on("requestfailed", (request) => {
     failedRequests.push(`FAILED ${request.url()}`);
   });
-
   if (collectCoverage) {
     await workspaceV2CoverageReporter.start(page);
   }
@@ -258,6 +257,7 @@ test("Game Journey progress dashboard summarizes completion metrics", async ({ p
   const failedRequests = [];
   const pageErrors = [];
   const consoleErrors = [];
+  const recommendedTargetRequests = [];
 
   page.on("pageerror", (error) => {
     pageErrors.push(error.message);
@@ -274,6 +274,12 @@ test("Game Journey progress dashboard summarizes completion metrics", async ({ p
   });
   page.on("requestfailed", (request) => {
     failedRequests.push(`FAILED ${request.url()}`);
+  });
+  page.on("request", (request) => {
+    const requestUrl = request.url();
+    if (requestUrl.includes("/api/toolbox/game-journey/repositories/") && requestUrl.includes("/methods/updateRecommendedTarget")) {
+      recommendedTargetRequests.push(request.postDataJSON());
+    }
   });
 
   try {
@@ -332,12 +338,23 @@ test("Game Journey progress dashboard summarizes completion metrics", async ({ p
       "Next action: mark one finished section item complete so overall progress can rise above 0%.",
     ]);
     await expect(page.locator("[data-journey-recommended-target]")).toHaveCount(5);
+    const recommendedTargetOrder = await page.locator("[data-journey-recommended-target]").evaluateAll((rows) => (
+      rows.map((row) => row.dataset.journeyRecommendedTarget)
+    ));
+    expect(recommendedTargetOrder).toEqual([
+      "hero",
+      "enemy",
+      "boss",
+      "background",
+      "music",
+    ]);
+    await expect(page.locator("[data-journey-recommended-targets] th")).toHaveText(["Target", "Section", "Count"]);
     await expect(page.locator("[data-journey-recommended-target] td:first-child")).toHaveText([
-      "Hero",
-      "Enemy",
-      "Boss",
-      "Background",
-      "Music",
+      "Hero [1]",
+      "Enemy [4]",
+      "Boss [1]",
+      "Background [3]",
+      "Music [5]",
     ]);
     await expect(page.locator("[data-journey-recommended-target='hero'] td").nth(1)).toHaveText("Objects");
     await expect(page.locator("[data-journey-recommended-target='enemy'] td").nth(1)).toHaveText("Objects");
@@ -349,11 +366,19 @@ test("Game Journey progress dashboard summarizes completion metrics", async ({ p
     await expect(page.locator("[data-journey-target-input='boss']")).toHaveValue("1");
     await expect(page.locator("[data-journey-target-input='background']")).toHaveValue("3");
     await expect(page.locator("[data-journey-target-input='music']")).toHaveValue("5");
+    await expect(page.locator("[data-journey-recommended-target] input[type='checkbox']")).toHaveCount(0);
+    await expect(page.locator("[data-journey-target-input='hero']")).toHaveAttribute("type", "number");
+    await expect(page.locator("[data-journey-target-input='hero']")).toHaveAttribute("inputmode", "numeric");
+    await expect(page.locator("[data-journey-target-input='hero']")).toHaveAttribute("aria-label", "Hero count");
     await page.locator("[data-journey-target-input='hero']").fill("2");
     await expect(page.locator("[data-journey-target-status]")).toHaveText("Saved Hero target at 2.");
     await expect(page.locator("[data-journey-target-input='hero']")).toHaveValue("2");
+    await expect(page.locator("[data-journey-target-count-preview='hero']")).toHaveText(" [2]");
+    expect(recommendedTargetRequests).toHaveLength(1);
+    expect(recommendedTargetRequests[0].args).toEqual(["hero", 2]);
     await page.reload({ waitUntil: "networkidle" });
     await expect(page.locator("[data-journey-target-input='hero']")).toHaveValue("2");
+    await expect(page.locator("[data-journey-target-count-preview='hero']")).toHaveText(" [2]");
     const repositoryData = await fetchApiData(server, "/api/toolbox/game-journey/repositories", {
       body: JSON.stringify({ options: {} }),
       method: "POST",
