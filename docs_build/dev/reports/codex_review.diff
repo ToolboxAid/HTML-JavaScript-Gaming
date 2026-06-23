@@ -1,116 +1,92 @@
-diff --git a/toolbox/colors/colors.js b/assets/toolbox/colors/js/index.js
-similarity index 97%
-rename from toolbox/colors/colors.js
-rename to assets/toolbox/colors/js/index.js
-index 99efed4f5..dcc0631e5 100644
---- a/toolbox/colors/colors.js
-+++ b/assets/toolbox/colors/js/index.js
-@@ -1,20 +1,36 @@
+diff --git a/toolbox/game-design/game-design.js b/assets/toolbox/game-design/js/index.js
+similarity index 92%
+rename from toolbox/game-design/game-design.js
+rename to assets/toolbox/game-design/js/index.js
+index 51466ecff..af61960cd 100644
+--- a/toolbox/game-design/game-design.js
++++ b/assets/toolbox/game-design/js/index.js
+@@ -1,10 +1,19 @@
  import {
--  CURATED_PALETTE_COLLECTIONS,
--  NUMERIC_VARIANT_COUNTS,
--  PALETTE_SOURCE_USER,
--  PALETTE_GENERATOR_DEFAULTS,
--  PALETTE_TOOL_KEY,
--  PALETTE_VARIANTS,
--  PALETTE_WORKSPACE_PATH,
--  PICKER_PREVIEW_DEFAULTS,
--  PICKER_PREVIEW_SORT_OPTIONS,
--  SIZE_OPTIONS,
--  SORT_OPTIONS,
--  SUGGESTED_TAGS,
--  createGameWorkspacePaletteApiRepository,
--  normalizePaletteSwatchInput,
--  validatePaletteSwatchInput
--} from "./palette-api-client.js";
-+  callServerToolFunction,
+-  GAME_DESIGN_GAME_TYPES,
+-  GAME_DESIGN_GENRES,
+-  GAME_DESIGN_PLAYER_MODES,
+-  GAME_DESIGN_PLAY_STYLES,
+-  createGameDesignApiRepository
+-} from "./game-design-api-client.js";
 +  createServerRepositoryClient,
 +  readServerToolConstants,
 +  requireServerConstant,
 +} from "../../../../src/api/server-api-client.js";
 +
-+const constants = readServerToolConstants("palette");
++const constants = readServerToolConstants("game-design");
 +
-+export const PALETTE_SOURCE_USER = requireServerConstant(constants, "PALETTE_SOURCE_USER", "palette");
-+export const PALETTE_TOOL_KEY = requireServerConstant(constants, "PALETTE_TOOL_KEY", "palette");
-+export const PALETTE_WORKSPACE_PATH = requireServerConstant(constants, "PALETTE_WORKSPACE_PATH", "palette");
-+export const CURATED_PALETTE_COLLECTIONS = Object.freeze(requireServerConstant(constants, "CURATED_PALETTE_COLLECTIONS", "palette"));
-+export const NUMERIC_VARIANT_COUNTS = Object.freeze(requireServerConstant(constants, "NUMERIC_VARIANT_COUNTS", "palette"));
-+export const PALETTE_GENERATOR_DEFAULTS = Object.freeze(requireServerConstant(constants, "PALETTE_GENERATOR_DEFAULTS", "palette"));
-+export const PALETTE_VARIANTS = Object.freeze(requireServerConstant(constants, "PALETTE_VARIANTS", "palette"));
-+export const PICKER_PREVIEW_DEFAULTS = Object.freeze(requireServerConstant(constants, "PICKER_PREVIEW_DEFAULTS", "palette"));
-+export const PICKER_PREVIEW_SORT_OPTIONS = Object.freeze(requireServerConstant(constants, "PICKER_PREVIEW_SORT_OPTIONS", "palette"));
-+export const SIZE_OPTIONS = Object.freeze(requireServerConstant(constants, "SIZE_OPTIONS", "palette"));
-+export const SORT_OPTIONS = Object.freeze(requireServerConstant(constants, "SORT_OPTIONS", "palette"));
-+export const SUGGESTED_TAGS = Object.freeze(requireServerConstant(constants, "SUGGESTED_TAGS", "palette"));
++export const GAME_DESIGN_GAME_TYPES = Object.freeze(requireServerConstant(constants, "GAME_DESIGN_GAME_TYPES", "game-design"));
++export const GAME_DESIGN_GENRES = Object.freeze(requireServerConstant(constants, "GAME_DESIGN_GENRES", "game-design"));
++export const GAME_DESIGN_PLAYER_MODES = Object.freeze(requireServerConstant(constants, "GAME_DESIGN_PLAYER_MODES", "game-design"));
++export const GAME_DESIGN_PLAY_STYLES = Object.freeze(requireServerConstant(constants, "GAME_DESIGN_PLAY_STYLES", "game-design"));
 +
-+export function createGameWorkspacePaletteApiRepository(options = {}) {
-+  return createServerRepositoryClient("palette", options);
-+}
-+
-+export function normalizePaletteSwatchInput(input) {
-+  return callServerToolFunction("palette", "normalizePaletteSwatchInput", input);
-+}
-+
-+export function validatePaletteSwatchInput(input, existingSwatches, options) {
-+  return callServerToolFunction("palette", "validatePaletteSwatchInput", input, existingSwatches, options);
++export function createGameDesignApiRepository(options = {}) {
++  return createServerRepositoryClient("game-design", options);
 +}
 
+ const repository = createGameDesignApiRepository();
  const params = new URLSearchParams(window.location.search);
-
-diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_019-low-risk-tool-migration-4.md b/docs_build/dev/reports/PR_26172_CHARLIE_019-low-risk-tool-migration-4.md
+diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_020-low-risk-tool-migration-5.md b/docs_build/dev/reports/PR_26172_CHARLIE_020-low-risk-tool-migration-5.md
 new file mode 100644
-index 000000000..61a0e573b
+index 000000000..1a9aed02a
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_CHARLIE_019-low-risk-tool-migration-4.md
-@@ -0,0 +1,103 @@
-+# PR_26172_CHARLIE_019-low-risk-tool-migration-4
++++ b/docs_build/dev/reports/PR_26172_CHARLIE_020-low-risk-tool-migration-5.md
+@@ -0,0 +1,107 @@
++# PR_26172_CHARLIE_020-low-risk-tool-migration-5
 +
 +## Summary
 +
 +Status: PASS with documented validation blockers
 +
-+This PR migrated the Colors toolbox JS family to the canonical tool asset structure selected by PR017.
++This PR migrated the Game Design toolbox JS family to the canonical tool asset structure selected by PR017.
 +
 +Canonical path:
 +
-+- `assets/toolbox/colors/js/index.js`
++- `assets/toolbox/game-design/js/index.js`
 +
 +Removed legacy active JS paths:
 +
-+- `toolbox/colors/colors.js`
-+- `toolbox/colors/palette-api-client.js`
++- `toolbox/game-design/game-design.js`
++- `toolbox/game-design/game-design-api-client.js`
 +
 +No CSS migration was required.
 +
 +## Files Reviewed
 +
-+- `toolbox/colors/index.html`
-+- `toolbox/colors/colors.js`
-+- `toolbox/colors/palette-api-client.js`
-+- `assets/toolbox/colors/js/index.js`
++- `toolbox/game-design/index.html`
++- `toolbox/game-design/game-design.js`
++- `toolbox/game-design/game-design-api-client.js`
++- `assets/toolbox/game-design/js/index.js`
 +- `scripts/validate-canonical-repository-structure.mjs`
 +- `scripts/validate-browser-env-agnostic.mjs`
 +- `tests/dev-runtime/ProductDataProviderContractHardening.test.mjs`
-+- `tests/playwright/tools/PaletteToolMockRepository.spec.mjs`
++- `tests/playwright/tools/GameDesignMockRepository.spec.mjs`
++- `tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs`
 +
 +## Files Changed
 +
 +| File | Change |
 +| --- | --- |
-+| `assets/toolbox/colors/js/index.js` | Moved Colors page module into canonical location and folded in the palette API client wrapper. |
-+| `toolbox/colors/palette-api-client.js` | Removed after wrapper was consolidated into the canonical module. |
-+| `toolbox/colors/index.html` | Updated module script source to canonical path. |
-+| `scripts/validate-canonical-repository-structure.mjs` | Removed Colors legacy JS exceptions. |
-+| `scripts/validate-browser-env-agnostic.mjs` | Updated Colors product-data entrypoint path. |
-+| `tests/dev-runtime/ProductDataProviderContractHardening.test.mjs` | Updated Colors product-data entrypoint path. |
++| `assets/toolbox/game-design/js/index.js` | Moved Game Design page module into canonical location and folded in the API client wrapper. |
++| `toolbox/game-design/game-design-api-client.js` | Removed after wrapper was consolidated into the canonical module. |
++| `toolbox/game-design/index.html` | Updated module script source to canonical path. |
++| `scripts/validate-canonical-repository-structure.mjs` | Removed Game Design legacy JS exceptions. |
++| `scripts/validate-browser-env-agnostic.mjs` | Updated Game Design product-data entrypoint path. |
++| `tests/dev-runtime/ProductDataProviderContractHardening.test.mjs` | Updated Game Design product-data entrypoint path. |
++| `tests/playwright/tools/GameDesignMockRepository.spec.mjs` | Added test-server API URL isolation matching other toolbox specs so local `.env` does not force browser calls to `127.0.0.1:5501`. |
++| `tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs` | Replaced the retired Game Design legacy fixture with a still-approved Controls legacy fixture. |
 +
 +## Behavior Preservation
 +
-+- The HTML route remains `toolbox/colors/index.html`.
-+- The browser module still creates the palette repository through the existing server API client.
-+- Existing DOM selectors and palette rendering logic were preserved.
-+- Palette constants and server helper functions were preserved in the canonical module.
++- The HTML route remains `toolbox/game-design/index.html`.
++- The browser module still creates the Game Design repository through the existing server API client.
++- Existing DOM selectors and handoff rendering logic were preserved.
++- Game Design constants and repository factory were preserved in the canonical module.
 +- No persistence behavior was added.
 +- No additional tool family was migrated.
 +
@@ -118,143 +94,177 @@ index 000000000..61a0e573b
 +
 +| Command | Result | Notes |
 +| --- | --- | --- |
-+| `rg "toolbox/colors/(colors|palette-api-client)\\.js|palette-api-client" -n --glob '!docs_build/dev/reports/**' --glob '!tmp/**' --glob '!node_modules/**'` | PASS | No active stale Colors JS references remain. |
-+| `node --check assets/toolbox/colors/js/index.js` | PASS | Syntax valid. |
++| `rg "toolbox/game-design/(game-design|game-design-api-client)\\.js|game-design-api-client" -n --glob '!docs_build/dev/reports/**' --glob '!tmp/**' --glob '!node_modules/**'` | PASS | No stale active Game Design JS references remain. |
++| `node --check assets/toolbox/game-design/js/index.js` | PASS | Syntax valid. |
 +| `node --check scripts/validate-canonical-repository-structure.mjs` | PASS | Syntax valid. |
 +| `node --check scripts/validate-browser-env-agnostic.mjs` | PASS | Syntax valid. |
 +| `node --check tests/dev-runtime/ProductDataProviderContractHardening.test.mjs` | PASS | Syntax valid. |
-+| `npm run validate:canonical-structure` | PASS | Blocking violations: 0. Approved legacy exceptions reduced to 488. |
++| `node --check tests/playwright/tools/GameDesignMockRepository.spec.mjs` | PASS | Syntax valid. |
++| `node --check tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs` | PASS | Syntax valid. |
++| `node --test tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs` | PASS | Guardrail regression passed. |
++| `npm run validate:canonical-structure` | PASS | Blocking violations: 0. Approved legacy exceptions reduced to 486. |
 +| `git diff --check` | PASS | Whitespace validation passed. |
-+| `npx playwright test tests/playwright/tools/PaletteToolMockRepository.spec.mjs` | FAIL | 1 test passed; 8 failed on pre-existing behavior/state/API expectations, including legacy Game Journey metrics SQLite protection surfacing in Colors log. |
++| `npx playwright test tests/playwright/tools/GameDesignMockRepository.spec.mjs` | FAIL | Browser reached same-origin API after test isolation, but Local API returned 500 for Game Design mutating methods and known Game Journey completion metrics route. |
 +
 +## Playwright Failure Notes
 +
-+The targeted Palette spec loaded the migrated canonical module and ran. The failures were not missing script or 404 failures for the new canonical path.
++The targeted Game Design spec loaded the migrated canonical module. The failures were not missing script or 404 failures for the new canonical path.
 +
-+Observed failing expectations included:
++Observed blockers:
 +
-+- Seed naming drift: expected `Demo Project - Game Project`, received `Demo Game - Game`.
-+- Palette state count drift across swatch/pin/tag flows.
-+- Existing layout assertion failure in picker row alignment.
-+- Known legacy Game Journey completion metrics SQLite protection message surfaced in the Colors invalid-payload test.
-+- Admin Controls route expectation missing `Controls.` heading.
++- `500 /api/toolbox/game-design/repositories/.../methods/saveDesign`
++- Legacy Game Journey completion metrics SQLite protection message replacing expected Game Design status text
++- `500 /api/game-journey/completion-metrics`
 +
-+These are outside this PR's one-tool canonical path migration and should be handled by separate test/API hardening work if owner requests it.
++The Game Journey completion metrics failure is the previously documented legacy SQLite preservation blocker from PR006A. The Game Design repository-method 500 is a Local API/persistence behavior outside this canonical path migration.
 +
 +## Requirement Checklist
 +
 +| Requirement | Result | Notes |
 +| --- | --- | --- |
-+| Migrate second safest tool from PR017 | PASS | Colors migrated. |
-+| Move JS to canonical structure | PASS | `assets/toolbox/colors/js/index.js`. |
++| Migrate third safest tool from PR017 | PASS | Game Design migrated. |
++| Move JS to canonical structure | PASS | `assets/toolbox/game-design/js/index.js`. |
 +| Move CSS only if required | PASS | No CSS move required. |
-+| Preserve behavior | PASS with validation blocker | Code path preserved; full Playwright is blocked by unrelated behavioral assertions. |
-+| Update references | PASS | HTML, guardrail, and product-data checks updated. |
++| Preserve behavior | PASS with validation blocker | Code path preserved; full Playwright is blocked by existing API/persistence 500s. |
++| Update references | PASS | HTML, guardrail, product-data, and guardrail regression references updated. |
 +| Targeted validation only | PASS | No samples or full smoke run. |
-+| Do not repeat PR018 | PASS | Game Configuration was not modified in this PR. |
++| Do not repeat PR018 or PR019 | PASS | Game Configuration and Colors were not modified in this PR. |
 +
 +## Branch Validation
 +
 +| Check | Result | Notes |
 +| --- | --- | --- |
 +| Current branch is Charlie stack branch | PASS | `PR_26172_CHARLIE_repository-compliance-stack` |
-+| Worktree clean before PR019 edits | PASS | PR018 was committed and pushed before PR019 edits. |
-+| Local/origin sync before PR019 edits | PASS | `0 0` before PR019 edits. |
++| Worktree clean before PR020 edits | PASS | PR019 was committed and pushed before PR020 edits. |
++| Local/origin sync before PR020 edits | PASS | `0 0` before PR020 edits. |
 +| Stack remains unmerged | PASS | No merge performed. |
 +
 +## Manual Validation Notes
 +
 +- Continue stack: YES.
 +- The migration reduced canonical legacy exceptions by two additional files.
-+- Palette Playwright failures should be reviewed separately because the canonical script path is loading and the failures are behavioral/API expectations.
++- Owner review should treat remaining Game Design Playwright failures as Local API/persistence validation blockers, not canonical path migration blockers.
 diff --git a/scripts/validate-browser-env-agnostic.mjs b/scripts/validate-browser-env-agnostic.mjs
-index 8b05c3ac1..74ad938a7 100644
+index 74ad938a7..031e290a5 100644
 --- a/scripts/validate-browser-env-agnostic.mjs
 +++ b/scripts/validate-browser-env-agnostic.mjs
-@@ -61,7 +61,7 @@ const accountAuthPages = Object.freeze([
- ]);
- const productApiClientFiles = Object.freeze([
-   "toolbox/assets/assets-api-client.js",
--  "toolbox/colors/palette-api-client.js",
-+  "assets/toolbox/colors/js/index.js",
+@@ -64,7 +64,7 @@ const productApiClientFiles = Object.freeze([
+   "assets/toolbox/colors/js/index.js",
    "toolbox/controls/controls-api-client.js",
    "assets/toolbox/game-configuration/js/index.js",
-   "toolbox/game-design/game-design-api-client.js",
+-  "toolbox/game-design/game-design-api-client.js",
++  "assets/toolbox/game-design/js/index.js",
+   "toolbox/game-journey/game-journey-api-client.js",
+   "toolbox/game-hub/game-hub-api-client.js",
+   "toolbox/objects/objects-api-client.js",
 diff --git a/scripts/validate-canonical-repository-structure.mjs b/scripts/validate-canonical-repository-structure.mjs
-index 18fc45000..d3cc7d985 100644
+index d3cc7d985..073499f4e 100644
 --- a/scripts/validate-canonical-repository-structure.mjs
 +++ b/scripts/validate-canonical-repository-structure.mjs
-@@ -9,8 +9,6 @@ export const APPROVED_LEGACY_JS_PATHS = Object.freeze(new Set([
-   "toolbox/assets/assets-api-client.js",
-   "toolbox/assets/assets-upload-worker.js",
+@@ -11,8 +11,6 @@ export const APPROVED_LEGACY_JS_PATHS = Object.freeze(new Set([
    "toolbox/assets/assets.js",
--  "toolbox/colors/colors.js",
--  "toolbox/colors/palette-api-client.js",
    "toolbox/controls/controls-api-client.js",
    "toolbox/controls/controls.js",
-   "toolbox/game-design/game-design-api-client.js",
+-  "toolbox/game-design/game-design-api-client.js",
+-  "toolbox/game-design/game-design.js",
+   "toolbox/game-hub/game-hub-api-client.js",
+   "toolbox/game-hub/game-hub.js",
+   "toolbox/game-journey/game-journey-api-client.js",
 diff --git a/tests/dev-runtime/ProductDataProviderContractHardening.test.mjs b/tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
-index b49845aee..2f156af8c 100644
+index 2f156af8c..d6ee4a607 100644
 --- a/tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
 +++ b/tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
-@@ -110,7 +110,7 @@ test("Active browser product-data entrypoints use API or service clients", () =>
-
-   const productApiClients = [
-     "toolbox/assets/assets-api-client.js",
--    "toolbox/colors/palette-api-client.js",
-+    "assets/toolbox/colors/js/index.js",
+@@ -113,7 +113,7 @@ test("Active browser product-data entrypoints use API or service clients", () =>
+     "assets/toolbox/colors/js/index.js",
      "toolbox/controls/controls-api-client.js",
      "assets/toolbox/game-configuration/js/index.js",
-     "toolbox/game-design/game-design-api-client.js",
-diff --git a/toolbox/colors/index.html b/toolbox/colors/index.html
-index a0e9e8276..c3f03f4de 100644
---- a/toolbox/colors/index.html
-+++ b/toolbox/colors/index.html
-@@ -376,7 +376,7 @@
-     <div data-partial="footer"></div>
-     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
-     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
--    <script type="module" src="toolbox/colors/colors.js"></script>
-+    <script type="module" src="assets/toolbox/colors/js/index.js"></script>
- </body>
+-    "toolbox/game-design/game-design-api-client.js",
++    "assets/toolbox/game-design/js/index.js",
+     "toolbox/game-journey/game-journey-api-client.js",
+     "toolbox/game-hub/game-hub-api-client.js",
+     "toolbox/objects/objects-api-client.js",
+diff --git a/tests/playwright/tools/GameDesignMockRepository.spec.mjs b/tests/playwright/tools/GameDesignMockRepository.spec.mjs
+index f6385183e..ebdaf6f9c 100644
+--- a/tests/playwright/tools/GameDesignMockRepository.spec.mjs
++++ b/tests/playwright/tools/GameDesignMockRepository.spec.mjs
+@@ -1,4 +1,5 @@
+ import { expect, test } from "@playwright/test";
++import process from "node:process";
+ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
+ import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
+ import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
+@@ -18,8 +19,26 @@ test.afterAll(async () => {
+   await workspaceV2CoverageReporter.writeReport();
+ });
 
- </html>
-diff --git a/toolbox/colors/palette-api-client.js b/toolbox/colors/palette-api-client.js
++function restoreEnvValue(key, value) {
++  if (value === undefined) {
++    delete process.env[key];
++    return;
++  }
++  process.env[key] = value;
++}
++
+ async function openRepoPage(page, pathName) {
+   const server = await startRepoServer();
++  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
++  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
++  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
++  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
++  const closeServer = server.close.bind(server);
++  server.close = async () => {
++    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
++    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
++    await closeServer();
++  };
+   const failedRequests = [];
+   const pageErrors = [];
+   const consoleErrors = [];
+diff --git a/tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs b/tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs
+index 20adc8b0b..ea9ed180a 100644
+--- a/tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs
++++ b/tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs
+@@ -14,7 +14,7 @@ test("canonical repository structure guardrail accepts canonical paths and appro
+     "assets/theme-v2/js/admin-system-health.js",
+     "assets/theme-v2/css/theme.css",
+     "src/engine/rendering/Renderer.js",
+-    "toolbox/game-design/game-design.js",
++    "toolbox/controls/controls.js",
+     "src/engine/ui/baseLayout.css",
+     "tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs",
+     "tests/runtime/V2SessionValidation.test.mjs",
+diff --git a/toolbox/game-design/game-design-api-client.js b/toolbox/game-design/game-design-api-client.js
 deleted file mode 100644
-index 127b5a70b..000000000
---- a/toolbox/colors/palette-api-client.js
+index 561906791..000000000
+--- a/toolbox/game-design/game-design-api-client.js
 +++ /dev/null
-@@ -1,33 +0,0 @@
+@@ -1,16 +0,0 @@
 -import {
--  callServerToolFunction,
 -  createServerRepositoryClient,
 -  readServerToolConstants,
 -  requireServerConstant,
 -} from "../../src/api/server-api-client.js";
 -
--const constants = readServerToolConstants("palette");
+-const constants = readServerToolConstants("game-design");
 -
--export const PALETTE_SOURCE_USER = requireServerConstant(constants, "PALETTE_SOURCE_USER", "palette");
--export const PALETTE_TOOL_KEY = requireServerConstant(constants, "PALETTE_TOOL_KEY", "palette");
--export const PALETTE_WORKSPACE_PATH = requireServerConstant(constants, "PALETTE_WORKSPACE_PATH", "palette");
--export const CURATED_PALETTE_COLLECTIONS = Object.freeze(requireServerConstant(constants, "CURATED_PALETTE_COLLECTIONS", "palette"));
--export const NUMERIC_VARIANT_COUNTS = Object.freeze(requireServerConstant(constants, "NUMERIC_VARIANT_COUNTS", "palette"));
--export const PALETTE_GENERATOR_DEFAULTS = Object.freeze(requireServerConstant(constants, "PALETTE_GENERATOR_DEFAULTS", "palette"));
--export const PALETTE_VARIANTS = Object.freeze(requireServerConstant(constants, "PALETTE_VARIANTS", "palette"));
--export const PICKER_PREVIEW_DEFAULTS = Object.freeze(requireServerConstant(constants, "PICKER_PREVIEW_DEFAULTS", "palette"));
--export const PICKER_PREVIEW_SORT_OPTIONS = Object.freeze(requireServerConstant(constants, "PICKER_PREVIEW_SORT_OPTIONS", "palette"));
--export const SIZE_OPTIONS = Object.freeze(requireServerConstant(constants, "SIZE_OPTIONS", "palette"));
--export const SORT_OPTIONS = Object.freeze(requireServerConstant(constants, "SORT_OPTIONS", "palette"));
--export const SUGGESTED_TAGS = Object.freeze(requireServerConstant(constants, "SUGGESTED_TAGS", "palette"));
+-export const GAME_DESIGN_GAME_TYPES = Object.freeze(requireServerConstant(constants, "GAME_DESIGN_GAME_TYPES", "game-design"));
+-export const GAME_DESIGN_GENRES = Object.freeze(requireServerConstant(constants, "GAME_DESIGN_GENRES", "game-design"));
+-export const GAME_DESIGN_PLAYER_MODES = Object.freeze(requireServerConstant(constants, "GAME_DESIGN_PLAYER_MODES", "game-design"));
+-export const GAME_DESIGN_PLAY_STYLES = Object.freeze(requireServerConstant(constants, "GAME_DESIGN_PLAY_STYLES", "game-design"));
 -
--export function createGameWorkspacePaletteApiRepository(options = {}) {
--  return createServerRepositoryClient("palette", options);
+-export function createGameDesignApiRepository(options = {}) {
+-  return createServerRepositoryClient("game-design", options);
 -}
--
--export function normalizePaletteSwatchInput(input) {
--  return callServerToolFunction("palette", "normalizePaletteSwatchInput", input);
--}
--
--export function validatePaletteSwatchInput(input, existingSwatches, options) {
--  return callServerToolFunction("palette", "validatePaletteSwatchInput", input, existingSwatches, options);
--}
+diff --git a/toolbox/game-design/index.html b/toolbox/game-design/index.html
+index 3335515ac..e8fda5433 100644
+--- a/toolbox/game-design/index.html
++++ b/toolbox/game-design/index.html
+@@ -195,7 +195,7 @@
+     <div data-partial="footer"></div>
+     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+-    <script type="module" src="toolbox/game-design/game-design.js"></script>
++    <script type="module" src="assets/toolbox/game-design/js/index.js"></script>
+ </body>
+
+ </html>

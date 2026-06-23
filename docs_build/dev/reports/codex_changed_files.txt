@@ -1,9 +1,11 @@
-assets/toolbox/colors/js/index.js
-docs_build/dev/reports/PR_26172_CHARLIE_019-low-risk-tool-migration-4.md
+assets/toolbox/game-design/js/index.js
+docs_build/dev/reports/PR_26172_CHARLIE_020-low-risk-tool-migration-5.md
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
 scripts/validate-browser-env-agnostic.mjs
 scripts/validate-canonical-repository-structure.mjs
 tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
-toolbox/colors/index.html
-toolbox/colors/palette-api-client.js
+tests/playwright/tools/GameDesignMockRepository.spec.mjs
+tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs
+toolbox/game-design/game-design-api-client.js
+toolbox/game-design/index.html

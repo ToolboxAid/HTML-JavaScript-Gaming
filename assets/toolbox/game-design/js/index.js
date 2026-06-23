@@ -1,10 +1,19 @@
 import {
-  GAME_DESIGN_GAME_TYPES,
-  GAME_DESIGN_GENRES,
-  GAME_DESIGN_PLAYER_MODES,
-  GAME_DESIGN_PLAY_STYLES,
-  createGameDesignApiRepository
-} from "./game-design-api-client.js";
+  createServerRepositoryClient,
+  readServerToolConstants,
+  requireServerConstant,
+} from "../../../../src/api/server-api-client.js";
+
+const constants = readServerToolConstants("game-design");
+
+export const GAME_DESIGN_GAME_TYPES = Object.freeze(requireServerConstant(constants, "GAME_DESIGN_GAME_TYPES", "game-design"));
+export const GAME_DESIGN_GENRES = Object.freeze(requireServerConstant(constants, "GAME_DESIGN_GENRES", "game-design"));
+export const GAME_DESIGN_PLAYER_MODES = Object.freeze(requireServerConstant(constants, "GAME_DESIGN_PLAYER_MODES", "game-design"));
+export const GAME_DESIGN_PLAY_STYLES = Object.freeze(requireServerConstant(constants, "GAME_DESIGN_PLAY_STYLES", "game-design"));
+
+export function createGameDesignApiRepository(options = {}) {
+  return createServerRepositoryClient("game-design", options);
+}
 
 const repository = createGameDesignApiRepository();
 const params = new URLSearchParams(window.location.search);
