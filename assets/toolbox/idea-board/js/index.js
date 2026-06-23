@@ -1,7 +1,8 @@
 import { createServerRepositoryClient } from "../../../../src/api/server-api-client.js";
 import { getSessionCurrent } from "../../../../src/api/session-api-client.js";
 
-const statusOptions = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project", "Archived"]);
+const editableStatusOptions = Object.freeze(["New", "Exploring", "Refining", "Ready"]);
+const filterStatusOptions = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project", "Archived"]);
 const defaultVisibleStatuses = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project"]);
 const userId = "user-1";
 const gameHubRoute = "toolbox/game-hub/index.html";
@@ -123,7 +124,7 @@ function visibleIdeas() {
 }
 
 function previousStatusForRestore(record) {
-  return statusOptions.includes(record.previousStatus) && record.previousStatus !== "Archived"
+  return filterStatusOptions.includes(record.previousStatus) && record.previousStatus !== "Archived"
     ? record.previousStatus
     : "Refining";
 }
@@ -168,7 +169,7 @@ function renderStatusFilter(root) {
   const options = root.querySelector("[data-idea-board-status-options]");
   if (!options) return;
   options.replaceChildren();
-  for (const status of statusOptions) {
+  for (const status of filterStatusOptions) {
     const label = document.createElement("label");
     label.className = "idea-board-show-filter__option";
     const input = document.createElement("input");
@@ -195,8 +196,7 @@ function statusSelect(value) {
   const select = document.createElement("select");
   select.setAttribute("aria-label", "Idea status");
   select.dataset.ideaBoardIdeaStatusInput = "true";
-  for (const optionValue of statusOptions) {
-    if (optionValue === "Project" || optionValue === "Archived") continue;
+  for (const optionValue of editableStatusOptions) {
     const option = document.createElement("option");
     option.value = optionValue;
     option.textContent = optionValue;
@@ -756,7 +756,7 @@ function handleNoteAction(root, actionControl) {
 
 function handleFilterAction(root, actionControl) {
   if (actionControl.matches("[data-idea-board-filter-select-all]")) {
-    state.visibleStatuses = new Set(statusOptions);
+    state.visibleStatuses = new Set(filterStatusOptions);
     updateStatus(root, "Showing all statuses.");
   } else if (actionControl.matches("[data-idea-board-filter-clear-all]")) {
     state.visibleStatuses = new Set();

@@ -5,6 +5,10 @@ import { isBrowserExtensionNoise } from "../../helpers/browserExtensionNoise.mjs
 import { createGameJourneyCompletionMetricsPostgresClientStub } from "../../helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 
+const EDITABLE_STATUS_OPTIONS = ["New", "Exploring", "Refining", "Ready"];
+const FILTER_STATUS_OPTIONS = ["New", "Exploring", "Refining", "Ready", "Project", "Archived"];
+const DEFAULT_VISIBLE_STATUS_OPTIONS = ["New", "Exploring", "Refining", "Ready", "Project"];
+
 function restoreEnvValue(key, value) {
   if (value === undefined) {
     delete process.env[key];
@@ -213,7 +217,7 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
     await expect(statusFilterAccordion.locator("summary")).toHaveText("Status Filter");
     await expect(statusFilterAccordion.locator("[data-idea-board-filter-select-all]")).toHaveText("Select All");
     await expect(statusFilterAccordion.locator("[data-idea-board-filter-clear-all]")).toHaveText("Clear All");
-    await expect(statusFilterAccordion.locator("[data-idea-board-status-filter-option]")).toHaveCount(6);
+    await expect(statusFilterAccordion.locator("[data-idea-board-status-filter-option]")).toHaveCount(FILTER_STATUS_OPTIONS.length);
     const statusFilterTheme = await statusFilterAccordion.locator("[data-idea-board-status-filter-option][value='New']").evaluate((input) => ({
       accentColor: getComputedStyle(input).accentColor,
       toolGroupColor: getComputedStyle(input.closest(".control-lab")).getPropertyValue("--tool-group-color").trim(),
@@ -222,18 +226,11 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
       accentColor: "rgb(255, 45, 45)",
       toolGroupColor: "#ff2d2d",
     });
-    await expect(statusFilterAccordion.locator(".idea-board-show-filter__option")).toHaveText([
-      "New",
-      "Exploring",
-      "Refining",
-      "Ready",
-      "Project",
-      "Archived",
-    ]);
+    await expect(statusFilterAccordion.locator(".idea-board-show-filter__option")).toHaveText(FILTER_STATUS_OPTIONS);
     const checkedStatuses = await page.locator("[data-idea-board-status-filter-option]:checked").evaluateAll((inputs) => (
       inputs.map((input) => input.value)
     ));
-    expect(checkedStatuses).toEqual(["New", "Exploring", "Refining", "Ready", "Project"]);
+    expect(checkedStatuses).toEqual(DEFAULT_VISIBLE_STATUS_OPTIONS);
     await expect(page.locator("[data-idea-board-status-filter-option][value='Archived']")).not.toBeChecked();
     await expect(page.getByText(/another/i)).toHaveCount(0);
     await expect(page.locator("[data-idea-board-notes-chevron]")).toHaveCount(0);
@@ -330,12 +327,7 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
     const ideaInputRow = page.locator("[data-idea-board-idea-input-row]").last();
     await expect(ideaInputRow.locator("[data-idea-board-idea-action]")).toHaveText(["Save", "Cancel"]);
     await expect(ideaInputRow.locator("[data-idea-board-idea-status-input]")).toHaveCount(1);
-    await expect(ideaInputRow.locator("[data-idea-board-idea-status-input] option")).toHaveText([
-      "New",
-      "Exploring",
-      "Refining",
-      "Ready",
-    ]);
+    await expect(ideaInputRow.locator("[data-idea-board-idea-status-input] option")).toHaveText(EDITABLE_STATUS_OPTIONS);
     await expect(ideaInputRow.locator("td").nth(2)).toHaveText("0 Notes");
     await page.locator("[data-idea-board-idea-input]").fill("Lantern Reef");
     await page.locator("[data-idea-board-pitch-input]").fill("Guide light through a reef that rearranges at dusk.");
@@ -355,6 +347,7 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
     await page.locator("[data-idea-board-idea-row='lantern-reef'] [data-idea-board-idea-action='edit']").click();
     await expect(page.locator("[data-idea-board-idea-input-row] [data-idea-board-idea-action]")).toHaveText(["Save", "Cancel"]);
     await expect(page.locator("[data-idea-board-idea-status-input]")).toHaveCount(1);
+    await expect(page.locator("[data-idea-board-idea-status-input] option")).toHaveText(EDITABLE_STATUS_OPTIONS);
     await page.locator("[data-idea-board-idea-status-input]").selectOption("Ready");
     await page.locator("[data-idea-board-idea-action='save']").click();
     await expect(page.locator("[data-idea-board-idea-row='lantern-reef'] td").nth(1)).toHaveText("Ready");

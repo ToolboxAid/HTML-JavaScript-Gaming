@@ -4,6 +4,9 @@ import { isBrowserExtensionNoise } from "../../helpers/browserExtensionNoise.mjs
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
+const IDEA_BOARD_EDITABLE_STATUS_OPTIONS = ["New", "Exploring", "Refining", "Ready"];
+const IDEA_BOARD_FILTER_STATUS_OPTIONS = ["New", "Exploring", "Refining", "Ready", "Project", "Archived"];
+
 const TOOL_ROUTE_SMOKE_CASES = [
   { heading: "Game Journey", route: "/tools/game-journey/index.html" },
   { heading: "Idea Board", route: "/tools/idea-board/index.html" },
@@ -319,6 +322,8 @@ test("Idea Board launches from Toolbox with accordion table notes model", async 
     ]);
     await expect(page.locator("[data-idea-board-table]")).toBeVisible();
     await expect(page.locator("[data-idea-board-table] > thead th[scope='col']")).toHaveText(["Idea", "Pitch", "Status", "Notes", "Actions"]);
+    await expect(page.locator("[data-idea-board-status-filter-option]")).toHaveCount(IDEA_BOARD_FILTER_STATUS_OPTIONS.length);
+    await expect(page.locator(".idea-board-show-filter__option")).toHaveText(IDEA_BOARD_FILTER_STATUS_OPTIONS);
     await expect(page.locator("[data-idea-board-idea-row]")).toHaveCount(3);
     await expect(page.locator("[data-idea-board-expanded-row]")).toHaveCount(0);
     await expect(page.locator("[data-idea-board-add-idea]")).toHaveText("Add Idea");
@@ -360,6 +365,7 @@ test("Idea Board launches from Toolbox with accordion table notes model", async 
     await page.locator("[data-idea-board-add-idea]").click();
     await page.locator("[data-idea-board-idea-input]").fill("Launch Tile");
     await page.locator("[data-idea-board-pitch-input]").fill("Turn a polished board idea into a project.");
+    await expect(page.locator("[data-idea-board-idea-status-input] option")).toHaveText(IDEA_BOARD_EDITABLE_STATUS_OPTIONS);
     await page.locator("[data-idea-board-idea-status-input]").selectOption("Ready");
     await page.locator("[data-idea-board-idea-action='save']").click();
     await expect(page.locator("[data-idea-board-idea-row='launch-tile'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Create Project", "Delete"]);
