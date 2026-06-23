@@ -1,6 +1,1 @@
-R100	toolbox/assets/assets-upload-worker.js	assets/toolbox/assets/js/assets-upload-worker.js
-M	assets/toolbox/assets/js/index.js
-A	docs_build/dev/reports/PR_26172_CHARLIE_042-canonical-tool-worker-placement.md
-M	scripts/validate-canonical-repository-structure.mjs
-M	tests/playwright/tools/AssetToolMockRepository.spec.mjs
-M	tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs
+A	docs_build/dev/reports/PR_26172_CHARLIE_043-final-charlie-compliance-reaudit.md

@@ -1,185 +1,121 @@
-diff --git a/toolbox/assets/assets-upload-worker.js b/assets/toolbox/assets/js/assets-upload-worker.js
-similarity index 100%
-rename from toolbox/assets/assets-upload-worker.js
-rename to assets/toolbox/assets/js/assets-upload-worker.js
-diff --git a/assets/toolbox/assets/js/index.js b/assets/toolbox/assets/js/index.js
-index e5df5a3a7..d09e88a81 100644
---- a/assets/toolbox/assets/js/index.js
-+++ b/assets/toolbox/assets/js/index.js
-@@ -71,7 +71,7 @@ const UPLOAD_ACCEPT_BY_ASSET_TYPE = Object.freeze({
- const DEFAULT_UPLOAD_CHUNK_SIZE_BYTES = 64 * 1024;
- const MAX_UPLOAD_CHUNK_SIZE_BYTES = 1024 * 1024;
- const SERVER_RECEIVE_PROGRESS_INTERVAL_MS = 1000;
--const UPLOAD_WORKER_URL = new URL("../../../../toolbox/assets/assets-upload-worker.js", import.meta.url);
-+const UPLOAD_WORKER_URL = new URL("./assets-upload-worker.js", import.meta.url);
- 
- function isBrowserValidationHost() {
-   return ["", "localhost", "127.0.0.1", "::1"].includes(window.location.hostname);
-diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_042-canonical-tool-worker-placement.md b/docs_build/dev/reports/PR_26172_CHARLIE_042-canonical-tool-worker-placement.md
+diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_043-final-charlie-compliance-reaudit.md b/docs_build/dev/reports/PR_26172_CHARLIE_043-final-charlie-compliance-reaudit.md
 new file mode 100644
-index 000000000..86c635601
+index 000000000..2dcc449fd
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_CHARLIE_042-canonical-tool-worker-placement.md
-@@ -0,0 +1,86 @@
-+# PR_26172_CHARLIE_042-canonical-tool-worker-placement
++++ b/docs_build/dev/reports/PR_26172_CHARLIE_043-final-charlie-compliance-reaudit.md
+@@ -0,0 +1,115 @@
++# PR_26172_CHARLIE_043-final-charlie-compliance-reaudit
 +
 +## Summary
 +
-+PASS: The Assets upload worker was moved from the remaining legacy toolbox sidecar path into the canonical tool-local worker path:
++PASS with documented retained blockers outside Charlie scope.
 +
-+- From: `toolbox/assets/assets-upload-worker.js`
-+- To: `assets/toolbox/assets/js/assets-upload-worker.js`
++Charlie canonical migration work now has:
 +
-+The Assets tool entrypoint now constructs the module worker with `new URL("./assets-upload-worker.js", import.meta.url)`.
++- Canonical tool entrypoints for the migrated target tools.
++- Shared API clients under `assets/js/shared/`.
++- Assets upload worker under the canonical tool-local worker path.
++- Canonical structure guardrail passing with zero blocking violations.
 +
-+## Canonical Worker Rule Applied
++## PASS/FAIL by Repository Area
 +
-+PASS: Tool-local web workers may use:
++| Area | Status | Notes |
++| --- | --- | --- |
++| Canonical tool JS paths | PASS | Migrated tool entrypoints use `assets/toolbox/{tool-name}/js/index.js`. |
++| Shared JS client paths | PASS | Assets, Controls, and Game Journey API clients use `assets/js/shared/`. |
++| Tool-local worker placement | PASS | Assets upload worker uses `assets/toolbox/assets/js/assets-upload-worker.js`. |
++| Retained exceptions from PR_037 list | PASS | No active retained exception remains for the audited list. |
++| Canonical guardrail | PASS | `npm run validate:canonical-structure` reports zero blocking violations. |
++| Guardrail regression test | PASS | `node --test tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs` passes. |
++| Targeted route/worker validation | PASS | Assets page, canonical worker, and shared client routes return HTTP 200; worker processes file payload. |
++| Browser environment validation | FAIL, documented blocker | Fails on product service contract and Messages user-facing `Local API` wording findings outside this Charlie migration scope. |
 +
-+`assets/toolbox/{tool-name}/js/{worker-name}.js`
++## Remaining Exceptions
 +
-+For guardrail enforcement, the implemented validator allows `assets/toolbox/{tool-name}/js/*-worker.js` as a canonical tool-local worker sidecar while keeping general helper files outside `index.js` disallowed.
++No remaining exceptions from the retained-exception list:
 +
-+## Files Reviewed
++- `toolbox/controls/controls-api-client.js`: resolved by shared client migration.
++- `toolbox/assets/assets-api-client.js`: resolved by shared client migration.
++- `toolbox/assets/assets-upload-worker.js`: resolved by canonical tool-local worker migration.
++- `toolbox/game-journey/game-journey-api-client.js`: resolved by shared client migration.
 +
-+- `docs_build/dev/ProjectInstructions/`
-+- `project-instructions/addendums/canonical-repository-structure.md`
-+- `project-instructions/addendums/legacy-migration-policy.md`
-+- `assets/toolbox/assets/js/index.js`
-+- `toolbox/assets/assets-upload-worker.js`
-+- `scripts/validate-canonical-repository-structure.mjs`
-+- `tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs`
-+- `tests/playwright/tools/AssetToolMockRepository.spec.mjs`
++Remaining approved legacy exceptions reported by the canonical guardrail are outside this targeted Charlie EOD workstream. Current guardrail count: 477 approved legacy exceptions, zero blocking violations.
 +
-+## Files Changed
++## Known Blockers Not Caused by Charlie
 +
-+- `assets/toolbox/assets/js/assets-upload-worker.js`
-+- `assets/toolbox/assets/js/index.js`
-+- `scripts/validate-canonical-repository-structure.mjs`
-+- `tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs`
-+- `tests/playwright/tools/AssetToolMockRepository.spec.mjs`
-+- `toolbox/assets/assets-upload-worker.js` removed by move
++### Browser Environment Gate
++
++`npm run validate:browser-env-agnostic` fails with:
++
++- Product service contract findings in `src/dev-runtime/server/local-api-router.mjs`.
++- User-facing implementation wording findings in `toolbox/messages/index.html` and `toolbox/messages/messages.js`.
++
++The report also confirms:
++
++- Deployment-label branching findings: none.
++- Deprecated SQLite/Local DB technical debt: none.
++
++These findings were not introduced by the Charlie canonical migration stack and require a separate product/runtime or Messages governance lane.
++
++### Assets Upload Completion
++
++The full Assets worker Playwright flow still reaches the worker, then reports:
++
++`Batch upload complete: 0 written, 1 failed, 0 skipped, 0 warnings.`
++
++This matches the previously documented Assets upload persistence/API blocker from PR_038. The focused worker validation confirms the moved worker loads and processes payloads successfully.
++
++## Final Executable Code Change Summary
++
++- Added shared helper/status module support.
++- Added canonical repository guardrail script and targeted regression coverage.
++- Migrated low-risk tool JS to canonical `assets/toolbox/{tool}/js/index.js` paths.
++- Migrated shared browser API clients to `assets/js/shared/`.
++- Migrated Assets upload worker to `assets/toolbox/assets/js/assets-upload-worker.js`.
++- Updated browser entrypoints, tests, and validation allowlists for the migrated paths.
 +
 +## Validation Commands
 +
-+- PASS: `node --check assets/toolbox/assets/js/index.js`
-+- PASS: `node --check assets/toolbox/assets/js/assets-upload-worker.js`
 +- PASS: `git diff --check`
 +- PASS: `npm run validate:canonical-structure`
 +- PASS: `node --test tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs`
-+- PASS: Targeted in-browser worker load probe:
-+  - loaded `/toolbox/assets/index.html`
-+  - fetched `/assets/toolbox/assets/js/assets-upload-worker.js`
-+  - constructed `new Worker("/assets/toolbox/assets/js/assets-upload-worker.js", { type: "module" })`
-+  - processed a 3-byte file to worker completion
-+
-+## Diagnostic Validation Note
-+
-+- FAIL, documented blocker: `npx playwright test tests/playwright/tools/AssetToolMockRepository.spec.mjs -g "Assets worker keeps UI responsive"` still reaches the worker and then reports `Batch upload complete: 0 written, 1 failed, 0 skipped, 0 warnings.`
-+- This matches the previously documented Assets upload persistence/API blocker and is not evidence that the worker path failed. The focused worker-load probe confirms the moved worker loads and completes file processing.
++- PASS: Targeted route/worker validation probe:
++  - `/toolbox/assets/index.html` HTTP 200
++  - `/assets/toolbox/assets/js/index.js` HTTP 200
++  - `/assets/toolbox/assets/js/assets-upload-worker.js` HTTP 200
++  - `/assets/js/shared/assets-api-client.js` HTTP 200
++  - `/assets/js/shared/controls-api-client.js` HTTP 200
++  - `/assets/js/shared/game-journey-api-client.js` HTTP 200
++  - Browser worker processed `final-worker-probe.bin` to completion
++- FAIL, documented blocker: `npm run validate:browser-env-agnostic`
 +
 +## Branch Validation
 +
 +- PASS: Current branch was `PR_26172_CHARLIE_repository-compliance-stack`.
-+- PASS: Worktree was clean before PR_042 edits.
-+- PASS: Local/origin sync was `0 0` before PR_042 edits.
-+- PASS: Scope stayed within Team Charlie repository compliance and canonical structure work.
++- PASS: Worktree was clean before PR_043 report generation.
++- PASS: Local/origin sync was `0 0` before PR_043 report generation.
++- PASS: No runtime code was changed by PR_043.
++- PASS: Stack remains unmerged until EOD merge execution.
 +
 +## Requirement Checklist
 +
 +- PASS: Reviewed ProjectInstructions.
-+- PASS: Reviewed canonical repository structure governance.
-+- PASS: Defined safe canonical tool-local worker path.
-+- PASS: Applied path only to Assets upload worker.
-+- PASS: Updated Worker URL construction.
-+- PASS: Preserved worker behavior.
-+- PASS: No feature changes.
-+- PASS: Updated canonical guardrail and targeted guardrail test.
-+- PASS: Confirmed old active worker path is no longer referenced outside historical reports.
++- PASS: Verified canonical tool JS paths.
++- PASS: Verified shared JS client paths.
++- PASS: Verified retained exceptions.
++- PASS: Verified worker placement.
++- PASS: Verified guardrail status.
++- PASS: Reported browser validation status.
++- PASS: Documented known unrelated blockers.
 +- PASS: Created ZIP artifact under `tmp/`.
 +
 +## Manual Validation Notes
 +
-+- The upload worker is still an Assets-only file processing worker.
-+- The worker move does not change upload payload shape, file chunking, progress messages, or completion/error message schema.
-+- Browser environment validation was not run for PR_042 because browser environment validation rules were not changed.
++- The targeted worker validation avoids the known upload record write failure and directly verifies worker URL serving, browser module-worker construction, and worker payload processing.
++- The browser environment gate failure should not block Charlie canonical merge review because its findings are in product/runtime and Messages wording areas outside this workstream.
 +
-+## Recommendation
++## Merge Readiness Recommendation
 +
-+Continue to PR_043 final Charlie compliance re-audit. The only retained upload blocker is the pre-existing Assets persistence/API write failure documented in earlier Charlie reports.
-diff --git a/scripts/validate-canonical-repository-structure.mjs b/scripts/validate-canonical-repository-structure.mjs
-index 5d963a1ec..e9296d04c 100644
---- a/scripts/validate-canonical-repository-structure.mjs
-+++ b/scripts/validate-canonical-repository-structure.mjs
-@@ -6,7 +6,6 @@ import { fileURLToPath } from "node:url";
- const repoRoot = path.resolve(fileURLToPath(new URL("..", import.meta.url)));
- 
- export const APPROVED_LEGACY_JS_PATHS = Object.freeze(new Set([
--  "toolbox/assets/assets-upload-worker.js",
-   "toolbox/game-hub/game-hub-api-client.js",
-   "toolbox/game-hub/game-hub.js",
-   "toolbox/messages/message-tts-service-registry.js",
-@@ -104,6 +103,7 @@ function record(severity, area, file, message, expected) {
- 
- function isCanonicalAssetJs(filePath) {
-   return /^assets\/toolbox\/[^/]+\/js\/index\.js$/.test(filePath) ||
-+    /^assets\/toolbox\/[^/]+\/js\/[^/]+-worker\.js$/.test(filePath) ||
-     filePath.startsWith("assets/js/shared/") ||
-     filePath.startsWith("assets/theme-v2/js/");
- }
-@@ -123,8 +123,8 @@ function auditJavaScript(filePath) {
-       "FAIL",
-       "JS",
-       filePath,
--      "JavaScript under assets must use assets/toolbox/{tool}/js/index.js, assets/js/shared/, or assets/theme-v2/js/.",
--      "assets/toolbox/{tool}/js/index.js or assets/js/shared/",
-+      "JavaScript under assets must use assets/toolbox/{tool}/js/index.js, assets/toolbox/{tool}/js/{worker-name}.js for tool-local workers, assets/js/shared/, or assets/theme-v2/js/.",
-+      "assets/toolbox/{tool}/js/index.js, assets/toolbox/{tool}/js/{worker-name}.js, or assets/js/shared/",
-     );
-   }
-   if (filePath.startsWith("toolbox/")) {
-@@ -134,7 +134,7 @@ function auditJavaScript(filePath) {
-         "JS",
-         filePath,
-         "Approved legacy toolbox JavaScript sidecar awaiting canonical migration.",
--        "assets/toolbox/{tool}/js/index.js or assets/js/shared/",
-+        "assets/toolbox/{tool}/js/index.js, assets/toolbox/{tool}/js/{worker-name}.js, or assets/js/shared/",
-       );
-     }
-     return record(
-diff --git a/tests/playwright/tools/AssetToolMockRepository.spec.mjs b/tests/playwright/tools/AssetToolMockRepository.spec.mjs
-index 3cc244b26..6a3f6e56f 100644
---- a/tests/playwright/tools/AssetToolMockRepository.spec.mjs
-+++ b/tests/playwright/tools/AssetToolMockRepository.spec.mjs
-@@ -817,7 +817,7 @@ test("Assets worker keeps UI responsive while server-received upload progress dr
-     const workerPromise = page.waitForEvent("worker");
-     await editRow.getByLabel("Upload File").setInputFiles(uploadFile("worker-progress.png", "image/png", Buffer.alloc(48, 7)));
-     const worker = await workerPromise;
--    expect(worker.url()).toContain("toolbox/assets/assets-upload-worker.js");
-+    expect(worker.url()).toContain("assets/toolbox/assets/js/assets-upload-worker.js");
- 
-     await expect(inlineProgress).toBeVisible();
-     await expect(progressBar).toHaveJSProperty("value", 0);
-diff --git a/tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs b/tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs
-index 02029aed5..0d5f9fa27 100644
---- a/tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs
-+++ b/tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs
-@@ -13,8 +13,8 @@ test("canonical repository structure guardrail accepts canonical paths and appro
-     "assets/js/shared/dom.js",
-     "assets/theme-v2/js/admin-system-health.js",
-     "assets/theme-v2/css/theme.css",
-+    "assets/toolbox/assets/js/assets-upload-worker.js",
-     "src/engine/rendering/Renderer.js",
--    "toolbox/assets/assets-upload-worker.js",
-     "src/engine/ui/baseLayout.css",
-     "tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs",
-     "tests/runtime/V2SessionValidation.test.mjs",
-@@ -22,7 +22,7 @@ test("canonical repository structure guardrail accepts canonical paths and appro
- 
-   assert.equal(result.status, "PASS");
-   assert.equal(result.findings.length, 0);
--  assert.equal(result.legacy.length, 3);
-+  assert.equal(result.legacy.length, 2);
- });
- 
- test("canonical repository structure guardrail fails unapproved violation fixture paths", () => {
++READY for Owner EOD merge review.
++
++The Charlie stack is merge-ready with retained blockers documented as pre-existing or outside Charlie scope.
