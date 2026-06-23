@@ -1,73 +1,95 @@
-diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_035-game-journey-api-client-migration-or-exception.md b/docs_build/dev/reports/PR_26172_CHARLIE_035-game-journey-api-client-migration-or-exception.md
+diff --git a/docs_build/dev/reports/PR_26172_CHARLIE_036-final-target-tool-compliance-reaudit.md b/docs_build/dev/reports/PR_26172_CHARLIE_036-final-target-tool-compliance-reaudit.md
 new file mode 100644
-index 000000000..d0f945e60
+index 000000000..296d94e65
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26172_CHARLIE_035-game-journey-api-client-migration-or-exception.md
-@@ -0,0 +1,90 @@
-+# PR_26172_CHARLIE_035-game-journey-api-client-migration-or-exception
++++ b/docs_build/dev/reports/PR_26172_CHARLIE_036-final-target-tool-compliance-reaudit.md
+@@ -0,0 +1,120 @@
++# PR_26172_CHARLIE_036-final-target-tool-compliance-reaudit
 +
 +## Summary
 +
-+Status: PASS with temporary legacy exception retained.
++Status: PASS with retained exceptions documented.
 +
-+No executable implementation files were changed in this PR. The remaining Game Journey API client was reviewed after the PR_034 entrypoint migration:
++Final reaudit scope:
 +
++- Controls
++- Assets / Asset Browser / Vector Art
++- Game Journey
++
++The active entrypoints for the target tools have moved to canonical paths. Remaining legacy paths are API-client or worker exceptions with removal plans.
++
++## Migrated Paths
++
++| Tool area | Legacy path | Canonical path | Status |
++| --- | --- | --- | --- |
++| Controls | `toolbox/controls/controls.js` | `assets/toolbox/controls/js/index.js` | Migrated |
++| Assets | `toolbox/assets/assets.js` | `assets/toolbox/assets/js/index.js` | Migrated |
++| Game Journey | `toolbox/game-journey/game-journey.js` | `assets/toolbox/game-journey/js/index.js` | Migrated |
++
++## Retained Exceptions
++
++| Path | Reason | Removal plan |
++| --- | --- | --- |
++| `toolbox/controls/controls-api-client.js` | Shared by Controls and `account/user-controls-page.js`. | Define shared client placement, move shared code, update both importers, then remove exception. |
++| `toolbox/assets/assets-api-client.js` | Shared by Assets and Objects. | Define shared client placement, update Assets and Objects together, then remove exception. |
++| `toolbox/assets/assets-upload-worker.js` | Worker filename/path pattern is not yet defined by canonical guardrail. | Add approved worker placement rule, move worker, update `new Worker(...)`, run upload validation, then remove exception. |
++| `toolbox/game-journey/game-journey-api-client.js` | Guardrail currently approves only `assets/toolbox/{tool}/js/index.js`; second tool JS file placement is not approved. | Add secondary tool-module or shared-client placement rule, move/update imports, run Game Journey validation, then remove exception. |
++
++## Remaining Legacy Paths
++
++Active retained legacy paths:
++
++- `toolbox/controls/controls-api-client.js`
++- `toolbox/assets/assets-api-client.js`
++- `toolbox/assets/assets-upload-worker.js`
 +- `toolbox/game-journey/game-journey-api-client.js`
 +
-+The file remains in its approved legacy location because moving it into `assets/toolbox/game-journey/js/` would create a second canonical tool JS file that the current guardrail does not allow.
++Historical references:
 +
-+## Files Reviewed
++- `docs_build/pr/PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff/BUILD_PR.md`
++- `docs_build/pr/PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff/APPLY_PR.md`
 +
-+- `docs_build/dev/ProjectInstructions/README.txt`
-+- `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
-+- `docs_build/dev/reports/PR_26172_CHARLIE_033-game-journey-canonical-js-migration-audit.md`
-+- `docs_build/dev/reports/PR_26172_CHARLIE_034-game-journey-safe-entrypoint-migration.md`
-+- `assets/toolbox/game-journey/js/index.js`
-+- `toolbox/game-journey/game-journey-api-client.js`
-+- `toolbox/game-journey/index.html`
-+- `tests/playwright/tools/GameJourneyTool.spec.mjs`
-+- `scripts/validate-canonical-repository-structure.mjs`
-+- `scripts/validate-browser-env-agnostic.mjs`
++Historical references were not rewritten.
 +
-+## Decision
++## Guardrail Status
 +
-+Decision: retain `toolbox/game-journey/game-journey-api-client.js` as a temporary legacy exception.
++- Command: `npm run validate:canonical-structure`
++- Result: PASS
++- Blocking violations: 0
++- Approved legacy exceptions: 481
 +
-+Reason:
++## Browser Validation Status
 +
-+- The current canonical guardrail approves the tool entrypoint path `assets/toolbox/{tool-name}/js/index.js`.
-+- It does not approve an additional tool-local API client file under `assets/toolbox/game-journey/js/`.
-+- Folding the API client into `index.js` would be a larger refactor and could obscure the completion-metrics API boundary.
-+- The API client re-exports completion metrics helpers from `src/api/game-journey-completion-api-client.js`, so it should stay isolated until the shared-client/secondary-file rule is explicit.
++- Command: `npm run validate:browser-env-agnostic`
++- Result: FAIL
++- Findings:
++  - Product service contract findings in `src/dev-runtime/server/local-api-router.mjs`.
++  - User-facing implementation wording findings in Messages.
++- Classification: existing broader browser-env gate findings, not introduced by this target-tool migration stack.
 +
-+Removal plan:
++## Report and ZIP Artifact Check
 +
-+1. Add or clarify a canonical rule for tool-local secondary modules, or approve a shared API-client location.
-+2. Move the API client only after the guardrail recognizes the destination.
-+3. Update the canonical Game Journey entrypoint import.
-+4. Re-run Game Journey route validation and completion-metrics validation.
-+5. Remove `toolbox/game-journey/game-journey-api-client.js` from approved legacy exceptions after validation passes.
++| Scope | Report | ZIP |
++| --- | --- | --- |
++| PR_26172_CHARLIE_028 | Present | Present |
++| PR_26172_CHARLIE_029 | Present | Present |
++| PR_26172_CHARLIE_030 | Present | Present |
++| PR_26172_CHARLIE_031 | Present | Present |
++| PR_26172_CHARLIE_032 | Present | Present |
++| PR_26172_CHARLIE_033 | Present | Present |
++| PR_26172_CHARLIE_034 | Present | Present |
++| PR_26172_CHARLIE_035 | Present | Present |
 +
-+## Validation Lane Report
++## Stack Readiness
 +
-+- `node --check toolbox/game-journey/game-journey-api-client.js`
-+  - Result: PASS
-+- `npm run validate:canonical-structure`
-+  - Result: PASS
-+  - Blocking violations: 0
-+  - Approved legacy exceptions: 481
-+- Active reference check
-+  - Result: PASS
-+  - The canonical entrypoint imports `toolbox/game-journey/game-journey-api-client.js`.
-+  - Guardrail and hardening tests still list the retained exception.
-+  - Historical `docs_build/pr` references to old `game-journey.js` remain unchanged.
-+- Targeted Game Journey Playwright validation:
-+  - Command: `npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs --grep "Game Journey summary table uses inline notes" --workers=1 --reporter=line --timeout=90000`
-+  - Result: PASS
++Ready for Owner review: YES, with documented retained exceptions and validation caveats.
 +
-+## Completion Metrics Note
++Owner review should note:
 +
-+The targeted validation used the existing test Postgres completion-metrics stub and passed. The local legacy SQLite preservation blocker documented in PR_26172_CHARLIE_006A remains a separate recovery/data-preservation concern, not a reason to move the API client in this PR.
++- The target entrypoint migrations are complete.
++- The retained API/worker files require follow-up shared-client or worker-placement governance before removal.
++- Browser-env validation remains blocked by existing non-Charlie findings.
++- Assets full upload Playwright validation is blocked by Local API provider persistence behavior, not by canonical entrypoint path loading.
 +
 +## Branch Validation
 +
@@ -78,19 +100,27 @@ index 000000000..d0f945e60
 +
 +## Requirement Checklist
 +
-+- Use PR_033 and PR_034 results: PASS
-+- Move API client if safe: PASS, not safe under current guardrail.
-+- Retain API client and document temporary legacy exception if not safe: PASS
-+- Preserve behavior: PASS
-+- No feature changes: PASS
-+- Run targeted Game Journey validation: PASS
++- Verify Controls: PASS
++- Verify Assets / Asset Browser / Vector Art: PASS
++- Verify Game Journey: PASS
++- Report migrated paths: PASS
++- Report retained exceptions: PASS
++- Report remaining legacy paths: PASS
++- Provide removal plans: PASS
 +- Run canonical structure guardrail: PASS
++- Run browser validation: PASS with existing failure documented.
++- Confirm all reports exist: PASS
 +- Confirm ZIP exists: PASS after artifact creation.
 +
 +## Manual Validation Notes
 +
-+The canonical Game Journey entrypoint is already active. Keeping the API client in the existing legacy path avoids introducing an unapproved secondary JS file pattern and avoids changing completion-metrics behavior.
++This reaudit confirms the remaining target work is no longer entrypoint migration. It is shared-client and worker-placement cleanup, which should be scoped separately to avoid changing tool behavior under a structure-only migration stack.
 +
-+## Recommendation
++## Recommended Next PRs
 +
-+Continue to PR_036 final target-tool compliance reaudit. Treat `toolbox/game-journey/game-journey-api-client.js` as a retained exception with a defined removal plan.
++1. Shared API-client placement governance for reused toolbox API clients.
++2. Worker placement guardrail for tool-local module workers.
++3. Controls API client shared placement migration.
++4. Assets API client shared placement migration with Objects.
++5. Assets worker migration after worker placement rule exists.
++6. Game Journey API client migration after secondary module or shared-client placement is approved.
