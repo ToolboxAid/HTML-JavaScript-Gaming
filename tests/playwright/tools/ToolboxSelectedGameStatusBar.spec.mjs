@@ -73,6 +73,15 @@ async function openRepoPage(page, pathName, options = {}) {
       });
     });
   }
+  await page.route("**/api/game-journey/completion-metrics", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        data: options.completionMetrics || completionMetricsFixture(),
+        ok: true,
+      }),
+    });
+  });
   if (options.session) {
     const userKey = options.session.userKey || MOCK_DB_KEYS.users.user1;
     await page.route("**/api/session/current", async (route) => {
@@ -113,6 +122,44 @@ function creatorSession() {
   };
 }
 
+function completionMetric(bucketKey, bucketName, completedCount, plannedCount) {
+  return {
+    active: true,
+    bucketKey,
+    bucketName,
+    completedCount,
+    percentComplete: plannedCount > 0 ? Math.round((completedCount / plannedCount) * 100) : 0,
+    plannedCount,
+  };
+}
+
+function completionMetricsFixture() {
+  return {
+    api: "Local API",
+    completedCount: 12,
+    databaseEngine: "Postgres",
+    percentComplete: 10,
+    plannedCount: 125,
+    records: [
+      completionMetric("001-idea", "Idea", 1, 4),
+      completionMetric("002-create", "Create", 3, 5),
+      completionMetric("003-design", "Design", 2, 5),
+      completionMetric("004-graphics", "Graphics", 5, 10),
+      completionMetric("005-audio", "Audio", 0, 4),
+      completionMetric("006-objects", "Objects", 12, 25),
+      completionMetric("007-worlds", "Worlds", 0, 5),
+      completionMetric("008-interface", "Interface", 1, 5),
+      completionMetric("009-controls", "Controls", 1, 4),
+      completionMetric("010-rules", "Rules", 4, 5),
+      completionMetric("011-progression", "Progression", 0, 4),
+      completionMetric("012-play-test", "Play Test", 0, 5),
+      completionMetric("013-publish", "Publish", 0, 5),
+      completionMetric("014-share", "Share", 0, 5),
+    ],
+    serviceContract: "Web UI -> Local API/Service Contract -> Postgres",
+  };
+}
+
 const REMOVED_STATUS_BAR_LABELS = [
   "Selected Game Name",
   "Selected Game Purpose",
@@ -148,6 +195,7 @@ async function statusBarSnapshot(page) {
     const centerPanel = document.querySelector(".tool-center-panel");
     const gameName = bar.querySelector("[data-toolbox-selected-game-name]");
     const message = bar.querySelector("[data-toolbox-status-message]");
+    const progress = bar.querySelector("[data-toolbox-status-progress]");
     const position = getComputedStyle(bar).position;
     const barBox = bar.getBoundingClientRect();
     const footerBox = footer?.getBoundingClientRect();
@@ -165,6 +213,9 @@ async function statusBarSnapshot(page) {
       messageBox: boxSnapshot(message),
       messageText: message?.textContent.replace(/\s+/g, " ").trim() || "",
       position,
+      progressBox: boxSnapshot(progress),
+      progressState: bar.dataset.toolboxProgressState || "",
+      progressText: progress?.textContent.replace(/\s+/g, " ").trim() || "",
       topBeforeFooter: footerBox ? barBox.bottom <= footerBox.top + 1 : false,
     };
   });
@@ -185,6 +236,7 @@ test("shared toolbox status bar shows selected Game Hub game above the footer", 
     await expect(statusBar.locator("[data-toolbox-status-action]")).toHaveCount(0);
     await expect(statusBar.locator("[data-toolbox-selected-game]")).not.toContainText("Under Construction");
     await expect(statusBar.locator("[data-toolbox-status-message]")).toContainText("Game Design mock repository ready.");
+    await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Game Design 2/5 (40%) | Journey 12/125 (10%)");
     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-id", "demo-game");
     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "active");
 
@@ -197,9 +249,35 @@ test("shared toolbox status bar shows selected Game Hub game above the footer", 
     expect(snapshot.dataset.selectedGameRequired).toBe("true");
     expect(snapshot.gameText).toBe("Demo Game");
     expect(snapshot.messageText).toContain("Game Design mock repository ready.");
+    expect(snapshot.progressState).toBe("active");
+    expect(snapshot.progressText).toBe("Game Design 2/5 (40%) | Journey 12/125 (10%)");
     expect(Math.max(snapshot.gameBox.top, snapshot.messageBox.top)).toBeLessThanOrEqual(
       Math.min(snapshot.gameBox.bottom, snapshot.messageBox.bottom),
     );
+    expect(Math.max(snapshot.gameBox.top, snapshot.messageBox.top, snapshot.progressBox.top)).toBeLessThanOrEqual(
+      Math.min(snapshot.gameBox.bottom, snapshot.messageBox.bottom, snapshot.progressBox.bottom),
+    );
+    expect(snapshot.progressBox.right).toBeGreaterThan(snapshot.messageBox.right);
+
+    expectNoPageFailures(failures);
+  } finally {
+    await failures.server.close();
+  }
+});
+
+test("shared toolbox status bar shows right-anchored current tool and journey progress", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/objects/index.html");
+
+  try {
+    const statusBar = page.locator("[data-toolbox-status-bar]");
+    await expect(statusBar).toBeVisible();
+    await expect(statusBar.locator("[data-toolbox-selected-game-name]")).toHaveText("Demo Game");
+    await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Objects 12/25 (48%) | Journey 12/125 (10%)");
+
+    const snapshot = await statusBarSnapshot(page);
+    expect(snapshot.progressState).toBe("active");
+    expect(snapshot.progressText).toBe("Objects 12/25 (48%) | Journey 12/125 (10%)");
+    expect(snapshot.progressBox.right).toBeGreaterThan(snapshot.messageBox.right);
 
     expectNoPageFailures(failures);
   } finally {
@@ -223,6 +301,7 @@ test("shared toolbox status bar center reports save state after Game Hub saves",
     await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
     await expect(statusBar.locator("[data-toolbox-status-message]")).toHaveText("Created and opened Status Bar Save.");
     await expect(statusBar.locator("[data-toolbox-selected-game-name]")).toHaveText("Status Bar Save");
+    await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Game Hub 3/5 (60%) | Journey 12/125 (10%)");
     await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveCount(0);
     await expect(statusBar).not.toContainText("Learning Game");
     await expect(statusBar).not.toContainText("Environment");
@@ -246,6 +325,7 @@ test("shared toolbox status bar anchors to the bottom in tool display mode", asy
     expect(Math.abs(snapshot.bottomGap)).toBeLessThanOrEqual(2);
     expect(snapshot.gameText).toBe("Demo Game");
     expect(snapshot.messageText).toContain("Game Design mock repository ready.");
+    expect(snapshot.progressText).toBe("Game Design 2/5 (40%) | Journey 12/125 (10%)");
     expect(snapshot.centerPanelBox.bottom).toBeLessThanOrEqual(snapshot.barBox.top + 1);
 
     expectNoPageFailures(failures);
@@ -270,6 +350,7 @@ test("Game Hub owner selection updates the global toolbox status bar", async ({ 
     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "active");
     await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
     await expect(statusBar.locator("[data-toolbox-status-message]")).toContainText("Sign in to create or update Game Hub projects.");
+    await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Game Hub 3/5 (60%) | Journey 12/125 (10%)");
 
     expectNoPageFailures(failures);
   } finally {
@@ -287,6 +368,7 @@ test("non-Idea Board toolbox pages show a creator-safe prompt when no Game Hub g
     await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveCount(0);
     await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
     await expect(statusBar.locator("[data-toolbox-status-message]")).toHaveText("Select or create a game in Game Hub before using this toolbox page.");
+    await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Game Design 2/5 (40%) | Journey 12/125 (10%)");
     await expect(statusBar.locator("[data-toolbox-status-action]")).toHaveCount(0);
     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "missing");
     await expect(page.locator("body")).not.toHaveAttribute("data-toolbox-selected-game-id", /.+/);
@@ -313,6 +395,7 @@ test("Idea Board is excluded from selected-game filtering and does not show the 
     await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
     await expect(statusBar.locator("[data-toolbox-status-message]")).toContainText("Ready to shape ideas and notes.");
     await expect(statusBar.locator("[data-toolbox-status-message]")).not.toContainText("Select or create a game");
+    await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Idea Board 1/4 (25%) | Journey 12/125 (10%)");
     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "optional");
     await expect(page.locator("body")).not.toHaveClass(/toolbox-selected-game-missing/);
 

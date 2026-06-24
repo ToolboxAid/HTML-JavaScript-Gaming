@@ -1,7 +1,39 @@
+import { readGameJourneyCompletionMetrics } from "/src/api/game-journey-completion-api-client.js";
 import { createServerRepositoryClient } from "/src/api/server-api-client.js";
+import { getToolBySlug } from "/src/shared/toolbox/tool-metadata-inventory.js";
 
 const EXCLUDED_SELECTED_GAME_TOOLS = new Set(["idea-board"]);
 const STATUS_BAR_SELECTOR = "[data-toolbox-status-bar]";
+const TOOL_PROGRESS_BUCKET_BY_SLUG = Object.freeze({
+  "achievements": "Progression",
+  "assets": "Graphics",
+  "audio": "Audio",
+  "audio-effects": "Audio",
+  "characters": "Objects",
+  "colors": "Graphics",
+  "community": "Share",
+  "controls": "Controls",
+  "events": "Rules",
+  "game-configuration": "Create",
+  "game-design": "Design",
+  "game-hub": "Create",
+  "game-testing": "Play Test",
+  "hitboxes": "Objects",
+  "idea-board": "Idea",
+  "input-mapping-v2": "Controls",
+  "marketplace": "Share",
+  "messages": "Interface",
+  "music": "Audio",
+  "objects": "Objects",
+  "publish": "Publish",
+  "ratings": "Share",
+  "sprites": "Graphics",
+  "tags": "Progression",
+  "text-to-speech": "Audio",
+  "videos": "Graphics",
+  "voices": "Audio",
+  "worlds": "Worlds",
+});
 
 let repository = null;
 let messageObserver = null;
@@ -101,7 +133,10 @@ function createStatusBar() {
   message.setAttribute("role", "status");
   center.append(message);
 
-  inner.append(game, center);
+  const progress = createText("p", "toolbox-status-bar__progress", "toolboxStatusProgress");
+  progress.setAttribute("aria-label", "Tool and journey progress");
+
+  inner.append(game, center, progress);
   bar.append(inner);
   return bar;
 }
@@ -233,6 +268,107 @@ function classifyToolContext(messageText, state, required) {
   return { kind: "action" };
 }
 
+function normalizeTextKey(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "");
+}
+
+function formatToolSlug(slug) {
+  return String(slug || "Tool")
+    .split(/[-_\s]+/)
+    .filter(Boolean)
+    .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
+    .join(" ") || "Tool";
+}
+
+function currentToolContext() {
+  const slug = toolSlugFromPath(mountOptions.pagePath);
+  const tool = getToolBySlug(slug);
+  return {
+    label: tool?.shortLabel || tool?.displayName || tool?.name || formatToolSlug(slug),
+    slug,
+  };
+}
+
+function normalizeProgressRecord(record) {
+  const total = Math.max(0, Number(record?.plannedCount) || 0);
+  const complete = Math.max(0, Math.min(Number(record?.completedCount) || 0, total));
+  const percent = Number.isFinite(Number(record?.percentComplete))
+    ? Math.max(0, Math.min(Number(record.percentComplete), 100))
+    : total > 0
+      ? Math.round((complete / total) * 100)
+      : 0;
+  return {
+    complete,
+    percent,
+    total,
+  };
+}
+
+function formatProgressRecord(label, record) {
+  const progress = normalizeProgressRecord(record);
+  return `${label} ${progress.complete}/${progress.total} (${progress.percent}%)`;
+}
+
+function findMetricForCurrentTool(snapshot, toolContext) {
+  if (toolContext.slug === "game-journey") {
+    return snapshot;
+  }
+
+  const records = Array.isArray(snapshot?.records) ? snapshot.records : [];
+  const explicitBucketName = TOOL_PROGRESS_BUCKET_BY_SLUG[toolContext.slug];
+  const explicitBucket = normalizeTextKey(explicitBucketName);
+  const toolLabel = normalizeTextKey(toolContext.label);
+  const toolSlug = normalizeTextKey(toolContext.slug);
+
+  return records.find((metric) => {
+    const bucketName = normalizeTextKey(metric?.bucketName);
+    return bucketName && (
+      bucketName === explicitBucket ||
+      bucketName === toolLabel ||
+      bucketName === toolSlug
+    );
+  }) || null;
+}
+
+function resolveProgressContext() {
+  const toolContext = currentToolContext();
+  const snapshot = readGameJourneyCompletionMetrics();
+  const currentMetric = findMetricForCurrentTool(snapshot, toolContext);
+  const journeyText = formatProgressRecord("Journey", snapshot);
+
+  if (!currentMetric) {
+    return {
+      state: "unmapped",
+      text: `${toolContext.label} progress unavailable | ${journeyText}`,
+    };
+  }
+
+  return {
+    state: "active",
+    text: `${formatProgressRecord(toolContext.label, currentMetric)} | ${journeyText}`,
+  };
+}
+
+function renderProgressContext(bar) {
+  const progress = bar.querySelector("[data-toolbox-status-progress]");
+  if (!progress) {
+    return;
+  }
+
+  try {
+    const context = resolveProgressContext();
+    bar.dataset.toolboxProgressState = context.state;
+    progress.textContent = context.text;
+    progress.removeAttribute("title");
+  } catch (error) {
+    bar.dataset.toolboxProgressState = "error";
+    progress.textContent = "Progress unavailable";
+    progress.removeAttribute("title");
+  }
+}
+
 function renderSelectedGame(bar, selectedGame, state, messageText) {
   const required = pageRequiresSelectedGame();
   const name = bar.querySelector("[data-toolbox-selected-game-name]");
@@ -247,6 +383,7 @@ function renderSelectedGame(bar, selectedGame, state, messageText) {
   bar.dataset.selectedGameState = state;
   bar.dataset.selectedGameRequired = String(required);
   bar.dataset.toolboxStatusContextKind = context.kind;
+  renderProgressContext(bar);
 
   if (selectedGame) {
     name.textContent = selectedGame.name;
