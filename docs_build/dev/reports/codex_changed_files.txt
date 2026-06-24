@@ -1,28 +1,5 @@
-# git status --short
-M  docs_build/dev/PROJECT_INSTRUCTIONS.md
-M  docs_build/dev/ProjectInstructions/addendums/branch_context_governance.md
-M  docs_build/dev/ProjectInstructions/addendums/branch_lock_governance.md
-M  docs_build/dev/ProjectInstructions/addendums/multi_team.md
-M  docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
-M  docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
-M  docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
-M  docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
-A  docs_build/dev/reports/PR_26175_OWNER_048-pr-open-to-closed-main-return-governance.md
-
-# git ls-files --others --exclude-standard
-
-
-# git diff --stat
-
-
-# git diff --cached --stat
- docs_build/dev/PROJECT_INSTRUCTIONS.md             | 61 ++++++++++++++
- .../addendums/branch_context_governance.md         | 14 ++++
- .../addendums/branch_lock_governance.md            |  4 +
- .../ProjectInstructions/addendums/multi_team.md    | 19 +++++
- .../ProjectInstructions/addendums/pr_workflow.md   | 59 ++++++++++---
- .../addendums/team_release_readiness.md            |  3 +
- .../addendums/team_start_and_release.md            | 24 +++++-
- .../team_assignments/TEAM_ASSIGNMENTS.md           |  6 ++
- ...048-pr-open-to-closed-main-return-governance.md | 97 ++++++++++++++++++++++
- 9 files changed, 273 insertions(+), 14 deletions(-)
+assets/toolbox/idea-board/js/index.js
+docs_build/dev/reports/PR_26175_ALFA_018-alfa-idea-board-polish-consolidation.md
+docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/codex_review.diff
+tests/playwright/tools/IdeaBoardTableNotes.spec.mjs

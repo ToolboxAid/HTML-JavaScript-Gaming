@@ -329,6 +329,22 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
     await expect(ideaInputRow.locator("[data-idea-board-idea-status-input]")).toHaveCount(1);
     await expect(ideaInputRow.locator("[data-idea-board-idea-status-input] option")).toHaveText(EDITABLE_STATUS_OPTIONS);
     await expect(ideaInputRow.locator("td").nth(2)).toHaveText("0 Notes");
+    await ideaInputRow.locator("[data-idea-board-idea-status-input]").evaluate((select) => {
+      const option = document.createElement("option");
+      option.value = "Project";
+      option.textContent = "Project";
+      select.append(option);
+      select.value = "Project";
+    });
+    await page.locator("[data-idea-board-idea-input]").fill("Project Trap");
+    await page.locator("[data-idea-board-pitch-input]").fill("Project status cannot be saved from the editable row.");
+    await page.locator("[data-idea-board-idea-action='save']").click();
+    await expect(page.locator("[data-idea-board-status]")).toHaveText("Enter an idea, pitch, and status before saving.");
+    await expect(page.locator("[data-idea-board-idea-row='project-trap']")).toHaveCount(0);
+    await ideaInputRow.locator("[data-idea-board-idea-status-input]").evaluate((select) => {
+      select.querySelector("option[value='Project']")?.remove();
+      select.value = "Refining";
+    });
     await page.locator("[data-idea-board-idea-input]").fill("Lantern Reef");
     await page.locator("[data-idea-board-pitch-input]").fill("Guide light through a reef that rearranges at dusk.");
     await page.locator("[data-idea-board-idea-status-input]").selectOption("Refining");
