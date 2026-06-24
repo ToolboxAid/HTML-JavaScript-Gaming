@@ -61,6 +61,56 @@ Commit/push during the day is allowed only on assigned team/OWNER/PR branches.
 Merge to main is EOD-only and owner-approved, unless the owner explicitly says:
 "Merge this PR now."
 
+## EOD Merge/Push Cleanup Gate
+
+At EOD merge/push closeout, Codex must convert OWNER-approved decisions into action before shutdown.
+
+Required gate:
+
+1. List all open and draft PRs using GitHub as authority.
+2. Group every PR by team:
+   - Alfa
+   - Bravo
+   - Charlie
+   - Delta
+   - Golf
+   - OWNER
+   - Unknown
+3. Assign every PR exactly one state:
+   - Merge approved
+   - Close approved
+   - Hold with reason
+   - Blocked by dependency
+   - Next review target
+4. Execute OWNER-approved merges before shutdown.
+5. Execute OWNER-approved closures before shutdown.
+6. Do not leave approved merge or close items open unless blocked.
+7. If blocked, document the exact blocker:
+   - draft state
+   - conflict
+   - non-main base
+   - failed validation
+   - missing OWNER approval
+8. Do not delete branches unless explicitly approved.
+9. Produce an EOD report with:
+   - merged PRs
+   - closed PRs
+   - held PRs with reasons
+   - blocked PRs with blockers
+   - next review queue
+   - final branch/worktree/local-origin sync
+
+OWNER_049 lesson:
+- PRs #129, #132, and #134 were merge-approved and still required merge execution.
+- PRs #3 and #51 were close-approved and still required closure execution.
+- PRs #50 and #118 were valid holds and required hold reasons.
+
+Rules:
+- This gate applies after the owner approves a merge/close batch and before EOD shutdown.
+- OWNER approval to merge or close is an instruction to execute that action unless a listed blocker exists.
+- Report-only handling is not sufficient for approved merge/close items.
+- This gate does not authorize branch deletion.
+
 ## EOD Workstream Closeout
 
 At completion of a merged PR or approved workstream:
