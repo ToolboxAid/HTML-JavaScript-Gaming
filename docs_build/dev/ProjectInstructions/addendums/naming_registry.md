@@ -25,11 +25,11 @@ Capture approved Game Foundry Studio names to reduce rename churn.
 
 ## Approved Environment Names
 
-- Local - VS Code environment
-- DEV - local Docker
-- IST - local Docker
-- UAT - VPS
-- PROD - VPS
+- Local - VS Code, Local API, developer workstation
+- DEV - Local Docker, PostgreSQL
+- IST - Local Docker, PostgreSQL
+- UAT - Cloudflare, Supabase PostgreSQL
+- PRD - Cloudflare, Supabase PostgreSQL
 
 ## Approved Package Terms
 

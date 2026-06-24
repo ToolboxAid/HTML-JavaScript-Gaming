@@ -35,6 +35,13 @@ This section is the current OWNER-approved active ownership alignment.
 - System Health
 - Operations
 
+System Health owns:
+- Environment Summary
+- Database Health
+- Storage Health
+- Runtime Health
+- Health Check History
+
 ## Team Delta
 
 - Engine

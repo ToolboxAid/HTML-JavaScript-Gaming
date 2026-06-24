@@ -402,9 +402,9 @@ Required dev-runtime folders:
 - `src/dev-runtime/guest-seeds/`
 
 Rules:
-- UAT/PROD must never import, bundle, or deploy `src/dev-runtime/`.
+- UAT/PRD must never import, bundle, or deploy `src/dev-runtime/`.
 - Active tools must use declared runtime contracts and must not import `src/dev-runtime/` directly.
-- Dev-only adapters may be exposed through existing dev/runtime contract shims only when the deployment boundary keeps `src/dev-runtime/` out of UAT/PROD bundles.
+- Dev-only adapters may be exposed through existing dev/runtime contract shims only when the deployment boundary keeps `src/dev-runtime/` out of UAT/PRD bundles.
 - No fallback auth, session, user, admin, or system user data is allowed.
 - Local session state must resolve selected users and roles from persisted Memory DB `users`, `roles`, and `user_roles` records.
 - Missing users or roles must fail visibly with actionable diagnostics.
@@ -425,6 +425,27 @@ Valid deployment targets are:
 - `UAT`
 - `PRD`
 
+Environment Summary shall display the approved GFS environment model:
+
+- Local
+  - VS Code
+  - Local API
+  - Developer workstation
+- DEV
+  - Local Docker
+  - PostgreSQL
+- IST
+  - Local Docker
+  - PostgreSQL
+- UAT
+  - Cloudflare
+  - Supabase PostgreSQL
+- PRD
+  - Cloudflare
+  - Supabase PostgreSQL
+
+Local is the developer workstation environment. `DEV`, `IST`, `UAT`, and `PRD` remain the deployment targets.
+
 Manual deployment-target flow:
 1. Copy the selected `.env.<target>` file to `.env`.
 2. Run validation.
@@ -443,6 +464,18 @@ Do not introduce runtime parameters such as:
 `DEV`, `IST`, `UAT`, and `PRD` are deployment targets, not application behaviors.
 
 Application code, runtime code, API/service code, and DB runtime scripts must not branch behavior by deployment target name.
+
+Storage model:
+- GFS uses a shared Cloudflare R2 bucket.
+- Environment folders are `/local`, `/dev`, `/ist`, `/uat`, and `/prd`.
+- Storage health checks must validate bucket connectivity, list, upload, read, and delete.
+
+System Health ownership:
+- Environment Summary
+- Database Health
+- Storage Health
+- Runtime Health
+- Health Check History
 
 ## RUNTIME SCRIPT NAMING GOVERNANCE
 
