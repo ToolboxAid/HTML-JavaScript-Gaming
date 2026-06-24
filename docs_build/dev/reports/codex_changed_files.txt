@@ -1,9 +1,38 @@
-docs_build/dev/BUILD_PR.md
-assets/theme-v2/js/toolbox-status-bar.js
-assets/theme-v2/css/status.css
-tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_report.md
-docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_validation-lane.md
-docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_requirements-checklist.md
-docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/codex_changed_files.txt
+# PR_26175_ALFA_047-theme-v2-svg-icon-registry Changed Files
+
+## Source, Test, Documentation, And Report Files
+
+- `docs_build/dev/BUILD_PR.md` - updated
+- `assets/theme-v2/svg/README.md` - added
+- `assets/theme-v2/svg/gfs-add.svg` - added
+- `assets/theme-v2/svg/gfs-chevron-down.svg` - added
+- `assets/theme-v2/svg/gfs-chevron-left.svg` - added
+- `assets/theme-v2/svg/gfs-chevron-right.svg` - added
+- `assets/theme-v2/svg/gfs-chevron-up.svg` - added
+- `assets/theme-v2/svg/gfs-close.svg` - added
+- `assets/theme-v2/svg/gfs-error.svg` - added
+- `assets/theme-v2/svg/gfs-exit-fullscreen.svg` - added
+- `assets/theme-v2/svg/gfs-fullscreen.svg` - added
+- `assets/theme-v2/svg/gfs-info.svg` - added
+- `assets/theme-v2/svg/gfs-menu.svg` - added
+- `assets/theme-v2/svg/gfs-search.svg` - added
+- `assets/theme-v2/svg/gfs-settings.svg` - added
+- `assets/theme-v2/svg/gfs-subtract.svg` - added
+- `assets/theme-v2/svg/gfs-success.svg` - added
+- `assets/theme-v2/svg/gfs-trash.svg` - added
+- `assets/theme-v2/svg/gfs-warning.svg` - added
+- `docs_build/design/theme-v2-icons/theme-v2-icon-style-guide.md` - added
+- `tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs` - added
+- `docs_build/pr/APPLY_PR_26175_ALFA_047-theme-v2-svg-icon-registry.md` - added
+- `docs_build/dev/reports/PR_26175_ALFA_047-theme-v2-svg-icon-registry_report.md` - added
+- `docs_build/dev/reports/PR_26175_ALFA_047-theme-v2-svg-icon-registry_validation-lane.md` - added
+- `docs_build/dev/reports/PR_26175_ALFA_047-theme-v2-svg-icon-registry_requirements-checklist.md` - added
+- `docs_build/dev/reports/PR_26175_ALFA_047-theme-v2-svg-icon-registry_manual-validation-notes.md` - added
+- `docs_build/dev/reports/codex_changed_files.txt` - updated
+- `docs_build/dev/reports/codex_review.diff` - updated
+
+## Validation
+
+- PASS: `npx playwright test tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs --workers=1` ran 5 tests successfully.
+- PASS: `rg -n "<[s]tyle|[s]tyle=" docs_build/design/theme-v2-icons/theme-v2-icon-style-guide.md tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs` returned no matches.
+- PASS: Repo-structured ZIP refreshed at `tmp/PR_26175_ALFA_047-theme-v2-svg-icon-registry_delta.zip`.

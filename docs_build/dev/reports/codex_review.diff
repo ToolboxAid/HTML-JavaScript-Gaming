@@ -1,643 +1,772 @@
-diff --git a/assets/theme-v2/css/status.css b/assets/theme-v2/css/status.css
-index 6acb4555b..4ca9cb266 100644
---- a/assets/theme-v2/css/status.css
-+++ b/assets/theme-v2/css/status.css
-@@ -38,6 +38,7 @@
- .toolbox-status-bar {
-   --toolbox-status-bar-height: var(--space-52);
-   --toolbox-status-game-max: 220px;
-+  --toolbox-status-progress-max: 34vw;
-   width: 100%;
-   min-block-size: var(--toolbox-status-bar-height);
-   border-block: var(--border-standard);
-@@ -50,7 +51,7 @@
-   margin: var(--space-0) auto;
-   padding: var(--space-10) var(--space-0);
-   display: grid;
--  grid-template-columns: minmax(var(--space-0), max-content) minmax(var(--space-0), 1fr);
-+  grid-template-columns: minmax(var(--space-0), max-content) minmax(var(--space-0), 1fr) minmax(var(--space-0), max-content);
-   gap: var(--space-16);
-   align-items: center
- }
-@@ -90,6 +91,19 @@
-   overflow-wrap: anywhere
- }
-
-+.toolbox-status-bar__progress {
-+  min-width: var(--space-0);
-+  max-width: var(--toolbox-status-progress-max);
-+  margin: var(--space-0);
-+  color: var(--muted);
-+  font-size: var(--font-size-sm);
-+  line-height: var(--line-height-tight);
-+  overflow: hidden;
-+  text-align: right;
-+  text-overflow: ellipsis;
-+  white-space: nowrap
-+}
-+
- .toolbox-status-bar[data-selected-game-state="active"] {
-   border-color: color-mix(in srgb, var(--green) 52%, var(--line))
- }
-@@ -249,16 +263,21 @@ body.tool-focus-mode .tool-center-panel {
- @media (max-width: 720px) {
-   .toolbox-status-bar__inner {
-     width: var(--container-width);
--    grid-template-columns: minmax(var(--space-0), max-content) minmax(var(--space-0), 1fr);
-+    grid-template-columns: minmax(var(--space-0), max-content) minmax(var(--space-0), 1fr) minmax(var(--space-0), max-content);
-     gap: var(--space-10);
-     text-align: center
-   }
-
-   .toolbox-status-bar__game-name {
--    max-width: 34vw
-+    max-width: 24vw
-   }
-
--  .toolbox-status-bar__message {
-+  .toolbox-status-bar__message,
-+  .toolbox-status-bar__progress {
-     font-size: var(--font-size-sm)
-   }
-+
-+  .toolbox-status-bar__progress {
-+    max-width: 30vw
-+  }
- }
-diff --git a/assets/theme-v2/js/toolbox-status-bar.js b/assets/theme-v2/js/toolbox-status-bar.js
-index 24c935311..6adc17290 100644
---- a/assets/theme-v2/js/toolbox-status-bar.js
-+++ b/assets/theme-v2/js/toolbox-status-bar.js
-@@ -1,7 +1,39 @@
-+import { readGameJourneyCompletionMetrics } from "/src/api/game-journey-completion-api-client.js";
- import { createServerRepositoryClient } from "/src/api/server-api-client.js";
-+import { getToolBySlug } from "/src/shared/toolbox/tool-metadata-inventory.js";
-
- const EXCLUDED_SELECTED_GAME_TOOLS = new Set(["idea-board"]);
- const STATUS_BAR_SELECTOR = "[data-toolbox-status-bar]";
-+const TOOL_PROGRESS_BUCKET_BY_SLUG = Object.freeze({
-+  "achievements": "Progression",
-+  "assets": "Graphics",
-+  "audio": "Audio",
-+  "audio-effects": "Audio",
-+  "characters": "Objects",
-+  "colors": "Graphics",
-+  "community": "Share",
-+  "controls": "Controls",
-+  "events": "Rules",
-+  "game-configuration": "Create",
-+  "game-design": "Design",
-+  "game-hub": "Create",
-+  "game-testing": "Play Test",
-+  "hitboxes": "Objects",
-+  "idea-board": "Idea",
-+  "input-mapping-v2": "Controls",
-+  "marketplace": "Share",
-+  "messages": "Interface",
-+  "music": "Audio",
-+  "objects": "Objects",
-+  "publish": "Publish",
-+  "ratings": "Share",
-+  "sprites": "Graphics",
-+  "tags": "Progression",
-+  "text-to-speech": "Audio",
-+  "videos": "Graphics",
-+  "voices": "Audio",
-+  "worlds": "Worlds",
-+});
-
- let repository = null;
- let messageObserver = null;
-@@ -101,7 +133,10 @@ function createStatusBar() {
-   message.setAttribute("role", "status");
-   center.append(message);
-
--  inner.append(game, center);
-+  const progress = createText("p", "toolbox-status-bar__progress", "toolboxStatusProgress");
-+  progress.setAttribute("aria-label", "Tool and journey progress");
-+
-+  inner.append(game, center, progress);
-   bar.append(inner);
-   return bar;
- }
-@@ -233,6 +268,107 @@ function classifyToolContext(messageText, state, required) {
-   return { kind: "action" };
- }
-
-+function normalizeTextKey(value) {
-+  return String(value || "")
-+    .toLowerCase()
-+    .replace(/[^a-z0-9]+/g, "");
-+}
-+
-+function formatToolSlug(slug) {
-+  return String(slug || "Tool")
-+    .split(/[-_\s]+/)
-+    .filter(Boolean)
-+    .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
-+    .join(" ") || "Tool";
-+}
-+
-+function currentToolContext() {
-+  const slug = toolSlugFromPath(mountOptions.pagePath);
-+  const tool = getToolBySlug(slug);
-+  return {
-+    label: tool?.shortLabel || tool?.displayName || tool?.name || formatToolSlug(slug),
-+    slug,
-+  };
-+}
-+
-+function normalizeProgressRecord(record) {
-+  const total = Math.max(0, Number(record?.plannedCount) || 0);
-+  const complete = Math.max(0, Math.min(Number(record?.completedCount) || 0, total));
-+  const percent = Number.isFinite(Number(record?.percentComplete))
-+    ? Math.max(0, Math.min(Number(record.percentComplete), 100))
-+    : total > 0
-+      ? Math.round((complete / total) * 100)
-+      : 0;
-+  return {
-+    complete,
-+    percent,
-+    total,
-+  };
-+}
-+
-+function formatProgressRecord(label, record) {
-+  const progress = normalizeProgressRecord(record);
-+  return `${label} ${progress.complete}/${progress.total} (${progress.percent}%)`;
-+}
-+
-+function findMetricForCurrentTool(snapshot, toolContext) {
-+  if (toolContext.slug === "game-journey") {
-+    return snapshot;
-+  }
-+
-+  const records = Array.isArray(snapshot?.records) ? snapshot.records : [];
-+  const explicitBucketName = TOOL_PROGRESS_BUCKET_BY_SLUG[toolContext.slug];
-+  const explicitBucket = normalizeTextKey(explicitBucketName);
-+  const toolLabel = normalizeTextKey(toolContext.label);
-+  const toolSlug = normalizeTextKey(toolContext.slug);
-+
-+  return records.find((metric) => {
-+    const bucketName = normalizeTextKey(metric?.bucketName);
-+    return bucketName && (
-+      bucketName === explicitBucket ||
-+      bucketName === toolLabel ||
-+      bucketName === toolSlug
-+    );
-+  }) || null;
-+}
-+
-+function resolveProgressContext() {
-+  const toolContext = currentToolContext();
-+  const snapshot = readGameJourneyCompletionMetrics();
-+  const currentMetric = findMetricForCurrentTool(snapshot, toolContext);
-+  const journeyText = formatProgressRecord("Journey", snapshot);
-+
-+  if (!currentMetric) {
-+    return {
-+      state: "unmapped",
-+      text: `${toolContext.label} progress unavailable | ${journeyText}`,
-+    };
-+  }
-+
-+  return {
-+    state: "active",
-+    text: `${formatProgressRecord(toolContext.label, currentMetric)} | ${journeyText}`,
-+  };
-+}
-+
-+function renderProgressContext(bar) {
-+  const progress = bar.querySelector("[data-toolbox-status-progress]");
-+  if (!progress) {
-+    return;
-+  }
-+
-+  try {
-+    const context = resolveProgressContext();
-+    bar.dataset.toolboxProgressState = context.state;
-+    progress.textContent = context.text;
-+    progress.removeAttribute("title");
-+  } catch (error) {
-+    bar.dataset.toolboxProgressState = "error";
-+    progress.textContent = "Progress unavailable";
-+    progress.removeAttribute("title");
-+  }
-+}
-+
- function renderSelectedGame(bar, selectedGame, state, messageText) {
-   const required = pageRequiresSelectedGame();
-   const name = bar.querySelector("[data-toolbox-selected-game-name]");
-@@ -247,6 +383,7 @@ function renderSelectedGame(bar, selectedGame, state, messageText) {
-   bar.dataset.selectedGameState = state;
-   bar.dataset.selectedGameRequired = String(required);
-   bar.dataset.toolboxStatusContextKind = context.kind;
-+  renderProgressContext(bar);
-
-   if (selectedGame) {
-     name.textContent = selectedGame.name;
 diff --git a/docs_build/dev/BUILD_PR.md b/docs_build/dev/BUILD_PR.md
-index 0778a1f1e..f4bc1e8e4 100644
---- a/docs_build/dev/BUILD_PR.md
-+++ b/docs_build/dev/BUILD_PR.md
-@@ -1,50 +1,54 @@
--# PR_26175_ALFA_009-status-bar-single-row-rebuild
-+# PR_26175_ALFA_011-status-bar-journey-progress-context
+@@ -1,74 +1,109 @@
+-# PR_26175_ALFA_011-status-bar-journey-progress-context
++# PR_26175_ALFA_047-theme-v2-svg-icon-registry
 
  ## Purpose
--Rebuild the shared toolbox status bar on current `main` so it is a single-row creator context bar.
-+Add right-anchored progress context to the shared toolbox status bar using the existing Game Journey completion metrics/API pipeline.
+-Add right-anchored progress context to the shared toolbox status bar using the existing Game Journey completion metrics/API pipeline.
++Create a shared Theme V2 SVG icon asset registry and authoritative validation specification so toolbox and platform UI can use approved standalone SVG files from one repo-owned source instead of page-local SVG, ad hoc CSS drawings, Font Awesome glyphs, conversation screenshots, vague row references, CSS-only generation, or a JS-only registry.
 
  ## Source Of Truth
--This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_009-status-bar-single-row-rebuild`.
-+This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_011-status-bar-journey-progress-context`.
+-This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_011-status-bar-journey-progress-context`.
++This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_047-theme-v2-svg-icon-registry`.
 
  ## Exact Scope
--- Display only the selected Game Hub game name on the left side of the toolbox status bar.
--- Display only the current status message in the center of the toolbox status bar.
--- Remove visible status bar labels: `Selected Game Name`, `Selected Game Purpose`, `Save State`, `Tool Action`, `Warning`, and `Error`.
--- Remove selected-game purpose from the visible status bar.
--- Preserve normal status bar placement above the footer.
--- Remove extra status bar/footer spacing so the shared footer top padding resolves to `0px`.
--- Preserve fullscreen/tool display mode bottom anchoring.
--- Ensure fullscreen center scrollable content stops above the fixed status bar.
--- Ensure fullscreen tool content is not hidden behind the status bar.
--- Preserve Idea Board selected-game filtering exclusion.
--- Preserve Game Hub as selected-game owner through the existing repository contract.
-+- Preserve the ALFA_009 single-row toolbox status bar behavior:
-+  - left side displays only the selected Game Hub game name.
-+  - center displays only the current status message.
-+- Add right-anchored progress text in this format:
-+  - `{CurrentTool} {complete}/{total} ({percent}%) | Journey {complete}/{total} ({percent}%)`
-+- Use existing Game Journey completion metrics/API pipeline for Journey totals.
-+- Derive current-tool progress from the existing completion metrics record that matches the current toolbox tool/section.
-+- Do not add new storage.
-+- Do not use browser-owned authoritative progress data.
-+- Preserve fullscreen bottom anchoring and existing fullscreen content bottom reserve.
-+- Preserve normal placement above the footer.
- - Use shared Theme V2 CSS/classes only.
--- Update targeted Playwright coverage for the single-row status bar, footer spacing, and fullscreen bottom reserve.
-+- Update targeted Playwright coverage for the right-anchored progress text and existing left/center behavior.
+-- Preserve the ALFA_009 single-row toolbox status bar behavior:
+-  - left side displays only the selected Game Hub game name.
+-  - center displays only the current status message.
+-- Add right-anchored progress text in this format:
+-  - `{CurrentTool} {complete}/{total} ({percent}%) | Journey {complete}/{total} ({percent}%)`
+-- Use existing Game Journey completion metrics/API pipeline for Journey totals.
+-- Derive current-tool progress from the existing completion metrics record that matches the current toolbox tool/section.
+-- Do not add new storage.
+-- Do not use browser-owned authoritative progress data.
+-- Preserve fullscreen bottom anchoring and existing fullscreen content bottom reserve.
+-- Preserve normal placement above the footer.
+-- Use shared Theme V2 CSS/classes only.
+-- Update targeted Playwright coverage for the right-anchored progress text and existing left/center behavior.
++- Remove the incorrect JS-only icon registry implementation from the ALFA_047 delta.
++- Use the user-authored SVG files already present under `assets/theme-v2/svg/` as the authoritative source.
++- Do not regenerate, redesign, simplify, optimize, or redraw any SVG icon artwork in this PR.
++- Required SVG files:
++  - `gfs-chevron-left.svg`
++  - `gfs-chevron-right.svg`
++  - `gfs-chevron-up.svg`
++  - `gfs-chevron-down.svg`
++  - `gfs-add.svg`
++  - `gfs-subtract.svg`
++  - `gfs-trash.svg`
++  - `gfs-close.svg`
++  - `gfs-warning.svg`
++  - `gfs-error.svg`
++  - `gfs-success.svg`
++  - `gfs-info.svg`
++  - `gfs-fullscreen.svg`
++  - `gfs-exit-fullscreen.svg`
++  - `gfs-menu.svg`
++  - `gfs-search.svg`
++  - `gfs-settings.svg`
++- Validate each required SVG is well-formed XML.
++- Validate each SVG uses `viewBox="0 0 24 24"`, `fill="none"`, `stroke="currentColor"`, `stroke-linecap="round"`, and `stroke-linejoin="round"`.
++- Do not create `expand` or `collapse` icon naming.
++- Do not create `delete` icon naming.
++- Do not replace the standalone SVG assets with a JS-only icon registry.
++- Do not replace the standalone SVG assets with CSS-only icon generation.
++- Create `docs_build/design/theme-v2-icons/theme-v2-icon-style-guide.md` as the authoritative specification for all future Theme V2 SVG icons.
++- Create or update `assets/theme-v2/svg/README.md` as the registry documentation for the authoritative SVG asset pack.
++- Document the approved validation rules and the no-regeneration/no-redesign policy.
++- If any required SVG is missing, report validation failure instead of generating a replacement.
++- Do not convert existing UI controls in this PR.
 
  ## Exact Targets
  - `docs_build/dev/BUILD_PR.md`
- - `assets/theme-v2/js/toolbox-status-bar.js`
- - `assets/theme-v2/css/status.css`
--- `assets/theme-v2/css/layout.css`
- - `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs`
--- `docs_build/dev/reports/PR_26175_ALFA_009-status-bar-single-row-rebuild_report.md`
--- `docs_build/dev/reports/PR_26175_ALFA_009-status-bar-single-row-rebuild_validation-lane.md`
--- `docs_build/dev/reports/PR_26175_ALFA_009-status-bar-single-row-rebuild_requirements-checklist.md`
-+- `docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_report.md`
-+- `docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_validation-lane.md`
-+- `docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_requirements-checklist.md`
+-- `assets/theme-v2/js/toolbox-status-bar.js`
+-- `assets/theme-v2/css/status.css`
+-- `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs`
+-- `docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_report.md`
+-- `docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_validation-lane.md`
+-- `docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_requirements-checklist.md`
++- `assets/theme-v2/svg/gfs-chevron-left.svg`
++- `assets/theme-v2/svg/gfs-chevron-right.svg`
++- `assets/theme-v2/svg/gfs-chevron-up.svg`
++- `assets/theme-v2/svg/gfs-chevron-down.svg`
++- `assets/theme-v2/svg/gfs-add.svg`
++- `assets/theme-v2/svg/gfs-subtract.svg`
++- `assets/theme-v2/svg/gfs-trash.svg`
++- `assets/theme-v2/svg/gfs-close.svg`
++- `assets/theme-v2/svg/gfs-warning.svg`
++- `assets/theme-v2/svg/gfs-error.svg`
++- `assets/theme-v2/svg/gfs-success.svg`
++- `assets/theme-v2/svg/gfs-info.svg`
++- `assets/theme-v2/svg/gfs-fullscreen.svg`
++- `assets/theme-v2/svg/gfs-exit-fullscreen.svg`
++- `assets/theme-v2/svg/gfs-menu.svg`
++- `assets/theme-v2/svg/gfs-search.svg`
++- `assets/theme-v2/svg/gfs-settings.svg`
++- `assets/theme-v2/svg/README.md`
++- `docs_build/design/theme-v2-icons/theme-v2-icon-style-guide.md`
++- `tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs`
++- `docs_build/dev/reports/PR_26175_ALFA_047-theme-v2-svg-icon-registry_report.md`
++- `docs_build/dev/reports/PR_26175_ALFA_047-theme-v2-svg-icon-registry_validation-lane.md`
++- `docs_build/dev/reports/PR_26175_ALFA_047-theme-v2-svg-icon-registry_requirements-checklist.md`
++- `docs_build/dev/reports/PR_26175_ALFA_047-theme-v2-svg-icon-registry_manual-validation-notes.md`
  - `docs_build/dev/reports/codex_review.diff`
  - `docs_build/dev/reports/codex_changed_files.txt`
 
-+## Evidence Sources
-+- `assets/js/shared/game-journey-api-client.js`
-+- `src/api/game-journey-completion-api-client.js`
-+- `src/dev-runtime/server/local-api-router.mjs`
-+- `src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs`
-+
+ ## Evidence Sources
+-- `assets/js/shared/game-journey-api-client.js`
+-- `src/api/game-journey-completion-api-client.js`
+-- `src/dev-runtime/server/local-api-router.mjs`
+-- `src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs`
++- `docs_build/pr/PLAN_PR_26175_ALFA_047-theme-v2-svg-icon-registry.md`
++- `assets/theme-v2/images/gfs-chevron-down.svg`
++- `assets/theme-v2/images/gfs-chevron-up.svg`
+
  ## Out Of Scope
--- No merge of PR #120.
--- No reuse of stale ALFA_003 branch.
-+- No Game Journey API/service/repository contract changes.
-+- No new persistence/storage.
-+- No browser-owned product data as source of truth.
-+- No silent fallback data.
- - No environment/server details in the status bar.
- - No selected game purpose in the visible status bar.
- - No visible status category labels in the status bar.
--- No status action links in the visible status bar.
- - No large banners.
- - No modal messages or modal-style status messages.
- - No row highlights.
--- No API/service/repository contract changes.
--- No browser-owned product data as source of truth.
- - No inline styles, style blocks, or page-local CSS.
+-- No Game Journey API/service/repository contract changes.
+-- No new persistence/storage.
++- No chevron conversion.
++- No status/action icon conversion.
++- No layout utility icon conversion.
++- No JS-only icon registry.
++- No CSS-only icon generation.
++- No Theme V2 CSS changes.
++- No runtime UI conversion.
++- No accordion conversion.
++- No Font Awesome removal.
++- No broad visual redesign.
++- No page-local CSS.
++- No inline styles.
++- No style blocks.
+ - No browser-owned product data as source of truth.
+-- No silent fallback data.
+-- No environment/server details in the status bar.
+-- No selected game purpose in the visible status bar.
+-- No visible status category labels in the status bar.
+-- No large banners.
+-- No modal messages or modal-style status messages.
+-- No row highlights.
+-- No inline styles, style blocks, or page-local CSS.
++- No API/service/repository contract changes.
  - No engine core changes.
  - No `start_of_day` folder changes.
-@@ -59,12 +63,12 @@ npx playwright test tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
- Also verify changed source does not introduce inline styles or style blocks:
+
+ ## Validation
+-Run targeted Playwright coverage:
++Run exactly:
 
  ```powershell
--rg -n "<[s]tyle|[s]tyle=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css assets/theme-v2/css/layout.css tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-+rg -n "<[s]tyle|[s]tyle=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
+-npx playwright test tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs --workers=1
+-```
+-
+-Also verify changed source does not introduce inline styles or style blocks:
+-
+-```powershell
+-rg -n "<[s]tyle|[s]tyle=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
++npx playwright test tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs --workers=1
++rg -n "<[s]tyle|[s]tyle=" docs_build/design/theme-v2-icons/theme-v2-icon-style-guide.md tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs
  ```
 
  ## Artifact
  Create repo-structured delta ZIP:
 
  ```text
--tmp/PR_26175_ALFA_009-status-bar-single-row-rebuild_delta.zip
-+tmp/PR_26175_ALFA_011-status-bar-journey-progress-context_delta.zip
+-tmp/PR_26175_ALFA_011-status-bar-journey-progress-context_delta.zip
++tmp/PR_26175_ALFA_047-theme-v2-svg-icon-registry_delta.zip
  ```
-diff --git a/docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_report.md b/docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_report.md
+diff --git a/assets/theme-v2/svg/README.md b/assets/theme-v2/svg/README.md
 new file mode 100644
-index 000000000..f737efdd4
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_report.md
-@@ -0,0 +1,38 @@
-+# PR_26175_ALFA_011-status-bar-journey-progress-context Report
+index 000000000..000000000
+@@ -0,0 +1,35 @@
++# GFS Icon Pack v1 Core
++
++The SVG files in `assets/theme-v2/svg/` are the authoritative Theme V2 icon source.
++
++These files are user-authored and approved. Do not regenerate, redesign, simplify, optimize, or redraw these SVG files during validation-only PRs.
++
++If a required SVG is missing, report validation failure instead of generating a replacement.
++
++Required validation:
++- each required file exists under `assets/theme-v2/svg/`
++- each SVG is well-formed XML
++- each SVG uses `viewBox="0 0 24 24"`
++- each SVG uses `fill="none"`
++- each SVG uses `stroke="currentColor"`
++- each SVG uses `stroke-linecap="round"`
++- each SVG uses `stroke-linejoin="round"`
++
++Required filenames:
++- `gfs-chevron-left.svg`
++- `gfs-chevron-right.svg`
++- `gfs-chevron-up.svg`
++- `gfs-chevron-down.svg`
++- `gfs-add.svg`
++- `gfs-subtract.svg`
++- `gfs-trash.svg`
++- `gfs-close.svg`
++- `gfs-warning.svg`
++- `gfs-error.svg`
++- `gfs-success.svg`
++- `gfs-info.svg`
++- `gfs-fullscreen.svg`
++- `gfs-exit-fullscreen.svg`
++- `gfs-menu.svg`
++- `gfs-search.svg`
++- `gfs-settings.svg`
+diff --git a/assets/theme-v2/svg/gfs-add.svg b/assets/theme-v2/svg/gfs-add.svg
+new file mode 100644
+index 000000000..000000000
+@@ -0,0 +1,3 @@
++<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
++  <path d="M10.2 3.8 H13.8 V10.2 H20.2 V13.8 H13.8 V20.2 H10.2 V13.8 H3.8 V10.2 H10.2 Z" />
++</svg>
+diff --git a/assets/theme-v2/svg/gfs-chevron-down.svg b/assets/theme-v2/svg/gfs-chevron-down.svg
+new file mode 100644
+index 000000000..000000000
+@@ -0,0 +1,4 @@
++<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
++  <path d="M3.5 7.5 L12 16.5 L20.5 7.5" />
++  <path d="M5.8 5.2 L12 11.8 L18.2 5.2" />
++</svg>
+diff --git a/assets/theme-v2/svg/gfs-chevron-left.svg b/assets/theme-v2/svg/gfs-chevron-left.svg
+new file mode 100644
+index 000000000..000000000
+@@ -0,0 +1,4 @@
++<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
++  <path d="M16.5 3.5 L7.5 12 L16.5 20.5" />
++  <path d="M18.8 5.8 L12.2 12 L18.8 18.2" />
++</svg>
+diff --git a/assets/theme-v2/svg/gfs-chevron-right.svg b/assets/theme-v2/svg/gfs-chevron-right.svg
+new file mode 100644
+index 000000000..000000000
+@@ -0,0 +1,4 @@
++<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
++  <path d="M7.5 3.5 L16.5 12 L7.5 20.5" />
++  <path d="M5.2 5.8 L11.8 12 L5.2 18.2" />
++</svg>
+diff --git a/assets/theme-v2/svg/gfs-chevron-up.svg b/assets/theme-v2/svg/gfs-chevron-up.svg
+new file mode 100644
+index 000000000..000000000
+@@ -0,0 +1,4 @@
++<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
++  <path d="M3.5 16.5 L12 7.5 L20.5 16.5" />
++  <path d="M5.8 18.8 L12 12.2 L18.2 18.8" />
++</svg>
+diff --git a/assets/theme-v2/svg/gfs-close.svg b/assets/theme-v2/svg/gfs-close.svg
+new file mode 100644
+index 000000000..000000000
+@@ -0,0 +1,5 @@
++<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
++  <circle cx="12" cy="12" r="8.8" />
++  <path d="M8.4 8.4 L15.6 15.6" />
++  <path d="M15.6 8.4 L8.4 15.6" />
++</svg>
+diff --git a/assets/theme-v2/svg/gfs-error.svg b/assets/theme-v2/svg/gfs-error.svg
+new file mode 100644
+index 000000000..000000000
+@@ -0,0 +1,6 @@
++<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
++  <path d="M8.3 3.7 H15.7 L20.3 8.3 V15.7 L15.7 20.3 H8.3 L3.7 15.7 V8.3 Z" />
++  <path d="M9.3 5.6 H14.7 L18.4 9.3 V14.7 L14.7 18.4 H9.3 L5.6 14.7 V9.3 Z" />
++  <path d="M12 8.3 V12.8" />
++  <path d="M12 15.8 H12.02" />
++</svg>
+diff --git a/assets/theme-v2/svg/gfs-exit-fullscreen.svg b/assets/theme-v2/svg/gfs-exit-fullscreen.svg
+new file mode 100644
+index 000000000..000000000
+@@ -0,0 +1,10 @@
++<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
++  <path d="M4.5 8.9 H8.9 V4.5" />
++  <path d="M4.8 9.2 L9.4 4.6" />
++  <path d="M19.5 8.9 H15.1 V4.5" />
++  <path d="M19.2 9.2 L14.6 4.6" />
++  <path d="M4.5 15.1 H8.9 V19.5" />
++  <path d="M4.8 14.8 L9.4 19.4" />
++  <path d="M19.5 15.1 H15.1 V19.5" />
++  <path d="M19.2 14.8 L14.6 19.4" />
++</svg>
+diff --git a/assets/theme-v2/svg/gfs-fullscreen.svg b/assets/theme-v2/svg/gfs-fullscreen.svg
+new file mode 100644
+index 000000000..000000000
+@@ -0,0 +1,10 @@
++<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
++  <path d="M8.9 4.5 H4.5 V8.9" />
++  <path d="M4.8 4.8 L9.4 9.4" />
++  <path d="M15.1 4.5 H19.5 V8.9" />
++  <path d="M19.2 4.8 L14.6 9.4" />
++  <path d="M8.9 19.5 H4.5 V15.1" />
++  <path d="M4.8 19.2 L9.4 14.6" />
++  <path d="M15.1 19.5 H19.5 V15.1" />
++  <path d="M19.2 19.2 L14.6 14.6" />
++</svg>
+diff --git a/assets/theme-v2/svg/gfs-info.svg b/assets/theme-v2/svg/gfs-info.svg
+new file mode 100644
+index 000000000..000000000
+@@ -0,0 +1,6 @@
++<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
++  <circle cx="12" cy="12" r="9" />
++  <circle cx="12" cy="12" r="7" />
++  <path d="M12 10.8 V16.3" />
++  <path d="M12 7.6 H12.02" />
++</svg>
+diff --git a/assets/theme-v2/svg/gfs-menu.svg b/assets/theme-v2/svg/gfs-menu.svg
+new file mode 100644
+index 000000000..000000000
+@@ -0,0 +1,5 @@
++<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
++  <path d="M5 6.2 H19 V8.1 H5 Z" />
++  <path d="M5 11.05 H19 V12.95 H5 Z" />
++  <path d="M5 15.9 H19 V17.8 H5 Z" />
++</svg>
+diff --git a/assets/theme-v2/svg/gfs-search.svg b/assets/theme-v2/svg/gfs-search.svg
+new file mode 100644
+index 000000000..000000000
+@@ -0,0 +1,6 @@
++<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
++  <circle cx="10.8" cy="10.8" r="7.9" />
++  <circle cx="10.8" cy="10.8" r="6.0" />
++  <path d="M16.5 16.5 L21 21" />
++  <path d="M15.2 17.8 L19.7 22.3" />
++</svg>
+diff --git a/assets/theme-v2/svg/gfs-settings.svg b/assets/theme-v2/svg/gfs-settings.svg
+new file mode 100644
+index 000000000..000000000
+@@ -0,0 +1,4 @@
++<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
++  <path d="M13.5 3.2 L14.1 5.3 C14.6 5.5 15 5.7 15.5 6 L17.6 5.4 L19.4 8.6 L17.9 10.2 C18 10.8 18 11.2 17.9 11.8 L19.4 13.4 L17.6 16.6 L15.5 16 C15 16.3 14.6 16.5 14.1 16.7 L13.5 18.8 H10.5 L9.9 16.7 C9.4 16.5 9 16.3 8.5 16 L6.4 16.6 L4.6 13.4 L6.1 11.8 C6 11.2 6 10.8 6.1 10.2 L4.6 8.6 L6.4 5.4 L8.5 6 C9 5.7 9.4 5.5 9.9 5.3 L10.5 3.2 Z" />
++  <circle cx="12" cy="11" r="3.2" />
++</svg>
+diff --git a/assets/theme-v2/svg/gfs-subtract.svg b/assets/theme-v2/svg/gfs-subtract.svg
+new file mode 100644
+index 000000000..000000000
+@@ -0,0 +1,3 @@
++<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
++  <path d="M4.2 10.2 H19.8 V13.8 H4.2 Z" />
++</svg>
+diff --git a/assets/theme-v2/svg/gfs-success.svg b/assets/theme-v2/svg/gfs-success.svg
+new file mode 100644
+index 000000000..000000000
+@@ -0,0 +1,5 @@
++<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
++  <circle cx="12" cy="12" r="9" />
++  <circle cx="12" cy="12" r="7" />
++  <path d="M7.7 12.2 L10.5 15 L16.7 8.9" />
++</svg>
+diff --git a/assets/theme-v2/svg/gfs-trash.svg b/assets/theme-v2/svg/gfs-trash.svg
+new file mode 100644
+index 000000000..000000000
+@@ -0,0 +1,8 @@
++<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
++  <path d="M7.2 7.4 H16.8 L16.1 20.2 H7.9 Z" />
++  <path d="M5.4 7.4 H18.6" />
++  <path d="M9.2 7.4 V4.8 H14.8 V7.4" />
++  <path d="M9.7 10.6 V17.2" />
++  <path d="M12 10.6 V17.2" />
++  <path d="M14.3 10.6 V17.2" />
++</svg>
+diff --git a/assets/theme-v2/svg/gfs-warning.svg b/assets/theme-v2/svg/gfs-warning.svg
+new file mode 100644
+index 000000000..000000000
+@@ -0,0 +1,6 @@
++<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
++  <path d="M12 3.4 C12.7 3.4 13.3 3.8 13.7 4.4 L21 17.1 C21.8 18.5 20.8 20.2 19.2 20.2 H4.8 C3.2 20.2 2.2 18.5 3 17.1 L10.3 4.4 C10.7 3.8 11.3 3.4 12 3.4 Z" />
++  <path d="M12 6.2 C12.4 6.2 12.8 6.4 13.1 6.9 L18.8 16.7 C19.3 17.5 18.7 18.5 17.7 18.5 H6.3 C5.3 18.5 4.7 17.5 5.2 16.7 L10.9 6.9 C11.2 6.4 11.6 6.2 12 6.2 Z" />
++  <path d="M12 9.5 V13.6" />
++  <path d="M12 16.2 H12.02" />
++</svg>
+diff --git a/docs_build/design/theme-v2-icons/theme-v2-icon-style-guide.md b/docs_build/design/theme-v2-icons/theme-v2-icon-style-guide.md
+new file mode 100644
+index 000000000..000000000
+@@ -0,0 +1,55 @@
++# Theme V2 Icon Style Guide
++
++## Purpose
++Provide the approved validation and usage language for shared Theme V2 SVG icons.
++
++The SVG files in `assets/theme-v2/svg/` are the authoritative Theme V2 icon source.
++
++## Artwork Authority
++The SVG artwork is user-authored and approved.
++
++Do not regenerate, redesign, simplify, optimize, or redraw these SVG files during validation-only PRs.
++
++If a required SVG is missing, report validation failure instead of generating a replacement.
++
++Do not replace the SVG files with CSS-only or JS-only icon generation.
++
++## SVG Validation Standard
++Every required SVG must be a standalone file under `assets/theme-v2/svg/`.
++
++Every required SVG must be well-formed XML.
++
++Every required SVG must use:
++- `viewBox="0 0 24 24"`
++- `fill="none"`
++- `stroke="currentColor"`
++- `stroke-linecap="round"`
++- `stroke-linejoin="round"`
++
++The approved files may include additional SVG attributes or path geometry as authored. Validation should not inspect, simplify, optimize, or rewrite artwork geometry.
++
++## Required Icon Files
++- `gfs-chevron-left.svg`
++- `gfs-chevron-right.svg`
++- `gfs-chevron-up.svg`
++- `gfs-chevron-down.svg`
++- `gfs-add.svg`
++- `gfs-subtract.svg`
++- `gfs-trash.svg`
++- `gfs-close.svg`
++- `gfs-warning.svg`
++- `gfs-error.svg`
++- `gfs-success.svg`
++- `gfs-info.svg`
++- `gfs-fullscreen.svg`
++- `gfs-exit-fullscreen.svg`
++- `gfs-menu.svg`
++- `gfs-search.svg`
++- `gfs-settings.svg`
++
++## Naming Rules
++Use `trash` naming instead of `delete`.
++
++Use `fullscreen` and `exit-fullscreen` naming.
++
++Do not add `expand`, `collapse`, or `delete` SVG names in this registry.
+diff --git a/tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs b/tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs
+new file mode 100644
+index 000000000..000000000
+@@ -0,0 +1,138 @@
++import { expect, test } from "@playwright/test";
++import fs from "node:fs/promises";
++import path from "node:path";
++import { fileURLToPath } from "node:url";
++import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
++
++const __filename = fileURLToPath(import.meta.url);
++const __dirname = path.dirname(__filename);
++const repoRoot = path.resolve(__dirname, "..", "..", "..");
++const svgRoot = path.join(repoRoot, "assets", "theme-v2", "svg");
++const readmePath = path.join(svgRoot, "README.md");
++const styleGuidePath = path.join(repoRoot, "docs_build", "design", "theme-v2-icons", "theme-v2-icon-style-guide.md");
++
++const REQUIRED_SVG_FILES = [
++  "gfs-add.svg",
++  "gfs-chevron-down.svg",
++  "gfs-chevron-left.svg",
++  "gfs-chevron-right.svg",
++  "gfs-chevron-up.svg",
++  "gfs-close.svg",
++  "gfs-error.svg",
++  "gfs-exit-fullscreen.svg",
++  "gfs-fullscreen.svg",
++  "gfs-info.svg",
++  "gfs-menu.svg",
++  "gfs-search.svg",
++  "gfs-settings.svg",
++  "gfs-subtract.svg",
++  "gfs-success.svg",
++  "gfs-trash.svg",
++  "gfs-warning.svg",
++];
++
++const FORBIDDEN_SVG_FILES = [
++  "gfs-collapse.svg",
++  "gfs-delete.svg",
++  "gfs-expand.svg",
++];
++
++function attributeValues(content, attributeName) {
++  return [...content.matchAll(new RegExp(`\\s${attributeName}="([^"]+)"`, "g"))].map((match) => match[1]);
++}
++
++async function fileExists(filePath) {
++  try {
++    await fs.access(filePath);
++    return true;
++  } catch {
++    return false;
++  }
++}
++
++async function readSvg(fileName) {
++  return fs.readFile(path.join(svgRoot, fileName), "utf8");
++}
++
++test("provides the required standalone Theme V2 SVG files", async () => {
++  const actualFiles = (await fs.readdir(svgRoot)).filter((name) => name.endsWith(".svg")).sort();
++  expect(actualFiles).toEqual(REQUIRED_SVG_FILES);
++
++  for (const fileName of FORBIDDEN_SVG_FILES) {
++    await expect(fileExists(path.join(svgRoot, fileName))).resolves.toBe(false);
++  }
++});
++
++test("validates every SVG as well-formed XML", async ({ page }) => {
++  for (const fileName of REQUIRED_SVG_FILES) {
++    const content = await readSvg(fileName);
++    const result = await page.evaluate((svgText) => {
++      const document = new DOMParser().parseFromString(svgText, "image/svg+xml");
++      const parserError = document.querySelector("parsererror");
++      const root = document.documentElement;
++      return {
++        error: parserError?.textContent?.replace(/\s+/g, " ").trim() || "",
++        rootName: root?.tagName || "",
++      };
++    }, content);
++    expect(result.error, fileName).toBe("");
++    expect(result.rootName.toLowerCase(), fileName).toBe("svg");
++  }
++});
++
++test("validates required shared SVG attributes without inspecting artwork geometry", async () => {
++  for (const fileName of REQUIRED_SVG_FILES) {
++    const content = await readSvg(fileName);
++    const fillValues = attributeValues(content, "fill");
++    const strokeValues = attributeValues(content, "stroke");
++    const linecapValues = attributeValues(content, "stroke-linecap");
++    const linejoinValues = attributeValues(content, "stroke-linejoin");
++
++    expect(content, fileName).toContain("<svg");
++    expect(content, fileName).toContain('viewBox="0 0 24 24"');
++    expect(content, fileName).toContain('fill="none"');
++    expect(content, fileName).toContain('stroke="currentColor"');
++    expect(content, fileName).toContain('stroke-linecap="round"');
++    expect(content, fileName).toContain('stroke-linejoin="round"');
++    expect(fillValues.every((value) => value === "none"), fileName).toBe(true);
++    expect(strokeValues.every((value) => value === "currentColor"), fileName).toBe(true);
++    expect(linecapValues.every((value) => value === "round"), fileName).toBe(true);
++    expect(linejoinValues.every((value) => value === "round"), fileName).toBe(true);
++  }
++});
++
++test("serves every Theme V2 SVG asset as an external file", async ({ request }) => {
++  const server = await startRepoServer();
++  try {
++    for (const fileName of REQUIRED_SVG_FILES) {
++      const response = await request.get(`${server.baseUrl}/assets/theme-v2/svg/${fileName}`);
++      expect(response.ok(), fileName).toBe(true);
++      expect(response.headers()["content-type"], fileName).toContain("image/svg+xml");
++      const body = await response.text();
++      expect(body, fileName).toContain('viewBox="0 0 24 24"');
++      expect(body, fileName).toContain('stroke="currentColor"');
++    }
++  } finally {
++    await server.close();
++  }
++});
++
++test("documents the SVG registry and authoritative artwork policy", async () => {
++  const readme = await fs.readFile(readmePath, "utf8");
++  const styleGuide = await fs.readFile(styleGuidePath, "utf8");
++  const requiredPhrases = [
++    "The SVG files in `assets/theme-v2/svg/` are the authoritative Theme V2 icon source.",
++    "Do not regenerate, redesign, simplify, optimize, or redraw these SVG files during validation-only PRs.",
++    "If a required SVG is missing, report validation failure instead of generating a replacement.",
++    '`viewBox="0 0 24 24"`',
++    '`fill="none"`',
++    '`stroke="currentColor"`',
++    '`stroke-linecap="round"`',
++    '`stroke-linejoin="round"`',
++  ];
++
++  for (const phrase of requiredPhrases) {
++    expect(readme).toContain(phrase);
++    expect(styleGuide).toContain(phrase);
++  }
++});
+diff --git a/docs_build/pr/APPLY_PR_26175_ALFA_047-theme-v2-svg-icon-registry.md b/docs_build/pr/APPLY_PR_26175_ALFA_047-theme-v2-svg-icon-registry.md
+new file mode 100644
+index 000000000..000000000
+@@ -0,0 +1,24 @@
++# APPLY PR_26175_ALFA_047-theme-v2-svg-icon-registry
++
++## Apply Summary
++
++- Applied on branch `codex/pr-26175-alfa-047-theme-v2-svg-icon-registry`.
++- Preserved the user-authored SVG artwork under `assets/theme-v2/svg/` as the authoritative Theme V2 icon source.
++- Added registry documentation in `assets/theme-v2/svg/README.md`.
++- Added the Theme V2 icon style guide in `docs_build/design/theme-v2-icons/theme-v2-icon-style-guide.md`.
++- Added targeted Playwright validation for required SVG filenames, forbidden names, XML parsing, shared attributes, static serving, and documentation policy.
++- No runtime UI conversion, accordion conversion, CSS-only icon generation, JS-only icon registry, or SVG artwork regeneration was applied.
++
++## Requirement Evidence
++
++- PASS evidence is recorded in `docs_build/dev/reports/PR_26175_ALFA_047-theme-v2-svg-icon-registry_requirements-checklist.md`.
++- Manual validation notes are recorded in `docs_build/dev/reports/PR_26175_ALFA_047-theme-v2-svg-icon-registry_manual-validation-notes.md`.
++
++## Validation Evidence
++
++- PASS: `npx playwright test tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs --workers=1`
++- PASS: `rg -n "<[s]tyle|[s]tyle=" docs_build/design/theme-v2-icons/theme-v2-icon-style-guide.md tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs` returned no matches.
++
++## Artifact
++
++- `tmp/PR_26175_ALFA_047-theme-v2-svg-icon-registry_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26175_ALFA_047-theme-v2-svg-icon-registry_report.md b/docs_build/dev/reports/PR_26175_ALFA_047-theme-v2-svg-icon-registry_report.md
+new file mode 100644
+index 000000000..000000000
+@@ -0,0 +1,40 @@
++# PR_26175_ALFA_047-theme-v2-svg-icon-registry Report
 +
 +## Status
 +PASS
 +
-+Added right-anchored progress context to the shared toolbox status bar while preserving the ALFA_009 left and center behavior.
++## Rework Input State
++- Branch at update start: `codex/pr-26175-alfa-047-theme-v2-svg-icon-registry`.
++- The working tree contained manually designed SVG files under `assets/theme-v2/svg/`.
++- Those SVG files are treated as user-authored authoritative artwork.
 +
-+## Changes
-+- `assets/theme-v2/js/toolbox-status-bar.js`
-+  - Imports the existing Game Journey completion metrics API client at line 1.
-+  - Adds current-tool-to-Journey-bucket matching at lines 7-35.
-+  - Adds the right progress node at line 136.
-+  - Formats progress as `{CurrentTool} {complete}/{total} ({percent}%) | Journey {complete}/{total} ({percent}%)` at lines 309-350.
-+  - Renders visible unavailable progress state without raw environment/server details at lines 354-370.
-+- `assets/theme-v2/css/status.css`
-+  - Adds a three-column shared status bar grid at line 54.
-+  - Adds right-aligned single-line progress styling at lines 94-106.
-+  - Preserves existing fullscreen anchoring and bottom reserve rules at lines 119-150.
-+- `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs`
-+  - Routes `/api/game-journey/completion-metrics` through the existing server API response shape at lines 76-83.
-+  - Verifies Game Design progress at lines 239 and 253.
-+  - Verifies the requested Objects example at lines 275 and 279.
-+  - Verifies right anchoring at lines 260 and 280.
-+  - Verifies Game Hub, missing-game, Idea Board, and fullscreen behavior at lines 304, 328, 353, 371, and 398.
++## Summary
++- Kept the existing SVG artwork unchanged during this update.
++- Updated registry documentation in `assets/theme-v2/svg/README.md`.
++- Updated the Theme V2 icon style guide to state that `assets/theme-v2/svg/` is the authoritative SVG source.
++- Updated Playwright validation to check only:
++  - required filenames exist
++  - forbidden filenames are absent
++  - SVG files are well-formed XML
++  - required shared SVG attributes are present and valid
++  - SVG files are served as external assets
++  - documentation records the no-regeneration policy
++- Removed geometry-specific validation from the test expectations.
 +
-+## Contract Notes
-+- No storage was added.
-+- No API/service/repository contract was changed.
-+- Progress data is read from the existing Game Journey completion metrics API pipeline.
-+- Browser state is not used as authoritative progress data.
-+- Existing selected-game ownership and left/center status bar behavior are preserved.
++## Evidence
++- Source of truth: `docs_build/dev/BUILD_PR.md`
++- SVG assets: `assets/theme-v2/svg/`
++- Registry documentation: `assets/theme-v2/svg/README.md`
++- Icon style guide: `docs_build/design/theme-v2-icons/theme-v2-icon-style-guide.md`
++- Test coverage: `tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs`
++- Manual validation notes: `docs_build/dev/reports/PR_26175_ALFA_047-theme-v2-svg-icon-registry_manual-validation-notes.md`
++- Changed-file manifest: `docs_build/dev/reports/codex_changed_files.txt`
++- Review diff: `docs_build/dev/reports/codex_review.diff`
 +
 +## Validation
-+- PASS: `npx playwright test tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs --workers=1`
-+- PASS: `rg -n "<[s]tyle|[s]tyle=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs`
++- PASS: `npx playwright test tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs --workers=1` ran 5 tests.
++- PASS: `rg -n "<[s]tyle|[s]tyle=" docs_build/design/theme-v2-icons/theme-v2-icon-style-guide.md tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs` returned no matches.
++- PASS: Branch validation stayed on `codex/pr-26175-alfa-047-theme-v2-svg-icon-registry`.
 +
 +## Artifact
-+- `tmp/PR_26175_ALFA_011-status-bar-journey-progress-context_delta.zip`
-diff --git a/docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_requirements-checklist.md b/docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_requirements-checklist.md
++- `tmp/PR_26175_ALFA_047-theme-v2-svg-icon-registry_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26175_ALFA_047-theme-v2-svg-icon-registry_validation-lane.md b/docs_build/dev/reports/PR_26175_ALFA_047-theme-v2-svg-icon-registry_validation-lane.md
 new file mode 100644
-index 000000000..94c18da59
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_requirements-checklist.md
-@@ -0,0 +1,17 @@
-+# PR_26175_ALFA_011 Requirements Checklist
+index 000000000..000000000
+@@ -0,0 +1,29 @@
++# PR_26175_ALFA_047-theme-v2-svg-icon-registry Validation Lane
++
++## Commands
++
++```powershell
++npx playwright test tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs --workers=1
++```
++
++Result: PASS
++
++Evidence:
++- 5 tests passed.
++- Coverage verifies required filenames, forbidden filenames, well-formed SVG XML, required shared SVG attributes, static serving, registry documentation, and style-guide authority.
++- Coverage does not inspect, simplify, optimize, redraw, or enforce artwork geometry.
++
++```powershell
++rg -n "<[s]tyle|[s]tyle=" docs_build/design/theme-v2-icons/theme-v2-icon-style-guide.md tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs
++```
++
++Result: PASS
++
++Evidence:
++- No matches were returned.
++
++## Final Validation Status
++PASS
++
++## Branch Validation
++PASS: Work remained on `codex/pr-26175-alfa-047-theme-v2-svg-icon-registry`.
+diff --git a/docs_build/dev/reports/PR_26175_ALFA_047-theme-v2-svg-icon-registry_requirements-checklist.md b/docs_build/dev/reports/PR_26175_ALFA_047-theme-v2-svg-icon-registry_requirements-checklist.md
+new file mode 100644
+index 000000000..000000000
+@@ -0,0 +1,28 @@
++# PR_26175_ALFA_047-theme-v2-svg-icon-registry Requirements Checklist
 +
 +| Requirement | Status | Evidence |
 +| --- | --- | --- |
-+| Implement right-anchored progress in the shared toolbox status bar. | PASS | `assets/theme-v2/js/toolbox-status-bar.js:136`, `assets/theme-v2/css/status.css:94`. |
-+| Use format `{CurrentTool} {complete}/{total} ({percent}%) | Journey {complete}/{total} ({percent}%)`. | PASS | `assets/theme-v2/js/toolbox-status-bar.js:309` and `:350`; tests at `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs:239`, `:275`. |
-+| Use existing Game Journey completion metrics/API pipeline. | PASS | `assets/theme-v2/js/toolbox-status-bar.js:1`, `:337`; tests route `/api/game-journey/completion-metrics` at `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs:76`. |
-+| Do not add new storage. | PASS | No persistence files changed. |
-+| Do not use browser-owned authoritative progress data. | PASS | Progress is read from `readGameJourneyCompletionMetrics()` and not local/session storage. |
-+| Keep existing left status bar behavior from ALFA_009. | PASS | Selected game assertions remain at `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs:237`, `:302`, `:391`. |
-+| Keep existing center status bar behavior from ALFA_009. | PASS | Message assertions remain at `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs:238`, `:303`, `:370`, `:397`. |
-+| Preserve fullscreen bottom anchoring. | PASS | Existing CSS rules remain at `assets/theme-v2/css/status.css:119`; test coverage at `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs:315`. |
-+| Preserve normal placement above footer. | PASS | Existing status bar placement test remains at `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs:224`. |
-+| No inline styles, style blocks, or page-local CSS. | PASS | Style scan returned no matches. |
-+| Use Theme V2 shared CSS/classes. | PASS | Styling changes are limited to `assets/theme-v2/css/status.css`. |
-+| Update targeted Playwright coverage. | PASS | `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs` now validates right progress text and anchoring. |
-+| Produce required reports and repo-structured ZIP. | PASS | PR reports added and ZIP target is `tmp/PR_26175_ALFA_011-status-bar-journey-progress-context_delta.zip`. |
-diff --git a/docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_validation-lane.md b/docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_validation-lane.md
++| Stay on the current Team Alfa PR branch. | PASS | Work stayed on `codex/pr-26175-alfa-047-theme-v2-svg-icon-registry`. |
++| Use SVG files already present under `assets/theme-v2/svg/` as authoritative source. | PASS | Tests validate the current file set in `assets/theme-v2/svg/`; docs state those files are authoritative. |
++| Do not regenerate SVG artwork. | PASS | No generation command was used; tests/docs only were updated for validation behavior. |
++| Do not redesign SVG artwork. | PASS | This update did not edit SVG geometry. |
++| Do not simplify or optimize path geometry. | PASS | Playwright no longer asserts or rewrites path geometry. |
++| Do not redraw any icon. | PASS | Existing SVG artwork is treated as user-authored content. |
++| Required SVG filenames exist. | PASS | Playwright verifies the exact required filename list. |
++| Missing required SVGs are validation failures, not generated replacements. | PASS | Style guide and README document failure behavior; tests fail if the required list is incomplete. |
++| Forbidden names `expand`, `collapse`, and `delete` are absent. | PASS | Playwright verifies those filenames do not exist. |
++| Each SVG is well-formed. | PASS | Playwright parses each SVG with `DOMParser` as `image/svg+xml`. |
++| Each SVG uses `viewBox="0 0 24 24"`. | PASS | Playwright verifies every required SVG. |
++| Each SVG uses `fill="none"`. | PASS | Playwright verifies every `fill` attribute value is `none`. |
++| Each SVG uses `stroke="currentColor"`. | PASS | Playwright verifies every `stroke` attribute value is `currentColor`. |
++| Each SVG uses rounded line caps. | PASS | Playwright verifies `stroke-linecap="round"`. |
++| Each SVG uses rounded line joins. | PASS | Playwright verifies `stroke-linejoin="round"`. |
++| Do not use CSS-only or JS-only icon generation. | PASS | No Theme V2 CSS/JS generator files are included; docs forbid replacement with CSS-only or JS-only generation. |
++| Update registry documentation. | PASS | `assets/theme-v2/svg/README.md` documents the authoritative asset pack and validation policy. |
++| Update Theme V2 icon style guide. | PASS | `docs_build/design/theme-v2-icons/theme-v2-icon-style-guide.md` documents the same authority and validation policy. |
++| Update Playwright validation. | PASS | `tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs` now validates presence, XML, attributes, serving, and docs without geometry assertions. |
++| No accordion conversion in ALFA_047. | PASS | No runtime UI files were modified. |
++| No runtime UI conversion in ALFA_047. | PASS | Final delta is assets, docs, tests, reports, and BUILD metadata only. |
++
++## Overall Status
++PASS
+diff --git a/docs_build/dev/reports/PR_26175_ALFA_047-theme-v2-svg-icon-registry_manual-validation-notes.md b/docs_build/dev/reports/PR_26175_ALFA_047-theme-v2-svg-icon-registry_manual-validation-notes.md
 new file mode 100644
-index 000000000..daa775695
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_validation-lane.md
-@@ -0,0 +1,38 @@
-+# PR_26175_ALFA_011 Validation Lane
+index 000000000..000000000
+@@ -0,0 +1,25 @@
++# PR_26175_ALFA_047-theme-v2-svg-icon-registry Manual Validation Notes
 +
-+## Playwright
-+Command:
++## Branch
++PASS: Work remained on `codex/pr-26175-alfa-047-theme-v2-svg-icon-registry`.
 +
-+```powershell
-+npx playwright test tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs --workers=1
-+```
++## Scope Review
++PASS: ALFA_047 remains limited to standalone SVG assets, registry/style-guide documentation, targeted tests, BUILD doc updates, and reports.
 +
-+Result:
++PASS: No runtime UI conversion, accordion conversion, Theme V2 CSS change, or Theme V2 JS change is included.
 +
-+```text
-+Running 7 tests using 1 worker
-+7 passed
-+```
++## Artwork Policy Review
++PASS: The current SVG files under `assets/theme-v2/svg/` are treated as user-authored authoritative artwork.
 +
-+Covered:
-+- Existing selected Game Hub game appears on the left.
-+- Existing center status message behavior is preserved.
-+- Right progress text renders in the required format.
-+- Objects example renders as `Objects 12/25 (48%) | Journey 12/125 (10%)`.
-+- Game Hub save state keeps center status behavior and right progress.
-+- Fullscreen/tool display mode keeps the fixed bottom status bar and content reserve.
-+- Game Hub owner selection updates global status context.
-+- Missing-game prompt remains creator-safe.
-+- Idea Board remains excluded from selected-game filtering.
++PASS: Validation was updated to avoid redesigning, redrawing, simplifying, optimizing, or enforcing path geometry.
 +
-+## Style And Scope
-+Command:
++PASS: If a required SVG is missing, the Playwright validation fails instead of generating a replacement.
 +
-+```powershell
-+rg -n "<[s]tyle|[s]tyle=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-+```
++## Validation Review
++PASS: Required filenames are checked.
 +
-+Result: PASS. The command returned no matches.
++PASS: Each SVG is parsed as well-formed XML.
 +
-+## Generated Files
-+Playwright updated generated coverage reports during validation. They were restored to `HEAD` because they are outside this PR's exact target list.
++PASS: Each SVG is checked for `viewBox="0 0 24 24"`, `fill="none"`, `stroke="currentColor"`, `stroke-linecap="round"`, and `stroke-linejoin="round"`.
++
++PASS: Registry documentation and the Theme V2 icon style guide document the authoritative-source policy.
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 4aa64ab71..1c6777b35 100644
---- a/docs_build/dev/reports/codex_changed_files.txt
-+++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,17 +1,9 @@
--docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
--docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
--docs_build/dev/ProjectInstructions/addendums/multi_team.md
--docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
--docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
--docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
--docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
--docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
--docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
--docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
--docs_build/dev/reports/PR_26175_OWNER_046-pr-targeted-review-packets.md
--docs_build/dev/reports/PR_REVIEW_003.md
--docs_build/dev/reports/PR_REVIEW_050.md
--docs_build/dev/reports/PR_REVIEW_051.md
--docs_build/dev/reports/PR_REVIEW_118.md
+@@ -1,9 +1,38 @@
+-docs_build/dev/BUILD_PR.md
+-assets/theme-v2/js/toolbox-status-bar.js
+-assets/theme-v2/css/status.css
+-tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
+-docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_report.md
+-docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_validation-lane.md
+-docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_requirements-checklist.md
+-docs_build/dev/reports/codex_review.diff
 -docs_build/dev/reports/codex_changed_files.txt
-+docs_build/dev/BUILD_PR.md
-+assets/theme-v2/js/toolbox-status-bar.js
-+assets/theme-v2/css/status.css
-+tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-+docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_report.md
-+docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_validation-lane.md
-+docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_requirements-checklist.md
- docs_build/dev/reports/codex_review.diff
-+docs_build/dev/reports/codex_changed_files.txt
-diff --git a/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs b/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-index 1a40d61c5..e4a940bad 100644
---- a/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-+++ b/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-@@ -73,6 +73,15 @@ async function openRepoPage(page, pathName, options = {}) {
-       });
-     });
-   }
-+  await page.route("**/api/game-journey/completion-metrics", async (route) => {
-+    await route.fulfill({
-+      contentType: "application/json",
-+      body: JSON.stringify({
-+        data: options.completionMetrics || completionMetricsFixture(),
-+        ok: true,
-+      }),
-+    });
-+  });
-   if (options.session) {
-     const userKey = options.session.userKey || MOCK_DB_KEYS.users.user1;
-     await page.route("**/api/session/current", async (route) => {
-@@ -113,6 +122,44 @@ function creatorSession() {
-   };
- }
-
-+function completionMetric(bucketKey, bucketName, completedCount, plannedCount) {
-+  return {
-+    active: true,
-+    bucketKey,
-+    bucketName,
-+    completedCount,
-+    percentComplete: plannedCount > 0 ? Math.round((completedCount / plannedCount) * 100) : 0,
-+    plannedCount,
-+  };
-+}
++# PR_26175_ALFA_047-theme-v2-svg-icon-registry Changed Files
 +
-+function completionMetricsFixture() {
-+  return {
-+    api: "Local API",
-+    completedCount: 12,
-+    databaseEngine: "Postgres",
-+    percentComplete: 10,
-+    plannedCount: 125,
-+    records: [
-+      completionMetric("001-idea", "Idea", 1, 4),
-+      completionMetric("002-create", "Create", 3, 5),
-+      completionMetric("003-design", "Design", 2, 5),
-+      completionMetric("004-graphics", "Graphics", 5, 10),
-+      completionMetric("005-audio", "Audio", 0, 4),
-+      completionMetric("006-objects", "Objects", 12, 25),
-+      completionMetric("007-worlds", "Worlds", 0, 5),
-+      completionMetric("008-interface", "Interface", 1, 5),
-+      completionMetric("009-controls", "Controls", 1, 4),
-+      completionMetric("010-rules", "Rules", 4, 5),
-+      completionMetric("011-progression", "Progression", 0, 4),
-+      completionMetric("012-play-test", "Play Test", 0, 5),
-+      completionMetric("013-publish", "Publish", 0, 5),
-+      completionMetric("014-share", "Share", 0, 5),
-+    ],
-+    serviceContract: "Web UI -> Local API/Service Contract -> Postgres",
-+  };
-+}
++## Source, Test, Documentation, And Report Files
 +
- const REMOVED_STATUS_BAR_LABELS = [
-   "Selected Game Name",
-   "Selected Game Purpose",
-@@ -148,6 +195,7 @@ async function statusBarSnapshot(page) {
-     const centerPanel = document.querySelector(".tool-center-panel");
-     const gameName = bar.querySelector("[data-toolbox-selected-game-name]");
-     const message = bar.querySelector("[data-toolbox-status-message]");
-+    const progress = bar.querySelector("[data-toolbox-status-progress]");
-     const position = getComputedStyle(bar).position;
-     const barBox = bar.getBoundingClientRect();
-     const footerBox = footer?.getBoundingClientRect();
-@@ -165,6 +213,9 @@ async function statusBarSnapshot(page) {
-       messageBox: boxSnapshot(message),
-       messageText: message?.textContent.replace(/\s+/g, " ").trim() || "",
-       position,
-+      progressBox: boxSnapshot(progress),
-+      progressState: bar.dataset.toolboxProgressState || "",
-+      progressText: progress?.textContent.replace(/\s+/g, " ").trim() || "",
-       topBeforeFooter: footerBox ? barBox.bottom <= footerBox.top + 1 : false,
-     };
-   });
-@@ -185,6 +236,7 @@ test("shared toolbox status bar shows selected Game Hub game above the footer",
-     await expect(statusBar.locator("[data-toolbox-status-action]")).toHaveCount(0);
-     await expect(statusBar.locator("[data-toolbox-selected-game]")).not.toContainText("Under Construction");
-     await expect(statusBar.locator("[data-toolbox-status-message]")).toContainText("Game Design mock repository ready.");
-+    await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Game Design 2/5 (40%) | Journey 12/125 (10%)");
-     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-id", "demo-game");
-     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "active");
-
-@@ -197,9 +249,35 @@ test("shared toolbox status bar shows selected Game Hub game above the footer",
-     expect(snapshot.dataset.selectedGameRequired).toBe("true");
-     expect(snapshot.gameText).toBe("Demo Game");
-     expect(snapshot.messageText).toContain("Game Design mock repository ready.");
-+    expect(snapshot.progressState).toBe("active");
-+    expect(snapshot.progressText).toBe("Game Design 2/5 (40%) | Journey 12/125 (10%)");
-     expect(Math.max(snapshot.gameBox.top, snapshot.messageBox.top)).toBeLessThanOrEqual(
-       Math.min(snapshot.gameBox.bottom, snapshot.messageBox.bottom),
-     );
-+    expect(Math.max(snapshot.gameBox.top, snapshot.messageBox.top, snapshot.progressBox.top)).toBeLessThanOrEqual(
-+      Math.min(snapshot.gameBox.bottom, snapshot.messageBox.bottom, snapshot.progressBox.bottom),
-+    );
-+    expect(snapshot.progressBox.right).toBeGreaterThan(snapshot.messageBox.right);
++- `docs_build/dev/BUILD_PR.md` - updated
++- `assets/theme-v2/svg/README.md` - added
++- `assets/theme-v2/svg/gfs-add.svg` - added
++- `assets/theme-v2/svg/gfs-chevron-down.svg` - added
++- `assets/theme-v2/svg/gfs-chevron-left.svg` - added
++- `assets/theme-v2/svg/gfs-chevron-right.svg` - added
++- `assets/theme-v2/svg/gfs-chevron-up.svg` - added
++- `assets/theme-v2/svg/gfs-close.svg` - added
++- `assets/theme-v2/svg/gfs-error.svg` - added
++- `assets/theme-v2/svg/gfs-exit-fullscreen.svg` - added
++- `assets/theme-v2/svg/gfs-fullscreen.svg` - added
++- `assets/theme-v2/svg/gfs-info.svg` - added
++- `assets/theme-v2/svg/gfs-menu.svg` - added
++- `assets/theme-v2/svg/gfs-search.svg` - added
++- `assets/theme-v2/svg/gfs-settings.svg` - added
++- `assets/theme-v2/svg/gfs-subtract.svg` - added
++- `assets/theme-v2/svg/gfs-success.svg` - added
++- `assets/theme-v2/svg/gfs-trash.svg` - added
++- `assets/theme-v2/svg/gfs-warning.svg` - added
++- `docs_build/design/theme-v2-icons/theme-v2-icon-style-guide.md` - added
++- `tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs` - added
++- `docs_build/pr/APPLY_PR_26175_ALFA_047-theme-v2-svg-icon-registry.md` - added
++- `docs_build/dev/reports/PR_26175_ALFA_047-theme-v2-svg-icon-registry_report.md` - added
++- `docs_build/dev/reports/PR_26175_ALFA_047-theme-v2-svg-icon-registry_validation-lane.md` - added
++- `docs_build/dev/reports/PR_26175_ALFA_047-theme-v2-svg-icon-registry_requirements-checklist.md` - added
++- `docs_build/dev/reports/PR_26175_ALFA_047-theme-v2-svg-icon-registry_manual-validation-notes.md` - added
++- `docs_build/dev/reports/codex_changed_files.txt` - updated
++- `docs_build/dev/reports/codex_review.diff` - updated
 +
-+    expectNoPageFailures(failures);
-+  } finally {
-+    await failures.server.close();
-+  }
-+});
++## Validation
 +
-+test("shared toolbox status bar shows right-anchored current tool and journey progress", async ({ page }) => {
-+  const failures = await openRepoPage(page, "/toolbox/objects/index.html");
-+
-+  try {
-+    const statusBar = page.locator("[data-toolbox-status-bar]");
-+    await expect(statusBar).toBeVisible();
-+    await expect(statusBar.locator("[data-toolbox-selected-game-name]")).toHaveText("Demo Game");
-+    await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Objects 12/25 (48%) | Journey 12/125 (10%)");
-+
-+    const snapshot = await statusBarSnapshot(page);
-+    expect(snapshot.progressState).toBe("active");
-+    expect(snapshot.progressText).toBe("Objects 12/25 (48%) | Journey 12/125 (10%)");
-+    expect(snapshot.progressBox.right).toBeGreaterThan(snapshot.messageBox.right);
-
-     expectNoPageFailures(failures);
-   } finally {
-@@ -223,6 +301,7 @@ test("shared toolbox status bar center reports save state after Game Hub saves",
-     await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
-     await expect(statusBar.locator("[data-toolbox-status-message]")).toHaveText("Created and opened Status Bar Save.");
-     await expect(statusBar.locator("[data-toolbox-selected-game-name]")).toHaveText("Status Bar Save");
-+    await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Game Hub 3/5 (60%) | Journey 12/125 (10%)");
-     await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveCount(0);
-     await expect(statusBar).not.toContainText("Learning Game");
-     await expect(statusBar).not.toContainText("Environment");
-@@ -246,6 +325,7 @@ test("shared toolbox status bar anchors to the bottom in tool display mode", asy
-     expect(Math.abs(snapshot.bottomGap)).toBeLessThanOrEqual(2);
-     expect(snapshot.gameText).toBe("Demo Game");
-     expect(snapshot.messageText).toContain("Game Design mock repository ready.");
-+    expect(snapshot.progressText).toBe("Game Design 2/5 (40%) | Journey 12/125 (10%)");
-     expect(snapshot.centerPanelBox.bottom).toBeLessThanOrEqual(snapshot.barBox.top + 1);
-
-     expectNoPageFailures(failures);
-@@ -270,6 +350,7 @@ test("Game Hub owner selection updates the global toolbox status bar", async ({
-     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "active");
-     await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
-     await expect(statusBar.locator("[data-toolbox-status-message]")).toContainText("Sign in to create or update Game Hub projects.");
-+    await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Game Hub 3/5 (60%) | Journey 12/125 (10%)");
-
-     expectNoPageFailures(failures);
-   } finally {
-@@ -287,6 +368,7 @@ test("non-Idea Board toolbox pages show a creator-safe prompt when no Game Hub g
-     await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveCount(0);
-     await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
-     await expect(statusBar.locator("[data-toolbox-status-message]")).toHaveText("Select or create a game in Game Hub before using this toolbox page.");
-+    await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Game Design 2/5 (40%) | Journey 12/125 (10%)");
-     await expect(statusBar.locator("[data-toolbox-status-action]")).toHaveCount(0);
-     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "missing");
-     await expect(page.locator("body")).not.toHaveAttribute("data-toolbox-selected-game-id", /.+/);
-@@ -313,6 +395,7 @@ test("Idea Board is excluded from selected-game filtering and does not show the
-     await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
-     await expect(statusBar.locator("[data-toolbox-status-message]")).toContainText("Ready to shape ideas and notes.");
-     await expect(statusBar.locator("[data-toolbox-status-message]")).not.toContainText("Select or create a game");
-+    await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Idea Board 1/4 (25%) | Journey 12/125 (10%)");
-     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "optional");
-     await expect(page.locator("body")).not.toHaveClass(/toolbox-selected-game-missing/);
++- PASS: `npx playwright test tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs --workers=1` ran 5 tests successfully.
++- PASS: `rg -n "<[s]tyle|[s]tyle=" docs_build/design/theme-v2-icons/theme-v2-icon-style-guide.md tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs` returned no matches.
++- PASS: Repo-structured ZIP refreshed at `tmp/PR_26175_ALFA_047-theme-v2-svg-icon-registry_delta.zip`.
