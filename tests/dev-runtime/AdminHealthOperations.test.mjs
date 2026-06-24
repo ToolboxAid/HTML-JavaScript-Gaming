@@ -137,6 +137,11 @@ test("Admin can view operational health while Creator sessions are blocked", asy
       assert.equal(health.environmentIdentity.storageFolder, "/local");
       assert.equal(health.environmentIdentity.siteUrl.includes("site-user"), false);
       assert.equal(health.environmentIdentity.apiUrl.includes("api-user"), false);
+      assert.equal(health.databaseStatus.databaseType, "Local Docker PostgreSQL");
+      assert.ok(["connected", "failed", "not configured"].includes(health.databaseStatus.connectivity));
+      assert.equal(typeof health.databaseStatus.lastChecked, "string");
+      assert.equal(typeof health.databaseStatus.responseTimeMs === "number" || health.databaseStatus.responseTimeMs === null, true);
+      assert.equal(typeof health.databaseStatus.version, "string");
       assert.deepEqual(
         health.environmentMap.map((row) => row.name),
         ["Local", "DEV", "IST", "UAT", "PRD"],

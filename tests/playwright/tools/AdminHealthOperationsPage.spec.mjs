@@ -151,10 +151,11 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("deferred/cancelled");
     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).not.toContainText("secret");
     await expect(page.getByRole("table", { name: "Database health" })).toContainText("Postgres");
-    await expect(page.locator("[data-admin-system-health-db-value='provider']")).toHaveText("Postgres");
-    await expect(page.locator("[data-admin-system-health-db-value='host']")).not.toHaveText("Configured host placeholder");
-    await expect(page.locator("[data-admin-system-health-db-value='database']")).not.toHaveText("Configured database placeholder");
-    await expect(page.locator("[data-admin-system-health-db-value='connection']")).not.toHaveText("Connection check pending");
+    await expect(page.locator("[data-admin-system-health-db-value='type']")).toHaveText("Local Docker PostgreSQL");
+    await expect(page.locator("[data-admin-system-health-db-value='connectivity']")).not.toHaveText("Loading");
+    await expect(page.locator("[data-admin-system-health-db-value='responseTime']")).not.toHaveText("Loading");
+    await expect(page.locator("[data-admin-system-health-db-value='version']")).not.toHaveText("Loading");
+    await expect(page.locator("[data-admin-system-health-db-value='lastChecked']")).not.toHaveText("Loading");
     await expect(page.getByRole("table", { name: "Database health" })).not.toContainText("postgres://");
     await expect(page.getByRole("table", { name: "Database health" })).not.toContainText("postgresql://");
     await expect(page.getByRole("table", { name: "Storage health" })).toContainText("Cloudflare R2");
