@@ -1,0 +1,128 @@
+# PR_26175_OWNER_049-governance-report-merge-batch
+
+## Purpose
+
+Document the current OWNER-approved governance decisions for the next report/cleanup batch.
+
+This PR is report-only. It does not merge PRs, close PRs, delete branches, or modify runtime code.
+
+## Source State
+
+| Item | GitHub state at review | Decision documented here |
+| --- | --- | --- |
+| PR #129 | Open draft, not merged, currently not mergeable as-is | MERGE APPROVED |
+| PR #132 | Open draft, not merged, currently not mergeable as-is | MERGE APPROVED |
+| PR #134 | Open draft, not merged, currently not mergeable as-is | MERGE APPROVED |
+| PR #3 | Open, not merged, currently not mergeable | CLOSE APPROVED |
+| PR #51 | Open draft, not merged, currently not mergeable | CLOSE APPROVED |
+| PR #50 | Open draft, not merged, currently not mergeable | HOLD |
+| PR #118 | Open draft, not merged, currently mergeable to its non-main base branch | HOLD |
+
+## OWNER Decisions
+
+### MERGE APPROVED
+
+| PR | Title | Rationale | Dependency impact | Expected post-merge state |
+| --- | --- | --- | --- | --- |
+| #129 | `[codex] PR_26175_OWNER_046 targeted PR review packets` | Establishes the OWNER_046 governance/report foundation: Team Gamma retired, Team Golf replacement active ownership lane, and GitHub-authoritative review packets for PR #3, #50, #51, and #118. | Merge before #132 because #132 cites the OWNER_046 review packets as supporting evidence. Because #129 changes Project Instructions and was based on older `main`, it likely needs normal ready/update/conflict handling before merge execution. | `main` contains the Golf/Gamma governance migration note and review packets `PR_REVIEW_003.md`, `PR_REVIEW_050.md`, `PR_REVIEW_051.md`, and `PR_REVIEW_118.md`. |
+| #132 | `PR_26175_OWNER_047: add targeted PR action decision report` | Captures the OWNER_047 action decision report for PR #3, #50, #51, and #118, including #3 code-diff risks, #50 Golf/Gamma historical decision, #51 superseded governance comparison, and #118 Alfa closeout evidence decision. | Merge after #129 so the review packets it uses are already present on `main`. It is report-only but currently not mergeable as-is, so it may require normal branch update handling before execution. | `main` contains the targeted action decision report that supports closing #3/#51 and holding #50/#118. |
+| #134 | `PR_26175_BRAVO_001: add PR 003 Messages code review` | Adds the Bravo code-review report for PR #3 focused on Messages / Emotion Profiles. It documents the key reason PR #3 should close: stale, not mergeable, targets removed SQLite service path, and mixes future BUILD specs into the PR_006 lane. | Independent of #129/#132 for file content, but it strengthens the evidence record for closing #3. It should merge before closing #3 so the code-review evidence is preserved on `main`. | `main` contains the Bravo PR #3 code-review report, giving the close action an auditable technical basis. |
+
+### CLOSE APPROVED
+
+| PR | Title | Rationale | Replacement / superseded reference | Dependency impact | Expected post-close state |
+| --- | --- | --- | --- | --- | --- |
+| #3 | `Pr/PR 26171 006 message emotion profile management` | Superseded by the current PostgreSQL Messages direction. The PR targets the removed SQLite Messages service path and is not mergeable. It also contains out-of-scope future BUILD specs for later Messages/TTS/playback lanes. | Current PostgreSQL-backed Messages implementation on `main`; OWNER_047 decision report from #132; Bravo code-review evidence from #134. | Close after #132 and #134 merge so both decision and code-review evidence are present on `main`. Do not delete the branch unless a later OWNER-approved cleanup task explicitly scopes branch deletion. | PR #3 is closed as superseded; PostgreSQL Messages remains the active direction; branch remains untouched. |
+| #51 | `PR_26172_MASTER_001-project-instructions-readme-and-root` | Superseded by the current Project Instructions governance state. It bootstraps an older ProjectInstructions root using MASTER wording and placeholder structure, while current `main` already has OWNER governance, addendums, team assignment rules, and archive history. | Current `docs_build/dev/ProjectInstructions/` state on `main`; OWNER_047 decision report from #132; OWNER_048 superseded closure decision log. | Close after #132 merges, or with #132/#134 evidence batch, so the decision trail is preserved. Do not delete the branch unless later explicitly approved. | PR #51 is closed as superseded; current OWNER Project Instructions remain authoritative; branch remains untouched. |
+
+### HOLD
+
+| PR | Title | Rationale | Dependency impact | Expected hold state |
+| --- | --- | --- | --- | --- |
+| #50 | `PR_26171_GAMMA_028-final-sqlite-clean-status-report` | Hold as historical Golf/Gamma SQLite closeout evidence. It may still be useful as reference material, but it should not be merged or closed in this batch until the OWNER confirms whether the final Gamma-era report should be preserved on `main` or left as PR evidence. | Related to #129 because #129 retires Gamma and replaces it with Golf as the active lane. Holding #50 avoids mixing historical Gamma closeout disposition with the approved merge/close batch. | PR #50 remains open/draft and untouched. |
+| #118 | `PR_26174_ALFA_EOD-final-closeout` | Hold as Alfa EOD closeout evidence. It targets a non-main base branch and is not needed before merging the OWNER/Bravo governance evidence batch. | It may remain useful for Alfa stack review, but it should not be merged into the governance batch or closed until OWNER completes the Alfa stack disposition. | PR #118 remains open/draft and untouched. |
+
+## Dependency Order
+
+Recommended execution order for the already-approved future actions:
+
+1. Prepare #129 for merge, then merge #129.
+2. Prepare #132 for merge, then merge #132.
+3. Prepare #134 for merge, then merge #134.
+4. Close #3 as superseded by the current PostgreSQL Messages direction after #132/#134 evidence is on `main`.
+5. Close #51 as superseded by the current Project Instructions governance state after #132 evidence is on `main`.
+6. Keep #50 and #118 open on hold.
+
+## Replacement And Superseded References
+
+| Superseded / held item | Replacement or current reference |
+| --- | --- |
+| PR #3 | PostgreSQL-backed Messages direction on `main`; evidence in #132 and #134. |
+| PR #51 | Current OWNER Project Instructions on `main`; evidence in #132 and OWNER_048 decision log. |
+| PR #50 | Held as final Gamma/Golf historical SQLite closeout evidence; #129 establishes Team Golf as active replacement lane. |
+| PR #118 | Held as Alfa closeout evidence for later Alfa stack disposition. |
+
+## Expected Post-Merge State
+
+After #129, #132, and #134 are merged, and #3/#51 are closed in a later approved action:
+
+- `main` contains OWNER_046 review packets for #3, #50, #51, and #118.
+- `main` contains OWNER_047 targeted action decision report.
+- `main` contains Bravo PR #3 code-review report.
+- PR #3 is closed as superseded by PostgreSQL Messages direction.
+- PR #51 is closed as superseded by current Project Instructions governance.
+- PR #50 remains open/draft on hold.
+- PR #118 remains open/draft on hold.
+- No branches are deleted unless a later OWNER-approved branch cleanup task explicitly scopes deletion.
+
+## Changed File Inventory For Reviewed Merge PRs
+
+| PR | Changed files reviewed |
+| --- | --- |
+| #129 | `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`; `docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md`; `docs_build/dev/ProjectInstructions/addendums/multi_team.md`; `docs_build/dev/ProjectInstructions/addendums/pr_workflow.md`; `docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md`; `docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md`; `docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md`; `docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md`; `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md`; `docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md`; `docs_build/dev/reports/PR_26175_OWNER_046-pr-targeted-review-packets.md`; `docs_build/dev/reports/PR_REVIEW_003.md`; `docs_build/dev/reports/PR_REVIEW_050.md`; `docs_build/dev/reports/PR_REVIEW_051.md`; `docs_build/dev/reports/PR_REVIEW_118.md`; `docs_build/dev/reports/codex_changed_files.txt`; `docs_build/dev/reports/codex_review.diff` |
+| #132 | `docs_build/dev/reports/PR_26175_OWNER_047-targeted-pr-action-decision-report.md`; `docs_build/dev/reports/codex_changed_files.txt`; `docs_build/dev/reports/codex_review.diff` |
+| #134 | `docs_build/dev/reports/PR_26175_BRAVO_001-pr-003-messages-emotion-profiles-code-review.md`; `docs_build/dev/reports/codex_changed_files.txt`; `docs_build/dev/reports/codex_review.diff` |
+
+## Requirement Checklist
+
+| Requirement | Status | Notes |
+| --- | --- | --- |
+| Start from `main` | PASS | Hard-stop gate confirmed current branch was `main` before branch creation. |
+| Worktree clean | PASS | Hard-stop gate confirmed clean worktree before branch creation. |
+| Local/origin sync `0 0` | PASS | Hard-stop gate confirmed `main...origin/main` was `0 0`. |
+| Read all Project Instructions | PASS | Read files under `docs_build/dev/ProjectInstructions/` before report creation. |
+| Review PR #129 | PASS | GitHub metadata and changed-file list reviewed. |
+| Review PR #132 | PASS | GitHub metadata and changed-file list reviewed. |
+| Review PR #134 | PASS | GitHub metadata and changed-file list reviewed. |
+| Document MERGE APPROVED decisions | PASS | #129, #132, and #134 documented. |
+| Document CLOSE APPROVED decisions | PASS | #3 and #51 documented. |
+| Document HOLD decisions | PASS | #50 and #118 documented. |
+| Include rationale | PASS | Included per decision table. |
+| Include dependency impact | PASS | Included per decision table and order section. |
+| Include replacement/superseded references | PASS | Included in close/hold and replacement tables. |
+| Include expected post-merge state | PASS | Included above. |
+| Do not merge PRs | PASS | No merge action performed. |
+| Do not close PRs | PASS | No close action performed. |
+| Do not delete branches | PASS | No branch deletion performed. |
+| Do not modify runtime code | PASS | Report-only changes under `docs_build/dev/reports/`. |
+
+## Validation Lane Report
+
+- PASS: GitHub PR metadata fetched for #129, #132, #134, #3, #51, #50, and #118.
+- PASS: GitHub changed-file lists fetched for #129, #132, and #134.
+- PASS: Scope stayed report-only under `docs_build/dev/reports/`.
+- PASS: No runtime validation required because no runtime code changed.
+
+## Manual Validation Notes
+
+- Confirmed #129, #132, and #134 remain unmerged at report time; this PR documents approval only and does not execute merges.
+- Confirmed #3 and #51 remain open at report time; this PR documents approval only and does not execute closures.
+- Confirmed #50 and #118 remain held and untouched.
+- Confirmed branch deletion is explicitly out of scope.
+
+## Artifacts
+
+- `docs_build/dev/reports/PR_26175_OWNER_049-governance-report-merge-batch.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+- `tmp/PR_26175_OWNER_049-governance-report-merge-batch_delta.zip`

@@ -7,6 +7,7 @@ const ADMIN_LABELS = Object.freeze([
   "Admin Tools",
   "Analytics",
   "Controls",
+  "Creators",
   "DB Viewer",
   "Environments",
   "Game Migration",
@@ -20,7 +21,6 @@ const ADMIN_LABELS = Object.freeze([
   "Site Setup",
   "System Health",
   "Tool Votes",
-  "Creators",
 ]);
 
 const OWNER_LABELS = Object.freeze([
@@ -160,6 +160,15 @@ test("Admin menu renders operational platform pages only", async ({ page }) => {
   try {
     await expect(page.locator("nav[aria-label='Admin tool pages'] :is(a, span)")).toHaveText(ADMIN_LABELS);
     const adminLinks = page.locator("nav[aria-label='Admin tool pages'] a");
+    const adminRenderedLabels = await page.locator("nav[aria-label='Admin tool pages'] :is(a, span)").allTextContents();
+    expect(adminRenderedLabels).toEqual([...adminRenderedLabels].sort((left, right) => left.localeCompare(right)));
+    expect(new Set(adminRenderedLabels).size).toBe(adminRenderedLabels.length);
+    const adminHrefs = await adminLinks.evaluateAll((links) => links.map((link) => link.getAttribute("href") || ""));
+    expect(new Set(adminHrefs).size).toBe(adminHrefs.length);
+    for (const href of adminHrefs) {
+      const response = await page.request.get(new URL(href, context.server.baseUrl).toString());
+      expect(response.status(), `${href} should open`).toBeLessThan(400);
+    }
     const adminLinkText = (await adminLinks.allTextContents()).join("\n");
     for (const label of [
       "Branding",
