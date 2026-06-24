@@ -13,6 +13,28 @@ Rules:
 - Cross-team work requires OWNER approval and must identify the correct owning team for each PR.
 - Team start commands must use the current ownership model before pulling a backlog item.
 
+## Current Active Ownership Lanes
+
+OWNER override approved.
+
+The current active ownership lanes are:
+
+- Team Alfa
+- Team Bravo
+- Team Charlie
+- Team Delta
+- Team Golf
+- Team OWNER
+
+Migration note:
+Team Gamma is retired. Team Golf is the replacement active ownership lane.
+
+Rules:
+- Historical PR references and branch names that mention Gamma remain unchanged for traceability.
+- New active work that would previously have used Team Gamma routes to Team Golf.
+- Team Golf work requires OWNER assignment, an active branch, an active draft/open PR, or active release/cleanup responsibility.
+- If Team Golf work touches Alfa, Bravo, Charlie, or Delta ownership areas, the PR must document the OWNER cross-team decision.
+
 ## All-Team Preferred Codex Execution Method
 
 Preferred execution model:

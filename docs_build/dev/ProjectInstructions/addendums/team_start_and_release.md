@@ -31,6 +31,28 @@ The current active delivery teams for backlog start commands are:
 
 Each team start must confirm the selected backlog item is inside that team's ownership area.
 
+## Current Active Ownership Start Map
+
+OWNER override approved.
+
+The current active ownership start map includes:
+
+- Team Alfa
+- Team Bravo
+- Team Charlie
+- Team Delta
+- Team Golf
+- Team OWNER
+
+Migration note:
+Team Gamma is retired. Team Golf is the replacement active ownership lane.
+
+Clarification:
+- The four-team start set remains the backlog ownership start set for Alfa, Bravo, Charlie, and Delta.
+- Team Golf is valid for OWNER-assigned, branch-backed, PR-backed, release, review packet, or cleanup work.
+- Historical Gamma references and branch names must remain unchanged.
+- Golf work must not silently take ownership from Alfa, Bravo, Charlie, or Delta; cross-team work requires OWNER approval.
+
 ## Assignment Flow
 
 For backlog-driven work:

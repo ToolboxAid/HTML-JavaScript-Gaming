@@ -28,7 +28,23 @@ If a team has no assignment, no active branch, and no active PR, it is inactive 
 
 | Team | Active Assignment | Branch | PR | Status | OWNER Decision |
 |------|-------------------|--------|----|--------|----------------|
+| Team Alfa | none | none | none | Available | Active ownership lane |
+| Team Bravo | none | none | none | Available | Active ownership lane |
+| Team Charlie | none | none | none | Available | Active ownership lane |
+| Team Delta | none | none | none | Available | Active ownership lane |
+| Team Golf | none | none | none | Available | Replacement active ownership lane for retired Team Gamma |
 | Team OWNER | none | none | none | Available | Governance Phase 1 complete |
+
+## Current Active Ownership Lanes
+
+OWNER override approved.
+
+The current active ownership lanes are Team Alfa, Team Bravo, Team Charlie, Team Delta, Team Golf, and Team OWNER.
+
+Migration note:
+Team Gamma is retired. Team Golf is the replacement active ownership lane.
+
+Historical Gamma PR references and branch names remain unchanged for traceability.
 
 ## Update Rules
 
