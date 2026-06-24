@@ -1,6 +1,7 @@
 ﻿docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/PR_26175_CHARLIE_027-final-charlie-audit.md
-docs_build/dev/reports/PR_26175_CHARLIE_027-final-charlie-audit-branch-validation.md
-docs_build/dev/reports/PR_26175_CHARLIE_027-final-charlie-audit-manual-validation-notes.md
-docs_build/dev/reports/PR_26175_CHARLIE_027-final-charlie-audit-requirement-checklist.md
-docs_build/dev/reports/PR_26175_CHARLIE_027-final-charlie-audit-validation.md
+docs_build/dev/reports/codex_review.diff
+docs_build/dev/reports/PR_26175_CHARLIE_028-team-charlie-final-closeout.md
+docs_build/dev/reports/PR_26175_CHARLIE_028-team-charlie-final-closeout-branch-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_028-team-charlie-final-closeout-manual-validation-notes.md
+docs_build/dev/reports/PR_26175_CHARLIE_028-team-charlie-final-closeout-requirement-checklist.md
+docs_build/dev/reports/PR_26175_CHARLIE_028-team-charlie-final-closeout-validation.md

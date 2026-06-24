@@ -1,0 +1,32 @@
+# PR_26175_CHARLIE_028 Requirement Checklist
+
+- PASS: Review PR #164 final state.
+- PASS: Verify PR #164 docs/governance-only scope.
+- PASS: Verify PR #164 reports and ZIP artifact.
+- PASS: Merge PR #164, or confirm it was already merged.
+- PASS: Return to `main` after PR #164 merge.
+- PASS: Review PR #167 final state.
+- PASS: Verify PR #167 reports-only scope.
+- PASS: Verify PR #167 does not change runtime, roadmap, backlog, or Project Instructions.
+- PASS: Merge PR #167.
+- PASS: Return to clean synced `main` after PR #167 merge.
+- PASS: Audit GitHub for open/draft Charlie PRs.
+- PASS: Audit Charlie review requests.
+- PASS: Audit Charlie branches.
+- PASS: Audit backlog.
+- PASS: Audit roadmap.
+- PASS: Audit Project Instructions.
+- PASS: Audit runtime.
+- PASS: Verify required reports exist.
+- PASS: Create final closeout report.
+- PASS: Create validation report.
+- PASS: Create branch validation report.
+- PASS: Create requirement checklist.
+- PASS: Create manual validation notes.
+- PASS: Create `codex_review.diff`.
+- PASS: Create `codex_changed_files.txt`.
+- PASS: Create repo-structured ZIP under `tmp/`.
+- PASS: Push PR_028 branch.
+- PASS: Open PR_028 draft PR.
+- PASS: Do not delete branches.
+- PASS: Do not merge PR_028 without separate Owner approval.
