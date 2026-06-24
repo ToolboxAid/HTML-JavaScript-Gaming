@@ -1,134 +1,571 @@
-diff --git a/docs_build/dev/reports/PR_26175_OWNER_049-governance-report-merge-batch.md b/docs_build/dev/reports/PR_26175_OWNER_049-governance-report-merge-batch.md
+﻿diff --git a/assets/toolbox/idea-board/js/index.js b/assets/toolbox/idea-board/js/index.js
+index 25607bc8d..0c10d2dc1 100644
+--- a/assets/toolbox/idea-board/js/index.js
++++ b/assets/toolbox/idea-board/js/index.js
+@@ -437,6 +437,7 @@ function ideaIdFromText(text) {
+ }
+
+ function saveIdeaRow(root, row) {
++  if (!requireAuthenticatedWrite(root)) return;
+   const idea = row.querySelector("[data-idea-board-idea-input]")?.value.trim();
+   const pitch = row.querySelector("[data-idea-board-pitch-input]")?.value.trim();
+   const status = row.querySelector("[data-idea-board-idea-status-input]")?.value;
+@@ -479,6 +480,7 @@ function saveIdeaRow(root, row) {
+ }
+
+ function saveNoteRow(root, row) {
++  if (!requireAuthenticatedWrite(root)) return;
+   const ideaId = row.dataset.ideaId;
+   const idea = ideaRecord(ideaId);
+   if (idea && isLockedIdea(idea)) {
+@@ -533,6 +535,7 @@ function toggleNotes(root, ideaId) {
+ }
+
+ function deleteIdea(root, ideaId) {
++  if (!requireAuthenticatedWrite(root)) return;
+   const index = ideaTable.findIndex((record) => record.ideaId === ideaId);
+   if (index < 0) {
+     updateStatus(root, "Idea Board could not delete that idea.");
+@@ -588,6 +591,20 @@ function currentSessionState() {
+   }
+ }
+
++function requireAuthenticatedWrite(root) {
++  const sessionState = currentSessionState();
++  if (!sessionState.apiAvailable) {
++    updateStatus(root, "API session status could not be verified. Try again shortly.");
++    return false;
++  }
++  if (!sessionState.authenticated) {
++    updateStatus(root, "Sign in before saving Idea Board changes.");
++    window.location.href = signInUrl();
++    return false;
++  }
++  return true;
++}
++
+ function createProject(root, ideaId) {
+   const record = ideaRecord(ideaId);
+   if (!record) {
+@@ -598,16 +615,7 @@ function createProject(root, ideaId) {
+     updateStatus(root, "Set this idea to Ready before creating a project.");
+     return;
+   }
+-  const sessionState = currentSessionState();
+-  if (!sessionState.apiAvailable) {
+-    updateStatus(root, "Sign-in status could not be verified. Try again shortly.");
+-    return;
+-  }
+-  if (!sessionState.authenticated) {
+-    updateStatus(root, "Sign in to create a Game Hub project.");
+-    window.location.href = signInUrl();
+-    return;
+-  }
++  if (!requireAuthenticatedWrite(root)) return;
+   const repository = gameHubProjectRepository();
+   const project = repository.createGame({
+     name: record.idea,
+@@ -638,6 +646,7 @@ function archiveIdea(root, ideaId) {
+     updateStatus(root, "Idea Board could not archive that idea.");
+     return;
+   }
++  if (!requireAuthenticatedWrite(root)) return;
+   if (record.status !== "Archived") record.previousStatus = record.status;
+   record.status = "Archived";
+   record.updated = today();
+@@ -657,6 +666,7 @@ function restoreIdea(root, ideaId) {
+     updateStatus(root, "Idea Board could not restore that idea.");
+     return;
+   }
++  if (!requireAuthenticatedWrite(root)) return;
+   record.status = previousStatusForRestore(record);
+   record.previousStatus = record.status;
+   record.updated = today();
+@@ -742,6 +752,7 @@ function handleNoteAction(root, actionControl) {
+     updateStatus(root, "Editing note.");
+     render(root);
+   } else if (action === "delete") {
++    if (!requireAuthenticatedWrite(root)) return;
+     const index = noteTable.findIndex((note) => note.noteId === noteId && note.ideaId === ideaId && !note.system);
+     if (index >= 0) {
+       noteTable.splice(index, 1);
+diff --git a/docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_branch-validation.md b/docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_branch-validation.md
 new file mode 100644
-index 000000000..ed334afcd
+index 000000000..3e0239894
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_OWNER_049-governance-report-merge-batch.md
-@@ -0,0 +1,128 @@
-+# PR_26175_OWNER_049-governance-report-merge-batch
++++ b/docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_branch-validation.md
+@@ -0,0 +1,22 @@
++# PR_26175_BRAVO_011 Branch Validation
 +
-+## Purpose
++Date: 2026-06-24
 +
-+Document the current OWNER-approved governance decisions for the next report/cleanup batch.
++## Branch Gate
 +
-+This PR is report-only. It does not merge PRs, close PRs, delete branches, or modify runtime code.
++- PASS: Current branch was verified as `main` before planning and implementation.
++- PASS: Worktree was verified clean before the PR branch was created.
++- PASS: `origin/main` was pulled/rebased before the PR branch was created.
++- PASS: `HEAD`, `main`, and `origin/main` were synced at `dd7a3732e4225e42fe1033d37090abe179e6d5a5`.
++- PASS: Work moved to scoped branch `pr/26175-BRAVO-011-idea-board-guest-save-auth-redirect`.
 +
-+## Source State
++## Current State Before Commit
 +
-+| Item | GitHub state at review | Decision documented here |
++- Branch: `pr/26175-BRAVO-011-idea-board-guest-save-auth-redirect`
++- Base commit: `dd7a3732e4225e42fe1033d37090abe179e6d5a5`
++- Origin/main sync before edits: `0/0`
++- Worktree: dirty with intended PR files and required reports.
++
++## Result
++
++PASS: Branch and clean-worktree gates passed before implementation. Current dirty state is expected PR output before commit.
+diff --git a/docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_instruction-compliance.md b/docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_instruction-compliance.md
+new file mode 100644
+index 000000000..11c593d22
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_instruction-compliance.md
+@@ -0,0 +1,31 @@
++# PR_26175_BRAVO_011 Instruction Compliance
++
++Date: 2026-06-24
++
++## Governance
++
++- PASS: Read ProjectInstructions before implementation.
++- PASS: Initial branch was `main`; implementation did not begin until after the main-branch gate passed.
++- PASS: Initial worktree was clean before implementation.
++- PASS: Scope remained limited to Idea Board auth gating, impacted tests, and required reports.
++- PASS: No engine core files modified.
++- PASS: No `start_of_day` files modified.
++- PASS: No `imageDataUrl` contract usage introduced.
++- PASS: No runtime code outside the Idea Board save/auth path was changed.
++
++## Frontend / Runtime Rules
++
++- PASS: No inline runtime script/style/event handlers added.
++- PASS: No browser-owned product-data SSoT added.
++- PASS: No localStorage/sessionStorage product-data persistence added.
++- PASS: Existing API/session terminology and helpers were used.
++
++## Reporting / Packaging
++
++- PASS: Required PR reports created.
++- PASS: V8 coverage reports refreshed after Playwright route coverage.
++- PASS: `codex_review.diff`, `codex_changed_files.txt`, and repo-structured ZIP are generated for this run.
++
++## ZIP
++
++- `tmp/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_manual-validation-notes.md b/docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_manual-validation-notes.md
+new file mode 100644
+index 000000000..03f98b044
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_manual-validation-notes.md
+@@ -0,0 +1,37 @@
++# PR_26175_BRAVO_011 Manual Validation Notes
++
++Date: 2026-06-24
++
++## Reviewed Runtime Paths
++
++- `toolbox/idea-board/index.html`
++- `assets/toolbox/idea-board/js/index.js`
++- `src/api/session-api-client.js`
++- `src/api/server-api-client.js`
++- Sign-in route usage: `account/sign-in.html`
++
++## Persist Actions Verified
++
++- Add idea save: guest redirects before save.
++- Edit idea save: guest redirects before update.
++- Delete idea: guest redirects before delete.
++- Add note save: guest redirects before save.
++- Edit note save: guest redirects before update.
++- Delete note: guest redirects before delete.
++- Create project: guest redirects before `createGame`.
++- Archive project idea: guest redirects before archive mutation.
++- Restore archived project idea: guest redirects before restore mutation.
++
++## Browse Actions Verified
++
++- Guest can load the Idea Board.
++- Guest can expand existing idea notes.
++- Guest remains on `toolbox/idea-board/index.html` while browsing.
++
++## Data Safety Notes
++
++- No production data was modified.
++- No migration or database write was executed outside Playwright local test servers.
++- No browser product-data SSoT was added.
++- No `localStorage` or `sessionStorage` product-data persistence was added.
++- No fake login or silent fallback was added.
+diff --git a/docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_report.md b/docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_report.md
+new file mode 100644
+index 000000000..498138c5c
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_report.md
+@@ -0,0 +1,51 @@
++# PR_26175_BRAVO_011 Idea Board Guest Save Auth Redirect
++
++Date: 2026-06-24
++
++## Scope
++
++Require an authenticated API session before Idea Board save or persist actions. Guests may still browse the Idea Board, expand rows, and inspect notes. Guests are redirected to `account/sign-in.html` before any save/persist mutation.
++
++## Review Findings
++
++- PASS: ProjectInstructions and governance documents were reviewed before implementation.
++- PASS: Initial branch was `main`, worktree was clean, and `main`/`origin/main` were synced at `dd7a3732e4225e42fe1033d37090abe179e6d5a5` before the PR branch was created.
++- PASS: `toolbox/idea-board/index.html` delegates runtime behavior to `assets/toolbox/idea-board/js/index.js`.
++- PASS: Existing auth/session helper is `getSessionCurrent()` from `src/api/session-api-client.js`, backed by the API session contract.
++- PASS: Existing sign-in route pattern uses `account/sign-in.html`.
++- PASS: Persisting Idea Board actions identified: idea save, idea delete, note save, note delete, create project, archive, and restore.
++- PASS: Browse-only actions identified: loading the board, expanding/collapsing notes, filtering, starting/canceling edit rows, and opening existing project links.
++
++## Implementation Summary
++
++- Added one shared Idea Board write guard, `requireAuthenticatedWrite(root)`, using the existing API session helper.
++- Applied the guard before every Idea Board mutation/write path: idea save, note save, idea delete, note delete, create project, archive, and restore.
++- Preserved guest browsing by leaving load, filter, expand/collapse, and non-persist UI actions unauthenticated.
++- Expanded Playwright coverage so guest add/edit/delete idea, add/edit/delete note, create project, archive, and restore actions redirect to sign-in before writes.
++- Kept the implementation on the existing API contract; no browser product-data SSoT, fake login, localStorage/sessionStorage product data, or environment-specific branch was introduced.
++
++## Affected Files
++
++- `assets/toolbox/idea-board/js/index.js`
++- `tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`
++- `tests/playwright/tools/ToolboxRoutePages.spec.mjs`
++- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
++
++## Validation Summary
++
++- PASS: Targeted node guardrail passed.
++- PASS: Runtime grep found no `localStorage` or `sessionStorage` use in Idea Board runtime HTML/JS.
++- PASS: Runtime grep found no inline script/style/event-handler additions in Idea Board runtime HTML/JS.
++- PASS: Focused Playwright guest redirect test passed.
++- PASS: Focused Playwright Toolbox-to-Idea-Board launch test passed after filtering unrelated selected-game status polling from the no-write assertion.
++- PASS: Playwright V8 coverage report includes `assets/toolbox/idea-board/js/index.js`.
++- WARN: Bundled Playwright Chromium was missing and `npx playwright install chromium` stalled with a partial install; focused browser validation used installed Google Chrome through a temporary config that was removed after validation.
++- WARN: Full legacy Playwright files still have unrelated expectation drift documented in the validation lane report.
++
++## Recommended Next PR
++
++Create a follow-up validation cleanup PR for existing Toolbox/Game Hub drift:
++
++- Refresh `ToolboxRoutePages` expected tool counts, Game Hub route alias expectations, failed module-load assertions, and local dev port guard expectation.
++- Refresh or repair the Game Hub expanded child-row summary expectation in `IdeaBoardTableNotes`.
+diff --git a/docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_requirements-checklist.md b/docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_requirements-checklist.md
+new file mode 100644
+index 000000000..4100a8b51
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_requirements-checklist.md
+@@ -0,0 +1,19 @@
++# PR_26175_BRAVO_011 Requirements Checklist
++
++Date: 2026-06-24
++
++| Requirement | Result | Evidence |
 +| --- | --- | --- |
-+| PR #129 | Open draft, not merged, currently not mergeable as-is | MERGE APPROVED |
-+| PR #132 | Open draft, not merged, currently not mergeable as-is | MERGE APPROVED |
-+| PR #134 | Open draft, not merged, currently not mergeable as-is | MERGE APPROVED |
-+| PR #3 | Open, not merged, currently not mergeable | CLOSE APPROVED |
-+| PR #51 | Open draft, not merged, currently not mergeable | CLOSE APPROVED |
-+| PR #50 | Open draft, not merged, currently not mergeable | HOLD |
-+| PR #118 | Open draft, not merged, currently mergeable to its non-main base branch | HOLD |
++| Guests may browse the Idea Board. | PASS | Playwright expands `top-thoughts` as a guest and remains on `toolbox/idea-board/index.html`. |
++| Guests may not save creator-owned data. | PASS | Guest save/persist controls redirect before mutation. |
++| Every save/persist action redirects unauthenticated users to `account/sign-in.html`. | PASS | Covered add/edit/delete idea, add/edit/delete note, create project, archive, and restore. |
++| Redirect before any API write. | PASS | Guest create/archive/restore assertions reset and inspect create-game requests; no write request is sent before redirect. |
++| All environments use the same API contract. | PASS | Uses existing `getSessionCurrent()` API session helper; no environment-specific branch added. |
++| Do not introduce browser-owned product data. | PASS | No new browser persistence or product-data SSoT added. |
++| Do not use localStorage/sessionStorage as product-data SSoT. | PASS | Runtime grep found no `localStorage` or `sessionStorage` in Idea Board runtime HTML/JS. |
++| Do not introduce fake login behavior. | PASS | Runtime uses existing API session helper only; tests use repo test session endpoint. |
++| No silent fallbacks. | PASS | API session verification failure blocks the write and reports status. |
++| Use API terminology only. | PASS | New unavailable status uses API session terminology. |
++| Keep PR limited to scope. | PASS | Runtime change is limited to Idea Board write gating; tests and reports cover the same scope. |
++| Create required reports. | PASS | PR report, branch validation, requirement checklist, validation lane, manual notes, instruction compliance, review diff, changed files, and V8 coverage reports are included. |
++| Create repo-structured ZIP under `tmp/`. | PASS | `tmp/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_delta.zip`. |
+diff --git a/docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_validation-lane.md b/docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_validation-lane.md
+new file mode 100644
+index 000000000..c7ffdfcc9
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_validation-lane.md
+@@ -0,0 +1,36 @@
++# PR_26175_BRAVO_011 Validation Lane
 +
-+## OWNER Decisions
++Date: 2026-06-24
 +
-+### MERGE APPROVED
++## Commands
 +
-+| PR | Title | Rationale | Dependency impact | Expected post-merge state |
-+| --- | --- | --- | --- | --- |
-+| #129 | `[codex] PR_26175_OWNER_046 targeted PR review packets` | Establishes the OWNER_046 governance/report foundation: Team Gamma retired, Team Golf replacement active ownership lane, and GitHub-authoritative review packets for PR #3, #50, #51, and #118. | Merge before #132 because #132 cites the OWNER_046 review packets as supporting evidence. Because #129 changes Project Instructions and was based on older `main`, it likely needs normal ready/update/conflict handling before merge execution. | `main` contains the Golf/Gamma governance migration note and review packets `PR_REVIEW_003.md`, `PR_REVIEW_050.md`, `PR_REVIEW_051.md`, and `PR_REVIEW_118.md`. |
-+| #132 | `PR_26175_OWNER_047: add targeted PR action decision report` | Captures the OWNER_047 action decision report for PR #3, #50, #51, and #118, including #3 code-diff risks, #50 Golf/Gamma historical decision, #51 superseded governance comparison, and #118 Alfa closeout evidence decision. | Merge after #129 so the review packets it uses are already present on `main`. It is report-only but currently not mergeable as-is, so it may require normal branch update handling before execution. | `main` contains the targeted action decision report that supports closing #3/#51 and holding #50/#118. |
-+| #134 | `PR_26175_BRAVO_001: add PR 003 Messages code review` | Adds the Bravo code-review report for PR #3 focused on Messages / Emotion Profiles. It documents the key reason PR #3 should close: stale, not mergeable, targets removed SQLite service path, and mixes future BUILD specs into the PR_006 lane. | Independent of #129/#132 for file content, but it strengthens the evidence record for closing #3. It should merge before closing #3 so the code-review evidence is preserved on `main`. | `main` contains the Bravo PR #3 code-review report, giving the close action an auditable technical basis. |
-+
-+### CLOSE APPROVED
-+
-+| PR | Title | Rationale | Replacement / superseded reference | Dependency impact | Expected post-close state |
-+| --- | --- | --- | --- | --- | --- |
-+| #3 | `Pr/PR 26171 006 message emotion profile management` | Superseded by the current PostgreSQL Messages direction. The PR targets the removed SQLite Messages service path and is not mergeable. It also contains out-of-scope future BUILD specs for later Messages/TTS/playback lanes. | Current PostgreSQL-backed Messages implementation on `main`; OWNER_047 decision report from #132; Bravo code-review evidence from #134. | Close after #132 and #134 merge so both decision and code-review evidence are present on `main`. Do not delete the branch unless a later OWNER-approved cleanup task explicitly scopes branch deletion. | PR #3 is closed as superseded; PostgreSQL Messages remains the active direction; branch remains untouched. |
-+| #51 | `PR_26172_MASTER_001-project-instructions-readme-and-root` | Superseded by the current Project Instructions governance state. It bootstraps an older ProjectInstructions root using MASTER wording and placeholder structure, while current `main` already has OWNER governance, addendums, team assignment rules, and archive history. | Current `docs_build/dev/ProjectInstructions/` state on `main`; OWNER_047 decision report from #132; OWNER_048 superseded closure decision log. | Close after #132 merges, or with #132/#134 evidence batch, so the decision trail is preserved. Do not delete the branch unless later explicitly approved. | PR #51 is closed as superseded; current OWNER Project Instructions remain authoritative; branch remains untouched. |
-+
-+### HOLD
-+
-+| PR | Title | Rationale | Dependency impact | Expected hold state |
-+| --- | --- | --- | --- | --- |
-+| #50 | `PR_26171_GAMMA_028-final-sqlite-clean-status-report` | Hold as historical Golf/Gamma SQLite closeout evidence. It may still be useful as reference material, but it should not be merged or closed in this batch until the OWNER confirms whether the final Gamma-era report should be preserved on `main` or left as PR evidence. | Related to #129 because #129 retires Gamma and replaces it with Golf as the active lane. Holding #50 avoids mixing historical Gamma closeout disposition with the approved merge/close batch. | PR #50 remains open/draft and untouched. |
-+| #118 | `PR_26174_ALFA_EOD-final-closeout` | Hold as Alfa EOD closeout evidence. It targets a non-main base branch and is not needed before merging the OWNER/Bravo governance evidence batch. | It may remain useful for Alfa stack review, but it should not be merged into the governance batch or closed until OWNER completes the Alfa stack disposition. | PR #118 remains open/draft and untouched. |
-+
-+## Dependency Order
-+
-+Recommended execution order for the already-approved future actions:
-+
-+1. Prepare #129 for merge, then merge #129.
-+2. Prepare #132 for merge, then merge #132.
-+3. Prepare #134 for merge, then merge #134.
-+4. Close #3 as superseded by the current PostgreSQL Messages direction after #132/#134 evidence is on `main`.
-+5. Close #51 as superseded by the current Project Instructions governance state after #132 evidence is on `main`.
-+6. Keep #50 and #118 open on hold.
-+
-+## Replacement And Superseded References
-+
-+| Superseded / held item | Replacement or current reference |
-+| --- | --- |
-+| PR #3 | PostgreSQL-backed Messages direction on `main`; evidence in #132 and #134. |
-+| PR #51 | Current OWNER Project Instructions on `main`; evidence in #132 and OWNER_048 decision log. |
-+| PR #50 | Held as final Gamma/Golf historical SQLite closeout evidence; #129 establishes Team Golf as active replacement lane. |
-+| PR #118 | Held as Alfa closeout evidence for later Alfa stack disposition. |
-+
-+## Expected Post-Merge State
-+
-+After #129, #132, and #134 are merged, and #3/#51 are closed in a later approved action:
-+
-+- `main` contains OWNER_046 review packets for #3, #50, #51, and #118.
-+- `main` contains OWNER_047 targeted action decision report.
-+- `main` contains Bravo PR #3 code-review report.
-+- PR #3 is closed as superseded by PostgreSQL Messages direction.
-+- PR #51 is closed as superseded by current Project Instructions governance.
-+- PR #50 remains open/draft on hold.
-+- PR #118 remains open/draft on hold.
-+- No branches are deleted unless a later OWNER-approved branch cleanup task explicitly scopes deletion.
-+
-+## Changed File Inventory For Reviewed Merge PRs
-+
-+| PR | Changed files reviewed |
-+| --- | --- |
-+| #129 | `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`; `docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md`; `docs_build/dev/ProjectInstructions/addendums/multi_team.md`; `docs_build/dev/ProjectInstructions/addendums/pr_workflow.md`; `docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md`; `docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md`; `docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md`; `docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md`; `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md`; `docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md`; `docs_build/dev/reports/PR_26175_OWNER_046-pr-targeted-review-packets.md`; `docs_build/dev/reports/PR_REVIEW_003.md`; `docs_build/dev/reports/PR_REVIEW_050.md`; `docs_build/dev/reports/PR_REVIEW_051.md`; `docs_build/dev/reports/PR_REVIEW_118.md`; `docs_build/dev/reports/codex_changed_files.txt`; `docs_build/dev/reports/codex_review.diff` |
-+| #132 | `docs_build/dev/reports/PR_26175_OWNER_047-targeted-pr-action-decision-report.md`; `docs_build/dev/reports/codex_changed_files.txt`; `docs_build/dev/reports/codex_review.diff` |
-+| #134 | `docs_build/dev/reports/PR_26175_BRAVO_001-pr-003-messages-emotion-profiles-code-review.md`; `docs_build/dev/reports/codex_changed_files.txt`; `docs_build/dev/reports/codex_review.diff` |
-+
-+## Requirement Checklist
-+
-+| Requirement | Status | Notes |
++| Command | Result | Notes |
 +| --- | --- | --- |
-+| Start from `main` | PASS | Hard-stop gate confirmed current branch was `main` before branch creation. |
-+| Worktree clean | PASS | Hard-stop gate confirmed clean worktree before branch creation. |
-+| Local/origin sync `0 0` | PASS | Hard-stop gate confirmed `main...origin/main` was `0 0`. |
-+| Read all Project Instructions | PASS | Read files under `docs_build/dev/ProjectInstructions/` before report creation. |
-+| Review PR #129 | PASS | GitHub metadata and changed-file list reviewed. |
-+| Review PR #132 | PASS | GitHub metadata and changed-file list reviewed. |
-+| Review PR #134 | PASS | GitHub metadata and changed-file list reviewed. |
-+| Document MERGE APPROVED decisions | PASS | #129, #132, and #134 documented. |
-+| Document CLOSE APPROVED decisions | PASS | #3 and #51 documented. |
-+| Document HOLD decisions | PASS | #50 and #118 documented. |
-+| Include rationale | PASS | Included per decision table. |
-+| Include dependency impact | PASS | Included per decision table and order section. |
-+| Include replacement/superseded references | PASS | Included in close/hold and replacement tables. |
-+| Include expected post-merge state | PASS | Included above. |
-+| Do not merge PRs | PASS | No merge action performed. |
-+| Do not close PRs | PASS | No close action performed. |
-+| Do not delete branches | PASS | No branch deletion performed. |
-+| Do not modify runtime code | PASS | Report-only changes under `docs_build/dev/reports/`. |
++| `git diff --check` | PASS | CRLF warnings only for touched Playwright specs. |
++| `rg -n "localStorage|sessionStorage" assets/toolbox/idea-board/js/index.js toolbox/idea-board/index.html` | PASS | No runtime matches. |
++| `rg -n "<script>|<style|style=|onclick=|onchange=|oninput=|onsubmit=" toolbox/idea-board/index.html assets/toolbox/idea-board/js/index.js` | PASS | No matches. |
++| `node scripts/run-node-test-files.mjs tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs` | PASS | 1 file, 2 tests passed. |
++| `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --config=tmp/playwright-system-chrome.config.cjs --workers=1 --reporter=list -g "Idea Board guest write actions redirect to sign in before saving data"` | PASS | Guest redirects verified for all scoped write actions. |
++| `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --config=tmp/playwright-system-chrome.config.cjs --workers=1 --reporter=list -g "Idea Board launches from Toolbox with accordion table notes model"` | PASS | Idea Board route and V8 coverage path exercised. |
++| `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --config=tmp/playwright-system-chrome.config.cjs --workers=1 --reporter=list` | WARN | 3 passed, 1 failed in downstream Game Hub expanded-row expectation: expected 3 child rows, received 2 (`source-idea`, `readiness-output`). This is unrelated legacy drift. |
++| `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --config=tmp/playwright-system-chrome.config.cjs --workers=1 --reporter=list` | WARN | 6 passed, 5 failed in unrelated toolbox metadata/route/local-port expectations. The Idea Board launch test passed. |
 +
-+## Validation Lane Report
++## Browser Setup Note
 +
-+- PASS: GitHub PR metadata fetched for #129, #132, #134, #3, #51, #50, and #118.
-+- PASS: GitHub changed-file lists fetched for #129, #132, and #134.
-+- PASS: Scope stayed report-only under `docs_build/dev/reports/`.
-+- PASS: No runtime validation required because no runtime code changed.
++- WARN: Default Playwright Chromium was missing at `C:\Users\davidq\AppData\Local\ms-playwright\chromium-1217\chrome-win64\chrome.exe`.
++- WARN: `npx playwright install chromium` stalled with only partial placeholder files and was stopped.
++- PASS: Focused browser validation was rerun with installed Google Chrome through a temporary `tmp/playwright-system-chrome.config.cjs`, then the temp config and `tmp/test-results` were removed.
 +
-+## Manual Validation Notes
++## Full-Suite Residual Failures
 +
-+- Confirmed #129, #132, and #134 remain unmerged at report time; this PR documents approval only and does not execute merges.
-+- Confirmed #3 and #51 remain open at report time; this PR documents approval only and does not execute closures.
-+- Confirmed #50 and #118 remain held and untouched.
-+- Confirmed branch deletion is explicitly out of scope.
++- `ToolboxRoutePages`: expected `Game Hub` route `/toolbox/game-workspace/index.html` not visible.
++- `ToolboxRoutePages`: expected toolbox status counts `Planned (28)` and `Beta (6)`; actual `Planned (27)` and `Beta (8)`.
++- `ToolboxRoutePages`: Game Crew route run recorded failed requests for shared toolbox metadata modules.
++- `ToolboxRoutePages`: local dev port guard expected redirect to port `5501`; page remained on the ephemeral test server port.
++- `IdeaBoardTableNotes`: Game Hub row expansion expected `summary`, `source-idea`, and `readiness-output`; rendered `source-idea` and `readiness-output`.
 +
-+## Artifacts
++## Result
 +
-+- `docs_build/dev/reports/PR_26175_OWNER_049-governance-report-merge-batch.md`
-+- `docs_build/dev/reports/codex_changed_files.txt`
-+- `docs_build/dev/reports/codex_review.diff`
-+- `tmp/PR_26175_OWNER_049-governance-report-merge-batch_delta.zip`
++PASS: BRAVO_011 validation lane passed for scoped guest-save auth redirect behavior.
++
++WARN: Broad legacy Playwright files are not fully green due to unrelated existing drift listed above.
+diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+index 83a4ad849..7b1c51f19 100644
+--- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+@@ -6,13 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
+ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+
+ Changed runtime JS files considered:
+-(0%) src/dev-runtime/messages/messages-postgres-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) toolbox/messages/messages.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) toolbox/text-to-speech/text2speech.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) toolbox/text-to-speech/tts-profile-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(100%) none changed - no changed runtime JS files
+
+ Guardrail warnings:
+-(0%) src/dev-runtime/messages/messages-postgres-service.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) toolbox/messages/messages.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) toolbox/text-to-speech/text2speech.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) toolbox/text-to-speech/tts-profile-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(100%) none changed - no changed runtime JS files
+diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+index 5a0ac58e8..66edca8d3 100644
+--- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
++++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+@@ -12,31 +12,32 @@ Note: entry percentages use function coverage when available, otherwise line cov
+ Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
+
+ Exercised tool entry points detected:
+-(0%) Toolbox Index - not exercised by this Playwright run
++(69%) Toolbox Index - exercised 3 runtime JS files
+ (0%) Tool Template V2 - not exercised by this Playwright run
+-(0%) Theme V2 Shared JS - not exercised by this Playwright run
++(74%) Theme V2 Shared JS - exercised 3 runtime JS files
+
+ Changed runtime JS files covered:
+-(0%) src/dev-runtime/messages/messages-postgres-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) toolbox/messages/messages.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) toolbox/text-to-speech/text2speech.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) toolbox/text-to-speech/tts-profile-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(100%) none changed - no changed runtime JS files
+
+ Files with executed line/function counts where available:
+-(100%) none - no covered runtime files
++(8%) src/api/session-api-client.js - executed lines 68/68; executed functions 1/12
++(17%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 1/6
++(25%) toolbox/game-hub/game-hub-api-client.js - executed lines 26/26; executed functions 1/4
++(36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2041/2041; executed functions 12/33
++(50%) toolbox/tools-page-accordions.js - executed lines 1156/1156; executed functions 1/2
++(59%) assets/toolbox/colors/js/index.js - executed lines 1859/1859; executed functions 122/207
++(63%) src/api/server-api-client.js - executed lines 167/167; executed functions 12/19
++(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 204/204; executed functions 9/14
++(65%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1001/1001; executed functions 58/89
++(65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
++(67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
++(76%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 22/29
++(100%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 398/398; executed functions 35/35
+
+ Uncovered or low-coverage changed JS files:
+-(0%) src/dev-runtime/messages/messages-postgres-service.mjs - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) toolbox/messages/messages.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) toolbox/text-to-speech/text2speech.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) toolbox/text-to-speech/tts-profile-store.js - WARNING: uncovered changed runtime JS file; advisory only
++(100%) none changed - no changed runtime JS files
+
+ Changed JS files considered:
+-(0%) src/dev-runtime/messages/messages-postgres-service.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/dev-runtime/DbSeedIntegrity.test.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/MessagesTool.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/tools/MessagesPlaybackSource.test.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/tools/Text2SpeechShell.test.mjs - changed JS file not collected as browser runtime coverage
+-(0%) toolbox/messages/messages.js - changed JS file not collected as browser runtime coverage
+-(0%) toolbox/text-to-speech/text2speech.js - changed JS file not collected as browser runtime coverage
+-(0%) toolbox/text-to-speech/tts-profile-store.js - changed JS file not collected as browser runtime coverage
++(0%) assets/toolbox/idea-board/js/index.js - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/IdeaBoardTableNotes.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
+diff --git a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+index 08f8fdc0e..949c4254e 100644
+--- a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
++++ b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+@@ -595,8 +595,11 @@ test("Idea Board gates Create Project to Ready ideas and locks converted project
+   }
+ });
+
+-test("Idea Board guest Create Project redirects to sign in without creating a project", async ({ page }) => {
+-  const server = await startRepoServer();
++test("Idea Board guest write actions redirect to sign in before saving data", async ({ page }) => {
++  const server = await startRepoServer({
++    gameJourneyCompletionMetricsLegacyDbPath: null,
++    gameJourneyCompletionMetricsPostgresClient: createGameJourneyCompletionMetricsPostgresClientStub(),
++  });
+   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+   const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
+   const previousSupabaseEnv = {
+@@ -620,6 +623,42 @@ test("Idea Board guest Create Project redirects to sign in without creating a pr
+     }
+   });
+
++  const openBoard = async () => {
++    await page.goto(`${server.baseUrl}/toolbox/idea-board/index.html`, { waitUntil: "networkidle" });
++    await expect(page.getByRole("heading", { level: 1, name: "Idea Board" })).toBeVisible();
++    await expect(page.locator("[data-idea-board-idea-row]")).toHaveCount(3);
++  };
++  const expectSignInRedirect = async () => {
++    await page.waitForURL(/\/account\/sign-in\.html$/);
++  };
++  const expectNoIdeaBoardBrowserStorage = async () => {
++    const storageKeys = await page.evaluate(() => {
++      const matchesIdeaBoard = (key) => /idea[-_]?board|ideaBoard|idea|note/i.test(key);
++      return {
++        local: Object.keys(window.localStorage || {}).filter(matchesIdeaBoard),
++        session: Object.keys(window.sessionStorage || {}).filter(matchesIdeaBoard),
++      };
++    });
++    expect(storageKeys).toEqual({ local: [], session: [] });
++  };
++  const signInCreator = async () => {
++    await page.request.post(`${server.baseUrl}/api/session/user`, {
++      data: { userKey: MOCK_DB_KEYS.users.user1 },
++    });
++  };
++  const signOutCreator = async () => {
++    await page.request.post(`${server.baseUrl}/api/session/user`, {
++      data: { userKey: "" },
++    });
++  };
++  const addReadyIdea = async (name) => {
++    await page.locator("[data-idea-board-add-idea]").click();
++    await page.locator("[data-idea-board-idea-input]").fill(name);
++    await page.locator("[data-idea-board-pitch-input]").fill(`${name} should require authenticated API session writes.`);
++    await page.locator("[data-idea-board-idea-status-input]").selectOption("Ready");
++    await page.locator("[data-idea-board-idea-action='save']").click();
++  };
++
+   try {
+     await page.route("**/api/platform-settings/banner", async (route) => {
+       await route.fulfill({
+@@ -645,17 +684,79 @@ test("Idea Board guest Create Project redirects to sign in without creating a pr
+       });
+     });
+
+-    await page.goto(`${server.baseUrl}/toolbox/idea-board/index.html`, { waitUntil: "networkidle" });
++    await openBoard();
++    await page.locator("[data-idea-board-idea-cell='top-thoughts']").click();
++    await expect(page.locator("[data-idea-board-expanded-row='top-thoughts']")).toBeVisible();
++    await expect(page).toHaveURL(/\/toolbox\/idea-board\/index\.html$/);
++
++    await openBoard();
+     await page.locator("[data-idea-board-add-idea]").click();
+     await page.locator("[data-idea-board-idea-input]").fill("Guest Reef");
+-    await page.locator("[data-idea-board-pitch-input]").fill("Guest cannot create authoritative project keys.");
++    await page.locator("[data-idea-board-pitch-input]").fill("Guest cannot save Idea Board records.");
+     await page.locator("[data-idea-board-idea-status-input]").selectOption("Ready");
+     await page.locator("[data-idea-board-idea-action='save']").click();
+-    await expect(page.locator("[data-idea-board-idea-row='guest-reef'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Create Project", "Delete"]);
++    await expectSignInRedirect();
+
+-    await page.locator("[data-idea-board-idea-row='guest-reef'] [data-idea-board-idea-action='create-project']").click();
+-    await page.waitForURL(/\/account\/sign-in\.html$/);
++    await openBoard();
++    await page.locator("[data-idea-board-idea-row='top-thoughts'] [data-idea-board-idea-action='edit']").click();
++    await page.locator("[data-idea-board-pitch-input]").fill("Guest cannot update Idea Board records.");
++    await page.locator("[data-idea-board-idea-action='save']").click();
++    await expectSignInRedirect();
++
++    await openBoard();
++    await page.locator("[data-idea-board-idea-row='top-thoughts'] [data-idea-board-idea-action='delete']").click();
++    await expectSignInRedirect();
++
++    await openBoard();
++    await page.locator("[data-idea-board-idea-cell='top-thoughts']").click();
++    await page.locator("[data-idea-board-add-note='top-thoughts']").click();
++    await page.locator("[data-idea-board-note-input]").fill("Guest cannot save Idea Board notes.");
++    await page.locator("[data-idea-board-note-action='save']").click();
++    await expectSignInRedirect();
++
++    await openBoard();
++    await page.locator("[data-idea-board-idea-cell='top-thoughts']").click();
++    await page.locator("[data-idea-board-notes-table='top-thoughts'] tbody tr").nth(1).locator("[data-idea-board-note-action='edit']").click();
++    await page.locator("[data-idea-board-note-input]").fill("Guest cannot update Idea Board notes.");
++    await page.locator("[data-idea-board-note-action='save']").click();
++    await expectSignInRedirect();
++
++    await openBoard();
++    await page.locator("[data-idea-board-idea-cell='top-thoughts']").click();
++    await page.locator("[data-idea-board-notes-table='top-thoughts'] tbody tr").nth(1).locator("[data-idea-board-note-action='delete']").click();
++    await expectSignInRedirect();
++
++    await signInCreator();
++    await openBoard();
++    await addReadyIdea("Guest Project Gate");
++    await expect(page.locator("[data-idea-board-idea-row='guest-project-gate'] [data-idea-board-idea-action='create-project']")).toBeVisible();
++    await signOutCreator();
++    await page.locator("[data-idea-board-idea-row='guest-project-gate'] [data-idea-board-idea-action='create-project']").click();
++    await expectSignInRedirect();
++
++    await signInCreator();
++    await openBoard();
++    await addReadyIdea("Guest Archive Gate");
++    await page.locator("[data-idea-board-idea-row='guest-archive-gate'] [data-idea-board-idea-action='create-project']").click();
++    await expect(page.locator("[data-idea-board-idea-row='guest-archive-gate'] [data-idea-board-idea-action='archive']")).toBeVisible();
++    createGameRequests.length = 0;
++    await signOutCreator();
++    await page.locator("[data-idea-board-idea-row='guest-archive-gate'] [data-idea-board-idea-action='archive']").click();
++    await expectSignInRedirect();
++
++    await signInCreator();
++    await openBoard();
++    await addReadyIdea("Guest Restore Gate");
++    await page.locator("[data-idea-board-idea-row='guest-restore-gate'] [data-idea-board-idea-action='create-project']").click();
++    await page.locator("[data-idea-board-idea-row='guest-restore-gate'] [data-idea-board-idea-action='archive']").click();
++    await page.locator("[data-idea-board-status-filter-option][value='Archived']").check();
++    await expect(page.locator("[data-idea-board-idea-row='guest-restore-gate'] [data-idea-board-idea-action='restore']")).toBeVisible();
++    createGameRequests.length = 0;
++    await signOutCreator();
++    await page.locator("[data-idea-board-idea-row='guest-restore-gate'] [data-idea-board-idea-action='restore']").click();
++    await expectSignInRedirect();
+     expect(createGameRequests).toEqual([]);
++    await expectNoIdeaBoardBrowserStorage();
+   } finally {
+     restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
+     restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
+@@ -677,6 +778,9 @@ test("Idea Board remains usable without visible navigation fallback when registr
+   await page.route("**/api/toolbox/registry/snapshot", async (route) => {
+     await route.fulfill({ body: "", status: 204 });
+   });
++  await page.request.post(`${server.baseUrl}/api/session/user`, {
++    data: { userKey: MOCK_DB_KEYS.users.user1 },
++  });
+
+   page.on("pageerror", (error) => {
+     const text = error.stack || error.message;
+diff --git a/tests/playwright/tools/ToolboxRoutePages.spec.mjs b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
+index 9e537de3a..08a25e491 100644
+--- a/tests/playwright/tools/ToolboxRoutePages.spec.mjs
++++ b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
+@@ -289,8 +289,9 @@ test("Idea Board launches from Toolbox with accordion table notes model", async
+     await workspaceV2CoverageReporter.start(page);
+     await setServerSession(server, MOCK_DB_KEYS.users.user1);
+     page.on("request", (request) => {
+-      if (request.url().includes("/api/") && request.method() !== "GET") {
+-        mutatingApiRequests.push(`${request.method()} ${request.url()}`);
++      const requestUrl = request.url();
++      if (requestUrl.includes("/api/") && request.method() !== "GET" && !requestUrl.includes("/methods/getActiveGame")) {
++        mutatingApiRequests.push(`${request.method()} ${requestUrl}`);
+       }
+     });
+     await page.goto(`${server.baseUrl}/toolbox/index.html?view=group&group=idea`, { waitUntil: "networkidle" });

@@ -395,7 +395,9 @@ test("Game Journey progress dashboard summarizes completion metrics", async ({ p
     );
     expect(objectsBucketNote?.key).toMatch(ULID_PATTERN);
     expect(persistedTarget).toMatchObject({
+      gameKey: GAME_JOURNEY_KEYS.game,
       noteKey: objectsBucketNote.key,
+      order: 2,
       title: "Recommended target: Hero",
     });
     expect(JSON.parse(persistedTarget.userDetails)).toMatchObject({ suggestedCount: 2 });
