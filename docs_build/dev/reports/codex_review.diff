@@ -1,505 +1,185 @@
-diff --git a/assets/theme-v2/css/buttons.css b/assets/theme-v2/css/buttons.css
-index 9b6b67704..f45910884 100644
---- a/assets/theme-v2/css/buttons.css
-+++ b/assets/theme-v2/css/buttons.css
-@@ -17,6 +17,36 @@
-   border-color: var(--orange-border-strong)
- }
- 
-+.btn--with-icon {
-+  gap: var(--space-8)
-+}
-+
-+.btn--with-icon .theme-icon {
-+  height: var(--icon-size-sm);
-+  width: var(--icon-size-sm)
-+}
-+
-+.btn--icon-only {
-+  border-radius: var(--radius-pill);
-+  height: var(--space-44);
-+  min-width: var(--space-44);
-+  padding: var(--space-0);
-+  width: var(--space-44)
-+}
-+
-+.btn--icon-only .theme-icon {
-+  height: var(--icon-size-md);
-+  width: var(--icon-size-md)
-+}
-+
-+.btn--icon-danger {
-+  color: var(--red)
-+}
-+
-+.btn--icon-success {
-+  color: var(--green)
-+}
-+
- .btn--compact {
-   margin: var(--space-0);
-   min-width: calc(var(--space-44) + var(--space-28));
-diff --git a/assets/theme-v2/css/icons.css b/assets/theme-v2/css/icons.css
-index ce1af7c8c..0233a8b46 100644
---- a/assets/theme-v2/css/icons.css
-+++ b/assets/theme-v2/css/icons.css
-@@ -43,10 +43,22 @@
-   --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-close.svg")
- }
- 
-+.theme-icon--delete {
-+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-trash.svg")
-+}
-+
-+.theme-icon--edit {
-+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-settings.svg")
-+}
-+
- .theme-icon--error {
-   --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-error.svg")
- }
- 
-+.theme-icon--external-link {
-+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-chevron-right.svg")
-+}
-+
- .theme-icon--exit-fullscreen {
-   --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-exit-fullscreen.svg")
- }
-@@ -63,6 +75,10 @@
-   --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-menu.svg")
- }
- 
-+.theme-icon--save {
-+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-success.svg")
-+}
-+
- .theme-icon--search {
-   --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-search.svg")
- }
-@@ -83,6 +99,32 @@
-   --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-trash.svg")
- }
- 
-+.theme-icon--validation {
-+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-warning.svg")
-+}
-+
- .theme-icon--warning {
-   --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-warning.svg")
- }
-+
-+.status-icon {
-+  height: var(--icon-size-sm);
-+  width: var(--icon-size-sm)
-+}
-+
-+.status-icon--error {
-+  color: var(--red)
-+}
-+
-+.status-icon--info {
-+  color: var(--cyan)
-+}
-+
-+.status-icon--save {
-+  color: var(--green)
-+}
-+
-+.status-icon--validation,
-+.status-icon--warning {
-+  color: var(--gold)
-+}
-diff --git a/assets/theme-v2/css/status.css b/assets/theme-v2/css/status.css
-index 4ca9cb266..a82c83065 100644
---- a/assets/theme-v2/css/status.css
-+++ b/assets/theme-v2/css/status.css
-@@ -85,12 +85,20 @@
- }
- 
- .toolbox-status-bar__message {
-+  display: inline-flex;
-+  align-items: center;
-+  justify-content: center;
-+  gap: var(--space-8);
-   margin: var(--space-0);
-   max-width: var(--measure-lg);
-   line-height: var(--line-height-copy);
-   overflow-wrap: anywhere
- }
- 
-+.toolbox-status-bar__status-icon {
-+  flex: 0 0 auto
-+}
-+
- .toolbox-status-bar__progress {
-   min-width: var(--space-0);
-   max-width: var(--toolbox-status-progress-max);
-diff --git a/assets/theme-v2/js/theme-icons.js b/assets/theme-v2/js/theme-icons.js
-index 442614fc1..f711b412c 100644
---- a/assets/theme-v2/js/theme-icons.js
-+++ b/assets/theme-v2/js/theme-icons.js
-@@ -5,16 +5,21 @@ const themeV2IconRegistry = Object.freeze({
-   "chevron-right": "gfs-chevron-right.svg",
-   "chevron-up": "gfs-chevron-up.svg",
-   close: "gfs-close.svg",
-+  delete: "gfs-trash.svg",
-+  edit: "gfs-settings.svg",
-   error: "gfs-error.svg",
-+  "external-link": "gfs-chevron-right.svg",
-   "exit-fullscreen": "gfs-exit-fullscreen.svg",
-   fullscreen: "gfs-fullscreen.svg",
-   info: "gfs-info.svg",
-   menu: "gfs-menu.svg",
-+  save: "gfs-success.svg",
-   search: "gfs-search.svg",
-   settings: "gfs-settings.svg",
-   subtract: "gfs-subtract.svg",
-   success: "gfs-success.svg",
-   trash: "gfs-trash.svg",
-+  validation: "gfs-warning.svg",
-   warning: "gfs-warning.svg",
- });
- 
-diff --git a/assets/theme-v2/js/toolbox-status-bar.js b/assets/theme-v2/js/toolbox-status-bar.js
-index 6adc17290..03e02098f 100644
---- a/assets/theme-v2/js/toolbox-status-bar.js
-+++ b/assets/theme-v2/js/toolbox-status-bar.js
-@@ -1,9 +1,19 @@
- import { readGameJourneyCompletionMetrics } from "/src/api/game-journey-completion-api-client.js";
- import { createServerRepositoryClient } from "/src/api/server-api-client.js";
- import { getToolBySlug } from "/src/shared/toolbox/tool-metadata-inventory.js";
-+import { createThemeIcon } from "/assets/theme-v2/js/theme-icons.js";
- 
- const EXCLUDED_SELECTED_GAME_TOOLS = new Set(["idea-board"]);
- const STATUS_BAR_SELECTOR = "[data-toolbox-status-bar]";
-+const STATUS_ICON_BY_CONTEXT_KIND = Object.freeze({
-+  action: "add",
-+  delete: "delete",
-+  error: "error",
-+  info: "info",
-+  save: "save",
-+  validation: "validation",
-+  warning: "warning",
-+});
- const TOOL_PROGRESS_BUCKET_BY_SLUG = Object.freeze({
-   "achievements": "Progression",
-   "assets": "Graphics",
-@@ -262,10 +272,31 @@ function classifyToolContext(messageText, state, required) {
-   if (/\b(validation|requirement|requirements|missing|required|open or seed)\b/i.test(text)) {
-     return { kind: "validation" };
-   }
--  if (/\b(saved|created|deleted|updated|loaded|save changes)\b/i.test(text)) {
-+  if (/\b(deleted)\b/i.test(text)) {
-+    return { kind: "delete" };
-+  }
-+  if (/\b(saved|created|updated|loaded|save changes)\b/i.test(text)) {
-     return { kind: "save" };
-   }
--  return { kind: "action" };
-+  return { kind: "info" };
-+}
-+
-+function statusIconNameForKind(kind) {
-+  return STATUS_ICON_BY_CONTEXT_KIND[kind] || STATUS_ICON_BY_CONTEXT_KIND.info;
-+}
-+
-+function renderStatusMessage(message, text, context) {
-+  if (!message) {
-+    return;
-+  }
-+  const kind = context?.kind || "info";
-+  const iconName = statusIconNameForKind(kind);
-+  const icon = createThemeIcon(iconName, {
-+    className: ["status-icon", `status-icon--${kind}`, "toolbox-status-bar__status-icon"],
-+  });
-+  message.dataset.toolboxStatusIcon = iconName;
-+  message.dataset.toolboxStatusKind = kind;
-+  message.replaceChildren(icon, document.createTextNode(text));
- }
- 
- function normalizeTextKey(value) {
-@@ -387,24 +418,24 @@ function renderSelectedGame(bar, selectedGame, state, messageText) {
- 
-   if (selectedGame) {
-     name.textContent = selectedGame.name;
--    message.textContent = nextMessage;
-+    renderStatusMessage(message, nextMessage, context);
-     return;
-   }
- 
-   if (!required) {
-     name.textContent = "No game selected";
--    message.textContent = nextMessage;
-+    renderStatusMessage(message, nextMessage, context);
-     return;
-   }
- 
-   if (state === "error") {
-     name.textContent = "Unavailable";
--    message.textContent = nextMessage;
-+    renderStatusMessage(message, nextMessage, context);
-     return;
-   }
- 
-   name.textContent = "No game selected";
--  message.textContent = "Select or create a game in Game Hub before using this toolbox page.";
-+  renderStatusMessage(message, "Select or create a game in Game Hub before using this toolbox page.", context);
- }
- 
- export function refreshToolboxStatusBar() {
-diff --git a/docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_manual-validation-notes.md b/docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_manual-validation-notes.md
+﻿diff --git a/docs_build/dev/reports/PR_26175_OWNER_057-final-five-pr-decision-plan.md b/docs_build/dev/reports/PR_26175_OWNER_057-final-five-pr-decision-plan.md
 new file mode 100644
-index 000000000..dcd83c56e
+index 000000000..6b2b39e6a
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_manual-validation-notes.md
-@@ -0,0 +1,6 @@
-+# PR_26175_ALFA_049-theme-v2-status-action-icons Manual Validation Notes
++++ b/docs_build/dev/reports/PR_26175_OWNER_057-final-five-pr-decision-plan.md
+@@ -0,0 +1,158 @@
++# PR_26175_OWNER_057 - Final Five PR Decision Plan
 +
-+- Confirmed Theme V2 registry aliases map semantic status/action names to the existing authoritative SVG files without adding or modifying SVG artwork.
-+- Confirmed generated status bar icons preserve the existing visible status message text.
-+- Confirmed the Game Hub save, warning prompt, and missing-game prompt states render the expected registry-backed status icons.
-+- Confirmed shared icon button classes support paired visible text and icon-only aria-label patterns.
-diff --git a/docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_report.md b/docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_report.md
-new file mode 100644
-index 000000000..40f4f05c4
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_report.md
-@@ -0,0 +1,14 @@
-+# PR_26175_ALFA_049-theme-v2-status-action-icons Report
++## Executive Summary
 +
-+## Summary
-+- Added semantic Theme V2 icon registry aliases for status/action affordances: save, validation, delete, edit, and external-link.
-+- Added shared icon button and status icon CSS classes in the Theme V2 CSS layer.
-+- Updated the shared toolbox status bar to render a registry-backed semantic status icon while preserving the existing selected-game, message, and progress text behavior.
++PASS - Audit/report only. GitHub was used as authority for the five requested open PRs: #159, #85, #135, #26, and #50.
++
++All five requested PRs remain open on GitHub and target `main`. GitHub REST reports each as `dirty` against current `main`, so none should be merged directly as-is. No PRs were merged or closed, no branches were deleted, and no runtime code was modified.
++
++Recommended owner actions:
++
++| PR | Team | Recommended action | Reason |
++| --- | --- | --- | --- |
++| #159 | OWNER | close as superseded | OWNER_056 was an action plan for Charlie/Bravo resolution work that has since been executed; its report branch is now stale and dirty. |
++| #85 | OWNER | recreate | Partly duplicated by current main and partly valuable, but older protected-governance content should be reauthored against the current Project Instructions layout instead of merged dirty. |
++| #135 | Alfa | close as superseded | Audit-only status-bar/Game Journey planning branch edits `BUILD_PR.md`; current main has moved to the later active status-bar progress-context BUILD. |
++| #26 | Alfa/Alpha | recreate | Old runtime branch is dirty and predates the consolidated Alfa table/UI merges; still potentially valuable, but should be rebuilt from current main if wanted. |
++| #50 | Gamma historical | hold | Historical SQLite closeout evidence remains useful for traceability while Gamma is retired and PostgreSQL direction is active. |
 +
 +## Branch Validation
-+PASS
 +
-+## Notes
-+- Icons supplement existing text and accessible button names; no visible status labels removed by ALFA_009 were reintroduced.
-+- No large banners, modal-style messages, row highlights, inline styles, style blocks, or page-local CSS were added.
-+- A local ignored .env from the original checkout was used only to run database-dependent Playwright lanes. It is ignored and is not included in the delta package.
-diff --git a/docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_requirements-checklist.md b/docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_requirements-checklist.md
-new file mode 100644
-index 000000000..bcef4744e
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_requirements-checklist.md
-@@ -0,0 +1,13 @@
-+# PR_26175_ALFA_049-theme-v2-status-action-icons Requirements Checklist
++| Gate | Status | Evidence |
++| --- | --- | --- |
++| Starting branch | PASS | `main` |
++| Worktree before branch | PASS | Clean |
++| Local/origin sync before branch | PASS | `0 0` |
++| Pull latest main | PASS | `git pull --ff-only` reported already up to date. |
++| Work branch | PASS | `PR_26175_OWNER_057-final-five-pr-decision-plan` |
++| Scope | PASS | Report-only audit of the five requested PRs. |
 +
-+- PASS: Add shared icon button CSS classes in buttons.css.
-+- PASS: Add shared status icon CSS classes in icons.css and status.css.
-+- PASS: Add helper usage in toolbox-status-bar.js only for semantic status icons.
-+- PASS: Keep status bar left, center, and right text behavior intact.
-+- PASS: Preserve creator-facing language and avoid reintroducing removed visible status labels.
-+- PASS: Ensure action icons have accessible names through paired visible text or aria-label.
-+- PASS: Keep status/action icon usage consistent for save, warning, error, validation, info, add, edit, delete, close, and external-link affordances covered by the scoped files.
-+- PASS: No large banners or modal-style messages introduced.
-+- PASS: No row highlights introduced.
-+- PASS: No inline styles, style blocks, or page-local CSS introduced.
-+- PASS: Exact required validation lane is green.
-diff --git a/docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_validation-lane.md b/docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_validation-lane.md
-new file mode 100644
-index 000000000..8db2e015f
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_validation-lane.md
-@@ -0,0 +1,15 @@
-+# PR_26175_ALFA_049-theme-v2-status-action-icons Validation Lane
++## GitHub Authority Snapshot
 +
-+## Static Checks
-+- PASS: node --check assets/theme-v2/js/theme-icons.js
-+- PASS: node --check assets/theme-v2/js/toolbox-status-bar.js
++Open PR cross-check on 2026-06-24 found the requested five PRs plus a newer out-of-scope draft PR #160. This report audits only #159, #85, #135, #26, and #50 per OWNER scope.
 +
-+## Playwright
-+- PASS: npx playwright test tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs --workers=1 (8 passed)
-+- PASS: npx playwright test tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs --workers=1 (7 passed)
++| PR | Title | Branch | Base | Draft | Mergeable state | Created | Updated | Age | Superseded by main? | Recommendation |
++| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
++| #159 | PR_26175_OWNER_056: add final open PR resolution plan | `PR_26175_OWNER_056-final-open-pr-resolution-plan` | `main` | Yes | `dirty` | 2026-06-24 | 2026-06-24 | 0 days | Yes | close as superseded |
++| #85 | [codex] Add Project Instructions governance addendums | `codex/canonical-repository-structure-instructions` | `main` | Yes | `dirty` | 2026-06-22 | 2026-06-22 | 2 days | Partially | recreate |
++| #135 | PR_26175_ALFA_010-game-journey-progress-context-audit | `codex/pr-26175-alfa-010-game-journey-progress-context-audit` | `main` | Yes | `dirty` | 2026-06-24 | 2026-06-24 | 0 days | Yes | close as superseded |
++| #26 | PR_26171_ALPHA_046 game hub table standard rebuild | `pr/26171-ALPHA-046-game-hub-table-standard-rebuild` | `main` | No | `dirty` | 2026-06-20 | 2026-06-20 | 4 calendar days | No, not fully confirmed | recreate |
++| #50 | PR_26171_GAMMA_028-final-sqlite-clean-status-report | `pr/26171-GAMMA-028-final-sqlite-clean-status-report` | `main` | Yes | `dirty` | 2026-06-21 | 2026-06-21 | 3 calendar days | No; historical evidence | hold |
 +
-+## Pattern Scan
-+- PASS: rg -n "<[s]tyle|[s]tyle=" assets/theme-v2/js/theme-icons.js assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/icons.css assets/theme-v2/css/buttons.css assets/theme-v2/css/status.css tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
++## Per-PR Decision Notes
 +
-+## Branch Validation
-+PASS
++### #159 - OWNER_056 Final Open PR Resolution Plan
++
++Changed files:
++
++- `docs_build/dev/reports/PR_26175_OWNER_056-final-open-pr-resolution-plan.md` added
++- `docs_build/dev/reports/codex_changed_files.txt` modified
++- `docs_build/dev/reports/codex_review.diff` modified
++
++Decision: close as superseded.
++
++Rationale: #159 recommended the Charlie stack and related final open PR actions. The Charlie sequence has since landed on `main`, and the live open PR set has changed. The branch is report-only and now dirty against current generated artifacts, so preserving it as an open draft adds noise rather than actionable value.
++
++### #85 - Project Instructions Governance Addendums
++
++Changed files:
++
++- `docs_build/dev/ProjectInstructions/README.txt` modified
++- `project-instructions/addendums/canonical-repository-structure.md` added
++- `project-instructions/addendums/platform-development-standards.md` added
++
++Decision: recreate.
++
++Rationale: the canonical repository structure addendum already exists on current `main`, while the proposed platform-development standards overlap newer approved Project Instructions for PostgreSQL-only direction, referenced asset protection, deprecation, and governance closeout. Because this is protected governance content and GitHub reports the PR as dirty, any still-needed platform standard should be recreated from current `main` and routed through the current Project Instructions structure with explicit OWNER wording.
++
++### #135 - ALFA_010 Game Journey Progress Context Audit
++
++Changed files:
++
++- `docs_build/dev/BUILD_PR.md` modified
++- `docs_build/dev/reports/PR_26175_ALFA_010-game-journey-progress-context-audit_report.md` added
++- `docs_build/dev/reports/PR_26175_ALFA_010-game-journey-progress-context-audit_requirements-checklist.md` added
++- `docs_build/dev/reports/PR_26175_ALFA_010-game-journey-progress-context-audit_validation-lane.md` added
++- `docs_build/dev/reports/codex_changed_files.txt` modified
++- `docs_build/dev/reports/codex_review.diff` modified
++
++Decision: close as superseded.
++
++Rationale: #135 is audit-only and changes the active `docs_build/dev/BUILD_PR.md`. Current `main` now has a later ALFA status-bar progress-context BUILD as the active source of truth. The #135 evidence may remain useful in GitHub history, but the branch should not merge over current BUILD_PR state.
++
++### #26 - ALPHA_046 Game Hub Table Standard Rebuild
++
++Changed files:
++
++- `assets/theme-v2/css/tables.css` modified
++- `docs_build/dev/reports/codex_changed_files.txt` modified
++- `docs_build/dev/reports/codex_review.diff` modified
++- `docs_build/pr/PR_26171_ALPHA_046-game-hub-table-standard-rebuild/APPLY_PR.md` added
++- `docs_build/pr/PR_26171_ALPHA_046-game-hub-table-standard-rebuild/BUILD_PR.md` added
++- `docs_build/pr/PR_26171_ALPHA_046-game-hub-table-standard-rebuild/PLAN_PR.md` added
++- `tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs` modified
++- `toolbox/game-workspace/game-workspace.js` modified
++- `toolbox/game-workspace/index.html` modified
++
++Decision: recreate.
++
++Rationale: #26 is an older runtime branch and the only requested PR that is not draft, but GitHub reports it as dirty against current `main`. It predates the consolidated Alfa merges and touches Game Workspace runtime/table behavior rather than the newer merged Game Hub, Game Journey, and Idea Board batches. Do not merge it directly. If OWNER still wants the Game Workspace table rebuild, recreate a fresh, current-main-safe runtime PR with targeted validation and without stale generated report conflicts.
++
++### #50 - GAMMA_028 Final SQLite Clean Status Report
++
++Changed files:
++
++- `docs_build/dev/reports/PR_26171_GAMMA_028-final-sqlite-clean-status-report-instruction-compliance-checklist.md` added
++- `docs_build/dev/reports/PR_26171_GAMMA_028-final-sqlite-clean-status-report-manual-validation-notes.md` added
++- `docs_build/dev/reports/PR_26171_GAMMA_028-final-sqlite-clean-status-report.md` added
++- `docs_build/dev/reports/codex_changed_files.txt` modified
++- `docs_build/dev/reports/codex_review.diff` modified
++
++Decision: hold.
++
++Rationale: #50 is historical Gamma evidence for final SQLite cleanup after earlier Gamma work. Team Gamma is retired and Team Golf is the replacement active lane, but historical Gamma references remain traceable by governance. Because the report is dirty against current generated artifacts and does not change runtime behavior, hold it until OWNER decides whether to merge as historical evidence, recreate as a current Golf/OWNER archive note, or close as superseded.
++
++## Requirement Checklist
++
++| Requirement | Status | Notes |
++| --- | --- | --- |
++| Start from `main` | PASS | Verified before branch creation. |
++| Hard stop if branch is not `main` | PASS | Branch was `main`. |
++| Hard stop if worktree is not clean | PASS | Worktree was clean. |
++| Hard stop if local/origin sync is not `0 0` | PASS | Sync was `0 0`. |
++| Read all Project Instructions | PASS | All files under `docs_build/dev/ProjectInstructions/` were read before report edits. |
++| Audit only #159, #85, #135, #26, #50 | PASS | #160 was discovered but left out of scope. |
++| Include title | PASS | Included in the authority snapshot. |
++| Include branch | PASS | Included in the authority snapshot. |
++| Include base branch | PASS | Included in the authority snapshot. |
++| Include draft state | PASS | Included in the authority snapshot. |
++| Include mergeable state | PASS | GitHub REST `mergeable_state` recorded. |
++| Include changed files | PASS | Per-PR file lists included. |
++| Identify whether superseded by main | PASS | Included per PR. |
++| Recommendation limited to merge, close as superseded, hold, recreate | PASS | All recommendations use approved values. |
++| Do not merge PRs | PASS | No merge actions were taken. |
++| Do not close PRs | PASS | No close actions were taken. |
++| Do not delete branches | PASS | No branch deletion was performed. |
++| Do not modify runtime code | PASS | Report artifacts only. |
++| Required reports and ZIP | PASS | Report, changed-file list, diff, and repo-structured ZIP produced. |
++
++## Validation Lane
++
++| Validation | Status | Evidence |
++| --- | --- | --- |
++| GitHub metadata pull | PASS | `gh pr view` and GitHub REST `pulls` endpoint used for the five requested PRs. |
++| Open PR cross-check | PASS | `gh pr list --state open --limit 100` captured current open set. |
++| Runtime validation | PASS | Not applicable; audit/report-only changes. |
++| Browser validation | PASS | Not applicable; no UI/runtime changes. |
++| Whitespace validation | PASS | `git diff --check` run after report generation. |
++| ZIP validation | PASS | Repo-structured delta ZIP created under `tmp/`. |
++
++## Manual Validation Notes
++
++- GitHub is authoritative for PR state; local branches were not used as authority for open/draft state.
++- GitHub reported the high-level mergeable field as `UNKNOWN` through `gh pr view`, so the REST `mergeable_state` field was used for the decision table.
++- All five requested PRs returned `mergeable_state: dirty`.
++- The current open PR list also includes #160, but #160 was not part of the OWNER_057 requested audit set.
++- No runtime files were edited by this PR.
++- No Playwright run was needed because the work is audit/report-only.
++- Branches should be retained; this report does not authorize branch deletion.
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 39b6818f7..3328f5987 100644
+index 3328f5987..11be8ee78 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,15 +1,13 @@
--assets/theme-v2/css/accordion.css
-+assets/theme-v2/css/buttons.css
- assets/theme-v2/css/icons.css
--assets/theme-v2/css/panels.css
--assets/theme-v2/css/tables.css
--assets/theme-v2/css/theme.css
-+assets/theme-v2/css/status.css
- assets/theme-v2/js/theme-icons.js
--assets/theme-v2/js/tool-display-mode.js
--assets/toolbox/idea-board/js/index.js
-+assets/theme-v2/js/toolbox-status-bar.js
- tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs
--docs_build/dev/reports/PR_26175_ALFA_048-theme-v2-chevron-conversion_manual-validation-notes.md
--docs_build/dev/reports/PR_26175_ALFA_048-theme-v2-chevron-conversion_report.md
--docs_build/dev/reports/PR_26175_ALFA_048-theme-v2-chevron-conversion_requirements-checklist.md
--docs_build/dev/reports/PR_26175_ALFA_048-theme-v2-chevron-conversion_validation-lane.md
-+tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-+docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_report.md
-+docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_validation-lane.md
-+docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_requirements-checklist.md
-+docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_manual-validation-notes.md
- docs_build/dev/reports/codex_changed_files.txt
- docs_build/dev/reports/codex_review.diff
-diff --git a/tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs b/tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs
-index e517d0623..2d1e7068e 100644
---- a/tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs
-+++ b/tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs
-@@ -45,16 +45,21 @@ const REQUIRED_ICON_REGISTRY = {
-   "chevron-right": "gfs-chevron-right.svg",
-   "chevron-up": "gfs-chevron-up.svg",
-   close: "gfs-close.svg",
-+  delete: "gfs-trash.svg",
-+  edit: "gfs-settings.svg",
-   error: "gfs-error.svg",
-+  "external-link": "gfs-chevron-right.svg",
-   "exit-fullscreen": "gfs-exit-fullscreen.svg",
-   fullscreen: "gfs-fullscreen.svg",
-   info: "gfs-info.svg",
-   menu: "gfs-menu.svg",
-+  save: "gfs-success.svg",
-   search: "gfs-search.svg",
-   settings: "gfs-settings.svg",
-   subtract: "gfs-subtract.svg",
-   success: "gfs-success.svg",
-   trash: "gfs-trash.svg",
-+  validation: "gfs-warning.svg",
-   warning: "gfs-warning.svg",
- };
- 
-@@ -185,6 +190,72 @@ test("creates CSS-backed registry icon nodes without inline SVG", async ({ page
-   }
- });
- 
-+test("supports semantic status and action aliases with shared CSS classes", async ({ page }) => {
-+  const server = await startRepoServer();
-+  try {
-+    await page.goto(`${server.baseUrl}/toolbox/idea-board/index.html`, { waitUntil: "networkidle" });
-+    const result = await page.evaluate(async () => {
-+      const themeIcons = await import("/assets/theme-v2/js/theme-icons.js");
-+      const saveButton = document.createElement("button");
-+      saveButton.className = "btn btn--with-icon";
-+      saveButton.type = "button";
-+      saveButton.append(
-+        themeIcons.createThemeIcon("save", { className: "btn__icon" }),
-+        document.createTextNode("Save")
-+      );
-+
-+      const deleteButton = document.createElement("button");
-+      deleteButton.className = "btn btn--icon-only btn--icon-danger";
-+      deleteButton.type = "button";
-+      deleteButton.setAttribute("aria-label", "Delete game");
-+      deleteButton.append(themeIcons.createThemeIcon("delete", { className: "btn__icon" }));
-+
-+      const statusIcon = themeIcons.createThemeIcon("validation", {
-+        className: "status-icon status-icon--validation",
-+      });
-+
-+      document.body.append(saveButton, deleteButton, statusIcon);
-+
-+      const saveIcon = saveButton.querySelector("[data-theme-icon]");
-+      const deleteIcon = deleteButton.querySelector("[data-theme-icon]");
-+      const saveStyles = getComputedStyle(saveButton);
-+      const deleteStyles = getComputedStyle(deleteButton);
-+      const statusStyles = getComputedStyle(statusIcon);
-+      return {
-+        deleteAriaLabel: deleteButton.getAttribute("aria-label"),
-+        deleteButtonHeight: deleteStyles.height,
-+        deleteButtonWidth: deleteStyles.width,
-+        deleteIconFile: deleteIcon?.dataset.themeIconFile,
-+        deleteIconName: deleteIcon?.dataset.themeIcon,
-+        saveButtonGap: saveStyles.gap,
-+        saveButtonText: saveButton.textContent.trim(),
-+        saveIconFile: saveIcon?.dataset.themeIconFile,
-+        saveIconName: saveIcon?.dataset.themeIcon,
-+        statusIconColor: statusStyles.color,
-+        statusIconFile: statusIcon.dataset.themeIconFile,
-+        statusIconName: statusIcon.dataset.themeIcon,
-+      };
-+    });
-+
-+    expect(result).toEqual({
-+      deleteAriaLabel: "Delete game",
-+      deleteButtonHeight: "44px",
-+      deleteButtonWidth: "44px",
-+      deleteIconFile: "gfs-trash.svg",
-+      deleteIconName: "delete",
-+      saveButtonGap: "8px",
-+      saveButtonText: "Save",
-+      saveIconFile: "gfs-success.svg",
-+      saveIconName: "save",
-+      statusIconColor: "rgb(255, 200, 87)",
-+      statusIconFile: "gfs-warning.svg",
-+      statusIconName: "validation",
-+    });
-+  } finally {
-+    await server.close();
-+  }
-+});
-+
- test("documents the SVG registry and authoritative artwork policy", async () => {
-   const readme = await fs.readFile(readmePath, "utf8");
-   const styleGuide = await fs.readFile(styleGuidePath, "utf8");
-diff --git a/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs b/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-index e4a940bad..e96e17752 100644
---- a/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-+++ b/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-@@ -195,6 +195,7 @@ async function statusBarSnapshot(page) {
-     const centerPanel = document.querySelector(".tool-center-panel");
-     const gameName = bar.querySelector("[data-toolbox-selected-game-name]");
-     const message = bar.querySelector("[data-toolbox-status-message]");
-+    const messageIcon = message?.querySelector("[data-theme-icon]");
-     const progress = bar.querySelector("[data-toolbox-status-progress]");
-     const position = getComputedStyle(bar).position;
-     const barBox = bar.getBoundingClientRect();
-@@ -211,6 +212,8 @@ async function statusBarSnapshot(page) {
-       gameBox: boxSnapshot(gameName),
-       gameText: gameName?.textContent.replace(/\s+/g, " ").trim() || "",
-       messageBox: boxSnapshot(message),
-+      messageIconFile: messageIcon?.dataset.themeIconFile || "",
-+      messageIconName: messageIcon?.dataset.themeIcon || "",
-       messageText: message?.textContent.replace(/\s+/g, " ").trim() || "",
-       position,
-       progressBox: boxSnapshot(progress),
-@@ -247,7 +250,10 @@ test("shared toolbox status bar shows selected Game Hub game above the footer",
-     expect(snapshot.position).not.toBe("fixed");
-     expect(snapshot.dataset.selectedGameState).toBe("active");
-     expect(snapshot.dataset.selectedGameRequired).toBe("true");
-+    expect(snapshot.dataset.toolboxStatusContextKind).toBe("info");
-     expect(snapshot.gameText).toBe("Demo Game");
-+    expect(snapshot.messageIconFile).toBe("gfs-info.svg");
-+    expect(snapshot.messageIconName).toBe("info");
-     expect(snapshot.messageText).toContain("Game Design mock repository ready.");
-     expect(snapshot.progressState).toBe("active");
-     expect(snapshot.progressText).toBe("Game Design 2/5 (40%) | Journey 12/125 (10%)");
-@@ -300,6 +306,7 @@ test("shared toolbox status bar center reports save state after Game Hub saves",
-     await expectRemovedStatusBarLabelsHidden(statusBar);
-     await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
-     await expect(statusBar.locator("[data-toolbox-status-message]")).toHaveText("Created and opened Status Bar Save.");
-+    await expect(statusBar.locator("[data-toolbox-status-message] [data-theme-icon='save']")).toHaveAttribute("data-theme-icon-file", "gfs-success.svg");
-     await expect(statusBar.locator("[data-toolbox-selected-game-name]")).toHaveText("Status Bar Save");
-     await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Game Hub 3/5 (60%) | Journey 12/125 (10%)");
-     await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveCount(0);
-@@ -350,6 +357,7 @@ test("Game Hub owner selection updates the global toolbox status bar", async ({
-     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "active");
-     await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
-     await expect(statusBar.locator("[data-toolbox-status-message]")).toContainText("Sign in to create or update Game Hub projects.");
-+    await expect(statusBar.locator("[data-toolbox-status-message] [data-theme-icon='warning']")).toHaveAttribute("data-theme-icon-file", "gfs-warning.svg");
-     await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Game Hub 3/5 (60%) | Journey 12/125 (10%)");
- 
-     expectNoPageFailures(failures);
-@@ -368,6 +376,7 @@ test("non-Idea Board toolbox pages show a creator-safe prompt when no Game Hub g
-     await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveCount(0);
-     await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
-     await expect(statusBar.locator("[data-toolbox-status-message]")).toHaveText("Select or create a game in Game Hub before using this toolbox page.");
-+    await expect(statusBar.locator("[data-toolbox-status-message] [data-theme-icon='add']")).toHaveAttribute("data-theme-icon-file", "gfs-add.svg");
-     await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Game Design 2/5 (40%) | Journey 12/125 (10%)");
-     await expect(statusBar.locator("[data-toolbox-status-action]")).toHaveCount(0);
-     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "missing");
+@@ -1,13 +1,3 @@
+-assets/theme-v2/css/buttons.css
+-assets/theme-v2/css/icons.css
+-assets/theme-v2/css/status.css
+-assets/theme-v2/js/theme-icons.js
+-assets/theme-v2/js/toolbox-status-bar.js
+-tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs
+-tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
+-docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_report.md
+-docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_validation-lane.md
+-docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_requirements-checklist.md
+-docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_manual-validation-notes.md
+-docs_build/dev/reports/codex_changed_files.txt
+-docs_build/dev/reports/codex_review.diff
++﻿docs_build/dev/reports/PR_26175_OWNER_057-final-five-pr-decision-plan.md / added
++docs_build/dev/reports/codex_changed_files.txt / updated
++docs_build/dev/reports/codex_review.diff / updated
