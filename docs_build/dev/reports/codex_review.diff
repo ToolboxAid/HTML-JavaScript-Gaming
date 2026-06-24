@@ -1,334 +1,180 @@
-diff --git a/docs_build/dev/reports/PR_26175_ALFA_016-alfa-parent-child-table-consolidation.md b/docs_build/dev/reports/PR_26175_ALFA_016-alfa-parent-child-table-consolidation.md
+diff --git a/docs_build/dev/reports/PR_26175_ALFA_017-alfa-game-hub-interactions-consolidation.md b/docs_build/dev/reports/PR_26175_ALFA_017-alfa-game-hub-interactions-consolidation.md
 new file mode 100644
-index 000000000..189879abc
+index 000000000..7b8961565
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_ALFA_016-alfa-parent-child-table-consolidation.md
-@@ -0,0 +1,89 @@
-+# PR_26175_ALFA_016 - Alfa Parent Child Table Consolidation
-+
-+Branch: `PR_26175_ALFA_016-alfa-parent-child-table-consolidation`
-+Team: Alfa
-+Source PRs represented: #103, #104, #105
-+Playwright impacted: YES
++++ b/docs_build/dev/reports/PR_26175_ALFA_017-alfa-game-hub-interactions-consolidation.md
+@@ -0,0 +1,67 @@
++# PR_26175_ALFA_017 - Alfa Game Hub Interactions Consolidation
 +
 +## Executive Summary
 +
-+This PR consolidates the remaining current-main-safe Game Hub parent/child table runtime work from PRs #103, #104, and #105.
++PASS - Consolidated the current-main-safe Batch C Game Hub interaction behavior from GitHub PRs #107 through #113.
 +
-+Current `main` already contained the Source Idea and Readiness Output child table behavior from the earlier stack. This branch preserves those current-main implementations and adds the remaining parent/child layout pieces:
-+
-+- marks the Games table as the Open Games parent table,
-+- adds an Open Games table caption,
-+- adds a Game Summary child table under expanded game rows,
-+- keeps Source Idea as a separate child table when source idea details exist,
-+- keeps Readiness Output as a separate child table.
-+
-+No status bar files were modified.
++This PR carries forward the remaining runtime-safe Game Hub child-row behavior: every expanded game parent row now exposes the same two child rows, Source Idea first and Readiness Output second, even when the game does not yet have source idea details. Existing current-main behavior for selected-game button state, guest save redirects, table-row add/edit flows, and removed standalone panels was preserved.
 +
 +## Runtime Files Changed
 +
 +| File | Change |
 +| --- | --- |
-+| `toolbox/game-hub/game-hub.js` | Adds Open Games parent-table identity/caption and a Game Summary child table. Preserves Source Idea and Readiness Output as separate child tables. |
++| `toolbox/game-hub/game-hub.js` | Always renders Source Idea and Readiness Output child rows for expanded game rows; aligns `aria-controls` with both child row IDs. |
++| `tests/playwright/tools/GameHubMockRepository.spec.mjs` | Updates focused Game Hub expectations for ordinary games to require the stable two-child-row structure and Source Idea fallback content. |
 +
-+No `toolbox/game-hub/index.html` or `assets/theme-v2/css/tables.css` change was required.
++## Source PR Coverage
 +
-+## Tests Updated
-+
-+| File | Change |
-+| --- | --- |
-+| `tests/playwright/tools/GameHubMockRepository.spec.mjs` | Updates Game Hub table assertions for Open Games parent-table identity, Game Summary child table, Source Idea child table, and Readiness Output child table. |
-+| `tests/playwright/tools/IdeaBoardTableNotes.spec.mjs` | Updates the Idea Board to Game Hub flow assertions for the expanded Game Hub child table sequence. |
-+
-+## Reports Generated
-+
-+| File | Purpose |
-+| --- | --- |
-+| `docs_build/dev/reports/PR_26175_ALFA_016-alfa-parent-child-table-consolidation.md` | This implementation and validation report. |
-+| `docs_build/dev/reports/codex_changed_files.txt` | Changed file inventory. |
-+| `docs_build/dev/reports/codex_review.diff` | Review diff. |
-+| `tmp/PR_26175_ALFA_016-alfa-parent-child-table-consolidation_delta.zip` | Repo-structured delta ZIP. |
-+
-+## Branch Validation
-+
-+| Check | Result | Notes |
++| Source PR | Batch C Area | Current-Main Resolution |
 +| --- | --- | --- |
-+| Started from `main` | PASS | `main` confirmed before branch creation. |
-+| Pulled latest `origin/main` | PASS | `git pull --ff-only` fast-forwarded before branch creation. |
-+| Worktree clean before branch | PASS | No local changes before branch creation. |
-+| Local/origin sync before branch | PASS | Sync confirmed as `0 0`. |
-+| Scope limited to Alfa Game Hub parent/child tables | PASS | Runtime change is limited to Game Hub table rendering. |
-+| Status bar untouched | PASS | No diff in status bar JS/CSS/tests. |
++| #107 | Game row child rows | Carried forward the stable Source Idea + Readiness Output child-row contract. |
++| #108 | Parent table centered in main panel / columns | Already present on current main without reintroducing obsolete Owner/Role/Next Tool columns. |
++| #109 | Actions/setup cleanup | Already present; Open Game Journey and Game Setup controls remain absent. |
++| #110 | Row add/edit selected state | Already present; add/edit rows remain table-native. |
++| #111 | Guest save redirect | Already present; save actions continue redirecting guests to `account/sign-in.html`. |
++| #112 | Selected-game button state | Already present; row/cell selected markers remain absent. |
++| #113 | Selected button and Game Crew label cleanup | Selected button styling already present; Game Crew label is no longer relevant on current main. |
 +
 +## Requirement Checklist
 +
-+| Requirement | Result | Notes |
++| Requirement | Status | Notes |
 +| --- | --- | --- |
-+| Read all Project Instructions | PASS | Active Project Instructions and history snapshots were read. |
-+| Implement remaining current-main-safe runtime changes from #103, #104, #105 | PASS | Added the remaining parent table identity and Game Summary child table while preserving current Source Idea and Readiness Output behavior. |
-+| Focus on Game Hub parent/child table layout | PASS | Open Games is now explicitly marked/captioned as the parent table. |
-+| Focus on Source Idea child table | PASS | Source Idea remains a dedicated child table for source-linked games. |
-+| Focus on Readiness Output child table | PASS | Readiness Output remains a dedicated child table. |
-+| Do not create report-only PR | PASS | Runtime and test files changed. |
-+| Do not change status bar work | PASS | Status bar files have no diff. |
-+| Do not install Chromium | PASS | Chromium install was not attempted. |
-+| If Playwright browser is missing, document blocked and continue | PASS | Chromium is missing and Playwright validation is documented as blocked. |
-+| Required reports and ZIP | PASS | Required reports are included and ZIP was created under `tmp/`. |
++| Start from `main` | PASS | Initial gate passed before branch creation. |
++| Hard stop if branch/worktree/sync invalid | PASS | `main`, clean worktree, local/origin sync `0 0` confirmed before branch creation. |
++| Read all Project Instructions | PASS | Active Project Instructions and history snapshots were reviewed before edits. |
++| Implement current-main-safe Batch C runtime changes | PASS | Implemented the remaining stable Source Idea + Readiness Output child-row behavior. |
++| Do not create report-only PR | PASS | Runtime and Playwright test files changed. |
++| Do not change status bar work | PASS | Status bar diff check was empty. |
++| Do not reintroduce removed standalone panels | PASS | No panel markup was restored. |
++| Do not use browser-owned product data as source of truth | PASS | Change uses existing repository/API-driven Game Hub state only. |
++| Do not install Chromium | PASS | Chromium was not installed. |
++| Required reports created | PASS | `codex_review.diff`, `codex_changed_files.txt`, and this report are included. |
++| Repo-structured ZIP under `tmp/` | PASS | ZIP created after report generation. |
 +
-+## Validation Lane Report
++## Validation Lane
 +
-+| Validation | Result | Command / Notes |
++| Command | Status | Result |
 +| --- | --- | --- |
-+| Runtime syntax check | PASS | `node --check toolbox/game-hub/game-hub.js` |
-+| Game Hub spec syntax check | PASS | `node --check tests/playwright/tools/GameHubMockRepository.spec.mjs` |
-+| Idea Board spec syntax check | PASS | `node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs` |
-+| Diff whitespace check | PASS | `git diff --check`; Git reported line-ending warnings only for touched specs. |
-+| Inline style guard | PASS | `rg -n "<[s]tyle|[s]tyle=" toolbox/game-hub/game-hub.js toolbox/game-hub/index.html tests/playwright/tools/GameHubMockRepository.spec.mjs tests/playwright/tools/IdeaBoardTableNotes.spec.mjs assets/theme-v2/css/tables.css` returned no matches. |
-+| Status bar scope check | PASS | `git diff -- assets/theme-v2/css/status.css assets/theme-v2/js/toolbox-status-bar.js tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs` returned no diff. |
-+| Playwright targeted browser lane | BLOCKED | Local Chromium is missing at `C:\Users\davidq\AppData\Local\ms-playwright\chromium-1217\chrome-win64\chrome.exe`. Per instruction, Chromium was not installed. |
++| `node --check toolbox/game-hub/game-hub.js` | PASS | JavaScript syntax valid. |
++| `node --check tests/playwright/tools/GameHubMockRepository.spec.mjs` | PASS | Test file syntax valid. |
++| `node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs` | PASS | Targeted adjacent test syntax valid. |
++| `node --check tests/playwright/tools/GameJourneyTool.spec.mjs` | PASS | Targeted adjacent test syntax valid. |
++| `git diff --check -- toolbox/game-hub/game-hub.js tests/playwright/tools/GameHubMockRepository.spec.mjs` | PASS | Exit code 0; Git emitted a non-blocking CRLF working-copy warning for the test file. |
++| `git diff -- assets/theme-v2/css/status.css assets/theme-v2/js/toolbox-status-bar.js tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs` | PASS | Empty diff; status bar work untouched. |
++| `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs tests/playwright/tools/GameJourneyTool.spec.mjs tests/playwright/tools/GameHubMockRepository.spec.mjs` | BLOCKED | Timed out with no diagnostics before the narrower browser check. |
++| `npx playwright test tests/playwright/tools/GameHubMockRepository.spec.mjs -g "Game Hub creates, opens, and deletes mock games|Game Hub validates game parent rows and child tables|Game Hub readiness child rows update from mock game state" --workers=1 --reporter=line --timeout=30000` | BLOCKED | Browser executable missing at `C:\Users\davidq\AppData\Local\ms-playwright\chromium-1217\chrome-win64\chrome.exe`. Chromium was not installed per instruction. |
 +
 +## Manual Validation Notes
 +
-+- Manual browser validation was not performed because Playwright Chromium is missing locally.
-+- Current-main Source Idea behavior was preserved: source-linked games render Source Idea as a child table; games without source details do not show an empty Source Idea child table.
-+- Readiness Output remains separate from Source Idea.
-+- The Game Summary child table intentionally includes Project, Purpose, and Status only to preserve the current simplified Game Hub table model and avoid reintroducing owner/role columns.
++- Reviewed source PR metadata and file patches for #107, #108, #109, #110, #111, #112, and #113.
++- Compared the final Batch C branch state against current main and preserved current-main additions, including selected-game change notifications and required Add Game validation.
++- Confirmed the implementation does not modify `toolbox-status-bar.js`, `status.css`, or `ToolboxSelectedGameStatusBar.spec.mjs`.
++- Confirmed no runtime JSON contract changes and no browser-owned product data source was introduced.
++- Browser validation remains blocked until the local Playwright Chromium executable is available.
++
++## Branch Validation
++
++PASS - Work began from clean, synced `main`; implementation was made on `PR_26175_ALFA_017-alfa-game-hub-interactions-consolidation`.
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 69b5a59af..1e9d23fae 100644
+index 1e9d23fae..39527f045 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,5 +1,6 @@
--docs_build/dev/reports/PR_26175_ALFA_015-alfa-foundation-consolidation.md
-+docs_build/dev/reports/PR_26175_ALFA_016-alfa-parent-child-table-consolidation.md
+@@ -1,6 +1,5 @@
+-docs_build/dev/reports/PR_26175_ALFA_016-alfa-parent-child-table-consolidation.md
++docs_build/dev/reports/PR_26175_ALFA_017-alfa-game-hub-interactions-consolidation.md
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
--src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
--tests/playwright/tools/GameJourneyTool.spec.mjs
-+tests/playwright/tools/GameHubMockRepository.spec.mjs
-+tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-+toolbox/game-hub/game-hub.js
+ tests/playwright/tools/GameHubMockRepository.spec.mjs
+-tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+ toolbox/game-hub/game-hub.js
 diff --git a/tests/playwright/tools/GameHubMockRepository.spec.mjs b/tests/playwright/tools/GameHubMockRepository.spec.mjs
-index 29e11c37a..2baf13cd0 100644
+index 2baf13cd0..20bb99adb 100644
 --- a/tests/playwright/tools/GameHubMockRepository.spec.mjs
 +++ b/tests/playwright/tools/GameHubMockRepository.spec.mjs
-@@ -292,9 +292,9 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
-     await expect(page.locator("[data-game-list]")).toContainText("Collision Demo");
-     await expect(page.locator("[data-game-list]")).toContainText("Camera Follow Demo");
-     await expect(page.locator("summary").filter({ hasText: /^Open Games$/ })).toHaveCount(0);
--    await expect(page.locator("[data-game-parent-table='open-games']")).toHaveCount(0);
--    await expect(page.locator("[data-game-rows-table='true']")).toHaveAttribute("aria-label", "Games");
--    await expect(page.locator("[data-game-rows-table='true'] caption")).toHaveCount(0);
-+    await expect(page.locator("[data-game-parent-table='open-games']")).toHaveAttribute("aria-label", "Open Games");
-+    await expect(page.locator("[data-game-rows-table='true']")).toHaveAttribute("aria-label", "Open Games");
-+    await expect(page.locator("[data-game-rows-table='true'] caption")).toHaveText("Open Games");
-     await expect(page.locator("[data-game-rows-table='true'] thead th")).toHaveText([
-       "Game",
-       "Purpose",
-@@ -354,12 +354,20 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
-     await demoGameRow.locator("[data-game-toggle='demo-game']").click();
+@@ -355,18 +355,17 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
      await expect(demoGameRow.locator("[data-game-toggle='demo-game']")).toHaveAttribute("aria-expanded", "true");
      const demoChildRows = page.locator("[data-game-expanded-row='demo-game']");
--    await expect(demoChildRows).toHaveCount(1);
--    await expect(demoChildRows.nth(0)).toHaveAttribute("data-game-child-row", "readiness-output");
--    await expect(page.locator("[data-game-expanded-row='demo-game'] [data-game-child-table='summary']")).toHaveCount(0);
--    await expect(page.locator("[data-game-expanded-row='demo-game'] [data-game-child-table]")).toHaveCount(1);
-+    await expect(demoChildRows).toHaveCount(2);
-+    await expect(demoChildRows.nth(0)).toHaveAttribute("data-game-child-row", "summary");
-+    await expect(demoChildRows.nth(1)).toHaveAttribute("data-game-child-row", "readiness-output");
-+    await expect(page.locator("[data-game-expanded-row='demo-game'] [data-game-child-table]")).toHaveCount(2);
-+    const summaryTable = demoChildRows.nth(0).locator("[data-game-child-table='summary']");
-+    await expect(summaryTable.locator("caption")).toHaveText("Game Summary");
-+    await expect(summaryTable.locator("thead th")).toHaveText(["Field", "Value"]);
-+    await expect(summaryTable.locator("tbody tr")).toHaveText([
-+      "ProjectDemo Game",
-+      "PurposeGame",
-+      "StatusUnder Construction",
-+    ]);
-     await expect(page.locator("[data-game-expanded-row='demo-game'] [data-game-child-table='source-idea']")).toHaveCount(0);
--    const readinessOutputTable = demoChildRows.nth(0).locator("[data-game-child-table='readiness-output']");
-+    const readinessOutputTable = demoChildRows.nth(1).locator("[data-game-child-table='readiness-output']");
+     await expect(demoChildRows).toHaveCount(2);
+-    await expect(demoChildRows.nth(0)).toHaveAttribute("data-game-child-row", "summary");
++    await expect(demoChildRows.nth(0)).toHaveAttribute("data-game-child-row", "source-idea");
+     await expect(demoChildRows.nth(1)).toHaveAttribute("data-game-child-row", "readiness-output");
++    await expect(page.locator("[data-game-expanded-row='demo-game'] [data-game-child-table='summary']")).toHaveCount(0);
+     await expect(page.locator("[data-game-expanded-row='demo-game'] [data-game-child-table]")).toHaveCount(2);
+-    const summaryTable = demoChildRows.nth(0).locator("[data-game-child-table='summary']");
+-    await expect(summaryTable.locator("caption")).toHaveText("Game Summary");
+-    await expect(summaryTable.locator("thead th")).toHaveText(["Field", "Value"]);
+-    await expect(summaryTable.locator("tbody tr")).toHaveText([
+-      "ProjectDemo Game",
+-      "PurposeGame",
+-      "StatusUnder Construction",
++    const demoSourceIdeaTable = demoChildRows.nth(0).locator("[data-game-child-table='source-idea']");
++    await expect(demoSourceIdeaTable.locator("caption")).toHaveText("Source Idea");
++    await expect(demoSourceIdeaTable.locator("tbody tr")).toHaveText([
++      "IdeaNo source idea yet",
++      "PitchCreate a project from Idea Board to see source details.",
++      "Note 1No source notes.",
+     ]);
+-    await expect(page.locator("[data-game-expanded-row='demo-game'] [data-game-child-table='source-idea']")).toHaveCount(0);
+     const readinessOutputTable = demoChildRows.nth(1).locator("[data-game-child-table='readiness-output']");
      await expect(readinessOutputTable.locator("caption")).toHaveText("Readiness Output");
      await expect(readinessOutputTable.locator("thead th")).toHaveText(["Output", "Status"]);
-     await expect(readinessOutputTable.locator("tbody tr")).toHaveText([
-@@ -441,8 +449,9 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
+@@ -449,9 +448,10 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
      await expect(page.locator("[data-game-row='archive-game-2'] [data-game-toggle='archive-game-2']")).not.toHaveAttribute("aria-current", "true");
      await expect(page.locator("[data-game-toggle][aria-current='true']")).toHaveCount(1);
      await expect(page.locator("[data-game-toggle][data-game-active='true']")).toHaveCount(1);
--    await expect(page.locator("[data-game-expanded-row='launch-test-game-1']")).toHaveCount(1);
--    await expect(page.locator("[data-game-expanded-row='launch-test-game-1']")).toHaveAttribute("data-game-child-row", "readiness-output");
-+    await expect(page.locator("[data-game-expanded-row='launch-test-game-1']")).toHaveCount(2);
-+    await expect(page.locator("[data-game-expanded-row='launch-test-game-1']").nth(0)).toHaveAttribute("data-game-child-row", "summary");
-+    await expect(page.locator("[data-game-expanded-row='launch-test-game-1']").nth(1)).toHaveAttribute("data-game-child-row", "readiness-output");
+-    await expect(page.locator("[data-game-expanded-row='launch-test-game-1']")).toHaveCount(2);
+-    await expect(page.locator("[data-game-expanded-row='launch-test-game-1']").nth(0)).toHaveAttribute("data-game-child-row", "summary");
+-    await expect(page.locator("[data-game-expanded-row='launch-test-game-1']").nth(1)).toHaveAttribute("data-game-child-row", "readiness-output");
++    const launchChildRows = page.locator("[data-game-expanded-row='launch-test-game-1']");
++    await expect(launchChildRows).toHaveCount(2);
++    await expect(launchChildRows.nth(0)).toHaveAttribute("data-game-child-row", "source-idea");
++    await expect(launchChildRows.nth(1)).toHaveAttribute("data-game-child-row", "readiness-output");
      await expect(page.locator("[data-game-expanded-row='archive-game-2']")).toHaveCount(0);
      await expect(page.locator("[data-game-row='launch-test-game-1'] [data-game-toggle='launch-test-game-1']")).toHaveClass("btn btn--compact primary");
      await expect(page.locator("[data-game-row='launch-test-game-1']").getByRole("button", { name: "Edit Launch Test Game" })).not.toHaveClass(/primary/);
-@@ -547,9 +556,9 @@ test("Game Hub validates game parent rows and child tables", async ({ page }) =>
- 
-   try {
-     await expect(page.locator("summary").filter({ hasText: /^Open Games$/ })).toHaveCount(0);
--    await expect(page.locator("[data-game-parent-table='open-games']")).toHaveCount(0);
--    await expect(page.locator("[data-game-rows-table='true']")).toHaveAttribute("aria-label", "Games");
--    await expect(page.locator("[data-game-rows-table='true'] caption")).toHaveCount(0);
-+    await expect(page.locator("[data-game-parent-table='open-games']")).toHaveAttribute("aria-label", "Open Games");
-+    await expect(page.locator("[data-game-rows-table='true']")).toHaveAttribute("aria-label", "Open Games");
-+    await expect(page.locator("[data-game-rows-table='true'] caption")).toHaveText("Open Games");
-     const parentRows = page.locator("[data-game-rows-table='true'] tbody > [data-game-row]");
-     await expect(parentRows).toHaveCount(1);
-     const gameRow = page.locator("[data-game-row='lantern-reef']");
-@@ -559,13 +568,20 @@ test("Game Hub validates game parent rows and child tables", async ({ page }) =>
-     await gameRow.locator("[data-game-toggle='lantern-reef']").click();
-     await expect(gameRow.locator("[data-game-toggle='lantern-reef']")).toHaveAttribute("aria-expanded", "true");
-     const expandedRows = page.locator("[data-game-expanded-row='lantern-reef']");
--    await expect(expandedRows).toHaveCount(2);
--    await expect(expandedRows.nth(0)).toHaveAttribute("data-game-child-row", "source-idea");
--    await expect(expandedRows.nth(1)).toHaveAttribute("data-game-child-row", "readiness-output");
--    await expect(expandedRows.locator("[data-game-child-table]")).toHaveCount(2);
--    await expect(expandedRows.locator("[data-game-child-table='summary']")).toHaveCount(0);
-+    await expect(expandedRows).toHaveCount(3);
-+    await expect(expandedRows.nth(0)).toHaveAttribute("data-game-child-row", "summary");
-+    await expect(expandedRows.nth(1)).toHaveAttribute("data-game-child-row", "source-idea");
-+    await expect(expandedRows.nth(2)).toHaveAttribute("data-game-child-row", "readiness-output");
-+    await expect(expandedRows.locator("[data-game-child-table]")).toHaveCount(3);
-+    const summaryTable = expandedRows.nth(0).locator("[data-game-child-table='summary']");
-+    await expect(summaryTable.locator("caption")).toHaveText("Game Summary");
-+    await expect(summaryTable.locator("tbody tr")).toHaveText([
-+      "ProjectLantern Reef",
-+      "PurposeGame",
-+      "StatusPlanning",
-+    ]);
- 
--    const sourceIdeaTable = expandedRows.nth(0).locator("[data-game-child-table='source-idea']");
-+    const sourceIdeaTable = expandedRows.nth(1).locator("[data-game-child-table='source-idea']");
-     await expect(sourceIdeaTable.locator("caption")).toHaveText("Source Idea");
-     await expect(sourceIdeaTable.locator("tbody tr")).toHaveText([
-       "IdeaLantern Reef",
-@@ -576,7 +592,7 @@ test("Game Hub validates game parent rows and child tables", async ({ page }) =>
-     await expect(sourceIdeaTable.locator("button, input, textarea, select, [contenteditable='true'], [role='button']")).toHaveCount(0);
-     await expect(sourceIdeaTable).not.toContainText(/Edit|Delete|Current Focus|Recommended Next Tool/);
- 
--    const readinessOutputTable = expandedRows.nth(1).locator("[data-game-child-table='readiness-output']");
-+    const readinessOutputTable = expandedRows.nth(2).locator("[data-game-child-table='readiness-output']");
-     await expect(readinessOutputTable.locator("caption")).toHaveText("Readiness Output");
-     await expect(readinessOutputTable.locator("thead th")).toHaveText(["Output", "Status"]);
-     await expect(readinessOutputTable).not.toContainText(/Guide reef keepers|Keep traversal gentle|Use warm lantern art/);
-@@ -678,6 +694,7 @@ test("Game Hub shows a creator-safe empty state when no projects exist", async (
-   try {
-     await expect(page.locator("[data-active-game-name]")).toHaveCount(0);
-     await expect(page.locator("[data-game-list] [data-game-list-status='empty']")).toHaveText("No Game Hub projects yet. Add a game to start building.");
-+    await expect(page.locator("[data-game-parent-table='open-games']")).toHaveAttribute("aria-label", "Open Games");
-     await expect(page.locator("[data-game-rows-table='true'] thead th")).toHaveText([
-       "Game",
-       "Purpose",
-diff --git a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-index 61d8fdc68..01a730513 100644
---- a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-+++ b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-@@ -400,10 +400,12 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-     await expect(activeGameToggle).toHaveText("Lantern Reef");
-     await activeGameToggle.click();
-     let expandedRows = page.locator("[data-game-expanded-row]");
--    await expect(expandedRows).toHaveCount(2);
--    await expect(expandedRows.nth(0)).toHaveAttribute("data-game-child-row", "source-idea");
--    await expect(expandedRows.nth(1)).toHaveAttribute("data-game-child-row", "readiness-output");
--    let sourceIdeaChildTable = expandedRows.nth(0).locator("[data-game-child-table='source-idea']");
-+    await expect(expandedRows).toHaveCount(3);
-+    await expect(expandedRows.nth(0)).toHaveAttribute("data-game-child-row", "summary");
-+    await expect(expandedRows.nth(1)).toHaveAttribute("data-game-child-row", "source-idea");
-+    await expect(expandedRows.nth(2)).toHaveAttribute("data-game-child-row", "readiness-output");
-+    await expect(expandedRows.nth(0).locator("[data-game-child-table='summary'] caption")).toHaveText("Game Summary");
-+    let sourceIdeaChildTable = expandedRows.nth(1).locator("[data-game-child-table='source-idea']");
-     await expect(sourceIdeaChildTable.locator("caption")).toHaveText("Source Idea");
-     await expect(sourceIdeaChildTable.locator("thead th")).toHaveText(["Context", "Details"]);
-     await expect(sourceIdeaChildTable.locator("tbody tr")).toHaveText([
-@@ -412,7 +414,7 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-       "Note 1Use dusk tide changes as the first Game Hub planning note.",
-     ]);
-     await expect(sourceIdeaChildTable.locator(":is(input, textarea, select, button)")).toHaveCount(0);
--    await expect(expandedRows.nth(1).locator("[data-game-child-table='readiness-output'] caption")).toHaveText("Readiness Output");
-+    await expect(expandedRows.nth(2).locator("[data-game-child-table='readiness-output'] caption")).toHaveText("Readiness Output");
-     await page.reload({ waitUntil: "networkidle" });
-     await expect(page.locator("[data-active-game-name]")).toHaveCount(0);
-     await expect(page.locator("[data-game-list]")).toContainText("Lantern Reef");
-@@ -421,8 +423,8 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-     await expect(page.locator("[data-game-hub-foundation]")).toHaveCount(0);
-     await activeGameToggle.click();
-     expandedRows = page.locator("[data-game-expanded-row]");
--    await expect(expandedRows).toHaveCount(2);
--    sourceIdeaChildTable = expandedRows.nth(0).locator("[data-game-child-table='source-idea']");
-+    await expect(expandedRows).toHaveCount(3);
-+    sourceIdeaChildTable = expandedRows.nth(1).locator("[data-game-child-table='source-idea']");
-     await expect(sourceIdeaChildTable.locator("tbody tr")).toHaveText([
-       "IdeaLantern Reef",
-       "PitchGuide light through a reef that rearranges at dusk.",
 diff --git a/toolbox/game-hub/game-hub.js b/toolbox/game-hub/game-hub.js
-index 50bbe46f1..2b9f8c031 100644
+index 2b9f8c031..2d761a0e6 100644
 --- a/toolbox/game-hub/game-hub.js
 +++ b/toolbox/game-hub/game-hub.js
-@@ -287,7 +287,7 @@ function createGameToggleButton(game, expanded, active) {
+@@ -287,12 +287,7 @@ function createGameToggleButton(game, expanded, active) {
      button.setAttribute("aria-current", "true");
    }
    button.setAttribute("aria-expanded", String(expanded));
--  const controlledRows = [];
-+  const controlledRows = [`game-child-summary-${game.id}`];
-   if (hasSourceIdeaDetails(game)) {
-     controlledRows.push(`game-child-source-idea-${game.id}`);
-   }
-@@ -316,6 +316,30 @@ function hasSourceIdeaDetails(game) {
-   return Boolean(sourceIdea.name || sourceIdea.pitch || sourceIdea.notes.length);
+-  const controlledRows = [`game-child-summary-${game.id}`];
+-  if (hasSourceIdeaDetails(game)) {
+-    controlledRows.push(`game-child-source-idea-${game.id}`);
+-  }
+-  controlledRows.push(`game-child-readiness-output-${game.id}`);
+-  button.setAttribute("aria-controls", controlledRows.join(" "));
++  button.setAttribute("aria-controls", `game-child-source-idea-${game.id} game-child-readiness-output-${game.id}`);
+   button.textContent = game.name;
+   return button;
  }
- 
-+function renderGameSummaryChildTable(parent, game) {
-+  const wrapper = document.createElement("div");
-+  wrapper.className = "table-wrapper";
-+  const table = document.createElement("table");
-+  table.className = "data-table data-table--fixed";
-+  table.dataset.gameChildTable = "summary";
-+  table.setAttribute("aria-label", `${game.name} game summary`);
-+  table.innerHTML = "<caption>Game Summary</caption><thead><tr><th scope=\"col\">Field</th><th scope=\"col\">Value</th></tr></thead>";
-+  const body = document.createElement("tbody");
-+  [
-+    ["Project", game.name],
-+    ["Purpose", game.purpose],
-+    ["Status", game.status],
-+  ].forEach(([label, value]) => {
-+    const row = document.createElement("tr");
-+    row.append(createCell(label, "th"), createCell(value || "Not set"));
-+    row.firstElementChild.scope = "row";
-+    body.append(row);
-+  });
-+  table.append(body);
-+  wrapper.append(table);
-+  parent.append(wrapper);
-+}
-+
- function renderSourceIdeaChildTable(parent, game) {
-   const sourceIdea = gameSourceIdeaDetails(game);
-   const wrapper = document.createElement("div");
-@@ -397,7 +421,13 @@ function renderReadinessOutputChildTable(parent, game, progress, active) {
+@@ -421,28 +416,18 @@ function renderReadinessOutputChildTable(parent, game, progress, active) {
  }
  
  function renderExpandedGameRow(tbody, game, progress, active) {
--  const childRows = [];
-+  const childRows = [
-+    {
-+      id: `game-child-summary-${game.id}`,
-+      render: (parent) => renderGameSummaryChildTable(parent, game),
-+      type: "summary",
-+    },
-+  ];
-   if (hasSourceIdeaDetails(game)) {
-     childRows.push({
+-  const childRows = [
++  [
+     {
+-      id: `game-child-summary-${game.id}`,
+-      render: (parent) => renderGameSummaryChildTable(parent, game),
+-      type: "summary",
+-    },
+-  ];
+-  if (hasSourceIdeaDetails(game)) {
+-    childRows.push({
        id: `game-child-source-idea-${game.id}`,
-@@ -562,9 +592,10 @@ function renderGameList(progress) {
-   wrapper.className = "table-wrapper";
-   const table = document.createElement("table");
-   table.className = "data-table data-table--fixed";
-+  table.dataset.gameParentTable = "open-games";
-   table.dataset.gameRowsTable = "true";
--  table.setAttribute("aria-label", "Games");
--  table.innerHTML = "<thead><tr><th scope=\"col\">Game</th><th scope=\"col\">Purpose</th><th scope=\"col\">Status</th><th scope=\"col\">Actions</th></tr></thead>";
-+  table.setAttribute("aria-label", "Open Games");
-+  table.innerHTML = "<caption>Open Games</caption><thead><tr><th scope=\"col\">Game</th><th scope=\"col\">Purpose</th><th scope=\"col\">Status</th><th scope=\"col\">Actions</th></tr></thead>";
-   const body = document.createElement("tbody");
-   listResult.forEach((game) => renderGameParentRow(body, game, activeGame, progress));
-   renderAddGameRow(body);
+       render: (parent) => renderSourceIdeaChildTable(parent, game),
+       type: "source-idea",
+-    });
+-  }
+-  childRows.push(
++    },
+     {
+       id: `game-child-readiness-output-${game.id}`,
+       render: (parent) => renderReadinessOutputChildTable(parent, game, progress, active),
+       type: "readiness-output",
+     },
+-  );
+-  childRows.forEach(({ id, render, type }) => {
++  ].forEach(({ id, render, type }) => {
+     const row = document.createElement("tr");
+     row.dataset.gameExpandedRow = game.id;
+     row.dataset.gameChildRow = type;
