@@ -1,5 +1,5 @@
-docs_build/dev/reports/PR_26175_ALFA_017-alfa-game-hub-interactions-consolidation.md
+assets/toolbox/idea-board/js/index.js
+docs_build/dev/reports/PR_26175_ALFA_018-alfa-idea-board-polish-consolidation.md
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
-tests/playwright/tools/GameHubMockRepository.spec.mjs
-toolbox/game-hub/game-hub.js
+tests/playwright/tools/IdeaBoardTableNotes.spec.mjs

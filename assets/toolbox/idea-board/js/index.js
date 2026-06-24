@@ -129,6 +129,10 @@ function previousStatusForRestore(record) {
     : "Refining";
 }
 
+function isEditableStatus(status) {
+  return editableStatusOptions.includes(status);
+}
+
 function rememberPreviousStatus(record) {
   if (record.status !== "Archived") {
     record.previousStatus = record.status;
@@ -436,7 +440,7 @@ function saveIdeaRow(root, row) {
   const idea = row.querySelector("[data-idea-board-idea-input]")?.value.trim();
   const pitch = row.querySelector("[data-idea-board-pitch-input]")?.value.trim();
   const status = row.querySelector("[data-idea-board-idea-status-input]")?.value;
-  if (!idea || !pitch || !status) {
+  if (!idea || !pitch || !isEditableStatus(status)) {
     updateStatus(root, "Enter an idea, pitch, and status before saving.");
     return;
   }
