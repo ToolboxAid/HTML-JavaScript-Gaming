@@ -66,6 +66,7 @@ class AdminSystemHealthController {
         this.apiContractRows = root.querySelector("[data-admin-system-health-api-contract-rows]");
         this.apiRegistryRows = root.querySelector("[data-admin-system-health-api-registry-rows]");
         this.capabilityRows = root.querySelector("[data-admin-system-health-capability-rows]");
+        this.featureFlagRows = root.querySelector("[data-admin-system-health-feature-flag-rows]");
         this.actionRows = root.querySelector("[data-admin-system-health-action-rows]");
         this.actionButtons = Array.from(root.querySelectorAll("[data-admin-system-health-action]"));
         this.configurationRows = root.querySelector("[data-admin-system-health-configuration-rows]");
@@ -149,6 +150,7 @@ class AdminSystemHealthController {
         this.renderEnvironmentCapabilitiesPending(reason);
         this.renderApiContractPending(reason);
         this.renderAdminApiRegistryPending(reason);
+        this.renderRuntimeFeatureFlagsPending(reason);
         this.renderServiceHealthPending(reason);
         this.renderConfigurationSummaryPending(reason);
         this.renderScheduledMonitoringPending(reason);
@@ -367,6 +369,45 @@ class AdminSystemHealthController {
             fragment.append(row);
         });
         this.apiRegistryRows.replaceChildren(fragment);
+    }
+
+    renderRuntimeFeatureFlagsPending(reason) {
+        if (!this.featureFlagRows) {
+            return;
+        }
+        const row = document.createElement("tr");
+        row.append(
+            this.createCell("Runtime Feature Flags"),
+            this.createCell("not available"),
+            this.createStatusCell("PENDING", reason),
+        );
+        this.featureFlagRows.replaceChildren(row);
+    }
+
+    renderRuntimeFeatureFlags(runtimeFeatureFlags = {}) {
+        if (!this.featureFlagRows) {
+            return;
+        }
+        if (runtimeFeatureFlags?.secretsExposed === true || runtimeFeatureFlags?.secretEditingAllowed === true) {
+            this.renderRuntimeFeatureFlagsPending("Safe runtime feature flags response was blocked because it exposed secret controls.");
+            return;
+        }
+        const rows = Array.isArray(runtimeFeatureFlags.rows) ? runtimeFeatureFlags.rows : [];
+        if (!rows.length) {
+            this.renderRuntimeFeatureFlagsPending("Safe Admin System Health API returned no runtime feature flag rows.");
+            return;
+        }
+        const fragment = document.createDocumentFragment();
+        rows.forEach((featureRow) => {
+            const row = document.createElement("tr");
+            row.append(
+                this.createCell(featureRow.flag),
+                this.createCell(featureRow.value),
+                this.createStatusCell(featureRow.status, runtimeFeatureFlags.message),
+            );
+            fragment.append(row);
+        });
+        this.featureFlagRows.replaceChildren(fragment);
     }
 
     renderServiceHealthPending(reason) {
@@ -793,6 +834,7 @@ class AdminSystemHealthController {
         this.renderEnvironmentCapabilities(data?.environmentCapabilities || {});
         this.renderApiContract(data?.apiContract || {});
         this.renderAdminApiRegistry(data?.adminApiRegistry || {});
+        this.renderRuntimeFeatureFlags(data?.runtimeFeatureFlags || {});
         this.renderServiceHealth(data?.serviceHealth || {});
         this.renderConfigurationSummary(data?.configurationSummary || {});
         this.renderScheduledMonitoring(data?.scheduledMonitoring || {});

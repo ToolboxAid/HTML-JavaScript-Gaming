@@ -233,6 +233,18 @@ test("Admin can view operational health while Creator sessions are blocked", asy
           "GET /api/navigation/admin-menu",
         ],
       );
+      assert.deepEqual(
+        health.runtimeFeatureFlags.rows.map((row) => `${row.flag}:${row.value}`),
+        [
+          "system-health.api-contract:Enabled",
+          "system-health.environment-capabilities:Enabled",
+          "system-health.admin-api-registry:Enabled",
+          "system-health.runtime-health:Enabled",
+          "system-health.manual-actions:Enabled",
+          "system-health.scheduled-monitoring:Not Configured",
+          "system-health.notifications:Not Configured",
+        ],
+      );
       assert.equal(
         health.environmentMap.some((row) => Object.prototype.hasOwnProperty.call(row, "status")),
         false,

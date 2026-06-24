@@ -43,6 +43,7 @@
                                     <p>Environment Capabilities</p>
                                     <p>Health API Contract</p>
                                     <p>Admin API Registry</p>
+                                    <p>Runtime Feature Flags</p>
                                     <p>Service Health</p>
                                     <p>Configuration Summary</p>
                                     <p>Manual Health Actions</p>
@@ -151,6 +152,21 @@
                                 </thead>
                                 <tbody data-admin-system-health-api-registry-rows>
                                     <tr><td>GET</td><td>Waiting for safe API status</td><td>Team Charlie</td><td data-health-status="PENDING" title="Reason: Admin API registry has not loaded yet." aria-label="PENDING: Admin API registry has not loaded yet.">PENDING</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Runtime feature flags">
+                                <caption>Runtime Feature Flags</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Flag</th>
+                                        <th scope="col">Current Deployment</th>
+                                        <th scope="col">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-system-health-feature-flag-rows>
+                                    <tr><td>Runtime Feature Flags</td><td>Waiting for safe API status</td><td data-health-status="PENDING" title="Reason: runtime feature flags have not loaded yet." aria-label="PENDING: runtime feature flags have not loaded yet.">PENDING</td></tr>
                                 </tbody>
                             </table>
                         </div>

@@ -1092,6 +1092,26 @@ function systemHealthAdminApiRegistry(checkedAt = new Date().toISOString()) {
   };
 }
 
+function systemHealthRuntimeFeatureFlags(checkedAt = new Date().toISOString()) {
+  const rows = [
+    { flag: "system-health.api-contract", status: "PASS", value: "Enabled" },
+    { flag: "system-health.environment-capabilities", status: "PASS", value: "Enabled" },
+    { flag: "system-health.admin-api-registry", status: "PASS", value: "Enabled" },
+    { flag: "system-health.runtime-health", status: "PASS", value: "Enabled" },
+    { flag: "system-health.manual-actions", status: "PASS", value: "Enabled" },
+    { flag: "system-health.scheduled-monitoring", status: "PENDING", value: "Not Configured" },
+    { flag: "system-health.notifications", status: "PENDING", value: "Not Configured" },
+  ];
+  return {
+    lastChecked: checkedAt,
+    message: "Runtime Feature Flags are read-only server-reported System Health capability flags.",
+    rows,
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    status: overallHealthStatus(rows.map((row) => ({ status: row.status }))),
+  };
+}
+
 function isSecretLikeRuntimeEnvKey(key) {
   const upperKey = String(key || "").toUpperCase();
   return RUNTIME_ENV_SECRET_MARKERS.some((marker) => upperKey.includes(marker));
@@ -4386,6 +4406,7 @@ LIMIT 1;
     const checkedAt = new Date().toISOString();
     const apiContract = systemHealthApiContract(checkedAt);
     const adminApiRegistry = systemHealthAdminApiRegistry(checkedAt);
+    const runtimeFeatureFlags = systemHealthRuntimeFeatureFlags(checkedAt);
     const environmentIdentity = systemHealthEnvironmentIdentity(process.env, checkedAt);
     const environmentMap = systemHealthEnvironmentMap();
     const databaseStatus = await this.ownerDatabaseStatus(environmentIdentity);
@@ -4570,6 +4591,7 @@ LIMIT 1;
       secretEditingAllowed: false,
       secretsExposed: false,
       runtimeEnvironment,
+      runtimeFeatureFlags,
       runtimeHealth,
       scheduledMonitoring,
       serviceHealth,
