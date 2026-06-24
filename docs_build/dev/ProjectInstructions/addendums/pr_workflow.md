@@ -14,57 +14,63 @@ Define the standard pull request workflow for Game Foundry Studio.
 3. Verify clean worktree.
 4. Create a PR branch and PR identity.
 5. Mark lifecycle state as PR Open.
-6. Make scoped changes only.
-7. Validate the change.
-8. Commit with a clear OWNER/team message.
-9. Push the branch.
-10. Open or update the draft PR.
-11. Review the PR.
-12. OWNER approves merge or intentional close without merge.
-13. Merge to main or record the approved no-merge close reason.
-14. Pull latest main before starting the next PR.
-15. Verify Main Verified and Closed gates.
+6. Plan on the same PR branch.
+7. Build on the same PR branch.
+8. Validate the change.
+9. Commit with a clear OWNER/team message.
+10. Push the branch.
+11. Open or update the draft PR.
+12. Review the PR.
+13. OWNER approves merge.
+14. Merge to main.
+15. Pull latest main before starting the next PR.
+16. Verify Main Verified and Closed gates.
 
 ## PR Lifecycle States
 
 Required state order:
 
 1. PR Open
-2. Building
-3. Validation
-4. Approved
-5. Merged
-6. Main Verified
-7. Closed
+2. Plan
+3. Build
+4. Validation
+5. Approved
+6. Merged
+7. Main Verified
+8. Closed
 
 Definitions:
 - PR Open is the first active lifecycle state.
-- PR Open means the branch and PR identity are created and named before implementation begins.
+- PR Open means the tracked PR identity and source branch are created and named before Plan begins.
+- Plan happens after PR Open on the same PR branch.
 - No BUILD_PR may proceed without a PR name and active branch/PR identity unless explicitly marked `PLAN_ONLY`.
-- Building means scoped work is in progress.
+- Build means scoped work is in progress on the same PR branch and PR identity.
 - Validation means requested checks, required reports, manual validation notes, and ZIP packaging are underway.
-- Approved means OWNER or required reviewer approval exists for merge or intentional close without merge.
-- Merged means the PR merged, or the approved no-merge close reason is recorded.
+- Approved means OWNER or required reviewer approval exists for merge.
+- Merged means the PR merged and changes were pushed.
 - Main Verified means current branch is `main`, `main` includes the merge or final commit, worktree is clean, local/origin sync is `0/0`, and no untracked files remain.
 - Closed is valid only after every Closed gate passes.
 
 Closed gates:
-- PR merged or intentionally closed without merge with reason recorded.
-- Changes pushed.
+- PR merged and changes pushed.
 - Current branch is `main`.
 - `main` includes the merge commit or recorded final commit.
 - Worktree clean.
 - Local/origin sync is `0/0`.
 - No untracked files.
-- Branch disposition is recorded as `deleted`, `retained for follow-up`, or `archived`.
+- Branch disposition is recorded as `retained`.
 - Required reports exist.
 - Required repo-structured ZIP under `tmp/` exists.
+- Backlog is updated.
+- Tool state is updated when applicable.
 
 ## Rules
 
 - Direct commits to main are prohibited unless OWNER explicitly approves.
 - Draft PRs are preferred until validation is complete.
 - Each PR must have a clear scope.
+- Plan, Build, validation, reports, ZIP packaging, and closeout must stay tied to the same PR identity and source branch.
+- Source branches are retained by default after merge and closeout.
 - Do not mix unrelated scopes.
 - Do not start dependent PRs until the required base PR is merged.
 - Always return to main before starting the next PR.

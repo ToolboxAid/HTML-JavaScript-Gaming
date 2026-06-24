@@ -57,7 +57,7 @@ Closed branch context requires:
 - worktree clean
 - local/origin sync is `0/0`
 - no untracked files
-- branch disposition recorded as `deleted`, `retained for follow-up`, or `archived`
+- source branch disposition recorded as `retained`
 
 ## GitHub Authority
 

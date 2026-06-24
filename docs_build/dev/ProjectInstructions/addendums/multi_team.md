@@ -151,7 +151,7 @@ Required steps:
 5. Record final main commit.
 6. Report final repository state.
 7. Produce a repo-structured ZIP under `tmp/` that includes the EOD report and all changed or preserved repo files from the closeout.
-8. Record branch disposition as `deleted`, `retained for follow-up`, or `archived`.
+8. Record source branch disposition as `retained`.
 9. Mark the PR Closed only when every Closed gate passes.
 
 Required final state:
@@ -170,7 +170,9 @@ Rules:
 - A workstream is not considered closed until the repository is returned to main.
 - A PI is not considered complete until main is current and synchronized.
 - Do not leave Codex on a feature, team, workstream, recovery, governance, or owner branch after successful merge.
-- A PR is not Closed until the PR merged or an intentional no-merge close reason is recorded, changes are pushed, the repository is on `main`, `main` includes the merge or final commit, the worktree is clean, local/origin sync is `0/0`, no untracked files exist, branch disposition is recorded, required reports exist, and the required repo-structured ZIP exists under `tmp/`.
+- Plan, Build, validation, reports, ZIP packaging, and closeout stay tied to the same PR identity and source branch.
+- Source branches are retained by default after merge and closeout.
+- A PR is not Closed until the PR merged, changes are pushed, the repository is on `main`, `main` includes the merge or final commit, the worktree is clean, local/origin sync is `0/0`, no untracked files exist, branch disposition is recorded as `retained`, required reports exist, the required repo-structured ZIP exists under `tmp/`, backlog is updated, and tool state is updated when applicable.
 - A completed EOD closeout must produce the required ZIP even when the closeout changed no repo files; in that case, the ZIP must contain the EOD report proving the no-change result.
 - The EOD ZIP does not replace the EOD report or other required reports under `docs_build/dev/reports/`.
 - If merge succeeds but repository is not returned to main:
@@ -187,6 +189,8 @@ FINAL REPOSITORY STATE:
 - PR status
 - Merge/final commit
 - Branch disposition
+- Backlog update status
+- Tool state update status
 - ZIP path
 - Closeout PASS/FAIL
 ```
@@ -209,7 +213,7 @@ Each reviewed item must be classified as one of:
 - Historical/Archive
 
 Rules:
-- Merged branches should be deleted after successful merge and main sync.
+- Merged source branches should be retained by default after successful merge and main sync.
 - Superseded draft PRs should be closed.
 - Abandoned branches should be documented before removal.
 - Active workstream branches remain.
@@ -235,7 +239,7 @@ Required PI closeout report fields:
 - active PRs
 - active branches
 - closed/superseded PRs
-- deleted branch candidates
+- retained branch disposition and any owner-approved deletion candidates
 - deferred work
 - next PI priorities
 
@@ -258,8 +262,7 @@ Audit targets:
 Recommendation-only first pass values:
 - keep
 - close
-- delete local
-- delete remote
+- retained
 - defer
 
 Rules:
