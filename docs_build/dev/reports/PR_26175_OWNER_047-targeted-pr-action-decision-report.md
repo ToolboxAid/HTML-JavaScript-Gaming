@@ -1,0 +1,185 @@
+# PR_26175_OWNER_047-targeted-pr-action-decision-report
+
+## Executive Summary
+
+OWNER override approved: targeted PR action decision report.
+
+This report uses GitHub PR metadata as authority and the existing review packets from PR_26175_OWNER_046 as supporting evidence. It is report-only. No PRs were merged, closed, or modified. No branches were deleted. No runtime code was changed.
+
+| PR | Team | Status | Days Old | Code Files Changed | Runtime Impact | Merge Risk | Recommendation |
+| --- | --- | --- | ---: | ---: | --- | --- | --- |
+| #3 | Team Bravo | Open | 4 | 4 | Yes: Messages service/UI/test changes | High | Needs deeper code review |
+| #50 | Team Golf, historical Gamma lane | Draft | 3 | 0 | No runtime impact | Low content risk, but GitHub reports not mergeable | Hold |
+| #51 | Team OWNER | Draft | 3 | 0 | No runtime impact | High governance drift/superseded risk | Close as superseded |
+| #118 | Team Alfa | Draft | 1 | 0 | No runtime impact | Low content risk, stack-order dependent | Hold |
+
+## Source Evidence
+
+- GitHub PR metadata fetched for #3, #50, #51, and #118.
+- Existing review packets read from branch `PR_26175_OWNER_046-pr-targeted-review-packets`:
+  - `docs_build/dev/reports/PR_REVIEW_003.md`
+  - `docs_build/dev/reports/PR_REVIEW_050.md`
+  - `docs_build/dev/reports/PR_REVIEW_051.md`
+  - `docs_build/dev/reports/PR_REVIEW_118.md`
+- Actual GitHub patches fetched for PR #3 code files:
+  - `src/dev-runtime/messages/messages-sqlite-service.mjs`
+  - `tests/playwright/tools/MessagesTool.spec.mjs`
+  - `toolbox/messages/index.html`
+  - `toolbox/messages/messages.js`
+
+Age is calendar days old as of 2026-06-24.
+
+## Decision Details
+
+### PR #3 - Pr/PR 26171 006 message emotion profile management
+
+- Team: Team Bravo
+- Created date: 2026-06-20T01:02:11Z
+- Updated date: 2026-06-20T01:08:39Z
+- Days old: 4
+- Branch: `pr/PR_26171_006-message-emotion-profile-management`
+- Author: ToolboxAid
+- Draft/open state: Open, non-draft
+- GitHub mergeable: false
+- Code files changed:
+  - `src/dev-runtime/messages/messages-sqlite-service.mjs`
+  - `tests/playwright/tools/MessagesTool.spec.mjs`
+  - `toolbox/messages/index.html`
+  - `toolbox/messages/messages.js`
+- Runtime impact: Yes. The PR changes the Messages SQLite service, Messages UI markup, and Messages browser behavior.
+- Merge risk: High.
+- Recommendation: Needs deeper code review.
+
+Purpose and notes:
+PR #3 adds emotion-profile usage counts and prevents deactivation of referenced emotion profiles. The supporting packet reports targeted syntax/API/Playwright validation passed, but `npm run test:workspace-v2` failed outside the Messages scope.
+
+Actual code-diff risk summary:
+
+| Code File | Summary | Risk |
+| --- | --- | --- |
+| `src/dev-runtime/messages/messages-sqlite-service.mjs` | Adds `emotionProfileUsage`, reference payloads, usage counts, and blocks deactivation when a profile is referenced by messages or segments. | High: service behavior changes are coupled to SQLite-backed data and current Project Instructions say SQLite is deprecated and PRs introducing SQLite should be rejected. Needs review against PostgreSQL direction and current Messages ownership. |
+| `tests/playwright/tools/MessagesTool.spec.mjs` | Extends Messages Playwright coverage to assert usage counts, API rejection for referenced profile deactivation, UI diagnostic display, and active status retention. | Medium: useful targeted coverage, but it masks the intentional 400 response from failure collectors and does not resolve the failed broader workspace lane. |
+| `toolbox/messages/index.html` | Adds Usage column and changes emotion profile number input step from `0.05` to `0.01`. | Medium: table column count and numeric precision changes should be reviewed for existing UI expectations and creator workflow fit. |
+| `toolbox/messages/messages.js` | Renders usage count, reloads emotion profiles when segments reload, repopulates select controls, and refreshes persistence display. | Medium/high: reload coupling may affect save flows and select state. Needs regression review around message, segment, and emotion profile editing. |
+
+Additional blocking concern:
+GitHub review on PR #3 contains a P1 finding that future BUILD specs for PR_008, PR_010, PR_012, PR_014, and PR_016 are included in this PR. That conflicts with the repository rule requiring one PR purpose only. Those planning files should be split out or the PR should be re-cut before merge consideration.
+
+### PR #50 - PR_26171_GAMMA_028-final-sqlite-clean-status-report
+
+- Team: Team Golf, historical Gamma lane
+- Created date: 2026-06-21T16:18:04Z
+- Updated date: 2026-06-21T16:18:04Z
+- Days old: 3
+- Branch: `pr/26171-GAMMA-028-final-sqlite-clean-status-report`
+- Author: ToolboxAid
+- Draft/open state: Draft
+- GitHub mergeable: false
+- Code files changed: None
+- Runtime impact: None. Report artifacts only.
+- Merge risk: Low content risk, but current GitHub state is not mergeable.
+- Recommendation: Hold.
+
+Decision:
+Content can serve as the final Golf/Gamma historical SQLite clean status report because it is report-only, documents the post-PR026/PR027 SQLite inventory, and preserves historical Gamma wording as audit evidence. Do not merge it in its current GitHub state because GitHub reports `mergeable=false`; refresh/rebase or conflict-resolution review is needed first.
+
+### PR #51 - PR_26172_MASTER_001-project-instructions-readme-and-root
+
+- Team: Team OWNER
+- Created date: 2026-06-21T17:26:20Z
+- Updated date: 2026-06-21T17:26:20Z
+- Days old: 3
+- Branch: `pr/26172-MASTER-001-project-instructions-readme-and-root`
+- Author: ToolboxAid
+- Draft/open state: Draft
+- GitHub mergeable: false
+- Code files changed: None
+- Runtime impact: None. Governance/docs only.
+- Merge risk: High governance drift and superseded-content risk.
+- Recommendation: Close as superseded.
+
+Current ProjectInstructions comparison:
+Current `main` already contains the Project Instructions root, `README.txt`, source folders, active addendums, backlog, team assignment governance, active team registry guidance, and history snapshots. Current guidance uses OWNER override wording, while #51 still contains historical MASTER override wording. Merging #51 would reintroduce obsolete bootstrap content and conflicts with the current OWNER-approved state.
+
+Decision:
+Close as superseded after owner approval. Preserve #51 as historical bootstrap evidence; do not merge it into current main.
+
+### PR #118 - PR_26174_ALFA_EOD-final-closeout
+
+- Team: Team Alfa
+- Created date: 2026-06-23T18:08:07Z
+- Updated date: 2026-06-23T18:10:12Z
+- Days old: 1
+- Branch: `pr/26174-ALFA-EOD-final-closeout`
+- Author: ToolboxAid
+- Draft/open state: Draft
+- GitHub mergeable: true
+- Code files changed: None
+- Runtime impact: None. Report artifacts only.
+- Merge risk: Low direct risk, but stack-order dependent because its base is `pr/26174-ALFA-EOD-workstream-closeout`, not `main`.
+- Recommendation: Hold.
+
+Decision:
+PR #118 is closeout evidence only. It is not required before reviewing the Alfa stack. Owner can review Alfa PRs #95 through #117 directly using the stack order documented in #118 and related closeout reports. Keep #118 as an evidence packet until the Alfa stack owner review plan is decided.
+
+## Action Queue
+
+| Priority | PR | Action | Rationale |
+| ---: | --- | --- | --- |
+| 1 | #3 | Deeper code review before any merge. | Runtime/service/UI changes, failed workspace lane, SQLite governance concern, and P1 scope concern. |
+| 2 | #51 | Owner-approved close as superseded. | Current main already contains newer OWNER-governed Project Instructions. |
+| 3 | #50 | Hold and refresh branch if owner wants historical report merged. | Content is acceptable as historical Golf/Gamma evidence, but GitHub says not mergeable. |
+| 4 | #118 | Hold as evidence; not a prerequisite for Alfa stack review. | Report-only closeout on stacked base. |
+
+## Requirement Checklist
+
+| Requirement | Result | Notes |
+| --- | --- | --- |
+| Start from main after allowed checkout | PASS | Main was checked out and fast-forward pulled before branch creation. |
+| Hard stop if branch/worktree/sync gate failed | PASS | Gate passed: main clean and `main...origin/main` was `0 0`. |
+| Read all Project Instructions | PASS | Read `docs_build/dev/ProjectInstructions/` files before report generation. |
+| Use existing review packets from PR_26175_OWNER_046 | PASS | Four packet files were read via `git show` from the OWNER_046 branch. |
+| Produce owner decision report for #3, #50, #51, #118 | PASS | This report covers all four requested PRs. |
+| Include Team | PASS | Included in executive table and per-PR sections. |
+| Include Created date | PASS | Included per PR. |
+| Include Updated date | PASS | Included per PR. |
+| Include Days old | PASS | Included per PR. |
+| Include Code files changed | PASS | Included per PR. |
+| Include Runtime impact | PASS | Included per PR. |
+| Include Merge risk | PASS | Included per PR. |
+| Use allowed recommendations only | PASS | Recommendations are Merge/Hold/Close as superseded/Needs deeper code review; this report uses Hold, Close as superseded, and Needs deeper code review. |
+| For #3, pull actual code diffs and summarize risks | PASS | Fetched and summarized all four changed code-file patches. |
+| For #50, decide if it can be merged as final Golf/Gamma historical report | PASS | Content yes; current GitHub mergeability no, so recommendation is Hold pending refresh. |
+| For #51, compare against current ProjectInstructions state | PASS | Compared current root/README/addendums/team assignment state and OWNER wording. |
+| For #118, determine closeout evidence vs Alfa prerequisite | PASS | Determined it is evidence only, not needed before Alfa stack review. |
+| Do not merge PRs | PASS | No merge command or GitHub merge action performed. |
+| Do not close PRs | PASS | No PR close action performed. |
+| Do not delete branches | PASS | No local or remote branch deletion performed. |
+| Do not modify runtime code | PASS | Only report files are changed. |
+| Produce `codex_review.diff` | PASS | Generated as required. |
+| Produce `codex_changed_files.txt` | PASS | Generated as required. |
+| Produce repo-structured ZIP under `tmp/` | PASS | Required path: `tmp/PR_26175_OWNER_047-targeted-pr-action-decision-report_delta.zip`. |
+
+## Validation Lane Report
+
+| Validation | Result | Evidence |
+| --- | --- | --- |
+| Branch gate | PASS | Current work branch: `PR_26175_OWNER_047-targeted-pr-action-decision-report`. |
+| Main/origin sync gate | PASS | `main...origin/main` returned `0 0`. |
+| Base commit recorded | PASS | Branch created from `d9724b19b3f384aed1a082c3461ece4c16fe0f12`; `origin/main` was also `d9724b19b3f384aed1a082c3461ece4c16fe0f12` at setup. |
+| GitHub PR metadata check | PASS | Fetched PRs #3, #50, #51, and #118 from GitHub. |
+| GitHub PR #3 patch check | PASS | Fetched patches for all four changed code files. |
+| PR_046 packet check | PASS | Read `PR_REVIEW_003.md`, `PR_REVIEW_050.md`, `PR_REVIEW_051.md`, and `PR_REVIEW_118.md`. |
+| ProjectInstructions comparison for #51 | PASS | Confirmed current root files and active governance files exist on current main branch. |
+| Runtime validation | NOT RUN | Report-only PR; no runtime code changed. |
+| Playwright validation | NOT RUN | Report-only PR; no UI/runtime code changed. |
+| Sample validation | NOT RUN | Report-only PR; no samples changed. |
+
+## Manual Validation Notes
+
+- Confirmed this PR is an OWNER report-only decision packet.
+- Confirmed no GitHub merge, close, branch delete, or branch cleanup action was performed.
+- Confirmed #3 needs deeper code review because it changes runtime/service/UI behavior and carries an existing P1 scope finding.
+- Confirmed #50 is substantively acceptable as final Golf/Gamma historical evidence but should be held until branch mergeability is resolved.
+- Confirmed #51 is superseded by the current Project Instructions operating-system state on main.
+- Confirmed #118 is Alfa closeout evidence only and is not required before reviewing the Alfa stack.

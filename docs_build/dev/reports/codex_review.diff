@@ -1,1 +1,204 @@
-diff --git a/docs_build/dev/BUILD_PR.md b/docs_build/dev/BUILD_PR.mdindex cf7378880..dd5b4d28f 100644--- a/docs_build/dev/BUILD_PR.md+++ b/docs_build/dev/BUILD_PR.md@@ -1,59 +1,63 @@-# PR_26175_ALFA_006-game-hub-create-project-validation+# PR_26175_ALFA_008-game-hub-feature-matrix  ## Purpose-Add creator-facing validation for the Game Hub create-project row so blank game names do not silently create fallback projects.+Audit the current Game Hub workflow and publish a feature matrix that maps implemented creator-facing behavior to code and Playwright evidence.  ## Source Of Truth-This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_006-game-hub-create-project-validation`.+This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_008-game-hub-feature-matrix`.  ## Exact Scope-- Validate the Game Hub add-game row before calling the repository create method.-- Block signed-in creator saves when the game name is blank or whitespace-only.-- Keep the add-game row open after validation failure.-- Show a creator-safe validation message in the existing Game Hub status log.-- Mark the game name input invalid for accessibility.-- Preserve valid create/open/delete behavior.-- Preserve guest save redirect behavior.+- Produce a Game Hub feature matrix only.+- Audit Game Hub table workflow, selected/open game behavior, create/edit/delete actions, child tables, guest save gating, empty/error states, Theme V2 layout, and targeted Game Hub coverage.+- Use current `main` behavior as evidence.+- Preserve Game Hub UI/product behavior. - Preserve API/service/repository contracts.-- Add targeted Playwright coverage for the create validation path.+- Preserve previous ALFA Game Hub cleanup and create-validation behavior.+- Do not implement product/UI changes unless validation exposes a requirement-critical defect.  ## Exact Targets - `docs_build/dev/BUILD_PR.md`-- `toolbox/game-hub/game-hub.js`-- `tests/playwright/tools/GameHubMockRepository.spec.mjs`-- `docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_report.md`-- `docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_validation-lane.md`-- `docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_requirements-checklist.md`+- `docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_report.md`+- `docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_validation-lane.md`+- `docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_requirements-checklist.md` - `docs_build/dev/reports/codex_review.diff` - `docs_build/dev/reports/codex_changed_files.txt` +## Evidence Sources+- `toolbox/game-hub/index.html`+- `toolbox/project-workspace/index.html`+- `toolbox/game-hub/game-hub.js`+- `toolbox/game-hub/game-hub-api-client.js`+- `src/dev-runtime/persistence/tool-repositories/game-workspace-mock-repository.js`+- `tests/playwright/tools/GameHubMockRepository.spec.mjs`+ ## Out Of Scope-- No repository/API/service contract changes.-- No Game Journey completion-metrics changes.+- No Game Hub product or UI changes.+- No Game Journey changes. - No shared toolbox status bar changes.-- No unrelated Game Hub workflow changes. - No browser-owned product data as source of truth.-- No silent create-name fallback in the Game Hub page flow.+- No API/service/repository contract changes. - No inline styles, style blocks, or page-local CSS. - No engine core changes. - No `start_of_day` folder changes.+- No ALFA_007 work.  ## Validation-Run targeted create-project validation:+Run targeted Game Hub validation:  ```powershell-npx playwright test tests/playwright/tools/GameHubMockRepository.spec.mjs --workers=1 --grep "Game Hub creates, opens, and deletes mock games"+npx playwright test tests/playwright/tools/GameHubMockRepository.spec.mjs --workers=1 ``` -Also verify changed source does not introduce inline styles or style blocks:+Also verify changed docs/reports do not introduce inline styles or style blocks:  ```powershell-rg -n "<[s]tyle|[s]tyle=" toolbox/game-hub/game-hub.js tests/playwright/tools/GameHubMockRepository.spec.mjs docs_build/dev/BUILD_PR.md docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_report.md docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_validation-lane.md docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_requirements-checklist.md+rg -n "<[s]tyle|[s]tyle=" docs_build/dev/BUILD_PR.md docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_report.md docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_validation-lane.md docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_requirements-checklist.md ```  ## Artifact Create repo-structured delta ZIP:  ```text-tmp/PR_26175_ALFA_006-game-hub-create-project-validation_delta.zip+tmp/PR_26175_ALFA_008-game-hub-feature-matrix_delta.zip ```diff --git a/docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_report.md b/docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_report.mdnew file mode 100644index 000000000..3fbcfdb04--- /dev/null+++ b/docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_report.md@@ -0,0 +1,35 @@+# PR_26175_ALFA_008-game-hub-feature-matrix Report++## Overall Status+PASS++## Summary+ALFA_008 produced a report-only Game Hub feature matrix from current `main` behavior. No product/UI/source implementation changes were needed. Targeted Game Hub validation passed with 14/14 Playwright tests.++## Feature Matrix+| Feature Area | Status | Current Behavior | Source Evidence | Validation Evidence |+| --- | --- | --- | --- | --- |+| Deprecated project workspace route | PASS | Older Project Workspace links land on a Game Hub handoff page and expose one creator-facing Game Hub action. | `toolbox/project-workspace/index.html:17`, `toolbox/project-workspace/index.html:20`, `toolbox/project-workspace/index.html:21`, `toolbox/project-workspace/index.html:22` | `tests/playwright/tools/GameHubMockRepository.spec.mjs:244`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:248`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:251` |+| Game Hub page shell | PASS | Game Hub uses Theme V2 shared classes, a wide tool workspace, center Games panel, and shared status elements. | `toolbox/game-hub/index.html:24`, `toolbox/game-hub/index.html:25`, `toolbox/game-hub/index.html:26`, `toolbox/game-hub/index.html:36`, `toolbox/game-hub/index.html:37`, `toolbox/game-hub/index.html:39` | `tests/playwright/tools/GameHubMockRepository.spec.mjs:263`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:873`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:878`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:880` |+| Game table ownership | PASS | The Game Hub page owns the creator-facing game table and renders it in the center panel only. | `toolbox/game-hub/game-hub.js:538`, `toolbox/game-hub/game-hub.js:561`, `toolbox/game-hub/game-hub.js:563`, `toolbox/game-hub/game-hub.js:567`, `toolbox/game-hub/game-hub.js:569` | `tests/playwright/tools/GameHubMockRepository.spec.mjs:288`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:289`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:296`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:298` |+| Parent row display | PASS | Parent rows display Game, Purpose, Status, and Actions without owner/role/next-tool columns. | `toolbox/game-hub/game-hub.js:500`, `toolbox/game-hub/game-hub.js:515`, `toolbox/game-hub/game-hub.js:518`, `toolbox/game-hub/game-hub.js:519`, `toolbox/game-hub/game-hub.js:523` | `tests/playwright/tools/GameHubMockRepository.spec.mjs:298`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:304`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:305`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:306`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:307` |+| Selected/open game affordance | PASS | Selection is represented by the game toggle button only; rows do not gain active-row attributes or row highlighting. | `toolbox/game-hub/game-hub.js:500`, `toolbox/game-hub/game-hub.js:515`, `toolbox/game-hub/game-hub.js:768`, `toolbox/game-hub/game-hub.js:771`, `toolbox/game-hub/game-hub.js:776` | `tests/playwright/tools/GameHubMockRepository.spec.mjs:308`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:311`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:314`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:324`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:326` |+| Add game workflow | PASS | Creators can open an add row, enter Game/Purpose/Status, save a new game, and cancel without saving. | `toolbox/game-hub/game-hub.js:428`, `toolbox/game-hub/game-hub.js:441`, `toolbox/game-hub/game-hub.js:448`, `toolbox/game-hub/game-hub.js:451`, `toolbox/game-hub/game-hub.js:699`, `toolbox/game-hub/game-hub.js:707` | `tests/playwright/tools/GameHubMockRepository.spec.mjs:379`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:398`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:401`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:411`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:426`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:430` |+| Create-name validation | PASS | Blank and whitespace-only names are blocked in the page flow before repository create, keeping the add row open and showing a creator-safe status message. | `toolbox/game-hub/game-hub.js:681`, `toolbox/game-hub/game-hub.js:684`, `toolbox/game-hub/game-hub.js:687`, `toolbox/game-hub/game-hub.js:690`, `toolbox/game-hub/game-hub.js:703`, `toolbox/game-hub/game-hub.js:707` | `tests/playwright/tools/GameHubMockRepository.spec.mjs:386`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:389`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:391`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:392`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:393`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:397` |+| Repository contract preservation | PASS | The Game Hub API client still uses the shared server repository client, and the mock repository contract remains unchanged. The lower-level repository still has defensive defaults, but ALFA_006 page validation prevents blank names from becoming creator-facing Game Hub creates. | `toolbox/game-hub/game-hub-api-client.js:1`, `toolbox/game-hub/game-hub-api-client.js:15`, `toolbox/game-hub/game-hub-api-client.js:16`, `src/dev-runtime/persistence/tool-repositories/game-workspace-mock-repository.js:378`, `src/dev-runtime/persistence/tool-repositories/game-workspace-mock-repository.js:381`, `src/dev-runtime/persistence/tool-repositories/game-workspace-mock-repository.js:419` | `tests/playwright/tools/GameHubMockRepository.spec.mjs:391`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:392`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:396`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:397` |+| Edit game purpose/status | PASS | Existing game names are read-only in edit mode while Purpose and Status remain editable. | `toolbox/game-hub/game-hub.js:464`, `toolbox/game-hub/game-hub.js:470`, `toolbox/game-hub/game-hub.js:471`, `toolbox/game-hub/game-hub.js:475`, `toolbox/game-hub/game-hub.js:478`, `toolbox/game-hub/game-hub.js:727`, `toolbox/game-hub/game-hub.js:741`, `toolbox/game-hub/game-hub.js:752` | `tests/playwright/tools/GameHubMockRepository.spec.mjs:413`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:417`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:418`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:419`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:424`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:780` |+| Delete open game | PASS | Signed-in creators can delete the active non-source-linked game, and source-linked games are protected. | `toolbox/game-hub/game-hub.js:834`, `toolbox/game-hub/game-hub.js:838`, `toolbox/game-hub/game-hub.js:845`, `toolbox/game-hub/game-hub.js:851`, `toolbox/game-hub/game-hub.js:852` | `tests/playwright/tools/GameHubMockRepository.spec.mjs:451`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:452`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:454`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:860`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:861` |+| Source idea child table | PASS | Source-linked games can expose read-only Idea Board context without edit/delete controls. | `toolbox/game-hub/game-hub.js:399`, `toolbox/game-hub/game-hub.js:401`, `toolbox/game-hub/game-hub.js:404`, `toolbox/game-hub/game-hub.js:415`, `toolbox/game-hub/game-hub.js:422` | `tests/playwright/tools/GameHubMockRepository.spec.mjs:462`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:559`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:563`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:568`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:576` |+| Readiness output child table | PASS | Every expanded game can expose readiness output and checklist context from Game Journey progress data. | `toolbox/game-hub/game-hub.js:353`, `toolbox/game-hub/game-hub.js:370`, `toolbox/game-hub/game-hub.js:372`, `toolbox/game-hub/game-hub.js:385`, `toolbox/game-hub/game-hub.js:386`, `toolbox/game-hub/game-hub.js:408` | `tests/playwright/tools/GameHubMockRepository.spec.mjs:362`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:365`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:579`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:581`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:826`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:858` |+| Guest browsing/save gating | PASS | Guests can browse Game Hub but save operations redirect to sign-in and delete is disabled. | `toolbox/game-hub/game-hub.js:131`, `toolbox/game-hub/game-hub.js:139`, `toolbox/game-hub/game-hub.js:147`, `toolbox/game-hub/game-hub.js:151`, `toolbox/game-hub/game-hub.js:174`, `toolbox/game-hub/game-hub.js:178` | `tests/playwright/tools/GameHubMockRepository.spec.mjs:593`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:601`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:603`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:604`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:617`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:623` |+| Empty state | PASS | Empty project lists show a creator-safe prompt and keep Add Game available. | `toolbox/game-hub/game-hub.js:557`, `toolbox/game-hub/game-hub.js:558`, `toolbox/game-hub/game-hub.js:570` | `tests/playwright/tools/GameHubMockRepository.spec.mjs:633`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:680`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:687`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:688`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:690` |+| Unavailable/error states | PASS | Repository and active-game errors use creator-safe messages without leaking backend details. | `toolbox/game-hub/game-hub.js:66`, `toolbox/game-hub/game-hub.js:70`, `toolbox/game-hub/game-hub.js:82`, `toolbox/game-hub/game-hub.js:89`, `toolbox/game-hub/game-hub.js:549`, `toolbox/game-hub/game-hub.js:550` | `tests/playwright/tools/GameHubMockRepository.spec.mjs:697`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:713`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:716`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:724`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:749`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:771` |+| Role-focused Toolbox discovery | PASS | Toolbox role filters still include Game Hub where expected while hiding unavailable role-focused tools. | `tests/playwright/tools/GameHubMockRepository.spec.mjs:996`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:1000`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:1002`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:1010`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:1012`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:1030` | `tests/playwright/tools/GameHubMockRepository.spec.mjs:996`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:1012`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:1024`, `tests/playwright/tools/GameHubMockRepository.spec.mjs:1034` |++## Validation+- PASS: `npx playwright test tests/playwright/tools/GameHubMockRepository.spec.mjs --workers=1`+- Result: 14 passed, 0 failed.+- PASS: Inline-style/style-block report scan completed with no matches after reports were created.++## Artifact+- `tmp/PR_26175_ALFA_008-game-hub-feature-matrix_delta.zip`diff --git a/docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_requirements-checklist.md b/docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_requirements-checklist.mdnew file mode 100644index 000000000..25f65acd6--- /dev/null+++ b/docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_requirements-checklist.md@@ -0,0 +1,15 @@+# PR_26175_ALFA_008-game-hub-feature-matrix Requirements Checklist++| Requirement | Status | Evidence |+| --- | --- | --- |+| Replace stale BUILD source of truth with ALFA_008 | PASS | `docs_build/dev/BUILD_PR.md:1` identifies `PR_26175_ALFA_008-game-hub-feature-matrix`. |+| Produce a Game Hub feature matrix only | PASS | `docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_report.md` contains the feature matrix and no product source files were changed. |+| Audit Game Hub table workflow completion | PASS | Matrix rows cover Game table ownership, parent rows, selection affordance, add/create validation, edit, delete, child tables, guest gating, and error states. |+| Use current main behavior as evidence | PASS | Matrix evidence points to `toolbox/game-hub/index.html`, `toolbox/project-workspace/index.html`, `toolbox/game-hub/game-hub.js`, `toolbox/game-hub/game-hub-api-client.js`, `src/dev-runtime/persistence/tool-repositories/game-workspace-mock-repository.js`, and `tests/playwright/tools/GameHubMockRepository.spec.mjs`. |+| Preserve Game Hub UI/product behavior | PASS | No Game Hub product/UI/source implementation files were modified in this PR. |+| Preserve API/service/repository contracts | PASS | No API, service, or repository files were modified. Matrix records existing API/repository evidence without changing contracts. |+| Preserve previous ALFA cleanup and create validation behavior | PASS | Targeted Game Hub spec passed 14/14 tests, including ALFA_005 selector cleanup and ALFA_006 create-name validation assertions. |+| Do not add browser-owned product data as source of truth | PASS | No runtime/product JSON or browser-owned data contract files were modified. |+| Do not add inline styles, style blocks, or page-local CSS | PASS | ALFA_008 changes are docs/reports only, and the targeted style scan found no matches. |+| Create required reports | PASS | Report, validation lane, requirements checklist, review diff, and changed-files report are included. |+| Create repo-structured delta ZIP | PASS | `tmp/PR_26175_ALFA_008-game-hub-feature-matrix_delta.zip` was created after reports were finalized. |diff --git a/docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_validation-lane.md b/docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_validation-lane.mdnew file mode 100644index 000000000..71a5ec416--- /dev/null+++ b/docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_validation-lane.md@@ -0,0 +1,11 @@+# PR_26175_ALFA_008-game-hub-feature-matrix Validation Lane++## Commands+| Command | Status | Evidence |+| --- | --- | --- |+| `npx playwright test tests/playwright/tools/GameHubMockRepository.spec.mjs --workers=1` | PASS | 14 passed, 0 failed. Covered deprecated route, create/open/delete, parent/child tables, guest save gating, empty state, unavailable state, active-game error state, malformed active-game payloads, purpose/status edits, readiness rows, wide Theme V2 layout, representative toolbox layout, Learn guidance, and member-role filters. |+| `rg -n "<[s]tyle|[s]tyle=" docs_build/dev/BUILD_PR.md docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_report.md docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_validation-lane.md docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_requirements-checklist.md` | PASS | No inline style or style block matches in ALFA_008 changed docs/reports. |++## Notes+- Playwright updated shared coverage report outputs during validation; those generated files were restored because they are outside ALFA_008 exact targets.+- No product/UI/source implementation files were changed for this audit.diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txtindex 9dca38cd8..15aa8521d 100644--- a/docs_build/dev/reports/codex_changed_files.txt+++ b/docs_build/dev/reports/codex_changed_files.txt@@ -1,23 +1,6 @@-?.env.example-admin/infrastructure.html-admin/system-health.html-assets/theme-v2/js/admin-infrastructure.js-assets/theme-v2/js/admin-system-health.js-docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard.md-docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard_PLAN.md-docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-instruction-compliance-checklist.md-docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-manual-validation-notes.md-docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization.md-docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization_PLAN.md-docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization-instruction-compliance-checklist.md-docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization-manual-validation-notes.md-docs_build/dev/reports/PR_26175_CHARLIE_EOD-branch-validation.md-docs_build/dev/reports/PR_26175_CHARLIE_EOD-closeout.md-docs_build/dev/reports/PR_26175_CHARLIE_EOD-merge-summary.md-scripts/validate-storage-config.mjs-src/dev-runtime/server/local-api-router.mjs-src/dev-runtime/storage/storage-config.mjs-tests/dev-runtime/AdminHealthOperations.test.mjs-tests/dev-runtime/StorageConfig.test.mjs-tests/playwright/tools/AdminHealthOperationsPage.spec.mjs-tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs+docs_build/dev/BUILD_PR.md+docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_report.md+docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_validation-lane.md+docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_requirements-checklist.md+docs_build/dev/reports/codex_review.diff+docs_build/dev/reports/codex_changed_files.txt
+diff --git a/docs_build/dev/reports/PR_26175_OWNER_047-targeted-pr-action-decision-report.md b/docs_build/dev/reports/PR_26175_OWNER_047-targeted-pr-action-decision-report.md
+new file mode 100644
+index 000000000..3042a565f
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_OWNER_047-targeted-pr-action-decision-report.md
+@@ -0,0 +1,185 @@
++# PR_26175_OWNER_047-targeted-pr-action-decision-report
++
++## Executive Summary
++
++OWNER override approved: targeted PR action decision report.
++
++This report uses GitHub PR metadata as authority and the existing review packets from PR_26175_OWNER_046 as supporting evidence. It is report-only. No PRs were merged, closed, or modified. No branches were deleted. No runtime code was changed.
++
++| PR | Team | Status | Days Old | Code Files Changed | Runtime Impact | Merge Risk | Recommendation |
++| --- | --- | --- | ---: | ---: | --- | --- | --- |
++| #3 | Team Bravo | Open | 4 | 4 | Yes: Messages service/UI/test changes | High | Needs deeper code review |
++| #50 | Team Golf, historical Gamma lane | Draft | 3 | 0 | No runtime impact | Low content risk, but GitHub reports not mergeable | Hold |
++| #51 | Team OWNER | Draft | 3 | 0 | No runtime impact | High governance drift/superseded risk | Close as superseded |
++| #118 | Team Alfa | Draft | 1 | 0 | No runtime impact | Low content risk, stack-order dependent | Hold |
++
++## Source Evidence
++
++- GitHub PR metadata fetched for #3, #50, #51, and #118.
++- Existing review packets read from branch `PR_26175_OWNER_046-pr-targeted-review-packets`:
++  - `docs_build/dev/reports/PR_REVIEW_003.md`
++  - `docs_build/dev/reports/PR_REVIEW_050.md`
++  - `docs_build/dev/reports/PR_REVIEW_051.md`
++  - `docs_build/dev/reports/PR_REVIEW_118.md`
++- Actual GitHub patches fetched for PR #3 code files:
++  - `src/dev-runtime/messages/messages-sqlite-service.mjs`
++  - `tests/playwright/tools/MessagesTool.spec.mjs`
++  - `toolbox/messages/index.html`
++  - `toolbox/messages/messages.js`
++
++Age is calendar days old as of 2026-06-24.
++
++## Decision Details
++
++### PR #3 - Pr/PR 26171 006 message emotion profile management
++
++- Team: Team Bravo
++- Created date: 2026-06-20T01:02:11Z
++- Updated date: 2026-06-20T01:08:39Z
++- Days old: 4
++- Branch: `pr/PR_26171_006-message-emotion-profile-management`
++- Author: ToolboxAid
++- Draft/open state: Open, non-draft
++- GitHub mergeable: false
++- Code files changed:
++  - `src/dev-runtime/messages/messages-sqlite-service.mjs`
++  - `tests/playwright/tools/MessagesTool.spec.mjs`
++  - `toolbox/messages/index.html`
++  - `toolbox/messages/messages.js`
++- Runtime impact: Yes. The PR changes the Messages SQLite service, Messages UI markup, and Messages browser behavior.
++- Merge risk: High.
++- Recommendation: Needs deeper code review.
++
++Purpose and notes:
++PR #3 adds emotion-profile usage counts and prevents deactivation of referenced emotion profiles. The supporting packet reports targeted syntax/API/Playwright validation passed, but `npm run test:workspace-v2` failed outside the Messages scope.
++
++Actual code-diff risk summary:
++
++| Code File | Summary | Risk |
++| --- | --- | --- |
++| `src/dev-runtime/messages/messages-sqlite-service.mjs` | Adds `emotionProfileUsage`, reference payloads, usage counts, and blocks deactivation when a profile is referenced by messages or segments. | High: service behavior changes are coupled to SQLite-backed data and current Project Instructions say SQLite is deprecated and PRs introducing SQLite should be rejected. Needs review against PostgreSQL direction and current Messages ownership. |
++| `tests/playwright/tools/MessagesTool.spec.mjs` | Extends Messages Playwright coverage to assert usage counts, API rejection for referenced profile deactivation, UI diagnostic display, and active status retention. | Medium: useful targeted coverage, but it masks the intentional 400 response from failure collectors and does not resolve the failed broader workspace lane. |
++| `toolbox/messages/index.html` | Adds Usage column and changes emotion profile number input step from `0.05` to `0.01`. | Medium: table column count and numeric precision changes should be reviewed for existing UI expectations and creator workflow fit. |
++| `toolbox/messages/messages.js` | Renders usage count, reloads emotion profiles when segments reload, repopulates select controls, and refreshes persistence display. | Medium/high: reload coupling may affect save flows and select state. Needs regression review around message, segment, and emotion profile editing. |
++
++Additional blocking concern:
++GitHub review on PR #3 contains a P1 finding that future BUILD specs for PR_008, PR_010, PR_012, PR_014, and PR_016 are included in this PR. That conflicts with the repository rule requiring one PR purpose only. Those planning files should be split out or the PR should be re-cut before merge consideration.
++
++### PR #50 - PR_26171_GAMMA_028-final-sqlite-clean-status-report
++
++- Team: Team Golf, historical Gamma lane
++- Created date: 2026-06-21T16:18:04Z
++- Updated date: 2026-06-21T16:18:04Z
++- Days old: 3
++- Branch: `pr/26171-GAMMA-028-final-sqlite-clean-status-report`
++- Author: ToolboxAid
++- Draft/open state: Draft
++- GitHub mergeable: false
++- Code files changed: None
++- Runtime impact: None. Report artifacts only.
++- Merge risk: Low content risk, but current GitHub state is not mergeable.
++- Recommendation: Hold.
++
++Decision:
++Content can serve as the final Golf/Gamma historical SQLite clean status report because it is report-only, documents the post-PR026/PR027 SQLite inventory, and preserves historical Gamma wording as audit evidence. Do not merge it in its current GitHub state because GitHub reports `mergeable=false`; refresh/rebase or conflict-resolution review is needed first.
++
++### PR #51 - PR_26172_MASTER_001-project-instructions-readme-and-root
++
++- Team: Team OWNER
++- Created date: 2026-06-21T17:26:20Z
++- Updated date: 2026-06-21T17:26:20Z
++- Days old: 3
++- Branch: `pr/26172-MASTER-001-project-instructions-readme-and-root`
++- Author: ToolboxAid
++- Draft/open state: Draft
++- GitHub mergeable: false
++- Code files changed: None
++- Runtime impact: None. Governance/docs only.
++- Merge risk: High governance drift and superseded-content risk.
++- Recommendation: Close as superseded.
++
++Current ProjectInstructions comparison:
++Current `main` already contains the Project Instructions root, `README.txt`, source folders, active addendums, backlog, team assignment governance, active team registry guidance, and history snapshots. Current guidance uses OWNER override wording, while #51 still contains historical MASTER override wording. Merging #51 would reintroduce obsolete bootstrap content and conflicts with the current OWNER-approved state.
++
++Decision:
++Close as superseded after owner approval. Preserve #51 as historical bootstrap evidence; do not merge it into current main.
++
++### PR #118 - PR_26174_ALFA_EOD-final-closeout
++
++- Team: Team Alfa
++- Created date: 2026-06-23T18:08:07Z
++- Updated date: 2026-06-23T18:10:12Z
++- Days old: 1
++- Branch: `pr/26174-ALFA-EOD-final-closeout`
++- Author: ToolboxAid
++- Draft/open state: Draft
++- GitHub mergeable: true
++- Code files changed: None
++- Runtime impact: None. Report artifacts only.
++- Merge risk: Low direct risk, but stack-order dependent because its base is `pr/26174-ALFA-EOD-workstream-closeout`, not `main`.
++- Recommendation: Hold.
++
++Decision:
++PR #118 is closeout evidence only. It is not required before reviewing the Alfa stack. Owner can review Alfa PRs #95 through #117 directly using the stack order documented in #118 and related closeout reports. Keep #118 as an evidence packet until the Alfa stack owner review plan is decided.
++
++## Action Queue
++
++| Priority | PR | Action | Rationale |
++| ---: | --- | --- | --- |
++| 1 | #3 | Deeper code review before any merge. | Runtime/service/UI changes, failed workspace lane, SQLite governance concern, and P1 scope concern. |
++| 2 | #51 | Owner-approved close as superseded. | Current main already contains newer OWNER-governed Project Instructions. |
++| 3 | #50 | Hold and refresh branch if owner wants historical report merged. | Content is acceptable as historical Golf/Gamma evidence, but GitHub says not mergeable. |
++| 4 | #118 | Hold as evidence; not a prerequisite for Alfa stack review. | Report-only closeout on stacked base. |
++
++## Requirement Checklist
++
++| Requirement | Result | Notes |
++| --- | --- | --- |
++| Start from main after allowed checkout | PASS | Main was checked out and fast-forward pulled before branch creation. |
++| Hard stop if branch/worktree/sync gate failed | PASS | Gate passed: main clean and `main...origin/main` was `0 0`. |
++| Read all Project Instructions | PASS | Read `docs_build/dev/ProjectInstructions/` files before report generation. |
++| Use existing review packets from PR_26175_OWNER_046 | PASS | Four packet files were read via `git show` from the OWNER_046 branch. |
++| Produce owner decision report for #3, #50, #51, #118 | PASS | This report covers all four requested PRs. |
++| Include Team | PASS | Included in executive table and per-PR sections. |
++| Include Created date | PASS | Included per PR. |
++| Include Updated date | PASS | Included per PR. |
++| Include Days old | PASS | Included per PR. |
++| Include Code files changed | PASS | Included per PR. |
++| Include Runtime impact | PASS | Included per PR. |
++| Include Merge risk | PASS | Included per PR. |
++| Use allowed recommendations only | PASS | Recommendations are Merge/Hold/Close as superseded/Needs deeper code review; this report uses Hold, Close as superseded, and Needs deeper code review. |
++| For #3, pull actual code diffs and summarize risks | PASS | Fetched and summarized all four changed code-file patches. |
++| For #50, decide if it can be merged as final Golf/Gamma historical report | PASS | Content yes; current GitHub mergeability no, so recommendation is Hold pending refresh. |
++| For #51, compare against current ProjectInstructions state | PASS | Compared current root/README/addendums/team assignment state and OWNER wording. |
++| For #118, determine closeout evidence vs Alfa prerequisite | PASS | Determined it is evidence only, not needed before Alfa stack review. |
++| Do not merge PRs | PASS | No merge command or GitHub merge action performed. |
++| Do not close PRs | PASS | No PR close action performed. |
++| Do not delete branches | PASS | No local or remote branch deletion performed. |
++| Do not modify runtime code | PASS | Only report files are changed. |
++| Produce `codex_review.diff` | PASS | Generated as required. |
++| Produce `codex_changed_files.txt` | PASS | Generated as required. |
++| Produce repo-structured ZIP under `tmp/` | PASS | Required path: `tmp/PR_26175_OWNER_047-targeted-pr-action-decision-report_delta.zip`. |
++
++## Validation Lane Report
++
++| Validation | Result | Evidence |
++| --- | --- | --- |
++| Branch gate | PASS | Current work branch: `PR_26175_OWNER_047-targeted-pr-action-decision-report`. |
++| Main/origin sync gate | PASS | `main...origin/main` returned `0 0`. |
++| Base commit recorded | PASS | Branch created from `d9724b19b3f384aed1a082c3461ece4c16fe0f12`; `origin/main` was also `d9724b19b3f384aed1a082c3461ece4c16fe0f12` at setup. |
++| GitHub PR metadata check | PASS | Fetched PRs #3, #50, #51, and #118 from GitHub. |
++| GitHub PR #3 patch check | PASS | Fetched patches for all four changed code files. |
++| PR_046 packet check | PASS | Read `PR_REVIEW_003.md`, `PR_REVIEW_050.md`, `PR_REVIEW_051.md`, and `PR_REVIEW_118.md`. |
++| ProjectInstructions comparison for #51 | PASS | Confirmed current root files and active governance files exist on current main branch. |
++| Runtime validation | NOT RUN | Report-only PR; no runtime code changed. |
++| Playwright validation | NOT RUN | Report-only PR; no UI/runtime code changed. |
++| Sample validation | NOT RUN | Report-only PR; no samples changed. |
++
++## Manual Validation Notes
++
++- Confirmed this PR is an OWNER report-only decision packet.
++- Confirmed no GitHub merge, close, branch delete, or branch cleanup action was performed.
++- Confirmed #3 needs deeper code review because it changes runtime/service/UI behavior and carries an existing P1 scope finding.
++- Confirmed #50 is substantively acceptable as final Golf/Gamma historical evidence but should be held until branch mergeability is resolved.
++- Confirmed #51 is superseded by the current Project Instructions operating-system state on main.
++- Confirmed #118 is Alfa closeout evidence only and is not required before reviewing the Alfa stack.
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index 15aa8521d..32a451000 100644
+--- a/docs_build/dev/reports/codex_changed_files.txt
++++ b/docs_build/dev/reports/codex_changed_files.txt
+@@ -1,6 +1,3 @@
+-docs_build/dev/BUILD_PR.md
+-docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_report.md
+-docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_validation-lane.md
+-docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_requirements-checklist.md
+-docs_build/dev/reports/codex_review.diff
++docs_build/dev/reports/PR_26175_OWNER_047-targeted-pr-action-decision-report.md
+ docs_build/dev/reports/codex_changed_files.txt
++docs_build/dev/reports/codex_review.diff

@@ -1,6 +1,3 @@
-docs_build/dev/BUILD_PR.md
-docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_report.md
-docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_validation-lane.md
-docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_requirements-checklist.md
-docs_build/dev/reports/codex_review.diff
+docs_build/dev/reports/PR_26175_OWNER_047-targeted-pr-action-decision-report.md
 docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/codex_review.diff
