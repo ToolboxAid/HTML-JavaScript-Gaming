@@ -34,6 +34,10 @@ Define the standard pull request workflow for Game Foundry Studio.
 - If validation fails, stop and report.
 - If conflict occurs, stop and report.
 - If OWNER decision is required, stop and report.
+- Every completed Codex PR run must produce a repo-structured ZIP under `tmp/`.
+- The ZIP rule applies to implementation, audit, report-only, validation-only, governance, and cleanup PRs.
+- The ZIP must include all changed or preserved repo files from the run and must not replace required reports under `docs_build/dev/reports/`.
+- If no repo files changed, Codex must still create a ZIP containing the PR report that proves the no-change result, unless the run hard-stopped before producing outputs.
 
 ## Batch Governance Mode
 

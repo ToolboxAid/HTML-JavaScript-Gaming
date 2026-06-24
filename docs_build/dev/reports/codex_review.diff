@@ -1,643 +1,184 @@
-diff --git a/assets/theme-v2/css/status.css b/assets/theme-v2/css/status.css
-index 6acb4555b..4ca9cb266 100644
---- a/assets/theme-v2/css/status.css
-+++ b/assets/theme-v2/css/status.css
-@@ -38,6 +38,7 @@
- .toolbox-status-bar {
-   --toolbox-status-bar-height: var(--space-52);
-   --toolbox-status-game-max: 220px;
-+  --toolbox-status-progress-max: 34vw;
-   width: 100%;
-   min-block-size: var(--toolbox-status-bar-height);
-   border-block: var(--border-standard);
-@@ -50,7 +51,7 @@
-   margin: var(--space-0) auto;
-   padding: var(--space-10) var(--space-0);
-   display: grid;
--  grid-template-columns: minmax(var(--space-0), max-content) minmax(var(--space-0), 1fr);
-+  grid-template-columns: minmax(var(--space-0), max-content) minmax(var(--space-0), 1fr) minmax(var(--space-0), max-content);
-   gap: var(--space-16);
-   align-items: center
- }
-@@ -90,6 +91,19 @@
-   overflow-wrap: anywhere
- }
-
-+.toolbox-status-bar__progress {
-+  min-width: var(--space-0);
-+  max-width: var(--toolbox-status-progress-max);
-+  margin: var(--space-0);
-+  color: var(--muted);
-+  font-size: var(--font-size-sm);
-+  line-height: var(--line-height-tight);
-+  overflow: hidden;
-+  text-align: right;
-+  text-overflow: ellipsis;
-+  white-space: nowrap
-+}
+diff --git a/docs_build/dev/PROJECT_INSTRUCTIONS.md b/docs_build/dev/PROJECT_INSTRUCTIONS.md
+index ad4e491e0..588db96d3 100644
+--- a/docs_build/dev/PROJECT_INSTRUCTIONS.md
++++ b/docs_build/dev/PROJECT_INSTRUCTIONS.md
+@@ -787 +787 @@ The full samples smoke test rule remains separate and runs only when broadly imp
+-Every Codex PR must produce review artifacts so ChatGPT can review the exact code changes.
++Every completed Codex PR or completed Codex run must produce review artifacts so ChatGPT can review the exact repo changes or the no-change evidence.
+@@ -792,0 +793 @@ Codex must create:
++- a PR-specific or EOD-specific report under `docs_build/dev/reports/`
+@@ -806,0 +808,3 @@ Rules:
++- Required reports remain required even when a ZIP is created.
++- Required report evidence must include branch validation PASS/FAIL, a requirement-by-requirement PASS/FAIL checklist, a validation lane report, and manual validation notes.
++- A ZIP artifact must not replace or move required report files out of `docs_build/dev/reports/`.
+@@ -815 +819 @@ When user asks for code review, they should upload:
+-Every PR must include:
++Every completed PR, audit, report-only, validation-only, or EOD closeout run must include:
+@@ -873 +877 @@ Codex ZIPs must:
+-- use the PR name in the ZIP filename
++- use the PR or EOD run name in the ZIP filename
+@@ -874,0 +879,7 @@ Codex ZIPs must:
++- include all changed or preserved repo files from the completed run
++- not include or depend on generated loose files under `tmp/`
++- not replace required report files under `docs_build/dev/reports/`
 +
- .toolbox-status-bar[data-selected-game-state="active"] {
-   border-color: color-mix(in srgb, var(--green) 52%, var(--line))
- }
-@@ -249,16 +263,21 @@ body.tool-focus-mode .tool-center-panel {
- @media (max-width: 720px) {
-   .toolbox-status-bar__inner {
-     width: var(--container-width);
--    grid-template-columns: minmax(var(--space-0), max-content) minmax(var(--space-0), 1fr);
-+    grid-template-columns: minmax(var(--space-0), max-content) minmax(var(--space-0), 1fr) minmax(var(--space-0), max-content);
-     gap: var(--space-10);
-     text-align: center
-   }
-
-   .toolbox-status-bar__game-name {
--    max-width: 34vw
-+    max-width: 24vw
-   }
-
--  .toolbox-status-bar__message {
-+  .toolbox-status-bar__message,
-+  .toolbox-status-bar__progress {
-     font-size: var(--font-size-sm)
-   }
++If a completed run changes no repo files, Codex must still create a ZIP containing the PR or EOD report that proves no repo files changed.
 +
-+  .toolbox-status-bar__progress {
-+    max-width: 30vw
-+  }
- }
-diff --git a/assets/theme-v2/js/toolbox-status-bar.js b/assets/theme-v2/js/toolbox-status-bar.js
-index 24c935311..6adc17290 100644
---- a/assets/theme-v2/js/toolbox-status-bar.js
-+++ b/assets/theme-v2/js/toolbox-status-bar.js
-@@ -1,7 +1,39 @@
-+import { readGameJourneyCompletionMetrics } from "/src/api/game-journey-completion-api-client.js";
- import { createServerRepositoryClient } from "/src/api/server-api-client.js";
-+import { getToolBySlug } from "/src/shared/toolbox/tool-metadata-inventory.js";
-
- const EXCLUDED_SELECTED_GAME_TOOLS = new Set(["idea-board"]);
- const STATUS_BAR_SELECTOR = "[data-toolbox-status-bar]";
-+const TOOL_PROGRESS_BUCKET_BY_SLUG = Object.freeze({
-+  "achievements": "Progression",
-+  "assets": "Graphics",
-+  "audio": "Audio",
-+  "audio-effects": "Audio",
-+  "characters": "Objects",
-+  "colors": "Graphics",
-+  "community": "Share",
-+  "controls": "Controls",
-+  "events": "Rules",
-+  "game-configuration": "Create",
-+  "game-design": "Design",
-+  "game-hub": "Create",
-+  "game-testing": "Play Test",
-+  "hitboxes": "Objects",
-+  "idea-board": "Idea",
-+  "input-mapping-v2": "Controls",
-+  "marketplace": "Share",
-+  "messages": "Interface",
-+  "music": "Audio",
-+  "objects": "Objects",
-+  "publish": "Publish",
-+  "ratings": "Share",
-+  "sprites": "Graphics",
-+  "tags": "Progression",
-+  "text-to-speech": "Audio",
-+  "videos": "Graphics",
-+  "voices": "Audio",
-+  "worlds": "Worlds",
-+});
-
- let repository = null;
- let messageObserver = null;
-@@ -101,7 +133,10 @@ function createStatusBar() {
-   message.setAttribute("role", "status");
-   center.append(message);
-
--  inner.append(game, center);
-+  const progress = createText("p", "toolbox-status-bar__progress", "toolboxStatusProgress");
-+  progress.setAttribute("aria-label", "Tool and journey progress");
++The no-change ZIP rule does not apply when the run hard-stopped before producing outputs.
+@@ -1587 +1598,9 @@ Required reports:
+-Codex must ALWAYS produce a repo-structured ZIP for every PR.
++Codex must ALWAYS produce a repo-structured ZIP for every completed Codex run.
 +
-+  inner.append(game, center, progress);
-   bar.append(inner);
-   return bar;
- }
-@@ -233,6 +268,107 @@ function classifyToolContext(messageText, state, required) {
-   return { kind: "action" };
- }
-
-+function normalizeTextKey(value) {
-+  return String(value || "")
-+    .toLowerCase()
-+    .replace(/[^a-z0-9]+/g, "");
-+}
++This applies to:
++- implementation PRs
++- audit PRs
++- report-only PRs
++- validation-only PRs
++- EOD closeout runs
++- governance and cleanup runs
+@@ -1591 +1610,3 @@ The ZIP must follow the existing CODEX ZIP STANDARD.
+-The ZIP is required output, not optional.
++The ZIP must include all changed or preserved repo files from the run.
 +
-+function formatToolSlug(slug) {
-+  return String(slug || "Tool")
-+    .split(/[-_\s]+/)
-+    .filter(Boolean)
-+    .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
-+    .join(" ") || "Tool";
-+}
++The ZIP is required output, not optional, and it does not replace required reports under `docs_build/dev/reports/`.
+@@ -1826 +1847 @@ Do NOT require:
+-Codex must include the repo-structured ZIP in returned artifacts for user and ChatGPT review.
++Codex must include the repo-structured ZIP path in returned artifacts for user and ChatGPT review for every completed run.
+@@ -1829,0 +1851,2 @@ The ZIP must still follow the CODEX ZIP STANDARD.
++If no repo files changed, the returned ZIP must contain the PR or EOD report proving the no-change result unless the run hard-stopped before outputs were produced.
 +
-+function currentToolContext() {
-+  const slug = toolSlugFromPath(mountOptions.pagePath);
-+  const tool = getToolBySlug(slug);
-+  return {
-+    label: tool?.shortLabel || tool?.displayName || tool?.name || formatToolSlug(slug),
-+    slug,
-+  };
-+}
-+
-+function normalizeProgressRecord(record) {
-+  const total = Math.max(0, Number(record?.plannedCount) || 0);
-+  const complete = Math.max(0, Math.min(Number(record?.completedCount) || 0, total));
-+  const percent = Number.isFinite(Number(record?.percentComplete))
-+    ? Math.max(0, Math.min(Number(record.percentComplete), 100))
-+    : total > 0
-+      ? Math.round((complete / total) * 100)
-+      : 0;
-+  return {
-+    complete,
-+    percent,
-+    total,
-+  };
-+}
-+
-+function formatProgressRecord(label, record) {
-+  const progress = normalizeProgressRecord(record);
-+  return `${label} ${progress.complete}/${progress.total} (${progress.percent}%)`;
-+}
-+
-+function findMetricForCurrentTool(snapshot, toolContext) {
-+  if (toolContext.slug === "game-journey") {
-+    return snapshot;
-+  }
-+
-+  const records = Array.isArray(snapshot?.records) ? snapshot.records : [];
-+  const explicitBucketName = TOOL_PROGRESS_BUCKET_BY_SLUG[toolContext.slug];
-+  const explicitBucket = normalizeTextKey(explicitBucketName);
-+  const toolLabel = normalizeTextKey(toolContext.label);
-+  const toolSlug = normalizeTextKey(toolContext.slug);
-+
-+  return records.find((metric) => {
-+    const bucketName = normalizeTextKey(metric?.bucketName);
-+    return bucketName && (
-+      bucketName === explicitBucket ||
-+      bucketName === toolLabel ||
-+      bucketName === toolSlug
-+    );
-+  }) || null;
-+}
-+
-+function resolveProgressContext() {
-+  const toolContext = currentToolContext();
-+  const snapshot = readGameJourneyCompletionMetrics();
-+  const currentMetric = findMetricForCurrentTool(snapshot, toolContext);
-+  const journeyText = formatProgressRecord("Journey", snapshot);
-+
-+  if (!currentMetric) {
-+    return {
-+      state: "unmapped",
-+      text: `${toolContext.label} progress unavailable | ${journeyText}`,
-+    };
-+  }
-+
-+  return {
-+    state: "active",
-+    text: `${formatProgressRecord(toolContext.label, currentMetric)} | ${journeyText}`,
-+  };
-+}
-+
-+function renderProgressContext(bar) {
-+  const progress = bar.querySelector("[data-toolbox-status-progress]");
-+  if (!progress) {
-+    return;
-+  }
-+
-+  try {
-+    const context = resolveProgressContext();
-+    bar.dataset.toolboxProgressState = context.state;
-+    progress.textContent = context.text;
-+    progress.removeAttribute("title");
-+  } catch (error) {
-+    bar.dataset.toolboxProgressState = "error";
-+    progress.textContent = "Progress unavailable";
-+    progress.removeAttribute("title");
-+  }
-+}
-+
- function renderSelectedGame(bar, selectedGame, state, messageText) {
-   const required = pageRequiresSelectedGame();
-   const name = bar.querySelector("[data-toolbox-selected-game-name]");
-@@ -247,6 +383,7 @@ function renderSelectedGame(bar, selectedGame, state, messageText) {
-   bar.dataset.selectedGameState = state;
-   bar.dataset.selectedGameRequired = String(required);
-   bar.dataset.toolboxStatusContextKind = context.kind;
-+  renderProgressContext(bar);
-
-   if (selectedGame) {
-     name.textContent = selectedGame.name;
-diff --git a/docs_build/dev/BUILD_PR.md b/docs_build/dev/BUILD_PR.md
-index 0778a1f1e..f4bc1e8e4 100644
---- a/docs_build/dev/BUILD_PR.md
-+++ b/docs_build/dev/BUILD_PR.md
-@@ -1,50 +1,54 @@
--# PR_26175_ALFA_009-status-bar-single-row-rebuild
-+# PR_26175_ALFA_011-status-bar-journey-progress-context
-
- ## Purpose
--Rebuild the shared toolbox status bar on current `main` so it is a single-row creator context bar.
-+Add right-anchored progress context to the shared toolbox status bar using the existing Game Journey completion metrics/API pipeline.
-
- ## Source Of Truth
--This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_009-status-bar-single-row-rebuild`.
-+This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_011-status-bar-journey-progress-context`.
-
- ## Exact Scope
--- Display only the selected Game Hub game name on the left side of the toolbox status bar.
--- Display only the current status message in the center of the toolbox status bar.
--- Remove visible status bar labels: `Selected Game Name`, `Selected Game Purpose`, `Save State`, `Tool Action`, `Warning`, and `Error`.
--- Remove selected-game purpose from the visible status bar.
--- Preserve normal status bar placement above the footer.
--- Remove extra status bar/footer spacing so the shared footer top padding resolves to `0px`.
--- Preserve fullscreen/tool display mode bottom anchoring.
--- Ensure fullscreen center scrollable content stops above the fixed status bar.
--- Ensure fullscreen tool content is not hidden behind the status bar.
--- Preserve Idea Board selected-game filtering exclusion.
--- Preserve Game Hub as selected-game owner through the existing repository contract.
-+- Preserve the ALFA_009 single-row toolbox status bar behavior:
-+  - left side displays only the selected Game Hub game name.
-+  - center displays only the current status message.
-+- Add right-anchored progress text in this format:
-+  - `{CurrentTool} {complete}/{total} ({percent}%) | Journey {complete}/{total} ({percent}%)`
-+- Use existing Game Journey completion metrics/API pipeline for Journey totals.
-+- Derive current-tool progress from the existing completion metrics record that matches the current toolbox tool/section.
-+- Do not add new storage.
-+- Do not use browser-owned authoritative progress data.
-+- Preserve fullscreen bottom anchoring and existing fullscreen content bottom reserve.
-+- Preserve normal placement above the footer.
- - Use shared Theme V2 CSS/classes only.
--- Update targeted Playwright coverage for the single-row status bar, footer spacing, and fullscreen bottom reserve.
-+- Update targeted Playwright coverage for the right-anchored progress text and existing left/center behavior.
-
- ## Exact Targets
- - `docs_build/dev/BUILD_PR.md`
- - `assets/theme-v2/js/toolbox-status-bar.js`
- - `assets/theme-v2/css/status.css`
--- `assets/theme-v2/css/layout.css`
- - `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs`
--- `docs_build/dev/reports/PR_26175_ALFA_009-status-bar-single-row-rebuild_report.md`
--- `docs_build/dev/reports/PR_26175_ALFA_009-status-bar-single-row-rebuild_validation-lane.md`
--- `docs_build/dev/reports/PR_26175_ALFA_009-status-bar-single-row-rebuild_requirements-checklist.md`
-+- `docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_report.md`
-+- `docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_validation-lane.md`
-+- `docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_requirements-checklist.md`
- - `docs_build/dev/reports/codex_review.diff`
- - `docs_build/dev/reports/codex_changed_files.txt`
-
-+## Evidence Sources
-+- `assets/js/shared/game-journey-api-client.js`
-+- `src/api/game-journey-completion-api-client.js`
-+- `src/dev-runtime/server/local-api-router.mjs`
-+- `src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs`
-+
- ## Out Of Scope
--- No merge of PR #120.
--- No reuse of stale ALFA_003 branch.
-+- No Game Journey API/service/repository contract changes.
-+- No new persistence/storage.
-+- No browser-owned product data as source of truth.
-+- No silent fallback data.
- - No environment/server details in the status bar.
- - No selected game purpose in the visible status bar.
- - No visible status category labels in the status bar.
--- No status action links in the visible status bar.
- - No large banners.
- - No modal messages or modal-style status messages.
- - No row highlights.
--- No API/service/repository contract changes.
--- No browser-owned product data as source of truth.
- - No inline styles, style blocks, or page-local CSS.
- - No engine core changes.
- - No `start_of_day` folder changes.
-@@ -59,12 +63,12 @@ npx playwright test tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
- Also verify changed source does not introduce inline styles or style blocks:
-
- ```powershell
--rg -n "<[s]tyle|[s]tyle=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css assets/theme-v2/css/layout.css tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-+rg -n "<[s]tyle|[s]tyle=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
- ```
-
- ## Artifact
- Create repo-structured delta ZIP:
-
- ```text
--tmp/PR_26175_ALFA_009-status-bar-single-row-rebuild_delta.zip
-+tmp/PR_26175_ALFA_011-status-bar-journey-progress-context_delta.zip
- ```
-diff --git a/docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_report.md b/docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_report.md
+@@ -2046,0 +2070 @@ Required steps:
++7. Produce the required repo-structured ZIP under `tmp/` containing the EOD report and any changed or preserved repo files from the closeout.
+@@ -2237,0 +2262,3 @@ Completion hard stops:
++- If branch validation PASS/FAIL is missing, HARD STOP.
++- If the requirement-by-requirement PASS/FAIL checklist is missing, HARD STOP.
++- If the validation lane report is missing, HARD STOP.
+diff --git a/docs_build/dev/ProjectInstructions/addendums/multi_team.md b/docs_build/dev/ProjectInstructions/addendums/multi_team.md
+index 190813840..286626ebb 100644
+--- a/docs_build/dev/ProjectInstructions/addendums/multi_team.md
++++ b/docs_build/dev/ProjectInstructions/addendums/multi_team.md
+@@ -123,0 +124 @@ Required gate:
++   - repo-structured ZIP path under `tmp/`
+@@ -150,0 +152 @@ Required steps:
++7. Produce a repo-structured ZIP under `tmp/` that includes the EOD report and all changed or preserved repo files from the closeout.
+@@ -167,0 +170,2 @@ Rules:
++- A completed EOD closeout must produce the required ZIP even when the closeout changed no repo files; in that case, the ZIP must contain the EOD report proving the no-change result.
++- The EOD ZIP does not replace the EOD report or other required reports under `docs_build/dev/reports/`.
+diff --git a/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md b/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
+index e4b0ba1de..16539243e 100644
+--- a/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
++++ b/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
+@@ -36,0 +37,4 @@ Define the standard pull request workflow for Game Foundry Studio.
++- Every completed Codex PR run must produce a repo-structured ZIP under `tmp/`.
++- The ZIP rule applies to implementation, audit, report-only, validation-only, governance, and cleanup PRs.
++- The ZIP must include all changed or preserved repo files from the run and must not replace required reports under `docs_build/dev/reports/`.
++- If no repo files changed, Codex must still create a ZIP containing the PR report that proves the no-change result, unless the run hard-stopped before producing outputs.
+diff --git a/docs_build/dev/reports/PR_26175_OWNER_047-codex-zip-required-for-all-runs.md b/docs_build/dev/reports/PR_26175_OWNER_047-codex-zip-required-for-all-runs.md
 new file mode 100644
-index 000000000..f737efdd4
+index 000000000..42ff570f0
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_report.md
-@@ -0,0 +1,38 @@
-+# PR_26175_ALFA_011-status-bar-journey-progress-context Report
++++ b/docs_build/dev/reports/PR_26175_OWNER_047-codex-zip-required-for-all-runs.md
+@@ -0,0 +1,67 @@
++# PR_26175_OWNER_047 Codex ZIP Required For All Runs
 +
-+## Status
-+PASS
++## Summary
++This governance-only PR clarifies that every completed Codex run must produce a repo-structured ZIP under `tmp/`, including implementation PRs, audit PRs, report-only PRs, validation-only PRs, governance/cleanup runs, and EOD closeouts.
 +
-+Added right-anchored progress context to the shared toolbox status bar while preserving the ALFA_009 left and center behavior.
++No runtime code changed.
 +
-+## Changes
-+- `assets/theme-v2/js/toolbox-status-bar.js`
-+  - Imports the existing Game Journey completion metrics API client at line 1.
-+  - Adds current-tool-to-Journey-bucket matching at lines 7-35.
-+  - Adds the right progress node at line 136.
-+  - Formats progress as `{CurrentTool} {complete}/{total} ({percent}%) | Journey {complete}/{total} ({percent}%)` at lines 309-350.
-+  - Renders visible unavailable progress state without raw environment/server details at lines 354-370.
-+- `assets/theme-v2/css/status.css`
-+  - Adds a three-column shared status bar grid at line 54.
-+  - Adds right-aligned single-line progress styling at lines 94-106.
-+  - Preserves existing fullscreen anchoring and bottom reserve rules at lines 119-150.
-+- `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs`
-+  - Routes `/api/game-journey/completion-metrics` through the existing server API response shape at lines 76-83.
-+  - Verifies Game Design progress at lines 239 and 253.
-+  - Verifies the requested Objects example at lines 275 and 279.
-+  - Verifies right anchoring at lines 260 and 280.
-+  - Verifies Game Hub, missing-game, Idea Board, and fullscreen behavior at lines 304, 328, 353, 371, and 398.
-+
-+## Contract Notes
-+- No storage was added.
-+- No API/service/repository contract was changed.
-+- Progress data is read from the existing Game Journey completion metrics API pipeline.
-+- Browser state is not used as authoritative progress data.
-+- Existing selected-game ownership and left/center status bar behavior are preserved.
-+
-+## Validation
-+- PASS: `npx playwright test tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs --workers=1`
-+- PASS: `rg -n "<[s]tyle|[s]tyle=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs`
-+
-+## Artifact
-+- `tmp/PR_26175_ALFA_011-status-bar-journey-progress-context_delta.zip`
-diff --git a/docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_requirements-checklist.md b/docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_requirements-checklist.md
-new file mode 100644
-index 000000000..94c18da59
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_requirements-checklist.md
-@@ -0,0 +1,17 @@
-+# PR_26175_ALFA_011 Requirements Checklist
-+
-+| Requirement | Status | Evidence |
++## Located Governance Files
++| File | Role | Change |
 +| --- | --- | --- |
-+| Implement right-anchored progress in the shared toolbox status bar. | PASS | `assets/theme-v2/js/toolbox-status-bar.js:136`, `assets/theme-v2/css/status.css:94`. |
-+| Use format `{CurrentTool} {complete}/{total} ({percent}%) | Journey {complete}/{total} ({percent}%)`. | PASS | `assets/theme-v2/js/toolbox-status-bar.js:309` and `:350`; tests at `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs:239`, `:275`. |
-+| Use existing Game Journey completion metrics/API pipeline. | PASS | `assets/theme-v2/js/toolbox-status-bar.js:1`, `:337`; tests route `/api/game-journey/completion-metrics` at `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs:76`. |
-+| Do not add new storage. | PASS | No persistence files changed. |
-+| Do not use browser-owned authoritative progress data. | PASS | Progress is read from `readGameJourneyCompletionMetrics()` and not local/session storage. |
-+| Keep existing left status bar behavior from ALFA_009. | PASS | Selected game assertions remain at `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs:237`, `:302`, `:391`. |
-+| Keep existing center status bar behavior from ALFA_009. | PASS | Message assertions remain at `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs:238`, `:303`, `:370`, `:397`. |
-+| Preserve fullscreen bottom anchoring. | PASS | Existing CSS rules remain at `assets/theme-v2/css/status.css:119`; test coverage at `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs:315`. |
-+| Preserve normal placement above footer. | PASS | Existing status bar placement test remains at `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs:224`. |
-+| No inline styles, style blocks, or page-local CSS. | PASS | Style scan returned no matches. |
-+| Use Theme V2 shared CSS/classes. | PASS | Styling changes are limited to `assets/theme-v2/css/status.css`. |
-+| Update targeted Playwright coverage. | PASS | `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs` now validates right progress text and anchoring. |
-+| Produce required reports and repo-structured ZIP. | PASS | PR reports added and ZIP target is `tmp/PR_26175_ALFA_011-status-bar-journey-progress-context_delta.zip`. |
-diff --git a/docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_validation-lane.md b/docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_validation-lane.md
-new file mode 100644
-index 000000000..daa775695
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_validation-lane.md
-@@ -0,0 +1,38 @@
-+# PR_26175_ALFA_011 Validation Lane
++| `docs_build/dev/PROJECT_INSTRUCTIONS.md` | Authoritative root project instructions for Codex outputs, report requirements, ZIP standard, PR completion, and EOD hard stops. | Updated |
++| `docs_build/dev/ProjectInstructions/addendums/pr_workflow.md` | PR workflow addendum for standard PR execution rules. | Updated |
++| `docs_build/dev/ProjectInstructions/addendums/multi_team.md` | Multi-team and EOD closeout addendum. | Updated |
++| `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md` | Index for the append-first Project Instructions operating system. | Reviewed; no output rules to update |
++| `docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md` | Team start and EOD reminder text. | Reviewed; no output rules to update |
 +
-+## Playwright
-+Command:
++## Requirement Checklist
++| Requirement | Result | Evidence |
++| --- | --- | --- |
++| Use main branch only | PASS | Branch validation confirmed current branch is `main`. |
++| Scope governance docs only | PASS | Changed files are governance docs and required reports only. |
++| No runtime code changes | PASS | No `src/`, `assets/`, `toolbox/`, or test runtime files changed. |
++| Locate active governance files | PASS | Active output rules found in root instructions, PR workflow addendum, and EOD multi-team addendum. |
++| Require ZIP for every completed Codex run | PASS | Root instructions now require ZIPs for every completed Codex run. |
++| Cover implementation, audit, report-only, validation-only, and EOD runs | PASS | Root instructions and PR/EOD addendums list those run types. |
++| ZIP includes changed/preserved repo files | PASS | Root ZIP standard and PR/EOD addendums require inclusion of all changed or preserved repo files. |
++| ZIP does not replace reports | PASS | Root instructions and addendums state ZIPs do not replace `docs_build/dev/reports/` files. |
++| Existing reports remain required | PASS | Root report rules explicitly preserve `codex_review.diff`, `codex_changed_files.txt`, PR/EOD report, branch validation, requirement checklist, validation lane report, and manual validation notes. |
++| No-change runs still produce ZIP | PASS | Root instructions and PR/EOD addendums require a ZIP containing the PR/EOD no-change report unless the run hard-stopped before outputs. |
++| Required reports created | PASS | This report, `codex_review.diff`, and `codex_changed_files.txt` were created/updated. |
++| Repo-structured ZIP under `tmp/` | PASS | ZIP created at `tmp/PR_26175_OWNER_047-codex-zip-required-for-all-runs_delta.zip`. |
 +
-+```powershell
-+npx playwright test tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs --workers=1
-+```
++## Branch Validation
++| Check | Result | Evidence |
++| --- | --- | --- |
++| Current branch is `main` | PASS | `git branch --show-current` returned `main`. |
++| Branch validation recorded | PASS | This section records PASS/FAIL branch evidence. |
 +
-+Result:
++## Validation Lane Report
++| Lane | Result | Evidence |
++| --- | --- | --- |
++| Docs-only validation | PASS | Changed paths are limited to `docs_build/dev/` governance and report files. |
++| Playwright impacted | PASS | No; governance docs only. |
++| Runtime validation | PASS | Not applicable; no runtime files changed. |
 +
-+```text
-+Running 7 tests using 1 worker
-+7 passed
-+```
++## Manual Validation Notes
++| Step | Result | Notes |
++| --- | --- | --- |
++| Reviewed root output rules | PASS | Confirmed required report and ZIP sections remain present and now apply to all completed Codex runs. |
++| Reviewed PR workflow addendum | PASS | Confirmed completed PR runs require `tmp/` ZIP output. |
++| Reviewed EOD addendum | PASS | Confirmed EOD reports must include ZIP path and closeouts must produce a ZIP. |
++| Verified report preservation rule | PASS | ZIP language states reports remain required under `docs_build/dev/reports/`. |
 +
-+Covered:
-+- Existing selected Game Hub game appears on the left.
-+- Existing center status message behavior is preserved.
-+- Right progress text renders in the required format.
-+- Objects example renders as `Objects 12/25 (48%) | Journey 12/125 (10%)`.
-+- Game Hub save state keeps center status behavior and right progress.
-+- Fullscreen/tool display mode keeps the fixed bottom status bar and content reserve.
-+- Game Hub owner selection updates global status context.
-+- Missing-game prompt remains creator-safe.
-+- Idea Board remains excluded from selected-game filtering.
++## Changed Files
++| File | Purpose |
++| --- | --- |
++| `docs_build/dev/PROJECT_INSTRUCTIONS.md` | Clarifies required reports and universal completed-run ZIP output. |
++| `docs_build/dev/ProjectInstructions/addendums/pr_workflow.md` | Adds PR workflow ZIP output rule for completed Codex PR runs. |
++| `docs_build/dev/ProjectInstructions/addendums/multi_team.md` | Adds EOD ZIP path/report expectations and closeout ZIP rule. |
++| `docs_build/dev/reports/PR_26175_OWNER_047-codex-zip-required-for-all-runs.md` | PR-specific report with branch validation, checklist, validation lane, and manual notes. |
++| `docs_build/dev/reports/codex_review.diff` | Required review diff artifact. |
++| `docs_build/dev/reports/codex_changed_files.txt` | Required changed-files artifact. |
 +
-+## Style And Scope
-+Command:
-+
-+```powershell
-+rg -n "<[s]tyle|[s]tyle=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-+```
-+
-+Result: PASS. The command returned no matches.
-+
-+## Generated Files
-+Playwright updated generated coverage reports during validation. They were restored to `HEAD` because they are outside this PR's exact target list.
++## ZIP
++| Artifact | Result |
++| --- | --- |
++| `tmp/PR_26175_OWNER_047-codex-zip-required-for-all-runs_delta.zip` | PASS - repo-structured ZIP containing changed repo files from this run. |
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 4aa64ab71..1c6777b35 100644
+index 1c6777b35..aa5252e75 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,17 +1,9 @@
--docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
--docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
--docs_build/dev/ProjectInstructions/addendums/multi_team.md
--docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
--docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
--docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
--docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
--docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
--docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
--docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
--docs_build/dev/reports/PR_26175_OWNER_046-pr-targeted-review-packets.md
--docs_build/dev/reports/PR_REVIEW_003.md
--docs_build/dev/reports/PR_REVIEW_050.md
--docs_build/dev/reports/PR_REVIEW_051.md
--docs_build/dev/reports/PR_REVIEW_118.md
+@@ -1,9 +1,22 @@
+-docs_build/dev/BUILD_PR.md
+-assets/theme-v2/js/toolbox-status-bar.js
+-assets/theme-v2/css/status.css
+-tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
+-docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_report.md
+-docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_validation-lane.md
+-docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_requirements-checklist.md
+-docs_build/dev/reports/codex_review.diff
 -docs_build/dev/reports/codex_changed_files.txt
-+docs_build/dev/BUILD_PR.md
-+assets/theme-v2/js/toolbox-status-bar.js
-+assets/theme-v2/css/status.css
-+tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-+docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_report.md
-+docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_validation-lane.md
-+docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_requirements-checklist.md
- docs_build/dev/reports/codex_review.diff
-+docs_build/dev/reports/codex_changed_files.txt
-diff --git a/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs b/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-index 1a40d61c5..e4a940bad 100644
---- a/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-+++ b/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-@@ -73,6 +73,15 @@ async function openRepoPage(page, pathName, options = {}) {
-       });
-     });
-   }
-+  await page.route("**/api/game-journey/completion-metrics", async (route) => {
-+    await route.fulfill({
-+      contentType: "application/json",
-+      body: JSON.stringify({
-+        data: options.completionMetrics || completionMetricsFixture(),
-+        ok: true,
-+      }),
-+    });
-+  });
-   if (options.session) {
-     const userKey = options.session.userKey || MOCK_DB_KEYS.users.user1;
-     await page.route("**/api/session/current", async (route) => {
-@@ -113,6 +122,44 @@ function creatorSession() {
-   };
- }
-
-+function completionMetric(bucketKey, bucketName, completedCount, plannedCount) {
-+  return {
-+    active: true,
-+    bucketKey,
-+    bucketName,
-+    completedCount,
-+    percentComplete: plannedCount > 0 ? Math.round((completedCount / plannedCount) * 100) : 0,
-+    plannedCount,
-+  };
-+}
++# git status --short
++M  docs_build/dev/PROJECT_INSTRUCTIONS.md
++M  docs_build/dev/ProjectInstructions/addendums/multi_team.md
++M  docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
++A  docs_build/dev/reports/PR_26175_OWNER_047-codex-zip-required-for-all-runs.md
++M  docs_build/dev/reports/codex_changed_files.txt
++M  docs_build/dev/reports/codex_review.diff
 +
-+function completionMetricsFixture() {
-+  return {
-+    api: "Local API",
-+    completedCount: 12,
-+    databaseEngine: "Postgres",
-+    percentComplete: 10,
-+    plannedCount: 125,
-+    records: [
-+      completionMetric("001-idea", "Idea", 1, 4),
-+      completionMetric("002-create", "Create", 3, 5),
-+      completionMetric("003-design", "Design", 2, 5),
-+      completionMetric("004-graphics", "Graphics", 5, 10),
-+      completionMetric("005-audio", "Audio", 0, 4),
-+      completionMetric("006-objects", "Objects", 12, 25),
-+      completionMetric("007-worlds", "Worlds", 0, 5),
-+      completionMetric("008-interface", "Interface", 1, 5),
-+      completionMetric("009-controls", "Controls", 1, 4),
-+      completionMetric("010-rules", "Rules", 4, 5),
-+      completionMetric("011-progression", "Progression", 0, 4),
-+      completionMetric("012-play-test", "Play Test", 0, 5),
-+      completionMetric("013-publish", "Publish", 0, 5),
-+      completionMetric("014-share", "Share", 0, 5),
-+    ],
-+    serviceContract: "Web UI -> Local API/Service Contract -> Postgres",
-+  };
-+}
++# git ls-files --others --exclude-standard
 +
- const REMOVED_STATUS_BAR_LABELS = [
-   "Selected Game Name",
-   "Selected Game Purpose",
-@@ -148,6 +195,7 @@ async function statusBarSnapshot(page) {
-     const centerPanel = document.querySelector(".tool-center-panel");
-     const gameName = bar.querySelector("[data-toolbox-selected-game-name]");
-     const message = bar.querySelector("[data-toolbox-status-message]");
-+    const progress = bar.querySelector("[data-toolbox-status-progress]");
-     const position = getComputedStyle(bar).position;
-     const barBox = bar.getBoundingClientRect();
-     const footerBox = footer?.getBoundingClientRect();
-@@ -165,6 +213,9 @@ async function statusBarSnapshot(page) {
-       messageBox: boxSnapshot(message),
-       messageText: message?.textContent.replace(/\s+/g, " ").trim() || "",
-       position,
-+      progressBox: boxSnapshot(progress),
-+      progressState: bar.dataset.toolboxProgressState || "",
-+      progressText: progress?.textContent.replace(/\s+/g, " ").trim() || "",
-       topBeforeFooter: footerBox ? barBox.bottom <= footerBox.top + 1 : false,
-     };
-   });
-@@ -185,6 +236,7 @@ test("shared toolbox status bar shows selected Game Hub game above the footer",
-     await expect(statusBar.locator("[data-toolbox-status-action]")).toHaveCount(0);
-     await expect(statusBar.locator("[data-toolbox-selected-game]")).not.toContainText("Under Construction");
-     await expect(statusBar.locator("[data-toolbox-status-message]")).toContainText("Game Design mock repository ready.");
-+    await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Game Design 2/5 (40%) | Journey 12/125 (10%)");
-     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-id", "demo-game");
-     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "active");
-
-@@ -197,9 +249,35 @@ test("shared toolbox status bar shows selected Game Hub game above the footer",
-     expect(snapshot.dataset.selectedGameRequired).toBe("true");
-     expect(snapshot.gameText).toBe("Demo Game");
-     expect(snapshot.messageText).toContain("Game Design mock repository ready.");
-+    expect(snapshot.progressState).toBe("active");
-+    expect(snapshot.progressText).toBe("Game Design 2/5 (40%) | Journey 12/125 (10%)");
-     expect(Math.max(snapshot.gameBox.top, snapshot.messageBox.top)).toBeLessThanOrEqual(
-       Math.min(snapshot.gameBox.bottom, snapshot.messageBox.bottom),
-     );
-+    expect(Math.max(snapshot.gameBox.top, snapshot.messageBox.top, snapshot.progressBox.top)).toBeLessThanOrEqual(
-+      Math.min(snapshot.gameBox.bottom, snapshot.messageBox.bottom, snapshot.progressBox.bottom),
-+    );
-+    expect(snapshot.progressBox.right).toBeGreaterThan(snapshot.messageBox.right);
 +
-+    expectNoPageFailures(failures);
-+  } finally {
-+    await failures.server.close();
-+  }
-+});
++# git diff --stat
 +
-+test("shared toolbox status bar shows right-anchored current tool and journey progress", async ({ page }) => {
-+  const failures = await openRepoPage(page, "/toolbox/objects/index.html");
 +
-+  try {
-+    const statusBar = page.locator("[data-toolbox-status-bar]");
-+    await expect(statusBar).toBeVisible();
-+    await expect(statusBar.locator("[data-toolbox-selected-game-name]")).toHaveText("Demo Game");
-+    await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Objects 12/25 (48%) | Journey 12/125 (10%)");
-+
-+    const snapshot = await statusBarSnapshot(page);
-+    expect(snapshot.progressState).toBe("active");
-+    expect(snapshot.progressText).toBe("Objects 12/25 (48%) | Journey 12/125 (10%)");
-+    expect(snapshot.progressBox.right).toBeGreaterThan(snapshot.messageBox.right);
-
-     expectNoPageFailures(failures);
-   } finally {
-@@ -223,6 +301,7 @@ test("shared toolbox status bar center reports save state after Game Hub saves",
-     await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
-     await expect(statusBar.locator("[data-toolbox-status-message]")).toHaveText("Created and opened Status Bar Save.");
-     await expect(statusBar.locator("[data-toolbox-selected-game-name]")).toHaveText("Status Bar Save");
-+    await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Game Hub 3/5 (60%) | Journey 12/125 (10%)");
-     await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveCount(0);
-     await expect(statusBar).not.toContainText("Learning Game");
-     await expect(statusBar).not.toContainText("Environment");
-@@ -246,6 +325,7 @@ test("shared toolbox status bar anchors to the bottom in tool display mode", asy
-     expect(Math.abs(snapshot.bottomGap)).toBeLessThanOrEqual(2);
-     expect(snapshot.gameText).toBe("Demo Game");
-     expect(snapshot.messageText).toContain("Game Design mock repository ready.");
-+    expect(snapshot.progressText).toBe("Game Design 2/5 (40%) | Journey 12/125 (10%)");
-     expect(snapshot.centerPanelBox.bottom).toBeLessThanOrEqual(snapshot.barBox.top + 1);
-
-     expectNoPageFailures(failures);
-@@ -270,6 +350,7 @@ test("Game Hub owner selection updates the global toolbox status bar", async ({
-     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "active");
-     await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
-     await expect(statusBar.locator("[data-toolbox-status-message]")).toContainText("Sign in to create or update Game Hub projects.");
-+    await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Game Hub 3/5 (60%) | Journey 12/125 (10%)");
-
-     expectNoPageFailures(failures);
-   } finally {
-@@ -287,6 +368,7 @@ test("non-Idea Board toolbox pages show a creator-safe prompt when no Game Hub g
-     await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveCount(0);
-     await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
-     await expect(statusBar.locator("[data-toolbox-status-message]")).toHaveText("Select or create a game in Game Hub before using this toolbox page.");
-+    await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Game Design 2/5 (40%) | Journey 12/125 (10%)");
-     await expect(statusBar.locator("[data-toolbox-status-action]")).toHaveCount(0);
-     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "missing");
-     await expect(page.locator("body")).not.toHaveAttribute("data-toolbox-selected-game-id", /.+/);
-@@ -313,6 +395,7 @@ test("Idea Board is excluded from selected-game filtering and does not show the
-     await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
-     await expect(statusBar.locator("[data-toolbox-status-message]")).toContainText("Ready to shape ideas and notes.");
-     await expect(statusBar.locator("[data-toolbox-status-message]")).not.toContainText("Select or create a game");
-+    await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Idea Board 1/4 (25%) | Journey 12/125 (10%)");
-     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "optional");
-     await expect(page.locator("body")).not.toHaveClass(/toolbox-selected-game-missing/);
++# git diff --cached --stat
++ docs_build/dev/PROJECT_INSTRUCTIONS.md             |  39 +-
++ .../ProjectInstructions/addendums/multi_team.md    |   4 +
++ .../ProjectInstructions/addendums/pr_workflow.md   |   4 +
++ ...75_OWNER_047-codex-zip-required-for-all-runs.md |  67 ++
++ docs_build/dev/reports/codex_changed_files.txt     |  27 +-
++ docs_build/dev/reports/codex_review.diff           | 818 +++++----------------
++ 6 files changed, 307 insertions(+), 652 deletions(-)

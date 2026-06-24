@@ -121,6 +121,7 @@ Required gate:
    - blocked PRs with blockers
    - next review queue
    - final branch/worktree/local-origin sync
+   - repo-structured ZIP path under `tmp/`
 
 OWNER_049 lesson:
 - PRs #129, #132, and #134 were merge-approved and still required merge execution.
@@ -148,6 +149,7 @@ Required steps:
    - local/origin sync = 0 0
 5. Record final main commit.
 6. Report final repository state.
+7. Produce a repo-structured ZIP under `tmp/` that includes the EOD report and all changed or preserved repo files from the closeout.
 
 Required final state:
 
@@ -165,6 +167,8 @@ Rules:
 - A workstream is not considered closed until the repository is returned to main.
 - A PI is not considered complete until main is current and synchronized.
 - Do not leave Codex on a feature, team, workstream, recovery, governance, or owner branch after successful merge.
+- A completed EOD closeout must produce the required ZIP even when the closeout changed no repo files; in that case, the ZIP must contain the EOD report proving the no-change result.
+- The EOD ZIP does not replace the EOD report or other required reports under `docs_build/dev/reports/`.
 - If merge succeeds but repository is not returned to main:
   closeout status = FAIL.
 

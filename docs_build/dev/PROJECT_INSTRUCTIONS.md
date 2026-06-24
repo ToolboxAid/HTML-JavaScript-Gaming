@@ -784,12 +784,13 @@ The full samples smoke test rule remains separate and runs only when broadly imp
 
 ## CODEX REVIEW DIFF REQUIREMENT
 
-Every Codex PR must produce review artifacts so ChatGPT can review the exact code changes.
+Every completed Codex PR or completed Codex run must produce review artifacts so ChatGPT can review the exact repo changes or the no-change evidence.
 
 Codex must create:
 
 - `docs_build/dev/reports/codex_review.diff`
 - `docs_build/dev/reports/codex_changed_files.txt`
+- a PR-specific or EOD-specific report under `docs_build/dev/reports/`
 
 `codex_review.diff` must contain:
 - `git diff --cached`
@@ -804,6 +805,9 @@ Rules:
 - Do not pause commits
 - Do not add dependencies
 - Do not change runtime behavior just to create review artifacts
+- Required reports remain required even when a ZIP is created.
+- Required report evidence must include branch validation PASS/FAIL, a requirement-by-requirement PASS/FAIL checklist, a validation lane report, and manual validation notes.
+- A ZIP artifact must not replace or move required report files out of `docs_build/dev/reports/`.
 
 When user asks for code review, they should upload:
 - PR delta ZIP
@@ -812,7 +816,7 @@ When user asks for code review, they should upload:
 
 ## MANUAL TEST REQUIREMENT
 
-Every PR must include:
+Every completed PR, audit, report-only, validation-only, or EOD closeout run must include:
 - exact manual validation steps
 - expected outcome
 - any known out-of-scope checks
@@ -870,8 +874,15 @@ Codex ZIPs must:
 - be repo-structured
 - preserve exact repo-relative paths
 - be placed under `<project folder>/tmp/`
-- use the PR name in the ZIP filename
+- use the PR or EOD run name in the ZIP filename
 - contain no extra files outside the defined structure
+- include all changed or preserved repo files from the completed run
+- not include or depend on generated loose files under `tmp/`
+- not replace required report files under `docs_build/dev/reports/`
+
+If a completed run changes no repo files, Codex must still create a ZIP containing the PR or EOD report that proves no repo files changed.
+
+The no-change ZIP rule does not apply when the run hard-stopped before producing outputs.
 
 Before Codex returns any ZIP, Codex must:
 1. Physically create the ZIP file.
@@ -1584,11 +1595,21 @@ Required reports:
 
 ## REQUIRED ZIP OUTPUT
 
-Codex must ALWAYS produce a repo-structured ZIP for every PR.
+Codex must ALWAYS produce a repo-structured ZIP for every completed Codex run.
+
+This applies to:
+- implementation PRs
+- audit PRs
+- report-only PRs
+- validation-only PRs
+- EOD closeout runs
+- governance and cleanup runs
 
 The ZIP must follow the existing CODEX ZIP STANDARD.
 
-The ZIP is required output, not optional.
+The ZIP must include all changed or preserved repo files from the run.
+
+The ZIP is required output, not optional, and it does not replace required reports under `docs_build/dev/reports/`.
 
 ## HTML FILE RESTRICTIONS
 
@@ -1823,9 +1844,11 @@ Do NOT require:
 
 ## CODEX ZIP RETURN CONTRACT
 
-Codex must include the repo-structured ZIP in returned artifacts for user and ChatGPT review.
+Codex must include the repo-structured ZIP path in returned artifacts for user and ChatGPT review for every completed run.
 
 The ZIP must still follow the CODEX ZIP STANDARD.
+
+If no repo files changed, the returned ZIP must contain the PR or EOD report proving the no-change result unless the run hard-stopped before outputs were produced.
 
 ## CODE REVIEW EVIDENCE RULE
 
@@ -2044,6 +2067,7 @@ Required steps:
    - local/origin sync = 0 0
 5. Record final main commit.
 6. Report final repository state.
+7. Produce the required repo-structured ZIP under `tmp/` containing the EOD report and any changed or preserved repo files from the closeout.
 
 Required final state:
 
@@ -2235,6 +2259,9 @@ Completion hard stops:
 - If required reports are missing, HARD STOP.
 - If `docs_build/dev/reports/codex_review.diff` is missing, HARD STOP.
 - If `docs_build/dev/reports/codex_changed_files.txt` is missing, HARD STOP.
+- If branch validation PASS/FAIL is missing, HARD STOP.
+- If the requirement-by-requirement PASS/FAIL checklist is missing, HARD STOP.
+- If the validation lane report is missing, HARD STOP.
 - If manual validation notes are missing, HARD STOP.
 - If the PR-specific report is missing, HARD STOP.
 - If an instruction compliance checklist is required and missing, HARD STOP.
