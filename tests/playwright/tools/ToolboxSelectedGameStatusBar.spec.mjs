@@ -195,6 +195,7 @@ async function statusBarSnapshot(page) {
     const centerPanel = document.querySelector(".tool-center-panel");
     const gameName = bar.querySelector("[data-toolbox-selected-game-name]");
     const message = bar.querySelector("[data-toolbox-status-message]");
+    const messageIcon = message?.querySelector("[data-theme-icon]");
     const progress = bar.querySelector("[data-toolbox-status-progress]");
     const position = getComputedStyle(bar).position;
     const barBox = bar.getBoundingClientRect();
@@ -211,6 +212,8 @@ async function statusBarSnapshot(page) {
       gameBox: boxSnapshot(gameName),
       gameText: gameName?.textContent.replace(/\s+/g, " ").trim() || "",
       messageBox: boxSnapshot(message),
+      messageIconFile: messageIcon?.dataset.themeIconFile || "",
+      messageIconName: messageIcon?.dataset.themeIcon || "",
       messageText: message?.textContent.replace(/\s+/g, " ").trim() || "",
       position,
       progressBox: boxSnapshot(progress),
@@ -247,7 +250,10 @@ test("shared toolbox status bar shows selected Game Hub game above the footer", 
     expect(snapshot.position).not.toBe("fixed");
     expect(snapshot.dataset.selectedGameState).toBe("active");
     expect(snapshot.dataset.selectedGameRequired).toBe("true");
+    expect(snapshot.dataset.toolboxStatusContextKind).toBe("info");
     expect(snapshot.gameText).toBe("Demo Game");
+    expect(snapshot.messageIconFile).toBe("gfs-info.svg");
+    expect(snapshot.messageIconName).toBe("info");
     expect(snapshot.messageText).toContain("Game Design mock repository ready.");
     expect(snapshot.progressState).toBe("active");
     expect(snapshot.progressText).toBe("Game Design 2/5 (40%) | Journey 12/125 (10%)");
@@ -300,6 +306,7 @@ test("shared toolbox status bar center reports save state after Game Hub saves",
     await expectRemovedStatusBarLabelsHidden(statusBar);
     await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
     await expect(statusBar.locator("[data-toolbox-status-message]")).toHaveText("Created and opened Status Bar Save.");
+    await expect(statusBar.locator("[data-toolbox-status-message] [data-theme-icon='save']")).toHaveAttribute("data-theme-icon-file", "gfs-success.svg");
     await expect(statusBar.locator("[data-toolbox-selected-game-name]")).toHaveText("Status Bar Save");
     await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Game Hub 3/5 (60%) | Journey 12/125 (10%)");
     await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveCount(0);
@@ -350,6 +357,7 @@ test("Game Hub owner selection updates the global toolbox status bar", async ({ 
     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "active");
     await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
     await expect(statusBar.locator("[data-toolbox-status-message]")).toContainText("Sign in to create or update Game Hub projects.");
+    await expect(statusBar.locator("[data-toolbox-status-message] [data-theme-icon='warning']")).toHaveAttribute("data-theme-icon-file", "gfs-warning.svg");
     await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Game Hub 3/5 (60%) | Journey 12/125 (10%)");
 
     expectNoPageFailures(failures);
@@ -368,6 +376,7 @@ test("non-Idea Board toolbox pages show a creator-safe prompt when no Game Hub g
     await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveCount(0);
     await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
     await expect(statusBar.locator("[data-toolbox-status-message]")).toHaveText("Select or create a game in Game Hub before using this toolbox page.");
+    await expect(statusBar.locator("[data-toolbox-status-message] [data-theme-icon='add']")).toHaveAttribute("data-theme-icon-file", "gfs-add.svg");
     await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Game Design 2/5 (40%) | Journey 12/125 (10%)");
     await expect(statusBar.locator("[data-toolbox-status-action]")).toHaveCount(0);
     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "missing");

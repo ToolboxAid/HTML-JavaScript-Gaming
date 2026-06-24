@@ -1,9 +1,19 @@
 import { readGameJourneyCompletionMetrics } from "/src/api/game-journey-completion-api-client.js";
 import { createServerRepositoryClient } from "/src/api/server-api-client.js";
 import { getToolBySlug } from "/src/shared/toolbox/tool-metadata-inventory.js";
+import { createThemeIcon } from "/assets/theme-v2/js/theme-icons.js";
 
 const EXCLUDED_SELECTED_GAME_TOOLS = new Set(["idea-board"]);
 const STATUS_BAR_SELECTOR = "[data-toolbox-status-bar]";
+const STATUS_ICON_BY_CONTEXT_KIND = Object.freeze({
+  action: "add",
+  delete: "delete",
+  error: "error",
+  info: "info",
+  save: "save",
+  validation: "validation",
+  warning: "warning",
+});
 const TOOL_PROGRESS_BUCKET_BY_SLUG = Object.freeze({
   "achievements": "Progression",
   "assets": "Graphics",
@@ -262,10 +272,31 @@ function classifyToolContext(messageText, state, required) {
   if (/\b(validation|requirement|requirements|missing|required|open or seed)\b/i.test(text)) {
     return { kind: "validation" };
   }
-  if (/\b(saved|created|deleted|updated|loaded|save changes)\b/i.test(text)) {
+  if (/\b(deleted)\b/i.test(text)) {
+    return { kind: "delete" };
+  }
+  if (/\b(saved|created|updated|loaded|save changes)\b/i.test(text)) {
     return { kind: "save" };
   }
-  return { kind: "action" };
+  return { kind: "info" };
+}
+
+function statusIconNameForKind(kind) {
+  return STATUS_ICON_BY_CONTEXT_KIND[kind] || STATUS_ICON_BY_CONTEXT_KIND.info;
+}
+
+function renderStatusMessage(message, text, context) {
+  if (!message) {
+    return;
+  }
+  const kind = context?.kind || "info";
+  const iconName = statusIconNameForKind(kind);
+  const icon = createThemeIcon(iconName, {
+    className: ["status-icon", `status-icon--${kind}`, "toolbox-status-bar__status-icon"],
+  });
+  message.dataset.toolboxStatusIcon = iconName;
+  message.dataset.toolboxStatusKind = kind;
+  message.replaceChildren(icon, document.createTextNode(text));
 }
 
 function normalizeTextKey(value) {
@@ -387,24 +418,24 @@ function renderSelectedGame(bar, selectedGame, state, messageText) {
 
   if (selectedGame) {
     name.textContent = selectedGame.name;
-    message.textContent = nextMessage;
+    renderStatusMessage(message, nextMessage, context);
     return;
   }
 
   if (!required) {
     name.textContent = "No game selected";
-    message.textContent = nextMessage;
+    renderStatusMessage(message, nextMessage, context);
     return;
   }
 
   if (state === "error") {
     name.textContent = "Unavailable";
-    message.textContent = nextMessage;
+    renderStatusMessage(message, nextMessage, context);
     return;
   }
 
   name.textContent = "No game selected";
-  message.textContent = "Select or create a game in Game Hub before using this toolbox page.";
+  renderStatusMessage(message, "Select or create a game in Game Hub before using this toolbox page.", context);
 }
 
 export function refreshToolboxStatusBar() {

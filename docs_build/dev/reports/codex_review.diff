@@ -1,681 +1,443 @@
-diff --git a/assets/theme-v2/css/accordion.css b/assets/theme-v2/css/accordion.css
-index d4bf86f9a..b650f518e 100644
---- a/assets/theme-v2/css/accordion.css
-+++ b/assets/theme-v2/css/accordion.css
-@@ -50,7 +50,7 @@ details.vertical-accordion summary::-webkit-details-marker {
-   display: none
+diff --git a/assets/theme-v2/css/buttons.css b/assets/theme-v2/css/buttons.css
+index 9b6b67704..f45910884 100644
+--- a/assets/theme-v2/css/buttons.css
++++ b/assets/theme-v2/css/buttons.css
+@@ -17,6 +17,36 @@
+   border-color: var(--orange-border-strong)
  }
  
--details.vertical-accordion summary:after {
-+.horizontal-accordion-toggle {
-   --accordion-button-border: var(--line);
-   --accordion-button-background: var(--panel-soft);
-   --accordion-button-color: var(--gold);
-@@ -66,74 +66,53 @@ details.vertical-accordion summary:after {
-   line-height: var(--line-height-single);
-   display: inline-grid;
-   place-items: center;
--  flex: 0 0 auto
-+  flex: 0 0 auto;
-+  margin-left: auto;
-+  font-size: var(--font-size-sm);
-+  font-weight: var(--font-weight-heavy);
-+  overflow: hidden;
-+  position: relative
- }
- 
--.horizontal-accordion-toggle {
-+.horizontal-accordion-toggle__icon,
-+.vertical-accordion__chevron,
-+.tool-display-mode__chevron {
-   --accordion-button-border: var(--line);
-   --accordion-button-background: var(--panel-soft);
-   --accordion-button-color: var(--gold);
--  min-width: var(--space-20);
--  width: var(--space-20);
--  height: var(--space-20);
--  padding: var(--space-0);
-+  align-items: center;
-+  background: var(--accordion-button-background);
-   border: var(--border-standard);
-   border-color: var(--accordion-button-border);
-   border-radius: var(--radius-pill);
--  background: var(--accordion-button-background);
-   color: var(--accordion-button-color);
--  line-height: var(--line-height-single);
--  display: inline-grid;
--  place-items: center;
-+  display: inline-flex;
-   flex: 0 0 auto;
--  margin-left: auto;
--  font-size: var(--space-0);
--  overflow: hidden;
--  position: relative
-+  height: var(--space-20);
-+  justify-content: center;
-+  line-height: var(--line-height-single);
-+  min-width: var(--space-20);
++.btn--with-icon {
++  gap: var(--space-8)
++}
++
++.btn--with-icon .theme-icon {
++  height: var(--icon-size-sm);
++  width: var(--icon-size-sm)
++}
++
++.btn--icon-only {
++  border-radius: var(--radius-pill);
++  height: var(--space-44);
++  min-width: var(--space-44);
 +  padding: var(--space-0);
-+  width: var(--space-20)
- }
- 
--.horizontal-accordion-toggle:before {
--  content: "";
--  position: absolute;
--  top: 50%;
--  left: 50%;
--  width: var(--space-14);
--  height: var(--space-14);
-+.horizontal-accordion-toggle__icon {
-   background: currentColor;
--  clip-path: polygon(70% 50%, 30% 20%, 30% 80%);
--  transform-origin: center
--}
--
--.horizontal-accordion-toggle[aria-expanded="true"]:before {
--  transform: translate(-50%, -50%)
--}
--
--.horizontal-accordion-toggle[aria-expanded="false"]:before {
--  transform: translate(-50%, -50%) rotate(180deg)
--}
--
--.horizontal-accordion-toggle--left[aria-expanded="true"]:before {
--  transform: translate(-50%, -50%) rotate(180deg)
--}
--
--.horizontal-accordion-toggle--left[aria-expanded="false"]:before {
--  transform: translate(-50%, -50%)
--}
--
--details.vertical-accordion summary:after {
--  content: "";
--  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
--  background-position: calc(50% - var(--space-3)) 50%, calc(50% + var(--space-3)) 50%;
--  background-size: var(--space-7) var(--space-7);
--  background-repeat: no-repeat
-+  border: 0;
-+  border-radius: var(--space-0);
-+  height: var(--space-14);
-+  min-width: var(--space-14);
-+  width: var(--space-14)
- }
- 
--details.vertical-accordion[open] summary:after {
--  background-image: linear-gradient(135deg, transparent 50%, currentColor 50%), linear-gradient(45deg, currentColor 50%, transparent 50%)
-+.vertical-accordion__chevron {
-+  margin-left: auto
- }
- 
--details.vertical-accordion summary:active:after {
--  background-image: linear-gradient(135deg, transparent 50%, currentColor 50%), linear-gradient(45deg, currentColor 50%, transparent 50%)
-+.vertical-accordion__chevron .theme-icon,
-+.tool-display-mode__chevron .theme-icon {
-+  height: var(--space-14);
-+  width: var(--space-14)
- }
- 
- details.vertical-accordion summary .status {
-@@ -150,7 +129,7 @@ details.vertical-accordion summary.accordion-summary--control-grid {
-   align-items: center
- }
- 
--details.vertical-accordion summary.accordion-summary--control-grid:after {
-+details.vertical-accordion summary.accordion-summary--control-grid .vertical-accordion__chevron {
-   justify-self: end
- }
- 
-@@ -188,10 +167,6 @@ details.vertical-accordion summary.accordion-summary--control-grid .accordion-su
-   min-width: var(--space-34)
- }
- 
--details.vertical-accordion[open] summary:active:after {
--  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%)
--}
--
- .accordion-body {
-   padding: var(--space-0) var(--space-14) var(--space-14);
-   color: var(--muted);
++  width: var(--space-44)
++}
++
++.btn--icon-only .theme-icon {
++  height: var(--icon-size-md);
++  width: var(--icon-size-md)
++}
++
++.btn--icon-danger {
++  color: var(--red)
++}
++
++.btn--icon-success {
++  color: var(--green)
++}
++
+ .btn--compact {
+   margin: var(--space-0);
+   min-width: calc(var(--space-44) + var(--space-28));
 diff --git a/assets/theme-v2/css/icons.css b/assets/theme-v2/css/icons.css
-new file mode 100644
-index 000000000..ce1af7c8c
---- /dev/null
+index ce1af7c8c..0233a8b46 100644
+--- a/assets/theme-v2/css/icons.css
 +++ b/assets/theme-v2/css/icons.css
-@@ -0,0 +1,88 @@
-+.theme-icon {
-+  --theme-v2-icon-url: none;
-+  background: currentColor;
-+  color: inherit;
-+  display: inline-block;
-+  flex: 0 0 auto;
-+  height: 1em;
-+  line-height: var(--line-height-single);
-+  pointer-events: none;
-+  vertical-align: -0.125em;
-+  width: 1em;
-+  -webkit-mask-image: var(--theme-v2-icon-url);
-+  mask-image: var(--theme-v2-icon-url);
-+  -webkit-mask-position: center;
-+  mask-position: center;
-+  -webkit-mask-repeat: no-repeat;
-+  mask-repeat: no-repeat;
-+  -webkit-mask-size: contain;
-+  mask-size: contain
-+}
-+
-+.theme-icon--add {
-+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-add.svg")
-+}
-+
-+.theme-icon--chevron-down {
-+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-chevron-down.svg")
-+}
-+
-+.theme-icon--chevron-left {
-+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-chevron-left.svg")
-+}
-+
-+.theme-icon--chevron-right {
-+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-chevron-right.svg")
-+}
-+
-+.theme-icon--chevron-up {
-+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-chevron-up.svg")
-+}
-+
-+.theme-icon--close {
-+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-close.svg")
-+}
-+
-+.theme-icon--error {
-+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-error.svg")
-+}
-+
-+.theme-icon--exit-fullscreen {
-+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-exit-fullscreen.svg")
-+}
-+
-+.theme-icon--fullscreen {
-+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-fullscreen.svg")
-+}
-+
-+.theme-icon--info {
-+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-info.svg")
-+}
-+
-+.theme-icon--menu {
-+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-menu.svg")
-+}
-+
-+.theme-icon--search {
-+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-search.svg")
-+}
-+
-+.theme-icon--settings {
-+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-settings.svg")
-+}
-+
-+.theme-icon--subtract {
-+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-subtract.svg")
-+}
-+
-+.theme-icon--success {
-+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-success.svg")
-+}
-+
-+.theme-icon--trash {
+@@ -43,10 +43,22 @@
+   --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-close.svg")
+ }
+ 
++.theme-icon--delete {
 +  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-trash.svg")
 +}
 +
-+.theme-icon--warning {
++.theme-icon--edit {
++  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-settings.svg")
++}
++
+ .theme-icon--error {
+   --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-error.svg")
+ }
+ 
++.theme-icon--external-link {
++  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-chevron-right.svg")
++}
++
+ .theme-icon--exit-fullscreen {
+   --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-exit-fullscreen.svg")
+ }
+@@ -63,6 +75,10 @@
+   --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-menu.svg")
+ }
+ 
++.theme-icon--save {
++  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-success.svg")
++}
++
+ .theme-icon--search {
+   --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-search.svg")
+ }
+@@ -83,6 +99,32 @@
+   --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-trash.svg")
+ }
+ 
++.theme-icon--validation {
 +  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-warning.svg")
 +}
-diff --git a/assets/theme-v2/css/panels.css b/assets/theme-v2/css/panels.css
-index bcfa2785f..b80582336 100644
---- a/assets/theme-v2/css/panels.css
-+++ b/assets/theme-v2/css/panels.css
-@@ -206,7 +206,7 @@
++
+ .theme-icon--warning {
+   --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-warning.svg")
+ }
++
++.status-icon {
++  height: var(--icon-size-sm);
++  width: var(--icon-size-sm)
++}
++
++.status-icon--error {
++  color: var(--red)
++}
++
++.status-icon--info {
++  color: var(--cyan)
++}
++
++.status-icon--save {
++  color: var(--green)
++}
++
++.status-icon--validation,
++.status-icon--warning {
++  color: var(--gold)
++}
+diff --git a/assets/theme-v2/css/status.css b/assets/theme-v2/css/status.css
+index 4ca9cb266..a82c83065 100644
+--- a/assets/theme-v2/css/status.css
++++ b/assets/theme-v2/css/status.css
+@@ -85,12 +85,20 @@
  }
  
- .tool-column[class*="tool-group-"] .horizontal-accordion-toggle,
--.tool-column[class*="tool-group-"] details.vertical-accordion summary:after {
-+.tool-column[class*="tool-group-"] details.vertical-accordion .vertical-accordion__chevron {
-   --accordion-button-border: var(--tool-group-accent);
-   --accordion-button-color: var(--tool-group-color)
- }
-@@ -298,36 +298,12 @@ body.tool-focus-mode .tool-center-panel:has(>details.vertical-accordion)>p {
-   display: none
- }
- 
--.tool-display-mode summary:after {
--  content: "";
-+.tool-display-mode__chevron {
-   position: absolute;
-   right: var(--space-12);
-   top: 50%;
-   transform: translateY(-50%);
--  width: var(--space-20);
--  height: var(--space-20);
--  border: var(--border-standard);
--  border-radius: var(--radius-pill);
--  background: var(--panel-soft);
--  color: var(--gold);
--  display: inline-grid;
--  place-items: center;
--  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
--  background-position: calc(50% - var(--space-3)) 50%, calc(50% + var(--space-3)) 50%;
--  background-size: var(--space-7) var(--space-7);
--  background-repeat: no-repeat
--}
--
--.tool-display-mode[open] summary:after {
--  background-image: linear-gradient(135deg, transparent 50%, currentColor 50%), linear-gradient(45deg, currentColor 50%, transparent 50%)
--}
--
--.tool-display-mode summary:active:after {
--  background-image: linear-gradient(135deg, transparent 50%, currentColor 50%), linear-gradient(45deg, currentColor 50%, transparent 50%)
--}
--
--.tool-display-mode[open] summary:active:after {
--  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%)
-+  z-index: var(--z-index-sm)
+ .toolbox-status-bar__message {
++  display: inline-flex;
++  align-items: center;
++  justify-content: center;
++  gap: var(--space-8);
+   margin: var(--space-0);
+   max-width: var(--measure-lg);
+   line-height: var(--line-height-copy);
+   overflow-wrap: anywhere
  }
  
- .tool-display-mode__badge {
-diff --git a/assets/theme-v2/css/tables.css b/assets/theme-v2/css/tables.css
-index 5575ff684..915a235e9 100644
---- a/assets/theme-v2/css/tables.css
-+++ b/assets/theme-v2/css/tables.css
-@@ -131,27 +131,10 @@ td {
- 
- .idea-board-idea-chevron {
-   display: inline-block;
--  width: 1em;
-   height: 1em;
-   margin-right: .35em;
--  background: currentColor;
-   vertical-align: -0.125em;
--  -webkit-mask-position: center;
--  mask-position: center;
--  -webkit-mask-repeat: no-repeat;
--  mask-repeat: no-repeat;
--  -webkit-mask-size: contain;
--  mask-size: contain
--}
--
--.idea-board-idea-chevron--down {
--  -webkit-mask-image: url("../images/gfs-chevron-down.svg");
--  mask-image: url("../images/gfs-chevron-down.svg")
--}
--
--.idea-board-idea-chevron--up {
--  -webkit-mask-image: url("../images/gfs-chevron-up.svg");
--  mask-image: url("../images/gfs-chevron-up.svg")
-+  width: 1em
- }
- 
- .idea-board-notes-child-surface {
-diff --git a/assets/theme-v2/css/theme.css b/assets/theme-v2/css/theme.css
-index 944bfa356..fb8af1256 100644
---- a/assets/theme-v2/css/theme.css
-+++ b/assets/theme-v2/css/theme.css
-@@ -4,6 +4,7 @@
- @import url("typography.css");
- @import url("layout.css");
- @import url("buttons.css");
-+@import url("icons.css");
- @import url("forms.css");
- @import url("controls.css");
- @import url("panels.css");
++.toolbox-status-bar__status-icon {
++  flex: 0 0 auto
++}
++
+ .toolbox-status-bar__progress {
+   min-width: var(--space-0);
+   max-width: var(--toolbox-status-progress-max);
 diff --git a/assets/theme-v2/js/theme-icons.js b/assets/theme-v2/js/theme-icons.js
-new file mode 100644
-index 000000000..442614fc1
---- /dev/null
+index 442614fc1..f711b412c 100644
+--- a/assets/theme-v2/js/theme-icons.js
 +++ b/assets/theme-v2/js/theme-icons.js
-@@ -0,0 +1,73 @@
-+const themeV2IconRegistry = Object.freeze({
-+  add: "gfs-add.svg",
-+  "chevron-down": "gfs-chevron-down.svg",
-+  "chevron-left": "gfs-chevron-left.svg",
-+  "chevron-right": "gfs-chevron-right.svg",
-+  "chevron-up": "gfs-chevron-up.svg",
-+  close: "gfs-close.svg",
-+  error: "gfs-error.svg",
-+  "exit-fullscreen": "gfs-exit-fullscreen.svg",
-+  fullscreen: "gfs-fullscreen.svg",
-+  info: "gfs-info.svg",
-+  menu: "gfs-menu.svg",
-+  search: "gfs-search.svg",
-+  settings: "gfs-settings.svg",
-+  subtract: "gfs-subtract.svg",
-+  success: "gfs-success.svg",
-+  trash: "gfs-trash.svg",
-+  warning: "gfs-warning.svg",
+@@ -5,16 +5,21 @@ const themeV2IconRegistry = Object.freeze({
+   "chevron-right": "gfs-chevron-right.svg",
+   "chevron-up": "gfs-chevron-up.svg",
+   close: "gfs-close.svg",
++  delete: "gfs-trash.svg",
++  edit: "gfs-settings.svg",
+   error: "gfs-error.svg",
++  "external-link": "gfs-chevron-right.svg",
+   "exit-fullscreen": "gfs-exit-fullscreen.svg",
+   fullscreen: "gfs-fullscreen.svg",
+   info: "gfs-info.svg",
+   menu: "gfs-menu.svg",
++  save: "gfs-success.svg",
+   search: "gfs-search.svg",
+   settings: "gfs-settings.svg",
+   subtract: "gfs-subtract.svg",
+   success: "gfs-success.svg",
+   trash: "gfs-trash.svg",
++  validation: "gfs-warning.svg",
+   warning: "gfs-warning.svg",
+ });
+ 
+diff --git a/assets/theme-v2/js/toolbox-status-bar.js b/assets/theme-v2/js/toolbox-status-bar.js
+index 6adc17290..03e02098f 100644
+--- a/assets/theme-v2/js/toolbox-status-bar.js
++++ b/assets/theme-v2/js/toolbox-status-bar.js
+@@ -1,9 +1,19 @@
+ import { readGameJourneyCompletionMetrics } from "/src/api/game-journey-completion-api-client.js";
+ import { createServerRepositoryClient } from "/src/api/server-api-client.js";
+ import { getToolBySlug } from "/src/shared/toolbox/tool-metadata-inventory.js";
++import { createThemeIcon } from "/assets/theme-v2/js/theme-icons.js";
+ 
+ const EXCLUDED_SELECTED_GAME_TOOLS = new Set(["idea-board"]);
+ const STATUS_BAR_SELECTOR = "[data-toolbox-status-bar]";
++const STATUS_ICON_BY_CONTEXT_KIND = Object.freeze({
++  action: "add",
++  delete: "delete",
++  error: "error",
++  info: "info",
++  save: "save",
++  validation: "validation",
++  warning: "warning",
 +});
-+
-+function themeIconFileName(name) {
-+  const fileName = themeV2IconRegistry[name];
-+  if (!fileName) {
-+    throw new RangeError(`Unknown Theme V2 icon: ${name}`);
+ const TOOL_PROGRESS_BUCKET_BY_SLUG = Object.freeze({
+   "achievements": "Progression",
+   "assets": "Graphics",
+@@ -262,10 +272,31 @@ function classifyToolContext(messageText, state, required) {
+   if (/\b(validation|requirement|requirements|missing|required|open or seed)\b/i.test(text)) {
+     return { kind: "validation" };
+   }
+-  if (/\b(saved|created|deleted|updated|loaded|save changes)\b/i.test(text)) {
++  if (/\b(deleted)\b/i.test(text)) {
++    return { kind: "delete" };
 +  }
-+  return fileName;
++  if (/\b(saved|created|updated|loaded|save changes)\b/i.test(text)) {
+     return { kind: "save" };
+   }
+-  return { kind: "action" };
++  return { kind: "info" };
 +}
 +
-+function themeIconPath(name) {
-+  return `/assets/theme-v2/svg/${themeIconFileName(name)}`;
++function statusIconNameForKind(kind) {
++  return STATUS_ICON_BY_CONTEXT_KIND[kind] || STATUS_ICON_BY_CONTEXT_KIND.info;
 +}
 +
-+function normalizeClassName(className) {
-+  if (Array.isArray(className)) {
-+    return className.filter(Boolean).join(" ");
++function renderStatusMessage(message, text, context) {
++  if (!message) {
++    return;
 +  }
-+  return className || "";
-+}
-+
-+function createThemeIcon(name, options = {}) {
-+  const icon = document.createElement("span");
-+  const extraClassName = normalizeClassName(options.className);
-+  icon.className = ["theme-icon", `theme-icon--${name}`, extraClassName].filter(Boolean).join(" ");
-+  icon.dataset.themeIcon = name;
-+  icon.dataset.themeIconFile = themeIconFileName(name);
-+
-+  if (options.label) {
-+    icon.setAttribute("role", "img");
-+    icon.setAttribute("aria-label", options.label);
-+  } else {
-+    icon.setAttribute("aria-hidden", "true");
-+  }
-+
-+  return icon;
-+}
-+
-+const themeIconsApi = Object.freeze({
-+  createThemeIcon,
-+  themeIconFileName,
-+  themeIconPath,
-+  themeV2IconRegistry,
-+});
-+
-+if (typeof window !== "undefined") {
-+  window.ThemeV2Icons = themeIconsApi;
-+}
-+
-+export {
-+  createThemeIcon,
-+  themeIconFileName,
-+  themeIconPath,
-+  themeV2IconRegistry,
-+};
-diff --git a/assets/theme-v2/js/tool-display-mode.js b/assets/theme-v2/js/tool-display-mode.js
-index 08bada607..b3f6f3265 100644
---- a/assets/theme-v2/js/tool-display-mode.js
-+++ b/assets/theme-v2/js/tool-display-mode.js
-@@ -12,6 +12,102 @@
-     const toolName = pageTitle ? pageTitle.textContent.trim() : "Tool";
-     const routeSlug = window.location.pathname.split("/").pop().replace(/\.html$/, "");
-     const toolSlug = slot.dataset.toolSlug || routeSlug;
-+    let themeIconRegistry = window.ThemeV2Icons || null;
-+
-+    function fallbackThemeIconFileName(name) {
-+        return "gfs-" + name + ".svg";
-+    }
-+
-+    function createThemeIconNode(name, className) {
-+        if (themeIconRegistry && typeof themeIconRegistry.createThemeIcon === "function") {
-+            return themeIconRegistry.createThemeIcon(name, { className });
-+        }
-+
-+        const icon = document.createElement("span");
-+        icon.className = ["theme-icon", "theme-icon--" + name, className].filter(Boolean).join(" ");
-+        icon.dataset.themeIcon = name;
-+        icon.dataset.themeIconFile = fallbackThemeIconFileName(name);
-+        icon.setAttribute("aria-hidden", "true");
-+        return icon;
-+    }
-+
-+    function createChevronShell(name, shellClassName, iconClassName) {
-+        const shell = document.createElement("span");
-+        shell.className = shellClassName;
-+        shell.setAttribute("aria-hidden", "true");
-+        shell.appendChild(createThemeIconNode(name, iconClassName));
-+        return shell;
-+    }
-+
-+    function replaceIconNode(parent, selector, icon) {
-+        const current = parent.querySelector(selector);
-+        if (current) {
-+            current.replaceWith(icon);
-+        } else {
-+            parent.appendChild(icon);
-+        }
-+    }
-+
-+    function updateVerticalAccordionChevron(details) {
-+        const accordionSummary = details.querySelector(":scope > summary");
-+        if (!accordionSummary) return;
-+        const iconName = details.open ? "chevron-up" : "chevron-down";
-+        const shell = createChevronShell(iconName, "vertical-accordion__chevron", "vertical-accordion__chevron-icon");
-+        replaceIconNode(accordionSummary, ":scope > .vertical-accordion__chevron", shell);
-+    }
-+
-+    function wireVerticalAccordionChevron(details) {
-+        if (details.dataset.themeV2ChevronWired === "true") {
-+            updateVerticalAccordionChevron(details);
-+            return;
-+        }
-+
-+        details.dataset.themeV2ChevronWired = "true";
-+        details.addEventListener("toggle", function () {
-+            updateVerticalAccordionChevron(details);
-+        });
-+        updateVerticalAccordionChevron(details);
-+    }
-+
-+    function refreshVerticalAccordionChevrons() {
-+        document.querySelectorAll("details.vertical-accordion").forEach(wireVerticalAccordionChevron);
-+    }
-+
-+    function updateToolDisplayModeChevron() {
-+        const iconName = displayMode.open ? "chevron-up" : "chevron-down";
-+        const shell = createChevronShell(iconName, "tool-display-mode__chevron", "tool-display-mode__chevron-icon");
-+        replaceIconNode(summary, ":scope > .tool-display-mode__chevron", shell);
-+    }
-+
-+    function horizontalToggleIconName(button) {
-+        const expanded = button.getAttribute("aria-expanded") !== "false";
-+        const isLeft = button.classList.contains("horizontal-accordion-toggle--left");
-+        if (isLeft) {
-+            return expanded ? "chevron-left" : "chevron-right";
-+        }
-+        return expanded ? "chevron-right" : "chevron-left";
-+    }
-+
-+    function updateHorizontalToggleIcon(button) {
-+        button.replaceChildren(createThemeIconNode(horizontalToggleIconName(button), "horizontal-accordion-toggle__icon"));
-+    }
-+
-+    function refreshHorizontalToggleIcons() {
-+        document.querySelectorAll(".horizontal-accordion-toggle").forEach(updateHorizontalToggleIcon);
-+    }
-+
-+    function refreshThemeIcons() {
-+        refreshVerticalAccordionChevrons();
-+        updateToolDisplayModeChevron();
-+        refreshHorizontalToggleIcons();
-+    }
-+
-+    import("/assets/theme-v2/js/theme-icons.js").then(function (module) {
-+        themeIconRegistry = module;
-+        refreshThemeIcons();
-+    }).catch(function () {
-+        themeIconRegistry = window.ThemeV2Icons || themeIconRegistry;
-+    });
++  const kind = context?.kind || "info";
++  const iconName = statusIconNameForKind(kind);
++  const icon = createThemeIcon(iconName, {
++    className: ["status-icon", `status-icon--${kind}`, "toolbox-status-bar__status-icon"],
++  });
++  message.dataset.toolboxStatusIcon = iconName;
++  message.dataset.toolboxStatusKind = kind;
++  message.replaceChildren(icon, document.createTextNode(text));
+ }
  
-     function explicitPngName(source) {
-         if (!source) return "";
-@@ -53,6 +149,7 @@
-     fullscreenName.textContent = toolName;
-     summary.appendChild(fullscreenName);
-     displayMode.appendChild(summary);
-+    displayMode.addEventListener("toggle", updateToolDisplayModeChevron);
+ function normalizeTextKey(value) {
+@@ -387,24 +418,24 @@ function renderSelectedGame(bar, selectedGame, state, messageText) {
  
-     const body = document.createElement("div");
-     body.className = "tool-display-mode__body";
-@@ -202,13 +299,16 @@
-         }
-     });
+   if (selectedGame) {
+     name.textContent = selectedGame.name;
+-    message.textContent = nextMessage;
++    renderStatusMessage(message, nextMessage, context);
+     return;
+   }
  
-+    refreshVerticalAccordionChevrons();
-+    updateToolDisplayModeChevron();
+   if (!required) {
+     name.textContent = "No game selected";
+-    message.textContent = nextMessage;
++    renderStatusMessage(message, nextMessage, context);
+     return;
+   }
+ 
+   if (state === "error") {
+     name.textContent = "Unavailable";
+-    message.textContent = nextMessage;
++    renderStatusMessage(message, nextMessage, context);
+     return;
+   }
+ 
+   name.textContent = "No game selected";
+-  message.textContent = "Select or create a game in Game Hub before using this toolbox page.";
++  renderStatusMessage(message, "Select or create a game in Game Hub before using this toolbox page.", context);
+ }
+ 
+ export function refreshToolboxStatusBar() {
+diff --git a/docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_manual-validation-notes.md b/docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_manual-validation-notes.md
+new file mode 100644
+index 000000000..dcd83c56e
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_manual-validation-notes.md
+@@ -0,0 +1,6 @@
++# PR_26175_ALFA_049-theme-v2-status-action-icons Manual Validation Notes
 +
-     document.querySelectorAll(".tool-workspace").forEach(function (workspace) {
-         const columns = workspace.querySelectorAll(":scope > .tool-column");
-         if (columns.length < 2) return;
- 
-         const sideColumns = [
--            { column: columns[0], side: "left", openIndicator: "<", closedIndicator: ">" },
--            { column: columns[columns.length - 1], side: "right", openIndicator: ">", closedIndicator: "<" }
-+            { column: columns[0], side: "left" },
-+            { column: columns[columns.length - 1], side: "right" }
-         ];
- 
-         sideColumns.forEach(function (entry) {
-@@ -222,15 +322,15 @@
-             button.className = "horizontal-accordion-toggle horizontal-accordion-toggle--" + entry.side;
-             button.setAttribute("aria-label", "Collapse " + label);
-             button.setAttribute("aria-expanded", "true");
--            button.textContent = entry.openIndicator;
-+            updateHorizontalToggleIcon(button);
-             header.insertBefore(button, header.firstChild);
- 
-             button.addEventListener("click", function () {
-                 const collapsed = entry.column.classList.toggle("is-collapsed");
-                 workspace.classList.toggle("is-" + entry.side + "-collapsed", collapsed);
--                button.textContent = collapsed ? entry.closedIndicator : entry.openIndicator;
-                 button.setAttribute("aria-expanded", collapsed ? "false" : "true");
-                 button.setAttribute("aria-label", (collapsed ? "Expand " : "Collapse ") + label);
-+                updateHorizontalToggleIcon(button);
-             });
-         });
-     });
-diff --git a/assets/toolbox/idea-board/js/index.js b/assets/toolbox/idea-board/js/index.js
-index 0c10d2dc1..5b33ae05d 100644
---- a/assets/toolbox/idea-board/js/index.js
-+++ b/assets/toolbox/idea-board/js/index.js
-@@ -1,5 +1,6 @@
- import { createServerRepositoryClient } from "../../../../src/api/server-api-client.js";
- import { getSessionCurrent } from "../../../../src/api/session-api-client.js";
-+import { createThemeIcon, themeIconFileName } from "../../../theme-v2/js/theme-icons.js";
- 
- const editableStatusOptions = Object.freeze(["New", "Exploring", "Refining", "Ready"]);
- const filterStatusOptions = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project", "Archived"]);
-@@ -267,10 +268,9 @@ function renderIdeaRow(tbody, record) {
-   const ideaText = document.createElement("span");
-   ideaText.className = "idea-board-idea-label__text";
-   ideaText.textContent = record.idea;
--  const chevron = document.createElement("span");
--  const chevronIcon = expanded ? "gfs-chevron-up.svg" : "gfs-chevron-down.svg";
--  chevron.className = `idea-board-idea-chevron idea-board-idea-chevron--${expanded ? "up" : "down"}`;
--  chevron.setAttribute("aria-hidden", "true");
-+  const chevronName = expanded ? "chevron-up" : "chevron-down";
-+  const chevron = createThemeIcon(chevronName, { className: "idea-board-idea-chevron" });
-+  const chevronIcon = themeIconFileName(chevronName);
-   chevron.dataset.ideaBoardChevron = record.ideaId;
-   chevron.dataset.ideaBoardChevronIcon = chevronIcon;
-   ideaLabel.append(chevron, ideaText);
++- Confirmed Theme V2 registry aliases map semantic status/action names to the existing authoritative SVG files without adding or modifying SVG artwork.
++- Confirmed generated status bar icons preserve the existing visible status message text.
++- Confirmed the Game Hub save, warning prompt, and missing-game prompt states render the expected registry-backed status icons.
++- Confirmed shared icon button classes support paired visible text and icon-only aria-label patterns.
+diff --git a/docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_report.md b/docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_report.md
+new file mode 100644
+index 000000000..40f4f05c4
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_report.md
+@@ -0,0 +1,14 @@
++# PR_26175_ALFA_049-theme-v2-status-action-icons Report
++
++## Summary
++- Added semantic Theme V2 icon registry aliases for status/action affordances: save, validation, delete, edit, and external-link.
++- Added shared icon button and status icon CSS classes in the Theme V2 CSS layer.
++- Updated the shared toolbox status bar to render a registry-backed semantic status icon while preserving the existing selected-game, message, and progress text behavior.
++
++## Branch Validation
++PASS
++
++## Notes
++- Icons supplement existing text and accessible button names; no visible status labels removed by ALFA_009 were reintroduced.
++- No large banners, modal-style messages, row highlights, inline styles, style blocks, or page-local CSS were added.
++- A local ignored .env from the original checkout was used only to run database-dependent Playwright lanes. It is ignored and is not included in the delta package.
+diff --git a/docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_requirements-checklist.md b/docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_requirements-checklist.md
+new file mode 100644
+index 000000000..bcef4744e
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_requirements-checklist.md
+@@ -0,0 +1,13 @@
++# PR_26175_ALFA_049-theme-v2-status-action-icons Requirements Checklist
++
++- PASS: Add shared icon button CSS classes in buttons.css.
++- PASS: Add shared status icon CSS classes in icons.css and status.css.
++- PASS: Add helper usage in toolbox-status-bar.js only for semantic status icons.
++- PASS: Keep status bar left, center, and right text behavior intact.
++- PASS: Preserve creator-facing language and avoid reintroducing removed visible status labels.
++- PASS: Ensure action icons have accessible names through paired visible text or aria-label.
++- PASS: Keep status/action icon usage consistent for save, warning, error, validation, info, add, edit, delete, close, and external-link affordances covered by the scoped files.
++- PASS: No large banners or modal-style messages introduced.
++- PASS: No row highlights introduced.
++- PASS: No inline styles, style blocks, or page-local CSS introduced.
++- PASS: Exact required validation lane is green.
+diff --git a/docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_validation-lane.md b/docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_validation-lane.md
+new file mode 100644
+index 000000000..8db2e015f
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_validation-lane.md
+@@ -0,0 +1,15 @@
++# PR_26175_ALFA_049-theme-v2-status-action-icons Validation Lane
++
++## Static Checks
++- PASS: node --check assets/theme-v2/js/theme-icons.js
++- PASS: node --check assets/theme-v2/js/toolbox-status-bar.js
++
++## Playwright
++- PASS: npx playwright test tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs --workers=1 (8 passed)
++- PASS: npx playwright test tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs --workers=1 (7 passed)
++
++## Pattern Scan
++- PASS: rg -n "<[s]tyle|[s]tyle=" assets/theme-v2/js/theme-icons.js assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/icons.css assets/theme-v2/css/buttons.css assets/theme-v2/css/status.css tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
++
++## Branch Validation
++PASS
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index 39b6818f7..3328f5987 100644
+--- a/docs_build/dev/reports/codex_changed_files.txt
++++ b/docs_build/dev/reports/codex_changed_files.txt
+@@ -1,15 +1,13 @@
+-assets/theme-v2/css/accordion.css
++assets/theme-v2/css/buttons.css
+ assets/theme-v2/css/icons.css
+-assets/theme-v2/css/panels.css
+-assets/theme-v2/css/tables.css
+-assets/theme-v2/css/theme.css
++assets/theme-v2/css/status.css
+ assets/theme-v2/js/theme-icons.js
+-assets/theme-v2/js/tool-display-mode.js
+-assets/toolbox/idea-board/js/index.js
++assets/theme-v2/js/toolbox-status-bar.js
+ tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs
+-docs_build/dev/reports/PR_26175_ALFA_048-theme-v2-chevron-conversion_manual-validation-notes.md
+-docs_build/dev/reports/PR_26175_ALFA_048-theme-v2-chevron-conversion_report.md
+-docs_build/dev/reports/PR_26175_ALFA_048-theme-v2-chevron-conversion_requirements-checklist.md
+-docs_build/dev/reports/PR_26175_ALFA_048-theme-v2-chevron-conversion_validation-lane.md
++tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
++docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_report.md
++docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_validation-lane.md
++docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_requirements-checklist.md
++docs_build/dev/reports/PR_26175_ALFA_049-theme-v2-status-action-icons_manual-validation-notes.md
+ docs_build/dev/reports/codex_changed_files.txt
+ docs_build/dev/reports/codex_review.diff
 diff --git a/tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs b/tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs
-index 2465fa5d1..e517d0623 100644
+index e517d0623..2d1e7068e 100644
 --- a/tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs
 +++ b/tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs
-@@ -1,7 +1,7 @@
- import { expect, test } from "@playwright/test";
- import fs from "node:fs/promises";
- import path from "node:path";
--import { fileURLToPath } from "node:url";
-+import { fileURLToPath, pathToFileURL } from "node:url";
- import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
+@@ -45,16 +45,21 @@ const REQUIRED_ICON_REGISTRY = {
+   "chevron-right": "gfs-chevron-right.svg",
+   "chevron-up": "gfs-chevron-up.svg",
+   close: "gfs-close.svg",
++  delete: "gfs-trash.svg",
++  edit: "gfs-settings.svg",
+   error: "gfs-error.svg",
++  "external-link": "gfs-chevron-right.svg",
+   "exit-fullscreen": "gfs-exit-fullscreen.svg",
+   fullscreen: "gfs-fullscreen.svg",
+   info: "gfs-info.svg",
+   menu: "gfs-menu.svg",
++  save: "gfs-success.svg",
+   search: "gfs-search.svg",
+   settings: "gfs-settings.svg",
+   subtract: "gfs-subtract.svg",
+   success: "gfs-success.svg",
+   trash: "gfs-trash.svg",
++  validation: "gfs-warning.svg",
+   warning: "gfs-warning.svg",
+ };
  
- const __filename = fileURLToPath(import.meta.url);
-@@ -9,6 +9,7 @@ const __dirname = path.dirname(__filename);
- const repoRoot = path.resolve(__dirname, "..", "..", "..");
- const svgRoot = path.join(repoRoot, "assets", "theme-v2", "svg");
- const readmePath = path.join(svgRoot, "README.md");
-+const themeIconsPath = path.join(repoRoot, "assets", "theme-v2", "js", "theme-icons.js");
- const styleGuidePath = path.join(repoRoot, "docs_build", "design", "theme-v2-icons", "theme-v2-icon-style-guide.md");
- 
- const REQUIRED_SVG_FILES = [
-@@ -37,6 +38,26 @@ const FORBIDDEN_SVG_FILES = [
-   "gfs-expand.svg",
- ];
- 
-+const REQUIRED_ICON_REGISTRY = {
-+  add: "gfs-add.svg",
-+  "chevron-down": "gfs-chevron-down.svg",
-+  "chevron-left": "gfs-chevron-left.svg",
-+  "chevron-right": "gfs-chevron-right.svg",
-+  "chevron-up": "gfs-chevron-up.svg",
-+  close: "gfs-close.svg",
-+  error: "gfs-error.svg",
-+  "exit-fullscreen": "gfs-exit-fullscreen.svg",
-+  fullscreen: "gfs-fullscreen.svg",
-+  info: "gfs-info.svg",
-+  menu: "gfs-menu.svg",
-+  search: "gfs-search.svg",
-+  settings: "gfs-settings.svg",
-+  subtract: "gfs-subtract.svg",
-+  success: "gfs-success.svg",
-+  trash: "gfs-trash.svg",
-+  warning: "gfs-warning.svg",
-+};
-+
- function attributeValues(content, attributeName) {
-   return [...content.matchAll(new RegExp(`\\s${attributeName}="([^"]+)"`, "g"))].map((match) => match[1]);
- }
-@@ -117,6 +138,53 @@ test("serves every Theme V2 SVG asset as an external file", async ({ request })
+@@ -185,6 +190,72 @@ test("creates CSS-backed registry icon nodes without inline SVG", async ({ page
    }
  });
  
-+test("maps shared Theme V2 icon names to standalone SVG files", async () => {
-+  const themeIcons = await import(`${pathToFileURL(themeIconsPath).href}?cacheBust=${Date.now()}`);
-+
-+  expect(themeIcons.themeV2IconRegistry).toEqual(REQUIRED_ICON_REGISTRY);
-+  for (const [iconName, fileName] of Object.entries(REQUIRED_ICON_REGISTRY)) {
-+    expect(REQUIRED_SVG_FILES, iconName).toContain(fileName);
-+    expect(themeIcons.themeIconFileName(iconName)).toBe(fileName);
-+    expect(themeIcons.themeIconPath(iconName)).toBe(`/assets/theme-v2/svg/${fileName}`);
-+  }
-+});
-+
-+test("creates CSS-backed registry icon nodes without inline SVG", async ({ page }) => {
++test("supports semantic status and action aliases with shared CSS classes", async ({ page }) => {
 +  const server = await startRepoServer();
 +  try {
 +    await page.goto(`${server.baseUrl}/toolbox/idea-board/index.html`, { waitUntil: "networkidle" });
 +    const result = await page.evaluate(async () => {
 +      const themeIcons = await import("/assets/theme-v2/js/theme-icons.js");
-+      const icon = themeIcons.createThemeIcon("chevron-down", { className: "test-registry-icon" });
-+      document.body.appendChild(icon);
-+      const iconStyles = getComputedStyle(icon);
++      const saveButton = document.createElement("button");
++      saveButton.className = "btn btn--with-icon";
++      saveButton.type = "button";
++      saveButton.append(
++        themeIcons.createThemeIcon("save", { className: "btn__icon" }),
++        document.createTextNode("Save")
++      );
++
++      const deleteButton = document.createElement("button");
++      deleteButton.className = "btn btn--icon-only btn--icon-danger";
++      deleteButton.type = "button";
++      deleteButton.setAttribute("aria-label", "Delete game");
++      deleteButton.append(themeIcons.createThemeIcon("delete", { className: "btn__icon" }));
++
++      const statusIcon = themeIcons.createThemeIcon("validation", {
++        className: "status-icon status-icon--validation",
++      });
++
++      document.body.append(saveButton, deleteButton, statusIcon);
++
++      const saveIcon = saveButton.querySelector("[data-theme-icon]");
++      const deleteIcon = deleteButton.querySelector("[data-theme-icon]");
++      const saveStyles = getComputedStyle(saveButton);
++      const deleteStyles = getComputedStyle(deleteButton);
++      const statusStyles = getComputedStyle(statusIcon);
 +      return {
-+        ariaHidden: icon.getAttribute("aria-hidden"),
-+        className: icon.className,
-+        iconFile: icon.dataset.themeIconFile,
-+        iconName: icon.dataset.themeIcon,
-+        inlineSvgCount: icon.querySelectorAll("svg").length,
-+        maskImage: iconStyles.getPropertyValue("-webkit-mask-image") || iconStyles.maskImage,
-+        role: icon.getAttribute("role"),
-+        tagName: icon.tagName.toLowerCase(),
++        deleteAriaLabel: deleteButton.getAttribute("aria-label"),
++        deleteButtonHeight: deleteStyles.height,
++        deleteButtonWidth: deleteStyles.width,
++        deleteIconFile: deleteIcon?.dataset.themeIconFile,
++        deleteIconName: deleteIcon?.dataset.themeIcon,
++        saveButtonGap: saveStyles.gap,
++        saveButtonText: saveButton.textContent.trim(),
++        saveIconFile: saveIcon?.dataset.themeIconFile,
++        saveIconName: saveIcon?.dataset.themeIcon,
++        statusIconColor: statusStyles.color,
++        statusIconFile: statusIcon.dataset.themeIconFile,
++        statusIconName: statusIcon.dataset.themeIcon,
 +      };
 +    });
 +
 +    expect(result).toEqual({
-+      ariaHidden: "true",
-+      className: "theme-icon theme-icon--chevron-down test-registry-icon",
-+      iconFile: "gfs-chevron-down.svg",
-+      iconName: "chevron-down",
-+      inlineSvgCount: 0,
-+      maskImage: expect.stringContaining("gfs-chevron-down.svg"),
-+      role: null,
-+      tagName: "span",
++      deleteAriaLabel: "Delete game",
++      deleteButtonHeight: "44px",
++      deleteButtonWidth: "44px",
++      deleteIconFile: "gfs-trash.svg",
++      deleteIconName: "delete",
++      saveButtonGap: "8px",
++      saveButtonText: "Save",
++      saveIconFile: "gfs-success.svg",
++      saveIconName: "save",
++      statusIconColor: "rgb(255, 200, 87)",
++      statusIconFile: "gfs-warning.svg",
++      statusIconName: "validation",
 +    });
 +  } finally {
 +    await server.close();
@@ -685,3 +447,59 @@ index 2465fa5d1..e517d0623 100644
  test("documents the SVG registry and authoritative artwork policy", async () => {
    const readme = await fs.readFile(readmePath, "utf8");
    const styleGuide = await fs.readFile(styleGuidePath, "utf8");
+diff --git a/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs b/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
+index e4a940bad..e96e17752 100644
+--- a/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
++++ b/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
+@@ -195,6 +195,7 @@ async function statusBarSnapshot(page) {
+     const centerPanel = document.querySelector(".tool-center-panel");
+     const gameName = bar.querySelector("[data-toolbox-selected-game-name]");
+     const message = bar.querySelector("[data-toolbox-status-message]");
++    const messageIcon = message?.querySelector("[data-theme-icon]");
+     const progress = bar.querySelector("[data-toolbox-status-progress]");
+     const position = getComputedStyle(bar).position;
+     const barBox = bar.getBoundingClientRect();
+@@ -211,6 +212,8 @@ async function statusBarSnapshot(page) {
+       gameBox: boxSnapshot(gameName),
+       gameText: gameName?.textContent.replace(/\s+/g, " ").trim() || "",
+       messageBox: boxSnapshot(message),
++      messageIconFile: messageIcon?.dataset.themeIconFile || "",
++      messageIconName: messageIcon?.dataset.themeIcon || "",
+       messageText: message?.textContent.replace(/\s+/g, " ").trim() || "",
+       position,
+       progressBox: boxSnapshot(progress),
+@@ -247,7 +250,10 @@ test("shared toolbox status bar shows selected Game Hub game above the footer",
+     expect(snapshot.position).not.toBe("fixed");
+     expect(snapshot.dataset.selectedGameState).toBe("active");
+     expect(snapshot.dataset.selectedGameRequired).toBe("true");
++    expect(snapshot.dataset.toolboxStatusContextKind).toBe("info");
+     expect(snapshot.gameText).toBe("Demo Game");
++    expect(snapshot.messageIconFile).toBe("gfs-info.svg");
++    expect(snapshot.messageIconName).toBe("info");
+     expect(snapshot.messageText).toContain("Game Design mock repository ready.");
+     expect(snapshot.progressState).toBe("active");
+     expect(snapshot.progressText).toBe("Game Design 2/5 (40%) | Journey 12/125 (10%)");
+@@ -300,6 +306,7 @@ test("shared toolbox status bar center reports save state after Game Hub saves",
+     await expectRemovedStatusBarLabelsHidden(statusBar);
+     await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
+     await expect(statusBar.locator("[data-toolbox-status-message]")).toHaveText("Created and opened Status Bar Save.");
++    await expect(statusBar.locator("[data-toolbox-status-message] [data-theme-icon='save']")).toHaveAttribute("data-theme-icon-file", "gfs-success.svg");
+     await expect(statusBar.locator("[data-toolbox-selected-game-name]")).toHaveText("Status Bar Save");
+     await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Game Hub 3/5 (60%) | Journey 12/125 (10%)");
+     await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveCount(0);
+@@ -350,6 +357,7 @@ test("Game Hub owner selection updates the global toolbox status bar", async ({
+     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "active");
+     await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
+     await expect(statusBar.locator("[data-toolbox-status-message]")).toContainText("Sign in to create or update Game Hub projects.");
++    await expect(statusBar.locator("[data-toolbox-status-message] [data-theme-icon='warning']")).toHaveAttribute("data-theme-icon-file", "gfs-warning.svg");
+     await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Game Hub 3/5 (60%) | Journey 12/125 (10%)");
+ 
+     expectNoPageFailures(failures);
+@@ -368,6 +376,7 @@ test("non-Idea Board toolbox pages show a creator-safe prompt when no Game Hub g
+     await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveCount(0);
+     await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
+     await expect(statusBar.locator("[data-toolbox-status-message]")).toHaveText("Select or create a game in Game Hub before using this toolbox page.");
++    await expect(statusBar.locator("[data-toolbox-status-message] [data-theme-icon='add']")).toHaveAttribute("data-theme-icon-file", "gfs-add.svg");
+     await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Game Design 2/5 (40%) | Journey 12/125 (10%)");
+     await expect(statusBar.locator("[data-toolbox-status-action]")).toHaveCount(0);
+     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "missing");

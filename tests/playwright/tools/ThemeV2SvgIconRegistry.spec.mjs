@@ -45,16 +45,21 @@ const REQUIRED_ICON_REGISTRY = {
   "chevron-right": "gfs-chevron-right.svg",
   "chevron-up": "gfs-chevron-up.svg",
   close: "gfs-close.svg",
+  delete: "gfs-trash.svg",
+  edit: "gfs-settings.svg",
   error: "gfs-error.svg",
+  "external-link": "gfs-chevron-right.svg",
   "exit-fullscreen": "gfs-exit-fullscreen.svg",
   fullscreen: "gfs-fullscreen.svg",
   info: "gfs-info.svg",
   menu: "gfs-menu.svg",
+  save: "gfs-success.svg",
   search: "gfs-search.svg",
   settings: "gfs-settings.svg",
   subtract: "gfs-subtract.svg",
   success: "gfs-success.svg",
   trash: "gfs-trash.svg",
+  validation: "gfs-warning.svg",
   warning: "gfs-warning.svg",
 };
 
@@ -179,6 +184,72 @@ test("creates CSS-backed registry icon nodes without inline SVG", async ({ page 
       maskImage: expect.stringContaining("gfs-chevron-down.svg"),
       role: null,
       tagName: "span",
+    });
+  } finally {
+    await server.close();
+  }
+});
+
+test("supports semantic status and action aliases with shared CSS classes", async ({ page }) => {
+  const server = await startRepoServer();
+  try {
+    await page.goto(`${server.baseUrl}/toolbox/idea-board/index.html`, { waitUntil: "networkidle" });
+    const result = await page.evaluate(async () => {
+      const themeIcons = await import("/assets/theme-v2/js/theme-icons.js");
+      const saveButton = document.createElement("button");
+      saveButton.className = "btn btn--with-icon";
+      saveButton.type = "button";
+      saveButton.append(
+        themeIcons.createThemeIcon("save", { className: "btn__icon" }),
+        document.createTextNode("Save")
+      );
+
+      const deleteButton = document.createElement("button");
+      deleteButton.className = "btn btn--icon-only btn--icon-danger";
+      deleteButton.type = "button";
+      deleteButton.setAttribute("aria-label", "Delete game");
+      deleteButton.append(themeIcons.createThemeIcon("delete", { className: "btn__icon" }));
+
+      const statusIcon = themeIcons.createThemeIcon("validation", {
+        className: "status-icon status-icon--validation",
+      });
+
+      document.body.append(saveButton, deleteButton, statusIcon);
+
+      const saveIcon = saveButton.querySelector("[data-theme-icon]");
+      const deleteIcon = deleteButton.querySelector("[data-theme-icon]");
+      const saveStyles = getComputedStyle(saveButton);
+      const deleteStyles = getComputedStyle(deleteButton);
+      const statusStyles = getComputedStyle(statusIcon);
+      return {
+        deleteAriaLabel: deleteButton.getAttribute("aria-label"),
+        deleteButtonHeight: deleteStyles.height,
+        deleteButtonWidth: deleteStyles.width,
+        deleteIconFile: deleteIcon?.dataset.themeIconFile,
+        deleteIconName: deleteIcon?.dataset.themeIcon,
+        saveButtonGap: saveStyles.gap,
+        saveButtonText: saveButton.textContent.trim(),
+        saveIconFile: saveIcon?.dataset.themeIconFile,
+        saveIconName: saveIcon?.dataset.themeIcon,
+        statusIconColor: statusStyles.color,
+        statusIconFile: statusIcon.dataset.themeIconFile,
+        statusIconName: statusIcon.dataset.themeIcon,
+      };
+    });
+
+    expect(result).toEqual({
+      deleteAriaLabel: "Delete game",
+      deleteButtonHeight: "44px",
+      deleteButtonWidth: "44px",
+      deleteIconFile: "gfs-trash.svg",
+      deleteIconName: "delete",
+      saveButtonGap: "8px",
+      saveButtonText: "Save",
+      saveIconFile: "gfs-success.svg",
+      saveIconName: "save",
+      statusIconColor: "rgb(255, 200, 87)",
+      statusIconFile: "gfs-warning.svg",
+      statusIconName: "validation",
     });
   } finally {
     await server.close();
