@@ -98,6 +98,14 @@ async function closeTextToSpeechRun(failures, page) {
   await failures.server.close();
 }
 
+async function setRangeValue(locator, value) {
+  await locator.evaluate((input, nextValue) => {
+    input.value = nextValue;
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+  }, String(value));
+}
+
 test("Text To Speech page loads and speaks through browser speech synthesis", async ({ page }) => {
   const failures = await openTextToSpeechPage(page);
   try {
@@ -108,6 +116,10 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
     await expect(page.locator("[data-tts-output-summary]")).toHaveCount(0);
     await expect(page.locator("[data-tts-queue-list]")).toHaveCount(0);
     await expect(page.locator("[data-tts-item-name]")).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: "Speech Composition" })).toBeVisible();
+    await expect(page.getByLabel("Text To Speak")).toBeVisible();
+    await expect(page.getByText("TTS Profile / Emotion Settings", { exact: true })).toHaveCount(0);
+    await expect(page.getByText("Emotion Settings", { exact: true })).toHaveCount(0);
     await expect(page.getByText("Named Sentence", { exact: true })).toHaveCount(0);
     await expect(page.getByText("Output Summary", { exact: true })).toHaveCount(0);
     await expect(page.getByText("Voice Filters", { exact: true })).toHaveCount(0);
@@ -120,8 +132,16 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
     await expect(page.locator("[data-tts-profile-table]")).toContainText("Default Balanced Profile");
     await expect(page.locator("[data-tts-profile-table]")).toContainText("Man Profile 1");
     await expect(page.locator("[data-tts-profile-table]")).toContainText("Woman Profile 2");
-    await expect(page.getByRole("columnheader", { exact: true, name: "Profile" })).toBeVisible();
-    await expect(page.getByRole("columnheader", { name: "Age Filter" })).toBeVisible();
+    await expect(page.getByLabel("TTS Profiles").getByRole("columnheader")).toHaveText([
+      "Profile",
+      "Gender",
+      "Voice",
+      "Language",
+      "Age Filter",
+      "Emotion Count",
+      "Status",
+      "Actions",
+    ]);
     const defaultProfileRow = page.locator("[data-tts-profile-row]").filter({ hasText: "Default Balanced Profile" });
     await expect(defaultProfileRow.getByRole("button", { name: "Delete" })).toBeDisabled();
     await expect(page.locator("[data-tts-emotion-host]")).toHaveCount(0);
@@ -130,11 +150,18 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
     await expect(defaultProfileRow.locator("[data-tts-profile-name-cell]")).toHaveAttribute("aria-expanded", "false");
     await defaultProfileRow.locator("[data-tts-profile-name-cell]").click();
     await expect(defaultProfileRow.locator("[data-tts-profile-name-cell]")).toHaveAttribute("aria-expanded", "true");
-    await expect(page.getByRole("heading", { name: "Emotion Settings" })).toBeVisible();
-    await expect(page.getByRole("columnheader", { name: "Emotion", exact: true })).toBeVisible();
-    await expect(page.getByRole("columnheader", { name: "Delivery Preset" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Emotion Settings" })).toHaveCount(0);
+    await expect(page.getByLabel("TTS Profile Emotions").getByRole("columnheader")).toHaveText([
+      "Emotion",
+      "Pitch",
+      "Rate",
+      "Volume",
+      "Actions",
+    ]);
+    await expect(page.getByRole("columnheader", { name: "Delivery Preset" })).toHaveCount(0);
     await expect(page.locator("[data-tts-emotion-row]")).toHaveCount(4);
     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Neutral" }).getByRole("button", { name: "Delete" })).toBeDisabled();
+    await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Neutral" }).getByRole("button", { name: "Play" })).toBeVisible();
     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Happy" })).toBeVisible();
     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Angry" })).toBeVisible();
     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Scared" })).toBeVisible();
@@ -157,29 +184,40 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
     await expect(page.locator("[data-tts-profile-editor='__new__']")).toBeVisible();
     await page.locator("[data-tts-profile-editor='__new__'] [data-tts-profile-name]").fill("Creature Profile");
     await page.locator("[data-tts-profile-editor='__new__'] [data-tts-profile-gender]").selectOption("neutral");
+    const newProfileVoiceSelect = page.locator("[data-tts-profile-editor='__new__'] [data-tts-profile-voice]");
+    await expect(newProfileVoiceSelect).toContainText("Arcade Voice (en-US)");
+    await expect(newProfileVoiceSelect).toContainText("Narrator Voice (en-GB)");
+    await newProfileVoiceSelect.selectOption("narrator-voice-uri");
     await page.locator("[data-tts-commit-profile='__new__']").click();
     await expect(page.locator("[data-tts-status]")).toHaveText("Saved TTS profile: Creature Profile.");
     await expect(page.locator("[data-tts-profile-table]")).toContainText("Creature Profile");
+    await expect(page.locator("[data-tts-profile-row]").filter({ hasText: "Creature Profile" })).toContainText("Narrator Voice");
     await page.locator("[data-tts-profile-row]").filter({ hasText: "Creature Profile" }).getByRole("button", { name: "Edit Profile" }).click();
+    await expect(page.locator("[data-tts-profile-editor] [data-tts-profile-voice]")).toHaveValue("narrator-voice-uri");
     await page.locator("[data-tts-profile-editor] [data-tts-profile-name]").fill("Creature Profile Updated");
     await page.locator("[data-tts-profile-editor] [data-tts-commit-profile]").click();
     await expect(page.locator("[data-tts-status]")).toHaveText("Saved TTS profile: Creature Profile Updated.");
+    await expect(page.locator("[data-tts-profile-row]").filter({ hasText: "Creature Profile Updated" })).toContainText("Narrator Voice");
     await expect(page.locator("[data-tts-emotion-add-control-row]").getByRole("button", { name: "Add Emotion" })).toBeVisible();
     await page.locator("[data-tts-emotion-add-control-row]").getByRole("button", { name: "Add Emotion" }).click();
     await expect(page.locator("[data-tts-emotion-add-control-row]")).toHaveCount(0);
     await page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-name]").selectOption("urgent");
-    await page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-pitch]").fill("1.2");
-    await page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-rate]").fill("1.1");
-    await page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-volume]").fill("0.8");
-    await page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-ssml-preset]").selectOption("whisper-ish");
+    await expect(page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-pitch]")).toHaveAttribute("type", "range");
+    await expect(page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-rate]")).toHaveAttribute("type", "range");
+    await expect(page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-volume]")).toHaveAttribute("type", "range");
+    await setRangeValue(page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-pitch]"), "1.2");
+    await setRangeValue(page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-rate]"), "1.1");
+    await setRangeValue(page.locator("[data-tts-emotion-editor='__new__'] [data-tts-emotion-volume]"), "0.8");
     await page.locator("[data-tts-commit-emotion='__new__']").click();
-    await expect(page.locator("[data-tts-status]")).toHaveText("Saved emotion setting: Urgent.");
+    await expect(page.locator("[data-tts-status]")).toHaveText("Saved emotion: Urgent.");
     await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Urgent" })).toContainText("1.2");
     await page.locator("[data-tts-emotion-row]").filter({ hasText: "Urgent" }).getByRole("button", { name: "Edit Emotion" }).click();
-    await page.locator("[data-tts-emotion-editor] [data-tts-emotion-volume]").fill("0.7");
+    await setRangeValue(page.locator("[data-tts-emotion-editor] [data-tts-emotion-volume]"), "0.7");
     await page.locator("[data-tts-emotion-editor] [data-tts-commit-emotion]").click();
-    await expect(page.locator("[data-tts-status]")).toHaveText("Saved emotion setting: Urgent.");
-    await expect(page.locator("[data-tts-emotion-row]").filter({ hasText: "Urgent" })).toContainText("Whisper-ish");
+    await expect(page.locator("[data-tts-status]")).toHaveText("Saved emotion: Urgent.");
+    const urgentEmotionRow = page.locator("[data-tts-emotion-row]").filter({ hasText: "Urgent" });
+    await expect(urgentEmotionRow).toContainText("0.7");
+    await expect(urgentEmotionRow.getByRole("button", { name: "Play" })).toBeVisible();
 
     await expect(page.locator("[data-tts-gender-select]")).toHaveCount(0);
     await expect(page.locator("[data-tts-language-select]")).toHaveCount(0);
@@ -199,17 +237,30 @@ test("Text To Speech page loads and speaks through browser speech synthesis", as
     await page.locator("[data-tts-text-input]").fill("Launch the next wave.");
     await expect(page.locator("[data-tts-text-count]")).toHaveText("21");
 
-    await expect(page.locator("[data-tts-speak]")).toBeEnabled();
-    await page.locator("[data-tts-speak]").click();
+    await urgentEmotionRow.getByRole("button", { name: "Play" }).click();
     await expect(page.locator("[data-tts-status]")).toContainText("Speech queued");
     let calls = await page.evaluate(() => window.__textToSpeechCalls);
     expect(calls.at(-1)).toEqual(expect.objectContaining({
-      lang: "en-US",
+      lang: "en-GB",
       pitch: 1.2,
       rate: 1.1,
       text: "Launch the next wave.",
       type: "speak",
-      voiceName: "Arcade Voice",
+      voiceName: "Narrator Voice",
+      volume: 0.7,
+    }));
+
+    await expect(page.locator("[data-tts-speak]")).toBeEnabled();
+    await page.locator("[data-tts-speak]").click();
+    await expect(page.locator("[data-tts-status]")).toContainText("Speech queued");
+    calls = await page.evaluate(() => window.__textToSpeechCalls);
+    expect(calls.at(-1)).toEqual(expect.objectContaining({
+      lang: "en-GB",
+      pitch: 1.2,
+      rate: 1.1,
+      text: "Launch the next wave.",
+      type: "speak",
+      voiceName: "Narrator Voice",
       volume: 0.7,
     }));
 
@@ -287,6 +338,12 @@ test("Text To Speech shows actionable error when browser speech synthesis is una
     await expect(page.locator("[data-tts-voice-select]")).toHaveCount(0);
     await expect(page.locator("[data-tts-speak]")).toBeDisabled();
     await expect(page.locator("[data-tts-stop]")).toBeDisabled();
+    const defaultProfileRow = page.locator("[data-tts-profile-row]").filter({ hasText: "Default Balanced Profile" });
+    await defaultProfileRow.locator("[data-tts-profile-name-cell]").click();
+    await page.locator("[data-tts-emotion-row]").filter({ hasText: "Neutral" }).getByRole("button", { name: "Play" }).click();
+    await expect(page.locator("[data-tts-status]")).toHaveText("SpeechSynthesis is unavailable in this browser. Use a browser with Web Speech API support.");
+    await expect(page.locator("[data-tts-status]")).not.toContainText("TypeError");
+    await expect(page.locator("[data-tts-status]")).not.toContainText("undefined");
 
     expect(failures.failedRequests).toEqual([]);
     expect(failures.pageErrors).toEqual([]);
