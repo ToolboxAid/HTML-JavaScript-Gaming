@@ -17,6 +17,15 @@ function writeData(path, body, context) {
   );
 }
 
+function actionData(path, context) {
+  return requireServerApiData(
+    safeRequestServerApi(path, {
+      method: "POST",
+    }),
+    context,
+  );
+}
+
 export function listEmotionProfiles() {
   return readData("/messages/emotion-profiles", "Messages emotion profiles");
 }
@@ -53,6 +62,10 @@ export function listMessages() {
   return readData("/messages/messages", "Messages list");
 }
 
+export function validatePublishConfiguration() {
+  return readData("/messages/publish-validation", "Messages publish validation");
+}
+
 export function getMessage(messageKey) {
   return readData(`/messages/messages/${encodeURIComponent(messageKey)}`, "Message record");
 }
@@ -63,6 +76,10 @@ export function createMessage(input) {
 
 export function updateMessage(messageKey, input) {
   return writeData(`/messages/messages/${encodeURIComponent(messageKey)}`, input, "Update message");
+}
+
+export function deleteMessage(messageKey) {
+  return actionData(`/messages/messages/${encodeURIComponent(messageKey)}/delete`, "Delete message");
 }
 
 export function listMessageSegments() {
@@ -79,4 +96,8 @@ export function createMessageSegment(input) {
 
 export function updateMessageSegment(segmentKey, input) {
   return writeData(`/messages/segments/${encodeURIComponent(segmentKey)}`, input, "Update message segment");
+}
+
+export function deleteMessageSegment(segmentKey) {
+  return actionData(`/messages/segments/${encodeURIComponent(segmentKey)}/delete`, "Delete message segment");
 }

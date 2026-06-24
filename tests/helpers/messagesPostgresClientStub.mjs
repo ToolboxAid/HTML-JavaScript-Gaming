@@ -77,6 +77,21 @@ export function createMessagesPostgresClientStub() {
         return clone(patched);
       }
 
+      if (normalizedMethod === "DELETE") {
+        if (!filter) {
+          throw new Error(`DELETE ${tableName} requires an equality filter.`);
+        }
+        const deleted = [];
+        for (let index = rows.length - 1; index >= 0; index -= 1) {
+          if (String(rows[index][filter.key]) !== filter.value) {
+            continue;
+          }
+          deleted.unshift(rows[index]);
+          rows.splice(index, 1);
+        }
+        return clone(deleted);
+      }
+
       throw new Error(`Unsupported Messages Postgres test method: ${normalizedMethod}.`);
     },
   };

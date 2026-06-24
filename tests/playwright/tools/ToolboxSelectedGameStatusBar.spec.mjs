@@ -113,20 +113,57 @@ function creatorSession() {
   };
 }
 
+const REMOVED_STATUS_BAR_LABELS = [
+  "Selected Game Name",
+  "Selected Game Purpose",
+  "Save State",
+  "Tool Action",
+  "Warning",
+  "Error",
+];
+
+async function expectRemovedStatusBarLabelsHidden(statusBar) {
+  for (const label of REMOVED_STATUS_BAR_LABELS) {
+    await expect(statusBar).not.toContainText(label);
+  }
+}
+
 async function statusBarSnapshot(page) {
   return page.locator("[data-toolbox-status-bar]").evaluate((bar) => {
+    const boxSnapshot = (element) => {
+      const box = element?.getBoundingClientRect();
+      if (!box) {
+        return null;
+      }
+      return {
+        bottom: box.bottom,
+        height: box.height,
+        left: box.left,
+        right: box.right,
+        top: box.top,
+      };
+    };
     const footer = document.querySelector("footer.footer");
+    const footerStyle = footer ? getComputedStyle(footer) : null;
+    const centerPanel = document.querySelector(".tool-center-panel");
+    const gameName = bar.querySelector("[data-toolbox-selected-game-name]");
+    const message = bar.querySelector("[data-toolbox-status-message]");
     const position = getComputedStyle(bar).position;
     const barBox = bar.getBoundingClientRect();
     const footerBox = footer?.getBoundingClientRect();
     return {
       bottomGap: Math.round(window.innerHeight - barBox.bottom),
+      barBox: boxSnapshot(bar),
+      centerPanelBox: boxSnapshot(centerPanel),
       dataset: { ...bar.dataset },
       filter: document.body.dataset.toolboxSelectedGameFilter || "",
       footerFollowsBar: footer ? Boolean(bar.compareDocumentPosition(footer) & Node.DOCUMENT_POSITION_FOLLOWING) : false,
+      footerPaddingTop: footerStyle ? parseFloat(footerStyle.paddingTop) || 0 : null,
       gameId: document.body.dataset.toolboxSelectedGameId || "",
-      gameText: bar.querySelector("[data-toolbox-selected-game]")?.textContent.replace(/\s+/g, " ").trim() || "",
-      messageText: bar.querySelector("[data-toolbox-status-center]")?.textContent.replace(/\s+/g, " ").trim() || "",
+      gameBox: boxSnapshot(gameName),
+      gameText: gameName?.textContent.replace(/\s+/g, " ").trim() || "",
+      messageBox: boxSnapshot(message),
+      messageText: message?.textContent.replace(/\s+/g, " ").trim() || "",
       position,
       topBeforeFooter: footerBox ? barBox.bottom <= footerBox.top + 1 : false,
     };
@@ -141,12 +178,12 @@ test("shared toolbox status bar shows selected Game Hub game above the footer", 
     await expect(statusBar).toBeVisible();
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     await expect(statusBar).not.toContainText("Environment");
-    await expect(statusBar.locator("[data-toolbox-selected-game-name-label]")).toHaveText("Selected Game Name");
+    await expectRemovedStatusBarLabelsHidden(statusBar);
     await expect(statusBar.locator("[data-toolbox-selected-game-name]")).toHaveText("Demo Game");
-    await expect(statusBar.locator("[data-toolbox-selected-game-purpose-label]")).toHaveText("Selected Game Purpose");
-    await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveText("Game");
+    await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveCount(0);
+    await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
+    await expect(statusBar.locator("[data-toolbox-status-action]")).toHaveCount(0);
     await expect(statusBar.locator("[data-toolbox-selected-game]")).not.toContainText("Under Construction");
-    await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveText("Tool Action");
     await expect(statusBar.locator("[data-toolbox-status-message]")).toContainText("Game Design mock repository ready.");
     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-id", "demo-game");
     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "active");
@@ -154,9 +191,15 @@ test("shared toolbox status bar shows selected Game Hub game above the footer", 
     const snapshot = await statusBarSnapshot(page);
     expect(snapshot.footerFollowsBar).toBe(true);
     expect(snapshot.topBeforeFooter).toBe(true);
+    expect(snapshot.footerPaddingTop).toBe(0);
     expect(snapshot.position).not.toBe("fixed");
     expect(snapshot.dataset.selectedGameState).toBe("active");
     expect(snapshot.dataset.selectedGameRequired).toBe("true");
+    expect(snapshot.gameText).toBe("Demo Game");
+    expect(snapshot.messageText).toContain("Game Design mock repository ready.");
+    expect(Math.max(snapshot.gameBox.top, snapshot.messageBox.top)).toBeLessThanOrEqual(
+      Math.min(snapshot.gameBox.bottom, snapshot.messageBox.bottom),
+    );
 
     expectNoPageFailures(failures);
   } finally {
@@ -175,11 +218,14 @@ test("shared toolbox status bar center reports save state after Game Hub saves",
     await addGameRow.getByLabel("Status").selectOption("Ready for Testing");
     await addGameRow.getByRole("button", { name: "Save" }).click();
 
-    await expect(page.locator("[data-toolbox-status-context-type]")).toHaveText("Save State");
-    await expect(page.locator("[data-toolbox-status-message]")).toHaveText("Created and opened Status Bar Save.");
-    await expect(page.locator("[data-toolbox-selected-game-name]")).toHaveText("Status Bar Save");
-    await expect(page.locator("[data-toolbox-selected-game-purpose]")).toHaveText("Learning Game");
-    await expect(page.locator("[data-toolbox-status-bar]")).not.toContainText("Environment");
+    const statusBar = page.locator("[data-toolbox-status-bar]");
+    await expectRemovedStatusBarLabelsHidden(statusBar);
+    await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
+    await expect(statusBar.locator("[data-toolbox-status-message]")).toHaveText("Created and opened Status Bar Save.");
+    await expect(statusBar.locator("[data-toolbox-selected-game-name]")).toHaveText("Status Bar Save");
+    await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveCount(0);
+    await expect(statusBar).not.toContainText("Learning Game");
+    await expect(statusBar).not.toContainText("Environment");
 
     expectNoPageFailures(failures);
   } finally {
@@ -198,7 +244,9 @@ test("shared toolbox status bar anchors to the bottom in tool display mode", asy
     const snapshot = await statusBarSnapshot(page);
     expect(snapshot.position).toBe("fixed");
     expect(Math.abs(snapshot.bottomGap)).toBeLessThanOrEqual(2);
-    expect(snapshot.gameText).toContain("Demo Game");
+    expect(snapshot.gameText).toBe("Demo Game");
+    expect(snapshot.messageText).toContain("Game Design mock repository ready.");
+    expect(snapshot.centerPanelBox.bottom).toBeLessThanOrEqual(snapshot.barBox.top + 1);
 
     expectNoPageFailures(failures);
   } finally {
@@ -213,12 +261,15 @@ test("Game Hub owner selection updates the global toolbox status bar", async ({ 
     await expect(page.locator("[data-toolbox-selected-game-name]")).toHaveText("Demo Game");
     await page.locator("[data-game-toggle='gravity-demo']").click();
     await expect(page.locator("[data-toolbox-selected-game-name]")).toHaveText("Gravity Demo");
-    await expect(page.locator("[data-toolbox-selected-game-purpose]")).toHaveText("Capability Demo");
-    await expect(page.locator("[data-toolbox-selected-game]")).not.toContainText("Wireframe");
+    const statusBar = page.locator("[data-toolbox-status-bar]");
+    await expectRemovedStatusBarLabelsHidden(statusBar);
+    await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveCount(0);
+    await expect(statusBar.locator("[data-toolbox-selected-game]")).not.toContainText("Capability Demo");
+    await expect(statusBar.locator("[data-toolbox-selected-game]")).not.toContainText("Wireframe");
     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-id", "gravity-demo");
     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "active");
-    await expect(page.locator("[data-toolbox-status-context-type]")).toHaveText("Warning");
-    await expect(page.locator("[data-toolbox-status-message]")).toContainText("Sign in to create or update Game Hub projects.");
+    await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
+    await expect(statusBar.locator("[data-toolbox-status-message]")).toContainText("Sign in to create or update Game Hub projects.");
 
     expectNoPageFailures(failures);
   } finally {
@@ -231,12 +282,12 @@ test("non-Idea Board toolbox pages show a creator-safe prompt when no Game Hub g
 
   try {
     const statusBar = page.locator("[data-toolbox-status-bar]");
+    await expectRemovedStatusBarLabelsHidden(statusBar);
     await expect(statusBar.locator("[data-toolbox-selected-game-name]")).toHaveText("No game selected");
-    await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveText("Game Hub owns game selection");
-    await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveText("Tool Action");
+    await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveCount(0);
+    await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
     await expect(statusBar.locator("[data-toolbox-status-message]")).toHaveText("Select or create a game in Game Hub before using this toolbox page.");
-    await expect(statusBar.locator("[data-toolbox-status-action]")).toHaveText("Select or Create in Game Hub");
-    await expect(statusBar.locator("[data-toolbox-status-action]")).toHaveAttribute("href", /toolbox\/game-hub\/index\.html$/);
+    await expect(statusBar.locator("[data-toolbox-status-action]")).toHaveCount(0);
     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "missing");
     await expect(page.locator("body")).not.toHaveAttribute("data-toolbox-selected-game-id", /.+/);
 
@@ -256,9 +307,10 @@ test("Idea Board is excluded from selected-game filtering and does not show the 
   try {
     const statusBar = page.locator("[data-toolbox-status-bar]");
     await expect(statusBar).toBeVisible();
+    await expectRemovedStatusBarLabelsHidden(statusBar);
     await expect(statusBar.locator("[data-toolbox-selected-game-name]")).toHaveText("No game selected");
-    await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveText("Idea Board optional");
-    await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveText("Tool Action");
+    await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveCount(0);
+    await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
     await expect(statusBar.locator("[data-toolbox-status-message]")).toContainText("Ready to shape ideas and notes.");
     await expect(statusBar.locator("[data-toolbox-status-message]")).not.toContainText("Select or create a game");
     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "optional");

@@ -2,10 +2,7 @@ diff --git a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/docs_b
 index 3314b3dea..20d6ae342 100644
 --- a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 +++ b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-@@ -57,3 +57,25 @@ Rules:
- - Teams pull backlog items only from their ownership area unless OWNER explicitly reassigns or splits the work.
- - Cross-team work requires OWNER approval and must identify the owning team for each PR.
- - Team start commands must remain aligned with this ownership model.
+@@ -59,0 +60,22 @@ Rules:
 +
 +## Current Active Ownership Lanes
 +
@@ -32,10 +29,7 @@ diff --git a/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md b/docs_bu
 index 12f74cb1f..d0118f63a 100644
 --- a/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
 +++ b/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
-@@ -90,6 +90,28 @@ Create one Team Delta branch for the selected assignment.
- Work only that assignment.
- ```
-
+@@ -92,0 +93,22 @@ Work only that assignment.
 +## Start Team Golf
 +
 +Ready-to-copy command:
@@ -58,17 +52,11 @@ index 12f74cb1f..d0118f63a 100644
 +Work only that assignment.
 +```
 +
- ## Day Work / EOD Merge Reminder
-
- Ready-to-copy reminder:
 diff --git a/docs_build/dev/ProjectInstructions/addendums/multi_team.md b/docs_build/dev/ProjectInstructions/addendums/multi_team.md
-index 3d603aff9..3a2ebd2ec 100644
+index 797a8834e..190813840 100644
 --- a/docs_build/dev/ProjectInstructions/addendums/multi_team.md
 +++ b/docs_build/dev/ProjectInstructions/addendums/multi_team.md
-@@ -13,6 +13,28 @@ Rules:
- - Cross-team work requires OWNER approval and must identify the correct owning team for each PR.
- - Team start commands must use the current ownership model before pulling a backlog item.
-
+@@ -15,0 +16,22 @@ Rules:
 +## Current Active Ownership Lanes
 +
 +OWNER override approved.
@@ -91,46 +79,28 @@ index 3d603aff9..3a2ebd2ec 100644
 +- Team Golf work requires OWNER assignment, an active branch, an active draft/open PR, or active release/cleanup responsibility.
 +- If Team Golf work touches Alfa, Bravo, Charlie, or Delta ownership areas, the PR must document the OWNER cross-team decision.
 +
- ## All-Team Preferred Codex Execution Method
-
- Preferred execution model:
 diff --git a/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md b/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
 index cadfee261..e4b0ba1de 100644
 --- a/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
 +++ b/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
-@@ -54,6 +54,8 @@ Applies to:
- - Team Alfa
- - Team Bravo
- - Team Charlie
+@@ -56,0 +57,2 @@ Applies to:
 +- Team Delta
 +- Team Golf
- - Any future NATO-named team
-
- Behavior:
 diff --git a/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md b/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
 index d73cfcb9f..521758eeb 100644
 --- a/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
 +++ b/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
-@@ -4,6 +4,11 @@
-
- This gate prevents Team Alfa, Team Bravo, Team Charlie, or Team OWNER from starting regular assigned work before the ProjectInstructions operating system is ready.
-
+@@ -6,0 +7,5 @@ This gate prevents Team Alfa, Team Bravo, Team Charlie, or Team OWNER from start
 +Current OWNER clarification:
 +- This gate also applies to Team Delta and Team Golf.
 +- Team Gamma is retired. Team Golf is the replacement active ownership lane.
 +- Historical wording that listed fewer teams remains traceable, but it must not exclude Delta or Golf from current active ownership governance.
 +
- ## Release Rule
-
- Teams may start only when all of the following are true:
 diff --git a/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md b/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
 index e1018c155..d6af3271c 100644
 --- a/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
 +++ b/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
-@@ -31,6 +31,28 @@ The current active delivery teams for backlog start commands are:
-
- Each team start must confirm the selected backlog item is inside that team's ownership area.
-
+@@ -33,0 +34,22 @@ Each team start must confirm the selected backlog item is inside that team's own
 +## Current Active Ownership Start Map
 +
 +OWNER override approved.
@@ -153,17 +123,11 @@ index e1018c155..d6af3271c 100644
 +- Historical Gamma references and branch names must remain unchanged.
 +- Golf work must not silently take ownership from Alfa, Bravo, Charlie, or Delta; cross-team work requires OWNER approval.
 +
- ## Assignment Flow
-
- For backlog-driven work:
 diff --git a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
 index 0b8942261..ed2f85a4b 100644
 --- a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
 +++ b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-@@ -162,6 +162,13 @@
-
- ## Four-Team Backlog Alignment
-
+@@ -164,0 +165,7 @@
 +Current OWNER clarification:
 +- The backlog alignment below preserves the current Alfa, Bravo, Charlie, and Delta ownership model.
 +- Team Gamma is retired. Team Golf is the replacement active ownership lane.
@@ -171,24 +135,17 @@ index 0b8942261..ed2f85a4b 100644
 +- Golf work may be OWNER-assigned, branch-backed, PR-backed, release, review packet, or cleanup work and must not silently replace Alfa, Bravo, Charlie, or Delta ownership.
 +- Historical Gamma PR references and branch names are not renamed by this clarification.
 +
- ### Team Alfa
-
- - [ ] Alfa - Game Hub polish
 diff --git a/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md b/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
 index 5ca625819..6ddf25619 100644
 --- a/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
 +++ b/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
-@@ -28,8 +28,24 @@ If a team has no assignment, no active branch, and no active PR, it is inactive
-
- | Team | Active Assignment | Branch | PR | Status | OWNER Decision |
- |------|-------------------|--------|----|--------|----------------|
+@@ -30,0 +31,5 @@ If a team has no assignment, no active branch, and no active PR, it is inactive
 +| Team Alfa | none | none | none | Available | Active ownership lane |
 +| Team Bravo | none | none | none | Available | Active ownership lane |
 +| Team Charlie | none | none | none | Available | Active ownership lane |
 +| Team Delta | none | none | none | Available | Active ownership lane |
 +| Team Golf | none | none | none | Available | Replacement active ownership lane for retired Team Gamma |
- | Team OWNER | none | none | none | Available | Governance Phase 1 complete |
-
+@@ -32,0 +38,11 @@ If a team has no assignment, no active branch, and no active PR, it is inactive
 +## Current Active Ownership Lanes
 +
 +OWNER override approved.
@@ -200,43 +157,25 @@ index 5ca625819..6ddf25619 100644
 +
 +Historical Gamma PR references and branch names remain unchanged for traceability.
 +
- ## Update Rules
-
- Update the registry when:
 diff --git a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
 index acefbba8e..afe4efa91 100644
 --- a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
 +++ b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
-@@ -4,6 +4,12 @@
-
- | Team | Assignment | Branch | PR | Status |
- |------|------------|--------|----|--------|
+@@ -6,0 +7,6 @@
 +| Team Alfa | none | none | none | Available |
 +| Team Bravo | none | none | none | Available |
 +| Team Charlie | none | none | none | Available |
 +| Team Delta | none | none | none | Available |
 +| Team Golf | none | none | none | Available |
 +| Team OWNER | none | none | none | Available |
-
- Rules:
- - Registry is the authoritative active-work view.
-@@ -27,6 +33,12 @@ Result:
- If a team is missing from Active Team Registry:
- it is currently inactive.
-
+@@ -29,0 +36,6 @@ it is currently inactive.
 +Current OWNER clarification:
 +- The active ownership lanes are Team Alfa, Team Bravo, Team Charlie, Team Delta, Team Golf, and Team OWNER.
 +- Team Gamma is retired. Team Golf is the replacement active ownership lane.
 +- Do not rewrite historical PR references that mention Team Gamma.
 +- Do not rename historical branches that contain Gamma.
 +
- ## Assignment Status Legend
-
- - Available: team may pull one `[ ]` backlog item when explicitly instructed.
-@@ -65,6 +77,16 @@ Active assignment: none.
-
- Active branch: none.
-
+@@ -67,0 +80,10 @@ Active branch: none.
 +## Team Golf
 +
 +Status: Available
@@ -247,17 +186,11 @@ index acefbba8e..afe4efa91 100644
 +
 +OWNER decision: Replacement active ownership lane for retired Team Gamma.
 +
- ## Team OWNER
-
- Status: Available
 diff --git a/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md b/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
 index 865cca551..bc4808b6f 100644
 --- a/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
 +++ b/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-@@ -52,6 +52,29 @@ Alfa, Bravo, Charlie, and Delta are the four active delivery teams for backlog o
-
- Each team may pull only from its ownership area unless OWNER explicitly reassigns, splits, or approves cross-team work.
-
+@@ -54,0 +55,23 @@ Each team may pull only from its ownership area unless OWNER explicitly reassign
 +## Current Active Ownership Lanes
 +
 +OWNER override approved.
@@ -281,9 +214,6 @@ index 865cca551..bc4808b6f 100644
 +- Golf work that touches Alfa, Bravo, Charlie, or Delta areas must document the OWNER cross-team decision.
 +- Historical Gamma PR references and branch names remain unchanged for traceability.
 +
- ## Rule
-
- Ownership may only be reassigned by OWNER governance.
 diff --git a/docs_build/dev/reports/PR_26175_OWNER_046-pr-targeted-review-packets.md b/docs_build/dev/reports/PR_26175_OWNER_046-pr-targeted-review-packets.md
 new file mode 100644
 index 000000000..055d7c1cb
@@ -734,36 +664,15 @@ index 000000000..d7756231b
 +
 +Review First. Treat as owner closeout evidence for the Alfa stack; do not merge until stack/order review is complete.
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 9dca38cd8..f54b81299 100644
+index ded176aa5..4aa64ab71 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,23 +1,17 @@
--﻿.env.example
--admin/infrastructure.html
--admin/system-health.html
--assets/theme-v2/js/admin-infrastructure.js
--assets/theme-v2/js/admin-system-health.js
--docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard.md
--docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard_PLAN.md
--docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-instruction-compliance-checklist.md
--docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-manual-validation-notes.md
--docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization.md
--docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization_PLAN.md
--docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization-instruction-compliance-checklist.md
--docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization-manual-validation-notes.md
--docs_build/dev/reports/PR_26175_CHARLIE_EOD-branch-validation.md
--docs_build/dev/reports/PR_26175_CHARLIE_EOD-closeout.md
--docs_build/dev/reports/PR_26175_CHARLIE_EOD-merge-summary.md
--scripts/validate-storage-config.mjs
--src/dev-runtime/server/local-api-router.mjs
--src/dev-runtime/storage/storage-config.mjs
--tests/dev-runtime/AdminHealthOperations.test.mjs
--tests/dev-runtime/StorageConfig.test.mjs
--tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
--tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
+@@ -0,0 +1,2 @@
 +docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
 +docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
-+docs_build/dev/ProjectInstructions/addendums/multi_team.md
+@@ -2,2 +4,12 @@ docs_build/dev/ProjectInstructions/addendums/multi_team.md
+-docs_build/dev/reports/PR_26175_OWNER_050-eod-merge-push-cleanup-gate.md
+-docs_build/dev/reports/codex_review.diff
 +docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
 +docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
 +docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
@@ -771,10 +680,10 @@ index 9dca38cd8..f54b81299 100644
 +docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
 +docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
 +docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
++docs_build/dev/reports/PR_26175_OWNER_046-pr-targeted-review-packets.md
 +docs_build/dev/reports/PR_REVIEW_003.md
 +docs_build/dev/reports/PR_REVIEW_050.md
 +docs_build/dev/reports/PR_REVIEW_051.md
 +docs_build/dev/reports/PR_REVIEW_118.md
-+docs_build/dev/reports/PR_26175_OWNER_046-pr-targeted-review-packets.md
-+docs_build/dev/reports/codex_changed_files.txt
+@@ -4,0 +17 @@ docs_build/dev/reports/codex_changed_files.txt
 +docs_build/dev/reports/codex_review.diff

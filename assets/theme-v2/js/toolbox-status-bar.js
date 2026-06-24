@@ -90,37 +90,16 @@ function createStatusBar() {
   game.className = "toolbox-status-bar__game";
   game.dataset.toolboxSelectedGame = "";
 
-  const nameField = document.createElement("div");
-  nameField.className = "toolbox-status-bar__field";
-  nameField.dataset.toolboxSelectedGameNameField = "";
-  const nameLabel = createText("span", "toolbox-status-bar__label", "toolboxSelectedGameNameLabel");
-  nameLabel.textContent = "Selected Game Name";
   const name = createText("strong", "toolbox-status-bar__game-name", "toolboxSelectedGameName");
-  nameField.append(nameLabel, name);
-
-  const purposeField = document.createElement("div");
-  purposeField.className = "toolbox-status-bar__field";
-  purposeField.dataset.toolboxSelectedGamePurposeField = "";
-  const purposeLabel = createText("span", "toolbox-status-bar__label", "toolboxSelectedGamePurposeLabel");
-  purposeLabel.textContent = "Selected Game Purpose";
-  const purpose = createText("span", "toolbox-status-bar__purpose", "toolboxSelectedGamePurpose");
-  purpose.dataset.toolboxSelectedGameMeta = "";
-  purposeField.append(purposeLabel, purpose);
-  game.append(nameField, purposeField);
+  game.append(name);
 
   const center = document.createElement("div");
   center.className = "toolbox-status-bar__center";
   center.dataset.toolboxStatusCenter = "";
 
-  const contextType = createText("span", "pill toolbox-status-bar__context-type", "toolboxStatusContextType");
   const message = createText("p", "toolbox-status-bar__message status", "toolboxStatusMessage");
   message.setAttribute("role", "status");
-  const action = document.createElement("a");
-  action.className = "btn btn--compact toolbox-status-bar__action";
-  action.dataset.toolboxStatusAction = "";
-  action.href = mountOptions.gameHubHref;
-  action.textContent = "Open Game Hub";
-  center.append(contextType, message, action);
+  center.append(message);
 
   inner.append(game, center);
   bar.append(inner);
@@ -234,33 +213,30 @@ function publishSelectedGameContext(selectedGame, state) {
 function classifyToolContext(messageText, state, required) {
   const text = String(messageText || "").trim();
   if (state === "error") {
-    return { kind: "error", label: "Error" };
+    return { kind: "error" };
   }
   if (required && state === "missing") {
-    return { kind: "action", label: "Tool Action" };
+    return { kind: "action" };
   }
   if (/\b(error|failed|malformed|unavailable|could not)\b/i.test(text)) {
-    return { kind: "error", label: "Error" };
+    return { kind: "error" };
   }
   if (/\b(sign in|refresh|try again|temporarily|blocked)\b/i.test(text)) {
-    return { kind: "warning", label: "Warning" };
+    return { kind: "warning" };
   }
   if (/\b(validation|requirement|requirements|missing|required|open or seed)\b/i.test(text)) {
-    return { kind: "validation", label: "Validation" };
+    return { kind: "validation" };
   }
   if (/\b(saved|created|deleted|updated|loaded|save changes)\b/i.test(text)) {
-    return { kind: "save", label: "Save State" };
+    return { kind: "save" };
   }
-  return { kind: "action", label: "Tool Action" };
+  return { kind: "action" };
 }
 
 function renderSelectedGame(bar, selectedGame, state, messageText) {
   const required = pageRequiresSelectedGame();
   const name = bar.querySelector("[data-toolbox-selected-game-name]");
-  const purpose = bar.querySelector("[data-toolbox-selected-game-purpose]");
-  const contextType = bar.querySelector("[data-toolbox-status-context-type]");
   const message = bar.querySelector("[data-toolbox-status-message]");
-  const action = bar.querySelector("[data-toolbox-status-action]");
   const nextMessage = messageText || latestToolMessage || (selectedGame
     ? `Tool context is filtered to ${selectedGame.name}.`
     : required
@@ -271,38 +247,27 @@ function renderSelectedGame(bar, selectedGame, state, messageText) {
   bar.dataset.selectedGameState = state;
   bar.dataset.selectedGameRequired = String(required);
   bar.dataset.toolboxStatusContextKind = context.kind;
-  contextType.textContent = context.label;
-  action.hidden = false;
-  action.href = mountOptions.gameHubHref;
 
   if (selectedGame) {
     name.textContent = selectedGame.name;
-    purpose.textContent = selectedGame.purpose || "Game";
     message.textContent = nextMessage;
-    action.textContent = "Open Game Hub";
     return;
   }
 
   if (!required) {
     name.textContent = "No game selected";
-    purpose.textContent = "Idea Board optional";
     message.textContent = nextMessage;
-    action.textContent = "Open Game Hub";
     return;
   }
 
   if (state === "error") {
     name.textContent = "Unavailable";
-    purpose.textContent = "Game Hub selected game could not be read";
     message.textContent = nextMessage;
-    action.textContent = "Open Game Hub";
     return;
   }
 
   name.textContent = "No game selected";
-  purpose.textContent = "Game Hub owns game selection";
   message.textContent = "Select or create a game in Game Hub before using this toolbox page.";
-  action.textContent = "Select or Create in Game Hub";
 }
 
 export function refreshToolboxStatusBar() {
