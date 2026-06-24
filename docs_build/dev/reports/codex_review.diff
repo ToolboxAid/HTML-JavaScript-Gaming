@@ -1,257 +1,148 @@
+diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+index ed90bcb49..7b1c51f19 100644
+--- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+@@ -6,8 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
+ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+
+ Changed runtime JS files considered:
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(82%) assets/theme-v2/js/admin-system-health.js - executed lines 808/808; executed functions 68/83
++(100%) none changed - no changed runtime JS files
+
+ Guardrail warnings:
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++(100%) none changed - no changed runtime JS files
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index c545e81e4..3778e8944 100644
+index 3778e8944..da6deaaa0 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -37,6 +37,7 @@ Uncovered or low-coverage changed JS files:
- 
+@@ -17,8 +17,7 @@ Exercised tool entry points detected:
+ (78%) Theme V2 Shared JS - exercised 4 runtime JS files
+
+ Changed runtime JS files covered:
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(82%) assets/theme-v2/js/admin-system-health.js - executed lines 808/808; executed functions 68/83
++(100%) none changed - no changed runtime JS files
+
+ Files with executed line/function counts where available:
+ (36%) src/api/server-api-client.js - executed lines 167/167; executed functions 5/14
+@@ -33,11 +32,7 @@ Files with executed line/function counts where available:
+ (100%) src/api/admin-system-health-api-client.js - executed lines 28/28; executed functions 4/4
+
+ Uncovered or low-coverage changed JS files:
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
++(100%) none changed - no changed runtime JS files
+
  Changed JS files considered:
- (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/api/admin-system-health/contract.test.mjs - changed JS file not collected as browser runtime coverage
- (0%) tests/dev-runtime/AdminHealthOperations.test.mjs - changed JS file not collected as browser runtime coverage
- (0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
- (82%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-branch-validation.md b/docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-branch-validation.md
+-(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/api/admin-system-health/contract.test.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/dev-runtime/AdminHealthOperations.test.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
+-(82%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-branch-validation.md b/docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-branch-validation.md
 new file mode 100644
-index 000000000..4694cef86
+index 000000000..a65cc8779
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-branch-validation.md
-@@ -0,0 +1,6 @@
-+# PR_26175_CHARLIE_022 Branch Validation
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-branch-validation.md
+@@ -0,0 +1,7 @@
++# PR_26175_CHARLIE_023 Branch Validation
 +
 +- PASS: Continued on `pr/26175-CHARLIE-010-system-health-history-and-closeout`.
-+- PASS: Stacked on PR_26175_CHARLIE_021.
++- PASS: Stacked on PR_26175_CHARLIE_022.
 +- PASS: No merge performed.
 +- PASS: No rebase performed.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-manual-validation-notes.md b/docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-manual-validation-notes.md
++- PASS: Branch ready to push and update draft PR #158.
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-manual-validation-notes.md b/docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-manual-validation-notes.md
 new file mode 100644
-index 000000000..0799952e8
+index 000000000..5db2a7208
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-manual-validation-notes.md
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-manual-validation-notes.md
 @@ -0,0 +1,5 @@
-+# PR_26175_CHARLIE_022 Manual Validation Notes
++# PR_26175_CHARLIE_023 Manual Validation Notes
 +
-+- Verified new tests live under canonical `tests/api/admin-system-health/`.
-+- Verified tests do not require peer environment services.
-+- Verified tests do not expose secrets.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-requirement-checklist.md b/docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-requirement-checklist.md
++- Verified completion reports exist for PRs 018 through 023.
++- Verified final validation lane includes the new Admin System Health contract suite.
++- Verified closeout records no merge requested.
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-requirement-checklist.md b/docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-requirement-checklist.md
 new file mode 100644
-index 000000000..08f86ae5a
+index 000000000..4bec1225f
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-requirement-checklist.md
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-requirement-checklist.md
 @@ -0,0 +1,7 @@
-+# PR_26175_CHARLIE_022 Requirement Checklist
++# PR_26175_CHARLIE_023 Requirement Checklist
 +
-+- PASS: Added focused Admin Health test suite.
-+- PASS: Test suite covers current-environment-only System Health contract.
-+- PASS: Test suite covers server-owned completion sections.
-+- PASS: Test suite covers unknown action rejection.
++- PASS: Added documentation closeout.
++- PASS: Included final validation evidence.
++- PASS: Listed all completion ZIP artifacts.
++- PASS: Preserved no-merge requirement.
 +- PASS: Required reports generated.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-validation.md b/docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-validation.md
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-validation.md b/docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-validation.md
 new file mode 100644
-index 000000000..6d1d940ec
+index 000000000..20b448550
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-validation.md
-@@ -0,0 +1,12 @@
-+# PR_26175_CHARLIE_022 Validation Report
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-validation.md
+@@ -0,0 +1,14 @@
++# PR_26175_CHARLIE_023 Validation Report
 +
 +## Commands
 +
-+- PASS: `node --check tests/api/admin-system-health/contract.test.mjs`
-+- PASS: `git diff --check`
 +- PASS: `node --test tests/api/admin-system-health/contract.test.mjs`
 +  - Result: 2 passed.
 +- PASS: `node --test tests/dev-runtime/AdminHealthOperations.test.mjs`
 +  - Result: 4 passed.
 +- PASS: `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line`
 +  - Result: 3 passed.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite.md b/docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite.md
++
++## Notes
++
++- Full samples smoke was not run; not required for this System Health completion scope.
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout.md b/docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout.md
 new file mode 100644
-index 000000000..0a7e88311
+index 000000000..d18a17a9d
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite.md
-@@ -0,0 +1,23 @@
-+# PR_26175_CHARLIE_022 Admin Health Test Suite
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout.md
+@@ -0,0 +1,43 @@
++# PR_26175_CHARLIE_023 System Health Documentation Closeout
 +
 +## Scope
 +
 +Team: Charlie
 +
-+Purpose: Add focused Admin System Health completion contract tests.
++Purpose: Close out System Health completion PRs 018 through 023 with final documentation and validation evidence.
 +
-+## Changes
++## Completed Commits
 +
-+- Added `tests/api/admin-system-health/contract.test.mjs`.
-+- Covered current-environment-only contract, server-owned completion sections, secret masking, and unknown manual action rejection.
++- PASS: PR_26175_CHARLIE_018-health-api-contract-cleanup
++- PASS: PR_26175_CHARLIE_019-environment-capabilities
++- PASS: PR_26175_CHARLIE_020-admin-api-registry
++- PASS: PR_26175_CHARLIE_021-runtime-feature-flags
++- PASS: PR_26175_CHARLIE_022-admin-health-test-suite
++- PASS: PR_26175_CHARLIE_023-system-health-documentation-closeout
 +
-+## Validation
++## Final Architecture State
 +
-+- PASS: New Admin System Health API contract suite.
-+- PASS: Existing targeted System Health API/unit tests.
-+- PASS: Targeted System Health Playwright tests.
-+- PASS: `git diff --check`.
++- PASS: System Health remains current-deployment only.
++- PASS: Environment Map remains reference-only.
++- PASS: Browser UI renders API-owned health and governance state.
++- PASS: Manual health actions call API contracts.
++- PASS: Scheduled monitoring and notification placeholders remain Not Configured.
++- PASS: Admin API Registry and Health API Contract are visible in System Health.
 +
-+## Artifact
++## Final Validation
 +
++- PASS: `node --test tests/api/admin-system-health/contract.test.mjs`
++  - Result: 2 passed.
++- PASS: `node --test tests/dev-runtime/AdminHealthOperations.test.mjs`
++  - Result: 4 passed.
++- PASS: `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line`
++  - Result: 3 passed.
++
++## ZIP Artifacts
++
++- `tmp/PR_26175_CHARLIE_018-health-api-contract-cleanup_delta.zip`
++- `tmp/PR_26175_CHARLIE_019-environment-capabilities_delta.zip`
++- `tmp/PR_26175_CHARLIE_020-admin-api-registry_delta.zip`
++- `tmp/PR_26175_CHARLIE_021-runtime-feature-flags_delta.zip`
 +- `tmp/PR_26175_CHARLIE_022-admin-health-test-suite_delta.zip`
-diff --git a/tests/api/admin-system-health/contract.test.mjs b/tests/api/admin-system-health/contract.test.mjs
-new file mode 100644
-index 000000000..e9e366882
---- /dev/null
-+++ b/tests/api/admin-system-health/contract.test.mjs
-@@ -0,0 +1,156 @@
-+import http from "node:http";
-+import test from "node:test";
-+import assert from "node:assert/strict";
-+import { createLocalApiRouter } from "../../../src/dev-runtime/server/local-api-router.mjs";
-+import { SEED_DB_KEYS } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
-+
-+function withEnv(nextEnv, callback) {
-+  const previousEnv = {};
-+  Object.keys(nextEnv).forEach((key) => {
-+    previousEnv[key] = process.env[key];
-+    if (nextEnv[key] === undefined) {
-+      delete process.env[key];
-+    } else {
-+      process.env[key] = nextEnv[key];
-+    }
-+  });
-+  return Promise.resolve()
-+    .then(callback)
-+    .finally(() => {
-+      Object.entries(previousEnv).forEach(([key, value]) => {
-+        if (value === undefined) {
-+          delete process.env[key];
-+        } else {
-+          process.env[key] = value;
-+        }
-+      });
-+    });
-+}
-+
-+function startApiServer() {
-+  const handleRequest = createLocalApiRouter();
-+  const server = http.createServer((request, response) => {
-+    const address = server.address();
-+    const port = address && typeof address !== "string" ? address.port : 0;
-+    const requestUrl = new URL(request.url || "/", `http://127.0.0.1:${port}`);
-+    handleRequest(request, response, requestUrl).catch((error) => {
-+      response.statusCode = error?.statusCode || 500;
-+      response.setHeader("Content-Type", "application/json; charset=utf-8");
-+      response.end(JSON.stringify({
-+        error: error instanceof Error ? error.message : String(error || "Admin System Health contract test server error."),
-+        ok: false,
-+      }));
-+    });
-+  });
-+  return new Promise((resolve, reject) => {
-+    server.once("error", reject);
-+    server.listen(0, "127.0.0.1", () => {
-+      const address = server.address();
-+      if (!address || typeof address === "string") {
-+        reject(new Error("Unable to start Admin System Health contract API server."));
-+        return;
-+      }
-+      resolve({
-+        baseUrl: `http://127.0.0.1:${address.port}`,
-+        close: () => new Promise((closeResolve) => {
-+          server.closeAllConnections?.();
-+          server.close(closeResolve);
-+        }),
-+      });
-+    });
-+  });
-+}
-+
-+async function apiPayload(baseUrl, pathName, request = {}) {
-+  const init = request.body === undefined
-+    ? request
-+    : {
-+      ...request,
-+      body: JSON.stringify(request.body),
-+      headers: {
-+        "content-type": "application/json",
-+        ...(request.headers || {}),
-+      },
-+    };
-+  const response = await fetch(`${baseUrl}${pathName}`, init);
-+  const payload = await response.json();
-+  return { payload, status: response.status };
-+}
-+
-+async function apiJson(baseUrl, pathName, request = {}) {
-+  const { payload, status } = await apiPayload(baseUrl, pathName, request);
-+  assert.equal(status, 200, `${pathName} should return 200: ${payload.error || ""}`);
-+  assert.equal(payload.ok, true);
-+  return payload.data;
-+}
-+
-+test("Admin System Health completion contract remains server-owned and current-environment only", async () => {
-+  await withEnv({
-+    GAMEFOUNDRY_API_URL: "http://api-user:api-secret@127.0.0.1:5501/api",
-+    GAMEFOUNDRY_ENVIRONMENT_LABEL: "DEV",
-+    GAMEFOUNDRY_SITE_URL: "http://site-user:site-secret@127.0.0.1:5500",
-+    GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX: "/dev/projects/",
-+  }, async () => {
-+    const server = await startApiServer();
-+    try {
-+      await apiJson(server.baseUrl, "/api/session/user", {
-+        body: { userKey: SEED_DB_KEYS.users.admin },
-+        method: "POST",
-+      });
-+      const health = await apiJson(server.baseUrl, "/api/admin/system-health/status");
-+      assert.equal(health.environmentIdentity.name, "DEV");
-+      assert.equal(health.apiContract.currentDeploymentOnly, true);
-+      assert.equal(health.apiContract.noCrossEnvironmentChecks, true);
-+      assert.equal(health.environmentCapabilities.peerEnvironmentChecks, false);
-+      assert.equal(health.environmentMap.some((row) => Object.hasOwn(row, "status")), false);
-+      assert.deepEqual(
-+        [
-+          "apiContract",
-+          "adminApiRegistry",
-+          "environmentCapabilities",
-+          "runtimeFeatureFlags",
-+          "serviceHealth",
-+          "configurationSummary",
-+          "scheduledMonitoring",
-+          "notificationsFoundation",
-+        ].filter((key) => Object.hasOwn(health, key)),
-+        [
-+          "apiContract",
-+          "adminApiRegistry",
-+          "environmentCapabilities",
-+          "runtimeFeatureFlags",
-+          "serviceHealth",
-+          "configurationSummary",
-+          "scheduledMonitoring",
-+          "notificationsFoundation",
-+        ],
-+      );
-+      const healthText = JSON.stringify(health);
-+      assert.equal(healthText.includes("api-secret"), false);
-+      assert.equal(healthText.includes("site-secret"), false);
-+      assert.equal(healthText.includes("/uat/projects"), false);
-+      assert.equal(health.secretEditingAllowed, false);
-+      assert.equal(health.secretsExposed, false);
-+    } finally {
-+      await server.close();
-+    }
-+  });
-+});
-+
-+test("Admin System Health rejects unknown manual health actions", async () => {
-+  const server = await startApiServer();
-+  try {
-+    await apiJson(server.baseUrl, "/api/session/user", {
-+      body: { userKey: SEED_DB_KEYS.users.admin },
-+      method: "POST",
-+    });
-+    const rejected = await apiPayload(server.baseUrl, "/api/admin/system-health/action", {
-+      body: { actionId: "peer-environment-check" },
-+      method: "POST",
-+    });
-+    assert.equal(rejected.status, 400);
-+    assert.match(rejected.payload.error, /Unknown Admin System Health action/);
-+  } finally {
-+    await server.close();
-+  }
-+});
++- `tmp/PR_26175_CHARLIE_023-system-health-documentation-closeout_delta.zip`

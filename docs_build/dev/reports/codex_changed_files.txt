@@ -1,20 +1,20 @@
 # git status --short
-M docs_build/dev/reports/playwright_v8_coverage_report.txt
-?? docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-branch-validation.md
-?? docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-manual-validation-notes.md
-?? docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-requirement-checklist.md
-?? docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-validation.md
-?? docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite.md
-?? tests/api/
+M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+ M docs_build/dev/reports/playwright_v8_coverage_report.txt
+?? docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-branch-validation.md
+?? docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-manual-validation-notes.md
+?? docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-requirement-checklist.md
+?? docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-validation.md
+?? docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-branch-validation.md
-docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-manual-validation-notes.md
-docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-requirement-checklist.md
-docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-validation.md
-docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite.md
-tests/api/admin-system-health/contract.test.mjs
+docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-branch-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-manual-validation-notes.md
+docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-requirement-checklist.md
+docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout.md
 
 # git diff --stat
-docs_build/dev/reports/playwright_v8_coverage_report.txt | 1 +
- 1 file changed, 1 insertion(+)
+docs_build/dev/reports/coverage_changed_js_guardrail.txt | 5 ++---
+ docs_build/dev/reports/playwright_v8_coverage_report.txt | 9 ++-------
+ 2 files changed, 4 insertions(+), 10 deletions(-)
