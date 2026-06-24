@@ -1,11 +1,11 @@
 # Test Cleanup Performance Report
 
-Generated: 2026-06-21T00:11:18.107Z
-Status: PASS
+Generated: 2026-06-23T16:38:57.091Z
+Status: WARN
 
 ## Cost Summary
 
-Total measured lane elapsed time: 67.79s
+Total measured lane elapsed time: 8.76s
 Actual browser launch count: 1
 Scheduled browser launch count: 1
 Baseline browser launch count: 1
@@ -23,8 +23,8 @@ Prevented redundant dependency traversal: 0
 
 | Lane | Status | Elapsed | Browser Launches | Reason |
 | --- | --- | --- | --- | --- |
-| workspace-contract | PASS | 67.79s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
-| game-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
+| workspace-contract | FAIL | 8.76s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
+| game-hub | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
 | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
 | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
 | asset-tool | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
@@ -43,11 +43,11 @@ Prevented redundant dependency traversal: 0
 
 | Lane | Duration | Test | Command |
 | --- | --- | --- | --- |
-| workspace-contract | 15.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-| workspace-contract | 14.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:664:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-| workspace-contract | 13.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:562:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-| workspace-contract | 11.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:482:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-| workspace-contract | 2.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:641:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming - 1\\node_modules\\@playwright\\test\\cli.js" test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+| workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:270:1 > root tools surface links current tool pages without old_* routes | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+| workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:485:1 > common header renders primary navigation order across active pages | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+| workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:565:1 > learn wireframe pages load with shared Theme V2 structure | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+| workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:644:1 > tool template future-state page loads from root Theme V2 paths | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+| workspace-contract | 0ms | tests\playwright\tools\RootToolsFutureState.spec.mjs:667:1 > representative active tool pages align center cleanup and registry group colors | "C:\\Program Files\\nodejs\\node.exe" C:\Users\davidq\Documents\github\GameFoundryStudio\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
 
 ## Prevented Broad Execution
 
