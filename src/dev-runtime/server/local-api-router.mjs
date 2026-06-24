@@ -321,6 +321,8 @@ const LOCAL_API_STARTUP_DEFAULT_PORT_BY_PROTOCOL = Object.freeze({
   "http:": "80",
   "https:": "443",
 });
+const LOCAL_API_PROCESS_STARTED_AT = new Date().toISOString();
+const SYSTEM_HEALTH_API_CONTRACT_VERSION = "2026-06-24.system-health.v1";
 const SYSTEM_HEALTH_USAGE_NOT_AVAILABLE = "NOT AVAILABLE";
 const SYSTEM_HEALTH_USAGE_CONTRACTS = Object.freeze({
   GAMEFOUNDRY_DB_CONNECTION_LIMIT: Object.freeze({
@@ -346,6 +348,35 @@ const STORAGE_CONNECTIVITY_ACTIONS = Object.freeze([
   Object.freeze({ id: "storage-write-test-object", label: "Write test object", operation: "upload" }),
   Object.freeze({ id: "storage-read-test-object", label: "Read test object", operation: "read" }),
   Object.freeze({ id: "storage-delete-test-object", label: "Delete test object", operation: "delete" }),
+]);
+const SYSTEM_HEALTH_STORAGE_ACTION_IDS = Object.freeze([
+  "storage-bucket-connectivity",
+  "storage-list",
+  "storage-upload-test-object",
+  "storage-read-test-object",
+  "storage-delete-test-object",
+]);
+const SYSTEM_HEALTH_MANUAL_ACTION_LABELS = Object.freeze({
+  "database-check": "Run Database Check",
+  "full-health-check": "Run Full Health Check",
+  refresh: "Refresh",
+  "runtime-check": "Run Runtime Check",
+  "storage-check": "Run Storage Check",
+});
+const SYSTEM_HEALTH_API_ENDPOINTS = Object.freeze([
+  Object.freeze({ method: "GET", path: "/api/admin/system-health/status", purpose: "Read current deployment System Health status." }),
+  Object.freeze({ method: "POST", path: "/api/admin/system-health/action", purpose: "Run current deployment manual health actions." }),
+  Object.freeze({ method: "POST", path: "/api/admin/system-health/storage-connectivity-action", purpose: "Run current deployment R2 folder diagnostics." }),
+]);
+const ADMIN_API_REGISTRY_ENTRIES = Object.freeze([
+  Object.freeze({ method: "GET", owner: "Team Charlie", path: "/api/admin/system-health/status", purpose: "System Health status contract" }),
+  Object.freeze({ method: "POST", owner: "Team Charlie", path: "/api/admin/system-health/action", purpose: "System Health manual actions" }),
+  Object.freeze({ method: "POST", owner: "Team Charlie", path: "/api/admin/system-health/storage-connectivity-action", purpose: "System Health R2 diagnostics" }),
+  Object.freeze({ method: "GET", owner: "Team Charlie", path: "/api/admin/infrastructure/storage-path-status", purpose: "Infrastructure storage path status" }),
+  Object.freeze({ method: "POST", owner: "Team Charlie", path: "/api/admin/infrastructure/storage-connectivity-action", purpose: "Infrastructure R2 diagnostics" }),
+  Object.freeze({ method: "GET", owner: "Team Charlie", path: "/api/admin/operations/status", purpose: "Admin Operations status" }),
+  Object.freeze({ method: "POST", owner: "Team Charlie", path: "/api/admin/operations/action", purpose: "Admin Operations actions" }),
+  Object.freeze({ method: "GET", owner: "Shared Admin Navigation", path: "/api/navigation/admin-menu", purpose: "Admin navigation menu contract" }),
 ]);
 const STORAGE_CONNECTIVITY_TEST_OBJECT_CONTENT = "Game Foundry Studio storage connectivity test object.\n";
 const STORAGE_CONNECTIVITY_TEST_OBJECT_RELATIVE_PATH = "connectivity/storage-connectivity-test.txt";
@@ -993,6 +1024,94 @@ function systemHealthSummary(rows) {
   };
 }
 
+function systemHealthApiContract(checkedAt = new Date().toISOString()) {
+  const endpointValue = SYSTEM_HEALTH_API_ENDPOINTS
+    .map((endpoint) => `${endpoint.method} ${endpoint.path}`)
+    .join("; ");
+  const rows = [
+    {
+      field: "Contract version",
+      status: "PASS",
+      value: SYSTEM_HEALTH_API_CONTRACT_VERSION,
+    },
+    {
+      field: "Data boundary",
+      status: "PASS",
+      value: SERVER_DATA_BOUNDARY_RULE,
+    },
+    {
+      field: "Deployment scope",
+      status: "PASS",
+      value: "Current deployment only",
+    },
+    {
+      field: "Environment Map",
+      status: "PASS",
+      value: "Reference only; no peer environment checks",
+    },
+    {
+      field: "Secret handling",
+      status: "PASS",
+      value: "No secret editing; secret values hidden",
+    },
+    {
+      field: "Endpoints",
+      status: "PASS",
+      value: endpointValue,
+    },
+  ];
+  return {
+    contractVersion: SYSTEM_HEALTH_API_CONTRACT_VERSION,
+    currentDeploymentOnly: true,
+    endpointCount: SYSTEM_HEALTH_API_ENDPOINTS.length,
+    endpoints: SYSTEM_HEALTH_API_ENDPOINTS.map((endpoint) => ({ ...endpoint })),
+    lastChecked: checkedAt,
+    message: "Admin System Health API contract is current-deployment only and server-owned.",
+    noCrossEnvironmentChecks: true,
+    referenceEnvironmentMapOnly: true,
+    rows,
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    status: "PASS",
+  };
+}
+
+function systemHealthAdminApiRegistry(checkedAt = new Date().toISOString()) {
+  const rows = ADMIN_API_REGISTRY_ENTRIES.map((entry) => ({
+    ...entry,
+    status: "PASS",
+  }));
+  return {
+    lastChecked: checkedAt,
+    message: "Admin API Registry lists server routes used by Admin System Health and adjacent Charlie-owned admin operations.",
+    routeCount: rows.length,
+    rows,
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    status: "PASS",
+  };
+}
+
+function systemHealthRuntimeFeatureFlags(checkedAt = new Date().toISOString()) {
+  const rows = [
+    { flag: "system-health.api-contract", status: "PASS", value: "Enabled" },
+    { flag: "system-health.environment-capabilities", status: "PASS", value: "Enabled" },
+    { flag: "system-health.admin-api-registry", status: "PASS", value: "Enabled" },
+    { flag: "system-health.runtime-health", status: "PASS", value: "Enabled" },
+    { flag: "system-health.manual-actions", status: "PASS", value: "Enabled" },
+    { flag: "system-health.scheduled-monitoring", status: "PENDING", value: "Not Configured" },
+    { flag: "system-health.notifications", status: "PENDING", value: "Not Configured" },
+  ];
+  return {
+    lastChecked: checkedAt,
+    message: "Runtime Feature Flags are read-only server-reported System Health capability flags.",
+    rows,
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    status: overallHealthStatus(rows.map((row) => ({ status: row.status }))),
+  };
+}
+
 function isSecretLikeRuntimeEnvKey(key) {
   const upperKey = String(key || "").toUpperCase();
   return RUNTIME_ENV_SECRET_MARKERS.some((marker) => upperKey.includes(marker));
@@ -1028,6 +1147,328 @@ function systemHealthRuntimeEnvironment(env = process.env) {
   };
 }
 
+let cachedProjectVersion = null;
+
+function projectVersion() {
+  if (cachedProjectVersion !== null) {
+    return cachedProjectVersion;
+  }
+  try {
+    const packageJson = JSON.parse(readFileSync(path.join(process.cwd(), "package.json"), "utf8"));
+    cachedProjectVersion = String(packageJson.version || "").trim();
+  } catch {
+    cachedProjectVersion = "";
+  }
+  return cachedProjectVersion;
+}
+
+function systemHealthRuntimeHealth(environmentIdentity = {}, checkedAt = new Date().toISOString()) {
+  const version = projectVersion();
+  const nodeVersion = String(process.version || "").trim();
+  const uptimeSeconds = Math.max(0, Math.floor(process.uptime()));
+  return {
+    apiVersion: version,
+    appVersion: version,
+    environmentName: environmentIdentity.name || "Unknown",
+    lastChecked: checkedAt,
+    message: "Runtime health is reported by the current deployment Local API only.",
+    nodeVersion,
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    serverStartTime: LOCAL_API_PROCESS_STARTED_AT,
+    status: "PASS",
+    uptimeSeconds,
+  };
+}
+
+function systemHealthServiceDisplayStatus(status, configured = true) {
+  if (configured === false) {
+    return { healthStatus: "PENDING", status: "Not Configured" };
+  }
+  const normalized = normalizeHealthStatus(status);
+  if (normalized === "PASS") {
+    return { healthStatus: "PASS", status: "Healthy" };
+  }
+  if (normalized === "FAIL") {
+    return { healthStatus: "FAIL", status: "Failed" };
+  }
+  return { healthStatus: "WARN", status: "Warning" };
+}
+
+function systemHealthServiceCard({ configured = true, id, label, lastChecked, status = "WARN", summary }) {
+  const displayStatus = systemHealthServiceDisplayStatus(status, configured);
+  return {
+    configured,
+    healthStatus: displayStatus.healthStatus,
+    id,
+    label,
+    lastChecked,
+    status: displayStatus.status,
+    summary: String(summary || "Service health status unavailable."),
+  };
+}
+
+function systemHealthServiceHealth({
+  authStatus = {},
+  checkedAt,
+  databaseStatus = {},
+  runtimeHealth = {},
+  session = {},
+  storageStatus = {},
+}) {
+  const databaseConfigured = databaseStatus.configured !== false && databaseStatus.connectivity !== "not configured";
+  const storageConfigured = storageStatus.configured === true;
+  const authConfigured = authStatus.configured === true || authStatus.ready === true;
+  const services = [
+    systemHealthServiceCard({
+      id: "runtime",
+      label: "Runtime",
+      lastChecked: runtimeHealth.lastChecked || checkedAt,
+      status: runtimeHealth.status || "WARN",
+      summary: runtimeHealth.message || "Runtime health status unavailable.",
+    }),
+    systemHealthServiceCard({
+      id: "api",
+      label: "API",
+      lastChecked: checkedAt,
+      status: session.authenticated && session.isAdmin ? "PASS" : "FAIL",
+      summary: session.authenticated && session.isAdmin
+        ? "Current deployment API responded to the Admin System Health request."
+        : "Admin System Health API requires an authenticated Admin session.",
+    }),
+    systemHealthServiceCard({
+      configured: databaseConfigured,
+      id: "database",
+      label: "Database",
+      lastChecked: databaseStatus.lastChecked || checkedAt,
+      status: databaseStatus.connectivityStatus || databaseStatus.status || "WARN",
+      summary: databaseStatus.message || `${databaseStatus.databaseType || "PostgreSQL"} status unavailable.`,
+    }),
+    systemHealthServiceCard({
+      configured: storageConfigured,
+      id: "storage",
+      label: "Storage",
+      lastChecked: storageStatus.lastChecked || checkedAt,
+      status: storageStatus.status || "WARN",
+      summary: storageStatus.message || "Cloudflare R2 storage status unavailable.",
+    }),
+    systemHealthServiceCard({
+      configured: authConfigured,
+      id: "authentication",
+      label: "Authentication",
+      lastChecked: checkedAt,
+      status: authStatus.ready === true ? "PASS" : "WARN",
+      summary: authStatus.operatorDiagnostic || authStatus.message || "Authentication provider status unavailable.",
+    }),
+    systemHealthServiceCard({
+      configured: false,
+      id: "email",
+      label: "Email",
+      lastChecked: checkedAt,
+      status: "PENDING",
+      summary: "Email health contract is not configured for this deployment.",
+    }),
+    systemHealthServiceCard({
+      configured: false,
+      id: "background-jobs",
+      label: "Background Jobs",
+      lastChecked: checkedAt,
+      status: "PENDING",
+      summary: "Background job health contract is not configured for this deployment.",
+    }),
+  ];
+  return {
+    lastChecked: checkedAt,
+    message: "Service Health summarizes current-deployment service contracts only.",
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    services,
+    status: overallHealthStatus(services.map((service) => ({ status: service.healthStatus }))),
+  };
+}
+
+function systemHealthConfigurationSummary({
+  authStatus = {},
+  checkedAt,
+  databaseStatus = {},
+  environmentIdentity = {},
+  storageStatus = {},
+}) {
+  const authConfigured = authStatus.configured === true || authStatus.ready === true;
+  const rows = [
+    {
+      field: "Current environment",
+      status: environmentIdentity.status || "WARN",
+      value: environmentIdentity.name || "Unknown",
+    },
+    {
+      field: "Hosting model",
+      status: environmentIdentity.hostingModel ? "PASS" : "WARN",
+      value: environmentIdentity.hostingModel || "not configured",
+    },
+    {
+      field: "Site URL",
+      status: environmentIdentity.siteUrlStatus || "WARN",
+      value: environmentIdentity.siteUrl || "not configured",
+    },
+    {
+      field: "API URL",
+      status: environmentIdentity.apiUrlStatus || "WARN",
+      value: environmentIdentity.apiUrl || "not configured",
+    },
+    {
+      field: "Database provider/type",
+      status: databaseStatus.databaseType || environmentIdentity.databaseModel ? "PASS" : "WARN",
+      value: databaseStatus.databaseType || environmentIdentity.databaseModel || "PostgreSQL",
+    },
+    {
+      field: "Storage provider/folder",
+      status: storageStatus.environmentFolderStatus || environmentIdentity.storageFolderStatus || "WARN",
+      value: `Cloudflare R2 ${storageStatus.environmentFolder || environmentIdentity.storageFolder || "not configured"}`,
+    },
+    {
+      field: "Auth provider/status",
+      status: authConfigured ? "PASS" : "PENDING",
+      value: `${authStatus.providerId || SUPABASE_AUTH_PROVIDER_ID} ${authConfigured ? "ready" : "not configured"}`,
+    },
+  ];
+  return {
+    lastChecked: checkedAt,
+    message: "Configuration Summary is read-only and contains no secret values.",
+    rows,
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    status: overallHealthStatus(rows),
+  };
+}
+
+function systemHealthEnvironmentCapabilities({
+  authStatus = {},
+  checkedAt,
+  databaseStatus = {},
+  environmentIdentity = {},
+  storageStatus = {},
+}) {
+  const rows = [
+    {
+      capability: "Hosting",
+      status: environmentIdentity.hostingModel ? "PASS" : "WARN",
+      value: environmentIdentity.hostingModel || "not configured",
+    },
+    {
+      capability: "API",
+      status: environmentIdentity.apiUrlStatus || "WARN",
+      value: environmentIdentity.apiUrl || "not configured",
+    },
+    {
+      capability: "Database",
+      status: databaseStatus.connectivityStatus || databaseStatus.status || "WARN",
+      value: databaseStatus.databaseType || environmentIdentity.databaseModel || "PostgreSQL",
+    },
+    {
+      capability: "Storage",
+      status: storageStatus.environmentFolderStatus || environmentIdentity.storageFolderStatus || "WARN",
+      value: `Cloudflare R2 ${storageStatus.environmentFolder || environmentIdentity.storageFolder || "not configured"}`,
+    },
+    {
+      capability: "Authentication",
+      status: authStatus.ready === true ? "PASS" : "PENDING",
+      value: authStatus.ready === true ? "Configured" : "Not Configured",
+    },
+    {
+      capability: "Scheduled Monitoring",
+      status: "PENDING",
+      value: "Not Configured",
+    },
+    {
+      capability: "Notifications",
+      status: "PENDING",
+      value: "Not Configured",
+    },
+  ];
+  return {
+    currentEnvironment: environmentIdentity.name || "Unknown",
+    lastChecked: checkedAt,
+    message: "Environment Capabilities describes the current deployment only.",
+    peerEnvironmentChecks: false,
+    rows,
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    status: overallHealthStatus(rows.map((row) => ({ status: row.status }))),
+  };
+}
+
+function systemHealthScheduledMonitoring(checkedAt = new Date().toISOString()) {
+  const rows = [
+    {
+      field: "Last scheduled run",
+      status: "PENDING",
+      value: "Not Configured",
+    },
+    {
+      field: "Next scheduled run",
+      status: "PENDING",
+      value: "Not Configured",
+    },
+    {
+      field: "Duration",
+      status: "PENDING",
+      value: "Not Configured",
+    },
+    {
+      field: "Recent result",
+      status: "PENDING",
+      value: "Not Configured",
+    },
+    {
+      field: "Failures/warnings",
+      status: "PENDING",
+      value: "Scheduler contract is not configured.",
+    },
+  ];
+  return {
+    lastChecked: checkedAt,
+    message: "Scheduled Health Monitoring is not configured for this deployment.",
+    rows,
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    status: "PENDING",
+  };
+}
+
+function systemHealthNotificationsFoundation(checkedAt = new Date().toISOString()) {
+  const rows = [
+    {
+      field: "Email alerts",
+      status: "PENDING",
+      value: "Not Configured",
+    },
+    {
+      field: "Admin notifications",
+      status: "PENDING",
+      value: "Not Configured",
+    },
+    {
+      field: "Webhook alerts",
+      status: "PENDING",
+      value: "Not Configured",
+    },
+    {
+      field: "Messages integration",
+      status: "PENDING",
+      value: "Not Configured",
+    },
+  ];
+  return {
+    lastChecked: checkedAt,
+    message: "Notifications and alerts are placeholders only; no alert sending contract is configured for this deployment.",
+    rows,
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    status: "PENDING",
+  };
+}
+
 function systemHealthHistoryRow({ checkedAt, environmentName, area, result, summary, kind = "recent check" }) {
   return {
     area,
@@ -1043,6 +1484,7 @@ function systemHealthCheckHistory({
   checkedAt,
   databaseStatus = {},
   environmentIdentity = {},
+  runtimeHealth = {},
   runtimeEnvironment = {},
   storageStatus = {},
 }) {
@@ -1076,8 +1518,8 @@ function systemHealthCheckHistory({
       area: "Runtime Health",
       checkedAt,
       environmentName,
-      result: runtimeEnvironment.status,
-      summary: runtimeEnvironment.message || "Runtime environment health unavailable.",
+      result: runtimeHealth.status || runtimeEnvironment.status,
+      summary: runtimeHealth.message || runtimeEnvironment.message || "Runtime health unavailable.",
     }),
   ];
   const issueRows = recentChecks
@@ -3886,10 +4328,85 @@ LIMIT 1;
     return this.runStorageConnectivityAction(String(body.actionId || "").trim(), { scope: "environment-folder" });
   }
 
+  async adminSystemHealthStorageHealthCheck() {
+    const results = [];
+    for (const actionId of SYSTEM_HEALTH_STORAGE_ACTION_IDS) {
+      results.push(await this.runStorageConnectivityAction(actionId, { scope: "environment-folder" }));
+    }
+    return {
+      actionId: "storage-check",
+      checkedAt: new Date().toISOString(),
+      label: SYSTEM_HEALTH_MANUAL_ACTION_LABELS["storage-check"],
+      message: "Storage health check executed bucket connectivity, list, upload, read, and delete through the current deployment API.",
+      secretEditingAllowed: false,
+      secretsExposed: false,
+      status: overallHealthStatus(results.map((result) => ({ status: result.status }))),
+      storageDiagnostics: results,
+      storageStatus: this.ownerStorageStatus(),
+    };
+  }
+
+  async adminSystemHealthAction(body = {}) {
+    const session = await this.requireAdminSession();
+    const actionId = String(body.actionId || "").trim();
+    const label = SYSTEM_HEALTH_MANUAL_ACTION_LABELS[actionId];
+    if (!label) {
+      throw httpError(`Unknown Admin System Health action: ${actionId || "missing actionId"}.`, 400);
+    }
+    const checkedAt = new Date().toISOString();
+    const environmentIdentity = systemHealthEnvironmentIdentity(process.env, checkedAt);
+    if (actionId === "refresh" || actionId === "full-health-check") {
+      const statusSnapshot = await this.adminSystemHealthStatus();
+      return {
+        actionId,
+        checkedAt,
+        label,
+        message: `${label} completed through the current deployment Admin System Health API.`,
+        secretEditingAllowed: false,
+        secretsExposed: false,
+        status: statusSnapshot.status,
+        statusSnapshot,
+      };
+    }
+    if (actionId === "runtime-check") {
+      const runtimeHealth = systemHealthRuntimeHealth(environmentIdentity, checkedAt);
+      return {
+        actionId,
+        checkedAt,
+        label,
+        message: "Runtime health check completed through the current deployment API.",
+        runtimeHealth,
+        secretEditingAllowed: false,
+        secretsExposed: false,
+        status: runtimeHealth.status,
+      };
+    }
+    if (actionId === "database-check") {
+      const databaseStatus = await this.ownerDatabaseStatus(environmentIdentity);
+      return {
+        actionId,
+        checkedAt,
+        databaseStatus,
+        label,
+        message: "Database health check completed through the current deployment API.",
+        secretEditingAllowed: false,
+        secretsExposed: false,
+        status: databaseStatus.connectivityStatus || databaseStatus.status,
+      };
+    }
+    if (session.isAdmin !== true) {
+      throw httpError("Admin role required.", 403);
+    }
+    return this.adminSystemHealthStorageHealthCheck();
+  }
+
   async adminSystemHealthStatus() {
     const session = await this.requireAdminSession();
     const authStatus = this.authStatus();
     const checkedAt = new Date().toISOString();
+    const apiContract = systemHealthApiContract(checkedAt);
+    const adminApiRegistry = systemHealthAdminApiRegistry(checkedAt);
+    const runtimeFeatureFlags = systemHealthRuntimeFeatureFlags(checkedAt);
     const environmentIdentity = systemHealthEnvironmentIdentity(process.env, checkedAt);
     const environmentMap = systemHealthEnvironmentMap();
     const databaseStatus = await this.ownerDatabaseStatus(environmentIdentity);
@@ -3902,11 +4419,37 @@ LIMIT 1;
     const promotionFoundation = this.ownerPromotionFoundation();
     const r2Readiness = systemHealthR2Readiness(storageStatus);
     const runtimeEnvironment = systemHealthRuntimeEnvironment();
+    const runtimeHealth = systemHealthRuntimeHealth(environmentIdentity, checkedAt);
+    const serviceHealth = systemHealthServiceHealth({
+      authStatus,
+      checkedAt,
+      databaseStatus,
+      runtimeHealth,
+      session,
+      storageStatus,
+    });
+    const configurationSummary = systemHealthConfigurationSummary({
+      authStatus,
+      checkedAt,
+      databaseStatus,
+      environmentIdentity,
+      storageStatus,
+    });
+    const environmentCapabilities = systemHealthEnvironmentCapabilities({
+      authStatus,
+      checkedAt,
+      databaseStatus,
+      environmentIdentity,
+      storageStatus,
+    });
+    const scheduledMonitoring = systemHealthScheduledMonitoring(checkedAt);
+    const notificationsFoundation = systemHealthNotificationsFoundation(checkedAt);
     const operationsHealth = adminOperationsHealth(this.standaloneTables);
     const healthCheckHistory = systemHealthCheckHistory({
       checkedAt,
       databaseStatus,
       environmentIdentity,
+      runtimeHealth,
       runtimeEnvironment,
       storageStatus,
     });
@@ -4033,16 +4576,25 @@ LIMIT 1;
       message: "Admin System Health loaded safe status only.",
       environmentIdentity,
       environmentMap,
+      environmentCapabilities,
       healthCheckHistory,
+      notificationsFoundation,
       operationsHealth,
       overview,
       pressureLabels: SYSTEM_HEALTH_LIMIT_PRESSURE_LABELS,
       connectionSummary: this.ownerConnectionSummary(),
       databaseStatus,
+      adminApiRegistry,
+      apiContract,
+      configurationSummary,
       r2Readiness,
       secretEditingAllowed: false,
       secretsExposed: false,
       runtimeEnvironment,
+      runtimeFeatureFlags,
+      runtimeHealth,
+      scheduledMonitoring,
+      serviceHealth,
       storageStatus,
       summary: systemHealthSummary(overview),
       status: overallHealthStatus(overview),
@@ -6053,6 +6605,12 @@ export function createLocalApiRouter({
       if (parts[1] === "admin" && parts[2] === "system-health" && request.method === "POST" && parts[3] === "storage-connectivity-action") {
         const body = await readRequestJson(request);
         ok(response, await dataSource.adminSystemHealthStorageConnectivityAction(body));
+        return true;
+      }
+
+      if (parts[1] === "admin" && parts[2] === "system-health" && request.method === "POST" && parts[3] === "action") {
+        const body = await readRequestJson(request);
+        ok(response, await dataSource.adminSystemHealthAction(body));
         return true;
       }
 

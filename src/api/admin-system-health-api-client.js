@@ -19,3 +19,13 @@ export function runAdminSystemHealthStorageConnectivityAction(actionId) {
     "Admin System Health storage connectivity action",
   );
 }
+
+export function runAdminSystemHealthAction(actionId) {
+  return requireServerApiData(
+    safeRequestServerApi("/admin/system-health/action", {
+      body: { actionId },
+      method: "POST",
+    }),
+    "Admin System Health action",
+  );
+}

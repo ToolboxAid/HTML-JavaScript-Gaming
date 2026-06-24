@@ -40,9 +40,19 @@
                                 <div class="accordion-body content-stack">
                                     <p>Environment Identity</p>
                                     <p>Environment Map</p>
+                                    <p>Environment Capabilities</p>
+                                    <p>Health API Contract</p>
+                                    <p>Admin API Registry</p>
+                                    <p>Runtime Feature Flags</p>
+                                    <p>Service Health</p>
+                                    <p>Configuration Summary</p>
+                                    <p>Manual Health Actions</p>
+                                    <p>Scheduled Health Monitoring</p>
+                                    <p>Notifications &amp; Alerts</p>
                                     <p>Local API Startup</p>
                                     <p>Database Health</p>
                                     <p>Storage Health</p>
+                                    <p>Runtime Health</p>
                                     <p>Health Check History</p>
                                     <p>Runtime Environment</p>
                                     <p>Limits &amp; Capacity</p>
@@ -100,6 +110,156 @@
                             </table>
                         </div>
                         <div class="table-wrapper">
+                            <table class="data-table" aria-label="Environment capabilities">
+                                <caption>Environment Capabilities</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Capability</th>
+                                        <th scope="col">Current Deployment</th>
+                                        <th scope="col">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-system-health-capability-rows>
+                                    <tr><td>Environment Capabilities</td><td>Waiting for safe API status</td><td data-health-status="PENDING" title="Reason: environment capabilities have not loaded yet." aria-label="PENDING: environment capabilities have not loaded yet.">PENDING</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Health API contract">
+                                <caption>Health API Contract</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Field</th>
+                                        <th scope="col">Contract</th>
+                                        <th scope="col">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-system-health-api-contract-rows>
+                                    <tr><td>Health API Contract</td><td>Waiting for safe API status</td><td data-health-status="PENDING" title="Reason: API contract has not loaded yet." aria-label="PENDING: API contract has not loaded yet.">PENDING</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Admin API registry">
+                                <caption>Admin API Registry</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Method</th>
+                                        <th scope="col">Route</th>
+                                        <th scope="col">Owner</th>
+                                        <th scope="col">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-system-health-api-registry-rows>
+                                    <tr><td>GET</td><td>Waiting for safe API status</td><td>Team Charlie</td><td data-health-status="PENDING" title="Reason: Admin API registry has not loaded yet." aria-label="PENDING: Admin API registry has not loaded yet.">PENDING</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Runtime feature flags">
+                                <caption>Runtime Feature Flags</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Flag</th>
+                                        <th scope="col">Current Deployment</th>
+                                        <th scope="col">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-system-health-feature-flag-rows>
+                                    <tr><td>Runtime Feature Flags</td><td>Waiting for safe API status</td><td data-health-status="PENDING" title="Reason: runtime feature flags have not loaded yet." aria-label="PENDING: runtime feature flags have not loaded yet.">PENDING</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <section class="content-stack" aria-label="Service health summary">
+                            <div>
+                                <div class="kicker">Current Deployment</div>
+                                <h3>Service Health</h3>
+                            </div>
+                            <div class="grid cols-3" data-admin-system-health-service-cards>
+                                <article class="card">
+                                    <div class="card-body content-stack content-stack--compact">
+                                        <h4>Loading</h4>
+                                        <p data-health-status="PENDING" title="Reason: service health has not loaded yet." aria-label="PENDING: service health has not loaded yet.">PENDING</p>
+                                        <p>Waiting for safe API status.</p>
+                                    </div>
+                                </article>
+                            </div>
+                        </section>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Configuration summary">
+                                <caption>Configuration Summary</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Field</th>
+                                        <th scope="col">Read-only Value</th>
+                                        <th scope="col">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-system-health-configuration-rows>
+                                    <tr><td>Configuration Summary</td><td>Waiting for safe API status</td><td data-health-status="PENDING" title="Reason: configuration summary has not loaded yet." aria-label="PENDING: configuration summary has not loaded yet.">PENDING</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <section class="content-stack" aria-label="Manual health actions">
+                            <div>
+                                <div class="kicker">Current Deployment</div>
+                                <h3>Manual Health Actions</h3>
+                            </div>
+                            <div class="content-cluster">
+                                <button class="btn btn--compact" type="button" data-admin-system-health-action="refresh">Refresh</button>
+                                <button class="btn btn--compact" type="button" data-admin-system-health-action="runtime-check">Run Runtime Check</button>
+                                <button class="btn btn--compact" type="button" data-admin-system-health-action="database-check">Run Database Check</button>
+                                <button class="btn btn--compact" type="button" data-admin-system-health-action="storage-check">Run Storage Check</button>
+                                <button class="btn btn--compact" type="button" data-admin-system-health-action="full-health-check">Run Full Health Check</button>
+                            </div>
+                            <div class="table-wrapper">
+                                <table class="data-table" aria-label="Manual health action results">
+                                    <caption>Manual Health Action Results</caption>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Action</th>
+                                            <th scope="col">Last Checked</th>
+                                            <th scope="col">Status</th>
+                                            <th scope="col">Result</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody data-admin-system-health-action-rows>
+                                        <tr><td>Manual health actions</td><td>not run</td><td data-health-status="PENDING" title="Reason: no manual health action has run yet." aria-label="PENDING: no manual health action has run yet.">PENDING</td><td>Waiting for Admin action.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Scheduled health monitoring">
+                                <caption>Scheduled Health Monitoring</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Field</th>
+                                        <th scope="col">Current Deployment</th>
+                                        <th scope="col">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-system-health-scheduled-rows>
+                                    <tr><td>Scheduled Health Monitoring</td><td>Not Configured</td><td data-health-status="PENDING" title="Reason: scheduled health monitoring has not loaded yet." aria-label="PENDING: scheduled health monitoring has not loaded yet.">PENDING</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Notifications and alerts">
+                                <caption>Notifications &amp; Alerts</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Integration</th>
+                                        <th scope="col">Current Deployment</th>
+                                        <th scope="col">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-system-health-notification-rows>
+                                    <tr><td>Notifications &amp; Alerts</td><td>Not Configured</td><td data-health-status="PENDING" title="Reason: notifications and alerts have not loaded yet." aria-label="PENDING: notifications and alerts have not loaded yet.">PENDING</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
                             <table class="data-table" aria-label="Local API startup diagnostics">
                                 <caption>Local API Startup Diagnostics</caption>
                                 <thead>
@@ -150,6 +310,27 @@
                                     <tr><td>Read</td><td data-admin-system-health-storage-value="read">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="read" title="Reason: R2 read check has not loaded yet." aria-label="PENDING: R2 read check has not loaded yet.">PENDING</td></tr>
                                     <tr><td>Delete</td><td data-admin-system-health-storage-value="delete">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="delete" title="Reason: R2 delete check has not loaded yet." aria-label="PENDING: R2 delete check has not loaded yet.">PENDING</td></tr>
                                     <tr><td>Last checked</td><td data-admin-system-health-storage-value="lastChecked">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="lastChecked" title="Reason: R2 health has not loaded yet." aria-label="PENDING: R2 health has not loaded yet.">PENDING</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Runtime health">
+                                <caption>Runtime Health</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Field</th>
+                                        <th scope="col">Current Deployment</th>
+                                        <th scope="col">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>Environment</td><td data-admin-system-health-runtime-health-value="environment">Loading</td><td data-health-status="PENDING" data-admin-system-health-runtime-health-status="environment" title="Reason: runtime health has not loaded yet." aria-label="PENDING: runtime health has not loaded yet.">PENDING</td></tr>
+                                    <tr><td>App/runtime version</td><td data-admin-system-health-runtime-health-value="appVersion">Loading</td><td data-health-status="PENDING" data-admin-system-health-runtime-health-status="appVersion" title="Reason: runtime health has not loaded yet." aria-label="PENDING: runtime health has not loaded yet.">PENDING</td></tr>
+                                    <tr><td>API version</td><td data-admin-system-health-runtime-health-value="apiVersion">Loading</td><td data-health-status="PENDING" data-admin-system-health-runtime-health-status="apiVersion" title="Reason: runtime health has not loaded yet." aria-label="PENDING: runtime health has not loaded yet.">PENDING</td></tr>
+                                    <tr><td>Node version</td><td data-admin-system-health-runtime-health-value="nodeVersion">Loading</td><td data-health-status="PENDING" data-admin-system-health-runtime-health-status="nodeVersion" title="Reason: runtime health has not loaded yet." aria-label="PENDING: runtime health has not loaded yet.">PENDING</td></tr>
+                                    <tr><td>Server start time</td><td data-admin-system-health-runtime-health-value="serverStartTime">Loading</td><td data-health-status="PENDING" data-admin-system-health-runtime-health-status="serverStartTime" title="Reason: runtime health has not loaded yet." aria-label="PENDING: runtime health has not loaded yet.">PENDING</td></tr>
+                                    <tr><td>Uptime</td><td data-admin-system-health-runtime-health-value="uptime">Loading</td><td data-health-status="PENDING" data-admin-system-health-runtime-health-status="uptime" title="Reason: runtime health has not loaded yet." aria-label="PENDING: runtime health has not loaded yet.">PENDING</td></tr>
+                                    <tr><td>Last checked</td><td data-admin-system-health-runtime-health-value="lastChecked">Loading</td><td data-health-status="PENDING" data-admin-system-health-runtime-health-status="lastChecked" title="Reason: runtime health has not loaded yet." aria-label="PENDING: runtime health has not loaded yet.">PENDING</td></tr>
                                 </tbody>
                             </table>
                         </div>
