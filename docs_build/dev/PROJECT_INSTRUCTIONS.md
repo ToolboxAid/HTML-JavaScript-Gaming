@@ -2288,6 +2288,17 @@ OWNER follows the same safety rules:
 - OWNER may override team locks, but may not silently delete, rewrite, or remove protected instructions.
 - OWNER override must be explicitly documented.
 
+## PROJECT INSTRUCTION REFERENCE FILE RECOGNITION
+
+`docs_build/dev/ProjectInstructions/addendums/project_reference_files.md` defines additional valid project instruction/reference files.
+
+Future Project Instructions reviews must include these files when present in `ProjectInstructions.zip`, the active project instruction directory, or `docs_build/dev/admin-notes/`:
+
+- `Installs required.txt`
+- `Table layout.txt`
+
+Treat these files the same as existing instruction documents for read-set, review, preservation, and reporting purposes.
+
 ## CODEX INSTRUCTION ENFORCEMENT START GATE
 
 Codex must run this gate before every PR execution and before any file changes.

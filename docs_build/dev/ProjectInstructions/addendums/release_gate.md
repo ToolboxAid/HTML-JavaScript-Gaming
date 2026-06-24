@@ -36,7 +36,10 @@ The release gate should confirm these files when relevant to the PR:
 - `docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md`
 - `docs_build/dev/ProjectInstructions/addendums/governance_phase1_complete.md`
 - `docs_build/dev/ProjectInstructions/addendums/pr_workflow.md`
+- `docs_build/dev/ProjectInstructions/addendums/project_reference_files.md`
 - `docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md`
+- `docs_build/dev/admin-notes/Installs required.txt` when present
+- `docs_build/dev/admin-notes/Table layout.txt` when present
 
 ## Validation Result
 

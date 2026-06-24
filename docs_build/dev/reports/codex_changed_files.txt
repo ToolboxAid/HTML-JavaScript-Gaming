@@ -1,8 +1,17 @@
+docs_build/dev/admin-notes/index.txt
+docs_build/dev/admin-notes/Installs required.txt
+docs_build/dev/admin-notes/Table layout.txt
+docs_build/dev/PROJECT_INSTRUCTIONS.md
+docs_build/dev/ProjectInstructions/addendums/project_reference_files.md
+docs_build/dev/ProjectInstructions/addendums/release_gate.md
+docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+docs_build/dev/ProjectInstructions/README.txt
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_branch-validation.md
-docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_manual-validation-notes.md
-docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_report.md
-docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_requirements-checklist.md
-docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_validation-lane.md
-docs_build/pr/PLAN_PR_26175_ALFA_051-alfa-end-of-day-closeout.md
+docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files.md
+docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_branch-validation.md
+docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_manual-validation-notes.md
+docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_requirement-checklist.md
+docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_validation-lane.md
+docs_build/pr/PLAN_PR_26175_OWNER_050-project-instructions-add-valid-reference-files.md
+project-instructions/addendums/codex-project-instructions-startup.md

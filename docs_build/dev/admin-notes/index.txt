@@ -30,6 +30,8 @@ Owned paths:
 - `docs_build/dev/admin-notes/other/index.txt` is the simple subnote fixture.
 - `docs_build/dev/admin-notes/quick-reference.txt` is a linked text-note fixture.
 - `docs_build/dev/admin-notes/sample.txt` is a root-relative link example note.
+- `docs_build/dev/admin-notes/Installs required.txt` is a recognized Project Instructions reference file.
+- `docs_build/dev/admin-notes/Table layout.txt` is a recognized Project Instructions reference file.
 - `docs_build/dev/admin-notes/notes/index.txt` is retained historical admin-note content.
 
 Runtime boundary:
@@ -48,4 +50,3 @@ Runtime boundary:
 - name is up for discuttion  (this is my ideas, things I want to fix, undecided question)
 [ ] Correction Notes update
 [subnote] should be /[subnote]/note.txt
-

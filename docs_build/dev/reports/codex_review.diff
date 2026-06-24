@@ -1,227 +1,466 @@
-diff --git a/docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_branch-validation.md b/docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_branch-validation.md
+diff --git a/docs_build/dev/PROJECT_INSTRUCTIONS.md b/docs_build/dev/PROJECT_INSTRUCTIONS.md
+index 4cccb8ffb..1fdd9fc64 100644
+--- a/docs_build/dev/PROJECT_INSTRUCTIONS.md
++++ b/docs_build/dev/PROJECT_INSTRUCTIONS.md
+@@ -2288,6 +2288,17 @@ OWNER follows the same safety rules:
+ - OWNER may override team locks, but may not silently delete, rewrite, or remove protected instructions.
+ - OWNER override must be explicitly documented.
+
++## PROJECT INSTRUCTION REFERENCE FILE RECOGNITION
++
++`docs_build/dev/ProjectInstructions/addendums/project_reference_files.md` defines additional valid project instruction/reference files.
++
++Future Project Instructions reviews must include these files when present in `ProjectInstructions.zip`, the active project instruction directory, or `docs_build/dev/admin-notes/`:
++
++- `Installs required.txt`
++- `Table layout.txt`
++
++Treat these files the same as existing instruction documents for read-set, review, preservation, and reporting purposes.
++
+ ## CODEX INSTRUCTION ENFORCEMENT START GATE
+
+ Codex must run this gate before every PR execution and before any file changes.
+diff --git a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+index 20d6ae342..640ca6792 100644
+--- a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
++++ b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+@@ -15,6 +15,7 @@ The Project Instructions operating system provides additive governance for:
+ - tile overlay status behavior
+ - deprecation workflow
+ - archive and history preservation
++- recognized project instruction/reference files
+
+ ## Preservation
+
+@@ -29,6 +30,10 @@ Existing Project Instructions remain preserved in their current locations. This
+ - `archive/` contains retained reference material.
+ - `archive/history/` contains timestamped history snapshots.
+
++## Recognized Project Reference Files
++
++`docs_build/dev/ProjectInstructions/addendums/project_reference_files.md` defines additional valid project instruction/reference files that must be included in future Project Instructions reviews when present in `ProjectInstructions.zip`, the active project instruction directory, or `docs_build/dev/admin-notes/`.
++
+ ## Merge Control
+
+ No PR in this operating system is merged without explicit owner approval.
+diff --git a/docs_build/dev/ProjectInstructions/README.txt b/docs_build/dev/ProjectInstructions/README.txt
+index 83680ec7e..262b216e7 100644
+--- a/docs_build/dev/ProjectInstructions/README.txt
++++ b/docs_build/dev/ProjectInstructions/README.txt
+@@ -48,3 +48,4 @@ Addendum index:
+ - Assistant Execution Modes: project-instructions/addendums/assistant-execution-modes.md
+ - Codex Artifact and Reporting Standard: project-instructions/addendums/codex-artifact-and-reporting-standard.md
+ - Codex Project Instructions Startup: project-instructions/addendums/codex-project-instructions-startup.md
++- Project Reference Files Governance: docs_build/dev/ProjectInstructions/addendums/project_reference_files.md
+diff --git a/docs_build/dev/ProjectInstructions/addendums/project_reference_files.md b/docs_build/dev/ProjectInstructions/addendums/project_reference_files.md
 new file mode 100644
-index 000000000..833eb75aa
+index 000000000..5e56f01a6
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_branch-validation.md
++++ b/docs_build/dev/ProjectInstructions/addendums/project_reference_files.md
+@@ -0,0 +1,36 @@
++# Project Reference Files Governance
++
++Status: Approved
++Owner: OWNER
++
++## Purpose
++
++Define recognized project instruction and reference documents that may live outside the active `docs_build/dev/ProjectInstructions/` addendum tree but still belong in Project Instructions reviews.
++
++## Recognized Files
++
++The following files are valid project instruction/reference documents when present in `ProjectInstructions.zip`, `docs_build/dev/ProjectInstructions/`, or the project instruction/admin-notes directory:
++
++- `Installs required.txt`
++- `Table layout.txt`
++
++Canonical repository locations:
++
++- `docs_build/dev/admin-notes/Installs required.txt`
++- `docs_build/dev/admin-notes/Table layout.txt`
++
++## Review Rule
++
++Future Project Instructions reviews must include these files automatically when they are present in either:
++
++- an extracted `ProjectInstructions.zip` bundle
++- the active project instruction directory
++- `docs_build/dev/admin-notes/`
++
++Treat these files the same as existing instruction documents for read-set, review, preservation, and reporting purposes.
++
++Missing files are not a release-gate failure unless a PR explicitly scopes those files or claims they are present.
++
++## Scope Boundary
++
++This governance addendum does not introduce runtime behavior, UI behavior, application loading, or ZIP-generation changes.
+diff --git a/docs_build/dev/ProjectInstructions/addendums/release_gate.md b/docs_build/dev/ProjectInstructions/addendums/release_gate.md
+index 5fe7ed1f0..a509f1791 100644
+--- a/docs_build/dev/ProjectInstructions/addendums/release_gate.md
++++ b/docs_build/dev/ProjectInstructions/addendums/release_gate.md
+@@ -36,7 +36,10 @@ The release gate should confirm these files when relevant to the PR:
+ - `docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md`
+ - `docs_build/dev/ProjectInstructions/addendums/governance_phase1_complete.md`
+ - `docs_build/dev/ProjectInstructions/addendums/pr_workflow.md`
++- `docs_build/dev/ProjectInstructions/addendums/project_reference_files.md`
+ - `docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md`
++- `docs_build/dev/admin-notes/Installs required.txt` when present
++- `docs_build/dev/admin-notes/Table layout.txt` when present
+
+ ## Validation Result
+
+diff --git a/docs_build/dev/admin-notes/Installs required.txt b/docs_build/dev/admin-notes/Installs required.txt
+new file mode 100644
+index 000000000..9f2615023
+--- /dev/null
++++ b/docs_build/dev/admin-notes/Installs required.txt
+@@ -0,0 +1,9 @@
++VS Code required tools
++
++Power Shell
++winget install --id GitHub.cli
++gh --version
++gh auth login
++
++Terminal
++Install-Script -Name winget-install -RequiredVersion 2.1.0 -Scope CurrentUser
+diff --git a/docs_build/dev/admin-notes/Table layout.txt b/docs_build/dev/admin-notes/Table layout.txt
+new file mode 100644
+index 000000000..f7d18e37b
+--- /dev/null
++++ b/docs_build/dev/admin-notes/Table layout.txt
+@@ -0,0 +1,60 @@
++
++DB base
++Creator Table 1
++Parent Table *-1 user
++Child Table -- *-1 Parent
++
++
++No selected Items
++┌──────────────────────────────────────────────────────────────────────────────────────────────────────┐
++│ Idea Board                                                                                           │
++├───────────────┬─────────────────────────────────────────┬───────────┬────────────┬─────────┬─────────┤
++│ Idea          │ Pitch                                   │ Status    │ Updated    │ Notes   │ Actions │
++├───────────────┼─────────────────────────────────────────┼───────────┼────────────┼─────────┼─────────┤
++│ Top Thougts   │ Smartest person wins...                 │ Exploring │ 2026-06-20 │ 3 Notes │ Edit Del│
++├───────────────┬─────────────────────────────────────────┬───────────┬────────────┬─────────┬─────────┤
++│ Sky Orchard   │ Grow floating islands...                │ Exploring │ 2026-06-20 │ 3 Notes │ Edit Del│
++├───────────────┴─────────────────────────────────────────┴───────────┴────────────┴─────────┴─────────┤
++│ Clockwork...  │ Deliver messages through looping city...│ New       │ 2026-06-20 │ 0 Notes │ Edit Del│
++├───────────────┴─────────────────────────────────────────┴───────────┴────────────┴─────────┴─────────┤
++│ [ Add Idea ]                                                                                         │
++└──────────────────────────────────────────────────────────────────────────────────────────────────────┘
++
++
++Clicking {Sky Orchard {chevron down arrow}] Expands/Acording the Note(s) for that Idea
++┌────────────────────────────────────────────────────────────────────────────────────────────────────┐
++│ Idea Board                                                                                         │
++├───────────────┬─────────────────────────────────────────┬───────────┬────────────┬─────────┬─────────┤
++│ Idea          │ Pitch                                   │ Status    │ Updated    │ Notes   │ Actions │
++├───────────────┼─────────────────────────────────────────┼───────────┼────────────┼─────────┼─────────┤
++│ Top Thougts   │ Smartest person wins...                 │ Exploring │ 2026-06-20 │ 3 Notes │ Edit Del│
++├───────────────┬─────────────────────────────────────────┬───────────┬────────────┬─────────┬─────────┤
++│ Sky Orchard[^}│ Grow floating islands...                │ Exploring │ 2026-06-20 │ 3 Notes │ Edit Del│
++├───────────────┴─────────────────────────────────────────┴───────────┴────────────┴─────────┴─────────┤
++│ Notes                                                                                               │
++│ --------------------------------------------------------------------------------------------------- │
++│ note 1                                                           [Edit] [Delete]                   │
++│ System seed note: compare early ideas before project creation. [Edit]                              │
++│ Ask whether the core loop is planning, defense, or both.    [Edit] [Delete]                       │
++│                                                                                                     │
++│ [ Add Note ]                                                                                        │
++├───────────────┬─────────────────────────────────────────┬───────────┬────────────┬─────────┬─────────┤
++│ Clockwork...  │ Deliver messages through looping city...│ New       │ 2026-06-20 │ 0 Notes │ Edit Del│
++├───────────────┴─────────────────────────────────────────┴───────────┴────────────┴─────────┴─────────┤
++│ [ Add Idea ]                                                                                         │
++└──────────────────────────────────────────────────────────────────────────────────────────────────────┘
++
++Clickin Add Idea
++┌────────────────────────────────────────────────────────────────────────────────────────────────────┐
++│ Idea Board                                                                                        │
++├───────────────┬─────────────────────────────────────────┬───────────┬────────────┬─────────┬─────────┤
++│ Idea          │ Pitch                                   │ Status    │ Updated    │ Notes   │ Actions │
++├───────────────┼─────────────────────────────────────────┼───────────┼────────────┼─────────┼─────────┤
++│ Top Thougts   │ Smartest person wins...                 │ Exploring │ 2026-06-20 │ 3 Notes │ Edit Del│
++├───────────────┬─────────────────────────────────────────┬───────────┬────────────┬─────────┬─────────┤
++│ Sky Orchard   │ Grow floating islands...                │ Exploring │ 2026-06-20 │ 3 Notes │ Edit Del│
++├───────────────┴─────────────────────────────────────────┴───────────┴────────────┴─────────┴─────────┤
++│ Clockwork...  │ Deliver messages through looping city...│ New       │ 2026-06-20 │ 0 Notes │ Edit Del│
++├───────────────┴─────────────────────────────────────────┴───────────┴────────────┴─────────┴─────────┤
++│ [input.....]  │ [input.....]                            │ [Dropdown]│ [autofile] │ 0 Notes │ Save Can│
++└──────────────────────────────────────────────────────────────────────────────────────────────────────┘
+diff --git a/docs_build/dev/admin-notes/index.txt b/docs_build/dev/admin-notes/index.txt
+index 25f4fc1bf..93654fa6e 100644
+--- a/docs_build/dev/admin-notes/index.txt
++++ b/docs_build/dev/admin-notes/index.txt
+@@ -30,6 +30,8 @@ Owned paths:
+ - `docs_build/dev/admin-notes/other/index.txt` is the simple subnote fixture.
+ - `docs_build/dev/admin-notes/quick-reference.txt` is a linked text-note fixture.
+ - `docs_build/dev/admin-notes/sample.txt` is a root-relative link example note.
++- `docs_build/dev/admin-notes/Installs required.txt` is a recognized Project Instructions reference file.
++- `docs_build/dev/admin-notes/Table layout.txt` is a recognized Project Instructions reference file.
+ - `docs_build/dev/admin-notes/notes/index.txt` is retained historical admin-note content.
+
+ Runtime boundary:
+@@ -48,4 +50,3 @@ Runtime boundary:
+ - name is up for discuttion  (this is my ideas, things I want to fix, undecided question)
+ [ ] Correction Notes update
+ [subnote] should be /[subnote]/note.txt
+-
+diff --git a/docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files.md b/docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files.md
+new file mode 100644
+index 000000000..2136ca33c
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files.md
+@@ -0,0 +1,70 @@
++# PR_26175_OWNER_050-project-instructions-add-valid-reference-files
++
++Date: 2026-06-24
++Team: OWNER
++Scope: Documentation/governance only
++Status: PASS
++
++## Summary
++
++- Added Project Reference Files Governance for recognized project instruction/reference documents.
++- Recognized `Installs required.txt` and `Table layout.txt` when present in `ProjectInstructions.zip`, the active project instruction directory, or `docs_build/dev/admin-notes/`.
++- Indexed the new addendum from the active Project Instructions README and operating-system root.
++- Updated the release gate, legacy startup guidance, root enforcement instructions, and admin-note ownership list so future reviews include these files automatically.
++- Added the two canonical admin-note reference files.
++- No runtime code changes and no UI changes were made.
++
++## Branch Validation
++
++PASS. Current branch is `codex/pr-26175-owner-050-project-instructions-add-valid-reference-files`, created from clean synchronized `main` at `99c53e368`.
++
++## Instruction Compliance
++
++- PASS: PR name includes OWNER team token.
++- PASS: Team OWNER owns governance/instruction-routing work.
++- PASS: Scope is documentation/governance only.
++- PASS: No runtime, UI, engine, backlog, or roadmap changes.
++- PASS: Required reports and ZIP artifact are produced for the BUILD.
++
++## Changed Files
++
++- `docs_build/dev/PROJECT_INSTRUCTIONS.md`
++- `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
++- `docs_build/dev/ProjectInstructions/README.txt`
++- `docs_build/dev/ProjectInstructions/addendums/project_reference_files.md`
++- `docs_build/dev/ProjectInstructions/addendums/release_gate.md`
++- `docs_build/dev/admin-notes/index.txt`
++- `docs_build/dev/admin-notes/Installs required.txt`
++- `docs_build/dev/admin-notes/Table layout.txt`
++- `project-instructions/addendums/codex-project-instructions-startup.md`
++- `docs_build/pr/PLAN_PR_26175_OWNER_050-project-instructions-add-valid-reference-files.md`
++- `docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files.md`
++- `docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_branch-validation.md`
++- `docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_requirement-checklist.md`
++- `docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_validation-lane.md`
++- `docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_manual-validation-notes.md`
++- `docs_build/dev/reports/codex_changed_files.txt`
++- `docs_build/dev/reports/codex_review.diff`
++
++## Required Reports
++
++- `docs_build/dev/reports/codex_review.diff`
++- `docs_build/dev/reports/codex_changed_files.txt`
++- `docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files.md`
++- `docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_branch-validation.md`
++- `docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_requirement-checklist.md`
++- `docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_validation-lane.md`
++- `docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_manual-validation-notes.md`
++
++## Validation
++
++- PASS: `git status --short --branch`.
++- PASS: `git rev-list --left-right --count origin/main...HEAD`.
++- PASS: `git diff --name-only`.
++- PASS: `git diff --check`.
++- PASS: Targeted reference checks confirmed both filenames and the new addendum are referenced from active instruction surfaces.
++- PASS: File presence checks confirmed both canonical admin-note reference files exist.
++
++## Artifact
++
++- `tmp/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_branch-validation.md b/docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_branch-validation.md
+new file mode 100644
+index 000000000..310f3f7f0
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_branch-validation.md
 @@ -0,0 +1,22 @@
-+# PR_26175_ALFA_051-alfa-end-of-day-closeout Branch Validation
++# PR_26175_OWNER_050-project-instructions-add-valid-reference-files Branch Validation
 +
 +## Branch
-+`codex/pr-26175-alfa-051-alfa-end-of-day-closeout`
++`codex/pr-26175-owner-050-project-instructions-add-valid-reference-files`
 +
 +## Base
 +- Base branch: `origin/main`
-+- Base commit at branch creation: `6a7a001b9`
++- Base commit at branch creation: `99c53e368`
 +
 +## Checks
-+- Branch created after ALFA_050 merge: PASS.
-+- Local `main` verified clean before branch creation: PASS.
-+- Branch delta limited to the ALFA_051 plan and required reports: PASS.
++- Current branch is the scoped OWNER_050 branch: PASS.
++- Branch was created from clean synchronized `main`: PASS.
++- Local/origin sync at branch creation was `0 0`: PASS.
++- Scope is limited to Project Instructions governance, admin-note reference files, plan, reports, and Codex review artifacts: PASS.
 +- No runtime files changed: PASS.
 +- No UI files changed: PASS.
-+- No test files changed: PASS.
-+- No roadmap files changed: PASS.
++- No engine core files changed: PASS.
 +- No backlog files changed: PASS.
-+- No Project Instructions source files changed: PASS.
++- No roadmap files changed: PASS.
 +
 +## Result
 +PASS
-diff --git a/docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_manual-validation-notes.md b/docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_manual-validation-notes.md
+diff --git a/docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_manual-validation-notes.md b/docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_manual-validation-notes.md
 new file mode 100644
-index 000000000..77dd81396
+index 000000000..dfdeb4aa2
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_manual-validation-notes.md
-@@ -0,0 +1,13 @@
-+# PR_26175_ALFA_051-alfa-end-of-day-closeout Manual Validation Notes
++++ b/docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_manual-validation-notes.md
+@@ -0,0 +1,15 @@
++# PR_26175_OWNER_050-project-instructions-add-valid-reference-files Manual Validation Notes
 +
-+Manual validation was limited to documentation/governance review because this PR is report-only.
++Manual validation was limited to governance/documentation review because this PR adds recognized instruction reference files and review rules only.
 +
 +## Notes
-+- Confirmed ALFA_050 merged to `main` before this closeout branch was created.
-+- Confirmed local `main` was synchronized with `origin/main` at `6a7a001b9` before branch work.
-+- Reviewed current Team Alfa assignment files; Team Alfa is listed as available with no active assignment or branch.
-+- Reviewed current backlog status without editing backlog source files.
-+- Audited GitHub for open Team Alfa PRs using connector searches for `ALFA` and `PR_26175_ALFA`; no open matching PRs were found.
++- Confirmed the new addendum recognizes `Installs required.txt` and `Table layout.txt`.
++- Confirmed the active Project Instructions root references the new addendum.
++- Confirmed the Project Instructions README indexes the new addendum.
++- Confirmed the release gate includes the new addendum and both canonical reference files when present.
++- Confirmed admin-note ownership lists both canonical files.
++- Confirmed Codex startup guidance includes both filenames in the Project Instructions read set when present.
++- Confirmed both canonical files exist under `docs_build/dev/admin-notes/`.
 +
 +## Result
 +PASS
-diff --git a/docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_report.md b/docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_report.md
+diff --git a/docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_requirement-checklist.md b/docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_requirement-checklist.md
 new file mode 100644
-index 000000000..374efeda0
+index 000000000..f4c81eb15
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_report.md
-@@ -0,0 +1,47 @@
-+# PR_26175_ALFA_051-alfa-end-of-day-closeout Report
++++ b/docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_requirement-checklist.md
+@@ -0,0 +1,21 @@
++# PR_26175_OWNER_050-project-instructions-add-valid-reference-files Requirement Checklist
 +
-+## Summary
-+- Scope: report-only Team Alfa end-of-day closeout for the current `PR_26175` Alfa stream.
-+- ALFA_050 status: merged to `main` as GitHub PR #169.
-+- ALFA_050 merge commit: `6a7a001b9d92a078fdfcfec50e26d533cf855d0d`.
-+- Main verification before this branch: PASS. Local `main` fast-forwarded to `origin/main` at `6a7a001b9` with a clean tracked worktree.
-+- Runtime/UI scope: no runtime code changes, no UI changes, no tests changed, no engine core changes, and no `start_of_day` changes.
-+
-+## Current Alfa Mainline Work
-+The current `main` branch includes the 26175 Alfa report trail for:
-+
-+- `PR_26175_ALFA_009-status-bar-single-row-rebuild`
-+- `PR_26175_ALFA_011-status-bar-journey-progress-context`
-+- `PR_26175_ALFA_015-alfa-foundation-consolidation`
-+- `PR_26175_ALFA_016-alfa-parent-child-table-consolidation`
-+- `PR_26175_ALFA_017-alfa-game-hub-interactions-consolidation`
-+- `PR_26175_ALFA_018-alfa-idea-board-polish-consolidation`
-+- `PR_26175_ALFA_047-theme-v2-svg-icon-registry`
-+- `PR_26175_ALFA_048-theme-v2-chevron-conversion`
-+- `PR_26175_ALFA_049-theme-v2-status-action-icons`
-+- `PR_26175_ALFA_050-theme-v2-layout-utility-icons`
-+- `PR_26175_ALFA_051-idea-board-game-hub-row-expectation`
-+
-+## Duplicate Numbering Note
-+`PR_26175_ALFA_051-idea-board-game-hub-row-expectation` already exists on current `main` as a separate test-expectation closeout. This closeout uses the exact requested slug `PR_26175_ALFA_051-alfa-end-of-day-closeout` to preserve traceability without rewriting the prior report history.
-+
-+## Open Team Alfa PR Audit
-+- GitHub connector search for open PRs matching `ALFA`: no open PRs found.
-+- GitHub connector search for open PRs matching `PR_26175_ALFA`: no open PRs found.
-+- Project Instructions active-team files list Team Alfa as `Available` with no active assignment, branch, or PR.
-+
-+## Backlog Status Note
-+Current backlog source files still contain open Team Alfa backlog items. This closeout does not complete, reprioritize, remove, or edit backlog items.
-+
-+## Changed Files
-+- `docs_build/pr/PLAN_PR_26175_ALFA_051-alfa-end-of-day-closeout.md`
-+- `docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_report.md`
-+- `docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_validation-lane.md`
-+- `docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_requirements-checklist.md`
-+- `docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_branch-validation.md`
-+- `docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_manual-validation-notes.md`
-+- `docs_build/dev/reports/codex_review.diff`
-+- `docs_build/dev/reports/codex_changed_files.txt`
-+
-+## Branch Validation
-+PASS
-diff --git a/docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_requirements-checklist.md b/docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_requirements-checklist.md
-new file mode 100644
-index 000000000..468917296
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_requirements-checklist.md
-@@ -0,0 +1,20 @@
-+# PR_26175_ALFA_051-alfa-end-of-day-closeout Requirements Checklist
-+
-+- [x] Confirm ALFA_050 was merged into `main`.
-+- [x] Confirm local `main` was verified clean before creating this branch.
-+- [x] Produce Team Alfa end-of-day closeout report.
-+- [x] Summarize current 26175 Alfa work present on `main`.
-+- [x] Document duplicate `PR_26175_ALFA_051` numbering note.
-+- [x] Audit open Team Alfa GitHub PRs.
-+- [x] Confirm no runtime code changes.
-+- [x] Confirm no UI changes.
-+- [x] Confirm no test expectation changes.
-+- [x] Confirm no backlog edits.
-+- [x] Confirm no roadmap edits.
-+- [x] Confirm no Project Instructions source edits.
++- [x] Add `Installs required.txt` as a valid project instruction/reference file.
++- [x] Add `Table layout.txt` as a valid project instruction/reference file.
++- [x] Update documentation so future instruction reviews include these files automatically.
++- [x] Treat these files the same as existing instruction documents when found in `ProjectInstructions.zip`.
++- [x] Treat these files the same as existing instruction documents when found in the project instruction directory.
++- [x] Treat these files the same as existing instruction documents when found in `docs_build/dev/admin-notes/`.
++- [x] Keep scope documentation/governance only.
++- [x] Make no runtime code changes.
++- [x] Make no UI changes.
++- [x] Produce PR-specific report.
++- [x] Produce branch validation PASS/FAIL report.
++- [x] Produce validation lane report.
++- [x] Produce manual validation notes.
 +- [x] Produce `codex_review.diff`.
 +- [x] Produce `codex_changed_files.txt`.
 +- [x] Produce repo-structured ZIP under `tmp/`.
 +
 +## Result
 +PASS
-diff --git a/docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_validation-lane.md b/docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_validation-lane.md
+diff --git a/docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_validation-lane.md b/docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_validation-lane.md
 new file mode 100644
-index 000000000..7c7b14514
+index 000000000..c8526f385
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_validation-lane.md
-@@ -0,0 +1,17 @@
-+# PR_26175_ALFA_051-alfa-end-of-day-closeout Validation Lane
++++ b/docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_validation-lane.md
+@@ -0,0 +1,20 @@
++# PR_26175_OWNER_050-project-instructions-add-valid-reference-files Validation Lane
 +
 +## Lane
-+Documentation/governance report lane.
++Documentation/governance lane.
 +
 +## Commands
 +- `git status --short --branch`
 +- `git rev-list --left-right --count origin/main...HEAD`
 +- `git diff --name-only`
 +- `git diff --check`
++- `rg -n "Installs required.txt|Table layout.txt|project_reference_files.md" docs_build/dev/PROJECT_INSTRUCTIONS.md docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md docs_build/dev/ProjectInstructions/README.txt docs_build/dev/ProjectInstructions/addendums/release_gate.md docs_build/dev/ProjectInstructions/addendums/project_reference_files.md docs_build/dev/admin-notes/index.txt project-instructions/addendums/codex-project-instructions-startup.md`
++- File presence checks for `docs_build/dev/admin-notes/Installs required.txt` and `docs_build/dev/admin-notes/Table layout.txt`
 +
-+## GitHub Metadata Audit
-+- Open PR search `ALFA`: PASS, no open PRs found.
-+- Open PR search `PR_26175_ALFA`: PASS, no open PRs found.
++## Skipped Lanes
++- Runtime validation skipped: no runtime files changed.
++- UI/browser validation skipped: no UI files changed.
++- Test suite skipped: no runtime, UI, or test files changed.
 +
 +## Result
 +PASS
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 07b3989e2..a0557cef9 100644
+index a0557cef9..950751836 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,14 +1,8 @@
--assets/theme-v2/css/buttons.css
--assets/theme-v2/css/icons.css
--assets/theme-v2/css/panels.css
--assets/theme-v2/js/gamefoundry-partials.js
--assets/theme-v2/js/tool-display-mode.js
--docs_build/dev/reports/PR_26175_ALFA_050-theme-v2-layout-utility-icons_manual-validation-notes.md
--docs_build/dev/reports/PR_26175_ALFA_050-theme-v2-layout-utility-icons_report.md
--docs_build/dev/reports/PR_26175_ALFA_050-theme-v2-layout-utility-icons_requirements-checklist.md
--docs_build/dev/reports/PR_26175_ALFA_050-theme-v2-layout-utility-icons_validation-lane.md
+@@ -1,8 +1,17 @@
++docs_build/dev/admin-notes/index.txt
++docs_build/dev/admin-notes/Installs required.txt
++docs_build/dev/admin-notes/Table layout.txt
++docs_build/dev/PROJECT_INSTRUCTIONS.md
++docs_build/dev/ProjectInstructions/addendums/project_reference_files.md
++docs_build/dev/ProjectInstructions/addendums/release_gate.md
++docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
++docs_build/dev/ProjectInstructions/README.txt
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
--tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs
--tests/playwright/tools/ToolboxRoutePages.spec.mjs
--tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-+docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_branch-validation.md
-+docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_manual-validation-notes.md
-+docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_report.md
-+docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_requirements-checklist.md
-+docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_validation-lane.md
-+docs_build/pr/PLAN_PR_26175_ALFA_051-alfa-end-of-day-closeout.md
-diff --git a/docs_build/pr/PLAN_PR_26175_ALFA_051-alfa-end-of-day-closeout.md b/docs_build/pr/PLAN_PR_26175_ALFA_051-alfa-end-of-day-closeout.md
+-docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_branch-validation.md
+-docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_manual-validation-notes.md
+-docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_report.md
+-docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_requirements-checklist.md
+-docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_validation-lane.md
+-docs_build/pr/PLAN_PR_26175_ALFA_051-alfa-end-of-day-closeout.md
++docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files.md
++docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_branch-validation.md
++docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_manual-validation-notes.md
++docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_requirement-checklist.md
++docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_validation-lane.md
++docs_build/pr/PLAN_PR_26175_OWNER_050-project-instructions-add-valid-reference-files.md
++project-instructions/addendums/codex-project-instructions-startup.md
+diff --git a/docs_build/pr/PLAN_PR_26175_OWNER_050-project-instructions-add-valid-reference-files.md b/docs_build/pr/PLAN_PR_26175_OWNER_050-project-instructions-add-valid-reference-files.md
 new file mode 100644
-index 000000000..980cd58b6
+index 000000000..08f2f9d4e
 --- /dev/null
-+++ b/docs_build/pr/PLAN_PR_26175_ALFA_051-alfa-end-of-day-closeout.md
-@@ -0,0 +1,66 @@
-+# PLAN PR_26175_ALFA_051-alfa-end-of-day-closeout
++++ b/docs_build/pr/PLAN_PR_26175_OWNER_050-project-instructions-add-valid-reference-files.md
+@@ -0,0 +1,57 @@
++# PLAN PR_26175_OWNER_050-project-instructions-add-valid-reference-files
 +
-+Source of truth: user request `PLAN_PR PR_26175_ALFA_051-alfa-end-of-day-closeout`.
++Source of truth: user request `PLAN_PR PR_26175_OWNER_050-project-instructions-add-valid-reference-files`.
 +
 +## Purpose
-+Create a current-main Team Alfa end-of-day closeout after ALFA_050 merged into `main`.
-+
-+## Dependencies
-+- Requires `PR_26175_ALFA_050-theme-v2-layout-utility-icons` to be merged into `main`.
-+- Requires local `main` to be clean and synchronized with `origin/main` before the closeout branch is created.
++Update Project Instructions governance so `Installs required.txt` and `Table layout.txt` are recognized as valid project instruction/reference files.
 +
 +## Scope
 +Primary target files:
-+- `docs_build/pr/PLAN_PR_26175_ALFA_051-alfa-end-of-day-closeout.md`
-+- `docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_report.md`
-+- `docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_validation-lane.md`
-+- `docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_requirements-checklist.md`
-+- `docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_branch-validation.md`
-+- `docs_build/dev/reports/PR_26175_ALFA_051-alfa-end-of-day-closeout_manual-validation-notes.md`
++- `docs_build/dev/PROJECT_INSTRUCTIONS.md`
++- `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
++- `docs_build/dev/ProjectInstructions/README.txt`
++- `docs_build/dev/ProjectInstructions/addendums/project_reference_files.md`
++- `docs_build/dev/ProjectInstructions/addendums/release_gate.md`
++- `docs_build/dev/admin-notes/index.txt`
++- `docs_build/dev/admin-notes/Installs required.txt`
++- `docs_build/dev/admin-notes/Table layout.txt`
++- `project-instructions/addendums/codex-project-instructions-startup.md`
++- `docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files.md`
++- `docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_branch-validation.md`
++- `docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_requirement-checklist.md`
++- `docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_validation-lane.md`
++- `docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_manual-validation-notes.md`
 +- `docs_build/dev/reports/codex_review.diff`
 +- `docs_build/dev/reports/codex_changed_files.txt`
 +
-+Allowed reads:
-+- Current Team Alfa report files under `docs_build/dev/reports/PR_26175_ALFA_*`.
-+- Current Project Instructions team/backlog files under `docs_build/dev/ProjectInstructions/`.
-+- Current roadmap files under `docs_build/dev/roadmaps/`.
-+- GitHub PR metadata for Team Alfa PRs.
-+
 +## Required Changes
-+- Produce a report-only Team Alfa end-of-day closeout for the current `PR_26175` Alfa stream.
-+- Confirm ALFA_050 is merged and `main` was verified clean before ALFA_051 branch work.
-+- Summarize the current 26175 Alfa work that landed on `main`.
-+- Identify any known duplicate numbering note for `PR_26175_ALFA_051`.
-+- Audit open Team Alfa GitHub PRs and note whether any remain active, stale, draft, or superseded.
-+- Confirm no runtime, UI, API, database, roadmap, backlog, or Project Instruction source files are modified.
-+- Produce required reports, Codex diff/list reports, and a repo-structured ZIP under `tmp/`.
++- Add `Installs required.txt` as a valid project instruction/reference file.
++- Add `Table layout.txt` as a valid project instruction/reference file.
++- Update documentation so future Project Instructions reviews include these files automatically.
++- Treat these files the same as existing instruction documents when found in `ProjectInstructions.zip`, the project instruction directory, or `docs_build/dev/admin-notes/`.
++- Preserve the files as documentation/reference material only.
 +
 +## Acceptance Criteria
-+- Closeout report clearly states ALFA_050 merge status and current main verification status.
-+- Closeout report is documentation/report-only.
-+- Requirement checklist, validation lane, branch validation, and manual notes exist.
-+- `codex_review.diff` and `codex_changed_files.txt` exist and match the final branch delta.
-+- Delta ZIP exists at `tmp/PR_26175_ALFA_051-alfa-end-of-day-closeout_delta.zip`.
-+- No runtime, UI, API, database, backlog, roadmap, or Project Instructions source files are changed.
++- New Project Reference Files Governance addendum exists and is indexed.
++- Both recognized filenames are listed in active instruction/governance review surfaces.
++- Both canonical admin-note reference files exist.
++- Required PR report, branch validation, requirement checklist, validation lane report, manual validation notes, `codex_review.diff`, and `codex_changed_files.txt` exist.
++- Delta ZIP exists under `tmp/`.
++- No runtime code changes.
++- No UI changes.
 +
 +## Validation
 +Run only:
@@ -229,18 +468,30 @@ index 000000000..980cd58b6
 +- `git rev-list --left-right --count origin/main...HEAD`
 +- `git diff --name-only`
 +- `git diff --check`
-+- GitHub PR metadata audit for open Team Alfa PRs.
++- Targeted reference checks for `Installs required.txt`, `Table layout.txt`, and `project_reference_files.md`.
 +
 +## Non-goals
 +- No runtime code changes.
 +- No UI changes.
-+- No test expectation changes.
-+- No backlog edits.
-+- No roadmap edits.
-+- No Project Instructions source edits.
-+- No branch deletion.
-+- No closing unrelated PRs.
-+- No merging this ALFA_051 closeout without the requested APPLY step.
++- No engine core changes.
++- No backlog changes.
++- No roadmap changes.
++- No broad Project Instructions rewrite.
+diff --git a/project-instructions/addendums/codex-project-instructions-startup.md b/project-instructions/addendums/codex-project-instructions-startup.md
+index 56ea75dbe..94744f06e 100644
+--- a/project-instructions/addendums/codex-project-instructions-startup.md
++++ b/project-instructions/addendums/codex-project-instructions-startup.md
+@@ -21,6 +21,13 @@ Codex must use this as the primary source of truth for:
+ - Execution modes
+ - Artifact requirements
+
++## Project Reference File Review
 +
-+## Working Tree Rule
-+Start from clean, synchronized `main`. If the tree is dirty before branch creation, stop unless all changes are already scoped to this PLAN/BUILD.
++When present in `ProjectInstructions.zip`, the active project instruction directory, or `docs_build/dev/admin-notes/`, Codex must include these recognized project instruction/reference files in the Project Instructions read set:
++
++- `Installs required.txt`
++- `Table layout.txt`
++
+ Chat instructions may supplement Project Instructions but must not override approved governance without explicit Owner approval.
+
+ ## Conflict Handling
