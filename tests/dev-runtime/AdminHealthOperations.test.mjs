@@ -201,6 +201,18 @@ test("Admin can view operational health while Creator sessions are blocked", asy
         health.environmentMap.map((row) => row.name),
         ["Local", "DEV", "IST", "UAT", "PRD"],
       );
+      assert.equal(health.apiContract.contractVersion, "2026-06-24.system-health.v1");
+      assert.equal(health.apiContract.currentDeploymentOnly, true);
+      assert.equal(health.apiContract.noCrossEnvironmentChecks, true);
+      assert.equal(health.apiContract.referenceEnvironmentMapOnly, true);
+      assert.deepEqual(
+        health.apiContract.endpoints.map((endpoint) => `${endpoint.method} ${endpoint.path}`),
+        [
+          "GET /api/admin/system-health/status",
+          "POST /api/admin/system-health/action",
+          "POST /api/admin/system-health/storage-connectivity-action",
+        ],
+      );
       assert.equal(
         health.environmentMap.some((row) => Object.prototype.hasOwnProperty.call(row, "status")),
         false,

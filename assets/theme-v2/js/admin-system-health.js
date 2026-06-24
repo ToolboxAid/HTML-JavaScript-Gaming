@@ -63,6 +63,7 @@ class AdminSystemHealthController {
             node,
         ]));
         this.historyRows = root.querySelector("[data-admin-system-health-history-rows]");
+        this.apiContractRows = root.querySelector("[data-admin-system-health-api-contract-rows]");
         this.actionRows = root.querySelector("[data-admin-system-health-action-rows]");
         this.actionButtons = Array.from(root.querySelectorAll("[data-admin-system-health-action]"));
         this.configurationRows = root.querySelector("[data-admin-system-health-configuration-rows]");
@@ -143,6 +144,7 @@ class AdminSystemHealthController {
         this.renderStartupPending(reason);
         this.renderStoragePending(reason);
         this.renderRuntimeHealthPending(reason);
+        this.renderApiContractPending(reason);
         this.renderServiceHealthPending(reason);
         this.renderConfigurationSummaryPending(reason);
         this.renderScheduledMonitoringPending(reason);
@@ -242,6 +244,45 @@ class AdminSystemHealthController {
         this.setRuntimeHealthStatus("uptime", Number.isFinite(Number(runtimeHealth.uptimeSeconds)) ? "PASS" : "WARN", reason);
         this.setRuntimeHealthValue("lastChecked", runtimeHealth.lastChecked, "not available");
         this.setRuntimeHealthStatus("lastChecked", runtimeHealth.lastChecked ? "PASS" : "WARN", reason);
+    }
+
+    renderApiContractPending(reason) {
+        if (!this.apiContractRows) {
+            return;
+        }
+        const row = document.createElement("tr");
+        row.append(
+            this.createCell("Health API Contract"),
+            this.createCell("not available"),
+            this.createStatusCell("PENDING", reason),
+        );
+        this.apiContractRows.replaceChildren(row);
+    }
+
+    renderApiContract(apiContract = {}) {
+        if (!this.apiContractRows) {
+            return;
+        }
+        if (apiContract?.secretsExposed === true || apiContract?.secretEditingAllowed === true) {
+            this.renderApiContractPending("Safe API contract response was blocked because it exposed secret controls.");
+            return;
+        }
+        const rows = Array.isArray(apiContract.rows) ? apiContract.rows : [];
+        if (!rows.length) {
+            this.renderApiContractPending("Safe Admin System Health API returned no contract rows.");
+            return;
+        }
+        const fragment = document.createDocumentFragment();
+        rows.forEach((contractRow) => {
+            const row = document.createElement("tr");
+            row.append(
+                this.createCell(contractRow.field),
+                this.createCell(contractRow.value),
+                this.createStatusCell(contractRow.status, apiContract.message),
+            );
+            fragment.append(row);
+        });
+        this.apiContractRows.replaceChildren(fragment);
     }
 
     renderServiceHealthPending(reason) {
@@ -665,6 +706,7 @@ class AdminSystemHealthController {
         this.renderStorageStatus(data?.storageStatus || {});
         this.runStorageDiagnostics();
         this.renderRuntimeHealth(data?.runtimeHealth || {});
+        this.renderApiContract(data?.apiContract || {});
         this.renderServiceHealth(data?.serviceHealth || {});
         this.renderConfigurationSummary(data?.configurationSummary || {});
         this.renderScheduledMonitoring(data?.scheduledMonitoring || {});

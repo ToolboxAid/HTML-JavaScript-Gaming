@@ -40,6 +40,7 @@
                                 <div class="accordion-body content-stack">
                                     <p>Environment Identity</p>
                                     <p>Environment Map</p>
+                                    <p>Health API Contract</p>
                                     <p>Service Health</p>
                                     <p>Configuration Summary</p>
                                     <p>Manual Health Actions</p>
@@ -102,6 +103,21 @@
                                     <tr><td>IST</td><td>Local Docker</td><td>Local Docker PostgreSQL</td><td>/ist</td></tr>
                                     <tr><td>UAT</td><td>Cloudflare</td><td>Supabase PostgreSQL</td><td>/uat</td></tr>
                                     <tr><td>PRD</td><td>Cloudflare</td><td>Supabase PostgreSQL</td><td>/prd</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Health API contract">
+                                <caption>Health API Contract</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Field</th>
+                                        <th scope="col">Contract</th>
+                                        <th scope="col">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-system-health-api-contract-rows>
+                                    <tr><td>Health API Contract</td><td>Waiting for safe API status</td><td data-health-status="PENDING" title="Reason: API contract has not loaded yet." aria-label="PENDING: API contract has not loaded yet.">PENDING</td></tr>
                                 </tbody>
                             </table>
                         </div>

@@ -322,6 +322,7 @@ const LOCAL_API_STARTUP_DEFAULT_PORT_BY_PROTOCOL = Object.freeze({
   "https:": "443",
 });
 const LOCAL_API_PROCESS_STARTED_AT = new Date().toISOString();
+const SYSTEM_HEALTH_API_CONTRACT_VERSION = "2026-06-24.system-health.v1";
 const SYSTEM_HEALTH_USAGE_NOT_AVAILABLE = "NOT AVAILABLE";
 const SYSTEM_HEALTH_USAGE_CONTRACTS = Object.freeze({
   GAMEFOUNDRY_DB_CONNECTION_LIMIT: Object.freeze({
@@ -362,6 +363,11 @@ const SYSTEM_HEALTH_MANUAL_ACTION_LABELS = Object.freeze({
   "runtime-check": "Run Runtime Check",
   "storage-check": "Run Storage Check",
 });
+const SYSTEM_HEALTH_API_ENDPOINTS = Object.freeze([
+  Object.freeze({ method: "GET", path: "/api/admin/system-health/status", purpose: "Read current deployment System Health status." }),
+  Object.freeze({ method: "POST", path: "/api/admin/system-health/action", purpose: "Run current deployment manual health actions." }),
+  Object.freeze({ method: "POST", path: "/api/admin/system-health/storage-connectivity-action", purpose: "Run current deployment R2 folder diagnostics." }),
+]);
 const STORAGE_CONNECTIVITY_TEST_OBJECT_CONTENT = "Game Foundry Studio storage connectivity test object.\n";
 const STORAGE_CONNECTIVITY_TEST_OBJECT_RELATIVE_PATH = "connectivity/storage-connectivity-test.txt";
 const SYSTEM_HEALTH_ENVIRONMENT_MODELS = Object.freeze([
@@ -1005,6 +1011,58 @@ function systemHealthSummary(rows) {
     score: total ? Math.round((counts.PASS / total) * 100) : 0,
     status: overallHealthStatus(rows),
     total,
+  };
+}
+
+function systemHealthApiContract(checkedAt = new Date().toISOString()) {
+  const endpointValue = SYSTEM_HEALTH_API_ENDPOINTS
+    .map((endpoint) => `${endpoint.method} ${endpoint.path}`)
+    .join("; ");
+  const rows = [
+    {
+      field: "Contract version",
+      status: "PASS",
+      value: SYSTEM_HEALTH_API_CONTRACT_VERSION,
+    },
+    {
+      field: "Data boundary",
+      status: "PASS",
+      value: SERVER_DATA_BOUNDARY_RULE,
+    },
+    {
+      field: "Deployment scope",
+      status: "PASS",
+      value: "Current deployment only",
+    },
+    {
+      field: "Environment Map",
+      status: "PASS",
+      value: "Reference only; no peer environment checks",
+    },
+    {
+      field: "Secret handling",
+      status: "PASS",
+      value: "No secret editing; secret values hidden",
+    },
+    {
+      field: "Endpoints",
+      status: "PASS",
+      value: endpointValue,
+    },
+  ];
+  return {
+    contractVersion: SYSTEM_HEALTH_API_CONTRACT_VERSION,
+    currentDeploymentOnly: true,
+    endpointCount: SYSTEM_HEALTH_API_ENDPOINTS.length,
+    endpoints: SYSTEM_HEALTH_API_ENDPOINTS.map((endpoint) => ({ ...endpoint })),
+    lastChecked: checkedAt,
+    message: "Admin System Health API contract is current-deployment only and server-owned.",
+    noCrossEnvironmentChecks: true,
+    referenceEnvironmentMapOnly: true,
+    rows,
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    status: "PASS",
   };
 }
 
@@ -4244,6 +4302,7 @@ LIMIT 1;
     const session = await this.requireAdminSession();
     const authStatus = this.authStatus();
     const checkedAt = new Date().toISOString();
+    const apiContract = systemHealthApiContract(checkedAt);
     const environmentIdentity = systemHealthEnvironmentIdentity(process.env, checkedAt);
     const environmentMap = systemHealthEnvironmentMap();
     const databaseStatus = await this.ownerDatabaseStatus(environmentIdentity);
@@ -4413,6 +4472,7 @@ LIMIT 1;
       pressureLabels: SYSTEM_HEALTH_LIMIT_PRESSURE_LABELS,
       connectionSummary: this.ownerConnectionSummary(),
       databaseStatus,
+      apiContract,
       configurationSummary,
       r2Readiness,
       secretEditingAllowed: false,

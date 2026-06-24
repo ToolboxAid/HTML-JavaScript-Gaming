@@ -145,6 +145,11 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
     await expect(page.getByRole("table", { name: "Environment map" })).toContainText("UAT");
     await expect(page.getByRole("table", { name: "Environment map" })).toContainText("PRD");
     await expect(page.getByRole("table", { name: "Environment map" }).locator("[data-health-status]")).toHaveCount(0);
+    const apiContractTable = page.getByRole("table", { name: "Health API contract" });
+    await expect(apiContractTable).toContainText("2026-06-24.system-health.v1");
+    await expect(apiContractTable).toContainText("Current deployment only");
+    await expect(apiContractTable).toContainText("Reference only");
+    await expect(apiContractTable).toContainText("GET /api/admin/system-health/status");
     const serviceCards = page.locator("[data-admin-system-health-service-card]");
     await expect(serviceCards).toHaveCount(7);
     const serviceCardText = (await serviceCards.allTextContents()).join("\n");
@@ -297,6 +302,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
   expect(pageSource).not.toContain("SQLite");
   expect(pageSource).toContain("Environment Identity");
   expect(pageSource).toContain("Environment Map");
+  expect(pageSource).toContain("Health API Contract");
   expect(pageSource).toContain("Service Health");
   expect(pageSource).toContain("Configuration Summary");
   expect(pageSource).toContain("Manual Health Actions");
