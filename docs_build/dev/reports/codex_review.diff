@@ -1,689 +1,240 @@
-diff --git a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-index 3314b3dea..20d6ae342 100644
---- a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-+++ b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-@@ -59,0 +60,22 @@ Rules:
+diff --git a/docs_build/dev/reports/PR_26175_OWNER_053-alfa-stack-resolution-plan.md b/docs_build/dev/reports/PR_26175_OWNER_053-alfa-stack-resolution-plan.md
+new file mode 100644
+index 000000000..800a47662
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_OWNER_053-alfa-stack-resolution-plan.md
+@@ -0,0 +1,213 @@
++# PR_26175_OWNER_053 - Alfa Stack Resolution Plan
 +
-+## Current Active Ownership Lanes
++Date: 2026-06-24
++Branch: PR_26175_OWNER_053-alfa-stack-resolution-plan
++Scope: Report-only Alfa PR stack resolution plan
 +
-+OWNER override approved.
++## Executive Summary
 +
-+The current active ownership lanes are:
++GitHub is authoritative for this review. PRs #96 through #118 are open draft Alfa PRs. GitHub reports each as `CLEAN` / `MERGEABLE` against its current base branch, but the PRs are stacked on non-main bases. None of #96 through #118 should be treated as independently merge-safe to `main` in its current PR configuration.
 +
-+- Team Alfa
-+- Team Bravo
-+- Team Charlie
-+- Team Delta
-+- Team Golf
-+- Team OWNER
++The stack should be resolved as ordered batches. PR #95, the ALFA_001 base, is already merged. PR #96 can become the first mainline merge candidate only after retargeting or rebasing onto current `main`, followed by validation. PRs #97 through #116 should then be processed in strict chain order, with validation checkpoints at batch boundaries.
 +
-+Migration note:
-+Team Gamma is retired. Team Golf is the replacement active ownership lane.
++PR #118 does not supersede the runtime portions of the stack. It is final closeout evidence. It can supersede portions of the closeout reporting from #117, but it does not replace Game Hub, Game Journey, Idea Board, tests, CSS, or metadata changes from #96 through #116.
 +
-+Rules:
-+- Do not rewrite historical PR references that mention Team Gamma.
-+- Do not rename historical branches that contain Gamma.
-+- Team Golf may own newly assigned work, review packets, cleanup, release, or OWNER-directed cross-team work.
-+- Team Golf must not silently take backlog ownership from Alfa, Bravo, Charlie, or Delta; cross-team work requires OWNER approval.
-diff --git a/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md b/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
-index 12f74cb1f..d0118f63a 100644
---- a/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
-+++ b/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
-@@ -92,0 +93,22 @@ Work only that assignment.
-+## Start Team Golf
++PR #117 should remain archive-only and should not be merged as runtime work. It can be closed as superseded by #118 after OWNER accepts #118 as the final closeout evidence.
 +
-+Ready-to-copy command:
++No PRs were merged. No PRs were closed. No branches were deleted. No runtime code was modified.
++
++## Alfa Dependency Chain Diagram
 +
 +```text
-+OWNER override approved: Start Team Golf from the ProjectInstructions release gate.
-+
-+Read docs_build/dev/ProjectInstructions/README.txt first.
-+Read docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md.
-+Read docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
-+Read docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md.
-+
-+Stop if Team Golf already has an active branch.
-+Stop if Team Golf already has an active assignment.
-+Stop if OWNER has not explicitly assigned Team Golf work.
-+Stop if the selected work conflicts with current Alfa, Bravo, Charlie, or Delta ownership.
-+
-+Record the selected assignment under Team Golf in TEAM_ASSIGNMENTS.md.
-+Create or use one Team Golf branch for the selected assignment.
-+Work only that assignment.
++#95 ALFA_001 idea-board-create-project-api-contract
++  status: merged to main
++  |
++  v
++#96 ALFA_002 game-hub-project-intake-display
++  |
++  v
++#97 ALFA_003 game-hub-journey-bootstrap
++  |
++  v
++#98 ALFA_004 game-hub-progress-count-model
++  |
++  v
++#99 ALFA_005 idea-project-validation-polish
++  |
++  v
++#100 ALFA_006 game-hub-empty-and-error-states
++  |
++  v
++#101 ALFA_007 game-journey-count-ui-polish
++  |
++  v
++#102 ALFA_008 alpha-stack-final-validation
++  |
++  v
++#103 ALFA_009 game-hub-parent-child-table-layout
++  |
++  v
++#104 ALFA_010 game-hub-source-idea-child-table-polish
++  |
++  v
++#105 ALFA_011 game-hub-readiness-output-child-table
++  |
++  v
++#106 ALFA_012 game-hub-parent-child-final-validation
++  |
++  v
++#107 ALFA_013 game-hub-game-row-child-rows
++  |
++  v
++#108 ALFA_014 game-hub-parent-columns-center
++  |
++  v
++#109 ALFA_015 game-hub-actions-and-setup-cleanup
++  |
++  v
++#110 ALFA_016 game-hub-row-edit-add-selected-state
++  |
++  v
++#111 ALFA_017 game-hub-guest-save-and-crew-cleanup
++  |
++  v
++#112 ALFA_018 game-selection-button-state
++  |
++  v
++#113 ALFA_019 game-hub-selected-button-and-crew-label
++  |
++  v
++#114 ALFA_020 game-hub-idea-board-cleanup
++  |
++  v
++#115 ALFA_021 idea-board-status-filter-table-polish
++  |
++  v
++#116 ALFA_022 idea-board-status-dropdown-fix
++  |
++  v
++#117 ALFA_EOD workstream-closeout
++  |
++  v
++#118 ALFA_EOD final-closeout
 +```
 +
-diff --git a/docs_build/dev/ProjectInstructions/addendums/multi_team.md b/docs_build/dev/ProjectInstructions/addendums/multi_team.md
-index 797a8834e..190813840 100644
---- a/docs_build/dev/ProjectInstructions/addendums/multi_team.md
-+++ b/docs_build/dev/ProjectInstructions/addendums/multi_team.md
-@@ -15,0 +16,22 @@ Rules:
-+## Current Active Ownership Lanes
++## PR Inventory
 +
-+OWNER override approved.
++Age is calendar-day age as of 2026-06-24 using GitHub creation dates.
 +
-+The current active ownership lanes are:
++| PR | Title | Created | Days Old | Chain Position | Runtime Impact | Status |
++| --- | --- | --- | ---: | --- | --- | --- |
++| #96 | PR_26174_ALFA_002-game-hub-project-intake-display | 2026-06-22 | 2 | ALFA_002, depends on merged #95 branch/base | Test/report impact only in PR diff; no direct runtime file in GitHub changed file list. | Dependency required |
++| #97 | PR_26174_ALFA_003-game-hub-journey-bootstrap | 2026-06-22 | 2 | ALFA_003, depends on #96 | Dev-runtime API/persistence bootstrap via mock DB store, Game Journey mock repository, and local API router. | Dependency required |
++| #98 | PR_26174_ALFA_004-game-hub-progress-count-model | 2026-06-22 | 2 | ALFA_004, depends on #97 | Game Journey mock repository count model plus Playwright coverage. | Dependency required |
++| #99 | PR_26174_ALFA_005-idea-project-validation-polish | 2026-06-22 | 2 | ALFA_005, depends on #98 | Test/report impact only in PR diff; validates Idea Board project flow. | Dependency required |
++| #100 | PR_26174_ALFA_006-game-hub-empty-and-error-states | 2026-06-22 | 2 | ALFA_006, depends on #99 | Game Hub UI empty/error state behavior and Playwright coverage. | Dependency required |
++| #101 | PR_26174_ALFA_007-game-journey-count-ui-polish | 2026-06-22 | 2 | ALFA_007, depends on #100 | Game Journey UI count display polish and Playwright coverage. | Dependency required |
++| #102 | PR_26174_ALFA_008-alpha-stack-final-validation | 2026-06-22 | 2 | ALFA_008, depends on #101 | Validation/report-only checkpoint for the first Alfa stack segment. | Dependency required |
++| #103 | PR_26174_ALFA_009-game-hub-parent-child-table-layout | 2026-06-22 | 2 | ALFA_009, depends on #102 | Game Hub UI parent/child table layout and Playwright coverage. | Dependency required |
++| #104 | PR_26174_ALFA_010-game-hub-source-idea-child-table-polish | 2026-06-22 | 2 | ALFA_010, depends on #103 | Game Hub source idea child-table polish plus Idea Board validation coverage. | Dependency required |
++| #105 | PR_26174_ALFA_011-game-hub-readiness-output-child-table | 2026-06-22 | 2 | ALFA_011, depends on #104 | Game Hub readiness/output child-table behavior and Playwright coverage. | Dependency required |
++| #106 | PR_26174_ALFA_012-game-hub-parent-child-final-validation | 2026-06-22 | 2 | ALFA_012, depends on #105 | Validation/report checkpoint plus Game Hub Playwright coverage. | Dependency required |
++| #107 | PR_26174_ALFA_013-game-hub-game-row-child-rows | 2026-06-22 | 2 | ALFA_013, depends on #106 | Game Hub row child rows, Game Hub HTML, table-first UI guidance, and tests. | Dependency required |
++| #108 | PR_26174_ALFA_014-game-hub-parent-columns-center | 2026-06-22 | 2 | ALFA_014, depends on #107 | Game Hub table layout/centering across JS, HTML, and tests. | Dependency required |
++| #109 | PR_26174_ALFA_015-game-hub-actions-and-setup-cleanup | 2026-06-23 | 1 | ALFA_015, depends on #108 | Game Hub actions/setup UI cleanup plus Theme V2 table CSS and tests. | Dependency required |
++| #110 | PR_26174_ALFA_016-game-hub-row-edit-add-selected-state | 2026-06-23 | 1 | ALFA_016, depends on #109 | Game Hub row edit/add selected state plus Theme V2 table CSS and tests. | Dependency required |
++| #111 | PR_26174_ALFA_017-game-hub-guest-save-and-crew-cleanup | 2026-06-23 | 1 | ALFA_017, depends on #110 | Game Hub guest save and crew cleanup in JS/HTML plus tests. | Dependency required |
++| #112 | PR_26174_ALFA_018-game-selection-button-state | 2026-06-23 | 1 | ALFA_018, depends on #111 | Game selection button state in Game Hub plus Theme V2 table CSS and tests. | Dependency required |
++| #113 | PR_26174_ALFA_019-game-hub-selected-button-and-crew-label | 2026-06-23 | 1 | ALFA_019, depends on #112 | Game Hub selected button and crew label behavior plus Theme V2 table CSS and tests. | Dependency required |
++| #114 | PR_26174_ALFA_020-game-hub-idea-board-cleanup | 2026-06-23 | 1 | ALFA_020, depends on #113 | Game Hub, Idea Board, metadata inventory, Build Path status, and route/test cleanup. | Dependency required |
++| #115 | PR_26174_ALFA_021-idea-board-status-filter-table-polish | 2026-06-23 | 1 | ALFA_021, depends on #114 | Idea Board status filter/table polish plus Theme V2 table CSS and tests. | Dependency required |
++| #116 | PR_26174_ALFA_022-idea-board-status-dropdown-fix | 2026-06-23 | 1 | ALFA_022, depends on #115 | Idea Board status dropdown fix and validation coverage. | Dependency required |
++| #117 | PR_26174_ALFA_EOD-workstream-closeout | 2026-06-23 | 1 | EOD closeout, depends on #116 | Report-only closeout evidence; no runtime files. | Close as superseded |
++| #118 | PR_26174_ALFA_EOD-final-closeout | 2026-06-23 | 1 | Final EOD closeout, depends on #117 | Report-only final closeout evidence; no runtime files. | Hold |
 +
-+- Team Alfa
-+- Team Bravo
-+- Team Charlie
-+- Team Delta
-+- Team Golf
-+- Team OWNER
++## Merge Candidates
 +
-+Migration note:
-+Team Gamma is retired. Team Golf is the replacement active ownership lane.
++No PR in #96 through #118 is merge-safe independently in its current GitHub configuration because every PR targets a non-main base branch.
 +
-+Rules:
-+- Historical PR references and branch names that mention Gamma remain unchanged for traceability.
-+- New active work that would previously have used Team Gamma routes to Team Golf.
-+- Team Golf work requires OWNER assignment, an active branch, an active draft/open PR, or active release/cleanup responsibility.
-+- If Team Golf work touches Alfa, Bravo, Charlie, or Delta ownership areas, the PR must document the OWNER cross-team decision.
++Conditional merge candidates after dependency handling:
++- #96 through #102: foundation and first validation batch. #96 can start after retargeting/rebasing onto current `main` because #95 is already merged.
++- #103 through #106: Game Hub parent/child table batch.
++- #107 through #114: Game Hub child-row, table layout, actions, selected state, crew label, Idea Board cleanup, and metadata batch.
++- #115 through #116: Idea Board status filter/dropdown batch.
 +
-diff --git a/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md b/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
-index cadfee261..e4b0ba1de 100644
---- a/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
-+++ b/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
-@@ -56,0 +57,2 @@ Applies to:
-+- Team Delta
-+- Team Golf
-diff --git a/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md b/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
-index d73cfcb9f..521758eeb 100644
---- a/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
-+++ b/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
-@@ -6,0 +7,5 @@ This gate prevents Team Alfa, Team Bravo, Team Charlie, or Team OWNER from start
-+Current OWNER clarification:
-+- This gate also applies to Team Delta and Team Golf.
-+- Team Gamma is retired. Team Golf is the replacement active ownership lane.
-+- Historical wording that listed fewer teams remains traceable, but it must not exclude Delta or Golf from current active ownership governance.
++Each batch should preserve internal PR order. Within a batch, merge sequentially and run a validation checkpoint after the batch lands on `main`.
 +
-diff --git a/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md b/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
-index e1018c155..d6af3271c 100644
---- a/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
-+++ b/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
-@@ -33,0 +34,22 @@ Each team start must confirm the selected backlog item is inside that team's own
-+## Current Active Ownership Start Map
++## Superseded Candidates
 +
-+OWNER override approved.
++#117 is the superseded candidate.
 +
-+The current active ownership start map includes:
++Reason:
++- #117 is report-only EOD workstream closeout evidence.
++- #118 is the later final closeout evidence.
++- #118 can supersede the reporting purpose of #117, but it does not supersede runtime or test changes from #96 through #116.
 +
-+- Team Alfa
-+- Team Bravo
-+- Team Charlie
-+- Team Delta
-+- Team Golf
-+- Team OWNER
++Recommendation:
++- Keep #117 as archive-only evidence in GitHub history.
++- Close #117 as superseded after OWNER confirms #118 is the accepted final closeout record.
 +
-+Migration note:
-+Team Gamma is retired. Team Golf is the replacement active ownership lane.
++## Hold Candidates
 +
-+Clarification:
-+- The four-team start set remains the backlog ownership start set for Alfa, Bravo, Charlie, and Delta.
-+- Team Golf is valid for OWNER-assigned, branch-backed, PR-backed, release, review packet, or cleanup work.
-+- Historical Gamma references and branch names must remain unchanged.
-+- Golf work must not silently take ownership from Alfa, Bravo, Charlie, or Delta; cross-team work requires OWNER approval.
++#118 should be held.
 +
-diff --git a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-index 0b8942261..ed2f85a4b 100644
---- a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-+++ b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-@@ -164,0 +165,7 @@
-+Current OWNER clarification:
-+- The backlog alignment below preserves the current Alfa, Bravo, Charlie, and Delta ownership model.
-+- Team Gamma is retired. Team Golf is the replacement active ownership lane.
-+- Team Golf has no standing backlog ownership area in this file unless OWNER assigns one.
-+- Golf work may be OWNER-assigned, branch-backed, PR-backed, release, review packet, or cleanup work and must not silently replace Alfa, Bravo, Charlie, or Delta ownership.
-+- Historical Gamma PR references and branch names are not renamed by this clarification.
++Reason:
++- #118 is final closeout evidence, not runtime implementation.
++- It depends on #117, which should remain archive-only and is not recommended for merge.
++- #118 is useful for owner review and audit context, but should not be merged before the runtime stack decision is complete.
 +
-diff --git a/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md b/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
-index 5ca625819..6ddf25619 100644
---- a/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
-+++ b/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
-@@ -30,0 +31,5 @@ If a team has no assignment, no active branch, and no active PR, it is inactive
-+| Team Alfa | none | none | none | Available | Active ownership lane |
-+| Team Bravo | none | none | none | Available | Active ownership lane |
-+| Team Charlie | none | none | none | Available | Active ownership lane |
-+| Team Delta | none | none | none | Available | Active ownership lane |
-+| Team Golf | none | none | none | Available | Replacement active ownership lane for retired Team Gamma |
-@@ -32,0 +38,11 @@ If a team has no assignment, no active branch, and no active PR, it is inactive
-+## Current Active Ownership Lanes
++Recommendation:
++- Hold #118 until #96 through #116 have been resolved.
++- After runtime stack resolution, either recreate final closeout evidence from current `main` or close #118 as historical closeout evidence.
 +
-+OWNER override approved.
++## Final Recommended Merge Order
 +
-+The current active ownership lanes are Team Alfa, Team Bravo, Team Charlie, Team Delta, Team Golf, and Team OWNER.
++1. Confirm #95 remains merged to `main`.
++2. Retarget or rebase #96 onto current `main`; validate; merge #96 if clean.
++3. Process Batch 1 in order: #97, #98, #99, #100, #101, #102.
++4. Run a validation checkpoint for Game Hub intake, Game Journey bootstrap/count model, Idea Board validation, and first-stack reports.
++5. Process Batch 2 in order: #103, #104, #105, #106.
++6. Run a validation checkpoint for Game Hub parent/child table behavior.
++7. Process Batch 3 in order: #107, #108, #109, #110, #111, #112, #113, #114.
++8. Run a validation checkpoint for Game Hub child rows, table layout, action cleanup, selected-state behavior, crew labels, Idea Board cleanup, and route coverage.
++9. Process Batch 4 in order: #115, #116.
++10. Run a validation checkpoint for Idea Board status filter/dropdown behavior.
++11. Do not merge #117; keep it archive-only and close as superseded after OWNER approval.
++12. Hold #118 until the runtime stack has landed or been rejected; then recreate or close final closeout evidence based on current `main`.
 +
-+Migration note:
-+Team Gamma is retired. Team Golf is the replacement active ownership lane.
++## Required Decisions
 +
-+Historical Gamma PR references and branch names remain unchanged for traceability.
-+
-diff --git a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
-index acefbba8e..afe4efa91 100644
---- a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
-+++ b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
-@@ -6,0 +7,6 @@
-+| Team Alfa | none | none | none | Available |
-+| Team Bravo | none | none | none | Available |
-+| Team Charlie | none | none | none | Available |
-+| Team Delta | none | none | none | Available |
-+| Team Golf | none | none | none | Available |
-+| Team OWNER | none | none | none | Available |
-@@ -29,0 +36,6 @@ it is currently inactive.
-+Current OWNER clarification:
-+- The active ownership lanes are Team Alfa, Team Bravo, Team Charlie, Team Delta, Team Golf, and Team OWNER.
-+- Team Gamma is retired. Team Golf is the replacement active ownership lane.
-+- Do not rewrite historical PR references that mention Team Gamma.
-+- Do not rename historical branches that contain Gamma.
-+
-@@ -67,0 +80,10 @@ Active branch: none.
-+## Team Golf
-+
-+Status: Available
-+
-+Active assignment: none.
-+
-+Active branch: none.
-+
-+OWNER decision: Replacement active ownership lane for retired Team Gamma.
-+
-diff --git a/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md b/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-index 865cca551..bc4808b6f 100644
---- a/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-+++ b/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-@@ -54,0 +55,23 @@ Each team may pull only from its ownership area unless OWNER explicitly reassign
-+## Current Active Ownership Lanes
-+
-+OWNER override approved.
-+
-+The current active ownership lanes are:
-+
-+- Team Alfa
-+- Team Bravo
-+- Team Charlie
-+- Team Delta
-+- Team Golf
-+- Team OWNER
-+
-+Migration note:
-+Team Gamma is retired. Team Golf is the replacement active ownership lane.
-+
-+Clarification:
-+- The four-team rule remains the current backlog ownership model for Alfa, Bravo, Charlie, and Delta.
-+- Team Golf does not receive a standing backlog ownership area in this file.
-+- Team Golf work requires OWNER assignment, an active branch, an active draft/open PR, or active release/review/cleanup responsibility.
-+- Golf work that touches Alfa, Bravo, Charlie, or Delta areas must document the OWNER cross-team decision.
-+- Historical Gamma PR references and branch names remain unchanged for traceability.
-+
-diff --git a/docs_build/dev/reports/PR_26175_OWNER_046-pr-targeted-review-packets.md b/docs_build/dev/reports/PR_26175_OWNER_046-pr-targeted-review-packets.md
-new file mode 100644
-index 000000000..055d7c1cb
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_OWNER_046-pr-targeted-review-packets.md
-@@ -0,0 +1,87 @@
-+# PR_26175_OWNER_046-pr-targeted-review-packets
-+
-+OWNER override approved.
-+
-+## Summary
-+
-+This PR updates active Project Instructions governance from Team Gamma to Team Golf and creates targeted GitHub-authoritative review packets for PR #3, #50, #51, and #118. No runtime behavior changes, PR merges, PR closures, or branch deletions were performed.
-+
-+Migration note:
-+Team Gamma is retired. Team Golf is the replacement active ownership lane.
-+
-+## Branch Validation
-+
-+| Check | Result | Evidence |
-+|---|---|---|
-+| Started from main | PASS | Started from `main`, pulled with `--ff-only`, and created the OWNER_046 branch from updated main. |
-+| Current branch | PASS | `PR_26175_OWNER_046-pr-targeted-review-packets` |
-+| Expected branch | PASS | `PR_26175_OWNER_046-pr-targeted-review-packets` |
-+| Base sync | PASS | Branch base `d39cc8c8e8f0673cb523547bc58264ab26bbcf3b`; main `d39cc8c8e8f0673cb523547bc58264ab26bbcf3b`; origin/main `d39cc8c8e8f0673cb523547bc58264ab26bbcf3b`. |
-+| Worktree before edits | PASS | Clean before branch creation and file generation. |
-+
-+## Requirement Checklist
-+
-+| Requirement | Result | Notes |
-+|---|---|---|
-+| Read all Project Instructions | PASS | Read 47 files under `docs_build/dev/ProjectInstructions/`. |
-+| Replace active Team Gamma ownership with Team Golf | PASS | Active governance now routes retired Gamma lane to Team Golf. |
-+| New active teams include Alfa | PASS | Active ownership map includes Team Alfa. |
-+| New active teams include Bravo | PASS | Active ownership map includes Team Bravo. |
-+| New active teams include Charlie | PASS | Active ownership map includes Team Charlie. |
-+| New active teams include Delta | PASS | Active ownership map includes Team Delta. |
-+| New active teams include Golf | PASS | Active ownership map includes Team Golf. |
-+| New active teams include OWNER | PASS | Active ownership map includes Team OWNER. |
-+| Do not rewrite historical PR references | PASS | No archive/history PR references were edited. |
-+| Do not rename historical branches | PASS | Review packets preserve historical Gamma branch names exactly. |
-+| Add migration note | PASS | Added exact note: "Team Gamma is retired. Team Golf is the replacement active ownership lane." |
-+| Generate PR #3 packet | PASS | Created `docs_build/dev/reports/PR_REVIEW_003.md`. |
-+| Generate PR #50 packet | PASS | Created `docs_build/dev/reports/PR_REVIEW_050.md`. |
-+| Generate PR #51 packet | PASS | Created `docs_build/dev/reports/PR_REVIEW_051.md`. |
-+| Generate PR #118 packet | PASS | Created `docs_build/dev/reports/PR_REVIEW_118.md`. |
-+| Include required packet fields | PASS | Each packet includes title, team, branch, dates, file lists, diff summary, purpose, risks, dependencies, and recommendation. |
-+| No merges | PASS | No merge action performed. |
-+| No PR closures | PASS | No PR close action performed. |
-+| No branch deletions | PASS | No branch deletion performed. |
-+| No runtime behavior changes | PASS | Governance/report packet files changed only. |
-+| Required reports | PASS | Generated summary report, `codex_changed_files.txt`, and `codex_review.diff`. |
-+| Repo ZIP under tmp/ | PASS | Created `tmp/PR_26175_OWNER_046-pr-targeted-review-packets_delta.zip`. |
++| Decision | Result |
++| --- | --- |
++| Does #118 supersede portions of the stack? | Yes, but only report/closeout portions. It does not supersede runtime implementation PRs #96 through #116. |
++| Should #117 remain archive-only? | Yes. Treat #117 as archive-only closeout evidence and close as superseded after OWNER approval. |
++| Are any PRs merge-safe independently? | No. All #96 through #118 PRs currently target non-main base branches. |
++| Should the stack merge as grouped batches? | Yes. Use ordered batches with strict internal order and validation checkpoints after each batch. |
 +
 +## Validation Lane Report
 +
-+| Lane | Result | Evidence |
-+|---|---|---|
-+| Governance lane | PASS | Updated active Project Instructions files only; history snapshots left untouched. |
-+| GitHub authority lane | PASS | PR metadata and file lists fetched from GitHub REST API for #3, #50, #51, and #118. |
-+| Review packet lane | PASS | Four review packet files generated. |
-+| Scope lane | PASS | No runtime files modified by this branch. |
-+| Whitespace lane | PASS | `git diff --check` passed after artifact generation. |
-+| ZIP lane | PASS | ZIP created and contents verified as repo-structured. |
++Commands used:
++- `git branch --show-current`
++- `git status --short`
++- `git rev-list --left-right --count main...origin/main`
++- `git pull --ff-only`
++- `gh pr view 95 --repo ToolboxAid/HTML-JavaScript-Gaming --json ...`
++- `gh pr view 96..118 --repo ToolboxAid/HTML-JavaScript-Gaming --json ...`
++- `git diff --check`
++- `git diff --cached --check`
++- `tar -tf tmp/PR_26175_OWNER_053-alfa-stack-resolution-plan_delta.zip`
 +
-+## Review Packet Index
-+
-+| PR | Team | Changed Files | Code Files | Recommendation | Packet |
-+|---|---|---:|---:|---|---|
-+| #3 | Team Bravo | 15 | 4 | Owner Decision Required. Review Bravo ownership, branch freshness, and current Messages/Emotion direction before merge/closure. | `docs_build/dev/reports/PR_REVIEW_003.md` |
-+| #50 | Team Golf (historical Gamma lane) | 5 | 0 | Review First. Likely final historical Gamma/SQLite status packet, now routed to Team Golf for active ownership decisions. | `docs_build/dev/reports/PR_REVIEW_050.md` |
-+| #51 | Team OWNER | 12 | 0 | Owner Decision Required. Historical governance bootstrap overlaps current ProjectInstructions state and must not be merged or archived without OWNER decision. | `docs_build/dev/reports/PR_REVIEW_051.md` |
-+| #118 | Team Alfa | 7 | 0 | Review First. Treat as owner closeout evidence for the Alfa stack; do not merge until stack/order review is complete. | `docs_build/dev/reports/PR_REVIEW_118.md` |
-+
-+## Changed Governance Files
-+
-+- `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
-+- `docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md`
-+- `docs_build/dev/ProjectInstructions/addendums/multi_team.md`
-+- `docs_build/dev/ProjectInstructions/addendums/pr_workflow.md`
-+- `docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md`
-+- `docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md`
-+- `docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md`
-+- `docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md`
-+- `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md`
-+- `docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md`
++Validation result:
++- PASS: Started from clean, synchronized `main`.
++- PASS: Read all Project Instructions.
++- PASS: Used GitHub PR metadata for all reviewed Alfa PRs.
++- PASS: Produced report-only artifacts.
++- PASS: No runtime code changed.
 +
 +## Manual Validation Notes
 +
-+- Confirmed Team Gamma retirement was added as an active governance migration note without editing historical PR references or branch names.
-+- Confirmed Team Golf is now the replacement active ownership lane in current governance.
-+- Confirmed PR review packets preserve GitHub titles and branch names exactly, including historical Gamma/Master/Alfa naming.
-+- Confirmed no runtime behavior files were edited for this branch.
-diff --git a/docs_build/dev/reports/PR_REVIEW_003.md b/docs_build/dev/reports/PR_REVIEW_003.md
-new file mode 100644
-index 000000000..c5b44b288
---- /dev/null
-+++ b/docs_build/dev/reports/PR_REVIEW_003.md
-@@ -0,0 +1,98 @@
-+# PR Review Packet #003
-+
-+## 1. Title
-+
-+Pr/PR 26171 006 message emotion profile management
-+
-+## 2. Team
-+
-+Team Bravo
-+
-+## 3. Branch
-+
-+`pr/PR_26171_006-message-emotion-profile-management`
-+
-+## 4. Created Date
-+
-+2026-06-20T01:02:11Z
-+
-+## 5. Updated Date
-+
-+2026-06-20T01:08:39Z
-+
-+## Status And Age
-+
-+- Status: Open
-+- Age: 4d 2h
-+- Author: ToolboxAid
-+- URL: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/3
-+
-+## 6. Full Changed File List
-+
-+- docs_build/dev/reports/PR_26171_006-message-emotion-profile-management-manual-validation.md (added, +11/-0)
-+- docs_build/dev/reports/PR_26171_006-message-emotion-profile-management-validation.txt (added, +30/-0)
-+- docs_build/dev/reports/PR_26171_006-message-emotion-profile-management.md (added, +53/-0)
-+- docs_build/dev/reports/codex_changed_files.txt (updated, +8/-9)
-+- docs_build/dev/reports/codex_review.diff (updated, +352/-305)
-+- docs_build/pr/BUILD_PR_26171_006-message-emotion-profile-management.md (added, +83/-0)
-+- docs_build/pr/BUILD_PR_26171_008-message-tts-profile-foundation.md (added, +98/-0)
-+- docs_build/pr/BUILD_PR_26171_010-message-speech-preview.md (added, +84/-0)
-+- docs_build/pr/BUILD_PR_26171_012-message-voice-provider-adapters.md (added, +86/-0)
-+- docs_build/pr/BUILD_PR_26171_014-runtime-message-playback-foundation.md (added, +84/-0)
-+- docs_build/pr/BUILD_PR_26171_016-midi-studio-roadmap-foundation.md (added, +74/-0)
-+- src/dev-runtime/messages/messages-sqlite-service.mjs (updated, +54/-4)
-+- tests/playwright/tools/MessagesTool.spec.mjs (updated, +37/-0)
-+- toolbox/messages/index.html (updated, +5/-4)
-+- toolbox/messages/messages.js (updated, +7/-1)
-+
-+## 7. Code File List Only
-+
-+- src/dev-runtime/messages/messages-sqlite-service.mjs (updated, +54/-4)
-+- tests/playwright/tools/MessagesTool.spec.mjs (updated, +37/-0)
-+- toolbox/messages/index.html (updated, +5/-4)
-+- toolbox/messages/messages.js (updated, +7/-1)
-+
-+## 8. Diff Summary By File
-+
-+| File | Change | Size | Summary |
-+|---|---|---:|---|
-+| docs_build/dev/reports/PR_26171_006-message-emotion-profile-management-manual-validation.md | added | +11/-0 | added report artifact (11+/0-). |
-+| docs_build/dev/reports/PR_26171_006-message-emotion-profile-management-validation.txt | added | +30/-0 | added report artifact (30+/0-). |
-+| docs_build/dev/reports/PR_26171_006-message-emotion-profile-management.md | added | +53/-0 | added report artifact (53+/0-). |
-+| docs_build/dev/reports/codex_changed_files.txt | updated | +8/-9 | updated report artifact (8+/9-). |
-+| docs_build/dev/reports/codex_review.diff | updated | +352/-305 | updated report artifact (352+/305-). |
-+| docs_build/pr/BUILD_PR_26171_006-message-emotion-profile-management.md | added | +83/-0 | added file (83+/0-); sample added: # BUILD PR_26171_006-message-emotion-profile-management. |
-+| docs_build/pr/BUILD_PR_26171_008-message-tts-profile-foundation.md | added | +98/-0 | added file (98+/0-); sample added: # BUILD PR_26171_008-message-tts-profile-foundation. |
-+| docs_build/pr/BUILD_PR_26171_010-message-speech-preview.md | added | +84/-0 | added file (84+/0-); sample added: # BUILD PR_26171_010-message-speech-preview. |
-+| docs_build/pr/BUILD_PR_26171_012-message-voice-provider-adapters.md | added | +86/-0 | added file (86+/0-); sample added: # BUILD PR_26171_012-message-voice-provider-adapters. |
-+| docs_build/pr/BUILD_PR_26171_014-runtime-message-playback-foundation.md | added | +84/-0 | added file (84+/0-); sample added: # BUILD PR_26171_014-runtime-message-playback-foundation. |
-+| docs_build/pr/BUILD_PR_26171_016-midi-studio-roadmap-foundation.md | added | +74/-0 | added file (74+/0-); sample added: # BUILD PR_26171_016-midi-studio-roadmap-foundation. |
-+| src/dev-runtime/messages/messages-sqlite-service.mjs | updated | +54/-4 | updated JavaScript module (54+/4-). |
-+| tests/playwright/tools/MessagesTool.spec.mjs | updated | +37/-0 | updated JavaScript module (37+/0-). |
-+| toolbox/messages/index.html | updated | +5/-4 | updated HTML page structure (5+/4-). |
-+| toolbox/messages/messages.js | updated | +7/-1 | updated JavaScript module (7+/1-). |
-+
-+## Changed Code File Details
-+
-+| Relative Path | Added/Updated/Deleted | Concise Change Summary |
-+|---|---|---|
-+| src/dev-runtime/messages/messages-sqlite-service.mjs | updated | updated JavaScript module (54+/4-). |
-+| tests/playwright/tools/MessagesTool.spec.mjs | updated | updated JavaScript module (37+/0-). |
-+| toolbox/messages/index.html | updated | updated HTML page structure (5+/4-). |
-+| toolbox/messages/messages.js | updated | updated JavaScript module (7+/1-). |
-+
-+## 9. Purpose
-+
-+No PR body provided.
-+
-+## 10. Risks
-+
-+Medium/high: 4 code file(s) changed, including tests/playwright/tools/MessagesTool.spec.mjs. Requires targeted validation review before merge.
-+
-+## 11. Dependencies
-+
-+Bravo Messages/Emotion workstream; owner/team decision required because current dependency state is not fully inferable from the PR title alone.
-+
-+## 12. Recommendation
-+
-+Owner Decision Required. Review Bravo ownership, branch freshness, and current Messages/Emotion direction before merge/closure.
-diff --git a/docs_build/dev/reports/PR_REVIEW_050.md b/docs_build/dev/reports/PR_REVIEW_050.md
-new file mode 100644
-index 000000000..d1521b998
---- /dev/null
-+++ b/docs_build/dev/reports/PR_REVIEW_050.md
-@@ -0,0 +1,72 @@
-+# PR Review Packet #050
-+
-+## 1. Title
-+
-+PR_26171_GAMMA_028-final-sqlite-clean-status-report
-+
-+## 2. Team
-+
-+Team Golf (historical Gamma lane)
-+
-+## 3. Branch
-+
-+`pr/26171-GAMMA-028-final-sqlite-clean-status-report`
-+
-+## 4. Created Date
-+
-+2026-06-21T16:18:04Z
-+
-+## 5. Updated Date
-+
-+2026-06-21T16:18:04Z
-+
-+## Status And Age
-+
-+- Status: Draft
-+- Age: 2d 11h
-+- Author: ToolboxAid
-+- URL: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/50
-+
-+## 6. Full Changed File List
-+
-+- docs_build/dev/reports/PR_26171_GAMMA_028-final-sqlite-clean-status-report-instruction-compliance-checklist.md (added, +18/-0)
-+- docs_build/dev/reports/PR_26171_GAMMA_028-final-sqlite-clean-status-report-manual-validation-notes.md (added, +12/-0)
-+- docs_build/dev/reports/PR_26171_GAMMA_028-final-sqlite-clean-status-report.md (added, +69/-0)
-+- docs_build/dev/reports/codex_changed_files.txt (updated, +4/-5)
-+- docs_build/dev/reports/codex_review.diff (updated, +104/-110)
-+
-+## 7. Code File List Only
-+
-+- None
-+
-+## 8. Diff Summary By File
-+
-+| File | Change | Size | Summary |
-+|---|---|---:|---|
-+| docs_build/dev/reports/PR_26171_GAMMA_028-final-sqlite-clean-status-report-instruction-compliance-checklist.md | added | +18/-0 | added report artifact (18+/0-). |
-+| docs_build/dev/reports/PR_26171_GAMMA_028-final-sqlite-clean-status-report-manual-validation-notes.md | added | +12/-0 | added report artifact (12+/0-). |
-+| docs_build/dev/reports/PR_26171_GAMMA_028-final-sqlite-clean-status-report.md | added | +69/-0 | added report artifact (69+/0-). |
-+| docs_build/dev/reports/codex_changed_files.txt | updated | +4/-5 | updated report artifact (4+/5-). |
-+| docs_build/dev/reports/codex_review.diff | updated | +104/-110 | updated report artifact (104+/110-). |
-+
-+## Changed Code File Details
-+
-+| Relative Path | Added/Updated/Deleted | Concise Change Summary |
-+|---|---|---|
-+| None | none | No changed code files. |
-+
-+## 9. Purpose
-+
-+Captures the final SQLite inventory after PR026 and PR027.
-+
-+## 10. Risks
-+
-+Low runtime risk because changed files are reports/governance/docs only; review risk is traceability and owner approval sequencing.
-+
-+## 11. Dependencies
-+
-+Historical Gamma/SQLite chain. Team Gamma is retired; Team Golf is the replacement active ownership lane. Review with #30 and #43 context before acting on #50.
-+
-+## 12. Recommendation
-+
-+Review First. Likely final historical Gamma/SQLite status packet, now routed to Team Golf for active ownership decisions.
-diff --git a/docs_build/dev/reports/PR_REVIEW_051.md b/docs_build/dev/reports/PR_REVIEW_051.md
-new file mode 100644
-index 000000000..d4ae9373d
---- /dev/null
-+++ b/docs_build/dev/reports/PR_REVIEW_051.md
-@@ -0,0 +1,86 @@
-+# PR Review Packet #051
-+
-+## 1. Title
-+
-+PR_26172_MASTER_001-project-instructions-readme-and-root
-+
-+## 2. Team
-+
-+Team OWNER
-+
-+## 3. Branch
-+
-+`pr/26172-MASTER-001-project-instructions-readme-and-root`
-+
-+## 4. Created Date
-+
-+2026-06-21T17:26:20Z
-+
-+## 5. Updated Date
-+
-+2026-06-21T17:26:20Z
-+
-+## Status And Age
-+
-+- Status: Draft
-+- Age: 2d 10h
-+- Author: ToolboxAid
-+- URL: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/51
-+
-+## 6. Full Changed File List
-+
-+- docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md (added, +34/-0)
-+- docs_build/dev/ProjectInstructions/README.txt (added, +28/-0)
-+- docs_build/dev/ProjectInstructions/addendums/.gitkeep (added, +1/-0)
-+- docs_build/dev/ProjectInstructions/archive/history/.gitkeep (added, +1/-0)
-+- docs_build/dev/ProjectInstructions/backlog/.gitkeep (added, +1/-0)
-+- docs_build/dev/ProjectInstructions/deprecation/.gitkeep (added, +1/-0)
-+- docs_build/dev/ProjectInstructions/team_assignments/.gitkeep (added, +1/-0)
-+- docs_build/dev/reports/PR_26172_MASTER_001-project-instructions-readme-and-root-instruction-compliance-checklist.md (added, +11/-0)
-+- docs_build/dev/reports/PR_26172_MASTER_001-project-instructions-readme-and-root-manual-validation-notes.md (added, +9/-0)
-+- docs_build/dev/reports/PR_26172_MASTER_001-project-instructions-readme-and-root.md (added, +22/-0)
-+- docs_build/dev/reports/codex_changed_files.txt (updated, +10/-4)
-+- docs_build/dev/reports/codex_review.diff (updated, +17/-134)
-+
-+## 7. Code File List Only
-+
-+- None
-+
-+## 8. Diff Summary By File
-+
-+| File | Change | Size | Summary |
-+|---|---|---:|---|
-+| docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md | added | +34/-0 | added Project Instructions governance text (34+/0-). |
-+| docs_build/dev/ProjectInstructions/README.txt | added | +28/-0 | added Project Instructions governance text (28+/0-). |
-+| docs_build/dev/ProjectInstructions/addendums/.gitkeep | added | +1/-0 | added Project Instructions governance text (1+/0-). |
-+| docs_build/dev/ProjectInstructions/archive/history/.gitkeep | added | +1/-0 | added Project Instructions governance text (1+/0-). |
-+| docs_build/dev/ProjectInstructions/backlog/.gitkeep | added | +1/-0 | added Project Instructions governance text (1+/0-). |
-+| docs_build/dev/ProjectInstructions/deprecation/.gitkeep | added | +1/-0 | added Project Instructions governance text (1+/0-). |
-+| docs_build/dev/ProjectInstructions/team_assignments/.gitkeep | added | +1/-0 | added Project Instructions governance text (1+/0-). |
-+| docs_build/dev/reports/PR_26172_MASTER_001-project-instructions-readme-and-root-instruction-compliance-checklist.md | added | +11/-0 | added report artifact (11+/0-). |
-+| docs_build/dev/reports/PR_26172_MASTER_001-project-instructions-readme-and-root-manual-validation-notes.md | added | +9/-0 | added report artifact (9+/0-). |
-+| docs_build/dev/reports/PR_26172_MASTER_001-project-instructions-readme-and-root.md | added | +22/-0 | added report artifact (22+/0-). |
-+| docs_build/dev/reports/codex_changed_files.txt | updated | +10/-4 | updated report artifact (10+/4-). |
-+| docs_build/dev/reports/codex_review.diff | updated | +17/-134 | updated report artifact (17+/134-). |
-+
-+## Changed Code File Details
-+
-+| Relative Path | Added/Updated/Deleted | Concise Change Summary |
-+|---|---|---|
-+| None | none | No changed code files. |
-+
-+## 9. Purpose
-+
-+Adds the new `docs_build/dev/ProjectInstructions/` operating-system root.
-+
-+## 10. Risks
-+
-+Low runtime risk because changed files are reports/governance/docs only; review risk is traceability and owner approval sequencing.
-+
-+## 11. Dependencies
-+
-+ProjectInstructions governance chain; history-sensitive and requires OWNER approval before merge or closure.
-+
-+## 12. Recommendation
-+
-+Owner Decision Required. Historical governance bootstrap overlaps current ProjectInstructions state and must not be merged or archived without OWNER decision.
-diff --git a/docs_build/dev/reports/PR_REVIEW_118.md b/docs_build/dev/reports/PR_REVIEW_118.md
-new file mode 100644
-index 000000000..d7756231b
---- /dev/null
-+++ b/docs_build/dev/reports/PR_REVIEW_118.md
-@@ -0,0 +1,76 @@
-+# PR Review Packet #118
-+
-+## 1. Title
-+
-+PR_26174_ALFA_EOD-final-closeout
-+
-+## 2. Team
-+
-+Team Alfa
-+
-+## 3. Branch
-+
-+`pr/26174-ALFA-EOD-final-closeout`
-+
-+## 4. Created Date
-+
-+2026-06-23T18:08:07Z
-+
-+## 5. Updated Date
-+
-+2026-06-23T18:10:12Z
-+
-+## Status And Age
-+
-+- Status: Draft
-+- Age: 9h
-+- Author: ToolboxAid
-+- URL: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/118
-+
-+## 6. Full Changed File List
-+
-+- docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_branch-validation.md (added, +19/-0)
-+- docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_manual-validation-notes.md (added, +8/-0)
-+- docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_report.md (added, +93/-0)
-+- docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_requirements-checklist.md (added, +16/-0)
-+- docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_validation-lane.md (added, +17/-0)
-+- docs_build/dev/reports/codex_changed_files.txt (updated, +5/-5)
-+- docs_build/dev/reports/codex_review.diff (updated, +158/-132)
-+
-+## 7. Code File List Only
-+
-+- None
-+
-+## 8. Diff Summary By File
-+
-+| File | Change | Size | Summary |
-+|---|---|---:|---|
-+| docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_branch-validation.md | added | +19/-0 | added report artifact (19+/0-). |
-+| docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_manual-validation-notes.md | added | +8/-0 | added report artifact (8+/0-). |
-+| docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_report.md | added | +93/-0 | added report artifact (93+/0-). |
-+| docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_requirements-checklist.md | added | +16/-0 | added report artifact (16+/0-). |
-+| docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_validation-lane.md | added | +17/-0 | added report artifact (17+/0-). |
-+| docs_build/dev/reports/codex_changed_files.txt | updated | +5/-5 | updated report artifact (5+/5-). |
-+| docs_build/dev/reports/codex_review.diff | updated | +158/-132 | updated report artifact (158+/132-). |
-+
-+## Changed Code File Details
-+
-+| Relative Path | Added/Updated/Deleted | Concise Change Summary |
-+|---|---|---|
-+| None | none | No changed code files. |
-+
-+## 9. Purpose
-+
-+Report-only final Team Alfa closeout for owner merge review.
-+
-+## 10. Risks
-+
-+Low runtime risk because changed files are reports/governance/docs only; review risk is traceability and owner approval sequencing.
-+
-+## 11. Dependencies
-+
-+Part of the PR_26174 Alfa stack; owner should review stack order before merge. PR #118 appears to be a final closeout report dependent on #117 and the earlier Alfa stack.
-+
-+## 12. Recommendation
-+
-+Review First. Treat as owner closeout evidence for the Alfa stack; do not merge until stack/order review is complete.
++- GitHub reports #96 through #118 as open draft PRs.
++- GitHub reports #96 through #118 as `CLEAN` / `MERGEABLE` against their current branch bases.
++- The current branch bases are stacked branches, not `main`.
++- #95 is already merged and is the upstream base before #96.
++- No PR merge, PR closure, or branch deletion was performed by this report.
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index ded176aa5..4aa64ab71 100644
+index 4aa64ab71..23f62b84e 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -0,0 +1,2 @@
-+docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-+docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
-@@ -2,2 +4,12 @@ docs_build/dev/ProjectInstructions/addendums/multi_team.md
--docs_build/dev/reports/PR_26175_OWNER_050-eod-merge-push-cleanup-gate.md
--docs_build/dev/reports/codex_review.diff
-+docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
-+docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
-+docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
-+docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-+docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
-+docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
-+docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-+docs_build/dev/reports/PR_26175_OWNER_046-pr-targeted-review-packets.md
-+docs_build/dev/reports/PR_REVIEW_003.md
-+docs_build/dev/reports/PR_REVIEW_050.md
-+docs_build/dev/reports/PR_REVIEW_051.md
-+docs_build/dev/reports/PR_REVIEW_118.md
-@@ -4,0 +17 @@ docs_build/dev/reports/codex_changed_files.txt
-+docs_build/dev/reports/codex_review.diff
+@@ -1,15 +1 @@
+-docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+-docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
+-docs_build/dev/ProjectInstructions/addendums/multi_team.md
+-docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
+-docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
+-docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
+-docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
+-docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
+-docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
+-docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
+-docs_build/dev/reports/PR_26175_OWNER_046-pr-targeted-review-packets.md
+-docs_build/dev/reports/PR_REVIEW_003.md
+-docs_build/dev/reports/PR_REVIEW_050.md
+-docs_build/dev/reports/PR_REVIEW_051.md
+-docs_build/dev/reports/PR_REVIEW_118.md
++docs_build/dev/reports/PR_26175_OWNER_053-alfa-stack-resolution-plan.md
