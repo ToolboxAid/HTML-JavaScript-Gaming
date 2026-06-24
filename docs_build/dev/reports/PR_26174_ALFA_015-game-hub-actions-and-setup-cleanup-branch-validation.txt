@@ -1,0 +1,9 @@
+Branch Validation: PASS
+
+PASS - Current branch is pr/26174-ALFA-015-game-hub-actions-and-setup-cleanup.
+PASS - Branch was created from pr/26174-ALFA-014-game-hub-parent-columns-center at 177840f74.
+PASS - Worktree was clean before creating the PR branch.
+PASS - Scope is limited to Game Hub UI/controller, Theme V2 table styling, targeted Playwright coverage, and required reports.
+PASS - No protected Project Instructions files were modified.
+PASS - No merge to main was performed.
+

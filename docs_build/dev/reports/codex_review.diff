@@ -116,17 +116,21 @@ index 000000000..d87ba0edc
 +
 +No active SQLite runtime or Local API follow-up is required. A future cleanup may retire the Game Journey legacy data-preservation guard only after the owner confirms legacy file migration risk has expired.
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 5ebd4f6a7..2b8d410d0 100644
+index 270cd2c56..a5b1abc3b 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,6 +1,5 @@
--docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-instruction-compliance-checklist.md
--docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup-manual-validation-notes.md
--docs_build/dev/reports/PR_26171_GAMMA_027-sqlite-doc-reference-cleanup.md
+@@ -1,9 +1,5 @@
+-﻿docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
+-docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
 -docs_build/dev/reports/codex_changed_files.txt
-+﻿docs_build/dev/reports/codex_changed_files.txt
- docs_build/dev/reports/codex_review.diff
--src/dev-runtime/persistence/mock-db-store.js
-+docs_build/dev/reports/PR_26171_GAMMA_028-final-sqlite-clean-status-report.md
-+docs_build/dev/reports/PR_26171_GAMMA_028-final-sqlite-clean-status-report-instruction-compliance-checklist.md
-+docs_build/dev/reports/PR_26171_GAMMA_028-final-sqlite-clean-status-report-manual-validation-notes.md
+-docs_build/dev/reports/PR_26175_CHARLIE_026-charlie-governance-gap-closeout.md
+-docs_build/dev/reports/PR_26175_CHARLIE_026-charlie-governance-gap-closeout-branch-validation.md
+-docs_build/dev/reports/PR_26175_CHARLIE_026-charlie-governance-gap-closeout-manual-validation-notes.md
+-docs_build/dev/reports/PR_26175_CHARLIE_026-charlie-governance-gap-closeout-requirement-checklist.md
+-docs_build/dev/reports/PR_26175_CHARLIE_026-charlie-governance-gap-closeout-validation.md
+-docs_build/dev/roadmaps/MASTER_ROADMAP_FEATURES.md
++﻿docs_build/dev/reports/PR_26171_GAMMA_028-final-sqlite-clean-status-report-instruction-compliance-checklist.md / added
++docs_build/dev/reports/PR_26171_GAMMA_028-final-sqlite-clean-status-report-manual-validation-notes.md / added
++docs_build/dev/reports/PR_26171_GAMMA_028-final-sqlite-clean-status-report.md / added
++docs_build/dev/reports/codex_changed_files.txt / updated
++docs_build/dev/reports/codex_review.diff / updated

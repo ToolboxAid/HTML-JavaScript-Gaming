@@ -109,15 +109,15 @@ test("Active browser product-data entrypoints use API or service clients", () =>
   assert.doesNotMatch(registryClient, /tools:\s*\[\]/);
 
   const productApiClients = [
-    "toolbox/assets/assets-api-client.js",
-    "toolbox/colors/palette-api-client.js",
-    "toolbox/controls/controls-api-client.js",
-    "toolbox/game-configuration/game-configuration-api-client.js",
-    "toolbox/game-design/game-design-api-client.js",
-    "toolbox/game-journey/game-journey-api-client.js",
+    "assets/js/shared/assets-api-client.js",
+    "assets/toolbox/colors/js/index.js",
+    "assets/js/shared/controls-api-client.js",
+    "assets/toolbox/game-configuration/js/index.js",
+    "assets/toolbox/game-design/js/index.js",
+    "assets/js/shared/game-journey-api-client.js",
     "toolbox/game-hub/game-hub-api-client.js",
-    "toolbox/objects/objects-api-client.js",
-    "toolbox/tags/tags-api-client.js",
+    "assets/toolbox/objects/js/index.js",
+    "assets/toolbox/tags/js/index.js",
   ];
   productApiClients.forEach((filePath) => {
     assert.equal(existsSync(path.join(repoRoot, filePath)), true, `${filePath} missing`);

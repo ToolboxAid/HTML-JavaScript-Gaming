@@ -1048,6 +1048,32 @@
         }
     }
 
+    async function renderToolboxStatusBar() {
+        const pagePath = currentPagePath() || "";
+        if (pagePath.indexOf("toolbox/") !== 0) {
+            return;
+        }
+        try {
+            const module = await import(assetUrl("js/toolbox-status-bar.js"));
+            if (typeof module.mountToolboxStatusBar === "function") {
+                module.mountToolboxStatusBar({
+                    gameHubHref: routeHref("game-hub"),
+                    pagePath
+                });
+            }
+        } catch (error) {
+            console.warn("[toolbox/status] Shared status bar could not be loaded.", error);
+        }
+    }
+
+    function refreshSharedSurfaces() {
+        renderPlatformBanner()
+            .then(renderToolboxStatusBar)
+            .catch(function (error) {
+                console.error(error);
+            });
+    }
+
     enforcePageProtection();
     document.addEventListener("DOMContentLoaded", function () {
         enforcePageProtection();
@@ -1056,11 +1082,11 @@
             replaceExisting("header-nav", "header.site-header"),
             replaceExisting("footer", "footer.footer")
         ];
-        Promise.all(tasks).then(renderPlatformBanner).catch(function (error) {
+        Promise.all(tasks).then(refreshSharedSurfaces).catch(function (error) {
             console.error(error);
         });
     });
     window.addEventListener("gamefoundry:session-user-changed", refreshHeaderLoginState);
     window.addEventListener("gamefoundry:data-changed", refreshHeaderOnly);
-    window.addEventListener("gamefoundry:platform-settings-changed", renderPlatformBanner);
+    window.addEventListener("gamefoundry:platform-settings-changed", refreshSharedSurfaces);
 }());

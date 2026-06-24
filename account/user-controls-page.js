@@ -1,4 +1,4 @@
-import { createControlsToolApiRepository } from "../toolbox/controls/controls-api-client.js";
+import { createControlsToolApiRepository } from "../assets/js/shared/controls-api-client.js";
 import { getSessionCurrent } from "../src/api/session-api-client.js";
 import InputService from "../src/engine/input/InputService.js";
 import InputCaptureService from "../src/engine/input/InputCaptureService.js";

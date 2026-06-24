@@ -1,0 +1,6 @@
+Manual Validation Notes: PASS
+
+PASS - Confirmed Open Games renders as a parent table with expected headers.
+PASS - Confirmed Demo Game expands to a child Game Summary table and collapses again.
+PASS - Confirmed Open Game buttons still open games through the existing repository path.
+PASS - Confirmed empty and unavailable Open Games states still render without game rows.

@@ -2,6 +2,7 @@ import {
     readAdminOperationsStatus,
     runAdminOperationAction
 } from "../../../src/api/admin-operations-api-client.js";
+import { formatStatusMessage } from "../../js/shared/status.js";
 
 class AdminOperationsController {
     constructor(root) {
@@ -25,7 +26,7 @@ class AdminOperationsController {
     }
 
     setStatus(status, message) {
-        this.status.textContent = `${status}: ${message}`;
+        this.status.textContent = formatStatusMessage(status, message);
     }
 
     createLabeledControl(labelText, control) {

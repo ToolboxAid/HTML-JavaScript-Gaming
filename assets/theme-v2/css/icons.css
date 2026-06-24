@@ -1,0 +1,130 @@
+.theme-icon {
+  --theme-v2-icon-url: none;
+  background: currentColor;
+  color: inherit;
+  display: inline-block;
+  flex: 0 0 auto;
+  height: 1em;
+  line-height: var(--line-height-single);
+  pointer-events: none;
+  vertical-align: -0.125em;
+  width: 1em;
+  -webkit-mask-image: var(--theme-v2-icon-url);
+  mask-image: var(--theme-v2-icon-url);
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-size: contain
+}
+
+.theme-icon--add {
+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-add.svg")
+}
+
+.theme-icon--chevron-down {
+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-chevron-down.svg")
+}
+
+.theme-icon--chevron-left {
+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-chevron-left.svg")
+}
+
+.theme-icon--chevron-right {
+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-chevron-right.svg")
+}
+
+.theme-icon--chevron-up {
+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-chevron-up.svg")
+}
+
+.theme-icon--close {
+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-close.svg")
+}
+
+.theme-icon--delete {
+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-trash.svg")
+}
+
+.theme-icon--edit {
+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-settings.svg")
+}
+
+.theme-icon--error {
+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-error.svg")
+}
+
+.theme-icon--external-link {
+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-chevron-right.svg")
+}
+
+.theme-icon--exit-fullscreen {
+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-exit-fullscreen.svg")
+}
+
+.theme-icon--fullscreen {
+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-fullscreen.svg")
+}
+
+.theme-icon--info {
+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-info.svg")
+}
+
+.theme-icon--menu {
+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-menu.svg")
+}
+
+.theme-icon--save {
+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-success.svg")
+}
+
+.theme-icon--search {
+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-search.svg")
+}
+
+.theme-icon--settings {
+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-settings.svg")
+}
+
+.theme-icon--subtract {
+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-subtract.svg")
+}
+
+.theme-icon--success {
+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-success.svg")
+}
+
+.theme-icon--trash {
+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-trash.svg")
+}
+
+.theme-icon--validation {
+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-warning.svg")
+}
+
+.theme-icon--warning {
+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-warning.svg")
+}
+
+.status-icon {
+  height: var(--icon-size-sm);
+  width: var(--icon-size-sm)
+}
+
+.status-icon--error {
+  color: var(--red)
+}
+
+.status-icon--info {
+  color: var(--cyan)
+}
+
+.status-icon--save {
+  color: var(--green)
+}
+
+.status-icon--validation,
+.status-icon--warning {
+  color: var(--gold)
+}

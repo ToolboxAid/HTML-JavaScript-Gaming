@@ -1,0 +1,6 @@
+Manual Validation Notes: PASS
+
+PASS - Confirmed target labels render Hero [1], Enemy [4], Boss [1], Background [3], Music [5].
+PASS - Confirmed Hero count preview updates to [2] after edit and remains [2] after reload.
+PASS - Confirmed updateRecommendedTarget API/service method is called with ["hero", 2].
+PASS - Confirmed no checkbox inputs were introduced.

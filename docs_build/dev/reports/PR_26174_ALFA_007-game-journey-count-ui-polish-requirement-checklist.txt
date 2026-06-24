@@ -1,0 +1,6 @@
+Requirement Checklist: PASS
+
+PASS - Polished count-based Journey inputs with visible [count] labels.
+PASS - Kept numeric counts and verified no checkbox inputs in the target model.
+PASS - Preserved target/bucket order: Hero, Enemy, Boss, Background, Music.
+PASS - Persisted edits through the existing API/service contract only.

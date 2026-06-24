@@ -18,7 +18,7 @@
             <div class="container">
                 <div class="kicker">Toolbox / Events</div>
                 <h1>Events</h1>
-                <p class="lede">Plan gameplay events, triggers, and state transitions. Static wireframe only; no database, persistence, save, load, or runtime behavior is implemented.</p>
+                <p class="lede">Plan gameplay events, triggers, and state transitions.</p>
             </div>
         </section>
         <section class="section">
@@ -31,13 +31,50 @@
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
                                 <summary>Setup</summary>
-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
+                                <div class="accordion-body content-stack">
+                                    <p>Message event actions are saved through the Local API.</p>
+                                    <p>Use message references for authored text and speech flows.</p>
+                                </div>
                             </details>
                         </div>
                     </aside>
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="events" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
-                    <section class="tool-center-panel"><h2>Workspace</h2>
-                        <p>Plan gameplay events, triggers, and state transitions. This page preserves the shared Theme V2 tool template structure for future rebuild work.</p>
+                    <section class="tool-center-panel">
+                        <h2>Message Event Actions</h2>
+                        <p>Connect gameplay events to authored Messages without storing event data in the browser.</p>
+                        <article class="card">
+                            <div class="card-body content-stack">
+                                <div class="surface-header">
+                                    <div>
+                                        <div class="kicker">Local API Event References</div>
+                                        <h3>Event Actions</h3>
+                                    </div>
+                                    <div class="action-group action-group--tight">
+                                        <button class="btn" type="button" data-events-add-action="__new__">Add Action</button>
+                                    </div>
+                                </div>
+                                <div class="table-wrapper">
+                                    <table class="data-table" aria-label="Message Event Actions">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Action</th>
+                                                <th scope="col">Event Option</th>
+                                                <th scope="col">Message</th>
+                                                <th scope="col">Updated</th>
+                                                <th scope="col">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody data-events-actions-table>
+                                            <tr><td colspan="5">Loading event actions.</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="status" data-events-validation-card hidden>
+                                    <p>Event action needs required fields.</p>
+                                    <ul data-events-validation-errors></ul>
+                                </div>
+                            </div>
+                        </article>
                     </section>
                     <aside class="tool-column tool-group-platform">
                         <div class="tool-column-header">
@@ -46,7 +83,11 @@
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
                                 <summary>Output</summary>
-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
+                                <div class="accordion-body content-stack">
+                                    <p>Source: <span data-events-persistence-source>Local API</span></p>
+                                    <p>Storage: <span data-events-persistence-storage>Local DB</span></p>
+                                    <div class="status" role="status" data-events-log>Loading Events.</div>
+                                </div>
                             </details>
                         </div>
                     </aside>
@@ -57,6 +98,7 @@
     <div data-partial="footer"></div>
     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+    <script type="module" src="assets/toolbox/events/js/index.js"></script>
 </body>
 
 </html>

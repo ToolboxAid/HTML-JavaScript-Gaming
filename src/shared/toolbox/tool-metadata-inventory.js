@@ -88,8 +88,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForTestable": false,
     "requiredForPublish": false,
     "requires": [],
-    "status": "Wireframe",
-    "releaseChannel": "wireframe",
+    "status": "Ready",
+    "releaseChannel": "complete",
     "progressChecklist": [
       "Idea table workflow visible",
       "Add Idea and Add Note actions remain inline",
@@ -153,7 +153,7 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPublish": true,
     "requires": [],
     "status": "Ready",
-    "releaseChannel": "beta",
+    "releaseChannel": "complete",
     "progressChecklist": [
       "Review readiness",
       "Static planned text only"

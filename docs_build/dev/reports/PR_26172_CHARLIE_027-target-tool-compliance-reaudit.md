@@ -1,0 +1,159 @@
+# PR_26172_CHARLIE_027-target-tool-compliance-reaudit
+
+Status: PASS with owner-review follow-ups.
+
+Branch: `PR_26172_CHARLIE_repository-compliance-stack`
+
+## Purpose
+
+Re-audit the listed target tools after PR023 through PR026.
+
+Target tools:
+- Audio
+- Audio Effects
+- Fonts
+- Characters
+- Objects
+- Worlds
+- Controls
+- Events
+- Sprites
+- Vector Art
+- MIDI Studio
+- Asset Browser
+- State Inspector
+- Game Journey
+
+## Validation Summary
+
+PASS:
+- `npm run validate:canonical-structure`
+  - Canonical repository structure guardrail: PASS.
+  - Blocking violations: 0.
+  - Approved legacy exceptions: 484.
+- Branch remained `PR_26172_CHARLIE_repository-compliance-stack`.
+- Worktree was clean before PR027.
+- Local/origin sync was `0 0` before PR027.
+- Target HTML inline audit found zero inline script blocks, zero inline style blocks, and zero inline event handlers across requested target tools.
+- ZIP artifact required under `tmp/`.
+
+Skipped:
+- Full samples smoke was not run per scope.
+- Broad Playwright was not run per scope.
+
+## Migrated Tools
+
+### Objects
+
+Status: migrated to canonical JS path.
+
+Current active JS:
+- `assets/toolbox/objects/js/index.js`
+
+Current active HTML:
+- `toolbox/objects/index.html`
+
+CSS:
+- none required.
+
+Notes:
+- `toolbox/objects/objects.js` was removed as an active path.
+- `toolbox/objects/objects-api-client.js` was removed as an active path.
+- Objects remains dependent on legacy Assets API client until Assets worker placement receives owner-review guidance.
+
+## Skipped Tools With No Active Tool-Specific JS/CSS Migration Needed
+
+- Audio: `toolbox/audio/index.html`, no tool JS/CSS, no inline findings.
+- Audio Effects: `toolbox/audio-effects/index.html`, no tool JS/CSS, no inline findings.
+- Fonts: `toolbox/fonts/index.html`, no tool JS/CSS, no inline findings.
+- Characters: `toolbox/characters/index.html`, no tool JS/CSS, no inline findings.
+- Worlds: `toolbox/worlds/index.html`, no tool JS/CSS, no inline findings.
+- Events: `toolbox/events/index.html`, no tool JS/CSS, no inline findings.
+- Sprites: `toolbox/sprites/index.html`, no tool JS/CSS, no inline findings.
+- MIDI Studio: no active `toolbox/midi-studio/` page found in tracked files.
+- State Inspector: `toolbox/saved-data/index.html`, no tool JS/CSS, no inline findings.
+
+## NEEDS CARE Tools
+
+### Controls
+
+Remaining active JS:
+- `toolbox/controls/controls-api-client.js`
+- `toolbox/controls/controls.js`
+
+Reason:
+- `account/user-controls-page.js` imports the Controls API wrapper.
+- `tests/playwright/tools/InputMappingV2Tool.spec.mjs` fetches `toolbox/controls/controls.js`.
+- Moving Controls safely requires a split between shared API client behavior and DOM page behavior.
+
+Recommended next PR:
+- `PR_26172_CHARLIE_controls-canonical-migration-design`
+  - Decide whether `controls-api-client.js` should move to `assets/js/shared/`, a canonical Controls module, or remain a documented shared exception.
+  - Then migrate `controls.js` only after import ownership is clear.
+
+## STOP / Owner Review Tools
+
+### Asset Browser / Vector Art
+
+Remaining active JS:
+- `toolbox/assets/assets-api-client.js`
+- `toolbox/assets/assets-upload-worker.js`
+- `toolbox/assets/assets.js`
+
+Reason:
+- `assets-upload-worker.js` is a worker script and needs an approved canonical placement before migration.
+- Asset Browser and Vector Art share the active Assets surface in the requested target set.
+- Objects now imports the legacy Assets API client from its canonical module, so Assets migration affects at least one migrated tool.
+
+Recommended next PR:
+- `PR_26172_CHARLIE_assets-worker-canonical-placement-decision`
+  - Owner decides worker canonical location and shared API-client placement.
+  - After decision, migrate the Assets page script, API client, and worker as one scoped tool-family migration.
+
+### Game Journey
+
+Remaining active JS:
+- `toolbox/game-journey/game-journey-api-client.js`
+- `toolbox/game-journey/game-journey.js`
+
+Reason:
+- Existing `/api/game-journey/completion-metrics` HTTP 500 blocker remains documented from earlier Charlie validation.
+- Game Journey may overlap Alfa-owned feature work.
+
+Recommended next PR:
+- `PR_26172_CHARLIE_game-journey-canonical-migration-readiness`
+  - Confirm ownership and resolve completion-metrics validation before moving active JS.
+
+## Remaining JS/CSS Violations For Target Tools
+
+Remaining target legacy JS exceptions:
+- `toolbox/assets/assets-api-client.js`
+- `toolbox/assets/assets-upload-worker.js`
+- `toolbox/assets/assets.js`
+- `toolbox/controls/controls-api-client.js`
+- `toolbox/controls/controls.js`
+- `toolbox/game-journey/game-journey-api-client.js`
+- `toolbox/game-journey/game-journey.js`
+
+Remaining target CSS issues:
+- none.
+
+Remaining inline script/style/event-handler issues:
+- none.
+
+## Requirement Checklist
+
+- [x] Re-audited migrated tools.
+- [x] Re-audited skipped target tools.
+- [x] Listed NEEDS CARE tools.
+- [x] Listed STOP / owner review tools.
+- [x] Listed remaining JS/CSS violations.
+- [x] Listed remaining inline issues.
+- [x] Recommended next PRs.
+- [x] Ran canonical structure guardrail.
+- [x] No runtime implementation changes in this PR.
+- [x] ZIP artifact required under `tmp/`.
+
+## Manual Validation Notes
+
+PR023 migrated the only SAFE implementation candidate from PR022. PR024 through PR026 correctly stopped rather than migrating NEEDS CARE or STOP / owner review tools. The stack is safe for Owner review with the known validation blockers documented.

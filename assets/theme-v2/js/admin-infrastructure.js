@@ -6,7 +6,7 @@ const STORAGE_PATH_LANES = Object.freeze([
     Object.freeze({ lane: "DEV", path: "/dev/projects/" }),
     Object.freeze({ lane: "IST", path: "/ist/projects/" }),
     Object.freeze({ lane: "UAT", path: "/uat/projects/" }),
-    Object.freeze({ lane: "PRD", path: "/prd/projects/" }),
+    Object.freeze({ lane: "PRD", path: "/prod/projects/" }),
 ]);
 
 class AdminInfrastructureStoragePathStatus {

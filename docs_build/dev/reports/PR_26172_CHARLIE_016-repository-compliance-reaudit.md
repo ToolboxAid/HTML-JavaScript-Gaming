@@ -1,0 +1,193 @@
+# PR_26172_CHARLIE_016 Repository Compliance Reaudit
+
+## Purpose
+
+Measure repository compliance progress after the Charlie PR_014 and PR_015 canonical tool migrations.
+
+Verification targets:
+
+- PR_034 Canonical Repository Structure
+- PR_035 Test Structure Standardization
+- PR_036 Legacy Migration Policy
+
+## Executive Summary
+
+| Check | Status | Result |
+| --- | --- | --- |
+| Canonical structure guardrail | PASS | `npm run validate:canonical-structure` reports 0 blocking violations. |
+| Approved legacy exceptions | PASS | Count is now 492, down from 495 in PR_012. |
+| Tool JS migration progress | PASS | Text To Speech and Tags now use canonical `assets/toolbox/{tool}/js/index.js` paths. |
+| CSS migration progress | PASS | No new CSS violations were introduced; remaining CSS items are approved engine UI legacy exceptions. |
+| Test structure progress | FAIL | Legacy test buckets remain unchanged by PR_014/PR_015. |
+| Stack ready for Owner review | PASS WITH KNOWN BLOCKERS | Structure guardrail passes; known unrelated validation blockers are documented in PR_014/PR_015 reports. |
+
+## Repository Area Results
+
+| Area | Status | Findings |
+| --- | --- | --- |
+| `assets/` | PASS | Canonical Text To Speech and Tags tool JS now live under `assets/toolbox/`. Existing shared status helper remains under `assets/js/shared/`. |
+| `toolbox/` | FAIL | Remaining approved legacy toolbox JS sidecars are listed below. |
+| `assets/toolbox/` | PASS | Contains canonical Idea Board, Text To Speech, and Tags JS entrypoints. |
+| `assets/theme-v2/` | PASS | Theme V2 assets remain in approved theme paths. |
+| `tests/` | FAIL | Legacy test buckets remain approved debt under PR_035. |
+| `api/` | FAIL | Top-level canonical `api/{feature-name}/` root remains absent; no API move was in this scope. |
+| `serverside/` | FAIL | Top-level canonical `serverside/{feature-name}/` root remains absent; no server-side move was in this scope. |
+| `src/engine/` | FAIL | `src/engine/paletteList.js` and `src/engine/ui/*.css` remain approved legacy exceptions. |
+
+## Guardrail Result
+
+Command:
+
+```text
+npm run validate:canonical-structure
+```
+
+Result:
+
+```text
+Canonical repository structure guardrail: PASS
+Blocking violations: 0
+Approved legacy exceptions: 492
+```
+
+## Remaining Non-Compliant JS Paths
+
+These paths remain approved legacy exceptions:
+
+- `src/engine/paletteList.js`
+- `toolbox/assets/assets-api-client.js`
+- `toolbox/assets/assets-upload-worker.js`
+- `toolbox/assets/assets.js`
+- `toolbox/colors/colors.js`
+- `toolbox/colors/palette-api-client.js`
+- `toolbox/controls/controls-api-client.js`
+- `toolbox/controls/controls.js`
+- `toolbox/game-configuration/game-configuration-api-client.js`
+- `toolbox/game-configuration/game-configuration.js`
+- `toolbox/game-design/game-design-api-client.js`
+- `toolbox/game-design/game-design.js`
+- `toolbox/game-hub/game-hub-api-client.js`
+- `toolbox/game-hub/game-hub.js`
+- `toolbox/game-journey/game-journey-api-client.js`
+- `toolbox/game-journey/game-journey.js`
+- `toolbox/messages/message-tts-service-registry.js`
+- `toolbox/messages/messages-api-client.js`
+- `toolbox/messages/messages.js`
+- `toolbox/objects/objects-api-client.js`
+- `toolbox/objects/objects.js`
+- `toolbox/tool-registry-api-client.js`
+- `toolbox/toolRegistry.js`
+- `toolbox/tools-page-accordions.js`
+
+Removed from remaining JS debt by this queue:
+
+- `toolbox/text-to-speech/text2speech.js`
+- `toolbox/tags/tags.js`
+- `toolbox/tags/tags-api-client.js`
+
+## Remaining Non-Compliant CSS Paths
+
+These paths remain approved legacy exceptions:
+
+- `src/engine/ui/baseLayout.css`
+- `src/engine/ui/hubCommon.css`
+- `src/engine/ui/spriteEditor.css`
+
+## Remaining Non-Compliant Test Buckets
+
+| Test Path/Bucket | Remaining Count |
+| --- | ---: |
+| `tests/ai/` | 1 |
+| `tests/assets/` | 1 |
+| `tests/audio/` | 1 |
+| `tests/combat/` | 1 |
+| `tests/config/` | 1 |
+| `tests/core/` | 8 |
+| `tests/dev-runtime/` | 31 |
+| `tests/entity/` | 1 |
+| `tests/events/` | 2 |
+| `tests/final/` | 11 |
+| `tests/fixtures/` | 52 |
+| `tests/fx/` | 1 |
+| `tests/games/` | 35 |
+| `tests/helpers/` | 11 |
+| `tests/index.html` | 1 |
+| `tests/input/` | 8 |
+| `tests/persistence/` | 1 |
+| `tests/playwright/` | 44 |
+| `tests/playwright_installation.txt` | 1 |
+| `tests/production/` | 3 |
+| `tests/README.md` | 1 |
+| `tests/render/` | 1 |
+| `tests/replay/` | 2 |
+| `tests/run-tests.mjs` | 1 |
+| `tests/runtime/` | 81 |
+| `tests/samples/` | 1 |
+| `tests/scenes/` | 3 |
+| `tests/schemas/` | 1 |
+| `tests/shared/` | 92 |
+| `tests/testRunner.html` | 1 |
+| `tests/testRunner.js` | 1 |
+| `tests/tools/` | 57 |
+| `tests/validation/` | 3 |
+| `tests/vector/` | 1 |
+| `tests/world/` | 4 |
+
+## Updated Migration Backlog
+
+1. Migrate `toolbox/game-configuration/` to `assets/toolbox/game-configuration/js/index.js`.
+2. Migrate `toolbox/colors/` to `assets/toolbox/colors/js/index.js`.
+3. Migrate `toolbox/objects/` to `assets/toolbox/objects/js/index.js`.
+4. Defer `toolbox/game-journey/` until the known completion-metrics validation blocker is resolved or accepted.
+5. Defer `toolbox/game-hub/` until shared root toolbox accordions and registry client migration are scoped together.
+6. Defer `toolbox/assets/` until worker script canonical placement is explicitly approved.
+7. Defer `toolbox/messages/` until Message Studio service registry consolidation is scoped.
+8. Continue small, obvious test bucket migrations separately under PR_035.
+9. Resolve `src/engine/paletteList.js` with an engine feature-folder plan.
+10. Resolve `src/engine/ui/*.css` through an approved engine UI or Theme V2 CSS policy.
+
+## Known Validation Blockers Carried Forward
+
+| Blocker | Status | Notes |
+| --- | --- | --- |
+| Game Journey completion metrics 500 | Pre-existing | Reappeared during Text To Speech Playwright registration validation. Documented in PR_006A and PR_014. |
+| Tags Add Tag Playwright failure | Pre-existing | Reproduced on `bfc203e82` before PR_015 changes. Documented in PR_015. |
+| Product-data/environment gates | Pre-existing | Broader assertions fail outside the Tags path update. Documented in PR_015. |
+
+## Branch Validation
+
+| Check | Status | Evidence |
+| --- | --- | --- |
+| Current branch | PASS | `PR_26172_CHARLIE_repository-compliance-stack`. |
+| Worktree clean before PR_016 edits | PASS | PR_015 was committed and pushed before this audit scope. |
+| Local/origin sync before PR_016 edits | PASS | `0 0` after PR_015 push. |
+| Stack remains unmerged | PASS | No merge to `main` was performed. |
+| Returned to main avoided | PASS | Work remained on the Charlie branch. |
+
+## Requirement Checklist
+
+| Requirement | Status | Evidence |
+| --- | --- | --- |
+| Verify PR_034 compliance | PASS | Canonical guardrail passes with 0 blocking violations; remaining JS/CSS debt listed. |
+| Verify PR_035 compliance | PASS | Remaining test buckets listed. |
+| Verify PR_036 compliance | PASS | Remaining debt is classified as approved legacy with a remediation backlog. |
+| Produce updated PASS/FAIL report | PASS | Repository Area Results included. |
+| Produce remaining migration backlog | PASS | Updated Migration Backlog included. |
+| Produce ZIP artifact | PASS | `tmp/PR_26172_CHARLIE_016-repository-compliance-reaudit_delta.zip` generated. |
+
+## Validation Lane Report
+
+| Lane | Status | Notes |
+| --- | --- | --- |
+| Canonical structure guardrail | PASS | `npm run validate:canonical-structure`. |
+| Reaudit inventory | PASS | `auditCanonicalRepositoryStructure` inventory gathered after PR_014 and PR_015. |
+| Markdown/text review | PASS | Report includes PASS/FAIL status and backlog. |
+| Playwright | SKIP | Audit-only scope; no browser route behavior changed in PR_016. |
+| Samples | SKIP | No sample files changed. |
+| Full smoke | SKIP | Out of scope per targeted validation rules. |
+
+## Manual Validation Notes
+
+- The Charlie stack removed three approved legacy JS sidecar entries across PR_014 and PR_015.
+- No runtime source files were changed by PR_016.
+- Remaining FAIL statuses represent approved legacy debt, not current guardrail blockers.

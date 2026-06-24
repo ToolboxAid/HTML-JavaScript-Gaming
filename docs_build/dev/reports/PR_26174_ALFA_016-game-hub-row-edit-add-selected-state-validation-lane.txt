@@ -1,0 +1,11 @@
+Validation Lane: PASS
+
+Commands:
+1. npx playwright test tests/playwright/tools/GameHubMockRepository.spec.mjs -g "Game Hub creates, opens, and deletes mock games|Game Hub validates game parent rows and child tables|Game Hub preserves guest browsing and blocks guest saves|Game Hub shows a creator-safe empty state when no projects exist|Game Hub shows a creator-safe unavailable state when project list API fails|Game Hub displays and edits game purpose and member role|Game Hub readiness child rows update from mock game state"
+Result: PASS - 7 passed.
+
+2. npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs -g "Idea Board uses accordion table ideas and notes"
+Result: PASS - 1 passed.
+
+3. git diff --check -- assets/theme-v2/css/tables.css toolbox/game-hub/game-hub.js tests/playwright/tools/GameHubMockRepository.spec.mjs
+Result: PASS.

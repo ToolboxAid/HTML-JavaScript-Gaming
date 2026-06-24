@@ -7,14 +7,19 @@ import {
   TTS_PROVIDER_ADAPTER_PLAN,
   createDefaultTextToSpeechProfiles,
   createEmotionProfile,
-  createMessageStudioTtsProfileOptions,
   createSpeechPreviewRequest,
   createTextToSpeechProfile,
   createTextToSpeechProfileEmotion,
   createTtsMessage,
   createVoiceProfile,
   previewTtsMessage,
-} from "../../toolbox/text-to-speech/text2speech.js";
+} from "../../assets/toolbox/text-to-speech/js/index.js";
+import {
+  TEXT_TO_SPEECH_PROFILE_STORAGE_KEY,
+  readSavedTextToSpeechProfiles,
+  textToSpeechProfilesToMessageOptions,
+  writeSavedTextToSpeechProfiles,
+} from "../../assets/js/shared/tts-profile-store.js";
 
 test("Text2Speech message model separates Design and Audio ownership", () => {
   const message = createTtsMessage({ text: "Hello", metadata: { tags: ["intro"] } });
@@ -25,9 +30,9 @@ test("Text2Speech message model separates Design and Audio ownership", () => {
   assert.equal(message.audioOwner, "Audio");
   assert.equal(message.generatedAudio, null);
   assert.deepEqual(message.metadata.tags, ["intro"]);
-  assert.equal(emotion.owner, "Design");
+  assert.equal(emotion.owner, "Audio");
   assert.equal(emotion.intensity, 1);
-  assert.equal(voice.owner, "Design");
+  assert.equal(voice.owner, "Audio");
   assert.equal(voice.generatedAudioOwner, "Audio");
   assert.ok(TTS_MESSAGE_STATUSES.includes("blocked"));
 });
@@ -65,7 +70,7 @@ test("Text2Speech provider adapter plan keeps browser speech implemented and pai
   assert.ok(TTS_PROVIDER_ADAPTER_PLAN.slice(1).every((provider) => provider.status === "planned"));
 });
 
-test("Text2Speech profile contract exposes Message Studio compatible profile options", () => {
+test("Text2Speech saved profile store exposes active profiles for Messages", () => {
   const voiceOptions = [{ language: "en-US", label: "Test Voice (en-US)", name: "Test Voice", value: "test-voice" }];
   const defaults = createDefaultTextToSpeechProfiles(voiceOptions);
   const custom = createTextToSpeechProfile({
@@ -83,9 +88,22 @@ test("Text2Speech profile contract exposes Message Studio compatible profile opt
     voice: "test-voice",
     voiceName: "Test Voice",
   });
-  const options = createMessageStudioTtsProfileOptions([custom]);
+  const writes = new Map();
+  const storage = {
+    getItem(key) {
+      return writes.get(key) || "";
+    },
+    setItem(key, value) {
+      writes.set(key, value);
+    },
+  };
+
+  assert.equal(writeSavedTextToSpeechProfiles([custom], storage), true);
+  const savedProfiles = readSavedTextToSpeechProfiles(storage);
+  const options = textToSpeechProfilesToMessageOptions(savedProfiles);
 
   assert.equal(TTS_PROFILE_CONTRACT_VERSION, "tts-profile-emotion-v1");
+  assert.equal(writes.has(TEXT_TO_SPEECH_PROFILE_STORAGE_KEY), true);
   assert.equal(defaults[0].name, "Default Balanced Profile");
   assert.equal(defaults[0].messageStudioUsageCount, 1);
   assert.deepEqual(defaults[0].emotions.map((emotion) => emotion.emotionLabel), ["Neutral", "Happy", "Angry", "Scared"]);
@@ -94,18 +112,25 @@ test("Text2Speech profile contract exposes Message Studio compatible profile opt
   assert.equal(defaults[0].emotions.find((emotion) => emotion.emotion === "neutral").messagePartsUsageCount, 1);
   assert.deepEqual(options, [{
     active: true,
+    age: "any",
+    ageFilter: "any",
     emotionSettings: [{
+      active: true,
       emotion: "urgent",
       emotionLabel: "Urgent",
+      key: "urgent",
       pitch: 1.2,
       rate: 1.1,
       ssmlLikePreset: "whisper-ish",
       volume: 0.8,
     }],
+    gender: "neutral",
     key: "custom-profile",
     language: "en-US",
     name: "Custom Profile",
     providerKey: "browser-speech",
+    sourceProfileId: "custom-profile",
+    voice: "test-voice",
     voiceName: "Test Voice",
   }]);
 });

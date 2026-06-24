@@ -12,6 +12,11 @@ const TEST_RUNTIME_ENV_VALUES = Object.freeze({
   GAMEFOUNDRY_ADMIN_HEALTH_TOKEN: "admin-health-token-secret",
 });
 
+const TEST_PUBLIC_SYSTEM_HEALTH_ENV_VALUES = Object.freeze({
+  GAMEFOUNDRY_ENVIRONMENT_LABEL: "DEV",
+  GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX: "/dev/projects/",
+});
+
 async function setSessionUser(server, userKey) {
   await fetch(`${server.baseUrl}/api/session/mode`, {
     body: JSON.stringify({ modeId: "local-db" }),
@@ -27,7 +32,10 @@ async function setSessionUser(server, userKey) {
 
 async function openAdminSystemHealthPage(page, userKey) {
   const previousRuntimeEnvValues = {};
-  Object.entries(TEST_RUNTIME_ENV_VALUES).forEach(([key, value]) => {
+  Object.entries({
+    ...TEST_RUNTIME_ENV_VALUES,
+    ...TEST_PUBLIC_SYSTEM_HEALTH_ENV_VALUES,
+  }).forEach(([key, value]) => {
     previousRuntimeEnvValues[key] = process.env[key];
     process.env[key] = value;
   });
@@ -125,23 +133,117 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
   try {
     await expect(page).toHaveTitle(/System Health - Game Foundry Studio LLC/);
     await expect(page.getByRole("heading", { exact: true, name: "System Health" })).toBeVisible();
-    await expect(page.getByRole("table", { name: "Environment summary" })).toContainText("DEV");
-    await expect(page.getByRole("table", { name: "Environment summary" })).toContainText("IST");
-    await expect(page.getByRole("table", { name: "Environment summary" })).toContainText("UAT");
-    await expect(page.getByRole("table", { name: "Environment summary" })).toContainText("PRD");
+    await expect(page.getByRole("table", { name: "Environment identity" })).toContainText("Environment name");
+    await expect(page.locator("[data-admin-system-health-environment-value='name']")).toHaveText("DEV");
+    await expect(page.locator("[data-admin-system-health-environment-value='hostingModel']")).toHaveText("Local Docker");
+    await expect(page.locator("[data-admin-system-health-environment-value='databaseModel']")).toHaveText("Local Docker PostgreSQL");
+    await expect(page.locator("[data-admin-system-health-environment-value='storageFolder']")).toHaveText("/dev");
+    await expect(page.getByRole("table", { name: "Environment identity" })).not.toContainText("env-secret");
+    await expect(page.getByRole("table", { name: "Environment map" })).toContainText("Local");
+    await expect(page.getByRole("table", { name: "Environment map" })).toContainText("DEV");
+    await expect(page.getByRole("table", { name: "Environment map" })).toContainText("IST");
+    await expect(page.getByRole("table", { name: "Environment map" })).toContainText("UAT");
+    await expect(page.getByRole("table", { name: "Environment map" })).toContainText("PRD");
+    await expect(page.getByRole("table", { name: "Environment map" }).locator("[data-health-status]")).toHaveCount(0);
+    const capabilitiesTable = page.getByRole("table", { name: "Environment capabilities" });
+    await expect(capabilitiesTable).toContainText("Hosting");
+    await expect(capabilitiesTable).toContainText("API");
+    await expect(capabilitiesTable).toContainText("Database");
+    await expect(capabilitiesTable).toContainText("Storage");
+    await expect(capabilitiesTable).toContainText("Scheduled Monitoring");
+    await expect(capabilitiesTable).not.toContainText("/uat");
+    const apiContractTable = page.getByRole("table", { name: "Health API contract" });
+    await expect(apiContractTable).toContainText("2026-06-24.system-health.v1");
+    await expect(apiContractTable).toContainText("Current deployment only");
+    await expect(apiContractTable).toContainText("Reference only");
+    await expect(apiContractTable).toContainText("GET /api/admin/system-health/status");
+    const apiRegistryTable = page.getByRole("table", { name: "Admin API registry" });
+    await expect(apiRegistryTable).toContainText("/api/admin/system-health/status");
+    await expect(apiRegistryTable).toContainText("/api/admin/system-health/action");
+    await expect(apiRegistryTable).toContainText("/api/admin/infrastructure/storage-path-status");
+    await expect(apiRegistryTable).toContainText("/api/admin/operations/status");
+    await expect(apiRegistryTable).toContainText("/api/navigation/admin-menu");
+    const featureFlagsTable = page.getByRole("table", { name: "Runtime feature flags" });
+    await expect(featureFlagsTable).toContainText("system-health.api-contract");
+    await expect(featureFlagsTable).toContainText("system-health.environment-capabilities");
+    await expect(featureFlagsTable).toContainText("system-health.manual-actions");
+    await expect(featureFlagsTable).toContainText("system-health.notifications");
+    await expect(featureFlagsTable).toContainText("Not Configured");
+    const serviceCards = page.locator("[data-admin-system-health-service-card]");
+    await expect(serviceCards).toHaveCount(7);
+    const serviceCardText = (await serviceCards.allTextContents()).join("\n");
+    ["Runtime", "API", "Database", "Storage", "Authentication", "Email", "Background Jobs"].forEach((label) => {
+      expect(serviceCardText).toContain(label);
+    });
+    const serviceStatuses = await serviceCards.locator("[data-health-status]").allTextContents();
+    expect(serviceStatuses.every((status) => ["Healthy", "Warning", "Failed", "Not Configured"].includes(status.trim()))).toBe(true);
+    const configurationTable = page.getByRole("table", { name: "Configuration summary" });
+    await expect(configurationTable).toContainText("Current environment");
+    await expect(configurationTable).toContainText("Hosting model");
+    await expect(configurationTable).toContainText("Site URL");
+    await expect(configurationTable).toContainText("API URL");
+    await expect(configurationTable).toContainText("Database provider/type");
+    await expect(configurationTable).toContainText("Storage provider/folder");
+    await expect(configurationTable).toContainText("Auth provider/status");
+    await expect(configurationTable).not.toContainText("env-secret");
+    await expect(page.getByRole("button", { name: "Refresh" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Run Runtime Check" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Run Database Check" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Run Storage Check" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Run Full Health Check" })).toBeVisible();
+    const scheduledTable = page.getByRole("table", { name: "Scheduled health monitoring" });
+    await expect(scheduledTable).toContainText("Last scheduled run");
+    await expect(scheduledTable).toContainText("Next scheduled run");
+    await expect(scheduledTable).toContainText("Duration");
+    await expect(scheduledTable).toContainText("Recent result");
+    await expect(scheduledTable).toContainText("Failures/warnings");
+    await expect(scheduledTable).toContainText("Not Configured");
+    const notificationsTable = page.getByRole("table", { name: "Notifications and alerts" });
+    await expect(notificationsTable).toContainText("Email alerts");
+    await expect(notificationsTable).toContainText("Admin notifications");
+    await expect(notificationsTable).toContainText("Webhook alerts");
+    await expect(notificationsTable).toContainText("Messages integration");
+    await expect(notificationsTable).toContainText("Not Configured");
+    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Approved diagnostics format");
+    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Environment Variables + All Runtime Ports");
+    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Configurable multiple runtime ports");
+    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("deferred/cancelled");
+    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).not.toContainText("secret");
     await expect(page.getByRole("table", { name: "Database health" })).toContainText("Postgres");
-    await expect(page.locator("[data-admin-system-health-db-value='provider']")).toHaveText("Postgres");
-    await expect(page.locator("[data-admin-system-health-db-value='host']")).not.toHaveText("Configured host placeholder");
-    await expect(page.locator("[data-admin-system-health-db-value='database']")).not.toHaveText("Configured database placeholder");
-    await expect(page.locator("[data-admin-system-health-db-value='connection']")).not.toHaveText("Connection check pending");
+    await expect(page.locator("[data-admin-system-health-db-value='type']")).toHaveText("Local Docker PostgreSQL");
+    await expect(page.locator("[data-admin-system-health-db-value='connectivity']")).not.toHaveText("Loading");
+    await expect(page.locator("[data-admin-system-health-db-value='responseTime']")).not.toHaveText("Loading");
+    await expect(page.locator("[data-admin-system-health-db-value='version']")).not.toHaveText("Loading");
+    await expect(page.locator("[data-admin-system-health-db-value='lastChecked']")).not.toHaveText("Loading");
     await expect(page.getByRole("table", { name: "Database health" })).not.toContainText("postgres://");
     await expect(page.getByRole("table", { name: "Database health" })).not.toContainText("postgresql://");
     await expect(page.getByRole("table", { name: "Storage health" })).toContainText("Cloudflare R2");
-    await expect(page.locator("[data-admin-system-health-storage-value='bucket']")).not.toHaveText("Configured bucket placeholder");
-    await expect(page.locator("[data-admin-system-health-storage-value='list']")).not.toHaveText("Objects prefix");
+    await expect(page.locator("[data-admin-system-health-storage-value='bucket']")).toContainText("/dev");
+    await expect(page.locator("[data-admin-system-health-storage-value='list']")).toContainText("/dev");
+    await expect(page.locator("[data-admin-system-health-storage-value='upload']")).toContainText("/dev");
     await expect(page.locator("[data-admin-system-health-storage-value='read']")).not.toHaveText("Health object");
-    await expect(page.locator("[data-admin-system-health-storage-value='write']")).not.toHaveText("Health object");
     await expect(page.locator("[data-admin-system-health-storage-value='delete']")).not.toHaveText("Health object");
+    await expect(page.getByRole("table", { name: "Runtime health" })).toContainText("Runtime Health");
+    await expect(page.locator("[data-admin-system-health-runtime-health-value='environment']")).toHaveText("DEV");
+    await expect(page.locator("[data-admin-system-health-runtime-health-value='appVersion']")).toHaveText("1.0.0");
+    await expect(page.locator("[data-admin-system-health-runtime-health-value='apiVersion']")).toHaveText("1.0.0");
+    await expect(page.locator("[data-admin-system-health-runtime-health-value='nodeVersion']")).toContainText("v");
+    await expect(page.locator("[data-admin-system-health-runtime-health-value='serverStartTime']")).not.toHaveText("Loading");
+    await expect(page.locator("[data-admin-system-health-runtime-health-value='uptime']")).toContainText("s");
+    await expect(page.locator("[data-admin-system-health-runtime-health-value='lastChecked']")).not.toHaveText("Loading");
+    const historyTable = page.getByRole("table", { name: "Health check history" });
+    await expect(historyTable).toContainText("DEV");
+    await expect(historyTable).toContainText("Environment Summary");
+    await expect(historyTable).toContainText("Database Health");
+    await expect(historyTable).toContainText("Storage Health");
+    await expect(historyTable).toContainText("Runtime Health");
+    await expect(historyTable).not.toContainText("IST");
+    await expect(historyTable).not.toContainText("UAT");
+    await expect(historyTable).not.toContainText("PRD");
+    await expect(historyTable).not.toContainText("/local");
+    await expect(historyTable).not.toContainText("/ist");
+    await expect(historyTable).not.toContainText("/uat");
+    await expect(historyTable).not.toContainText("/prd");
     await expect(page.getByRole("table", { name: "Runtime environment" })).toContainText("********");
     await expect(page.getByRole("table", { name: "Runtime environment" })).toContainText("GAMEFOUNDRY_ADMIN_HEALTH_DATABASE_URL");
     await expect(page.getByRole("table", { name: "Runtime environment" })).toContainText("GAMEFOUNDRY_ADMIN_HEALTH_PUBLIC_FLAG");
@@ -174,7 +276,10 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
       expect((title || ariaLabel || "").trim()).not.toEqual("");
     }
     expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/status"))).toBe(true);
-    expect(context.requestUrls.filter((url) => url.includes("/api/admin/system-health/storage-connectivity-action"))).toHaveLength(4);
+    expect(context.requestUrls.filter((url) => url.includes("/api/admin/system-health/storage-connectivity-action"))).toHaveLength(5);
+    await page.getByRole("button", { name: "Run Runtime Check" }).click();
+    await expect(page.getByRole("table", { name: "Manual health action results" })).toContainText("Run Runtime Check");
+    expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/action"))).toBe(true);
     await expectClientToHideSecretValues(page, context);
     await expect(page.locator("[data-admin-system-health-storage-action]")).toHaveCount(0);
     await expect(page.locator("[data-owner-ai-save], [data-owner-membership-save], [data-owner-ai-credits], [data-owner-memberships]")).toHaveCount(0);
@@ -192,7 +297,9 @@ test("Creator sessions cannot access Admin System Health operations", async ({ p
   try {
     await expect(page.getByRole("heading", { name: "Admin role required" })).toBeVisible();
     await expect(page.locator("[data-session-access-blocked='admin']")).toBeVisible();
-    await expect(page.getByRole("table", { name: "Environment summary" })).toHaveCount(0);
+    await expect(page.getByRole("table", { name: "Environment identity" })).toHaveCount(0);
+    await expect(page.getByRole("table", { name: "Environment map" })).toHaveCount(0);
+    await expect(page.getByRole("table", { name: "Health check history" })).toHaveCount(0);
     expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/status"))).toBe(false);
     expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/storage-connectivity-action"))).toBe(false);
     expect(context.pageErrors).toEqual([]);
@@ -212,7 +319,20 @@ test("Admin System Health operations page keeps scripts and styles external", as
   expect(pageSource).not.toMatch(/data-health-status="(?:WARN|FAIL)"/);
   expect(pageSource).not.toContain("No active failure is declared");
   expect(pageSource).not.toContain("SQLite");
+  expect(pageSource).toContain("Environment Identity");
+  expect(pageSource).toContain("Environment Map");
+  expect(pageSource).toContain("Environment Capabilities");
+  expect(pageSource).toContain("Health API Contract");
+  expect(pageSource).toContain("Admin API Registry");
+  expect(pageSource).toContain("Runtime Feature Flags");
+  expect(pageSource).toContain("Service Health");
+  expect(pageSource).toContain("Configuration Summary");
+  expect(pageSource).toContain("Manual Health Actions");
+  expect(pageSource).toContain("Scheduled Health Monitoring");
+  expect(pageSource).toContain("Notifications &amp; Alerts");
+  expect(pageSource).toContain("Runtime Health");
   expect(pageSource).toContain("Diagnostics Plan");
+  expect(pageSource).toContain("Local API Startup Diagnostics");
   expect(pageSource).toContain("Server-owned Postgres health reader");
   expect(pageSource).toContain("Server-owned Cloudflare R2 storage diagnostic");
   expect(pageSource).toContain("assets/theme-v2/js/admin-system-health.js");
@@ -221,5 +341,6 @@ test("Admin System Health operations page keeps scripts and styles external", as
   expect(runtimeSource).not.toContain("SQLite");
   expect(runtimeSource).not.toContain("localStorage");
   expect(runtimeSource).not.toContain("sessionStorage");
+  expect(runtimeSource).toContain("runAdminSystemHealthAction");
   expect(runtimeSource).toContain("runAdminSystemHealthStorageConnectivityAction");
 });

@@ -206,7 +206,7 @@
 }
 
 .tool-column[class*="tool-group-"] .horizontal-accordion-toggle,
-.tool-column[class*="tool-group-"] details.vertical-accordion summary:after {
+.tool-column[class*="tool-group-"] details.vertical-accordion .vertical-accordion__chevron {
   --accordion-button-border: var(--tool-group-accent);
   --accordion-button-color: var(--tool-group-color)
 }
@@ -298,36 +298,12 @@ body.tool-focus-mode .tool-center-panel:has(>details.vertical-accordion)>p {
   display: none
 }
 
-.tool-display-mode summary:after {
-  content: "";
+.tool-display-mode__chevron {
   position: absolute;
   right: var(--space-12);
   top: 50%;
   transform: translateY(-50%);
-  width: var(--space-20);
-  height: var(--space-20);
-  border: var(--border-standard);
-  border-radius: var(--radius-pill);
-  background: var(--panel-soft);
-  color: var(--gold);
-  display: inline-grid;
-  place-items: center;
-  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
-  background-position: calc(50% - var(--space-3)) 50%, calc(50% + var(--space-3)) 50%;
-  background-size: var(--space-7) var(--space-7);
-  background-repeat: no-repeat
-}
-
-.tool-display-mode[open] summary:after {
-  background-image: linear-gradient(135deg, transparent 50%, currentColor 50%), linear-gradient(45deg, currentColor 50%, transparent 50%)
-}
-
-.tool-display-mode summary:active:after {
-  background-image: linear-gradient(135deg, transparent 50%, currentColor 50%), linear-gradient(45deg, currentColor 50%, transparent 50%)
-}
-
-.tool-display-mode[open] summary:active:after {
-  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%)
+  z-index: var(--z-index-sm)
 }
 
 .tool-display-mode__badge {

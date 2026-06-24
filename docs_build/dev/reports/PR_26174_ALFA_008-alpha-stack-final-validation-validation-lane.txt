@@ -1,0 +1,9 @@
+Validation Lane: PASS
+
+PASS - npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+PASS - npx playwright test tests/playwright/tools/GameHubMockRepository.spec.mjs -g "Game Hub shows a creator-safe empty state|Game Hub shows a creator-safe unavailable state"
+PASS - npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs -g "Game Journey progress dashboard summarizes completion metrics"
+
+Notes:
+- These targeted Playwright lanes cover the ALFA_001 through ALFA_007 stack.
+- Full workspace smoke was not run.

@@ -13,10 +13,12 @@
 # Ignore the NEXT_COMMAND.txt file
 NEXT_COMMAND.txt
 
-# Ignore the tests results and temporary files
+# Ignore generated dependency, test result, and temporary files
 node_modules/
 tests/results/
+tests/results/**
 tmp/test-results/
+tmp/test-results/**
 tmp/
 scripts/untracked/
 projects/
@@ -45,3 +47,4 @@ docs/dev/reports/playwright_v8_coverage_report.txt
 
 # Game Foundry Studio project files
 assets/*.gfsp
+docs_build/dev/ProjectInstructions.zip

@@ -35,6 +35,129 @@
   line-height: var(--line-height-copy)
 }
 
+.toolbox-status-bar {
+  --toolbox-status-bar-height: var(--space-52);
+  --toolbox-status-game-max: 220px;
+  --toolbox-status-progress-max: 34vw;
+  width: 100%;
+  min-block-size: var(--toolbox-status-bar-height);
+  border-block: var(--border-standard);
+  background: var(--panel-overlay-strong);
+  color: var(--text)
+}
+
+.toolbox-status-bar__inner {
+  width: var(--container-width);
+  margin: var(--space-0) auto;
+  padding: var(--space-10) var(--space-0);
+  display: grid;
+  grid-template-columns: minmax(var(--space-0), max-content) minmax(var(--space-0), 1fr) minmax(var(--space-0), max-content);
+  gap: var(--space-16);
+  align-items: center
+}
+
+.toolbox-status-bar__game {
+  min-width: var(--space-0);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: left
+}
+
+.toolbox-status-bar__game-name {
+  color: var(--text);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-tight);
+  max-width: min(30vw, var(--toolbox-status-game-max));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow-wrap: anywhere
+}
+
+.toolbox-status-bar__center {
+  min-width: var(--space-0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  justify-self: center;
+  text-align: center
+}
+
+.toolbox-status-bar__message {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-8);
+  margin: var(--space-0);
+  max-width: var(--measure-lg);
+  line-height: var(--line-height-copy);
+  overflow-wrap: anywhere
+}
+
+.toolbox-status-bar__status-icon {
+  flex: 0 0 auto
+}
+
+.toolbox-status-bar__progress {
+  min-width: var(--space-0);
+  max-width: var(--toolbox-status-progress-max);
+  margin: var(--space-0);
+  color: var(--muted);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-tight);
+  overflow: hidden;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap
+}
+
+.toolbox-status-bar[data-selected-game-state="active"] {
+  border-color: color-mix(in srgb, var(--green) 52%, var(--line))
+}
+
+.toolbox-status-bar[data-selected-game-state="missing"] {
+  border-color: var(--gold-border-muted)
+}
+
+.toolbox-status-bar[data-selected-game-state="error"] {
+  border-color: color-mix(in srgb, var(--red) 52%, var(--line))
+}
+
+body.tool-focus-mode .toolbox-status-bar {
+  position: fixed;
+  inset-block-end: var(--space-0);
+  inset-inline: var(--space-0);
+  z-index: var(--z-index-lg);
+  border-block-end: var(--space-0);
+  box-shadow: var(--shadow-md)
+}
+
+body.tool-focus-mode {
+  --toolbox-status-bar-height: var(--space-52);
+  --toolbox-status-top-reserve: var(--space-0)
+}
+
+body.tool-focus-mode:has(.platform-banner) {
+  --toolbox-status-top-reserve: var(--space-52)
+}
+
+body.tool-focus-mode .tool-workspace {
+  box-sizing: border-box;
+  height: calc(100vh - var(--toolbox-status-bar-height) - var(--toolbox-status-top-reserve));
+  max-height: calc(100vh - var(--toolbox-status-bar-height) - var(--toolbox-status-top-reserve))
+}
+
+body.tool-focus-mode .tool-column {
+  height: calc(100vh - var(--toolbox-status-bar-height) - var(--toolbox-status-top-reserve) - var(--space-20));
+  max-height: calc(100vh - var(--toolbox-status-bar-height) - var(--toolbox-status-top-reserve) - var(--space-20))
+}
+
+body.tool-focus-mode .tool-center-panel {
+  box-sizing: border-box;
+  scroll-padding-block-end: var(--toolbox-status-bar-height)
+}
+
 .platform-banner {
   width: 100%;
   border-bottom: var(--border-standard);
@@ -143,4 +266,26 @@
 .swatch-label.toolbox-group-play {
   color: var(--bg);
   text-shadow: none
+}
+
+@media (max-width: 720px) {
+  .toolbox-status-bar__inner {
+    width: var(--container-width);
+    grid-template-columns: minmax(var(--space-0), max-content) minmax(var(--space-0), 1fr) minmax(var(--space-0), max-content);
+    gap: var(--space-10);
+    text-align: center
+  }
+
+  .toolbox-status-bar__game-name {
+    max-width: 24vw
+  }
+
+  .toolbox-status-bar__message,
+  .toolbox-status-bar__progress {
+    font-size: var(--font-size-sm)
+  }
+
+  .toolbox-status-bar__progress {
+    max-width: 30vw
+  }
 }

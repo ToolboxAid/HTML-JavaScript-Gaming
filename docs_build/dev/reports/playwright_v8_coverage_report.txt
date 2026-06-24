@@ -12,18 +12,27 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(0%) Toolbox Index - not exercised by this Playwright run
+(46%) Toolbox Index - exercised 1 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
-(0%) Theme V2 Shared JS - not exercised by this Playwright run
+(78%) Theme V2 Shared JS - exercised 4 runtime JS files
 
 Changed runtime JS files covered:
-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(100%) none changed - no changed runtime JS files
 
 Files with executed line/function counts where available:
-(100%) none - no covered runtime files
+(36%) src/api/server-api-client.js - executed lines 167/167; executed functions 5/14
+(46%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 12/26
+(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 204/204; executed functions 9/14
+(65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
+(74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1001/1001; executed functions 69/93
+(80%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 4/5
+(82%) assets/theme-v2/js/admin-system-health.js - executed lines 808/808; executed functions 68/83
+(83%) assets/js/shared/status.js - executed lines 37/37; executed functions 5/6
+(91%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 10/11
+(100%) src/api/admin-system-health-api-client.js - executed lines 28/28; executed functions 4/4
 
 Uncovered or low-coverage changed JS files:
-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+(100%) none changed - no changed runtime JS files
 
 Changed JS files considered:
-(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/api/admin-system-health/contract.test.mjs - changed JS file not collected as browser runtime coverage

@@ -1,0 +1,14 @@
+Branch validation: PASS
+
+Branch:
+pr/26174-ALFA-017-game-hub-guest-save-and-crew-cleanup
+
+Base stack branch:
+pr/26174-ALFA-016-game-hub-row-edit-add-selected-state
+
+Checks:
+- Current branch is the ALFA_017 branch: PASS
+- Worktree was clean before ALFA_017 edits: PASS
+- Scope limited to Game Hub page/script, targeted Playwright coverage, and required reports: PASS
+- No protected Project Instructions changes: PASS
+- No merge to main performed: PASS

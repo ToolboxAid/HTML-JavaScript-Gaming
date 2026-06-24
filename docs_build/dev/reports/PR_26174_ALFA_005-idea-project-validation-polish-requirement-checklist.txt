@@ -1,0 +1,6 @@
+Requirement Checklist: PASS
+
+PASS - Validates Ready-only Create Project behavior.
+PASS - Validates converted Project ideas stay locked/read-only.
+PASS - Validates guest Create Project redirects to account/sign-in.html.
+PASS - Added missing targeted tests only; no production code changed.

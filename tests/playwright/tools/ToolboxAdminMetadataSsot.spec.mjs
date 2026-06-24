@@ -244,10 +244,10 @@ test("Toolbox and Admin Tool Votes share the same DB-backed metadata and plannin
     const counts = countByStatus(snapshot.rows);
     const visibleCounts = countByStatus(visibleSnapshotRows);
     expect(counts).toMatchObject({
-      beta: 7,
-      complete: 1,
+      beta: 6,
+      complete: 3,
       planned: 31,
-      wireframe: 5,
+      wireframe: 4,
       deprecated: 2,
     });
     const orderedSetupRows = snapshot.rows

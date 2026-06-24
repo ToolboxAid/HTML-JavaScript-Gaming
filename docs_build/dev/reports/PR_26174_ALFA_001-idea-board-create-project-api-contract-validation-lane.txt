@@ -1,0 +1,11 @@
+Validation Lane Report: PASS
+
+Commands run:
+- `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs`
+
+Result:
+- PASS: 3 tests passed.
+
+Notes:
+- Targeted Playwright lane was used because the impacted surface is Idea Board with Game Hub handoff.
+- Full samples smoke was not run by default per instruction.

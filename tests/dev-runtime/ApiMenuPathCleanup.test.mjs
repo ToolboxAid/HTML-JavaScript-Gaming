@@ -21,20 +21,20 @@ const EXPECTED_ADMIN_LABELS = Object.freeze([
   "Admin Tools",
   "Analytics",
   "Controls",
+  "Creators",
   "DB Viewer",
   "Environments",
   "Game Migration",
   "Infrastructure",
-  "Invitations",
+  "Invites",
   "Moderation",
   "Operations",
   "Platform Settings",
   "Ratings",
-  "Roles",
+  "Responsibilities",
   "Site Setup",
   "System Health",
   "Tool Votes",
-  "Users",
 ]);
 
 const EXPECTED_OWNER_LABELS = Object.freeze([
@@ -98,7 +98,7 @@ test("Admin and Owner shared menus are non-overlapping by responsibility", () =>
   ["Branding", "Design System", "Grouping Colors", "Legal", "Marketplace Settings", "Notes", "Revenue", "Site Settings", "Themes"].forEach((label) => {
     assert.equal(adminItems.some((item) => item.label === label), false, `Admin menu must not include Owner business item ${label}`);
   });
-  ["DB Viewer", "Infrastructure", "Invitations", "Operations", "Platform Settings", "System Health", "Users"].forEach((label) => {
+  ["Creators", "DB Viewer", "Infrastructure", "Invites", "Operations", "Platform Settings", "System Health"].forEach((label) => {
     assert.equal(ownerItems.some((item) => item.label === label), false, `Owner menu must not duplicate Admin operations item ${label}`);
   });
 });

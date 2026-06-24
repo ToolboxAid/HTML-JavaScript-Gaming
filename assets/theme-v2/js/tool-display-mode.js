@@ -12,6 +12,102 @@
     const toolName = pageTitle ? pageTitle.textContent.trim() : "Tool";
     const routeSlug = window.location.pathname.split("/").pop().replace(/\.html$/, "");
     const toolSlug = slot.dataset.toolSlug || routeSlug;
+    let themeIconRegistry = window.ThemeV2Icons || null;
+
+    function fallbackThemeIconFileName(name) {
+        return "gfs-" + name + ".svg";
+    }
+
+    function createThemeIconNode(name, className) {
+        if (themeIconRegistry && typeof themeIconRegistry.createThemeIcon === "function") {
+            return themeIconRegistry.createThemeIcon(name, { className });
+        }
+
+        const icon = document.createElement("span");
+        icon.className = ["theme-icon", "theme-icon--" + name, className].filter(Boolean).join(" ");
+        icon.dataset.themeIcon = name;
+        icon.dataset.themeIconFile = fallbackThemeIconFileName(name);
+        icon.setAttribute("aria-hidden", "true");
+        return icon;
+    }
+
+    function createChevronShell(name, shellClassName, iconClassName) {
+        const shell = document.createElement("span");
+        shell.className = shellClassName;
+        shell.setAttribute("aria-hidden", "true");
+        shell.appendChild(createThemeIconNode(name, iconClassName));
+        return shell;
+    }
+
+    function replaceIconNode(parent, selector, icon) {
+        const current = parent.querySelector(selector);
+        if (current) {
+            current.replaceWith(icon);
+        } else {
+            parent.appendChild(icon);
+        }
+    }
+
+    function updateVerticalAccordionChevron(details) {
+        const accordionSummary = details.querySelector(":scope > summary");
+        if (!accordionSummary) return;
+        const iconName = details.open ? "chevron-up" : "chevron-down";
+        const shell = createChevronShell(iconName, "vertical-accordion__chevron", "vertical-accordion__chevron-icon");
+        replaceIconNode(accordionSummary, ":scope > .vertical-accordion__chevron", shell);
+    }
+
+    function wireVerticalAccordionChevron(details) {
+        if (details.dataset.themeV2ChevronWired === "true") {
+            updateVerticalAccordionChevron(details);
+            return;
+        }
+
+        details.dataset.themeV2ChevronWired = "true";
+        details.addEventListener("toggle", function () {
+            updateVerticalAccordionChevron(details);
+        });
+        updateVerticalAccordionChevron(details);
+    }
+
+    function refreshVerticalAccordionChevrons() {
+        document.querySelectorAll("details.vertical-accordion").forEach(wireVerticalAccordionChevron);
+    }
+
+    function updateToolDisplayModeChevron() {
+        const iconName = displayMode.open ? "chevron-up" : "chevron-down";
+        const shell = createChevronShell(iconName, "tool-display-mode__chevron", "tool-display-mode__chevron-icon");
+        replaceIconNode(summary, ":scope > .tool-display-mode__chevron", shell);
+    }
+
+    function horizontalToggleIconName(button) {
+        const expanded = button.getAttribute("aria-expanded") !== "false";
+        const isLeft = button.classList.contains("horizontal-accordion-toggle--left");
+        if (isLeft) {
+            return expanded ? "chevron-left" : "chevron-right";
+        }
+        return expanded ? "chevron-right" : "chevron-left";
+    }
+
+    function updateHorizontalToggleIcon(button) {
+        button.replaceChildren(createThemeIconNode(horizontalToggleIconName(button), "horizontal-accordion-toggle__icon"));
+    }
+
+    function refreshHorizontalToggleIcons() {
+        document.querySelectorAll(".horizontal-accordion-toggle").forEach(updateHorizontalToggleIcon);
+    }
+
+    function refreshThemeIcons() {
+        refreshVerticalAccordionChevrons();
+        updateToolDisplayModeChevron();
+        refreshHorizontalToggleIcons();
+    }
+
+    import("/assets/theme-v2/js/theme-icons.js").then(function (module) {
+        themeIconRegistry = module;
+        refreshThemeIcons();
+    }).catch(function () {
+        themeIconRegistry = window.ThemeV2Icons || themeIconRegistry;
+    });
 
     function explicitPngName(source) {
         if (!source) return "";
@@ -53,6 +149,7 @@
     fullscreenName.textContent = toolName;
     summary.appendChild(fullscreenName);
     displayMode.appendChild(summary);
+    displayMode.addEventListener("toggle", updateToolDisplayModeChevron);
 
     const body = document.createElement("div");
     body.className = "tool-display-mode__body";
@@ -202,13 +299,16 @@
         }
     });
 
+    refreshVerticalAccordionChevrons();
+    updateToolDisplayModeChevron();
+
     document.querySelectorAll(".tool-workspace").forEach(function (workspace) {
         const columns = workspace.querySelectorAll(":scope > .tool-column");
         if (columns.length < 2) return;
 
         const sideColumns = [
-            { column: columns[0], side: "left", openIndicator: "<", closedIndicator: ">" },
-            { column: columns[columns.length - 1], side: "right", openIndicator: ">", closedIndicator: "<" }
+            { column: columns[0], side: "left" },
+            { column: columns[columns.length - 1], side: "right" }
         ];
 
         sideColumns.forEach(function (entry) {
@@ -222,15 +322,15 @@
             button.className = "horizontal-accordion-toggle horizontal-accordion-toggle--" + entry.side;
             button.setAttribute("aria-label", "Collapse " + label);
             button.setAttribute("aria-expanded", "true");
-            button.textContent = entry.openIndicator;
+            updateHorizontalToggleIcon(button);
             header.insertBefore(button, header.firstChild);
 
             button.addEventListener("click", function () {
                 const collapsed = entry.column.classList.toggle("is-collapsed");
                 workspace.classList.toggle("is-" + entry.side + "-collapsed", collapsed);
-                button.textContent = collapsed ? entry.closedIndicator : entry.openIndicator;
                 button.setAttribute("aria-expanded", collapsed ? "false" : "true");
                 button.setAttribute("aria-label", (collapsed ? "Expand " : "Collapse ") + label);
+                updateHorizontalToggleIcon(button);
             });
         });
     });

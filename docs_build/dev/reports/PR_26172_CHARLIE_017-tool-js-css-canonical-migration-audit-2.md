@@ -1,0 +1,110 @@
+# PR_26172_CHARLIE_017-tool-js-css-canonical-migration-audit-2
+
+## Summary
+
+Status: PASS
+
+This audit reviewed the remaining active toolbox JS/CSS canonical migration candidates after the completed Text To Speech and Tags migrations. No implementation files were changed in this PR.
+
+Recommended next migrations:
+
+1. PR_26172_CHARLIE_018 - Game Configuration
+2. PR_26172_CHARLIE_019 - Colors
+3. PR_26172_CHARLIE_020 - Game Design
+
+These are the lowest-risk candidates based on file count, reference count, direct test coverage, and no known Alfa/Bravo ownership conflict.
+
+## Files And Areas Reviewed
+
+- `toolbox/`
+- `assets/toolbox/`
+- `assets/theme-v2/`
+- `scripts/validate-canonical-repository-structure.mjs`
+- `docs_build/dev/reports/PR_26172_CHARLIE_016-repository-compliance-reaudit.md`
+
+## Candidate Ranking
+
+| Rank | Tool | Non-Canonical JS | Non-Canonical CSS | Reference Count | Direct Coverage | Recommendation |
+| --- | --- | --- | --- | ---: | --- | --- |
+| 1 | Game Configuration | `toolbox/game-configuration/game-configuration.js`; `toolbox/game-configuration/game-configuration-api-client.js` | None found | 5 | `tests/playwright/tools/GameConfigurationMockRepository.spec.mjs` | Migrate next. Small file set, direct coverage, low reference surface. |
+| 2 | Colors | `toolbox/colors/colors.js`; `toolbox/colors/palette-api-client.js` | None found | 5 | `tests/playwright/tools/PaletteToolMockRepository.spec.mjs` | Migrate after Game Configuration. Strong direct coverage and no known ownership conflict. |
+| 3 | Game Design | `toolbox/game-design/game-design.js`; `toolbox/game-design/game-design-api-client.js` | None found | 6 | `tests/playwright/tools/GameDesignMockRepository.spec.mjs` | Migrate after Colors. Small file set and direct coverage. |
+| 4 | Objects | `toolbox/objects/objects.js`; `toolbox/objects/objects-api-client.js` | None found | 6 | `tests/playwright/tools/ObjectsTool.spec.mjs` | Keep as next candidate after this queue. Slightly higher risk because it touches object and asset linking behavior. |
+| 5 | Controls | `toolbox/controls/controls.js`; `toolbox/controls/controls-api-client.js` | None found | 8 | Controls-focused Playwright coverage exists | Keep as later candidate. Higher reference count and account/user control surface. |
+
+## Deferred Candidates
+
+| Tool | Reason Deferred |
+| --- | --- |
+| Game Journey | Known pre-existing `/api/game-journey/completion-metrics` HTTP 500 validation blocker and likely Alfa workstream overlap. |
+| Messages | Bravo-owned workstream risk and larger file set. |
+| Game Hub | Shares root toolbox registry/accordion behavior and imports API client from root-level code. |
+| Assets | Larger migration with worker file and broader artifact/test reference surface. |
+| Root toolbox scripts | Not a single-tool migration and should be scoped separately. |
+
+## Inline Script And Style Findings
+
+Reviewed active toolbox pages for inline script, inline style, and inline event handler issues.
+
+| Area | Inline `<script>` Blocks | Inline `<style>` Blocks Or `style=` | Inline Event Handlers |
+| --- | ---: | ---: | ---: |
+| `toolbox/assets/` | 0 | 0 | 0 |
+| `toolbox/colors/` | 0 | 0 | 0 |
+| `toolbox/controls/` | 0 | 0 | 0 |
+| `toolbox/game-configuration/` | 0 | 0 | 0 |
+| `toolbox/game-design/` | 0 | 0 | 0 |
+| `toolbox/game-hub/` | 0 | 0 | 0 |
+| `toolbox/game-journey/` | 0 | 0 | 0 |
+| `toolbox/messages/` | 0 | 0 | 0 |
+| `toolbox/objects/` | 0 | 0 | 0 |
+
+## Recommended Execution Order
+
+1. Migrate Game Configuration JS into `assets/toolbox/game-configuration/js/index.js`.
+2. Migrate Colors JS into `assets/toolbox/colors/js/index.js`.
+3. Migrate Game Design JS into `assets/toolbox/game-design/js/index.js`.
+4. Re-run canonical structure guardrail after each migration.
+5. Re-run repository compliance audit after the three migrations.
+
+## Branch Validation
+
+| Check | Result | Notes |
+| --- | --- | --- |
+| Current branch is Charlie stack branch | PASS | `PR_26172_CHARLIE_repository-compliance-stack` |
+| Worktree clean before PR017 edits | PASS | No tracked changes before report creation. |
+| Local/origin sync | PASS | `0 0` before report creation. |
+| Scope limited to audit/reporting | PASS | No runtime or implementation files changed. |
+
+## Requirement Checklist
+
+| Requirement | Result | Notes |
+| --- | --- | --- |
+| Review `toolbox/` | PASS | Remaining active toolbox candidates classified. |
+| Review `assets/toolbox/` | PASS | Existing canonical migrations used as reference. |
+| Review `assets/theme-v2/` | PASS | Shared theme scripts remain external and are not migration targets in this PR. |
+| Identify tool JS outside canonical locations | PASS | Candidate list above. |
+| Identify tool CSS outside canonical locations | PASS | No active tool CSS migration candidate was identified in reviewed areas. |
+| Identify inline script violations | PASS | None found in reviewed active toolbox pages. |
+| Identify inline style violations | PASS | None found in reviewed active toolbox pages. |
+| Rank next five migrations | PASS | Ranking table provided. |
+| No implementation changes | PASS | Report-only PR. |
+
+## Validation Lane Report
+
+Commands:
+
+- `git branch --show-current`
+- `git status --short`
+- `git rev-list --left-right --count origin/PR_26172_CHARLIE_repository-compliance-stack...HEAD`
+- Targeted text inventory of `toolbox/`, `assets/toolbox/`, and `assets/theme-v2/`
+- `git diff --check`
+
+Result: PASS
+
+No Playwright or samples were run because this PR is audit-only and does not modify runtime or UI files.
+
+## Manual Validation Notes
+
+- PR017 is an audit-only step and is safe to continue into PR018.
+- Game Configuration is the safest next single-tool migration.
+- Game Journey remains deferred because the known completion metrics HTTP 500 is unrelated to canonical JS/CSS structure work and should not block unrelated Charlie migration candidates.

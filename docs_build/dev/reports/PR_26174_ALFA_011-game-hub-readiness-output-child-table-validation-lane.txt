@@ -1,0 +1,3 @@
+Validation Lane: PASS
+
+PASS - npx playwright test tests/playwright/tools/GameHubMockRepository.spec.mjs -g "Game Hub creates, opens, and deletes mock games"

@@ -1,0 +1,120 @@
+# PR_26172_CHARLIE_036-final-target-tool-compliance-reaudit
+
+## Summary
+
+Status: PASS with retained exceptions documented.
+
+Final reaudit scope:
+
+- Controls
+- Assets / Asset Browser / Vector Art
+- Game Journey
+
+The active entrypoints for the target tools have moved to canonical paths. Remaining legacy paths are API-client or worker exceptions with removal plans.
+
+## Migrated Paths
+
+| Tool area | Legacy path | Canonical path | Status |
+| --- | --- | --- | --- |
+| Controls | `toolbox/controls/controls.js` | `assets/toolbox/controls/js/index.js` | Migrated |
+| Assets | `toolbox/assets/assets.js` | `assets/toolbox/assets/js/index.js` | Migrated |
+| Game Journey | `toolbox/game-journey/game-journey.js` | `assets/toolbox/game-journey/js/index.js` | Migrated |
+
+## Retained Exceptions
+
+| Path | Reason | Removal plan |
+| --- | --- | --- |
+| `toolbox/controls/controls-api-client.js` | Shared by Controls and `account/user-controls-page.js`. | Define shared client placement, move shared code, update both importers, then remove exception. |
+| `toolbox/assets/assets-api-client.js` | Shared by Assets and Objects. | Define shared client placement, update Assets and Objects together, then remove exception. |
+| `toolbox/assets/assets-upload-worker.js` | Worker filename/path pattern is not yet defined by canonical guardrail. | Add approved worker placement rule, move worker, update `new Worker(...)`, run upload validation, then remove exception. |
+| `toolbox/game-journey/game-journey-api-client.js` | Guardrail currently approves only `assets/toolbox/{tool}/js/index.js`; second tool JS file placement is not approved. | Add secondary tool-module or shared-client placement rule, move/update imports, run Game Journey validation, then remove exception. |
+
+## Remaining Legacy Paths
+
+Active retained legacy paths:
+
+- `toolbox/controls/controls-api-client.js`
+- `toolbox/assets/assets-api-client.js`
+- `toolbox/assets/assets-upload-worker.js`
+- `toolbox/game-journey/game-journey-api-client.js`
+
+Historical references:
+
+- `docs_build/pr/PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff/BUILD_PR.md`
+- `docs_build/pr/PR_26171_ALPHA_047-game-hub-canonical-path-journey-handoff/APPLY_PR.md`
+
+Historical references were not rewritten.
+
+## Guardrail Status
+
+- Command: `npm run validate:canonical-structure`
+- Result: PASS
+- Blocking violations: 0
+- Approved legacy exceptions: 481
+
+## Browser Validation Status
+
+- Command: `npm run validate:browser-env-agnostic`
+- Result: FAIL
+- Findings:
+  - Product service contract findings in `src/dev-runtime/server/local-api-router.mjs`.
+  - User-facing implementation wording findings in Messages.
+- Classification: existing broader browser-env gate findings, not introduced by this target-tool migration stack.
+
+## Report and ZIP Artifact Check
+
+| Scope | Report | ZIP |
+| --- | --- | --- |
+| PR_26172_CHARLIE_028 | Present | Present |
+| PR_26172_CHARLIE_029 | Present | Present |
+| PR_26172_CHARLIE_030 | Present | Present |
+| PR_26172_CHARLIE_031 | Present | Present |
+| PR_26172_CHARLIE_032 | Present | Present |
+| PR_26172_CHARLIE_033 | Present | Present |
+| PR_26172_CHARLIE_034 | Present | Present |
+| PR_26172_CHARLIE_035 | Present | Present |
+
+## Stack Readiness
+
+Ready for Owner review: YES, with documented retained exceptions and validation caveats.
+
+Owner review should note:
+
+- The target entrypoint migrations are complete.
+- The retained API/worker files require follow-up shared-client or worker-placement governance before removal.
+- Browser-env validation remains blocked by existing non-Charlie findings.
+- Assets full upload Playwright validation is blocked by Local API provider persistence behavior, not by canonical entrypoint path loading.
+
+## Branch Validation
+
+- Current branch: `PR_26172_CHARLIE_repository-compliance-stack`
+- Expected branch: `PR_26172_CHARLIE_repository-compliance-stack`
+- Local/origin sync before PR: `0 0`
+- Branch validation: PASS
+
+## Requirement Checklist
+
+- Verify Controls: PASS
+- Verify Assets / Asset Browser / Vector Art: PASS
+- Verify Game Journey: PASS
+- Report migrated paths: PASS
+- Report retained exceptions: PASS
+- Report remaining legacy paths: PASS
+- Provide removal plans: PASS
+- Run canonical structure guardrail: PASS
+- Run browser validation: PASS with existing failure documented.
+- Confirm all reports exist: PASS
+- Confirm ZIP exists: PASS after artifact creation.
+
+## Manual Validation Notes
+
+This reaudit confirms the remaining target work is no longer entrypoint migration. It is shared-client and worker-placement cleanup, which should be scoped separately to avoid changing tool behavior under a structure-only migration stack.
+
+## Recommended Next PRs
+
+1. Shared API-client placement governance for reused toolbox API clients.
+2. Worker placement guardrail for tool-local module workers.
+3. Controls API client shared placement migration.
+4. Assets API client shared placement migration with Objects.
+5. Assets worker migration after worker placement rule exists.
+6. Game Journey API client migration after secondary module or shared-client placement is approved.

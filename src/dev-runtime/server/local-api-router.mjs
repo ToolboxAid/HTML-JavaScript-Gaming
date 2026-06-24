@@ -17,7 +17,11 @@ import {
   createInputMappingToolMockRepository,
 } from "../persistence/tool-repositories/input-mapping-mock-repository.js";
 import { createConfiguredBackupStorage, createConfiguredProjectAssetStorage } from "../storage/r2-project-asset-storage.mjs";
-import { loadStorageConfig } from "../storage/storage-config.mjs";
+import {
+  STORAGE_PROJECTS_PREFIX_LANES,
+  loadStorageConfig,
+  normalizeStorageProjectsPrefix,
+} from "../storage/storage-config.mjs";
 import { createPostgresBackup } from "../database/postgres-backup-service.mjs";
 import {
   GFSP_PACKAGE_REQUIRED_FILES,
@@ -311,6 +315,14 @@ const RUNTIME_ENV_SECRET_MARKERS = Object.freeze([
   "JWT",
   "DATABASE_URL",
 ]);
+const LOCAL_API_STARTUP_DEFAULT_HOST = "127.0.0.1";
+const LOCAL_API_STARTUP_DEFAULT_PORT = "5501";
+const LOCAL_API_STARTUP_DEFAULT_PORT_BY_PROTOCOL = Object.freeze({
+  "http:": "80",
+  "https:": "443",
+});
+const LOCAL_API_PROCESS_STARTED_AT = new Date().toISOString();
+const SYSTEM_HEALTH_API_CONTRACT_VERSION = "2026-06-24.system-health.v1";
 const SYSTEM_HEALTH_USAGE_NOT_AVAILABLE = "NOT AVAILABLE";
 const SYSTEM_HEALTH_USAGE_CONTRACTS = Object.freeze({
   GAMEFOUNDRY_DB_CONNECTION_LIMIT: Object.freeze({
@@ -329,20 +341,82 @@ const SYSTEM_HEALTH_USAGE_CONTRACTS = Object.freeze({
     integrationPoint: "Future R2 provider telemetry can report project asset storage bytes used through the Local API.",
   }),
 });
-const STORAGE_PROJECTS_PREFIX_LANES = Object.freeze([
-  Object.freeze({ lane: "DEV", path: "/dev/projects/" }),
-  Object.freeze({ lane: "IST", path: "/ist/projects/" }),
-  Object.freeze({ lane: "UAT", path: "/uat/projects/" }),
-  Object.freeze({ lane: "PRD", path: "/prd/projects/" }),
-]);
 const STORAGE_CONNECTIVITY_ACTIONS = Object.freeze([
-  Object.freeze({ id: "storage-list", label: "List" }),
-  Object.freeze({ id: "storage-write-test-object", label: "Write test object" }),
-  Object.freeze({ id: "storage-read-test-object", label: "Read test object" }),
-  Object.freeze({ id: "storage-delete-test-object", label: "Delete test object" }),
+  Object.freeze({ id: "storage-bucket-connectivity", label: "Bucket connectivity", operation: "bucket-connectivity" }),
+  Object.freeze({ id: "storage-list", label: "List", operation: "list" }),
+  Object.freeze({ id: "storage-upload-test-object", label: "Upload test object", operation: "upload" }),
+  Object.freeze({ id: "storage-write-test-object", label: "Write test object", operation: "upload" }),
+  Object.freeze({ id: "storage-read-test-object", label: "Read test object", operation: "read" }),
+  Object.freeze({ id: "storage-delete-test-object", label: "Delete test object", operation: "delete" }),
+]);
+const SYSTEM_HEALTH_STORAGE_ACTION_IDS = Object.freeze([
+  "storage-bucket-connectivity",
+  "storage-list",
+  "storage-upload-test-object",
+  "storage-read-test-object",
+  "storage-delete-test-object",
+]);
+const SYSTEM_HEALTH_MANUAL_ACTION_LABELS = Object.freeze({
+  "database-check": "Run Database Check",
+  "full-health-check": "Run Full Health Check",
+  refresh: "Refresh",
+  "runtime-check": "Run Runtime Check",
+  "storage-check": "Run Storage Check",
+});
+const SYSTEM_HEALTH_API_ENDPOINTS = Object.freeze([
+  Object.freeze({ method: "GET", path: "/api/admin/system-health/status", purpose: "Read current deployment System Health status." }),
+  Object.freeze({ method: "POST", path: "/api/admin/system-health/action", purpose: "Run current deployment manual health actions." }),
+  Object.freeze({ method: "POST", path: "/api/admin/system-health/storage-connectivity-action", purpose: "Run current deployment R2 folder diagnostics." }),
+]);
+const ADMIN_API_REGISTRY_ENTRIES = Object.freeze([
+  Object.freeze({ method: "GET", owner: "Team Charlie", path: "/api/admin/system-health/status", purpose: "System Health status contract" }),
+  Object.freeze({ method: "POST", owner: "Team Charlie", path: "/api/admin/system-health/action", purpose: "System Health manual actions" }),
+  Object.freeze({ method: "POST", owner: "Team Charlie", path: "/api/admin/system-health/storage-connectivity-action", purpose: "System Health R2 diagnostics" }),
+  Object.freeze({ method: "GET", owner: "Team Charlie", path: "/api/admin/infrastructure/storage-path-status", purpose: "Infrastructure storage path status" }),
+  Object.freeze({ method: "POST", owner: "Team Charlie", path: "/api/admin/infrastructure/storage-connectivity-action", purpose: "Infrastructure R2 diagnostics" }),
+  Object.freeze({ method: "GET", owner: "Team Charlie", path: "/api/admin/operations/status", purpose: "Admin Operations status" }),
+  Object.freeze({ method: "POST", owner: "Team Charlie", path: "/api/admin/operations/action", purpose: "Admin Operations actions" }),
+  Object.freeze({ method: "GET", owner: "Shared Admin Navigation", path: "/api/navigation/admin-menu", purpose: "Admin navigation menu contract" }),
 ]);
 const STORAGE_CONNECTIVITY_TEST_OBJECT_CONTENT = "Game Foundry Studio storage connectivity test object.\n";
 const STORAGE_CONNECTIVITY_TEST_OBJECT_RELATIVE_PATH = "connectivity/storage-connectivity-test.txt";
+const SYSTEM_HEALTH_ENVIRONMENT_MODELS = Object.freeze([
+  Object.freeze({
+    databaseModel: "Local Docker PostgreSQL",
+    hostingModel: "VS Code + Local API",
+    name: "Local",
+    storageFolder: "/local",
+  }),
+  Object.freeze({
+    databaseModel: "Local Docker PostgreSQL",
+    hostingModel: "Local Docker",
+    name: "DEV",
+    storageFolder: "/dev",
+  }),
+  Object.freeze({
+    databaseModel: "Local Docker PostgreSQL",
+    hostingModel: "Local Docker",
+    name: "IST",
+    storageFolder: "/ist",
+  }),
+  Object.freeze({
+    databaseModel: "Supabase PostgreSQL",
+    hostingModel: "Cloudflare",
+    name: "UAT",
+    storageFolder: "/uat",
+  }),
+  Object.freeze({
+    databaseModel: "Supabase PostgreSQL",
+    hostingModel: "Cloudflare",
+    name: "PRD",
+    storageFolder: "/prd",
+  }),
+]);
+const SYSTEM_HEALTH_ENVIRONMENT_BY_NAME = new Map(SYSTEM_HEALTH_ENVIRONMENT_MODELS.map((model) => [model.name, model]));
+const SYSTEM_HEALTH_ENVIRONMENT_BY_FOLDER = new Map([
+  ...SYSTEM_HEALTH_ENVIRONMENT_MODELS.map((model) => [model.storageFolder, model.name]),
+  ["/prod", "PRD"],
+]);
 const ADMIN_OPERATION_GROUPS = Object.freeze([
   Object.freeze({
     id: "project-packaging",
@@ -497,8 +571,9 @@ function dotEnvValue(key) {
 
 function storageProjectsPrefixStatus() {
   const currentPath = dotEnvValue(STORAGE_PROJECTS_PREFIX_ENV_KEY);
-  const matchedLane = STORAGE_PROJECTS_PREFIX_LANES.find((lane) => lane.path === currentPath.value);
-  const invalidPath = !currentPath.found || !currentPath.value || !matchedLane;
+  const normalizedPath = normalizeStorageProjectsPrefix(currentPath.value);
+  const matchedLane = STORAGE_PROJECTS_PREFIX_LANES.find((lane) => lane.path === normalizedPath);
+  const invalidPath = !currentPath.found || !normalizedPath || !matchedLane;
   const rows = STORAGE_PROJECTS_PREFIX_LANES.map((lane) => {
     if (invalidPath) {
       return {
@@ -508,7 +583,7 @@ function storageProjectsPrefixStatus() {
         value: "ERROR",
       };
     }
-    const active = currentPath.value === lane.path;
+    const active = normalizedPath === lane.path;
     return {
       ...lane,
       active,
@@ -519,7 +594,7 @@ function storageProjectsPrefixStatus() {
   return {
     configured: !invalidPath,
     invalidPath,
-    missing: !currentPath.found || !currentPath.value,
+    missing: !currentPath.found || !normalizedPath,
     rows,
     secretsExposed: false,
     status: invalidPath ? "ERROR" : "PASS",
@@ -735,6 +810,208 @@ function overallHealthStatus(rows) {
   return "PASS";
 }
 
+function localApiStartupPortFromUrl(value) {
+  const rawValue = String(value || "").trim();
+  if (!rawValue) {
+    return "not configured";
+  }
+  try {
+    const parsedUrl = new URL(rawValue);
+    return parsedUrl.port || LOCAL_API_STARTUP_DEFAULT_PORT_BY_PROTOCOL[parsedUrl.protocol] || "not configured";
+  } catch {
+    return "invalid URL";
+  }
+}
+
+function localApiStartupUrlDisplay(value, fallback = "not configured") {
+  const rawValue = String(value || "").trim();
+  if (!rawValue) {
+    return fallback;
+  }
+  try {
+    const parsedUrl = new URL(rawValue);
+    if (parsedUrl.username) {
+      parsedUrl.username = "********";
+    }
+    if (parsedUrl.password) {
+      parsedUrl.password = "********";
+    }
+    parsedUrl.search = "";
+    parsedUrl.hash = "";
+    return parsedUrl.toString();
+  } catch {
+    return "invalid URL";
+  }
+}
+
+function localApiStartupBindTarget(env = process.env) {
+  const host = String(env.GAMEFOUNDRY_LOCAL_API_HOST || LOCAL_API_STARTUP_DEFAULT_HOST).trim() || LOCAL_API_STARTUP_DEFAULT_HOST;
+  const port = String(env.GAMEFOUNDRY_LOCAL_API_PORT || LOCAL_API_STARTUP_DEFAULT_PORT).trim() || LOCAL_API_STARTUP_DEFAULT_PORT;
+  const portStatus = /^[1-9]\d*$/.test(port) ? "PASS" : "WARN";
+  return {
+    host,
+    port,
+    status: portStatus,
+    value: `${host}:${port}`,
+  };
+}
+
+function systemHealthLocalApiStartupDiagnostics(env = process.env) {
+  const bindTarget = localApiStartupBindTarget(env);
+  const configuredApiUrl = String(env.GAMEFOUNDRY_API_URL || "").trim();
+  const derivedApiUrl = `http://${bindTarget.value}/api`;
+  const siteUrl = String(env.GAMEFOUNDRY_SITE_URL || "").trim();
+  const rows = [
+    {
+      field: "Approved diagnostics format",
+      reason: "Startup output includes deterministic Environment Variables and All Runtime Ports sections.",
+      status: "PASS",
+      value: "Environment Variables + All Runtime Ports",
+    },
+    {
+      field: "Environment variable diagnostics",
+      reason: "Startup output masks secret-like values and redacts URL credentials before printing.",
+      status: "PASS",
+      value: "masked and redacted",
+    },
+    {
+      field: "Configured startup bind target",
+      reason: bindTarget.status === "PASS"
+        ? "Local API startup uses the configured or default host and port for the bind target."
+        : "GAMEFOUNDRY_LOCAL_API_PORT must be a positive integer.",
+      status: bindTarget.status,
+      value: bindTarget.value,
+    },
+    {
+      field: "Configured site URL",
+      reason: siteUrl
+        ? "GAMEFOUNDRY_SITE_URL is available for startup diagnostics."
+        : "GAMEFOUNDRY_SITE_URL is not configured; startup diagnostics will print not configured.",
+      status: siteUrl ? "PASS" : "WARN",
+      value: localApiStartupUrlDisplay(siteUrl),
+    },
+    {
+      field: "Configured API URL",
+      reason: configuredApiUrl
+        ? "GAMEFOUNDRY_API_URL is configured and displayed without URL credentials."
+        : "GAMEFOUNDRY_API_URL is not configured; startup diagnostics derive /api from the bind target.",
+      status: "PASS",
+      value: localApiStartupUrlDisplay(configuredApiUrl || derivedApiUrl),
+    },
+    {
+      field: "Configured API URL port",
+      reason: "Port is derived from the configured or startup-derived API URL for display only.",
+      status: "PASS",
+      value: localApiStartupPortFromUrl(configuredApiUrl || derivedApiUrl),
+    },
+    {
+      field: "Configurable multiple runtime ports",
+      reason: "Configurable multiple runtime ports are explicitly deferred/cancelled for this PR.",
+      status: "PENDING",
+      value: "deferred/cancelled",
+    },
+  ];
+  const actionableRows = rows.filter((row) => row.status !== "PENDING");
+  return {
+    message: "Local API startup diagnostics use the approved safe output format; configurable multiple runtime ports remain deferred.",
+    rows,
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    status: overallHealthStatus(actionableRows),
+  };
+}
+
+function systemHealthEnvironmentMap() {
+  return SYSTEM_HEALTH_ENVIRONMENT_MODELS.map((model) => ({ ...model }));
+}
+
+function topLevelStorageFolder(value) {
+  const segment = String(value || "")
+    .trim()
+    .replace(/\\/g, "/")
+    .replace(/^\/+|\/+$/g, "")
+    .split("/")
+    .filter(Boolean)[0] || "";
+  return segment ? `/${segment.toLowerCase()}` : "";
+}
+
+function normalizeEnvironmentName(value) {
+  const upperValue = String(value || "").trim().toUpperCase();
+  if (!upperValue) {
+    return "";
+  }
+  if (["LOCAL", "DEV", "IST", "UAT", "PRD"].includes(upperValue)) {
+    return upperValue === "LOCAL" ? "Local" : upperValue;
+  }
+  if (upperValue === "PROD" || upperValue === "PRODUCTION") {
+    return "PRD";
+  }
+  if (upperValue.includes("LOCAL")) {
+    return "Local";
+  }
+  return "";
+}
+
+function inferSystemHealthEnvironmentName(env = process.env) {
+  const configuredStorageFolder = topLevelStorageFolder(env.GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX || dotEnvValue(STORAGE_PROJECTS_PREFIX_ENV_KEY).value);
+  const folderMatch = SYSTEM_HEALTH_ENVIRONMENT_BY_FOLDER.get(configuredStorageFolder);
+  if (folderMatch) {
+    return {
+      configuredStorageFolder,
+      name: folderMatch,
+      source: STORAGE_PROJECTS_PREFIX_ENV_KEY,
+      status: "PASS",
+    };
+  }
+
+  const labelMatch = normalizeEnvironmentName(env.GAMEFOUNDRY_ENVIRONMENT_LABEL);
+  if (labelMatch) {
+    return {
+      configuredStorageFolder,
+      name: labelMatch,
+      source: "GAMEFOUNDRY_ENVIRONMENT_LABEL",
+      status: "WARN",
+    };
+  }
+
+  return {
+    configuredStorageFolder,
+    name: "Local",
+    source: "local default",
+    status: configuredStorageFolder ? "WARN" : "PASS",
+  };
+}
+
+function systemHealthEnvironmentIdentity(env = process.env, lastHealthCheck = new Date().toISOString()) {
+  const inferred = inferSystemHealthEnvironmentName(env);
+  const model = SYSTEM_HEALTH_ENVIRONMENT_BY_NAME.get(inferred.name) || SYSTEM_HEALTH_ENVIRONMENT_BY_NAME.get("Local");
+  const siteUrl = localApiStartupUrlDisplay(String(env.GAMEFOUNDRY_SITE_URL || "").trim());
+  const bindTarget = localApiStartupBindTarget(env);
+  const configuredApiUrl = String(env.GAMEFOUNDRY_API_URL || "").trim();
+  const apiUrl = localApiStartupUrlDisplay(configuredApiUrl || `http://${bindTarget.value}/api`);
+  const storageFolderMatches = !inferred.configuredStorageFolder
+    || inferred.configuredStorageFolder === model.storageFolder
+    || (model.name === "PRD" && inferred.configuredStorageFolder === "/prod");
+
+  return {
+    apiUrl,
+    apiUrlStatus: apiUrl === "not configured" || apiUrl === "invalid URL" ? "WARN" : "PASS",
+    databaseModel: model.databaseModel,
+    hostingModel: model.hostingModel,
+    lastHealthCheck,
+    message: storageFolderMatches
+      ? `Current deployment identity resolved as ${model.name} from ${inferred.source}.`
+      : `Current deployment identity defaulted to ${model.name}; ${STORAGE_PROJECTS_PREFIX_ENV_KEY} did not match an approved environment folder.`,
+    name: model.name,
+    siteUrl,
+    siteUrlStatus: siteUrl === "not configured" || siteUrl === "invalid URL" ? "WARN" : "PASS",
+    source: inferred.source,
+    status: storageFolderMatches ? inferred.status : "WARN",
+    storageFolder: model.storageFolder,
+    storageFolderStatus: storageFolderMatches ? inferred.status : "WARN",
+  };
+}
+
 function systemHealthSummary(rows) {
   const counts = systemHealthCounts(rows);
   const total = counts.PASS + counts.WARN + counts.FAIL;
@@ -744,6 +1021,94 @@ function systemHealthSummary(rows) {
     score: total ? Math.round((counts.PASS / total) * 100) : 0,
     status: overallHealthStatus(rows),
     total,
+  };
+}
+
+function systemHealthApiContract(checkedAt = new Date().toISOString()) {
+  const endpointValue = SYSTEM_HEALTH_API_ENDPOINTS
+    .map((endpoint) => `${endpoint.method} ${endpoint.path}`)
+    .join("; ");
+  const rows = [
+    {
+      field: "Contract version",
+      status: "PASS",
+      value: SYSTEM_HEALTH_API_CONTRACT_VERSION,
+    },
+    {
+      field: "Data boundary",
+      status: "PASS",
+      value: SERVER_DATA_BOUNDARY_RULE,
+    },
+    {
+      field: "Deployment scope",
+      status: "PASS",
+      value: "Current deployment only",
+    },
+    {
+      field: "Environment Map",
+      status: "PASS",
+      value: "Reference only; no peer environment checks",
+    },
+    {
+      field: "Secret handling",
+      status: "PASS",
+      value: "No secret editing; secret values hidden",
+    },
+    {
+      field: "Endpoints",
+      status: "PASS",
+      value: endpointValue,
+    },
+  ];
+  return {
+    contractVersion: SYSTEM_HEALTH_API_CONTRACT_VERSION,
+    currentDeploymentOnly: true,
+    endpointCount: SYSTEM_HEALTH_API_ENDPOINTS.length,
+    endpoints: SYSTEM_HEALTH_API_ENDPOINTS.map((endpoint) => ({ ...endpoint })),
+    lastChecked: checkedAt,
+    message: "Admin System Health API contract is current-deployment only and server-owned.",
+    noCrossEnvironmentChecks: true,
+    referenceEnvironmentMapOnly: true,
+    rows,
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    status: "PASS",
+  };
+}
+
+function systemHealthAdminApiRegistry(checkedAt = new Date().toISOString()) {
+  const rows = ADMIN_API_REGISTRY_ENTRIES.map((entry) => ({
+    ...entry,
+    status: "PASS",
+  }));
+  return {
+    lastChecked: checkedAt,
+    message: "Admin API Registry lists server routes used by Admin System Health and adjacent Charlie-owned admin operations.",
+    routeCount: rows.length,
+    rows,
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    status: "PASS",
+  };
+}
+
+function systemHealthRuntimeFeatureFlags(checkedAt = new Date().toISOString()) {
+  const rows = [
+    { flag: "system-health.api-contract", status: "PASS", value: "Enabled" },
+    { flag: "system-health.environment-capabilities", status: "PASS", value: "Enabled" },
+    { flag: "system-health.admin-api-registry", status: "PASS", value: "Enabled" },
+    { flag: "system-health.runtime-health", status: "PASS", value: "Enabled" },
+    { flag: "system-health.manual-actions", status: "PASS", value: "Enabled" },
+    { flag: "system-health.scheduled-monitoring", status: "PENDING", value: "Not Configured" },
+    { flag: "system-health.notifications", status: "PENDING", value: "Not Configured" },
+  ];
+  return {
+    lastChecked: checkedAt,
+    message: "Runtime Feature Flags are read-only server-reported System Health capability flags.",
+    rows,
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    status: overallHealthStatus(rows.map((row) => ({ status: row.status }))),
   };
 }
 
@@ -780,6 +1145,394 @@ function systemHealthRuntimeEnvironment(env = process.env) {
     status: rows.some((row) => row.status !== "PASS") ? "WARN" : "PASS",
     totalCount: rows.length,
   };
+}
+
+let cachedProjectVersion = null;
+
+function projectVersion() {
+  if (cachedProjectVersion !== null) {
+    return cachedProjectVersion;
+  }
+  try {
+    const packageJson = JSON.parse(readFileSync(path.join(process.cwd(), "package.json"), "utf8"));
+    cachedProjectVersion = String(packageJson.version || "").trim();
+  } catch {
+    cachedProjectVersion = "";
+  }
+  return cachedProjectVersion;
+}
+
+function systemHealthRuntimeHealth(environmentIdentity = {}, checkedAt = new Date().toISOString()) {
+  const version = projectVersion();
+  const nodeVersion = String(process.version || "").trim();
+  const uptimeSeconds = Math.max(0, Math.floor(process.uptime()));
+  return {
+    apiVersion: version,
+    appVersion: version,
+    environmentName: environmentIdentity.name || "Unknown",
+    lastChecked: checkedAt,
+    message: "Runtime health is reported by the current deployment Local API only.",
+    nodeVersion,
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    serverStartTime: LOCAL_API_PROCESS_STARTED_AT,
+    status: "PASS",
+    uptimeSeconds,
+  };
+}
+
+function systemHealthServiceDisplayStatus(status, configured = true) {
+  if (configured === false) {
+    return { healthStatus: "PENDING", status: "Not Configured" };
+  }
+  const normalized = normalizeHealthStatus(status);
+  if (normalized === "PASS") {
+    return { healthStatus: "PASS", status: "Healthy" };
+  }
+  if (normalized === "FAIL") {
+    return { healthStatus: "FAIL", status: "Failed" };
+  }
+  return { healthStatus: "WARN", status: "Warning" };
+}
+
+function systemHealthServiceCard({ configured = true, id, label, lastChecked, status = "WARN", summary }) {
+  const displayStatus = systemHealthServiceDisplayStatus(status, configured);
+  return {
+    configured,
+    healthStatus: displayStatus.healthStatus,
+    id,
+    label,
+    lastChecked,
+    status: displayStatus.status,
+    summary: String(summary || "Service health status unavailable."),
+  };
+}
+
+function systemHealthServiceHealth({
+  authStatus = {},
+  checkedAt,
+  databaseStatus = {},
+  runtimeHealth = {},
+  session = {},
+  storageStatus = {},
+}) {
+  const databaseConfigured = databaseStatus.configured !== false && databaseStatus.connectivity !== "not configured";
+  const storageConfigured = storageStatus.configured === true;
+  const authConfigured = authStatus.configured === true || authStatus.ready === true;
+  const services = [
+    systemHealthServiceCard({
+      id: "runtime",
+      label: "Runtime",
+      lastChecked: runtimeHealth.lastChecked || checkedAt,
+      status: runtimeHealth.status || "WARN",
+      summary: runtimeHealth.message || "Runtime health status unavailable.",
+    }),
+    systemHealthServiceCard({
+      id: "api",
+      label: "API",
+      lastChecked: checkedAt,
+      status: session.authenticated && session.isAdmin ? "PASS" : "FAIL",
+      summary: session.authenticated && session.isAdmin
+        ? "Current deployment API responded to the Admin System Health request."
+        : "Admin System Health API requires an authenticated Admin session.",
+    }),
+    systemHealthServiceCard({
+      configured: databaseConfigured,
+      id: "database",
+      label: "Database",
+      lastChecked: databaseStatus.lastChecked || checkedAt,
+      status: databaseStatus.connectivityStatus || databaseStatus.status || "WARN",
+      summary: databaseStatus.message || `${databaseStatus.databaseType || "PostgreSQL"} status unavailable.`,
+    }),
+    systemHealthServiceCard({
+      configured: storageConfigured,
+      id: "storage",
+      label: "Storage",
+      lastChecked: storageStatus.lastChecked || checkedAt,
+      status: storageStatus.status || "WARN",
+      summary: storageStatus.message || "Cloudflare R2 storage status unavailable.",
+    }),
+    systemHealthServiceCard({
+      configured: authConfigured,
+      id: "authentication",
+      label: "Authentication",
+      lastChecked: checkedAt,
+      status: authStatus.ready === true ? "PASS" : "WARN",
+      summary: authStatus.operatorDiagnostic || authStatus.message || "Authentication provider status unavailable.",
+    }),
+    systemHealthServiceCard({
+      configured: false,
+      id: "email",
+      label: "Email",
+      lastChecked: checkedAt,
+      status: "PENDING",
+      summary: "Email health contract is not configured for this deployment.",
+    }),
+    systemHealthServiceCard({
+      configured: false,
+      id: "background-jobs",
+      label: "Background Jobs",
+      lastChecked: checkedAt,
+      status: "PENDING",
+      summary: "Background job health contract is not configured for this deployment.",
+    }),
+  ];
+  return {
+    lastChecked: checkedAt,
+    message: "Service Health summarizes current-deployment service contracts only.",
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    services,
+    status: overallHealthStatus(services.map((service) => ({ status: service.healthStatus }))),
+  };
+}
+
+function systemHealthConfigurationSummary({
+  authStatus = {},
+  checkedAt,
+  databaseStatus = {},
+  environmentIdentity = {},
+  storageStatus = {},
+}) {
+  const authConfigured = authStatus.configured === true || authStatus.ready === true;
+  const rows = [
+    {
+      field: "Current environment",
+      status: environmentIdentity.status || "WARN",
+      value: environmentIdentity.name || "Unknown",
+    },
+    {
+      field: "Hosting model",
+      status: environmentIdentity.hostingModel ? "PASS" : "WARN",
+      value: environmentIdentity.hostingModel || "not configured",
+    },
+    {
+      field: "Site URL",
+      status: environmentIdentity.siteUrlStatus || "WARN",
+      value: environmentIdentity.siteUrl || "not configured",
+    },
+    {
+      field: "API URL",
+      status: environmentIdentity.apiUrlStatus || "WARN",
+      value: environmentIdentity.apiUrl || "not configured",
+    },
+    {
+      field: "Database provider/type",
+      status: databaseStatus.databaseType || environmentIdentity.databaseModel ? "PASS" : "WARN",
+      value: databaseStatus.databaseType || environmentIdentity.databaseModel || "PostgreSQL",
+    },
+    {
+      field: "Storage provider/folder",
+      status: storageStatus.environmentFolderStatus || environmentIdentity.storageFolderStatus || "WARN",
+      value: `Cloudflare R2 ${storageStatus.environmentFolder || environmentIdentity.storageFolder || "not configured"}`,
+    },
+    {
+      field: "Auth provider/status",
+      status: authConfigured ? "PASS" : "PENDING",
+      value: `${authStatus.providerId || SUPABASE_AUTH_PROVIDER_ID} ${authConfigured ? "ready" : "not configured"}`,
+    },
+  ];
+  return {
+    lastChecked: checkedAt,
+    message: "Configuration Summary is read-only and contains no secret values.",
+    rows,
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    status: overallHealthStatus(rows),
+  };
+}
+
+function systemHealthEnvironmentCapabilities({
+  authStatus = {},
+  checkedAt,
+  databaseStatus = {},
+  environmentIdentity = {},
+  storageStatus = {},
+}) {
+  const rows = [
+    {
+      capability: "Hosting",
+      status: environmentIdentity.hostingModel ? "PASS" : "WARN",
+      value: environmentIdentity.hostingModel || "not configured",
+    },
+    {
+      capability: "API",
+      status: environmentIdentity.apiUrlStatus || "WARN",
+      value: environmentIdentity.apiUrl || "not configured",
+    },
+    {
+      capability: "Database",
+      status: databaseStatus.connectivityStatus || databaseStatus.status || "WARN",
+      value: databaseStatus.databaseType || environmentIdentity.databaseModel || "PostgreSQL",
+    },
+    {
+      capability: "Storage",
+      status: storageStatus.environmentFolderStatus || environmentIdentity.storageFolderStatus || "WARN",
+      value: `Cloudflare R2 ${storageStatus.environmentFolder || environmentIdentity.storageFolder || "not configured"}`,
+    },
+    {
+      capability: "Authentication",
+      status: authStatus.ready === true ? "PASS" : "PENDING",
+      value: authStatus.ready === true ? "Configured" : "Not Configured",
+    },
+    {
+      capability: "Scheduled Monitoring",
+      status: "PENDING",
+      value: "Not Configured",
+    },
+    {
+      capability: "Notifications",
+      status: "PENDING",
+      value: "Not Configured",
+    },
+  ];
+  return {
+    currentEnvironment: environmentIdentity.name || "Unknown",
+    lastChecked: checkedAt,
+    message: "Environment Capabilities describes the current deployment only.",
+    peerEnvironmentChecks: false,
+    rows,
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    status: overallHealthStatus(rows.map((row) => ({ status: row.status }))),
+  };
+}
+
+function systemHealthScheduledMonitoring(checkedAt = new Date().toISOString()) {
+  const rows = [
+    {
+      field: "Last scheduled run",
+      status: "PENDING",
+      value: "Not Configured",
+    },
+    {
+      field: "Next scheduled run",
+      status: "PENDING",
+      value: "Not Configured",
+    },
+    {
+      field: "Duration",
+      status: "PENDING",
+      value: "Not Configured",
+    },
+    {
+      field: "Recent result",
+      status: "PENDING",
+      value: "Not Configured",
+    },
+    {
+      field: "Failures/warnings",
+      status: "PENDING",
+      value: "Scheduler contract is not configured.",
+    },
+  ];
+  return {
+    lastChecked: checkedAt,
+    message: "Scheduled Health Monitoring is not configured for this deployment.",
+    rows,
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    status: "PENDING",
+  };
+}
+
+function systemHealthNotificationsFoundation(checkedAt = new Date().toISOString()) {
+  const rows = [
+    {
+      field: "Email alerts",
+      status: "PENDING",
+      value: "Not Configured",
+    },
+    {
+      field: "Admin notifications",
+      status: "PENDING",
+      value: "Not Configured",
+    },
+    {
+      field: "Webhook alerts",
+      status: "PENDING",
+      value: "Not Configured",
+    },
+    {
+      field: "Messages integration",
+      status: "PENDING",
+      value: "Not Configured",
+    },
+  ];
+  return {
+    lastChecked: checkedAt,
+    message: "Notifications and alerts are placeholders only; no alert sending contract is configured for this deployment.",
+    rows,
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    status: "PENDING",
+  };
+}
+
+function systemHealthHistoryRow({ checkedAt, environmentName, area, result, summary, kind = "recent check" }) {
+  return {
+    area,
+    checkedAt,
+    environmentName,
+    kind,
+    result: normalizeHealthStatus(result),
+    summary: String(summary || "No summary returned."),
+  };
+}
+
+function systemHealthCheckHistory({
+  checkedAt,
+  databaseStatus = {},
+  environmentIdentity = {},
+  runtimeHealth = {},
+  runtimeEnvironment = {},
+  storageStatus = {},
+}) {
+  const environmentName = environmentIdentity.name || "Unknown";
+  const databaseResponseTime = Number.isFinite(databaseStatus.responseTimeMs)
+    ? `${databaseStatus.responseTimeMs} ms`
+    : "not available";
+  const recentChecks = [
+    systemHealthHistoryRow({
+      area: "Environment Summary",
+      checkedAt,
+      environmentName,
+      result: environmentIdentity.status,
+      summary: `Current deployment ${environmentName}; hosting ${environmentIdentity.hostingModel || "not configured"}; storage folder ${environmentIdentity.storageFolder || "not configured"}.`,
+    }),
+    systemHealthHistoryRow({
+      area: "Database Health",
+      checkedAt,
+      environmentName,
+      result: databaseStatus.connectivityStatus || databaseStatus.status,
+      summary: `${databaseStatus.databaseType || "PostgreSQL"} connectivity ${databaseStatus.connectivity || "not configured"}; response time ${databaseResponseTime}; version ${databaseStatus.version || "not available"}.`,
+    }),
+    systemHealthHistoryRow({
+      area: "Storage Health",
+      checkedAt,
+      environmentName,
+      result: storageStatus.status,
+      summary: `Cloudflare R2 folder ${storageStatus.environmentFolder || environmentIdentity.storageFolder || "not configured"}; bucket ${storageStatus.configured ? "configured" : "not configured"}; last checked ${storageStatus.lastChecked || checkedAt}.`,
+    }),
+    systemHealthHistoryRow({
+      area: "Runtime Health",
+      checkedAt,
+      environmentName,
+      result: runtimeHealth.status || runtimeEnvironment.status,
+      summary: runtimeHealth.message || runtimeEnvironment.message || "Runtime health unavailable.",
+    }),
+  ];
+  const issueRows = recentChecks
+    .filter((row) => row.result !== "PASS")
+    .map((row) => systemHealthHistoryRow({
+      area: `${row.area} ${row.result === "FAIL" ? "Failure" : "Warning"}`,
+      checkedAt: row.checkedAt,
+      environmentName: row.environmentName,
+      kind: row.result === "FAIL" ? "failure" : "warning",
+      result: row.result,
+      summary: row.summary,
+    }));
+  return [...recentChecks, ...issueRows];
 }
 
 function systemHealthR2Readiness(storageStatus) {
@@ -3192,6 +3945,7 @@ class ApiRuntimeDataSource {
     const storageConfig = loadStorageConfig();
     const safe = storageConfig.safe || {};
     const configured = storageConfig.configured === true;
+    const environmentIdentity = systemHealthEnvironmentIdentity();
     return {
       accessKeyConfigured: configured,
       accessKeyStatus: configured ? "PASS" : "WARN",
@@ -3200,6 +3954,9 @@ class ApiRuntimeDataSource {
       configured,
       endpoint: safe.endpoint || "",
       endpointStatus: safe.endpoint && safe.endpoint !== "invalid endpoint" ? "PASS" : "WARN",
+      environmentFolder: environmentIdentity.storageFolder,
+      environmentFolderStatus: environmentIdentity.storageFolderStatus,
+      lastChecked: new Date().toISOString(),
       message: configured
         ? "Project asset storage is configured. Credential values are hidden."
         : `Project asset storage is not fully configured: ${storageConfig.missingKeys?.join(", ") || storageConfig.validationError || "storage configuration incomplete"}.`,
@@ -3211,17 +3968,34 @@ class ApiRuntimeDataSource {
     };
   }
 
-  storageConnectivityTestObjectKey(storage) {
+  storageConnectivityEnvironmentFolder() {
+    return systemHealthEnvironmentIdentity().storageFolder || "/local";
+  }
+
+  storageConnectivityTargetPrefix(storage, scope = "project-prefix") {
+    if (scope === "environment-folder") {
+      return `${this.storageConnectivityEnvironmentFolder()}/`.replace(/\/{2,}/g, "/");
+    }
+    return String(storage.config?.projectsPrefix || "").trim();
+  }
+
+  storageConnectivityTestObjectKey(storage, scope = "project-prefix") {
+    if (scope === "environment-folder") {
+      return `${this.storageConnectivityTargetPrefix(storage, scope)}${STORAGE_CONNECTIVITY_TEST_OBJECT_RELATIVE_PATH}`.replace(/\/{2,}/g, "/");
+    }
     const projectsPrefix = String(storage.config?.projectsPrefix || "").trim();
     return `${projectsPrefix}${STORAGE_CONNECTIVITY_TEST_OBJECT_RELATIVE_PATH}`.replace(/\/{2,}/g, "/");
   }
 
-  storageConnectivityConfigFailure(actionId, storage) {
+  storageConnectivityConfigFailure(actionId, storage, scope = "project-prefix") {
     const missing = storage.config?.missingKeys?.join(", ") || storage.config?.validationError || "storage configuration incomplete";
     return {
       actionId,
+      environmentFolder: scope === "environment-folder" ? this.storageConnectivityEnvironmentFolder() : "",
       executed: false,
+      lastChecked: new Date().toISOString(),
       message: `Storage connectivity requires configured storage and GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX before this action can run. Missing or invalid: ${missing}.`,
+      projectsPrefix: String(storage.config?.projectsPrefix || "").trim(),
       secretEditingAllowed: false,
       secretsExposed: false,
       status: "FAIL",
@@ -3229,11 +4003,13 @@ class ApiRuntimeDataSource {
     };
   }
 
-  storageConnectivityResult({ actionId, executed = true, keysListed = 0, message, objectKey, projectsPrefix, status }) {
+  storageConnectivityResult({ actionId, environmentFolder = "", executed = true, keysListed = 0, message, objectKey, projectsPrefix, status }) {
     return {
       actionId,
+      environmentFolder,
       executed,
       keysListed,
+      lastChecked: new Date().toISOString(),
       message,
       projectsPrefix,
       secretEditingAllowed: false,
@@ -3244,36 +4020,58 @@ class ApiRuntimeDataSource {
     };
   }
 
-  async runStorageConnectivityAction(actionId) {
+  async runStorageConnectivityAction(actionId, options = {}) {
     const action = STORAGE_CONNECTIVITY_ACTIONS.find((candidate) => candidate.id === actionId);
     if (!action) {
       throw new Error(`Unknown storage connectivity action: ${actionId || "missing actionId"}.`);
     }
 
+    const scope = options.scope === "environment-folder" ? "environment-folder" : "project-prefix";
     const storage = createConfiguredProjectAssetStorage();
     const projectsPrefix = String(storage.config?.projectsPrefix || "").trim();
     if (!storage.configured || !projectsPrefix) {
-      return this.storageConnectivityConfigFailure(action.id, storage);
+      return this.storageConnectivityConfigFailure(action.id, storage, scope);
     }
 
-    const objectKey = this.storageConnectivityTestObjectKey(storage);
+    const environmentFolder = scope === "environment-folder" ? this.storageConnectivityEnvironmentFolder() : "";
+    const targetPrefix = this.storageConnectivityTargetPrefix(storage, scope);
+    const objectKey = this.storageConnectivityTestObjectKey(storage, scope);
     try {
-      if (action.id === "storage-list") {
-        const result = await storage.listProjectObjects();
+      if (action.operation === "bucket-connectivity") {
+        const result = await storage.listObjects(targetPrefix);
         const keysListed = Array.isArray(result.keys) ? result.keys.length : 0;
         return this.storageConnectivityResult({
           actionId: action.id,
+          environmentFolder,
           keysListed,
           message: result.ok
-            ? `List completed under ${projectsPrefix}; ${keysListed} object(s) returned.`
-            : `${result.message || "Storage list failed."} Verify the endpoint, bucket, credentials, and GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX.`,
+            ? `Bucket connectivity validated for current environment folder ${targetPrefix}.`
+            : `${result.message || "Storage bucket connectivity failed."} Verify the endpoint, bucket, credentials, and current environment folder ${targetPrefix}.`,
           objectKey,
           projectsPrefix,
           status: result.ok ? "PASS" : "FAIL",
         });
       }
 
-      if (action.id === "storage-write-test-object") {
+      if (action.operation === "list") {
+        const result = scope === "environment-folder"
+          ? await storage.listObjects(targetPrefix)
+          : await storage.listProjectObjects();
+        const keysListed = Array.isArray(result.keys) ? result.keys.length : 0;
+        return this.storageConnectivityResult({
+          actionId: action.id,
+          environmentFolder,
+          keysListed,
+          message: result.ok
+            ? `List completed under ${targetPrefix}; ${keysListed} object(s) returned.`
+            : `${result.message || "Storage list failed."} Verify the endpoint, bucket, credentials, and target prefix ${targetPrefix}.`,
+          objectKey,
+          projectsPrefix,
+          status: result.ok ? "PASS" : "FAIL",
+        });
+      }
+
+      if (action.operation === "upload") {
         const result = await storage.putObject({
           bytes: STORAGE_CONNECTIVITY_TEST_OBJECT_CONTENT,
           contentType: "text/plain; charset=utf-8",
@@ -3281,24 +4079,26 @@ class ApiRuntimeDataSource {
         });
         return this.storageConnectivityResult({
           actionId: action.id,
+          environmentFolder,
           message: result.ok
-            ? `Write test object completed at ${objectKey}.`
-            : `${result.message || "Storage write failed."} Verify write permission for ${projectsPrefix}.`,
+            ? `Upload test object completed at ${objectKey}.`
+            : `${result.message || "Storage upload failed."} Verify upload permission for ${targetPrefix}.`,
           objectKey,
           projectsPrefix,
           status: result.ok ? "PASS" : "FAIL",
         });
       }
 
-      if (action.id === "storage-read-test-object") {
+      if (action.operation === "read") {
         const result = await storage.readObject(objectKey);
         const text = result.ok ? Buffer.from(result.bytes || []).toString("utf8") : "";
         const contentMatches = text === STORAGE_CONNECTIVITY_TEST_OBJECT_CONTENT;
         return this.storageConnectivityResult({
           actionId: action.id,
+          environmentFolder,
           message: result.ok && contentMatches
             ? `Read test object completed from ${objectKey}.`
-            : `${result.message || "Storage read failed or returned unexpected content."} Run Write test object first and verify read permission for ${projectsPrefix}.`,
+            : `${result.message || "Storage read failed or returned unexpected content."} Run Upload first and verify read permission for ${targetPrefix}.`,
           objectKey,
           projectsPrefix,
           status: result.ok && contentMatches ? "PASS" : "FAIL",
@@ -3308,9 +4108,10 @@ class ApiRuntimeDataSource {
       const result = await storage.deleteObject(objectKey);
       return this.storageConnectivityResult({
         actionId: action.id,
+        environmentFolder,
         message: result.ok
           ? `Delete test object completed at ${objectKey}.`
-          : `${result.message || "Storage delete failed."} Verify delete permission for ${projectsPrefix}.`,
+          : `${result.message || "Storage delete failed."} Verify delete permission for ${targetPrefix}.`,
         objectKey,
         projectsPrefix,
         status: result.ok ? "PASS" : "FAIL",
@@ -3318,6 +4119,7 @@ class ApiRuntimeDataSource {
     } catch (error) {
       return this.storageConnectivityResult({
         actionId: action.id,
+        environmentFolder,
         message: `Storage connectivity action failed: ${error instanceof Error ? error.message : String(error || "Unknown storage error.")}`,
         objectKey,
         projectsPrefix,
@@ -3409,9 +4211,14 @@ class ApiRuntimeDataSource {
     };
   }
 
-  async ownerDatabaseStatus() {
+  async ownerDatabaseStatus(environmentIdentity = systemHealthEnvironmentIdentity()) {
+    const startedAt = Date.now();
     const databaseStatus = {
       ...databaseConfigStatus(),
+      connectivity: "not configured",
+      connectivityStatus: "WARN",
+      databaseType: environmentIdentity.databaseModel || "PostgreSQL",
+      lastChecked: new Date().toISOString(),
       lastMigration: {
         appliedAt: "",
         name: "",
@@ -3423,10 +4230,14 @@ class ApiRuntimeDataSource {
         DML: 0,
       },
       migrationStatus: "WARN",
+      responseTimeMs: null,
       status: "WARN",
+      version: "",
+      versionStatus: "WARN",
     };
     try {
       const adapter = this.supabaseDatabaseAdapter("Reading Admin System Health migration history");
+      const versionRows = await adapter.databaseClient().query("SELECT version() AS version;");
       const countRows = await adapter.databaseClient().query(`
 SELECT "migrationType", count(*)::int AS count
 FROM schema_migrations
@@ -3441,8 +4252,11 @@ LIMIT 1;
 `);
       const counts = new Map(countRows.map((row) => [String(row.migrationType || ""), Number(row.count || 0)]));
       const lastRow = lastRows[0] || {};
+      const version = String(versionRows[0]?.version || "").trim();
       return {
         ...databaseStatus,
+        connectivity: "connected",
+        connectivityStatus: "PASS",
         lastMigration: {
           appliedAt: String(lastRow.appliedAt || ""),
           name: String(lastRow.migrationName || ""),
@@ -3454,12 +4268,20 @@ LIMIT 1;
           DML: counts.get("DML") || 0,
         },
         migrationStatus: "PASS",
+        message: "Current environment database connection responded through the safe Admin System Health API.",
+        responseTimeMs: Date.now() - startedAt,
         status: databaseStatus.configured === true ? "PASS" : "WARN",
+        version: version || "not available",
+        versionStatus: version ? "PASS" : "WARN",
       };
     } catch (error) {
       return {
         ...databaseStatus,
-        message: `Migration history read failed: ${error instanceof Error ? error.message : String(error || "Unknown database error.")}`,
+        connectivity: "failed",
+        connectivityStatus: "FAIL",
+        message: `Current environment database health read failed: ${error instanceof Error ? error.message : String(error || "Unknown database error.")}`,
+        responseTimeMs: Date.now() - startedAt,
+        status: "FAIL",
       };
     }
   }
@@ -3503,22 +4325,134 @@ LIMIT 1;
 
   async adminSystemHealthStorageConnectivityAction(body = {}) {
     await this.requireAdminSession();
-    return this.runStorageConnectivityAction(String(body.actionId || "").trim());
+    return this.runStorageConnectivityAction(String(body.actionId || "").trim(), { scope: "environment-folder" });
+  }
+
+  async adminSystemHealthStorageHealthCheck() {
+    const results = [];
+    for (const actionId of SYSTEM_HEALTH_STORAGE_ACTION_IDS) {
+      results.push(await this.runStorageConnectivityAction(actionId, { scope: "environment-folder" }));
+    }
+    return {
+      actionId: "storage-check",
+      checkedAt: new Date().toISOString(),
+      label: SYSTEM_HEALTH_MANUAL_ACTION_LABELS["storage-check"],
+      message: "Storage health check executed bucket connectivity, list, upload, read, and delete through the current deployment API.",
+      secretEditingAllowed: false,
+      secretsExposed: false,
+      status: overallHealthStatus(results.map((result) => ({ status: result.status }))),
+      storageDiagnostics: results,
+      storageStatus: this.ownerStorageStatus(),
+    };
+  }
+
+  async adminSystemHealthAction(body = {}) {
+    const session = await this.requireAdminSession();
+    const actionId = String(body.actionId || "").trim();
+    const label = SYSTEM_HEALTH_MANUAL_ACTION_LABELS[actionId];
+    if (!label) {
+      throw httpError(`Unknown Admin System Health action: ${actionId || "missing actionId"}.`, 400);
+    }
+    const checkedAt = new Date().toISOString();
+    const environmentIdentity = systemHealthEnvironmentIdentity(process.env, checkedAt);
+    if (actionId === "refresh" || actionId === "full-health-check") {
+      const statusSnapshot = await this.adminSystemHealthStatus();
+      return {
+        actionId,
+        checkedAt,
+        label,
+        message: `${label} completed through the current deployment Admin System Health API.`,
+        secretEditingAllowed: false,
+        secretsExposed: false,
+        status: statusSnapshot.status,
+        statusSnapshot,
+      };
+    }
+    if (actionId === "runtime-check") {
+      const runtimeHealth = systemHealthRuntimeHealth(environmentIdentity, checkedAt);
+      return {
+        actionId,
+        checkedAt,
+        label,
+        message: "Runtime health check completed through the current deployment API.",
+        runtimeHealth,
+        secretEditingAllowed: false,
+        secretsExposed: false,
+        status: runtimeHealth.status,
+      };
+    }
+    if (actionId === "database-check") {
+      const databaseStatus = await this.ownerDatabaseStatus(environmentIdentity);
+      return {
+        actionId,
+        checkedAt,
+        databaseStatus,
+        label,
+        message: "Database health check completed through the current deployment API.",
+        secretEditingAllowed: false,
+        secretsExposed: false,
+        status: databaseStatus.connectivityStatus || databaseStatus.status,
+      };
+    }
+    if (session.isAdmin !== true) {
+      throw httpError("Admin role required.", 403);
+    }
+    return this.adminSystemHealthStorageHealthCheck();
   }
 
   async adminSystemHealthStatus() {
     const session = await this.requireAdminSession();
     const authStatus = this.authStatus();
-    const databaseStatus = await this.ownerDatabaseStatus();
+    const checkedAt = new Date().toISOString();
+    const apiContract = systemHealthApiContract(checkedAt);
+    const adminApiRegistry = systemHealthAdminApiRegistry(checkedAt);
+    const runtimeFeatureFlags = systemHealthRuntimeFeatureFlags(checkedAt);
+    const environmentIdentity = systemHealthEnvironmentIdentity(process.env, checkedAt);
+    const environmentMap = systemHealthEnvironmentMap();
+    const databaseStatus = await this.ownerDatabaseStatus(environmentIdentity);
     const storageStatus = this.ownerStorageStatus();
     const environmentStatus = storageProjectsPrefixStatus();
+    const localApiStartup = systemHealthLocalApiStartupDiagnostics();
     const limitRows = systemHealthLimitRows();
     const limitsStatus = systemHealthLimitStatus(limitRows);
     const packageStatus = projectPackageReadinessStatus();
     const promotionFoundation = this.ownerPromotionFoundation();
     const r2Readiness = systemHealthR2Readiness(storageStatus);
     const runtimeEnvironment = systemHealthRuntimeEnvironment();
+    const runtimeHealth = systemHealthRuntimeHealth(environmentIdentity, checkedAt);
+    const serviceHealth = systemHealthServiceHealth({
+      authStatus,
+      checkedAt,
+      databaseStatus,
+      runtimeHealth,
+      session,
+      storageStatus,
+    });
+    const configurationSummary = systemHealthConfigurationSummary({
+      authStatus,
+      checkedAt,
+      databaseStatus,
+      environmentIdentity,
+      storageStatus,
+    });
+    const environmentCapabilities = systemHealthEnvironmentCapabilities({
+      authStatus,
+      checkedAt,
+      databaseStatus,
+      environmentIdentity,
+      storageStatus,
+    });
+    const scheduledMonitoring = systemHealthScheduledMonitoring(checkedAt);
+    const notificationsFoundation = systemHealthNotificationsFoundation(checkedAt);
     const operationsHealth = adminOperationsHealth(this.standaloneTables);
+    const healthCheckHistory = systemHealthCheckHistory({
+      checkedAt,
+      databaseStatus,
+      environmentIdentity,
+      runtimeHealth,
+      runtimeEnvironment,
+      storageStatus,
+    });
     const importBlocked = promotionFoundation.importOverwriteAllowed === false
       && promotionFoundation.browserExecutionAllowed === false
       && promotionFoundation.destructiveOperationsAllowed === false;
@@ -3529,6 +4463,11 @@ LIMIT 1;
         summary: session.authenticated && session.isAdmin
           ? "Current session is authenticated with Admin access."
           : "Sign in with an Admin account to view system health.",
+      },
+      {
+        area: "Environment identity",
+        status: environmentIdentity.status,
+        summary: `Current deployment is ${environmentIdentity.name}; System Health does not actively check peer environments.`,
       },
       {
         area: "Product Data / Local DB",
@@ -3564,6 +4503,11 @@ LIMIT 1;
           : "One or more required limits are missing or invalid in current .env.",
       },
       {
+        area: "Local API startup diagnostics",
+        status: localApiStartup.status,
+        summary: localApiStartup.message,
+      },
+      {
         area: "Migration status",
         status: databaseStatus.migrationStatus || "WARN",
         summary: `DDL=${databaseStatus.migrationCounts?.DDL || 0}; DML=${databaseStatus.migrationCounts?.DML || 0}; last=${databaseStatus.lastMigration?.name || "not recorded"}.`,
@@ -3588,6 +4532,13 @@ LIMIT 1;
       details: [
         { area: "Account/session readiness", field: "Session", status: session.authenticated ? "PASS" : "FAIL", value: session.authenticated ? "authenticated" : "not authenticated" },
         { area: "Account/session readiness", field: "Role", status: session.isAdmin ? "PASS" : "FAIL", value: session.isAdmin ? "Admin" : "Admin required" },
+        { area: "Environment identity", field: "Environment name", status: environmentIdentity.status, value: environmentIdentity.name },
+        { area: "Environment identity", field: "Hosting model", status: "PASS", value: environmentIdentity.hostingModel },
+        { area: "Environment identity", field: "Site URL", status: environmentIdentity.siteUrlStatus, value: environmentIdentity.siteUrl },
+        { area: "Environment identity", field: "API URL", status: environmentIdentity.apiUrlStatus, value: environmentIdentity.apiUrl },
+        { area: "Environment identity", field: "Database model", status: "PASS", value: environmentIdentity.databaseModel },
+        { area: "Environment identity", field: "Storage folder", status: environmentIdentity.storageFolderStatus, value: environmentIdentity.storageFolder },
+        { area: "Environment identity", field: "Last health check", status: "PASS", value: environmentIdentity.lastHealthCheck },
         { area: "Product Data / Local DB", field: "Database host", status: databaseStatus.hostStatus || "WARN", value: databaseStatus.host || "not configured" },
         { area: "Product Data / Local DB", field: "Database name", status: databaseStatus.databaseNameStatus || "WARN", value: databaseStatus.databaseName || "not configured" },
         { area: "Project Asset Storage / R2", field: "Endpoint", status: storageStatus.endpointStatus || "WARN", value: storageStatus.endpoint || "not configured" },
@@ -3596,6 +4547,12 @@ LIMIT 1;
         { area: "Environment configuration", field: environmentStatus.variableName, status: environmentStatus.status, value: environmentStatus.configured ? "valid lane match" : "missing or invalid" },
         { area: "Secrets status", field: "Storage access key", status: storageStatus.accessKeyStatus || "WARN", value: storageStatus.accessKeyConfigured ? "configured; value hidden" : "not configured" },
         { area: "Secrets status", field: "Storage secret key", status: storageStatus.secretKeyStatus || "WARN", value: storageStatus.secretKeyConfigured ? "configured; value hidden" : "not configured" },
+        ...localApiStartup.rows.map((row) => ({
+          area: "Local API startup diagnostics",
+          field: row.field,
+          status: row.status,
+          value: row.value,
+        })),
         { area: "Migration status", field: "Migration counts", status: databaseStatus.migrationStatus || "WARN", value: `DDL=${databaseStatus.migrationCounts?.DDL || 0}; DML=${databaseStatus.migrationCounts?.DML || 0}` },
         { area: "Project package readiness", field: ".gfsp decision", status: packageStatus.status, value: packageStatus.decisionPath },
         { area: "Project package readiness", field: "Runtime scaffold", status: packageStatus.status, value: `${packageStatus.contract?.packageType || "Game Foundry Studio Project"} ${packageStatus.contract?.contractVersion || ""}`.trim() },
@@ -3615,16 +4572,29 @@ LIMIT 1;
         adminOperations: "/admin/operations.html",
       },
       limits: limitRows,
+      localApiStartup,
       message: "Admin System Health loaded safe status only.",
+      environmentIdentity,
+      environmentMap,
+      environmentCapabilities,
+      healthCheckHistory,
+      notificationsFoundation,
       operationsHealth,
       overview,
       pressureLabels: SYSTEM_HEALTH_LIMIT_PRESSURE_LABELS,
       connectionSummary: this.ownerConnectionSummary(),
       databaseStatus,
+      adminApiRegistry,
+      apiContract,
+      configurationSummary,
       r2Readiness,
       secretEditingAllowed: false,
       secretsExposed: false,
       runtimeEnvironment,
+      runtimeFeatureFlags,
+      runtimeHealth,
+      scheduledMonitoring,
+      serviceHealth,
       storageStatus,
       summary: systemHealthSummary(overview),
       status: overallHealthStatus(overview),
@@ -5306,6 +6276,13 @@ LIMIT 1;
     }
     const result = await method(...args);
     assertRepositoryMethodResult(repositoryId, methodName, result);
+    if (repository === this.gameWorkspaceRepository && methodName === "createGame") {
+      const journeyBootstrap = this.gameJourneyRepository.bootstrapGameJourneyForGame(result);
+      if (!journeyBootstrap || !Array.isArray(journeyBootstrap.buckets)) {
+        throw repositoryMethodError("Game Journey bootstrap did not return starter bucket records. Restore the Local API/service contract.");
+      }
+      result.journeyBootstrap = journeyBootstrap;
+    }
     const methodPersistsThroughToolStore =
       repository === this.gameJourneyRepository && GAME_JOURNEY_TOOL_STORE_METHODS.has(methodName);
     if (repositoryMethodRequiresPersistence(methodName) && !methodPersistsThroughToolStore) {
@@ -5628,6 +6605,12 @@ export function createLocalApiRouter({
       if (parts[1] === "admin" && parts[2] === "system-health" && request.method === "POST" && parts[3] === "storage-connectivity-action") {
         const body = await readRequestJson(request);
         ok(response, await dataSource.adminSystemHealthStorageConnectivityAction(body));
+        return true;
+      }
+
+      if (parts[1] === "admin" && parts[2] === "system-health" && request.method === "POST" && parts[3] === "action") {
+        const body = await readRequestJson(request);
+        ok(response, await dataSource.adminSystemHealthAction(body));
         return true;
       }
 

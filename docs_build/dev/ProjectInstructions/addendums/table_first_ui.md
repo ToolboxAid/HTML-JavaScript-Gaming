@@ -1,0 +1,83 @@
+Game Foundry Studio uses a table-first creator experience.
+
+Preferred patterns:
+- table display
+- inline editing
+- save/cancel on row
+- add row at bottom
+- child rows for details
+- reusable table components
+
+Avoid:
+- large multi-page forms
+- modal-heavy workflows
+- separate edit pages when inline editing is practical
+
+Reference implementation:
+Idea Board is the reference implementation.
+
+
+DB base
+Creator Table 1 
+Parent Table *-1 user
+Child Table -- *-1 Parent
+
+
+No selected Items
+┌──────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Idea Board                                                                                           │
+├───────────────┬─────────────────────────────────────────┬───────────┬────────────┬─────────┬─────────┤
+│ Idea          │ Pitch                                   │ Status    │ Updated    │ Notes   │ Actions │
+├───────────────┼─────────────────────────────────────────┼───────────┼────────────┼─────────┼─────────┤
+│ Top Thougts   │ Smartest person wins...                 │ Exploring │ 2026-06-20 │ 3 Notes │ Edit Del│
+├───────────────┬─────────────────────────────────────────┬───────────┬────────────┬─────────┬─────────┤
+│ Sky Orchard   │ Grow floating islands...                │ Exploring │ 2026-06-20 │ 3 Notes │ Edit Del│
+├───────────────┴─────────────────────────────────────────┴───────────┴────────────┴─────────┴─────────┤
+│ Clockwork...  │ Deliver messages through looping city...│ New       │ 2026-06-20 │ 0 Notes │ Edit Del│
+├───────────────┴─────────────────────────────────────────┴───────────┴────────────┴─────────┴─────────┤
+│ [ Add Idea ]                                                                                         │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+Clicking {Sky Orchard {chevron down arrow}] Expands/Acording the Note(s) for that Idea
+┌────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Idea Board                                                                                         │   
+├───────────────┬─────────────────────────────────────────┬───────────┬────────────┬─────────┬─────────┤
+│ Idea          │ Pitch                                   │ Status    │ Updated    │ Notes   │ Actions │
+├───────────────┼─────────────────────────────────────────┼───────────┼────────────┼─────────┼─────────┤
+│ Top Thougts   │ Smartest person wins...                 │ Exploring │ 2026-06-20 │ 3 Notes │ Edit Del│
+├───────────────┬─────────────────────────────────────────┬───────────┬────────────┬─────────┬─────────┤
+│ Sky Orchard[^}│ Grow floating islands...                │ Exploring │ 2026-06-20 │ 3 Notes │ Edit Del│
+├───────────────┴─────────────────────────────────────────┴───────────┴────────────┴─────────┴─────────┤
+│ Notes                                                                                               │
+│ --------------------------------------------------------------------------------------------------- │
+│ note 1                                                           [Edit] [Delete]                   │
+│ System seed note: compare early ideas before project creation. [Edit]                              │
+│ Ask whether the core loop is planning, defense, or both.    [Edit] [Delete]                       │
+│                                                                                                     │
+│ [ Add Note ]                                                                                        │
+├───────────────┬─────────────────────────────────────────┬───────────┬────────────┬─────────┬─────────┤
+│ Clockwork...  │ Deliver messages through looping city...│ New       │ 2026-06-20 │ 0 Notes │ Edit Del│
+├───────────────┴─────────────────────────────────────────┴───────────┴────────────┴─────────┴─────────┤
+│ [ Add Idea ]                                                                                         │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+Clickin Add Idea
+┌────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Idea Board                                                                                        │
+├───────────────┬─────────────────────────────────────────┬───────────┬────────────┬─────────┬─────────┤
+│ Idea          │ Pitch                                   │ Status    │ Updated    │ Notes   │ Actions │
+├───────────────┼─────────────────────────────────────────┼───────────┼────────────┼─────────┼─────────┤
+│ Top Thougts   │ Smartest person wins...                 │ Exploring │ 2026-06-20 │ 3 Notes │ Edit Del│
+├───────────────┬─────────────────────────────────────────┬───────────┬────────────┬─────────┬─────────┤
+│ Sky Orchard   │ Grow floating islands...                │ Exploring │ 2026-06-20 │ 3 Notes │ Edit Del│
+├───────────────┴─────────────────────────────────────────┴───────────┴────────────┴─────────┴─────────┤
+│ Clockwork...  │ Deliver messages through looping city...│ New       │ 2026-06-20 │ 0 Notes │ Edit Del│
+├───────────────┴─────────────────────────────────────────┴───────────┴────────────┴─────────┴─────────┤
+│ [input.....]  │ [input.....]                            │ [Dropdown]│ [autofile] │ 0 Notes │ Save Can│
+└──────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+
+
+

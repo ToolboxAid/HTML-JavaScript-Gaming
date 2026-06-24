@@ -116,42 +116,25 @@ td {
 }
 
 .idea-board-idea-label {
-  display: inline-flex;
-  align-items: center;
-  gap: .35em;
+  display: inline;
   color: inherit;
   font: inherit;
   line-height: var(--line-height-single);
   vertical-align: baseline;
-  white-space: nowrap
+  white-space: normal
 }
 
 .idea-board-idea-label__text {
-  line-height: var(--line-height-single)
+  overflow-wrap: anywhere;
+  line-height: inherit
 }
 
 .idea-board-idea-chevron {
   display: inline-block;
-  width: 1em;
   height: 1em;
-  flex: 0 0 1em;
-  background: currentColor;
-  -webkit-mask-position: center;
-  mask-position: center;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-size: contain;
-  mask-size: contain
-}
-
-.idea-board-idea-chevron--down {
-  -webkit-mask-image: url("../images/gfs-chevron-down.svg");
-  mask-image: url("../images/gfs-chevron-down.svg")
-}
-
-.idea-board-idea-chevron--up {
-  -webkit-mask-image: url("../images/gfs-chevron-up.svg");
-  mask-image: url("../images/gfs-chevron-up.svg")
+  margin-right: .35em;
+  vertical-align: -0.125em;
+  width: 1em
 }
 
 .idea-board-notes-child-surface {

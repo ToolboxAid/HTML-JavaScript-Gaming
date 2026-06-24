@@ -1,0 +1,158 @@
+# PR_26175_OWNER_057 - Final Five PR Decision Plan
+
+## Executive Summary
+
+PASS - Audit/report only. GitHub was used as authority for the five requested open PRs: #159, #85, #135, #26, and #50.
+
+All five requested PRs remain open on GitHub and target `main`. GitHub REST reports each as `dirty` against current `main`, so none should be merged directly as-is. No PRs were merged or closed, no branches were deleted, and no runtime code was modified.
+
+Recommended owner actions:
+
+| PR | Team | Recommended action | Reason |
+| --- | --- | --- | --- |
+| #159 | OWNER | close as superseded | OWNER_056 was an action plan for Charlie/Bravo resolution work that has since been executed; its report branch is now stale and dirty. |
+| #85 | OWNER | recreate | Partly duplicated by current main and partly valuable, but older protected-governance content should be reauthored against the current Project Instructions layout instead of merged dirty. |
+| #135 | Alfa | close as superseded | Audit-only status-bar/Game Journey planning branch edits `BUILD_PR.md`; current main has moved to the later active status-bar progress-context BUILD. |
+| #26 | Alfa/Alpha | recreate | Old runtime branch is dirty and predates the consolidated Alfa table/UI merges; still potentially valuable, but should be rebuilt from current main if wanted. |
+| #50 | Gamma historical | hold | Historical SQLite closeout evidence remains useful for traceability while Gamma is retired and PostgreSQL direction is active. |
+
+## Branch Validation
+
+| Gate | Status | Evidence |
+| --- | --- | --- |
+| Starting branch | PASS | `main` |
+| Worktree before branch | PASS | Clean |
+| Local/origin sync before branch | PASS | `0 0` |
+| Pull latest main | PASS | `git pull --ff-only` reported already up to date. |
+| Work branch | PASS | `PR_26175_OWNER_057-final-five-pr-decision-plan` |
+| Scope | PASS | Report-only audit of the five requested PRs. |
+
+## GitHub Authority Snapshot
+
+Open PR cross-check on 2026-06-24 found the requested five PRs plus a newer out-of-scope draft PR #160. This report audits only #159, #85, #135, #26, and #50 per OWNER scope.
+
+| PR | Title | Branch | Base | Draft | Mergeable state | Created | Updated | Age | Superseded by main? | Recommendation |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| #159 | PR_26175_OWNER_056: add final open PR resolution plan | `PR_26175_OWNER_056-final-open-pr-resolution-plan` | `main` | Yes | `dirty` | 2026-06-24 | 2026-06-24 | 0 days | Yes | close as superseded |
+| #85 | [codex] Add Project Instructions governance addendums | `codex/canonical-repository-structure-instructions` | `main` | Yes | `dirty` | 2026-06-22 | 2026-06-22 | 2 days | Partially | recreate |
+| #135 | PR_26175_ALFA_010-game-journey-progress-context-audit | `codex/pr-26175-alfa-010-game-journey-progress-context-audit` | `main` | Yes | `dirty` | 2026-06-24 | 2026-06-24 | 0 days | Yes | close as superseded |
+| #26 | PR_26171_ALPHA_046 game hub table standard rebuild | `pr/26171-ALPHA-046-game-hub-table-standard-rebuild` | `main` | No | `dirty` | 2026-06-20 | 2026-06-20 | 4 calendar days | No, not fully confirmed | recreate |
+| #50 | PR_26171_GAMMA_028-final-sqlite-clean-status-report | `pr/26171-GAMMA-028-final-sqlite-clean-status-report` | `main` | Yes | `dirty` | 2026-06-21 | 2026-06-21 | 3 calendar days | No; historical evidence | hold |
+
+## Per-PR Decision Notes
+
+### #159 - OWNER_056 Final Open PR Resolution Plan
+
+Changed files:
+
+- `docs_build/dev/reports/PR_26175_OWNER_056-final-open-pr-resolution-plan.md` added
+- `docs_build/dev/reports/codex_changed_files.txt` modified
+- `docs_build/dev/reports/codex_review.diff` modified
+
+Decision: close as superseded.
+
+Rationale: #159 recommended the Charlie stack and related final open PR actions. The Charlie sequence has since landed on `main`, and the live open PR set has changed. The branch is report-only and now dirty against current generated artifacts, so preserving it as an open draft adds noise rather than actionable value.
+
+### #85 - Project Instructions Governance Addendums
+
+Changed files:
+
+- `docs_build/dev/ProjectInstructions/README.txt` modified
+- `project-instructions/addendums/canonical-repository-structure.md` added
+- `project-instructions/addendums/platform-development-standards.md` added
+
+Decision: recreate.
+
+Rationale: the canonical repository structure addendum already exists on current `main`, while the proposed platform-development standards overlap newer approved Project Instructions for PostgreSQL-only direction, referenced asset protection, deprecation, and governance closeout. Because this is protected governance content and GitHub reports the PR as dirty, any still-needed platform standard should be recreated from current `main` and routed through the current Project Instructions structure with explicit OWNER wording.
+
+### #135 - ALFA_010 Game Journey Progress Context Audit
+
+Changed files:
+
+- `docs_build/dev/BUILD_PR.md` modified
+- `docs_build/dev/reports/PR_26175_ALFA_010-game-journey-progress-context-audit_report.md` added
+- `docs_build/dev/reports/PR_26175_ALFA_010-game-journey-progress-context-audit_requirements-checklist.md` added
+- `docs_build/dev/reports/PR_26175_ALFA_010-game-journey-progress-context-audit_validation-lane.md` added
+- `docs_build/dev/reports/codex_changed_files.txt` modified
+- `docs_build/dev/reports/codex_review.diff` modified
+
+Decision: close as superseded.
+
+Rationale: #135 is audit-only and changes the active `docs_build/dev/BUILD_PR.md`. Current `main` now has a later ALFA status-bar progress-context BUILD as the active source of truth. The #135 evidence may remain useful in GitHub history, but the branch should not merge over current BUILD_PR state.
+
+### #26 - ALPHA_046 Game Hub Table Standard Rebuild
+
+Changed files:
+
+- `assets/theme-v2/css/tables.css` modified
+- `docs_build/dev/reports/codex_changed_files.txt` modified
+- `docs_build/dev/reports/codex_review.diff` modified
+- `docs_build/pr/PR_26171_ALPHA_046-game-hub-table-standard-rebuild/APPLY_PR.md` added
+- `docs_build/pr/PR_26171_ALPHA_046-game-hub-table-standard-rebuild/BUILD_PR.md` added
+- `docs_build/pr/PR_26171_ALPHA_046-game-hub-table-standard-rebuild/PLAN_PR.md` added
+- `tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs` modified
+- `toolbox/game-workspace/game-workspace.js` modified
+- `toolbox/game-workspace/index.html` modified
+
+Decision: recreate.
+
+Rationale: #26 is an older runtime branch and the only requested PR that is not draft, but GitHub reports it as dirty against current `main`. It predates the consolidated Alfa merges and touches Game Workspace runtime/table behavior rather than the newer merged Game Hub, Game Journey, and Idea Board batches. Do not merge it directly. If OWNER still wants the Game Workspace table rebuild, recreate a fresh, current-main-safe runtime PR with targeted validation and without stale generated report conflicts.
+
+### #50 - GAMMA_028 Final SQLite Clean Status Report
+
+Changed files:
+
+- `docs_build/dev/reports/PR_26171_GAMMA_028-final-sqlite-clean-status-report-instruction-compliance-checklist.md` added
+- `docs_build/dev/reports/PR_26171_GAMMA_028-final-sqlite-clean-status-report-manual-validation-notes.md` added
+- `docs_build/dev/reports/PR_26171_GAMMA_028-final-sqlite-clean-status-report.md` added
+- `docs_build/dev/reports/codex_changed_files.txt` modified
+- `docs_build/dev/reports/codex_review.diff` modified
+
+Decision: hold.
+
+Rationale: #50 is historical Gamma evidence for final SQLite cleanup after earlier Gamma work. Team Gamma is retired and Team Golf is the replacement active lane, but historical Gamma references remain traceable by governance. Because the report is dirty against current generated artifacts and does not change runtime behavior, hold it until OWNER decides whether to merge as historical evidence, recreate as a current Golf/OWNER archive note, or close as superseded.
+
+## Requirement Checklist
+
+| Requirement | Status | Notes |
+| --- | --- | --- |
+| Start from `main` | PASS | Verified before branch creation. |
+| Hard stop if branch is not `main` | PASS | Branch was `main`. |
+| Hard stop if worktree is not clean | PASS | Worktree was clean. |
+| Hard stop if local/origin sync is not `0 0` | PASS | Sync was `0 0`. |
+| Read all Project Instructions | PASS | All files under `docs_build/dev/ProjectInstructions/` were read before report edits. |
+| Audit only #159, #85, #135, #26, #50 | PASS | #160 was discovered but left out of scope. |
+| Include title | PASS | Included in the authority snapshot. |
+| Include branch | PASS | Included in the authority snapshot. |
+| Include base branch | PASS | Included in the authority snapshot. |
+| Include draft state | PASS | Included in the authority snapshot. |
+| Include mergeable state | PASS | GitHub REST `mergeable_state` recorded. |
+| Include changed files | PASS | Per-PR file lists included. |
+| Identify whether superseded by main | PASS | Included per PR. |
+| Recommendation limited to merge, close as superseded, hold, recreate | PASS | All recommendations use approved values. |
+| Do not merge PRs | PASS | No merge actions were taken. |
+| Do not close PRs | PASS | No close actions were taken. |
+| Do not delete branches | PASS | No branch deletion was performed. |
+| Do not modify runtime code | PASS | Report artifacts only. |
+| Required reports and ZIP | PASS | Report, changed-file list, diff, and repo-structured ZIP produced. |
+
+## Validation Lane
+
+| Validation | Status | Evidence |
+| --- | --- | --- |
+| GitHub metadata pull | PASS | `gh pr view` and GitHub REST `pulls` endpoint used for the five requested PRs. |
+| Open PR cross-check | PASS | `gh pr list --state open --limit 100` captured current open set. |
+| Runtime validation | PASS | Not applicable; audit/report-only changes. |
+| Browser validation | PASS | Not applicable; no UI/runtime changes. |
+| Whitespace validation | PASS | `git diff --check` run after report generation. |
+| ZIP validation | PASS | Repo-structured delta ZIP created under `tmp/`. |
+
+## Manual Validation Notes
+
+- GitHub is authoritative for PR state; local branches were not used as authority for open/draft state.
+- GitHub reported the high-level mergeable field as `UNKNOWN` through `gh pr view`, so the REST `mergeable_state` field was used for the decision table.
+- All five requested PRs returned `mergeable_state: dirty`.
+- The current open PR list also includes #160, but #160 was not part of the OWNER_057 requested audit set.
+- No runtime files were edited by this PR.
+- No Playwright run was needed because the work is audit/report-only.
+- Branches should be retained; this report does not authorize branch deletion.

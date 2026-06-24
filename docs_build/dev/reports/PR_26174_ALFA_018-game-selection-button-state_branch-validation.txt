@@ -1,0 +1,14 @@
+Branch validation: PASS
+
+Branch:
+pr/26174-ALFA-018-game-selection-button-state
+
+Base stack branch:
+pr/26174-ALFA-017-game-hub-guest-save-and-crew-cleanup
+
+Checks:
+- Current branch is the ALFA_018 branch: PASS
+- Worktree was clean before ALFA_018 edits: PASS
+- Scope limited to Game Hub selection state, targeted Playwright coverage, and required reports: PASS
+- No protected Project Instructions changes: PASS
+- No merge to main performed: PASS
