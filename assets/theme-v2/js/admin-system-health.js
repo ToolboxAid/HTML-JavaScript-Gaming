@@ -22,6 +22,14 @@ function asText(value, fallback = "not available") {
 class AdminSystemHealthController {
     constructor(root) {
         this.root = root;
+        this.environmentValues = new Map(Array.from(root.querySelectorAll("[data-admin-system-health-environment-value]")).map((node) => [
+            node.dataset.adminSystemHealthEnvironmentValue,
+            node,
+        ]));
+        this.environmentStatuses = new Map(Array.from(root.querySelectorAll("[data-admin-system-health-environment-status]")).map((node) => [
+            node.dataset.adminSystemHealthEnvironmentStatus,
+            node,
+        ]));
         this.dbValues = new Map(Array.from(root.querySelectorAll("[data-admin-system-health-db-value]")).map((node) => [
             node.dataset.adminSystemHealthDbValue,
             node,
@@ -43,7 +51,7 @@ class AdminSystemHealthController {
     }
 
     init() {
-        if ((!this.dbValues.size && !this.storageValues.size) || document.querySelector("[data-session-access-blocked='admin']") || window.GameFoundrySessionGuard?.blocked === true) {
+        if ((!this.environmentValues.size && !this.dbValues.size && !this.storageValues.size) || document.querySelector("[data-session-access-blocked='admin']") || window.GameFoundrySessionGuard?.blocked === true) {
             return;
         }
         this.load();
@@ -54,6 +62,18 @@ class AdminSystemHealthController {
         if (node) {
             node.textContent = asText(value, fallback);
         }
+    }
+
+    setEnvironmentValue(key, value, fallback) {
+        const node = this.environmentValues.get(key);
+        if (node) {
+            node.textContent = asText(value, fallback);
+        }
+    }
+
+    setEnvironmentStatus(key, status, reason = "") {
+        const node = this.environmentStatuses.get(key);
+        this.setStatusNode(node, status, reason);
     }
 
     setStorageValue(key, value, fallback) {
@@ -78,11 +98,32 @@ class AdminSystemHealthController {
     }
 
     renderPending(reason) {
+        ["name", "hostingModel", "siteUrl", "apiUrl", "databaseModel", "storageFolder", "lastHealthCheck"].forEach((key) => {
+            this.setEnvironmentStatus(key, "PENDING", reason);
+        });
         ["host", "database", "migration", "connection"].forEach((key) => {
             this.setStatus(key, "PENDING", reason);
         });
         this.renderStartupPending(reason);
         this.renderStoragePending(reason);
+    }
+
+    renderEnvironmentIdentity(environmentIdentity = {}) {
+        const reason = environmentIdentity.message || "Current deployment environment identity returned by the safe Admin System Health API.";
+        this.setEnvironmentValue("name", environmentIdentity.name, "Unknown");
+        this.setEnvironmentStatus("name", environmentIdentity.status, reason);
+        this.setEnvironmentValue("hostingModel", environmentIdentity.hostingModel, "not configured");
+        this.setEnvironmentStatus("hostingModel", environmentIdentity.hostingModel ? "PASS" : "WARN", reason);
+        this.setEnvironmentValue("siteUrl", environmentIdentity.siteUrl, "not configured");
+        this.setEnvironmentStatus("siteUrl", environmentIdentity.siteUrlStatus, reason);
+        this.setEnvironmentValue("apiUrl", environmentIdentity.apiUrl, "not configured");
+        this.setEnvironmentStatus("apiUrl", environmentIdentity.apiUrlStatus, reason);
+        this.setEnvironmentValue("databaseModel", environmentIdentity.databaseModel, "not configured");
+        this.setEnvironmentStatus("databaseModel", environmentIdentity.databaseModel ? "PASS" : "WARN", reason);
+        this.setEnvironmentValue("storageFolder", environmentIdentity.storageFolder, "not configured");
+        this.setEnvironmentStatus("storageFolder", environmentIdentity.storageFolderStatus, reason);
+        this.setEnvironmentValue("lastHealthCheck", environmentIdentity.lastHealthCheck, "not available");
+        this.setEnvironmentStatus("lastHealthCheck", environmentIdentity.lastHealthCheck ? "PASS" : "WARN", reason);
     }
 
     renderStoragePending(reason) {
@@ -250,6 +291,7 @@ class AdminSystemHealthController {
                 this.renderPending("Safe Admin System Health API refused to render because the response exposed secret controls.");
                 return;
             }
+            this.renderEnvironmentIdentity(data?.environmentIdentity || {});
             this.renderPostgresStatus(data?.databaseStatus || {});
             this.renderStartupDiagnostics(data?.localApiStartup || {});
             this.renderStorageStatus(data?.storageStatus || {});

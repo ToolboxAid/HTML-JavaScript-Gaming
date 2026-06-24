@@ -109,7 +109,9 @@ async function apiJson(baseUrl, pathName, request = {}) {
 test("Admin can view operational health while Creator sessions are blocked", async () => {
   await withEnv({
     GAMEFOUNDRY_API_URL: "http://api-user:api-secret@127.0.0.1:5501/api",
+    GAMEFOUNDRY_ENVIRONMENT_LABEL: "Local",
     GAMEFOUNDRY_SITE_URL: "http://site-user:site-secret@127.0.0.1:5500",
+    GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX: "/local/projects/",
     GAMEFOUNDRY_SUPABASE_ANON_KEY: undefined,
     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: undefined,
     GAMEFOUNDRY_SUPABASE_URL: undefined,
@@ -129,6 +131,20 @@ test("Admin can view operational health while Creator sessions are blocked", asy
         method: "POST",
       });
       const health = await apiJson(server.baseUrl, "/api/admin/system-health/status");
+      assert.equal(health.environmentIdentity.name, "Local");
+      assert.equal(health.environmentIdentity.hostingModel, "VS Code + Local API");
+      assert.equal(health.environmentIdentity.databaseModel, "Local Docker PostgreSQL");
+      assert.equal(health.environmentIdentity.storageFolder, "/local");
+      assert.equal(health.environmentIdentity.siteUrl.includes("site-user"), false);
+      assert.equal(health.environmentIdentity.apiUrl.includes("api-user"), false);
+      assert.deepEqual(
+        health.environmentMap.map((row) => row.name),
+        ["Local", "DEV", "IST", "UAT", "PRD"],
+      );
+      assert.equal(
+        health.environmentMap.some((row) => Object.prototype.hasOwnProperty.call(row, "status")),
+        false,
+      );
       assert.equal(health.localApiStartup.secretEditingAllowed, false);
       assert.equal(health.localApiStartup.secretsExposed, false);
       assert.equal(Array.isArray(health.localApiStartup.rows), true);

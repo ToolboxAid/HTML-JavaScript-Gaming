@@ -38,7 +38,8 @@
                             <details class="vertical-accordion" open>
                                 <summary>Health Sections</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>Environment Summary</p>
+                                    <p>Environment Identity</p>
+                                    <p>Environment Map</p>
                                     <p>Local API Startup</p>
                                     <p>Database Health</p>
                                     <p>Storage Health</p>
@@ -57,21 +58,43 @@
                             <h2 id="admin-system-health-title">System Health Tables</h2>
                         </div>
                         <div class="table-wrapper">
-                            <table class="data-table" aria-label="Environment summary">
-                                <caption>Environment Summary</caption>
+                            <table class="data-table" aria-label="Environment identity">
+                                <caption>Environment Identity</caption>
                                 <thead>
                                     <tr>
-                                        <th scope="col">Environment</th>
-                                        <th scope="col">Purpose</th>
-                                        <th scope="col">Promotion Gate</th>
+                                        <th scope="col">Field</th>
+                                        <th scope="col">Current Deployment</th>
                                         <th scope="col">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr><td>DEV</td><td>Local implementation and diagnostics</td><td>Developer validation</td><td data-health-status="PASS">PASS</td></tr>
-                                    <tr><td>IST</td><td>Integrated system testing</td><td>Cross-feature validation</td><td data-health-status="PASS">PASS</td></tr>
-                                    <tr><td>UAT</td><td>User acceptance testing</td><td>Owner review</td><td data-health-status="PASS">PASS</td></tr>
-                                    <tr><td>PRD</td><td>Production runtime</td><td>EOD approval</td><td data-health-status="PASS">PASS</td></tr>
+                                    <tr><td>Environment name</td><td data-admin-system-health-environment-value="name">Loading</td><td data-health-status="PENDING" data-admin-system-health-environment-status="name" title="Reason: current environment identity has not loaded yet." aria-label="PENDING: current environment identity has not loaded yet.">PENDING</td></tr>
+                                    <tr><td>Hosting model</td><td data-admin-system-health-environment-value="hostingModel">Loading</td><td data-health-status="PENDING" data-admin-system-health-environment-status="hostingModel" title="Reason: current environment identity has not loaded yet." aria-label="PENDING: current environment identity has not loaded yet.">PENDING</td></tr>
+                                    <tr><td>Site URL</td><td data-admin-system-health-environment-value="siteUrl">Loading</td><td data-health-status="PENDING" data-admin-system-health-environment-status="siteUrl" title="Reason: current environment identity has not loaded yet." aria-label="PENDING: current environment identity has not loaded yet.">PENDING</td></tr>
+                                    <tr><td>API URL</td><td data-admin-system-health-environment-value="apiUrl">Loading</td><td data-health-status="PENDING" data-admin-system-health-environment-status="apiUrl" title="Reason: current environment identity has not loaded yet." aria-label="PENDING: current environment identity has not loaded yet.">PENDING</td></tr>
+                                    <tr><td>Database model</td><td data-admin-system-health-environment-value="databaseModel">Loading</td><td data-health-status="PENDING" data-admin-system-health-environment-status="databaseModel" title="Reason: current environment identity has not loaded yet." aria-label="PENDING: current environment identity has not loaded yet.">PENDING</td></tr>
+                                    <tr><td>Storage folder</td><td data-admin-system-health-environment-value="storageFolder">Loading</td><td data-health-status="PENDING" data-admin-system-health-environment-status="storageFolder" title="Reason: current environment identity has not loaded yet." aria-label="PENDING: current environment identity has not loaded yet.">PENDING</td></tr>
+                                    <tr><td>Last health check</td><td data-admin-system-health-environment-value="lastHealthCheck">Loading</td><td data-health-status="PENDING" data-admin-system-health-environment-status="lastHealthCheck" title="Reason: current environment identity has not loaded yet." aria-label="PENDING: current environment identity has not loaded yet.">PENDING</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Environment map">
+                                <caption>Environment Map</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Environment</th>
+                                        <th scope="col">Hosting model</th>
+                                        <th scope="col">Database model</th>
+                                        <th scope="col">Storage folder</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>Local</td><td>VS Code + Local API</td><td>Local Docker PostgreSQL</td><td>/local</td></tr>
+                                    <tr><td>DEV</td><td>Local Docker</td><td>Local Docker PostgreSQL</td><td>/dev</td></tr>
+                                    <tr><td>IST</td><td>Local Docker</td><td>Local Docker PostgreSQL</td><td>/ist</td></tr>
+                                    <tr><td>UAT</td><td>Cloudflare</td><td>Supabase PostgreSQL</td><td>/uat</td></tr>
+                                    <tr><td>PRD</td><td>Cloudflare</td><td>Supabase PostgreSQL</td><td>/prd</td></tr>
                                 </tbody>
                             </table>
                         </div>
