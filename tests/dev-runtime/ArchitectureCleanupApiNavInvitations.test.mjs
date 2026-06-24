@@ -92,7 +92,7 @@ test("product and web API clients live under src/api while engine API keeps only
 test("Admin and Owner navigation are shared and include present operational/business pages", async () => {
   const adminLabels = getAdminNavigationItems().map((item) => item.label);
   const ownerLabels = getOwnerNavigationItems().map((item) => item.label);
-  ["Admin Tools", "Infrastructure", "Invitations", "Operations", "System Health", "Tool Votes", "Users"].forEach((label) => {
+  ["Admin Tools", "Creators", "Infrastructure", "Invites", "Operations", "System Health", "Tool Votes"].forEach((label) => {
     assert.equal(adminLabels.includes(label), true, `Admin navigation should include ${label}`);
   });
   ["Owner Tools", "AI Credits", "Branding", "Grouping Colors", "Memberships", "Revenue"].forEach((label) => {

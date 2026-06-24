@@ -2,6 +2,7 @@ const ADMIN_NAVIGATION_ITEMS = Object.freeze([
   Object.freeze({ disabled: true, label: "Admin Tools", planned: false }),
   Object.freeze({ label: "Analytics", path: "admin/analytics.html", route: "admin-analytics" }),
   Object.freeze({ label: "Controls", path: "admin/controls.html", route: "admin-controls" }),
+  Object.freeze({ label: "Creators", path: "admin/users.html", route: "admin-users" }),
   Object.freeze({ label: "DB Viewer", path: "admin/db-viewer.html", route: "admin-db-viewer" }),
   Object.freeze({ label: "Environments", path: "admin/environments.html", route: "admin-environments" }),
   Object.freeze({ label: "Game Migration", path: "admin/game-migration.html", route: "admin-game-migration" }),
@@ -15,7 +16,6 @@ const ADMIN_NAVIGATION_ITEMS = Object.freeze([
   Object.freeze({ label: "Site Setup", path: "admin/site-setup.html", route: "admin-site-setup" }),
   Object.freeze({ label: "System Health", path: "admin/system-health.html", route: "admin-system-health" }),
   Object.freeze({ label: "Tool Votes", path: "admin/tool-votes.html", route: "admin-tool-votes" }),
-  Object.freeze({ label: "Creators", path: "admin/users.html", route: "admin-users" }),
 ]);
 
 const OWNER_NAVIGATION_ITEMS = Object.freeze([
