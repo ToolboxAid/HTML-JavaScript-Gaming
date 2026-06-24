@@ -1,5 +1,6 @@
 import { createServerRepositoryClient } from "../../../../src/api/server-api-client.js";
 import { getSessionCurrent } from "../../../../src/api/session-api-client.js";
+import { createThemeIcon, themeIconFileName } from "../../../theme-v2/js/theme-icons.js";
 
 const editableStatusOptions = Object.freeze(["New", "Exploring", "Refining", "Ready"]);
 const filterStatusOptions = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project", "Archived"]);
@@ -267,10 +268,9 @@ function renderIdeaRow(tbody, record) {
   const ideaText = document.createElement("span");
   ideaText.className = "idea-board-idea-label__text";
   ideaText.textContent = record.idea;
-  const chevron = document.createElement("span");
-  const chevronIcon = expanded ? "gfs-chevron-up.svg" : "gfs-chevron-down.svg";
-  chevron.className = `idea-board-idea-chevron idea-board-idea-chevron--${expanded ? "up" : "down"}`;
-  chevron.setAttribute("aria-hidden", "true");
+  const chevronName = expanded ? "chevron-up" : "chevron-down";
+  const chevron = createThemeIcon(chevronName, { className: "idea-board-idea-chevron" });
+  const chevronIcon = themeIconFileName(chevronName);
   chevron.dataset.ideaBoardChevron = record.ideaId;
   chevron.dataset.ideaBoardChevronIcon = chevronIcon;
   ideaLabel.append(chevron, ideaText);
