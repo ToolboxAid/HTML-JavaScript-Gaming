@@ -1238,6 +1238,44 @@ function systemHealthConfigurationSummary({
   };
 }
 
+function systemHealthScheduledMonitoring(checkedAt = new Date().toISOString()) {
+  const rows = [
+    {
+      field: "Last scheduled run",
+      status: "PENDING",
+      value: "Not Configured",
+    },
+    {
+      field: "Next scheduled run",
+      status: "PENDING",
+      value: "Not Configured",
+    },
+    {
+      field: "Duration",
+      status: "PENDING",
+      value: "Not Configured",
+    },
+    {
+      field: "Recent result",
+      status: "PENDING",
+      value: "Not Configured",
+    },
+    {
+      field: "Failures/warnings",
+      status: "PENDING",
+      value: "Scheduler contract is not configured.",
+    },
+  ];
+  return {
+    lastChecked: checkedAt,
+    message: "Scheduled Health Monitoring is not configured for this deployment.",
+    rows,
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    status: "PENDING",
+  };
+}
+
 function systemHealthHistoryRow({ checkedAt, environmentName, area, result, summary, kind = "recent check" }) {
   return {
     area,
@@ -4201,6 +4239,7 @@ LIMIT 1;
       environmentIdentity,
       storageStatus,
     });
+    const scheduledMonitoring = systemHealthScheduledMonitoring(checkedAt);
     const operationsHealth = adminOperationsHealth(this.standaloneTables);
     const healthCheckHistory = systemHealthCheckHistory({
       checkedAt,
@@ -4345,6 +4384,7 @@ LIMIT 1;
       secretsExposed: false,
       runtimeEnvironment,
       runtimeHealth,
+      scheduledMonitoring,
       serviceHealth,
       storageStatus,
       summary: systemHealthSummary(overview),

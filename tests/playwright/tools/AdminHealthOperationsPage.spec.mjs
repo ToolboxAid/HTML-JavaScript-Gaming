@@ -167,6 +167,13 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
     await expect(page.getByRole("button", { name: "Run Database Check" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Run Storage Check" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Run Full Health Check" })).toBeVisible();
+    const scheduledTable = page.getByRole("table", { name: "Scheduled health monitoring" });
+    await expect(scheduledTable).toContainText("Last scheduled run");
+    await expect(scheduledTable).toContainText("Next scheduled run");
+    await expect(scheduledTable).toContainText("Duration");
+    await expect(scheduledTable).toContainText("Recent result");
+    await expect(scheduledTable).toContainText("Failures/warnings");
+    await expect(scheduledTable).toContainText("Not Configured");
     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Approved diagnostics format");
     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Environment Variables + All Runtime Ports");
     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Configurable multiple runtime ports");
@@ -287,6 +294,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
   expect(pageSource).toContain("Service Health");
   expect(pageSource).toContain("Configuration Summary");
   expect(pageSource).toContain("Manual Health Actions");
+  expect(pageSource).toContain("Scheduled Health Monitoring");
   expect(pageSource).toContain("Runtime Health");
   expect(pageSource).toContain("Diagnostics Plan");
   expect(pageSource).toContain("Local API Startup Diagnostics");

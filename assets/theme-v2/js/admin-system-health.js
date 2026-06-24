@@ -66,6 +66,7 @@ class AdminSystemHealthController {
         this.actionRows = root.querySelector("[data-admin-system-health-action-rows]");
         this.actionButtons = Array.from(root.querySelectorAll("[data-admin-system-health-action]"));
         this.configurationRows = root.querySelector("[data-admin-system-health-configuration-rows]");
+        this.scheduledRows = root.querySelector("[data-admin-system-health-scheduled-rows]");
         this.serviceCards = root.querySelector("[data-admin-system-health-service-cards]");
         this.startupRows = root.querySelector("[data-admin-system-health-startup-rows]");
         this.runtimeRows = root.querySelector("[data-admin-system-health-runtime-rows]");
@@ -143,6 +144,7 @@ class AdminSystemHealthController {
         this.renderRuntimeHealthPending(reason);
         this.renderServiceHealthPending(reason);
         this.renderConfigurationSummaryPending(reason);
+        this.renderScheduledMonitoringPending(reason);
         this.renderHistoryPending(reason);
     }
 
@@ -336,6 +338,45 @@ class AdminSystemHealthController {
             fragment.append(row);
         });
         this.configurationRows.replaceChildren(fragment);
+    }
+
+    renderScheduledMonitoringPending(reason) {
+        if (!this.scheduledRows) {
+            return;
+        }
+        const row = document.createElement("tr");
+        row.append(
+            this.createCell("Scheduled Health Monitoring"),
+            this.createCell("Not Configured"),
+            this.createStatusCell("PENDING", reason),
+        );
+        this.scheduledRows.replaceChildren(row);
+    }
+
+    renderScheduledMonitoring(scheduledMonitoring = {}) {
+        if (!this.scheduledRows) {
+            return;
+        }
+        if (scheduledMonitoring?.secretsExposed === true || scheduledMonitoring?.secretEditingAllowed === true) {
+            this.renderScheduledMonitoringPending("Safe scheduled monitoring response was blocked because it exposed secret controls.");
+            return;
+        }
+        const rows = Array.isArray(scheduledMonitoring.rows) ? scheduledMonitoring.rows : [];
+        if (!rows.length) {
+            this.renderScheduledMonitoringPending("Safe Admin System Health API returned no scheduled monitoring rows.");
+            return;
+        }
+        const fragment = document.createDocumentFragment();
+        rows.forEach((scheduledRow) => {
+            const row = document.createElement("tr");
+            row.append(
+                this.createCell(scheduledRow.field),
+                this.createCell(scheduledRow.value),
+                this.createStatusCell(scheduledRow.status, scheduledMonitoring.message),
+            );
+            fragment.append(row);
+        });
+        this.scheduledRows.replaceChildren(fragment);
     }
 
     renderStartupPending(reason) {
@@ -585,6 +626,7 @@ class AdminSystemHealthController {
         this.renderRuntimeHealth(data?.runtimeHealth || {});
         this.renderServiceHealth(data?.serviceHealth || {});
         this.renderConfigurationSummary(data?.configurationSummary || {});
+        this.renderScheduledMonitoring(data?.scheduledMonitoring || {});
         this.renderHealthCheckHistory(data?.healthCheckHistory || []);
         this.renderRuntimeEnvironment(data?.runtimeEnvironment || {});
     }

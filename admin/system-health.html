@@ -43,6 +43,7 @@
                                     <p>Service Health</p>
                                     <p>Configuration Summary</p>
                                     <p>Manual Health Actions</p>
+                                    <p>Scheduled Health Monitoring</p>
                                     <p>Local API Startup</p>
                                     <p>Database Health</p>
                                     <p>Storage Health</p>
@@ -162,6 +163,21 @@
                                 </table>
                             </div>
                         </section>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Scheduled health monitoring">
+                                <caption>Scheduled Health Monitoring</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Field</th>
+                                        <th scope="col">Current Deployment</th>
+                                        <th scope="col">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-system-health-scheduled-rows>
+                                    <tr><td>Scheduled Health Monitoring</td><td>Not Configured</td><td data-health-status="PENDING" title="Reason: scheduled health monitoring has not loaded yet." aria-label="PENDING: scheduled health monitoring has not loaded yet.">PENDING</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                         <div class="table-wrapper">
                             <table class="data-table" aria-label="Local API startup diagnostics">
                                 <caption>Local API Startup Diagnostics</caption>

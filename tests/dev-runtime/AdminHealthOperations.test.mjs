@@ -175,6 +175,12 @@ test("Admin can view operational health while Creator sessions are blocked", asy
       assert.equal(JSON.stringify(health.configurationSummary).includes("site-secret"), false);
       assert.equal(JSON.stringify(health.configurationSummary).includes("api-user"), false);
       assert.equal(JSON.stringify(health.configurationSummary).includes("api-secret"), false);
+      assert.deepEqual(
+        health.scheduledMonitoring.rows.map((row) => row.field),
+        ["Last scheduled run", "Next scheduled run", "Duration", "Recent result", "Failures/warnings"],
+      );
+      assert.equal(health.scheduledMonitoring.rows.some((row) => row.value === "Not Configured"), true);
+      assert.equal(health.scheduledMonitoring.status, "PENDING");
       assert.equal(health.storageStatus.environmentFolder, "/local");
       assert.equal(typeof health.storageStatus.lastChecked, "string");
       assert.equal(Array.isArray(health.healthCheckHistory), true);
