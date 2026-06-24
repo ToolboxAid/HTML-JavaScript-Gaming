@@ -159,6 +159,22 @@ test("Admin can view operational health while Creator sessions are blocked", asy
       );
       assert.equal(health.serviceHealth.services.every((service) => typeof service.summary === "string"), true);
       assert.equal(JSON.stringify(health.serviceHealth).includes("/uat"), false);
+      assert.deepEqual(
+        health.configurationSummary.rows.map((row) => row.field),
+        [
+          "Current environment",
+          "Hosting model",
+          "Site URL",
+          "API URL",
+          "Database provider/type",
+          "Storage provider/folder",
+          "Auth provider/status",
+        ],
+      );
+      assert.equal(JSON.stringify(health.configurationSummary).includes("site-user"), false);
+      assert.equal(JSON.stringify(health.configurationSummary).includes("site-secret"), false);
+      assert.equal(JSON.stringify(health.configurationSummary).includes("api-user"), false);
+      assert.equal(JSON.stringify(health.configurationSummary).includes("api-secret"), false);
       assert.equal(health.storageStatus.environmentFolder, "/local");
       assert.equal(typeof health.storageStatus.lastChecked, "string");
       assert.equal(Array.isArray(health.healthCheckHistory), true);

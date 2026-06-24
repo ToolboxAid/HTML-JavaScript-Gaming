@@ -61,6 +61,7 @@ class AdminSystemHealthController {
             node,
         ]));
         this.historyRows = root.querySelector("[data-admin-system-health-history-rows]");
+        this.configurationRows = root.querySelector("[data-admin-system-health-configuration-rows]");
         this.serviceCards = root.querySelector("[data-admin-system-health-service-cards]");
         this.startupRows = root.querySelector("[data-admin-system-health-startup-rows]");
         this.runtimeRows = root.querySelector("[data-admin-system-health-runtime-rows]");
@@ -136,6 +137,7 @@ class AdminSystemHealthController {
         this.renderStoragePending(reason);
         this.renderRuntimeHealthPending(reason);
         this.renderServiceHealthPending(reason);
+        this.renderConfigurationSummaryPending(reason);
         this.renderHistoryPending(reason);
     }
 
@@ -276,6 +278,45 @@ class AdminSystemHealthController {
             fragment.append(this.createServiceHealthCard(service));
         });
         this.serviceCards.replaceChildren(fragment);
+    }
+
+    renderConfigurationSummaryPending(reason) {
+        if (!this.configurationRows) {
+            return;
+        }
+        const row = document.createElement("tr");
+        row.append(
+            this.createCell("Configuration Summary"),
+            this.createCell("not available"),
+            this.createStatusCell("PENDING", reason),
+        );
+        this.configurationRows.replaceChildren(row);
+    }
+
+    renderConfigurationSummary(configurationSummary = {}) {
+        if (!this.configurationRows) {
+            return;
+        }
+        if (configurationSummary?.secretsExposed === true || configurationSummary?.secretEditingAllowed === true) {
+            this.renderConfigurationSummaryPending("Safe configuration summary response was blocked because it exposed secret controls.");
+            return;
+        }
+        const rows = Array.isArray(configurationSummary.rows) ? configurationSummary.rows : [];
+        if (!rows.length) {
+            this.renderConfigurationSummaryPending("Safe Admin System Health API returned no configuration summary rows.");
+            return;
+        }
+        const fragment = document.createDocumentFragment();
+        rows.forEach((configurationRow) => {
+            const row = document.createElement("tr");
+            row.append(
+                this.createCell(configurationRow.field),
+                this.createCell(configurationRow.value),
+                this.createStatusCell(configurationRow.status, configurationSummary.message),
+            );
+            fragment.append(row);
+        });
+        this.configurationRows.replaceChildren(fragment);
     }
 
     renderStartupPending(reason) {
@@ -461,6 +502,7 @@ class AdminSystemHealthController {
             this.runStorageDiagnostics();
             this.renderRuntimeHealth(data?.runtimeHealth || {});
             this.renderServiceHealth(data?.serviceHealth || {});
+            this.renderConfigurationSummary(data?.configurationSummary || {});
             this.renderHealthCheckHistory(data?.healthCheckHistory || []);
             this.renderRuntimeEnvironment(data?.runtimeEnvironment || {});
         } catch (error) {

@@ -41,6 +41,7 @@
                                     <p>Environment Identity</p>
                                     <p>Environment Map</p>
                                     <p>Service Health</p>
+                                    <p>Configuration Summary</p>
                                     <p>Local API Startup</p>
                                     <p>Database Health</p>
                                     <p>Storage Health</p>
@@ -116,6 +117,21 @@
                                 </article>
                             </div>
                         </section>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Configuration summary">
+                                <caption>Configuration Summary</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Field</th>
+                                        <th scope="col">Read-only Value</th>
+                                        <th scope="col">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-system-health-configuration-rows>
+                                    <tr><td>Configuration Summary</td><td>Waiting for safe API status</td><td data-health-status="PENDING" title="Reason: configuration summary has not loaded yet." aria-label="PENDING: configuration summary has not loaded yet.">PENDING</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                         <div class="table-wrapper">
                             <table class="data-table" aria-label="Local API startup diagnostics">
                                 <caption>Local API Startup Diagnostics</caption>

@@ -153,6 +153,15 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
     });
     const serviceStatuses = await serviceCards.locator("[data-health-status]").allTextContents();
     expect(serviceStatuses.every((status) => ["Healthy", "Warning", "Failed", "Not Configured"].includes(status.trim()))).toBe(true);
+    const configurationTable = page.getByRole("table", { name: "Configuration summary" });
+    await expect(configurationTable).toContainText("Current environment");
+    await expect(configurationTable).toContainText("Hosting model");
+    await expect(configurationTable).toContainText("Site URL");
+    await expect(configurationTable).toContainText("API URL");
+    await expect(configurationTable).toContainText("Database provider/type");
+    await expect(configurationTable).toContainText("Storage provider/folder");
+    await expect(configurationTable).toContainText("Auth provider/status");
+    await expect(configurationTable).not.toContainText("env-secret");
     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Approved diagnostics format");
     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Environment Variables + All Runtime Ports");
     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Configurable multiple runtime ports");
@@ -268,6 +277,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
   expect(pageSource).toContain("Environment Identity");
   expect(pageSource).toContain("Environment Map");
   expect(pageSource).toContain("Service Health");
+  expect(pageSource).toContain("Configuration Summary");
   expect(pageSource).toContain("Runtime Health");
   expect(pageSource).toContain("Diagnostics Plan");
   expect(pageSource).toContain("Local API Startup Diagnostics");

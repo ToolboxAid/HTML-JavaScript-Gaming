@@ -1169,6 +1169,61 @@ function systemHealthServiceHealth({
   };
 }
 
+function systemHealthConfigurationSummary({
+  authStatus = {},
+  checkedAt,
+  databaseStatus = {},
+  environmentIdentity = {},
+  storageStatus = {},
+}) {
+  const authConfigured = authStatus.configured === true || authStatus.ready === true;
+  const rows = [
+    {
+      field: "Current environment",
+      status: environmentIdentity.status || "WARN",
+      value: environmentIdentity.name || "Unknown",
+    },
+    {
+      field: "Hosting model",
+      status: environmentIdentity.hostingModel ? "PASS" : "WARN",
+      value: environmentIdentity.hostingModel || "not configured",
+    },
+    {
+      field: "Site URL",
+      status: environmentIdentity.siteUrlStatus || "WARN",
+      value: environmentIdentity.siteUrl || "not configured",
+    },
+    {
+      field: "API URL",
+      status: environmentIdentity.apiUrlStatus || "WARN",
+      value: environmentIdentity.apiUrl || "not configured",
+    },
+    {
+      field: "Database provider/type",
+      status: databaseStatus.databaseType || environmentIdentity.databaseModel ? "PASS" : "WARN",
+      value: databaseStatus.databaseType || environmentIdentity.databaseModel || "PostgreSQL",
+    },
+    {
+      field: "Storage provider/folder",
+      status: storageStatus.environmentFolderStatus || environmentIdentity.storageFolderStatus || "WARN",
+      value: `Cloudflare R2 ${storageStatus.environmentFolder || environmentIdentity.storageFolder || "not configured"}`,
+    },
+    {
+      field: "Auth provider/status",
+      status: authConfigured ? "PASS" : "PENDING",
+      value: `${authStatus.providerId || SUPABASE_AUTH_PROVIDER_ID} ${authConfigured ? "ready" : "not configured"}`,
+    },
+  ];
+  return {
+    lastChecked: checkedAt,
+    message: "Configuration Summary is read-only and contains no secret values.",
+    rows,
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    status: overallHealthStatus(rows),
+  };
+}
+
 function systemHealthHistoryRow({ checkedAt, environmentName, area, result, summary, kind = "recent check" }) {
   return {
     area,
@@ -4053,6 +4108,13 @@ LIMIT 1;
       session,
       storageStatus,
     });
+    const configurationSummary = systemHealthConfigurationSummary({
+      authStatus,
+      checkedAt,
+      databaseStatus,
+      environmentIdentity,
+      storageStatus,
+    });
     const operationsHealth = adminOperationsHealth(this.standaloneTables);
     const healthCheckHistory = systemHealthCheckHistory({
       checkedAt,
@@ -4191,6 +4253,7 @@ LIMIT 1;
       pressureLabels: SYSTEM_HEALTH_LIMIT_PRESSURE_LABELS,
       connectionSummary: this.ownerConnectionSummary(),
       databaseStatus,
+      configurationSummary,
       r2Readiness,
       secretEditingAllowed: false,
       secretsExposed: false,
