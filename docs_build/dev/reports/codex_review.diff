@@ -1,689 +1,643 @@
-diff --git a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-index 3314b3dea..20d6ae342 100644
---- a/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-+++ b/docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-@@ -59,0 +60,22 @@ Rules:
+diff --git a/assets/theme-v2/css/status.css b/assets/theme-v2/css/status.css
+index 6acb4555b..4ca9cb266 100644
+--- a/assets/theme-v2/css/status.css
++++ b/assets/theme-v2/css/status.css
+@@ -38,6 +38,7 @@
+ .toolbox-status-bar {
+   --toolbox-status-bar-height: var(--space-52);
+   --toolbox-status-game-max: 220px;
++  --toolbox-status-progress-max: 34vw;
+   width: 100%;
+   min-block-size: var(--toolbox-status-bar-height);
+   border-block: var(--border-standard);
+@@ -50,7 +51,7 @@
+   margin: var(--space-0) auto;
+   padding: var(--space-10) var(--space-0);
+   display: grid;
+-  grid-template-columns: minmax(var(--space-0), max-content) minmax(var(--space-0), 1fr);
++  grid-template-columns: minmax(var(--space-0), max-content) minmax(var(--space-0), 1fr) minmax(var(--space-0), max-content);
+   gap: var(--space-16);
+   align-items: center
+ }
+@@ -90,6 +91,19 @@
+   overflow-wrap: anywhere
+ }
+
++.toolbox-status-bar__progress {
++  min-width: var(--space-0);
++  max-width: var(--toolbox-status-progress-max);
++  margin: var(--space-0);
++  color: var(--muted);
++  font-size: var(--font-size-sm);
++  line-height: var(--line-height-tight);
++  overflow: hidden;
++  text-align: right;
++  text-overflow: ellipsis;
++  white-space: nowrap
++}
 +
-+## Current Active Ownership Lanes
+ .toolbox-status-bar[data-selected-game-state="active"] {
+   border-color: color-mix(in srgb, var(--green) 52%, var(--line))
+ }
+@@ -249,16 +263,21 @@ body.tool-focus-mode .tool-center-panel {
+ @media (max-width: 720px) {
+   .toolbox-status-bar__inner {
+     width: var(--container-width);
+-    grid-template-columns: minmax(var(--space-0), max-content) minmax(var(--space-0), 1fr);
++    grid-template-columns: minmax(var(--space-0), max-content) minmax(var(--space-0), 1fr) minmax(var(--space-0), max-content);
+     gap: var(--space-10);
+     text-align: center
+   }
+
+   .toolbox-status-bar__game-name {
+-    max-width: 34vw
++    max-width: 24vw
+   }
+
+-  .toolbox-status-bar__message {
++  .toolbox-status-bar__message,
++  .toolbox-status-bar__progress {
+     font-size: var(--font-size-sm)
+   }
 +
-+OWNER override approved.
++  .toolbox-status-bar__progress {
++    max-width: 30vw
++  }
+ }
+diff --git a/assets/theme-v2/js/toolbox-status-bar.js b/assets/theme-v2/js/toolbox-status-bar.js
+index 24c935311..6adc17290 100644
+--- a/assets/theme-v2/js/toolbox-status-bar.js
++++ b/assets/theme-v2/js/toolbox-status-bar.js
+@@ -1,7 +1,39 @@
++import { readGameJourneyCompletionMetrics } from "/src/api/game-journey-completion-api-client.js";
+ import { createServerRepositoryClient } from "/src/api/server-api-client.js";
++import { getToolBySlug } from "/src/shared/toolbox/tool-metadata-inventory.js";
+
+ const EXCLUDED_SELECTED_GAME_TOOLS = new Set(["idea-board"]);
+ const STATUS_BAR_SELECTOR = "[data-toolbox-status-bar]";
++const TOOL_PROGRESS_BUCKET_BY_SLUG = Object.freeze({
++  "achievements": "Progression",
++  "assets": "Graphics",
++  "audio": "Audio",
++  "audio-effects": "Audio",
++  "characters": "Objects",
++  "colors": "Graphics",
++  "community": "Share",
++  "controls": "Controls",
++  "events": "Rules",
++  "game-configuration": "Create",
++  "game-design": "Design",
++  "game-hub": "Create",
++  "game-testing": "Play Test",
++  "hitboxes": "Objects",
++  "idea-board": "Idea",
++  "input-mapping-v2": "Controls",
++  "marketplace": "Share",
++  "messages": "Interface",
++  "music": "Audio",
++  "objects": "Objects",
++  "publish": "Publish",
++  "ratings": "Share",
++  "sprites": "Graphics",
++  "tags": "Progression",
++  "text-to-speech": "Audio",
++  "videos": "Graphics",
++  "voices": "Audio",
++  "worlds": "Worlds",
++});
+
+ let repository = null;
+ let messageObserver = null;
+@@ -101,7 +133,10 @@ function createStatusBar() {
+   message.setAttribute("role", "status");
+   center.append(message);
+
+-  inner.append(game, center);
++  const progress = createText("p", "toolbox-status-bar__progress", "toolboxStatusProgress");
++  progress.setAttribute("aria-label", "Tool and journey progress");
 +
-+The current active ownership lanes are:
++  inner.append(game, center, progress);
+   bar.append(inner);
+   return bar;
+ }
+@@ -233,6 +268,107 @@ function classifyToolContext(messageText, state, required) {
+   return { kind: "action" };
+ }
+
++function normalizeTextKey(value) {
++  return String(value || "")
++    .toLowerCase()
++    .replace(/[^a-z0-9]+/g, "");
++}
 +
-+- Team Alfa
-+- Team Bravo
-+- Team Charlie
-+- Team Delta
-+- Team Golf
-+- Team OWNER
++function formatToolSlug(slug) {
++  return String(slug || "Tool")
++    .split(/[-_\s]+/)
++    .filter(Boolean)
++    .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
++    .join(" ") || "Tool";
++}
 +
-+Migration note:
-+Team Gamma is retired. Team Golf is the replacement active ownership lane.
++function currentToolContext() {
++  const slug = toolSlugFromPath(mountOptions.pagePath);
++  const tool = getToolBySlug(slug);
++  return {
++    label: tool?.shortLabel || tool?.displayName || tool?.name || formatToolSlug(slug),
++    slug,
++  };
++}
 +
-+Rules:
-+- Do not rewrite historical PR references that mention Team Gamma.
-+- Do not rename historical branches that contain Gamma.
-+- Team Golf may own newly assigned work, review packets, cleanup, release, or OWNER-directed cross-team work.
-+- Team Golf must not silently take backlog ownership from Alfa, Bravo, Charlie, or Delta; cross-team work requires OWNER approval.
-diff --git a/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md b/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
-index 12f74cb1f..d0118f63a 100644
---- a/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
-+++ b/docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
-@@ -92,0 +93,22 @@ Work only that assignment.
-+## Start Team Golf
++function normalizeProgressRecord(record) {
++  const total = Math.max(0, Number(record?.plannedCount) || 0);
++  const complete = Math.max(0, Math.min(Number(record?.completedCount) || 0, total));
++  const percent = Number.isFinite(Number(record?.percentComplete))
++    ? Math.max(0, Math.min(Number(record.percentComplete), 100))
++    : total > 0
++      ? Math.round((complete / total) * 100)
++      : 0;
++  return {
++    complete,
++    percent,
++    total,
++  };
++}
 +
-+Ready-to-copy command:
++function formatProgressRecord(label, record) {
++  const progress = normalizeProgressRecord(record);
++  return `${label} ${progress.complete}/${progress.total} (${progress.percent}%)`;
++}
 +
-+```text
-+OWNER override approved: Start Team Golf from the ProjectInstructions release gate.
++function findMetricForCurrentTool(snapshot, toolContext) {
++  if (toolContext.slug === "game-journey") {
++    return snapshot;
++  }
 +
-+Read docs_build/dev/ProjectInstructions/README.txt first.
-+Read docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md.
-+Read docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
-+Read docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md.
++  const records = Array.isArray(snapshot?.records) ? snapshot.records : [];
++  const explicitBucketName = TOOL_PROGRESS_BUCKET_BY_SLUG[toolContext.slug];
++  const explicitBucket = normalizeTextKey(explicitBucketName);
++  const toolLabel = normalizeTextKey(toolContext.label);
++  const toolSlug = normalizeTextKey(toolContext.slug);
 +
-+Stop if Team Golf already has an active branch.
-+Stop if Team Golf already has an active assignment.
-+Stop if OWNER has not explicitly assigned Team Golf work.
-+Stop if the selected work conflicts with current Alfa, Bravo, Charlie, or Delta ownership.
++  return records.find((metric) => {
++    const bucketName = normalizeTextKey(metric?.bucketName);
++    return bucketName && (
++      bucketName === explicitBucket ||
++      bucketName === toolLabel ||
++      bucketName === toolSlug
++    );
++  }) || null;
++}
 +
-+Record the selected assignment under Team Golf in TEAM_ASSIGNMENTS.md.
-+Create or use one Team Golf branch for the selected assignment.
-+Work only that assignment.
++function resolveProgressContext() {
++  const toolContext = currentToolContext();
++  const snapshot = readGameJourneyCompletionMetrics();
++  const currentMetric = findMetricForCurrentTool(snapshot, toolContext);
++  const journeyText = formatProgressRecord("Journey", snapshot);
++
++  if (!currentMetric) {
++    return {
++      state: "unmapped",
++      text: `${toolContext.label} progress unavailable | ${journeyText}`,
++    };
++  }
++
++  return {
++    state: "active",
++    text: `${formatProgressRecord(toolContext.label, currentMetric)} | ${journeyText}`,
++  };
++}
++
++function renderProgressContext(bar) {
++  const progress = bar.querySelector("[data-toolbox-status-progress]");
++  if (!progress) {
++    return;
++  }
++
++  try {
++    const context = resolveProgressContext();
++    bar.dataset.toolboxProgressState = context.state;
++    progress.textContent = context.text;
++    progress.removeAttribute("title");
++  } catch (error) {
++    bar.dataset.toolboxProgressState = "error";
++    progress.textContent = "Progress unavailable";
++    progress.removeAttribute("title");
++  }
++}
++
+ function renderSelectedGame(bar, selectedGame, state, messageText) {
+   const required = pageRequiresSelectedGame();
+   const name = bar.querySelector("[data-toolbox-selected-game-name]");
+@@ -247,6 +383,7 @@ function renderSelectedGame(bar, selectedGame, state, messageText) {
+   bar.dataset.selectedGameState = state;
+   bar.dataset.selectedGameRequired = String(required);
+   bar.dataset.toolboxStatusContextKind = context.kind;
++  renderProgressContext(bar);
+
+   if (selectedGame) {
+     name.textContent = selectedGame.name;
+diff --git a/docs_build/dev/BUILD_PR.md b/docs_build/dev/BUILD_PR.md
+index 0778a1f1e..f4bc1e8e4 100644
+--- a/docs_build/dev/BUILD_PR.md
++++ b/docs_build/dev/BUILD_PR.md
+@@ -1,50 +1,54 @@
+-# PR_26175_ALFA_009-status-bar-single-row-rebuild
++# PR_26175_ALFA_011-status-bar-journey-progress-context
+
+ ## Purpose
+-Rebuild the shared toolbox status bar on current `main` so it is a single-row creator context bar.
++Add right-anchored progress context to the shared toolbox status bar using the existing Game Journey completion metrics/API pipeline.
+
+ ## Source Of Truth
+-This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_009-status-bar-single-row-rebuild`.
++This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_011-status-bar-journey-progress-context`.
+
+ ## Exact Scope
+-- Display only the selected Game Hub game name on the left side of the toolbox status bar.
+-- Display only the current status message in the center of the toolbox status bar.
+-- Remove visible status bar labels: `Selected Game Name`, `Selected Game Purpose`, `Save State`, `Tool Action`, `Warning`, and `Error`.
+-- Remove selected-game purpose from the visible status bar.
+-- Preserve normal status bar placement above the footer.
+-- Remove extra status bar/footer spacing so the shared footer top padding resolves to `0px`.
+-- Preserve fullscreen/tool display mode bottom anchoring.
+-- Ensure fullscreen center scrollable content stops above the fixed status bar.
+-- Ensure fullscreen tool content is not hidden behind the status bar.
+-- Preserve Idea Board selected-game filtering exclusion.
+-- Preserve Game Hub as selected-game owner through the existing repository contract.
++- Preserve the ALFA_009 single-row toolbox status bar behavior:
++  - left side displays only the selected Game Hub game name.
++  - center displays only the current status message.
++- Add right-anchored progress text in this format:
++  - `{CurrentTool} {complete}/{total} ({percent}%) | Journey {complete}/{total} ({percent}%)`
++- Use existing Game Journey completion metrics/API pipeline for Journey totals.
++- Derive current-tool progress from the existing completion metrics record that matches the current toolbox tool/section.
++- Do not add new storage.
++- Do not use browser-owned authoritative progress data.
++- Preserve fullscreen bottom anchoring and existing fullscreen content bottom reserve.
++- Preserve normal placement above the footer.
+ - Use shared Theme V2 CSS/classes only.
+-- Update targeted Playwright coverage for the single-row status bar, footer spacing, and fullscreen bottom reserve.
++- Update targeted Playwright coverage for the right-anchored progress text and existing left/center behavior.
+
+ ## Exact Targets
+ - `docs_build/dev/BUILD_PR.md`
+ - `assets/theme-v2/js/toolbox-status-bar.js`
+ - `assets/theme-v2/css/status.css`
+-- `assets/theme-v2/css/layout.css`
+ - `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs`
+-- `docs_build/dev/reports/PR_26175_ALFA_009-status-bar-single-row-rebuild_report.md`
+-- `docs_build/dev/reports/PR_26175_ALFA_009-status-bar-single-row-rebuild_validation-lane.md`
+-- `docs_build/dev/reports/PR_26175_ALFA_009-status-bar-single-row-rebuild_requirements-checklist.md`
++- `docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_report.md`
++- `docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_validation-lane.md`
++- `docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_requirements-checklist.md`
+ - `docs_build/dev/reports/codex_review.diff`
+ - `docs_build/dev/reports/codex_changed_files.txt`
+
++## Evidence Sources
++- `assets/js/shared/game-journey-api-client.js`
++- `src/api/game-journey-completion-api-client.js`
++- `src/dev-runtime/server/local-api-router.mjs`
++- `src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs`
++
+ ## Out Of Scope
+-- No merge of PR #120.
+-- No reuse of stale ALFA_003 branch.
++- No Game Journey API/service/repository contract changes.
++- No new persistence/storage.
++- No browser-owned product data as source of truth.
++- No silent fallback data.
+ - No environment/server details in the status bar.
+ - No selected game purpose in the visible status bar.
+ - No visible status category labels in the status bar.
+-- No status action links in the visible status bar.
+ - No large banners.
+ - No modal messages or modal-style status messages.
+ - No row highlights.
+-- No API/service/repository contract changes.
+-- No browser-owned product data as source of truth.
+ - No inline styles, style blocks, or page-local CSS.
+ - No engine core changes.
+ - No `start_of_day` folder changes.
+@@ -59,12 +63,12 @@ npx playwright test tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
+ Also verify changed source does not introduce inline styles or style blocks:
+
+ ```powershell
+-rg -n "<[s]tyle|[s]tyle=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css assets/theme-v2/css/layout.css tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
++rg -n "<[s]tyle|[s]tyle=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
+ ```
+
+ ## Artifact
+ Create repo-structured delta ZIP:
+
+ ```text
+-tmp/PR_26175_ALFA_009-status-bar-single-row-rebuild_delta.zip
++tmp/PR_26175_ALFA_011-status-bar-journey-progress-context_delta.zip
+ ```
+diff --git a/docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_report.md b/docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_report.md
+new file mode 100644
+index 000000000..f737efdd4
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_report.md
+@@ -0,0 +1,38 @@
++# PR_26175_ALFA_011-status-bar-journey-progress-context Report
++
++## Status
++PASS
++
++Added right-anchored progress context to the shared toolbox status bar while preserving the ALFA_009 left and center behavior.
++
++## Changes
++- `assets/theme-v2/js/toolbox-status-bar.js`
++  - Imports the existing Game Journey completion metrics API client at line 1.
++  - Adds current-tool-to-Journey-bucket matching at lines 7-35.
++  - Adds the right progress node at line 136.
++  - Formats progress as `{CurrentTool} {complete}/{total} ({percent}%) | Journey {complete}/{total} ({percent}%)` at lines 309-350.
++  - Renders visible unavailable progress state without raw environment/server details at lines 354-370.
++- `assets/theme-v2/css/status.css`
++  - Adds a three-column shared status bar grid at line 54.
++  - Adds right-aligned single-line progress styling at lines 94-106.
++  - Preserves existing fullscreen anchoring and bottom reserve rules at lines 119-150.
++- `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs`
++  - Routes `/api/game-journey/completion-metrics` through the existing server API response shape at lines 76-83.
++  - Verifies Game Design progress at lines 239 and 253.
++  - Verifies the requested Objects example at lines 275 and 279.
++  - Verifies right anchoring at lines 260 and 280.
++  - Verifies Game Hub, missing-game, Idea Board, and fullscreen behavior at lines 304, 328, 353, 371, and 398.
++
++## Contract Notes
++- No storage was added.
++- No API/service/repository contract was changed.
++- Progress data is read from the existing Game Journey completion metrics API pipeline.
++- Browser state is not used as authoritative progress data.
++- Existing selected-game ownership and left/center status bar behavior are preserved.
++
++## Validation
++- PASS: `npx playwright test tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs --workers=1`
++- PASS: `rg -n "<[s]tyle|[s]tyle=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs`
++
++## Artifact
++- `tmp/PR_26175_ALFA_011-status-bar-journey-progress-context_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_requirements-checklist.md b/docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_requirements-checklist.md
+new file mode 100644
+index 000000000..94c18da59
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_requirements-checklist.md
+@@ -0,0 +1,17 @@
++# PR_26175_ALFA_011 Requirements Checklist
++
++| Requirement | Status | Evidence |
++| --- | --- | --- |
++| Implement right-anchored progress in the shared toolbox status bar. | PASS | `assets/theme-v2/js/toolbox-status-bar.js:136`, `assets/theme-v2/css/status.css:94`. |
++| Use format `{CurrentTool} {complete}/{total} ({percent}%) | Journey {complete}/{total} ({percent}%)`. | PASS | `assets/theme-v2/js/toolbox-status-bar.js:309` and `:350`; tests at `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs:239`, `:275`. |
++| Use existing Game Journey completion metrics/API pipeline. | PASS | `assets/theme-v2/js/toolbox-status-bar.js:1`, `:337`; tests route `/api/game-journey/completion-metrics` at `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs:76`. |
++| Do not add new storage. | PASS | No persistence files changed. |
++| Do not use browser-owned authoritative progress data. | PASS | Progress is read from `readGameJourneyCompletionMetrics()` and not local/session storage. |
++| Keep existing left status bar behavior from ALFA_009. | PASS | Selected game assertions remain at `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs:237`, `:302`, `:391`. |
++| Keep existing center status bar behavior from ALFA_009. | PASS | Message assertions remain at `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs:238`, `:303`, `:370`, `:397`. |
++| Preserve fullscreen bottom anchoring. | PASS | Existing CSS rules remain at `assets/theme-v2/css/status.css:119`; test coverage at `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs:315`. |
++| Preserve normal placement above footer. | PASS | Existing status bar placement test remains at `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs:224`. |
++| No inline styles, style blocks, or page-local CSS. | PASS | Style scan returned no matches. |
++| Use Theme V2 shared CSS/classes. | PASS | Styling changes are limited to `assets/theme-v2/css/status.css`. |
++| Update targeted Playwright coverage. | PASS | `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs` now validates right progress text and anchoring. |
++| Produce required reports and repo-structured ZIP. | PASS | PR reports added and ZIP target is `tmp/PR_26175_ALFA_011-status-bar-journey-progress-context_delta.zip`. |
+diff --git a/docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_validation-lane.md b/docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_validation-lane.md
+new file mode 100644
+index 000000000..daa775695
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_validation-lane.md
+@@ -0,0 +1,38 @@
++# PR_26175_ALFA_011 Validation Lane
++
++## Playwright
++Command:
++
++```powershell
++npx playwright test tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs --workers=1
 +```
 +
-diff --git a/docs_build/dev/ProjectInstructions/addendums/multi_team.md b/docs_build/dev/ProjectInstructions/addendums/multi_team.md
-index 797a8834e..190813840 100644
---- a/docs_build/dev/ProjectInstructions/addendums/multi_team.md
-+++ b/docs_build/dev/ProjectInstructions/addendums/multi_team.md
-@@ -15,0 +16,22 @@ Rules:
-+## Current Active Ownership Lanes
-+
-+OWNER override approved.
-+
-+The current active ownership lanes are:
-+
-+- Team Alfa
-+- Team Bravo
-+- Team Charlie
-+- Team Delta
-+- Team Golf
-+- Team OWNER
-+
-+Migration note:
-+Team Gamma is retired. Team Golf is the replacement active ownership lane.
-+
-+Rules:
-+- Historical PR references and branch names that mention Gamma remain unchanged for traceability.
-+- New active work that would previously have used Team Gamma routes to Team Golf.
-+- Team Golf work requires OWNER assignment, an active branch, an active draft/open PR, or active release/cleanup responsibility.
-+- If Team Golf work touches Alfa, Bravo, Charlie, or Delta ownership areas, the PR must document the OWNER cross-team decision.
-+
-diff --git a/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md b/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
-index cadfee261..e4b0ba1de 100644
---- a/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
-+++ b/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
-@@ -56,0 +57,2 @@ Applies to:
-+- Team Delta
-+- Team Golf
-diff --git a/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md b/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
-index d73cfcb9f..521758eeb 100644
---- a/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
-+++ b/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
-@@ -6,0 +7,5 @@ This gate prevents Team Alfa, Team Bravo, Team Charlie, or Team OWNER from start
-+Current OWNER clarification:
-+- This gate also applies to Team Delta and Team Golf.
-+- Team Gamma is retired. Team Golf is the replacement active ownership lane.
-+- Historical wording that listed fewer teams remains traceable, but it must not exclude Delta or Golf from current active ownership governance.
-+
-diff --git a/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md b/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
-index e1018c155..d6af3271c 100644
---- a/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
-+++ b/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
-@@ -33,0 +34,22 @@ Each team start must confirm the selected backlog item is inside that team's own
-+## Current Active Ownership Start Map
-+
-+OWNER override approved.
-+
-+The current active ownership start map includes:
-+
-+- Team Alfa
-+- Team Bravo
-+- Team Charlie
-+- Team Delta
-+- Team Golf
-+- Team OWNER
-+
-+Migration note:
-+Team Gamma is retired. Team Golf is the replacement active ownership lane.
-+
-+Clarification:
-+- The four-team start set remains the backlog ownership start set for Alfa, Bravo, Charlie, and Delta.
-+- Team Golf is valid for OWNER-assigned, branch-backed, PR-backed, release, review packet, or cleanup work.
-+- Historical Gamma references and branch names must remain unchanged.
-+- Golf work must not silently take ownership from Alfa, Bravo, Charlie, or Delta; cross-team work requires OWNER approval.
-+
-diff --git a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-index 0b8942261..ed2f85a4b 100644
---- a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-+++ b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-@@ -164,0 +165,7 @@
-+Current OWNER clarification:
-+- The backlog alignment below preserves the current Alfa, Bravo, Charlie, and Delta ownership model.
-+- Team Gamma is retired. Team Golf is the replacement active ownership lane.
-+- Team Golf has no standing backlog ownership area in this file unless OWNER assigns one.
-+- Golf work may be OWNER-assigned, branch-backed, PR-backed, release, review packet, or cleanup work and must not silently replace Alfa, Bravo, Charlie, or Delta ownership.
-+- Historical Gamma PR references and branch names are not renamed by this clarification.
-+
-diff --git a/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md b/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
-index 5ca625819..6ddf25619 100644
---- a/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
-+++ b/docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
-@@ -30,0 +31,5 @@ If a team has no assignment, no active branch, and no active PR, it is inactive
-+| Team Alfa | none | none | none | Available | Active ownership lane |
-+| Team Bravo | none | none | none | Available | Active ownership lane |
-+| Team Charlie | none | none | none | Available | Active ownership lane |
-+| Team Delta | none | none | none | Available | Active ownership lane |
-+| Team Golf | none | none | none | Available | Replacement active ownership lane for retired Team Gamma |
-@@ -32,0 +38,11 @@ If a team has no assignment, no active branch, and no active PR, it is inactive
-+## Current Active Ownership Lanes
-+
-+OWNER override approved.
-+
-+The current active ownership lanes are Team Alfa, Team Bravo, Team Charlie, Team Delta, Team Golf, and Team OWNER.
-+
-+Migration note:
-+Team Gamma is retired. Team Golf is the replacement active ownership lane.
-+
-+Historical Gamma PR references and branch names remain unchanged for traceability.
-+
-diff --git a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
-index acefbba8e..afe4efa91 100644
---- a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
-+++ b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
-@@ -6,0 +7,6 @@
-+| Team Alfa | none | none | none | Available |
-+| Team Bravo | none | none | none | Available |
-+| Team Charlie | none | none | none | Available |
-+| Team Delta | none | none | none | Available |
-+| Team Golf | none | none | none | Available |
-+| Team OWNER | none | none | none | Available |
-@@ -29,0 +36,6 @@ it is currently inactive.
-+Current OWNER clarification:
-+- The active ownership lanes are Team Alfa, Team Bravo, Team Charlie, Team Delta, Team Golf, and Team OWNER.
-+- Team Gamma is retired. Team Golf is the replacement active ownership lane.
-+- Do not rewrite historical PR references that mention Team Gamma.
-+- Do not rename historical branches that contain Gamma.
-+
-@@ -67,0 +80,10 @@ Active branch: none.
-+## Team Golf
-+
-+Status: Available
-+
-+Active assignment: none.
-+
-+Active branch: none.
-+
-+OWNER decision: Replacement active ownership lane for retired Team Gamma.
-+
-diff --git a/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md b/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-index 865cca551..bc4808b6f 100644
---- a/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-+++ b/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-@@ -54,0 +55,23 @@ Each team may pull only from its ownership area unless OWNER explicitly reassign
-+## Current Active Ownership Lanes
-+
-+OWNER override approved.
-+
-+The current active ownership lanes are:
-+
-+- Team Alfa
-+- Team Bravo
-+- Team Charlie
-+- Team Delta
-+- Team Golf
-+- Team OWNER
-+
-+Migration note:
-+Team Gamma is retired. Team Golf is the replacement active ownership lane.
-+
-+Clarification:
-+- The four-team rule remains the current backlog ownership model for Alfa, Bravo, Charlie, and Delta.
-+- Team Golf does not receive a standing backlog ownership area in this file.
-+- Team Golf work requires OWNER assignment, an active branch, an active draft/open PR, or active release/review/cleanup responsibility.
-+- Golf work that touches Alfa, Bravo, Charlie, or Delta areas must document the OWNER cross-team decision.
-+- Historical Gamma PR references and branch names remain unchanged for traceability.
-+
-diff --git a/docs_build/dev/reports/PR_26175_OWNER_046-pr-targeted-review-packets.md b/docs_build/dev/reports/PR_26175_OWNER_046-pr-targeted-review-packets.md
-new file mode 100644
-index 000000000..055d7c1cb
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_OWNER_046-pr-targeted-review-packets.md
-@@ -0,0 +1,87 @@
-+# PR_26175_OWNER_046-pr-targeted-review-packets
-+
-+OWNER override approved.
-+
-+## Summary
-+
-+This PR updates active Project Instructions governance from Team Gamma to Team Golf and creates targeted GitHub-authoritative review packets for PR #3, #50, #51, and #118. No runtime behavior changes, PR merges, PR closures, or branch deletions were performed.
-+
-+Migration note:
-+Team Gamma is retired. Team Golf is the replacement active ownership lane.
-+
-+## Branch Validation
-+
-+| Check | Result | Evidence |
-+|---|---|---|
-+| Started from main | PASS | Started from `main`, pulled with `--ff-only`, and created the OWNER_046 branch from updated main. |
-+| Current branch | PASS | `PR_26175_OWNER_046-pr-targeted-review-packets` |
-+| Expected branch | PASS | `PR_26175_OWNER_046-pr-targeted-review-packets` |
-+| Base sync | PASS | Branch base `d39cc8c8e8f0673cb523547bc58264ab26bbcf3b`; main `d39cc8c8e8f0673cb523547bc58264ab26bbcf3b`; origin/main `d39cc8c8e8f0673cb523547bc58264ab26bbcf3b`. |
-+| Worktree before edits | PASS | Clean before branch creation and file generation. |
-+
-+## Requirement Checklist
-+
-+| Requirement | Result | Notes |
-+|---|---|---|
-+| Read all Project Instructions | PASS | Read 47 files under `docs_build/dev/ProjectInstructions/`. |
-+| Replace active Team Gamma ownership with Team Golf | PASS | Active governance now routes retired Gamma lane to Team Golf. |
-+| New active teams include Alfa | PASS | Active ownership map includes Team Alfa. |
-+| New active teams include Bravo | PASS | Active ownership map includes Team Bravo. |
-+| New active teams include Charlie | PASS | Active ownership map includes Team Charlie. |
-+| New active teams include Delta | PASS | Active ownership map includes Team Delta. |
-+| New active teams include Golf | PASS | Active ownership map includes Team Golf. |
-+| New active teams include OWNER | PASS | Active ownership map includes Team OWNER. |
-+| Do not rewrite historical PR references | PASS | No archive/history PR references were edited. |
-+| Do not rename historical branches | PASS | Review packets preserve historical Gamma branch names exactly. |
-+| Add migration note | PASS | Added exact note: "Team Gamma is retired. Team Golf is the replacement active ownership lane." |
-+| Generate PR #3 packet | PASS | Created `docs_build/dev/reports/PR_REVIEW_003.md`. |
-+| Generate PR #50 packet | PASS | Created `docs_build/dev/reports/PR_REVIEW_050.md`. |
-+| Generate PR #51 packet | PASS | Created `docs_build/dev/reports/PR_REVIEW_051.md`. |
-+| Generate PR #118 packet | PASS | Created `docs_build/dev/reports/PR_REVIEW_118.md`. |
-+| Include required packet fields | PASS | Each packet includes title, team, branch, dates, file lists, diff summary, purpose, risks, dependencies, and recommendation. |
-+| No merges | PASS | No merge action performed. |
-+| No PR closures | PASS | No PR close action performed. |
-+| No branch deletions | PASS | No branch deletion performed. |
-+| No runtime behavior changes | PASS | Governance/report packet files changed only. |
-+| Required reports | PASS | Generated summary report, `codex_changed_files.txt`, and `codex_review.diff`. |
-+| Repo ZIP under tmp/ | PASS | Created `tmp/PR_26175_OWNER_046-pr-targeted-review-packets_delta.zip`. |
-+
-+## Validation Lane Report
-+
-+| Lane | Result | Evidence |
-+|---|---|---|
-+| Governance lane | PASS | Updated active Project Instructions files only; history snapshots left untouched. |
-+| GitHub authority lane | PASS | PR metadata and file lists fetched from GitHub REST API for #3, #50, #51, and #118. |
-+| Review packet lane | PASS | Four review packet files generated. |
-+| Scope lane | PASS | No runtime files modified by this branch. |
-+| Whitespace lane | PASS | `git diff --check` passed after artifact generation. |
-+| ZIP lane | PASS | ZIP created and contents verified as repo-structured. |
-+
-+## Review Packet Index
-+
-+| PR | Team | Changed Files | Code Files | Recommendation | Packet |
-+|---|---|---:|---:|---|---|
-+| #3 | Team Bravo | 15 | 4 | Owner Decision Required. Review Bravo ownership, branch freshness, and current Messages/Emotion direction before merge/closure. | `docs_build/dev/reports/PR_REVIEW_003.md` |
-+| #50 | Team Golf (historical Gamma lane) | 5 | 0 | Review First. Likely final historical Gamma/SQLite status packet, now routed to Team Golf for active ownership decisions. | `docs_build/dev/reports/PR_REVIEW_050.md` |
-+| #51 | Team OWNER | 12 | 0 | Owner Decision Required. Historical governance bootstrap overlaps current ProjectInstructions state and must not be merged or archived without OWNER decision. | `docs_build/dev/reports/PR_REVIEW_051.md` |
-+| #118 | Team Alfa | 7 | 0 | Review First. Treat as owner closeout evidence for the Alfa stack; do not merge until stack/order review is complete. | `docs_build/dev/reports/PR_REVIEW_118.md` |
-+
-+## Changed Governance Files
-+
-+- `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
-+- `docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md`
-+- `docs_build/dev/ProjectInstructions/addendums/multi_team.md`
-+- `docs_build/dev/ProjectInstructions/addendums/pr_workflow.md`
-+- `docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md`
-+- `docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md`
-+- `docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md`
-+- `docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md`
-+- `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md`
-+- `docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md`
-+
-+## Manual Validation Notes
-+
-+- Confirmed Team Gamma retirement was added as an active governance migration note without editing historical PR references or branch names.
-+- Confirmed Team Golf is now the replacement active ownership lane in current governance.
-+- Confirmed PR review packets preserve GitHub titles and branch names exactly, including historical Gamma/Master/Alfa naming.
-+- Confirmed no runtime behavior files were edited for this branch.
-diff --git a/docs_build/dev/reports/PR_REVIEW_003.md b/docs_build/dev/reports/PR_REVIEW_003.md
-new file mode 100644
-index 000000000..c5b44b288
---- /dev/null
-+++ b/docs_build/dev/reports/PR_REVIEW_003.md
-@@ -0,0 +1,98 @@
-+# PR Review Packet #003
-+
-+## 1. Title
-+
-+Pr/PR 26171 006 message emotion profile management
-+
-+## 2. Team
-+
-+Team Bravo
-+
-+## 3. Branch
-+
-+`pr/PR_26171_006-message-emotion-profile-management`
-+
-+## 4. Created Date
-+
-+2026-06-20T01:02:11Z
-+
-+## 5. Updated Date
-+
-+2026-06-20T01:08:39Z
-+
-+## Status And Age
-+
-+- Status: Open
-+- Age: 4d 2h
-+- Author: ToolboxAid
-+- URL: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/3
-+
-+## 6. Full Changed File List
-+
-+- docs_build/dev/reports/PR_26171_006-message-emotion-profile-management-manual-validation.md (added, +11/-0)
-+- docs_build/dev/reports/PR_26171_006-message-emotion-profile-management-validation.txt (added, +30/-0)
-+- docs_build/dev/reports/PR_26171_006-message-emotion-profile-management.md (added, +53/-0)
-+- docs_build/dev/reports/codex_changed_files.txt (updated, +8/-9)
-+- docs_build/dev/reports/codex_review.diff (updated, +352/-305)
-+- docs_build/pr/BUILD_PR_26171_006-message-emotion-profile-management.md (added, +83/-0)
-+- docs_build/pr/BUILD_PR_26171_008-message-tts-profile-foundation.md (added, +98/-0)
-+- docs_build/pr/BUILD_PR_26171_010-message-speech-preview.md (added, +84/-0)
-+- docs_build/pr/BUILD_PR_26171_012-message-voice-provider-adapters.md (added, +86/-0)
-+- docs_build/pr/BUILD_PR_26171_014-runtime-message-playback-foundation.md (added, +84/-0)
-+- docs_build/pr/BUILD_PR_26171_016-midi-studio-roadmap-foundation.md (added, +74/-0)
-+- src/dev-runtime/messages/messages-sqlite-service.mjs (updated, +54/-4)
-+- tests/playwright/tools/MessagesTool.spec.mjs (updated, +37/-0)
-+- toolbox/messages/index.html (updated, +5/-4)
-+- toolbox/messages/messages.js (updated, +7/-1)
-+
-+## 7. Code File List Only
-+
-+- src/dev-runtime/messages/messages-sqlite-service.mjs (updated, +54/-4)
-+- tests/playwright/tools/MessagesTool.spec.mjs (updated, +37/-0)
-+- toolbox/messages/index.html (updated, +5/-4)
-+- toolbox/messages/messages.js (updated, +7/-1)
-+
-+## 8. Diff Summary By File
-+
-+| File | Change | Size | Summary |
-+|---|---|---:|---|
-+| docs_build/dev/reports/PR_26171_006-message-emotion-profile-management-manual-validation.md | added | +11/-0 | added report artifact (11+/0-). |
-+| docs_build/dev/reports/PR_26171_006-message-emotion-profile-management-validation.txt | added | +30/-0 | added report artifact (30+/0-). |
-+| docs_build/dev/reports/PR_26171_006-message-emotion-profile-management.md | added | +53/-0 | added report artifact (53+/0-). |
-+| docs_build/dev/reports/codex_changed_files.txt | updated | +8/-9 | updated report artifact (8+/9-). |
-+| docs_build/dev/reports/codex_review.diff | updated | +352/-305 | updated report artifact (352+/305-). |
-+| docs_build/pr/BUILD_PR_26171_006-message-emotion-profile-management.md | added | +83/-0 | added file (83+/0-); sample added: # BUILD PR_26171_006-message-emotion-profile-management. |
-+| docs_build/pr/BUILD_PR_26171_008-message-tts-profile-foundation.md | added | +98/-0 | added file (98+/0-); sample added: # BUILD PR_26171_008-message-tts-profile-foundation. |
-+| docs_build/pr/BUILD_PR_26171_010-message-speech-preview.md | added | +84/-0 | added file (84+/0-); sample added: # BUILD PR_26171_010-message-speech-preview. |
-+| docs_build/pr/BUILD_PR_26171_012-message-voice-provider-adapters.md | added | +86/-0 | added file (86+/0-); sample added: # BUILD PR_26171_012-message-voice-provider-adapters. |
-+| docs_build/pr/BUILD_PR_26171_014-runtime-message-playback-foundation.md | added | +84/-0 | added file (84+/0-); sample added: # BUILD PR_26171_014-runtime-message-playback-foundation. |
-+| docs_build/pr/BUILD_PR_26171_016-midi-studio-roadmap-foundation.md | added | +74/-0 | added file (74+/0-); sample added: # BUILD PR_26171_016-midi-studio-roadmap-foundation. |
-+| src/dev-runtime/messages/messages-sqlite-service.mjs | updated | +54/-4 | updated JavaScript module (54+/4-). |
-+| tests/playwright/tools/MessagesTool.spec.mjs | updated | +37/-0 | updated JavaScript module (37+/0-). |
-+| toolbox/messages/index.html | updated | +5/-4 | updated HTML page structure (5+/4-). |
-+| toolbox/messages/messages.js | updated | +7/-1 | updated JavaScript module (7+/1-). |
-+
-+## Changed Code File Details
-+
-+| Relative Path | Added/Updated/Deleted | Concise Change Summary |
-+|---|---|---|
-+| src/dev-runtime/messages/messages-sqlite-service.mjs | updated | updated JavaScript module (54+/4-). |
-+| tests/playwright/tools/MessagesTool.spec.mjs | updated | updated JavaScript module (37+/0-). |
-+| toolbox/messages/index.html | updated | updated HTML page structure (5+/4-). |
-+| toolbox/messages/messages.js | updated | updated JavaScript module (7+/1-). |
-+
-+## 9. Purpose
-+
-+No PR body provided.
-+
-+## 10. Risks
-+
-+Medium/high: 4 code file(s) changed, including tests/playwright/tools/MessagesTool.spec.mjs. Requires targeted validation review before merge.
-+
-+## 11. Dependencies
-+
-+Bravo Messages/Emotion workstream; owner/team decision required because current dependency state is not fully inferable from the PR title alone.
-+
-+## 12. Recommendation
-+
-+Owner Decision Required. Review Bravo ownership, branch freshness, and current Messages/Emotion direction before merge/closure.
-diff --git a/docs_build/dev/reports/PR_REVIEW_050.md b/docs_build/dev/reports/PR_REVIEW_050.md
-new file mode 100644
-index 000000000..d1521b998
---- /dev/null
-+++ b/docs_build/dev/reports/PR_REVIEW_050.md
-@@ -0,0 +1,72 @@
-+# PR Review Packet #050
-+
-+## 1. Title
-+
-+PR_26171_GAMMA_028-final-sqlite-clean-status-report
-+
-+## 2. Team
-+
-+Team Golf (historical Gamma lane)
-+
-+## 3. Branch
-+
-+`pr/26171-GAMMA-028-final-sqlite-clean-status-report`
-+
-+## 4. Created Date
-+
-+2026-06-21T16:18:04Z
-+
-+## 5. Updated Date
-+
-+2026-06-21T16:18:04Z
-+
-+## Status And Age
-+
-+- Status: Draft
-+- Age: 2d 11h
-+- Author: ToolboxAid
-+- URL: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/50
-+
-+## 6. Full Changed File List
-+
-+- docs_build/dev/reports/PR_26171_GAMMA_028-final-sqlite-clean-status-report-instruction-compliance-checklist.md (added, +18/-0)
-+- docs_build/dev/reports/PR_26171_GAMMA_028-final-sqlite-clean-status-report-manual-validation-notes.md (added, +12/-0)
-+- docs_build/dev/reports/PR_26171_GAMMA_028-final-sqlite-clean-status-report.md (added, +69/-0)
-+- docs_build/dev/reports/codex_changed_files.txt (updated, +4/-5)
-+- docs_build/dev/reports/codex_review.diff (updated, +104/-110)
-+
-+## 7. Code File List Only
-+
-+- None
-+
-+## 8. Diff Summary By File
-+
-+| File | Change | Size | Summary |
-+|---|---|---:|---|
-+| docs_build/dev/reports/PR_26171_GAMMA_028-final-sqlite-clean-status-report-instruction-compliance-checklist.md | added | +18/-0 | added report artifact (18+/0-). |
-+| docs_build/dev/reports/PR_26171_GAMMA_028-final-sqlite-clean-status-report-manual-validation-notes.md | added | +12/-0 | added report artifact (12+/0-). |
-+| docs_build/dev/reports/PR_26171_GAMMA_028-final-sqlite-clean-status-report.md | added | +69/-0 | added report artifact (69+/0-). |
-+| docs_build/dev/reports/codex_changed_files.txt | updated | +4/-5 | updated report artifact (4+/5-). |
-+| docs_build/dev/reports/codex_review.diff | updated | +104/-110 | updated report artifact (104+/110-). |
-+
-+## Changed Code File Details
-+
-+| Relative Path | Added/Updated/Deleted | Concise Change Summary |
-+|---|---|---|
-+| None | none | No changed code files. |
-+
-+## 9. Purpose
-+
-+Captures the final SQLite inventory after PR026 and PR027.
-+
-+## 10. Risks
-+
-+Low runtime risk because changed files are reports/governance/docs only; review risk is traceability and owner approval sequencing.
-+
-+## 11. Dependencies
-+
-+Historical Gamma/SQLite chain. Team Gamma is retired; Team Golf is the replacement active ownership lane. Review with #30 and #43 context before acting on #50.
-+
-+## 12. Recommendation
-+
-+Review First. Likely final historical Gamma/SQLite status packet, now routed to Team Golf for active ownership decisions.
-diff --git a/docs_build/dev/reports/PR_REVIEW_051.md b/docs_build/dev/reports/PR_REVIEW_051.md
-new file mode 100644
-index 000000000..d4ae9373d
---- /dev/null
-+++ b/docs_build/dev/reports/PR_REVIEW_051.md
-@@ -0,0 +1,86 @@
-+# PR Review Packet #051
-+
-+## 1. Title
-+
-+PR_26172_MASTER_001-project-instructions-readme-and-root
-+
-+## 2. Team
-+
-+Team OWNER
-+
-+## 3. Branch
-+
-+`pr/26172-MASTER-001-project-instructions-readme-and-root`
-+
-+## 4. Created Date
-+
-+2026-06-21T17:26:20Z
-+
-+## 5. Updated Date
-+
-+2026-06-21T17:26:20Z
-+
-+## Status And Age
-+
-+- Status: Draft
-+- Age: 2d 10h
-+- Author: ToolboxAid
-+- URL: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/51
-+
-+## 6. Full Changed File List
-+
-+- docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md (added, +34/-0)
-+- docs_build/dev/ProjectInstructions/README.txt (added, +28/-0)
-+- docs_build/dev/ProjectInstructions/addendums/.gitkeep (added, +1/-0)
-+- docs_build/dev/ProjectInstructions/archive/history/.gitkeep (added, +1/-0)
-+- docs_build/dev/ProjectInstructions/backlog/.gitkeep (added, +1/-0)
-+- docs_build/dev/ProjectInstructions/deprecation/.gitkeep (added, +1/-0)
-+- docs_build/dev/ProjectInstructions/team_assignments/.gitkeep (added, +1/-0)
-+- docs_build/dev/reports/PR_26172_MASTER_001-project-instructions-readme-and-root-instruction-compliance-checklist.md (added, +11/-0)
-+- docs_build/dev/reports/PR_26172_MASTER_001-project-instructions-readme-and-root-manual-validation-notes.md (added, +9/-0)
-+- docs_build/dev/reports/PR_26172_MASTER_001-project-instructions-readme-and-root.md (added, +22/-0)
-+- docs_build/dev/reports/codex_changed_files.txt (updated, +10/-4)
-+- docs_build/dev/reports/codex_review.diff (updated, +17/-134)
-+
-+## 7. Code File List Only
-+
-+- None
-+
-+## 8. Diff Summary By File
-+
-+| File | Change | Size | Summary |
-+|---|---|---:|---|
-+| docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md | added | +34/-0 | added Project Instructions governance text (34+/0-). |
-+| docs_build/dev/ProjectInstructions/README.txt | added | +28/-0 | added Project Instructions governance text (28+/0-). |
-+| docs_build/dev/ProjectInstructions/addendums/.gitkeep | added | +1/-0 | added Project Instructions governance text (1+/0-). |
-+| docs_build/dev/ProjectInstructions/archive/history/.gitkeep | added | +1/-0 | added Project Instructions governance text (1+/0-). |
-+| docs_build/dev/ProjectInstructions/backlog/.gitkeep | added | +1/-0 | added Project Instructions governance text (1+/0-). |
-+| docs_build/dev/ProjectInstructions/deprecation/.gitkeep | added | +1/-0 | added Project Instructions governance text (1+/0-). |
-+| docs_build/dev/ProjectInstructions/team_assignments/.gitkeep | added | +1/-0 | added Project Instructions governance text (1+/0-). |
-+| docs_build/dev/reports/PR_26172_MASTER_001-project-instructions-readme-and-root-instruction-compliance-checklist.md | added | +11/-0 | added report artifact (11+/0-). |
-+| docs_build/dev/reports/PR_26172_MASTER_001-project-instructions-readme-and-root-manual-validation-notes.md | added | +9/-0 | added report artifact (9+/0-). |
-+| docs_build/dev/reports/PR_26172_MASTER_001-project-instructions-readme-and-root.md | added | +22/-0 | added report artifact (22+/0-). |
-+| docs_build/dev/reports/codex_changed_files.txt | updated | +10/-4 | updated report artifact (10+/4-). |
-+| docs_build/dev/reports/codex_review.diff | updated | +17/-134 | updated report artifact (17+/134-). |
-+
-+## Changed Code File Details
-+
-+| Relative Path | Added/Updated/Deleted | Concise Change Summary |
-+|---|---|---|
-+| None | none | No changed code files. |
-+
-+## 9. Purpose
-+
-+Adds the new `docs_build/dev/ProjectInstructions/` operating-system root.
-+
-+## 10. Risks
-+
-+Low runtime risk because changed files are reports/governance/docs only; review risk is traceability and owner approval sequencing.
-+
-+## 11. Dependencies
-+
-+ProjectInstructions governance chain; history-sensitive and requires OWNER approval before merge or closure.
-+
-+## 12. Recommendation
-+
-+Owner Decision Required. Historical governance bootstrap overlaps current ProjectInstructions state and must not be merged or archived without OWNER decision.
-diff --git a/docs_build/dev/reports/PR_REVIEW_118.md b/docs_build/dev/reports/PR_REVIEW_118.md
-new file mode 100644
-index 000000000..d7756231b
---- /dev/null
-+++ b/docs_build/dev/reports/PR_REVIEW_118.md
-@@ -0,0 +1,76 @@
-+# PR Review Packet #118
-+
-+## 1. Title
-+
-+PR_26174_ALFA_EOD-final-closeout
-+
-+## 2. Team
-+
-+Team Alfa
-+
-+## 3. Branch
-+
-+`pr/26174-ALFA-EOD-final-closeout`
-+
-+## 4. Created Date
-+
-+2026-06-23T18:08:07Z
-+
-+## 5. Updated Date
-+
-+2026-06-23T18:10:12Z
-+
-+## Status And Age
-+
-+- Status: Draft
-+- Age: 9h
-+- Author: ToolboxAid
-+- URL: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/118
-+
-+## 6. Full Changed File List
-+
-+- docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_branch-validation.md (added, +19/-0)
-+- docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_manual-validation-notes.md (added, +8/-0)
-+- docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_report.md (added, +93/-0)
-+- docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_requirements-checklist.md (added, +16/-0)
-+- docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_validation-lane.md (added, +17/-0)
-+- docs_build/dev/reports/codex_changed_files.txt (updated, +5/-5)
-+- docs_build/dev/reports/codex_review.diff (updated, +158/-132)
-+
-+## 7. Code File List Only
-+
-+- None
-+
-+## 8. Diff Summary By File
-+
-+| File | Change | Size | Summary |
-+|---|---|---:|---|
-+| docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_branch-validation.md | added | +19/-0 | added report artifact (19+/0-). |
-+| docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_manual-validation-notes.md | added | +8/-0 | added report artifact (8+/0-). |
-+| docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_report.md | added | +93/-0 | added report artifact (93+/0-). |
-+| docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_requirements-checklist.md | added | +16/-0 | added report artifact (16+/0-). |
-+| docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_validation-lane.md | added | +17/-0 | added report artifact (17+/0-). |
-+| docs_build/dev/reports/codex_changed_files.txt | updated | +5/-5 | updated report artifact (5+/5-). |
-+| docs_build/dev/reports/codex_review.diff | updated | +158/-132 | updated report artifact (158+/132-). |
-+
-+## Changed Code File Details
-+
-+| Relative Path | Added/Updated/Deleted | Concise Change Summary |
-+|---|---|---|
-+| None | none | No changed code files. |
-+
-+## 9. Purpose
-+
-+Report-only final Team Alfa closeout for owner merge review.
-+
-+## 10. Risks
-+
-+Low runtime risk because changed files are reports/governance/docs only; review risk is traceability and owner approval sequencing.
-+
-+## 11. Dependencies
-+
-+Part of the PR_26174 Alfa stack; owner should review stack order before merge. PR #118 appears to be a final closeout report dependent on #117 and the earlier Alfa stack.
-+
-+## 12. Recommendation
-+
-+Review First. Treat as owner closeout evidence for the Alfa stack; do not merge until stack/order review is complete.
++Result:
++
++```text
++Running 7 tests using 1 worker
++7 passed
++```
++
++Covered:
++- Existing selected Game Hub game appears on the left.
++- Existing center status message behavior is preserved.
++- Right progress text renders in the required format.
++- Objects example renders as `Objects 12/25 (48%) | Journey 12/125 (10%)`.
++- Game Hub save state keeps center status behavior and right progress.
++- Fullscreen/tool display mode keeps the fixed bottom status bar and content reserve.
++- Game Hub owner selection updates global status context.
++- Missing-game prompt remains creator-safe.
++- Idea Board remains excluded from selected-game filtering.
++
++## Style And Scope
++Command:
++
++```powershell
++rg -n "<[s]tyle|[s]tyle=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
++```
++
++Result: PASS. The command returned no matches.
++
++## Generated Files
++Playwright updated generated coverage reports during validation. They were restored to `HEAD` because they are outside this PR's exact target list.
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index ded176aa5..4aa64ab71 100644
+index 4aa64ab71..1c6777b35 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -0,0 +1,2 @@
-+docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
-+docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
-@@ -2,2 +4,12 @@ docs_build/dev/ProjectInstructions/addendums/multi_team.md
--docs_build/dev/reports/PR_26175_OWNER_050-eod-merge-push-cleanup-gate.md
--docs_build/dev/reports/codex_review.diff
-+docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
-+docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
-+docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
-+docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-+docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
-+docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
-+docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
-+docs_build/dev/reports/PR_26175_OWNER_046-pr-targeted-review-packets.md
-+docs_build/dev/reports/PR_REVIEW_003.md
-+docs_build/dev/reports/PR_REVIEW_050.md
-+docs_build/dev/reports/PR_REVIEW_051.md
-+docs_build/dev/reports/PR_REVIEW_118.md
-@@ -4,0 +17 @@ docs_build/dev/reports/codex_changed_files.txt
-+docs_build/dev/reports/codex_review.diff
+@@ -1,17 +1,9 @@
+-docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
+-docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
+-docs_build/dev/ProjectInstructions/addendums/multi_team.md
+-docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
+-docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
+-docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
+-docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
+-docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md
+-docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
+-docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
+-docs_build/dev/reports/PR_26175_OWNER_046-pr-targeted-review-packets.md
+-docs_build/dev/reports/PR_REVIEW_003.md
+-docs_build/dev/reports/PR_REVIEW_050.md
+-docs_build/dev/reports/PR_REVIEW_051.md
+-docs_build/dev/reports/PR_REVIEW_118.md
+-docs_build/dev/reports/codex_changed_files.txt
++docs_build/dev/BUILD_PR.md
++assets/theme-v2/js/toolbox-status-bar.js
++assets/theme-v2/css/status.css
++tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
++docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_report.md
++docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_validation-lane.md
++docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_requirements-checklist.md
+ docs_build/dev/reports/codex_review.diff
++docs_build/dev/reports/codex_changed_files.txt
+diff --git a/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs b/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
+index 1a40d61c5..e4a940bad 100644
+--- a/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
++++ b/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
+@@ -73,6 +73,15 @@ async function openRepoPage(page, pathName, options = {}) {
+       });
+     });
+   }
++  await page.route("**/api/game-journey/completion-metrics", async (route) => {
++    await route.fulfill({
++      contentType: "application/json",
++      body: JSON.stringify({
++        data: options.completionMetrics || completionMetricsFixture(),
++        ok: true,
++      }),
++    });
++  });
+   if (options.session) {
+     const userKey = options.session.userKey || MOCK_DB_KEYS.users.user1;
+     await page.route("**/api/session/current", async (route) => {
+@@ -113,6 +122,44 @@ function creatorSession() {
+   };
+ }
+
++function completionMetric(bucketKey, bucketName, completedCount, plannedCount) {
++  return {
++    active: true,
++    bucketKey,
++    bucketName,
++    completedCount,
++    percentComplete: plannedCount > 0 ? Math.round((completedCount / plannedCount) * 100) : 0,
++    plannedCount,
++  };
++}
++
++function completionMetricsFixture() {
++  return {
++    api: "Local API",
++    completedCount: 12,
++    databaseEngine: "Postgres",
++    percentComplete: 10,
++    plannedCount: 125,
++    records: [
++      completionMetric("001-idea", "Idea", 1, 4),
++      completionMetric("002-create", "Create", 3, 5),
++      completionMetric("003-design", "Design", 2, 5),
++      completionMetric("004-graphics", "Graphics", 5, 10),
++      completionMetric("005-audio", "Audio", 0, 4),
++      completionMetric("006-objects", "Objects", 12, 25),
++      completionMetric("007-worlds", "Worlds", 0, 5),
++      completionMetric("008-interface", "Interface", 1, 5),
++      completionMetric("009-controls", "Controls", 1, 4),
++      completionMetric("010-rules", "Rules", 4, 5),
++      completionMetric("011-progression", "Progression", 0, 4),
++      completionMetric("012-play-test", "Play Test", 0, 5),
++      completionMetric("013-publish", "Publish", 0, 5),
++      completionMetric("014-share", "Share", 0, 5),
++    ],
++    serviceContract: "Web UI -> Local API/Service Contract -> Postgres",
++  };
++}
++
+ const REMOVED_STATUS_BAR_LABELS = [
+   "Selected Game Name",
+   "Selected Game Purpose",
+@@ -148,6 +195,7 @@ async function statusBarSnapshot(page) {
+     const centerPanel = document.querySelector(".tool-center-panel");
+     const gameName = bar.querySelector("[data-toolbox-selected-game-name]");
+     const message = bar.querySelector("[data-toolbox-status-message]");
++    const progress = bar.querySelector("[data-toolbox-status-progress]");
+     const position = getComputedStyle(bar).position;
+     const barBox = bar.getBoundingClientRect();
+     const footerBox = footer?.getBoundingClientRect();
+@@ -165,6 +213,9 @@ async function statusBarSnapshot(page) {
+       messageBox: boxSnapshot(message),
+       messageText: message?.textContent.replace(/\s+/g, " ").trim() || "",
+       position,
++      progressBox: boxSnapshot(progress),
++      progressState: bar.dataset.toolboxProgressState || "",
++      progressText: progress?.textContent.replace(/\s+/g, " ").trim() || "",
+       topBeforeFooter: footerBox ? barBox.bottom <= footerBox.top + 1 : false,
+     };
+   });
+@@ -185,6 +236,7 @@ test("shared toolbox status bar shows selected Game Hub game above the footer",
+     await expect(statusBar.locator("[data-toolbox-status-action]")).toHaveCount(0);
+     await expect(statusBar.locator("[data-toolbox-selected-game]")).not.toContainText("Under Construction");
+     await expect(statusBar.locator("[data-toolbox-status-message]")).toContainText("Game Design mock repository ready.");
++    await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Game Design 2/5 (40%) | Journey 12/125 (10%)");
+     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-id", "demo-game");
+     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "active");
+
+@@ -197,9 +249,35 @@ test("shared toolbox status bar shows selected Game Hub game above the footer",
+     expect(snapshot.dataset.selectedGameRequired).toBe("true");
+     expect(snapshot.gameText).toBe("Demo Game");
+     expect(snapshot.messageText).toContain("Game Design mock repository ready.");
++    expect(snapshot.progressState).toBe("active");
++    expect(snapshot.progressText).toBe("Game Design 2/5 (40%) | Journey 12/125 (10%)");
+     expect(Math.max(snapshot.gameBox.top, snapshot.messageBox.top)).toBeLessThanOrEqual(
+       Math.min(snapshot.gameBox.bottom, snapshot.messageBox.bottom),
+     );
++    expect(Math.max(snapshot.gameBox.top, snapshot.messageBox.top, snapshot.progressBox.top)).toBeLessThanOrEqual(
++      Math.min(snapshot.gameBox.bottom, snapshot.messageBox.bottom, snapshot.progressBox.bottom),
++    );
++    expect(snapshot.progressBox.right).toBeGreaterThan(snapshot.messageBox.right);
++
++    expectNoPageFailures(failures);
++  } finally {
++    await failures.server.close();
++  }
++});
++
++test("shared toolbox status bar shows right-anchored current tool and journey progress", async ({ page }) => {
++  const failures = await openRepoPage(page, "/toolbox/objects/index.html");
++
++  try {
++    const statusBar = page.locator("[data-toolbox-status-bar]");
++    await expect(statusBar).toBeVisible();
++    await expect(statusBar.locator("[data-toolbox-selected-game-name]")).toHaveText("Demo Game");
++    await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Objects 12/25 (48%) | Journey 12/125 (10%)");
++
++    const snapshot = await statusBarSnapshot(page);
++    expect(snapshot.progressState).toBe("active");
++    expect(snapshot.progressText).toBe("Objects 12/25 (48%) | Journey 12/125 (10%)");
++    expect(snapshot.progressBox.right).toBeGreaterThan(snapshot.messageBox.right);
+
+     expectNoPageFailures(failures);
+   } finally {
+@@ -223,6 +301,7 @@ test("shared toolbox status bar center reports save state after Game Hub saves",
+     await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
+     await expect(statusBar.locator("[data-toolbox-status-message]")).toHaveText("Created and opened Status Bar Save.");
+     await expect(statusBar.locator("[data-toolbox-selected-game-name]")).toHaveText("Status Bar Save");
++    await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Game Hub 3/5 (60%) | Journey 12/125 (10%)");
+     await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveCount(0);
+     await expect(statusBar).not.toContainText("Learning Game");
+     await expect(statusBar).not.toContainText("Environment");
+@@ -246,6 +325,7 @@ test("shared toolbox status bar anchors to the bottom in tool display mode", asy
+     expect(Math.abs(snapshot.bottomGap)).toBeLessThanOrEqual(2);
+     expect(snapshot.gameText).toBe("Demo Game");
+     expect(snapshot.messageText).toContain("Game Design mock repository ready.");
++    expect(snapshot.progressText).toBe("Game Design 2/5 (40%) | Journey 12/125 (10%)");
+     expect(snapshot.centerPanelBox.bottom).toBeLessThanOrEqual(snapshot.barBox.top + 1);
+
+     expectNoPageFailures(failures);
+@@ -270,6 +350,7 @@ test("Game Hub owner selection updates the global toolbox status bar", async ({
+     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "active");
+     await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
+     await expect(statusBar.locator("[data-toolbox-status-message]")).toContainText("Sign in to create or update Game Hub projects.");
++    await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Game Hub 3/5 (60%) | Journey 12/125 (10%)");
+
+     expectNoPageFailures(failures);
+   } finally {
+@@ -287,6 +368,7 @@ test("non-Idea Board toolbox pages show a creator-safe prompt when no Game Hub g
+     await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveCount(0);
+     await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
+     await expect(statusBar.locator("[data-toolbox-status-message]")).toHaveText("Select or create a game in Game Hub before using this toolbox page.");
++    await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Game Design 2/5 (40%) | Journey 12/125 (10%)");
+     await expect(statusBar.locator("[data-toolbox-status-action]")).toHaveCount(0);
+     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "missing");
+     await expect(page.locator("body")).not.toHaveAttribute("data-toolbox-selected-game-id", /.+/);
+@@ -313,6 +395,7 @@ test("Idea Board is excluded from selected-game filtering and does not show the
+     await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
+     await expect(statusBar.locator("[data-toolbox-status-message]")).toContainText("Ready to shape ideas and notes.");
+     await expect(statusBar.locator("[data-toolbox-status-message]")).not.toContainText("Select or create a game");
++    await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Idea Board 1/4 (25%) | Journey 12/125 (10%)");
+     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "optional");
+     await expect(page.locator("body")).not.toHaveClass(/toolbox-selected-game-missing/);
