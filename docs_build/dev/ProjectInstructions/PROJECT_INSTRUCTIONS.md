@@ -44,3 +44,16 @@ OWNER follows the same safety rules:
 - One active OWNER assignment at a time.
 - OWNER may override team locks, but may not silently delete, rewrite, or remove protected instructions.
 - OWNER override must be explicitly documented.
+
+## Four-Team Ownership Alignment
+
+The single authoritative four-team ownership definition is:
+
+`docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md`
+
+Use the `Current Four-Team Ownership Model` section there for team ownership, assignment routing, and cross-team scope checks.
+
+Rules:
+- Teams pull backlog items only from their ownership area unless OWNER explicitly reassigns or splits the work.
+- Cross-team work requires OWNER approval and must identify the owning team for each PR.
+- Team start commands must remain aligned with this ownership model.

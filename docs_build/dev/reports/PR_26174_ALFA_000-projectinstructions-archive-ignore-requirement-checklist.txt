@@ -1,0 +1,10 @@
+Requirement Checklist: PASS
+
+PASS - Started from main.
+PASS - Hard stop rule checked: current branch was main before branch creation.
+PASS - Hard stop rule checked: only dirty file was `.gitignore`, matching this PR.
+PASS - Updated `.gitignore` only, plus required reports.
+PASS - Added exact line: docs_build/dev/ProjectInstructions.zip
+PASS - No other file changes except required reports.
+PASS - Required reports generated.
+PASS - Repo-structured ZIP produced under tmp/.

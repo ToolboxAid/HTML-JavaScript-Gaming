@@ -1,0 +1,6 @@
+Branch Validation: PASS
+
+PASS - Current branch: pr/26174-ALFA-010-game-hub-source-idea-child-table-polish.
+PASS - Stack base: pr/26174-ALFA-009-game-hub-parent-child-table-layout.
+PASS - Changes are scoped to Source Idea child table rendering, targeted tests, and required reports.
+PASS - No merge to main performed.

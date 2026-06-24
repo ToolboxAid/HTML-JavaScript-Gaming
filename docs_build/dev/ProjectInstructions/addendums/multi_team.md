@@ -1,5 +1,18 @@
 # Multi-Team Codex Execution Governance
 
+## Four Active Delivery Teams
+
+The single authoritative four-team ownership definition is:
+
+`docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md`
+
+Use the `Current Four-Team Ownership Model` section there for active delivery team ownership.
+
+Rules:
+- Team work must stay inside the owning team's area.
+- Cross-team work requires OWNER approval and must identify the correct owning team for each PR.
+- Team start commands must use the current ownership model before pulling a backlog item.
+
 ## All-Team Preferred Codex Execution Method
 
 Preferred execution model:

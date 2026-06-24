@@ -1,7 +1,7 @@
 import {
   readSavedTextToSpeechProfiles,
   textToSpeechProfilesToMessageOptions,
-} from "../text-to-speech/tts-profile-store.js";
+} from "../../assets/js/shared/tts-profile-store.js";
 import {
   createEmotionProfile,
   createMessage,

@@ -1,0 +1,10 @@
+Validation Lane: PASS
+
+Command:
+npx playwright test tests/playwright/tools/GameHubMockRepository.spec.mjs -g "Game Hub validates Open Games parent and child tables|Game Hub shows a creator-safe empty state|Game Hub shows a creator-safe unavailable state"
+
+Result:
+3 passed.
+
+Additional check:
+git diff --check

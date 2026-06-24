@@ -1,0 +1,13 @@
+Manual Validation Notes
+
+PASS - Confirmed Game Hub no longer renders the Game Setup accordion.
+PASS - Confirmed Game Hub no longer renders the Open Game Journey action.
+PASS - Confirmed parent table columns remain Game, Purpose, Status, Owner, Actions.
+PASS - Confirmed visible parent row action text is Edit.
+PASS - Confirmed Edit keeps using the repository open-game method and does not introduce browser-owned project arrays.
+PASS - Confirmed the active game row exposes data-game-active="true", aria-current="true", and a non-transparent theme background.
+PASS - Confirmed Source Idea and Readiness Output remain separate child tables under the expanded game row.
+PASS - Confirmed Add submits through the existing create-game form/API path.
+PASS - Confirmed safe empty and API-unavailable states still pass targeted Playwright validation.
+NOTE - Full GameHubMockRepository.spec.mjs exploratory run had an unrelated toolbox-role completion-metrics 500 failure; scoped Game Hub validation passed.
+

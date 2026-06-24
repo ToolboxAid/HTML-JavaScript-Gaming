@@ -77,6 +77,13 @@ function collectPageFailures(page) {
 async function openObjectsPage(page) {
   const server = await startRepoServer();
   const failures = collectPageFailures(page);
+  await page.addInitScript(({ apiUrl, siteUrl }) => {
+    window.GameFoundryPublicConfig = {
+      apiUrl,
+      environmentLabel: "Development Environment",
+      siteUrl,
+    };
+  }, { apiUrl: `${server.baseUrl}/api`, siteUrl: server.baseUrl });
   await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}/toolbox/objects/index.html`, { waitUntil: "networkidle" });
   return { ...failures, server };
@@ -85,6 +92,13 @@ async function openObjectsPage(page) {
 async function openToolboxPage(page) {
   const server = await startRepoServer();
   const failures = collectPageFailures(page);
+  await page.addInitScript(({ apiUrl, siteUrl }) => {
+    window.GameFoundryPublicConfig = {
+      apiUrl,
+      environmentLabel: "Development Environment",
+      siteUrl,
+    };
+  }, { apiUrl: `${server.baseUrl}/api`, siteUrl: server.baseUrl });
   await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
   return { ...failures, server };
@@ -169,8 +183,11 @@ test("Objects exposes production copy, setup status, and broad table input", asy
     expect(constants.OBJECT_TYPE_TEMPLATES.map((template) => template.type)).toEqual(TYPE_OPTIONS);
     expect(constants.STARTER_OBJECTS.map((object) => object.name)).toEqual(["Hero", "Projectile", "Wall"]);
     expect(constants.CAPABILITY_LABELS.movable).toBe("Can Move");
-    const objectsSource = await page.evaluate(async () => fetch("/toolbox/objects/objects.js").then((response) => response.text()));
-    expect(objectsSource).not.toMatch(/const\s+(CAPABILITY_LABELS|OBJECT_TYPE_TEMPLATES|STARTER_OBJECTS)\s*=/);
+    const objectsSource = await page.evaluate(async () => fetch("/assets/toolbox/objects/js/index.js").then((response) => response.text()));
+    expect(objectsSource).toContain('readServerToolConstants("objects")');
+    expect(objectsSource).toContain('requireServerConstant(constants, "CAPABILITY_LABELS", "objects")');
+    expect(objectsSource).toContain('requireServerConstant(constants, "OBJECT_TYPE_TEMPLATES", "objects")');
+    expect(objectsSource).toContain('requireServerConstant(constants, "STARTER_OBJECTS", "objects")');
     await expect(page.getByRole("heading", { level: 3, name: "Object Status" })).toHaveCount(0);
     await expect(page.locator("[aria-label='Object status summary']")).toHaveCount(0);
     await expect(page.locator("[data-objects-status-summary]")).toHaveCount(0);

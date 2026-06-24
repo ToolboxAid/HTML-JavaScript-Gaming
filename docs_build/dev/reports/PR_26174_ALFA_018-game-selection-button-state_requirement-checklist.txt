@@ -1,0 +1,13 @@
+Requirement checklist: PASS
+
+- Selected game is indicated only by the Game button: PASS
+- Row-level selection indicators removed: PASS
+- Left border highlight removed: PASS
+- Row background highlight removed: PASS
+- Cell background highlights removed: PASS
+- Purpose, Status, and Actions columns remain visually identical for all rows: PASS
+- Only one game may be selected at a time: PASS
+- Selecting a different game moves selected styling to that game button: PASS
+- Child rows continue to follow the selected game: PASS
+- Follow table_first_ui.md: PASS
+- Removed selected-game status copy from bottom status area: PASS

@@ -66,6 +66,30 @@ Create one Team Charlie branch for the selected assignment.
 Work only that assignment.
 ```
 
+## Start Team Delta
+
+Ready-to-copy command:
+
+```text
+OWNER override approved: Start Team Delta from the ProjectInstructions release gate.
+
+Read docs_build/dev/ProjectInstructions/README.txt first.
+Read docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md.
+Read docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md.
+Read docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md.
+
+Pull one [ ] item for Team Delta from BACKLOG_MASTER.md.
+Stop if Team Delta already has an active branch.
+Stop if Team Delta already has an active assignment.
+Stop if no [ ] Team Delta backlog item is available.
+Stop if the selected item is outside Team Delta ownership.
+
+Change the selected backlog item from [ ] to [.].
+Add the selected assignment under Team Delta in TEAM_ASSIGNMENTS.md.
+Create one Team Delta branch for the selected assignment.
+Work only that assignment.
+```
+
 ## Day Work / EOD Merge Reminder
 
 Ready-to-copy reminder:

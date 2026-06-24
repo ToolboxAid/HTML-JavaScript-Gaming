@@ -2,8 +2,12 @@ import {
     readAdminSystemHealthStatus,
     runAdminSystemHealthStorageConnectivityAction,
 } from "../../../src/api/admin-system-health-api-client.js";
+import {
+    applyStatusNode,
+    normalizeStatusValue,
+    statusText,
+} from "../../js/shared/status.js";
 
-const STATUS_VALUES = Object.freeze(["PASS", "WARN", "FAIL", "PENDING", "INFO", "SKIP"]);
 const STORAGE_DIAGNOSTIC_ACTIONS = Object.freeze([
     Object.freeze({ actionId: "storage-list", key: "list" }),
     Object.freeze({ actionId: "storage-write-test-object", key: "write" }),
@@ -12,18 +16,7 @@ const STORAGE_DIAGNOSTIC_ACTIONS = Object.freeze([
 ]);
 
 function asText(value, fallback = "not available") {
-    const text = String(value ?? "").trim();
-    return text || fallback;
-}
-
-function statusValue(value, fallback = "PENDING") {
-    const normalized = String(value || "").trim().toUpperCase();
-    return STATUS_VALUES.includes(normalized) ? normalized : fallback;
-}
-
-function reasonText(status, reason) {
-    const message = asText(reason, "Safe server diagnostics did not provide a reason.");
-    return `${status}: ${message}`;
+    return statusText(value, fallback);
 }
 
 class AdminSystemHealthController {
@@ -45,6 +38,7 @@ class AdminSystemHealthController {
             node.dataset.adminSystemHealthStorageStatus,
             node,
         ]));
+        this.startupRows = root.querySelector("[data-admin-system-health-startup-rows]");
         this.runtimeRows = root.querySelector("[data-admin-system-health-runtime-rows]");
     }
 
@@ -80,26 +74,14 @@ class AdminSystemHealthController {
     }
 
     setStatusNode(node, status, reason = "") {
-        if (!node) {
-            return;
-        }
-        const normalized = statusValue(status);
-        node.textContent = normalized;
-        node.dataset.healthStatus = normalized;
-        if (normalized === "PASS" && !reason) {
-            node.removeAttribute("title");
-            node.removeAttribute("aria-label");
-            return;
-        }
-        const resolvedReason = reasonText(normalized, reason);
-        node.setAttribute("title", `Reason: ${asText(reason, "Safe server diagnostics returned this non-PASS status.")}`);
-        node.setAttribute("aria-label", resolvedReason);
+        applyStatusNode(node, status, { reason });
     }
 
     renderPending(reason) {
         ["host", "database", "migration", "connection"].forEach((key) => {
             this.setStatus(key, "PENDING", reason);
         });
+        this.renderStartupPending(reason);
         this.renderStoragePending(reason);
     }
 
@@ -136,6 +118,45 @@ class AdminSystemHealthController {
         const reason = storageStatus.message || "Cloudflare R2 configuration status returned by the safe Admin System Health API.";
         this.setStorageValue("bucket", storageStatus.bucket, "not configured");
         this.setStorageStatus("bucket", storageStatus.bucketStatus || storageStatus.status, reason);
+    }
+
+    renderStartupPending(reason) {
+        if (!this.startupRows) {
+            return;
+        }
+        const row = document.createElement("tr");
+        row.append(
+            this.createCell("Local API startup diagnostics"),
+            this.createCell("not available"),
+            this.createStatusCell("PENDING", reason),
+        );
+        this.startupRows.replaceChildren(row);
+    }
+
+    renderStartupDiagnostics(localApiStartup = {}) {
+        if (!this.startupRows) {
+            return;
+        }
+        if (localApiStartup?.secretsExposed === true || localApiStartup?.secretEditingAllowed === true) {
+            this.renderStartupPending("Safe Local API startup diagnostics were blocked because the response exposed secret controls.");
+            return;
+        }
+        const rows = Array.isArray(localApiStartup.rows) ? localApiStartup.rows : [];
+        if (!rows.length) {
+            this.renderStartupPending("Safe Local API startup diagnostics returned no rows.");
+            return;
+        }
+        const fragment = document.createDocumentFragment();
+        rows.forEach((startupRow) => {
+            const row = document.createElement("tr");
+            row.append(
+                this.createCell(startupRow.field),
+                this.createCell(startupRow.value),
+                this.createStatusCell(startupRow.status, startupRow.reason || localApiStartup.message),
+            );
+            fragment.append(row);
+        });
+        this.startupRows.replaceChildren(fragment);
     }
 
     storageResultTarget(result = {}) {
@@ -176,7 +197,7 @@ class AdminSystemHealthController {
 
     createStatusCell(status, reason) {
         const cell = document.createElement("td");
-        cell.dataset.healthStatus = statusValue(status);
+        cell.dataset.healthStatus = normalizeStatusValue(status);
         this.setStatusNode(cell, status, reason);
         return cell;
     }
@@ -230,6 +251,7 @@ class AdminSystemHealthController {
                 return;
             }
             this.renderPostgresStatus(data?.databaseStatus || {});
+            this.renderStartupDiagnostics(data?.localApiStartup || {});
             this.renderStorageStatus(data?.storageStatus || {});
             this.runStorageDiagnostics();
             this.renderRuntimeEnvironment(data?.runtimeEnvironment || {});

@@ -1,0 +1,10 @@
+Manual validation notes: PASS
+
+- Reviewed `docs_build/dev/ProjectInstructions/addendums/table_first_ui.md`.
+- Confirmed selected state remains on the game button through `aria-current`.
+- Confirmed parent rows no longer receive active attributes.
+- Confirmed cells no longer receive active markers.
+- Confirmed the old left-border cell selector was removed.
+- Confirmed selecting another game leaves only one selected game button.
+- Confirmed Source Idea and Readiness Output child rows move with the selected game.
+- Confirmed the bottom status area no longer receives `Selected {game}.` when a game row is selected.

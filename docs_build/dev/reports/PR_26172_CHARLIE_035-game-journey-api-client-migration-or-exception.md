@@ -1,0 +1,90 @@
+# PR_26172_CHARLIE_035-game-journey-api-client-migration-or-exception
+
+## Summary
+
+Status: PASS with temporary legacy exception retained.
+
+No executable implementation files were changed in this PR. The remaining Game Journey API client was reviewed after the PR_034 entrypoint migration:
+
+- `toolbox/game-journey/game-journey-api-client.js`
+
+The file remains in its approved legacy location because moving it into `assets/toolbox/game-journey/js/` would create a second canonical tool JS file that the current guardrail does not allow.
+
+## Files Reviewed
+
+- `docs_build/dev/ProjectInstructions/README.txt`
+- `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
+- `docs_build/dev/reports/PR_26172_CHARLIE_033-game-journey-canonical-js-migration-audit.md`
+- `docs_build/dev/reports/PR_26172_CHARLIE_034-game-journey-safe-entrypoint-migration.md`
+- `assets/toolbox/game-journey/js/index.js`
+- `toolbox/game-journey/game-journey-api-client.js`
+- `toolbox/game-journey/index.html`
+- `tests/playwright/tools/GameJourneyTool.spec.mjs`
+- `scripts/validate-canonical-repository-structure.mjs`
+- `scripts/validate-browser-env-agnostic.mjs`
+
+## Decision
+
+Decision: retain `toolbox/game-journey/game-journey-api-client.js` as a temporary legacy exception.
+
+Reason:
+
+- The current canonical guardrail approves the tool entrypoint path `assets/toolbox/{tool-name}/js/index.js`.
+- It does not approve an additional tool-local API client file under `assets/toolbox/game-journey/js/`.
+- Folding the API client into `index.js` would be a larger refactor and could obscure the completion-metrics API boundary.
+- The API client re-exports completion metrics helpers from `src/api/game-journey-completion-api-client.js`, so it should stay isolated until the shared-client/secondary-file rule is explicit.
+
+Removal plan:
+
+1. Add or clarify a canonical rule for tool-local secondary modules, or approve a shared API-client location.
+2. Move the API client only after the guardrail recognizes the destination.
+3. Update the canonical Game Journey entrypoint import.
+4. Re-run Game Journey route validation and completion-metrics validation.
+5. Remove `toolbox/game-journey/game-journey-api-client.js` from approved legacy exceptions after validation passes.
+
+## Validation Lane Report
+
+- `node --check toolbox/game-journey/game-journey-api-client.js`
+  - Result: PASS
+- `npm run validate:canonical-structure`
+  - Result: PASS
+  - Blocking violations: 0
+  - Approved legacy exceptions: 481
+- Active reference check
+  - Result: PASS
+  - The canonical entrypoint imports `toolbox/game-journey/game-journey-api-client.js`.
+  - Guardrail and hardening tests still list the retained exception.
+  - Historical `docs_build/pr` references to old `game-journey.js` remain unchanged.
+- Targeted Game Journey Playwright validation:
+  - Command: `npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs --grep "Game Journey summary table uses inline notes" --workers=1 --reporter=line --timeout=90000`
+  - Result: PASS
+
+## Completion Metrics Note
+
+The targeted validation used the existing test Postgres completion-metrics stub and passed. The local legacy SQLite preservation blocker documented in PR_26172_CHARLIE_006A remains a separate recovery/data-preservation concern, not a reason to move the API client in this PR.
+
+## Branch Validation
+
+- Current branch: `PR_26172_CHARLIE_repository-compliance-stack`
+- Expected branch: `PR_26172_CHARLIE_repository-compliance-stack`
+- Local/origin sync before PR: `0 0`
+- Branch validation: PASS
+
+## Requirement Checklist
+
+- Use PR_033 and PR_034 results: PASS
+- Move API client if safe: PASS, not safe under current guardrail.
+- Retain API client and document temporary legacy exception if not safe: PASS
+- Preserve behavior: PASS
+- No feature changes: PASS
+- Run targeted Game Journey validation: PASS
+- Run canonical structure guardrail: PASS
+- Confirm ZIP exists: PASS after artifact creation.
+
+## Manual Validation Notes
+
+The canonical Game Journey entrypoint is already active. Keeping the API client in the existing legacy path avoids introducing an unapproved secondary JS file pattern and avoids changing completion-metrics behavior.
+
+## Recommendation
+
+Continue to PR_036 final target-tool compliance reaudit. Treat `toolbox/game-journey/game-journey-api-client.js` as a retained exception with a defined removal plan.

@@ -1,0 +1,7 @@
+Manual Validation Notes
+
+PASS - Confirmed `Lantern Reef` appears in the Game Hub list after Idea Board conversion.
+PASS - Confirmed Game Hub source idea name, pitch, and notes render from the Local API-backed project.
+PASS - Confirmed source idea note context has no input, textarea, select, or button controls.
+PASS - Confirmed browser refresh keeps the created project active and source notes visible through Local API state.
+PASS - Confirmed no browser-owned project data store was introduced.

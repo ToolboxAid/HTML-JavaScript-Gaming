@@ -13,13 +13,13 @@ import {
   createTtsMessage,
   createVoiceProfile,
   previewTtsMessage,
-} from "../../toolbox/text-to-speech/text2speech.js";
+} from "../../assets/toolbox/text-to-speech/js/index.js";
 import {
   TEXT_TO_SPEECH_PROFILE_STORAGE_KEY,
   readSavedTextToSpeechProfiles,
   textToSpeechProfilesToMessageOptions,
   writeSavedTextToSpeechProfiles,
-} from "../../toolbox/text-to-speech/tts-profile-store.js";
+} from "../../assets/js/shared/tts-profile-store.js";
 
 test("Text2Speech message model separates Design and Audio ownership", () => {
   const message = createTtsMessage({ text: "Hello", metadata: { tags: ["intro"] } });

@@ -1,43 +1,56 @@
 # Team Ownership Governance
 
-## OWNER
+## Current Four-Team Ownership Model
 
-- Architecture
-- Product Direction
-- Cross-Team Governance
-- Final Approval
+This section is the current OWNER-approved active ownership alignment.
 
 ## Team Alfa
 
-- Idea Board
 - Game Hub
 - Game Journey
-- Design
-- Objects
-- Worlds
-- Interface
-- Controls
-- Rules
-- Progression
+- Idea Board
+- Creator workflow
+- Creator onboarding
+- UX flow
 
 ## Team Bravo
 
-- Graphics
 - Audio
+- Audio Effects
 - Messages
-- TTS
-- MIDI
-- Publishing
-- Community
-- Marketplace
+- Emotion Profiles
+- TTS Profiles
+- Asset Browser
+- Vector Art
+- MIDI Studio
+- Creator content tools
 
 ## Team Charlie
 
-- Governance
+- Repository compliance
+- Validation
 - Infrastructure
-- Operations
-- Diagnostics
+- Storage
+- Environment management
 - System Health
+- Operations
+
+## Team Delta
+
+- Engine
+- Runtime
+- Shared JS
+- API clients
+- Event systems
+- Performance
+- Technical debt remediation
+- Runtime test coverage
+
+## Current Four-Team Rule
+
+Alfa, Bravo, Charlie, and Delta are the four active delivery teams for backlog ownership and team start routing.
+
+Each team may pull only from its ownership area unless OWNER explicitly reassigns, splits, or approves cross-team work.
 
 ## Rule
 

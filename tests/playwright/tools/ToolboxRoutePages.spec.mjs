@@ -4,6 +4,9 @@ import { isBrowserExtensionNoise } from "../../helpers/browserExtensionNoise.mjs
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
+const IDEA_BOARD_EDITABLE_STATUS_OPTIONS = ["New", "Exploring", "Refining", "Ready"];
+const IDEA_BOARD_FILTER_STATUS_OPTIONS = ["New", "Exploring", "Refining", "Ready", "Project", "Archived"];
+
 const TOOL_ROUTE_SMOKE_CASES = [
   { heading: "Game Journey", route: "/tools/game-journey/index.html" },
   { heading: "Idea Board", route: "/tools/idea-board/index.html" },
@@ -120,8 +123,6 @@ async function expectIdeaChevron(page, ideaId, iconName) {
     const cellStyles = getComputedStyle(cell);
     const labelStyles = getComputedStyle(label);
     const iconStyles = getComputedStyle(icon);
-    const textRect = text.getBoundingClientRect();
-    const iconRect = icon.getBoundingClientRect();
     return {
       iconName: icon.dataset.ideaBoardChevronIcon,
       labelDisplay: labelStyles.display,
@@ -129,21 +130,19 @@ async function expectIdeaChevron(page, ideaId, iconName) {
       iconHeight: Number.parseFloat(iconStyles.height),
       fontSize: Number.parseFloat(cellStyles.fontSize),
       iconColor: iconStyles.backgroundColor,
-      iconBottom: iconRect.bottom,
-      iconLeft: iconRect.left,
+      iconBeforeText: Boolean(icon.compareDocumentPosition(text) & Node.DOCUMENT_POSITION_FOLLOWING),
+      iconVerticalAlign: Number.parseFloat(iconStyles.verticalAlign),
       textColor: cellStyles.color,
-      textBottom: textRect.bottom,
-      textLeft: textRect.left,
       maskImage: iconStyles.getPropertyValue("-webkit-mask-image") || iconStyles.maskImage,
     };
   }, ideaId);
   expect(metrics.iconName).toBe(iconName);
-  expect(metrics.labelDisplay).toBe("inline-flex");
+  expect(metrics.labelDisplay).toBe("inline");
   expect(Math.abs(metrics.iconWidth - metrics.fontSize)).toBeLessThanOrEqual(1);
   expect(Math.abs(metrics.iconHeight - metrics.fontSize)).toBeLessThanOrEqual(1);
   expect(metrics.iconColor).toBe(metrics.textColor);
-  expect(metrics.iconLeft).toBeLessThan(metrics.textLeft);
-  expect(Math.abs(metrics.iconBottom - metrics.textBottom)).toBeLessThanOrEqual(2);
+  expect(metrics.iconBeforeText).toBe(true);
+  expect(metrics.iconVerticalAlign).toBeLessThan(0);
   expect(metrics.maskImage).toContain(iconName);
 }
 
@@ -314,14 +313,17 @@ test("Idea Board launches from Toolbox with accordion table notes model", async 
       sections.map((section) => section.getAttribute("data-idea-board-section"))
     ));
     expect(ideaBoardSections).toEqual([
-      "Workflow",
+      "Status Filter",
       "Status",
+      "Workflow",
       "Idea Table",
       "Notes Governance",
       "Diagnostics",
     ]);
     await expect(page.locator("[data-idea-board-table]")).toBeVisible();
-    await expect(page.locator("[data-idea-board-table] > thead th[scope='col']")).toHaveText(["Idea", "Pitch", "Status", "Updated", "Notes", "Actions"]);
+    await expect(page.locator("[data-idea-board-table] > thead th[scope='col']")).toHaveText(["Idea", "Pitch", "Status", "Notes", "Actions"]);
+    await expect(page.locator("[data-idea-board-status-filter-option]")).toHaveCount(IDEA_BOARD_FILTER_STATUS_OPTIONS.length);
+    await expect(page.locator(".idea-board-show-filter__option")).toHaveText(IDEA_BOARD_FILTER_STATUS_OPTIONS);
     await expect(page.locator("[data-idea-board-idea-row]")).toHaveCount(3);
     await expect(page.locator("[data-idea-board-expanded-row]")).toHaveCount(0);
     await expect(page.locator("[data-idea-board-add-idea]")).toHaveText("Add Idea");
@@ -351,7 +353,7 @@ test("Idea Board launches from Toolbox with accordion table notes model", async 
     await expectExpandedNotesChildIndentation(page, "top-thoughts");
     await expect(page.locator("[data-idea-board-create-project]")).toHaveCount(0);
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-    await expect(page.locator("script[src='toolbox/idea-board/index.js']")).toHaveCount(1);
+    await expect(page.locator("script[src='assets/toolbox/idea-board/js/index.js']")).toHaveCount(1);
     mutatingApiRequests.length = 0;
     await page.locator("[data-idea-board-add-note='top-thoughts']").click();
     await page.locator("[data-idea-board-note-input]").fill("Capture traversal risks before project creation.");
@@ -363,6 +365,7 @@ test("Idea Board launches from Toolbox with accordion table notes model", async 
     await page.locator("[data-idea-board-add-idea]").click();
     await page.locator("[data-idea-board-idea-input]").fill("Launch Tile");
     await page.locator("[data-idea-board-pitch-input]").fill("Turn a polished board idea into a project.");
+    await expect(page.locator("[data-idea-board-idea-status-input] option")).toHaveText(IDEA_BOARD_EDITABLE_STATUS_OPTIONS);
     await page.locator("[data-idea-board-idea-status-input]").selectOption("Ready");
     await page.locator("[data-idea-board-idea-action='save']").click();
     await expect(page.locator("[data-idea-board-idea-row='launch-tile'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Create Project", "Delete"]);
@@ -510,9 +513,9 @@ test("toolbox status kickers, filters, card order, and voting controls work from
 
     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
       "Planned (28)",
-      "Wireframe (5)",
-      "Beta (7)",
-      "Complete (1)",
+      "Wireframe (4)",
+      "Beta (6)",
+      "Complete (3)",
       "Deprecated (1)",
     ]);
     await expect(page.locator("[data-toolbox-status-filter='planned']")).toHaveAttribute("aria-pressed", "false");
@@ -527,9 +530,9 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await page.locator("[data-tools-view='build-path']").click();
     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
       "Planned (28)",
-      "Wireframe (5)",
-      "Beta (7)",
-      "Complete (1)",
+      "Wireframe (4)",
+      "Beta (6)",
+      "Complete (3)",
       "Deprecated (1)",
     ]);
     await expect(page.locator("[data-toolbox-status-filter='planned']")).toHaveAttribute("aria-pressed", "false");
@@ -552,13 +555,23 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await page.locator("[data-toolbox-status-filter='deprecated']").click();
     await expect(page.locator("[data-toolbox-status-filter='deprecated']")).toHaveAttribute("aria-pressed", "true");
 
-    for (const toolName of ["Assets", "Tags", "Game Configuration", "Game Design", "Game Journey", "Game Hub"]) {
+    for (const toolName of ["Assets", "Tags", "Game Configuration", "Game Design", "Game Journey"]) {
       const betaCard = page.locator(`[data-toolbox-tool-card='${toolName}']`);
       await expect(betaCard).toBeVisible();
       await expect(betaCard.locator("[data-toolbox-kicker]")).toHaveText("Beta");
       await expect(betaCard.locator("[data-toolbox-kicker]")).toHaveAttribute(
         "title",
         STATUS_HELP_TEXT.beta,
+      );
+    }
+
+    for (const toolName of ["Colors", "Game Hub", "Idea Board"]) {
+      const completeCard = page.locator(`[data-toolbox-tool-card='${toolName}']`);
+      await expect(completeCard).toBeVisible();
+      await expect(completeCard.locator("[data-toolbox-kicker]")).toHaveText("Complete");
+      await expect(completeCard.locator("[data-toolbox-kicker]")).toHaveAttribute(
+        "title",
+        STATUS_HELP_TEXT.complete,
       );
     }
 
@@ -816,7 +829,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
 
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
     await page.locator("[data-tools-view='build-path']").click();
-    await expect(page.locator("[data-toolbox-status-filter='complete']")).toHaveText("Complete (0)");
+    await expect(page.locator("[data-toolbox-status-filter='complete']")).toHaveText("Complete (2)");
     await expect(page.locator("[data-build-path-tool='Colors']")).toHaveCount(0);
     await page.locator("[data-toolbox-status-filter='beta']").click();
     const colorsBuildPathRow = page.locator("[data-build-path-tool='Colors']");
@@ -1235,19 +1248,19 @@ test("toolbox Build Path status filters support multi-select registry-matched to
 
     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
       "Planned (28)",
-      "Wireframe (5)",
-      "Beta (7)",
-      "Complete (1)",
+      "Wireframe (4)",
+      "Beta (6)",
+      "Complete (3)",
       "Deprecated (1)",
     ]);
     await expectActiveFilters(["complete"]);
     await expect(page.locator("[data-build-path-tool='Colors']")).toBeVisible();
-    await expectBuildPathChannels(["complete"], 1);
+    await expectBuildPathChannels(["complete"], 3);
     await expectBuildPathOrder("Colors", registryById.get("colors").order);
 
     await page.locator("[data-toolbox-status-filter='planned']").click();
     await expectActiveFilters(["planned", "complete"]);
-    await expectBuildPathChannels(["planned", "complete"], 29);
+    await expectBuildPathChannels(["planned", "complete"], 31);
     await expect(page.locator("[data-build-path-tool='AI Command Center']")).toBeVisible();
     await expectBuildPathOrder("AI Command Center", registryById.get("ai-assistant").order);
     await expectBuildPathOrder("Colors", registryById.get("colors").order);
@@ -1260,19 +1273,19 @@ test("toolbox Build Path status filters support multi-select registry-matched to
 
     await page.locator("[data-toolbox-status-filter='wireframe']").click();
     await expectActiveFilters(["planned", "wireframe"]);
-    await expectBuildPathChannels(["planned", "wireframe"], 33);
+    await expectBuildPathChannels(["planned", "wireframe"], 32);
     await expect(page.locator("[data-build-path-tool='Saved Data']")).toBeVisible();
     await expect(page.locator("[data-build-path-tool='Build Game']")).toHaveCount(0);
 
     await page.locator("[data-toolbox-status-filter='deprecated']").click();
     await expectActiveFilters(["planned", "wireframe", "deprecated"]);
-    await expectBuildPathChannels(["planned", "wireframe", "deprecated"], 34);
+    await expectBuildPathChannels(["planned", "wireframe", "deprecated"], 33);
     await expect(page.locator("[data-build-path-tool='Build Game']")).toBeVisible();
     await expectBuildPathOrder("Build Game", registryById.get("build-game").order);
 
     await page.locator("[data-toolbox-status-filter='beta']").click();
     await expectActiveFilters(["planned", "wireframe", "beta", "deprecated"]);
-    await expectBuildPathChannels(["planned", "wireframe", "beta", "deprecated"], 41);
+    await expectBuildPathChannels(["planned", "wireframe", "beta", "deprecated"], 39);
 
     expect(failedRequests).toEqual([]);
     expect(pageErrors).toEqual([]);

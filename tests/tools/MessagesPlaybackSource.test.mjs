@@ -21,7 +21,8 @@ test("Messages wires profile dropdowns through the Text To Speech profile contra
   const source = await readFile(new URL("../../toolbox/messages/messages.js", import.meta.url), "utf8");
 
   assert.equal(source.includes("../text-to-speech/text2speech.js"), false);
-  assert.equal(source.includes("../text-to-speech/tts-profile-store.js"), true);
+  assert.equal(source.includes("../text-to-speech/tts-profile-store.js"), false);
+  assert.equal(source.includes("../../assets/js/shared/tts-profile-store.js"), true);
   assert.equal(source.includes("createMessageStudioDefaultTtsProfiles"), false);
   assert.equal(source.includes("createMessageStudioTtsProfileOptions"), false);
   assert.equal(source.includes("state.voiceProfiles = voicePayload.ttsProfiles || []"), false);

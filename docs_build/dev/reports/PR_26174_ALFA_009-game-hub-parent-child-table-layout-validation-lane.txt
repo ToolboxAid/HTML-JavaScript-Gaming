@@ -1,0 +1,4 @@
+Validation Lane: PASS
+
+PASS - npx playwright test tests/playwright/tools/GameHubMockRepository.spec.mjs -g "Game Hub creates, opens, and deletes mock games"
+PASS - npx playwright test tests/playwright/tools/GameHubMockRepository.spec.mjs -g "Game Hub shows a creator-safe empty state|Game Hub shows a creator-safe unavailable state"

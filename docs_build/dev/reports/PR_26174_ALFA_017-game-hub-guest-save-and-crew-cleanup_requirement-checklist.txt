@@ -1,0 +1,16 @@
+Requirement checklist: PASS
+
+- As a guest, clicking any Save button redirects to account/sign-in.html: PASS
+- Move/rename current user role accordion to Game Crew: PASS
+- Remove Owner from the displayed parent table fields: PASS
+- Parent table columns are Game, Purpose, Status, Actions: PASS
+- Owner remains implicit and is not displayed in the parent table: PASS
+- Action buttons match the same scale/height as the game buttons: PASS
+- Removed instructional copy: PASS
+- Preserve Game row parent structure: PASS
+- Preserve Source Idea child row/table: PASS
+- Preserve Readiness Output child row/table: PASS
+- Preserve API/service contract: PASS
+- No browser-owned product data: PASS
+- No silent fallbacks: PASS
+- Follow table_first_ui.md: PASS

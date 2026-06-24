@@ -3,7 +3,11 @@ import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import { createConfiguredProjectAssetStorage } from "../src/dev-runtime/storage/r2-project-asset-storage.mjs";
-import { STORAGE_ENV_KEYS, loadStorageConfig } from "../src/dev-runtime/storage/storage-config.mjs";
+import {
+  STORAGE_ENV_KEYS,
+  STORAGE_PROJECTS_ALLOWED_PREFIXES,
+  loadStorageConfig,
+} from "../src/dev-runtime/storage/storage-config.mjs";
 
 const ENV_FILE = ".env";
 
@@ -64,6 +68,7 @@ console.log(`PASS - Storage env keys present=${presentKeys.length}/${STORAGE_ENV
 
 if (!config.configured) {
   console.log(`SKIP - Storage DEV values are not fully configured in .env (${config.missingKeys?.join(", ") || config.validationError}).`);
+  console.log(`SKIP - Approved project storage prefixes: ${STORAGE_PROJECTS_ALLOWED_PREFIXES.join(", ")}.`);
   process.exit(0);
 }
 

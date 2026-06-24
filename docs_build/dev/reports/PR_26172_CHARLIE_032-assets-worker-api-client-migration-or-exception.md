@@ -1,0 +1,108 @@
+# PR_26172_CHARLIE_032-assets-worker-api-client-migration-or-exception
+
+## Summary
+
+Status: PASS with temporary legacy exceptions retained.
+
+No executable implementation files were changed in this PR. The remaining Assets tool legacy files were reviewed after the PR_031 entrypoint migration:
+
+- `toolbox/assets/assets-api-client.js`
+- `toolbox/assets/assets-upload-worker.js`
+
+Both files remain in approved legacy locations for this stack because moving them would require governance or shared-client decisions outside this PR scope.
+
+## Files Reviewed
+
+- `docs_build/dev/ProjectInstructions/README.txt`
+- `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
+- `docs_build/dev/reports/PR_26172_CHARLIE_030-assets-tool-canonical-js-migration-audit.md`
+- `docs_build/dev/reports/PR_26172_CHARLIE_031-assets-tool-safe-entrypoint-migration.md`
+- `assets/toolbox/assets/js/index.js`
+- `assets/toolbox/objects/js/index.js`
+- `toolbox/assets/assets-api-client.js`
+- `toolbox/assets/assets-upload-worker.js`
+- `scripts/validate-canonical-repository-structure.mjs`
+- `scripts/validate-browser-env-agnostic.mjs`
+- `tests/playwright/tools/AssetToolMockRepository.spec.mjs`
+
+## Decision
+
+### Assets API Client
+
+Decision: retain as temporary legacy exception.
+
+Reason:
+
+- `toolbox/assets/assets-api-client.js` is not Assets-only.
+- `assets/toolbox/objects/js/index.js` imports `createAssetToolApiRepository` from the same file.
+- Moving the client into `assets/toolbox/assets/js/` would either break Objects or require a shared-client migration that is outside this PR.
+
+Removal plan:
+
+1. Create a shared API-client placement rule for reused toolbox clients.
+2. Move shared reusable code to the approved shared location.
+3. Update Assets and Objects imports together.
+4. Remove the legacy exception after both tools validate.
+
+### Assets Upload Worker
+
+Decision: retain as temporary legacy exception.
+
+Reason:
+
+- `toolbox/assets/assets-upload-worker.js` is a module worker and is loaded directly by URL.
+- The current canonical guardrail approves tool entrypoints at `assets/toolbox/{tool-name}/js/index.js`.
+- It does not yet define an approved worker filename or worker subpath pattern.
+- PR_031 validation confirmed the retained worker loads from `toolbox/assets/assets-upload-worker.js`.
+
+Removal plan:
+
+1. Add a canonical worker placement rule, or explicitly approve an Assets worker exception.
+2. Move the worker only after the new placement is recognized by the guardrail.
+3. Update `new Worker(...)` URL construction.
+4. Run targeted upload validation before removing the legacy exception.
+
+## Validation Lane Report
+
+- `npm run validate:canonical-structure`
+  - Result: PASS
+  - Blocking violations: 0
+  - Approved legacy exceptions: 482
+- `npm run validate:browser-env-agnostic`
+  - Result: FAIL
+  - Existing findings:
+    - Local API product service contract findings in `src/dev-runtime/server/local-api-router.mjs`.
+    - User-facing implementation wording findings in Messages.
+  - Classification: existing broader browser-env gate findings, not caused by this report-only PR.
+- Active reference check
+  - Result: PASS
+  - `toolbox/assets/assets-api-client.js` is referenced by Assets, Objects, guardrails, and related tests.
+  - `toolbox/assets/assets-upload-worker.js` is referenced by the Assets canonical entrypoint, guardrail, and worker validation test.
+
+## Branch Validation
+
+- Current branch: `PR_26172_CHARLIE_repository-compliance-stack`
+- Expected branch: `PR_26172_CHARLIE_repository-compliance-stack`
+- Local/origin sync before PR: `0 0`
+- Branch validation: PASS
+
+## Requirement Checklist
+
+- Use PR_030 and PR_031 results: PASS
+- Move Assets-only API client only if safe: PASS, retained because it is shared with Objects.
+- Move worker only if safe: PASS, retained because canonical worker placement is undefined.
+- Document approved temporary legacy exception with removal plan: PASS
+- Do not create shared APIs unless clearly reused by multiple tools: PASS
+- No behavior changes: PASS
+- Run targeted Assets validation: PASS by PR_031 page/worker probe; full upload Playwright remains blocked by provider persistence failure.
+- Run browser env validation: PASS with existing failure documented.
+- Run canonical structure guardrail: PASS
+- Confirm ZIP exists: PASS after artifact creation.
+
+## Manual Validation Notes
+
+The safest current state is to keep the API client and worker in their approved legacy paths while the active entrypoint lives in the canonical path. This keeps Objects imports working and avoids inventing an unapproved worker path.
+
+## Recommendation
+
+Continue to Game Journey audit PR_033. Open a later shared-client or worker-placement governance PR before moving the retained Assets exceptions.

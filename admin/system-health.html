@@ -39,6 +39,7 @@
                                 <summary>Health Sections</summary>
                                 <div class="accordion-body content-stack">
                                     <p>Environment Summary</p>
+                                    <p>Local API Startup</p>
                                     <p>Database Health</p>
                                     <p>Storage Health</p>
                                     <p>Runtime Environment</p>
@@ -71,6 +72,21 @@
                                     <tr><td>IST</td><td>Integrated system testing</td><td>Cross-feature validation</td><td data-health-status="PASS">PASS</td></tr>
                                     <tr><td>UAT</td><td>User acceptance testing</td><td>Owner review</td><td data-health-status="PASS">PASS</td></tr>
                                     <tr><td>PRD</td><td>Production runtime</td><td>EOD approval</td><td data-health-status="PASS">PASS</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Local API startup diagnostics">
+                                <caption>Local API Startup Diagnostics</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Field</th>
+                                        <th scope="col">Safe Value</th>
+                                        <th scope="col">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-system-health-startup-rows>
+                                    <tr><td>Startup diagnostics</td><td>Waiting for safe API status</td><td data-health-status="PENDING" title="Reason: safe Local API startup diagnostics have not loaded yet." aria-label="PENDING: safe Local API startup diagnostics have not loaded yet.">PENDING</td></tr>
                                 </tbody>
                             </table>
                         </div>

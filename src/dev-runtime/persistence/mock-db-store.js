@@ -125,7 +125,7 @@ const MOCK_DB_TABLE_SCHEMAS = Object.freeze({
   input_custom_action_records: Object.freeze(["key", "id", "gameId", "label", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   game_journey_note_types: Object.freeze(["key", "typeSlug", "name", "seeded", "userExtensible", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   game_journey_completion_metrics: Object.freeze(["key", "bucketKey", "bucketOrder", "bucketName", "friendlyDescription", "requiredForMvp", "canSkip", "plannedCount", "completedCount", "active", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-  game_journey_notes: Object.freeze(["key", "slug", "gameKey", "ownerKey", "name", "typeKey", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  game_journey_notes: Object.freeze(["key", "slug", "gameKey", "ownerKey", "name", "typeKey", "bucketOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   game_journey_templates: Object.freeze(["key", "templateSlug", "originalMeaning", "systemGuidance", "linkedToolContexts", "version", "isActive", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   game_journey_items: Object.freeze(["key", "gameKey", "noteKey", "status", "title", "userDetails", "templateKey", "linkedRecordType", "linkedRecordId", "indent", "order", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   game_journey_activity: Object.freeze(["key", "gameKey", "noteKey", "message", "createdAt", "updatedAt", "createdBy", "updatedBy"]),

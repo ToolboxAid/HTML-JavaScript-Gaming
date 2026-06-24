@@ -1,0 +1,57 @@
+# PR_26172_CHARLIE_025-target-tool-migration-batch-3
+
+Status: STOP GATE DOCUMENTED.
+
+Branch: `PR_26172_CHARLIE_repository-compliance-stack`
+
+## Purpose
+
+Migrate a third safe batch from `PR_26172_CHARLIE_022-target-tool-migration-audit`.
+
+## Stop Gate Result
+
+Stop gate triggered: no third SAFE target-tool migration exists after PR023 migrated Objects.
+
+## Safety Review
+
+Remaining target tools were not migrated because:
+
+- Controls is NEEDS CARE due shared API wrapper references outside the tool surface.
+- Asset Browser / Vector Art / Assets remain STOP / owner review due canonical worker placement ambiguity and shared ownership of the active assets scripts.
+- Game Journey remains STOP / owner review due the known `/api/game-journey/completion-metrics` validation blocker and possible Alfa feature-work overlap.
+- Audio, Audio Effects, Fonts, Characters, Worlds, Events, Sprites, MIDI Studio, and State Inspector have no active tool-specific JS/CSS migration to perform in this lane.
+
+## Files Changed
+
+- `docs_build/dev/reports/PR_26172_CHARLIE_025-target-tool-migration-batch-3.md`
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/codex_changed_files.txt`
+
+## Runtime and Feature Changes
+
+None.
+
+## Validation Lane Report
+
+PASS:
+- Branch remained `PR_26172_CHARLIE_repository-compliance-stack`.
+- Local/origin sync was `0 0` before this report-only PR.
+- `git diff --check` completed for the report-only delta.
+- ZIP artifact required under `tmp/`.
+
+Skipped:
+- Tool Playwright validation was skipped because no tool migration was performed in this PR.
+- Canonical guardrail was not rerun because no JS/CSS/test structure changed in this PR.
+- Samples were not run per scope.
+
+## Requirement Checklist
+
+- [x] Select up to 3 additional SAFE tools only.
+- [x] Do not repeat PR023 or PR024.
+- [x] Stop if no third SAFE migration exists.
+- [x] No runtime source changes.
+- [x] ZIP artifact required under `tmp/`.
+
+## Manual Validation Notes
+
+This stop gate prevents migration of NEEDS CARE or STOP / owner review tools without explicit owner direction. The queue may continue to PR026 for the remaining-SAFE check.

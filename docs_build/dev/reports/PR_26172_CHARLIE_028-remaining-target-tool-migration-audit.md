@@ -1,0 +1,149 @@
+# PR_26172_CHARLIE_028-remaining-target-tool-migration-audit
+
+Status: PASS.
+
+Branch: `PR_26172_CHARLIE_repository-compliance-stack`
+
+## Purpose
+
+Audit remaining active legacy target tool JavaScript areas before implementation.
+
+Reviewed only:
+- `toolbox/controls/`
+- `toolbox/assets/`
+- `toolbox/game-journey/`
+- related tests
+- related validation scripts
+
+## Controls
+
+Current JS entrypoints:
+- `toolbox/controls/controls.js`
+- `toolbox/controls/controls-api-client.js`
+
+HTML script reference:
+- `toolbox/controls/index.html` loads `toolbox/controls/controls.js`.
+
+API client references:
+- `toolbox/controls/controls.js` imports `./controls-api-client.js`.
+- `account/user-controls-page.js` imports `../toolbox/controls/controls-api-client.js`.
+- `tests/dev-runtime/ProductDataProviderContractHardening.test.mjs` lists `toolbox/controls/controls-api-client.js`.
+- `scripts/validate-browser-env-agnostic.mjs` lists `toolbox/controls/controls-api-client.js`.
+
+Tests/references requiring updates:
+- `tests/playwright/tools/InputMappingV2Tool.spec.mjs` fetches `/toolbox/controls/controls.js`.
+- `tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs` uses `toolbox/controls/controls.js` as an approved legacy fixture.
+
+Validation scripts requiring exception updates:
+- `scripts/validate-canonical-repository-structure.mjs` currently approves both Controls JS files as legacy exceptions.
+
+Target canonical path:
+- Entry point: `assets/toolbox/controls/js/index.js`.
+
+Risk:
+- Entry point: SAFE.
+- API client: NEEDS CARE because it is reused by `account/user-controls-page.js`.
+
+Recommendation:
+- Move only `controls.js` to `assets/toolbox/controls/js/index.js`.
+- Retain `controls-api-client.js` temporarily as a documented shared legacy exception.
+
+## Assets / Asset Browser / Vector Art
+
+Current JS entrypoints:
+- `toolbox/assets/assets.js`
+- `toolbox/assets/assets-api-client.js`
+- `toolbox/assets/assets-upload-worker.js`
+
+HTML script reference:
+- `toolbox/assets/index.html` loads `toolbox/assets/assets.js`.
+
+Worker reference:
+- `toolbox/assets/assets.js` constructs `new URL("./assets-upload-worker.js", import.meta.url)`.
+
+API client references:
+- `toolbox/assets/assets.js` imports `./assets-api-client.js`.
+- `assets/toolbox/objects/js/index.js` imports `../../../../toolbox/assets/assets-api-client.js`.
+- `tests/dev-runtime/ProductDataProviderContractHardening.test.mjs` lists `toolbox/assets/assets-api-client.js`.
+- `scripts/validate-browser-env-agnostic.mjs` lists `toolbox/assets/assets-api-client.js`.
+
+Tests/references requiring updates:
+- `tests/playwright/tools/AssetToolMockRepository.spec.mjs` expects worker URL to contain `toolbox/assets/assets-upload-worker.js`.
+
+Validation scripts requiring exception updates:
+- `scripts/validate-canonical-repository-structure.mjs` currently approves `assets.js`, `assets-api-client.js`, and `assets-upload-worker.js` as legacy exceptions.
+
+Target canonical path:
+- Entry point: `assets/toolbox/assets/js/index.js`.
+
+Risk:
+- Entry point: NEEDS CARE but likely safe if the worker remains at its legacy URL and the import paths are updated.
+- API client: NEEDS CARE because it is reused by Objects and Assets.
+- Worker: STOP / owner review because the current canonical guardrail allows `assets/toolbox/{tool}/js/index.js` but does not define an approved worker filename pattern.
+
+Recommendation:
+- First move only `assets.js` to `assets/toolbox/assets/js/index.js`.
+- Keep `assets-api-client.js` and `assets-upload-worker.js` as temporary documented legacy exceptions unless later owner guidance approves shared API and worker placement.
+
+## Game Journey
+
+Current JS entrypoints:
+- `toolbox/game-journey/game-journey.js`
+- `toolbox/game-journey/game-journey-api-client.js`
+
+HTML script reference:
+- `toolbox/game-journey/index.html` loads `toolbox/game-journey/game-journey.js`.
+
+API client references:
+- `toolbox/game-journey/game-journey.js` imports `./game-journey-api-client.js`.
+- `tests/dev-runtime/ProductDataProviderContractHardening.test.mjs` lists `toolbox/game-journey/game-journey-api-client.js`.
+- `scripts/validate-browser-env-agnostic.mjs` lists `toolbox/game-journey/game-journey-api-client.js`.
+
+Tests/references requiring updates:
+- `tests/playwright/tools/GameJourneyTool.spec.mjs` references `toolbox/game-journey/game-journey.js`.
+
+Validation scripts requiring exception updates:
+- `scripts/validate-canonical-repository-structure.mjs` currently approves both Game Journey JS files as legacy exceptions.
+
+Target canonical path:
+- Entry point: `assets/toolbox/game-journey/js/index.js`.
+
+Risk:
+- Entry point: NEEDS CARE due prior `/api/game-journey/completion-metrics` HTTP 500 validation blocker.
+- API client: NEEDS CARE but likely movable after entrypoint validation because it is currently Game Journey-specific.
+
+Known blocker:
+- `docs_build/dev/reports/PR_26172_CHARLIE_006A-game-journey-validation-failure-investigation.md` determined the completion-metrics 500 is caused by legacy SQLite preservation protection, not by prior Charlie asset migrations.
+
+Recommendation:
+- Move `game-journey.js` only if validation distinguishes the known completion-metrics preservation stop from module path failures.
+- Consider moving `game-journey-api-client.js` afterward if the entrypoint migration is stable.
+
+## Requirement Checklist
+
+- [x] Reviewed only scoped target folders and related tests/validators.
+- [x] Identified current JS entrypoints.
+- [x] Identified HTML script references.
+- [x] Identified worker references.
+- [x] Identified API client references.
+- [x] Identified tests referencing old paths.
+- [x] Identified validation scripts requiring exception updates.
+- [x] Identified canonical target paths.
+- [x] Classified risk per area.
+- [x] No implementation changes.
+
+## Validation Lane Report
+
+PASS:
+- Report exists.
+- Runtime source unchanged in this PR.
+- ZIP artifact required under `tmp/`.
+
+Skipped:
+- Playwright not run because this PR is audit-only.
+- Canonical guardrail not rerun because this PR does not change JS/CSS/test structure.
+- Samples not run per scope.
+
+## Manual Validation Notes
+
+This audit supports a conservative migration sequence: Controls entrypoint first, Assets entrypoint only after worker/API coupling review, then Game Journey with the known completion-metrics blocker isolated from module-path validation.
