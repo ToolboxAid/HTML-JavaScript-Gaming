@@ -40,6 +40,7 @@
                                 <div class="accordion-body content-stack">
                                     <p>Environment Identity</p>
                                     <p>Environment Map</p>
+                                    <p>Service Health</p>
                                     <p>Local API Startup</p>
                                     <p>Database Health</p>
                                     <p>Storage Health</p>
@@ -100,6 +101,21 @@
                                 </tbody>
                             </table>
                         </div>
+                        <section class="content-stack" aria-label="Service health summary">
+                            <div>
+                                <div class="kicker">Current Deployment</div>
+                                <h3>Service Health</h3>
+                            </div>
+                            <div class="grid cols-3" data-admin-system-health-service-cards>
+                                <article class="card">
+                                    <div class="card-body content-stack content-stack--compact">
+                                        <h4>Loading</h4>
+                                        <p data-health-status="PENDING" title="Reason: service health has not loaded yet." aria-label="PENDING: service health has not loaded yet.">PENDING</p>
+                                        <p>Waiting for safe API status.</p>
+                                    </div>
+                                </article>
+                            </div>
+                        </section>
                         <div class="table-wrapper">
                             <table class="data-table" aria-label="Local API startup diagnostics">
                                 <caption>Local API Startup Diagnostics</caption>

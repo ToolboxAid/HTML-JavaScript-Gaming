@@ -145,6 +145,14 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
     await expect(page.getByRole("table", { name: "Environment map" })).toContainText("UAT");
     await expect(page.getByRole("table", { name: "Environment map" })).toContainText("PRD");
     await expect(page.getByRole("table", { name: "Environment map" }).locator("[data-health-status]")).toHaveCount(0);
+    const serviceCards = page.locator("[data-admin-system-health-service-card]");
+    await expect(serviceCards).toHaveCount(7);
+    const serviceCardText = (await serviceCards.allTextContents()).join("\n");
+    ["Runtime", "API", "Database", "Storage", "Authentication", "Email", "Background Jobs"].forEach((label) => {
+      expect(serviceCardText).toContain(label);
+    });
+    const serviceStatuses = await serviceCards.locator("[data-health-status]").allTextContents();
+    expect(serviceStatuses.every((status) => ["Healthy", "Warning", "Failed", "Not Configured"].includes(status.trim()))).toBe(true);
     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Approved diagnostics format");
     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Environment Variables + All Runtime Ports");
     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Configurable multiple runtime ports");
@@ -259,6 +267,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
   expect(pageSource).not.toContain("SQLite");
   expect(pageSource).toContain("Environment Identity");
   expect(pageSource).toContain("Environment Map");
+  expect(pageSource).toContain("Service Health");
   expect(pageSource).toContain("Runtime Health");
   expect(pageSource).toContain("Diagnostics Plan");
   expect(pageSource).toContain("Local API Startup Diagnostics");

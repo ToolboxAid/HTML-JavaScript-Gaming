@@ -149,6 +149,16 @@ test("Admin can view operational health while Creator sessions are blocked", asy
       assert.equal(typeof health.runtimeHealth.serverStartTime, "string");
       assert.equal(typeof health.runtimeHealth.uptimeSeconds, "number");
       assert.equal(typeof health.runtimeHealth.lastChecked, "string");
+      assert.deepEqual(
+        health.serviceHealth.services.map((service) => service.label),
+        ["Runtime", "API", "Database", "Storage", "Authentication", "Email", "Background Jobs"],
+      );
+      assert.equal(
+        health.serviceHealth.services.every((service) => ["Healthy", "Warning", "Failed", "Not Configured"].includes(service.status)),
+        true,
+      );
+      assert.equal(health.serviceHealth.services.every((service) => typeof service.summary === "string"), true);
+      assert.equal(JSON.stringify(health.serviceHealth).includes("/uat"), false);
       assert.equal(health.storageStatus.environmentFolder, "/local");
       assert.equal(typeof health.storageStatus.lastChecked, "string");
       assert.equal(Array.isArray(health.healthCheckHistory), true);

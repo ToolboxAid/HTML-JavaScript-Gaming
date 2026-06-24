@@ -1063,6 +1063,112 @@ function systemHealthRuntimeHealth(environmentIdentity = {}, checkedAt = new Dat
   };
 }
 
+function systemHealthServiceDisplayStatus(status, configured = true) {
+  if (configured === false) {
+    return { healthStatus: "PENDING", status: "Not Configured" };
+  }
+  const normalized = normalizeHealthStatus(status);
+  if (normalized === "PASS") {
+    return { healthStatus: "PASS", status: "Healthy" };
+  }
+  if (normalized === "FAIL") {
+    return { healthStatus: "FAIL", status: "Failed" };
+  }
+  return { healthStatus: "WARN", status: "Warning" };
+}
+
+function systemHealthServiceCard({ configured = true, id, label, lastChecked, status = "WARN", summary }) {
+  const displayStatus = systemHealthServiceDisplayStatus(status, configured);
+  return {
+    configured,
+    healthStatus: displayStatus.healthStatus,
+    id,
+    label,
+    lastChecked,
+    status: displayStatus.status,
+    summary: String(summary || "Service health status unavailable."),
+  };
+}
+
+function systemHealthServiceHealth({
+  authStatus = {},
+  checkedAt,
+  databaseStatus = {},
+  runtimeHealth = {},
+  session = {},
+  storageStatus = {},
+}) {
+  const databaseConfigured = databaseStatus.configured !== false && databaseStatus.connectivity !== "not configured";
+  const storageConfigured = storageStatus.configured === true;
+  const authConfigured = authStatus.configured === true || authStatus.ready === true;
+  const services = [
+    systemHealthServiceCard({
+      id: "runtime",
+      label: "Runtime",
+      lastChecked: runtimeHealth.lastChecked || checkedAt,
+      status: runtimeHealth.status || "WARN",
+      summary: runtimeHealth.message || "Runtime health status unavailable.",
+    }),
+    systemHealthServiceCard({
+      id: "api",
+      label: "API",
+      lastChecked: checkedAt,
+      status: session.authenticated && session.isAdmin ? "PASS" : "FAIL",
+      summary: session.authenticated && session.isAdmin
+        ? "Current deployment API responded to the Admin System Health request."
+        : "Admin System Health API requires an authenticated Admin session.",
+    }),
+    systemHealthServiceCard({
+      configured: databaseConfigured,
+      id: "database",
+      label: "Database",
+      lastChecked: databaseStatus.lastChecked || checkedAt,
+      status: databaseStatus.connectivityStatus || databaseStatus.status || "WARN",
+      summary: databaseStatus.message || `${databaseStatus.databaseType || "PostgreSQL"} status unavailable.`,
+    }),
+    systemHealthServiceCard({
+      configured: storageConfigured,
+      id: "storage",
+      label: "Storage",
+      lastChecked: storageStatus.lastChecked || checkedAt,
+      status: storageStatus.status || "WARN",
+      summary: storageStatus.message || "Cloudflare R2 storage status unavailable.",
+    }),
+    systemHealthServiceCard({
+      configured: authConfigured,
+      id: "authentication",
+      label: "Authentication",
+      lastChecked: checkedAt,
+      status: authStatus.ready === true ? "PASS" : "WARN",
+      summary: authStatus.operatorDiagnostic || authStatus.message || "Authentication provider status unavailable.",
+    }),
+    systemHealthServiceCard({
+      configured: false,
+      id: "email",
+      label: "Email",
+      lastChecked: checkedAt,
+      status: "PENDING",
+      summary: "Email health contract is not configured for this deployment.",
+    }),
+    systemHealthServiceCard({
+      configured: false,
+      id: "background-jobs",
+      label: "Background Jobs",
+      lastChecked: checkedAt,
+      status: "PENDING",
+      summary: "Background job health contract is not configured for this deployment.",
+    }),
+  ];
+  return {
+    lastChecked: checkedAt,
+    message: "Service Health summarizes current-deployment service contracts only.",
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    services,
+    status: overallHealthStatus(services.map((service) => ({ status: service.healthStatus }))),
+  };
+}
+
 function systemHealthHistoryRow({ checkedAt, environmentName, area, result, summary, kind = "recent check" }) {
   return {
     area,
@@ -3939,6 +4045,14 @@ LIMIT 1;
     const r2Readiness = systemHealthR2Readiness(storageStatus);
     const runtimeEnvironment = systemHealthRuntimeEnvironment();
     const runtimeHealth = systemHealthRuntimeHealth(environmentIdentity, checkedAt);
+    const serviceHealth = systemHealthServiceHealth({
+      authStatus,
+      checkedAt,
+      databaseStatus,
+      runtimeHealth,
+      session,
+      storageStatus,
+    });
     const operationsHealth = adminOperationsHealth(this.standaloneTables);
     const healthCheckHistory = systemHealthCheckHistory({
       checkedAt,
@@ -4082,6 +4196,7 @@ LIMIT 1;
       secretsExposed: false,
       runtimeEnvironment,
       runtimeHealth,
+      serviceHealth,
       storageStatus,
       summary: systemHealthSummary(overview),
       status: overallHealthStatus(overview),

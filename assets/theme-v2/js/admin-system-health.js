@@ -61,6 +61,7 @@ class AdminSystemHealthController {
             node,
         ]));
         this.historyRows = root.querySelector("[data-admin-system-health-history-rows]");
+        this.serviceCards = root.querySelector("[data-admin-system-health-service-cards]");
         this.startupRows = root.querySelector("[data-admin-system-health-startup-rows]");
         this.runtimeRows = root.querySelector("[data-admin-system-health-runtime-rows]");
     }
@@ -134,6 +135,7 @@ class AdminSystemHealthController {
         this.renderStartupPending(reason);
         this.renderStoragePending(reason);
         this.renderRuntimeHealthPending(reason);
+        this.renderServiceHealthPending(reason);
         this.renderHistoryPending(reason);
     }
 
@@ -215,6 +217,65 @@ class AdminSystemHealthController {
         this.setRuntimeHealthStatus("uptime", Number.isFinite(Number(runtimeHealth.uptimeSeconds)) ? "PASS" : "WARN", reason);
         this.setRuntimeHealthValue("lastChecked", runtimeHealth.lastChecked, "not available");
         this.setRuntimeHealthStatus("lastChecked", runtimeHealth.lastChecked ? "PASS" : "WARN", reason);
+    }
+
+    renderServiceHealthPending(reason) {
+        if (!this.serviceCards) {
+            return;
+        }
+        const card = this.createServiceHealthCard({
+            healthStatus: "PENDING",
+            label: "Service Health",
+            status: "Not Configured",
+            summary: reason,
+        });
+        this.serviceCards.replaceChildren(card);
+    }
+
+    createServiceHealthCard(service = {}) {
+        const card = document.createElement("article");
+        card.className = "card";
+        card.dataset.adminSystemHealthServiceCard = service.id || "";
+        const body = document.createElement("div");
+        body.className = "card-body content-stack content-stack--compact";
+        const title = document.createElement("h4");
+        title.textContent = asText(service.label, "Service");
+        const status = document.createElement("p");
+        const healthStatus = normalizeStatusValue(service.healthStatus);
+        status.dataset.healthStatus = healthStatus;
+        status.textContent = asText(service.status, "Not Configured");
+        if (healthStatus !== "PASS") {
+            const reason = asText(service.summary, "Safe server diagnostics did not provide a reason.");
+            status.setAttribute("title", `Reason: ${reason}`);
+            status.setAttribute("aria-label", `${status.textContent}: ${reason}`);
+        }
+        const summary = document.createElement("p");
+        summary.textContent = asText(service.summary, "Status unavailable.");
+        const checkedAt = document.createElement("p");
+        checkedAt.textContent = `Last checked: ${asText(service.lastChecked, "not available")}`;
+        body.append(title, status, summary, checkedAt);
+        card.append(body);
+        return card;
+    }
+
+    renderServiceHealth(serviceHealth = {}) {
+        if (!this.serviceCards) {
+            return;
+        }
+        if (serviceHealth?.secretsExposed === true || serviceHealth?.secretEditingAllowed === true) {
+            this.renderServiceHealthPending("Safe service health response was blocked because it exposed secret controls.");
+            return;
+        }
+        const services = Array.isArray(serviceHealth.services) ? serviceHealth.services : [];
+        if (!services.length) {
+            this.renderServiceHealthPending("Safe Admin System Health API returned no service health cards.");
+            return;
+        }
+        const fragment = document.createDocumentFragment();
+        services.forEach((service) => {
+            fragment.append(this.createServiceHealthCard(service));
+        });
+        this.serviceCards.replaceChildren(fragment);
     }
 
     renderStartupPending(reason) {
@@ -399,6 +460,7 @@ class AdminSystemHealthController {
             this.renderStorageStatus(data?.storageStatus || {});
             this.runStorageDiagnostics();
             this.renderRuntimeHealth(data?.runtimeHealth || {});
+            this.renderServiceHealth(data?.serviceHealth || {});
             this.renderHealthCheckHistory(data?.healthCheckHistory || []);
             this.renderRuntimeEnvironment(data?.runtimeEnvironment || {});
         } catch (error) {
