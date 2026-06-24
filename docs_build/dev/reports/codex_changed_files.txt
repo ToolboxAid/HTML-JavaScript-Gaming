@@ -1,3 +1,9 @@
-﻿docs_build/dev/reports/PR_26175_OWNER_057-final-five-pr-decision-plan.md / added
-docs_build/dev/reports/codex_changed_files.txt / updated
-docs_build/dev/reports/codex_review.diff / updated
+﻿docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
+docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
+docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/PR_26175_CHARLIE_026-charlie-governance-gap-closeout.md
+docs_build/dev/reports/PR_26175_CHARLIE_026-charlie-governance-gap-closeout-branch-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_026-charlie-governance-gap-closeout-manual-validation-notes.md
+docs_build/dev/reports/PR_26175_CHARLIE_026-charlie-governance-gap-closeout-requirement-checklist.md
+docs_build/dev/reports/PR_26175_CHARLIE_026-charlie-governance-gap-closeout-validation.md
+docs_build/dev/roadmaps/MASTER_ROADMAP_FEATURES.md

@@ -160,6 +160,23 @@
   - Recommendation-only hygiene audit process verified.
   - Branch deletion and PR closure remain prohibited without explicit owner approval.
 
+## Cancelled / Not Doing
+
+### Environment Isolation & Developer Experience
+
+Status: CANCELLED / NOT DOING
+
+Items removed from backlog:
+- Multi-port workspace framework
+- Alpha/Beta/User isolation framework
+- Runtime port management initiative
+
+Replacement governance:
+- System Health remains one page per deployed environment.
+- Each deployment actively checks only itself.
+- Environment Summary, Database Health, Storage Health, Runtime Health, and Health Check History are Team Charlie System Health ownership.
+- Environment governance follows the approved GFS infrastructure and System Health v1 documentation.
+
 ## Four-Team Backlog Alignment
 
 Current OWNER clarification:

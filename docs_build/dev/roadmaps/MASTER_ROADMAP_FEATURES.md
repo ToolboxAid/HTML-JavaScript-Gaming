@@ -55,3 +55,14 @@ Status: complete through GitHub PR #158.
 
 These items are not authorized as new Team Charlie System Health feature PRs
 unless Owner creates a new phase.
+
+### Cancelled / Not Doing
+
+Status: cancelled, not active roadmap work.
+
+- Environment Isolation & Developer Experience
+- Multi-port workspace framework
+- Alpha/Beta/User isolation framework
+- Runtime port management initiative
+
+These items must not be reopened as Team Charlie work unless Owner creates a new phase.
