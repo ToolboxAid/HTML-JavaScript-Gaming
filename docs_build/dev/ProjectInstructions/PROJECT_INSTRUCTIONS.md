@@ -15,6 +15,7 @@ The Project Instructions operating system provides additive governance for:
 - tile overlay status behavior
 - deprecation workflow
 - archive and history preservation
+- recognized project instruction/reference files
 
 ## Preservation
 
@@ -28,6 +29,10 @@ Existing Project Instructions remain preserved in their current locations. This 
 - `deprecation/` contains deprecation workflow documentation.
 - `archive/` contains retained reference material.
 - `archive/history/` contains timestamped history snapshots.
+
+## Recognized Project Reference Files
+
+`docs_build/dev/ProjectInstructions/addendums/project_reference_files.md` defines additional valid project instruction/reference files that must be included in future Project Instructions reviews when present in `ProjectInstructions.zip`, the active project instruction directory, or `docs_build/dev/admin-notes/`.
 
 ## Merge Control
 

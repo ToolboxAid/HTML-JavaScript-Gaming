@@ -1,0 +1,9 @@
+VS Code required tools
+
+Power Shell
+winget install --id GitHub.cli
+gh --version
+gh auth login
+
+Terminal
+Install-Script -Name winget-install -RequiredVersion 2.1.0 -Scope CurrentUser

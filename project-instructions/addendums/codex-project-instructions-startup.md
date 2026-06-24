@@ -21,6 +21,13 @@ Codex must use this as the primary source of truth for:
 - Execution modes
 - Artifact requirements
 
+## Project Reference File Review
+
+When present in `ProjectInstructions.zip`, the active project instruction directory, or `docs_build/dev/admin-notes/`, Codex must include these recognized project instruction/reference files in the Project Instructions read set:
+
+- `Installs required.txt`
+- `Table layout.txt`
+
 Chat instructions may supplement Project Instructions but must not override approved governance without explicit Owner approval.
 
 ## Conflict Handling
