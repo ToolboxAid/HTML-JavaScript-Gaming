@@ -1,148 +1,370 @@
-diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index ed90bcb49..7b1c51f19 100644
---- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,8 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
- Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
-
- Changed runtime JS files considered:
--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(82%) assets/theme-v2/js/admin-system-health.js - executed lines 808/808; executed functions 68/83
-+(100%) none changed - no changed runtime JS files
-
- Guardrail warnings:
--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-+(100%) none changed - no changed runtime JS files
-diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 3778e8944..da6deaaa0 100644
---- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
-+++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -17,8 +17,7 @@ Exercised tool entry points detected:
- (78%) Theme V2 Shared JS - exercised 4 runtime JS files
-
- Changed runtime JS files covered:
--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(82%) assets/theme-v2/js/admin-system-health.js - executed lines 808/808; executed functions 68/83
-+(100%) none changed - no changed runtime JS files
-
- Files with executed line/function counts where available:
- (36%) src/api/server-api-client.js - executed lines 167/167; executed functions 5/14
-@@ -33,11 +32,7 @@ Files with executed line/function counts where available:
- (100%) src/api/admin-system-health-api-client.js - executed lines 28/28; executed functions 4/4
-
- Uncovered or low-coverage changed JS files:
--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
-+(100%) none changed - no changed runtime JS files
-
- Changed JS files considered:
--(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
- (0%) tests/api/admin-system-health/contract.test.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/dev-runtime/AdminHealthOperations.test.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
--(82%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-branch-validation.md b/docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-branch-validation.md
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-branch-validation.md b/docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-branch-validation.md
 new file mode 100644
-index 000000000..a65cc8779
+index 000000000..42f90b418
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-branch-validation.md
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-branch-validation.md
 @@ -0,0 +1,7 @@
-+# PR_26175_CHARLIE_023 Branch Validation
++# PR_26175_CHARLIE_024 Branch Validation
 +
-+- PASS: Continued on `pr/26175-CHARLIE-010-system-health-history-and-closeout`.
-+- PASS: Stacked on PR_26175_CHARLIE_022.
++- PASS: Continued from `pr/26175-CHARLIE-010-system-health-history-and-closeout`.
++- PASS: Start gate worktree was clean.
++- PASS: PR purpose is singular: System Health v1 operational documentation.
++- PASS: Runtime behavior unchanged.
 +- PASS: No merge performed.
-+- PASS: No rebase performed.
-+- PASS: Branch ready to push and update draft PR #158.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-manual-validation-notes.md b/docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-manual-validation-notes.md
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-manual-validation-notes.md b/docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-manual-validation-notes.md
 new file mode 100644
-index 000000000..5db2a7208
+index 000000000..c0c41d301
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-manual-validation-notes.md
-@@ -0,0 +1,5 @@
-+# PR_26175_CHARLIE_023 Manual Validation Notes
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-manual-validation-notes.md
+@@ -0,0 +1,13 @@
++# PR_26175_CHARLIE_024 Manual Validation Notes
 +
-+- Verified completion reports exist for PRs 018 through 023.
-+- Verified final validation lane includes the new Admin System Health contract suite.
-+- Verified closeout records no merge requested.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-requirement-checklist.md b/docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-requirement-checklist.md
++- Verified the new guide documents the current-environment-only System Health
++  architecture.
++- Verified the Environment Map is documented as reference-only.
++- Verified the approved Local, DEV, IST, UAT, and PRD model is included.
++- Verified the shared R2 folder model includes `/local`, `/dev`, `/ist`,
++  `/uat`, and `/prd`.
++- Verified manual health actions are documented as API-backed operations.
++- Verified Scheduled Health Monitoring and Notifications & Alerts are documented
++  as production-safe Not Configured states when service contracts are absent.
++- Verified troubleshooting and manual validation guidance is present.
++- Verified no runtime files were modified.
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-requirement-checklist.md b/docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-requirement-checklist.md
 new file mode 100644
-index 000000000..4bec1225f
+index 000000000..42894166b
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-requirement-checklist.md
-@@ -0,0 +1,7 @@
-+# PR_26175_CHARLIE_023 Requirement Checklist
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-requirement-checklist.md
+@@ -0,0 +1,22 @@
++# PR_26175_CHARLIE_024 Requirement Checklist
 +
-+- PASS: Added documentation closeout.
-+- PASS: Included final validation evidence.
-+- PASS: Listed all completion ZIP artifacts.
-+- PASS: Preserved no-merge requirement.
-+- PASS: Required reports generated.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-validation.md b/docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-validation.md
++| Requirement | Status | Evidence |
++| --- | --- | --- |
++| Continue from current Charlie System Health branch | PASS | Branch `pr/26175-CHARLIE-010-system-health-history-and-closeout`. |
++| Hard stop if worktree is not clean | PASS | Start gate was clean. |
++| Add durable operational docs under `docs_build` | PASS | Added `docs_build/operations/system-health-v1-operational-guide.md`. |
++| Document System Health architecture | PASS | Architecture section added. |
++| Document current-environment-only rule | PASS | Architecture and guardrails sections added. |
++| Document Environment Map reference-only rule | PASS | Architecture and validation sections added. |
++| Document Local/DEV/IST/UAT/PRD model | PASS | Environment Model table added. |
++| Document shared R2 folder model | PASS | Shared R2 Folder Model section added. |
++| Document API contract summary | PASS | API Contract Summary section added. |
++| Document manual health actions | PASS | Manual Health Actions section added. |
++| Document scheduled monitoring Not Configured behavior | PASS | Scheduled Monitoring section added. |
++| Document notifications Not Configured behavior | PASS | Notifications And Alerts section added. |
++| Document troubleshooting guide | PASS | Troubleshooting Guide section added. |
++| Document manual validation guide | PASS | Manual Validation Guide section added. |
++| Do not change runtime behavior | PASS | Documentation-only changes. |
++| Create reports and ZIP | PASS | Reports created; ZIP path reserved under `tmp/`. |
++| Push branch and update PR #158 | PASS | Completed by this BUILD after commit and push. |
++| Do not merge | PASS | No merge performed. |
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-validation.md b/docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-validation.md
 new file mode 100644
-index 000000000..20b448550
+index 000000000..783a99438
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-validation.md
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-validation.md
 @@ -0,0 +1,14 @@
-+# PR_26175_CHARLIE_023 Validation Report
++# PR_26175_CHARLIE_024 Validation
 +
-+## Commands
++## Validation Lane
 +
-+- PASS: `node --test tests/api/admin-system-health/contract.test.mjs`
-+  - Result: 2 passed.
-+- PASS: `node --test tests/dev-runtime/AdminHealthOperations.test.mjs`
-+  - Result: 4 passed.
-+- PASS: `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line`
-+  - Result: 3 passed.
++- PASS: Documentation scope confirmed; no runtime behavior changes required.
++- PASS: `git diff --check`
++- PASS: Required durable operational documentation added under `docs_build`.
++- PASS: Required report artifacts generated under `docs_build/dev/reports`.
 +
-+## Notes
++## Runtime Validation
 +
-+- Full samples smoke was not run; not required for this System Health completion scope.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout.md b/docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout.md
++Runtime unit and Playwright tests were not run for this PR because the change is
++documentation-only and does not modify application, API, test, or configuration
++behavior.
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs.md b/docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs.md
 new file mode 100644
-index 000000000..d18a17a9d
+index 000000000..2cccce8d6
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout.md
-@@ -0,0 +1,43 @@
-+# PR_26175_CHARLIE_023 System Health Documentation Closeout
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs.md
+@@ -0,0 +1,38 @@
++# PR_26175_CHARLIE_024 System Health Operational Docs
 +
 +## Scope
 +
 +Team: Charlie
 +
-+Purpose: Close out System Health completion PRs 018 through 023 with final documentation and validation evidence.
++Purpose: Add durable System Health v1 operational documentation under
++`docs_build` without changing runtime behavior.
 +
-+## Completed Commits
++## Changes
 +
-+- PASS: PR_26175_CHARLIE_018-health-api-contract-cleanup
-+- PASS: PR_26175_CHARLIE_019-environment-capabilities
-+- PASS: PR_26175_CHARLIE_020-admin-api-registry
-+- PASS: PR_26175_CHARLIE_021-runtime-feature-flags
-+- PASS: PR_26175_CHARLIE_022-admin-health-test-suite
-+- PASS: PR_26175_CHARLIE_023-system-health-documentation-closeout
++- Added `docs_build/operations/system-health-v1-operational-guide.md`.
++- Documented the current-environment-only rule.
++- Documented the reference-only Environment Map rule.
++- Documented Local, DEV, IST, UAT, and PRD environment models.
++- Documented the shared Cloudflare R2 folder model.
++- Documented the Admin System Health API contract summary.
++- Documented manual health actions.
++- Documented production-safe Not Configured behavior for scheduled monitoring
++  and notifications.
++- Added troubleshooting and manual validation guides.
 +
-+## Final Architecture State
++## Runtime Behavior
 +
-+- PASS: System Health remains current-deployment only.
-+- PASS: Environment Map remains reference-only.
-+- PASS: Browser UI renders API-owned health and governance state.
-+- PASS: Manual health actions call API contracts.
-+- PASS: Scheduled monitoring and notification placeholders remain Not Configured.
-+- PASS: Admin API Registry and Health API Contract are visible in System Health.
++- PASS: No runtime files changed.
++- PASS: Documentation-only scope.
++- PASS: No API, UI, service, test, or configuration behavior changed.
 +
-+## Final Validation
++## Artifacts
 +
-+- PASS: `node --test tests/api/admin-system-health/contract.test.mjs`
-+  - Result: 2 passed.
-+- PASS: `node --test tests/dev-runtime/AdminHealthOperations.test.mjs`
-+  - Result: 4 passed.
-+- PASS: `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line`
-+  - Result: 3 passed.
++- `docs_build/dev/reports/codex_review.diff`
++- `docs_build/dev/reports/codex_changed_files.txt`
++- `docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs.md`
++- `docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-validation.md`
++- `docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-branch-validation.md`
++- `docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-requirement-checklist.md`
++- `docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-manual-validation-notes.md`
++- `tmp/PR_26175_CHARLIE_024-system-health-operational-docs_delta.zip`
+diff --git a/docs_build/operations/system-health-v1-operational-guide.md b/docs_build/operations/system-health-v1-operational-guide.md
+new file mode 100644
+index 000000000..afe83ac09
+--- /dev/null
++++ b/docs_build/operations/system-health-v1-operational-guide.md
+@@ -0,0 +1,240 @@
++# System Health v1 Operational Guide
 +
-+## ZIP Artifacts
++## Purpose
 +
-+- `tmp/PR_26175_CHARLIE_018-health-api-contract-cleanup_delta.zip`
-+- `tmp/PR_26175_CHARLIE_019-environment-capabilities_delta.zip`
-+- `tmp/PR_26175_CHARLIE_020-admin-api-registry_delta.zip`
-+- `tmp/PR_26175_CHARLIE_021-runtime-feature-flags_delta.zip`
-+- `tmp/PR_26175_CHARLIE_022-admin-health-test-suite_delta.zip`
-+- `tmp/PR_26175_CHARLIE_023-system-health-documentation-closeout_delta.zip`
++System Health v1 is the Team Charlie admin surface for confirming the health of
++the currently deployed Game Foundry Studio environment. It is an operational
++read model: the browser renders server-owned status returned by the Admin System
++Health API, and operators use manual actions to ask the API to run specific
++checks.
++
++This guide is the durable operator reference for System Health v1. It describes
++the approved environment model, storage model, API contract, manual actions,
++safe placeholder behavior, troubleshooting steps, and manual validation path.
++
++## Architecture
++
++System Health is one page per deployed environment. A deployment actively checks
++only itself.
++
++The page may display a static Environment Map for operator reference, but the
++Environment Map must not trigger active peer-environment checks. For example,
++the UAT deployment may show Local, DEV, IST, UAT, and PRD in the reference map,
++but it must only check UAT infrastructure.
++
++The browser does not own infrastructure health state. It loads and renders the
++server-owned API payload from `/api/admin/system-health/status` and submits
++manual health actions to Admin System Health API endpoints. Browser-side
++fallback rows may show safe pending or unavailable states while loading, but a
++successful health result must come from the API/service contract.
++
++## Environment Model
++
++| Environment | Hosting model | Database model | Storage folder |
++| --- | --- | --- | --- |
++| Local | VS Code + Local API | Local Docker PostgreSQL | `/local` |
++| DEV | Local Docker | Local Docker PostgreSQL | `/dev` |
++| IST | Local Docker | Local Docker PostgreSQL | `/ist` |
++| UAT | Cloudflare | Supabase PostgreSQL | `/uat` |
++| PRD | Cloudflare | Supabase PostgreSQL | `/prd` |
++
++The Environment Identity section displays the current deployment only:
++
++- environment name
++- hosting model
++- site URL
++- API URL
++- database model
++- storage folder
++- last health check
++
++The Environment Map is reference-only and lists all approved environments.
++
++## Shared R2 Folder Model
++
++GFS uses one shared Cloudflare R2 bucket with environment-scoped folders:
++
++- `/local`
++- `/dev`
++- `/ist`
++- `/uat`
++- `/prd`
++
++Storage Health must use the folder for the current environment only. The active
++diagnostic operations are:
++
++- bucket connectivity
++- list
++- upload
++- read
++- delete
++
++Do not run storage diagnostics against another environment folder from the
++current deployment.
++
++## API Contract Summary
++
++Contract version: `2026-06-24.system-health.v1`
++
++| Method | Path | Purpose |
++| --- | --- | --- |
++| GET | `/api/admin/system-health/status` | Read current deployment System Health status. |
++| POST | `/api/admin/system-health/action` | Run current deployment manual health actions. |
++| POST | `/api/admin/system-health/storage-connectivity-action` | Run current deployment R2 folder diagnostics. |
++
++The status API owns the System Health data boundary. It reports:
++
++- current environment identity
++- reference Environment Map
++- environment capabilities
++- Health API Contract
++- Admin API Registry
++- runtime feature flags
++- runtime health
++- service health
++- configuration summary
++- database health
++- storage health
++- scheduled monitoring foundation
++- notifications foundation
++- health check history
++
++The contract must not expose secrets. Configuration values that could contain
++credentials, tokens, keys, or connection strings must be omitted or masked by
++the server before reaching the browser.
++
++## Manual Health Actions
++
++Manual health action controls submit API requests. They do not create browser
++owned successful health results.
++
++Supported controls:
++
++- Refresh
++- Run Runtime Check
++- Run Database Check
++- Run Storage Check
++- Run Full Health Check
++
++Each manual action is scoped to the current deployment. A Run Storage Check must
++use the current environment folder, and a Run Database Check must use the
++current environment database model.
++
++## Scheduled Monitoring
++
++Scheduled Health Monitoring is production-safe when the scheduler is not
++implemented or not configured. In that state, System Health shows Not Configured
++or pending rows for:
++
++- last scheduled run
++- next scheduled run
++- duration
++- recent result
++- failures/warnings
++
++This state is intentional and must not be treated as a hidden success. Operators
++should treat it as a clear statement that automatic scheduled checks are not
++active for the deployment.
++
++## Notifications And Alerts
++
++Notifications and alerts are production-safe when no sending contract is
++configured. In that state, System Health shows Not Configured or pending rows
++for:
++
++- email alerts
++- admin notifications
++- webhook alerts
++- messages integration, when present
++
++System Health v1 must not send email, admin notifications, webhooks, or messages
++unless an approved service contract exists.
++
++## Troubleshooting Guide
++
++### Page Does Not Load Status
++
++1. Confirm the current deployment serves `admin/system-health.html`.
++2. Confirm the API route `GET /api/admin/system-health/status` is reachable.
++3. Check the browser console for network failures.
++4. Check the Local API or deployment logs for route errors.
++5. Confirm any admin authorization requirement for the deployment is satisfied.
++
++### Environment Identity Looks Wrong
++
++1. Confirm the deployment environment variables identify the intended
++   environment.
++2. Confirm the storage folder maps to the intended environment.
++3. Restart the API after changing environment variables.
++4. Reopen System Health and verify only the current deployment identity changed.
++5. Do not use the Environment Map as proof of active environment selection; it
++   is reference-only.
++
++### Database Health Fails
++
++1. For Local, DEV, and IST, confirm Local Docker PostgreSQL is running.
++2. For UAT and PRD, confirm Supabase PostgreSQL configuration is present
++   server-side.
++3. Run the manual Database Check.
++4. Review response time, connectivity, version, and last checked values.
++5. Check server logs for connection errors without exposing credentials.
++
++### Storage Health Fails
++
++1. Confirm Cloudflare R2 bucket configuration is present server-side.
++2. Confirm the storage folder matches the current environment.
++3. Run the manual Storage Check.
++4. Review bucket connectivity, list, upload, read, and delete results.
++5. If upload or delete fails, confirm the deployment credentials allow test
++   object writes and cleanup in the current environment folder.
++
++### Runtime Health Fails
++
++1. Confirm the API process is running.
++2. Confirm runtime version, API version, Node version, server start time, and
++   uptime fields are returned when available.
++3. Run the manual Runtime Check.
++4. Review deployment logs for startup or route errors.
++
++### Scheduled Or Notification Sections Show Not Configured
++
++This is expected until approved scheduler or notification service contracts are
++implemented. Do not patch the browser to display a healthy state. Add or update
++the server-side service contract first, then update System Health to render the
++server-owned result.
++
++## Manual Validation Guide
++
++Use this checklist after System Health v1 changes or deployment configuration
++changes:
++
++1. Open the System Health page for the deployment being validated.
++2. Confirm Environment Identity shows the current deployment only.
++3. Confirm Environment Map lists Local, DEV, IST, UAT, and PRD as reference
++   entries only.
++4. Confirm no network call attempts to health-check another environment.
++5. Confirm Configuration Summary contains no secrets.
++6. Confirm Database Health matches the current environment database model.
++7. Confirm Storage Health uses the current environment R2 folder.
++8. Run Refresh.
++9. Run Runtime Check.
++10. Run Database Check.
++11. Run Storage Check.
++12. Run Full Health Check.
++13. Confirm action results come from API responses.
++14. Confirm Scheduled Health Monitoring shows Not Configured when no scheduler
++    contract exists.
++15. Confirm Notifications & Alerts shows Not Configured when no notification
++    contract exists.
++16. Review Health Check History for recent checks, warnings, and failures for
++    the current environment only.
++
++## Operator Guardrails
++
++- Do not add cross-environment health checks.
++- Do not let the browser invent healthy infrastructure state.
++- Do not expose credentials or raw connection strings.
++- Do not change environment folder mappings without updating this guide,
++  Project Instructions, and the System Health API contract tests.
++- Do not treat Not Configured placeholders as failures when the underlying
++  scheduler or notification service contract is intentionally absent.

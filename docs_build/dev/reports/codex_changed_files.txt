@@ -1,20 +1,18 @@
 # git status --short
-M docs_build/dev/reports/coverage_changed_js_guardrail.txt
- M docs_build/dev/reports/playwright_v8_coverage_report.txt
-?? docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-branch-validation.md
-?? docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-manual-validation-notes.md
-?? docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-requirement-checklist.md
-?? docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-validation.md
-?? docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout.md
+?? docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-branch-validation.md
+?? docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-manual-validation-notes.md
+?? docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-requirement-checklist.md
+?? docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-validation.md
+?? docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs.md
+?? docs_build/operations/system-health-v1-operational-guide.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-branch-validation.md
-docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-manual-validation-notes.md
-docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-requirement-checklist.md
-docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-validation.md
-docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout.md
+docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-branch-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-manual-validation-notes.md
+docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-requirement-checklist.md
+docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs.md
+docs_build/operations/system-health-v1-operational-guide.md
 
 # git diff --stat
-docs_build/dev/reports/coverage_changed_js_guardrail.txt | 5 ++---
- docs_build/dev/reports/playwright_v8_coverage_report.txt | 9 ++-------
- 2 files changed, 4 insertions(+), 10 deletions(-)
+(no output)
