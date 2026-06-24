@@ -64,6 +64,7 @@ class AdminSystemHealthController {
         ]));
         this.historyRows = root.querySelector("[data-admin-system-health-history-rows]");
         this.apiContractRows = root.querySelector("[data-admin-system-health-api-contract-rows]");
+        this.capabilityRows = root.querySelector("[data-admin-system-health-capability-rows]");
         this.actionRows = root.querySelector("[data-admin-system-health-action-rows]");
         this.actionButtons = Array.from(root.querySelectorAll("[data-admin-system-health-action]"));
         this.configurationRows = root.querySelector("[data-admin-system-health-configuration-rows]");
@@ -144,6 +145,7 @@ class AdminSystemHealthController {
         this.renderStartupPending(reason);
         this.renderStoragePending(reason);
         this.renderRuntimeHealthPending(reason);
+        this.renderEnvironmentCapabilitiesPending(reason);
         this.renderApiContractPending(reason);
         this.renderServiceHealthPending(reason);
         this.renderConfigurationSummaryPending(reason);
@@ -283,6 +285,45 @@ class AdminSystemHealthController {
             fragment.append(row);
         });
         this.apiContractRows.replaceChildren(fragment);
+    }
+
+    renderEnvironmentCapabilitiesPending(reason) {
+        if (!this.capabilityRows) {
+            return;
+        }
+        const row = document.createElement("tr");
+        row.append(
+            this.createCell("Environment Capabilities"),
+            this.createCell("not available"),
+            this.createStatusCell("PENDING", reason),
+        );
+        this.capabilityRows.replaceChildren(row);
+    }
+
+    renderEnvironmentCapabilities(environmentCapabilities = {}) {
+        if (!this.capabilityRows) {
+            return;
+        }
+        if (environmentCapabilities?.secretsExposed === true || environmentCapabilities?.secretEditingAllowed === true) {
+            this.renderEnvironmentCapabilitiesPending("Safe environment capabilities response was blocked because it exposed secret controls.");
+            return;
+        }
+        const rows = Array.isArray(environmentCapabilities.rows) ? environmentCapabilities.rows : [];
+        if (!rows.length) {
+            this.renderEnvironmentCapabilitiesPending("Safe Admin System Health API returned no environment capability rows.");
+            return;
+        }
+        const fragment = document.createDocumentFragment();
+        rows.forEach((capabilityRow) => {
+            const row = document.createElement("tr");
+            row.append(
+                this.createCell(capabilityRow.capability),
+                this.createCell(capabilityRow.value),
+                this.createStatusCell(capabilityRow.status, environmentCapabilities.message),
+            );
+            fragment.append(row);
+        });
+        this.capabilityRows.replaceChildren(fragment);
     }
 
     renderServiceHealthPending(reason) {
@@ -706,6 +747,7 @@ class AdminSystemHealthController {
         this.renderStorageStatus(data?.storageStatus || {});
         this.runStorageDiagnostics();
         this.renderRuntimeHealth(data?.runtimeHealth || {});
+        this.renderEnvironmentCapabilities(data?.environmentCapabilities || {});
         this.renderApiContract(data?.apiContract || {});
         this.renderServiceHealth(data?.serviceHealth || {});
         this.renderConfigurationSummary(data?.configurationSummary || {});

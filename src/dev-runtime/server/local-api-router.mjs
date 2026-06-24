@@ -1296,6 +1296,62 @@ function systemHealthConfigurationSummary({
   };
 }
 
+function systemHealthEnvironmentCapabilities({
+  authStatus = {},
+  checkedAt,
+  databaseStatus = {},
+  environmentIdentity = {},
+  storageStatus = {},
+}) {
+  const rows = [
+    {
+      capability: "Hosting",
+      status: environmentIdentity.hostingModel ? "PASS" : "WARN",
+      value: environmentIdentity.hostingModel || "not configured",
+    },
+    {
+      capability: "API",
+      status: environmentIdentity.apiUrlStatus || "WARN",
+      value: environmentIdentity.apiUrl || "not configured",
+    },
+    {
+      capability: "Database",
+      status: databaseStatus.connectivityStatus || databaseStatus.status || "WARN",
+      value: databaseStatus.databaseType || environmentIdentity.databaseModel || "PostgreSQL",
+    },
+    {
+      capability: "Storage",
+      status: storageStatus.environmentFolderStatus || environmentIdentity.storageFolderStatus || "WARN",
+      value: `Cloudflare R2 ${storageStatus.environmentFolder || environmentIdentity.storageFolder || "not configured"}`,
+    },
+    {
+      capability: "Authentication",
+      status: authStatus.ready === true ? "PASS" : "PENDING",
+      value: authStatus.ready === true ? "Configured" : "Not Configured",
+    },
+    {
+      capability: "Scheduled Monitoring",
+      status: "PENDING",
+      value: "Not Configured",
+    },
+    {
+      capability: "Notifications",
+      status: "PENDING",
+      value: "Not Configured",
+    },
+  ];
+  return {
+    currentEnvironment: environmentIdentity.name || "Unknown",
+    lastChecked: checkedAt,
+    message: "Environment Capabilities describes the current deployment only.",
+    peerEnvironmentChecks: false,
+    rows,
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    status: overallHealthStatus(rows.map((row) => ({ status: row.status }))),
+  };
+}
+
 function systemHealthScheduledMonitoring(checkedAt = new Date().toISOString()) {
   const rows = [
     {
@@ -4331,6 +4387,13 @@ LIMIT 1;
       environmentIdentity,
       storageStatus,
     });
+    const environmentCapabilities = systemHealthEnvironmentCapabilities({
+      authStatus,
+      checkedAt,
+      databaseStatus,
+      environmentIdentity,
+      storageStatus,
+    });
     const scheduledMonitoring = systemHealthScheduledMonitoring(checkedAt);
     const notificationsFoundation = systemHealthNotificationsFoundation(checkedAt);
     const operationsHealth = adminOperationsHealth(this.standaloneTables);
@@ -4465,6 +4528,7 @@ LIMIT 1;
       message: "Admin System Health loaded safe status only.",
       environmentIdentity,
       environmentMap,
+      environmentCapabilities,
       healthCheckHistory,
       notificationsFoundation,
       operationsHealth,

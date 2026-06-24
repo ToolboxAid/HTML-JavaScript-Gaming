@@ -1,134 +1,134 @@
 diff --git a/admin/system-health.html b/admin/system-health.html
-index 0eeea442e..70d4778ce 100644
+index 70d4778ce..69fbc72ea 100644
 --- a/admin/system-health.html
 +++ b/admin/system-health.html
 @@ -40,6 +40,7 @@
                                  <div class="accordion-body content-stack">
                                      <p>Environment Identity</p>
                                      <p>Environment Map</p>
-+                                    <p>Health API Contract</p>
++                                    <p>Environment Capabilities</p>
+                                     <p>Health API Contract</p>
                                      <p>Service Health</p>
                                      <p>Configuration Summary</p>
-                                     <p>Manual Health Actions</p>
-@@ -105,6 +106,21 @@
+@@ -106,6 +107,21 @@
                                  </tbody>
                              </table>
                          </div>
 +                        <div class="table-wrapper">
-+                            <table class="data-table" aria-label="Health API contract">
-+                                <caption>Health API Contract</caption>
++                            <table class="data-table" aria-label="Environment capabilities">
++                                <caption>Environment Capabilities</caption>
 +                                <thead>
 +                                    <tr>
-+                                        <th scope="col">Field</th>
-+                                        <th scope="col">Contract</th>
++                                        <th scope="col">Capability</th>
++                                        <th scope="col">Current Deployment</th>
 +                                        <th scope="col">Status</th>
 +                                    </tr>
 +                                </thead>
-+                                <tbody data-admin-system-health-api-contract-rows>
-+                                    <tr><td>Health API Contract</td><td>Waiting for safe API status</td><td data-health-status="PENDING" title="Reason: API contract has not loaded yet." aria-label="PENDING: API contract has not loaded yet.">PENDING</td></tr>
++                                <tbody data-admin-system-health-capability-rows>
++                                    <tr><td>Environment Capabilities</td><td>Waiting for safe API status</td><td data-health-status="PENDING" title="Reason: environment capabilities have not loaded yet." aria-label="PENDING: environment capabilities have not loaded yet.">PENDING</td></tr>
 +                                </tbody>
 +                            </table>
 +                        </div>
-                         <section class="content-stack" aria-label="Service health summary">
-                             <div>
-                                 <div class="kicker">Current Deployment</div>
+                         <div class="table-wrapper">
+                             <table class="data-table" aria-label="Health API contract">
+                                 <caption>Health API Contract</caption>
 diff --git a/assets/theme-v2/js/admin-system-health.js b/assets/theme-v2/js/admin-system-health.js
-index 8bb6ed2bc..aa33a2abb 100644
+index aa33a2abb..5339e3443 100644
 --- a/assets/theme-v2/js/admin-system-health.js
 +++ b/assets/theme-v2/js/admin-system-health.js
-@@ -63,6 +63,7 @@ class AdminSystemHealthController {
-             node,
+@@ -64,6 +64,7 @@ class AdminSystemHealthController {
          ]));
          this.historyRows = root.querySelector("[data-admin-system-health-history-rows]");
-+        this.apiContractRows = root.querySelector("[data-admin-system-health-api-contract-rows]");
+         this.apiContractRows = root.querySelector("[data-admin-system-health-api-contract-rows]");
++        this.capabilityRows = root.querySelector("[data-admin-system-health-capability-rows]");
          this.actionRows = root.querySelector("[data-admin-system-health-action-rows]");
          this.actionButtons = Array.from(root.querySelectorAll("[data-admin-system-health-action]"));
          this.configurationRows = root.querySelector("[data-admin-system-health-configuration-rows]");
-@@ -143,6 +144,7 @@ class AdminSystemHealthController {
+@@ -144,6 +145,7 @@ class AdminSystemHealthController {
          this.renderStartupPending(reason);
          this.renderStoragePending(reason);
          this.renderRuntimeHealthPending(reason);
-+        this.renderApiContractPending(reason);
++        this.renderEnvironmentCapabilitiesPending(reason);
+         this.renderApiContractPending(reason);
          this.renderServiceHealthPending(reason);
          this.renderConfigurationSummaryPending(reason);
-         this.renderScheduledMonitoringPending(reason);
-@@ -244,6 +246,45 @@ class AdminSystemHealthController {
-         this.setRuntimeHealthStatus("lastChecked", runtimeHealth.lastChecked ? "PASS" : "WARN", reason);
+@@ -285,6 +287,45 @@ class AdminSystemHealthController {
+         this.apiContractRows.replaceChildren(fragment);
      }
  
-+    renderApiContractPending(reason) {
-+        if (!this.apiContractRows) {
++    renderEnvironmentCapabilitiesPending(reason) {
++        if (!this.capabilityRows) {
 +            return;
 +        }
 +        const row = document.createElement("tr");
 +        row.append(
-+            this.createCell("Health API Contract"),
++            this.createCell("Environment Capabilities"),
 +            this.createCell("not available"),
 +            this.createStatusCell("PENDING", reason),
 +        );
-+        this.apiContractRows.replaceChildren(row);
++        this.capabilityRows.replaceChildren(row);
 +    }
 +
-+    renderApiContract(apiContract = {}) {
-+        if (!this.apiContractRows) {
++    renderEnvironmentCapabilities(environmentCapabilities = {}) {
++        if (!this.capabilityRows) {
 +            return;
 +        }
-+        if (apiContract?.secretsExposed === true || apiContract?.secretEditingAllowed === true) {
-+            this.renderApiContractPending("Safe API contract response was blocked because it exposed secret controls.");
++        if (environmentCapabilities?.secretsExposed === true || environmentCapabilities?.secretEditingAllowed === true) {
++            this.renderEnvironmentCapabilitiesPending("Safe environment capabilities response was blocked because it exposed secret controls.");
 +            return;
 +        }
-+        const rows = Array.isArray(apiContract.rows) ? apiContract.rows : [];
++        const rows = Array.isArray(environmentCapabilities.rows) ? environmentCapabilities.rows : [];
 +        if (!rows.length) {
-+            this.renderApiContractPending("Safe Admin System Health API returned no contract rows.");
++            this.renderEnvironmentCapabilitiesPending("Safe Admin System Health API returned no environment capability rows.");
 +            return;
 +        }
 +        const fragment = document.createDocumentFragment();
-+        rows.forEach((contractRow) => {
++        rows.forEach((capabilityRow) => {
 +            const row = document.createElement("tr");
 +            row.append(
-+                this.createCell(contractRow.field),
-+                this.createCell(contractRow.value),
-+                this.createStatusCell(contractRow.status, apiContract.message),
++                this.createCell(capabilityRow.capability),
++                this.createCell(capabilityRow.value),
++                this.createStatusCell(capabilityRow.status, environmentCapabilities.message),
 +            );
 +            fragment.append(row);
 +        });
-+        this.apiContractRows.replaceChildren(fragment);
++        this.capabilityRows.replaceChildren(fragment);
 +    }
 +
      renderServiceHealthPending(reason) {
          if (!this.serviceCards) {
              return;
-@@ -665,6 +706,7 @@ class AdminSystemHealthController {
+@@ -706,6 +747,7 @@ class AdminSystemHealthController {
          this.renderStorageStatus(data?.storageStatus || {});
          this.runStorageDiagnostics();
          this.renderRuntimeHealth(data?.runtimeHealth || {});
-+        this.renderApiContract(data?.apiContract || {});
++        this.renderEnvironmentCapabilities(data?.environmentCapabilities || {});
+         this.renderApiContract(data?.apiContract || {});
          this.renderServiceHealth(data?.serviceHealth || {});
          this.renderConfigurationSummary(data?.configurationSummary || {});
-         this.renderScheduledMonitoring(data?.scheduledMonitoring || {});
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 7e3f565f5..6388b18ee 100644
+index 6388b18ee..a20648f49 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 @@ -7,7 +7,7 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
  
  Changed runtime JS files considered:
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(85%) assets/theme-v2/js/admin-system-health.js - executed lines 646/646; executed functions 60/71
-+(84%) assets/theme-v2/js/admin-system-health.js - executed lines 686/686; executed functions 62/74
+-(84%) assets/theme-v2/js/admin-system-health.js - executed lines 686/686; executed functions 62/74
++(83%) assets/theme-v2/js/admin-system-health.js - executed lines 726/726; executed functions 64/77
  
  Guardrail warnings:
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index bae5e5942..efddfe95a 100644
+index efddfe95a..1553c54a6 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
 @@ -18,7 +18,7 @@ Exercised tool entry points detected:
  
  Changed runtime JS files covered:
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(85%) assets/theme-v2/js/admin-system-health.js - executed lines 646/646; executed functions 60/71
-+(84%) assets/theme-v2/js/admin-system-health.js - executed lines 686/686; executed functions 62/74
+-(84%) assets/theme-v2/js/admin-system-health.js - executed lines 686/686; executed functions 62/74
++(83%) assets/theme-v2/js/admin-system-health.js - executed lines 726/726; executed functions 64/77
  
  Files with executed line/function counts where available:
  (36%) src/api/server-api-client.js - executed lines 167/167; executed functions 5/14
@@ -136,8 +136,8 @@ index bae5e5942..efddfe95a 100644
  (74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1001/1001; executed functions 69/93
  (80%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 4/5
  (83%) assets/js/shared/status.js - executed lines 37/37; executed functions 5/6
--(85%) assets/theme-v2/js/admin-system-health.js - executed lines 646/646; executed functions 60/71
-+(84%) assets/theme-v2/js/admin-system-health.js - executed lines 686/686; executed functions 62/74
+-(84%) assets/theme-v2/js/admin-system-health.js - executed lines 686/686; executed functions 62/74
++(83%) assets/theme-v2/js/admin-system-health.js - executed lines 726/726; executed functions 64/77
  (91%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 10/11
  (100%) src/api/admin-system-health-api-client.js - executed lines 28/28; executed functions 4/4
  
@@ -145,200 +145,184 @@ index bae5e5942..efddfe95a 100644
  (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
  (0%) tests/dev-runtime/AdminHealthOperations.test.mjs - changed JS file not collected as browser runtime coverage
  (0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
--(85%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
-+(84%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
+-(84%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
++(83%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
 diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index b46b963e2..ae30c76f0 100644
+index ae30c76f0..121f8116e 100644
 --- a/src/dev-runtime/server/local-api-router.mjs
 +++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -322,6 +322,7 @@ const LOCAL_API_STARTUP_DEFAULT_PORT_BY_PROTOCOL = Object.freeze({
-   "https:": "443",
- });
- const LOCAL_API_PROCESS_STARTED_AT = new Date().toISOString();
-+const SYSTEM_HEALTH_API_CONTRACT_VERSION = "2026-06-24.system-health.v1";
- const SYSTEM_HEALTH_USAGE_NOT_AVAILABLE = "NOT AVAILABLE";
- const SYSTEM_HEALTH_USAGE_CONTRACTS = Object.freeze({
-   GAMEFOUNDRY_DB_CONNECTION_LIMIT: Object.freeze({
-@@ -362,6 +363,11 @@ const SYSTEM_HEALTH_MANUAL_ACTION_LABELS = Object.freeze({
-   "runtime-check": "Run Runtime Check",
-   "storage-check": "Run Storage Check",
- });
-+const SYSTEM_HEALTH_API_ENDPOINTS = Object.freeze([
-+  Object.freeze({ method: "GET", path: "/api/admin/system-health/status", purpose: "Read current deployment System Health status." }),
-+  Object.freeze({ method: "POST", path: "/api/admin/system-health/action", purpose: "Run current deployment manual health actions." }),
-+  Object.freeze({ method: "POST", path: "/api/admin/system-health/storage-connectivity-action", purpose: "Run current deployment R2 folder diagnostics." }),
-+]);
- const STORAGE_CONNECTIVITY_TEST_OBJECT_CONTENT = "Game Foundry Studio storage connectivity test object.\n";
- const STORAGE_CONNECTIVITY_TEST_OBJECT_RELATIVE_PATH = "connectivity/storage-connectivity-test.txt";
- const SYSTEM_HEALTH_ENVIRONMENT_MODELS = Object.freeze([
-@@ -1008,6 +1014,58 @@ function systemHealthSummary(rows) {
+@@ -1296,6 +1296,62 @@ function systemHealthConfigurationSummary({
    };
  }
  
-+function systemHealthApiContract(checkedAt = new Date().toISOString()) {
-+  const endpointValue = SYSTEM_HEALTH_API_ENDPOINTS
-+    .map((endpoint) => `${endpoint.method} ${endpoint.path}`)
-+    .join("; ");
++function systemHealthEnvironmentCapabilities({
++  authStatus = {},
++  checkedAt,
++  databaseStatus = {},
++  environmentIdentity = {},
++  storageStatus = {},
++}) {
 +  const rows = [
 +    {
-+      field: "Contract version",
-+      status: "PASS",
-+      value: SYSTEM_HEALTH_API_CONTRACT_VERSION,
++      capability: "Hosting",
++      status: environmentIdentity.hostingModel ? "PASS" : "WARN",
++      value: environmentIdentity.hostingModel || "not configured",
 +    },
 +    {
-+      field: "Data boundary",
-+      status: "PASS",
-+      value: SERVER_DATA_BOUNDARY_RULE,
++      capability: "API",
++      status: environmentIdentity.apiUrlStatus || "WARN",
++      value: environmentIdentity.apiUrl || "not configured",
 +    },
 +    {
-+      field: "Deployment scope",
-+      status: "PASS",
-+      value: "Current deployment only",
++      capability: "Database",
++      status: databaseStatus.connectivityStatus || databaseStatus.status || "WARN",
++      value: databaseStatus.databaseType || environmentIdentity.databaseModel || "PostgreSQL",
 +    },
 +    {
-+      field: "Environment Map",
-+      status: "PASS",
-+      value: "Reference only; no peer environment checks",
++      capability: "Storage",
++      status: storageStatus.environmentFolderStatus || environmentIdentity.storageFolderStatus || "WARN",
++      value: `Cloudflare R2 ${storageStatus.environmentFolder || environmentIdentity.storageFolder || "not configured"}`,
 +    },
 +    {
-+      field: "Secret handling",
-+      status: "PASS",
-+      value: "No secret editing; secret values hidden",
++      capability: "Authentication",
++      status: authStatus.ready === true ? "PASS" : "PENDING",
++      value: authStatus.ready === true ? "Configured" : "Not Configured",
 +    },
 +    {
-+      field: "Endpoints",
-+      status: "PASS",
-+      value: endpointValue,
++      capability: "Scheduled Monitoring",
++      status: "PENDING",
++      value: "Not Configured",
++    },
++    {
++      capability: "Notifications",
++      status: "PENDING",
++      value: "Not Configured",
 +    },
 +  ];
 +  return {
-+    contractVersion: SYSTEM_HEALTH_API_CONTRACT_VERSION,
-+    currentDeploymentOnly: true,
-+    endpointCount: SYSTEM_HEALTH_API_ENDPOINTS.length,
-+    endpoints: SYSTEM_HEALTH_API_ENDPOINTS.map((endpoint) => ({ ...endpoint })),
++    currentEnvironment: environmentIdentity.name || "Unknown",
 +    lastChecked: checkedAt,
-+    message: "Admin System Health API contract is current-deployment only and server-owned.",
-+    noCrossEnvironmentChecks: true,
-+    referenceEnvironmentMapOnly: true,
++    message: "Environment Capabilities describes the current deployment only.",
++    peerEnvironmentChecks: false,
 +    rows,
 +    secretEditingAllowed: false,
 +    secretsExposed: false,
-+    status: "PASS",
++    status: overallHealthStatus(rows.map((row) => ({ status: row.status }))),
 +  };
 +}
 +
- function isSecretLikeRuntimeEnvKey(key) {
-   const upperKey = String(key || "").toUpperCase();
-   return RUNTIME_ENV_SECRET_MARKERS.some((marker) => upperKey.includes(marker));
-@@ -4244,6 +4302,7 @@ LIMIT 1;
-     const session = await this.requireAdminSession();
-     const authStatus = this.authStatus();
-     const checkedAt = new Date().toISOString();
-+    const apiContract = systemHealthApiContract(checkedAt);
-     const environmentIdentity = systemHealthEnvironmentIdentity(process.env, checkedAt);
-     const environmentMap = systemHealthEnvironmentMap();
-     const databaseStatus = await this.ownerDatabaseStatus(environmentIdentity);
-@@ -4413,6 +4472,7 @@ LIMIT 1;
-       pressureLabels: SYSTEM_HEALTH_LIMIT_PRESSURE_LABELS,
-       connectionSummary: this.ownerConnectionSummary(),
-       databaseStatus,
-+      apiContract,
-       configurationSummary,
-       r2Readiness,
-       secretEditingAllowed: false,
+ function systemHealthScheduledMonitoring(checkedAt = new Date().toISOString()) {
+   const rows = [
+     {
+@@ -4331,6 +4387,13 @@ LIMIT 1;
+       environmentIdentity,
+       storageStatus,
+     });
++    const environmentCapabilities = systemHealthEnvironmentCapabilities({
++      authStatus,
++      checkedAt,
++      databaseStatus,
++      environmentIdentity,
++      storageStatus,
++    });
+     const scheduledMonitoring = systemHealthScheduledMonitoring(checkedAt);
+     const notificationsFoundation = systemHealthNotificationsFoundation(checkedAt);
+     const operationsHealth = adminOperationsHealth(this.standaloneTables);
+@@ -4465,6 +4528,7 @@ LIMIT 1;
+       message: "Admin System Health loaded safe status only.",
+       environmentIdentity,
+       environmentMap,
++      environmentCapabilities,
+       healthCheckHistory,
+       notificationsFoundation,
+       operationsHealth,
 diff --git a/tests/dev-runtime/AdminHealthOperations.test.mjs b/tests/dev-runtime/AdminHealthOperations.test.mjs
-index f76213645..b3f50029d 100644
+index b3f50029d..a2023f7d3 100644
 --- a/tests/dev-runtime/AdminHealthOperations.test.mjs
 +++ b/tests/dev-runtime/AdminHealthOperations.test.mjs
-@@ -201,6 +201,18 @@ test("Admin can view operational health while Creator sessions are blocked", asy
-         health.environmentMap.map((row) => row.name),
-         ["Local", "DEV", "IST", "UAT", "PRD"],
+@@ -187,6 +187,13 @@ test("Admin can view operational health while Creator sessions are blocked", asy
        );
-+      assert.equal(health.apiContract.contractVersion, "2026-06-24.system-health.v1");
-+      assert.equal(health.apiContract.currentDeploymentOnly, true);
-+      assert.equal(health.apiContract.noCrossEnvironmentChecks, true);
-+      assert.equal(health.apiContract.referenceEnvironmentMapOnly, true);
+       assert.equal(health.notificationsFoundation.rows.every((row) => row.value === "Not Configured"), true);
+       assert.equal(health.notificationsFoundation.status, "PENDING");
++      assert.equal(health.environmentCapabilities.currentEnvironment, "Local");
++      assert.equal(health.environmentCapabilities.peerEnvironmentChecks, false);
 +      assert.deepEqual(
-+        health.apiContract.endpoints.map((endpoint) => `${endpoint.method} ${endpoint.path}`),
-+        [
-+          "GET /api/admin/system-health/status",
-+          "POST /api/admin/system-health/action",
-+          "POST /api/admin/system-health/storage-connectivity-action",
-+        ],
++        health.environmentCapabilities.rows.map((row) => row.capability),
++        ["Hosting", "API", "Database", "Storage", "Authentication", "Scheduled Monitoring", "Notifications"],
 +      );
-       assert.equal(
-         health.environmentMap.some((row) => Object.prototype.hasOwnProperty.call(row, "status")),
-         false,
++      assert.equal(JSON.stringify(health.environmentCapabilities).includes("/uat"), false);
+       assert.equal(health.storageStatus.environmentFolder, "/local");
+       assert.equal(typeof health.storageStatus.lastChecked, "string");
+       assert.equal(Array.isArray(health.healthCheckHistory), true);
 diff --git a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-index 335c1e2f0..d16f6b6b6 100644
+index d16f6b6b6..7f191b96e 100644
 --- a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
 +++ b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-@@ -145,6 +145,11 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
+@@ -145,6 +145,13 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
      await expect(page.getByRole("table", { name: "Environment map" })).toContainText("UAT");
      await expect(page.getByRole("table", { name: "Environment map" })).toContainText("PRD");
      await expect(page.getByRole("table", { name: "Environment map" }).locator("[data-health-status]")).toHaveCount(0);
-+    const apiContractTable = page.getByRole("table", { name: "Health API contract" });
-+    await expect(apiContractTable).toContainText("2026-06-24.system-health.v1");
-+    await expect(apiContractTable).toContainText("Current deployment only");
-+    await expect(apiContractTable).toContainText("Reference only");
-+    await expect(apiContractTable).toContainText("GET /api/admin/system-health/status");
-     const serviceCards = page.locator("[data-admin-system-health-service-card]");
-     await expect(serviceCards).toHaveCount(7);
-     const serviceCardText = (await serviceCards.allTextContents()).join("\n");
-@@ -297,6 +302,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
++    const capabilitiesTable = page.getByRole("table", { name: "Environment capabilities" });
++    await expect(capabilitiesTable).toContainText("Hosting");
++    await expect(capabilitiesTable).toContainText("API");
++    await expect(capabilitiesTable).toContainText("Database");
++    await expect(capabilitiesTable).toContainText("Storage");
++    await expect(capabilitiesTable).toContainText("Scheduled Monitoring");
++    await expect(capabilitiesTable).not.toContainText("/uat");
+     const apiContractTable = page.getByRole("table", { name: "Health API contract" });
+     await expect(apiContractTable).toContainText("2026-06-24.system-health.v1");
+     await expect(apiContractTable).toContainText("Current deployment only");
+@@ -302,6 +309,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
    expect(pageSource).not.toContain("SQLite");
    expect(pageSource).toContain("Environment Identity");
    expect(pageSource).toContain("Environment Map");
-+  expect(pageSource).toContain("Health API Contract");
++  expect(pageSource).toContain("Environment Capabilities");
+   expect(pageSource).toContain("Health API Contract");
    expect(pageSource).toContain("Service Health");
    expect(pageSource).toContain("Configuration Summary");
-   expect(pageSource).toContain("Manual Health Actions");
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_018-health-api-contract-cleanup-branch-validation.md b/docs_build/dev/reports/PR_26175_CHARLIE_018-health-api-contract-cleanup-branch-validation.md
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_019-environment-capabilities-branch-validation.md b/docs_build/dev/reports/PR_26175_CHARLIE_019-environment-capabilities-branch-validation.md
 new file mode 100644
-index 000000000..b10a284e8
+index 000000000..519a012e3
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_018-health-api-contract-cleanup-branch-validation.md
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_019-environment-capabilities-branch-validation.md
 @@ -0,0 +1,6 @@
-+# PR_26175_CHARLIE_018 Branch Validation
++# PR_26175_CHARLIE_019 Branch Validation
 +
-+- PASS: Started from clean `pr/26175-CHARLIE-010-system-health-history-and-closeout`.
-+- PASS: Stacked on PR_26175_CHARLIE_017.
++- PASS: Continued on `pr/26175-CHARLIE-010-system-health-history-and-closeout`.
++- PASS: Stacked on PR_26175_CHARLIE_018.
 +- PASS: No merge performed.
 +- PASS: No rebase performed.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_018-health-api-contract-cleanup-manual-validation-notes.md b/docs_build/dev/reports/PR_26175_CHARLIE_018-health-api-contract-cleanup-manual-validation-notes.md
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_019-environment-capabilities-manual-validation-notes.md b/docs_build/dev/reports/PR_26175_CHARLIE_019-environment-capabilities-manual-validation-notes.md
 new file mode 100644
-index 000000000..a54b303eb
+index 000000000..7e0d1b58a
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_018-health-api-contract-cleanup-manual-validation-notes.md
-@@ -0,0 +1,6 @@
-+# PR_26175_CHARLIE_018 Manual Validation Notes
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_019-environment-capabilities-manual-validation-notes.md
+@@ -0,0 +1,5 @@
++# PR_26175_CHARLIE_019 Manual Validation Notes
 +
-+- Verified Health API Contract table appears on System Health.
-+- Verified contract rows come from `/api/admin/system-health/status`.
-+- Verified Environment Map remains reference-only.
-+- Verified no response shape removals were made.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_018-health-api-contract-cleanup-requirement-checklist.md b/docs_build/dev/reports/PR_26175_CHARLIE_018-health-api-contract-cleanup-requirement-checklist.md
++- Verified Environment Capabilities table renders after Environment Map.
++- Verified the table reflects the current deployment only.
++- Verified no `/uat`, `/prd`, or peer environment checks appear in current capability rows.
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_019-environment-capabilities-requirement-checklist.md b/docs_build/dev/reports/PR_26175_CHARLIE_019-environment-capabilities-requirement-checklist.md
 new file mode 100644
-index 000000000..8ffb3f1c1
+index 000000000..0109a4580
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_018-health-api-contract-cleanup-requirement-checklist.md
-@@ -0,0 +1,9 @@
-+# PR_26175_CHARLIE_018 Requirement Checklist
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_019-environment-capabilities-requirement-checklist.md
+@@ -0,0 +1,7 @@
++# PR_26175_CHARLIE_019 Requirement Checklist
 +
-+- PASS: Cleaned up API contract visibility.
-+- PASS: Preserved current response fields.
-+- PASS: Added explicit current-deployment-only contract.
-+- PASS: Added explicit no-cross-environment-checks contract.
-+- PASS: Added endpoint list.
-+- PASS: Browser renders API-owned contract state.
++- PASS: Added current environment capabilities.
++- PASS: Did not add peer environment checks.
++- PASS: Browser renders API-owned capability state.
++- PASS: Not Configured placeholders do not fake success.
 +- PASS: Required reports generated.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_018-health-api-contract-cleanup-validation.md b/docs_build/dev/reports/PR_26175_CHARLIE_018-health-api-contract-cleanup-validation.md
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_019-environment-capabilities-validation.md b/docs_build/dev/reports/PR_26175_CHARLIE_019-environment-capabilities-validation.md
 new file mode 100644
-index 000000000..407a3065d
+index 000000000..5d523af39
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_018-health-api-contract-cleanup-validation.md
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_019-environment-capabilities-validation.md
 @@ -0,0 +1,12 @@
-+# PR_26175_CHARLIE_018 Validation Report
++# PR_26175_CHARLIE_019 Validation Report
 +
 +## Commands
 +
@@ -350,25 +334,25 @@ index 000000000..407a3065d
 +  - Result: 4 passed.
 +- PASS: `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line`
 +  - Result: 3 passed.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_018-health-api-contract-cleanup.md b/docs_build/dev/reports/PR_26175_CHARLIE_018-health-api-contract-cleanup.md
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_019-environment-capabilities.md b/docs_build/dev/reports/PR_26175_CHARLIE_019-environment-capabilities.md
 new file mode 100644
-index 000000000..e513dee45
+index 000000000..a5a68d926
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_018-health-api-contract-cleanup.md
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_019-environment-capabilities.md
 @@ -0,0 +1,25 @@
-+# PR_26175_CHARLIE_018 Health API Contract Cleanup
++# PR_26175_CHARLIE_019 Environment Capabilities
 +
 +## Scope
 +
 +Team: Charlie
 +
-+Purpose: Add explicit Admin System Health API contract metadata and UI visibility.
++Purpose: Add current-environment capability summary to Admin System Health.
 +
 +## Changes
 +
-+- Added server-owned `apiContract` to `/api/admin/system-health/status`.
-+- Added contract version, data boundary, current-deployment-only rule, reference-only Environment Map rule, secret handling rule, and endpoint registry.
-+- Added Health API Contract table to `admin/system-health.html`.
++- Added server-owned `environmentCapabilities` to the System Health status API.
++- Added Environment Capabilities table to the System Health page.
++- Covered Hosting, API, Database, Storage, Authentication, Scheduled Monitoring, and Notifications.
 +- Updated API and Playwright tests.
 +
 +## Validation
@@ -380,4 +364,4 @@ index 000000000..e513dee45
 +
 +## Artifact
 +
-+- `tmp/PR_26175_CHARLIE_018-health-api-contract-cleanup_delta.zip`
++- `tmp/PR_26175_CHARLIE_019-environment-capabilities_delta.zip`

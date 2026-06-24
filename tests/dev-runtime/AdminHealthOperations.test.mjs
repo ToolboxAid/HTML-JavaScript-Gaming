@@ -187,6 +187,13 @@ test("Admin can view operational health while Creator sessions are blocked", asy
       );
       assert.equal(health.notificationsFoundation.rows.every((row) => row.value === "Not Configured"), true);
       assert.equal(health.notificationsFoundation.status, "PENDING");
+      assert.equal(health.environmentCapabilities.currentEnvironment, "Local");
+      assert.equal(health.environmentCapabilities.peerEnvironmentChecks, false);
+      assert.deepEqual(
+        health.environmentCapabilities.rows.map((row) => row.capability),
+        ["Hosting", "API", "Database", "Storage", "Authentication", "Scheduled Monitoring", "Notifications"],
+      );
+      assert.equal(JSON.stringify(health.environmentCapabilities).includes("/uat"), false);
       assert.equal(health.storageStatus.environmentFolder, "/local");
       assert.equal(typeof health.storageStatus.lastChecked, "string");
       assert.equal(Array.isArray(health.healthCheckHistory), true);

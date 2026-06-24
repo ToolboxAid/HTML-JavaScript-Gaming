@@ -40,6 +40,7 @@
                                 <div class="accordion-body content-stack">
                                     <p>Environment Identity</p>
                                     <p>Environment Map</p>
+                                    <p>Environment Capabilities</p>
                                     <p>Health API Contract</p>
                                     <p>Service Health</p>
                                     <p>Configuration Summary</p>
@@ -103,6 +104,21 @@
                                     <tr><td>IST</td><td>Local Docker</td><td>Local Docker PostgreSQL</td><td>/ist</td></tr>
                                     <tr><td>UAT</td><td>Cloudflare</td><td>Supabase PostgreSQL</td><td>/uat</td></tr>
                                     <tr><td>PRD</td><td>Cloudflare</td><td>Supabase PostgreSQL</td><td>/prd</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Environment capabilities">
+                                <caption>Environment Capabilities</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Capability</th>
+                                        <th scope="col">Current Deployment</th>
+                                        <th scope="col">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-system-health-capability-rows>
+                                    <tr><td>Environment Capabilities</td><td>Waiting for safe API status</td><td data-health-status="PENDING" title="Reason: environment capabilities have not loaded yet." aria-label="PENDING: environment capabilities have not loaded yet.">PENDING</td></tr>
                                 </tbody>
                             </table>
                         </div>
