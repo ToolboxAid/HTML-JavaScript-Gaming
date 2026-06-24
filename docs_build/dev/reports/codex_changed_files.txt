@@ -1,28 +1,9 @@
 # git status --short
-M  docs_build/dev/PROJECT_INSTRUCTIONS.md
-M  docs_build/dev/ProjectInstructions/addendums/branch_context_governance.md
-M  docs_build/dev/ProjectInstructions/addendums/branch_lock_governance.md
-M  docs_build/dev/ProjectInstructions/addendums/multi_team.md
-M  docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
-M  docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
-M  docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
-M  docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
-A  docs_build/dev/reports/PR_26175_OWNER_049-pr-lifecycle-plan-after-open-branch-retention.md
-
-# git ls-files --others --exclude-standard
 
 
-# git diff --stat
+# git diff --name-status main...HEAD
+A	docs_build/dev/reports/PR_26175_OWNER_049-governance-report-merge-batch.md
 
-
-# git diff --cached --stat
- docs_build/dev/PROJECT_INSTRUCTIONS.md             | 43 +++++++------
- .../addendums/branch_context_governance.md         |  2 +-
- .../addendums/branch_lock_governance.md            |  6 +-
- .../ProjectInstructions/addendums/multi_team.md    | 15 +++--
- .../ProjectInstructions/addendums/pr_workflow.md   | 52 ++++++++-------
- .../addendums/team_release_readiness.md            |  4 +-
- .../addendums/team_start_and_release.md            | 16 +++--
- .../team_assignments/TEAM_ASSIGNMENTS.md           |  7 +-
- ...r-lifecycle-plan-after-open-branch-retention.md | 75 ++++++++++++++++++++++
- 9 files changed, 159 insertions(+), 61 deletions(-)
+# git diff --stat main...HEAD
+ ...6175_OWNER_049-governance-report-merge-batch.md | 128 +++++++++++++++++++++
+ 1 file changed, 128 insertions(+)
