@@ -1,39 +1,570 @@
+diff --git a/admin/system-health.html b/admin/system-health.html
+index b4b9f477f..8573b3310 100644
+--- a/admin/system-health.html
++++ b/admin/system-health.html
+@@ -43,6 +43,7 @@
+                                     <p>Local API Startup</p>
+                                     <p>Database Health</p>
+                                     <p>Storage Health</p>
++                                    <p>Health Check History</p>
+                                     <p>Runtime Environment</p>
+                                     <p>Limits &amp; Capacity</p>
+                                     <p>Diagnostics Plan</p>
+@@ -143,11 +144,29 @@
+                                     </tr>
+                                 </thead>
+                                 <tbody>
+-                                    <tr><td>Bucket</td><td data-admin-system-health-storage-value="bucket">Configured bucket placeholder</td><td data-health-status="PENDING" data-admin-system-health-storage-status="bucket" title="Reason: R2 bucket reader is intentionally not wired in this foundation PR." aria-label="PENDING: R2 bucket reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
+-                                    <tr><td>List</td><td data-admin-system-health-storage-value="list">Objects prefix</td><td data-health-status="PENDING" data-admin-system-health-storage-status="list" title="Reason: R2 list check is intentionally not wired in this foundation PR." aria-label="PENDING: R2 list check is intentionally not wired in this foundation PR.">PENDING</td></tr>
+-                                    <tr><td>Read</td><td data-admin-system-health-storage-value="read">Health object</td><td data-health-status="PENDING" data-admin-system-health-storage-status="read" title="Reason: R2 read check is intentionally not wired in this foundation PR." aria-label="PENDING: R2 read check is intentionally not wired in this foundation PR.">PENDING</td></tr>
+-                                    <tr><td>Write</td><td data-admin-system-health-storage-value="write">Health object</td><td data-health-status="PENDING" data-admin-system-health-storage-status="write" title="Reason: R2 write check is intentionally not wired in this foundation PR." aria-label="PENDING: R2 write check is intentionally not wired in this foundation PR.">PENDING</td></tr>
+-                                    <tr><td>Delete</td><td data-admin-system-health-storage-value="delete">Health object</td><td data-health-status="PENDING" data-admin-system-health-storage-status="delete" title="Reason: R2 delete check is intentionally not wired in this foundation PR." aria-label="PENDING: R2 delete check is intentionally not wired in this foundation PR.">PENDING</td></tr>
++                                    <tr><td>Bucket connectivity</td><td data-admin-system-health-storage-value="bucket">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="bucket" title="Reason: R2 bucket connectivity has not loaded yet." aria-label="PENDING: R2 bucket connectivity has not loaded yet.">PENDING</td></tr>
++                                    <tr><td>List</td><td data-admin-system-health-storage-value="list">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="list" title="Reason: R2 list check has not loaded yet." aria-label="PENDING: R2 list check has not loaded yet.">PENDING</td></tr>
++                                    <tr><td>Upload</td><td data-admin-system-health-storage-value="upload">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="upload" title="Reason: R2 upload check has not loaded yet." aria-label="PENDING: R2 upload check has not loaded yet.">PENDING</td></tr>
++                                    <tr><td>Read</td><td data-admin-system-health-storage-value="read">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="read" title="Reason: R2 read check has not loaded yet." aria-label="PENDING: R2 read check has not loaded yet.">PENDING</td></tr>
++                                    <tr><td>Delete</td><td data-admin-system-health-storage-value="delete">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="delete" title="Reason: R2 delete check has not loaded yet." aria-label="PENDING: R2 delete check has not loaded yet.">PENDING</td></tr>
++                                    <tr><td>Last checked</td><td data-admin-system-health-storage-value="lastChecked">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="lastChecked" title="Reason: R2 health has not loaded yet." aria-label="PENDING: R2 health has not loaded yet.">PENDING</td></tr>
++                                </tbody>
++                            </table>
++                        </div>
++                        <div class="table-wrapper">
++                            <table class="data-table" aria-label="Health check history">
++                                <caption>Health Check History</caption>
++                                <thead>
++                                    <tr>
++                                        <th scope="col">Time</th>
++                                        <th scope="col">Environment</th>
++                                        <th scope="col">Area</th>
++                                        <th scope="col">Result</th>
++                                        <th scope="col">Summary</th>
++                                    </tr>
++                                </thead>
++                                <tbody data-admin-system-health-history-rows>
++                                    <tr><td>Loading</td><td>Loading</td><td>Current environment</td><td data-health-status="PENDING" title="Reason: health check history has not loaded yet." aria-label="PENDING: health check history has not loaded yet.">PENDING</td><td>Waiting for safe API status.</td></tr>
+                                 </tbody>
+                             </table>
+                         </div>
+diff --git a/assets/theme-v2/js/admin-system-health.js b/assets/theme-v2/js/admin-system-health.js
+index 61b446a3e..e0c2cab9f 100644
+--- a/assets/theme-v2/js/admin-system-health.js
++++ b/assets/theme-v2/js/admin-system-health.js
+@@ -9,8 +9,9 @@ import {
+ } from "../../js/shared/status.js";
+ 
+ const STORAGE_DIAGNOSTIC_ACTIONS = Object.freeze([
++    Object.freeze({ actionId: "storage-bucket-connectivity", key: "bucket" }),
+     Object.freeze({ actionId: "storage-list", key: "list" }),
+-    Object.freeze({ actionId: "storage-write-test-object", key: "write" }),
++    Object.freeze({ actionId: "storage-upload-test-object", key: "upload" }),
+     Object.freeze({ actionId: "storage-read-test-object", key: "read" }),
+     Object.freeze({ actionId: "storage-delete-test-object", key: "delete" }),
+ ]);
+@@ -46,6 +47,7 @@ class AdminSystemHealthController {
+             node.dataset.adminSystemHealthStorageStatus,
+             node,
+         ]));
++        this.historyRows = root.querySelector("[data-admin-system-health-history-rows]");
+         this.startupRows = root.querySelector("[data-admin-system-health-startup-rows]");
+         this.runtimeRows = root.querySelector("[data-admin-system-health-runtime-rows]");
+     }
+@@ -106,6 +108,7 @@ class AdminSystemHealthController {
+         });
+         this.renderStartupPending(reason);
+         this.renderStoragePending(reason);
++        this.renderHistoryPending(reason);
+     }
+ 
+     renderEnvironmentIdentity(environmentIdentity = {}) {
+@@ -127,7 +130,7 @@ class AdminSystemHealthController {
+     }
+ 
+     renderStoragePending(reason) {
+-        ["bucket", "list", "read", "write", "delete"].forEach((key) => {
++        ["bucket", "list", "upload", "read", "delete", "lastChecked"].forEach((key) => {
+             this.setStorageStatus(key, "PENDING", reason);
+         });
+         this.renderRuntimePending(reason);
+@@ -153,8 +156,10 @@ class AdminSystemHealthController {
+ 
+     renderStorageStatus(storageStatus = {}) {
+         const reason = storageStatus.message || "Cloudflare R2 configuration status returned by the safe Admin System Health API.";
+-        this.setStorageValue("bucket", storageStatus.bucket, "not configured");
++        this.setStorageValue("bucket", storageStatus.environmentFolder ? `${storageStatus.bucket || "not configured"} ${storageStatus.environmentFolder}` : storageStatus.bucket, "not configured");
+         this.setStorageStatus("bucket", storageStatus.bucketStatus || storageStatus.status, reason);
++        this.setStorageValue("lastChecked", storageStatus.lastChecked, "not available");
++        this.setStorageStatus("lastChecked", storageStatus.lastChecked ? "PASS" : "WARN", reason);
+     }
+ 
+     renderStartupPending(reason) {
+@@ -198,9 +203,12 @@ class AdminSystemHealthController {
+ 
+     storageResultTarget(result = {}) {
+         if (typeof result.keysListed === "number" && result.actionId === "storage-list") {
+-            return `${result.keysListed} object(s) under ${asText(result.projectsPrefix, "configured prefix")}`;
++            return `${result.keysListed} object(s) under ${asText(result.environmentFolder, "current environment folder")}`;
+         }
+-        return result.testObjectKey || result.projectsPrefix || result.message || "diagnostic target unavailable";
++        if (result.actionId === "storage-bucket-connectivity") {
++            return result.environmentFolder || result.message || "bucket connectivity target unavailable";
++        }
++        return result.testObjectKey || result.environmentFolder || result.message || "diagnostic target unavailable";
+     }
+ 
+     renderStorageResult(key, result = {}) {
+@@ -210,6 +218,49 @@ class AdminSystemHealthController {
+         }
+         this.setStorageValue(key, this.storageResultTarget(result));
+         this.setStorageStatus(key, result.status, result.message || "R2 diagnostic returned without a message.");
++        if (result.lastChecked) {
++            this.setStorageValue("lastChecked", result.lastChecked);
++            this.setStorageStatus("lastChecked", "PASS", "Most recent current-environment R2 health check timestamp.");
++        }
++    }
++
++    renderHistoryPending(reason) {
++        if (!this.historyRows) {
++            return;
++        }
++        const row = document.createElement("tr");
++        row.append(
++            this.createCell("not available"),
++            this.createCell("current environment"),
++            this.createCell("Health Check History"),
++            this.createStatusCell("PENDING", reason),
++            this.createCell("Safe health check history is not available."),
++        );
++        this.historyRows.replaceChildren(row);
++    }
++
++    renderHealthCheckHistory(historyRows = []) {
++        if (!this.historyRows) {
++            return;
++        }
++        const rows = Array.isArray(historyRows) ? historyRows : [];
++        if (!rows.length) {
++            this.renderHistoryPending("Safe Admin System Health API returned no current-environment health check history rows.");
++            return;
++        }
++        const fragment = document.createDocumentFragment();
++        rows.forEach((historyRow) => {
++            const row = document.createElement("tr");
++            row.append(
++                this.createCell(historyRow.checkedAt),
++                this.createCell(historyRow.environmentName),
++                this.createCell(historyRow.area),
++                this.createStatusCell(historyRow.result || historyRow.status, historyRow.summary),
++                this.createCell(historyRow.summary),
++            );
++            fragment.append(row);
++        });
++        this.historyRows.replaceChildren(fragment);
+     }
+ 
+     runStorageDiagnostics() {
+@@ -292,6 +343,7 @@ class AdminSystemHealthController {
+             this.renderStartupDiagnostics(data?.localApiStartup || {});
+             this.renderStorageStatus(data?.storageStatus || {});
+             this.runStorageDiagnostics();
++            this.renderHealthCheckHistory(data?.healthCheckHistory || []);
+             this.renderRuntimeEnvironment(data?.runtimeEnvironment || {});
+         } catch (error) {
+             const message = error instanceof Error ? error.message : "Safe Admin System Health API is unavailable.";
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_009-system-health-current-r2-health.md b/docs_build/dev/reports/PR_26175_CHARLIE_009-system-health-current-r2-health.md
+new file mode 100644
+index 000000000..a0cd45bc9
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_009-system-health-current-r2-health.md
+@@ -0,0 +1,41 @@
++# PR_26175_CHARLIE_009 System Health Current R2 Health
++
++## Scope
++
++Team: Charlie
++
++Purpose: Add current-environment Cloudflare R2 folder health only to Admin System Health.
++
++## Changes
++
++- Replaced the System Health Storage Health rows with current-environment R2 checks:
++  - bucket connectivity
++  - list
++  - upload
++  - read
++  - delete
++  - last checked
++- System Health storage diagnostics run against the current environment folder only:
++  - Local: `/local`
++  - DEV: `/dev`
++  - IST: `/ist`
++  - UAT: `/uat`
++  - PRD: `/prd`
++- Preserved the separate Admin Infrastructure storage diagnostic path that uses the configured project prefix.
++- Updated focused API and Playwright tests.
++
++## Architecture Constraint
++
++PASS. R2 health checks target only the current deployment environment folder. No peer environment R2 folders are actively checked by System Health.
++
++## Validation
++
++- PASS: `node --check src/dev-runtime/server/local-api-router.mjs`
++- PASS: `node --check assets/theme-v2/js/admin-system-health.js`
++- PASS: `git diff --check`
++- PASS: `node --test tests/dev-runtime/AdminHealthOperations.test.mjs`
++- PASS: `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line`
++
++## Artifact
++
++- `tmp/PR_26175_CHARLIE_009-system-health-current-r2-health_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_010-system-health-history-and-closeout.md b/docs_build/dev/reports/PR_26175_CHARLIE_010-system-health-history-and-closeout.md
+new file mode 100644
+index 000000000..c8f5ff396
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_010-system-health-history-and-closeout.md
+@@ -0,0 +1,68 @@
++# PR_26175_CHARLIE_010 System Health History and Closeout
++
++## Scope
++
++Team: Charlie
++
++Purpose: Add current-environment Health Check History and close out the System Health stacked expansion chain.
++
++## Chain
++
++- `PR_26175_CHARLIE_006-project-instructions-system-health-infrastructure`
++  - Branch: `PR_26175_CHARLIE_006-project-instructions-system-health-infrastructure`
++  - Commit: `c870b812faded383094fb13fc60ae9cfc7f14889`
++  - Result: pushed to origin, not merged.
++- `PR_26175_CHARLIE_007-system-health-environment-identity`
++  - Branch: `pr/26175-CHARLIE-007-system-health-environment-identity`
++  - Commit: `6556e73efcd8ae13b51b56288416c88688e67634`
++  - Draft PR: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/151
++- `PR_26175_CHARLIE_008-system-health-current-database-health`
++  - Branch: `pr/26175-CHARLIE-008-system-health-current-database-health`
++  - Commit: `2603aeb6e5a7ccca516051953cbd70a5a6c94c4b`
++  - Draft PR: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/152
++- `PR_26175_CHARLIE_009-system-health-current-r2-health`
++  - Branch: `pr/26175-CHARLIE-009-system-health-current-r2-health`
++  - Commit: `9740705fbe73dffd43744ab66338f8e4a925eed4`
++  - Draft PR: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/153
++- `PR_26175_CHARLIE_010-system-health-history-and-closeout`
++  - Branch: `pr/26175-CHARLIE-010-system-health-history-and-closeout`
++  - Commit and draft PR URL are assigned after this report is committed and pushed.
++
++## Changes
++
++- Added Health Check History to the Admin System Health page.
++- Health Check History is derived from the current deployment only:
++  - Environment Summary
++  - Database Health
++  - Storage Health
++  - Runtime Health
++- Warning and failure rows are generated only from current-environment health rows.
++- Creator sessions remain blocked from Admin System Health and do not trigger status or storage health requests.
++
++## Governance
++
++- PASS: System Health is one page per deployed environment.
++- PASS: Each deployment actively checks only itself.
++- PASS: The Environment Map remains a static reference for Local, DEV, IST, UAT, and PRD.
++- PASS: System Health does not actively check peer databases or peer R2 folders.
++- PASS: Cancelled initiatives remain not doing:
++  - Environment Isolation & Developer Experience
++  - multi-port workspace framework
++  - Alpha/Beta/User runtime separation
++  - runtime port management initiative
++
++## Validation
++
++- PASS: `node --check src/dev-runtime/server/local-api-router.mjs`
++- PASS: `node --check assets/theme-v2/js/admin-system-health.js`
++- PASS: `git diff --check`
++- PASS: `node --test tests/dev-runtime/AdminHealthOperations.test.mjs`
++- PASS: `node --test tests/dev-runtime/PublicEnvironmentConfig.test.mjs`
++- PASS: `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line`
++
++## Artifacts
++
++- `tmp/PR_26175_CHARLIE_007-system-health-environment-identity_delta.zip`
++- `tmp/PR_26175_CHARLIE_008-system-health-current-database-health_delta.zip`
++- `tmp/PR_26175_CHARLIE_009-system-health-current-r2-health_delta.zip`
++- `tmp/PR_26175_CHARLIE_010-system-health-history-and-closeout_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order-branch-validation.md b/docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order-branch-validation.md
+new file mode 100644
+index 000000000..e2d3a2b30
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order-branch-validation.md
+@@ -0,0 +1,15 @@
++# PR_26175_CHARLIE_011 Branch Validation
++
++## Start Gate
++
++- PASS: Current branch was `pr/26175-CHARLIE-010-system-health-history-and-closeout`.
++- PASS: Worktree was clean before implementation.
++- PASS: Build remained on the current Charlie continuation branch.
++- PASS: No rebase was performed.
++- PASS: No new root branch was created.
++
++## Final Branch Target
++
++- Branch to push: `pr/26175-CHARLIE-010-system-health-history-and-closeout`
++- Expected draft PR to update: https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/155
++- Merge status: no merge requested or performed.
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order-manual-validation-notes.md b/docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order-manual-validation-notes.md
+new file mode 100644
+index 000000000..e8b6eae26
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order-manual-validation-notes.md
+@@ -0,0 +1,26 @@
++# PR_26175_CHARLIE_011 Manual Validation Notes
++
++## Admin Submenu Order
++
++Visible labels after the change:
++
++`Admin Tools`, `Analytics`, `Controls`, `Creators`, `DB Viewer`, `Environments`, `Game Migration`, `Infrastructure`, `Invites`, `Moderation`, `Operations`, `Platform Settings`, `Ratings`, `Responsibilities`, `Site Setup`, `System Health`, `Tool Votes`
++
++## Route Preservation
++
++The only source navigation reorder moved this existing item:
++
++- `Creators`
++  - path remained `admin/users.html`
++  - route remained `admin-users`
++  - label remained `Creators`
++
++All other Admin navigation objects remained unchanged.
++
++## Open-Page Check
++
++The targeted Playwright navigation test collected every active Admin submenu href from the rendered submenu and requested each page through the local test server. Every response returned a status below HTTP 400.
++
++## Duplicate Check
++
++The targeted Playwright navigation test checks for duplicate rendered labels and duplicate active hrefs. The targeted unit script also checks duplicate labels and existing active paths.
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order-requirement-checklist.md b/docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order-requirement-checklist.md
+new file mode 100644
+index 000000000..39afb7966
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order-requirement-checklist.md
+@@ -0,0 +1,42 @@
++# PR_26175_CHARLIE_011 Requirement Checklist
++
++## Branch Rules
++
++- PASS: Continued on `pr/26175-CHARLIE-010-system-health-history-and-closeout`.
++- PASS: Did not return to `main`.
++- PASS: Did not rebase.
++- PASS: Did not create a new root branch.
++- PASS: Hard stop conditions were checked before implementation.
++
++## Objective
++
++- PASS: Admin submenu entries are alphabetized by displayed text.
++
++## Scope
++
++- PASS: Located Admin submenu definition in `src/api/admin-owner-navigation.js`.
++- PASS: Sorted submenu entries by displayed text.
++- PASS: Preserved routes, URLs, IDs, CSS classes, Theme V2 styling, and existing renderer behavior.
++- PASS: Did not rename pages.
++- PASS: Did not rename folders.
++- PASS: Did not modify page content.
++- PASS: No unrelated cleanup.
++
++## Validation
++
++- PASS: Verified submenu labels are alphabetical.
++- PASS: Verified every Admin page path exists and every Admin submenu href opens below HTTP 400 in targeted Playwright.
++- PASS: Verified no duplicate labels or hrefs.
++- PASS: Ran affected Playwright navigation tests.
++- PASS: Ran affected targeted unit tests.
++
++## Artifacts
++
++- PASS: `docs_build/dev/reports/codex_review.diff`
++- PASS: `docs_build/dev/reports/codex_changed_files.txt`
++- PASS: `docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order.md`
++- PASS: validation report
++- PASS: branch validation report
++- PASS: requirement checklist
++- PASS: manual validation notes
++- PASS: repository ZIP under `tmp/`
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order-validation.md b/docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order-validation.md
+new file mode 100644
+index 000000000..aeec3f443
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order-validation.md
+@@ -0,0 +1,22 @@
++# PR_26175_CHARLIE_011 Validation Report
++
++## Commands
++
++- PASS: `node --check src/api/admin-owner-navigation.js`
++- PASS: `node --input-type=module` alphabetical/duplicate/path verification script
++  - Result: `PASS labels=17 active=16`
++  - Order: `Admin Tools | Analytics | Controls | Creators | DB Viewer | Environments | Game Migration | Infrastructure | Invites | Moderation | Operations | Platform Settings | Ratings | Responsibilities | Site Setup | System Health | Tool Votes`
++- PASS: `git diff --check`
++  - Result: no whitespace errors; CRLF conversion warnings only.
++- PASS: `node --test tests/dev-runtime/ApiMenuPathCleanup.test.mjs`
++  - Result: 6 passed.
++- PASS: `node --test --test-name-pattern "Admin and Owner navigation are shared" tests/dev-runtime/ArchitectureCleanupApiNavInvitations.test.mjs`
++  - Result: 1 passed.
++- PASS: `npx playwright test tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs --workers=1 --reporter=line`
++  - Result: 4 passed.
++- PASS: `npx playwright test tests/playwright/tools/AdminInvitationsNavPage.spec.mjs --workers=1 --reporter=line`
++  - Result: 3 passed.
++
++## Note
++
++A non-targeted full-file run of `tests/dev-runtime/ArchitectureCleanupApiNavInvitations.test.mjs` was not used for final validation because its first non-navigation test fails on a pre-existing missing `src/engine/api` directory assertion. The affected navigation subtest passed by name.
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order.md b/docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order.md
+new file mode 100644
+index 000000000..7dcbe5262
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order.md
+@@ -0,0 +1,47 @@
++# PR_26175_CHARLIE_011 Admin Submenu Alphabetical Order
++
++## Scope
++
++Team: Charlie
++
++Purpose: Alphabetize the Admin submenu by visible menu labels only.
++
++## Branch
++
++- Continuation branch: `pr/26175-CHARLIE-010-system-health-history-and-closeout`
++- Start gate: PASS
++  - Current branch matched the expected Charlie continuation branch.
++  - Worktree was clean before implementation.
++
++## Changes
++
++- Moved `Creators` into its alphabetical position in `src/api/admin-owner-navigation.js`.
++- Preserved each Admin menu item label, path, route id, disabled state, and renderer behavior.
++- Updated affected navigation tests that pin visible Admin menu label order.
++- Added Playwright coverage of:
++  - alphabetical visible label order
++  - duplicate detection
++  - duplicate href detection
++  - each Admin submenu href opening with an HTTP status below 400
++
++## Non-Changes
++
++- No page files were renamed.
++- No folders were renamed.
++- No page content was modified.
++- No routes, URLs, permissions, icons, IDs, CSS classes, Theme V2 styling, or event handlers were changed.
++- No menu outside the Admin submenu was reordered.
++
++## Validation Summary
++
++- PASS: Admin labels are alphabetical.
++- PASS: No duplicate Admin labels.
++- PASS: No duplicate Admin hrefs.
++- PASS: Every active Admin submenu item points to an existing page path.
++- PASS: Every Admin submenu href opened with an HTTP status below 400 in the targeted Playwright navigation test.
++- PASS: Targeted unit tests passed.
++- PASS: Targeted Playwright navigation tests passed.
++
++## Artifact
++
++- `tmp/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order_delta.zip`
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index b4511a59b..5efcd7443 100644
+--- a/docs_build/dev/reports/codex_changed_files.txt
++++ b/docs_build/dev/reports/codex_changed_files.txt
+@@ -1,30 +1,21 @@
+-ï»¿# git diff --cached --name-status origin/main
+-M	assets/toolbox/idea-board/js/index.js
+-A	docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_branch-validation.md
+-A	docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_instruction-compliance.md
+-A	docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_manual-validation-notes.md
+-A	docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_report.md
+-A	docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_requirements-checklist.md
+-A	docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_validation-lane.md
+-M	docs_build/dev/reports/codex_changed_files.txt
+-M	docs_build/dev/reports/codex_review.diff
+-M	docs_build/dev/reports/coverage_changed_js_guardrail.txt
+-M	docs_build/dev/reports/playwright_v8_coverage_report.txt
+-M	tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+-M	tests/playwright/tools/ToolboxRoutePages.spec.mjs
+-
+-# git diff --cached --stat origin/main
+- assets/toolbox/idea-board/js/index.js              |  31 +-
+- ...d-guest-save-auth-redirect_branch-validation.md |  22 +
+- ...st-save-auth-redirect_instruction-compliance.md |  31 +
+- ...t-save-auth-redirect_manual-validation-notes.md |  37 ++
+- ...1-idea-board-guest-save-auth-redirect_report.md |  51 ++
+- ...st-save-auth-redirect_requirements-checklist.md |  19 +
+- ...ard-guest-save-auth-redirect_validation-lane.md |  36 ++
+- docs_build/dev/reports/codex_changed_files.txt     |  33 +-
+- docs_build/dev/reports/codex_review.diff           | 695 +++++++++++++++++----
+- .../dev/reports/coverage_changed_js_guardrail.txt  |  10 +-
+- .../dev/reports/playwright_v8_coverage_report.txt  |  39 +-
+- .../playwright/tools/IdeaBoardTableNotes.spec.mjs  | 118 +++-
+- tests/playwright/tools/ToolboxRoutePages.spec.mjs  |   5 +-
+- 13 files changed, 941 insertions(+), 186 deletions(-)
++admin/system-health.html
++assets/theme-v2/js/admin-system-health.js
++docs_build/dev/reports/PR_26175_CHARLIE_009-system-health-current-r2-health.md
++docs_build/dev/reports/PR_26175_CHARLIE_010-system-health-history-and-closeout.md
++docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order-branch-validation.md
++docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order-manual-validation-notes.md
++docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order-requirement-checklist.md
++docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order-validation.md
++docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order.md
++docs_build/dev/reports/codex_changed_files.txt
++docs_build/dev/reports/codex_review.diff
++docs_build/dev/reports/coverage_changed_js_guardrail.txt
++docs_build/dev/reports/playwright_v8_coverage_report.txt
++src/api/admin-owner-navigation.js
++src/dev-runtime/server/local-api-router.mjs
++tests/dev-runtime/AdminHealthOperations.test.mjs
++tests/dev-runtime/ApiMenuPathCleanup.test.mjs
++tests/dev-runtime/ArchitectureCleanupApiNavInvitations.test.mjs
++tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
++tests/playwright/tools/AdminInvitationsNavPage.spec.mjs
++tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 0003bcc7e..8df1af057 100644
+index e8e235569..8df1af057 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 @@ -6,8 +6,10 @@ Missing changed runtime JS files are WARN, not FAIL.
  Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
-
+ 
  Changed runtime JS files considered:
 +(0%) assets/theme-v2/js/admin-system-health.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(88%) assets/theme-v2/js/admin-system-health.js - executed lines 334/334; executed functions 35/40
+-(89%) assets/theme-v2/js/admin-system-health.js - executed lines 284/284; executed functions 33/37
 +(100%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 5/5
-
+ 
  Guardrail warnings:
 +(0%) assets/theme-v2/js/admin-system-health.js - WARNING: changed runtime JS file missing from coverage; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 82d39d813..be704e176 100644
+index b83e6a3d3..be704e176 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
 @@ -12,31 +12,41 @@ Note: entry percentages use function coverage when available, otherwise line cov
  Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
-
+ 
  Exercised tool entry points detected:
 -(46%) Toolbox Index - exercised 1 runtime JS files
 +(35%) Toolbox Index - exercised 1 runtime JS files
  (0%) Tool Template V2 - not exercised by this Playwright run
 -(78%) Theme V2 Shared JS - exercised 4 runtime JS files
 +(70%) Theme V2 Shared JS - exercised 5 runtime JS files
-
+ 
  Changed runtime JS files covered:
 +(0%) assets/theme-v2/js/admin-system-health.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(88%) assets/theme-v2/js/admin-system-health.js - executed lines 334/334; executed functions 35/40
+-(89%) assets/theme-v2/js/admin-system-health.js - executed lines 284/284; executed functions 33/37
 +(100%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 5/5
-
+ 
  Files with executed line/function counts where available:
 +(35%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 9/26
  (36%) src/api/server-api-client.js - executed lines 167/167; executed functions 5/14
@@ -49,17 +580,17 @@ index 82d39d813..be704e176 100644
  (74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1001/1001; executed functions 69/93
 -(80%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 4/5
 -(83%) assets/js/shared/status.js - executed lines 37/37; executed functions 5/6
--(88%) assets/theme-v2/js/admin-system-health.js - executed lines 334/334; executed functions 35/40
+-(89%) assets/theme-v2/js/admin-system-health.js - executed lines 284/284; executed functions 33/37
 -(91%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 10/11
 -(100%) src/api/admin-system-health-api-client.js - executed lines 19/19; executed functions 3/3
 +(89%) src/dev-runtime/admin/admin-notes-viewer.js - executed lines 533/533; executed functions 49/55
 +(100%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 11/11
 +(100%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 5/5
-
+ 
  Uncovered or low-coverage changed JS files:
 +(0%) assets/theme-v2/js/admin-system-health.js - WARNING: uncovered changed runtime JS file; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
-
+ 
  Changed JS files considered:
 +(0%) assets/theme-v2/js/admin-system-health.js - changed JS file not collected as browser runtime coverage
  (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
@@ -67,7 +598,7 @@ index 82d39d813..be704e176 100644
 +(0%) tests/dev-runtime/ApiMenuPathCleanup.test.mjs - changed JS file not collected as browser runtime coverage
 +(0%) tests/dev-runtime/ArchitectureCleanupApiNavInvitations.test.mjs - changed JS file not collected as browser runtime coverage
  (0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
--(88%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
+-(89%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
 +(0%) tests/playwright/tools/AdminInvitationsNavPage.spec.mjs - changed JS file not collected as browser runtime coverage
 +(0%) tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs - changed JS file not collected as browser runtime coverage
 +(100%) src/api/admin-owner-navigation.js - changed JS file with browser V8 coverage
@@ -89,8 +620,341 @@ index b80366641..592647346 100644
    Object.freeze({ label: "Tool Votes", path: "admin/tool-votes.html", route: "admin-tool-votes" }),
 -  Object.freeze({ label: "Creators", path: "admin/users.html", route: "admin-users" }),
  ]);
-
+ 
  const OWNER_NAVIGATION_ITEMS = Object.freeze([
+diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
+index 7305d14c0..194ba4622 100644
+--- a/src/dev-runtime/server/local-api-router.mjs
++++ b/src/dev-runtime/server/local-api-router.mjs
+@@ -340,10 +340,12 @@ const SYSTEM_HEALTH_USAGE_CONTRACTS = Object.freeze({
+   }),
+ });
+ const STORAGE_CONNECTIVITY_ACTIONS = Object.freeze([
+-  Object.freeze({ id: "storage-list", label: "List" }),
+-  Object.freeze({ id: "storage-write-test-object", label: "Write test object" }),
+-  Object.freeze({ id: "storage-read-test-object", label: "Read test object" }),
+-  Object.freeze({ id: "storage-delete-test-object", label: "Delete test object" }),
++  Object.freeze({ id: "storage-bucket-connectivity", label: "Bucket connectivity", operation: "bucket-connectivity" }),
++  Object.freeze({ id: "storage-list", label: "List", operation: "list" }),
++  Object.freeze({ id: "storage-upload-test-object", label: "Upload test object", operation: "upload" }),
++  Object.freeze({ id: "storage-write-test-object", label: "Write test object", operation: "upload" }),
++  Object.freeze({ id: "storage-read-test-object", label: "Read test object", operation: "read" }),
++  Object.freeze({ id: "storage-delete-test-object", label: "Delete test object", operation: "delete" }),
+ ]);
+ const STORAGE_CONNECTIVITY_TEST_OBJECT_CONTENT = "Game Foundry Studio storage connectivity test object.\n";
+ const STORAGE_CONNECTIVITY_TEST_OBJECT_RELATIVE_PATH = "connectivity/storage-connectivity-test.txt";
+@@ -1026,6 +1028,71 @@ function systemHealthRuntimeEnvironment(env = process.env) {
+   };
+ }
+ 
++function systemHealthHistoryRow({ checkedAt, environmentName, area, result, summary, kind = "recent check" }) {
++  return {
++    area,
++    checkedAt,
++    environmentName,
++    kind,
++    result: normalizeHealthStatus(result),
++    summary: String(summary || "No summary returned."),
++  };
++}
++
++function systemHealthCheckHistory({
++  checkedAt,
++  databaseStatus = {},
++  environmentIdentity = {},
++  runtimeEnvironment = {},
++  storageStatus = {},
++}) {
++  const environmentName = environmentIdentity.name || "Unknown";
++  const databaseResponseTime = Number.isFinite(databaseStatus.responseTimeMs)
++    ? `${databaseStatus.responseTimeMs} ms`
++    : "not available";
++  const recentChecks = [
++    systemHealthHistoryRow({
++      area: "Environment Summary",
++      checkedAt,
++      environmentName,
++      result: environmentIdentity.status,
++      summary: `Current deployment ${environmentName}; hosting ${environmentIdentity.hostingModel || "not configured"}; storage folder ${environmentIdentity.storageFolder || "not configured"}.`,
++    }),
++    systemHealthHistoryRow({
++      area: "Database Health",
++      checkedAt,
++      environmentName,
++      result: databaseStatus.connectivityStatus || databaseStatus.status,
++      summary: `${databaseStatus.databaseType || "PostgreSQL"} connectivity ${databaseStatus.connectivity || "not configured"}; response time ${databaseResponseTime}; version ${databaseStatus.version || "not available"}.`,
++    }),
++    systemHealthHistoryRow({
++      area: "Storage Health",
++      checkedAt,
++      environmentName,
++      result: storageStatus.status,
++      summary: `Cloudflare R2 folder ${storageStatus.environmentFolder || environmentIdentity.storageFolder || "not configured"}; bucket ${storageStatus.configured ? "configured" : "not configured"}; last checked ${storageStatus.lastChecked || checkedAt}.`,
++    }),
++    systemHealthHistoryRow({
++      area: "Runtime Health",
++      checkedAt,
++      environmentName,
++      result: runtimeEnvironment.status,
++      summary: runtimeEnvironment.message || "Runtime environment health unavailable.",
++    }),
++  ];
++  const issueRows = recentChecks
++    .filter((row) => row.result !== "PASS")
++    .map((row) => systemHealthHistoryRow({
++      area: `${row.area} ${row.result === "FAIL" ? "Failure" : "Warning"}`,
++      checkedAt: row.checkedAt,
++      environmentName: row.environmentName,
++      kind: row.result === "FAIL" ? "failure" : "warning",
++      result: row.result,
++      summary: row.summary,
++    }));
++  return [...recentChecks, ...issueRows];
++}
++
+ function systemHealthR2Readiness(storageStatus) {
+   const credentialsConfigured = storageStatus.accessKeyConfigured === true && storageStatus.secretKeyConfigured === true;
+   const configurationReady = storageStatus.configured === true
+@@ -3436,6 +3503,7 @@ class ApiRuntimeDataSource {
+     const storageConfig = loadStorageConfig();
+     const safe = storageConfig.safe || {};
+     const configured = storageConfig.configured === true;
++    const environmentIdentity = systemHealthEnvironmentIdentity();
+     return {
+       accessKeyConfigured: configured,
+       accessKeyStatus: configured ? "PASS" : "WARN",
+@@ -3444,6 +3512,9 @@ class ApiRuntimeDataSource {
+       configured,
+       endpoint: safe.endpoint || "",
+       endpointStatus: safe.endpoint && safe.endpoint !== "invalid endpoint" ? "PASS" : "WARN",
++      environmentFolder: environmentIdentity.storageFolder,
++      environmentFolderStatus: environmentIdentity.storageFolderStatus,
++      lastChecked: new Date().toISOString(),
+       message: configured
+         ? "Project asset storage is configured. Credential values are hidden."
+         : `Project asset storage is not fully configured: ${storageConfig.missingKeys?.join(", ") || storageConfig.validationError || "storage configuration incomplete"}.`,
+@@ -3455,17 +3526,34 @@ class ApiRuntimeDataSource {
+     };
+   }
+ 
+-  storageConnectivityTestObjectKey(storage) {
++  storageConnectivityEnvironmentFolder() {
++    return systemHealthEnvironmentIdentity().storageFolder || "/local";
++  }
++
++  storageConnectivityTargetPrefix(storage, scope = "project-prefix") {
++    if (scope === "environment-folder") {
++      return `${this.storageConnectivityEnvironmentFolder()}/`.replace(/\/{2,}/g, "/");
++    }
++    return String(storage.config?.projectsPrefix || "").trim();
++  }
++
++  storageConnectivityTestObjectKey(storage, scope = "project-prefix") {
++    if (scope === "environment-folder") {
++      return `${this.storageConnectivityTargetPrefix(storage, scope)}${STORAGE_CONNECTIVITY_TEST_OBJECT_RELATIVE_PATH}`.replace(/\/{2,}/g, "/");
++    }
+     const projectsPrefix = String(storage.config?.projectsPrefix || "").trim();
+     return `${projectsPrefix}${STORAGE_CONNECTIVITY_TEST_OBJECT_RELATIVE_PATH}`.replace(/\/{2,}/g, "/");
+   }
+ 
+-  storageConnectivityConfigFailure(actionId, storage) {
++  storageConnectivityConfigFailure(actionId, storage, scope = "project-prefix") {
+     const missing = storage.config?.missingKeys?.join(", ") || storage.config?.validationError || "storage configuration incomplete";
+     return {
+       actionId,
++      environmentFolder: scope === "environment-folder" ? this.storageConnectivityEnvironmentFolder() : "",
+       executed: false,
++      lastChecked: new Date().toISOString(),
+       message: `Storage connectivity requires configured storage and GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX before this action can run. Missing or invalid: ${missing}.`,
++      projectsPrefix: String(storage.config?.projectsPrefix || "").trim(),
+       secretEditingAllowed: false,
+       secretsExposed: false,
+       status: "FAIL",
+@@ -3473,11 +3561,13 @@ class ApiRuntimeDataSource {
+     };
+   }
+ 
+-  storageConnectivityResult({ actionId, executed = true, keysListed = 0, message, objectKey, projectsPrefix, status }) {
++  storageConnectivityResult({ actionId, environmentFolder = "", executed = true, keysListed = 0, message, objectKey, projectsPrefix, status }) {
+     return {
+       actionId,
++      environmentFolder,
+       executed,
+       keysListed,
++      lastChecked: new Date().toISOString(),
+       message,
+       projectsPrefix,
+       secretEditingAllowed: false,
+@@ -3488,36 +3578,58 @@ class ApiRuntimeDataSource {
+     };
+   }
+ 
+-  async runStorageConnectivityAction(actionId) {
++  async runStorageConnectivityAction(actionId, options = {}) {
+     const action = STORAGE_CONNECTIVITY_ACTIONS.find((candidate) => candidate.id === actionId);
+     if (!action) {
+       throw new Error(`Unknown storage connectivity action: ${actionId || "missing actionId"}.`);
+     }
+ 
++    const scope = options.scope === "environment-folder" ? "environment-folder" : "project-prefix";
+     const storage = createConfiguredProjectAssetStorage();
+     const projectsPrefix = String(storage.config?.projectsPrefix || "").trim();
+     if (!storage.configured || !projectsPrefix) {
+-      return this.storageConnectivityConfigFailure(action.id, storage);
++      return this.storageConnectivityConfigFailure(action.id, storage, scope);
+     }
+ 
+-    const objectKey = this.storageConnectivityTestObjectKey(storage);
++    const environmentFolder = scope === "environment-folder" ? this.storageConnectivityEnvironmentFolder() : "";
++    const targetPrefix = this.storageConnectivityTargetPrefix(storage, scope);
++    const objectKey = this.storageConnectivityTestObjectKey(storage, scope);
+     try {
+-      if (action.id === "storage-list") {
+-        const result = await storage.listProjectObjects();
++      if (action.operation === "bucket-connectivity") {
++        const result = await storage.listObjects(targetPrefix);
+         const keysListed = Array.isArray(result.keys) ? result.keys.length : 0;
+         return this.storageConnectivityResult({
+           actionId: action.id,
++          environmentFolder,
+           keysListed,
+           message: result.ok
+-            ? `List completed under ${projectsPrefix}; ${keysListed} object(s) returned.`
+-            : `${result.message || "Storage list failed."} Verify the endpoint, bucket, credentials, and GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX.`,
++            ? `Bucket connectivity validated for current environment folder ${targetPrefix}.`
++            : `${result.message || "Storage bucket connectivity failed."} Verify the endpoint, bucket, credentials, and current environment folder ${targetPrefix}.`,
+           objectKey,
+           projectsPrefix,
+           status: result.ok ? "PASS" : "FAIL",
+         });
+       }
+ 
+-      if (action.id === "storage-write-test-object") {
++      if (action.operation === "list") {
++        const result = scope === "environment-folder"
++          ? await storage.listObjects(targetPrefix)
++          : await storage.listProjectObjects();
++        const keysListed = Array.isArray(result.keys) ? result.keys.length : 0;
++        return this.storageConnectivityResult({
++          actionId: action.id,
++          environmentFolder,
++          keysListed,
++          message: result.ok
++            ? `List completed under ${targetPrefix}; ${keysListed} object(s) returned.`
++            : `${result.message || "Storage list failed."} Verify the endpoint, bucket, credentials, and target prefix ${targetPrefix}.`,
++          objectKey,
++          projectsPrefix,
++          status: result.ok ? "PASS" : "FAIL",
++        });
++      }
++
++      if (action.operation === "upload") {
+         const result = await storage.putObject({
+           bytes: STORAGE_CONNECTIVITY_TEST_OBJECT_CONTENT,
+           contentType: "text/plain; charset=utf-8",
+@@ -3525,24 +3637,26 @@ class ApiRuntimeDataSource {
+         });
+         return this.storageConnectivityResult({
+           actionId: action.id,
++          environmentFolder,
+           message: result.ok
+-            ? `Write test object completed at ${objectKey}.`
+-            : `${result.message || "Storage write failed."} Verify write permission for ${projectsPrefix}.`,
++            ? `Upload test object completed at ${objectKey}.`
++            : `${result.message || "Storage upload failed."} Verify upload permission for ${targetPrefix}.`,
+           objectKey,
+           projectsPrefix,
+           status: result.ok ? "PASS" : "FAIL",
+         });
+       }
+ 
+-      if (action.id === "storage-read-test-object") {
++      if (action.operation === "read") {
+         const result = await storage.readObject(objectKey);
+         const text = result.ok ? Buffer.from(result.bytes || []).toString("utf8") : "";
+         const contentMatches = text === STORAGE_CONNECTIVITY_TEST_OBJECT_CONTENT;
+         return this.storageConnectivityResult({
+           actionId: action.id,
++          environmentFolder,
+           message: result.ok && contentMatches
+             ? `Read test object completed from ${objectKey}.`
+-            : `${result.message || "Storage read failed or returned unexpected content."} Run Write test object first and verify read permission for ${projectsPrefix}.`,
++            : `${result.message || "Storage read failed or returned unexpected content."} Run Upload first and verify read permission for ${targetPrefix}.`,
+           objectKey,
+           projectsPrefix,
+           status: result.ok && contentMatches ? "PASS" : "FAIL",
+@@ -3552,9 +3666,10 @@ class ApiRuntimeDataSource {
+       const result = await storage.deleteObject(objectKey);
+       return this.storageConnectivityResult({
+         actionId: action.id,
++        environmentFolder,
+         message: result.ok
+           ? `Delete test object completed at ${objectKey}.`
+-          : `${result.message || "Storage delete failed."} Verify delete permission for ${projectsPrefix}.`,
++          : `${result.message || "Storage delete failed."} Verify delete permission for ${targetPrefix}.`,
+         objectKey,
+         projectsPrefix,
+         status: result.ok ? "PASS" : "FAIL",
+@@ -3562,6 +3677,7 @@ class ApiRuntimeDataSource {
+     } catch (error) {
+       return this.storageConnectivityResult({
+         actionId: action.id,
++        environmentFolder,
+         message: `Storage connectivity action failed: ${error instanceof Error ? error.message : String(error || "Unknown storage error.")}`,
+         objectKey,
+         projectsPrefix,
+@@ -3767,7 +3883,7 @@ LIMIT 1;
+ 
+   async adminSystemHealthStorageConnectivityAction(body = {}) {
+     await this.requireAdminSession();
+-    return this.runStorageConnectivityAction(String(body.actionId || "").trim());
++    return this.runStorageConnectivityAction(String(body.actionId || "").trim(), { scope: "environment-folder" });
+   }
+ 
+   async adminSystemHealthStatus() {
+@@ -3787,6 +3903,13 @@ LIMIT 1;
+     const r2Readiness = systemHealthR2Readiness(storageStatus);
+     const runtimeEnvironment = systemHealthRuntimeEnvironment();
+     const operationsHealth = adminOperationsHealth(this.standaloneTables);
++    const healthCheckHistory = systemHealthCheckHistory({
++      checkedAt,
++      databaseStatus,
++      environmentIdentity,
++      runtimeEnvironment,
++      storageStatus,
++    });
+     const importBlocked = promotionFoundation.importOverwriteAllowed === false
+       && promotionFoundation.browserExecutionAllowed === false
+       && promotionFoundation.destructiveOperationsAllowed === false;
+@@ -3910,6 +4033,7 @@ LIMIT 1;
+       message: "Admin System Health loaded safe status only.",
+       environmentIdentity,
+       environmentMap,
++      healthCheckHistory,
+       operationsHealth,
+       overview,
+       pressureLabels: SYSTEM_HEALTH_LIMIT_PRESSURE_LABELS,
+diff --git a/tests/dev-runtime/AdminHealthOperations.test.mjs b/tests/dev-runtime/AdminHealthOperations.test.mjs
+index e7863ac4e..fc0d28ea7 100644
+--- a/tests/dev-runtime/AdminHealthOperations.test.mjs
++++ b/tests/dev-runtime/AdminHealthOperations.test.mjs
+@@ -142,6 +142,16 @@ test("Admin can view operational health while Creator sessions are blocked", asy
+       assert.equal(typeof health.databaseStatus.lastChecked, "string");
+       assert.equal(typeof health.databaseStatus.responseTimeMs === "number" || health.databaseStatus.responseTimeMs === null, true);
+       assert.equal(typeof health.databaseStatus.version, "string");
++      assert.equal(health.storageStatus.environmentFolder, "/local");
++      assert.equal(typeof health.storageStatus.lastChecked, "string");
++      assert.equal(Array.isArray(health.healthCheckHistory), true);
++      assert.deepEqual(
++        health.healthCheckHistory.slice(0, 4).map((row) => row.area),
++        ["Environment Summary", "Database Health", "Storage Health", "Runtime Health"],
++      );
++      assert.equal(health.healthCheckHistory.every((row) => row.environmentName === "Local"), true);
++      assert.equal(JSON.stringify(health.healthCheckHistory).includes("/dev"), false);
++      assert.equal(JSON.stringify(health.healthCheckHistory).includes("/uat"), false);
+       assert.deepEqual(
+         health.environmentMap.map((row) => row.name),
+         ["Local", "DEV", "IST", "UAT", "PRD"],
 diff --git a/tests/dev-runtime/ApiMenuPathCleanup.test.mjs b/tests/dev-runtime/ApiMenuPathCleanup.test.mjs
 index deb1027fe..abc1b76ef 100644
 --- a/tests/dev-runtime/ApiMenuPathCleanup.test.mjs
@@ -117,7 +981,7 @@ index deb1027fe..abc1b76ef 100644
    "Tool Votes",
 -  "Users",
  ]);
-
+ 
  const EXPECTED_OWNER_LABELS = Object.freeze([
 @@ -98,7 +98,7 @@ test("Admin and Owner shared menus are non-overlapping by responsibility", () =>
    ["Branding", "Design System", "Grouping Colors", "Legal", "Marketplace Settings", "Notes", "Revenue", "Site Settings", "Themes"].forEach((label) => {
@@ -141,6 +1005,55 @@ index fdb745e4c..a896dcb9c 100644
      assert.equal(adminLabels.includes(label), true, `Admin navigation should include ${label}`);
    });
    ["Owner Tools", "AI Credits", "Branding", "Grouping Colors", "Memberships", "Revenue"].forEach((label) => {
+diff --git a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+index 76c78b53e..021c845c5 100644
+--- a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
++++ b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+@@ -159,11 +159,24 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
+     await expect(page.getByRole("table", { name: "Database health" })).not.toContainText("postgres://");
+     await expect(page.getByRole("table", { name: "Database health" })).not.toContainText("postgresql://");
+     await expect(page.getByRole("table", { name: "Storage health" })).toContainText("Cloudflare R2");
+-    await expect(page.locator("[data-admin-system-health-storage-value='bucket']")).not.toHaveText("Configured bucket placeholder");
+-    await expect(page.locator("[data-admin-system-health-storage-value='list']")).not.toHaveText("Objects prefix");
++    await expect(page.locator("[data-admin-system-health-storage-value='bucket']")).toContainText("/dev");
++    await expect(page.locator("[data-admin-system-health-storage-value='list']")).toContainText("/dev");
++    await expect(page.locator("[data-admin-system-health-storage-value='upload']")).toContainText("/dev");
+     await expect(page.locator("[data-admin-system-health-storage-value='read']")).not.toHaveText("Health object");
+-    await expect(page.locator("[data-admin-system-health-storage-value='write']")).not.toHaveText("Health object");
+     await expect(page.locator("[data-admin-system-health-storage-value='delete']")).not.toHaveText("Health object");
++    const historyTable = page.getByRole("table", { name: "Health check history" });
++    await expect(historyTable).toContainText("DEV");
++    await expect(historyTable).toContainText("Environment Summary");
++    await expect(historyTable).toContainText("Database Health");
++    await expect(historyTable).toContainText("Storage Health");
++    await expect(historyTable).toContainText("Runtime Health");
++    await expect(historyTable).not.toContainText("IST");
++    await expect(historyTable).not.toContainText("UAT");
++    await expect(historyTable).not.toContainText("PRD");
++    await expect(historyTable).not.toContainText("/local");
++    await expect(historyTable).not.toContainText("/ist");
++    await expect(historyTable).not.toContainText("/uat");
++    await expect(historyTable).not.toContainText("/prd");
+     await expect(page.getByRole("table", { name: "Runtime environment" })).toContainText("********");
+     await expect(page.getByRole("table", { name: "Runtime environment" })).toContainText("GAMEFOUNDRY_ADMIN_HEALTH_DATABASE_URL");
+     await expect(page.getByRole("table", { name: "Runtime environment" })).toContainText("GAMEFOUNDRY_ADMIN_HEALTH_PUBLIC_FLAG");
+@@ -196,7 +209,7 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
+       expect((title || ariaLabel || "").trim()).not.toEqual("");
+     }
+     expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/status"))).toBe(true);
+-    expect(context.requestUrls.filter((url) => url.includes("/api/admin/system-health/storage-connectivity-action"))).toHaveLength(4);
++    expect(context.requestUrls.filter((url) => url.includes("/api/admin/system-health/storage-connectivity-action"))).toHaveLength(5);
+     await expectClientToHideSecretValues(page, context);
+     await expect(page.locator("[data-admin-system-health-storage-action]")).toHaveCount(0);
+     await expect(page.locator("[data-owner-ai-save], [data-owner-membership-save], [data-owner-ai-credits], [data-owner-memberships]")).toHaveCount(0);
+@@ -216,6 +229,7 @@ test("Creator sessions cannot access Admin System Health operations", async ({ p
+     await expect(page.locator("[data-session-access-blocked='admin']")).toBeVisible();
+     await expect(page.getByRole("table", { name: "Environment identity" })).toHaveCount(0);
+     await expect(page.getByRole("table", { name: "Environment map" })).toHaveCount(0);
++    await expect(page.getByRole("table", { name: "Health check history" })).toHaveCount(0);
+     expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/status"))).toBe(false);
+     expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/storage-connectivity-action"))).toBe(false);
+     expect(context.pageErrors).toEqual([]);
 diff --git a/tests/playwright/tools/AdminInvitationsNavPage.spec.mjs b/tests/playwright/tools/AdminInvitationsNavPage.spec.mjs
 index bb20304ab..d5ff2cda0 100644
 --- a/tests/playwright/tools/AdminInvitationsNavPage.spec.mjs
@@ -160,7 +1073,7 @@ index bb20304ab..d5ff2cda0 100644
 -      "Creators",
      ]);
      await expect(page.locator("nav[aria-label='Admin tool pages'] a[aria-current='page']")).toHaveText("Invites");
-
+ 
 diff --git a/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs b/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
 index 79890522e..f4b68a097 100644
 --- a/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
@@ -179,7 +1092,7 @@ index 79890522e..f4b68a097 100644
    "Tool Votes",
 -  "Creators",
  ]);
-
+ 
  const OWNER_LABELS = Object.freeze([
 @@ -160,6 +160,15 @@ test("Admin menu renders operational platform pages only", async ({ page }) => {
    try {
