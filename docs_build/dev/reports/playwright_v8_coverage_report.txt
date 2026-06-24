@@ -12,32 +12,31 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(69%) Toolbox Index - exercised 3 runtime JS files
+(46%) Toolbox Index - exercised 1 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
-(74%) Theme V2 Shared JS - exercised 3 runtime JS files
+(78%) Theme V2 Shared JS - exercised 4 runtime JS files
 
 Changed runtime JS files covered:
-(100%) none changed - no changed runtime JS files
+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(89%) assets/theme-v2/js/admin-system-health.js - executed lines 288/288; executed functions 33/37
 
 Files with executed line/function counts where available:
-(8%) src/api/session-api-client.js - executed lines 68/68; executed functions 1/12
-(17%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 1/6
-(25%) toolbox/game-hub/game-hub-api-client.js - executed lines 26/26; executed functions 1/4
-(36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2041/2041; executed functions 12/33
-(50%) toolbox/tools-page-accordions.js - executed lines 1156/1156; executed functions 1/2
-(59%) assets/toolbox/colors/js/index.js - executed lines 1859/1859; executed functions 122/207
-(63%) src/api/server-api-client.js - executed lines 167/167; executed functions 12/19
+(36%) src/api/server-api-client.js - executed lines 167/167; executed functions 5/14
+(46%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 12/26
 (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 204/204; executed functions 9/14
-(65%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1001/1001; executed functions 58/89
 (65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
-(67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
-(76%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 22/29
-(100%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 398/398; executed functions 35/35
+(74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1001/1001; executed functions 69/93
+(80%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 4/5
+(83%) assets/js/shared/status.js - executed lines 37/37; executed functions 5/6
+(89%) assets/theme-v2/js/admin-system-health.js - executed lines 288/288; executed functions 33/37
+(91%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 10/11
+(100%) src/api/admin-system-health-api-client.js - executed lines 19/19; executed functions 3/3
 
 Uncovered or low-coverage changed JS files:
-(100%) none changed - no changed runtime JS files
+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
-(0%) assets/toolbox/idea-board/js/index.js - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/IdeaBoardTableNotes.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/dev-runtime/AdminHealthOperations.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
+(89%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage

@@ -347,6 +347,43 @@ const STORAGE_CONNECTIVITY_ACTIONS = Object.freeze([
 ]);
 const STORAGE_CONNECTIVITY_TEST_OBJECT_CONTENT = "Game Foundry Studio storage connectivity test object.\n";
 const STORAGE_CONNECTIVITY_TEST_OBJECT_RELATIVE_PATH = "connectivity/storage-connectivity-test.txt";
+const SYSTEM_HEALTH_ENVIRONMENT_MODELS = Object.freeze([
+  Object.freeze({
+    databaseModel: "Local Docker PostgreSQL",
+    hostingModel: "VS Code + Local API",
+    name: "Local",
+    storageFolder: "/local",
+  }),
+  Object.freeze({
+    databaseModel: "Local Docker PostgreSQL",
+    hostingModel: "Local Docker",
+    name: "DEV",
+    storageFolder: "/dev",
+  }),
+  Object.freeze({
+    databaseModel: "Local Docker PostgreSQL",
+    hostingModel: "Local Docker",
+    name: "IST",
+    storageFolder: "/ist",
+  }),
+  Object.freeze({
+    databaseModel: "Supabase PostgreSQL",
+    hostingModel: "Cloudflare",
+    name: "UAT",
+    storageFolder: "/uat",
+  }),
+  Object.freeze({
+    databaseModel: "Supabase PostgreSQL",
+    hostingModel: "Cloudflare",
+    name: "PRD",
+    storageFolder: "/prd",
+  }),
+]);
+const SYSTEM_HEALTH_ENVIRONMENT_BY_NAME = new Map(SYSTEM_HEALTH_ENVIRONMENT_MODELS.map((model) => [model.name, model]));
+const SYSTEM_HEALTH_ENVIRONMENT_BY_FOLDER = new Map([
+  ...SYSTEM_HEALTH_ENVIRONMENT_MODELS.map((model) => [model.storageFolder, model.name]),
+  ["/prod", "PRD"],
+]);
 const ADMIN_OPERATION_GROUPS = Object.freeze([
   Object.freeze({
     id: "project-packaging",
@@ -848,6 +885,97 @@ function systemHealthLocalApiStartupDiagnostics(env = process.env) {
     secretEditingAllowed: false,
     secretsExposed: false,
     status: overallHealthStatus(actionableRows),
+  };
+}
+
+function systemHealthEnvironmentMap() {
+  return SYSTEM_HEALTH_ENVIRONMENT_MODELS.map((model) => ({ ...model }));
+}
+
+function topLevelStorageFolder(value) {
+  const segment = String(value || "")
+    .trim()
+    .replace(/\\/g, "/")
+    .replace(/^\/+|\/+$/g, "")
+    .split("/")
+    .filter(Boolean)[0] || "";
+  return segment ? `/${segment.toLowerCase()}` : "";
+}
+
+function normalizeEnvironmentName(value) {
+  const upperValue = String(value || "").trim().toUpperCase();
+  if (!upperValue) {
+    return "";
+  }
+  if (["LOCAL", "DEV", "IST", "UAT", "PRD"].includes(upperValue)) {
+    return upperValue === "LOCAL" ? "Local" : upperValue;
+  }
+  if (upperValue === "PROD" || upperValue === "PRODUCTION") {
+    return "PRD";
+  }
+  if (upperValue.includes("LOCAL")) {
+    return "Local";
+  }
+  return "";
+}
+
+function inferSystemHealthEnvironmentName(env = process.env) {
+  const configuredStorageFolder = topLevelStorageFolder(env.GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX || dotEnvValue(STORAGE_PROJECTS_PREFIX_ENV_KEY).value);
+  const folderMatch = SYSTEM_HEALTH_ENVIRONMENT_BY_FOLDER.get(configuredStorageFolder);
+  if (folderMatch) {
+    return {
+      configuredStorageFolder,
+      name: folderMatch,
+      source: STORAGE_PROJECTS_PREFIX_ENV_KEY,
+      status: "PASS",
+    };
+  }
+
+  const labelMatch = normalizeEnvironmentName(env.GAMEFOUNDRY_ENVIRONMENT_LABEL);
+  if (labelMatch) {
+    return {
+      configuredStorageFolder,
+      name: labelMatch,
+      source: "GAMEFOUNDRY_ENVIRONMENT_LABEL",
+      status: "WARN",
+    };
+  }
+
+  return {
+    configuredStorageFolder,
+    name: "Local",
+    source: "local default",
+    status: configuredStorageFolder ? "WARN" : "PASS",
+  };
+}
+
+function systemHealthEnvironmentIdentity(env = process.env, lastHealthCheck = new Date().toISOString()) {
+  const inferred = inferSystemHealthEnvironmentName(env);
+  const model = SYSTEM_HEALTH_ENVIRONMENT_BY_NAME.get(inferred.name) || SYSTEM_HEALTH_ENVIRONMENT_BY_NAME.get("Local");
+  const siteUrl = localApiStartupUrlDisplay(String(env.GAMEFOUNDRY_SITE_URL || "").trim());
+  const bindTarget = localApiStartupBindTarget(env);
+  const configuredApiUrl = String(env.GAMEFOUNDRY_API_URL || "").trim();
+  const apiUrl = localApiStartupUrlDisplay(configuredApiUrl || `http://${bindTarget.value}/api`);
+  const storageFolderMatches = !inferred.configuredStorageFolder
+    || inferred.configuredStorageFolder === model.storageFolder
+    || (model.name === "PRD" && inferred.configuredStorageFolder === "/prod");
+
+  return {
+    apiUrl,
+    apiUrlStatus: apiUrl === "not configured" || apiUrl === "invalid URL" ? "WARN" : "PASS",
+    databaseModel: model.databaseModel,
+    hostingModel: model.hostingModel,
+    lastHealthCheck,
+    message: storageFolderMatches
+      ? `Current deployment identity resolved as ${model.name} from ${inferred.source}.`
+      : `Current deployment identity defaulted to ${model.name}; ${STORAGE_PROJECTS_PREFIX_ENV_KEY} did not match an approved environment folder.`,
+    name: model.name,
+    siteUrl,
+    siteUrlStatus: siteUrl === "not configured" || siteUrl === "invalid URL" ? "WARN" : "PASS",
+    source: inferred.source,
+    status: storageFolderMatches ? inferred.status : "WARN",
+    storageFolder: model.storageFolder,
+    storageFolderStatus: storageFolderMatches ? inferred.status : "WARN",
   };
 }
 
@@ -3625,6 +3753,9 @@ LIMIT 1;
   async adminSystemHealthStatus() {
     const session = await this.requireAdminSession();
     const authStatus = this.authStatus();
+    const checkedAt = new Date().toISOString();
+    const environmentIdentity = systemHealthEnvironmentIdentity(process.env, checkedAt);
+    const environmentMap = systemHealthEnvironmentMap();
     const databaseStatus = await this.ownerDatabaseStatus();
     const storageStatus = this.ownerStorageStatus();
     const environmentStatus = storageProjectsPrefixStatus();
@@ -3646,6 +3777,11 @@ LIMIT 1;
         summary: session.authenticated && session.isAdmin
           ? "Current session is authenticated with Admin access."
           : "Sign in with an Admin account to view system health.",
+      },
+      {
+        area: "Environment identity",
+        status: environmentIdentity.status,
+        summary: `Current deployment is ${environmentIdentity.name}; System Health does not actively check peer environments.`,
       },
       {
         area: "Product Data / Local DB",
@@ -3710,6 +3846,13 @@ LIMIT 1;
       details: [
         { area: "Account/session readiness", field: "Session", status: session.authenticated ? "PASS" : "FAIL", value: session.authenticated ? "authenticated" : "not authenticated" },
         { area: "Account/session readiness", field: "Role", status: session.isAdmin ? "PASS" : "FAIL", value: session.isAdmin ? "Admin" : "Admin required" },
+        { area: "Environment identity", field: "Environment name", status: environmentIdentity.status, value: environmentIdentity.name },
+        { area: "Environment identity", field: "Hosting model", status: "PASS", value: environmentIdentity.hostingModel },
+        { area: "Environment identity", field: "Site URL", status: environmentIdentity.siteUrlStatus, value: environmentIdentity.siteUrl },
+        { area: "Environment identity", field: "API URL", status: environmentIdentity.apiUrlStatus, value: environmentIdentity.apiUrl },
+        { area: "Environment identity", field: "Database model", status: "PASS", value: environmentIdentity.databaseModel },
+        { area: "Environment identity", field: "Storage folder", status: environmentIdentity.storageFolderStatus, value: environmentIdentity.storageFolder },
+        { area: "Environment identity", field: "Last health check", status: "PASS", value: environmentIdentity.lastHealthCheck },
         { area: "Product Data / Local DB", field: "Database host", status: databaseStatus.hostStatus || "WARN", value: databaseStatus.host || "not configured" },
         { area: "Product Data / Local DB", field: "Database name", status: databaseStatus.databaseNameStatus || "WARN", value: databaseStatus.databaseName || "not configured" },
         { area: "Project Asset Storage / R2", field: "Endpoint", status: storageStatus.endpointStatus || "WARN", value: storageStatus.endpoint || "not configured" },
@@ -3745,6 +3888,8 @@ LIMIT 1;
       limits: limitRows,
       localApiStartup,
       message: "Admin System Health loaded safe status only.",
+      environmentIdentity,
+      environmentMap,
       operationsHealth,
       overview,
       pressureLabels: SYSTEM_HEALTH_LIMIT_PRESSURE_LABELS,

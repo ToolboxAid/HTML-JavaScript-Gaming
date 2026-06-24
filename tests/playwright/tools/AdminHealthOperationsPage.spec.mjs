@@ -12,6 +12,11 @@ const TEST_RUNTIME_ENV_VALUES = Object.freeze({
   GAMEFOUNDRY_ADMIN_HEALTH_TOKEN: "admin-health-token-secret",
 });
 
+const TEST_PUBLIC_SYSTEM_HEALTH_ENV_VALUES = Object.freeze({
+  GAMEFOUNDRY_ENVIRONMENT_LABEL: "DEV",
+  GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX: "/dev/projects/",
+});
+
 async function setSessionUser(server, userKey) {
   await fetch(`${server.baseUrl}/api/session/mode`, {
     body: JSON.stringify({ modeId: "local-db" }),
@@ -27,7 +32,10 @@ async function setSessionUser(server, userKey) {
 
 async function openAdminSystemHealthPage(page, userKey) {
   const previousRuntimeEnvValues = {};
-  Object.entries(TEST_RUNTIME_ENV_VALUES).forEach(([key, value]) => {
+  Object.entries({
+    ...TEST_RUNTIME_ENV_VALUES,
+    ...TEST_PUBLIC_SYSTEM_HEALTH_ENV_VALUES,
+  }).forEach(([key, value]) => {
     previousRuntimeEnvValues[key] = process.env[key];
     process.env[key] = value;
   });
@@ -125,10 +133,18 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
   try {
     await expect(page).toHaveTitle(/System Health - Game Foundry Studio LLC/);
     await expect(page.getByRole("heading", { exact: true, name: "System Health" })).toBeVisible();
-    await expect(page.getByRole("table", { name: "Environment summary" })).toContainText("DEV");
-    await expect(page.getByRole("table", { name: "Environment summary" })).toContainText("IST");
-    await expect(page.getByRole("table", { name: "Environment summary" })).toContainText("UAT");
-    await expect(page.getByRole("table", { name: "Environment summary" })).toContainText("PRD");
+    await expect(page.getByRole("table", { name: "Environment identity" })).toContainText("Environment name");
+    await expect(page.locator("[data-admin-system-health-environment-value='name']")).toHaveText("DEV");
+    await expect(page.locator("[data-admin-system-health-environment-value='hostingModel']")).toHaveText("Local Docker");
+    await expect(page.locator("[data-admin-system-health-environment-value='databaseModel']")).toHaveText("Local Docker PostgreSQL");
+    await expect(page.locator("[data-admin-system-health-environment-value='storageFolder']")).toHaveText("/dev");
+    await expect(page.getByRole("table", { name: "Environment identity" })).not.toContainText("env-secret");
+    await expect(page.getByRole("table", { name: "Environment map" })).toContainText("Local");
+    await expect(page.getByRole("table", { name: "Environment map" })).toContainText("DEV");
+    await expect(page.getByRole("table", { name: "Environment map" })).toContainText("IST");
+    await expect(page.getByRole("table", { name: "Environment map" })).toContainText("UAT");
+    await expect(page.getByRole("table", { name: "Environment map" })).toContainText("PRD");
+    await expect(page.getByRole("table", { name: "Environment map" }).locator("[data-health-status]")).toHaveCount(0);
     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Approved diagnostics format");
     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Environment Variables + All Runtime Ports");
     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Configurable multiple runtime ports");
@@ -197,7 +213,8 @@ test("Creator sessions cannot access Admin System Health operations", async ({ p
   try {
     await expect(page.getByRole("heading", { name: "Admin role required" })).toBeVisible();
     await expect(page.locator("[data-session-access-blocked='admin']")).toBeVisible();
-    await expect(page.getByRole("table", { name: "Environment summary" })).toHaveCount(0);
+    await expect(page.getByRole("table", { name: "Environment identity" })).toHaveCount(0);
+    await expect(page.getByRole("table", { name: "Environment map" })).toHaveCount(0);
     expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/status"))).toBe(false);
     expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/storage-connectivity-action"))).toBe(false);
     expect(context.pageErrors).toEqual([]);
@@ -217,6 +234,8 @@ test("Admin System Health operations page keeps scripts and styles external", as
   expect(pageSource).not.toMatch(/data-health-status="(?:WARN|FAIL)"/);
   expect(pageSource).not.toContain("No active failure is declared");
   expect(pageSource).not.toContain("SQLite");
+  expect(pageSource).toContain("Environment Identity");
+  expect(pageSource).toContain("Environment Map");
   expect(pageSource).toContain("Diagnostics Plan");
   expect(pageSource).toContain("Local API Startup Diagnostics");
   expect(pageSource).toContain("Server-owned Postgres health reader");
