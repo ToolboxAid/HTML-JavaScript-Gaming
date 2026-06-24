@@ -8,4 +8,4 @@
 - PASS: No inline SVG blocks added to page HTML.
 - PASS: No inline styles, style blocks, or page-local CSS added.
 - PASS: No old gfs-chevron up/down mask-image usage remains in scoped active component CSS.
-- FAIL: Full required validation lane is blocked by the pre-existing Game Hub row-count assertion in IdeaBoardTableNotes.spec.mjs.
+- PASS: Full required validation lane is green after ALFA_051.
