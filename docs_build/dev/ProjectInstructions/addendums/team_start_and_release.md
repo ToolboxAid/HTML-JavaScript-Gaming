@@ -19,6 +19,7 @@ Before a team starts, validate:
 - active assignment is selected or confirmed by OWNER
 - assigned team uses NATO phonetic naming
 - work remains with the assigned team until complete or OWNER reassignment
+- the team's previous PR is Closed, unless OWNER documented an explicit stacked PR chain
 
 ## Current Four-Team Start Set
 
@@ -60,10 +61,14 @@ For backlog-driven work:
 1. Read `docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md`.
 2. Select only the OWNER-approved backlog item.
 3. Use the approved status model from `status_model.md`.
-4. Create or use the approved team branch.
-5. Record active work in the active team registry when required.
-6. Open a draft PR after validation.
-7. Merge only through OWNER-approved PR workflow.
+4. Confirm the previous PR for the team is Closed, unless this is an explicitly documented stacked PR chain.
+5. Create or use the approved team branch and PR identity.
+6. Mark lifecycle state as PR Open.
+7. Plan on the same PR branch.
+8. Build on the same PR branch.
+9. Record active work in the active team registry when required.
+10. Open or update a draft PR during active work.
+11. Merge only through OWNER-approved PR workflow.
 
 ## Team Command Examples
 
@@ -87,6 +92,21 @@ A team or OWNER PR is release-ready when:
 - branch context is correct
 - active assignment or OWNER ownership is clear
 - PR summary states the validation result
+- lifecycle state is at least Validation
+- required reports and repo-structured ZIP under `tmp/` exist before Closed
+
+Closed readiness requires:
+- PR merged and pushed
+- current branch is `main`
+- worktree clean
+- local/origin sync is `0/0`
+- no untracked files
+- merge or final commit recorded
+- branch disposition recorded as `retained`
+- required reports exist
+- required repo-structured ZIP under `tmp/` exists
+- backlog updated
+- tool state updated when applicable
 
 ## Gate Behavior
 

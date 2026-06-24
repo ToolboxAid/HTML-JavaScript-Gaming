@@ -20,6 +20,9 @@ Teams may start only when all of the following are true:
 - No-direct-main rule exists.
 - Out-of-scope stop rule exists.
 - Build Path sync rule exists.
+- PR lifecycle states exist in order: PR Open, Plan, Build, Validation, Approved, Merged, Main Verified, Closed.
+- Previous-PR Closed gate exists before a team starts another PR, except explicitly documented stacked PR chains.
+- Final closeout output includes branch, worktree, local/origin sync, PR number/name, PR status, merge/final commit, branch disposition, backlog update status, tool state update status, ZIP path, and Closeout PASS/FAIL.
 
 ## Gate Outcome
 

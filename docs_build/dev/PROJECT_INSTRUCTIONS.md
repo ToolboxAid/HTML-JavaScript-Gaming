@@ -5,6 +5,11 @@ You are working in a docs-first repo workflow.
 Workflow:
 PLAN_PR → BUILD_PR → APPLY_PR
 
+PR lifecycle gate:
+PR Open → Plan → Build → Validation → Approved → Merged → Main Verified → Closed
+
+The PLAN_PR → BUILD_PR → APPLY_PR workflow remains preserved. PR Open is the first lifecycle status for active work, Plan happens after PR Open on the same PR branch, and Closed is the final repository-state gate.
+
 # WORKFLOW & EXECUTION
 
 ## PR NAMING STANDARD
@@ -43,6 +48,66 @@ Rules:
 - Do NOT reuse old `PR_11_*` format for new PRs
 - Existing PC/LAPTOP, desktop/laptop, workspace, environment, or machine-parity examples are historical only
 - Future PR reports, recovery reports, validation reports, and manual validation notes must include TEAM ownership
+
+## PR LIFECYCLE STATE GATE
+
+Required state order:
+
+1. PR Open
+2. Plan
+3. Build
+4. Validation
+5. Approved
+6. Merged
+7. Main Verified
+8. Closed
+
+Definitions:
+- PR Open is the first active lifecycle state.
+- PR Open means the tracked PR identity and source branch have been created and named before Plan begins.
+- Plan happens after PR Open on the same PR branch.
+- Build, validation, reports, ZIP packaging, and closeout stay tied to that same PR identity and source branch.
+- No BUILD_PR may proceed without a PR name and active branch/PR identity unless it is explicitly marked `PLAN_ONLY`.
+- Build means scoped implementation, audit, report, validation, governance, or cleanup work is in progress for that PR identity.
+- Validation means requested checks, required report creation, manual validation notes, and ZIP packaging are being completed.
+- Approved means the owner or required reviewer has approved the PR outcome for merge.
+- Merged means the PR has merged and changes have been pushed.
+- Main Verified means Codex is back on `main`, `main` includes the merge commit or recorded final commit, the worktree is clean, local/origin sync is `0/0`, and no untracked files remain.
+- Closed means every Closed gate below is PASS.
+
+Closed is valid only when all are PASS:
+- PR merged and changes pushed.
+- Current branch is `main`.
+- `main` includes the merge commit or recorded final commit.
+- Worktree clean.
+- Local/origin sync is `0/0`.
+- No untracked files.
+- Branch disposition recorded as `retained`.
+- Required reports exist.
+- Required repo-structured ZIP under `tmp/` exists.
+- Backlog updated.
+- Tool state updated when applicable.
+
+Hard stop:
+- A team must not begin another PR if its previous PR is not Closed.
+- Exception is allowed only for explicitly documented stacked PR chains.
+
+Required final closeout output:
+
+```text
+FINAL REPOSITORY STATE:
+- Branch
+- Worktree
+- Local/origin sync
+- PR number/name
+- PR status
+- Merge/final commit
+- Branch disposition
+- Backlog update status
+- Tool state update status
+- ZIP path
+- Closeout PASS/FAIL
+```
 
 ## CHATGPT EXECUTION ROLE
 
@@ -784,12 +849,13 @@ The full samples smoke test rule remains separate and runs only when broadly imp
 
 ## CODEX REVIEW DIFF REQUIREMENT
 
-Every Codex PR must produce review artifacts so ChatGPT can review the exact code changes.
+Every completed Codex PR or completed Codex run must produce review artifacts so ChatGPT can review the exact repo changes or the no-change evidence.
 
 Codex must create:
 
 - `docs_build/dev/reports/codex_review.diff`
 - `docs_build/dev/reports/codex_changed_files.txt`
+- a PR-specific or EOD-specific report under `docs_build/dev/reports/`
 
 `codex_review.diff` must contain:
 - `git diff --cached`
@@ -804,6 +870,9 @@ Rules:
 - Do not pause commits
 - Do not add dependencies
 - Do not change runtime behavior just to create review artifacts
+- Required reports remain required even when a ZIP is created.
+- Required report evidence must include branch validation PASS/FAIL, a requirement-by-requirement PASS/FAIL checklist, a validation lane report, and manual validation notes.
+- A ZIP artifact must not replace or move required report files out of `docs_build/dev/reports/`.
 
 When user asks for code review, they should upload:
 - PR delta ZIP
@@ -812,7 +881,7 @@ When user asks for code review, they should upload:
 
 ## MANUAL TEST REQUIREMENT
 
-Every PR must include:
+Every completed PR, audit, report-only, validation-only, or EOD closeout run must include:
 - exact manual validation steps
 - expected outcome
 - any known out-of-scope checks
@@ -870,8 +939,15 @@ Codex ZIPs must:
 - be repo-structured
 - preserve exact repo-relative paths
 - be placed under `<project folder>/tmp/`
-- use the PR name in the ZIP filename
+- use the PR or EOD run name in the ZIP filename
 - contain no extra files outside the defined structure
+- include all changed or preserved repo files from the completed run
+- not include or depend on generated loose files under `tmp/`
+- not replace required report files under `docs_build/dev/reports/`
+
+If a completed run changes no repo files, Codex must still create a ZIP containing the PR or EOD report that proves no repo files changed.
+
+The no-change ZIP rule does not apply when the run hard-stopped before producing outputs.
 
 Before Codex returns any ZIP, Codex must:
 1. Physically create the ZIP file.
@@ -1584,11 +1660,21 @@ Required reports:
 
 ## REQUIRED ZIP OUTPUT
 
-Codex must ALWAYS produce a repo-structured ZIP for every PR.
+Codex must ALWAYS produce a repo-structured ZIP for every completed Codex run.
+
+This applies to:
+- implementation PRs
+- audit PRs
+- report-only PRs
+- validation-only PRs
+- EOD closeout runs
+- governance and cleanup runs
 
 The ZIP must follow the existing CODEX ZIP STANDARD.
 
-The ZIP is required output, not optional.
+The ZIP must include all changed or preserved repo files from the run.
+
+The ZIP is required output, not optional, and it does not replace required reports under `docs_build/dev/reports/`.
 
 ## HTML FILE RESTRICTIONS
 
@@ -1640,6 +1726,8 @@ Before packaging any PR, Codex must:
 - include PASS/FAIL evidence for each requested item in the PR report
 
 Codex must not package partially completed PRs.
+
+PR completion is not the same as Closed. Closed requires the final repository-state gate from `PR LIFECYCLE STATE GATE`.
 
 ## ERROR HANDLING CONTRACT
 
@@ -1823,9 +1911,11 @@ Do NOT require:
 
 ## CODEX ZIP RETURN CONTRACT
 
-Codex must include the repo-structured ZIP in returned artifacts for user and ChatGPT review.
+Codex must include the repo-structured ZIP path in returned artifacts for user and ChatGPT review for every completed run.
 
 The ZIP must still follow the CODEX ZIP STANDARD.
+
+If no repo files changed, the returned ZIP must contain the PR or EOD report proving the no-change result unless the run hard-stopped before outputs were produced.
 
 ## CODE REVIEW EVIDENCE RULE
 
@@ -2044,6 +2134,7 @@ Required steps:
    - local/origin sync = 0 0
 5. Record final main commit.
 6. Report final repository state.
+7. Produce the required repo-structured ZIP under `tmp/` containing the EOD report and any changed or preserved repo files from the closeout.
 
 Required final state:
 
@@ -2082,7 +2173,7 @@ Each reviewed item must be classified as one of:
 - Historical/Archive
 
 Rules:
-- Merged branches should be deleted after successful merge and main sync.
+- Merged source branches should be retained by default after successful merge and main sync.
 - Superseded draft PRs should be closed.
 - Abandoned branches should be documented before removal.
 - Active workstream branches remain.
@@ -2108,7 +2199,7 @@ Required PI closeout report fields:
 - active PRs
 - active branches
 - closed/superseded PRs
-- deleted branch candidates
+- retained branch disposition and any owner-approved deletion candidates
 - deferred work
 - next PI priorities
 
@@ -2131,8 +2222,7 @@ Audit targets:
 Recommendation-only first pass values:
 - keep
 - close
-- delete local
-- delete remote
+- retained
 - defer
 
 Rules:
@@ -2235,6 +2325,9 @@ Completion hard stops:
 - If required reports are missing, HARD STOP.
 - If `docs_build/dev/reports/codex_review.diff` is missing, HARD STOP.
 - If `docs_build/dev/reports/codex_changed_files.txt` is missing, HARD STOP.
+- If branch validation PASS/FAIL is missing, HARD STOP.
+- If the requirement-by-requirement PASS/FAIL checklist is missing, HARD STOP.
+- If the validation lane report is missing, HARD STOP.
 - If manual validation notes are missing, HARD STOP.
 - If the PR-specific report is missing, HARD STOP.
 - If an instruction compliance checklist is required and missing, HARD STOP.

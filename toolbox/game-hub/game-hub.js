@@ -311,6 +311,30 @@ function hasSourceIdeaDetails(game) {
   return Boolean(sourceIdea.name || sourceIdea.pitch || sourceIdea.notes.length);
 }
 
+function renderGameSummaryChildTable(parent, game) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "table-wrapper";
+  const table = document.createElement("table");
+  table.className = "data-table data-table--fixed";
+  table.dataset.gameChildTable = "summary";
+  table.setAttribute("aria-label", `${game.name} game summary`);
+  table.innerHTML = "<caption>Game Summary</caption><thead><tr><th scope=\"col\">Field</th><th scope=\"col\">Value</th></tr></thead>";
+  const body = document.createElement("tbody");
+  [
+    ["Project", game.name],
+    ["Purpose", game.purpose],
+    ["Status", game.status],
+  ].forEach(([label, value]) => {
+    const row = document.createElement("tr");
+    row.append(createCell(label, "th"), createCell(value || "Not set"));
+    row.firstElementChild.scope = "row";
+    body.append(row);
+  });
+  table.append(body);
+  wrapper.append(table);
+  parent.append(wrapper);
+}
+
 function renderSourceIdeaChildTable(parent, game) {
   const sourceIdea = gameSourceIdeaDetails(game);
   const wrapper = document.createElement("div");
@@ -553,9 +577,10 @@ function renderGameList(progress) {
   wrapper.className = "table-wrapper";
   const table = document.createElement("table");
   table.className = "data-table data-table--fixed";
+  table.dataset.gameParentTable = "open-games";
   table.dataset.gameRowsTable = "true";
-  table.setAttribute("aria-label", "Games");
-  table.innerHTML = "<thead><tr><th scope=\"col\">Game</th><th scope=\"col\">Purpose</th><th scope=\"col\">Status</th><th scope=\"col\">Actions</th></tr></thead>";
+  table.setAttribute("aria-label", "Open Games");
+  table.innerHTML = "<caption>Open Games</caption><thead><tr><th scope=\"col\">Game</th><th scope=\"col\">Purpose</th><th scope=\"col\">Status</th><th scope=\"col\">Actions</th></tr></thead>";
   const body = document.createElement("tbody");
   listResult.forEach((game) => renderGameParentRow(body, game, activeGame, progress));
   renderAddGameRow(body);
