@@ -287,12 +287,7 @@ function createGameToggleButton(game, expanded, active) {
     button.setAttribute("aria-current", "true");
   }
   button.setAttribute("aria-expanded", String(expanded));
-  const controlledRows = [];
-  if (hasSourceIdeaDetails(game)) {
-    controlledRows.push(`game-child-source-idea-${game.id}`);
-  }
-  controlledRows.push(`game-child-readiness-output-${game.id}`);
-  button.setAttribute("aria-controls", controlledRows.join(" "));
+  button.setAttribute("aria-controls", `game-child-source-idea-${game.id} game-child-readiness-output-${game.id}`);
   button.textContent = game.name;
   return button;
 }
@@ -314,6 +309,30 @@ function gameSourceIdeaDetails(game) {
 function hasSourceIdeaDetails(game) {
   const sourceIdea = gameSourceIdeaDetails(game);
   return Boolean(sourceIdea.name || sourceIdea.pitch || sourceIdea.notes.length);
+}
+
+function renderGameSummaryChildTable(parent, game) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "table-wrapper";
+  const table = document.createElement("table");
+  table.className = "data-table data-table--fixed";
+  table.dataset.gameChildTable = "summary";
+  table.setAttribute("aria-label", `${game.name} game summary`);
+  table.innerHTML = "<caption>Game Summary</caption><thead><tr><th scope=\"col\">Field</th><th scope=\"col\">Value</th></tr></thead>";
+  const body = document.createElement("tbody");
+  [
+    ["Project", game.name],
+    ["Purpose", game.purpose],
+    ["Status", game.status],
+  ].forEach(([label, value]) => {
+    const row = document.createElement("tr");
+    row.append(createCell(label, "th"), createCell(value || "Not set"));
+    row.firstElementChild.scope = "row";
+    body.append(row);
+  });
+  table.append(body);
+  wrapper.append(table);
+  parent.append(wrapper);
 }
 
 function renderSourceIdeaChildTable(parent, game) {
@@ -397,22 +416,18 @@ function renderReadinessOutputChildTable(parent, game, progress, active) {
 }
 
 function renderExpandedGameRow(tbody, game, progress, active) {
-  const childRows = [];
-  if (hasSourceIdeaDetails(game)) {
-    childRows.push({
+  [
+    {
       id: `game-child-source-idea-${game.id}`,
       render: (parent) => renderSourceIdeaChildTable(parent, game),
       type: "source-idea",
-    });
-  }
-  childRows.push(
+    },
     {
       id: `game-child-readiness-output-${game.id}`,
       render: (parent) => renderReadinessOutputChildTable(parent, game, progress, active),
       type: "readiness-output",
     },
-  );
-  childRows.forEach(({ id, render, type }) => {
+  ].forEach(({ id, render, type }) => {
     const row = document.createElement("tr");
     row.dataset.gameExpandedRow = game.id;
     row.dataset.gameChildRow = type;
@@ -562,9 +577,10 @@ function renderGameList(progress) {
   wrapper.className = "table-wrapper";
   const table = document.createElement("table");
   table.className = "data-table data-table--fixed";
+  table.dataset.gameParentTable = "open-games";
   table.dataset.gameRowsTable = "true";
-  table.setAttribute("aria-label", "Games");
-  table.innerHTML = "<thead><tr><th scope=\"col\">Game</th><th scope=\"col\">Purpose</th><th scope=\"col\">Status</th><th scope=\"col\">Actions</th></tr></thead>";
+  table.setAttribute("aria-label", "Open Games");
+  table.innerHTML = "<caption>Open Games</caption><thead><tr><th scope=\"col\">Game</th><th scope=\"col\">Purpose</th><th scope=\"col\">Status</th><th scope=\"col\">Actions</th></tr></thead>";
   const body = document.createElement("tbody");
   listResult.forEach((game) => renderGameParentRow(body, game, activeGame, progress));
   renderAddGameRow(body);

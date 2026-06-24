@@ -63,10 +63,12 @@ For backlog-driven work:
 3. Use the approved status model from `status_model.md`.
 4. Confirm the previous PR for the team is Closed, unless this is an explicitly documented stacked PR chain.
 5. Create or use the approved team branch and PR identity.
-6. Mark lifecycle state as PR Open before BUILD_PR work begins.
-7. Record active work in the active team registry when required.
-8. Open or update a draft PR during active work.
-9. Merge only through OWNER-approved PR workflow.
+6. Mark lifecycle state as PR Open.
+7. Plan on the same PR branch.
+8. Build on the same PR branch.
+9. Record active work in the active team registry when required.
+10. Open or update a draft PR during active work.
+11. Merge only through OWNER-approved PR workflow.
 
 ## Team Command Examples
 
@@ -94,15 +96,17 @@ A team or OWNER PR is release-ready when:
 - required reports and repo-structured ZIP under `tmp/` exist before Closed
 
 Closed readiness requires:
-- PR merged or intentionally closed without merge with reason recorded
+- PR merged and pushed
 - current branch is `main`
 - worktree clean
 - local/origin sync is `0/0`
 - no untracked files
 - merge or final commit recorded
-- branch disposition recorded as `deleted`, `retained for follow-up`, or `archived`
+- branch disposition recorded as `retained`
 - required reports exist
 - required repo-structured ZIP under `tmp/` exists
+- backlog updated
+- tool state updated when applicable
 
 ## Gate Behavior
 

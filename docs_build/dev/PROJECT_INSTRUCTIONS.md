@@ -6,9 +6,9 @@ Workflow:
 PLAN_PR → BUILD_PR → APPLY_PR
 
 PR lifecycle gate:
-PR Open → Building → Validation → Approved → Merged → Main Verified → Closed
+PR Open → Plan → Build → Validation → Approved → Merged → Main Verified → Closed
 
-The PLAN_PR → BUILD_PR → APPLY_PR workflow remains preserved. PR Open is the first lifecycle status for active work, and Closed is the final repository-state gate.
+The PLAN_PR → BUILD_PR → APPLY_PR workflow remains preserved. PR Open is the first lifecycle status for active work, Plan happens after PR Open on the same PR branch, and Closed is the final repository-state gate.
 
 # WORKFLOW & EXECUTION
 
@@ -54,35 +54,39 @@ Rules:
 Required state order:
 
 1. PR Open
-2. Building
-3. Validation
-4. Approved
-5. Merged
-6. Main Verified
-7. Closed
+2. Plan
+3. Build
+4. Validation
+5. Approved
+6. Merged
+7. Main Verified
+8. Closed
 
 Definitions:
 - PR Open is the first active lifecycle state.
-- PR Open means the PR or branch has been created and named, and the work has a tracked PR identity before implementation begins.
+- PR Open means the tracked PR identity and source branch have been created and named before Plan begins.
+- Plan happens after PR Open on the same PR branch.
+- Build, validation, reports, ZIP packaging, and closeout stay tied to that same PR identity and source branch.
 - No BUILD_PR may proceed without a PR name and active branch/PR identity unless it is explicitly marked `PLAN_ONLY`.
-- Building means scoped implementation, audit, report, validation, governance, or cleanup work is in progress for that PR identity.
+- Build means scoped implementation, audit, report, validation, governance, or cleanup work is in progress for that PR identity.
 - Validation means requested checks, required report creation, manual validation notes, and ZIP packaging are being completed.
-- Approved means the owner or required reviewer has approved the PR outcome or intentionally approved closure without merge.
-- Merged means the PR has merged or has been intentionally closed without merge with the reason recorded.
+- Approved means the owner or required reviewer has approved the PR outcome for merge.
+- Merged means the PR has merged and changes have been pushed.
 - Main Verified means Codex is back on `main`, `main` includes the merge commit or recorded final commit, the worktree is clean, local/origin sync is `0/0`, and no untracked files remain.
 - Closed means every Closed gate below is PASS.
 
 Closed is valid only when all are PASS:
-- PR merged or intentionally closed without merge with reason recorded.
-- Changes pushed.
+- PR merged and changes pushed.
 - Current branch is `main`.
 - `main` includes the merge commit or recorded final commit.
 - Worktree clean.
 - Local/origin sync is `0/0`.
 - No untracked files.
-- Branch disposition recorded as `deleted`, `retained for follow-up`, or `archived`.
+- Branch disposition recorded as `retained`.
 - Required reports exist.
 - Required repo-structured ZIP under `tmp/` exists.
+- Backlog updated.
+- Tool state updated when applicable.
 
 Hard stop:
 - A team must not begin another PR if its previous PR is not Closed.
@@ -99,6 +103,8 @@ FINAL REPOSITORY STATE:
 - PR status
 - Merge/final commit
 - Branch disposition
+- Backlog update status
+- Tool state update status
 - ZIP path
 - Closeout PASS/FAIL
 ```
@@ -2167,7 +2173,7 @@ Each reviewed item must be classified as one of:
 - Historical/Archive
 
 Rules:
-- Merged branches should be deleted after successful merge and main sync.
+- Merged source branches should be retained by default after successful merge and main sync.
 - Superseded draft PRs should be closed.
 - Abandoned branches should be documented before removal.
 - Active workstream branches remain.
@@ -2193,7 +2199,7 @@ Required PI closeout report fields:
 - active PRs
 - active branches
 - closed/superseded PRs
-- deleted branch candidates
+- retained branch disposition and any owner-approved deletion candidates
 - deferred work
 - next PI priorities
 
@@ -2216,8 +2222,7 @@ Audit targets:
 Recommendation-only first pass values:
 - keep
 - close
-- delete local
-- delete remote
+- retained
 - defer
 
 Rules:
