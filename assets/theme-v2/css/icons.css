@@ -43,8 +43,20 @@
   --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-close.svg")
 }
 
+.theme-icon--delete {
+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-trash.svg")
+}
+
+.theme-icon--edit {
+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-settings.svg")
+}
+
 .theme-icon--error {
   --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-error.svg")
+}
+
+.theme-icon--external-link {
+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-chevron-right.svg")
 }
 
 .theme-icon--exit-fullscreen {
@@ -61,6 +73,10 @@
 
 .theme-icon--menu {
   --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-menu.svg")
+}
+
+.theme-icon--save {
+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-success.svg")
 }
 
 .theme-icon--search {
@@ -83,6 +99,32 @@
   --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-trash.svg")
 }
 
+.theme-icon--validation {
+  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-warning.svg")
+}
+
 .theme-icon--warning {
   --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-warning.svg")
+}
+
+.status-icon {
+  height: var(--icon-size-sm);
+  width: var(--icon-size-sm)
+}
+
+.status-icon--error {
+  color: var(--red)
+}
+
+.status-icon--info {
+  color: var(--cyan)
+}
+
+.status-icon--save {
+  color: var(--green)
+}
+
+.status-icon--validation,
+.status-icon--warning {
+  color: var(--gold)
 }

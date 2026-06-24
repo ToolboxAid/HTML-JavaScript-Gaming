@@ -17,6 +17,36 @@
   border-color: var(--orange-border-strong)
 }
 
+.btn--with-icon {
+  gap: var(--space-8)
+}
+
+.btn--with-icon .theme-icon {
+  height: var(--icon-size-sm);
+  width: var(--icon-size-sm)
+}
+
+.btn--icon-only {
+  border-radius: var(--radius-pill);
+  height: var(--space-44);
+  min-width: var(--space-44);
+  padding: var(--space-0);
+  width: var(--space-44)
+}
+
+.btn--icon-only .theme-icon {
+  height: var(--icon-size-md);
+  width: var(--icon-size-md)
+}
+
+.btn--icon-danger {
+  color: var(--red)
+}
+
+.btn--icon-success {
+  color: var(--green)
+}
+
 .btn--compact {
   margin: var(--space-0);
   min-width: calc(var(--space-44) + var(--space-28));

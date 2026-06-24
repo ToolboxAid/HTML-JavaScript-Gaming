@@ -85,10 +85,18 @@
 }
 
 .toolbox-status-bar__message {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-8);
   margin: var(--space-0);
   max-width: var(--measure-lg);
   line-height: var(--line-height-copy);
   overflow-wrap: anywhere
+}
+
+.toolbox-status-bar__status-icon {
+  flex: 0 0 auto
 }
 
 .toolbox-status-bar__progress {
