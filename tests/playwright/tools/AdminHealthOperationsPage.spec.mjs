@@ -174,6 +174,12 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
     await expect(scheduledTable).toContainText("Recent result");
     await expect(scheduledTable).toContainText("Failures/warnings");
     await expect(scheduledTable).toContainText("Not Configured");
+    const notificationsTable = page.getByRole("table", { name: "Notifications and alerts" });
+    await expect(notificationsTable).toContainText("Email alerts");
+    await expect(notificationsTable).toContainText("Admin notifications");
+    await expect(notificationsTable).toContainText("Webhook alerts");
+    await expect(notificationsTable).toContainText("Messages integration");
+    await expect(notificationsTable).toContainText("Not Configured");
     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Approved diagnostics format");
     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Environment Variables + All Runtime Ports");
     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Configurable multiple runtime ports");
@@ -295,6 +301,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
   expect(pageSource).toContain("Configuration Summary");
   expect(pageSource).toContain("Manual Health Actions");
   expect(pageSource).toContain("Scheduled Health Monitoring");
+  expect(pageSource).toContain("Notifications &amp; Alerts");
   expect(pageSource).toContain("Runtime Health");
   expect(pageSource).toContain("Diagnostics Plan");
   expect(pageSource).toContain("Local API Startup Diagnostics");

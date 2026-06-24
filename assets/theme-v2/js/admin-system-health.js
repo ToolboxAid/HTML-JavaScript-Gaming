@@ -67,6 +67,7 @@ class AdminSystemHealthController {
         this.actionButtons = Array.from(root.querySelectorAll("[data-admin-system-health-action]"));
         this.configurationRows = root.querySelector("[data-admin-system-health-configuration-rows]");
         this.scheduledRows = root.querySelector("[data-admin-system-health-scheduled-rows]");
+        this.notificationRows = root.querySelector("[data-admin-system-health-notification-rows]");
         this.serviceCards = root.querySelector("[data-admin-system-health-service-cards]");
         this.startupRows = root.querySelector("[data-admin-system-health-startup-rows]");
         this.runtimeRows = root.querySelector("[data-admin-system-health-runtime-rows]");
@@ -145,6 +146,7 @@ class AdminSystemHealthController {
         this.renderServiceHealthPending(reason);
         this.renderConfigurationSummaryPending(reason);
         this.renderScheduledMonitoringPending(reason);
+        this.renderNotificationsFoundationPending(reason);
         this.renderHistoryPending(reason);
     }
 
@@ -377,6 +379,45 @@ class AdminSystemHealthController {
             fragment.append(row);
         });
         this.scheduledRows.replaceChildren(fragment);
+    }
+
+    renderNotificationsFoundationPending(reason) {
+        if (!this.notificationRows) {
+            return;
+        }
+        const row = document.createElement("tr");
+        row.append(
+            this.createCell("Notifications & Alerts"),
+            this.createCell("Not Configured"),
+            this.createStatusCell("PENDING", reason),
+        );
+        this.notificationRows.replaceChildren(row);
+    }
+
+    renderNotificationsFoundation(notificationsFoundation = {}) {
+        if (!this.notificationRows) {
+            return;
+        }
+        if (notificationsFoundation?.secretsExposed === true || notificationsFoundation?.secretEditingAllowed === true) {
+            this.renderNotificationsFoundationPending("Safe notifications response was blocked because it exposed secret controls.");
+            return;
+        }
+        const rows = Array.isArray(notificationsFoundation.rows) ? notificationsFoundation.rows : [];
+        if (!rows.length) {
+            this.renderNotificationsFoundationPending("Safe Admin System Health API returned no notifications rows.");
+            return;
+        }
+        const fragment = document.createDocumentFragment();
+        rows.forEach((notificationRow) => {
+            const row = document.createElement("tr");
+            row.append(
+                this.createCell(notificationRow.field),
+                this.createCell(notificationRow.value),
+                this.createStatusCell(notificationRow.status, notificationsFoundation.message),
+            );
+            fragment.append(row);
+        });
+        this.notificationRows.replaceChildren(fragment);
     }
 
     renderStartupPending(reason) {
@@ -627,6 +668,7 @@ class AdminSystemHealthController {
         this.renderServiceHealth(data?.serviceHealth || {});
         this.renderConfigurationSummary(data?.configurationSummary || {});
         this.renderScheduledMonitoring(data?.scheduledMonitoring || {});
+        this.renderNotificationsFoundation(data?.notificationsFoundation || {});
         this.renderHealthCheckHistory(data?.healthCheckHistory || []);
         this.renderRuntimeEnvironment(data?.runtimeEnvironment || {});
     }

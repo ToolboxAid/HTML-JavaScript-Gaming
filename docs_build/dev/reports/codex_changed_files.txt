@@ -6,25 +6,27 @@ M admin/system-health.html
  M src/dev-runtime/server/local-api-router.mjs
  M tests/dev-runtime/AdminHealthOperations.test.mjs
  M tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-?? docs_build/dev/reports/PR_26175_CHARLIE_016-scheduled-health-monitoring-branch-validation.md
-?? docs_build/dev/reports/PR_26175_CHARLIE_016-scheduled-health-monitoring-manual-validation-notes.md
-?? docs_build/dev/reports/PR_26175_CHARLIE_016-scheduled-health-monitoring-requirement-checklist.md
-?? docs_build/dev/reports/PR_26175_CHARLIE_016-scheduled-health-monitoring-validation.md
-?? docs_build/dev/reports/PR_26175_CHARLIE_016-scheduled-health-monitoring.md
+?? docs_build/dev/reports/PR_26175_CHARLIE_012-017-system-health-phase-2-closeout.md
+?? docs_build/dev/reports/PR_26175_CHARLIE_017-health-notifications-foundation-branch-validation.md
+?? docs_build/dev/reports/PR_26175_CHARLIE_017-health-notifications-foundation-manual-validation-notes.md
+?? docs_build/dev/reports/PR_26175_CHARLIE_017-health-notifications-foundation-requirement-checklist.md
+?? docs_build/dev/reports/PR_26175_CHARLIE_017-health-notifications-foundation-validation.md
+?? docs_build/dev/reports/PR_26175_CHARLIE_017-health-notifications-foundation.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26175_CHARLIE_016-scheduled-health-monitoring-branch-validation.md
-docs_build/dev/reports/PR_26175_CHARLIE_016-scheduled-health-monitoring-manual-validation-notes.md
-docs_build/dev/reports/PR_26175_CHARLIE_016-scheduled-health-monitoring-requirement-checklist.md
-docs_build/dev/reports/PR_26175_CHARLIE_016-scheduled-health-monitoring-validation.md
-docs_build/dev/reports/PR_26175_CHARLIE_016-scheduled-health-monitoring.md
+docs_build/dev/reports/PR_26175_CHARLIE_012-017-system-health-phase-2-closeout.md
+docs_build/dev/reports/PR_26175_CHARLIE_017-health-notifications-foundation-branch-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_017-health-notifications-foundation-manual-validation-notes.md
+docs_build/dev/reports/PR_26175_CHARLIE_017-health-notifications-foundation-requirement-checklist.md
+docs_build/dev/reports/PR_26175_CHARLIE_017-health-notifications-foundation-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_017-health-notifications-foundation.md
 
 # git diff --stat
 admin/system-health.html                           | 16 +++++++++
  assets/theme-v2/js/admin-system-health.js          | 42 ++++++++++++++++++++++
- .../dev/reports/coverage_changed_js_guardrail.txt  |  2 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |  8 ++---
- src/dev-runtime/server/local-api-router.mjs        | 40 +++++++++++++++++++++
+ .../dev/reports/coverage_changed_js_guardrail.txt  |  3 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |  6 ++--
+ src/dev-runtime/server/local-api-router.mjs        | 35 ++++++++++++++++++
  tests/dev-runtime/AdminHealthOperations.test.mjs   |  6 ++++
- .../tools/AdminHealthOperationsPage.spec.mjs       |  8 +++++
- 7 files changed, 117 insertions(+), 5 deletions(-)
+ .../tools/AdminHealthOperationsPage.spec.mjs       |  7 ++++
+ 7 files changed, 109 insertions(+), 6 deletions(-)

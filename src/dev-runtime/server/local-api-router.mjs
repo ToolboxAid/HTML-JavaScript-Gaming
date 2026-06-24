@@ -1276,6 +1276,39 @@ function systemHealthScheduledMonitoring(checkedAt = new Date().toISOString()) {
   };
 }
 
+function systemHealthNotificationsFoundation(checkedAt = new Date().toISOString()) {
+  const rows = [
+    {
+      field: "Email alerts",
+      status: "PENDING",
+      value: "Not Configured",
+    },
+    {
+      field: "Admin notifications",
+      status: "PENDING",
+      value: "Not Configured",
+    },
+    {
+      field: "Webhook alerts",
+      status: "PENDING",
+      value: "Not Configured",
+    },
+    {
+      field: "Messages integration",
+      status: "PENDING",
+      value: "Not Configured",
+    },
+  ];
+  return {
+    lastChecked: checkedAt,
+    message: "Notifications and alerts are placeholders only; no alert sending contract is configured for this deployment.",
+    rows,
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    status: "PENDING",
+  };
+}
+
 function systemHealthHistoryRow({ checkedAt, environmentName, area, result, summary, kind = "recent check" }) {
   return {
     area,
@@ -4240,6 +4273,7 @@ LIMIT 1;
       storageStatus,
     });
     const scheduledMonitoring = systemHealthScheduledMonitoring(checkedAt);
+    const notificationsFoundation = systemHealthNotificationsFoundation(checkedAt);
     const operationsHealth = adminOperationsHealth(this.standaloneTables);
     const healthCheckHistory = systemHealthCheckHistory({
       checkedAt,
@@ -4373,6 +4407,7 @@ LIMIT 1;
       environmentIdentity,
       environmentMap,
       healthCheckHistory,
+      notificationsFoundation,
       operationsHealth,
       overview,
       pressureLabels: SYSTEM_HEALTH_LIMIT_PRESSURE_LABELS,

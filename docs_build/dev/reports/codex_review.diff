@@ -1,31 +1,31 @@
 diff --git a/admin/system-health.html b/admin/system-health.html
-index ad1a9fc5a..24c769a50 100644
+index 24c769a50..0eeea442e 100644
 --- a/admin/system-health.html
 +++ b/admin/system-health.html
-@@ -43,6 +43,7 @@
-                                     <p>Service Health</p>
+@@ -44,6 +44,7 @@
                                      <p>Configuration Summary</p>
                                      <p>Manual Health Actions</p>
-+                                    <p>Scheduled Health Monitoring</p>
+                                     <p>Scheduled Health Monitoring</p>
++                                    <p>Notifications &amp; Alerts</p>
                                      <p>Local API Startup</p>
                                      <p>Database Health</p>
                                      <p>Storage Health</p>
-@@ -162,6 +163,21 @@
-                                 </table>
-                             </div>
-                         </section>
+@@ -178,6 +179,21 @@
+                                 </tbody>
+                             </table>
+                         </div>
 +                        <div class="table-wrapper">
-+                            <table class="data-table" aria-label="Scheduled health monitoring">
-+                                <caption>Scheduled Health Monitoring</caption>
++                            <table class="data-table" aria-label="Notifications and alerts">
++                                <caption>Notifications &amp; Alerts</caption>
 +                                <thead>
 +                                    <tr>
-+                                        <th scope="col">Field</th>
++                                        <th scope="col">Integration</th>
 +                                        <th scope="col">Current Deployment</th>
 +                                        <th scope="col">Status</th>
 +                                    </tr>
 +                                </thead>
-+                                <tbody data-admin-system-health-scheduled-rows>
-+                                    <tr><td>Scheduled Health Monitoring</td><td>Not Configured</td><td data-health-status="PENDING" title="Reason: scheduled health monitoring has not loaded yet." aria-label="PENDING: scheduled health monitoring has not loaded yet.">PENDING</td></tr>
++                                <tbody data-admin-system-health-notification-rows>
++                                    <tr><td>Notifications &amp; Alerts</td><td>Not Configured</td><td data-health-status="PENDING" title="Reason: notifications and alerts have not loaded yet." aria-label="PENDING: notifications and alerts have not loaded yet.">PENDING</td></tr>
 +                                </tbody>
 +                            </table>
 +                        </div>
@@ -33,165 +33,155 @@ index ad1a9fc5a..24c769a50 100644
                              <table class="data-table" aria-label="Local API startup diagnostics">
                                  <caption>Local API Startup Diagnostics</caption>
 diff --git a/assets/theme-v2/js/admin-system-health.js b/assets/theme-v2/js/admin-system-health.js
-index f63f35751..3b2bc123e 100644
+index 3b2bc123e..8bb6ed2bc 100644
 --- a/assets/theme-v2/js/admin-system-health.js
 +++ b/assets/theme-v2/js/admin-system-health.js
-@@ -66,6 +66,7 @@ class AdminSystemHealthController {
-         this.actionRows = root.querySelector("[data-admin-system-health-action-rows]");
+@@ -67,6 +67,7 @@ class AdminSystemHealthController {
          this.actionButtons = Array.from(root.querySelectorAll("[data-admin-system-health-action]"));
          this.configurationRows = root.querySelector("[data-admin-system-health-configuration-rows]");
-+        this.scheduledRows = root.querySelector("[data-admin-system-health-scheduled-rows]");
+         this.scheduledRows = root.querySelector("[data-admin-system-health-scheduled-rows]");
++        this.notificationRows = root.querySelector("[data-admin-system-health-notification-rows]");
          this.serviceCards = root.querySelector("[data-admin-system-health-service-cards]");
          this.startupRows = root.querySelector("[data-admin-system-health-startup-rows]");
          this.runtimeRows = root.querySelector("[data-admin-system-health-runtime-rows]");
-@@ -143,6 +144,7 @@ class AdminSystemHealthController {
-         this.renderRuntimeHealthPending(reason);
+@@ -145,6 +146,7 @@ class AdminSystemHealthController {
          this.renderServiceHealthPending(reason);
          this.renderConfigurationSummaryPending(reason);
-+        this.renderScheduledMonitoringPending(reason);
+         this.renderScheduledMonitoringPending(reason);
++        this.renderNotificationsFoundationPending(reason);
          this.renderHistoryPending(reason);
      }
  
-@@ -338,6 +340,45 @@ class AdminSystemHealthController {
-         this.configurationRows.replaceChildren(fragment);
+@@ -379,6 +381,45 @@ class AdminSystemHealthController {
+         this.scheduledRows.replaceChildren(fragment);
      }
  
-+    renderScheduledMonitoringPending(reason) {
-+        if (!this.scheduledRows) {
++    renderNotificationsFoundationPending(reason) {
++        if (!this.notificationRows) {
 +            return;
 +        }
 +        const row = document.createElement("tr");
 +        row.append(
-+            this.createCell("Scheduled Health Monitoring"),
++            this.createCell("Notifications & Alerts"),
 +            this.createCell("Not Configured"),
 +            this.createStatusCell("PENDING", reason),
 +        );
-+        this.scheduledRows.replaceChildren(row);
++        this.notificationRows.replaceChildren(row);
 +    }
 +
-+    renderScheduledMonitoring(scheduledMonitoring = {}) {
-+        if (!this.scheduledRows) {
++    renderNotificationsFoundation(notificationsFoundation = {}) {
++        if (!this.notificationRows) {
 +            return;
 +        }
-+        if (scheduledMonitoring?.secretsExposed === true || scheduledMonitoring?.secretEditingAllowed === true) {
-+            this.renderScheduledMonitoringPending("Safe scheduled monitoring response was blocked because it exposed secret controls.");
++        if (notificationsFoundation?.secretsExposed === true || notificationsFoundation?.secretEditingAllowed === true) {
++            this.renderNotificationsFoundationPending("Safe notifications response was blocked because it exposed secret controls.");
 +            return;
 +        }
-+        const rows = Array.isArray(scheduledMonitoring.rows) ? scheduledMonitoring.rows : [];
++        const rows = Array.isArray(notificationsFoundation.rows) ? notificationsFoundation.rows : [];
 +        if (!rows.length) {
-+            this.renderScheduledMonitoringPending("Safe Admin System Health API returned no scheduled monitoring rows.");
++            this.renderNotificationsFoundationPending("Safe Admin System Health API returned no notifications rows.");
 +            return;
 +        }
 +        const fragment = document.createDocumentFragment();
-+        rows.forEach((scheduledRow) => {
++        rows.forEach((notificationRow) => {
 +            const row = document.createElement("tr");
 +            row.append(
-+                this.createCell(scheduledRow.field),
-+                this.createCell(scheduledRow.value),
-+                this.createStatusCell(scheduledRow.status, scheduledMonitoring.message),
++                this.createCell(notificationRow.field),
++                this.createCell(notificationRow.value),
++                this.createStatusCell(notificationRow.status, notificationsFoundation.message),
 +            );
 +            fragment.append(row);
 +        });
-+        this.scheduledRows.replaceChildren(fragment);
++        this.notificationRows.replaceChildren(fragment);
 +    }
 +
      renderStartupPending(reason) {
          if (!this.startupRows) {
              return;
-@@ -585,6 +626,7 @@ class AdminSystemHealthController {
-         this.renderRuntimeHealth(data?.runtimeHealth || {});
+@@ -627,6 +668,7 @@ class AdminSystemHealthController {
          this.renderServiceHealth(data?.serviceHealth || {});
          this.renderConfigurationSummary(data?.configurationSummary || {});
-+        this.renderScheduledMonitoring(data?.scheduledMonitoring || {});
+         this.renderScheduledMonitoring(data?.scheduledMonitoring || {});
++        this.renderNotificationsFoundation(data?.notificationsFoundation || {});
          this.renderHealthCheckHistory(data?.healthCheckHistory || []);
          this.renderRuntimeEnvironment(data?.runtimeEnvironment || {});
      }
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 3b245ffb8..6b05f6627 100644
+index 6b05f6627..7e3f565f5 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -7,7 +7,7 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+@@ -7,8 +7,7 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
  
  Changed runtime JS files considered:
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(86%) assets/theme-v2/js/admin-system-health.js - executed lines 566/566; executed functions 56/65
-+(85%) assets/theme-v2/js/admin-system-health.js - executed lines 606/606; executed functions 58/68
- (100%) src/api/admin-system-health-api-client.js - executed lines 28/28; executed functions 4/4
+-(85%) assets/theme-v2/js/admin-system-health.js - executed lines 606/606; executed functions 58/68
+-(100%) src/api/admin-system-health-api-client.js - executed lines 28/28; executed functions 4/4
++(85%) assets/theme-v2/js/admin-system-health.js - executed lines 646/646; executed functions 60/71
  
  Guardrail warnings:
+ (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 951bbc3e1..d91b66ba5 100644
+index d91b66ba5..bae5e5942 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -14,11 +14,11 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
- Exercised tool entry points detected:
- (46%) Toolbox Index - exercised 1 runtime JS files
- (0%) Tool Template V2 - not exercised by this Playwright run
--(79%) Theme V2 Shared JS - exercised 4 runtime JS files
-+(78%) Theme V2 Shared JS - exercised 4 runtime JS files
+@@ -18,8 +18,7 @@ Exercised tool entry points detected:
  
  Changed runtime JS files covered:
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(86%) assets/theme-v2/js/admin-system-health.js - executed lines 566/566; executed functions 56/65
-+(85%) assets/theme-v2/js/admin-system-health.js - executed lines 606/606; executed functions 58/68
- (100%) src/api/admin-system-health-api-client.js - executed lines 28/28; executed functions 4/4
+-(85%) assets/theme-v2/js/admin-system-health.js - executed lines 606/606; executed functions 58/68
+-(100%) src/api/admin-system-health-api-client.js - executed lines 28/28; executed functions 4/4
++(85%) assets/theme-v2/js/admin-system-health.js - executed lines 646/646; executed functions 60/71
  
  Files with executed line/function counts where available:
-@@ -29,7 +29,7 @@ Files with executed line/function counts where available:
+ (36%) src/api/server-api-client.js - executed lines 167/167; executed functions 5/14
+@@ -29,7 +28,7 @@ Files with executed line/function counts where available:
  (74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1001/1001; executed functions 69/93
  (80%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 4/5
  (83%) assets/js/shared/status.js - executed lines 37/37; executed functions 5/6
--(86%) assets/theme-v2/js/admin-system-health.js - executed lines 566/566; executed functions 56/65
-+(85%) assets/theme-v2/js/admin-system-health.js - executed lines 606/606; executed functions 58/68
+-(85%) assets/theme-v2/js/admin-system-health.js - executed lines 606/606; executed functions 58/68
++(85%) assets/theme-v2/js/admin-system-health.js - executed lines 646/646; executed functions 60/71
  (91%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 10/11
  (100%) src/api/admin-system-health-api-client.js - executed lines 28/28; executed functions 4/4
  
-@@ -40,5 +40,5 @@ Changed JS files considered:
- (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
+@@ -41,4 +40,3 @@ Changed JS files considered:
  (0%) tests/dev-runtime/AdminHealthOperations.test.mjs - changed JS file not collected as browser runtime coverage
  (0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
--(86%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
-+(85%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
- (100%) src/api/admin-system-health-api-client.js - changed JS file with browser V8 coverage
+ (85%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
+-(100%) src/api/admin-system-health-api-client.js - changed JS file with browser V8 coverage
 diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index 6d06d0eca..00330caf8 100644
+index 00330caf8..b46b963e2 100644
 --- a/src/dev-runtime/server/local-api-router.mjs
 +++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -1238,6 +1238,44 @@ function systemHealthConfigurationSummary({
+@@ -1276,6 +1276,39 @@ function systemHealthScheduledMonitoring(checkedAt = new Date().toISOString()) {
    };
  }
  
-+function systemHealthScheduledMonitoring(checkedAt = new Date().toISOString()) {
++function systemHealthNotificationsFoundation(checkedAt = new Date().toISOString()) {
 +  const rows = [
 +    {
-+      field: "Last scheduled run",
++      field: "Email alerts",
 +      status: "PENDING",
 +      value: "Not Configured",
 +    },
 +    {
-+      field: "Next scheduled run",
++      field: "Admin notifications",
 +      status: "PENDING",
 +      value: "Not Configured",
 +    },
 +    {
-+      field: "Duration",
++      field: "Webhook alerts",
 +      status: "PENDING",
 +      value: "Not Configured",
 +    },
 +    {
-+      field: "Recent result",
++      field: "Messages integration",
 +      status: "PENDING",
 +      value: "Not Configured",
-+    },
-+    {
-+      field: "Failures/warnings",
-+      status: "PENDING",
-+      value: "Scheduler contract is not configured.",
 +    },
 +  ];
 +  return {
 +    lastChecked: checkedAt,
-+    message: "Scheduled Health Monitoring is not configured for this deployment.",
++    message: "Notifications and alerts are placeholders only; no alert sending contract is configured for this deployment.",
 +    rows,
 +    secretEditingAllowed: false,
 +    secretsExposed: false,
@@ -202,117 +192,165 @@ index 6d06d0eca..00330caf8 100644
  function systemHealthHistoryRow({ checkedAt, environmentName, area, result, summary, kind = "recent check" }) {
    return {
      area,
-@@ -4201,6 +4239,7 @@ LIMIT 1;
-       environmentIdentity,
+@@ -4240,6 +4273,7 @@ LIMIT 1;
        storageStatus,
      });
-+    const scheduledMonitoring = systemHealthScheduledMonitoring(checkedAt);
+     const scheduledMonitoring = systemHealthScheduledMonitoring(checkedAt);
++    const notificationsFoundation = systemHealthNotificationsFoundation(checkedAt);
      const operationsHealth = adminOperationsHealth(this.standaloneTables);
      const healthCheckHistory = systemHealthCheckHistory({
        checkedAt,
-@@ -4345,6 +4384,7 @@ LIMIT 1;
-       secretsExposed: false,
-       runtimeEnvironment,
-       runtimeHealth,
-+      scheduledMonitoring,
-       serviceHealth,
-       storageStatus,
-       summary: systemHealthSummary(overview),
+@@ -4373,6 +4407,7 @@ LIMIT 1;
+       environmentIdentity,
+       environmentMap,
+       healthCheckHistory,
++      notificationsFoundation,
+       operationsHealth,
+       overview,
+       pressureLabels: SYSTEM_HEALTH_LIMIT_PRESSURE_LABELS,
 diff --git a/tests/dev-runtime/AdminHealthOperations.test.mjs b/tests/dev-runtime/AdminHealthOperations.test.mjs
-index 5df10fab0..0a7b841b6 100644
+index 0a7b841b6..f76213645 100644
 --- a/tests/dev-runtime/AdminHealthOperations.test.mjs
 +++ b/tests/dev-runtime/AdminHealthOperations.test.mjs
-@@ -175,6 +175,12 @@ test("Admin can view operational health while Creator sessions are blocked", asy
-       assert.equal(JSON.stringify(health.configurationSummary).includes("site-secret"), false);
-       assert.equal(JSON.stringify(health.configurationSummary).includes("api-user"), false);
-       assert.equal(JSON.stringify(health.configurationSummary).includes("api-secret"), false);
+@@ -181,6 +181,12 @@ test("Admin can view operational health while Creator sessions are blocked", asy
+       );
+       assert.equal(health.scheduledMonitoring.rows.some((row) => row.value === "Not Configured"), true);
+       assert.equal(health.scheduledMonitoring.status, "PENDING");
 +      assert.deepEqual(
-+        health.scheduledMonitoring.rows.map((row) => row.field),
-+        ["Last scheduled run", "Next scheduled run", "Duration", "Recent result", "Failures/warnings"],
++        health.notificationsFoundation.rows.map((row) => row.field),
++        ["Email alerts", "Admin notifications", "Webhook alerts", "Messages integration"],
 +      );
-+      assert.equal(health.scheduledMonitoring.rows.some((row) => row.value === "Not Configured"), true);
-+      assert.equal(health.scheduledMonitoring.status, "PENDING");
++      assert.equal(health.notificationsFoundation.rows.every((row) => row.value === "Not Configured"), true);
++      assert.equal(health.notificationsFoundation.status, "PENDING");
        assert.equal(health.storageStatus.environmentFolder, "/local");
        assert.equal(typeof health.storageStatus.lastChecked, "string");
        assert.equal(Array.isArray(health.healthCheckHistory), true);
 diff --git a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-index 098dc9f8a..ecd257aad 100644
+index ecd257aad..335c1e2f0 100644
 --- a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
 +++ b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-@@ -167,6 +167,13 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
-     await expect(page.getByRole("button", { name: "Run Database Check" })).toBeVisible();
-     await expect(page.getByRole("button", { name: "Run Storage Check" })).toBeVisible();
-     await expect(page.getByRole("button", { name: "Run Full Health Check" })).toBeVisible();
-+    const scheduledTable = page.getByRole("table", { name: "Scheduled health monitoring" });
-+    await expect(scheduledTable).toContainText("Last scheduled run");
-+    await expect(scheduledTable).toContainText("Next scheduled run");
-+    await expect(scheduledTable).toContainText("Duration");
-+    await expect(scheduledTable).toContainText("Recent result");
-+    await expect(scheduledTable).toContainText("Failures/warnings");
-+    await expect(scheduledTable).toContainText("Not Configured");
+@@ -174,6 +174,12 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
+     await expect(scheduledTable).toContainText("Recent result");
+     await expect(scheduledTable).toContainText("Failures/warnings");
+     await expect(scheduledTable).toContainText("Not Configured");
++    const notificationsTable = page.getByRole("table", { name: "Notifications and alerts" });
++    await expect(notificationsTable).toContainText("Email alerts");
++    await expect(notificationsTable).toContainText("Admin notifications");
++    await expect(notificationsTable).toContainText("Webhook alerts");
++    await expect(notificationsTable).toContainText("Messages integration");
++    await expect(notificationsTable).toContainText("Not Configured");
      await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Approved diagnostics format");
      await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Environment Variables + All Runtime Ports");
      await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Configurable multiple runtime ports");
-@@ -287,6 +294,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
-   expect(pageSource).toContain("Service Health");
+@@ -295,6 +301,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
    expect(pageSource).toContain("Configuration Summary");
    expect(pageSource).toContain("Manual Health Actions");
-+  expect(pageSource).toContain("Scheduled Health Monitoring");
+   expect(pageSource).toContain("Scheduled Health Monitoring");
++  expect(pageSource).toContain("Notifications &amp; Alerts");
    expect(pageSource).toContain("Runtime Health");
    expect(pageSource).toContain("Diagnostics Plan");
    expect(pageSource).toContain("Local API Startup Diagnostics");
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_016-scheduled-health-monitoring-branch-validation.md b/docs_build/dev/reports/PR_26175_CHARLIE_016-scheduled-health-monitoring-branch-validation.md
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_012-017-system-health-phase-2-closeout.md b/docs_build/dev/reports/PR_26175_CHARLIE_012-017-system-health-phase-2-closeout.md
 new file mode 100644
-index 000000000..9ad64a553
+index 000000000..769036e82
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_016-scheduled-health-monitoring-branch-validation.md
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_012-017-system-health-phase-2-closeout.md
+@@ -0,0 +1,43 @@
++# PR_26175_CHARLIE_012-017 System Health Phase 2 Closeout
++
++## Scope
++
++Team: Charlie
++
++Workstream branch: `pr/26175-CHARLIE-010-system-health-history-and-closeout`
++
++## Completed Phase 2 Slices
++
++- PASS: PR_26175_CHARLIE_012-runtime-health
++- PASS: PR_26175_CHARLIE_013-service-health-dashboard
++- PASS: PR_26175_CHARLIE_014-configuration-summary
++- PASS: PR_26175_CHARLIE_015-manual-health-actions
++- PASS: PR_26175_CHARLIE_016-scheduled-health-monitoring
++- PASS: PR_26175_CHARLIE_017-health-notifications-foundation
++
++## Architecture Closeout
++
++- PASS: System Health remains one page per deployed environment.
++- PASS: Each deployment actively checks only itself.
++- PASS: Environment Map remains reference-only.
++- PASS: No cross-environment checks were added.
++- PASS: Web UI calls API/service contracts.
++- PASS: Browser does not own infrastructure health state.
++- PASS: Not Configured placeholders do not fake success.
++
++## Validation Closeout
++
++- PASS: Targeted System Health API/unit tests passed for each slice.
++- PASS: Targeted System Health Playwright tests passed for each slice.
++- PASS: Syntax checks passed for touched JavaScript modules.
++- PASS: `git diff --check` passed for each slice with CRLF warnings only.
++- NOT RUN: Full samples smoke; not required for System Health Phase 2.
++
++## ZIP Artifacts
++
++- `tmp/PR_26175_CHARLIE_012-runtime-health_delta.zip`
++- `tmp/PR_26175_CHARLIE_013-service-health-dashboard_delta.zip`
++- `tmp/PR_26175_CHARLIE_014-configuration-summary_delta.zip`
++- `tmp/PR_26175_CHARLIE_015-manual-health-actions_delta.zip`
++- `tmp/PR_26175_CHARLIE_016-scheduled-health-monitoring_delta.zip`
++- `tmp/PR_26175_CHARLIE_017-health-notifications-foundation_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_017-health-notifications-foundation-branch-validation.md b/docs_build/dev/reports/PR_26175_CHARLIE_017-health-notifications-foundation-branch-validation.md
+new file mode 100644
+index 000000000..23f700f3c
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_017-health-notifications-foundation-branch-validation.md
 @@ -0,0 +1,9 @@
-+# PR_26175_CHARLIE_016 Branch Validation
++# PR_26175_CHARLIE_017 Branch Validation
 +
 +## Branch Rules
 +
 +- PASS: Continued on `pr/26175-CHARLIE-010-system-health-history-and-closeout`.
-+- PASS: Stacked on PR_26175_CHARLIE_015.
++- PASS: Stacked on PR_26175_CHARLIE_016.
 +- PASS: No merge was performed.
 +- PASS: No rebase was performed.
 +- PASS: No new root branch was created.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_016-scheduled-health-monitoring-manual-validation-notes.md b/docs_build/dev/reports/PR_26175_CHARLIE_016-scheduled-health-monitoring-manual-validation-notes.md
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_017-health-notifications-foundation-manual-validation-notes.md b/docs_build/dev/reports/PR_26175_CHARLIE_017-health-notifications-foundation-manual-validation-notes.md
 new file mode 100644
-index 000000000..010238f9a
+index 000000000..a3f0ef546
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_016-scheduled-health-monitoring-manual-validation-notes.md
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_017-health-notifications-foundation-manual-validation-notes.md
 @@ -0,0 +1,6 @@
-+# PR_26175_CHARLIE_016 Manual Validation Notes
++# PR_26175_CHARLIE_017 Manual Validation Notes
 +
-+- Verified Scheduled Health Monitoring renders on `admin/system-health.html`.
-+- Verified Not Configured appears instead of fake scheduler success.
-+- Verified the table includes last run, next run, duration, recent result, and failures/warnings.
-+- Verified no scheduler side effects or cross-environment checks were introduced.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_016-scheduled-health-monitoring-requirement-checklist.md b/docs_build/dev/reports/PR_26175_CHARLIE_016-scheduled-health-monitoring-requirement-checklist.md
++- Verified Notifications & Alerts renders on `admin/system-health.html`.
++- Verified Email alerts, Admin notifications, Webhook alerts, and Messages integration show Not Configured.
++- Verified no send controls or delivery actions were added.
++- Verified no peer environment health checks were introduced.
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_017-health-notifications-foundation-requirement-checklist.md b/docs_build/dev/reports/PR_26175_CHARLIE_017-health-notifications-foundation-requirement-checklist.md
 new file mode 100644
-index 000000000..d099700d5
+index 000000000..9455d7554
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_016-scheduled-health-monitoring-requirement-checklist.md
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_017-health-notifications-foundation-requirement-checklist.md
 @@ -0,0 +1,12 @@
-+# PR_26175_CHARLIE_016 Requirement Checklist
++# PR_26175_CHARLIE_017 Requirement Checklist
 +
-+- PASS: Added Scheduled Health Monitoring foundation.
-+- PASS: Shows last scheduled run.
-+- PASS: Shows next scheduled run if available.
-+- PASS: Shows duration.
-+- PASS: Shows recent result.
-+- PASS: Shows failures/warnings.
-+- PASS: Shows production-safe Not Configured state when scheduler is not implemented.
++- PASS: Added Email alerts status placeholder.
++- PASS: Added Admin notification status placeholder.
++- PASS: Added Webhook status placeholder.
++- PASS: Added Messages integration placeholder because a messages service surface exists.
++- PASS: Did not add actual sending behavior.
++- PASS: Shows Not Configured safely.
++- PASS: Added final Phase 2 closeout report.
 +- PASS: Current environment only.
 +- PASS: Tests were updated.
 +- PASS: Required reports were generated.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_016-scheduled-health-monitoring-validation.md b/docs_build/dev/reports/PR_26175_CHARLIE_016-scheduled-health-monitoring-validation.md
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_017-health-notifications-foundation-validation.md b/docs_build/dev/reports/PR_26175_CHARLIE_017-health-notifications-foundation-validation.md
 new file mode 100644
-index 000000000..2d660b368
+index 000000000..4d1bd2871
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_016-scheduled-health-monitoring-validation.md
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_017-health-notifications-foundation-validation.md
 @@ -0,0 +1,18 @@
-+# PR_26175_CHARLIE_016 Validation Report
++# PR_26175_CHARLIE_017 Validation Report
 +
 +## Commands
 +
@@ -330,35 +368,37 @@ index 000000000..2d660b368
 +- Targeted System Health API/unit lane: PASS.
 +- Targeted System Health Playwright lane: PASS.
 +- Full samples smoke: not run; not required for this System Health-only slice.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_016-scheduled-health-monitoring.md b/docs_build/dev/reports/PR_26175_CHARLIE_016-scheduled-health-monitoring.md
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_017-health-notifications-foundation.md b/docs_build/dev/reports/PR_26175_CHARLIE_017-health-notifications-foundation.md
 new file mode 100644
-index 000000000..a07e997e2
+index 000000000..128662d81
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_016-scheduled-health-monitoring.md
-@@ -0,0 +1,26 @@
-+# PR_26175_CHARLIE_016 Scheduled Health Monitoring
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_017-health-notifications-foundation.md
+@@ -0,0 +1,28 @@
++# PR_26175_CHARLIE_017 Health Notifications Foundation
 +
 +## Scope
 +
 +Team: Charlie
 +
-+Purpose: Add the Scheduled Health Monitoring foundation to Admin System Health Phase 2.
++Purpose: Add Notifications & Alerts foundation placeholders to Admin System Health Phase 2.
 +
 +## Changes
 +
-+- Added server-owned `scheduledMonitoring` to the Admin System Health status API.
-+- Added Scheduled Health Monitoring table for last scheduled run, next scheduled run, duration, recent result, and failures/warnings.
-+- Returned production-safe Not Configured values because no scheduler contract is implemented.
++- Added server-owned `notificationsFoundation` to the Admin System Health status API.
++- Added Notifications & Alerts table with Email alerts, Admin notifications, Webhook alerts, and Messages integration placeholders.
++- Returned production-safe Not Configured values for every notification path.
++- Added final Phase 2 closeout report.
 +- Updated API and Playwright System Health tests.
 +
 +## Architecture Notes
 +
-+- PASS: Scheduler success is not faked.
-+- PASS: Not Configured state is explicit and safe.
++- PASS: No email sending was added.
++- PASS: No webhook sending was added.
++- PASS: No admin notification delivery was added.
++- PASS: Messages integration is placeholder-only.
 +- PASS: Current environment only.
 +- PASS: Browser renders API-owned state only.
-+- PASS: No cross-environment checks were added.
 +
 +## Artifact
 +
-+- `tmp/PR_26175_CHARLIE_016-scheduled-health-monitoring_delta.zip`
++- `tmp/PR_26175_CHARLIE_017-health-notifications-foundation_delta.zip`

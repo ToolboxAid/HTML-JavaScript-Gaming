@@ -181,6 +181,12 @@ test("Admin can view operational health while Creator sessions are blocked", asy
       );
       assert.equal(health.scheduledMonitoring.rows.some((row) => row.value === "Not Configured"), true);
       assert.equal(health.scheduledMonitoring.status, "PENDING");
+      assert.deepEqual(
+        health.notificationsFoundation.rows.map((row) => row.field),
+        ["Email alerts", "Admin notifications", "Webhook alerts", "Messages integration"],
+      );
+      assert.equal(health.notificationsFoundation.rows.every((row) => row.value === "Not Configured"), true);
+      assert.equal(health.notificationsFoundation.status, "PENDING");
       assert.equal(health.storageStatus.environmentFolder, "/local");
       assert.equal(typeof health.storageStatus.lastChecked, "string");
       assert.equal(Array.isArray(health.healthCheckHistory), true);
