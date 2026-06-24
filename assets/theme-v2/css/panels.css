@@ -298,6 +298,10 @@ body.tool-focus-mode .tool-center-panel:has(>details.vertical-accordion)>p {
   display: none
 }
 
+.tool-display-mode__mode-icon {
+  color: var(--cyan)
+}
+
 .tool-display-mode__chevron {
   position: absolute;
   right: var(--space-12);
@@ -338,6 +342,27 @@ body.tool-focus-mode .tool-center-panel:has(>details.vertical-accordion)>p {
   align-items: center;
   gap: var(--space-14);
   flex-wrap: wrap
+}
+
+.tool-display-mode__navigation-link {
+  align-items: center;
+  color: var(--text);
+  display: inline-flex;
+  gap: var(--space-6);
+  line-height: var(--line-height-tight)
+}
+
+.tool-display-mode__navigation-link:hover,
+.tool-display-mode__navigation-link:focus-visible {
+  color: var(--gold)
+}
+
+.tool-display-mode__navigation-link--disabled {
+  color: var(--muted)
+}
+
+.tool-display-mode__navigation-icon {
+  color: currentColor
 }
 
 .tool-display-mode__character {

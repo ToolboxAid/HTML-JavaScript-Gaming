@@ -79,6 +79,14 @@
         replaceIconNode(summary, ":scope > .tool-display-mode__chevron", shell);
     }
 
+    function updateToolDisplayModeModeIcon() {
+        const iconName = document.body.classList.contains("tool-focus-mode") || document.fullscreenElement
+            ? "exit-fullscreen"
+            : "fullscreen";
+        const icon = createThemeIconNode(iconName, "layout-icon tool-display-mode__mode-icon");
+        replaceIconNode(summary, ":scope > .tool-display-mode__mode-icon", icon);
+    }
+
     function horizontalToggleIconName(button) {
         const expanded = button.getAttribute("aria-expanded") !== "false";
         const isLeft = button.classList.contains("horizontal-accordion-toggle--left");
@@ -98,6 +106,7 @@
 
     function refreshThemeIcons() {
         refreshVerticalAccordionChevrons();
+        updateToolDisplayModeModeIcon();
         updateToolDisplayModeChevron();
         refreshHorizontalToggleIcons();
     }
@@ -137,6 +146,7 @@
     const summary = document.createElement("summary");
     summary.setAttribute("aria-label", "Tool Display Mode");
     summary.title = "Tool Display Mode";
+    summary.appendChild(createThemeIconNode("fullscreen", "layout-icon tool-display-mode__mode-icon"));
 
     const badge = document.createElement("img");
     badge.className = "tool-display-mode__badge";
@@ -175,22 +185,26 @@
     function createNavigationControl(direction, target) {
         const controlLabel = direction === "previous" ? "Previous" : "Next";
         const dataAttribute = direction === "previous" ? "toolNavPrevious" : "toolNavNext";
+        const iconName = direction === "previous" ? "chevron-left" : "chevron-right";
+        const icon = createThemeIconNode(iconName, "layout-icon tool-display-mode__navigation-icon");
+        const label = document.createTextNode(controlLabel + ": " + (target?.label || "Unavailable"));
 
         if (!target || target.disabled) {
             const disabledText = document.createElement("span");
-            disabledText.className = "pill";
+            disabledText.className = "pill tool-display-mode__navigation-link tool-display-mode__navigation-link--disabled";
             disabledText.dataset[dataAttribute] = "disabled";
-            disabledText.textContent = controlLabel + ": " + (target?.label || "Unavailable");
+            disabledText.append(icon, label);
             return disabledText;
         }
 
         const link = document.createElement("a");
+        link.className = "tool-display-mode__navigation-link";
         link.href = target.href;
         link.dataset[dataAttribute] = target.kind;
         if (target.group) {
             link.dataset.toolNavGroup = target.group;
         }
-        link.textContent = controlLabel + ": " + target.label;
+        link.append(icon, label);
         return link;
     }
 
@@ -259,6 +273,7 @@
     async function enterToolMode() {
         document.body.classList.add("tool-focus-mode");
         displayMode.open = false;
+        updateToolDisplayModeModeIcon();
 
         try {
             if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
@@ -272,6 +287,7 @@
     async function exitToolMode() {
         document.body.classList.remove("tool-focus-mode");
         displayMode.open = true;
+        updateToolDisplayModeModeIcon();
 
         try {
             if (document.fullscreenElement && document.exitFullscreen) {
@@ -296,6 +312,7 @@
         if (!document.fullscreenElement && document.body.classList.contains("tool-focus-mode")) {
             document.body.classList.remove("tool-focus-mode");
             displayMode.open = true;
+            refreshThemeIcons();
         }
     });
 

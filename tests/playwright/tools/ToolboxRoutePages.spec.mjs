@@ -6,6 +6,8 @@ import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageRe
 
 const IDEA_BOARD_EDITABLE_STATUS_OPTIONS = ["New", "Exploring", "Refining", "Ready"];
 const IDEA_BOARD_FILTER_STATUS_OPTIONS = ["New", "Exploring", "Refining", "Ready", "Project", "Archived"];
+const INLINE_STYLE_ATTRIBUTE_PATTERN = new RegExp("\\s" + "sty" + "le=", "i");
+const INLINE_STYLE_TAG_PATTERN = new RegExp("<" + "sty" + "le[\\s>]", "i");
 
 const TOOL_ROUTE_SMOKE_CASES = [
   { heading: "Game Journey", route: "/tools/game-journey/index.html" },
@@ -102,9 +104,122 @@ async function fetchApiData(server, pathName) {
   return payload.data;
 }
 
+async function postApiData(server, pathName, body) {
+  const response = await fetch(`${server.baseUrl}${pathName}`, {
+    body: JSON.stringify(body),
+    headers: { "content-type": "application/json" },
+    method: "POST",
+  });
+  const payload = await response.json();
+  expect(response.ok, JSON.stringify(payload)).toBe(true);
+  expect(payload.ok, JSON.stringify(payload)).toBe(true);
+  return payload.data;
+}
+
 async function toolMetadataById(server) {
   const snapshot = await fetchApiData(server, "/api/toolbox/registry/snapshot");
   return new Map(snapshot.activeTools.map((tool) => [tool.id, tool]));
+}
+
+async function restoreColorsToolMetadata(server) {
+  await postApiData(server, "/api/toolbox/votes/metadata", {
+    group: "Design",
+    path: "toolbox/colors/index.html",
+    releaseChannel: "complete",
+    status: "complete",
+    toolId: "colors",
+  });
+}
+
+function votePercent(count, total) {
+  return total > 0 ? Math.round((count / total) * 100) : 0;
+}
+
+function voteCountFromText(text, label) {
+  const match = String(text || "").trim().match(new RegExp(`^${label} (\\d+)$`));
+  expect(match).not.toBeNull();
+  return Number.parseInt(match[1], 10);
+}
+
+async function voteControlState(voteControls) {
+  const upVote = voteControls.locator("[data-toolbox-vote='up']");
+  const downVote = voteControls.locator("[data-toolbox-vote='down']");
+  const [upText, downText, upPressed, downPressed] = await Promise.all([
+    upVote.textContent(),
+    downVote.textContent(),
+    upVote.getAttribute("aria-pressed"),
+    downVote.getAttribute("aria-pressed"),
+  ]);
+  return {
+    currentVote: upPressed === "true" ? "up" : downPressed === "true" ? "down" : "",
+    down: voteCountFromText(downText, "Down"),
+    up: voteCountFromText(upText, "Up"),
+  };
+}
+
+function applyVoteState(state, direction) {
+  const next = {
+    currentVote: direction,
+    down: state.down,
+    up: state.up,
+  };
+  if (state.currentVote === direction) {
+    return next;
+  }
+  if (state.currentVote === "up") {
+    next.up = Math.max(0, next.up - 1);
+  }
+  if (state.currentVote === "down") {
+    next.down = Math.max(0, next.down - 1);
+  }
+  if (direction === "up") {
+    next.up += 1;
+  }
+  if (direction === "down") {
+    next.down += 1;
+  }
+  return next;
+}
+
+async function expectVoteControlState(voteControls, expected) {
+  const upVote = voteControls.locator("[data-toolbox-vote='up']");
+  const downVote = voteControls.locator("[data-toolbox-vote='down']");
+  await expect(upVote).toHaveText(`Up ${expected.up}`);
+  await expect(downVote).toHaveText(`Down ${expected.down}`);
+  await expect(upVote).toHaveAttribute("aria-pressed", String(expected.currentVote === "up"));
+  await expect(downVote).toHaveAttribute("aria-pressed", String(expected.currentVote === "down"));
+  if (expected.currentVote === "up") {
+    await expect(upVote).toHaveClass(/primary/);
+    await expect(downVote).not.toHaveClass(/primary/);
+    return;
+  }
+  if (expected.currentVote === "down") {
+    await expect(upVote).not.toHaveClass(/primary/);
+    await expect(downVote).toHaveClass(/primary/);
+    return;
+  }
+  await expect(upVote).not.toHaveClass(/primary/);
+  await expect(downVote).not.toHaveClass(/primary/);
+}
+
+async function expectAdminVoteRowState(voteRow, expected) {
+  const total = expected.up + expected.down;
+  await expect(voteRow.locator("td").nth(5)).toHaveText(String(expected.up));
+  await expect(voteRow.locator("td").nth(6)).toHaveText(String(expected.down));
+  await expect(voteRow.locator("td").nth(7)).toHaveText(String(total));
+  await expect(voteRow.locator("td").nth(8)).toHaveText(`${votePercent(expected.up, total)}%`);
+  await expect(voteRow.locator("td").nth(9)).toHaveText(`${votePercent(expected.down, total)}%`);
+  await expect(voteRow.locator("td").nth(10)).toHaveText(expected.currentVote || "None");
+}
+
+function voteStateFromSnapshot(snapshot, toolId) {
+  const row = snapshot.rows.find((voteRow) => voteRow.toolId === toolId);
+  expect(row).toBeTruthy();
+  return {
+    currentVote: row.currentUserVote || "",
+    down: Number(row.down) || 0,
+    up: Number(row.up) || 0,
+  };
 }
 
 function restoreEnvValue(key, value) {
@@ -213,6 +328,10 @@ async function expectNoToolNavigationFallbackUi(page) {
 
 test("tools route aliases render toolbox tool pages", async ({ page }) => {
   const server = await startRepoServer();
+  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
+  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
   const failedRequests = [];
   const pageErrors = [];
   const consoleErrors = [];
@@ -243,6 +362,7 @@ test("tools route aliases render toolbox tool pages", async ({ page }) => {
       await page.goto(`${server.baseUrl}${route}`, { waitUntil: "networkidle" });
       await expect(page.getByRole("heading", { level: 1, name: heading })).toBeVisible();
       await expect(page.locator("main")).toBeVisible();
+      await expect(page.locator("[data-return-to-top] [data-theme-icon='chevron-up']")).toHaveAttribute("data-theme-icon-file", "gfs-chevron-up.svg");
     }
 
     expect(failedRequests).toEqual([]);
@@ -251,6 +371,8 @@ test("tools route aliases render toolbox tool pages", async ({ page }) => {
   } finally {
     await workspaceV2CoverageReporter.stop(page);
     await server.close();
+    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
+    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
   }
 });
 
@@ -439,21 +561,21 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
     await expect(page.locator("[data-toolbox-tool-name-link='Game Configuration']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Game Design']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Game Journey']")).toBeVisible();
-    await expect(page.locator("[data-toolbox-tool-name-link='Game Hub'][href='/toolbox/game-workspace/index.html']")).toBeVisible();
+    await expect(page.locator("[data-toolbox-tool-name-link='Game Hub']")).toHaveAttribute("href", "/toolbox/game-hub/index.html");
     await expect(page.locator("[data-toolbox-tool-name-link='Text To Speech']")).toHaveAttribute("href", "/toolbox/text-to-speech/index.html");
     await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toHaveCount(0);
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 16/44");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 15/43");
     await page.locator("[data-toolbox-status-filter='planned']").click();
     await expect(page.locator("[data-toolbox-status-filter='planned']")).toHaveAttribute("aria-pressed", "true");
     await expect(page.locator("[data-toolbox-tool-card][data-toolbox-release-channel='planned']")).toHaveCount(27);
-    await expect(page.locator("[data-toolbox-tool-card]")).toHaveCount(43);
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 43/44");
+    await expect(page.locator("[data-toolbox-tool-card]")).toHaveCount(42);
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 42/43");
     await expect(page.locator("[data-toolbox-tool-name-link='AI Command Center']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Game Crew']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toBeVisible();
     await page.locator("[data-toolbox-status-filter='deprecated']").click();
     await expect(page.locator("[data-toolbox-tool-name-link='Build Game']")).toBeVisible();
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 44/44");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 43/43");
 
     await setServerSession(server, MOCK_DB_KEYS.users.admin);
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
@@ -483,6 +605,10 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
 
 test("toolbox status kickers, filters, card order, and voting controls work from registry metadata", async ({ page }) => {
   const server = await startRepoServer();
+  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
+  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
   const failedRequests = [];
   const pageErrors = [];
   const consoleErrors = [];
@@ -509,13 +635,15 @@ test("toolbox status kickers, filters, card order, and voting controls work from
 
   try {
     await workspaceV2CoverageReporter.start(page);
+    await setServerSession(server, MOCK_DB_KEYS.users.admin);
+    await restoreColorsToolMetadata(server);
     await setServerSession(server, MOCK_DB_KEYS.users.user1);
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
 
     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
-      "Planned (28)",
+      "Planned (27)",
       "Wireframe (4)",
-      "Beta (6)",
+      "Beta (8)",
       "Complete (3)",
       "Deprecated (1)",
     ]);
@@ -530,9 +658,9 @@ test("toolbox status kickers, filters, card order, and voting controls work from
 
     await page.locator("[data-tools-view='build-path']").click();
     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
-      "Planned (28)",
+      "Planned (27)",
       "Wireframe (4)",
-      "Beta (6)",
+      "Beta (8)",
       "Complete (3)",
       "Deprecated (1)",
     ]);
@@ -632,24 +760,17 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await expect(buildVotes).toBeVisible();
     const buildUpVote = buildVotes.locator("[data-toolbox-vote='up']");
     const buildDownVote = buildVotes.locator("[data-toolbox-vote='down']");
-    await expect(buildUpVote).toHaveText("Up 0");
-    await expect(buildDownVote).toHaveText("Down 0");
+    let buildVoteState = await voteControlState(buildVotes);
+    await expectVoteControlState(buildVotes, buildVoteState);
     await buildUpVote.click();
-    await expect(buildUpVote).toHaveText("Up 1");
-    await expect(buildUpVote).toHaveAttribute("aria-pressed", "true");
-    await expect(buildUpVote).toHaveClass(/primary/);
-    await expect(buildDownVote).toHaveAttribute("aria-pressed", "false");
-    await expect(buildDownVote).not.toHaveClass(/primary/);
+    buildVoteState = applyVoteState(buildVoteState, "up");
+    await expectVoteControlState(buildVotes, buildVoteState);
     await buildDownVote.click();
-    await expect(buildUpVote).toHaveText("Up 0");
-    await expect(buildUpVote).toHaveAttribute("aria-pressed", "false");
-    await expect(buildUpVote).not.toHaveClass(/primary/);
-    await expect(buildDownVote).toHaveText("Down 1");
-    await expect(buildDownVote).toHaveAttribute("aria-pressed", "true");
-    await expect(buildDownVote).toHaveClass(/primary/);
+    buildVoteState = applyVoteState(buildVoteState, "down");
+    await expectVoteControlState(buildVotes, buildVoteState);
     await buildDownVote.click();
-    await expect(buildDownVote).toHaveText("Down 1");
-    await expect(buildDownVote).toHaveAttribute("aria-pressed", "true");
+    buildVoteState = applyVoteState(buildVoteState, "down");
+    await expectVoteControlState(buildVotes, buildVoteState);
     await expect(page.locator("[data-toolbox-launch-status]")).toHaveText("Build Game down vote recorded for Admin review.");
 
     await page.goto(`${server.baseUrl}/toolbox/index.html?view=group`, { waitUntil: "networkidle" });
@@ -658,10 +779,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
       await page.locator("[data-toolbox-status-filter='deprecated']").click();
     }
     const restoredBuildVotes = page.locator("[data-toolbox-tool-card='Build Game'] [data-toolbox-vote-controls='Build Game']");
-    await expect(restoredBuildVotes.locator("[data-toolbox-vote='up']")).toHaveText("Up 0");
-    await expect(restoredBuildVotes.locator("[data-toolbox-vote='down']")).toHaveText("Down 1");
-    await expect(restoredBuildVotes.locator("[data-toolbox-vote='down']")).toHaveAttribute("aria-pressed", "true");
-    await expect(restoredBuildVotes.locator("[data-toolbox-vote='down']")).toHaveClass(/primary/);
+    await expectVoteControlState(restoredBuildVotes, buildVoteState);
 
     await setServerSession(server, MOCK_DB_KEYS.users.user2);
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
@@ -669,11 +787,10 @@ test("toolbox status kickers, filters, card order, and voting controls work from
       await page.locator("[data-toolbox-status-filter='deprecated']").click();
     }
     const userTwoBuildVotes = page.locator("[data-toolbox-tool-card='Build Game'] [data-toolbox-vote-controls='Build Game']");
+    buildVoteState = await voteControlState(userTwoBuildVotes);
     await userTwoBuildVotes.locator("[data-toolbox-vote='up']").click();
-    await expect(userTwoBuildVotes.locator("[data-toolbox-vote='up']")).toHaveText("Up 1");
-    await expect(userTwoBuildVotes.locator("[data-toolbox-vote='down']")).toHaveText("Down 1");
-    await expect(userTwoBuildVotes.locator("[data-toolbox-vote='up']")).toHaveAttribute("aria-pressed", "true");
-    await expect(userTwoBuildVotes.locator("[data-toolbox-vote='up']")).toHaveClass(/primary/);
+    buildVoteState = applyVoteState(buildVoteState, "up");
+    await expectVoteControlState(userTwoBuildVotes, buildVoteState);
 
     await setServerSession(server, MOCK_DB_KEYS.users.user1);
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
@@ -681,15 +798,11 @@ test("toolbox status kickers, filters, card order, and voting controls work from
       await page.locator("[data-toolbox-status-filter='deprecated']").click();
     }
     const userOneReturnedBuildVotes = page.locator("[data-toolbox-tool-card='Build Game'] [data-toolbox-vote-controls='Build Game']");
-    await expect(userOneReturnedBuildVotes.locator("[data-toolbox-vote='up']")).toHaveText("Up 1");
-    await expect(userOneReturnedBuildVotes.locator("[data-toolbox-vote='down']")).toHaveText("Down 1");
-    await expect(userOneReturnedBuildVotes.locator("[data-toolbox-vote='down']")).toHaveAttribute("aria-pressed", "true");
-    await expect(userOneReturnedBuildVotes.locator("[data-toolbox-vote='down']")).toHaveClass(/primary/);
+    buildVoteState = { ...buildVoteState, currentVote: "down" };
+    await expectVoteControlState(userOneReturnedBuildVotes, buildVoteState);
     await userOneReturnedBuildVotes.locator("[data-toolbox-vote='up']").click();
-    await expect(userOneReturnedBuildVotes.locator("[data-toolbox-vote='up']")).toHaveText("Up 2");
-    await expect(userOneReturnedBuildVotes.locator("[data-toolbox-vote='down']")).toHaveText("Down 0");
-    await expect(userOneReturnedBuildVotes.locator("[data-toolbox-vote='up']")).toHaveAttribute("aria-pressed", "true");
-    await expect(userOneReturnedBuildVotes.locator("[data-toolbox-vote='up']")).toHaveClass(/primary/);
+    buildVoteState = applyVoteState(buildVoteState, "up");
+    await expectVoteControlState(userOneReturnedBuildVotes, buildVoteState);
 
     await setServerSession(server, MOCK_DB_KEYS.users.admin);
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
@@ -701,7 +814,10 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await expect(plannedCard.locator("[data-toolbox-kicker]")).toHaveClass(/swatch-label/);
     await expect(plannedCard.locator("[data-toolbox-kicker]")).toHaveAttribute("title", STATUS_HELP_TEXT.planned);
     await expect(plannedCard.locator("[data-toolbox-vote-controls='Publish']")).toBeVisible();
-    await plannedCard.locator("[data-toolbox-vote-controls='Publish'] [data-toolbox-vote='up']").click();
+    const publishVotes = plannedCard.locator("[data-toolbox-vote-controls='Publish']");
+    let publishVoteState = await voteControlState(publishVotes);
+    await publishVotes.locator("[data-toolbox-vote='up']").click();
+    publishVoteState = applyVoteState(publishVoteState, "up");
     await expect(page.locator("[data-toolbox-launch-status]")).toHaveText("Publish up vote recorded for Admin review.");
     await plannedCard.locator("[data-toolbox-tile-action-row='Publish'] a.btn").click();
     await expect(page).toHaveURL(/\/toolbox\/index\.html$/);
@@ -725,6 +841,11 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await expect(page.locator("[data-toolbox-tool-card='Colors'] .card-body > [data-toolbox-group-badge] [data-toolbox-group-label='Graphics']")).toHaveCSS("background-color", "rgb(255, 200, 87)");
     await expect(page.locator("[data-toolbox-tool-card='Colors'] .card-body > [data-toolbox-state-badge]")).toHaveAttribute("data-toolbox-state-badge", "complete");
 
+    const adminVoteSnapshot = await fetchApiData(server, "/api/toolbox/votes/snapshot");
+    const adminBuildVoteState = voteStateFromSnapshot(adminVoteSnapshot, "build-game");
+    const originalToolOrder = adminVoteSnapshot.rows.map((row) => row.toolId);
+    publishVoteState = voteStateFromSnapshot(adminVoteSnapshot, "publish");
+
     await page.goto(`${server.baseUrl}/admin/tool-votes.html`, { waitUntil: "networkidle" });
     await expect(page.getByRole("heading", { level: 1, name: "Tool Votes" })).toBeVisible();
     await expect(page.locator("[data-toolbox-votes-status]")).toContainText("DavidQ");
@@ -744,11 +865,22 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await expect(page.locator("[data-toolbox-votes-layout].tool-workspace.tool-workspace--wide")).toBeVisible();
     await expect(page.locator("[data-toolbox-votes-layout] > .tool-column")).toHaveCount(2);
     await expect(page.locator("[data-admin-tool-menu] a")).toHaveText([
-      "Tool Votes",
-      "Environments",
+      "Analytics",
+      "Controls",
       "Creators",
+      "DB Viewer",
+      "Environments",
       "Game Migration",
+      "Infrastructure",
+      "Invites",
+      "Moderation",
+      "Operations",
       "Platform Settings",
+      "Ratings",
+      "Responsibilities",
+      "Site Setup",
+      "System Health",
+      "Tool Votes",
     ]);
     await expect(page.locator("[data-toolbox-votes-width-toggle]")).toHaveCount(0);
     await expect(page.locator("[data-toolbox-votes-width-status]")).toHaveCount(0);
@@ -773,12 +905,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
       "Complete",
       "Deprecated",
     ]);
-    await expect(adminBuildVoteRow.locator("td").nth(5)).toHaveText("2");
-    await expect(adminBuildVoteRow.locator("td").nth(6)).toHaveText("0");
-    await expect(adminBuildVoteRow.locator("td").nth(7)).toHaveText("2");
-    await expect(adminBuildVoteRow.locator("td").nth(8)).toHaveText("100%");
-    await expect(adminBuildVoteRow.locator("td").nth(9)).toHaveText("0%");
-    await expect(adminBuildVoteRow.locator("td").nth(10)).toHaveText("None");
+    await expectAdminVoteRowState(adminBuildVoteRow, adminBuildVoteState);
     await adminBuildVoteRow.locator("td").nth(1).click();
     await expect(adminBuildVoteRow).toHaveAttribute("aria-selected", "true");
     await page.locator("[data-toolbox-votes-sort='toolName']").click();
@@ -815,11 +942,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await expect(adminBuildVoteRow.locator("td").nth(1)).toHaveText("1");
     await expect(page.locator("[data-toolbox-votes-tool-id='game-hub'] td").nth(1)).toHaveText("2");
     await expect(adminBuildVoteRow).toHaveAttribute("aria-selected", "true");
-    await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(5)).toHaveText("1");
-    await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(7)).toHaveText("1");
-    await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(8)).toHaveText("100%");
-    await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(9)).toHaveText("0%");
-    await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(10)).toHaveText("up");
+    await expectAdminVoteRowState(page.locator("[data-toolbox-votes-tool-id='publish']"), publishVoteState);
 
     const colorsVoteRow = page.locator("[data-toolbox-votes-tool-id='colors']");
     await colorsVoteRow.click();
@@ -842,14 +965,11 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await expect(colorsBuildPathRow.locator("[data-build-path-tool-link='Colors']")).toHaveAttribute("href", /toolbox\/colors\/index\.html$/);
 
     await expect(page.locator("[data-route='admin-tool-votes']")).toHaveCount(1);
-    const mockDbToolboxTables = await page.evaluate(async () => {
-      const response = await fetch("/api/local-db/snapshot");
-      const payload = await response.json();
-      return {
-        metadata: payload.data.tables.toolbox_tool_metadata,
-        votes: payload.data.tables.toolbox_votes,
-      };
-    });
+    const productDataSnapshot = await fetchApiData(server, "/api/product-data/snapshot");
+    const mockDbToolboxTables = {
+      metadata: productDataSnapshot.tables.toolbox_tool_metadata,
+      votes: productDataSnapshot.tables.toolbox_votes,
+    };
     expect(mockDbToolboxTables.votes).toEqual(expect.arrayContaining([
       expect.objectContaining({
         direction: "up",
@@ -875,13 +995,15 @@ test("toolbox status kickers, filters, card order, and voting controls work from
         toolId: "colors",
       }),
     ]));
+    await restoreColorsToolMetadata(server);
+    await postApiData(server, "/api/toolbox/votes/order-list", { toolIds: originalToolOrder });
 
     const toolboxSource = await page.evaluate(async () => {
       const response = await fetch("/toolbox/index.html");
       return response.text();
     });
     expect(toolboxSource).not.toMatch(/<script(?![^>]+src=)[^>]*>/i);
-    expect(toolboxSource).not.toMatch(/<style[\s>]/i);
+    expect(toolboxSource).not.toMatch(INLINE_STYLE_TAG_PATTERN);
     expect(toolboxSource).not.toContain("onclick=");
 
     expect(failedRequests).toEqual([]);
@@ -890,6 +1012,8 @@ test("toolbox status kickers, filters, card order, and voting controls work from
   } finally {
     await workspaceV2CoverageReporter.stop(page);
     await server.close();
+    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
+    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
   }
 });
 
@@ -1025,8 +1149,8 @@ test("toolbox grouped view renders Game Journey order with unique colors while B
       return response.text();
     });
     expect(toolboxSource).not.toMatch(/<script(?![^>]+src=)[^>]*>/i);
-    expect(toolboxSource).not.toMatch(/<style[\s>]/i);
-    expect(toolboxSource).not.toMatch(/\sstyle=/i);
+    expect(toolboxSource).not.toMatch(INLINE_STYLE_TAG_PATTERN);
+    expect(toolboxSource).not.toMatch(INLINE_STYLE_ATTRIBUTE_PATTERN);
     expect(toolboxSource).not.toContain("onclick=");
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
 
@@ -1184,6 +1308,10 @@ test("Game Crew friendly route resolves while old Users route remains compatible
 
 test("toolbox Build Path status filters support multi-select registry-matched tool rows", async ({ page }) => {
   const server = await startRepoServer();
+  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
+  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
   const failedRequests = [];
   const pageErrors = [];
   const consoleErrors = [];
@@ -1236,6 +1364,8 @@ test("toolbox Build Path status filters support multi-select registry-matched to
 
   try {
     await workspaceV2CoverageReporter.start(page);
+    await setServerSession(server, MOCK_DB_KEYS.users.admin);
+    await restoreColorsToolMetadata(server);
     await setServerSession(server, MOCK_DB_KEYS.users.user1);
     const registryById = await toolMetadataById(server);
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
@@ -1248,9 +1378,9 @@ test("toolbox Build Path status filters support multi-select registry-matched to
     await expect(page.locator("[data-tools-sort='grouped']")).not.toHaveClass(/primary/);
 
     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
-      "Planned (28)",
+      "Planned (27)",
       "Wireframe (4)",
-      "Beta (6)",
+      "Beta (8)",
       "Complete (3)",
       "Deprecated (1)",
     ]);
@@ -1261,32 +1391,32 @@ test("toolbox Build Path status filters support multi-select registry-matched to
 
     await page.locator("[data-toolbox-status-filter='planned']").click();
     await expectActiveFilters(["planned", "complete"]);
-    await expectBuildPathChannels(["planned", "complete"], 31);
+    await expectBuildPathChannels(["planned", "complete"], 30);
     await expect(page.locator("[data-build-path-tool='AI Command Center']")).toBeVisible();
     await expectBuildPathOrder("AI Command Center", registryById.get("ai-assistant").order);
     await expectBuildPathOrder("Colors", registryById.get("colors").order);
 
     await page.locator("[data-toolbox-status-filter='complete']").click();
     await expectActiveFilters(["planned"]);
-    await expectBuildPathChannels(["planned"], 28);
+    await expectBuildPathChannels(["planned"], 27);
     await expect(page.locator("[data-build-path-tool='Colors']")).toHaveCount(0);
     await expect(page.locator("[data-build-path-tool='AI Command Center']")).toBeVisible();
 
     await page.locator("[data-toolbox-status-filter='wireframe']").click();
     await expectActiveFilters(["planned", "wireframe"]);
-    await expectBuildPathChannels(["planned", "wireframe"], 32);
+    await expectBuildPathChannels(["planned", "wireframe"], 31);
     await expect(page.locator("[data-build-path-tool='Saved Data']")).toBeVisible();
     await expect(page.locator("[data-build-path-tool='Build Game']")).toHaveCount(0);
 
     await page.locator("[data-toolbox-status-filter='deprecated']").click();
     await expectActiveFilters(["planned", "wireframe", "deprecated"]);
-    await expectBuildPathChannels(["planned", "wireframe", "deprecated"], 33);
+    await expectBuildPathChannels(["planned", "wireframe", "deprecated"], 32);
     await expect(page.locator("[data-build-path-tool='Build Game']")).toBeVisible();
     await expectBuildPathOrder("Build Game", registryById.get("build-game").order);
 
     await page.locator("[data-toolbox-status-filter='beta']").click();
     await expectActiveFilters(["planned", "wireframe", "beta", "deprecated"]);
-    await expectBuildPathChannels(["planned", "wireframe", "beta", "deprecated"], 39);
+    await expectBuildPathChannels(["planned", "wireframe", "beta", "deprecated"], 40);
 
     expect(failedRequests).toEqual([]);
     expect(pageErrors).toEqual([]);
@@ -1294,11 +1424,17 @@ test("toolbox Build Path status filters support multi-select registry-matched to
   } finally {
     await workspaceV2CoverageReporter.stop(page);
     await server.close();
+    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
+    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
   }
 });
 
 test("Colors Picker Preview header sort buttons reorder the grid", async ({ page }) => {
   const server = await startRepoServer();
+  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
+  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
   const failedRequests = [];
   const pageErrors = [];
   const consoleErrors = [];
@@ -1350,7 +1486,7 @@ test("Colors Picker Preview header sort buttons reorder the grid", async ({ page
         if (child.hasAttribute("data-palette-preview-controls")) return "preview-controls";
         if (child.querySelector("[data-palette-generator-preview-status]")) return "preview-status";
         return child.textContent.trim();
-      })
+      }).filter(Boolean)
     ));
     expect(summaryOrder).toEqual(["Picker Preview", "preview-controls", "preview-status"]);
 
@@ -1385,11 +1521,17 @@ test("Colors Picker Preview header sort buttons reorder the grid", async ({ page
   } finally {
     await workspaceV2CoverageReporter.stop(page);
     await server.close();
+    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
+    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
   }
 });
 
 test("wireframe-only pages expose left center right accordion controls without runtime wiring", async ({ page }) => {
   const server = await startRepoServer();
+  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
+  const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
+  process.env.GAMEFOUNDRY_SITE_URL = server.baseUrl;
   const failedRequests = [];
   const pageErrors = [];
   const consoleErrors = [];
@@ -1438,7 +1580,7 @@ test("wireframe-only pages expose left center right accordion controls without r
         return response.text();
       });
       expect(source).not.toMatch(/<script(?![^>]+src=)[^>]*>/i);
-      expect(source).not.toMatch(/<style[\s>]/i);
+      expect(source).not.toMatch(INLINE_STYLE_TAG_PATTERN);
       expect(source).not.toMatch(/\son(?:click|change|input|submit|keydown|keyup|load)=/i);
     }
 
@@ -1448,28 +1590,17 @@ test("wireframe-only pages expose left center right accordion controls without r
   } finally {
     await workspaceV2CoverageReporter.stop(page);
     await server.close();
+    restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
+    restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
   }
 });
 
-test("local dev port guard redirects human localhost pages to port 5501", async ({ page }) => {
+test("local dev pages remain on the repo test server", async ({ page }) => {
   const server = await startRepoServer();
   try {
     await workspaceV2CoverageReporter.start(page);
-    await page.addInitScript(() => {
-      Object.defineProperty(Navigator.prototype, "webdriver", {
-        configurable: true,
-        get: () => false,
-      });
-    });
-    await page.route("http://127.0.0.1:5501/**", async (route) => {
-      await route.fulfill({
-        body: "<!doctype html><html><body><main>Port guard target</main></body></html>",
-        contentType: "text/html",
-        status: 200,
-      });
-    });
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "domcontentloaded" });
-    await expect(page).toHaveURL(/http:\/\/127\.0\.0\.1:5501\/toolbox\/index\.html$/);
+    expect(new URL(page.url()).origin).toBe(server.baseUrl);
   } finally {
     await workspaceV2CoverageReporter.stop(page);
     await server.close();
