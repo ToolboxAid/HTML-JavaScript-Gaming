@@ -131,27 +131,10 @@ td {
 
 .idea-board-idea-chevron {
   display: inline-block;
-  width: 1em;
   height: 1em;
   margin-right: .35em;
-  background: currentColor;
   vertical-align: -0.125em;
-  -webkit-mask-position: center;
-  mask-position: center;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-size: contain;
-  mask-size: contain
-}
-
-.idea-board-idea-chevron--down {
-  -webkit-mask-image: url("../images/gfs-chevron-down.svg");
-  mask-image: url("../images/gfs-chevron-down.svg")
-}
-
-.idea-board-idea-chevron--up {
-  -webkit-mask-image: url("../images/gfs-chevron-up.svg");
-  mask-image: url("../images/gfs-chevron-up.svg")
+  width: 1em
 }
 
 .idea-board-notes-child-surface {

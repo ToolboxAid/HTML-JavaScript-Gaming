@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -9,6 +9,7 @@ const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..", "..");
 const svgRoot = path.join(repoRoot, "assets", "theme-v2", "svg");
 const readmePath = path.join(svgRoot, "README.md");
+const themeIconsPath = path.join(repoRoot, "assets", "theme-v2", "js", "theme-icons.js");
 const styleGuidePath = path.join(repoRoot, "docs_build", "design", "theme-v2-icons", "theme-v2-icon-style-guide.md");
 
 const REQUIRED_SVG_FILES = [
@@ -36,6 +37,26 @@ const FORBIDDEN_SVG_FILES = [
   "gfs-delete.svg",
   "gfs-expand.svg",
 ];
+
+const REQUIRED_ICON_REGISTRY = {
+  add: "gfs-add.svg",
+  "chevron-down": "gfs-chevron-down.svg",
+  "chevron-left": "gfs-chevron-left.svg",
+  "chevron-right": "gfs-chevron-right.svg",
+  "chevron-up": "gfs-chevron-up.svg",
+  close: "gfs-close.svg",
+  error: "gfs-error.svg",
+  "exit-fullscreen": "gfs-exit-fullscreen.svg",
+  fullscreen: "gfs-fullscreen.svg",
+  info: "gfs-info.svg",
+  menu: "gfs-menu.svg",
+  search: "gfs-search.svg",
+  settings: "gfs-settings.svg",
+  subtract: "gfs-subtract.svg",
+  success: "gfs-success.svg",
+  trash: "gfs-trash.svg",
+  warning: "gfs-warning.svg",
+};
 
 function attributeValues(content, attributeName) {
   return [...content.matchAll(new RegExp(`\\s${attributeName}="([^"]+)"`, "g"))].map((match) => match[1]);
@@ -112,6 +133,53 @@ test("serves every Theme V2 SVG asset as an external file", async ({ request }) 
       expect(body, fileName).toContain('viewBox="0 0 24 24"');
       expect(body, fileName).toContain('stroke="currentColor"');
     }
+  } finally {
+    await server.close();
+  }
+});
+
+test("maps shared Theme V2 icon names to standalone SVG files", async () => {
+  const themeIcons = await import(`${pathToFileURL(themeIconsPath).href}?cacheBust=${Date.now()}`);
+
+  expect(themeIcons.themeV2IconRegistry).toEqual(REQUIRED_ICON_REGISTRY);
+  for (const [iconName, fileName] of Object.entries(REQUIRED_ICON_REGISTRY)) {
+    expect(REQUIRED_SVG_FILES, iconName).toContain(fileName);
+    expect(themeIcons.themeIconFileName(iconName)).toBe(fileName);
+    expect(themeIcons.themeIconPath(iconName)).toBe(`/assets/theme-v2/svg/${fileName}`);
+  }
+});
+
+test("creates CSS-backed registry icon nodes without inline SVG", async ({ page }) => {
+  const server = await startRepoServer();
+  try {
+    await page.goto(`${server.baseUrl}/toolbox/idea-board/index.html`, { waitUntil: "networkidle" });
+    const result = await page.evaluate(async () => {
+      const themeIcons = await import("/assets/theme-v2/js/theme-icons.js");
+      const icon = themeIcons.createThemeIcon("chevron-down", { className: "test-registry-icon" });
+      document.body.appendChild(icon);
+      const iconStyles = getComputedStyle(icon);
+      return {
+        ariaHidden: icon.getAttribute("aria-hidden"),
+        className: icon.className,
+        iconFile: icon.dataset.themeIconFile,
+        iconName: icon.dataset.themeIcon,
+        inlineSvgCount: icon.querySelectorAll("svg").length,
+        maskImage: iconStyles.getPropertyValue("-webkit-mask-image") || iconStyles.maskImage,
+        role: icon.getAttribute("role"),
+        tagName: icon.tagName.toLowerCase(),
+      };
+    });
+
+    expect(result).toEqual({
+      ariaHidden: "true",
+      className: "theme-icon theme-icon--chevron-down test-registry-icon",
+      iconFile: "gfs-chevron-down.svg",
+      iconName: "chevron-down",
+      inlineSvgCount: 0,
+      maskImage: expect.stringContaining("gfs-chevron-down.svg"),
+      role: null,
+      tagName: "span",
+    });
   } finally {
     await server.close();
   }

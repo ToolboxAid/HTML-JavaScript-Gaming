@@ -1,41 +1,687 @@
-diff --git a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-index 949c4254e..6d626f03b 100644
---- a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-+++ b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-@@ -416,12 +416,10 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-     await expect(activeGameToggle).toHaveText("Lantern Reef");
-     await activeGameToggle.click();
-     let expandedRows = page.locator("[data-game-expanded-row]");
--    await expect(expandedRows).toHaveCount(3);
--    await expect(expandedRows.nth(0)).toHaveAttribute("data-game-child-row", "summary");
--    await expect(expandedRows.nth(1)).toHaveAttribute("data-game-child-row", "source-idea");
--    await expect(expandedRows.nth(2)).toHaveAttribute("data-game-child-row", "readiness-output");
--    await expect(expandedRows.nth(0).locator("[data-game-child-table='summary'] caption")).toHaveText("Game Summary");
--    let sourceIdeaChildTable = expandedRows.nth(1).locator("[data-game-child-table='source-idea']");
-+    await expect(expandedRows).toHaveCount(2);
-+    await expect(expandedRows.nth(0)).toHaveAttribute("data-game-child-row", "source-idea");
-+    await expect(expandedRows.nth(1)).toHaveAttribute("data-game-child-row", "readiness-output");
-+    let sourceIdeaChildTable = expandedRows.nth(0).locator("[data-game-child-table='source-idea']");
-     await expect(sourceIdeaChildTable.locator("caption")).toHaveText("Source Idea");
-     await expect(sourceIdeaChildTable.locator("thead th")).toHaveText(["Context", "Details"]);
-     await expect(sourceIdeaChildTable.locator("tbody tr")).toHaveText([
-@@ -430,7 +428,7 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-       "Note 1Use dusk tide changes as the first Game Hub planning note.",
-     ]);
-     await expect(sourceIdeaChildTable.locator(":is(input, textarea, select, button)")).toHaveCount(0);
--    await expect(expandedRows.nth(2).locator("[data-game-child-table='readiness-output'] caption")).toHaveText("Readiness Output");
-+    await expect(expandedRows.nth(1).locator("[data-game-child-table='readiness-output'] caption")).toHaveText("Readiness Output");
-     await page.reload({ waitUntil: "networkidle" });
-     await expect(page.locator("[data-active-game-name]")).toHaveCount(0);
-     await expect(page.locator("[data-game-list]")).toContainText("Lantern Reef");
-@@ -439,8 +437,8 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-     await expect(page.locator("[data-game-hub-foundation]")).toHaveCount(0);
-     await activeGameToggle.click();
-     expandedRows = page.locator("[data-game-expanded-row]");
--    await expect(expandedRows).toHaveCount(3);
--    sourceIdeaChildTable = expandedRows.nth(1).locator("[data-game-child-table='source-idea']");
-+    await expect(expandedRows).toHaveCount(2);
-+    sourceIdeaChildTable = expandedRows.nth(0).locator("[data-game-child-table='source-idea']");
-     await expect(sourceIdeaChildTable.locator("tbody tr")).toHaveText([
-       "IdeaLantern Reef",
-       "PitchGuide light through a reef that rearranges at dusk.",
+diff --git a/assets/theme-v2/css/accordion.css b/assets/theme-v2/css/accordion.css
+index d4bf86f9a..b650f518e 100644
+--- a/assets/theme-v2/css/accordion.css
++++ b/assets/theme-v2/css/accordion.css
+@@ -50,7 +50,7 @@ details.vertical-accordion summary::-webkit-details-marker {
+   display: none
+ }
+ 
+-details.vertical-accordion summary:after {
++.horizontal-accordion-toggle {
+   --accordion-button-border: var(--line);
+   --accordion-button-background: var(--panel-soft);
+   --accordion-button-color: var(--gold);
+@@ -66,74 +66,53 @@ details.vertical-accordion summary:after {
+   line-height: var(--line-height-single);
+   display: inline-grid;
+   place-items: center;
+-  flex: 0 0 auto
++  flex: 0 0 auto;
++  margin-left: auto;
++  font-size: var(--font-size-sm);
++  font-weight: var(--font-weight-heavy);
++  overflow: hidden;
++  position: relative
+ }
+ 
+-.horizontal-accordion-toggle {
++.horizontal-accordion-toggle__icon,
++.vertical-accordion__chevron,
++.tool-display-mode__chevron {
+   --accordion-button-border: var(--line);
+   --accordion-button-background: var(--panel-soft);
+   --accordion-button-color: var(--gold);
+-  min-width: var(--space-20);
+-  width: var(--space-20);
+-  height: var(--space-20);
+-  padding: var(--space-0);
++  align-items: center;
++  background: var(--accordion-button-background);
+   border: var(--border-standard);
+   border-color: var(--accordion-button-border);
+   border-radius: var(--radius-pill);
+-  background: var(--accordion-button-background);
+   color: var(--accordion-button-color);
+-  line-height: var(--line-height-single);
+-  display: inline-grid;
+-  place-items: center;
++  display: inline-flex;
+   flex: 0 0 auto;
+-  margin-left: auto;
+-  font-size: var(--space-0);
+-  overflow: hidden;
+-  position: relative
++  height: var(--space-20);
++  justify-content: center;
++  line-height: var(--line-height-single);
++  min-width: var(--space-20);
++  padding: var(--space-0);
++  width: var(--space-20)
+ }
+ 
+-.horizontal-accordion-toggle:before {
+-  content: "";
+-  position: absolute;
+-  top: 50%;
+-  left: 50%;
+-  width: var(--space-14);
+-  height: var(--space-14);
++.horizontal-accordion-toggle__icon {
+   background: currentColor;
+-  clip-path: polygon(70% 50%, 30% 20%, 30% 80%);
+-  transform-origin: center
+-}
+-
+-.horizontal-accordion-toggle[aria-expanded="true"]:before {
+-  transform: translate(-50%, -50%)
+-}
+-
+-.horizontal-accordion-toggle[aria-expanded="false"]:before {
+-  transform: translate(-50%, -50%) rotate(180deg)
+-}
+-
+-.horizontal-accordion-toggle--left[aria-expanded="true"]:before {
+-  transform: translate(-50%, -50%) rotate(180deg)
+-}
+-
+-.horizontal-accordion-toggle--left[aria-expanded="false"]:before {
+-  transform: translate(-50%, -50%)
+-}
+-
+-details.vertical-accordion summary:after {
+-  content: "";
+-  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+-  background-position: calc(50% - var(--space-3)) 50%, calc(50% + var(--space-3)) 50%;
+-  background-size: var(--space-7) var(--space-7);
+-  background-repeat: no-repeat
++  border: 0;
++  border-radius: var(--space-0);
++  height: var(--space-14);
++  min-width: var(--space-14);
++  width: var(--space-14)
+ }
+ 
+-details.vertical-accordion[open] summary:after {
+-  background-image: linear-gradient(135deg, transparent 50%, currentColor 50%), linear-gradient(45deg, currentColor 50%, transparent 50%)
++.vertical-accordion__chevron {
++  margin-left: auto
+ }
+ 
+-details.vertical-accordion summary:active:after {
+-  background-image: linear-gradient(135deg, transparent 50%, currentColor 50%), linear-gradient(45deg, currentColor 50%, transparent 50%)
++.vertical-accordion__chevron .theme-icon,
++.tool-display-mode__chevron .theme-icon {
++  height: var(--space-14);
++  width: var(--space-14)
+ }
+ 
+ details.vertical-accordion summary .status {
+@@ -150,7 +129,7 @@ details.vertical-accordion summary.accordion-summary--control-grid {
+   align-items: center
+ }
+ 
+-details.vertical-accordion summary.accordion-summary--control-grid:after {
++details.vertical-accordion summary.accordion-summary--control-grid .vertical-accordion__chevron {
+   justify-self: end
+ }
+ 
+@@ -188,10 +167,6 @@ details.vertical-accordion summary.accordion-summary--control-grid .accordion-su
+   min-width: var(--space-34)
+ }
+ 
+-details.vertical-accordion[open] summary:active:after {
+-  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%)
+-}
+-
+ .accordion-body {
+   padding: var(--space-0) var(--space-14) var(--space-14);
+   color: var(--muted);
+diff --git a/assets/theme-v2/css/icons.css b/assets/theme-v2/css/icons.css
+new file mode 100644
+index 000000000..ce1af7c8c
+--- /dev/null
++++ b/assets/theme-v2/css/icons.css
+@@ -0,0 +1,88 @@
++.theme-icon {
++  --theme-v2-icon-url: none;
++  background: currentColor;
++  color: inherit;
++  display: inline-block;
++  flex: 0 0 auto;
++  height: 1em;
++  line-height: var(--line-height-single);
++  pointer-events: none;
++  vertical-align: -0.125em;
++  width: 1em;
++  -webkit-mask-image: var(--theme-v2-icon-url);
++  mask-image: var(--theme-v2-icon-url);
++  -webkit-mask-position: center;
++  mask-position: center;
++  -webkit-mask-repeat: no-repeat;
++  mask-repeat: no-repeat;
++  -webkit-mask-size: contain;
++  mask-size: contain
++}
++
++.theme-icon--add {
++  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-add.svg")
++}
++
++.theme-icon--chevron-down {
++  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-chevron-down.svg")
++}
++
++.theme-icon--chevron-left {
++  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-chevron-left.svg")
++}
++
++.theme-icon--chevron-right {
++  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-chevron-right.svg")
++}
++
++.theme-icon--chevron-up {
++  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-chevron-up.svg")
++}
++
++.theme-icon--close {
++  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-close.svg")
++}
++
++.theme-icon--error {
++  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-error.svg")
++}
++
++.theme-icon--exit-fullscreen {
++  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-exit-fullscreen.svg")
++}
++
++.theme-icon--fullscreen {
++  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-fullscreen.svg")
++}
++
++.theme-icon--info {
++  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-info.svg")
++}
++
++.theme-icon--menu {
++  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-menu.svg")
++}
++
++.theme-icon--search {
++  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-search.svg")
++}
++
++.theme-icon--settings {
++  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-settings.svg")
++}
++
++.theme-icon--subtract {
++  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-subtract.svg")
++}
++
++.theme-icon--success {
++  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-success.svg")
++}
++
++.theme-icon--trash {
++  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-trash.svg")
++}
++
++.theme-icon--warning {
++  --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-warning.svg")
++}
+diff --git a/assets/theme-v2/css/panels.css b/assets/theme-v2/css/panels.css
+index bcfa2785f..b80582336 100644
+--- a/assets/theme-v2/css/panels.css
++++ b/assets/theme-v2/css/panels.css
+@@ -206,7 +206,7 @@
+ }
+ 
+ .tool-column[class*="tool-group-"] .horizontal-accordion-toggle,
+-.tool-column[class*="tool-group-"] details.vertical-accordion summary:after {
++.tool-column[class*="tool-group-"] details.vertical-accordion .vertical-accordion__chevron {
+   --accordion-button-border: var(--tool-group-accent);
+   --accordion-button-color: var(--tool-group-color)
+ }
+@@ -298,36 +298,12 @@ body.tool-focus-mode .tool-center-panel:has(>details.vertical-accordion)>p {
+   display: none
+ }
+ 
+-.tool-display-mode summary:after {
+-  content: "";
++.tool-display-mode__chevron {
+   position: absolute;
+   right: var(--space-12);
+   top: 50%;
+   transform: translateY(-50%);
+-  width: var(--space-20);
+-  height: var(--space-20);
+-  border: var(--border-standard);
+-  border-radius: var(--radius-pill);
+-  background: var(--panel-soft);
+-  color: var(--gold);
+-  display: inline-grid;
+-  place-items: center;
+-  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+-  background-position: calc(50% - var(--space-3)) 50%, calc(50% + var(--space-3)) 50%;
+-  background-size: var(--space-7) var(--space-7);
+-  background-repeat: no-repeat
+-}
+-
+-.tool-display-mode[open] summary:after {
+-  background-image: linear-gradient(135deg, transparent 50%, currentColor 50%), linear-gradient(45deg, currentColor 50%, transparent 50%)
+-}
+-
+-.tool-display-mode summary:active:after {
+-  background-image: linear-gradient(135deg, transparent 50%, currentColor 50%), linear-gradient(45deg, currentColor 50%, transparent 50%)
+-}
+-
+-.tool-display-mode[open] summary:active:after {
+-  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%)
++  z-index: var(--z-index-sm)
+ }
+ 
+ .tool-display-mode__badge {
+diff --git a/assets/theme-v2/css/tables.css b/assets/theme-v2/css/tables.css
+index 5575ff684..915a235e9 100644
+--- a/assets/theme-v2/css/tables.css
++++ b/assets/theme-v2/css/tables.css
+@@ -131,27 +131,10 @@ td {
+ 
+ .idea-board-idea-chevron {
+   display: inline-block;
+-  width: 1em;
+   height: 1em;
+   margin-right: .35em;
+-  background: currentColor;
+   vertical-align: -0.125em;
+-  -webkit-mask-position: center;
+-  mask-position: center;
+-  -webkit-mask-repeat: no-repeat;
+-  mask-repeat: no-repeat;
+-  -webkit-mask-size: contain;
+-  mask-size: contain
+-}
+-
+-.idea-board-idea-chevron--down {
+-  -webkit-mask-image: url("../images/gfs-chevron-down.svg");
+-  mask-image: url("../images/gfs-chevron-down.svg")
+-}
+-
+-.idea-board-idea-chevron--up {
+-  -webkit-mask-image: url("../images/gfs-chevron-up.svg");
+-  mask-image: url("../images/gfs-chevron-up.svg")
++  width: 1em
+ }
+ 
+ .idea-board-notes-child-surface {
+diff --git a/assets/theme-v2/css/theme.css b/assets/theme-v2/css/theme.css
+index 944bfa356..fb8af1256 100644
+--- a/assets/theme-v2/css/theme.css
++++ b/assets/theme-v2/css/theme.css
+@@ -4,6 +4,7 @@
+ @import url("typography.css");
+ @import url("layout.css");
+ @import url("buttons.css");
++@import url("icons.css");
+ @import url("forms.css");
+ @import url("controls.css");
+ @import url("panels.css");
+diff --git a/assets/theme-v2/js/theme-icons.js b/assets/theme-v2/js/theme-icons.js
+new file mode 100644
+index 000000000..442614fc1
+--- /dev/null
++++ b/assets/theme-v2/js/theme-icons.js
+@@ -0,0 +1,73 @@
++const themeV2IconRegistry = Object.freeze({
++  add: "gfs-add.svg",
++  "chevron-down": "gfs-chevron-down.svg",
++  "chevron-left": "gfs-chevron-left.svg",
++  "chevron-right": "gfs-chevron-right.svg",
++  "chevron-up": "gfs-chevron-up.svg",
++  close: "gfs-close.svg",
++  error: "gfs-error.svg",
++  "exit-fullscreen": "gfs-exit-fullscreen.svg",
++  fullscreen: "gfs-fullscreen.svg",
++  info: "gfs-info.svg",
++  menu: "gfs-menu.svg",
++  search: "gfs-search.svg",
++  settings: "gfs-settings.svg",
++  subtract: "gfs-subtract.svg",
++  success: "gfs-success.svg",
++  trash: "gfs-trash.svg",
++  warning: "gfs-warning.svg",
++});
++
++function themeIconFileName(name) {
++  const fileName = themeV2IconRegistry[name];
++  if (!fileName) {
++    throw new RangeError(`Unknown Theme V2 icon: ${name}`);
++  }
++  return fileName;
++}
++
++function themeIconPath(name) {
++  return `/assets/theme-v2/svg/${themeIconFileName(name)}`;
++}
++
++function normalizeClassName(className) {
++  if (Array.isArray(className)) {
++    return className.filter(Boolean).join(" ");
++  }
++  return className || "";
++}
++
++function createThemeIcon(name, options = {}) {
++  const icon = document.createElement("span");
++  const extraClassName = normalizeClassName(options.className);
++  icon.className = ["theme-icon", `theme-icon--${name}`, extraClassName].filter(Boolean).join(" ");
++  icon.dataset.themeIcon = name;
++  icon.dataset.themeIconFile = themeIconFileName(name);
++
++  if (options.label) {
++    icon.setAttribute("role", "img");
++    icon.setAttribute("aria-label", options.label);
++  } else {
++    icon.setAttribute("aria-hidden", "true");
++  }
++
++  return icon;
++}
++
++const themeIconsApi = Object.freeze({
++  createThemeIcon,
++  themeIconFileName,
++  themeIconPath,
++  themeV2IconRegistry,
++});
++
++if (typeof window !== "undefined") {
++  window.ThemeV2Icons = themeIconsApi;
++}
++
++export {
++  createThemeIcon,
++  themeIconFileName,
++  themeIconPath,
++  themeV2IconRegistry,
++};
+diff --git a/assets/theme-v2/js/tool-display-mode.js b/assets/theme-v2/js/tool-display-mode.js
+index 08bada607..b3f6f3265 100644
+--- a/assets/theme-v2/js/tool-display-mode.js
++++ b/assets/theme-v2/js/tool-display-mode.js
+@@ -12,6 +12,102 @@
+     const toolName = pageTitle ? pageTitle.textContent.trim() : "Tool";
+     const routeSlug = window.location.pathname.split("/").pop().replace(/\.html$/, "");
+     const toolSlug = slot.dataset.toolSlug || routeSlug;
++    let themeIconRegistry = window.ThemeV2Icons || null;
++
++    function fallbackThemeIconFileName(name) {
++        return "gfs-" + name + ".svg";
++    }
++
++    function createThemeIconNode(name, className) {
++        if (themeIconRegistry && typeof themeIconRegistry.createThemeIcon === "function") {
++            return themeIconRegistry.createThemeIcon(name, { className });
++        }
++
++        const icon = document.createElement("span");
++        icon.className = ["theme-icon", "theme-icon--" + name, className].filter(Boolean).join(" ");
++        icon.dataset.themeIcon = name;
++        icon.dataset.themeIconFile = fallbackThemeIconFileName(name);
++        icon.setAttribute("aria-hidden", "true");
++        return icon;
++    }
++
++    function createChevronShell(name, shellClassName, iconClassName) {
++        const shell = document.createElement("span");
++        shell.className = shellClassName;
++        shell.setAttribute("aria-hidden", "true");
++        shell.appendChild(createThemeIconNode(name, iconClassName));
++        return shell;
++    }
++
++    function replaceIconNode(parent, selector, icon) {
++        const current = parent.querySelector(selector);
++        if (current) {
++            current.replaceWith(icon);
++        } else {
++            parent.appendChild(icon);
++        }
++    }
++
++    function updateVerticalAccordionChevron(details) {
++        const accordionSummary = details.querySelector(":scope > summary");
++        if (!accordionSummary) return;
++        const iconName = details.open ? "chevron-up" : "chevron-down";
++        const shell = createChevronShell(iconName, "vertical-accordion__chevron", "vertical-accordion__chevron-icon");
++        replaceIconNode(accordionSummary, ":scope > .vertical-accordion__chevron", shell);
++    }
++
++    function wireVerticalAccordionChevron(details) {
++        if (details.dataset.themeV2ChevronWired === "true") {
++            updateVerticalAccordionChevron(details);
++            return;
++        }
++
++        details.dataset.themeV2ChevronWired = "true";
++        details.addEventListener("toggle", function () {
++            updateVerticalAccordionChevron(details);
++        });
++        updateVerticalAccordionChevron(details);
++    }
++
++    function refreshVerticalAccordionChevrons() {
++        document.querySelectorAll("details.vertical-accordion").forEach(wireVerticalAccordionChevron);
++    }
++
++    function updateToolDisplayModeChevron() {
++        const iconName = displayMode.open ? "chevron-up" : "chevron-down";
++        const shell = createChevronShell(iconName, "tool-display-mode__chevron", "tool-display-mode__chevron-icon");
++        replaceIconNode(summary, ":scope > .tool-display-mode__chevron", shell);
++    }
++
++    function horizontalToggleIconName(button) {
++        const expanded = button.getAttribute("aria-expanded") !== "false";
++        const isLeft = button.classList.contains("horizontal-accordion-toggle--left");
++        if (isLeft) {
++            return expanded ? "chevron-left" : "chevron-right";
++        }
++        return expanded ? "chevron-right" : "chevron-left";
++    }
++
++    function updateHorizontalToggleIcon(button) {
++        button.replaceChildren(createThemeIconNode(horizontalToggleIconName(button), "horizontal-accordion-toggle__icon"));
++    }
++
++    function refreshHorizontalToggleIcons() {
++        document.querySelectorAll(".horizontal-accordion-toggle").forEach(updateHorizontalToggleIcon);
++    }
++
++    function refreshThemeIcons() {
++        refreshVerticalAccordionChevrons();
++        updateToolDisplayModeChevron();
++        refreshHorizontalToggleIcons();
++    }
++
++    import("/assets/theme-v2/js/theme-icons.js").then(function (module) {
++        themeIconRegistry = module;
++        refreshThemeIcons();
++    }).catch(function () {
++        themeIconRegistry = window.ThemeV2Icons || themeIconRegistry;
++    });
+ 
+     function explicitPngName(source) {
+         if (!source) return "";
+@@ -53,6 +149,7 @@
+     fullscreenName.textContent = toolName;
+     summary.appendChild(fullscreenName);
+     displayMode.appendChild(summary);
++    displayMode.addEventListener("toggle", updateToolDisplayModeChevron);
+ 
+     const body = document.createElement("div");
+     body.className = "tool-display-mode__body";
+@@ -202,13 +299,16 @@
+         }
+     });
+ 
++    refreshVerticalAccordionChevrons();
++    updateToolDisplayModeChevron();
++
+     document.querySelectorAll(".tool-workspace").forEach(function (workspace) {
+         const columns = workspace.querySelectorAll(":scope > .tool-column");
+         if (columns.length < 2) return;
+ 
+         const sideColumns = [
+-            { column: columns[0], side: "left", openIndicator: "<", closedIndicator: ">" },
+-            { column: columns[columns.length - 1], side: "right", openIndicator: ">", closedIndicator: "<" }
++            { column: columns[0], side: "left" },
++            { column: columns[columns.length - 1], side: "right" }
+         ];
+ 
+         sideColumns.forEach(function (entry) {
+@@ -222,15 +322,15 @@
+             button.className = "horizontal-accordion-toggle horizontal-accordion-toggle--" + entry.side;
+             button.setAttribute("aria-label", "Collapse " + label);
+             button.setAttribute("aria-expanded", "true");
+-            button.textContent = entry.openIndicator;
++            updateHorizontalToggleIcon(button);
+             header.insertBefore(button, header.firstChild);
+ 
+             button.addEventListener("click", function () {
+                 const collapsed = entry.column.classList.toggle("is-collapsed");
+                 workspace.classList.toggle("is-" + entry.side + "-collapsed", collapsed);
+-                button.textContent = collapsed ? entry.closedIndicator : entry.openIndicator;
+                 button.setAttribute("aria-expanded", collapsed ? "false" : "true");
+                 button.setAttribute("aria-label", (collapsed ? "Expand " : "Collapse ") + label);
++                updateHorizontalToggleIcon(button);
+             });
+         });
+     });
+diff --git a/assets/toolbox/idea-board/js/index.js b/assets/toolbox/idea-board/js/index.js
+index 0c10d2dc1..5b33ae05d 100644
+--- a/assets/toolbox/idea-board/js/index.js
++++ b/assets/toolbox/idea-board/js/index.js
+@@ -1,5 +1,6 @@
+ import { createServerRepositoryClient } from "../../../../src/api/server-api-client.js";
+ import { getSessionCurrent } from "../../../../src/api/session-api-client.js";
++import { createThemeIcon, themeIconFileName } from "../../../theme-v2/js/theme-icons.js";
+ 
+ const editableStatusOptions = Object.freeze(["New", "Exploring", "Refining", "Ready"]);
+ const filterStatusOptions = Object.freeze(["New", "Exploring", "Refining", "Ready", "Project", "Archived"]);
+@@ -267,10 +268,9 @@ function renderIdeaRow(tbody, record) {
+   const ideaText = document.createElement("span");
+   ideaText.className = "idea-board-idea-label__text";
+   ideaText.textContent = record.idea;
+-  const chevron = document.createElement("span");
+-  const chevronIcon = expanded ? "gfs-chevron-up.svg" : "gfs-chevron-down.svg";
+-  chevron.className = `idea-board-idea-chevron idea-board-idea-chevron--${expanded ? "up" : "down"}`;
+-  chevron.setAttribute("aria-hidden", "true");
++  const chevronName = expanded ? "chevron-up" : "chevron-down";
++  const chevron = createThemeIcon(chevronName, { className: "idea-board-idea-chevron" });
++  const chevronIcon = themeIconFileName(chevronName);
+   chevron.dataset.ideaBoardChevron = record.ideaId;
+   chevron.dataset.ideaBoardChevronIcon = chevronIcon;
+   ideaLabel.append(chevron, ideaText);
+diff --git a/tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs b/tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs
+index 2465fa5d1..e517d0623 100644
+--- a/tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs
++++ b/tests/playwright/tools/ThemeV2SvgIconRegistry.spec.mjs
+@@ -1,7 +1,7 @@
+ import { expect, test } from "@playwright/test";
+ import fs from "node:fs/promises";
+ import path from "node:path";
+-import { fileURLToPath } from "node:url";
++import { fileURLToPath, pathToFileURL } from "node:url";
+ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
+ 
+ const __filename = fileURLToPath(import.meta.url);
+@@ -9,6 +9,7 @@ const __dirname = path.dirname(__filename);
+ const repoRoot = path.resolve(__dirname, "..", "..", "..");
+ const svgRoot = path.join(repoRoot, "assets", "theme-v2", "svg");
+ const readmePath = path.join(svgRoot, "README.md");
++const themeIconsPath = path.join(repoRoot, "assets", "theme-v2", "js", "theme-icons.js");
+ const styleGuidePath = path.join(repoRoot, "docs_build", "design", "theme-v2-icons", "theme-v2-icon-style-guide.md");
+ 
+ const REQUIRED_SVG_FILES = [
+@@ -37,6 +38,26 @@ const FORBIDDEN_SVG_FILES = [
+   "gfs-expand.svg",
+ ];
+ 
++const REQUIRED_ICON_REGISTRY = {
++  add: "gfs-add.svg",
++  "chevron-down": "gfs-chevron-down.svg",
++  "chevron-left": "gfs-chevron-left.svg",
++  "chevron-right": "gfs-chevron-right.svg",
++  "chevron-up": "gfs-chevron-up.svg",
++  close: "gfs-close.svg",
++  error: "gfs-error.svg",
++  "exit-fullscreen": "gfs-exit-fullscreen.svg",
++  fullscreen: "gfs-fullscreen.svg",
++  info: "gfs-info.svg",
++  menu: "gfs-menu.svg",
++  search: "gfs-search.svg",
++  settings: "gfs-settings.svg",
++  subtract: "gfs-subtract.svg",
++  success: "gfs-success.svg",
++  trash: "gfs-trash.svg",
++  warning: "gfs-warning.svg",
++};
++
+ function attributeValues(content, attributeName) {
+   return [...content.matchAll(new RegExp(`\\s${attributeName}="([^"]+)"`, "g"))].map((match) => match[1]);
+ }
+@@ -117,6 +138,53 @@ test("serves every Theme V2 SVG asset as an external file", async ({ request })
+   }
+ });
+ 
++test("maps shared Theme V2 icon names to standalone SVG files", async () => {
++  const themeIcons = await import(`${pathToFileURL(themeIconsPath).href}?cacheBust=${Date.now()}`);
++
++  expect(themeIcons.themeV2IconRegistry).toEqual(REQUIRED_ICON_REGISTRY);
++  for (const [iconName, fileName] of Object.entries(REQUIRED_ICON_REGISTRY)) {
++    expect(REQUIRED_SVG_FILES, iconName).toContain(fileName);
++    expect(themeIcons.themeIconFileName(iconName)).toBe(fileName);
++    expect(themeIcons.themeIconPath(iconName)).toBe(`/assets/theme-v2/svg/${fileName}`);
++  }
++});
++
++test("creates CSS-backed registry icon nodes without inline SVG", async ({ page }) => {
++  const server = await startRepoServer();
++  try {
++    await page.goto(`${server.baseUrl}/toolbox/idea-board/index.html`, { waitUntil: "networkidle" });
++    const result = await page.evaluate(async () => {
++      const themeIcons = await import("/assets/theme-v2/js/theme-icons.js");
++      const icon = themeIcons.createThemeIcon("chevron-down", { className: "test-registry-icon" });
++      document.body.appendChild(icon);
++      const iconStyles = getComputedStyle(icon);
++      return {
++        ariaHidden: icon.getAttribute("aria-hidden"),
++        className: icon.className,
++        iconFile: icon.dataset.themeIconFile,
++        iconName: icon.dataset.themeIcon,
++        inlineSvgCount: icon.querySelectorAll("svg").length,
++        maskImage: iconStyles.getPropertyValue("-webkit-mask-image") || iconStyles.maskImage,
++        role: icon.getAttribute("role"),
++        tagName: icon.tagName.toLowerCase(),
++      };
++    });
++
++    expect(result).toEqual({
++      ariaHidden: "true",
++      className: "theme-icon theme-icon--chevron-down test-registry-icon",
++      iconFile: "gfs-chevron-down.svg",
++      iconName: "chevron-down",
++      inlineSvgCount: 0,
++      maskImage: expect.stringContaining("gfs-chevron-down.svg"),
++      role: null,
++      tagName: "span",
++    });
++  } finally {
++    await server.close();
++  }
++});
++
+ test("documents the SVG registry and authoritative artwork policy", async () => {
+   const readme = await fs.readFile(readmePath, "utf8");
+   const styleGuide = await fs.readFile(styleGuidePath, "utf8");
