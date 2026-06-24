@@ -9,8 +9,9 @@ import {
 } from "../../js/shared/status.js";
 
 const STORAGE_DIAGNOSTIC_ACTIONS = Object.freeze([
+    Object.freeze({ actionId: "storage-bucket-connectivity", key: "bucket" }),
     Object.freeze({ actionId: "storage-list", key: "list" }),
-    Object.freeze({ actionId: "storage-write-test-object", key: "write" }),
+    Object.freeze({ actionId: "storage-upload-test-object", key: "upload" }),
     Object.freeze({ actionId: "storage-read-test-object", key: "read" }),
     Object.freeze({ actionId: "storage-delete-test-object", key: "delete" }),
 ]);
@@ -46,6 +47,7 @@ class AdminSystemHealthController {
             node.dataset.adminSystemHealthStorageStatus,
             node,
         ]));
+        this.historyRows = root.querySelector("[data-admin-system-health-history-rows]");
         this.startupRows = root.querySelector("[data-admin-system-health-startup-rows]");
         this.runtimeRows = root.querySelector("[data-admin-system-health-runtime-rows]");
     }
@@ -106,6 +108,7 @@ class AdminSystemHealthController {
         });
         this.renderStartupPending(reason);
         this.renderStoragePending(reason);
+        this.renderHistoryPending(reason);
     }
 
     renderEnvironmentIdentity(environmentIdentity = {}) {
@@ -127,7 +130,7 @@ class AdminSystemHealthController {
     }
 
     renderStoragePending(reason) {
-        ["bucket", "list", "read", "write", "delete"].forEach((key) => {
+        ["bucket", "list", "upload", "read", "delete", "lastChecked"].forEach((key) => {
             this.setStorageStatus(key, "PENDING", reason);
         });
         this.renderRuntimePending(reason);
@@ -153,8 +156,10 @@ class AdminSystemHealthController {
 
     renderStorageStatus(storageStatus = {}) {
         const reason = storageStatus.message || "Cloudflare R2 configuration status returned by the safe Admin System Health API.";
-        this.setStorageValue("bucket", storageStatus.bucket, "not configured");
+        this.setStorageValue("bucket", storageStatus.environmentFolder ? `${storageStatus.bucket || "not configured"} ${storageStatus.environmentFolder}` : storageStatus.bucket, "not configured");
         this.setStorageStatus("bucket", storageStatus.bucketStatus || storageStatus.status, reason);
+        this.setStorageValue("lastChecked", storageStatus.lastChecked, "not available");
+        this.setStorageStatus("lastChecked", storageStatus.lastChecked ? "PASS" : "WARN", reason);
     }
 
     renderStartupPending(reason) {
@@ -198,9 +203,12 @@ class AdminSystemHealthController {
 
     storageResultTarget(result = {}) {
         if (typeof result.keysListed === "number" && result.actionId === "storage-list") {
-            return `${result.keysListed} object(s) under ${asText(result.projectsPrefix, "configured prefix")}`;
+            return `${result.keysListed} object(s) under ${asText(result.environmentFolder, "current environment folder")}`;
         }
-        return result.testObjectKey || result.projectsPrefix || result.message || "diagnostic target unavailable";
+        if (result.actionId === "storage-bucket-connectivity") {
+            return result.environmentFolder || result.message || "bucket connectivity target unavailable";
+        }
+        return result.testObjectKey || result.environmentFolder || result.message || "diagnostic target unavailable";
     }
 
     renderStorageResult(key, result = {}) {
@@ -210,6 +218,49 @@ class AdminSystemHealthController {
         }
         this.setStorageValue(key, this.storageResultTarget(result));
         this.setStorageStatus(key, result.status, result.message || "R2 diagnostic returned without a message.");
+        if (result.lastChecked) {
+            this.setStorageValue("lastChecked", result.lastChecked);
+            this.setStorageStatus("lastChecked", "PASS", "Most recent current-environment R2 health check timestamp.");
+        }
+    }
+
+    renderHistoryPending(reason) {
+        if (!this.historyRows) {
+            return;
+        }
+        const row = document.createElement("tr");
+        row.append(
+            this.createCell("not available"),
+            this.createCell("current environment"),
+            this.createCell("Health Check History"),
+            this.createStatusCell("PENDING", reason),
+            this.createCell("Safe health check history is not available."),
+        );
+        this.historyRows.replaceChildren(row);
+    }
+
+    renderHealthCheckHistory(historyRows = []) {
+        if (!this.historyRows) {
+            return;
+        }
+        const rows = Array.isArray(historyRows) ? historyRows : [];
+        if (!rows.length) {
+            this.renderHistoryPending("Safe Admin System Health API returned no current-environment health check history rows.");
+            return;
+        }
+        const fragment = document.createDocumentFragment();
+        rows.forEach((historyRow) => {
+            const row = document.createElement("tr");
+            row.append(
+                this.createCell(historyRow.checkedAt),
+                this.createCell(historyRow.environmentName),
+                this.createCell(historyRow.area),
+                this.createStatusCell(historyRow.result || historyRow.status, historyRow.summary),
+                this.createCell(historyRow.summary),
+            );
+            fragment.append(row);
+        });
+        this.historyRows.replaceChildren(fragment);
     }
 
     runStorageDiagnostics() {
@@ -292,6 +343,7 @@ class AdminSystemHealthController {
             this.renderStartupDiagnostics(data?.localApiStartup || {});
             this.renderStorageStatus(data?.storageStatus || {});
             this.runStorageDiagnostics();
+            this.renderHealthCheckHistory(data?.healthCheckHistory || []);
             this.renderRuntimeEnvironment(data?.runtimeEnvironment || {});
         } catch (error) {
             const message = error instanceof Error ? error.message : "Safe Admin System Health API is unavailable.";

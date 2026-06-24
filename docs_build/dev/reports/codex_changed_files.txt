@@ -1,30 +1,21 @@
-﻿# git diff --cached --name-status origin/main
-M	assets/toolbox/idea-board/js/index.js
-A	docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_branch-validation.md
-A	docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_instruction-compliance.md
-A	docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_manual-validation-notes.md
-A	docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_report.md
-A	docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_requirements-checklist.md
-A	docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_validation-lane.md
-M	docs_build/dev/reports/codex_changed_files.txt
-M	docs_build/dev/reports/codex_review.diff
-M	docs_build/dev/reports/coverage_changed_js_guardrail.txt
-M	docs_build/dev/reports/playwright_v8_coverage_report.txt
-M	tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-M	tests/playwright/tools/ToolboxRoutePages.spec.mjs
-
-# git diff --cached --stat origin/main
- assets/toolbox/idea-board/js/index.js              |  31 +-
- ...d-guest-save-auth-redirect_branch-validation.md |  22 +
- ...st-save-auth-redirect_instruction-compliance.md |  31 +
- ...t-save-auth-redirect_manual-validation-notes.md |  37 ++
- ...1-idea-board-guest-save-auth-redirect_report.md |  51 ++
- ...st-save-auth-redirect_requirements-checklist.md |  19 +
- ...ard-guest-save-auth-redirect_validation-lane.md |  36 ++
- docs_build/dev/reports/codex_changed_files.txt     |  33 +-
- docs_build/dev/reports/codex_review.diff           | 695 +++++++++++++++++----
- .../dev/reports/coverage_changed_js_guardrail.txt  |  10 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |  39 +-
- .../playwright/tools/IdeaBoardTableNotes.spec.mjs  | 118 +++-
- tests/playwright/tools/ToolboxRoutePages.spec.mjs  |   5 +-
- 13 files changed, 941 insertions(+), 186 deletions(-)
+admin/system-health.html
+assets/theme-v2/js/admin-system-health.js
+docs_build/dev/reports/PR_26175_CHARLIE_009-system-health-current-r2-health.md
+docs_build/dev/reports/PR_26175_CHARLIE_010-system-health-history-and-closeout.md
+docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order-branch-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order-manual-validation-notes.md
+docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order-requirement-checklist.md
+docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order.md
+docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/codex_review.diff
+docs_build/dev/reports/coverage_changed_js_guardrail.txt
+docs_build/dev/reports/playwright_v8_coverage_report.txt
+src/api/admin-owner-navigation.js
+src/dev-runtime/server/local-api-router.mjs
+tests/dev-runtime/AdminHealthOperations.test.mjs
+tests/dev-runtime/ApiMenuPathCleanup.test.mjs
+tests/dev-runtime/ArchitectureCleanupApiNavInvitations.test.mjs
+tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+tests/playwright/tools/AdminInvitationsNavPage.spec.mjs
+tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs

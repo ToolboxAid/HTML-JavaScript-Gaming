@@ -43,6 +43,7 @@
                                     <p>Local API Startup</p>
                                     <p>Database Health</p>
                                     <p>Storage Health</p>
+                                    <p>Health Check History</p>
                                     <p>Runtime Environment</p>
                                     <p>Limits &amp; Capacity</p>
                                     <p>Diagnostics Plan</p>
@@ -143,11 +144,29 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr><td>Bucket</td><td data-admin-system-health-storage-value="bucket">Configured bucket placeholder</td><td data-health-status="PENDING" data-admin-system-health-storage-status="bucket" title="Reason: R2 bucket reader is intentionally not wired in this foundation PR." aria-label="PENDING: R2 bucket reader is intentionally not wired in this foundation PR.">PENDING</td></tr>
-                                    <tr><td>List</td><td data-admin-system-health-storage-value="list">Objects prefix</td><td data-health-status="PENDING" data-admin-system-health-storage-status="list" title="Reason: R2 list check is intentionally not wired in this foundation PR." aria-label="PENDING: R2 list check is intentionally not wired in this foundation PR.">PENDING</td></tr>
-                                    <tr><td>Read</td><td data-admin-system-health-storage-value="read">Health object</td><td data-health-status="PENDING" data-admin-system-health-storage-status="read" title="Reason: R2 read check is intentionally not wired in this foundation PR." aria-label="PENDING: R2 read check is intentionally not wired in this foundation PR.">PENDING</td></tr>
-                                    <tr><td>Write</td><td data-admin-system-health-storage-value="write">Health object</td><td data-health-status="PENDING" data-admin-system-health-storage-status="write" title="Reason: R2 write check is intentionally not wired in this foundation PR." aria-label="PENDING: R2 write check is intentionally not wired in this foundation PR.">PENDING</td></tr>
-                                    <tr><td>Delete</td><td data-admin-system-health-storage-value="delete">Health object</td><td data-health-status="PENDING" data-admin-system-health-storage-status="delete" title="Reason: R2 delete check is intentionally not wired in this foundation PR." aria-label="PENDING: R2 delete check is intentionally not wired in this foundation PR.">PENDING</td></tr>
+                                    <tr><td>Bucket connectivity</td><td data-admin-system-health-storage-value="bucket">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="bucket" title="Reason: R2 bucket connectivity has not loaded yet." aria-label="PENDING: R2 bucket connectivity has not loaded yet.">PENDING</td></tr>
+                                    <tr><td>List</td><td data-admin-system-health-storage-value="list">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="list" title="Reason: R2 list check has not loaded yet." aria-label="PENDING: R2 list check has not loaded yet.">PENDING</td></tr>
+                                    <tr><td>Upload</td><td data-admin-system-health-storage-value="upload">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="upload" title="Reason: R2 upload check has not loaded yet." aria-label="PENDING: R2 upload check has not loaded yet.">PENDING</td></tr>
+                                    <tr><td>Read</td><td data-admin-system-health-storage-value="read">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="read" title="Reason: R2 read check has not loaded yet." aria-label="PENDING: R2 read check has not loaded yet.">PENDING</td></tr>
+                                    <tr><td>Delete</td><td data-admin-system-health-storage-value="delete">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="delete" title="Reason: R2 delete check has not loaded yet." aria-label="PENDING: R2 delete check has not loaded yet.">PENDING</td></tr>
+                                    <tr><td>Last checked</td><td data-admin-system-health-storage-value="lastChecked">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="lastChecked" title="Reason: R2 health has not loaded yet." aria-label="PENDING: R2 health has not loaded yet.">PENDING</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Health check history">
+                                <caption>Health Check History</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Time</th>
+                                        <th scope="col">Environment</th>
+                                        <th scope="col">Area</th>
+                                        <th scope="col">Result</th>
+                                        <th scope="col">Summary</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-system-health-history-rows>
+                                    <tr><td>Loading</td><td>Loading</td><td>Current environment</td><td data-health-status="PENDING" title="Reason: health check history has not loaded yet." aria-label="PENDING: health check history has not loaded yet.">PENDING</td><td>Waiting for safe API status.</td></tr>
                                 </tbody>
                             </table>
                         </div>
