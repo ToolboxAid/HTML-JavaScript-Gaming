@@ -1,6 +1,6 @@
-toolbox/game-hub/game-hub.js
-tests/playwright/tools/GameHubMockRepository.spec.mjs
-tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
 docs_build/dev/reports/PR_26175_ALFA_016-alfa-parent-child-table-consolidation.md
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
+tests/playwright/tools/GameHubMockRepository.spec.mjs
+tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+toolbox/game-hub/game-hub.js

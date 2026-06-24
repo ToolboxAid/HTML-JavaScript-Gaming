@@ -1080,7 +1080,7 @@ export function createGameJourneyMockRepository(options = {}) {
         linkedRecordType: RECOMMENDED_TARGET_LINKED_RECORD_TYPE,
         linkedRecordId: target.key,
         indent: 0,
-        order: getItemsForNote(RECOMMENDED_TARGET_NOTE_KEY).length + 1,
+        order: getItemsForNote(noteKey).length + 1,
         createdAt: timestampValue,
         updatedAt: timestampValue,
       };
