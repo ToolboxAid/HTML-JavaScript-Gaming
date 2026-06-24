@@ -3653,9 +3653,14 @@ class ApiRuntimeDataSource {
     };
   }
 
-  async ownerDatabaseStatus() {
+  async ownerDatabaseStatus(environmentIdentity = systemHealthEnvironmentIdentity()) {
+    const startedAt = Date.now();
     const databaseStatus = {
       ...databaseConfigStatus(),
+      connectivity: "not configured",
+      connectivityStatus: "WARN",
+      databaseType: environmentIdentity.databaseModel || "PostgreSQL",
+      lastChecked: new Date().toISOString(),
       lastMigration: {
         appliedAt: "",
         name: "",
@@ -3667,10 +3672,14 @@ class ApiRuntimeDataSource {
         DML: 0,
       },
       migrationStatus: "WARN",
+      responseTimeMs: null,
       status: "WARN",
+      version: "",
+      versionStatus: "WARN",
     };
     try {
       const adapter = this.supabaseDatabaseAdapter("Reading Admin System Health migration history");
+      const versionRows = await adapter.databaseClient().query("SELECT version() AS version;");
       const countRows = await adapter.databaseClient().query(`
 SELECT "migrationType", count(*)::int AS count
 FROM schema_migrations
@@ -3685,8 +3694,11 @@ LIMIT 1;
 `);
       const counts = new Map(countRows.map((row) => [String(row.migrationType || ""), Number(row.count || 0)]));
       const lastRow = lastRows[0] || {};
+      const version = String(versionRows[0]?.version || "").trim();
       return {
         ...databaseStatus,
+        connectivity: "connected",
+        connectivityStatus: "PASS",
         lastMigration: {
           appliedAt: String(lastRow.appliedAt || ""),
           name: String(lastRow.migrationName || ""),
@@ -3698,12 +3710,20 @@ LIMIT 1;
           DML: counts.get("DML") || 0,
         },
         migrationStatus: "PASS",
+        message: "Current environment database connection responded through the safe Admin System Health API.",
+        responseTimeMs: Date.now() - startedAt,
         status: databaseStatus.configured === true ? "PASS" : "WARN",
+        version: version || "not available",
+        versionStatus: version ? "PASS" : "WARN",
       };
     } catch (error) {
       return {
         ...databaseStatus,
-        message: `Migration history read failed: ${error instanceof Error ? error.message : String(error || "Unknown database error.")}`,
+        connectivity: "failed",
+        connectivityStatus: "FAIL",
+        message: `Current environment database health read failed: ${error instanceof Error ? error.message : String(error || "Unknown database error.")}`,
+        responseTimeMs: Date.now() - startedAt,
+        status: "FAIL",
       };
     }
   }
@@ -3756,7 +3776,7 @@ LIMIT 1;
     const checkedAt = new Date().toISOString();
     const environmentIdentity = systemHealthEnvironmentIdentity(process.env, checkedAt);
     const environmentMap = systemHealthEnvironmentMap();
-    const databaseStatus = await this.ownerDatabaseStatus();
+    const databaseStatus = await this.ownerDatabaseStatus(environmentIdentity);
     const storageStatus = this.ownerStorageStatus();
     const environmentStatus = storageProjectsPrefixStatus();
     const localApiStartup = systemHealthLocalApiStartupDiagnostics();

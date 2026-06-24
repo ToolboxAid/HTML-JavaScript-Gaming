@@ -101,7 +101,7 @@ class AdminSystemHealthController {
         ["name", "hostingModel", "siteUrl", "apiUrl", "databaseModel", "storageFolder", "lastHealthCheck"].forEach((key) => {
             this.setEnvironmentStatus(key, "PENDING", reason);
         });
-        ["host", "database", "migration", "connection"].forEach((key) => {
+        ["type", "connectivity", "responseTime", "version", "lastChecked"].forEach((key) => {
             this.setStatus(key, "PENDING", reason);
         });
         this.renderStartupPending(reason);
@@ -134,25 +134,21 @@ class AdminSystemHealthController {
     }
 
     renderPostgresStatus(databaseStatus = {}) {
-        const migrationCounts = databaseStatus.migrationCounts || {};
-        const lastMigration = databaseStatus.lastMigration || {};
-        const migrationSummary = lastMigration.name
-            ? `${asText(lastMigration.type, "migration")} ${lastMigration.name}${lastMigration.appliedAt ? ` at ${lastMigration.appliedAt}` : ""}`
-            : `DDL=${migrationCounts.DDL || 0}; DML=${migrationCounts.DML || 0}; last migration not recorded`;
-        const connectionReason = databaseStatus.message || "Postgres diagnostic status returned by the safe Admin System Health API.";
+        const reason = databaseStatus.message || "Current environment database health returned by the safe Admin System Health API.";
+        const responseTime = Number.isFinite(databaseStatus.responseTimeMs)
+            ? `${databaseStatus.responseTimeMs} ms`
+            : "not available";
 
-        this.setValue("provider", "Postgres");
-        this.setStatus("provider", "PASS");
-        this.setValue("host", databaseStatus.host, "not configured");
-        this.setStatus("host", databaseStatus.hostStatus, connectionReason);
-        this.setValue("port", databaseStatus.port ? String(databaseStatus.port) : "", "not configured");
-        this.setStatus("port", databaseStatus.portStatus, connectionReason);
-        this.setValue("database", databaseStatus.databaseName, "not configured");
-        this.setStatus("database", databaseStatus.databaseNameStatus, connectionReason);
-        this.setValue("migration", migrationSummary);
-        this.setStatus("migration", databaseStatus.lastMigrationStatus || databaseStatus.migrationStatus, connectionReason);
-        this.setValue("connection", databaseStatus.configured === true ? connectionReason : databaseStatus.message || "Postgres configuration is not complete.");
-        this.setStatus("connection", databaseStatus.status, connectionReason);
+        this.setValue("type", databaseStatus.databaseType, "PostgreSQL");
+        this.setStatus("type", databaseStatus.databaseType ? "PASS" : "WARN", reason);
+        this.setValue("connectivity", databaseStatus.connectivity, databaseStatus.message || "not configured");
+        this.setStatus("connectivity", databaseStatus.connectivityStatus || databaseStatus.status, reason);
+        this.setValue("responseTime", responseTime);
+        this.setStatus("responseTime", Number.isFinite(databaseStatus.responseTimeMs) ? "PASS" : "WARN", reason);
+        this.setValue("version", databaseStatus.version, "not available");
+        this.setStatus("version", databaseStatus.versionStatus, reason);
+        this.setValue("lastChecked", databaseStatus.lastChecked, "not available");
+        this.setStatus("lastChecked", databaseStatus.lastChecked ? "PASS" : "WARN", reason);
     }
 
     renderStorageStatus(storageStatus = {}) {

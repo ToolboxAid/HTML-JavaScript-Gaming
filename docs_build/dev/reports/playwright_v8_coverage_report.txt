@@ -18,7 +18,7 @@ Exercised tool entry points detected:
 
 Changed runtime JS files covered:
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(89%) assets/theme-v2/js/admin-system-health.js - executed lines 288/288; executed functions 33/37
+(89%) assets/theme-v2/js/admin-system-health.js - executed lines 284/284; executed functions 33/37
 
 Files with executed line/function counts where available:
 (36%) src/api/server-api-client.js - executed lines 167/167; executed functions 5/14
@@ -28,7 +28,7 @@ Files with executed line/function counts where available:
 (74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1001/1001; executed functions 69/93
 (80%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 4/5
 (83%) assets/js/shared/status.js - executed lines 37/37; executed functions 5/6
-(89%) assets/theme-v2/js/admin-system-health.js - executed lines 288/288; executed functions 33/37
+(89%) assets/theme-v2/js/admin-system-health.js - executed lines 284/284; executed functions 33/37
 (91%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 10/11
 (100%) src/api/admin-system-health-api-client.js - executed lines 19/19; executed functions 3/3
 
