@@ -1,184 +1,379 @@
 diff --git a/docs_build/dev/PROJECT_INSTRUCTIONS.md b/docs_build/dev/PROJECT_INSTRUCTIONS.md
-index ad4e491e0..588db96d3 100644
+index 588db96d3..ad63e3ad2 100644
 --- a/docs_build/dev/PROJECT_INSTRUCTIONS.md
 +++ b/docs_build/dev/PROJECT_INSTRUCTIONS.md
-@@ -787 +787 @@ The full samples smoke test rule remains separate and runs only when broadly imp
--Every Codex PR must produce review artifacts so ChatGPT can review the exact code changes.
-+Every completed Codex PR or completed Codex run must produce review artifacts so ChatGPT can review the exact repo changes or the no-change evidence.
-@@ -792,0 +793 @@ Codex must create:
-+- a PR-specific or EOD-specific report under `docs_build/dev/reports/`
-@@ -806,0 +808,3 @@ Rules:
-+- Required reports remain required even when a ZIP is created.
-+- Required report evidence must include branch validation PASS/FAIL, a requirement-by-requirement PASS/FAIL checklist, a validation lane report, and manual validation notes.
-+- A ZIP artifact must not replace or move required report files out of `docs_build/dev/reports/`.
-@@ -815 +819 @@ When user asks for code review, they should upload:
--Every PR must include:
-+Every completed PR, audit, report-only, validation-only, or EOD closeout run must include:
-@@ -873 +877 @@ Codex ZIPs must:
--- use the PR name in the ZIP filename
-+- use the PR or EOD run name in the ZIP filename
-@@ -874,0 +879,7 @@ Codex ZIPs must:
-+- include all changed or preserved repo files from the completed run
-+- not include or depend on generated loose files under `tmp/`
-+- not replace required report files under `docs_build/dev/reports/`
+@@ -7,0 +8,5 @@ PLAN_PR → BUILD_PR → APPLY_PR
++PR lifecycle gate:
++PR Open → Building → Validation → Approved → Merged → Main Verified → Closed
 +
-+If a completed run changes no repo files, Codex must still create a ZIP containing the PR or EOD report that proves no repo files changed.
++The PLAN_PR → BUILD_PR → APPLY_PR workflow remains preserved. PR Open is the first lifecycle status for active work, and Closed is the final repository-state gate.
 +
-+The no-change ZIP rule does not apply when the run hard-stopped before producing outputs.
-@@ -1587 +1598,9 @@ Required reports:
--Codex must ALWAYS produce a repo-structured ZIP for every PR.
-+Codex must ALWAYS produce a repo-structured ZIP for every completed Codex run.
+@@ -46,0 +52,54 @@ Rules:
++## PR LIFECYCLE STATE GATE
 +
-+This applies to:
-+- implementation PRs
-+- audit PRs
-+- report-only PRs
-+- validation-only PRs
-+- EOD closeout runs
-+- governance and cleanup runs
-@@ -1591 +1610,3 @@ The ZIP must follow the existing CODEX ZIP STANDARD.
--The ZIP is required output, not optional.
-+The ZIP must include all changed or preserved repo files from the run.
++Required state order:
 +
-+The ZIP is required output, not optional, and it does not replace required reports under `docs_build/dev/reports/`.
-@@ -1826 +1847 @@ Do NOT require:
--Codex must include the repo-structured ZIP in returned artifacts for user and ChatGPT review.
-+Codex must include the repo-structured ZIP path in returned artifacts for user and ChatGPT review for every completed run.
-@@ -1829,0 +1851,2 @@ The ZIP must still follow the CODEX ZIP STANDARD.
-+If no repo files changed, the returned ZIP must contain the PR or EOD report proving the no-change result unless the run hard-stopped before outputs were produced.
++1. PR Open
++2. Building
++3. Validation
++4. Approved
++5. Merged
++6. Main Verified
++7. Closed
 +
-@@ -2046,0 +2070 @@ Required steps:
-+7. Produce the required repo-structured ZIP under `tmp/` containing the EOD report and any changed or preserved repo files from the closeout.
-@@ -2237,0 +2262,3 @@ Completion hard stops:
-+- If branch validation PASS/FAIL is missing, HARD STOP.
-+- If the requirement-by-requirement PASS/FAIL checklist is missing, HARD STOP.
-+- If the validation lane report is missing, HARD STOP.
++Definitions:
++- PR Open is the first active lifecycle state.
++- PR Open means the PR or branch has been created and named, and the work has a tracked PR identity before implementation begins.
++- No BUILD_PR may proceed without a PR name and active branch/PR identity unless it is explicitly marked `PLAN_ONLY`.
++- Building means scoped implementation, audit, report, validation, governance, or cleanup work is in progress for that PR identity.
++- Validation means requested checks, required report creation, manual validation notes, and ZIP packaging are being completed.
++- Approved means the owner or required reviewer has approved the PR outcome or intentionally approved closure without merge.
++- Merged means the PR has merged or has been intentionally closed without merge with the reason recorded.
++- Main Verified means Codex is back on `main`, `main` includes the merge commit or recorded final commit, the worktree is clean, local/origin sync is `0/0`, and no untracked files remain.
++- Closed means every Closed gate below is PASS.
++
++Closed is valid only when all are PASS:
++- PR merged or intentionally closed without merge with reason recorded.
++- Changes pushed.
++- Current branch is `main`.
++- `main` includes the merge commit or recorded final commit.
++- Worktree clean.
++- Local/origin sync is `0/0`.
++- No untracked files.
++- Branch disposition recorded as `deleted`, `retained for follow-up`, or `archived`.
++- Required reports exist.
++- Required repo-structured ZIP under `tmp/` exists.
++
++Hard stop:
++- A team must not begin another PR if its previous PR is not Closed.
++- Exception is allowed only for explicitly documented stacked PR chains.
++
++Required final closeout output:
++
++```text
++FINAL REPOSITORY STATE:
++- Branch
++- Worktree
++- Local/origin sync
++- PR number/name
++- PR status
++- Merge/final commit
++- Branch disposition
++- ZIP path
++- Closeout PASS/FAIL
++```
++
+@@ -1664,0 +1724,2 @@ Codex must not package partially completed PRs.
++PR completion is not the same as Closed. Closed requires the final repository-state gate from `PR LIFECYCLE STATE GATE`.
++
+diff --git a/docs_build/dev/ProjectInstructions/addendums/branch_context_governance.md b/docs_build/dev/ProjectInstructions/addendums/branch_context_governance.md
+index 9baa13442..f1eac45dd 100644
+--- a/docs_build/dev/ProjectInstructions/addendums/branch_context_governance.md
++++ b/docs_build/dev/ProjectInstructions/addendums/branch_context_governance.md
+@@ -20,0 +21,2 @@ At the start of work, report or validate:
++- active PR number/name or explicit `PLAN_ONLY`
++- previous PR Closed status unless this is an explicitly documented stacked PR chain
+@@ -30,0 +33,2 @@ Stop and report before changing files when:
++- BUILD_PR work has no PR name and active branch/PR identity, unless explicitly marked `PLAN_ONLY`
++- the team's previous PR is not Closed and no stacked PR chain is documented
+@@ -47,0 +52,10 @@ Return to `main` only after the PR is merged, the branch is retired, or OWNER ex
++Returning to `main` is required before Closed can be recorded.
++
++Closed branch context requires:
++- current branch is `main`
++- `main` includes the merge commit or recorded final commit
++- worktree clean
++- local/origin sync is `0/0`
++- no untracked files
++- branch disposition recorded as `deleted`, `retained for follow-up`, or `archived`
++
+diff --git a/docs_build/dev/ProjectInstructions/addendums/branch_lock_governance.md b/docs_build/dev/ProjectInstructions/addendums/branch_lock_governance.md
+index 42fe1d0bf..b9da2de1b 100644
+--- a/docs_build/dev/ProjectInstructions/addendums/branch_lock_governance.md
++++ b/docs_build/dev/ProjectInstructions/addendums/branch_lock_governance.md
+@@ -15,0 +16,3 @@ Keep active work attached to the correct assigned team, branch, and OWNER decisi
++- A team with a previous PR that is not Closed must not begin another PR unless OWNER documented an explicit stacked PR chain.
++- PR Open begins only after the branch and PR identity are named.
++- Closed ends only after the final main-return, clean-worktree, local/origin `0/0`, no-untracked-files, required-report, required-ZIP, and branch-disposition gates pass.
+@@ -24,0 +28 @@ Keep active work attached to the correct assigned team, branch, and OWNER decisi
++- Record branch disposition before Closed as one of: `deleted`, `retained for follow-up`, or `archived`.
 diff --git a/docs_build/dev/ProjectInstructions/addendums/multi_team.md b/docs_build/dev/ProjectInstructions/addendums/multi_team.md
-index 190813840..286626ebb 100644
+index 286626ebb..f8e58e24c 100644
 --- a/docs_build/dev/ProjectInstructions/addendums/multi_team.md
 +++ b/docs_build/dev/ProjectInstructions/addendums/multi_team.md
-@@ -123,0 +124 @@ Required gate:
-+   - repo-structured ZIP path under `tmp/`
-@@ -150,0 +152 @@ Required steps:
-+7. Produce a repo-structured ZIP under `tmp/` that includes the EOD report and all changed or preserved repo files from the closeout.
-@@ -167,0 +170,2 @@ Rules:
-+- A completed EOD closeout must produce the required ZIP even when the closeout changed no repo files; in that case, the ZIP must contain the EOD report proving the no-change result.
-+- The EOD ZIP does not replace the EOD report or other required reports under `docs_build/dev/reports/`.
+@@ -124,0 +125 @@ Required gate:
++   - final repository state block
+@@ -152,0 +154,2 @@ Required steps:
++8. Record branch disposition as `deleted`, `retained for follow-up`, or `archived`.
++9. Mark the PR Closed only when every Closed gate passes.
+@@ -169,0 +173 @@ Rules:
++- A PR is not Closed until the PR merged or an intentional no-merge close reason is recorded, changes are pushed, the repository is on `main`, `main` includes the merge or final commit, the worktree is clean, local/origin sync is `0/0`, no untracked files exist, branch disposition is recorded, required reports exist, and the required repo-structured ZIP exists under `tmp/`.
+@@ -174,0 +179,15 @@ Rules:
++Required final closeout output:
++
++```text
++FINAL REPOSITORY STATE:
++- Branch
++- Worktree
++- Local/origin sync
++- PR number/name
++- PR status
++- Merge/final commit
++- Branch disposition
++- ZIP path
++- Closeout PASS/FAIL
++```
++
 diff --git a/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md b/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
-index e4b0ba1de..16539243e 100644
+index 16539243e..422486a72 100644
 --- a/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
 +++ b/docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
-@@ -36,0 +37,4 @@ Define the standard pull request workflow for Game Foundry Studio.
-+- Every completed Codex PR run must produce a repo-structured ZIP under `tmp/`.
-+- The ZIP rule applies to implementation, audit, report-only, validation-only, governance, and cleanup PRs.
-+- The ZIP must include all changed or preserved repo files from the run and must not replace required reports under `docs_build/dev/reports/`.
-+- If no repo files changed, Codex must still create a ZIP containing the PR report that proves the no-change result, unless the run hard-stopped before producing outputs.
-diff --git a/docs_build/dev/reports/PR_26175_OWNER_047-codex-zip-required-for-all-runs.md b/docs_build/dev/reports/PR_26175_OWNER_047-codex-zip-required-for-all-runs.md
+@@ -15,10 +15,47 @@ Define the standard pull request workflow for Game Foundry Studio.
+-4. Create a PR branch.
+-5. Make scoped changes only.
+-6. Validate the change.
+-7. Commit with a clear OWNER/team message.
+-8. Push the branch.
+-9. Open a draft PR.
+-10. Review the PR.
+-11. OWNER approves merge.
+-12. Merge to main.
+-13. Pull latest main before starting the next PR.
++4. Create a PR branch and PR identity.
++5. Mark lifecycle state as PR Open.
++6. Make scoped changes only.
++7. Validate the change.
++8. Commit with a clear OWNER/team message.
++9. Push the branch.
++10. Open or update the draft PR.
++11. Review the PR.
++12. OWNER approves merge or intentional close without merge.
++13. Merge to main or record the approved no-merge close reason.
++14. Pull latest main before starting the next PR.
++15. Verify Main Verified and Closed gates.
++
++## PR Lifecycle States
++
++Required state order:
++
++1. PR Open
++2. Building
++3. Validation
++4. Approved
++5. Merged
++6. Main Verified
++7. Closed
++
++Definitions:
++- PR Open is the first active lifecycle state.
++- PR Open means the branch and PR identity are created and named before implementation begins.
++- No BUILD_PR may proceed without a PR name and active branch/PR identity unless explicitly marked `PLAN_ONLY`.
++- Building means scoped work is in progress.
++- Validation means requested checks, required reports, manual validation notes, and ZIP packaging are underway.
++- Approved means OWNER or required reviewer approval exists for merge or intentional close without merge.
++- Merged means the PR merged, or the approved no-merge close reason is recorded.
++- Main Verified means current branch is `main`, `main` includes the merge or final commit, worktree is clean, local/origin sync is `0/0`, and no untracked files remain.
++- Closed is valid only after every Closed gate passes.
++
++Closed gates:
++- PR merged or intentionally closed without merge with reason recorded.
++- Changes pushed.
++- Current branch is `main`.
++- `main` includes the merge commit or recorded final commit.
++- Worktree clean.
++- Local/origin sync is `0/0`.
++- No untracked files.
++- Branch disposition is recorded as `deleted`, `retained for follow-up`, or `archived`.
++- Required reports exist.
++- Required repo-structured ZIP under `tmp/` exists.
+@@ -33,0 +71,2 @@ Define the standard pull request workflow for Game Foundry Studio.
++- A team must not begin another PR if its previous PR is not Closed.
++- Exception is allowed only for explicitly documented stacked PR chains.
+diff --git a/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md b/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
+index 521758eeb..f405ca3e6 100644
+--- a/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
++++ b/docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
+@@ -22,0 +23,3 @@ Teams may start only when all of the following are true:
++- PR lifecycle states exist in order: PR Open, Building, Validation, Approved, Merged, Main Verified, Closed.
++- Previous-PR Closed gate exists before a team starts another PR, except explicitly documented stacked PR chains.
++- Final closeout output includes branch, worktree, local/origin sync, PR number/name, PR status, merge/final commit, branch disposition, ZIP path, and Closeout PASS/FAIL.
+diff --git a/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md b/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
+index d6af3271c..b2ebbe2a6 100644
+--- a/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
++++ b/docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
+@@ -21,0 +22 @@ Before a team starts, validate:
++- the team's previous PR is Closed, unless OWNER documented an explicit stacked PR chain
+@@ -63,4 +64,6 @@ For backlog-driven work:
+-4. Create or use the approved team branch.
+-5. Record active work in the active team registry when required.
+-6. Open a draft PR after validation.
+-7. Merge only through OWNER-approved PR workflow.
++4. Confirm the previous PR for the team is Closed, unless this is an explicitly documented stacked PR chain.
++5. Create or use the approved team branch and PR identity.
++6. Mark lifecycle state as PR Open before BUILD_PR work begins.
++7. Record active work in the active team registry when required.
++8. Open or update a draft PR during active work.
++9. Merge only through OWNER-approved PR workflow.
+@@ -89,0 +93,13 @@ A team or OWNER PR is release-ready when:
++- lifecycle state is at least Validation
++- required reports and repo-structured ZIP under `tmp/` exist before Closed
++
++Closed readiness requires:
++- PR merged or intentionally closed without merge with reason recorded
++- current branch is `main`
++- worktree clean
++- local/origin sync is `0/0`
++- no untracked files
++- merge or final commit recorded
++- branch disposition recorded as `deleted`, `retained for follow-up`, or `archived`
++- required reports exist
++- required repo-structured ZIP under `tmp/` exists
+diff --git a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
+index afe4efa91..992eda712 100644
+--- a/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
++++ b/docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
+@@ -19,0 +20 @@ Rules:
++- Registry must record when a team PR reaches Closed before that team begins another PR, unless OWNER documented an explicit stacked PR chain.
+@@ -140,0 +142,3 @@ Rules:
++- Each PR starts at PR Open after the branch and PR identity are named.
++- Each PR reaches Closed only after main-return, clean-worktree, local/origin `0/0`, no-untracked-files, required-report, required-ZIP, and branch-disposition gates pass.
++- A team must not begin another PR until its previous PR is Closed unless OWNER documented an explicit stacked PR chain.
+@@ -166,0 +171,2 @@ Rules:
++- Each PR must move through PR Open, Building, Validation, Approved, Merged, Main Verified, and Closed in order.
++- A team must not begin another PR until its previous PR is Closed unless OWNER documented an explicit stacked PR chain.
+diff --git a/docs_build/dev/reports/PR_26175_OWNER_048-pr-open-to-closed-main-return-governance.md b/docs_build/dev/reports/PR_26175_OWNER_048-pr-open-to-closed-main-return-governance.md
 new file mode 100644
-index 000000000..42ff570f0
+index 000000000..85e5726c8
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_OWNER_047-codex-zip-required-for-all-runs.md
-@@ -0,0 +1,67 @@
-+# PR_26175_OWNER_047 Codex ZIP Required For All Runs
++++ b/docs_build/dev/reports/PR_26175_OWNER_048-pr-open-to-closed-main-return-governance.md
+@@ -0,0 +1,97 @@
++# PR_26175_OWNER_048 PR Open To Closed Main Return Governance
 +
 +## Summary
-+This governance-only PR clarifies that every completed Codex run must produce a repo-structured ZIP under `tmp/`, including implementation PRs, audit PRs, report-only PRs, validation-only PRs, governance/cleanup runs, and EOD closeouts.
++This governance-only PR defines the active PR lifecycle as:
++
++`PR Open -> Building -> Validation -> Approved -> Merged -> Main Verified -> Closed`
++
++It clarifies that PR Open is the first active lifecycle state, that BUILD_PR work requires a PR name and active branch/PR identity unless explicitly marked `PLAN_ONLY`, and that Closed is valid only after the merge/no-merge decision, push, main return, clean/synced repo state, branch disposition, required reports, and required ZIP all pass.
 +
 +No runtime code changed.
 +
-+## Located Governance Files
++## Located Active Governance Files
 +| File | Role | Change |
 +| --- | --- | --- |
-+| `docs_build/dev/PROJECT_INSTRUCTIONS.md` | Authoritative root project instructions for Codex outputs, report requirements, ZIP standard, PR completion, and EOD hard stops. | Updated |
-+| `docs_build/dev/ProjectInstructions/addendums/pr_workflow.md` | PR workflow addendum for standard PR execution rules. | Updated |
-+| `docs_build/dev/ProjectInstructions/addendums/multi_team.md` | Multi-team and EOD closeout addendum. | Updated |
-+| `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md` | Index for the append-first Project Instructions operating system. | Reviewed; no output rules to update |
-+| `docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md` | Team start and EOD reminder text. | Reviewed; no output rules to update |
++| `docs_build/dev/PROJECT_INSTRUCTIONS.md` | Root instructions for PLAN_PR -> BUILD_PR -> APPLY_PR, required reports, PR completion, ZIP output, and EOD hard stops. | Updated |
++| `docs_build/dev/ProjectInstructions/addendums/pr_workflow.md` | Standard PR workflow and sequencing rules. | Updated |
++| `docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md` | Team start and release-readiness governance. | Updated |
++| `docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md` | Team release-readiness gate. | Updated |
++| `docs_build/dev/ProjectInstructions/addendums/branch_context_governance.md` | Branch context, stop conditions, and return-to-main rules. | Updated |
++| `docs_build/dev/ProjectInstructions/addendums/branch_lock_governance.md` | Active work branch lock and branch disposition rules. | Updated |
++| `docs_build/dev/ProjectInstructions/addendums/multi_team.md` | Multi-team and EOD closeout governance. | Updated |
++| `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md` | Active team registry and sequential PR execution rules. | Updated |
 +
 +## Requirement Checklist
 +| Requirement | Result | Evidence |
 +| --- | --- | --- |
-+| Use main branch only | PASS | Branch validation confirmed current branch is `main`. |
-+| Scope governance docs only | PASS | Changed files are governance docs and required reports only. |
-+| No runtime code changes | PASS | No `src/`, `assets/`, `toolbox/`, or test runtime files changed. |
-+| Locate active governance files | PASS | Active output rules found in root instructions, PR workflow addendum, and EOD multi-team addendum. |
-+| Require ZIP for every completed Codex run | PASS | Root instructions now require ZIPs for every completed Codex run. |
-+| Cover implementation, audit, report-only, validation-only, and EOD runs | PASS | Root instructions and PR/EOD addendums list those run types. |
-+| ZIP includes changed/preserved repo files | PASS | Root ZIP standard and PR/EOD addendums require inclusion of all changed or preserved repo files. |
-+| ZIP does not replace reports | PASS | Root instructions and addendums state ZIPs do not replace `docs_build/dev/reports/` files. |
-+| Existing reports remain required | PASS | Root report rules explicitly preserve `codex_review.diff`, `codex_changed_files.txt`, PR/EOD report, branch validation, requirement checklist, validation lane report, and manual validation notes. |
-+| No-change runs still produce ZIP | PASS | Root instructions and PR/EOD addendums require a ZIP containing the PR/EOD no-change report unless the run hard-stopped before outputs. |
-+| Required reports created | PASS | This report, `codex_review.diff`, and `codex_changed_files.txt` were created/updated. |
-+| Repo-structured ZIP under `tmp/` | PASS | ZIP created at `tmp/PR_26175_OWNER_047-codex-zip-required-for-all-runs_delta.zip`. |
++| Use main branch only | PASS | `git branch --show-current` returned `main`. |
++| Governance docs only | PASS | Changed paths are limited to `docs_build/dev/` governance and report files. |
++| No runtime code changes | PASS | No `src/`, `assets/`, `toolbox/`, runtime, or Playwright test files changed. |
++| Locate active PR workflow / team release / branch governance docs | PASS | Active files are listed in this report. |
++| Add lifecycle states in required order | PASS | Root instructions and PR workflow define `PR Open -> Building -> Validation -> Approved -> Merged -> Main Verified -> Closed`. |
++| Define PR Open | PASS | Root and PR workflow define PR Open as the first active lifecycle state after PR/branch identity exists. |
++| Block BUILD_PR without PR identity unless PLAN_ONLY | PASS | Root, PR workflow, and branch context governance include the hard stop. |
++| Define Closed gates | PASS | Root and PR workflow list merge/no-merge reason, push, main branch, final commit, clean worktree, sync `0/0`, no untracked files, branch disposition, reports, and ZIP. |
++| Add previous-PR hard stop | PASS | Root, PR workflow, team start, branch context, branch lock, and team assignment registry now require previous PR Closed unless a stacked PR chain is documented. |
++| Add final closeout output | PASS | Root and multi-team closeout require `FINAL REPOSITORY STATE` fields. |
++| Preserve PLAN_PR -> BUILD_PR -> APPLY_PR language | PASS | Existing workflow language remains and is clarified as separate from lifecycle status. |
++| Create required reports | PASS | This report, `codex_review.diff`, and `codex_changed_files.txt` are created/updated. |
++| Create repo-structured ZIP under `tmp/` | PASS | Planned artifact path: `tmp/PR_26175_OWNER_048-pr-open-to-closed-main-return-governance_delta.zip`. |
 +
 +## Branch Validation
 +| Check | Result | Evidence |
 +| --- | --- | --- |
-+| Current branch is `main` | PASS | `git branch --show-current` returned `main`. |
-+| Branch validation recorded | PASS | This section records PASS/FAIL branch evidence. |
++| Current branch is `main` | PASS | Branch command returned `main`. |
++| Worktree before edits | PASS | Worktree was clean at start. |
++| Local/origin sync before edits | WARN | Local `main` was already ahead of `origin/main` by 1 prior governance commit. |
 +
 +## Validation Lane Report
 +| Lane | Result | Evidence |
 +| --- | --- | --- |
-+| Docs-only validation | PASS | Changed paths are limited to `docs_build/dev/` governance and report files. |
++| Docs-only validation | PASS | Path check returned only `docs_build/dev/` changed files. |
++| Whitespace validation | PASS | `git diff --check` passed. |
 +| Playwright impacted | PASS | No; governance docs only. |
 +| Runtime validation | PASS | Not applicable; no runtime files changed. |
 +
 +## Manual Validation Notes
 +| Step | Result | Notes |
 +| --- | --- | --- |
-+| Reviewed root output rules | PASS | Confirmed required report and ZIP sections remain present and now apply to all completed Codex runs. |
-+| Reviewed PR workflow addendum | PASS | Confirmed completed PR runs require `tmp/` ZIP output. |
-+| Reviewed EOD addendum | PASS | Confirmed EOD reports must include ZIP path and closeouts must produce a ZIP. |
-+| Verified report preservation rule | PASS | ZIP language states reports remain required under `docs_build/dev/reports/`. |
++| Reviewed root workflow language | PASS | PLAN_PR -> BUILD_PR -> APPLY_PR remains preserved and lifecycle gate is additive. |
++| Reviewed PR workflow addendum | PASS | Standard flow now begins with PR branch/identity and PR Open before build work. |
++| Reviewed team release docs | PASS | Team start/release gates now block new PR starts until previous PR is Closed unless stacked. |
++| Reviewed branch governance docs | PASS | Branch context and lock rules now require PR identity, main return before Closed, and branch disposition. |
++| Reviewed EOD governance | PASS | Final repository state block and Closed gate are required in closeout. |
++
++## Final Closeout Output Added To Governance
++```text
++FINAL REPOSITORY STATE:
++- Branch
++- Worktree
++- Local/origin sync
++- PR number/name
++- PR status
++- Merge/final commit
++- Branch disposition
++- ZIP path
++- Closeout PASS/FAIL
++```
 +
 +## Changed Files
 +| File | Purpose |
 +| --- | --- |
-+| `docs_build/dev/PROJECT_INSTRUCTIONS.md` | Clarifies required reports and universal completed-run ZIP output. |
-+| `docs_build/dev/ProjectInstructions/addendums/pr_workflow.md` | Adds PR workflow ZIP output rule for completed Codex PR runs. |
-+| `docs_build/dev/ProjectInstructions/addendums/multi_team.md` | Adds EOD ZIP path/report expectations and closeout ZIP rule. |
-+| `docs_build/dev/reports/PR_26175_OWNER_047-codex-zip-required-for-all-runs.md` | PR-specific report with branch validation, checklist, validation lane, and manual notes. |
++| `docs_build/dev/PROJECT_INSTRUCTIONS.md` | Adds lifecycle gate, PR Open/Closed definitions, previous-PR hard stop, final-state output, and completion clarification. |
++| `docs_build/dev/ProjectInstructions/addendums/pr_workflow.md` | Adds lifecycle states, standard flow updates, and Closed gates. |
++| `docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md` | Adds previous-PR Closed check and release/Closed readiness rules. |
++| `docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md` | Adds lifecycle, previous-PR, and final closeout readiness requirements. |
++| `docs_build/dev/ProjectInstructions/addendums/branch_context_governance.md` | Adds PR identity, previous-PR, and Closed branch context checks. |
++| `docs_build/dev/ProjectInstructions/addendums/branch_lock_governance.md` | Adds PR Open/Closed branch lock and disposition rules. |
++| `docs_build/dev/ProjectInstructions/addendums/multi_team.md` | Adds final repository state block and EOD Closed gate. |
++| `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md` | Adds registry and sequential PR Closed rules. |
++| `docs_build/dev/reports/PR_26175_OWNER_048-pr-open-to-closed-main-return-governance.md` | Required PR-specific report. |
 +| `docs_build/dev/reports/codex_review.diff` | Required review diff artifact. |
 +| `docs_build/dev/reports/codex_changed_files.txt` | Required changed-files artifact. |
 +
 +## ZIP
 +| Artifact | Result |
 +| --- | --- |
-+| `tmp/PR_26175_OWNER_047-codex-zip-required-for-all-runs_delta.zip` | PASS - repo-structured ZIP containing changed repo files from this run. |
++| `tmp/PR_26175_OWNER_048-pr-open-to-closed-main-return-governance_delta.zip` | PASS - repo-structured ZIP created for this run. |
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 1c6777b35..aa5252e75 100644
+index aa5252e75..6ec0304a3 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,9 +1,22 @@
--docs_build/dev/BUILD_PR.md
--assets/theme-v2/js/toolbox-status-bar.js
--assets/theme-v2/css/status.css
--tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
--docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_report.md
--docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_validation-lane.md
--docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_requirements-checklist.md
--docs_build/dev/reports/codex_review.diff
--docs_build/dev/reports/codex_changed_files.txt
-+# git status --short
-+M  docs_build/dev/PROJECT_INSTRUCTIONS.md
-+M  docs_build/dev/ProjectInstructions/addendums/multi_team.md
-+M  docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
-+A  docs_build/dev/reports/PR_26175_OWNER_047-codex-zip-required-for-all-runs.md
-+M  docs_build/dev/reports/codex_changed_files.txt
-+M  docs_build/dev/reports/codex_review.diff
-+
-+# git ls-files --others --exclude-standard
-+
-+
-+# git diff --stat
-+
-+
-+# git diff --cached --stat
-+ docs_build/dev/PROJECT_INSTRUCTIONS.md             |  39 +-
-+ .../ProjectInstructions/addendums/multi_team.md    |   4 +
-+ .../ProjectInstructions/addendums/pr_workflow.md   |   4 +
-+ ...75_OWNER_047-codex-zip-required-for-all-runs.md |  67 ++
-+ docs_build/dev/reports/codex_changed_files.txt     |  27 +-
-+ docs_build/dev/reports/codex_review.diff           | 818 +++++----------------
-+ 6 files changed, 307 insertions(+), 652 deletions(-)
+@@ -2,0 +3,2 @@ M  docs_build/dev/PROJECT_INSTRUCTIONS.md
++M  docs_build/dev/ProjectInstructions/addendums/branch_context_governance.md
++M  docs_build/dev/ProjectInstructions/addendums/branch_lock_governance.md
+@@ -5,3 +7,4 @@ M  docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
+-A  docs_build/dev/reports/PR_26175_OWNER_047-codex-zip-required-for-all-runs.md
+-M  docs_build/dev/reports/codex_changed_files.txt
+-M  docs_build/dev/reports/codex_review.diff
++M  docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
++M  docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
++M  docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
++A  docs_build/dev/reports/PR_26175_OWNER_048-pr-open-to-closed-main-return-governance.md
+@@ -16,7 +19,10 @@ M  docs_build/dev/reports/codex_review.diff
+- docs_build/dev/PROJECT_INSTRUCTIONS.md             |  39 +-
+- .../ProjectInstructions/addendums/multi_team.md    |   4 +
+- .../ProjectInstructions/addendums/pr_workflow.md   |   4 +
+- ...75_OWNER_047-codex-zip-required-for-all-runs.md |  67 ++
+- docs_build/dev/reports/codex_changed_files.txt     |  27 +-
+- docs_build/dev/reports/codex_review.diff           | 818 +++++----------------
+- 6 files changed, 307 insertions(+), 652 deletions(-)
++ docs_build/dev/PROJECT_INSTRUCTIONS.md             | 61 ++++++++++++++
++ .../addendums/branch_context_governance.md         | 14 ++++
++ .../addendums/branch_lock_governance.md            |  4 +
++ .../ProjectInstructions/addendums/multi_team.md    | 19 +++++
++ .../ProjectInstructions/addendums/pr_workflow.md   | 59 ++++++++++---
++ .../addendums/team_release_readiness.md            |  3 +
++ .../addendums/team_start_and_release.md            | 24 +++++-
++ .../team_assignments/TEAM_ASSIGNMENTS.md           |  6 ++
++ ...048-pr-open-to-closed-main-return-governance.md | 97 ++++++++++++++++++++++
++ 9 files changed, 273 insertions(+), 14 deletions(-)

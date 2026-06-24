@@ -17,6 +17,7 @@ Rules:
 - Registry must be updated when assignments change.
 - Registry must be updated when branches are retired.
 - Registry must be updated when PRs merge.
+- Registry must record when a team PR reaches Closed before that team begins another PR, unless OWNER documented an explicit stacked PR chain.
 - Teams with no active work are omitted.
 
 A team is Active when:
@@ -138,6 +139,9 @@ Rules:
 - Each PR must still have one clear purpose.
 - Each PR must create its own branch.
 - Each PR must be committed, pushed, and opened as a draft PR.
+- Each PR starts at PR Open after the branch and PR identity are named.
+- Each PR reaches Closed only after main-return, clean-worktree, local/origin `0/0`, no-untracked-files, required-report, required-ZIP, and branch-disposition gates pass.
+- A team must not begin another PR until its previous PR is Closed unless OWNER documented an explicit stacked PR chain.
 - Do not commit directly to main.
 - Do not merge without explicit owner approval.
 - If later PRs depend on earlier unmerged PRs, Codex must either:
@@ -164,6 +168,8 @@ Rules:
 - Each PR must create or use its own approved branch.
 - Each PR may be committed and pushed during active work.
 - Each PR may be opened as a draft PR during active work.
+- Each PR must move through PR Open, Building, Validation, Approved, Merged, Main Verified, and Closed in order.
+- A team must not begin another PR until its previous PR is Closed unless OWNER documented an explicit stacked PR chain.
 - Do not commit directly to main.
 - Do not merge to main during active work unless the owner explicitly says: "Merge this PR now."
 - If later PRs depend on earlier unmerged PRs, Codex must either:

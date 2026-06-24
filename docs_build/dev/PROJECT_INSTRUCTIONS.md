@@ -5,6 +5,11 @@ You are working in a docs-first repo workflow.
 Workflow:
 PLAN_PR → BUILD_PR → APPLY_PR
 
+PR lifecycle gate:
+PR Open → Building → Validation → Approved → Merged → Main Verified → Closed
+
+The PLAN_PR → BUILD_PR → APPLY_PR workflow remains preserved. PR Open is the first lifecycle status for active work, and Closed is the final repository-state gate.
+
 # WORKFLOW & EXECUTION
 
 ## PR NAMING STANDARD
@@ -43,6 +48,60 @@ Rules:
 - Do NOT reuse old `PR_11_*` format for new PRs
 - Existing PC/LAPTOP, desktop/laptop, workspace, environment, or machine-parity examples are historical only
 - Future PR reports, recovery reports, validation reports, and manual validation notes must include TEAM ownership
+
+## PR LIFECYCLE STATE GATE
+
+Required state order:
+
+1. PR Open
+2. Building
+3. Validation
+4. Approved
+5. Merged
+6. Main Verified
+7. Closed
+
+Definitions:
+- PR Open is the first active lifecycle state.
+- PR Open means the PR or branch has been created and named, and the work has a tracked PR identity before implementation begins.
+- No BUILD_PR may proceed without a PR name and active branch/PR identity unless it is explicitly marked `PLAN_ONLY`.
+- Building means scoped implementation, audit, report, validation, governance, or cleanup work is in progress for that PR identity.
+- Validation means requested checks, required report creation, manual validation notes, and ZIP packaging are being completed.
+- Approved means the owner or required reviewer has approved the PR outcome or intentionally approved closure without merge.
+- Merged means the PR has merged or has been intentionally closed without merge with the reason recorded.
+- Main Verified means Codex is back on `main`, `main` includes the merge commit or recorded final commit, the worktree is clean, local/origin sync is `0/0`, and no untracked files remain.
+- Closed means every Closed gate below is PASS.
+
+Closed is valid only when all are PASS:
+- PR merged or intentionally closed without merge with reason recorded.
+- Changes pushed.
+- Current branch is `main`.
+- `main` includes the merge commit or recorded final commit.
+- Worktree clean.
+- Local/origin sync is `0/0`.
+- No untracked files.
+- Branch disposition recorded as `deleted`, `retained for follow-up`, or `archived`.
+- Required reports exist.
+- Required repo-structured ZIP under `tmp/` exists.
+
+Hard stop:
+- A team must not begin another PR if its previous PR is not Closed.
+- Exception is allowed only for explicitly documented stacked PR chains.
+
+Required final closeout output:
+
+```text
+FINAL REPOSITORY STATE:
+- Branch
+- Worktree
+- Local/origin sync
+- PR number/name
+- PR status
+- Merge/final commit
+- Branch disposition
+- ZIP path
+- Closeout PASS/FAIL
+```
 
 ## CHATGPT EXECUTION ROLE
 
@@ -1661,6 +1720,8 @@ Before packaging any PR, Codex must:
 - include PASS/FAIL evidence for each requested item in the PR report
 
 Codex must not package partially completed PRs.
+
+PR completion is not the same as Closed. Closed requires the final repository-state gate from `PR LIFECYCLE STATE GATE`.
 
 ## ERROR HANDLING CONTRACT
 

@@ -12,16 +12,53 @@ Define the standard pull request workflow for Game Foundry Studio.
 1. Start from main.
 2. Pull latest origin/main.
 3. Verify clean worktree.
-4. Create a PR branch.
-5. Make scoped changes only.
-6. Validate the change.
-7. Commit with a clear OWNER/team message.
-8. Push the branch.
-9. Open a draft PR.
-10. Review the PR.
-11. OWNER approves merge.
-12. Merge to main.
-13. Pull latest main before starting the next PR.
+4. Create a PR branch and PR identity.
+5. Mark lifecycle state as PR Open.
+6. Make scoped changes only.
+7. Validate the change.
+8. Commit with a clear OWNER/team message.
+9. Push the branch.
+10. Open or update the draft PR.
+11. Review the PR.
+12. OWNER approves merge or intentional close without merge.
+13. Merge to main or record the approved no-merge close reason.
+14. Pull latest main before starting the next PR.
+15. Verify Main Verified and Closed gates.
+
+## PR Lifecycle States
+
+Required state order:
+
+1. PR Open
+2. Building
+3. Validation
+4. Approved
+5. Merged
+6. Main Verified
+7. Closed
+
+Definitions:
+- PR Open is the first active lifecycle state.
+- PR Open means the branch and PR identity are created and named before implementation begins.
+- No BUILD_PR may proceed without a PR name and active branch/PR identity unless explicitly marked `PLAN_ONLY`.
+- Building means scoped work is in progress.
+- Validation means requested checks, required reports, manual validation notes, and ZIP packaging are underway.
+- Approved means OWNER or required reviewer approval exists for merge or intentional close without merge.
+- Merged means the PR merged, or the approved no-merge close reason is recorded.
+- Main Verified means current branch is `main`, `main` includes the merge or final commit, worktree is clean, local/origin sync is `0/0`, and no untracked files remain.
+- Closed is valid only after every Closed gate passes.
+
+Closed gates:
+- PR merged or intentionally closed without merge with reason recorded.
+- Changes pushed.
+- Current branch is `main`.
+- `main` includes the merge commit or recorded final commit.
+- Worktree clean.
+- Local/origin sync is `0/0`.
+- No untracked files.
+- Branch disposition is recorded as `deleted`, `retained for follow-up`, or `archived`.
+- Required reports exist.
+- Required repo-structured ZIP under `tmp/` exists.
 
 ## Rules
 
@@ -31,6 +68,8 @@ Define the standard pull request workflow for Game Foundry Studio.
 - Do not mix unrelated scopes.
 - Do not start dependent PRs until the required base PR is merged.
 - Always return to main before starting the next PR.
+- A team must not begin another PR if its previous PR is not Closed.
+- Exception is allowed only for explicitly documented stacked PR chains.
 - If validation fails, stop and report.
 - If conflict occurs, stop and report.
 - If OWNER decision is required, stop and report.

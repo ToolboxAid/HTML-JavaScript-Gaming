@@ -1,10 +1,13 @@
 # git status --short
 M  docs_build/dev/PROJECT_INSTRUCTIONS.md
+M  docs_build/dev/ProjectInstructions/addendums/branch_context_governance.md
+M  docs_build/dev/ProjectInstructions/addendums/branch_lock_governance.md
 M  docs_build/dev/ProjectInstructions/addendums/multi_team.md
 M  docs_build/dev/ProjectInstructions/addendums/pr_workflow.md
-A  docs_build/dev/reports/PR_26175_OWNER_047-codex-zip-required-for-all-runs.md
-M  docs_build/dev/reports/codex_changed_files.txt
-M  docs_build/dev/reports/codex_review.diff
+M  docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md
+M  docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
+M  docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
+A  docs_build/dev/reports/PR_26175_OWNER_048-pr-open-to-closed-main-return-governance.md
 
 # git ls-files --others --exclude-standard
 
@@ -13,10 +16,13 @@ M  docs_build/dev/reports/codex_review.diff
 
 
 # git diff --cached --stat
- docs_build/dev/PROJECT_INSTRUCTIONS.md             |  39 +-
- .../ProjectInstructions/addendums/multi_team.md    |   4 +
- .../ProjectInstructions/addendums/pr_workflow.md   |   4 +
- ...75_OWNER_047-codex-zip-required-for-all-runs.md |  67 ++
- docs_build/dev/reports/codex_changed_files.txt     |  27 +-
- docs_build/dev/reports/codex_review.diff           | 818 +++++----------------
- 6 files changed, 307 insertions(+), 652 deletions(-)
+ docs_build/dev/PROJECT_INSTRUCTIONS.md             | 61 ++++++++++++++
+ .../addendums/branch_context_governance.md         | 14 ++++
+ .../addendums/branch_lock_governance.md            |  4 +
+ .../ProjectInstructions/addendums/multi_team.md    | 19 +++++
+ .../ProjectInstructions/addendums/pr_workflow.md   | 59 ++++++++++---
+ .../addendums/team_release_readiness.md            |  3 +
+ .../addendums/team_start_and_release.md            | 24 +++++-
+ .../team_assignments/TEAM_ASSIGNMENTS.md           |  6 ++
+ ...048-pr-open-to-closed-main-return-governance.md | 97 ++++++++++++++++++++++
+ 9 files changed, 273 insertions(+), 14 deletions(-)
