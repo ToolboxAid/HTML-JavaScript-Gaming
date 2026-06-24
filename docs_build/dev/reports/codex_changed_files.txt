@@ -1,9 +1,30 @@
-# git status --short
+﻿# git diff --cached --name-status origin/main
+M	assets/toolbox/idea-board/js/index.js
+A	docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_branch-validation.md
+A	docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_instruction-compliance.md
+A	docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_manual-validation-notes.md
+A	docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_report.md
+A	docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_requirements-checklist.md
+A	docs_build/dev/reports/PR_26175_BRAVO_011-idea-board-guest-save-auth-redirect_validation-lane.md
+M	docs_build/dev/reports/codex_changed_files.txt
+M	docs_build/dev/reports/codex_review.diff
+M	docs_build/dev/reports/coverage_changed_js_guardrail.txt
+M	docs_build/dev/reports/playwright_v8_coverage_report.txt
+M	tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+M	tests/playwright/tools/ToolboxRoutePages.spec.mjs
 
-
-# git diff --name-status main...HEAD
-A	docs_build/dev/reports/PR_26175_OWNER_049-governance-report-merge-batch.md
-
-# git diff --stat main...HEAD
- ...6175_OWNER_049-governance-report-merge-batch.md | 128 +++++++++++++++++++++
- 1 file changed, 128 insertions(+)
+# git diff --cached --stat origin/main
+ assets/toolbox/idea-board/js/index.js              |  31 +-
+ ...d-guest-save-auth-redirect_branch-validation.md |  22 +
+ ...st-save-auth-redirect_instruction-compliance.md |  31 +
+ ...t-save-auth-redirect_manual-validation-notes.md |  37 ++
+ ...1-idea-board-guest-save-auth-redirect_report.md |  51 ++
+ ...st-save-auth-redirect_requirements-checklist.md |  19 +
+ ...ard-guest-save-auth-redirect_validation-lane.md |  36 ++
+ docs_build/dev/reports/codex_changed_files.txt     |  33 +-
+ docs_build/dev/reports/codex_review.diff           | 695 +++++++++++++++++----
+ .../dev/reports/coverage_changed_js_guardrail.txt  |  10 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |  39 +-
+ .../playwright/tools/IdeaBoardTableNotes.spec.mjs  | 118 +++-
+ tests/playwright/tools/ToolboxRoutePages.spec.mjs  |   5 +-
+ 13 files changed, 941 insertions(+), 186 deletions(-)

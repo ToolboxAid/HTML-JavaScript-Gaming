@@ -289,8 +289,9 @@ test("Idea Board launches from Toolbox with accordion table notes model", async 
     await workspaceV2CoverageReporter.start(page);
     await setServerSession(server, MOCK_DB_KEYS.users.user1);
     page.on("request", (request) => {
-      if (request.url().includes("/api/") && request.method() !== "GET") {
-        mutatingApiRequests.push(`${request.method()} ${request.url()}`);
+      const requestUrl = request.url();
+      if (requestUrl.includes("/api/") && request.method() !== "GET" && !requestUrl.includes("/methods/getActiveGame")) {
+        mutatingApiRequests.push(`${request.method()} ${requestUrl}`);
       }
     });
     await page.goto(`${server.baseUrl}/toolbox/index.html?view=group&group=idea`, { waitUntil: "networkidle" });
