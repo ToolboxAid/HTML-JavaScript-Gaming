@@ -1,330 +1,257 @@
-diff --git a/admin/system-health.html b/admin/system-health.html
-index 25826a480..abe5c4f97 100644
---- a/admin/system-health.html
-+++ b/admin/system-health.html
-@@ -43,6 +43,7 @@
-                                     <p>Environment Capabilities</p>
-                                     <p>Health API Contract</p>
-                                     <p>Admin API Registry</p>
-+                                    <p>Runtime Feature Flags</p>
-                                     <p>Service Health</p>
-                                     <p>Configuration Summary</p>
-                                     <p>Manual Health Actions</p>
-@@ -154,6 +155,21 @@
-                                 </tbody>
-                             </table>
-                         </div>
-+                        <div class="table-wrapper">
-+                            <table class="data-table" aria-label="Runtime feature flags">
-+                                <caption>Runtime Feature Flags</caption>
-+                                <thead>
-+                                    <tr>
-+                                        <th scope="col">Flag</th>
-+                                        <th scope="col">Current Deployment</th>
-+                                        <th scope="col">Status</th>
-+                                    </tr>
-+                                </thead>
-+                                <tbody data-admin-system-health-feature-flag-rows>
-+                                    <tr><td>Runtime Feature Flags</td><td>Waiting for safe API status</td><td data-health-status="PENDING" title="Reason: runtime feature flags have not loaded yet." aria-label="PENDING: runtime feature flags have not loaded yet.">PENDING</td></tr>
-+                                </tbody>
-+                            </table>
-+                        </div>
-                         <section class="content-stack" aria-label="Service health summary">
-                             <div>
-                                 <div class="kicker">Current Deployment</div>
-diff --git a/assets/theme-v2/js/admin-system-health.js b/assets/theme-v2/js/admin-system-health.js
-index 38e1c7a9c..656394104 100644
---- a/assets/theme-v2/js/admin-system-health.js
-+++ b/assets/theme-v2/js/admin-system-health.js
-@@ -66,6 +66,7 @@ class AdminSystemHealthController {
-         this.apiContractRows = root.querySelector("[data-admin-system-health-api-contract-rows]");
-         this.apiRegistryRows = root.querySelector("[data-admin-system-health-api-registry-rows]");
-         this.capabilityRows = root.querySelector("[data-admin-system-health-capability-rows]");
-+        this.featureFlagRows = root.querySelector("[data-admin-system-health-feature-flag-rows]");
-         this.actionRows = root.querySelector("[data-admin-system-health-action-rows]");
-         this.actionButtons = Array.from(root.querySelectorAll("[data-admin-system-health-action]"));
-         this.configurationRows = root.querySelector("[data-admin-system-health-configuration-rows]");
-@@ -149,6 +150,7 @@ class AdminSystemHealthController {
-         this.renderEnvironmentCapabilitiesPending(reason);
-         this.renderApiContractPending(reason);
-         this.renderAdminApiRegistryPending(reason);
-+        this.renderRuntimeFeatureFlagsPending(reason);
-         this.renderServiceHealthPending(reason);
-         this.renderConfigurationSummaryPending(reason);
-         this.renderScheduledMonitoringPending(reason);
-@@ -369,6 +371,45 @@ class AdminSystemHealthController {
-         this.apiRegistryRows.replaceChildren(fragment);
-     }
- 
-+    renderRuntimeFeatureFlagsPending(reason) {
-+        if (!this.featureFlagRows) {
-+            return;
-+        }
-+        const row = document.createElement("tr");
-+        row.append(
-+            this.createCell("Runtime Feature Flags"),
-+            this.createCell("not available"),
-+            this.createStatusCell("PENDING", reason),
-+        );
-+        this.featureFlagRows.replaceChildren(row);
-+    }
-+
-+    renderRuntimeFeatureFlags(runtimeFeatureFlags = {}) {
-+        if (!this.featureFlagRows) {
-+            return;
-+        }
-+        if (runtimeFeatureFlags?.secretsExposed === true || runtimeFeatureFlags?.secretEditingAllowed === true) {
-+            this.renderRuntimeFeatureFlagsPending("Safe runtime feature flags response was blocked because it exposed secret controls.");
-+            return;
-+        }
-+        const rows = Array.isArray(runtimeFeatureFlags.rows) ? runtimeFeatureFlags.rows : [];
-+        if (!rows.length) {
-+            this.renderRuntimeFeatureFlagsPending("Safe Admin System Health API returned no runtime feature flag rows.");
-+            return;
-+        }
-+        const fragment = document.createDocumentFragment();
-+        rows.forEach((featureRow) => {
-+            const row = document.createElement("tr");
-+            row.append(
-+                this.createCell(featureRow.flag),
-+                this.createCell(featureRow.value),
-+                this.createStatusCell(featureRow.status, runtimeFeatureFlags.message),
-+            );
-+            fragment.append(row);
-+        });
-+        this.featureFlagRows.replaceChildren(fragment);
-+    }
-+
-     renderServiceHealthPending(reason) {
-         if (!this.serviceCards) {
-             return;
-@@ -793,6 +834,7 @@ class AdminSystemHealthController {
-         this.renderEnvironmentCapabilities(data?.environmentCapabilities || {});
-         this.renderApiContract(data?.apiContract || {});
-         this.renderAdminApiRegistry(data?.adminApiRegistry || {});
-+        this.renderRuntimeFeatureFlags(data?.runtimeFeatureFlags || {});
-         this.renderServiceHealth(data?.serviceHealth || {});
-         this.renderConfigurationSummary(data?.configurationSummary || {});
-         this.renderScheduledMonitoring(data?.scheduledMonitoring || {});
-diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 26b61d80d..ed90bcb49 100644
---- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -7,7 +7,7 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
- 
- Changed runtime JS files considered:
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(83%) assets/theme-v2/js/admin-system-health.js - executed lines 768/768; executed functions 66/80
-+(82%) assets/theme-v2/js/admin-system-health.js - executed lines 808/808; executed functions 68/83
- 
- Guardrail warnings:
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 8a47f28c2..c545e81e4 100644
+index c545e81e4..3778e8944 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -18,7 +18,7 @@ Exercised tool entry points detected:
+@@ -37,6 +37,7 @@ Uncovered or low-coverage changed JS files:
  
- Changed runtime JS files covered:
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(83%) assets/theme-v2/js/admin-system-health.js - executed lines 768/768; executed functions 66/80
-+(82%) assets/theme-v2/js/admin-system-health.js - executed lines 808/808; executed functions 68/83
- 
- Files with executed line/function counts where available:
- (36%) src/api/server-api-client.js - executed lines 167/167; executed functions 5/14
-@@ -27,8 +27,8 @@ Files with executed line/function counts where available:
- (65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
- (74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1001/1001; executed functions 69/93
- (80%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 4/5
-+(82%) assets/theme-v2/js/admin-system-health.js - executed lines 808/808; executed functions 68/83
- (83%) assets/js/shared/status.js - executed lines 37/37; executed functions 5/6
--(83%) assets/theme-v2/js/admin-system-health.js - executed lines 768/768; executed functions 66/80
- (91%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 10/11
- (100%) src/api/admin-system-health-api-client.js - executed lines 28/28; executed functions 4/4
- 
-@@ -39,4 +39,4 @@ Changed JS files considered:
+ Changed JS files considered:
  (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/api/admin-system-health/contract.test.mjs - changed JS file not collected as browser runtime coverage
  (0%) tests/dev-runtime/AdminHealthOperations.test.mjs - changed JS file not collected as browser runtime coverage
  (0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
--(83%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
-+(82%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
-diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index 0f9ab617d..993e14a59 100644
---- a/src/dev-runtime/server/local-api-router.mjs
-+++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -1092,6 +1092,26 @@ function systemHealthAdminApiRegistry(checkedAt = new Date().toISOString()) {
-   };
- }
- 
-+function systemHealthRuntimeFeatureFlags(checkedAt = new Date().toISOString()) {
-+  const rows = [
-+    { flag: "system-health.api-contract", status: "PASS", value: "Enabled" },
-+    { flag: "system-health.environment-capabilities", status: "PASS", value: "Enabled" },
-+    { flag: "system-health.admin-api-registry", status: "PASS", value: "Enabled" },
-+    { flag: "system-health.runtime-health", status: "PASS", value: "Enabled" },
-+    { flag: "system-health.manual-actions", status: "PASS", value: "Enabled" },
-+    { flag: "system-health.scheduled-monitoring", status: "PENDING", value: "Not Configured" },
-+    { flag: "system-health.notifications", status: "PENDING", value: "Not Configured" },
-+  ];
-+  return {
-+    lastChecked: checkedAt,
-+    message: "Runtime Feature Flags are read-only server-reported System Health capability flags.",
-+    rows,
-+    secretEditingAllowed: false,
-+    secretsExposed: false,
-+    status: overallHealthStatus(rows.map((row) => ({ status: row.status }))),
-+  };
-+}
-+
- function isSecretLikeRuntimeEnvKey(key) {
-   const upperKey = String(key || "").toUpperCase();
-   return RUNTIME_ENV_SECRET_MARKERS.some((marker) => upperKey.includes(marker));
-@@ -4386,6 +4406,7 @@ LIMIT 1;
-     const checkedAt = new Date().toISOString();
-     const apiContract = systemHealthApiContract(checkedAt);
-     const adminApiRegistry = systemHealthAdminApiRegistry(checkedAt);
-+    const runtimeFeatureFlags = systemHealthRuntimeFeatureFlags(checkedAt);
-     const environmentIdentity = systemHealthEnvironmentIdentity(process.env, checkedAt);
-     const environmentMap = systemHealthEnvironmentMap();
-     const databaseStatus = await this.ownerDatabaseStatus(environmentIdentity);
-@@ -4570,6 +4591,7 @@ LIMIT 1;
-       secretEditingAllowed: false,
-       secretsExposed: false,
-       runtimeEnvironment,
-+      runtimeFeatureFlags,
-       runtimeHealth,
-       scheduledMonitoring,
-       serviceHealth,
-diff --git a/tests/dev-runtime/AdminHealthOperations.test.mjs b/tests/dev-runtime/AdminHealthOperations.test.mjs
-index 5b87500bb..e682005b2 100644
---- a/tests/dev-runtime/AdminHealthOperations.test.mjs
-+++ b/tests/dev-runtime/AdminHealthOperations.test.mjs
-@@ -233,6 +233,18 @@ test("Admin can view operational health while Creator sessions are blocked", asy
-           "GET /api/navigation/admin-menu",
-         ],
-       );
-+      assert.deepEqual(
-+        health.runtimeFeatureFlags.rows.map((row) => `${row.flag}:${row.value}`),
-+        [
-+          "system-health.api-contract:Enabled",
-+          "system-health.environment-capabilities:Enabled",
-+          "system-health.admin-api-registry:Enabled",
-+          "system-health.runtime-health:Enabled",
-+          "system-health.manual-actions:Enabled",
-+          "system-health.scheduled-monitoring:Not Configured",
-+          "system-health.notifications:Not Configured",
-+        ],
-+      );
-       assert.equal(
-         health.environmentMap.some((row) => Object.prototype.hasOwnProperty.call(row, "status")),
-         false,
-diff --git a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-index b93b5f953..52d7acf50 100644
---- a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-+++ b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-@@ -163,6 +163,12 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
-     await expect(apiRegistryTable).toContainText("/api/admin/infrastructure/storage-path-status");
-     await expect(apiRegistryTable).toContainText("/api/admin/operations/status");
-     await expect(apiRegistryTable).toContainText("/api/navigation/admin-menu");
-+    const featureFlagsTable = page.getByRole("table", { name: "Runtime feature flags" });
-+    await expect(featureFlagsTable).toContainText("system-health.api-contract");
-+    await expect(featureFlagsTable).toContainText("system-health.environment-capabilities");
-+    await expect(featureFlagsTable).toContainText("system-health.manual-actions");
-+    await expect(featureFlagsTable).toContainText("system-health.notifications");
-+    await expect(featureFlagsTable).toContainText("Not Configured");
-     const serviceCards = page.locator("[data-admin-system-health-service-card]");
-     await expect(serviceCards).toHaveCount(7);
-     const serviceCardText = (await serviceCards.allTextContents()).join("\n");
-@@ -318,6 +324,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
-   expect(pageSource).toContain("Environment Capabilities");
-   expect(pageSource).toContain("Health API Contract");
-   expect(pageSource).toContain("Admin API Registry");
-+  expect(pageSource).toContain("Runtime Feature Flags");
-   expect(pageSource).toContain("Service Health");
-   expect(pageSource).toContain("Configuration Summary");
-   expect(pageSource).toContain("Manual Health Actions");
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_021-runtime-feature-flags-branch-validation.md b/docs_build/dev/reports/PR_26175_CHARLIE_021-runtime-feature-flags-branch-validation.md
+ (82%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-branch-validation.md b/docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-branch-validation.md
 new file mode 100644
-index 000000000..dda6a5907
+index 000000000..4694cef86
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_021-runtime-feature-flags-branch-validation.md
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-branch-validation.md
 @@ -0,0 +1,6 @@
-+# PR_26175_CHARLIE_021 Branch Validation
++# PR_26175_CHARLIE_022 Branch Validation
 +
 +- PASS: Continued on `pr/26175-CHARLIE-010-system-health-history-and-closeout`.
-+- PASS: Stacked on PR_26175_CHARLIE_020.
++- PASS: Stacked on PR_26175_CHARLIE_021.
 +- PASS: No merge performed.
 +- PASS: No rebase performed.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_021-runtime-feature-flags-manual-validation-notes.md b/docs_build/dev/reports/PR_26175_CHARLIE_021-runtime-feature-flags-manual-validation-notes.md
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-manual-validation-notes.md b/docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-manual-validation-notes.md
 new file mode 100644
-index 000000000..e0db010b0
+index 000000000..0799952e8
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_021-runtime-feature-flags-manual-validation-notes.md
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-manual-validation-notes.md
 @@ -0,0 +1,5 @@
-+# PR_26175_CHARLIE_021 Manual Validation Notes
++# PR_26175_CHARLIE_022 Manual Validation Notes
 +
-+- Verified Runtime Feature Flags table renders on System Health.
-+- Verified completed System Health flags show Enabled.
-+- Verified scheduled monitoring and notifications remain Not Configured.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_021-runtime-feature-flags-requirement-checklist.md b/docs_build/dev/reports/PR_26175_CHARLIE_021-runtime-feature-flags-requirement-checklist.md
++- Verified new tests live under canonical `tests/api/admin-system-health/`.
++- Verified tests do not require peer environment services.
++- Verified tests do not expose secrets.
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-requirement-checklist.md b/docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-requirement-checklist.md
 new file mode 100644
-index 000000000..51a7c1be6
+index 000000000..08f86ae5a
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_021-runtime-feature-flags-requirement-checklist.md
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-requirement-checklist.md
 @@ -0,0 +1,7 @@
-+# PR_26175_CHARLIE_021 Requirement Checklist
++# PR_26175_CHARLIE_022 Requirement Checklist
 +
-+- PASS: Added runtime feature flags.
-+- PASS: Flags are read-only.
-+- PASS: Flags are server-owned.
-+- PASS: Not Configured placeholders do not fake enabled behavior.
++- PASS: Added focused Admin Health test suite.
++- PASS: Test suite covers current-environment-only System Health contract.
++- PASS: Test suite covers server-owned completion sections.
++- PASS: Test suite covers unknown action rejection.
 +- PASS: Required reports generated.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_021-runtime-feature-flags-validation.md b/docs_build/dev/reports/PR_26175_CHARLIE_021-runtime-feature-flags-validation.md
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-validation.md b/docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-validation.md
 new file mode 100644
-index 000000000..4cdbaaedd
+index 000000000..6d1d940ec
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_021-runtime-feature-flags-validation.md
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-validation.md
 @@ -0,0 +1,12 @@
-+# PR_26175_CHARLIE_021 Validation Report
++# PR_26175_CHARLIE_022 Validation Report
 +
 +## Commands
 +
-+- PASS: `node --check src/dev-runtime/server/local-api-router.mjs`
-+- PASS: `node --check assets/theme-v2/js/admin-system-health.js`
++- PASS: `node --check tests/api/admin-system-health/contract.test.mjs`
 +- PASS: `git diff --check`
-+  - Result: no whitespace errors; CRLF conversion warnings only.
++- PASS: `node --test tests/api/admin-system-health/contract.test.mjs`
++  - Result: 2 passed.
 +- PASS: `node --test tests/dev-runtime/AdminHealthOperations.test.mjs`
 +  - Result: 4 passed.
 +- PASS: `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line`
 +  - Result: 3 passed.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_021-runtime-feature-flags.md b/docs_build/dev/reports/PR_26175_CHARLIE_021-runtime-feature-flags.md
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite.md b/docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite.md
 new file mode 100644
-index 000000000..9f8607a0c
+index 000000000..0a7e88311
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_021-runtime-feature-flags.md
-@@ -0,0 +1,25 @@
-+# PR_26175_CHARLIE_021 Runtime Feature Flags
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite.md
+@@ -0,0 +1,23 @@
++# PR_26175_CHARLIE_022 Admin Health Test Suite
 +
 +## Scope
 +
 +Team: Charlie
 +
-+Purpose: Add read-only runtime feature flags to Admin System Health.
++Purpose: Add focused Admin System Health completion contract tests.
 +
 +## Changes
 +
-+- Added server-owned `runtimeFeatureFlags` to the System Health status API.
-+- Added Runtime Feature Flags table to the System Health page.
-+- Reported completed System Health features as Enabled and placeholders as Not Configured.
-+- Updated API and Playwright tests.
++- Added `tests/api/admin-system-health/contract.test.mjs`.
++- Covered current-environment-only contract, server-owned completion sections, secret masking, and unknown manual action rejection.
 +
 +## Validation
 +
-+- PASS: Targeted System Health API/unit tests.
++- PASS: New Admin System Health API contract suite.
++- PASS: Existing targeted System Health API/unit tests.
 +- PASS: Targeted System Health Playwright tests.
-+- PASS: Syntax checks.
 +- PASS: `git diff --check`.
 +
 +## Artifact
 +
-+- `tmp/PR_26175_CHARLIE_021-runtime-feature-flags_delta.zip`
++- `tmp/PR_26175_CHARLIE_022-admin-health-test-suite_delta.zip`
+diff --git a/tests/api/admin-system-health/contract.test.mjs b/tests/api/admin-system-health/contract.test.mjs
+new file mode 100644
+index 000000000..e9e366882
+--- /dev/null
++++ b/tests/api/admin-system-health/contract.test.mjs
+@@ -0,0 +1,156 @@
++import http from "node:http";
++import test from "node:test";
++import assert from "node:assert/strict";
++import { createLocalApiRouter } from "../../../src/dev-runtime/server/local-api-router.mjs";
++import { SEED_DB_KEYS } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
++
++function withEnv(nextEnv, callback) {
++  const previousEnv = {};
++  Object.keys(nextEnv).forEach((key) => {
++    previousEnv[key] = process.env[key];
++    if (nextEnv[key] === undefined) {
++      delete process.env[key];
++    } else {
++      process.env[key] = nextEnv[key];
++    }
++  });
++  return Promise.resolve()
++    .then(callback)
++    .finally(() => {
++      Object.entries(previousEnv).forEach(([key, value]) => {
++        if (value === undefined) {
++          delete process.env[key];
++        } else {
++          process.env[key] = value;
++        }
++      });
++    });
++}
++
++function startApiServer() {
++  const handleRequest = createLocalApiRouter();
++  const server = http.createServer((request, response) => {
++    const address = server.address();
++    const port = address && typeof address !== "string" ? address.port : 0;
++    const requestUrl = new URL(request.url || "/", `http://127.0.0.1:${port}`);
++    handleRequest(request, response, requestUrl).catch((error) => {
++      response.statusCode = error?.statusCode || 500;
++      response.setHeader("Content-Type", "application/json; charset=utf-8");
++      response.end(JSON.stringify({
++        error: error instanceof Error ? error.message : String(error || "Admin System Health contract test server error."),
++        ok: false,
++      }));
++    });
++  });
++  return new Promise((resolve, reject) => {
++    server.once("error", reject);
++    server.listen(0, "127.0.0.1", () => {
++      const address = server.address();
++      if (!address || typeof address === "string") {
++        reject(new Error("Unable to start Admin System Health contract API server."));
++        return;
++      }
++      resolve({
++        baseUrl: `http://127.0.0.1:${address.port}`,
++        close: () => new Promise((closeResolve) => {
++          server.closeAllConnections?.();
++          server.close(closeResolve);
++        }),
++      });
++    });
++  });
++}
++
++async function apiPayload(baseUrl, pathName, request = {}) {
++  const init = request.body === undefined
++    ? request
++    : {
++      ...request,
++      body: JSON.stringify(request.body),
++      headers: {
++        "content-type": "application/json",
++        ...(request.headers || {}),
++      },
++    };
++  const response = await fetch(`${baseUrl}${pathName}`, init);
++  const payload = await response.json();
++  return { payload, status: response.status };
++}
++
++async function apiJson(baseUrl, pathName, request = {}) {
++  const { payload, status } = await apiPayload(baseUrl, pathName, request);
++  assert.equal(status, 200, `${pathName} should return 200: ${payload.error || ""}`);
++  assert.equal(payload.ok, true);
++  return payload.data;
++}
++
++test("Admin System Health completion contract remains server-owned and current-environment only", async () => {
++  await withEnv({
++    GAMEFOUNDRY_API_URL: "http://api-user:api-secret@127.0.0.1:5501/api",
++    GAMEFOUNDRY_ENVIRONMENT_LABEL: "DEV",
++    GAMEFOUNDRY_SITE_URL: "http://site-user:site-secret@127.0.0.1:5500",
++    GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX: "/dev/projects/",
++  }, async () => {
++    const server = await startApiServer();
++    try {
++      await apiJson(server.baseUrl, "/api/session/user", {
++        body: { userKey: SEED_DB_KEYS.users.admin },
++        method: "POST",
++      });
++      const health = await apiJson(server.baseUrl, "/api/admin/system-health/status");
++      assert.equal(health.environmentIdentity.name, "DEV");
++      assert.equal(health.apiContract.currentDeploymentOnly, true);
++      assert.equal(health.apiContract.noCrossEnvironmentChecks, true);
++      assert.equal(health.environmentCapabilities.peerEnvironmentChecks, false);
++      assert.equal(health.environmentMap.some((row) => Object.hasOwn(row, "status")), false);
++      assert.deepEqual(
++        [
++          "apiContract",
++          "adminApiRegistry",
++          "environmentCapabilities",
++          "runtimeFeatureFlags",
++          "serviceHealth",
++          "configurationSummary",
++          "scheduledMonitoring",
++          "notificationsFoundation",
++        ].filter((key) => Object.hasOwn(health, key)),
++        [
++          "apiContract",
++          "adminApiRegistry",
++          "environmentCapabilities",
++          "runtimeFeatureFlags",
++          "serviceHealth",
++          "configurationSummary",
++          "scheduledMonitoring",
++          "notificationsFoundation",
++        ],
++      );
++      const healthText = JSON.stringify(health);
++      assert.equal(healthText.includes("api-secret"), false);
++      assert.equal(healthText.includes("site-secret"), false);
++      assert.equal(healthText.includes("/uat/projects"), false);
++      assert.equal(health.secretEditingAllowed, false);
++      assert.equal(health.secretsExposed, false);
++    } finally {
++      await server.close();
++    }
++  });
++});
++
++test("Admin System Health rejects unknown manual health actions", async () => {
++  const server = await startApiServer();
++  try {
++    await apiJson(server.baseUrl, "/api/session/user", {
++      body: { userKey: SEED_DB_KEYS.users.admin },
++      method: "POST",
++    });
++    const rejected = await apiPayload(server.baseUrl, "/api/admin/system-health/action", {
++      body: { actionId: "peer-environment-check" },
++      method: "POST",
++    });
++    assert.equal(rejected.status, 400);
++    assert.match(rejected.payload.error, /Unknown Admin System Health action/);
++  } finally {
++    await server.close();
++  }
++});
