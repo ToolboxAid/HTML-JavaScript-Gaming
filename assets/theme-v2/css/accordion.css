@@ -50,25 +50,6 @@ details.vertical-accordion summary::-webkit-details-marker {
   display: none
 }
 
-details.vertical-accordion summary:after {
-  --accordion-button-border: var(--line);
-  --accordion-button-background: var(--panel-soft);
-  --accordion-button-color: var(--gold);
-  min-width: var(--space-20);
-  width: var(--space-20);
-  height: var(--space-20);
-  padding: var(--space-0);
-  border: var(--border-standard);
-  border-color: var(--accordion-button-border);
-  border-radius: var(--radius-pill);
-  background: var(--accordion-button-background);
-  color: var(--accordion-button-color);
-  line-height: var(--line-height-single);
-  display: inline-grid;
-  place-items: center;
-  flex: 0 0 auto
-}
-
 .horizontal-accordion-toggle {
   --accordion-button-border: var(--line);
   --accordion-button-background: var(--panel-soft);
@@ -87,53 +68,51 @@ details.vertical-accordion summary:after {
   place-items: center;
   flex: 0 0 auto;
   margin-left: auto;
-  font-size: var(--space-0);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-heavy);
   overflow: hidden;
   position: relative
 }
 
-.horizontal-accordion-toggle:before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: var(--space-14);
-  height: var(--space-14);
+.horizontal-accordion-toggle__icon,
+.vertical-accordion__chevron,
+.tool-display-mode__chevron {
+  --accordion-button-border: var(--line);
+  --accordion-button-background: var(--panel-soft);
+  --accordion-button-color: var(--gold);
+  align-items: center;
+  background: var(--accordion-button-background);
+  border: var(--border-standard);
+  border-color: var(--accordion-button-border);
+  border-radius: var(--radius-pill);
+  color: var(--accordion-button-color);
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: var(--space-20);
+  justify-content: center;
+  line-height: var(--line-height-single);
+  min-width: var(--space-20);
+  padding: var(--space-0);
+  width: var(--space-20)
+}
+
+.horizontal-accordion-toggle__icon {
   background: currentColor;
-  clip-path: polygon(70% 50%, 30% 20%, 30% 80%);
-  transform-origin: center
+  border: 0;
+  border-radius: var(--space-0);
+  height: var(--space-14);
+  min-width: var(--space-14);
+  width: var(--space-14)
 }
 
-.horizontal-accordion-toggle[aria-expanded="true"]:before {
-  transform: translate(-50%, -50%)
+.vertical-accordion__chevron {
+  margin-left: auto
 }
 
-.horizontal-accordion-toggle[aria-expanded="false"]:before {
-  transform: translate(-50%, -50%) rotate(180deg)
-}
-
-.horizontal-accordion-toggle--left[aria-expanded="true"]:before {
-  transform: translate(-50%, -50%) rotate(180deg)
-}
-
-.horizontal-accordion-toggle--left[aria-expanded="false"]:before {
-  transform: translate(-50%, -50%)
-}
-
-details.vertical-accordion summary:after {
-  content: "";
-  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
-  background-position: calc(50% - var(--space-3)) 50%, calc(50% + var(--space-3)) 50%;
-  background-size: var(--space-7) var(--space-7);
-  background-repeat: no-repeat
-}
-
-details.vertical-accordion[open] summary:after {
-  background-image: linear-gradient(135deg, transparent 50%, currentColor 50%), linear-gradient(45deg, currentColor 50%, transparent 50%)
-}
-
-details.vertical-accordion summary:active:after {
-  background-image: linear-gradient(135deg, transparent 50%, currentColor 50%), linear-gradient(45deg, currentColor 50%, transparent 50%)
+.vertical-accordion__chevron .theme-icon,
+.tool-display-mode__chevron .theme-icon {
+  height: var(--space-14);
+  width: var(--space-14)
 }
 
 details.vertical-accordion summary .status {
@@ -150,7 +129,7 @@ details.vertical-accordion summary.accordion-summary--control-grid {
   align-items: center
 }
 
-details.vertical-accordion summary.accordion-summary--control-grid:after {
+details.vertical-accordion summary.accordion-summary--control-grid .vertical-accordion__chevron {
   justify-self: end
 }
 
@@ -186,10 +165,6 @@ details.vertical-accordion summary.accordion-summary--control-grid .accordion-su
 
 .accordion-summary-controls .slider-current-value {
   min-width: var(--space-34)
-}
-
-details.vertical-accordion[open] summary:active:after {
-  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%)
 }
 
 .accordion-body {
