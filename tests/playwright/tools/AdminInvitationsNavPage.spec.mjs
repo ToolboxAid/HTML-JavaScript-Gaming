@@ -83,6 +83,7 @@ test("Admin Invites uses shared navigation and creates personalized Beta invite 
     await expect(page.locator("nav[aria-label='Admin tool pages'] a")).toContainText([
       "Analytics",
       "Controls",
+      "Creators",
       "DB Viewer",
       "Environments",
       "Game Migration",
@@ -96,7 +97,6 @@ test("Admin Invites uses shared navigation and creates personalized Beta invite 
       "Site Setup",
       "System Health",
       "Tool Votes",
-      "Creators",
     ]);
     await expect(page.locator("nav[aria-label='Admin tool pages'] a[aria-current='page']")).toHaveText("Invites");
 

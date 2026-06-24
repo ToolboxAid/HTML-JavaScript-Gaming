@@ -1,134 +1,199 @@
-diff --git a/docs_build/dev/reports/PR_26175_OWNER_049-governance-report-merge-batch.md b/docs_build/dev/reports/PR_26175_OWNER_049-governance-report-merge-batch.md
-new file mode 100644
-index 000000000..ed334afcd
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_OWNER_049-governance-report-merge-batch.md
-@@ -0,0 +1,128 @@
-+# PR_26175_OWNER_049-governance-report-merge-batch
-+
-+## Purpose
-+
-+Document the current OWNER-approved governance decisions for the next report/cleanup batch.
-+
-+This PR is report-only. It does not merge PRs, close PRs, delete branches, or modify runtime code.
-+
-+## Source State
-+
-+| Item | GitHub state at review | Decision documented here |
-+| --- | --- | --- |
-+| PR #129 | Open draft, not merged, currently not mergeable as-is | MERGE APPROVED |
-+| PR #132 | Open draft, not merged, currently not mergeable as-is | MERGE APPROVED |
-+| PR #134 | Open draft, not merged, currently not mergeable as-is | MERGE APPROVED |
-+| PR #3 | Open, not merged, currently not mergeable | CLOSE APPROVED |
-+| PR #51 | Open draft, not merged, currently not mergeable | CLOSE APPROVED |
-+| PR #50 | Open draft, not merged, currently not mergeable | HOLD |
-+| PR #118 | Open draft, not merged, currently mergeable to its non-main base branch | HOLD |
-+
-+## OWNER Decisions
-+
-+### MERGE APPROVED
-+
-+| PR | Title | Rationale | Dependency impact | Expected post-merge state |
-+| --- | --- | --- | --- | --- |
-+| #129 | `[codex] PR_26175_OWNER_046 targeted PR review packets` | Establishes the OWNER_046 governance/report foundation: Team Gamma retired, Team Golf replacement active ownership lane, and GitHub-authoritative review packets for PR #3, #50, #51, and #118. | Merge before #132 because #132 cites the OWNER_046 review packets as supporting evidence. Because #129 changes Project Instructions and was based on older `main`, it likely needs normal ready/update/conflict handling before merge execution. | `main` contains the Golf/Gamma governance migration note and review packets `PR_REVIEW_003.md`, `PR_REVIEW_050.md`, `PR_REVIEW_051.md`, and `PR_REVIEW_118.md`. |
-+| #132 | `PR_26175_OWNER_047: add targeted PR action decision report` | Captures the OWNER_047 action decision report for PR #3, #50, #51, and #118, including #3 code-diff risks, #50 Golf/Gamma historical decision, #51 superseded governance comparison, and #118 Alfa closeout evidence decision. | Merge after #129 so the review packets it uses are already present on `main`. It is report-only but currently not mergeable as-is, so it may require normal branch update handling before execution. | `main` contains the targeted action decision report that supports closing #3/#51 and holding #50/#118. |
-+| #134 | `PR_26175_BRAVO_001: add PR 003 Messages code review` | Adds the Bravo code-review report for PR #3 focused on Messages / Emotion Profiles. It documents the key reason PR #3 should close: stale, not mergeable, targets removed SQLite service path, and mixes future BUILD specs into the PR_006 lane. | Independent of #129/#132 for file content, but it strengthens the evidence record for closing #3. It should merge before closing #3 so the code-review evidence is preserved on `main`. | `main` contains the Bravo PR #3 code-review report, giving the close action an auditable technical basis. |
-+
-+### CLOSE APPROVED
-+
-+| PR | Title | Rationale | Replacement / superseded reference | Dependency impact | Expected post-close state |
-+| --- | --- | --- | --- | --- | --- |
-+| #3 | `Pr/PR 26171 006 message emotion profile management` | Superseded by the current PostgreSQL Messages direction. The PR targets the removed SQLite Messages service path and is not mergeable. It also contains out-of-scope future BUILD specs for later Messages/TTS/playback lanes. | Current PostgreSQL-backed Messages implementation on `main`; OWNER_047 decision report from #132; Bravo code-review evidence from #134. | Close after #132 and #134 merge so both decision and code-review evidence are present on `main`. Do not delete the branch unless a later OWNER-approved cleanup task explicitly scopes branch deletion. | PR #3 is closed as superseded; PostgreSQL Messages remains the active direction; branch remains untouched. |
-+| #51 | `PR_26172_MASTER_001-project-instructions-readme-and-root` | Superseded by the current Project Instructions governance state. It bootstraps an older ProjectInstructions root using MASTER wording and placeholder structure, while current `main` already has OWNER governance, addendums, team assignment rules, and archive history. | Current `docs_build/dev/ProjectInstructions/` state on `main`; OWNER_047 decision report from #132; OWNER_048 superseded closure decision log. | Close after #132 merges, or with #132/#134 evidence batch, so the decision trail is preserved. Do not delete the branch unless later explicitly approved. | PR #51 is closed as superseded; current OWNER Project Instructions remain authoritative; branch remains untouched. |
-+
-+### HOLD
-+
-+| PR | Title | Rationale | Dependency impact | Expected hold state |
-+| --- | --- | --- | --- | --- |
-+| #50 | `PR_26171_GAMMA_028-final-sqlite-clean-status-report` | Hold as historical Golf/Gamma SQLite closeout evidence. It may still be useful as reference material, but it should not be merged or closed in this batch until the OWNER confirms whether the final Gamma-era report should be preserved on `main` or left as PR evidence. | Related to #129 because #129 retires Gamma and replaces it with Golf as the active lane. Holding #50 avoids mixing historical Gamma closeout disposition with the approved merge/close batch. | PR #50 remains open/draft and untouched. |
-+| #118 | `PR_26174_ALFA_EOD-final-closeout` | Hold as Alfa EOD closeout evidence. It targets a non-main base branch and is not needed before merging the OWNER/Bravo governance evidence batch. | It may remain useful for Alfa stack review, but it should not be merged into the governance batch or closed until OWNER completes the Alfa stack disposition. | PR #118 remains open/draft and untouched. |
-+
-+## Dependency Order
-+
-+Recommended execution order for the already-approved future actions:
-+
-+1. Prepare #129 for merge, then merge #129.
-+2. Prepare #132 for merge, then merge #132.
-+3. Prepare #134 for merge, then merge #134.
-+4. Close #3 as superseded by the current PostgreSQL Messages direction after #132/#134 evidence is on `main`.
-+5. Close #51 as superseded by the current Project Instructions governance state after #132 evidence is on `main`.
-+6. Keep #50 and #118 open on hold.
-+
-+## Replacement And Superseded References
-+
-+| Superseded / held item | Replacement or current reference |
-+| --- | --- |
-+| PR #3 | PostgreSQL-backed Messages direction on `main`; evidence in #132 and #134. |
-+| PR #51 | Current OWNER Project Instructions on `main`; evidence in #132 and OWNER_048 decision log. |
-+| PR #50 | Held as final Gamma/Golf historical SQLite closeout evidence; #129 establishes Team Golf as active replacement lane. |
-+| PR #118 | Held as Alfa closeout evidence for later Alfa stack disposition. |
-+
-+## Expected Post-Merge State
-+
-+After #129, #132, and #134 are merged, and #3/#51 are closed in a later approved action:
-+
-+- `main` contains OWNER_046 review packets for #3, #50, #51, and #118.
-+- `main` contains OWNER_047 targeted action decision report.
-+- `main` contains Bravo PR #3 code-review report.
-+- PR #3 is closed as superseded by PostgreSQL Messages direction.
-+- PR #51 is closed as superseded by current Project Instructions governance.
-+- PR #50 remains open/draft on hold.
-+- PR #118 remains open/draft on hold.
-+- No branches are deleted unless a later OWNER-approved branch cleanup task explicitly scopes deletion.
-+
-+## Changed File Inventory For Reviewed Merge PRs
-+
-+| PR | Changed files reviewed |
-+| --- | --- |
-+| #129 | `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`; `docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md`; `docs_build/dev/ProjectInstructions/addendums/multi_team.md`; `docs_build/dev/ProjectInstructions/addendums/pr_workflow.md`; `docs_build/dev/ProjectInstructions/addendums/team_release_readiness.md`; `docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md`; `docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md`; `docs_build/dev/ProjectInstructions/team_assignments/ACTIVE_TEAM_REGISTRY.md`; `docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md`; `docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md`; `docs_build/dev/reports/PR_26175_OWNER_046-pr-targeted-review-packets.md`; `docs_build/dev/reports/PR_REVIEW_003.md`; `docs_build/dev/reports/PR_REVIEW_050.md`; `docs_build/dev/reports/PR_REVIEW_051.md`; `docs_build/dev/reports/PR_REVIEW_118.md`; `docs_build/dev/reports/codex_changed_files.txt`; `docs_build/dev/reports/codex_review.diff` |
-+| #132 | `docs_build/dev/reports/PR_26175_OWNER_047-targeted-pr-action-decision-report.md`; `docs_build/dev/reports/codex_changed_files.txt`; `docs_build/dev/reports/codex_review.diff` |
-+| #134 | `docs_build/dev/reports/PR_26175_BRAVO_001-pr-003-messages-emotion-profiles-code-review.md`; `docs_build/dev/reports/codex_changed_files.txt`; `docs_build/dev/reports/codex_review.diff` |
-+
-+## Requirement Checklist
-+
-+| Requirement | Status | Notes |
-+| --- | --- | --- |
-+| Start from `main` | PASS | Hard-stop gate confirmed current branch was `main` before branch creation. |
-+| Worktree clean | PASS | Hard-stop gate confirmed clean worktree before branch creation. |
-+| Local/origin sync `0 0` | PASS | Hard-stop gate confirmed `main...origin/main` was `0 0`. |
-+| Read all Project Instructions | PASS | Read files under `docs_build/dev/ProjectInstructions/` before report creation. |
-+| Review PR #129 | PASS | GitHub metadata and changed-file list reviewed. |
-+| Review PR #132 | PASS | GitHub metadata and changed-file list reviewed. |
-+| Review PR #134 | PASS | GitHub metadata and changed-file list reviewed. |
-+| Document MERGE APPROVED decisions | PASS | #129, #132, and #134 documented. |
-+| Document CLOSE APPROVED decisions | PASS | #3 and #51 documented. |
-+| Document HOLD decisions | PASS | #50 and #118 documented. |
-+| Include rationale | PASS | Included per decision table. |
-+| Include dependency impact | PASS | Included per decision table and order section. |
-+| Include replacement/superseded references | PASS | Included in close/hold and replacement tables. |
-+| Include expected post-merge state | PASS | Included above. |
-+| Do not merge PRs | PASS | No merge action performed. |
-+| Do not close PRs | PASS | No close action performed. |
-+| Do not delete branches | PASS | No branch deletion performed. |
-+| Do not modify runtime code | PASS | Report-only changes under `docs_build/dev/reports/`. |
-+
-+## Validation Lane Report
-+
-+- PASS: GitHub PR metadata fetched for #129, #132, #134, #3, #51, #50, and #118.
-+- PASS: GitHub changed-file lists fetched for #129, #132, and #134.
-+- PASS: Scope stayed report-only under `docs_build/dev/reports/`.
-+- PASS: No runtime validation required because no runtime code changed.
-+
-+## Manual Validation Notes
-+
-+- Confirmed #129, #132, and #134 remain unmerged at report time; this PR documents approval only and does not execute merges.
-+- Confirmed #3 and #51 remain open at report time; this PR documents approval only and does not execute closures.
-+- Confirmed #50 and #118 remain held and untouched.
-+- Confirmed branch deletion is explicitly out of scope.
-+
-+## Artifacts
-+
-+- `docs_build/dev/reports/PR_26175_OWNER_049-governance-report-merge-batch.md`
-+- `docs_build/dev/reports/codex_changed_files.txt`
-+- `docs_build/dev/reports/codex_review.diff`
-+- `tmp/PR_26175_OWNER_049-governance-report-merge-batch_delta.zip`
+diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+index 0003bcc7e..8df1af057 100644
+--- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+@@ -6,8 +6,10 @@ Missing changed runtime JS files are WARN, not FAIL.
+ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+
+ Changed runtime JS files considered:
++(0%) assets/theme-v2/js/admin-system-health.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(88%) assets/theme-v2/js/admin-system-health.js - executed lines 334/334; executed functions 35/40
++(100%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 5/5
+
+ Guardrail warnings:
++(0%) assets/theme-v2/js/admin-system-health.js - WARNING: changed runtime JS file missing from coverage; advisory only
+ (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+index 82d39d813..be704e176 100644
+--- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
++++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+@@ -12,31 +12,41 @@ Note: entry percentages use function coverage when available, otherwise line cov
+ Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
+
+ Exercised tool entry points detected:
+-(46%) Toolbox Index - exercised 1 runtime JS files
++(35%) Toolbox Index - exercised 1 runtime JS files
+ (0%) Tool Template V2 - not exercised by this Playwright run
+-(78%) Theme V2 Shared JS - exercised 4 runtime JS files
++(70%) Theme V2 Shared JS - exercised 5 runtime JS files
+
+ Changed runtime JS files covered:
++(0%) assets/theme-v2/js/admin-system-health.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(88%) assets/theme-v2/js/admin-system-health.js - executed lines 334/334; executed functions 35/40
++(100%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 5/5
+
+ Files with executed line/function counts where available:
++(35%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 9/26
+ (36%) src/api/server-api-client.js - executed lines 167/167; executed functions 5/14
+-(46%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 12/26
++(40%) src/api/admin-invitations-api-client.js - executed lines 40/40; executed functions 2/5
++(50%) assets/js/shared/status.js - executed lines 37/37; executed functions 3/6
++(53%) assets/theme-v2/js/admin-invitations.js - executed lines 156/156; executed functions 9/17
++(59%) assets/theme-v2/js/owner-memberships.js - executed lines 248/248; executed functions 16/27
+ (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 204/204; executed functions 9/14
+-(65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
++(67%) src/api/owner-memberships-api-client.js - executed lines 19/19; executed functions 2/3
++(71%) src/api/public-config-client.js - executed lines 209/209; executed functions 20/28
+ (74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1001/1001; executed functions 69/93
+-(80%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 4/5
+-(83%) assets/js/shared/status.js - executed lines 37/37; executed functions 5/6
+-(88%) assets/theme-v2/js/admin-system-health.js - executed lines 334/334; executed functions 35/40
+-(91%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 10/11
+-(100%) src/api/admin-system-health-api-client.js - executed lines 19/19; executed functions 3/3
++(89%) src/dev-runtime/admin/admin-notes-viewer.js - executed lines 533/533; executed functions 49/55
++(100%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 11/11
++(100%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 5/5
+
+ Uncovered or low-coverage changed JS files:
++(0%) assets/theme-v2/js/admin-system-health.js - WARNING: uncovered changed runtime JS file; advisory only
+ (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+
+ Changed JS files considered:
++(0%) assets/theme-v2/js/admin-system-health.js - changed JS file not collected as browser runtime coverage
+ (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/dev-runtime/AdminHealthOperations.test.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/dev-runtime/ApiMenuPathCleanup.test.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/dev-runtime/ArchitectureCleanupApiNavInvitations.test.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
+-(88%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
++(0%) tests/playwright/tools/AdminInvitationsNavPage.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs - changed JS file not collected as browser runtime coverage
++(100%) src/api/admin-owner-navigation.js - changed JS file with browser V8 coverage
+diff --git a/src/api/admin-owner-navigation.js b/src/api/admin-owner-navigation.js
+index b80366641..592647346 100644
+--- a/src/api/admin-owner-navigation.js
++++ b/src/api/admin-owner-navigation.js
+@@ -2,6 +2,7 @@ const ADMIN_NAVIGATION_ITEMS = Object.freeze([
+   Object.freeze({ disabled: true, label: "Admin Tools", planned: false }),
+   Object.freeze({ label: "Analytics", path: "admin/analytics.html", route: "admin-analytics" }),
+   Object.freeze({ label: "Controls", path: "admin/controls.html", route: "admin-controls" }),
++  Object.freeze({ label: "Creators", path: "admin/users.html", route: "admin-users" }),
+   Object.freeze({ label: "DB Viewer", path: "admin/db-viewer.html", route: "admin-db-viewer" }),
+   Object.freeze({ label: "Environments", path: "admin/environments.html", route: "admin-environments" }),
+   Object.freeze({ label: "Game Migration", path: "admin/game-migration.html", route: "admin-game-migration" }),
+@@ -15,7 +16,6 @@ const ADMIN_NAVIGATION_ITEMS = Object.freeze([
+   Object.freeze({ label: "Site Setup", path: "admin/site-setup.html", route: "admin-site-setup" }),
+   Object.freeze({ label: "System Health", path: "admin/system-health.html", route: "admin-system-health" }),
+   Object.freeze({ label: "Tool Votes", path: "admin/tool-votes.html", route: "admin-tool-votes" }),
+-  Object.freeze({ label: "Creators", path: "admin/users.html", route: "admin-users" }),
+ ]);
+
+ const OWNER_NAVIGATION_ITEMS = Object.freeze([
+diff --git a/tests/dev-runtime/ApiMenuPathCleanup.test.mjs b/tests/dev-runtime/ApiMenuPathCleanup.test.mjs
+index deb1027fe..abc1b76ef 100644
+--- a/tests/dev-runtime/ApiMenuPathCleanup.test.mjs
++++ b/tests/dev-runtime/ApiMenuPathCleanup.test.mjs
+@@ -21,20 +21,20 @@ const EXPECTED_ADMIN_LABELS = Object.freeze([
+   "Admin Tools",
+   "Analytics",
+   "Controls",
++  "Creators",
+   "DB Viewer",
+   "Environments",
+   "Game Migration",
+   "Infrastructure",
+-  "Invitations",
++  "Invites",
+   "Moderation",
+   "Operations",
+   "Platform Settings",
+   "Ratings",
+-  "Roles",
++  "Responsibilities",
+   "Site Setup",
+   "System Health",
+   "Tool Votes",
+-  "Users",
+ ]);
+
+ const EXPECTED_OWNER_LABELS = Object.freeze([
+@@ -98,7 +98,7 @@ test("Admin and Owner shared menus are non-overlapping by responsibility", () =>
+   ["Branding", "Design System", "Grouping Colors", "Legal", "Marketplace Settings", "Notes", "Revenue", "Site Settings", "Themes"].forEach((label) => {
+     assert.equal(adminItems.some((item) => item.label === label), false, `Admin menu must not include Owner business item ${label}`);
+   });
+-  ["DB Viewer", "Infrastructure", "Invitations", "Operations", "Platform Settings", "System Health", "Users"].forEach((label) => {
++  ["Creators", "DB Viewer", "Infrastructure", "Invites", "Operations", "Platform Settings", "System Health"].forEach((label) => {
+     assert.equal(ownerItems.some((item) => item.label === label), false, `Owner menu must not duplicate Admin operations item ${label}`);
+   });
+ });
+diff --git a/tests/dev-runtime/ArchitectureCleanupApiNavInvitations.test.mjs b/tests/dev-runtime/ArchitectureCleanupApiNavInvitations.test.mjs
+index fdb745e4c..a896dcb9c 100644
+--- a/tests/dev-runtime/ArchitectureCleanupApiNavInvitations.test.mjs
++++ b/tests/dev-runtime/ArchitectureCleanupApiNavInvitations.test.mjs
+@@ -92,7 +92,7 @@ test("product and web API clients live under src/api while engine API keeps only
+ test("Admin and Owner navigation are shared and include present operational/business pages", async () => {
+   const adminLabels = getAdminNavigationItems().map((item) => item.label);
+   const ownerLabels = getOwnerNavigationItems().map((item) => item.label);
+-  ["Admin Tools", "Infrastructure", "Invitations", "Operations", "System Health", "Tool Votes", "Users"].forEach((label) => {
++  ["Admin Tools", "Creators", "Infrastructure", "Invites", "Operations", "System Health", "Tool Votes"].forEach((label) => {
+     assert.equal(adminLabels.includes(label), true, `Admin navigation should include ${label}`);
+   });
+   ["Owner Tools", "AI Credits", "Branding", "Grouping Colors", "Memberships", "Revenue"].forEach((label) => {
+diff --git a/tests/playwright/tools/AdminInvitationsNavPage.spec.mjs b/tests/playwright/tools/AdminInvitationsNavPage.spec.mjs
+index bb20304ab..d5ff2cda0 100644
+--- a/tests/playwright/tools/AdminInvitationsNavPage.spec.mjs
++++ b/tests/playwright/tools/AdminInvitationsNavPage.spec.mjs
+@@ -83,6 +83,7 @@ test("Admin Invites uses shared navigation and creates personalized Beta invite
+     await expect(page.locator("nav[aria-label='Admin tool pages'] a")).toContainText([
+       "Analytics",
+       "Controls",
++      "Creators",
+       "DB Viewer",
+       "Environments",
+       "Game Migration",
+@@ -96,7 +97,6 @@ test("Admin Invites uses shared navigation and creates personalized Beta invite
+       "Site Setup",
+       "System Health",
+       "Tool Votes",
+-      "Creators",
+     ]);
+     await expect(page.locator("nav[aria-label='Admin tool pages'] a[aria-current='page']")).toHaveText("Invites");
+
+diff --git a/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs b/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
+index 79890522e..f4b68a097 100644
+--- a/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
++++ b/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
+@@ -7,6 +7,7 @@ const ADMIN_LABELS = Object.freeze([
+   "Admin Tools",
+   "Analytics",
+   "Controls",
++  "Creators",
+   "DB Viewer",
+   "Environments",
+   "Game Migration",
+@@ -20,7 +21,6 @@ const ADMIN_LABELS = Object.freeze([
+   "Site Setup",
+   "System Health",
+   "Tool Votes",
+-  "Creators",
+ ]);
+
+ const OWNER_LABELS = Object.freeze([
+@@ -160,6 +160,15 @@ test("Admin menu renders operational platform pages only", async ({ page }) => {
+   try {
+     await expect(page.locator("nav[aria-label='Admin tool pages'] :is(a, span)")).toHaveText(ADMIN_LABELS);
+     const adminLinks = page.locator("nav[aria-label='Admin tool pages'] a");
++    const adminRenderedLabels = await page.locator("nav[aria-label='Admin tool pages'] :is(a, span)").allTextContents();
++    expect(adminRenderedLabels).toEqual([...adminRenderedLabels].sort((left, right) => left.localeCompare(right)));
++    expect(new Set(adminRenderedLabels).size).toBe(adminRenderedLabels.length);
++    const adminHrefs = await adminLinks.evaluateAll((links) => links.map((link) => link.getAttribute("href") || ""));
++    expect(new Set(adminHrefs).size).toBe(adminHrefs.length);
++    for (const href of adminHrefs) {
++      const response = await page.request.get(new URL(href, context.server.baseUrl).toString());
++      expect(response.status(), `${href} should open`).toBeLessThan(400);
++    }
+     const adminLinkText = (await adminLinks.allTextContents()).join("\n");
+     for (const label of [
+       "Branding",

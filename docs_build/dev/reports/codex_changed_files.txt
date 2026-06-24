@@ -1,9 +1,14 @@
-# git status --short
-
-
-# git diff --name-status main...HEAD
-A	docs_build/dev/reports/PR_26175_OWNER_049-governance-report-merge-batch.md
-
-# git diff --stat main...HEAD
- ...6175_OWNER_049-governance-report-merge-batch.md | 128 +++++++++++++++++++++
- 1 file changed, 128 insertions(+)
+﻿docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/codex_review.diff
+docs_build/dev/reports/coverage_changed_js_guardrail.txt
+docs_build/dev/reports/playwright_v8_coverage_report.txt
+docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order.md
+docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order-branch-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order-manual-validation-notes.md
+docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order-requirement-checklist.md
+docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order-validation.md
+src/api/admin-owner-navigation.js
+tests/dev-runtime/ApiMenuPathCleanup.test.mjs
+tests/dev-runtime/ArchitectureCleanupApiNavInvitations.test.mjs
+tests/playwright/tools/AdminInvitationsNavPage.spec.mjs
+tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
