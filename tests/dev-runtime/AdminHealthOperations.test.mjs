@@ -142,6 +142,8 @@ test("Admin can view operational health while Creator sessions are blocked", asy
       assert.equal(typeof health.databaseStatus.lastChecked, "string");
       assert.equal(typeof health.databaseStatus.responseTimeMs === "number" || health.databaseStatus.responseTimeMs === null, true);
       assert.equal(typeof health.databaseStatus.version, "string");
+      assert.equal(health.storageStatus.environmentFolder, "/local");
+      assert.equal(typeof health.storageStatus.lastChecked, "string");
       assert.deepEqual(
         health.environmentMap.map((row) => row.name),
         ["Local", "DEV", "IST", "UAT", "PRD"],

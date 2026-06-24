@@ -159,10 +159,10 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
     await expect(page.getByRole("table", { name: "Database health" })).not.toContainText("postgres://");
     await expect(page.getByRole("table", { name: "Database health" })).not.toContainText("postgresql://");
     await expect(page.getByRole("table", { name: "Storage health" })).toContainText("Cloudflare R2");
-    await expect(page.locator("[data-admin-system-health-storage-value='bucket']")).not.toHaveText("Configured bucket placeholder");
-    await expect(page.locator("[data-admin-system-health-storage-value='list']")).not.toHaveText("Objects prefix");
+    await expect(page.locator("[data-admin-system-health-storage-value='bucket']")).toContainText("/dev");
+    await expect(page.locator("[data-admin-system-health-storage-value='list']")).toContainText("/dev");
+    await expect(page.locator("[data-admin-system-health-storage-value='upload']")).toContainText("/dev");
     await expect(page.locator("[data-admin-system-health-storage-value='read']")).not.toHaveText("Health object");
-    await expect(page.locator("[data-admin-system-health-storage-value='write']")).not.toHaveText("Health object");
     await expect(page.locator("[data-admin-system-health-storage-value='delete']")).not.toHaveText("Health object");
     await expect(page.getByRole("table", { name: "Runtime environment" })).toContainText("********");
     await expect(page.getByRole("table", { name: "Runtime environment" })).toContainText("GAMEFOUNDRY_ADMIN_HEALTH_DATABASE_URL");
@@ -196,7 +196,7 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
       expect((title || ariaLabel || "").trim()).not.toEqual("");
     }
     expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/status"))).toBe(true);
-    expect(context.requestUrls.filter((url) => url.includes("/api/admin/system-health/storage-connectivity-action"))).toHaveLength(4);
+    expect(context.requestUrls.filter((url) => url.includes("/api/admin/system-health/storage-connectivity-action"))).toHaveLength(5);
     await expectClientToHideSecretValues(page, context);
     await expect(page.locator("[data-admin-system-health-storage-action]")).toHaveCount(0);
     await expect(page.locator("[data-owner-ai-save], [data-owner-membership-save], [data-owner-ai-credits], [data-owner-memberships]")).toHaveCount(0);

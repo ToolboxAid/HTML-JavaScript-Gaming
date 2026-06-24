@@ -340,10 +340,12 @@ const SYSTEM_HEALTH_USAGE_CONTRACTS = Object.freeze({
   }),
 });
 const STORAGE_CONNECTIVITY_ACTIONS = Object.freeze([
-  Object.freeze({ id: "storage-list", label: "List" }),
-  Object.freeze({ id: "storage-write-test-object", label: "Write test object" }),
-  Object.freeze({ id: "storage-read-test-object", label: "Read test object" }),
-  Object.freeze({ id: "storage-delete-test-object", label: "Delete test object" }),
+  Object.freeze({ id: "storage-bucket-connectivity", label: "Bucket connectivity", operation: "bucket-connectivity" }),
+  Object.freeze({ id: "storage-list", label: "List", operation: "list" }),
+  Object.freeze({ id: "storage-upload-test-object", label: "Upload test object", operation: "upload" }),
+  Object.freeze({ id: "storage-write-test-object", label: "Write test object", operation: "upload" }),
+  Object.freeze({ id: "storage-read-test-object", label: "Read test object", operation: "read" }),
+  Object.freeze({ id: "storage-delete-test-object", label: "Delete test object", operation: "delete" }),
 ]);
 const STORAGE_CONNECTIVITY_TEST_OBJECT_CONTENT = "Game Foundry Studio storage connectivity test object.\n";
 const STORAGE_CONNECTIVITY_TEST_OBJECT_RELATIVE_PATH = "connectivity/storage-connectivity-test.txt";
@@ -3436,6 +3438,7 @@ class ApiRuntimeDataSource {
     const storageConfig = loadStorageConfig();
     const safe = storageConfig.safe || {};
     const configured = storageConfig.configured === true;
+    const environmentIdentity = systemHealthEnvironmentIdentity();
     return {
       accessKeyConfigured: configured,
       accessKeyStatus: configured ? "PASS" : "WARN",
@@ -3444,6 +3447,9 @@ class ApiRuntimeDataSource {
       configured,
       endpoint: safe.endpoint || "",
       endpointStatus: safe.endpoint && safe.endpoint !== "invalid endpoint" ? "PASS" : "WARN",
+      environmentFolder: environmentIdentity.storageFolder,
+      environmentFolderStatus: environmentIdentity.storageFolderStatus,
+      lastChecked: new Date().toISOString(),
       message: configured
         ? "Project asset storage is configured. Credential values are hidden."
         : `Project asset storage is not fully configured: ${storageConfig.missingKeys?.join(", ") || storageConfig.validationError || "storage configuration incomplete"}.`,
@@ -3455,17 +3461,34 @@ class ApiRuntimeDataSource {
     };
   }
 
-  storageConnectivityTestObjectKey(storage) {
+  storageConnectivityEnvironmentFolder() {
+    return systemHealthEnvironmentIdentity().storageFolder || "/local";
+  }
+
+  storageConnectivityTargetPrefix(storage, scope = "project-prefix") {
+    if (scope === "environment-folder") {
+      return `${this.storageConnectivityEnvironmentFolder()}/`.replace(/\/{2,}/g, "/");
+    }
+    return String(storage.config?.projectsPrefix || "").trim();
+  }
+
+  storageConnectivityTestObjectKey(storage, scope = "project-prefix") {
+    if (scope === "environment-folder") {
+      return `${this.storageConnectivityTargetPrefix(storage, scope)}${STORAGE_CONNECTIVITY_TEST_OBJECT_RELATIVE_PATH}`.replace(/\/{2,}/g, "/");
+    }
     const projectsPrefix = String(storage.config?.projectsPrefix || "").trim();
     return `${projectsPrefix}${STORAGE_CONNECTIVITY_TEST_OBJECT_RELATIVE_PATH}`.replace(/\/{2,}/g, "/");
   }
 
-  storageConnectivityConfigFailure(actionId, storage) {
+  storageConnectivityConfigFailure(actionId, storage, scope = "project-prefix") {
     const missing = storage.config?.missingKeys?.join(", ") || storage.config?.validationError || "storage configuration incomplete";
     return {
       actionId,
+      environmentFolder: scope === "environment-folder" ? this.storageConnectivityEnvironmentFolder() : "",
       executed: false,
+      lastChecked: new Date().toISOString(),
       message: `Storage connectivity requires configured storage and GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX before this action can run. Missing or invalid: ${missing}.`,
+      projectsPrefix: String(storage.config?.projectsPrefix || "").trim(),
       secretEditingAllowed: false,
       secretsExposed: false,
       status: "FAIL",
@@ -3473,11 +3496,13 @@ class ApiRuntimeDataSource {
     };
   }
 
-  storageConnectivityResult({ actionId, executed = true, keysListed = 0, message, objectKey, projectsPrefix, status }) {
+  storageConnectivityResult({ actionId, environmentFolder = "", executed = true, keysListed = 0, message, objectKey, projectsPrefix, status }) {
     return {
       actionId,
+      environmentFolder,
       executed,
       keysListed,
+      lastChecked: new Date().toISOString(),
       message,
       projectsPrefix,
       secretEditingAllowed: false,
@@ -3488,36 +3513,58 @@ class ApiRuntimeDataSource {
     };
   }
 
-  async runStorageConnectivityAction(actionId) {
+  async runStorageConnectivityAction(actionId, options = {}) {
     const action = STORAGE_CONNECTIVITY_ACTIONS.find((candidate) => candidate.id === actionId);
     if (!action) {
       throw new Error(`Unknown storage connectivity action: ${actionId || "missing actionId"}.`);
     }
 
+    const scope = options.scope === "environment-folder" ? "environment-folder" : "project-prefix";
     const storage = createConfiguredProjectAssetStorage();
     const projectsPrefix = String(storage.config?.projectsPrefix || "").trim();
     if (!storage.configured || !projectsPrefix) {
-      return this.storageConnectivityConfigFailure(action.id, storage);
+      return this.storageConnectivityConfigFailure(action.id, storage, scope);
     }
 
-    const objectKey = this.storageConnectivityTestObjectKey(storage);
+    const environmentFolder = scope === "environment-folder" ? this.storageConnectivityEnvironmentFolder() : "";
+    const targetPrefix = this.storageConnectivityTargetPrefix(storage, scope);
+    const objectKey = this.storageConnectivityTestObjectKey(storage, scope);
     try {
-      if (action.id === "storage-list") {
-        const result = await storage.listProjectObjects();
+      if (action.operation === "bucket-connectivity") {
+        const result = await storage.listObjects(targetPrefix);
         const keysListed = Array.isArray(result.keys) ? result.keys.length : 0;
         return this.storageConnectivityResult({
           actionId: action.id,
+          environmentFolder,
           keysListed,
           message: result.ok
-            ? `List completed under ${projectsPrefix}; ${keysListed} object(s) returned.`
-            : `${result.message || "Storage list failed."} Verify the endpoint, bucket, credentials, and GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX.`,
+            ? `Bucket connectivity validated for current environment folder ${targetPrefix}.`
+            : `${result.message || "Storage bucket connectivity failed."} Verify the endpoint, bucket, credentials, and current environment folder ${targetPrefix}.`,
           objectKey,
           projectsPrefix,
           status: result.ok ? "PASS" : "FAIL",
         });
       }
 
-      if (action.id === "storage-write-test-object") {
+      if (action.operation === "list") {
+        const result = scope === "environment-folder"
+          ? await storage.listObjects(targetPrefix)
+          : await storage.listProjectObjects();
+        const keysListed = Array.isArray(result.keys) ? result.keys.length : 0;
+        return this.storageConnectivityResult({
+          actionId: action.id,
+          environmentFolder,
+          keysListed,
+          message: result.ok
+            ? `List completed under ${targetPrefix}; ${keysListed} object(s) returned.`
+            : `${result.message || "Storage list failed."} Verify the endpoint, bucket, credentials, and target prefix ${targetPrefix}.`,
+          objectKey,
+          projectsPrefix,
+          status: result.ok ? "PASS" : "FAIL",
+        });
+      }
+
+      if (action.operation === "upload") {
         const result = await storage.putObject({
           bytes: STORAGE_CONNECTIVITY_TEST_OBJECT_CONTENT,
           contentType: "text/plain; charset=utf-8",
@@ -3525,24 +3572,26 @@ class ApiRuntimeDataSource {
         });
         return this.storageConnectivityResult({
           actionId: action.id,
+          environmentFolder,
           message: result.ok
-            ? `Write test object completed at ${objectKey}.`
-            : `${result.message || "Storage write failed."} Verify write permission for ${projectsPrefix}.`,
+            ? `Upload test object completed at ${objectKey}.`
+            : `${result.message || "Storage upload failed."} Verify upload permission for ${targetPrefix}.`,
           objectKey,
           projectsPrefix,
           status: result.ok ? "PASS" : "FAIL",
         });
       }
 
-      if (action.id === "storage-read-test-object") {
+      if (action.operation === "read") {
         const result = await storage.readObject(objectKey);
         const text = result.ok ? Buffer.from(result.bytes || []).toString("utf8") : "";
         const contentMatches = text === STORAGE_CONNECTIVITY_TEST_OBJECT_CONTENT;
         return this.storageConnectivityResult({
           actionId: action.id,
+          environmentFolder,
           message: result.ok && contentMatches
             ? `Read test object completed from ${objectKey}.`
-            : `${result.message || "Storage read failed or returned unexpected content."} Run Write test object first and verify read permission for ${projectsPrefix}.`,
+            : `${result.message || "Storage read failed or returned unexpected content."} Run Upload first and verify read permission for ${targetPrefix}.`,
           objectKey,
           projectsPrefix,
           status: result.ok && contentMatches ? "PASS" : "FAIL",
@@ -3552,9 +3601,10 @@ class ApiRuntimeDataSource {
       const result = await storage.deleteObject(objectKey);
       return this.storageConnectivityResult({
         actionId: action.id,
+        environmentFolder,
         message: result.ok
           ? `Delete test object completed at ${objectKey}.`
-          : `${result.message || "Storage delete failed."} Verify delete permission for ${projectsPrefix}.`,
+          : `${result.message || "Storage delete failed."} Verify delete permission for ${targetPrefix}.`,
         objectKey,
         projectsPrefix,
         status: result.ok ? "PASS" : "FAIL",
@@ -3562,6 +3612,7 @@ class ApiRuntimeDataSource {
     } catch (error) {
       return this.storageConnectivityResult({
         actionId: action.id,
+        environmentFolder,
         message: `Storage connectivity action failed: ${error instanceof Error ? error.message : String(error || "Unknown storage error.")}`,
         objectKey,
         projectsPrefix,
@@ -3767,7 +3818,7 @@ LIMIT 1;
 
   async adminSystemHealthStorageConnectivityAction(body = {}) {
     await this.requireAdminSession();
-    return this.runStorageConnectivityAction(String(body.actionId || "").trim());
+    return this.runStorageConnectivityAction(String(body.actionId || "").trim(), { scope: "environment-folder" });
   }
 
   async adminSystemHealthStatus() {
