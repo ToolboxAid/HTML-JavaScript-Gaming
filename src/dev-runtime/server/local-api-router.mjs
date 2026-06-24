@@ -1028,6 +1028,71 @@ function systemHealthRuntimeEnvironment(env = process.env) {
   };
 }
 
+function systemHealthHistoryRow({ checkedAt, environmentName, area, result, summary, kind = "recent check" }) {
+  return {
+    area,
+    checkedAt,
+    environmentName,
+    kind,
+    result: normalizeHealthStatus(result),
+    summary: String(summary || "No summary returned."),
+  };
+}
+
+function systemHealthCheckHistory({
+  checkedAt,
+  databaseStatus = {},
+  environmentIdentity = {},
+  runtimeEnvironment = {},
+  storageStatus = {},
+}) {
+  const environmentName = environmentIdentity.name || "Unknown";
+  const databaseResponseTime = Number.isFinite(databaseStatus.responseTimeMs)
+    ? `${databaseStatus.responseTimeMs} ms`
+    : "not available";
+  const recentChecks = [
+    systemHealthHistoryRow({
+      area: "Environment Summary",
+      checkedAt,
+      environmentName,
+      result: environmentIdentity.status,
+      summary: `Current deployment ${environmentName}; hosting ${environmentIdentity.hostingModel || "not configured"}; storage folder ${environmentIdentity.storageFolder || "not configured"}.`,
+    }),
+    systemHealthHistoryRow({
+      area: "Database Health",
+      checkedAt,
+      environmentName,
+      result: databaseStatus.connectivityStatus || databaseStatus.status,
+      summary: `${databaseStatus.databaseType || "PostgreSQL"} connectivity ${databaseStatus.connectivity || "not configured"}; response time ${databaseResponseTime}; version ${databaseStatus.version || "not available"}.`,
+    }),
+    systemHealthHistoryRow({
+      area: "Storage Health",
+      checkedAt,
+      environmentName,
+      result: storageStatus.status,
+      summary: `Cloudflare R2 folder ${storageStatus.environmentFolder || environmentIdentity.storageFolder || "not configured"}; bucket ${storageStatus.configured ? "configured" : "not configured"}; last checked ${storageStatus.lastChecked || checkedAt}.`,
+    }),
+    systemHealthHistoryRow({
+      area: "Runtime Health",
+      checkedAt,
+      environmentName,
+      result: runtimeEnvironment.status,
+      summary: runtimeEnvironment.message || "Runtime environment health unavailable.",
+    }),
+  ];
+  const issueRows = recentChecks
+    .filter((row) => row.result !== "PASS")
+    .map((row) => systemHealthHistoryRow({
+      area: `${row.area} ${row.result === "FAIL" ? "Failure" : "Warning"}`,
+      checkedAt: row.checkedAt,
+      environmentName: row.environmentName,
+      kind: row.result === "FAIL" ? "failure" : "warning",
+      result: row.result,
+      summary: row.summary,
+    }));
+  return [...recentChecks, ...issueRows];
+}
+
 function systemHealthR2Readiness(storageStatus) {
   const credentialsConfigured = storageStatus.accessKeyConfigured === true && storageStatus.secretKeyConfigured === true;
   const configurationReady = storageStatus.configured === true
@@ -3838,6 +3903,13 @@ LIMIT 1;
     const r2Readiness = systemHealthR2Readiness(storageStatus);
     const runtimeEnvironment = systemHealthRuntimeEnvironment();
     const operationsHealth = adminOperationsHealth(this.standaloneTables);
+    const healthCheckHistory = systemHealthCheckHistory({
+      checkedAt,
+      databaseStatus,
+      environmentIdentity,
+      runtimeEnvironment,
+      storageStatus,
+    });
     const importBlocked = promotionFoundation.importOverwriteAllowed === false
       && promotionFoundation.browserExecutionAllowed === false
       && promotionFoundation.destructiveOperationsAllowed === false;
@@ -3961,6 +4033,7 @@ LIMIT 1;
       message: "Admin System Health loaded safe status only.",
       environmentIdentity,
       environmentMap,
+      healthCheckHistory,
       operationsHealth,
       overview,
       pressureLabels: SYSTEM_HEALTH_LIMIT_PRESSURE_LABELS,

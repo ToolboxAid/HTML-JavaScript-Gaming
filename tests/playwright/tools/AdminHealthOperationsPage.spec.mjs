@@ -164,6 +164,19 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
     await expect(page.locator("[data-admin-system-health-storage-value='upload']")).toContainText("/dev");
     await expect(page.locator("[data-admin-system-health-storage-value='read']")).not.toHaveText("Health object");
     await expect(page.locator("[data-admin-system-health-storage-value='delete']")).not.toHaveText("Health object");
+    const historyTable = page.getByRole("table", { name: "Health check history" });
+    await expect(historyTable).toContainText("DEV");
+    await expect(historyTable).toContainText("Environment Summary");
+    await expect(historyTable).toContainText("Database Health");
+    await expect(historyTable).toContainText("Storage Health");
+    await expect(historyTable).toContainText("Runtime Health");
+    await expect(historyTable).not.toContainText("IST");
+    await expect(historyTable).not.toContainText("UAT");
+    await expect(historyTable).not.toContainText("PRD");
+    await expect(historyTable).not.toContainText("/local");
+    await expect(historyTable).not.toContainText("/ist");
+    await expect(historyTable).not.toContainText("/uat");
+    await expect(historyTable).not.toContainText("/prd");
     await expect(page.getByRole("table", { name: "Runtime environment" })).toContainText("********");
     await expect(page.getByRole("table", { name: "Runtime environment" })).toContainText("GAMEFOUNDRY_ADMIN_HEALTH_DATABASE_URL");
     await expect(page.getByRole("table", { name: "Runtime environment" })).toContainText("GAMEFOUNDRY_ADMIN_HEALTH_PUBLIC_FLAG");
@@ -216,6 +229,7 @@ test("Creator sessions cannot access Admin System Health operations", async ({ p
     await expect(page.locator("[data-session-access-blocked='admin']")).toBeVisible();
     await expect(page.getByRole("table", { name: "Environment identity" })).toHaveCount(0);
     await expect(page.getByRole("table", { name: "Environment map" })).toHaveCount(0);
+    await expect(page.getByRole("table", { name: "Health check history" })).toHaveCount(0);
     expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/status"))).toBe(false);
     expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/storage-connectivity-action"))).toBe(false);
     expect(context.pageErrors).toEqual([]);

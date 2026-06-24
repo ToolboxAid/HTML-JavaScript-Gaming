@@ -47,6 +47,7 @@ class AdminSystemHealthController {
             node.dataset.adminSystemHealthStorageStatus,
             node,
         ]));
+        this.historyRows = root.querySelector("[data-admin-system-health-history-rows]");
         this.startupRows = root.querySelector("[data-admin-system-health-startup-rows]");
         this.runtimeRows = root.querySelector("[data-admin-system-health-runtime-rows]");
     }
@@ -107,6 +108,7 @@ class AdminSystemHealthController {
         });
         this.renderStartupPending(reason);
         this.renderStoragePending(reason);
+        this.renderHistoryPending(reason);
     }
 
     renderEnvironmentIdentity(environmentIdentity = {}) {
@@ -222,6 +224,45 @@ class AdminSystemHealthController {
         }
     }
 
+    renderHistoryPending(reason) {
+        if (!this.historyRows) {
+            return;
+        }
+        const row = document.createElement("tr");
+        row.append(
+            this.createCell("not available"),
+            this.createCell("current environment"),
+            this.createCell("Health Check History"),
+            this.createStatusCell("PENDING", reason),
+            this.createCell("Safe health check history is not available."),
+        );
+        this.historyRows.replaceChildren(row);
+    }
+
+    renderHealthCheckHistory(historyRows = []) {
+        if (!this.historyRows) {
+            return;
+        }
+        const rows = Array.isArray(historyRows) ? historyRows : [];
+        if (!rows.length) {
+            this.renderHistoryPending("Safe Admin System Health API returned no current-environment health check history rows.");
+            return;
+        }
+        const fragment = document.createDocumentFragment();
+        rows.forEach((historyRow) => {
+            const row = document.createElement("tr");
+            row.append(
+                this.createCell(historyRow.checkedAt),
+                this.createCell(historyRow.environmentName),
+                this.createCell(historyRow.area),
+                this.createStatusCell(historyRow.result || historyRow.status, historyRow.summary),
+                this.createCell(historyRow.summary),
+            );
+            fragment.append(row);
+        });
+        this.historyRows.replaceChildren(fragment);
+    }
+
     runStorageDiagnostics() {
         STORAGE_DIAGNOSTIC_ACTIONS.forEach(({ key }) => {
             this.setStorageStatus(key, "PENDING", "R2 diagnostic is running through the safe Admin System Health API.");
@@ -302,6 +343,7 @@ class AdminSystemHealthController {
             this.renderStartupDiagnostics(data?.localApiStartup || {});
             this.renderStorageStatus(data?.storageStatus || {});
             this.runStorageDiagnostics();
+            this.renderHealthCheckHistory(data?.healthCheckHistory || []);
             this.renderRuntimeEnvironment(data?.runtimeEnvironment || {});
         } catch (error) {
             const message = error instanceof Error ? error.message : "Safe Admin System Health API is unavailable.";
