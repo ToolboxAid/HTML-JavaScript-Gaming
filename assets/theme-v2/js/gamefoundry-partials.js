@@ -127,6 +127,7 @@
 
     const currentScript = document.currentScript || document.querySelector("script[src*='gamefoundry-partials.js']");
     const assetRoot = currentScript ? new URL("../", currentScript.src) : null;
+    let themeIconRegistry = window.ThemeV2Icons || null;
     let navigationAdminMenuCache = null;
     let publicConfigCache = null;
     let publicConfigDataCache = null;
@@ -323,6 +324,54 @@
     function assetUrl(path) {
         if (!assetRoot) return rootPrefix() + path;
         return new URL(path.replace(/^assets\//, ""), assetRoot).href;
+    }
+
+    function fallbackThemeIconFileName(name) {
+        return "gfs-" + name + ".svg";
+    }
+
+    function createThemeIconNode(name, className) {
+        if (themeIconRegistry && typeof themeIconRegistry.createThemeIcon === "function") {
+            return themeIconRegistry.createThemeIcon(name, { className });
+        }
+
+        const icon = document.createElement("span");
+        icon.className = ["theme-icon", "theme-icon--" + name, className].filter(Boolean).join(" ");
+        icon.dataset.themeIcon = name;
+        icon.dataset.themeIconFile = fallbackThemeIconFileName(name);
+        icon.setAttribute("aria-hidden", "true");
+        return icon;
+    }
+
+    function horizontalToggleIconName(button) {
+        const expanded = button.getAttribute("aria-expanded") !== "false";
+        const isLeft = button.classList.contains("horizontal-accordion-toggle--left");
+        if (isLeft) {
+            return expanded ? "chevron-left" : "chevron-right";
+        }
+        return expanded ? "chevron-right" : "chevron-left";
+    }
+
+    function updateHorizontalToggleIcon(button) {
+        button.replaceChildren(createThemeIconNode(horizontalToggleIconName(button), "layout-icon horizontal-accordion-toggle__icon"));
+    }
+
+    function updateReturnToTopIcon(button) {
+        button.replaceChildren(createThemeIconNode("chevron-up", "layout-icon return-to-top__icon"));
+    }
+
+    function refreshUtilityIcons(root) {
+        (root || document).querySelectorAll(".horizontal-accordion-toggle").forEach(updateHorizontalToggleIcon);
+        (root || document).querySelectorAll("[data-return-to-top]").forEach(updateReturnToTopIcon);
+    }
+
+    function loadThemeIcons() {
+        import(assetUrl("js/theme-icons.js")).then(function (module) {
+            themeIconRegistry = module;
+            refreshUtilityIcons(document);
+        }).catch(function () {
+            themeIconRegistry = window.ThemeV2Icons || themeIconRegistry;
+        });
     }
 
     function currentPagePath() {
@@ -934,7 +983,7 @@
         button.dataset.accountSideNavCollapse = "";
         button.setAttribute("aria-label", "Collapse " + label);
         button.setAttribute("aria-expanded", "true");
-        button.textContent = "<";
+        updateHorizontalToggleIcon(button);
         header.insertBefore(button, header.firstChild);
 
         button.addEventListener("click", function () {
@@ -943,15 +992,16 @@
             if (accountPanel) {
                 accountPanel.classList.toggle("is-left-collapsed", collapsed);
             }
-            button.textContent = collapsed ? ">" : "<";
             button.setAttribute("aria-expanded", collapsed ? "false" : "true");
             button.setAttribute("aria-label", (collapsed ? "Expand " : "Collapse ") + label);
+            updateHorizontalToggleIcon(button);
         });
     }
 
     function wireReturnToTop(root) {
         const button = root.querySelector("[data-return-to-top]");
         if (!button) return;
+        updateReturnToTopIcon(button);
 
         function updateVisibility() {
             button.classList.toggle("is-visible", window.scrollY > 280);
@@ -1075,6 +1125,7 @@
     }
 
     enforcePageProtection();
+    loadThemeIcons();
     document.addEventListener("DOMContentLoaded", function () {
         enforcePageProtection();
         const slots = Array.from(document.querySelectorAll("[data-partial]"));

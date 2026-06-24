@@ -230,6 +230,11 @@ test("shared toolbox status bar shows selected Game Hub game above the footer", 
   try {
     const statusBar = page.locator("[data-toolbox-status-bar]");
     await expect(statusBar).toBeVisible();
+    const displayMode = page.locator("#toolDisplayMode");
+    await expect(displayMode.locator("summary [data-theme-icon='fullscreen']")).toHaveAttribute("data-theme-icon-file", "gfs-fullscreen.svg");
+    await expect(displayMode.locator("[data-tool-nav-previous] [data-theme-icon='chevron-left']")).toHaveAttribute("data-theme-icon-file", "gfs-chevron-left.svg");
+    await expect(displayMode.locator("[data-tool-nav-next] [data-theme-icon='chevron-right']")).toHaveAttribute("data-theme-icon-file", "gfs-chevron-right.svg");
+    await expect(page.locator(".horizontal-accordion-toggle").first().locator("[data-theme-icon]")).toHaveAttribute("data-theme-icon-file", /gfs-chevron-(left|right)\.svg/);
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     await expect(statusBar).not.toContainText("Environment");
     await expectRemovedStatusBarLabelsHidden(statusBar);
@@ -326,6 +331,7 @@ test("shared toolbox status bar anchors to the bottom in tool display mode", asy
     await expect(page.locator("[data-toolbox-status-bar]")).toBeVisible();
     await page.locator("#toolDisplayMode summary").click();
     await expect(page.locator("body")).toHaveClass(/tool-focus-mode/);
+    await expect(page.locator("#toolDisplayMode summary [data-theme-icon='exit-fullscreen']")).toHaveAttribute("data-theme-icon-file", "gfs-exit-fullscreen.svg");
 
     const snapshot = await statusBarSnapshot(page);
     expect(snapshot.position).toBe("fixed");

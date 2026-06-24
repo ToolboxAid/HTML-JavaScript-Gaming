@@ -112,8 +112,14 @@
   transition: opacity var(--transition-duration-fast) ease, transform var(--transition-duration-fast) ease, color var(--transition-duration-fast) ease, border-color var(--transition-duration-fast) ease, background var(--transition-duration-fast) ease
 }
 
-.return-to-top span {
+.return-to-top span,
+.return-to-top__icon {
   transform: translateY(var(--return-to-top-glyph-shift))
+}
+
+.return-to-top__icon {
+  height: var(--icon-size-sm);
+  width: var(--icon-size-sm)
 }
 
 .return-to-top.is-visible {

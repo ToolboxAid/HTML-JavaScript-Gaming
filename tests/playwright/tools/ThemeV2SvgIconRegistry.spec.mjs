@@ -213,8 +213,9 @@ test("supports semantic status and action aliases with shared CSS classes", asyn
       const statusIcon = themeIcons.createThemeIcon("validation", {
         className: "status-icon status-icon--validation",
       });
+      const layoutIcon = themeIcons.createThemeIcon("fullscreen", { className: "layout-icon" });
 
-      document.body.append(saveButton, deleteButton, statusIcon);
+      document.body.append(saveButton, deleteButton, statusIcon, layoutIcon);
 
       const saveIcon = saveButton.querySelector("[data-theme-icon]");
       const deleteIcon = deleteButton.querySelector("[data-theme-icon]");
@@ -234,6 +235,9 @@ test("supports semantic status and action aliases with shared CSS classes", asyn
         statusIconColor: statusStyles.color,
         statusIconFile: statusIcon.dataset.themeIconFile,
         statusIconName: statusIcon.dataset.themeIcon,
+        layoutIconFile: layoutIcon.dataset.themeIconFile,
+        layoutIconName: layoutIcon.dataset.themeIcon,
+        layoutIconWidth: getComputedStyle(layoutIcon).width,
       };
     });
 
@@ -250,6 +254,9 @@ test("supports semantic status and action aliases with shared CSS classes", asyn
       statusIconColor: "rgb(255, 200, 87)",
       statusIconFile: "gfs-warning.svg",
       statusIconName: "validation",
+      layoutIconFile: "gfs-fullscreen.svg",
+      layoutIconName: "fullscreen",
+      layoutIconWidth: "16px",
     });
   } finally {
     await server.close();

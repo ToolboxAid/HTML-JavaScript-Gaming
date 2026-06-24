@@ -107,6 +107,11 @@
   --theme-v2-icon-url: url("/assets/theme-v2/svg/gfs-warning.svg")
 }
 
+.layout-icon {
+  height: var(--icon-size-sm);
+  width: var(--icon-size-sm)
+}
+
 .status-icon {
   height: var(--icon-size-sm);
   width: var(--icon-size-sm)
