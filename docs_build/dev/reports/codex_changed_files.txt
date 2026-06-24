@@ -1,3 +1,7 @@
-﻿docs_build/dev/reports/PR_26175_OWNER_056-final-open-pr-resolution-plan.md / added
-docs_build/dev/reports/codex_changed_files.txt / updated
-docs_build/dev/reports/codex_review.diff / updated
+tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
+docs_build/dev/reports/PR_26175_ALFA_051-idea-board-game-hub-row-expectation_manual-validation-notes.md
+docs_build/dev/reports/PR_26175_ALFA_051-idea-board-game-hub-row-expectation_report.md
+docs_build/dev/reports/PR_26175_ALFA_051-idea-board-game-hub-row-expectation_requirements-checklist.md
+docs_build/dev/reports/PR_26175_ALFA_051-idea-board-game-hub-row-expectation_validation-lane.md
+docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/codex_review.diff

@@ -416,12 +416,10 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
     await expect(activeGameToggle).toHaveText("Lantern Reef");
     await activeGameToggle.click();
     let expandedRows = page.locator("[data-game-expanded-row]");
-    await expect(expandedRows).toHaveCount(3);
-    await expect(expandedRows.nth(0)).toHaveAttribute("data-game-child-row", "summary");
-    await expect(expandedRows.nth(1)).toHaveAttribute("data-game-child-row", "source-idea");
-    await expect(expandedRows.nth(2)).toHaveAttribute("data-game-child-row", "readiness-output");
-    await expect(expandedRows.nth(0).locator("[data-game-child-table='summary'] caption")).toHaveText("Game Summary");
-    let sourceIdeaChildTable = expandedRows.nth(1).locator("[data-game-child-table='source-idea']");
+    await expect(expandedRows).toHaveCount(2);
+    await expect(expandedRows.nth(0)).toHaveAttribute("data-game-child-row", "source-idea");
+    await expect(expandedRows.nth(1)).toHaveAttribute("data-game-child-row", "readiness-output");
+    let sourceIdeaChildTable = expandedRows.nth(0).locator("[data-game-child-table='source-idea']");
     await expect(sourceIdeaChildTable.locator("caption")).toHaveText("Source Idea");
     await expect(sourceIdeaChildTable.locator("thead th")).toHaveText(["Context", "Details"]);
     await expect(sourceIdeaChildTable.locator("tbody tr")).toHaveText([
@@ -430,7 +428,7 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
       "Note 1Use dusk tide changes as the first Game Hub planning note.",
     ]);
     await expect(sourceIdeaChildTable.locator(":is(input, textarea, select, button)")).toHaveCount(0);
-    await expect(expandedRows.nth(2).locator("[data-game-child-table='readiness-output'] caption")).toHaveText("Readiness Output");
+    await expect(expandedRows.nth(1).locator("[data-game-child-table='readiness-output'] caption")).toHaveText("Readiness Output");
     await page.reload({ waitUntil: "networkidle" });
     await expect(page.locator("[data-active-game-name]")).toHaveCount(0);
     await expect(page.locator("[data-game-list]")).toContainText("Lantern Reef");
@@ -439,8 +437,8 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
     await expect(page.locator("[data-game-hub-foundation]")).toHaveCount(0);
     await activeGameToggle.click();
     expandedRows = page.locator("[data-game-expanded-row]");
-    await expect(expandedRows).toHaveCount(3);
-    sourceIdeaChildTable = expandedRows.nth(1).locator("[data-game-child-table='source-idea']");
+    await expect(expandedRows).toHaveCount(2);
+    sourceIdeaChildTable = expandedRows.nth(0).locator("[data-game-child-table='source-idea']");
     await expect(sourceIdeaChildTable.locator("tbody tr")).toHaveText([
       "IdeaLantern Reef",
       "PitchGuide light through a reef that rearranges at dusk.",
