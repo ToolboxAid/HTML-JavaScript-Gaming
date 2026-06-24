@@ -437,6 +437,7 @@ function ideaIdFromText(text) {
 }
 
 function saveIdeaRow(root, row) {
+  if (!requireAuthenticatedWrite(root)) return;
   const idea = row.querySelector("[data-idea-board-idea-input]")?.value.trim();
   const pitch = row.querySelector("[data-idea-board-pitch-input]")?.value.trim();
   const status = row.querySelector("[data-idea-board-idea-status-input]")?.value;
@@ -479,6 +480,7 @@ function saveIdeaRow(root, row) {
 }
 
 function saveNoteRow(root, row) {
+  if (!requireAuthenticatedWrite(root)) return;
   const ideaId = row.dataset.ideaId;
   const idea = ideaRecord(ideaId);
   if (idea && isLockedIdea(idea)) {
@@ -533,6 +535,7 @@ function toggleNotes(root, ideaId) {
 }
 
 function deleteIdea(root, ideaId) {
+  if (!requireAuthenticatedWrite(root)) return;
   const index = ideaTable.findIndex((record) => record.ideaId === ideaId);
   if (index < 0) {
     updateStatus(root, "Idea Board could not delete that idea.");
@@ -588,6 +591,20 @@ function currentSessionState() {
   }
 }
 
+function requireAuthenticatedWrite(root) {
+  const sessionState = currentSessionState();
+  if (!sessionState.apiAvailable) {
+    updateStatus(root, "API session status could not be verified. Try again shortly.");
+    return false;
+  }
+  if (!sessionState.authenticated) {
+    updateStatus(root, "Sign in before saving Idea Board changes.");
+    window.location.href = signInUrl();
+    return false;
+  }
+  return true;
+}
+
 function createProject(root, ideaId) {
   const record = ideaRecord(ideaId);
   if (!record) {
@@ -598,16 +615,7 @@ function createProject(root, ideaId) {
     updateStatus(root, "Set this idea to Ready before creating a project.");
     return;
   }
-  const sessionState = currentSessionState();
-  if (!sessionState.apiAvailable) {
-    updateStatus(root, "Sign-in status could not be verified. Try again shortly.");
-    return;
-  }
-  if (!sessionState.authenticated) {
-    updateStatus(root, "Sign in to create a Game Hub project.");
-    window.location.href = signInUrl();
-    return;
-  }
+  if (!requireAuthenticatedWrite(root)) return;
   const repository = gameHubProjectRepository();
   const project = repository.createGame({
     name: record.idea,
@@ -638,6 +646,7 @@ function archiveIdea(root, ideaId) {
     updateStatus(root, "Idea Board could not archive that idea.");
     return;
   }
+  if (!requireAuthenticatedWrite(root)) return;
   if (record.status !== "Archived") record.previousStatus = record.status;
   record.status = "Archived";
   record.updated = today();
@@ -657,6 +666,7 @@ function restoreIdea(root, ideaId) {
     updateStatus(root, "Idea Board could not restore that idea.");
     return;
   }
+  if (!requireAuthenticatedWrite(root)) return;
   record.status = previousStatusForRestore(record);
   record.previousStatus = record.status;
   record.updated = today();
@@ -742,6 +752,7 @@ function handleNoteAction(root, actionControl) {
     updateStatus(root, "Editing note.");
     render(root);
   } else if (action === "delete") {
+    if (!requireAuthenticatedWrite(root)) return;
     const index = noteTable.findIndex((note) => note.noteId === noteId && note.ideaId === ideaId && !note.system);
     if (index >= 0) {
       noteTable.splice(index, 1);
