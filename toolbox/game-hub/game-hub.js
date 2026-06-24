@@ -287,12 +287,7 @@ function createGameToggleButton(game, expanded, active) {
     button.setAttribute("aria-current", "true");
   }
   button.setAttribute("aria-expanded", String(expanded));
-  const controlledRows = [];
-  if (hasSourceIdeaDetails(game)) {
-    controlledRows.push(`game-child-source-idea-${game.id}`);
-  }
-  controlledRows.push(`game-child-readiness-output-${game.id}`);
-  button.setAttribute("aria-controls", controlledRows.join(" "));
+  button.setAttribute("aria-controls", `game-child-source-idea-${game.id} game-child-readiness-output-${game.id}`);
   button.textContent = game.name;
   return button;
 }
@@ -397,22 +392,18 @@ function renderReadinessOutputChildTable(parent, game, progress, active) {
 }
 
 function renderExpandedGameRow(tbody, game, progress, active) {
-  const childRows = [];
-  if (hasSourceIdeaDetails(game)) {
-    childRows.push({
+  [
+    {
       id: `game-child-source-idea-${game.id}`,
       render: (parent) => renderSourceIdeaChildTable(parent, game),
       type: "source-idea",
-    });
-  }
-  childRows.push(
+    },
     {
       id: `game-child-readiness-output-${game.id}`,
       render: (parent) => renderReadinessOutputChildTable(parent, game, progress, active),
       type: "readiness-output",
     },
-  );
-  childRows.forEach(({ id, render, type }) => {
+  ].forEach(({ id, render, type }) => {
     const row = document.createElement("tr");
     row.dataset.gameExpandedRow = game.id;
     row.dataset.gameChildRow = type;

@@ -1,9 +1,5 @@
-docs_build/dev/BUILD_PR.md
-assets/theme-v2/js/toolbox-status-bar.js
-assets/theme-v2/css/status.css
-tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_report.md
-docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_validation-lane.md
-docs_build/dev/reports/PR_26175_ALFA_011-status-bar-journey-progress-context_requirements-checklist.md
-docs_build/dev/reports/codex_review.diff
+docs_build/dev/reports/PR_26175_ALFA_017-alfa-game-hub-interactions-consolidation.md
 docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/codex_review.diff
+tests/playwright/tools/GameHubMockRepository.spec.mjs
+toolbox/game-hub/game-hub.js

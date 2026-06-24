@@ -354,12 +354,19 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
     await demoGameRow.locator("[data-game-toggle='demo-game']").click();
     await expect(demoGameRow.locator("[data-game-toggle='demo-game']")).toHaveAttribute("aria-expanded", "true");
     const demoChildRows = page.locator("[data-game-expanded-row='demo-game']");
-    await expect(demoChildRows).toHaveCount(1);
-    await expect(demoChildRows.nth(0)).toHaveAttribute("data-game-child-row", "readiness-output");
+    await expect(demoChildRows).toHaveCount(2);
+    await expect(demoChildRows.nth(0)).toHaveAttribute("data-game-child-row", "source-idea");
+    await expect(demoChildRows.nth(1)).toHaveAttribute("data-game-child-row", "readiness-output");
     await expect(page.locator("[data-game-expanded-row='demo-game'] [data-game-child-table='summary']")).toHaveCount(0);
-    await expect(page.locator("[data-game-expanded-row='demo-game'] [data-game-child-table]")).toHaveCount(1);
-    await expect(page.locator("[data-game-expanded-row='demo-game'] [data-game-child-table='source-idea']")).toHaveCount(0);
-    const readinessOutputTable = demoChildRows.nth(0).locator("[data-game-child-table='readiness-output']");
+    await expect(page.locator("[data-game-expanded-row='demo-game'] [data-game-child-table]")).toHaveCount(2);
+    const demoSourceIdeaTable = demoChildRows.nth(0).locator("[data-game-child-table='source-idea']");
+    await expect(demoSourceIdeaTable.locator("caption")).toHaveText("Source Idea");
+    await expect(demoSourceIdeaTable.locator("tbody tr")).toHaveText([
+      "IdeaNo source idea yet",
+      "PitchCreate a project from Idea Board to see source details.",
+      "Note 1No source notes.",
+    ]);
+    const readinessOutputTable = demoChildRows.nth(1).locator("[data-game-child-table='readiness-output']");
     await expect(readinessOutputTable.locator("caption")).toHaveText("Readiness Output");
     await expect(readinessOutputTable.locator("thead th")).toHaveText(["Output", "Status"]);
     await expect(readinessOutputTable.locator("tbody tr")).toHaveText([
@@ -441,8 +448,10 @@ test("Game Hub creates, opens, and deletes mock games", async ({ page }) => {
     await expect(page.locator("[data-game-row='archive-game-2'] [data-game-toggle='archive-game-2']")).not.toHaveAttribute("aria-current", "true");
     await expect(page.locator("[data-game-toggle][aria-current='true']")).toHaveCount(1);
     await expect(page.locator("[data-game-toggle][data-game-active='true']")).toHaveCount(1);
-    await expect(page.locator("[data-game-expanded-row='launch-test-game-1']")).toHaveCount(1);
-    await expect(page.locator("[data-game-expanded-row='launch-test-game-1']")).toHaveAttribute("data-game-child-row", "readiness-output");
+    const launchChildRows = page.locator("[data-game-expanded-row='launch-test-game-1']");
+    await expect(launchChildRows).toHaveCount(2);
+    await expect(launchChildRows.nth(0)).toHaveAttribute("data-game-child-row", "source-idea");
+    await expect(launchChildRows.nth(1)).toHaveAttribute("data-game-child-row", "readiness-output");
     await expect(page.locator("[data-game-expanded-row='archive-game-2']")).toHaveCount(0);
     await expect(page.locator("[data-game-row='launch-test-game-1'] [data-game-toggle='launch-test-game-1']")).toHaveClass("btn btn--compact primary");
     await expect(page.locator("[data-game-row='launch-test-game-1']").getByRole("button", { name: "Edit Launch Test Game" })).not.toHaveClass(/primary/);
