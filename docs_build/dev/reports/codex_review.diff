@@ -1,130 +1,150 @@
-diff --git a/assets/toolbox/idea-board/js/index.js b/assets/toolbox/idea-board/js/index.js
-index 47a5ed91e..25607bc8d 100644
---- a/assets/toolbox/idea-board/js/index.js
-+++ b/assets/toolbox/idea-board/js/index.js
-@@ -129,6 +129,10 @@ function previousStatusForRestore(record) {
-     : "Refining";
- }
- 
-+function isEditableStatus(status) {
-+  return editableStatusOptions.includes(status);
-+}
-+
- function rememberPreviousStatus(record) {
-   if (record.status !== "Archived") {
-     record.previousStatus = record.status;
-@@ -436,7 +440,7 @@ function saveIdeaRow(root, row) {
-   const idea = row.querySelector("[data-idea-board-idea-input]")?.value.trim();
-   const pitch = row.querySelector("[data-idea-board-pitch-input]")?.value.trim();
-   const status = row.querySelector("[data-idea-board-idea-status-input]")?.value;
--  if (!idea || !pitch || !status) {
-+  if (!idea || !pitch || !isEditableStatus(status)) {
-     updateStatus(root, "Enter an idea, pitch, and status before saving.");
-     return;
-   }
-diff --git a/docs_build/dev/reports/PR_26175_ALFA_018-alfa-idea-board-polish-consolidation.md b/docs_build/dev/reports/PR_26175_ALFA_018-alfa-idea-board-polish-consolidation.md
+diff --git a/docs_build/dev/reports/PR_26175_OWNER_055-remaining-open-pr-action-plan.md b/docs_build/dev/reports/PR_26175_OWNER_055-remaining-open-pr-action-plan.md
 new file mode 100644
-index 000000000..dc24d4ee4
+index 000000000..614f63f37
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_ALFA_018-alfa-idea-board-polish-consolidation.md
-@@ -0,0 +1,60 @@
-+# PR_26175_ALFA_018 - Alfa Idea Board Polish Consolidation
++++ b/docs_build/dev/reports/PR_26175_OWNER_055-remaining-open-pr-action-plan.md
+@@ -0,0 +1,133 @@
++# PR_26175_OWNER_055 - Remaining Open PR Action Plan
 +
 +## Executive Summary
 +
-+PASS - Consolidated the remaining current-main-safe Alfa Batch D Idea Board status dropdown guard.
++PASS - Report-only OWNER audit. No PRs were merged or closed, no branches were deleted, and no runtime code was modified.
 +
-+Current `main` already contained the #114, #115, and #116 structural work: the status filter is in the left accordion, the Idea Board parent table no longer has the Updated column, idea labels wrap, editable status dropdowns list only `New`, `Exploring`, `Refining`, and `Ready`, and status filters list `New`, `Exploring`, `Refining`, `Ready`, `Project`, and `Archived`.
++GitHub was used as authority for the remaining open PR list and per-PR metadata. The requested remaining open PRs were reviewed across Alfa/Alpha, Charlie, OWNER, and Gamma historical lanes.
 +
-+This PR adds a runtime save guard so stale or injected editable dropdown values cannot persist non-editable statuses such as `Project` or `Archived`.
++Primary recommendations:
 +
-+## Runtime Files Changed
++1. Merge candidate: #155, after OWNER review and normal ready/validation handling.
++2. Close as superseded: #142, #143, #144, #145, #137, #41, #154, #141, #140, #136, #127, #125, #123, #43, and #30.
++3. Hold: #50 as the remaining Gamma historical final report until OWNER decides whether to preserve it on main or archive/close it.
++4. Needs deeper review: #135, #85, and #26 because each may contain still-relevant governance or runtime intent not fully covered by the recent consolidated merge/closure batch.
 +
-+| File | Change |
-+| --- | --- |
-+| `assets/toolbox/idea-board/js/index.js` | Adds an editable-status validation helper and rejects add/edit saves when the submitted status is not one of the editable statuses. |
-+| `tests/playwright/tools/IdeaBoardTableNotes.spec.mjs` | Adds focused coverage that injects a stale `Project` option into the editable row and verifies it cannot create an Idea Board row. |
++## Branch Validation
 +
-+## Source PR Coverage
-+
-+| Source PR | Batch D Area | Current-Main Resolution |
++| Gate | Status | Evidence |
 +| --- | --- | --- |
-+| #114 | Idea Board cleanup | Already present on current main; Game Hub changes were not touched. |
-+| #115 | Status filter table polish | Already present on current main; no Updated column, wrapped idea labels, themed status filters. |
-+| #116 | Editable status dropdown fix | Present and hardened by this PR with save-path validation. |
++| Current branch before work | PASS | `main` |
++| Worktree before work | PASS | Clean |
++| Local/origin sync before work | PASS | `0 0` |
++| Pull latest main before branch | PASS | `git pull --ff-only` reported already up to date for `main`. |
++| Work branch | PASS | `PR_26175_OWNER_055-remaining-open-pr-action-plan` |
++
++## Action Queue
++
++| Action | PRs | Reason |
++| --- | --- | --- |
++| Merge after OWNER review | #155 | Latest Charlie system-health/history/admin-submenu branch is open, draft, and GitHub reports it mergeable. It appears to supersede the earlier Charlie system-health drafts. |
++| Close as superseded | #142, #143, #144, #145 | Report-only Alfa batch drafts are superseded by merged runtime consolidations #146, #148, #149, and #150. |
++| Close as superseded | #137 | Status-bar replacement review is historical evidence after the status-bar replacement decision was executed. |
++| Close as superseded | #41 | Older Alpha Game Journey / Idea Board / Game Hub flow branch overlaps areas now covered by the consolidated Alfa runtime merges. |
++| Close as superseded | #154, #141, #140, #136, #127, #125, #123 | OWNER report drafts are stale after the consolidated Alfa merges and old Alfa closures were executed. |
++| Close as superseded | #43, #30 | Historical Gamma SQLite reports are superseded by current PostgreSQL-only direction and the newer Gamma final-report lane. |
++| Hold | #50 | Previously held Gamma final SQLite clean-status report; keep pending OWNER archival/merge/closure decision. |
++| Needs deeper review | #135 | Audit/BUILD-only status-bar journey-progress PR may still contain active future-build intent but is not merge-ready runtime work. |
++| Needs deeper review | #85 | Governance addendum PR touches protected instruction paths and root `project-instructions/` material; review before merge or closure. |
++| Needs deeper review | #26 | Older Alpha runtime branch touches Game Workspace/table files not obviously covered by consolidated Alfa merges. |
++
++## PR Inventory
++
++### Alfa / Alpha
++
++| PR | Team | Title | Branch | Created | Days Old | Draft / Mergeable | Changed Files Summary | Superseded? | Recommended Action |
++| --- | --- | --- | --- | --- | ---: | --- | --- | --- | --- |
++| #145 | Alfa | PR_26175_ALFA_014: Alfa batch D Idea Board polish | `PR_26175_ALFA_014-alfa-batch-d-idea-board-polish` | 2026-06-24 | 0 | Draft / UNKNOWN | 4 report files, including Alfa stack closure-candidates report and codex artifacts. | Yes, by merged #150 and old Alfa closures. | close as superseded |
++| #144 | Alfa | PR_26175_ALFA_013: Alfa batch C Game Hub interactions | `PR_26175_ALFA_013-alfa-batch-c-game-hub-interactions` | 2026-06-24 | 0 | Draft / UNKNOWN | 3 report-only files: batch report and codex artifacts. | Yes, by merged #149. | close as superseded |
++| #143 | Alfa | PR_26175_ALFA_012: Alfa batch B parent/child tables | `PR_26175_ALFA_012-alfa-batch-b-parent-child-tables` | 2026-06-24 | 0 | Draft / CONFLICTING | 3 report-only files: batch report and codex artifacts. | Yes, by merged #148/#149. | close as superseded |
++| #142 | Alfa | PR_26175_ALFA_011: Alfa batch A foundation | `PR_26175_ALFA_011-alfa-batch-a-foundation` | 2026-06-24 | 0 | Draft / CONFLICTING | 3 report-only files: batch report and codex artifacts. | Yes, by merged #146. | close as superseded |
++| #137 | Alfa | PR_26175_ALFA_010: status bar replacement review | `PR_26175_ALFA_010-status-bar-replacement-review` | 2026-06-24 | 0 | Draft / UNKNOWN | 3 report-only files for the #120/#133 status-bar replacement review. | Yes, decision path has been executed. | close as superseded |
++| #135 | Alfa | PR_26175_ALFA_010-game-journey-progress-context-audit | `codex/pr-26175-alfa-010-game-journey-progress-context-audit` | 2026-06-24 | 0 | Draft / UNKNOWN | BUILD_PR plus audit/checklist/validation reports and codex artifacts. | Not confirmed; may represent future status-bar progress context planning. | needs deeper review |
++| #41 | Alpha | PR_26171_ALPHA_048 idea project journey execution flow | `pr/26171-ALPHA-048-idea-project-journey-execution-flow` | 2026-06-21 | 3 | Open / UNKNOWN | 8 files: PR docs, codex artifacts, Game Journey/Idea Board specs, and `toolbox/game-hub/index.html`. | Likely yes, by current Alfa consolidated Game Hub/Game Journey/Idea Board direction. | close as superseded |
++| #26 | Alpha | PR_26171_ALPHA_046 game hub table standard rebuild | `pr/26171-ALPHA-046-game-hub-table-standard-rebuild` | 2026-06-20 | 4 | Open / UNKNOWN | 9 files: table CSS, PR docs, codex artifacts, Game Workspace spec, `toolbox/game-workspace/game-workspace.js`, and Game Workspace HTML. | Not confirmed; overlaps table-first work but touches Game Workspace files outside recent consolidated Alfa merges. | needs deeper review |
++
++### Charlie
++
++| PR | Team | Title | Branch | Created | Days Old | Draft / Mergeable | Changed Files Summary | Superseded? | Recommended Action |
++| --- | --- | --- | --- | --- | ---: | --- | --- | --- | --- |
++| #155 | Charlie | PR_26175_CHARLIE_010-system-health-history-and-closeout + 011-admin-submenu-alphabetical-order | `pr/26175-CHARLIE-010-system-health-history-and-closeout` | 2026-06-24 | 0 | Draft / MERGEABLE | 20 files: System Health page/JS, router/test/spec updates, coverage reports, CHARLIE_010/011 reports, and codex artifacts. | No; appears to be the latest Charlie combined branch. | merge |
++| #153 | Charlie | PR_26175_CHARLIE_009-system-health-current-r2-health | `pr/26175-CHARLIE-009-system-health-current-r2-health` | 2026-06-24 | 0 | Draft / MERGEABLE | 8 files: System Health page/JS, router, dev-runtime test, Playwright spec, coverage reports, and report file. | Likely yes, by #155. | close as superseded |
++| #152 | Charlie | PR_26175_CHARLIE_008-system-health-current-database-health | `pr/26175-CHARLIE-008-system-health-current-database-health` | 2026-06-24 | 0 | Draft / MERGEABLE | 8 files: System Health page/JS, router, dev-runtime test, Playwright spec, coverage reports, and report file. | Likely yes, by #155. | close as superseded |
++| #151 | Charlie | PR_26175_CHARLIE_007-system-health-environment-identity | `pr/26175-CHARLIE-007-system-health-environment-identity` | 2026-06-24 | 0 | Draft / UNKNOWN | 8 files: System Health page/JS, router, dev-runtime test, Playwright spec, coverage reports, and report file. | Likely yes, by #155. | close as superseded |
++
++### OWNER
++
++| PR | Team | Title | Branch | Created | Days Old | Draft / Mergeable | Changed Files Summary | Superseded? | Recommended Action |
++| --- | --- | --- | --- | --- | ---: | --- | --- | --- | --- |
++| #154 | OWNER | PR_26175_OWNER_054: add Alfa consolidated batch closeout plan | `PR_26175_OWNER_054-alfa-consolidated-batch-closeout-plan` | 2026-06-24 | 0 | Draft / UNKNOWN | 3 report-only files: OWNER_054 report and codex artifacts. | Yes, by executed consolidated merges and old Alfa closures. | close as superseded |
++| #141 | OWNER | PR_26175_OWNER_053: add Alfa stack resolution plan | `PR_26175_OWNER_053-alfa-stack-resolution-plan` | 2026-06-24 | 0 | Draft / UNKNOWN | 3 report-only files: Alfa stack resolution report and codex artifacts. | Yes, by merged #146/#148/#149/#150 and old Alfa closures. | close as superseded |
++| #140 | OWNER | PR_26175_OWNER_051: document cleanup blocker resolution plan | `PR_26175_OWNER_051-cleanup-blocker-resolution-plan` | 2026-06-24 | 0 | Draft / CONFLICTING | 3 report-only files: cleanup blocker plan and codex artifacts. | Yes, blockers have been resolved/executed. | close as superseded |
++| #136 | OWNER | PR_26175_OWNER_048: add superseded PR closure decision log | `PR_26175_OWNER_048-close-superseded-pr-decision-log` | 2026-06-24 | 0 | Draft / UNKNOWN | 3 report-only files: superseded PR closure decision log and codex artifacts. | Yes, closure decision path has moved beyond this report. | close as superseded |
++| #127 | OWNER | [codex] PR_26175_OWNER_045 expanded GitHub PR inventory report | `PR_26175_OWNER_045-github-pr-expanded-inventory-report` | 2026-06-23 | 1 | Draft / UNKNOWN | 3 report-only files: expanded inventory report and codex artifacts. | Yes, stale inventory. | close as superseded |
++| #125 | OWNER | [codex] PR_26175_OWNER_044 full GitHub PR inventory report | `PR_26175_OWNER_044-github-pr-full-inventory-report` | 2026-06-23 | 1 | Draft / UNKNOWN | 5 files: report, raw PR JSON/text, and codex artifacts. | Yes, stale inventory. | close as superseded |
++| #123 | OWNER | [codex] PR_26175_OWNER_042 GitHub PR inventory audit | `PR_26175_OWNER_042-github-pr-inventory-audit` | 2026-06-23 | 1 | Draft / UNKNOWN | 3 report-only files: inventory audit and codex artifacts. | Yes, stale inventory. | close as superseded |
++| #85 | OWNER | [codex] Add Project Instructions governance addendums | `codex/canonical-repository-structure-instructions` | 2026-06-22 | 2 | Draft / UNKNOWN | 3 governance files: `docs_build/dev/ProjectInstructions/README.txt` plus root `project-instructions` addendums. | Not confirmed; protected governance content requires review before action. | needs deeper review |
++
++### Gamma Historical
++
++| PR | Team | Title | Branch | Created | Days Old | Draft / Mergeable | Changed Files Summary | Superseded? | Recommended Action |
++| --- | --- | --- | --- | --- | ---: | --- | --- | --- | --- |
++| #50 | Gamma historical | PR_26171_GAMMA_028-final-sqlite-clean-status-report | `pr/26171-GAMMA-028-final-sqlite-clean-status-report` | 2026-06-21 | 3 | Draft / UNKNOWN | 5 report-only files: final SQLite clean-status report, checklist, manual notes, and codex artifacts. | Not closed by prior OWNER decisions; remains the final Gamma historical evidence candidate. | hold |
++| #43 | Gamma historical | PR_26171_GAMMA_021-sqlite-active-runtime-removal-plan | `team/GAMMA/admin` | 2026-06-21 | 3 | Draft / UNKNOWN | 7 report-only files: affected files list, follow-up sequence, removal plan, checklist, manual notes, and codex artifacts. | Likely yes, by current PostgreSQL-only direction and newer final report lane #50. | close as superseded |
++| #30 | Gamma historical | PR_26171_GAMMA_006-sqlite-deprecation-audit | `pr/26171-GAMMA-006-sqlite-deprecation-audit` | 2026-06-20 | 4 | Draft / UNKNOWN | 5 report-only files: SQLite deprecation audit, checklist, manual notes, and codex artifacts. | Likely yes, by current PostgreSQL-only direction and newer final report lane #50. | close as superseded |
++
++## Dependency / Order Notes
++
++1. Charlie order: review #155 first. If OWNER approves and #155 merges, close #151, #152, and #153 as superseded.
++2. Alfa cleanup order: close #142 through #145 after OWNER approval because #146/#148/#149/#150 are already merged.
++3. OWNER report cleanup order: close #154, #141, #140, #136, #127, #125, and #123 after OWNER approval because their decisions are stale or executed.
++4. Gamma historical order: keep #50 held until OWNER decides whether to merge it as final historical evidence or close it; close #43/#30 only after OWNER approves historical cleanup.
++5. Deep-review queue: #135, #85, and #26 should not be closed automatically because each may carry unique planning/governance/runtime context.
 +
 +## Requirement Checklist
 +
 +| Requirement | Status | Notes |
 +| --- | --- | --- |
-+| Start from `main` | PASS | `main` was checked, pulled, clean, and synced before branch creation. |
-+| Hard stop if branch/worktree/sync invalid | PASS | Branch `main`, clean worktree, local/origin sync `0 0` confirmed after pull. |
-+| Read all Project Instructions | PASS | All files under `docs_build/dev/ProjectInstructions/` were read before edits. |
-+| Implement current-main-safe Batch D runtime changes | PASS | Added runtime validation for editable-only Idea Board statuses. |
-+| Editable statuses limited to New/Exploring/Refining/Ready | PASS | UI already did this; save path now enforces it. |
-+| Filter statuses include Project and Archived | PASS | Existing filter behavior preserved. |
-+| Preserve Game Hub changes | PASS | No Game Hub files changed. |
-+| Do not change status bar work | PASS | Status bar diff check was empty. |
-+| Do not install Chromium | PASS | Chromium was not installed. |
-+| Required reports and ZIP | PASS | Reports generated and delta ZIP created under `tmp/`. |
++| Start from `main` | PASS | Verified before branch creation. |
++| Hard stop if branch/worktree/sync invalid | PASS | Branch `main`, clean worktree, local/origin `0 0`. |
++| Read all Project Instructions | PASS | All files under `docs_build/dev/ProjectInstructions/` were read. |
++| Audit requested Alfa/Alpha PRs | PASS | #145, #144, #143, #142, #137, #135, #41, #26 included. |
++| Audit requested Charlie PRs | PASS | #155, #153, #152, #151 included. |
++| Audit requested OWNER PRs | PASS | #154, #141, #140, #136, #127, #125, #123, #85 included. |
++| Audit requested Gamma historical PRs | PASS | #50, #43, #30 included. |
++| Include requested per-PR fields | PASS | Team, title, branch, created date, days old, draft/mergeable state, changed files summary, superseded assessment, and recommendation included. |
++| Use GitHub as authority | PASS | `gh pr view` and `gh pr list` were used. |
++| Do not merge PRs | PASS | No PR merge performed. |
++| Do not close PRs | PASS | No PR closure performed. |
++| Do not delete branches | PASS | No branch deletion performed. |
++| Do not modify runtime code | PASS | Report-only branch. |
++| Required reports and ZIP | PASS | `codex_review.diff`, `codex_changed_files.txt`, this report, and repo-structured ZIP are produced. |
 +
 +## Validation Lane
 +
 +| Command | Status | Result |
 +| --- | --- | --- |
-+| `node --check assets/toolbox/idea-board/js/index.js` | PASS | JavaScript syntax valid. |
-+| `node --check tests/playwright/tools/IdeaBoardTableNotes.spec.mjs` | PASS | Test file syntax valid. |
-+| `git diff --check -- assets/toolbox/idea-board/js/index.js tests/playwright/tools/IdeaBoardTableNotes.spec.mjs` | PASS | Exit code 0; Git emitted a non-blocking CRLF warning for the test file. |
-+| `git diff -- toolbox/game-hub/game-hub.js toolbox/game-hub/index.html assets/theme-v2/css/status.css assets/theme-v2/js/toolbox-status-bar.js tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs` | PASS | Empty diff; Game Hub and status bar work untouched. |
-+| `npx playwright test tests/playwright/tools/IdeaBoardTableNotes.spec.mjs --workers=1 --reporter=line --timeout=30000` | BLOCKED | Browser executable missing at `C:\Users\davidq\AppData\Local\ms-playwright\chromium-1217\chrome-win64\chrome.exe`; Chromium was not installed per instruction. |
++| `git branch --show-current` | PASS | `main` before branch creation. |
++| `git status --short` | PASS | Clean before branch creation. |
++| `git rev-list --left-right --count HEAD...origin/main` | PASS | `0 0` before branch creation. |
++| `git pull --ff-only` | PASS | `main` already up to date. |
++| `gh pr view` for requested PRs | PASS | All 23 requested PRs fetched successfully with no final errors. |
++| `gh pr list --state open` | PASS | Used to cross-check open PR inventory. |
++| `git diff --name-only` | PASS | Diff limited to this report, `codex_changed_files.txt`, and `codex_review.diff`. |
++| `git diff --check` | PASS | No whitespace errors. |
++| ZIP content check | PASS | Repo-structured ZIP contains the three required report files. |
++| Runtime validation | N/A | Report-only PR; no runtime code changed. |
 +
 +## Manual Validation Notes
 +
-+- Compared GitHub PR #114, #115, and #116 metadata and patches against current main.
-+- Confirmed the historical `toolbox/idea-board/index.js` path has moved on current main to `assets/toolbox/idea-board/js/index.js`.
-+- Confirmed current main already preserves the Batch D status filter/table/dropdown shape.
-+- Confirmed this PR does not modify `toolbox/game-hub/*`, `assets/theme-v2/css/status.css`, `assets/theme-v2/js/toolbox-status-bar.js`, or status bar Playwright coverage.
-+
-+## Branch Validation
-+
-+PASS - Work began from clean, synced `main`; implementation was made on `PR_26175_ALFA_018-alfa-idea-board-polish-consolidation`.
++- GitHub `mergeable=UNKNOWN` is reported as-is from GitHub and should not be interpreted as safe to merge.
++- This report intentionally recommends actions but does not execute them.
++- Historical Team Gamma PR names and branches are preserved for traceability even though Team Gamma is retired and Team Golf is the replacement active lane.
++- The raw fetch trace was written to `tmp/owner_055_pr_inventory.json` as scratch evidence and is not part of the committed report set.
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 39527f045..96fb4553c 100644
+index 96fb4553c..e17c1a4b2 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,5 +1,5 @@
--docs_build/dev/reports/PR_26175_ALFA_017-alfa-game-hub-interactions-consolidation.md
-+assets/toolbox/idea-board/js/index.js
-+docs_build/dev/reports/PR_26175_ALFA_018-alfa-idea-board-polish-consolidation.md
+@@ -1,5 +1,3 @@
+-assets/toolbox/idea-board/js/index.js
+-docs_build/dev/reports/PR_26175_ALFA_018-alfa-idea-board-polish-consolidation.md
++docs_build/dev/reports/PR_26175_OWNER_055-remaining-open-pr-action-plan.md
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
--tests/playwright/tools/GameHubMockRepository.spec.mjs
--toolbox/game-hub/game-hub.js
-+tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-diff --git a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-index 01a730513..08f8fdc0e 100644
---- a/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-+++ b/tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
-@@ -329,6 +329,22 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
-     await expect(ideaInputRow.locator("[data-idea-board-idea-status-input]")).toHaveCount(1);
-     await expect(ideaInputRow.locator("[data-idea-board-idea-status-input] option")).toHaveText(EDITABLE_STATUS_OPTIONS);
-     await expect(ideaInputRow.locator("td").nth(2)).toHaveText("0 Notes");
-+    await ideaInputRow.locator("[data-idea-board-idea-status-input]").evaluate((select) => {
-+      const option = document.createElement("option");
-+      option.value = "Project";
-+      option.textContent = "Project";
-+      select.append(option);
-+      select.value = "Project";
-+    });
-+    await page.locator("[data-idea-board-idea-input]").fill("Project Trap");
-+    await page.locator("[data-idea-board-pitch-input]").fill("Project status cannot be saved from the editable row.");
-+    await page.locator("[data-idea-board-idea-action='save']").click();
-+    await expect(page.locator("[data-idea-board-status]")).toHaveText("Enter an idea, pitch, and status before saving.");
-+    await expect(page.locator("[data-idea-board-idea-row='project-trap']")).toHaveCount(0);
-+    await ideaInputRow.locator("[data-idea-board-idea-status-input]").evaluate((select) => {
-+      select.querySelector("option[value='Project']")?.remove();
-+      select.value = "Refining";
-+    });
-     await page.locator("[data-idea-board-idea-input]").fill("Lantern Reef");
-     await page.locator("[data-idea-board-pitch-input]").fill("Guide light through a reef that rearranges at dusk.");
-     await page.locator("[data-idea-board-idea-status-input]").selectOption("Refining");
+-tests/playwright/tools/IdeaBoardTableNotes.spec.mjs

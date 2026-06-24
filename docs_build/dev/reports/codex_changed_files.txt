@@ -1,5 +1,3 @@
-assets/toolbox/idea-board/js/index.js
-docs_build/dev/reports/PR_26175_ALFA_018-alfa-idea-board-polish-consolidation.md
+docs_build/dev/reports/PR_26175_OWNER_055-remaining-open-pr-action-plan.md
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
-tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
