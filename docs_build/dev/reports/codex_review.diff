@@ -1,991 +1,235 @@
-diff --git a/assets/theme-v2/css/layout.css b/assets/theme-v2/css/layout.css
-index a9614b412..b392b3306 100644
---- a/assets/theme-v2/css/layout.css
-+++ b/assets/theme-v2/css/layout.css
-@@ -733,7 +733,7 @@ body.tool-focus-mode .tool-workspace--table-scroll-focus .tool-table-scroll-regi
- .footer {
-   margin-top: var(--space-46);
-   border-top: var(--border-standard);
--  padding: var(--space-24) var(--space-0);
-+  padding: var(--space-0) var(--space-0) var(--space-24);
-   color: var(--muted)
- }
- 
-diff --git a/assets/theme-v2/css/status.css b/assets/theme-v2/css/status.css
-index 88e0d5e64..6acb4555b 100644
---- a/assets/theme-v2/css/status.css
-+++ b/assets/theme-v2/css/status.css
-@@ -36,7 +36,10 @@
- }
- 
- .toolbox-status-bar {
-+  --toolbox-status-bar-height: var(--space-52);
-+  --toolbox-status-game-max: 220px;
-   width: 100%;
-+  min-block-size: var(--toolbox-status-bar-height);
-   border-block: var(--border-standard);
-   background: var(--panel-overlay-strong);
-   color: var(--text)
-@@ -47,7 +50,7 @@
-   margin: var(--space-0) auto;
-   padding: var(--space-10) var(--space-0);
-   display: grid;
--  grid-template-columns: minmax(var(--space-0), 1fr) minmax(var(--space-0), 2fr);
-+  grid-template-columns: minmax(var(--space-0), max-content) minmax(var(--space-0), 1fr);
-   gap: var(--space-16);
-   align-items: center
- }
-@@ -56,34 +59,18 @@
-   min-width: var(--space-0);
-   display: flex;
-   align-items: center;
--  flex-wrap: wrap;
--  gap: var(--space-14);
-+  justify-content: flex-start;
-   text-align: left
- }
- 
--.toolbox-status-bar__field {
--  min-width: var(--space-0);
--  display: grid;
--  gap: var(--space-3)
--}
--
--.toolbox-status-bar__label {
--  color: var(--muted);
--  font-size: var(--font-size-xs);
--  font-weight: var(--font-weight-heavy);
--  letter-spacing: var(--letter-spacing-kicker);
--  text-transform: uppercase
--}
--
- .toolbox-status-bar__game-name {
-   color: var(--text);
-   font-size: var(--font-size-base);
--  overflow-wrap: anywhere
--}
--
--.toolbox-status-bar__purpose {
--  color: var(--muted);
--  font-size: var(--font-size-sm);
-+  line-height: var(--line-height-tight);
-+  max-width: min(30vw, var(--toolbox-status-game-max));
-+  overflow: hidden;
-+  text-overflow: ellipsis;
-+  white-space: nowrap;
-   overflow-wrap: anywhere
- }
- 
-@@ -92,25 +79,17 @@
-   display: flex;
-   align-items: center;
-   justify-content: center;
--  flex-wrap: wrap;
--  gap: var(--space-10);
-+  justify-self: center;
-   text-align: center
- }
- 
--.toolbox-status-bar__context-type {
--  flex: 0 0 auto
--}
--
- .toolbox-status-bar__message {
-   margin: var(--space-0);
-   max-width: var(--measure-lg);
-+  line-height: var(--line-height-copy);
-   overflow-wrap: anywhere
- }
- 
--.toolbox-status-bar__action {
--  flex: 0 0 auto
--}
--
- .toolbox-status-bar[data-selected-game-state="active"] {
-   border-color: color-mix(in srgb, var(--green) 52%, var(--line))
- }
-@@ -123,22 +102,6 @@
-   border-color: color-mix(in srgb, var(--red) 52%, var(--line))
- }
- 
--.toolbox-status-bar[data-toolbox-status-context-kind="error"] .toolbox-status-bar__context-type {
--  border-color: color-mix(in srgb, var(--red) 62%, var(--line));
--  color: var(--red)
--}
--
--.toolbox-status-bar[data-toolbox-status-context-kind="warning"] .toolbox-status-bar__context-type,
--.toolbox-status-bar[data-toolbox-status-context-kind="validation"] .toolbox-status-bar__context-type {
--  border-color: var(--gold-border-muted);
--  color: var(--gold)
--}
--
--.toolbox-status-bar[data-toolbox-status-context-kind="save"] .toolbox-status-bar__context-type {
--  border-color: color-mix(in srgb, var(--green) 62%, var(--line));
--  color: var(--green)
--}
--
- body.tool-focus-mode .toolbox-status-bar {
-   position: fixed;
-   inset-block-end: var(--space-0);
-@@ -148,6 +111,31 @@ body.tool-focus-mode .toolbox-status-bar {
-   box-shadow: var(--shadow-md)
- }
- 
-+body.tool-focus-mode {
-+  --toolbox-status-bar-height: var(--space-52);
-+  --toolbox-status-top-reserve: var(--space-0)
-+}
-+
-+body.tool-focus-mode:has(.platform-banner) {
-+  --toolbox-status-top-reserve: var(--space-52)
-+}
-+
-+body.tool-focus-mode .tool-workspace {
-+  box-sizing: border-box;
-+  height: calc(100vh - var(--toolbox-status-bar-height) - var(--toolbox-status-top-reserve));
-+  max-height: calc(100vh - var(--toolbox-status-bar-height) - var(--toolbox-status-top-reserve))
-+}
-+
-+body.tool-focus-mode .tool-column {
-+  height: calc(100vh - var(--toolbox-status-bar-height) - var(--toolbox-status-top-reserve) - var(--space-20));
-+  max-height: calc(100vh - var(--toolbox-status-bar-height) - var(--toolbox-status-top-reserve) - var(--space-20))
-+}
-+
-+body.tool-focus-mode .tool-center-panel {
-+  box-sizing: border-box;
-+  scroll-padding-block-end: var(--toolbox-status-bar-height)
-+}
-+
- .platform-banner {
-   width: 100%;
-   border-bottom: var(--border-standard);
-@@ -261,12 +249,16 @@ body.tool-focus-mode .toolbox-status-bar {
- @media (max-width: 720px) {
-   .toolbox-status-bar__inner {
-     width: var(--container-width);
--    grid-template-columns: 1fr;
-+    grid-template-columns: minmax(var(--space-0), max-content) minmax(var(--space-0), 1fr);
-+    gap: var(--space-10);
-     text-align: center
-   }
- 
--  .toolbox-status-bar__game {
--    justify-content: center;
--    text-align: center
-+  .toolbox-status-bar__game-name {
-+    max-width: 34vw
-+  }
-+
-+  .toolbox-status-bar__message {
-+    font-size: var(--font-size-sm)
-   }
- }
-diff --git a/assets/theme-v2/js/toolbox-status-bar.js b/assets/theme-v2/js/toolbox-status-bar.js
-index fdb367328..24c935311 100644
---- a/assets/theme-v2/js/toolbox-status-bar.js
-+++ b/assets/theme-v2/js/toolbox-status-bar.js
-@@ -90,37 +90,16 @@ function createStatusBar() {
-   game.className = "toolbox-status-bar__game";
-   game.dataset.toolboxSelectedGame = "";
- 
--  const nameField = document.createElement("div");
--  nameField.className = "toolbox-status-bar__field";
--  nameField.dataset.toolboxSelectedGameNameField = "";
--  const nameLabel = createText("span", "toolbox-status-bar__label", "toolboxSelectedGameNameLabel");
--  nameLabel.textContent = "Selected Game Name";
-   const name = createText("strong", "toolbox-status-bar__game-name", "toolboxSelectedGameName");
--  nameField.append(nameLabel, name);
--
--  const purposeField = document.createElement("div");
--  purposeField.className = "toolbox-status-bar__field";
--  purposeField.dataset.toolboxSelectedGamePurposeField = "";
--  const purposeLabel = createText("span", "toolbox-status-bar__label", "toolboxSelectedGamePurposeLabel");
--  purposeLabel.textContent = "Selected Game Purpose";
--  const purpose = createText("span", "toolbox-status-bar__purpose", "toolboxSelectedGamePurpose");
--  purpose.dataset.toolboxSelectedGameMeta = "";
--  purposeField.append(purposeLabel, purpose);
--  game.append(nameField, purposeField);
-+  game.append(name);
- 
-   const center = document.createElement("div");
-   center.className = "toolbox-status-bar__center";
-   center.dataset.toolboxStatusCenter = "";
- 
--  const contextType = createText("span", "pill toolbox-status-bar__context-type", "toolboxStatusContextType");
-   const message = createText("p", "toolbox-status-bar__message status", "toolboxStatusMessage");
-   message.setAttribute("role", "status");
--  const action = document.createElement("a");
--  action.className = "btn btn--compact toolbox-status-bar__action";
--  action.dataset.toolboxStatusAction = "";
--  action.href = mountOptions.gameHubHref;
--  action.textContent = "Open Game Hub";
--  center.append(contextType, message, action);
-+  center.append(message);
- 
-   inner.append(game, center);
-   bar.append(inner);
-@@ -234,33 +213,30 @@ function publishSelectedGameContext(selectedGame, state) {
- function classifyToolContext(messageText, state, required) {
-   const text = String(messageText || "").trim();
-   if (state === "error") {
--    return { kind: "error", label: "Error" };
-+    return { kind: "error" };
-   }
-   if (required && state === "missing") {
--    return { kind: "action", label: "Tool Action" };
-+    return { kind: "action" };
-   }
-   if (/\b(error|failed|malformed|unavailable|could not)\b/i.test(text)) {
--    return { kind: "error", label: "Error" };
-+    return { kind: "error" };
-   }
-   if (/\b(sign in|refresh|try again|temporarily|blocked)\b/i.test(text)) {
--    return { kind: "warning", label: "Warning" };
-+    return { kind: "warning" };
-   }
-   if (/\b(validation|requirement|requirements|missing|required|open or seed)\b/i.test(text)) {
--    return { kind: "validation", label: "Validation" };
-+    return { kind: "validation" };
-   }
-   if (/\b(saved|created|deleted|updated|loaded|save changes)\b/i.test(text)) {
--    return { kind: "save", label: "Save State" };
-+    return { kind: "save" };
-   }
--  return { kind: "action", label: "Tool Action" };
-+  return { kind: "action" };
- }
- 
- function renderSelectedGame(bar, selectedGame, state, messageText) {
-   const required = pageRequiresSelectedGame();
-   const name = bar.querySelector("[data-toolbox-selected-game-name]");
--  const purpose = bar.querySelector("[data-toolbox-selected-game-purpose]");
--  const contextType = bar.querySelector("[data-toolbox-status-context-type]");
-   const message = bar.querySelector("[data-toolbox-status-message]");
--  const action = bar.querySelector("[data-toolbox-status-action]");
-   const nextMessage = messageText || latestToolMessage || (selectedGame
-     ? `Tool context is filtered to ${selectedGame.name}.`
-     : required
-@@ -271,38 +247,27 @@ function renderSelectedGame(bar, selectedGame, state, messageText) {
-   bar.dataset.selectedGameState = state;
-   bar.dataset.selectedGameRequired = String(required);
-   bar.dataset.toolboxStatusContextKind = context.kind;
--  contextType.textContent = context.label;
--  action.hidden = false;
--  action.href = mountOptions.gameHubHref;
- 
-   if (selectedGame) {
-     name.textContent = selectedGame.name;
--    purpose.textContent = selectedGame.purpose || "Game";
-     message.textContent = nextMessage;
--    action.textContent = "Open Game Hub";
-     return;
-   }
- 
-   if (!required) {
-     name.textContent = "No game selected";
--    purpose.textContent = "Idea Board optional";
-     message.textContent = nextMessage;
--    action.textContent = "Open Game Hub";
-     return;
-   }
- 
-   if (state === "error") {
-     name.textContent = "Unavailable";
--    purpose.textContent = "Game Hub selected game could not be read";
-     message.textContent = nextMessage;
--    action.textContent = "Open Game Hub";
-     return;
-   }
- 
-   name.textContent = "No game selected";
--  purpose.textContent = "Game Hub owns game selection";
-   message.textContent = "Select or create a game in Game Hub before using this toolbox page.";
--  action.textContent = "Select or Create in Game Hub";
- }
- 
- export function refreshToolboxStatusBar() {
-diff --git a/docs_build/dev/BUILD_PR.md b/docs_build/dev/BUILD_PR.md
-index dd5b4d28f..0778a1f1e 100644
---- a/docs_build/dev/BUILD_PR.md
-+++ b/docs_build/dev/BUILD_PR.md
-@@ -1,63 +1,70 @@
--# PR_26175_ALFA_008-game-hub-feature-matrix
-+# PR_26175_ALFA_009-status-bar-single-row-rebuild
- 
- ## Purpose
--Audit the current Game Hub workflow and publish a feature matrix that maps implemented creator-facing behavior to code and Playwright evidence.
-+Rebuild the shared toolbox status bar on current `main` so it is a single-row creator context bar.
- 
- ## Source Of Truth
--This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_008-game-hub-feature-matrix`.
-+This `BUILD_PR.md` is the source of truth for `PR_26175_ALFA_009-status-bar-single-row-rebuild`.
- 
- ## Exact Scope
--- Produce a Game Hub feature matrix only.
--- Audit Game Hub table workflow, selected/open game behavior, create/edit/delete actions, child tables, guest save gating, empty/error states, Theme V2 layout, and targeted Game Hub coverage.
--- Use current `main` behavior as evidence.
--- Preserve Game Hub UI/product behavior.
--- Preserve API/service/repository contracts.
--- Preserve previous ALFA Game Hub cleanup and create-validation behavior.
--- Do not implement product/UI changes unless validation exposes a requirement-critical defect.
-+- Display only the selected Game Hub game name on the left side of the toolbox status bar.
-+- Display only the current status message in the center of the toolbox status bar.
-+- Remove visible status bar labels: `Selected Game Name`, `Selected Game Purpose`, `Save State`, `Tool Action`, `Warning`, and `Error`.
-+- Remove selected-game purpose from the visible status bar.
-+- Preserve normal status bar placement above the footer.
-+- Remove extra status bar/footer spacing so the shared footer top padding resolves to `0px`.
-+- Preserve fullscreen/tool display mode bottom anchoring.
-+- Ensure fullscreen center scrollable content stops above the fixed status bar.
-+- Ensure fullscreen tool content is not hidden behind the status bar.
-+- Preserve Idea Board selected-game filtering exclusion.
-+- Preserve Game Hub as selected-game owner through the existing repository contract.
-+- Use shared Theme V2 CSS/classes only.
-+- Update targeted Playwright coverage for the single-row status bar, footer spacing, and fullscreen bottom reserve.
- 
- ## Exact Targets
- - `docs_build/dev/BUILD_PR.md`
--- `docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_report.md`
--- `docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_validation-lane.md`
--- `docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_requirements-checklist.md`
-+- `assets/theme-v2/js/toolbox-status-bar.js`
-+- `assets/theme-v2/css/status.css`
-+- `assets/theme-v2/css/layout.css`
-+- `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs`
-+- `docs_build/dev/reports/PR_26175_ALFA_009-status-bar-single-row-rebuild_report.md`
-+- `docs_build/dev/reports/PR_26175_ALFA_009-status-bar-single-row-rebuild_validation-lane.md`
-+- `docs_build/dev/reports/PR_26175_ALFA_009-status-bar-single-row-rebuild_requirements-checklist.md`
- - `docs_build/dev/reports/codex_review.diff`
- - `docs_build/dev/reports/codex_changed_files.txt`
- 
--## Evidence Sources
--- `toolbox/game-hub/index.html`
--- `toolbox/project-workspace/index.html`
--- `toolbox/game-hub/game-hub.js`
--- `toolbox/game-hub/game-hub-api-client.js`
--- `src/dev-runtime/persistence/tool-repositories/game-workspace-mock-repository.js`
--- `tests/playwright/tools/GameHubMockRepository.spec.mjs`
--
- ## Out Of Scope
--- No Game Hub product or UI changes.
--- No Game Journey changes.
--- No shared toolbox status bar changes.
--- No browser-owned product data as source of truth.
-+- No merge of PR #120.
-+- No reuse of stale ALFA_003 branch.
-+- No environment/server details in the status bar.
-+- No selected game purpose in the visible status bar.
-+- No visible status category labels in the status bar.
-+- No status action links in the visible status bar.
-+- No large banners.
-+- No modal messages or modal-style status messages.
-+- No row highlights.
- - No API/service/repository contract changes.
-+- No browser-owned product data as source of truth.
- - No inline styles, style blocks, or page-local CSS.
- - No engine core changes.
- - No `start_of_day` folder changes.
--- No ALFA_007 work.
- 
- ## Validation
--Run targeted Game Hub validation:
-+Run targeted Playwright coverage:
- 
- ```powershell
--npx playwright test tests/playwright/tools/GameHubMockRepository.spec.mjs --workers=1
-+npx playwright test tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs --workers=1
- ```
- 
--Also verify changed docs/reports do not introduce inline styles or style blocks:
-+Also verify changed source does not introduce inline styles or style blocks:
- 
- ```powershell
--rg -n "<[s]tyle|[s]tyle=" docs_build/dev/BUILD_PR.md docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_report.md docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_validation-lane.md docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_requirements-checklist.md
-+rg -n "<[s]tyle|[s]tyle=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css assets/theme-v2/css/layout.css tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
- ```
- 
- ## Artifact
- Create repo-structured delta ZIP:
- 
- ```text
--tmp/PR_26175_ALFA_008-game-hub-feature-matrix_delta.zip
-+tmp/PR_26175_ALFA_009-status-bar-single-row-rebuild_delta.zip
- ```
-diff --git a/docs_build/dev/reports/PR_26175_ALFA_009-status-bar-single-row-rebuild_report.md b/docs_build/dev/reports/PR_26175_ALFA_009-status-bar-single-row-rebuild_report.md
+diff --git a/docs_build/dev/reports/PR_26175_OWNER_051-cleanup-blocker-resolution-plan.md b/docs_build/dev/reports/PR_26175_OWNER_051-cleanup-blocker-resolution-plan.md
 new file mode 100644
-index 000000000..e23234978
+index 000000000..54c32fa91
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_ALFA_009-status-bar-single-row-rebuild_report.md
-@@ -0,0 +1,32 @@
-+# PR_26175_ALFA_009-status-bar-single-row-rebuild Report
++++ b/docs_build/dev/reports/PR_26175_OWNER_051-cleanup-blocker-resolution-plan.md
+@@ -0,0 +1,215 @@
++# PR_26175_OWNER_051 - Cleanup Blocker Resolution Plan
 +
-+## Overall Status
-+PASS
++Date: 2026-06-24
++Branch: PR_26175_OWNER_051-cleanup-blocker-resolution-plan
++Scope: Report-only cleanup blocker resolution plan
 +
-+## Summary
-+ALFA_009 rebuilds the shared toolbox status bar from current clean `main` without merging PR #120 or reusing the stale ALFA_003 branch. The status bar now exposes a single visible row with selected game name on the left and the current status message centered.
++## Executive Summary
 +
-+## Changes
-+- Replaced the status bar DOM with only the selected game name and status message as visible content.
-+- Removed visible status labels: `Selected Game Name`, `Selected Game Purpose`, `Save State`, `Tool Action`, `Warning`, and `Error`.
-+- Removed selected-game purpose and visible status action links from the status bar.
-+- Kept status context classification as non-visible dataset state for shared styling and behavior.
-+- Set shared Theme V2 footer top padding to `0px` while preserving bottom padding.
-+- Added shared fullscreen reserves so the fixed bottom status bar does not cover the center tool area.
-+- Preserved Game Hub selected-game ownership and Idea Board selected-game filtering exclusion.
-+- Updated targeted Playwright coverage for removed labels, visible game/message text, same-row layout, footer top padding, and fullscreen center-panel bounds.
++This report reviews cleanup blockers for PRs #129, #132, #134, and #139 using GitHub as authority, with local `git merge-tree` checks against current `main` to identify conflict files.
 +
-+## Files Changed
-+- `assets/theme-v2/js/toolbox-status-bar.js`
-+- `assets/theme-v2/css/status.css`
-+- `assets/theme-v2/css/layout.css`
-+- `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs`
-+- `docs_build/dev/BUILD_PR.md`
-+- ALFA_009 reports and Codex diff/change reports
++No PRs were merged. No PRs were closed. No branches were deleted. No runtime code was modified.
 +
-+## Validation
-+- PASS: `npx playwright test tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs --workers=1` produced 6 passed, 0 failed after the fullscreen reserve correction.
-+- PASS: `rg -n "<[s]tyle|[s]tyle=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css assets/theme-v2/css/layout.css tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs` returned no matches.
++Key decisions:
++- #129 is still needed because it carries the active Team Golf replacement governance and targeted review packets. Its conflicts are limited to shared generated report artifacts, not Team Golf governance files.
++- #132 is closeable as superseded if OWNER accepts the later executed cleanup outcomes and this OWNER_051 blocker plan as the current decision record.
++- #134 is closeable as superseded because PR #3 is already closed and the BRAVO_001 review was used as closure evidence.
++- #139 is the actual `PR_26175_OWNER_050-eod-merge-push-cleanup-gate` PR. #135 is not OWNER_050.
 +
-+## Artifact
-+- `tmp/PR_26175_ALFA_009-status-bar-single-row-rebuild_delta.zip`
-diff --git a/docs_build/dev/reports/PR_26175_ALFA_009-status-bar-single-row-rebuild_requirements-checklist.md b/docs_build/dev/reports/PR_26175_ALFA_009-status-bar-single-row-rebuild_requirements-checklist.md
-new file mode 100644
-index 000000000..2e9aa4b1e
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_ALFA_009-status-bar-single-row-rebuild_requirements-checklist.md
-@@ -0,0 +1,19 @@
-+# PR_26175_ALFA_009-status-bar-single-row-rebuild Requirements Checklist
++## PR Blocker Table
 +
-+| Requirement | Status | Evidence |
++| PR | Title | Branch | Draft State | Mergeable State | Conflicting Files | Still Needed | Superseded | Recommended Action |
++| --- | --- | --- | --- | --- | --- | --- | --- | --- |
++| #129 | [codex] PR_26175_OWNER_046 targeted PR review packets | `PR_26175_OWNER_046-pr-targeted-review-packets` | Draft | `DIRTY` / `CONFLICTING` | `docs_build/dev/reports/codex_changed_files.txt`; `docs_build/dev/reports/codex_review.diff` | Yes | No | resolve conflicts and merge |
++| #132 | PR_26175_OWNER_047: add targeted PR action decision report | `PR_26175_OWNER_047-targeted-pr-action-decision-report` | Draft | `DIRTY` / `CONFLICTING` | `docs_build/dev/reports/codex_changed_files.txt`; `docs_build/dev/reports/codex_review.diff` | No, if OWNER accepts later cleanup outcomes as the record | Yes | close as superseded |
++| #134 | PR_26175_BRAVO_001: add PR 003 Messages code review | `PR_26175_BRAVO_001-pr-003-messages-emotion-profiles-code-review` | Draft | `DIRTY` / `CONFLICTING` | `docs_build/dev/reports/codex_changed_files.txt`; `docs_build/dev/reports/codex_review.diff` | No, unless OWNER wants the review preserved on `main` | Yes | close as superseded |
++| #139 | PR_26175_OWNER_050: add EOD merge push cleanup gate | `PR_26175_OWNER_050-eod-merge-push-cleanup-gate` | Draft | `CLEAN` / `MERGEABLE` | None | Yes | No | resolve conflicts and merge |
++
++## PR #129 Detail
++
++Title: `[codex] PR_26175_OWNER_046 targeted PR review packets`
++
++Branch: `PR_26175_OWNER_046-pr-targeted-review-packets`
++
++Draft state: Draft
++
++Mergeable state: `DIRTY` / `CONFLICTING`
++
++Conflicting files:
++- `docs_build/dev/reports/codex_changed_files.txt`
++- `docs_build/dev/reports/codex_review.diff`
++
++Changed scope:
++- Project Instructions governance updates for Team Gamma retirement and Team Golf replacement active ownership.
++- Targeted review packets for PR #3, #50, #51, and #118.
++- Generated report artifacts.
++
++Still needed: Yes.
++
++Superseded: No.
++
++Analysis:
++- Current `main` does not contain the targeted review packet files from #129.
++- Current `main` does not contain the full Team Gamma retired / Team Golf replacement active ownership lane update from #129.
++- The merge-tree conflicts do not touch Team Golf governance files; they are limited to shared generated report artifacts.
++- Because PR #124 was closed as superseded by #129 Golf governance, #129 remains the active carrier for that governance decision unless OWNER chooses a recreation path.
++
++Recommended action: resolve conflicts and merge.
++
++Implementation note:
++- Resolve only the generated report artifact conflicts.
++- Keep the Team Golf governance changes from #129 intact.
++- Mark the PR ready only after conflict resolution and validation.
++
++## PR #132 Detail
++
++Title: `PR_26175_OWNER_047: add targeted PR action decision report`
++
++Branch: `PR_26175_OWNER_047-targeted-pr-action-decision-report`
++
++Draft state: Draft
++
++Mergeable state: `DIRTY` / `CONFLICTING`
++
++Conflicting files:
++- `docs_build/dev/reports/codex_changed_files.txt`
++- `docs_build/dev/reports/codex_review.diff`
++
++Changed scope:
++- Adds `docs_build/dev/reports/PR_26175_OWNER_047-targeted-pr-action-decision-report.md`.
++- Updates generated report artifacts.
++
++Still needed: No, if OWNER accepts the later executed cleanup outcomes and this OWNER_051 blocker plan as the current decision record.
++
++Superseded: Yes.
++
++Analysis:
++- #132 evaluated PR #3, #50, #51, and #118.
++- PR #3 has now been closed as superseded by PostgreSQL Messages direction and BRAVO_001 review evidence.
++- PR #51 has now been closed as superseded by current Project Instructions governance.
++- PR #50 and #118 remain held.
++- The operational decisions from #132 have therefore been acted on or carried forward.
++- If OWNER wants the original detailed decision report preserved on `main`, recreate it from current `main` instead of merging the stale branch. Otherwise, close #132 as superseded after OWNER approval.
++
++Recommended action: close as superseded.
++
++## PR #134 Detail
++
++Title: `PR_26175_BRAVO_001: add PR 003 Messages code review`
++
++Branch: `PR_26175_BRAVO_001-pr-003-messages-emotion-profiles-code-review`
++
++Draft state: Draft
++
++Mergeable state: `DIRTY` / `CONFLICTING`
++
++Conflicting files:
++- `docs_build/dev/reports/codex_changed_files.txt`
++- `docs_build/dev/reports/codex_review.diff`
++
++Changed scope:
++- Adds `docs_build/dev/reports/PR_26175_BRAVO_001-pr-003-messages-emotion-profiles-code-review.md`.
++- Updates generated report artifacts.
++
++Still needed: No, unless OWNER wants the review preserved on `main` as audit evidence.
++
++Superseded: Yes.
++
++Analysis:
++- #134 reviewed PR #3 only.
++- PR #3 is already closed as superseded.
++- The close comment on #3 cites the PostgreSQL Messages direction and BRAVO_001 review.
++- The review PR remains useful as GitHub-side evidence, but merging it to `main` is no longer required for cleanup execution.
++- If OWNER wants durable in-repo evidence, recreate the report from current `main`; otherwise close #134 as superseded after OWNER approval.
++
++Recommended action: close as superseded.
++
++## PR #139 Detail
++
++Title: `PR_26175_OWNER_050: add EOD merge push cleanup gate`
++
++Branch: `PR_26175_OWNER_050-eod-merge-push-cleanup-gate`
++
++Draft state: Draft
++
++Mergeable state: `CLEAN` / `MERGEABLE`
++
++Conflicting files:
++- None.
++
++Changed scope:
++- Adds the EOD Merge/Push Cleanup Gate to `docs_build/dev/ProjectInstructions/addendums/multi_team.md`.
++- Adds the OWNER_050 report and generated report artifacts.
++
++Still needed: Yes.
++
++Superseded: No.
++
++Analysis:
++- #139 is the actual OWNER_050 EOD cleanup gate PR.
++- #135 is `PR_26175_ALFA_010-game-journey-progress-context-audit`; it is not OWNER_050.
++- #139 is clean and mergeable by GitHub mergeability state.
++- The remaining blocker is draft state and OWNER merge execution approval.
++
++Recommended action: resolve conflicts and merge.
++
++Implementation note:
++- No conflict resolution is currently required for #139.
++- Mark ready for review or merge only after OWNER approval, then merge through the normal EOD flow.
++
++## Recommended Cleanup Sequence
++
++1. Resolve #129 generated report artifact conflicts and merge #129 if OWNER still wants Team Golf governance and review packets on `main`.
++2. Merge #139 after OWNER approval because it is clean and carries the EOD cleanup gate.
++3. Close #132 as superseded if OWNER accepts that its decisions are now represented by executed cleanup outcomes and this blocker plan.
++4. Close #134 as superseded if OWNER accepts GitHub-side BRAVO_001 review evidence for the already closed #3.
++5. Continue holding #50 and #118 unless OWNER issues a new cleanup decision.
++
++## Requirement Checklist
++
++| Requirement | Status | Notes |
 +| --- | --- | --- |
-+| Start from clean synced `main` at `d9724b19b3f384aed1a082c3461ece4c16fe0f12` | PASS | Guardrail checks passed before branch creation: branch `main`, clean worktree, sync `0/0`, requested commit. |
-+| Do not merge PR #120 | PASS | ALFA_009 was rebuilt on a fresh branch from `main`; no PR #120 merge was performed. |
-+| Do not reuse stale ALFA_003 branch | PASS | Work was done on `codex/pr-26175-alfa-009-status-bar-single-row-rebuild`. |
-+| Status bar displays only selected game name on left and status message in center | PASS | `toolbox-status-bar.js` renders only `[data-toolbox-selected-game-name]` and `[data-toolbox-status-message]` as visible bar content. |
-+| Remove visible labels | PASS | Playwright asserts the status bar does not contain `Selected Game Name`, `Selected Game Purpose`, `Save State`, `Tool Action`, `Warning`, or `Error`. |
-+| Remove selected-game purpose from visible status bar | PASS | Purpose DOM is removed and Playwright asserts `[data-toolbox-selected-game-purpose]` has count `0`. |
-+| Remove extra footer top gap and make footer top padding resolve to `0px` | PASS | Shared `.footer` padding now starts at `var(--space-0)`, and Playwright verifies computed footer top padding is `0`. |
-+| Use shared Theme V2 styling | PASS | Changes are in `assets/theme-v2/css/status.css` and `assets/theme-v2/css/layout.css`; no inline styles or page-local CSS were added. |
-+| Preserve fullscreen bottom anchoring | PASS | Playwright verifies the status bar is fixed and bottom gap is within 2px in tool display mode. |
-+| Center scrollable content stops above status bar | PASS | Playwright verifies `.tool-center-panel` bottom is above the status bar top in tool display mode. |
-+| No content hidden behind status bar | PASS | Fullscreen workspace and columns reserve the platform banner and status bar height in shared CSS. |
-+| Preserve Idea Board exclusion | PASS | Playwright verifies Idea Board remains optional and does not show the missing-game prompt. |
-+| Preserve Game Hub selected-game ownership | PASS | Status bar still reads selected game through the existing Game Hub repository client; no API/service contract changes were made. |
-+| Update targeted Playwright coverage | PASS | `tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs` was updated and passed. |
-+| Produce required reports and ZIP | PASS | ALFA_009 report, validation lane, checklist, Codex reports, and delta ZIP were created. |
-diff --git a/docs_build/dev/reports/PR_26175_ALFA_009-status-bar-single-row-rebuild_validation-lane.md b/docs_build/dev/reports/PR_26175_ALFA_009-status-bar-single-row-rebuild_validation-lane.md
-new file mode 100644
-index 000000000..0ec6d65af
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_ALFA_009-status-bar-single-row-rebuild_validation-lane.md
-@@ -0,0 +1,12 @@
-+# PR_26175_ALFA_009-status-bar-single-row-rebuild Validation Lane
++| Start from `main` | PASS | Initial branch was `main`. |
++| Hard stop if worktree not clean | PASS | Initial worktree was clean. |
++| Hard stop if local/origin sync not `0 0` | PASS | `main...origin/main` returned `0 0`. |
++| Read all Project Instructions | PASS | All files under `docs_build/dev/ProjectInstructions/` were read before report creation. |
++| Report #129 | PASS | Included title, branch, draft state, mergeable state, conflicts, need/superseded status, and action. |
++| Report #132 | PASS | Included title, branch, draft state, mergeable state, conflicts, need/superseded status, and action. |
++| Report #134 | PASS | Included title, branch, draft state, mergeable state, conflicts, need/superseded status, and action. |
++| Report #139 | PASS | Identified as actual OWNER_050 EOD cleanup gate PR. |
++| Do not merge PRs | PASS | No merges performed. |
++| Do not close PRs | PASS | No closures performed. |
++| Do not delete branches | PASS | No branch deletion performed. |
++| Do not modify runtime code | PASS | Only report artifacts changed. |
++| Create repo-structured ZIP under `tmp/` | PASS | ZIP path: `tmp/PR_26175_OWNER_051-cleanup-blocker-resolution-plan_delta.zip`. |
 +
-+## Commands
-+| Command | Status | Evidence |
-+| --- | --- | --- |
-+| `npx playwright test tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs --workers=1` | PASS | Final run passed 6/6 tests. Coverage includes normal placement above footer, no visible removed labels, no visible purpose, save message updates, fullscreen bottom anchoring, center panel bottom above status bar, Game Hub selection updates, missing-game prompt, and Idea Board exclusion. |
-+| `rg -n "<[s]tyle|[s]tyle=" assets/theme-v2/js/toolbox-status-bar.js assets/theme-v2/css/status.css assets/theme-v2/css/layout.css tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs` | PASS | No inline style or style block matches. |
++## Validation Lane Report
 +
-+## Notes
-+- An interim Playwright run failed the fullscreen center-panel bound assertion. The failure showed the center panel still extended below the fixed status bar.
-+- The final fix adds shared Theme V2 top and bottom reserves in `assets/theme-v2/css/status.css`, including the platform banner reserve used in tool display mode.
-+- Playwright-generated coverage reports were restored because they are outside ALFA_009 exact targets.
++Commands used:
++- `git pull --ff-only`
++- `gh pr view 129 --json ...`
++- `gh pr view 132 --json ...`
++- `gh pr view 134 --json ...`
++- `gh pr view 139 --json ...`
++- `git fetch origin pull/129/head pull/132/head pull/134/head pull/139/head`
++- `git merge-tree --write-tree main 3dc08fc3f3a52087fb0fc23a00482fe2b9c0e3f0`
++- `git merge-tree --write-tree main d53783bce17c6985e1fe654e4162f565e61d0afd`
++- `git merge-tree --write-tree main 958b521625a19e6a0fc2a0cdf3fb315e1e4ed5fa`
++- `git merge-tree --write-tree main 77c6a3d7151e08de167384270e361a1e7ad955a9`
++- `git diff --check`
++- `tar -tf tmp/PR_26175_OWNER_051-cleanup-blocker-resolution-plan_delta.zip`
++
++Validation result:
++- PASS: PR metadata gathered from GitHub.
++- PASS: Conflict files identified by local merge-tree checks without checking out PR branches.
++- PASS: Scope remains report-only.
++- PASS: No runtime code modified.
++
++## Manual Validation Notes
++
++- GitHub reports #129, #132, and #134 as draft and conflicting.
++- GitHub reports #139 as draft, clean, and mergeable.
++- Local merge-tree reports conflicts for #129, #132, and #134 only in generated report artifact files.
++- Local merge-tree reports no conflicts for #139.
++- Current `main` does not yet contain the OWNER_050 EOD cleanup gate from #139.
++- Current `main` does not yet contain the #129 targeted review packet files.
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 6eccfd73d..25b28f9ba 100644
+index 25b28f9ba..2aed3b4df 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,304 +1,10 @@
--# git status --short
--M  .env.example
--M  .gitignore
--M  account/user-controls-page.js
--M  admin/infrastructure.html
--M  admin/system-health.html
--R  toolbox/assets/assets-api-client.js -> assets/js/shared/assets-api-client.js
--R  toolbox/controls/controls-api-client.js -> assets/js/shared/controls-api-client.js
--R  toolbox/game-journey/game-journey-api-client.js -> assets/js/shared/game-journey-api-client.js
--A  assets/js/shared/status.js
--R  toolbox/text-to-speech/tts-profile-store.js -> assets/js/shared/tts-profile-store.js
--M  assets/theme-v2/css/status.css
--M  assets/theme-v2/css/tables.css
--M  assets/theme-v2/js/admin-infrastructure.js
--M  assets/theme-v2/js/admin-invitations.js
--M  assets/theme-v2/js/admin-operations.js
--M  assets/theme-v2/js/admin-setup-actions.js
--M  assets/theme-v2/js/admin-system-health.js
--M  assets/theme-v2/js/gamefoundry-partials.js
--A  assets/theme-v2/js/toolbox-status-bar.js
--R  toolbox/assets/assets-upload-worker.js -> assets/toolbox/assets/js/assets-upload-worker.js
--R  toolbox/assets/assets.js -> assets/toolbox/assets/js/index.js
--R  toolbox/colors/colors.js -> assets/toolbox/colors/js/index.js
--R  toolbox/controls/controls.js -> assets/toolbox/controls/js/index.js
--R  toolbox/events/events.js -> assets/toolbox/events/js/index.js
--R  toolbox/game-configuration/game-configuration.js -> assets/toolbox/game-configuration/js/index.js
--R  toolbox/game-design/game-design.js -> assets/toolbox/game-design/js/index.js
--R  toolbox/game-journey/game-journey.js -> assets/toolbox/game-journey/js/index.js
--R  toolbox/idea-board/index.js -> assets/toolbox/idea-board/js/index.js
--R  toolbox/objects/objects.js -> assets/toolbox/objects/js/index.js
--R  toolbox/tags/tags.js -> assets/toolbox/tags/js/index.js
--R  toolbox/text-to-speech/text2speech.js -> assets/toolbox/text-to-speech/js/index.js
--M  docs_build/dev/BUILD_PR.md
--M  docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md
--M  docs_build/dev/ProjectInstructions/TEAM_START_COMMANDS.md
--M  docs_build/dev/ProjectInstructions/addendums/multi_team.md
--M  docs_build/dev/ProjectInstructions/addendums/table_first_ui.md
--M  docs_build/dev/ProjectInstructions/addendums/team_start_and_release.md
--M  docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
--M  docs_build/dev/ProjectInstructions/team_assignments/TEAM_ASSIGNMENTS.md
--M  docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_001-repository-compliance-audit.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_002-test-results-artifact-cleanup.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_003-src-dev-runtime-test-migration-audit.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_004-src-dev-runtime-low-risk-test-move.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_005-scattered-tool-js-css-audit.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_006-low-risk-tool-asset-migration.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_006A-game-journey-validation-failure-investigation.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_007-shared-js-candidate-audit.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_008-canonical-structure-guardrail-script.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_009-guardrail-preflight-wireup.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_010-shared-js-low-risk-consolidation.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_011-test-location-remediation.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_012-canonical-structure-enforcement-audit.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_013-tool-js-css-canonical-migration-audit.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_014-low-risk-tool-migration-1.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_015-low-risk-tool-migration-2.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_016-repository-compliance-reaudit.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_017-tool-js-css-canonical-migration-audit-2.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_018-low-risk-tool-migration-3.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_019-low-risk-tool-migration-4.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_020-low-risk-tool-migration-5.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_021-repository-compliance-reaudit-2.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_022-target-tool-migration-audit.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_023-target-tool-migration-batch-1.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_024-target-tool-migration-batch-2.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_025-target-tool-migration-batch-3.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_026-target-tool-migration-batch-4.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_027-target-tool-compliance-reaudit.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_028-remaining-target-tool-migration-audit.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_029-controls-canonical-js-migration.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_030-assets-tool-canonical-js-migration-audit.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_031-assets-tool-safe-entrypoint-migration.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_032-assets-worker-api-client-migration-or-exception.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_033-game-journey-canonical-js-migration-audit.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_034-game-journey-safe-entrypoint-migration.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_035-game-journey-api-client-migration-or-exception.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_036-final-target-tool-compliance-reaudit.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_037-retained-exceptions-audit.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_038-assets-upload-http-500-investigation.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_039-assets-api-worker-exception-resolution.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_040-controls-game-journey-api-client-resolution.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_041-final-retained-exceptions-reaudit.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_042-canonical-tool-worker-placement.md
--A  docs_build/dev/reports/PR_26172_CHARLIE_043-final-charlie-compliance-reaudit.md
--A  docs_build/dev/reports/PR_26172_OWNER_040-four-team-backlog-alignment.md
--A  docs_build/dev/reports/PR_26172_OWNER_041-four-team-cleanup.md
--A  docs_build/dev/reports/PR_26174_ALFA_000-projectinstructions-archive-ignore-branch-validation.txt
--A  docs_build/dev/reports/PR_26174_ALFA_000-projectinstructions-archive-ignore-manual-validation-notes.txt
--A  docs_build/dev/reports/PR_26174_ALFA_000-projectinstructions-archive-ignore-requirement-checklist.txt
--A  docs_build/dev/reports/PR_26174_ALFA_000-projectinstructions-archive-ignore-validation-lane.txt
--A  docs_build/dev/reports/PR_26174_ALFA_000-projectinstructions-archive-ignore.md
--A  docs_build/dev/reports/PR_26174_ALFA_001-idea-board-create-project-api-contract-branch-validation.txt
--A  docs_build/dev/reports/PR_26174_ALFA_001-idea-board-create-project-api-contract-manual-validation-notes.txt
--A  docs_build/dev/reports/PR_26174_ALFA_001-idea-board-create-project-api-contract-requirement-checklist.txt
--A  docs_build/dev/reports/PR_26174_ALFA_001-idea-board-create-project-api-contract-validation-lane.txt
--A  docs_build/dev/reports/PR_26174_ALFA_001-idea-board-create-project-api-contract.md
--A  docs_build/dev/reports/PR_26174_ALFA_002-game-hub-project-intake-display-branch-validation.txt
--A  docs_build/dev/reports/PR_26174_ALFA_002-game-hub-project-intake-display-manual-validation-notes.txt
--A  docs_build/dev/reports/PR_26174_ALFA_002-game-hub-project-intake-display-requirement-checklist.txt
--A  docs_build/dev/reports/PR_26174_ALFA_002-game-hub-project-intake-display-validation-lane.txt
--A  docs_build/dev/reports/PR_26174_ALFA_002-game-hub-project-intake-display.md
--A  docs_build/dev/reports/PR_26174_ALFA_003-game-hub-journey-bootstrap-branch-validation.txt
--A  docs_build/dev/reports/PR_26174_ALFA_003-game-hub-journey-bootstrap-manual-validation-notes.txt
--A  docs_build/dev/reports/PR_26174_ALFA_003-game-hub-journey-bootstrap-requirement-checklist.txt
--A  docs_build/dev/reports/PR_26174_ALFA_003-game-hub-journey-bootstrap-validation-lane.txt
--A  docs_build/dev/reports/PR_26174_ALFA_003-game-hub-journey-bootstrap.md
--A  docs_build/dev/reports/PR_26174_ALFA_004-game-hub-progress-count-model-branch-validation.txt
--A  docs_build/dev/reports/PR_26174_ALFA_004-game-hub-progress-count-model-manual-validation-notes.txt
--A  docs_build/dev/reports/PR_26174_ALFA_004-game-hub-progress-count-model-requirement-checklist.txt
--A  docs_build/dev/reports/PR_26174_ALFA_004-game-hub-progress-count-model-validation-lane.txt
--A  docs_build/dev/reports/PR_26174_ALFA_004-game-hub-progress-count-model.md
--A  docs_build/dev/reports/PR_26174_ALFA_005-idea-project-validation-polish-branch-validation.txt
--A  docs_build/dev/reports/PR_26174_ALFA_005-idea-project-validation-polish-manual-validation-notes.txt
--A  docs_build/dev/reports/PR_26174_ALFA_005-idea-project-validation-polish-requirement-checklist.txt
--A  docs_build/dev/reports/PR_26174_ALFA_005-idea-project-validation-polish-validation-lane.txt
--A  docs_build/dev/reports/PR_26174_ALFA_005-idea-project-validation-polish.md
--A  docs_build/dev/reports/PR_26174_ALFA_006-game-hub-empty-and-error-states-branch-validation.txt
--A  docs_build/dev/reports/PR_26174_ALFA_006-game-hub-empty-and-error-states-manual-validation-notes.txt
--A  docs_build/dev/reports/PR_26174_ALFA_006-game-hub-empty-and-error-states-requirement-checklist.txt
--A  docs_build/dev/reports/PR_26174_ALFA_006-game-hub-empty-and-error-states-validation-lane.txt
--A  docs_build/dev/reports/PR_26174_ALFA_006-game-hub-empty-and-error-states.md
--A  docs_build/dev/reports/PR_26174_ALFA_007-game-journey-count-ui-polish-branch-validation.txt
--A  docs_build/dev/reports/PR_26174_ALFA_007-game-journey-count-ui-polish-manual-validation-notes.txt
--A  docs_build/dev/reports/PR_26174_ALFA_007-game-journey-count-ui-polish-requirement-checklist.txt
--A  docs_build/dev/reports/PR_26174_ALFA_007-game-journey-count-ui-polish-validation-lane.txt
--A  docs_build/dev/reports/PR_26174_ALFA_007-game-journey-count-ui-polish.md
--A  docs_build/dev/reports/PR_26174_ALFA_008-alpha-stack-final-validation-branch-validation.txt
--A  docs_build/dev/reports/PR_26174_ALFA_008-alpha-stack-final-validation-final-stack-report.md
--A  docs_build/dev/reports/PR_26174_ALFA_008-alpha-stack-final-validation-manual-validation-notes.txt
--A  docs_build/dev/reports/PR_26174_ALFA_008-alpha-stack-final-validation-requirement-checklist.txt
--A  docs_build/dev/reports/PR_26174_ALFA_008-alpha-stack-final-validation-validation-lane.txt
--A  docs_build/dev/reports/PR_26174_ALFA_008-alpha-stack-final-validation.md
--A  docs_build/dev/reports/PR_26174_ALFA_009-game-hub-parent-child-table-layout-branch-validation.txt
--A  docs_build/dev/reports/PR_26174_ALFA_009-game-hub-parent-child-table-layout-manual-validation-notes.txt
--A  docs_build/dev/reports/PR_26174_ALFA_009-game-hub-parent-child-table-layout-requirement-checklist.txt
--A  docs_build/dev/reports/PR_26174_ALFA_009-game-hub-parent-child-table-layout-validation-lane.txt
--A  docs_build/dev/reports/PR_26174_ALFA_009-game-hub-parent-child-table-layout.md
--A  docs_build/dev/reports/PR_26174_ALFA_010-game-hub-source-idea-child-table-polish-branch-validation.txt
--A  docs_build/dev/reports/PR_26174_ALFA_010-game-hub-source-idea-child-table-polish-manual-validation-notes.txt
--A  docs_build/dev/reports/PR_26174_ALFA_010-game-hub-source-idea-child-table-polish-requirement-checklist.txt
--A  docs_build/dev/reports/PR_26174_ALFA_010-game-hub-source-idea-child-table-polish-validation-lane.txt
--A  docs_build/dev/reports/PR_26174_ALFA_010-game-hub-source-idea-child-table-polish.md
--A  docs_build/dev/reports/PR_26174_ALFA_011-game-hub-readiness-output-child-table-branch-validation.txt
--A  docs_build/dev/reports/PR_26174_ALFA_011-game-hub-readiness-output-child-table-manual-validation-notes.txt
--A  docs_build/dev/reports/PR_26174_ALFA_011-game-hub-readiness-output-child-table-requirement-checklist.txt
--A  docs_build/dev/reports/PR_26174_ALFA_011-game-hub-readiness-output-child-table-validation-lane.txt
--A  docs_build/dev/reports/PR_26174_ALFA_011-game-hub-readiness-output-child-table.md
--A  docs_build/dev/reports/PR_26174_ALFA_012-game-hub-parent-child-final-validation-branch-validation.txt
--A  docs_build/dev/reports/PR_26174_ALFA_012-game-hub-parent-child-final-validation-manual-validation-notes.txt
--A  docs_build/dev/reports/PR_26174_ALFA_012-game-hub-parent-child-final-validation-requirement-checklist.txt
--A  docs_build/dev/reports/PR_26174_ALFA_012-game-hub-parent-child-final-validation-validation-lane.txt
--A  docs_build/dev/reports/PR_26174_ALFA_012-game-hub-parent-child-final-validation.md
--A  docs_build/dev/reports/PR_26174_ALFA_013-game-hub-game-row-child-rows-branch-validation.txt
--A  docs_build/dev/reports/PR_26174_ALFA_013-game-hub-game-row-child-rows-manual-validation-notes.txt
--A  docs_build/dev/reports/PR_26174_ALFA_013-game-hub-game-row-child-rows-requirement-checklist.txt
--A  docs_build/dev/reports/PR_26174_ALFA_013-game-hub-game-row-child-rows-validation-lane.txt
--A  docs_build/dev/reports/PR_26174_ALFA_013-game-hub-game-row-child-rows.md
--A  docs_build/dev/reports/PR_26174_ALFA_014-game-hub-parent-columns-center-branch-validation.txt
--A  docs_build/dev/reports/PR_26174_ALFA_014-game-hub-parent-columns-center-manual-validation-notes.txt
--A  docs_build/dev/reports/PR_26174_ALFA_014-game-hub-parent-columns-center-requirement-checklist.txt
--A  docs_build/dev/reports/PR_26174_ALFA_014-game-hub-parent-columns-center-validation-lane.txt
--A  docs_build/dev/reports/PR_26174_ALFA_014-game-hub-parent-columns-center.md
--A  docs_build/dev/reports/PR_26174_ALFA_015-game-hub-actions-and-setup-cleanup-branch-validation.txt
--A  docs_build/dev/reports/PR_26174_ALFA_015-game-hub-actions-and-setup-cleanup-manual-validation-notes.txt
--A  docs_build/dev/reports/PR_26174_ALFA_015-game-hub-actions-and-setup-cleanup-requirement-checklist.txt
--A  docs_build/dev/reports/PR_26174_ALFA_015-game-hub-actions-and-setup-cleanup-validation-lane.txt
--A  docs_build/dev/reports/PR_26174_ALFA_015-game-hub-actions-and-setup-cleanup.md
--A  docs_build/dev/reports/PR_26174_ALFA_016-game-hub-row-edit-add-selected-state-branch-validation.txt
--A  docs_build/dev/reports/PR_26174_ALFA_016-game-hub-row-edit-add-selected-state-manual-validation-notes.txt
--A  docs_build/dev/reports/PR_26174_ALFA_016-game-hub-row-edit-add-selected-state-requirement-checklist.txt
--A  docs_build/dev/reports/PR_26174_ALFA_016-game-hub-row-edit-add-selected-state-validation-lane.txt
--A  docs_build/dev/reports/PR_26174_ALFA_016-game-hub-row-edit-add-selected-state.md
--A  docs_build/dev/reports/PR_26174_ALFA_017-game-hub-guest-save-and-crew-cleanup.md
--A  docs_build/dev/reports/PR_26174_ALFA_017-game-hub-guest-save-and-crew-cleanup_branch-validation.txt
--A  docs_build/dev/reports/PR_26174_ALFA_017-game-hub-guest-save-and-crew-cleanup_manual-validation-notes.txt
--A  docs_build/dev/reports/PR_26174_ALFA_017-game-hub-guest-save-and-crew-cleanup_requirement-checklist.txt
--A  docs_build/dev/reports/PR_26174_ALFA_017-game-hub-guest-save-and-crew-cleanup_validation-lane.txt
--A  docs_build/dev/reports/PR_26174_ALFA_018-game-selection-button-state.md
--A  docs_build/dev/reports/PR_26174_ALFA_018-game-selection-button-state_branch-validation.txt
--A  docs_build/dev/reports/PR_26174_ALFA_018-game-selection-button-state_manual-validation-notes.txt
--A  docs_build/dev/reports/PR_26174_ALFA_018-game-selection-button-state_requirement-checklist.txt
--A  docs_build/dev/reports/PR_26174_ALFA_018-game-selection-button-state_validation-lane.txt
--A  docs_build/dev/reports/PR_26174_ALFA_019-game-hub-selected-button-and-crew-label.md
--A  docs_build/dev/reports/PR_26174_ALFA_019-game-hub-selected-button-and-crew-label_branch-validation.txt
--A  docs_build/dev/reports/PR_26174_ALFA_019-game-hub-selected-button-and-crew-label_manual-validation-notes.txt
--A  docs_build/dev/reports/PR_26174_ALFA_019-game-hub-selected-button-and-crew-label_requirement-checklist.txt
--A  docs_build/dev/reports/PR_26174_ALFA_019-game-hub-selected-button-and-crew-label_validation-lane.txt
--A  docs_build/dev/reports/PR_26174_ALFA_020-game-hub-idea-board-cleanup_branch-validation.md
--A  docs_build/dev/reports/PR_26174_ALFA_020-game-hub-idea-board-cleanup_manual-validation-notes.md
--A  docs_build/dev/reports/PR_26174_ALFA_020-game-hub-idea-board-cleanup_report.md
--A  docs_build/dev/reports/PR_26174_ALFA_020-game-hub-idea-board-cleanup_requirements-checklist.md
--A  docs_build/dev/reports/PR_26174_ALFA_020-game-hub-idea-board-cleanup_validation-lane.md
--A  docs_build/dev/reports/PR_26174_ALFA_021-idea-board-status-filter-table-polish_branch-validation.md
--A  docs_build/dev/reports/PR_26174_ALFA_021-idea-board-status-filter-table-polish_manual-validation-notes.md
--A  docs_build/dev/reports/PR_26174_ALFA_021-idea-board-status-filter-table-polish_report.md
--A  docs_build/dev/reports/PR_26174_ALFA_021-idea-board-status-filter-table-polish_requirements-checklist.md
--A  docs_build/dev/reports/PR_26174_ALFA_021-idea-board-status-filter-table-polish_validation-lane.md
--A  docs_build/dev/reports/PR_26174_ALFA_022-idea-board-status-dropdown-fix_branch-validation.md
--A  docs_build/dev/reports/PR_26174_ALFA_022-idea-board-status-dropdown-fix_manual-validation-notes.md
--A  docs_build/dev/reports/PR_26174_ALFA_022-idea-board-status-dropdown-fix_report.md
--A  docs_build/dev/reports/PR_26174_ALFA_022-idea-board-status-dropdown-fix_requirements-checklist.md
--A  docs_build/dev/reports/PR_26174_ALFA_022-idea-board-status-dropdown-fix_validation-lane.md
--A  docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_branch-validation.md
--A  docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_manual-validation-notes.md
--A  docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_report.md
--A  docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_requirements-checklist.md
--A  docs_build/dev/reports/PR_26174_ALFA_EOD-final-closeout_validation-lane.md
--A  docs_build/dev/reports/PR_26174_ALFA_EOD-workstream-closeout_branch-validation.md
--A  docs_build/dev/reports/PR_26174_ALFA_EOD-workstream-closeout_manual-validation-notes.md
--A  docs_build/dev/reports/PR_26174_ALFA_EOD-workstream-closeout_report.md
--A  docs_build/dev/reports/PR_26174_ALFA_EOD-workstream-closeout_requirements-checklist.md
--A  docs_build/dev/reports/PR_26174_ALFA_EOD-workstream-closeout_validation-lane.md
--A  docs_build/dev/reports/PR_26174_ALFA_MERGE_PUSH_CLOSEOUT.md
--A  docs_build/dev/reports/PR_26175_ALFA_001-toolbox-selected-game-status-bar_report.md
--A  docs_build/dev/reports/PR_26175_ALFA_001-toolbox-selected-game-status-bar_requirements-checklist.md
--A  docs_build/dev/reports/PR_26175_ALFA_001-toolbox-selected-game-status-bar_validation-lane.md
--A  docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_report.md
--A  docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_requirements-checklist.md
--A  docs_build/dev/reports/PR_26175_ALFA_002-toolbox-status-bar-context-polish_validation-lane.md
--A  docs_build/dev/reports/PR_26175_ALFA_004-game-hub-completion-status-audit_report.md
--A  docs_build/dev/reports/PR_26175_ALFA_004-game-hub-completion-status-audit_requirements-checklist.md
--A  docs_build/dev/reports/PR_26175_ALFA_004-game-hub-completion-status-audit_validation-lane.md
--A  docs_build/dev/reports/PR_26175_ALFA_005-game-hub-audit-findings-cleanup_report.md
--A  docs_build/dev/reports/PR_26175_ALFA_005-game-hub-audit-findings-cleanup_requirements-checklist.md
--A  docs_build/dev/reports/PR_26175_ALFA_005-game-hub-audit-findings-cleanup_validation-lane.md
--A  docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_report.md
--A  docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_requirements-checklist.md
--A  docs_build/dev/reports/PR_26175_ALFA_006-game-hub-create-project-validation_validation-lane.md
--A  docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_report.md
--A  docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_requirements-checklist.md
--A  docs_build/dev/reports/PR_26175_ALFA_008-game-hub-feature-matrix_validation-lane.md
--A  docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-instruction-compliance-checklist.md
--A  docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard-manual-validation-notes.md
--A  docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard.md
--A  docs_build/dev/reports/PR_26175_CHARLIE_002-system-health-dashboard_PLAN.md
--A  docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization-instruction-compliance-checklist.md
--A  docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization-manual-validation-notes.md
--A  docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization.md
--A  docs_build/dev/reports/PR_26175_CHARLIE_003-r2-storage-standardization_PLAN.md
--A  docs_build/dev/reports/PR_26175_CHARLIE_EOD-branch-validation.md
--A  docs_build/dev/reports/PR_26175_CHARLIE_EOD-closeout.md
--A  docs_build/dev/reports/PR_26175_CHARLIE_EOD-merge-summary.md
--M  docs_build/dev/reports/codex_changed_files.txt
--M  docs_build/dev/reports/codex_review.diff
--M  package.json
--M  scripts/run-targeted-test-lanes.mjs
--M  scripts/validate-browser-env-agnostic.mjs
--A  scripts/validate-canonical-repository-structure.mjs
--M  scripts/validate-storage-config.mjs
--M  src/dev-runtime/persistence/mock-db-store.js
--M  src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
--M  src/dev-runtime/server/local-api-router.mjs
--M  src/dev-runtime/storage/storage-config.mjs
--M  src/shared/toolbox/tool-metadata-inventory.js
--M  tests/dev-runtime/AdminHealthOperations.test.mjs
--M  tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
--A  tests/dev-runtime/StorageConfig.test.mjs
--R  tests/core/FixedTicker.test.mjs -> tests/engine/core/FixedTicker.test.mjs
--R  tests/core/FrameClock.test.mjs -> tests/engine/core/FrameClock.test.mjs
--R  tests/core/RuntimeMetrics.test.mjs -> tests/engine/core/RuntimeMetrics.test.mjs
--M  tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
--M  tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
--M  tests/playwright/tools/AssetToolMockRepository.spec.mjs
--M  tests/playwright/tools/BuildPathProgressSimplification.spec.mjs
--M  tests/playwright/tools/GameConfigurationMockRepository.spec.mjs
--M  tests/playwright/tools/GameDesignMockRepository.spec.mjs
--M  tests/playwright/tools/GameHubMockRepository.spec.mjs
--M  tests/playwright/tools/GameJourneyTool.spec.mjs
--M  tests/playwright/tools/IdeaBoardTableNotes.spec.mjs
--M  tests/playwright/tools/InputMappingV2Tool.spec.mjs
--M  tests/playwright/tools/ObjectsTool.spec.mjs
--M  tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
--M  tests/playwright/tools/ToolboxRoutePages.spec.mjs
--A  tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
--A  tests/regression/CanonicalRepositoryStructureGuardrail.test.mjs
--M  tests/run-tests.mjs
--M  tests/tools/MessagesPlaybackSource.test.mjs
--M  tests/tools/Text2SpeechShell.test.mjs
--M  toolbox/assets/index.html
--M  toolbox/colors/index.html
--D  toolbox/colors/palette-api-client.js
--M  toolbox/controls/index.html
--M  toolbox/events/index.html
--D  toolbox/game-configuration/game-configuration-api-client.js
--M  toolbox/game-configuration/index.html
--D  toolbox/game-design/game-design-api-client.js
--M  toolbox/game-design/index.html
--M  toolbox/game-hub/game-hub.js
--M  toolbox/game-hub/index.html
--M  toolbox/game-journey/index.html
--M  toolbox/idea-board/index.html
--M  toolbox/messages/messages.js
--M  toolbox/objects/index.html
--D  toolbox/objects/objects-api-client.js
--M  toolbox/tags/index.html
--D  toolbox/tags/tags-api-client.js
--M  toolbox/text-to-speech/index.html
--
--# git ls-files --others --exclude-standard
--(no output)
--
--# git diff --stat
--(no output)
-\ No newline at end of file
-+docs_build/dev/BUILD_PR.md
-+assets/theme-v2/js/toolbox-status-bar.js
-+assets/theme-v2/css/status.css
-+assets/theme-v2/css/layout.css
-+tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-+docs_build/dev/reports/PR_26175_ALFA_009-status-bar-single-row-rebuild_report.md
-+docs_build/dev/reports/PR_26175_ALFA_009-status-bar-single-row-rebuild_validation-lane.md
-+docs_build/dev/reports/PR_26175_ALFA_009-status-bar-single-row-rebuild_requirements-checklist.md
-+docs_build/dev/reports/codex_review.diff
-+docs_build/dev/reports/codex_changed_files.txt
-diff --git a/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs b/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-index 065fbce4a..1a40d61c5 100644
---- a/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-+++ b/tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
-@@ -113,20 +113,57 @@ function creatorSession() {
-   };
- }
- 
-+const REMOVED_STATUS_BAR_LABELS = [
-+  "Selected Game Name",
-+  "Selected Game Purpose",
-+  "Save State",
-+  "Tool Action",
-+  "Warning",
-+  "Error",
-+];
-+
-+async function expectRemovedStatusBarLabelsHidden(statusBar) {
-+  for (const label of REMOVED_STATUS_BAR_LABELS) {
-+    await expect(statusBar).not.toContainText(label);
-+  }
-+}
-+
- async function statusBarSnapshot(page) {
-   return page.locator("[data-toolbox-status-bar]").evaluate((bar) => {
-+    const boxSnapshot = (element) => {
-+      const box = element?.getBoundingClientRect();
-+      if (!box) {
-+        return null;
-+      }
-+      return {
-+        bottom: box.bottom,
-+        height: box.height,
-+        left: box.left,
-+        right: box.right,
-+        top: box.top,
-+      };
-+    };
-     const footer = document.querySelector("footer.footer");
-+    const footerStyle = footer ? getComputedStyle(footer) : null;
-+    const centerPanel = document.querySelector(".tool-center-panel");
-+    const gameName = bar.querySelector("[data-toolbox-selected-game-name]");
-+    const message = bar.querySelector("[data-toolbox-status-message]");
-     const position = getComputedStyle(bar).position;
-     const barBox = bar.getBoundingClientRect();
-     const footerBox = footer?.getBoundingClientRect();
-     return {
-       bottomGap: Math.round(window.innerHeight - barBox.bottom),
-+      barBox: boxSnapshot(bar),
-+      centerPanelBox: boxSnapshot(centerPanel),
-       dataset: { ...bar.dataset },
-       filter: document.body.dataset.toolboxSelectedGameFilter || "",
-       footerFollowsBar: footer ? Boolean(bar.compareDocumentPosition(footer) & Node.DOCUMENT_POSITION_FOLLOWING) : false,
-+      footerPaddingTop: footerStyle ? parseFloat(footerStyle.paddingTop) || 0 : null,
-       gameId: document.body.dataset.toolboxSelectedGameId || "",
--      gameText: bar.querySelector("[data-toolbox-selected-game]")?.textContent.replace(/\s+/g, " ").trim() || "",
--      messageText: bar.querySelector("[data-toolbox-status-center]")?.textContent.replace(/\s+/g, " ").trim() || "",
-+      gameBox: boxSnapshot(gameName),
-+      gameText: gameName?.textContent.replace(/\s+/g, " ").trim() || "",
-+      messageBox: boxSnapshot(message),
-+      messageText: message?.textContent.replace(/\s+/g, " ").trim() || "",
-       position,
-       topBeforeFooter: footerBox ? barBox.bottom <= footerBox.top + 1 : false,
-     };
-@@ -141,12 +178,12 @@ test("shared toolbox status bar shows selected Game Hub game above the footer",
-     await expect(statusBar).toBeVisible();
-     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-     await expect(statusBar).not.toContainText("Environment");
--    await expect(statusBar.locator("[data-toolbox-selected-game-name-label]")).toHaveText("Selected Game Name");
-+    await expectRemovedStatusBarLabelsHidden(statusBar);
-     await expect(statusBar.locator("[data-toolbox-selected-game-name]")).toHaveText("Demo Game");
--    await expect(statusBar.locator("[data-toolbox-selected-game-purpose-label]")).toHaveText("Selected Game Purpose");
--    await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveText("Game");
-+    await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveCount(0);
-+    await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
-+    await expect(statusBar.locator("[data-toolbox-status-action]")).toHaveCount(0);
-     await expect(statusBar.locator("[data-toolbox-selected-game]")).not.toContainText("Under Construction");
--    await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveText("Tool Action");
-     await expect(statusBar.locator("[data-toolbox-status-message]")).toContainText("Game Design mock repository ready.");
-     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-id", "demo-game");
-     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "active");
-@@ -154,9 +191,15 @@ test("shared toolbox status bar shows selected Game Hub game above the footer",
-     const snapshot = await statusBarSnapshot(page);
-     expect(snapshot.footerFollowsBar).toBe(true);
-     expect(snapshot.topBeforeFooter).toBe(true);
-+    expect(snapshot.footerPaddingTop).toBe(0);
-     expect(snapshot.position).not.toBe("fixed");
-     expect(snapshot.dataset.selectedGameState).toBe("active");
-     expect(snapshot.dataset.selectedGameRequired).toBe("true");
-+    expect(snapshot.gameText).toBe("Demo Game");
-+    expect(snapshot.messageText).toContain("Game Design mock repository ready.");
-+    expect(Math.max(snapshot.gameBox.top, snapshot.messageBox.top)).toBeLessThanOrEqual(
-+      Math.min(snapshot.gameBox.bottom, snapshot.messageBox.bottom),
-+    );
- 
-     expectNoPageFailures(failures);
-   } finally {
-@@ -175,11 +218,14 @@ test("shared toolbox status bar center reports save state after Game Hub saves",
-     await addGameRow.getByLabel("Status").selectOption("Ready for Testing");
-     await addGameRow.getByRole("button", { name: "Save" }).click();
- 
--    await expect(page.locator("[data-toolbox-status-context-type]")).toHaveText("Save State");
--    await expect(page.locator("[data-toolbox-status-message]")).toHaveText("Created and opened Status Bar Save.");
--    await expect(page.locator("[data-toolbox-selected-game-name]")).toHaveText("Status Bar Save");
--    await expect(page.locator("[data-toolbox-selected-game-purpose]")).toHaveText("Learning Game");
--    await expect(page.locator("[data-toolbox-status-bar]")).not.toContainText("Environment");
-+    const statusBar = page.locator("[data-toolbox-status-bar]");
-+    await expectRemovedStatusBarLabelsHidden(statusBar);
-+    await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
-+    await expect(statusBar.locator("[data-toolbox-status-message]")).toHaveText("Created and opened Status Bar Save.");
-+    await expect(statusBar.locator("[data-toolbox-selected-game-name]")).toHaveText("Status Bar Save");
-+    await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveCount(0);
-+    await expect(statusBar).not.toContainText("Learning Game");
-+    await expect(statusBar).not.toContainText("Environment");
- 
-     expectNoPageFailures(failures);
-   } finally {
-@@ -198,7 +244,9 @@ test("shared toolbox status bar anchors to the bottom in tool display mode", asy
-     const snapshot = await statusBarSnapshot(page);
-     expect(snapshot.position).toBe("fixed");
-     expect(Math.abs(snapshot.bottomGap)).toBeLessThanOrEqual(2);
--    expect(snapshot.gameText).toContain("Demo Game");
-+    expect(snapshot.gameText).toBe("Demo Game");
-+    expect(snapshot.messageText).toContain("Game Design mock repository ready.");
-+    expect(snapshot.centerPanelBox.bottom).toBeLessThanOrEqual(snapshot.barBox.top + 1);
- 
-     expectNoPageFailures(failures);
-   } finally {
-@@ -213,12 +261,15 @@ test("Game Hub owner selection updates the global toolbox status bar", async ({
-     await expect(page.locator("[data-toolbox-selected-game-name]")).toHaveText("Demo Game");
-     await page.locator("[data-game-toggle='gravity-demo']").click();
-     await expect(page.locator("[data-toolbox-selected-game-name]")).toHaveText("Gravity Demo");
--    await expect(page.locator("[data-toolbox-selected-game-purpose]")).toHaveText("Capability Demo");
--    await expect(page.locator("[data-toolbox-selected-game]")).not.toContainText("Wireframe");
-+    const statusBar = page.locator("[data-toolbox-status-bar]");
-+    await expectRemovedStatusBarLabelsHidden(statusBar);
-+    await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveCount(0);
-+    await expect(statusBar.locator("[data-toolbox-selected-game]")).not.toContainText("Capability Demo");
-+    await expect(statusBar.locator("[data-toolbox-selected-game]")).not.toContainText("Wireframe");
-     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-id", "gravity-demo");
-     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "active");
--    await expect(page.locator("[data-toolbox-status-context-type]")).toHaveText("Warning");
--    await expect(page.locator("[data-toolbox-status-message]")).toContainText("Sign in to create or update Game Hub projects.");
-+    await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
-+    await expect(statusBar.locator("[data-toolbox-status-message]")).toContainText("Sign in to create or update Game Hub projects.");
- 
-     expectNoPageFailures(failures);
-   } finally {
-@@ -231,12 +282,12 @@ test("non-Idea Board toolbox pages show a creator-safe prompt when no Game Hub g
- 
-   try {
-     const statusBar = page.locator("[data-toolbox-status-bar]");
-+    await expectRemovedStatusBarLabelsHidden(statusBar);
-     await expect(statusBar.locator("[data-toolbox-selected-game-name]")).toHaveText("No game selected");
--    await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveText("Game Hub owns game selection");
--    await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveText("Tool Action");
-+    await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveCount(0);
-+    await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
-     await expect(statusBar.locator("[data-toolbox-status-message]")).toHaveText("Select or create a game in Game Hub before using this toolbox page.");
--    await expect(statusBar.locator("[data-toolbox-status-action]")).toHaveText("Select or Create in Game Hub");
--    await expect(statusBar.locator("[data-toolbox-status-action]")).toHaveAttribute("href", /toolbox\/game-hub\/index\.html$/);
-+    await expect(statusBar.locator("[data-toolbox-status-action]")).toHaveCount(0);
-     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "missing");
-     await expect(page.locator("body")).not.toHaveAttribute("data-toolbox-selected-game-id", /.+/);
- 
-@@ -256,9 +307,10 @@ test("Idea Board is excluded from selected-game filtering and does not show the
-   try {
-     const statusBar = page.locator("[data-toolbox-status-bar]");
-     await expect(statusBar).toBeVisible();
-+    await expectRemovedStatusBarLabelsHidden(statusBar);
-     await expect(statusBar.locator("[data-toolbox-selected-game-name]")).toHaveText("No game selected");
--    await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveText("Idea Board optional");
--    await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveText("Tool Action");
-+    await expect(statusBar.locator("[data-toolbox-selected-game-purpose]")).toHaveCount(0);
-+    await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
-     await expect(statusBar.locator("[data-toolbox-status-message]")).toContainText("Ready to shape ideas and notes.");
-     await expect(statusBar.locator("[data-toolbox-status-message]")).not.toContainText("Select or create a game");
-     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "optional");
+@@ -1,8 +1 @@
+-docs_build/dev/BUILD_PR.md
+-assets/theme-v2/js/toolbox-status-bar.js
+-assets/theme-v2/css/status.css
+-assets/theme-v2/css/layout.css
+-tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
+-docs_build/dev/reports/PR_26175_ALFA_009-status-bar-single-row-rebuild_report.md
+-docs_build/dev/reports/PR_26175_ALFA_009-status-bar-single-row-rebuild_validation-lane.md
+-docs_build/dev/reports/PR_26175_ALFA_009-status-bar-single-row-rebuild_requirements-checklist.md
++docs_build/dev/reports/PR_26175_OWNER_051-cleanup-blocker-resolution-plan.md
