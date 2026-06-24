@@ -38,6 +38,7 @@
 .toolbox-status-bar {
   --toolbox-status-bar-height: var(--space-52);
   --toolbox-status-game-max: 220px;
+  --toolbox-status-progress-max: 34vw;
   width: 100%;
   min-block-size: var(--toolbox-status-bar-height);
   border-block: var(--border-standard);
@@ -50,7 +51,7 @@
   margin: var(--space-0) auto;
   padding: var(--space-10) var(--space-0);
   display: grid;
-  grid-template-columns: minmax(var(--space-0), max-content) minmax(var(--space-0), 1fr);
+  grid-template-columns: minmax(var(--space-0), max-content) minmax(var(--space-0), 1fr) minmax(var(--space-0), max-content);
   gap: var(--space-16);
   align-items: center
 }
@@ -88,6 +89,19 @@
   max-width: var(--measure-lg);
   line-height: var(--line-height-copy);
   overflow-wrap: anywhere
+}
+
+.toolbox-status-bar__progress {
+  min-width: var(--space-0);
+  max-width: var(--toolbox-status-progress-max);
+  margin: var(--space-0);
+  color: var(--muted);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-tight);
+  overflow: hidden;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap
 }
 
 .toolbox-status-bar[data-selected-game-state="active"] {
@@ -249,16 +263,21 @@ body.tool-focus-mode .tool-center-panel {
 @media (max-width: 720px) {
   .toolbox-status-bar__inner {
     width: var(--container-width);
-    grid-template-columns: minmax(var(--space-0), max-content) minmax(var(--space-0), 1fr);
+    grid-template-columns: minmax(var(--space-0), max-content) minmax(var(--space-0), 1fr) minmax(var(--space-0), max-content);
     gap: var(--space-10);
     text-align: center
   }
 
   .toolbox-status-bar__game-name {
-    max-width: 34vw
+    max-width: 24vw
   }
 
-  .toolbox-status-bar__message {
+  .toolbox-status-bar__message,
+  .toolbox-status-bar__progress {
     font-size: var(--font-size-sm)
+  }
+
+  .toolbox-status-bar__progress {
+    max-width: 30vw
   }
 }

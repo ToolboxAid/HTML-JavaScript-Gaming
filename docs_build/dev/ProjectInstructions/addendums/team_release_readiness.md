@@ -4,6 +4,11 @@
 
 This gate prevents Team Alfa, Team Bravo, Team Charlie, or Team OWNER from starting regular assigned work before the ProjectInstructions operating system is ready.
 
+Current OWNER clarification:
+- This gate also applies to Team Delta and Team Golf.
+- Team Gamma is retired. Team Golf is the replacement active ownership lane.
+- Historical wording that listed fewer teams remains traceable, but it must not exclude Delta or Golf from current active ownership governance.
+
 ## Release Rule
 
 Teams may start only when all of the following are true:
@@ -15,6 +20,9 @@ Teams may start only when all of the following are true:
 - No-direct-main rule exists.
 - Out-of-scope stop rule exists.
 - Build Path sync rule exists.
+- PR lifecycle states exist in order: PR Open, Plan, Build, Validation, Approved, Merged, Main Verified, Closed.
+- Previous-PR Closed gate exists before a team starts another PR, except explicitly documented stacked PR chains.
+- Final closeout output includes branch, worktree, local/origin sync, PR number/name, PR status, merge/final commit, branch disposition, backlog update status, tool state update status, ZIP path, and Closeout PASS/FAIL.
 
 ## Gate Outcome
 

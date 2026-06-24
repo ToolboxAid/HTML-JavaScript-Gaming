@@ -13,6 +13,28 @@ Rules:
 - Cross-team work requires OWNER approval and must identify the correct owning team for each PR.
 - Team start commands must use the current ownership model before pulling a backlog item.
 
+## Current Active Ownership Lanes
+
+OWNER override approved.
+
+The current active ownership lanes are:
+
+- Team Alfa
+- Team Bravo
+- Team Charlie
+- Team Delta
+- Team Golf
+- Team OWNER
+
+Migration note:
+Team Gamma is retired. Team Golf is the replacement active ownership lane.
+
+Rules:
+- Historical PR references and branch names that mention Gamma remain unchanged for traceability.
+- New active work that would previously have used Team Gamma routes to Team Golf.
+- Team Golf work requires OWNER assignment, an active branch, an active draft/open PR, or active release/cleanup responsibility.
+- If Team Golf work touches Alfa, Bravo, Charlie, or Delta ownership areas, the PR must document the OWNER cross-team decision.
+
 ## All-Team Preferred Codex Execution Method
 
 Preferred execution model:
@@ -61,6 +83,58 @@ Commit/push during the day is allowed only on assigned team/OWNER/PR branches.
 Merge to main is EOD-only and owner-approved, unless the owner explicitly says:
 "Merge this PR now."
 
+## EOD Merge/Push Cleanup Gate
+
+At EOD merge/push closeout, Codex must convert OWNER-approved decisions into action before shutdown.
+
+Required gate:
+
+1. List all open and draft PRs using GitHub as authority.
+2. Group every PR by team:
+   - Alfa
+   - Bravo
+   - Charlie
+   - Delta
+   - Golf
+   - OWNER
+   - Unknown
+3. Assign every PR exactly one state:
+   - Merge approved
+   - Close approved
+   - Hold with reason
+   - Blocked by dependency
+   - Next review target
+4. Execute OWNER-approved merges before shutdown.
+5. Execute OWNER-approved closures before shutdown.
+6. Do not leave approved merge or close items open unless blocked.
+7. If blocked, document the exact blocker:
+   - draft state
+   - conflict
+   - non-main base
+   - failed validation
+   - missing OWNER approval
+8. Do not delete branches unless explicitly approved.
+9. Produce an EOD report with:
+   - merged PRs
+   - closed PRs
+   - held PRs with reasons
+   - blocked PRs with blockers
+   - next review queue
+   - final branch/worktree/local-origin sync
+   - repo-structured ZIP path under `tmp/`
+   - final repository state block
+
+OWNER_049 lesson:
+- PRs #129, #132, and #134 were merge-approved and still required merge execution.
+- PRs #3 and #51 were close-approved and still required closure execution.
+- PRs #50 and #118 were valid holds and required hold reasons.
+
+Rules:
+- This gate applies after the owner approves a merge/close batch and before EOD shutdown.
+- OWNER approval to merge or close is an instruction to execute that action unless a listed blocker exists.
+- Report-only handling is not sufficient for approved merge/close items.
+- This gate does not authorize branch deletion.
+
 ## EOD Workstream Closeout
 
 At completion of a merged PR or approved workstream:
@@ -76,6 +150,9 @@ Required steps:
    - local/origin sync = 0 0
 5. Record final main commit.
 6. Report final repository state.
+7. Produce a repo-structured ZIP under `tmp/` that includes the EOD report and all changed or preserved repo files from the closeout.
+8. Record source branch disposition as `retained`.
+9. Mark the PR Closed only when every Closed gate passes.
 
 Required final state:
 
@@ -93,8 +170,30 @@ Rules:
 - A workstream is not considered closed until the repository is returned to main.
 - A PI is not considered complete until main is current and synchronized.
 - Do not leave Codex on a feature, team, workstream, recovery, governance, or owner branch after successful merge.
+- Plan, Build, validation, reports, ZIP packaging, and closeout stay tied to the same PR identity and source branch.
+- Source branches are retained by default after merge and closeout.
+- A PR is not Closed until the PR merged, changes are pushed, the repository is on `main`, `main` includes the merge or final commit, the worktree is clean, local/origin sync is `0/0`, no untracked files exist, branch disposition is recorded as `retained`, required reports exist, the required repo-structured ZIP exists under `tmp/`, backlog is updated, and tool state is updated when applicable.
+- A completed EOD closeout must produce the required ZIP even when the closeout changed no repo files; in that case, the ZIP must contain the EOD report proving the no-change result.
+- The EOD ZIP does not replace the EOD report or other required reports under `docs_build/dev/reports/`.
 - If merge succeeds but repository is not returned to main:
   closeout status = FAIL.
+
+Required final closeout output:
+
+```text
+FINAL REPOSITORY STATE:
+- Branch
+- Worktree
+- Local/origin sync
+- PR number/name
+- PR status
+- Merge/final commit
+- Branch disposition
+- Backlog update status
+- Tool state update status
+- ZIP path
+- Closeout PASS/FAIL
+```
 
 ## Workstream Hygiene Governance
 
@@ -114,7 +213,7 @@ Each reviewed item must be classified as one of:
 - Historical/Archive
 
 Rules:
-- Merged branches should be deleted after successful merge and main sync.
+- Merged source branches should be retained by default after successful merge and main sync.
 - Superseded draft PRs should be closed.
 - Abandoned branches should be documented before removal.
 - Active workstream branches remain.
@@ -140,7 +239,7 @@ Required PI closeout report fields:
 - active PRs
 - active branches
 - closed/superseded PRs
-- deleted branch candidates
+- retained branch disposition and any owner-approved deletion candidates
 - deferred work
 - next PI priorities
 
@@ -163,8 +262,7 @@ Audit targets:
 Recommendation-only first pass values:
 - keep
 - close
-- delete local
-- delete remote
+- retained
 - defer
 
 Rules:

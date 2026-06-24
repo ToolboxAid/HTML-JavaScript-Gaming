@@ -162,6 +162,13 @@
 
 ## Four-Team Backlog Alignment
 
+Current OWNER clarification:
+- The backlog alignment below preserves the current Alfa, Bravo, Charlie, and Delta ownership model.
+- Team Gamma is retired. Team Golf is the replacement active ownership lane.
+- Team Golf has no standing backlog ownership area in this file unless OWNER assigns one.
+- Golf work may be OWNER-assigned, branch-backed, PR-backed, release, review packet, or cleanup work and must not silently replace Alfa, Bravo, Charlie, or Delta ownership.
+- Historical Gamma PR references and branch names are not renamed by this clarification.
+
 ### Team Alfa
 
 - [ ] Alfa - Game Hub polish
