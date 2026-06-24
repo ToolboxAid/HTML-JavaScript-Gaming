@@ -1,5 +1,6 @@
 import {
     readAdminSystemHealthStatus,
+    runAdminSystemHealthAction,
     runAdminSystemHealthStorageConnectivityAction,
 } from "../../../src/api/admin-system-health-api-client.js";
 import {
@@ -15,6 +16,7 @@ const STORAGE_DIAGNOSTIC_ACTIONS = Object.freeze([
     Object.freeze({ actionId: "storage-read-test-object", key: "read" }),
     Object.freeze({ actionId: "storage-delete-test-object", key: "delete" }),
 ]);
+const STORAGE_DIAGNOSTIC_ACTION_KEY_BY_ID = new Map(STORAGE_DIAGNOSTIC_ACTIONS.map((action) => [action.actionId, action.key]));
 
 function asText(value, fallback = "not available") {
     return statusText(value, fallback);
@@ -61,6 +63,8 @@ class AdminSystemHealthController {
             node,
         ]));
         this.historyRows = root.querySelector("[data-admin-system-health-history-rows]");
+        this.actionRows = root.querySelector("[data-admin-system-health-action-rows]");
+        this.actionButtons = Array.from(root.querySelectorAll("[data-admin-system-health-action]"));
         this.configurationRows = root.querySelector("[data-admin-system-health-configuration-rows]");
         this.serviceCards = root.querySelector("[data-admin-system-health-service-cards]");
         this.startupRows = root.querySelector("[data-admin-system-health-startup-rows]");
@@ -71,6 +75,7 @@ class AdminSystemHealthController {
         if ((!this.environmentValues.size && !this.dbValues.size && !this.storageValues.size) || document.querySelector("[data-session-access-blocked='admin']") || window.GameFoundrySessionGuard?.blocked === true) {
             return;
         }
+        this.bindManualActions();
         this.load();
     }
 
@@ -139,6 +144,20 @@ class AdminSystemHealthController {
         this.renderServiceHealthPending(reason);
         this.renderConfigurationSummaryPending(reason);
         this.renderHistoryPending(reason);
+    }
+
+    bindManualActions() {
+        this.actionButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+                this.runManualHealthAction(button.dataset.adminSystemHealthAction);
+            });
+        });
+    }
+
+    setManualActionsDisabled(disabled) {
+        this.actionButtons.forEach((button) => {
+            button.disabled = disabled;
+        });
     }
 
     renderEnvironmentIdentity(environmentIdentity = {}) {
@@ -447,6 +466,71 @@ class AdminSystemHealthController {
         return cell;
     }
 
+    renderManualActionResult(result = {}) {
+        if (!this.actionRows) {
+            return;
+        }
+        const blocked = result?.secretsExposed === true || result?.secretEditingAllowed === true;
+        const row = document.createElement("tr");
+        row.append(
+            this.createCell(result.label || "Manual health action"),
+            this.createCell(result.checkedAt || result.lastChecked || "not available"),
+            this.createStatusCell(blocked ? "PENDING" : result.status, blocked ? "Safe manual action response was blocked because it exposed secret controls." : result.message),
+            this.createCell(blocked ? "Safe manual action response was blocked." : result.message),
+        );
+        this.actionRows.replaceChildren(row);
+    }
+
+    applyManualActionResult(result = {}) {
+        if (result.statusSnapshot) {
+            this.renderStatusData(result.statusSnapshot);
+        }
+        if (result.runtimeHealth) {
+            this.renderRuntimeHealth(result.runtimeHealth);
+        }
+        if (result.databaseStatus) {
+            this.renderPostgresStatus(result.databaseStatus);
+        }
+        if (result.storageStatus) {
+            this.renderStorageStatus(result.storageStatus);
+        }
+        const storageDiagnostics = Array.isArray(result.storageDiagnostics) ? result.storageDiagnostics : [];
+        storageDiagnostics.forEach((storageResult) => {
+            const key = STORAGE_DIAGNOSTIC_ACTION_KEY_BY_ID.get(storageResult.actionId);
+            if (key) {
+                this.renderStorageResult(key, storageResult);
+            }
+        });
+    }
+
+    runManualHealthAction(actionId) {
+        if (!actionId) {
+            return;
+        }
+        this.setManualActionsDisabled(true);
+        this.renderManualActionResult({
+            checkedAt: new Date().toISOString(),
+            label: "Manual health action",
+            message: "Manual health action is running through the safe Admin System Health API.",
+            status: "PENDING",
+        });
+        try {
+            const result = runAdminSystemHealthAction(actionId);
+            this.renderManualActionResult(result);
+            this.applyManualActionResult(result);
+        } catch (error) {
+            const message = error instanceof Error ? error.message : "Safe Admin System Health action API is unavailable.";
+            this.renderManualActionResult({
+                checkedAt: new Date().toISOString(),
+                label: "Manual health action",
+                message,
+                status: "FAIL",
+            });
+        } finally {
+            this.setManualActionsDisabled(false);
+        }
+    }
+
     renderRuntimePending(reason) {
         if (!this.runtimeRows) {
             return;
@@ -488,23 +572,27 @@ class AdminSystemHealthController {
         this.runtimeRows.replaceChildren(fragment);
     }
 
+    renderStatusData(data = {}) {
+        if (data?.secretsExposed === true || data?.secretEditingAllowed === true) {
+            this.renderPending("Safe Admin System Health API refused to render because the response exposed secret controls.");
+            return;
+        }
+        this.renderEnvironmentIdentity(data?.environmentIdentity || {});
+        this.renderPostgresStatus(data?.databaseStatus || {});
+        this.renderStartupDiagnostics(data?.localApiStartup || {});
+        this.renderStorageStatus(data?.storageStatus || {});
+        this.runStorageDiagnostics();
+        this.renderRuntimeHealth(data?.runtimeHealth || {});
+        this.renderServiceHealth(data?.serviceHealth || {});
+        this.renderConfigurationSummary(data?.configurationSummary || {});
+        this.renderHealthCheckHistory(data?.healthCheckHistory || []);
+        this.renderRuntimeEnvironment(data?.runtimeEnvironment || {});
+    }
+
     load() {
         try {
             const data = readAdminSystemHealthStatus();
-            if (data?.secretsExposed === true || data?.secretEditingAllowed === true) {
-                this.renderPending("Safe Admin System Health API refused to render because the response exposed secret controls.");
-                return;
-            }
-            this.renderEnvironmentIdentity(data?.environmentIdentity || {});
-            this.renderPostgresStatus(data?.databaseStatus || {});
-            this.renderStartupDiagnostics(data?.localApiStartup || {});
-            this.renderStorageStatus(data?.storageStatus || {});
-            this.runStorageDiagnostics();
-            this.renderRuntimeHealth(data?.runtimeHealth || {});
-            this.renderServiceHealth(data?.serviceHealth || {});
-            this.renderConfigurationSummary(data?.configurationSummary || {});
-            this.renderHealthCheckHistory(data?.healthCheckHistory || []);
-            this.renderRuntimeEnvironment(data?.runtimeEnvironment || {});
+            this.renderStatusData(data);
         } catch (error) {
             const message = error instanceof Error ? error.message : "Safe Admin System Health API is unavailable.";
             this.renderPending(message);

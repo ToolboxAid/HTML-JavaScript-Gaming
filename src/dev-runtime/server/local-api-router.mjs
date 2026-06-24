@@ -348,6 +348,20 @@ const STORAGE_CONNECTIVITY_ACTIONS = Object.freeze([
   Object.freeze({ id: "storage-read-test-object", label: "Read test object", operation: "read" }),
   Object.freeze({ id: "storage-delete-test-object", label: "Delete test object", operation: "delete" }),
 ]);
+const SYSTEM_HEALTH_STORAGE_ACTION_IDS = Object.freeze([
+  "storage-bucket-connectivity",
+  "storage-list",
+  "storage-upload-test-object",
+  "storage-read-test-object",
+  "storage-delete-test-object",
+]);
+const SYSTEM_HEALTH_MANUAL_ACTION_LABELS = Object.freeze({
+  "database-check": "Run Database Check",
+  "full-health-check": "Run Full Health Check",
+  refresh: "Refresh",
+  "runtime-check": "Run Runtime Check",
+  "storage-check": "Run Storage Check",
+});
 const STORAGE_CONNECTIVITY_TEST_OBJECT_CONTENT = "Game Foundry Studio storage connectivity test object.\n";
 const STORAGE_CONNECTIVITY_TEST_OBJECT_RELATIVE_PATH = "connectivity/storage-connectivity-test.txt";
 const SYSTEM_HEALTH_ENVIRONMENT_MODELS = Object.freeze([
@@ -4083,6 +4097,78 @@ LIMIT 1;
     return this.runStorageConnectivityAction(String(body.actionId || "").trim(), { scope: "environment-folder" });
   }
 
+  async adminSystemHealthStorageHealthCheck() {
+    const results = [];
+    for (const actionId of SYSTEM_HEALTH_STORAGE_ACTION_IDS) {
+      results.push(await this.runStorageConnectivityAction(actionId, { scope: "environment-folder" }));
+    }
+    return {
+      actionId: "storage-check",
+      checkedAt: new Date().toISOString(),
+      label: SYSTEM_HEALTH_MANUAL_ACTION_LABELS["storage-check"],
+      message: "Storage health check executed bucket connectivity, list, upload, read, and delete through the current deployment API.",
+      secretEditingAllowed: false,
+      secretsExposed: false,
+      status: overallHealthStatus(results.map((result) => ({ status: result.status }))),
+      storageDiagnostics: results,
+      storageStatus: this.ownerStorageStatus(),
+    };
+  }
+
+  async adminSystemHealthAction(body = {}) {
+    const session = await this.requireAdminSession();
+    const actionId = String(body.actionId || "").trim();
+    const label = SYSTEM_HEALTH_MANUAL_ACTION_LABELS[actionId];
+    if (!label) {
+      throw httpError(`Unknown Admin System Health action: ${actionId || "missing actionId"}.`, 400);
+    }
+    const checkedAt = new Date().toISOString();
+    const environmentIdentity = systemHealthEnvironmentIdentity(process.env, checkedAt);
+    if (actionId === "refresh" || actionId === "full-health-check") {
+      const statusSnapshot = await this.adminSystemHealthStatus();
+      return {
+        actionId,
+        checkedAt,
+        label,
+        message: `${label} completed through the current deployment Admin System Health API.`,
+        secretEditingAllowed: false,
+        secretsExposed: false,
+        status: statusSnapshot.status,
+        statusSnapshot,
+      };
+    }
+    if (actionId === "runtime-check") {
+      const runtimeHealth = systemHealthRuntimeHealth(environmentIdentity, checkedAt);
+      return {
+        actionId,
+        checkedAt,
+        label,
+        message: "Runtime health check completed through the current deployment API.",
+        runtimeHealth,
+        secretEditingAllowed: false,
+        secretsExposed: false,
+        status: runtimeHealth.status,
+      };
+    }
+    if (actionId === "database-check") {
+      const databaseStatus = await this.ownerDatabaseStatus(environmentIdentity);
+      return {
+        actionId,
+        checkedAt,
+        databaseStatus,
+        label,
+        message: "Database health check completed through the current deployment API.",
+        secretEditingAllowed: false,
+        secretsExposed: false,
+        status: databaseStatus.connectivityStatus || databaseStatus.status,
+      };
+    }
+    if (session.isAdmin !== true) {
+      throw httpError("Admin role required.", 403);
+    }
+    return this.adminSystemHealthStorageHealthCheck();
+  }
+
   async adminSystemHealthStatus() {
     const session = await this.requireAdminSession();
     const authStatus = this.authStatus();
@@ -6270,6 +6356,12 @@ export function createLocalApiRouter({
       if (parts[1] === "admin" && parts[2] === "system-health" && request.method === "POST" && parts[3] === "storage-connectivity-action") {
         const body = await readRequestJson(request);
         ok(response, await dataSource.adminSystemHealthStorageConnectivityAction(body));
+        return true;
+      }
+
+      if (parts[1] === "admin" && parts[2] === "system-health" && request.method === "POST" && parts[3] === "action") {
+        const body = await readRequestJson(request);
+        ok(response, await dataSource.adminSystemHealthAction(body));
         return true;
       }
 

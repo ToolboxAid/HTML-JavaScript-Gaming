@@ -209,6 +209,44 @@ test("Admin can view operational health while Creator sessions are blocked", asy
       assert.equal(startupText.includes("api-secret"), false);
       assert.equal(startupText.includes("site-user"), false);
       assert.equal(startupText.includes("site-secret"), false);
+      const runtimeAction = await apiJson(server.baseUrl, "/api/admin/system-health/action", {
+        body: { actionId: "runtime-check" },
+        method: "POST",
+      });
+      assert.equal(runtimeAction.runtimeHealth.environmentName, "Local");
+      assert.equal(runtimeAction.actionId, "runtime-check");
+      const databaseAction = await apiJson(server.baseUrl, "/api/admin/system-health/action", {
+        body: { actionId: "database-check" },
+        method: "POST",
+      });
+      assert.equal(databaseAction.databaseStatus.databaseType, "Local Docker PostgreSQL");
+      assert.equal(databaseAction.actionId, "database-check");
+      const storageAction = await apiJson(server.baseUrl, "/api/admin/system-health/action", {
+        body: { actionId: "storage-check" },
+        method: "POST",
+      });
+      assert.equal(storageAction.actionId, "storage-check");
+      assert.deepEqual(
+        storageAction.storageDiagnostics.map((row) => row.actionId),
+        [
+          "storage-bucket-connectivity",
+          "storage-list",
+          "storage-upload-test-object",
+          "storage-read-test-object",
+          "storage-delete-test-object",
+        ],
+      );
+      assert.equal(storageAction.storageDiagnostics.every((row) => row.environmentFolder === "/local"), true);
+      const refreshAction = await apiJson(server.baseUrl, "/api/admin/system-health/action", {
+        body: { actionId: "refresh" },
+        method: "POST",
+      });
+      assert.equal(refreshAction.statusSnapshot.environmentIdentity.name, "Local");
+      const fullAction = await apiJson(server.baseUrl, "/api/admin/system-health/action", {
+        body: { actionId: "full-health-check" },
+        method: "POST",
+      });
+      assert.equal(fullAction.statusSnapshot.environmentIdentity.name, "Local");
       assert.equal(Array.isArray(health.operationsHealth.summaryRows), true);
       assert.deepEqual(
         health.operationsHealth.summaryRows.map((row) => row.area),

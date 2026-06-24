@@ -162,6 +162,11 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
     await expect(configurationTable).toContainText("Storage provider/folder");
     await expect(configurationTable).toContainText("Auth provider/status");
     await expect(configurationTable).not.toContainText("env-secret");
+    await expect(page.getByRole("button", { name: "Refresh" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Run Runtime Check" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Run Database Check" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Run Storage Check" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Run Full Health Check" })).toBeVisible();
     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Approved diagnostics format");
     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Environment Variables + All Runtime Ports");
     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Configurable multiple runtime ports");
@@ -235,6 +240,9 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
     }
     expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/status"))).toBe(true);
     expect(context.requestUrls.filter((url) => url.includes("/api/admin/system-health/storage-connectivity-action"))).toHaveLength(5);
+    await page.getByRole("button", { name: "Run Runtime Check" }).click();
+    await expect(page.getByRole("table", { name: "Manual health action results" })).toContainText("Run Runtime Check");
+    expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/action"))).toBe(true);
     await expectClientToHideSecretValues(page, context);
     await expect(page.locator("[data-admin-system-health-storage-action]")).toHaveCount(0);
     await expect(page.locator("[data-owner-ai-save], [data-owner-membership-save], [data-owner-ai-credits], [data-owner-memberships]")).toHaveCount(0);
@@ -278,6 +286,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
   expect(pageSource).toContain("Environment Map");
   expect(pageSource).toContain("Service Health");
   expect(pageSource).toContain("Configuration Summary");
+  expect(pageSource).toContain("Manual Health Actions");
   expect(pageSource).toContain("Runtime Health");
   expect(pageSource).toContain("Diagnostics Plan");
   expect(pageSource).toContain("Local API Startup Diagnostics");
@@ -289,5 +298,6 @@ test("Admin System Health operations page keeps scripts and styles external", as
   expect(runtimeSource).not.toContain("SQLite");
   expect(runtimeSource).not.toContain("localStorage");
   expect(runtimeSource).not.toContain("sessionStorage");
+  expect(runtimeSource).toContain("runAdminSystemHealthAction");
   expect(runtimeSource).toContain("runAdminSystemHealthStorageConnectivityAction");
 });

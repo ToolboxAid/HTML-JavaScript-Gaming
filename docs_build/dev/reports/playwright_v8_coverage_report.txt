@@ -14,11 +14,12 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
 Exercised tool entry points detected:
 (46%) Toolbox Index - exercised 1 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
-(78%) Theme V2 Shared JS - exercised 4 runtime JS files
+(79%) Theme V2 Shared JS - exercised 4 runtime JS files
 
 Changed runtime JS files covered:
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(85%) assets/theme-v2/js/admin-system-health.js - executed lines 484/484; executed functions 46/54
+(86%) assets/theme-v2/js/admin-system-health.js - executed lines 566/566; executed functions 56/65
+(100%) src/api/admin-system-health-api-client.js - executed lines 28/28; executed functions 4/4
 
 Files with executed line/function counts where available:
 (36%) src/api/server-api-client.js - executed lines 167/167; executed functions 5/14
@@ -28,9 +29,9 @@ Files with executed line/function counts where available:
 (74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1001/1001; executed functions 69/93
 (80%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 4/5
 (83%) assets/js/shared/status.js - executed lines 37/37; executed functions 5/6
-(85%) assets/theme-v2/js/admin-system-health.js - executed lines 484/484; executed functions 46/54
+(86%) assets/theme-v2/js/admin-system-health.js - executed lines 566/566; executed functions 56/65
 (91%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 10/11
-(100%) src/api/admin-system-health-api-client.js - executed lines 19/19; executed functions 3/3
+(100%) src/api/admin-system-health-api-client.js - executed lines 28/28; executed functions 4/4
 
 Uncovered or low-coverage changed JS files:
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
@@ -39,4 +40,5 @@ Changed JS files considered:
 (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/dev-runtime/AdminHealthOperations.test.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
-(85%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
+(86%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
+(100%) src/api/admin-system-health-api-client.js - changed JS file with browser V8 coverage

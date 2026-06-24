@@ -1,356 +1,558 @@
 diff --git a/admin/system-health.html b/admin/system-health.html
-index 3669d4430..b49563adf 100644
+index b49563adf..ad1a9fc5a 100644
 --- a/admin/system-health.html
 +++ b/admin/system-health.html
-@@ -41,6 +41,7 @@
-                                     <p>Environment Identity</p>
+@@ -42,6 +42,7 @@
                                      <p>Environment Map</p>
                                      <p>Service Health</p>
-+                                    <p>Configuration Summary</p>
+                                     <p>Configuration Summary</p>
++                                    <p>Manual Health Actions</p>
                                      <p>Local API Startup</p>
                                      <p>Database Health</p>
                                      <p>Storage Health</p>
-@@ -116,6 +117,21 @@
-                                 </article>
-                             </div>
-                         </section>
-+                        <div class="table-wrapper">
-+                            <table class="data-table" aria-label="Configuration summary">
-+                                <caption>Configuration Summary</caption>
-+                                <thead>
-+                                    <tr>
-+                                        <th scope="col">Field</th>
-+                                        <th scope="col">Read-only Value</th>
-+                                        <th scope="col">Status</th>
-+                                    </tr>
-+                                </thead>
-+                                <tbody data-admin-system-health-configuration-rows>
-+                                    <tr><td>Configuration Summary</td><td>Waiting for safe API status</td><td data-health-status="PENDING" title="Reason: configuration summary has not loaded yet." aria-label="PENDING: configuration summary has not loaded yet.">PENDING</td></tr>
-+                                </tbody>
-+                            </table>
-+                        </div>
+@@ -132,6 +133,35 @@
+                                 </tbody>
+                             </table>
+                         </div>
++                        <section class="content-stack" aria-label="Manual health actions">
++                            <div>
++                                <div class="kicker">Current Deployment</div>
++                                <h3>Manual Health Actions</h3>
++                            </div>
++                            <div class="content-cluster">
++                                <button class="btn btn--compact" type="button" data-admin-system-health-action="refresh">Refresh</button>
++                                <button class="btn btn--compact" type="button" data-admin-system-health-action="runtime-check">Run Runtime Check</button>
++                                <button class="btn btn--compact" type="button" data-admin-system-health-action="database-check">Run Database Check</button>
++                                <button class="btn btn--compact" type="button" data-admin-system-health-action="storage-check">Run Storage Check</button>
++                                <button class="btn btn--compact" type="button" data-admin-system-health-action="full-health-check">Run Full Health Check</button>
++                            </div>
++                            <div class="table-wrapper">
++                                <table class="data-table" aria-label="Manual health action results">
++                                    <caption>Manual Health Action Results</caption>
++                                    <thead>
++                                        <tr>
++                                            <th scope="col">Action</th>
++                                            <th scope="col">Last Checked</th>
++                                            <th scope="col">Status</th>
++                                            <th scope="col">Result</th>
++                                        </tr>
++                                    </thead>
++                                    <tbody data-admin-system-health-action-rows>
++                                        <tr><td>Manual health actions</td><td>not run</td><td data-health-status="PENDING" title="Reason: no manual health action has run yet." aria-label="PENDING: no manual health action has run yet.">PENDING</td><td>Waiting for Admin action.</td></tr>
++                                    </tbody>
++                                </table>
++                            </div>
++                        </section>
                          <div class="table-wrapper">
                              <table class="data-table" aria-label="Local API startup diagnostics">
                                  <caption>Local API Startup Diagnostics</caption>
 diff --git a/assets/theme-v2/js/admin-system-health.js b/assets/theme-v2/js/admin-system-health.js
-index 69cffcd2d..671bc87ac 100644
+index 671bc87ac..f63f35751 100644
 --- a/assets/theme-v2/js/admin-system-health.js
 +++ b/assets/theme-v2/js/admin-system-health.js
-@@ -61,6 +61,7 @@ class AdminSystemHealthController {
+@@ -1,5 +1,6 @@
+ import {
+     readAdminSystemHealthStatus,
++    runAdminSystemHealthAction,
+     runAdminSystemHealthStorageConnectivityAction,
+ } from "../../../src/api/admin-system-health-api-client.js";
+ import {
+@@ -15,6 +16,7 @@ const STORAGE_DIAGNOSTIC_ACTIONS = Object.freeze([
+     Object.freeze({ actionId: "storage-read-test-object", key: "read" }),
+     Object.freeze({ actionId: "storage-delete-test-object", key: "delete" }),
+ ]);
++const STORAGE_DIAGNOSTIC_ACTION_KEY_BY_ID = new Map(STORAGE_DIAGNOSTIC_ACTIONS.map((action) => [action.actionId, action.key]));
+ 
+ function asText(value, fallback = "not available") {
+     return statusText(value, fallback);
+@@ -61,6 +63,8 @@ class AdminSystemHealthController {
              node,
          ]));
          this.historyRows = root.querySelector("[data-admin-system-health-history-rows]");
-+        this.configurationRows = root.querySelector("[data-admin-system-health-configuration-rows]");
++        this.actionRows = root.querySelector("[data-admin-system-health-action-rows]");
++        this.actionButtons = Array.from(root.querySelectorAll("[data-admin-system-health-action]"));
+         this.configurationRows = root.querySelector("[data-admin-system-health-configuration-rows]");
          this.serviceCards = root.querySelector("[data-admin-system-health-service-cards]");
          this.startupRows = root.querySelector("[data-admin-system-health-startup-rows]");
-         this.runtimeRows = root.querySelector("[data-admin-system-health-runtime-rows]");
-@@ -136,6 +137,7 @@ class AdminSystemHealthController {
-         this.renderStoragePending(reason);
-         this.renderRuntimeHealthPending(reason);
-         this.renderServiceHealthPending(reason);
-+        this.renderConfigurationSummaryPending(reason);
+@@ -71,6 +75,7 @@ class AdminSystemHealthController {
+         if ((!this.environmentValues.size && !this.dbValues.size && !this.storageValues.size) || document.querySelector("[data-session-access-blocked='admin']") || window.GameFoundrySessionGuard?.blocked === true) {
+             return;
+         }
++        this.bindManualActions();
+         this.load();
+     }
+ 
+@@ -141,6 +146,20 @@ class AdminSystemHealthController {
          this.renderHistoryPending(reason);
      }
  
-@@ -278,6 +280,45 @@ class AdminSystemHealthController {
-         this.serviceCards.replaceChildren(fragment);
++    bindManualActions() {
++        this.actionButtons.forEach((button) => {
++            button.addEventListener("click", () => {
++                this.runManualHealthAction(button.dataset.adminSystemHealthAction);
++            });
++        });
++    }
++
++    setManualActionsDisabled(disabled) {
++        this.actionButtons.forEach((button) => {
++            button.disabled = disabled;
++        });
++    }
++
+     renderEnvironmentIdentity(environmentIdentity = {}) {
+         const reason = environmentIdentity.message || "Current deployment environment identity returned by the safe Admin System Health API.";
+         this.setEnvironmentValue("name", environmentIdentity.name, "Unknown");
+@@ -447,6 +466,71 @@ class AdminSystemHealthController {
+         return cell;
      }
  
-+    renderConfigurationSummaryPending(reason) {
-+        if (!this.configurationRows) {
++    renderManualActionResult(result = {}) {
++        if (!this.actionRows) {
 +            return;
 +        }
++        const blocked = result?.secretsExposed === true || result?.secretEditingAllowed === true;
 +        const row = document.createElement("tr");
 +        row.append(
-+            this.createCell("Configuration Summary"),
-+            this.createCell("not available"),
-+            this.createStatusCell("PENDING", reason),
++            this.createCell(result.label || "Manual health action"),
++            this.createCell(result.checkedAt || result.lastChecked || "not available"),
++            this.createStatusCell(blocked ? "PENDING" : result.status, blocked ? "Safe manual action response was blocked because it exposed secret controls." : result.message),
++            this.createCell(blocked ? "Safe manual action response was blocked." : result.message),
 +        );
-+        this.configurationRows.replaceChildren(row);
++        this.actionRows.replaceChildren(row);
 +    }
 +
-+    renderConfigurationSummary(configurationSummary = {}) {
-+        if (!this.configurationRows) {
-+            return;
++    applyManualActionResult(result = {}) {
++        if (result.statusSnapshot) {
++            this.renderStatusData(result.statusSnapshot);
 +        }
-+        if (configurationSummary?.secretsExposed === true || configurationSummary?.secretEditingAllowed === true) {
-+            this.renderConfigurationSummaryPending("Safe configuration summary response was blocked because it exposed secret controls.");
-+            return;
++        if (result.runtimeHealth) {
++            this.renderRuntimeHealth(result.runtimeHealth);
 +        }
-+        const rows = Array.isArray(configurationSummary.rows) ? configurationSummary.rows : [];
-+        if (!rows.length) {
-+            this.renderConfigurationSummaryPending("Safe Admin System Health API returned no configuration summary rows.");
-+            return;
++        if (result.databaseStatus) {
++            this.renderPostgresStatus(result.databaseStatus);
 +        }
-+        const fragment = document.createDocumentFragment();
-+        rows.forEach((configurationRow) => {
-+            const row = document.createElement("tr");
-+            row.append(
-+                this.createCell(configurationRow.field),
-+                this.createCell(configurationRow.value),
-+                this.createStatusCell(configurationRow.status, configurationSummary.message),
-+            );
-+            fragment.append(row);
++        if (result.storageStatus) {
++            this.renderStorageStatus(result.storageStatus);
++        }
++        const storageDiagnostics = Array.isArray(result.storageDiagnostics) ? result.storageDiagnostics : [];
++        storageDiagnostics.forEach((storageResult) => {
++            const key = STORAGE_DIAGNOSTIC_ACTION_KEY_BY_ID.get(storageResult.actionId);
++            if (key) {
++                this.renderStorageResult(key, storageResult);
++            }
 +        });
-+        this.configurationRows.replaceChildren(fragment);
 +    }
 +
-     renderStartupPending(reason) {
-         if (!this.startupRows) {
++    runManualHealthAction(actionId) {
++        if (!actionId) {
++            return;
++        }
++        this.setManualActionsDisabled(true);
++        this.renderManualActionResult({
++            checkedAt: new Date().toISOString(),
++            label: "Manual health action",
++            message: "Manual health action is running through the safe Admin System Health API.",
++            status: "PENDING",
++        });
++        try {
++            const result = runAdminSystemHealthAction(actionId);
++            this.renderManualActionResult(result);
++            this.applyManualActionResult(result);
++        } catch (error) {
++            const message = error instanceof Error ? error.message : "Safe Admin System Health action API is unavailable.";
++            this.renderManualActionResult({
++                checkedAt: new Date().toISOString(),
++                label: "Manual health action",
++                message,
++                status: "FAIL",
++            });
++        } finally {
++            this.setManualActionsDisabled(false);
++        }
++    }
++
+     renderRuntimePending(reason) {
+         if (!this.runtimeRows) {
              return;
-@@ -461,6 +502,7 @@ class AdminSystemHealthController {
-             this.runStorageDiagnostics();
-             this.renderRuntimeHealth(data?.runtimeHealth || {});
-             this.renderServiceHealth(data?.serviceHealth || {});
-+            this.renderConfigurationSummary(data?.configurationSummary || {});
-             this.renderHealthCheckHistory(data?.healthCheckHistory || []);
-             this.renderRuntimeEnvironment(data?.runtimeEnvironment || {});
+@@ -488,23 +572,27 @@ class AdminSystemHealthController {
+         this.runtimeRows.replaceChildren(fragment);
+     }
+ 
++    renderStatusData(data = {}) {
++        if (data?.secretsExposed === true || data?.secretEditingAllowed === true) {
++            this.renderPending("Safe Admin System Health API refused to render because the response exposed secret controls.");
++            return;
++        }
++        this.renderEnvironmentIdentity(data?.environmentIdentity || {});
++        this.renderPostgresStatus(data?.databaseStatus || {});
++        this.renderStartupDiagnostics(data?.localApiStartup || {});
++        this.renderStorageStatus(data?.storageStatus || {});
++        this.runStorageDiagnostics();
++        this.renderRuntimeHealth(data?.runtimeHealth || {});
++        this.renderServiceHealth(data?.serviceHealth || {});
++        this.renderConfigurationSummary(data?.configurationSummary || {});
++        this.renderHealthCheckHistory(data?.healthCheckHistory || []);
++        this.renderRuntimeEnvironment(data?.runtimeEnvironment || {});
++    }
++
+     load() {
+         try {
+             const data = readAdminSystemHealthStatus();
+-            if (data?.secretsExposed === true || data?.secretEditingAllowed === true) {
+-                this.renderPending("Safe Admin System Health API refused to render because the response exposed secret controls.");
+-                return;
+-            }
+-            this.renderEnvironmentIdentity(data?.environmentIdentity || {});
+-            this.renderPostgresStatus(data?.databaseStatus || {});
+-            this.renderStartupDiagnostics(data?.localApiStartup || {});
+-            this.renderStorageStatus(data?.storageStatus || {});
+-            this.runStorageDiagnostics();
+-            this.renderRuntimeHealth(data?.runtimeHealth || {});
+-            this.renderServiceHealth(data?.serviceHealth || {});
+-            this.renderConfigurationSummary(data?.configurationSummary || {});
+-            this.renderHealthCheckHistory(data?.healthCheckHistory || []);
+-            this.renderRuntimeEnvironment(data?.runtimeEnvironment || {});
++            this.renderStatusData(data);
          } catch (error) {
+             const message = error instanceof Error ? error.message : "Safe Admin System Health API is unavailable.";
+             this.renderPending(message);
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index c7da8249e..041db8fb5 100644
+index 041db8fb5..3b245ffb8 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -7,7 +7,7 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+@@ -7,7 +7,8 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
  
  Changed runtime JS files considered:
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(86%) assets/theme-v2/js/admin-system-health.js - executed lines 444/444; executed functions 44/51
-+(85%) assets/theme-v2/js/admin-system-health.js - executed lines 484/484; executed functions 46/54
+-(85%) assets/theme-v2/js/admin-system-health.js - executed lines 484/484; executed functions 46/54
++(86%) assets/theme-v2/js/admin-system-health.js - executed lines 566/566; executed functions 56/65
++(100%) src/api/admin-system-health-api-client.js - executed lines 28/28; executed functions 4/4
  
  Guardrail warnings:
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index ecf38924f..d333b0db3 100644
+index d333b0db3..951bbc3e1 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -18,7 +18,7 @@ Exercised tool entry points detected:
+@@ -14,11 +14,12 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
+ Exercised tool entry points detected:
+ (46%) Toolbox Index - exercised 1 runtime JS files
+ (0%) Tool Template V2 - not exercised by this Playwright run
+-(78%) Theme V2 Shared JS - exercised 4 runtime JS files
++(79%) Theme V2 Shared JS - exercised 4 runtime JS files
  
  Changed runtime JS files covered:
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(86%) assets/theme-v2/js/admin-system-health.js - executed lines 444/444; executed functions 44/51
-+(85%) assets/theme-v2/js/admin-system-health.js - executed lines 484/484; executed functions 46/54
+-(85%) assets/theme-v2/js/admin-system-health.js - executed lines 484/484; executed functions 46/54
++(86%) assets/theme-v2/js/admin-system-health.js - executed lines 566/566; executed functions 56/65
++(100%) src/api/admin-system-health-api-client.js - executed lines 28/28; executed functions 4/4
  
  Files with executed line/function counts where available:
  (36%) src/api/server-api-client.js - executed lines 167/167; executed functions 5/14
-@@ -28,7 +28,7 @@ Files with executed line/function counts where available:
+@@ -28,9 +29,9 @@ Files with executed line/function counts where available:
  (74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1001/1001; executed functions 69/93
  (80%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 4/5
  (83%) assets/js/shared/status.js - executed lines 37/37; executed functions 5/6
--(86%) assets/theme-v2/js/admin-system-health.js - executed lines 444/444; executed functions 44/51
-+(85%) assets/theme-v2/js/admin-system-health.js - executed lines 484/484; executed functions 46/54
+-(85%) assets/theme-v2/js/admin-system-health.js - executed lines 484/484; executed functions 46/54
++(86%) assets/theme-v2/js/admin-system-health.js - executed lines 566/566; executed functions 56/65
  (91%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 10/11
- (100%) src/api/admin-system-health-api-client.js - executed lines 19/19; executed functions 3/3
+-(100%) src/api/admin-system-health-api-client.js - executed lines 19/19; executed functions 3/3
++(100%) src/api/admin-system-health-api-client.js - executed lines 28/28; executed functions 4/4
  
-@@ -39,4 +39,4 @@ Changed JS files considered:
+ Uncovered or low-coverage changed JS files:
+ (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+@@ -39,4 +40,5 @@ Changed JS files considered:
  (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
  (0%) tests/dev-runtime/AdminHealthOperations.test.mjs - changed JS file not collected as browser runtime coverage
  (0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
--(86%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
-+(85%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
+-(85%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
++(86%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
++(100%) src/api/admin-system-health-api-client.js - changed JS file with browser V8 coverage
+diff --git a/src/api/admin-system-health-api-client.js b/src/api/admin-system-health-api-client.js
+index dcac596fd..9b166d097 100644
+--- a/src/api/admin-system-health-api-client.js
++++ b/src/api/admin-system-health-api-client.js
+@@ -19,3 +19,13 @@ export function runAdminSystemHealthStorageConnectivityAction(actionId) {
+     "Admin System Health storage connectivity action",
+   );
+ }
++
++export function runAdminSystemHealthAction(actionId) {
++  return requireServerApiData(
++    safeRequestServerApi("/admin/system-health/action", {
++      body: { actionId },
++      method: "POST",
++    }),
++    "Admin System Health action",
++  );
++}
 diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index 3bbe7bd07..ff1d868a5 100644
+index ff1d868a5..6d06d0eca 100644
 --- a/src/dev-runtime/server/local-api-router.mjs
 +++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -1169,6 +1169,61 @@ function systemHealthServiceHealth({
-   };
- }
+@@ -348,6 +348,20 @@ const STORAGE_CONNECTIVITY_ACTIONS = Object.freeze([
+   Object.freeze({ id: "storage-read-test-object", label: "Read test object", operation: "read" }),
+   Object.freeze({ id: "storage-delete-test-object", label: "Delete test object", operation: "delete" }),
+ ]);
++const SYSTEM_HEALTH_STORAGE_ACTION_IDS = Object.freeze([
++  "storage-bucket-connectivity",
++  "storage-list",
++  "storage-upload-test-object",
++  "storage-read-test-object",
++  "storage-delete-test-object",
++]);
++const SYSTEM_HEALTH_MANUAL_ACTION_LABELS = Object.freeze({
++  "database-check": "Run Database Check",
++  "full-health-check": "Run Full Health Check",
++  refresh: "Refresh",
++  "runtime-check": "Run Runtime Check",
++  "storage-check": "Run Storage Check",
++});
+ const STORAGE_CONNECTIVITY_TEST_OBJECT_CONTENT = "Game Foundry Studio storage connectivity test object.\n";
+ const STORAGE_CONNECTIVITY_TEST_OBJECT_RELATIVE_PATH = "connectivity/storage-connectivity-test.txt";
+ const SYSTEM_HEALTH_ENVIRONMENT_MODELS = Object.freeze([
+@@ -4083,6 +4097,78 @@ LIMIT 1;
+     return this.runStorageConnectivityAction(String(body.actionId || "").trim(), { scope: "environment-folder" });
+   }
  
-+function systemHealthConfigurationSummary({
-+  authStatus = {},
-+  checkedAt,
-+  databaseStatus = {},
-+  environmentIdentity = {},
-+  storageStatus = {},
-+}) {
-+  const authConfigured = authStatus.configured === true || authStatus.ready === true;
-+  const rows = [
-+    {
-+      field: "Current environment",
-+      status: environmentIdentity.status || "WARN",
-+      value: environmentIdentity.name || "Unknown",
-+    },
-+    {
-+      field: "Hosting model",
-+      status: environmentIdentity.hostingModel ? "PASS" : "WARN",
-+      value: environmentIdentity.hostingModel || "not configured",
-+    },
-+    {
-+      field: "Site URL",
-+      status: environmentIdentity.siteUrlStatus || "WARN",
-+      value: environmentIdentity.siteUrl || "not configured",
-+    },
-+    {
-+      field: "API URL",
-+      status: environmentIdentity.apiUrlStatus || "WARN",
-+      value: environmentIdentity.apiUrl || "not configured",
-+    },
-+    {
-+      field: "Database provider/type",
-+      status: databaseStatus.databaseType || environmentIdentity.databaseModel ? "PASS" : "WARN",
-+      value: databaseStatus.databaseType || environmentIdentity.databaseModel || "PostgreSQL",
-+    },
-+    {
-+      field: "Storage provider/folder",
-+      status: storageStatus.environmentFolderStatus || environmentIdentity.storageFolderStatus || "WARN",
-+      value: `Cloudflare R2 ${storageStatus.environmentFolder || environmentIdentity.storageFolder || "not configured"}`,
-+    },
-+    {
-+      field: "Auth provider/status",
-+      status: authConfigured ? "PASS" : "PENDING",
-+      value: `${authStatus.providerId || SUPABASE_AUTH_PROVIDER_ID} ${authConfigured ? "ready" : "not configured"}`,
-+    },
-+  ];
-+  return {
-+    lastChecked: checkedAt,
-+    message: "Configuration Summary is read-only and contains no secret values.",
-+    rows,
-+    secretEditingAllowed: false,
-+    secretsExposed: false,
-+    status: overallHealthStatus(rows),
-+  };
-+}
++  async adminSystemHealthStorageHealthCheck() {
++    const results = [];
++    for (const actionId of SYSTEM_HEALTH_STORAGE_ACTION_IDS) {
++      results.push(await this.runStorageConnectivityAction(actionId, { scope: "environment-folder" }));
++    }
++    return {
++      actionId: "storage-check",
++      checkedAt: new Date().toISOString(),
++      label: SYSTEM_HEALTH_MANUAL_ACTION_LABELS["storage-check"],
++      message: "Storage health check executed bucket connectivity, list, upload, read, and delete through the current deployment API.",
++      secretEditingAllowed: false,
++      secretsExposed: false,
++      status: overallHealthStatus(results.map((result) => ({ status: result.status }))),
++      storageDiagnostics: results,
++      storageStatus: this.ownerStorageStatus(),
++    };
++  }
 +
- function systemHealthHistoryRow({ checkedAt, environmentName, area, result, summary, kind = "recent check" }) {
-   return {
-     area,
-@@ -4053,6 +4108,13 @@ LIMIT 1;
-       session,
-       storageStatus,
-     });
-+    const configurationSummary = systemHealthConfigurationSummary({
-+      authStatus,
-+      checkedAt,
-+      databaseStatus,
-+      environmentIdentity,
-+      storageStatus,
-+    });
-     const operationsHealth = adminOperationsHealth(this.standaloneTables);
-     const healthCheckHistory = systemHealthCheckHistory({
-       checkedAt,
-@@ -4191,6 +4253,7 @@ LIMIT 1;
-       pressureLabels: SYSTEM_HEALTH_LIMIT_PRESSURE_LABELS,
-       connectionSummary: this.ownerConnectionSummary(),
-       databaseStatus,
-+      configurationSummary,
-       r2Readiness,
-       secretEditingAllowed: false,
-       secretsExposed: false,
++  async adminSystemHealthAction(body = {}) {
++    const session = await this.requireAdminSession();
++    const actionId = String(body.actionId || "").trim();
++    const label = SYSTEM_HEALTH_MANUAL_ACTION_LABELS[actionId];
++    if (!label) {
++      throw httpError(`Unknown Admin System Health action: ${actionId || "missing actionId"}.`, 400);
++    }
++    const checkedAt = new Date().toISOString();
++    const environmentIdentity = systemHealthEnvironmentIdentity(process.env, checkedAt);
++    if (actionId === "refresh" || actionId === "full-health-check") {
++      const statusSnapshot = await this.adminSystemHealthStatus();
++      return {
++        actionId,
++        checkedAt,
++        label,
++        message: `${label} completed through the current deployment Admin System Health API.`,
++        secretEditingAllowed: false,
++        secretsExposed: false,
++        status: statusSnapshot.status,
++        statusSnapshot,
++      };
++    }
++    if (actionId === "runtime-check") {
++      const runtimeHealth = systemHealthRuntimeHealth(environmentIdentity, checkedAt);
++      return {
++        actionId,
++        checkedAt,
++        label,
++        message: "Runtime health check completed through the current deployment API.",
++        runtimeHealth,
++        secretEditingAllowed: false,
++        secretsExposed: false,
++        status: runtimeHealth.status,
++      };
++    }
++    if (actionId === "database-check") {
++      const databaseStatus = await this.ownerDatabaseStatus(environmentIdentity);
++      return {
++        actionId,
++        checkedAt,
++        databaseStatus,
++        label,
++        message: "Database health check completed through the current deployment API.",
++        secretEditingAllowed: false,
++        secretsExposed: false,
++        status: databaseStatus.connectivityStatus || databaseStatus.status,
++      };
++    }
++    if (session.isAdmin !== true) {
++      throw httpError("Admin role required.", 403);
++    }
++    return this.adminSystemHealthStorageHealthCheck();
++  }
++
+   async adminSystemHealthStatus() {
+     const session = await this.requireAdminSession();
+     const authStatus = this.authStatus();
+@@ -6273,6 +6359,12 @@ export function createLocalApiRouter({
+         return true;
+       }
+ 
++      if (parts[1] === "admin" && parts[2] === "system-health" && request.method === "POST" && parts[3] === "action") {
++        const body = await readRequestJson(request);
++        ok(response, await dataSource.adminSystemHealthAction(body));
++        return true;
++      }
++
+       if (parts[1] === "admin" && parts[2] === "operations" && request.method === "GET" && parts[3] === "status") {
+         ok(response, await dataSource.adminOperationsStatus());
+         return true;
 diff --git a/tests/dev-runtime/AdminHealthOperations.test.mjs b/tests/dev-runtime/AdminHealthOperations.test.mjs
-index 5a4d4f24b..a3e0c9859 100644
+index a3e0c9859..5df10fab0 100644
 --- a/tests/dev-runtime/AdminHealthOperations.test.mjs
 +++ b/tests/dev-runtime/AdminHealthOperations.test.mjs
-@@ -159,6 +159,22 @@ test("Admin can view operational health while Creator sessions are blocked", asy
-       );
-       assert.equal(health.serviceHealth.services.every((service) => typeof service.summary === "string"), true);
-       assert.equal(JSON.stringify(health.serviceHealth).includes("/uat"), false);
+@@ -209,6 +209,44 @@ test("Admin can view operational health while Creator sessions are blocked", asy
+       assert.equal(startupText.includes("api-secret"), false);
+       assert.equal(startupText.includes("site-user"), false);
+       assert.equal(startupText.includes("site-secret"), false);
++      const runtimeAction = await apiJson(server.baseUrl, "/api/admin/system-health/action", {
++        body: { actionId: "runtime-check" },
++        method: "POST",
++      });
++      assert.equal(runtimeAction.runtimeHealth.environmentName, "Local");
++      assert.equal(runtimeAction.actionId, "runtime-check");
++      const databaseAction = await apiJson(server.baseUrl, "/api/admin/system-health/action", {
++        body: { actionId: "database-check" },
++        method: "POST",
++      });
++      assert.equal(databaseAction.databaseStatus.databaseType, "Local Docker PostgreSQL");
++      assert.equal(databaseAction.actionId, "database-check");
++      const storageAction = await apiJson(server.baseUrl, "/api/admin/system-health/action", {
++        body: { actionId: "storage-check" },
++        method: "POST",
++      });
++      assert.equal(storageAction.actionId, "storage-check");
 +      assert.deepEqual(
-+        health.configurationSummary.rows.map((row) => row.field),
++        storageAction.storageDiagnostics.map((row) => row.actionId),
 +        [
-+          "Current environment",
-+          "Hosting model",
-+          "Site URL",
-+          "API URL",
-+          "Database provider/type",
-+          "Storage provider/folder",
-+          "Auth provider/status",
++          "storage-bucket-connectivity",
++          "storage-list",
++          "storage-upload-test-object",
++          "storage-read-test-object",
++          "storage-delete-test-object",
 +        ],
 +      );
-+      assert.equal(JSON.stringify(health.configurationSummary).includes("site-user"), false);
-+      assert.equal(JSON.stringify(health.configurationSummary).includes("site-secret"), false);
-+      assert.equal(JSON.stringify(health.configurationSummary).includes("api-user"), false);
-+      assert.equal(JSON.stringify(health.configurationSummary).includes("api-secret"), false);
-       assert.equal(health.storageStatus.environmentFolder, "/local");
-       assert.equal(typeof health.storageStatus.lastChecked, "string");
-       assert.equal(Array.isArray(health.healthCheckHistory), true);
++      assert.equal(storageAction.storageDiagnostics.every((row) => row.environmentFolder === "/local"), true);
++      const refreshAction = await apiJson(server.baseUrl, "/api/admin/system-health/action", {
++        body: { actionId: "refresh" },
++        method: "POST",
++      });
++      assert.equal(refreshAction.statusSnapshot.environmentIdentity.name, "Local");
++      const fullAction = await apiJson(server.baseUrl, "/api/admin/system-health/action", {
++        body: { actionId: "full-health-check" },
++        method: "POST",
++      });
++      assert.equal(fullAction.statusSnapshot.environmentIdentity.name, "Local");
+       assert.equal(Array.isArray(health.operationsHealth.summaryRows), true);
+       assert.deepEqual(
+         health.operationsHealth.summaryRows.map((row) => row.area),
 diff --git a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-index bf7c43ed3..0c209bc73 100644
+index 0c209bc73..098dc9f8a 100644
 --- a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
 +++ b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-@@ -153,6 +153,15 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
-     });
-     const serviceStatuses = await serviceCards.locator("[data-health-status]").allTextContents();
-     expect(serviceStatuses.every((status) => ["Healthy", "Warning", "Failed", "Not Configured"].includes(status.trim()))).toBe(true);
-+    const configurationTable = page.getByRole("table", { name: "Configuration summary" });
-+    await expect(configurationTable).toContainText("Current environment");
-+    await expect(configurationTable).toContainText("Hosting model");
-+    await expect(configurationTable).toContainText("Site URL");
-+    await expect(configurationTable).toContainText("API URL");
-+    await expect(configurationTable).toContainText("Database provider/type");
-+    await expect(configurationTable).toContainText("Storage provider/folder");
-+    await expect(configurationTable).toContainText("Auth provider/status");
-+    await expect(configurationTable).not.toContainText("env-secret");
+@@ -162,6 +162,11 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
+     await expect(configurationTable).toContainText("Storage provider/folder");
+     await expect(configurationTable).toContainText("Auth provider/status");
+     await expect(configurationTable).not.toContainText("env-secret");
++    await expect(page.getByRole("button", { name: "Refresh" })).toBeVisible();
++    await expect(page.getByRole("button", { name: "Run Runtime Check" })).toBeVisible();
++    await expect(page.getByRole("button", { name: "Run Database Check" })).toBeVisible();
++    await expect(page.getByRole("button", { name: "Run Storage Check" })).toBeVisible();
++    await expect(page.getByRole("button", { name: "Run Full Health Check" })).toBeVisible();
      await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Approved diagnostics format");
      await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Environment Variables + All Runtime Ports");
      await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Configurable multiple runtime ports");
-@@ -268,6 +277,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
-   expect(pageSource).toContain("Environment Identity");
+@@ -235,6 +240,9 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
+     }
+     expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/status"))).toBe(true);
+     expect(context.requestUrls.filter((url) => url.includes("/api/admin/system-health/storage-connectivity-action"))).toHaveLength(5);
++    await page.getByRole("button", { name: "Run Runtime Check" }).click();
++    await expect(page.getByRole("table", { name: "Manual health action results" })).toContainText("Run Runtime Check");
++    expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/action"))).toBe(true);
+     await expectClientToHideSecretValues(page, context);
+     await expect(page.locator("[data-admin-system-health-storage-action]")).toHaveCount(0);
+     await expect(page.locator("[data-owner-ai-save], [data-owner-membership-save], [data-owner-ai-credits], [data-owner-memberships]")).toHaveCount(0);
+@@ -278,6 +286,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
    expect(pageSource).toContain("Environment Map");
    expect(pageSource).toContain("Service Health");
-+  expect(pageSource).toContain("Configuration Summary");
+   expect(pageSource).toContain("Configuration Summary");
++  expect(pageSource).toContain("Manual Health Actions");
    expect(pageSource).toContain("Runtime Health");
    expect(pageSource).toContain("Diagnostics Plan");
    expect(pageSource).toContain("Local API Startup Diagnostics");
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_014-configuration-summary-branch-validation.md b/docs_build/dev/reports/PR_26175_CHARLIE_014-configuration-summary-branch-validation.md
+@@ -289,5 +298,6 @@ test("Admin System Health operations page keeps scripts and styles external", as
+   expect(runtimeSource).not.toContain("SQLite");
+   expect(runtimeSource).not.toContain("localStorage");
+   expect(runtimeSource).not.toContain("sessionStorage");
++  expect(runtimeSource).toContain("runAdminSystemHealthAction");
+   expect(runtimeSource).toContain("runAdminSystemHealthStorageConnectivityAction");
+ });
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_015-manual-health-actions-branch-validation.md b/docs_build/dev/reports/PR_26175_CHARLIE_015-manual-health-actions-branch-validation.md
 new file mode 100644
-index 000000000..9bf1bf62d
+index 000000000..32175f177
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_014-configuration-summary-branch-validation.md
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_015-manual-health-actions-branch-validation.md
 @@ -0,0 +1,9 @@
-+# PR_26175_CHARLIE_014 Branch Validation
++# PR_26175_CHARLIE_015 Branch Validation
 +
 +## Branch Rules
 +
 +- PASS: Continued on `pr/26175-CHARLIE-010-system-health-history-and-closeout`.
-+- PASS: Stacked on PR_26175_CHARLIE_013.
++- PASS: Stacked on PR_26175_CHARLIE_014.
 +- PASS: No merge was performed.
 +- PASS: No rebase was performed.
 +- PASS: No new root branch was created.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_014-configuration-summary-manual-validation-notes.md b/docs_build/dev/reports/PR_26175_CHARLIE_014-configuration-summary-manual-validation-notes.md
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_015-manual-health-actions-manual-validation-notes.md b/docs_build/dev/reports/PR_26175_CHARLIE_015-manual-health-actions-manual-validation-notes.md
 new file mode 100644
-index 000000000..1a03e013b
+index 000000000..019226334
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_014-configuration-summary-manual-validation-notes.md
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_015-manual-health-actions-manual-validation-notes.md
 @@ -0,0 +1,7 @@
-+# PR_26175_CHARLIE_014 Manual Validation Notes
++# PR_26175_CHARLIE_015 Manual Validation Notes
 +
-+- Verified Configuration Summary renders on `admin/system-health.html`.
-+- Verified the summary contains only read-only fields.
-+- Verified site/API URL credentials are not displayed.
-+- Verified no raw database or auth secrets are included.
++- Verified all five requested manual action controls are visible on `admin/system-health.html`.
++- Verified Run Runtime Check posts to `/api/admin/system-health/action`.
++- Verified manual action results are rendered in the action results table.
++- Verified storage health action is server-side and current-environment scoped.
 +- Verified no peer environment health checks were introduced.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_014-configuration-summary-requirement-checklist.md b/docs_build/dev/reports/PR_26175_CHARLIE_014-configuration-summary-requirement-checklist.md
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_015-manual-health-actions-requirement-checklist.md b/docs_build/dev/reports/PR_26175_CHARLIE_015-manual-health-actions-requirement-checklist.md
 new file mode 100644
-index 000000000..e08c7873b
+index 000000000..992ba2925
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_014-configuration-summary-requirement-checklist.md
-@@ -0,0 +1,15 @@
-+# PR_26175_CHARLIE_014 Requirement Checklist
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_015-manual-health-actions-requirement-checklist.md
+@@ -0,0 +1,12 @@
++# PR_26175_CHARLIE_015 Requirement Checklist
 +
-+- PASS: Added read-only Configuration Summary.
-+- PASS: Shows current environment.
-+- PASS: Shows hosting model.
-+- PASS: Shows site URL.
-+- PASS: Shows API URL.
-+- PASS: Shows database provider/type.
-+- PASS: Shows storage provider/folder.
-+- PASS: Shows auth provider/status.
-+- PASS: Does not expose secrets.
-+- PASS: Masks sensitive URL values.
-+- PASS: Uses API/service contract data.
++- PASS: Added Refresh control.
++- PASS: Added Run Runtime Check control.
++- PASS: Added Run Database Check control.
++- PASS: Added Run Storage Check control.
++- PASS: Added Run Full Health Check control.
++- PASS: Actions call API/service contracts.
++- PASS: No browser-owned fake health success.
++- PASS: Current environment only.
 +- PASS: Tests were updated.
 +- PASS: Required reports were generated.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_014-configuration-summary-validation.md b/docs_build/dev/reports/PR_26175_CHARLIE_014-configuration-summary-validation.md
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_015-manual-health-actions-validation.md b/docs_build/dev/reports/PR_26175_CHARLIE_015-manual-health-actions-validation.md
 new file mode 100644
-index 000000000..12f7143cc
+index 000000000..7d7a5af14
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_014-configuration-summary-validation.md
-@@ -0,0 +1,18 @@
-+# PR_26175_CHARLIE_014 Validation Report
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_015-manual-health-actions-validation.md
+@@ -0,0 +1,19 @@
++# PR_26175_CHARLIE_015 Validation Report
 +
 +## Commands
 +
 +- PASS: `node --check src/dev-runtime/server/local-api-router.mjs`
 +- PASS: `node --check assets/theme-v2/js/admin-system-health.js`
++- PASS: `node --check src/api/admin-system-health-api-client.js`
 +- PASS: `git diff --check`
 +  - Result: no whitespace errors; CRLF conversion warnings only.
 +- PASS: `node --test tests/dev-runtime/AdminHealthOperations.test.mjs`
@@ -363,35 +565,36 @@ index 000000000..12f7143cc
 +- Targeted System Health API/unit lane: PASS.
 +- Targeted System Health Playwright lane: PASS.
 +- Full samples smoke: not run; not required for this System Health-only slice.
-diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_014-configuration-summary.md b/docs_build/dev/reports/PR_26175_CHARLIE_014-configuration-summary.md
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_015-manual-health-actions.md b/docs_build/dev/reports/PR_26175_CHARLIE_015-manual-health-actions.md
 new file mode 100644
-index 000000000..b576b4fff
+index 000000000..467ed14a4
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_CHARLIE_014-configuration-summary.md
-@@ -0,0 +1,26 @@
-+# PR_26175_CHARLIE_014 Configuration Summary
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_015-manual-health-actions.md
+@@ -0,0 +1,27 @@
++# PR_26175_CHARLIE_015 Manual Health Actions
 +
 +## Scope
 +
 +Team: Charlie
 +
-+Purpose: Add a read-only current-environment Configuration Summary to Admin System Health Phase 2.
++Purpose: Add manual current-environment health action controls to Admin System Health Phase 2.
 +
 +## Changes
 +
-+- Added server-owned `configurationSummary` to the Admin System Health status API.
-+- Added a Configuration Summary table with current environment, hosting model, site URL, API URL, database provider/type, storage provider/folder, and auth provider/status.
-+- Reused existing URL redaction so credentials are masked before the browser receives display values.
++- Added `/api/admin/system-health/action` for Refresh, Run Runtime Check, Run Database Check, Run Storage Check, and Run Full Health Check.
++- Added manual action buttons and an action result table to `admin/system-health.html`.
++- Added client API support for manual health actions.
++- Updated the controller so action results render only from server responses.
 +- Updated API and Playwright System Health tests.
 +
 +## Architecture Notes
 +
-+- PASS: Summary is read-only.
-+- PASS: No secrets are exposed.
++- PASS: Actions call API/service contracts.
++- PASS: Browser does not fake successful health.
++- PASS: Storage action runs bucket connectivity, list, upload, read, and delete through the current deployment API.
 +- PASS: Current environment only.
-+- PASS: Browser renders API-owned configuration state only.
 +- PASS: No cross-environment checks were added.
 +
 +## Artifact
 +
-+- `tmp/PR_26175_CHARLIE_014-configuration-summary_delta.zip`
++- `tmp/PR_26175_CHARLIE_015-manual-health-actions_delta.zip`

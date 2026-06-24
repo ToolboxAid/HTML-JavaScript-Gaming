@@ -42,6 +42,7 @@
                                     <p>Environment Map</p>
                                     <p>Service Health</p>
                                     <p>Configuration Summary</p>
+                                    <p>Manual Health Actions</p>
                                     <p>Local API Startup</p>
                                     <p>Database Health</p>
                                     <p>Storage Health</p>
@@ -132,6 +133,35 @@
                                 </tbody>
                             </table>
                         </div>
+                        <section class="content-stack" aria-label="Manual health actions">
+                            <div>
+                                <div class="kicker">Current Deployment</div>
+                                <h3>Manual Health Actions</h3>
+                            </div>
+                            <div class="content-cluster">
+                                <button class="btn btn--compact" type="button" data-admin-system-health-action="refresh">Refresh</button>
+                                <button class="btn btn--compact" type="button" data-admin-system-health-action="runtime-check">Run Runtime Check</button>
+                                <button class="btn btn--compact" type="button" data-admin-system-health-action="database-check">Run Database Check</button>
+                                <button class="btn btn--compact" type="button" data-admin-system-health-action="storage-check">Run Storage Check</button>
+                                <button class="btn btn--compact" type="button" data-admin-system-health-action="full-health-check">Run Full Health Check</button>
+                            </div>
+                            <div class="table-wrapper">
+                                <table class="data-table" aria-label="Manual health action results">
+                                    <caption>Manual Health Action Results</caption>
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Action</th>
+                                            <th scope="col">Last Checked</th>
+                                            <th scope="col">Status</th>
+                                            <th scope="col">Result</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody data-admin-system-health-action-rows>
+                                        <tr><td>Manual health actions</td><td>not run</td><td data-health-status="PENDING" title="Reason: no manual health action has run yet." aria-label="PENDING: no manual health action has run yet.">PENDING</td><td>Waiting for Admin action.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
                         <div class="table-wrapper">
                             <table class="data-table" aria-label="Local API startup diagnostics">
                                 <caption>Local API Startup Diagnostics</caption>
