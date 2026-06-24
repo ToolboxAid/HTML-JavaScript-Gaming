@@ -1,18 +1,78 @@
-# git status --short
-?? docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-branch-validation.md
-?? docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-manual-validation-notes.md
-?? docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-requirement-checklist.md
-?? docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-validation.md
-?? docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs.md
-?? docs_build/operations/system-health-v1-operational-guide.md
-
-# git ls-files --others --exclude-standard
+admin/system-health.html
+assets/theme-v2/js/admin-system-health.js
+docs_build/dev/reports/PR_26175_CHARLIE_012-017-system-health-phase-2-closeout.md
+docs_build/dev/reports/PR_26175_CHARLIE_012-runtime-health-branch-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_012-runtime-health-manual-validation-notes.md
+docs_build/dev/reports/PR_26175_CHARLIE_012-runtime-health-requirement-checklist.md
+docs_build/dev/reports/PR_26175_CHARLIE_012-runtime-health-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_012-runtime-health.md
+docs_build/dev/reports/PR_26175_CHARLIE_013-service-health-dashboard-branch-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_013-service-health-dashboard-manual-validation-notes.md
+docs_build/dev/reports/PR_26175_CHARLIE_013-service-health-dashboard-requirement-checklist.md
+docs_build/dev/reports/PR_26175_CHARLIE_013-service-health-dashboard-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_013-service-health-dashboard.md
+docs_build/dev/reports/PR_26175_CHARLIE_014-configuration-summary-branch-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_014-configuration-summary-manual-validation-notes.md
+docs_build/dev/reports/PR_26175_CHARLIE_014-configuration-summary-requirement-checklist.md
+docs_build/dev/reports/PR_26175_CHARLIE_014-configuration-summary-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_014-configuration-summary.md
+docs_build/dev/reports/PR_26175_CHARLIE_015-manual-health-actions-branch-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_015-manual-health-actions-manual-validation-notes.md
+docs_build/dev/reports/PR_26175_CHARLIE_015-manual-health-actions-requirement-checklist.md
+docs_build/dev/reports/PR_26175_CHARLIE_015-manual-health-actions-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_015-manual-health-actions.md
+docs_build/dev/reports/PR_26175_CHARLIE_016-scheduled-health-monitoring-branch-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_016-scheduled-health-monitoring-manual-validation-notes.md
+docs_build/dev/reports/PR_26175_CHARLIE_016-scheduled-health-monitoring-requirement-checklist.md
+docs_build/dev/reports/PR_26175_CHARLIE_016-scheduled-health-monitoring-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_016-scheduled-health-monitoring.md
+docs_build/dev/reports/PR_26175_CHARLIE_017-health-notifications-foundation-branch-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_017-health-notifications-foundation-manual-validation-notes.md
+docs_build/dev/reports/PR_26175_CHARLIE_017-health-notifications-foundation-requirement-checklist.md
+docs_build/dev/reports/PR_26175_CHARLIE_017-health-notifications-foundation-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_017-health-notifications-foundation.md
+docs_build/dev/reports/PR_26175_CHARLIE_018-health-api-contract-cleanup-branch-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_018-health-api-contract-cleanup-manual-validation-notes.md
+docs_build/dev/reports/PR_26175_CHARLIE_018-health-api-contract-cleanup-requirement-checklist.md
+docs_build/dev/reports/PR_26175_CHARLIE_018-health-api-contract-cleanup-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_018-health-api-contract-cleanup.md
+docs_build/dev/reports/PR_26175_CHARLIE_019-environment-capabilities-branch-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_019-environment-capabilities-manual-validation-notes.md
+docs_build/dev/reports/PR_26175_CHARLIE_019-environment-capabilities-requirement-checklist.md
+docs_build/dev/reports/PR_26175_CHARLIE_019-environment-capabilities-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_019-environment-capabilities.md
+docs_build/dev/reports/PR_26175_CHARLIE_020-admin-api-registry-branch-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_020-admin-api-registry-manual-validation-notes.md
+docs_build/dev/reports/PR_26175_CHARLIE_020-admin-api-registry-requirement-checklist.md
+docs_build/dev/reports/PR_26175_CHARLIE_020-admin-api-registry-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_020-admin-api-registry.md
+docs_build/dev/reports/PR_26175_CHARLIE_021-runtime-feature-flags-branch-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_021-runtime-feature-flags-manual-validation-notes.md
+docs_build/dev/reports/PR_26175_CHARLIE_021-runtime-feature-flags-requirement-checklist.md
+docs_build/dev/reports/PR_26175_CHARLIE_021-runtime-feature-flags-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_021-runtime-feature-flags.md
+docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-branch-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-manual-validation-notes.md
+docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-requirement-checklist.md
+docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_022-admin-health-test-suite.md
+docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-branch-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-manual-validation-notes.md
+docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-requirement-checklist.md
+docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_023-system-health-documentation-closeout.md
 docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-branch-validation.md
 docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-manual-validation-notes.md
 docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-requirement-checklist.md
 docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs-validation.md
 docs_build/dev/reports/PR_26175_CHARLIE_024-system-health-operational-docs.md
+docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/codex_review.diff
+docs_build/dev/reports/coverage_changed_js_guardrail.txt
+docs_build/dev/reports/playwright_v8_coverage_report.txt
 docs_build/operations/system-health-v1-operational-guide.md
-
-# git diff --stat
-(no output)
+src/api/admin-system-health-api-client.js
+src/dev-runtime/server/local-api-router.mjs
+tests/api/admin-system-health/contract.test.mjs
+tests/dev-runtime/AdminHealthOperations.test.mjs
+tests/playwright/tools/AdminHealthOperationsPage.spec.mjs

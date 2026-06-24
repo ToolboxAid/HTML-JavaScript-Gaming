@@ -329,6 +329,22 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
     await expect(ideaInputRow.locator("[data-idea-board-idea-status-input]")).toHaveCount(1);
     await expect(ideaInputRow.locator("[data-idea-board-idea-status-input] option")).toHaveText(EDITABLE_STATUS_OPTIONS);
     await expect(ideaInputRow.locator("td").nth(2)).toHaveText("0 Notes");
+    await ideaInputRow.locator("[data-idea-board-idea-status-input]").evaluate((select) => {
+      const option = document.createElement("option");
+      option.value = "Project";
+      option.textContent = "Project";
+      select.append(option);
+      select.value = "Project";
+    });
+    await page.locator("[data-idea-board-idea-input]").fill("Project Trap");
+    await page.locator("[data-idea-board-pitch-input]").fill("Project status cannot be saved from the editable row.");
+    await page.locator("[data-idea-board-idea-action='save']").click();
+    await expect(page.locator("[data-idea-board-status]")).toHaveText("Enter an idea, pitch, and status before saving.");
+    await expect(page.locator("[data-idea-board-idea-row='project-trap']")).toHaveCount(0);
+    await ideaInputRow.locator("[data-idea-board-idea-status-input]").evaluate((select) => {
+      select.querySelector("option[value='Project']")?.remove();
+      select.value = "Refining";
+    });
     await page.locator("[data-idea-board-idea-input]").fill("Lantern Reef");
     await page.locator("[data-idea-board-pitch-input]").fill("Guide light through a reef that rearranges at dusk.");
     await page.locator("[data-idea-board-idea-status-input]").selectOption("Refining");
@@ -400,10 +416,12 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
     await expect(activeGameToggle).toHaveText("Lantern Reef");
     await activeGameToggle.click();
     let expandedRows = page.locator("[data-game-expanded-row]");
-    await expect(expandedRows).toHaveCount(2);
-    await expect(expandedRows.nth(0)).toHaveAttribute("data-game-child-row", "source-idea");
-    await expect(expandedRows.nth(1)).toHaveAttribute("data-game-child-row", "readiness-output");
-    let sourceIdeaChildTable = expandedRows.nth(0).locator("[data-game-child-table='source-idea']");
+    await expect(expandedRows).toHaveCount(3);
+    await expect(expandedRows.nth(0)).toHaveAttribute("data-game-child-row", "summary");
+    await expect(expandedRows.nth(1)).toHaveAttribute("data-game-child-row", "source-idea");
+    await expect(expandedRows.nth(2)).toHaveAttribute("data-game-child-row", "readiness-output");
+    await expect(expandedRows.nth(0).locator("[data-game-child-table='summary'] caption")).toHaveText("Game Summary");
+    let sourceIdeaChildTable = expandedRows.nth(1).locator("[data-game-child-table='source-idea']");
     await expect(sourceIdeaChildTable.locator("caption")).toHaveText("Source Idea");
     await expect(sourceIdeaChildTable.locator("thead th")).toHaveText(["Context", "Details"]);
     await expect(sourceIdeaChildTable.locator("tbody tr")).toHaveText([
@@ -412,7 +430,7 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
       "Note 1Use dusk tide changes as the first Game Hub planning note.",
     ]);
     await expect(sourceIdeaChildTable.locator(":is(input, textarea, select, button)")).toHaveCount(0);
-    await expect(expandedRows.nth(1).locator("[data-game-child-table='readiness-output'] caption")).toHaveText("Readiness Output");
+    await expect(expandedRows.nth(2).locator("[data-game-child-table='readiness-output'] caption")).toHaveText("Readiness Output");
     await page.reload({ waitUntil: "networkidle" });
     await expect(page.locator("[data-active-game-name]")).toHaveCount(0);
     await expect(page.locator("[data-game-list]")).toContainText("Lantern Reef");
@@ -421,8 +439,8 @@ test("Idea Board uses accordion table ideas and notes", async ({ page }) => {
     await expect(page.locator("[data-game-hub-foundation]")).toHaveCount(0);
     await activeGameToggle.click();
     expandedRows = page.locator("[data-game-expanded-row]");
-    await expect(expandedRows).toHaveCount(2);
-    sourceIdeaChildTable = expandedRows.nth(0).locator("[data-game-child-table='source-idea']");
+    await expect(expandedRows).toHaveCount(3);
+    sourceIdeaChildTable = expandedRows.nth(1).locator("[data-game-child-table='source-idea']");
     await expect(sourceIdeaChildTable.locator("tbody tr")).toHaveText([
       "IdeaLantern Reef",
       "PitchGuide light through a reef that rearranges at dusk.",
@@ -577,8 +595,11 @@ test("Idea Board gates Create Project to Ready ideas and locks converted project
   }
 });
 
-test("Idea Board guest Create Project redirects to sign in without creating a project", async ({ page }) => {
-  const server = await startRepoServer();
+test("Idea Board guest write actions redirect to sign in before saving data", async ({ page }) => {
+  const server = await startRepoServer({
+    gameJourneyCompletionMetricsLegacyDbPath: null,
+    gameJourneyCompletionMetricsPostgresClient: createGameJourneyCompletionMetricsPostgresClientStub(),
+  });
   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
   const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
   const previousSupabaseEnv = {
@@ -601,6 +622,42 @@ test("Idea Board guest Create Project redirects to sign in without creating a pr
       createGameRequests.push(requestUrl);
     }
   });
+
+  const openBoard = async () => {
+    await page.goto(`${server.baseUrl}/toolbox/idea-board/index.html`, { waitUntil: "networkidle" });
+    await expect(page.getByRole("heading", { level: 1, name: "Idea Board" })).toBeVisible();
+    await expect(page.locator("[data-idea-board-idea-row]")).toHaveCount(3);
+  };
+  const expectSignInRedirect = async () => {
+    await page.waitForURL(/\/account\/sign-in\.html$/);
+  };
+  const expectNoIdeaBoardBrowserStorage = async () => {
+    const storageKeys = await page.evaluate(() => {
+      const matchesIdeaBoard = (key) => /idea[-_]?board|ideaBoard|idea|note/i.test(key);
+      return {
+        local: Object.keys(window.localStorage || {}).filter(matchesIdeaBoard),
+        session: Object.keys(window.sessionStorage || {}).filter(matchesIdeaBoard),
+      };
+    });
+    expect(storageKeys).toEqual({ local: [], session: [] });
+  };
+  const signInCreator = async () => {
+    await page.request.post(`${server.baseUrl}/api/session/user`, {
+      data: { userKey: MOCK_DB_KEYS.users.user1 },
+    });
+  };
+  const signOutCreator = async () => {
+    await page.request.post(`${server.baseUrl}/api/session/user`, {
+      data: { userKey: "" },
+    });
+  };
+  const addReadyIdea = async (name) => {
+    await page.locator("[data-idea-board-add-idea]").click();
+    await page.locator("[data-idea-board-idea-input]").fill(name);
+    await page.locator("[data-idea-board-pitch-input]").fill(`${name} should require authenticated API session writes.`);
+    await page.locator("[data-idea-board-idea-status-input]").selectOption("Ready");
+    await page.locator("[data-idea-board-idea-action='save']").click();
+  };
 
   try {
     await page.route("**/api/platform-settings/banner", async (route) => {
@@ -627,17 +684,79 @@ test("Idea Board guest Create Project redirects to sign in without creating a pr
       });
     });
 
-    await page.goto(`${server.baseUrl}/toolbox/idea-board/index.html`, { waitUntil: "networkidle" });
+    await openBoard();
+    await page.locator("[data-idea-board-idea-cell='top-thoughts']").click();
+    await expect(page.locator("[data-idea-board-expanded-row='top-thoughts']")).toBeVisible();
+    await expect(page).toHaveURL(/\/toolbox\/idea-board\/index\.html$/);
+
+    await openBoard();
     await page.locator("[data-idea-board-add-idea]").click();
     await page.locator("[data-idea-board-idea-input]").fill("Guest Reef");
-    await page.locator("[data-idea-board-pitch-input]").fill("Guest cannot create authoritative project keys.");
+    await page.locator("[data-idea-board-pitch-input]").fill("Guest cannot save Idea Board records.");
     await page.locator("[data-idea-board-idea-status-input]").selectOption("Ready");
     await page.locator("[data-idea-board-idea-action='save']").click();
-    await expect(page.locator("[data-idea-board-idea-row='guest-reef'] [data-idea-board-idea-action]")).toHaveText(["Edit", "Create Project", "Delete"]);
+    await expectSignInRedirect();
 
-    await page.locator("[data-idea-board-idea-row='guest-reef'] [data-idea-board-idea-action='create-project']").click();
-    await page.waitForURL(/\/account\/sign-in\.html$/);
+    await openBoard();
+    await page.locator("[data-idea-board-idea-row='top-thoughts'] [data-idea-board-idea-action='edit']").click();
+    await page.locator("[data-idea-board-pitch-input]").fill("Guest cannot update Idea Board records.");
+    await page.locator("[data-idea-board-idea-action='save']").click();
+    await expectSignInRedirect();
+
+    await openBoard();
+    await page.locator("[data-idea-board-idea-row='top-thoughts'] [data-idea-board-idea-action='delete']").click();
+    await expectSignInRedirect();
+
+    await openBoard();
+    await page.locator("[data-idea-board-idea-cell='top-thoughts']").click();
+    await page.locator("[data-idea-board-add-note='top-thoughts']").click();
+    await page.locator("[data-idea-board-note-input]").fill("Guest cannot save Idea Board notes.");
+    await page.locator("[data-idea-board-note-action='save']").click();
+    await expectSignInRedirect();
+
+    await openBoard();
+    await page.locator("[data-idea-board-idea-cell='top-thoughts']").click();
+    await page.locator("[data-idea-board-notes-table='top-thoughts'] tbody tr").nth(1).locator("[data-idea-board-note-action='edit']").click();
+    await page.locator("[data-idea-board-note-input]").fill("Guest cannot update Idea Board notes.");
+    await page.locator("[data-idea-board-note-action='save']").click();
+    await expectSignInRedirect();
+
+    await openBoard();
+    await page.locator("[data-idea-board-idea-cell='top-thoughts']").click();
+    await page.locator("[data-idea-board-notes-table='top-thoughts'] tbody tr").nth(1).locator("[data-idea-board-note-action='delete']").click();
+    await expectSignInRedirect();
+
+    await signInCreator();
+    await openBoard();
+    await addReadyIdea("Guest Project Gate");
+    await expect(page.locator("[data-idea-board-idea-row='guest-project-gate'] [data-idea-board-idea-action='create-project']")).toBeVisible();
+    await signOutCreator();
+    await page.locator("[data-idea-board-idea-row='guest-project-gate'] [data-idea-board-idea-action='create-project']").click();
+    await expectSignInRedirect();
+
+    await signInCreator();
+    await openBoard();
+    await addReadyIdea("Guest Archive Gate");
+    await page.locator("[data-idea-board-idea-row='guest-archive-gate'] [data-idea-board-idea-action='create-project']").click();
+    await expect(page.locator("[data-idea-board-idea-row='guest-archive-gate'] [data-idea-board-idea-action='archive']")).toBeVisible();
+    createGameRequests.length = 0;
+    await signOutCreator();
+    await page.locator("[data-idea-board-idea-row='guest-archive-gate'] [data-idea-board-idea-action='archive']").click();
+    await expectSignInRedirect();
+
+    await signInCreator();
+    await openBoard();
+    await addReadyIdea("Guest Restore Gate");
+    await page.locator("[data-idea-board-idea-row='guest-restore-gate'] [data-idea-board-idea-action='create-project']").click();
+    await page.locator("[data-idea-board-idea-row='guest-restore-gate'] [data-idea-board-idea-action='archive']").click();
+    await page.locator("[data-idea-board-status-filter-option][value='Archived']").check();
+    await expect(page.locator("[data-idea-board-idea-row='guest-restore-gate'] [data-idea-board-idea-action='restore']")).toBeVisible();
+    createGameRequests.length = 0;
+    await signOutCreator();
+    await page.locator("[data-idea-board-idea-row='guest-restore-gate'] [data-idea-board-idea-action='restore']").click();
+    await expectSignInRedirect();
     expect(createGameRequests).toEqual([]);
+    await expectNoIdeaBoardBrowserStorage();
   } finally {
     restoreEnvValue("GAMEFOUNDRY_API_URL", previousApiUrl);
     restoreEnvValue("GAMEFOUNDRY_SITE_URL", previousSiteUrl);
@@ -658,6 +777,9 @@ test("Idea Board remains usable without visible navigation fallback when registr
 
   await page.route("**/api/toolbox/registry/snapshot", async (route) => {
     await route.fulfill({ body: "", status: 204 });
+  });
+  await page.request.post(`${server.baseUrl}/api/session/user`, {
+    data: { userKey: MOCK_DB_KEYS.users.user1 },
   });
 
   page.on("pageerror", (error) => {
