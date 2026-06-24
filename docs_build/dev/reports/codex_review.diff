@@ -1,199 +1,467 @@
+diff --git a/admin/system-health.html b/admin/system-health.html
+index 8573b3310..dc5cf5f0c 100644
+--- a/admin/system-health.html
++++ b/admin/system-health.html
+@@ -43,6 +43,7 @@
+                                     <p>Local API Startup</p>
+                                     <p>Database Health</p>
+                                     <p>Storage Health</p>
++                                    <p>Runtime Health</p>
+                                     <p>Health Check History</p>
+                                     <p>Runtime Environment</p>
+                                     <p>Limits &amp; Capacity</p>
+@@ -153,6 +154,27 @@
+                                 </tbody>
+                             </table>
+                         </div>
++                        <div class="table-wrapper">
++                            <table class="data-table" aria-label="Runtime health">
++                                <caption>Runtime Health</caption>
++                                <thead>
++                                    <tr>
++                                        <th scope="col">Field</th>
++                                        <th scope="col">Current Deployment</th>
++                                        <th scope="col">Status</th>
++                                    </tr>
++                                </thead>
++                                <tbody>
++                                    <tr><td>Environment</td><td data-admin-system-health-runtime-health-value="environment">Loading</td><td data-health-status="PENDING" data-admin-system-health-runtime-health-status="environment" title="Reason: runtime health has not loaded yet." aria-label="PENDING: runtime health has not loaded yet.">PENDING</td></tr>
++                                    <tr><td>App/runtime version</td><td data-admin-system-health-runtime-health-value="appVersion">Loading</td><td data-health-status="PENDING" data-admin-system-health-runtime-health-status="appVersion" title="Reason: runtime health has not loaded yet." aria-label="PENDING: runtime health has not loaded yet.">PENDING</td></tr>
++                                    <tr><td>API version</td><td data-admin-system-health-runtime-health-value="apiVersion">Loading</td><td data-health-status="PENDING" data-admin-system-health-runtime-health-status="apiVersion" title="Reason: runtime health has not loaded yet." aria-label="PENDING: runtime health has not loaded yet.">PENDING</td></tr>
++                                    <tr><td>Node version</td><td data-admin-system-health-runtime-health-value="nodeVersion">Loading</td><td data-health-status="PENDING" data-admin-system-health-runtime-health-status="nodeVersion" title="Reason: runtime health has not loaded yet." aria-label="PENDING: runtime health has not loaded yet.">PENDING</td></tr>
++                                    <tr><td>Server start time</td><td data-admin-system-health-runtime-health-value="serverStartTime">Loading</td><td data-health-status="PENDING" data-admin-system-health-runtime-health-status="serverStartTime" title="Reason: runtime health has not loaded yet." aria-label="PENDING: runtime health has not loaded yet.">PENDING</td></tr>
++                                    <tr><td>Uptime</td><td data-admin-system-health-runtime-health-value="uptime">Loading</td><td data-health-status="PENDING" data-admin-system-health-runtime-health-status="uptime" title="Reason: runtime health has not loaded yet." aria-label="PENDING: runtime health has not loaded yet.">PENDING</td></tr>
++                                    <tr><td>Last checked</td><td data-admin-system-health-runtime-health-value="lastChecked">Loading</td><td data-health-status="PENDING" data-admin-system-health-runtime-health-status="lastChecked" title="Reason: runtime health has not loaded yet." aria-label="PENDING: runtime health has not loaded yet.">PENDING</td></tr>
++                                </tbody>
++                            </table>
++                        </div>
+                         <div class="table-wrapper">
+                             <table class="data-table" aria-label="Health check history">
+                                 <caption>Health Check History</caption>
+diff --git a/assets/theme-v2/js/admin-system-health.js b/assets/theme-v2/js/admin-system-health.js
+index e0c2cab9f..e94d6b511 100644
+--- a/assets/theme-v2/js/admin-system-health.js
++++ b/assets/theme-v2/js/admin-system-health.js
+@@ -20,6 +20,11 @@ function asText(value, fallback = "not available") {
+     return statusText(value, fallback);
+ }
+ 
++function formatUptimeSeconds(value) {
++    const seconds = Number(value);
++    return Number.isFinite(seconds) ? `${Math.max(0, Math.floor(seconds))} s` : "not available";
++}
++
+ class AdminSystemHealthController {
+     constructor(root) {
+         this.root = root;
+@@ -47,6 +52,14 @@ class AdminSystemHealthController {
+             node.dataset.adminSystemHealthStorageStatus,
+             node,
+         ]));
++        this.runtimeHealthValues = new Map(Array.from(root.querySelectorAll("[data-admin-system-health-runtime-health-value]")).map((node) => [
++            node.dataset.adminSystemHealthRuntimeHealthValue,
++            node,
++        ]));
++        this.runtimeHealthStatuses = new Map(Array.from(root.querySelectorAll("[data-admin-system-health-runtime-health-status]")).map((node) => [
++            node.dataset.adminSystemHealthRuntimeHealthStatus,
++            node,
++        ]));
+         this.historyRows = root.querySelector("[data-admin-system-health-history-rows]");
+         this.startupRows = root.querySelector("[data-admin-system-health-startup-rows]");
+         this.runtimeRows = root.querySelector("[data-admin-system-health-runtime-rows]");
+@@ -95,6 +108,18 @@ class AdminSystemHealthController {
+         this.setStatusNode(node, status, reason);
+     }
+ 
++    setRuntimeHealthValue(key, value, fallback) {
++        const node = this.runtimeHealthValues.get(key);
++        if (node) {
++            node.textContent = asText(value, fallback);
++        }
++    }
++
++    setRuntimeHealthStatus(key, status, reason = "") {
++        const node = this.runtimeHealthStatuses.get(key);
++        this.setStatusNode(node, status, reason);
++    }
++
+     setStatusNode(node, status, reason = "") {
+         applyStatusNode(node, status, { reason });
+     }
+@@ -108,6 +133,7 @@ class AdminSystemHealthController {
+         });
+         this.renderStartupPending(reason);
+         this.renderStoragePending(reason);
++        this.renderRuntimeHealthPending(reason);
+         this.renderHistoryPending(reason);
+     }
+ 
+@@ -162,6 +188,35 @@ class AdminSystemHealthController {
+         this.setStorageStatus("lastChecked", storageStatus.lastChecked ? "PASS" : "WARN", reason);
+     }
+ 
++    renderRuntimeHealthPending(reason) {
++        ["environment", "appVersion", "apiVersion", "nodeVersion", "serverStartTime", "uptime", "lastChecked"].forEach((key) => {
++            this.setRuntimeHealthValue(key, "not available");
++            this.setRuntimeHealthStatus(key, "PENDING", reason);
++        });
++    }
++
++    renderRuntimeHealth(runtimeHealth = {}) {
++        const reason = runtimeHealth.message || "Current deployment runtime health returned by the safe Admin System Health API.";
++        if (runtimeHealth?.secretsExposed === true || runtimeHealth?.secretEditingAllowed === true) {
++            this.renderRuntimeHealthPending("Safe runtime health response was blocked because it exposed secret controls.");
++            return;
++        }
++        this.setRuntimeHealthValue("environment", runtimeHealth.environmentName, "Unknown");
++        this.setRuntimeHealthStatus("environment", runtimeHealth.environmentName ? runtimeHealth.status : "WARN", reason);
++        this.setRuntimeHealthValue("appVersion", runtimeHealth.appVersion, "not available");
++        this.setRuntimeHealthStatus("appVersion", runtimeHealth.appVersion ? "PASS" : "WARN", reason);
++        this.setRuntimeHealthValue("apiVersion", runtimeHealth.apiVersion, "not available");
++        this.setRuntimeHealthStatus("apiVersion", runtimeHealth.apiVersion ? "PASS" : "WARN", reason);
++        this.setRuntimeHealthValue("nodeVersion", runtimeHealth.nodeVersion, "not available");
++        this.setRuntimeHealthStatus("nodeVersion", runtimeHealth.nodeVersion ? "PASS" : "WARN", reason);
++        this.setRuntimeHealthValue("serverStartTime", runtimeHealth.serverStartTime, "not available");
++        this.setRuntimeHealthStatus("serverStartTime", runtimeHealth.serverStartTime ? "PASS" : "WARN", reason);
++        this.setRuntimeHealthValue("uptime", formatUptimeSeconds(runtimeHealth.uptimeSeconds));
++        this.setRuntimeHealthStatus("uptime", Number.isFinite(Number(runtimeHealth.uptimeSeconds)) ? "PASS" : "WARN", reason);
++        this.setRuntimeHealthValue("lastChecked", runtimeHealth.lastChecked, "not available");
++        this.setRuntimeHealthStatus("lastChecked", runtimeHealth.lastChecked ? "PASS" : "WARN", reason);
++    }
++
+     renderStartupPending(reason) {
+         if (!this.startupRows) {
+             return;
+@@ -343,6 +398,7 @@ class AdminSystemHealthController {
+             this.renderStartupDiagnostics(data?.localApiStartup || {});
+             this.renderStorageStatus(data?.storageStatus || {});
+             this.runStorageDiagnostics();
++            this.renderRuntimeHealth(data?.runtimeHealth || {});
+             this.renderHealthCheckHistory(data?.healthCheckHistory || []);
+             this.renderRuntimeEnvironment(data?.runtimeEnvironment || {});
+         } catch (error) {
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 0003bcc7e..8df1af057 100644
+index 8df1af057..18c9fb3d9 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,8 +6,10 @@ Missing changed runtime JS files are WARN, not FAIL.
+@@ -6,10 +6,9 @@ Missing changed runtime JS files are WARN, not FAIL.
  Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
-
+ 
  Changed runtime JS files considered:
-+(0%) assets/theme-v2/js/admin-system-health.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) assets/theme-v2/js/admin-system-health.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(88%) assets/theme-v2/js/admin-system-health.js - executed lines 334/334; executed functions 35/40
-+(100%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 5/5
-
+-(100%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 5/5
++(80%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 4/5
++(87%) assets/theme-v2/js/admin-system-health.js - executed lines 385/385; executed functions 41/47
+ 
  Guardrail warnings:
-+(0%) assets/theme-v2/js/admin-system-health.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) assets/theme-v2/js/admin-system-health.js - WARNING: changed runtime JS file missing from coverage; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 82d39d813..be704e176 100644
+index be704e176..a406efd04 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -12,31 +12,41 @@ Note: entry percentages use function coverage when available, otherwise line cov
+@@ -12,36 +12,31 @@ Note: entry percentages use function coverage when available, otherwise line cov
  Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
-
+ 
  Exercised tool entry points detected:
--(46%) Toolbox Index - exercised 1 runtime JS files
-+(35%) Toolbox Index - exercised 1 runtime JS files
+-(35%) Toolbox Index - exercised 1 runtime JS files
++(46%) Toolbox Index - exercised 1 runtime JS files
  (0%) Tool Template V2 - not exercised by this Playwright run
--(78%) Theme V2 Shared JS - exercised 4 runtime JS files
-+(70%) Theme V2 Shared JS - exercised 5 runtime JS files
-
+-(70%) Theme V2 Shared JS - exercised 5 runtime JS files
++(78%) Theme V2 Shared JS - exercised 4 runtime JS files
+ 
  Changed runtime JS files covered:
-+(0%) assets/theme-v2/js/admin-system-health.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) assets/theme-v2/js/admin-system-health.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(88%) assets/theme-v2/js/admin-system-health.js - executed lines 334/334; executed functions 35/40
-+(100%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 5/5
-
+-(100%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 5/5
++(80%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 4/5
++(87%) assets/theme-v2/js/admin-system-health.js - executed lines 385/385; executed functions 41/47
+ 
  Files with executed line/function counts where available:
-+(35%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 9/26
+-(35%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 9/26
  (36%) src/api/server-api-client.js - executed lines 167/167; executed functions 5/14
--(46%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 12/26
-+(40%) src/api/admin-invitations-api-client.js - executed lines 40/40; executed functions 2/5
-+(50%) assets/js/shared/status.js - executed lines 37/37; executed functions 3/6
-+(53%) assets/theme-v2/js/admin-invitations.js - executed lines 156/156; executed functions 9/17
-+(59%) assets/theme-v2/js/owner-memberships.js - executed lines 248/248; executed functions 16/27
+-(40%) src/api/admin-invitations-api-client.js - executed lines 40/40; executed functions 2/5
+-(50%) assets/js/shared/status.js - executed lines 37/37; executed functions 3/6
+-(53%) assets/theme-v2/js/admin-invitations.js - executed lines 156/156; executed functions 9/17
+-(59%) assets/theme-v2/js/owner-memberships.js - executed lines 248/248; executed functions 16/27
++(46%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 12/26
  (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 204/204; executed functions 9/14
--(65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
-+(67%) src/api/owner-memberships-api-client.js - executed lines 19/19; executed functions 2/3
-+(71%) src/api/public-config-client.js - executed lines 209/209; executed functions 20/28
+-(67%) src/api/owner-memberships-api-client.js - executed lines 19/19; executed functions 2/3
+-(71%) src/api/public-config-client.js - executed lines 209/209; executed functions 20/28
++(65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
  (74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1001/1001; executed functions 69/93
--(80%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 4/5
--(83%) assets/js/shared/status.js - executed lines 37/37; executed functions 5/6
--(88%) assets/theme-v2/js/admin-system-health.js - executed lines 334/334; executed functions 35/40
--(91%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 10/11
--(100%) src/api/admin-system-health-api-client.js - executed lines 19/19; executed functions 3/3
-+(89%) src/dev-runtime/admin/admin-notes-viewer.js - executed lines 533/533; executed functions 49/55
-+(100%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 11/11
-+(100%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 5/5
-
+-(89%) src/dev-runtime/admin/admin-notes-viewer.js - executed lines 533/533; executed functions 49/55
+-(100%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 11/11
+-(100%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 5/5
++(80%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 4/5
++(83%) assets/js/shared/status.js - executed lines 37/37; executed functions 5/6
++(87%) assets/theme-v2/js/admin-system-health.js - executed lines 385/385; executed functions 41/47
++(91%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 10/11
++(100%) src/api/admin-system-health-api-client.js - executed lines 19/19; executed functions 3/3
+ 
  Uncovered or low-coverage changed JS files:
-+(0%) assets/theme-v2/js/admin-system-health.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) assets/theme-v2/js/admin-system-health.js - WARNING: uncovered changed runtime JS file; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
-
+ 
  Changed JS files considered:
-+(0%) assets/theme-v2/js/admin-system-health.js - changed JS file not collected as browser runtime coverage
+-(0%) assets/theme-v2/js/admin-system-health.js - changed JS file not collected as browser runtime coverage
  (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
  (0%) tests/dev-runtime/AdminHealthOperations.test.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/dev-runtime/ApiMenuPathCleanup.test.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/dev-runtime/ArchitectureCleanupApiNavInvitations.test.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/dev-runtime/ApiMenuPathCleanup.test.mjs - changed JS file not collected as browser runtime coverage
+@@ -49,4 +44,5 @@ Changed JS files considered:
  (0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
--(88%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
-+(0%) tests/playwright/tools/AdminInvitationsNavPage.spec.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs - changed JS file not collected as browser runtime coverage
-+(100%) src/api/admin-owner-navigation.js - changed JS file with browser V8 coverage
-diff --git a/src/api/admin-owner-navigation.js b/src/api/admin-owner-navigation.js
-index b80366641..592647346 100644
---- a/src/api/admin-owner-navigation.js
-+++ b/src/api/admin-owner-navigation.js
-@@ -2,6 +2,7 @@ const ADMIN_NAVIGATION_ITEMS = Object.freeze([
-   Object.freeze({ disabled: true, label: "Admin Tools", planned: false }),
-   Object.freeze({ label: "Analytics", path: "admin/analytics.html", route: "admin-analytics" }),
-   Object.freeze({ label: "Controls", path: "admin/controls.html", route: "admin-controls" }),
-+  Object.freeze({ label: "Creators", path: "admin/users.html", route: "admin-users" }),
-   Object.freeze({ label: "DB Viewer", path: "admin/db-viewer.html", route: "admin-db-viewer" }),
-   Object.freeze({ label: "Environments", path: "admin/environments.html", route: "admin-environments" }),
-   Object.freeze({ label: "Game Migration", path: "admin/game-migration.html", route: "admin-game-migration" }),
-@@ -15,7 +16,6 @@ const ADMIN_NAVIGATION_ITEMS = Object.freeze([
-   Object.freeze({ label: "Site Setup", path: "admin/site-setup.html", route: "admin-site-setup" }),
-   Object.freeze({ label: "System Health", path: "admin/system-health.html", route: "admin-system-health" }),
-   Object.freeze({ label: "Tool Votes", path: "admin/tool-votes.html", route: "admin-tool-votes" }),
--  Object.freeze({ label: "Creators", path: "admin/users.html", route: "admin-users" }),
- ]);
-
- const OWNER_NAVIGATION_ITEMS = Object.freeze([
-diff --git a/tests/dev-runtime/ApiMenuPathCleanup.test.mjs b/tests/dev-runtime/ApiMenuPathCleanup.test.mjs
-index deb1027fe..abc1b76ef 100644
---- a/tests/dev-runtime/ApiMenuPathCleanup.test.mjs
-+++ b/tests/dev-runtime/ApiMenuPathCleanup.test.mjs
-@@ -21,20 +21,20 @@ const EXPECTED_ADMIN_LABELS = Object.freeze([
-   "Admin Tools",
-   "Analytics",
-   "Controls",
-+  "Creators",
-   "DB Viewer",
-   "Environments",
-   "Game Migration",
-   "Infrastructure",
--  "Invitations",
-+  "Invites",
-   "Moderation",
-   "Operations",
-   "Platform Settings",
-   "Ratings",
--  "Roles",
-+  "Responsibilities",
-   "Site Setup",
-   "System Health",
-   "Tool Votes",
--  "Users",
- ]);
-
- const EXPECTED_OWNER_LABELS = Object.freeze([
-@@ -98,7 +98,7 @@ test("Admin and Owner shared menus are non-overlapping by responsibility", () =>
-   ["Branding", "Design System", "Grouping Colors", "Legal", "Marketplace Settings", "Notes", "Revenue", "Site Settings", "Themes"].forEach((label) => {
-     assert.equal(adminItems.some((item) => item.label === label), false, `Admin menu must not include Owner business item ${label}`);
-   });
--  ["DB Viewer", "Infrastructure", "Invitations", "Operations", "Platform Settings", "System Health", "Users"].forEach((label) => {
-+  ["Creators", "DB Viewer", "Infrastructure", "Invites", "Operations", "Platform Settings", "System Health"].forEach((label) => {
-     assert.equal(ownerItems.some((item) => item.label === label), false, `Owner menu must not duplicate Admin operations item ${label}`);
-   });
+ (0%) tests/playwright/tools/AdminInvitationsNavPage.spec.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs - changed JS file not collected as browser runtime coverage
+-(100%) src/api/admin-owner-navigation.js - changed JS file with browser V8 coverage
++(80%) src/api/admin-owner-navigation.js - changed JS file with browser V8 coverage
++(87%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
+diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
+index 194ba4622..b9ad7e292 100644
+--- a/src/dev-runtime/server/local-api-router.mjs
++++ b/src/dev-runtime/server/local-api-router.mjs
+@@ -321,6 +321,7 @@ const LOCAL_API_STARTUP_DEFAULT_PORT_BY_PROTOCOL = Object.freeze({
+   "http:": "80",
+   "https:": "443",
  });
-diff --git a/tests/dev-runtime/ArchitectureCleanupApiNavInvitations.test.mjs b/tests/dev-runtime/ArchitectureCleanupApiNavInvitations.test.mjs
-index fdb745e4c..a896dcb9c 100644
---- a/tests/dev-runtime/ArchitectureCleanupApiNavInvitations.test.mjs
-+++ b/tests/dev-runtime/ArchitectureCleanupApiNavInvitations.test.mjs
-@@ -92,7 +92,7 @@ test("product and web API clients live under src/api while engine API keeps only
- test("Admin and Owner navigation are shared and include present operational/business pages", async () => {
-   const adminLabels = getAdminNavigationItems().map((item) => item.label);
-   const ownerLabels = getOwnerNavigationItems().map((item) => item.label);
--  ["Admin Tools", "Infrastructure", "Invitations", "Operations", "System Health", "Tool Votes", "Users"].forEach((label) => {
-+  ["Admin Tools", "Creators", "Infrastructure", "Invites", "Operations", "System Health", "Tool Votes"].forEach((label) => {
-     assert.equal(adminLabels.includes(label), true, `Admin navigation should include ${label}`);
-   });
-   ["Owner Tools", "AI Credits", "Branding", "Grouping Colors", "Memberships", "Revenue"].forEach((label) => {
-diff --git a/tests/playwright/tools/AdminInvitationsNavPage.spec.mjs b/tests/playwright/tools/AdminInvitationsNavPage.spec.mjs
-index bb20304ab..d5ff2cda0 100644
---- a/tests/playwright/tools/AdminInvitationsNavPage.spec.mjs
-+++ b/tests/playwright/tools/AdminInvitationsNavPage.spec.mjs
-@@ -83,6 +83,7 @@ test("Admin Invites uses shared navigation and creates personalized Beta invite
-     await expect(page.locator("nav[aria-label='Admin tool pages'] a")).toContainText([
-       "Analytics",
-       "Controls",
-+      "Creators",
-       "DB Viewer",
-       "Environments",
-       "Game Migration",
-@@ -96,7 +97,6 @@ test("Admin Invites uses shared navigation and creates personalized Beta invite
-       "Site Setup",
-       "System Health",
-       "Tool Votes",
--      "Creators",
-     ]);
-     await expect(page.locator("nav[aria-label='Admin tool pages'] a[aria-current='page']")).toHaveText("Invites");
-
-diff --git a/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs b/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
-index 79890522e..f4b68a097 100644
---- a/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
-+++ b/tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
-@@ -7,6 +7,7 @@ const ADMIN_LABELS = Object.freeze([
-   "Admin Tools",
-   "Analytics",
-   "Controls",
-+  "Creators",
-   "DB Viewer",
-   "Environments",
-   "Game Migration",
-@@ -20,7 +21,6 @@ const ADMIN_LABELS = Object.freeze([
-   "Site Setup",
-   "System Health",
-   "Tool Votes",
--  "Creators",
- ]);
-
- const OWNER_LABELS = Object.freeze([
-@@ -160,6 +160,15 @@ test("Admin menu renders operational platform pages only", async ({ page }) => {
-   try {
-     await expect(page.locator("nav[aria-label='Admin tool pages'] :is(a, span)")).toHaveText(ADMIN_LABELS);
-     const adminLinks = page.locator("nav[aria-label='Admin tool pages'] a");
-+    const adminRenderedLabels = await page.locator("nav[aria-label='Admin tool pages'] :is(a, span)").allTextContents();
-+    expect(adminRenderedLabels).toEqual([...adminRenderedLabels].sort((left, right) => left.localeCompare(right)));
-+    expect(new Set(adminRenderedLabels).size).toBe(adminRenderedLabels.length);
-+    const adminHrefs = await adminLinks.evaluateAll((links) => links.map((link) => link.getAttribute("href") || ""));
-+    expect(new Set(adminHrefs).size).toBe(adminHrefs.length);
-+    for (const href of adminHrefs) {
-+      const response = await page.request.get(new URL(href, context.server.baseUrl).toString());
-+      expect(response.status(), `${href} should open`).toBeLessThan(400);
-+    }
-     const adminLinkText = (await adminLinks.allTextContents()).join("\n");
-     for (const label of [
-       "Branding",
++const LOCAL_API_PROCESS_STARTED_AT = new Date().toISOString();
+ const SYSTEM_HEALTH_USAGE_NOT_AVAILABLE = "NOT AVAILABLE";
+ const SYSTEM_HEALTH_USAGE_CONTRACTS = Object.freeze({
+   GAMEFOUNDRY_DB_CONNECTION_LIMIT: Object.freeze({
+@@ -1028,6 +1029,40 @@ function systemHealthRuntimeEnvironment(env = process.env) {
+   };
+ }
+ 
++let cachedProjectVersion = null;
++
++function projectVersion() {
++  if (cachedProjectVersion !== null) {
++    return cachedProjectVersion;
++  }
++  try {
++    const packageJson = JSON.parse(readFileSync(path.join(process.cwd(), "package.json"), "utf8"));
++    cachedProjectVersion = String(packageJson.version || "").trim();
++  } catch {
++    cachedProjectVersion = "";
++  }
++  return cachedProjectVersion;
++}
++
++function systemHealthRuntimeHealth(environmentIdentity = {}, checkedAt = new Date().toISOString()) {
++  const version = projectVersion();
++  const nodeVersion = String(process.version || "").trim();
++  const uptimeSeconds = Math.max(0, Math.floor(process.uptime()));
++  return {
++    apiVersion: version,
++    appVersion: version,
++    environmentName: environmentIdentity.name || "Unknown",
++    lastChecked: checkedAt,
++    message: "Runtime health is reported by the current deployment Local API only.",
++    nodeVersion,
++    secretEditingAllowed: false,
++    secretsExposed: false,
++    serverStartTime: LOCAL_API_PROCESS_STARTED_AT,
++    status: "PASS",
++    uptimeSeconds,
++  };
++}
++
+ function systemHealthHistoryRow({ checkedAt, environmentName, area, result, summary, kind = "recent check" }) {
+   return {
+     area,
+@@ -1043,6 +1078,7 @@ function systemHealthCheckHistory({
+   checkedAt,
+   databaseStatus = {},
+   environmentIdentity = {},
++  runtimeHealth = {},
+   runtimeEnvironment = {},
+   storageStatus = {},
+ }) {
+@@ -1076,8 +1112,8 @@ function systemHealthCheckHistory({
+       area: "Runtime Health",
+       checkedAt,
+       environmentName,
+-      result: runtimeEnvironment.status,
+-      summary: runtimeEnvironment.message || "Runtime environment health unavailable.",
++      result: runtimeHealth.status || runtimeEnvironment.status,
++      summary: runtimeHealth.message || runtimeEnvironment.message || "Runtime health unavailable.",
+     }),
+   ];
+   const issueRows = recentChecks
+@@ -3902,11 +3938,13 @@ LIMIT 1;
+     const promotionFoundation = this.ownerPromotionFoundation();
+     const r2Readiness = systemHealthR2Readiness(storageStatus);
+     const runtimeEnvironment = systemHealthRuntimeEnvironment();
++    const runtimeHealth = systemHealthRuntimeHealth(environmentIdentity, checkedAt);
+     const operationsHealth = adminOperationsHealth(this.standaloneTables);
+     const healthCheckHistory = systemHealthCheckHistory({
+       checkedAt,
+       databaseStatus,
+       environmentIdentity,
++      runtimeHealth,
+       runtimeEnvironment,
+       storageStatus,
+     });
+@@ -4043,6 +4081,7 @@ LIMIT 1;
+       secretEditingAllowed: false,
+       secretsExposed: false,
+       runtimeEnvironment,
++      runtimeHealth,
+       storageStatus,
+       summary: systemHealthSummary(overview),
+       status: overallHealthStatus(overview),
+diff --git a/tests/dev-runtime/AdminHealthOperations.test.mjs b/tests/dev-runtime/AdminHealthOperations.test.mjs
+index fc0d28ea7..318f5b771 100644
+--- a/tests/dev-runtime/AdminHealthOperations.test.mjs
++++ b/tests/dev-runtime/AdminHealthOperations.test.mjs
+@@ -142,6 +142,13 @@ test("Admin can view operational health while Creator sessions are blocked", asy
+       assert.equal(typeof health.databaseStatus.lastChecked, "string");
+       assert.equal(typeof health.databaseStatus.responseTimeMs === "number" || health.databaseStatus.responseTimeMs === null, true);
+       assert.equal(typeof health.databaseStatus.version, "string");
++      assert.equal(health.runtimeHealth.environmentName, "Local");
++      assert.equal(health.runtimeHealth.appVersion, "1.0.0");
++      assert.equal(health.runtimeHealth.apiVersion, "1.0.0");
++      assert.match(health.runtimeHealth.nodeVersion, /^v\d+\./);
++      assert.equal(typeof health.runtimeHealth.serverStartTime, "string");
++      assert.equal(typeof health.runtimeHealth.uptimeSeconds, "number");
++      assert.equal(typeof health.runtimeHealth.lastChecked, "string");
+       assert.equal(health.storageStatus.environmentFolder, "/local");
+       assert.equal(typeof health.storageStatus.lastChecked, "string");
+       assert.equal(Array.isArray(health.healthCheckHistory), true);
+diff --git a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+index 021c845c5..f6886e525 100644
+--- a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
++++ b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+@@ -164,6 +164,14 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
+     await expect(page.locator("[data-admin-system-health-storage-value='upload']")).toContainText("/dev");
+     await expect(page.locator("[data-admin-system-health-storage-value='read']")).not.toHaveText("Health object");
+     await expect(page.locator("[data-admin-system-health-storage-value='delete']")).not.toHaveText("Health object");
++    await expect(page.getByRole("table", { name: "Runtime health" })).toContainText("Runtime Health");
++    await expect(page.locator("[data-admin-system-health-runtime-health-value='environment']")).toHaveText("DEV");
++    await expect(page.locator("[data-admin-system-health-runtime-health-value='appVersion']")).toHaveText("1.0.0");
++    await expect(page.locator("[data-admin-system-health-runtime-health-value='apiVersion']")).toHaveText("1.0.0");
++    await expect(page.locator("[data-admin-system-health-runtime-health-value='nodeVersion']")).toContainText("v");
++    await expect(page.locator("[data-admin-system-health-runtime-health-value='serverStartTime']")).not.toHaveText("Loading");
++    await expect(page.locator("[data-admin-system-health-runtime-health-value='uptime']")).toContainText("s");
++    await expect(page.locator("[data-admin-system-health-runtime-health-value='lastChecked']")).not.toHaveText("Loading");
+     const historyTable = page.getByRole("table", { name: "Health check history" });
+     await expect(historyTable).toContainText("DEV");
+     await expect(historyTable).toContainText("Environment Summary");
+@@ -251,6 +259,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
+   expect(pageSource).not.toContain("SQLite");
+   expect(pageSource).toContain("Environment Identity");
+   expect(pageSource).toContain("Environment Map");
++  expect(pageSource).toContain("Runtime Health");
+   expect(pageSource).toContain("Diagnostics Plan");
+   expect(pageSource).toContain("Local API Startup Diagnostics");
+   expect(pageSource).toContain("Server-owned Postgres health reader");
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_012-runtime-health-branch-validation.md b/docs_build/dev/reports/PR_26175_CHARLIE_012-runtime-health-branch-validation.md
+new file mode 100644
+index 000000000..58442a3f7
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_012-runtime-health-branch-validation.md
+@@ -0,0 +1,14 @@
++# PR_26175_CHARLIE_012 Branch Validation
++
++## Start Gate
++
++- PASS: Worktree was clean before Phase 2 implementation started.
++- PASS: Current branch was `pr/26175-CHARLIE-010-system-health-history-and-closeout`.
++- PASS: Branch history contained Charlie PRs 007 through 011.
++
++## Branch Rules
++
++- PASS: Continued on the existing Charlie workstream branch.
++- PASS: No merge was performed.
++- PASS: No rebase was performed.
++- PASS: No new root branch was created.
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_012-runtime-health-manual-validation-notes.md b/docs_build/dev/reports/PR_26175_CHARLIE_012-runtime-health-manual-validation-notes.md
+new file mode 100644
+index 000000000..7eb85fd46
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_012-runtime-health-manual-validation-notes.md
+@@ -0,0 +1,7 @@
++# PR_26175_CHARLIE_012 Manual Validation Notes
++
++- Verified the Runtime Health table is present on `admin/system-health.html`.
++- Verified Runtime Health values are rendered from `/api/admin/system-health/status`.
++- Verified the page still blocks Creator sessions before System Health API calls.
++- Verified Runtime Environment remains a masked variable table and was not repurposed as Runtime Health.
++- Verified no cross-environment health checks were introduced.
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_012-runtime-health-requirement-checklist.md b/docs_build/dev/reports/PR_26175_CHARLIE_012-runtime-health-requirement-checklist.md
+new file mode 100644
+index 000000000..5c744daaf
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_012-runtime-health-requirement-checklist.md
+@@ -0,0 +1,15 @@
++# PR_26175_CHARLIE_012 Requirement Checklist
++
++- PASS: Added Runtime Health section.
++- PASS: Shows current environment.
++- PASS: Shows app/runtime version when available.
++- PASS: Shows API version when available.
++- PASS: Shows Node version from the server.
++- PASS: Shows server start time from the server.
++- PASS: Shows uptime from the server.
++- PASS: Shows last checked from the server.
++- PASS: Uses API/service contract data.
++- PASS: Browser does not own runtime health state.
++- PASS: Does not actively check other environments.
++- PASS: Tests were updated.
++- PASS: Required reports were generated.
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_012-runtime-health-validation.md b/docs_build/dev/reports/PR_26175_CHARLIE_012-runtime-health-validation.md
+new file mode 100644
+index 000000000..4cce6df84
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_012-runtime-health-validation.md
+@@ -0,0 +1,18 @@
++# PR_26175_CHARLIE_012 Validation Report
++
++## Commands
++
++- PASS: `node --check src/dev-runtime/server/local-api-router.mjs`
++- PASS: `node --check assets/theme-v2/js/admin-system-health.js`
++- PASS: `git diff --check`
++  - Result: no whitespace errors; CRLF conversion warnings only.
++- PASS: `node --test tests/dev-runtime/AdminHealthOperations.test.mjs`
++  - Result: 4 passed.
++- PASS: `npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line`
++  - Result: 3 passed.
++
++## Validation Lane
++
++- Targeted System Health API/unit lane: PASS.
++- Targeted System Health Playwright lane: PASS.
++- Full samples smoke: not run; not required for this System Health-only slice.
+diff --git a/docs_build/dev/reports/PR_26175_CHARLIE_012-runtime-health.md b/docs_build/dev/reports/PR_26175_CHARLIE_012-runtime-health.md
+new file mode 100644
+index 000000000..c653f5faf
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_CHARLIE_012-runtime-health.md
+@@ -0,0 +1,26 @@
++# PR_26175_CHARLIE_012 Runtime Health
++
++## Scope
++
++Team: Charlie
++
++Purpose: Add current-deployment Runtime Health to Admin System Health Phase 2.
++
++## Changes
++
++- Added server-owned `runtimeHealth` to the Admin System Health status API.
++- Added Runtime Health UI table for environment, app/runtime version, API version, Node version, server start time, uptime, and last checked.
++- Kept Runtime Environment masking as a separate existing section.
++- Updated API and Playwright System Health tests for the Runtime Health contract.
++
++## Architecture Notes
++
++- PASS: Current deployment only.
++- PASS: Environment Map remains reference-only.
++- PASS: Browser renders API-owned runtime health state.
++- PASS: No cross-environment runtime checks were added.
++- PASS: No secrets are exposed.
++
++## Artifact
++
++- `tmp/PR_26175_CHARLIE_012-runtime-health_delta.zip`

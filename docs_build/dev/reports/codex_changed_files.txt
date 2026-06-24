@@ -1,14 +1,30 @@
-﻿docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/coverage_changed_js_guardrail.txt
-docs_build/dev/reports/playwright_v8_coverage_report.txt
-docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order.md
-docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order-branch-validation.md
-docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order-manual-validation-notes.md
-docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order-requirement-checklist.md
-docs_build/dev/reports/PR_26175_CHARLIE_011-admin-submenu-alphabetical-order-validation.md
-src/api/admin-owner-navigation.js
-tests/dev-runtime/ApiMenuPathCleanup.test.mjs
-tests/dev-runtime/ArchitectureCleanupApiNavInvitations.test.mjs
-tests/playwright/tools/AdminInvitationsNavPage.spec.mjs
-tests/playwright/tools/AdminOwnerNavigationBoundary.spec.mjs
+# git status --short
+M admin/system-health.html
+ M assets/theme-v2/js/admin-system-health.js
+ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+ M docs_build/dev/reports/playwright_v8_coverage_report.txt
+ M src/dev-runtime/server/local-api-router.mjs
+ M tests/dev-runtime/AdminHealthOperations.test.mjs
+ M tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+?? docs_build/dev/reports/PR_26175_CHARLIE_012-runtime-health-branch-validation.md
+?? docs_build/dev/reports/PR_26175_CHARLIE_012-runtime-health-manual-validation-notes.md
+?? docs_build/dev/reports/PR_26175_CHARLIE_012-runtime-health-requirement-checklist.md
+?? docs_build/dev/reports/PR_26175_CHARLIE_012-runtime-health-validation.md
+?? docs_build/dev/reports/PR_26175_CHARLIE_012-runtime-health.md
+
+# git ls-files --others --exclude-standard
+docs_build/dev/reports/PR_26175_CHARLIE_012-runtime-health-branch-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_012-runtime-health-manual-validation-notes.md
+docs_build/dev/reports/PR_26175_CHARLIE_012-runtime-health-requirement-checklist.md
+docs_build/dev/reports/PR_26175_CHARLIE_012-runtime-health-validation.md
+docs_build/dev/reports/PR_26175_CHARLIE_012-runtime-health.md
+
+# git diff --stat
+admin/system-health.html                           | 22 +++++++++
+ assets/theme-v2/js/admin-system-health.js          | 56 ++++++++++++++++++++++
+ .../dev/reports/coverage_changed_js_guardrail.txt  |  5 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  | 30 +++++-------
+ src/dev-runtime/server/local-api-router.mjs        | 43 ++++++++++++++++-
+ tests/dev-runtime/AdminHealthOperations.test.mjs   |  7 +++
+ .../tools/AdminHealthOperationsPage.spec.mjs       |  9 ++++
+ 7 files changed, 150 insertions(+), 22 deletions(-)

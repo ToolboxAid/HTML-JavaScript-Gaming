@@ -164,6 +164,14 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
     await expect(page.locator("[data-admin-system-health-storage-value='upload']")).toContainText("/dev");
     await expect(page.locator("[data-admin-system-health-storage-value='read']")).not.toHaveText("Health object");
     await expect(page.locator("[data-admin-system-health-storage-value='delete']")).not.toHaveText("Health object");
+    await expect(page.getByRole("table", { name: "Runtime health" })).toContainText("Runtime Health");
+    await expect(page.locator("[data-admin-system-health-runtime-health-value='environment']")).toHaveText("DEV");
+    await expect(page.locator("[data-admin-system-health-runtime-health-value='appVersion']")).toHaveText("1.0.0");
+    await expect(page.locator("[data-admin-system-health-runtime-health-value='apiVersion']")).toHaveText("1.0.0");
+    await expect(page.locator("[data-admin-system-health-runtime-health-value='nodeVersion']")).toContainText("v");
+    await expect(page.locator("[data-admin-system-health-runtime-health-value='serverStartTime']")).not.toHaveText("Loading");
+    await expect(page.locator("[data-admin-system-health-runtime-health-value='uptime']")).toContainText("s");
+    await expect(page.locator("[data-admin-system-health-runtime-health-value='lastChecked']")).not.toHaveText("Loading");
     const historyTable = page.getByRole("table", { name: "Health check history" });
     await expect(historyTable).toContainText("DEV");
     await expect(historyTable).toContainText("Environment Summary");
@@ -251,6 +259,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
   expect(pageSource).not.toContain("SQLite");
   expect(pageSource).toContain("Environment Identity");
   expect(pageSource).toContain("Environment Map");
+  expect(pageSource).toContain("Runtime Health");
   expect(pageSource).toContain("Diagnostics Plan");
   expect(pageSource).toContain("Local API Startup Diagnostics");
   expect(pageSource).toContain("Server-owned Postgres health reader");

@@ -142,6 +142,13 @@ test("Admin can view operational health while Creator sessions are blocked", asy
       assert.equal(typeof health.databaseStatus.lastChecked, "string");
       assert.equal(typeof health.databaseStatus.responseTimeMs === "number" || health.databaseStatus.responseTimeMs === null, true);
       assert.equal(typeof health.databaseStatus.version, "string");
+      assert.equal(health.runtimeHealth.environmentName, "Local");
+      assert.equal(health.runtimeHealth.appVersion, "1.0.0");
+      assert.equal(health.runtimeHealth.apiVersion, "1.0.0");
+      assert.match(health.runtimeHealth.nodeVersion, /^v\d+\./);
+      assert.equal(typeof health.runtimeHealth.serverStartTime, "string");
+      assert.equal(typeof health.runtimeHealth.uptimeSeconds, "number");
+      assert.equal(typeof health.runtimeHealth.lastChecked, "string");
       assert.equal(health.storageStatus.environmentFolder, "/local");
       assert.equal(typeof health.storageStatus.lastChecked, "string");
       assert.equal(Array.isArray(health.healthCheckHistory), true);

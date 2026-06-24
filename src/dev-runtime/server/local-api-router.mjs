@@ -321,6 +321,7 @@ const LOCAL_API_STARTUP_DEFAULT_PORT_BY_PROTOCOL = Object.freeze({
   "http:": "80",
   "https:": "443",
 });
+const LOCAL_API_PROCESS_STARTED_AT = new Date().toISOString();
 const SYSTEM_HEALTH_USAGE_NOT_AVAILABLE = "NOT AVAILABLE";
 const SYSTEM_HEALTH_USAGE_CONTRACTS = Object.freeze({
   GAMEFOUNDRY_DB_CONNECTION_LIMIT: Object.freeze({
@@ -1028,6 +1029,40 @@ function systemHealthRuntimeEnvironment(env = process.env) {
   };
 }
 
+let cachedProjectVersion = null;
+
+function projectVersion() {
+  if (cachedProjectVersion !== null) {
+    return cachedProjectVersion;
+  }
+  try {
+    const packageJson = JSON.parse(readFileSync(path.join(process.cwd(), "package.json"), "utf8"));
+    cachedProjectVersion = String(packageJson.version || "").trim();
+  } catch {
+    cachedProjectVersion = "";
+  }
+  return cachedProjectVersion;
+}
+
+function systemHealthRuntimeHealth(environmentIdentity = {}, checkedAt = new Date().toISOString()) {
+  const version = projectVersion();
+  const nodeVersion = String(process.version || "").trim();
+  const uptimeSeconds = Math.max(0, Math.floor(process.uptime()));
+  return {
+    apiVersion: version,
+    appVersion: version,
+    environmentName: environmentIdentity.name || "Unknown",
+    lastChecked: checkedAt,
+    message: "Runtime health is reported by the current deployment Local API only.",
+    nodeVersion,
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    serverStartTime: LOCAL_API_PROCESS_STARTED_AT,
+    status: "PASS",
+    uptimeSeconds,
+  };
+}
+
 function systemHealthHistoryRow({ checkedAt, environmentName, area, result, summary, kind = "recent check" }) {
   return {
     area,
@@ -1043,6 +1078,7 @@ function systemHealthCheckHistory({
   checkedAt,
   databaseStatus = {},
   environmentIdentity = {},
+  runtimeHealth = {},
   runtimeEnvironment = {},
   storageStatus = {},
 }) {
@@ -1076,8 +1112,8 @@ function systemHealthCheckHistory({
       area: "Runtime Health",
       checkedAt,
       environmentName,
-      result: runtimeEnvironment.status,
-      summary: runtimeEnvironment.message || "Runtime environment health unavailable.",
+      result: runtimeHealth.status || runtimeEnvironment.status,
+      summary: runtimeHealth.message || runtimeEnvironment.message || "Runtime health unavailable.",
     }),
   ];
   const issueRows = recentChecks
@@ -3902,11 +3938,13 @@ LIMIT 1;
     const promotionFoundation = this.ownerPromotionFoundation();
     const r2Readiness = systemHealthR2Readiness(storageStatus);
     const runtimeEnvironment = systemHealthRuntimeEnvironment();
+    const runtimeHealth = systemHealthRuntimeHealth(environmentIdentity, checkedAt);
     const operationsHealth = adminOperationsHealth(this.standaloneTables);
     const healthCheckHistory = systemHealthCheckHistory({
       checkedAt,
       databaseStatus,
       environmentIdentity,
+      runtimeHealth,
       runtimeEnvironment,
       storageStatus,
     });
@@ -4043,6 +4081,7 @@ LIMIT 1;
       secretEditingAllowed: false,
       secretsExposed: false,
       runtimeEnvironment,
+      runtimeHealth,
       storageStatus,
       summary: systemHealthSummary(overview),
       status: overallHealthStatus(overview),

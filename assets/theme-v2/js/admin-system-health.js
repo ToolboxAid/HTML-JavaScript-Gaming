@@ -20,6 +20,11 @@ function asText(value, fallback = "not available") {
     return statusText(value, fallback);
 }
 
+function formatUptimeSeconds(value) {
+    const seconds = Number(value);
+    return Number.isFinite(seconds) ? `${Math.max(0, Math.floor(seconds))} s` : "not available";
+}
+
 class AdminSystemHealthController {
     constructor(root) {
         this.root = root;
@@ -45,6 +50,14 @@ class AdminSystemHealthController {
         ]));
         this.storageStatuses = new Map(Array.from(root.querySelectorAll("[data-admin-system-health-storage-status]")).map((node) => [
             node.dataset.adminSystemHealthStorageStatus,
+            node,
+        ]));
+        this.runtimeHealthValues = new Map(Array.from(root.querySelectorAll("[data-admin-system-health-runtime-health-value]")).map((node) => [
+            node.dataset.adminSystemHealthRuntimeHealthValue,
+            node,
+        ]));
+        this.runtimeHealthStatuses = new Map(Array.from(root.querySelectorAll("[data-admin-system-health-runtime-health-status]")).map((node) => [
+            node.dataset.adminSystemHealthRuntimeHealthStatus,
             node,
         ]));
         this.historyRows = root.querySelector("[data-admin-system-health-history-rows]");
@@ -95,6 +108,18 @@ class AdminSystemHealthController {
         this.setStatusNode(node, status, reason);
     }
 
+    setRuntimeHealthValue(key, value, fallback) {
+        const node = this.runtimeHealthValues.get(key);
+        if (node) {
+            node.textContent = asText(value, fallback);
+        }
+    }
+
+    setRuntimeHealthStatus(key, status, reason = "") {
+        const node = this.runtimeHealthStatuses.get(key);
+        this.setStatusNode(node, status, reason);
+    }
+
     setStatusNode(node, status, reason = "") {
         applyStatusNode(node, status, { reason });
     }
@@ -108,6 +133,7 @@ class AdminSystemHealthController {
         });
         this.renderStartupPending(reason);
         this.renderStoragePending(reason);
+        this.renderRuntimeHealthPending(reason);
         this.renderHistoryPending(reason);
     }
 
@@ -160,6 +186,35 @@ class AdminSystemHealthController {
         this.setStorageStatus("bucket", storageStatus.bucketStatus || storageStatus.status, reason);
         this.setStorageValue("lastChecked", storageStatus.lastChecked, "not available");
         this.setStorageStatus("lastChecked", storageStatus.lastChecked ? "PASS" : "WARN", reason);
+    }
+
+    renderRuntimeHealthPending(reason) {
+        ["environment", "appVersion", "apiVersion", "nodeVersion", "serverStartTime", "uptime", "lastChecked"].forEach((key) => {
+            this.setRuntimeHealthValue(key, "not available");
+            this.setRuntimeHealthStatus(key, "PENDING", reason);
+        });
+    }
+
+    renderRuntimeHealth(runtimeHealth = {}) {
+        const reason = runtimeHealth.message || "Current deployment runtime health returned by the safe Admin System Health API.";
+        if (runtimeHealth?.secretsExposed === true || runtimeHealth?.secretEditingAllowed === true) {
+            this.renderRuntimeHealthPending("Safe runtime health response was blocked because it exposed secret controls.");
+            return;
+        }
+        this.setRuntimeHealthValue("environment", runtimeHealth.environmentName, "Unknown");
+        this.setRuntimeHealthStatus("environment", runtimeHealth.environmentName ? runtimeHealth.status : "WARN", reason);
+        this.setRuntimeHealthValue("appVersion", runtimeHealth.appVersion, "not available");
+        this.setRuntimeHealthStatus("appVersion", runtimeHealth.appVersion ? "PASS" : "WARN", reason);
+        this.setRuntimeHealthValue("apiVersion", runtimeHealth.apiVersion, "not available");
+        this.setRuntimeHealthStatus("apiVersion", runtimeHealth.apiVersion ? "PASS" : "WARN", reason);
+        this.setRuntimeHealthValue("nodeVersion", runtimeHealth.nodeVersion, "not available");
+        this.setRuntimeHealthStatus("nodeVersion", runtimeHealth.nodeVersion ? "PASS" : "WARN", reason);
+        this.setRuntimeHealthValue("serverStartTime", runtimeHealth.serverStartTime, "not available");
+        this.setRuntimeHealthStatus("serverStartTime", runtimeHealth.serverStartTime ? "PASS" : "WARN", reason);
+        this.setRuntimeHealthValue("uptime", formatUptimeSeconds(runtimeHealth.uptimeSeconds));
+        this.setRuntimeHealthStatus("uptime", Number.isFinite(Number(runtimeHealth.uptimeSeconds)) ? "PASS" : "WARN", reason);
+        this.setRuntimeHealthValue("lastChecked", runtimeHealth.lastChecked, "not available");
+        this.setRuntimeHealthStatus("lastChecked", runtimeHealth.lastChecked ? "PASS" : "WARN", reason);
     }
 
     renderStartupPending(reason) {
@@ -343,6 +398,7 @@ class AdminSystemHealthController {
             this.renderStartupDiagnostics(data?.localApiStartup || {});
             this.renderStorageStatus(data?.storageStatus || {});
             this.runStorageDiagnostics();
+            this.renderRuntimeHealth(data?.runtimeHealth || {});
             this.renderHealthCheckHistory(data?.healthCheckHistory || []);
             this.renderRuntimeEnvironment(data?.runtimeEnvironment || {});
         } catch (error) {
