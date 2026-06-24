@@ -64,6 +64,7 @@ class AdminSystemHealthController {
         ]));
         this.historyRows = root.querySelector("[data-admin-system-health-history-rows]");
         this.apiContractRows = root.querySelector("[data-admin-system-health-api-contract-rows]");
+        this.apiRegistryRows = root.querySelector("[data-admin-system-health-api-registry-rows]");
         this.capabilityRows = root.querySelector("[data-admin-system-health-capability-rows]");
         this.actionRows = root.querySelector("[data-admin-system-health-action-rows]");
         this.actionButtons = Array.from(root.querySelectorAll("[data-admin-system-health-action]"));
@@ -147,6 +148,7 @@ class AdminSystemHealthController {
         this.renderRuntimeHealthPending(reason);
         this.renderEnvironmentCapabilitiesPending(reason);
         this.renderApiContractPending(reason);
+        this.renderAdminApiRegistryPending(reason);
         this.renderServiceHealthPending(reason);
         this.renderConfigurationSummaryPending(reason);
         this.renderScheduledMonitoringPending(reason);
@@ -324,6 +326,47 @@ class AdminSystemHealthController {
             fragment.append(row);
         });
         this.capabilityRows.replaceChildren(fragment);
+    }
+
+    renderAdminApiRegistryPending(reason) {
+        if (!this.apiRegistryRows) {
+            return;
+        }
+        const row = document.createElement("tr");
+        row.append(
+            this.createCell("GET"),
+            this.createCell("not available"),
+            this.createCell("Team Charlie"),
+            this.createStatusCell("PENDING", reason),
+        );
+        this.apiRegistryRows.replaceChildren(row);
+    }
+
+    renderAdminApiRegistry(adminApiRegistry = {}) {
+        if (!this.apiRegistryRows) {
+            return;
+        }
+        if (adminApiRegistry?.secretsExposed === true || adminApiRegistry?.secretEditingAllowed === true) {
+            this.renderAdminApiRegistryPending("Safe Admin API registry response was blocked because it exposed secret controls.");
+            return;
+        }
+        const rows = Array.isArray(adminApiRegistry.rows) ? adminApiRegistry.rows : [];
+        if (!rows.length) {
+            this.renderAdminApiRegistryPending("Safe Admin System Health API returned no Admin API registry rows.");
+            return;
+        }
+        const fragment = document.createDocumentFragment();
+        rows.forEach((registryRow) => {
+            const row = document.createElement("tr");
+            row.append(
+                this.createCell(registryRow.method),
+                this.createCell(`${registryRow.path} - ${registryRow.purpose}`),
+                this.createCell(registryRow.owner),
+                this.createStatusCell(registryRow.status, adminApiRegistry.message),
+            );
+            fragment.append(row);
+        });
+        this.apiRegistryRows.replaceChildren(fragment);
     }
 
     renderServiceHealthPending(reason) {
@@ -749,6 +792,7 @@ class AdminSystemHealthController {
         this.renderRuntimeHealth(data?.runtimeHealth || {});
         this.renderEnvironmentCapabilities(data?.environmentCapabilities || {});
         this.renderApiContract(data?.apiContract || {});
+        this.renderAdminApiRegistry(data?.adminApiRegistry || {});
         this.renderServiceHealth(data?.serviceHealth || {});
         this.renderConfigurationSummary(data?.configurationSummary || {});
         this.renderScheduledMonitoring(data?.scheduledMonitoring || {});

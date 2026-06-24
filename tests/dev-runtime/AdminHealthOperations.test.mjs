@@ -220,6 +220,19 @@ test("Admin can view operational health while Creator sessions are blocked", asy
           "POST /api/admin/system-health/storage-connectivity-action",
         ],
       );
+      assert.deepEqual(
+        health.adminApiRegistry.rows.map((row) => `${row.method} ${row.path}`),
+        [
+          "GET /api/admin/system-health/status",
+          "POST /api/admin/system-health/action",
+          "POST /api/admin/system-health/storage-connectivity-action",
+          "GET /api/admin/infrastructure/storage-path-status",
+          "POST /api/admin/infrastructure/storage-connectivity-action",
+          "GET /api/admin/operations/status",
+          "POST /api/admin/operations/action",
+          "GET /api/navigation/admin-menu",
+        ],
+      );
       assert.equal(
         health.environmentMap.some((row) => Object.prototype.hasOwnProperty.call(row, "status")),
         false,

@@ -368,6 +368,16 @@ const SYSTEM_HEALTH_API_ENDPOINTS = Object.freeze([
   Object.freeze({ method: "POST", path: "/api/admin/system-health/action", purpose: "Run current deployment manual health actions." }),
   Object.freeze({ method: "POST", path: "/api/admin/system-health/storage-connectivity-action", purpose: "Run current deployment R2 folder diagnostics." }),
 ]);
+const ADMIN_API_REGISTRY_ENTRIES = Object.freeze([
+  Object.freeze({ method: "GET", owner: "Team Charlie", path: "/api/admin/system-health/status", purpose: "System Health status contract" }),
+  Object.freeze({ method: "POST", owner: "Team Charlie", path: "/api/admin/system-health/action", purpose: "System Health manual actions" }),
+  Object.freeze({ method: "POST", owner: "Team Charlie", path: "/api/admin/system-health/storage-connectivity-action", purpose: "System Health R2 diagnostics" }),
+  Object.freeze({ method: "GET", owner: "Team Charlie", path: "/api/admin/infrastructure/storage-path-status", purpose: "Infrastructure storage path status" }),
+  Object.freeze({ method: "POST", owner: "Team Charlie", path: "/api/admin/infrastructure/storage-connectivity-action", purpose: "Infrastructure R2 diagnostics" }),
+  Object.freeze({ method: "GET", owner: "Team Charlie", path: "/api/admin/operations/status", purpose: "Admin Operations status" }),
+  Object.freeze({ method: "POST", owner: "Team Charlie", path: "/api/admin/operations/action", purpose: "Admin Operations actions" }),
+  Object.freeze({ method: "GET", owner: "Shared Admin Navigation", path: "/api/navigation/admin-menu", purpose: "Admin navigation menu contract" }),
+]);
 const STORAGE_CONNECTIVITY_TEST_OBJECT_CONTENT = "Game Foundry Studio storage connectivity test object.\n";
 const STORAGE_CONNECTIVITY_TEST_OBJECT_RELATIVE_PATH = "connectivity/storage-connectivity-test.txt";
 const SYSTEM_HEALTH_ENVIRONMENT_MODELS = Object.freeze([
@@ -1059,6 +1069,22 @@ function systemHealthApiContract(checkedAt = new Date().toISOString()) {
     message: "Admin System Health API contract is current-deployment only and server-owned.",
     noCrossEnvironmentChecks: true,
     referenceEnvironmentMapOnly: true,
+    rows,
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    status: "PASS",
+  };
+}
+
+function systemHealthAdminApiRegistry(checkedAt = new Date().toISOString()) {
+  const rows = ADMIN_API_REGISTRY_ENTRIES.map((entry) => ({
+    ...entry,
+    status: "PASS",
+  }));
+  return {
+    lastChecked: checkedAt,
+    message: "Admin API Registry lists server routes used by Admin System Health and adjacent Charlie-owned admin operations.",
+    routeCount: rows.length,
     rows,
     secretEditingAllowed: false,
     secretsExposed: false,
@@ -4359,6 +4385,7 @@ LIMIT 1;
     const authStatus = this.authStatus();
     const checkedAt = new Date().toISOString();
     const apiContract = systemHealthApiContract(checkedAt);
+    const adminApiRegistry = systemHealthAdminApiRegistry(checkedAt);
     const environmentIdentity = systemHealthEnvironmentIdentity(process.env, checkedAt);
     const environmentMap = systemHealthEnvironmentMap();
     const databaseStatus = await this.ownerDatabaseStatus(environmentIdentity);
@@ -4536,6 +4563,7 @@ LIMIT 1;
       pressureLabels: SYSTEM_HEALTH_LIMIT_PRESSURE_LABELS,
       connectionSummary: this.ownerConnectionSummary(),
       databaseStatus,
+      adminApiRegistry,
       apiContract,
       configurationSummary,
       r2Readiness,

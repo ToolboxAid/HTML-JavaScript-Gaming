@@ -157,6 +157,12 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
     await expect(apiContractTable).toContainText("Current deployment only");
     await expect(apiContractTable).toContainText("Reference only");
     await expect(apiContractTable).toContainText("GET /api/admin/system-health/status");
+    const apiRegistryTable = page.getByRole("table", { name: "Admin API registry" });
+    await expect(apiRegistryTable).toContainText("/api/admin/system-health/status");
+    await expect(apiRegistryTable).toContainText("/api/admin/system-health/action");
+    await expect(apiRegistryTable).toContainText("/api/admin/infrastructure/storage-path-status");
+    await expect(apiRegistryTable).toContainText("/api/admin/operations/status");
+    await expect(apiRegistryTable).toContainText("/api/navigation/admin-menu");
     const serviceCards = page.locator("[data-admin-system-health-service-card]");
     await expect(serviceCards).toHaveCount(7);
     const serviceCardText = (await serviceCards.allTextContents()).join("\n");
@@ -311,6 +317,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
   expect(pageSource).toContain("Environment Map");
   expect(pageSource).toContain("Environment Capabilities");
   expect(pageSource).toContain("Health API Contract");
+  expect(pageSource).toContain("Admin API Registry");
   expect(pageSource).toContain("Service Health");
   expect(pageSource).toContain("Configuration Summary");
   expect(pageSource).toContain("Manual Health Actions");
