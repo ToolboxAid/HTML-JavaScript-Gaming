@@ -12,31 +12,32 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(0%) Toolbox Index - not exercised by this Playwright run
+(69%) Toolbox Index - exercised 3 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
-(0%) Theme V2 Shared JS - not exercised by this Playwright run
+(74%) Theme V2 Shared JS - exercised 3 runtime JS files
 
 Changed runtime JS files covered:
-(0%) src/dev-runtime/messages/messages-postgres-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) toolbox/messages/messages.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) toolbox/text-to-speech/text2speech.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) toolbox/text-to-speech/tts-profile-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(100%) none changed - no changed runtime JS files
 
 Files with executed line/function counts where available:
-(100%) none - no covered runtime files
+(8%) src/api/session-api-client.js - executed lines 68/68; executed functions 1/12
+(17%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 1/6
+(25%) toolbox/game-hub/game-hub-api-client.js - executed lines 26/26; executed functions 1/4
+(36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2041/2041; executed functions 12/33
+(50%) toolbox/tools-page-accordions.js - executed lines 1156/1156; executed functions 1/2
+(59%) assets/toolbox/colors/js/index.js - executed lines 1859/1859; executed functions 122/207
+(63%) src/api/server-api-client.js - executed lines 167/167; executed functions 12/19
+(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 204/204; executed functions 9/14
+(65%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1001/1001; executed functions 58/89
+(65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
+(67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
+(76%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 22/29
+(100%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 398/398; executed functions 35/35
 
 Uncovered or low-coverage changed JS files:
-(0%) src/dev-runtime/messages/messages-postgres-service.mjs - WARNING: uncovered changed runtime JS file; advisory only
-(0%) toolbox/messages/messages.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) toolbox/text-to-speech/text2speech.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) toolbox/text-to-speech/tts-profile-store.js - WARNING: uncovered changed runtime JS file; advisory only
+(100%) none changed - no changed runtime JS files
 
 Changed JS files considered:
-(0%) src/dev-runtime/messages/messages-postgres-service.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/dev-runtime/DbSeedIntegrity.test.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/MessagesTool.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/tools/MessagesPlaybackSource.test.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/tools/Text2SpeechShell.test.mjs - changed JS file not collected as browser runtime coverage
-(0%) toolbox/messages/messages.js - changed JS file not collected as browser runtime coverage
-(0%) toolbox/text-to-speech/text2speech.js - changed JS file not collected as browser runtime coverage
-(0%) toolbox/text-to-speech/tts-profile-store.js - changed JS file not collected as browser runtime coverage
+(0%) assets/toolbox/idea-board/js/index.js - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/IdeaBoardTableNotes.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
