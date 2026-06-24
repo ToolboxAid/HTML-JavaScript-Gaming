@@ -1,9 +1,3 @@
-# git status --short
-
-
-# git diff --name-status main...HEAD
-A	docs_build/dev/reports/PR_26175_OWNER_049-governance-report-merge-batch.md
-
-# git diff --stat main...HEAD
- ...6175_OWNER_049-governance-report-merge-batch.md | 128 +++++++++++++++++++++
- 1 file changed, 128 insertions(+)
+docs_build/dev/reports/PR_26175_OWNER_054-alfa-consolidated-batch-closeout-plan.md
+docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/codex_review.diff
