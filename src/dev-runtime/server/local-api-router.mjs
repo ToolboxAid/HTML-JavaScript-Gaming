@@ -356,6 +356,7 @@ const SYSTEM_HEALTH_STORAGE_ACTION_IDS = Object.freeze([
   "storage-read-test-object",
   "storage-delete-test-object",
 ]);
+const SYSTEM_HEALTH_STORAGE_EXPANDED_VALIDATION_ACTION_ID = "storage-expanded-validation";
 const SYSTEM_HEALTH_MANUAL_ACTION_LABELS = Object.freeze({
   "database-check": "Run Database Check",
   "full-health-check": "Run Full Health Check",
@@ -4046,43 +4047,75 @@ class ApiRuntimeDataSource {
 
   storageConnectivityConfigFailure(actionId, storage, scope = "project-prefix") {
     const missing = storage.config?.missingKeys?.join(", ") || storage.config?.validationError || "storage configuration incomplete";
+    const action = STORAGE_CONNECTIVITY_ACTIONS.find((candidate) => candidate.id === actionId);
     return {
       actionId,
+      cleanupStatus: "not-run",
+      durationMs: 0,
       environmentFolder: scope === "environment-folder" ? this.storageConnectivityEnvironmentFolder() : "",
       executed: false,
       lastChecked: new Date().toISOString(),
       message: `Storage connectivity requires configured storage and GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX before this action can run. Missing or invalid: ${missing}.`,
+      operation: action?.operation || "configuration",
+      operationLabel: action?.label || "Storage configuration",
+      permanentObjectCreated: false,
       projectsPrefix: String(storage.config?.projectsPrefix || "").trim(),
       secretEditingAllowed: false,
       secretsExposed: false,
       status: "FAIL",
       storageStatus: this.ownerStorageStatus(),
+      targetPrefix: scope === "environment-folder" ? this.storageConnectivityEnvironmentFolder() : String(storage.config?.projectsPrefix || "").trim(),
     };
   }
 
-  storageConnectivityResult({ actionId, environmentFolder = "", executed = true, keysListed = 0, message, objectKey, projectsPrefix, status }) {
+  storageConnectivityResult({
+    action,
+    actionId,
+    cleanupStatus = "not-applicable",
+    durationMs = 0,
+    environmentFolder = "",
+    executed = true,
+    keysListed = 0,
+    message,
+    objectKey,
+    permanentObjectCreated = false,
+    projectsPrefix,
+    status,
+    targetPrefix = "",
+  }) {
+    const resolvedAction = action || STORAGE_CONNECTIVITY_ACTIONS.find((candidate) => candidate.id === actionId) || {};
     return {
       actionId,
+      cleanupStatus,
+      durationMs,
       environmentFolder,
       executed,
       keysListed,
       lastChecked: new Date().toISOString(),
       message,
+      operation: resolvedAction.operation || "",
+      operationLabel: resolvedAction.label || actionId,
+      permanentObjectCreated,
       projectsPrefix,
       secretEditingAllowed: false,
       secretsExposed: false,
       status,
       storageStatus: this.ownerStorageStatus(),
+      targetPrefix,
       testObjectKey: objectKey,
     };
   }
 
   async runStorageConnectivityAction(actionId, options = {}) {
+    if (actionId === SYSTEM_HEALTH_STORAGE_EXPANDED_VALIDATION_ACTION_ID) {
+      return this.runStorageExpandedValidation(options);
+    }
     const action = STORAGE_CONNECTIVITY_ACTIONS.find((candidate) => candidate.id === actionId);
     if (!action) {
       throw new Error(`Unknown storage connectivity action: ${actionId || "missing actionId"}.`);
     }
 
+    const startedAt = Date.now();
     const scope = options.scope === "environment-folder" ? "environment-folder" : "project-prefix";
     const storage = createConfiguredProjectAssetStorage();
     const projectsPrefix = String(storage.config?.projectsPrefix || "").trim();
@@ -4098,7 +4131,9 @@ class ApiRuntimeDataSource {
         const result = await storage.listObjects(targetPrefix);
         const keysListed = Array.isArray(result.keys) ? result.keys.length : 0;
         return this.storageConnectivityResult({
+          action,
           actionId: action.id,
+          durationMs: Date.now() - startedAt,
           environmentFolder,
           keysListed,
           message: result.ok
@@ -4107,6 +4142,7 @@ class ApiRuntimeDataSource {
           objectKey,
           projectsPrefix,
           status: result.ok ? "PASS" : "FAIL",
+          targetPrefix,
         });
       }
 
@@ -4116,7 +4152,9 @@ class ApiRuntimeDataSource {
           : await storage.listProjectObjects();
         const keysListed = Array.isArray(result.keys) ? result.keys.length : 0;
         return this.storageConnectivityResult({
+          action,
           actionId: action.id,
+          durationMs: Date.now() - startedAt,
           environmentFolder,
           keysListed,
           message: result.ok
@@ -4125,6 +4163,7 @@ class ApiRuntimeDataSource {
           objectKey,
           projectsPrefix,
           status: result.ok ? "PASS" : "FAIL",
+          targetPrefix,
         });
       }
 
@@ -4135,14 +4174,19 @@ class ApiRuntimeDataSource {
           objectKey,
         });
         return this.storageConnectivityResult({
+          action,
           actionId: action.id,
+          cleanupStatus: result.ok ? "requires-delete-action" : "not-created",
+          durationMs: Date.now() - startedAt,
           environmentFolder,
           message: result.ok
             ? `Upload test object completed at ${objectKey}.`
             : `${result.message || "Storage upload failed."} Verify upload permission for ${targetPrefix}.`,
           objectKey,
+          permanentObjectCreated: result.ok === true,
           projectsPrefix,
           status: result.ok ? "PASS" : "FAIL",
+          targetPrefix,
         });
       }
 
@@ -4151,7 +4195,9 @@ class ApiRuntimeDataSource {
         const text = result.ok ? Buffer.from(result.bytes || []).toString("utf8") : "";
         const contentMatches = text === STORAGE_CONNECTIVITY_TEST_OBJECT_CONTENT;
         return this.storageConnectivityResult({
+          action,
           actionId: action.id,
+          durationMs: Date.now() - startedAt,
           environmentFolder,
           message: result.ok && contentMatches
             ? `Read test object completed from ${objectKey}.`
@@ -4159,30 +4205,75 @@ class ApiRuntimeDataSource {
           objectKey,
           projectsPrefix,
           status: result.ok && contentMatches ? "PASS" : "FAIL",
+          targetPrefix,
         });
       }
 
       const result = await storage.deleteObject(objectKey);
       return this.storageConnectivityResult({
+        action,
         actionId: action.id,
+        cleanupStatus: result.ok ? "completed" : "failed",
+        durationMs: Date.now() - startedAt,
         environmentFolder,
         message: result.ok
           ? `Delete test object completed at ${objectKey}.`
           : `${result.message || "Storage delete failed."} Verify delete permission for ${targetPrefix}.`,
         objectKey,
+        permanentObjectCreated: false,
         projectsPrefix,
         status: result.ok ? "PASS" : "FAIL",
+        targetPrefix,
       });
     } catch (error) {
       return this.storageConnectivityResult({
+        action,
         actionId: action.id,
+        durationMs: Date.now() - startedAt,
         environmentFolder,
         message: `Storage connectivity action failed: ${error instanceof Error ? error.message : String(error || "Unknown storage error.")}`,
         objectKey,
         projectsPrefix,
         status: "FAIL",
+        targetPrefix,
       });
     }
+  }
+
+  async runStorageExpandedValidation(options = {}) {
+    const startedAt = Date.now();
+    const scope = options.scope === "environment-folder" ? "environment-folder" : "project-prefix";
+    const storage = createConfiguredProjectAssetStorage();
+    const targetPrefix = this.storageConnectivityTargetPrefix(storage, scope);
+    const objectKey = this.storageConnectivityTestObjectKey(storage, scope);
+    const results = [];
+    for (const actionId of SYSTEM_HEALTH_STORAGE_ACTION_IDS) {
+      results.push(await this.runStorageConnectivityAction(actionId, { scope }));
+    }
+    const uploadResult = results.find((result) => result.actionId === "storage-upload-test-object");
+    const deleteResult = results.find((result) => result.actionId === "storage-delete-test-object");
+    const permanentObjectCreated = uploadResult?.status === "PASS" && deleteResult?.status !== "PASS";
+    const status = overallHealthStatus(results);
+    return {
+      actionId: SYSTEM_HEALTH_STORAGE_EXPANDED_VALIDATION_ACTION_ID,
+      cleanupStatus: permanentObjectCreated ? "failed" : "completed",
+      durationMs: Date.now() - startedAt,
+      environmentFolder: scope === "environment-folder" ? this.storageConnectivityEnvironmentFolder() : "",
+      executed: true,
+      lastChecked: new Date().toISOString(),
+      message: permanentObjectCreated
+        ? `Expanded R2 validation detected a cleanup failure for ${objectKey}; review storage credentials and delete permission.`
+        : `Expanded R2 validation completed against ${targetPrefix}; test object cleanup was attempted in the same validation run.`,
+      permanentObjectCreated,
+      projectsPrefix: String(storage.config?.projectsPrefix || "").trim(),
+      secretEditingAllowed: false,
+      secretsExposed: false,
+      status,
+      storageDiagnostics: results,
+      storageStatus: this.ownerStorageStatus(),
+      targetPrefix,
+      testObjectKey: objectKey,
+    };
   }
 
   ownerPromotionFoundation() {
@@ -4424,20 +4515,20 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
   }
 
   async adminSystemHealthStorageHealthCheck() {
-    const results = [];
-    for (const actionId of SYSTEM_HEALTH_STORAGE_ACTION_IDS) {
-      results.push(await this.runStorageConnectivityAction(actionId, { scope: "environment-folder" }));
-    }
+    const validation = await this.runStorageExpandedValidation({ scope: "environment-folder" });
+    const results = Array.isArray(validation.storageDiagnostics) ? validation.storageDiagnostics : [];
     return {
       actionId: "storage-check",
       checkedAt: new Date().toISOString(),
       label: SYSTEM_HEALTH_MANUAL_ACTION_LABELS["storage-check"],
-      message: "Storage health check executed bucket connectivity, list, upload, read, and delete through the current deployment API.",
+      message: validation.message || "Storage health check executed bucket connectivity, list, upload, read, and delete through the current deployment API.",
+      permanentObjectCreated: validation.permanentObjectCreated === true,
       secretEditingAllowed: false,
       secretsExposed: false,
-      status: overallHealthStatus(results.map((result) => ({ status: result.status }))),
+      status: validation.status || overallHealthStatus(results.map((result) => ({ status: result.status }))),
       storageDiagnostics: results,
       storageStatus: this.ownerStorageStatus(),
+      validationDurationMs: validation.durationMs,
     };
   }
 
