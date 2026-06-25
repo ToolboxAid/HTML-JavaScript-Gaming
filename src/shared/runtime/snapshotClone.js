@@ -1,3 +1,13 @@
+export function cloneRuntimeValue(value) {
+  if (value === undefined || value === null) {
+    return null;
+  }
+  if (typeof structuredClone === "function") {
+    return structuredClone(value);
+  }
+  return JSON.parse(JSON.stringify(value));
+}
+
 export function cloneSnapshot(snapshot) {
   if (snapshot === null || typeof snapshot !== "object") {
     return {};
