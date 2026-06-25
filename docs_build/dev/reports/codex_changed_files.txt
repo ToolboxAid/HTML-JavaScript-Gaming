@@ -1,32 +1,44 @@
-# git status --short
-M admin/system-health.html
- M assets/theme-v2/js/admin-system-health.js
- M docs_build/dev/reports/coverage_changed_js_guardrail.txt
- M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M src/dev-runtime/server/local-api-router.mjs
- M tests/api/admin-system-health/contract.test.mjs
- M tests/dev-runtime/AdminHealthOperations.test.mjs
- M tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-?? docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_branch-validation.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_manual-validation-notes.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_requirements-checklist.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_validation-lane.md
-
-# git ls-files --others --exclude-standard
+# git diff --name-only origin/main --
+admin/system-health.html
+assets/theme-v2/js/admin-system-health.js
 docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel.md
 docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_branch-validation.md
 docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_manual-validation-notes.md
 docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_requirements-checklist.md
 docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_validation-lane.md
+docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/codex_review.diff
+docs_build/dev/reports/coverage_changed_js_guardrail.txt
+docs_build/dev/reports/playwright_v8_coverage_report.txt
+src/dev-runtime/server/local-api-router.mjs
+tests/api/admin-system-health/contract.test.mjs
+tests/dev-runtime/AdminHealthOperations.test.mjs
+tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
 
-# git diff --stat
-admin/system-health.html                           |  16 +++
- assets/theme-v2/js/admin-system-health.js          |  42 ++++++++
- .../dev/reports/coverage_changed_js_guardrail.txt  |   5 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |  29 ++++--
- src/dev-runtime/server/local-api-router.mjs        | 115 +++++++++++++++++++--
- tests/api/admin-system-health/contract.test.mjs    |  15 +++
- tests/dev-runtime/AdminHealthOperations.test.mjs   |  20 ++++
- .../tools/AdminHealthOperationsPage.spec.mjs       |  11 ++
- 8 files changed, 233 insertions(+), 20 deletions(-)
+# git status --short
+ M docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel.md
+ M docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_branch-validation.md
+ M docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_manual-validation-notes.md
+ M docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_requirements-checklist.md
+ M docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_validation-lane.md
+ M docs_build/dev/reports/codex_review.diff
+ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+ M docs_build/dev/reports/playwright_v8_coverage_report.txt
+
+# git diff --stat origin/main --
+ admin/system-health.html                           |  16 +
+ assets/theme-v2/js/admin-system-health.js          |  42 ++
+ ...LIE_029-system-health-postgres-metrics-panel.md |  39 +
+ ...lth-postgres-metrics-panel_branch-validation.md |  17 +
+ ...stgres-metrics-panel_manual-validation-notes.md |   9 +
+ ...ostgres-metrics-panel_requirements-checklist.md |  16 +
+ ...ealth-postgres-metrics-panel_validation-lane.md |  21 +
+ docs_build/dev/reports/codex_changed_files.txt     |  42 +-
+ docs_build/dev/reports/codex_review.diff           | 794 +++++++++++++++------
+ .../dev/reports/coverage_changed_js_guardrail.txt  |   4 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |  24 +-
+ src/dev-runtime/server/local-api-router.mjs        | 115 ++-
+ tests/api/admin-system-health/contract.test.mjs    |  15 +
+ tests/dev-runtime/AdminHealthOperations.test.mjs   |  20 +
+ .../tools/AdminHealthOperationsPage.spec.mjs       |  11 +
+ 15 files changed, 924 insertions(+), 261 deletions(-)

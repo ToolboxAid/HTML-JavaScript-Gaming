@@ -4,6 +4,7 @@ Team: Charlie
 Branch: pr/26177-CHARLIE-029-system-health-postgres-metrics-panel
 Base: main
 Lifecycle: Build / Validation
+Repair: Updated from origin/main on 2026-06-25 after PR #177 reported draft=true and mergeable=false.
 
 ## Scope
 - Added a System Health Postgres Metrics panel backed by the server-owned Admin System Health API.
@@ -28,5 +29,11 @@ Lifecycle: Build / Validation
 - PASS: npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line
 - PASS: git diff --check
 
+## Repair Notes
+- PASS: Merged current origin/main into the PR branch.
+- PASS: Merge conflict was limited to generated report artifacts: codex_changed_files.txt and codex_review.diff.
+- PASS: No runtime, UI, API, database, or product-data conflict required a product decision.
+- PASS: Scope remains Postgres metrics panel only.
+
 ## ZIP
-- Pending until commit: C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\tmp\PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_delta.zip
+- Generated after repair: C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\tmp\PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_delta.zip

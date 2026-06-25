@@ -7,12 +7,12 @@ Impacted lanes:
 - Playwright: targeted Admin System Health page spec.
 
 Commands:
-- node --check src/dev-runtime/server/local-api-router.mjs
-- node --check assets/theme-v2/js/admin-system-health.js
-- node --test tests/api/admin-system-health/contract.test.mjs
-- node --test tests/dev-runtime/AdminHealthOperations.test.mjs
-- npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line
-- git diff --check
+- PASS: node --check src/dev-runtime/server/local-api-router.mjs
+- PASS: node --check assets/theme-v2/js/admin-system-health.js
+- PASS: node --test tests/api/admin-system-health/contract.test.mjs
+- PASS: node --test tests/dev-runtime/AdminHealthOperations.test.mjs
+- PASS: npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line
+- PASS: git diff --check
 
 Skipped lanes:
 - Full samples smoke skipped; not impacted by System Health API/UI panel change.

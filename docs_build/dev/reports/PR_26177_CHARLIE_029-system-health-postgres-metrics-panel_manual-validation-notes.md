@@ -5,3 +5,5 @@
 - Confirmed unavailable metrics render visibly as Unavailable/WARN rather than silently falling back.
 - Confirmed page retains external scripts/styles only; no inline style/script/handler additions.
 - Confirmed no secrets or database URLs are shown in the Database Health or Postgres Metrics tables.
+- Confirmed current main merge conflict was limited to generated report artifacts.
+- Confirmed no start_of_day files changed.

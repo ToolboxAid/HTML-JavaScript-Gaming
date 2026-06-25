@@ -43,7 +43,7 @@ index 656394104..746d47753 100644
 +        this.postgresMetricRows = root.querySelector("[data-admin-system-health-postgres-metric-rows]");
          this.runtimeRows = root.querySelector("[data-admin-system-health-runtime-rows]");
      }
- 
+
 @@ -145,6 +146,7 @@ class AdminSystemHealthController {
              this.setStatus(key, "PENDING", reason);
          });
@@ -97,45 +97,175 @@ index 656394104..746d47753 100644
 +        });
 +        this.postgresMetricRows.replaceChildren(fragment);
      }
- 
+
      renderStorageStatus(storageStatus = {}) {
-diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 4cf3859da..be6f01bab 100644
---- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,7 +6,8 @@ Missing changed runtime JS files are WARN, not FAIL.
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel.md b/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel.md
+new file mode 100644
+index 000000000..7ff7fe32a
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel.md
+@@ -0,0 +1,39 @@
++﻿# PR_26177_CHARLIE_029-system-health-postgres-metrics-panel
++
++Team: Charlie
++Branch: pr/26177-CHARLIE-029-system-health-postgres-metrics-panel
++Base: main
++Lifecycle: Build / Validation
++Repair: Updated from origin/main on 2026-06-25 after PR #177 reported draft=true and mergeable=false.
++
++## Scope
++- Added a System Health Postgres Metrics panel backed by the server-owned Admin System Health API.
++- Added safe current-environment metrics for connection status, database name, current schema, migration status, last migration, table count, database size, and last checked.
++- Preserved current-environment-only behavior and did not add cross-environment database checks.
++
++## Changed Files
++- admin/system-health.html
++- assets/theme-v2/js/admin-system-health.js
++- src/dev-runtime/server/local-api-router.mjs
++- tests/api/admin-system-health/contract.test.mjs
++- tests/dev-runtime/AdminHealthOperations.test.mjs
++- tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
++- docs_build/dev/reports/coverage_changed_js_guardrail.tx
++- docs_build/dev/reports/playwright_v8_coverage_report.tx
++
++## Validation
++- PASS: node --check src/dev-runtime/server/local-api-router.mjs
++- PASS: node --check assets/theme-v2/js/admin-system-health.js
++- PASS: node --test tests/api/admin-system-health/contract.test.mjs
++- PASS: node --test tests/dev-runtime/AdminHealthOperations.test.mjs
++- PASS: npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line
++- PASS: git diff --check
++
++## Repair Notes
++- PASS: Merged current origin/main into the PR branch.
++- PASS: Merge conflict was limited to generated report artifacts: codex_changed_files.txt and codex_review.diff.
++- PASS: No runtime, UI, API, database, or product-data conflict required a product decision.
++- PASS: Scope remains Postgres metrics panel only.
++
++## ZIP
++- Generated after repair: C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\tmp\PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_delta.zip
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_branch-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_branch-validation.md
+new file mode 100644
+index 000000000..9364d3f7c
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_branch-validation.md
+@@ -0,0 +1,17 @@
++﻿# PR_26177_CHARLIE_029-system-health-postgres-metrics-panel Branch Validation
++
++Branch: pr/26177-CHARLIE-029-system-health-postgres-metrics-panel
++Expected start branch: main, then PR branch for build
++Current status at validation:
++## pr/26177-CHARLIE-029-system-health-postgres-metrics-panel
++Updated from origin/main for PR #177 repair.
++
++Result: PASS
++
++Checks:
++- PASS: Started from synchronized main.
++- PASS: Active branch matches PR identity.
++- PASS: Current origin/main merged into branch.
++- PASS: Merge conflict scope was generated report artifacts only.
++- PASS: Worktree contains only scoped PR repair/report changes after report refresh.
++- PASS: No start_of_day files modified.
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_manual-validation-notes.md
+new file mode 100644
+index 000000000..1c30d0c93
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_manual-validation-notes.md
+@@ -0,0 +1,9 @@
++﻿# PR_26177_CHARLIE_029-system-health-postgres-metrics-panel Manual Validation Notes
++
++- Confirmed Postgres Metrics appears as a separate System Health table.
++- Confirmed metric values come from the server-owned Admin System Health API response.
++- Confirmed unavailable metrics render visibly as Unavailable/WARN rather than silently falling back.
++- Confirmed page retains external scripts/styles only; no inline style/script/handler additions.
++- Confirmed no secrets or database URLs are shown in the Database Health or Postgres Metrics tables.
++- Confirmed current main merge conflict was limited to generated report artifacts.
++- Confirmed no start_of_day files changed.
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_requirements-checklist.md b/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_requirements-checklist.md
+new file mode 100644
+index 000000000..f99698e88
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_requirements-checklist.md
+@@ -0,0 +1,16 @@
++﻿# PR_26177_CHARLIE_029-system-health-postgres-metrics-panel Requirement Checklis
++
++- PASS: Add/extend System Health Postgres metrics panel.
++- PASS: Include connection status.
++- PASS: Include database name.
++- PASS: Include current schema/migration status when available.
++- PASS: Include table count when available.
++- PASS: Include database size when available.
++- PASS: Do not add expensive queries.
++- PASS: Show explicit Unavailable status when a metric is unavailable.
++- PASS: Do not expose secrets.
++- PASS: Keep browser UI consuming API/service contract.
++- PASS: No cross-environment checks added.
++- PASS: No start_of_day files modified.
++- PASS: Repaired PR #177 branch from current main.
++- PASS: Mark ready for review after validation/reporting is complete.
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_validation-lane.md b/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_validation-lane.md
+new file mode 100644
+index 000000000..e1ca3d673
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_validation-lane.md
+@@ -0,0 +1,21 @@
++﻿# PR_26177_CHARLIE_029-system-health-postgres-metrics-panel Validation Lane Repor
++
++Impacted lanes:
++- runtime: Local API Admin System Health status contract.
++- contract: Admin System Health API contract tests.
++- UI: Admin System Health Theme V2 page controller and markup.
++- Playwright: targeted Admin System Health page spec.
++
++Commands:
++- PASS: node --check src/dev-runtime/server/local-api-router.mjs
++- PASS: node --check assets/theme-v2/js/admin-system-health.js
++- PASS: node --test tests/api/admin-system-health/contract.test.mjs
++- PASS: node --test tests/dev-runtime/AdminHealthOperations.test.mjs
++- PASS: npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line
++- PASS: git diff --check
++
++Skipped lanes:
++- Full samples smoke skipped; not impacted by System Health API/UI panel change.
++- Full workspace suite skipped; targeted Project Workspace coverage was sufficient for this scoped Admin page.
++
++Result: PASS
+diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.tx
+index 4cf3859da..7b1c51f19 100644
+--- a/docs_build/dev/reports/coverage_changed_js_guardrail.tx
++++ b/docs_build/dev/reports/coverage_changed_js_guardrail.tx
+@@ -6,7 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
  Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
- 
+
  Changed runtime JS files considered:
 -(63%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 62/98
-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(81%) assets/theme-v2/js/admin-system-health.js - executed lines 848/848; executed functions 70/86
- 
++(100%) none changed - no changed runtime JS files
+
  Guardrail warnings:
 -(100%) none - no changed runtime JS coverage warnings
-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 8f1bdb531..e004c18db 100644
---- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
-+++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -12,22 +12,33 @@ Note: entry percentages use function coverage when available, otherwise line cov
++(100%) none changed - no changed runtime JS files
+diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.tx
+index 8f1bdb531..627ed631f 100644
+--- a/docs_build/dev/reports/playwright_v8_coverage_report.tx
++++ b/docs_build/dev/reports/playwright_v8_coverage_report.tx
+@@ -12,22 +12,28 @@ Note: entry percentages use function coverage when available, otherwise line cov
  Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
- 
+
  Exercised tool entry points detected:
 -(0%) Toolbox Index - not exercised by this Playwright run
 +(46%) Toolbox Index - exercised 1 runtime JS files
  (0%) Tool Template V2 - not exercised by this Playwright run
 -(64%) Theme V2 Shared JS - exercised 2 runtime JS files
 +(78%) Theme V2 Shared JS - exercised 5 runtime JS files
- 
+
  Changed runtime JS files covered:
 -(63%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 62/98
-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(81%) assets/theme-v2/js/admin-system-health.js - executed lines 848/848; executed functions 70/86
- 
++(100%) none changed - no changed runtime JS files
+
  Files with executed line/function counts where available:
 -(63%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 62/98
-+(36%) src/api/server-api-client.js - executed lines 167/167; executed functions 5/14
++(36%) src/api/server-api-client.js - executed lines 168/168; executed functions 5/14
 +(46%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 12/26
 +(65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
 +(75%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 76/102
@@ -147,20 +277,16 @@ index 8f1bdb531..e004c18db 100644
 +(83%) assets/js/shared/status.js - executed lines 37/37; executed functions 5/6
 +(91%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 10/11
 +(100%) src/api/admin-system-health-api-client.js - executed lines 28/28; executed functions 4/4
- 
+
  Uncovered or low-coverage changed JS files:
 -(100%) none - no low-coverage changed runtime JS files
-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
- 
++(100%) none changed - no changed runtime JS files
+
  Changed JS files considered:
 -(0%) tests/playwright/tools/RemainingLegalPages.spec.mjs - changed JS file not collected as browser runtime coverage
 -(63%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
 -(100%) legal/legal-nav.js - changed JS file with browser V8 coverage
-+(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/api/admin-system-health/contract.test.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/dev-runtime/AdminHealthOperations.test.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
-+(81%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
++(100%) none - no changed JS files
 diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
 index 993e14a59..462d8b7a0 100644
 --- a/src/dev-runtime/server/local-api-router.mjs
@@ -168,7 +294,7 @@ index 993e14a59..462d8b7a0 100644
 @@ -650,6 +650,63 @@ function databaseConfigStatus(env = process.env) {
    }
  }
- 
+
 +function systemHealthPostgresMetrics(databaseStatus = {}, checkedAt = new Date().toISOString()) {
 +  const reason = databaseStatus.message || "Postgres metrics are reported only when the current environment database reader returns safe values.";
 +  const tableCount = Number(databaseStatus.tableCount);
@@ -192,7 +318,7 @@ index 993e14a59..462d8b7a0 100644
 +      metric: "Migration status",
 +      status: databaseStatus.migrationStatus || "WARN",
 +      value: databaseStatus.migrationStatus === "PASS"
-+        ? `DDL=${databaseStatus.migrationCounts?.DDL || 0}; DML=${databaseStatus.migrationCounts?.DML || 0}`
++        ? `DDL=${databaseStatus.migrationCounts?.DDL || 0}; DML=${databaseStatus.migrationCounts?.DML || 0}
 +        : "Unavailable",
 +    },
 +    {
@@ -247,30 +373,30 @@ index 993e14a59..462d8b7a0 100644
      try {
        const adapter = this.supabaseDatabaseAdapter("Reading Admin System Health migration history");
 -      const versionRows = await adapter.databaseClient().query("SELECT version() AS version;");
--      const countRows = await adapter.databaseClient().query(`
+-      const countRows = await adapter.databaseClient().query(
 +      const databaseClient = adapter.databaseClient();
 +      const versionRows = await databaseClient.query("SELECT version() AS version;");
 +      const currentRows = await databaseClient.query("SELECT current_database() AS database_name, current_schema() AS schema_name;");
-+      const countRows = await databaseClient.query(`
- SELECT "migrationType", count(*)::int AS count
++      const countRows = await databaseClient.query(
+ SELECT "migrationType", count(*)::int AS coun
  FROM schema_migrations
  GROUP BY "migrationType"
  ORDER BY "migrationType";
  `);
--      const lastRows = await adapter.databaseClient().query(`
-+      const lastRows = await databaseClient.query(`
+-      const lastRows = await adapter.databaseClient().query(
++      const lastRows = await databaseClient.query(
  SELECT "migrationType", "migrationName", "appliedAt"
  FROM schema_migrations
  ORDER BY "appliedAt" DESC, key DESC
  LIMIT 1;
 +`);
-+      const tableCountRows = await databaseClient.query(`
-+SELECT count(*)::int AS table_count
++      const tableCountRows = await databaseClient.query(
++SELECT count(*)::int AS table_coun
 +FROM information_schema.tables
 +WHERE table_schema NOT IN ('pg_catalog', 'information_schema')
 +  AND table_type = 'BASE TABLE';
 +`);
-+      const databaseSizeRows = await databaseClient.query(`
++      const databaseSizeRows = await databaseClient.query(
 +SELECT pg_database_size(current_database()) AS database_size_bytes,
 +       pg_size_pretty(pg_database_size(current_database())) AS database_size;
  `);
@@ -329,7 +455,7 @@ index 993e14a59..462d8b7a0 100644
 +      };
      }
    }
- 
+
 @@ -4410,6 +4505,7 @@ LIMIT 1;
      const environmentIdentity = systemHealthEnvironmentIdentity(process.env, checkedAt);
      const environmentMap = systemHealthEnvironmentMap();
@@ -450,128 +576,3 @@ index 52d7acf50..56733ce6a 100644
    expect(pageSource).toContain("Server-owned Postgres health reader");
    expect(pageSource).toContain("Server-owned Cloudflare R2 storage diagnostic");
    expect(pageSource).toContain("assets/theme-v2/js/admin-system-health.js");
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel.md b/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel.md
-new file mode 100644
-index 000000000..e0e6f995a
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel.md
-@@ -0,0 +1,32 @@
-+﻿# PR_26177_CHARLIE_029-system-health-postgres-metrics-panel
-+
-+Team: Charlie
-+Branch: pr/26177-CHARLIE-029-system-health-postgres-metrics-panel
-+Base: main
-+Lifecycle: Build / Validation
-+
-+## Scope
-+- Added a System Health Postgres Metrics panel backed by the server-owned Admin System Health API.
-+- Added safe current-environment metrics for connection status, database name, current schema, migration status, last migration, table count, database size, and last checked.
-+- Preserved current-environment-only behavior and did not add cross-environment database checks.
-+
-+## Changed Files
-+- admin/system-health.html
-+- assets/theme-v2/js/admin-system-health.js
-+- src/dev-runtime/server/local-api-router.mjs
-+- tests/api/admin-system-health/contract.test.mjs
-+- tests/dev-runtime/AdminHealthOperations.test.mjs
-+- tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-+- docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+- docs_build/dev/reports/playwright_v8_coverage_report.txt
-+
-+## Validation
-+- PASS: node --check src/dev-runtime/server/local-api-router.mjs
-+- PASS: node --check assets/theme-v2/js/admin-system-health.js
-+- PASS: node --test tests/api/admin-system-health/contract.test.mjs
-+- PASS: node --test tests/dev-runtime/AdminHealthOperations.test.mjs
-+- PASS: npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line
-+- PASS: git diff --check
-+
-+## ZIP
-+- Pending until commit: C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\tmp\PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_delta.zip
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_branch-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_branch-validation.md
-new file mode 100644
-index 000000000..b5a80d96a
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_branch-validation.md
-@@ -0,0 +1,21 @@
-+﻿# PR_26177_CHARLIE_029-system-health-postgres-metrics-panel Branch Validation
-+
-+Branch: pr/26177-CHARLIE-029-system-health-postgres-metrics-panel
-+Expected start branch: main, then PR branch for build
-+Current status at validation:
-+## pr/26177-CHARLIE-029-system-health-postgres-metrics-panel
-+ M admin/system-health.html
-+ M assets/theme-v2/js/admin-system-health.js
-+ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+ M docs_build/dev/reports/playwright_v8_coverage_report.txt
-+ M src/dev-runtime/server/local-api-router.mjs
-+ M tests/api/admin-system-health/contract.test.mjs
-+ M tests/dev-runtime/AdminHealthOperations.test.mjs
-+ M tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-+
-+Result: PASS
-+
-+Checks:
-+- PASS: Started from synchronized main.
-+- PASS: Active branch matches PR identity.
-+- PASS: Worktree contained only scoped PR changes and generated validation reports.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_manual-validation-notes.md
-new file mode 100644
-index 000000000..b37c12319
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_manual-validation-notes.md
-@@ -0,0 +1,7 @@
-+﻿# PR_26177_CHARLIE_029-system-health-postgres-metrics-panel Manual Validation Notes
-+
-+- Confirmed Postgres Metrics appears as a separate System Health table.
-+- Confirmed metric values come from the server-owned Admin System Health API response.
-+- Confirmed unavailable metrics render visibly as Unavailable/WARN rather than silently falling back.
-+- Confirmed page retains external scripts/styles only; no inline style/script/handler additions.
-+- Confirmed no secrets or database URLs are shown in the Database Health or Postgres Metrics tables.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_requirements-checklist.md b/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_requirements-checklist.md
-new file mode 100644
-index 000000000..201ce7ec5
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_requirements-checklist.md
-@@ -0,0 +1,14 @@
-+﻿# PR_26177_CHARLIE_029-system-health-postgres-metrics-panel Requirement Checklist
-+
-+- PASS: Add/extend System Health Postgres metrics panel.
-+- PASS: Include connection status.
-+- PASS: Include database name.
-+- PASS: Include current schema/migration status when available.
-+- PASS: Include table count when available.
-+- PASS: Include database size when available.
-+- PASS: Do not add expensive queries.
-+- PASS: Show explicit Unavailable status when a metric is unavailable.
-+- PASS: Do not expose secrets.
-+- PASS: Keep browser UI consuming API/service contract.
-+- PASS: No cross-environment checks added.
-+- PASS: No start_of_day files modified.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_validation-lane.md b/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_validation-lane.md
-new file mode 100644
-index 000000000..45c110616
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_validation-lane.md
-@@ -0,0 +1,21 @@
-+﻿# PR_26177_CHARLIE_029-system-health-postgres-metrics-panel Validation Lane Report
-+
-+Impacted lanes:
-+- runtime: Local API Admin System Health status contract.
-+- contract: Admin System Health API contract tests.
-+- UI: Admin System Health Theme V2 page controller and markup.
-+- Playwright: targeted Admin System Health page spec.
-+
-+Commands:
-+- node --check src/dev-runtime/server/local-api-router.mjs
-+- node --check assets/theme-v2/js/admin-system-health.js
-+- node --test tests/api/admin-system-health/contract.test.mjs
-+- node --test tests/dev-runtime/AdminHealthOperations.test.mjs
-+- npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line
-+- git diff --check
-+
-+Skipped lanes:
-+- Full samples smoke skipped; not impacted by System Health API/UI panel change.
-+- Full workspace suite skipped; targeted Project Workspace coverage was sufficient for this scoped Admin page.
-+
-+Result: PASS
