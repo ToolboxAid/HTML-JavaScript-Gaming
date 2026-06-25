@@ -5,6 +5,7 @@ David Quesenberry
 ReplaySystem.js
 */
 import { asNonNegativeInteger } from '../../shared/math/numberNormalization.js';
+import { cloneRuntimeValue } from '../../shared/runtime/snapshotClone.js';
 import { createReplayModel, normalizeReplayModel, withFinalState } from './ReplayModel.js';
 import { ReplayTimeline } from './ReplayTimeline.js';
 
@@ -37,7 +38,7 @@ export default class ReplaySystem {
 
   recordFrame(frame) {
     if (this.recording) {
-      const clonedFrame = structuredClone(frame);
+      const clonedFrame = cloneRuntimeValue(frame);
       this.frames.push(clonedFrame);
       this.timeline.pushSnapshot(this.frames.length - 1, clonedFrame);
     }
@@ -51,7 +52,7 @@ export default class ReplaySystem {
   }
 
   getReplay() {
-    return structuredClone(this.replay);
+    return cloneRuntimeValue(this.replay);
   }
 
   loadReplay(replay) {
@@ -96,7 +97,7 @@ export default class ReplaySystem {
     const normalizedFrameId = asNonNegativeInteger(frameId, this.frames.length);
     const prefix = this.frames.slice(0, normalizedFrameId);
     const replacementFrames = Array.isArray(frames)
-      ? frames.map((frame) => structuredClone(frame))
+      ? frames.map((frame) => cloneRuntimeValue(frame))
       : [];
     const nextFrames = [...prefix, ...replacementFrames];
 

@@ -19,6 +19,19 @@ export function run() {
   const nextResult = advanceRuntimeTick(startResult.tick);
   assert.equal(nextResult.valid, true);
   assert.deepEqual(nextResult.tick, { frame: 1, elapsedMs: 100, fixedDeltaMs: 100, deltaSeconds: 0.1 });
+  assert.equal(
+    nextResult.tick.deltaSeconds,
+    startResult.tick.deltaSeconds,
+    'Runtime tick advance should reuse the precomputed deltaSeconds value.'
+  );
+
+  const legacyTickResult = advanceRuntimeTick({ frame: 2, elapsedMs: 200, fixedDeltaMs: 100 });
+  assert.equal(legacyTickResult.valid, true);
+  assert.deepEqual(
+    legacyTickResult.tick,
+    { frame: 3, elapsedMs: 300, fixedDeltaMs: 100, deltaSeconds: 0.1 },
+    'Runtime tick advance should preserve compatibility for ticks without deltaSeconds.'
+  );
 
   const invalidResult = createRuntimeTickLoop({ fixedDeltaMs: 0 });
   assert.equal(invalidResult.valid, false);
