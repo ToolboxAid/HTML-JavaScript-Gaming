@@ -4,67 +4,66 @@ import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageRe
 
 const LEGAL_PAGES = Object.freeze([
   Object.freeze({
-    documentType: "community_guidelines",
-    path: "legal/community-guidelines.html",
-    route: "legal/community-guidelines.html",
-    slug: "community",
-    title: "Community Guidelines",
-    unavailable: "Published Community Guidelines is unavailable.",
+    bodyText: "This page links to the legal policies for Game Foundry Studio.",
+    path: "legal/index.html",
+    title: "Legal Overview",
   }),
   Object.freeze({
-    documentType: "cookies_policy",
-    path: "legal/cookies-policy.html",
-    route: "legal/cookies-policy.html",
-    slug: "cookies",
-    title: "Cookies Policy",
-    unavailable: "Published Cookies Policy is unavailable.",
+    bodyText: "These Terms of Service govern your access to and use of Game Foundry Studio",
+    path: "legal/terms-of-service.html",
+    title: "Terms of Service",
   }),
   Object.freeze({
-    documentType: "copyright_policy",
-    path: "legal/copyright-policy.html",
-    route: "legal/copyright-policy.html",
-    slug: "copyright",
-    title: "Copyright Policy",
-    unavailable: "Published Copyright Policy is unavailable.",
-  }),
-  Object.freeze({
-    documentType: "dmca_policy",
-    path: "legal/dmca-policy.html",
-    route: "legal/dmca-policy.html",
-    slug: "dmca",
-    title: "DMCA Policy",
-    unavailable: "Published DMCA Policy is unavailable.",
-  }),
-  Object.freeze({
-    documentType: "privacy_policy",
+    bodyText: "This Privacy Policy explains how Game Foundry Studio LLC collects, uses, stores, and shares information",
     path: "legal/privacy-policy.html",
-    route: "legal/privacy-policy.html",
-    slug: "privacy",
     title: "Privacy Policy",
-    unavailable: "Published Privacy Policy is unavailable.",
+  }),
+  Object.freeze({
+    bodyText: "This Cookie Policy explains how Game Foundry Studio LLC uses cookies and similar technologies.",
+    path: "legal/cookie-policy.html",
+    title: "Cookie Policy",
+  }),
+  Object.freeze({
+    bodyText: "Game Foundry Studio is built to help creators build, play, and share games.",
+    path: "legal/community-guidelines.html",
+    title: "Community Guidelines",
+  }),
+  Object.freeze({
+    bodyText: "Game Foundry Studio respects intellectual property rights and expects users to do the same.",
+    path: "legal/copyright-policy.html",
+    title: "Copyright Policy",
+  }),
+  Object.freeze({
+    bodyText: "Game Foundry Studio LLC responds to copyright notices under the Digital Millennium Copyright Act",
+    path: "legal/dmca-policy.html",
+    title: "DMCA Policy",
   }),
 ]);
 
 const LEGAL_LINK_LABELS = Object.freeze([
+  "Legal Overview",
+  "Terms of Service",
+  "Privacy Policy",
+  "Cookie Policy",
   "Community Guidelines",
-  "Cookies Policy",
   "Copyright Policy",
   "DMCA Policy",
-  "Privacy Policy",
-  "Terms of Service",
 ]);
 
 const FOOTER_LEGAL_PATHS = Object.freeze([
+  "/legal/index.html",
+  "/legal/terms-of-service.html",
+  "/legal/privacy-policy.html",
+  "/legal/cookie-policy.html",
   "/legal/community-guidelines.html",
-  "/legal/cookies-policy.html",
   "/legal/copyright-policy.html",
   "/legal/dmca-policy.html",
-  "/legal/privacy-policy.html",
-  "/legal/terms.html",
 ]);
 
 async function openLegalServerPage(page) {
+  const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
   const server = await startRepoServer();
+  process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
   const failedRequests = [];
   const pageErrors = [];
   const consoleErrors = [];
@@ -89,101 +88,62 @@ async function openLegalServerPage(page) {
     consoleErrors,
     failedRequests,
     pageErrors,
+    previousApiUrl,
     server,
   };
-}
-
-async function gotoLegalPage(page, server, legalPage) {
-  await page.goto(`${server.baseUrl}/${legalPage.path}`, { waitUntil: "networkidle" });
-  await expect(page).toHaveTitle(new RegExp(`${legalPage.title} - GameFoundryStudio`));
-  await expect(page.getByRole("heading", { name: legalPage.title })).toBeVisible();
-}
-
-async function expectLegalNavigation(page) {
-  await expect(page.locator("aside.side-menu a")).toHaveText(LEGAL_LINK_LABELS);
-  await expect(page.locator("footer.footer")).toBeVisible();
-  const footerLinks = page.locator("footer.footer [aria-labelledby='footer-legal'] .footer__links a");
-  await expect(footerLinks).toHaveText(LEGAL_LINK_LABELS);
-  const footerPaths = await footerLinks.evaluateAll((links) =>
-    links.map((link) => new URL(link.href).pathname),
-  );
-  expect(footerPaths).toEqual(FOOTER_LEGAL_PATHS);
 }
 
 async function closeLegalServerPage(page, context) {
   await workspaceV2CoverageReporter.stop(page);
   await context.server.close();
+  if (context.previousApiUrl === undefined) {
+    delete process.env.GAMEFOUNDRY_API_URL;
+  } else {
+    process.env.GAMEFOUNDRY_API_URL = context.previousApiUrl;
+  }
+}
+
+async function expectLegalNavigation(page, legalPage) {
+  const links = page.locator("aside.side-menu a");
+  await expect(links).toHaveText(LEGAL_LINK_LABELS);
+
+  const activeLink = page.locator("aside.side-menu a[aria-current='page']");
+  await expect(activeLink).toHaveText(legalPage.title);
+  await expect(activeLink).toHaveClass(/active/);
+  await expect(activeLink).toHaveClass(/is-current/);
+
+  const footerLinks = page.locator("footer.footer [aria-labelledby='footer-legal'] .footer__links a");
+  await expect(footerLinks).toHaveText(LEGAL_LINK_LABELS);
+  const footerPaths = await footerLinks.evaluateAll((footerLinkNodes) =>
+    footerLinkNodes.map((link) => new URL(link.href).pathname),
+  );
+  expect(footerPaths).toEqual(FOOTER_LEGAL_PATHS);
+}
+
+async function gotoLegalPage(page, server, legalPage) {
+  await page.goto(`${server.baseUrl}/${legalPage.path}`, { waitUntil: "networkidle" });
+  await expect(page).toHaveTitle(`${legalPage.title} - Game Foundry Studio`);
+  await expect(page.getByRole("heading", { level: 1, name: legalPage.title })).toBeVisible();
 }
 
 test.afterAll(async () => {
   await workspaceV2CoverageReporter.writeReport();
 });
 
-test("remaining legal pages show visible diagnostics when published content is missing", async ({ page }) => {
+test("legal pages render approved static content with shared navigation", async ({ page }) => {
   const context = await openLegalServerPage(page);
   try {
     for (const legalPage of LEGAL_PAGES) {
       await gotoLegalPage(page, context.server, legalPage);
-      await expect(page.locator("[data-legal-document-status]")).toContainText("WARN:");
-      await expect(page.locator("[data-legal-document-status]")).toContainText("Owner must publish approved content");
-      await expect(page.locator("[data-legal-document-effective]")).toHaveText(legalPage.unavailable);
-      await expect(page.locator("[data-legal-document-body]")).toBeEmpty();
+      await expectLegalNavigation(page, legalPage);
+      await expect(page.locator(".legal-document-body")).toContainText(legalPage.bodyText);
+      await expect(page.getByText("Published legal document")).toHaveCount(0);
+      await expect(page.getByText("is not available")).toHaveCount(0);
       await expect(page.getByText("Temporary placeholder legal copy")).toHaveCount(0);
-      await expect(page.getByText("Privacy Commitments")).toHaveCount(0);
-      await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-      await expectLegalNavigation(page);
-    }
-    expect(context.pageErrors).toEqual([]);
-    expect(context.consoleErrors).toEqual([]);
-    expect(context.failedRequests).toEqual([]);
-  } finally {
-    await closeLegalServerPage(page, context);
-  }
-});
-
-test("remaining legal pages render published content returned by the legal API", async ({ page }) => {
-  await page.route("**/api/legal/document**", async (route) => {
-    const requestUrl = new URL(route.request().url());
-    const documentType = requestUrl.searchParams.get("documentType") || "";
-    const legalPage = LEGAL_PAGES.find((entry) => entry.documentType === documentType);
-    if (!legalPage) {
-      await route.fulfill({
-        body: JSON.stringify({ error: "Unsupported legal document fixture.", ok: false }),
-        contentType: "application/json; charset=utf-8",
-        status: 404,
-      });
-      return;
-    }
-    await route.fulfill({
-      body: JSON.stringify({
-        data: {
-          available: true,
-          bodyMarkdown: `${legalPage.title} published fixture.\n\nSecond published paragraph for ${legalPage.slug}.`,
-          diagnostic: `Loaded published legal document ${legalPage.documentType}.`,
-          documentType: legalPage.documentType,
-          effectiveAt: "2026-06-18T12:00:00.000Z",
-          publishedAt: "2026-06-18T12:00:00.000Z",
-          route: legalPage.route,
-          slug: legalPage.slug,
-          status: "PASS",
-          title: legalPage.title,
-          version: "1",
-        },
-        ok: true,
-      }),
-      contentType: "application/json; charset=utf-8",
-      status: 200,
-    });
-  });
-  const context = await openLegalServerPage(page);
-  try {
-    for (const legalPage of LEGAL_PAGES) {
-      await gotoLegalPage(page, context.server, legalPage);
-      await expect(page.locator("[data-legal-document-status]")).toContainText("PASS:");
-      await expect(page.locator("[data-legal-document-effective]")).toHaveText("Effective June 18, 2026.");
-      await expect(page.locator("[data-legal-document-body]")).toContainText(`${legalPage.title} published fixture.`);
-      await expect(page.locator("[data-legal-document-body]")).toContainText(`Second published paragraph for ${legalPage.slug}.`);
-      await expect(page.getByText("Draft")).toHaveCount(0);
+      await expect(page.locator("[data-legal-document-page]")).toHaveCount(0);
+      await expect(page.locator("[data-legal-document-type]")).toHaveCount(0);
+      await expect(page.locator("script[src$='legal-document-page.js']")).toHaveCount(0);
+      await expect(page.locator("aside.side-menu noscript")).toHaveCount(0);
     }
     expect(context.pageErrors).toEqual([]);
     expect(context.consoleErrors).toEqual([]);
