@@ -41,6 +41,52 @@ export function run() {
 
   assert.equal(invalidResult.valid, false);
   assert.deepEqual(invalidResult.errors.map((error) => error.code), [RUNTIME_EVENT_ERRORS.EVENT_TYPE_REQUIRED]);
+
+  const invalidRuntimeEventsResult = publishRuntimeEvents([], [
+    {
+      eventType: "event.frameStart",
+      payload: {},
+    },
+    {
+      eventId: "event.runtime.frameStart.1",
+      payload: {},
+    },
+    "not-an-event-record",
+  ]);
+
+  assert.equal(invalidRuntimeEventsResult.valid, false);
+  assert.deepEqual(invalidRuntimeEventsResult.errors.map((error) => error.code), [
+    RUNTIME_EVENT_ERRORS.EVENT_ID_REQUIRED,
+    RUNTIME_EVENT_ERRORS.EVENT_TYPE_REQUIRED,
+    RUNTIME_EVENT_ERRORS.RUNTIME_EVENT_INVALID,
+  ]);
+
+  const sourceRuntimeEvent = {
+    eventId: "event.runtime.frameStart.2",
+    eventType: "event.frameStart",
+    payload: {
+      tick: 2,
+    },
+  };
+  const sourceConditionMatch = {
+    conditionId: "condition.score.ready",
+    eventType: "event.scoreReady",
+    payload: {
+      score: 100,
+    },
+  };
+  const clonedResult = publishRuntimeEvents([sourceConditionMatch], [sourceRuntimeEvent]);
+  sourceRuntimeEvent.payload.tick = 99;
+  sourceConditionMatch.payload.score = 999;
+
+  assert.equal(clonedResult.runtimeEvents[0].payload.tick, 2);
+  assert.equal(clonedResult.publishedEvents[0].payload.score, 100);
+  assert.throws(() => {
+    clonedResult.runtimeEvents.push({});
+  }, TypeError);
+  assert.throws(() => {
+    clonedResult.runtimeEvents[0].eventId = "event.changed";
+  }, TypeError);
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
