@@ -51,7 +51,7 @@ export function signIn(options = {}) {
 }
 
 export function logoutSessionUser() {
-  return unwrap(safeRequestServerApi("/session/logout", { method: "POST" }), "Session logout");
+  return requireSessionApiData(safeRequestServerApi("/session/logout", { method: "POST" }), "Session logout");
 }
 
 export function signOut() {
