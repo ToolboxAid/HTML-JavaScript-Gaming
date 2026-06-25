@@ -1,140 +1,100 @@
-﻿diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_036-team-charlie-final-closeout.md b/docs_build/dev/reports/PR_26177_CHARLIE_036-team-charlie-final-closeout.md
-new file mode 100644
-index 000000000..2ff14f6c6
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_036-team-charlie-final-closeout.md
-@@ -0,0 +1,56 @@
-+# PR_26177_CHARLIE_036-team-charlie-final-closeout
-+
-+Team: Charlie
-+Branch: pr/26177-CHARLIE-036-team-charlie-final-closeout
-+Base: main
-+Scope: reports-only closeout
-+
-+## Completed Work Summary
-+
-+Team Charlie completed the System Health extension stack and returned the repository to a clean, synced main before this closeout report. This report records the completion state only and does not change runtime, UI, API, database, or backlog behavior.
-+
-+## Merged Charlie PRs
-+
-+| PR | Name | Merge commit |
-+| --- | --- | --- |
-+| #177 | PR_26177_CHARLIE_029-system-health-postgres-metrics-panel | 8b41455881247d3cab25a0135822960fb9308799 |
-+| #178 | PR_26177_CHARLIE_030-r2-storage-health-expanded-validation | 1fe86387a565a236956f4cdb0c9308d783b38841 |
-+| #180 | PR_26177_CHARLIE_031-environment-health-comparison | 65e65de0d6b4b20ac09099b782ee5d9fba27ab28 |
-+| #181 | PR_26177_CHARLIE_032-runtime-health-json-endpoints | b6a46c2887308e1bec70c68e369d000678d5798d |
-+| #183 | PR_26177_CHARLIE_034-startup-runtime-report-cleanup | 0c2987998e311c905c24676707200b1ae4d78a5b |
-+| #184 | PR_26177_CHARLIE_035-system-health-ui-polish | 41eaa1dcd7d2b9c24122c4330ffd116d92e5a5d0 |
-+
-+## Final System Health Capability Summary
-+
-+- Current-environment identity and reference Environment Map.
-+- Current-environment database health with safe Postgres metrics.
-+- Current-environment Cloudflare R2 storage health with safe bucket/list/upload/read/delete validation.
-+- Runtime health, service summary cards, configuration summary, manual health actions, scheduled monitoring foundation, and notification placeholders.
-+- Runtime JSON health endpoint for API-owned health status.
-+- Startup/runtime diagnostics with masked secrets and explicit Local API/site/database/storage status.
-+- Theme V2 System Health readability and status polish.
-+
-+## Validation Summary
-+
-+The merged Charlie stack recorded targeted validation in each PR:
-+- Local API and API-client syntax checks.
-+- Admin System Health API contract tests.
-+- Admin System Health runtime operation tests.
-+- Targeted Playwright System Health page tests.
-+- Startup logging tests for runtime diagnostics.
-+- `git diff --check` for each PR.
-+
-+This closeout PR is reports-only. Playwright impact: No.
-+
-+## Future Operational Enhancements
-+
-+The following items remain future operational enhancements and are not current blockers:
-+- telemetry
-+- historical health metrics
-+- production monitoring
-+- alerting
-+- blue/green deployment health
-+
-+## Closeout Decision
-+
-+Charlie active System Health implementation is complete. Future Charlie System Health work is operational enhancement work, not a blocker for current main.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_036-team-charlie-final-closeout_branch-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_036-team-charlie-final-closeout_branch-validation.md
-new file mode 100644
-index 000000000..10a51debc
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_036-team-charlie-final-closeout_branch-validation.md
-@@ -0,0 +1,15 @@
-+# PR_26177_CHARLIE_036 Branch Validation
-+
-+Branch: pr/26177-CHARLIE-036-team-charlie-final-closeout
-+Base: main
-+
-+Result: PASS
-+
-+Checks:
-+- PASS: Created from clean, synced `main`.
-+- PASS: `main` includes Golf merge commit `c66099d53ab62fd5b9393c669c0dbbcaaf453032`.
-+- PASS: Charlie PRs #177, #178, #180, #181, #183, and #184 are merged and closed.
-+- PASS: Golf PR #191 is merged and closed.
-+- PASS: This branch changes reports only.
-+- PASS: No runtime, UI, API, or database files changed.
-+- PASS: No `start_of_day` files changed.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_036-team-charlie-final-closeout_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_CHARLIE_036-team-charlie-final-closeout_manual-validation-notes.md
-new file mode 100644
-index 000000000..a4c40f423
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_036-team-charlie-final-closeout_manual-validation-notes.md
-@@ -0,0 +1,8 @@
-+# PR_26177_CHARLIE_036 Manual Validation Notes
-+
-+- Confirmed GitHub reports Charlie PRs #177, #178, #180, #181, #183, and #184 as merged and closed.
-+- Confirmed Golf PR #191 is merged and closed before Charlie closeout.
-+- Confirmed final main commit includes `c66099d53ab62fd5b9393c669c0dbbcaaf453032`.
-+- Confirmed System Health future work is listed as operational enhancement work.
-+- Confirmed this PR has no runtime, UI, API, or database edits.
-+- Confirmed no Playwright lane is impacted by this report-only closeout.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_036-team-charlie-final-closeout_requirements-checklist.md b/docs_build/dev/reports/PR_26177_CHARLIE_036-team-charlie-final-closeout_requirements-checklist.md
-new file mode 100644
-index 000000000..f92379cb5
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_036-team-charlie-final-closeout_requirements-checklist.md
-@@ -0,0 +1,15 @@
-+# PR_26177_CHARLIE_036 Requirement Checklist
-+
-+- PASS: Reports-only closeout for Team Charlie.
-+- PASS: No runtime code changes.
-+- PASS: No UI changes.
-+- PASS: No API changes.
-+- PASS: No database changes.
-+- PASS: Included Charlie completed work summary.
-+- PASS: Included merged Charlie PR list.
-+- PASS: Included final System Health capability summary.
-+- PASS: Included validation summary.
-+- PASS: Listed telemetry, historical health metrics, production monitoring, alerting, and blue/green deployment health as future backlog.
-+- PASS: Marked Charlie active implementation complete.
-+- PASS: Confirmed future Charlie work is operational enhancement, not a current blocker.
-+- PASS: Created required reports and ZIP artifact.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_036-team-charlie-final-closeout_validation-lane.md b/docs_build/dev/reports/PR_26177_CHARLIE_036-team-charlie-final-closeout_validation-lane.md
-new file mode 100644
-index 000000000..49e9be2da
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_036-team-charlie-final-closeout_validation-lane.md
-@@ -0,0 +1,16 @@
-+# PR_26177_CHARLIE_036 Validation Lane Report
-+
-+Impacted lanes:
-+- Reports/governance only.
-+
-+Commands:
-+- PASS: `git diff --check`
-+- PASS: report-only changed-file check
-+- PASS: no runtime/UI/API/database changed-file check
-+- PASS: no `start_of_day` changed-file check
-+
-+Skipped lanes:
-+- Playwright skipped because this PR is reports-only.
-+- Full samples smoke skipped because no runtime, UI, API, database, or sample files changed.
-+
-+Result: PASS
+﻿diff --git a/docs_build/dev/reports/PR_26177_OWNER_052-eod-main-verification-and-backlog-update.md b/docs_build/dev/reports/PR_26177_OWNER_052-eod-main-verification-and-backlog-update.md
+index caa70266c..7d1cc6fb6 100644
+--- a/docs_build/dev/reports/PR_26177_OWNER_052-eod-main-verification-and-backlog-update.md
++++ b/docs_build/dev/reports/PR_26177_OWNER_052-eod-main-verification-and-backlog-update.md
+@@ -10,7 +10,7 @@ Scope: governance/reporting only
+ - Branch verified before PR work: `main`
+ - Worktree verified before PR work: clean
+ - Local/origin sync before PR work: `0/0`
+-- Final main commit verified: `c66099d53ab62fd5b9393c669c0dbbcaaf453032`
++- Final main commit verified: `e76d2a11d2c11fefd1a2f47a3291041e69ff3460`
+ - Playwright impacted: No, reports/governance only
+ - Full samples smoke: not run
+
+@@ -24,11 +24,12 @@ Scope: governance/reporting only
+ | Charlie | #181 | PR_26177_CHARLIE_032-runtime-health-json-endpoints | b6a46c2887308e1bec70c68e369d000678d5798d |
+ | Charlie | #183 | PR_26177_CHARLIE_034-startup-runtime-report-cleanup | 0c2987998e311c905c24676707200b1ae4d78a5b |
+ | Charlie | #184 | PR_26177_CHARLIE_035-system-health-ui-polish | 41eaa1dcd7d2b9c24122c4330ffd116d92e5a5d0 |
++| Charlie | #195 | PR_26177_CHARLIE_036-team-charlie-final-closeout | e76d2a11d2c11fefd1a2f47a3291041e69ff3460 |
+ | Golf | #191 | PR_26177_GOLF_036-game-journey-metrics-sqlite-to-postgres-migration | c66099d53ab62fd5b9393c669c0dbbcaaf453032 |
+
+ ## Charlie Status
+
+-Charlie System Health implementation is complete for the current workstream. PR #195 is open as a reports-only final closeout and does not block current runtime functionality.
++Charlie System Health implementation and reports-only final closeout are complete for the current workstream. PR #195 is merged and closed.
+
+ Future Charlie System Health work is operational enhancement work:
+ - telemetry
+@@ -49,7 +50,7 @@ Legacy SQLite blocker retired:
+ ## Remaining Open PRs By Team
+
+ Team Charlie:
+-- #195 PR_26177_CHARLIE_036-team-charlie-final-closeout
++- none after #195 merge
+
+ Team Delta:
+ - #188 PR_26175_DELTA_006: add runtime validation harness
+@@ -71,4 +72,4 @@ No backlog edit was required in this PR. Existing governance already records Cha
+
+ ## Next Recommended Workstream
+
+-Recommended next step: review and merge the reports-only Charlie closeout PR #195 if Owner approves, then resolve the open Delta runtime-service PR stack and OWNER legal-governance leftover PR #176.
++Recommended next step: resolve the open Delta runtime-service PR stack and OWNER legal-governance leftover PR #176.
+diff --git a/docs_build/dev/reports/PR_26177_OWNER_052-eod-main-verification-and-backlog-update_branch-validation.md b/docs_build/dev/reports/PR_26177_OWNER_052-eod-main-verification-and-backlog-update_branch-validation.md
+index 992fee591..3ac8efc51 100644
+--- a/docs_build/dev/reports/PR_26177_OWNER_052-eod-main-verification-and-backlog-update_branch-validation.md
++++ b/docs_build/dev/reports/PR_26177_OWNER_052-eod-main-verification-and-backlog-update_branch-validation.md
+@@ -8,8 +8,9 @@ Result: PASS
+ Checks:
+ - PASS: Created from clean, synced `main`.
+ - PASS: Local/origin sync was `0/0`.
+-- PASS: Final main commit at branch start was `c66099d53ab62fd5b9393c669c0dbbcaaf453032`.
++- PASS: Final main commit after Charlie #195 merge was `e76d2a11d2c11fefd1a2f47a3291041e69ff3460`.
+ - PASS: Charlie PRs #177, #178, #180, #181, #183, and #184 are merged and closed.
++- PASS: Charlie PR #195 is merged and closed.
+ - PASS: Golf PR #191 is merged and closed.
+ - PASS: Legacy SQLite blocker is retired from the original runtime path.
+ - PASS: This branch changes reports only.
+diff --git a/docs_build/dev/reports/PR_26177_OWNER_052-eod-main-verification-and-backlog-update_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_OWNER_052-eod-main-verification-and-backlog-update_manual-validation-notes.md
+index 5acc4264c..65c08f05d 100644
+--- a/docs_build/dev/reports/PR_26177_OWNER_052-eod-main-verification-and-backlog-update_manual-validation-notes.md
++++ b/docs_build/dev/reports/PR_26177_OWNER_052-eod-main-verification-and-backlog-update_manual-validation-notes.md
+@@ -3,8 +3,9 @@
+ - Confirmed local branch was `main` before creating the OWNER EOD branch.
+ - Confirmed worktree was clean and local/origin sync was `0/0`.
+ - Confirmed GitHub reports Charlie PRs #177, #178, #180, #181, #183, and #184 as merged and closed.
++- Confirmed GitHub reports Charlie PR #195 as merged and closed.
+ - Confirmed GitHub reports Golf PR #191 as merged and closed.
+ - Confirmed `tmp/local-api/game-journey-completion-metrics.sqlite` is absent.
+ - Confirmed the archived legacy SQLite file exists under `tmp/local-api/legacy-migrated/`.
+-- Confirmed remaining open PR inventory includes Charlie #195, Delta #188, #189, #190, #192, #193, #194, and OWNER #176.
++- Confirmed remaining open PR inventory excludes Charlie #195 and includes Delta #188, #189, #190, #192, #193, #194, and OWNER #176.
+ - Confirmed this PR has no runtime, UI, API, database, or backlog edits.
+diff --git a/docs_build/dev/reports/PR_26177_OWNER_052-eod-main-verification-and-backlog-update_requirements-checklist.md b/docs_build/dev/reports/PR_26177_OWNER_052-eod-main-verification-and-backlog-update_requirements-checklist.md
+index 47c3580b4..72af1b0f8 100644
+--- a/docs_build/dev/reports/PR_26177_OWNER_052-eod-main-verification-and-backlog-update_requirements-checklist.md
++++ b/docs_build/dev/reports/PR_26177_OWNER_052-eod-main-verification-and-backlog-update_requirements-checklist.md
+@@ -5,8 +5,9 @@
+ - PASS: Recorded main branch status.
+ - PASS: Recorded worktree status.
+ - PASS: Recorded local/origin sync status.
+-- PASS: Recorded final main commit `c66099d53ab62fd5b9393c669c0dbbcaaf453032`.
++- PASS: Recorded final main commit `e76d2a11d2c11fefd1a2f47a3291041e69ff3460`.
+ - PASS: Listed merged Charlie PRs #177, #178, #180, #181, #183, and #184.
++- PASS: Listed merged Charlie PR #195 and removed it from remaining open PRs.
+ - PASS: Listed merged Golf PR #191.
+ - PASS: Recorded Charlie complete.
+ - PASS: Recorded Golf Game Journey metrics migration complete.
+diff --git a/docs_build/dev/reports/PR_26177_OWNER_052-eod-main-verification-and-backlog-update_validation-lane.md b/docs_build/dev/reports/PR_26177_OWNER_052-eod-main-verification-and-backlog-update_validation-lane.md
+index a0814e72e..34c416107 100644
+--- a/docs_build/dev/reports/PR_26177_OWNER_052-eod-main-verification-and-backlog-update_validation-lane.md
++++ b/docs_build/dev/reports/PR_26177_OWNER_052-eod-main-verification-and-backlog-update_validation-lane.md
+@@ -8,7 +8,7 @@ Commands:
+ - PASS: report-only changed-file check
+ - PASS: no runtime/UI/API/database changed-file check
+ - PASS: no `start_of_day` changed-file check
+-- PASS: final main commit ancestry check for `c66099d53ab62fd5b9393c669c0dbbcaaf453032`
++- PASS: final main commit ancestry check for `e76d2a11d2c11fefd1a2f47a3291041e69ff3460`
+
+ Skipped lanes:
+ - Playwright skipped because this PR is reports/governance only.
