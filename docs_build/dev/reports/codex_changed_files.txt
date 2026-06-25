@@ -1,27 +1,10 @@
-﻿assets/theme-v2/js/gamefoundry-partials.js
-assets/theme-v2/js/legal-document-page.js
-assets/theme-v2/partials/footer.html
-docs_build/dev/reports/PR_26175_OWNER_054-legal-corrected-package.md
-docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/coverage_changed_js_guardrail.txt
-docs_build/dev/reports/playwright_v8_coverage_report.txt
-legal/community-guidelines.html
-legal/community-guidelines.md
-legal/cookie-policy.html
-legal/cookie-policy.md
-legal/cookies-policy.html
-legal/copyright-policy.html
-legal/copyright-policy.md
-legal/disclaimer.html
-legal/dmca-policy.html
-legal/dmca-policy.md
-legal/index.html
-legal/index.md
-legal/legal-nav.js
-legal/privacy-policy.html
-legal/privacy-policy.md
-legal/terms.html
-legal/terms-of-service.html
-legal/terms-of-service.md
-tests/playwright/tools/RemainingLegalPages.spec.mjs
+﻿docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md / updated
+src/engine/runtime/runtimeTickLoop.js / updated
+tests/engine/RuntimeTickLoop.test.mjs / updated
+docs_build/dev/reports/PR_26175_DELTA_001_Runtime_Performance_Optimization.md / added
+docs_build/dev/reports/PR_26175_DELTA_001_Runtime_Performance_Optimization-branch-validation.md / added
+docs_build/dev/reports/PR_26175_DELTA_001_Runtime_Performance_Optimization-requirement-checklist.md / added
+docs_build/dev/reports/PR_26175_DELTA_001_Runtime_Performance_Optimization-validation.md / added
+docs_build/dev/reports/PR_26175_DELTA_001_Runtime_Performance_Optimization-manual-validation-notes.md / added
+docs_build/dev/reports/codex_changed_files.txt / updated
+docs_build/dev/reports/codex_review.diff / updated
