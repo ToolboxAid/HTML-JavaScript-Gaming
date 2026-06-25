@@ -1,1 +1,385 @@
-diff --git a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md index 8134b4348..86d5af501 100644 --- a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md +++ b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md @@ -241,7 +241,8 @@ Current OWNER clarification:    ### Team Delta   -- [ ] Delta - Shared JS consolidation +- [x] Delta - Shared JS consolidation +  - Completion reference: PR_26175_DELTA_002_Shared_Runtime_Consolidation.  - [ ] Delta - API client consolidation  - [x] Delta - Runtime performance audit    - Completion reference: PR_26175_DELTA_001_Runtime_Performance_Optimization. diff --git a/docs_build/dev/reports/PR_26175_DELTA_002_Shared_Runtime_Consolidation-branch-validation.md b/docs_build/dev/reports/PR_26175_DELTA_002_Shared_Runtime_Consolidation-branch-validation.md new file mode 100644 index 000000000..9f9d943ae --- /dev/null +++ b/docs_build/dev/reports/PR_26175_DELTA_002_Shared_Runtime_Consolidation-branch-validation.md @@ -0,0 +1,15 @@ +# PR_26175_DELTA_002 Branch Validation + +| Gate | Status | Evidence | +| --- | --- | --- | +| Current branch before work | PASS | `main` after PR_001 merge | +| Worktree before work | PASS | Clean | +| Local/origin sync before work | PASS | `0 0` | +| Team ownership | PASS | Team Delta owns Runtime, Shared JS, and technical consolidation. | +| Work branch | PASS | `PR_26175_DELTA_002_Shared_Runtime_Consolidation` | +| Previous Delta PR closed | PASS | PR_001 was merged and `main` was verified before PR_002 started. | +| Scope boundary | PASS | Shared runtime clone helper plus replay runtime adopters and focused test only. | + +## Instruction Reads + +PASS - All files under `docs_build/dev/ProjectInstructions/` were read before the Delta sequence, and updated instructions were reread after pulling latest `main`. diff --git a/docs_build/dev/reports/PR_26175_DELTA_002_Shared_Runtime_Consolidation-manual-validation-notes.md b/docs_build/dev/reports/PR_26175_DELTA_002_Shared_Runtime_Consolidation-manual-validation-notes.md new file mode 100644 index 000000000..61bd0df59 --- /dev/null +++ b/docs_build/dev/reports/PR_26175_DELTA_002_Shared_Runtime_Consolidation-manual-validation-notes.md @@ -0,0 +1,9 @@ +# PR_26175_DELTA_002 Manual Validation Notes + +- Confirmed Team Delta ownership covers Shared JS and Runtime. +- Confirmed replay runtime cloning duplicated local `structuredClone` calls before this PR. +- Confirmed replay model and replay system now use the shared runtime clone helper. +- Confirmed fallback behavior by temporarily disabling `globalThis.structuredClone` in the focused replay test. +- Confirmed no browser-owned data, API contract, UI, or tool state changes were introduced. +- Confirmed backlog completion reference was added for `Delta - Shared JS consolidation`. +- Confirmed source branch disposition should remain `retained`. diff --git a/docs_build/dev/reports/PR_26175_DELTA_002_Shared_Runtime_Consolidation-requirement-checklist.md b/docs_build/dev/reports/PR_26175_DELTA_002_Shared_Runtime_Consolidation-requirement-checklist.md new file mode 100644 index 000000000..f69f9256d --- /dev/null +++ b/docs_build/dev/reports/PR_26175_DELTA_002_Shared_Runtime_Consolidation-requirement-checklist.md @@ -0,0 +1,19 @@ +# PR_26175_DELTA_002 Requirement Checklist + +| Requirement | Status | Notes | +| --- | --- | --- | +| Team Delta ownership only | PASS | Shared JS and runtime replay consolidation are Delta-owned. | +| One PR purpose | PASS | Shared runtime clone consolidation only. | +| Preserve backward compatibility | PASS | Added JSON fallback when `structuredClone` is unavailable. | +| Update backlog | PASS | `Delta - Shared JS consolidation` marked complete. | +| Update tool state if applicable | PASS | Not applicable; no tool tile/status changed. | +| Produce governance reports | PASS | Summary, branch validation, checklist, validation lane, manual notes, Codex diff, changed-file list, and ZIP. | +| Runtime validation | PASS | Focused node checks, replay system test, and final systems test passed. | +| No unrelated files | PASS | Changes are limited to shared runtime clone, replay runtime adopters, focused test, backlog, and reports. | +| No branch deletion | PASS | Source branch retained. | + +## Compatibility Notes + +- Public replay model shape is unchanged. +- Replay frames remain deep-cloned before storage and output. +- Fallback cloning supports runtime environments without native `structuredClone`. diff --git a/docs_build/dev/reports/PR_26175_DELTA_002_Shared_Runtime_Consolidation-validation.md b/docs_build/dev/reports/PR_26175_DELTA_002_Shared_Runtime_Consolidation-validation.md new file mode 100644 index 000000000..d5f8c4f44 --- /dev/null +++ b/docs_build/dev/reports/PR_26175_DELTA_002_Shared_Runtime_Consolidation-validation.md @@ -0,0 +1,31 @@ +# PR_26175_DELTA_002 Validation Lane + +## Commands + +```powershell +node --check src/shared/runtime/snapshotClone.js +node --check src/engine/replay/ReplayModel.js +node --check src/engine/replay/ReplaySystem.js +node --check tests/replay/ReplaySystem.test.mjs +node tests/replay/ReplaySystem.test.mjs +node tests/final/FinalSystems.test.mjs +``` + +## Results + +| Command | Status | +| --- | --- | +| `node --check src/shared/runtime/snapshotClone.js` | PASS | +| `node --check src/engine/replay/ReplayModel.js` | PASS | +| `node --check src/engine/replay/ReplaySystem.js` | PASS | +| `node --check tests/replay/ReplaySystem.test.mjs` | PASS | +| `node tests/replay/ReplaySystem.test.mjs` | PASS | +| `node tests/final/FinalSystems.test.mjs` | PASS | + +## Browser Validation + +SKIP - No browser UI files changed. + +## Playwright Validation + +SKIP - Runtime replay/shared helper behavior is covered by focused Node tests. diff --git a/docs_build/dev/reports/PR_26175_DELTA_002_Shared_Runtime_Consolidation.md b/docs_build/dev/reports/PR_26175_DELTA_002_Shared_Runtime_Consolidation.md new file mode 100644 index 000000000..69fd38de4 --- /dev/null +++ b/docs_build/dev/reports/PR_26175_DELTA_002_Shared_Runtime_Consolidation.md @@ -0,0 +1,44 @@ +# PR_26175_DELTA_002_Shared_Runtime_Consolidation + +## Summary + +Team Delta consolidated replay cloning onto the shared runtime helper surface. + +`src/shared/runtime/snapshotClone.js` now exports `cloneRuntimeValue(...)`, which gives runtime code one shared cloning path with a `structuredClone` fast path and JSON fallback. Replay model and replay system cloning now use that shared helper instead of local `structuredClone` calls. + +## Scope + +- Team: Delta +- Backlog item: `Delta - Shared JS consolidation` +- Shared runtime file changed: `src/shared/runtime/snapshotClone.js` +- Runtime replay files changed: +  - `src/engine/replay/ReplayModel.js` +  - `src/engine/replay/ReplaySystem.js` +- Tests changed: `tests/replay/ReplaySystem.test.mjs` +- Backlog updated: `docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md` + +## Runtime Impact + +PASS - Replay cloning behavior remains backward compatible. + +- Replay records still deep-clone metadata, initial state, frames, and final state. +- Runtime replay code now works even when `structuredClone` is unavailable. +- Existing replay playback and replacement behavior is preserved. + +## Backlog Update + +PASS - `Delta - Shared JS consolidation` is marked complete with this PR as the completion reference. + +## Tool State Update + +SKIP - No Build Path tool status or tool tile state changed. + +## Validation Summary + +PASS - Focused replay and final system validation completed. + +See `PR_26175_DELTA_002_Shared_Runtime_Consolidation-validation.md` for command details. + +## Branch Disposition + +Source branch should be retained after merge unless OWNER later approves branch deletion. diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt index 729da1632..4af0693b0 100644 --- a/docs_build/dev/reports/codex_changed_files.txt +++ b/docs_build/dev/reports/codex_changed_files.txt @@ -1,10 +1,12 @@  ﻿docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md / updated -src/engine/runtime/runtimeTickLoop.js / updated -tests/engine/RuntimeTickLoop.test.mjs / updated -docs_build/dev/reports/PR_26175_DELTA_001_Runtime_Performance_Optimization.md / added -docs_build/dev/reports/PR_26175_DELTA_001_Runtime_Performance_Optimization-branch-validation.md / added -docs_build/dev/reports/PR_26175_DELTA_001_Runtime_Performance_Optimization-requirement-checklist.md / added -docs_build/dev/reports/PR_26175_DELTA_001_Runtime_Performance_Optimization-validation.md / added -docs_build/dev/reports/PR_26175_DELTA_001_Runtime_Performance_Optimization-manual-validation-notes.md / added +src/shared/runtime/snapshotClone.js / updated +src/engine/replay/ReplayModel.js / updated +src/engine/replay/ReplaySystem.js / updated +tests/replay/ReplaySystem.test.mjs / updated +docs_build/dev/reports/PR_26175_DELTA_002_Shared_Runtime_Consolidation.md / added +docs_build/dev/reports/PR_26175_DELTA_002_Shared_Runtime_Consolidation-branch-validation.md / added +docs_build/dev/reports/PR_26175_DELTA_002_Shared_Runtime_Consolidation-requirement-checklist.md / added +docs_build/dev/reports/PR_26175_DELTA_002_Shared_Runtime_Consolidation-validation.md / added +docs_build/dev/reports/PR_26175_DELTA_002_Shared_Runtime_Consolidation-manual-validation-notes.md / added  docs_build/dev/reports/codex_changed_files.txt / updated  docs_build/dev/reports/codex_review.diff / updated diff --git a/src/engine/replay/ReplayModel.js b/src/engine/replay/ReplayModel.js index b59a8af4b..4204af3c9 100644 --- a/src/engine/replay/ReplayModel.js +++ b/src/engine/replay/ReplayModel.js @@ -7,9 +7,10 @@ ReplayModel.js  import {    SHARED_REPLAY_MODEL_CONTRACT_VERSION,  } from "../../shared/contracts/replayContracts.js"; +import { cloneRuntimeValue } from "../../shared/runtime/snapshotClone.js";    function cloneOrNull(value) { -  return value === undefined || value === null ? null : structuredClone(value); +  return cloneRuntimeValue(value);  }    function cloneFrames(frames) { @@ -18,7 +19,7 @@ function cloneFrames(frames) {    }    const out = [];    for (let i = 0; i < frames.length; i += 1) { -    out.push(structuredClone(frames[i])); +    out.push(cloneRuntimeValue(frames[i]));    }    return out;  } diff --git a/src/engine/replay/ReplaySystem.js b/src/engine/replay/ReplaySystem.js index 5139a83a0..1358b85a2 100644 --- a/src/engine/replay/ReplaySystem.js +++ b/src/engine/replay/ReplaySystem.js @@ -5,6 +5,7 @@ David Quesenberry  ReplaySystem.js  */  import { asNonNegativeInteger } from '../../shared/math/numberNormalization.js'; +import { cloneRuntimeValue } from '../../shared/runtime/snapshotClone.js';  import { createReplayModel, normalizeReplayModel, withFinalState } from './ReplayModel.js';  import { ReplayTimeline } from './ReplayTimeline.js';   @@ -37,7 +38,7 @@ export default class ReplaySystem {      recordFrame(frame) {      if (this.recording) { -      const clonedFrame = structuredClone(frame); +      const clonedFrame = cloneRuntimeValue(frame);        this.frames.push(clonedFrame);        this.timeline.pushSnapshot(this.frames.length - 1, clonedFrame);      } @@ -51,7 +52,7 @@ export default class ReplaySystem {    }      getReplay() { -    return structuredClone(this.replay); +    return cloneRuntimeValue(this.replay);    }      loadReplay(replay) { @@ -96,7 +97,7 @@ export default class ReplaySystem {      const normalizedFrameId = asNonNegativeInteger(frameId, this.frames.length);      const prefix = this.frames.slice(0, normalizedFrameId);      const replacementFrames = Array.isArray(frames) -      ? frames.map((frame) => structuredClone(frame)) +      ? frames.map((frame) => cloneRuntimeValue(frame))        : [];      const nextFrames = [...prefix, ...replacementFrames];   diff --git a/src/shared/runtime/snapshotClone.js b/src/shared/runtime/snapshotClone.js index 84ce37fcf..ff843685d 100644 --- a/src/shared/runtime/snapshotClone.js +++ b/src/shared/runtime/snapshotClone.js @@ -1,3 +1,13 @@ +export function cloneRuntimeValue(value) { +  if (value === undefined || value === null) { +    return null; +  } +  if (typeof structuredClone === "function") { +    return structuredClone(value); +  } +  return JSON.parse(JSON.stringify(value)); +} +  export function cloneSnapshot(snapshot) {    if (snapshot === null || typeof snapshot !== "object") {      return {}; diff --git a/tests/replay/ReplaySystem.test.mjs b/tests/replay/ReplaySystem.test.mjs index 4a395d778..fb3a1fdf4 100644 --- a/tests/replay/ReplaySystem.test.mjs +++ b/tests/replay/ReplaySystem.test.mjs @@ -58,4 +58,26 @@ export function run() {    assert.equal(replaced.frames.length, 1);    assert.equal(replaced.frames[0].events.status, 'patched');    assert.equal(replay.getTimelineSnapshot(0).snapshot.events.status, 'patched'); + +  const originalStructuredClone = globalThis.structuredClone; +  try { +    globalThis.structuredClone = undefined; +    const fallbackReplay = new ReplaySystem(); +    const fallbackFrame = { input: { jump: true }, events: { status: 'fallback' } }; +    fallbackReplay.startRecording({ +      metadata: { mode: 'json-fallback' }, +      initialState: { player: { x: 4 } }, +    }); +    fallbackReplay.recordFrame(fallbackFrame); +    fallbackFrame.input.jump = false; +    fallbackReplay.stopRecording({ finalState: { status: 'done' } }); + +    const fallbackSavedReplay = fallbackReplay.getReplay(); +    assert.equal(fallbackSavedReplay.metadata.mode, 'json-fallback'); +    assert.equal(fallbackSavedReplay.initialState.player.x, 4); +    assert.equal(fallbackSavedReplay.frames[0].input.jump, true); +    assert.equal(fallbackSavedReplay.finalState.status, 'done'); +  } finally { +    globalThis.structuredClone = originalStructuredClone; +  }  }
+diff --git a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
+index 86d5af501..7f2068482 100644
+--- a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
++++ b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
+@@ -243,7 +243,8 @@ Current OWNER clarification:
+
+ - [x] Delta - Shared JS consolidation
+   - Completion reference: PR_26175_DELTA_002_Shared_Runtime_Consolidation.
+-- [ ] Delta - API client consolidation
++- [x] Delta - API client consolidation
++  - Completed by PR_26175_DELTA_003_API_Client_Standardization.
+ - [x] Delta - Runtime performance audit
+   - Completion reference: PR_26175_DELTA_001_Runtime_Performance_Optimization.
+ - [ ] Delta - Engine test coverage improvements
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_003_API_Client_Standardization-branch-validation.md b/docs_build/dev/reports/PR_26175_DELTA_003_API_Client_Standardization-branch-validation.md
+new file mode 100644
+index 000000000..34c270132
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_DELTA_003_API_Client_Standardization-branch-validation.md
+@@ -0,0 +1,15 @@
++# PR_26175_DELTA_003 Branch Validation
++
++| Gate | Status | Evidence |
++| --- | --- | --- |
++| Current branch before work | PASS | `main` after PR_002 merge |
++| Worktree before work | PASS | Clean |
++| Local/origin sync before work | PASS | `0 0` |
++| Team ownership | PASS | Team Delta owns Shared JS, API clients, Runtime, Performance, and technical debt remediation. |
++| Work branch | PASS | `PR_26175_DELTA_003_API_Client_Standardization` |
++| Previous Delta PR closed | PASS | PR_002 was merged and `main` was verified before PR_003 started. |
++| Scope boundary | PASS | Shared server API data helper plus session/setup/DB Viewer adopters and focused test only. |
++
++## Instruction Reads
++
++PASS - All files under `docs_build/dev/ProjectInstructions/` were read before the Delta sequence, and updated instructions were reread after pulling latest `main`.
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_003_API_Client_Standardization-manual-validation-notes.md b/docs_build/dev/reports/PR_26175_DELTA_003_API_Client_Standardization-manual-validation-notes.md
+new file mode 100644
+index 000000000..610fe2f0e
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_DELTA_003_API_Client_Standardization-manual-validation-notes.md
+@@ -0,0 +1,15 @@
++# PR_26175_DELTA_003 Manual Validation Notes
++
++## Manual Review
++
++- Confirmed the shared API helper remains backward compatible for existing callers.
++- Confirmed Session, Admin Setup, and DB Viewer clients retain their previous restore guidance text.
++- Confirmed no runtime UI, Theme V2, browser-owned data, or status bar files changed.
++
++## Manual Validation
++
++PASS - Code review found no unrelated runtime behavior change.
++
++## Follow-Up
++
++- Remaining Delta runtime work continues in the next sequential PRs for runtime test expansion and technical debt cleanup.
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_003_API_Client_Standardization-requirement-checklist.md b/docs_build/dev/reports/PR_26175_DELTA_003_API_Client_Standardization-requirement-checklist.md
+new file mode 100644
+index 000000000..3e73df1ec
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_DELTA_003_API_Client_Standardization-requirement-checklist.md
+@@ -0,0 +1,19 @@
++# PR_26175_DELTA_003 Requirement Checklist
++
++| Requirement | Status | Notes |
++| --- | --- | --- |
++| Team Delta ownership only | PASS | API client standardization is Delta-owned. |
++| One PR purpose | PASS | Shared server API data handling consolidation only. |
++| Preserve backward compatibility | PASS | Existing default and domain-specific restore messages are preserved. |
++| Update backlog | PASS | `Delta - API client consolidation` marked complete. |
++| Update tool state if applicable | PASS | Not applicable; no tool tile/status changed. |
++| Produce governance reports | PASS | Summary, branch validation, checklist, validation lane, manual notes, Codex diff, changed-file list, and ZIP. |
++| Runtime validation | PASS | Focused node checks and API/dev-runtime tests passed. |
++| No unrelated files | PASS | Changes are limited to API clients, focused test, backlog, and reports. |
++| No branch deletion | PASS | Source branch retained. |
++
++## Compatibility Notes
++
++- `requireServerApiData(...)` remains source compatible for existing two-argument callers.
++- New optional restore guidance avoids local unwrap duplication without weakening domain-specific diagnostics.
++- Browser API route resolution behavior is unchanged.
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_003_API_Client_Standardization-validation.md b/docs_build/dev/reports/PR_26175_DELTA_003_API_Client_Standardization-validation.md
+new file mode 100644
+index 000000000..a61761d0c
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_DELTA_003_API_Client_Standardization-validation.md
+@@ -0,0 +1,39 @@
++# PR_26175_DELTA_003 Validation Lane
++
++## Commands
++
++```powershell
++node --check src/api/server-api-client.js
++node --check src/api/session-api-client.js
++node --check src/api/admin-setup-api-client.js
++node --check src/api/db-viewer-api-client.js
++node --check tests/dev-runtime/ServerApiClientStandardization.test.mjs
++node tests/dev-runtime/ServerApiClientStandardization.test.mjs
++node tests/dev-runtime/PublicApiUrlClient.test.mjs
++node tests/dev-runtime/DbViewerConfiguredSnapshot.test.mjs
++node tests/dev-runtime/AdminHealthOperations.test.mjs
++git diff --check
++```
++
++## Results
++
++| Command | Status |
++| --- | --- |
++| `node --check src/api/server-api-client.js` | PASS |
++| `node --check src/api/session-api-client.js` | PASS |
++| `node --check src/api/admin-setup-api-client.js` | PASS |
++| `node --check src/api/db-viewer-api-client.js` | PASS |
++| `node --check tests/dev-runtime/ServerApiClientStandardization.test.mjs` | PASS |
++| `node tests/dev-runtime/ServerApiClientStandardization.test.mjs` | PASS |
++| `node tests/dev-runtime/PublicApiUrlClient.test.mjs` | PASS |
++| `node tests/dev-runtime/DbViewerConfiguredSnapshot.test.mjs` | PASS |
++| `node tests/dev-runtime/AdminHealthOperations.test.mjs` | PASS |
++| `git diff --check` | PASS |
++
++## Browser Validation
++
++SKIP - No browser UI files changed.
++
++## Playwright Validation
++
++SKIP - API client standardization is covered by focused Node tests.
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_003_API_Client_Standardization.md b/docs_build/dev/reports/PR_26175_DELTA_003_API_Client_Standardization.md
+new file mode 100644
+index 000000000..141033346
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_DELTA_003_API_Client_Standardization.md
+@@ -0,0 +1,46 @@
++# PR_26175_DELTA_003_API_Client_Standardization
++
++## Summary
++
++Team Delta standardized remaining local API data unwrap helpers onto the shared `requireServerApiData(...)` client boundary.
++
++`requireServerApiData(...)` now accepts optional client-specific restore guidance while preserving the existing default Browser -> Server API -> Data Source contract message. Session, Admin Setup, and DB Viewer API clients now delegate to the shared helper and keep their previous domain-specific guidance.
++
++## Scope
++
++- Team: Delta
++- Backlog item: `Delta - API client consolidation`
++- Shared API client changed: `src/api/server-api-client.js`
++- API clients consolidated:
++  - `src/api/session-api-client.js`
++  - `src/api/admin-setup-api-client.js`
++  - `src/api/db-viewer-api-client.js`
++- Tests added: `tests/dev-runtime/ServerApiClientStandardization.test.mjs`
++- Backlog updated: `docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md`
++
++## Runtime Impact
++
++PASS - API client behavior remains backward compatible.
++
++- Successful server API responses still return `payload.data`.
++- Failed server API responses still throw the server error text.
++- Missing `data` payloads still emit actionable restore guidance.
++- Existing session, setup, and DB Viewer restore messages are preserved through the shared helper.
++
++## Backlog Update
++
++PASS - `Delta - API client consolidation` is marked complete with this PR as the completion reference.
++
++## Tool State Update
++
++SKIP - No Build Path tool status or tool tile state changed.
++
++## Validation Summary
++
++PASS - Focused API client and adjacent dev-runtime validation completed.
++
++See `PR_26175_DELTA_003_API_Client_Standardization-validation.md` for command details.
++
++## Branch Disposition
++
++Source branch should be retained after merge unless OWNER later approves branch deletion.
+diff --git a/src/api/admin-setup-api-client.js b/src/api/admin-setup-api-client.js
+index 1a7b8b2e1..7aa3cab2a 100644
+--- a/src/api/admin-setup-api-client.js
++++ b/src/api/admin-setup-api-client.js
+@@ -1,15 +1,14 @@
+-import { safeRequestServerApi } from "./server-api-client.js";
++import {
++  requireServerApiData,
++  safeRequestServerApi,
++} from "./server-api-client.js";
+
+-function unwrap(response, context) {
+-  if (!response.ok) {
+-    throw new Error(response.error);
+-  }
+-  if (!response.payload || !Object.prototype.hasOwnProperty.call(response.payload, "data")) {
+-    throw new Error(`${context} did not return server data. Restore the admin setup API.`);
+-  }
+-  return response.payload.data;
++function requireAdminSetupApiData(response, context) {
++  return requireServerApiData(response, context, {
++    restoreMessage: "Restore the admin setup API.",
++  });
+ }
+
+ export function readAdminSetupStatus() {
+-  return unwrap(safeRequestServerApi("/admin/setup/status"), "Admin setup status");
++  return requireAdminSetupApiData(safeRequestServerApi("/admin/setup/status"), "Admin setup status");
+ }
+diff --git a/src/api/db-viewer-api-client.js b/src/api/db-viewer-api-client.js
+index 021de51c6..211eea084 100644
+--- a/src/api/db-viewer-api-client.js
++++ b/src/api/db-viewer-api-client.js
+@@ -1,15 +1,14 @@
+-import { safeRequestServerApi } from "./server-api-client.js";
++import {
++  requireServerApiData,
++  safeRequestServerApi,
++} from "./server-api-client.js";
+
+-function unwrap(response, context) {
+-  if (!response.ok) {
+-    throw new Error(response.error);
+-  }
+-  if (!response.payload || !Object.prototype.hasOwnProperty.call(response.payload, "data")) {
+-    throw new Error(`${context} did not return server data. Restore the server-backed DB Viewer API.`);
+-  }
+-  return response.payload.data;
++function requireDbViewerApiData(response, context) {
++  return requireServerApiData(response, context, {
++    restoreMessage: "Restore the server-backed DB Viewer API.",
++  });
+ }
+
+ export function getDbViewerSnapshot() {
+-  return unwrap(safeRequestServerApi("/product-data/snapshot"), "DB Viewer snapshot");
++  return requireDbViewerApiData(safeRequestServerApi("/product-data/snapshot"), "DB Viewer snapshot");
+ }
+diff --git a/src/api/server-api-client.js b/src/api/server-api-client.js
+index db5f4956c..71460f2a3 100644
+--- a/src/api/server-api-client.js
++++ b/src/api/server-api-client.js
+@@ -80,12 +80,13 @@ export function safeRequestServerApi(path, options = {}) {
+   }
+ }
+
+-export function requireServerApiData(response, context) {
++export function requireServerApiData(response, context, options = {}) {
+   if (!response.ok) {
+     throw new Error(response.error);
+   }
+   if (!response.payload || !Object.prototype.hasOwnProperty.call(response.payload, "data")) {
+-    throw new Error(`${context} did not return server data. Restore the Browser -> Server API -> Data Source contract.`);
++    const restoreMessage = options.restoreMessage || `Restore the ${SERVER_DATA_BOUNDARY_RULE} contract.`;
++    throw new Error(`${context} did not return server data. ${restoreMessage}`);
+   }
+   return response.payload.data;
+ }
+diff --git a/src/api/session-api-client.js b/src/api/session-api-client.js
+index b72d55eba..f31004ea1 100644
+--- a/src/api/session-api-client.js
++++ b/src/api/session-api-client.js
+@@ -1,4 +1,7 @@
+-import { safeRequestServerApi } from "./server-api-client.js";
++import {
++  requireServerApiData,
++  safeRequestServerApi,
++} from "./server-api-client.js";
+
+ export const AUTH_PROVIDER_CONTRACT_OPERATIONS = Object.freeze([
+   "getCurrentUser",
+@@ -7,18 +10,14 @@ export const AUTH_PROVIDER_CONTRACT_OPERATIONS = Object.freeze([
+   "requireRole",
+ ]);
+
+-function unwrap(response, context) {
+-  if (!response.ok) {
+-    throw new Error(response.error);
+-  }
+-  if (!response.payload || !Object.prototype.hasOwnProperty.call(response.payload, "data")) {
+-    throw new Error(`${context} did not return server data. Restore the server auth/session API.`);
+-  }
+-  return response.payload.data;
++function requireSessionApiData(response, context) {
++  return requireServerApiData(response, context, {
++    restoreMessage: "Restore the server auth/session API.",
++  });
+ }
+
+ export function getSessionCurrent() {
+-  return unwrap(safeRequestServerApi("/session/current"), "Current session");
++  return requireSessionApiData(safeRequestServerApi("/session/current"), "Current session");
+ }
+
+ export function getCurrentUser() {
+@@ -26,22 +25,22 @@ export function getCurrentUser() {
+ }
+
+ export function getSessionModes() {
+-  return unwrap(safeRequestServerApi("/session/modes"), "Session modes");
++  return requireSessionApiData(safeRequestServerApi("/session/modes"), "Session modes");
+ }
+
+ export function getSessionUsers() {
+-  return unwrap(safeRequestServerApi("/session/users"), "Session users");
++  return requireSessionApiData(safeRequestServerApi("/session/users"), "Session users");
+ }
+
+ export function setSessionMode(modeId) {
+-  return unwrap(safeRequestServerApi("/session/mode", {
++  return requireSessionApiData(safeRequestServerApi("/session/mode", {
+     body: { modeId },
+     method: "POST",
+   }), "Session mode update");
+ }
+
+ export function setSessionUser(userKey) {
+-  return unwrap(safeRequestServerApi("/session/user", {
++  return requireSessionApiData(safeRequestServerApi("/session/user", {
+     body: { userKey },
+     method: "POST",
+   }), "Session user update");
+diff --git a/tests/dev-runtime/ServerApiClientStandardization.test.mjs b/tests/dev-runtime/ServerApiClientStandardization.test.mjs
+new file mode 100644
+index 000000000..5530e4074
+--- /dev/null
++++ b/tests/dev-runtime/ServerApiClientStandardization.test.mjs
+@@ -0,0 +1,59 @@
++import assert from "node:assert/strict";
++import test from "node:test";
++
++import {
++  requireServerApiData,
++  SERVER_DATA_BOUNDARY_RULE,
++} from "../../src/api/server-api-client.js";
++
++test("requireServerApiData returns the server data payload", () => {
++  assert.deepEqual(
++    requireServerApiData({
++      ok: true,
++      payload: {
++        data: {
++          status: "ready",
++        },
++        ok: true,
++      },
++    }, "Runtime API"),
++    { status: "ready" },
++  );
++});
++
++test("requireServerApiData preserves server API errors", () => {
++  assert.throws(
++    () => requireServerApiData({
++      error: "Server API unavailable.",
++      ok: false,
++      payload: null,
++    }, "Runtime API"),
++    /Server API unavailable\./,
++  );
++});
++
++test("requireServerApiData reports the shared boundary for missing data", () => {
++  assert.throws(
++    () => requireServerApiData({
++      ok: true,
++      payload: {
++        ok: true,
++      },
++    }, "Runtime API"),
++    new RegExp(`Runtime API did not return server data\\. Restore the ${SERVER_DATA_BOUNDARY_RULE} contract\\.`),
++  );
++});
++
++test("requireServerApiData supports client-specific restore guidance", () => {
++  assert.throws(
++    () => requireServerApiData({
++      ok: true,
++      payload: {
++        ok: true,
++      },
++    }, "Admin setup status", {
++      restoreMessage: "Restore the admin setup API.",
++    }),
++    /Admin setup status did not return server data\. Restore the admin setup API\./,
++  );
++});

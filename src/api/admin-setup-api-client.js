@@ -1,15 +1,14 @@
-import { safeRequestServerApi } from "./server-api-client.js";
+import {
+  requireServerApiData,
+  safeRequestServerApi,
+} from "./server-api-client.js";
 
-function unwrap(response, context) {
-  if (!response.ok) {
-    throw new Error(response.error);
-  }
-  if (!response.payload || !Object.prototype.hasOwnProperty.call(response.payload, "data")) {
-    throw new Error(`${context} did not return server data. Restore the admin setup API.`);
-  }
-  return response.payload.data;
+function requireAdminSetupApiData(response, context) {
+  return requireServerApiData(response, context, {
+    restoreMessage: "Restore the admin setup API.",
+  });
 }
 
 export function readAdminSetupStatus() {
-  return unwrap(safeRequestServerApi("/admin/setup/status"), "Admin setup status");
+  return requireAdminSetupApiData(safeRequestServerApi("/admin/setup/status"), "Admin setup status");
 }
