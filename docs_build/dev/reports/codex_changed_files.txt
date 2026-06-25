@@ -1,22 +1,18 @@
 # git status --short
 M package.json
- M src/api/session-api-client.js
- M tests/dev-runtime/ServerApiClientStandardization.test.mjs
-?? docs_build/dev/reports/PR_26175_DELTA_008-api-client-service-coverage.md
-?? docs_build/dev/reports/PR_26175_DELTA_008-api-client-service-coverage_branch-validation.md
-?? docs_build/dev/reports/PR_26175_DELTA_008-api-client-service-coverage_manual-validation-notes.md
-?? docs_build/dev/reports/PR_26175_DELTA_008-api-client-service-coverage_requirements-checklist.md
-?? docs_build/dev/reports/PR_26175_DELTA_008-api-client-service-coverage_validation-lane.md
+?? docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage.md
+?? docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_branch-validation.md
+?? docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_manual-validation-notes.md
+?? docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_requirements-checklist.md
+?? docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_validation-lane.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26175_DELTA_008-api-client-service-coverage.md
-docs_build/dev/reports/PR_26175_DELTA_008-api-client-service-coverage_branch-validation.md
-docs_build/dev/reports/PR_26175_DELTA_008-api-client-service-coverage_manual-validation-notes.md
-docs_build/dev/reports/PR_26175_DELTA_008-api-client-service-coverage_requirements-checklist.md
-docs_build/dev/reports/PR_26175_DELTA_008-api-client-service-coverage_validation-lane.md
+docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage.md
+docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_branch-validation.md
+docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_manual-validation-notes.md
+docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_requirements-checklist.md
+docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_validation-lane.md
 
 # git diff --stat
-package.json                                       |   1 +
- src/api/session-api-client.js                      |   2 +-
- .../ServerApiClientStandardization.test.mjs        | 320 +++++++++++++++++++++
- 3 files changed, 322 insertions(+), 1 deletion(-)
+package.json | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)

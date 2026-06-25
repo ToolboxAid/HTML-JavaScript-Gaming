@@ -1,531 +1,168 @@
 diff --git a/package.json b/package.json
-index e2b30a064..7bfd5d4b7 100644
+index 7bfd5d4b7..2f1acac10 100644
 --- a/package.json
 +++ b/package.json
-@@ -3,6 +3,7 @@
-   "scripts": {
-     "pretest": "node docs_build/dev/toolbox/checkSharedExtractionGuard.mjs",
-     "test": "node ./scripts/run-node-tests.mjs",
-+    "test:service:api": "node ./scripts/run-node-test-files.mjs tests/dev-runtime/ServerApiClientStandardization.test.mjs tests/dev-runtime/PublicApiUrlClient.test.mjs",
-     "test:audit:locations": "node ./scripts/audit-playwright-test-locations.mjs",
-     "test:playwright:structure": "node ./scripts/audit-playwright-test-locations.mjs",
-     "test:playwright:zero-browser": "node ./scripts/run-targeted-test-lanes.mjs --zero-browser-only",
-diff --git a/src/api/session-api-client.js b/src/api/session-api-client.js
-index f31004ea1..3b8c69125 100644
---- a/src/api/session-api-client.js
-+++ b/src/api/session-api-client.js
-@@ -51,7 +51,7 @@ export function signIn(options = {}) {
- }
-
- export function logoutSessionUser() {
--  return unwrap(safeRequestServerApi("/session/logout", { method: "POST" }), "Session logout");
-+  return requireSessionApiData(safeRequestServerApi("/session/logout", { method: "POST" }), "Session logout");
- }
-
- export function signOut() {
-diff --git a/tests/dev-runtime/ServerApiClientStandardization.test.mjs b/tests/dev-runtime/ServerApiClientStandardization.test.mjs
-index 5530e4074..5e50ea034 100644
---- a/tests/dev-runtime/ServerApiClientStandardization.test.mjs
-+++ b/tests/dev-runtime/ServerApiClientStandardization.test.mjs
-@@ -1,10 +1,89 @@
- import assert from "node:assert/strict";
- import test from "node:test";
-
-+import { clearPublicConfigCache } from "../../src/api/public-config-client.js";
- import {
-+  callServerToolFunction,
-+  clearServerApiDiagnostics,
-+  createServerRepositoryClient,
-+  readServerToolConstants,
-   requireServerApiData,
-   SERVER_DATA_BOUNDARY_RULE,
-+  safeRequestServerApi,
- } from "../../src/api/server-api-client.js";
-+import { logoutSessionUser } from "../../src/api/session-api-client.js";
-+
-+function installMockServerApi(routes) {
-+  const calls = [];
-+  const previousWindow = globalThis.window;
-+  const previousXmlHttpRequest = globalThis.XMLHttpRequest;
-+
-+  clearPublicConfigCache();
-+  clearServerApiDiagnostics();
-+
-+  globalThis.window = {
-+    GameFoundryPublicConfig: {
-+      apiUrl: "http://runtime-api.test/api",
-+    },
-+  };
-+
-+  globalThis.XMLHttpRequest = class MockXMLHttpRequest {
-+    constructor() {
-+      this.headers = {};
-+      this.responseText = "";
-+      this.status = 0;
-+    }
-+
-+    open(method, url, async) {
-+      this.async = async;
-+      this.method = method;
-+      this.url = url;
-+    }
-+
-+    setRequestHeader(name, value) {
-+      this.headers[name] = value;
-+    }
-+
-+    send(body) {
-+      calls.push({
-+        async: this.async,
-+        body,
-+        headers: { ...this.headers },
-+        method: this.method,
-+        url: this.url,
-+      });
-+      const route = routes[`${this.method} ${this.url}`] || {
-+        payload: {
-+          error: `No mock route for ${this.method} ${this.url}`,
-+          ok: false,
-+        },
-+        status: 404,
-+      };
-+      this.status = route.status;
-+      this.responseText = typeof route.payload === "string"
-+        ? route.payload
-+        : JSON.stringify(route.payload);
-+    }
-+  };
-+
-+  return {
-+    calls,
-+    restore() {
-+      if (previousWindow === undefined) {
-+        delete globalThis.window;
-+      } else {
-+        globalThis.window = previousWindow;
-+      }
-+      if (previousXmlHttpRequest === undefined) {
-+        delete globalThis.XMLHttpRequest;
-+      } else {
-+        globalThis.XMLHttpRequest = previousXmlHttpRequest;
-+      }
-+      clearPublicConfigCache();
-+      clearServerApiDiagnostics();
-+    },
-+  };
-+}
-
- test("requireServerApiData returns the server data payload", () => {
-   assert.deepEqual(
-@@ -57,3 +136,244 @@ test("requireServerApiData supports client-specific restore guidance", () => {
-     /Admin setup status did not return server data\. Restore the admin setup API\./,
-   );
- });
-+
-+test("safeRequestServerApi sends JSON requests through the configured server API", () => {
-+  const mockApi = installMockServerApi({
-+    "POST http://runtime-api.test/api/runtime/echo": {
-+      payload: {
-+        data: {
-+          status: "accepted",
-+        },
-+        ok: true,
-+      },
-+      status: 200,
-+    },
-+  });
-+
-+  try {
-+    assert.deepEqual(
-+      safeRequestServerApi("/runtime/echo", {
-+        body: { value: 42 },
-+        method: "POST",
-+      }),
-+      {
-+        ok: true,
-+        payload: {
-+          data: {
-+            status: "accepted",
-+          },
-+          ok: true,
-+        },
-+      },
-+    );
-+    assert.deepEqual(mockApi.calls, [
-+      {
-+        async: false,
-+        body: JSON.stringify({ value: 42 }),
-+        headers: {
-+          Accept: "application/json",
-+          "Content-Type": "application/json",
-+        },
-+        method: "POST",
-+        url: "http://runtime-api.test/api/runtime/echo",
-+      },
-+    ]);
-+  } finally {
-+    mockApi.restore();
-+  }
-+});
-+
-+test("safeRequestServerApi reports static-only route failures without throwing", () => {
-+  const mockApi = installMockServerApi({
-+    "GET http://runtime-api.test/api/runtime/missing": {
-+      payload: {
-+        ok: false,
-+      },
-+      status: 404,
-+    },
-+  });
-+
-+  try {
-+    const response = safeRequestServerApi("/runtime/missing");
-+    assert.equal(response.ok, false);
-+    assert.match(
-+      response.error,
-+      /Server API route unavailable for GET http:\/\/runtime-api\.test\/api\/runtime\/missing \(404\)/,
-+    );
-+  } finally {
-+    mockApi.restore();
-+  }
-+});
-+
-+test("server tool helpers consume server-owned constants and function results", () => {
-+  const mockApi = installMockServerApi({
-+    "GET http://runtime-api.test/api/toolbox/game-hub/constants": {
-+      payload: {
-+        data: {
-+          statusOptions: ["New", "Ready"],
-+        },
-+        ok: true,
-+      },
-+      status: 200,
-+    },
-+    "POST http://runtime-api.test/api/toolbox/game-hub/functions/formatStatus": {
-+      payload: {
-+        data: {
-+          result: "READY",
-+        },
-+        ok: true,
-+      },
-+      status: 200,
-+    },
-+  });
-+
-+  try {
-+    assert.deepEqual(readServerToolConstants("game-hub"), {
-+      statusOptions: ["New", "Ready"],
-+    });
-+    assert.equal(callServerToolFunction("game-hub", "formatStatus", "ready"), "READY");
-+    assert.deepEqual(mockApi.calls.map((call) => ({
-+      body: call.body,
-+      method: call.method,
-+      url: call.url,
-+    })), [
-+      {
-+        body: null,
-+        method: "GET",
-+        url: "http://runtime-api.test/api/toolbox/game-hub/constants",
-+      },
-+      {
-+        body: JSON.stringify({ args: ["ready"] }),
-+        method: "POST",
-+        url: "http://runtime-api.test/api/toolbox/game-hub/functions/formatStatus",
-+      },
-+    ]);
-+  } finally {
-+    mockApi.restore();
-+  }
-+});
-+
-+test("createServerRepositoryClient routes method calls through repository ids", () => {
-+  const mockApi = installMockServerApi({
-+    "POST http://runtime-api.test/api/toolbox/game-hub/repositories": {
-+      payload: {
-+        data: {
-+          repositoryId: "repo-123",
-+        },
-+        ok: true,
-+      },
-+      status: 200,
-+    },
-+    "POST http://runtime-api.test/api/toolbox/game-hub/repositories/repo-123/methods/listGames": {
-+      payload: {
-+        data: {
-+          result: [{ id: "game-1" }],
-+        },
-+        ok: true,
-+      },
-+      status: 200,
-+    },
-+  });
-+
-+  try {
-+    const repository = createServerRepositoryClient("game-hub", { mode: "test" });
-+    assert.equal(repository.__apiRepositoryId(), "repo-123");
-+    assert.deepEqual(repository.listGames({ status: "Ready" }), [{ id: "game-1" }]);
-+    assert.deepEqual(mockApi.calls.map((call) => ({
-+      body: call.body,
-+      method: call.method,
-+      url: call.url,
-+    })), [
-+      {
-+        body: JSON.stringify({ options: { mode: "test" } }),
-+        method: "POST",
-+        url: "http://runtime-api.test/api/toolbox/game-hub/repositories",
-+      },
-+      {
-+        body: JSON.stringify({ args: [{ status: "Ready" }] }),
-+        method: "POST",
-+        url: "http://runtime-api.test/api/toolbox/game-hub/repositories/repo-123/methods/listGames",
-+      },
-+    ]);
-+  } finally {
-+    mockApi.restore();
-+  }
-+});
-+
-+test("createServerRepositoryClient returns blocked validation when repository init fails", () => {
-+  const mockApi = installMockServerApi({
-+    "POST http://runtime-api.test/api/toolbox/game-hub/repositories": {
-+      payload: {
-+        error: "Server data source unavailable.",
-+        ok: false,
-+      },
-+      status: 503,
-+    },
-+  });
-+
-+  try {
-+    const repository = createServerRepositoryClient("game-hub");
-+    assert.equal(repository.__apiRepositoryId(), "");
-+    assert.match(repository.__apiDiagnostic(), /Server data source unavailable/);
-+    assert.deepEqual(repository.listGames(), {
-+      error: true,
-+      message: "Server data source unavailable.",
-+      validation: {
-+        findings: [
-+          {
-+            action: "Start the local server API or restore the server data source.",
-+            label: "Server data source missing",
-+            status: "Blocked",
-+          },
-+        ],
-+        status: "Blocked",
-+      },
-+    });
-+  } finally {
-+    mockApi.restore();
-+  }
-+});
-+
-+test("logoutSessionUser uses the standardized session server data boundary", () => {
-+  const mockApi = installMockServerApi({
-+    "POST http://runtime-api.test/api/session/logout": {
-+      payload: {
-+        data: {
-+          authenticated: false,
-+          userKey: "",
-+        },
-+        ok: true,
-+      },
-+      status: 200,
-+    },
-+  });
-+
-+  try {
-+    assert.deepEqual(logoutSessionUser(), {
-+      authenticated: false,
-+      userKey: "",
-+    });
-+  } finally {
-+    mockApi.restore();
-+  }
-+});
-+
-+test("logoutSessionUser preserves session restore guidance for missing server data", () => {
-+  const mockApi = installMockServerApi({
-+    "POST http://runtime-api.test/api/session/logout": {
-+      payload: {
-+        ok: true,
-+      },
-+      status: 200,
-+    },
-+  });
-+
-+  try {
-+    assert.throws(
-+      () => logoutSessionUser(),
-+      /Session logout did not return server data\. Restore the server auth\/session API\./,
-+    );
-+  } finally {
-+    mockApi.restore();
-+  }
-+});
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_008-api-client-service-coverage.md b/docs_build/dev/reports/PR_26175_DELTA_008-api-client-service-coverage.md
+@@ -21,7 +21,7 @@
+     "test:lane:game-hub": "node ./scripts/run-targeted-test-lanes.mjs --lane game-hub",
+     "test:lane:tool-runtime": "node ./scripts/run-targeted-test-lanes.mjs --lane tool-runtime",
+     "test:lane:game-runtime": "node ./scripts/run-targeted-test-lanes.mjs --lane game-runtime",
+-    "test:service:runtime": "node ./scripts/run-node-test-files.mjs tests/engine/RuntimeTickLoop.test.mjs tests/engine/RuntimeConditionSystem.test.mjs tests/engine/RuntimeCollisionProcessing.test.mjs tests/engine/RuntimeMovementProcessing.test.mjs tests/engine/RuntimeCooldownProcessing.test.mjs tests/engine/RuntimeDamageProcessing.test.mjs tests/engine/RuntimeHealthModel.test.mjs tests/engine/RuntimeLivesAndRespawn.test.mjs tests/engine/RuntimeSpawnDespawnProcessing.test.mjs tests/engine/RuntimeScoringAndStateProcessing.test.mjs tests/engine/RuntimeOutcomeProcessing.test.mjs tests/engine/RuntimeInputPipeline.test.mjs tests/engine/RuntimeObjectInstantiation.test.mjs tests/engine/RuntimeObjectRecordFactory.test.mjs tests/engine/RuntimeBehaviorComposition.test.mjs tests/replay/ReplaySystem.test.mjs tests/dev-runtime/ServerApiClientStandardization.test.mjs tests/engine/RuntimeEventSystem.test.mjs tests/engine/RuntimeTriggerProcessing.test.mjs tests/engine/RuntimeActionSystem.test.mjs tests/final/FinalSystems.test.mjs",
++    "test:service:runtime": "node ./scripts/run-node-test-files.mjs tests/engine/RuntimeTickLoop.test.mjs tests/engine/RuntimeConditionSystem.test.mjs tests/engine/RuntimeCollisionProcessing.test.mjs tests/engine/RuntimeMovementProcessing.test.mjs tests/engine/RuntimeCooldownProcessing.test.mjs tests/engine/RuntimeDamageProcessing.test.mjs tests/engine/RuntimeHealthModel.test.mjs tests/engine/RuntimeLivesAndRespawn.test.mjs tests/engine/RuntimeSpawnDespawnProcessing.test.mjs tests/engine/RuntimeScoringAndStateProcessing.test.mjs tests/engine/RuntimeOutcomeProcessing.test.mjs tests/engine/RuntimeInputPipeline.test.mjs tests/engine/RuntimeObjectInstantiation.test.mjs tests/engine/RuntimeObjectRecordFactory.test.mjs tests/engine/RuntimeBehaviorComposition.test.mjs tests/replay/ReplaySystem.test.mjs tests/replay/ReplayTimeline.test.mjs tests/events/EventBus.test.mjs tests/dev-runtime/ServerApiClientStandardization.test.mjs tests/engine/RuntimeEventSystem.test.mjs tests/engine/RuntimeTriggerProcessing.test.mjs tests/engine/RuntimeActionSystem.test.mjs tests/final/FinalSystems.test.mjs",
+     "test:lane:integration": "node ./scripts/run-targeted-test-lanes.mjs --lane integration",
+     "test:lane:engine-src": "node ./scripts/run-targeted-test-lanes.mjs --lane engine-src",
+     "test:lane:samples": "node ./scripts/run-targeted-test-lanes.mjs --lane samples --include-samples",
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage.md b/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage.md
 new file mode 100644
-index 000000000..f178bf413
+index 000000000..4b4dcd5de
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_008-api-client-service-coverage.md
-@@ -0,0 +1,79 @@
-+# PR_26175_DELTA_008-api-client-service-coverage
++++ b/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage.md
+@@ -0,0 +1,70 @@
++# PR_26175_DELTA_009-replay-event-service-coverage
 +
 +## Summary
 +
-+Team Delta expanded API client service coverage using the page/service testing model from PR_26175_DELTA_006 and the runtime lane discipline continued in PR_26175_DELTA_007.
++Team Delta expanded replay and runtime event service coverage through the existing page/service-level runtime lane.
 +
-+This PR adds `npm run test:service:api` as a service-level lane for shared API client behavior. It reuses the existing Node test-file runner, keeps `npm test` as the site-wide/all-tests command, and does not create any team-specific test runner or Delta-named command.
++This PR does not add a new npm command, does not add a new runner, and does not create any team-specific test command. It keeps `npm test` as the site-wide/all-tests command and expands `npm run test:service:runtime` from 21 targeted Node test files to 23 targeted Node test files.
 +
 +## Scope
 +
 +- Team: Delta
-+- Branch: `PR_26175_DELTA_008-api-client-service-coverage`
-+- Runtime code changed: `src/api/session-api-client.js`
-+- Tests changed: `tests/dev-runtime/ServerApiClientStandardization.test.mjs`
-+- Test command changed: `package.json`
++- Branch: `PR_26175_DELTA_009-replay-event-service-coverage`
++- Changed file: `package.json`
++- Runtime code changed: none
 +- UI changed: none
 +- New test runner: none
 +- Team-named command: none
 +
 +## Coverage Added
 +
-+The new `test:service:api` lane covers:
++The existing `test:service:runtime` lane now also covers:
 +
-+- Shared server API request routing through configured `apiUrl`
-+- Static-only server API route failures
-+- Server tool constants and function calls
-+- Server repository client initialization and method routing
-+- Blocked repository validation when server initialization fails
-+- Session logout data-boundary handling
-+- Existing public API URL client coverage
++- `tests/replay/ReplayTimeline.test.mjs`
++- `tests/events/EventBus.test.mjs`
++
++These additions extend service-level coverage for replay timeline snapshot behavior and engine event bus subscription/emit behavior without duplicating existing tests.
 +
 +## Runtime Impact
 +
-+PASS - Runtime behavior change is limited to fixing `logoutSessionUser()` to use the existing `requireSessionApiData(...)` server boundary instead of an undefined helper. The API remains backward compatible and now returns standardized session data or restore guidance.
++PASS - No runtime implementation files changed. This is a service-lane coverage expansion only.
 +
 +## Requirement Checklist
 +
 +| Requirement | Status | Notes |
 +|---|---|---|
-+| One PR purpose only | PASS | API client service coverage only. |
-+| Team Delta ownership only | PASS | Shared runtime/API client testability is Delta-owned. |
-+| Branch from updated main | PASS | Branch created after PR_007 merge and main sync. |
-+| Expand API client service coverage | PASS | Added `test:service:api` and expanded shared API client tests. |
-+| Reuse existing test infrastructure | PASS | Reuses `scripts/run-node-test-files.mjs`. |
-+| Add/update `test:service:api` only if needed | PASS | A focused API service lane did not exist. |
++| One PR purpose only | PASS | Replay and event service coverage expansion only. |
++| Team Delta ownership only | PASS | Replay, runtime, shared JS, API clients, event systems, and runtime test coverage are Delta-owned. |
++| Branch from updated main | PASS | Branch created after PR_006, PR_007, and PR_008 were merged and main sync passed. |
++| Expand replay and runtime event service coverage | PASS | Added replay timeline and event bus tests to `test:service:runtime`. |
++| Reuse existing service-level testing | PASS | Existing `test:service:runtime` lane expanded. |
++| Do not add new npm commands unless strictly necessary | PASS | No npm command added. |
++| Do not add a new runner | PASS | Reuses `scripts/run-node-test-files.mjs`. |
 +| Do not create team-specific commands | PASS | No Delta-named npm command added. |
-+| Do not add a new test runner | PASS | Existing runner reused. |
-+| Do not duplicate PR_006 or PR_007 | PASS | Adds API service coverage, separate from page/service lane setup and runtime coverage. |
++| Do not duplicate existing tests | PASS | Existing test files are included once in the service lane. |
 +| Keep `npm test` site-wide/all-tests | PASS | Existing `npm test` remains unchanged. |
-+| No unrelated cleanup | PASS | Changes are limited to API coverage and the covered API boundary fix. |
++| No unrelated cleanup | PASS | Only `package.json` and required reports/artifacts changed. |
 +| No UI changes | PASS | No UI files changed. |
-+| No browser-owned product data | PASS | No browser persistence or product JSON contracts changed. |
-+| No silent fallbacks or hidden defaults | PASS | Tests assert explicit server API errors and restore guidance. |
++| No browser-owned product data | PASS | No browser persistence or project/runtime JSON contracts changed. |
++| No silent fallbacks or hidden defaults | PASS | No runtime behavior changed. |
 +
 +## Validation Lane Report
 +
 +| Command | Status | Notes |
 +|---|---|---|
-+| `node --check src/api/session-api-client.js` | PASS | Syntax valid. |
-+| `node --check tests/dev-runtime/ServerApiClientStandardization.test.mjs` | PASS | Syntax valid. |
-+| `npm run test:service:api` | PASS | 2/2 targeted Node test files passed, 13 tests passed. |
-+| Package command assertion | PASS | `npm test` and `test:service:api` present; `test:delta-runtime` absent. |
-+| Delta harness absence check | PASS | `scripts/run-delta-runtime-validation.mjs` absent. |
-+| Delta command grep | PASS | No matches for Delta-named test commands in package scripts, scripts, source, or dev-runtime tests. |
++| `npm run test:service:runtime` | PASS | 23/23 targeted Node test files passed. |
++| Governance guard | PASS | `npm test` unchanged; no `test:delta-runtime`; no Delta harness script; no Delta-named test command matches. |
 +| `git diff --check` | PASS | No whitespace errors. |
 +
 +## Manual Validation Notes
 +
 +- Confirmed `npm test` still points to `node ./scripts/run-node-tests.mjs`.
-+- Confirmed `test:service:api` is page/service-level and not team-owned.
-+- Confirmed no Team Delta-specific validation harness was added.
-+- Confirmed the session logout client now uses the same server data-boundary helper used by sign-in and current-session reads.
-+- Playwright was not run because this PR changes shared API client service coverage and no browser UI files.
++- Confirmed no `test:service:api` changes were made, so API validation was not required for this PR.
++- Confirmed no runtime implementation, UI, status bar, browser storage, or project/runtime JSON files were modified.
++- Confirmed `tests/events/EventBusNaming.test.mjs` was not added to the runtime service lane because it currently references missing historical `src/engine/events/index.js`; adding that broken historical test would make the lane fail and exceed this PR's coverage-only scope.
 +
 +## ZIP
 +
 +Repo-structured delta ZIP:
 +
-+`tmp/PR_26175_DELTA_008-api-client-service-coverage_delta.zip`
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_008-api-client-service-coverage_branch-validation.md b/docs_build/dev/reports/PR_26175_DELTA_008-api-client-service-coverage_branch-validation.md
++`tmp/PR_26175_DELTA_009-replay-event-service-coverage_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_branch-validation.md b/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_branch-validation.md
 new file mode 100644
-index 000000000..68f4d5cf0
+index 000000000..42eaf7fcc
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_008-api-client-service-coverage_branch-validation.md
-@@ -0,0 +1,14 @@
-+# PR_26175_DELTA_008 Branch Validation
++++ b/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_branch-validation.md
+@@ -0,0 +1,15 @@
++# PR_26175_DELTA_009 Branch Validation
 +
 +| Check | Status | Notes |
 +|---|---|---|
-+| Started from main | PASS | Checked out `main` before merging PR_007. |
-+| Pulled latest main | PASS | `git pull --ff-only` completed. |
-+| Main worktree clean before merge | PASS | `git status --short` returned clean. |
-+| Main/origin sync before merge | PASS | `git rev-list --left-right --count main...origin/main` returned `0 0`. |
-+| PR_007 approved merge completed | PASS | PR_26175_DELTA_007 was merged first. |
-+| Returned to main after merge | PASS | Main was checked out after PR_007 merge. |
-+| Pulled latest after merge | PASS | Main fast-forwarded to `57ef3bfee`. |
-+| Main clean/synced after merge | PASS | Worktree clean and `main...origin/main` returned `0 0`. |
-+| PR_008 branch created from updated main | PASS | Branch `PR_26175_DELTA_008-api-client-service-coverage` created from `57ef3bfee`. |
++| Started from main | PASS | Checked out `main` before EOD merge sequence. |
++| Pulled latest main | PASS | `git pull --ff-only` completed before merge work. |
++| Start branch was main | PASS | Current branch was `main` at the start gate. |
++| Start worktree clean | PASS | `git status --short` returned clean. |
++| Start main/origin sync | PASS | `main...origin/main` returned `0 0`. |
++| PR_006 merged before PR_009 | PASS | PR #189 was already merged. |
++| PR_007 merged before PR_009 | PASS | PR #199 was already merged. |
++| PR_008 merged before PR_009 | PASS | PR #200 was marked ready, merged, and main was pulled. |
++| Main clean/synced after PR_008 | PASS | Worktree clean and `main...origin/main` returned `0 0`. |
++| PR_009 branch created from updated main | PASS | Branch `PR_26175_DELTA_009-replay-event-service-coverage` created from `1dcfc080a`. |
 +
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_008-api-client-service-coverage_manual-validation-notes.md b/docs_build/dev/reports/PR_26175_DELTA_008-api-client-service-coverage_manual-validation-notes.md
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_manual-validation-notes.md b/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_manual-validation-notes.md
 new file mode 100644
-index 000000000..79191e183
+index 000000000..561a68802
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_008-api-client-service-coverage_manual-validation-notes.md
++++ b/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_manual-validation-notes.md
 @@ -0,0 +1,9 @@
-+# PR_26175_DELTA_008 Manual Validation Notes
++# PR_26175_DELTA_009 Manual Validation Notes
 +
-+- Confirmed the API service lane is discoverable by service name: `npm run test:service:api`.
-+- Confirmed `npm test` remains the site-wide/all-tests command.
++- Confirmed this PR only expands `test:service:runtime`.
++- Confirmed `tests/replay/ReplayTimeline.test.mjs` and `tests/events/EventBus.test.mjs` pass under the existing shared Node test-file runner.
++- Confirmed no API files were touched, so `npm run test:service:api` was not required.
++- Confirmed no new npm command or runner was added.
 +- Confirmed no `test:delta-runtime` command exists.
 +- Confirmed `scripts/run-delta-runtime-validation.mjs` does not exist.
-+- Confirmed the changed runtime file is limited to `src/api/session-api-client.js`.
-+- Confirmed the logout change is directly covered by new tests for success and missing server data restore guidance.
-+- Confirmed no UI, Playwright, browser storage, project JSON, runtime workspace JSON, or status bar files were modified.
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_008-api-client-service-coverage_requirements-checklist.md b/docs_build/dev/reports/PR_26175_DELTA_008-api-client-service-coverage_requirements-checklist.md
++- Confirmed no source runtime, UI, browser storage, project JSON, runtime workspace JSON, or status bar files were modified.
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_requirements-checklist.md b/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_requirements-checklist.md
 new file mode 100644
-index 000000000..401e03168
+index 000000000..0d1f1c45b
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_008-api-client-service-coverage_requirements-checklist.md
-@@ -0,0 +1,21 @@
-+# PR_26175_DELTA_008 Requirements Checklist
++++ b/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_requirements-checklist.md
+@@ -0,0 +1,19 @@
++# PR_26175_DELTA_009 Requirements Checklist
 +
 +| Requirement | Status | Notes |
 +|---|---|---|
-+| Expand API client service coverage | PASS | Added shared server API, repository, tool, session, and public API URL coverage. |
-+| Use page/service testing model | PASS | New command is `test:service:api`. |
-+| Reuse existing test infrastructure | PASS | Uses `scripts/run-node-test-files.mjs`. |
-+| Add/update `test:service:api` only if needed | PASS | No focused API service command existed. |
-+| No team-specific test command | PASS | No Delta-named npm command added. |
-+| No new test runner | PASS | No runner script added. |
-+| Do not duplicate PR_006 | PASS | Does not alter the page/service test-lane setup beyond adding API service lane. |
-+| Do not duplicate PR_007 | PASS | Does not expand `test:service:runtime`. |
-+| Keep `npm test` site-wide | PASS | `npm test` remains `node ./scripts/run-node-tests.mjs`. |
-+| No unrelated cleanup | PASS | Only API client coverage, one covered API boundary fix, reports, and artifacts changed. |
++| Expand replay and runtime event service coverage | PASS | Runtime service lane now includes replay timeline and event bus tests. |
++| Reuse existing service-level testing | PASS | Existing `test:service:runtime` command expanded. |
++| Do not add new npm commands unless strictly necessary | PASS | No new npm command added. |
++| Do not add a new runner | PASS | Existing `scripts/run-node-test-files.mjs` reused. |
++| Do not create team-specific test commands | PASS | No Delta-named command added. |
++| Do not duplicate existing tests | PASS | Existing files are included once in the service lane. |
++| Keep `npm test` site-wide | PASS | `npm test` unchanged. |
++| No unrelated cleanup | PASS | Only `package.json` and required reports/artifacts changed. |
 +| No UI changes | PASS | No UI files changed. |
-+| No browser-owned product data | PASS | No persisted browser data or project/workspace JSON contracts changed. |
-+| No silent fallbacks | PASS | Tests assert explicit route failures and blocked validation. |
-+| No hidden defaults | PASS | No implicit product/runtime defaults added. |
++| No browser-owned product data | PASS | No persisted browser data changed. |
++| No silent fallbacks | PASS | No runtime behavior changed. |
++| No hidden defaults | PASS | No runtime behavior changed. |
 +| Required reports | PASS | Report packet and Codex artifacts created. |
-+| Repo-structured ZIP | PASS | `tmp/PR_26175_DELTA_008-api-client-service-coverage_delta.zip`. |
++| Repo-structured ZIP | PASS | `tmp/PR_26175_DELTA_009-replay-event-service-coverage_delta.zip`. |
 +
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_008-api-client-service-coverage_validation-lane.md b/docs_build/dev/reports/PR_26175_DELTA_008-api-client-service-coverage_validation-lane.md
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_validation-lane.md b/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_validation-lane.md
 new file mode 100644
-index 000000000..99e19f42d
+index 000000000..f1e320520
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_008-api-client-service-coverage_validation-lane.md
-@@ -0,0 +1,37 @@
-+# PR_26175_DELTA_008 Validation Lane
++++ b/docs_build/dev/reports/PR_26175_DELTA_009-replay-event-service-coverage_validation-lane.md
+@@ -0,0 +1,30 @@
++# PR_26175_DELTA_009 Validation Lane
 +
 +## Commands
 +
 +```powershell
-+node --check src/api/session-api-client.js
-+node --check tests/dev-runtime/ServerApiClientStandardization.test.mjs
-+npm run test:service:api
-+$pkg = Get-Content -Raw package.json | ConvertFrom-Json; if ($pkg.scripts.PSObject.Properties.Name -contains 'test:delta-runtime') { throw 'test:delta-runtime exists' }; if (-not ($pkg.scripts.PSObject.Properties.Name -contains 'test')) { throw 'npm test missing' }; if (-not ($pkg.scripts.PSObject.Properties.Name -contains 'test:service:api')) { throw 'test:service:api missing' }; if ($pkg.scripts.test -ne 'node ./scripts/run-node-tests.mjs') { throw 'npm test changed unexpectedly' }
++npm run test:service:runtime
++$pkg = Get-Content -Raw package.json | ConvertFrom-Json; if ($pkg.scripts.PSObject.Properties.Name -contains 'test:delta-runtime') { throw 'test:delta-runtime exists' }; if ($pkg.scripts.test -ne 'node ./scripts/run-node-tests.mjs') { throw 'npm test changed unexpectedly' }
 +if (Test-Path scripts/run-delta-runtime-validation.mjs) { throw 'unexpected delta runtime script' }
-+rg -n "delta-runtime|run-delta-runtime|test:delta" package.json scripts src/api tests/dev-runtime
++rg -n "delta-runtime|run-delta-runtime|test:delta" package.json scripts tests src
 +git diff --check
 +```
 +
@@ -533,20 +170,15 @@ index 000000000..99e19f42d
 +
 +| Command | Status |
 +|---|---|
-+| `node --check src/api/session-api-client.js` | PASS |
-+| `node --check tests/dev-runtime/ServerApiClientStandardization.test.mjs` | PASS |
-+| `npm run test:service:api` | PASS |
++| `npm run test:service:runtime` | PASS |
 +| Package command assertion | PASS |
 +| Delta harness absence check | PASS |
 +| Delta command grep | PASS - no matches |
 +| `git diff --check` | PASS |
 +
-+## API Service Files
++## Runtime Service Files
 +
-+`npm run test:service:api` passed:
-+
-+- `tests/dev-runtime/ServerApiClientStandardization.test.mjs`
-+- `tests/dev-runtime/PublicApiUrlClient.test.mjs`
++`npm run test:service:runtime` passed 23 targeted Node test files.
 +
 +## Browser / Playwright
 +
