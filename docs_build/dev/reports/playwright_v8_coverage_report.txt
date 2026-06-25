@@ -36,7 +36,8 @@ Uncovered or low-coverage changed JS files:
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
+(0%) scripts/start-local-api-server.mjs - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/api/admin-system-health/contract.test.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/dev-runtime/AdminHealthOperations.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/dev-runtime/LocalApiStartupLogging.test.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage

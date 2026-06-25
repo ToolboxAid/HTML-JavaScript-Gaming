@@ -218,6 +218,12 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
     await expect(notificationsTable).toContainText("Not Configured");
     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Approved diagnostics format");
     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Environment Variables + All Runtime Ports");
+    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Environment variable order");
+    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Secret masking markers");
+    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Local API URL");
+    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Local site URL port");
+    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Database mode");
+    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Storage status");
     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Configurable multiple runtime ports");
     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("deferred/cancelled");
     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).not.toContainText("secret");
