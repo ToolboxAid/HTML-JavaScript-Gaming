@@ -1,38 +1,31 @@
-# git diff --name-only pr/26177-CHARLIE-032-runtime-health-json-endpoints --
-docs_build/dev/reports/PR_26177_CHARLIE_034-startup-runtime-report-cleanup.md
-docs_build/dev/reports/PR_26177_CHARLIE_034-startup-runtime-report-cleanup_branch-validation.md
-docs_build/dev/reports/PR_26177_CHARLIE_034-startup-runtime-report-cleanup_manual-validation-notes.md
-docs_build/dev/reports/PR_26177_CHARLIE_034-startup-runtime-report-cleanup_requirements-checklist.md
-docs_build/dev/reports/PR_26177_CHARLIE_034-startup-runtime-report-cleanup_validation-lane.md
+# git diff --name-only pr/26177-CHARLIE-034-startup-runtime-report-cleanup --
+assets/theme-v2/css/status.css
+assets/theme-v2/css/tables.css
+docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish.md
+docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_branch-validation.md
+docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_manual-validation-notes.md
+docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_requirements-checklist.md
+docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_validation-lane.md
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
+docs_build/dev/reports/coverage_changed_js_guardrail.txt
 docs_build/dev/reports/playwright_v8_coverage_report.txt
-scripts/start-local-api-server.mjs
-src/dev-runtime/server/local-api-router.mjs
-tests/dev-runtime/AdminHealthOperations.test.mjs
-tests/dev-runtime/LocalApiStartupLogging.test.mjs
-tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
 
 # git status --short
- M docs_build/dev/reports/PR_26177_CHARLIE_034-startup-runtime-report-cleanup.md
- M docs_build/dev/reports/PR_26177_CHARLIE_034-startup-runtime-report-cleanup_branch-validation.md
- M docs_build/dev/reports/PR_26177_CHARLIE_034-startup-runtime-report-cleanup_manual-validation-notes.md
- M docs_build/dev/reports/PR_26177_CHARLIE_034-startup-runtime-report-cleanup_requirements-checklist.md
+ M docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish.md
  M docs_build/dev/reports/codex_review.diff
- M docs_build/dev/reports/playwright_v8_coverage_report.txt
+ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
 
-# git diff --stat pr/26177-CHARLIE-032-runtime-health-json-endpoints --
- ...7_CHARLIE_034-startup-runtime-report-cleanup.md |  35 ++
- ...tup-runtime-report-cleanup_branch-validation.md |  14 +
- ...ntime-report-cleanup_manual-validation-notes.md |   9 +
- ...untime-report-cleanup_requirements-checklist.md |  14 +
- ...artup-runtime-report-cleanup_validation-lane.md |  14 +
- docs_build/dev/reports/codex_changed_files.txt     |  59 ++-
- docs_build/dev/reports/codex_review.diff           | 479 ++++++++++++++++++++-
- .../dev/reports/playwright_v8_coverage_report.txt  |   3 +-
- scripts/start-local-api-server.mjs                 |  34 +-
- src/dev-runtime/server/local-api-router.mjs        | 101 ++++-
- tests/dev-runtime/AdminHealthOperations.test.mjs   |   7 +
- tests/dev-runtime/LocalApiStartupLogging.test.mjs  |  32 ++
- .../tools/AdminHealthOperationsPage.spec.mjs       |   6 +
- 13 files changed, 771 insertions(+), 36 deletions(-)
+# git diff --stat pr/26177-CHARLIE-034-startup-runtime-report-cleanup --
+ assets/theme-v2/css/status.css                     |  52 ++
+ assets/theme-v2/css/tables.css                     |  37 ++
+ ...PR_26177_CHARLIE_035-system-health-ui-polish.md |  25 +
+ ...35-system-health-ui-polish_branch-validation.md |  14 +
+ ...tem-health-ui-polish_manual-validation-notes.md |   8 +
+ ...stem-health-ui-polish_requirements-checklist.md |  12 +
+ ..._035-system-health-ui-polish_validation-lane.md |  10 +
+ docs_build/dev/reports/codex_changed_files.txt     |  57 +-
+ docs_build/dev/reports/codex_review.diff           | 617 +++++++--------------
+ .../dev/reports/coverage_changed_js_guardrail.txt  |   4 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |  10 +-
+ 11 files changed, 382 insertions(+), 464 deletions(-)
