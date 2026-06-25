@@ -1,45 +1,26 @@
-# git diff --name-only pr/26177-CHARLIE-029-system-health-postgres-metrics-panel --
-admin/system-health.html
-assets/theme-v2/js/admin-system-health.js
-docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation.md
-docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_branch-validation.md
-docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_manual-validation-notes.md
-docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_requirements-checklist.md
-docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_validation-lane.md
-docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/coverage_changed_js_guardrail.txt
-docs_build/dev/reports/playwright_v8_coverage_report.txt
-src/api/admin-system-health-api-client.js
-src/dev-runtime/server/local-api-router.mjs
-tests/api/admin-system-health/contract.test.mjs
-tests/dev-runtime/AdminHealthOperations.test.mjs
-tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-
 # git status --short
- M docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation.md
- M docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_branch-validation.md
- M docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_manual-validation-notes.md
- M docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_requirements-checklist.md
- M docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_validation-lane.md
+M docs_build/dev/reports/codex_changed_files.txt
  M docs_build/dev/reports/codex_review.diff
- M docs_build/dev/reports/playwright_v8_coverage_report.txt
+ M package.json
+ M src/api/session-api-client.js
+ M tests/dev-runtime/ServerApiClientStandardization.test.mjs
+?? docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests.md
+?? docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_branch-validation.md
+?? docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_manual-validation-notes.md
+?? docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_requirements-checklist.md
+?? docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_validation-lane.md
 
-# git diff --stat pr/26177-CHARLIE-029-system-health-postgres-metrics-panel --
- admin/system-health.html                           |  13 +-
- assets/theme-v2/js/admin-system-health.js          |  41 +-
- ...IE_030-r2-storage-health-expanded-validation.md |  35 +
- ...health-expanded-validation_branch-validation.md |  17 +
- ...-expanded-validation_manual-validation-notes.md |   9 +
- ...h-expanded-validation_requirements-checklist.md |  13 +
- ...e-health-expanded-validation_validation-lane.md |  22 +
- docs_build/dev/reports/codex_changed_files.txt     |  70 +-
- docs_build/dev/reports/codex_review.diff           | 988 +++++++++++----------
- .../dev/reports/coverage_changed_js_guardrail.txt  |   6 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |  17 +-
- src/api/admin-system-health-api-client.js          |   4 +
- src/dev-runtime/server/local-api-router.mjs        | 105 ++-
- tests/api/admin-system-health/contract.test.mjs    |  19 +
- tests/dev-runtime/AdminHealthOperations.test.mjs   |   6 +
- .../tools/AdminHealthOperationsPage.spec.mjs       |   8 +-
- 16 files changed, 851 insertions(+), 522 deletions(-)
+# git ls-files --others --exclude-standard
+docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests.md
+docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_branch-validation.md
+docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_manual-validation-notes.md
+docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_requirements-checklist.md
+docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_validation-lane.md
+
+# git diff --stat
+docs_build/dev/reports/codex_changed_files.txt     |   65 +-
+ docs_build/dev/reports/codex_review.diff           | 1825 +++++++++++++-------
+ package.json                                       |    1 +
+ src/api/session-api-client.js                      |    2 +-
+ .../ServerApiClientStandardization.test.mjs        |  126 ++
+ 5 files changed, 1335 insertions(+), 684 deletions(-)

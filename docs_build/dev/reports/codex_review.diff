@@ -1,662 +1,2238 @@
-diff --git a/admin/system-health.html b/admin/system-health.html
-index 5aa9fa80a..b62f232d7 100644
---- a/admin/system-health.html
-+++ b/admin/system-health.html
-@@ -316,16 +316,17 @@
-                                     <tr>
-                                         <th scope="col">Check</th>
-                                         <th scope="col">Target</th>
-+                                        <th scope="col">Timing</th>
-                                         <th scope="col">Status</th>
-                                     </tr>
-                                 </thead>
-                                 <tbody>
--                                    <tr><td>Bucket connectivity</td><td data-admin-system-health-storage-value="bucket">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="bucket" title="Reason: R2 bucket connectivity has not loaded yet." aria-label="PENDING: R2 bucket connectivity has not loaded yet.">PENDING</td></tr>
--                                    <tr><td>List</td><td data-admin-system-health-storage-value="list">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="list" title="Reason: R2 list check has not loaded yet." aria-label="PENDING: R2 list check has not loaded yet.">PENDING</td></tr>
--                                    <tr><td>Upload</td><td data-admin-system-health-storage-value="upload">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="upload" title="Reason: R2 upload check has not loaded yet." aria-label="PENDING: R2 upload check has not loaded yet.">PENDING</td></tr>
--                                    <tr><td>Read</td><td data-admin-system-health-storage-value="read">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="read" title="Reason: R2 read check has not loaded yet." aria-label="PENDING: R2 read check has not loaded yet.">PENDING</td></tr>
--                                    <tr><td>Delete</td><td data-admin-system-health-storage-value="delete">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="delete" title="Reason: R2 delete check has not loaded yet." aria-label="PENDING: R2 delete check has not loaded yet.">PENDING</td></tr>
--                                    <tr><td>Last checked</td><td data-admin-system-health-storage-value="lastChecked">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="lastChecked" title="Reason: R2 health has not loaded yet." aria-label="PENDING: R2 health has not loaded yet.">PENDING</td></tr>
-+                                    <tr><td>Bucket connectivity</td><td data-admin-system-health-storage-value="bucket">Loading</td><td data-admin-system-health-storage-timing="bucket">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="bucket" title="Reason: R2 bucket connectivity has not loaded yet." aria-label="PENDING: R2 bucket connectivity has not loaded yet.">PENDING</td></tr>
-+                                    <tr><td>List</td><td data-admin-system-health-storage-value="list">Loading</td><td data-admin-system-health-storage-timing="list">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="list" title="Reason: R2 list check has not loaded yet." aria-label="PENDING: R2 list check has not loaded yet.">PENDING</td></tr>
-+                                    <tr><td>Upload</td><td data-admin-system-health-storage-value="upload">Loading</td><td data-admin-system-health-storage-timing="upload">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="upload" title="Reason: R2 upload check has not loaded yet." aria-label="PENDING: R2 upload check has not loaded yet.">PENDING</td></tr>
-+                                    <tr><td>Read</td><td data-admin-system-health-storage-value="read">Loading</td><td data-admin-system-health-storage-timing="read">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="read" title="Reason: R2 read check has not loaded yet." aria-label="PENDING: R2 read check has not loaded yet.">PENDING</td></tr>
-+                                    <tr><td>Delete</td><td data-admin-system-health-storage-value="delete">Loading</td><td data-admin-system-health-storage-timing="delete">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="delete" title="Reason: R2 delete check has not loaded yet." aria-label="PENDING: R2 delete check has not loaded yet.">PENDING</td></tr>
-+                                    <tr><td>Last checked</td><td data-admin-system-health-storage-value="lastChecked">Loading</td><td data-admin-system-health-storage-timing="lastChecked">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="lastChecked" title="Reason: R2 health has not loaded yet." aria-label="PENDING: R2 health has not loaded yet.">PENDING</td></tr>
-                                 </tbody>
-                             </table>
-                         </div>
-diff --git a/assets/theme-v2/js/admin-system-health.js b/assets/theme-v2/js/admin-system-health.js
-index 746d47753..21bc50a63 100644
---- a/assets/theme-v2/js/admin-system-health.js
-+++ b/assets/theme-v2/js/admin-system-health.js
-@@ -1,7 +1,7 @@
- import {
-     readAdminSystemHealthStatus,
-     runAdminSystemHealthAction,
--    runAdminSystemHealthStorageConnectivityAction,
-+    runAdminSystemHealthStorageExpandedValidation,
- } from "../../../src/api/admin-system-health-api-client.js";
- import {
-     applyStatusNode,
-@@ -54,6 +54,10 @@ class AdminSystemHealthController {
-             node.dataset.adminSystemHealthStorageStatus,
-             node,
-         ]));
-+        this.storageTimings = new Map(Array.from(root.querySelectorAll("[data-admin-system-health-storage-timing]")).map((node) => [
-+            node.dataset.adminSystemHealthStorageTiming,
-+            node,
-+        ]));
-         this.runtimeHealthValues = new Map(Array.from(root.querySelectorAll("[data-admin-system-health-runtime-health-value]")).map((node) => [
-             node.dataset.adminSystemHealthRuntimeHealthValue,
-             node,
-@@ -122,6 +126,13 @@ class AdminSystemHealthController {
-         this.setStatusNode(node, status, reason);
-     }
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index ae2d25d52..eea7be37e 100644
+--- a/docs_build/dev/reports/codex_changed_files.txt
++++ b/docs_build/dev/reports/codex_changed_files.txt
+@@ -1,45 +1,26 @@
+-# git diff --name-only pr/26177-CHARLIE-029-system-health-postgres-metrics-panel --
+-admin/system-health.html
+-assets/theme-v2/js/admin-system-health.js
+-docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation.md
+-docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_branch-validation.md
+-docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_manual-validation-notes.md
+-docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_requirements-checklist.md
+-docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_validation-lane.md
+-docs_build/dev/reports/codex_changed_files.txt
+-docs_build/dev/reports/codex_review.diff
+-docs_build/dev/reports/coverage_changed_js_guardrail.txt
+-docs_build/dev/reports/playwright_v8_coverage_report.txt
+-src/api/admin-system-health-api-client.js
+-src/dev-runtime/server/local-api-router.mjs
+-tests/api/admin-system-health/contract.test.mjs
+-tests/dev-runtime/AdminHealthOperations.test.mjs
+-tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+-
+ # git status --short
+- M docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation.md
+- M docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_branch-validation.md
+- M docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_manual-validation-notes.md
+- M docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_requirements-checklist.md
+- M docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_validation-lane.md
++M docs_build/dev/reports/codex_changed_files.txt
+  M docs_build/dev/reports/codex_review.diff
+- M docs_build/dev/reports/playwright_v8_coverage_report.txt
++ M package.json
++ M src/api/session-api-client.js
++ M tests/dev-runtime/ServerApiClientStandardization.test.mjs
++?? docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests.md
++?? docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_branch-validation.md
++?? docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_manual-validation-notes.md
++?? docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_requirements-checklist.md
++?? docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_validation-lane.md
++
++# git ls-files --others --exclude-standard
++docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests.md
++docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_branch-validation.md
++docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_manual-validation-notes.md
++docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_requirements-checklist.md
++docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_validation-lane.md
 
-+    setStorageTiming(key, value, fallback) {
-+        const node = this.storageTimings.get(key);
-+        if (node) {
-+            node.textContent = asText(value, fallback);
-+        }
-+    }
+-# git diff --stat pr/26177-CHARLIE-029-system-health-postgres-metrics-panel --
+- admin/system-health.html                           |  13 +-
+- assets/theme-v2/js/admin-system-health.js          |  41 +-
+- ...IE_030-r2-storage-health-expanded-validation.md |  35 +
+- ...health-expanded-validation_branch-validation.md |  17 +
+- ...-expanded-validation_manual-validation-notes.md |   9 +
+- ...h-expanded-validation_requirements-checklist.md |  13 +
+- ...e-health-expanded-validation_validation-lane.md |  22 +
+- docs_build/dev/reports/codex_changed_files.txt     |  70 +-
+- docs_build/dev/reports/codex_review.diff           | 988 +++++++++++----------
+- .../dev/reports/coverage_changed_js_guardrail.txt  |   6 +-
+- .../dev/reports/playwright_v8_coverage_report.txt  |  17 +-
+- src/api/admin-system-health-api-client.js          |   4 +
+- src/dev-runtime/server/local-api-router.mjs        | 105 ++-
+- tests/api/admin-system-health/contract.test.mjs    |  19 +
+- tests/dev-runtime/AdminHealthOperations.test.mjs   |   6 +
+- .../tools/AdminHealthOperationsPage.spec.mjs       |   8 +-
+- 16 files changed, 851 insertions(+), 522 deletions(-)
++# git diff --stat
++docs_build/dev/reports/codex_changed_files.txt     |  54 +-
++ docs_build/dev/reports/codex_review.diff           | 816 ++++-----------------
++ package.json                                       |   1 +
++ src/api/session-api-client.js                      |   2 +-
++ .../ServerApiClientStandardization.test.mjs        | 126 ++++
++ 5 files changed, 301 insertions(+), 698 deletions(-)
+\ No newline at end of file
+diff --git a/docs_build/dev/reports/codex_review.diff b/docs_build/dev/reports/codex_review.diff
+index 8ce24fdc9..4ac91671e 100644
+--- a/docs_build/dev/reports/codex_review.diff
++++ b/docs_build/dev/reports/codex_review.diff
+@@ -1,662 +1,1205 @@
+-diff --git a/admin/system-health.html b/admin/system-health.html
+-index 5aa9fa80a..b62f232d7 100644
+---- a/admin/system-health.html
+-+++ b/admin/system-health.html
+-@@ -316,16 +316,17 @@
+-                                     <tr>
+-                                         <th scope="col">Check</th>
+-                                         <th scope="col">Target</th>
+-+                                        <th scope="col">Timing</th>
+-                                         <th scope="col">Status</th>
+-                                     </tr>
+-                                 </thead>
+-                                 <tbody>
+--                                    <tr><td>Bucket connectivity</td><td data-admin-system-health-storage-value="bucket">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="bucket" title="Reason: R2 bucket connectivity has not loaded yet." aria-label="PENDING: R2 bucket connectivity has not loaded yet.">PENDING</td></tr>
+--                                    <tr><td>List</td><td data-admin-system-health-storage-value="list">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="list" title="Reason: R2 list check has not loaded yet." aria-label="PENDING: R2 list check has not loaded yet.">PENDING</td></tr>
+--                                    <tr><td>Upload</td><td data-admin-system-health-storage-value="upload">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="upload" title="Reason: R2 upload check has not loaded yet." aria-label="PENDING: R2 upload check has not loaded yet.">PENDING</td></tr>
+--                                    <tr><td>Read</td><td data-admin-system-health-storage-value="read">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="read" title="Reason: R2 read check has not loaded yet." aria-label="PENDING: R2 read check has not loaded yet.">PENDING</td></tr>
+--                                    <tr><td>Delete</td><td data-admin-system-health-storage-value="delete">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="delete" title="Reason: R2 delete check has not loaded yet." aria-label="PENDING: R2 delete check has not loaded yet.">PENDING</td></tr>
+--                                    <tr><td>Last checked</td><td data-admin-system-health-storage-value="lastChecked">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="lastChecked" title="Reason: R2 health has not loaded yet." aria-label="PENDING: R2 health has not loaded yet.">PENDING</td></tr>
+-+                                    <tr><td>Bucket connectivity</td><td data-admin-system-health-storage-value="bucket">Loading</td><td data-admin-system-health-storage-timing="bucket">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="bucket" title="Reason: R2 bucket connectivity has not loaded yet." aria-label="PENDING: R2 bucket connectivity has not loaded yet.">PENDING</td></tr>
+-+                                    <tr><td>List</td><td data-admin-system-health-storage-value="list">Loading</td><td data-admin-system-health-storage-timing="list">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="list" title="Reason: R2 list check has not loaded yet." aria-label="PENDING: R2 list check has not loaded yet.">PENDING</td></tr>
+-+                                    <tr><td>Upload</td><td data-admin-system-health-storage-value="upload">Loading</td><td data-admin-system-health-storage-timing="upload">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="upload" title="Reason: R2 upload check has not loaded yet." aria-label="PENDING: R2 upload check has not loaded yet.">PENDING</td></tr>
+-+                                    <tr><td>Read</td><td data-admin-system-health-storage-value="read">Loading</td><td data-admin-system-health-storage-timing="read">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="read" title="Reason: R2 read check has not loaded yet." aria-label="PENDING: R2 read check has not loaded yet.">PENDING</td></tr>
+-+                                    <tr><td>Delete</td><td data-admin-system-health-storage-value="delete">Loading</td><td data-admin-system-health-storage-timing="delete">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="delete" title="Reason: R2 delete check has not loaded yet." aria-label="PENDING: R2 delete check has not loaded yet.">PENDING</td></tr>
+-+                                    <tr><td>Last checked</td><td data-admin-system-health-storage-value="lastChecked">Loading</td><td data-admin-system-health-storage-timing="lastChecked">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="lastChecked" title="Reason: R2 health has not loaded yet." aria-label="PENDING: R2 health has not loaded yet.">PENDING</td></tr>
+-                                 </tbody>
+-                             </table>
+-                         </div>
+-diff --git a/assets/theme-v2/js/admin-system-health.js b/assets/theme-v2/js/admin-system-health.js
+-index 746d47753..21bc50a63 100644
+---- a/assets/theme-v2/js/admin-system-health.js
+-+++ b/assets/theme-v2/js/admin-system-health.js
+-@@ -1,7 +1,7 @@
+- import {
+-     readAdminSystemHealthStatus,
+-     runAdminSystemHealthAction,
+--    runAdminSystemHealthStorageConnectivityAction,
+-+    runAdminSystemHealthStorageExpandedValidation,
+- } from "../../../src/api/admin-system-health-api-client.js";
++diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
++index ae2d25d52..9a155cc2b 100644
++--- a/docs_build/dev/reports/codex_changed_files.txt
+++++ b/docs_build/dev/reports/codex_changed_files.txt
++@@ -1,45 +1,13 @@
++-# git diff --name-only pr/26177-CHARLIE-029-system-health-postgres-metrics-panel --
++-admin/system-health.html
++-assets/theme-v2/js/admin-system-health.js
++-docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation.md
++-docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_branch-validation.md
++-docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_manual-validation-notes.md
++-docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_requirements-checklist.md
++-docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_validation-lane.md
++-docs_build/dev/reports/codex_changed_files.txt
++-docs_build/dev/reports/codex_review.diff
++-docs_build/dev/reports/coverage_changed_js_guardrail.txt
++-docs_build/dev/reports/playwright_v8_coverage_report.txt
++-src/api/admin-system-health-api-client.js
++-src/dev-runtime/server/local-api-router.mjs
++-tests/api/admin-system-health/contract.test.mjs
++-tests/dev-runtime/AdminHealthOperations.test.mjs
++-tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
++-
++ # git status --short
++- M docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation.md
++- M docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_branch-validation.md
++- M docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_manual-validation-notes.md
++- M docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_requirements-checklist.md
++- M docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_validation-lane.md
++- M docs_build/dev/reports/codex_review.diff
++- M docs_build/dev/reports/playwright_v8_coverage_report.txt
+++M package.json
+++ M src/api/session-api-client.js
+++ M tests/dev-runtime/ServerApiClientStandardization.test.mjs
+++
+++# git ls-files --others --exclude-standard
+++(no output)
 +
-     setRuntimeHealthValue(key, value, fallback) {
-         const node = this.runtimeHealthValues.get(key);
-         if (node) {
-@@ -195,6 +206,7 @@ class AdminSystemHealthController {
-     renderStoragePending(reason) {
-         ["bucket", "list", "upload", "read", "delete", "lastChecked"].forEach((key) => {
-             this.setStorageStatus(key, "PENDING", reason);
-+            this.setStorageTiming(key, "not available");
-         });
-         this.renderRuntimePending(reason);
-     }
-@@ -261,8 +273,10 @@ class AdminSystemHealthController {
-         const reason = storageStatus.message || "Cloudflare R2 configuration status returned by the safe Admin System Health API.";
-         this.setStorageValue("bucket", storageStatus.environmentFolder ? `${storageStatus.bucket || "not configured"} ${storageStatus.environmentFolder}` : storageStatus.bucket, "not configured");
-         this.setStorageStatus("bucket", storageStatus.bucketStatus || storageStatus.status, reason);
-+        this.setStorageTiming("bucket", storageStatus.lastChecked ? "configuration status" : "not available");
-         this.setStorageValue("lastChecked", storageStatus.lastChecked, "not available");
-         this.setStorageStatus("lastChecked", storageStatus.lastChecked ? "PASS" : "WARN", reason);
-+        this.setStorageTiming("lastChecked", storageStatus.lastChecked ? "configuration status" : "not available");
-     }
-
-     renderRuntimeHealthPending(reason) {
-@@ -684,9 +698,11 @@ class AdminSystemHealthController {
-         }
-         this.setStorageValue(key, this.storageResultTarget(result));
-         this.setStorageStatus(key, result.status, result.message || "R2 diagnostic returned without a message.");
-+        this.setStorageTiming(key, Number.isFinite(Number(result.durationMs)) ? `${result.durationMs} ms` : "not available");
-         if (result.lastChecked) {
-             this.setStorageValue("lastChecked", result.lastChecked);
-             this.setStorageStatus("lastChecked", "PASS", "Most recent current-environment R2 health check timestamp.");
-+            this.setStorageTiming("lastChecked", Number.isFinite(Number(result.durationMs)) ? `${result.durationMs} ms` : "not available");
-         }
-     }
-
-@@ -732,15 +748,24 @@ class AdminSystemHealthController {
-     runStorageDiagnostics() {
-         STORAGE_DIAGNOSTIC_ACTIONS.forEach(({ key }) => {
-             this.setStorageStatus(key, "PENDING", "R2 diagnostic is running through the safe Admin System Health API.");
-+            this.setStorageTiming(key, "running");
-         });
--        STORAGE_DIAGNOSTIC_ACTIONS.forEach(({ actionId, key }) => {
--            try {
--                this.renderStorageResult(key, runAdminSystemHealthStorageConnectivityAction(actionId));
--            } catch (error) {
--                const message = error instanceof Error ? error.message : "Safe R2 diagnostic API is unavailable.";
-+        try {
-+            const validation = runAdminSystemHealthStorageExpandedValidation();
-+            const diagnostics = Array.isArray(validation.storageDiagnostics) ? validation.storageDiagnostics : [];
-+            diagnostics.forEach((storageResult) => {
-+                const key = STORAGE_DIAGNOSTIC_ACTION_KEY_BY_ID.get(storageResult.actionId);
-+                if (key) {
-+                    this.renderStorageResult(key, storageResult);
-+                }
-+            });
-+        } catch (error) {
-+            const message = error instanceof Error ? error.message : "Safe R2 diagnostic API is unavailable.";
-+            STORAGE_DIAGNOSTIC_ACTIONS.forEach(({ key }) => {
-                 this.setStorageStatus(key, "PENDING", message);
--            }
--        });
-+                this.setStorageTiming(key, "not available");
-+            });
-+        }
-     }
-
-     createCell(text) {
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation.md
-new file mode 100644
-index 000000000..61eba9efb
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation.md
-@@ -0,0 +1,35 @@
-+﻿# PR_26177_CHARLIE_030-r2-storage-health-expanded-validation
++-# git diff --stat pr/26177-CHARLIE-029-system-health-postgres-metrics-panel --
++- admin/system-health.html                           |  13 +-
++- assets/theme-v2/js/admin-system-health.js          |  41 +-
++- ...IE_030-r2-storage-health-expanded-validation.md |  35 +
++- ...health-expanded-validation_branch-validation.md |  17 +
++- ...-expanded-validation_manual-validation-notes.md |   9 +
++- ...h-expanded-validation_requirements-checklist.md |  13 +
++- ...e-health-expanded-validation_validation-lane.md |  22 +
++- docs_build/dev/reports/codex_changed_files.txt     |  70 +-
++- docs_build/dev/reports/codex_review.diff           | 988 +++++++++++----------
++- .../dev/reports/coverage_changed_js_guardrail.txt  |   6 +-
++- .../dev/reports/playwright_v8_coverage_report.txt  |  17 +-
++- src/api/admin-system-health-api-client.js          |   4 +
++- src/dev-runtime/server/local-api-router.mjs        | 105 ++-
++- tests/api/admin-system-health/contract.test.mjs    |  19 +
++- tests/dev-runtime/AdminHealthOperations.test.mjs   |   6 +
++- .../tools/AdminHealthOperationsPage.spec.mjs       |   8 +-
++- 16 files changed, 851 insertions(+), 522 deletions(-)
+++# git diff --stat
+++package.json                                       |   1 +
+++ src/api/session-api-client.js                      |   2 +-
+++ .../ServerApiClientStandardization.test.mjs        | 126 +++++++++++++++++++++
+++ 3 files changed, 128 insertions(+), 1 deletion(-)
++\ No newline at end of file
++diff --git a/docs_build/dev/reports/codex_review.diff b/docs_build/dev/reports/codex_review.diff
++index 8ce24fdc9..6bd489213 100644
++--- a/docs_build/dev/reports/codex_review.diff
+++++ b/docs_build/dev/reports/codex_review.diff
++@@ -1,662 +1,170 @@
++-diff --git a/admin/system-health.html b/admin/system-health.html
++-index 5aa9fa80a..b62f232d7 100644
++---- a/admin/system-health.html
++-+++ b/admin/system-health.html
++-@@ -316,16 +316,17 @@
++-                                     <tr>
++-                                         <th scope="col">Check</th>
++-                                         <th scope="col">Target</th>
++-+                                        <th scope="col">Timing</th>
++-                                         <th scope="col">Status</th>
++-                                     </tr>
++-                                 </thead>
++-                                 <tbody>
++--                                    <tr><td>Bucket connectivity</td><td data-admin-system-health-storage-value="bucket">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="bucket" title="Reason: R2 bucket connectivity has not loaded yet." aria-label="PENDING: R2 bucket connectivity has not loaded yet.">PENDING</td></tr>
++--                                    <tr><td>List</td><td data-admin-system-health-storage-value="list">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="list" title="Reason: R2 list check has not loaded yet." aria-label="PENDING: R2 list check has not loaded yet.">PENDING</td></tr>
++--                                    <tr><td>Upload</td><td data-admin-system-health-storage-value="upload">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="upload" title="Reason: R2 upload check has not loaded yet." aria-label="PENDING: R2 upload check has not loaded yet.">PENDING</td></tr>
++--                                    <tr><td>Read</td><td data-admin-system-health-storage-value="read">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="read" title="Reason: R2 read check has not loaded yet." aria-label="PENDING: R2 read check has not loaded yet.">PENDING</td></tr>
++--                                    <tr><td>Delete</td><td data-admin-system-health-storage-value="delete">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="delete" title="Reason: R2 delete check has not loaded yet." aria-label="PENDING: R2 delete check has not loaded yet.">PENDING</td></tr>
++--                                    <tr><td>Last checked</td><td data-admin-system-health-storage-value="lastChecked">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="lastChecked" title="Reason: R2 health has not loaded yet." aria-label="PENDING: R2 health has not loaded yet.">PENDING</td></tr>
++-+                                    <tr><td>Bucket connectivity</td><td data-admin-system-health-storage-value="bucket">Loading</td><td data-admin-system-health-storage-timing="bucket">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="bucket" title="Reason: R2 bucket connectivity has not loaded yet." aria-label="PENDING: R2 bucket connectivity has not loaded yet.">PENDING</td></tr>
++-+                                    <tr><td>List</td><td data-admin-system-health-storage-value="list">Loading</td><td data-admin-system-health-storage-timing="list">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="list" title="Reason: R2 list check has not loaded yet." aria-label="PENDING: R2 list check has not loaded yet.">PENDING</td></tr>
++-+                                    <tr><td>Upload</td><td data-admin-system-health-storage-value="upload">Loading</td><td data-admin-system-health-storage-timing="upload">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="upload" title="Reason: R2 upload check has not loaded yet." aria-label="PENDING: R2 upload check has not loaded yet.">PENDING</td></tr>
++-+                                    <tr><td>Read</td><td data-admin-system-health-storage-value="read">Loading</td><td data-admin-system-health-storage-timing="read">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="read" title="Reason: R2 read check has not loaded yet." aria-label="PENDING: R2 read check has not loaded yet.">PENDING</td></tr>
++-+                                    <tr><td>Delete</td><td data-admin-system-health-storage-value="delete">Loading</td><td data-admin-system-health-storage-timing="delete">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="delete" title="Reason: R2 delete check has not loaded yet." aria-label="PENDING: R2 delete check has not loaded yet.">PENDING</td></tr>
++-+                                    <tr><td>Last checked</td><td data-admin-system-health-storage-value="lastChecked">Loading</td><td data-admin-system-health-storage-timing="lastChecked">Loading</td><td data-health-status="PENDING" data-admin-system-health-storage-status="lastChecked" title="Reason: R2 health has not loaded yet." aria-label="PENDING: R2 health has not loaded yet.">PENDING</td></tr>
++-                                 </tbody>
++-                             </table>
++-                         </div>
++-diff --git a/assets/theme-v2/js/admin-system-health.js b/assets/theme-v2/js/admin-system-health.js
++-index 746d47753..21bc50a63 100644
++---- a/assets/theme-v2/js/admin-system-health.js
++-+++ b/assets/theme-v2/js/admin-system-health.js
++-@@ -1,7 +1,7 @@
++- import {
++-     readAdminSystemHealthStatus,
++-     runAdminSystemHealthAction,
++--    runAdminSystemHealthStorageConnectivityAction,
++-+    runAdminSystemHealthStorageExpandedValidation,
++- } from "../../../src/api/admin-system-health-api-client.js";
+++diff --git a/package.json b/package.json
+++index 72c3c9c32..05118574a 100644
+++--- a/package.json
++++++ b/package.json
+++@@ -3,6 +3,7 @@
+++   "scripts": {
+++     "pretest": "node docs_build/dev/toolbox/checkSharedExtractionGuard.mjs",
+++     "test": "node ./scripts/run-node-tests.mjs",
++++    "test:service:api-client": "node ./scripts/run-node-test-files.mjs tests/dev-runtime/ServerApiClientStandardization.test.mjs",
+++     "test:audit:locations": "node ./scripts/audit-playwright-test-locations.mjs",
+++     "test:playwright:structure": "node ./scripts/audit-playwright-test-locations.mjs",
+++     "test:playwright:zero-browser": "node ./scripts/run-targeted-test-lanes.mjs --zero-browser-only",
+++diff --git a/src/api/session-api-client.js b/src/api/session-api-client.js
+++index f31004ea1..3b8c69125 100644
+++--- a/src/api/session-api-client.js
++++++ b/src/api/session-api-client.js
+++@@ -51,7 +51,7 @@ export function signIn(options = {}) {
+++ }
+++
+++ export function logoutSessionUser() {
+++-  return unwrap(safeRequestServerApi("/session/logout", { method: "POST" }), "Session logout");
++++  return requireSessionApiData(safeRequestServerApi("/session/logout", { method: "POST" }), "Session logout");
+++ }
+++
+++ export function signOut() {
+++diff --git a/tests/dev-runtime/ServerApiClientStandardization.test.mjs b/tests/dev-runtime/ServerApiClientStandardization.test.mjs
+++index 5530e4074..a694fa78e 100644
+++--- a/tests/dev-runtime/ServerApiClientStandardization.test.mjs
++++++ b/tests/dev-runtime/ServerApiClientStandardization.test.mjs
+++@@ -1,10 +1,82 @@
+++ import assert from "node:assert/strict";
+++ import test from "node:test";
+++
++++import { clearPublicConfigCache } from "../../src/api/public-config-client.js";
++  import {
++-     applyStatusNode,
++-@@ -54,6 +54,10 @@ class AdminSystemHealthController {
++-             node.dataset.adminSystemHealthStorageStatus,
++-             node,
++-         ]));
++-+        this.storageTimings = new Map(Array.from(root.querySelectorAll("[data-admin-system-health-storage-timing]")).map((node) => [
++-+            node.dataset.adminSystemHealthStorageTiming,
++-+            node,
++-+        ]));
++-         this.runtimeHealthValues = new Map(Array.from(root.querySelectorAll("[data-admin-system-health-runtime-health-value]")).map((node) => [
++-             node.dataset.adminSystemHealthRuntimeHealthValue,
++-             node,
++-@@ -122,6 +126,13 @@ class AdminSystemHealthController {
++-         this.setStatusNode(node, status, reason);
++-     }
++-
++-+    setStorageTiming(key, value, fallback) {
++-+        const node = this.storageTimings.get(key);
++-+        if (node) {
++-+            node.textContent = asText(value, fallback);
++-+        }
++++  clearServerApiDiagnostics,
+++   requireServerApiData,
+++   SERVER_DATA_BOUNDARY_RULE,
+++ } from "../../src/api/server-api-client.js";
++++import { logoutSessionUser } from "../../src/api/session-api-client.js";
++++
++++function installMockServerApi(routes) {
++++  const calls = [];
++++  const previousWindow = globalThis.window;
++++  const previousXmlHttpRequest = globalThis.XMLHttpRequest;
++++
++++  clearPublicConfigCache();
++++  clearServerApiDiagnostics();
++++
++++  globalThis.window = {
++++    GameFoundryPublicConfig: {
++++      apiUrl: "http://runtime-api.test/api",
++++    },
++++  };
++++
++++  globalThis.XMLHttpRequest = class MockXMLHttpRequest {
++++    constructor() {
++++      this.headers = {};
++++      this.responseText = "";
++++      this.status = 0;
++ +    }
++ +
++-     setRuntimeHealthValue(key, value, fallback) {
++-         const node = this.runtimeHealthValues.get(key);
++-         if (node) {
++-@@ -195,6 +206,7 @@ class AdminSystemHealthController {
++-     renderStoragePending(reason) {
++-         ["bucket", "list", "upload", "read", "delete", "lastChecked"].forEach((key) => {
++-             this.setStorageStatus(key, "PENDING", reason);
++-+            this.setStorageTiming(key, "not available");
++-         });
++-         this.renderRuntimePending(reason);
++-     }
++-@@ -261,8 +273,10 @@ class AdminSystemHealthController {
++-         const reason = storageStatus.message || "Cloudflare R2 configuration status returned by the safe Admin System Health API.";
++-         this.setStorageValue("bucket", storageStatus.environmentFolder ? `${storageStatus.bucket || "not configured"} ${storageStatus.environmentFolder}` : storageStatus.bucket, "not configured");
++-         this.setStorageStatus("bucket", storageStatus.bucketStatus || storageStatus.status, reason);
++-+        this.setStorageTiming("bucket", storageStatus.lastChecked ? "configuration status" : "not available");
++-         this.setStorageValue("lastChecked", storageStatus.lastChecked, "not available");
++-         this.setStorageStatus("lastChecked", storageStatus.lastChecked ? "PASS" : "WARN", reason);
++-+        this.setStorageTiming("lastChecked", storageStatus.lastChecked ? "configuration status" : "not available");
++-     }
++-
++-     renderRuntimeHealthPending(reason) {
++-@@ -684,9 +698,11 @@ class AdminSystemHealthController {
++-         }
++-         this.setStorageValue(key, this.storageResultTarget(result));
++-         this.setStorageStatus(key, result.status, result.message || "R2 diagnostic returned without a message.");
++-+        this.setStorageTiming(key, Number.isFinite(Number(result.durationMs)) ? `${result.durationMs} ms` : "not available");
++-         if (result.lastChecked) {
++-             this.setStorageValue("lastChecked", result.lastChecked);
++-             this.setStorageStatus("lastChecked", "PASS", "Most recent current-environment R2 health check timestamp.");
++-+            this.setStorageTiming("lastChecked", Number.isFinite(Number(result.durationMs)) ? `${result.durationMs} ms` : "not available");
++-         }
++-     }
++-
++-@@ -732,15 +748,24 @@ class AdminSystemHealthController {
++-     runStorageDiagnostics() {
++-         STORAGE_DIAGNOSTIC_ACTIONS.forEach(({ key }) => {
++-             this.setStorageStatus(key, "PENDING", "R2 diagnostic is running through the safe Admin System Health API.");
++-+            this.setStorageTiming(key, "running");
++-         });
++--        STORAGE_DIAGNOSTIC_ACTIONS.forEach(({ actionId, key }) => {
++--            try {
++--                this.renderStorageResult(key, runAdminSystemHealthStorageConnectivityAction(actionId));
++--            } catch (error) {
++--                const message = error instanceof Error ? error.message : "Safe R2 diagnostic API is unavailable.";
++-+        try {
++-+            const validation = runAdminSystemHealthStorageExpandedValidation();
++-+            const diagnostics = Array.isArray(validation.storageDiagnostics) ? validation.storageDiagnostics : [];
++-+            diagnostics.forEach((storageResult) => {
++-+                const key = STORAGE_DIAGNOSTIC_ACTION_KEY_BY_ID.get(storageResult.actionId);
++-+                if (key) {
++-+                    this.renderStorageResult(key, storageResult);
++-+                }
++-+            });
++-+        } catch (error) {
++-+            const message = error instanceof Error ? error.message : "Safe R2 diagnostic API is unavailable.";
++-+            STORAGE_DIAGNOSTIC_ACTIONS.forEach(({ key }) => {
++-                 this.setStorageStatus(key, "PENDING", message);
++--            }
++--        });
++-+                this.setStorageTiming(key, "not available");
++-+            });
++-+        }
++-     }
++-
++-     createCell(text) {
++-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation.md
++-new file mode 100644
++-index 000000000..61eba9efb
++---- /dev/null
++-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation.md
++-@@ -0,0 +1,35 @@
++-+﻿# PR_26177_CHARLIE_030-r2-storage-health-expanded-validation
++-+
++-+Team: Charlie
++-+Branch: pr/26177-CHARLIE-030-r2-storage-health-expanded-validation
++-+Base: pr/26177-CHARLIE-029-system-health-postgres-metrics-panel
++-+Lifecycle: Build / Validation
++-+Repair: Rebased onto repaired PR_26177_CHARLIE_029 branch on 2026-06-25.
++-+
++-+## Scope
++-+- Expanded System Health R2 validation into an API-owned current-environment validation run.
++-+- Added safe list/upload/read/delete diagnostics with duration, operation label, cleanup status, and permanent-object metadata.
++-+- Updated the System Health UI to show storage timing without adding inline styles, script blocks, or page-local CSS.
++-+
++-+## Changed Files
++-+- admin/system-health.html
++-+- assets/theme-v2/js/admin-system-health.js
++-+- src/api/admin-system-health-api-client.js
++-+- src/dev-runtime/server/local-api-router.mjs
++-+- tests/api/admin-system-health/contract.test.mjs
++-+- tests/dev-runtime/AdminHealthOperations.test.mjs
++-+- tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
++-+- docs_build/dev/reports/coverage_changed_js_guardrail.tx
++-+- docs_build/dev/reports/playwright_v8_coverage_report.tx
++-+
++-+## Validation
++-+- PASS: node --check src/dev-runtime/server/local-api-router.mjs
++-+- PASS: node --check assets/theme-v2/js/admin-system-health.js
++-+- PASS: node --check src/api/admin-system-health-api-client.js
++-+- PASS: node --test tests/api/admin-system-health/contract.test.mjs
++-+- PASS: node --test tests/dev-runtime/AdminHealthOperations.test.mjs
++-+- PASS: npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line
++-+- PASS: git diff --check
++-+
++-+## ZIP
++-+- Generated after repair: C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\tmp\PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_delta.zip
++-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_branch-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_branch-validation.md
++-new file mode 100644
++-index 000000000..0c0387294
++---- /dev/null
++-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_branch-validation.md
++-@@ -0,0 +1,17 @@
++-+﻿# PR_26177_CHARLIE_030-r2-storage-health-expanded-validation Branch Validation
++-+
++-+Branch: pr/26177-CHARLIE-030-r2-storage-health-expanded-validation
++-+Expected stack base: pr/26177-CHARLIE-029-system-health-postgres-metrics-panel
++-+Current status at validation:
++-+## pr/26177-CHARLIE-030-r2-storage-health-expanded-validation
++-+Updated onto repaired PR_26177_CHARLIE_029 stack base.
++-+
++-+Result: PASS
++-+
++-+Checks:
++-+- PASS: Branch created from PR 029 branch for the approved stacked chain.
++-+- PASS: Active branch matches PR identity.
++-+- PASS: Worktree contained only scoped PR changes and generated validation reports.
++-+- PASS: Branch is based on repaired PR 029 branch.
++-+- PASS: Rebase conflict scope was generated report artifacts only.
++-+- PASS: No start_of_day files modified.
++-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_manual-validation-notes.md
++-new file mode 100644
++-index 000000000..36806ff77
++---- /dev/null
++-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_manual-validation-notes.md
++-@@ -0,0 +1,9 @@
++-+﻿# PR_26177_CHARLIE_030-r2-storage-health-expanded-validation Manual Validation Notes
++-+
++-+- Confirmed the browser calls one expanded R2 validation action instead of owning the list/upload/read/delete sequence itself.
++-+- Confirmed Storage Health displays timing values for list, upload, read, and delete rows.
++-+- Confirmed storage validation payload includes cleanup status and permanent-object metadata.
++-+- Confirmed storage diagnostics stay scoped to the current environment folder.
++-+- Confirmed no storage credentials or secrets are displayed.
++-+- Confirmed branch repair conflict was limited to generated report artifacts.
++-+- Confirmed no start_of_day files changed.
++-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_requirements-checklist.md b/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_requirements-checklist.md
++-new file mode 100644
++-index 000000000..2dda36cc8
++---- /dev/null
++-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_requirements-checklist.md
++-@@ -0,0 +1,13 @@
++-+﻿# PR_26177_CHARLIE_030-r2-storage-health-expanded-validation Requirement Checklis
++-+
++-+- PASS: Expanded Cloud/R2 storage health validation.
++-+- PASS: Included safe bucket/list/write/read/delete validation through API-owned action contract.
++-+- PASS: Included timing/status fields where available.
++-+- PASS: Does not create browser-owned storage health state.
++-+- PASS: Test object cleanup is attempted in the same expanded validation run.
++-+- PASS: Does not expose secrets.
++-+- PASS: Current environment folder only.
++-+- PASS: No unrelated files modified.
++-+- PASS: No start_of_day files modified.
++-+- PASS: Rebased onto repaired PR_26177_CHARLIE_029 branch.
++-+- PASS: Shows unavailable/not configured states explicitly.
++-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_validation-lane.md b/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_validation-lane.md
++-new file mode 100644
++-index 000000000..0dbf85ec0
++---- /dev/null
++-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_validation-lane.md
++-@@ -0,0 +1,22 @@
++-+﻿# PR_26177_CHARLIE_030-r2-storage-health-expanded-validation Validation Lane Repor
++-+
++-+Impacted lanes:
++-+- runtime: Local API Admin System Health R2 action contract.
++-+- contract: Admin System Health API contract tests.
++-+- UI: Admin System Health Theme V2 page controller and markup.
++-+- Playwright: targeted Admin System Health page spec.
++-+
++-+Commands:
++-+- PASS: node --check src/dev-runtime/server/local-api-router.mjs
++-+- PASS: node --check assets/theme-v2/js/admin-system-health.js
++-+- PASS: node --check src/api/admin-system-health-api-client.js
++-+- PASS: node --test tests/api/admin-system-health/contract.test.mjs
++-+- PASS: node --test tests/dev-runtime/AdminHealthOperations.test.mjs
++-+- PASS: npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line
++-+- PASS: git diff --check
++-+
++-+Skipped lanes:
++-+- Full samples smoke skipped; not impacted by System Health storage diagnostics.
++-+- Full Project Workspace suite skipped; targeted Admin/System Health coverage was sufficient for this scoped page/API change.
++-+
++-+Result: PASS
++-diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.tx
++-index 7b1c51f19..7211f2375 100644
++---- a/docs_build/dev/reports/coverage_changed_js_guardrail.tx
++-+++ b/docs_build/dev/reports/coverage_changed_js_guardrail.tx
++-@@ -6,7 +6,9 @@ Missing changed runtime JS files are WARN, not FAIL.
++- Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
++-
++- Changed runtime JS files considered:
++--(100%) none changed - no changed runtime JS files
++-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++-+(81%) assets/theme-v2/js/admin-system-health.js - executed lines 872/872; executed functions 72/89
++-+(100%) src/api/admin-system-health-api-client.js - executed lines 31/31; executed functions 5/5
++-
++- Guardrail warnings:
++--(100%) none changed - no changed runtime JS files
++-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++-diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.tx
++-index 627ed631f..2a2982e6a 100644
++---- a/docs_build/dev/reports/playwright_v8_coverage_report.tx
++-+++ b/docs_build/dev/reports/playwright_v8_coverage_report.tx
++-@@ -17,7 +17,9 @@ Exercised tool entry points detected:
++- (78%) Theme V2 Shared JS - exercised 5 runtime JS files
++-
++- Changed runtime JS files covered:
++--(100%) none changed - no changed runtime JS files
++-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++-+(81%) assets/theme-v2/js/admin-system-health.js - executed lines 872/872; executed functions 72/89
++-+(100%) src/api/admin-system-health-api-client.js - executed lines 31/31; executed functions 5/5
++-
++- Files with executed line/function counts where available:
++- (36%) src/api/server-api-client.js - executed lines 168/168; executed functions 5/14
++-@@ -27,13 +29,18 @@ Files with executed line/function counts where available:
++- (77%) assets/theme-v2/js/tool-display-mode.js - executed lines 304/304; executed functions 23/30
++- (80%) assets/theme-v2/js/theme-icons.js - executed lines 69/69; executed functions 4/5
++- (80%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 4/5
++--(81%) assets/theme-v2/js/admin-system-health.js - executed lines 848/848; executed functions 70/86
++-+(81%) assets/theme-v2/js/admin-system-health.js - executed lines 872/872; executed functions 72/89
++- (83%) assets/js/shared/status.js - executed lines 37/37; executed functions 5/6
++- (91%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 10/11
++--(100%) src/api/admin-system-health-api-client.js - executed lines 28/28; executed functions 4/4
++-+(100%) src/api/admin-system-health-api-client.js - executed lines 31/31; executed functions 5/5
++-
++- Uncovered or low-coverage changed JS files:
++--(100%) none changed - no changed runtime JS files
++-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
++-
++- Changed JS files considered:
++--(100%) none - no changed JS files
++-+(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
++-+(0%) tests/api/admin-system-health/contract.test.mjs - changed JS file not collected as browser runtime coverage
++-+(0%) tests/dev-runtime/AdminHealthOperations.test.mjs - changed JS file not collected as browser runtime coverage
++-+(0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
++-+(81%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
++-+(100%) src/api/admin-system-health-api-client.js - changed JS file with browser V8 coverage
++-diff --git a/src/api/admin-system-health-api-client.js b/src/api/admin-system-health-api-client.js
++-index 9b166d097..49101c59f 100644
++---- a/src/api/admin-system-health-api-client.js
++-+++ b/src/api/admin-system-health-api-client.js
++-@@ -20,6 +20,10 @@ export function runAdminSystemHealthStorageConnectivityAction(actionId) {
++-   );
++- }
++-
++-+export function runAdminSystemHealthStorageExpandedValidation() {
++-+  return runAdminSystemHealthStorageConnectivityAction("storage-expanded-validation");
++-+}
++-+
++- export function runAdminSystemHealthAction(actionId) {
++-   return requireServerApiData(
++-     safeRequestServerApi("/admin/system-health/action", {
++-diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
++-index 462d8b7a0..6dbb8a106 100644
++---- a/src/dev-runtime/server/local-api-router.mjs
++-+++ b/src/dev-runtime/server/local-api-router.mjs
++-@@ -356,6 +356,7 @@ const SYSTEM_HEALTH_STORAGE_ACTION_IDS = Object.freeze([
++-   "storage-read-test-object",
++-   "storage-delete-test-object",
++- ]);
++-+const SYSTEM_HEALTH_STORAGE_EXPANDED_VALIDATION_ACTION_ID = "storage-expanded-validation";
++- const SYSTEM_HEALTH_MANUAL_ACTION_LABELS = Object.freeze({
++-   "database-check": "Run Database Check",
++-   "full-health-check": "Run Full Health Check",
++-@@ -4046,43 +4047,75 @@ class ApiRuntimeDataSource {
++-
++-   storageConnectivityConfigFailure(actionId, storage, scope = "project-prefix") {
++-     const missing = storage.config?.missingKeys?.join(", ") || storage.config?.validationError || "storage configuration incomplete";
++-+    const action = STORAGE_CONNECTIVITY_ACTIONS.find((candidate) => candidate.id === actionId);
++-     return {
++-       actionId,
++-+      cleanupStatus: "not-run",
++-+      durationMs: 0,
++-       environmentFolder: scope === "environment-folder" ? this.storageConnectivityEnvironmentFolder() : "",
++-       executed: false,
++-       lastChecked: new Date().toISOString(),
++-       message: `Storage connectivity requires configured storage and GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX before this action can run. Missing or invalid: ${missing}.`,
++-+      operation: action?.operation || "configuration",
++-+      operationLabel: action?.label || "Storage configuration",
++-+      permanentObjectCreated: false,
++-       projectsPrefix: String(storage.config?.projectsPrefix || "").trim(),
++-       secretEditingAllowed: false,
++-       secretsExposed: false,
++-       status: "FAIL",
++-       storageStatus: this.ownerStorageStatus(),
++-+      targetPrefix: scope === "environment-folder" ? this.storageConnectivityEnvironmentFolder() : String(storage.config?.projectsPrefix || "").trim(),
++-     };
++-   }
++-
++--  storageConnectivityResult({ actionId, environmentFolder = "", executed = true, keysListed = 0, message, objectKey, projectsPrefix, status }) {
++-+  storageConnectivityResult({
++-+    action,
++-+    actionId,
++-+    cleanupStatus = "not-applicable",
++-+    durationMs = 0,
++-+    environmentFolder = "",
++-+    executed = true,
++-+    keysListed = 0,
++-+    message,
++-+    objectKey,
++-+    permanentObjectCreated = false,
++-+    projectsPrefix,
++-+    status,
++-+    targetPrefix = "",
++-+  }) {
++-+    const resolvedAction = action || STORAGE_CONNECTIVITY_ACTIONS.find((candidate) => candidate.id === actionId) || {};
++-     return {
++-       actionId,
++-+      cleanupStatus,
++-+      durationMs,
++-       environmentFolder,
++-       executed,
++-       keysListed,
++-       lastChecked: new Date().toISOString(),
++-       message,
++-+      operation: resolvedAction.operation || "",
++-+      operationLabel: resolvedAction.label || actionId,
++-+      permanentObjectCreated,
++-       projectsPrefix,
++-       secretEditingAllowed: false,
++-       secretsExposed: false,
++-       status,
++-       storageStatus: this.ownerStorageStatus(),
++-+      targetPrefix,
++-       testObjectKey: objectKey,
++-     };
++-   }
++-
++-   async runStorageConnectivityAction(actionId, options = {}) {
++-+    if (actionId === SYSTEM_HEALTH_STORAGE_EXPANDED_VALIDATION_ACTION_ID) {
++-+      return this.runStorageExpandedValidation(options);
++++    open(method, url, async) {
++++      this.method = method;
++++      this.url = url;
++++      this.async = async;
++ +    }
++-     const action = STORAGE_CONNECTIVITY_ACTIONS.find((candidate) => candidate.id === actionId);
++-     if (!action) {
++-       throw new Error(`Unknown storage connectivity action: ${actionId || "missing actionId"}.`);
++-     }
++-
++-+    const startedAt = Date.now();
++-     const scope = options.scope === "environment-folder" ? "environment-folder" : "project-prefix";
++-     const storage = createConfiguredProjectAssetStorage();
++-     const projectsPrefix = String(storage.config?.projectsPrefix || "").trim();
++-@@ -4098,7 +4131,9 @@ class ApiRuntimeDataSource {
++-         const result = await storage.listObjects(targetPrefix);
++-         const keysListed = Array.isArray(result.keys) ? result.keys.length : 0;
++-         return this.storageConnectivityResult({
++-+          action,
++-           actionId: action.id,
++-+          durationMs: Date.now() - startedAt,
++-           environmentFolder,
++-           keysListed,
++-           message: result.ok
++-@@ -4107,6 +4142,7 @@ class ApiRuntimeDataSource {
++-           objectKey,
++-           projectsPrefix,
++-           status: result.ok ? "PASS" : "FAIL",
++-+          targetPrefix,
++-         });
++-       }
++-
++-@@ -4116,7 +4152,9 @@ class ApiRuntimeDataSource {
++-           : await storage.listProjectObjects();
++-         const keysListed = Array.isArray(result.keys) ? result.keys.length : 0;
++-         return this.storageConnectivityResult({
++-+          action,
++-           actionId: action.id,
++-+          durationMs: Date.now() - startedAt,
++-           environmentFolder,
++-           keysListed,
++-           message: result.ok
++-@@ -4125,6 +4163,7 @@ class ApiRuntimeDataSource {
++-           objectKey,
++-           projectsPrefix,
++-           status: result.ok ? "PASS" : "FAIL",
++-+          targetPrefix,
++-         });
++-       }
++-
++-@@ -4135,14 +4174,19 @@ class ApiRuntimeDataSource {
++-           objectKey,
++-         });
++-         return this.storageConnectivityResult({
++-+          action,
++-           actionId: action.id,
++-+          cleanupStatus: result.ok ? "requires-delete-action" : "not-created",
++-+          durationMs: Date.now() - startedAt,
++-           environmentFolder,
++-           message: result.ok
++-             ? `Upload test object completed at ${objectKey}.
++-             : `${result.message || "Storage upload failed."} Verify upload permission for ${targetPrefix}.`,
++-           objectKey,
++-+          permanentObjectCreated: result.ok === true,
++-           projectsPrefix,
++-           status: result.ok ? "PASS" : "FAIL",
++-+          targetPrefix,
++-         });
++-       }
++-
++-@@ -4151,7 +4195,9 @@ class ApiRuntimeDataSource {
++-         const text = result.ok ? Buffer.from(result.bytes || []).toString("utf8") : "";
++-         const contentMatches = text === STORAGE_CONNECTIVITY_TEST_OBJECT_CONTENT;
++-         return this.storageConnectivityResult({
++-+          action,
++-           actionId: action.id,
++-+          durationMs: Date.now() - startedAt,
++-           environmentFolder,
++-           message: result.ok && contentMatches
++-             ? `Read test object completed from ${objectKey}.
++-@@ -4159,32 +4205,77 @@ class ApiRuntimeDataSource {
++-           objectKey,
++-           projectsPrefix,
++-           status: result.ok && contentMatches ? "PASS" : "FAIL",
++-+          targetPrefix,
++-         });
++-       }
++-
++-       const result = await storage.deleteObject(objectKey);
++-       return this.storageConnectivityResult({
++-+        action,
++-         actionId: action.id,
++-+        cleanupStatus: result.ok ? "completed" : "failed",
++-+        durationMs: Date.now() - startedAt,
++-         environmentFolder,
++-         message: result.ok
++-           ? `Delete test object completed at ${objectKey}.
++-           : `${result.message || "Storage delete failed."} Verify delete permission for ${targetPrefix}.`,
++-         objectKey,
++-+        permanentObjectCreated: false,
++-         projectsPrefix,
++-         status: result.ok ? "PASS" : "FAIL",
++-+        targetPrefix,
++-       });
++-     } catch (error) {
++-       return this.storageConnectivityResult({
++-+        action,
++-         actionId: action.id,
++-+        durationMs: Date.now() - startedAt,
++-         environmentFolder,
++-         message: `Storage connectivity action failed: ${error instanceof Error ? error.message : String(error || "Unknown storage error.")}`,
++-         objectKey,
++-         projectsPrefix,
++-         status: "FAIL",
++-+        targetPrefix,
++-       });
++-     }
++-   }
++-
++-+  async runStorageExpandedValidation(options = {}) {
++-+    const startedAt = Date.now();
++-+    const scope = options.scope === "environment-folder" ? "environment-folder" : "project-prefix";
++-+    const storage = createConfiguredProjectAssetStorage();
++-+    const targetPrefix = this.storageConnectivityTargetPrefix(storage, scope);
++-+    const objectKey = this.storageConnectivityTestObjectKey(storage, scope);
++-+    const results = [];
++-+    for (const actionId of SYSTEM_HEALTH_STORAGE_ACTION_IDS) {
++-+      results.push(await this.runStorageConnectivityAction(actionId, { scope }));
++++
++++    setRequestHeader(name, value) {
++++      this.headers[name] = value;
++ +    }
++-+    const uploadResult = results.find((result) => result.actionId === "storage-upload-test-object");
++-+    const deleteResult = results.find((result) => result.actionId === "storage-delete-test-object");
++-+    const permanentObjectCreated = uploadResult?.status === "PASS" && deleteResult?.status !== "PASS";
++-+    const status = overallHealthStatus(results);
++-+    return {
++-+      actionId: SYSTEM_HEALTH_STORAGE_EXPANDED_VALIDATION_ACTION_ID,
++-+      cleanupStatus: permanentObjectCreated ? "failed" : "completed",
++-+      durationMs: Date.now() - startedAt,
++-+      environmentFolder: scope === "environment-folder" ? this.storageConnectivityEnvironmentFolder() : "",
++-+      executed: true,
++-+      lastChecked: new Date().toISOString(),
++-+      message: permanentObjectCreated
++-+        ? `Expanded R2 validation detected a cleanup failure for ${objectKey}; review storage credentials and delete permission.
++-+        : `Expanded R2 validation completed against ${targetPrefix}; test object cleanup was attempted in the same validation run.`,
++-+      permanentObjectCreated,
++-+      projectsPrefix: String(storage.config?.projectsPrefix || "").trim(),
++-+      secretEditingAllowed: false,
++-+      secretsExposed: false,
++-+      status,
++-+      storageDiagnostics: results,
++-+      storageStatus: this.ownerStorageStatus(),
++-+      targetPrefix,
++-+      testObjectKey: objectKey,
++-+    };
++-+  }
++ +
++-   ownerPromotionFoundation() {
++-     const steps = [
++-       {
++-@@ -4424,20 +4515,20 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
++-   }
++-
++-   async adminSystemHealthStorageHealthCheck() {
++--    const results = [];
++--    for (const actionId of SYSTEM_HEALTH_STORAGE_ACTION_IDS) {
++--      results.push(await this.runStorageConnectivityAction(actionId, { scope: "environment-folder" }));
++--    }
++-+    const validation = await this.runStorageExpandedValidation({ scope: "environment-folder" });
++-+    const results = Array.isArray(validation.storageDiagnostics) ? validation.storageDiagnostics : [];
++-     return {
++-       actionId: "storage-check",
++-       checkedAt: new Date().toISOString(),
++-       label: SYSTEM_HEALTH_MANUAL_ACTION_LABELS["storage-check"],
++--      message: "Storage health check executed bucket connectivity, list, upload, read, and delete through the current deployment API.",
++-+      message: validation.message || "Storage health check executed bucket connectivity, list, upload, read, and delete through the current deployment API.",
++-+      permanentObjectCreated: validation.permanentObjectCreated === true,
++-       secretEditingAllowed: false,
++-       secretsExposed: false,
++--      status: overallHealthStatus(results.map((result) => ({ status: result.status }))),
++-+      status: validation.status || overallHealthStatus(results.map((result) => ({ status: result.status }))),
++-       storageDiagnostics: results,
++-       storageStatus: this.ownerStorageStatus(),
++-+      validationDurationMs: validation.durationMs,
++-     };
++-   }
++-
++-diff --git a/tests/api/admin-system-health/contract.test.mjs b/tests/api/admin-system-health/contract.test.mjs
++-index 25aa84b34..54e821f13 100644
++---- a/tests/api/admin-system-health/contract.test.mjs
++-+++ b/tests/api/admin-system-health/contract.test.mjs
++-@@ -146,6 +146,25 @@ test("Admin System Health completion contract remains server-owned and current-e
++-       assert.equal(healthText.includes("/uat/projects"), false);
++-       assert.equal(health.secretEditingAllowed, false);
++-       assert.equal(health.secretsExposed, false);
++-+      const expandedStorage = await apiJson(server.baseUrl, "/api/admin/system-health/storage-connectivity-action", {
++-+        body: { actionId: "storage-expanded-validation" },
++-+        method: "POST",
++++    send(body) {
++++      calls.push({
++++        body,
++++        headers: { ...this.headers },
++++        method: this.method,
++++        url: this.url,
++ +      });
++-+      assert.deepEqual(
++-+        expandedStorage.storageDiagnostics.map((row) => row.actionId),
++-+        [
++-+          "storage-bucket-connectivity",
++-+          "storage-list",
++-+          "storage-upload-test-object",
++-+          "storage-read-test-object",
++-+          "storage-delete-test-object",
++-+        ],
++-+      );
++-+      assert.equal(expandedStorage.storageDiagnostics.every((row) => row.environmentFolder === "/dev"), true);
++-+      assert.equal(expandedStorage.storageDiagnostics.every((row) => typeof row.durationMs === "number"), true);
++-+      assert.equal(expandedStorage.permanentObjectCreated, false);
++-+      assert.equal(JSON.stringify(expandedStorage).includes("api-secret"), false);
++-+      assert.equal(JSON.stringify(expandedStorage).includes("site-secret"), false);
++-     } finally {
++-       await server.close();
++-     }
++-diff --git a/tests/dev-runtime/AdminHealthOperations.test.mjs b/tests/dev-runtime/AdminHealthOperations.test.mjs
++-index 99fef0757..9ea40988a 100644
++---- a/tests/dev-runtime/AdminHealthOperations.test.mjs
++-+++ b/tests/dev-runtime/AdminHealthOperations.test.mjs
++-@@ -311,6 +311,12 @@ test("Admin can view operational health while Creator sessions are blocked", asy
++-         ],
++-       );
++-       assert.equal(storageAction.storageDiagnostics.every((row) => row.environmentFolder === "/local"), true);
++-+      assert.equal(storageAction.permanentObjectCreated, false);
++-+      assert.equal(typeof storageAction.validationDurationMs, "number");
++-+      assert.equal(storageAction.storageDiagnostics.every((row) => typeof row.durationMs === "number"), true);
++-+      assert.equal(storageAction.storageDiagnostics.every((row) => typeof row.operationLabel === "string"), true);
++-+      assert.equal(storageAction.storageDiagnostics.every((row) => typeof row.cleanupStatus === "string"), true);
++-+      assert.equal(storageAction.storageDiagnostics.every((row) => row.permanentObjectCreated === false), true);
++-       const refreshAction = await apiJson(server.baseUrl, "/api/admin/system-health/action", {
++-         body: { actionId: "refresh" },
++-         method: "POST",
++-diff --git a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
++-index 56733ce6a..713344ac0 100644
++---- a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
++-+++ b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
++-@@ -233,6 +233,10 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
++-     await expect(page.locator("[data-admin-system-health-storage-value='upload']")).toContainText("/dev");
++-     await expect(page.locator("[data-admin-system-health-storage-value='read']")).not.toHaveText("Health object");
++-     await expect(page.locator("[data-admin-system-health-storage-value='delete']")).not.toHaveText("Health object");
++-+    await expect(page.locator("[data-admin-system-health-storage-timing='list']")).not.toHaveText("Loading");
++-+    await expect(page.locator("[data-admin-system-health-storage-timing='upload']")).not.toHaveText("Loading");
++-+    await expect(page.locator("[data-admin-system-health-storage-timing='read']")).not.toHaveText("Loading");
++-+    await expect(page.locator("[data-admin-system-health-storage-timing='delete']")).not.toHaveText("Loading");
++-     await expect(page.getByRole("table", { name: "Runtime health" })).toContainText("Runtime Health");
++-     await expect(page.locator("[data-admin-system-health-runtime-health-value='environment']")).toHaveText("DEV");
++-     await expect(page.locator("[data-admin-system-health-runtime-health-value='appVersion']")).toHaveText("1.0.0");
++-@@ -286,7 +290,7 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
++-       expect((title || ariaLabel || "").trim()).not.toEqual("");
++-     }
++-     expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/status"))).toBe(true);
++--    expect(context.requestUrls.filter((url) => url.includes("/api/admin/system-health/storage-connectivity-action"))).toHaveLength(5);
++-+    expect(context.requestUrls.filter((url) => url.includes("/api/admin/system-health/storage-connectivity-action"))).toHaveLength(1);
++-     await page.getByRole("button", { name: "Run Runtime Check" }).click();
++-     await expect(page.getByRole("table", { name: "Manual health action results" })).toContainText("Run Runtime Check");
++-     expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/action"))).toBe(true);
++-@@ -353,5 +357,5 @@ test("Admin System Health operations page keeps scripts and styles external", as
++-   expect(runtimeSource).not.toContain("localStorage");
++-   expect(runtimeSource).not.toContain("sessionStorage");
++-   expect(runtimeSource).toContain("runAdminSystemHealthAction");
++--  expect(runtimeSource).toContain("runAdminSystemHealthStorageConnectivityAction");
++-+  expect(runtimeSource).toContain("runAdminSystemHealthStorageExpandedValidation");
++++      const route = routes[`${this.method} ${this.url}`] || {
++++        payload: {
++++          error: `No mock route for ${this.method} ${this.url}`,
++++          ok: false,
++++        },
++++        status: 404,
++++      };
++++      this.status = route.status;
++++      this.responseText = JSON.stringify(route.payload);
++++    }
++++  };
++++
++++  return {
++++    calls,
++++    restore() {
++++      if (previousWindow === undefined) {
++++        delete globalThis.window;
++++      } else {
++++        globalThis.window = previousWindow;
++++      }
++++      if (previousXmlHttpRequest === undefined) {
++++        delete globalThis.XMLHttpRequest;
++++      } else {
++++        globalThis.XMLHttpRequest = previousXmlHttpRequest;
++++      }
++++      clearPublicConfigCache();
++++      clearServerApiDiagnostics();
++++    },
++++  };
++++}
+++
+++ test("requireServerApiData returns the server data payload", () => {
+++   assert.deepEqual(
+++@@ -57,3 +129,57 @@ test("requireServerApiData supports client-specific restore guidance", () => {
+++     /Admin setup status did not return server data\. Restore the admin setup API\./,
+++   );
++  });
++++
++++test("logoutSessionUser uses the standardized session server data boundary", () => {
++++  const mockApi = installMockServerApi({
++++    "POST http://runtime-api.test/api/session/logout": {
++++      payload: {
++++        data: {
++++          authenticated: false,
++++          userKey: "",
++++        },
++++        ok: true,
++++      },
++++      status: 200,
++++    },
++++  });
++++
++++  try {
++++    assert.deepEqual(logoutSessionUser(), {
++++      authenticated: false,
++++      userKey: "",
++++    });
++++    assert.deepEqual(mockApi.calls, [
++++      {
++++        body: null,
++++        headers: {
++++          Accept: "application/json",
++++        },
++++        method: "POST",
++++        url: "http://runtime-api.test/api/session/logout",
++++      },
++++    ]);
++++  } finally {
++++    mockApi.restore();
++++  }
++++});
++++
++++test("logoutSessionUser preserves session restore guidance for missing server data", () => {
++++  const mockApi = installMockServerApi({
++++    "POST http://runtime-api.test/api/session/logout": {
++++      payload: {
++++        ok: true,
++++      },
++++      status: 200,
++++    },
++++  });
++++
++++  try {
++++    assert.throws(
++++      () => logoutSessionUser(),
++++      /Session logout did not return server data\. Restore the server auth\/session API\./,
++++    );
++++  } finally {
++++    mockApi.restore();
++++  }
++++});
++diff --git a/package.json b/package.json
++index 72c3c9c32..05118574a 100644
++--- a/package.json
+++++ b/package.json
++@@ -3,6 +3,7 @@
++   "scripts": {
++     "pretest": "node docs_build/dev/toolbox/checkSharedExtractionGuard.mjs",
++     "test": "node ./scripts/run-node-tests.mjs",
+++    "test:service:api-client": "node ./scripts/run-node-test-files.mjs tests/dev-runtime/ServerApiClientStandardization.test.mjs",
++     "test:audit:locations": "node ./scripts/audit-playwright-test-locations.mjs",
++     "test:playwright:structure": "node ./scripts/audit-playwright-test-locations.mjs",
++     "test:playwright:zero-browser": "node ./scripts/run-targeted-test-lanes.mjs --zero-browser-only",
++diff --git a/src/api/session-api-client.js b/src/api/session-api-client.js
++index f31004ea1..3b8c69125 100644
++--- a/src/api/session-api-client.js
+++++ b/src/api/session-api-client.js
++@@ -51,7 +51,7 @@ export function signIn(options = {}) {
++ }
 +
-+Team: Charlie
-+Branch: pr/26177-CHARLIE-030-r2-storage-health-expanded-validation
-+Base: pr/26177-CHARLIE-029-system-health-postgres-metrics-panel
-+Lifecycle: Build / Validation
-+Repair: Rebased onto repaired PR_26177_CHARLIE_029 branch on 2026-06-25.
++ export function logoutSessionUser() {
++-  return unwrap(safeRequestServerApi("/session/logout", { method: "POST" }), "Session logout");
+++  return requireSessionApiData(safeRequestServerApi("/session/logout", { method: "POST" }), "Session logout");
++ }
 +
-+## Scope
-+- Expanded System Health R2 validation into an API-owned current-environment validation run.
-+- Added safe list/upload/read/delete diagnostics with duration, operation label, cleanup status, and permanent-object metadata.
-+- Updated the System Health UI to show storage timing without adding inline styles, script blocks, or page-local CSS.
++ export function signOut() {
++diff --git a/tests/dev-runtime/ServerApiClientStandardization.test.mjs b/tests/dev-runtime/ServerApiClientStandardization.test.mjs
++index 5530e4074..a694fa78e 100644
++--- a/tests/dev-runtime/ServerApiClientStandardization.test.mjs
+++++ b/tests/dev-runtime/ServerApiClientStandardization.test.mjs
++@@ -1,10 +1,82 @@
++ import assert from "node:assert/strict";
++ import test from "node:test";
 +
-+## Changed Files
-+- admin/system-health.html
-+- assets/theme-v2/js/admin-system-health.js
-+- src/api/admin-system-health-api-client.js
-+- src/dev-runtime/server/local-api-router.mjs
-+- tests/api/admin-system-health/contract.test.mjs
-+- tests/dev-runtime/AdminHealthOperations.test.mjs
-+- tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-+- docs_build/dev/reports/coverage_changed_js_guardrail.tx
-+- docs_build/dev/reports/playwright_v8_coverage_report.tx
+++import { clearPublicConfigCache } from "../../src/api/public-config-client.js";
+  import {
+-     applyStatusNode,
+-@@ -54,6 +54,10 @@ class AdminSystemHealthController {
+-             node.dataset.adminSystemHealthStorageStatus,
+-             node,
+-         ]));
+-+        this.storageTimings = new Map(Array.from(root.querySelectorAll("[data-admin-system-health-storage-timing]")).map((node) => [
+-+            node.dataset.adminSystemHealthStorageTiming,
+-+            node,
+-+        ]));
+-         this.runtimeHealthValues = new Map(Array.from(root.querySelectorAll("[data-admin-system-health-runtime-health-value]")).map((node) => [
+-             node.dataset.adminSystemHealthRuntimeHealthValue,
+-             node,
+-@@ -122,6 +126,13 @@ class AdminSystemHealthController {
+-         this.setStatusNode(node, status, reason);
+-     }
+-
+-+    setStorageTiming(key, value, fallback) {
+-+        const node = this.storageTimings.get(key);
+-+        if (node) {
+-+            node.textContent = asText(value, fallback);
+-+        }
+++  clearServerApiDiagnostics,
++   requireServerApiData,
++   SERVER_DATA_BOUNDARY_RULE,
++ } from "../../src/api/server-api-client.js";
+++import { logoutSessionUser } from "../../src/api/session-api-client.js";
+++
+++function installMockServerApi(routes) {
+++  const calls = [];
+++  const previousWindow = globalThis.window;
+++  const previousXmlHttpRequest = globalThis.XMLHttpRequest;
+++
+++  clearPublicConfigCache();
+++  clearServerApiDiagnostics();
+++
+++  globalThis.window = {
+++    GameFoundryPublicConfig: {
+++      apiUrl: "http://runtime-api.test/api",
+++    },
+++  };
+++
+++  globalThis.XMLHttpRequest = class MockXMLHttpRequest {
+++    constructor() {
+++      this.headers = {};
+++      this.responseText = "";
+++      this.status = 0;
+ +    }
+ +
+-     setRuntimeHealthValue(key, value, fallback) {
+-         const node = this.runtimeHealthValues.get(key);
+-         if (node) {
+-@@ -195,6 +206,7 @@ class AdminSystemHealthController {
+-     renderStoragePending(reason) {
+-         ["bucket", "list", "upload", "read", "delete", "lastChecked"].forEach((key) => {
+-             this.setStorageStatus(key, "PENDING", reason);
+-+            this.setStorageTiming(key, "not available");
+-         });
+-         this.renderRuntimePending(reason);
+-     }
+-@@ -261,8 +273,10 @@ class AdminSystemHealthController {
+-         const reason = storageStatus.message || "Cloudflare R2 configuration status returned by the safe Admin System Health API.";
+-         this.setStorageValue("bucket", storageStatus.environmentFolder ? `${storageStatus.bucket || "not configured"} ${storageStatus.environmentFolder}` : storageStatus.bucket, "not configured");
+-         this.setStorageStatus("bucket", storageStatus.bucketStatus || storageStatus.status, reason);
+-+        this.setStorageTiming("bucket", storageStatus.lastChecked ? "configuration status" : "not available");
+-         this.setStorageValue("lastChecked", storageStatus.lastChecked, "not available");
+-         this.setStorageStatus("lastChecked", storageStatus.lastChecked ? "PASS" : "WARN", reason);
+-+        this.setStorageTiming("lastChecked", storageStatus.lastChecked ? "configuration status" : "not available");
+-     }
+-
+-     renderRuntimeHealthPending(reason) {
+-@@ -684,9 +698,11 @@ class AdminSystemHealthController {
+-         }
+-         this.setStorageValue(key, this.storageResultTarget(result));
+-         this.setStorageStatus(key, result.status, result.message || "R2 diagnostic returned without a message.");
+-+        this.setStorageTiming(key, Number.isFinite(Number(result.durationMs)) ? `${result.durationMs} ms` : "not available");
+-         if (result.lastChecked) {
+-             this.setStorageValue("lastChecked", result.lastChecked);
+-             this.setStorageStatus("lastChecked", "PASS", "Most recent current-environment R2 health check timestamp.");
+-+            this.setStorageTiming("lastChecked", Number.isFinite(Number(result.durationMs)) ? `${result.durationMs} ms` : "not available");
+-         }
+-     }
+-
+-@@ -732,15 +748,24 @@ class AdminSystemHealthController {
+-     runStorageDiagnostics() {
+-         STORAGE_DIAGNOSTIC_ACTIONS.forEach(({ key }) => {
+-             this.setStorageStatus(key, "PENDING", "R2 diagnostic is running through the safe Admin System Health API.");
+-+            this.setStorageTiming(key, "running");
+-         });
+--        STORAGE_DIAGNOSTIC_ACTIONS.forEach(({ actionId, key }) => {
+--            try {
+--                this.renderStorageResult(key, runAdminSystemHealthStorageConnectivityAction(actionId));
+--            } catch (error) {
+--                const message = error instanceof Error ? error.message : "Safe R2 diagnostic API is unavailable.";
+-+        try {
+-+            const validation = runAdminSystemHealthStorageExpandedValidation();
+-+            const diagnostics = Array.isArray(validation.storageDiagnostics) ? validation.storageDiagnostics : [];
+-+            diagnostics.forEach((storageResult) => {
+-+                const key = STORAGE_DIAGNOSTIC_ACTION_KEY_BY_ID.get(storageResult.actionId);
+-+                if (key) {
+-+                    this.renderStorageResult(key, storageResult);
+-+                }
+-+            });
+-+        } catch (error) {
+-+            const message = error instanceof Error ? error.message : "Safe R2 diagnostic API is unavailable.";
+-+            STORAGE_DIAGNOSTIC_ACTIONS.forEach(({ key }) => {
+-                 this.setStorageStatus(key, "PENDING", message);
+--            }
+--        });
+-+                this.setStorageTiming(key, "not available");
+-+            });
+-+        }
+-     }
+-
+-     createCell(text) {
+-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation.md
+++    open(method, url, async) {
+++      this.method = method;
+++      this.url = url;
+++      this.async = async;
+++    }
+++
+++    setRequestHeader(name, value) {
+++      this.headers[name] = value;
+++    }
+++
+++    send(body) {
+++      calls.push({
+++        body,
+++        headers: { ...this.headers },
+++        method: this.method,
+++        url: this.url,
+++      });
+++      const route = routes[`${this.method} ${this.url}`] || {
+++        payload: {
+++          error: `No mock route for ${this.method} ${this.url}`,
+++          ok: false,
+++        },
+++        status: 404,
+++      };
+++      this.status = route.status;
+++      this.responseText = JSON.stringify(route.payload);
+++    }
+++  };
+++
+++  return {
+++    calls,
+++    restore() {
+++      if (previousWindow === undefined) {
+++        delete globalThis.window;
+++      } else {
+++        globalThis.window = previousWindow;
+++      }
+++      if (previousXmlHttpRequest === undefined) {
+++        delete globalThis.XMLHttpRequest;
+++      } else {
+++        globalThis.XMLHttpRequest = previousXmlHttpRequest;
+++      }
+++      clearPublicConfigCache();
+++      clearServerApiDiagnostics();
+++    },
+++  };
+++}
 +
-+## Validation
-+- PASS: node --check src/dev-runtime/server/local-api-router.mjs
-+- PASS: node --check assets/theme-v2/js/admin-system-health.js
-+- PASS: node --check src/api/admin-system-health-api-client.js
-+- PASS: node --test tests/api/admin-system-health/contract.test.mjs
-+- PASS: node --test tests/dev-runtime/AdminHealthOperations.test.mjs
-+- PASS: npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line
-+- PASS: git diff --check
-+
-+## ZIP
-+- Generated after repair: C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\tmp\PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_delta.zip
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_branch-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_branch-validation.md
-new file mode 100644
-index 000000000..0c0387294
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_branch-validation.md
-@@ -0,0 +1,17 @@
-+﻿# PR_26177_CHARLIE_030-r2-storage-health-expanded-validation Branch Validation
-+
-+Branch: pr/26177-CHARLIE-030-r2-storage-health-expanded-validation
-+Expected stack base: pr/26177-CHARLIE-029-system-health-postgres-metrics-panel
-+Current status at validation:
-+## pr/26177-CHARLIE-030-r2-storage-health-expanded-validation
-+Updated onto repaired PR_26177_CHARLIE_029 stack base.
-+
-+Result: PASS
-+
-+Checks:
-+- PASS: Branch created from PR 029 branch for the approved stacked chain.
-+- PASS: Active branch matches PR identity.
-+- PASS: Worktree contained only scoped PR changes and generated validation reports.
-+- PASS: Branch is based on repaired PR 029 branch.
-+- PASS: Rebase conflict scope was generated report artifacts only.
-+- PASS: No start_of_day files modified.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_manual-validation-notes.md
-new file mode 100644
-index 000000000..36806ff77
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_manual-validation-notes.md
-@@ -0,0 +1,9 @@
-+﻿# PR_26177_CHARLIE_030-r2-storage-health-expanded-validation Manual Validation Notes
-+
-+- Confirmed the browser calls one expanded R2 validation action instead of owning the list/upload/read/delete sequence itself.
-+- Confirmed Storage Health displays timing values for list, upload, read, and delete rows.
-+- Confirmed storage validation payload includes cleanup status and permanent-object metadata.
-+- Confirmed storage diagnostics stay scoped to the current environment folder.
-+- Confirmed no storage credentials or secrets are displayed.
-+- Confirmed branch repair conflict was limited to generated report artifacts.
-+- Confirmed no start_of_day files changed.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_requirements-checklist.md b/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_requirements-checklist.md
-new file mode 100644
-index 000000000..2dda36cc8
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_requirements-checklist.md
-@@ -0,0 +1,13 @@
-+﻿# PR_26177_CHARLIE_030-r2-storage-health-expanded-validation Requirement Checklis
-+
-+- PASS: Expanded Cloud/R2 storage health validation.
-+- PASS: Included safe bucket/list/write/read/delete validation through API-owned action contract.
-+- PASS: Included timing/status fields where available.
-+- PASS: Does not create browser-owned storage health state.
-+- PASS: Test object cleanup is attempted in the same expanded validation run.
-+- PASS: Does not expose secrets.
-+- PASS: Current environment folder only.
-+- PASS: No unrelated files modified.
-+- PASS: No start_of_day files modified.
-+- PASS: Rebased onto repaired PR_26177_CHARLIE_029 branch.
-+- PASS: Shows unavailable/not configured states explicitly.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_validation-lane.md b/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_validation-lane.md
-new file mode 100644
-index 000000000..0dbf85ec0
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_validation-lane.md
-@@ -0,0 +1,22 @@
-+﻿# PR_26177_CHARLIE_030-r2-storage-health-expanded-validation Validation Lane Repor
-+
-+Impacted lanes:
-+- runtime: Local API Admin System Health R2 action contract.
-+- contract: Admin System Health API contract tests.
-+- UI: Admin System Health Theme V2 page controller and markup.
-+- Playwright: targeted Admin System Health page spec.
-+
-+Commands:
-+- PASS: node --check src/dev-runtime/server/local-api-router.mjs
-+- PASS: node --check assets/theme-v2/js/admin-system-health.js
-+- PASS: node --check src/api/admin-system-health-api-client.js
-+- PASS: node --test tests/api/admin-system-health/contract.test.mjs
-+- PASS: node --test tests/dev-runtime/AdminHealthOperations.test.mjs
-+- PASS: npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line
-+- PASS: git diff --check
-+
-+Skipped lanes:
-+- Full samples smoke skipped; not impacted by System Health storage diagnostics.
-+- Full Project Workspace suite skipped; targeted Admin/System Health coverage was sufficient for this scoped page/API change.
-+
-+Result: PASS
-diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.tx
-index 7b1c51f19..7211f2375 100644
---- a/docs_build/dev/reports/coverage_changed_js_guardrail.tx
-+++ b/docs_build/dev/reports/coverage_changed_js_guardrail.tx
-@@ -6,7 +6,9 @@ Missing changed runtime JS files are WARN, not FAIL.
- Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
-
- Changed runtime JS files considered:
--(100%) none changed - no changed runtime JS files
-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(81%) assets/theme-v2/js/admin-system-health.js - executed lines 872/872; executed functions 72/89
-+(100%) src/api/admin-system-health-api-client.js - executed lines 31/31; executed functions 5/5
-
- Guardrail warnings:
--(100%) none changed - no changed runtime JS files
-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.tx
-index 627ed631f..2a2982e6a 100644
---- a/docs_build/dev/reports/playwright_v8_coverage_report.tx
-+++ b/docs_build/dev/reports/playwright_v8_coverage_report.tx
-@@ -17,7 +17,9 @@ Exercised tool entry points detected:
- (78%) Theme V2 Shared JS - exercised 5 runtime JS files
-
- Changed runtime JS files covered:
--(100%) none changed - no changed runtime JS files
-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(81%) assets/theme-v2/js/admin-system-health.js - executed lines 872/872; executed functions 72/89
-+(100%) src/api/admin-system-health-api-client.js - executed lines 31/31; executed functions 5/5
-
- Files with executed line/function counts where available:
- (36%) src/api/server-api-client.js - executed lines 168/168; executed functions 5/14
-@@ -27,13 +29,18 @@ Files with executed line/function counts where available:
- (77%) assets/theme-v2/js/tool-display-mode.js - executed lines 304/304; executed functions 23/30
- (80%) assets/theme-v2/js/theme-icons.js - executed lines 69/69; executed functions 4/5
- (80%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 4/5
--(81%) assets/theme-v2/js/admin-system-health.js - executed lines 848/848; executed functions 70/86
-+(81%) assets/theme-v2/js/admin-system-health.js - executed lines 872/872; executed functions 72/89
- (83%) assets/js/shared/status.js - executed lines 37/37; executed functions 5/6
- (91%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 10/11
--(100%) src/api/admin-system-health-api-client.js - executed lines 28/28; executed functions 4/4
-+(100%) src/api/admin-system-health-api-client.js - executed lines 31/31; executed functions 5/5
-
- Uncovered or low-coverage changed JS files:
--(100%) none changed - no changed runtime JS files
-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
-
- Changed JS files considered:
--(100%) none - no changed JS files
-+(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/api/admin-system-health/contract.test.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/dev-runtime/AdminHealthOperations.test.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
-+(81%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
-+(100%) src/api/admin-system-health-api-client.js - changed JS file with browser V8 coverage
-diff --git a/src/api/admin-system-health-api-client.js b/src/api/admin-system-health-api-client.js
-index 9b166d097..49101c59f 100644
---- a/src/api/admin-system-health-api-client.js
-+++ b/src/api/admin-system-health-api-client.js
-@@ -20,6 +20,10 @@ export function runAdminSystemHealthStorageConnectivityAction(actionId) {
-   );
++ test("requireServerApiData returns the server data payload", () => {
++   assert.deepEqual(
++@@ -57,3 +129,57 @@ test("requireServerApiData supports client-specific restore guidance", () => {
++     /Admin setup status did not return server data\. Restore the admin setup API\./,
++   );
++ });
+++
+++test("logoutSessionUser uses the standardized session server data boundary", () => {
+++  const mockApi = installMockServerApi({
+++    "POST http://runtime-api.test/api/session/logout": {
+++      payload: {
+++        data: {
+++          authenticated: false,
+++          userKey: "",
+++        },
+++        ok: true,
+++      },
+++      status: 200,
+++    },
+++  });
+++
+++  try {
+++    assert.deepEqual(logoutSessionUser(), {
+++      authenticated: false,
+++      userKey: "",
+++    });
+++    assert.deepEqual(mockApi.calls, [
+++      {
+++        body: null,
+++        headers: {
+++          Accept: "application/json",
+++        },
+++        method: "POST",
+++        url: "http://runtime-api.test/api/session/logout",
+++      },
+++    ]);
+++  } finally {
+++    mockApi.restore();
+++  }
+++});
+++
+++test("logoutSessionUser preserves session restore guidance for missing server data", () => {
+++  const mockApi = installMockServerApi({
+++    "POST http://runtime-api.test/api/session/logout": {
+++      payload: {
+++        ok: true,
+++      },
+++      status: 200,
+++    },
+++  });
+++
+++  try {
+++    assert.throws(
+++      () => logoutSessionUser(),
+++      /Session logout did not return server data\. Restore the server auth\/session API\./,
+++    );
+++  } finally {
+++    mockApi.restore();
+++  }
+++});
++diff --git a/docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests.md b/docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests.md
+ new file mode 100644
+-index 000000000..61eba9efb
++index 000000000..f7d6337e0
+ --- /dev/null
+-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation.md
+-@@ -0,0 +1,35 @@
+-+﻿# PR_26177_CHARLIE_030-r2-storage-health-expanded-validation
+++++ b/docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests.md
++@@ -0,0 +1,63 @@
+++# PR_26175_DELTA_007-runtime-api-client-service-tests
+++
+++## Summary
+ +
+-+Team: Charlie
+-+Branch: pr/26177-CHARLIE-030-r2-storage-health-expanded-validation
+-+Base: pr/26177-CHARLIE-029-system-health-postgres-metrics-panel
+-+Lifecycle: Build / Validation
+-+Repair: Rebased onto repaired PR_26177_CHARLIE_029 branch on 2026-06-25.
+++Team Delta added service-level API client coverage for the standardized Browser -> Server API -> Data Source boundary.
+++
+++This PR fixes the session logout API client to use the same `requireServerApiData(...)` unwrap path as the other session client calls. It also adds targeted tests proving logout uses the configured server API URL, returns `payload.data`, and preserves the session-specific restore guidance when server data is missing.
+ +
+ +## Scope
+-+- Expanded System Health R2 validation into an API-owned current-environment validation run.
+-+- Added safe list/upload/read/delete diagnostics with duration, operation label, cleanup status, and permanent-object metadata.
+-+- Updated the System Health UI to show storage timing without adding inline styles, script blocks, or page-local CSS.
+-+
+-+## Changed Files
+-+- admin/system-health.html
+-+- assets/theme-v2/js/admin-system-health.js
+-+- src/api/admin-system-health-api-client.js
+-+- src/dev-runtime/server/local-api-router.mjs
+-+- tests/api/admin-system-health/contract.test.mjs
+-+- tests/dev-runtime/AdminHealthOperations.test.mjs
+-+- tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+-+- docs_build/dev/reports/coverage_changed_js_guardrail.tx
+-+- docs_build/dev/reports/playwright_v8_coverage_report.tx
+-+
+-+## Validation
+-+- PASS: node --check src/dev-runtime/server/local-api-router.mjs
+-+- PASS: node --check assets/theme-v2/js/admin-system-health.js
+-+- PASS: node --check src/api/admin-system-health-api-client.js
+-+- PASS: node --test tests/api/admin-system-health/contract.test.mjs
+-+- PASS: node --test tests/dev-runtime/AdminHealthOperations.test.mjs
+-+- PASS: npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line
+-+- PASS: git diff --check
+++
+++- Team: Delta
+++- Branch: `PR_26175_DELTA_007-runtime-api-client-service-tests`
+++- Runtime file changed: `src/api/session-api-client.js`
+++- Test file changed: `tests/dev-runtime/ServerApiClientStandardization.test.mjs`
+++- Service test command added: `npm run test:service:api-client`
+++- Site-wide command preserved: `npm test`
+++
+++## Runtime Impact
+++
+++PASS - Session logout now follows the standardized server-data boundary instead of calling an undefined helper.
+++
+++## API / Data Impact
+++
+++PASS - No API routes or persisted data contracts changed. The browser API client still calls `/session/logout` with `POST` and reads server-owned `payload.data`.
+++
+++## Requirement Checklist
+++
+++| Requirement | Status | Notes |
+++|---|---|---|
+++| One PR purpose only | PASS | API client service testability only. |
+++| Team Delta ownership only | PASS | API clients and runtime test coverage are Delta-owned. |
+++| No team-specific test runner | PASS | No Delta-named runner or command added. |
+++| No `scripts/run-delta-runtime-validation.mjs` | PASS | File was not added. |
+++| No `test:delta-runtime` | PASS | Script was not added. |
+++| Testing organized by service/page level | PASS | Added `test:service:api-client`. |
+++| Keep `npm test` as site-wide command | PASS | Existing `npm test` is unchanged. |
+++| No UI changes | PASS | No UI files changed. |
+++| No browser-owned product data | PASS | Test stubs only the server API response; no persisted browser data source added. |
+++| No silent fallbacks or hidden defaults | PASS | Missing server data still throws explicit restore guidance. |
+++
+++## Validation Lane Report
+++
+++| Command | Status | Notes |
+++|---|---|---|
+++| `node --check src/api/session-api-client.js` | PASS | API client syntax valid. |
+++| `node --check tests/dev-runtime/ServerApiClientStandardization.test.mjs` | PASS | Test syntax valid. |
+++| `npm run test:service:api-client` | PASS | 1 targeted file, 6 tests passed. |
+++| `git diff --check` | PASS | No whitespace errors. |
+++| `npm run codex:review-artifacts` | PASS | Regenerated `codex_review.diff` and `codex_changed_files.txt`. |
+++
+++## Manual Validation Notes
+++
+++- Confirmed `package.json` keeps `npm test` unchanged.
+++- Confirmed no Team Delta-specific validation command was introduced.
+++- Confirmed session logout test uses mocked server API data instead of browser-owned persisted state.
+++- Playwright was not run; this is a Node service/API-client coverage change.
+ +
+ +## ZIP
+-+- Generated after repair: C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\tmp\PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_delta.zip
+-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_branch-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_branch-validation.md
+++
+++Expected repo-structured delta ZIP:
+++
+++`tmp/PR_26175_DELTA_007-runtime-api-client-service-tests_delta.zip`
+++
++diff --git a/docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_branch-validation.md b/docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_branch-validation.md
+ new file mode 100644
+-index 000000000..0c0387294
++index 000000000..d8dc22bf1
+ --- /dev/null
+-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_branch-validation.md
+-@@ -0,0 +1,17 @@
+-+﻿# PR_26177_CHARLIE_030-r2-storage-health-expanded-validation Branch Validation
+-+
+-+Branch: pr/26177-CHARLIE-030-r2-storage-health-expanded-validation
+-+Expected stack base: pr/26177-CHARLIE-029-system-health-postgres-metrics-panel
+-+Current status at validation:
+-+## pr/26177-CHARLIE-030-r2-storage-health-expanded-validation
+-+Updated onto repaired PR_26177_CHARLIE_029 stack base.
+-+
+-+Result: PASS
+-+
+-+Checks:
+-+- PASS: Branch created from PR 029 branch for the approved stacked chain.
+-+- PASS: Active branch matches PR identity.
+-+- PASS: Worktree contained only scoped PR changes and generated validation reports.
+-+- PASS: Branch is based on repaired PR 029 branch.
+-+- PASS: Rebase conflict scope was generated report artifacts only.
+-+- PASS: No start_of_day files modified.
+-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_manual-validation-notes.md
+++++ b/docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_branch-validation.md
++@@ -0,0 +1,10 @@
+++# PR_26175_DELTA_007 Branch Validation
+++
+++| Check | Status | Evidence |
+++|---|---|---|
+++| Started from `main` | PASS | `main` was checked out and fast-forward pulled before work began. |
+++| Local/origin sync before branch | PASS | `git rev-list --left-right --count main...origin/main` returned `0 0`. |
+++| Worktree clean before branch | PASS | `git status --short` returned no entries. |
+++| Working branch | PASS | `PR_26175_DELTA_007-runtime-api-client-service-tests`. |
+++| Direct commit to `main` avoided | PASS | Changes were made only on the PR branch. |
+++
++diff --git a/docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_manual-validation-notes.md b/docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_manual-validation-notes.md
+ new file mode 100644
+-index 000000000..36806ff77
++index 000000000..13bd9f8b5
+ --- /dev/null
+-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_manual-validation-notes.md
+++++ b/docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_manual-validation-notes.md
+ @@ -0,0 +1,9 @@
+-+﻿# PR_26177_CHARLIE_030-r2-storage-health-expanded-validation Manual Validation Notes
+-+
+-+- Confirmed the browser calls one expanded R2 validation action instead of owning the list/upload/read/delete sequence itself.
+-+- Confirmed Storage Health displays timing values for list, upload, read, and delete rows.
+-+- Confirmed storage validation payload includes cleanup status and permanent-object metadata.
+-+- Confirmed storage diagnostics stay scoped to the current environment folder.
+-+- Confirmed no storage credentials or secrets are displayed.
+-+- Confirmed branch repair conflict was limited to generated report artifacts.
+-+- Confirmed no start_of_day files changed.
+-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_requirements-checklist.md b/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_requirements-checklist.md
+++# PR_26175_DELTA_007 Manual Validation Notes
+++
+++- Reviewed changed files for API-client-only scope.
+++- Confirmed no UI files changed.
+++- Confirmed no persisted browser-owned product data was introduced.
+++- Confirmed no `scripts/run-delta-runtime-validation.mjs` file was added.
+++- Confirmed no `test:delta-runtime` script was added.
+++- Confirmed `npm test` remains the site-wide/all-tests command.
+++
++diff --git a/docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_requirements-checklist.md b/docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_requirements-checklist.md
+ new file mode 100644
+-index 000000000..2dda36cc8
++index 000000000..5da7573e5
+ --- /dev/null
+-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_requirements-checklist.md
+-@@ -0,0 +1,13 @@
+-+﻿# PR_26177_CHARLIE_030-r2-storage-health-expanded-validation Requirement Checklis
+-+
+-+- PASS: Expanded Cloud/R2 storage health validation.
+-+- PASS: Included safe bucket/list/write/read/delete validation through API-owned action contract.
+-+- PASS: Included timing/status fields where available.
+-+- PASS: Does not create browser-owned storage health state.
+-+- PASS: Test object cleanup is attempted in the same expanded validation run.
+-+- PASS: Does not expose secrets.
+-+- PASS: Current environment folder only.
+-+- PASS: No unrelated files modified.
+-+- PASS: No start_of_day files modified.
+-+- PASS: Rebased onto repaired PR_26177_CHARLIE_029 branch.
+-+- PASS: Shows unavailable/not configured states explicitly.
+-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_validation-lane.md b/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_validation-lane.md
+++++ b/docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_requirements-checklist.md
++@@ -0,0 +1,12 @@
+++# PR_26175_DELTA_007 Requirements Checklist
+++
+++| Requirement | Status | Notes |
+++|---|---|---|
+++| Branch from updated main | PASS | Branch created after fast-forward pull and sync check. |
+++| Build smallest scoped change | PASS | Fixed session logout unwrap and added focused API client tests. |
+++| Validate targeted tests | PASS | `npm run test:service:api-client` passed. |
+++| Required reports created | PASS | PR report, branch validation, checklist, validation lane, manual notes, review diff, changed files. |
+++| Repo-structured ZIP created | PENDING | Created after report files are staged in the delta package step. |
+++| Open PR | PENDING | Opened after commit and push. |
+++| Stop before merge approval | PASS | This PR is draft/open only; no merge performed. |
+++
++diff --git a/docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_validation-lane.md b/docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_validation-lane.md
+ new file mode 100644
+-index 000000000..0dbf85ec0
++index 000000000..f3844a691
+ --- /dev/null
+-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_validation-lane.md
+-@@ -0,0 +1,22 @@
+-+﻿# PR_26177_CHARLIE_030-r2-storage-health-expanded-validation Validation Lane Repor
+-+
+-+Impacted lanes:
+-+- runtime: Local API Admin System Health R2 action contract.
+-+- contract: Admin System Health API contract tests.
+-+- UI: Admin System Health Theme V2 page controller and markup.
+-+- Playwright: targeted Admin System Health page spec.
+-+
+-+Commands:
+-+- PASS: node --check src/dev-runtime/server/local-api-router.mjs
+-+- PASS: node --check assets/theme-v2/js/admin-system-health.js
+-+- PASS: node --check src/api/admin-system-health-api-client.js
+-+- PASS: node --test tests/api/admin-system-health/contract.test.mjs
+-+- PASS: node --test tests/dev-runtime/AdminHealthOperations.test.mjs
+-+- PASS: npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line
+-+- PASS: git diff --check
+-+
+-+Skipped lanes:
+-+- Full samples smoke skipped; not impacted by System Health storage diagnostics.
+-+- Full Project Workspace suite skipped; targeted Admin/System Health coverage was sufficient for this scoped page/API change.
+-+
+-+Result: PASS
+-diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.tx
+-index 7b1c51f19..7211f2375 100644
+---- a/docs_build/dev/reports/coverage_changed_js_guardrail.tx
+-+++ b/docs_build/dev/reports/coverage_changed_js_guardrail.tx
+-@@ -6,7 +6,9 @@ Missing changed runtime JS files are WARN, not FAIL.
+- Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+-
+- Changed runtime JS files considered:
+--(100%) none changed - no changed runtime JS files
+-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-+(81%) assets/theme-v2/js/admin-system-health.js - executed lines 872/872; executed functions 72/89
+-+(100%) src/api/admin-system-health-api-client.js - executed lines 31/31; executed functions 5/5
+-
+- Guardrail warnings:
+--(100%) none changed - no changed runtime JS files
+-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+-diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.tx
+-index 627ed631f..2a2982e6a 100644
+---- a/docs_build/dev/reports/playwright_v8_coverage_report.tx
+-+++ b/docs_build/dev/reports/playwright_v8_coverage_report.tx
+-@@ -17,7 +17,9 @@ Exercised tool entry points detected:
+- (78%) Theme V2 Shared JS - exercised 5 runtime JS files
+-
+- Changed runtime JS files covered:
+--(100%) none changed - no changed runtime JS files
+-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-+(81%) assets/theme-v2/js/admin-system-health.js - executed lines 872/872; executed functions 72/89
+-+(100%) src/api/admin-system-health-api-client.js - executed lines 31/31; executed functions 5/5
+-
+- Files with executed line/function counts where available:
+- (36%) src/api/server-api-client.js - executed lines 168/168; executed functions 5/14
+-@@ -27,13 +29,18 @@ Files with executed line/function counts where available:
+- (77%) assets/theme-v2/js/tool-display-mode.js - executed lines 304/304; executed functions 23/30
+- (80%) assets/theme-v2/js/theme-icons.js - executed lines 69/69; executed functions 4/5
+- (80%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 4/5
+--(81%) assets/theme-v2/js/admin-system-health.js - executed lines 848/848; executed functions 70/86
+-+(81%) assets/theme-v2/js/admin-system-health.js - executed lines 872/872; executed functions 72/89
+- (83%) assets/js/shared/status.js - executed lines 37/37; executed functions 5/6
+- (91%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 10/11
+--(100%) src/api/admin-system-health-api-client.js - executed lines 28/28; executed functions 4/4
+-+(100%) src/api/admin-system-health-api-client.js - executed lines 31/31; executed functions 5/5
+-
+- Uncovered or low-coverage changed JS files:
+--(100%) none changed - no changed runtime JS files
+-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+-
+- Changed JS files considered:
+--(100%) none - no changed JS files
+-+(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
+-+(0%) tests/api/admin-system-health/contract.test.mjs - changed JS file not collected as browser runtime coverage
+-+(0%) tests/dev-runtime/AdminHealthOperations.test.mjs - changed JS file not collected as browser runtime coverage
+-+(0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
+-+(81%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
+-+(100%) src/api/admin-system-health-api-client.js - changed JS file with browser V8 coverage
+-diff --git a/src/api/admin-system-health-api-client.js b/src/api/admin-system-health-api-client.js
+-index 9b166d097..49101c59f 100644
+---- a/src/api/admin-system-health-api-client.js
+-+++ b/src/api/admin-system-health-api-client.js
+-@@ -20,6 +20,10 @@ export function runAdminSystemHealthStorageConnectivityAction(actionId) {
+-   );
+- }
+-
+-+export function runAdminSystemHealthStorageExpandedValidation() {
+-+  return runAdminSystemHealthStorageConnectivityAction("storage-expanded-validation");
+-+}
+++++ b/docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_validation-lane.md
++@@ -0,0 +1,20 @@
+++# PR_26175_DELTA_007 Validation Lane
+ +
+- export function runAdminSystemHealthAction(actionId) {
+-   return requireServerApiData(
+-     safeRequestServerApi("/admin/system-health/action", {
+-diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
+-index 462d8b7a0..6dbb8a106 100644
+---- a/src/dev-runtime/server/local-api-router.mjs
+-+++ b/src/dev-runtime/server/local-api-router.mjs
+-@@ -356,6 +356,7 @@ const SYSTEM_HEALTH_STORAGE_ACTION_IDS = Object.freeze([
+-   "storage-read-test-object",
+-   "storage-delete-test-object",
+- ]);
+-+const SYSTEM_HEALTH_STORAGE_EXPANDED_VALIDATION_ACTION_ID = "storage-expanded-validation";
+- const SYSTEM_HEALTH_MANUAL_ACTION_LABELS = Object.freeze({
+-   "database-check": "Run Database Check",
+-   "full-health-check": "Run Full Health Check",
+-@@ -4046,43 +4047,75 @@ class ApiRuntimeDataSource {
+-
+-   storageConnectivityConfigFailure(actionId, storage, scope = "project-prefix") {
+-     const missing = storage.config?.missingKeys?.join(", ") || storage.config?.validationError || "storage configuration incomplete";
+-+    const action = STORAGE_CONNECTIVITY_ACTIONS.find((candidate) => candidate.id === actionId);
+-     return {
+-       actionId,
+-+      cleanupStatus: "not-run",
+-+      durationMs: 0,
+-       environmentFolder: scope === "environment-folder" ? this.storageConnectivityEnvironmentFolder() : "",
+-       executed: false,
+-       lastChecked: new Date().toISOString(),
+-       message: `Storage connectivity requires configured storage and GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX before this action can run. Missing or invalid: ${missing}.`,
+-+      operation: action?.operation || "configuration",
+-+      operationLabel: action?.label || "Storage configuration",
+-+      permanentObjectCreated: false,
+-       projectsPrefix: String(storage.config?.projectsPrefix || "").trim(),
+-       secretEditingAllowed: false,
+-       secretsExposed: false,
+-       status: "FAIL",
+-       storageStatus: this.ownerStorageStatus(),
+-+      targetPrefix: scope === "environment-folder" ? this.storageConnectivityEnvironmentFolder() : String(storage.config?.projectsPrefix || "").trim(),
+-     };
+-   }
+-
+--  storageConnectivityResult({ actionId, environmentFolder = "", executed = true, keysListed = 0, message, objectKey, projectsPrefix, status }) {
+-+  storageConnectivityResult({
+-+    action,
+-+    actionId,
+-+    cleanupStatus = "not-applicable",
+-+    durationMs = 0,
+-+    environmentFolder = "",
+-+    executed = true,
+-+    keysListed = 0,
+-+    message,
+-+    objectKey,
+-+    permanentObjectCreated = false,
+-+    projectsPrefix,
+-+    status,
+-+    targetPrefix = "",
+-+  }) {
+-+    const resolvedAction = action || STORAGE_CONNECTIVITY_ACTIONS.find((candidate) => candidate.id === actionId) || {};
+-     return {
+-       actionId,
+-+      cleanupStatus,
+-+      durationMs,
+-       environmentFolder,
+-       executed,
+-       keysListed,
+-       lastChecked: new Date().toISOString(),
+-       message,
+-+      operation: resolvedAction.operation || "",
+-+      operationLabel: resolvedAction.label || actionId,
+-+      permanentObjectCreated,
+-       projectsPrefix,
+-       secretEditingAllowed: false,
+-       secretsExposed: false,
+-       status,
+-       storageStatus: this.ownerStorageStatus(),
+-+      targetPrefix,
+-       testObjectKey: objectKey,
+-     };
+-   }
+-
+-   async runStorageConnectivityAction(actionId, options = {}) {
+-+    if (actionId === SYSTEM_HEALTH_STORAGE_EXPANDED_VALIDATION_ACTION_ID) {
+-+      return this.runStorageExpandedValidation(options);
+-+    }
+-     const action = STORAGE_CONNECTIVITY_ACTIONS.find((candidate) => candidate.id === actionId);
+-     if (!action) {
+-       throw new Error(`Unknown storage connectivity action: ${actionId || "missing actionId"}.`);
+-     }
+-
+-+    const startedAt = Date.now();
+-     const scope = options.scope === "environment-folder" ? "environment-folder" : "project-prefix";
+-     const storage = createConfiguredProjectAssetStorage();
+-     const projectsPrefix = String(storage.config?.projectsPrefix || "").trim();
+-@@ -4098,7 +4131,9 @@ class ApiRuntimeDataSource {
+-         const result = await storage.listObjects(targetPrefix);
+-         const keysListed = Array.isArray(result.keys) ? result.keys.length : 0;
+-         return this.storageConnectivityResult({
+-+          action,
+-           actionId: action.id,
+-+          durationMs: Date.now() - startedAt,
+-           environmentFolder,
+-           keysListed,
+-           message: result.ok
+-@@ -4107,6 +4142,7 @@ class ApiRuntimeDataSource {
+-           objectKey,
+-           projectsPrefix,
+-           status: result.ok ? "PASS" : "FAIL",
+-+          targetPrefix,
+-         });
+-       }
+-
+-@@ -4116,7 +4152,9 @@ class ApiRuntimeDataSource {
+-           : await storage.listProjectObjects();
+-         const keysListed = Array.isArray(result.keys) ? result.keys.length : 0;
+-         return this.storageConnectivityResult({
+-+          action,
+-           actionId: action.id,
+-+          durationMs: Date.now() - startedAt,
+-           environmentFolder,
+-           keysListed,
+-           message: result.ok
+-@@ -4125,6 +4163,7 @@ class ApiRuntimeDataSource {
+-           objectKey,
+-           projectsPrefix,
+-           status: result.ok ? "PASS" : "FAIL",
+-+          targetPrefix,
+-         });
+-       }
+-
+-@@ -4135,14 +4174,19 @@ class ApiRuntimeDataSource {
+-           objectKey,
+-         });
+-         return this.storageConnectivityResult({
+-+          action,
+-           actionId: action.id,
+-+          cleanupStatus: result.ok ? "requires-delete-action" : "not-created",
+-+          durationMs: Date.now() - startedAt,
+-           environmentFolder,
+-           message: result.ok
+-             ? `Upload test object completed at ${objectKey}.
+-             : `${result.message || "Storage upload failed."} Verify upload permission for ${targetPrefix}.`,
+-           objectKey,
+-+          permanentObjectCreated: result.ok === true,
+-           projectsPrefix,
+-           status: result.ok ? "PASS" : "FAIL",
+-+          targetPrefix,
+-         });
+-       }
+-
+-@@ -4151,7 +4195,9 @@ class ApiRuntimeDataSource {
+-         const text = result.ok ? Buffer.from(result.bytes || []).toString("utf8") : "";
+-         const contentMatches = text === STORAGE_CONNECTIVITY_TEST_OBJECT_CONTENT;
+-         return this.storageConnectivityResult({
+-+          action,
+-           actionId: action.id,
+-+          durationMs: Date.now() - startedAt,
+-           environmentFolder,
+-           message: result.ok && contentMatches
+-             ? `Read test object completed from ${objectKey}.
+-@@ -4159,32 +4205,77 @@ class ApiRuntimeDataSource {
+-           objectKey,
+-           projectsPrefix,
+-           status: result.ok && contentMatches ? "PASS" : "FAIL",
+-+          targetPrefix,
+-         });
+-       }
+-
+-       const result = await storage.deleteObject(objectKey);
+-       return this.storageConnectivityResult({
+-+        action,
+-         actionId: action.id,
+-+        cleanupStatus: result.ok ? "completed" : "failed",
+-+        durationMs: Date.now() - startedAt,
+-         environmentFolder,
+-         message: result.ok
+-           ? `Delete test object completed at ${objectKey}.
+-           : `${result.message || "Storage delete failed."} Verify delete permission for ${targetPrefix}.`,
+-         objectKey,
+-+        permanentObjectCreated: false,
+-         projectsPrefix,
+-         status: result.ok ? "PASS" : "FAIL",
+-+        targetPrefix,
+-       });
+-     } catch (error) {
+-       return this.storageConnectivityResult({
+-+        action,
+-         actionId: action.id,
+-+        durationMs: Date.now() - startedAt,
+-         environmentFolder,
+-         message: `Storage connectivity action failed: ${error instanceof Error ? error.message : String(error || "Unknown storage error.")}`,
+-         objectKey,
+-         projectsPrefix,
+-         status: "FAIL",
+-+        targetPrefix,
+-       });
+-     }
+-   }
+-
+-+  async runStorageExpandedValidation(options = {}) {
+-+    const startedAt = Date.now();
+-+    const scope = options.scope === "environment-folder" ? "environment-folder" : "project-prefix";
+-+    const storage = createConfiguredProjectAssetStorage();
+-+    const targetPrefix = this.storageConnectivityTargetPrefix(storage, scope);
+-+    const objectKey = this.storageConnectivityTestObjectKey(storage, scope);
+-+    const results = [];
+-+    for (const actionId of SYSTEM_HEALTH_STORAGE_ACTION_IDS) {
+-+      results.push(await this.runStorageConnectivityAction(actionId, { scope }));
+-+    }
+-+    const uploadResult = results.find((result) => result.actionId === "storage-upload-test-object");
+-+    const deleteResult = results.find((result) => result.actionId === "storage-delete-test-object");
+-+    const permanentObjectCreated = uploadResult?.status === "PASS" && deleteResult?.status !== "PASS";
+-+    const status = overallHealthStatus(results);
+-+    return {
+-+      actionId: SYSTEM_HEALTH_STORAGE_EXPANDED_VALIDATION_ACTION_ID,
+-+      cleanupStatus: permanentObjectCreated ? "failed" : "completed",
+-+      durationMs: Date.now() - startedAt,
+-+      environmentFolder: scope === "environment-folder" ? this.storageConnectivityEnvironmentFolder() : "",
+-+      executed: true,
+-+      lastChecked: new Date().toISOString(),
+-+      message: permanentObjectCreated
+-+        ? `Expanded R2 validation detected a cleanup failure for ${objectKey}; review storage credentials and delete permission.
+-+        : `Expanded R2 validation completed against ${targetPrefix}; test object cleanup was attempted in the same validation run.`,
+-+      permanentObjectCreated,
+-+      projectsPrefix: String(storage.config?.projectsPrefix || "").trim(),
+-+      secretEditingAllowed: false,
+-+      secretsExposed: false,
+-+      status,
+-+      storageDiagnostics: results,
+-+      storageStatus: this.ownerStorageStatus(),
+-+      targetPrefix,
+-+      testObjectKey: objectKey,
+-+    };
+-+  }
+++## Targeted Lane
+++
+++`npm run test:service:api-client`
+++
+++## Results
+++
+++| Command | Result |
+++|---|---|
+++| `node --check src/api/session-api-client.js` | PASS |
+++| `node --check tests/dev-runtime/ServerApiClientStandardization.test.mjs` | PASS |
+++| `npm run test:service:api-client` | PASS |
+++| `git diff --check` | PASS |
+++
+++## Notes
+++
+++- The service lane is page/service-level and not named for Team Delta.
+++- Full `npm test` was not run because this PR is scoped to API client service coverage.
+ +
+-   ownerPromotionFoundation() {
+-     const steps = [
+-       {
+-@@ -4424,20 +4515,20 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
+-   }
+-
+-   async adminSystemHealthStorageHealthCheck() {
+--    const results = [];
+--    for (const actionId of SYSTEM_HEALTH_STORAGE_ACTION_IDS) {
+--      results.push(await this.runStorageConnectivityAction(actionId, { scope: "environment-folder" }));
+--    }
+-+    const validation = await this.runStorageExpandedValidation({ scope: "environment-folder" });
+-+    const results = Array.isArray(validation.storageDiagnostics) ? validation.storageDiagnostics : [];
+-     return {
+-       actionId: "storage-check",
+-       checkedAt: new Date().toISOString(),
+-       label: SYSTEM_HEALTH_MANUAL_ACTION_LABELS["storage-check"],
+--      message: "Storage health check executed bucket connectivity, list, upload, read, and delete through the current deployment API.",
+-+      message: validation.message || "Storage health check executed bucket connectivity, list, upload, read, and delete through the current deployment API.",
+-+      permanentObjectCreated: validation.permanentObjectCreated === true,
+-       secretEditingAllowed: false,
+-       secretsExposed: false,
+--      status: overallHealthStatus(results.map((result) => ({ status: result.status }))),
+-+      status: validation.status || overallHealthStatus(results.map((result) => ({ status: result.status }))),
+-       storageDiagnostics: results,
+-       storageStatus: this.ownerStorageStatus(),
+-+      validationDurationMs: validation.durationMs,
+-     };
+-   }
+-
+-diff --git a/tests/api/admin-system-health/contract.test.mjs b/tests/api/admin-system-health/contract.test.mjs
+-index 25aa84b34..54e821f13 100644
+---- a/tests/api/admin-system-health/contract.test.mjs
+-+++ b/tests/api/admin-system-health/contract.test.mjs
+-@@ -146,6 +146,25 @@ test("Admin System Health completion contract remains server-owned and current-e
+-       assert.equal(healthText.includes("/uat/projects"), false);
+-       assert.equal(health.secretEditingAllowed, false);
+-       assert.equal(health.secretsExposed, false);
+-+      const expandedStorage = await apiJson(server.baseUrl, "/api/admin/system-health/storage-connectivity-action", {
+-+        body: { actionId: "storage-expanded-validation" },
+-+        method: "POST",
+-+      });
+-+      assert.deepEqual(
+-+        expandedStorage.storageDiagnostics.map((row) => row.actionId),
+-+        [
+-+          "storage-bucket-connectivity",
+-+          "storage-list",
+-+          "storage-upload-test-object",
+-+          "storage-read-test-object",
+-+          "storage-delete-test-object",
+-+        ],
+-+      );
+-+      assert.equal(expandedStorage.storageDiagnostics.every((row) => row.environmentFolder === "/dev"), true);
+-+      assert.equal(expandedStorage.storageDiagnostics.every((row) => typeof row.durationMs === "number"), true);
+-+      assert.equal(expandedStorage.permanentObjectCreated, false);
+-+      assert.equal(JSON.stringify(expandedStorage).includes("api-secret"), false);
+-+      assert.equal(JSON.stringify(expandedStorage).includes("site-secret"), false);
+-     } finally {
+-       await server.close();
+-     }
+-diff --git a/tests/dev-runtime/AdminHealthOperations.test.mjs b/tests/dev-runtime/AdminHealthOperations.test.mjs
+-index 99fef0757..9ea40988a 100644
+---- a/tests/dev-runtime/AdminHealthOperations.test.mjs
+-+++ b/tests/dev-runtime/AdminHealthOperations.test.mjs
+-@@ -311,6 +311,12 @@ test("Admin can view operational health while Creator sessions are blocked", asy
+-         ],
+-       );
+-       assert.equal(storageAction.storageDiagnostics.every((row) => row.environmentFolder === "/local"), true);
+-+      assert.equal(storageAction.permanentObjectCreated, false);
+-+      assert.equal(typeof storageAction.validationDurationMs, "number");
+-+      assert.equal(storageAction.storageDiagnostics.every((row) => typeof row.durationMs === "number"), true);
+-+      assert.equal(storageAction.storageDiagnostics.every((row) => typeof row.operationLabel === "string"), true);
+-+      assert.equal(storageAction.storageDiagnostics.every((row) => typeof row.cleanupStatus === "string"), true);
+-+      assert.equal(storageAction.storageDiagnostics.every((row) => row.permanentObjectCreated === false), true);
+-       const refreshAction = await apiJson(server.baseUrl, "/api/admin/system-health/action", {
+-         body: { actionId: "refresh" },
+-         method: "POST",
+-diff --git a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+-index 56733ce6a..713344ac0 100644
+---- a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+-+++ b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+-@@ -233,6 +233,10 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
+-     await expect(page.locator("[data-admin-system-health-storage-value='upload']")).toContainText("/dev");
+-     await expect(page.locator("[data-admin-system-health-storage-value='read']")).not.toHaveText("Health object");
+-     await expect(page.locator("[data-admin-system-health-storage-value='delete']")).not.toHaveText("Health object");
+-+    await expect(page.locator("[data-admin-system-health-storage-timing='list']")).not.toHaveText("Loading");
+-+    await expect(page.locator("[data-admin-system-health-storage-timing='upload']")).not.toHaveText("Loading");
+-+    await expect(page.locator("[data-admin-system-health-storage-timing='read']")).not.toHaveText("Loading");
+-+    await expect(page.locator("[data-admin-system-health-storage-timing='delete']")).not.toHaveText("Loading");
+-     await expect(page.getByRole("table", { name: "Runtime health" })).toContainText("Runtime Health");
+-     await expect(page.locator("[data-admin-system-health-runtime-health-value='environment']")).toHaveText("DEV");
+-     await expect(page.locator("[data-admin-system-health-runtime-health-value='appVersion']")).toHaveText("1.0.0");
+-@@ -286,7 +290,7 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
+-       expect((title || ariaLabel || "").trim()).not.toEqual("");
+-     }
+-     expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/status"))).toBe(true);
+--    expect(context.requestUrls.filter((url) => url.includes("/api/admin/system-health/storage-connectivity-action"))).toHaveLength(5);
+-+    expect(context.requestUrls.filter((url) => url.includes("/api/admin/system-health/storage-connectivity-action"))).toHaveLength(1);
+-     await page.getByRole("button", { name: "Run Runtime Check" }).click();
+-     await expect(page.getByRole("table", { name: "Manual health action results" })).toContainText("Run Runtime Check");
+-     expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/action"))).toBe(true);
+-@@ -353,5 +357,5 @@ test("Admin System Health operations page keeps scripts and styles external", as
+-   expect(runtimeSource).not.toContain("localStorage");
+-   expect(runtimeSource).not.toContain("sessionStorage");
+-   expect(runtimeSource).toContain("runAdminSystemHealthAction");
+--  expect(runtimeSource).toContain("runAdminSystemHealthStorageConnectivityAction");
+-+  expect(runtimeSource).toContain("runAdminSystemHealthStorageExpandedValidation");
+- });
+diff --git a/package.json b/package.json
+index 72c3c9c32..05118574a 100644
+--- a/package.json
++++ b/package.json
+@@ -3,6 +3,7 @@
+   "scripts": {
+     "pretest": "node docs_build/dev/toolbox/checkSharedExtractionGuard.mjs",
+     "test": "node ./scripts/run-node-tests.mjs",
++    "test:service:api-client": "node ./scripts/run-node-test-files.mjs tests/dev-runtime/ServerApiClientStandardization.test.mjs",
+     "test:audit:locations": "node ./scripts/audit-playwright-test-locations.mjs",
+     "test:playwright:structure": "node ./scripts/audit-playwright-test-locations.mjs",
+     "test:playwright:zero-browser": "node ./scripts/run-targeted-test-lanes.mjs --zero-browser-only",
+diff --git a/src/api/session-api-client.js b/src/api/session-api-client.js
+index f31004ea1..3b8c69125 100644
+--- a/src/api/session-api-client.js
++++ b/src/api/session-api-client.js
+@@ -51,7 +51,7 @@ export function signIn(options = {}) {
  }
 
-+export function runAdminSystemHealthStorageExpandedValidation() {
-+  return runAdminSystemHealthStorageConnectivityAction("storage-expanded-validation");
-+}
+ export function logoutSessionUser() {
+-  return unwrap(safeRequestServerApi("/session/logout", { method: "POST" }), "Session logout");
++  return requireSessionApiData(safeRequestServerApi("/session/logout", { method: "POST" }), "Session logout");
+ }
+
+ export function signOut() {
+diff --git a/tests/dev-runtime/ServerApiClientStandardization.test.mjs b/tests/dev-runtime/ServerApiClientStandardization.test.mjs
+index 5530e4074..a694fa78e 100644
+--- a/tests/dev-runtime/ServerApiClientStandardization.test.mjs
++++ b/tests/dev-runtime/ServerApiClientStandardization.test.mjs
+@@ -1,10 +1,82 @@
+ import assert from "node:assert/strict";
+ import test from "node:test";
+
++import { clearPublicConfigCache } from "../../src/api/public-config-client.js";
+ import {
++  clearServerApiDiagnostics,
+   requireServerApiData,
+   SERVER_DATA_BOUNDARY_RULE,
+ } from "../../src/api/server-api-client.js";
++import { logoutSessionUser } from "../../src/api/session-api-client.js";
 +
- export function runAdminSystemHealthAction(actionId) {
-   return requireServerApiData(
-     safeRequestServerApi("/admin/system-health/action", {
-diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index 462d8b7a0..6dbb8a106 100644
---- a/src/dev-runtime/server/local-api-router.mjs
-+++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -356,6 +356,7 @@ const SYSTEM_HEALTH_STORAGE_ACTION_IDS = Object.freeze([
-   "storage-read-test-object",
-   "storage-delete-test-object",
- ]);
-+const SYSTEM_HEALTH_STORAGE_EXPANDED_VALIDATION_ACTION_ID = "storage-expanded-validation";
- const SYSTEM_HEALTH_MANUAL_ACTION_LABELS = Object.freeze({
-   "database-check": "Run Database Check",
-   "full-health-check": "Run Full Health Check",
-@@ -4046,43 +4047,75 @@ class ApiRuntimeDataSource {
-
-   storageConnectivityConfigFailure(actionId, storage, scope = "project-prefix") {
-     const missing = storage.config?.missingKeys?.join(", ") || storage.config?.validationError || "storage configuration incomplete";
-+    const action = STORAGE_CONNECTIVITY_ACTIONS.find((candidate) => candidate.id === actionId);
-     return {
-       actionId,
-+      cleanupStatus: "not-run",
-+      durationMs: 0,
-       environmentFolder: scope === "environment-folder" ? this.storageConnectivityEnvironmentFolder() : "",
-       executed: false,
-       lastChecked: new Date().toISOString(),
-       message: `Storage connectivity requires configured storage and GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX before this action can run. Missing or invalid: ${missing}.`,
-+      operation: action?.operation || "configuration",
-+      operationLabel: action?.label || "Storage configuration",
-+      permanentObjectCreated: false,
-       projectsPrefix: String(storage.config?.projectsPrefix || "").trim(),
-       secretEditingAllowed: false,
-       secretsExposed: false,
-       status: "FAIL",
-       storageStatus: this.ownerStorageStatus(),
-+      targetPrefix: scope === "environment-folder" ? this.storageConnectivityEnvironmentFolder() : String(storage.config?.projectsPrefix || "").trim(),
-     };
-   }
-
--  storageConnectivityResult({ actionId, environmentFolder = "", executed = true, keysListed = 0, message, objectKey, projectsPrefix, status }) {
-+  storageConnectivityResult({
-+    action,
-+    actionId,
-+    cleanupStatus = "not-applicable",
-+    durationMs = 0,
-+    environmentFolder = "",
-+    executed = true,
-+    keysListed = 0,
-+    message,
-+    objectKey,
-+    permanentObjectCreated = false,
-+    projectsPrefix,
-+    status,
-+    targetPrefix = "",
-+  }) {
-+    const resolvedAction = action || STORAGE_CONNECTIVITY_ACTIONS.find((candidate) => candidate.id === actionId) || {};
-     return {
-       actionId,
-+      cleanupStatus,
-+      durationMs,
-       environmentFolder,
-       executed,
-       keysListed,
-       lastChecked: new Date().toISOString(),
-       message,
-+      operation: resolvedAction.operation || "",
-+      operationLabel: resolvedAction.label || actionId,
-+      permanentObjectCreated,
-       projectsPrefix,
-       secretEditingAllowed: false,
-       secretsExposed: false,
-       status,
-       storageStatus: this.ownerStorageStatus(),
-+      targetPrefix,
-       testObjectKey: objectKey,
-     };
-   }
-
-   async runStorageConnectivityAction(actionId, options = {}) {
-+    if (actionId === SYSTEM_HEALTH_STORAGE_EXPANDED_VALIDATION_ACTION_ID) {
-+      return this.runStorageExpandedValidation(options);
-+    }
-     const action = STORAGE_CONNECTIVITY_ACTIONS.find((candidate) => candidate.id === actionId);
-     if (!action) {
-       throw new Error(`Unknown storage connectivity action: ${actionId || "missing actionId"}.`);
-     }
-
-+    const startedAt = Date.now();
-     const scope = options.scope === "environment-folder" ? "environment-folder" : "project-prefix";
-     const storage = createConfiguredProjectAssetStorage();
-     const projectsPrefix = String(storage.config?.projectsPrefix || "").trim();
-@@ -4098,7 +4131,9 @@ class ApiRuntimeDataSource {
-         const result = await storage.listObjects(targetPrefix);
-         const keysListed = Array.isArray(result.keys) ? result.keys.length : 0;
-         return this.storageConnectivityResult({
-+          action,
-           actionId: action.id,
-+          durationMs: Date.now() - startedAt,
-           environmentFolder,
-           keysListed,
-           message: result.ok
-@@ -4107,6 +4142,7 @@ class ApiRuntimeDataSource {
-           objectKey,
-           projectsPrefix,
-           status: result.ok ? "PASS" : "FAIL",
-+          targetPrefix,
-         });
-       }
-
-@@ -4116,7 +4152,9 @@ class ApiRuntimeDataSource {
-           : await storage.listProjectObjects();
-         const keysListed = Array.isArray(result.keys) ? result.keys.length : 0;
-         return this.storageConnectivityResult({
-+          action,
-           actionId: action.id,
-+          durationMs: Date.now() - startedAt,
-           environmentFolder,
-           keysListed,
-           message: result.ok
-@@ -4125,6 +4163,7 @@ class ApiRuntimeDataSource {
-           objectKey,
-           projectsPrefix,
-           status: result.ok ? "PASS" : "FAIL",
-+          targetPrefix,
-         });
-       }
-
-@@ -4135,14 +4174,19 @@ class ApiRuntimeDataSource {
-           objectKey,
-         });
-         return this.storageConnectivityResult({
-+          action,
-           actionId: action.id,
-+          cleanupStatus: result.ok ? "requires-delete-action" : "not-created",
-+          durationMs: Date.now() - startedAt,
-           environmentFolder,
-           message: result.ok
-             ? `Upload test object completed at ${objectKey}.
-             : `${result.message || "Storage upload failed."} Verify upload permission for ${targetPrefix}.`,
-           objectKey,
-+          permanentObjectCreated: result.ok === true,
-           projectsPrefix,
-           status: result.ok ? "PASS" : "FAIL",
-+          targetPrefix,
-         });
-       }
-
-@@ -4151,7 +4195,9 @@ class ApiRuntimeDataSource {
-         const text = result.ok ? Buffer.from(result.bytes || []).toString("utf8") : "";
-         const contentMatches = text === STORAGE_CONNECTIVITY_TEST_OBJECT_CONTENT;
-         return this.storageConnectivityResult({
-+          action,
-           actionId: action.id,
-+          durationMs: Date.now() - startedAt,
-           environmentFolder,
-           message: result.ok && contentMatches
-             ? `Read test object completed from ${objectKey}.
-@@ -4159,32 +4205,77 @@ class ApiRuntimeDataSource {
-           objectKey,
-           projectsPrefix,
-           status: result.ok && contentMatches ? "PASS" : "FAIL",
-+          targetPrefix,
-         });
-       }
-
-       const result = await storage.deleteObject(objectKey);
-       return this.storageConnectivityResult({
-+        action,
-         actionId: action.id,
-+        cleanupStatus: result.ok ? "completed" : "failed",
-+        durationMs: Date.now() - startedAt,
-         environmentFolder,
-         message: result.ok
-           ? `Delete test object completed at ${objectKey}.
-           : `${result.message || "Storage delete failed."} Verify delete permission for ${targetPrefix}.`,
-         objectKey,
-+        permanentObjectCreated: false,
-         projectsPrefix,
-         status: result.ok ? "PASS" : "FAIL",
-+        targetPrefix,
-       });
-     } catch (error) {
-       return this.storageConnectivityResult({
-+        action,
-         actionId: action.id,
-+        durationMs: Date.now() - startedAt,
-         environmentFolder,
-         message: `Storage connectivity action failed: ${error instanceof Error ? error.message : String(error || "Unknown storage error.")}`,
-         objectKey,
-         projectsPrefix,
-         status: "FAIL",
-+        targetPrefix,
-       });
-     }
-   }
-
-+  async runStorageExpandedValidation(options = {}) {
-+    const startedAt = Date.now();
-+    const scope = options.scope === "environment-folder" ? "environment-folder" : "project-prefix";
-+    const storage = createConfiguredProjectAssetStorage();
-+    const targetPrefix = this.storageConnectivityTargetPrefix(storage, scope);
-+    const objectKey = this.storageConnectivityTestObjectKey(storage, scope);
-+    const results = [];
-+    for (const actionId of SYSTEM_HEALTH_STORAGE_ACTION_IDS) {
-+      results.push(await this.runStorageConnectivityAction(actionId, { scope }));
-+    }
-+    const uploadResult = results.find((result) => result.actionId === "storage-upload-test-object");
-+    const deleteResult = results.find((result) => result.actionId === "storage-delete-test-object");
-+    const permanentObjectCreated = uploadResult?.status === "PASS" && deleteResult?.status !== "PASS";
-+    const status = overallHealthStatus(results);
-+    return {
-+      actionId: SYSTEM_HEALTH_STORAGE_EXPANDED_VALIDATION_ACTION_ID,
-+      cleanupStatus: permanentObjectCreated ? "failed" : "completed",
-+      durationMs: Date.now() - startedAt,
-+      environmentFolder: scope === "environment-folder" ? this.storageConnectivityEnvironmentFolder() : "",
-+      executed: true,
-+      lastChecked: new Date().toISOString(),
-+      message: permanentObjectCreated
-+        ? `Expanded R2 validation detected a cleanup failure for ${objectKey}; review storage credentials and delete permission.
-+        : `Expanded R2 validation completed against ${targetPrefix}; test object cleanup was attempted in the same validation run.`,
-+      permanentObjectCreated,
-+      projectsPrefix: String(storage.config?.projectsPrefix || "").trim(),
-+      secretEditingAllowed: false,
-+      secretsExposed: false,
-+      status,
-+      storageDiagnostics: results,
-+      storageStatus: this.ownerStorageStatus(),
-+      targetPrefix,
-+      testObjectKey: objectKey,
-+    };
-+  }
++function installMockServerApi(routes) {
++  const calls = [];
++  const previousWindow = globalThis.window;
++  const previousXmlHttpRequest = globalThis.XMLHttpRequest;
 +
-   ownerPromotionFoundation() {
-     const steps = [
-       {
-@@ -4424,20 +4515,20 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
-   }
-
-   async adminSystemHealthStorageHealthCheck() {
--    const results = [];
--    for (const actionId of SYSTEM_HEALTH_STORAGE_ACTION_IDS) {
--      results.push(await this.runStorageConnectivityAction(actionId, { scope: "environment-folder" }));
--    }
-+    const validation = await this.runStorageExpandedValidation({ scope: "environment-folder" });
-+    const results = Array.isArray(validation.storageDiagnostics) ? validation.storageDiagnostics : [];
-     return {
-       actionId: "storage-check",
-       checkedAt: new Date().toISOString(),
-       label: SYSTEM_HEALTH_MANUAL_ACTION_LABELS["storage-check"],
--      message: "Storage health check executed bucket connectivity, list, upload, read, and delete through the current deployment API.",
-+      message: validation.message || "Storage health check executed bucket connectivity, list, upload, read, and delete through the current deployment API.",
-+      permanentObjectCreated: validation.permanentObjectCreated === true,
-       secretEditingAllowed: false,
-       secretsExposed: false,
--      status: overallHealthStatus(results.map((result) => ({ status: result.status }))),
-+      status: validation.status || overallHealthStatus(results.map((result) => ({ status: result.status }))),
-       storageDiagnostics: results,
-       storageStatus: this.ownerStorageStatus(),
-+      validationDurationMs: validation.durationMs,
-     };
-   }
-
-diff --git a/tests/api/admin-system-health/contract.test.mjs b/tests/api/admin-system-health/contract.test.mjs
-index 25aa84b34..54e821f13 100644
---- a/tests/api/admin-system-health/contract.test.mjs
-+++ b/tests/api/admin-system-health/contract.test.mjs
-@@ -146,6 +146,25 @@ test("Admin System Health completion contract remains server-owned and current-e
-       assert.equal(healthText.includes("/uat/projects"), false);
-       assert.equal(health.secretEditingAllowed, false);
-       assert.equal(health.secretsExposed, false);
-+      const expandedStorage = await apiJson(server.baseUrl, "/api/admin/system-health/storage-connectivity-action", {
-+        body: { actionId: "storage-expanded-validation" },
-+        method: "POST",
++  clearPublicConfigCache();
++  clearServerApiDiagnostics();
++
++  globalThis.window = {
++    GameFoundryPublicConfig: {
++      apiUrl: "http://runtime-api.test/api",
++    },
++  };
++
++  globalThis.XMLHttpRequest = class MockXMLHttpRequest {
++    constructor() {
++      this.headers = {};
++      this.responseText = "";
++      this.status = 0;
++    }
++
++    open(method, url, async) {
++      this.method = method;
++      this.url = url;
++      this.async = async;
++    }
++
++    setRequestHeader(name, value) {
++      this.headers[name] = value;
++    }
++
++    send(body) {
++      calls.push({
++        body,
++        headers: { ...this.headers },
++        method: this.method,
++        url: this.url,
 +      });
-+      assert.deepEqual(
-+        expandedStorage.storageDiagnostics.map((row) => row.actionId),
-+        [
-+          "storage-bucket-connectivity",
-+          "storage-list",
-+          "storage-upload-test-object",
-+          "storage-read-test-object",
-+          "storage-delete-test-object",
-+        ],
-+      );
-+      assert.equal(expandedStorage.storageDiagnostics.every((row) => row.environmentFolder === "/dev"), true);
-+      assert.equal(expandedStorage.storageDiagnostics.every((row) => typeof row.durationMs === "number"), true);
-+      assert.equal(expandedStorage.permanentObjectCreated, false);
-+      assert.equal(JSON.stringify(expandedStorage).includes("api-secret"), false);
-+      assert.equal(JSON.stringify(expandedStorage).includes("site-secret"), false);
-     } finally {
-       await server.close();
-     }
-diff --git a/tests/dev-runtime/AdminHealthOperations.test.mjs b/tests/dev-runtime/AdminHealthOperations.test.mjs
-index 99fef0757..9ea40988a 100644
---- a/tests/dev-runtime/AdminHealthOperations.test.mjs
-+++ b/tests/dev-runtime/AdminHealthOperations.test.mjs
-@@ -311,6 +311,12 @@ test("Admin can view operational health while Creator sessions are blocked", asy
-         ],
-       );
-       assert.equal(storageAction.storageDiagnostics.every((row) => row.environmentFolder === "/local"), true);
-+      assert.equal(storageAction.permanentObjectCreated, false);
-+      assert.equal(typeof storageAction.validationDurationMs, "number");
-+      assert.equal(storageAction.storageDiagnostics.every((row) => typeof row.durationMs === "number"), true);
-+      assert.equal(storageAction.storageDiagnostics.every((row) => typeof row.operationLabel === "string"), true);
-+      assert.equal(storageAction.storageDiagnostics.every((row) => typeof row.cleanupStatus === "string"), true);
-+      assert.equal(storageAction.storageDiagnostics.every((row) => row.permanentObjectCreated === false), true);
-       const refreshAction = await apiJson(server.baseUrl, "/api/admin/system-health/action", {
-         body: { actionId: "refresh" },
-         method: "POST",
-diff --git a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-index 56733ce6a..713344ac0 100644
---- a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-+++ b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-@@ -233,6 +233,10 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
-     await expect(page.locator("[data-admin-system-health-storage-value='upload']")).toContainText("/dev");
-     await expect(page.locator("[data-admin-system-health-storage-value='read']")).not.toHaveText("Health object");
-     await expect(page.locator("[data-admin-system-health-storage-value='delete']")).not.toHaveText("Health object");
-+    await expect(page.locator("[data-admin-system-health-storage-timing='list']")).not.toHaveText("Loading");
-+    await expect(page.locator("[data-admin-system-health-storage-timing='upload']")).not.toHaveText("Loading");
-+    await expect(page.locator("[data-admin-system-health-storage-timing='read']")).not.toHaveText("Loading");
-+    await expect(page.locator("[data-admin-system-health-storage-timing='delete']")).not.toHaveText("Loading");
-     await expect(page.getByRole("table", { name: "Runtime health" })).toContainText("Runtime Health");
-     await expect(page.locator("[data-admin-system-health-runtime-health-value='environment']")).toHaveText("DEV");
-     await expect(page.locator("[data-admin-system-health-runtime-health-value='appVersion']")).toHaveText("1.0.0");
-@@ -286,7 +290,7 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
-       expect((title || ariaLabel || "").trim()).not.toEqual("");
-     }
-     expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/status"))).toBe(true);
--    expect(context.requestUrls.filter((url) => url.includes("/api/admin/system-health/storage-connectivity-action"))).toHaveLength(5);
-+    expect(context.requestUrls.filter((url) => url.includes("/api/admin/system-health/storage-connectivity-action"))).toHaveLength(1);
-     await page.getByRole("button", { name: "Run Runtime Check" }).click();
-     await expect(page.getByRole("table", { name: "Manual health action results" })).toContainText("Run Runtime Check");
-     expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/action"))).toBe(true);
-@@ -353,5 +357,5 @@ test("Admin System Health operations page keeps scripts and styles external", as
-   expect(runtimeSource).not.toContain("localStorage");
-   expect(runtimeSource).not.toContain("sessionStorage");
-   expect(runtimeSource).toContain("runAdminSystemHealthAction");
--  expect(runtimeSource).toContain("runAdminSystemHealthStorageConnectivityAction");
-+  expect(runtimeSource).toContain("runAdminSystemHealthStorageExpandedValidation");
++      const route = routes[`${this.method} ${this.url}`] || {
++        payload: {
++          error: `No mock route for ${this.method} ${this.url}`,
++          ok: false,
++        },
++        status: 404,
++      };
++      this.status = route.status;
++      this.responseText = JSON.stringify(route.payload);
++    }
++  };
++
++  return {
++    calls,
++    restore() {
++      if (previousWindow === undefined) {
++        delete globalThis.window;
++      } else {
++        globalThis.window = previousWindow;
++      }
++      if (previousXmlHttpRequest === undefined) {
++        delete globalThis.XMLHttpRequest;
++      } else {
++        globalThis.XMLHttpRequest = previousXmlHttpRequest;
++      }
++      clearPublicConfigCache();
++      clearServerApiDiagnostics();
++    },
++  };
++}
+
+ test("requireServerApiData returns the server data payload", () => {
+   assert.deepEqual(
+@@ -57,3 +129,57 @@ test("requireServerApiData supports client-specific restore guidance", () => {
+     /Admin setup status did not return server data\. Restore the admin setup API\./,
+   );
  });
++
++test("logoutSessionUser uses the standardized session server data boundary", () => {
++  const mockApi = installMockServerApi({
++    "POST http://runtime-api.test/api/session/logout": {
++      payload: {
++        data: {
++          authenticated: false,
++          userKey: "",
++        },
++        ok: true,
++      },
++      status: 200,
++    },
++  });
++
++  try {
++    assert.deepEqual(logoutSessionUser(), {
++      authenticated: false,
++      userKey: "",
++    });
++    assert.deepEqual(mockApi.calls, [
++      {
++        body: null,
++        headers: {
++          Accept: "application/json",
++        },
++        method: "POST",
++        url: "http://runtime-api.test/api/session/logout",
++      },
++    ]);
++  } finally {
++    mockApi.restore();
++  }
++});
++
++test("logoutSessionUser preserves session restore guidance for missing server data", () => {
++  const mockApi = installMockServerApi({
++    "POST http://runtime-api.test/api/session/logout": {
++      payload: {
++        ok: true,
++      },
++      status: 200,
++    },
++  });
++
++  try {
++    assert.throws(
++      () => logoutSessionUser(),
++      /Session logout did not return server data\. Restore the server auth\/session API\./,
++    );
++  } finally {
++    mockApi.restore();
++  }
++});
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests.md b/docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests.md
+new file mode 100644
+index 000000000..f7d6337e0
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests.md
+@@ -0,0 +1,63 @@
++# PR_26175_DELTA_007-runtime-api-client-service-tests
++
++## Summary
++
++Team Delta added service-level API client coverage for the standardized Browser -> Server API -> Data Source boundary.
++
++This PR fixes the session logout API client to use the same `requireServerApiData(...)` unwrap path as the other session client calls. It also adds targeted tests proving logout uses the configured server API URL, returns `payload.data`, and preserves the session-specific restore guidance when server data is missing.
++
++## Scope
++
++- Team: Delta
++- Branch: `PR_26175_DELTA_007-runtime-api-client-service-tests`
++- Runtime file changed: `src/api/session-api-client.js`
++- Test file changed: `tests/dev-runtime/ServerApiClientStandardization.test.mjs`
++- Service test command added: `npm run test:service:api-client`
++- Site-wide command preserved: `npm test`
++
++## Runtime Impact
++
++PASS - Session logout now follows the standardized server-data boundary instead of calling an undefined helper.
++
++## API / Data Impact
++
++PASS - No API routes or persisted data contracts changed. The browser API client still calls `/session/logout` with `POST` and reads server-owned `payload.data`.
++
++## Requirement Checklist
++
++| Requirement | Status | Notes |
++|---|---|---|
++| One PR purpose only | PASS | API client service testability only. |
++| Team Delta ownership only | PASS | API clients and runtime test coverage are Delta-owned. |
++| No team-specific test runner | PASS | No Delta-named runner or command added. |
++| No `scripts/run-delta-runtime-validation.mjs` | PASS | File was not added. |
++| No `test:delta-runtime` | PASS | Script was not added. |
++| Testing organized by service/page level | PASS | Added `test:service:api-client`. |
++| Keep `npm test` as site-wide command | PASS | Existing `npm test` is unchanged. |
++| No UI changes | PASS | No UI files changed. |
++| No browser-owned product data | PASS | Test stubs only the server API response; no persisted browser data source added. |
++| No silent fallbacks or hidden defaults | PASS | Missing server data still throws explicit restore guidance. |
++
++## Validation Lane Report
++
++| Command | Status | Notes |
++|---|---|---|
++| `node --check src/api/session-api-client.js` | PASS | API client syntax valid. |
++| `node --check tests/dev-runtime/ServerApiClientStandardization.test.mjs` | PASS | Test syntax valid. |
++| `npm run test:service:api-client` | PASS | 1 targeted file, 6 tests passed. |
++| `git diff --check` | PASS | No whitespace errors. |
++| `npm run codex:review-artifacts` | PASS | Regenerated `codex_review.diff` and `codex_changed_files.txt`. |
++
++## Manual Validation Notes
++
++- Confirmed `package.json` keeps `npm test` unchanged.
++- Confirmed no Team Delta-specific validation command was introduced.
++- Confirmed session logout test uses mocked server API data instead of browser-owned persisted state.
++- Playwright was not run; this is a Node service/API-client coverage change.
++
++## ZIP
++
++Expected repo-structured delta ZIP:
++
++`tmp/PR_26175_DELTA_007-runtime-api-client-service-tests_delta.zip`
++
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_branch-validation.md b/docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_branch-validation.md
+new file mode 100644
+index 000000000..d8dc22bf1
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_branch-validation.md
+@@ -0,0 +1,10 @@
++# PR_26175_DELTA_007 Branch Validation
++
++| Check | Status | Evidence |
++|---|---|---|
++| Started from `main` | PASS | `main` was checked out and fast-forward pulled before work began. |
++| Local/origin sync before branch | PASS | `git rev-list --left-right --count main...origin/main` returned `0 0`. |
++| Worktree clean before branch | PASS | `git status --short` returned no entries. |
++| Working branch | PASS | `PR_26175_DELTA_007-runtime-api-client-service-tests`. |
++| Direct commit to `main` avoided | PASS | Changes were made only on the PR branch. |
++
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_manual-validation-notes.md b/docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_manual-validation-notes.md
+new file mode 100644
+index 000000000..13bd9f8b5
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_manual-validation-notes.md
+@@ -0,0 +1,9 @@
++# PR_26175_DELTA_007 Manual Validation Notes
++
++- Reviewed changed files for API-client-only scope.
++- Confirmed no UI files changed.
++- Confirmed no persisted browser-owned product data was introduced.
++- Confirmed no `scripts/run-delta-runtime-validation.mjs` file was added.
++- Confirmed no `test:delta-runtime` script was added.
++- Confirmed `npm test` remains the site-wide/all-tests command.
++
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_requirements-checklist.md b/docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_requirements-checklist.md
+new file mode 100644
+index 000000000..07cd3a160
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_requirements-checklist.md
+@@ -0,0 +1,11 @@
++# PR_26175_DELTA_007 Requirements Checklist
++
++| Requirement | Status | Notes |
++|---|---|---|
++| Branch from updated main | PASS | Branch created after fast-forward pull and sync check. |
++| Build smallest scoped change | PASS | Fixed session logout unwrap and added focused API client tests. |
++| Validate targeted tests | PASS | `npm run test:service:api-client` passed. |
++| Required reports created | PASS | PR report, branch validation, checklist, validation lane, manual notes, review diff, changed files. |
++| Repo-structured ZIP created | PASS | `tmp/PR_26175_DELTA_007-runtime-api-client-service-tests_delta.zip`. |
++| Open PR | PENDING | Opened after commit and push. |
++| Stop before merge approval | PASS | This PR is draft/open only; no merge performed. |
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_validation-lane.md b/docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_validation-lane.md
+new file mode 100644
+index 000000000..f3844a691
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_DELTA_007-runtime-api-client-service-tests_validation-lane.md
+@@ -0,0 +1,20 @@
++# PR_26175_DELTA_007 Validation Lane
++
++## Targeted Lane
++
++`npm run test:service:api-client`
++
++## Results
++
++| Command | Result |
++|---|---|
++| `node --check src/api/session-api-client.js` | PASS |
++| `node --check tests/dev-runtime/ServerApiClientStandardization.test.mjs` | PASS |
++| `npm run test:service:api-client` | PASS |
++| `git diff --check` | PASS |
++
++## Notes
++
++- The service lane is page/service-level and not named for Team Delta.
++- Full `npm test` was not run because this PR is scoped to API client service coverage.
++
