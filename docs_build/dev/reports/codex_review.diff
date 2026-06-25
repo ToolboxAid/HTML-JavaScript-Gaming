@@ -1,1062 +1,196 @@
-diff --git a/assets/theme-v2/css/accordion.css b/assets/theme-v2/css/accordion.css
-index b650f518e..df65a0332 100644
---- a/assets/theme-v2/css/accordion.css
-+++ b/assets/theme-v2/css/accordion.css
-@@ -75,8 +75,7 @@ details.vertical-accordion summary::-webkit-details-marker {
- }
-
- .horizontal-accordion-toggle__icon,
--.vertical-accordion__chevron,
--.tool-display-mode__chevron {
-+.vertical-accordion__chevron {
-   --accordion-button-border: var(--line);
-   --accordion-button-background: var(--panel-soft);
-   --accordion-button-color: var(--gold);
-@@ -109,8 +108,7 @@ details.vertical-accordion summary::-webkit-details-marker {
-   margin-left: auto
- }
-
--.vertical-accordion__chevron .theme-icon,
--.tool-display-mode__chevron .theme-icon {
-+.vertical-accordion__chevron .theme-icon {
-   height: var(--space-14);
-   width: var(--space-14)
- }
-diff --git a/assets/theme-v2/css/layout.css b/assets/theme-v2/css/layout.css
-index b392b3306..be0dab165 100644
---- a/assets/theme-v2/css/layout.css
-+++ b/assets/theme-v2/css/layout.css
-@@ -196,7 +196,6 @@ div {
-   min-width: var(--space-0)
- }
-
--body.tool-focus-mode .site-header,
- body.tool-focus-mode .page-title,
- body.tool-focus-mode .footer {
-   display: none !important
-@@ -313,6 +312,10 @@ body.tool-focus-mode:has(.tool-workspace--fullscreen-chrome) .site-header {
-   z-index: var(--z-index-lg)
- }
-
-+body.tool-focus-mode .site-header > .container.nav {
-+  display: none !important
-+}
-+
- body.tool-focus-mode:has(.tool-workspace--fullscreen-chrome) .footer {
-   inset-block-end: var(--space-0);
-   inset-inline: var(--space-0);
-diff --git a/assets/theme-v2/css/panels.css b/assets/theme-v2/css/panels.css
-index 74f68f0c0..901895252 100644
---- a/assets/theme-v2/css/panels.css
-+++ b/assets/theme-v2/css/panels.css
-@@ -274,11 +274,7 @@ body.tool-focus-mode .tool-center-panel:has(>details.vertical-accordion)>p {
-   border-radius: var(--radius-lg);
-   background: var(--panel);
-   box-shadow: var(--shadow-lg);
--  overflow: hidden;
--  display: flex;
--  align-items: center;
--  justify-content: center;
--  gap: var(--space-12)
-+  overflow: hidden
- }
-
- .tool-display-mode summary {
-@@ -286,12 +282,15 @@ body.tool-focus-mode .tool-center-panel:has(>details.vertical-accordion)>p {
-   font-weight: var(--font-weight-heavy);
-   cursor: pointer;
-   list-style: none;
--  padding: var(--space-10) var(--space-44) var(--space-10) var(--space-10);
-+  padding: var(--space-10);
-   display: flex;
-   align-items: center;
--  justify-content: center;
--  gap: var(--space-10);
--  flex: 0 0 auto
-+  flex-direction: row;
-+  flex-wrap: wrap;
-+  justify-content: flex-start;
-+  gap: var(--space-8) var(--space-10);
-+  min-width: var(--space-0);
-+  width: 100%
- }
-
- .tool-display-mode summary::-webkit-details-marker {
-@@ -299,20 +298,17 @@ body.tool-focus-mode .tool-center-panel:has(>details.vertical-accordion)>p {
- }
-
- .tool-display-mode__mode-icon {
--  color: var(--cyan)
--}
--
--.tool-display-mode__chevron {
--  position: absolute;
--  right: var(--space-12);
--  top: 50%;
--  transform: translateY(-50%);
--  z-index: var(--z-index-sm)
-+  color: var(--gold);
-+  flex: 0 0 auto;
-+  height: calc(var(--icon-size-sm) * 2.6);
-+  margin-left: auto;
-+  width: calc(var(--icon-size-sm) * 2.6)
- }
-
- .tool-display-mode__badge {
--  width: 64px;
--  height: 64px;
-+  flex: 0 0 auto;
-+  width: 128px;
-+  height: 128px;
-   object-fit: contain;
-   object-position: center;
-   border: 0;
-@@ -320,71 +316,19 @@ body.tool-focus-mode .tool-center-panel:has(>details.vertical-accordion)>p {
-   background: transparent
- }
-
--.tool-display-mode__body {
--  display: grid;
--  grid-template-columns: auto minmax(var(--space-0), 1fr);
--  grid-template-rows: auto auto;
--  align-items: center;
--  column-gap: var(--space-15);
--  row-gap: var(--space-8);
--  min-width: var(--space-0);
--  padding: var(--space-10) var(--space-14) var(--space-10) var(--space-0)
--}
--
--.tool-display-mode__identity-row {
--  display: contents
--}
--
--.tool-display-mode__navigation-row {
--  grid-column: 2;
--  grid-row: 2;
--  display: flex;
--  align-items: center;
--  gap: var(--space-14);
--  flex-wrap: wrap
--}
--
--.tool-display-mode__navigation-link {
--  align-items: center;
--  color: var(--text);
--  display: inline-flex;
--  gap: var(--space-6);
--  line-height: var(--line-height-tight)
--}
--
--.tool-display-mode__navigation-link:hover,
--.tool-display-mode__navigation-link:focus-visible {
--  color: var(--gold)
--}
--
--.tool-display-mode__navigation-link--disabled {
--  color: var(--muted)
--}
--
--.tool-display-mode__navigation-icon {
--  color: currentColor
--}
--
- .tool-display-mode__character {
--  grid-column: 1;
--  grid-row: 1 / span 2;
--  width: 225px;
--  height: 127px;
-+  width: min(224px, 100%);
-+  height: auto;
-   object-fit: contain;
-   display: block;
--  flex: 0 0 auto
-+  flex: 0 0 min(224px, 100%);
-+  min-width: min(144px, 100%)
- }
-
- .tool-display-mode__fullscreen-name {
--  display: none;
--  white-space: nowrap
--}
--
--.tool-display-mode__description {
--  grid-column: 2;
--  grid-row: 1;
--  color: var(--gold);
--  font-weight: var(--font-weight-heavy);
-+  display: inline-flex;
-+  flex: 1 1 4rem;
-+  min-width: var(--space-0);
-   overflow: hidden;
-   text-overflow: ellipsis;
-   white-space: nowrap
-@@ -393,17 +337,21 @@ body.tool-focus-mode .tool-center-panel:has(>details.vertical-accordion)>p {
- body.tool-focus-mode .tool-display-mode {
-   border-color: var(--line);
-   background: var(--panel);
--  box-shadow: var(--shadow-lg);
--  justify-content: center
-+  box-shadow: var(--shadow-lg)
- }
-
--body.tool-focus-mode .tool-display-mode__fullscreen-name {
--  display: inline
-+body.tool-focus-mode .tool-display-mode__badge {
-+  width: 64px;
-+  height: 64px
- }
-
--body.tool-focus-mode .tool-display-mode__badge {
--  width: 32px;
--  height: 32px
-+body.tool-focus-mode .tool-display-mode__character {
-+  display: none
-+}
-+
-+body.tool-focus-mode .tool-display-mode__fullscreen-name {
-+  justify-content: center;
-+  text-align: center
- }
-
- .side-menu a {
-diff --git a/assets/theme-v2/css/status.css b/assets/theme-v2/css/status.css
-index a82c83065..81af7d308 100644
---- a/assets/theme-v2/css/status.css
-+++ b/assets/theme-v2/css/status.css
-@@ -135,11 +135,11 @@ body.tool-focus-mode .toolbox-status-bar {
-
- body.tool-focus-mode {
-   --toolbox-status-bar-height: var(--space-52);
--  --toolbox-status-top-reserve: var(--space-0)
-+  --toolbox-status-top-reserve: var(--space-78)
- }
-
- body.tool-focus-mode:has(.platform-banner) {
--  --toolbox-status-top-reserve: var(--space-52)
-+  --toolbox-status-top-reserve: var(--space-78)
- }
-
- body.tool-focus-mode .tool-workspace {
-@@ -165,6 +165,10 @@ body.tool-focus-mode .tool-center-panel {
-   color: var(--text)
- }
-
-+body.tool-focus-mode [data-platform-banner-placement="footer"] {
-+  display: none !important
-+}
-+
- .platform-banner__inner {
-   width: var(--container-width);
-   margin: var(--space-0) auto;
-diff --git a/assets/theme-v2/js/tool-display-mode.js b/assets/theme-v2/js/tool-display-mode.js
-index cae5febcf..f35aa06e9 100644
---- a/assets/theme-v2/js/tool-display-mode.js
-+++ b/assets/theme-v2/js/tool-display-mode.js
-@@ -73,14 +73,8 @@
-         document.querySelectorAll("details.vertical-accordion").forEach(wireVerticalAccordionChevron);
-     }
-
--    function updateToolDisplayModeChevron() {
--        const iconName = displayMode.open ? "chevron-up" : "chevron-down";
--        const shell = createChevronShell(iconName, "tool-display-mode__chevron", "tool-display-mode__chevron-icon");
--        replaceIconNode(summary, ":scope > .tool-display-mode__chevron", shell);
--    }
--
-     function updateToolDisplayModeModeIcon() {
--        const iconName = document.body.classList.contains("tool-focus-mode") || document.fullscreenElement
-+        const iconName = document.body.classList.contains("tool-focus-mode")
-             ? "exit-fullscreen"
-             : "fullscreen";
-         const icon = createThemeIconNode(iconName, "layout-icon tool-display-mode__mode-icon");
-@@ -107,7 +101,6 @@
-     function refreshThemeIcons() {
-         refreshVerticalAccordionChevrons();
-         updateToolDisplayModeModeIcon();
--        updateToolDisplayModeChevron();
-         refreshHorizontalToggleIcons();
-     }
-
-@@ -146,68 +139,24 @@
-     const summary = document.createElement("summary");
-     summary.setAttribute("aria-label", "Tool Display Mode");
-     summary.title = "Tool Display Mode";
--    summary.appendChild(createThemeIconNode("fullscreen", "layout-icon tool-display-mode__mode-icon"));
-
-     const badge = document.createElement("img");
-     badge.className = "tool-display-mode__badge";
-     badge.src = publicImageSource(slot.dataset.toolIconSrc, "badges");
-     badge.alt = toolName + " badge";
--    summary.appendChild(badge);
-
-     const fullscreenName = document.createElement("span");
-     fullscreenName.className = "tool-display-mode__fullscreen-name";
-     fullscreenName.textContent = toolName;
--    summary.appendChild(fullscreenName);
--    displayMode.appendChild(summary);
--    displayMode.addEventListener("toggle", updateToolDisplayModeChevron);
--
--    const body = document.createElement("div");
--    body.className = "tool-display-mode__body";
--
--    const identityRow = document.createElement("div");
--    identityRow.className = "tool-display-mode__identity-row content-cluster";
--    identityRow.dataset.toolDisplayModeRow = "identity";
-
-     const character = document.createElement("img");
-     character.className = "tool-display-mode__character";
-     character.src = publicImageSource(slot.dataset.toolCharacterSrc, "characters");
-     character.alt = toolName + " character";
--    identityRow.appendChild(character);
--
--    const description = document.createElement("span");
--    description.className = "tool-display-mode__description";
--    description.textContent = toolName;
--    identityRow.appendChild(description);
--    body.appendChild(identityRow);
--    displayMode.appendChild(body);
-+    summary.append(badge, fullscreenName, character, createThemeIconNode("fullscreen", "layout-icon tool-display-mode__mode-icon"));
-+    displayMode.append(summary);
-     slot.replaceWith(displayMode);
-
--    function createNavigationControl(direction, target) {
--        const controlLabel = direction === "previous" ? "Previous" : "Next";
--        const dataAttribute = direction === "previous" ? "toolNavPrevious" : "toolNavNext";
--        const iconName = direction === "previous" ? "chevron-left" : "chevron-right";
--        const icon = createThemeIconNode(iconName, "layout-icon tool-display-mode__navigation-icon");
--        const label = document.createTextNode(controlLabel + ": " + (target?.label || "Unavailable"));
--
--        if (!target || target.disabled) {
--            const disabledText = document.createElement("span");
--            disabledText.className = "pill tool-display-mode__navigation-link tool-display-mode__navigation-link--disabled";
--            disabledText.dataset[dataAttribute] = "disabled";
--            disabledText.append(icon, label);
--            return disabledText;
--        }
--
--        const link = document.createElement("a");
--        link.className = "tool-display-mode__navigation-link";
--        link.href = target.href;
--        link.dataset[dataAttribute] = target.kind;
--        if (target.group) {
--            link.dataset.toolNavGroup = target.group;
--        }
--        link.append(icon, label);
--        return link;
--    }
--
-     function applyRegistryImages(registry) {
-         const registryTool = registry.getToolBySlug(toolSlug);
-         if (!registryTool) {
-@@ -240,35 +189,24 @@
-         badge.alt = registryName + " badge";
-         fullscreenName.textContent = registryName;
-         character.alt = registryName + " character";
--        description.textContent = registryName;
-         badge.src = registry.getToolImageSource(registryTool, "badge");
-         character.src = registry.getToolImageSource(registryTool, "tool");
-     }
-
--    async function renderToolNavigation() {
-+    async function renderToolDisplayMetadata() {
-         try {
-             const registry = await import("/toolbox/tool-registry-api-client.js");
-             const registryDiagnostic = registry.getToolRegistryApiDiagnostic();
-             if (registryDiagnostic) {
-                 throw new Error(registryDiagnostic);
-             }
--            const navigation = registry.getToolNavigationTargets(toolSlug);
-             applyRegistryImages(registry);
--            const navigationRow = document.createElement("nav");
--            navigationRow.className = "tool-display-mode__navigation-row content-cluster";
--            navigationRow.dataset.toolDisplayModeRow = "navigation";
--            navigationRow.setAttribute("aria-label", "Tool build-order navigation");
--            navigationRow.append(
--                createNavigationControl("previous", navigation.previous),
--                createNavigationControl("next", navigation.next)
--            );
--            body.appendChild(navigationRow);
-         } catch (error) {
--            console.warn("Tool navigation could not be loaded.", error);
-+            console.warn("Tool display metadata could not be loaded.", error);
-         }
-     }
-
--    renderToolNavigation();
-+    renderToolDisplayMetadata();
-
-     async function enterToolMode() {
-         document.body.classList.add("tool-focus-mode");
-@@ -296,6 +234,7 @@
-         } catch (error) {
-             console.warn("Exit fullscreen failed.", error);
-         }
-+        updateToolDisplayModeModeIcon();
-     }
-
-     summary.addEventListener("click", function (event) {
-@@ -309,15 +248,14 @@
-     });
-
-     document.addEventListener("fullscreenchange", function () {
--        if (!document.fullscreenElement && document.body.classList.contains("tool-focus-mode")) {
-+        if (!document.fullscreenElement) {
-             document.body.classList.remove("tool-focus-mode");
-             displayMode.open = true;
--            refreshThemeIcons();
-         }
-+        refreshThemeIcons();
-     });
-
-     refreshVerticalAccordionChevrons();
--    updateToolDisplayModeChevron();
-
-     document.querySelectorAll(".tool-workspace").forEach(function (workspace) {
-         const columns = workspace.querySelectorAll(":scope > .tool-column");
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 4cb4ab3d9..4694f15e5 100644
+index 4694f15e5..9efdaa670 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,27 +1,13 @@
--﻿assets/theme-v2/js/gamefoundry-partials.js
--assets/theme-v2/js/legal-document-page.js
--assets/theme-v2/partials/footer.html
--docs_build/dev/reports/PR_26175_OWNER_054-legal-corrected-package.md
-+assets/theme-v2/css/accordion.css
-+assets/theme-v2/css/layout.css
-+assets/theme-v2/css/panels.css
-+assets/theme-v2/css/status.css
-+assets/theme-v2/js/tool-display-mode.js
-+tests/playwright/tools/ToolDisplayModeSingleLineLayout.spec.mjs
-+docs_build/dev/reports/PR_26176_005-tool-display-mode-single-line-layout_report.md
-+docs_build/dev/reports/PR_26176_005-tool-display-mode-single-line-layout_branch-validation.md
-+docs_build/dev/reports/PR_26176_005-tool-display-mode-single-line-layout_validation-lane.md
-+docs_build/dev/reports/PR_26176_005-tool-display-mode-single-line-layout_requirements-checklist.md
-+docs_build/dev/reports/PR_26176_005-tool-display-mode-single-line-layout_manual-validation-notes.md
+@@ -1,13 +1,9 @@
+-assets/theme-v2/css/accordion.css
+-assets/theme-v2/css/layout.css
+-assets/theme-v2/css/panels.css
+-assets/theme-v2/css/status.css
+-assets/theme-v2/js/tool-display-mode.js
+-tests/playwright/tools/ToolDisplayModeSingleLineLayout.spec.mjs
+-docs_build/dev/reports/PR_26176_005-tool-display-mode-single-line-layout_report.md
+-docs_build/dev/reports/PR_26176_005-tool-display-mode-single-line-layout_branch-validation.md
+-docs_build/dev/reports/PR_26176_005-tool-display-mode-single-line-layout_validation-lane.md
+-docs_build/dev/reports/PR_26176_005-tool-display-mode-single-line-layout_requirements-checklist.md
+-docs_build/dev/reports/PR_26176_005-tool-display-mode-single-line-layout_manual-validation-notes.md
++docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_report.md
++docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_validation-lane.md
++docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_manual-validation-notes.md
++docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_requirements-checklist.md
++docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_branch-validation.md
++docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_tool-state.md
++docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_backlog.md
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
--docs_build/dev/reports/coverage_changed_js_guardrail.txt
--docs_build/dev/reports/playwright_v8_coverage_report.txt
--legal/community-guidelines.html
--legal/community-guidelines.md
--legal/cookie-policy.html
--legal/cookie-policy.md
--legal/cookies-policy.html
--legal/copyright-policy.html
--legal/copyright-policy.md
--legal/disclaimer.html
--legal/dmca-policy.html
--legal/dmca-policy.md
--legal/index.html
--legal/index.md
--legal/legal-nav.js
--legal/privacy-policy.html
--legal/privacy-policy.md
--legal/terms.html
--legal/terms-of-service.html
--legal/terms-of-service.md
--tests/playwright/tools/RemainingLegalPages.spec.mjs
-\ No newline at end of file
-diff --git a/tests/playwright/tools/ToolDisplayModeSingleLineLayout.spec.mjs b/tests/playwright/tools/ToolDisplayModeSingleLineLayout.spec.mjs
+diff --git a/docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_report.md b/docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_report.md
 new file mode 100644
-index 000000000..4655d8079
+index 000000000..da690df2f
 --- /dev/null
-+++ b/tests/playwright/tools/ToolDisplayModeSingleLineLayout.spec.mjs
-@@ -0,0 +1,419 @@
-+import { expect, test } from "@playwright/test";
-+import fs from "node:fs/promises";
-+import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
-+
-+const TOOL_IMAGE_FALLBACK = "/assets/theme-v2/images/image-missing.svg";
-+
-+const GAME_DESIGN_CONSTANTS = {
-+  GAME_DESIGN_GAME_TYPES: ["Platformer"],
-+  GAME_DESIGN_GENRES: ["Adventure"],
-+  GAME_DESIGN_PLAYER_MODES: [{ label: "Single Player", value: "1 Player" }],
-+  GAME_DESIGN_PLAY_STYLES: ["Exploration"],
-+};
-+
-+const GAME_DESIGN_SNAPSHOT = {
-+  activeDesign: null,
-+  activeGame: null,
-+  capabilityDemoGames: [],
-+  progressHandoff: {
-+    currentFocus: "Design",
-+    gameProgress: "Not started",
-+    progressChecklist: [],
-+    publishingProgress: "Not ready",
-+    recommendedNextTool: "Game Configuration",
-+  },
-+  tables: {},
-+};
-+
-+const GAME_DESIGN_VALIDATION = {
-+  findings: [],
-+  status: "Ready",
-+};
-+
-+const TOOL_REGISTRY_SNAPSHOT = {
-+  activeTools: [
-+    {
-+      displayName: "Build Game",
-+      folderName: "build-game",
-+      id: "build-game",
-+      imageSources: { badge: TOOL_IMAGE_FALLBACK, tool: TOOL_IMAGE_FALLBACK },
-+      name: "Build Game",
-+      path: "build-game",
-+      route: "/toolbox/build-game/index.html",
-+    },
-+    {
-+      displayName: "Game Design",
-+      folderName: "game-design",
-+      id: "game-design",
-+      imageSources: { badge: TOOL_IMAGE_FALLBACK, tool: TOOL_IMAGE_FALLBACK },
-+      name: "Game Design",
-+      path: "game-design",
-+      route: "/toolbox/game-design/index.html",
-+    },
-+    {
-+      displayName: "Game Hub",
-+      folderName: "game-hub",
-+      id: "game-hub",
-+      imageSources: { badge: TOOL_IMAGE_FALLBACK, tool: TOOL_IMAGE_FALLBACK },
-+      name: "Game Hub",
-+      path: "game-hub",
-+      route: "/toolbox/game-hub/index.html",
-+    },
-+  ],
-+  tools: [],
-+};
-+
-+TOOL_REGISTRY_SNAPSHOT.tools = TOOL_REGISTRY_SNAPSHOT.activeTools;
-+
-+async function openRepoPage(page, pathName) {
-+  const server = await startRepoServer();
-+  const pageErrors = [];
-+
-+  page.on("pageerror", (error) => {
-+    pageErrors.push(error.message);
-+  });
-+
-+  await page.route("**/api/toolbox/game-design/constants", async (route) => {
-+    await route.fulfill({ json: { data: GAME_DESIGN_CONSTANTS, ok: true } });
-+  });
-+  await page.route("**/api/public/config", async (route) => {
-+    await route.fulfill({
-+      json: {
-+        data: {
-+          environmentBanner: {
-+            active: true,
-+            message: "Development Environment",
-+            tone: "warning",
-+          },
-+          publicConfig: {},
-+        },
-+        ok: true,
-+      },
-+    });
-+  });
-+  await page.route("**/api/platform-settings/banner", async (route) => {
-+    await route.fulfill({
-+      json: {
-+        data: {
-+          banner: {
-+            active: false,
-+            message: "",
-+            tone: "info",
-+          },
-+          diagnostics: { active: false },
-+        },
-+        ok: true,
-+      },
-+    });
-+  });
-+  await page.route("**/api/toolbox/registry/snapshot", async (route) => {
-+    await route.fulfill({ json: { data: TOOL_REGISTRY_SNAPSHOT, ok: true } });
-+  });
-+  await page.route("**/api/toolbox/game-design/repositories", async (route) => {
-+    await route.fulfill({ json: { data: { repositoryId: "tool-display-mode-fixture" }, ok: true } });
-+  });
-+  await page.route("**/api/toolbox/game-design/repositories/**/methods/**", async (route) => {
-+    const methodName = decodeURIComponent(route.request().url().split("/methods/").pop() || "");
-+    const resultByMethod = {
-+      getSnapshot: GAME_DESIGN_SNAPSHOT,
-+      openGameContext: { message: "Opened fixture game." },
-+      saveDesign: { message: "Saved fixture design." },
-+      validateDesign: GAME_DESIGN_VALIDATION,
-+    };
-+    await route.fulfill({
-+      json: {
-+        data: { result: resultByMethod[methodName] || null },
-+        ok: true,
-+      },
-+    });
-+  });
-+
-+  await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
-+  return { pageErrors, server };
-+}
-+
-+function expectNoRuntimeErrors(failures) {
-+  expect(failures.pageErrors).toEqual([]);
-+}
-+
-+async function platformBannerSnapshot(page) {
-+  await expect(page.locator("header.site-header")).toBeVisible();
-+  await expect(page.locator("[data-platform-banner-source='environment-config'][data-platform-banner-placement='header']")).toHaveCount(1);
-+  await expect(page.locator("[data-platform-banner-source='environment-config'][data-platform-banner-placement='footer']")).toHaveCount(1);
-+  return page.evaluate(() => {
-+    const header = document.querySelector("header.site-header");
-+    const headerBanner = document.querySelector("[data-platform-banner-source='environment-config'][data-platform-banner-placement='header']");
-+    const footerBanner = document.querySelector("[data-platform-banner-source='environment-config'][data-platform-banner-placement='footer']");
-+    const headerInner = headerBanner?.querySelector(".platform-banner__inner") || null;
-+    const headerMessage = headerBanner?.querySelector(".platform-banner__message") || null;
-+    const footerMessage = footerBanner?.querySelector(".platform-banner__message") || null;
-+    const nav = header?.querySelector(":scope > .container.nav") || null;
-+    const headerBox = header?.getBoundingClientRect();
-+    const headerBannerBox = headerBanner?.getBoundingClientRect();
-+    const footerBannerBox = footerBanner?.getBoundingClientRect();
-+    const headerInnerBox = headerInner?.getBoundingClientRect();
-+    const navBox = nav?.getBoundingClientRect();
-+    return {
-+      footerBannerDisplay: footerBanner ? getComputedStyle(footerBanner).display : "",
-+      footerBannerHeight: Number((footerBannerBox?.height || 0).toFixed(2)),
-+      footerBannerVisible: Boolean(footerBannerBox && footerBannerBox.width > 0 && footerBannerBox.height > 0),
-+      footerMessageText: footerMessage?.textContent?.trim() || "",
-+      headerBannerDisplay: headerBanner ? getComputedStyle(headerBanner).display : "",
-+      headerBannerHeight: Number((headerBannerBox?.height || 0).toFixed(2)),
-+      headerBannerVisible: Boolean(headerBannerBox && headerBannerBox.width > 0 && headerBannerBox.height > 0),
-+      headerVisible: Boolean(headerBox && headerBox.width > 0 && headerBox.height > 0),
-+      headerInnerDisplay: headerInner ? getComputedStyle(headerInner).display : "",
-+      headerInnerHeight: Number((headerInnerBox?.height || 0).toFixed(2)),
-+      headerInnerVisible: Boolean(headerInnerBox && headerInnerBox.width > 0 && headerInnerBox.height > 0),
-+      headerMessageText: headerMessage?.textContent?.trim() || "",
-+      navDisplay: nav ? getComputedStyle(nav).display : "",
-+      navVisible: Boolean(navBox && navBox.width > 0 && navBox.height > 0),
-+    };
-+  });
-+}
-+
-+async function expectPlatformBannerMode(page, { focusMode }) {
-+  const snapshot = await platformBannerSnapshot(page);
-+  expect(snapshot.headerVisible).toBe(true);
-+  expect(snapshot.headerBannerDisplay).toBe("block");
-+  expect(snapshot.headerBannerVisible).toBe(true);
-+  expect(snapshot.headerMessageText).toBe("Development Environment");
-+  expect(snapshot.headerInnerDisplay).toBe("flex");
-+  expect(snapshot.headerInnerHeight).toBeGreaterThan(0);
-+  expect(snapshot.headerInnerVisible).toBe(true);
-+  expect(snapshot.footerMessageText).toBe("Development Environment");
-+  if (focusMode) {
-+    expect(snapshot.footerBannerDisplay).toBe("none");
-+    expect(snapshot.footerBannerHeight).toBe(0);
-+    expect(snapshot.footerBannerVisible).toBe(false);
-+    expect(snapshot.navDisplay).toBe("none");
-+    expect(snapshot.navVisible).toBe(false);
-+  } else {
-+    expect(snapshot.footerBannerDisplay).toBe("block");
-+    expect(snapshot.footerBannerHeight).toBeGreaterThan(0);
-+    expect(snapshot.footerBannerVisible).toBe(true);
-+    expect(snapshot.navDisplay).toBe("flex");
-+    expect(snapshot.navVisible).toBe(true);
-+  }
-+}
-+
-+async function toolDisplayControlSnapshot(page) {
-+  return page.locator("#toolDisplayMode").evaluate((displayMode) => {
-+    const summary = displayMode.querySelector("summary");
-+    const badge = summary.querySelector(".tool-display-mode__badge");
-+    const fullscreenName = summary.querySelector(".tool-display-mode__fullscreen-name");
-+    const character = summary.querySelector(".tool-display-mode__character");
-+    const modeIcon = summary.querySelector(".tool-display-mode__mode-icon");
-+    const baseIcon = document.createElement("span");
-+    baseIcon.className = "layout-icon";
-+    baseIcon.style.display = "inline-block";
-+    baseIcon.style.position = "absolute";
-+    baseIcon.style.visibility = "hidden";
-+    const goldProbe = document.createElement("span");
-+    goldProbe.style.color = "var(--gold)";
-+    goldProbe.style.position = "absolute";
-+    goldProbe.style.visibility = "hidden";
-+    document.body.append(baseIcon, goldProbe);
-+
-+    const displayModeBox = displayMode.getBoundingClientRect();
-+    const summaryBox = summary.getBoundingClientRect();
-+    const badgeBox = badge.getBoundingClientRect();
-+    const nameBox = fullscreenName.getBoundingClientRect();
-+    const characterBox = character.getBoundingClientRect();
-+    const iconBox = modeIcon.getBoundingClientRect();
-+    const baseBox = baseIcon.getBoundingClientRect();
-+    const summaryStyle = getComputedStyle(summary);
-+    const summaryContentRight = summaryBox.right - (parseFloat(summaryStyle.paddingRight) || 0);
-+    const summaryContentBox = {
-+      bottom: summaryBox.bottom - (parseFloat(summaryStyle.paddingBottom) || 0),
-+      left: summaryBox.left + (parseFloat(summaryStyle.paddingLeft) || 0),
-+      right: summaryBox.right - (parseFloat(summaryStyle.paddingRight) || 0),
-+      top: summaryBox.top + (parseFloat(summaryStyle.paddingTop) || 0),
-+    };
-+    const characterStyle = getComputedStyle(character);
-+    const characterVisible = characterStyle.display !== "none" && characterBox.width > 0 && characterBox.height > 0;
-+    const contentBoxes = [badgeBox, nameBox, iconBox];
-+    if (characterVisible) {
-+      contentBoxes.splice(2, 0, characterBox);
-+    }
-+    const boxesOverlap = (first, second) => !(
-+      first.right <= second.left ||
-+      second.right <= first.left ||
-+      first.bottom <= second.top ||
-+      second.bottom <= first.top
-+    );
-+    const contentContained = contentBoxes.every((box) => (
-+      box.left >= summaryContentBox.left - 1 &&
-+      box.right <= summaryContentBox.right + 1 &&
-+      box.top >= summaryContentBox.top - 1 &&
-+      box.bottom <= summaryContentBox.bottom + 1
-+    ));
-+    const contentDoesNotOverlap = contentBoxes.every((box, index) => (
-+      contentBoxes.slice(index + 1).every((otherBox) => !boxesOverlap(box, otherBox))
-+    ));
-+    const characterNaturalRatio = character.naturalWidth / character.naturalHeight;
-+    const sameVisualRow = contentBoxes.every((box) => {
-+      const itemCenter = box.top + (box.height / 2);
-+      const iconCenter = iconBox.top + (iconBox.height / 2);
-+      return Math.abs(itemCenter - iconCenter) <= 4;
-+    });
-+    const result = {
-+      badgeHeight: Number(badgeBox.height.toFixed(2)),
-+      badgeLeftAligned: Math.abs(badgeBox.left - summaryContentBox.left) <= 1,
-+      badgeWidth: Number(badgeBox.width.toFixed(2)),
-+      characterAfterName: characterBox.left >= nameBox.right - 1,
-+      characterDisplay: characterStyle.display,
-+      characterHeight: Number(characterBox.height.toFixed(2)),
-+      characterNaturalRatio: Number(characterNaturalRatio.toFixed(2)),
-+      characterRatio: Number((characterBox.width / characterBox.height).toFixed(2)),
-+      characterVisible,
-+      characterWidth: Number(characterBox.width.toFixed(2)),
-+      chevronCount: summary.querySelectorAll(".tool-display-mode__chevron").length,
-+      contentContained,
-+      contentDoesNotOverlap,
-+      controlRightAligned: Math.abs(summaryBox.right - displayModeBox.right) <= 3,
-+      displayModeChildren: Array.from(displayMode.children).map((child) => child.tagName.toLowerCase()),
-+      fullscreenNameDisplay: getComputedStyle(fullscreenName).display,
-+      fullscreenNameFlexGrow: getComputedStyle(fullscreenName).flexGrow,
-+      fullscreenNameJustifyContent: getComputedStyle(fullscreenName).justifyContent,
-+      fullscreenNameMinWidth: getComputedStyle(fullscreenName).minWidth,
-+      fullscreenNameTextAlign: getComputedStyle(fullscreenName).textAlign,
-+      goldColor: getComputedStyle(goldProbe).color,
-+      iconColor: getComputedStyle(modeIcon).color,
-+      iconFile: modeIcon.dataset.themeIconFile,
-+      iconHeightScale: Number((iconBox.height / baseBox.height).toFixed(2)),
-+      iconName: modeIcon.dataset.themeIcon,
-+      iconAnchoredToSummaryRight: Math.abs(iconBox.right - summaryContentRight) <= 3,
-+      iconWidthScale: Number((iconBox.width / baseBox.width).toFixed(2)),
-+      navigationRowCount: summary.querySelectorAll(".tool-display-mode__navigation-row").length,
-+      navigationTextRemoved: !/Previous:|Next:/.test(summary.textContent || ""),
-+      sameVisualRow,
-+      summaryDisplay: summaryStyle.display,
-+      summaryFlexDirection: summaryStyle.flexDirection,
-+      summaryFlexWrap: summaryStyle.flexWrap,
-+      summaryChildren: Array.from(summary.children).map((child) => ({
-+        className: child.className,
-+        tagName: child.tagName.toLowerCase(),
-+        themeIcon: child.dataset.themeIcon || "",
-+      })),
-+      summaryOrder: getComputedStyle(summary).order,
-+    };
-+
-+    baseIcon.remove();
-+    goldProbe.remove();
-+    return result;
-+  });
-+}
-+
-+async function expectToolDisplayControl(page, { badgeSize, characterVisible, characterWidth = 0, focusMode = false, iconFile, iconName }) {
-+  await expect(page.locator("#toolDisplayMode summary .tool-display-mode__navigation-row")).toHaveCount(0);
-+  await expect(page.locator("#toolDisplayMode summary")).not.toContainText(/Previous:|Next:/);
-+  const snapshot = await toolDisplayControlSnapshot(page);
-+  expect(snapshot.badgeHeight).toBeCloseTo(badgeSize, 0);
-+  expect(snapshot.badgeLeftAligned).toBe(true);
-+  expect(snapshot.badgeWidth).toBeCloseTo(badgeSize, 0);
-+  expect(snapshot.characterVisible).toBe(characterVisible);
-+  if (characterVisible) {
-+    expect(snapshot.characterDisplay).toBe("block");
-+    expect(snapshot.characterHeight).toBeCloseTo(characterWidth / snapshot.characterNaturalRatio, 0);
-+    expect(snapshot.characterRatio).toBeCloseTo(snapshot.characterNaturalRatio, 1);
-+    expect(snapshot.characterWidth).toBeCloseTo(characterWidth, 0);
-+  } else {
-+    expect(snapshot.characterDisplay).toBe("none");
-+    expect(snapshot.characterHeight).toBe(0);
-+    expect(snapshot.characterWidth).toBe(0);
-+  }
-+  expect(snapshot.chevronCount).toBe(0);
-+  expect(snapshot.contentContained).toBe(true);
-+  expect(snapshot.contentDoesNotOverlap).toBe(true);
-+  expect(snapshot.controlRightAligned).toBe(true);
-+  expect(snapshot.displayModeChildren).toEqual(["summary"]);
-+  expect(snapshot.fullscreenNameDisplay).toBe("flex");
-+  expect(snapshot.fullscreenNameFlexGrow).toBe("1");
-+  expect(snapshot.fullscreenNameMinWidth).toBe("0px");
-+  if (focusMode) {
-+    expect(snapshot.fullscreenNameJustifyContent).toBe("center");
-+    expect(snapshot.fullscreenNameTextAlign).toBe("center");
-+  }
-+  expect(snapshot.iconColor).toBe(snapshot.goldColor);
-+  expect(snapshot.iconFile).toBe(iconFile);
-+  expect(snapshot.iconName).toBe(iconName);
-+  expect(snapshot.iconAnchoredToSummaryRight).toBe(true);
-+  expect(snapshot.iconHeightScale).toBeGreaterThanOrEqual(2.55);
-+  expect(snapshot.iconHeightScale).toBeLessThanOrEqual(2.65);
-+  expect(snapshot.iconWidthScale).toBeGreaterThanOrEqual(2.55);
-+  expect(snapshot.iconWidthScale).toBeLessThanOrEqual(2.65);
-+  expect(snapshot.navigationRowCount).toBe(0);
-+  expect(snapshot.navigationTextRemoved).toBe(true);
-+  expect(snapshot.sameVisualRow).toBe(true);
-+  expect(snapshot.summaryDisplay).toBe("flex");
-+  expect(snapshot.summaryFlexDirection).toBe("row");
-+  expect(snapshot.summaryFlexWrap).toBe("wrap");
-+  expect(snapshot.summaryChildren).toEqual([
-+    { className: "tool-display-mode__badge", tagName: "img", themeIcon: "" },
-+    { className: "tool-display-mode__fullscreen-name", tagName: "span", themeIcon: "" },
-+    { className: "tool-display-mode__character", tagName: "img", themeIcon: "" },
-+    {
-+      className: `theme-icon theme-icon--${iconName} layout-icon tool-display-mode__mode-icon`,
-+      tagName: "span",
-+      themeIcon: iconName,
-+    },
-+  ]);
-+  expect(snapshot.summaryOrder).toBe("0");
-+}
-+
-+async function expectModeIconUsesAutoMargin() {
-+  const css = await fs.readFile("assets/theme-v2/css/panels.css", "utf8");
-+  const layoutCss = await fs.readFile("assets/theme-v2/css/layout.css", "utf8");
-+  const statusCss = await fs.readFile("assets/theme-v2/css/status.css", "utf8");
-+  const js = await fs.readFile("assets/theme-v2/js/tool-display-mode.js", "utf8");
-+  expect(css).toMatch(/\.tool-display-mode__mode-icon\s*{[^}]*margin-left:\s*auto;/s);
-+  expect(css).not.toMatch(/\.tool-display-mode__(body|identity-row|description|navigation-row|navigation-link|navigation-icon)\b/);
-+  expect(layoutCss).toMatch(/body\.tool-focus-mode\s+\.site-header\s*>\s*\.container\.nav\s*{[^}]*display:\s*none\s*!important/s);
-+  expect(statusCss).not.toMatch(/tool-focus-mode\s+\.platform-banner__inner/);
-+  expect(statusCss).toMatch(/body\.tool-focus-mode\s+\[data-platform-banner-placement="footer"\]\s*{[^}]*display:\s*none\s*!important/s);
-+  expect(js).not.toMatch(/tool-display-mode__navigation-row|Previous:|Next:|getToolNavigationTargets|createNavigationControl/);
-+}
-+
-+test("shared Tool Display Mode uses the final single-line layout behavior", async ({ page }) => {
-+  const failures = await openRepoPage(page, "/toolbox/game-design/index.html");
-+
-+  try {
-+    await expectPlatformBannerMode(page, { focusMode: false });
-+    await expect(page.locator("#toolDisplayMode summary [data-theme-icon='fullscreen']")).toBeVisible();
-+    await expectToolDisplayControl(page, {
-+      badgeSize: 128,
-+      characterVisible: true,
-+      characterWidth: 224,
-+      iconFile: "gfs-fullscreen.svg",
-+      iconName: "fullscreen",
-+    });
-+    await expectModeIconUsesAutoMargin();
-+
-+    await page.locator("#toolDisplayMode summary").click();
-+    await expect(page.locator("body")).toHaveClass(/tool-focus-mode/);
-+    await expectPlatformBannerMode(page, { focusMode: true });
-+    await expectToolDisplayControl(page, {
-+      badgeSize: 64,
-+      characterVisible: false,
-+      focusMode: true,
-+      iconFile: "gfs-exit-fullscreen.svg",
-+      iconName: "exit-fullscreen",
-+    });
-+
-+    await page.locator("#toolDisplayMode summary").click();
-+    await expect(page.locator("body")).not.toHaveClass(/tool-focus-mode/);
-+    await expectPlatformBannerMode(page, { focusMode: false });
-+    await expectToolDisplayControl(page, {
-+      badgeSize: 128,
-+      characterVisible: true,
-+      characterWidth: 224,
-+      iconFile: "gfs-fullscreen.svg",
-+      iconName: "fullscreen",
-+    });
-+
-+    expectNoRuntimeErrors(failures);
-+  } finally {
-+    await failures.server.close();
-+  }
-+});
-diff --git a/docs_build/dev/reports/PR_26176_005-tool-display-mode-single-line-layout_report.md b/docs_build/dev/reports/PR_26176_005-tool-display-mode-single-line-layout_report.md
-new file mode 100644
-index 000000000..63f915949
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26176_005-tool-display-mode-single-line-layout_report.md
-@@ -0,0 +1,49 @@
-+# PR_26176_005-tool-display-mode-single-line-layout Report
++++ b/docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_report.md
+@@ -0,0 +1,40 @@
++﻿# PR_26176_006-alfa-tool-display-validation-closeout Report
 +
 +## Scope Source
-+- Active request: finalize existing branch `PR_26176_005-tool-display-mode-single-line-layout`.
-+- Branch gate: current branch confirmed as `PR_26176_005-tool-display-mode-single-line-layout`; no `PR_26176_006` or `PR_26176_007` branch was created.
-+- Worktree review: modified and untracked files were reviewed; accidental/unneeded `PR_26176_001` through `PR_26176_004` untracked report artifacts were removed.
-+- Note: `docs_build/dev/BUILD_PR.md` still describes `PR_26175_ALFA_047-theme-v2-svg-icon-registry`, so the user prompt was treated as the operative BUILD scope for this PR.
++- Active request: PR_26176_006-alfa-tool-display-validation-closeout.
++- Branch source: created from PR_26176_005-tool-display-mode-single-line-layout.
++- Purpose: validation-only closeout for the PR_26176_005 Tool Display Mode work.
++- Runtime/UI scope: no feature work, no UI enhancements, no runtime changes, and no CSS cleanup.
++- Note: docs_build/dev/BUILD_PR.md still describes PR_26175_ALFA_047-theme-v2-svg-icon-registry; the current user prompt was treated as the operative source for this stacked validation closeout.
 +
 +## Summary
-+- Updated the shared Tool Display Mode template so the `<summary>` directly owns the badge, tool name, character image, and fullscreen/exit-fullscreen icon in that order.
-+- Kept the fullscreen/exit-fullscreen theme icon as the final direct child of `<summary>`, gold, 2.6x the base layout icon, and anchored to the far right with `margin-left: auto`.
-+- Removed the old Tool Display Mode chevron, stacked body/identity/description layout, and rendered navigation row UI.
-+- Removed `nav.tool-display-mode__navigation-row`, `Previous: {tool}`, `Next: {tool}`, and CSS/JS used solely to render or populate that row.
-+- Normal mode now displays both shared platform banner placements, `data-platform-banner-placement="header"` and `data-platform-banner-placement="footer"`.
-+- Fullscreen mode keeps the header-placement platform banner visible, including `.platform-banner__inner` and the `Development Environment` message.
-+- Fullscreen mode hides the footer-placement platform banner with `data-platform-banner-placement="footer"`.
-+- Fullscreen mode hides the main site navigation container, `.site-header > div.container.nav`, including the brand/home navigation.
-+- Shared fullscreen CSS targets the banner placement attribute and does not target `.platform-banner__inner`.
-+- Fullscreen mode hides the character image, renders the badge at 64x64, centers the growing tool name, and keeps the exit icon anchored far right.
-+- Narrowed the focused Playwright validation to Tool Display Mode behavior only and renamed it to `ToolDisplayModeSingleLineLayout.spec.mjs`.
-+- Removed older PR_26176_001/002 validation assertions and style changes for horizontal accordion color and footer status icon sizing from this branch.
++- Re-ran focused Tool Display Mode validation against the existing shared implementation from PR_26176_005.
++- Reviewed the changed-file set for this branch and kept the 006 delta to reports, validation notes, changed-file manifest, and diff artifact only.
++- Confirmed no accidental PR_26176_001-004 leftovers were present in the 006 changed-file set.
++- Added Tool State and Backlog closeout notes without changing runtime Tool State contracts or backlog completion checkboxes.
++- Confirmed PR_26176_007 governance closeout remains blocked until PR_26176_005 and PR_26176_006 are merged to main.
 +
 +## Changed Files
-+- `assets/theme-v2/js/tool-display-mode.js`
-+- `assets/theme-v2/css/accordion.css`
-+- `assets/theme-v2/css/layout.css`
-+- `assets/theme-v2/css/panels.css`
-+- `assets/theme-v2/css/status.css`
-+- `tests/playwright/tools/ToolDisplayModeSingleLineLayout.spec.mjs`
-+- `docs_build/dev/reports/PR_26176_005-tool-display-mode-single-line-layout_report.md`
-+- `docs_build/dev/reports/PR_26176_005-tool-display-mode-single-line-layout_branch-validation.md`
-+- `docs_build/dev/reports/PR_26176_005-tool-display-mode-single-line-layout_validation-lane.md`
-+- `docs_build/dev/reports/PR_26176_005-tool-display-mode-single-line-layout_requirements-checklist.md`
-+- `docs_build/dev/reports/PR_26176_005-tool-display-mode-single-line-layout_manual-validation-notes.md`
-+- `docs_build/dev/reports/codex_changed_files.txt`
-+- `docs_build/dev/reports/codex_review.diff`
++- docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_report.md
++- docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_validation-lane.md
++- docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_manual-validation-notes.md
++- docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_requirements-checklist.md
++- docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_branch-validation.md
++- docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_tool-state.md
++- docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_backlog.md
++- docs_build/dev/reports/codex_changed_files.txt
++- docs_build/dev/reports/codex_review.diff
 +
 +## Validation
-+- `node --check assets/theme-v2/js/tool-display-mode.js`
-+- `node --check tests/playwright/tools/ToolDisplayModeSingleLineLayout.spec.mjs`
-+- `npx playwright test tests/playwright/tools/ToolDisplayModeSingleLineLayout.spec.mjs --workers=1`
-+- `git diff --check`
++-
++ode --check assets/theme-v2/js/tool-display-mode.js: PASS.
++-
++ode --check tests/playwright/tools/ToolDisplayModeSingleLineLayout.spec.mjs: PASS.
++-
++px playwright test tests/playwright/tools/ToolDisplayModeSingleLineLayout.spec.mjs --workers=1: PASS, 1 passed.
 +
-+## Notes
-+- No individual toolbox pages were modified.
-+- The previous fullscreen rule that hid `.platform-banner__inner` was removed.
-+- No `PR_26176_006` or `PR_26176_007` branch/artifact was created during this finalization pass.
-+- Game Journey completion metrics SQLite/Postgres behavior was not changed; that warning is documented as Golf-owned external storage migration work outside this PR.
-+- The focused Playwright run uses deterministic route fixtures for public config, platform banner settings, registry metadata, game-design constants, and minimal game-design repository calls.
-diff --git a/docs_build/dev/reports/PR_26176_005-tool-display-mode-single-line-layout_branch-validation.md b/docs_build/dev/reports/PR_26176_005-tool-display-mode-single-line-layout_branch-validation.md
-new file mode 100644
-index 000000000..9ae1a604c
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26176_005-tool-display-mode-single-line-layout_branch-validation.md
-@@ -0,0 +1,12 @@
-+# PR_26176_005 Branch Validation
++## Artifact
++- 	mp/PR_26176_006-alfa-tool-display-validation-closeout_delta.zip
 +
-+| Check | Status | Notes |
-+| --- | --- | --- |
-+| Active branch is `PR_26176_005-tool-display-mode-single-line-layout` | PASS | Confirmed with `git branch --show-current`. |
-+| Worktree reviewed before final packaging | PASS | Modified and untracked files were reviewed before report/ZIP regeneration. |
-+| No `PR_26176_006` branch created | PASS | User explicitly cancelled stacked PR creation; this pass stayed on PR_26176_005. |
-+| No `PR_26176_007` branch created | PASS | User explicitly cancelled stacked PR creation; this pass stayed on PR_26176_005. |
-+| Accidental/unneeded PR_26176_001-004 artifacts removed | PASS | Untracked PR_26176_001 through PR_26176_004 report files were deleted from the worktree. |
-+| Remaining changed files are PR_26176_005 scoped | PASS | Final changed-files report lists shared Tool Display Mode/layout code, focused Tool Display Mode validation, and required PR_26176_005 reports. |
-+| Fullscreen platform banner correction stayed in PR_26176_005 | PASS | Shared CSS keeps the header placement banner visible and hides only `[data-platform-banner-placement="footer"]` in focus mode. |
-+| Game Journey completion metrics storage warning handled | PASS | No SQLite/Postgres behavior changed; warning documented as Golf-owned external storage migration work. |
-diff --git a/docs_build/dev/reports/PR_26176_005-tool-display-mode-single-line-layout_validation-lane.md b/docs_build/dev/reports/PR_26176_005-tool-display-mode-single-line-layout_validation-lane.md
++## Closeout Timestamp
++- 2026-06-25 16:37:10 -04:00
+diff --git a/docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_validation-lane.md b/docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_validation-lane.md
 new file mode 100644
-index 000000000..1b1c467c9
+index 000000000..690f1d098
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26176_005-tool-display-mode-single-line-layout_validation-lane.md
-@@ -0,0 +1,35 @@
-+# PR_26176_005 Validation Lane
++++ b/docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_validation-lane.md
+@@ -0,0 +1,23 @@
++﻿# PR_26176_006 Validation Lane
 +
 +## Commands
 +
-+```powershell
++``powershell
 +node --check assets/theme-v2/js/tool-display-mode.js
 +node --check tests/playwright/tools/ToolDisplayModeSingleLineLayout.spec.mjs
 +npx playwright test tests/playwright/tools/ToolDisplayModeSingleLineLayout.spec.mjs --workers=1
-+git diff --check
-+```
++``
 +
 +## Results
-+- `node --check assets/theme-v2/js/tool-display-mode.js`: PASS.
-+- `node --check tests/playwright/tools/ToolDisplayModeSingleLineLayout.spec.mjs`: PASS.
-+- `npx playwright test tests/playwright/tools/ToolDisplayModeSingleLineLayout.spec.mjs --workers=1`: PASS, `1 passed`.
-+- `git diff --check`: PASS.
++-
++ode --check assets/theme-v2/js/tool-display-mode.js: PASS.
++-
++ode --check tests/playwright/tools/ToolDisplayModeSingleLineLayout.spec.mjs: PASS.
++-
++px playwright test tests/playwright/tools/ToolDisplayModeSingleLineLayout.spec.mjs --workers=1: PASS, 1 passed.
 +
-+## Browser Coverage
-+- Loaded `/toolbox/game-design/index.html`.
-+- Used deterministic Playwright route fixtures for public config environment banner, platform banner settings, game-design constants, registry metadata, and minimal repository responses.
-+- Verified normal mode displays both shared platform banner placements, `data-platform-banner-placement="header"` and `data-platform-banner-placement="footer"`.
-+- Verified the header and footer placement banners both carry the `Development Environment` message in normal mode.
-+- Verified normal mode keeps `.site-header > div.container.nav` visible.
-+- Verified fullscreen mode keeps `header.site-header` and the header-placement platform banner visible, including `.platform-banner__inner` and `Development Environment`.
-+- Verified fullscreen mode hides the footer-placement platform banner with `[data-platform-banner-placement="footer"]`.
-+- Verified fullscreen mode hides `.site-header > div.container.nav`, including the brand/home navigation.
-+- Verified shared status CSS targets `[data-platform-banner-placement="footer"]` and no longer contains a focus-mode rule that hides `.platform-banner__inner`.
-+- Verified exiting fullscreen restores the complete platform banner and returns the icon to `fullscreen`.
-+- Verified Tool Display Mode summary children are badge, tool name, character image, and fullscreen/exit icon in that order.
-+- Verified the fullscreen/exit icon is gold, 2.6x the base layout icon, and anchored to the far right using shared flexbox.
-+- Verified normal mode badge is 128x128 and character image is 224px wide with natural aspect ratio.
-+- Verified fullscreen mode hides the character image, keeps the badge visible at 64x64, centers/grows the title, and anchors the exit icon far right.
-+- Verified the row is a single visual line at the focused desktop width with no overlap or clipping.
-+- Verified `nav.tool-display-mode__navigation-row`, `Previous: {tool}`, and `Next: {tool}` are not rendered.
-+- Verified shared CSS/JS no longer contain the removed Tool Display Mode navigation/body/description selectors or navigation construction helpers.
-diff --git a/docs_build/dev/reports/PR_26176_005-tool-display-mode-single-line-layout_requirements-checklist.md b/docs_build/dev/reports/PR_26176_005-tool-display-mode-single-line-layout_requirements-checklist.md
++## Coverage Notes
++- Loaded /toolbox/game-design/index.html through the focused Tool Display Mode Playwright fixture.
++- Verified shared Tool Display Mode summary ordering, single-row layout, fullscreen/exit icon state, no navigation row, character visibility, badge sizing, and non-overlap geometry.
++- Verified platform banner placement behavior from PR_26176_005: header-placement banner remains visible in fullscreen and footer-placement banner is hidden in fullscreen.
++- No runtime, UI, CSS, JS, or test behavior was changed in PR_26176_006.
+diff --git a/docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_manual-validation-notes.md b/docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_manual-validation-notes.md
 new file mode 100644
-index 000000000..5fe70f5a0
+index 000000000..09ec4851f
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26176_005-tool-display-mode-single-line-layout_requirements-checklist.md
-@@ -0,0 +1,31 @@
-+# PR_26176_005 Requirements Checklist
++++ b/docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_manual-validation-notes.md
+@@ -0,0 +1,14 @@
++﻿# PR_26176_006 Manual Validation Notes
++
++## Review
++- Confirmed branch PR_26176_006-alfa-tool-display-validation-closeout was created from PR_26176_005-tool-display-mode-single-line-layout.
++- Reviewed the branch delta and kept it report-only.
++- Confirmed no individual toolbox pages were modified.
++- Confirmed no runtime code, shared CSS, shared JS, or Playwright test edits were made in this validation closeout branch.
++- Confirmed no accidental PR_26176_001-004 report artifacts were reintroduced.
++
++## Observations
++- Focused Tool Display Mode Playwright validation passed.
++- Tool State status is documented as unchanged/not applicable to this validation-only closeout.
++- Backlog status is documented as unchanged; no backlog checkbox was completed or reprioritized.
++- PR_26176_007 should not be started until PR_26176_005 and PR_26176_006 are merged, because its governance scope requires those merge checks to pass.
+diff --git a/docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_requirements-checklist.md b/docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_requirements-checklist.md
+new file mode 100644
+index 000000000..07de4c8e2
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_requirements-checklist.md
+@@ -0,0 +1,23 @@
++﻿# PR_26176_006 Requirements Checklist
 +
 +| Requirement | Status | Evidence |
 +| --- | --- | --- |
-+| Continue only on `PR_26176_005-tool-display-mode-single-line-layout` | PASS | Branch confirmed before cleanup and validation. |
-+| Do not create `PR_26176_006` or `PR_26176_007` | PASS | No new branch was created during finalization. |
-+| Review modified and untracked files | PASS | Dirty set was reviewed; final dirty set is scoped to PR_26176_005 files. |
-+| Remove accidental/unneeded PR_26176_001-004 artifacts | PASS | Untracked PR_26176_001 through PR_26176_004 report files were removed. |
-+| Preserve PR_26176_005 reports/specs | PASS | PR_26176_005 report, checklist, validation lane, branch validation, manual notes, diff, changed-files list, and focused spec were updated. |
-+| Use shared Theme V2/tool display CSS/JS only unless required | PASS | Runtime changes are limited to shared Theme V2 CSS and `tool-display-mode.js`; no individual toolbox pages changed. |
-+| Badge, title, character/image content, and fullscreen/exit icon align in one horizontal row where practical | PASS | Playwright geometry asserts one visual row at the focused desktop width with no overlap or clipping. |
-+| Fullscreen/exit icon remains anchored far right | PASS | Shared CSS uses `margin-left: auto`; Playwright verifies right-edge anchoring in normal, fullscreen, and restored states. |
-+| Remove old Tool Display Mode chevron | PASS | JS no longer renders `.tool-display-mode__chevron`; obsolete CSS selectors were removed. |
-+| Remove `nav.tool-display-mode__navigation-row` from all toolbox pages | PASS | Shared component no longer creates the navigation row. |
-+| Remove rendered `Previous: {tool}` and `Next: {tool}` UI | PASS | Playwright and static assertions verify those labels are not rendered by Tool Display Mode. |
-+| Remove CSS/JS used solely for the navigation row | PASS | Shared navigation-row, navigation-link, navigation-icon CSS and JS construction were removed. |
-+| Normal mode displays both platform banner placements | PASS | Playwright verifies header and footer `data-platform-banner-placement` banners are visible in normal mode. |
-+| Fullscreen keeps header-placement platform banner visible | PASS | Playwright verifies the header-placement banner, `.platform-banner__inner`, and `Development Environment` remain visible in focus mode. |
-+| Fullscreen hides footer-placement platform banner | PASS | Shared focus CSS targets `[data-platform-banner-placement="footer"]`; Playwright verifies the footer-placement banner is `display: none` in focus mode. |
-+| Fullscreen hides main site navigation container | PASS | Shared focus CSS hides `.site-header > div.container.nav`; Playwright verifies it is `display: none` in focus mode. |
-+| Do not target `.platform-banner__inner` for fullscreen banner hiding | PASS | Shared status CSS no longer contains a focus-mode rule for `.platform-banner__inner`; the footer placement is targeted by data attribute instead. |
-+| Normal mode character image renders at final requested size with aspect ratio preserved | PASS | Playwright verifies the character image is 224px wide with natural aspect ratio. |
-+| Normal mode badge is larger | PASS | Playwright verifies the badge is 128x128. |
-+| Fullscreen hides character image | PASS | Playwright verifies `.tool-display-mode__character` is not displayed in focus mode. |
-+| Fullscreen badge remains larger than the original focus badge | PASS | Playwright verifies the focus badge is 64x64. |
-+| Fullscreen badge left, tool name centered/growing, exit icon far right | PASS | Playwright verifies badge left alignment, centered title styling, flex growth, and icon right anchoring. |
-+| Preserve fullscreen icon state restoration | PASS | Playwright verifies the icon switches to exit-fullscreen in focus mode and returns to fullscreen after exit. |
-+| Do not change Game Journey completion metrics SQLite/Postgres behavior | PASS | No storage/runtime metrics files were changed; warning is documented as Golf-owned external storage migration work. |
-+| No unrelated cleanup | PASS | Older accordion color/footer status icon changes were removed from this branch; only PR_26176_005 files remain. |
-+| Produce reports under `docs_build/dev/reports/` | PASS | Required PR_26176_005 reports were generated/updated. |
-+| Produce repo-structured ZIP under `tmp/` | PASS | `tmp/PR_26176_005-tool-display-mode-single-line-layout_delta.zip` generated after validation. |
-diff --git a/docs_build/dev/reports/PR_26176_005-tool-display-mode-single-line-layout_manual-validation-notes.md b/docs_build/dev/reports/PR_26176_005-tool-display-mode-single-line-layout_manual-validation-notes.md
++| Start from PR_26176_005-tool-display-mode-single-line-layout | PASS | Branch was created from the current PR_26176_005 branch after the hard branch guard passed. |
++| Create PR_26176_006-alfa-tool-display-validation-closeout | PASS | Current branch is PR_26176_006-alfa-tool-display-validation-closeout. |
++| Validation only | PASS | Changed-file set is report-only plus codex_*; no runtime files changed in 006. |
++| No feature work | PASS | No feature files were edited. |
++| No UI enhancements | PASS | No UI code or CSS changes were made in 006. |
++| No CSS cleanup beyond blocker fixes | PASS | No CSS files changed in 006. |
++| Execute focused Tool Display Mode Playwright validation | PASS |
++px playwright test tests/playwright/tools/ToolDisplayModeSingleLineLayout.spec.mjs --workers=1 passed. |
++| Review all changed files | PASS | Branch delta was reviewed and limited to 006 closeout artifacts. |
++| Remove accidental leftovers | PASS | No accidental PR_26176_001-004 leftovers were present in the 006 changed-file set. |
++| Update Tool State | PASS | Tool State note added; no runtime Tool State contract changes required. |
++| Update Backlog | PASS | Backlog note added; no backlog checkbox/status changed. |
++| Update PR report | PASS | PR-specific report created. |
++| Update validation report | PASS | Validation lane report created. |
++| Update manual validation notes | PASS | Manual notes created. |
++| Produce codex_review.diff | PASS | Generated from the 006 changed-file manifest. |
++| Produce codex_changed_files.txt | PASS | Updated with the 006 report-only changed-file set. |
++| Produce repo ZIP | PASS | 	mp/PR_26176_006-alfa-tool-display-validation-closeout_delta.zip generated. |
++| Hard stop after reports are complete | PASS | PR_26176_007 is blocked/deferred until 005 and 006 are merged. |
+diff --git a/docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_branch-validation.md b/docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_branch-validation.md
 new file mode 100644
-index 000000000..5ca28c801
+index 000000000..3c759f431
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26176_005-tool-display-mode-single-line-layout_manual-validation-notes.md
-@@ -0,0 +1,22 @@
-+# PR_26176_005 Manual Validation Notes
++++ b/docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_branch-validation.md
+@@ -0,0 +1,10 @@
++﻿# PR_26176_006 Branch Validation
 +
-+## Manual Review
-+- Confirmed the active branch is `PR_26176_005-tool-display-mode-single-line-layout`.
-+- Reviewed modified and untracked files and removed accidental/unneeded PR_26176_001 through PR_26176_004 untracked report artifacts.
-+- Reviewed `assets/theme-v2/js/tool-display-mode.js` to confirm the shared summary template directly renders badge, title, character image, and mode icon.
-+- Reviewed `assets/theme-v2/css/panels.css`, `accordion.css`, `layout.css`, and `status.css` for shared-only Tool Display Mode/layout changes.
-+- Confirmed no individual toolbox pages were modified.
++| Check | Status | Notes |
++| --- | --- | --- |
++| Source branch | PASS | Created from PR_26176_005-tool-display-mode-single-line-layout. |
++| Current branch | PASS | PR_26176_006-alfa-tool-display-validation-closeout. |
++| Worktree before 006 edits | PASS | Clean after PR_26176_005 EOD commit. |
++| Runtime changes | PASS | None in 006. |
++| Report-only delta | PASS | 006 changed files are reports, codex_changed_files.txt, and codex_review.diff. |
++| PR_26176_007 readiness | BLOCKED | Governance closeout requires 005 and 006 merged; those conditions are not true yet. |
+diff --git a/docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_tool-state.md b/docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_tool-state.md
+new file mode 100644
+index 000000000..bc18d931f
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_tool-state.md
+@@ -0,0 +1,9 @@
++﻿# PR_26176_006 Tool State Update
 +
-+## Observations
-+- The shared Tool Display Mode no longer renders the navigation row or `Previous:` / `Next:` labels.
-+- The fullscreen/exit icon remains the final direct child of `<summary>`, uses the shared theme icon registry, and returns to the fullscreen SVG after exiting focus mode.
-+- Normal mode displays both shared platform banner placements, header and footer, including the `Development Environment` message.
-+- Fullscreen mode keeps the site header and header-placement platform banner visible, including `.platform-banner__inner` and the `Development Environment` message.
-+- Fullscreen mode hides the footer-placement platform banner using `[data-platform-banner-placement="footer"]`.
-+- Shared fullscreen CSS does not target `.platform-banner__inner` because both placement banners use the same inner structure.
-+- Fullscreen mode hides the main `.site-header > div.container.nav` navigation container, including the brand/home navigation.
-+- At the focused desktop Playwright width, the badge, title, character image, and fullscreen icon stay on one visual row without overlap or clipping.
-+- Normal mode renders the shared character image at 224px wide with `height: auto`, and the badge at 128x128.
-+- Fullscreen mode hides the shared character image, renders the badge at 64x64, centers the growing tool name, and keeps the exit-fullscreen icon anchored to the far right.
-+- Older PR_26176_001/002 horizontal accordion color and footer status icon validation/styling were removed from this branch during final cleanup.
-+- Game Journey completion metrics SQLite/Postgres behavior was not changed; the warning is Golf-owned external storage migration work outside this PR.
++## Status
++PASS - reviewed for applicability.
++
++## Notes
++- PR_26176_006 is validation-only and does not modify Tool State persistence, Tool State payload contracts, Workspace V2 toolState terminology, or Tool State Library behavior.
++- The focused Tool Display Mode validation does not create, mutate, or persist toolState payloads.
++- No Tool State source contract update was required for this closeout.
+diff --git a/docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_backlog.md b/docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_backlog.md
+new file mode 100644
+index 000000000..856b92b8c
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26176_006-alfa-tool-display-validation-closeout_backlog.md
+@@ -0,0 +1,10 @@
++﻿# PR_26176_006 Backlog Update
++
++## Status
++PASS - reviewed for applicability.
++
++## Notes
++- PR_26176_006 is a validation-only closeout for the already implemented PR_26176_005 Tool Display Mode work.
++- No backlog checkbox was completed, reprioritized, removed, or reassigned.
++- Existing Alfa backlog ownership remains unchanged.
++- PR_26176_007 remains blocked until PR_26176_005 and PR_26176_006 are merged, because its governance scope requires those merge checks.
