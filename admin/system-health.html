@@ -51,6 +51,7 @@
                                     <p>Notifications &amp; Alerts</p>
                                     <p>Local API Startup</p>
                                     <p>Database Health</p>
+                                    <p>Postgres Metrics</p>
                                     <p>Storage Health</p>
                                     <p>Runtime Health</p>
                                     <p>Health Check History</p>
@@ -290,6 +291,21 @@
                                     <tr><td>Response time</td><td data-admin-system-health-db-value="responseTime">Loading</td><td data-health-status="PENDING" data-admin-system-health-db-status="responseTime" title="Reason: database health has not loaded yet." aria-label="PENDING: database health has not loaded yet.">PENDING</td></tr>
                                     <tr><td>Version</td><td data-admin-system-health-db-value="version">Loading</td><td data-health-status="PENDING" data-admin-system-health-db-status="version" title="Reason: database health has not loaded yet." aria-label="PENDING: database health has not loaded yet.">PENDING</td></tr>
                                     <tr><td>Last checked</td><td data-admin-system-health-db-value="lastChecked">Loading</td><td data-health-status="PENDING" data-admin-system-health-db-status="lastChecked" title="Reason: database health has not loaded yet." aria-label="PENDING: database health has not loaded yet.">PENDING</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Postgres metrics">
+                                <caption>Postgres Metrics</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Metric</th>
+                                        <th scope="col">Safe Value</th>
+                                        <th scope="col">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-system-health-postgres-metric-rows>
+                                    <tr><td>Postgres metrics</td><td>Unavailable until safe API status loads</td><td data-health-status="PENDING" title="Reason: Postgres metrics have not loaded yet." aria-label="PENDING: Postgres metrics have not loaded yet.">PENDING</td></tr>
                                 </tbody>
                             </table>
                         </div>

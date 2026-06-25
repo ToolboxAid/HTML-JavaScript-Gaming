@@ -217,6 +217,16 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
     await expect(page.locator("[data-admin-system-health-db-value='lastChecked']")).not.toHaveText("Loading");
     await expect(page.getByRole("table", { name: "Database health" })).not.toContainText("postgres://");
     await expect(page.getByRole("table", { name: "Database health" })).not.toContainText("postgresql://");
+    const postgresMetricsTable = page.getByRole("table", { name: "Postgres metrics" });
+    await expect(postgresMetricsTable).toContainText("Connection status");
+    await expect(postgresMetricsTable).toContainText("Database name");
+    await expect(postgresMetricsTable).toContainText("Current schema");
+    await expect(postgresMetricsTable).toContainText("Migration status");
+    await expect(postgresMetricsTable).toContainText("Last migration");
+    await expect(postgresMetricsTable).toContainText("Table count");
+    await expect(postgresMetricsTable).toContainText("Database size");
+    await expect(postgresMetricsTable).not.toContainText("postgres://");
+    await expect(postgresMetricsTable).not.toContainText("postgresql://");
     await expect(page.getByRole("table", { name: "Storage health" })).toContainText("Cloudflare R2");
     await expect(page.locator("[data-admin-system-health-storage-value='bucket']")).toContainText("/dev");
     await expect(page.locator("[data-admin-system-health-storage-value='list']")).toContainText("/dev");
@@ -333,6 +343,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
   expect(pageSource).toContain("Runtime Health");
   expect(pageSource).toContain("Diagnostics Plan");
   expect(pageSource).toContain("Local API Startup Diagnostics");
+  expect(pageSource).toContain("Postgres Metrics");
   expect(pageSource).toContain("Server-owned Postgres health reader");
   expect(pageSource).toContain("Server-owned Cloudflare R2 storage diagnostic");
   expect(pageSource).toContain("assets/theme-v2/js/admin-system-health.js");

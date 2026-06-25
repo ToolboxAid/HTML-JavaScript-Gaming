@@ -142,6 +142,24 @@ test("Admin can view operational health while Creator sessions are blocked", asy
       assert.equal(typeof health.databaseStatus.lastChecked, "string");
       assert.equal(typeof health.databaseStatus.responseTimeMs === "number" || health.databaseStatus.responseTimeMs === null, true);
       assert.equal(typeof health.databaseStatus.version, "string");
+      assert.equal(health.postgresMetrics.secretEditingAllowed, false);
+      assert.equal(health.postgresMetrics.secretsExposed, false);
+      assert.deepEqual(
+        health.postgresMetrics.rows.map((row) => row.metric),
+        [
+          "Connection status",
+          "Database name",
+          "Current schema",
+          "Migration status",
+          "Last migration",
+          "Table count",
+          "Database size",
+          "Last checked",
+        ],
+      );
+      assert.equal(health.postgresMetrics.rows.every((row) => typeof row.value === "string"), true);
+      assert.equal(health.postgresMetrics.rows.some((row) => row.value === "Unavailable"), true);
+      assert.equal(health.databaseStatus.postgresMetrics.rows.length, health.postgresMetrics.rows.length);
       assert.equal(health.runtimeHealth.environmentName, "Local");
       assert.equal(health.runtimeHealth.appVersion, "1.0.0");
       assert.equal(health.runtimeHealth.apiVersion, "1.0.0");
@@ -318,6 +336,8 @@ test("Admin can view operational health while Creator sessions are blocked", asy
       const healthText = JSON.stringify(health.operationsHealth);
       assert.equal(healthText.includes("monthlyPriceCents"), false);
       assert.equal(healthText.includes("priceCents"), false);
+      assert.equal(JSON.stringify(health.postgresMetrics).includes("postgres://"), false);
+      assert.equal(JSON.stringify(health.postgresMetrics).includes("postgresql://"), false);
       assert.equal(health.secretEditingAllowed, false);
     } finally {
       await server.close();

@@ -1,27 +1,32 @@
-﻿assets/theme-v2/js/gamefoundry-partials.js
-assets/theme-v2/js/legal-document-page.js
-assets/theme-v2/partials/footer.html
-docs_build/dev/reports/PR_26175_OWNER_054-legal-corrected-package.md
-docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/coverage_changed_js_guardrail.txt
-docs_build/dev/reports/playwright_v8_coverage_report.txt
-legal/community-guidelines.html
-legal/community-guidelines.md
-legal/cookie-policy.html
-legal/cookie-policy.md
-legal/cookies-policy.html
-legal/copyright-policy.html
-legal/copyright-policy.md
-legal/disclaimer.html
-legal/dmca-policy.html
-legal/dmca-policy.md
-legal/index.html
-legal/index.md
-legal/legal-nav.js
-legal/privacy-policy.html
-legal/privacy-policy.md
-legal/terms.html
-legal/terms-of-service.html
-legal/terms-of-service.md
-tests/playwright/tools/RemainingLegalPages.spec.mjs
+# git status --short
+M admin/system-health.html
+ M assets/theme-v2/js/admin-system-health.js
+ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+ M docs_build/dev/reports/playwright_v8_coverage_report.txt
+ M src/dev-runtime/server/local-api-router.mjs
+ M tests/api/admin-system-health/contract.test.mjs
+ M tests/dev-runtime/AdminHealthOperations.test.mjs
+ M tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+?? docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_branch-validation.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_manual-validation-notes.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_requirements-checklist.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_validation-lane.md
+
+# git ls-files --others --exclude-standard
+docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel.md
+docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_branch-validation.md
+docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_manual-validation-notes.md
+docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_requirements-checklist.md
+docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_validation-lane.md
+
+# git diff --stat
+admin/system-health.html                           |  16 +++
+ assets/theme-v2/js/admin-system-health.js          |  42 ++++++++
+ .../dev/reports/coverage_changed_js_guardrail.txt  |   5 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |  29 ++++--
+ src/dev-runtime/server/local-api-router.mjs        | 115 +++++++++++++++++++--
+ tests/api/admin-system-health/contract.test.mjs    |  15 +++
+ tests/dev-runtime/AdminHealthOperations.test.mjs   |  20 ++++
+ .../tools/AdminHealthOperationsPage.spec.mjs       |  11 ++
+ 8 files changed, 233 insertions(+), 20 deletions(-)

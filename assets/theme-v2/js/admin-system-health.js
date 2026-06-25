@@ -74,6 +74,7 @@ class AdminSystemHealthController {
         this.notificationRows = root.querySelector("[data-admin-system-health-notification-rows]");
         this.serviceCards = root.querySelector("[data-admin-system-health-service-cards]");
         this.startupRows = root.querySelector("[data-admin-system-health-startup-rows]");
+        this.postgresMetricRows = root.querySelector("[data-admin-system-health-postgres-metric-rows]");
         this.runtimeRows = root.querySelector("[data-admin-system-health-runtime-rows]");
     }
 
@@ -145,6 +146,7 @@ class AdminSystemHealthController {
             this.setStatus(key, "PENDING", reason);
         });
         this.renderStartupPending(reason);
+        this.renderPostgresMetricsPending(reason);
         this.renderStoragePending(reason);
         this.renderRuntimeHealthPending(reason);
         this.renderEnvironmentCapabilitiesPending(reason);
@@ -213,6 +215,46 @@ class AdminSystemHealthController {
         this.setStatus("version", databaseStatus.versionStatus, reason);
         this.setValue("lastChecked", databaseStatus.lastChecked, "not available");
         this.setStatus("lastChecked", databaseStatus.lastChecked ? "PASS" : "WARN", reason);
+        this.renderPostgresMetrics(databaseStatus.postgresMetrics || {});
+    }
+
+    renderPostgresMetricsPending(reason) {
+        if (!this.postgresMetricRows) {
+            return;
+        }
+        const row = document.createElement("tr");
+        row.append(
+            this.createCell("Postgres metrics"),
+            this.createCell("Unavailable"),
+            this.createStatusCell("PENDING", reason),
+        );
+        this.postgresMetricRows.replaceChildren(row);
+    }
+
+    renderPostgresMetrics(postgresMetrics = {}) {
+        if (!this.postgresMetricRows) {
+            return;
+        }
+        if (postgresMetrics?.secretsExposed === true || postgresMetrics?.secretEditingAllowed === true) {
+            this.renderPostgresMetricsPending("Safe Postgres metrics response was blocked because it exposed secret controls.");
+            return;
+        }
+        const rows = Array.isArray(postgresMetrics.rows) ? postgresMetrics.rows : [];
+        if (!rows.length) {
+            this.renderPostgresMetricsPending("Safe Admin System Health API returned no Postgres metric rows.");
+            return;
+        }
+        const fragment = document.createDocumentFragment();
+        rows.forEach((metricRow) => {
+            const row = document.createElement("tr");
+            row.append(
+                this.createCell(metricRow.metric),
+                this.createCell(metricRow.value),
+                this.createStatusCell(metricRow.status, postgresMetrics.message),
+            );
+            fragment.append(row);
+        });
+        this.postgresMetricRows.replaceChildren(fragment);
     }
 
     renderStorageStatus(storageStatus = {}) {
