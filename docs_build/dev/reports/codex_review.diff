@@ -1,245 +1,1036 @@
-diff --git a/assets/theme-v2/css/status.css b/assets/theme-v2/css/status.css
-index a82c83065..8fdef0123 100644
---- a/assets/theme-v2/css/status.css
-+++ b/assets/theme-v2/css/status.css
-@@ -289,3 +289,55 @@ body.tool-focus-mode .tool-center-panel {
-     max-width: 30vw
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index 4dd326015..475a70fdd 100644
+--- a/docs_build/dev/reports/codex_changed_files.txt
++++ b/docs_build/dev/reports/codex_changed_files.txt
+@@ -1,31 +1,24 @@
+-# git diff --name-only pr/26177-CHARLIE-034-startup-runtime-report-cleanup --
+-assets/theme-v2/css/status.css
+-assets/theme-v2/css/tables.css
+-docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish.md
+-docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_branch-validation.md
+-docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_manual-validation-notes.md
+-docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_requirements-checklist.md
+-docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_validation-lane.md
+-docs_build/dev/reports/codex_changed_files.txt
+-docs_build/dev/reports/codex_review.diff
+-docs_build/dev/reports/coverage_changed_js_guardrail.txt
+-docs_build/dev/reports/playwright_v8_coverage_report.txt
+-
+ # git status --short
+- M docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish.md
++M docs_build/dev/reports/codex_changed_files.txt
+  M docs_build/dev/reports/codex_review.diff
+- M docs_build/dev/reports/coverage_changed_js_guardrail.txt
++ M package.json
++ M tests/engine/RuntimeEventSystem.test.mjs
++?? docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests.md
++?? docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_branch-validation.md
++?? docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_manual-validation-notes.md
++?? docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_requirements-checklist.md
++?? docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_validation-lane.md
++
++# git ls-files --others --exclude-standard
++docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests.md
++docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_branch-validation.md
++docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_manual-validation-notes.md
++docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_requirements-checklist.md
++docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_validation-lane.md
+
+-# git diff --stat pr/26177-CHARLIE-034-startup-runtime-report-cleanup --
+- assets/theme-v2/css/status.css                     |  52 ++
+- assets/theme-v2/css/tables.css                     |  37 ++
+- ...PR_26177_CHARLIE_035-system-health-ui-polish.md |  25 +
+- ...35-system-health-ui-polish_branch-validation.md |  14 +
+- ...tem-health-ui-polish_manual-validation-notes.md |   8 +
+- ...stem-health-ui-polish_requirements-checklist.md |  12 +
+- ..._035-system-health-ui-polish_validation-lane.md |  10 +
+- docs_build/dev/reports/codex_changed_files.txt     |  57 +-
+- docs_build/dev/reports/codex_review.diff           | 617 +++++++--------------
+- .../dev/reports/coverage_changed_js_guardrail.txt  |   4 +-
+- .../dev/reports/playwright_v8_coverage_report.txt  |  10 +-
+- 11 files changed, 382 insertions(+), 464 deletions(-)
++# git diff --stat
++docs_build/dev/reports/codex_changed_files.txt |  38 +---
++ docs_build/dev/reports/codex_review.diff       | 303 +++++--------------------
++ package.json                                   |   1 +
++ tests/engine/RuntimeEventSystem.test.mjs       |  26 ++-
++ 4 files changed, 94 insertions(+), 274 deletions(-)
+\ No newline at end of file
+diff --git a/docs_build/dev/reports/codex_review.diff b/docs_build/dev/reports/codex_review.diff
+index f3fb5cb1d..383190fa5 100644
+--- a/docs_build/dev/reports/codex_review.diff
++++ b/docs_build/dev/reports/codex_review.diff
+@@ -1,245 +1,554 @@
+-diff --git a/assets/theme-v2/css/status.css b/assets/theme-v2/css/status.css
+-index a82c83065..8fdef0123 100644
+---- a/assets/theme-v2/css/status.css
+-+++ b/assets/theme-v2/css/status.css
+-@@ -289,3 +289,55 @@ body.tool-focus-mode .tool-center-panel {
+-     max-width: 30vw
++diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
++index 4dd326015..b6b6b2931 100644
++--- a/docs_build/dev/reports/codex_changed_files.txt
+++++ b/docs_build/dev/reports/codex_changed_files.txt
++@@ -1,31 +1,11 @@
++-# git diff --name-only pr/26177-CHARLIE-034-startup-runtime-report-cleanup --
++-assets/theme-v2/css/status.css
++-assets/theme-v2/css/tables.css
++-docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish.md
++-docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_branch-validation.md
++-docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_manual-validation-notes.md
++-docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_requirements-checklist.md
++-docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_validation-lane.md
++-docs_build/dev/reports/codex_changed_files.txt
++-docs_build/dev/reports/codex_review.diff
++-docs_build/dev/reports/coverage_changed_js_guardrail.txt
++-docs_build/dev/reports/playwright_v8_coverage_report.txt
++-
++ # git status --short
++- M docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish.md
++- M docs_build/dev/reports/codex_review.diff
++- M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+++M package.json
+++ M tests/engine/RuntimeEventSystem.test.mjs
+++
+++# git ls-files --others --exclude-standard
+++(no output)
++
++-# git diff --stat pr/26177-CHARLIE-034-startup-runtime-report-cleanup --
++- assets/theme-v2/css/status.css                     |  52 ++
++- assets/theme-v2/css/tables.css                     |  37 ++
++- ...PR_26177_CHARLIE_035-system-health-ui-polish.md |  25 +
++- ...35-system-health-ui-polish_branch-validation.md |  14 +
++- ...tem-health-ui-polish_manual-validation-notes.md |   8 +
++- ...stem-health-ui-polish_requirements-checklist.md |  12 +
++- ..._035-system-health-ui-polish_validation-lane.md |  10 +
++- docs_build/dev/reports/codex_changed_files.txt     |  57 +-
++- docs_build/dev/reports/codex_review.diff           | 617 +++++++--------------
++- .../dev/reports/coverage_changed_js_guardrail.txt  |   4 +-
++- .../dev/reports/playwright_v8_coverage_report.txt  |  10 +-
++- 11 files changed, 382 insertions(+), 464 deletions(-)
+++# git diff --stat
+++package.json                             |  1 +
+++ tests/engine/RuntimeEventSystem.test.mjs | 26 +++++++++++++++++++++++++-
+++ 2 files changed, 26 insertions(+), 1 deletion(-)
++\ No newline at end of file
++diff --git a/docs_build/dev/reports/codex_review.diff b/docs_build/dev/reports/codex_review.diff
++index f3fb5cb1d..dd2b4809e 100644
++--- a/docs_build/dev/reports/codex_review.diff
+++++ b/docs_build/dev/reports/codex_review.diff
++@@ -1,245 +1,60 @@
++-diff --git a/assets/theme-v2/css/status.css b/assets/theme-v2/css/status.css
++-index a82c83065..8fdef0123 100644
++---- a/assets/theme-v2/css/status.css
++-+++ b/assets/theme-v2/css/status.css
++-@@ -289,3 +289,55 @@ body.tool-focus-mode .tool-center-panel {
++-     max-width: 30vw
+++diff --git a/package.json b/package.json
+++index 72c3c9c32..3cdc3e26b 100644
+++--- a/package.json
++++++ b/package.json
+++@@ -3,6 +3,7 @@
+++   "scripts": {
+++     "pretest": "node docs_build/dev/toolbox/checkSharedExtractionGuard.mjs",
+++     "test": "node ./scripts/run-node-tests.mjs",
++++    "test:service:runtime-events": "node ./scripts/run-node-test-files.mjs tests/engine/RuntimeEventSystem.test.mjs tests/engine/RuntimeTriggerProcessing.test.mjs tests/engine/RuntimeActionSystem.test.mjs",
+++     "test:audit:locations": "node ./scripts/audit-playwright-test-locations.mjs",
+++     "test:playwright:structure": "node ./scripts/audit-playwright-test-locations.mjs",
+++     "test:playwright:zero-browser": "node ./scripts/run-targeted-test-lanes.mjs --zero-browser-only",
+++diff --git a/tests/engine/RuntimeEventSystem.test.mjs b/tests/engine/RuntimeEventSystem.test.mjs
+++index 9a0b1fc01..f81ecf3fa 100644
+++--- a/tests/engine/RuntimeEventSystem.test.mjs
++++++ b/tests/engine/RuntimeEventSystem.test.mjs
+++@@ -61,6 +61,19 @@ export function run() {
+++     RUNTIME_EVENT_ERRORS.RUNTIME_EVENT_INVALID,
+++   ]);
+++
++++  const invalidCollectionsResult = publishRuntimeEvents(null, null);
++++
++++  assert.equal(invalidCollectionsResult.valid, false);
++++  assert.deepEqual(invalidCollectionsResult.runtimeEvents, []);
++++  assert.deepEqual(invalidCollectionsResult.publishedEvents, []);
++++  assert.deepEqual(invalidCollectionsResult.errors.map((error) => error.code), [
++++    RUNTIME_EVENT_ERRORS.CONDITION_MATCHES_INVALID,
++++    RUNTIME_EVENT_ERRORS.RUNTIME_EVENTS_INVALID,
++++  ]);
++++  assert.throws(() => {
++++    invalidCollectionsResult.errors.push({});
++++  }, TypeError);
++++
+++   const sourceRuntimeEvent = {
+++     eventId: "event.runtime.frameStart.2",
+++     eventType: "event.frameStart",
+++@@ -98,11 +111,22 @@ export function run() {
+++         tick: 3,
+++       },
+++     };
+++-    const fallbackResult = publishRuntimeEvents([], [fallbackRuntimeEvent]);
++++    const fallbackConditionMatch = {
++++      conditionId: "condition.fallback.ready",
++++      eventType: "event.fallbackReady",
++++      payload: {
++++        nested: {
++++          status: "ready",
++++        },
++++      },
++++    };
++++    const fallbackResult = publishRuntimeEvents([fallbackConditionMatch], [fallbackRuntimeEvent]);
+++     fallbackRuntimeEvent.payload.tick = 333;
++++    fallbackConditionMatch.payload.nested.status = "mutated";
+++
+++     assert.equal(fallbackResult.valid, true);
+++     assert.equal(fallbackResult.runtimeEvents[0].payload.tick, 3);
++++    assert.equal(fallbackResult.publishedEvents[0].payload.nested.status, "ready");
+++   } finally {
+++     globalThis.structuredClone = nativeStructuredClone;
++    }
++- }
++-+
++-+[data-admin-system-health] [data-health-status] {
++-+  font-weight: var(--font-weight-heavy);
++-+  letter-spacing: 0;
++-+  text-transform: uppercase
++-+}
++-+
++-+[data-admin-system-health] td[data-health-status] {
++-+  width: 1%;
++-+  min-width: 7rem;
++-+  text-align: center;
++-+  white-space: nowrap
++-+}
++-+
++-+[data-admin-system-health] p[data-health-status] {
++-+  display: inline-flex;
++-+  align-items: center;
++-+  justify-content: center;
++-+  width: fit-content;
++-+  max-width: 100%;
++-+  min-height: var(--space-28);
++-+  padding: var(--space-4) var(--space-10);
++-+  border: var(--border-standard);
++-+  border-radius: var(--radius-pill);
++-+  overflow-wrap: anywhere
++-+}
++-+
++-+[data-admin-system-health] [data-health-status="PASS"] {
++-+  border-color: color-mix(in srgb, var(--green) 58%, var(--line));
++-+  background: color-mix(in srgb, var(--green) 16%, transparent);
++-+  color: var(--green)
++-+}
++-+
++-+[data-admin-system-health] [data-health-status="WARN"],
++-+[data-admin-system-health] [data-health-status="PENDING"] {
++-+  border-color: color-mix(in srgb, var(--gold) 54%, var(--line));
++-+  background: color-mix(in srgb, var(--gold) 13%, transparent);
++-+  color: var(--gold)
++-+}
++-+
++-+[data-admin-system-health] [data-health-status="FAIL"] {
++-+  border-color: color-mix(in srgb, var(--red) 58%, var(--line));
++-+  background: color-mix(in srgb, var(--red) 15%, transparent);
++-+  color: var(--deep-red)
++-+}
++-+
++-+[data-admin-system-health] [data-health-status="INFO"],
++-+[data-admin-system-health] [data-health-status="SKIP"] {
++-+  border-color: color-mix(in srgb, var(--cyan) 52%, var(--line));
++-+  background: color-mix(in srgb, var(--cyan) 12%, transparent);
++-+  color: var(--cyan)
++-+}
++-diff --git a/assets/theme-v2/css/tables.css b/assets/theme-v2/css/tables.css
++-index 915a235e9..43bde5f3b 100644
++---- a/assets/theme-v2/css/tables.css
++-+++ b/assets/theme-v2/css/tables.css
++-@@ -178,3 +178,40 @@ td {
++-   max-width: 100%;
++-   width: 100%
++- }
++-+
++-+[data-admin-system-health] .table-wrapper {
++-+  border: var(--border-standard);
++-+  border-radius: var(--radius-lg);
++-+  background: var(--panel-overlay);
++-+  box-shadow: var(--shadow-sm)
++-+}
++-+
++-+[data-admin-system-health] .data-table {
++-+  min-width: 720px;
++-+  background: transparent
++-+}
++-+
++-+[data-admin-system-health] .data-table caption {
++-+  padding: var(--space-12) var(--space-14);
++-+  border-bottom: var(--border-standard);
++-+  background: var(--panel-soft);
++-+  color: var(--gold)
++-+}
++-+
++-+[data-admin-system-health] .data-table th,
++-+[data-admin-system-health] .data-table td {
++-+  padding: var(--space-10) var(--space-12);
++-+  vertical-align: top
++-+}
++-+
++-+[data-admin-system-health] .data-table th {
++-+  color: var(--cyan)
++-+}
++-+
++-+[data-admin-system-health] .data-table tbody tr:nth-child(even) {
++-+  background: var(--panel-soft-subtle)
++-+}
++-+
++-+[data-admin-system-health] .data-table td {
++-+  overflow-wrap: anywhere
++-+}
++-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish.md b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish.md
++-new file mode 100644
++-index 000000000..83221164d
++---- /dev/null
++-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish.md
++-@@ -0,0 +1,25 @@
++-+# PR_26177_CHARLIE_035-system-health-ui-polish
++-+
++-+Team: Charlie
++-+Branch: pr/26177-CHARLIE-035-system-health-ui-polish
++-+Base: pr/26177-CHARLIE-034-startup-runtime-report-cleanup
++-+Lifecycle: Build / Validation
++-+Repair: Rebased onto repaired PR_26177_CHARLIE_034 branch on 2026-06-25.
++-+
++-+## Scope
++-+- Added Theme V2 styling for System Health table wrappers, captions, row rhythm, and dense table spacing.
++-+- Added Theme V2 status treatment for System Health status indicators.
++-+- Kept the change visual-only with no new API, runtime, UI behavior, or page-local CSS.
++-+
++-+## Changed Files
++-+- assets/theme-v2/css/status.css
++-+- assets/theme-v2/css/tables.css
++-+- docs_build/dev/reports/coverage_changed_js_guardrail.txt
++-+- docs_build/dev/reports/playwright_v8_coverage_report.txt
++-+
++-+## Validation
++-+- PASS: npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line
++-+- PASS: git diff --check
++-+
++-+## ZIP
++-+- Generated after repair: C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\tmp\PR_26177_CHARLIE_035-system-health-ui-polish_delta.zip
++-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_branch-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_branch-validation.md
++-new file mode 100644
++-index 000000000..1fb9628c1
++---- /dev/null
++-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_branch-validation.md
++-@@ -0,0 +1,14 @@
++-+# PR_26177_CHARLIE_035 Branch Validation
++-+
++-+Branch: pr/26177-CHARLIE-035-system-health-ui-polish
++-+Base: pr/26177-CHARLIE-034-startup-runtime-report-cleanup
++-+
++-+## Results
++-+- PASS: Continued the stacked Charlie workstream from PR_26177_CHARLIE_034.
++-+- PASS: Branch is based on repaired PR_26177_CHARLIE_034 branch.
++-+- PASS: Rebase conflict scope was generated report artifacts only.
++-+- PASS: Worktree was clean before edits.
++-+- PASS: Changes are limited to Theme V2 visual polish and reports.
++-+- PASS: No start_of_day files were modified.
++-+- PASS: No direct commit to main was made.
++-+- PASS: PR branch will be pushed for draft PR creation.
++-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_manual-validation-notes.md
++-new file mode 100644
++-index 000000000..2202ab001
++---- /dev/null
++-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_manual-validation-notes.md
++-@@ -0,0 +1,8 @@
++-+# PR_26177_CHARLIE_035 Manual Validation Notes
++-+
++-+- Confirmed System Health tables use scoped Theme V2 table wrapper and caption polish.
++-+- Confirmed status indicators have distinct PASS, WARN/PENDING, FAIL, INFO, and SKIP treatments.
++-+- Confirmed the page still uses external Theme V2 CSS and JavaScript only.
++-+- Confirmed no runtime behavior, API contract, database contract, or storage contract was changed.
++-+- Confirmed branch repair conflict was limited to generated report artifacts.
++-+- Confirmed no start_of_day files changed.
++-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_requirements-checklist.md b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_requirements-checklist.md
++-new file mode 100644
++-index 000000000..5539cd503
++---- /dev/null
++-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_requirements-checklist.md
++-@@ -0,0 +1,12 @@
++-+# PR_26177_CHARLIE_035 Requirement Checklist
++-+
++-+- PASS: Theme V2 polish only.
++-+- PASS: Improve System Health layout/readability/status indicators.
++-+- PASS: No new functionality beyond visual polish.
++-+- PASS: Use existing Theme V2 CSS assets.
++-+- PASS: No inline styles, style blocks, script blocks, inline handlers, or page-local CSS.
++-+- PASS: Preserve existing behavior.
++-+- PASS: Do not modify unrelated files.
++-+- PASS: Do not modify start_of_day folders.
++-+- PASS: Do not introduce MEM DB, fake-login, silent fallbacks, or browser-owned infrastructure state.
++-+- PASS: Rebased onto repaired PR_26177_CHARLIE_034 branch.
++-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_validation-lane.md b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_validation-lane.md
++-new file mode 100644
++-index 000000000..b6a4fede1
++---- /dev/null
++-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_validation-lane.md
++-@@ -0,0 +1,10 @@
++-+# PR_26177_CHARLIE_035 Validation Lane
++-+
++-+## Commands
++-+- PASS: npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line
++-+- PASS: git diff --check
++-+
++-+## Notes
++-+- `git diff --check` reported only expected Windows LF-to-CRLF working-copy warnings.
++-+- No API/unit tests were required because this PR changes only Theme V2 CSS.
++-+- Full samples smoke was not run because this PR is limited to Admin System Health UI polish.
++-diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++-index 74a29674c..7b1c51f19 100644
++---- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++-+++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++-@@ -6,7 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
++- Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
++-
++- Changed runtime JS files considered:
++--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++-+(100%) none changed - no changed runtime JS files
++-
++- Guardrail warnings:
++--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++-+(100%) none changed - no changed runtime JS files
++-diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
++-index e00dbc9b0..f936d8cc1 100644
++---- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
++-+++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
++-@@ -17,7 +17,7 @@ Exercised tool entry points detected:
++- (78%) Theme V2 Shared JS - exercised 5 runtime JS files
++-
++- Changed runtime JS files covered:
++--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++-+(100%) none changed - no changed runtime JS files
++-
++- Files with executed line/function counts where available:
++- (36%) src/api/server-api-client.js - executed lines 168/168; executed functions 5/14
++-@@ -33,11 +33,7 @@ Files with executed line/function counts where available:
++- (100%) src/api/admin-system-health-api-client.js - executed lines 31/31; executed functions 5/5
++-
++- Uncovered or low-coverage changed JS files:
++--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
++-+(100%) none changed - no changed runtime JS files
++-
++- Changed JS files considered:
++--(0%) scripts/start-local-api-server.mjs - changed JS file not collected as browser runtime coverage
++--(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
++--(0%) tests/dev-runtime/AdminHealthOperations.test.mjs - changed JS file not collected as browser runtime coverage
++--(0%) tests/dev-runtime/LocalApiStartupLogging.test.mjs - changed JS file not collected as browser runtime coverage
++--(0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
++-+(100%) none - no changed JS files
++diff --git a/package.json b/package.json
++index 72c3c9c32..3cdc3e26b 100644
++--- a/package.json
+++++ b/package.json
++@@ -3,6 +3,7 @@
++   "scripts": {
++     "pretest": "node docs_build/dev/toolbox/checkSharedExtractionGuard.mjs",
++     "test": "node ./scripts/run-node-tests.mjs",
+++    "test:service:runtime-events": "node ./scripts/run-node-test-files.mjs tests/engine/RuntimeEventSystem.test.mjs tests/engine/RuntimeTriggerProcessing.test.mjs tests/engine/RuntimeActionSystem.test.mjs",
++     "test:audit:locations": "node ./scripts/audit-playwright-test-locations.mjs",
++     "test:playwright:structure": "node ./scripts/audit-playwright-test-locations.mjs",
++     "test:playwright:zero-browser": "node ./scripts/run-targeted-test-lanes.mjs --zero-browser-only",
++diff --git a/tests/engine/RuntimeEventSystem.test.mjs b/tests/engine/RuntimeEventSystem.test.mjs
++index 9a0b1fc01..f81ecf3fa 100644
++--- a/tests/engine/RuntimeEventSystem.test.mjs
+++++ b/tests/engine/RuntimeEventSystem.test.mjs
++@@ -61,6 +61,19 @@ export function run() {
++     RUNTIME_EVENT_ERRORS.RUNTIME_EVENT_INVALID,
++   ]);
++
+++  const invalidCollectionsResult = publishRuntimeEvents(null, null);
+++
+++  assert.equal(invalidCollectionsResult.valid, false);
+++  assert.deepEqual(invalidCollectionsResult.runtimeEvents, []);
+++  assert.deepEqual(invalidCollectionsResult.publishedEvents, []);
+++  assert.deepEqual(invalidCollectionsResult.errors.map((error) => error.code), [
+++    RUNTIME_EVENT_ERRORS.CONDITION_MATCHES_INVALID,
+++    RUNTIME_EVENT_ERRORS.RUNTIME_EVENTS_INVALID,
+++  ]);
+++  assert.throws(() => {
+++    invalidCollectionsResult.errors.push({});
+++  }, TypeError);
+++
++   const sourceRuntimeEvent = {
++     eventId: "event.runtime.frameStart.2",
++     eventType: "event.frameStart",
++@@ -98,11 +111,22 @@ export function run() {
++         tick: 3,
++       },
++     };
++-    const fallbackResult = publishRuntimeEvents([], [fallbackRuntimeEvent]);
+++    const fallbackConditionMatch = {
+++      conditionId: "condition.fallback.ready",
+++      eventType: "event.fallbackReady",
+++      payload: {
+++        nested: {
+++          status: "ready",
+++        },
+++      },
+++    };
+++    const fallbackResult = publishRuntimeEvents([fallbackConditionMatch], [fallbackRuntimeEvent]);
++     fallbackRuntimeEvent.payload.tick = 333;
+++    fallbackConditionMatch.payload.nested.status = "mutated";
++
++     assert.equal(fallbackResult.valid, true);
++     assert.equal(fallbackResult.runtimeEvents[0].payload.tick, 3);
+++    assert.equal(fallbackResult.publishedEvents[0].payload.nested.status, "ready");
++   } finally {
++     globalThis.structuredClone = nativeStructuredClone;
+    }
+- }
+-+
+-+[data-admin-system-health] [data-health-status] {
+-+  font-weight: var(--font-weight-heavy);
+-+  letter-spacing: 0;
+-+  text-transform: uppercase
+-+}
+-+
+-+[data-admin-system-health] td[data-health-status] {
+-+  width: 1%;
+-+  min-width: 7rem;
+-+  text-align: center;
+-+  white-space: nowrap
+-+}
+-+
+-+[data-admin-system-health] p[data-health-status] {
+-+  display: inline-flex;
+-+  align-items: center;
+-+  justify-content: center;
+-+  width: fit-content;
+-+  max-width: 100%;
+-+  min-height: var(--space-28);
+-+  padding: var(--space-4) var(--space-10);
+-+  border: var(--border-standard);
+-+  border-radius: var(--radius-pill);
+-+  overflow-wrap: anywhere
+-+}
+-+
+-+[data-admin-system-health] [data-health-status="PASS"] {
+-+  border-color: color-mix(in srgb, var(--green) 58%, var(--line));
+-+  background: color-mix(in srgb, var(--green) 16%, transparent);
+-+  color: var(--green)
+-+}
+-+
+-+[data-admin-system-health] [data-health-status="WARN"],
+-+[data-admin-system-health] [data-health-status="PENDING"] {
+-+  border-color: color-mix(in srgb, var(--gold) 54%, var(--line));
+-+  background: color-mix(in srgb, var(--gold) 13%, transparent);
+-+  color: var(--gold)
+-+}
+-+
+-+[data-admin-system-health] [data-health-status="FAIL"] {
+-+  border-color: color-mix(in srgb, var(--red) 58%, var(--line));
+-+  background: color-mix(in srgb, var(--red) 15%, transparent);
+-+  color: var(--deep-red)
+-+}
+-+
+-+[data-admin-system-health] [data-health-status="INFO"],
+-+[data-admin-system-health] [data-health-status="SKIP"] {
+-+  border-color: color-mix(in srgb, var(--cyan) 52%, var(--line));
+-+  background: color-mix(in srgb, var(--cyan) 12%, transparent);
+-+  color: var(--cyan)
+-+}
+-diff --git a/assets/theme-v2/css/tables.css b/assets/theme-v2/css/tables.css
+-index 915a235e9..43bde5f3b 100644
+---- a/assets/theme-v2/css/tables.css
+-+++ b/assets/theme-v2/css/tables.css
+-@@ -178,3 +178,40 @@ td {
+-   max-width: 100%;
+-   width: 100%
+- }
+-+
+-+[data-admin-system-health] .table-wrapper {
+-+  border: var(--border-standard);
+-+  border-radius: var(--radius-lg);
+-+  background: var(--panel-overlay);
+-+  box-shadow: var(--shadow-sm)
+-+}
+-+
+-+[data-admin-system-health] .data-table {
+-+  min-width: 720px;
+-+  background: transparent
+-+}
+-+
+-+[data-admin-system-health] .data-table caption {
+-+  padding: var(--space-12) var(--space-14);
+-+  border-bottom: var(--border-standard);
+-+  background: var(--panel-soft);
+-+  color: var(--gold)
+-+}
+-+
+-+[data-admin-system-health] .data-table th,
+-+[data-admin-system-health] .data-table td {
+-+  padding: var(--space-10) var(--space-12);
+-+  vertical-align: top
+-+}
+-+
+-+[data-admin-system-health] .data-table th {
+-+  color: var(--cyan)
+-+}
+-+
+-+[data-admin-system-health] .data-table tbody tr:nth-child(even) {
+-+  background: var(--panel-soft-subtle)
+-+}
+-+
+-+[data-admin-system-health] .data-table td {
+-+  overflow-wrap: anywhere
+-+}
+-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish.md b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish.md
++diff --git a/docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests.md b/docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests.md
+ new file mode 100644
+-index 000000000..83221164d
++index 000000000..e31ba2ee4
+ --- /dev/null
+-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish.md
+-@@ -0,0 +1,25 @@
+-+# PR_26177_CHARLIE_035-system-health-ui-polish
+++++ b/docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests.md
++@@ -0,0 +1,57 @@
+++# PR_26175_DELTA_009-runtime-event-service-tests
+++
+++## Summary
+++
+++Team Delta expanded service-level runtime event coverage without changing runtime behavior.
+ +
+-+Team: Charlie
+-+Branch: pr/26177-CHARLIE-035-system-health-ui-polish
+-+Base: pr/26177-CHARLIE-034-startup-runtime-report-cleanup
+-+Lifecycle: Build / Validation
+-+Repair: Rebased onto repaired PR_26177_CHARLIE_034 branch on 2026-06-25.
+++This PR adds a focused runtime-events service command and strengthens `RuntimeEventSystem` tests for invalid collection input handling, frozen error arrays, and shared clone fallback behavior for published condition events.
+ +
+ +## Scope
+-+- Added Theme V2 styling for System Health table wrappers, captions, row rhythm, and dense table spacing.
+-+- Added Theme V2 status treatment for System Health status indicators.
+-+- Kept the change visual-only with no new API, runtime, UI behavior, or page-local CSS.
+ +
+-+## Changed Files
+-+- assets/theme-v2/css/status.css
+-+- assets/theme-v2/css/tables.css
+-+- docs_build/dev/reports/coverage_changed_js_guardrail.txt
+-+- docs_build/dev/reports/playwright_v8_coverage_report.txt
+++- Team: Delta
+++- Branch: `PR_26175_DELTA_009-runtime-event-service-tests`
+++- Test file changed: `tests/engine/RuntimeEventSystem.test.mjs`
+++- Service test command added: `npm run test:service:runtime-events`
+++- Site-wide command preserved: `npm test`
+ +
+-+## Validation
+-+- PASS: npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line
+-+- PASS: git diff --check
+++## Runtime Impact
+++
+++PASS - Test-only runtime event coverage expansion. No runtime code changed.
+++
+++## Requirement Checklist
+++
+++| Requirement | Status | Notes |
+++|---|---|---|
+++| One PR purpose only | PASS | Runtime event service tests only. |
+++| Team Delta ownership only | PASS | Event systems and runtime test coverage are Delta-owned. |
+++| No team-specific test runner | PASS | No Delta-named runner or command added. |
+++| No `scripts/run-delta-runtime-validation.mjs` | PASS | File was not added. |
+++| No `test:delta-runtime` | PASS | Script was not added. |
+++| Testing organized by service/page level | PASS | Added `test:service:runtime-events`. |
+++| Keep `npm test` as site-wide command | PASS | Existing `npm test` is unchanged. |
+++| No UI changes | PASS | No UI files changed. |
+++| No browser-owned product data | PASS | Tests use runtime event fixtures only. |
+++| No silent fallbacks or hidden defaults | PASS | Clone fallback is explicitly validated by disabling `structuredClone`. |
+++
+++## Validation Lane Report
+++
+++| Command | Status | Notes |
+++|---|---|---|
+++| `node --check tests/engine/RuntimeEventSystem.test.mjs` | PASS | Test syntax valid. |
+++| `npm run test:service:runtime-events` | PASS | 3 targeted runtime event/action/trigger test files passed. |
+++| `git diff --check` | PASS | No whitespace errors before report generation. |
+++| `npm run codex:review-artifacts` | PASS | Regenerated `codex_review.diff` and `codex_changed_files.txt`. |
+++
+++## Manual Validation Notes
+++
+++- Confirmed this is a test-only runtime event PR.
+++- Confirmed no runtime code, UI code, or browser persistence code changed.
+++- Confirmed no Team Delta-specific test command was introduced.
+++- Playwright was not run; this is Node service coverage.
+ +
+ +## ZIP
+-+- Generated after repair: C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\tmp\PR_26177_CHARLIE_035-system-health-ui-polish_delta.zip
+-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_branch-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_branch-validation.md
+++
+++Expected repo-structured delta ZIP:
+++
+++`tmp/PR_26175_DELTA_009-runtime-event-service-tests_delta.zip`
+++
++diff --git a/docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_branch-validation.md b/docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_branch-validation.md
+ new file mode 100644
+-index 000000000..1fb9628c1
++index 000000000..ddb1da69b
+ --- /dev/null
+-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_branch-validation.md
+-@@ -0,0 +1,14 @@
+-+# PR_26177_CHARLIE_035 Branch Validation
+++++ b/docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_branch-validation.md
++@@ -0,0 +1,11 @@
+++# PR_26175_DELTA_009 Branch Validation
+ +
+-+Branch: pr/26177-CHARLIE-035-system-health-ui-polish
+-+Base: pr/26177-CHARLIE-034-startup-runtime-report-cleanup
+++| Check | Status | Evidence |
+++|---|---|---|
+++| Returned to `main` before branch | PASS | Checked out `main` after PR_26175_DELTA_008 draft PR creation. |
+++| Pulled latest `main` | PASS | `git pull --ff-only` reported up to date. |
+++| Local/origin sync before branch | PASS | `git rev-list --left-right --count main...origin/main` returned `0 0`. |
+++| Worktree clean before branch | PASS | `git status --short` returned no entries. |
+++| Working branch | PASS | `PR_26175_DELTA_009-runtime-event-service-tests`. |
+++| Direct commit to `main` avoided | PASS | Changes were made only on the PR branch. |
+ +
+-+## Results
+-+- PASS: Continued the stacked Charlie workstream from PR_26177_CHARLIE_034.
+-+- PASS: Branch is based on repaired PR_26177_CHARLIE_034 branch.
+-+- PASS: Rebase conflict scope was generated report artifacts only.
+-+- PASS: Worktree was clean before edits.
+-+- PASS: Changes are limited to Theme V2 visual polish and reports.
+-+- PASS: No start_of_day files were modified.
+-+- PASS: No direct commit to main was made.
+-+- PASS: PR branch will be pushed for draft PR creation.
+-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_manual-validation-notes.md
++diff --git a/docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_manual-validation-notes.md b/docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_manual-validation-notes.md
+ new file mode 100644
+-index 000000000..2202ab001
++index 000000000..4784fd0b2
+ --- /dev/null
+-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_manual-validation-notes.md
+-@@ -0,0 +1,8 @@
+-+# PR_26177_CHARLIE_035 Manual Validation Notes
+-+
+-+- Confirmed System Health tables use scoped Theme V2 table wrapper and caption polish.
+-+- Confirmed status indicators have distinct PASS, WARN/PENDING, FAIL, INFO, and SKIP treatments.
+-+- Confirmed the page still uses external Theme V2 CSS and JavaScript only.
+-+- Confirmed no runtime behavior, API contract, database contract, or storage contract was changed.
+-+- Confirmed branch repair conflict was limited to generated report artifacts.
+-+- Confirmed no start_of_day files changed.
+-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_requirements-checklist.md b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_requirements-checklist.md
+++++ b/docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_manual-validation-notes.md
++@@ -0,0 +1,10 @@
+++# PR_26175_DELTA_009 Manual Validation Notes
+++
+++- Reviewed changed files for runtime-event-only scope.
+++- Confirmed no runtime source file changed.
+++- Confirmed no UI files changed.
+++- Confirmed no persisted browser-owned product data was introduced.
+++- Confirmed no `scripts/run-delta-runtime-validation.mjs` file was added.
+++- Confirmed no `test:delta-runtime` script was added.
+++- Confirmed `npm test` remains the site-wide/all-tests command.
+++
++diff --git a/docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_requirements-checklist.md b/docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_requirements-checklist.md
+ new file mode 100644
+-index 000000000..5539cd503
++index 000000000..1e726c966
+ --- /dev/null
+-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_requirements-checklist.md
+++++ b/docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_requirements-checklist.md
+ @@ -0,0 +1,12 @@
+-+# PR_26177_CHARLIE_035 Requirement Checklist
+-+
+-+- PASS: Theme V2 polish only.
+-+- PASS: Improve System Health layout/readability/status indicators.
+-+- PASS: No new functionality beyond visual polish.
+-+- PASS: Use existing Theme V2 CSS assets.
+-+- PASS: No inline styles, style blocks, script blocks, inline handlers, or page-local CSS.
+-+- PASS: Preserve existing behavior.
+-+- PASS: Do not modify unrelated files.
+-+- PASS: Do not modify start_of_day folders.
+-+- PASS: Do not introduce MEM DB, fake-login, silent fallbacks, or browser-owned infrastructure state.
+-+- PASS: Rebased onto repaired PR_26177_CHARLIE_034 branch.
+-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_validation-lane.md b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_validation-lane.md
+++# PR_26175_DELTA_009 Requirements Checklist
+++
+++| Requirement | Status | Notes |
+++|---|---|---|
+++| Branch from updated main | PASS | Branch created after pull and sync check. |
+++| Build smallest scoped change | PASS | Added runtime event coverage and a focused service lane. |
+++| Validate targeted tests | PASS | `npm run test:service:runtime-events` passed. |
+++| Required reports created | PASS | PR report, branch validation, checklist, validation lane, manual notes, review diff, changed files. |
+++| Repo-structured ZIP created | PENDING | Created after report files are packaged. |
+++| Open PR | PENDING | Opened after commit and push. |
+++| Stop before merge approval | PASS | This PR is draft/open only; no merge performed. |
+++
++diff --git a/docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_validation-lane.md b/docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_validation-lane.md
+ new file mode 100644
+-index 000000000..b6a4fede1
++index 000000000..9eaf4c753
+ --- /dev/null
+-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_validation-lane.md
+-@@ -0,0 +1,10 @@
+-+# PR_26177_CHARLIE_035 Validation Lane
+++++ b/docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_validation-lane.md
++@@ -0,0 +1,19 @@
+++# PR_26175_DELTA_009 Validation Lane
+++
+++## Targeted Lane
+ +
+-+## Commands
+-+- PASS: npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line
+-+- PASS: git diff --check
+++`npm run test:service:runtime-events`
+++
+++## Results
+++
+++| Command | Result |
+++|---|---|
+++| `node --check tests/engine/RuntimeEventSystem.test.mjs` | PASS |
+++| `npm run test:service:runtime-events` | PASS |
+++| `git diff --check` | PASS |
+ +
+ +## Notes
+-+- `git diff --check` reported only expected Windows LF-to-CRLF working-copy warnings.
+-+- No API/unit tests were required because this PR changes only Theme V2 CSS.
+-+- Full samples smoke was not run because this PR is limited to Admin System Health UI polish.
+-diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+-index 74a29674c..7b1c51f19 100644
+---- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+-+++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+-@@ -6,7 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
+- Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+-
+- Changed runtime JS files considered:
+--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-+(100%) none changed - no changed runtime JS files
+-
+- Guardrail warnings:
+--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+-+(100%) none changed - no changed runtime JS files
+-diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+-index e00dbc9b0..f936d8cc1 100644
+---- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
+-+++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+-@@ -17,7 +17,7 @@ Exercised tool entry points detected:
+- (78%) Theme V2 Shared JS - exercised 5 runtime JS files
+-
+- Changed runtime JS files covered:
+--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-+(100%) none changed - no changed runtime JS files
+-
+- Files with executed line/function counts where available:
+- (36%) src/api/server-api-client.js - executed lines 168/168; executed functions 5/14
+-@@ -33,11 +33,7 @@ Files with executed line/function counts where available:
+- (100%) src/api/admin-system-health-api-client.js - executed lines 31/31; executed functions 5/5
+-
+- Uncovered or low-coverage changed JS files:
+--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+-+(100%) none changed - no changed runtime JS files
+-
+- Changed JS files considered:
+--(0%) scripts/start-local-api-server.mjs - changed JS file not collected as browser runtime coverage
+--(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
+--(0%) tests/dev-runtime/AdminHealthOperations.test.mjs - changed JS file not collected as browser runtime coverage
+--(0%) tests/dev-runtime/LocalApiStartupLogging.test.mjs - changed JS file not collected as browser runtime coverage
+--(0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
+-+(100%) none - no changed JS files
+++
+++- The service lane is event-system-focused and not named for Team Delta.
+++- Full `npm test` was not run because this PR is scoped to runtime event service coverage.
+++
+diff --git a/package.json b/package.json
+index 72c3c9c32..3cdc3e26b 100644
+--- a/package.json
++++ b/package.json
+@@ -3,6 +3,7 @@
+   "scripts": {
+     "pretest": "node docs_build/dev/toolbox/checkSharedExtractionGuard.mjs",
+     "test": "node ./scripts/run-node-tests.mjs",
++    "test:service:runtime-events": "node ./scripts/run-node-test-files.mjs tests/engine/RuntimeEventSystem.test.mjs tests/engine/RuntimeTriggerProcessing.test.mjs tests/engine/RuntimeActionSystem.test.mjs",
+     "test:audit:locations": "node ./scripts/audit-playwright-test-locations.mjs",
+     "test:playwright:structure": "node ./scripts/audit-playwright-test-locations.mjs",
+     "test:playwright:zero-browser": "node ./scripts/run-targeted-test-lanes.mjs --zero-browser-only",
+diff --git a/tests/engine/RuntimeEventSystem.test.mjs b/tests/engine/RuntimeEventSystem.test.mjs
+index 9a0b1fc01..f81ecf3fa 100644
+--- a/tests/engine/RuntimeEventSystem.test.mjs
++++ b/tests/engine/RuntimeEventSystem.test.mjs
+@@ -61,6 +61,19 @@ export function run() {
+     RUNTIME_EVENT_ERRORS.RUNTIME_EVENT_INVALID,
+   ]);
+
++  const invalidCollectionsResult = publishRuntimeEvents(null, null);
++
++  assert.equal(invalidCollectionsResult.valid, false);
++  assert.deepEqual(invalidCollectionsResult.runtimeEvents, []);
++  assert.deepEqual(invalidCollectionsResult.publishedEvents, []);
++  assert.deepEqual(invalidCollectionsResult.errors.map((error) => error.code), [
++    RUNTIME_EVENT_ERRORS.CONDITION_MATCHES_INVALID,
++    RUNTIME_EVENT_ERRORS.RUNTIME_EVENTS_INVALID,
++  ]);
++  assert.throws(() => {
++    invalidCollectionsResult.errors.push({});
++  }, TypeError);
++
+   const sourceRuntimeEvent = {
+     eventId: "event.runtime.frameStart.2",
+     eventType: "event.frameStart",
+@@ -98,11 +111,22 @@ export function run() {
+         tick: 3,
+       },
+     };
+-    const fallbackResult = publishRuntimeEvents([], [fallbackRuntimeEvent]);
++    const fallbackConditionMatch = {
++      conditionId: "condition.fallback.ready",
++      eventType: "event.fallbackReady",
++      payload: {
++        nested: {
++          status: "ready",
++        },
++      },
++    };
++    const fallbackResult = publishRuntimeEvents([fallbackConditionMatch], [fallbackRuntimeEvent]);
+     fallbackRuntimeEvent.payload.tick = 333;
++    fallbackConditionMatch.payload.nested.status = "mutated";
+
+     assert.equal(fallbackResult.valid, true);
+     assert.equal(fallbackResult.runtimeEvents[0].payload.tick, 3);
++    assert.equal(fallbackResult.publishedEvents[0].payload.nested.status, "ready");
+   } finally {
+     globalThis.structuredClone = nativeStructuredClone;
    }
- }
-+
-+[data-admin-system-health] [data-health-status] {
-+  font-weight: var(--font-weight-heavy);
-+  letter-spacing: 0;
-+  text-transform: uppercase
-+}
-+
-+[data-admin-system-health] td[data-health-status] {
-+  width: 1%;
-+  min-width: 7rem;
-+  text-align: center;
-+  white-space: nowrap
-+}
-+
-+[data-admin-system-health] p[data-health-status] {
-+  display: inline-flex;
-+  align-items: center;
-+  justify-content: center;
-+  width: fit-content;
-+  max-width: 100%;
-+  min-height: var(--space-28);
-+  padding: var(--space-4) var(--space-10);
-+  border: var(--border-standard);
-+  border-radius: var(--radius-pill);
-+  overflow-wrap: anywhere
-+}
-+
-+[data-admin-system-health] [data-health-status="PASS"] {
-+  border-color: color-mix(in srgb, var(--green) 58%, var(--line));
-+  background: color-mix(in srgb, var(--green) 16%, transparent);
-+  color: var(--green)
-+}
-+
-+[data-admin-system-health] [data-health-status="WARN"],
-+[data-admin-system-health] [data-health-status="PENDING"] {
-+  border-color: color-mix(in srgb, var(--gold) 54%, var(--line));
-+  background: color-mix(in srgb, var(--gold) 13%, transparent);
-+  color: var(--gold)
-+}
-+
-+[data-admin-system-health] [data-health-status="FAIL"] {
-+  border-color: color-mix(in srgb, var(--red) 58%, var(--line));
-+  background: color-mix(in srgb, var(--red) 15%, transparent);
-+  color: var(--deep-red)
-+}
-+
-+[data-admin-system-health] [data-health-status="INFO"],
-+[data-admin-system-health] [data-health-status="SKIP"] {
-+  border-color: color-mix(in srgb, var(--cyan) 52%, var(--line));
-+  background: color-mix(in srgb, var(--cyan) 12%, transparent);
-+  color: var(--cyan)
-+}
-diff --git a/assets/theme-v2/css/tables.css b/assets/theme-v2/css/tables.css
-index 915a235e9..43bde5f3b 100644
---- a/assets/theme-v2/css/tables.css
-+++ b/assets/theme-v2/css/tables.css
-@@ -178,3 +178,40 @@ td {
-   max-width: 100%;
-   width: 100%
- }
-+
-+[data-admin-system-health] .table-wrapper {
-+  border: var(--border-standard);
-+  border-radius: var(--radius-lg);
-+  background: var(--panel-overlay);
-+  box-shadow: var(--shadow-sm)
-+}
-+
-+[data-admin-system-health] .data-table {
-+  min-width: 720px;
-+  background: transparent
-+}
-+
-+[data-admin-system-health] .data-table caption {
-+  padding: var(--space-12) var(--space-14);
-+  border-bottom: var(--border-standard);
-+  background: var(--panel-soft);
-+  color: var(--gold)
-+}
-+
-+[data-admin-system-health] .data-table th,
-+[data-admin-system-health] .data-table td {
-+  padding: var(--space-10) var(--space-12);
-+  vertical-align: top
-+}
-+
-+[data-admin-system-health] .data-table th {
-+  color: var(--cyan)
-+}
-+
-+[data-admin-system-health] .data-table tbody tr:nth-child(even) {
-+  background: var(--panel-soft-subtle)
-+}
-+
-+[data-admin-system-health] .data-table td {
-+  overflow-wrap: anywhere
-+}
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish.md b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish.md
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests.md b/docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests.md
 new file mode 100644
-index 000000000..83221164d
+index 000000000..e31ba2ee4
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish.md
-@@ -0,0 +1,25 @@
-+# PR_26177_CHARLIE_035-system-health-ui-polish
++++ b/docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests.md
+@@ -0,0 +1,57 @@
++# PR_26175_DELTA_009-runtime-event-service-tests
 +
-+Team: Charlie
-+Branch: pr/26177-CHARLIE-035-system-health-ui-polish
-+Base: pr/26177-CHARLIE-034-startup-runtime-report-cleanup
-+Lifecycle: Build / Validation
-+Repair: Rebased onto repaired PR_26177_CHARLIE_034 branch on 2026-06-25.
++## Summary
++
++Team Delta expanded service-level runtime event coverage without changing runtime behavior.
++
++This PR adds a focused runtime-events service command and strengthens `RuntimeEventSystem` tests for invalid collection input handling, frozen error arrays, and shared clone fallback behavior for published condition events.
 +
 +## Scope
-+- Added Theme V2 styling for System Health table wrappers, captions, row rhythm, and dense table spacing.
-+- Added Theme V2 status treatment for System Health status indicators.
-+- Kept the change visual-only with no new API, runtime, UI behavior, or page-local CSS.
 +
-+## Changed Files
-+- assets/theme-v2/css/status.css
-+- assets/theme-v2/css/tables.css
-+- docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+- docs_build/dev/reports/playwright_v8_coverage_report.txt
++- Team: Delta
++- Branch: `PR_26175_DELTA_009-runtime-event-service-tests`
++- Test file changed: `tests/engine/RuntimeEventSystem.test.mjs`
++- Service test command added: `npm run test:service:runtime-events`
++- Site-wide command preserved: `npm test`
 +
-+## Validation
-+- PASS: npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line
-+- PASS: git diff --check
++## Runtime Impact
++
++PASS - Test-only runtime event coverage expansion. No runtime code changed.
++
++## Requirement Checklist
++
++| Requirement | Status | Notes |
++|---|---|---|
++| One PR purpose only | PASS | Runtime event service tests only. |
++| Team Delta ownership only | PASS | Event systems and runtime test coverage are Delta-owned. |
++| No team-specific test runner | PASS | No Delta-named runner or command added. |
++| No `scripts/run-delta-runtime-validation.mjs` | PASS | File was not added. |
++| No `test:delta-runtime` | PASS | Script was not added. |
++| Testing organized by service/page level | PASS | Added `test:service:runtime-events`. |
++| Keep `npm test` as site-wide command | PASS | Existing `npm test` is unchanged. |
++| No UI changes | PASS | No UI files changed. |
++| No browser-owned product data | PASS | Tests use runtime event fixtures only. |
++| No silent fallbacks or hidden defaults | PASS | Clone fallback is explicitly validated by disabling `structuredClone`. |
++
++## Validation Lane Report
++
++| Command | Status | Notes |
++|---|---|---|
++| `node --check tests/engine/RuntimeEventSystem.test.mjs` | PASS | Test syntax valid. |
++| `npm run test:service:runtime-events` | PASS | 3 targeted runtime event/action/trigger test files passed. |
++| `git diff --check` | PASS | No whitespace errors before report generation. |
++| `npm run codex:review-artifacts` | PASS | Regenerated `codex_review.diff` and `codex_changed_files.txt`. |
++
++## Manual Validation Notes
++
++- Confirmed this is a test-only runtime event PR.
++- Confirmed no runtime code, UI code, or browser persistence code changed.
++- Confirmed no Team Delta-specific test command was introduced.
++- Playwright was not run; this is Node service coverage.
 +
 +## ZIP
-+- Generated after repair: C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\tmp\PR_26177_CHARLIE_035-system-health-ui-polish_delta.zip
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_branch-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_branch-validation.md
-new file mode 100644
-index 000000000..1fb9628c1
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_branch-validation.md
-@@ -0,0 +1,14 @@
-+# PR_26177_CHARLIE_035 Branch Validation
 +
-+Branch: pr/26177-CHARLIE-035-system-health-ui-polish
-+Base: pr/26177-CHARLIE-034-startup-runtime-report-cleanup
++Expected repo-structured delta ZIP:
++
++`tmp/PR_26175_DELTA_009-runtime-event-service-tests_delta.zip`
++
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_branch-validation.md b/docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_branch-validation.md
+new file mode 100644
+index 000000000..ddb1da69b
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_branch-validation.md
+@@ -0,0 +1,11 @@
++# PR_26175_DELTA_009 Branch Validation
++
++| Check | Status | Evidence |
++|---|---|---|
++| Returned to `main` before branch | PASS | Checked out `main` after PR_26175_DELTA_008 draft PR creation. |
++| Pulled latest `main` | PASS | `git pull --ff-only` reported up to date. |
++| Local/origin sync before branch | PASS | `git rev-list --left-right --count main...origin/main` returned `0 0`. |
++| Worktree clean before branch | PASS | `git status --short` returned no entries. |
++| Working branch | PASS | `PR_26175_DELTA_009-runtime-event-service-tests`. |
++| Direct commit to `main` avoided | PASS | Changes were made only on the PR branch. |
++
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_manual-validation-notes.md b/docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_manual-validation-notes.md
+new file mode 100644
+index 000000000..4784fd0b2
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_manual-validation-notes.md
+@@ -0,0 +1,10 @@
++# PR_26175_DELTA_009 Manual Validation Notes
++
++- Reviewed changed files for runtime-event-only scope.
++- Confirmed no runtime source file changed.
++- Confirmed no UI files changed.
++- Confirmed no persisted browser-owned product data was introduced.
++- Confirmed no `scripts/run-delta-runtime-validation.mjs` file was added.
++- Confirmed no `test:delta-runtime` script was added.
++- Confirmed `npm test` remains the site-wide/all-tests command.
++
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_requirements-checklist.md b/docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_requirements-checklist.md
+new file mode 100644
+index 000000000..636ddb19a
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_requirements-checklist.md
+@@ -0,0 +1,11 @@
++# PR_26175_DELTA_009 Requirements Checklist
++
++| Requirement | Status | Notes |
++|---|---|---|
++| Branch from updated main | PASS | Branch created after pull and sync check. |
++| Build smallest scoped change | PASS | Added runtime event coverage and a focused service lane. |
++| Validate targeted tests | PASS | `npm run test:service:runtime-events` passed. |
++| Required reports created | PASS | PR report, branch validation, checklist, validation lane, manual notes, review diff, changed files. |
++| Repo-structured ZIP created | PASS | `tmp/PR_26175_DELTA_009-runtime-event-service-tests_delta.zip`. |
++| Open PR | PENDING | Opened after commit and push. |
++| Stop before merge approval | PASS | This PR is draft/open only; no merge performed. |
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_validation-lane.md b/docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_validation-lane.md
+new file mode 100644
+index 000000000..9eaf4c753
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_DELTA_009-runtime-event-service-tests_validation-lane.md
+@@ -0,0 +1,19 @@
++# PR_26175_DELTA_009 Validation Lane
++
++## Targeted Lane
++
++`npm run test:service:runtime-events`
 +
 +## Results
-+- PASS: Continued the stacked Charlie workstream from PR_26177_CHARLIE_034.
-+- PASS: Branch is based on repaired PR_26177_CHARLIE_034 branch.
-+- PASS: Rebase conflict scope was generated report artifacts only.
-+- PASS: Worktree was clean before edits.
-+- PASS: Changes are limited to Theme V2 visual polish and reports.
-+- PASS: No start_of_day files were modified.
-+- PASS: No direct commit to main was made.
-+- PASS: PR branch will be pushed for draft PR creation.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_manual-validation-notes.md
-new file mode 100644
-index 000000000..2202ab001
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_manual-validation-notes.md
-@@ -0,0 +1,8 @@
-+# PR_26177_CHARLIE_035 Manual Validation Notes
 +
-+- Confirmed System Health tables use scoped Theme V2 table wrapper and caption polish.
-+- Confirmed status indicators have distinct PASS, WARN/PENDING, FAIL, INFO, and SKIP treatments.
-+- Confirmed the page still uses external Theme V2 CSS and JavaScript only.
-+- Confirmed no runtime behavior, API contract, database contract, or storage contract was changed.
-+- Confirmed branch repair conflict was limited to generated report artifacts.
-+- Confirmed no start_of_day files changed.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_requirements-checklist.md b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_requirements-checklist.md
-new file mode 100644
-index 000000000..5539cd503
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_requirements-checklist.md
-@@ -0,0 +1,12 @@
-+# PR_26177_CHARLIE_035 Requirement Checklist
-+
-+- PASS: Theme V2 polish only.
-+- PASS: Improve System Health layout/readability/status indicators.
-+- PASS: No new functionality beyond visual polish.
-+- PASS: Use existing Theme V2 CSS assets.
-+- PASS: No inline styles, style blocks, script blocks, inline handlers, or page-local CSS.
-+- PASS: Preserve existing behavior.
-+- PASS: Do not modify unrelated files.
-+- PASS: Do not modify start_of_day folders.
-+- PASS: Do not introduce MEM DB, fake-login, silent fallbacks, or browser-owned infrastructure state.
-+- PASS: Rebased onto repaired PR_26177_CHARLIE_034 branch.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_validation-lane.md b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_validation-lane.md
-new file mode 100644
-index 000000000..b6a4fede1
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_validation-lane.md
-@@ -0,0 +1,10 @@
-+# PR_26177_CHARLIE_035 Validation Lane
-+
-+## Commands
-+- PASS: npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line
-+- PASS: git diff --check
++| Command | Result |
++|---|---|
++| `node --check tests/engine/RuntimeEventSystem.test.mjs` | PASS |
++| `npm run test:service:runtime-events` | PASS |
++| `git diff --check` | PASS |
 +
 +## Notes
-+- `git diff --check` reported only expected Windows LF-to-CRLF working-copy warnings.
-+- No API/unit tests were required because this PR changes only Theme V2 CSS.
-+- Full samples smoke was not run because this PR is limited to Admin System Health UI polish.
-diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 74a29674c..7b1c51f19 100644
---- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,7 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
- Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
-
- Changed runtime JS files considered:
--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(100%) none changed - no changed runtime JS files
-
- Guardrail warnings:
--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-+(100%) none changed - no changed runtime JS files
-diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index e00dbc9b0..f936d8cc1 100644
---- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
-+++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -17,7 +17,7 @@ Exercised tool entry points detected:
- (78%) Theme V2 Shared JS - exercised 5 runtime JS files
-
- Changed runtime JS files covered:
--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(100%) none changed - no changed runtime JS files
-
- Files with executed line/function counts where available:
- (36%) src/api/server-api-client.js - executed lines 168/168; executed functions 5/14
-@@ -33,11 +33,7 @@ Files with executed line/function counts where available:
- (100%) src/api/admin-system-health-api-client.js - executed lines 31/31; executed functions 5/5
-
- Uncovered or low-coverage changed JS files:
--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
-+(100%) none changed - no changed runtime JS files
-
- Changed JS files considered:
--(0%) scripts/start-local-api-server.mjs - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/dev-runtime/AdminHealthOperations.test.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/dev-runtime/LocalApiStartupLogging.test.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
-+(100%) none - no changed JS files
++
++- The service lane is event-system-focused and not named for Team Delta.
++- Full `npm test` was not run because this PR is scoped to runtime event service coverage.
++

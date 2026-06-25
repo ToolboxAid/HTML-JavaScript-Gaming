@@ -61,6 +61,19 @@ export function run() {
     RUNTIME_EVENT_ERRORS.RUNTIME_EVENT_INVALID,
   ]);
 
+  const invalidCollectionsResult = publishRuntimeEvents(null, null);
+
+  assert.equal(invalidCollectionsResult.valid, false);
+  assert.deepEqual(invalidCollectionsResult.runtimeEvents, []);
+  assert.deepEqual(invalidCollectionsResult.publishedEvents, []);
+  assert.deepEqual(invalidCollectionsResult.errors.map((error) => error.code), [
+    RUNTIME_EVENT_ERRORS.CONDITION_MATCHES_INVALID,
+    RUNTIME_EVENT_ERRORS.RUNTIME_EVENTS_INVALID,
+  ]);
+  assert.throws(() => {
+    invalidCollectionsResult.errors.push({});
+  }, TypeError);
+
   const sourceRuntimeEvent = {
     eventId: "event.runtime.frameStart.2",
     eventType: "event.frameStart",
@@ -98,11 +111,22 @@ export function run() {
         tick: 3,
       },
     };
-    const fallbackResult = publishRuntimeEvents([], [fallbackRuntimeEvent]);
+    const fallbackConditionMatch = {
+      conditionId: "condition.fallback.ready",
+      eventType: "event.fallbackReady",
+      payload: {
+        nested: {
+          status: "ready",
+        },
+      },
+    };
+    const fallbackResult = publishRuntimeEvents([fallbackConditionMatch], [fallbackRuntimeEvent]);
     fallbackRuntimeEvent.payload.tick = 333;
+    fallbackConditionMatch.payload.nested.status = "mutated";
 
     assert.equal(fallbackResult.valid, true);
     assert.equal(fallbackResult.runtimeEvents[0].payload.tick, 3);
+    assert.equal(fallbackResult.publishedEvents[0].payload.nested.status, "ready");
   } finally {
     globalThis.structuredClone = nativeStructuredClone;
   }
