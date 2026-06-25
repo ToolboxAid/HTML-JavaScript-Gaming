@@ -365,11 +365,13 @@ const SYSTEM_HEALTH_MANUAL_ACTION_LABELS = Object.freeze({
   "storage-check": "Run Storage Check",
 });
 const SYSTEM_HEALTH_API_ENDPOINTS = Object.freeze([
+  Object.freeze({ method: "GET", path: "/api/runtime/health", purpose: "Read public-safe Local API runtime health JSON." }),
   Object.freeze({ method: "GET", path: "/api/admin/system-health/status", purpose: "Read current deployment System Health status." }),
   Object.freeze({ method: "POST", path: "/api/admin/system-health/action", purpose: "Run current deployment manual health actions." }),
   Object.freeze({ method: "POST", path: "/api/admin/system-health/storage-connectivity-action", purpose: "Run current deployment R2 folder diagnostics." }),
 ]);
 const ADMIN_API_REGISTRY_ENTRIES = Object.freeze([
+  Object.freeze({ method: "GET", owner: "Team Charlie", path: "/api/runtime/health", purpose: "Runtime health JSON contract" }),
   Object.freeze({ method: "GET", owner: "Team Charlie", path: "/api/admin/system-health/status", purpose: "System Health status contract" }),
   Object.freeze({ method: "POST", owner: "Team Charlie", path: "/api/admin/system-health/action", purpose: "System Health manual actions" }),
   Object.freeze({ method: "POST", owner: "Team Charlie", path: "/api/admin/system-health/storage-connectivity-action", purpose: "System Health R2 diagnostics" }),
@@ -4865,6 +4867,48 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
     };
   }
 
+  async runtimeHealthJsonStatus() {
+    const checkedAt = new Date().toISOString();
+    const environmentIdentity = systemHealthEnvironmentIdentity(process.env, checkedAt);
+    const runtimeHealth = systemHealthRuntimeHealth(environmentIdentity, checkedAt);
+    const databaseStatus = await this.ownerDatabaseStatus(environmentIdentity);
+    const storageStatus = this.ownerStorageStatus();
+    return {
+      api: {
+        status: runtimeHealth.status || "WARN",
+        version: runtimeHealth.apiVersion || "not available",
+      },
+      database: {
+        connectivity: databaseStatus.connectivity || "not configured",
+        databaseType: databaseStatus.databaseType || environmentIdentity.databaseModel || "PostgreSQL",
+        lastChecked: databaseStatus.lastChecked || checkedAt,
+        responseTimeMs: Number.isFinite(databaseStatus.responseTimeMs) ? databaseStatus.responseTimeMs : null,
+        status: databaseStatus.connectivityStatus || databaseStatus.status || "WARN",
+        version: databaseStatus.version || "not available",
+      },
+      environment: {
+        hostingModel: environmentIdentity.hostingModel || "not configured",
+        name: environmentIdentity.name || "Unknown",
+        storageFolder: environmentIdentity.storageFolder || "not configured",
+      },
+      message: "Runtime health JSON is server-owned and safe for Local API status consumers.",
+      secretEditingAllowed: false,
+      secretsExposed: false,
+      status: overallHealthStatus([
+        { status: runtimeHealth.status || "WARN" },
+        { status: databaseStatus.connectivityStatus || databaseStatus.status || "WARN" },
+        { status: storageStatus.status || "WARN" },
+      ]),
+      storage: {
+        configured: storageStatus.configured === true,
+        environmentFolder: storageStatus.environmentFolder || environmentIdentity.storageFolder || "not configured",
+        lastChecked: storageStatus.lastChecked || checkedAt,
+        status: storageStatus.status || "WARN",
+      },
+      timestamp: checkedAt,
+    };
+  }
+
   projectWorkspaceProjectsForRoute() {
     const activeProject = this.gameWorkspaceRepository.getActiveGame();
     const records = gameWorkspaceProjectRecords(this.gameWorkspaceRepository);
@@ -6723,6 +6767,10 @@ export function createLocalApiRouter({
         return true;
       }
       if (request.method === "GET" && await handleAdminNotesDirectoryApiRequest(requestUrl, response, { repoRoot })) {
+        return true;
+      }
+      if (parts[1] === "runtime" && request.method === "GET" && parts[2] === "health") {
+        ok(response, await dataSource.runtimeHealthJsonStatus());
         return true;
       }
       if (parts[1] === "session") {

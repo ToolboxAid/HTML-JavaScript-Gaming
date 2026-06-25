@@ -166,8 +166,10 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
     await expect(apiContractTable).toContainText("2026-06-24.system-health.v1");
     await expect(apiContractTable).toContainText("Current deployment only");
     await expect(apiContractTable).toContainText("Reference only");
+    await expect(apiContractTable).toContainText("GET /api/runtime/health");
     await expect(apiContractTable).toContainText("GET /api/admin/system-health/status");
     const apiRegistryTable = page.getByRole("table", { name: "Admin API registry" });
+    await expect(apiRegistryTable).toContainText("/api/runtime/health");
     await expect(apiRegistryTable).toContainText("/api/admin/system-health/status");
     await expect(apiRegistryTable).toContainText("/api/admin/system-health/action");
     await expect(apiRegistryTable).toContainText("/api/admin/infrastructure/storage-path-status");

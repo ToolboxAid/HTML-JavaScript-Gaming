@@ -18,7 +18,6 @@ Exercised tool entry points detected:
 
 Changed runtime JS files covered:
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(80%) assets/theme-v2/js/admin-system-health.js - executed lines 920/920; executed functions 74/92
 
 Files with executed line/function counts where available:
 (36%) src/api/server-api-client.js - executed lines 168/168; executed functions 5/14
@@ -41,4 +40,3 @@ Changed JS files considered:
 (0%) tests/api/admin-system-health/contract.test.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/dev-runtime/AdminHealthOperations.test.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
-(80%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage

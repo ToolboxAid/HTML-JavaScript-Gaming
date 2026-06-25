@@ -242,6 +242,7 @@ test("Admin can view operational health while Creator sessions are blocked", asy
       assert.deepEqual(
         health.apiContract.endpoints.map((endpoint) => `${endpoint.method} ${endpoint.path}`),
         [
+          "GET /api/runtime/health",
           "GET /api/admin/system-health/status",
           "POST /api/admin/system-health/action",
           "POST /api/admin/system-health/storage-connectivity-action",
@@ -250,6 +251,7 @@ test("Admin can view operational health while Creator sessions are blocked", asy
       assert.deepEqual(
         health.adminApiRegistry.rows.map((row) => `${row.method} ${row.path}`),
         [
+          "GET /api/runtime/health",
           "GET /api/admin/system-health/status",
           "POST /api/admin/system-health/action",
           "POST /api/admin/system-health/storage-connectivity-action",
@@ -260,6 +262,16 @@ test("Admin can view operational health while Creator sessions are blocked", asy
           "GET /api/navigation/admin-menu",
         ],
       );
+      const runtimeJson = await apiJson(server.baseUrl, "/api/runtime/health");
+      assert.equal(runtimeJson.environment.name, "Local");
+      assert.equal(runtimeJson.api.status, "PASS");
+      assert.ok(["PASS", "WARN", "FAIL"].includes(runtimeJson.database.status));
+      assert.ok(["PASS", "WARN", "FAIL"].includes(runtimeJson.storage.status));
+      assert.equal(typeof runtimeJson.timestamp, "string");
+      assert.equal(runtimeJson.secretEditingAllowed, false);
+      assert.equal(runtimeJson.secretsExposed, false);
+      assert.equal(JSON.stringify(runtimeJson).includes("api-secret"), false);
+      assert.equal(JSON.stringify(runtimeJson).includes("site-secret"), false);
       assert.deepEqual(
         health.runtimeFeatureFlags.rows.map((row) => `${row.flag}:${row.value}`),
         [
