@@ -1,45 +1,44 @@
-# git diff --name-only pr/26177-CHARLIE-029-system-health-postgres-metrics-panel --
+﻿# git diff --name-only pr/26177-CHARLIE-030-r2-storage-health-expanded-validation --
 admin/system-health.html
 assets/theme-v2/js/admin-system-health.js
-docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation.md
-docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_branch-validation.md
-docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_manual-validation-notes.md
-docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_requirements-checklist.md
-docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_validation-lane.md
+docs_build/dev/reports/PR_26177_CHARLIE_031-environment-health-comparison.md
+docs_build/dev/reports/PR_26177_CHARLIE_031-environment-health-comparison_branch-validation.md
+docs_build/dev/reports/PR_26177_CHARLIE_031-environment-health-comparison_manual-validation-notes.md
+docs_build/dev/reports/PR_26177_CHARLIE_031-environment-health-comparison_requirements-checklist.md
+docs_build/dev/reports/PR_26177_CHARLIE_031-environment-health-comparison_validation-lane.md
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/coverage_changed_js_guardrail.txt
 docs_build/dev/reports/playwright_v8_coverage_report.txt
-src/api/admin-system-health-api-client.js
 src/dev-runtime/server/local-api-router.mjs
 tests/api/admin-system-health/contract.test.mjs
 tests/dev-runtime/AdminHealthOperations.test.mjs
 tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
 
 # git status --short
- M docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation.md
- M docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_branch-validation.md
- M docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_manual-validation-notes.md
- M docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_requirements-checklist.md
- M docs_build/dev/reports/PR_26177_CHARLIE_030-r2-storage-health-expanded-validation_validation-lane.md
+ M docs_build/dev/reports/PR_26177_CHARLIE_031-environment-health-comparison.md
+ M docs_build/dev/reports/PR_26177_CHARLIE_031-environment-health-comparison_branch-validation.md
+ M docs_build/dev/reports/PR_26177_CHARLIE_031-environment-health-comparison_manual-validation-notes.md
+ M docs_build/dev/reports/PR_26177_CHARLIE_031-environment-health-comparison_requirements-checklist.md
+ M docs_build/dev/reports/PR_26177_CHARLIE_031-environment-health-comparison_validation-lane.md
  M docs_build/dev/reports/codex_review.diff
+ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
 
-# git diff --stat pr/26177-CHARLIE-029-system-health-postgres-metrics-panel --
- admin/system-health.html                           |  13 +-
- assets/theme-v2/js/admin-system-health.js          |  41 +-
- ...IE_030-r2-storage-health-expanded-validation.md |  35 +
- ...health-expanded-validation_branch-validation.md |  17 +
- ...-expanded-validation_manual-validation-notes.md |   9 +
- ...h-expanded-validation_requirements-checklist.md |  13 +
- ...e-health-expanded-validation_validation-lane.md |  22 +
- docs_build/dev/reports/codex_changed_files.txt     |  70 +-
- docs_build/dev/reports/codex_review.diff           | 988 +++++++++++----------
- .../dev/reports/coverage_changed_js_guardrail.txt  |   6 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |  17 +-
- src/api/admin-system-health-api-client.js          |   4 +
- src/dev-runtime/server/local-api-router.mjs        | 105 ++-
- tests/api/admin-system-health/contract.test.mjs    |  19 +
- tests/dev-runtime/AdminHealthOperations.test.mjs   |   6 +
- .../tools/AdminHealthOperationsPage.spec.mjs       |   8 +-
- 16 files changed, 851 insertions(+), 522 deletions(-)
+# git diff --stat pr/26177-CHARLIE-030-r2-storage-health-expanded-validation --
+ admin/system-health.html                           |  20 +
+ assets/theme-v2/js/admin-system-health.js          |  50 ++
+ ...77_CHARLIE_031-environment-health-comparison.md |  33 +
+ ...ironment-health-comparison_branch-validation.md |  17 +
+ ...nt-health-comparison_manual-validation-notes.md |   9 +
+ ...ent-health-comparison_requirements-checklist.md |  12 +
+ ...nvironment-health-comparison_validation-lane.md |  21 +
+ docs_build/dev/reports/codex_changed_files.txt     |  71 +--
+ docs_build/dev/reports/codex_review.diff           | 663 +--------------------
+ .../dev/reports/coverage_changed_js_guardrail.txt  |   3 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |   8 +-
+ src/dev-runtime/server/local-api-router.mjs        |  76 +++
+ tests/api/admin-system-health/contract.test.mjs    |  13 +
+ tests/dev-runtime/AdminHealthOperations.test.mjs   |   9 +
+ .../tools/AdminHealthOperationsPage.spec.mjs       |  11 +
+ 15 files changed, 305 insertions(+), 711 deletions(-)

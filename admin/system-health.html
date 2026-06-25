@@ -40,6 +40,7 @@
                                 <div class="accordion-body content-stack">
                                     <p>Environment Identity</p>
                                     <p>Environment Map</p>
+                                    <p>Environment Health Comparison</p>
                                     <p>Environment Capabilities</p>
                                     <p>Health API Contract</p>
                                     <p>Admin API Registry</p>
@@ -107,6 +108,25 @@
                                     <tr><td>IST</td><td>Local Docker</td><td>Local Docker PostgreSQL</td><td>/ist</td></tr>
                                     <tr><td>UAT</td><td>Cloudflare</td><td>Supabase PostgreSQL</td><td>/uat</td></tr>
                                     <tr><td>PRD</td><td>Cloudflare</td><td>Supabase PostgreSQL</td><td>/prd</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Environment health comparison">
+                                <caption>Environment Health Comparison</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Environment</th>
+                                        <th scope="col">Hosting model</th>
+                                        <th scope="col">Runtime expectation</th>
+                                        <th scope="col">Database model</th>
+                                        <th scope="col">Storage folder</th>
+                                        <th scope="col">State</th>
+                                        <th scope="col">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-system-health-environment-comparison-rows>
+                                    <tr><td>Environment comparison</td><td>Reference-only</td><td>Waiting for safe API status</td><td>Reference-only</td><td>Reference-only</td><td>Unavailable</td><td data-health-status="PENDING" title="Reason: environment comparison has not loaded yet." aria-label="PENDING: environment comparison has not loaded yet.">PENDING</td></tr>
                                 </tbody>
                             </table>
                         </div>
