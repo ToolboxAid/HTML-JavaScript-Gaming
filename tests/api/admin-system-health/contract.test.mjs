@@ -93,6 +93,15 @@ test("Admin System Health completion contract remains server-owned and current-e
   }, async () => {
     const server = await startApiServer();
     try {
+      const runtimeJson = await apiJson(server.baseUrl, "/api/runtime/health");
+      assert.equal(runtimeJson.environment.name, "DEV");
+      assert.equal(runtimeJson.environment.storageFolder, "/dev");
+      assert.equal(runtimeJson.api.status, "PASS");
+      assert.equal(Object.hasOwn(runtimeJson, "timestamp"), true);
+      assert.equal(runtimeJson.secretEditingAllowed, false);
+      assert.equal(runtimeJson.secretsExposed, false);
+      assert.equal(JSON.stringify(runtimeJson).includes("api-secret"), false);
+      assert.equal(JSON.stringify(runtimeJson).includes("site-secret"), false);
       await apiJson(server.baseUrl, "/api/session/user", {
         body: { userKey: SEED_DB_KEYS.users.admin },
         method: "POST",

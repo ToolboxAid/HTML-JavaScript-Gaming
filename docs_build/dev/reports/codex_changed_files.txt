@@ -1,11 +1,9 @@
-﻿# git diff --name-only pr/26177-CHARLIE-030-r2-storage-health-expanded-validation --
-admin/system-health.html
-assets/theme-v2/js/admin-system-health.js
-docs_build/dev/reports/PR_26177_CHARLIE_031-environment-health-comparison.md
-docs_build/dev/reports/PR_26177_CHARLIE_031-environment-health-comparison_branch-validation.md
-docs_build/dev/reports/PR_26177_CHARLIE_031-environment-health-comparison_manual-validation-notes.md
-docs_build/dev/reports/PR_26177_CHARLIE_031-environment-health-comparison_requirements-checklist.md
-docs_build/dev/reports/PR_26177_CHARLIE_031-environment-health-comparison_validation-lane.md
+# git diff --name-only pr/26177-CHARLIE-031-environment-health-comparison --
+docs_build/dev/reports/PR_26177_CHARLIE_032-runtime-health-json-endpoints.md
+docs_build/dev/reports/PR_26177_CHARLIE_032-runtime-health-json-endpoints_branch-validation.md
+docs_build/dev/reports/PR_26177_CHARLIE_032-runtime-health-json-endpoints_manual-validation-notes.md
+docs_build/dev/reports/PR_26177_CHARLIE_032-runtime-health-json-endpoints_requirements-checklist.md
+docs_build/dev/reports/PR_26177_CHARLIE_032-runtime-health-json-endpoints_validation-lane.md
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/coverage_changed_js_guardrail.txt
@@ -16,29 +14,20 @@ tests/dev-runtime/AdminHealthOperations.test.mjs
 tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
 
 # git status --short
- M docs_build/dev/reports/PR_26177_CHARLIE_031-environment-health-comparison.md
- M docs_build/dev/reports/PR_26177_CHARLIE_031-environment-health-comparison_branch-validation.md
- M docs_build/dev/reports/PR_26177_CHARLIE_031-environment-health-comparison_manual-validation-notes.md
- M docs_build/dev/reports/PR_26177_CHARLIE_031-environment-health-comparison_requirements-checklist.md
- M docs_build/dev/reports/PR_26177_CHARLIE_031-environment-health-comparison_validation-lane.md
- M docs_build/dev/reports/codex_review.diff
- M docs_build/dev/reports/coverage_changed_js_guardrail.txt
- M docs_build/dev/reports/playwright_v8_coverage_report.txt
+(no output)
 
-# git diff --stat pr/26177-CHARLIE-030-r2-storage-health-expanded-validation --
- admin/system-health.html                           |  20 +
- assets/theme-v2/js/admin-system-health.js          |  50 ++
- ...77_CHARLIE_031-environment-health-comparison.md |  33 +
- ...ironment-health-comparison_branch-validation.md |  17 +
- ...nt-health-comparison_manual-validation-notes.md |   9 +
- ...ent-health-comparison_requirements-checklist.md |  12 +
- ...nvironment-health-comparison_validation-lane.md |  21 +
- docs_build/dev/reports/codex_changed_files.txt     |  71 +--
- docs_build/dev/reports/codex_review.diff           | 663 +--------------------
- .../dev/reports/coverage_changed_js_guardrail.txt  |   3 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |   8 +-
- src/dev-runtime/server/local-api-router.mjs        |  76 +++
- tests/api/admin-system-health/contract.test.mjs    |  13 +
- tests/dev-runtime/AdminHealthOperations.test.mjs   |   9 +
- .../tools/AdminHealthOperationsPage.spec.mjs       |  11 +
- 15 files changed, 305 insertions(+), 711 deletions(-)
+# git diff --stat pr/26177-CHARLIE-031-environment-health-comparison --
+ ...77_CHARLIE_032-runtime-health-json-endpoints.md | 30 ++++++++++
+ ...time-health-json-endpoints_branch-validation.md | 17 ++++++
+ ...ealth-json-endpoints_manual-validation-notes.md |  8 +++
+ ...health-json-endpoints_requirements-checklist.md | 13 +++++
+ ...untime-health-json-endpoints_validation-lane.md | 20 +++++++
+ docs_build/dev/reports/codex_changed_files.txt     | 66 ++++++++--------------
+ docs_build/dev/reports/codex_review.diff           |  2 +-
+ .../dev/reports/coverage_changed_js_guardrail.txt  |  1 -
+ .../dev/reports/playwright_v8_coverage_report.txt  |  2 -
+ src/dev-runtime/server/local-api-router.mjs        | 48 ++++++++++++++++
+ tests/api/admin-system-health/contract.test.mjs    |  9 +++
+ tests/dev-runtime/AdminHealthOperations.test.mjs   | 12 ++++
+ .../tools/AdminHealthOperationsPage.spec.mjs       |  2 +
+ 13 files changed, 185 insertions(+), 45 deletions(-)
