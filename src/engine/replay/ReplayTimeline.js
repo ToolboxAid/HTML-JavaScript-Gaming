@@ -8,11 +8,12 @@ import { asNonNegativeInteger, asPositiveInteger } from "../../shared/math/numbe
 import {
   SHARED_REPLAY_TIMELINE_DEFAULT_WINDOW_FRAMES,
 } from "../../shared/contracts/replayContracts.js";
+import { cloneRuntimeValue } from "../../shared/runtime/snapshotClone.js";
 
 function cloneEntry(entry) {
   return {
     frameId: entry.frameId,
-    snapshot: structuredClone(entry.snapshot),
+    snapshot: cloneRuntimeValue(entry.snapshot),
   };
 }
 
@@ -30,7 +31,7 @@ class ReplayTimeline {
     const normalizedFrameId = asNonNegativeInteger(frameId, this.entries.length);
     const entry = {
       frameId: normalizedFrameId,
-      snapshot: structuredClone(snapshot),
+      snapshot: cloneRuntimeValue(snapshot),
     };
     this.entries.push(entry);
     this.pruneOldSnapshots();
@@ -88,7 +89,7 @@ class ReplayTimeline {
       for (let i = 0; i < snapshots.length; i += 1) {
         nextEntries.push({
           frameId: normalizedFrameId + i,
-          snapshot: structuredClone(snapshots[i]),
+          snapshot: cloneRuntimeValue(snapshots[i]),
         });
       }
     }
