@@ -145,6 +145,16 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
     await expect(page.getByRole("table", { name: "Environment map" })).toContainText("UAT");
     await expect(page.getByRole("table", { name: "Environment map" })).toContainText("PRD");
     await expect(page.getByRole("table", { name: "Environment map" }).locator("[data-health-status]")).toHaveCount(0);
+    const comparisonTable = page.getByRole("table", { name: "Environment health comparison" });
+    await expect(comparisonTable).toContainText("Local (VS Code)");
+    await expect(comparisonTable).toContainText("Local static server + Local API");
+    await expect(comparisonTable).toContainText("DEV");
+    await expect(comparisonTable).toContainText("Current");
+    await expect(comparisonTable).toContainText("IST");
+    await expect(comparisonTable).toContainText("UAT");
+    await expect(comparisonTable).toContainText("PROD");
+    await expect(comparisonTable).toContainText("Not Configured");
+    await expect(comparisonTable).toContainText("Unavailable");
     const capabilitiesTable = page.getByRole("table", { name: "Environment capabilities" });
     await expect(capabilitiesTable).toContainText("Hosting");
     await expect(capabilitiesTable).toContainText("API");
@@ -335,6 +345,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
   expect(pageSource).not.toContain("SQLite");
   expect(pageSource).toContain("Environment Identity");
   expect(pageSource).toContain("Environment Map");
+  expect(pageSource).toContain("Environment Health Comparison");
   expect(pageSource).toContain("Environment Capabilities");
   expect(pageSource).toContain("Health API Contract");
   expect(pageSource).toContain("Admin API Registry");

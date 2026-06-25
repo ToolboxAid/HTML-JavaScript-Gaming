@@ -983,6 +983,80 @@ function systemHealthEnvironmentMap() {
   return SYSTEM_HEALTH_ENVIRONMENT_MODELS.map((model) => ({ ...model }));
 }
 
+function systemHealthEnvironmentComparison({ checkedAt = new Date().toISOString(), environmentIdentity = {} } = {}) {
+  const currentEnvironmentName = normalizeEnvironmentName(environmentIdentity.name);
+  const comparisonModels = [
+    {
+      canonicalName: "Local",
+      databaseModel: "Local Docker PostgreSQL",
+      displayName: "Local (VS Code)",
+      hostingModel: "VS Code + Local API",
+      runtimeExpectation: "Local static server + Local API + developer workstation",
+      storageFolder: "/local",
+    },
+    {
+      canonicalName: "DEV",
+      databaseModel: "Local Docker PostgreSQL",
+      displayName: "DEV",
+      hostingModel: "Local Docker",
+      runtimeExpectation: "Local Docker runtime + Local API",
+      storageFolder: "/dev",
+    },
+    {
+      canonicalName: "IST",
+      databaseModel: "Local Docker PostgreSQL",
+      displayName: "IST",
+      hostingModel: "Local Docker",
+      runtimeExpectation: "Local Docker runtime + Local API",
+      storageFolder: "/ist",
+    },
+    {
+      canonicalName: "UAT",
+      databaseModel: "Supabase PostgreSQL",
+      displayName: "UAT",
+      hostingModel: "Cloudflare",
+      runtimeExpectation: "Cloudflare deployment + server API contract",
+      storageFolder: "/uat",
+    },
+    {
+      canonicalName: "PRD",
+      databaseModel: "Supabase PostgreSQL",
+      displayName: "PROD",
+      hostingModel: "Cloudflare",
+      runtimeExpectation: "Cloudflare deployment + server API contract",
+      storageFolder: "/prd",
+    },
+  ];
+  const rows = comparisonModels.map((model) => {
+    const current = normalizeEnvironmentName(model.canonicalName) === currentEnvironmentName;
+    const state = current
+      ? "Current"
+      : model.canonicalName === "Local"
+        ? "Unavailable"
+        : "Not Configured";
+    return {
+      ...model,
+      activeCheck: current,
+      checkedAt: current ? checkedAt : "",
+      state,
+      status: current ? environmentIdentity.status || "PASS" : "WARN",
+      summary: current
+        ? `This deployment actively checks only ${environmentIdentity.name || model.displayName}.`
+        : `${model.displayName} is reference-only from this deployment; no active health check was run.`,
+    };
+  });
+  return {
+    currentEnvironment: environmentIdentity.name || "Unknown",
+    lastChecked: checkedAt,
+    message: "Environment Health Comparison is reference-only for peer environments; only the current deployment is actively checked.",
+    noCrossEnvironmentChecks: true,
+    rows,
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    status: rows.some((row) => row.activeCheck) ? "PASS" : "WARN",
+  };
+}
+
 function topLevelStorageFolder(value) {
   const segment = String(value || "")
     .trim()
@@ -4595,6 +4669,7 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
     const runtimeFeatureFlags = systemHealthRuntimeFeatureFlags(checkedAt);
     const environmentIdentity = systemHealthEnvironmentIdentity(process.env, checkedAt);
     const environmentMap = systemHealthEnvironmentMap();
+    const environmentComparison = systemHealthEnvironmentComparison({ checkedAt, environmentIdentity });
     const databaseStatus = await this.ownerDatabaseStatus(environmentIdentity);
     const postgresMetrics = databaseStatus.postgresMetrics || systemHealthPostgresMetrics(databaseStatus, checkedAt);
     const storageStatus = this.ownerStorageStatus();
@@ -4763,6 +4838,7 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
       message: "Admin System Health loaded safe status only.",
       environmentIdentity,
       environmentMap,
+      environmentComparison,
       environmentCapabilities,
       healthCheckHistory,
       notificationsFoundation,

@@ -226,6 +226,15 @@ test("Admin can view operational health while Creator sessions are blocked", asy
         health.environmentMap.map((row) => row.name),
         ["Local", "DEV", "IST", "UAT", "PRD"],
       );
+      assert.equal(health.environmentComparison.noCrossEnvironmentChecks, true);
+      assert.deepEqual(
+        health.environmentComparison.rows.map((row) => row.displayName),
+        ["Local (VS Code)", "DEV", "IST", "UAT", "PROD"],
+      );
+      assert.equal(health.environmentComparison.rows.filter((row) => row.activeCheck === true).length, 1);
+      assert.equal(health.environmentComparison.rows.find((row) => row.displayName === "Local (VS Code)").state, "Current");
+      assert.equal(health.environmentComparison.rows.find((row) => row.displayName === "DEV").state, "Not Configured");
+      assert.equal(health.environmentComparison.rows.find((row) => row.displayName === "PROD").storageFolder, "/prd");
       assert.equal(health.apiContract.contractVersion, "2026-06-24.system-health.v1");
       assert.equal(health.apiContract.currentDeploymentOnly, true);
       assert.equal(health.apiContract.noCrossEnvironmentChecks, true);

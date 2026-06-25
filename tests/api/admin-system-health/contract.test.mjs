@@ -107,6 +107,7 @@ test("Admin System Health completion contract remains server-owned and current-e
         [
           "apiContract",
           "adminApiRegistry",
+          "environmentComparison",
           "environmentCapabilities",
           "runtimeFeatureFlags",
           "serviceHealth",
@@ -118,6 +119,7 @@ test("Admin System Health completion contract remains server-owned and current-e
         [
           "apiContract",
           "adminApiRegistry",
+          "environmentComparison",
           "environmentCapabilities",
           "runtimeFeatureFlags",
           "serviceHealth",
@@ -125,6 +127,17 @@ test("Admin System Health completion contract remains server-owned and current-e
           "postgresMetrics",
           "scheduledMonitoring",
           "notificationsFoundation",
+        ],
+      );
+      assert.equal(health.environmentComparison.noCrossEnvironmentChecks, true);
+      assert.deepEqual(
+        health.environmentComparison.rows.map((row) => `${row.displayName}:${row.state}`),
+        [
+          "Local (VS Code):Unavailable",
+          "DEV:Current",
+          "IST:Not Configured",
+          "UAT:Not Configured",
+          "PROD:Not Configured",
         ],
       );
       assert.deepEqual(

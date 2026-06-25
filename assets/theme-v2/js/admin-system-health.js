@@ -69,6 +69,7 @@ class AdminSystemHealthController {
         this.historyRows = root.querySelector("[data-admin-system-health-history-rows]");
         this.apiContractRows = root.querySelector("[data-admin-system-health-api-contract-rows]");
         this.apiRegistryRows = root.querySelector("[data-admin-system-health-api-registry-rows]");
+        this.environmentComparisonRows = root.querySelector("[data-admin-system-health-environment-comparison-rows]");
         this.capabilityRows = root.querySelector("[data-admin-system-health-capability-rows]");
         this.featureFlagRows = root.querySelector("[data-admin-system-health-feature-flag-rows]");
         this.actionRows = root.querySelector("[data-admin-system-health-action-rows]");
@@ -160,6 +161,7 @@ class AdminSystemHealthController {
         this.renderPostgresMetricsPending(reason);
         this.renderStoragePending(reason);
         this.renderRuntimeHealthPending(reason);
+        this.renderEnvironmentComparisonPending(reason);
         this.renderEnvironmentCapabilitiesPending(reason);
         this.renderApiContractPending(reason);
         this.renderAdminApiRegistryPending(reason);
@@ -201,6 +203,53 @@ class AdminSystemHealthController {
         this.setEnvironmentStatus("storageFolder", environmentIdentity.storageFolderStatus, reason);
         this.setEnvironmentValue("lastHealthCheck", environmentIdentity.lastHealthCheck, "not available");
         this.setEnvironmentStatus("lastHealthCheck", environmentIdentity.lastHealthCheck ? "PASS" : "WARN", reason);
+    }
+
+    renderEnvironmentComparisonPending(reason) {
+        if (!this.environmentComparisonRows) {
+            return;
+        }
+        const row = document.createElement("tr");
+        row.append(
+            this.createCell("Environment comparison"),
+            this.createCell("Reference-only"),
+            this.createCell("not available"),
+            this.createCell("Reference-only"),
+            this.createCell("Reference-only"),
+            this.createCell("Unavailable"),
+            this.createStatusCell("PENDING", reason),
+        );
+        this.environmentComparisonRows.replaceChildren(row);
+    }
+
+    renderEnvironmentComparison(environmentComparison = {}) {
+        if (!this.environmentComparisonRows) {
+            return;
+        }
+        if (environmentComparison?.secretsExposed === true || environmentComparison?.secretEditingAllowed === true) {
+            this.renderEnvironmentComparisonPending("Safe environment comparison response was blocked because it exposed secret controls.");
+            return;
+        }
+        const rows = Array.isArray(environmentComparison.rows) ? environmentComparison.rows : [];
+        if (!rows.length) {
+            this.renderEnvironmentComparisonPending("Safe Admin System Health API returned no environment comparison rows.");
+            return;
+        }
+        const fragment = document.createDocumentFragment();
+        rows.forEach((comparisonRow) => {
+            const row = document.createElement("tr");
+            row.append(
+                this.createCell(comparisonRow.displayName),
+                this.createCell(comparisonRow.hostingModel),
+                this.createCell(comparisonRow.runtimeExpectation),
+                this.createCell(comparisonRow.databaseModel),
+                this.createCell(comparisonRow.storageFolder),
+                this.createCell(comparisonRow.state),
+                this.createStatusCell(comparisonRow.status, comparisonRow.summary || environmentComparison.message),
+            );
+            fragment.append(row);
+        });
+        this.environmentComparisonRows.replaceChildren(fragment);
     }
 
     renderStoragePending(reason) {
@@ -893,6 +942,7 @@ class AdminSystemHealthController {
             return;
         }
         this.renderEnvironmentIdentity(data?.environmentIdentity || {});
+        this.renderEnvironmentComparison(data?.environmentComparison || {});
         this.renderPostgresStatus(data?.databaseStatus || {});
         this.renderStartupDiagnostics(data?.localApiStartup || {});
         this.renderStorageStatus(data?.storageStatus || {});
