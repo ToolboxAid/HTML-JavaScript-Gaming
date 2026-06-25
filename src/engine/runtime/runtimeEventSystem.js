@@ -5,6 +5,8 @@ David Quesenberry
 runtimeEventSystem.js
 */
 
+import { cloneRuntimeValue } from "../../shared/runtime/snapshotClone.js";
+
 export const RUNTIME_EVENT_ERRORS = Object.freeze({
   CONDITION_MATCHES_INVALID: "RUNTIME_EVENT_CONDITION_MATCHES_INVALID",
   RUNTIME_EVENTS_INVALID: "RUNTIME_EVENT_RUNTIME_EVENTS_INVALID",
@@ -53,11 +55,11 @@ export function publishRuntimeEvents(conditionMatches, runtimeEvents) {
     eventId: `event.${conditionMatch.eventType}.${conditionMatch.conditionId}.${index}`,
     eventType: conditionMatch.eventType,
     conditionId: conditionMatch.conditionId,
-    payload: Object.freeze(cloneJson(conditionMatch.payload)),
+    payload: Object.freeze(cloneRuntimeValue(conditionMatch.payload)),
   }));
 
   return createEventPublishResult({
-    runtimeEvents: [...runtimeEvents, ...publishedEvents].map((runtimeEvent) => Object.freeze(cloneJson(runtimeEvent))),
+    runtimeEvents: [...runtimeEvents, ...publishedEvents].map((runtimeEvent) => Object.freeze(cloneRuntimeValue(runtimeEvent))),
     publishedEvents,
     errors,
   });
@@ -144,10 +146,6 @@ function createEventPublishResult({ runtimeEvents, publishedEvents, errors }) {
 
 function createEventError(code, message, path) {
   return Object.freeze({ code, message, path });
-}
-
-function cloneJson(value) {
-  return JSON.parse(JSON.stringify(value));
 }
 
 function isRecord(value) {

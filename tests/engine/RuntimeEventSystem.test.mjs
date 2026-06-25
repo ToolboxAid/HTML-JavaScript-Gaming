@@ -87,6 +87,25 @@ export function run() {
   assert.throws(() => {
     clonedResult.runtimeEvents[0].eventId = "event.changed";
   }, TypeError);
+
+  const nativeStructuredClone = globalThis.structuredClone;
+  globalThis.structuredClone = undefined;
+  try {
+    const fallbackRuntimeEvent = {
+      eventId: "event.runtime.frameStart.3",
+      eventType: "event.frameStart",
+      payload: {
+        tick: 3,
+      },
+    };
+    const fallbackResult = publishRuntimeEvents([], [fallbackRuntimeEvent]);
+    fallbackRuntimeEvent.payload.tick = 333;
+
+    assert.equal(fallbackResult.valid, true);
+    assert.equal(fallbackResult.runtimeEvents[0].payload.tick, 3);
+  } finally {
+    globalThis.structuredClone = nativeStructuredClone;
+  }
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

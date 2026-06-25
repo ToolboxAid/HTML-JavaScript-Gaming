@@ -1,50 +1,50 @@
 diff --git a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-index 7f2068482..0dc1ef5ec 100644
+index 0dc1ef5ec..de7ad4681 100644
 --- a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
 +++ b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-@@ -247,7 +247,8 @@ Current OWNER clarification:
-   - Completed by PR_26175_DELTA_003_API_Client_Standardization.
- - [x] Delta - Runtime performance audit
+@@ -249,7 +249,8 @@ Current OWNER clarification:
    - Completion reference: PR_26175_DELTA_001_Runtime_Performance_Optimization.
--- [ ] Delta - Engine test coverage improvements
-+- [x] Delta - Engine test coverage improvements
-+  - Completed by PR_26175_DELTA_004_Runtime_Test_Expansion.
- - [ ] Delta - Event system audit
+ - [x] Delta - Engine test coverage improvements
+   - Completed by PR_26175_DELTA_004_Runtime_Test_Expansion.
+-- [ ] Delta - Event system audit
++- [x] Delta - Event system audit
++  - Completed by PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup.
  - [ ] Delta - Controls runtime framework audit
  - [ ] Delta - Object runtime framework audit
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_004_Runtime_Test_Expansion-branch-validation.md b/docs_build/dev/reports/PR_26175_DELTA_004_Runtime_Test_Expansion-branch-validation.md
+ - [ ] Delta - World runtime framework audit
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-branch-validation.md b/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-branch-validation.md
 new file mode 100644
-index 000000000..2070dcf61
+index 000000000..c86256005
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_004_Runtime_Test_Expansion-branch-validation.md
++++ b/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-branch-validation.md
 @@ -0,0 +1,15 @@
-+# PR_26175_DELTA_004 Branch Validation
++# PR_26175_DELTA_005 Branch Validation
 +
 +| Gate | Status | Evidence |
 +| --- | --- | --- |
-+| Current branch before work | PASS | `main` after PR_003 merge |
++| Current branch before work | PASS | `main` after PR_004 merge |
 +| Worktree before work | PASS | Clean |
 +| Local/origin sync before work | PASS | `0 0` |
-+| Team ownership | PASS | Team Delta owns Runtime, Event systems, and Runtime test coverage. |
-+| Work branch | PASS | `PR_26175_DELTA_004_Runtime_Test_Expansion` |
-+| Previous Delta PR closed | PASS | PR_003 was merged and `main` was verified before PR_004 started. |
-+| Scope boundary | PASS | Runtime event system test expansion and backlog/report updates only. |
++| Team ownership | PASS | Team Delta owns Runtime, Event systems, Shared JS, Performance, and technical debt remediation. |
++| Work branch | PASS | `PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup` |
++| Previous Delta PR closed | PASS | PR_004 was merged and `main` was verified before PR_005 started. |
++| Scope boundary | PASS | Runtime event clone cleanup, focused test update, backlog, and reports only. |
 +
 +## Instruction Reads
 +
 +PASS - All files under `docs_build/dev/ProjectInstructions/` were read before the Delta sequence, and updated instructions were reread after pulling latest `main`.
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_004_Runtime_Test_Expansion-manual-validation-notes.md b/docs_build/dev/reports/PR_26175_DELTA_004_Runtime_Test_Expansion-manual-validation-notes.md
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-manual-validation-notes.md b/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-manual-validation-notes.md
 new file mode 100644
-index 000000000..43702bb60
+index 000000000..835bc982d
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_004_Runtime_Test_Expansion-manual-validation-notes.md
++++ b/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-manual-validation-notes.md
 @@ -0,0 +1,15 @@
-+# PR_26175_DELTA_004 Manual Validation Notes
++# PR_26175_DELTA_005 Manual Validation Notes
 +
 +## Manual Review
 +
-+- Confirmed runtime implementation files were not modified.
-+- Confirmed expanded assertions cover invalid runtime event records and output immutability.
++- Confirmed the removed local clone helper was replaced with `cloneRuntimeValue(...)`.
++- Confirmed event output clone/freeze expectations remain covered by tests.
 +- Confirmed no Theme V2, UI, API client, browser-owned data, or status bar files changed.
 +
 +## Manual Validation
@@ -53,42 +53,44 @@ index 000000000..43702bb60
 +
 +## Follow-Up
 +
-+- Remaining Delta runtime work continues in the next sequential PR for technical debt cleanup.
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_004_Runtime_Test_Expansion-requirement-checklist.md b/docs_build/dev/reports/PR_26175_DELTA_004_Runtime_Test_Expansion-requirement-checklist.md
++- The requested five-PR Delta sequence is complete after this PR merges and `main` is verified.
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-requirement-checklist.md b/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-requirement-checklist.md
 new file mode 100644
-index 000000000..098b13fbd
+index 000000000..3488f5872
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_004_Runtime_Test_Expansion-requirement-checklist.md
-@@ -0,0 +1,18 @@
-+# PR_26175_DELTA_004 Requirement Checklist
++++ b/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-requirement-checklist.md
+@@ -0,0 +1,19 @@
++# PR_26175_DELTA_005 Requirement Checklist
 +
 +| Requirement | Status | Notes |
 +| --- | --- | --- |
-+| Team Delta ownership only | PASS | Runtime event test coverage is Delta-owned. |
-+| One PR purpose | PASS | Runtime event coverage expansion only. |
-+| Preserve backward compatibility | PASS | No runtime code changed. |
-+| Update backlog | PASS | `Delta - Engine test coverage improvements` marked complete. |
++| Team Delta ownership only | PASS | Runtime event-system cleanup is Delta-owned. |
++| One PR purpose | PASS | Shared runtime clone adoption in event publishing only. |
++| Preserve backward compatibility | PASS | Event, trigger, action, and final systems validation passed. |
++| Update backlog | PASS | `Delta - Event system audit` marked complete. |
 +| Update tool state if applicable | PASS | Not applicable; no tool tile/status changed. |
 +| Produce governance reports | PASS | Summary, branch validation, checklist, validation lane, manual notes, Codex diff, changed-file list, and ZIP. |
 +| Runtime validation | PASS | Focused runtime tests and final systems test passed. |
-+| No unrelated files | PASS | Changes are limited to runtime test coverage, backlog, and reports. |
++| No unrelated files | PASS | Changes are limited to event runtime cleanup, focused test, backlog, and reports. |
 +| No branch deletion | PASS | Source branch retained. |
 +
 +## Compatibility Notes
 +
-+- Existing runtime event publishing fixtures continue to pass.
-+- Trigger and action runtime tests continue to pass against the expanded event test contract.
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_004_Runtime_Test_Expansion-validation.md b/docs_build/dev/reports/PR_26175_DELTA_004_Runtime_Test_Expansion-validation.md
++- `publishRuntimeEvents(...)` public output shape is unchanged.
++- The shared runtime clone helper keeps the existing JSON fallback path when `structuredClone` is unavailable.
++- PR_005 does not touch status bar, Theme V2, browser-owned data, or unrelated tool runtime code.
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-validation.md b/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-validation.md
 new file mode 100644
-index 000000000..fd0cdf9fa
+index 000000000..1285e5bb6
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_004_Runtime_Test_Expansion-validation.md
-@@ -0,0 +1,31 @@
-+# PR_26175_DELTA_004 Validation Lane
++++ b/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-validation.md
+@@ -0,0 +1,33 @@
++# PR_26175_DELTA_005 Validation Lane
 +
 +## Commands
 +
 +```powershell
++node --check src/engine/runtime/runtimeEventSystem.js
 +node --check tests/engine/RuntimeEventSystem.test.mjs
 +node tests/engine/RuntimeEventSystem.test.mjs
 +node tests/engine/RuntimeTriggerProcessing.test.mjs
@@ -101,6 +103,7 @@ index 000000000..fd0cdf9fa
 +
 +| Command | Status |
 +| --- | --- |
++| `node --check src/engine/runtime/runtimeEventSystem.js` | PASS |
 +| `node --check tests/engine/RuntimeEventSystem.test.mjs` | PASS |
 +| `node tests/engine/RuntimeEventSystem.test.mjs` | PASS |
 +| `node tests/engine/RuntimeTriggerProcessing.test.mjs` | PASS |
@@ -114,39 +117,51 @@ index 000000000..fd0cdf9fa
 +
 +## Playwright Validation
 +
-+SKIP - Runtime test expansion is covered by focused Node tests.
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_004_Runtime_Test_Expansion.md b/docs_build/dev/reports/PR_26175_DELTA_004_Runtime_Test_Expansion.md
++SKIP - Runtime event technical debt cleanup is covered by focused Node tests.
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup.md b/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup.md
 new file mode 100644
-index 000000000..5fe726656
+index 000000000..ca5c32c49
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_004_Runtime_Test_Expansion.md
-@@ -0,0 +1,40 @@
-+# PR_26175_DELTA_004_Runtime_Test_Expansion
++++ b/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup.md
+@@ -0,0 +1,52 @@
++# PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup
 +
 +## Summary
 +
-+Team Delta expanded runtime event system coverage without changing runtime behavior.
++Team Delta cleaned up runtime event-system clone debt by moving event publishing onto the shared runtime clone helper.
 +
-+`tests/engine/RuntimeEventSystem.test.mjs` now covers invalid existing runtime event records and verifies published results are isolated from later source-object mutation. This strengthens the event publishing contract around validation and immutable result handling.
++`runtimeEventSystem.js` now uses `cloneRuntimeValue(...)` from `src/shared/runtime/snapshotClone.js`, removing its local JSON clone helper. The runtime event test now covers the shared-helper fallback path with `structuredClone` unavailable.
 +
 +## Scope
 +
 +- Team: Delta
-+- Backlog item: `Delta - Engine test coverage improvements`
++- Backlog item: `Delta - Event system audit`
++- Runtime file changed: `src/engine/runtime/runtimeEventSystem.js`
 +- Test file changed: `tests/engine/RuntimeEventSystem.test.mjs`
 +- Backlog updated: `docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md`
 +
 +## Runtime Impact
 +
-+PASS - No runtime code changed.
++PASS - Event publishing behavior remains backward compatible.
 +
-+- Runtime event publishing behavior is unchanged.
-+- Test coverage now confirms invalid runtime events report `EVENT_ID_REQUIRED`, `EVENT_TYPE_REQUIRED`, and `RUNTIME_EVENT_INVALID`.
-+- Test coverage now confirms returned event arrays and event records reject mutation and are isolated from source-object mutations after publish.
++- Published event payloads are still cloned before output.
++- Runtime event output records remain frozen.
++- Existing event, trigger, action, and final systems validation continues to pass.
++- Runtime event cloning now uses the same shared clone path as other Delta runtime consolidation work.
 +
 +## Backlog Update
 +
-+PASS - `Delta - Engine test coverage improvements` is marked complete with this PR as the completion reference.
++PASS - `Delta - Event system audit` is marked complete with this PR as the completion reference.
++
++## Team Delta Sequence Completion
++
++| PR | Status | Result |
++| --- | --- | --- |
++| `PR_26175_DELTA_001_Runtime_Performance_Optimization` | PASS | Merged to `main`. |
++| `PR_26175_DELTA_002_Shared_Runtime_Consolidation` | PASS | Merged to `main`. |
++| `PR_26175_DELTA_003_API_Client_Standardization` | PASS | Merged to `main`. |
++| `PR_26175_DELTA_004_Runtime_Test_Expansion` | PASS | Merged to `main`. |
++| `PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup` | PASS | Prepared for validation and merge. |
 +
 +## Tool State Update
 +
@@ -156,65 +171,76 @@ index 000000000..5fe726656
 +
 +PASS - Focused runtime event, trigger, action, and final systems validation completed.
 +
-+See `PR_26175_DELTA_004_Runtime_Test_Expansion-validation.md` for command details.
++See `PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-validation.md` for command details.
 +
 +## Branch Disposition
 +
 +Source branch should be retained after merge unless OWNER later approves branch deletion.
+diff --git a/src/engine/runtime/runtimeEventSystem.js b/src/engine/runtime/runtimeEventSystem.js
+index eba44a68f..87736411d 100644
+--- a/src/engine/runtime/runtimeEventSystem.js
++++ b/src/engine/runtime/runtimeEventSystem.js
+@@ -5,6 +5,8 @@ David Quesenberry
+ runtimeEventSystem.js
+ */
+
++import { cloneRuntimeValue } from "../../shared/runtime/snapshotClone.js";
++
+ export const RUNTIME_EVENT_ERRORS = Object.freeze({
+   CONDITION_MATCHES_INVALID: "RUNTIME_EVENT_CONDITION_MATCHES_INVALID",
+   RUNTIME_EVENTS_INVALID: "RUNTIME_EVENT_RUNTIME_EVENTS_INVALID",
+@@ -53,11 +55,11 @@ export function publishRuntimeEvents(conditionMatches, runtimeEvents) {
+     eventId: `event.${conditionMatch.eventType}.${conditionMatch.conditionId}.${index}`,
+     eventType: conditionMatch.eventType,
+     conditionId: conditionMatch.conditionId,
+-    payload: Object.freeze(cloneJson(conditionMatch.payload)),
++    payload: Object.freeze(cloneRuntimeValue(conditionMatch.payload)),
+   }));
+
+   return createEventPublishResult({
+-    runtimeEvents: [...runtimeEvents, ...publishedEvents].map((runtimeEvent) => Object.freeze(cloneJson(runtimeEvent))),
++    runtimeEvents: [...runtimeEvents, ...publishedEvents].map((runtimeEvent) => Object.freeze(cloneRuntimeValue(runtimeEvent))),
+     publishedEvents,
+     errors,
+   });
+@@ -146,10 +148,6 @@ function createEventError(code, message, path) {
+   return Object.freeze({ code, message, path });
+ }
+
+-function cloneJson(value) {
+-  return JSON.parse(JSON.stringify(value));
+-}
+-
+ function isRecord(value) {
+   return value !== null && typeof value === "object" && !Array.isArray(value);
+ }
 diff --git a/tests/engine/RuntimeEventSystem.test.mjs b/tests/engine/RuntimeEventSystem.test.mjs
-index 3106a1729..1cb9ca85d 100644
+index 1cb9ca85d..9a0b1fc01 100644
 --- a/tests/engine/RuntimeEventSystem.test.mjs
 +++ b/tests/engine/RuntimeEventSystem.test.mjs
-@@ -41,6 +41,52 @@ export function run() {
-
-   assert.equal(invalidResult.valid, false);
-   assert.deepEqual(invalidResult.errors.map((error) => error.code), [RUNTIME_EVENT_ERRORS.EVENT_TYPE_REQUIRED]);
+@@ -87,6 +87,25 @@ export function run() {
+   assert.throws(() => {
+     clonedResult.runtimeEvents[0].eventId = "event.changed";
+   }, TypeError);
 +
-+  const invalidRuntimeEventsResult = publishRuntimeEvents([], [
-+    {
++  const nativeStructuredClone = globalThis.structuredClone;
++  globalThis.structuredClone = undefined;
++  try {
++    const fallbackRuntimeEvent = {
++      eventId: "event.runtime.frameStart.3",
 +      eventType: "event.frameStart",
-+      payload: {},
-+    },
-+    {
-+      eventId: "event.runtime.frameStart.1",
-+      payload: {},
-+    },
-+    "not-an-event-record",
-+  ]);
++      payload: {
++        tick: 3,
++      },
++    };
++    const fallbackResult = publishRuntimeEvents([], [fallbackRuntimeEvent]);
++    fallbackRuntimeEvent.payload.tick = 333;
 +
-+  assert.equal(invalidRuntimeEventsResult.valid, false);
-+  assert.deepEqual(invalidRuntimeEventsResult.errors.map((error) => error.code), [
-+    RUNTIME_EVENT_ERRORS.EVENT_ID_REQUIRED,
-+    RUNTIME_EVENT_ERRORS.EVENT_TYPE_REQUIRED,
-+    RUNTIME_EVENT_ERRORS.RUNTIME_EVENT_INVALID,
-+  ]);
-+
-+  const sourceRuntimeEvent = {
-+    eventId: "event.runtime.frameStart.2",
-+    eventType: "event.frameStart",
-+    payload: {
-+      tick: 2,
-+    },
-+  };
-+  const sourceConditionMatch = {
-+    conditionId: "condition.score.ready",
-+    eventType: "event.scoreReady",
-+    payload: {
-+      score: 100,
-+    },
-+  };
-+  const clonedResult = publishRuntimeEvents([sourceConditionMatch], [sourceRuntimeEvent]);
-+  sourceRuntimeEvent.payload.tick = 99;
-+  sourceConditionMatch.payload.score = 999;
-+
-+  assert.equal(clonedResult.runtimeEvents[0].payload.tick, 2);
-+  assert.equal(clonedResult.publishedEvents[0].payload.score, 100);
-+  assert.throws(() => {
-+    clonedResult.runtimeEvents.push({});
-+  }, TypeError);
-+  assert.throws(() => {
-+    clonedResult.runtimeEvents[0].eventId = "event.changed";
-+  }, TypeError);
++    assert.equal(fallbackResult.valid, true);
++    assert.equal(fallbackResult.runtimeEvents[0].payload.tick, 3);
++  } finally {
++    globalThis.structuredClone = nativeStructuredClone;
++  }
  }
 
  if (import.meta.url === `file://${process.argv[1]}`) {
