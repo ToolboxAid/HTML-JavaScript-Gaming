@@ -1,8 +1,227 @@
-diff --git a/IMPLEMENTATION.md b/IMPLEMENTATION.md
+diff --git a/docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention.md b/docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention.md
+new file mode 100644
+index 000000000..003a95f2f
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention.md
+@@ -0,0 +1,43 @@
++# PR_26175_OWNER_055-legal-governance-leftover-retention
++
++## Purpose
++Retain the legal/governance leftover artifacts that remained after `PR_26175_OWNER_054-legal-corrected-package` was merged and `main` was synchronized.
++
++## Source Leftovers
++The previous `MAIN_VERIFY` identified three untracked leftover paths:
++
++| Path | Classification | Retention decision |
++| --- | --- | --- |
++| `docs_build/legal/IMPLEMENTATION.md` | Legal package implementation/source notes | Retained in this follow-up PR. |
++| `docs_build/legal/LEGAL_CHANGELOG.md` | Legal foundation package governance notes | Retained in this follow-up PR. |
++| `docs_build/dev/reports/PR_26175_OWNER_current-open-pr-status.md` | Generated governance status report | Retained as a snapshot report in this follow-up PR. |
++
++## Implementation
++- Added the retained package implementation instructions at `docs_build/legal/IMPLEMENTATION.md`.
++- Added the retained legal changelog at `docs_build/legal/LEGAL_CHANGELOG.md`.
++- Updated and retained `docs_build/dev/reports/PR_26175_OWNER_current-open-pr-status.md` as a current governance snapshot taken after OWNER_054 was merged and before OWNER_055 was opened.
++- Added OWNER_055 plan, validation, checklist, manual validation, changed-files, review-diff, and delta ZIP outputs.
++- Confirmed no `IMPLEMENTATION.md` file remains at the repository root.
++
++## Validation Commands
++- PASS: `git status --short --branch`
++- PASS: `git rev-list --left-right --count origin/main...HEAD`
++- PASS: `git diff --name-only`
++- PASS: `git diff --check`
++- PASS: targeted retained-file existence checks.
++- PASS: targeted root `IMPLEMENTATION.md` absence check.
++- PASS: targeted changed-file scope check confirmed documentation/governance/report files only.
++
++## Guardrails
++- No product files were modified.
++- No runtime code was modified.
++- No `IMPLEMENTATION.md` file remains at the repository root.
++- No branches were deleted.
++- `stash@{0}` was left untouched.
++- No leftover file was moved to `tmp/`.
++- No leftover file was deleted.
++
++## Delta ZIP
++Repo-structured delta ZIP:
++
++`tmp/PR_26175_OWNER_055-legal-governance-leftover-retention_delta.zip`
+diff --git a/docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_branch-validation.md b/docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_branch-validation.md
+new file mode 100644
+index 000000000..a822823a9
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_branch-validation.md
+@@ -0,0 +1,19 @@
++# PR_26175_OWNER_055-legal-governance-leftover-retention Branch Validation
++
++## Result
++PASS
++
++## Branch
++- Working branch: `codex/pr-26175-owner-055-legal-governance-leftover-retention`
++- Base branch: `main`
++- Base commit at branch creation: `0c0f2ebc00b40409ea6ebc013a59729747926daf`
++
++## Checks
++| Check | Result |
++| --- | --- |
++| Branch created from current `main` | PASS |
++| `origin/main` fetched before branch work | PASS |
++| Local branch contains one documentation/governance purpose | PASS |
++| Product files unchanged | PASS |
++| Stash left untouched | PASS |
++| No branch deletion performed | PASS |
+diff --git a/docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_manual-validation-notes.md b/docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_manual-validation-notes.md
+new file mode 100644
+index 000000000..512d1bfe7
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_manual-validation-notes.md
+@@ -0,0 +1,13 @@
++# PR_26175_OWNER_055-legal-governance-leftover-retention Manual Validation Notes
++
++## Manual Review
++- Confirmed `docs_build/legal/IMPLEMENTATION.md` contains legal foundation implementation instructions/source notes rather than unrelated temporary content.
++- Confirmed `IMPLEMENTATION.md` is not present at the repository root.
++- Confirmed `docs_build/legal/LEGAL_CHANGELOG.md` belongs to the legal foundation package governance notes.
++- Confirmed `docs_build/dev/reports/PR_26175_OWNER_current-open-pr-status.md` is a generated governance report snapshot.
++- Confirmed this PR does not intentionally alter product files, runtime code, UI, legal page rendering, branches, or stashes.
++
++## Notes
++- `stash@{0}` remains untouched.
++- Retained files were committed to preserve legal/governance provenance after OWNER_054.
++- No owner-approved move-to-`tmp/` or deletion action was performed.
+diff --git a/docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_requirement-checklist.md b/docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_requirement-checklist.md
+new file mode 100644
+index 000000000..d39f7b558
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_requirement-checklist.md
+@@ -0,0 +1,15 @@
++# PR_26175_OWNER_055-legal-governance-leftover-retention Requirement Checklist
++
++| Requirement | Status | Notes |
++| --- | --- | --- |
++| PLAN_PR created | PASS | Added `docs_build/pr/PLAN_PR_26175_OWNER_055-legal-governance-leftover-retention.md`. |
++| BUILD_PR completed | PASS | Added this documentation/governance retention report bundle. |
++| APPLY_PR ready | PASS | Changes are scoped for a normal PR. |
++| Retain `docs_build/legal/IMPLEMENTATION.md` only if it contains legal package source notes | PASS | File contains legal foundation implementation instructions/source notes. |
++| Do not leave `IMPLEMENTATION.md` at repo root | PASS | Root file absent; retained copy is `docs_build/legal/IMPLEMENTATION.md`. |
++| Retain `docs_build/legal/LEGAL_CHANGELOG.md` only if it belongs to the legal package | PASS | File documents legal foundation package version 1.0. |
++| Retain current open PR status report only if creating report-retention PR | PASS | This PR is the report-retention/legal-governance follow-up. |
++| Do not modify product files | PASS | Only documentation/governance/report paths are changed. |
++| Do not alter `stash@{0}` | PASS | Stash was not touched. |
++| Do not delete branches | PASS | No branch deletion was performed. |
++| Produce repo-structured ZIP under `tmp/` | PASS | `tmp/PR_26175_OWNER_055-legal-governance-leftover-retention_delta.zip`. |
+diff --git a/docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_validation-lane.md b/docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_validation-lane.md
+new file mode 100644
+index 000000000..794417b97
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_validation-lane.md
+@@ -0,0 +1,20 @@
++# PR_26175_OWNER_055-legal-governance-leftover-retention Validation Lane
++
++## Lane
++Documentation/governance retention lane.
++
++## Validation Performed
++| Validation | Result |
++| --- | --- |
++| `git status --short --branch` | PASS |
++| `git rev-list --left-right --count origin/main...HEAD` | PASS |
++| `git diff --name-only` | PASS |
++| `git diff --check` | PASS |
++| Required retained files exist | PASS |
++| Root `IMPLEMENTATION.md` absent | PASS |
++| Required OWNER_055 reports exist | PASS |
++| Changed-file scope excludes product/runtime files | PASS |
++| Delta ZIP exists under `tmp/` | PASS |
++
++## Runtime Validation
++Not run. This PR is documentation/governance-only and does not change runtime code, UI, legal page content, or tests.
+diff --git a/docs_build/dev/reports/PR_26175_OWNER_current-open-pr-status.md b/docs_build/dev/reports/PR_26175_OWNER_current-open-pr-status.md
+new file mode 100644
+index 000000000..02ecebd0b
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_OWNER_current-open-pr-status.md
+@@ -0,0 +1,31 @@
++# PR_26175_OWNER_current-open-pr-status
++
++## Snapshot Scope
++This governance snapshot was refreshed after `PR_26175_OWNER_054-legal-corrected-package` was merged and before opening `PR_26175_OWNER_055-legal-governance-leftover-retention`.
++
++## MAIN_VERIFY Snapshot
++| Item | Result |
++| --- | --- |
++| Current branch at verification | `main` |
++| Current main commit | `0c0f2ebc00b40409ea6ebc013a59729747926daf` (`0c0f2ebc`) |
++| Local/origin sync | `0 0` |
++| Open PR count before OWNER_055 | `0` |
++| Draft PR count before OWNER_055 | `0` |
++| Worktree state before OWNER_055 branch | Dirty, untracked leftovers only |
++| Product files modified | No |
++| Stashes altered | No |
++
++## Retained Leftovers
++| Path | Classification | OWNER_055 disposition |
++| --- | --- | --- |
++| `docs_build/legal/IMPLEMENTATION.md` | Legal package implementation/source notes | Retain in legal governance follow-up PR. |
++| `docs_build/legal/LEGAL_CHANGELOG.md` | Legal foundation package governance notes | Retain in legal governance follow-up PR. |
++| `docs_build/dev/reports/PR_26175_OWNER_current-open-pr-status.md` | Generated governance status report | Retain as this refreshed snapshot. |
++
++## Stashes
++| Stash | Description | Action |
++| --- | --- | --- |
++| `stash@{0}` | `On codex/pr-26175-alfa-047-theme-v2-svg-icon-registry: MAIN_VERIFY preserve pre-existing uncommitted OWNER_050 files before main sync` | Retained; not altered |
++
++## Recommendation
++Proceed with `PR_26175_OWNER_055-legal-governance-leftover-retention` as a small documentation/governance PR. Do not delete leftovers, move leftovers to `tmp/`, alter stashes, or delete branches unless separately approved by the owner.
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index 4cb4ab3d9..917cc795a 100644
+--- a/docs_build/dev/reports/codex_changed_files.txt
++++ b/docs_build/dev/reports/codex_changed_files.txt
+@@ -1,27 +1,11 @@
+-﻿assets/theme-v2/js/gamefoundry-partials.js
+-assets/theme-v2/js/legal-document-page.js
+-assets/theme-v2/partials/footer.html
+-docs_build/dev/reports/PR_26175_OWNER_054-legal-corrected-package.md
++docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention.md
++docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_branch-validation.md
++docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_manual-validation-notes.md
++docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_requirement-checklist.md
++docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_validation-lane.md
++docs_build/dev/reports/PR_26175_OWNER_current-open-pr-status.md
+ docs_build/dev/reports/codex_changed_files.txt
+ docs_build/dev/reports/codex_review.diff
+-docs_build/dev/reports/coverage_changed_js_guardrail.txt
+-docs_build/dev/reports/playwright_v8_coverage_report.txt
+-legal/community-guidelines.html
+-legal/community-guidelines.md
+-legal/cookie-policy.html
+-legal/cookie-policy.md
+-legal/cookies-policy.html
+-legal/copyright-policy.html
+-legal/copyright-policy.md
+-legal/disclaimer.html
+-legal/dmca-policy.html
+-legal/dmca-policy.md
+-legal/index.html
+-legal/index.md
+-legal/legal-nav.js
+-legal/privacy-policy.html
+-legal/privacy-policy.md
+-legal/terms.html
+-legal/terms-of-service.html
+-legal/terms-of-service.md
+-tests/playwright/tools/RemainingLegalPages.spec.mjs
+\ No newline at end of file
++docs_build/legal/IMPLEMENTATION.md
++docs_build/legal/LEGAL_CHANGELOG.md
++docs_build/pr/PLAN_PR_26175_OWNER_055-legal-governance-leftover-retention.md
+diff --git a/docs_build/legal/IMPLEMENTATION.md b/docs_build/legal/IMPLEMENTATION.md
 new file mode 100644
 index 000000000..5b65bf05c
 --- /dev/null
-+++ b/IMPLEMENTATION.md
++++ b/docs_build/legal/IMPLEMENTATION.md
 @@ -0,0 +1,127 @@
 +# Legal Foundation Implementation Instructions
 +
@@ -131,219 +350,6 @@ index 000000000..5b65bf05c
 +- Current page has `aria-current="page"`.
 +- No page has a hand-maintained duplicate left legal menu.
 +- No unrelated code, route, database, API, or storage changes.
-diff --git a/docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention.md b/docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention.md
-new file mode 100644
-index 000000000..37e4e7959
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention.md
-@@ -0,0 +1,40 @@
-+# PR_26175_OWNER_055-legal-governance-leftover-retention
-+
-+## Purpose
-+Retain the legal/governance leftover artifacts that remained after `PR_26175_OWNER_054-legal-corrected-package` was merged and `main` was synchronized.
-+
-+## Source Leftovers
-+The previous `MAIN_VERIFY` identified three untracked leftover paths:
-+
-+| Path | Classification | Retention decision |
-+| --- | --- | --- |
-+| `IMPLEMENTATION.md` | Legal package implementation/source notes | Retained in this follow-up PR. |
-+| `docs_build/legal/LEGAL_CHANGELOG.md` | Legal foundation package governance notes | Retained in this follow-up PR. |
-+| `docs_build/dev/reports/PR_26175_OWNER_current-open-pr-status.md` | Generated governance status report | Retained as a snapshot report in this follow-up PR. |
-+
-+## Implementation
-+- Added the retained package implementation instructions at `IMPLEMENTATION.md`.
-+- Added the retained legal changelog at `docs_build/legal/LEGAL_CHANGELOG.md`.
-+- Updated and retained `docs_build/dev/reports/PR_26175_OWNER_current-open-pr-status.md` as a current governance snapshot taken after OWNER_054 was merged and before OWNER_055 was opened.
-+- Added OWNER_055 plan, validation, checklist, manual validation, changed-files, review-diff, and delta ZIP outputs.
-+
-+## Validation Commands
-+- PASS: `git status --short --branch`
-+- PASS: `git rev-list --left-right --count origin/main...HEAD`
-+- PASS: `git diff --name-only`
-+- PASS: `git diff --check`
-+- PASS: targeted retained-file existence checks.
-+- PASS: targeted changed-file scope check confirmed documentation/governance/report files only.
-+
-+## Guardrails
-+- No product files were modified.
-+- No runtime code was modified.
-+- No branches were deleted.
-+- `stash@{0}` was left untouched.
-+- No leftover file was moved to `tmp/`.
-+- No leftover file was deleted.
-+
-+## Delta ZIP
-+Repo-structured delta ZIP:
-+
-+`tmp/PR_26175_OWNER_055-legal-governance-leftover-retention_delta.zip`
-diff --git a/docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_branch-validation.md b/docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_branch-validation.md
-new file mode 100644
-index 000000000..a822823a9
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_branch-validation.md
-@@ -0,0 +1,19 @@
-+# PR_26175_OWNER_055-legal-governance-leftover-retention Branch Validation
-+
-+## Result
-+PASS
-+
-+## Branch
-+- Working branch: `codex/pr-26175-owner-055-legal-governance-leftover-retention`
-+- Base branch: `main`
-+- Base commit at branch creation: `0c0f2ebc00b40409ea6ebc013a59729747926daf`
-+
-+## Checks
-+| Check | Result |
-+| --- | --- |
-+| Branch created from current `main` | PASS |
-+| `origin/main` fetched before branch work | PASS |
-+| Local branch contains one documentation/governance purpose | PASS |
-+| Product files unchanged | PASS |
-+| Stash left untouched | PASS |
-+| No branch deletion performed | PASS |
-diff --git a/docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_manual-validation-notes.md b/docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_manual-validation-notes.md
-new file mode 100644
-index 000000000..b5dd42c81
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_manual-validation-notes.md
-@@ -0,0 +1,12 @@
-+# PR_26175_OWNER_055-legal-governance-leftover-retention Manual Validation Notes
-+
-+## Manual Review
-+- Confirmed `IMPLEMENTATION.md` contains legal foundation implementation instructions/source notes rather than unrelated temporary content.
-+- Confirmed `docs_build/legal/LEGAL_CHANGELOG.md` belongs to the legal foundation package governance notes.
-+- Confirmed `docs_build/dev/reports/PR_26175_OWNER_current-open-pr-status.md` is a generated governance report snapshot.
-+- Confirmed this PR does not intentionally alter product files, runtime code, UI, legal page rendering, branches, or stashes.
-+
-+## Notes
-+- `stash@{0}` remains untouched.
-+- Retained files were committed to preserve legal/governance provenance after OWNER_054.
-+- No owner-approved move-to-`tmp/` or deletion action was performed.
-diff --git a/docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_requirement-checklist.md b/docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_requirement-checklist.md
-new file mode 100644
-index 000000000..352e65154
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_requirement-checklist.md
-@@ -0,0 +1,14 @@
-+# PR_26175_OWNER_055-legal-governance-leftover-retention Requirement Checklist
-+
-+| Requirement | Status | Notes |
-+| --- | --- | --- |
-+| PLAN_PR created | PASS | Added `docs_build/pr/PLAN_PR_26175_OWNER_055-legal-governance-leftover-retention.md`. |
-+| BUILD_PR completed | PASS | Added this documentation/governance retention report bundle. |
-+| APPLY_PR ready | PASS | Changes are scoped for a normal PR. |
-+| Retain `IMPLEMENTATION.md` only if it contains legal package source notes | PASS | File contains legal foundation implementation instructions/source notes. |
-+| Retain `docs_build/legal/LEGAL_CHANGELOG.md` only if it belongs to the legal package | PASS | File documents legal foundation package version 1.0. |
-+| Retain current open PR status report only if creating report-retention PR | PASS | This PR is the report-retention/legal-governance follow-up. |
-+| Do not modify product files | PASS | Only documentation/governance/report paths are changed. |
-+| Do not alter `stash@{0}` | PASS | Stash was not touched. |
-+| Do not delete branches | PASS | No branch deletion was performed. |
-+| Produce repo-structured ZIP under `tmp/` | PASS | `tmp/PR_26175_OWNER_055-legal-governance-leftover-retention_delta.zip`. |
-diff --git a/docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_validation-lane.md b/docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_validation-lane.md
-new file mode 100644
-index 000000000..de71bad80
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_validation-lane.md
-@@ -0,0 +1,19 @@
-+# PR_26175_OWNER_055-legal-governance-leftover-retention Validation Lane
-+
-+## Lane
-+Documentation/governance retention lane.
-+
-+## Validation Performed
-+| Validation | Result |
-+| --- | --- |
-+| `git status --short --branch` | PASS |
-+| `git rev-list --left-right --count origin/main...HEAD` | PASS |
-+| `git diff --name-only` | PASS |
-+| `git diff --check` | PASS |
-+| Required retained files exist | PASS |
-+| Required OWNER_055 reports exist | PASS |
-+| Changed-file scope excludes product/runtime files | PASS |
-+| Delta ZIP exists under `tmp/` | PASS |
-+
-+## Runtime Validation
-+Not run. This PR is documentation/governance-only and does not change runtime code, UI, legal page content, or tests.
-diff --git a/docs_build/dev/reports/PR_26175_OWNER_current-open-pr-status.md b/docs_build/dev/reports/PR_26175_OWNER_current-open-pr-status.md
-new file mode 100644
-index 000000000..6ffec6a54
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_OWNER_current-open-pr-status.md
-@@ -0,0 +1,31 @@
-+# PR_26175_OWNER_current-open-pr-status
-+
-+## Snapshot Scope
-+This governance snapshot was refreshed after `PR_26175_OWNER_054-legal-corrected-package` was merged and before opening `PR_26175_OWNER_055-legal-governance-leftover-retention`.
-+
-+## MAIN_VERIFY Snapshot
-+| Item | Result |
-+| --- | --- |
-+| Current branch at verification | `main` |
-+| Current main commit | `0c0f2ebc00b40409ea6ebc013a59729747926daf` (`0c0f2ebc`) |
-+| Local/origin sync | `0 0` |
-+| Open PR count before OWNER_055 | `0` |
-+| Draft PR count before OWNER_055 | `0` |
-+| Worktree state before OWNER_055 branch | Dirty, untracked leftovers only |
-+| Product files modified | No |
-+| Stashes altered | No |
-+
-+## Retained Leftovers
-+| Path | Classification | OWNER_055 disposition |
-+| --- | --- | --- |
-+| `IMPLEMENTATION.md` | Legal package implementation/source notes | Retain in legal governance follow-up PR. |
-+| `docs_build/legal/LEGAL_CHANGELOG.md` | Legal foundation package governance notes | Retain in legal governance follow-up PR. |
-+| `docs_build/dev/reports/PR_26175_OWNER_current-open-pr-status.md` | Generated governance status report | Retain as this refreshed snapshot. |
-+
-+## Stashes
-+| Stash | Description | Action |
-+| --- | --- | --- |
-+| `stash@{0}` | `On codex/pr-26175-alfa-047-theme-v2-svg-icon-registry: MAIN_VERIFY preserve pre-existing uncommitted OWNER_050 files before main sync` | Retained; not altered |
-+
-+## Recommendation
-+Proceed with `PR_26175_OWNER_055-legal-governance-leftover-retention` as a small documentation/governance PR. Do not delete leftovers, move leftovers to `tmp/`, alter stashes, or delete branches unless separately approved by the owner.
-diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 4cb4ab3d9..e530f855e 100644
---- a/docs_build/dev/reports/codex_changed_files.txt
-+++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,27 +1,11 @@
--﻿assets/theme-v2/js/gamefoundry-partials.js
--assets/theme-v2/js/legal-document-page.js
--assets/theme-v2/partials/footer.html
--docs_build/dev/reports/PR_26175_OWNER_054-legal-corrected-package.md
-+IMPLEMENTATION.md
-+docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention.md
-+docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_branch-validation.md
-+docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_manual-validation-notes.md
-+docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_requirement-checklist.md
-+docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_validation-lane.md
-+docs_build/dev/reports/PR_26175_OWNER_current-open-pr-status.md
- docs_build/dev/reports/codex_changed_files.txt
- docs_build/dev/reports/codex_review.diff
--docs_build/dev/reports/coverage_changed_js_guardrail.txt
--docs_build/dev/reports/playwright_v8_coverage_report.txt
--legal/community-guidelines.html
--legal/community-guidelines.md
--legal/cookie-policy.html
--legal/cookie-policy.md
--legal/cookies-policy.html
--legal/copyright-policy.html
--legal/copyright-policy.md
--legal/disclaimer.html
--legal/dmca-policy.html
--legal/dmca-policy.md
--legal/index.html
--legal/index.md
--legal/legal-nav.js
--legal/privacy-policy.html
--legal/privacy-policy.md
--legal/terms.html
--legal/terms-of-service.html
--legal/terms-of-service.md
--tests/playwright/tools/RemainingLegalPages.spec.mjs
-\ No newline at end of file
-+docs_build/legal/LEGAL_CHANGELOG.md
-+docs_build/pr/PLAN_PR_26175_OWNER_055-legal-governance-leftover-retention.md
 diff --git a/docs_build/legal/LEGAL_CHANGELOG.md b/docs_build/legal/LEGAL_CHANGELOG.md
 new file mode 100644
 index 000000000..80e6b2684
@@ -376,7 +382,7 @@ index 000000000..80e6b2684
 +- `aria-current="page"` on the selected legal page
 diff --git a/docs_build/pr/PLAN_PR_26175_OWNER_055-legal-governance-leftover-retention.md b/docs_build/pr/PLAN_PR_26175_OWNER_055-legal-governance-leftover-retention.md
 new file mode 100644
-index 000000000..aba7e05ee
+index 000000000..347807170
 --- /dev/null
 +++ b/docs_build/pr/PLAN_PR_26175_OWNER_055-legal-governance-leftover-retention.md
 @@ -0,0 +1,44 @@
@@ -389,7 +395,7 @@ index 000000000..aba7e05ee
 +
 +## Scope
 +Primary target files:
-+- `IMPLEMENTATION.md`
++- `docs_build/legal/IMPLEMENTATION.md`
 +- `docs_build/legal/LEGAL_CHANGELOG.md`
 +- `docs_build/dev/reports/PR_26175_OWNER_current-open-pr-status.md`
 +- `docs_build/pr/PLAN_PR_26175_OWNER_055-legal-governance-leftover-retention.md`
@@ -403,7 +409,7 @@ index 000000000..aba7e05ee
 +- `tmp/PR_26175_OWNER_055-legal-governance-leftover-retention_delta.zip`
 +
 +## Required Changes
-+- Retain `IMPLEMENTATION.md` because it contains legal package implementation/source notes.
++- Retain `docs_build/legal/IMPLEMENTATION.md` because it contains legal package implementation/source notes.
 +- Retain `docs_build/legal/LEGAL_CHANGELOG.md` because it belongs to the legal foundation package governance notes.
 +- Retain `docs_build/dev/reports/PR_26175_OWNER_current-open-pr-status.md` as a generated governance report snapshot.
 +- Add the normal OWNER_055 plan, validation, checklist, manual notes, changed-files, review-diff, and ZIP outputs.

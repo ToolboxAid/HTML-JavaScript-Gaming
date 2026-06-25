@@ -7,7 +7,7 @@ Retain the legal/governance leftover artifacts identified after `PR_26175_OWNER_
 
 ## Scope
 Primary target files:
-- `IMPLEMENTATION.md`
+- `docs_build/legal/IMPLEMENTATION.md`
 - `docs_build/legal/LEGAL_CHANGELOG.md`
 - `docs_build/dev/reports/PR_26175_OWNER_current-open-pr-status.md`
 - `docs_build/pr/PLAN_PR_26175_OWNER_055-legal-governance-leftover-retention.md`
@@ -21,7 +21,7 @@ Primary target files:
 - `tmp/PR_26175_OWNER_055-legal-governance-leftover-retention_delta.zip`
 
 ## Required Changes
-- Retain `IMPLEMENTATION.md` because it contains legal package implementation/source notes.
+- Retain `docs_build/legal/IMPLEMENTATION.md` because it contains legal package implementation/source notes.
 - Retain `docs_build/legal/LEGAL_CHANGELOG.md` because it belongs to the legal foundation package governance notes.
 - Retain `docs_build/dev/reports/PR_26175_OWNER_current-open-pr-status.md` as a generated governance report snapshot.
 - Add the normal OWNER_055 plan, validation, checklist, manual notes, changed-files, review-diff, and ZIP outputs.

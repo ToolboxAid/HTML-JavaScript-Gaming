@@ -18,7 +18,7 @@ This governance snapshot was refreshed after `PR_26175_OWNER_054-legal-corrected
 ## Retained Leftovers
 | Path | Classification | OWNER_055 disposition |
 | --- | --- | --- |
-| `IMPLEMENTATION.md` | Legal package implementation/source notes | Retain in legal governance follow-up PR. |
+| `docs_build/legal/IMPLEMENTATION.md` | Legal package implementation/source notes | Retain in legal governance follow-up PR. |
 | `docs_build/legal/LEGAL_CHANGELOG.md` | Legal foundation package governance notes | Retain in legal governance follow-up PR. |
 | `docs_build/dev/reports/PR_26175_OWNER_current-open-pr-status.md` | Generated governance status report | Retain as this refreshed snapshot. |
 

@@ -1,7 +1,8 @@
 # PR_26175_OWNER_055-legal-governance-leftover-retention Manual Validation Notes
 
 ## Manual Review
-- Confirmed `IMPLEMENTATION.md` contains legal foundation implementation instructions/source notes rather than unrelated temporary content.
+- Confirmed `docs_build/legal/IMPLEMENTATION.md` contains legal foundation implementation instructions/source notes rather than unrelated temporary content.
+- Confirmed `IMPLEMENTATION.md` is not present at the repository root.
 - Confirmed `docs_build/legal/LEGAL_CHANGELOG.md` belongs to the legal foundation package governance notes.
 - Confirmed `docs_build/dev/reports/PR_26175_OWNER_current-open-pr-status.md` is a generated governance report snapshot.
 - Confirmed this PR does not intentionally alter product files, runtime code, UI, legal page rendering, branches, or stashes.

@@ -1,4 +1,3 @@
-IMPLEMENTATION.md
 docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention.md
 docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_branch-validation.md
 docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_manual-validation-notes.md
@@ -7,5 +6,6 @@ docs_build/dev/reports/PR_26175_OWNER_055-legal-governance-leftover-retention_va
 docs_build/dev/reports/PR_26175_OWNER_current-open-pr-status.md
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
+docs_build/legal/IMPLEMENTATION.md
 docs_build/legal/LEGAL_CHANGELOG.md
 docs_build/pr/PLAN_PR_26175_OWNER_055-legal-governance-leftover-retention.md

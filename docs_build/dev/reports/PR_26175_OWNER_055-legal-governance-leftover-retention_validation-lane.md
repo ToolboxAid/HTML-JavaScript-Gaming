@@ -11,6 +11,7 @@ Documentation/governance retention lane.
 | `git diff --name-only` | PASS |
 | `git diff --check` | PASS |
 | Required retained files exist | PASS |
+| Root `IMPLEMENTATION.md` absent | PASS |
 | Required OWNER_055 reports exist | PASS |
 | Changed-file scope excludes product/runtime files | PASS |
 | Delta ZIP exists under `tmp/` | PASS |
