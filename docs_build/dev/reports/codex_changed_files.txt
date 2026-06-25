@@ -1,37 +1,18 @@
-# git diff --name-only main...HEAD plus working tree
-docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-branch-validation.md
-docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-manual-validation-notes.md
-docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-requirement-checklist.md
-docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-validation.md
-docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes.md
-docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/codex_review.diff
-package.json
-src/engine/replay/ReplayTimeline.js
-
 # git status --short
- M docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-branch-validation.md
- M docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-requirement-checklist.md
- M docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-validation.md
- M docs_build/dev/reports/codex_changed_files.txt
- M docs_build/dev/reports/codex_review.diff
+M package.json
+?? docs_build/dev/reports/PR_26175_DELTA_007-runtime-service-coverage.md
+?? docs_build/dev/reports/PR_26175_DELTA_007-runtime-service-coverage_branch-validation.md
+?? docs_build/dev/reports/PR_26175_DELTA_007-runtime-service-coverage_manual-validation-notes.md
+?? docs_build/dev/reports/PR_26175_DELTA_007-runtime-service-coverage_requirements-checklist.md
+?? docs_build/dev/reports/PR_26175_DELTA_007-runtime-service-coverage_validation-lane.md
 
-# git diff --stat main...HEAD
-...06-page-service-test-lanes-branch-validation.md |  17 +
- ...e-service-test-lanes-manual-validation-notes.md |  18 ++
- ...age-service-test-lanes-requirement-checklist.md |  24 ++
- ...DELTA_006-page-service-test-lanes-validation.md |  51 +++
- .../PR_26175_DELTA_006-page-service-test-lanes.md  |  62 ++++
- docs_build/dev/reports/codex_changed_files.txt     |  25 +-
- docs_build/dev/reports/codex_review.diff           | 352 +++++++++++++++------
- package.json                                       |   1 +
- src/engine/replay/ReplayTimeline.js                |   7 +-
- 9 files changed, 443 insertions(+), 114 deletions(-)
+# git ls-files --others --exclude-standard
+docs_build/dev/reports/PR_26175_DELTA_007-runtime-service-coverage.md
+docs_build/dev/reports/PR_26175_DELTA_007-runtime-service-coverage_branch-validation.md
+docs_build/dev/reports/PR_26175_DELTA_007-runtime-service-coverage_manual-validation-notes.md
+docs_build/dev/reports/PR_26175_DELTA_007-runtime-service-coverage_requirements-checklist.md
+docs_build/dev/reports/PR_26175_DELTA_007-runtime-service-coverage_validation-lane.md
 
-# git diff --stat working tree
-...06-page-service-test-lanes-branch-validation.md |   5 +-
- ...age-service-test-lanes-requirement-checklist.md |   1 +
- ...DELTA_006-page-service-test-lanes-validation.md |   4 +-
- docs_build/dev/reports/codex_changed_files.txt     |  21 ++--
- docs_build/dev/reports/codex_review.diff           | 127 ++++++++++++++++++++-
- 5 files changed, 136 insertions(+), 22 deletions(-)
+# git diff --stat
+package.json | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
