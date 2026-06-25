@@ -1,16 +1,17 @@
 # git status --short
-?? docs_build/dev/reports/PR_26177_CHARLIE_036-team-charlie-final-closeout.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_036-team-charlie-final-closeout_branch-validation.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_036-team-charlie-final-closeout_manual-validation-notes.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_036-team-charlie-final-closeout_requirements-checklist.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_036-team-charlie-final-closeout_validation-lane.md
+M docs_build/dev/reports/PR_26177_OWNER_052-eod-main-verification-and-backlog-update.md
+ M docs_build/dev/reports/PR_26177_OWNER_052-eod-main-verification-and-backlog-update_branch-validation.md
+ M docs_build/dev/reports/PR_26177_OWNER_052-eod-main-verification-and-backlog-update_manual-validation-notes.md
+ M docs_build/dev/reports/PR_26177_OWNER_052-eod-main-verification-and-backlog-update_requirements-checklist.md
+ M docs_build/dev/reports/PR_26177_OWNER_052-eod-main-verification-and-backlog-update_validation-lane.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26177_CHARLIE_036-team-charlie-final-closeout.md
-docs_build/dev/reports/PR_26177_CHARLIE_036-team-charlie-final-closeout_branch-validation.md
-docs_build/dev/reports/PR_26177_CHARLIE_036-team-charlie-final-closeout_manual-validation-notes.md
-docs_build/dev/reports/PR_26177_CHARLIE_036-team-charlie-final-closeout_requirements-checklist.md
-docs_build/dev/reports/PR_26177_CHARLIE_036-team-charlie-final-closeout_validation-lane.md
+(no output)
 
 # git diff --stat
-(no output)
+...R_26177_OWNER_052-eod-main-verification-and-backlog-update.md | 9 +++++----
+ ...eod-main-verification-and-backlog-update_branch-validation.md | 3 ++-
+ ...in-verification-and-backlog-update_manual-validation-notes.md | 3 ++-
+ ...ain-verification-and-backlog-update_requirements-checklist.md | 3 ++-
+ ...2-eod-main-verification-and-backlog-update_validation-lane.md | 2 +-
+ 5 files changed, 12 insertions(+), 8 deletions(-)
