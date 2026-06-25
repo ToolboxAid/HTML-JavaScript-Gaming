@@ -17,7 +17,7 @@ Exercised tool entry points detected:
 (78%) Theme V2 Shared JS - exercised 5 runtime JS files
 
 Changed runtime JS files covered:
-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(100%) none changed - no changed runtime JS files
 
 Files with executed line/function counts where available:
 (36%) src/api/server-api-client.js - executed lines 168/168; executed functions 5/14
@@ -33,11 +33,7 @@ Files with executed line/function counts where available:
 (100%) src/api/admin-system-health-api-client.js - executed lines 31/31; executed functions 5/5
 
 Uncovered or low-coverage changed JS files:
-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+(100%) none changed - no changed runtime JS files
 
 Changed JS files considered:
-(0%) scripts/start-local-api-server.mjs - changed JS file not collected as browser runtime coverage
-(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/dev-runtime/AdminHealthOperations.test.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/dev-runtime/LocalApiStartupLogging.test.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
+(100%) none - no changed JS files

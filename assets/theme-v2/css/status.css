@@ -289,3 +289,55 @@ body.tool-focus-mode .tool-center-panel {
     max-width: 30vw
   }
 }
+
+[data-admin-system-health] [data-health-status] {
+  font-weight: var(--font-weight-heavy);
+  letter-spacing: 0;
+  text-transform: uppercase
+}
+
+[data-admin-system-health] td[data-health-status] {
+  width: 1%;
+  min-width: 7rem;
+  text-align: center;
+  white-space: nowrap
+}
+
+[data-admin-system-health] p[data-health-status] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  max-width: 100%;
+  min-height: var(--space-28);
+  padding: var(--space-4) var(--space-10);
+  border: var(--border-standard);
+  border-radius: var(--radius-pill);
+  overflow-wrap: anywhere
+}
+
+[data-admin-system-health] [data-health-status="PASS"] {
+  border-color: color-mix(in srgb, var(--green) 58%, var(--line));
+  background: color-mix(in srgb, var(--green) 16%, transparent);
+  color: var(--green)
+}
+
+[data-admin-system-health] [data-health-status="WARN"],
+[data-admin-system-health] [data-health-status="PENDING"] {
+  border-color: color-mix(in srgb, var(--gold) 54%, var(--line));
+  background: color-mix(in srgb, var(--gold) 13%, transparent);
+  color: var(--gold)
+}
+
+[data-admin-system-health] [data-health-status="FAIL"] {
+  border-color: color-mix(in srgb, var(--red) 58%, var(--line));
+  background: color-mix(in srgb, var(--red) 15%, transparent);
+  color: var(--deep-red)
+}
+
+[data-admin-system-health] [data-health-status="INFO"],
+[data-admin-system-health] [data-health-status="SKIP"] {
+  border-color: color-mix(in srgb, var(--cyan) 52%, var(--line));
+  background: color-mix(in srgb, var(--cyan) 12%, transparent);
+  color: var(--cyan)
+}

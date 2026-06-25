@@ -1,478 +1,245 @@
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_034-startup-runtime-report-cleanup.md b/docs_build/dev/reports/PR_26177_CHARLIE_034-startup-runtime-report-cleanup.md
+diff --git a/assets/theme-v2/css/status.css b/assets/theme-v2/css/status.css
+index a82c83065..8fdef0123 100644
+--- a/assets/theme-v2/css/status.css
++++ b/assets/theme-v2/css/status.css
+@@ -289,3 +289,55 @@ body.tool-focus-mode .tool-center-panel {
+     max-width: 30vw
+   }
+ }
++
++[data-admin-system-health] [data-health-status] {
++  font-weight: var(--font-weight-heavy);
++  letter-spacing: 0;
++  text-transform: uppercase
++}
++
++[data-admin-system-health] td[data-health-status] {
++  width: 1%;
++  min-width: 7rem;
++  text-align: center;
++  white-space: nowrap
++}
++
++[data-admin-system-health] p[data-health-status] {
++  display: inline-flex;
++  align-items: center;
++  justify-content: center;
++  width: fit-content;
++  max-width: 100%;
++  min-height: var(--space-28);
++  padding: var(--space-4) var(--space-10);
++  border: var(--border-standard);
++  border-radius: var(--radius-pill);
++  overflow-wrap: anywhere
++}
++
++[data-admin-system-health] [data-health-status="PASS"] {
++  border-color: color-mix(in srgb, var(--green) 58%, var(--line));
++  background: color-mix(in srgb, var(--green) 16%, transparent);
++  color: var(--green)
++}
++
++[data-admin-system-health] [data-health-status="WARN"],
++[data-admin-system-health] [data-health-status="PENDING"] {
++  border-color: color-mix(in srgb, var(--gold) 54%, var(--line));
++  background: color-mix(in srgb, var(--gold) 13%, transparent);
++  color: var(--gold)
++}
++
++[data-admin-system-health] [data-health-status="FAIL"] {
++  border-color: color-mix(in srgb, var(--red) 58%, var(--line));
++  background: color-mix(in srgb, var(--red) 15%, transparent);
++  color: var(--deep-red)
++}
++
++[data-admin-system-health] [data-health-status="INFO"],
++[data-admin-system-health] [data-health-status="SKIP"] {
++  border-color: color-mix(in srgb, var(--cyan) 52%, var(--line));
++  background: color-mix(in srgb, var(--cyan) 12%, transparent);
++  color: var(--cyan)
++}
+diff --git a/assets/theme-v2/css/tables.css b/assets/theme-v2/css/tables.css
+index 915a235e9..43bde5f3b 100644
+--- a/assets/theme-v2/css/tables.css
++++ b/assets/theme-v2/css/tables.css
+@@ -178,3 +178,40 @@ td {
+   max-width: 100%;
+   width: 100%
+ }
++
++[data-admin-system-health] .table-wrapper {
++  border: var(--border-standard);
++  border-radius: var(--radius-lg);
++  background: var(--panel-overlay);
++  box-shadow: var(--shadow-sm)
++}
++
++[data-admin-system-health] .data-table {
++  min-width: 720px;
++  background: transparent
++}
++
++[data-admin-system-health] .data-table caption {
++  padding: var(--space-12) var(--space-14);
++  border-bottom: var(--border-standard);
++  background: var(--panel-soft);
++  color: var(--gold)
++}
++
++[data-admin-system-health] .data-table th,
++[data-admin-system-health] .data-table td {
++  padding: var(--space-10) var(--space-12);
++  vertical-align: top
++}
++
++[data-admin-system-health] .data-table th {
++  color: var(--cyan)
++}
++
++[data-admin-system-health] .data-table tbody tr:nth-child(even) {
++  background: var(--panel-soft-subtle)
++}
++
++[data-admin-system-health] .data-table td {
++  overflow-wrap: anywhere
++}
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish.md b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish.md
 new file mode 100644
-index 000000000..a92990053
+index 000000000..83221164d
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_034-startup-runtime-report-cleanup.md
-@@ -0,0 +1,35 @@
-+# PR_26177_CHARLIE_034-startup-runtime-report-cleanup
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish.md
+@@ -0,0 +1,25 @@
++# PR_26177_CHARLIE_035-system-health-ui-polish
 +
 +Team: Charlie
-+Branch: pr/26177-CHARLIE-034-startup-runtime-report-cleanup
-+Base: pr/26177-CHARLIE-032-runtime-health-json-endpoints
++Branch: pr/26177-CHARLIE-035-system-health-ui-polish
++Base: pr/26177-CHARLIE-034-startup-runtime-report-cleanup
 +Lifecycle: Build / Validation
-+Repair: Rebased onto repaired PR_26177_CHARLIE_032 branch on 2026-06-25.
++Repair: Rebased onto repaired PR_26177_CHARLIE_034 branch on 2026-06-25.
 +
 +## Scope
-+- Polished Local API startup diagnostics with explicit Local API URL, local site URL, local site URL port, database mode, and storage status.
-+- Kept runtime environment variable output deterministic and alphabetized.
-+- Confirmed secret-like environment keys containing PASSWORD, SECRET, TOKEN, KEY, SERVICE_ROLE, or JWT remain masked.
-+- Mirrored the safe diagnostics through the System Health API payload so the browser renders service-owned status.
++- Added Theme V2 styling for System Health table wrappers, captions, row rhythm, and dense table spacing.
++- Added Theme V2 status treatment for System Health status indicators.
++- Kept the change visual-only with no new API, runtime, UI behavior, or page-local CSS.
 +
 +## Changed Files
-+- scripts/start-local-api-server.mjs
-+- src/dev-runtime/server/local-api-router.mjs
-+- tests/dev-runtime/LocalApiStartupLogging.test.mjs
-+- tests/dev-runtime/AdminHealthOperations.test.mjs
-+- tests/api/admin-system-health/contract.test.mjs
-+- tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
++- assets/theme-v2/css/status.css
++- assets/theme-v2/css/tables.css
 +- docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +- docs_build/dev/reports/playwright_v8_coverage_report.txt
 +
 +## Validation
-+- PASS: node --check scripts/start-local-api-server.mjs
-+- PASS: node --check src/dev-runtime/server/local-api-router.mjs
-+- PASS: node --test tests/dev-runtime/LocalApiStartupLogging.test.mjs
-+- PASS: node --test tests/api/admin-system-health/contract.test.mjs
-+- PASS: node --test tests/dev-runtime/AdminHealthOperations.test.mjs
 +- PASS: npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line
 +- PASS: git diff --check
 +
 +## ZIP
-+- Generated after repair: C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\tmp\PR_26177_CHARLIE_034-startup-runtime-report-cleanup_delta.zip
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_034-startup-runtime-report-cleanup_branch-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_034-startup-runtime-report-cleanup_branch-validation.md
++- Generated after repair: C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\tmp\PR_26177_CHARLIE_035-system-health-ui-polish_delta.zip
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_branch-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_branch-validation.md
 new file mode 100644
-index 000000000..36fe52dfc
+index 000000000..1fb9628c1
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_034-startup-runtime-report-cleanup_branch-validation.md
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_branch-validation.md
 @@ -0,0 +1,14 @@
-+# PR_26177_CHARLIE_034 Branch Validation
++# PR_26177_CHARLIE_035 Branch Validation
 +
-+Branch: pr/26177-CHARLIE-034-startup-runtime-report-cleanup
-+Base: pr/26177-CHARLIE-032-runtime-health-json-endpoints
++Branch: pr/26177-CHARLIE-035-system-health-ui-polish
++Base: pr/26177-CHARLIE-034-startup-runtime-report-cleanup
 +
 +## Results
-+- PASS: Continued the stacked Charlie workstream from PR_26177_CHARLIE_032.
-+- PASS: Branch is based on repaired PR_26177_CHARLIE_032 branch.
++- PASS: Continued the stacked Charlie workstream from PR_26177_CHARLIE_034.
++- PASS: Branch is based on repaired PR_26177_CHARLIE_034 branch.
 +- PASS: Rebase conflict scope was generated report artifacts only.
 +- PASS: Worktree was clean before edits.
-+- PASS: Runtime changes are limited to Local API startup/runtime diagnostics.
++- PASS: Changes are limited to Theme V2 visual polish and reports.
 +- PASS: No start_of_day files were modified.
 +- PASS: No direct commit to main was made.
 +- PASS: PR branch will be pushed for draft PR creation.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_034-startup-runtime-report-cleanup_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_CHARLIE_034-startup-runtime-report-cleanup_manual-validation-notes.md
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_manual-validation-notes.md
 new file mode 100644
-index 000000000..83600b226
+index 000000000..2202ab001
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_034-startup-runtime-report-cleanup_manual-validation-notes.md
-@@ -0,0 +1,9 @@
-+# PR_26177_CHARLIE_034 Manual Validation Notes
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_manual-validation-notes.md
+@@ -0,0 +1,8 @@
++# PR_26177_CHARLIE_035 Manual Validation Notes
 +
-+- Confirmed startup log output now prints Local API URL, local site URL, local site URL port, database mode, and storage status.
-+- Confirmed `.env` diagnostic lines remain alphabetized by key.
-+- Confirmed secret-like values are masked, including KEY and SERVICE_ROLE variables.
-+- Confirmed System Health renders the new Local API startup diagnostics from the Local API payload.
-+- Confirmed no browser-owned infrastructure health state was introduced.
++- Confirmed System Health tables use scoped Theme V2 table wrapper and caption polish.
++- Confirmed status indicators have distinct PASS, WARN/PENDING, FAIL, INFO, and SKIP treatments.
++- Confirmed the page still uses external Theme V2 CSS and JavaScript only.
++- Confirmed no runtime behavior, API contract, database contract, or storage contract was changed.
 +- Confirmed branch repair conflict was limited to generated report artifacts.
 +- Confirmed no start_of_day files changed.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_034-startup-runtime-report-cleanup_requirements-checklist.md b/docs_build/dev/reports/PR_26177_CHARLIE_034-startup-runtime-report-cleanup_requirements-checklist.md
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_requirements-checklist.md b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_requirements-checklist.md
 new file mode 100644
-index 000000000..f40562fc5
+index 000000000..5539cd503
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_034-startup-runtime-report-cleanup_requirements-checklist.md
-@@ -0,0 +1,14 @@
-+# PR_26177_CHARLIE_034 Requirement Checklist
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_requirements-checklist.md
+@@ -0,0 +1,12 @@
++# PR_26177_CHARLIE_035 Requirement Checklist
 +
-+- PASS: Polish Local API startup/runtime diagnostics.
-+- PASS: Keep environment variables alphabetized.
-+- PASS: Mask secrets containing PASSWORD, SECRET, TOKEN, KEY, SERVICE_ROLE, or JWT.
-+- PASS: Include clear Local API URL.
-+- PASS: Include local site URL and port when available.
-+- PASS: Include database mode without exposing connection credentials.
-+- PASS: Include storage status without exposing secrets.
-+- PASS: Preserve existing startup and System Health behavior.
++- PASS: Theme V2 polish only.
++- PASS: Improve System Health layout/readability/status indicators.
++- PASS: No new functionality beyond visual polish.
++- PASS: Use existing Theme V2 CSS assets.
++- PASS: No inline styles, style blocks, script blocks, inline handlers, or page-local CSS.
++- PASS: Preserve existing behavior.
 +- PASS: Do not modify unrelated files.
 +- PASS: Do not modify start_of_day folders.
 +- PASS: Do not introduce MEM DB, fake-login, silent fallbacks, or browser-owned infrastructure state.
-+- PASS: Rebased onto repaired PR_26177_CHARLIE_032 branch.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_034-startup-runtime-report-cleanup_validation-lane.md b/docs_build/dev/reports/PR_26177_CHARLIE_034-startup-runtime-report-cleanup_validation-lane.md
++- PASS: Rebased onto repaired PR_26177_CHARLIE_034 branch.
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_validation-lane.md b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_validation-lane.md
 new file mode 100644
-index 000000000..a48f5434f
+index 000000000..b6a4fede1
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_034-startup-runtime-report-cleanup_validation-lane.md
-@@ -0,0 +1,14 @@
-+# PR_26177_CHARLIE_034 Validation Lane
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_validation-lane.md
+@@ -0,0 +1,10 @@
++# PR_26177_CHARLIE_035 Validation Lane
 +
 +## Commands
-+- PASS: node --check scripts/start-local-api-server.mjs
-+- PASS: node --check src/dev-runtime/server/local-api-router.mjs
-+- PASS: node --test tests/dev-runtime/LocalApiStartupLogging.test.mjs
-+- PASS: node --test tests/api/admin-system-health/contract.test.mjs
-+- PASS: node --test tests/dev-runtime/AdminHealthOperations.test.mjs
 +- PASS: npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line
 +- PASS: git diff --check
 +
 +## Notes
 +- `git diff --check` reported only expected Windows LF-to-CRLF working-copy warnings.
-+- Full samples smoke was not run because this PR is scoped to Local API startup diagnostics and System Health rendering.
++- No API/unit tests were required because this PR changes only Theme V2 CSS.
++- Full samples smoke was not run because this PR is limited to Admin System Health UI polish.
+diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+index 74a29674c..7b1c51f19 100644
+--- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+@@ -6,7 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
+ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+
+ Changed runtime JS files considered:
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(100%) none changed - no changed runtime JS files
+
+ Guardrail warnings:
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++(100%) none changed - no changed runtime JS files
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index e539a3bb1..e00dbc9b0 100644
+index e00dbc9b0..f936d8cc1 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -36,7 +36,8 @@ Uncovered or low-coverage changed JS files:
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+@@ -17,7 +17,7 @@ Exercised tool entry points detected:
+ (78%) Theme V2 Shared JS - exercised 5 runtime JS files
+
+ Changed runtime JS files covered:
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(100%) none changed - no changed runtime JS files
+
+ Files with executed line/function counts where available:
+ (36%) src/api/server-api-client.js - executed lines 168/168; executed functions 5/14
+@@ -33,11 +33,7 @@ Files with executed line/function counts where available:
+ (100%) src/api/admin-system-health-api-client.js - executed lines 31/31; executed functions 5/5
+
+ Uncovered or low-coverage changed JS files:
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
++(100%) none changed - no changed runtime JS files
 
  Changed JS files considered:
-+(0%) scripts/start-local-api-server.mjs - changed JS file not collected as browser runtime coverage
- (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/api/admin-system-health/contract.test.mjs - changed JS file not collected as browser runtime coverage
- (0%) tests/dev-runtime/AdminHealthOperations.test.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/dev-runtime/LocalApiStartupLogging.test.mjs - changed JS file not collected as browser runtime coverage
- (0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
-diff --git a/scripts/start-local-api-server.mjs b/scripts/start-local-api-server.mjs
-index d9bde5d76..3a4d5ef3e 100644
---- a/scripts/start-local-api-server.mjs
-+++ b/scripts/start-local-api-server.mjs
-@@ -4,6 +4,7 @@ import path from "node:path";
- import { pathToFileURL } from "node:url";
- import { databaseSslMode } from "../src/dev-runtime/persistence/postgres-connection-client.mjs";
- import { startLocalApiServer } from "../src/dev-runtime/server/local-api-server.mjs";
-+import { loadStorageConfig } from "../src/dev-runtime/storage/storage-config.mjs";
-
- const RUNTIME_ENV_FILE = ".env";
- const NOT_CONFIGURED = "(not configured)";
-@@ -181,6 +182,28 @@ function formatRuntimePortLogLines({ env, localServer }) {
-   ];
- }
-
-+function databaseMode(env) {
-+  const rawValue = String(env.GAMEFOUNDRY_DATABASE_URL || "").trim();
-+  if (!rawValue) {
-+    return "not configured";
-+  }
-+  try {
-+    const parsedUrl = new URL(rawValue);
-+    return ["postgres:", "postgresql:"].includes(parsedUrl.protocol) ? "Postgres" : "invalid database URL";
-+  } catch {
-+    return "invalid database URL";
-+  }
-+}
-+
-+function storageStatus(env) {
-+  const storageConfig = loadStorageConfig(env);
-+  if (storageConfig.configured) {
-+    return `configured (bucket ${storageConfig.safe.bucket}; prefix ${storageConfig.safe.projectsPrefix})`;
-+  }
-+  const issue = storageConfig.validationError || `missing ${storageConfig.missingKeys?.join(", ") || "storage configuration"}`;
-+  return `not configured (${issue})`;
-+}
-+
- export function formatStartupLogLines({
-   accountConnection,
-   configuredDatabaseSslMode,
-@@ -190,14 +213,21 @@ export function formatStartupLogLines({
-   localServer,
-   runtimeEnv,
- }) {
-+  const configuredApiUrl = String(env.GAMEFOUNDRY_API_URL || "").trim() || defaultApiUrl(localServer.baseUrl);
-+  const configuredSiteUrl = configuredValue(env.GAMEFOUNDRY_SITE_URL);
-   return [
-     `GameFoundry API runtime server running at ${localServer.baseUrl}`,
--    `Configured site URL: ${configuredValue(env.GAMEFOUNDRY_SITE_URL)}`,
--    `Configured API URL: ${String(env.GAMEFOUNDRY_API_URL || "").trim() || defaultApiUrl(localServer.baseUrl)}`,
-+    `Configured site URL: ${configuredSiteUrl}`,
-+    `Configured API URL: ${configuredApiUrl}`,
-+    `Local API URL: ${configuredApiUrl}`,
-+    `Local site URL: ${configuredSiteUrl}`,
-+    `Local site URL port: ${portFromUrl(env.GAMEFOUNDRY_SITE_URL)}`,
-     ...formatEnvironmentVariableLogLines(runtimeEnv),
-     ...formatRuntimePortLogLines({ env, localServer }),
-     connectionStatusLine("auth", accountConnection),
-     connectionStatusLine("database", databaseConnection),
-+    `Database mode: ${databaseMode(env)}`,
-+    `Storage status: ${storageStatus(env)}`,
-     `Database SSL mode: ${configuredDatabaseSslMode || `invalid (${databaseSslModeError})`}`,
-     "Press Ctrl+C to stop.",
-   ];
-diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index 9ffc20905..f2f927aff 100644
---- a/src/dev-runtime/server/local-api-router.mjs
-+++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -904,6 +904,13 @@ function localApiStartupUrlDisplay(value, fallback = "not configured") {
-   }
- }
-
-+function localApiStartupPortStatus(port) {
-+  if (port === "invalid URL") {
-+    return "FAIL";
-+  }
-+  return port === "not configured" ? "WARN" : "PASS";
-+}
-+
- function localApiStartupBindTarget(env = process.env) {
-   const host = String(env.GAMEFOUNDRY_LOCAL_API_HOST || LOCAL_API_STARTUP_DEFAULT_HOST).trim() || LOCAL_API_STARTUP_DEFAULT_HOST;
-   const port = String(env.GAMEFOUNDRY_LOCAL_API_PORT || LOCAL_API_STARTUP_DEFAULT_PORT).trim() || LOCAL_API_STARTUP_DEFAULT_PORT;
-@@ -916,11 +923,57 @@ function localApiStartupBindTarget(env = process.env) {
-   };
- }
-
-+function localApiStartupDatabaseMode(env = process.env) {
-+  const databaseStatus = databaseConfigStatus(env);
-+  if (databaseStatus.hostStatus === "FAIL" || databaseStatus.databaseNameStatus === "FAIL") {
-+    return {
-+      reason: "GAMEFOUNDRY_DATABASE_URL is present but is not a valid Postgres URL.",
-+      status: "FAIL",
-+      value: "invalid database URL",
-+    };
-+  }
-+  if (!databaseStatus.configured) {
-+    return {
-+      reason: "GAMEFOUNDRY_DATABASE_URL is not configured for the Local API startup report.",
-+      status: "WARN",
-+      value: "not configured",
-+    };
-+  }
-+  return {
-+    reason: "GAMEFOUNDRY_DATABASE_URL is configured with a Postgres protocol; credentials remain hidden.",
-+    status: "PASS",
-+    value: "Postgres",
-+  };
-+}
-+
-+function localApiStartupStorageStatus(env = process.env) {
-+  const storageConfig = loadStorageConfig(env);
-+  if (storageConfig.configured) {
-+    return {
-+      reason: `Cloudflare R2 configuration is present for bucket ${storageConfig.safe.bucket} and prefix ${storageConfig.safe.projectsPrefix}; credential values remain hidden.`,
-+      status: "PASS",
-+      value: "configured",
-+    };
-+  }
-+  const issue = storageConfig.validationError
-+    || `missing ${storageConfig.missingKeys?.join(", ") || "storage configuration"}`;
-+  return {
-+    reason: `Cloudflare R2 storage is not fully configured: ${issue}.`,
-+    status: "WARN",
-+    value: "not configured",
-+  };
-+}
-+
- function systemHealthLocalApiStartupDiagnostics(env = process.env) {
-   const bindTarget = localApiStartupBindTarget(env);
-   const configuredApiUrl = String(env.GAMEFOUNDRY_API_URL || "").trim();
-   const derivedApiUrl = `http://${bindTarget.value}/api`;
-   const siteUrl = String(env.GAMEFOUNDRY_SITE_URL || "").trim();
-+  const apiUrlDisplay = localApiStartupUrlDisplay(configuredApiUrl || derivedApiUrl);
-+  const siteUrlDisplay = localApiStartupUrlDisplay(siteUrl);
-+  const siteUrlPort = localApiStartupPortFromUrl(siteUrl);
-+  const databaseMode = localApiStartupDatabaseMode(env);
-+  const storageStatus = localApiStartupStorageStatus(env);
-   const rows = [
-     {
-       field: "Approved diagnostics format",
-@@ -934,6 +987,18 @@ function systemHealthLocalApiStartupDiagnostics(env = process.env) {
-       status: "PASS",
-       value: "masked and redacted",
-     },
-+    {
-+      field: "Environment variable order",
-+      reason: "Runtime .env keys are sorted alphabetically before startup diagnostics are printed.",
-+      status: "PASS",
-+      value: "alphabetical",
-+    },
-+    {
-+      field: "Secret masking markers",
-+      reason: "Startup diagnostics mask variables whose keys contain PASSWORD, SECRET, TOKEN, KEY, SERVICE_ROLE, or JWT.",
-+      status: "PASS",
-+      value: "PASSWORD, SECRET, TOKEN, KEY, SERVICE_ROLE, JWT",
-+    },
-     {
-       field: "Configured startup bind target",
-       reason: bindTarget.status === "PASS"
-@@ -942,6 +1007,28 @@ function systemHealthLocalApiStartupDiagnostics(env = process.env) {
-       status: bindTarget.status,
-       value: bindTarget.value,
-     },
-+    {
-+      field: "Local API URL",
-+      reason: configuredApiUrl
-+        ? "GAMEFOUNDRY_API_URL is configured and displayed without URL credentials."
-+        : "GAMEFOUNDRY_API_URL is not configured; startup diagnostics derive /api from the bind target.",
-+      status: apiUrlDisplay === "invalid URL" ? "FAIL" : "PASS",
-+      value: apiUrlDisplay,
-+    },
-+    {
-+      field: "Local site URL",
-+      reason: siteUrl
-+        ? "GAMEFOUNDRY_SITE_URL is available for startup diagnostics."
-+        : "GAMEFOUNDRY_SITE_URL is not configured for the Local API startup report.",
-+      status: siteUrl ? (siteUrlDisplay === "invalid URL" ? "FAIL" : "PASS") : "WARN",
-+      value: siteUrlDisplay,
-+    },
-+    {
-+      field: "Local site URL port",
-+      reason: "Port is derived from GAMEFOUNDRY_SITE_URL for display only.",
-+      status: localApiStartupPortStatus(siteUrlPort),
-+      value: siteUrlPort,
-+    },
-     {
-       field: "Configured site URL",
-       reason: siteUrl
-@@ -956,7 +1043,7 @@ function systemHealthLocalApiStartupDiagnostics(env = process.env) {
-         ? "GAMEFOUNDRY_API_URL is configured and displayed without URL credentials."
-         : "GAMEFOUNDRY_API_URL is not configured; startup diagnostics derive /api from the bind target.",
-       status: "PASS",
--      value: localApiStartupUrlDisplay(configuredApiUrl || derivedApiUrl),
-+      value: apiUrlDisplay,
-     },
-     {
-       field: "Configured API URL port",
-@@ -964,6 +1051,18 @@ function systemHealthLocalApiStartupDiagnostics(env = process.env) {
-       status: "PASS",
-       value: localApiStartupPortFromUrl(configuredApiUrl || derivedApiUrl),
-     },
-+    {
-+      field: "Database mode",
-+      reason: databaseMode.reason,
-+      status: databaseMode.status,
-+      value: databaseMode.value,
-+    },
-+    {
-+      field: "Storage status",
-+      reason: storageStatus.reason,
-+      status: storageStatus.status,
-+      value: storageStatus.value,
-+    },
-     {
-       field: "Configurable multiple runtime ports",
-       reason: "Configurable multiple runtime ports are explicitly deferred/cancelled for this PR.",
-diff --git a/tests/dev-runtime/AdminHealthOperations.test.mjs b/tests/dev-runtime/AdminHealthOperations.test.mjs
-index 8d37ad5c3..59bea182c 100644
---- a/tests/dev-runtime/AdminHealthOperations.test.mjs
-+++ b/tests/dev-runtime/AdminHealthOperations.test.mjs
-@@ -299,6 +299,13 @@ test("Admin can view operational health while Creator sessions are blocked", asy
-         health.localApiStartup.rows.some((row) => row.field === "Configurable multiple runtime ports" && row.status === "PENDING" && row.value === "deferred/cancelled"),
-         true,
-       );
-+      const startupRows = new Map(health.localApiStartup.rows.map((row) => [row.field, row]));
-+      assert.equal(startupRows.get("Environment variable order")?.value, "alphabetical");
-+      assert.equal(startupRows.get("Secret masking markers")?.value, "PASSWORD, SECRET, TOKEN, KEY, SERVICE_ROLE, JWT");
-+      assert.equal(startupRows.get("Local API URL")?.status, "PASS");
-+      assert.equal(startupRows.get("Local site URL port")?.value, "5500");
-+      assert.ok(["Postgres", "not configured", "invalid database URL"].includes(startupRows.get("Database mode")?.value));
-+      assert.equal(startupRows.get("Storage status")?.value, "not configured");
-       const startupText = JSON.stringify(health.localApiStartup);
-       assert.equal(startupText.includes("api-user"), false);
-       assert.equal(startupText.includes("api-secret"), false);
-diff --git a/tests/dev-runtime/LocalApiStartupLogging.test.mjs b/tests/dev-runtime/LocalApiStartupLogging.test.mjs
-index 5cafc2f0a..5362b40d2 100644
---- a/tests/dev-runtime/LocalApiStartupLogging.test.mjs
-+++ b/tests/dev-runtime/LocalApiStartupLogging.test.mjs
-@@ -17,7 +17,10 @@ test("local API startup log separates bind URL from configured public URLs", ()
-       GAMEFOUNDRY_API_URL: "http://127.0.0.1:5501/api",
-       GAMEFOUNDRY_DATABASE_URL: "postgres://secret-user:secret-pass@example.invalid/db",
-       GAMEFOUNDRY_SITE_URL: "http://127.0.0.1:5500",
-+      GAMEFOUNDRY_STORAGE_ACCESS_KEY_ID: "storage-access-key",
-+      GAMEFOUNDRY_STORAGE_BUCKET: "gamefoundry-test-assets",
-       GAMEFOUNDRY_STORAGE_ENDPOINT: "http://127.0.0.1:9000",
-+      GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX: "/dev/projects/",
-       GAMEFOUNDRY_STORAGE_SECRET_ACCESS_KEY: "storage-secret",
-       GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "service-role-secret",
-       GAMEFOUNDRY_SUPABASE_URL: "https://example.supabase.co",
-@@ -44,11 +47,26 @@ test("local API startup log separates bind URL from configured public URLs", ()
-           key: "GAMEFOUNDRY_DATABASE_URL",
-           value: "postgres://secret-user:secret-pass@example.invalid/db",
-         },
-+        {
-+          applied: false,
-+          key: "GAMEFOUNDRY_STORAGE_ACCESS_KEY_ID",
-+          value: "storage-access-key",
-+        },
-+        {
-+          applied: true,
-+          key: "GAMEFOUNDRY_STORAGE_BUCKET",
-+          value: "gamefoundry-test-assets",
-+        },
-         {
-           applied: true,
-           key: "GAMEFOUNDRY_STORAGE_ENDPOINT",
-           value: "http://127.0.0.1:9000",
-         },
-+        {
-+          applied: true,
-+          key: "GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX",
-+          value: "/dev/projects/",
-+        },
-         {
-           applied: false,
-           key: "GAMEFOUNDRY_STORAGE_SECRET_ACCESS_KEY",
-@@ -62,11 +80,17 @@ test("local API startup log separates bind URL from configured public URLs", ()
-     "GameFoundry API runtime server running at http://127.0.0.1:5501",
-     "Configured site URL: http://127.0.0.1:5500",
-     "Configured API URL: http://127.0.0.1:5501/api",
-+    "Local API URL: http://127.0.0.1:5501/api",
-+    "Local site URL: http://127.0.0.1:5500",
-+    "Local site URL port: 5500",
-     "=========================================",
-     "Environment Variables",
-     "=========================================",
-     "+ GAMEFOUNDRY_DATABASE_URL=postgres://********:********@example.invalid/db",
-+    "- GAMEFOUNDRY_STORAGE_ACCESS_KEY_ID=********",
-+    "+ GAMEFOUNDRY_STORAGE_BUCKET=gamefoundry-test-assets",
-     "+ GAMEFOUNDRY_STORAGE_ENDPOINT=http://127.0.0.1:9000",
-+    "+ GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX=/dev/projects/",
-     "- GAMEFOUNDRY_STORAGE_SECRET_ACCESS_KEY=********",
-     "- GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY=********",
-     "+ GAMEFOUNDRY_SUPABASE_URL=https://example.supabase.co",
-@@ -81,6 +105,8 @@ test("local API startup log separates bind URL from configured public URLs", ()
-     "Storage service port: 9000",
-     "Configured auth connection: configured.",
-     "Configured database connection: configured.",
-+    "Database mode: Postgres",
-+    "Storage status: configured (bucket gamefoundry-test-assets; prefix /dev/projects/)",
-     "Database SSL mode: require",
-     "Press Ctrl+C to stop.",
-   ]);
-@@ -88,6 +114,7 @@ test("local API startup log separates bind URL from configured public URLs", ()
-   assert.equal(lines.join("\n").includes(".env loaded for API runtime"), false);
-   assert.equal(lines.join("\n").includes("secret-user"), false);
-   assert.equal(lines.join("\n").includes("secret-pass"), false);
-+  assert.equal(lines.join("\n").includes("storage-access-key"), false);
-   assert.equal(lines.join("\n").includes("storage-secret"), false);
-   assert.equal(lines.join("\n").includes("service-role-secret"), false);
- });
-@@ -119,6 +146,9 @@ test("local API startup log shows missing site URL and derives API URL from bind
-     "GameFoundry API runtime server running at http://127.0.0.1:5599",
-     "Configured site URL: (not configured)",
-     "Configured API URL: http://127.0.0.1:5599/api",
-+    "Local API URL: http://127.0.0.1:5599/api",
-+    "Local site URL: (not configured)",
-+    "Local site URL port: not configured",
-     ".env was not found for API runtime.",
-     "=========================================",
-     "All Runtime Ports being used by Service",
-@@ -131,6 +161,8 @@ test("local API startup log shows missing site URL and derives API URL from bind
-     "Storage service port: not configured",
-     "Configured auth connection: missing GAMEFOUNDRY_SUPABASE_URL.",
-     "Configured database connection: missing GAMEFOUNDRY_DATABASE_URL.",
-+    "Database mode: not configured",
-+    "Storage status: not configured (missing GAMEFOUNDRY_STORAGE_ENDPOINT, GAMEFOUNDRY_STORAGE_ACCESS_KEY_ID, GAMEFOUNDRY_STORAGE_SECRET_ACCESS_KEY, GAMEFOUNDRY_STORAGE_BUCKET, GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX)",
-     "Database SSL mode: invalid (GAMEFOUNDRY_DATABASE_SSL is missing.)",
-     "Press Ctrl+C to stop.",
-   ]);
-diff --git a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-index 45d704c3e..cf54c49d3 100644
---- a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-+++ b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
-@@ -218,6 +218,12 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
-     await expect(notificationsTable).toContainText("Not Configured");
-     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Approved diagnostics format");
-     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Environment Variables + All Runtime Ports");
-+    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Environment variable order");
-+    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Secret masking markers");
-+    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Local API URL");
-+    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Local site URL port");
-+    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Database mode");
-+    await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Storage status");
-     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("Configurable multiple runtime ports");
-     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).toContainText("deferred/cancelled");
-     await expect(page.getByRole("table", { name: "Local API startup diagnostics" })).not.toContainText("secret");
+-(0%) scripts/start-local-api-server.mjs - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/dev-runtime/AdminHealthOperations.test.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/dev-runtime/LocalApiStartupLogging.test.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
++(100%) none - no changed JS files

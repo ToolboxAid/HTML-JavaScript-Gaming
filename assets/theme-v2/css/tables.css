@@ -178,3 +178,40 @@ td {
   max-width: 100%;
   width: 100%
 }
+
+[data-admin-system-health] .table-wrapper {
+  border: var(--border-standard);
+  border-radius: var(--radius-lg);
+  background: var(--panel-overlay);
+  box-shadow: var(--shadow-sm)
+}
+
+[data-admin-system-health] .data-table {
+  min-width: 720px;
+  background: transparent
+}
+
+[data-admin-system-health] .data-table caption {
+  padding: var(--space-12) var(--space-14);
+  border-bottom: var(--border-standard);
+  background: var(--panel-soft);
+  color: var(--gold)
+}
+
+[data-admin-system-health] .data-table th,
+[data-admin-system-health] .data-table td {
+  padding: var(--space-10) var(--space-12);
+  vertical-align: top
+}
+
+[data-admin-system-health] .data-table th {
+  color: var(--cyan)
+}
+
+[data-admin-system-health] .data-table tbody tr:nth-child(even) {
+  background: var(--panel-soft-subtle)
+}
+
+[data-admin-system-health] .data-table td {
+  overflow-wrap: anywhere
+}
