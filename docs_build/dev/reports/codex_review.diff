@@ -1,371 +1,194 @@
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-branch-validation.md b/docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-branch-validation.md
+diff --git a/package.json b/package.json
+index f9f6eef65..e2b30a064 100644
+--- a/package.json
++++ b/package.json
+@@ -20,7 +20,7 @@
+     "test:lane:game-hub": "node ./scripts/run-targeted-test-lanes.mjs --lane game-hub",
+     "test:lane:tool-runtime": "node ./scripts/run-targeted-test-lanes.mjs --lane tool-runtime",
+     "test:lane:game-runtime": "node ./scripts/run-targeted-test-lanes.mjs --lane game-runtime",
+-    "test:service:runtime": "node ./scripts/run-node-test-files.mjs tests/engine/RuntimeTickLoop.test.mjs tests/replay/ReplaySystem.test.mjs tests/dev-runtime/ServerApiClientStandardization.test.mjs tests/engine/RuntimeEventSystem.test.mjs tests/engine/RuntimeTriggerProcessing.test.mjs tests/engine/RuntimeActionSystem.test.mjs tests/final/FinalSystems.test.mjs",
++    "test:service:runtime": "node ./scripts/run-node-test-files.mjs tests/engine/RuntimeTickLoop.test.mjs tests/engine/RuntimeConditionSystem.test.mjs tests/engine/RuntimeCollisionProcessing.test.mjs tests/engine/RuntimeMovementProcessing.test.mjs tests/engine/RuntimeCooldownProcessing.test.mjs tests/engine/RuntimeDamageProcessing.test.mjs tests/engine/RuntimeHealthModel.test.mjs tests/engine/RuntimeLivesAndRespawn.test.mjs tests/engine/RuntimeSpawnDespawnProcessing.test.mjs tests/engine/RuntimeScoringAndStateProcessing.test.mjs tests/engine/RuntimeOutcomeProcessing.test.mjs tests/engine/RuntimeInputPipeline.test.mjs tests/engine/RuntimeObjectInstantiation.test.mjs tests/engine/RuntimeObjectRecordFactory.test.mjs tests/engine/RuntimeBehaviorComposition.test.mjs tests/replay/ReplaySystem.test.mjs tests/dev-runtime/ServerApiClientStandardization.test.mjs tests/engine/RuntimeEventSystem.test.mjs tests/engine/RuntimeTriggerProcessing.test.mjs tests/engine/RuntimeActionSystem.test.mjs tests/final/FinalSystems.test.mjs",
+     "test:lane:integration": "node ./scripts/run-targeted-test-lanes.mjs --lane integration",
+     "test:lane:engine-src": "node ./scripts/run-targeted-test-lanes.mjs --lane engine-src",
+     "test:lane:samples": "node ./scripts/run-targeted-test-lanes.mjs --lane samples --include-samples",
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_007-runtime-service-coverage.md b/docs_build/dev/reports/PR_26175_DELTA_007-runtime-service-coverage.md
 new file mode 100644
-index 000000000..946f30b6e
+index 000000000..7b1c58965
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-branch-validation.md
-@@ -0,0 +1,17 @@
-+# PR_26175_DELTA_006 Branch Validation
++++ b/docs_build/dev/reports/PR_26175_DELTA_007-runtime-service-coverage.md
+@@ -0,0 +1,81 @@
++# PR_26175_DELTA_007-runtime-service-coverage
 +
-+| Gate | Status | Evidence |
-+| --- | --- | --- |
-+| Checkout to `main` before work | PASS | `git switch main` completed. |
-+| Pull latest before work | PASS | `git pull --ff-only` reported up to date. |
-+| Current branch after checkout/pull | PASS | `main` |
-+| Worktree before branch | PASS | Clean |
-+| Local/origin sync before branch | PASS | `0 0` |
-+| Work branch | PASS | `PR_26175_DELTA_006-page-service-test-lanes` |
-+| Team ownership | PASS | Team Delta owns Runtime, Shared JS, API clients, Event systems, Performance, technical debt remediation, and runtime test coverage. |
-+| Scope boundary | PASS | Runtime service command plus replay clone fallback fix only. |
-+| Project Instructions read | PASS | Every file under `docs_build/dev/ProjectInstructions/` was read before implementation. |
++## Summary
 +
-+## Merge Approval
++Team Delta expanded the existing page/service-level runtime service lane introduced by PR_26175_DELTA_006.
 +
-+PENDING - Current governance requires OWNER approval before merge to `main`.
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-manual-validation-notes.md b/docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-manual-validation-notes.md
-new file mode 100644
-index 000000000..0f1f2e40d
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-manual-validation-notes.md
-@@ -0,0 +1,18 @@
-+# PR_26175_DELTA_006 Manual Validation Notes
++This PR does not add a new test runner and does not create a team-specific command. It keeps `npm test` as the site-wide/all-tests command and expands `npm run test:service:runtime` from 7 targeted Node test files to 21 targeted Node test files.
 +
-+## Manual Review
++## Scope
 +
-+- Confirmed the replacement PR avoids team-specific test orchestration.
-+- Confirmed no `scripts/run-delta-runtime-validation.mjs` file exists.
-+- Confirmed no `test:delta-runtime` package script exists.
-+- Confirmed `test:service:runtime` is organized by runtime service coverage, not team ownership.
-+- Confirmed `npm test` remains the broader site-wide/all-tests command path.
-+- Confirmed no UI, browser-owned product data, fake-login, MEM DB, local-mem, silent fallback, or hidden default behavior was introduced.
++- Team: Delta
++- Branch: `PR_26175_DELTA_007-runtime-service-coverage`
++- Changed file: `package.json`
++- Runtime code changed: none
++- UI changed: none
++- New test runner: none
++- Team-named command: none
 +
-+## Manual Validation
++## Coverage Added
 +
-+PASS - Code review found the changes scoped to package test command wiring and replay timeline clone fallback alignment.
++The existing `test:service:runtime` lane now also covers:
 +
-+## Follow-Up
++- Runtime condition evaluation
++- Runtime collision processing
++- Runtime movement processing
++- Runtime cooldown processing
++- Runtime damage processing
++- Runtime health model
++- Runtime lives and respawn
++- Runtime spawn/despawn processing
++- Runtime scoring and state processing
++- Runtime outcome processing
++- Runtime input pipeline
++- Runtime object instantiation
++- Runtime object record factory
++- Runtime behavior composition
 +
-+- The superseded draft PR #188 should be closed only with explicit OWNER approval.
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-requirement-checklist.md b/docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-requirement-checklist.md
-new file mode 100644
-index 000000000..441cd1b7b
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-requirement-checklist.md
-@@ -0,0 +1,24 @@
-+# PR_26175_DELTA_006 Requirement Checklist
++## Runtime Impact
++
++PASS - No runtime implementation files changed. This is service-lane coverage expansion only.
++
++## Requirement Checklist
 +
 +| Requirement | Status | Notes |
-+| --- | --- | --- |
-+| Hard stop if not on `main` after checkout/pull | PASS | Work started from clean synced `main`. |
-+| Do not keep/create `scripts/run-delta-runtime-validation.mjs` | PASS | File does not exist. |
-+| Do not keep/create `npm run test:delta-runtime` | PASS | No package script exists. |
-+| Do not create Team Delta-specific test command | PASS | Added `test:service:runtime`, a service-level command. |
-+| Testing organized by page/service level | PASS | Runtime service command groups runtime/replay/API client service tests. |
-+| Focused command for page/service-level tests | PASS | `npm run test:service:runtime`. |
-+| One site-wide/all-tests command | PASS | Existing `npm test` remains the site-wide/all-tests Node command path. |
-+| DELTA_001 through DELTA_005 covered through page/service tests | PASS | Runtime tick, replay, API client, event, trigger/action, and final systems tests run through the service command. |
-+| Team Delta ownership only | PASS | Replay/runtime/API/event coverage is Delta-owned. |
-+| No unrelated cleanup | PASS | Changes are limited to package command, replay clone fallback fix, reports, Codex artifacts, and ZIP. |
++|---|---|---|
++| One PR purpose only | PASS | Runtime service coverage expansion only. |
++| Team Delta ownership only | PASS | Runtime modules and runtime test coverage are Delta-owned. |
++| Branch from updated main | PASS | Branch created after PR_006 merge and main sync. |
++| Do not duplicate PR_006 | PASS | Existing `test:service:runtime` was expanded rather than recreated. |
++| No team-specific test runner | PASS | No runner added. |
++| No team-named npm command | PASS | No `test:delta-runtime` or Delta-named command added. |
++| No new test runner | PASS | Reuses `scripts/run-node-test-files.mjs`. |
++| Page/service-level testing | PASS | Uses `test:service:runtime`. |
++| `npm test` remains site-wide/all-tests | PASS | Existing `npm test` remains unchanged. |
 +| No UI changes | PASS | No UI files changed. |
-+| No browser-owned product data | PASS | No browser storage/product data contract changed. |
-+| No fake-login, MEM DB, local-mem, silent fallback, or hidden defaults | PASS | No auth or data source fallback changed. |
-+| Required reports and ZIP | PASS | Report packet, Codex artifacts, and repo-structured ZIP are included. |
++| No browser-owned product data | PASS | No browser persistence changed. |
++| No silent fallbacks or hidden defaults | PASS | No runtime behavior changed. |
 +
-+## Compatibility Notes
++## Validation Lane Report
 +
-+- Existing `npm test` remains unchanged.
-+- Existing individual test files remain directly runnable.
-+- Replay timeline clone behavior now uses the same shared runtime clone helper as ReplaySystem.
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-validation.md b/docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-validation.md
++| Command | Status | Notes |
++|---|---|---|
++| `npm run test:service:runtime` | PASS | 21/21 targeted Node test files passed. |
++| Package command assertion | PASS | `npm test` and `test:service:runtime` present; `test:delta-runtime` absent. |
++| Delta harness absence check | PASS | `scripts/run-delta-runtime-validation.mjs` absent. |
++| Delta command grep | PASS | No matches for Delta-named test commands in package scripts or scripts. |
++| `git diff --check` | PASS | No whitespace errors. |
++
++## Manual Validation Notes
++
++- Confirmed the only functional change is the `test:service:runtime` file list in `package.json`.
++- Confirmed no test files or runtime source files were changed.
++- Confirmed the lane remains page/service-level and uses the existing shared Node test-file runner.
++- Playwright was not run because this is Node runtime service coverage.
++
++## ZIP
++
++Repo-structured delta ZIP:
++
++`tmp/PR_26175_DELTA_007-runtime-service-coverage_delta.zip`
++
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_007-runtime-service-coverage_branch-validation.md b/docs_build/dev/reports/PR_26175_DELTA_007-runtime-service-coverage_branch-validation.md
 new file mode 100644
-index 000000000..8501dfd2c
+index 000000000..d0097af4d
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-validation.md
-@@ -0,0 +1,51 @@
-+# PR_26175_DELTA_006 Validation Lane
++++ b/docs_build/dev/reports/PR_26175_DELTA_007-runtime-service-coverage_branch-validation.md
+@@ -0,0 +1,13 @@
++# PR_26175_DELTA_007 Branch Validation
++
++| Check | Status | Evidence |
++|---|---|---|
++| Started from `main` | PASS | `git checkout main` completed before work. |
++| Pulled latest `main` | PASS | `git pull --ff-only` completed before work. |
++| Current branch after gate | PASS | `main`. |
++| Worktree before branch | PASS | Clean. |
++| Local/origin sync before branch | PASS | `main...origin/main` returned `0 0`. |
++| PR_006 merged before branch | PASS | `main` includes PR_26175_DELTA_006. |
++| Working branch | PASS | `PR_26175_DELTA_007-runtime-service-coverage`. |
++| Project Instructions read | PASS | All files under `docs_build/dev/ProjectInstructions/` were read before implementation. |
++
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_007-runtime-service-coverage_manual-validation-notes.md b/docs_build/dev/reports/PR_26175_DELTA_007-runtime-service-coverage_manual-validation-notes.md
+new file mode 100644
+index 000000000..cf5026fd0
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_DELTA_007-runtime-service-coverage_manual-validation-notes.md
+@@ -0,0 +1,9 @@
++# PR_26175_DELTA_007 Manual Validation Notes
++
++- Reviewed `package.json` and confirmed `npm test` remains unchanged.
++- Confirmed `test:service:runtime` remains a page/service-level command.
++- Confirmed no Team Delta-specific test runner or command was introduced.
++- Confirmed no `scripts/run-delta-runtime-validation.mjs` exists.
++- Confirmed no runtime source files changed.
++- Confirmed no UI files changed.
++
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_007-runtime-service-coverage_requirements-checklist.md b/docs_build/dev/reports/PR_26175_DELTA_007-runtime-service-coverage_requirements-checklist.md
+new file mode 100644
+index 000000000..a7bfe41fe
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_DELTA_007-runtime-service-coverage_requirements-checklist.md
+@@ -0,0 +1,18 @@
++# PR_26175_DELTA_007 Requirements Checklist
++
++| Requirement | Status | Notes |
++|---|---|---|
++| Expand existing runtime service coverage | PASS | `test:service:runtime` now runs 21 targeted files. |
++| Do not duplicate PR_006 | PASS | Existing command expanded only. |
++| No team-specific test command | PASS | No Delta-named npm command added. |
++| No new test runner | PASS | Existing `scripts/run-node-test-files.mjs` reused. |
++| Keep `npm test` site-wide | PASS | `npm test` unchanged. |
++| Keep testing page/service-level | PASS | Existing service lane expanded. |
++| No unrelated cleanup | PASS | Only `package.json` and required reports/artifacts changed. |
++| No UI changes | PASS | No UI files changed. |
++| No browser-owned product data | PASS | No persisted browser data changed. |
++| No silent fallbacks | PASS | No runtime behavior changed. |
++| No hidden defaults | PASS | No runtime behavior changed. |
++| Required reports | PASS | Report packet and Codex artifacts created. |
++| Repo-structured ZIP | PASS | `tmp/PR_26175_DELTA_007-runtime-service-coverage_delta.zip`. |
++
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_007-runtime-service-coverage_validation-lane.md b/docs_build/dev/reports/PR_26175_DELTA_007-runtime-service-coverage_validation-lane.md
+new file mode 100644
+index 000000000..bc1af0253
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26175_DELTA_007-runtime-service-coverage_validation-lane.md
+@@ -0,0 +1,30 @@
++# PR_26175_DELTA_007 Validation Lane
 +
 +## Commands
 +
 +```powershell
-+node --check src/engine/replay/ReplayTimeline.js
 +npm run test:service:runtime
-+node -e "const pkg=require('./package.json'); if (pkg.scripts['test:delta-runtime']) throw new Error('team-specific delta script exists'); if (!pkg.scripts['test:service:runtime']) throw new Error('service runtime script missing'); if (!pkg.scripts.test) throw new Error('site-wide test script missing'); console.log('service runtime and site-wide test commands present');"
-+if (Test-Path scripts/run-delta-runtime-validation.mjs) { Write-Error 'unexpected delta runtime script'; exit 1 } else { Write-Output 'no delta runtime script present' }
-+rg -n "delta-runtime|run-delta-runtime|test:delta|Team Delta-specific|Delta validation harness" package.json scripts src/engine/replay
++$pkg = Get-Content -Raw package.json | ConvertFrom-Json; if ($pkg.scripts.PSObject.Properties.Name -contains 'test:delta-runtime') { throw 'test:delta-runtime exists' }
++if (Test-Path scripts/run-delta-runtime-validation.mjs) { throw 'unexpected delta runtime script' }
++rg -n "delta-runtime|run-delta-runtime|test:delta" package.json scripts
 +git diff --check
 +```
 +
 +## Results
 +
 +| Command | Status |
-+| --- | --- |
-+| `node --check src/engine/replay/ReplayTimeline.js` | PASS |
++|---|---|
 +| `npm run test:service:runtime` | PASS |
 +| Package command assertion | PASS |
-+| Delta harness file absence check | PASS |
-+| Team-specific command grep | PASS - no matches |
++| Delta harness absence check | PASS |
++| Delta command grep | PASS - no matches |
 +| `git diff --check` | PASS |
 +
-+## Runtime Service Coverage
++## Runtime Service Files
 +
-+`npm run test:service:runtime` passed seven targeted test files:
++`npm run test:service:runtime` passed 21 targeted Node test files.
 +
-+- `tests/engine/RuntimeTickLoop.test.mjs`
-+- `tests/replay/ReplaySystem.test.mjs`
-+- `tests/dev-runtime/ServerApiClientStandardization.test.mjs`
-+- `tests/engine/RuntimeEventSystem.test.mjs`
-+- `tests/engine/RuntimeTriggerProcessing.test.mjs`
-+- `tests/engine/RuntimeActionSystem.test.mjs`
-+- `tests/final/FinalSystems.test.mjs`
-+
-+## Site-Wide Command
-+
-+PRESENT - `npm test` remains the site-wide/all-tests Node command path.
-+
-+## Browser Validation
++## Browser / Playwright
 +
 +SKIP - No browser UI files changed.
 +
-+## Playwright Validation
-+
-+SKIP - Runtime service coverage is Node-based and no page UI changed.
-+
-+## Full Samples Smoke
-+
-+SKIP - Not run by default per instruction.
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes.md b/docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes.md
-new file mode 100644
-index 000000000..1d03b6fd3
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes.md
-@@ -0,0 +1,62 @@
-+# PR_26175_DELTA_006-page-service-test-lanes
-+
-+## Summary
-+
-+Team Delta replaced the team-specific validation harness approach with a project testing direction based on page/service-level commands.
-+
-+This PR adds `npm run test:service:runtime` as the focused runtime service test command. It uses the existing `scripts/run-node-test-files.mjs` runner and does not add a Team Delta-specific script, package command, or test orchestration layer.
-+
-+The service command exposed a replay service testability gap: `ReplayTimeline` still depended directly on native `structuredClone`, so the replay fallback behavior from prior runtime clone work could not be validated through the service-level lane. `ReplayTimeline` now uses the existing shared `cloneRuntimeValue(...)` helper.
-+
-+## Command Model
-+
-+| Need | Command | Status |
-+| --- | --- | --- |
-+| Focused runtime service validation | `npm run test:service:runtime` | PASS |
-+| Site-wide/all-tests command path | `npm test` | PRESENT |
-+
-+## DELTA_001 Through DELTA_005 Coverage
-+
-+| Prior runtime behavior | Service-level coverage |
-+| --- | --- |
-+| DELTA_001 runtime tick optimization | `tests/engine/RuntimeTickLoop.test.mjs` |
-+| DELTA_002 replay clone consolidation | `tests/replay/ReplaySystem.test.mjs` |
-+| DELTA_003 API client standardization | `tests/dev-runtime/ServerApiClientStandardization.test.mjs` |
-+| DELTA_004 runtime event test coverage | `tests/engine/RuntimeEventSystem.test.mjs` |
-+| DELTA_005 runtime event clone cleanup | `tests/engine/RuntimeTriggerProcessing.test.mjs`, `tests/engine/RuntimeActionSystem.test.mjs`, `tests/final/FinalSystems.test.mjs` |
-+
-+## Scope
-+
-+- Team: Delta
-+- Runtime service command changed: `package.json`
-+- Runtime service implementation changed: `src/engine/replay/ReplayTimeline.js`
-+- Runtime code ownership: Replay/runtime clone behavior is Team Delta-owned.
-+- UI changed: none
-+- Browser-owned product data changed: none
-+- Team-specific test command added: no
-+
-+## Replacement Notes
-+
-+PASS - This replacement PR does not keep or create:
-+
-+- `scripts/run-delta-runtime-validation.mjs`
-+- `npm run test:delta-runtime`
-+- Team Delta-specific test commands
-+
-+## Backlog Update
-+
-+SKIP - This is an OWNER-directed replacement for the draft harness approach and does not change backlog source-of-truth status.
-+
-+## Tool State Update
-+
-+SKIP - No Build Path tool status or tool tile state changed.
-+
-+## Validation Summary
-+
-+PASS - Runtime service validation passed through `npm run test:service:runtime`.
-+
-+See `PR_26175_DELTA_006-page-service-test-lanes-validation.md` for command details.
-+
-+## Branch Disposition
-+
-+Source branch should be retained after merge unless OWNER later approves branch deletion.
-diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index b8c3d2ce6..d8bbcb21a 100644
---- a/docs_build/dev/reports/codex_changed_files.txt
-+++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,17 +1,20 @@
- # git status --short
--M docs_build/dev/reports/PR_26177_OWNER_052-eod-main-verification-and-backlog-update.md
-- M docs_build/dev/reports/PR_26177_OWNER_052-eod-main-verification-and-backlog-update_branch-validation.md
-- M docs_build/dev/reports/PR_26177_OWNER_052-eod-main-verification-and-backlog-update_manual-validation-notes.md
-- M docs_build/dev/reports/PR_26177_OWNER_052-eod-main-verification-and-backlog-update_requirements-checklist.md
-- M docs_build/dev/reports/PR_26177_OWNER_052-eod-main-verification-and-backlog-update_validation-lane.md
-+A  docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-branch-validation.md
-+A  docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-manual-validation-notes.md
-+A  docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-requirement-checklist.md
-+A  docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-validation.md
-+A  docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes.md
-+UU docs_build/dev/reports/codex_changed_files.txt
-+UU docs_build/dev/reports/codex_review.diff
-+M  package.json
-+M  src/engine/replay/ReplayTimeline.js
-
- # git ls-files --others --exclude-standard
- (no output)
-
- # git diff --stat
--...R_26177_OWNER_052-eod-main-verification-and-backlog-update.md | 9 +++++----
-- ...eod-main-verification-and-backlog-update_branch-validation.md | 3 ++-
-- ...in-verification-and-backlog-update_manual-validation-notes.md | 3 ++-
-- ...ain-verification-and-backlog-update_requirements-checklist.md | 3 ++-
-- ...2-eod-main-verification-and-backlog-update_validation-lane.md | 2 +-
-- 5 files changed, 12 insertions(+), 8 deletions(-)
-\ No newline at end of file
-+docs_build/dev/reports/codex_changed_files.txt | Unmerged
-+ docs_build/dev/reports/codex_changed_files.txt |  14 +-
-+ docs_build/dev/reports/codex_review.diff       | Unmerged
-+ docs_build/dev/reports/codex_review.diff       | 253 +++++++++++++++++++++++++
-+ 2 files changed, 266 insertions(+), 1 deletion(-)
-\ No newline at end of file
-diff --git a/package.json b/package.json
-index 72c3c9c32..f9f6eef65 100644
---- a/package.json
-+++ b/package.json
-@@ -20,6 +20,7 @@
-     "test:lane:game-hub": "node ./scripts/run-targeted-test-lanes.mjs --lane game-hub",
-     "test:lane:tool-runtime": "node ./scripts/run-targeted-test-lanes.mjs --lane tool-runtime",
-     "test:lane:game-runtime": "node ./scripts/run-targeted-test-lanes.mjs --lane game-runtime",
-+    "test:service:runtime": "node ./scripts/run-node-test-files.mjs tests/engine/RuntimeTickLoop.test.mjs tests/replay/ReplaySystem.test.mjs tests/dev-runtime/ServerApiClientStandardization.test.mjs tests/engine/RuntimeEventSystem.test.mjs tests/engine/RuntimeTriggerProcessing.test.mjs tests/engine/RuntimeActionSystem.test.mjs tests/final/FinalSystems.test.mjs",
-     "test:lane:integration": "node ./scripts/run-targeted-test-lanes.mjs --lane integration",
-     "test:lane:engine-src": "node ./scripts/run-targeted-test-lanes.mjs --lane engine-src",
-     "test:lane:samples": "node ./scripts/run-targeted-test-lanes.mjs --lane samples --include-samples",
-diff --git a/src/engine/replay/ReplayTimeline.js b/src/engine/replay/ReplayTimeline.js
-index b4d0f1cc5..105ad6153 100644
---- a/src/engine/replay/ReplayTimeline.js
-+++ b/src/engine/replay/ReplayTimeline.js
-@@ -8,11 +8,12 @@ import { asNonNegativeInteger, asPositiveInteger } from "../../shared/math/numbe
- import {
-   SHARED_REPLAY_TIMELINE_DEFAULT_WINDOW_FRAMES,
- } from "../../shared/contracts/replayContracts.js";
-+import { cloneRuntimeValue } from "../../shared/runtime/snapshotClone.js";
-
- function cloneEntry(entry) {
-   return {
-     frameId: entry.frameId,
--    snapshot: structuredClone(entry.snapshot),
-+    snapshot: cloneRuntimeValue(entry.snapshot),
-   };
- }
-
-@@ -30,7 +31,7 @@ class ReplayTimeline {
-     const normalizedFrameId = asNonNegativeInteger(frameId, this.entries.length);
-     const entry = {
-       frameId: normalizedFrameId,
--      snapshot: structuredClone(snapshot),
-+      snapshot: cloneRuntimeValue(snapshot),
-     };
-     this.entries.push(entry);
-     this.pruneOldSnapshots();
-@@ -88,7 +89,7 @@ class ReplayTimeline {
-       for (let i = 0; i < snapshots.length; i += 1) {
-         nextEntries.push({
-           frameId: normalizedFrameId + i,
--          snapshot: structuredClone(snapshots[i]),
-+          snapshot: cloneRuntimeValue(snapshots[i]),
-         });
-       }
-     }
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-branch-validation.md b/docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-branch-validation.md
-index 946f30b6e..686cff59b 100644
---- a/docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-branch-validation.md
-+++ b/docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-branch-validation.md
-@@ -2,12 +2,13 @@
-
- | Gate | Status | Evidence |
- | --- | --- | --- |
--| Checkout to `main` before work | PASS | `git switch main` completed. |
--| Pull latest before work | PASS | `git pull --ff-only` reported up to date. |
-+| Recovery checkout to `main` before repair | PASS | `git checkout main` completed before repair. |
-+| Pull latest before repair | PASS | `git pull --ff-only` fast-forwarded `main` to `7bdcdfed1`. |
- | Current branch after checkout/pull | PASS | `main` |
- | Worktree before branch | PASS | Clean |
- | Local/origin sync before branch | PASS | `0 0` |
- | Work branch | PASS | `PR_26175_DELTA_006-page-service-test-lanes` |
-+| Rebase onto updated `main` | PASS | Rebased branch onto `main` at `7bdcdfed1`. |
- | Team ownership | PASS | Team Delta owns Runtime, Shared JS, API clients, Event systems, Performance, technical debt remediation, and runtime test coverage. |
- | Scope boundary | PASS | Runtime service command plus replay clone fallback fix only. |
- | Project Instructions read | PASS | Every file under `docs_build/dev/ProjectInstructions/` was read before implementation. |
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-requirement-checklist.md b/docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-requirement-checklist.md
-index 441cd1b7b..e83d62f0d 100644
---- a/docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-requirement-checklist.md
-+++ b/docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-requirement-checklist.md
-@@ -16,6 +16,7 @@
- | No browser-owned product data | PASS | No browser storage/product data contract changed. |
- | No fake-login, MEM DB, local-mem, silent fallback, or hidden defaults | PASS | No auth or data source fallback changed. |
- | Required reports and ZIP | PASS | Report packet, Codex artifacts, and repo-structured ZIP are included. |
-+| Recovery rebase from current main | PASS | Branch repaired on top of `main` at `7bdcdfed1`. |
-
- ## Compatibility Notes
-
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-validation.md b/docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-validation.md
-index 8501dfd2c..d89f2dc61 100644
---- a/docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-validation.md
-+++ b/docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-validation.md
-@@ -16,10 +16,10 @@ git diff --check
- | Command | Status |
- | --- | --- |
- | `node --check src/engine/replay/ReplayTimeline.js` | PASS |
--| `npm run test:service:runtime` | PASS |
-+| `npm run test:service:runtime` | PASS - 7/7 targeted Node test files passed after rebase. |
- | Package command assertion | PASS |
- | Delta harness file absence check | PASS |
--| Team-specific command grep | PASS - no matches |
-+| Team-specific command grep | PASS - no matches in package scripts, scripts, or replay source. |
- | `git diff --check` | PASS |
-
- ## Runtime Service Coverage
-diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index d8bbcb21a..46a9f33e3 100644
---- a/docs_build/dev/reports/codex_changed_files.txt
-+++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,20 +1,13 @@
- # git status --short
--A  docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-branch-validation.md
--A  docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-manual-validation-notes.md
--A  docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-requirement-checklist.md
--A  docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-validation.md
--A  docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes.md
--UU docs_build/dev/reports/codex_changed_files.txt
--UU docs_build/dev/reports/codex_review.diff
--M  package.json
--M  src/engine/replay/ReplayTimeline.js
-+M docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-branch-validation.md
-+ M docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-requirement-checklist.md
-+ M docs_build/dev/reports/PR_26175_DELTA_006-page-service-test-lanes-validation.md
-
- # git ls-files --others --exclude-standard
- (no output)
-
- # git diff --stat
--docs_build/dev/reports/codex_changed_files.txt | Unmerged
-- docs_build/dev/reports/codex_changed_files.txt |  14 +-
-- docs_build/dev/reports/codex_review.diff       | Unmerged
-- docs_build/dev/reports/codex_review.diff       | 253 +++++++++++++++++++++++++
-- 2 files changed, 266 insertions(+), 1 deletion(-)
-\ No newline at end of file
-+.../PR_26175_DELTA_006-page-service-test-lanes-branch-validation.md  | 5 +++--
-+ ..._26175_DELTA_006-page-service-test-lanes-requirement-checklist.md | 1 +
-+ .../reports/PR_26175_DELTA_006-page-service-test-lanes-validation.md | 4 ++--
-+ 3 files changed, 6 insertions(+), 4 deletions(-)
-\ No newline at end of file
