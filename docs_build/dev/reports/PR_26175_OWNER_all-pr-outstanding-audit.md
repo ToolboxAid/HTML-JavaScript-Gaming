@@ -1,0 +1,308 @@
+# PR_26175_OWNER_all-pr-outstanding-audit
+
+## MAIN_VERIFY
+- Current branch: `main`
+- Current main commit: `9c01aec6d0c0cf7abd2a74bbe70d73ec7ce7958a` (`9c01aec6d`)
+- Worktree clean/dirty: `clean before this report was created; currently dirty by this report only`
+- Local/origin sync: `0	0`
+- Main verification result: PASS. Commit is `9c01aec6d` or newer.
+
+## Summary Counts
+- Open non-draft PRs: 0
+- Draft PRs: 0
+- Closed-unmerged PRs: 74
+- Local branches not merged into `main`: 16
+- Remote branches not merged into `origin/main`: 80
+- Local stashes: 1
+
+## Open PRs Grouped By Team
+- None. Recommendation: **hold**; no open non-draft PR needs merge/close action.
+
+## Draft PRs Grouped By Team
+- None. Recommendation: **hold**; no draft PR needs action.
+
+## Closed-Unmerged PRs Grouped By Team
+Closed-unmerged PRs are already closed on GitHub. The recommendation is **hold** unless the owner explicitly asks to rebuild or reopen one.
+### Team Alfa
+- [ ] #145 [PR_26175_ALFA_014: Alfa batch D Idea Board polish](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/145) | head `PR_26175_ALFA_014-alfa-batch-d-idea-board-polish` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #144 [PR_26175_ALFA_013: Alfa batch C Game Hub interactions](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/144) | head `PR_26175_ALFA_013-alfa-batch-c-game-hub-interactions` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #143 [PR_26175_ALFA_012: Alfa batch B parent/child tables](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/143) | head `PR_26175_ALFA_012-alfa-batch-b-parent-child-tables` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #142 [PR_26175_ALFA_011: Alfa batch A foundation](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/142) | head `PR_26175_ALFA_011-alfa-batch-a-foundation` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #137 [PR_26175_ALFA_010: status bar replacement review](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/137) | head `PR_26175_ALFA_010-status-bar-replacement-review` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #135 [PR_26175_ALFA_010-game-journey-progress-context-audit](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/135) | head `codex/pr-26175-alfa-010-game-journey-progress-context-audit` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #128 [[codex] PR_26175_ALFA_007 game hub project readonly proof](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/128) | head `codex/pr-26175-alfa-007-game-hub-project-readonly-proof` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #120 [[codex] PR_26175_ALFA_003 toolbox status bar single row polish](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/120) | head `codex/pr-26175-alfa-003-toolbox-status-bar-single-row-polish` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #118 [PR_26174_ALFA_EOD-final-closeout](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/118) | head `pr/26174-ALFA-EOD-final-closeout` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #117 [PR_26174_ALFA_EOD-workstream-closeout](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/117) | head `pr/26174-ALFA-EOD-workstream-closeout` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #116 [PR_26174_ALFA_022-idea-board-status-dropdown-fix](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/116) | head `pr/26174-ALFA-022-idea-board-status-dropdown-fix` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #115 [PR_26174_ALFA_021-idea-board-status-filter-table-polish](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/115) | head `pr/26174-ALFA-021-idea-board-status-filter-table-polish` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #114 [PR_26174_ALFA_020-game-hub-idea-board-cleanup](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/114) | head `pr/26174-ALFA-020-game-hub-idea-board-cleanup` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #113 [PR_26174_ALFA_019-game-hub-selected-button-and-crew-label](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/113) | head `pr/26174-ALFA-019-game-hub-selected-button-and-crew-label` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #112 [PR_26174_ALFA_018-game-selection-button-state](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/112) | head `pr/26174-ALFA-018-game-selection-button-state` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #111 [PR_26174_ALFA_017-game-hub-guest-save-and-crew-cleanup](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/111) | head `pr/26174-ALFA-017-game-hub-guest-save-and-crew-cleanup` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #110 [PR_26174_ALFA_016-game-hub-row-edit-add-selected-state](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/110) | head `pr/26174-ALFA-016-game-hub-row-edit-add-selected-state` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #109 [PR_26174_ALFA_015-game-hub-actions-and-setup-cleanup](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/109) | head `pr/26174-ALFA-015-game-hub-actions-and-setup-cleanup` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #108 [PR_26174_ALFA_014-game-hub-parent-columns-center](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/108) | head `pr/26174-ALFA-014-game-hub-parent-columns-center` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #107 [PR_26174_ALFA_013-game-hub-game-row-child-rows](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/107) | head `pr/26174-ALFA-013-game-hub-game-row-child-rows` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #106 [PR_26174_ALFA_012-game-hub-parent-child-final-validation](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/106) | head `pr/26174-ALFA-012-game-hub-parent-child-final-validation` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #105 [PR_26174_ALFA_011-game-hub-readiness-output-child-table](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/105) | head `pr/26174-ALFA-011-game-hub-readiness-output-child-table` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #104 [PR_26174_ALFA_010-game-hub-source-idea-child-table-polish](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/104) | head `pr/26174-ALFA-010-game-hub-source-idea-child-table-polish` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #103 [PR_26174_ALFA_009-game-hub-parent-child-table-layout](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/103) | head `pr/26174-ALFA-009-game-hub-parent-child-table-layout` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #102 [PR_26174_ALFA_008-alpha-stack-final-validation](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/102) | head `pr/26174-ALFA-008-alpha-stack-final-validation` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #101 [PR_26174_ALFA_007-game-journey-count-ui-polish](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/101) | head `pr/26174-ALFA-007-game-journey-count-ui-polish` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #100 [PR_26174_ALFA_006-game-hub-empty-and-error-states](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/100) | head `pr/26174-ALFA-006-game-hub-empty-and-error-states` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #99 [PR_26174_ALFA_005-idea-project-validation-polish](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/99) | head `pr/26174-ALFA-005-idea-project-validation-polish` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #98 [PR_26174_ALFA_004-game-hub-progress-count-model](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/98) | head `pr/26174-ALFA-004-game-hub-progress-count-model` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #97 [PR_26174_ALFA_003-game-hub-journey-bootstrap](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/97) | head `pr/26174-ALFA-003-game-hub-journey-bootstrap` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #96 [PR_26174_ALFA_002-game-hub-project-intake-display](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/96) | head `pr/26174-ALFA-002-game-hub-project-intake-display` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #41 [PR_26171_ALPHA_048 idea project journey execution flow](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/41) | head `pr/26171-ALPHA-048-idea-project-journey-execution-flow` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #26 [PR_26171_ALPHA_046 game hub table standard rebuild](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/26) | head `pr/26171-ALPHA-046-game-hub-table-standard-rebuild` | closed 2026-06-24 | Recommendation: **hold**.
+### Team Bravo
+- [ ] #134 [PR_26175_BRAVO_001: add PR 003 Messages code review](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/134) | head `PR_26175_BRAVO_001-pr-003-messages-emotion-profiles-code-review` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #3 [Pr/PR 26171 006 message emotion profile management](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/3) | head `pr/PR_26171_006-message-emotion-profile-management` | closed 2026-06-24 | Recommendation: **hold**.
+### Team Charlie
+- [ ] #43 [PR_26171_GAMMA_021-sqlite-active-runtime-removal-plan](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/43) | head `team/GAMMA/admin` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #35 [PR_26171_GAMMA_010-replace-main-branch-guard-with-workstream-guard](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/35) | head `pr/26171-GAMMA-010-replace-main-branch-guard-with-workstream-guard` | closed 2026-06-22 | Recommendation: **hold**.
+- [ ] #34 [PR_26171_GAMMA_009-github-authoritative-workstream-sync](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/34) | head `pr/26171-GAMMA-009-github-authoritative-workstream-sync` | closed 2026-06-22 | Recommendation: **hold**.
+- [ ] #30 [PR_26171_GAMMA_006-sqlite-deprecation-audit](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/30) | head `pr/26171-GAMMA-006-sqlite-deprecation-audit` | closed 2026-06-24 | Recommendation: **hold**.
+### Team OWNER
+- [ ] #154 [PR_26175_OWNER_054: add Alfa consolidated batch closeout plan](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/154) | head `PR_26175_OWNER_054-alfa-consolidated-batch-closeout-plan` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #141 [PR_26175_OWNER_053: add Alfa stack resolution plan](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/141) | head `PR_26175_OWNER_053-alfa-stack-resolution-plan` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #140 [PR_26175_OWNER_051: document cleanup blocker resolution plan](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/140) | head `PR_26175_OWNER_051-cleanup-blocker-resolution-plan` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #136 [PR_26175_OWNER_048: add superseded PR closure decision log](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/136) | head `PR_26175_OWNER_048-close-superseded-pr-decision-log` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #132 [PR_26175_OWNER_047: add targeted PR action decision report](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/132) | head `PR_26175_OWNER_047-targeted-pr-action-decision-report` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #127 [[codex] PR_26175_OWNER_045 expanded GitHub PR inventory report](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/127) | head `PR_26175_OWNER_045-github-pr-expanded-inventory-report` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #125 [[codex] PR_26175_OWNER_044 full GitHub PR inventory report](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/125) | head `PR_26175_OWNER_044-github-pr-full-inventory-report` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #124 [[codex] PR_26175_OWNER_043 team registry Gamma Delta alignment](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/124) | head `PR_26175_OWNER_043-team-registry-gamma-delta-alignment` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #123 [[codex] PR_26175_OWNER_042 GitHub PR inventory audit](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/123) | head `PR_26175_OWNER_042-github-pr-inventory-audit` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #85 [[codex] Add Project Instructions governance addendums](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/85) | head `codex/canonical-repository-structure-instructions` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #80 [PR_26172_OWNER_029-postgres-only-governance](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/80) | head `pr/26172-OWNER-029-postgres-only-governance` | closed 2026-06-22 | Recommendation: **hold**.
+- [ ] #74 [PR_26172_OWNER_025-active-registry-main-reset](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/74) | head `pr/26172-OWNER-025-active-registry-main-reset` | closed 2026-06-22 | Recommendation: **hold**.
+- [ ] #73 [PR_26172_OWNER_024-active-team-registry](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/73) | head `pr/26172-OWNER-024-active-team-registry` | closed 2026-06-22 | Recommendation: **hold**.
+- [ ] #71 [PR_26172_OWNER_022-branch-persistence-governance](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/71) | head `pr/26172-OWNER-022-branch-persistence-governance` | closed 2026-06-22 | Recommendation: **hold**.
+- [ ] #70 [PR_26172_OWNER_021-projectinstructions-release-gate](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/70) | head `pr/26172-OWNER-021-projectinstructions-release-gate` | closed 2026-06-22 | Recommendation: **hold**.
+- [ ] #69 [PR_26172_OWNER_020-owner-branch-lock-governance](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/69) | head `pr/26172-OWNER-020-owner-branch-lock-governance` | closed 2026-06-22 | Recommendation: **hold**.
+- [ ] #68 [PR_26172_OWNER_019-day-work-eod-merge-governance](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/68) | head `pr/26172-OWNER-019-day-work-eod-merge-governance` | closed 2026-06-22 | Recommendation: **hold**.
+- [ ] #67 [PR_26172_OWNER_018-nato-team-normalization](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/67) | head `pr/26172-OWNER-018-nato-team-normalization` | closed 2026-06-22 | Recommendation: **hold**.
+- [ ] #65 [PR_26172_OWNER_016-all-team-codex-execution-and-eod-merge-rule](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/65) | head `pr/26172-OWNER-016-all-team-codex-execution-and-eod-merge-rule` | closed 2026-06-22 | Recommendation: **hold**.
+- [ ] #64 [PR_26172_OWNER_015-nato-team-registry-and-codex-execution-method](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/64) | head `pr/26172-OWNER-015-nato-team-registry-and-codex-execution-method` | closed 2026-06-22 | Recommendation: **hold**.
+- [ ] #63 [PR_26172_OWNER_014-owner-team-start-command](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/63) | head `pr/26172-OWNER-014-owner-team-start-command` | closed 2026-06-22 | Recommendation: **hold**.
+- [ ] #62 [PR_26172_OWNER_013-team-release-readiness-gate](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/62) | head `pr/26172-OWNER-013-team-release-readiness-gate` | closed 2026-06-22 | Recommendation: **hold**.
+- [ ] #61 [PR_26172_OWNER_012-initial-team-assignments](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/61) | head `pr/26172-OWNER-012-initial-team-assignments` | closed 2026-06-22 | Recommendation: **hold**.
+- [ ] #60 [PR_26172_OWNER_011-backlog-master-game-journey-population](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/60) | head `pr/26172-OWNER-011-backlog-master-game-journey-population` | closed 2026-06-22 | Recommendation: **hold**.
+- [ ] #58 [PR_26172_MASTER_009-deprecation-workflow](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/58) | head `pr/26172-MASTER-009-deprecation-workflow` | closed 2026-06-22 | Recommendation: **hold**.
+- [ ] #57 [PR_26172_MASTER_008-build-path-tile-overlays](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/57) | head `pr/26172-MASTER-008-build-path-tile-overlays` | closed 2026-06-22 | Recommendation: **hold**.
+- [ ] #56 [PR_26172_MASTER_007-build-path-status-sync](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/56) | head `pr/26172-MASTER-007-build-path-status-sync` | closed 2026-06-22 | Recommendation: **hold**.
+- [ ] #55 [PR_26172_MASTER_005-branch-main-scope-governance](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/55) | head `pr/26172-MASTER-005-branch-main-scope-governance` | closed 2026-06-22 | Recommendation: **hold**.
+- [ ] #54 [PR_26172_MASTER_004-team-assignments-governance](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/54) | head `pr/26172-MASTER-004-team-assignments-governance` | closed 2026-06-22 | Recommendation: **hold**.
+- [ ] #53 [PR_26172_MASTER_003-backlog-master-governance](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/53) | head `pr/26172-MASTER-003-backlog-master-governance` | closed 2026-06-22 | Recommendation: **hold**.
+- [ ] #52 [PR_26172_MASTER_002-preservation-and-archive-governance](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/52) | head `pr/26172-MASTER-002-preservation-and-archive-governance` | closed 2026-06-22 | Recommendation: **hold**.
+- [ ] #51 [PR_26172_MASTER_001-project-instructions-readme-and-root](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/51) | head `pr/26172-MASTER-001-project-instructions-readme-and-root` | closed 2026-06-24 | Recommendation: **hold**.
+- [ ] #33 [PR_26171_GAMMA_008-sequential-queue-branch-governance-alignment](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/33) | head `pr/26171-GAMMA-008-sequential-queue-branch-governance-alignment` | closed 2026-06-22 | Recommendation: **hold**.
+- [ ] #29 [PR_26171_GAMMA_005-all-team-sequential-queue-governance](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/29) | head `pr/26171-GAMMA-005-all-team-sequential-queue-governance` | closed 2026-06-22 | Recommendation: **hold**.
+- [ ] #27 [PR_26171_GAMMA_004-sequential-gamma-queue-governance](https://github.com/ToolboxAid/HTML-JavaScript-Gaming/pull/27) | head `pr/26171-GAMMA-004-sequential-gamma-queue-governance` | closed 2026-06-22 | Recommendation: **hold**.
+
+## Branches Not Merged Into Main Grouped By Team
+No branch deletion was performed. Remote branch cleanup should remain owner-approved because many branches are retained historical PR heads.
+### Team Alfa
+Local:
+- `codex/pr-26171-033-idea-board-inline-accordion-cell` | merged PR #8 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+- `codex/pr-26171-034-idea-board-chevron-text-style` | merged PR #9 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+- `codex/pr-26171-035-idea-board-inline-notes-no-heading` | merged PR #10 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+- `codex/pr-26171-037-idea-board-action-button-alignment` | merged PR #11 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+- `codex/pr-26171-038-idea-board-note-indent-alignment` | merged PR #12 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+- `codex/pr-26171-040-idea-board-production-copy-cleanup` | merged PR #15 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+- `codex/pr-26171-041-idea-board-production-polish` | merged PR #17 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+- `codex/pr-26171-042-idea-board-navigation-fallback-cleanup` | merged PR #19 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+- `codex/pr-26175-alfa-003-toolbox-status-bar-single-row-polish` | closed-unmerged PR #120 | Recommendation: **needs user decision**.
+- `codex/pr-26175-alfa-007-game-hub-project-readonly-proof` | closed-unmerged PR #128 | Recommendation: **needs user decision**.
+- `codex/pr-26175-alfa-010-game-journey-progress-context-audit` | closed-unmerged PR #135 | Recommendation: **needs user decision**.
+- `pr/26171-ALPHA-046-game-hub-table-standard-rebuild` | closed-unmerged PR #26 | Recommendation: **needs user decision**.
+- `pr/26171-ALPHA-048-idea-project-journey-execution-flow` | closed-unmerged PR #41 | Recommendation: **needs user decision**.
+Remote:
+- `origin/PR_26175_ALFA_010-status-bar-replacement-review` | closed-unmerged PR #137 | Recommendation: **needs user decision**.
+- `origin/PR_26175_ALFA_011-alfa-batch-a-foundation` | closed-unmerged PR #142 | Recommendation: **needs user decision**.
+- `origin/PR_26175_ALFA_012-alfa-batch-b-parent-child-tables` | closed-unmerged PR #143 | Recommendation: **needs user decision**.
+- `origin/PR_26175_ALFA_013-alfa-batch-c-game-hub-interactions` | closed-unmerged PR #144 | Recommendation: **needs user decision**.
+- `origin/PR_26175_ALFA_014-alfa-batch-d-idea-board-polish` | closed-unmerged PR #145 | Recommendation: **needs user decision**.
+- `origin/codex/pr-26171-033-idea-board-inline-accordion-cell` | merged PR #8 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+- `origin/codex/pr-26171-034-idea-board-chevron-text-style` | merged PR #9 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+- `origin/codex/pr-26171-035-idea-board-inline-notes-no-heading` | merged PR #10 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+- `origin/codex/pr-26171-037-idea-board-action-button-alignment` | merged PR #11 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+- `origin/codex/pr-26171-038-idea-board-note-indent-alignment` | merged PR #12 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+- `origin/codex/pr-26171-040-idea-board-production-copy-cleanup` | merged PR #15 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+- `origin/codex/pr-26171-041-idea-board-production-polish` | merged PR #17 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+- `origin/codex/pr-26171-042-idea-board-navigation-fallback-cleanup` | merged PR #19 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+- `origin/codex/pr-26175-alfa-003-toolbox-status-bar-single-row-polish` | closed-unmerged PR #120 | Recommendation: **needs user decision**.
+- `origin/codex/pr-26175-alfa-007-game-hub-project-readonly-proof` | closed-unmerged PR #128 | Recommendation: **needs user decision**.
+- `origin/codex/pr-26175-alfa-010-game-journey-progress-context-audit` | closed-unmerged PR #135 | Recommendation: **needs user decision**.
+- `origin/pr/26171-ALPHA-046-game-hub-table-standard-rebuild` | closed-unmerged PR #26 | Recommendation: **needs user decision**.
+- `origin/pr/26171-ALPHA-048-idea-project-journey-execution-flow` | closed-unmerged PR #41 | Recommendation: **needs user decision**.
+### Team Bravo
+Local:
+- `codex/pr-26171-069-message-tts-profile-contract-alignment` | merged PR #23 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+Remote:
+- `origin/PR_26175_BRAVO_001-pr-003-messages-emotion-profiles-code-review` | closed-unmerged PR #134 | Recommendation: **needs user decision**.
+- `origin/codex/pr-26171-037-text2speech-functional-tool-rebuild` | merged PR #5 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+- `origin/codex/pr-26171-039-text2speech-archived-feature-parity` | remote branch has no matching PR in the fetched PR inventory | Recommendation: **needs user decision**.
+- `origin/codex/pr-26171-041-text2speech-engine-audio-foundation` | remote branch has no matching PR in the fetched PR inventory | Recommendation: **needs user decision**.
+- `origin/codex/pr-26171-069-message-tts-profile-contract-alignment` | merged PR #23 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+- `origin/pr/26171-061-text2speech-engine-audio-feature-parity` | merged PR #18 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+- `origin/pr/26171-065-message-studio-parent-child-table-foundation` | merged PR #20 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+- `origin/pr/26171-067-tts-profile-emotion-table-foundation` | merged PR #21 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+- `origin/pr/26171-BETA-077-tts-profile-parent-child-table` | merged PR #38 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+- `origin/pr/26171-BETA-079-message-studio-parent-child-table-completion` | merged PR #39 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+- `origin/pr/26171-BETA-081-message-playback-through-tts-engine` | merged PR #40 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+- `origin/pr/26171-BETA-083-message-tts-polish-and-dead-code` | merged PR #42 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+- `origin/pr/PR_26171_006-message-emotion-profile-management` | closed-unmerged PR #3 | Recommendation: **needs user decision**.
+- `origin/team/BRAVO/postgres-messages-audit` | remote branch has no matching PR in the fetched PR inventory | Recommendation: **needs user decision**.
+### Team Charlie
+Remote:
+- `origin/pr/26171-GAMMA-006-sqlite-deprecation-audit` | closed-unmerged PR #30 | Recommendation: **needs user decision**.
+- `origin/pr/26171-GAMMA-009-github-authoritative-workstream-sync` | closed-unmerged PR #34 | Recommendation: **needs user decision**.
+- `origin/pr/26171-GAMMA-010-replace-main-branch-guard-with-workstream-guard` | closed-unmerged PR #35 | Recommendation: **needs user decision**.
+- `origin/pr/26171-GAMMA-028-final-sqlite-clean-status-report` | merged PR #50 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+- `origin/team/GAMMA/admin` | merged PR #36 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+### Team OWNER
+Local:
+- `codex/canonical-repository-structure-instructions` | closed-unmerged PR #85 | Recommendation: **needs user decision**.
+- `codex/pr-26171-039-table-first-workspace-governance` | merged PR #13 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+Remote:
+- `origin/PR_26171_001-branch-first-pr-governance` | remote branch has no matching PR in the fetched PR inventory | Recommendation: **needs user decision**.
+- `origin/PR_26175_CHARLIE_006-project-instructions-system-health-infrastructure` | remote branch has no matching PR in the fetched PR inventory | Recommendation: **needs user decision**.
+- `origin/PR_26175_OWNER_042-github-pr-inventory-audit` | closed-unmerged PR #123 | Recommendation: **needs user decision**.
+- `origin/PR_26175_OWNER_043-team-registry-gamma-delta-alignment` | closed-unmerged PR #124 | Recommendation: **needs user decision**.
+- `origin/PR_26175_OWNER_044-github-pr-full-inventory-report` | closed-unmerged PR #125 | Recommendation: **needs user decision**.
+- `origin/PR_26175_OWNER_045-github-pr-expanded-inventory-report` | closed-unmerged PR #127 | Recommendation: **needs user decision**.
+- `origin/PR_26175_OWNER_047-targeted-pr-action-decision-report` | closed-unmerged PR #132 | Recommendation: **needs user decision**.
+- `origin/PR_26175_OWNER_048-close-superseded-pr-decision-log` | closed-unmerged PR #136 | Recommendation: **needs user decision**.
+- `origin/PR_26175_OWNER_051-cleanup-blocker-resolution-plan` | closed-unmerged PR #140 | Recommendation: **needs user decision**.
+- `origin/PR_26175_OWNER_053-alfa-stack-resolution-plan` | closed-unmerged PR #141 | Recommendation: **needs user decision**.
+- `origin/PR_26175_OWNER_054-alfa-consolidated-batch-closeout-plan` | closed-unmerged PR #154 | Recommendation: **needs user decision**.
+- `origin/PR_26175_OWNER_056-final-open-pr-resolution-plan` | merged PR #159 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+- `origin/PR_26175_OWNER_057-final-five-pr-decision-plan` | merged PR #161 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+- `origin/codex/canonical-repository-structure-instructions` | closed-unmerged PR #85 | Recommendation: **needs user decision**.
+- `origin/codex/pr-26171-039-table-first-workspace-governance` | merged PR #13 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+- `origin/pr/26171-GAMMA-004-sequential-gamma-queue-governance` | closed-unmerged PR #27 | Recommendation: **needs user decision**.
+- `origin/pr/26171-GAMMA-005-all-team-sequential-queue-governance` | closed-unmerged PR #29 | Recommendation: **needs user decision**.
+- `origin/pr/26171-GAMMA-008-sequential-queue-branch-governance-alignment` | closed-unmerged PR #33 | Recommendation: **needs user decision**.
+- `origin/pr/26172-BRAVO-text2speech-messages-inventory` | remote branch has no matching PR in the fetched PR inventory | Recommendation: **needs user decision**.
+- `origin/pr/26172-MASTER-001-project-instructions-readme-and-root` | closed-unmerged PR #51 | Recommendation: **needs user decision**.
+- `origin/pr/26172-MASTER-002-preservation-and-archive-governance` | closed-unmerged PR #52 | Recommendation: **needs user decision**.
+- `origin/pr/26172-MASTER-003-backlog-master-governance` | closed-unmerged PR #53 | Recommendation: **needs user decision**.
+- `origin/pr/26172-MASTER-004-team-assignments-governance` | closed-unmerged PR #54 | Recommendation: **needs user decision**.
+- `origin/pr/26172-MASTER-005-branch-main-scope-governance` | closed-unmerged PR #55 | Recommendation: **needs user decision**.
+- `origin/pr/26172-MASTER-007-build-path-status-sync` | closed-unmerged PR #56 | Recommendation: **needs user decision**.
+- `origin/pr/26172-MASTER-008-build-path-tile-overlays` | closed-unmerged PR #57 | Recommendation: **needs user decision**.
+- `origin/pr/26172-MASTER-009-deprecation-workflow` | closed-unmerged PR #58 | Recommendation: **needs user decision**.
+- `origin/pr/26172-OWNER-011-backlog-master-game-journey-population` | closed-unmerged PR #60 | Recommendation: **needs user decision**.
+- `origin/pr/26172-OWNER-012-initial-team-assignments` | closed-unmerged PR #61 | Recommendation: **needs user decision**.
+- `origin/pr/26172-OWNER-013-team-release-readiness-gate` | closed-unmerged PR #62 | Recommendation: **needs user decision**.
+- `origin/pr/26172-OWNER-014-owner-team-start-command` | closed-unmerged PR #63 | Recommendation: **needs user decision**.
+- `origin/pr/26172-OWNER-015-nato-team-registry-and-codex-execution-method` | closed-unmerged PR #64 | Recommendation: **needs user decision**.
+- `origin/pr/26172-OWNER-016-all-team-codex-execution-and-eod-merge-rule` | closed-unmerged PR #65 | Recommendation: **needs user decision**.
+- `origin/pr/26172-OWNER-018-nato-team-normalization` | closed-unmerged PR #67 | Recommendation: **needs user decision**.
+- `origin/pr/26172-OWNER-019-day-work-eod-merge-governance` | closed-unmerged PR #68 | Recommendation: **needs user decision**.
+- `origin/pr/26172-OWNER-020-owner-branch-lock-governance` | closed-unmerged PR #69 | Recommendation: **needs user decision**.
+- `origin/pr/26172-OWNER-021-projectinstructions-release-gate` | closed-unmerged PR #70 | Recommendation: **needs user decision**.
+- `origin/pr/26172-OWNER-022-branch-persistence-governance` | closed-unmerged PR #71 | Recommendation: **needs user decision**.
+- `origin/pr/26172-OWNER-029-postgres-only-governance` | closed-unmerged PR #80 | Recommendation: **needs user decision**.
+### Unknown / needs owner routing
+Remote:
+- `origin/pr-120` | remote branch has no matching PR in the fetched PR inventory | Recommendation: **needs user decision**.
+- `origin/pr-128` | remote branch has no matching PR in the fetched PR inventory | Recommendation: **needs user decision**.
+- `origin/pr/26171-059-rollback-restore-plan` | merged PR #14 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+- `origin/pr/26171-063-codex-instruction-enforcement-hardening` | merged PR #16 but branch still appears not merged by git ancestry | Recommendation: **hold**.
+
+## PRs Missing Required Reports
+Audit method: searched `docs_build/dev/reports/` on current `main` for PR-specific report, branch validation, requirement checklist, validation lane, and manual validation notes by standard PR key. Historical closed PRs without a standard key are reported as missing the standard report set.
+### Team Alfa
+- #145 `PR_26175_ALFA_014` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #144 `PR_26175_ALFA_013` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #143 `PR_26175_ALFA_012` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #142 `PR_26175_ALFA_011` draft | missing: branch validation, manual validation notes | Recommendation: **hold**.
+- #137 `PR_26175_ALFA_010` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #135 `PR_26175_ALFA_010` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #128 `PR_26175_ALFA_007` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #120 `PR_26175_ALFA_003` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #118 `no standard PR key` draft | missing: standard PR key, PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #117 `no standard PR key` draft | missing: standard PR key, PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #41 `PR_26171_ALPHA_048` closed | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #26 `PR_26171_ALPHA_046` closed | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+### Team Bravo
+- #134 `PR_26175_BRAVO_001` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #3 `no standard PR key` closed | missing: standard PR key, PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+### Team Charlie
+- #43 `PR_26171_GAMMA_021` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #35 `PR_26171_GAMMA_010` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #34 `PR_26171_GAMMA_009` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #30 `PR_26171_GAMMA_006` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+### Team OWNER
+- #154 `PR_26175_OWNER_054` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #141 `PR_26175_OWNER_053` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #140 `PR_26175_OWNER_051` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #136 `PR_26175_OWNER_048` draft | missing: branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #132 `PR_26175_OWNER_047` draft | missing: branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #127 `PR_26175_OWNER_045` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #125 `PR_26175_OWNER_044` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #124 `PR_26175_OWNER_043` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #123 `PR_26175_OWNER_042` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #85 `no standard PR key` draft | missing: standard PR key, PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #80 `PR_26172_OWNER_029` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #74 `PR_26172_OWNER_025` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #73 `PR_26172_OWNER_024` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #71 `PR_26172_OWNER_022` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #70 `PR_26172_OWNER_021` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #69 `PR_26172_OWNER_020` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #68 `PR_26172_OWNER_019` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #67 `PR_26172_OWNER_018` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #65 `PR_26172_OWNER_016` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #64 `PR_26172_OWNER_015` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #63 `PR_26172_OWNER_014` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #62 `PR_26172_OWNER_013` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #61 `PR_26172_OWNER_012` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #60 `PR_26172_OWNER_011` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #58 `PR_26172_MASTER_009` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #57 `PR_26172_MASTER_008` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #56 `PR_26172_MASTER_007` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #55 `PR_26172_MASTER_005` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #54 `PR_26172_MASTER_004` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #53 `PR_26172_MASTER_003` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #52 `PR_26172_MASTER_002` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #51 `PR_26172_MASTER_001` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #33 `PR_26171_GAMMA_008` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #29 `PR_26171_GAMMA_005` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+- #27 `PR_26171_GAMMA_004` draft | missing: PR-specific report, branch validation, requirement checklist, validation lane, manual validation notes | Recommendation: **hold**.
+
+## Local Stashes Or Uncommitted Leftovers Grouped By Likely Team
+### Team OWNER
+- `stash@{0}: On codex/pr-26175-alfa-047-theme-v2-svg-icon-registry: MAIN_VERIFY preserve pre-existing uncommitted OWNER_050 files before main sync` | likely OWNER_050 duplicate docs/report stash | Recommendation: **ignore stale local-only duplicate** unless the user explicitly wants to inspect or drop it.
+Stash file list:
+- `docs_build/dev/PROJECT_INSTRUCTIONS.md`
+- `docs_build/dev/ProjectInstructions/PROJECT_INSTRUCTIONS.md`
+- `docs_build/dev/ProjectInstructions/README.txt`
+- `docs_build/dev/ProjectInstructions/addendums/project_reference_files.md`
+- `docs_build/dev/ProjectInstructions/addendums/release_gate.md`
+- `docs_build/dev/admin-notes/Installs required.txt`
+- `docs_build/dev/admin-notes/Table layout.txt`
+- `docs_build/dev/admin-notes/index.txt`
+- `docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files.md`
+- `docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_branch-validation.md`
+- `docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_manual-validation-notes.md`
+- `docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_requirement-checklist.md`
+- `docs_build/dev/reports/PR_26175_OWNER_050-project-instructions-add-valid-reference-files_validation-lane.md`
+- `project-instructions/addendums/codex-project-instructions-startup.md`
+
+## Recommendations
+- Open PRs: none; no merge action outstanding.
+- Draft PRs: none; no draft close/ready action outstanding.
+- Closed-unmerged PRs: **hold** as historical unless the user chooses a specific PR to rebuild.
+- Remote unmerged branches: **needs user decision** before any cleanup; no deletion performed.
+- Local-only unmerged branches: **ignore stale local-only duplicate** unless the user requests branch cleanup.
+- Local stash `stash@{0}`: **ignore stale local-only duplicate** for now; do not drop without user approval.
+
+## Guardrails Observed
+- No branches were deleted.
+- No PRs were closed.
+- No product files were modified.
+- No feature work was created.
