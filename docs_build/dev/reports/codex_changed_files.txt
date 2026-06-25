@@ -1,9 +1,8 @@
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/PR_26175_OWNER_051-outstanding-pr-audit-report.md
-docs_build/dev/reports/PR_26175_OWNER_051-outstanding-pr-audit-report_branch-validation.md
-docs_build/dev/reports/PR_26175_OWNER_051-outstanding-pr-audit-report_manual-validation-notes.md
-docs_build/dev/reports/PR_26175_OWNER_051-outstanding-pr-audit-report_requirement-checklist.md
-docs_build/dev/reports/PR_26175_OWNER_051-outstanding-pr-audit-report_validation-lane.md
-docs_build/dev/reports/PR_26175_OWNER_all-pr-outstanding-audit.md
-docs_build/pr/PLAN_PR_26175_OWNER_051-outstanding-pr-audit-report.md
+docs_build/dev/reports/PR_26175_OWNER_052-project-work-inventory.md
+docs_build/dev/reports/PR_26175_OWNER_052-project-work-inventory_branch-validation.md
+docs_build/dev/reports/PR_26175_OWNER_052-project-work-inventory_manual-validation-notes.md
+docs_build/dev/reports/PR_26175_OWNER_052-project-work-inventory_requirement-checklist.md
+docs_build/dev/reports/PR_26175_OWNER_052-project-work-inventory_validation-lane.md
+docs_build/pr/PLAN_PR_26175_OWNER_052-project-work-inventory.md
