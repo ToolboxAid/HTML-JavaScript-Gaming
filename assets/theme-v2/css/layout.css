@@ -196,7 +196,6 @@ div {
   min-width: var(--space-0)
 }
 
-body.tool-focus-mode .site-header,
 body.tool-focus-mode .page-title,
 body.tool-focus-mode .footer {
   display: none !important
@@ -311,6 +310,10 @@ body.tool-focus-mode:has(.tool-workspace--fullscreen-chrome) .site-header {
   overflow: visible;
   position: fixed;
   z-index: var(--z-index-lg)
+}
+
+body.tool-focus-mode .site-header > .container.nav {
+  display: none !important
 }
 
 body.tool-focus-mode:has(.tool-workspace--fullscreen-chrome) .footer {

@@ -75,8 +75,7 @@ details.vertical-accordion summary::-webkit-details-marker {
 }
 
 .horizontal-accordion-toggle__icon,
-.vertical-accordion__chevron,
-.tool-display-mode__chevron {
+.vertical-accordion__chevron {
   --accordion-button-border: var(--line);
   --accordion-button-background: var(--panel-soft);
   --accordion-button-color: var(--gold);
@@ -109,8 +108,7 @@ details.vertical-accordion summary::-webkit-details-marker {
   margin-left: auto
 }
 
-.vertical-accordion__chevron .theme-icon,
-.tool-display-mode__chevron .theme-icon {
+.vertical-accordion__chevron .theme-icon {
   height: var(--space-14);
   width: var(--space-14)
 }

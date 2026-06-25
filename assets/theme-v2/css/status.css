@@ -135,11 +135,11 @@ body.tool-focus-mode .toolbox-status-bar {
 
 body.tool-focus-mode {
   --toolbox-status-bar-height: var(--space-52);
-  --toolbox-status-top-reserve: var(--space-0)
+  --toolbox-status-top-reserve: var(--space-78)
 }
 
 body.tool-focus-mode:has(.platform-banner) {
-  --toolbox-status-top-reserve: var(--space-52)
+  --toolbox-status-top-reserve: var(--space-78)
 }
 
 body.tool-focus-mode .tool-workspace {
@@ -163,6 +163,10 @@ body.tool-focus-mode .tool-center-panel {
   border-bottom: var(--border-standard);
   background: var(--panel-overlay-strong);
   color: var(--text)
+}
+
+body.tool-focus-mode [data-platform-banner-placement="footer"] {
+  display: none !important
 }
 
 .platform-banner__inner {

@@ -274,11 +274,7 @@ body.tool-focus-mode .tool-center-panel:has(>details.vertical-accordion)>p {
   border-radius: var(--radius-lg);
   background: var(--panel);
   box-shadow: var(--shadow-lg);
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-12)
+  overflow: hidden
 }
 
 .tool-display-mode summary {
@@ -286,12 +282,15 @@ body.tool-focus-mode .tool-center-panel:has(>details.vertical-accordion)>p {
   font-weight: var(--font-weight-heavy);
   cursor: pointer;
   list-style: none;
-  padding: var(--space-10) var(--space-44) var(--space-10) var(--space-10);
+  padding: var(--space-10);
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: var(--space-10);
-  flex: 0 0 auto
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: var(--space-8) var(--space-10);
+  min-width: var(--space-0);
+  width: 100%
 }
 
 .tool-display-mode summary::-webkit-details-marker {
@@ -299,20 +298,17 @@ body.tool-focus-mode .tool-center-panel:has(>details.vertical-accordion)>p {
 }
 
 .tool-display-mode__mode-icon {
-  color: var(--cyan)
-}
-
-.tool-display-mode__chevron {
-  position: absolute;
-  right: var(--space-12);
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: var(--z-index-sm)
+  color: var(--gold);
+  flex: 0 0 auto;
+  height: calc(var(--icon-size-sm) * 2.6);
+  margin-left: auto;
+  width: calc(var(--icon-size-sm) * 2.6)
 }
 
 .tool-display-mode__badge {
-  width: 64px;
-  height: 64px;
+  flex: 0 0 auto;
+  width: 128px;
+  height: 128px;
   object-fit: contain;
   object-position: center;
   border: 0;
@@ -320,71 +316,19 @@ body.tool-focus-mode .tool-center-panel:has(>details.vertical-accordion)>p {
   background: transparent
 }
 
-.tool-display-mode__body {
-  display: grid;
-  grid-template-columns: auto minmax(var(--space-0), 1fr);
-  grid-template-rows: auto auto;
-  align-items: center;
-  column-gap: var(--space-15);
-  row-gap: var(--space-8);
-  min-width: var(--space-0);
-  padding: var(--space-10) var(--space-14) var(--space-10) var(--space-0)
-}
-
-.tool-display-mode__identity-row {
-  display: contents
-}
-
-.tool-display-mode__navigation-row {
-  grid-column: 2;
-  grid-row: 2;
-  display: flex;
-  align-items: center;
-  gap: var(--space-14);
-  flex-wrap: wrap
-}
-
-.tool-display-mode__navigation-link {
-  align-items: center;
-  color: var(--text);
-  display: inline-flex;
-  gap: var(--space-6);
-  line-height: var(--line-height-tight)
-}
-
-.tool-display-mode__navigation-link:hover,
-.tool-display-mode__navigation-link:focus-visible {
-  color: var(--gold)
-}
-
-.tool-display-mode__navigation-link--disabled {
-  color: var(--muted)
-}
-
-.tool-display-mode__navigation-icon {
-  color: currentColor
-}
-
 .tool-display-mode__character {
-  grid-column: 1;
-  grid-row: 1 / span 2;
-  width: 225px;
-  height: 127px;
+  width: min(224px, 100%);
+  height: auto;
   object-fit: contain;
   display: block;
-  flex: 0 0 auto
+  flex: 0 0 min(224px, 100%);
+  min-width: min(144px, 100%)
 }
 
 .tool-display-mode__fullscreen-name {
-  display: none;
-  white-space: nowrap
-}
-
-.tool-display-mode__description {
-  grid-column: 2;
-  grid-row: 1;
-  color: var(--gold);
-  font-weight: var(--font-weight-heavy);
+  display: inline-flex;
+  flex: 1 1 4rem;
+  min-width: var(--space-0);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap
@@ -393,17 +337,21 @@ body.tool-focus-mode .tool-center-panel:has(>details.vertical-accordion)>p {
 body.tool-focus-mode .tool-display-mode {
   border-color: var(--line);
   background: var(--panel);
-  box-shadow: var(--shadow-lg);
-  justify-content: center
-}
-
-body.tool-focus-mode .tool-display-mode__fullscreen-name {
-  display: inline
+  box-shadow: var(--shadow-lg)
 }
 
 body.tool-focus-mode .tool-display-mode__badge {
-  width: 32px;
-  height: 32px
+  width: 64px;
+  height: 64px
+}
+
+body.tool-focus-mode .tool-display-mode__character {
+  display: none
+}
+
+body.tool-focus-mode .tool-display-mode__fullscreen-name {
+  justify-content: center;
+  text-align: center
 }
 
 .side-menu a {
