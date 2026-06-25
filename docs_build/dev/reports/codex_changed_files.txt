@@ -1,31 +1,26 @@
-# git diff --name-only pr/26177-CHARLIE-034-startup-runtime-report-cleanup --
-assets/theme-v2/css/status.css
-assets/theme-v2/css/tables.css
-docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish.md
-docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_branch-validation.md
-docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_manual-validation-notes.md
-docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_requirements-checklist.md
-docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_validation-lane.md
-docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/coverage_changed_js_guardrail.txt
-docs_build/dev/reports/playwright_v8_coverage_report.txt
-
 # git status --short
- M docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish.md
+M docs_build/dev/reports/codex_changed_files.txt
  M docs_build/dev/reports/codex_review.diff
- M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+ M package.json
+ M src/engine/replay/ReplayTimeline.js
+ M tests/replay/ReplayTimeline.test.mjs
+?? docs_build/dev/reports/PR_26175_DELTA_008-replay-clone-service-tests.md
+?? docs_build/dev/reports/PR_26175_DELTA_008-replay-clone-service-tests_branch-validation.md
+?? docs_build/dev/reports/PR_26175_DELTA_008-replay-clone-service-tests_manual-validation-notes.md
+?? docs_build/dev/reports/PR_26175_DELTA_008-replay-clone-service-tests_requirements-checklist.md
+?? docs_build/dev/reports/PR_26175_DELTA_008-replay-clone-service-tests_validation-lane.md
 
-# git diff --stat pr/26177-CHARLIE-034-startup-runtime-report-cleanup --
- assets/theme-v2/css/status.css                     |  52 ++
- assets/theme-v2/css/tables.css                     |  37 ++
- ...PR_26177_CHARLIE_035-system-health-ui-polish.md |  25 +
- ...35-system-health-ui-polish_branch-validation.md |  14 +
- ...tem-health-ui-polish_manual-validation-notes.md |   8 +
- ...stem-health-ui-polish_requirements-checklist.md |  12 +
- ..._035-system-health-ui-polish_validation-lane.md |  10 +
- docs_build/dev/reports/codex_changed_files.txt     |  57 +-
- docs_build/dev/reports/codex_review.diff           | 617 +++++++--------------
- .../dev/reports/coverage_changed_js_guardrail.txt  |   4 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |  10 +-
- 11 files changed, 382 insertions(+), 464 deletions(-)
+# git ls-files --others --exclude-standard
+docs_build/dev/reports/PR_26175_DELTA_008-replay-clone-service-tests.md
+docs_build/dev/reports/PR_26175_DELTA_008-replay-clone-service-tests_branch-validation.md
+docs_build/dev/reports/PR_26175_DELTA_008-replay-clone-service-tests_manual-validation-notes.md
+docs_build/dev/reports/PR_26175_DELTA_008-replay-clone-service-tests_requirements-checklist.md
+docs_build/dev/reports/PR_26175_DELTA_008-replay-clone-service-tests_validation-lane.md
+
+# git diff --stat
+docs_build/dev/reports/codex_changed_files.txt |  51 +-
+ docs_build/dev/reports/codex_review.diff       | 794 ++++++++++++++++++-------
+ package.json                                   |   1 +
+ src/engine/replay/ReplayTimeline.js            |   7 +-
+ tests/replay/ReplayTimeline.test.mjs           |  25 +
+ 5 files changed, 628 insertions(+), 250 deletions(-)

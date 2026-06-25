@@ -3,6 +3,7 @@
   "scripts": {
     "pretest": "node docs_build/dev/toolbox/checkSharedExtractionGuard.mjs",
     "test": "node ./scripts/run-node-tests.mjs",
+    "test:service:replay-clone": "node ./scripts/run-node-test-files.mjs tests/replay/ReplayTimeline.test.mjs tests/replay/ReplaySystem.test.mjs",
     "test:audit:locations": "node ./scripts/audit-playwright-test-locations.mjs",
     "test:playwright:structure": "node ./scripts/audit-playwright-test-locations.mjs",
     "test:playwright:zero-browser": "node ./scripts/run-targeted-test-lanes.mjs --zero-browser-only",

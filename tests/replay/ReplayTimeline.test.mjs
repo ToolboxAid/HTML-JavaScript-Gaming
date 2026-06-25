@@ -37,4 +37,29 @@ export function run() {
 
   timeline.clear();
   assert.equal(timeline.toArray().length, 0);
+
+  const originalStructuredClone = globalThis.structuredClone;
+  try {
+    globalThis.structuredClone = undefined;
+    const fallbackTimeline = new ReplayTimeline({ maxFrames: 3 });
+    const fallbackSnapshot = {
+      input: { jump: true },
+      state: { status: 'recording' },
+    };
+    const pushed = fallbackTimeline.pushSnapshot(0, fallbackSnapshot);
+    fallbackSnapshot.input.jump = false;
+    pushed.snapshot.state.status = 'mutated-return';
+
+    assert.equal(fallbackTimeline.getSnapshot(0).snapshot.input.jump, true);
+    assert.equal(fallbackTimeline.getSnapshot(0).snapshot.state.status, 'recording');
+
+    const replacement = [{ input: { jump: false }, state: { status: 'patched' } }];
+    const replacedFallback = fallbackTimeline.replaceFromFrame(0, replacement);
+    replacement[0].state.status = 'mutated-input';
+    replacedFallback[0].snapshot.state.status = 'mutated-return';
+
+    assert.equal(fallbackTimeline.getLatestSnapshot().snapshot.state.status, 'patched');
+  } finally {
+    globalThis.structuredClone = originalStructuredClone;
+  }
 }
