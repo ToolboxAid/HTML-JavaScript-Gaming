@@ -6,7 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
 Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
-(100%) none changed - no changed runtime JS files
+(63%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 62/98
 
 Guardrail warnings:
-(100%) none changed - no changed runtime JS files
+(100%) none - no changed runtime JS coverage warnings
