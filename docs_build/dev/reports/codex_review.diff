@@ -1,246 +1,578 @@
-diff --git a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-index 0dc1ef5ec..de7ad4681 100644
---- a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-+++ b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-@@ -249,7 +249,8 @@ Current OWNER clarification:
-   - Completion reference: PR_26175_DELTA_001_Runtime_Performance_Optimization.
- - [x] Delta - Engine test coverage improvements
-   - Completed by PR_26175_DELTA_004_Runtime_Test_Expansion.
--- [ ] Delta - Event system audit
-+- [x] Delta - Event system audit
-+  - Completed by PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup.
- - [ ] Delta - Controls runtime framework audit
- - [ ] Delta - Object runtime framework audit
- - [ ] Delta - World runtime framework audit
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-branch-validation.md b/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-branch-validation.md
+diff --git a/admin/system-health.html b/admin/system-health.html
+index abe5c4f97..5aa9fa80a 100644
+--- a/admin/system-health.html
++++ b/admin/system-health.html
+@@ -51,6 +51,7 @@
+                                     <p>Notifications &amp; Alerts</p>
+                                     <p>Local API Startup</p>
+                                     <p>Database Health</p>
++                                    <p>Postgres Metrics</p>
+                                     <p>Storage Health</p>
+                                     <p>Runtime Health</p>
+                                     <p>Health Check History</p>
+@@ -293,6 +294,21 @@
+                                 </tbody>
+                             </table>
+                         </div>
++                        <div class="table-wrapper">
++                            <table class="data-table" aria-label="Postgres metrics">
++                                <caption>Postgres Metrics</caption>
++                                <thead>
++                                    <tr>
++                                        <th scope="col">Metric</th>
++                                        <th scope="col">Safe Value</th>
++                                        <th scope="col">Status</th>
++                                    </tr>
++                                </thead>
++                                <tbody data-admin-system-health-postgres-metric-rows>
++                                    <tr><td>Postgres metrics</td><td>Unavailable until safe API status loads</td><td data-health-status="PENDING" title="Reason: Postgres metrics have not loaded yet." aria-label="PENDING: Postgres metrics have not loaded yet.">PENDING</td></tr>
++                                </tbody>
++                            </table>
++                        </div>
+                         <div class="table-wrapper">
+                             <table class="data-table" aria-label="Storage health">
+                                 <caption>Storage Health - Cloudflare R2</caption>
+diff --git a/assets/theme-v2/js/admin-system-health.js b/assets/theme-v2/js/admin-system-health.js
+index 656394104..746d47753 100644
+--- a/assets/theme-v2/js/admin-system-health.js
++++ b/assets/theme-v2/js/admin-system-health.js
+@@ -74,6 +74,7 @@ class AdminSystemHealthController {
+         this.notificationRows = root.querySelector("[data-admin-system-health-notification-rows]");
+         this.serviceCards = root.querySelector("[data-admin-system-health-service-cards]");
+         this.startupRows = root.querySelector("[data-admin-system-health-startup-rows]");
++        this.postgresMetricRows = root.querySelector("[data-admin-system-health-postgres-metric-rows]");
+         this.runtimeRows = root.querySelector("[data-admin-system-health-runtime-rows]");
+     }
+
+@@ -145,6 +146,7 @@ class AdminSystemHealthController {
+             this.setStatus(key, "PENDING", reason);
+         });
+         this.renderStartupPending(reason);
++        this.renderPostgresMetricsPending(reason);
+         this.renderStoragePending(reason);
+         this.renderRuntimeHealthPending(reason);
+         this.renderEnvironmentCapabilitiesPending(reason);
+@@ -213,6 +215,46 @@ class AdminSystemHealthController {
+         this.setStatus("version", databaseStatus.versionStatus, reason);
+         this.setValue("lastChecked", databaseStatus.lastChecked, "not available");
+         this.setStatus("lastChecked", databaseStatus.lastChecked ? "PASS" : "WARN", reason);
++        this.renderPostgresMetrics(databaseStatus.postgresMetrics || {});
++    }
++
++    renderPostgresMetricsPending(reason) {
++        if (!this.postgresMetricRows) {
++            return;
++        }
++        const row = document.createElement("tr");
++        row.append(
++            this.createCell("Postgres metrics"),
++            this.createCell("Unavailable"),
++            this.createStatusCell("PENDING", reason),
++        );
++        this.postgresMetricRows.replaceChildren(row);
++    }
++
++    renderPostgresMetrics(postgresMetrics = {}) {
++        if (!this.postgresMetricRows) {
++            return;
++        }
++        if (postgresMetrics?.secretsExposed === true || postgresMetrics?.secretEditingAllowed === true) {
++            this.renderPostgresMetricsPending("Safe Postgres metrics response was blocked because it exposed secret controls.");
++            return;
++        }
++        const rows = Array.isArray(postgresMetrics.rows) ? postgresMetrics.rows : [];
++        if (!rows.length) {
++            this.renderPostgresMetricsPending("Safe Admin System Health API returned no Postgres metric rows.");
++            return;
++        }
++        const fragment = document.createDocumentFragment();
++        rows.forEach((metricRow) => {
++            const row = document.createElement("tr");
++            row.append(
++                this.createCell(metricRow.metric),
++                this.createCell(metricRow.value),
++                this.createStatusCell(metricRow.status, postgresMetrics.message),
++            );
++            fragment.append(row);
++        });
++        this.postgresMetricRows.replaceChildren(fragment);
+     }
+
+     renderStorageStatus(storageStatus = {}) {
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel.md b/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel.md
 new file mode 100644
-index 000000000..c86256005
+index 000000000..7ff7fe32a
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-branch-validation.md
-@@ -0,0 +1,15 @@
-+# PR_26175_DELTA_005 Branch Validation
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel.md
+@@ -0,0 +1,39 @@
++﻿# PR_26177_CHARLIE_029-system-health-postgres-metrics-panel
 +
-+| Gate | Status | Evidence |
-+| --- | --- | --- |
-+| Current branch before work | PASS | `main` after PR_004 merge |
-+| Worktree before work | PASS | Clean |
-+| Local/origin sync before work | PASS | `0 0` |
-+| Team ownership | PASS | Team Delta owns Runtime, Event systems, Shared JS, Performance, and technical debt remediation. |
-+| Work branch | PASS | `PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup` |
-+| Previous Delta PR closed | PASS | PR_004 was merged and `main` was verified before PR_005 started. |
-+| Scope boundary | PASS | Runtime event clone cleanup, focused test update, backlog, and reports only. |
-+
-+## Instruction Reads
-+
-+PASS - All files under `docs_build/dev/ProjectInstructions/` were read before the Delta sequence, and updated instructions were reread after pulling latest `main`.
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-manual-validation-notes.md b/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-manual-validation-notes.md
-new file mode 100644
-index 000000000..835bc982d
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-manual-validation-notes.md
-@@ -0,0 +1,15 @@
-+# PR_26175_DELTA_005 Manual Validation Notes
-+
-+## Manual Review
-+
-+- Confirmed the removed local clone helper was replaced with `cloneRuntimeValue(...)`.
-+- Confirmed event output clone/freeze expectations remain covered by tests.
-+- Confirmed no Theme V2, UI, API client, browser-owned data, or status bar files changed.
-+
-+## Manual Validation
-+
-+PASS - Code review found no unrelated runtime behavior change.
-+
-+## Follow-Up
-+
-+- The requested five-PR Delta sequence is complete after this PR merges and `main` is verified.
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-requirement-checklist.md b/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-requirement-checklist.md
-new file mode 100644
-index 000000000..3488f5872
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-requirement-checklist.md
-@@ -0,0 +1,19 @@
-+# PR_26175_DELTA_005 Requirement Checklist
-+
-+| Requirement | Status | Notes |
-+| --- | --- | --- |
-+| Team Delta ownership only | PASS | Runtime event-system cleanup is Delta-owned. |
-+| One PR purpose | PASS | Shared runtime clone adoption in event publishing only. |
-+| Preserve backward compatibility | PASS | Event, trigger, action, and final systems validation passed. |
-+| Update backlog | PASS | `Delta - Event system audit` marked complete. |
-+| Update tool state if applicable | PASS | Not applicable; no tool tile/status changed. |
-+| Produce governance reports | PASS | Summary, branch validation, checklist, validation lane, manual notes, Codex diff, changed-file list, and ZIP. |
-+| Runtime validation | PASS | Focused runtime tests and final systems test passed. |
-+| No unrelated files | PASS | Changes are limited to event runtime cleanup, focused test, backlog, and reports. |
-+| No branch deletion | PASS | Source branch retained. |
-+
-+## Compatibility Notes
-+
-+- `publishRuntimeEvents(...)` public output shape is unchanged.
-+- The shared runtime clone helper keeps the existing JSON fallback path when `structuredClone` is unavailable.
-+- PR_005 does not touch status bar, Theme V2, browser-owned data, or unrelated tool runtime code.
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-validation.md b/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-validation.md
-new file mode 100644
-index 000000000..1285e5bb6
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-validation.md
-@@ -0,0 +1,33 @@
-+# PR_26175_DELTA_005 Validation Lane
-+
-+## Commands
-+
-+```powershell
-+node --check src/engine/runtime/runtimeEventSystem.js
-+node --check tests/engine/RuntimeEventSystem.test.mjs
-+node tests/engine/RuntimeEventSystem.test.mjs
-+node tests/engine/RuntimeTriggerProcessing.test.mjs
-+node tests/engine/RuntimeActionSystem.test.mjs
-+node tests/final/FinalSystems.test.mjs
-+git diff --check
-+```
-+
-+## Results
-+
-+| Command | Status |
-+| --- | --- |
-+| `node --check src/engine/runtime/runtimeEventSystem.js` | PASS |
-+| `node --check tests/engine/RuntimeEventSystem.test.mjs` | PASS |
-+| `node tests/engine/RuntimeEventSystem.test.mjs` | PASS |
-+| `node tests/engine/RuntimeTriggerProcessing.test.mjs` | PASS |
-+| `node tests/engine/RuntimeActionSystem.test.mjs` | PASS |
-+| `node tests/final/FinalSystems.test.mjs` | PASS |
-+| `git diff --check` | PASS |
-+
-+## Browser Validation
-+
-+SKIP - No browser UI files changed.
-+
-+## Playwright Validation
-+
-+SKIP - Runtime event technical debt cleanup is covered by focused Node tests.
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup.md b/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup.md
-new file mode 100644
-index 000000000..ca5c32c49
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup.md
-@@ -0,0 +1,52 @@
-+# PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup
-+
-+## Summary
-+
-+Team Delta cleaned up runtime event-system clone debt by moving event publishing onto the shared runtime clone helper.
-+
-+`runtimeEventSystem.js` now uses `cloneRuntimeValue(...)` from `src/shared/runtime/snapshotClone.js`, removing its local JSON clone helper. The runtime event test now covers the shared-helper fallback path with `structuredClone` unavailable.
++Team: Charlie
++Branch: pr/26177-CHARLIE-029-system-health-postgres-metrics-panel
++Base: main
++Lifecycle: Build / Validation
++Repair: Updated from origin/main on 2026-06-25 after PR #177 reported draft=true and mergeable=false.
 +
 +## Scope
++- Added a System Health Postgres Metrics panel backed by the server-owned Admin System Health API.
++- Added safe current-environment metrics for connection status, database name, current schema, migration status, last migration, table count, database size, and last checked.
++- Preserved current-environment-only behavior and did not add cross-environment database checks.
 +
-+- Team: Delta
-+- Backlog item: `Delta - Event system audit`
-+- Runtime file changed: `src/engine/runtime/runtimeEventSystem.js`
-+- Test file changed: `tests/engine/RuntimeEventSystem.test.mjs`
-+- Backlog updated: `docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md`
++## Changed Files
++- admin/system-health.html
++- assets/theme-v2/js/admin-system-health.js
++- src/dev-runtime/server/local-api-router.mjs
++- tests/api/admin-system-health/contract.test.mjs
++- tests/dev-runtime/AdminHealthOperations.test.mjs
++- tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
++- docs_build/dev/reports/coverage_changed_js_guardrail.tx
++- docs_build/dev/reports/playwright_v8_coverage_report.tx
 +
-+## Runtime Impact
++## Validation
++- PASS: node --check src/dev-runtime/server/local-api-router.mjs
++- PASS: node --check assets/theme-v2/js/admin-system-health.js
++- PASS: node --test tests/api/admin-system-health/contract.test.mjs
++- PASS: node --test tests/dev-runtime/AdminHealthOperations.test.mjs
++- PASS: npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line
++- PASS: git diff --check
 +
-+PASS - Event publishing behavior remains backward compatible.
++## Repair Notes
++- PASS: Merged current origin/main into the PR branch.
++- PASS: Merge conflict was limited to generated report artifacts: codex_changed_files.txt and codex_review.diff.
++- PASS: No runtime, UI, API, database, or product-data conflict required a product decision.
++- PASS: Scope remains Postgres metrics panel only.
 +
-+- Published event payloads are still cloned before output.
-+- Runtime event output records remain frozen.
-+- Existing event, trigger, action, and final systems validation continues to pass.
-+- Runtime event cloning now uses the same shared clone path as other Delta runtime consolidation work.
++## ZIP
++- Generated after repair: C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\tmp\PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_delta.zip
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_branch-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_branch-validation.md
+new file mode 100644
+index 000000000..9364d3f7c
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_branch-validation.md
+@@ -0,0 +1,17 @@
++﻿# PR_26177_CHARLIE_029-system-health-postgres-metrics-panel Branch Validation
 +
-+## Backlog Update
++Branch: pr/26177-CHARLIE-029-system-health-postgres-metrics-panel
++Expected start branch: main, then PR branch for build
++Current status at validation:
++## pr/26177-CHARLIE-029-system-health-postgres-metrics-panel
++Updated from origin/main for PR #177 repair.
 +
-+PASS - `Delta - Event system audit` is marked complete with this PR as the completion reference.
++Result: PASS
 +
-+## Team Delta Sequence Completion
++Checks:
++- PASS: Started from synchronized main.
++- PASS: Active branch matches PR identity.
++- PASS: Current origin/main merged into branch.
++- PASS: Merge conflict scope was generated report artifacts only.
++- PASS: Worktree contains only scoped PR repair/report changes after report refresh.
++- PASS: No start_of_day files modified.
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_manual-validation-notes.md
+new file mode 100644
+index 000000000..1c30d0c93
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_manual-validation-notes.md
+@@ -0,0 +1,9 @@
++﻿# PR_26177_CHARLIE_029-system-health-postgres-metrics-panel Manual Validation Notes
 +
-+| PR | Status | Result |
-+| --- | --- | --- |
-+| `PR_26175_DELTA_001_Runtime_Performance_Optimization` | PASS | Merged to `main`. |
-+| `PR_26175_DELTA_002_Shared_Runtime_Consolidation` | PASS | Merged to `main`. |
-+| `PR_26175_DELTA_003_API_Client_Standardization` | PASS | Merged to `main`. |
-+| `PR_26175_DELTA_004_Runtime_Test_Expansion` | PASS | Merged to `main`. |
-+| `PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup` | PASS | Prepared for validation and merge. |
++- Confirmed Postgres Metrics appears as a separate System Health table.
++- Confirmed metric values come from the server-owned Admin System Health API response.
++- Confirmed unavailable metrics render visibly as Unavailable/WARN rather than silently falling back.
++- Confirmed page retains external scripts/styles only; no inline style/script/handler additions.
++- Confirmed no secrets or database URLs are shown in the Database Health or Postgres Metrics tables.
++- Confirmed current main merge conflict was limited to generated report artifacts.
++- Confirmed no start_of_day files changed.
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_requirements-checklist.md b/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_requirements-checklist.md
+new file mode 100644
+index 000000000..f99698e88
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_requirements-checklist.md
+@@ -0,0 +1,16 @@
++﻿# PR_26177_CHARLIE_029-system-health-postgres-metrics-panel Requirement Checklis
 +
-+## Tool State Update
++- PASS: Add/extend System Health Postgres metrics panel.
++- PASS: Include connection status.
++- PASS: Include database name.
++- PASS: Include current schema/migration status when available.
++- PASS: Include table count when available.
++- PASS: Include database size when available.
++- PASS: Do not add expensive queries.
++- PASS: Show explicit Unavailable status when a metric is unavailable.
++- PASS: Do not expose secrets.
++- PASS: Keep browser UI consuming API/service contract.
++- PASS: No cross-environment checks added.
++- PASS: No start_of_day files modified.
++- PASS: Repaired PR #177 branch from current main.
++- PASS: Mark ready for review after validation/reporting is complete.
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_validation-lane.md b/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_validation-lane.md
+new file mode 100644
+index 000000000..e1ca3d673
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_029-system-health-postgres-metrics-panel_validation-lane.md
+@@ -0,0 +1,21 @@
++﻿# PR_26177_CHARLIE_029-system-health-postgres-metrics-panel Validation Lane Repor
 +
-+SKIP - No Build Path tool status or tool tile state changed.
++Impacted lanes:
++- runtime: Local API Admin System Health status contract.
++- contract: Admin System Health API contract tests.
++- UI: Admin System Health Theme V2 page controller and markup.
++- Playwright: targeted Admin System Health page spec.
 +
-+## Validation Summary
++Commands:
++- PASS: node --check src/dev-runtime/server/local-api-router.mjs
++- PASS: node --check assets/theme-v2/js/admin-system-health.js
++- PASS: node --test tests/api/admin-system-health/contract.test.mjs
++- PASS: node --test tests/dev-runtime/AdminHealthOperations.test.mjs
++- PASS: npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line
++- PASS: git diff --check
 +
-+PASS - Focused runtime event, trigger, action, and final systems validation completed.
++Skipped lanes:
++- Full samples smoke skipped; not impacted by System Health API/UI panel change.
++- Full workspace suite skipped; targeted Project Workspace coverage was sufficient for this scoped Admin page.
 +
-+See `PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-validation.md` for command details.
-+
-+## Branch Disposition
-+
-+Source branch should be retained after merge unless OWNER later approves branch deletion.
-diff --git a/src/engine/runtime/runtimeEventSystem.js b/src/engine/runtime/runtimeEventSystem.js
-index eba44a68f..87736411d 100644
---- a/src/engine/runtime/runtimeEventSystem.js
-+++ b/src/engine/runtime/runtimeEventSystem.js
-@@ -5,6 +5,8 @@ David Quesenberry
- runtimeEventSystem.js
- */
++Result: PASS
+diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.tx
+index 4cf3859da..7b1c51f19 100644
+--- a/docs_build/dev/reports/coverage_changed_js_guardrail.tx
++++ b/docs_build/dev/reports/coverage_changed_js_guardrail.tx
+@@ -6,7 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
+ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
-+import { cloneRuntimeValue } from "../../shared/runtime/snapshotClone.js";
-+
- export const RUNTIME_EVENT_ERRORS = Object.freeze({
-   CONDITION_MATCHES_INVALID: "RUNTIME_EVENT_CONDITION_MATCHES_INVALID",
-   RUNTIME_EVENTS_INVALID: "RUNTIME_EVENT_RUNTIME_EVENTS_INVALID",
-@@ -53,11 +55,11 @@ export function publishRuntimeEvents(conditionMatches, runtimeEvents) {
-     eventId: `event.${conditionMatch.eventType}.${conditionMatch.conditionId}.${index}`,
-     eventType: conditionMatch.eventType,
-     conditionId: conditionMatch.conditionId,
--    payload: Object.freeze(cloneJson(conditionMatch.payload)),
-+    payload: Object.freeze(cloneRuntimeValue(conditionMatch.payload)),
-   }));
+ Changed runtime JS files considered:
+-(63%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 62/98
++(100%) none changed - no changed runtime JS files
 
-   return createEventPublishResult({
--    runtimeEvents: [...runtimeEvents, ...publishedEvents].map((runtimeEvent) => Object.freeze(cloneJson(runtimeEvent))),
-+    runtimeEvents: [...runtimeEvents, ...publishedEvents].map((runtimeEvent) => Object.freeze(cloneRuntimeValue(runtimeEvent))),
-     publishedEvents,
-     errors,
-   });
-@@ -146,10 +148,6 @@ function createEventError(code, message, path) {
-   return Object.freeze({ code, message, path });
+ Guardrail warnings:
+-(100%) none - no changed runtime JS coverage warnings
++(100%) none changed - no changed runtime JS files
+diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.tx
+index 8f1bdb531..627ed631f 100644
+--- a/docs_build/dev/reports/playwright_v8_coverage_report.tx
++++ b/docs_build/dev/reports/playwright_v8_coverage_report.tx
+@@ -12,22 +12,28 @@ Note: entry percentages use function coverage when available, otherwise line cov
+ Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
+
+ Exercised tool entry points detected:
+-(0%) Toolbox Index - not exercised by this Playwright run
++(46%) Toolbox Index - exercised 1 runtime JS files
+ (0%) Tool Template V2 - not exercised by this Playwright run
+-(64%) Theme V2 Shared JS - exercised 2 runtime JS files
++(78%) Theme V2 Shared JS - exercised 5 runtime JS files
+
+ Changed runtime JS files covered:
+-(63%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 62/98
++(100%) none changed - no changed runtime JS files
+
+ Files with executed line/function counts where available:
+-(63%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 62/98
++(36%) src/api/server-api-client.js - executed lines 168/168; executed functions 5/14
++(46%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 12/26
++(65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
++(75%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 76/102
++(77%) assets/theme-v2/js/tool-display-mode.js - executed lines 304/304; executed functions 23/30
+ (80%) assets/theme-v2/js/theme-icons.js - executed lines 69/69; executed functions 4/5
+-(100%) legal/legal-nav.js - executed lines 34/34; executed functions 3/3
++(80%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 4/5
++(81%) assets/theme-v2/js/admin-system-health.js - executed lines 848/848; executed functions 70/86
++(83%) assets/js/shared/status.js - executed lines 37/37; executed functions 5/6
++(91%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 10/11
++(100%) src/api/admin-system-health-api-client.js - executed lines 28/28; executed functions 4/4
+
+ Uncovered or low-coverage changed JS files:
+-(100%) none - no low-coverage changed runtime JS files
++(100%) none changed - no changed runtime JS files
+
+ Changed JS files considered:
+-(0%) tests/playwright/tools/RemainingLegalPages.spec.mjs - changed JS file not collected as browser runtime coverage
+-(63%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
+-(100%) legal/legal-nav.js - changed JS file with browser V8 coverage
++(100%) none - no changed JS files
+diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
+index 993e14a59..462d8b7a0 100644
+--- a/src/dev-runtime/server/local-api-router.mjs
++++ b/src/dev-runtime/server/local-api-router.mjs
+@@ -650,6 +650,63 @@ function databaseConfigStatus(env = process.env) {
+   }
  }
 
--function cloneJson(value) {
--  return JSON.parse(JSON.stringify(value));
--}
--
- function isRecord(value) {
-   return value !== null && typeof value === "object" && !Array.isArray(value);
- }
-diff --git a/tests/engine/RuntimeEventSystem.test.mjs b/tests/engine/RuntimeEventSystem.test.mjs
-index 1cb9ca85d..9a0b1fc01 100644
---- a/tests/engine/RuntimeEventSystem.test.mjs
-+++ b/tests/engine/RuntimeEventSystem.test.mjs
-@@ -87,6 +87,25 @@ export function run() {
-   assert.throws(() => {
-     clonedResult.runtimeEvents[0].eventId = "event.changed";
-   }, TypeError);
++function systemHealthPostgresMetrics(databaseStatus = {}, checkedAt = new Date().toISOString()) {
++  const reason = databaseStatus.message || "Postgres metrics are reported only when the current environment database reader returns safe values.";
++  const tableCount = Number(databaseStatus.tableCount);
++  const metricRows = [
++    {
++      metric: "Connection status",
++      status: databaseStatus.connectivityStatus || databaseStatus.status || "WARN",
++      value: databaseStatus.connectivity || "Unavailable",
++    },
++    {
++      metric: "Database name",
++      status: databaseStatus.currentDatabaseNameStatus || databaseStatus.databaseNameStatus || "WARN",
++      value: databaseStatus.currentDatabaseName || databaseStatus.databaseName || "Unavailable",
++    },
++    {
++      metric: "Current schema",
++      status: databaseStatus.currentSchemaStatus || "WARN",
++      value: databaseStatus.currentSchema || "Unavailable",
++    },
++    {
++      metric: "Migration status",
++      status: databaseStatus.migrationStatus || "WARN",
++      value: databaseStatus.migrationStatus === "PASS"
++        ? `DDL=${databaseStatus.migrationCounts?.DDL || 0}; DML=${databaseStatus.migrationCounts?.DML || 0}
++        : "Unavailable",
++    },
++    {
++      metric: "Last migration",
++      status: databaseStatus.lastMigrationStatus || "WARN",
++      value: databaseStatus.lastMigration?.name || "Unavailable",
++    },
++    {
++      metric: "Table count",
++      status: Number.isFinite(tableCount) ? "PASS" : "WARN",
++      value: Number.isFinite(tableCount) ? String(tableCount) : "Unavailable",
++    },
++    {
++      metric: "Database size",
++      status: databaseStatus.databaseSizeStatus || "WARN",
++      value: databaseStatus.databaseSize || "Unavailable",
++    },
++    {
++      metric: "Last checked",
++      status: databaseStatus.lastChecked ? "PASS" : "WARN",
++      value: databaseStatus.lastChecked || checkedAt || "Unavailable",
++    },
++  ];
++  return {
++    lastChecked: databaseStatus.lastChecked || checkedAt,
++    message: reason,
++    rows: metricRows,
++    secretEditingAllowed: false,
++    secretsExposed: false,
++    status: overallHealthStatus(metricRows),
++  };
++}
 +
-+  const nativeStructuredClone = globalThis.structuredClone;
-+  globalThis.structuredClone = undefined;
-+  try {
-+    const fallbackRuntimeEvent = {
-+      eventId: "event.runtime.frameStart.3",
-+      eventType: "event.frameStart",
-+      payload: {
-+        tick: 3,
-+      },
-+    };
-+    const fallbackResult = publishRuntimeEvents([], [fallbackRuntimeEvent]);
-+    fallbackRuntimeEvent.payload.tick = 333;
-+
-+    assert.equal(fallbackResult.valid, true);
-+    assert.equal(fallbackResult.runtimeEvents[0].payload.tick, 3);
-+  } finally {
-+    globalThis.structuredClone = nativeStructuredClone;
-+  }
- }
+ function projectPackageReadinessStatus() {
+   const decisionPath = path.join(process.cwd(), "docs_build", "codex", "decisions", "project-packages.md");
+   const contract = projectPackageReadinessContract();
+@@ -4232,31 +4289,60 @@ class ApiRuntimeDataSource {
+       migrationStatus: "WARN",
+       responseTimeMs: null,
+       status: "WARN",
++      currentDatabaseName: "",
++      currentDatabaseNameStatus: "WARN",
++      currentSchema: "",
++      currentSchemaStatus: "WARN",
++      databaseSize: "",
++      databaseSizeBytes: null,
++      databaseSizeStatus: "WARN",
++      tableCount: null,
+       version: "",
+       versionStatus: "WARN",
+     };
+     try {
+       const adapter = this.supabaseDatabaseAdapter("Reading Admin System Health migration history");
+-      const versionRows = await adapter.databaseClient().query("SELECT version() AS version;");
+-      const countRows = await adapter.databaseClient().query(
++      const databaseClient = adapter.databaseClient();
++      const versionRows = await databaseClient.query("SELECT version() AS version;");
++      const currentRows = await databaseClient.query("SELECT current_database() AS database_name, current_schema() AS schema_name;");
++      const countRows = await databaseClient.query(
+ SELECT "migrationType", count(*)::int AS coun
+ FROM schema_migrations
+ GROUP BY "migrationType"
+ ORDER BY "migrationType";
+ `);
+-      const lastRows = await adapter.databaseClient().query(
++      const lastRows = await databaseClient.query(
+ SELECT "migrationType", "migrationName", "appliedAt"
+ FROM schema_migrations
+ ORDER BY "appliedAt" DESC, key DESC
+ LIMIT 1;
++`);
++      const tableCountRows = await databaseClient.query(
++SELECT count(*)::int AS table_coun
++FROM information_schema.tables
++WHERE table_schema NOT IN ('pg_catalog', 'information_schema')
++  AND table_type = 'BASE TABLE';
++`);
++      const databaseSizeRows = await databaseClient.query(
++SELECT pg_database_size(current_database()) AS database_size_bytes,
++       pg_size_pretty(pg_database_size(current_database())) AS database_size;
+ `);
+       const counts = new Map(countRows.map((row) => [String(row.migrationType || ""), Number(row.count || 0)]));
++      const currentRow = currentRows[0] || {};
+       const lastRow = lastRows[0] || {};
+-      const version = String(versionRows[0]?.version || "").trim();
+-      return {
++      const tableCount = Number(tableCountRows[0]?.table_count);
++      const databaseSizeBytes = Number(databaseSizeRows[0]?.database_size_bytes);
++      const connectedStatus = {
+         ...databaseStatus,
+         connectivity: "connected",
+         connectivityStatus: "PASS",
++        currentDatabaseName: String(currentRow.database_name || ""),
++        currentDatabaseNameStatus: currentRow.database_name ? "PASS" : "WARN",
++        currentSchema: String(currentRow.schema_name || ""),
++        currentSchemaStatus: currentRow.schema_name ? "PASS" : "WARN",
++        databaseSize: String(databaseSizeRows[0]?.database_size || ""),
++        databaseSizeBytes: Number.isFinite(databaseSizeBytes) ? databaseSizeBytes : null,
++        databaseSizeStatus: databaseSizeRows[0]?.database_size ? "PASS" : "WARN",
+         lastMigration: {
+           appliedAt: String(lastRow.appliedAt || ""),
+           name: String(lastRow.migrationName || ""),
+@@ -4268,14 +4354,19 @@ LIMIT 1;
+           DML: counts.get("DML") || 0,
+         },
+         migrationStatus: "PASS",
+-        message: "Current environment database connection responded through the safe Admin System Health API.",
++        message: "Current environment database connection and safe Postgres metrics responded through the Admin System Health API.",
+         responseTimeMs: Date.now() - startedAt,
+         status: databaseStatus.configured === true ? "PASS" : "WARN",
+-        version: version || "not available",
+-        versionStatus: version ? "PASS" : "WARN",
++        tableCount: Number.isFinite(tableCount) ? tableCount : null,
++        version: String(versionRows[0]?.version || "").trim() || "not available",
++        versionStatus: versionRows[0]?.version ? "PASS" : "WARN",
+       };
+-    } catch (error) {
+       return {
++        ...connectedStatus,
++        postgresMetrics: systemHealthPostgresMetrics(connectedStatus, connectedStatus.lastChecked),
++      };
++    } catch (error) {
++      const failedStatus = {
+         ...databaseStatus,
+         connectivity: "failed",
+         connectivityStatus: "FAIL",
+@@ -4283,6 +4374,10 @@ LIMIT 1;
+         responseTimeMs: Date.now() - startedAt,
+         status: "FAIL",
+       };
++      return {
++        ...failedStatus,
++        postgresMetrics: systemHealthPostgresMetrics(failedStatus, failedStatus.lastChecked),
++      };
+     }
+   }
 
- if (import.meta.url === `file://${process.argv[1]}`) {
+@@ -4410,6 +4505,7 @@ LIMIT 1;
+     const environmentIdentity = systemHealthEnvironmentIdentity(process.env, checkedAt);
+     const environmentMap = systemHealthEnvironmentMap();
+     const databaseStatus = await this.ownerDatabaseStatus(environmentIdentity);
++    const postgresMetrics = databaseStatus.postgresMetrics || systemHealthPostgresMetrics(databaseStatus, checkedAt);
+     const storageStatus = this.ownerStorageStatus();
+     const environmentStatus = storageProjectsPrefixStatus();
+     const localApiStartup = systemHealthLocalApiStartupDiagnostics();
+@@ -4581,6 +4677,7 @@ LIMIT 1;
+       notificationsFoundation,
+       operationsHealth,
+       overview,
++      postgresMetrics,
+       pressureLabels: SYSTEM_HEALTH_LIMIT_PRESSURE_LABELS,
+       connectionSummary: this.ownerConnectionSummary(),
+       databaseStatus,
+diff --git a/tests/api/admin-system-health/contract.test.mjs b/tests/api/admin-system-health/contract.test.mjs
+index e9e366882..25aa84b34 100644
+--- a/tests/api/admin-system-health/contract.test.mjs
++++ b/tests/api/admin-system-health/contract.test.mjs
+@@ -111,6 +111,7 @@ test("Admin System Health completion contract remains server-owned and current-e
+           "runtimeFeatureFlags",
+           "serviceHealth",
+           "configurationSummary",
++          "postgresMetrics",
+           "scheduledMonitoring",
+           "notificationsFoundation",
+         ].filter((key) => Object.hasOwn(health, key)),
+@@ -121,10 +122,24 @@ test("Admin System Health completion contract remains server-owned and current-e
+           "runtimeFeatureFlags",
+           "serviceHealth",
+           "configurationSummary",
++          "postgresMetrics",
+           "scheduledMonitoring",
+           "notificationsFoundation",
+         ],
+       );
++      assert.deepEqual(
++        health.postgresMetrics.rows.map((row) => row.metric),
++        [
++          "Connection status",
++          "Database name",
++          "Current schema",
++          "Migration status",
++          "Last migration",
++          "Table count",
++          "Database size",
++          "Last checked",
++        ],
++      );
+       const healthText = JSON.stringify(health);
+       assert.equal(healthText.includes("api-secret"), false);
+       assert.equal(healthText.includes("site-secret"), false);
+diff --git a/tests/dev-runtime/AdminHealthOperations.test.mjs b/tests/dev-runtime/AdminHealthOperations.test.mjs
+index e682005b2..99fef0757 100644
+--- a/tests/dev-runtime/AdminHealthOperations.test.mjs
++++ b/tests/dev-runtime/AdminHealthOperations.test.mjs
+@@ -142,6 +142,24 @@ test("Admin can view operational health while Creator sessions are blocked", asy
+       assert.equal(typeof health.databaseStatus.lastChecked, "string");
+       assert.equal(typeof health.databaseStatus.responseTimeMs === "number" || health.databaseStatus.responseTimeMs === null, true);
+       assert.equal(typeof health.databaseStatus.version, "string");
++      assert.equal(health.postgresMetrics.secretEditingAllowed, false);
++      assert.equal(health.postgresMetrics.secretsExposed, false);
++      assert.deepEqual(
++        health.postgresMetrics.rows.map((row) => row.metric),
++        [
++          "Connection status",
++          "Database name",
++          "Current schema",
++          "Migration status",
++          "Last migration",
++          "Table count",
++          "Database size",
++          "Last checked",
++        ],
++      );
++      assert.equal(health.postgresMetrics.rows.every((row) => typeof row.value === "string"), true);
++      assert.equal(health.postgresMetrics.rows.some((row) => row.value === "Unavailable"), true);
++      assert.equal(health.databaseStatus.postgresMetrics.rows.length, health.postgresMetrics.rows.length);
+       assert.equal(health.runtimeHealth.environmentName, "Local");
+       assert.equal(health.runtimeHealth.appVersion, "1.0.0");
+       assert.equal(health.runtimeHealth.apiVersion, "1.0.0");
+@@ -318,6 +336,8 @@ test("Admin can view operational health while Creator sessions are blocked", asy
+       const healthText = JSON.stringify(health.operationsHealth);
+       assert.equal(healthText.includes("monthlyPriceCents"), false);
+       assert.equal(healthText.includes("priceCents"), false);
++      assert.equal(JSON.stringify(health.postgresMetrics).includes("postgres://"), false);
++      assert.equal(JSON.stringify(health.postgresMetrics).includes("postgresql://"), false);
+       assert.equal(health.secretEditingAllowed, false);
+     } finally {
+       await server.close();
+diff --git a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+index 52d7acf50..56733ce6a 100644
+--- a/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
++++ b/tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
+@@ -217,6 +217,16 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
+     await expect(page.locator("[data-admin-system-health-db-value='lastChecked']")).not.toHaveText("Loading");
+     await expect(page.getByRole("table", { name: "Database health" })).not.toContainText("postgres://");
+     await expect(page.getByRole("table", { name: "Database health" })).not.toContainText("postgresql://");
++    const postgresMetricsTable = page.getByRole("table", { name: "Postgres metrics" });
++    await expect(postgresMetricsTable).toContainText("Connection status");
++    await expect(postgresMetricsTable).toContainText("Database name");
++    await expect(postgresMetricsTable).toContainText("Current schema");
++    await expect(postgresMetricsTable).toContainText("Migration status");
++    await expect(postgresMetricsTable).toContainText("Last migration");
++    await expect(postgresMetricsTable).toContainText("Table count");
++    await expect(postgresMetricsTable).toContainText("Database size");
++    await expect(postgresMetricsTable).not.toContainText("postgres://");
++    await expect(postgresMetricsTable).not.toContainText("postgresql://");
+     await expect(page.getByRole("table", { name: "Storage health" })).toContainText("Cloudflare R2");
+     await expect(page.locator("[data-admin-system-health-storage-value='bucket']")).toContainText("/dev");
+     await expect(page.locator("[data-admin-system-health-storage-value='list']")).toContainText("/dev");
+@@ -333,6 +343,7 @@ test("Admin System Health operations page keeps scripts and styles external", as
+   expect(pageSource).toContain("Runtime Health");
+   expect(pageSource).toContain("Diagnostics Plan");
+   expect(pageSource).toContain("Local API Startup Diagnostics");
++  expect(pageSource).toContain("Postgres Metrics");
+   expect(pageSource).toContain("Server-owned Postgres health reader");
+   expect(pageSource).toContain("Server-owned Cloudflare R2 storage diagnostic");
+   expect(pageSource).toContain("assets/theme-v2/js/admin-system-health.js");

@@ -650,6 +650,63 @@ function databaseConfigStatus(env = process.env) {
   }
 }
 
+function systemHealthPostgresMetrics(databaseStatus = {}, checkedAt = new Date().toISOString()) {
+  const reason = databaseStatus.message || "Postgres metrics are reported only when the current environment database reader returns safe values.";
+  const tableCount = Number(databaseStatus.tableCount);
+  const metricRows = [
+    {
+      metric: "Connection status",
+      status: databaseStatus.connectivityStatus || databaseStatus.status || "WARN",
+      value: databaseStatus.connectivity || "Unavailable",
+    },
+    {
+      metric: "Database name",
+      status: databaseStatus.currentDatabaseNameStatus || databaseStatus.databaseNameStatus || "WARN",
+      value: databaseStatus.currentDatabaseName || databaseStatus.databaseName || "Unavailable",
+    },
+    {
+      metric: "Current schema",
+      status: databaseStatus.currentSchemaStatus || "WARN",
+      value: databaseStatus.currentSchema || "Unavailable",
+    },
+    {
+      metric: "Migration status",
+      status: databaseStatus.migrationStatus || "WARN",
+      value: databaseStatus.migrationStatus === "PASS"
+        ? `DDL=${databaseStatus.migrationCounts?.DDL || 0}; DML=${databaseStatus.migrationCounts?.DML || 0}`
+        : "Unavailable",
+    },
+    {
+      metric: "Last migration",
+      status: databaseStatus.lastMigrationStatus || "WARN",
+      value: databaseStatus.lastMigration?.name || "Unavailable",
+    },
+    {
+      metric: "Table count",
+      status: Number.isFinite(tableCount) ? "PASS" : "WARN",
+      value: Number.isFinite(tableCount) ? String(tableCount) : "Unavailable",
+    },
+    {
+      metric: "Database size",
+      status: databaseStatus.databaseSizeStatus || "WARN",
+      value: databaseStatus.databaseSize || "Unavailable",
+    },
+    {
+      metric: "Last checked",
+      status: databaseStatus.lastChecked ? "PASS" : "WARN",
+      value: databaseStatus.lastChecked || checkedAt || "Unavailable",
+    },
+  ];
+  return {
+    lastChecked: databaseStatus.lastChecked || checkedAt,
+    message: reason,
+    rows: metricRows,
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    status: overallHealthStatus(metricRows),
+  };
+}
+
 function projectPackageReadinessStatus() {
   const decisionPath = path.join(process.cwd(), "docs_build", "codex", "decisions", "project-packages.md");
   const contract = projectPackageReadinessContract();
@@ -4232,31 +4289,60 @@ class ApiRuntimeDataSource {
       migrationStatus: "WARN",
       responseTimeMs: null,
       status: "WARN",
+      currentDatabaseName: "",
+      currentDatabaseNameStatus: "WARN",
+      currentSchema: "",
+      currentSchemaStatus: "WARN",
+      databaseSize: "",
+      databaseSizeBytes: null,
+      databaseSizeStatus: "WARN",
+      tableCount: null,
       version: "",
       versionStatus: "WARN",
     };
     try {
       const adapter = this.supabaseDatabaseAdapter("Reading Admin System Health migration history");
-      const versionRows = await adapter.databaseClient().query("SELECT version() AS version;");
-      const countRows = await adapter.databaseClient().query(`
+      const databaseClient = adapter.databaseClient();
+      const versionRows = await databaseClient.query("SELECT version() AS version;");
+      const currentRows = await databaseClient.query("SELECT current_database() AS database_name, current_schema() AS schema_name;");
+      const countRows = await databaseClient.query(`
 SELECT "migrationType", count(*)::int AS count
 FROM schema_migrations
 GROUP BY "migrationType"
 ORDER BY "migrationType";
 `);
-      const lastRows = await adapter.databaseClient().query(`
+      const lastRows = await databaseClient.query(`
 SELECT "migrationType", "migrationName", "appliedAt"
 FROM schema_migrations
 ORDER BY "appliedAt" DESC, key DESC
 LIMIT 1;
 `);
+      const tableCountRows = await databaseClient.query(`
+SELECT count(*)::int AS table_count
+FROM information_schema.tables
+WHERE table_schema NOT IN ('pg_catalog', 'information_schema')
+  AND table_type = 'BASE TABLE';
+`);
+      const databaseSizeRows = await databaseClient.query(`
+SELECT pg_database_size(current_database()) AS database_size_bytes,
+       pg_size_pretty(pg_database_size(current_database())) AS database_size;
+`);
       const counts = new Map(countRows.map((row) => [String(row.migrationType || ""), Number(row.count || 0)]));
+      const currentRow = currentRows[0] || {};
       const lastRow = lastRows[0] || {};
-      const version = String(versionRows[0]?.version || "").trim();
-      return {
+      const tableCount = Number(tableCountRows[0]?.table_count);
+      const databaseSizeBytes = Number(databaseSizeRows[0]?.database_size_bytes);
+      const connectedStatus = {
         ...databaseStatus,
         connectivity: "connected",
         connectivityStatus: "PASS",
+        currentDatabaseName: String(currentRow.database_name || ""),
+        currentDatabaseNameStatus: currentRow.database_name ? "PASS" : "WARN",
+        currentSchema: String(currentRow.schema_name || ""),
+        currentSchemaStatus: currentRow.schema_name ? "PASS" : "WARN",
+        databaseSize: String(databaseSizeRows[0]?.database_size || ""),
+        databaseSizeBytes: Number.isFinite(databaseSizeBytes) ? databaseSizeBytes : null,
+        databaseSizeStatus: databaseSizeRows[0]?.database_size ? "PASS" : "WARN",
         lastMigration: {
           appliedAt: String(lastRow.appliedAt || ""),
           name: String(lastRow.migrationName || ""),
@@ -4268,20 +4354,29 @@ LIMIT 1;
           DML: counts.get("DML") || 0,
         },
         migrationStatus: "PASS",
-        message: "Current environment database connection responded through the safe Admin System Health API.",
+        message: "Current environment database connection and safe Postgres metrics responded through the Admin System Health API.",
         responseTimeMs: Date.now() - startedAt,
         status: databaseStatus.configured === true ? "PASS" : "WARN",
-        version: version || "not available",
-        versionStatus: version ? "PASS" : "WARN",
+        tableCount: Number.isFinite(tableCount) ? tableCount : null,
+        version: String(versionRows[0]?.version || "").trim() || "not available",
+        versionStatus: versionRows[0]?.version ? "PASS" : "WARN",
+      };
+      return {
+        ...connectedStatus,
+        postgresMetrics: systemHealthPostgresMetrics(connectedStatus, connectedStatus.lastChecked),
       };
     } catch (error) {
-      return {
+      const failedStatus = {
         ...databaseStatus,
         connectivity: "failed",
         connectivityStatus: "FAIL",
         message: `Current environment database health read failed: ${error instanceof Error ? error.message : String(error || "Unknown database error.")}`,
         responseTimeMs: Date.now() - startedAt,
         status: "FAIL",
+      };
+      return {
+        ...failedStatus,
+        postgresMetrics: systemHealthPostgresMetrics(failedStatus, failedStatus.lastChecked),
       };
     }
   }
@@ -4410,6 +4505,7 @@ LIMIT 1;
     const environmentIdentity = systemHealthEnvironmentIdentity(process.env, checkedAt);
     const environmentMap = systemHealthEnvironmentMap();
     const databaseStatus = await this.ownerDatabaseStatus(environmentIdentity);
+    const postgresMetrics = databaseStatus.postgresMetrics || systemHealthPostgresMetrics(databaseStatus, checkedAt);
     const storageStatus = this.ownerStorageStatus();
     const environmentStatus = storageProjectsPrefixStatus();
     const localApiStartup = systemHealthLocalApiStartupDiagnostics();
@@ -4581,6 +4677,7 @@ LIMIT 1;
       notificationsFoundation,
       operationsHealth,
       overview,
+      postgresMetrics,
       pressureLabels: SYSTEM_HEALTH_LIMIT_PRESSURE_LABELS,
       connectionSummary: this.ownerConnectionSummary(),
       databaseStatus,

@@ -111,6 +111,7 @@ test("Admin System Health completion contract remains server-owned and current-e
           "runtimeFeatureFlags",
           "serviceHealth",
           "configurationSummary",
+          "postgresMetrics",
           "scheduledMonitoring",
           "notificationsFoundation",
         ].filter((key) => Object.hasOwn(health, key)),
@@ -121,8 +122,22 @@ test("Admin System Health completion contract remains server-owned and current-e
           "runtimeFeatureFlags",
           "serviceHealth",
           "configurationSummary",
+          "postgresMetrics",
           "scheduledMonitoring",
           "notificationsFoundation",
+        ],
+      );
+      assert.deepEqual(
+        health.postgresMetrics.rows.map((row) => row.metric),
+        [
+          "Connection status",
+          "Database name",
+          "Current schema",
+          "Migration status",
+          "Last migration",
+          "Table count",
+          "Database size",
+          "Last checked",
         ],
       );
       const healthText = JSON.stringify(health);
