@@ -1,245 +1,1040 @@
-diff --git a/assets/theme-v2/css/status.css b/assets/theme-v2/css/status.css
-index a82c83065..8fdef0123 100644
---- a/assets/theme-v2/css/status.css
-+++ b/assets/theme-v2/css/status.css
-@@ -289,3 +289,55 @@ body.tool-focus-mode .tool-center-panel {
-     max-width: 30vw
-   }
- }
-+
-+[data-admin-system-health] [data-health-status] {
-+  font-weight: var(--font-weight-heavy);
-+  letter-spacing: 0;
-+  text-transform: uppercase
-+}
-+
-+[data-admin-system-health] td[data-health-status] {
-+  width: 1%;
-+  min-width: 7rem;
-+  text-align: center;
-+  white-space: nowrap
-+}
-+
-+[data-admin-system-health] p[data-health-status] {
-+  display: inline-flex;
-+  align-items: center;
-+  justify-content: center;
-+  width: fit-content;
-+  max-width: 100%;
-+  min-height: var(--space-28);
-+  padding: var(--space-4) var(--space-10);
-+  border: var(--border-standard);
-+  border-radius: var(--radius-pill);
-+  overflow-wrap: anywhere
-+}
-+
-+[data-admin-system-health] [data-health-status="PASS"] {
-+  border-color: color-mix(in srgb, var(--green) 58%, var(--line));
-+  background: color-mix(in srgb, var(--green) 16%, transparent);
-+  color: var(--green)
-+}
-+
-+[data-admin-system-health] [data-health-status="WARN"],
-+[data-admin-system-health] [data-health-status="PENDING"] {
-+  border-color: color-mix(in srgb, var(--gold) 54%, var(--line));
-+  background: color-mix(in srgb, var(--gold) 13%, transparent);
-+  color: var(--gold)
-+}
-+
-+[data-admin-system-health] [data-health-status="FAIL"] {
-+  border-color: color-mix(in srgb, var(--red) 58%, var(--line));
-+  background: color-mix(in srgb, var(--red) 15%, transparent);
-+  color: var(--deep-red)
-+}
-+
-+[data-admin-system-health] [data-health-status="INFO"],
-+[data-admin-system-health] [data-health-status="SKIP"] {
-+  border-color: color-mix(in srgb, var(--cyan) 52%, var(--line));
-+  background: color-mix(in srgb, var(--cyan) 12%, transparent);
-+  color: var(--cyan)
-+}
-diff --git a/assets/theme-v2/css/tables.css b/assets/theme-v2/css/tables.css
-index 915a235e9..43bde5f3b 100644
---- a/assets/theme-v2/css/tables.css
-+++ b/assets/theme-v2/css/tables.css
-@@ -178,3 +178,40 @@ td {
-   max-width: 100%;
-   width: 100%
- }
-+
-+[data-admin-system-health] .table-wrapper {
-+  border: var(--border-standard);
-+  border-radius: var(--radius-lg);
-+  background: var(--panel-overlay);
-+  box-shadow: var(--shadow-sm)
-+}
-+
-+[data-admin-system-health] .data-table {
-+  min-width: 720px;
-+  background: transparent
-+}
-+
-+[data-admin-system-health] .data-table caption {
-+  padding: var(--space-12) var(--space-14);
-+  border-bottom: var(--border-standard);
-+  background: var(--panel-soft);
-+  color: var(--gold)
-+}
-+
-+[data-admin-system-health] .data-table th,
-+[data-admin-system-health] .data-table td {
-+  padding: var(--space-10) var(--space-12);
-+  vertical-align: top
-+}
-+
-+[data-admin-system-health] .data-table th {
-+  color: var(--cyan)
-+}
-+
-+[data-admin-system-health] .data-table tbody tr:nth-child(even) {
-+  background: var(--panel-soft-subtle)
-+}
-+
-+[data-admin-system-health] .data-table td {
-+  overflow-wrap: anywhere
-+}
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish.md b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish.md
-new file mode 100644
-index 000000000..83221164d
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish.md
-@@ -0,0 +1,25 @@
-+# PR_26177_CHARLIE_035-system-health-ui-polish
-+
-+Team: Charlie
-+Branch: pr/26177-CHARLIE-035-system-health-ui-polish
-+Base: pr/26177-CHARLIE-034-startup-runtime-report-cleanup
-+Lifecycle: Build / Validation
-+Repair: Rebased onto repaired PR_26177_CHARLIE_034 branch on 2026-06-25.
-+
-+## Scope
-+- Added Theme V2 styling for System Health table wrappers, captions, row rhythm, and dense table spacing.
-+- Added Theme V2 status treatment for System Health status indicators.
-+- Kept the change visual-only with no new API, runtime, UI behavior, or page-local CSS.
-+
-+## Changed Files
-+- assets/theme-v2/css/status.css
-+- assets/theme-v2/css/tables.css
-+- docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+- docs_build/dev/reports/playwright_v8_coverage_report.txt
-+
-+## Validation
-+- PASS: npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line
-+- PASS: git diff --check
-+
-+## ZIP
-+- Generated after repair: C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\tmp\PR_26177_CHARLIE_035-system-health-ui-polish_delta.zip
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_branch-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_branch-validation.md
-new file mode 100644
-index 000000000..1fb9628c1
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_branch-validation.md
-@@ -0,0 +1,14 @@
-+# PR_26177_CHARLIE_035 Branch Validation
-+
-+Branch: pr/26177-CHARLIE-035-system-health-ui-polish
-+Base: pr/26177-CHARLIE-034-startup-runtime-report-cleanup
-+
-+## Results
-+- PASS: Continued the stacked Charlie workstream from PR_26177_CHARLIE_034.
-+- PASS: Branch is based on repaired PR_26177_CHARLIE_034 branch.
-+- PASS: Rebase conflict scope was generated report artifacts only.
-+- PASS: Worktree was clean before edits.
-+- PASS: Changes are limited to Theme V2 visual polish and reports.
-+- PASS: No start_of_day files were modified.
-+- PASS: No direct commit to main was made.
-+- PASS: PR branch will be pushed for draft PR creation.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_manual-validation-notes.md
-new file mode 100644
-index 000000000..2202ab001
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_manual-validation-notes.md
-@@ -0,0 +1,8 @@
-+# PR_26177_CHARLIE_035 Manual Validation Notes
-+
-+- Confirmed System Health tables use scoped Theme V2 table wrapper and caption polish.
-+- Confirmed status indicators have distinct PASS, WARN/PENDING, FAIL, INFO, and SKIP treatments.
-+- Confirmed the page still uses external Theme V2 CSS and JavaScript only.
-+- Confirmed no runtime behavior, API contract, database contract, or storage contract was changed.
-+- Confirmed branch repair conflict was limited to generated report artifacts.
-+- Confirmed no start_of_day files changed.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_requirements-checklist.md b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_requirements-checklist.md
-new file mode 100644
-index 000000000..5539cd503
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_requirements-checklist.md
-@@ -0,0 +1,12 @@
-+# PR_26177_CHARLIE_035 Requirement Checklist
-+
-+- PASS: Theme V2 polish only.
-+- PASS: Improve System Health layout/readability/status indicators.
-+- PASS: No new functionality beyond visual polish.
-+- PASS: Use existing Theme V2 CSS assets.
-+- PASS: No inline styles, style blocks, script blocks, inline handlers, or page-local CSS.
-+- PASS: Preserve existing behavior.
-+- PASS: Do not modify unrelated files.
-+- PASS: Do not modify start_of_day folders.
-+- PASS: Do not introduce MEM DB, fake-login, silent fallbacks, or browser-owned infrastructure state.
-+- PASS: Rebased onto repaired PR_26177_CHARLIE_034 branch.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_validation-lane.md b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_validation-lane.md
-new file mode 100644
-index 000000000..b6a4fede1
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_035-system-health-ui-polish_validation-lane.md
-@@ -0,0 +1,10 @@
-+# PR_26177_CHARLIE_035 Validation Lane
-+
-+## Commands
-+- PASS: npx playwright test tests/playwright/tools/AdminHealthOperationsPage.spec.mjs --workers=1 --reporter=line
-+- PASS: git diff --check
-+
-+## Notes
-+- `git diff --check` reported only expected Windows LF-to-CRLF working-copy warnings.
-+- No API/unit tests were required because this PR changes only Theme V2 CSS.
-+- Full samples smoke was not run because this PR is limited to Admin System Health UI polish.
-diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 74a29674c..7b1c51f19 100644
+﻿diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+index 7b1c51f19..01a698376 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,7 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
+@@ -6,7 +6,9 @@ Missing changed runtime JS files are WARN, not FAIL.
  Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
  Changed runtime JS files considered:
--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(100%) none changed - no changed runtime JS files
+-(100%) none changed - no changed runtime JS files
++(0%) src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 
  Guardrail warnings:
--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-+(100%) none changed - no changed runtime JS files
+-(100%) none changed - no changed runtime JS files
++(0%) src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index e00dbc9b0..f936d8cc1 100644
+index f936d8cc1..da369bcdb 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -17,7 +17,7 @@ Exercised tool entry points detected:
- (78%) Theme V2 Shared JS - exercised 5 runtime JS files
+@@ -12,28 +12,33 @@ Note: entry percentages use function coverage when available, otherwise line cov
+ Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
+
+ Exercised tool entry points detected:
+-(46%) Toolbox Index - exercised 1 runtime JS files
++(76%) Toolbox Index - exercised 1 runtime JS files
+ (0%) Tool Template V2 - not exercised by this Playwright run
+-(78%) Theme V2 Shared JS - exercised 5 runtime JS files
++(72%) Theme V2 Shared JS - exercised 4 runtime JS files
 
  Changed runtime JS files covered:
--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(100%) none changed - no changed runtime JS files
+-(100%) none changed - no changed runtime JS files
++(0%) src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 
  Files with executed line/function counts where available:
- (36%) src/api/server-api-client.js - executed lines 168/168; executed functions 5/14
-@@ -33,11 +33,7 @@ Files with executed line/function counts where available:
- (100%) src/api/admin-system-health-api-client.js - executed lines 31/31; executed functions 5/5
+-(36%) src/api/server-api-client.js - executed lines 168/168; executed functions 5/14
+-(46%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 12/26
++(36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2041/2041; executed functions 12/33
++(53%) src/api/server-api-client.js - executed lines 168/168; executed functions 10/19
++(64%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 63/98
+ (65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
+-(75%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 76/102
++(67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
++(73%) assets/toolbox/game-journey/js/index.js - executed lines 1662/1662; executed functions 108/148
++(76%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 22/29
+ (77%) assets/theme-v2/js/tool-display-mode.js - executed lines 304/304; executed functions 23/30
+-(80%) assets/theme-v2/js/admin-system-health.js - executed lines 920/920; executed functions 74/92
+ (80%) assets/theme-v2/js/theme-icons.js - executed lines 69/69; executed functions 4/5
+-(80%) src/api/admin-owner-navigation.js - executed lines 42/42; executed functions 4/5
+-(83%) assets/js/shared/status.js - executed lines 37/37; executed functions 5/6
+-(91%) assets/theme-v2/js/admin-owner-navigation.js - executed lines 58/58; executed functions 10/11
+-(100%) src/api/admin-system-health-api-client.js - executed lines 31/31; executed functions 5/5
++(89%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 32/36
++(100%) assets/js/shared/game-journey-api-client.js - executed lines 19/19; executed functions 2/2
 
  Uncovered or low-coverage changed JS files:
--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
-+(100%) none changed - no changed runtime JS files
+-(100%) none changed - no changed runtime JS files
++(0%) src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - WARNING: uncovered changed runtime JS file; advisory only
 
  Changed JS files considered:
--(0%) scripts/start-local-api-server.mjs - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/dev-runtime/AdminHealthOperations.test.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/dev-runtime/LocalApiStartupLogging.test.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
-+(100%) none - no changed JS files
+-(100%) none - no changed JS files
++(0%) scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs - changed JS file not collected as browser runtime coverage
+diff --git a/src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs b/src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs
+index c23ab78e0..2795e534c 100644
+--- a/src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs
++++ b/src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs
+@@ -6,7 +6,7 @@ import { SEED_DB_KEYS, makeSeedUlid } from "../seed/seed-db-keys.mjs";
+
+ export const GAME_JOURNEY_COMPLETION_METRICS_TABLE = "game_journey_completion_metrics";
+
+-const GAME_JOURNEY_COMPLETION_METRICS_SCHEMA_SQL = `
++export const GAME_JOURNEY_COMPLETION_METRICS_SCHEMA_SQL = `
+ CREATE TABLE IF NOT EXISTS game_journey_completion_metrics (
+   key text PRIMARY KEY,
+   "bucketKey" text NOT NULL UNIQUE,
+diff --git a/docs_build/dev/reports/PR_26177_GOLF_036-game-journey-metrics-sqlite-to-postgres-migration.md b/docs_build/dev/reports/PR_26177_GOLF_036-game-journey-metrics-sqlite-to-postgres-migration.md
+new file mode 100644
+index 000000000..605b5af53
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_GOLF_036-game-journey-metrics-sqlite-to-postgres-migration.md
+@@ -0,0 +1,61 @@
++# PR_26177_GOLF_036-game-journey-metrics-sqlite-to-postgres-migration
++
++Team: Golf
++Branch: pr/26177-GOLF-036-game-journey-metrics-sqlite-to-postgres-migration
++Base: main
++Lifecycle: Build / Validation
++
++## Scope
++
++- Added a one-time server-side migration utility for legacy Game Journey completion metrics.
++- Inspected the legacy SQLite file at `tmp/local-api/game-journey-completion-metrics.sqlite`.
++- Migrated valid completion metric data through the existing Postgres client/service contract path.
++- Preserved legacy `createdAt` and `updatedAt` values for rows already present in Postgres.
++- Archived the legacy SQLite file only after the migration completed successfully.
++
++## Legacy SQLite Inspection
++
++- File inspected: `tmp/local-api/game-journey-completion-metrics.sqlite`
++- Table found: `game_journey_completion_metrics`
++- Schema objects found: 4
++- Valid rows found: 14
++- Columns matched the current Postgres table shape.
++
++## Migration Result
++
++- Command: `node --use-system-ca scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs`
++- Env file: `.env` loaded; secrets were not printed.
++- Legacy rows: 14
++- Rows inserted: 0
++- Rows already present: 0
++- Rows timestamp-patched: 14
++- Result: PASS
++- Legacy file archived to:
++  `tmp/local-api/legacy-migrated/game-journey-completion-metrics-20260625T195902Z.sqlite`
++
++The existing Postgres rows matched the legacy rows except for `createdAt` and `updatedAt`. The migration patched those timestamp fields explicitly, then moved the SQLite file out of the runtime guard path.
++
++## Changed Files
++
++- `scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs`
++- `src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs`
++- `src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs`
++- `tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs`
++- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
++- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++
++## Validation
++
++- PASS: `node --check src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs`
++- PASS: `node --check scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs`
++- PASS: `node --check src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs`
++- PASS: `node --test tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs`
++- PASS: `node --use-system-ca scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs --inspect-only`
++- PASS: `node --use-system-ca scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs`
++- PASS: `npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs --grep "completion metrics" --workers=1 --reporter=line`
++- PASS: `git diff --check`
++
++## ZIP
++
++- `tmp/PR_26177_GOLF_036-game-journey-metrics-sqlite-to-postgres-migration_delta.zip`
++
+diff --git a/docs_build/dev/reports/PR_26177_GOLF_036-game-journey-metrics-sqlite-to-postgres-migration_branch-validation.md b/docs_build/dev/reports/PR_26177_GOLF_036-game-journey-metrics-sqlite-to-postgres-migration_branch-validation.md
+new file mode 100644
+index 000000000..ae8ee7ab9
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_GOLF_036-game-journey-metrics-sqlite-to-postgres-migration_branch-validation.md
+@@ -0,0 +1,16 @@
++# PR_26177_GOLF_036 Branch Validation
++
++Branch: pr/26177-GOLF-036-game-journey-metrics-sqlite-to-postgres-migration
++Base: main
++
++Result: PASS
++
++Checks:
++- PASS: Branch created from clean, synced `main` after Charlie PRs #177, #178, #180, #181, #183, and #184 merged.
++- PASS: Branch name matches PR identity.
++- PASS: Worktree changes are scoped to migration utility, migration tests, and required reports.
++- PASS: No `start_of_day` files changed.
++- PASS: No UI files changed.
++- PASS: No browser storage or browser-owned product data was introduced.
++- PASS: Legacy SQLite file was moved only after successful migration.
++
+diff --git a/docs_build/dev/reports/PR_26177_GOLF_036-game-journey-metrics-sqlite-to-postgres-migration_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_GOLF_036-game-journey-metrics-sqlite-to-postgres-migration_manual-validation-notes.md
+new file mode 100644
+index 000000000..4e7e59d16
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_GOLF_036-game-journey-metrics-sqlite-to-postgres-migration_manual-validation-notes.md
+@@ -0,0 +1,12 @@
++# PR_26177_GOLF_036 Manual Validation Notes
++
++- Confirmed legacy SQLite existed before migration at `tmp/local-api/game-journey-completion-metrics.sqlite`.
++- Confirmed inspect-only mode found 14 valid rows and did not move the file.
++- Confirmed actual migration loaded `.env` without printing secrets.
++- Confirmed actual migration patched 14 timestamp-only Postgres differences.
++- Confirmed actual migration inserted 0 rows because completion metrics were already present.
++- Confirmed actual migration archived the legacy file to `tmp/local-api/legacy-migrated/game-journey-completion-metrics-20260625T195902Z.sqlite`.
++- Confirmed `tmp/local-api/game-journey-completion-metrics.sqlite` no longer exists after migration.
++- Confirmed targeted Game Journey completion metrics Playwright tests passed.
++- Confirmed no `start_of_day` files changed.
++
+diff --git a/docs_build/dev/reports/PR_26177_GOLF_036-game-journey-metrics-sqlite-to-postgres-migration_requirements-checklist.md b/docs_build/dev/reports/PR_26177_GOLF_036-game-journey-metrics-sqlite-to-postgres-migration_requirements-checklist.md
+new file mode 100644
+index 000000000..a052c6cf3
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_GOLF_036-game-journey-metrics-sqlite-to-postgres-migration_requirements-checklist.md
+@@ -0,0 +1,16 @@
++# PR_26177_GOLF_036 Requirement Checklist
++
++- PASS: Inspected the legacy SQLite schema and data.
++- PASS: Exported valid Game Journey completion metrics from legacy SQLite.
++- PASS: Migrated valid metrics through the Postgres service/client path.
++- PASS: Preserved `createdAt` and `updatedAt` values where available.
++- PASS: Did not silently overwrite existing Postgres data.
++- PASS: Detected duplicate and conflicting rows before writes.
++- PASS: Moved legacy SQLite only after successful migration.
++- PASS: Archived legacy SQLite under `tmp/local-api/legacy-migrated/`.
++- PASS: Did not delete data.
++- PASS: Did not use browser storage.
++- PASS: Did not introduce MEM DB, local-mem, fake-login, or silent fallback terminology.
++- PASS: Preserved Web UI -> API/Service Contract -> Database ownership.
++- PASS: Created required reports and ZIP artifact.
++
+diff --git a/docs_build/dev/reports/PR_26177_GOLF_036-game-journey-metrics-sqlite-to-postgres-migration_validation-lane.md b/docs_build/dev/reports/PR_26177_GOLF_036-game-journey-metrics-sqlite-to-postgres-migration_validation-lane.md
+new file mode 100644
+index 000000000..da9688349
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_GOLF_036-game-journey-metrics-sqlite-to-postgres-migration_validation-lane.md
+@@ -0,0 +1,24 @@
++# PR_26177_GOLF_036 Validation Lane Report
++
++Impacted lanes:
++- Game Journey completion metrics persistence.
++- One-time legacy SQLite migration command.
++- Postgres duplicate/conflict handling.
++- Targeted Game Journey completion metrics Playwright coverage.
++
++Commands:
++- PASS: `node --check src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs`
++- PASS: `node --check scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs`
++- PASS: `node --check src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs`
++- PASS: `node --test tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs`
++- PASS: `node --use-system-ca scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs --inspect-only`
++- PASS: `node --use-system-ca scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs`
++- PASS: `npx playwright test tests/playwright/tools/GameJourneyTool.spec.mjs --grep "completion metrics" --workers=1 --reporter=line`
++- PASS: `git diff --check`
++
++Skipped lanes:
++- Full samples smoke skipped; not impacted by this scoped migration utility.
++- Full Project Workspace suite skipped; targeted Game Journey persistence and Playwright coverage was sufficient.
++
++Result: PASS
++
+diff --git a/scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs b/scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs
+new file mode 100644
+index 000000000..bb3c19985
+--- /dev/null
++++ b/scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs
+@@ -0,0 +1,156 @@
++import fs from "node:fs";
++import path from "node:path";
++import process from "node:process";
++import {
++  DEFAULT_GAME_JOURNEY_COMPLETION_METRICS_ARCHIVE_DIR,
++  DEFAULT_GAME_JOURNEY_COMPLETION_METRICS_SQLITE_PATH,
++  migrateLegacyCompletionMetricsSqliteToPostgres,
++  readLegacyCompletionMetricsSqlite,
++} from "../src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs";
++
++const ENV_FILE = ".env";
++
++function parseEnvValue(value) {
++  const trimmed = value.trim();
++  const quote = trimmed[0];
++  if ((quote === "\"" || quote === "'") && trimmed.endsWith(quote)) {
++    return trimmed.slice(1, -1);
++  }
++  const commentIndex = trimmed.indexOf(" #");
++  return commentIndex === -1 ? trimmed : trimmed.slice(0, commentIndex).trim();
++}
++
++function loadRuntimeEnv() {
++  const envPath = path.resolve(process.cwd(), ENV_FILE);
++  if (!fs.existsSync(envPath)) {
++    return {
++      loaded: false,
++      loadedKeys: [],
++      path: envPath,
++    };
++  }
++  const loadedKeys = [];
++  fs.readFileSync(envPath, "utf8").split(/\r?\n/u).forEach((line) => {
++    const trimmed = line.trim();
++    if (!trimmed || trimmed.startsWith("#")) {
++      return;
++    }
++    const normalized = trimmed.startsWith("export ") ? trimmed.slice(7).trim() : trimmed;
++    const separatorIndex = normalized.indexOf("=");
++    if (separatorIndex <= 0) {
++      return;
++    }
++    const key = normalized.slice(0, separatorIndex).trim();
++    if (!/^[A-Za-z_][A-Za-z0-9_]*$/u.test(key) || process.env[key] !== undefined) {
++      return;
++    }
++    process.env[key] = parseEnvValue(normalized.slice(separatorIndex + 1));
++    loadedKeys.push(key);
++  });
++  return {
++    loaded: true,
++    loadedKeys: loadedKeys.sort(),
++    path: envPath,
++  };
++}
++
++function parseArgs(argv) {
++  const options = {
++    archiveDir: DEFAULT_GAME_JOURNEY_COMPLETION_METRICS_ARCHIVE_DIR,
++    dryRun: false,
++    inspectOnly: false,
++    legacyDbPath: DEFAULT_GAME_JOURNEY_COMPLETION_METRICS_SQLITE_PATH,
++    pythonCommand: "python",
++  };
++  for (let index = 0; index < argv.length; index += 1) {
++    const arg = argv[index];
++    if (arg === "--dry-run") {
++      options.dryRun = true;
++      continue;
++    }
++    if (arg === "--inspect-only") {
++      options.inspectOnly = true;
++      continue;
++    }
++    if (arg === "--legacy-db") {
++      options.legacyDbPath = path.resolve(argv[index + 1] || "");
++      index += 1;
++      continue;
++    }
++    if (arg === "--archive-dir") {
++      options.archiveDir = path.resolve(argv[index + 1] || "");
++      index += 1;
++      continue;
++    }
++    if (arg === "--python") {
++      options.pythonCommand = argv[index + 1] || "python";
++      index += 1;
++      continue;
++    }
++    throw new Error(`Unknown argument: ${arg}`);
++  }
++  return options;
++}
++
++function printSummary(summary) {
++  Object.entries(summary).forEach(([key, value]) => {
++    console.log(`${key}: ${value}`);
++  });
++}
++
++async function main() {
++  const options = parseArgs(process.argv.slice(2));
++  const envLoad = loadRuntimeEnv();
++  const exported = await readLegacyCompletionMetricsSqlite({
++    legacyDbPath: options.legacyDbPath,
++    pythonCommand: options.pythonCommand,
++  });
++  printSummary({
++    "Legacy SQLite": exported.legacyDbPath,
++    "Schema objects": exported.schema.objects.length,
++    "Valid rows": exported.rowCount,
++  });
++  if (options.inspectOnly) {
++    console.log("PASS: inspect-only completed; no Postgres writes or file moves were attempted.");
++    return;
++  }
++  if (!String(process.env.GAMEFOUNDRY_DATABASE_URL || "").trim()) {
++    console.error("BLOCKED: GAMEFOUNDRY_DATABASE_URL is missing; migration did not run and the legacy SQLite file was not moved.");
++    console.error("Run after configuring Postgres, for example:");
++    console.error("  node --use-system-ca scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs");
++    process.exitCode = 2;
++    return;
++  }
++  if (!String(process.env.GAMEFOUNDRY_DATABASE_SSL || "").trim()) {
++    console.error("BLOCKED: GAMEFOUNDRY_DATABASE_SSL is missing; migration did not run and the legacy SQLite file was not moved.");
++    console.error("Set GAMEFOUNDRY_DATABASE_SSL=disable for local Postgres or require for TLS Postgres.");
++    process.exitCode = 2;
++    return;
++  }
++  const result = await migrateLegacyCompletionMetricsSqliteToPostgres({
++    archiveDir: options.archiveDir,
++    dryRun: options.dryRun,
++    env: process.env,
++    legacyDbPath: exported.legacyDbPath,
++    pythonCommand: options.pythonCommand,
++  });
++  printSummary({
++    "Env file": envLoad.loaded ? `${envLoad.path} (${envLoad.loadedKeys.length} key(s) loaded)` : "not found",
++    "Legacy rows": result.legacyRowCount,
++    "Rows inserted": result.insertedCount,
++    "Rows already present": result.duplicateCount,
++    "Rows timestamp-patched": result.timestampPatchCount,
++    "Rows that would insert": result.wouldInsertCount,
++    "Rows that would patch timestamps": result.wouldPatchTimestampCount,
++    "Archive": result.archive.archived ? result.archive.archivePath : result.archive.message,
++    "Status": result.status,
++  });
++}
++
++main().catch((error) => {
++  console.error(error instanceof Error ? error.message : String(error || "Unknown migration failure."));
++  if (error?.details?.conflicts) {
++    console.error(JSON.stringify({ conflicts: error.details.conflicts }, null, 2));
++  }
++  process.exitCode = 1;
++});
+diff --git a/src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs b/src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs
+new file mode 100644
+index 000000000..e53bee7fe
+--- /dev/null
++++ b/src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs
+@@ -0,0 +1,433 @@
++import fs from "node:fs/promises";
++import { existsSync } from "node:fs";
++import path from "node:path";
++import { spawn } from "node:child_process";
++import process from "node:process";
++import {
++  GAME_JOURNEY_COMPLETION_METRICS_SCHEMA_SQL,
++  GAME_JOURNEY_COMPLETION_METRICS_TABLE,
++} from "./game-journey-completion-metrics-store.mjs";
++import { createPostgresConnectionClient } from "./postgres-connection-client.mjs";
++
++export const DEFAULT_GAME_JOURNEY_COMPLETION_METRICS_SQLITE_PATH = path.join(
++  process.cwd(),
++  "tmp",
++  "local-api",
++  "game-journey-completion-metrics.sqlite",
++);
++export const DEFAULT_GAME_JOURNEY_COMPLETION_METRICS_ARCHIVE_DIR = path.join(
++  process.cwd(),
++  "tmp",
++  "local-api",
++  "legacy-migrated",
++);
++
++const LEGACY_TABLE = GAME_JOURNEY_COMPLETION_METRICS_TABLE;
++const EXPECTED_COLUMNS = Object.freeze([
++  "key",
++  "bucketKey",
++  "bucketOrder",
++  "bucketName",
++  "friendlyDescription",
++  "requiredForMvp",
++  "canSkip",
++  "plannedCount",
++  "completedCount",
++  "active",
++  "status",
++  "createdAt",
++  "updatedAt",
++  "createdBy",
++  "updatedBy",
++]);
++
++const PYTHON_SQLITE_EXPORT_SCRIPT = String.raw`
++import json
++import sqlite3
++import sys
++
++db_path = sys.argv[1]
++connection = sqlite3.connect(db_path)
++connection.row_factory = sqlite3.Row
++try:
++    schema_objects = [
++        dict(row)
++        for row in connection.execute(
++            "SELECT name, type, sql FROM sqlite_master WHERE type IN ('table', 'index', 'trigger', 'view') ORDER BY type, name"
++        ).fetchall()
++    ]
++    columns = [
++        dict(row)
++        for row in connection.execute("PRAGMA table_info(game_journey_completion_metrics)").fetchall()
++    ]
++    rows = [
++        dict(row)
++        for row in connection.execute(
++            'SELECT * FROM "game_journey_completion_metrics" ORDER BY "bucketOrder", "bucketKey"'
++        ).fetchall()
++    ]
++    print(json.dumps({
++        "schema": {
++            "columns": columns,
++            "objects": schema_objects,
++        },
++        "rows": rows,
++    }))
++finally:
++    connection.close()
++`;
++
++export class GameJourneyCompletionMetricsMigrationError extends Error {
++  constructor(message, details = {}) {
++    super(message);
++    this.name = "GameJourneyCompletionMetricsMigrationError";
++    this.details = details;
++  }
++}
++
++function asText(value) {
++  return String(value ?? "").trim();
++}
++
++function normalizeCount(value, label) {
++  const parsed = Number(value);
++  if (!Number.isFinite(parsed) || parsed < 0) {
++    throw new GameJourneyCompletionMetricsMigrationError(`Invalid legacy ${label}: ${value}.`);
++  }
++  return Math.trunc(parsed);
++}
++
++function normalizeBoolean(value, label) {
++  if (value === true || value === 1 || value === "1" || value === "true" || value === "active") {
++    return true;
++  }
++  if (value === false || value === 0 || value === "0" || value === "false" || value === "inactive") {
++    return false;
++  }
++  throw new GameJourneyCompletionMetricsMigrationError(`Invalid legacy ${label}: ${value}.`);
++}
++
++function requireText(row, key) {
++  const value = asText(row?.[key]);
++  if (!value) {
++    throw new GameJourneyCompletionMetricsMigrationError(`Legacy row is missing required ${key}.`);
++  }
++  return value;
++}
++
++function normalizeStatus(row, active) {
++  const status = asText(row?.status) || (active ? "active" : "inactive");
++  if (!["active", "inactive"].includes(status)) {
++    throw new GameJourneyCompletionMetricsMigrationError(`Invalid legacy status: ${status}.`);
++  }
++  return status;
++}
++
++export function normalizeLegacyCompletionMetric(row) {
++  const plannedCount = normalizeCount(row?.plannedCount, "plannedCount");
++  const completedCount = normalizeCount(row?.completedCount, "completedCount");
++  if (completedCount > plannedCount) {
++    throw new GameJourneyCompletionMetricsMigrationError(
++      `Legacy completedCount ${completedCount} exceeds plannedCount ${plannedCount} for ${asText(row?.bucketKey) || "(missing bucketKey)"}.`,
++    );
++  }
++  const active = normalizeBoolean(row?.active, "active");
++  return {
++    active,
++    bucketKey: requireText(row, "bucketKey"),
++    bucketName: requireText(row, "bucketName"),
++    bucketOrder: normalizeCount(row?.bucketOrder, "bucketOrder"),
++    canSkip: normalizeBoolean(row?.canSkip, "canSkip"),
++    completedCount,
++    createdAt: requireText(row, "createdAt"),
++    createdBy: requireText(row, "createdBy"),
++    friendlyDescription: requireText(row, "friendlyDescription"),
++    key: requireText(row, "key"),
++    plannedCount,
++    requiredForMvp: normalizeBoolean(row?.requiredForMvp, "requiredForMvp"),
++    status: normalizeStatus(row, active),
++    updatedAt: requireText(row, "updatedAt"),
++    updatedBy: requireText(row, "updatedBy"),
++  };
++}
++
++function validateLegacySchema(exported) {
++  const table = exported?.schema?.objects?.find((object) => object.type === "table" && object.name === LEGACY_TABLE);
++  if (!table) {
++    throw new GameJourneyCompletionMetricsMigrationError(`Legacy SQLite file does not contain ${LEGACY_TABLE}.`);
++  }
++  const columns = new Set((exported?.schema?.columns || []).map((column) => String(column.name || "")));
++  const missingColumns = EXPECTED_COLUMNS.filter((column) => !columns.has(column));
++  if (missingColumns.length) {
++    throw new GameJourneyCompletionMetricsMigrationError(
++      `Legacy SQLite ${LEGACY_TABLE} is missing required columns: ${missingColumns.join(", ")}.`,
++      { missingColumns },
++    );
++  }
++}
++
++function assertUniqueLegacyRows(rows) {
++  const seenKeys = new Set();
++  const seenBucketKeys = new Set();
++  rows.forEach((row) => {
++    if (seenKeys.has(row.key)) {
++      throw new GameJourneyCompletionMetricsMigrationError(`Duplicate legacy key detected before migration: ${row.key}.`);
++    }
++    if (seenBucketKeys.has(row.bucketKey)) {
++      throw new GameJourneyCompletionMetricsMigrationError(`Duplicate legacy bucketKey detected before migration: ${row.bucketKey}.`);
++    }
++    seenKeys.add(row.key);
++    seenBucketKeys.add(row.bucketKey);
++  });
++}
++
++function comparableRow(row) {
++  const normalized = normalizeLegacyCompletionMetric(row);
++  return EXPECTED_COLUMNS.reduce((record, key) => {
++    record[key] = normalized[key];
++    return record;
++  }, {});
++}
++
++function rowsMatch(left, right) {
++  const normalizedLeft = comparableRow(left);
++  const normalizedRight = comparableRow(right);
++  return EXPECTED_COLUMNS.every((key) => normalizedLeft[key] === normalizedRight[key]);
++}
++
++function differingColumns(left, right) {
++  const normalizedLeft = comparableRow(left);
++  const normalizedRight = comparableRow(right);
++  return EXPECTED_COLUMNS.filter((key) => normalizedLeft[key] !== normalizedRight[key]);
++}
++
++export function classifyLegacyCompletionMetricRows({ existingRows = [], legacyRows = [] } = {}) {
++  const existingByKey = new Map(existingRows.map((row) => [String(row.key || ""), row]));
++  const existingByBucketKey = new Map(existingRows.map((row) => [String(row.bucketKey || ""), row]));
++  const duplicates = [];
++  const conflicts = [];
++  const inserts = [];
++  const timestampPatches = [];
++  legacyRows.forEach((legacyRow) => {
++    const existing = existingByKey.get(legacyRow.key) || existingByBucketKey.get(legacyRow.bucketKey);
++    if (!existing) {
++      inserts.push(legacyRow);
++      return;
++    }
++    if (rowsMatch(legacyRow, existing)) {
++      duplicates.push({
++        bucketKey: legacyRow.bucketKey,
++        key: legacyRow.key,
++        reason: "already present in Postgres with matching data",
++      });
++      return;
++    }
++    const diffs = differingColumns(legacyRow, existing);
++    if (diffs.every((column) => column === "createdAt" || column === "updatedAt")) {
++      timestampPatches.push({
++        bucketKey: legacyRow.bucketKey,
++        createdAt: legacyRow.createdAt,
++        key: legacyRow.key,
++        reason: "Postgres row matched legacy data except timestamps; preserving legacy createdAt/updatedAt.",
++        updatedAt: legacyRow.updatedAt,
++      });
++      return;
++    }
++    conflicts.push({
++      bucketKey: legacyRow.bucketKey,
++      existingKey: String(existing.key || ""),
++      key: legacyRow.key,
++      reason: `Postgres already contains a different row for this key or bucketKey (${diffs.join(", ")} differ).`,
++    });
++  });
++  return { conflicts, duplicates, inserts, timestampPatches };
++}
++
++function spawnPythonExport({ legacyDbPath, pythonCommand }) {
++  return new Promise((resolve, reject) => {
++    const child = spawn(pythonCommand, ["-", legacyDbPath], {
++      stdio: ["pipe", "pipe", "pipe"],
++      windowsHide: true,
++    });
++    let stdout = "";
++    let stderr = "";
++    child.stdout.setEncoding("utf8");
++    child.stderr.setEncoding("utf8");
++    child.stdout.on("data", (chunk) => {
++      stdout += chunk;
++    });
++    child.stderr.on("data", (chunk) => {
++      stderr += chunk;
++    });
++    child.once("error", reject);
++    child.once("close", (code) => {
++      if (code === 0) {
++        resolve(stdout);
++        return;
++      }
++      reject(new GameJourneyCompletionMetricsMigrationError(
++        `Python SQLite export failed with exit code ${code}. ${stderr.trim()}`,
++        { stderr: stderr.trim() },
++      ));
++    });
++    child.stdin.end(PYTHON_SQLITE_EXPORT_SCRIPT);
++  });
++}
++
++export async function readLegacyCompletionMetricsSqlite({ legacyDbPath, pythonCommand = "python" } = {}) {
++  const resolvedPath = path.resolve(legacyDbPath || DEFAULT_GAME_JOURNEY_COMPLETION_METRICS_SQLITE_PATH);
++  if (!existsSync(resolvedPath)) {
++    throw new GameJourneyCompletionMetricsMigrationError(`Legacy SQLite file was not found: ${resolvedPath}.`);
++  }
++  const stdout = await spawnPythonExport({ legacyDbPath: resolvedPath, pythonCommand });
++  let exported;
++  try {
++    exported = JSON.parse(stdout);
++  } catch (error) {
++    throw new GameJourneyCompletionMetricsMigrationError(
++      `Python SQLite export did not return valid JSON: ${error instanceof Error ? error.message : String(error)}.`,
++    );
++  }
++  validateLegacySchema(exported);
++  const rows = (exported.rows || []).map(normalizeLegacyCompletionMetric);
++  assertUniqueLegacyRows(rows);
++  return {
++    legacyDbPath: resolvedPath,
++    rowCount: rows.length,
++    rows,
++    schema: exported.schema,
++  };
++}
++
++async function nextArchivePath({ archiveDir, legacyDbPath, now = new Date() }) {
++  await fs.mkdir(archiveDir, { recursive: true });
++  const parsed = path.parse(legacyDbPath);
++  const stamp = now.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
++  for (let index = 0; index < 100; index += 1) {
++    const suffix = index === 0 ? "" : `-${index + 1}`;
++    const candidate = path.join(archiveDir, `${parsed.name}-${stamp}${suffix}${parsed.ext || ".sqlite"}`);
++    if (!existsSync(candidate)) {
++      return candidate;
++    }
++  }
++  throw new GameJourneyCompletionMetricsMigrationError(`Could not allocate archive path in ${archiveDir}.`);
++}
++
++export async function archiveLegacyCompletionMetricsSqlite({ archiveDir, legacyDbPath, now = new Date() } = {}) {
++  const resolvedLegacyPath = path.resolve(legacyDbPath || DEFAULT_GAME_JOURNEY_COMPLETION_METRICS_SQLITE_PATH);
++  const resolvedArchiveDir = path.resolve(archiveDir || DEFAULT_GAME_JOURNEY_COMPLETION_METRICS_ARCHIVE_DIR);
++  if (!existsSync(resolvedLegacyPath)) {
++    return {
++      archived: false,
++      archivePath: "",
++      legacyDbPath: resolvedLegacyPath,
++      message: "Legacy SQLite file was already absent.",
++    };
++  }
++  const archivePath = await nextArchivePath({
++    archiveDir: resolvedArchiveDir,
++    legacyDbPath: resolvedLegacyPath,
++    now,
++  });
++  await fs.rename(resolvedLegacyPath, archivePath);
++  return {
++    archived: true,
++    archivePath,
++    legacyDbPath: resolvedLegacyPath,
++    message: `Legacy SQLite file moved to ${archivePath}.`,
++  };
++}
++
++export async function migrateLegacyCompletionMetricRowsToPostgres({
++  archiveDir,
++  dryRun = false,
++  env = process.env,
++  legacyDbPath,
++  now = new Date(),
++  postgresClient = null,
++  rows = [],
++} = {}) {
++  const legacyRows = rows.map(normalizeLegacyCompletionMetric);
++  assertUniqueLegacyRows(legacyRows);
++  const client = postgresClient || createPostgresConnectionClient({ env });
++  await client.query(GAME_JOURNEY_COMPLETION_METRICS_SCHEMA_SQL);
++  const existingRows = await client.requestTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE, {
++    method: "GET",
++    query: "select=*",
++  });
++  const classified = classifyLegacyCompletionMetricRows({
++    existingRows: Array.isArray(existingRows) ? existingRows : [],
++    legacyRows,
++  });
++  if (classified.conflicts.length) {
++    throw new GameJourneyCompletionMetricsMigrationError(
++      `Game Journey completion metrics migration blocked by ${classified.conflicts.length} Postgres conflict(s). No data was moved.`,
++      { conflicts: classified.conflicts },
++    );
++  }
++  if (!dryRun && classified.inserts.length) {
++    await client.requestTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE, {
++      body: classified.inserts,
++      method: "POST",
++      query: "on_conflict=key",
++    });
++  }
++  if (!dryRun) {
++    for (const patch of classified.timestampPatches) {
++      await client.requestTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE, {
++        body: {
++          createdAt: patch.createdAt,
++          updatedAt: patch.updatedAt,
++        },
++        method: "PATCH",
++        query: `bucketKey=eq.${encodeURIComponent(patch.bucketKey)}`,
++      });
++    }
++  }
++  const archive = dryRun
++    ? {
++      archived: false,
++      archivePath: "",
++      legacyDbPath: path.resolve(legacyDbPath || DEFAULT_GAME_JOURNEY_COMPLETION_METRICS_SQLITE_PATH),
++      message: "Dry run did not move the legacy SQLite file.",
++    }
++    : await archiveLegacyCompletionMetricsSqlite({ archiveDir, legacyDbPath, now });
++  return {
++    archive,
++    duplicateCount: classified.duplicates.length,
++    duplicates: classified.duplicates,
++    insertedCount: dryRun ? 0 : classified.inserts.length,
++    legacyRowCount: legacyRows.length,
++    status: dryRun ? "DRY_RUN" : "PASS",
++    timestampPatchCount: dryRun ? 0 : classified.timestampPatches.length,
++    timestampPatches: classified.timestampPatches,
++    wouldInsertCount: classified.inserts.length,
++    wouldPatchTimestampCount: classified.timestampPatches.length,
++  };
++}
++
++export async function migrateLegacyCompletionMetricsSqliteToPostgres({
++  archiveDir,
++  dryRun = false,
++  env = process.env,
++  legacyDbPath,
++  now = new Date(),
++  postgresClient = null,
++  pythonCommand = "python",
++} = {}) {
++  const exported = await readLegacyCompletionMetricsSqlite({ legacyDbPath, pythonCommand });
++  const result = await migrateLegacyCompletionMetricRowsToPostgres({
++    archiveDir,
++    dryRun,
++    env,
++    legacyDbPath: exported.legacyDbPath,
++    now,
++    postgresClient,
++    rows: exported.rows,
++  });
++  return {
++    ...result,
++    legacyDbPath: exported.legacyDbPath,
++    schemaObjectCount: exported.schema.objects.length,
++  };
++}
+diff --git a/tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs b/tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs
+new file mode 100644
+index 000000000..6428e63e8
+--- /dev/null
++++ b/tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs
+@@ -0,0 +1,194 @@
++import assert from "node:assert/strict";
++import fs from "node:fs/promises";
++import os from "node:os";
++import path from "node:path";
++import test from "node:test";
++import {
++  GAME_JOURNEY_COMPLETION_METRICS_TABLE,
++} from "../../src/dev-runtime/persistence/game-journey-completion-metrics-store.mjs";
++import {
++  migrateLegacyCompletionMetricRowsToPostgres,
++} from "../../src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs";
++import { createGameJourneyCompletionMetricsPostgresClientStub } from "../helpers/gameJourneyCompletionMetricsPostgresClientStub.mjs";
++
++const LEGACY_ROW = Object.freeze({
++  active: 1,
++  bucketKey: "002-create",
++  bucketName: "Create",
++  bucketOrder: 2,
++  canSkip: 0,
++  completedCount: 3,
++  createdAt: "2026-06-20T01:52:14.797Z",
++  createdBy: "01K2GFSJ0Y0000000000000054",
++  friendlyDescription: "Set up your game and crew",
++  key: "01K2GFSJ0Y0000000000006002",
++  plannedCount: 5,
++  requiredForMvp: 1,
++  status: "active",
++  updatedAt: "2026-06-21T03:04:05.000Z",
++  updatedBy: "01K2GFSJ0Y0000000000000054",
++});
++
++async function tempLegacyFile() {
++  const directory = await fs.mkdtemp(path.join(os.tmpdir(), "gfs-game-journey-migration-"));
++  const legacyDbPath = path.join(directory, "game-journey-completion-metrics.sqlite");
++  const archiveDir = path.join(directory, "legacy-migrated");
++  await fs.writeFile(legacyDbPath, "legacy sqlite placeholder");
++  return { archiveDir, directory, legacyDbPath };
++}
++
++test("Game Journey completion metrics migration inserts valid rows and archives legacy SQLite after success", async () => {
++  const postgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
++  const paths = await tempLegacyFile();
++  try {
++    const result = await migrateLegacyCompletionMetricRowsToPostgres({
++      archiveDir: paths.archiveDir,
++      legacyDbPath: paths.legacyDbPath,
++      now: new Date("2026-06-25T12:00:00.000Z"),
++      postgresClient,
++      rows: [LEGACY_ROW],
++    });
++
++    assert.equal(result.status, "PASS");
++    assert.equal(result.insertedCount, 1);
++    assert.equal(result.duplicateCount, 0);
++    assert.equal(result.archive.archived, true);
++    assert.equal(await fs.stat(paths.legacyDbPath).then(() => true, () => false), false);
++    assert.equal(await fs.stat(result.archive.archivePath).then(() => true, () => false), true);
++    assert.match(result.archive.archivePath, /legacy-migrated[\\/]+game-journey-completion-metrics-20260625T120000Z\.sqlite$/);
++    assert.deepEqual(postgresClient.dumpTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE), [
++      {
++        ...LEGACY_ROW,
++        active: true,
++        canSkip: false,
++        requiredForMvp: true,
++      },
++    ]);
++  } finally {
++    await fs.rm(paths.directory, { force: true, recursive: true });
++  }
++});
++
++test("Game Journey completion metrics migration detects Postgres conflicts without moving legacy SQLite", async () => {
++  const postgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
++  const paths = await tempLegacyFile();
++  await postgresClient.requestTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE, {
++    body: {
++      ...LEGACY_ROW,
++      active: true,
++      canSkip: false,
++      completedCount: 1,
++      requiredForMvp: true,
++    },
++    method: "POST",
++  });
++
++  try {
++    await assert.rejects(
++      () => migrateLegacyCompletionMetricRowsToPostgres({
++        archiveDir: paths.archiveDir,
++        legacyDbPath: paths.legacyDbPath,
++        postgresClient,
++        rows: [LEGACY_ROW],
++      }),
++      /migration blocked by 1 Postgres conflict/,
++    );
++    assert.equal(await fs.stat(paths.legacyDbPath).then(() => true, () => false), true);
++  } finally {
++    await fs.rm(paths.directory, { force: true, recursive: true });
++  }
++});
++
++test("Game Journey completion metrics migration archives when legacy rows are already present unchanged", async () => {
++  const postgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
++  const paths = await tempLegacyFile();
++  await postgresClient.requestTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE, {
++    body: {
++      ...LEGACY_ROW,
++      active: true,
++      canSkip: false,
++      requiredForMvp: true,
++    },
++    method: "POST",
++  });
++
++  try {
++    const result = await migrateLegacyCompletionMetricRowsToPostgres({
++      archiveDir: paths.archiveDir,
++      legacyDbPath: paths.legacyDbPath,
++      postgresClient,
++      rows: [LEGACY_ROW],
++    });
++
++    assert.equal(result.insertedCount, 0);
++    assert.equal(result.duplicateCount, 1);
++    assert.equal(result.archive.archived, true);
++    assert.equal(await fs.stat(paths.legacyDbPath).then(() => true, () => false), false);
++  } finally {
++    await fs.rm(paths.directory, { force: true, recursive: true });
++  }
++});
++
++test("Game Journey completion metrics migration preserves legacy timestamps for otherwise matching Postgres rows", async () => {
++  const postgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
++  const paths = await tempLegacyFile();
++  await postgresClient.requestTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE, {
++    body: {
++      ...LEGACY_ROW,
++      active: true,
++      canSkip: false,
++      createdAt: "2026-06-25T00:00:00.000Z",
++      requiredForMvp: true,
++      updatedAt: "2026-06-25T00:00:00.000Z",
++    },
++    method: "POST",
++  });
++
++  try {
++    const result = await migrateLegacyCompletionMetricRowsToPostgres({
++      archiveDir: paths.archiveDir,
++      legacyDbPath: paths.legacyDbPath,
++      postgresClient,
++      rows: [LEGACY_ROW],
++    });
++
++    assert.equal(result.insertedCount, 0);
++    assert.equal(result.duplicateCount, 0);
++    assert.equal(result.timestampPatchCount, 1);
++    assert.equal(result.archive.archived, true);
++    assert.deepEqual(postgresClient.dumpTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE)[0], {
++      ...LEGACY_ROW,
++      active: true,
++      canSkip: false,
++      requiredForMvp: true,
++    });
++  } finally {
++    await fs.rm(paths.directory, { force: true, recursive: true });
++  }
++});
++
++test("Game Journey completion metrics migration rejects duplicate legacy bucket keys before writing", async () => {
++  const postgresClient = createGameJourneyCompletionMetricsPostgresClientStub();
++  const paths = await tempLegacyFile();
++  try {
++    await assert.rejects(
++      () => migrateLegacyCompletionMetricRowsToPostgres({
++        archiveDir: paths.archiveDir,
++        legacyDbPath: paths.legacyDbPath,
++        postgresClient,
++        rows: [
++          LEGACY_ROW,
++          {
++            ...LEGACY_ROW,
++            key: "01K2GFSJ0Y0000000000006999",
++          },
++        ],
++      }),
++      /Duplicate legacy bucketKey/,
++    );
++    assert.equal(postgresClient.dumpTable(GAME_JOURNEY_COMPLETION_METRICS_TABLE).length, 0);
++    assert.equal(await fs.stat(paths.legacyDbPath).then(() => true, () => false), true);
++  } finally {
++    await fs.rm(paths.directory, { force: true, recursive: true });
++  }
++});
