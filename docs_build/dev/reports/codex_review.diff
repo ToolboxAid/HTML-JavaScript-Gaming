@@ -1,101 +1,83 @@
-diff --git a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-index 0dc1ef5ec..de7ad4681 100644
---- a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-+++ b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-@@ -249,7 +249,8 @@ Current OWNER clarification:
-   - Completion reference: PR_26175_DELTA_001_Runtime_Performance_Optimization.
- - [x] Delta - Engine test coverage improvements
-   - Completed by PR_26175_DELTA_004_Runtime_Test_Expansion.
--- [ ] Delta - Event system audit
-+- [x] Delta - Event system audit
-+  - Completed by PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup.
- - [ ] Delta - Controls runtime framework audit
- - [ ] Delta - Object runtime framework audit
- - [ ] Delta - World runtime framework audit
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-branch-validation.md b/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-branch-validation.md
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_006-runtime-validation-harness-branch-validation.md b/docs_build/dev/reports/PR_26175_DELTA_006-runtime-validation-harness-branch-validation.md
 new file mode 100644
-index 000000000..c86256005
+index 000000000..80ae83179
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-branch-validation.md
++++ b/docs_build/dev/reports/PR_26175_DELTA_006-runtime-validation-harness-branch-validation.md
 @@ -0,0 +1,15 @@
-+# PR_26175_DELTA_005 Branch Validation
++# PR_26175_DELTA_006 Branch Validation
 +
 +| Gate | Status | Evidence |
 +| --- | --- | --- |
-+| Current branch before work | PASS | `main` after PR_004 merge |
++| Current branch before work | PASS | `main` |
 +| Worktree before work | PASS | Clean |
 +| Local/origin sync before work | PASS | `0 0` |
-+| Team ownership | PASS | Team Delta owns Runtime, Event systems, Shared JS, Performance, and technical debt remediation. |
-+| Work branch | PASS | `PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup` |
-+| Previous Delta PR closed | PASS | PR_004 was merged and `main` was verified before PR_005 started. |
-+| Scope boundary | PASS | Runtime event clone cleanup, focused test update, backlog, and reports only. |
++| Team ownership | PASS | Team Delta owns Runtime, Shared JS, API clients, Event systems, Performance, technical debt remediation, and runtime test coverage. |
++| Work branch | PASS | `PR_26175_DELTA_006-runtime-validation-harness` |
++| Scope boundary | PASS | Harness and package script only; no runtime or UI behavior changed. |
++| Project Instructions read | PASS | Every file under `docs_build/dev/ProjectInstructions/` was read before implementation. |
 +
-+## Instruction Reads
++## Merge Approval
 +
-+PASS - All files under `docs_build/dev/ProjectInstructions/` were read before the Delta sequence, and updated instructions were reread after pulling latest `main`.
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-manual-validation-notes.md b/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-manual-validation-notes.md
++PENDING - Current governance requires OWNER approval before merge to `main`.
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_006-runtime-validation-harness-manual-validation-notes.md b/docs_build/dev/reports/PR_26175_DELTA_006-runtime-validation-harness-manual-validation-notes.md
 new file mode 100644
-index 000000000..835bc982d
+index 000000000..ab23af104
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-manual-validation-notes.md
++++ b/docs_build/dev/reports/PR_26175_DELTA_006-runtime-validation-harness-manual-validation-notes.md
 @@ -0,0 +1,15 @@
-+# PR_26175_DELTA_005 Manual Validation Notes
++# PR_26175_DELTA_006 Manual Validation Notes
 +
 +## Manual Review
 +
-+- Confirmed the removed local clone helper was replaced with `cloneRuntimeValue(...)`.
-+- Confirmed event output clone/freeze expectations remain covered by tests.
-+- Confirmed no Theme V2, UI, API client, browser-owned data, or status bar files changed.
++- Confirmed the harness maps DELTA_001 through DELTA_005 to targeted automated test files.
++- Confirmed no runtime implementation, UI, browser-owned data, Local API/Local DB behavior, or status bar files changed.
++- Confirmed no fake-login, MEM DB, local-mem, silent fallback, or hidden default behavior was introduced.
 +
 +## Manual Validation
 +
-+PASS - Code review found no unrelated runtime behavior change.
++PASS - Code review found the change limited to validation orchestration and package script exposure.
 +
 +## Follow-Up
 +
-+- The requested five-PR Delta sequence is complete after this PR merges and `main` is verified.
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-requirement-checklist.md b/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-requirement-checklist.md
++- PR_26175_DELTA_007 should add deeper API client regression coverage after PR_006 is merged and `main` is verified.
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_006-runtime-validation-harness-requirement-checklist.md b/docs_build/dev/reports/PR_26175_DELTA_006-runtime-validation-harness-requirement-checklist.md
 new file mode 100644
-index 000000000..3488f5872
+index 000000000..92b01ff6f
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-requirement-checklist.md
++++ b/docs_build/dev/reports/PR_26175_DELTA_006-runtime-validation-harness-requirement-checklist.md
 @@ -0,0 +1,19 @@
-+# PR_26175_DELTA_005 Requirement Checklist
++# PR_26175_DELTA_006 Requirement Checklist
 +
 +| Requirement | Status | Notes |
 +| --- | --- | --- |
-+| Team Delta ownership only | PASS | Runtime event-system cleanup is Delta-owned. |
-+| One PR purpose | PASS | Shared runtime clone adoption in event publishing only. |
-+| Preserve backward compatibility | PASS | Event, trigger, action, and final systems validation passed. |
-+| Update backlog | PASS | `Delta - Event system audit` marked complete. |
-+| Update tool state if applicable | PASS | Not applicable; no tool tile/status changed. |
-+| Produce governance reports | PASS | Summary, branch validation, checklist, validation lane, manual notes, Codex diff, changed-file list, and ZIP. |
-+| Runtime validation | PASS | Focused runtime tests and final systems test passed. |
-+| No unrelated files | PASS | Changes are limited to event runtime cleanup, focused test, backlog, and reports. |
-+| No branch deletion | PASS | Source branch retained. |
++| Team Delta ownership only | PASS | Runtime validation harness is Delta-owned. |
++| One PR purpose only | PASS | Adds one targeted Delta runtime validation harness. |
++| No UI changes unless required | PASS | No UI files changed. |
++| No browser-owned product data | PASS | No product data or browser storage contract changed. |
++| No fake-login, MEM DB, local-mem, silent fallback, or hidden defaults | PASS | Harness invokes existing tests only and adds no data-source fallback. |
++| DEV terminology current direction | PASS | No deprecated data-source terminology introduced. |
++| Required reports | PASS | Summary, branch validation, checklist, validation lane, manual notes, Codex diff, changed-file list, and ZIP are included. |
++| Targeted automated validation | PASS | `npm run test:delta-runtime` passed. |
++| Full samples smoke skipped by default | PASS | Full samples smoke was not run. |
++| Legacy `test:workspace-v2` avoided | PASS | Narrower Delta harness exists, so the legacy command was not used. |
 +
 +## Compatibility Notes
 +
-+- `publishRuntimeEvents(...)` public output shape is unchanged.
-+- The shared runtime clone helper keeps the existing JSON fallback path when `structuredClone` is unavailable.
-+- PR_005 does not touch status bar, Theme V2, browser-owned data, or unrelated tool runtime code.
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-validation.md b/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-validation.md
++- Existing individual test files remain directly runnable.
++- The new package script only aggregates targeted existing lanes.
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_006-runtime-validation-harness-validation.md b/docs_build/dev/reports/PR_26175_DELTA_006-runtime-validation-harness-validation.md
 new file mode 100644
-index 000000000..1285e5bb6
+index 000000000..78ce64be6
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-validation.md
-@@ -0,0 +1,33 @@
-+# PR_26175_DELTA_005 Validation Lane
++++ b/docs_build/dev/reports/PR_26175_DELTA_006-runtime-validation-harness-validation.md
+@@ -0,0 +1,29 @@
++# PR_26175_DELTA_006 Validation Lane
 +
 +## Commands
 +
 +```powershell
-+node --check src/engine/runtime/runtimeEventSystem.js
-+node --check tests/engine/RuntimeEventSystem.test.mjs
-+node tests/engine/RuntimeEventSystem.test.mjs
-+node tests/engine/RuntimeTriggerProcessing.test.mjs
-+node tests/engine/RuntimeActionSystem.test.mjs
-+node tests/final/FinalSystems.test.mjs
++node --check scripts/run-delta-runtime-validation.mjs
++npm run test:delta-runtime
 +git diff --check
 +```
 +
@@ -103,12 +85,8 @@ index 000000000..1285e5bb6
 +
 +| Command | Status |
 +| --- | --- |
-+| `node --check src/engine/runtime/runtimeEventSystem.js` | PASS |
-+| `node --check tests/engine/RuntimeEventSystem.test.mjs` | PASS |
-+| `node tests/engine/RuntimeEventSystem.test.mjs` | PASS |
-+| `node tests/engine/RuntimeTriggerProcessing.test.mjs` | PASS |
-+| `node tests/engine/RuntimeActionSystem.test.mjs` | PASS |
-+| `node tests/final/FinalSystems.test.mjs` | PASS |
++| `node --check scripts/run-delta-runtime-validation.mjs` | PASS |
++| `npm run test:delta-runtime` | PASS |
 +| `git diff --check` | PASS |
 +
 +## Browser Validation
@@ -117,51 +95,50 @@ index 000000000..1285e5bb6
 +
 +## Playwright Validation
 +
-+SKIP - Runtime event technical debt cleanup is covered by focused Node tests.
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup.md b/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup.md
++SKIP - No UI or browser runtime changed; the narrower Node harness is the relevant validation lane.
++
++## Full Samples Smoke
++
++SKIP - Not run by default per instruction.
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_006-runtime-validation-harness.md b/docs_build/dev/reports/PR_26175_DELTA_006-runtime-validation-harness.md
 new file mode 100644
-index 000000000..ca5c32c49
+index 000000000..6360c2315
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup.md
-@@ -0,0 +1,52 @@
-+# PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup
++++ b/docs_build/dev/reports/PR_26175_DELTA_006-runtime-validation-harness.md
+@@ -0,0 +1,47 @@
++# PR_26175_DELTA_006-runtime-validation-harness
 +
 +## Summary
 +
-+Team Delta cleaned up runtime event-system clone debt by moving event publishing onto the shared runtime clone helper.
++Team Delta added a targeted validation harness for the already-merged DELTA_001 through DELTA_005 workstream.
 +
-+`runtimeEventSystem.js` now uses `cloneRuntimeValue(...)` from `src/shared/runtime/snapshotClone.js`, removing its local JSON clone helper. The runtime event test now covers the shared-helper fallback path with `structuredClone` unavailable.
++The new `npm run test:delta-runtime` command runs the exact automated lanes that prove the runtime tick optimization, replay clone consolidation, API client standardization, runtime event coverage, and runtime event clone cleanup remain testable without invoking full samples smoke or broad Workspace V2 validation.
 +
 +## Scope
 +
 +- Team: Delta
-+- Backlog item: `Delta - Event system audit`
-+- Runtime file changed: `src/engine/runtime/runtimeEventSystem.js`
-+- Test file changed: `tests/engine/RuntimeEventSystem.test.mjs`
-+- Backlog updated: `docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md`
++- Purpose: Runtime validation harness only
++- Script added: `scripts/run-delta-runtime-validation.mjs`
++- Package script added: `test:delta-runtime`
++- Runtime code changed: none
++- UI changed: none
++- Browser-owned product data changed: none
 +
-+## Runtime Impact
++## Harness Coverage
 +
-+PASS - Event publishing behavior remains backward compatible.
-+
-+- Published event payloads are still cloned before output.
-+- Runtime event output records remain frozen.
-+- Existing event, trigger, action, and final systems validation continues to pass.
-+- Runtime event cloning now uses the same shared clone path as other Delta runtime consolidation work.
++| Delta work | Targeted lane |
++| --- | --- |
++| DELTA_001 runtime tick optimization | `tests/engine/RuntimeTickLoop.test.mjs` |
++| DELTA_002 replay clone consolidation | `tests/replay/ReplaySystem.test.mjs` |
++| DELTA_003 API client standardization | `tests/dev-runtime/ServerApiClientStandardization.test.mjs` |
++| DELTA_004 runtime event coverage | `tests/engine/RuntimeEventSystem.test.mjs` |
++| DELTA_005 runtime event clone cleanup | `tests/engine/RuntimeTriggerProcessing.test.mjs` |
++| DELTA_005 action/event integration | `tests/engine/RuntimeActionSystem.test.mjs` |
++| Delta closeout regression | `tests/final/FinalSystems.test.mjs` |
 +
 +## Backlog Update
 +
-+PASS - `Delta - Event system audit` is marked complete with this PR as the completion reference.
-+
-+## Team Delta Sequence Completion
-+
-+| PR | Status | Result |
-+| --- | --- | --- |
-+| `PR_26175_DELTA_001_Runtime_Performance_Optimization` | PASS | Merged to `main`. |
-+| `PR_26175_DELTA_002_Shared_Runtime_Consolidation` | PASS | Merged to `main`. |
-+| `PR_26175_DELTA_003_API_Client_Standardization` | PASS | Merged to `main`. |
-+| `PR_26175_DELTA_004_Runtime_Test_Expansion` | PASS | Merged to `main`. |
-+| `PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup` | PASS | Prepared for validation and merge. |
++SKIP - This OWNER-assigned follow-up adds validation harnessing for completed Delta work and does not change a backlog source item.
 +
 +## Tool State Update
 +
@@ -169,78 +146,80 @@ index 000000000..ca5c32c49
 +
 +## Validation Summary
 +
-+PASS - Focused runtime event, trigger, action, and final systems validation completed.
++PASS - `npm run test:delta-runtime` passed all seven targeted lanes.
 +
-+See `PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup-validation.md` for command details.
++See `PR_26175_DELTA_006-runtime-validation-harness-validation.md` for command details.
 +
 +## Branch Disposition
 +
 +Source branch should be retained after merge unless OWNER later approves branch deletion.
-diff --git a/src/engine/runtime/runtimeEventSystem.js b/src/engine/runtime/runtimeEventSystem.js
-index eba44a68f..87736411d 100644
---- a/src/engine/runtime/runtimeEventSystem.js
-+++ b/src/engine/runtime/runtimeEventSystem.js
-@@ -5,6 +5,8 @@ David Quesenberry
- runtimeEventSystem.js
- */
-
-+import { cloneRuntimeValue } from "../../shared/runtime/snapshotClone.js";
+diff --git a/package.json b/package.json
+index 72c3c9c32..f6358b18a 100644
+--- a/package.json
++++ b/package.json
+@@ -20,6 +20,7 @@
+     "test:lane:game-hub": "node ./scripts/run-targeted-test-lanes.mjs --lane game-hub",
+     "test:lane:tool-runtime": "node ./scripts/run-targeted-test-lanes.mjs --lane tool-runtime",
+     "test:lane:game-runtime": "node ./scripts/run-targeted-test-lanes.mjs --lane game-runtime",
++    "test:delta-runtime": "node ./scripts/run-delta-runtime-validation.mjs",
+     "test:lane:integration": "node ./scripts/run-targeted-test-lanes.mjs --lane integration",
+     "test:lane:engine-src": "node ./scripts/run-targeted-test-lanes.mjs --lane engine-src",
+     "test:lane:samples": "node ./scripts/run-targeted-test-lanes.mjs --lane samples --include-samples",
+diff --git a/scripts/run-delta-runtime-validation.mjs b/scripts/run-delta-runtime-validation.mjs
+new file mode 100644
+index 000000000..f9849a071
+--- /dev/null
++++ b/scripts/run-delta-runtime-validation.mjs
+@@ -0,0 +1,52 @@
++import { spawnSync } from "node:child_process";
 +
- export const RUNTIME_EVENT_ERRORS = Object.freeze({
-   CONDITION_MATCHES_INVALID: "RUNTIME_EVENT_CONDITION_MATCHES_INVALID",
-   RUNTIME_EVENTS_INVALID: "RUNTIME_EVENT_RUNTIME_EVENTS_INVALID",
-@@ -53,11 +55,11 @@ export function publishRuntimeEvents(conditionMatches, runtimeEvents) {
-     eventId: `event.${conditionMatch.eventType}.${conditionMatch.conditionId}.${index}`,
-     eventType: conditionMatch.eventType,
-     conditionId: conditionMatch.conditionId,
--    payload: Object.freeze(cloneJson(conditionMatch.payload)),
-+    payload: Object.freeze(cloneRuntimeValue(conditionMatch.payload)),
-   }));
-
-   return createEventPublishResult({
--    runtimeEvents: [...runtimeEvents, ...publishedEvents].map((runtimeEvent) => Object.freeze(cloneJson(runtimeEvent))),
-+    runtimeEvents: [...runtimeEvents, ...publishedEvents].map((runtimeEvent) => Object.freeze(cloneRuntimeValue(runtimeEvent))),
-     publishedEvents,
-     errors,
-   });
-@@ -146,10 +148,6 @@ function createEventError(code, message, path) {
-   return Object.freeze({ code, message, path });
- }
-
--function cloneJson(value) {
--  return JSON.parse(JSON.stringify(value));
--}
--
- function isRecord(value) {
-   return value !== null && typeof value === "object" && !Array.isArray(value);
- }
-diff --git a/tests/engine/RuntimeEventSystem.test.mjs b/tests/engine/RuntimeEventSystem.test.mjs
-index 1cb9ca85d..9a0b1fc01 100644
---- a/tests/engine/RuntimeEventSystem.test.mjs
-+++ b/tests/engine/RuntimeEventSystem.test.mjs
-@@ -87,6 +87,25 @@ export function run() {
-   assert.throws(() => {
-     clonedResult.runtimeEvents[0].eventId = "event.changed";
-   }, TypeError);
++const validationLanes = Object.freeze([
++  {
++    id: "DELTA_001 runtime tick optimization",
++    args: ["tests/engine/RuntimeTickLoop.test.mjs"],
++  },
++  {
++    id: "DELTA_002 replay clone consolidation",
++    args: ["tests/replay/ReplaySystem.test.mjs"],
++  },
++  {
++    id: "DELTA_003 API client standardization",
++    args: ["tests/dev-runtime/ServerApiClientStandardization.test.mjs"],
++  },
++  {
++    id: "DELTA_004 event system coverage",
++    args: ["tests/engine/RuntimeEventSystem.test.mjs"],
++  },
++  {
++    id: "DELTA_005 event clone cleanup",
++    args: ["tests/engine/RuntimeTriggerProcessing.test.mjs"],
++  },
++  {
++    id: "DELTA_005 action/event integration",
++    args: ["tests/engine/RuntimeActionSystem.test.mjs"],
++  },
++  {
++    id: "Delta closeout systems regression",
++    args: ["tests/final/FinalSystems.test.mjs"],
++  },
++]);
 +
-+  const nativeStructuredClone = globalThis.structuredClone;
-+  globalThis.structuredClone = undefined;
-+  try {
-+    const fallbackRuntimeEvent = {
-+      eventId: "event.runtime.frameStart.3",
-+      eventType: "event.frameStart",
-+      payload: {
-+        tick: 3,
-+      },
-+    };
-+    const fallbackResult = publishRuntimeEvents([], [fallbackRuntimeEvent]);
-+    fallbackRuntimeEvent.payload.tick = 333;
++let passed = 0;
 +
-+    assert.equal(fallbackResult.valid, true);
-+    assert.equal(fallbackResult.runtimeEvents[0].payload.tick, 3);
-+  } finally {
-+    globalThis.structuredClone = nativeStructuredClone;
++for (const lane of validationLanes) {
++  console.log(`\n[Delta runtime] ${lane.id}`);
++  const result = spawnSync(process.execPath, lane.args, {
++    stdio: "inherit",
++  });
++  if (result.error) {
++    throw result.error;
 +  }
- }
-
- if (import.meta.url === `file://${process.argv[1]}`) {
++  if (result.status !== 0) {
++    console.error(`[Delta runtime] FAIL ${lane.id}`);
++    process.exit(result.status || 1);
++  }
++  passed += 1;
++  console.log(`[Delta runtime] PASS ${lane.id}`);
++}
++
++console.log(`\n[Delta runtime] PASS ${passed}/${validationLanes.length} lanes`);
