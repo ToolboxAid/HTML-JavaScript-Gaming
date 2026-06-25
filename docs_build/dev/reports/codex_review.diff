@@ -1,51 +1,51 @@
 diff --git a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-index 86d5af501..7f2068482 100644
+index 7f2068482..0dc1ef5ec 100644
 --- a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
 +++ b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
-@@ -243,7 +243,8 @@ Current OWNER clarification:
-
- - [x] Delta - Shared JS consolidation
-   - Completion reference: PR_26175_DELTA_002_Shared_Runtime_Consolidation.
--- [ ] Delta - API client consolidation
-+- [x] Delta - API client consolidation
-+  - Completed by PR_26175_DELTA_003_API_Client_Standardization.
+@@ -247,7 +247,8 @@ Current OWNER clarification:
+   - Completed by PR_26175_DELTA_003_API_Client_Standardization.
  - [x] Delta - Runtime performance audit
    - Completion reference: PR_26175_DELTA_001_Runtime_Performance_Optimization.
- - [ ] Delta - Engine test coverage improvements
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_003_API_Client_Standardization-branch-validation.md b/docs_build/dev/reports/PR_26175_DELTA_003_API_Client_Standardization-branch-validation.md
+-- [ ] Delta - Engine test coverage improvements
++- [x] Delta - Engine test coverage improvements
++  - Completed by PR_26175_DELTA_004_Runtime_Test_Expansion.
+ - [ ] Delta - Event system audit
+ - [ ] Delta - Controls runtime framework audit
+ - [ ] Delta - Object runtime framework audit
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_004_Runtime_Test_Expansion-branch-validation.md b/docs_build/dev/reports/PR_26175_DELTA_004_Runtime_Test_Expansion-branch-validation.md
 new file mode 100644
-index 000000000..34c270132
+index 000000000..2070dcf61
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_003_API_Client_Standardization-branch-validation.md
++++ b/docs_build/dev/reports/PR_26175_DELTA_004_Runtime_Test_Expansion-branch-validation.md
 @@ -0,0 +1,15 @@
-+# PR_26175_DELTA_003 Branch Validation
++# PR_26175_DELTA_004 Branch Validation
 +
 +| Gate | Status | Evidence |
 +| --- | --- | --- |
-+| Current branch before work | PASS | `main` after PR_002 merge |
++| Current branch before work | PASS | `main` after PR_003 merge |
 +| Worktree before work | PASS | Clean |
 +| Local/origin sync before work | PASS | `0 0` |
-+| Team ownership | PASS | Team Delta owns Shared JS, API clients, Runtime, Performance, and technical debt remediation. |
-+| Work branch | PASS | `PR_26175_DELTA_003_API_Client_Standardization` |
-+| Previous Delta PR closed | PASS | PR_002 was merged and `main` was verified before PR_003 started. |
-+| Scope boundary | PASS | Shared server API data helper plus session/setup/DB Viewer adopters and focused test only. |
++| Team ownership | PASS | Team Delta owns Runtime, Event systems, and Runtime test coverage. |
++| Work branch | PASS | `PR_26175_DELTA_004_Runtime_Test_Expansion` |
++| Previous Delta PR closed | PASS | PR_003 was merged and `main` was verified before PR_004 started. |
++| Scope boundary | PASS | Runtime event system test expansion and backlog/report updates only. |
 +
 +## Instruction Reads
 +
 +PASS - All files under `docs_build/dev/ProjectInstructions/` were read before the Delta sequence, and updated instructions were reread after pulling latest `main`.
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_003_API_Client_Standardization-manual-validation-notes.md b/docs_build/dev/reports/PR_26175_DELTA_003_API_Client_Standardization-manual-validation-notes.md
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_004_Runtime_Test_Expansion-manual-validation-notes.md b/docs_build/dev/reports/PR_26175_DELTA_004_Runtime_Test_Expansion-manual-validation-notes.md
 new file mode 100644
-index 000000000..610fe2f0e
+index 000000000..43702bb60
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_003_API_Client_Standardization-manual-validation-notes.md
++++ b/docs_build/dev/reports/PR_26175_DELTA_004_Runtime_Test_Expansion-manual-validation-notes.md
 @@ -0,0 +1,15 @@
-+# PR_26175_DELTA_003 Manual Validation Notes
++# PR_26175_DELTA_004 Manual Validation Notes
 +
 +## Manual Review
 +
-+- Confirmed the shared API helper remains backward compatible for existing callers.
-+- Confirmed Session, Admin Setup, and DB Viewer clients retain their previous restore guidance text.
-+- Confirmed no runtime UI, Theme V2, browser-owned data, or status bar files changed.
++- Confirmed runtime implementation files were not modified.
++- Confirmed expanded assertions cover invalid runtime event records and output immutability.
++- Confirmed no Theme V2, UI, API client, browser-owned data, or status bar files changed.
 +
 +## Manual Validation
 +
@@ -53,52 +53,47 @@ index 000000000..610fe2f0e
 +
 +## Follow-Up
 +
-+- Remaining Delta runtime work continues in the next sequential PRs for runtime test expansion and technical debt cleanup.
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_003_API_Client_Standardization-requirement-checklist.md b/docs_build/dev/reports/PR_26175_DELTA_003_API_Client_Standardization-requirement-checklist.md
++- Remaining Delta runtime work continues in the next sequential PR for technical debt cleanup.
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_004_Runtime_Test_Expansion-requirement-checklist.md b/docs_build/dev/reports/PR_26175_DELTA_004_Runtime_Test_Expansion-requirement-checklist.md
 new file mode 100644
-index 000000000..3e73df1ec
+index 000000000..098b13fbd
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_003_API_Client_Standardization-requirement-checklist.md
-@@ -0,0 +1,19 @@
-+# PR_26175_DELTA_003 Requirement Checklist
++++ b/docs_build/dev/reports/PR_26175_DELTA_004_Runtime_Test_Expansion-requirement-checklist.md
+@@ -0,0 +1,18 @@
++# PR_26175_DELTA_004 Requirement Checklist
 +
 +| Requirement | Status | Notes |
 +| --- | --- | --- |
-+| Team Delta ownership only | PASS | API client standardization is Delta-owned. |
-+| One PR purpose | PASS | Shared server API data handling consolidation only. |
-+| Preserve backward compatibility | PASS | Existing default and domain-specific restore messages are preserved. |
-+| Update backlog | PASS | `Delta - API client consolidation` marked complete. |
++| Team Delta ownership only | PASS | Runtime event test coverage is Delta-owned. |
++| One PR purpose | PASS | Runtime event coverage expansion only. |
++| Preserve backward compatibility | PASS | No runtime code changed. |
++| Update backlog | PASS | `Delta - Engine test coverage improvements` marked complete. |
 +| Update tool state if applicable | PASS | Not applicable; no tool tile/status changed. |
 +| Produce governance reports | PASS | Summary, branch validation, checklist, validation lane, manual notes, Codex diff, changed-file list, and ZIP. |
-+| Runtime validation | PASS | Focused node checks and API/dev-runtime tests passed. |
-+| No unrelated files | PASS | Changes are limited to API clients, focused test, backlog, and reports. |
++| Runtime validation | PASS | Focused runtime tests and final systems test passed. |
++| No unrelated files | PASS | Changes are limited to runtime test coverage, backlog, and reports. |
 +| No branch deletion | PASS | Source branch retained. |
 +
 +## Compatibility Notes
 +
-+- `requireServerApiData(...)` remains source compatible for existing two-argument callers.
-+- New optional restore guidance avoids local unwrap duplication without weakening domain-specific diagnostics.
-+- Browser API route resolution behavior is unchanged.
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_003_API_Client_Standardization-validation.md b/docs_build/dev/reports/PR_26175_DELTA_003_API_Client_Standardization-validation.md
++- Existing runtime event publishing fixtures continue to pass.
++- Trigger and action runtime tests continue to pass against the expanded event test contract.
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_004_Runtime_Test_Expansion-validation.md b/docs_build/dev/reports/PR_26175_DELTA_004_Runtime_Test_Expansion-validation.md
 new file mode 100644
-index 000000000..a61761d0c
+index 000000000..fd0cdf9fa
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_003_API_Client_Standardization-validation.md
-@@ -0,0 +1,39 @@
-+# PR_26175_DELTA_003 Validation Lane
++++ b/docs_build/dev/reports/PR_26175_DELTA_004_Runtime_Test_Expansion-validation.md
+@@ -0,0 +1,31 @@
++# PR_26175_DELTA_004 Validation Lane
 +
 +## Commands
 +
 +```powershell
-+node --check src/api/server-api-client.js
-+node --check src/api/session-api-client.js
-+node --check src/api/admin-setup-api-client.js
-+node --check src/api/db-viewer-api-client.js
-+node --check tests/dev-runtime/ServerApiClientStandardization.test.mjs
-+node tests/dev-runtime/ServerApiClientStandardization.test.mjs
-+node tests/dev-runtime/PublicApiUrlClient.test.mjs
-+node tests/dev-runtime/DbViewerConfiguredSnapshot.test.mjs
-+node tests/dev-runtime/AdminHealthOperations.test.mjs
++node --check tests/engine/RuntimeEventSystem.test.mjs
++node tests/engine/RuntimeEventSystem.test.mjs
++node tests/engine/RuntimeTriggerProcessing.test.mjs
++node tests/engine/RuntimeActionSystem.test.mjs
++node tests/final/FinalSystems.test.mjs
 +git diff --check
 +```
 +
@@ -106,15 +101,11 @@ index 000000000..a61761d0c
 +
 +| Command | Status |
 +| --- | --- |
-+| `node --check src/api/server-api-client.js` | PASS |
-+| `node --check src/api/session-api-client.js` | PASS |
-+| `node --check src/api/admin-setup-api-client.js` | PASS |
-+| `node --check src/api/db-viewer-api-client.js` | PASS |
-+| `node --check tests/dev-runtime/ServerApiClientStandardization.test.mjs` | PASS |
-+| `node tests/dev-runtime/ServerApiClientStandardization.test.mjs` | PASS |
-+| `node tests/dev-runtime/PublicApiUrlClient.test.mjs` | PASS |
-+| `node tests/dev-runtime/DbViewerConfiguredSnapshot.test.mjs` | PASS |
-+| `node tests/dev-runtime/AdminHealthOperations.test.mjs` | PASS |
++| `node --check tests/engine/RuntimeEventSystem.test.mjs` | PASS |
++| `node tests/engine/RuntimeEventSystem.test.mjs` | PASS |
++| `node tests/engine/RuntimeTriggerProcessing.test.mjs` | PASS |
++| `node tests/engine/RuntimeActionSystem.test.mjs` | PASS |
++| `node tests/final/FinalSystems.test.mjs` | PASS |
 +| `git diff --check` | PASS |
 +
 +## Browser Validation
@@ -123,45 +114,39 @@ index 000000000..a61761d0c
 +
 +## Playwright Validation
 +
-+SKIP - API client standardization is covered by focused Node tests.
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_003_API_Client_Standardization.md b/docs_build/dev/reports/PR_26175_DELTA_003_API_Client_Standardization.md
++SKIP - Runtime test expansion is covered by focused Node tests.
+diff --git a/docs_build/dev/reports/PR_26175_DELTA_004_Runtime_Test_Expansion.md b/docs_build/dev/reports/PR_26175_DELTA_004_Runtime_Test_Expansion.md
 new file mode 100644
-index 000000000..141033346
+index 000000000..5fe726656
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_003_API_Client_Standardization.md
-@@ -0,0 +1,46 @@
-+# PR_26175_DELTA_003_API_Client_Standardization
++++ b/docs_build/dev/reports/PR_26175_DELTA_004_Runtime_Test_Expansion.md
+@@ -0,0 +1,40 @@
++# PR_26175_DELTA_004_Runtime_Test_Expansion
 +
 +## Summary
 +
-+Team Delta standardized remaining local API data unwrap helpers onto the shared `requireServerApiData(...)` client boundary.
++Team Delta expanded runtime event system coverage without changing runtime behavior.
 +
-+`requireServerApiData(...)` now accepts optional client-specific restore guidance while preserving the existing default Browser -> Server API -> Data Source contract message. Session, Admin Setup, and DB Viewer API clients now delegate to the shared helper and keep their previous domain-specific guidance.
++`tests/engine/RuntimeEventSystem.test.mjs` now covers invalid existing runtime event records and verifies published results are isolated from later source-object mutation. This strengthens the event publishing contract around validation and immutable result handling.
 +
 +## Scope
 +
 +- Team: Delta
-+- Backlog item: `Delta - API client consolidation`
-+- Shared API client changed: `src/api/server-api-client.js`
-+- API clients consolidated:
-+  - `src/api/session-api-client.js`
-+  - `src/api/admin-setup-api-client.js`
-+  - `src/api/db-viewer-api-client.js`
-+- Tests added: `tests/dev-runtime/ServerApiClientStandardization.test.mjs`
++- Backlog item: `Delta - Engine test coverage improvements`
++- Test file changed: `tests/engine/RuntimeEventSystem.test.mjs`
 +- Backlog updated: `docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md`
 +
 +## Runtime Impact
 +
-+PASS - API client behavior remains backward compatible.
++PASS - No runtime code changed.
 +
-+- Successful server API responses still return `payload.data`.
-+- Failed server API responses still throw the server error text.
-+- Missing `data` payloads still emit actionable restore guidance.
-+- Existing session, setup, and DB Viewer restore messages are preserved through the shared helper.
++- Runtime event publishing behavior is unchanged.
++- Test coverage now confirms invalid runtime events report `EVENT_ID_REQUIRED`, `EVENT_TYPE_REQUIRED`, and `RUNTIME_EVENT_INVALID`.
++- Test coverage now confirms returned event arrays and event records reject mutation and are isolated from source-object mutations after publish.
 +
 +## Backlog Update
 +
-+PASS - `Delta - API client consolidation` is marked complete with this PR as the completion reference.
++PASS - `Delta - Engine test coverage improvements` is marked complete with this PR as the completion reference.
 +
 +## Tool State Update
 +
@@ -169,217 +154,67 @@ index 000000000..141033346
 +
 +## Validation Summary
 +
-+PASS - Focused API client and adjacent dev-runtime validation completed.
++PASS - Focused runtime event, trigger, action, and final systems validation completed.
 +
-+See `PR_26175_DELTA_003_API_Client_Standardization-validation.md` for command details.
++See `PR_26175_DELTA_004_Runtime_Test_Expansion-validation.md` for command details.
 +
 +## Branch Disposition
 +
 +Source branch should be retained after merge unless OWNER later approves branch deletion.
-diff --git a/src/api/admin-setup-api-client.js b/src/api/admin-setup-api-client.js
-index 1a7b8b2e1..7aa3cab2a 100644
---- a/src/api/admin-setup-api-client.js
-+++ b/src/api/admin-setup-api-client.js
-@@ -1,15 +1,14 @@
--import { safeRequestServerApi } from "./server-api-client.js";
-+import {
-+  requireServerApiData,
-+  safeRequestServerApi,
-+} from "./server-api-client.js";
+diff --git a/tests/engine/RuntimeEventSystem.test.mjs b/tests/engine/RuntimeEventSystem.test.mjs
+index 3106a1729..1cb9ca85d 100644
+--- a/tests/engine/RuntimeEventSystem.test.mjs
++++ b/tests/engine/RuntimeEventSystem.test.mjs
+@@ -41,6 +41,52 @@ export function run() {
 
--function unwrap(response, context) {
--  if (!response.ok) {
--    throw new Error(response.error);
--  }
--  if (!response.payload || !Object.prototype.hasOwnProperty.call(response.payload, "data")) {
--    throw new Error(`${context} did not return server data. Restore the admin setup API.`);
--  }
--  return response.payload.data;
-+function requireAdminSetupApiData(response, context) {
-+  return requireServerApiData(response, context, {
-+    restoreMessage: "Restore the admin setup API.",
-+  });
- }
-
- export function readAdminSetupStatus() {
--  return unwrap(safeRequestServerApi("/admin/setup/status"), "Admin setup status");
-+  return requireAdminSetupApiData(safeRequestServerApi("/admin/setup/status"), "Admin setup status");
- }
-diff --git a/src/api/db-viewer-api-client.js b/src/api/db-viewer-api-client.js
-index 021de51c6..211eea084 100644
---- a/src/api/db-viewer-api-client.js
-+++ b/src/api/db-viewer-api-client.js
-@@ -1,15 +1,14 @@
--import { safeRequestServerApi } from "./server-api-client.js";
-+import {
-+  requireServerApiData,
-+  safeRequestServerApi,
-+} from "./server-api-client.js";
-
--function unwrap(response, context) {
--  if (!response.ok) {
--    throw new Error(response.error);
--  }
--  if (!response.payload || !Object.prototype.hasOwnProperty.call(response.payload, "data")) {
--    throw new Error(`${context} did not return server data. Restore the server-backed DB Viewer API.`);
--  }
--  return response.payload.data;
-+function requireDbViewerApiData(response, context) {
-+  return requireServerApiData(response, context, {
-+    restoreMessage: "Restore the server-backed DB Viewer API.",
-+  });
- }
-
- export function getDbViewerSnapshot() {
--  return unwrap(safeRequestServerApi("/product-data/snapshot"), "DB Viewer snapshot");
-+  return requireDbViewerApiData(safeRequestServerApi("/product-data/snapshot"), "DB Viewer snapshot");
- }
-diff --git a/src/api/server-api-client.js b/src/api/server-api-client.js
-index db5f4956c..71460f2a3 100644
---- a/src/api/server-api-client.js
-+++ b/src/api/server-api-client.js
-@@ -80,12 +80,13 @@ export function safeRequestServerApi(path, options = {}) {
-   }
- }
-
--export function requireServerApiData(response, context) {
-+export function requireServerApiData(response, context, options = {}) {
-   if (!response.ok) {
-     throw new Error(response.error);
-   }
-   if (!response.payload || !Object.prototype.hasOwnProperty.call(response.payload, "data")) {
--    throw new Error(`${context} did not return server data. Restore the Browser -> Server API -> Data Source contract.`);
-+    const restoreMessage = options.restoreMessage || `Restore the ${SERVER_DATA_BOUNDARY_RULE} contract.`;
-+    throw new Error(`${context} did not return server data. ${restoreMessage}`);
-   }
-   return response.payload.data;
- }
-diff --git a/src/api/session-api-client.js b/src/api/session-api-client.js
-index b72d55eba..f31004ea1 100644
---- a/src/api/session-api-client.js
-+++ b/src/api/session-api-client.js
-@@ -1,4 +1,7 @@
--import { safeRequestServerApi } from "./server-api-client.js";
-+import {
-+  requireServerApiData,
-+  safeRequestServerApi,
-+} from "./server-api-client.js";
-
- export const AUTH_PROVIDER_CONTRACT_OPERATIONS = Object.freeze([
-   "getCurrentUser",
-@@ -7,18 +10,14 @@ export const AUTH_PROVIDER_CONTRACT_OPERATIONS = Object.freeze([
-   "requireRole",
- ]);
-
--function unwrap(response, context) {
--  if (!response.ok) {
--    throw new Error(response.error);
--  }
--  if (!response.payload || !Object.prototype.hasOwnProperty.call(response.payload, "data")) {
--    throw new Error(`${context} did not return server data. Restore the server auth/session API.`);
--  }
--  return response.payload.data;
-+function requireSessionApiData(response, context) {
-+  return requireServerApiData(response, context, {
-+    restoreMessage: "Restore the server auth/session API.",
-+  });
- }
-
- export function getSessionCurrent() {
--  return unwrap(safeRequestServerApi("/session/current"), "Current session");
-+  return requireSessionApiData(safeRequestServerApi("/session/current"), "Current session");
- }
-
- export function getCurrentUser() {
-@@ -26,22 +25,22 @@ export function getCurrentUser() {
- }
-
- export function getSessionModes() {
--  return unwrap(safeRequestServerApi("/session/modes"), "Session modes");
-+  return requireSessionApiData(safeRequestServerApi("/session/modes"), "Session modes");
- }
-
- export function getSessionUsers() {
--  return unwrap(safeRequestServerApi("/session/users"), "Session users");
-+  return requireSessionApiData(safeRequestServerApi("/session/users"), "Session users");
- }
-
- export function setSessionMode(modeId) {
--  return unwrap(safeRequestServerApi("/session/mode", {
-+  return requireSessionApiData(safeRequestServerApi("/session/mode", {
-     body: { modeId },
-     method: "POST",
-   }), "Session mode update");
- }
-
- export function setSessionUser(userKey) {
--  return unwrap(safeRequestServerApi("/session/user", {
-+  return requireSessionApiData(safeRequestServerApi("/session/user", {
-     body: { userKey },
-     method: "POST",
-   }), "Session user update");
-diff --git a/tests/dev-runtime/ServerApiClientStandardization.test.mjs b/tests/dev-runtime/ServerApiClientStandardization.test.mjs
-new file mode 100644
-index 000000000..5530e4074
---- /dev/null
-+++ b/tests/dev-runtime/ServerApiClientStandardization.test.mjs
-@@ -0,0 +1,59 @@
-+import assert from "node:assert/strict";
-+import test from "node:test";
+   assert.equal(invalidResult.valid, false);
+   assert.deepEqual(invalidResult.errors.map((error) => error.code), [RUNTIME_EVENT_ERRORS.EVENT_TYPE_REQUIRED]);
 +
-+import {
-+  requireServerApiData,
-+  SERVER_DATA_BOUNDARY_RULE,
-+} from "../../src/api/server-api-client.js";
++  const invalidRuntimeEventsResult = publishRuntimeEvents([], [
++    {
++      eventType: "event.frameStart",
++      payload: {},
++    },
++    {
++      eventId: "event.runtime.frameStart.1",
++      payload: {},
++    },
++    "not-an-event-record",
++  ]);
 +
-+test("requireServerApiData returns the server data payload", () => {
-+  assert.deepEqual(
-+    requireServerApiData({
-+      ok: true,
-+      payload: {
-+        data: {
-+          status: "ready",
-+        },
-+        ok: true,
-+      },
-+    }, "Runtime API"),
-+    { status: "ready" },
-+  );
-+});
++  assert.equal(invalidRuntimeEventsResult.valid, false);
++  assert.deepEqual(invalidRuntimeEventsResult.errors.map((error) => error.code), [
++    RUNTIME_EVENT_ERRORS.EVENT_ID_REQUIRED,
++    RUNTIME_EVENT_ERRORS.EVENT_TYPE_REQUIRED,
++    RUNTIME_EVENT_ERRORS.RUNTIME_EVENT_INVALID,
++  ]);
 +
-+test("requireServerApiData preserves server API errors", () => {
-+  assert.throws(
-+    () => requireServerApiData({
-+      error: "Server API unavailable.",
-+      ok: false,
-+      payload: null,
-+    }, "Runtime API"),
-+    /Server API unavailable\./,
-+  );
-+});
++  const sourceRuntimeEvent = {
++    eventId: "event.runtime.frameStart.2",
++    eventType: "event.frameStart",
++    payload: {
++      tick: 2,
++    },
++  };
++  const sourceConditionMatch = {
++    conditionId: "condition.score.ready",
++    eventType: "event.scoreReady",
++    payload: {
++      score: 100,
++    },
++  };
++  const clonedResult = publishRuntimeEvents([sourceConditionMatch], [sourceRuntimeEvent]);
++  sourceRuntimeEvent.payload.tick = 99;
++  sourceConditionMatch.payload.score = 999;
 +
-+test("requireServerApiData reports the shared boundary for missing data", () => {
-+  assert.throws(
-+    () => requireServerApiData({
-+      ok: true,
-+      payload: {
-+        ok: true,
-+      },
-+    }, "Runtime API"),
-+    new RegExp(`Runtime API did not return server data\\. Restore the ${SERVER_DATA_BOUNDARY_RULE} contract\\.`),
-+  );
-+});
-+
-+test("requireServerApiData supports client-specific restore guidance", () => {
-+  assert.throws(
-+    () => requireServerApiData({
-+      ok: true,
-+      payload: {
-+        ok: true,
-+      },
-+    }, "Admin setup status", {
-+      restoreMessage: "Restore the admin setup API.",
-+    }),
-+    /Admin setup status did not return server data\. Restore the admin setup API\./,
-+  );
-+});
++  assert.equal(clonedResult.runtimeEvents[0].payload.tick, 2);
++  assert.equal(clonedResult.publishedEvents[0].payload.score, 100);
++  assert.throws(() => {
++    clonedResult.runtimeEvents.push({});
++  }, TypeError);
++  assert.throws(() => {
++    clonedResult.runtimeEvents[0].eventId = "event.changed";
++  }, TypeError);
+ }
+
+ if (import.meta.url === `file://${process.argv[1]}`) {
