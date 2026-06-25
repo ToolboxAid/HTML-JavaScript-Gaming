@@ -17,7 +17,10 @@ test("local API startup log separates bind URL from configured public URLs", () 
       GAMEFOUNDRY_API_URL: "http://127.0.0.1:5501/api",
       GAMEFOUNDRY_DATABASE_URL: "postgres://secret-user:secret-pass@example.invalid/db",
       GAMEFOUNDRY_SITE_URL: "http://127.0.0.1:5500",
+      GAMEFOUNDRY_STORAGE_ACCESS_KEY_ID: "storage-access-key",
+      GAMEFOUNDRY_STORAGE_BUCKET: "gamefoundry-test-assets",
       GAMEFOUNDRY_STORAGE_ENDPOINT: "http://127.0.0.1:9000",
+      GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX: "/dev/projects/",
       GAMEFOUNDRY_STORAGE_SECRET_ACCESS_KEY: "storage-secret",
       GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "service-role-secret",
       GAMEFOUNDRY_SUPABASE_URL: "https://example.supabase.co",
@@ -45,9 +48,24 @@ test("local API startup log separates bind URL from configured public URLs", () 
           value: "postgres://secret-user:secret-pass@example.invalid/db",
         },
         {
+          applied: false,
+          key: "GAMEFOUNDRY_STORAGE_ACCESS_KEY_ID",
+          value: "storage-access-key",
+        },
+        {
+          applied: true,
+          key: "GAMEFOUNDRY_STORAGE_BUCKET",
+          value: "gamefoundry-test-assets",
+        },
+        {
           applied: true,
           key: "GAMEFOUNDRY_STORAGE_ENDPOINT",
           value: "http://127.0.0.1:9000",
+        },
+        {
+          applied: true,
+          key: "GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX",
+          value: "/dev/projects/",
         },
         {
           applied: false,
@@ -62,11 +80,17 @@ test("local API startup log separates bind URL from configured public URLs", () 
     "GameFoundry API runtime server running at http://127.0.0.1:5501",
     "Configured site URL: http://127.0.0.1:5500",
     "Configured API URL: http://127.0.0.1:5501/api",
+    "Local API URL: http://127.0.0.1:5501/api",
+    "Local site URL: http://127.0.0.1:5500",
+    "Local site URL port: 5500",
     "=========================================",
     "Environment Variables",
     "=========================================",
     "+ GAMEFOUNDRY_DATABASE_URL=postgres://********:********@example.invalid/db",
+    "- GAMEFOUNDRY_STORAGE_ACCESS_KEY_ID=********",
+    "+ GAMEFOUNDRY_STORAGE_BUCKET=gamefoundry-test-assets",
     "+ GAMEFOUNDRY_STORAGE_ENDPOINT=http://127.0.0.1:9000",
+    "+ GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX=/dev/projects/",
     "- GAMEFOUNDRY_STORAGE_SECRET_ACCESS_KEY=********",
     "- GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY=********",
     "+ GAMEFOUNDRY_SUPABASE_URL=https://example.supabase.co",
@@ -81,6 +105,8 @@ test("local API startup log separates bind URL from configured public URLs", () 
     "Storage service port: 9000",
     "Configured auth connection: configured.",
     "Configured database connection: configured.",
+    "Database mode: Postgres",
+    "Storage status: configured (bucket gamefoundry-test-assets; prefix /dev/projects/)",
     "Database SSL mode: require",
     "Press Ctrl+C to stop.",
   ]);
@@ -88,6 +114,7 @@ test("local API startup log separates bind URL from configured public URLs", () 
   assert.equal(lines.join("\n").includes(".env loaded for API runtime"), false);
   assert.equal(lines.join("\n").includes("secret-user"), false);
   assert.equal(lines.join("\n").includes("secret-pass"), false);
+  assert.equal(lines.join("\n").includes("storage-access-key"), false);
   assert.equal(lines.join("\n").includes("storage-secret"), false);
   assert.equal(lines.join("\n").includes("service-role-secret"), false);
 });
@@ -119,6 +146,9 @@ test("local API startup log shows missing site URL and derives API URL from bind
     "GameFoundry API runtime server running at http://127.0.0.1:5599",
     "Configured site URL: (not configured)",
     "Configured API URL: http://127.0.0.1:5599/api",
+    "Local API URL: http://127.0.0.1:5599/api",
+    "Local site URL: (not configured)",
+    "Local site URL port: not configured",
     ".env was not found for API runtime.",
     "=========================================",
     "All Runtime Ports being used by Service",
@@ -131,6 +161,8 @@ test("local API startup log shows missing site URL and derives API URL from bind
     "Storage service port: not configured",
     "Configured auth connection: missing GAMEFOUNDRY_SUPABASE_URL.",
     "Configured database connection: missing GAMEFOUNDRY_DATABASE_URL.",
+    "Database mode: not configured",
+    "Storage status: not configured (missing GAMEFOUNDRY_STORAGE_ENDPOINT, GAMEFOUNDRY_STORAGE_ACCESS_KEY_ID, GAMEFOUNDRY_STORAGE_SECRET_ACCESS_KEY, GAMEFOUNDRY_STORAGE_BUCKET, GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX)",
     "Database SSL mode: invalid (GAMEFOUNDRY_DATABASE_SSL is missing.)",
     "Press Ctrl+C to stop.",
   ]);

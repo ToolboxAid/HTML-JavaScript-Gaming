@@ -299,6 +299,13 @@ test("Admin can view operational health while Creator sessions are blocked", asy
         health.localApiStartup.rows.some((row) => row.field === "Configurable multiple runtime ports" && row.status === "PENDING" && row.value === "deferred/cancelled"),
         true,
       );
+      const startupRows = new Map(health.localApiStartup.rows.map((row) => [row.field, row]));
+      assert.equal(startupRows.get("Environment variable order")?.value, "alphabetical");
+      assert.equal(startupRows.get("Secret masking markers")?.value, "PASSWORD, SECRET, TOKEN, KEY, SERVICE_ROLE, JWT");
+      assert.equal(startupRows.get("Local API URL")?.status, "PASS");
+      assert.equal(startupRows.get("Local site URL port")?.value, "5500");
+      assert.ok(["Postgres", "not configured", "invalid database URL"].includes(startupRows.get("Database mode")?.value));
+      assert.equal(startupRows.get("Storage status")?.value, "not configured");
       const startupText = JSON.stringify(health.localApiStartup);
       assert.equal(startupText.includes("api-user"), false);
       assert.equal(startupText.includes("api-secret"), false);

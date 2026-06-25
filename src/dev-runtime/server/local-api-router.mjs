@@ -904,6 +904,13 @@ function localApiStartupUrlDisplay(value, fallback = "not configured") {
   }
 }
 
+function localApiStartupPortStatus(port) {
+  if (port === "invalid URL") {
+    return "FAIL";
+  }
+  return port === "not configured" ? "WARN" : "PASS";
+}
+
 function localApiStartupBindTarget(env = process.env) {
   const host = String(env.GAMEFOUNDRY_LOCAL_API_HOST || LOCAL_API_STARTUP_DEFAULT_HOST).trim() || LOCAL_API_STARTUP_DEFAULT_HOST;
   const port = String(env.GAMEFOUNDRY_LOCAL_API_PORT || LOCAL_API_STARTUP_DEFAULT_PORT).trim() || LOCAL_API_STARTUP_DEFAULT_PORT;
@@ -916,11 +923,57 @@ function localApiStartupBindTarget(env = process.env) {
   };
 }
 
+function localApiStartupDatabaseMode(env = process.env) {
+  const databaseStatus = databaseConfigStatus(env);
+  if (databaseStatus.hostStatus === "FAIL" || databaseStatus.databaseNameStatus === "FAIL") {
+    return {
+      reason: "GAMEFOUNDRY_DATABASE_URL is present but is not a valid Postgres URL.",
+      status: "FAIL",
+      value: "invalid database URL",
+    };
+  }
+  if (!databaseStatus.configured) {
+    return {
+      reason: "GAMEFOUNDRY_DATABASE_URL is not configured for the Local API startup report.",
+      status: "WARN",
+      value: "not configured",
+    };
+  }
+  return {
+    reason: "GAMEFOUNDRY_DATABASE_URL is configured with a Postgres protocol; credentials remain hidden.",
+    status: "PASS",
+    value: "Postgres",
+  };
+}
+
+function localApiStartupStorageStatus(env = process.env) {
+  const storageConfig = loadStorageConfig(env);
+  if (storageConfig.configured) {
+    return {
+      reason: `Cloudflare R2 configuration is present for bucket ${storageConfig.safe.bucket} and prefix ${storageConfig.safe.projectsPrefix}; credential values remain hidden.`,
+      status: "PASS",
+      value: "configured",
+    };
+  }
+  const issue = storageConfig.validationError
+    || `missing ${storageConfig.missingKeys?.join(", ") || "storage configuration"}`;
+  return {
+    reason: `Cloudflare R2 storage is not fully configured: ${issue}.`,
+    status: "WARN",
+    value: "not configured",
+  };
+}
+
 function systemHealthLocalApiStartupDiagnostics(env = process.env) {
   const bindTarget = localApiStartupBindTarget(env);
   const configuredApiUrl = String(env.GAMEFOUNDRY_API_URL || "").trim();
   const derivedApiUrl = `http://${bindTarget.value}/api`;
   const siteUrl = String(env.GAMEFOUNDRY_SITE_URL || "").trim();
+  const apiUrlDisplay = localApiStartupUrlDisplay(configuredApiUrl || derivedApiUrl);
+  const siteUrlDisplay = localApiStartupUrlDisplay(siteUrl);
+  const siteUrlPort = localApiStartupPortFromUrl(siteUrl);
+  const databaseMode = localApiStartupDatabaseMode(env);
+  const storageStatus = localApiStartupStorageStatus(env);
   const rows = [
     {
       field: "Approved diagnostics format",
@@ -935,12 +988,46 @@ function systemHealthLocalApiStartupDiagnostics(env = process.env) {
       value: "masked and redacted",
     },
     {
+      field: "Environment variable order",
+      reason: "Runtime .env keys are sorted alphabetically before startup diagnostics are printed.",
+      status: "PASS",
+      value: "alphabetical",
+    },
+    {
+      field: "Secret masking markers",
+      reason: "Startup diagnostics mask variables whose keys contain PASSWORD, SECRET, TOKEN, KEY, SERVICE_ROLE, or JWT.",
+      status: "PASS",
+      value: "PASSWORD, SECRET, TOKEN, KEY, SERVICE_ROLE, JWT",
+    },
+    {
       field: "Configured startup bind target",
       reason: bindTarget.status === "PASS"
         ? "Local API startup uses the configured or default host and port for the bind target."
         : "GAMEFOUNDRY_LOCAL_API_PORT must be a positive integer.",
       status: bindTarget.status,
       value: bindTarget.value,
+    },
+    {
+      field: "Local API URL",
+      reason: configuredApiUrl
+        ? "GAMEFOUNDRY_API_URL is configured and displayed without URL credentials."
+        : "GAMEFOUNDRY_API_URL is not configured; startup diagnostics derive /api from the bind target.",
+      status: apiUrlDisplay === "invalid URL" ? "FAIL" : "PASS",
+      value: apiUrlDisplay,
+    },
+    {
+      field: "Local site URL",
+      reason: siteUrl
+        ? "GAMEFOUNDRY_SITE_URL is available for startup diagnostics."
+        : "GAMEFOUNDRY_SITE_URL is not configured for the Local API startup report.",
+      status: siteUrl ? (siteUrlDisplay === "invalid URL" ? "FAIL" : "PASS") : "WARN",
+      value: siteUrlDisplay,
+    },
+    {
+      field: "Local site URL port",
+      reason: "Port is derived from GAMEFOUNDRY_SITE_URL for display only.",
+      status: localApiStartupPortStatus(siteUrlPort),
+      value: siteUrlPort,
     },
     {
       field: "Configured site URL",
@@ -956,13 +1043,25 @@ function systemHealthLocalApiStartupDiagnostics(env = process.env) {
         ? "GAMEFOUNDRY_API_URL is configured and displayed without URL credentials."
         : "GAMEFOUNDRY_API_URL is not configured; startup diagnostics derive /api from the bind target.",
       status: "PASS",
-      value: localApiStartupUrlDisplay(configuredApiUrl || derivedApiUrl),
+      value: apiUrlDisplay,
     },
     {
       field: "Configured API URL port",
       reason: "Port is derived from the configured or startup-derived API URL for display only.",
       status: "PASS",
       value: localApiStartupPortFromUrl(configuredApiUrl || derivedApiUrl),
+    },
+    {
+      field: "Database mode",
+      reason: databaseMode.reason,
+      status: databaseMode.status,
+      value: databaseMode.value,
+    },
+    {
+      field: "Storage status",
+      reason: storageStatus.reason,
+      status: storageStatus.status,
+      value: storageStatus.value,
     },
     {
       field: "Configurable multiple runtime ports",
