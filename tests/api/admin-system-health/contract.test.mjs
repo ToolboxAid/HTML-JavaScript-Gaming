@@ -146,6 +146,25 @@ test("Admin System Health completion contract remains server-owned and current-e
       assert.equal(healthText.includes("/uat/projects"), false);
       assert.equal(health.secretEditingAllowed, false);
       assert.equal(health.secretsExposed, false);
+      const expandedStorage = await apiJson(server.baseUrl, "/api/admin/system-health/storage-connectivity-action", {
+        body: { actionId: "storage-expanded-validation" },
+        method: "POST",
+      });
+      assert.deepEqual(
+        expandedStorage.storageDiagnostics.map((row) => row.actionId),
+        [
+          "storage-bucket-connectivity",
+          "storage-list",
+          "storage-upload-test-object",
+          "storage-read-test-object",
+          "storage-delete-test-object",
+        ],
+      );
+      assert.equal(expandedStorage.storageDiagnostics.every((row) => row.environmentFolder === "/dev"), true);
+      assert.equal(expandedStorage.storageDiagnostics.every((row) => typeof row.durationMs === "number"), true);
+      assert.equal(expandedStorage.permanentObjectCreated, false);
+      assert.equal(JSON.stringify(expandedStorage).includes("api-secret"), false);
+      assert.equal(JSON.stringify(expandedStorage).includes("site-secret"), false);
     } finally {
       await server.close();
     }

@@ -311,6 +311,12 @@ test("Admin can view operational health while Creator sessions are blocked", asy
         ],
       );
       assert.equal(storageAction.storageDiagnostics.every((row) => row.environmentFolder === "/local"), true);
+      assert.equal(storageAction.permanentObjectCreated, false);
+      assert.equal(typeof storageAction.validationDurationMs, "number");
+      assert.equal(storageAction.storageDiagnostics.every((row) => typeof row.durationMs === "number"), true);
+      assert.equal(storageAction.storageDiagnostics.every((row) => typeof row.operationLabel === "string"), true);
+      assert.equal(storageAction.storageDiagnostics.every((row) => typeof row.cleanupStatus === "string"), true);
+      assert.equal(storageAction.storageDiagnostics.every((row) => row.permanentObjectCreated === false), true);
       const refreshAction = await apiJson(server.baseUrl, "/api/admin/system-health/action", {
         body: { actionId: "refresh" },
         method: "POST",

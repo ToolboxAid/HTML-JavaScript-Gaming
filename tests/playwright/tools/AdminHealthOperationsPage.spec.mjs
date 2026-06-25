@@ -233,6 +233,10 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
     await expect(page.locator("[data-admin-system-health-storage-value='upload']")).toContainText("/dev");
     await expect(page.locator("[data-admin-system-health-storage-value='read']")).not.toHaveText("Health object");
     await expect(page.locator("[data-admin-system-health-storage-value='delete']")).not.toHaveText("Health object");
+    await expect(page.locator("[data-admin-system-health-storage-timing='list']")).not.toHaveText("Loading");
+    await expect(page.locator("[data-admin-system-health-storage-timing='upload']")).not.toHaveText("Loading");
+    await expect(page.locator("[data-admin-system-health-storage-timing='read']")).not.toHaveText("Loading");
+    await expect(page.locator("[data-admin-system-health-storage-timing='delete']")).not.toHaveText("Loading");
     await expect(page.getByRole("table", { name: "Runtime health" })).toContainText("Runtime Health");
     await expect(page.locator("[data-admin-system-health-runtime-health-value='environment']")).toHaveText("DEV");
     await expect(page.locator("[data-admin-system-health-runtime-health-value='appVersion']")).toHaveText("1.0.0");
@@ -286,7 +290,7 @@ test("Admin System Health renders Postgres diagnostics through the safe status A
       expect((title || ariaLabel || "").trim()).not.toEqual("");
     }
     expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/status"))).toBe(true);
-    expect(context.requestUrls.filter((url) => url.includes("/api/admin/system-health/storage-connectivity-action"))).toHaveLength(5);
+    expect(context.requestUrls.filter((url) => url.includes("/api/admin/system-health/storage-connectivity-action"))).toHaveLength(1);
     await page.getByRole("button", { name: "Run Runtime Check" }).click();
     await expect(page.getByRole("table", { name: "Manual health action results" })).toContainText("Run Runtime Check");
     expect(context.requestUrls.some((url) => url.includes("/api/admin/system-health/action"))).toBe(true);
@@ -353,5 +357,5 @@ test("Admin System Health operations page keeps scripts and styles external", as
   expect(runtimeSource).not.toContain("localStorage");
   expect(runtimeSource).not.toContain("sessionStorage");
   expect(runtimeSource).toContain("runAdminSystemHealthAction");
-  expect(runtimeSource).toContain("runAdminSystemHealthStorageConnectivityAction");
+  expect(runtimeSource).toContain("runAdminSystemHealthStorageExpandedValidation");
 });
