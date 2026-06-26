@@ -243,7 +243,7 @@ test("shared toolbox status bar shows selected Game Hub game above the footer", 
     await expect(statusBar.locator("[data-toolbox-status-context-type]")).toHaveCount(0);
     await expect(statusBar.locator("[data-toolbox-status-action]")).toHaveCount(0);
     await expect(statusBar.locator("[data-toolbox-selected-game]")).not.toContainText("Under Construction");
-    await expect(statusBar.locator("[data-toolbox-status-message]")).toContainText("Game Design mock repository ready.");
+    await expect(statusBar.locator("[data-toolbox-status-message]")).toContainText("Game Design API ready.");
     await expect(statusBar.locator("[data-toolbox-status-progress]")).toHaveText("Game Design 2/5 (40%) | Journey 12/125 (10%)");
     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-id", "demo-game");
     await expect(page.locator("body")).toHaveAttribute("data-toolbox-selected-game-filter", "active");
@@ -259,7 +259,7 @@ test("shared toolbox status bar shows selected Game Hub game above the footer", 
     expect(snapshot.gameText).toBe("Demo Game");
     expect(snapshot.messageIconFile).toBe("gfs-info.svg");
     expect(snapshot.messageIconName).toBe("info");
-    expect(snapshot.messageText).toContain("Game Design mock repository ready.");
+    expect(snapshot.messageText).toContain("Game Design API ready.");
     expect(snapshot.progressState).toBe("active");
     expect(snapshot.progressText).toBe("Game Design 2/5 (40%) | Journey 12/125 (10%)");
     expect(Math.max(snapshot.gameBox.top, snapshot.messageBox.top)).toBeLessThanOrEqual(
@@ -337,7 +337,7 @@ test("shared toolbox status bar anchors to the bottom in tool display mode", asy
     expect(snapshot.position).toBe("fixed");
     expect(Math.abs(snapshot.bottomGap)).toBeLessThanOrEqual(2);
     expect(snapshot.gameText).toBe("Demo Game");
-    expect(snapshot.messageText).toContain("Game Design mock repository ready.");
+    expect(snapshot.messageText).toContain("Game Design API ready.");
     expect(snapshot.progressText).toBe("Game Design 2/5 (40%) | Journey 12/125 (10%)");
     expect(snapshot.centerPanelBox.bottom).toBeLessThanOrEqual(snapshot.barBox.top + 1);
 

@@ -1,19 +1,32 @@
-assets/toolbox/game-design/js/index.js
-docs_build/database/ddl/game-design.sql
-docs_build/database/dml/game-design.sql
-docs_build/database/seed/game-design.json
-docs_build/database/seed/guest/game-design.json
-docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_branch-validation.md
-docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_manual-validation-notes.md
-docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_report.md
-docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_requirement-checklist.md
-docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_validation-lane.md
-docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/coverage_changed_js_guardrail.txt
-docs_build/dev/reports/playwright_v8_coverage_report.txt
-src/dev-runtime/auth/provider-contract-stubs.mjs
-src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js
-src/dev-runtime/server/local-api-router.mjs
-tests/playwright/tools/GameDesignApiBehavior.spec.mjs
-toolbox/game-design/index.html
+﻿M	assets/toolbox/game-configuration/js/index.js
+M	assets/toolbox/game-design/js/index.js
+M	assets/toolbox/tags/js/index.js
+M	docs_build/database/ddl/game-configuration.sql
+M	docs_build/database/ddl/game-design.sql
+M	docs_build/database/ddl/tags.sql
+M	docs_build/database/dml/tags.sql
+M	docs_build/database/seed/guest/tags.json
+M	docs_build/database/seed/tags.json
+M	docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_branch-validation.md
+M	docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_manual-validation-notes.md
+M	docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_report.md
+M	docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_requirement-checklist.md
+M	docs_build/dev/reports/PR_26177_ALFA_060-game-design-foundation_validation-lane.md
+M	docs_build/dev/reports/coverage_changed_js_guardrail.txt
+M	docs_build/dev/reports/playwright_v8_coverage_report.txt
+M	src/dev-runtime/auth/provider-contract-stubs.mjs
+M	src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js
+D	src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js
+D	src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js
+D	src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js
+M	src/dev-runtime/server/local-api-router.mjs
+A	src/dev-runtime/toolbox-api/alfa-tool-services.mjs
+M	tests/dev-runtime/DevRuntimeBoundary.test.mjs
+M	tests/playwright/tools/AssetToolMockRepository.spec.mjs
+R087	tests/playwright/tools/GameConfigurationMockRepository.spec.mjs	tests/playwright/tools/GameConfigurationApiDb.spec.mjs
+M	tests/playwright/tools/GameDesignApiBehavior.spec.mjs
+M	tests/playwright/tools/TagsTool.spec.mjs
+M	tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
+M	toolbox/game-configuration/index.html
+M	toolbox/game-design/index.html
+M	toolbox/tags/index.html

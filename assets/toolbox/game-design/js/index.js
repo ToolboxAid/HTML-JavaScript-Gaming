@@ -1,9 +1,9 @@
+import { getSessionCurrent } from "../../../../src/api/session-api-client.js";
 import {
   createServerRepositoryClient,
   readServerToolConstants,
   requireServerConstant,
 } from "../../../../src/api/server-api-client.js";
-import { getSessionCurrent } from "../../../../src/api/session-api-client.js";
 
 const constants = readServerToolConstants("game-design");
 
@@ -73,6 +73,23 @@ function setText(element, value) {
   if (element) {
     element.textContent = value;
   }
+}
+
+function currentSession() {
+  try {
+    return getSessionCurrent();
+  } catch {
+    return { authenticated: false };
+  }
+}
+
+function redirectGuestWriteAction() {
+  if (currentSession()?.authenticated === true) {
+    return false;
+  }
+  setText(elements.statusLog, "Sign in before saving Game Design.");
+  window.location.href = new URL("/account/sign-in.html", window.location.href).href;
+  return true;
 }
 
 function populateSelect(select, values, placeholder) {
@@ -201,23 +218,6 @@ function applyDesignToForm(design) {
   if (elements.capabilityDemoNotes) {
     elements.capabilityDemoNotes.value = design.capabilityDemoNotes;
   }
-}
-
-function currentSession() {
-  try {
-    return getSessionCurrent();
-  } catch {
-    return { authenticated: false };
-  }
-}
-
-function redirectGuestSaveAction() {
-  if (currentSession()?.authenticated === true) {
-    return false;
-  }
-  setText(elements.statusLog, "Sign in before saving Game Design.");
-  window.location.href = new URL("/account/sign-in.html", window.location.href).href;
-  return true;
 }
 
 function renderValidation(validation) {
@@ -370,7 +370,7 @@ elements.form?.addEventListener("input", renderFormValidation);
 
 elements.form?.addEventListener("submit", (event) => {
   event.preventDefault();
-  if (redirectGuestSaveAction()) {
+  if (redirectGuestWriteAction()) {
     return;
   }
   const result = repository.saveDesign(readForm());

@@ -2,7 +2,6 @@ import { randomBytes } from "node:crypto";
 import { existsSync, mkdirSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
-import { createGameConfigurationMockRepository } from "./game-configuration-mock-repository.js";
 import {
   createGameWorkspacePaletteRepository
 } from "./palette-workspace-repository.js";
@@ -471,10 +470,75 @@ function auditFields(timestamp, userKey = ASSET_SYSTEM_USER_KEY) {
 }
 
 function createReadyGameConfigurationRepository() {
-  const repository = createGameConfigurationMockRepository();
-  repository.makeValidGameDesign("demo-game");
-  repository.updateConfiguration("demo-game", READY_CONFIGURATION_INPUT);
-  return repository;
+  let mode = "ready";
+  let configuration = { ...READY_CONFIGURATION_INPUT, playerMode: "1 Player", status: "Ready" };
+  const activeProject = {
+    id: "demo-game",
+    name: "Demo Game",
+    purpose: "Game",
+  };
+  const activeDesign = {
+    gameType: "Puzzle",
+    genre: "Adventure",
+    playerMode: "1 Player",
+    playStyle: "Single Player",
+  };
+
+  function snapshot() {
+    const ready = mode !== "missing";
+    return {
+      configuration: ready ? configuration : null,
+      handoff: {
+        activeDesign: ready ? activeDesign : null,
+        activeGame: ready ? activeProject : null,
+        activeProject: ready ? activeProject : null,
+        ready,
+        validation: {
+          findings: ready ? [] : [
+            {
+              action: "Complete a valid Game Design before editing Game Configuration.",
+              label: "Game Design",
+              status: "Missing",
+            },
+          ],
+          status: ready ? "Ready" : "Blocked",
+        },
+      },
+      progressHandoff: {
+        currentFocus: ready ? "Prepare Assets" : "Complete Game Design",
+        gameProgress: ready ? "Demo Game Game Configuration ready" : "Game Configuration blocked until Game Design is ready",
+        publishingProgress: ready ? "Build Game remains blocked until required assets are ready" : "Build Game blocked by missing Game Design handoff",
+        readinessStatus: ready ? configuration.status : "Blocked",
+        recommendedNextTool: ready ? "Assets" : "Game Design",
+      },
+      validation: {
+        findings: [],
+        status: ready ? configuration.status : "Blocked",
+      },
+    };
+  }
+
+  return {
+    getSnapshot: snapshot,
+    makeMissingGameDesign() {
+      mode = "missing";
+      return snapshot();
+    },
+    makeValidGameDesign() {
+      mode = "ready";
+      return snapshot();
+    },
+    updateConfiguration(projectId, input = {}) {
+      mode = "ready";
+      configuration = {
+        ...configuration,
+        ...input,
+        playerMode: "1 Player",
+        status: Object.values(input).every((value) => normalizeText(value)) ? "Ready" : "Under Construction",
+      };
+      return configuration;
+    },
+  };
 }
 
 function createValidationRows(projectId, findings) {

@@ -19,8 +19,9 @@ Exercised tool entry points detected:
 Changed runtime JS files covered:
 (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 
 Files with executed line/function counts where available:
 (25%) src/api/session-api-client.js - executed lines 67/67; executed functions 3/12
@@ -43,12 +44,22 @@ Files with executed line/function counts where available:
 Uncovered or low-coverage changed JS files:
 (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
+(0%) assets/toolbox/game-configuration/js/index.js - changed JS file not collected as browser runtime coverage
+(0%) assets/toolbox/tags/js/index.js - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
-(0%) src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/dev-runtime/DevRuntimeBoundary.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/AssetToolMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/GameConfigurationApiDb.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/GameDesignApiBehavior.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/TagsTool.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs - changed JS file not collected as browser runtime coverage
+(100%) assets/toolbox/game-design/js/index.js - changed JS file with browser V8 coverage
