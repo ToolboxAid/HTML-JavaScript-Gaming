@@ -441,12 +441,13 @@ Toolbox and Admin tool metadata must use a shared DB-backed tool metadata source
 
 ## DATABASE DIRECTION
 
-SQLite is deprecated.
-Postgres is authoritative.
+Postgres is the authoritative active runtime database.
+
+SQLite is deprecated/retired and is not an active runtime database for Local (VS Code), DEV, IST, UAT, or PROD.
 
 Rules:
 - New database work must target Postgres.
-- Local API -> Postgres is the required direction.
+- Local (VS Code) API -> Postgres is the required direction.
 - New PRs must not introduce SQLite persistence.
 - Do not add new SQLite services.
 - Do not add new SQLite DDL.
@@ -478,17 +479,58 @@ Rules:
 
 Runtime startup loads `.env` only.
 
+Official environment model:
+- `Local (VS Code)`
+- `DEV`
+- `IST`
+- `UAT`
+- `PROD`
+
+Promotion order:
+- `Local (VS Code) -> DEV -> IST -> UAT -> PROD`
+
+Environment invariance rule:
+- The deployable artifact is identical across every environment.
+- Only `.env` values and environment-managed secret values differ between environments.
+- Application code, runtime code, API/service code, database runtime scripts, migrations, and bundles must not fork by environment name.
+
+Shared API/service contract:
+- One shared API/service contract is required across Local (VS Code), DEV, IST, UAT, and PROD.
+- Browser/UI/runtime code must consume the same contract in every environment.
+- Environment-specific endpoints, keys, buckets, and prefixes are configuration values only.
+- Do not create environment-specific API/service contracts.
+
+Required services in every environment:
+- Supabase Auth
+- Supabase Postgres
+- Cloudflare R2
+
+Guest seed data rule:
+- All environments receive approved guest seed data for all tools.
+- Guest seed data is shared environment setup data, not an environment-specific behavior fork.
+- Guest seed data must be applied through the shared data/service contract and must not require per-environment application code.
+
+Required Cloudflare R2 top-level prefixes:
+- Local (VS Code): `/local/`
+- DEV: `/dev/`
+- IST: `/ist/`
+- UAT: `/uat/`
+- PROD: `/prod/`
+
+Derived R2 paths for projects, backups, exports, or future storage lanes must stay under the matching top-level prefix for the active environment.
+
 The following files are copy-source files only:
 - `.env.dev`
 - `.env.ist`
 - `.env.uat`
-- `.env.prd`
+- `.env.prd` is the legacy copy-source filename for PROD values; new environment governance uses the `PROD` environment name.
 
-Valid deployment targets are:
+Valid environment stages are:
+- `Local (VS Code)`
 - `DEV`
 - `IST`
 - `UAT`
-- `PRD`
+- `PROD`
 
 Manual deployment-target flow:
 1. Copy the selected `.env.<target>` file to `.env`.
@@ -501,11 +543,12 @@ Runtime environment parameters are prohibited.
 Do not introduce runtime parameters such as:
 - `--env`
 - `--environment`
+- `ENVIRONMENT=LOCAL`
 - `ENVIRONMENT=DEV`
 - `ENVIRONMENT=UAT`
-- `ENVIRONMENT=PRD`
+- `ENVIRONMENT=PROD`
 
-`DEV`, `IST`, `UAT`, and `PRD` are deployment targets, not application behaviors.
+`Local (VS Code)`, `DEV`, `IST`, `UAT`, and `PROD` are environment stages, not application behaviors.
 
 Application code, runtime code, API/service code, and DB runtime scripts must not branch behavior by deployment target name.
 
