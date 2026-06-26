@@ -1,7 +1,0 @@
-{
-  "source": "../seed/tags.json",
-  "group": "Tags",
-  "architecture": "Browser -> API -> Database",
-  "flatTagsOnly": true,
-  "note": "Use docs_build/database/seed/tags.json as the canonical Tags seed review artifact."
-}

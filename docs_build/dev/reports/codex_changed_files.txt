@@ -1,24 +1,19 @@
-M	assets/toolbox/tags/js/index.js
-M	docs_build/database/ddl/tags.sql
-M	docs_build/database/dml/tags.sql
-M	docs_build/database/seed/guest/tags.json
-M	docs_build/database/seed/tags.json
-A	docs_build/database/tags/ddl.sql
-A	docs_build/database/tags/dml.sql
-A	docs_build/database/tags/seed.json
-A	docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_branch-validation.md
-A	docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_manual-validation-notes.md
-A	docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_report.md
-A	docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_requirement-checklist.md
-A	docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_validation-lane.md
-M	docs_build/dev/reports/coverage_changed_js_guardrail.txt
-M	docs_build/dev/reports/playwright_v8_coverage_report.txt
-M	src/dev-runtime/auth/provider-contract-stubs.mjs
-M	src/dev-runtime/persistence/mock-db-store.js
-M	src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js
-M	src/dev-runtime/server/local-api-router.mjs
-M	tests/playwright/tools/AdminDbViewer.spec.mjs
-M	tests/playwright/tools/TagsTool.spec.mjs
-M	toolbox/tags/index.html
-M	docs_build/dev/reports/codex_changed_files.txt
-M	docs_build/dev/reports/codex_review.diff
+assets/toolbox/tags/js/index.js
+docs_build/database/ddl/tags.sql
+docs_build/database/dml/tags.sql
+docs_build/database/seed/guest/tags.json
+docs_build/database/seed/tags.json
+docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_branch-validation.md
+docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_manual-validation-notes.md
+docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_report.md
+docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_requirement-checklist.md
+docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_validation-lane.md
+docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/codex_review.diff
+docs_build/dev/reports/coverage_changed_js_guardrail.txt
+docs_build/dev/reports/playwright_v8_coverage_report.txt
+src/dev-runtime/auth/provider-contract-stubs.mjs
+src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js
+src/dev-runtime/server/local-api-router.mjs
+tests/playwright/tools/TagsTool.spec.mjs
+toolbox/tags/index.html

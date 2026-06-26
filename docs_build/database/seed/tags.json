@@ -65,5 +65,5 @@
     ],
     "project_tag_assignments": []
   },
-  "note": "Flat reusable tag seed labels are server/API owned. Project-specific assignments are intentionally empty and must be created through the API."
+  "note": "Flat reusable tag seed labels are server/API owned. Current-game starter assignments are created by the API repository at runtime so project keys stay server-owned."
 }

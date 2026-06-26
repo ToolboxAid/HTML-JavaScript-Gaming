@@ -1,9 +1,36 @@
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import { expect, test } from "@playwright/test";
-import { TAGS_TOOL_TABLES, createTagsToolMockRepository } from "../../../src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js";
-import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store.js";
+import { createPostgresConnectionClient } from "../../../src/dev-runtime/persistence/postgres-connection-client.mjs";
+import { SEED_DB_KEYS } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
+
+let tagsSchemaReadyPromise = null;
+
+async function ensureTagsDatabaseSchema() {
+  if (!tagsSchemaReadyPromise) {
+    tagsSchemaReadyPromise = (async () => {
+      const client = createPostgresConnectionClient();
+      const ddlFiles = [
+        "docs_build/database/ddl/account.sql",
+        "docs_build/database/ddl/game-workspace.sql",
+        "docs_build/database/ddl/tags.sql",
+      ];
+      for (const ddlFile of ddlFiles) {
+        const ddl = await readFile(path.resolve(ddlFile), "utf8");
+        await client.query(ddl);
+      }
+    })();
+  }
+  try {
+    await tagsSchemaReadyPromise;
+  } catch (error) {
+    tagsSchemaReadyPromise = null;
+    throw error;
+  }
+}
 
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
@@ -20,7 +47,7 @@ test.afterAll(async () => {
   await workspaceV2CoverageReporter.writeReport();
 });
 
-async function setServerSession(server, userKey = MOCK_DB_KEYS.users.user1) {
+async function setServerSession(server, userKey = SEED_DB_KEYS.users.user1) {
   await fetch(`${server.baseUrl}/api/session/mode`, {
     body: JSON.stringify({ modeId: "local-db" }),
     headers: { "Content-Type": "application/json" },
@@ -33,8 +60,38 @@ async function setServerSession(server, userKey = MOCK_DB_KEYS.users.user1) {
   });
 }
 
+async function createRepositoryApiClient(server, toolId) {
+  const createResponse = await fetch(`${server.baseUrl}/api/toolbox/${toolId}/repositories`, {
+    body: JSON.stringify({ options: {} }),
+    headers: { "Content-Type": "application/json" },
+    method: "POST"
+  });
+  const createPayload = await createResponse.json();
+  expect(createPayload.ok).toBe(true);
+  const repositoryId = createPayload.data.repositoryId;
+
+  async function callRepositoryMethod(methodName, ...args) {
+    const response = await fetch(`${server.baseUrl}/api/toolbox/${toolId}/repositories/${repositoryId}/methods/${methodName}`, {
+      body: JSON.stringify({ args }),
+      headers: { "Content-Type": "application/json" },
+      method: "POST"
+    });
+    const payload = await response.json();
+    expect(payload.ok).toBe(true);
+    return payload.data.result;
+  }
+  callRepositoryMethod.repositoryId = repositoryId;
+  return callRepositoryMethod;
+}
+
+async function persistActiveGameHubProject(server) {
+  const callGameHubMethod = await createRepositoryApiClient(server, "game-hub");
+  await callGameHubMethod("updateGameStatus", "demo-game", "Under Construction");
+}
+
 async function openRepoPage(page, pathName, options = {}) {
   const server = await startRepoServer();
+  await ensureTagsDatabaseSchema();
   const failedRequests = [];
   const pageErrors = [];
   const consoleErrors = [];
@@ -57,7 +114,8 @@ async function openRepoPage(page, pathName, options = {}) {
   });
 
   if (options.sessionUserKey !== null) {
-    await setServerSession(server, options.sessionUserKey || MOCK_DB_KEYS.users.user1);
+    await setServerSession(server, options.sessionUserKey || SEED_DB_KEYS.users.user1);
+    await persistActiveGameHubProject(server);
   }
   await page.addInitScript(() => {
     window.GameFoundryPublicConfig = {
@@ -75,11 +133,26 @@ function expectNoPageFailures(failures) {
   expect(failures.consoleErrors).toEqual([]);
 }
 
-test("Tags repository exposes flat project tag tables and assignment workflow", () => {
-  const repository = createTagsToolMockRepository({ persist: false });
-  expect(Object.keys(repository.getTables()).sort()).toEqual([...TAGS_TOOL_TABLES].sort());
-  expect(Object.keys(repository.getTables()).sort()).toEqual(["project_tag_assignments", "project_tags"]);
-  expect(repository.listTags().map((tag) => tag.label)).toEqual([
+async function createTagsApiClient(server) {
+  return createRepositoryApiClient(server, "tags");
+}
+
+async function readProductRows(tableName, query = "select=*") {
+  const client = createPostgresConnectionClient();
+  return client.requestTable(tableName, { query });
+}
+
+test("Tags API exposes flat project tag tables and assignment workflow", async () => {
+  const server = await startRepoServer();
+  try {
+    await ensureTagsDatabaseSchema();
+    await setServerSession(server);
+    await persistActiveGameHubProject(server);
+    const callTagsMethod = await createTagsApiClient(server);
+
+    const snapshot = await callTagsMethod("getSnapshot");
+    expect(Object.keys(snapshot.tables).sort()).toEqual(["project_tag_assignments", "project_tags"]);
+    expect(snapshot.tags.map((tag) => tag.label)).toEqual([
     "boss-fight",
     "fantasy",
     "kids",
@@ -88,60 +161,92 @@ test("Tags repository exposes flat project tag tables and assignment workflow", 
     "platformer",
   ]);
 
-  const addResult = repository.addTag({
-    description: "Hero vocabulary",
-    label: "Hero"
-  });
-  expect(addResult.added).toBe(true);
-  expect(addResult.tag).toEqual(expect.objectContaining({
-    createdAt: expect.any(String),
-    createdBy: expect.any(String),
-    key: expect.stringMatching(/^[0-9A-HJKMNP-TV-Z]{26}$/),
-    label: "Hero",
-    updatedAt: expect.any(String),
-    updatedBy: expect.any(String)
-  }));
-  expect(repository.listTags()).toEqual(expect.arrayContaining([
-    expect.objectContaining({
+    const addResult = await callTagsMethod("addTag", {
       description: "Hero vocabulary",
+      label: "Hero"
+    });
+    expect(addResult.added).toBe(true);
+    expect(addResult.tag).toEqual(expect.objectContaining({
+      createdAt: expect.any(String),
+      createdBy: expect.any(String),
+      key: expect.stringMatching(/^[0-9A-HJKMNP-TV-Z]{26}$/),
       label: "Hero",
-      usageCount: 0
-    })
-  ]));
+      updatedAt: expect.any(String),
+      updatedBy: expect.any(String)
+    }));
 
-  const duplicate = repository.addTag({ label: "hero" });
-  expect(duplicate.added).toBe(false);
-  expect(duplicate.validation.findings[0]).toMatchObject({
-    label: "Tag Label",
-    status: "Duplicate",
-  });
+    const duplicate = await callTagsMethod("addTag", { label: "hero" });
+    expect(duplicate.added).toBe(false);
+    expect(duplicate.validation.findings[0]).toMatchObject({
+      label: "Tag Label",
+      status: "Duplicate",
+    });
 
-  const assignResult = repository.assignTagToProject(addResult.tag.id);
-  expect(assignResult.assigned).toBe(true);
-  expect(repository.getSnapshot().assignedTags).toEqual([
-    expect.objectContaining({ label: "Hero" })
-  ]);
+    expect(snapshot.assignedTags.map((tag) => tag.label).sort()).toEqual([
+      "fantasy",
+      "platformer",
+    ]);
 
-  const updateResult = repository.updateTag(addResult.tag.id, {
-    description: "Hero and player vocabulary",
-    label: "Hero Asset"
-  });
-  expect(updateResult.updated).toBe(true);
-  expect(repository.findTag(updateResult.tag.id).description).toBe("Hero and player vocabulary");
+    const assignResult = await callTagsMethod("assignTagToProject", addResult.tag.id);
+    expect(assignResult.assigned).toBe(true);
+    expect(assignResult.snapshot.assignedTags).toEqual(expect.arrayContaining([
+      expect.objectContaining({ label: "Hero" }),
+      expect.objectContaining({ label: "fantasy" }),
+      expect.objectContaining({ label: "platformer" })
+    ]));
+    await expect.poll(async () => {
+      const rows = await readProductRows("project_tag_assignments", `tagKey=eq.${encodeURIComponent(addResult.tag.key)}`);
+      return rows.some((row) => row.tagKey === addResult.tag.key);
+    }).toBe(true);
 
-  const removeResult = repository.removeTagFromProject(updateResult.tag.id);
-  expect(removeResult.removed).toBe(true);
-  const deleteResult = repository.deleteTag(updateResult.tag.id);
-  expect(deleteResult.deleted).toBe(true);
-  expect(repository.findTag(updateResult.tag.id)).toBeNull();
+    const updateResult = await callTagsMethod("updateTag", addResult.tag.id, {
+      description: "Hero and player vocabulary",
+      label: "Hero Asset"
+    });
+    expect(updateResult.updated).toBe(true);
+    expect(updateResult.tag.description).toBe("Hero and player vocabulary");
+    const updatedTagRows = await readProductRows("project_tags", `key=eq.${encodeURIComponent(updateResult.tag.key)}`);
+    expect(updatedTagRows).toEqual([
+      expect.objectContaining({
+        active: true,
+        description: "Hero and player vocabulary",
+        label: "Hero Asset",
+        slug: "hero-asset",
+      })
+    ]);
+
+    const removeResult = await callTagsMethod("removeTagFromProject", updateResult.tag.id);
+    expect(removeResult.removed).toBe(true);
+    await expect.poll(async () => {
+      const rows = await readProductRows("project_tag_assignments", `tagKey=eq.${encodeURIComponent(updateResult.tag.key)}`);
+      return rows.some((row) => row.tagKey === updateResult.tag.key);
+    }).toBe(false);
+    const deleteResult = await callTagsMethod("deleteTag", updateResult.tag.id);
+    expect(deleteResult.deleted).toBe(true);
+    const finalSnapshot = await callTagsMethod("getSnapshot");
+    expect(finalSnapshot.tags.some((tag) => tag.id === updateResult.tag.id)).toBe(false);
+    const deletedRows = await readProductRows("project_tags", `key=eq.${encodeURIComponent(updateResult.tag.key)}`);
+    expect(deletedRows).toEqual([
+      expect.objectContaining({
+        active: false,
+        label: "Hero Asset",
+      })
+    ]);
+  } finally {
+    await server.close();
+  }
 });
 
 test("Tags page supports add, edit, usage expansion, delete, and toolbox registration", async ({ page }) => {
-  const failures = await openRepoPage(page, "/tools/tags/index.html");
+  const failures = await openRepoPage(page, "/toolbox/tags/index.html");
 
   try {
     await expect(page.getByRole("heading", { level: 1, name: "Tags" })).toBeVisible();
     await expect(page.locator(".tool-workspace")).toBeVisible();
+    await expect(page.locator("[data-toolbox-selected-game-name]")).toHaveText("Demo Game");
+    await expect(page.locator("[data-tags-active-project]")).toHaveText("Demo Game");
+    await expect(page.locator("[data-tags-assigned-labels]")).toContainText("fantasy");
+    await expect(page.locator("[data-tags-assigned-labels]")).toContainText("platformer");
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     const addTagPlacement = await page.locator("[data-tags-add]").evaluate((button) => ({
       insideTagsTableCard: Boolean(button.closest(".card")?.querySelector("[data-tags-table]")),
@@ -180,13 +285,17 @@ test("Tags page supports add, edit, usage expansion, delete, and toolbox registr
 
     await page.locator("[data-tags-row]").filter({ hasText: "Hero" }).getByRole("button", { name: "Assign" }).click();
     await expect(page.locator("[data-tags-log]")).toHaveText("Assigned Hero to Demo Game.");
-    await expect(page.locator("[data-tags-assigned-count]")).toHaveText("1");
-    await expect(page.locator("[data-tags-assigned-labels]")).toHaveText("Hero");
+    await expect(page.locator("[data-tags-assigned-count]")).toHaveText("3");
+    await expect(page.locator("[data-tags-assigned-labels]")).toContainText("Hero");
     await page.getByRole("button", { name: "Refresh Tags" }).click();
-    await expect(page.locator("[data-tags-assigned-labels]")).toHaveText("Hero");
+    await expect(page.locator("[data-tags-assigned-labels]")).toContainText("Hero");
+    await page.reload({ waitUntil: "networkidle" });
+    await expect(page.locator("[data-toolbox-selected-game-name]")).toHaveText("Demo Game");
+    await expect(page.locator("[data-tags-assigned-labels]")).toContainText("Hero");
+    await expect(page.locator("[data-tags-row]").filter({ hasText: "Hero" }).getByRole("button", { name: "Remove" })).toBeVisible();
     await page.locator("[data-tags-row]").filter({ hasText: "Hero" }).getByRole("button", { name: "Remove" }).click();
     await expect(page.locator("[data-tags-log]")).toHaveText("Removed Hero from Demo Game.");
-    await expect(page.locator("[data-tags-assigned-count]")).toHaveText("0");
+    await expect(page.locator("[data-tags-assigned-count]")).toHaveText("2");
 
     await page.locator("[data-tags-row]").filter({ hasText: "Hero" }).getByRole("button", { name: "Edit" }).click();
     const editRow = page.locator("[data-tags-editing-row='hero']");
@@ -229,7 +338,7 @@ test("Tags page supports add, edit, usage expansion, delete, and toolbox registr
 });
 
 test("Tags guest write actions redirect to sign in before saving project data", async ({ page }) => {
-  const failures = await openRepoPage(page, "/tools/tags/index.html", { sessionUserKey: null });
+  const failures = await openRepoPage(page, "/toolbox/tags/index.html", { sessionUserKey: null });
 
   try {
     await page.getByRole("button", { name: "Add Tag" }).click();
@@ -241,5 +350,34 @@ test("Tags guest write actions redirect to sign in before saving project data", 
   } finally {
     await workspaceV2CoverageReporter.stop(page).catch(() => {});
     await failures.server.close();
+  }
+});
+
+test("Tags API rejects guest write actions", async () => {
+  const server = await startRepoServer();
+  try {
+    await ensureTagsDatabaseSchema();
+    const callTagsMethod = await createTagsApiClient(server);
+    const writeMethods = [
+      ["addTag", [{ label: "Guest API Tag" }]],
+      ["updateTag", ["platformer", { label: "Guest Update" }]],
+      ["assignTagToProject", ["platformer"]],
+      ["removeTagFromProject", ["platformer"]],
+      ["deleteTag", ["platformer"]],
+    ];
+
+    for (const [methodName, args] of writeMethods) {
+      const response = await fetch(`${server.baseUrl}/api/toolbox/tags/repositories/${callTagsMethod.repositoryId}/methods/${methodName}`, {
+        body: JSON.stringify({ args }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST"
+      });
+      const payload = await response.json();
+      expect(response.status).toBe(401);
+      expect(payload.ok).toBe(false);
+      expect(payload.error).toContain("Sign in required to save project tags through the API.");
+    }
+  } finally {
+    await server.close();
   }
 });

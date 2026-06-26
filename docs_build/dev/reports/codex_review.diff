@@ -8,7 +8,7 @@ index 118923da9..9ac5305c0 100644
    createServerRepositoryClient,
    readServerToolConstants,
 @@ -16,14 +17,17 @@ const repository = createTagsToolApiRepository();
- 
+
  const elements = {
    add: document.querySelector("[data-tags-add]"),
 +  activeProject: document.querySelector("[data-tags-active-project]"),
@@ -24,7 +24,7 @@ index 118923da9..9ac5305c0 100644
    tableCounts: document.querySelector("[data-tags-table-counts]"),
 -  usageCount: document.querySelector("[data-tags-usage-count]"),
  };
- 
+
  let editingTagId = "";
 @@ -63,20 +67,42 @@ function createInput(value, label, datasetName) {
  function editingValues(row) {
@@ -34,7 +34,7 @@ index 118923da9..9ac5305c0 100644
 +    label: row.querySelector("[data-tags-name-input]")?.value || "",
    };
  }
- 
+
 +function currentSession() {
 +  try {
 +    return getSessionCurrent();
@@ -59,27 +59,27 @@ index 118923da9..9ac5305c0 100644
  function createEditRow(tag = null) {
    const row = document.createElement("tr");
    row.dataset.tagsEditingRow = tag?.id || "__new__";
- 
+
    const nameCell = document.createElement("td");
 -  nameCell.append(createInput(tag?.name || "", "Tag Name", "tagsNameInput"));
 +  nameCell.append(createInput(tagLabel(tag), "Tag Label", "tagsNameInput"));
- 
+
    const descriptionCell = document.createElement("td");
    descriptionCell.append(createInput(tag?.description || "", "Description", "tagsDescriptionInput"));
- 
+
 +  const assignedCell = createCell(tag?.assigned ? "Yes" : "No");
    const usageCell = createCell(tag ? String(tag.usageCount || 0) : "0");
- 
+
    const actionsCell = document.createElement("td");
 @@ -88,7 +114,7 @@ function createEditRow(tag = null) {
    );
    actionsCell.append(actions);
- 
+
 -  row.append(nameCell, descriptionCell, usageCell, actionsCell);
 +  row.append(nameCell, descriptionCell, assignedCell, usageCell, actionsCell);
    return row;
  }
- 
+
 @@ -96,7 +122,7 @@ function createUsageCountButton(tag) {
    const cell = document.createElement("td");
    const button = createButton(String(tag.usageCount || 0), "tagsToggleUsage", tag.id);
@@ -100,7 +100,7 @@ index 118923da9..9ac5305c0 100644
      createButton("Trash", "tagsDelete", tag.id)
    );
    actionsCell.append(actions);
- 
+
    row.append(
 -    createCell(tag.name),
 +    createCell(tagLabel(tag)),
@@ -111,19 +111,19 @@ index 118923da9..9ac5305c0 100644
    );
 @@ -132,14 +162,14 @@ function createUsageRow(tag) {
    row.dataset.tagsUsageRow = tag.id;
- 
+
    const cell = document.createElement("td");
 -  cell.colSpan = 4;
 +  cell.colSpan = 5;
- 
+
    const wrapper = document.createElement("div");
    wrapper.className = "table-wrapper";
- 
+
    const table = document.createElement("table");
    table.className = "data-table";
 -  table.setAttribute("aria-label", `${tag.name} usage`);
 +  table.setAttribute("aria-label", `${tagLabel(tag)} usage`);
- 
+
    const head = document.createElement("thead");
    const headRow = document.createElement("tr");
 @@ -151,7 +181,9 @@ function createUsageRow(tag) {
@@ -147,7 +147,7 @@ index 118923da9..9ac5305c0 100644
      row.append(cell);
      elements.table.append(row);
 @@ -212,11 +244,13 @@ function renderTableCounts(snapshot) {
- 
+
  function render() {
    const snapshot = repository.getSnapshot();
 -  const usageCount = snapshot.tags.reduce((total, tag) => total + tag.usageCount, 0);
@@ -175,7 +175,7 @@ index 118923da9..9ac5305c0 100644
 +  setText(elements.log, "Project tags refreshed from the API.");
    render();
  });
- 
+
  elements.table?.addEventListener("click", (event) => {
 +  const assign = event.target.closest("[data-tags-assign]");
    const edit = event.target.closest("[data-tags-edit]");
@@ -184,12 +184,12 @@ index 118923da9..9ac5305c0 100644
    const deleteButton = event.target.closest("[data-tags-delete]");
 +  const remove = event.target.closest("[data-tags-remove]");
    const toggleUsage = event.target.closest("[data-tags-toggle-usage]");
- 
+
    if (toggleUsage) {
 @@ -248,6 +289,28 @@ elements.table?.addEventListener("click", (event) => {
      return;
    }
- 
+
 +  if (assign) {
 +    if (redirectGuestWriteAction()) {
 +      return;
@@ -217,7 +217,7 @@ index 118923da9..9ac5305c0 100644
      expandedTagId = "";
 @@ -266,6 +329,9 @@ elements.table?.addEventListener("click", (event) => {
    }
- 
+
    if (save) {
 +    if (redirectGuestWriteAction()) {
 +      return;
@@ -236,7 +236,7 @@ index 118923da9..9ac5305c0 100644
      render();
 @@ -281,6 +347,9 @@ elements.table?.addEventListener("click", (event) => {
    }
- 
+
    if (deleteButton) {
 +    if (redirectGuestWriteAction()) {
 +      return;
@@ -274,7 +274,7 @@ index d73007fa3..4eb7df0dd 100644
      "createdBy" text NOT NULL REFERENCES users(key),
      "updatedBy" text NOT NULL REFERENCES users(key)
  );
- 
+
 -CREATE INDEX IF NOT EXISTS idx_workspace_tag_records_gameid ON workspace_tag_records ("gameId");
 -CREATE INDEX IF NOT EXISTS idx_workspace_tag_records_createdby ON workspace_tag_records ("createdBy");
 -CREATE INDEX IF NOT EXISTS idx_workspace_tag_records_updatedby ON workspace_tag_records ("updatedBy");
@@ -313,7 +313,7 @@ index 5044083d5..f9ac0c787 100644
 --- Owned tables: workspace_tag_records
 +-- Owned tables: project_tags, project_tag_assignments
 +-- Flat tags only: no category table, category UI, grouped category filtering, or category-owned seed data.
- 
+
 --- DML status: Server-seed-owned.
 --- Setup is performed through the Admin-owned server-side seed API.
 --- Browser pages must not seed authoritative records.
@@ -356,7 +356,7 @@ index a9efeb02d..21b672280 100644
    "samplePackages": [
      {
 diff --git a/docs_build/database/seed/tags.json b/docs_build/database/seed/tags.json
-index 1f7018488..699542610 100644
+index 1f7018488..b2fe523a1 100644
 --- a/docs_build/database/seed/tags.json
 +++ b/docs_build/database/seed/tags.json
 @@ -4,8 +4,66 @@
@@ -426,188 +426,120 @@ index 1f7018488..699542610 100644
 +    "project_tag_assignments": []
    },
 -  "note": "Seed records for this group are intentionally empty until an Admin-owned server API seeds them."
-+  "note": "Flat reusable tag seed labels are server/API owned. Project-specific assignments are intentionally empty and must be created through the API."
++  "note": "Flat reusable tag seed labels are server/API owned. Current-game starter assignments are created by the API repository at runtime so project keys stay server-owned."
  }
-diff --git a/docs_build/database/tags/ddl.sql b/docs_build/database/tags/ddl.sql
-new file mode 100644
-index 000000000..1d2762fb4
---- /dev/null
-+++ b/docs_build/database/tags/ddl.sql
-@@ -0,0 +1,5 @@
-+-- Game Foundry Studio DEV database DDL
-+-- Group: Tags
-+-- Architecture: Browser -> API -> Database
-+-- Flat project tags only; no categories.
-+\i ../ddl/tags.sql
-diff --git a/docs_build/database/tags/dml.sql b/docs_build/database/tags/dml.sql
-new file mode 100644
-index 000000000..b2bc4bedd
---- /dev/null
-+++ b/docs_build/database/tags/dml.sql
-@@ -0,0 +1,5 @@
-+-- Game Foundry Studio DEV database DML / seed review
-+-- Group: Tags
-+-- Architecture: Browser -> API -> Database
-+-- Flat project tags only; no categories.
-+\i ../dml/tags.sql
-diff --git a/docs_build/database/tags/seed.json b/docs_build/database/tags/seed.json
-new file mode 100644
-index 000000000..b5f8a273d
---- /dev/null
-+++ b/docs_build/database/tags/seed.json
-@@ -0,0 +1,7 @@
-+{
-+  "source": "../seed/tags.json",
-+  "group": "Tags",
-+  "architecture": "Browser -> API -> Database",
-+  "flatTagsOnly": true,
-+  "note": "Use docs_build/database/seed/tags.json as the canonical Tags seed review artifact."
-+}
 diff --git a/docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_branch-validation.md b/docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_branch-validation.md
 new file mode 100644
-index 000000000..f0432c69c
+index 000000000..b37cb4bad
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_branch-validation.md
-@@ -0,0 +1,10 @@
-+# PR_26177_ALFA_058 Branch Validation
+@@ -0,0 +1,9 @@
++# PR_26177_ALFA_058-flat-project-tags Branch Validation
 +
-+| Check | Result | Evidence |
-+| --- | --- | --- |
-+| Branch | PASS | `PR_26177_ALFA_058-flat-project-tags` |
-+| Base gate | PASS | Branch was created after `main...origin/main` reported `0 0`. |
-+| Scope | PASS | Changes are limited to flat Tags DB/API/UI wiring, targeted tests, and required reports. |
-+| Runtime architecture | PASS | Browser calls the API repository; no browser-owned product data source was introduced. |
-+| Worktree before packaging | PASS | Reviewed with `git status --short`; only PR058 scoped files and generated validation reports are present. |
-+| SQLite/tmp runtime dependency | PASS | Scoped tag surface search found no `SQLite`, `.sqlite`, `tmp/local-api`, or `localStorage` product-data dependency. |
++Generated: 2026-06-26 18:53:15 UTC
++
++- Branch check: PASS - current branch is `PR_26177_ALFA_058-flat-project-tags`.
++- Scope check: PASS - changes are limited to Tags UI/runtime seed behavior, API/DB tests, database seed artifact, reports, and packaging.
++- Architecture check: PASS - targeted validation uses Browser -> API -> Database.
++- Current game check: PASS - status bar and Tags active project both show Demo Game.
++- Validation result: PASS.
 diff --git a/docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_manual-validation-notes.md
 new file mode 100644
-index 000000000..65601eb4b
+index 000000000..a5cf427ac
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_manual-validation-notes.md
-@@ -0,0 +1,15 @@
-+# PR_26177_ALFA_058 Manual Validation Notes
+@@ -0,0 +1,9 @@
++# PR_26177_ALFA_058-flat-project-tags Manual Validation Notes
 +
-+## Reviewed
-+- Tags page renders as a flat Project Tags tool with no category UI.
-+- Add Tag opens an inline editor and saves through the API repository.
-+- Duplicate `hero` label is rejected after `Hero` exists.
-+- Usage expansion renders an empty-state row before assignment.
-+- Assign and Remove update the active project assignment count and inspector labels.
-+- Refresh preserves the assigned tag through the server-owned API repository session.
-+- Edit and delete update the table and counts.
-+- Guest write action redirects to `account/sign-in.html`.
++Generated: 2026-06-26 18:53:15 UTC
 +
-+## Not In Scope
-+- Applying database migrations to the developer workstation database.
-+- Category grouping, category filters, or category-owned seeds.
++- Loaded /toolbox/tags/index.html and confirmed the status bar selected game is Demo Game.
++- Confirmed the Tags center panel shows current-game starter assignments for fantasy and platformer from runtime API state.
++- Added Hero, assigned it to Demo Game, refreshed, reloaded, and confirmed assignment persisted.
++- Removed Hero from Demo Game, edited it to Hero Asset, and deleted it after assignment removal.
++- Verified guest browser write redirects to account/sign-in.html and direct guest API write methods return 401.
 diff --git a/docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_report.md b/docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_report.md
 new file mode 100644
-index 000000000..2c785d50d
+index 000000000..5dcc194fd
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_report.md
-@@ -0,0 +1,23 @@
+@@ -0,0 +1,26 @@
 +# PR_26177_ALFA_058-flat-project-tags Report
 +
-+## Summary
-+- Built flat project tags as reusable project labels with no category table, category UI, grouped category filtering, or category-owned seed data.
-+- Added DB documentation artifacts for `project_tags` and `project_tag_assignments` under `docs_build/database/ddl`, `docs_build/database/dml`, `docs_build/database/seed`, and `docs_build/database/tags`.
-+- Updated the Tags tool to use the API repository only for tag CRUD and project assignment.
-+- Added duplicate prevention, assign/remove behavior, refresh persistence within the API-owned repository session, and guest write redirect to `account/sign-in.html`.
++Generated: 2026-06-26 18:53:15 UTC
++Branch: `PR_26177_ALFA_058-flat-project-tags`
++Base: `main`
++Current HEAD before packaging: `675b1a40f`
 +
-+## Changed Areas
-+- Tags tool UI: `toolbox/tags/index.html`, `assets/toolbox/tags/js/index.js`.
-+- API/dev-runtime service contract: tags repository, server router repository mapping, mock DB schemas, provider contract table list.
-+- Database docs and seed: flat `project_tags` and `project_tag_assignments`.
-+- Targeted Playwright coverage for Tags and Admin DB table naming.
++## Summary
++PR058 keeps Tags as a human-testable flat tag tool. The tool loads the current Game Hub game context, shows starter current-game tag assignments from API runtime state, supports add/edit/assign/remove/delete actions through the API, persists rows to database-backed tag tables, and survives refresh/reload.
++
++## Implementation Notes
++- Center title is `Tags`; no Workspace wording is used.
++- Starter runtime tag state includes assignments for the selected Demo Game so the tool opens with current-game tag context.
++- Static seed JSON keeps project assignments empty because runtime project keys remain server/API-owned.
++- The Playwright lane uses `/toolbox/tags/index.html` and asserts the shared status bar selected game.
++- Guest write coverage checks add, update, assign, remove, and delete API methods.
++- No categories, SQLite, tmp runtime dependency, JSON source of truth, mock-db-store expansion, or new mock repository file was added.
 +
 +## Validation
-+- PASS: `node --check` on changed JS/MJS test/runtime files.
-+- PASS: `git diff --check`.
-+- PASS: `npx playwright test tests/playwright/tools/TagsTool.spec.mjs --workers=1 --reporter=line` (`3 passed`).
-+
-+## Notes
-+- Product/runtime wording in the Tags UI uses `API`.
-+- No browser product-data source of truth was added.
-+- The Playwright Tags spec pins browser public config to the same-origin test API so workstation `.env` values cannot redirect the focused lane to an unrelated listener.
++- PASS - node --check assets/toolbox/tags/js/index.js
++- PASS - node --check src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js
++- PASS - node --check src/dev-runtime/server/local-api-router.mjs
++- PASS - node --check tests/playwright/tools/TagsTool.spec.mjs
++- PASS - python -m json.tool docs_build/database/seed/tags.json
++- PASS - git diff --check (line-ending notices only)
++- PASS - npx playwright test tests/playwright/tools/TagsTool.spec.mjs --workers=1 --reporter=line (4 passed)
 diff --git a/docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_requirement-checklist.md b/docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_requirement-checklist.md
 new file mode 100644
-index 000000000..954e9c6ab
+index 000000000..526e5eb54
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_requirement-checklist.md
-@@ -0,0 +1,22 @@
-+# PR_26177_ALFA_058 Requirement Checklist
+@@ -0,0 +1,15 @@
++# PR_26177_ALFA_058-flat-project-tags Requirement Checklist
 +
-+| Requirement | Result | Notes |
-+| --- | --- | --- |
-+| Browser -> API -> Database architecture | PASS | Tags UI uses `createServerRepositoryClient("tags")`; server owns tag records and keys. |
-+| Product/runtime wording says API, not Local API | PASS | Tags UI copy uses API wording. |
-+| One API contract across environments | PASS | No environment-specific Tags product code path was added. |
-+| Environment differences are config/.env only | PASS | Tags behavior does not branch by environment. |
-+| No SQLite | PASS | No SQLite references added in tag runtime, tests, or DB artifacts. |
-+| No tmp runtime dependency | PASS | No tmp path is used by the Tags runtime. |
-+| No JSON source of truth | PASS | JSON seed is documentation/seed data only; runtime uses API repository calls. |
-+| Browser does not own product data | PASS | No local/session storage product-data SSoT was added. |
-+| API/server owns authoritative keys | PASS | Server repository assigns ULID-shaped keys for new tags and assignments. |
-+| Real ULIDs for non-user records | PASS | Seed and generated keys use ULID-shaped non-user keys. |
-+| Audit fields | PASS | `createdAt`, `updatedAt`, `createdBy`, and `updatedBy` are present in DDL, seed, repository rows, and assignments. |
-+| Ownership references `users.key` | PASS | DDL references `users(key)` for audit fields. |
-+| Guest saves redirect | PASS | Guest write test verifies redirect to `account/sign-in.html`. |
-+| Flat tags only | PASS | No category table/UI/filtering was added. |
-+| Duplicate prevention | PASS | Repository and browser validation reject duplicate labels/slugs. |
-+| Assign/remove project tags | PASS | API repository and browser test cover assign/remove. |
-+| Refresh persistence | PASS | Browser test verifies assigned tag remains after refresh while the API-owned server repository session is active. |
-+| Required reports and ZIP | PASS | PR report, branch validation, checklist, lane report, manual notes, `codex_*` reports, and delta ZIP are produced. |
++Generated: 2026-06-26 18:53:15 UTC
++
++- PASS - Page title remains Tags and copy remains 'Manage shared Game tags for assets and tool records.'
++- PASS - Flat tags only; no category table, UI, filtering, or category-owned seed data.
++- PASS - Tool loads current Game Hub game context from the shared status bar/API path.
++- PASS - Starter tags include current-game seed assignments for Demo Game in runtime seed state; static seed JSON keeps project assignments API-owned.
++- PASS - Signed-in Creator can add a tag, assign it to the current game, remove it, refresh, reload, and see persistence.
++- PASS - API/DB validation asserts project_tags and project_tag_assignments rows.
++- PASS - Guest add/save/update/delete/assign/remove API actions return 401; browser guest save redirects to account/sign-in.html.
++- PASS - Browser -> API -> Database path only; no browser product-data source of truth.
++- PASS - No SQLite or tmp runtime dependency introduced.
++- PASS - No mock-db-store expansion and no new *-mock-repository.js file added.
++- PASS - DDL, DML, and seed artifacts remain under docs_build/database/ddl, dml, and seed paths.
 diff --git a/docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_validation-lane.md b/docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_validation-lane.md
 new file mode 100644
-index 000000000..628533279
+index 000000000..3c2882813
 --- /dev/null
 +++ b/docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_validation-lane.md
-@@ -0,0 +1,20 @@
-+# PR_26177_ALFA_058 Validation Lane
+@@ -0,0 +1,11 @@
++# PR_26177_ALFA_058-flat-project-tags Validation Lane
 +
-+## Commands
-+- `node --check assets/toolbox/tags/js/index.js`
-+- `node --check src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js`
-+- `node --check src/dev-runtime/persistence/mock-db-store.js`
-+- `node --check src/dev-runtime/auth/provider-contract-stubs.mjs`
-+- `node --check src/dev-runtime/server/local-api-router.mjs`
-+- `node --check tests/playwright/tools/TagsTool.spec.mjs`
-+- `node --check tests/playwright/tools/AdminDbViewer.spec.mjs`
-+- `git diff --check`
-+- `npx playwright test tests/playwright/tools/TagsTool.spec.mjs --workers=1 --reporter=line`
++Generated: 2026-06-26 18:53:15 UTC
 +
-+## Result
-+PASS
-+
-+## Evidence
-+- Playwright Tags lane: `3 passed`.
-+- Syntax checks passed for changed runtime/test JS/MJS files.
-+- `git diff --check` exited `0`; only line-ending normalization warnings were printed.
++- PASS - node --check assets/toolbox/tags/js/index.js
++- PASS - node --check src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js
++- PASS - node --check src/dev-runtime/server/local-api-router.mjs
++- PASS - node --check tests/playwright/tools/TagsTool.spec.mjs
++- PASS - python -m json.tool docs_build/database/seed/tags.json
++- PASS - git diff --check (line-ending notices only)
++- PASS - npx playwright test tests/playwright/tools/TagsTool.spec.mjs --workers=1 --reporter=line (4 passed)
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 098d8de0b..d0cafdcc1 100644
+index 098d8de0b..6255514c3 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,16 +1,24 @@
--?M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md
+@@ -1,16 +1,19 @@
+-ï»¿M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md
 -M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md
 -M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md
 -M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_requirement-checklist.md
 -M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_validation-lane.md
-+M	assets/toolbox/tags/js/index.js
-+M	docs_build/database/ddl/tags.sql
-+M	docs_build/database/dml/tags.sql
-+M	docs_build/database/seed/guest/tags.json
-+M	docs_build/database/seed/tags.json
-+A	docs_build/database/tags/ddl.sql
-+A	docs_build/database/tags/dml.sql
-+A	docs_build/database/tags/seed.json
-+A	docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_branch-validation.md
-+A	docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_manual-validation-notes.md
-+A	docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_report.md
-+A	docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_requirement-checklist.md
-+A	docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_validation-lane.md
- M	docs_build/dev/reports/coverage_changed_js_guardrail.txt
- M	docs_build/dev/reports/playwright_v8_coverage_report.txt
+-M	docs_build/dev/reports/coverage_changed_js_guardrail.txt
+-M	docs_build/dev/reports/playwright_v8_coverage_report.txt
 -D	scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs
 -M	scripts/validate-browser-env-agnostic.mjs
 -D	src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs
@@ -615,56 +547,65 @@ index 098d8de0b..d0cafdcc1 100644
 -M	tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
 -M	tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
 -M	tests/playwright/tools/GameJourneyTool.spec.mjs
-+M	src/dev-runtime/auth/provider-contract-stubs.mjs
-+M	src/dev-runtime/persistence/mock-db-store.js
-+M	src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js
-+M	src/dev-runtime/server/local-api-router.mjs
-+M	tests/playwright/tools/AdminDbViewer.spec.mjs
-+M	tests/playwright/tools/TagsTool.spec.mjs
-+M	toolbox/tags/index.html
- M	docs_build/dev/reports/codex_changed_files.txt
- M	docs_build/dev/reports/codex_review.diff
+-M	docs_build/dev/reports/codex_changed_files.txt
+-M	docs_build/dev/reports/codex_review.diff
++assets/toolbox/tags/js/index.js
++docs_build/database/ddl/tags.sql
++docs_build/database/dml/tags.sql
++docs_build/database/seed/guest/tags.json
++docs_build/database/seed/tags.json
++docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_branch-validation.md
++docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_manual-validation-notes.md
++docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_report.md
++docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_requirement-checklist.md
++docs_build/dev/reports/PR_26177_ALFA_058-flat-project-tags_validation-lane.md
++docs_build/dev/reports/codex_changed_files.txt
++docs_build/dev/reports/codex_review.diff
++docs_build/dev/reports/coverage_changed_js_guardrail.txt
++docs_build/dev/reports/playwright_v8_coverage_report.txt
++src/dev-runtime/auth/provider-contract-stubs.mjs
++src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js
++src/dev-runtime/server/local-api-router.mjs
++tests/playwright/tools/TagsTool.spec.mjs
++toolbox/tags/index.html
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 7b1c51f19..22c6efb64 100644
+index 7b1c51f19..291e735e1 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,7 +6,13 @@ Missing changed runtime JS files are WARN, not FAIL.
+@@ -6,7 +6,11 @@ Missing changed runtime JS files are WARN, not FAIL.
  Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
- 
+
  Changed runtime JS files considered:
 -(100%) none changed - no changed runtime JS files
-+(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 +(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 +(0%) src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 +(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- 
+
  Guardrail warnings:
 -(100%) none changed - no changed runtime JS files
-+(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 +(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
 +(0%) src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
 +(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index f2363d3bf..3ff22418d 100644
+index f2363d3bf..bc4f25103 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -12,31 +12,45 @@ Note: entry percentages use function coverage when available, otherwise line cov
+@@ -12,31 +12,41 @@ Note: entry percentages use function coverage when available, otherwise line cov
  Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
- 
+
  Exercised tool entry points detected:
 -(76%) Toolbox Index - exercised 1 runtime JS files
 +(74%) Toolbox Index - exercised 3 runtime JS files
  (0%) Tool Template V2 - not exercised by this Playwright run
 -(72%) Theme V2 Shared JS - exercised 4 runtime JS files
-+(70%) Theme V2 Shared JS - exercised 6 runtime JS files
- 
++(72%) Theme V2 Shared JS - exercised 6 runtime JS files
+
  Changed runtime JS files covered:
 -(100%) none changed - no changed runtime JS files
-+(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 +(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 +(0%) src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 +(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- 
+
  Files with executed line/function counts where available:
 +(25%) src/api/session-api-client.js - executed lines 67/67; executed functions 3/12
 +(33%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
@@ -685,29 +626,26 @@ index f2363d3bf..3ff22418d 100644
 -(89%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 32/36
 -(100%) assets/js/shared/game-journey-api-client.js - executed lines 19/19; executed functions 2/2
 +(86%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 25/29
-+(95%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 35/37
 +(96%) assets/toolbox/tags/js/index.js - executed lines 314/314; executed functions 22/23
 +(100%) assets/theme-v2/js/account-auth-service.js - executed lines 64/64; executed functions 7/7
- 
++(100%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 37/37
+
  Uncovered or low-coverage changed JS files:
 -(100%) none changed - no changed runtime JS files
-+(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
 +(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
 +(0%) src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
 +(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
- 
+
  Changed JS files considered:
 -(0%) scripts/validate-browser-env-agnostic.mjs - changed JS file not collected as browser runtime coverage
 -(0%) tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs - changed JS file not collected as browser runtime coverage
 -(0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
 -(0%) tests/playwright/tools/GameJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
-+(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
 +(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
 +(0%) src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js - changed JS file not collected as browser runtime coverage
 +(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
 +(0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
 +(0%) tests/playwright/tools/TagsTool.spec.mjs - changed JS file not collected as browser runtime coverage
-+(96%) assets/toolbox/tags/js/index.js - changed JS file with browser V8 coverage
 diff --git a/src/dev-runtime/auth/provider-contract-stubs.mjs b/src/dev-runtime/auth/provider-contract-stubs.mjs
 index cff94f9b0..07ac3f229 100644
 --- a/src/dev-runtime/auth/provider-contract-stubs.mjs
@@ -722,31 +660,8 @@ index cff94f9b0..07ac3f229 100644
    "asset_role_definitions",
    "asset_library_items",
    "asset_storage_objects",
-diff --git a/src/dev-runtime/persistence/mock-db-store.js b/src/dev-runtime/persistence/mock-db-store.js
-index e96fb833f..c39ee16f3 100644
---- a/src/dev-runtime/persistence/mock-db-store.js
-+++ b/src/dev-runtime/persistence/mock-db-store.js
-@@ -76,7 +76,7 @@ export const MOCK_DB_TOOL_GROUPS = Object.freeze({
-   }),
-   tags: Object.freeze({
-     label: "Tags",
--    tableNames: Object.freeze(["workspace_tag_records"]),
-+    tableNames: Object.freeze(["project_tags", "project_tag_assignments"]),
-   }),
-   asset: Object.freeze({
-     label: "Asset",
-@@ -133,7 +133,8 @@ const MOCK_DB_TABLE_SCHEMAS = Object.freeze({
-   palette_source_swatches: Object.freeze(["key", "id", "swatchKey", "hex", "name", "source", "sourceLabel", "tags", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-   palette_swatch_usages: Object.freeze(["key", "id", "gameId", "assetId", "swatchHex", "swatchName", "swatchKey", "toolId", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-   project_workspace_palette_globals: Object.freeze(["key", "gameId", "swatchCount", "toolKey", "workspacePath", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
--  workspace_tag_records: Object.freeze(["key", "id", "gameId", "name", "description", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-+  project_tags: Object.freeze(["key", "slug", "label", "description", "active", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-+  project_tag_assignments: Object.freeze(["key", "projectKey", "tagKey", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-   asset_role_definitions: Object.freeze(["key", "id", "label", "storageFolder", "extensions", "mimeTypes", "previewBehavior", "uploadEnabled", "inputMode", "usageRoles", "maxSizeBytes", "dbFields", "validationNeeds", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-   asset_library_items: Object.freeze(["key", "id", "gameId", "ownerProjectId", "ownerUserId", "assetRole", "assetRoleLabel", "assetType", "description", "tagKeys", "name", "source", "reference", "fileName", "originalName", "mimeType", "size", "checksum", "storageObjectId", "storedPath", "path", "previewKind", "role", "type", "usage", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-   asset_storage_objects: Object.freeze(["key", "id", "assetId", "gameId", "ownerProjectId", "role", "originalName", "storedPath", "mimeType", "size", "checksum", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
 diff --git a/src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js b/src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js
-index f4635afe9..7bbdac1eb 100644
+index f4635afe9..2fecaef7d 100644
 --- a/src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js
 +++ b/src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js
 @@ -1,3 +1,4 @@
@@ -756,13 +671,13 @@ index f4635afe9..7bbdac1eb 100644
    mockDbPersistenceEnabled,
 @@ -7,13 +8,23 @@ import {
  } from "../mock-db-store.js";
- 
+
  export const TAGS_TOOL_TABLES = Object.freeze([
 -  "workspace_tag_records"
 +  "project_tags",
 +  "project_tag_assignments",
  ]);
- 
+
  const TAGS_DB_OWNER = "tags";
  const TAGS_SYSTEM_USER_KEY = MOCK_DB_KEYS.users.forgeBot;
  const DEFAULT_TAG_USER_KEY = MOCK_DB_KEYS.users.user1;
@@ -777,13 +692,13 @@ index f4635afe9..7bbdac1eb 100644
 +  Object.freeze({ label: "kids", description: "Designed for younger players." }),
 +  Object.freeze({ label: "boss-fight", description: "Includes a climactic boss encounter." }),
 +]);
- 
+
  function normalizeText(value) {
    return String(value || "").trim();
-@@ -50,30 +61,43 @@ function cloneTables(tables) {
+@@ -50,30 +61,49 @@ function cloneTables(tables) {
    );
  }
- 
+
 +function normalizeTagLabel(value) {
 +  return normalizeText(value).replace(/\s+/g, " ");
 +}
@@ -795,13 +710,13 @@ index f4635afe9..7bbdac1eb 100644
 +    project_tags: [],
    };
  }
- 
+
 -function normalizeTagName(value) {
 -  return normalizeText(value).replace(/\s+/g, " ");
 +function tagKeyForIndex(index) {
 +  return makeSeedUlid(7200 + index);
  }
- 
+
 -function tagKeyForName(name, rows) {
 -  const base = slugify(name) || "tag";
 -  if (!rows.some((row) => row.id === base)) {
@@ -818,39 +733,45 @@ index f4635afe9..7bbdac1eb 100644
 +
 +function createSeedTables() {
 +  const audit = auditFields(TAGS_SYSTEM_USER_KEY);
++  const projectTags = STARTER_TAGS.map((tag, index) => ({
++    ...audit,
++    active: true,
++    description: tag.description,
++    id: slugify(tag.label),
++    key: tagKeyForIndex(index + 1),
++    label: tag.label,
++    slug: slugify(tag.label),
++  }));
 +  return {
-+    project_tag_assignments: [],
-+    project_tags: STARTER_TAGS.map((tag, index) => ({
++    project_tag_assignments: projectTags.slice(0, 2).map((tag, index) => ({
 +      ...audit,
-+      active: true,
-+      description: tag.description,
-+      id: slugify(tag.label),
-+      key: tagKeyForIndex(index + 1),
-+      label: tag.label,
-+      slug: slugify(tag.label),
++      key: assignmentKeyForIndex(index + 1),
++      projectKey: DEFAULT_PROJECT_KEY,
++      tagKey: tag.key,
 +    })),
++    project_tags: projectTags,
 +  };
  }
- 
+
  function usageRowsForTag(tag, usageProvider) {
 -  const tagId = normalizeText(tag.id);
 +  const tagId = normalizeText(tag.id || tag.slug);
    if (!tagId || typeof usageProvider !== "function") {
      return [];
    }
-@@ -93,6 +117,8 @@ export function createTagsToolMockRepository(options = {}) {
+@@ -93,6 +123,8 @@ export function createTagsToolMockRepository(options = {}) {
    const persistenceEnabled = mockDbPersistenceEnabled(options);
    let hasPersistedTables = Boolean(loadedMockDbTables.persisted);
    let tables = loadedMockDbTables.tables;
 +  let tagCounter = tables.project_tags?.length || STARTER_TAGS.length;
 +  let assignmentCounter = tables.project_tag_assignments?.length || 0;
- 
+
    function persistTables() {
      saveMockDbTables(TAGS_DB_OWNER, tables, options);
-@@ -108,10 +134,13 @@ export function createTagsToolMockRepository(options = {}) {
+@@ -108,10 +140,13 @@ export function createTagsToolMockRepository(options = {}) {
      return normalizeText(sessionUserKey) || DEFAULT_TAG_USER_KEY;
    }
- 
+
 -  function activeGameId() {
 +  function activeProject() {
      const repository = options.gameWorkspaceRepository;
@@ -861,12 +782,12 @@ index f4635afe9..7bbdac1eb 100644
 +      name: normalizeText(activeGame?.name) || "Demo Game",
 +    };
    }
- 
+
    function usageProvider() {
-@@ -121,49 +150,66 @@ export function createTagsToolMockRepository(options = {}) {
+@@ -121,49 +156,66 @@ export function createTagsToolMockRepository(options = {}) {
      return [];
    }
- 
+
 +  function assignmentRowsForTag(tagKey) {
 +    return tables.project_tag_assignments.filter((assignment) => assignment.tagKey === tagKey);
 +  }
@@ -887,7 +808,7 @@ index f4635afe9..7bbdac1eb 100644
 +      usageCount: usage.length + assignments.length,
      };
    }
- 
+
    function listTags() {
 -    const gameId = activeGameId();
 -    return tables.workspace_tag_records
@@ -898,22 +819,22 @@ index f4635afe9..7bbdac1eb 100644
 -      .sort((left, right) => left.name.localeCompare(right.name));
 +      .sort((left, right) => left.label.localeCompare(right.label));
    }
- 
+
    function findTag(tagId) {
      const id = normalizeText(tagId);
 -    return listTags().find((tag) => tag.id === id) || null;
 +    return listTags().find((tag) => tag.id === id || tag.slug === id || tag.key === id) || null;
-+  }
-+
+   }
+
+-  function validateTagInput(input = {}, existingId = "") {
+-    const name = normalizeTagName(input.name || input.tagName);
 +  function assignedTagsForProject(projectKey = activeProject().key) {
 +    const assignedKeys = new Set(tables.project_tag_assignments
 +      .filter((assignment) => assignment.projectKey === projectKey)
 +      .map((assignment) => assignment.tagKey));
 +    return listTags().filter((tag) => assignedKeys.has(tag.key));
-   }
- 
--  function validateTagInput(input = {}, existingId = "") {
--    const name = normalizeTagName(input.name || input.tagName);
++  }
++
 +  function validateTagInput(input = {}, existingKey = "") {
 +    const label = normalizeTagLabel(input.label || input.name || input.tagName);
      const description = normalizeText(input.description);
@@ -927,7 +848,7 @@ index f4635afe9..7bbdac1eb 100644
 +      (row.label.toLowerCase() === label.toLowerCase() || row.slug === slug)
      ));
      const findings = [];
- 
+
 -    if (!name) {
 +    if (!label) {
        findings.push({
@@ -947,7 +868,7 @@ index f4635afe9..7bbdac1eb 100644
          status: "Duplicate",
        });
      }
-@@ -171,11 +217,23 @@ export function createTagsToolMockRepository(options = {}) {
+@@ -171,11 +223,23 @@ export function createTagsToolMockRepository(options = {}) {
      return {
        description,
        findings,
@@ -958,7 +879,7 @@ index f4635afe9..7bbdac1eb 100644
        status: findings.length ? "Needs Input" : "Ready",
      };
    }
- 
+
 +  function nextTagKey() {
 +    tagCounter += 1;
 +    return makeSeedUlid(7200 + tagCounter);
@@ -972,9 +893,9 @@ index f4635afe9..7bbdac1eb 100644
    function addTag(input = {}) {
      const validation = validateTagInput(input);
      if (validation.findings.length) {
-@@ -188,20 +246,20 @@ export function createTagsToolMockRepository(options = {}) {
+@@ -188,20 +252,20 @@ export function createTagsToolMockRepository(options = {}) {
      }
- 
+
      const userKey = activeUserKey();
 -    const id = tagKeyForName(validation.name, tables.workspace_tag_records);
      const row = {
@@ -1000,9 +921,9 @@ index f4635afe9..7bbdac1eb 100644
        snapshot: getSnapshot(),
        tag: decorateTag(row),
        validation,
-@@ -209,17 +267,17 @@ export function createTagsToolMockRepository(options = {}) {
+@@ -209,17 +273,17 @@ export function createTagsToolMockRepository(options = {}) {
    }
- 
+
    function updateTag(tagId, input = {}) {
 -    const id = normalizeText(tagId);
 -    const row = tables.workspace_tag_records.find((candidate) => candidate.gameId === activeGameId() && candidate.id === id);
@@ -1016,16 +937,16 @@ index f4635afe9..7bbdac1eb 100644
          updated: false,
        };
      }
- 
+
 -    const validation = validateTagInput(input, id);
 +    const validation = validateTagInput(input, row.key);
      if (validation.findings.length) {
        return {
          message: validation.findings[0].action,
-@@ -229,13 +287,15 @@ export function createTagsToolMockRepository(options = {}) {
+@@ -229,13 +293,15 @@ export function createTagsToolMockRepository(options = {}) {
        };
      }
- 
+
 -    row.name = validation.name;
      row.description = validation.description;
 +    row.id = validation.slug;
@@ -1040,7 +961,7 @@ index f4635afe9..7bbdac1eb 100644
        snapshot: getSnapshot(),
        tag: decorateTag(row),
        updated: true,
-@@ -248,42 +308,120 @@ export function createTagsToolMockRepository(options = {}) {
+@@ -248,42 +314,127 @@ export function createTagsToolMockRepository(options = {}) {
      if (!tag) {
        return {
          deleted: false,
@@ -1057,9 +978,16 @@ index f4635afe9..7bbdac1eb 100644
          snapshot: getSnapshot(),
        };
      }
- 
+
 -    tables.workspace_tag_records = tables.workspace_tag_records.filter((row) => !(row.gameId === tag.gameId && row.id === tag.id));
-+    tables.project_tags = tables.project_tags.filter((row) => row.key !== tag.key);
++    const row = tables.project_tags.find((candidate) => candidate.key === tag.key);
++    if (row) {
++      row.active = false;
++      row.id = `${row.id}-deleted-${row.key.slice(-6)}`;
++      row.slug = `${row.slug}-deleted-${row.key.slice(-6)}`;
++      row.updatedAt = timestamp();
++      row.updatedBy = activeUserKey();
++    }
      persistTables();
      return {
        deleted: true,
@@ -1069,7 +997,7 @@ index f4635afe9..7bbdac1eb 100644
        tagId: tag.id,
      };
    }
- 
+
 +  function assignTagToProject(tagId, projectKey = activeProject().key) {
 +    const tag = findTag(tagId);
 +    const project = activeProject();
@@ -1141,11 +1069,11 @@ index f4635afe9..7bbdac1eb 100644
      persistTables();
      return getSnapshot();
    }
- 
+
 +  function resetTags() {
 +    tables = createSeedTables();
 +    tagCounter = tables.project_tags.length;
-+    assignmentCounter = 0;
++    assignmentCounter = tables.project_tag_assignments.length;
 +    persistTables();
 +    return getSnapshot();
 +  }
@@ -1153,7 +1081,7 @@ index f4635afe9..7bbdac1eb 100644
    function getTables() {
      return normalizeMockDbTables(TAGS_DB_OWNER, cloneTables(tables), options);
    }
- 
+
    function getSnapshot() {
      const tags = listTags();
 +    const project = activeProject();
@@ -1166,14 +1094,14 @@ index f4635afe9..7bbdac1eb 100644
        status: tags.length ? "Ready" : "Needs Tags",
        tableCounts: TAGS_TOOL_TABLES.map((tableName) => ({
          rows: tables[tableName].length,
-@@ -295,18 +433,21 @@ export function createTagsToolMockRepository(options = {}) {
+@@ -295,18 +446,21 @@ export function createTagsToolMockRepository(options = {}) {
    }
- 
+
    if (!hasPersistedTables) {
 -    tables = createEmptyTables();
 +    tables = createSeedTables();
    }
- 
+
    return {
      TAGS_TOOL_TABLES,
      addTag,
@@ -1190,44 +1118,95 @@ index f4635afe9..7bbdac1eb 100644
      validateTagInput,
    };
 diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index 913163236..fdbc02014 100644
+index 913163236..49f196f3b 100644
 --- a/src/dev-runtime/server/local-api-router.mjs
 +++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -3308,7 +3308,14 @@ function paletteTables(repository) {
+@@ -2787,6 +2787,16 @@ const GAME_WORKSPACE_SAVE_METHODS = new Set([
+   "updateGameStatus",
+ ]);
+
++const TAGS_SAVE_METHODS = new Set([
++  "addTag",
++  "assignTagToProject",
++  "clearTags",
++  "deleteTag",
++  "removeTagFromProject",
++  "resetTags",
++  "updateTag",
++]);
++
+ const GAME_JOURNEY_TOOL_STORE_METHODS = new Set([
+   "addItem",
+   "addNote",
+@@ -3308,7 +3318,29 @@ function paletteTables(repository) {
  }
- 
+
  function tagsTables(repository) {
 -  return normalizeOwnedTables("tags", repository.getTables());
 +  const tables = repository.getTables();
 +  return normalizeOwnedTables("tags", {
 +    project_tag_assignments: (tables.project_tag_assignments || []).map((record) => ({
-+      ...record,
++      createdAt: record.createdAt,
++      createdBy: record.createdBy,
++      key: record.key,
 +      projectKey: gameWorkspaceGameKey(record.projectKey),
++      tagKey: record.tagKey,
++      updatedAt: record.updatedAt,
++      updatedBy: record.updatedBy,
 +    })),
-+    project_tags: tables.project_tags || [],
++    project_tags: (tables.project_tags || []).map((record) => ({
++      active: record.active !== false,
++      createdAt: record.createdAt,
++      createdBy: record.createdBy,
++      description: record.description,
++      key: record.key,
++      label: record.label,
++      slug: record.slug,
++      updatedAt: record.updatedAt,
++      updatedBy: record.updatedBy,
++    })),
 +  });
  }
- 
+
  function assetTables(repository) {
-@@ -3703,6 +3710,17 @@ class ApiRuntimeDataSource {
+@@ -3703,6 +3735,24 @@ class ApiRuntimeDataSource {
      return this.persistSupabaseProductSnapshot(action);
    }
- 
+
 +  async persistTagsProviderState(action) {
-+    return {
-+      action,
-+      database: "API database",
-+      databaseEngine: "Server-owned project tag repository",
-+      providerId: "api-project-tags",
-+      serviceContract: "Browser -> API -> Database",
-+      status: "PASS",
++    const adapter = this.supabaseDatabaseAdapter(action);
++    const tables = {
++      ...gameWorkspaceTables(this.gameWorkspaceRepository),
++      ...tagsTables(this.tagsRepository),
 +    };
++    const activeProject = this.gameWorkspaceRepository.getActiveGame?.();
++    const activeProjectKey = gameWorkspaceGameKey(activeProject?.key || activeProject?.id);
++    if (activeProjectKey) {
++      await adapter.requestTable("project_tag_assignments", {
++        method: "DELETE",
++        prefer: "return=minimal",
++        query: `projectKey=eq.${encodeURIComponent(activeProjectKey)}`,
++      });
++    }
++    return adapter.upsertProductTables(tables);
 +  }
 +
    async persistGameWorkspaceProviderState(action) {
      return {
        action,
-@@ -6790,6 +6808,8 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
+@@ -6763,6 +6813,11 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
+     if (repository === this.gameWorkspaceRepository && GAME_WORKSPACE_SAVE_METHODS.has(methodName) && !this.sessionUserKey) {
+       throw new Error("Sign in required to save Game Hub project records through Local API.");
+     }
++    if (repository === this.tagsRepository && TAGS_SAVE_METHODS.has(methodName) && !this.sessionUserKey) {
++      const error = new Error("Sign in required to save project tags through the API.");
++      error.statusCode = 401;
++      throw error;
++    }
+     this.cleared = false;
+     if (repository === this.assetRepository && methodName === "makeReadyGameConfiguration") {
+       if (this.assetReadyInitialized) {
+@@ -6790,6 +6845,8 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
      if (repositoryMethodRequiresPersistence(methodName) && !methodPersistsThroughToolStore) {
        if (repository === this.gameWorkspaceRepository) {
          await this.persistGameWorkspaceProviderState(`Persisting ${methodName} result`);
@@ -1236,24 +1215,47 @@ index 913163236..fdbc02014 100644
        } else if (repository === this.assetRepository) {
          await this.persistAssetProviderState(`Persisting ${methodName} result`);
        } else {
-diff --git a/tests/playwright/tools/AdminDbViewer.spec.mjs b/tests/playwright/tools/AdminDbViewer.spec.mjs
-index 59acfef4c..0583b24ac 100644
---- a/tests/playwright/tools/AdminDbViewer.spec.mjs
-+++ b/tests/playwright/tools/AdminDbViewer.spec.mjs
-@@ -172,7 +172,7 @@ function configuredDbViewerGroups(tableNames) {
-     { id: "game-hub", label: "Game Hub", tableNames: include(["game_workspace_games", "game_workspace_progress"]), type: "tool" },
-     { id: "objects", label: "Objects", tableNames: include(["object_definition_records"]), type: "tool" },
-     { id: "palette", label: "Palette", tableNames: include(["palette_colors", "palette_source_swatches", "palette_swatch_usages", "project_workspace_palette_globals"]), type: "tool" },
--    { id: "tags", label: "Tags", tableNames: include(["workspace_tag_records"]), type: "tool" },
-+    { id: "tags", label: "Tags", tableNames: include(["project_tags", "project_tag_assignments"]), type: "tool" },
-     { id: "toolbox_tool_metadata", label: "Tool Metadata", tableNames: include(["toolbox_tool_metadata"]), type: "table" },
-     { id: "toolbox_tool_planning", label: "Tool Planning", tableNames: include(["toolbox_tool_planning"]), type: "table" },
-     { id: "tool_state_samples", label: "Tool State Samples", tableNames: include(["tool_state_samples"]), type: "table" },
 diff --git a/tests/playwright/tools/TagsTool.spec.mjs b/tests/playwright/tools/TagsTool.spec.mjs
-index 423b1be06..5ca177f4e 100644
+index 423b1be06..10a8f11ed 100644
 --- a/tests/playwright/tools/TagsTool.spec.mjs
 +++ b/tests/playwright/tools/TagsTool.spec.mjs
-@@ -8,7 +8,7 @@ import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageRe
+@@ -1,14 +1,41 @@
++import { readFile } from "node:fs/promises";
++import path from "node:path";
+ import { expect, test } from "@playwright/test";
+-import { TAGS_TOOL_TABLES, createTagsToolMockRepository } from "../../../src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js";
+-import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store.js";
++import { createPostgresConnectionClient } from "../../../src/dev-runtime/persistence/postgres-connection-client.mjs";
++import { SEED_DB_KEYS } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
+ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
+ import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
+ import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
+
++let tagsSchemaReadyPromise = null;
++
++async function ensureTagsDatabaseSchema() {
++  if (!tagsSchemaReadyPromise) {
++    tagsSchemaReadyPromise = (async () => {
++      const client = createPostgresConnectionClient();
++      const ddlFiles = [
++        "docs_build/database/ddl/account.sql",
++        "docs_build/database/ddl/game-workspace.sql",
++        "docs_build/database/ddl/tags.sql",
++      ];
++      for (const ddlFile of ddlFiles) {
++        const ddl = await readFile(path.resolve(ddlFile), "utf8");
++        await client.query(ddl);
++      }
++    })();
++  }
++  try {
++    await tagsSchemaReadyPromise;
++  } catch (error) {
++    tagsSchemaReadyPromise = null;
++    throw error;
++  }
++}
++
  test.beforeEach(async ({ page }) => {
    await installPlaywrightStorageIsolation(page, {
      lane: "tags-tool",
@@ -1261,23 +1263,64 @@ index 423b1be06..5ca177f4e 100644
 +    surface: "Tags first-class tool and flat project tag assignment"
    });
  });
- 
-@@ -33,7 +33,7 @@ async function setServerSession(server, userKey = MOCK_DB_KEYS.users.user1) {
+
+@@ -20,7 +47,7 @@ test.afterAll(async () => {
+   await workspaceV2CoverageReporter.writeReport();
+ });
+
+-async function setServerSession(server, userKey = MOCK_DB_KEYS.users.user1) {
++async function setServerSession(server, userKey = SEED_DB_KEYS.users.user1) {
+   await fetch(`${server.baseUrl}/api/session/mode`, {
+     body: JSON.stringify({ modeId: "local-db" }),
+     headers: { "Content-Type": "application/json" },
+@@ -33,8 +60,38 @@ async function setServerSession(server, userKey = MOCK_DB_KEYS.users.user1) {
    });
  }
- 
+
 -async function openRepoPage(page, pathName) {
++async function createRepositoryApiClient(server, toolId) {
++  const createResponse = await fetch(`${server.baseUrl}/api/toolbox/${toolId}/repositories`, {
++    body: JSON.stringify({ options: {} }),
++    headers: { "Content-Type": "application/json" },
++    method: "POST"
++  });
++  const createPayload = await createResponse.json();
++  expect(createPayload.ok).toBe(true);
++  const repositoryId = createPayload.data.repositoryId;
++
++  async function callRepositoryMethod(methodName, ...args) {
++    const response = await fetch(`${server.baseUrl}/api/toolbox/${toolId}/repositories/${repositoryId}/methods/${methodName}`, {
++      body: JSON.stringify({ args }),
++      headers: { "Content-Type": "application/json" },
++      method: "POST"
++    });
++    const payload = await response.json();
++    expect(payload.ok).toBe(true);
++    return payload.data.result;
++  }
++  callRepositoryMethod.repositoryId = repositoryId;
++  return callRepositoryMethod;
++}
++
++async function persistActiveGameHubProject(server) {
++  const callGameHubMethod = await createRepositoryApiClient(server, "game-hub");
++  await callGameHubMethod("updateGameStatus", "demo-game", "Under Construction");
++}
++
 +async function openRepoPage(page, pathName, options = {}) {
    const server = await startRepoServer();
++  await ensureTagsDatabaseSchema();
    const failedRequests = [];
    const pageErrors = [];
-@@ -56,7 +56,14 @@ async function openRepoPage(page, pathName) {
+   const consoleErrors = [];
+@@ -56,7 +113,15 @@ async function openRepoPage(page, pathName) {
      failedRequests.push(`FAILED ${request.url()}`);
    });
- 
+
 -  await setServerSession(server);
 +  if (options.sessionUserKey !== null) {
-+    await setServerSession(server, options.sessionUserKey || MOCK_DB_KEYS.users.user1);
++    await setServerSession(server, options.sessionUserKey || SEED_DB_KEYS.users.user1);
++    await persistActiveGameHubProject(server);
 +  }
 +  await page.addInitScript(() => {
 +    window.GameFoundryPublicConfig = {
@@ -1287,82 +1330,159 @@ index 423b1be06..5ca177f4e 100644
    await workspaceV2CoverageReporter.start(page);
    await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
    return { consoleErrors, failedRequests, pageErrors, server };
-@@ -68,40 +75,65 @@ function expectNoPageFailures(failures) {
+@@ -68,48 +133,120 @@ function expectNoPageFailures(failures) {
    expect(failures.consoleErrors).toEqual([]);
  }
- 
+
 -test("Tags repository exposes shared workspace tag table", () => {
-+test("Tags repository exposes flat project tag tables and assignment workflow", () => {
-   const repository = createTagsToolMockRepository({ persist: false });
-   expect(Object.keys(repository.getTables()).sort()).toEqual([...TAGS_TOOL_TABLES].sort());
-+  expect(Object.keys(repository.getTables()).sort()).toEqual(["project_tag_assignments", "project_tags"]);
-+  expect(repository.listTags().map((tag) => tag.label)).toEqual([
+-  const repository = createTagsToolMockRepository({ persist: false });
+-  expect(Object.keys(repository.getTables()).sort()).toEqual([...TAGS_TOOL_TABLES].sort());
++async function createTagsApiClient(server) {
++  return createRepositoryApiClient(server, "tags");
++}
++
++async function readProductRows(tableName, query = "select=*") {
++  const client = createPostgresConnectionClient();
++  return client.requestTable(tableName, { query });
++}
+
+-  const addResult = repository.addTag({
+-    description: "Hero vocabulary",
+-    name: "Hero"
+-  });
+-  expect(addResult.added).toBe(true);
+-  expect(addResult.tag).toEqual(expect.objectContaining({
+-    createdAt: expect.any(String),
+-    createdBy: expect.any(String),
+-    key: addResult.tag.id,
+-    updatedAt: expect.any(String),
+-    updatedBy: expect.any(String)
+-  }));
+-  expect(repository.listTags()).toEqual([
+-    expect.objectContaining({
+-      description: "Hero vocabulary",
+-      name: "Hero",
+-      usageCount: 0
+-    })
++test("Tags API exposes flat project tag tables and assignment workflow", async () => {
++  const server = await startRepoServer();
++  try {
++    await ensureTagsDatabaseSchema();
++    await setServerSession(server);
++    await persistActiveGameHubProject(server);
++    const callTagsMethod = await createTagsApiClient(server);
++
++    const snapshot = await callTagsMethod("getSnapshot");
++    expect(Object.keys(snapshot.tables).sort()).toEqual(["project_tag_assignments", "project_tags"]);
++    expect(snapshot.tags.map((tag) => tag.label)).toEqual([
 +    "boss-fight",
 +    "fantasy",
 +    "kids",
 +    "medium",
 +    "pixel-art",
 +    "platformer",
-+  ]);
- 
-   const addResult = repository.addTag({
-     description: "Hero vocabulary",
--    name: "Hero"
-+    label: "Hero"
-   });
-   expect(addResult.added).toBe(true);
-   expect(addResult.tag).toEqual(expect.objectContaining({
-     createdAt: expect.any(String),
-     createdBy: expect.any(String),
--    key: addResult.tag.id,
-+    key: expect.stringMatching(/^[0-9A-HJKMNP-TV-Z]{26}$/),
-+    label: "Hero",
-     updatedAt: expect.any(String),
-     updatedBy: expect.any(String)
-   }));
--  expect(repository.listTags()).toEqual([
-+  expect(repository.listTags()).toEqual(expect.arrayContaining([
-     expect.objectContaining({
-       description: "Hero vocabulary",
--      name: "Hero",
-+      label: "Hero",
-       usageCount: 0
-     })
-+  ]));
-+
-+  const duplicate = repository.addTag({ label: "hero" });
-+  expect(duplicate.added).toBe(false);
-+  expect(duplicate.validation.findings[0]).toMatchObject({
-+    label: "Tag Label",
-+    status: "Duplicate",
-+  });
-+
-+  const assignResult = repository.assignTagToProject(addResult.tag.id);
-+  expect(assignResult.assigned).toBe(true);
-+  expect(repository.getSnapshot().assignedTags).toEqual([
-+    expect.objectContaining({ label: "Hero" })
    ]);
- 
-   const updateResult = repository.updateTag(addResult.tag.id, {
-     description: "Hero and player vocabulary",
+
+-  const updateResult = repository.updateTag(addResult.tag.id, {
+-    description: "Hero and player vocabulary",
 -    name: "Hero Asset"
-+    label: "Hero Asset"
-   });
-   expect(updateResult.updated).toBe(true);
+-  });
+-  expect(updateResult.updated).toBe(true);
 -  expect(repository.findTag(addResult.tag.id).description).toBe("Hero and player vocabulary");
-+  expect(repository.findTag(updateResult.tag.id).description).toBe("Hero and player vocabulary");
- 
++    const addResult = await callTagsMethod("addTag", {
++      description: "Hero vocabulary",
++      label: "Hero"
++    });
++    expect(addResult.added).toBe(true);
++    expect(addResult.tag).toEqual(expect.objectContaining({
++      createdAt: expect.any(String),
++      createdBy: expect.any(String),
++      key: expect.stringMatching(/^[0-9A-HJKMNP-TV-Z]{26}$/),
++      label: "Hero",
++      updatedAt: expect.any(String),
++      updatedBy: expect.any(String)
++    }));
+
 -  const deleteResult = repository.deleteTag(addResult.tag.id);
-+  const removeResult = repository.removeTagFromProject(updateResult.tag.id);
-+  expect(removeResult.removed).toBe(true);
-+  const deleteResult = repository.deleteTag(updateResult.tag.id);
-   expect(deleteResult.deleted).toBe(true);
+-  expect(deleteResult.deleted).toBe(true);
 -  expect(repository.listTags()).toEqual([]);
-+  expect(repository.findTag(updateResult.tag.id)).toBeNull();
++    const duplicate = await callTagsMethod("addTag", { label: "hero" });
++    expect(duplicate.added).toBe(false);
++    expect(duplicate.validation.findings[0]).toMatchObject({
++      label: "Tag Label",
++      status: "Duplicate",
++    });
++
++    expect(snapshot.assignedTags.map((tag) => tag.label).sort()).toEqual([
++      "fantasy",
++      "platformer",
++    ]);
++
++    const assignResult = await callTagsMethod("assignTagToProject", addResult.tag.id);
++    expect(assignResult.assigned).toBe(true);
++    expect(assignResult.snapshot.assignedTags).toEqual(expect.arrayContaining([
++      expect.objectContaining({ label: "Hero" }),
++      expect.objectContaining({ label: "fantasy" }),
++      expect.objectContaining({ label: "platformer" })
++    ]));
++    await expect.poll(async () => {
++      const rows = await readProductRows("project_tag_assignments", `tagKey=eq.${encodeURIComponent(addResult.tag.key)}`);
++      return rows.some((row) => row.tagKey === addResult.tag.key);
++    }).toBe(true);
++
++    const updateResult = await callTagsMethod("updateTag", addResult.tag.id, {
++      description: "Hero and player vocabulary",
++      label: "Hero Asset"
++    });
++    expect(updateResult.updated).toBe(true);
++    expect(updateResult.tag.description).toBe("Hero and player vocabulary");
++    const updatedTagRows = await readProductRows("project_tags", `key=eq.${encodeURIComponent(updateResult.tag.key)}`);
++    expect(updatedTagRows).toEqual([
++      expect.objectContaining({
++        active: true,
++        description: "Hero and player vocabulary",
++        label: "Hero Asset",
++        slug: "hero-asset",
++      })
++    ]);
++
++    const removeResult = await callTagsMethod("removeTagFromProject", updateResult.tag.id);
++    expect(removeResult.removed).toBe(true);
++    await expect.poll(async () => {
++      const rows = await readProductRows("project_tag_assignments", `tagKey=eq.${encodeURIComponent(updateResult.tag.key)}`);
++      return rows.some((row) => row.tagKey === updateResult.tag.key);
++    }).toBe(false);
++    const deleteResult = await callTagsMethod("deleteTag", updateResult.tag.id);
++    expect(deleteResult.deleted).toBe(true);
++    const finalSnapshot = await callTagsMethod("getSnapshot");
++    expect(finalSnapshot.tags.some((tag) => tag.id === updateResult.tag.id)).toBe(false);
++    const deletedRows = await readProductRows("project_tags", `key=eq.${encodeURIComponent(updateResult.tag.key)}`);
++    expect(deletedRows).toEqual([
++      expect.objectContaining({
++        active: false,
++        label: "Hero Asset",
++      })
++    ]);
++  } finally {
++    await server.close();
++  }
  });
- 
+
  test("Tags page supports add, edit, usage expansion, delete, and toolbox registration", async ({ page }) => {
-@@ -127,21 +159,38 @@ test("Tags page supports add, edit, usage expansion, delete, and toolbox registr
+-  const failures = await openRepoPage(page, "/tools/tags/index.html");
++  const failures = await openRepoPage(page, "/toolbox/tags/index.html");
+
+   try {
+     await expect(page.getByRole("heading", { level: 1, name: "Tags" })).toBeVisible();
+     await expect(page.locator(".tool-workspace")).toBeVisible();
++    await expect(page.locator("[data-toolbox-selected-game-name]")).toHaveText("Demo Game");
++    await expect(page.locator("[data-tags-active-project]")).toHaveText("Demo Game");
++    await expect(page.locator("[data-tags-assigned-labels]")).toContainText("fantasy");
++    await expect(page.locator("[data-tags-assigned-labels]")).toContainText("platformer");
+     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+     const addTagPlacement = await page.locator("[data-tags-add]").evaluate((button) => ({
+       insideTagsTableCard: Boolean(button.closest(".card")?.querySelector("[data-tags-table]")),
+@@ -127,21 +264,42 @@ test("Tags page supports add, edit, usage expansion, delete, and toolbox registr
      await page.getByRole("button", { name: "Add Tag" }).click();
      const newRow = page.locator("[data-tags-editing-row='__new__']");
      await expect(newRow).toBeVisible();
@@ -1381,21 +1501,25 @@ index 423b1be06..5ca177f4e 100644
 +    await duplicateRow.getByRole("button", { name: "Save" }).click();
 +    await expect(page.locator("[data-tags-log]")).toHaveText("Choose a unique project tag label.");
 +    await duplicateRow.getByRole("button", { name: "Cancel" }).click();
- 
+
      await page.locator("[data-tags-row]").filter({ hasText: "Hero" }).getByRole("button", { name: "Show usage for Hero" }).click();
      await expect(page.locator("[data-tags-usage-row='hero']")).toContainText("Tool");
      await expect(page.locator("[data-tags-usage-row='hero']")).toContainText("Item Name");
      await expect(page.locator("[data-tags-usage-row='hero']")).toContainText("No usage yet.");
- 
+
 +    await page.locator("[data-tags-row]").filter({ hasText: "Hero" }).getByRole("button", { name: "Assign" }).click();
 +    await expect(page.locator("[data-tags-log]")).toHaveText("Assigned Hero to Demo Game.");
-+    await expect(page.locator("[data-tags-assigned-count]")).toHaveText("1");
-+    await expect(page.locator("[data-tags-assigned-labels]")).toHaveText("Hero");
++    await expect(page.locator("[data-tags-assigned-count]")).toHaveText("3");
++    await expect(page.locator("[data-tags-assigned-labels]")).toContainText("Hero");
 +    await page.getByRole("button", { name: "Refresh Tags" }).click();
-+    await expect(page.locator("[data-tags-assigned-labels]")).toHaveText("Hero");
++    await expect(page.locator("[data-tags-assigned-labels]")).toContainText("Hero");
++    await page.reload({ waitUntil: "networkidle" });
++    await expect(page.locator("[data-toolbox-selected-game-name]")).toHaveText("Demo Game");
++    await expect(page.locator("[data-tags-assigned-labels]")).toContainText("Hero");
++    await expect(page.locator("[data-tags-row]").filter({ hasText: "Hero" }).getByRole("button", { name: "Remove" })).toBeVisible();
 +    await page.locator("[data-tags-row]").filter({ hasText: "Hero" }).getByRole("button", { name: "Remove" }).click();
 +    await expect(page.locator("[data-tags-log]")).toHaveText("Removed Hero from Demo Game.");
-+    await expect(page.locator("[data-tags-assigned-count]")).toHaveText("0");
++    await expect(page.locator("[data-tags-assigned-count]")).toHaveText("2");
 +
      await page.locator("[data-tags-row]").filter({ hasText: "Hero" }).getByRole("button", { name: "Edit" }).click();
      const editRow = page.locator("[data-tags-editing-row='hero']");
@@ -1404,22 +1528,22 @@ index 423b1be06..5ca177f4e 100644
      await editRow.getByLabel("Description").fill("Hero and player assets");
      await editRow.getByRole("button", { name: "Save" }).click();
      await expect(page.locator("[data-tags-log]")).toHaveText("Updated Hero Asset.");
-@@ -149,7 +198,7 @@ test("Tags page supports add, edit, usage expansion, delete, and toolbox registr
- 
+@@ -149,7 +307,7 @@ test("Tags page supports add, edit, usage expansion, delete, and toolbox registr
+
      await page.locator("[data-tags-row]").filter({ hasText: "Hero Asset" }).getByRole("button", { name: "Trash" }).click();
      await expect(page.locator("[data-tags-log]")).toHaveText("Deleted Hero Asset.");
 -    await expect(page.locator("[data-tags-table]")).toContainText("No tags added yet.");
 +    await expect(page.locator("[data-tags-count]")).toHaveText("6");
- 
+
      const registryResponse = await fetch(`${failures.server.baseUrl}/api/toolbox/registry/snapshot`);
      const registryPayload = await registryResponse.json();
-@@ -178,3 +227,19 @@ test("Tags page supports add, edit, usage expansion, delete, and toolbox registr
+@@ -178,3 +336,48 @@ test("Tags page supports add, edit, usage expansion, delete, and toolbox registr
      await failures.server.close();
    }
  });
 +
 +test("Tags guest write actions redirect to sign in before saving project data", async ({ page }) => {
-+  const failures = await openRepoPage(page, "/tools/tags/index.html", { sessionUserKey: null });
++  const failures = await openRepoPage(page, "/toolbox/tags/index.html", { sessionUserKey: null });
 +
 +  try {
 +    await page.getByRole("button", { name: "Add Tag" }).click();
@@ -1433,8 +1557,37 @@ index 423b1be06..5ca177f4e 100644
 +    await failures.server.close();
 +  }
 +});
++
++test("Tags API rejects guest write actions", async () => {
++  const server = await startRepoServer();
++  try {
++    await ensureTagsDatabaseSchema();
++    const callTagsMethod = await createTagsApiClient(server);
++    const writeMethods = [
++      ["addTag", [{ label: "Guest API Tag" }]],
++      ["updateTag", ["platformer", { label: "Guest Update" }]],
++      ["assignTagToProject", ["platformer"]],
++      ["removeTagFromProject", ["platformer"]],
++      ["deleteTag", ["platformer"]],
++    ];
++
++    for (const [methodName, args] of writeMethods) {
++      const response = await fetch(`${server.baseUrl}/api/toolbox/tags/repositories/${callTagsMethod.repositoryId}/methods/${methodName}`, {
++        body: JSON.stringify({ args }),
++        headers: { "Content-Type": "application/json" },
++        method: "POST"
++      });
++      const payload = await response.json();
++      expect(response.status).toBe(401);
++      expect(payload.ok).toBe(false);
++      expect(payload.error).toContain("Sign in required to save project tags through the API.");
++    }
++  } finally {
++    await server.close();
++  }
++});
 diff --git a/toolbox/tags/index.html b/toolbox/tags/index.html
-index 974e8b672..92d1336be 100644
+index 974e8b672..424e8d356 100644
 --- a/toolbox/tags/index.html
 +++ b/toolbox/tags/index.html
 @@ -6,7 +6,7 @@
@@ -1442,7 +1595,7 @@ index 974e8b672..92d1336be 100644
      <meta name="viewport" content="width=device-width, initial-scale=1">
      <title>Tags - GameFoundryStudio</title>
 -    <meta name="description" content="Tags Toolbox runtime for shared Game Hub vocabulary and usage references.">
-+    <meta name="description" content="Tags Toolbox runtime for flat project labels and project tag assignment.">
++    <meta name="description" content="Manage shared Game tags for assets and tool records.">
      <link rel="icon" href="/favicon.svg">
      <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
  </head>
@@ -1451,7 +1604,7 @@ index 974e8b672..92d1336be 100644
                  <div class="kicker">Toolbox / Tags</div>
                  <h1>Tags</h1>
 -                <p class="lede">Manage shared Game Hub tags used by creator tools.</p>
-+                <p class="lede">Manage flat project tags for discovery, sharing, and creator workflow context.</p>
++                <p class="lede">Manage shared Game tags for assets and tool records.</p>
              </div>
          </section>
          <section class="section">
@@ -1474,7 +1627,7 @@ index 974e8b672..92d1336be 100644
                      <section class="tool-center-panel">
 -                        <h2>Game Hub Tags</h2>
 -                        <p>Use this table as the shared tag vocabulary for the active Game Hub.</p>
-+                        <h2>Project Tags</h2>
++                        <h2>Tags</h2>
 +                        <p>Create reusable flat labels and assign them to the active project through the API.</p>
                          <div class="grid cols-3" aria-label="Tags summary">
                              <article class="mini-stat"><strong data-tags-status>Needs Tags</strong>Status</article>
@@ -1492,7 +1645,8 @@ index 974e8b672..92d1336be 100644
                                  </div>
 +                                <p>Active project: <strong data-tags-active-project>Demo Game</strong></p>
                                  <div class="table-wrapper">
-                                     <table class="data-table" aria-label="Workspace tags">
+-                                    <table class="data-table" aria-label="Workspace tags">
++                                    <table class="data-table" aria-label="Game tags">
                                          <thead>
                                              <tr>
 -                                                <th scope="col">Tag Name</th>

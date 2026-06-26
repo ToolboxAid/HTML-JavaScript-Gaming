@@ -1,22 +1,15 @@
-# PR_26177_ALFA_058 Requirement Checklist
+# PR_26177_ALFA_058-flat-project-tags Requirement Checklist
 
-| Requirement | Result | Notes |
-| --- | --- | --- |
-| Browser -> API -> Database architecture | PASS | Tags UI uses `createServerRepositoryClient("tags")`; server owns tag records and keys. |
-| Product/runtime wording says API, not Local API | PASS | Tags UI copy uses API wording. |
-| One API contract across environments | PASS | No environment-specific Tags product code path was added. |
-| Environment differences are config/.env only | PASS | Tags behavior does not branch by environment. |
-| No SQLite | PASS | No SQLite references added in tag runtime, tests, or DB artifacts. |
-| No tmp runtime dependency | PASS | No tmp path is used by the Tags runtime. |
-| No JSON source of truth | PASS | JSON seed is documentation/seed data only; runtime uses API repository calls. |
-| Browser does not own product data | PASS | No local/session storage product-data SSoT was added. |
-| API/server owns authoritative keys | PASS | Server repository assigns ULID-shaped keys for new tags and assignments. |
-| Real ULIDs for non-user records | PASS | Seed and generated keys use ULID-shaped non-user keys. |
-| Audit fields | PASS | `createdAt`, `updatedAt`, `createdBy`, and `updatedBy` are present in DDL, seed, repository rows, and assignments. |
-| Ownership references `users.key` | PASS | DDL references `users(key)` for audit fields. |
-| Guest saves redirect | PASS | Guest write test verifies redirect to `account/sign-in.html`. |
-| Flat tags only | PASS | No category table/UI/filtering was added. |
-| Duplicate prevention | PASS | Repository and browser validation reject duplicate labels/slugs. |
-| Assign/remove project tags | PASS | API repository and browser test cover assign/remove. |
-| Refresh persistence | PASS | Browser test verifies assigned tag remains after refresh while the API-owned server repository session is active. |
-| Required reports and ZIP | PASS | PR report, branch validation, checklist, lane report, manual notes, `codex_*` reports, and delta ZIP are produced. |
+Generated: 2026-06-26 18:53:15 UTC
+
+- PASS - Page title remains Tags and copy remains 'Manage shared Game tags for assets and tool records.'
+- PASS - Flat tags only; no category table, UI, filtering, or category-owned seed data.
+- PASS - Tool loads current Game Hub game context from the shared status bar/API path.
+- PASS - Starter tags include current-game seed assignments for Demo Game in runtime seed state; static seed JSON keeps project assignments API-owned.
+- PASS - Signed-in Creator can add a tag, assign it to the current game, remove it, refresh, reload, and see persistence.
+- PASS - API/DB validation asserts project_tags and project_tag_assignments rows.
+- PASS - Guest add/save/update/delete/assign/remove API actions return 401; browser guest save redirects to account/sign-in.html.
+- PASS - Browser -> API -> Database path only; no browser product-data source of truth.
+- PASS - No SQLite or tmp runtime dependency introduced.
+- PASS - No mock-db-store expansion and no new *-mock-repository.js file added.
+- PASS - DDL, DML, and seed artifacts remain under docs_build/database/ddl, dml, and seed paths.

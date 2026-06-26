@@ -2787,6 +2787,16 @@ const GAME_WORKSPACE_SAVE_METHODS = new Set([
   "updateGameStatus",
 ]);
 
+const TAGS_SAVE_METHODS = new Set([
+  "addTag",
+  "assignTagToProject",
+  "clearTags",
+  "deleteTag",
+  "removeTagFromProject",
+  "resetTags",
+  "updateTag",
+]);
+
 const GAME_JOURNEY_TOOL_STORE_METHODS = new Set([
   "addItem",
   "addNote",
@@ -3311,10 +3321,25 @@ function tagsTables(repository) {
   const tables = repository.getTables();
   return normalizeOwnedTables("tags", {
     project_tag_assignments: (tables.project_tag_assignments || []).map((record) => ({
-      ...record,
+      createdAt: record.createdAt,
+      createdBy: record.createdBy,
+      key: record.key,
       projectKey: gameWorkspaceGameKey(record.projectKey),
+      tagKey: record.tagKey,
+      updatedAt: record.updatedAt,
+      updatedBy: record.updatedBy,
     })),
-    project_tags: tables.project_tags || [],
+    project_tags: (tables.project_tags || []).map((record) => ({
+      active: record.active !== false,
+      createdAt: record.createdAt,
+      createdBy: record.createdBy,
+      description: record.description,
+      key: record.key,
+      label: record.label,
+      slug: record.slug,
+      updatedAt: record.updatedAt,
+      updatedBy: record.updatedBy,
+    })),
   });
 }
 
@@ -3711,14 +3736,21 @@ class ApiRuntimeDataSource {
   }
 
   async persistTagsProviderState(action) {
-    return {
-      action,
-      database: "API database",
-      databaseEngine: "Server-owned project tag repository",
-      providerId: "api-project-tags",
-      serviceContract: "Browser -> API -> Database",
-      status: "PASS",
+    const adapter = this.supabaseDatabaseAdapter(action);
+    const tables = {
+      ...gameWorkspaceTables(this.gameWorkspaceRepository),
+      ...tagsTables(this.tagsRepository),
     };
+    const activeProject = this.gameWorkspaceRepository.getActiveGame?.();
+    const activeProjectKey = gameWorkspaceGameKey(activeProject?.key || activeProject?.id);
+    if (activeProjectKey) {
+      await adapter.requestTable("project_tag_assignments", {
+        method: "DELETE",
+        prefer: "return=minimal",
+        query: `projectKey=eq.${encodeURIComponent(activeProjectKey)}`,
+      });
+    }
+    return adapter.upsertProductTables(tables);
   }
 
   async persistGameWorkspaceProviderState(action) {
@@ -6780,6 +6812,11 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
     }
     if (repository === this.gameWorkspaceRepository && GAME_WORKSPACE_SAVE_METHODS.has(methodName) && !this.sessionUserKey) {
       throw new Error("Sign in required to save Game Hub project records through Local API.");
+    }
+    if (repository === this.tagsRepository && TAGS_SAVE_METHODS.has(methodName) && !this.sessionUserKey) {
+      const error = new Error("Sign in required to save project tags through the API.");
+      error.statusCode = 401;
+      throw error;
     }
     this.cleared = false;
     if (repository === this.assetRepository && methodName === "makeReadyGameConfiguration") {

@@ -1,23 +1,26 @@
 # PR_26177_ALFA_058-flat-project-tags Report
 
-## Summary
-- Built flat project tags as reusable project labels with no category table, category UI, grouped category filtering, or category-owned seed data.
-- Added DB documentation artifacts for `project_tags` and `project_tag_assignments` under `docs_build/database/ddl`, `docs_build/database/dml`, `docs_build/database/seed`, and `docs_build/database/tags`.
-- Updated the Tags tool to use the API repository only for tag CRUD and project assignment.
-- Added duplicate prevention, assign/remove behavior, refresh persistence within the API-owned repository session, and guest write redirect to `account/sign-in.html`.
+Generated: 2026-06-26 18:53:15 UTC
+Branch: `PR_26177_ALFA_058-flat-project-tags`
+Base: `main`
+Current HEAD before packaging: `675b1a40f`
 
-## Changed Areas
-- Tags tool UI: `toolbox/tags/index.html`, `assets/toolbox/tags/js/index.js`.
-- API/dev-runtime service contract: tags repository, server router repository mapping, mock DB schemas, provider contract table list.
-- Database docs and seed: flat `project_tags` and `project_tag_assignments`.
-- Targeted Playwright coverage for Tags and Admin DB table naming.
+## Summary
+PR058 keeps Tags as a human-testable flat tag tool. The tool loads the current Game Hub game context, shows starter current-game tag assignments from API runtime state, supports add/edit/assign/remove/delete actions through the API, persists rows to database-backed tag tables, and survives refresh/reload.
+
+## Implementation Notes
+- Center title is `Tags`; no Workspace wording is used.
+- Starter runtime tag state includes assignments for the selected Demo Game so the tool opens with current-game tag context.
+- Static seed JSON keeps project assignments empty because runtime project keys remain server/API-owned.
+- The Playwright lane uses `/toolbox/tags/index.html` and asserts the shared status bar selected game.
+- Guest write coverage checks add, update, assign, remove, and delete API methods.
+- No categories, SQLite, tmp runtime dependency, JSON source of truth, mock-db-store expansion, or new mock repository file was added.
 
 ## Validation
-- PASS: `node --check` on changed JS/MJS test/runtime files.
-- PASS: `git diff --check`.
-- PASS: `npx playwright test tests/playwright/tools/TagsTool.spec.mjs --workers=1 --reporter=line` (`3 passed`).
-
-## Notes
-- Product/runtime wording in the Tags UI uses `API`.
-- No browser product-data source of truth was added.
-- The Playwright Tags spec pins browser public config to the same-origin test API so workstation `.env` values cannot redirect the focused lane to an unrelated listener.
+- PASS - node --check assets/toolbox/tags/js/index.js
+- PASS - node --check src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js
+- PASS - node --check src/dev-runtime/server/local-api-router.mjs
+- PASS - node --check tests/playwright/tools/TagsTool.spec.mjs
+- PASS - python -m json.tool docs_build/database/seed/tags.json
+- PASS - git diff --check (line-ending notices only)
+- PASS - npx playwright test tests/playwright/tools/TagsTool.spec.mjs --workers=1 --reporter=line (4 passed)

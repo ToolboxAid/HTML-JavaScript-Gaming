@@ -82,17 +82,23 @@ function assignmentKeyForIndex(index) {
 
 function createSeedTables() {
   const audit = auditFields(TAGS_SYSTEM_USER_KEY);
+  const projectTags = STARTER_TAGS.map((tag, index) => ({
+    ...audit,
+    active: true,
+    description: tag.description,
+    id: slugify(tag.label),
+    key: tagKeyForIndex(index + 1),
+    label: tag.label,
+    slug: slugify(tag.label),
+  }));
   return {
-    project_tag_assignments: [],
-    project_tags: STARTER_TAGS.map((tag, index) => ({
+    project_tag_assignments: projectTags.slice(0, 2).map((tag, index) => ({
       ...audit,
-      active: true,
-      description: tag.description,
-      id: slugify(tag.label),
-      key: tagKeyForIndex(index + 1),
-      label: tag.label,
-      slug: slugify(tag.label),
+      key: assignmentKeyForIndex(index + 1),
+      projectKey: DEFAULT_PROJECT_KEY,
+      tagKey: tag.key,
     })),
+    project_tags: projectTags,
   };
 }
 
@@ -320,7 +326,14 @@ export function createTagsToolMockRepository(options = {}) {
       };
     }
 
-    tables.project_tags = tables.project_tags.filter((row) => row.key !== tag.key);
+    const row = tables.project_tags.find((candidate) => candidate.key === tag.key);
+    if (row) {
+      row.active = false;
+      row.id = `${row.id}-deleted-${row.key.slice(-6)}`;
+      row.slug = `${row.slug}-deleted-${row.key.slice(-6)}`;
+      row.updatedAt = timestamp();
+      row.updatedBy = activeUserKey();
+    }
     persistTables();
     return {
       deleted: true,
@@ -405,7 +418,7 @@ export function createTagsToolMockRepository(options = {}) {
   function resetTags() {
     tables = createSeedTables();
     tagCounter = tables.project_tags.length;
-    assignmentCounter = 0;
+    assignmentCounter = tables.project_tag_assignments.length;
     persistTables();
     return getSnapshot();
   }

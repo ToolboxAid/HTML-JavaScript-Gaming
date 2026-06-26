@@ -1,10 +1,9 @@
-# PR_26177_ALFA_058 Branch Validation
+# PR_26177_ALFA_058-flat-project-tags Branch Validation
 
-| Check | Result | Evidence |
-| --- | --- | --- |
-| Branch | PASS | `PR_26177_ALFA_058-flat-project-tags` |
-| Base gate | PASS | Branch was created after `main...origin/main` reported `0 0`. |
-| Scope | PASS | Changes are limited to flat Tags DB/API/UI wiring, targeted tests, and required reports. |
-| Runtime architecture | PASS | Browser calls the API repository; no browser-owned product data source was introduced. |
-| Worktree before packaging | PASS | Reviewed with `git status --short`; only PR058 scoped files and generated validation reports are present. |
-| SQLite/tmp runtime dependency | PASS | Scoped tag surface search found no `SQLite`, `.sqlite`, `tmp/local-api`, or `localStorage` product-data dependency. |
+Generated: 2026-06-26 18:53:15 UTC
+
+- Branch check: PASS - current branch is `PR_26177_ALFA_058-flat-project-tags`.
+- Scope check: PASS - changes are limited to Tags UI/runtime seed behavior, API/DB tests, database seed artifact, reports, and packaging.
+- Architecture check: PASS - targeted validation uses Browser -> API -> Database.
+- Current game check: PASS - status bar and Tags active project both show Demo Game.
+- Validation result: PASS.
