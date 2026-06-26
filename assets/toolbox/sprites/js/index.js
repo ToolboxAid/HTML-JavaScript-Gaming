@@ -20,6 +20,8 @@ const elements = {
   paletteStatus: document.querySelector("[data-sprites-palette-status]"),
   previewPanel: document.querySelector("[data-sprites-preview-panel]"),
   refresh: document.querySelector("[data-sprites-refresh]"),
+  referencePanel: document.querySelector("[data-sprites-reference-panel]"),
+  referenceStatus: document.querySelector("[data-sprites-reference-status]"),
   replace: document.querySelector("[data-sprites-replace]"),
   replaceStatus: document.querySelector("[data-sprites-replace-status]"),
   search: document.querySelector("[data-sprites-search]"),
@@ -193,8 +195,12 @@ function usageCountFor(sprite) {
   return Number.isFinite(count) && count >= 0 ? String(count) : "0";
 }
 
+function referencesFor(sprite) {
+  return Array.isArray(sprite?.references) ? sprite.references : [];
+}
+
 function numericUsageCount(sprite) {
-  const count = Number(sprite?.usageCount ?? sprite?.usage_count ?? sprite?.references?.length);
+  const count = Number(sprite?.usageCount ?? sprite?.usage_count ?? referencesFor(sprite).length);
   return Number.isFinite(count) && count >= 0 ? count : 0;
 }
 
@@ -324,8 +330,10 @@ function renderUnavailable(message) {
   setText(elements.paletteSelectionStatus, "Palette/Colors selection unavailable until API-backed key records are available.");
   setText(elements.storageStatus, "Storage import unavailable because the Sprites API is not responding.");
   setText(elements.filterStatus, "Filters unavailable until Sprites records load from the API.");
+  setText(elements.referenceStatus, "References unavailable until Sprites records load from the API.");
   setText(elements.replaceStatus, "Replace metadata unavailable until the Sprites API responds.");
   renderPreviewPanel(null);
+  renderReferencePanel(null);
   setText(elements.updated, new Date().toLocaleTimeString());
   setHidden(elements.emptyState, false);
   setHidden(elements.errorState, false);
@@ -400,11 +408,58 @@ function renderPreviewPanel(sprite) {
   setDisabled(elements.replace, false);
 }
 
+function renderReferencePanel(sprite) {
+  if (!elements.referencePanel) {
+    return;
+  }
+  elements.referencePanel.replaceChildren();
+  if (!sprite) {
+    setText(elements.referenceStatus, "Select a sprite to review API-provided usage references.");
+    elements.referencePanel.append(createParagraph("No sprite selected for reference review.", "status"));
+    return;
+  }
+  const references = referencesFor(sprite);
+  const usageCount = numericUsageCount(sprite);
+  setText(
+    elements.referenceStatus,
+    usageCount > 0
+      ? `${usageCount} usage reference${usageCount === 1 ? "" : "s"} reported by the Sprites API.`
+      : "No usage references reported by the Sprites API."
+  );
+  if (!references.length) {
+    elements.referencePanel.append(createParagraph("No references reported yet. Future Objects and Worlds references will appear here when the API supplies them.", "status"));
+    return;
+  }
+  const wrapper = document.createElement("div");
+  wrapper.className = "table-wrapper";
+  const table = document.createElement("table");
+  table.className = "data-table";
+  table.setAttribute("aria-label", "Sprite usage references");
+  const head = document.createElement("thead");
+  const headRow = document.createElement("tr");
+  headRow.append(createCell("Source Type"), createCell("Source Key"), createCell("Label"));
+  head.append(headRow);
+  const body = document.createElement("tbody");
+  references.forEach((reference) => {
+    const row = document.createElement("tr");
+    row.append(
+      createCell(normalizeText(reference.sourceType)),
+      createCell(normalizeText(reference.sourceKey)),
+      createCell(normalizeText(reference.label, "No label"))
+    );
+    body.append(row);
+  });
+  table.append(head, body);
+  wrapper.append(table);
+  elements.referencePanel.append(wrapper);
+}
+
 function selectSprite(sprite) {
   selectedSpriteKey = sprite?.key || "";
   if (!sprite) {
     setText(elements.metadata, "Select a sprite row to review its metadata.");
     renderPreviewPanel(null);
+    renderReferencePanel(null);
     return;
   }
   const key = normalizeText(sprite?.key, "Unavailable");
@@ -412,6 +467,7 @@ function selectSprite(sprite) {
   const sizeBytes = normalizeText(sprite?.sizeBytes ?? sprite?.size_bytes, "Unavailable");
   setText(elements.metadata, `${normalizeText(sprite?.name)} (${key}) | ${mimeType} | ${formatDimensions(sprite)} | ${sizeBytes} bytes`);
   renderPreviewPanel(sprite);
+  renderReferencePanel(sprite);
 }
 
 function renderRows(sprites, emptyMessage = "No Sprites records returned by the API.") {
@@ -491,9 +547,10 @@ function createSpriteRow(sprite) {
     actions.append(
       createButton("Edit", "spritesEdit", sprite?.key || "", { label: `Edit ${name}` }),
       createButton("Duplicate", "spritesDuplicateRow", sprite?.key || "", { label: `Duplicate ${name}` }),
-      createButton(archived ? "Archived" : "Archive", "spritesArchive", sprite?.key || "", {
+      createButton(archived ? "Archived" : usageCount > 0 ? "Archive Safely" : "Archive", "spritesArchive", sprite?.key || "", {
         disabled: archived,
-        label: archived ? `${name} is already archived` : `Archive ${name}`,
+        label: archived ? `${name} is already archived` : usageCount > 0 ? `Archive safely ${name}` : `Archive ${name}`,
+        title: usageCount > 0 ? "Sprite is referenced. Archive is the safe action; destructive delete is blocked." : "",
       }),
       createButton(usageCount > 0 ? "Delete Blocked" : "Delete", "spritesDelete", sprite?.key || "", {
         disabled: usageCount > 0,

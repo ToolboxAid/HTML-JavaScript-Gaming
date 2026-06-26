@@ -1,321 +1,191 @@
 diff --git a/assets/toolbox/sprites/js/index.js b/assets/toolbox/sprites/js/index.js
-index fcbe5bd04..9924f47cc 100644
+index 9924f47cc..e0149857e 100644
 --- a/assets/toolbox/sprites/js/index.js
 +++ b/assets/toolbox/sprites/js/index.js
-@@ -7,8 +7,11 @@ const elements = {
-   add: document.querySelector("[data-sprites-add]"),
-   apiStatus: document.querySelector("[data-sprites-api-status]"),
-   count: document.querySelector("[data-sprites-count]"),
-+  categoryFilter: document.querySelector("[data-sprites-category-filter]"),
-+  clearFilters: document.querySelector("[data-sprites-clear-filters]"),
-   emptyState: document.querySelector("[data-sprites-empty-state]"),
-   errorState: document.querySelector("[data-sprites-error-state]"),
-+  filterStatus: document.querySelector("[data-sprites-filter-status]"),
-   libraryStatus: document.querySelector("[data-sprites-library-status]"),
-   metadata: document.querySelector("[data-sprites-metadata]"),
-   outputStatus: document.querySelector("[data-sprites-output-status]"),
-@@ -19,8 +22,11 @@ const elements = {
+@@ -20,6 +20,8 @@ const elements = {
+   paletteStatus: document.querySelector("[data-sprites-palette-status]"),
+   previewPanel: document.querySelector("[data-sprites-preview-panel]"),
    refresh: document.querySelector("[data-sprites-refresh]"),
++  referencePanel: document.querySelector("[data-sprites-reference-panel]"),
++  referenceStatus: document.querySelector("[data-sprites-reference-status]"),
    replace: document.querySelector("[data-sprites-replace]"),
    replaceStatus: document.querySelector("[data-sprites-replace-status]"),
-+  search: document.querySelector("[data-sprites-search]"),
-   storageStatus: document.querySelector("[data-sprites-storage-status]"),
-+  statusFilter: document.querySelector("[data-sprites-status-filter]"),
-   tableBody: document.querySelector("[data-sprites-table-body]"),
-+  tagFilter: document.querySelector("[data-sprites-tag-filter]"),
-   updated: document.querySelector("[data-sprites-updated]"),
-   validation: document.querySelector("[data-sprites-validation]"),
-   duplicate: document.querySelector("[data-sprites-duplicate]"),
-@@ -172,6 +178,16 @@ function paletteKeysFor(sprite) {
-   return [];
- }
-
-+function tagKeysFor(sprite) {
-+  if (Array.isArray(sprite?.tagKeys)) {
-+    return sprite.tagKeys.map((key) => String(key || "").trim()).filter(Boolean);
-+  }
-+  if (Array.isArray(sprite?.tag_keys)) {
-+    return sprite.tag_keys.map((key) => String(key || "").trim()).filter(Boolean);
-+  }
-+  return [];
-+}
-+
- function usageCountFor(sprite) {
-   const count = Number(sprite?.usageCount ?? sprite?.usage_count ?? sprite?.references?.length);
+   search: document.querySelector("[data-sprites-search]"),
+@@ -193,8 +195,12 @@ function usageCountFor(sprite) {
    return Number.isFinite(count) && count >= 0 ? String(count) : "0";
-@@ -192,12 +208,93 @@ function spriteRowsFromPayload(payload) {
-   return [];
  }
 
-+function uniqueSorted(values) {
-+  return [...new Set(values.map((value) => String(value || "").trim()).filter(Boolean))]
-+    .sort((left, right) => left.localeCompare(right, undefined, { sensitivity: "base" }));
++function referencesFor(sprite) {
++  return Array.isArray(sprite?.references) ? sprite.references : [];
 +}
 +
-+function setSelectOptions(select, values, allLabel) {
-+  if (!select) {
-+    return;
-+  }
-+  const current = select.value;
-+  const options = [""].concat(values);
-+  select.replaceChildren(...options.map((value) => {
-+    const option = document.createElement("option");
-+    option.value = value;
-+    option.textContent = value || allLabel;
-+    return option;
-+  }));
-+  select.value = options.includes(current) ? current : "";
-+}
-+
-+function renderFilterOptions(sprites) {
-+  setSelectOptions(elements.statusFilter, SPRITE_STATUSES, "All statuses");
-+  setSelectOptions(elements.categoryFilter, uniqueSorted(sprites.map((sprite) => sprite.category)), "All categories");
-+  setSelectOptions(elements.tagFilter, uniqueSorted(sprites.flatMap(tagKeysFor)), "All tag keys");
-+}
-+
-+function filterValues() {
-+  return {
-+    category: String(elements.categoryFilter?.value || "").trim(),
-+    search: String(elements.search?.value || "").trim().toLowerCase(),
-+    status: String(elements.statusFilter?.value || "").trim(),
-+    tagKey: String(elements.tagFilter?.value || "").trim(),
-+  };
-+}
-+
-+function spriteMatchesFilters(sprite, filters) {
-+  if (filters.status && sprite.status !== filters.status) {
-+    return false;
-+  }
-+  if (filters.category && sprite.category !== filters.category) {
-+    return false;
-+  }
-+  if (filters.tagKey && !tagKeysFor(sprite).includes(filters.tagKey)) {
-+    return false;
-+  }
-+  if (!filters.search) {
-+    return true;
-+  }
-+  const haystack = [
-+    sprite.name,
-+    sprite.status,
-+    sprite.category,
-+    sprite.source,
-+    sprite.storagePath,
-+    ...tagKeysFor(sprite),
-+    ...paletteKeysFor(sprite),
-+  ].map((value) => String(value || "").toLowerCase()).join(" ");
-+  return haystack.includes(filters.search);
-+}
-+
-+function filteredSprites() {
-+  const filters = filterValues();
-+  return currentSprites.filter((sprite) => spriteMatchesFilters(sprite, filters));
-+}
-+
-+function renderFilterStatus(visibleCount, totalCount) {
-+  if (totalCount === 0) {
-+    setText(elements.filterStatus, "No API-backed Sprites records are available to filter.");
-+    return;
-+  }
-+  const filters = filterValues();
-+  const activeFilters = Object.values(filters).filter(Boolean).length;
-+  setText(
-+    elements.filterStatus,
-+    activeFilters > 0
-+      ? `${visibleCount} of ${totalCount} Sprites records match current filters.`
-+      : `${totalCount} Sprites records available.`
-+  );
-+}
-+
- function renderLoading() {
-   setText(elements.apiStatus, "Loading");
-   setText(elements.libraryStatus, "Loading");
-   setText(elements.outputStatus, "Loading");
-   setText(elements.outputSummary, "Waiting for Sprites API response.");
-   setActionStatus("Loading Sprites records.");
-+  setText(elements.filterStatus, "Filters load with API-backed Sprites records.");
-   setText(elements.storageStatus, "Storage import is checking API capabilities.");
-   setText(elements.replaceStatus, "Select a sprite to update source metadata through the API.");
-   setText(elements.emptyState, "Loading Sprites records.");
-@@ -226,6 +323,7 @@ function renderUnavailable(message) {
-   setText(elements.paletteStatus, "Palette/Colors references unavailable until Sprites records load from the API.");
+ function numericUsageCount(sprite) {
+-  const count = Number(sprite?.usageCount ?? sprite?.usage_count ?? sprite?.references?.length);
++  const count = Number(sprite?.usageCount ?? sprite?.usage_count ?? referencesFor(sprite).length);
+   return Number.isFinite(count) && count >= 0 ? count : 0;
+ }
+
+@@ -324,8 +330,10 @@ function renderUnavailable(message) {
    setText(elements.paletteSelectionStatus, "Palette/Colors selection unavailable until API-backed key records are available.");
    setText(elements.storageStatus, "Storage import unavailable because the Sprites API is not responding.");
-+  setText(elements.filterStatus, "Filters unavailable until Sprites records load from the API.");
+   setText(elements.filterStatus, "Filters unavailable until Sprites records load from the API.");
++  setText(elements.referenceStatus, "References unavailable until Sprites records load from the API.");
    setText(elements.replaceStatus, "Replace metadata unavailable until the Sprites API responds.");
    renderPreviewPanel(null);
++  renderReferencePanel(null);
    setText(elements.updated, new Date().toLocaleTimeString());
-@@ -316,13 +414,13 @@ function selectSprite(sprite) {
-   renderPreviewPanel(sprite);
+   setHidden(elements.emptyState, false);
+   setHidden(elements.errorState, false);
+@@ -400,11 +408,58 @@ function renderPreviewPanel(sprite) {
+   setDisabled(elements.replace, false);
  }
 
--function renderRows(sprites) {
-+function renderRows(sprites, emptyMessage = "No Sprites records returned by the API.") {
-   if (!elements.tableBody) {
-     return;
-   }
-   if (sprites.length === 0) {
-     const row = document.createElement("tr");
--    const cell = createCell("No Sprites records returned by the API.");
-+    const cell = createCell(emptyMessage);
-     cell.colSpan = 9;
-     row.append(cell);
-     elements.tableBody.replaceChildren(...(editingKey === "__new__" ? [createEditRow(), row] : [row]));
-@@ -425,11 +523,13 @@ function renderSprites(payload) {
-   const sprites = spriteRowsFromPayload(payload);
-   currentSprites = sprites;
-   const count = sprites.length;
-+  renderFilterOptions(sprites);
-+  const visibleSprites = filteredSprites();
-   setText(elements.apiStatus, "Ready");
-   setText(elements.libraryStatus, count > 0 ? "Ready" : "Empty");
-   setText(elements.count, String(count));
-   setText(elements.outputStatus, count > 0 ? "Ready" : "Empty");
--  setText(elements.outputSummary, count > 0 ? `${count} sprite record${count === 1 ? "" : "s"} loaded from the API.` : "Sprites API responded with no records.");
-+  setText(elements.outputSummary, count > 0 ? `${visibleSprites.length} of ${count} sprite record${count === 1 ? "" : "s"} displayed from the API.` : "Sprites API responded with no records.");
-   setText(elements.emptyState, count > 0 ? "" : "No Sprites records returned by the API.");
-   setText(elements.updated, new Date().toLocaleTimeString());
-   setText(elements.metadata, count > 0 ? "Select a sprite row to review its metadata." : "No sprite metadata available yet.");
-@@ -440,7 +540,11 @@ function renderSprites(payload) {
-   setHidden(elements.emptyState, count > 0);
-   setHidden(elements.errorState, true);
-   renderPaletteStatus(sprites);
--  renderRows(sprites);
-+  renderFilterStatus(visibleSprites.length, count);
-+  renderRows(
-+    visibleSprites,
-+    count > 0 ? "No Sprites records match current filters." : "No Sprites records returned by the API."
++function renderReferencePanel(sprite) {
++  if (!elements.referencePanel) {
++    return;
++  }
++  elements.referencePanel.replaceChildren();
++  if (!sprite) {
++    setText(elements.referenceStatus, "Select a sprite to review API-provided usage references.");
++    elements.referencePanel.append(createParagraph("No sprite selected for reference review.", "status"));
++    return;
++  }
++  const references = referencesFor(sprite);
++  const usageCount = numericUsageCount(sprite);
++  setText(
++    elements.referenceStatus,
++    usageCount > 0
++      ? `${usageCount} usage reference${usageCount === 1 ? "" : "s"} reported by the Sprites API.`
++      : "No usage references reported by the Sprites API."
 +  );
++  if (!references.length) {
++    elements.referencePanel.append(createParagraph("No references reported yet. Future Objects and Worlds references will appear here when the API supplies them.", "status"));
++    return;
++  }
++  const wrapper = document.createElement("div");
++  wrapper.className = "table-wrapper";
++  const table = document.createElement("table");
++  table.className = "data-table";
++  table.setAttribute("aria-label", "Sprite usage references");
++  const head = document.createElement("thead");
++  const headRow = document.createElement("tr");
++  headRow.append(createCell("Source Type"), createCell("Source Key"), createCell("Label"));
++  head.append(headRow);
++  const body = document.createElement("tbody");
++  references.forEach((reference) => {
++    const row = document.createElement("tr");
++    row.append(
++      createCell(normalizeText(reference.sourceType)),
++      createCell(normalizeText(reference.sourceKey)),
++      createCell(normalizeText(reference.label, "No label"))
++    );
++    body.append(row);
++  });
++  table.append(head, body);
++  wrapper.append(table);
++  elements.referencePanel.append(wrapper);
++}
++
+ function selectSprite(sprite) {
+   selectedSpriteKey = sprite?.key || "";
+   if (!sprite) {
+     setText(elements.metadata, "Select a sprite row to review its metadata.");
+     renderPreviewPanel(null);
++    renderReferencePanel(null);
+     return;
+   }
+   const key = normalizeText(sprite?.key, "Unavailable");
+@@ -412,6 +467,7 @@ function selectSprite(sprite) {
+   const sizeBytes = normalizeText(sprite?.sizeBytes ?? sprite?.size_bytes, "Unavailable");
+   setText(elements.metadata, `${normalizeText(sprite?.name)} (${key}) | ${mimeType} | ${formatDimensions(sprite)} | ${sizeBytes} bytes`);
+   renderPreviewPanel(sprite);
++  renderReferencePanel(sprite);
  }
 
- function bodyFromSprite(sprite, overrides = {}) {
-@@ -648,7 +752,7 @@ elements.refresh?.addEventListener("click", () => {
-
- elements.add?.addEventListener("click", () => {
-   editingKey = "__new__";
--  renderRows(currentSprites);
-+  renderRows(filteredSprites());
-   setActionStatus("New sprite row ready. Name and status are required.");
- });
-
-@@ -665,13 +769,13 @@ elements.tableBody?.addEventListener("click", (event) => {
-   const duplicateKey = target.dataset.spritesDuplicateRow;
-   if (editKey !== undefined) {
-     editingKey = editKey;
--    renderRows(currentSprites);
-+    renderRows(filteredSprites());
-     setActionStatus("Editing sprite row. Name and status are required.");
-     return;
-   }
-   if (cancelKey !== undefined) {
-     editingKey = "";
--    renderRows(currentSprites);
-+    renderRows(filteredSprites());
-     setActionStatus("Sprite edit cancelled.");
-     return;
-   }
-@@ -703,4 +807,37 @@ elements.replace?.addEventListener("click", () => {
-   void replaceSpriteMetadata(selectedSpriteKey);
- });
-
-+[elements.search, elements.statusFilter, elements.categoryFilter, elements.tagFilter].forEach((control) => {
-+  control?.addEventListener("input", () => {
-+    editingKey = "";
-+    const visibleSprites = filteredSprites();
-+    renderFilterStatus(visibleSprites.length, currentSprites.length);
-+    renderRows(visibleSprites, "No Sprites records match current filters.");
-+  });
-+  control?.addEventListener("change", () => {
-+    editingKey = "";
-+    const visibleSprites = filteredSprites();
-+    renderFilterStatus(visibleSprites.length, currentSprites.length);
-+    renderRows(visibleSprites, "No Sprites records match current filters.");
-+  });
-+});
-+
-+elements.clearFilters?.addEventListener("click", () => {
-+  if (elements.search) {
-+    elements.search.value = "";
-+  }
-+  if (elements.statusFilter) {
-+    elements.statusFilter.value = "";
-+  }
-+  if (elements.categoryFilter) {
-+    elements.categoryFilter.value = "";
-+  }
-+  if (elements.tagFilter) {
-+    elements.tagFilter.value = "";
-+  }
-+  const visibleSprites = filteredSprites();
-+  renderFilterStatus(visibleSprites.length, currentSprites.length);
-+  renderRows(visibleSprites);
-+});
-+
- void loadSprites();
+ function renderRows(sprites, emptyMessage = "No Sprites records returned by the API.") {
+@@ -491,9 +547,10 @@ function createSpriteRow(sprite) {
+     actions.append(
+       createButton("Edit", "spritesEdit", sprite?.key || "", { label: `Edit ${name}` }),
+       createButton("Duplicate", "spritesDuplicateRow", sprite?.key || "", { label: `Duplicate ${name}` }),
+-      createButton(archived ? "Archived" : "Archive", "spritesArchive", sprite?.key || "", {
++      createButton(archived ? "Archived" : usageCount > 0 ? "Archive Safely" : "Archive", "spritesArchive", sprite?.key || "", {
+         disabled: archived,
+-        label: archived ? `${name} is already archived` : `Archive ${name}`,
++        label: archived ? `${name} is already archived` : usageCount > 0 ? `Archive safely ${name}` : `Archive ${name}`,
++        title: usageCount > 0 ? "Sprite is referenced. Archive is the safe action; destructive delete is blocked." : "",
+       }),
+       createButton(usageCount > 0 ? "Delete Blocked" : "Delete", "spritesDelete", sprite?.key || "", {
+         disabled: usageCount > 0,
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index fa5f97754..6c5cebe36 100644
+index 6c5cebe36..734504cef 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -30,12 +30,12 @@ Files with executed line/function counts where available:
+@@ -30,7 +30,7 @@ Files with executed line/function counts where available:
  (76%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 22/29
  (77%) assets/theme-v2/js/tool-display-mode.js - executed lines 304/304; executed functions 23/30
  (80%) assets/theme-v2/js/theme-icons.js - executed lines 69/69; executed functions 4/5
-+(96%) assets/toolbox/sprites/js/index.js - executed lines 776/776; executed functions 76/79
+-(96%) assets/toolbox/sprites/js/index.js - executed lines 776/776; executed functions 76/79
++(96%) assets/toolbox/sprites/js/index.js - executed lines 831/831; executed functions 79/82
  (97%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 35/36
--(97%) assets/toolbox/sprites/js/index.js - executed lines 649/649; executed functions 57/59
 
  Uncovered or low-coverage changed JS files:
- (100%) none changed - no changed runtime JS files
-
- Changed JS files considered:
- (0%) tests/playwright/tools/SpritesToolShell.spec.mjs - changed JS file not collected as browser runtime coverage
--(97%) assets/toolbox/sprites/js/index.js - changed JS file with browser V8 coverage
-+(96%) assets/toolbox/sprites/js/index.js - changed JS file with browser V8 coverage
 diff --git a/tests/playwright/tools/SpritesToolShell.spec.mjs b/tests/playwright/tools/SpritesToolShell.spec.mjs
-index 55f7b0718..8f26757ca 100644
+index 8f26757ca..7c8683a77 100644
 --- a/tests/playwright/tools/SpritesToolShell.spec.mjs
 +++ b/tests/playwright/tools/SpritesToolShell.spec.mjs
-@@ -391,3 +391,74 @@ test("Sprites shell duplicates with API-owned key and replaces metadata through
-     await server.close();
+@@ -242,7 +242,7 @@ test("Sprites shell archives referenced records and deletes only unreferenced re
+
+   try {
+     await expect(page.getByRole("button", { name: "Delete blocked for Used Sprite" })).toBeDisabled();
+-    await page.getByRole("button", { name: "Archive Used Sprite" }).click();
++    await page.getByRole("button", { name: "Archive safely Used Sprite" }).click();
+     await expect(page.locator("[data-sprites-table-body]")).toContainText("archived");
+     await page.getByRole("button", { name: "Delete Free Sprite" }).click();
+     await expect(page.locator("[data-sprites-table-body]")).not.toContainText("Free Sprite");
+@@ -254,6 +254,73 @@ test("Sprites shell archives referenced records and deletes only unreferenced re
    }
  });
-+
-+test("Sprites shell filters API-backed records by search, category, status, and tag key", async ({ page }) => {
+
++test("Sprites shell shows API-provided references and blocks destructive delete", async ({ page }) => {
++  const postedPaths = [];
++  const referencedKey = "01J1SPRITEREF0000000000000";
 +  const server = await openSpritesPage(page, async (currentPage) => {
-+    await currentPage.route("**/api/sprites/records", async (route) => {
++    await currentPage.route("**/api/sprites/records**", async (route) => {
++      const request = route.request();
++      const url = new URL(request.url());
++      if (request.method() === "POST") {
++        postedPaths.push(url.pathname);
++        await route.fulfill({
++          body: JSON.stringify({ data: { sprite: null }, ok: true }),
++          contentType: "application/json",
++          status: 200,
++        });
++        return;
++      }
 +      await route.fulfill({
 +        body: JSON.stringify({
 +          data: {
 +            sprites: [
 +              {
-+                category: "Characters",
-+                key: "01J1FILTERHERO000000000000",
-+                name: "Hero Walk",
-+                source: "hero-walk.png",
++                key: referencedKey,
++                name: "Referenced Sprite",
 +                status: "ready",
-+                tagKeys: ["hero", "player"],
-+                updatedAt: "2026-06-26T13:00:00.000Z",
-+                usageCount: 0,
-+              },
-+              {
-+                category: "Effects",
-+                key: "01J1FILTERSPARK00000000000",
-+                name: "Spark Burst",
-+                source: "spark.png",
-+                status: "draft",
-+                tagKeys: ["effect"],
-+                updatedAt: "2026-06-26T13:05:00.000Z",
-+                usageCount: 0,
-+              },
-+              {
-+                category: "Characters",
-+                key: "01J1FILTERVILLAIN000000000",
-+                name: "Boss Idle",
-+                source: "boss-idle.png",
-+                status: "published",
-+                tagKeys: ["boss"],
-+                updatedAt: "2026-06-26T13:10:00.000Z",
-+                usageCount: 0,
++                updatedAt: "2026-06-26T13:20:00.000Z",
++                usageCount: 2,
++                references: [
++                  {
++                    key: "01J1REFOBJECT000000000000",
++                    label: "Hero Object",
++                    sourceKey: "object_hero",
++                    sourceType: "Objects",
++                  },
++                  {
++                    key: "01J1REFWORLD0000000000000",
++                    label: "Intro World",
++                    sourceKey: "world_intro",
++                    sourceType: "Worlds",
++                  },
++                ],
 +              },
 +            ],
 +          },
@@ -328,123 +198,112 @@ index 55f7b0718..8f26757ca 100644
 +  });
 +
 +  try {
-+    await expect(page.locator("[data-sprites-filter-status]")).toHaveText("3 Sprites records available.");
-+    await page.getByLabel("Search Sprites").fill("hero");
-+    await expect(page.locator("[data-sprites-table-body]")).toContainText("Hero Walk");
-+    await expect(page.locator("[data-sprites-table-body]")).not.toContainText("Spark Burst");
-+    await expect(page.locator("[data-sprites-filter-status]")).toHaveText("1 of 3 Sprites records match current filters.");
-+    await page.getByRole("button", { name: "Clear Filters" }).click();
-+    await page.getByLabel("Filter Sprites by category").selectOption("Characters");
-+    await expect(page.locator("[data-sprites-table-body]")).toContainText("Hero Walk");
-+    await expect(page.locator("[data-sprites-table-body]")).toContainText("Boss Idle");
-+    await expect(page.locator("[data-sprites-table-body]")).not.toContainText("Spark Burst");
-+    await page.getByLabel("Filter Sprites by status").selectOption("published");
-+    await expect(page.locator("[data-sprites-table-body]")).toContainText("Boss Idle");
-+    await expect(page.locator("[data-sprites-table-body]")).not.toContainText("Hero Walk");
-+    await page.getByRole("button", { name: "Clear Filters" }).click();
-+    await page.getByLabel("Filter Sprites by tag key").selectOption("effect");
-+    await expect(page.locator("[data-sprites-table-body]")).toContainText("Spark Burst");
-+    await expect(page.locator("[data-sprites-table-body]")).not.toContainText("Hero Walk");
++    await page.locator(`[data-sprites-row-key='${referencedKey}']`).click();
++    await expect(page.locator("[data-sprites-reference-status]")).toContainText("2 usage references");
++    await expect(page.locator("[data-sprites-reference-panel]")).toContainText("Objects");
++    await expect(page.locator("[data-sprites-reference-panel]")).toContainText("Hero Object");
++    await expect(page.locator("[data-sprites-reference-panel]")).toContainText("Worlds");
++    await expect(page.getByRole("button", { name: "Delete blocked for Referenced Sprite" })).toBeDisabled();
++    await page.getByRole("button", { name: "Archive safely Referenced Sprite" }).click();
++    expect(postedPaths).toContain(`/api/sprites/records/${referencedKey}/archive`);
++    expect(postedPaths).not.toContain(`/api/sprites/records/${referencedKey}/delete`);
 +  } finally {
 +    await workspaceV2CoverageReporter.stop(page);
 +    await server.close();
 +  }
 +});
++
+ test("Sprites shell previews metadata and shows storage and Palette unavailable states", async ({ page }) => {
+   const server = await openSpritesPage(page, async (currentPage) => {
+     await currentPage.route("**/api/sprites/records", async (route) => {
 diff --git a/toolbox/sprites/index.html b/toolbox/sprites/index.html
-index e72610c6b..963582677 100644
+index 963582677..6287ceb1e 100644
 --- a/toolbox/sprites/index.html
 +++ b/toolbox/sprites/index.html
-@@ -44,6 +44,21 @@
-                                     <p data-sprites-palette-selection-status>Palette/Colors selection loads when the Palette/Colors API is available.</p>
+@@ -124,6 +124,15 @@
+                                     </div>
                                  </div>
                              </details>
 +                            <details class="vertical-accordion" open>
-+                                <summary>Search & Filters</summary>
++                                <summary>References</summary>
 +                                <div class="accordion-body content-stack">
-+                                    <label for="spritesSearch">Search</label>
-+                                    <input id="spritesSearch" type="search" data-sprites-search aria-label="Search Sprites">
-+                                    <label for="spritesStatusFilter">Status</label>
-+                                    <select id="spritesStatusFilter" data-sprites-status-filter aria-label="Filter Sprites by status"></select>
-+                                    <label for="spritesCategoryFilter">Category</label>
-+                                    <select id="spritesCategoryFilter" data-sprites-category-filter aria-label="Filter Sprites by category"></select>
-+                                    <label for="spritesTagFilter">Tag Key</label>
-+                                    <select id="spritesTagFilter" data-sprites-tag-filter aria-label="Filter Sprites by tag key"></select>
-+                                    <button class="btn btn--compact" type="button" data-sprites-clear-filters>Clear Filters</button>
-+                                    <p data-sprites-filter-status>Filters load with API-backed Sprites records.</p>
++                                    <p data-sprites-reference-status>Select a sprite to review API-provided usage references.</p>
++                                    <div data-sprites-reference-panel>
++                                        <p class="status" role="status">No sprite selected for reference review.</p>
++                                    </div>
 +                                </div>
 +                            </details>
-                         </div>
-                     </aside>
-                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="sprites" data-tool-icon-src="assets/theme-v2/images/badges/sprites.png" data-tool-character-src="assets/theme-v2/images/tools/sprites.png"></div>
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-branch-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-branch-validation.md
+                             <details class="vertical-accordion" open>
+                                 <summary>Import</summary>
+                                 <div class="accordion-body content-stack">
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-branch-validation.md b/docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-branch-validation.md
 new file mode 100644
-index 000000000..3b1d50f6e
+index 000000000..7a4a077c0
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-branch-validation.md
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-branch-validation.md
 @@ -0,0 +1,12 @@
-+# PR_26177_CHARLIE_014 Branch Validation
++# PR_26177_CHARLIE_015 Branch Validation
 +
 +Status: PASS
 +
 +## Checks
 +
-+- PASS: PR014 was created as a stacked branch from `PR_26177_CHARLIE_013-sprites-import-preview-metadata-palette`.
-+- PASS: Stacking is required because search/filter controls build on the PR013 Sprites table and metadata shell.
-+- PASS: Current work branch is `PR_26177_CHARLIE_014-sprites-tags-categories-search`.
-+- PASS: Branch contains only the Sprites tags/categories/search PR scope relative to PR013.
++- PASS: PR015 was created as a stacked branch from `PR_26177_CHARLIE_014-sprites-tags-categories-search`.
++- PASS: Stacking is required because reference protection builds on the PR014 Sprites table/actions.
++- PASS: Current work branch is `PR_26177_CHARLIE_015-sprites-reference-protection`.
++- PASS: Branch contains only the Sprites reference protection PR scope relative to PR014.
 +- PASS: No merge was performed.
 +- PASS: No `start_of_day` path is changed.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-manual-validation-notes.md b/docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-manual-validation-notes.md
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-manual-validation-notes.md b/docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-manual-validation-notes.md
 new file mode 100644
-index 000000000..fbd30a43f
+index 000000000..a32c4eb7c
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-manual-validation-notes.md
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-manual-validation-notes.md
 @@ -0,0 +1,13 @@
-+# PR_26177_CHARLIE_014 Manual Validation Notes
++# PR_26177_CHARLIE_015 Manual Validation Notes
 +
 +Status: PASS
 +
 +## Manual Review
 +
-+- Verified Search filters by API-returned sprite fields and tag/palette key text.
-+- Verified category options are derived from current API records.
-+- Verified tag key options are derived from current API records.
-+- Verified status filtering uses the Sprites status contract.
-+- Verified clear filters restores the unfiltered API-backed table.
-+- Verified no static category or tag product-data list was introduced.
-+- Verified Sprites does not duplicate Tags ownership.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-requirements-checklist.md b/docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-requirements-checklist.md
++- Verified API-provided references render in the inspector.
++- Verified empty reference state appears when the API returns no references.
++- Verified referenced sprites show usage counts.
++- Verified delete is disabled for referenced sprites.
++- Verified archive remains available and clearly labeled as the safe action for referenced sprites.
++- Verified no fake Objects or Worlds references were added.
++- Verified future reference ownership remains API/database-backed.
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-requirements-checklist.md b/docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-requirements-checklist.md
 new file mode 100644
-index 000000000..aa85dda6e
+index 000000000..22fe3f038
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-requirements-checklist.md
-@@ -0,0 +1,19 @@
-+# PR_26177_CHARLIE_014 Requirements Checklist
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-requirements-checklist.md
+@@ -0,0 +1,18 @@
++# PR_26177_CHARLIE_015 Requirements Checklist
 +
 +Status: PASS
 +
-+- PASS: Added search for Sprites.
-+- PASS: Added status filter.
-+- PASS: Added categories filter.
-+- PASS: Added tag key filter.
-+- PASS: Search and filters use API/database-backed sprite data.
-+- PASS: Categories are derived from API-backed records.
-+- PASS: Tag keys are derived from API-backed records.
-+- PASS: Did not create Sprite-owned Tags data.
-+- PASS: Did not use page-local product arrays for categories or tags.
-+- PASS: Added table filtering UX consistent with GFS patterns.
++- PASS: Added reference viewer for where a sprite is used.
++- PASS: Reference viewer consumes API-provided references only.
++- PASS: Did not invent fake references.
++- PASS: Prevents destructive delete when a sprite is referenced.
++- PASS: Allows safe archive action with clear labeling for referenced sprites.
++- PASS: Shows usage counts in the table.
++- PASS: Shows usage reference details in the inspector.
++- PASS: Establishes future Objects/Worlds reference contract through API/database references.
++- PASS: Shows visible empty state when no real references are available.
 +- PASS: Did not add browser storage product-data source of truth.
 +- PASS: Did not introduce MEM DB, local-mem, fake-login, or silent fallback.
 +- PASS: Targeted Playwright coverage passed.
 +- PASS: Required report artifacts were created.
 +- PASS: Repo-structured ZIP artifact was created under `tmp/`.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-validation-lane.md b/docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-validation-lane.md
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-validation-lane.md b/docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-validation-lane.md
 new file mode 100644
-index 000000000..f1c57be49
+index 000000000..30019411e
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-validation-lane.md
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-validation-lane.md
 @@ -0,0 +1,33 @@
-+# PR_26177_CHARLIE_014 Validation Lane
++# PR_26177_CHARLIE_015 Validation Lane
 +
 +Status: PASS
 +
@@ -472,18 +331,18 @@ index 000000000..f1c57be49
 +node ./node_modules/@playwright/test/cli.js test tests/playwright/tools/SpritesToolShell.spec.mjs --project=playwright --workers=1 --reporter=list
 +```
 +
-+Result: PASS, 9 passed.
++Result: PASS, 10 passed.
 +
 +## Playwright Coverage
 +
 +Targeted Playwright coverage updated `docs_build/dev/reports/playwright_v8_coverage_report.txt` for the Sprites browser module.
-diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search.md b/docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search.md
+diff --git a/docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection.md b/docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection.md
 new file mode 100644
-index 000000000..fb4161770
+index 000000000..f7359d479
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search.md
-@@ -0,0 +1,45 @@
-+# PR_26177_CHARLIE_014-sprites-tags-categories-search
++++ b/docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection.md
+@@ -0,0 +1,49 @@
++# PR_26177_CHARLIE_015-sprites-reference-protection
 +
 +Team: Charlie
 +
@@ -491,7 +350,7 @@ index 000000000..fb4161770
 +
 +## Scope
 +
-+Added API-backed search and filters for Sprites records. Categories and tag keys are derived from the API response; Sprites does not create a separate tag authority or page-local product data list.
++Added API-provided reference visibility and strengthened destructive delete protection for Sprites.
 +
 +## Changed Files
 +
@@ -501,21 +360,25 @@ index 000000000..fb4161770
 +- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
 +- `docs_build/dev/reports/codex_review.diff`
 +- `docs_build/dev/reports/codex_changed_files.txt`
-+- `docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search.md`
-+- `docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-branch-validation.md`
-+- `docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-requirements-checklist.md`
-+- `docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-validation-lane.md`
-+- `docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-manual-validation-notes.md`
++- `docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection.md`
++- `docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-branch-validation.md`
++- `docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-requirements-checklist.md`
++- `docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-validation-lane.md`
++- `docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-manual-validation-notes.md`
 +
 +## Implementation Notes
 +
-+- Added search control.
-+- Added status filter using the Sprites API status contract.
-+- Added category filter derived from API-backed sprite records.
-+- Added tag key filter derived from API-backed sprite records.
-+- Added clear filters action.
-+- Added filter status summary for visible records versus total API-backed records.
-+- Did not duplicate Tags ownership or add page-local reusable product arrays.
++- Added reference viewer for API-provided usage references.
++- Displays source type, source key, and label for each usage reference.
++- Shows empty reference state when the API reports no references.
++- Keeps usage count visible in table and details.
++- Destructive delete remains disabled when usage count is greater than zero.
++- Referenced sprites show `Archive Safely` to make the safe action explicit.
++- No fake Objects or Worlds references were added.
++
++## Reference Contract
++
++The UI consumes the existing Sprites API `references` array. Future Objects/Worlds integrations should supply real usage rows through the API/database reference contract rather than browser-local inference.
 +
 +## Validation
 +
@@ -527,4 +390,4 @@ index 000000000..fb4161770
 +
 +## ZIP Artifact
 +
-+- `tmp/PR_26177_CHARLIE_014-sprites-tags-categories-search_delta.zip`
++- `tmp/PR_26177_CHARLIE_015-sprites-reference-protection_delta.zip`

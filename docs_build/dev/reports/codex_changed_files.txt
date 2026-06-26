@@ -3,22 +3,22 @@ M assets/toolbox/sprites/js/index.js
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
  M tests/playwright/tools/SpritesToolShell.spec.mjs
  M toolbox/sprites/index.html
-?? docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-branch-validation.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-manual-validation-notes.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-requirements-checklist.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-validation-lane.md
-?? docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-branch-validation.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-manual-validation-notes.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-requirements-checklist.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-validation-lane.md
+?? docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-branch-validation.md
-docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-manual-validation-notes.md
-docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-requirements-checklist.md
-docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search-validation-lane.md
-docs_build/dev/reports/PR_26177_CHARLIE_014-sprites-tags-categories-search.md
+docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-branch-validation.md
+docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-manual-validation-notes.md
+docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-requirements-checklist.md
+docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection-validation-lane.md
+docs_build/dev/reports/PR_26177_CHARLIE_015-sprites-reference-protection.md
 
 # git diff --stat
-assets/toolbox/sprites/js/index.js                 | 151 ++++++++++++++++++++-
- .../dev/reports/playwright_v8_coverage_report.txt  |   4 +-
- tests/playwright/tools/SpritesToolShell.spec.mjs   |  71 ++++++++++
- toolbox/sprites/index.html                         |  15 ++
- 4 files changed, 232 insertions(+), 9 deletions(-)
+assets/toolbox/sprites/js/index.js                 | 63 +++++++++++++++++++-
+ .../dev/reports/playwright_v8_coverage_report.txt  |  2 +-
+ tests/playwright/tools/SpritesToolShell.spec.mjs   | 69 +++++++++++++++++++++-
+ toolbox/sprites/index.html                         |  9 +++
+ 4 files changed, 138 insertions(+), 5 deletions(-)
