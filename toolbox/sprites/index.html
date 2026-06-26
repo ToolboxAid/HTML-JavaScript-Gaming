@@ -74,16 +74,19 @@
                                                 <th scope="col">Palette Refs</th>
                                                 <th scope="col">Updated</th>
                                                 <th scope="col">Usage</th>
+                                                <th scope="col">Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody data-sprites-table-body>
-                                            <tr><td colspan="8">Loading Sprites records.</td></tr>
+                                            <tr><td colspan="9">Loading Sprites records.</td></tr>
                                         </tbody>
                                     </table>
                                 </div>
                                 <div class="action-group">
+                                    <button class="btn primary" type="button" data-sprites-add>Add Sprite</button>
                                     <button class="btn" type="button" data-sprites-refresh>Refresh</button>
                                 </div>
+                                <div class="status" role="status" data-sprites-validation>Ready for API-backed edits.</div>
                             </div>
                         </article>
                     </section>
@@ -103,6 +106,7 @@
                                 <div class="accordion-body content-stack">
                                     <p>Status: <span data-sprites-output-status>Loading</span></p>
                                     <p data-sprites-output-summary>Waiting for Sprites API response.</p>
+                                    <p data-sprites-action-status>No pending sprite action.</p>
                                 </div>
                             </details>
                         </div>
