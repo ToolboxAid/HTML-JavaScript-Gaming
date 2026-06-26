@@ -72,7 +72,7 @@
 
 - [ ] Alfa - Controls
 - [ ] Alfa - Input Mapping
-- [ ] Alfa - Hitboxes
+- [ ] Delta - Hitboxes
 
 ### Rules
 
@@ -252,5 +252,6 @@ Current OWNER clarification:
 - [x] Delta - Event system audit
   - Completed by PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup.
 - [ ] Delta - Controls runtime framework audit
+- [ ] Delta - Hitboxes
 - [ ] Delta - Object runtime framework audit
 - [ ] Delta - World runtime framework audit

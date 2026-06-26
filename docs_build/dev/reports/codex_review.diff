@@ -1,94 +1,140 @@
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_010-final-team-delta-completion-report.md b/docs_build/dev/reports/PR_26175_DELTA_010-final-team-delta-completion-report.md
-index e871142cf..95ef440af 100644
---- a/docs_build/dev/reports/PR_26175_DELTA_010-final-team-delta-completion-report.md
-+++ b/docs_build/dev/reports/PR_26175_DELTA_010-final-team-delta-completion-report.md
-@@ -48,4 +48,8 @@ Team Delta runtime testability work through DELTA_009 is complete on main. PR_26
-
- ## Open Hygiene Note
-
--GitHub still has obsolete draft PR #188 for the earlier rejected Delta-specific harness approach. It is not part of the active DELTA_001 through DELTA_010 path and was not modified by this closeout.
-+Obsolete draft Delta implementation PRs #188, #190, #192, and #193 were closed as superseded during final EOD closeout. Source branches were retained. No open Delta implementation PRs remain.
-+
-+## Remaining Work
-+
-+None.
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout.md b/docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout.md
-index b42068d87..7702b97f2 100644
---- a/docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout.md
-+++ b/docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout.md
-@@ -67,7 +67,8 @@ This PR does not change runtime behavior, tests, package commands, UI, browser-o
- - `npm test` was inspected as the site-wide command path and was not changed.
- - Full `npm test` was not required for this report-only PR because no runtime, test, or command implementation changed in PR_010.
- - Source branches are retained; no branch deletion was performed.
--- Historical obsolete draft PR #188 still exists on GitHub but is outside this closeout merge scope and was not modified.
-+- Obsolete draft Delta implementation PRs #188, #190, #192, and #193 were closed as superseded during final EOD closeout. Branches were retained.
-+- Expected remaining Team Delta work: none.
-
- ## ZIP
-diff --git a/docs_build/dev/reports/PR_26175_DELTA_EOD_final_report.md b/docs_build/dev/reports/PR_26175_DELTA_EOD_final_report.md
+diff --git a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
+index de7ad4681..37fe942aa 100644
+--- a/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
++++ b/docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
+@@ -72,7 +72,7 @@
+ 
+ - [ ] Alfa - Controls
+ - [ ] Alfa - Input Mapping
+-- [ ] Alfa - Hitboxes
++- [ ] Delta - Hitboxes
+ 
+ ### Rules
+ 
+@@ -252,5 +252,6 @@ Current OWNER clarification:
+ - [x] Delta - Event system audit
+   - Completed by PR_26175_DELTA_005_Runtime_Technical_Debt_Cleanup.
+ - [ ] Delta - Controls runtime framework audit
++- [ ] Delta - Hitboxes
+ - [ ] Delta - Object runtime framework audit
+ - [ ] Delta - World runtime framework audit
+diff --git a/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md b/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
+index bc548346d..1e2e47843 100644
+--- a/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
++++ b/docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
+@@ -49,6 +49,7 @@ Team Charlie System Health owns:
+ - Shared JS
+ - API clients
+ - Event systems
++- Hitboxes
+ - Performance
+ - Technical debt remediation
+ - Runtime test coverage
+diff --git a/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership.md b/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership.md
 new file mode 100644
-index 000000000..8bc5f817d
+index 000000000..aecd58bab
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26175_DELTA_EOD_final_report.md
-@@ -0,0 +1,61 @@
-+# PR_26175_DELTA_EOD Final Report
++++ b/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership.md
+@@ -0,0 +1,33 @@
++# PR_26177_DELTA_001-hitboxes-team-ownership
++
++Team: Delta
++Branch: PR_26177_DELTA_001-hitboxes-team-ownership
++Base: main
++Scope: Project Instructions ownership/backlog documentation only
 +
 +## Summary
 +
-+Team Delta End-of-Day closeout is complete through PR_26175_DELTA_010. Delta runtime work DELTA_001 through DELTA_009 is on main, and PR_26175_DELTA_010 records the report-only closeout evidence.
++Team Delta is now the sole documented owner of Hitboxes in the Project Instructions ownership and backlog routing files.
 +
-+## DELTA_001 Through DELTA_010
++## Changes
 +
-+| Item | Result | Evidence |
++- Updated `docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md` to add Hitboxes to Team Delta ownership.
++- Updated `docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md` to change the Game Journey MVP Hitboxes item from Alfa to Delta.
++- Added Hitboxes to the Team Delta backlog alignment list.
++
++## Scope Guard
++
++- No implementation code changed.
++- No engine core files changed.
++- No `start_of_day` files changed.
++- No other team ownership assignments changed.
++- Existing unrelated untracked file `docs_build/dev/ProjectInstructions (2).zip` was left untouched.
++
++## Validation
++
++- PASS: Current branch before PR branch creation was `main`.
++- PASS: PR branch created and work remained on `PR_26177_DELTA_001-hitboxes-team-ownership`.
++- PASS: `rg -n "Alfa - Hitboxes" docs_build/dev/ProjectInstructions` returned no matches.
++- PASS: `rg -n "Delta - Hitboxes|Hitboxes" docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md` found only Delta ownership entries for Hitboxes in target files.
++- PASS: `git diff --name-only` showed only Project Instructions ownership/backlog files before report generation.
++
+diff --git a/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_branch-validation.md b/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_branch-validation.md
+new file mode 100644
+index 000000000..4dcb5c321
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_branch-validation.md
+@@ -0,0 +1,17 @@
++# PR_26177_DELTA_001 Hitboxes Team Ownership Branch Validation
++
++Branch: PR_26177_DELTA_001-hitboxes-team-ownership
++Base: main
++
++Result: PASS
++
++| Check | Status | Notes |
 +|---|---|---|
-+| DELTA_001 Runtime Performance Optimization | Complete | Commit `b760048a4` is on main. |
-+| DELTA_002 Shared Runtime Consolidation | Complete | Commit `801780b96` is on main. |
-+| DELTA_003 API Client Standardization | Complete | PR #185 merged. |
-+| DELTA_004 Runtime Test Expansion | Complete | PR #186 merged. |
-+| DELTA_005 Runtime Technical Debt Cleanup | Complete | PR #187 merged. |
-+| DELTA_006 Page Service Test Lanes | Complete | PR #189 merged. |
-+| DELTA_007 Runtime Service Coverage | Complete | PR #199 merged. |
-+| DELTA_008 API Client Service Coverage | Complete | PR #200 merged. |
-+| DELTA_009 Replay Event Service Coverage | Complete | PR #201 merged. |
-+| DELTA_010 Runtime Testability Closeout | Ready for merge | PR #194 report-only closeout. |
++| Start branch was main | PASS | `git branch --show-current` returned `main` before branch creation. |
++| PR branch created | PASS | Current branch is `PR_26177_DELTA_001-hitboxes-team-ownership`. |
++| Branch starts from current main | PASS | Starting commit was `f237619cf7aea710a32b9d5141115fb02dbd3293`; `HEAD...origin/main` was `0 0` before edits. |
++| Scope is documentation/reporting only | PASS | No implementation code changed. |
++| Engine core untouched | PASS | No engine core files changed. |
++| start_of_day untouched | PASS | No `start_of_day` files changed. |
++| Unrelated work preserved | PASS | Existing untracked `docs_build/dev/ProjectInstructions (2).zip` left untouched. |
 +
-+## Runtime Accomplishments
+diff --git a/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_validation-checklist.md b/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_validation-checklist.md
+new file mode 100644
+index 000000000..9d801e2e9
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_validation-checklist.md
+@@ -0,0 +1,15 @@
++# PR_26177_DELTA_001 Hitboxes Team Ownership Validation Checklist
 +
-+- Runtime tick, replay clone, API client, runtime event, trigger/action, and final systems coverage are represented through service lanes.
-+- Runtime implementation is unchanged by DELTA_010.
-+- No browser-owned product data was introduced.
-+- No hidden defaults or silent fallbacks were introduced.
++| Requirement | Status | Notes |
++|---|---|---|
++| Hard stop unless current branch is main | PASS | Start branch was verified as `main` before creating the PR branch. |
++| Create and switch to PR branch | PASS | Created and switched to `PR_26177_DELTA_001-hitboxes-team-ownership`. |
++| Team Delta sole owner of Hitboxes | PASS | Team ownership map lists Hitboxes under Team Delta. |
++| Remove Hitboxes from Team Alfa ownership | PASS | Backlog item changed from `Alfa - Hitboxes` to `Delta - Hitboxes`; no `Alfa - Hitboxes` matches remain in ProjectInstructions. |
++| Do not modify implementation code | PASS | Only Project Instructions and report artifacts changed. |
++| Do not change other team ownership | PASS | Diff changes only Hitboxes ownership/routing. |
++| Regenerate Codex review diff | PASS | `docs_build/dev/reports/codex_review.diff` generated from the working diff. |
++| Regenerate Codex changed files | PASS | `docs_build/dev/reports/codex_changed_files.txt` generated from changed files. |
++| PR-specific report | PASS | `docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership.md` added. |
++| Branch validation | PASS | `docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_branch-validation.md` added. |
 +
-+## Testing Accomplishments
-+
-+- `npm test` remains the single site-wide/all-tests command.
-+- `npm run test:service:runtime` provides focused runtime service coverage.
-+- `npm run test:service:api` provides focused API client service coverage.
-+- No `test:delta-runtime` command exists.
-+- No `scripts/run-delta-runtime-validation.mjs` harness exists.
-+- No Team Delta-specific test runner remains.
-+
-+## Governance Accomplishments
-+
-+- Page/service-level testing is the active model.
-+- Team-specific validation harness work was superseded and closed.
-+- Obsolete draft Delta implementation PRs #188, #190, #192, and #193 were closed without deleting branches.
-+- Source branches are retained.
-+
-+## Validation Results
-+
-+| Validation | Result |
-+|---|---|
-+| `npm run test:service:runtime` | PASS |
-+| `npm run test:service:api` | PASS |
-+| Package/script guard | PASS |
-+| Report verification | PASS |
-+| `git diff --check` | PASS |
-+
-+## Remaining Work
-+
-+None.
-+
-+## Phase Status
-+
-+Team Delta phase: complete.
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index 9bbcdda40..0172ab7b9 100644
+--- a/docs_build/dev/reports/codex_changed_files.txt
++++ b/docs_build/dev/reports/codex_changed_files.txt
+@@ -1,12 +1,7 @@
+-# git status --short
+-M docs_build/dev/reports/PR_26175_DELTA_010-final-team-delta-completion-report.md
+- M docs_build/dev/reports/PR_26175_DELTA_010-runtime-testability-closeout.md
+-?? docs_build/dev/reports/PR_26175_DELTA_EOD_final_report.md
+-
+-# git ls-files --others --exclude-standard
+-docs_build/dev/reports/PR_26175_DELTA_EOD_final_report.md
+-
+-# git diff --stat
+-.../PR_26175_DELTA_010-final-team-delta-completion-report.md        | 6 +++++-
+- .../dev/reports/PR_26175_DELTA_010-runtime-testability-closeout.md  | 3 ++-
+- 2 files changed, 7 insertions(+), 2 deletions(-)
+\ No newline at end of file
++docs_build/dev/ProjectInstructions/backlog/BACKLOG_MASTER.md
++docs_build/dev/ProjectInstructions/team_assignments/team_ownership.md
++docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership.md
++docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_branch-validation.md
++docs_build/dev/reports/PR_26177_DELTA_001-hitboxes-team-ownership_validation-checklist.md
++docs_build/dev/reports/codex_changed_files.txt
++docs_build/dev/reports/codex_review.diff
