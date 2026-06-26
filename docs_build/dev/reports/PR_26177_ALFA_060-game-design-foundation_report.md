@@ -1,6 +1,6 @@
 # PR_26177_ALFA_060-game-design-foundation Report
 
-Generated: 2026-06-26 20:12:17 UTC
+Generated: 2026-06-26 20:59:30 UTC
 Branch: `PR_26177_ALFA_060-game-design-foundation`
 
 ## Summary
@@ -18,13 +18,11 @@ PR060 reworks Game Design as a human-testable API/DB-backed tool while carrying 
 - PASS - `node --check src/dev-runtime/toolbox-api/alfa-tool-services.mjs`
 - PASS - `node --check src/dev-runtime/server/local-api-router.mjs`
 - PASS - `node --check assets/toolbox/game-design/js/index.js`
-- PASS - `node --check assets/toolbox/game-configuration/js/index.js`
 - PASS - `node --test tests/dev-runtime/DevRuntimeBoundary.test.mjs`
-- PASS - `npx playwright test tests/playwright/tools/GameDesignApiBehavior.spec.mjs --project=playwright --workers=1` (6 passed)
-- PASS - `npx playwright test tests/playwright/tools/GameConfigurationApiDb.spec.mjs --project=playwright --workers=1` (4 passed after fixing invalid handoff reseeding)
-- PASS - `npx playwright test tests/playwright/tools/TagsTool.spec.mjs --project=playwright --workers=1` (4 passed)
+- PASS - `npx playwright test tests/playwright/tools/GameDesignApiBehavior.spec.mjs --project=playwright --workers=1 --reporter=line` (6 passed)
 
 ## Notes
 - No SQLite or tmp runtime dependency was introduced.
 - No JSON source of truth or browser-owned product data was introduced.
 - No new `*-mock-repository.js` file was added for Tags, Game Crew, Game Design, or Game Configuration.
+- No `mock-db-store.js` or Admin DB viewer expansion is present in this PR.

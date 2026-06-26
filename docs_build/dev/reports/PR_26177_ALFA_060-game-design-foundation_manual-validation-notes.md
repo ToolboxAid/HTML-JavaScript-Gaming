@@ -1,6 +1,6 @@
 # PR_26177_ALFA_060-game-design-foundation Manual Validation Notes
 
-Generated: 2026-06-26 20:12:17 UTC
+Generated: 2026-06-26 20:59:30 UTC
 
 - Loaded `/toolbox/game-design/index.html` and confirmed the selected Game Hub game context renders for Demo Game.
 - Confirmed the page is an editable tool surface, not a landing page.
@@ -10,4 +10,4 @@ Generated: 2026-06-26 20:12:17 UTC
 - Opened Gravity Demo context and confirmed capability demo data remains game-owned.
 - Confirmed guest browser save redirects to `account/sign-in.html`.
 - Confirmed direct guest API save returns 401 and does not write product data.
-- Confirmed invalid Game Design handoff remains invalid for Game Configuration instead of reseeding itself to ready.
+- Confirmed retired Alfa mock repositories are absent and the guardrail test passes.
