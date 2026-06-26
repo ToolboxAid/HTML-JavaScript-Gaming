@@ -1,9 +1,12 @@
-# PR_26177_OWNER_007-project-instructions-single-source-eod-lock Manual Validation Notes
+﻿# Manual Validation Notes - PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 
-- Reviewed active ProjectInstructions branch lifecycle wording.
-- Confirmed canonical START, WORK, and END phases are documented.
-- Confirmed active governance/team workflow docs reference docs_build/dev/ProjectInstructions/addendums/project_instructions_single_source_eod_lock.md or summarize the canonical lifecycle.
-- Confirmed docs_build/dev/start_of_day/ was not modified.
-- Confirmed no product/runtime files were modified.
-- Confirmed report manifest used merge-base 520199ccc98ca54ad599095672d13b7b8aab188e to avoid unrelated newer mainline files.
-- Confirmed ZIP artifact path: tmp/PR_26177_OWNER_007-project-instructions-single-source-eod-lock_delta.zip.
+Status: PASS
+
+- Reviewed cleanup scope against OWNER-provided file list.
+- Removed only duplicate active instruction files and stale one-off root docs from docs_build/dev root.
+- Removed docs_build/dev/next_command.txt only as an exact untracked/ignored stale file; it is not included in the git commit.
+- Confirmed docs_build/dev/ProjectInstructions/** was preserved.
+- Confirmed docs_build/dev/reports/** and current PR reports were preserved/regenerated.
+- Confirmed no product/runtime files changed.
+- Confirmed no start_of_day files changed.
+- Playwright was not run; documentation/governance-only change.

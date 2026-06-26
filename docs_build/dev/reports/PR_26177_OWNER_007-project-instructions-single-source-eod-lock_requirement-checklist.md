@@ -1,23 +1,19 @@
-# PR_26177_OWNER_007-project-instructions-single-source-eod-lock Requirement Checklist
+﻿# Requirement Checklist - PR_26177_OWNER_007-project-instructions-single-source-eod-lock
 
-- PASS: PR remains documentation/governance only.
-- PASS: Added canonical three-phase lifecycle: START, WORK, END.
-- PASS: START says every team begins on main.
-- PASS: START includes checkout/fetch/ff-only pull/status/sync/head commands.
-- PASS: START requires current branch main, clean working tree, main...origin/main 0 0, and HEAD equal to published EOD SHA.
-- PASS: START allows branch creation only after all four required results pass.
-- PASS: START documents git switch -c PR_<name>.
-- PASS: START prohibits commits on main, implementation on main, and validation on main except start validation.
-- PASS: WORK requires remaining on the PR branch.
-- PASS: WORK prohibits checking out main.
-- PASS: WORK requires commits, pushes, validation, and PR open/update from the PR branch.
-- PASS: WORK hard stops on current branch main before commit, unexpected branch changes, and attempts to push main.
-- PASS: END requires commit, PR branch push, PR open/update, merge, immediate main checkout/fetch/ff-only pull/status/sync/head commands.
-- PASS: END requires current branch main, clean worktree, and main...origin/main 0 0.
-- PASS: END publishes Branch, HEAD SHA, and date/time as tomorrow's official baseline, then stops all work.
-- PASS: Daily synchronization requires publishing Branch: main and HEAD SHA.
-- PASS: Mandatory hard stops are documented.
-- PASS: Active governance/team workflow docs under docs_build/dev/ProjectInstructions/ reference this lifecycle.
-- PASS: Did not modify product/runtime files.
-- PASS: Did not modify start_of_day folders.
-- PASS: Did not remove, move, or overwrite legacy SQLite files.
+Status: PASS
+
+- PASS: Audit repo for ProjectInstructions / project instructions duplicates.
+- PASS: Active source is docs_build/dev/ProjectInstructions/.
+- PASS: Duplicate active instruction files in docs_build/dev root were deleted.
+- PASS: Stale PR/restart one-off files listed in OWNER review were deleted or removed from local disk when untracked.
+- PASS: docs_build/dev/ProjectInstructions/** was not deleted.
+- PASS: docs_build/dev/reports/** and current PR reports were preserved/regenerated.
+- PASS: Active validation/audit docs were not deleted without migration.
+- PASS: Active team start/governance docs reference docs_build/dev/ProjectInstructions/ as the active source.
+- PASS: EOD main lock governance is documented.
+- PASS: Next-day reset governance is documented.
+- PASS: Canonical START / WORK / END branch lifecycle is documented.
+- PASS: Team rule blocks PR branch creation until main is clean, synced, and at the published EOD SHA.
+- PASS: No feature work started.
+- PASS: No product/runtime files changed.
+- PASS: No start_of_day files changed.

@@ -1,1 +1,0 @@
-Remove select completely. Pager only.

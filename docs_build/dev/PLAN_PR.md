@@ -7,7 +7,9 @@ Make `docs_build/dev/ProjectInstructions/` the only active Project Instructions 
 ## Scope
 
 - Audit ProjectInstructions and project instructions duplicates.
-- Mark legacy ProjectInstructions-style sources as deprecated reference material.
+- Delete duplicate active instruction files from `docs_build/dev/` root.
+- Delete stale one-off PR/restart files from `docs_build/dev/` root.
+- Preserve historical ProjectInstructions-style sources only as deprecated reference material.
 - Move active legacy addendums into `docs_build/dev/ProjectInstructions/addendums/`.
 - Update active team start and governance docs to reference only `docs_build/dev/ProjectInstructions/`.
 - Add EOD main lock, next-day reset, team PR branch creation gate, and canonical START / WORK / END branch lifecycle rules.
@@ -23,6 +25,7 @@ Make `docs_build/dev/ProjectInstructions/` the only active Project Instructions 
 ## Validation Plan
 
 1. Run targeted grep/search proving no active duplicate ProjectInstructions source remains.
-2. Confirm EOD/Next Day and canonical START / WORK / END branch lifecycle rules appear in active governance docs.
-3. Confirm no product/runtime files changed.
-4. Run `git diff --check`.
+2. Confirm duplicate active root instruction files and stale one-off root files are absent.
+3. Confirm EOD/Next Day and canonical START / WORK / END branch lifecycle rules appear in active governance docs.
+4. Confirm no product/runtime files changed.
+5. Run `git diff --check`.

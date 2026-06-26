@@ -7,8 +7,8 @@ Owner: OWNER
 
 `docs_build/dev/ProjectInstructions/` is the only active Project Instructions source for Game Foundry Studio.
 
-Deprecated reference locations must not be used as active instruction sources:
-- `docs_build/dev/PROJECT_INSTRUCTIONS.md`
+Only this folder may contain active Project Instructions. Deprecated reference locations must not be used as active instruction sources:
+- root-level copies in `docs_build/dev/`
 - `project-instructions/`
 - archived Project Instructions snapshots
 - generated PR reports
