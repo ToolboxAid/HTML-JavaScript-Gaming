@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import {
+  aabbContactState,
   aabbOverlap,
   collisionTime,
   normalizeBoundingBox,
@@ -46,6 +47,9 @@ export function run() {
     { height: 5, width: 5, x: 5, y: 5 },
   );
   assert.equal(aabbOverlap({ x: 0, y: 0, width: 4, height: 4 }, { x: 5, y: 0, width: 4, height: 4 }).overlap, false);
+  assert.equal(aabbContactState({ x: 0, y: 0, width: 4, height: 4 }, { x: 5, y: 0, width: 4, height: 4 }).state, "separated");
+  assert.equal(aabbContactState({ x: 0, y: 0, width: 4, height: 4 }, { x: 4, y: 0, width: 4, height: 4 }).state, "touching");
+  assert.equal(aabbContactState({ x: 0, y: 0, width: 4, height: 4 }, { x: 3, y: 0, width: 4, height: 4 }).state, "overlapping");
 
   const highSpeedImpact = sweptAabb({
     movingBox: { x: 0, y: 0, width: 10, height: 10 },

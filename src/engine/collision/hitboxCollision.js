@@ -66,6 +66,32 @@ export function aabbOverlap(leftBox, rightBox) {
   });
 }
 
+export function aabbContactState(leftBox, rightBox) {
+  const left = normalizeBoundingBox(leftBox);
+  const right = normalizeBoundingBox(rightBox);
+  const overlapResult = aabbOverlap(left, right);
+  if (overlapResult.overlap) {
+    return Object.freeze({
+      left,
+      right,
+      state: "overlapping",
+    });
+  }
+
+  const xRangesTouch = left.left <= right.right && left.right >= right.left;
+  const yRangesTouch = left.top <= right.bottom && left.bottom >= right.top;
+  const edgesTouch = left.right === right.left
+    || left.left === right.right
+    || left.bottom === right.top
+    || left.top === right.bottom;
+  const state = edgesTouch && xRangesTouch && yRangesTouch ? "touching" : "separated";
+  return Object.freeze({
+    left,
+    right,
+    state,
+  });
+}
+
 function positionBox(box, position) {
   const normalized = normalizeBoundingBox(box);
   return normalizeBoundingBox({
