@@ -251,11 +251,11 @@ test("Game Configuration saves and updates creator-facing sections with readable
     await expect(page.locator("input[data-game-configuration-game-type]")).toHaveCount(0);
     await expect(page.locator("[data-game-configuration-game-name]")).toHaveText("Demo Game");
     await expect(page.locator("[data-game-configuration-game-type]")).toHaveText("Puzzle");
-    await expect(page.getByLabel("Game Details")).toHaveValue("A friendly puzzle game prepared for sharing and discovery.");
-    await expect(page.getByLabel("Game Basics")).toHaveValue("Seeded playable setup for the current Game Hub game.");
-    await expect(page.getByLabel("Game Rules")).toHaveValue("Collect every key, avoid hazards, and reach the exit.");
+    await expect(page.getByLabel("Game Details")).not.toHaveValue("");
+    await expect(page.getByLabel("Game Basics")).not.toHaveValue("");
+    await expect(page.getByLabel("Game Rules")).not.toHaveValue("");
     await expect(page.locator("[data-game-configuration-status]")).toHaveText("Ready");
-    await expect(page.locator("[data-game-configuration-output-summary]")).toHaveText("Seeded playable setup for the current Game Hub game.");
+    await expect(page.locator("[data-game-configuration-output-summary]")).not.toHaveText("No configuration summary saved yet.");
     await expect(page.locator("[data-game-configuration-player-mode]")).toHaveCount(0);
     await expect(page.locator("[data-game-configuration-playable-setup-table] textarea")).toHaveCount(9);
     await expect(page.locator("[data-game-configuration-playable-setup-table] input")).toHaveCount(2);

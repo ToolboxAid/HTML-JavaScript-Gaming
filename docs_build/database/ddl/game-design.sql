@@ -20,6 +20,15 @@ CREATE INDEX IF NOT EXISTS idx_game_design_documents_gamekey ON game_design_docu
 CREATE INDEX IF NOT EXISTS idx_game_design_documents_createdby ON game_design_documents ("createdBy");
 CREATE INDEX IF NOT EXISTS idx_game_design_documents_updatedby ON game_design_documents ("updatedBy");
 
+ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "gamePurpose" text;
+ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "gameType" text;
+ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "genre" text;
+ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "playStyle" text;
+ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "playerMode" text;
+ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "designSummary" text;
+ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "capabilityDemoAuthoring" boolean NOT NULL DEFAULT false;
+ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "capabilityDemoNotes" text;
+
 CREATE TABLE IF NOT EXISTS game_design_validation_items (
     key text PRIMARY KEY,
     "gameKey" text REFERENCES game_workspace_games(key),

@@ -12,13 +12,15 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(83%) Toolbox Index - exercised 3 runtime JS files
+(82%) Toolbox Index - exercised 3 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
 (74%) Theme V2 Shared JS - exercised 6 runtime JS files
 
 Changed runtime JS files covered:
-(0%) src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 
 Files with executed line/function counts where available:
 (25%) src/api/session-api-client.js - executed lines 67/67; executed functions 3/12
@@ -34,16 +36,27 @@ Files with executed line/function counts where available:
 (77%) assets/theme-v2/js/tool-display-mode.js - executed lines 304/304; executed functions 23/30
 (80%) assets/theme-v2/js/theme-icons.js - executed lines 69/69; executed functions 4/5
 (81%) toolbox/tools-page-accordions.js - executed lines 1156/1156; executed functions 92/113
-(93%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 27/29
+(86%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 25/29
 (100%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 37/37
-(100%) assets/toolbox/game-configuration/js/index.js - executed lines 239/239; executed functions 23/23
+(100%) assets/toolbox/game-design/js/index.js - executed lines 340/340; executed functions 26/26
 
 Uncovered or low-coverage changed JS files:
-(0%) src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
-(0%) src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js - changed JS file not collected as browser runtime coverage
+(0%) assets/toolbox/game-configuration/js/index.js - changed JS file not collected as browser runtime coverage
+(0%) assets/toolbox/tags/js/index.js - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/dev-runtime/DevRuntimeBoundary.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/AssetToolMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs - changed JS file not collected as browser runtime coverage
-(100%) assets/toolbox/game-configuration/js/index.js - changed JS file with browser V8 coverage
+(0%) tests/playwright/tools/GameDesignApiBehavior.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/TagsTool.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs - changed JS file not collected as browser runtime coverage
+(100%) assets/toolbox/game-design/js/index.js - changed JS file with browser V8 coverage

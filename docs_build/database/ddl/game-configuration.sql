@@ -49,6 +49,18 @@ ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "testReadiness" 
 CREATE INDEX IF NOT EXISTS idx_game_configuration_records_gamekey ON game_configuration_records ("gameKey");
 CREATE INDEX IF NOT EXISTS idx_game_configuration_records_createdby ON game_configuration_records ("createdBy");
 CREATE INDEX IF NOT EXISTS idx_game_configuration_records_updatedby ON game_configuration_records ("updatedBy");
+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "gameName" text;
+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "gamePurpose" text;
+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "gameType" text;
+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "genre" text;
+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "playStyle" text;
+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "gameBasics" text;
+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "gameRules" text;
+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "playerSetup" text;
+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "worldSetup" text;
+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "objectSetup" text;
+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "audioSetup" text;
+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "testReadiness" text;
 
 CREATE TABLE IF NOT EXISTS game_configuration_validation_items (
     key text PRIMARY KEY,
@@ -68,3 +80,4 @@ ALTER TABLE game_configuration_validation_items ADD COLUMN IF NOT EXISTS "sectio
 CREATE INDEX IF NOT EXISTS idx_game_configuration_validation_items_gamekey ON game_configuration_validation_items ("gameKey");
 CREATE INDEX IF NOT EXISTS idx_game_configuration_validation_items_createdby ON game_configuration_validation_items ("createdBy");
 CREATE INDEX IF NOT EXISTS idx_game_configuration_validation_items_updatedby ON game_configuration_validation_items ("updatedBy");
+ALTER TABLE game_configuration_validation_items ADD COLUMN IF NOT EXISTS "section" text;

@@ -1,76 +1,20 @@
 diff --git a/assets/toolbox/game-configuration/js/index.js b/assets/toolbox/game-configuration/js/index.js
-index d94f3ced2..89e359d23 100644
+index 89e359d23..08328dc52 100644
 --- a/assets/toolbox/game-configuration/js/index.js
 +++ b/assets/toolbox/game-configuration/js/index.js
-@@ -3,6 +3,7 @@ import {
+@@ -1,9 +1,9 @@
++import { getSessionCurrent } from "../../../../src/api/session-api-client.js";
+ import {
+   createServerRepositoryClient,
    readServerToolConstants,
    requireServerConstant,
  } from "../../../../src/api/server-api-client.js";
-+import { getSessionCurrent } from "../../../../src/api/session-api-client.js";
+-import { getSessionCurrent } from "../../../../src/api/session-api-client.js";
 
  const constants = readServerToolConstants("game-configuration");
 
-@@ -32,25 +33,41 @@ const elements = {
-   form: document.querySelector("[data-game-configuration-form]"),
-   formCard: document.querySelector("[data-game-configuration-form-card]"),
-   gameBasics: document.querySelector("[data-game-configuration-game-basics]"),
-+  gameDetails: document.querySelector("[data-game-configuration-game-details]"),
-+  gameName: document.querySelector("[data-game-configuration-game-name]"),
-   gameRules: document.querySelector("[data-game-configuration-game-rules]"),
-+  gameType: document.querySelector("[data-game-configuration-game-type]"),
-   handoffContext: document.querySelector("[data-game-configuration-handoff-context]"),
-   handoffOverlay: document.querySelector("[data-game-configuration-handoff-overlay]"),
-   missingItems: document.querySelector("[data-game-configuration-output-missing]"),
-   objectSetup: document.querySelector("[data-game-configuration-object-setup]"),
-   outputCapability: document.querySelector("[data-game-configuration-output-capability]"),
-+  outputDetails: document.querySelector("[data-game-configuration-output-details]"),
-+  outputGameType: document.querySelector("[data-game-configuration-output-game-type]"),
-+  outputName: document.querySelector("[data-game-configuration-output-name]"),
-   outputNextStep: document.querySelector("[data-game-configuration-output-next-step]"),
-+  outputPlatforms: document.querySelector("[data-game-configuration-output-platforms]"),
-   outputPlayerMode: document.querySelector("[data-game-configuration-output-player-mode]"),
-   outputReadiness: document.querySelector("[data-game-configuration-output-readiness]"),
-+  outputResolution: document.querySelector("[data-game-configuration-output-resolution]"),
-+  outputStartup: document.querySelector("[data-game-configuration-output-startup]"),
-   outputSummary: document.querySelector("[data-game-configuration-output-summary]"),
-+  outputVersion: document.querySelector("[data-game-configuration-output-version]"),
-+  outputVisibility: document.querySelector("[data-game-configuration-output-visibility]"),
-+  platforms: document.querySelector("[data-game-configuration-platforms]"),
-   playerSetup: document.querySelector("[data-game-configuration-player-setup]"),
-   progressCurrentFocus: document.querySelector("[data-game-configuration-current-focus]"),
-   progressGame: document.querySelector("[data-game-configuration-game-progress]"),
-   progressPublishing: document.querySelector("[data-game-configuration-publishing-progress]"),
-   progressRecommended: document.querySelectorAll("[data-game-configuration-recommended-tool]"),
-+  resolution: document.querySelector("[data-game-configuration-resolution]"),
-   statusLog: document.querySelector("[data-game-configuration-log]"),
-+  startupSettings: document.querySelector("[data-game-configuration-startup-settings]"),
-   testReadiness: document.querySelector("[data-game-configuration-test-readiness]"),
-   validationList: document.querySelector("[data-game-configuration-validation-list]"),
-   validationOverlay: document.querySelector("[data-game-configuration-validation-overlay]"),
-+  version: document.querySelector("[data-game-configuration-version]"),
-+  visibility: document.querySelector("[data-game-configuration-visibility]"),
-   worldSetup: document.querySelector("[data-game-configuration-world-setup]")
- };
-
-@@ -75,10 +92,16 @@ function readForm() {
-   return {
-     audioSetup: elements.audioSetup?.value,
-     gameBasics: elements.gameBasics?.value,
-+    gameDetails: elements.gameDetails?.value,
-     gameRules: elements.gameRules?.value,
-     objectSetup: elements.objectSetup?.value,
-+    platforms: elements.platforms?.value,
-     playerSetup: elements.playerSetup?.value,
-+    resolution: elements.resolution?.value,
-+    startupSettings: elements.startupSettings?.value,
-     testReadiness: elements.testReadiness?.value,
-+    version: elements.version?.value,
-+    visibility: elements.visibility?.value,
-     worldSetup: elements.worldSetup?.value
-   };
- }
-@@ -106,6 +129,23 @@ function applyConfigurationToForm(configuration) {
-   });
+@@ -82,6 +82,23 @@ function setText(element, value) {
+   }
  }
 
 +function currentSession() {
@@ -81,7 +25,7 @@ index d94f3ced2..89e359d23 100644
 +  }
 +}
 +
-+function redirectGuestSaveAction() {
++function redirectGuestWriteAction() {
 +  if (currentSession()?.authenticated === true) {
 +    return false;
 +  }
@@ -90,99 +34,508 @@ index d94f3ced2..89e359d23 100644
 +  return true;
 +}
 +
+ function createListItem(text) {
+   const item = document.createElement("li");
+   item.textContent = text;
+@@ -113,6 +130,15 @@ function clearForm() {
+       input.value = "";
+     }
+   });
++  if (elements.version) {
++    elements.version.value = "";
++  }
++  if (elements.resolution) {
++    elements.resolution.value = "1280x720";
++  }
++  if (elements.visibility) {
++    elements.visibility.value = "Private";
++  }
+ }
+
+ function applyConfigurationToForm(configuration) {
+@@ -127,23 +153,15 @@ function applyConfigurationToForm(configuration) {
+       input.value = configuration[section] || "";
+     }
+   });
+-}
+-
+-function currentSession() {
+-  try {
+-    return getSessionCurrent();
+-  } catch {
+-    return { authenticated: false };
++  if (elements.version) {
++    elements.version.value = configuration.version || "";
+   }
+-}
+-
+-function redirectGuestSaveAction() {
+-  if (currentSession()?.authenticated === true) {
+-    return false;
++  if (elements.resolution) {
++    elements.resolution.value = configuration.resolution || "1280x720";
++  }
++  if (elements.visibility) {
++    elements.visibility.value = configuration.visibility || "Private";
+   }
+-  setText(elements.statusLog, "Sign in before saving Game Configuration.");
+-  window.location.href = new URL("/account/sign-in.html", window.location.href).href;
+-  return true;
+ }
+
  function renderValidation(validation) {
-   if (!elements.validationList || !elements.validationOverlay) {
+@@ -250,6 +268,9 @@ elements.form?.addEventListener("change", renderFormValidation);
+
+ elements.form?.addEventListener("submit", (event) => {
+   event.preventDefault();
++  if (redirectGuestWriteAction()) {
++    return;
++  }
+   const snapshot = repository.getSnapshot();
+   const projectId = snapshot.handoff.activeProject?.id || "";
+
+@@ -259,10 +280,6 @@ elements.form?.addEventListener("submit", (event) => {
      return;
-@@ -141,9 +181,19 @@ function renderHandoff(snapshot) {
+   }
+
+-  if (redirectGuestSaveAction()) {
+-    return;
+-  }
+-
+   const configuration = repository.updateConfiguration(projectId, readForm());
+   const nextSnapshot = repository.getSnapshot();
+   const message = configuration?.status === "Ready" || nextSnapshot.progressHandoff.readinessStatus === "Ready"
+diff --git a/assets/toolbox/game-design/js/index.js b/assets/toolbox/game-design/js/index.js
+index af61960cd..120a3a168 100644
+--- a/assets/toolbox/game-design/js/index.js
++++ b/assets/toolbox/game-design/js/index.js
+@@ -1,3 +1,4 @@
++import { getSessionCurrent } from "../../../../src/api/session-api-client.js";
+ import {
+   createServerRepositoryClient,
+   readServerToolConstants,
+@@ -30,7 +31,9 @@ const elements = {
+   capabilityDemoNotes: document.querySelector("[data-game-design-capability-notes]"),
+   capabilityDemoPanel: document.querySelector("[data-game-design-capability-panel]"),
+   configurationLink: document.querySelector("[data-game-design-configuration-link]"),
++  coreLoop: document.querySelector("[data-game-design-core-loop]"),
+   designSummary: document.querySelector("[data-game-design-summary]"),
++  designNotes: document.querySelector("[data-game-design-notes]"),
+   designStatus: document.querySelector("[data-game-design-status]"),
+   form: document.querySelector("[data-game-design-form]"),
+   gameType: document.querySelector("[data-game-design-type]"),
+@@ -40,20 +43,30 @@ const elements = {
+   handoffProgress: document.querySelector("[data-game-design-game-progress]"),
+   handoffPublishing: document.querySelector("[data-game-design-publishing-progress]"),
+   handoffRecommended: document.querySelector("[data-game-design-recommended-tool]"),
++  loseCondition: document.querySelector("[data-game-design-lose-condition]"),
++  outputAudience: document.querySelector("[data-game-design-output-audience]"),
+   outputCapability: document.querySelector("[data-game-design-output-capability]"),
++  outputCoreLoop: document.querySelector("[data-game-design-output-core-loop]"),
++  outputLose: document.querySelector("[data-game-design-output-lose]"),
+   outputMissing: document.querySelector("[data-game-design-output-missing]"),
+   outputNextStep: document.querySelector("[data-game-design-output-next-step]"),
++  outputNotes: document.querySelector("[data-game-design-output-notes]"),
+   outputPlayerMode: document.querySelector("[data-game-design-output-player-mode]"),
++  outputStory: document.querySelector("[data-game-design-output-story]"),
+   outputSummary: document.querySelector("[data-game-design-output-summary]"),
+   outputValidation: document.querySelector("[data-game-design-output-validation]"),
++  outputWin: document.querySelector("[data-game-design-output-win]"),
+   playerMode: document.querySelector("[data-game-design-player-mode]"),
+   playStyle: document.querySelector("[data-game-design-play-style]"),
++  story: document.querySelector("[data-game-design-story]"),
++  targetAudience: document.querySelector("[data-game-design-target-audience]"),
+   gameContext: document.querySelector("[data-game-design-game-context]"),
+   gameOverlay: document.querySelector("[data-game-design-game-overlay]"),
+   statusLog: document.querySelector("[data-game-design-log]"),
+   tableCounts: document.querySelector("[data-game-design-table-counts]"),
+   validationList: document.querySelector("[data-game-design-validation-list]"),
+-  validationOverlay: document.querySelector("[data-game-design-validation-overlay]")
++  validationOverlay: document.querySelector("[data-game-design-validation-overlay]"),
++  winCondition: document.querySelector("[data-game-design-win-condition]")
+ };
+
+ function setText(element, value) {
+@@ -62,6 +75,23 @@ function setText(element, value) {
    }
  }
 
-+function inheritedGameName(snapshot) {
-+  return snapshot.handoff.activeProject?.name || snapshot.handoff.activeGame?.name || "";
++function currentSession() {
++  try {
++    return getSessionCurrent();
++  } catch {
++    return { authenticated: false };
++  }
 +}
 +
-+function inheritedGameType(snapshot) {
-+  return snapshot.handoff.activeProject?.gameType || snapshot.handoff.activeDesign?.gameType || snapshot.handoff.activeProject?.purpose || "";
++function redirectGuestWriteAction() {
++  if (currentSession()?.authenticated === true) {
++    return false;
++  }
++  setText(elements.statusLog, "Sign in before saving Game Design.");
++  window.location.href = new URL("/account/sign-in.html", window.location.href).href;
++  return true;
 +}
 +
- function renderOutput(snapshot) {
-   const configuration = snapshot.configuration;
-   const validation = snapshot.validation;
-+  const gameName = configuration?.gameName || inheritedGameName(snapshot);
-+  const gameType = inheritedGameType(snapshot);
-   const missing = validation.findings.map((finding) => finding.label).join(", ");
-   const summary = configuration?.gameBasics || "No configuration summary saved yet.";
-   const activeGame = snapshot.handoff.activeGame || snapshot.handoff.activeProject;
-@@ -151,6 +201,16 @@ function renderOutput(snapshot) {
-     ? `${activeGame.name} remains a game-owned capability demo.`
-     : "Standard game configuration.";
+ function populateSelect(select, values, placeholder) {
+   if (!select) {
+     return;
+@@ -92,11 +122,18 @@ function readForm() {
+   return {
+     capabilityDemoAuthoring: repository.getActiveGame()?.purpose === "Capability Demo",
+     capabilityDemoNotes: elements.capabilityDemoNotes?.value,
++    coreLoop: elements.coreLoop?.value,
++    designNotes: elements.designNotes?.value,
+     designSummary: elements.designSummary?.value,
+     gameType: elements.gameType?.value,
+     genre: elements.genre?.value,
++    loseCondition: elements.loseCondition?.value,
+     playerMode: elements.playerMode?.value,
+-    playStyle: elements.playStyle?.value
++    playStyle: elements.playStyle?.value,
++    story: elements.story?.value,
++    summary: elements.designSummary?.value,
++    targetAudience: elements.targetAudience?.value,
++    winCondition: elements.winCondition?.value
+   };
+ }
 
-+  setText(elements.gameName, gameName || "From Game Hub");
-+  setText(elements.gameType, gameType || "From Game Hub");
-+  setText(elements.outputName, gameName || "No game name saved yet.");
-+  setText(elements.outputGameType, gameType || "No game type inherited yet.");
-+  setText(elements.outputDetails, configuration?.gameDetails || "No game details saved yet.");
-+  setText(elements.outputVersion, configuration?.version || "No version saved yet.");
-+  setText(elements.outputResolution, configuration?.resolution || "No resolution saved yet.");
-+  setText(elements.outputPlatforms, configuration?.platforms || "No platforms saved yet.");
-+  setText(elements.outputVisibility, configuration?.visibility || "No visibility saved yet.");
-+  setText(elements.outputStartup, configuration?.startupSettings || "No startup settings saved yet.");
-   setText(elements.outputSummary, summary);
-   setText(elements.outputPlayerMode, configuration?.playerMode || snapshot.handoff.activeDesign?.playerMode || "1 Player");
-   setText(elements.outputReadiness, snapshot.progressHandoff.readinessStatus);
-@@ -199,9 +259,13 @@ elements.form?.addEventListener("submit", (event) => {
+@@ -116,6 +153,24 @@ function clearForm() {
+   if (elements.designSummary) {
+     elements.designSummary.value = "";
+   }
++  if (elements.story) {
++    elements.story.value = "";
++  }
++  if (elements.coreLoop) {
++    elements.coreLoop.value = "";
++  }
++  if (elements.winCondition) {
++    elements.winCondition.value = "";
++  }
++  if (elements.loseCondition) {
++    elements.loseCondition.value = "";
++  }
++  if (elements.targetAudience) {
++    elements.targetAudience.value = "";
++  }
++  if (elements.designNotes) {
++    elements.designNotes.value = "";
++  }
+   if (elements.capabilityDemoNotes) {
+     elements.capabilityDemoNotes.value = "";
+   }
+@@ -140,7 +195,25 @@ function applyDesignToForm(design) {
+     elements.playerMode.value = design.playerMode || "1 Player";
+   }
+   if (elements.designSummary) {
+-    elements.designSummary.value = design.designSummary;
++    elements.designSummary.value = design.summary || design.designSummary;
++  }
++  if (elements.story) {
++    elements.story.value = design.story;
++  }
++  if (elements.coreLoop) {
++    elements.coreLoop.value = design.coreLoop;
++  }
++  if (elements.winCondition) {
++    elements.winCondition.value = design.winCondition;
++  }
++  if (elements.loseCondition) {
++    elements.loseCondition.value = design.loseCondition;
++  }
++  if (elements.targetAudience) {
++    elements.targetAudience.value = design.targetAudience;
++  }
++  if (elements.designNotes) {
++    elements.designNotes.value = design.designNotes;
+   }
+   if (elements.capabilityDemoNotes) {
+     elements.capabilityDemoNotes.value = design.capabilityDemoNotes;
+@@ -225,7 +298,13 @@ function renderOutput(snapshot, validation) {
+   const activeGame = snapshot.activeGame || snapshot.activeProject;
+   const missingRequirements = validation.findings.map((finding) => finding.label).join(", ");
+
+-  setText(elements.outputSummary, activeDesign?.designSummary || "No design summary saved yet.");
++  setText(elements.outputSummary, activeDesign?.summary || activeDesign?.designSummary || "No design summary saved yet.");
++  setText(elements.outputStory, activeDesign?.story || "No story saved yet.");
++  setText(elements.outputCoreLoop, activeDesign?.coreLoop || "No core loop saved yet.");
++  setText(elements.outputWin, activeDesign?.winCondition || "No win condition saved yet.");
++  setText(elements.outputLose, activeDesign?.loseCondition || "No lose condition saved yet.");
++  setText(elements.outputAudience, activeDesign?.targetAudience || "No audience saved yet.");
++  setText(elements.outputNotes, activeDesign?.designNotes || "No notes saved yet.");
+   setText(elements.outputPlayerMode, activeDesign?.playerMode || "1 Player");
+   setText(elements.outputValidation, validation.status);
+   setText(elements.outputNextStep, snapshot.progressHandoff.recommendedNextTool);
+@@ -291,6 +370,9 @@ elements.form?.addEventListener("input", renderFormValidation);
+
+ elements.form?.addEventListener("submit", (event) => {
+   event.preventDefault();
++  if (redirectGuestWriteAction()) {
++    return;
++  }
+   const result = repository.saveDesign(readForm());
+   setText(elements.statusLog, result.message);
+   render();
+diff --git a/assets/toolbox/tags/js/index.js b/assets/toolbox/tags/js/index.js
+index 118923da9..9ac5305c0 100644
+--- a/assets/toolbox/tags/js/index.js
++++ b/assets/toolbox/tags/js/index.js
+@@ -1,3 +1,4 @@
++import { getSessionCurrent } from "../../../../src/api/session-api-client.js";
+ import {
+   createServerRepositoryClient,
+   readServerToolConstants,
+@@ -16,14 +17,17 @@ const repository = createTagsToolApiRepository();
+
+ const elements = {
+   add: document.querySelector("[data-tags-add]"),
++  activeProject: document.querySelector("[data-tags-active-project]"),
++  assignedCount: document.querySelector("[data-tags-assigned-count]"),
++  assignedLabels: document.querySelector("[data-tags-assigned-labels]"),
+   count: document.querySelector("[data-tags-count]"),
+   log: document.querySelector("[data-tags-log]"),
+   outputStatus: document.querySelector("[data-tags-output-status]"),
++  refresh: document.querySelector("[data-tags-refresh]"),
+   selected: document.querySelector("[data-tags-selected]"),
+   status: document.querySelector("[data-tags-status]"),
+   table: document.querySelector("[data-tags-table]"),
+   tableCounts: document.querySelector("[data-tags-table-counts]"),
+-  usageCount: document.querySelector("[data-tags-usage-count]"),
+ };
+
+ let editingTagId = "";
+@@ -63,20 +67,42 @@ function createInput(value, label, datasetName) {
+ function editingValues(row) {
+   return {
+     description: row.querySelector("[data-tags-description-input]")?.value || "",
+-    name: row.querySelector("[data-tags-name-input]")?.value || "",
++    label: row.querySelector("[data-tags-name-input]")?.value || "",
+   };
+ }
+
++function currentSession() {
++  try {
++    return getSessionCurrent();
++  } catch {
++    return { authenticated: false };
++  }
++}
++
++function redirectGuestWriteAction() {
++  if (currentSession()?.authenticated === true) {
++    return false;
++  }
++  setText(elements.log, "Sign in before saving project tags.");
++  window.location.href = new URL("/account/sign-in.html", window.location.href).href;
++  return true;
++}
++
++function tagLabel(tag) {
++  return tag?.label || tag?.name || "";
++}
++
+ function createEditRow(tag = null) {
+   const row = document.createElement("tr");
+   row.dataset.tagsEditingRow = tag?.id || "__new__";
+
+   const nameCell = document.createElement("td");
+-  nameCell.append(createInput(tag?.name || "", "Tag Name", "tagsNameInput"));
++  nameCell.append(createInput(tagLabel(tag), "Tag Label", "tagsNameInput"));
+
+   const descriptionCell = document.createElement("td");
+   descriptionCell.append(createInput(tag?.description || "", "Description", "tagsDescriptionInput"));
+
++  const assignedCell = createCell(tag?.assigned ? "Yes" : "No");
+   const usageCell = createCell(tag ? String(tag.usageCount || 0) : "0");
+
+   const actionsCell = document.createElement("td");
+@@ -88,7 +114,7 @@ function createEditRow(tag = null) {
+   );
+   actionsCell.append(actions);
+
+-  row.append(nameCell, descriptionCell, usageCell, actionsCell);
++  row.append(nameCell, descriptionCell, assignedCell, usageCell, actionsCell);
+   return row;
+ }
+
+@@ -96,7 +122,7 @@ function createUsageCountButton(tag) {
+   const cell = document.createElement("td");
+   const button = createButton(String(tag.usageCount || 0), "tagsToggleUsage", tag.id);
+   button.setAttribute("aria-expanded", String(expandedTagId === tag.id));
+-  button.setAttribute("aria-label", `Show usage for ${tag.name}`);
++  button.setAttribute("aria-label", `Show usage for ${tagLabel(tag)}`);
+   cell.append(button);
+   return cell;
+ }
+@@ -113,14 +139,18 @@ function createTagRow(tag) {
+   const actions = document.createElement("div");
+   actions.className = "action-group action-group--tight";
+   actions.append(
++    tag.assigned
++      ? createButton("Remove", "tagsRemove", tag.id)
++      : createButton("Assign", "tagsAssign", tag.id),
+     createButton("Edit", "tagsEdit", tag.id),
+     createButton("Trash", "tagsDelete", tag.id)
+   );
+   actionsCell.append(actions);
+
+   row.append(
+-    createCell(tag.name),
++    createCell(tagLabel(tag)),
+     createCell(tag.description || "No description"),
++    createCell(tag.assigned ? "Yes" : "No"),
+     createUsageCountButton(tag),
+     actionsCell
+   );
+@@ -132,14 +162,14 @@ function createUsageRow(tag) {
+   row.dataset.tagsUsageRow = tag.id;
+
+   const cell = document.createElement("td");
+-  cell.colSpan = 4;
++  cell.colSpan = 5;
+
+   const wrapper = document.createElement("div");
+   wrapper.className = "table-wrapper";
+
+   const table = document.createElement("table");
+   table.className = "data-table";
+-  table.setAttribute("aria-label", `${tag.name} usage`);
++  table.setAttribute("aria-label", `${tagLabel(tag)} usage`);
+
+   const head = document.createElement("thead");
+   const headRow = document.createElement("tr");
+@@ -151,7 +181,9 @@ function createUsageRow(tag) {
+     const emptyRow = document.createElement("tr");
+     const emptyCell = document.createElement("td");
+     emptyCell.colSpan = 2;
+-    emptyCell.textContent = "No usage yet.";
++    emptyCell.textContent = tag.assigned
++      ? "Assigned to the active project."
++      : "No usage yet.";
+     emptyRow.append(emptyCell);
+     body.append(emptyRow);
+   } else {
+@@ -182,7 +214,7 @@ function renderTable(snapshot) {
+   if (!snapshot.tags.length && editingTagId !== "__new__") {
+     const row = document.createElement("tr");
+     const cell = document.createElement("td");
+-    cell.colSpan = 4;
++    cell.colSpan = 5;
+     cell.textContent = "No tags added yet.";
+     row.append(cell);
+     elements.table.append(row);
+@@ -212,11 +244,13 @@ function renderTableCounts(snapshot) {
+
+ function render() {
+   const snapshot = repository.getSnapshot();
+-  const usageCount = snapshot.tags.reduce((total, tag) => total + tag.usageCount, 0);
++  const assignedLabels = snapshot.assignedTags.map(tagLabel).join(", ") || "None";
+   setText(elements.status, snapshot.status);
+   setText(elements.outputStatus, snapshot.status);
++  setText(elements.activeProject, snapshot.activeProject?.name || "No active project");
++  setText(elements.assignedCount, String(snapshot.assignedTags.length));
++  setText(elements.assignedLabels, assignedLabels);
+   setText(elements.count, String(snapshot.tags.length));
+-  setText(elements.usageCount, String(usageCount));
+   setText(elements.selected, selectedTagName);
+   if (elements.add) {
+     elements.add.disabled = editingTagId === "__new__";
+@@ -229,15 +263,22 @@ elements.add?.addEventListener("click", () => {
+   editingTagId = "__new__";
+   expandedTagId = "";
+   selectedTagName = "New tag";
+-  setText(elements.log, "Adding a workspace tag.");
++  setText(elements.log, "Adding a project tag.");
++  render();
++});
++
++elements.refresh?.addEventListener("click", () => {
++  setText(elements.log, "Project tags refreshed from the API.");
+   render();
+ });
+
+ elements.table?.addEventListener("click", (event) => {
++  const assign = event.target.closest("[data-tags-assign]");
+   const edit = event.target.closest("[data-tags-edit]");
+   const save = event.target.closest("[data-tags-save]");
+   const cancel = event.target.closest("[data-tags-cancel]");
+   const deleteButton = event.target.closest("[data-tags-delete]");
++  const remove = event.target.closest("[data-tags-remove]");
+   const toggleUsage = event.target.closest("[data-tags-toggle-usage]");
+
+   if (toggleUsage) {
+@@ -248,6 +289,28 @@ elements.table?.addEventListener("click", (event) => {
      return;
    }
 
-+  if (redirectGuestSaveAction()) {
++  if (assign) {
++    if (redirectGuestWriteAction()) {
++      return;
++    }
++    const result = repository.assignTagToProject(assign.dataset.tagsAssign);
++    selectedTagName = tagLabel(result.tag) || selectedTagName;
++    setText(elements.log, result.message);
++    render();
 +    return;
 +  }
 +
-   const configuration = repository.updateConfiguration(projectId, readForm());
-   const nextSnapshot = repository.getSnapshot();
--  const message = configuration?.status === "Ready"
-+  const message = configuration?.status === "Ready" || nextSnapshot.progressHandoff.readinessStatus === "Ready"
-     ? "Saved Game Configuration as ready. Assets is the recommended next tool."
-     : `Saved Game Configuration with ${nextSnapshot.validation.findings.length} missing item${nextSnapshot.validation.findings.length === 1 ? "" : "s"}.`;
++  if (remove) {
++    if (redirectGuestWriteAction()) {
++      return;
++    }
++    const result = repository.removeTagFromProject(remove.dataset.tagsRemove);
++    selectedTagName = tagLabel(result.tag) || selectedTagName;
++    setText(elements.log, result.message);
++    render();
++    return;
++  }
++
+   if (edit) {
+     editingTagId = edit.dataset.tagsEdit;
+     expandedTagId = "";
+@@ -266,6 +329,9 @@ elements.table?.addEventListener("click", (event) => {
+   }
 
+   if (save) {
++    if (redirectGuestWriteAction()) {
++      return;
++    }
+     const row = save.closest("[data-tags-editing-row]");
+     const values = editingValues(row);
+     const result = save.dataset.tagsSave === "__new__"
+@@ -273,7 +339,7 @@ elements.table?.addEventListener("click", (event) => {
+       : repository.updateTag(save.dataset.tagsSave, values);
+     if (result.added || result.updated) {
+       editingTagId = "";
+-      selectedTagName = result.tag?.name || "None";
++      selectedTagName = tagLabel(result.tag) || "None";
+     }
+     setText(elements.log, result.message);
+     render();
+@@ -281,6 +347,9 @@ elements.table?.addEventListener("click", (event) => {
+   }
+
+   if (deleteButton) {
++    if (redirectGuestWriteAction()) {
++      return;
++    }
+     const result = repository.deleteTag(deleteButton.dataset.tagsDelete);
+     if (result.deleted) {
+       editingTagId = "";
 diff --git a/docs_build/database/ddl/game-configuration.sql b/docs_build/database/ddl/game-configuration.sql
-index f604a7116..6da90ddc5 100644
+index 6da90ddc5..222fa8d6f 100644
 --- a/docs_build/database/ddl/game-configuration.sql
 +++ b/docs_build/database/ddl/game-configuration.sql
-@@ -8,15 +8,44 @@
- CREATE TABLE IF NOT EXISTS game_configuration_records (
-     key text PRIMARY KEY,
-     "gameKey" text REFERENCES game_workspace_games(key),
-+    "gameDetails" text,
-+    "version" text,
-+    "resolution" text,
-+    "platforms" text,
-+    "visibility" text,
-+    "startupSettings" text,
-     "status" text,
-     "summary" text,
-     "playerMode" text,
-+    "gameBasics" text,
-+    "gameRules" text,
-+    "playerSetup" text,
-+    "worldSetup" text,
-+    "objectSetup" text,
-+    "audioSetup" text,
-+    "testReadiness" text,
-     "createdAt" timestamptz NOT NULL DEFAULT now(),
-     "updatedAt" timestamptz NOT NULL DEFAULT now(),
-     "createdBy" text NOT NULL REFERENCES users(key),
-     "updatedBy" text NOT NULL REFERENCES users(key)
- );
-
-+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "gameDetails" text;
-+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "version" text;
-+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "resolution" text;
-+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "platforms" text;
-+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "visibility" text;
-+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "startupSettings" text;
-+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "summary" text;
-+ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "playerMode" text;
+@@ -49,6 +49,18 @@ ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "testReadiness"
+ CREATE INDEX IF NOT EXISTS idx_game_configuration_records_gamekey ON game_configuration_records ("gameKey");
+ CREATE INDEX IF NOT EXISTS idx_game_configuration_records_createdby ON game_configuration_records ("createdBy");
+ CREATE INDEX IF NOT EXISTS idx_game_configuration_records_updatedby ON game_configuration_records ("updatedBy");
++ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "gameName" text;
++ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "gamePurpose" text;
++ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "gameType" text;
++ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "genre" text;
++ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "playStyle" text;
 +ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "gameBasics" text;
 +ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "gameRules" text;
 +ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "playerSetup" text;
@@ -190,1154 +543,364 @@ index f604a7116..6da90ddc5 100644
 +ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "objectSetup" text;
 +ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "audioSetup" text;
 +ALTER TABLE game_configuration_records ADD COLUMN IF NOT EXISTS "testReadiness" text;
-+
- CREATE INDEX IF NOT EXISTS idx_game_configuration_records_gamekey ON game_configuration_records ("gameKey");
- CREATE INDEX IF NOT EXISTS idx_game_configuration_records_createdby ON game_configuration_records ("createdBy");
- CREATE INDEX IF NOT EXISTS idx_game_configuration_records_updatedby ON game_configuration_records ("updatedBy");
-@@ -24,6 +53,7 @@ CREATE INDEX IF NOT EXISTS idx_game_configuration_records_updatedby ON game_conf
+
  CREATE TABLE IF NOT EXISTS game_configuration_validation_items (
      key text PRIMARY KEY,
-     "gameKey" text REFERENCES game_workspace_games(key),
-+    "section" text,
-     "label" text,
-     "status" text,
-     "action" text,
-@@ -33,6 +63,8 @@ CREATE TABLE IF NOT EXISTS game_configuration_validation_items (
-     "updatedBy" text NOT NULL REFERENCES users(key)
- );
-
-+ALTER TABLE game_configuration_validation_items ADD COLUMN IF NOT EXISTS "section" text;
-+
+@@ -68,3 +80,4 @@ ALTER TABLE game_configuration_validation_items ADD COLUMN IF NOT EXISTS "sectio
  CREATE INDEX IF NOT EXISTS idx_game_configuration_validation_items_gamekey ON game_configuration_validation_items ("gameKey");
  CREATE INDEX IF NOT EXISTS idx_game_configuration_validation_items_createdby ON game_configuration_validation_items ("createdBy");
  CREATE INDEX IF NOT EXISTS idx_game_configuration_validation_items_updatedby ON game_configuration_validation_items ("updatedBy");
-diff --git a/docs_build/database/seed/game-configuration.json b/docs_build/database/seed/game-configuration.json
-index c5cc9d0ed..608c0464e 100644
---- a/docs_build/database/seed/game-configuration.json
-+++ b/docs_build/database/seed/game-configuration.json
-@@ -8,5 +8,5 @@
-     "game_configuration_records": [],
-     "game_configuration_validation_items": []
++ALTER TABLE game_configuration_validation_items ADD COLUMN IF NOT EXISTS "section" text;
+diff --git a/docs_build/database/ddl/game-design.sql b/docs_build/database/ddl/game-design.sql
+index 26870d412..3677a9681 100644
+--- a/docs_build/database/ddl/game-design.sql
++++ b/docs_build/database/ddl/game-design.sql
+@@ -20,6 +20,15 @@ CREATE INDEX IF NOT EXISTS idx_game_design_documents_gamekey ON game_design_docu
+ CREATE INDEX IF NOT EXISTS idx_game_design_documents_createdby ON game_design_documents ("createdBy");
+ CREATE INDEX IF NOT EXISTS idx_game_design_documents_updatedby ON game_design_documents ("updatedBy");
+
++ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "gamePurpose" text;
++ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "gameType" text;
++ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "genre" text;
++ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "playStyle" text;
++ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "playerMode" text;
++ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "designSummary" text;
++ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "capabilityDemoAuthoring" boolean NOT NULL DEFAULT false;
++ALTER TABLE game_design_documents ADD COLUMN IF NOT EXISTS "capabilityDemoNotes" text;
++
+ CREATE TABLE IF NOT EXISTS game_design_validation_items (
+     key text PRIMARY KEY,
+     "gameKey" text REFERENCES game_workspace_games(key),
+diff --git a/docs_build/database/ddl/tags.sql b/docs_build/database/ddl/tags.sql
+index d73007fa3..4eb7df0dd 100644
+--- a/docs_build/database/ddl/tags.sql
++++ b/docs_build/database/ddl/tags.sql
+@@ -2,21 +2,41 @@
+ -- Group: Tags
+ -- Ownership: docs_build/database/ddl/tags.sql
+ -- Target DEV database: gamefoundry_dev
+--- Scope: executable grouped table DDL for active Supabase/server API migration.
++-- Scope: executable grouped table DDL for active server API migration.
++-- Architecture: Browser -> API -> Database.
++-- Flat tags only: no category table, category UI, grouped category filtering, or category-owned seed data.
+ -- Authoritative key values are generated by the server/API layer unless a later DEV-only seed exception explicitly applies.
+--- Owned tables: workspace_tag_records
+-CREATE TABLE IF NOT EXISTS workspace_tag_records (
++-- Owned tables: project_tags, project_tag_assignments
++CREATE TABLE IF NOT EXISTS project_tags (
+     key text PRIMARY KEY,
+-    "id" text,
+-    "gameId" text REFERENCES game_workspace_games(key),
+-    "name" text,
++    "slug" text NOT NULL,
++    "label" text NOT NULL,
+     "description" text,
++    "active" boolean NOT NULL DEFAULT true,
+     "createdAt" timestamptz NOT NULL DEFAULT now(),
+     "updatedAt" timestamptz NOT NULL DEFAULT now(),
+     "createdBy" text NOT NULL REFERENCES users(key),
+     "updatedBy" text NOT NULL REFERENCES users(key)
+ );
+
+-CREATE INDEX IF NOT EXISTS idx_workspace_tag_records_gameid ON workspace_tag_records ("gameId");
+-CREATE INDEX IF NOT EXISTS idx_workspace_tag_records_createdby ON workspace_tag_records ("createdBy");
+-CREATE INDEX IF NOT EXISTS idx_workspace_tag_records_updatedby ON workspace_tag_records ("updatedBy");
++CREATE UNIQUE INDEX IF NOT EXISTS idx_project_tags_slug_unique ON project_tags (lower("slug"));
++CREATE INDEX IF NOT EXISTS idx_project_tags_active ON project_tags ("active");
++CREATE INDEX IF NOT EXISTS idx_project_tags_createdby ON project_tags ("createdBy");
++CREATE INDEX IF NOT EXISTS idx_project_tags_updatedby ON project_tags ("updatedBy");
++
++CREATE TABLE IF NOT EXISTS project_tag_assignments (
++    key text PRIMARY KEY,
++    "projectKey" text NOT NULL REFERENCES game_workspace_games(key),
++    "tagKey" text NOT NULL REFERENCES project_tags(key),
++    "createdAt" timestamptz NOT NULL DEFAULT now(),
++    "updatedAt" timestamptz NOT NULL DEFAULT now(),
++    "createdBy" text NOT NULL REFERENCES users(key),
++    "updatedBy" text NOT NULL REFERENCES users(key)
++);
++
++CREATE UNIQUE INDEX IF NOT EXISTS idx_project_tag_assignments_project_tag_unique
++    ON project_tag_assignments ("projectKey", "tagKey");
++CREATE INDEX IF NOT EXISTS idx_project_tag_assignments_projectkey ON project_tag_assignments ("projectKey");
++CREATE INDEX IF NOT EXISTS idx_project_tag_assignments_tagkey ON project_tag_assignments ("tagKey");
++CREATE INDEX IF NOT EXISTS idx_project_tag_assignments_createdby ON project_tag_assignments ("createdBy");
++CREATE INDEX IF NOT EXISTS idx_project_tag_assignments_updatedby ON project_tag_assignments ("updatedBy");
+diff --git a/docs_build/database/dml/tags.sql b/docs_build/database/dml/tags.sql
+index 5044083d5..f9ac0c787 100644
+--- a/docs_build/database/dml/tags.sql
++++ b/docs_build/database/dml/tags.sql
+@@ -2,13 +2,29 @@
+ -- Group: Tags
+ -- Ownership: docs_build/database/dml/tags.sql
+ -- Runtime setup/seed operations for this group must run through server-side APIs.
+--- Temporary scope: DEV/review artifact only until Admin Site Setup/server seed APIs fully own grouped setup.
++-- Architecture: Browser -> API -> Database.
+ -- Browser pages must not directly seed authoritative DB records.
+--- Owned tables: workspace_tag_records
++-- Owned tables: project_tags, project_tag_assignments
++-- Flat tags only: no category table, category UI, grouped category filtering, or category-owned seed data.
+
+--- DML status: Server-seed-owned.
+--- Setup is performed through the Admin-owned server-side seed API.
+--- Browser pages must not seed authoritative records.
+--- The server/API layer generates all non-user keys.
+--- This SQL file intentionally has no direct INSERT statements because direct SQL would bypass key/audit ownership.
+--- Direct SQL setup for this group remains deferred until a later migration-runner PR explicitly owns it.
++-- Starter flat tag seed labels for server/API seeding.
++-- These rows use stable DEV seed ULIDs and users.key ownership so database reviewers can inspect the desired baseline.
++-- Product runtime create/update/delete still flows through the API.
++INSERT INTO project_tags (key, "slug", "label", "description", "active", "createdBy", "updatedBy")
++VALUES
++  ('01K2GFSJ0Y0000000000007201', 'platformer', 'platformer', 'Platforming, jumping, and movement-focused projects.', true, '01K2GFSJ0Y0000000000000054', '01K2GFSJ0Y0000000000000054'),
++  ('01K2GFSJ0Y0000000000007202', 'fantasy', 'fantasy', 'Magic, legends, and fantasy world themes.', true, '01K2GFSJ0Y0000000000000054', '01K2GFSJ0Y0000000000000054'),
++  ('01K2GFSJ0Y0000000000007203', 'medium', 'medium', 'Medium-sized project scope.', true, '01K2GFSJ0Y0000000000000054', '01K2GFSJ0Y0000000000000054'),
++  ('01K2GFSJ0Y0000000000007204', 'pixel-art', 'pixel-art', 'Pixel art visual direction.', true, '01K2GFSJ0Y0000000000000054', '01K2GFSJ0Y0000000000000054'),
++  ('01K2GFSJ0Y0000000000007205', 'kids', 'kids', 'Designed for younger players.', true, '01K2GFSJ0Y0000000000000054', '01K2GFSJ0Y0000000000000054'),
++  ('01K2GFSJ0Y0000000000007206', 'boss-fight', 'boss-fight', 'Includes a climactic boss encounter.', true, '01K2GFSJ0Y0000000000000054', '01K2GFSJ0Y0000000000000054')
++ON CONFLICT (key) DO UPDATE SET
++  "slug" = EXCLUDED."slug",
++  "label" = EXCLUDED."label",
++  "description" = EXCLUDED."description",
++  "active" = EXCLUDED."active",
++  "updatedAt" = now(),
++  "updatedBy" = EXCLUDED."updatedBy";
++
++-- Project tag assignment seed rows are intentionally empty.
++-- Assignments are user/project-specific and must be created through the API.
+diff --git a/docs_build/database/seed/guest/tags.json b/docs_build/database/seed/guest/tags.json
+index a9efeb02d..21b672280 100644
+--- a/docs_build/database/seed/guest/tags.json
++++ b/docs_build/database/seed/guest/tags.json
+@@ -6,7 +6,8 @@
+   "writableByGuest": false,
+   "signInRedirect": "account/sign-in.html",
+   "tables": {
+-    "workspace_tag_records": []
++    "project_tags": [],
++    "project_tag_assignments": []
    },
--  "note": "Seed records for this group are intentionally empty until an Admin-owned server API seeds them."
-+  "note": "Game Configuration records are server/API-owned. Browser pages must not seed or generate authoritative configuration records."
+   "samplePackages": [
+     {
+diff --git a/docs_build/database/seed/tags.json b/docs_build/database/seed/tags.json
+index 1f7018488..996291098 100644
+--- a/docs_build/database/seed/tags.json
++++ b/docs_build/database/seed/tags.json
+@@ -5,7 +5,8 @@
+   "serverSideSeedRequired": true,
+   "browserAuthoritativeKeyGenerationAllowed": false,
+   "tables": {
+-    "workspace_tag_records": []
++    "project_tags": [],
++    "project_tag_assignments": []
+   },
+   "note": "Seed records for this group are intentionally empty until an Admin-owned server API seeds them."
  }
 diff --git a/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_branch-validation.md b/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_branch-validation.md
-new file mode 100644
-index 000000000..7835478c5
---- /dev/null
+index 7835478c5..4ed1bde0d 100644
+--- a/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_branch-validation.md
 +++ b/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_branch-validation.md
-@@ -0,0 +1,9 @@
-+# PR_26177_ALFA_061-game-configuration-foundation Branch Validation
-+
-+Generated: 2026-06-26 18:51:30 UTC
-+
-+- Branch check: PASS - current branch is `PR_26177_ALFA_061-game-configuration-foundation`.
-+- Scope check: PASS - changes are limited to Game Configuration seeded data behavior, targeted tests, reports, and package artifacts.
-+- Architecture check: PASS - targeted validation proves Browser -> API -> Database persistence.
-+- Current game check: PASS - status bar and Game Configuration handoff both show Demo Game.
-+- Validation result: PASS.
+@@ -1,9 +1,10 @@
+ # PR_26177_ALFA_061-game-configuration-foundation Branch Validation
+
+-Generated: 2026-06-26 18:51:30 UTC
++Generated: 2026-06-26 20:51:40 UTC
+
+ - Branch check: PASS - current branch is `PR_26177_ALFA_061-game-configuration-foundation`.
+-- Scope check: PASS - changes are limited to Game Configuration seeded data behavior, targeted tests, reports, and package artifacts.
+-- Architecture check: PASS - targeted validation proves Browser -> API -> Database persistence.
+-- Current game check: PASS - status bar and Game Configuration handoff both show Demo Game.
++- Scope check: PASS - runtime changes are limited to the stacked Alfa API service/tool pages/tests needed for Tags, Game Design, and Game Configuration DB-backed behavior.
++- No-mock check: PASS - `tags-mock-repository.js`, `game-design-mock-repository.js`, and `game-configuration-mock-repository.js` are absent, and the guardrail test fails if they return or are imported.
++- Router check: PASS - `local-api-router.mjs` routes Tags, Game Design, and Game Configuration through database-backed API services, not retired mock repositories.
++- Architecture check: PASS - targeted tests exercise Browser -> API -> Database persistence and guest write rejection/redirect behavior.
+ - Validation result: PASS.
 diff --git a/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_manual-validation-notes.md
-new file mode 100644
-index 000000000..c507e43e9
---- /dev/null
+index c507e43e9..c722beaff 100644
+--- a/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_manual-validation-notes.md
 +++ b/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_manual-validation-notes.md
-@@ -0,0 +1,11 @@
-+# PR_26177_ALFA_061-game-configuration-foundation Manual Validation Notes
-+
-+Generated: 2026-06-26 18:51:30 UTC
-+
-+- Loaded /toolbox/game-configuration/index.html and confirmed the status bar selected game is Demo Game.
-+- Confirmed Game Name and Game Type render as read-only text, not editable inputs.
-+- Confirmed seeded current-game configuration fields load before editing.
-+- Edited configuration settings, saved through the API, and verified game_configuration_records rows.
-+- Reloaded and confirmed Game Details and Game Basics persisted.
-+- Cleared required fields to verify validation still reports missing sections.
-+- Verified guest browser save redirects and direct guest API save returns 401.
+@@ -1,11 +1,11 @@
+ # PR_26177_ALFA_061-game-configuration-foundation Manual Validation Notes
+
+-Generated: 2026-06-26 18:51:30 UTC
++Generated: 2026-06-26 20:51:40 UTC
+
+-- Loaded /toolbox/game-configuration/index.html and confirmed the status bar selected game is Demo Game.
+-- Confirmed Game Name and Game Type render as read-only text, not editable inputs.
+-- Confirmed seeded current-game configuration fields load before editing.
+-- Edited configuration settings, saved through the API, and verified game_configuration_records rows.
+-- Reloaded and confirmed Game Details and Game Basics persisted.
+-- Cleared required fields to verify validation still reports missing sections.
+-- Verified guest browser save redirects and direct guest API save returns 401.
++- Loaded `/toolbox/game-configuration/index.html` with the default valid current-game handoff and confirmed the selected game status shows Demo Game.
++- Confirmed Game Name and Game Type render as inherited read-only text, with no editable inputs for those values.
++- Confirmed seeded Game Details, Platforms, Startup Settings, Game Basics, Game Rules, and setup fields load for the current game.
++- Edited configuration fields, saved through the API, verified `game_configuration_records` rows, reloaded, and confirmed persisted values return.
++- Cleared required fields, saved, and confirmed the validation overlay reports missing sections without generic snapshot seeding hiding the invalid state.
++- Verified guest browser save redirects to `account/sign-in.html`.
++- Verified Tags and Game Design focused lanes still pass after the shared Alfa API service changes.
 diff --git a/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_report.md b/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_report.md
-new file mode 100644
-index 000000000..d6cba80eb
---- /dev/null
+index d6cba80eb..60a2bd7c0 100644
+--- a/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_report.md
 +++ b/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_report.md
-@@ -0,0 +1,24 @@
-+# PR_26177_ALFA_061-game-configuration-foundation Report
+@@ -1,24 +1,31 @@
+ # PR_26177_ALFA_061-game-configuration-foundation Report
+
+-Generated: 2026-06-26 18:51:30 UTC
++Generated: 2026-06-26 20:51:40 UTC
+ Branch: `PR_26177_ALFA_061-game-configuration-foundation`
+-Base: `main`
+-Current HEAD before packaging: `72f8f181c`
++Base: stacked on `PR_26177_ALFA_060-game-design-foundation`
++Current HEAD before packaging: `d0ce8ebda`
+
+ ## Summary
+-PR061 makes Game Configuration a human-testable API/DB-backed tool with seeded current-game configuration data. Project identity stays read-only from Game Hub/Game Design handoff, editable configuration settings can be saved, database rows are asserted, and refresh/reload preserves saved values.
++PR061 completes the Game Configuration foundation as a human-testable Browser -> API -> Database tool. Game Name and Game Type are inherited from the current Game Hub/Game Design context and remain read-only, while configuration-owned fields save through the API, reload from database persistence, and surface Creator-safe readiness guidance.
+
+ ## Implementation Notes
+-- `makeValidGameDesign()` seeds a current-game configuration only when the selected game has no existing configuration record.
+-- Game Name and Game Type remain non-input status text.
+-- Tests assert the shared status bar selected game and seeded Demo Game configuration values before editing.
+-- Validation coverage clears fields explicitly to prove missing-section behavior despite the seeded ready state.
+-- No SQLite, tmp runtime dependency, JSON source of truth, mock-db-store expansion, or new mock repository file was added.
++- Game Configuration uses the shared Alfa API service in `src/dev-runtime/toolbox-api/alfa-tool-services.mjs`; the deleted Game Configuration mock repository is not routed or imported.
++- The normal valid-handoff bootstrap prepares a ready starter configuration only when the current game has no complete usable configuration. Explicit invalid saves remain visible and are not silently repaired by later snapshots.
++- `local-api-router.mjs` routes Tags, Game Design, and Game Configuration to the shared database-backed service instead of retired mock repositories.
++- Provider contract stubs include the Game Design section/demo tables required by the shared service contract.
++- No scoped Tags, Game Crew, Game Design, or Game Configuration mock repository source of truth is present in this branch.
+
+ ## Validation
+-- PASS - node --check assets/toolbox/game-configuration/js/index.js
+-- PASS - node --check src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js
+-- PASS - node --check src/dev-runtime/server/local-api-router.mjs
+-- PASS - node --check tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs
+-- PASS - git diff --check (line-ending notices only)
+-- PASS - npx playwright test tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs --workers=1 --reporter=line (6 passed)
++- PASS - `node --check src/dev-runtime/toolbox-api/alfa-tool-services.mjs`
++- PASS - `node --check src/dev-runtime/server/local-api-router.mjs`
++- PASS - `node --check assets/toolbox/tags/js/index.js`
++- PASS - `node --check assets/toolbox/game-design/js/index.js`
++- PASS - `node --check assets/toolbox/game-configuration/js/index.js`
++- PASS - `node --test tests/dev-runtime/DevRuntimeBoundary.test.mjs` (5 passed)
++- PASS - `npx playwright test tests/playwright/tools/TagsTool.spec.mjs --project=playwright --workers=1 --reporter=line` (4 passed)
++- PASS - `npx playwright test tests/playwright/tools/GameDesignApiBehavior.spec.mjs --project=playwright --workers=1 --reporter=line` (6 passed)
++- PASS - `npx playwright test tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs --project=playwright --workers=1 --reporter=line` (6 passed)
++- PASS - `git diff --check` (line-ending notices only)
 +
-+Generated: 2026-06-26 18:51:30 UTC
-+Branch: `PR_26177_ALFA_061-game-configuration-foundation`
-+Base: `main`
-+Current HEAD before packaging: `72f8f181c`
-+
-+## Summary
-+PR061 makes Game Configuration a human-testable API/DB-backed tool with seeded current-game configuration data. Project identity stays read-only from Game Hub/Game Design handoff, editable configuration settings can be saved, database rows are asserted, and refresh/reload preserves saved values.
-+
-+## Implementation Notes
-+- `makeValidGameDesign()` seeds a current-game configuration only when the selected game has no existing configuration record.
-+- Game Name and Game Type remain non-input status text.
-+- Tests assert the shared status bar selected game and seeded Demo Game configuration values before editing.
-+- Validation coverage clears fields explicitly to prove missing-section behavior despite the seeded ready state.
-+- No SQLite, tmp runtime dependency, JSON source of truth, mock-db-store expansion, or new mock repository file was added.
-+
-+## Validation
-+- PASS - node --check assets/toolbox/game-configuration/js/index.js
-+- PASS - node --check src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js
-+- PASS - node --check src/dev-runtime/server/local-api-router.mjs
-+- PASS - node --check tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs
-+- PASS - git diff --check (line-ending notices only)
-+- PASS - npx playwright test tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs --workers=1 --reporter=line (6 passed)
++## Packaging
++- Repo-structured ZIP: `tmp/PR_26177_ALFA_061-game-configuration-foundation_delta.zip`
 diff --git a/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_requirement-checklist.md b/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_requirement-checklist.md
-new file mode 100644
-index 000000000..ad792010f
---- /dev/null
+index ad792010f..c8a77527f 100644
+--- a/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_requirement-checklist.md
 +++ b/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_requirement-checklist.md
-@@ -0,0 +1,15 @@
-+# PR_26177_ALFA_061-game-configuration-foundation Requirement Checklist
-+
-+Generated: 2026-06-26 18:51:30 UTC
-+
-+- PASS - Center title is Configuration; Configuration Workspace wording is absent.
-+- PASS - Game Name comes from Game Hub and is read-only/non-editable.
-+- PASS - Game Type comes from the Game Hub/Game Design handoff and is read-only/non-editable.
-+- PASS - Configuration owns editable settings only after project creation.
-+- PASS - Tool loads seeded configuration data for the current selected Game Hub game.
-+- PASS - Tool asserts the shared status bar selected game is Demo Game.
-+- PASS - Read/write behavior remains scoped to the active current game configuration.
-+- PASS - Signed-in Creator can edit fields, save through API/DB, reload, and see persisted values.
-+- PASS - Guest browser save redirects to account/sign-in.html and direct guest API save returns 401.
-+- PASS - No SQLite, tmp runtime dependency, JSON source of truth, mock-db-store expansion, or new mock repository file was added.
-+- PASS - DDL/DML/seed artifacts remain under docs_build/database/ddl, dml, and seed paths.
+@@ -1,15 +1,16 @@
+ # PR_26177_ALFA_061-game-configuration-foundation Requirement Checklist
+
+-Generated: 2026-06-26 18:51:30 UTC
++Generated: 2026-06-26 20:51:40 UTC
+
+ - PASS - Center title is Configuration; Configuration Workspace wording is absent.
+-- PASS - Game Name comes from Game Hub and is read-only/non-editable.
+-- PASS - Game Type comes from the Game Hub/Game Design handoff and is read-only/non-editable.
++- PASS - Game Name comes from Game Hub and renders read-only.
++- PASS - Game Type comes from the Game Hub/Game Design handoff and renders read-only.
+ - PASS - Configuration owns editable settings only after project creation.
+-- PASS - Tool loads seeded configuration data for the current selected Game Hub game.
+-- PASS - Tool asserts the shared status bar selected game is Demo Game.
+-- PASS - Read/write behavior remains scoped to the active current game configuration.
+-- PASS - Signed-in Creator can edit fields, save through API/DB, reload, and see persisted values.
+-- PASS - Guest browser save redirects to account/sign-in.html and direct guest API save returns 401.
+-- PASS - No SQLite, tmp runtime dependency, JSON source of truth, mock-db-store expansion, or new mock repository file was added.
+-- PASS - DDL/DML/seed artifacts remain under docs_build/database/ddl, dml, and seed paths.
++- PASS - Tool loads seeded current-game configuration data through the API/database path.
++- PASS - Signed-in Creator can edit settings, save, refresh, and see persisted values.
++- PASS - Invalid saves remain visible as missing-section validation and are not silently repaired by generic snapshots.
++- PASS - Guest browser save redirects to `account/sign-in.html`; direct guest API save returns 401.
++- PASS - Tags, Game Design, and Game Configuration do not route through retired mock repositories.
++- PASS - Guardrail test fails if `tags-mock-repository.js`, `game-design-mock-repository.js`, or `game-configuration-mock-repository.js` exists or is imported.
++- PASS - No scoped mock-db-store expansion, page-local arrays, JSON source of truth, SQLite, or tmp runtime dependency was introduced.
++- PASS - DDL, DML, and seed artifacts remain under `docs_build/database/ddl/`, `docs_build/database/dml/`, and `docs_build/database/seed/`.
 diff --git a/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_validation-lane.md b/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_validation-lane.md
-new file mode 100644
-index 000000000..c98a7519f
---- /dev/null
+index c98a7519f..753f7792c 100644
+--- a/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_validation-lane.md
 +++ b/docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_validation-lane.md
-@@ -0,0 +1,10 @@
-+# PR_26177_ALFA_061-game-configuration-foundation Validation Lane
+@@ -1,10 +1,16 @@
+ # PR_26177_ALFA_061-game-configuration-foundation Validation Lane
+
+-Generated: 2026-06-26 18:51:30 UTC
++Generated: 2026-06-26 20:51:40 UTC
+
+-- PASS - node --check assets/toolbox/game-configuration/js/index.js
+-- PASS - node --check src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js
+-- PASS - node --check src/dev-runtime/server/local-api-router.mjs
+-- PASS - node --check tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs
+-- PASS - git diff --check (line-ending notices only)
+-- PASS - npx playwright test tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs --workers=1 --reporter=line (6 passed)
++- PASS - `node --check src/dev-runtime/toolbox-api/alfa-tool-services.mjs`
++- PASS - `node --check src/dev-runtime/server/local-api-router.mjs`
++- PASS - `node --check assets/toolbox/tags/js/index.js`
++- PASS - `node --check assets/toolbox/game-design/js/index.js`
++- PASS - `node --check assets/toolbox/game-configuration/js/index.js`
++- PASS - `node --test tests/dev-runtime/DevRuntimeBoundary.test.mjs`
++- PASS - `npx playwright test tests/playwright/tools/TagsTool.spec.mjs --project=playwright --workers=1 --reporter=line`
++- PASS - `npx playwright test tests/playwright/tools/GameDesignApiBehavior.spec.mjs --project=playwright --workers=1 --reporter=line`
++- PASS - `npx playwright test tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs --project=playwright --workers=1 --reporter=line`
++- PASS - `git diff --check`
 +
-+Generated: 2026-06-26 18:51:30 UTC
-+
-+- PASS - node --check assets/toolbox/game-configuration/js/index.js
-+- PASS - node --check src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js
-+- PASS - node --check src/dev-runtime/server/local-api-router.mjs
-+- PASS - node --check tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs
-+- PASS - git diff --check (line-ending notices only)
-+- PASS - npx playwright test tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs --workers=1 --reporter=line (6 passed)
++Note: an earlier parallel Game Design run timed out while writing Playwright trace artifacts; the same lane passed when rerun alone.
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 098d8de0b..3716be489 100644
+index 3716be489..a3a8311fd 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,16 +1,16 @@
--ï»¿M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_branch-validation.md
--M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_manual-validation-notes.md
--M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_report.md
--M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_requirement-checklist.md
--M	docs_build/dev/reports/PR_26177_OWNER_057-game-journey-metrics-regression-recovery_validation-lane.md
--M	docs_build/dev/reports/coverage_changed_js_guardrail.txt
--M	docs_build/dev/reports/playwright_v8_coverage_report.txt
--D	scripts/migrate-game-journey-completion-metrics-sqlite-to-postgres.mjs
--M	scripts/validate-browser-env-agnostic.mjs
--D	src/dev-runtime/persistence/game-journey-completion-metrics-migration.mjs
--D	tests/dev-runtime/GameJourneyCompletionMetricsMigration.test.mjs
--M	tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs
--M	tests/playwright/tools/AdminHealthOperationsPage.spec.mjs
--M	tests/playwright/tools/GameJourneyTool.spec.mjs
--M	docs_build/dev/reports/codex_changed_files.txt
--M	docs_build/dev/reports/codex_review.diff
-+assets/toolbox/game-configuration/js/index.js
-+docs_build/database/ddl/game-configuration.sql
-+docs_build/database/seed/game-configuration.json
-+docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_branch-validation.md
-+docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_manual-validation-notes.md
-+docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_report.md
-+docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_requirement-checklist.md
-+docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_validation-lane.md
-+docs_build/dev/reports/codex_changed_files.txt
-+docs_build/dev/reports/codex_review.diff
-+docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+docs_build/dev/reports/playwright_v8_coverage_report.txt
-+src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js
-+src/dev-runtime/server/local-api-router.mjs
-+tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs
-+toolbox/game-configuration/index.html
-diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 7b1c51f19..895c3b05c 100644
---- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,7 +6,9 @@ Missing changed runtime JS files are WARN, not FAIL.
- Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
-
- Changed runtime JS files considered:
--(100%) none changed - no changed runtime JS files
-+(0%) src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-
- Guardrail warnings:
--(100%) none changed - no changed runtime JS files
-+(0%) src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index f2363d3bf..99aa46caf 100644
---- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
-+++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -12,31 +12,38 @@ Note: entry percentages use function coverage when available, otherwise line cov
- Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
-
- Exercised tool entry points detected:
--(76%) Toolbox Index - exercised 1 runtime JS files
-+(83%) Toolbox Index - exercised 3 runtime JS files
- (0%) Tool Template V2 - not exercised by this Playwright run
--(72%) Theme V2 Shared JS - exercised 4 runtime JS files
-+(74%) Theme V2 Shared JS - exercised 6 runtime JS files
-
- Changed runtime JS files covered:
--(100%) none changed - no changed runtime JS files
-+(0%) src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-
- Files with executed line/function counts where available:
-+(25%) src/api/session-api-client.js - executed lines 67/67; executed functions 3/12
-+(33%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
- (36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2041/2041; executed functions 12/33
-+(50%) toolbox/game-hub/game-hub-api-client.js - executed lines 26/26; executed functions 2/4
- (53%) src/api/server-api-client.js - executed lines 168/168; executed functions 10/19
-+(57%) assets/theme-v2/js/account-auth-service.js - executed lines 64/64; executed functions 4/7
- (64%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 63/98
--(65%) src/api/public-config-client.js - executed lines 209/209; executed functions 17/26
- (67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
--(73%) assets/toolbox/game-journey/js/index.js - executed lines 1662/1662; executed functions 108/148
--(76%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 22/29
-+(70%) assets/theme-v2/js/login-session.js - executed lines 113/113; executed functions 7/10
-+(75%) src/api/public-config-client.js - executed lines 209/209; executed functions 21/28
- (77%) assets/theme-v2/js/tool-display-mode.js - executed lines 304/304; executed functions 23/30
- (80%) assets/theme-v2/js/theme-icons.js - executed lines 69/69; executed functions 4/5
--(89%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 32/36
--(100%) assets/js/shared/game-journey-api-client.js - executed lines 19/19; executed functions 2/2
-+(81%) toolbox/tools-page-accordions.js - executed lines 1156/1156; executed functions 92/113
-+(93%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 27/29
-+(100%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 37/37
-+(100%) assets/toolbox/game-configuration/js/index.js - executed lines 239/239; executed functions 23/23
-
- Uncovered or low-coverage changed JS files:
--(100%) none changed - no changed runtime JS files
-+(0%) src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
-
- Changed JS files considered:
--(0%) scripts/validate-browser-env-agnostic.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/dev-runtime/GameJourneyCompletionMetricsStore.test.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/AdminHealthOperationsPage.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/GameJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
-+(0%) src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js - changed JS file not collected as browser runtime coverage
-+(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs - changed JS file not collected as browser runtime coverage
-+(100%) assets/toolbox/game-configuration/js/index.js - changed JS file with browser V8 coverage
-diff --git a/src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js b/src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js
-index e63aaef34..a86d46e2e 100644
---- a/src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js
-+++ b/src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js
-@@ -1,46 +1,63 @@
- import { createGameDesignMockRepository } from "./game-design-mock-repository.js";
-+import { GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY } from "./game-workspace-mock-repository.js";
-+import { makeSeedUlid } from "../../seed/seed-db-keys.mjs";
-
- export const GAME_CONFIGURATION_TABLES = Object.freeze([
--  "game_configuration_documents",
--  "game_configuration_validation_items"
-+  "game_configuration_records",
-+  "game_configuration_validation_items",
- ]);
-
- export const GAME_CONFIGURATION_SECTIONS = Object.freeze([
-+  "gameDetails",
-+  "version",
-+  "resolution",
-+  "platforms",
-+  "visibility",
-+  "startupSettings",
-   "gameBasics",
-   "gameRules",
-   "playerSetup",
-   "worldSetup",
-   "objectSetup",
-   "audioSetup",
--  "testReadiness"
-+  "testReadiness",
- ]);
-
- export const GAME_CONFIGURATION_PLAYER_MODES = Object.freeze([
-   Object.freeze({
-     description: "One active player.",
-     label: "1 Player",
--    value: "1 Player"
-+    value: "1 Player",
-   }),
-   Object.freeze({
-     description: "Multiple players, one active player receives input at a time.",
-     label: "2+ Turn Based",
--    value: "2+ Turn Based"
-+    value: "2+ Turn Based",
-   }),
-   Object.freeze({
-     description: "Multiple players active at the same time.",
-     label: "2+ Concurrent",
--    value: "2+ Concurrent"
--  })
-+    value: "2+ Concurrent",
-+  }),
- ]);
-
-+export const GAME_CONFIGURATION_VISIBILITY_OPTIONS = Object.freeze(["Private", "Unlisted", "Public"]);
-+export const GAME_CONFIGURATION_RESOLUTION_OPTIONS = Object.freeze(["1280x720", "1366x768", "1920x1080"]);
-+
- const SECTION_LABELS = Object.freeze({
-+  audioSetup: "Audio Setup",
-   gameBasics: "Game Basics",
-+  gameDetails: "Game Details",
-   gameRules: "Game Rules",
-+  objectSetup: "Object Setup",
-+  platforms: "Platforms",
-   playerSetup: "Player Setup",
-+  resolution: "Resolution",
-+  startupSettings: "Startup Settings",
-+  testReadiness: "Test Readiness",
-+  version: "Version",
-+  visibility: "Visibility",
-   worldSetup: "World Setup",
--  objectSetup: "Object Setup",
--  audioSetup: "Audio Setup",
--  testReadiness: "Test Readiness"
- });
-
- function cloneRows(rows) {
-@@ -49,15 +66,15 @@ function cloneRows(rows) {
-
- function cloneTables(tables) {
-   return {
--    game_configuration_documents: cloneRows(tables.game_configuration_documents),
--    game_configuration_validation_items: cloneRows(tables.game_configuration_validation_items)
-+    game_configuration_records: cloneRows(tables.game_configuration_records),
-+    game_configuration_validation_items: cloneRows(tables.game_configuration_validation_items),
-   };
- }
-
- function createEmptyTables() {
-   return {
--    game_configuration_documents: [],
--    game_configuration_validation_items: []
-+    game_configuration_records: [],
-+    game_configuration_validation_items: [],
-   };
- }
-
-@@ -72,18 +89,54 @@ function normalizePlayerMode(value) {
-     : "1 Player";
- }
-
-+function normalizeChoice(value, options, fallback) {
-+  const normalized = normalizeText(value);
-+  return options.includes(normalized) ? normalized : fallback;
-+}
-+
-+function auditFields(index = 0, userKey = GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY) {
-+  const timestamp = new Date(Date.UTC(2026, 0, 1, 14, index, 0)).toISOString();
-+  return {
-+    createdAt: timestamp,
-+    createdBy: userKey,
-+    updatedAt: timestamp,
-+    updatedBy: userKey,
-+  };
-+}
-+
-+function hashKeySource(value) {
-+  return Array.from(String(value || "game-configuration")).reduce(
-+    (hash, character) => ((hash * 31) + character.charCodeAt(0)) % 97,
-+    0,
-+  );
-+}
-+
-+function keySequenceForProject(baseSequence, projectId, index = 0) {
-+  return baseSequence + (hashKeySource(projectId) * 20) + index;
-+}
-+
-+function configurationKeyForProject(projectId) {
-+  return makeSeedUlid(keySequenceForProject(8800, projectId));
-+}
-+
-+function validationKeyForProject(projectId, index) {
-+  return makeSeedUlid(keySequenceForProject(8900, projectId, index));
-+}
-+
- function configurationIdForProject(projectId) {
-   return `${projectId}-game-configuration`;
- }
-
- function createValidationRows(projectId, findings) {
-   return findings.map((finding, index) => ({
--    id: `${projectId}-configuration-validation-${index + 1}`,
-+    key: validationKeyForProject(projectId, index),
-+    projectKey: projectId,
-     projectId,
-     section: finding.section,
-     label: finding.label,
-     action: finding.action,
--    status: "Missing"
-+    status: "Missing",
-+    ...auditFields(index + 20),
-   }));
- }
-
-@@ -96,27 +149,43 @@ function designRequiresAudio(handoff) {
-
- function requiredSectionsForHandoff(handoff) {
-   const sections = [
-+    "gameDetails",
-+    "version",
-+    "resolution",
-+    "platforms",
-+    "visibility",
-+    "startupSettings",
-     "gameBasics",
-     "gameRules",
-     "playerSetup",
-     "worldSetup",
-     "objectSetup",
--    "testReadiness"
-+    "testReadiness",
-   ];
-
-   if (designRequiresAudio(handoff)) {
--    sections.splice(5, 0, "audioSetup");
-+    sections.splice(11, 0, "audioSetup");
-   }
-
-   return sections;
- }
-
- function createDocument(projectId, handoff, input = {}) {
-+  const activeProject = handoff.activeProject || {};
-   const document = {
-+    key: configurationKeyForProject(projectId),
-     id: configurationIdForProject(projectId),
-+    projectKey: projectId,
-     projectId,
--    projectPurpose: handoff.activeProject?.purpose || "",
--    gameType: handoff.activeDesign?.gameType || "",
-+    gameName: activeProject.name || "",
-+    gameDetails: normalizeText(input.gameDetails),
-+    version: normalizeText(input.version) || "0.1.0",
-+    resolution: normalizeChoice(input.resolution, GAME_CONFIGURATION_RESOLUTION_OPTIONS, "1280x720"),
-+    platforms: normalizeText(input.platforms),
-+    visibility: normalizeChoice(input.visibility, GAME_CONFIGURATION_VISIBILITY_OPTIONS, "Private"),
-+    startupSettings: normalizeText(input.startupSettings),
-+    projectPurpose: activeProject.purpose || "",
-+    gameType: activeProject.gameType || handoff.activeDesign?.gameType || activeProject.purpose || "",
-     genre: handoff.activeDesign?.genre || "",
-     playStyle: handoff.activeDesign?.playStyle || "",
-     playerMode: normalizePlayerMode(handoff.activeDesign?.playerMode),
-@@ -128,7 +197,7 @@ function createDocument(projectId, handoff, input = {}) {
-     audioSetup: normalizeText(input.audioSetup),
-     testReadiness: normalizeText(input.testReadiness),
-     status: "Under Construction",
--    updatedAt: new Date().toISOString()
-+    ...auditFields(0, activeProject.ownerKey),
-   };
-   const validation = validateDocument(document, handoff);
-   document.status = validation.findings.length === 0 ? "Ready" : "Under Construction";
-@@ -140,29 +209,29 @@ function validateDocument(document, handoff) {
-
-   if (!handoff.ready) {
-     findings.push({
--      section: "gameDesign",
-+      action: "Complete a valid Game Design before editing Game Configuration.",
-       label: "Game Design",
--      action: "Complete a valid Game Design before editing Game Configuration."
-+      section: "gameDesign",
-     });
-     return {
-       findings,
--      status: "Blocked"
-+      status: "Blocked",
-     };
-   }
-
-   requiredSectionsForHandoff(handoff).forEach((section) => {
-     if (!normalizeText(document?.[section])) {
-       findings.push({
--        section,
-+        action: `Complete ${SECTION_LABELS[section]} before Build Game readiness.`,
-         label: SECTION_LABELS[section],
--        action: `Complete ${SECTION_LABELS[section]} before Build Game readiness.`
-+        section,
-       });
-     }
-   });
-
-   return {
-     findings,
--    status: findings.length === 0 ? "Ready" : "Needs Input"
-+    status: findings.length === 0 ? "Ready" : "Needs Input",
-   };
- }
-
-@@ -174,7 +243,7 @@ function createSeededGameDesignRepository() {
-     gameType: "Puzzle",
-     genre: "Adventure",
-     playerMode: "1 Player",
--    playStyle: "Single Player"
-+    playStyle: "Single Player",
-   });
-   return repository;
- }
-@@ -194,12 +263,14 @@ export function createGameConfigurationMockRepository(options = {}) {
-       activeGame: activeProject,
-       activeProject,
-       ready,
--      validation
-+      validation,
-     };
-   }
-
-   function getConfiguration(projectId) {
--    return tables.game_configuration_documents.find((document) => document.projectId === projectId) || null;
-+    return tables.game_configuration_records.find((document) => (
-+      document.projectId === projectId || document.projectKey === projectId
-+    )) || null;
-   }
-
-   function createConfiguration(projectId, input = {}) {
-@@ -209,10 +280,10 @@ export function createGameConfigurationMockRepository(options = {}) {
-     }
-
-     const document = createDocument(projectId, handoff, input);
--    tables.game_configuration_documents = tables.game_configuration_documents.filter(
--      (row) => row.projectId !== projectId
-+    tables.game_configuration_records = tables.game_configuration_records.filter(
-+      (row) => row.projectId !== projectId && row.projectKey !== projectId,
-     );
--    tables.game_configuration_documents.push(document);
-+    tables.game_configuration_records.push(document);
-     replaceValidationRows(projectId, validateConfiguration(projectId, document).findings);
-     return document;
-   }
-@@ -221,9 +292,33 @@ export function createGameConfigurationMockRepository(options = {}) {
-     return createConfiguration(projectId, input);
-   }
-
-+  function seedConfigurationForActiveProject() {
-+    const handoff = getGameDesignHandoff();
-+    const projectId = handoff.activeProject?.id || "";
-+    if (!handoff.ready || !projectId || getConfiguration(projectId)) {
-+      return null;
-+    }
-+
-+    return createConfiguration(projectId, {
-+      audioSetup: "Simple pickup, hazard, and completion sounds.",
-+      gameBasics: "Seeded playable setup for the current Game Hub game.",
-+      gameDetails: "A friendly puzzle game prepared for sharing and discovery.",
-+      gameRules: "Collect every key, avoid hazards, and reach the exit.",
-+      objectSetup: "Keys, doors, hazards, exit marker, and tutorial prompt.",
-+      platforms: "Web",
-+      playerSetup: "One player starts near the first key with keyboard controls.",
-+      resolution: "1280x720",
-+      startupSettings: "Open on the title screen and start in the first room.",
-+      testReadiness: "Confirm start, collect, fail, retry, and win paths before Build Game.",
-+      version: "0.1.0",
-+      visibility: "Private",
-+      worldSetup: "One compact room with a locked exit and visible goal path.",
-+    });
-+  }
-+
-   function replaceValidationRows(projectId, findings) {
-     tables.game_configuration_validation_items = tables.game_configuration_validation_items.filter(
--      (row) => row.projectId !== projectId
-+      (row) => row.projectId !== projectId && row.projectKey !== projectId,
-     );
-     tables.game_configuration_validation_items.push(...createValidationRows(projectId, findings));
-   }
-@@ -241,11 +336,11 @@ export function createGameConfigurationMockRepository(options = {}) {
-   }
-
-   function resetConfiguration(projectId) {
--    tables.game_configuration_documents = tables.game_configuration_documents.filter(
--      (row) => row.projectId !== projectId
-+    tables.game_configuration_records = tables.game_configuration_records.filter(
-+      (row) => row.projectId !== projectId && row.projectKey !== projectId,
-     );
-     tables.game_configuration_validation_items = tables.game_configuration_validation_items.filter(
--      (row) => row.projectId !== projectId
-+      (row) => row.projectId !== projectId && row.projectKey !== projectId,
-     );
-     return getSnapshot();
-   }
-@@ -271,7 +366,7 @@ export function createGameConfigurationMockRepository(options = {}) {
-     gameDesignRepository.resetDesignData();
-     openRequestedProject(projectId);
-     gameDesignRepository.saveDesign({
--      gameType: "Puzzle"
-+      gameType: "Puzzle",
-     });
-     tables = createEmptyTables();
-     return getSnapshot();
-@@ -285,11 +380,9 @@ export function createGameConfigurationMockRepository(options = {}) {
-       gameType: "Puzzle",
-       genre: "Adventure",
-       playerMode: "1 Player",
--      playStyle: "Single Player"
-+      playStyle: "Single Player",
-     });
--    if (!projectId) {
--      tables = createEmptyTables();
--    }
-+    seedConfigurationForActiveProject();
-     return getSnapshot();
-   }
-
-@@ -309,8 +402,8 @@ export function createGameConfigurationMockRepository(options = {}) {
-         gameProgress: "Game Configuration blocked until Game Design is ready",
-         projectProgress: "Game Configuration blocked until Game Design is ready",
-         publishingProgress: "Build Game blocked by missing Game Design handoff",
-+        readinessStatus: "Blocked",
-         recommendedNextTool: "Game Design",
--        readinessStatus: "Blocked"
-       };
-     }
-
-@@ -320,8 +413,8 @@ export function createGameConfigurationMockRepository(options = {}) {
-         gameProgress: `${handoff.activeProject.name} configuration needs ${validation.findings.length} item${validation.findings.length === 1 ? "" : "s"}`,
-         projectProgress: `${handoff.activeProject.name} configuration needs ${validation.findings.length} item${validation.findings.length === 1 ? "" : "s"}`,
-         publishingProgress: "Build Game blocked until configuration is ready",
-+        readinessStatus: validation.status,
-         recommendedNextTool: "Game Configuration",
--        readinessStatus: validation.status
-       };
-     }
-
-@@ -330,8 +423,8 @@ export function createGameConfigurationMockRepository(options = {}) {
-       gameProgress: `${handoff.activeProject.name} Game Configuration ready`,
-       projectProgress: `${handoff.activeProject.name} Game Configuration ready`,
-       publishingProgress: "Build Game remains blocked until required assets are ready",
-+      readinessStatus: "Ready",
-       recommendedNextTool: "Assets",
--      readinessStatus: "Ready"
-     };
-   }
-
-@@ -346,7 +439,7 @@ export function createGameConfigurationMockRepository(options = {}) {
-       handoff,
-       progressHandoff: getProjectProgressHandoff(),
-       tables: getTables(),
--      validation
-+      validation,
-     };
-   }
-
-@@ -363,6 +456,6 @@ export function createGameConfigurationMockRepository(options = {}) {
-     resetAll,
-     resetConfiguration,
-     updateConfiguration,
--    validateConfiguration
-+    validateConfiguration,
-   };
- }
-diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index 913163236..fa253e02f 100644
---- a/src/dev-runtime/server/local-api-router.mjs
-+++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -2787,6 +2787,13 @@ const GAME_WORKSPACE_SAVE_METHODS = new Set([
-   "updateGameStatus",
- ]);
-
-+const GAME_CONFIGURATION_SAVE_METHODS = new Set([
-+  "createConfiguration",
-+  "resetAll",
-+  "resetConfiguration",
-+  "updateConfiguration",
-+]);
-+
- const GAME_JOURNEY_TOOL_STORE_METHODS = new Set([
-   "addItem",
-   "addNote",
-@@ -3255,12 +3262,25 @@ function gameDesignTables(repository) {
-
- function gameConfigurationTables(repository) {
-   const tables = repository.getTables();
--  return normalizeOwnedTables("game-configuration", {
--    game_configuration_records: (tables.game_configuration_documents || []).map((record, index) => ({
-+  return {
-+    game_configuration_records: (tables.game_configuration_records || []).map((record, index) => ({
-       ...snapshotAuditFields(index + 180, SEED_DB_KEYS.users.user1),
-       key: record.key,
--      gameKey: gameWorkspaceGameKey(record.gameKey || record.gameId),
-+      gameKey: gameWorkspaceGameKey(record.gameKey || record.gameId || record.projectKey || record.projectId),
-+      gameDetails: record.gameDetails || "",
-+      version: record.version || "",
-+      resolution: record.resolution || "",
-+      platforms: record.platforms || "",
-+      visibility: record.visibility || "",
-+      startupSettings: record.startupSettings || "",
-       playerMode: record.playerMode || "1 Player",
-+      gameBasics: record.gameBasics || "",
-+      gameRules: record.gameRules || "",
-+      playerSetup: record.playerSetup || "",
-+      worldSetup: record.worldSetup || "",
-+      objectSetup: record.objectSetup || "",
-+      audioSetup: record.audioSetup || "",
-+      testReadiness: record.testReadiness || "",
-       status: record.status || record.readinessStatus || "Ready",
-       summary: record.gameBasics || [
-         record.sceneTemplate,
-@@ -3276,7 +3296,8 @@ function gameConfigurationTables(repository) {
-     game_configuration_validation_items: (tables.game_configuration_validation_items || []).map((record, index) => ({
-       ...snapshotAuditFields(index + 220, SEED_DB_KEYS.users.user1),
-       key: record.key,
--      gameKey: gameWorkspaceGameKey(record.gameKey || record.gameId),
-+      gameKey: gameWorkspaceGameKey(record.gameKey || record.gameId || record.projectKey || record.projectId),
-+      section: record.section,
-       label: record.label,
-       status: record.status,
-       action: record.action,
-@@ -3285,7 +3306,7 @@ function gameConfigurationTables(repository) {
-       createdBy: record.createdBy || SEED_DB_KEYS.users.user1,
-       updatedBy: record.updatedBy || SEED_DB_KEYS.users.user1,
-     })),
--  });
-+  };
- }
-
- function objectsTables(repository) {
-@@ -3703,6 +3724,14 @@ class ApiRuntimeDataSource {
-     return this.persistSupabaseProductSnapshot(action);
-   }
-
-+  async persistGameConfigurationProviderState(action) {
-+    const adapter = this.supabaseDatabaseAdapter(action);
-+    return adapter.upsertProductTables({
-+      ...gameWorkspaceTables(this.gameWorkspaceRepository),
-+      ...gameConfigurationTables(this.gameConfigurationRepository),
-+    });
-+  }
-+
-   async persistGameWorkspaceProviderState(action) {
-     return {
-       action,
-@@ -6763,6 +6792,9 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
-     if (repository === this.gameWorkspaceRepository && GAME_WORKSPACE_SAVE_METHODS.has(methodName) && !this.sessionUserKey) {
-       throw new Error("Sign in required to save Game Hub project records through Local API.");
-     }
-+    if (repository === this.gameConfigurationRepository && GAME_CONFIGURATION_SAVE_METHODS.has(methodName) && !this.sessionUserKey) {
-+      throw httpError("Sign in required to save Game Configuration through the API.", 401);
-+    }
-     this.cleared = false;
-     if (repository === this.assetRepository && methodName === "makeReadyGameConfiguration") {
-       if (this.assetReadyInitialized) {
-@@ -6790,6 +6822,8 @@ SELECT pg_database_size(current_database()) AS database_size_bytes,
-     if (repositoryMethodRequiresPersistence(methodName) && !methodPersistsThroughToolStore) {
-       if (repository === this.gameWorkspaceRepository) {
-         await this.persistGameWorkspaceProviderState(`Persisting ${methodName} result`);
-+      } else if (repository === this.gameConfigurationRepository) {
-+        await this.persistGameConfigurationProviderState(`Persisting ${methodName} result`);
-       } else if (repository === this.assetRepository) {
-         await this.persistAssetProviderState(`Persisting ${methodName} result`);
-       } else {
-diff --git a/tests/playwright/tools/GameConfigurationMockRepository.spec.mjs b/tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs
-similarity index 54%
-rename from tests/playwright/tools/GameConfigurationMockRepository.spec.mjs
-rename to tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs
-index 8fc1f6e38..d3111688a 100644
---- a/tests/playwright/tools/GameConfigurationMockRepository.spec.mjs
-+++ b/tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs
-@@ -1,13 +1,17 @@
- import { expect, test } from "@playwright/test";
-+import { readFile } from "node:fs/promises";
-+import path from "node:path";
- import process from "node:process";
- import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
-+import { createPostgresConnectionClient } from "../../../src/dev-runtime/persistence/postgres-connection-client.mjs";
-+import { SEED_DB_KEYS } from "../../../src/dev-runtime/seed/seed-db-keys.mjs";
- import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
- import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
-
- test.beforeEach(async ({ page }) => {
-   await installPlaywrightStorageIsolation(page, {
-     lane: "game-configuration",
--    surface: "game configuration mock repository"
-+    surface: "game configuration API behavior"
-   });
- });
-
-@@ -27,8 +31,48 @@ function restoreEnvValue(key, value) {
-   process.env[key] = value;
- }
-
--async function openRepoPage(page, pathName) {
-+let gameConfigurationSchemaReadyPromise = null;
-+
-+async function ensureGameConfigurationDatabaseSchema() {
-+  if (!gameConfigurationSchemaReadyPromise) {
-+    gameConfigurationSchemaReadyPromise = (async () => {
-+      const client = createPostgresConnectionClient();
-+      const ddlFiles = [
-+        "docs_build/database/ddl/account.sql",
-+        "docs_build/database/ddl/game-workspace.sql",
-+        "docs_build/database/ddl/game-design.sql",
-+        "docs_build/database/ddl/game-configuration.sql"
-+      ];
-+      for (const ddlFile of ddlFiles) {
-+        const ddl = await readFile(path.resolve(ddlFile), "utf8");
-+        await client.query(ddl);
-+      }
-+    })();
-+  }
-+  try {
-+    await gameConfigurationSchemaReadyPromise;
-+  } catch (error) {
-+    gameConfigurationSchemaReadyPromise = null;
-+    throw error;
-+  }
-+}
-+
-+async function readProductRows(tableName, query = "select=*") {
-+  const client = createPostgresConnectionClient();
-+  return client.requestTable(tableName, { query });
-+}
-+
-+async function setServerSession(server, userKey) {
-+  await fetch(`${server.baseUrl}/api/session/user`, {
-+    body: JSON.stringify({ userKey }),
-+    headers: { "Content-Type": "application/json" },
-+    method: "POST"
-+  });
-+}
-+
-+async function openRepoPage(page, pathName, options = {}) {
-   const server = await startRepoServer();
-+  await ensureGameConfigurationDatabaseSchema();
-   const previousApiUrl = process.env.GAMEFOUNDRY_API_URL;
-   const previousSiteUrl = process.env.GAMEFOUNDRY_SITE_URL;
-   process.env.GAMEFOUNDRY_API_URL = `${server.baseUrl}/api`;
-@@ -61,11 +105,42 @@ async function openRepoPage(page, pathName) {
-   });
-
-   await workspaceV2CoverageReporter.start(page);
--  await fetch(`${server.baseUrl}/api/local-db/seed`, { method: "POST" });
-+  if (options.sessionUserKey !== null) {
-+    await setServerSession(server, options.sessionUserKey || SEED_DB_KEYS.users.user1);
-+  }
-   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
-   return { consoleErrors, failedRequests, pageErrors, server };
- }
-
-+async function createRepositoryApiClient(server, toolId) {
-+  const repositoryResponse = await fetch(`${server.baseUrl}/api/toolbox/${encodeURIComponent(toolId)}/repositories`, {
-+    body: JSON.stringify({ options: {} }),
-+    headers: { "Content-Type": "application/json" },
-+    method: "POST"
-+  });
-+  const repositoryPayload = await repositoryResponse.json();
-+  expect(repositoryResponse.status).toBe(200);
-+  expect(repositoryPayload.ok).toBe(true);
-+  const repositoryId = repositoryPayload.data.repositoryId;
-+  expect(repositoryId).toBeTruthy();
-+
-+  return {
-+    repositoryId,
-+    async call(methodName, args = []) {
-+      const response = await fetch(
-+        `${server.baseUrl}/api/toolbox/${encodeURIComponent(toolId)}/repositories/${encodeURIComponent(repositoryId)}/methods/${encodeURIComponent(methodName)}`,
-+        {
-+          body: JSON.stringify({ args }),
-+          headers: { "Content-Type": "application/json" },
-+          method: "POST"
-+        }
-+      );
-+      const payload = await response.json().catch(() => ({}));
-+      return { payload, response };
-+    }
-+  };
-+}
-+
- async function expectNoPageFailures(failures) {
-   expect(failures.failedRequests).toEqual([]);
-   expect(failures.pageErrors).toEqual([]);
-@@ -73,6 +148,12 @@ async function expectNoPageFailures(failures) {
- }
-
- async function fillReadyConfiguration(page, summary = "A playable puzzle configuration with one clear starting room.") {
-+  await page.getByLabel("Game Details").fill("A friendly puzzle game prepared for sharing and discovery.");
-+  await page.getByLabel("Version").fill("0.1.0");
-+  await page.getByLabel("Resolution").selectOption("1280x720");
-+  await page.getByLabel("Platforms").fill("Web");
-+  await page.getByLabel("Visibility").selectOption("Private");
-+  await page.getByLabel("Startup Settings").fill("Open on the title screen and start in the first room.");
-   await page.getByLabel("Game Basics").fill(summary);
-   await page.getByLabel("Game Rules").fill("Collect every key, avoid hazards, and reach the exit.");
-   await page.getByLabel("Player Setup").fill("One player starts near the first key with keyboard controls.");
-@@ -123,6 +204,7 @@ test("Game Configuration saves and updates creator-facing sections with readable
-   const failures = await openRepoPage(page, "/toolbox/game-configuration/index.html");
-
-   try {
-+    await expect(page.locator("[data-toolbox-selected-game-name]")).toHaveText("Demo Game");
-     await expect(page.locator("[data-game-configuration-handoff-context]")).toHaveText("Demo Game - Game - Puzzle / Adventure / Single Player / 1 Player");
-     await expect(page.locator("[data-game-configuration-handoff-overlay]")).toBeHidden();
-     await expect(page.locator("[data-game-configuration-form-card]")).toBeVisible();
-@@ -149,6 +231,14 @@ test("Game Configuration saves and updates creator-facing sections with readable
-     expect(formCardSpacing.firstChildTopGap).toBeGreaterThanOrEqual(8);
-     await expect(page.locator("[data-game-configuration-playable-setup-table]")).toBeVisible();
-     await expect(page.locator("[data-game-configuration-playable-setup-table] th")).toHaveText([
-+      "Game Name",
-+      "Game Type",
-+      "Game Details",
-+      "Version",
-+      "Resolution",
-+      "Platforms",
-+      "Visibility",
-+      "Startup Settings",
-       "Game Basics",
-       "Game Rules",
-       "Player Setup",
-@@ -157,13 +247,31 @@ test("Game Configuration saves and updates creator-facing sections with readable
-       "Audio Setup",
-       "Test Readiness"
-     ]);
-+    await expect(page.locator("input[data-game-configuration-game-name]")).toHaveCount(0);
-+    await expect(page.locator("input[data-game-configuration-game-type]")).toHaveCount(0);
-+    await expect(page.locator("[data-game-configuration-game-name]")).toHaveText("Demo Game");
-+    await expect(page.locator("[data-game-configuration-game-type]")).toHaveText("Puzzle");
-+    await expect(page.getByLabel("Game Details")).toHaveValue("A friendly puzzle game prepared for sharing and discovery.");
-+    await expect(page.getByLabel("Game Basics")).toHaveValue("Seeded playable setup for the current Game Hub game.");
-+    await expect(page.getByLabel("Game Rules")).toHaveValue("Collect every key, avoid hazards, and reach the exit.");
-+    await expect(page.locator("[data-game-configuration-status]")).toHaveText("Ready");
-+    await expect(page.locator("[data-game-configuration-output-summary]")).toHaveText("Seeded playable setup for the current Game Hub game.");
-     await expect(page.locator("[data-game-configuration-player-mode]")).toHaveCount(0);
--    await expect(page.locator("[data-game-configuration-playable-setup-table] textarea")).toHaveCount(7);
-+    await expect(page.locator("[data-game-configuration-playable-setup-table] textarea")).toHaveCount(9);
-+    await expect(page.locator("[data-game-configuration-playable-setup-table] input")).toHaveCount(2);
-+    await expect(page.locator("[data-game-configuration-playable-setup-table] select")).toHaveCount(2);
-     expect(await page.locator("[data-game-configuration-playable-setup-table] textarea").evaluateAll((textareas) => (
-       textareas.every((textarea) => textarea.getAttribute("rows") === "4")
-     ))).toBe(true);
-     await expect(page.locator("[data-game-configuration-output] pre, [data-game-configuration-output] code")).toHaveCount(0);
-     await expect(page.locator("[data-game-configuration-output]")).toContainText("Configuration Summary");
-+    await expect(page.locator("[data-game-configuration-output]")).toContainText("Game Name");
-+    await expect(page.locator("[data-game-configuration-output]")).toContainText("Game Type");
-+    await expect(page.locator("[data-game-configuration-output]")).toContainText("Version");
-+    await expect(page.locator("[data-game-configuration-output]")).toContainText("Resolution");
-+    await expect(page.locator("[data-game-configuration-output]")).toContainText("Platforms");
-+    await expect(page.locator("[data-game-configuration-output]")).toContainText("Visibility");
-+    await expect(page.locator("[data-game-configuration-output]")).toContainText("Startup Settings");
-     await expect(page.locator("[data-game-configuration-output]")).toContainText("Player Mode");
-     await expect(page.locator("[data-game-configuration-output]")).toContainText("Readiness Status");
-     await expect(page.locator("[data-game-configuration-output]")).toContainText("Missing Items");
-@@ -176,6 +284,14 @@ test("Game Configuration saves and updates creator-facing sections with readable
-
-     await expect(page.locator("[data-game-configuration-log]")).toHaveText("Saved Game Configuration as ready. Assets is the recommended next tool.");
-     await expect(page.locator("[data-game-configuration-status]")).toHaveText("Ready");
-+    await expect(page.locator("[data-game-configuration-output-name]")).toHaveText("Demo Game");
-+    await expect(page.locator("[data-game-configuration-output-game-type]")).toHaveText("Puzzle");
-+    await expect(page.locator("[data-game-configuration-output-details]")).toHaveText("A friendly puzzle game prepared for sharing and discovery.");
-+    await expect(page.locator("[data-game-configuration-output-version]")).toHaveText("0.1.0");
-+    await expect(page.locator("[data-game-configuration-output-resolution]")).toHaveText("1280x720");
-+    await expect(page.locator("[data-game-configuration-output-platforms]")).toHaveText("Web");
-+    await expect(page.locator("[data-game-configuration-output-visibility]")).toHaveText("Private");
-+    await expect(page.locator("[data-game-configuration-output-startup]")).toHaveText("Open on the title screen and start in the first room.");
-     await expect(page.locator("[data-game-configuration-output-player-mode]")).toHaveText("1 Player");
-     await expect(page.locator("[data-game-configuration-output-readiness]")).toHaveText("Ready");
-     await expect(page.locator("[data-game-configuration-output-next-step]")).toHaveText("Assets");
-@@ -183,11 +299,37 @@ test("Game Configuration saves and updates creator-facing sections with readable
-     await expect(page.locator("[data-game-configuration-game-progress]")).toContainText("Game Configuration ready");
-     await expect(page.locator("[data-game-configuration-current-focus]")).toHaveText("Prepare Assets");
-     await expect(page.locator("[data-game-configuration-recommended-tool]").first()).toHaveText("Assets");
-+    await expect.poll(async () => {
-+      const rows = await readProductRows("game_configuration_records");
-+      return rows.find((row) => row.gameBasics === "A playable puzzle configuration with one clear starting room.") || null;
-+    }, { timeout: 10_000 }).toMatchObject({
-+      gameDetails: "A friendly puzzle game prepared for sharing and discovery.",
-+      gameBasics: "A playable puzzle configuration with one clear starting room.",
-+      gameRules: "Collect every key, avoid hazards, and reach the exit.",
-+      resolution: "1280x720",
-+      platforms: "Web",
-+      visibility: "Private",
-+      status: "Ready"
-+    });
-
-     await page.getByLabel("Game Basics").fill("Updated playable puzzle setup ready for Assets.");
-     await page.getByRole("button", { name: "Save Game Configuration" }).click();
-     await expect(page.locator("[data-game-configuration-output-summary]")).toHaveText("Updated playable puzzle setup ready for Assets.");
-     await expect(page.locator("[data-game-configuration-output]")).not.toContainText('"updatedAt"');
-+    await expect.poll(async () => {
-+      const rows = await readProductRows("game_configuration_records");
-+      return rows.find((row) => row.gameBasics === "Updated playable puzzle setup ready for Assets.") || null;
-+    }, { timeout: 10_000 }).toMatchObject({
-+      gameBasics: "Updated playable puzzle setup ready for Assets.",
-+      status: "Ready"
-+    });
-+    await page.reload({ waitUntil: "networkidle" });
-+    await expect(page.locator("[data-toolbox-selected-game-name]")).toHaveText("Demo Game");
-+    await expect(page.locator("[data-game-configuration-game-name]")).toHaveText("Demo Game");
-+    await expect(page.locator("[data-game-configuration-game-type]")).toHaveText("Puzzle");
-+    await expect(page.getByLabel("Game Details")).toHaveValue("A friendly puzzle game prepared for sharing and discovery.");
-+    await expect(page.getByLabel("Game Basics")).toHaveValue("Updated playable puzzle setup ready for Assets.");
-+    await expect(page.locator("[data-game-configuration-output-summary]")).toHaveText("Updated playable puzzle setup ready for Assets.");
-
-     await expectNoPageFailures(failures);
-   } finally {
-@@ -200,11 +342,23 @@ test("Game Configuration validation lists missing required sections and blocks B
-   const failures = await openRepoPage(page, "/toolbox/game-configuration/index.html");
-
-   try {
-+    await page.getByLabel("Game Details").fill("");
-+    await page.getByLabel("Platforms").fill("");
-+    await page.getByLabel("Startup Settings").fill("");
-     await page.getByLabel("Game Basics").fill("A playable setup summary without enough supporting detail.");
-+    await page.getByLabel("Game Rules").fill("");
-+    await page.getByLabel("Player Setup").fill("");
-+    await page.getByLabel("World Setup").fill("");
-+    await page.getByLabel("Object Setup").fill("");
-+    await page.getByLabel("Audio Setup").fill("");
-+    await page.getByLabel("Test Readiness").fill("");
-     await page.getByRole("button", { name: "Save Game Configuration" }).click();
-
--    await expect(page.locator("[data-game-configuration-log]")).toHaveText("Saved Game Configuration with 6 missing items.");
-+    await expect(page.locator("[data-game-configuration-log]")).toHaveText("Saved Game Configuration with 9 missing items.");
-     await expect(page.locator("[data-game-configuration-validation-overlay]")).toBeVisible();
-+    await expect(page.locator("[data-game-configuration-validation-list]")).toContainText("Game Details");
-+    await expect(page.locator("[data-game-configuration-validation-list]")).toContainText("Platforms");
-+    await expect(page.locator("[data-game-configuration-validation-list]")).toContainText("Startup Settings");
-     await expect(page.locator("[data-game-configuration-validation-list]")).toContainText("Game Rules");
-     await expect(page.locator("[data-game-configuration-validation-list]")).toContainText("Player Setup");
-     await expect(page.locator("[data-game-configuration-validation-list]")).toContainText("World Setup");
-@@ -222,6 +376,40 @@ test("Game Configuration validation lists missing required sections and blocks B
-   }
- });
-
-+test("Game Configuration guest save redirects to sign in", async ({ page }) => {
-+  const failures = await openRepoPage(page, "/toolbox/game-configuration/index.html", { sessionUserKey: null });
-+
-+  try {
-+    await page.getByLabel("Game Basics").fill("Guest configuration attempt.");
-+    await page.getByRole("button", { name: "Save Game Configuration" }).click();
-+    await page.waitForURL(/\/account\/sign-in\.html$/);
-+  } finally {
-+    await workspaceV2CoverageReporter.stop(page).catch(() => {});
-+    await failures.server.close();
-+  }
-+});
-+
-+test("Game Configuration API rejects guest saves", async () => {
-+  const server = await startRepoServer();
-+  await ensureGameConfigurationDatabaseSchema();
-+
-+  try {
-+    const api = await createRepositoryApiClient(server, "game-configuration");
-+    const { payload, response } = await api.call("updateConfiguration", [
-+      "demo-game",
-+      {
-+        gameBasics: "Guest direct API attempt"
-+      }
-+    ]);
-+
-+    expect(response.status).toBe(401);
-+    expect(payload.ok).toBe(false);
-+    expect(payload.error).toContain("Sign in required to save Game Configuration through the API.");
-+  } finally {
-+    await server.close();
-+  }
-+});
-+
- test("Toolbox Build Path view shows Game Configuration handoff state", async ({ page }) => {
-   const failures = await openRepoPage(page, "/toolbox/index.html");
-
-diff --git a/toolbox/game-configuration/index.html b/toolbox/game-configuration/index.html
-index ae41be477..e7f0a3a0c 100644
---- a/toolbox/game-configuration/index.html
-+++ b/toolbox/game-configuration/index.html
-@@ -51,12 +51,12 @@
-                         </div>
-                     </aside>
-                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="game-configuration" data-tool-icon-src="assets/theme-v2/images/badges/index.png" data-tool-character-src="assets/theme-v2/images/characters/index.png"></div>
--                    <section class="tool-center-panel"><h2>Configuration Workspace</h2>
--                        <p>Game Configuration saves an in-memory playable setup for the active game. No database, auth, cloud, or persistence behavior is implemented.</p>
-+                    <section class="tool-center-panel"><h2>Configuration</h2>
-+                        <p>Game Configuration saves Creator-facing game setup details through the API.</p>
-                         <div class="grid cols-3" aria-label="Game Configuration readiness summary">
-                             <article class="mini-stat"><strong data-game-configuration-status>Needs Input</strong>Readiness status</article>
-                             <article class="mini-stat"><strong data-game-configuration-recommended-tool>Game Configuration</strong>Next tool</article>
--                            <article class="mini-stat"><strong>Mock</strong>Repository only</article>
-+                            <article class="mini-stat"><strong>API</strong>Persistence</article>
-                         </div>
-                         <article class="card" data-game-configuration-form-card hidden>
-                             <div class="card-body content-stack">
-@@ -68,6 +68,50 @@
-                                     <div class="table-wrapper">
-                                         <table class="data-table tool-form-table" aria-label="Playable Setup fields" data-game-configuration-playable-setup-table>
-                                             <tbody>
-+                                                <tr>
-+                                                    <th scope="row">Game Name</th>
-+                                                    <td><span class="status" data-game-configuration-game-name>From Game Hub</span></td>
-+                                                </tr>
-+                                                <tr>
-+                                                    <th scope="row">Game Type</th>
-+                                                    <td><span class="status" data-game-configuration-game-type>From Game Hub</span></td>
-+                                                </tr>
-+                                                <tr>
-+                                                    <th scope="row"><label for="gameConfigurationDetails">Game Details</label></th>
-+                                                    <td><textarea id="gameConfigurationDetails" rows="4" data-game-configuration-game-details placeholder="Describe the game for creators, collaborators, and publishing review."></textarea></td>
-+                                                </tr>
-+                                                <tr>
-+                                                    <th scope="row"><label for="gameConfigurationVersion">Version</label></th>
-+                                                    <td><input id="gameConfigurationVersion" type="text" data-game-configuration-version placeholder="0.1.0"></td>
-+                                                </tr>
-+                                                <tr>
-+                                                    <th scope="row"><label for="gameConfigurationResolution">Resolution</label></th>
-+                                                    <td>
-+                                                        <select id="gameConfigurationResolution" data-game-configuration-resolution>
-+                                                            <option value="1280x720">1280x720</option>
-+                                                            <option value="1366x768">1366x768</option>
-+                                                            <option value="1920x1080">1920x1080</option>
-+                                                        </select>
-+                                                    </td>
-+                                                </tr>
-+                                                <tr>
-+                                                    <th scope="row"><label for="gameConfigurationPlatforms">Platforms</label></th>
-+                                                    <td><input id="gameConfigurationPlatforms" type="text" data-game-configuration-platforms placeholder="Web, Desktop, Mobile"></td>
-+                                                </tr>
-+                                                <tr>
-+                                                    <th scope="row"><label for="gameConfigurationVisibility">Visibility</label></th>
-+                                                    <td>
-+                                                        <select id="gameConfigurationVisibility" data-game-configuration-visibility>
-+                                                            <option value="Private">Private</option>
-+                                                            <option value="Unlisted">Unlisted</option>
-+                                                            <option value="Public">Public</option>
-+                                                        </select>
-+                                                    </td>
-+                                                </tr>
-+                                                <tr>
-+                                                    <th scope="row"><label for="gameConfigurationStartup">Startup Settings</label></th>
-+                                                    <td><textarea id="gameConfigurationStartup" rows="4" data-game-configuration-startup-settings placeholder="Describe the first screen, start action, and initial player state."></textarea></td>
-+                                                </tr>
-                                                 <tr>
-                                                     <th scope="row"><label for="gameConfigurationBasics">Game Basics</label></th>
-                                                     <td><textarea id="gameConfigurationBasics" rows="4" data-game-configuration-game-basics placeholder="Summarize the game setup players should understand first."></textarea></td>
-@@ -112,6 +156,14 @@
-                             <details class="vertical-accordion" open>
-                                 <summary>Output</summary>
-                                 <div class="accordion-body content-stack" data-game-configuration-output>
-+                                    <p>Game Name: <span data-game-configuration-output-name>No game name saved yet.</span></p>
-+                                    <p>Game Type: <span data-game-configuration-output-game-type>No game type inherited yet.</span></p>
-+                                    <p>Game Details: <span data-game-configuration-output-details>No game details saved yet.</span></p>
-+                                    <p>Version: <span data-game-configuration-output-version>No version saved yet.</span></p>
-+                                    <p>Resolution: <span data-game-configuration-output-resolution>No resolution saved yet.</span></p>
-+                                    <p>Platforms: <span data-game-configuration-output-platforms>No platforms saved yet.</span></p>
-+                                    <p>Visibility: <span data-game-configuration-output-visibility>No visibility saved yet.</span></p>
-+                                    <p>Startup Settings: <span data-game-configuration-output-startup>No startup settings saved yet.</span></p>
-                                     <p>Configuration Summary: <span data-game-configuration-output-summary>No configuration summary saved yet.</span></p>
-                                     <p>Player Mode: <span data-game-configuration-output-player-mode>1 Player</span></p>
-                                     <p>Readiness Status: <span data-game-configuration-output-readiness>Needs Input</span></p>
-@@ -156,7 +208,7 @@
-                             <details class="vertical-accordion" open>
-                                 <summary>Status Log</summary>
-                                 <div class="accordion-body">
--                                    <div class="status" role="status" data-game-configuration-log>Game Configuration mock repository ready.</div>
-+                                    <div class="status" role="status" data-game-configuration-log>Game Configuration API repository ready.</div>
-                                 </div>
-                             </details>
-                         </div>
+@@ -1,16 +1,34 @@
+-assets/toolbox/game-configuration/js/index.js
+-docs_build/database/ddl/game-configuration.sql
+-docs_build/database/seed/game-configuration.json
+-docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_branch-validation.md
+-docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_manual-validation-notes.md
+-docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_report.md
+-docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_requirement-checklist.md
+-docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_validation-lane.md
+-docs_build/dev/reports/codex_changed_files.txt
+-docs_build/dev/reports/codex_review.diff
+-docs_build/dev/reports/coverage_changed_js_guardrail.txt
+-docs_build/dev/reports/playwright_v8_coverage_report.txt
+-src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js
+-src/dev-runtime/server/local-api-router.mjs
+-tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs
+-toolbox/game-configuration/index.html
++﻿M	assets/toolbox/game-configuration/js/index.js
++M	assets/toolbox/game-design/js/index.js
++M	assets/toolbox/tags/js/index.js
++M	docs_build/database/ddl/game-configuration.sql
++M	docs_build/database/ddl/game-design.sql
++M	docs_build/database/ddl/tags.sql
++M	docs_build/database/dml/tags.sql
++M	docs_build/database/seed/guest/tags.json
++M	docs_build/database/seed/tags.json
++M	docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_branch-validation.md
++M	docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_manual-validation-notes.md
++M	docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_report.md
++M	docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_requirement-checklist.md
++M	docs_build/dev/reports/PR_26177_ALFA_061-game-configuration-foundation_validation-lane.md
++M	docs_build/dev/reports/codex_changed_files.txt
++M	docs_build/dev/reports/codex_review.diff
++M	docs_build/dev/reports/coverage_changed_js_guardrail.txt
++M	docs_build/dev/reports/playwright_v8_coverage_report.txt
++M	src/dev-runtime/auth/provider-contract-stubs.mjs
++M	src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js
++D	src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js
++D	src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js
++D	src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js
++M	src/dev-runtime/server/local-api-router.mjs
++A	src/dev-runtime/toolbox-api/alfa-tool-services.mjs
++M	tests/dev-runtime/DevRuntimeBoundary.test.mjs
++M	tests/playwright/tools/AssetToolMockRepository.spec.mjs
++M	tests/playwright/tools/GameConfigurationApiBehavior.spec.mjs
++R060	tests/playwright/tools/GameDesignMockRepository.spec.mjs	tests/playwright/tools/GameDesignApiBehavior.spec.mjs
++M	tests/playwright/tools/TagsTool.spec.mjs
++M	tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs
++M	toolbox/game-configuration/index.html
++M	toolbox/game-design/index.html
++M	toolbox/tags/index.html

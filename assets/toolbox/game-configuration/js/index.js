@@ -1,9 +1,9 @@
+import { getSessionCurrent } from "../../../../src/api/session-api-client.js";
 import {
   createServerRepositoryClient,
   readServerToolConstants,
   requireServerConstant,
 } from "../../../../src/api/server-api-client.js";
-import { getSessionCurrent } from "../../../../src/api/session-api-client.js";
 
 const constants = readServerToolConstants("game-configuration");
 
@@ -82,6 +82,23 @@ function setText(element, value) {
   }
 }
 
+function currentSession() {
+  try {
+    return getSessionCurrent();
+  } catch {
+    return { authenticated: false };
+  }
+}
+
+function redirectGuestWriteAction() {
+  if (currentSession()?.authenticated === true) {
+    return false;
+  }
+  setText(elements.statusLog, "Sign in before saving Game Configuration.");
+  window.location.href = new URL("/account/sign-in.html", window.location.href).href;
+  return true;
+}
+
 function createListItem(text) {
   const item = document.createElement("li");
   item.textContent = text;
@@ -113,6 +130,15 @@ function clearForm() {
       input.value = "";
     }
   });
+  if (elements.version) {
+    elements.version.value = "";
+  }
+  if (elements.resolution) {
+    elements.resolution.value = "1280x720";
+  }
+  if (elements.visibility) {
+    elements.visibility.value = "Private";
+  }
 }
 
 function applyConfigurationToForm(configuration) {
@@ -127,23 +153,15 @@ function applyConfigurationToForm(configuration) {
       input.value = configuration[section] || "";
     }
   });
-}
-
-function currentSession() {
-  try {
-    return getSessionCurrent();
-  } catch {
-    return { authenticated: false };
+  if (elements.version) {
+    elements.version.value = configuration.version || "";
   }
-}
-
-function redirectGuestSaveAction() {
-  if (currentSession()?.authenticated === true) {
-    return false;
+  if (elements.resolution) {
+    elements.resolution.value = configuration.resolution || "1280x720";
   }
-  setText(elements.statusLog, "Sign in before saving Game Configuration.");
-  window.location.href = new URL("/account/sign-in.html", window.location.href).href;
-  return true;
+  if (elements.visibility) {
+    elements.visibility.value = configuration.visibility || "Private";
+  }
 }
 
 function renderValidation(validation) {
@@ -250,16 +268,15 @@ elements.form?.addEventListener("change", renderFormValidation);
 
 elements.form?.addEventListener("submit", (event) => {
   event.preventDefault();
+  if (redirectGuestWriteAction()) {
+    return;
+  }
   const snapshot = repository.getSnapshot();
   const projectId = snapshot.handoff.activeProject?.id || "";
 
   if (!snapshot.handoff.ready || !projectId) {
     setText(elements.statusLog, "Complete a valid Game Design before saving Game Configuration.");
     render();
-    return;
-  }
-
-  if (redirectGuestSaveAction()) {
     return;
   }
 

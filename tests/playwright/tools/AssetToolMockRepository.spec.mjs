@@ -10,7 +10,6 @@ import {
   ASSET_USAGE_OPTIONS,
   createAssetToolMockRepository
 } from "../../../src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js";
-import { createTagsToolMockRepository } from "../../../src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js";
 import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store.js";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
@@ -43,6 +42,46 @@ const SMALL_PNG = Buffer.from(
   "base64"
 );
 const projectIdsToClean = new Set();
+
+function createSharedTagFixture(options = {}) {
+  const tags = [];
+  return {
+    addTag(input = {}) {
+      const label = String(input.name || input.label || "").trim();
+      const slug = label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+      const tag = {
+        description: String(input.description || "").trim(),
+        id: slug,
+        key: `tag-${slug}`,
+        label,
+        slug,
+        usage: [],
+      };
+      tags.push(tag);
+      return { added: true, tag };
+    },
+    findTag(tagId) {
+      const tag = tags.find((candidate) => candidate.id === tagId || candidate.key === tagId) || null;
+      if (!tag) {
+        return null;
+      }
+      const usageProvider = typeof options.usageProvider === "function" ? options.usageProvider : () => [];
+      return {
+        ...tag,
+        usage: usageProvider()
+          .filter((asset) => Array.isArray(asset.tagKeys) && asset.tagKeys.includes(tag.id))
+          .map((asset) => ({
+            itemKey: asset.id,
+            itemName: asset.name,
+            tool: "Assets",
+          })),
+      };
+    },
+    listTags() {
+      return tags.map((tag) => this.findTag(tag.id));
+    },
+  };
+}
 
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
@@ -306,8 +345,7 @@ async function addUploadBatch(page, assetType, files, usage = "Interface") {
 
 test("Asset repository exposes catalog tables, usage values, and shared tag references", () => {
   let assetRepository;
-  const tagsRepository = createTagsToolMockRepository({
-    persist: false,
+  const tagsRepository = createSharedTagFixture({
     usageProvider: () => assetRepository?.listAssets() || []
   });
   assetRepository = createAssetToolMockRepository({
