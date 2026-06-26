@@ -31,7 +31,7 @@ If a team has no assignment, no active branch, and no active PR, it is inactive 
 | Team Alfa | none | none | none | Available | Active ownership lane |
 | Team Bravo | none | none | none | Available | Active ownership lane |
 | Team Charlie | none | none | none | Available | Active ownership lane |
-| Team Delta | PR_26177_DELTA_055-random-seed-enhancements | PR_26177_DELTA_055-random-seed-enhancements | PR_26177_DELTA_055-random-seed-enhancements | Active | OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_055-random-seed-enhancements |
+| Team Delta | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | PR_26177_DELTA_056-shared-validation-assertions | Active | OWNER override approved: Continue Team Delta random utility stack with PR_26177_DELTA_056-shared-validation-assertions |
 | Team Golf | none | none | none | Available | Replacement active ownership lane for retired Team Gamma |
 | Team OWNER | none | none | none | Available | Governance Phase 1 complete |
 

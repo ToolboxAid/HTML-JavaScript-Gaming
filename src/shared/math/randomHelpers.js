@@ -1,3 +1,5 @@
+import { assertArray, assertFiniteNumber, assertOrderedRange } from "../validation/assert.js";
+
 function assertRandomNext(randomNext) {
   if (typeof randomNext !== "function") {
     throw new TypeError("randomNext must be a function.");
@@ -13,27 +15,6 @@ function readRandomValue(randomNext) {
   }
 
   return value;
-}
-
-function assertFiniteNumber(value, name) {
-  if (!Number.isFinite(value)) {
-    throw new TypeError(`${name} must be a finite number.`);
-  }
-}
-
-function assertOrderedRange(min, max) {
-  assertFiniteNumber(min, "min");
-  assertFiniteNumber(max, "max");
-
-  if (max < min) {
-    throw new RangeError("max must be greater than or equal to min.");
-  }
-}
-
-function assertArray(value, name) {
-  if (!Array.isArray(value)) {
-    throw new TypeError(`${name} must be an array.`);
-  }
 }
 
 function readWeightedItem(entry) {
