@@ -1,12 +1,8 @@
-docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/coverage_changed_js_guardrail.txt
-docs_build/dev/reports/playwright_v8_coverage_report.txt
-docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_branch-validation.md
-docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_manual-validation-notes.md
-docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_report.md
-docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_requirement-checklist.md
-docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_validation-lane.md
-src/dev-runtime/auth/provider-contract-stubs.mjs
-src/dev-runtime/persistence/mock-db-store.js
-tests/playwright/tools/AdminDbViewer.spec.mjs
-tests/playwright/tools/TagsTool.spec.mjs
+M	docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_branch-validation.md
+M	docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_manual-validation-notes.md
+M	docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_report.md
+M	docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_requirement-checklist.md
+M	docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_validation-lane.md
+M	docs_build/dev/reports/playwright_v8_coverage_report.txt
+M	src/dev-runtime/persistence/mock-db-store.js
+M	tests/playwright/tools/AdminDbViewer.spec.mjs

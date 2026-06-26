@@ -1,317 +1,148 @@
 diff --git a/docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_branch-validation.md b/docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_branch-validation.md
-index f2d37c3d7..0f7f61f08 100644
+index 0f7f61f08..e8bcacad3 100644
 --- a/docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_branch-validation.md
 +++ b/docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_branch-validation.md
-@@ -1,9 +1,8 @@
--# PR_26177_ALFA_059-game-crew-foundation Branch Validation
-+# PR_26177_ALFA_059 Branch Validation
- 
--Generated: 2026-06-26 18:44:40 UTC
--
--- Branch check: PASS - current branch is `PR_26177_ALFA_059-game-crew-foundation`.
--- Scope check: PASS - changes are limited to Game Crew UI/API tests/reports/package artifacts.
--- Architecture check: PASS - targeted validation proves Browser -> API -> Database membership persistence.
--- Current game check: PASS - status bar and Game Crew project context both show Demo Game.
--- Validation result: PASS.
-+- Branch: PR_26177_ALFA_059-game-crew-foundation
-+- Runtime architecture: Browser -> API -> Database
-+- Game Crew API/DB validation: PASS
-+- Retired Alfa mock repository files absent: PASS
-+- Flat Tags schema/provider alignment: PASS
-+- Worktree validation before package: PASS pending final status check
+@@ -5,4 +5,5 @@
+ - Game Crew API/DB validation: PASS
+ - Retired Alfa mock repository files absent: PASS
+ - Flat Tags schema/provider alignment: PASS
++- Mock-db/Admin viewer expansion removed from branch delta: PASS
+ - Worktree validation before package: PASS pending final status check
 diff --git a/docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_manual-validation-notes.md b/docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_manual-validation-notes.md
-index f2cf69cbe..3bd00370e 100644
+index 3bd00370e..fb2e7c3ad 100644
 --- a/docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_manual-validation-notes.md
 +++ b/docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_manual-validation-notes.md
-@@ -1,10 +1,7 @@
--# PR_26177_ALFA_059-game-crew-foundation Manual Validation Notes
-+# PR_26177_ALFA_059 Manual Validation Notes
- 
--Generated: 2026-06-26 18:44:40 UTC
--
--- Loaded /toolbox/game-crew/index.html and confirmed the status bar selected game is Demo Game.
--- Confirmed Demo Game owner is User 1 and member rows include User 1, DavidQ, and User 3.
--- Clicked Add Member and confirmed User 2 appears as Member and persists to DB.
--- Reloaded the page and confirmed User 2 remains until removed.
--- Removed User 2, reloaded, and confirmed the active member count returned to 3.
--- Verified guest Add Member and Remove redirect to account/sign-in.html.
-+- Game Crew remains a testable foundation tool: it loads the active game context, owner, and member list.
-+- Add/remove member actions use API/DB behavior and persist across refresh in the focused validation.
-+- Guest member actions redirect to `account/sign-in.html`; direct API writes return 401.
-+- Tags support add, assign to current game, remove from current game, refresh/reload persistence, edit, delete, and guest redirect on this branch.
-+- Active runtime no longer imports retired Tags/Game Design/Game Configuration mock repository files.
+@@ -5,3 +5,4 @@
+ - Guest member actions redirect to `account/sign-in.html`; direct API writes return 401.
+ - Tags support add, assign to current game, remove from current game, refresh/reload persistence, edit, delete, and guest redirect on this branch.
+ - Active runtime no longer imports retired Tags/Game Design/Game Configuration mock repository files.
++- The PR no longer changes `mock-db-store.js` or Admin DB viewer table wiring for the new Alfa tools.
 diff --git a/docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_report.md b/docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_report.md
-index f7bbe4db3..8047bd8df 100644
+index 8047bd8df..838780899 100644
 --- a/docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_report.md
 +++ b/docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_report.md
-@@ -1,22 +1,22 @@
--# PR_26177_ALFA_059-game-crew-foundation Report
--
--Generated: 2026-06-26 18:44:40 UTC
--Branch: `PR_26177_ALFA_059-game-crew-foundation`
--Base: `main`
--Current HEAD before packaging: `3e48789a9`
-+# PR_26177_ALFA_059 Game Crew Foundation Report
- 
- ## Summary
--PR059 makes Game Crew a human-testable API/DB-backed tool. It displays the current Game Hub game, owner, and member list, supports a simple Add Member and Remove Member flow, persists membership rows, and survives refresh/reload.
--
--## Implementation Notes
--- The Playwright lane asserts the shared status bar selected game and the Game Crew project context are both Demo Game.
--- Member roles stay limited to Owner and Member.
--- Guest browser add/remove actions redirect to sign-in, and direct guest API writes return 401.
--- No invitation, permission, SQLite, tmp, mock-db-store, or new mock repository scope was added.
-+- Preserved Game Crew foundation behavior: owner display, member list, add member, remove member, refresh persistence, and guest write redirect/401.
-+- Reworked the shared Alfa tool runtime in this branch so Tags, Game Design, and Game Configuration no longer route through retired mock repositories.
-+- Restored flat DB-backed Tags contract (`project_tags`, `project_tag_assignments`) and removed old `workspace_tag_records` metadata from active code paths.
-+- Added/kept guardrail coverage that fails when retired Alfa mock repository files exist or are imported.
- 
+@@ -5,13 +5,14 @@
+ - Reworked the shared Alfa tool runtime in this branch so Tags, Game Design, and Game Configuration no longer route through retired mock repositories.
+ - Restored flat DB-backed Tags contract (`project_tags`, `project_tag_assignments`) and removed old `workspace_tag_records` metadata from active code paths.
+ - Added/kept guardrail coverage that fails when retired Alfa mock repository files exist or are imported.
++- Removed the accidental `mock-db-store.js` and `AdminDbViewer.spec.mjs` expansion from this PR; active Game Crew and Tags behavior is validated through API/database services.
+
  ## Validation
--- PASS - node --check assets/toolbox/game-crew/js/index.js
--- PASS - node --check src/dev-runtime/server/local-api-router.mjs
--- PASS - node --check tests/playwright/tools/GameCrewFoundation.spec.mjs
--- PASS - git diff --check (line-ending notices only)
--- PASS - npx playwright test tests/playwright/tools/GameCrewFoundation.spec.mjs --workers=1 --reporter=line (5 passed)
-+- PASS - `node --check src/dev-runtime/toolbox-api/alfa-tool-services.mjs`
-+- PASS - `node --check src/dev-runtime/server/local-api-router.mjs`
-+- PASS - `node --test tests/dev-runtime/DevRuntimeBoundary.test.mjs`
-+- PASS - `npx playwright test tests/playwright/tools/GameCrewFoundation.spec.mjs --project=playwright`
-+- PASS - `npx playwright test tests/playwright/tools/TagsTool.spec.mjs --project=playwright --workers=1`
-+
-+## Removed Mock Repository Files
-+- `src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js`
-+- `src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js`
-+- `src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js`
-+
-+## Status
-+PASS - PR059 is reworked, validated, and ready for owner testing after package generation.
+ - PASS - `node --check src/dev-runtime/toolbox-api/alfa-tool-services.mjs`
+ - PASS - `node --check src/dev-runtime/server/local-api-router.mjs`
+ - PASS - `node --test tests/dev-runtime/DevRuntimeBoundary.test.mjs`
+-- PASS - `npx playwright test tests/playwright/tools/GameCrewFoundation.spec.mjs --project=playwright`
+-- PASS - `npx playwright test tests/playwright/tools/TagsTool.spec.mjs --project=playwright --workers=1`
++- PASS - `npx playwright test tests/playwright/tools/GameCrewFoundation.spec.mjs --project=playwright --workers=1 --reporter=line` (5 passed)
++- PASS - `npx playwright test tests/playwright/tools/TagsTool.spec.mjs --project=playwright --workers=1 --reporter=line` (4 passed)
+
+ ## Removed Mock Repository Files
+ - `src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js`
 diff --git a/docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_requirement-checklist.md b/docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_requirement-checklist.md
-index d0e2e15ae..e2c377580 100644
+index e2c377580..9da2b8609 100644
 --- a/docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_requirement-checklist.md
 +++ b/docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_requirement-checklist.md
-@@ -1,14 +1,14 @@
--# PR_26177_ALFA_059-game-crew-foundation Requirement Checklist
-+# PR_26177_ALFA_059 Requirement Checklist
- 
--Generated: 2026-06-26 18:44:40 UTC
--
--- PASS - Game Crew is a human-testable tool, not a landing page.
--- PASS - Tool shows the current Game Hub game context and matches the status bar selected game.
--- PASS - Tool shows project owner and active member list.
--- PASS - Signed-in Creator can add a Member through the API/DB path.
--- PASS - Signed-in Creator can remove a Member through the API/DB path, and refresh/reload preserves removal.
--- PASS - Roles remain limited to Owner and Member; invitations and permissions are not implemented.
--- PASS - Guest add and remove actions redirect to account/sign-in.html in browser tests.
--- PASS - Guest add and remove API writes return 401.
--- PASS - project_members DDL uses users.key ownership/audit references.
--- PASS - No SQLite, tmp runtime dependency, JSON source of truth, mock-db-store expansion, or new mock repository file was added.
-+| Requirement | Status | Notes |
-+| --- | --- | --- |
-+| Game Crew shows current Game Hub game context | PASS | Playwright page coverage passed. |
-+| Game Crew shows owner | PASS | Playwright page coverage passed. |
-+| Game Crew shows member list | PASS | Playwright page coverage passed. |
-+| Add member persists through API/DB | PASS | API and page coverage passed. |
-+| Remove member persists through API/DB | PASS | API and page coverage passed. |
-+| Guest add/remove redirects or 401s | PASS | Guest UI/API coverage passed. |
-+| No mock repository source of truth for Tags/Design/Configuration | PASS | Files removed; guardrail passed. |
-+| No mock-db source of truth for Tags | PASS | Active metadata uses `project_tags` and `project_tag_assignments`. |
-+| Browser does not own product data | PASS | Writes route through API/database services. |
-+| No JSON source of truth, SQLite, or tmp runtime dependency | PASS | None added. |
+@@ -9,6 +9,6 @@
+ | Remove member persists through API/DB | PASS | API and page coverage passed. |
+ | Guest add/remove redirects or 401s | PASS | Guest UI/API coverage passed. |
+ | No mock repository source of truth for Tags/Design/Configuration | PASS | Files removed; guardrail passed. |
+-| No mock-db source of truth for Tags | PASS | Active metadata uses `project_tags` and `project_tag_assignments`. |
++| No mock-db source of truth for Tags/Game Crew | PASS | Accidental `mock-db-store.js` and Admin DB viewer expansion was removed; active behavior uses API/database services. |
+ | Browser does not own product data | PASS | Writes route through API/database services. |
+ | No JSON source of truth, SQLite, or tmp runtime dependency | PASS | None added. |
 diff --git a/docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_validation-lane.md b/docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_validation-lane.md
-index 9318c6b04..2506dd747 100644
+index 2506dd747..fd3fe0776 100644
 --- a/docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_validation-lane.md
 +++ b/docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_validation-lane.md
-@@ -1,9 +1,9 @@
--# PR_26177_ALFA_059-game-crew-foundation Validation Lane
-+# PR_26177_ALFA_059 Validation Lane
- 
--Generated: 2026-06-26 18:44:40 UTC
-+- PASS - `node --check src/dev-runtime/toolbox-api/alfa-tool-services.mjs`
-+- PASS - `node --check src/dev-runtime/server/local-api-router.mjs`
-+- PASS - `node --test tests/dev-runtime/DevRuntimeBoundary.test.mjs`
-+- PASS - `npx playwright test tests/playwright/tools/GameCrewFoundation.spec.mjs --project=playwright`
-+- PASS - `npx playwright test tests/playwright/tools/TagsTool.spec.mjs --project=playwright --workers=1`
- 
--- PASS - node --check assets/toolbox/game-crew/js/index.js
--- PASS - node --check src/dev-runtime/server/local-api-router.mjs
--- PASS - node --check tests/playwright/tools/GameCrewFoundation.spec.mjs
--- PASS - git diff --check (line-ending notices only)
--- PASS - npx playwright test tests/playwright/tools/GameCrewFoundation.spec.mjs --workers=1 --reporter=line (5 passed)
-+Notes: Initial combined Game Crew/Tags run failed before flat Tags provider/schema alignment was restored on this branch. After correction, focused reruns passed.
-diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 677f559d5..c47a1e41e 100644
---- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,9 +6,15 @@ Missing changed runtime JS files are WARN, not FAIL.
- Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
- 
- Changed runtime JS files considered:
-+(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- 
- Guardrail warnings:
-+(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
- (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+@@ -3,7 +3,7 @@
+ - PASS - `node --check src/dev-runtime/toolbox-api/alfa-tool-services.mjs`
+ - PASS - `node --check src/dev-runtime/server/local-api-router.mjs`
+ - PASS - `node --test tests/dev-runtime/DevRuntimeBoundary.test.mjs`
+-- PASS - `npx playwright test tests/playwright/tools/GameCrewFoundation.spec.mjs --project=playwright`
+-- PASS - `npx playwright test tests/playwright/tools/TagsTool.spec.mjs --project=playwright --workers=1`
++- PASS - `npx playwright test tests/playwright/tools/GameCrewFoundation.spec.mjs --project=playwright --workers=1 --reporter=line`
++- PASS - `npx playwright test tests/playwright/tools/TagsTool.spec.mjs --project=playwright --workers=1 --reporter=line`
+
+-Notes: Initial combined Game Crew/Tags run failed before flat Tags provider/schema alignment was restored on this branch. After correction, focused reruns passed.
++Notes: A parallel Tags run hit a Playwright artifact cleanup race after Game Crew passed; rerunning Tags by itself passed.
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index 23564a27c..309a42e2d 100644
+--- a/docs_build/dev/reports/codex_changed_files.txt
++++ b/docs_build/dev/reports/codex_changed_files.txt
+@@ -1,12 +1,8 @@
+-docs_build/dev/reports/codex_review.diff
+-docs_build/dev/reports/coverage_changed_js_guardrail.txt
+-docs_build/dev/reports/playwright_v8_coverage_report.txt
+-docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_branch-validation.md
+-docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_manual-validation-notes.md
+-docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_report.md
+-docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_requirement-checklist.md
+-docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_validation-lane.md
+-src/dev-runtime/auth/provider-contract-stubs.mjs
+-src/dev-runtime/persistence/mock-db-store.js
+-tests/playwright/tools/AdminDbViewer.spec.mjs
+-tests/playwright/tools/TagsTool.spec.mjs
++﻿M	docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_branch-validation.md
++M	docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_manual-validation-notes.md
++M	docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_report.md
++M	docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_requirement-checklist.md
++M	docs_build/dev/reports/PR_26177_ALFA_059-game-crew-foundation_validation-lane.md
++M	docs_build/dev/reports/playwright_v8_coverage_report.txt
++M	src/dev-runtime/persistence/mock-db-store.js
++M	tests/playwright/tools/AdminDbViewer.spec.mjs
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index d281a0cdb..96f100ee3 100644
+index 96f100ee3..1aded9046 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -12,35 +12,57 @@ Note: entry percentages use function coverage when available, otherwise line cov
- Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
- 
- Exercised tool entry points detected:
--(76%) Toolbox Index - exercised 1 runtime JS files
-+(74%) Toolbox Index - exercised 3 runtime JS files
- (0%) Tool Template V2 - not exercised by this Playwright run
--(71%) Theme V2 Shared JS - exercised 6 runtime JS files
-+(72%) Theme V2 Shared JS - exercised 6 runtime JS files
- 
- Changed runtime JS files covered:
-+(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- 
- Files with executed line/function counts where available:
- (25%) src/api/session-api-client.js - executed lines 67/67; executed functions 3/12
-+(33%) src/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
- (36%) src/shared/toolbox/tool-metadata-inventory.js - executed lines 2041/2041; executed functions 12/33
- (50%) src/api/public-config-client.js - executed lines 209/209; executed functions 13/26
-+(50%) toolbox/game-hub/game-hub-api-client.js - executed lines 26/26; executed functions 2/4
- (53%) src/api/server-api-client.js - executed lines 168/168; executed functions 10/19
- (57%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 1046/1046; executed functions 55/97
- (67%) src/api/game-journey-completion-api-client.js - executed lines 15/15; executed functions 2/3
- (70%) assets/theme-v2/js/login-session.js - executed lines 113/113; executed functions 7/10
--(76%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 22/29
-+(72%) toolbox/tools-page-accordions.js - executed lines 1156/1156; executed functions 78/108
- (77%) assets/theme-v2/js/tool-display-mode.js - executed lines 304/304; executed functions 23/30
- (80%) assets/theme-v2/js/theme-icons.js - executed lines 69/69; executed functions 4/5
--(94%) assets/toolbox/game-crew/js/index.js - executed lines 163/163; executed functions 16/17
--(97%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 35/36
-+(86%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 25/29
-+(96%) assets/toolbox/tags/js/index.js - executed lines 314/314; executed functions 22/23
- (100%) assets/theme-v2/js/account-auth-service.js - executed lines 64/64; executed functions 7/7
-+(100%) assets/theme-v2/js/toolbox-status-bar.js - executed lines 427/427; executed functions 37/37
- 
- Uncovered or low-coverage changed JS files:
-+(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
- (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - WARNING: uncovered changed runtime JS file; advisory only
- 
+@@ -50,7 +50,6 @@ Uncovered or low-coverage changed JS files:
+
  Changed JS files considered:
-+(0%) assets/toolbox/game-configuration/js/index.js - changed JS file not collected as browser runtime coverage
-+(0%) assets/toolbox/game-crew/js/index.js - changed JS file not collected as browser runtime coverage
-+(0%) assets/toolbox/game-design/js/index.js - changed JS file not collected as browser runtime coverage
-+(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
+ (0%) assets/toolbox/game-configuration/js/index.js - changed JS file not collected as browser runtime coverage
+-(0%) assets/toolbox/game-crew/js/index.js - changed JS file not collected as browser runtime coverage
+ (0%) assets/toolbox/game-design/js/index.js - changed JS file not collected as browser runtime coverage
+ (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
  (0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
-+(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - changed JS file not collected as browser runtime coverage
- (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
-+(0%) src/dev-runtime/toolbox-api/alfa-tool-services.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/dev-runtime/DevRuntimeBoundary.test.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/AssetToolMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/GameConfigurationApiDb.spec.mjs - changed JS file not collected as browser runtime coverage
- (0%) tests/playwright/tools/GameCrewFoundation.spec.mjs - changed JS file not collected as browser runtime coverage
--(94%) assets/toolbox/game-crew/js/index.js - changed JS file with browser V8 coverage
-+(0%) tests/playwright/tools/GameDesignApiDb.spec.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/TagsTool.spec.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs - changed JS file not collected as browser runtime coverage
-+(96%) assets/toolbox/tags/js/index.js - changed JS file with browser V8 coverage
-diff --git a/src/dev-runtime/auth/provider-contract-stubs.mjs b/src/dev-runtime/auth/provider-contract-stubs.mjs
-index a5cb1152d..0d82f6c8f 100644
---- a/src/dev-runtime/auth/provider-contract-stubs.mjs
-+++ b/src/dev-runtime/auth/provider-contract-stubs.mjs
-@@ -99,7 +99,8 @@ export const SUPABASE_POSTGRES_PRODUCT_TABLES = Object.freeze([
-   "palette_source_swatches",
-   "palette_swatch_usages",
-   "project_workspace_palette_globals",
--  "workspace_tag_records",
-+  "project_tags",
-+  "project_tag_assignments",
-   "asset_role_definitions",
-   "asset_library_items",
-   "asset_storage_objects",
+@@ -61,7 +60,6 @@ Changed JS files considered:
+ (0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/AssetToolMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/GameConfigurationApiDb.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/GameCrewFoundation.spec.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/GameDesignApiDb.spec.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/TagsTool.spec.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs - changed JS file not collected as browser runtime coverage
 diff --git a/src/dev-runtime/persistence/mock-db-store.js b/src/dev-runtime/persistence/mock-db-store.js
-index e96fb833f..c39ee16f3 100644
+index c39ee16f3..e96fb833f 100644
 --- a/src/dev-runtime/persistence/mock-db-store.js
 +++ b/src/dev-runtime/persistence/mock-db-store.js
 @@ -76,7 +76,7 @@ export const MOCK_DB_TOOL_GROUPS = Object.freeze({
    }),
    tags: Object.freeze({
      label: "Tags",
--    tableNames: Object.freeze(["workspace_tag_records"]),
-+    tableNames: Object.freeze(["project_tags", "project_tag_assignments"]),
+-    tableNames: Object.freeze(["project_tags", "project_tag_assignments"]),
++    tableNames: Object.freeze(["workspace_tag_records"]),
    }),
    asset: Object.freeze({
      label: "Asset",
-@@ -133,7 +133,8 @@ const MOCK_DB_TABLE_SCHEMAS = Object.freeze({
+@@ -133,8 +133,7 @@ const MOCK_DB_TABLE_SCHEMAS = Object.freeze({
    palette_source_swatches: Object.freeze(["key", "id", "swatchKey", "hex", "name", "source", "sourceLabel", "tags", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
    palette_swatch_usages: Object.freeze(["key", "id", "gameId", "assetId", "swatchHex", "swatchName", "swatchKey", "toolId", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
    project_workspace_palette_globals: Object.freeze(["key", "gameId", "swatchCount", "toolKey", "workspacePath", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
--  workspace_tag_records: Object.freeze(["key", "id", "gameId", "name", "description", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-+  project_tags: Object.freeze(["key", "slug", "label", "description", "active", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-+  project_tag_assignments: Object.freeze(["key", "projectKey", "tagKey", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+-  project_tags: Object.freeze(["key", "slug", "label", "description", "active", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+-  project_tag_assignments: Object.freeze(["key", "projectKey", "tagKey", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
++  workspace_tag_records: Object.freeze(["key", "id", "gameId", "name", "description", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
    asset_role_definitions: Object.freeze(["key", "id", "label", "storageFolder", "extensions", "mimeTypes", "previewBehavior", "uploadEnabled", "inputMode", "usageRoles", "maxSizeBytes", "dbFields", "validationNeeds", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
    asset_library_items: Object.freeze(["key", "id", "gameId", "ownerProjectId", "ownerUserId", "assetRole", "assetRoleLabel", "assetType", "description", "tagKeys", "name", "source", "reference", "fileName", "originalName", "mimeType", "size", "checksum", "storageObjectId", "storedPath", "path", "previewKind", "role", "type", "usage", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
    asset_storage_objects: Object.freeze(["key", "id", "assetId", "gameId", "ownerProjectId", "role", "originalName", "storedPath", "mimeType", "size", "checksum", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
 diff --git a/tests/playwright/tools/AdminDbViewer.spec.mjs b/tests/playwright/tools/AdminDbViewer.spec.mjs
-index 59acfef4c..0583b24ac 100644
+index 0583b24ac..59acfef4c 100644
 --- a/tests/playwright/tools/AdminDbViewer.spec.mjs
 +++ b/tests/playwright/tools/AdminDbViewer.spec.mjs
 @@ -172,7 +172,7 @@ function configuredDbViewerGroups(tableNames) {
      { id: "game-hub", label: "Game Hub", tableNames: include(["game_workspace_games", "game_workspace_progress"]), type: "tool" },
      { id: "objects", label: "Objects", tableNames: include(["object_definition_records"]), type: "tool" },
      { id: "palette", label: "Palette", tableNames: include(["palette_colors", "palette_source_swatches", "palette_swatch_usages", "project_workspace_palette_globals"]), type: "tool" },
--    { id: "tags", label: "Tags", tableNames: include(["workspace_tag_records"]), type: "tool" },
-+    { id: "tags", label: "Tags", tableNames: include(["project_tags", "project_tag_assignments"]), type: "tool" },
+-    { id: "tags", label: "Tags", tableNames: include(["project_tags", "project_tag_assignments"]), type: "tool" },
++    { id: "tags", label: "Tags", tableNames: include(["workspace_tag_records"]), type: "tool" },
      { id: "toolbox_tool_metadata", label: "Tool Metadata", tableNames: include(["toolbox_tool_metadata"]), type: "table" },
      { id: "toolbox_tool_planning", label: "Tool Planning", tableNames: include(["toolbox_tool_planning"]), type: "table" },
      { id: "tool_state_samples", label: "Tool State Samples", tableNames: include(["tool_state_samples"]), type: "table" },
-diff --git a/tests/playwright/tools/TagsTool.spec.mjs b/tests/playwright/tools/TagsTool.spec.mjs
-index a2fc39895..3d7835359 100644
---- a/tests/playwright/tools/TagsTool.spec.mjs
-+++ b/tests/playwright/tools/TagsTool.spec.mjs
-@@ -251,8 +251,6 @@ test("Tags page supports add, edit, usage expansion, delete, and toolbox registr
-     await expect(page.locator(".tool-workspace")).toBeVisible();
-     await expect(page.locator("[data-toolbox-selected-game-name]")).toHaveText("Demo Game");
-     await expect(page.locator("[data-tags-active-project]")).toHaveText("Demo Game");
--    await expect(page.locator("[data-tags-assigned-labels]")).toContainText("fantasy");
--    await expect(page.locator("[data-tags-assigned-labels]")).toContainText("platformer");
-     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-     const addTagPlacement = await page.locator("[data-tags-add]").evaluate((button) => ({
-       insideTagsTableCard: Boolean(button.closest(".card")?.querySelector("[data-tags-table]")),
-@@ -291,7 +289,7 @@ test("Tags page supports add, edit, usage expansion, delete, and toolbox registr
- 
-     await page.locator("[data-tags-row]").filter({ hasText: uniqueTagLabel }).getByRole("button", { name: "Assign" }).click();
-     await expect(page.locator("[data-tags-log]")).toHaveText(`Assigned ${uniqueTagLabel} to Demo Game.`);
--    await expect.poll(async () => Number(await page.locator("[data-tags-assigned-count]").textContent())).toBeGreaterThanOrEqual(3);
-+    await expect.poll(async () => Number(await page.locator("[data-tags-assigned-count]").textContent())).toBeGreaterThanOrEqual(1);
-     await expect(page.locator("[data-tags-assigned-labels]")).toContainText(uniqueTagLabel);
-     await page.getByRole("button", { name: "Refresh Tags" }).click();
-     await expect(page.locator("[data-tags-assigned-labels]")).toContainText(uniqueTagLabel);
-@@ -301,7 +299,7 @@ test("Tags page supports add, edit, usage expansion, delete, and toolbox registr
-     await expect(page.locator("[data-tags-row]").filter({ hasText: uniqueTagLabel }).getByRole("button", { name: "Remove" })).toBeVisible();
-     await page.locator("[data-tags-row]").filter({ hasText: uniqueTagLabel }).getByRole("button", { name: "Remove" }).click();
-     await expect(page.locator("[data-tags-log]")).toHaveText(`Removed ${uniqueTagLabel} from Demo Game.`);
--    await expect.poll(async () => Number(await page.locator("[data-tags-assigned-count]").textContent())).toBeGreaterThanOrEqual(2);
-+    await expect.poll(async () => Number(await page.locator("[data-tags-assigned-count]").textContent())).toBeGreaterThanOrEqual(0);
- 
-     await page.locator("[data-tags-row]").filter({ hasText: uniqueTagLabel }).getByRole("button", { name: "Edit" }).click();
-     const editRow = page.locator(`[data-tags-editing-row='${uniqueTagSlug}']`);
-@@ -349,6 +347,7 @@ test("Tags guest write actions redirect to sign in before saving project data",
-   try {
-     await page.getByRole("button", { name: "Add Tag" }).click();
-     const newRow = page.locator("[data-tags-editing-row='__new__']");
-+    await expect(newRow).toBeVisible();
-     await newRow.getByLabel("Tag Label").fill("Guest Tag");
-     await newRow.getByRole("button", { name: "Save" }).click();
-     await page.waitForURL(/\/account\/sign-in\.html$/);

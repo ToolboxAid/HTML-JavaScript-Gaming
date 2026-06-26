@@ -50,7 +50,6 @@ Uncovered or low-coverage changed JS files:
 
 Changed JS files considered:
 (0%) assets/toolbox/game-configuration/js/index.js - changed JS file not collected as browser runtime coverage
-(0%) assets/toolbox/game-crew/js/index.js - changed JS file not collected as browser runtime coverage
 (0%) assets/toolbox/game-design/js/index.js - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
@@ -61,7 +60,6 @@ Changed JS files considered:
 (0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/AssetToolMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/GameConfigurationApiDb.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/GameCrewFoundation.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/GameDesignApiDb.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/TagsTool.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/ToolboxSelectedGameStatusBar.spec.mjs - changed JS file not collected as browser runtime coverage

@@ -5,4 +5,5 @@
 - Game Crew API/DB validation: PASS
 - Retired Alfa mock repository files absent: PASS
 - Flat Tags schema/provider alignment: PASS
+- Mock-db/Admin viewer expansion removed from branch delta: PASS
 - Worktree validation before package: PASS pending final status check

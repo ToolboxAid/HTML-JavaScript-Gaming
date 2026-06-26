@@ -9,6 +9,6 @@
 | Remove member persists through API/DB | PASS | API and page coverage passed. |
 | Guest add/remove redirects or 401s | PASS | Guest UI/API coverage passed. |
 | No mock repository source of truth for Tags/Design/Configuration | PASS | Files removed; guardrail passed. |
-| No mock-db source of truth for Tags | PASS | Active metadata uses `project_tags` and `project_tag_assignments`. |
+| No mock-db source of truth for Tags/Game Crew | PASS | Accidental `mock-db-store.js` and Admin DB viewer expansion was removed; active behavior uses API/database services. |
 | Browser does not own product data | PASS | Writes route through API/database services. |
 | No JSON source of truth, SQLite, or tmp runtime dependency | PASS | None added. |
